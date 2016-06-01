@@ -15,5 +15,3 @@ You can also use destructuring imports::
 
 This allows you to call the function :func:`Exponent.Contacts.getContactsAsync`
 simply using ``Contacts.getContactsAsync()`` for example.
-
-Testing webhook!
