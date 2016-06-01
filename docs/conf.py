@@ -25,6 +25,8 @@ import os
 
 primary_domain = 'js'
 
+html_style = 'css/custom.css'
+
 
 # -- General configuration ------------------------------------------------
 
