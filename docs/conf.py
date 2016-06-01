@@ -25,7 +25,9 @@ import os
 
 primary_domain = 'js'
 
-html_style = 'css/custom.css'
+html_context = {
+    'css_files': ['_static/css/custom.css'],
+}
 
 
 # -- General configuration ------------------------------------------------
