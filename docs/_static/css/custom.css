@@ -1,0 +1,23 @@
+@import url(sphinx_rtd_theme_modified.css);
+@import url(//media.readthedocs.org/css/readthedocs-doc-embed.css);
+@import url(//fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,500);
+
+body,
+h1, h2, .rst-content .toctree-wrapper p.caption, h3, h4, h5, h6, legend,
+.btn {
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
+code, pre, tt, .rst-content tt, .rst-content code, div[class^='highlight'] pre {
+  font-family: 'Menlo',Consolas,"Andale Mono WT","Andale Mono","Lucida Console","Lucida Sans Typewriter","DejaVu Sans Mono","Bitstream Vera Sans Mono","Liberation Mono","Nimbus Mono L",Monaco,"Courier New",Courier,monospace;;
+}
+
+.wy-side-nav-search {
+  background-color: #056ecf;
+}
+
+.rst-content tt.xref, a .rst-content tt, .rst-content tt.xref, .rst-content code.xref, a .rst-content tt, a .rst-content code {
+  font-weight: normal;
+  color: #2980B9;
+}
+
