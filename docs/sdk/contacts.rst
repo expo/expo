@@ -1,7 +1,7 @@
 Contacts
 ========
 
-Provides access to the phone's sytem contacts.
+Provides access to the phone's system contacts.
 
 .. function:: Exponent.Contacts.getContactsAsync(fields)
 
