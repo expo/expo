@@ -19,7 +19,7 @@ from the camera.
       * **aspect** (*array*) -- An array with two entries ``[x, y]`` specifying the
         aspect ratio to maintain if the user is allowed to edit the image (by
         passing ``allowsEditing: true``). This is only applicable
-        on Android, since on iOS the crop rectangel is always a square.
+        on Android, since on iOS the crop rectangle is always a square.
 
    :returns:
       If the user cancelled the image picking, returns ``{ cancelled: true }``.
@@ -43,7 +43,7 @@ from the camera.
       * **aspect** (*array*) -- An array with two entries ``[x, y]`` specifying the
         aspect ratio to maintain if the user is allowed to edit the image (by
         passing ``allowsEditing: true``). This is only applicable
-        on Android, since on iOS the crop rectangel is always a square.
+        on Android, since on iOS the crop rectangle is always a square.
 
    :returns:
       If the user cancelled the image picking, returns ``{ cancelled: true }``.
