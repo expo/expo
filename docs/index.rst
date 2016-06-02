@@ -7,10 +7,3 @@ Exponent Documentation
    sdk/index
 
 
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`search`
-
