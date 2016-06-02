@@ -289,15 +289,6 @@ texinfo_documents = [
 
 # -- Exponent configuration -----------------------------------------------
 
-primary_domain = 'js'
-
-# html_theme = 'sphinx_rtd_theme'
-
-# html_context = {
-#     'css_files': ['_static/css/custom.css'],
-# }
-
-
 import guzzle_sphinx_theme
 
 # Adds an HTML table visitor to apply Bootstrap table classes
@@ -313,5 +304,12 @@ html_theme_options = {
     # Set the name of the project to appear in the sidebar
     "project_nav_name": "Exponent",
 }
+
+primary_domain = 'js'
+
+html_context = {
+    'css_files': ['_static/css/custom.css'],
+}
+
 
 
