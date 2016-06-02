@@ -1,11 +1,7 @@
-@import url(sphinx_rtd_theme_modified.css);
-@import url(//media.readthedocs.org/css/readthedocs-doc-embed.css);
-@import url(//fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,500);
-
 body,
 h1, h2, .rst-content .toctree-wrapper p.caption, h3, h4, h5, h6, legend,
 .btn {
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: 'Helvetica', sans-serif;
 }
 
 code, pre, tt, .rst-content tt, .rst-content code, div[class^='highlight'] pre {
@@ -16,17 +12,31 @@ code, pre, tt, .rst-content tt, .rst-content code, div[class^='highlight'] pre {
   background-color: #056ecf;
 }
 
-.rst-content tt.xref, a .rst-content tt, .rst-content tt.xref, .rst-content code.xref, a .rst-content tt, a .rst-content code {
-  font-weight: normal;
-  color: #2980B9;
+.text-logo {
+  margin: 0 0 0 0;
+  height: 78px;
+  background-color: #fff;
+  border-bottom: 1px solid #fff;
+  background-image: url(../img/logo-text.png);
+  background-size: 175px;
+  background-repeat: no-repeat;
+  background-position: center;
+  color: transparent;
 }
 
-a.icon-home, a.icon-home:hover {
-  background: transparent;
-  background-image: url(../img/logo.png);
-  width: 42px;
-  height: 42px;
-  background-size: 42px;
+.text-logo:hover {
   color: transparent;
+}
+
+#left-column {
+  background: #fff;
+}
+
+/* #right-column, .footer { */
+/*   border-right: 1px solid #e0e0e0; */
+/* } */
+
+body {
+  background-color: #fff;
 }
 

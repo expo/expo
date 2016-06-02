@@ -12,11 +12,11 @@ from the camera.
    :param object options:
       A map of options:
 
-      * allowsEditing (`boolean`) -- Whether to show a UI to edit the image
+      * **allowsEditing** (*boolean*) -- Whether to show a UI to edit the image
         after it is picked. On Android the user can crop and rotate the image
         and on iOS simply crop it. Defaults to ``false``.
 
-      * aspect (`array`) -- An array with two entries ``[x, y]`` specifying the
+      * **aspect** (*array*) -- An array with two entries ``[x, y]`` specifying the
         aspect ratio to maintain if the user is allowed to edit the image (by
         passing ``allowsEditing: true``). This is only applicable
         on Android, since on iOS the crop rectangel is always a square.
@@ -36,11 +36,11 @@ from the camera.
    :param object options:
       A map of options:
 
-      * allowsEditing (`boolean`) -- Whether to show a UI to edit the image
+      * **allowsEditing** (*boolean*) -- Whether to show a UI to edit the image
         after it is picked. On Android the user can crop and rotate the image
         and on iOS simply crop it. Defaults to ``false``.
 
-      * aspect (`array`) -- An array with two entries ``[x, y]`` specifying the
+      * **aspect** (*array*) -- An array with two entries ``[x, y]`` specifying the
         aspect ratio to maintain if the user is allowed to edit the image (by
         passing ``allowsEditing: true``). This is only applicable
         on Android, since on iOS the crop rectangel is always a square.
