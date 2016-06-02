@@ -7,3 +7,4 @@ Exponent SDK
    intro
    constants
    contacts
+   imagepicker
