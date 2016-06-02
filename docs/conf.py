@@ -21,15 +21,6 @@ import os
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.insert(0, os.path.abspath('.'))
 
-# -- Exponent configuration -----------------------------------------------
-
-primary_domain = 'js'
-
-html_context = {
-    'css_files': ['_static/css/custom.css'],
-}
-
-
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -118,7 +109,7 @@ todo_include_todos = False
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'sphinx_rtd_theme'
+#html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -294,3 +285,33 @@ texinfo_documents = [
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
+
+
+# -- Exponent configuration -----------------------------------------------
+
+primary_domain = 'js'
+
+# html_theme = 'sphinx_rtd_theme'
+
+# html_context = {
+#     'css_files': ['_static/css/custom.css'],
+# }
+
+
+import guzzle_sphinx_theme
+
+# Adds an HTML table visitor to apply Bootstrap table classes
+html_translator_class = 'guzzle_sphinx_theme.HTMLTranslator'
+html_theme_path = guzzle_sphinx_theme.html_theme_path()
+html_theme = 'guzzle_sphinx_theme'
+
+# Register the theme as an extension to generate a sitemap.xml
+extensions.append("guzzle_sphinx_theme")
+
+# Guzzle theme options (see theme.conf for more information)
+html_theme_options = {
+    # Set the name of the project to appear in the sidebar
+    "project_nav_name": "Exponent",
+}
+
+
