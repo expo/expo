@@ -6,6 +6,6 @@
 [subrepo]
 	remote = git@github.com:exponentjs/exponent-docs.git
 	branch = master
-	commit = 3235b0cd8da6906da4ede93918c397308e45706c
-	parent = ae428fcb272fc6e7685e102633da6dd4b50bdda0
+	commit = 38fe00167ac5e6969b13c0428615fe6f20048a6b
+	parent = e46a0a0104d266d28a2443a6082957be7fb31b16
 	cmdver = 0.3.0
