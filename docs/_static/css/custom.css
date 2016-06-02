@@ -21,3 +21,12 @@ code, pre, tt, .rst-content tt, .rst-content code, div[class^='highlight'] pre {
   color: #2980B9;
 }
 
+a.icon-home, a.icon-home:hover {
+  background: transparent;
+  background-image: url(https://d3lwq5rlu14cro.cloudfront.net/v1/pmEUQbj7N1m95nXyF7j7.png);
+  width: 42px;
+  height: 42px;
+  background-size: 42px;
+  color: transparent;
+}
+
