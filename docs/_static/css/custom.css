@@ -10,8 +10,12 @@ code, pre, tt, .rst-content tt, .rst-content code, div[class^='highlight'] pre {
   font-family: 'Menlo',Consolas,"Andale Mono WT","Andale Mono","Lucida Console","Lucida Sans Typewriter","DejaVu Sans Mono","Bitstream Vera Sans Mono","Liberation Mono","Nimbus Mono L",Monaco,"Courier New",Courier,monospace;;
 }
 
-.wy-side-nav-search {
-  background-color: #056ecf;
+code {
+  padding: 0px;
+}
+
+code.xref {
+  color: #428bca;
 }
 
 .text-logo {
