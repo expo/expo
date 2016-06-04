@@ -7,4 +7,5 @@ Exponent SDK
    intro
    constants
    contacts
+   facebook
    imagepicker
