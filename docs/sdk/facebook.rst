@@ -28,9 +28,9 @@ to do as much of the work as possible.
    :returns:
       If the user or Facebook cancelled the login, returns ``{ type: 'cancel' }``.
 
-      Otherwise, returns ``{ type: 'success', token, expiration }`` where
-      ``token`` is a string giving the access token to use with Facebook HTTP
-      API requests and ``expiration`` gives the time that this token will expire
-      (as seconds since epoch). You can save the access token using, say,
-      ``AsyncStorage``, and use it till the expiration time.
+      Otherwise, returns ``{ type: 'success', token, expires }`` where ``token``
+      is a string giving the access token to use with Facebook HTTP API requests
+      and ``expires`` gives the time that this token will expire (as seconds
+      since epoch). You can save the access token using, say, ``AsyncStorage``,
+      and use it till the expiration time.
 
