@@ -5,5 +5,4 @@ Exponent Documentation
    :maxdepth: 2
 
    sdk/index
-
-
+   xdl/index
