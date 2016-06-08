@@ -12,7 +12,7 @@ incorporate them!
 
 ### As an Exponent developer
 
-Make your changes in `universe/docs` and commit them. Then, in `universe`, run
-`git subrepo push docs` (make sure to run this at the root of the repository).
-This will push to the public repository, which triggers a webhook that rebuilds
-the documentation (generating the online version, pdf and epub) automatically.
+Make your changes in `universe/docs` and commit them. When our `shipit` bot
+synchronizes the changes to the public `exponent-docs` repository, a webhook
+will run that regenerates the HTML to display on the documentation website. All
+you need to do is commit!
