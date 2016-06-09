@@ -18,10 +18,10 @@ Allows loading fonts from the web and using them in React Native components.
 .. function:: Exponent.Font.style(name)
 
    Return style attributes to use with a ``Text`` or other React Native
-   component to use a font loaded with :func:`Exponent.Font.loadAsync`. You can
-   even call this function before calling :func:`Exponent.Font.loadAsync`, it
-   will return the correct style attributes. This way you can use this function
-   with ``StyleSheet.create()`` at global scope.
+   component. You can even call this function before calling
+   :func:`Exponent.Font.loadAsync`, it will still return the correct style
+   attributes. This way you can use this function with ``StyleSheet.create()``
+   at global scope.
 
    :param string name:
       The user-defined name for this font specified in :func:`Exponent.Font.loadAsync`.
@@ -34,7 +34,7 @@ Allows loading fonts from the web and using them in React Native components.
    .. code-block:: javascript
 
      <Text style={{ ...Exponent.Font.style('helloFont'), color: 'red' }}>
-       HELLO WORLD
+       Hello world!
      </Text>
 
    Before the component is rendered, the font must be loaded by calling
