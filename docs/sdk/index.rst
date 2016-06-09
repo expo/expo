@@ -8,4 +8,5 @@ Exponent SDK
    constants
    contacts
    facebook
+   font
    imagepicker
