@@ -1,13 +1,12 @@
 Constants
 =========
 
-System information that remains constant throughout the lifetime of the app.
+System information that remains constant throughout the lifetime of your app.
 
 .. attribute:: Exponent.Constants.sessionId
 
-   A string that is unique to the current session of the app. It is
-   different across apps and across multiple launches of the same
-   app.
+   A string that is unique to the current session of your app. It is different
+   across apps and across multiple launches of the same app.
 
 .. attribute:: Exponent.Constants.exponentVersion
 
