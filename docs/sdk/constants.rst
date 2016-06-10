@@ -17,7 +17,7 @@ System information that remains constant throughout the lifetime of your app.
    The `device year class <https://github.com/facebook/device-year-class>`_ of
    this device.
 
-.. attribute:: Exponent.Constants.deviceUUID
+.. attribute:: Exponent.Constants.deviceId
 
    An identifier that is unique to this particular device and installation of
    the Exponent client.
