@@ -15,6 +15,28 @@ Allows loading fonts from the web and using them in React Native components.
    :returns:
       Doesn't return anything, simply awaits till the font is available to use.
 
+.. function:: Exponent.Font.loadAsync(map)
+
+   Convenience form of :func:`Exponent.Font.loadAsync` that allows you to
+   specify multiple font sources at once.
+
+   :param object map:
+      A map of names to urls as in :func:`Exponent.Font.loadAsync`.
+
+   :returns:
+      Doesn't return anything, simply awaits till all fonts are available to use.
+
+   :example:
+      .. code-block:: javascript
+
+        Exponent.Font.loadAsync({
+          score: 'http://url/to/font1.ttf',
+          health: 'http://url/to/font2.ttf',
+        });
+
+      This is equivalent to calling :func:`Exponent.Font.loadAsync` once per name
+      and url pair.
+
 .. function:: Exponent.Font.style(name)
 
    Return style attributes to use with a ``Text`` or other React Native
