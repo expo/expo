@@ -13,9 +13,9 @@ example).
    to access their Facebook data.
 
    :param string appId:
-      Your Facebook application ID. Look at `Facebook's developer documentation
-      <https://developers.facebook.com/docs/apps/register>`_ to learn how to get
-      one.
+      Your Facebook application ID. `Facebook's developer documentation
+      <https://developers.facebook.com/docs/apps/register>`_ describes how to
+      get one.
 
    :param object options:
       A map of options:
