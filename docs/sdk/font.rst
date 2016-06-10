@@ -29,14 +29,13 @@ Allows loading fonts from the web and using them in React Native components.
    :returns:
       An object with style attributes to use in a ``Text`` or similar component.
 
-   Here's an example use of this function:
+   :example:
+      .. code-block:: javascript
 
-   .. code-block:: javascript
+        <Text style={{ ...Exponent.Font.style('helloFont'), color: 'red' }}>
+          Hello world!
+        </Text>
 
-     <Text style={{ ...Exponent.Font.style('helloFont'), color: 'red' }}>
-       Hello world!
-     </Text>
-
-   Before the component is rendered, the font must be loaded by calling
-   ``Exponent.Font.loadAsync('helloFont', 'http://url/to/font.ttf')``.
+      Before the component is rendered, the font must be loaded by calling
+      ``Exponent.Font.loadAsync('helloFont', 'http://url/to/font.ttf')``.
 
