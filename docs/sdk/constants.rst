@@ -7,7 +7,7 @@ System information that remains constant throughout the lifetime of the app.
 
    A string that is unique to the current session of the app. It is
    different across apps and across multiple launches of the same
-   apps.
+   app.
 
 .. attribute:: Exponent.Constants.exponentVersion
 
