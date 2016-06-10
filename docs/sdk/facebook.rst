@@ -6,8 +6,8 @@ available through HTTP (such as the `Graph API
 <https://developers.facebook.com/docs/graph-api/overview/>`_). Exponent only
 exposes the bare minimum native API since it is best to use cross-platform
 JavaScript code with HTTP requests (using React Native's `fetch
-<https://facebook.github.io/react-native/docs/network.html>`_ API, for example)
-to do as much of the work as possible.
+<https://facebook.github.io/react-native/docs/network.html#fetch>`_, for
+example) to do as much of the work as possible.
 
 .. function:: Exponent.Facebook.logInWithReadPermissionsAsync(appId, options)
 
@@ -34,3 +34,25 @@ to do as much of the work as possible.
       since epoch). You can save the access token using, say, ``AsyncStorage``,
       and use it till the expiration time.
 
+   :example:
+      .. code-block:: javascript
+
+        const { type, token } = await Exponent.Facebook.logInWithReadPermissionsAsync(
+          '<APP_ID>', {
+            permissions: ['public_profile'],
+          });
+        if (type === 'success') {
+          const response = await fetch(
+            `https://graph.facebook.com/me?access_token=${token}`);
+          Alert.alert(
+            'Logged in!',
+            `Hi ${(await response.json()).name}!`,
+          );
+        }
+
+      Given a valid Facebook application ID in place of ``<APP_ID>``, the code
+      above will prompt the user to log into Facebook then display the user's
+      name. This uses React Native's `fetch
+      <https://facebook.github.io/react-native/docs/network.html#fetch>`_ to
+      query Facebook's `Graph API
+      <https://developers.facebook.com/docs/graph-api>`_.
