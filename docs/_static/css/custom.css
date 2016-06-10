@@ -14,8 +14,21 @@ code {
   padding: 0px;
 }
 
+code, pre {
+  margin: 14px 0;
+}
+
+pre {
+  padding: 5px 0 5px 20px;
+  margin: 14px 0;
+}
+
 code.xref {
   color: #428bca;
+}
+
+dl dd {
+  margin: 3px 0 10px 20px;
 }
 
 .text-logo {
