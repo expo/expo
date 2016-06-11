@@ -1,3 +1,5 @@
+.. _exponent-sdk:
+
 Exponent SDK
 ============
 
