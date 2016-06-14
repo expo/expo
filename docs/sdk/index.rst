@@ -7,20 +7,20 @@ The Exponent SDK provides access to system functionality such as contacts,
 camera, and social login. It is provided by the npm package `exponent
 <https://www.npmjs.com/package/exponent>`_. Install it by running ``npm
 install --save exponent`` in the root directory of the project. Then you can
-import it in your JavaScript code as follows:
-
-.. code-block:: javascript
-
-  import Exponent from 'exponent';
-
-If you prefer, you can also use destructuring imports:
+import modules from it in your JavaScript code as follows:
 
 .. code-block:: javascript
 
   import { Contacts } from 'exponent';
 
-This allows you to write ``Contacts.getContactsAsync()`` instead of
-:func:`Exponent.Contacts.getContactsAsync`, for example.
+You can also import all Exponent SDK modules:
+
+.. code-block:: javascript
+
+  import * as Exponent from 'exponent';
+
+This allows you to write :func:`Exponent.Contacts.getContactsAsync`, for
+example.
 
 .. raw:: html
 

@@ -56,11 +56,11 @@ following ``import`` in your application code:
 
 .. code-block:: javascript
 
-   import Exponent from 'exponent';
+   import { Font } from 'exponent';
 
-The ``Exponent`` library provides an API to access native functionality of the
-device from your JavaScript code. ``Exponent.Font`` is the module that deals
-with font-related tasks. First, we must load the font from the web using
+The ``'exponent'`` library provides an API to access native functionality of the
+device from your JavaScript code. ``Font`` is the module that deals with
+font-related tasks. First, we must load the font from the web using
 :func:`Exponent.Font.loadAsync`. We can do this in the `componentDidMount()
 <https://facebook.github.io/react/docs/component-specs.html#mounting-componentdidmount>`_
 lifecycle method of the ``App`` component. Add the following method in ``App``:
@@ -68,7 +68,7 @@ lifecycle method of the ``App`` component. Add the following method in ``App``:
 .. code-block:: javascript
 
     async componentDidMount() {
-      await Exponent.Font.loadAsync({
+      await Font.loadAsync({
         awesome: 'https://github.com/FortAwesome/Font-Awesome/raw/master/fonts/fontawesome-webfont.ttf',
       });
     }
@@ -90,7 +90,7 @@ to do is change your ``Text`` element to the following:
 
 .. code-block:: javascript
 
-          <Text style={{ ...Exponent.Font.style('awesome'),
+          <Text style={{ ...Font.style('awesome'),
                          fontSize: 56 }}>
             Hello, world!
           </Text>
@@ -103,7 +103,7 @@ following:
 
 .. code-block:: javascript
 
-          <Text style={{ ...Exponent.Font.style('awesome'),
+          <Text style={{ ...Font.style('awesome'),
                          fontSize: 56 }}>
             {'\uf000'}
           </Text>
@@ -152,7 +152,7 @@ Finally, we want to only render the ``Text`` component if ``fontLoaded`` is
 
           {
             this.state.fontLoaded ? (
-              <Text style={{ ...Exponent.Font.style('awesome'),
+              <Text style={{ ...Font.style('awesome'),
                              fontSize: 56 }}>
                 {'\uf000'}
               </Text>
