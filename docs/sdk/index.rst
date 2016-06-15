@@ -1,7 +1,7 @@
 .. _exponent-sdk:
 
-Exponent SDK
-============
+SDK API Reference
+=======================
 
 The Exponent SDK provides access to system functionality such as contacts,
 camera, and social login. It is provided by the npm package `exponent

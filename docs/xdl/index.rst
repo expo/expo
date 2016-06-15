@@ -1,5 +1,5 @@
-XDL
-============
+XDL API Reference
+==================
 
 XDL (Exponent Development Library) is used for building tools for Exponent
 developers such as `XDE <https://github.com/exponentjs/xde>`_ and

@@ -1,5 +1,5 @@
-Facebook
-========
+Facebook Login
+==============
 
 Provides Facebook integration for Exponent apps. Exponent exposes a minimal
 native API since you can access Facebook's `Graph API

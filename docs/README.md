@@ -30,4 +30,3 @@ Then, in `universe/docs`, run,
 This will serve the docs site accessible at the URL given in the output of the
 command. When you edit and save one of the docs source files it builds and
 refreshes the page automatically.
-

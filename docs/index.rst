@@ -1,9 +1,17 @@
-Exponent Documentation
+Learn Exponent
 ======================
 
+.. raw:: html
+   :file: introduction/overview.html
+
+
+---------------------------------------
+
 .. toctree::
+   :includehidden:
    :maxdepth: 2
 
-   tuts/index
+   introduction/index
+   guides/index
    sdk/index
    xdl/index
