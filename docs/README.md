@@ -25,7 +25,7 @@ Make sure you have `python` and `pip` installed. Run,
 
 Then, in `universe/docs`, run,
 
-```rm -rf _build_html && PYGMENTS_NODE_COMMAND=node sphinx-autobuild . _build_html```
+```make serve```
 
 This will serve the docs site accessible at the URL given in the output of the
 command. When you edit and save one of the docs source files it builds and
