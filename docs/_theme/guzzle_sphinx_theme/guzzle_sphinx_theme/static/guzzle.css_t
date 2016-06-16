@@ -70,7 +70,7 @@ h1 {
 }
 
 h2 {
-  font-size: 34px;
+  font-size: 28px;
   padding: .2em 0;
   border-bottom: 1px solid #ddd;
 }
@@ -415,7 +415,7 @@ table.two-column {
 
 .footer-relations {
   display: relative;
-  border-top: 1px solid #ccc;
+  border-top: 1px solid #e0e0e0;
   padding: 12px 45px;
   margin-top: 30px;
   font-size: 24px;

@@ -5,5 +5,5 @@ Introduction
    :maxdepth: 2
 
    installation
-   community
    learning
+   community

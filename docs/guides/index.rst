@@ -7,3 +7,4 @@ Guides
    up-and-running
    logging
    font-awesome
+   upgrading-exponent
