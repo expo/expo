@@ -2,7 +2,7 @@
 Logging
 **********************
 
-Writing to the logs in an Exponent app is just like in the browser: use ``console.log``, ``console.warn`` and ``console.error``.
+Writing to the logs in an Exponent app works just like in the browser: use ``console.log``, ``console.warn`` and ``console.error``.
 Note: we don't currently support ``console.table`` outside of remote debugging mode.
 
 View logs for an iOS simulator

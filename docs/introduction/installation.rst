@@ -1,3 +1,5 @@
+.. _installation:
+
 Installation
 ============
 
@@ -5,7 +7,7 @@ There are two tools that you need to develop apps with Exponent - a
 desktop development tool and a mobile client to open your app.
 
 Desktop Development Tool: XDE
--------------------------------
+-----------------------------
 
 XDE stands for Exponent Development Environment. It is a standalone
 desktop app that includes all dependencies you'll need to get started.
@@ -23,17 +25,17 @@ for you, and you can access that from the Exponent client on iOS or
 Android, either on a real device or in a simulator.
 
 On your device
-^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^
 
 `Download for Android 4.4+ from the Play Store <https://play.google.com/store/apps/details?id=host.exp.exponent>`_ or `for iOS 8+ from the App Store <https://itunes.com/apps/exponent>`_
 
 iOS simulator
-^^^^^^^^^^^^^^
+^^^^^^^^^^^^^
 
 Install `Xcode through the Apple App Store <https://itunes.apple.com/app/xcode/id497799835>`_. It'll take a while, go have a nap. Next, open up Xcode, go to preferences and click the Components tab, install a simulator from the list `(screenshot). </_static/img/xcode-simulator.png>`_
 
 Android emulator
-^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^
 
 Follow the `Genymotion Installation guide <https://docs.genymotion.com/Content/01_Get_Started/Installation.htm>`_ -- the Individual Basic plan is free and works great with Exponent. Once you've installed Genymotion, create a virtual device - we recommend a Nexus 5, the Android version is up to you. Start up the virtual device when it's ready.
 

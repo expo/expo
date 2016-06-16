@@ -1,0 +1,30 @@
+
+Exponent is a mobile app development tool that enables you to build high quality
+native iOS and Android applications using JavaScript and deploy them
+effortlessly.
+
+Writing an Exponent app is like writing a React Native app, except you never
+need to open Xcode / Android Studio, or write any native code. To make this
+possible, we provide the :ref:`exponent-sdk` 
+
+<a class="reference external" href="sdk/index.html">a
+collection of native APIs into Exponent</a> which you can access through the
+<cite>exponent</cite> npm package. These native APIs include functionality like
+Facebook login, an image picker/cropper and push notifications. We're
+continually adding to our native APIs and would like to hear from you if there's
+something that we're missing: <a class="reference external"
+href="mailto:support@getexponent.com">support<span>@</span>getexponent<span>.</span>com</a>.
+
+
+<p>Exponent also provides UI components to handle a variety of use-cases
+  that almost all apps will cover but are not baked into React Native
+  core, these include icons, an image lightbox, a loading overlay and
+  more.
+</p>
+<p>So go ahead and give Exponent a try, follow the <a class="reference
+  external" href="introduction/installation.html">Installation</a>
+  instructions -- it shouldn't take more than a few minutes. Once you're done
+  with that, get <a class="reference external" href="guides/up-and-running.html">Up and Running</a>
+  with your first Exponent project.  If you're not already familiar with React and React Native
+  you can bootstrap your knowledge with <a class="reference external" href="http://www.reactnativeexpress.com/">React Native Express</a>.
+</p>
