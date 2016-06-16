@@ -34,3 +34,4 @@ example.
    facebook
    font
    imagepicker
+   location
