@@ -1,0 +1,11 @@
+
+<div class="sidebar-block">
+  <div class="sidebar-toc">
+    {% set toctree = toctree(maxdepth=2, collapse=False, includehidden=True) %}
+    {% if toctree %}
+      {{ toctree }}
+    {% else %}
+      {{ toc }}
+    {% endif %}
+  </div>
+</div>

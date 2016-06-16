@@ -1,0 +1,4 @@
+*.pyc
+dist
+guzzle_sphinx_theme.egg-info
+demo/_build

@@ -4,10 +4,8 @@ Learn Exponent
 .. raw:: html
    :file: introduction/overview.html
 
-
----------------------------------------
-
 .. toctree::
+   :hidden:
    :includehidden:
    :maxdepth: 2
 

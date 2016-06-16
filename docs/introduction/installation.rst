@@ -17,14 +17,15 @@ desktop app that includes all dependencies you'll need to get started.
 Mobile Client: Exponent for iOS and Android
 --------------------------------------------
 
+The Exponent client is like a browser for apps built with Exponent. When
+you boot up XDE on your project it generates a unique development URL
+for you, and you can access that from the Exponent client on iOS or
+Android, either on a real device or in a simulator.
+
 On your device
 ^^^^^^^^^^^^^^^
 
-The Exponent mobile app is what you use to run your projects.
-
-`Download for Android 4.4+ from the Play Store <https://play.google.com/store/apps/details?id=host.exp.exponent>`_
-
-`Download for iOS 7+ from the App Store <https://itunes.com/apps/exponent>`_
+`Download for Android 4.4+ from the Play Store <https://play.google.com/store/apps/details?id=host.exp.exponent>`_ or `for iOS 8+ from the App Store <https://itunes.com/apps/exponent>`_
 
 iOS simulator
 ^^^^^^^^^^^^^^

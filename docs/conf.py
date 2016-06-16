@@ -46,7 +46,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'exponent'
+project = 'Exponent'
 copyright = '2016, Exponent'
 author = 'Exponent'
 
@@ -225,7 +225,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'exponent.tex', 'exponent Documentation',
+    (master_doc, 'exponent.tex', 'Exponent Documentation',
      'Exponent', 'manual'),
 ]
 
@@ -255,7 +255,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'exponent', 'exponent Documentation',
+    (master_doc, 'Exponent', 'Exponent Documentation',
      [author], 1)
 ]
 
@@ -269,8 +269,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'exponent', 'exponent Documentation',
-     author, 'exponent', 'One line description of project.',
+    (master_doc, 'Exponent', 'Exponent Documentation',
+     author, 'Exponent', '',
      'Miscellaneous'),
 ]
 
@@ -289,11 +289,14 @@ texinfo_documents = [
 
 # -- Exponent configuration -----------------------------------------------
 
-import guzzle_sphinx_theme
+from os import path
+package_dir = path.abspath(path.dirname(__file__))
+template_path = path.join(package_dir, '_theme', 'guzzle_sphinx_theme')
 
 # Adds an HTML table visitor to apply Bootstrap table classes
 html_translator_class = 'guzzle_sphinx_theme.HTMLTranslator'
-html_theme_path = guzzle_sphinx_theme.html_theme_path()
+html_theme_path = [template_path]
+print "theme %s." % html_theme_path
 html_theme = 'guzzle_sphinx_theme'
 
 # Register the theme as an extension to generate a sitemap.xml

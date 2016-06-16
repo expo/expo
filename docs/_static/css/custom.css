@@ -3,7 +3,7 @@
 body,
 h1, h2, .rst-content .toctree-wrapper p.caption, h3, h4, h5, h6, legend,
 .btn {
-  font-family: 'Helvetica', sans-serif;
+  font-family: 'Source Sans Pro', sans-serif;
 }
 
 code, pre, tt, .rst-content tt, .rst-content code, div[class^='highlight'] pre {
@@ -33,17 +33,33 @@ dl dd {
 
 .text-logo {
   margin: 0 0 0 0;
-  height: 78px;
+  height: 60px;
+  padding: 0;
   background-color: #fff;
   border-bottom: 1px solid #fff;
   background-image: url(../img/logo-text.png);
-  background-size: 175px;
+  background-size: 190px;
   background-repeat: no-repeat;
   background-position: center;
   color: transparent;
+  font-size: 0;
+}
+
+.text-logo::-moz-selection {
+  color: transparent;
+  background: transparent;
+}
+
+.text-logo::selection {
+  color: transparent;
+  background: transparent;
 }
 
 .text-logo:hover {
+  color: transparent;
+}
+
+.text-logo:active {
   color: transparent;
 }
 
