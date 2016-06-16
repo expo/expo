@@ -17,20 +17,24 @@ so that it's compatible with the latest version.
 
 * **Close XDE**
 
-* **Find out what the latest version of Exponent is**
-  * `See a list of versions <https://getexponent.com/--/abi-versions>`_ and pick the one with the biggest number. You will use the ``exponent-react-native-tag`` in the next step.
+* **Find out what the latest version of Exponent is:**
 
-* **Update the version of react-native that your project depends on**
+  `See a list of versions <https://getexponent.com/--/abi-versions>`_ and pick the one with the biggest number. You will use the ``exponent-react-native-tag`` in the next step.
+
+* **Update the version of react-native that your project depends on:**
+
   * Open your project's ``package.json`` file and find the ``"react-native"`` entry under the ``"dependencies"`` section.
   * Its value should look like ``"exponentjs/react-native#sdk-x.y.z"``. Replace the ``sdk-x.y.z`` with the ``exponent-react-native-tag`` from the previous step.
 
-* **Update the version of Exponent SDK**
+* **Update the version of Exponent SDK:**
+
   * Open your project's ``package.json`` file and find the ``"exponent"`` entry under the ``"dependencies"`` section.
   * Change the version matcher to something like ``^6.0.0``, but replace ``6.0.0`` with the sdk version from the previous step.
   * Delete your ``node_modules`` directory and run ``npm install``. I like to do ``npm install && say wake up``.
 
 * **Update XDE**
-  * XDE looks for updates automatically, so it might already have already installed and asked you to restart it. If it didn't, you can grab the latest release `from Github <https://github.com/exponentjs/xde/releases>`_.
+
+  XDE looks for updates automatically, so it might already have already installed and asked you to restart it. If it didn't, you can grab the latest release `from Github <https://github.com/exponentjs/xde/releases>`_.
 
 * **Open your project and clear the packager cache**
 
