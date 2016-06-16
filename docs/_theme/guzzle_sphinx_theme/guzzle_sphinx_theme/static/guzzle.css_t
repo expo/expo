@@ -242,8 +242,8 @@ div.sphinxsidebar .sidebar-toc a {
 
 .sidebar-toc ul li.current.toctree-l1 > a,
 .sidebar-toc ul li.current.toctree-l1 > a:hover {
-  font-weight: 500;
-  color: #444;
+  /*font-weight: 500;*/
+  /*color: #444;*/
 }
 
 .sidebar-toc ul li.current.toctree-l1 > a.current,
