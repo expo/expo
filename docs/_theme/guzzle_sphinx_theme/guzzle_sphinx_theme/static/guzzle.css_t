@@ -65,9 +65,8 @@ h1 {
   font-size: 38px;
   padding: 25px 10px 15px 45px;
   margin: 0px 0 25px -45px;
-  // background-color: aliceblue;
   width: calc(100% + 90px);
-  border-bottom: 1px solid #D8E4EF;
+  border-bottom: 1px solid #e0e0e0;
 }
 
 h2 {
@@ -123,6 +122,7 @@ code, tt {
 
 code.literal {
   color: #333;
+  padding: 3px;
 }
 
 tt {

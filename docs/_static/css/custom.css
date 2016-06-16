@@ -10,8 +10,9 @@ code, pre, tt, .rst-content tt, .rst-content code, div[class^='highlight'] pre {
   font-family: 'Menlo',Consolas,"Andale Mono WT","Andale Mono","Lucida Console","Lucida Sans Typewriter","DejaVu Sans Mono","Bitstream Vera Sans Mono","Liberation Mono","Nimbus Mono L",Monaco,"Courier New",Courier,monospace;;
 }
 
-code {
-  padding: 3px;
+code.descclassname, code.descname {
+  padding: 3px 0;
+  border-radius: 0;
 }
 
 code, pre {
