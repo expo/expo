@@ -11,15 +11,14 @@
   <link rel="stylesheet" type="text/css" href="{{ pathto('_static/css/bootstrap.min.css', 1) }}" />
   <link rel="stylesheet" type="text/css" href="{{ pathto('_static/css/bootstrap-theme.min.css', 1) }}" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ pathto('_static/img/apple-touch-icon-180x180.png', 1) }}"/>
+  <link rel="icon" type="image/png" href="{{ pathto('_static/img/favicon-32x32.png', 1) }}" sizes="32x32"/>
+  <meta name="msapplication-TileColor" content="#023c69"/>
+  <meta name="msapplication-TileImage" content="{{ pathto('_static/img/mstile-144x144.png', 1) }}"/>
+  <meta name="theme-color" content="#023c69"/>
+
   {{ super() }}
 {%- endblock %}
-
-{%- block extrahead %}
-  {% if theme_touch_icon %}
-  <link rel="apple-touch-icon" href="{{ pathto('_static/' ~ theme_touch_icon, 1) }}" />
-  {% endif %}
-  {{ super() }}
-{% endblock %}
 
 {# Displays the URL for the homepage if it's set or the master_doc if it is not #}
 {% macro homepage() -%}
