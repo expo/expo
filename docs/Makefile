@@ -6,6 +6,7 @@ SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 PAPER         =
 BUILDDIR      = _build
+export PYGMENTS_NODE_COMMAND = node
 
 # User-friendly check for sphinx-build
 ifeq ($(shell which $(SPHINXBUILD) >/dev/null 2>&1; echo $$?), 1)
@@ -20,7 +21,7 @@ ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 
 serve:
-	@rm -rf _build_html && PYGMENTS_NODE_COMMAND=node sphinx-autobuild . _build_html
+	@rm -rf _build_html && sphinx-autobuild . _build_html
 
 .PHONY: help
 help:
