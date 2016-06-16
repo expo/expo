@@ -25,7 +25,7 @@ to start the other components.
       * **reset** (*boolean*) -- Reset the React Native cache.
 
 
-.. function:: xdl.Project.stopAsync(projectRoot, options)
+.. function:: xdl.Project.stopAsync(projectRoot)
 
    Stops everything started by ``xdl`` on a project. If an external React Native
    packager was specified through :func:`xdl.Project.setOptionsAsync` it will not
@@ -113,7 +113,7 @@ to start the other components.
       Project root directory.
 
 
-.. function:: xdl.Project.startTunnelsAsync(projectRoot, options)
+.. function:: xdl.Project.startTunnelsAsync(projectRoot)
 
    Starts tunnels over the Exponent server and the React Native packager. Both
    need to be started or else this will throw an error.
