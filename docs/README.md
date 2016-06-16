@@ -21,11 +21,11 @@ you need to do is commit!
 
 Make sure you have `python` and `pip` installed. Run,
 
-```pip install sphinx sphinx-autobuild guzzle_sphinx_theme```
+```pip install git+git://github.com/exponentjs/sphinx.git@master pygments-lexer-babylon sphinx-autobuild pygments-style-exponent```
 
 Then, in `universe/docs`, run,
 
-```rm -rf _build_html && sphinx-autobuild . _build_html```
+```rm -rf _build_html && PYGMENTS_NODE_COMMAND=node sphinx-autobuild . _build_html```
 
 This will serve the docs site accessible at the URL given in the output of the
 command. When you edit and save one of the docs source files it builds and

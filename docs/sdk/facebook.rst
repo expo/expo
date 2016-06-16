@@ -1,4 +1,4 @@
-Facebook Login
+Facebook
 ==============
 
 Provides Facebook integration for Exponent apps. Exponent exposes a minimal
@@ -38,18 +38,20 @@ example).
    :example:
       .. code-block:: javascript
 
-        const { type, token } = await Exponent.Facebook.logInWithReadPermissionsAsync(
-          '<APP_ID>', {
-            permissions: ['public_profile'],
-          });
-        if (type === 'success') {
-          // Get the user's name using Facebook's Graph API
-          const response = await fetch(
-            `https://graph.facebook.com/me?access_token=${token}`);
-          Alert.alert(
-            'Logged in!',
-            `Hi ${(await response.json()).name}!`,
-          );
+        async function logIn() {
+          const { type, token } = await Exponent.Facebook.logInWithReadPermissionsAsync(
+            '<APP_ID>', {
+              permissions: ['public_profile'],
+            });
+          if (type === 'success') {
+            // Get the user's name using Facebook's Graph API
+            const response = await fetch(
+              `https://graph.facebook.com/me?access_token=${token}`);
+            Alert.alert(
+              'Logged in!',
+              `Hi ${(await response.json()).name}!`,
+            );
+          }
         }
 
       Given a valid Facebook application ID in place of ``<APP_ID>``, the code

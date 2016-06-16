@@ -75,7 +75,7 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '_theme']
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
@@ -93,7 +93,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 #show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = 'exponent'
 
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []

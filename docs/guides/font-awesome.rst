@@ -1,5 +1,5 @@
 **********************
-Font Awesome for icons
+Font Awesome for Icons
 **********************
 
 `Font Awesome <http://fontawesome.io/>`_ provides an icon set in the form of a
@@ -15,8 +15,6 @@ First let's start with a basic "Hello world!" app:
 
 .. code-block:: javascript
 
-  'use strict';
-
   import {
     AppRegistry,
     Text,
@@ -28,9 +26,7 @@ First let's start with a basic "Hello world!" app:
   class App extends React.Component {
     render() {
       return (
-        <View style={{ flex: 1,
-                      justifyContent: 'center',
-                      alignItems: 'center' }}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <Text style={{ fontSize: 56 }}>
             Hello, world!
           </Text>
@@ -67,11 +63,15 @@ lifecycle method of the ``App`` component. Add the following method in ``App``:
 
 .. code-block:: javascript
 
-    async componentDidMount() {
-      await Font.loadAsync({
-        awesome: 'https://github.com/FortAwesome/Font-Awesome/raw/master/fonts/fontawesome-webfont.ttf',
-      });
-    }
+      class App extends React.Component {
+        componentDidMount() {
+          Font.loadAsync({
+            awesome: 'https://github.com/FortAwesome/Font-Awesome/raw/master/fonts/fontawesome-webfont.ttf',
+          });
+        }
+
+        // ...
+      }
 
 This loads Font Awesome and associates it with the name ``'awesome'`` in
 Exponent's font map. Now we just have to refer to this font in our ``Text``
@@ -90,8 +90,7 @@ to do is change your ``Text`` element to the following:
 
 .. code-block:: javascript
 
-          <Text style={{ ...Font.style('awesome'),
-                         fontSize: 56 }}>
+          <Text style={{ ...Font.style('awesome'), fontSize: 56 }}>
             Hello, world!
           </Text>
 
@@ -103,8 +102,7 @@ following:
 
 .. code-block:: javascript
 
-          <Text style={{ ...Font.style('awesome'),
-                         fontSize: 56 }}>
+          <Text style={{ ...Font.style('awesome'), fontSize: 56 }}>
             {'\uf000'}
           </Text>
 
@@ -129,11 +127,15 @@ First we initialize ``fontLoaded`` to false in the ``App`` class constructor:
 
 .. code-block:: javascript
 
-    constructor(props, context) {
-      super(props, context);
-      this.state = {
-        fontLoaded: false,
-      };
+    class App extends React.Component {
+      constructor(props, context) {
+        super(props, context);
+        this.state = {
+          fontLoaded: false,
+        };
+      }
+
+      // ...
     }
 
 Next, we must set ``fontLoaded`` to ``true`` when the font is done loading.
@@ -152,8 +154,7 @@ Finally, we want to only render the ``Text`` component if ``fontLoaded`` is
 
           {
             this.state.fontLoaded ? (
-              <Text style={{ ...Font.style('awesome'),
-                             fontSize: 56 }}>
+              <Text style={{ ...Font.style('awesome'), fontSize: 56 }}>
                 {'\uf000'}
               </Text>
             ) : null
