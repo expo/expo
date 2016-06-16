@@ -54,7 +54,7 @@ following ``import`` in your application code:
 
    import { Font } from 'exponent';
 
-The ``'exponent'`` library provides an API to access native functionality of the
+The ``exponent`` library provides an API to access native functionality of the
 device from your JavaScript code. ``Font`` is the module that deals with
 font-related tasks. First, we must load the font from the web using
 :func:`Exponent.Font.loadAsync`. We can do this in the `componentDidMount()

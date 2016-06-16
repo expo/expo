@@ -112,12 +112,17 @@ p {
 }
 
 code, pre, tt {
-  font-size: 15px;
+  font-size: 14px;
   font-family: Consolas, monospace;
 }
 
 code, tt {
-  color: #8D1A38;
+  background-color: rgba(0,0,0,0.04);
+  border-radius: 3px;
+}
+
+code.literal {
+  color: #333;
 }
 
 tt {
@@ -128,7 +133,6 @@ code, pre {
   line-height: 23px;
   margin: 20px 0;
   word-wrap: normal;
-  background-color: #fff;
 }
 
 pre {
@@ -309,7 +313,7 @@ div.sphinxsidebar input {
 
 .sidebar-block {
   padding: 0;
-  margin: 14px 0 30px 0;
+  margin: 10px 0 25px 0;
 }
 
 .sidebar-block h2 {
@@ -330,7 +334,7 @@ div.sphinxsidebar input {
 .sphinxsidebar > .sidebar-block:not(:last-child):after {
     content: '';
     display:block;
-    border-top: 1px solid #ccc;
+    border-top: 1px solid rgb(233, 233, 233);
     margin: 24px 22px 0 22px;
 }
 
