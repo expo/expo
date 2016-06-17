@@ -2,4 +2,4 @@
 
 set -e
 
-docker build -t gcr.io/exponenjs/docs-builder -f _resources/builder.Dockerfile .
+docker build -t gcr.io/exponentjs/docs-builder:latest -f _resources/builder.Dockerfile .
