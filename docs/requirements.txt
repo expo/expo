@@ -1,1 +1,5 @@
 guzzle_sphinx_theme
+git+git://github.com/exponentjs/sphinx.git@master
+pygments-lexer-babylon
+sphinx-autobuild
+pygments-style-exponent
