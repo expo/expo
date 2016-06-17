@@ -21,7 +21,7 @@ ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 
 serve:
-	@rm -rf _build_html && sphinx-autobuild . _build_html
+	@rm -rf _build_html && sphinx-autobuild --host 0.0.0.0 . _build_html
 
 .PHONY: help
 help:
