@@ -40,3 +40,10 @@ Android emulator
 Follow the `Genymotion Installation guide <https://docs.genymotion.com/Content/01_Get_Started/Installation.htm>`_ -- the Individual Basic plan is free and works great with Exponent. Once you've installed Genymotion, create a virtual device - we recommend a Nexus 5, the Android version is up to you. Start up the virtual device when it's ready.
 
 Once the emulator is open and you have a project open in XDE, you can press *Open project in Exponent on Android* in XDE and it will install the Exponent client to the emulator and open up your app inside of it.
+
+Node.js
+--------
+
+To get started wtih Exponent you don't necessarily need to have Node.js
+installed, but as soon as you start actually building something you'll want to
+have it. `Download the latest version of Node.js <https://nodejs.org/en/>`_.
