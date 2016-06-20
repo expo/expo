@@ -19,6 +19,18 @@ you need to do is commit!
 
 ### Testing changes locally
 
+#### With Docker (easy)
+
+If your machine has Docker for Mac you can run:
+
+```bash
+./scripts/watch.sh
+```
+
+from this directory and be on your way.
+
+#### With Python (still easy, but environment dependent)
+
 Make sure you have `python` and `pip` installed. Run,
 
 ```pip install git+git://github.com/exponentjs/sphinx.git@master pygments-lexer-babylon sphinx-autobuild pygments-style-exponent```
