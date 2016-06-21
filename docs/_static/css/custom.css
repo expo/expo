@@ -96,4 +96,10 @@ h5 > code {
   font-size: 20px;
 }
 
+#version-indicator {
+  margin-top: -5px;
+  margin-bottom: 11px;
+  text-align: center;
+}
+
 
