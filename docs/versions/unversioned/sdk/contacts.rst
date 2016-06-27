@@ -5,14 +5,13 @@ Provides access to the phone's system contacts.
 
 .. function:: Exponent.Contacts.getContactsAsync(fields)
 
-   Get a list of all entries in the system contacts.
+   Get a list of all entries in the system contacts. This returns the name and
+   optionally phone number and email of each contact.
 
    :param array fields:
-      An array of field names to retrieve per contact. Each element must be one
-      of ``'phone_number'`` or ``'email'``.
+      An array describing fields to retrieve per contact. Each element bust be
+      one of ``Exponent.Contacts.PHONE_NUMBER`` or ``Exponent.Contacts.EMAIL``.
    :returns:
-      An array of objects of the form ``{ id, name, phoneNumber, email }``
-      with ``phoneNumber`` present only if ``'phone_number'`` is in the
-      ``fields`` parameter and ``email`` present only if ``'email'``
-      is in the ``fields`` parameter.
-
+      An array of objects of the form ``{ id, name, phoneNumber, email }`` with
+      ``phoneNumber`` and ``email`` only present if they were requested through
+      the ``fields`` parameter.
