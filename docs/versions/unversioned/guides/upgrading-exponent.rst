@@ -19,12 +19,12 @@ so that it's compatible with the latest version.
 
 * **Find out what the latest version of Exponent is:**
 
-  `See a list of versions <https://getexponent.com/--/abi-versions>`_ and pick the one with the biggest number. You will use the ``exponent-react-native-tag`` in the next step.
+  `See a list of versions <https://getexponent.com/--/sdk-versions>`_ and pick the one with the biggest number. You will use the ``exponentReactNativeTag`` in the next step.
 
 * **Update the version of react-native that your project depends on:**
 
   * Open your project's ``package.json`` file and find the ``"react-native"`` entry under the ``"dependencies"`` section.
-  * Its value should look like ``"exponentjs/react-native#sdk-x.y.z"``. Replace the ``sdk-x.y.z`` with the ``exponent-react-native-tag`` from the previous step.
+  * Its value should look like ``"exponentjs/react-native#sdk-x.y.z"``. Replace the ``sdk-x.y.z`` with the ``exponentReactNativeTag`` from the previous step.
 
 * **Update the version of Exponent SDK:**
 
