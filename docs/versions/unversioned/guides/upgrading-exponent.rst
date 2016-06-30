@@ -19,7 +19,7 @@ so that it's compatible with the latest version.
 
 * **Find out what the latest version of Exponent is:**
 
-  `See a list of versions <https://getexponent.com/--/sdk-versions>`_ and pick the one with the biggest number. You will use the ``exponentReactNativeTag`` in the next step.
+  `See a list of versions <https://getexponent.com/--/versions>`_ and pick the one with the biggest number. You will use the ``exponentReactNativeTag`` in the next step.
 
 * **Update the version of react-native that your project depends on:**
 
