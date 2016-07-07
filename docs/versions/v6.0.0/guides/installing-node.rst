@@ -1,8 +1,8 @@
 .. _installing-node:
 
-**************
-Installing Node
-**************
+******************
+Installing Node.js
+******************
 
 This is a guide to installing Node.js on your computer. To do anything interesting with Exponent, you'll need to have ``node`` and ``npm`` installed.
 
@@ -36,8 +36,8 @@ Once you install `nvm`, open a new terminal window and then type ``nvm install n
 
 If for some reason you prefer not to use nvm to install and manage Node on your machine, you can either use Homebrew to install Node (``brew install node``) or install the current version from `the nodejs.org website <https://nodejs.org>`_, but we recommend using ``nvm`` so that you can update more easily.
 
-If you have a Unix/Linux system
-"""""""""""""""""""""""""""""""
+If you are running Linux (or similar)
+"""""""""""""""""""""""""""""""""""""
 
 If you are running *nix, we also recommmend using `nvm <https://github.com/creationix/nvm#install-script>`_ for the same reasons as we do on Mac.
 
