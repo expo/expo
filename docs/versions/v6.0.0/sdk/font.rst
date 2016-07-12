@@ -2,6 +2,7 @@ Font
 ====
 
 Allows loading fonts from the web and using them in React Native components.
+You can load fonts from both ``.ttf`` files and ``.otf`` files.
 
 .. function:: Exponent.Font.loadAsync(name, url)
 
