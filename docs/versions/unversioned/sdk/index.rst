@@ -29,6 +29,7 @@ example.
 .. toctree::
    :maxdepth: 2
 
+   asset
    constants
    contacts
    facebook
