@@ -2,7 +2,7 @@
 #
 
 # You can set these variables from the command line.
-DEFAULT_VERSION = v6.0.0
+DEFAULT_VERSION ?= v6.0.0
 SPHINXBUILD   = sphinx-build
 BUILDDIR      = _build
 export PYGMENTS_NODE_COMMAND = node
