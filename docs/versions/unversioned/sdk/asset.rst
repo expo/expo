@@ -12,7 +12,7 @@ Native's `documentation on static image resources
 for more information. This method of referring to static image resources works
 out of the box with Exponent.
 
-.. function:: Exponent.Asset.fromRequire(module)
+.. function:: Exponent.Asset.fromModule(module)
 
    Get metadata about an asset.
 
@@ -42,7 +42,7 @@ out of the box with Exponent.
    :example:
       .. code-block:: javascript
 
-        const soundURI = Exponent.Asset.fromRequire(require('./sounds/beep.wav')).uri;
+        const soundURI = Exponent.Asset.fromModule(require('./sounds/beep.wav')).uri;
 
       On running this piece of code, ``soundURI`` is a URI that can be used to
       read the contents of ``sounds/beep.wav``. The path is resolved relative to
