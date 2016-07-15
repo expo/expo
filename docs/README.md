@@ -5,6 +5,17 @@ Hi! This is what will make Exponent actually be useable by people. :)
 
 ## How to edit
 
+#### A note about versioning
+
+Exponent's SDK is versioned so that apps made on old SDKs are still supported
+when new SDKs are relased. The website documents previous SDK versions too.
+
+Version names correspond to directory names under `versions/`.
+
+`unversioned` is a special version for the next SDK release. `devdocs` isn't
+actually an SDK version, it's just a special version that corresponds to the
+"Tool Developer Documentation" website.
+
 ### As a random person
 
 Thanks for helping! :D Just make your changes on a fork of this repository or
@@ -27,11 +38,11 @@ Navigate to the documentation root.
 If your machine has Docker for Mac you can run:
 
 ```bash
-./scripts/watch.sh
+./scripts/watch.sh <versionname>
 ```
 
-from this directory and be on your way. This will preview the `DEFAULT_VERSION`
-according to the `Makefile`.
+from this directory. So for example, `./scripts/watch.sh v7.0.0` will preview
+docs for sdk 7. The site is viewable at `localhost:8000`.
 
 #### With Python (still easy, but environment dependent)
 
@@ -50,5 +61,5 @@ page automatically. You can also try a specific version like this,
 
 ```DEFAULT_VERSION=v6.0.0 make serve```
 
-Version names correspond to directory names under `versions/`.
+The site is viewable at `localhost:8000`.
 
