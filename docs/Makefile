@@ -29,6 +29,6 @@ version/%:
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 	@echo "The start page for version '$(@F)' is $(BUILDDIR)/html/versions/$(@F)/index.html."
 
-all: $(subst versions/,version/,$(wildcard versions/*)) redirect
+all: $(subst versions/,version/,$(sort $(wildcard versions/*))) redirect
 
 

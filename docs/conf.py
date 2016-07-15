@@ -54,7 +54,7 @@ author = 'Exponent'
 # The short X.Y version.
 version = os.environ['DOCS_VERSION'] # set this on the command-line explicitly
 # The full version, including alpha/beta/rc tags.
-release = version
+release =  'Tool Developer Documentation' if version == 'devdocs' else version
 
 # The master toctree document.
 master_doc = 'versions/' + version + '/index'
@@ -317,6 +317,5 @@ html_context = {
 }
 
 rst_epilog = '.. |version| replace:: %s' % version
-
-
+rst_epilog = '.. |release| replace:: %s' % release
 
