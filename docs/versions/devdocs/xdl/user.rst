@@ -15,9 +15,9 @@ Provides access to the user's Exponent account.
       * **password** (*string, required*) -- Password.
 
    :returns:
-      If login fails, returns ``null``.
+      If login fails, returns ``Promise<null>``.
 
-      Otherwise, returns ``{ username }``.
+      Otherwise, returns ``Promise<{username: string}>``.
 
 
 .. function:: xdl.User.logoutAsync()
@@ -30,4 +30,4 @@ Provides access to the user's Exponent account.
    Ask Exponent's servers to return the current logged in user.
 
    :returns:
-      Returns ``{ username }`` or ``null``.
+      Returns ``Promise<{username: string}>`` or ``Promise<null>``.

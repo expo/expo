@@ -32,3 +32,4 @@ This allows you to write ``User.loginAsync()`` instead of
 
    project
    user
+   versions

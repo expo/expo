@@ -54,7 +54,7 @@ to start the other components.
       * **minify** (*boolean*) -- Minify the bundle.
 
    :returns:
-      ``url``
+      ``Promise<string>``
 
 
 .. function:: xdl.Project.publishAsync(projectRoot, options)
@@ -70,7 +70,7 @@ to start the other components.
       * **quiet** (*boolean*) -- Don't post a notification to our slack channel.
 
    :returns:
-      ``{ url }``
+      ``Promise<{url: string}>``
 
 
 .. function:: xdl.Project.startExponentServerAsync(projectRoot)
