@@ -1,0 +1,22 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: docs-ingress
+  namespace: production
+  labels:
+    ssl: 'true'
+  annotations:
+    kubernetes.io/tls-acme: "true"
+spec:
+  tls:
+  - hosts:
+    - docs.getexponent.com
+    secretName: docs-ssl
+  rules:
+  - host: docs.getexponent.com
+    http:
+      paths:
+      - backend:
+          serviceName: docs
+          servicePort: 80
+        path: /
