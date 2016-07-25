@@ -10,7 +10,7 @@ Guides
    debugging
    using-custom-fonts
    icons
-   routing-and-navigation
-   social-authentication
+   .. routing-and-navigation
+   .. social-authentication
    push-notifications
    upgrading-exponent

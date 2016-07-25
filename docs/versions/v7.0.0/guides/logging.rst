@@ -1,5 +1,5 @@
 ************
-Viewing logs
+Viewing Logs
 ************
 
 Writing to the logs in an Exponent app works just like in the browser: use ``console.log``, ``console.warn`` and ``console.error``.
