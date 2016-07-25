@@ -1,12 +1,13 @@
-**********************
-Font Awesome for Icons
-**********************
+*******************
+Using Custom Fonts
+*******************
 
-`Font Awesome <http://fontawesome.io/>`_ provides an icon set in the form of a
-font, so that all you need to do to start using Font Awesome icons is use their
-font and render Unicode characters! In this tutorial we'll learn how to use Font
-Awesome in Exponent.
-
+Both iOS and Android come with their own set of platform fonts but if you want
+to inject some more brand personality into your app, a well picked font can go
+a long way. In this guide we'll walk you through adding a custom font to your
+Exponent app. We'll use `Font Awesome <http://fontawesome.io/>`_ in the
+example, and the process is identical for any other font, so feel free to adapt
+it to your use case.
 
 Starting code
 =============
@@ -47,8 +48,10 @@ Loading the font
 We will load Font Awesome from the .ttf available on the web at
 https://github.com/FortAwesome/Font-Awesome/raw/master/fonts/fontawesome-webfont.ttf.
 To load and use fonts from the web we will use the :ref:`Exponent SDK
-<exponent-sdk>`, which you can install with ``npm install --save exponent`` in
-your project directory. Add the following ``import`` in your application code:
+<exponent-sdk>`, which comes pre-installed when you create a new Exponent
+project, but if for some reason you don't have it, you can install with ``npm
+install --save exponent`` in your project directory. Add the following
+``import`` in your application code:
 
 .. code-block:: javascript
 
@@ -77,6 +80,24 @@ This loads Font Awesome and associates it with the name ``'awesome'`` in
 Exponent's font map. Now we just have to refer to this font in our ``Text``
 component.
 
+Using the resource system
+=========================
+
+Rather than load font from some arbitrary URL that we don't own, let's save the
+font file to ``/assets/fonts/fontawesome-webfont.ttf``. Now we can update our
+code to the following:
+
+.. code-block:: javascript
+
+      class App extends React.Component {
+        componentDidMount() {
+          Font.loadAsync({
+            awesome: require('./fontawesome-webfont.ttf'),
+          });
+        }
+
+        // ...
+      }
 
 Using the font in a ``Text`` component
 ======================================

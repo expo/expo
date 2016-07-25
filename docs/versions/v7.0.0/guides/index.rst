@@ -5,6 +5,12 @@ Guides
    :maxdepth: 2
 
    up-and-running
+   project-structure
    logging
-   font-awesome
+   debugging
+   using-custom-fonts
+   icons
+   routing-and-navigation
+   social-authentication
+   push-notifications
    upgrading-exponent
