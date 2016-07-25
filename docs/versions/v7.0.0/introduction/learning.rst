@@ -12,6 +12,7 @@ Exponent
 * `Pomodoro <https://github.com/exponentjs/pomodoroexp>`_ - sample Pomodoro app
 * `Floatyplane <https://github.com/exponentjs/floatyplane>`_ - a game you might be familiar with
 * `Foodwheel <https://github.com/exponentjs/foodwheel>`_ - how we decide where to eat lunch
+* `React Native Playground <https://github.com/exponentjs/rnplay>`_ - source of the client app for `rnplay.org <https://www.rnplay.org>`_
 
 React Native
 """"""""""""""
