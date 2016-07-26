@@ -42,6 +42,9 @@ only difference is ``@exponent/vector-icons`` uses a more idiomatic ``import`` s
 ``import { Ionicons } from '@exponent/vector-icons';`` instead of..
 ``import Ionicons from 'react-native-vector-icons/Ionicons';``.
 
+.. epigraph::
+  **Note:** As with :ref:`any custom font <using-custom-fonts>` in Exponent, you may want to preload icon fonts before rendering your app. The font object is available as a static property on the font component, so in the case above it is ``Ionicons.font``, which evaluates to ``{ionicons: require('path/to/ionicons.ttf')}``.
+
 Icon images
 ===========
 

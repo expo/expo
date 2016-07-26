@@ -5,7 +5,8 @@ Guides
    :maxdepth: 2
 
    up-and-running
-   project-structure
+   .. project-structure
+   configuration
    logging
    debugging
    icons
@@ -13,4 +14,5 @@ Guides
    .. routing-and-navigation
    .. social-authentication
    push-notifications
+   building-standalone-apps
    upgrading-exponent
