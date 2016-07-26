@@ -8,8 +8,8 @@ Guides
    project-structure
    logging
    debugging
-   using-custom-fonts
    icons
+   using-custom-fonts
    .. routing-and-navigation
    .. social-authentication
    push-notifications
