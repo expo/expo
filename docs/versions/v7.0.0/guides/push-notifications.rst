@@ -12,4 +12,4 @@ On your server, when you want to push to this user you send a POST request to ..
 
 Currently not possible:
 - Silent pushes
-- Collapse on individual pushes (key specified in 
+- Collapse on individual pushes (key specified in

@@ -5,14 +5,16 @@ Using Custom Fonts
 Both iOS and Android come with their own set of platform fonts but if you want
 to inject some more brand personality into your app, a well picked font can go
 a long way. In this guide we'll walk you through adding a custom font to your
-Exponent app. We'll use `Font Awesome <http://fontawesome.io/>`_ in the
-example, and the process is identical for any other font, so feel free to adapt
-it to your use case.
+Exponent app. We'll use `Open Sans
+<https://fonts.google.com/specimen/Open+Sans>` from `Google Fonts
+<https://fonts.google.com/>`_ in the example, and the process is identical for
+any other font, so feel free to adapt it to your use case.
 
 Starting code
 =============
 
-First let's start with a basic "Hello world!" app:
+First let's start with a basic "Hello world!" app. Create a new project in XDE/exp and change
+``main.js`` to the following:
 
 .. code-block:: javascript
 
@@ -38,20 +40,28 @@ First let's start with a basic "Hello world!" app:
 
   AppRegistry.registerComponent('main', () => App);
 
-Try getting this basic app running before playing with Font Awesome so you can
+Try getting this basic app running before playing with Open Sans, so you can
 get any basic setup issues out of the way.
 
+Downloading the font
+====================
 
-Loading the font
-================
+Once the zip file has been downloaded, extract it and copy
+``OpenSans-Light.ttf``, ``OpenSans-Regular.ttf``, and ``OpenSans-Bold.ttf``
+into the assets directory in your project. The location we recommend is
+``your-project/assets/fonts``.
 
-We will load Font Awesome from the .ttf available on the web at
-https://github.com/FortAwesome/Font-Awesome/raw/master/fonts/fontawesome-webfont.ttf.
-To load and use fonts from the web we will use the :ref:`Exponent SDK
-<exponent-sdk>`, which comes pre-installed when you create a new Exponent
-project, but if for some reason you don't have it, you can install with ``npm
-install --save exponent`` in your project directory. Add the following
-``import`` in your application code:
+.. epigraph::
+  **Note:** We don't *have to* download the font, we could alternatively load it from the web. We recommend it, though, so that it doesn't just disappear on you like things on the web sometimes do.
+
+Loading the font in your app
+============================
+
+To load and use fonts we will use the :ref:`Exponent SDK <exponent-sdk>`, which
+comes pre-installed when you create a new Exponent project, but if for some
+reason you don't have it, you can install with ``npm install --save exponent``
+in your project directory. Add the following ``import`` in your application
+code:
 
 .. code-block:: javascript
 
@@ -59,45 +69,31 @@ install --save exponent`` in your project directory. Add the following
 
 The ``exponent`` library provides an API to access native functionality of the
 device from your JavaScript code. ``Font`` is the module that deals with
-font-related tasks. First, we must load the font from the web using
+font-related tasks. First, we must load the font from our assets directory using
 :func:`Exponent.Font.loadAsync`. We can do this in the `componentDidMount()
 <https://facebook.github.io/react/docs/component-specs.html#mounting-componentdidmount>`_
 lifecycle method of the ``App`` component. Add the following method in ``App``:
+Now that we have the font files saved to disk and the Font SDK imported, let's
+add this code:
 
 .. code-block:: javascript
 
       class App extends React.Component {
         componentDidMount() {
           Font.loadAsync({
-            awesome: 'https://github.com/FortAwesome/Font-Awesome/raw/master/fonts/fontawesome-webfont.ttf',
+            'open-sans-bold': require('./assets/fonts/OpenSans-Bold.ttf'),
           });
         }
 
         // ...
       }
 
-This loads Font Awesome and associates it with the name ``'awesome'`` in
+This loads Font Awesome and associates it with the name ``'open-sans-bold'`` in
 Exponent's font map. Now we just have to refer to this font in our ``Text``
 component.
 
-Using the resource system
-=========================
-
-Rather than load font from some arbitrary URL that we don't own, let's save the
-font file to ``/assets/fonts/fontawesome-webfont.ttf``. Now we can update our
-code to the following:
-
-.. code-block:: javascript
-
-      class App extends React.Component {
-        componentDidMount() {
-          Font.loadAsync({
-            awesome: require('./fontawesome-webfont.ttf'),
-          });
-        }
-
-        // ...
-      }
+.. epigraph::
+  **Note:** Fonts loaded through Exponent don't currently support the ``fontWeight`` or ``fontStyle`` properties -- you will need to load those variations of the font and specify them by name, as we have done here with bold.
 
 Using the font in a ``Text`` component
 ======================================
@@ -111,30 +107,19 @@ to do is change your ``Text`` element to the following:
 
 .. code-block:: javascript
 
-          <Text style={{ ...Font.style('awesome'), fontSize: 56 }}>
+          <Text style={{ ...Font.style('open-sans-bold'), fontSize: 56 }}>
             Hello, world!
           </Text>
 
-When you refresh the app, you will notice that the text looks the same.
-Currently the content of our ``Text`` component is ``'Hello, world!'``. Font
-Awesome uses unicode code points to refer to its icons. ``'\uf000'`` refers to
-the 'glass' icon, let's try that one. Edit your ``Text`` element to the
-following:
-
-.. code-block:: javascript
-
-          <Text style={{ ...Font.style('awesome'), fontSize: 56 }}>
-            {'\uf000'}
-          </Text>
-
-On next refresh the app seems to still not display the text with Font Awesome.
-You may see that it either shows an error character (like a question mark), or
-some other character that isn't a glass. The problem is that
+On next refresh the app seems to still not display the text with Open Sans Bold.
+You will see that it is still using the default system font. The problem is that
 :func:`Exponent.Font.loadAsync` is an asynchronous call and takes some time to
 complete. Before it completes, the ``Text`` component is already rendered with
-the default font since it can't find the ``'awesome'`` font (which hasn't been
+the default font since it can't find the ``'open-sans-bold'`` font (which hasn't been
 loaded yet).
 
+.. epigraph::
+  **Note:** If you're curious, go ahead and add ``console.log(Font.style('open-sans-bold'));`` to your code and you'll see that it evaluates to {fontFamily: 'some-long-id-open-sans-bold'}. We prepend the family name with a session id in order to prevent fonts from different apps opened through Exponent from clashing.
 
 Waiting for the font to load before rendering
 =============================================
@@ -149,41 +134,50 @@ First we initialize ``fontLoaded`` to false in the ``App`` class constructor:
 .. code-block:: javascript
 
     class App extends React.Component {
-      constructor(props, context) {
-        super(props, context);
-        this.state = {
-          fontLoaded: false,
-        };
-      }
+      state = {
+        fontLoaded: false,
+      };
 
       // ...
     }
 
 Next, we must set ``fontLoaded`` to ``true`` when the font is done loading.
 :func:`Exponent.Font.loadAsync` returns a ``Promise`` that is fulfilled when the
-font is successfully loaded and ready to use. So we simply have to add the
-following after the ``await`` line in ``App.componentDidMount()``:
+font is successfully loaded and ready to use. So we can use `async/await <https://blog.getexponent.com/react-native-meets-async-functions-3e6f81111173>`_
+with ``componentDidMount()`` to wait until the font is loaded, then update our state.
 
 .. code-block:: javascript
 
-      this.setState({ fontLoaded: true });
+      class App extends React.Component {
+        async componentDidMount() {
+          await Font.loadAsync({
+            'open-sans-bold': require('./assets/fonts/OpenSans-Bold.ttf'),
+          });
+
+          this.setState({ fontLoaded: true });
+        }
+
+        // ...
+      }
 
 Finally, we want to only render the ``Text`` component if ``fontLoaded`` is
 ``true``. We can do this by replacing the ``Text`` element with the following:
 
 .. code-block:: javascript
 
-          {
-            this.state.fontLoaded ? (
-              <Text style={{ ...Font.style('awesome'), fontSize: 56 }}>
-                {'\uf000'}
-              </Text>
-            ) : null
-          }
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            {
+              this.state.fontLoaded ? (
+                <Text style={{ ...Font.style('open-sans-bold'), fontSize: 56 }}>
+                  Hello, world!
+                </Text>
+              ) : null
+            }
+          </View>
 
 A ``null`` child element is simply ignored by React Native, so this skips
 rendering the ``Text`` component when ``fontLoaded`` is ``false``. Now on
 refreshing the app you should see that it renders the Font Awesome glass icon!
 
-The finished version of this tutorial is available as an Exponent project on
-`GitHub <https://github.com/exponentjs/font-awesome-example>`_.
+.. epigraph::
+  **Note:** Typically you will want to load your apps primary fonts before the app is displayed to avoid text flashing in after the font loads. For the moment, the recommended approach is to move the ``Font.loadAsync`` call to your top-level component. We are working on integrating an official resource preloading and caching API that will be available in SDK8.
