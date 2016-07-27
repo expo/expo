@@ -85,12 +85,11 @@ is, just leave it to us. Otherwise, feel free to upload your own.
 
   [exp] No currently active or previous builds for this project.
 
-  ? Would you like to upload a keystore or have us generate one for you?
+  Would you like to upload a keystore or have us generate one for you?
   If you don't know what this means, let us handle it! :)
 
     1) Let Exponent handle the process!
     2) I want to upload my own keystore!
-    Answer:
 
 If you choose to build for iOS
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -99,6 +98,22 @@ The first time you build the project You will be prompted for your Apple ID and
 password for your developer account, and your Apple Team ID. This is needed to
 manage to manage certificates and provisioning profiles, so we can build and
 send off push notifications.
+
+.. code-block:: none
+
+  [exp] No currently active or previous builds for this project.
+
+  We need your Apple ID/password to manage certificates and provisioning
+  profiles from your Apple Developer account.
+
+  What's your Apple ID? example@gmail.com
+  Password? ******************
+  What is your Apple Team ID (you can find that on this page:
+  https://developer.apple.com/account/#/membership)? XY1234567
+
+Next we will ask you if you'd like us to handle your distribution certificate
+or use your own. Similar to the Android keystore, if you don't know what a
+distribution certificate is, just let us handle it for you.
 
 4. Wait for it to finish building
 """""""""""""""""""""""""""""""""
