@@ -132,7 +132,7 @@ We will fix this.
   this is the easiest way to test out that the build was successful. But it's
   not the most satisfying.
 - **To run it on your Android device**, make sure you have the Android platform tools installed along with ``adb``, then just run ``adb install app-filename.apk`` with your device plugged in.
-- **To run it on your iOS device**, follow `these steps <http://stackoverflow.com/questions/26720764/install-ipa-with-itunes-12>`_. or use `ios-deploy <https://github.com/phonegap/ios-deploy>`_.
+- **To run it on your iOS device**, you will need to put in a bit more work :( We are working on producing simulator builds to make it easier to test, but for now you will need to use TestFlight. Go to iTunes connect and create a new app and pick your bundle identifier. After that, I recommend using `pilot <https://github.com/fastlane/fastlane/tree/master/pilot>`_ to upload the build and add testers.
 
 6. Submit it to the appropriate store
 """""""""""""""""""""""""""""""""""""
