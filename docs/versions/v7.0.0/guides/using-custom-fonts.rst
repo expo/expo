@@ -6,9 +6,11 @@ Both iOS and Android come with their own set of platform fonts but if you want
 to inject some more brand personality into your app, a well picked font can go
 a long way. In this guide we'll walk you through adding a custom font to your
 Exponent app. We'll use `Open Sans
-<https://fonts.google.com/specimen/Open+Sans>` from `Google Fonts
+<https://fonts.google.com/specimen/Open+Sans>`_ from `Google Fonts
 <https://fonts.google.com/>`_ in the example, and the process is identical for
-any other font, so feel free to adapt it to your use case.
+any other font, so feel free to adapt it to your use case. Before proceeding,
+go ahead and download `Open Sans
+<https://fonts.google.com/specimen/Open+Sans>`_
 
 Starting code
 =============
@@ -46,10 +48,9 @@ get any basic setup issues out of the way.
 Downloading the font
 ====================
 
-Once the zip file has been downloaded, extract it and copy
-``OpenSans-Light.ttf``, ``OpenSans-Regular.ttf``, and ``OpenSans-Bold.ttf``
-into the assets directory in your project. The location we recommend is
-``your-project/assets/fonts``.
+Take the Open Sans zipfile that you downloaded, extract it and copy
+``OpenSans-Bold.ttf`` into the assets directory in your project. The location
+we recommend is ``your-project/assets/fonts``.
 
 .. epigraph::
   **Note:** We don't *have to* download the font, we could alternatively load it from the web. We recommend it, though, so that it doesn't just disappear on you like things on the web sometimes do.
