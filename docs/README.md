@@ -24,10 +24,12 @@ incorporate them!
 
 ### As an Exponent developer
 
-Make your changes in `universe/docs` and commit them. Our `shipit` bot
+- Make your changes in `universe/docs` and commit them. Our `shipit` bot
 synchronizes the changes to the public `exponent-docs` repository. To deploy,
 you will need Docker for Mac. Just run `./scripts/deploy.sh` from
 `universe/docs`.
+- Next run `kubectl --namespace production get po`
+- Then `kubectl --namespace production delete po docs-(id of the docs pod from above)`
 
 ### Testing changes locally
 
