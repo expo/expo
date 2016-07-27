@@ -8,6 +8,11 @@ and Play Store. We call these "shell apps" or "standalone apps". The purpose of
 this guide is to walk you through creating a standalone version of your Exponent
 app for iOS and Android.
 
+An Apple Developer account is needed to build the iOS standalone app, but a
+Google Play Developer account is not needed to build the Android standalone app.
+If you'd like to submit to either app store, you will of course need a developer
+account on that store.
+
 .. epigraph::
   **Warning:** Standalone apps are currently in alpha! While the Android version has been heavily tested with `li.st <https://li.st/>`_, the iOS version and our automated build pipeline for both are brand new so you may run into some issues. Be sure to reach out to us on Slack or Twitter if you do and we'll fix them up right away and send you an Exponent t-shirt.
 
@@ -68,8 +73,32 @@ add any that are missing.
   This is necessary because during the build process your app will be
   republished to ensure it is the latest version.
 - Once the app has started, run ``exp build:android`` or ``exp build:ios``.
-- **If you chose to build for Android**, you will be prompted ...
-- **If you chose to build for iOS**, you will be prompted ...
+
+If you choose to build for Android
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The first time you build the project you will be asked whether you'd like to
+upload a keystore or have us handle it for you. If you don't know what a keystore
+is, just leave it to us. Otherwise, feel free to upload your own.
+
+.. code-block:: none
+
+  [exp] No currently active or previous builds for this project.
+
+  ? Would you like to upload a keystore or have us generate one for you?
+  If you don't know what this means, let us handle it! :)
+
+    1) Let Exponent handle the process!
+    2) I want to upload my own keystore!
+    Answer:
+
+If you choose to build for iOS
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The first time you build the project You will be prompted for your Apple ID and
+password for your developer account, and your Apple Team ID. This is needed to
+manage to manage certificates and provisioning profiles, so we can build and
+send off push notifications.
 
 4. Wait for it to finish building
 """""""""""""""""""""""""""""""""
@@ -77,13 +106,18 @@ add any that are missing.
 This will take a few minutes, you can check up on it by running ``exp
 build:status``. When it's done, you'll see the url of a ``.apk`` (Android) or
 ``.ipa`` (iOS) file -- this is your app. Copy and paste it into your browser
-address bar to download, or use ``curl`` or ``wget`` if that's your style.
+address bar to download -- it won't work with ``curl`` or ``wget`` unless you
+happen to know the correct incantation to download a gzipped file from S3.
+We will fix this.
 
-5. Test it on your device
-"""""""""""""""""""""""""
+5. Test it on your device or simulator
+""""""""""""""""""""""""""""""""""""""
 
-adb
-https://github.com/phonegap/ios-deploy
+- You can drag and drop the ``.apk``/``.ipa`` into your Android/iOS simulator,
+  this is the easiest way to test out that the build was successful. But it's
+  not the most satisfying.
+- **To run it on your Android device**, make sure you have the Android platform tools installed along with ``adb``, then just run ``adb install app-filename.apk`` with your device plugged in.
+- **To run it on your iOS device**, follow `these steps <http://stackoverflow.com/questions/26720764/install-ipa-with-itunes-12>`_. or use `ios-deploy <https://github.com/phonegap/ios-deploy>`_.
 
 6. Submit it to the appropriate store
 """""""""""""""""""""""""""""""""""""
