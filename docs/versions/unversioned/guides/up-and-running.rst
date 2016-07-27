@@ -10,10 +10,17 @@ At this point we should have XDE installed on our development machine and the Ex
 
 Alright, let's get started.
 
+Create an account
+"""""""""""""""""
+
+Upon opening XDE you will be prompted for a username and password. Fill this in with your desired username and password and hit continue -- if the username isn't already taken, then we will automatically create the account for you.
+
 Creating the project
 """"""""""""""""""""
 
-Open XDE and press ``New Project``, create a new directory and give it the name that you would like for your project. I'll call it ``FirstProject``. Select the directory and press ``Open``.
+Press ``Project`` and select ``New Project``, then enter the name of your project in the dialog that pops up. I'll call mine ``FirstProject``, and press create.
+
+Next, choose where to save the project. I keep all of my fun projects in ``~/coding``, so I navigate to that directory and press open.
 
 XDE is now initializing a new project in selected directory: it copies a basic template and installs ``react``, ``react-native`` and ``exponent``.
 
@@ -26,8 +33,8 @@ Open the app on your phone or simulator
 """""""""""""""""""""""""""""""""""""""
 
 You'll see that XDE shows you a URL like ``http://4v-9wa.notbrent.mynewproject.exp.direct:80``- feel free to open this up in your browser, you will see that it serves up some JSON. This JSON is the Exponent manifest.
-We can open our app by opening the Exponent app on our phone typing this URL into the address bar. Alternatively, enter your phone number and press ``Send link for Phone``, then tap on the link in your text messages.
+We can open our app by opening the Exponent app on our phone typing this URL into the address bar. Alternatively, press ``Send Link``, enter your phone number, and press ``Send Link`` again. Open the message on your phone and tap on the link to open it in Exponent.
 You can share this link with anybody else who has the Exponent app installed, but it will only be available as long as you have the project open in XDE.
 
-To open the app in the iOS simulator you can press the ``Open Project in Exponent on iOS Simulator`` button.
-To open the app in the Android emulator, first boot it up and then press ``Open Project in Exponent on Android``.
+To open the app in the iOS simulator you can press the ``Device`` button and choose ``Open on iOS`` (Mac only).
+To open the app in the Android emulator, first boot it up and then press ``Device`` and ``Open on Android``.

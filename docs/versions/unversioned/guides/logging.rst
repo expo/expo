@@ -1,9 +1,45 @@
-**********************
-Logging
-**********************
+************
+Viewing Logs
+************
 
 Writing to the logs in an Exponent app works just like in the browser: use ``console.log``, ``console.warn`` and ``console.error``.
 Note: we don't currently support ``console.table`` outside of remote debugging mode.
+
+Recommended: View logs with Exponent tools
+==========================================
+
+When you open an app that is being served from XDE or exp, the app will send logs over to the server and make them conveniently available to you. This means that you don't need to even have your device connected to your computer to see the logs -- in fact, if someone opens the app from the other side of the world you can still see your app's logs from their device.
+
+XDE logging pane
+^^^^^^^^^^^^^^^^
+
+.. figure:: img/xde-logs.png
+  :width: 100%
+  :alt: XDE window with logs
+
+  With XDE you will notice that when you open up an app with sdkVersion >= 7.0.0 the log window is split in two. Your app logs show up on the right, and the packager logs show up on the left.
+
+.. figure:: img/xde-logs-device-picker.png
+  :width: 100%
+  :alt: XDE window with device picker selected
+
+  XDE also lets you switch between the logs for any device that has opened the app.
+
+exp logs
+^^^^^^^^
+
+If you use our command line tool ``exp``, you also have easy access to the logs with the ``exp logs`` command (be sure to have your server started first! ``exp start`` in the project directory).
+
+.. figure:: img/exp-logs.png
+  :width: 100%
+  :alt: Terminal output from running xde logs
+
+  Packager logs and app logs from all connected devices will be streamed to this screen until you exit with ``CTRL+C``.
+
+Optional: Manually access device logs
+=====================================
+
+While it's usually not necessary, if you want to see logs for everything happening on your device, even the logs from other apps and the OS itself, you can use one of the following approaches.
 
 View logs for an iOS simulator
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
