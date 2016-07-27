@@ -127,14 +127,14 @@ this is done.
 
 .. code-block:: javascript
 
-   import React from 'react';
-   import {
-     DeviceEventEmitter,
-     Text,
-     View,
-   } from 'react-native';
+  import React from 'react';
+  import {
+    DeviceEventEmitter,
+    Text,
+    View,
+  } from 'react-native';
 
-   import registerForPushNotificationsAsync from 'registerForPushNotificationsAsync';
+  import registerForPushNotificationsAsync from 'registerForPushNotificationsAsync';
 
   class AppContainer extends React.Component {
     state = {
