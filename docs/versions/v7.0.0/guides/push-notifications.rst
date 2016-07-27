@@ -53,6 +53,19 @@ screen that the notification refers to).
   }
 
 
+Read this before continuing
+"""""""""""""""""""""""""""
+
+With SDK7 for iOS you need to make sure that your ``exp.json`` includes the following:
+
+.. code-block:: javascript
+
+  ios: {
+    permissions: {
+      remoteNotifications: true,
+    },
+  }
+
 2. Call Exponent's Push API with the user's token
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
