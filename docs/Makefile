@@ -20,7 +20,10 @@ redirect:
 	mkdir -p _build/html
 	sed -e 's/REPLACE_ME/$(DEFAULT_VERSION)/g' index-template.html > _build/html/index.html
 
-serve: clean redirect
+update-exp:
+	DOCS_VERSION=$(DEFAULT_VERSION) node scripts/generate-exp-docs.js versions/$(DEFAULT_VERSION)/guides/configuration.rst
+
+serve: clean redirect update-exp
 	DOCS_VERSION=$(DEFAULT_VERSION) sphinx-autobuild --host 0.0.0.0 . _build/html
 
 version/%:
@@ -30,5 +33,3 @@ version/%:
 	@echo "The start page for version '$(@F)' is $(BUILDDIR)/html/versions/$(@F)/index.html."
 
 all: $(subst versions/,version/,$(sort $(wildcard versions/*))) redirect
-
-
