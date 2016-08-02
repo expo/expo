@@ -19,34 +19,69 @@ And so we have the ``Permissions`` module.
       The name of the permission.
 
    :returns:
-      Returns a ``Promise`` that is resolved 
+      Returns a ``Promise`` that is resolved with the information about the
+      permission, including status, expiration and scope (if it applies to
+      the permission type).
 
-      If the user cancelled the image picking, returns ``{ cancelled: true }``.
 
-      Otherwise, returns ``{ cancelled: false, uri, width, height }`` where
-      ``uri`` is a URI to the local image file (useable in a react-native
-      ``Image`` tag) and ``width, height`` specify the dimensions of the image.
+   :example:
+      .. code-block:: javascript
 
-.. function:: Exponent.ImagePicker.launchCameraAsync(options)
+        async function alertIfRemoteNotificationsDisabledAsync() {
+          const { Permissions } = Exponent;
 
-   Display the system UI for taking a photo with the camera.
+          // Returns {status: 'granted' | 'undetermined', expires: 'never'}
+          const { status } = await Permissions.getAsync(Permissions.REMOTE_NOTIFICATIONS);
 
-   :param object options:
-      A map of options:
 
-      * **allowsEditing** (*boolean*) -- Whether to show a UI to edit the image
-        after it is picked. On Android the user can crop and rotate the image
-        and on iOS simply crop it. Defaults to ``false``.
+          if (status !== 'granted') {
+            alert('Hey! You might want to enable notifications for my app, they are good.');
+          }
+        }
 
-      * **aspect** (*array*) -- An array with two entries ``[x, y]`` specifying the
-        aspect ratio to maintain if the user is allowed to edit the image (by
-        passing ``allowsEditing: true``). This is only applicable
-        on Android, since on iOS the crop rectangle is always a square.
+.. function:: Exponent.Permissions.askAsync(type)
+
+   Prompt the user for a permission. If they have already granted access,
+   response will be success.
+
+   :param string type:
+      The name of the permission.
 
    :returns:
-      If the user cancelled taking a photo, returns ``{ cancelled: true }``.
+      Returns a ``Promise`` that is resolved with the information about the
+      permission, including status, expiration and scope (if it applies to
+      the permission type).
 
-      Otherwise, returns ``{ cancelled: false, uri, width, height }`` where
-      ``uri`` is a URI to the local image file (useable in a React Native
-      ``Image`` tag) and ``width, height`` specify the dimensions of the image.
+   :example:
+      .. code-block:: javascript
 
+        async function getLocationAsync() {
+          const { Location, Permissions } = Exponent;
+
+          /** Returns: {
+            *   status: 'granted' | 'denied' | 'undetermined',
+            *   expires: 'never',
+            *   android: {
+            *     scope: 'fine' | 'coarse' | 'none',
+            *   },
+            *   ios: {
+            *     scope: 'whenInUse' | 'always',
+            *   },
+            * }
+            */
+          const { status } = await Permissions.askAsync(Permissions.LOCATION);
+
+          if (status === 'granted') {
+            return Location.getCurrentPositionAsync({enableHighAccuracy: true});
+          } else {
+            throw new Error('Location permission not granted');
+          }
+        }
+
+.. attribute:: Exponent.Permissions.REMOTE_NOTIFICATIONS
+
+   The permission type for push notifications.
+
+.. attribute:: Exponent.Permissions.LOCATION
+
+   The permission type for location access.
