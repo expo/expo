@@ -151,7 +151,7 @@ this is done.
 
   class AppContainer extends React.Component {
     state = {
-      notificationData: '',
+      notification: {},
     };
 
     componentWillMount() {
@@ -171,13 +171,14 @@ this is done.
     }
 
     _handleNotification = (notification) => {
-      this.setState({notificationData: notification});
+      this.setState({notification: notification});
     };
 
     render() {
       return (
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          <Text>{JSON.stringify(this.state.notificationData)}</Text>
+          <Text>Origin: {this.state.notification.origin}</Text>
+          <Text>Data: {JSON.stringify(this.state.notification.data)}</Text>
         </View>
       );
     }
@@ -190,6 +191,7 @@ It's not entirely clear from the above when your app will be able to handle the
 notification depending on it's state at the time the notification is received.
 For clarification, see the following table:
 
+
 .. figure:: img/receiving-push.png
   :width: 100%
-  :alt: Diagram explaining saving tokens
+  :alt: Timing of notifications

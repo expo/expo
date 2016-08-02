@@ -192,4 +192,4 @@ For clarification, see the following table:
 
 .. figure:: img/receiving-push.png
   :width: 100%
-  :alt: Diagram explaining saving tokens
+  :alt: Timing of notifications
