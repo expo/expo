@@ -30,10 +30,12 @@ example.
    :maxdepth: 2
 
    asset
+   blur-view
    constants
    contacts
    facebook
    font
    imagepicker
+   linear-gradient
    location
    permissions
