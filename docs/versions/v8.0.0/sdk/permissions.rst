@@ -29,10 +29,7 @@ And so we have the ``Permissions`` module.
 
         async function alertIfRemoteNotificationsDisabledAsync() {
           const { Permissions } = Exponent;
-
-          // Returns {status: 'granted' | 'undetermined', expires: 'never'}
           const { status } = await Permissions.getAsync(Permissions.REMOTE_NOTIFICATIONS);
-
 
           if (status !== 'granted') {
             alert('Hey! You might want to enable notifications for my app, they are good.');
@@ -57,18 +54,6 @@ And so we have the ``Permissions`` module.
 
         async function getLocationAsync() {
           const { Location, Permissions } = Exponent;
-
-          /** Returns: {
-            *   status: 'granted' | 'denied' | 'undetermined',
-            *   expires: 'never',
-            *   android: {
-            *     scope: 'fine' | 'coarse' | 'none',
-            *   },
-            *   ios: {
-            *     scope: 'whenInUse' | 'always',
-            *   },
-            * }
-            */
           const { status } = await Permissions.askAsync(Permissions.LOCATION);
 
           if (status === 'granted') {
