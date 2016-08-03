@@ -29,6 +29,7 @@ example.
 .. toctree::
    :maxdepth: 2
 
+   app-loading
    asset
    blur-view
    constants

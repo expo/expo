@@ -1,8 +1,8 @@
 .. _linear-gradient:
 
-***************
+**************
 LinearGradient
-***************
+**************
 
 A React component that renders a native gradient view.
 
