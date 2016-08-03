@@ -99,6 +99,3 @@ poll for the current location or subscribe to location update events.
       * **remove** (*function*) -- Call this function with no arguments to
         remove this subscription. The callback will no longer be called for
         location updates.
-
-
-

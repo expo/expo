@@ -30,11 +30,24 @@ screen that the notification refers to).
 
 .. code-block:: javascript
 
-  import { Notifications } from 'exponent';
+  import { Permissions, Notifications } from 'exponent';
 
   const PUSH_ENDPOINT = 'https://your-server.com/users/push-token';
 
-  function registerForPushNotificationsAsync() {
+  async function registerForPushNotificationsAsync() {
+    // Android remote notification permissions are granted during the app
+    // install, so this will only ask on iOS
+    let { status } = await Permissions.askAsync(Permissions.REMOTE_NOTIFICATIONS);
+
+    // Stop here if the user did not grant permissions
+    if (status !== 'granted') {
+      return;
+    }
+
+    // Get the token that uniquely identifies this device
+    let token = await Notifications.getExponentPushTokenAsync();
+
+    // POST the token to our backend so we can use it to send pushes from there
     return fetch(PUSH_ENDPOINT, {
       method: 'POST',
       headers: {
@@ -52,19 +65,6 @@ screen that the notification refers to).
     });
   }
 
-
-Read this before continuing
-"""""""""""""""""""""""""""
-
-With SDK7 for iOS you need to make sure that your ``exp.json`` includes the following:
-
-.. code-block:: javascript
-
-  ios: {
-    permissions: {
-      remoteNotifications: true,
-    },
-  }
 
 2. Call Exponent's Push API with the user's token
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -151,7 +151,7 @@ this is done.
 
   class AppContainer extends React.Component {
     state = {
-      notificationData: '',
+      notification: {},
     };
 
     componentWillMount() {
@@ -171,13 +171,14 @@ this is done.
     }
 
     _handleNotification = (notification) => {
-      this.setState({notificationData: notification});
+      this.setState({notification: notification});
     };
 
     render() {
       return (
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          <Text>{JSON.stringify(this.state.notificationData)}</Text>
+          <Text>Origin: {this.state.notification.origin}</Text>
+          <Text>Data: {JSON.stringify(this.state.notification.data)}</Text>
         </View>
       );
     }
@@ -190,6 +191,7 @@ It's not entirely clear from the above when your app will be able to handle the
 notification depending on it's state at the time the notification is received.
 For clarification, see the following table:
 
+
 .. figure:: img/receiving-push.png
   :width: 100%
-  :alt: Diagram explaining saving tokens
+  :alt: Timing of notifications
