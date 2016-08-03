@@ -1,6 +1,6 @@
-*******************
+******************
 Using Custom Fonts
-*******************
+******************
 
 Both iOS and Android come with their own set of platform fonts but if you want
 to inject some more brand personality into your app, a well picked font can go
