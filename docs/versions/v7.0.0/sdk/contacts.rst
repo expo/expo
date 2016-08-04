@@ -15,3 +15,23 @@ Provides access to the phone's system contacts.
       An array of objects of the form ``{ id, name, phoneNumber, email }`` with
       ``phoneNumber`` and ``email`` only present if they were requested through
       the ``fields`` parameter.
+
+   :example:
+      .. code-block:: javascript
+
+        async function showFirstContactAsync() {
+          const contacts = await Exponent.Contacts.getContactsAsync([
+            Exponent.Contacts.PHONE_NUMBER,
+            Exponent.Contacts.EMAIL,
+          ]);
+          if (contacts.length > 0) {
+            Alert.alert(
+              'Your first contact is...',
+              `Name: ${contacts[0].name}\n` +
+              `Phone: ${contacts[0].phoneNumber}\n` +
+              `Email: ${contacts[0].email}`
+            );
+          }
+        }
+
+      This function will display the first entry in the user's contacts.
