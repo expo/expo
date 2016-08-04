@@ -7,7 +7,6 @@ Guides
    up-and-running
    .. project-structure
    configuration
-   how-exponent-works
    logging
    debugging
    assets
@@ -19,3 +18,4 @@ Guides
    deployment
    building-standalone-apps
    upgrading-exponent
+   how-exponent-works
