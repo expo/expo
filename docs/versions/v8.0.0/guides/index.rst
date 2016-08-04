@@ -5,9 +5,9 @@ Guides
    :maxdepth: 2
 
    up-and-running
-   how-exponent-works
    .. project-structure
    configuration
+   how-exponent-works
    logging
    debugging
    assets

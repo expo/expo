@@ -10,6 +10,9 @@ Recommended: View logs with Exponent tools
 
 When you open an app that is being served from XDE or exp, the app will send logs over to the server and make them conveniently available to you. This means that you don't need to even have your device connected to your computer to see the logs -- in fact, if someone opens the app from the other side of the world you can still see your app's logs from their device.
 
+.. epigraph::
+  **Note:** Are the logs not showing up for you? Be sure that you're using Exponent sdkVersion 7.0.0 or higher, and that you have the ``exponent`` npm package installed and imported (eg: ``import * as Exponent from 'exponent'`` at the top of your main JS file).
+
 XDE logging pane
 ^^^^^^^^^^^^^^^^
 
