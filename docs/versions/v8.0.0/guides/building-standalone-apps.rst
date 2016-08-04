@@ -1,3 +1,5 @@
+.. _building-standalone-apps:
+
 ************************
 Building Standalone Apps
 ************************
@@ -39,12 +41,9 @@ add any that are missing.
         iconUrl: "https://s3.amazonaws.com/exp-us-standard/rnplay/app-icon.png",
         version: "2.0.0",
         slug: "rnplay",
-        sdkVersion: "7.0.0",
+        sdkVersion: "8.0.0",
         ios: {
           bundleIdentifier: "org.rnplay.exp",
-          permissions: {
-            remoteNotifications: true,
-          }
         },
         android: {
           package: "org.rnplay.exp",
@@ -61,10 +60,7 @@ add any that are missing.
   JavaScript is published to, for example ``exp.host/@notbrent/rnplay``, where
   ``notbrent`` is my username and ``rnplay`` is the slug. The ``sdkVersion``
   tells Exponent what Exponent runtime version to use, which corresponds to a
-  React Native version. The ``remoteNotifications`` field only needs to be
-  ``true`` if you plan on sending push notifications, and is not a required
-  field for Android.
-
+  React Native version.
 
 3. Start the build
 """"""""""""""""""

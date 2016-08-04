@@ -6,8 +6,8 @@ LinearGradient
 
 A React component that renders a native gradient view.
 
-Example
-'''''''
+Example button
+''''''''''''''
 
 .. image:: img/gradient-button-example.png
   :width: 400
@@ -36,6 +36,28 @@ Example
       );
     }
   }
+
+Example with transparency
+'''''''''''''''''''''''''
+
+.. image:: img/gradient-transparency-example.png
+  :width: 400
+
+.. code-block:: javascript
+
+  import React from 'react';
+  import { Components } from 'exponent';
+
+  export default class BlackFade extends React.Component {
+    render() {
+      return (
+        <Components.LinearGradient
+          colors={['rgba(0,0,0,0.4)', 'transparent']}
+          style={{position: 'absolute', left: 0, right: 0, top: 0, height: 20}} />
+      );
+    }
+  }
+
 
 
 props

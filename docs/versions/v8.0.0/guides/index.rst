@@ -5,6 +5,7 @@ Guides
    :maxdepth: 2
 
    up-and-running
+   how-exponent-works
    .. project-structure
    configuration
    logging
