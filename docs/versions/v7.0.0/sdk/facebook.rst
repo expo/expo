@@ -7,6 +7,13 @@ native API since you can access Facebook's `Graph API
 `fetch <https://facebook.github.io/react-native/docs/network.html#fetch>`_, for
 example).
 
+Follow `Facebook's developer documentation
+<https://developers.facebook.com/docs/apps/register>`_ to register an
+application with Facebook's API and get an application ID. For iOS, make sure to
+add `host.exp.Exponent` as a 'Bundle ID'. For Android no further steps are
+required. You may have to switch the app from 'development mode' to 'public
+mode' before other users can log in.
+
 .. function:: Exponent.Facebook.logInWithReadPermissionsAsync(appId, options)
 
    Prompts the user to log into Facebook and grants your app permission
