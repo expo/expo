@@ -82,9 +82,9 @@ out of the box with Exponent.
    :example:
       .. code-block:: javascript
 
-        const soundURI = Exponent.Asset.fromModule(require('./sounds/beep.wav')).uri;
+        const imageURI = Exponent.Asset.fromModule(require('./images/hello.jpg')).uri;
 
-      On running this piece of code, ``soundURI`` gives the remote URI that the
-      contents of ``sounds/beep.wav`` can be read from. The path is resolved
+      On running this piece of code, ``imageURI`` gives the remote URI that the
+      contents of ``images/hello.jpg`` can be read from. The path is resolved
       relative to the source file that this code is evaluated in.
 
