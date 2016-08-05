@@ -50,6 +50,10 @@ cached. Users have higher standards for mobile than web, so you might want to
 take it a step further by preloading and caching the font and important images
 during the initial loading screen.
 
+In order to keep the loading screen visible while we cache our assets, we
+render :ref:`Exponent.Components.AppLoading <app-loading>` and only that
+component until everything is ready.
+
 .. code-block:: javascript
 
   import * as Exponent from 'Exponent';

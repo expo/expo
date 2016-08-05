@@ -15,7 +15,6 @@ Guides
    .. routing-and-navigation
    .. social-authentication
    push-notifications
-   how-exponent-works
-   deployment
    building-standalone-apps
+   how-exponent-works
    upgrading-exponent

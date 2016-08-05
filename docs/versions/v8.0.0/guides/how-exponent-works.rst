@@ -116,13 +116,55 @@ like: ``<START> processing asset request my-proejct/assets/example@3x.png``.
 Notice that it serves up the correct asset for the your screen DPI, assuming
 that it exists.
 
+Deployment
+""""""""""
+
+Deployment for Exponent means compiling your JavaScript bundle with production
+flags enabled (minify, disable runtime development checks) and upload it along
+with any assets that it requires (see :ref:`Assets <all-about-assets>`) to
+CloudFront. We upload your ``exp.json`` configuration to our server. As soon as
+the publish is complete, users will receive the new version next time they open
+the app or refresh it, provided that they have a version of the Exponent client that
+supports the ``sdkVersion`` specified in your ``exp.json``.
+
+.. epigraph::
+  **Note:** To package your app for deployment on the Apple App Store or Google Play Store, see :ref:`Building Standalone Apps<building-standalone-apps>`. Each time you update the SDK version you will need to rebuild your binary.
+
+SDK Versions
+""""""""""""
+
+The ``sdkVersion`` of an Exponent app indicates what version of the compiled
+ObjC/Java/C layer of Exponent to use. Each ``sdkVersion`` roughly corresponds
+to a release of React Native plus the Exponent libraries in the SDK section of
+these docs.
+
+The Exponent client app supports many versions of the Exponent SDK, but an app
+can only use one at a time. This allows you to publish your app today and still
+have it work a year from now without any changes, even if we have completely
+revamped or removed an API your app depends on in a new version. This is
+possible because your app will always be running against the same compiled code
+as the day that you published it.
+
+If you publish an update to your app with a new ``sdkVersion``, if a user has yet
+to update to the latest Exponent client then they will still be able to use
+the previous ``sdkVersion``.
+
+.. epigraph::
+  **Note:** It's likely that eventually we will formulate a policy for how long we want to keep around sdkVersions and begin pruning very old versions of the sdk from the client, but until we do that, everything will remain backwards compatible.
+
 Opening a deployed Exponent app
 """""""""""""""""""""""""""""""
 
 .. image:: img/fetch-app-production.png
   :width: 500
 
+The process is essentially the same as opening an Exponent app in development, only now
+we hit the Exponent backend to get the manifest, and manifest points us to your app's
+JavaScript which now lives on CloudFront.
 
 Standalone apps
 """""""""""""""
 
+We also refer to these as "shell apps", because they are essentially a modified version
+of the Exponent client that always points to a single published URL and does not include
+the Exponent home screen.
