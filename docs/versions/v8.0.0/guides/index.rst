@@ -12,10 +12,10 @@ Guides
    assets
    icons
    using-custom-fonts
-   routing-and-navigation
+   .. routing-and-navigation
    .. social-authentication
    push-notifications
+   how-exponent-works
    deployment
    building-standalone-apps
    upgrading-exponent
-   how-exponent-works

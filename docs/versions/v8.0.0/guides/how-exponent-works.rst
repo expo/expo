@@ -1,3 +1,5 @@
+.. _how-exponent-works:
+
 ==================
 How Exponent Works
 ==================
@@ -30,6 +32,7 @@ Exponent app. Its purpose is to serve the **Exponent Manifest** and provide
 a communication layer between the XDE UI and the Exponent app on your phone or
 simulator.
 
+.. _exponent-manifest:
 Exponent Manifest
 -----------------
 
@@ -112,3 +115,14 @@ unless you have already cached that asset you will see a request in the XDE logs
 like: ``<START> processing asset request my-proejct/assets/example@3x.png``.
 Notice that it serves up the correct asset for the your screen DPI, assuming
 that it exists.
+
+Opening a deployed Exponent app
+"""""""""""""""""""""""""""""""
+
+.. image:: img/fetch-app-production.png
+  :width: 500
+
+
+Standalone apps
+"""""""""""""""
+
