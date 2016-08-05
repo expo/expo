@@ -49,9 +49,8 @@ System information that remains constant throughout the lifetime of your app.
 
 .. attribute:: Exponent.Constants.linkingUri
 
-   When an app is opened due to a deep link, the prefix of the initial URI
-   without the deep link part. If this prefix is removed from
-   ``props.exp.initialUri``, the deep link path remains.
+   When an app is opened due to a deep link, the prefix of the URI without the
+   deep link part.
 
 ..
   .. attribute:: Exponent.Constants.statusBarHeight
