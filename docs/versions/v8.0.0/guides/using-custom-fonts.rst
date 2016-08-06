@@ -52,8 +52,8 @@ Take the Open Sans zipfile that you downloaded, extract it and copy
 ``OpenSans-Bold.ttf`` into the assets directory in your project. The location
 we recommend is ``your-project/assets/fonts``.
 
-.. epigraph::
-  **Note:** We don't *have to* download the font, we could alternatively load it from the web. We recommend it, though, so that it doesn't just disappear on you like things on the web sometimes do.
+.. .. epigraph::
+..   **Note:** We don't *have to* download the font, we could alternatively load it from the web. We recommend it, though, so that it doesn't just disappear on you like things on the web sometimes do.
 
 Loading the font in your app
 ============================
