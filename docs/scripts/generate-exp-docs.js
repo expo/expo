@@ -11,9 +11,6 @@ const stream = fs.createWriteStream(filePath);
 
 const preamble = `
 \`\`exp.json\`\` is your go-to place for configuring parts of your app that don't belong in code. The following is a full list of properties available to you.\
-\n\n
-.. epigraph::
-  **Note:** exp.json is parsed with \`JSON5 <http://json5.org/>\`_ to allow for comments. If you prefer to just use plain JSON, go ahead, it's a subset of JSON5.
 `
 
 // Open and write!
