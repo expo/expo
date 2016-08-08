@@ -30,6 +30,7 @@ This allows you to write ``User.loginAsync()`` instead of
 .. toctree::
    :maxdepth: 2
 
+   logger
    project
    user
    versions
