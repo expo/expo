@@ -20,10 +20,10 @@ redirect:
 	mkdir -p _build/html
 	sed -e 's/REPLACE_ME/$(DEFAULT_VERSION)/g' index-template.html > _build/html/index.html
 
-update-exp:
+update-exp-json-guide:
 	DOCS_VERSION=$(DEFAULT_VERSION) node scripts/generate-exp-docs.js versions/$(DEFAULT_VERSION)/guides/configuration.rst
 
-serve: clean redirect update-exp
+serve: clean redirect update-exp-json-guide
 	DOCS_VERSION=$(DEFAULT_VERSION) sphinx-autobuild --host 0.0.0.0 . _build/html
 
 version/%:
