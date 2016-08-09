@@ -34,7 +34,7 @@ so that it's compatible with the latest version.
 
 * **Update XDE**
 
-  XDE looks for updates automatically, so it might already have already installed and asked you to restart it. If it didn't, you can grab the latest release `from Github <https://github.com/exponentjs/xde/releases>`_.
+  XDE looks for updates automatically, so it might already have already installed and asked you to restart it. If it didn't, you can grab the latest release of `XDE for macOS <https://xde-updates.exponentjs.com/download/mac>`_ or `XDE for Windows (alpha) <https://xde-updates.exponentjs.com/download/win32>`_.
 
 * **Open your project and clear the packager cache**
 
