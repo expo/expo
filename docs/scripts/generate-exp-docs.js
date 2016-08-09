@@ -1,6 +1,11 @@
 const path = require('path');
 const fs = require('fs');
-const ExpSchema = require('../../dev/xdl/src/project/ExpSchema');
+
+try {
+  const ExpSchema = require('../../dev/xdl/src/project/ExpSchema');
+} catch (e) {
+  return;
+}
 
 if (!process.argv[2]) {
   console.error('Please path in the path to the target file');
