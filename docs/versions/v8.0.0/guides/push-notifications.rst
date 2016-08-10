@@ -142,6 +142,7 @@ this is done.
 
   import React from 'react';
   import {
+    AppRegistry,
     DeviceEventEmitter,
     Text,
     View,
@@ -164,7 +165,11 @@ this is done.
       );
 
       // Handle notifications that are received or selected while the app
-      // is closed, and selected in order to open the app
+      // is closed, and selected in order to open the app.
+      //
+      // `exp` is a special prop that is only available on your app's
+      // root component -- the one that is registered with `AppRegistry`
+      // as main.
       if (this.props.exp.notification) {
         this._handleNotification(this.props.exp.notification);
       }
@@ -183,6 +188,8 @@ this is done.
       );
     }
   }
+
+  AppRegistry.registerComponent('main', () => AppContainer);
 
 Notification handling timing
 """"""""""""""""""""""""""""
