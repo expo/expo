@@ -38,3 +38,43 @@ You can share this link with anybody else who has the Exponent app installed, bu
 
 To open the app in the iOS simulator you can press the ``Device`` button and choose ``Open on iOS`` (macOS only).
 To open the app in the Android emulator, first boot it up and then press ``Device`` and ``Open on Android``.
+
+Making your first change
+""""""""""""""""""""""""
+
+Open up ``screens/HomeScreen.js`` in your new project and change any of the
+text in the ``render()`` function. You should see your app reload with your changes.
+
+.. _live-reload-help:
+Can't see your changes?
+^^^^^^^^^^^^^^^^^^^^^^^
+Live reload is enabled by default, but let's just make sure we go over the
+steps to enable it in case somehow things just aren't working.
+
+- First, make sure you have :ref:`development mode enabled in XDE <xde-development-mode>`.
+- Next, close the app and reopen it.
+- Once the app is open again, shake your device to reveal the developer menu. If you are using an emulator, press ``⌘+d`` for iOS or ``ctrl+m`` for Android (in Genymotion).
+- If you see ``Enable Live Reload``, press it and your app will reload. If you
+  see ``Disable Live Reload`` then exit the developer menu and try making
+  another change.
+
+  .. figure:: img/developer-menu.png
+    :width: 70%
+    :alt: In-app developer menu
+
+Manully reloading the app
+-------------------------
+- If you've followed the above steps and live reload **still** doesn't work,
+  press the button in the bottom right of XDE to send us a support request.
+  Until we resolve the issue for you, you can either shake the device and press
+  ``Reload``, or use one of the following tools which work both with an without
+  development mode.
+
+  .. figure:: img/exponent-refresh.png
+    :width: 90%
+    :alt: Refresh using Exponent buttons
+
+Congratulations!
+----------------
+
+You have created a new Exponent project, made a change, and seen it update.

@@ -1,8 +1,9 @@
 const path = require('path');
 const fs = require('fs');
 
+let ExpSchema;
 try {
-  const ExpSchema = require('../../dev/xdl/src/project/ExpSchema');
+  ExpSchema = require('../../dev/xdl/src/project/ExpSchema');
 } catch (e) {
   return;
 }
@@ -16,6 +17,7 @@ const stream = fs.createWriteStream(filePath);
 
 const preamble = `
 \`\`exp.json\`\` is your go-to place for configuring parts of your app that don't belong in code. The following is a full list of properties available to you.\
+\n\n
 `
 
 // Open and write!
