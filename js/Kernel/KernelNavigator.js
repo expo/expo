@@ -20,7 +20,6 @@ import autobind from 'autobind-decorator';
 import Browser from 'Browser';
 import BrowserActions from 'BrowserActions';
 import ConsoleActions from 'ConsoleActions';
-import ExButton from 'ExButton';
 import ExRouter from 'ExRouter';
 import reactMixin from 'react-mixin';
 import { connect } from 'react-redux';
@@ -28,8 +27,6 @@ import { connect } from 'react-redux';
 const {
   ExponentKernel,
 } = NativeModules;
-
-const DOUBLE_TAP_THRESHOLD_MS = 300;
 
 const KERNEL_ROUTE_HOME = 0;
 const KERNEL_ROUTE_BROWSER = 1;
@@ -96,13 +93,13 @@ class KernelNavigator extends React.Component {
   render() {
     let initialRouteStack = (this.props.isShell) ? [this._findOrCreateBrowserRoute(this.props.shellManifestUrl)] : [this._homeRoute];
 
-    let button;
-    if (!this.props.isShell && this.props.tasks.size > 0) {
-      button = (<ExButton onPress={this._handleExButtonPress} />);
-    }
-
     return (
-      <View style={styles.container}>
+      <View
+        style={styles.container}
+        onStartShouldSetResponder={this._onContainerStartShouldSetResponder}
+        onResponderGrant={this._onContainerResponderGrant}
+        onResponderMove={this._onContainerResponderMove}
+        onResponderRelease={this._onContainerResponderRelease}>
         <ExNavigator
           ref={component => { this._navigator = component; }}
           initialRouteStack={initialRouteStack}
@@ -110,29 +107,59 @@ class KernelNavigator extends React.Component {
           style={styles.navigator}
           sceneStyle={styles.scene}
         />
-        {button}
       </View>
     );
   }
 
   @autobind
-  _handleExButtonPress() {
-    if (this._tapMeansDoubleTap) {
-      this._tapMeansDoubleTap = false;
-      this._handleExButtonDoublePress();
-    } else {
-      this._tapMeansDoubleTap = true;
-      this.setTimeout(() => {
-        if (this._tapMeansDoubleTap) {
-          this._handleExButtonSinglePress();
-        }
-        this._tapMeansDoubleTap = false;
-      }, DOUBLE_TAP_THRESHOLD_MS);
+  _onContainerStartShouldSetResponder() {
+    return (!this.props.isShell && this.props.tasks.size > 0);
+  }
+
+  @autobind
+  _onContainerResponderGrant(event) {
+    this._hasTouch = true;
+    this._handleTouch(event);
+  }
+
+  @autobind
+  _onContainerResponderMove(event) {
+    this._handleTouch(event);
+  }
+
+  @autobind
+  _onContainerResponderRelease(event) {
+    this._hasTouch = false;
+    this._hasDoubleTouch = false;
+  }
+
+  @autobind
+  _handleTouch(event) {
+    let { force, touches } = event.nativeEvent;
+    if (View.forceTouchAvailable && this._hasTouch) {
+      if (force >= 0.99) {
+        this._switchTasks();
+      }
+    }
+    if (touches) {
+      if (touches.length === 2 && !this._hasDoubleTouch) {
+        this._hasDoubleTouch = true;
+        this.setTimeout(() => {
+          if (this._hasDoubleTouch) {
+            this._switchTasks();
+          }
+        }, 600);
+      }
+      if (touches.length !== 2 && this._hasDoubleTouch) {
+        this._hasDoubleTouch = false;
+      }
     }
   }
 
   @autobind
-  _handleExButtonSinglePress() {
+  _switchTasks() {
+    this._hasTouch = false;
+    this._hasDoubleTouch = false;
     if (this.props.isHomeVisible) {
       // since only one task besides Home is allowed, just pick the first nonnull url
       let urlsToForeground = this.props.tasks.keySeq().filter(taskUrl => (taskUrl !== null));
@@ -142,16 +169,6 @@ class KernelNavigator extends React.Component {
     } else {
       this.props.dispatch(BrowserActions.foregroundHomeAsync());
     }
-  }
-
-  @autobind
-  _handleExButtonDoublePress() {
-    this.pushConsole(false);
-  }
-
-  @autobind
-  _doubleTapExpired() {
-    this._tapMeansDoubleTap = false;
   }
 
   @autobind
