@@ -51,7 +51,7 @@ Can't see your changes?
 Live reload is enabled by default, but let's just make sure we go over the
 steps to enable it in case somehow things just aren't working.
 
-- First, make sure you have :ref:`development mode enabled in XDE <xde-development-mode>`.
+- First, make sure you have :ref:`development mode enabled in XDE <development-mode>`.
 - Next, close the app and reopen it.
 - Once the app is open again, shake your device to reveal the developer menu. If you are using an emulator, press ``⌘+d`` for iOS or ``ctrl+m`` for Android (in Genymotion).
 - If you see ``Enable Live Reload``, press it and your app will reload. If you
