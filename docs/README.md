@@ -28,8 +28,10 @@ incorporate them!
 synchronizes the changes to the public `exponent-docs` repository. To deploy,
 you will need Docker for Mac. Just run `./scripts/deploy.sh` from
 `universe/docs`.
-- Next run `kubectl --namespace production get po`
-- Then `kubectl --namespace production delete po docs-(id of the docs pod from above)`
+
+### Manually restart docs pod (for some reason?)
+
+- Run `node scripts/restart-docs-pod.js`
 
 ### Testing changes locally
 
