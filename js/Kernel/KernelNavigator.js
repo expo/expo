@@ -96,6 +96,7 @@ class KernelNavigator extends React.Component {
     return (
       <View
         style={styles.container}
+        onMoveShouldSetResponderCapture={this._onContainerMoveShouldSetResponderCapture}
         onStartShouldSetResponder={this._onContainerStartShouldSetResponder}
         onResponderGrant={this._onContainerResponderGrant}
         onResponderMove={this._onContainerResponderMove}
@@ -109,6 +110,20 @@ class KernelNavigator extends React.Component {
         />
       </View>
     );
+  }
+
+  @autobind
+  _onContainerMoveShouldSetResponderCapture(event) {
+    // if the force touch gesture is available/meaningful,
+    // and user force touches on a subview that would otherwise capture the touch,
+    // override that and become the responder.
+    if (this._onContainerStartShouldSetResponder()) {
+      if (View.forceTouchAvailable) {
+        let { force } = event.nativeEvent;
+        return (force > 0.8);
+      }
+    }
+    return false;
   }
 
   @autobind
@@ -136,22 +151,24 @@ class KernelNavigator extends React.Component {
   @autobind
   _handleTouch(event) {
     let { force, touches } = event.nativeEvent;
-    if (View.forceTouchAvailable && this._hasTouch) {
-      if (force >= 0.99) {
-        this._switchTasks();
+    if (this._hasTouch) {
+      if (View.forceTouchAvailable) {
+        if (force >= 0.99) {
+          this._switchTasks();
+        }
       }
-    }
-    if (touches) {
-      if (touches.length === 2 && !this._hasDoubleTouch) {
-        this._hasDoubleTouch = true;
-        this.setTimeout(() => {
-          if (this._hasDoubleTouch) {
-            this._switchTasks();
-          }
-        }, 600);
-      }
-      if (touches.length !== 2 && this._hasDoubleTouch) {
-        this._hasDoubleTouch = false;
+      if (touches) {
+        if (touches.length === 2 && !this._hasDoubleTouch) {
+          this._hasDoubleTouch = true;
+          this.setTimeout(() => {
+            if (this._hasDoubleTouch) {
+              this._switchTasks();
+            }
+          }, 600);
+        }
+        if (touches.length !== 2 && this._hasDoubleTouch) {
+          this._hasDoubleTouch = false;
+        }
       }
     }
   }
