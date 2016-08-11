@@ -62,7 +62,7 @@ steps to enable it in case somehow things just aren't working.
     :width: 70%
     :alt: In-app developer menu
 
-Manully reloading the app
+Manually reloading the app
 -------------------------
 - If you've followed the above steps and live reload **still** doesn't work,
   press the button in the bottom right of XDE to send us a support request.
