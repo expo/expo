@@ -184,7 +184,8 @@ class KernelNavigator extends React.Component {
         this.props.dispatch(BrowserActions.foregroundUrlAsync(urlsToForeground.first()));
       }
     } else {
-      this.props.dispatch(BrowserActions.foregroundHomeAsync());
+      this.props.dispatch(BrowserActions.showMenuAsync(true));
+      // this.props.dispatch(BrowserActions.foregroundHomeAsync());
     }
   }
 

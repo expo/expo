@@ -100,6 +100,11 @@ let BrowserActions = {
   },
 
   @action
+  showMenuAsync(isVisible) {
+    return { isVisible };
+  },
+
+  @action
   showLoadingError(code, message, originalUrl, manifest = null) {
     return { code, message, originalUrl, manifest };
   },

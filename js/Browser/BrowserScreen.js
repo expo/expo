@@ -26,6 +26,7 @@ import ExColors from 'ExColors';
 import ExManifests from 'ExManifests';
 let { ExponentKernel } = NativeModules;
 import Frame from 'Frame';
+import MenuView from 'MenuView';
 import { connect } from 'react-redux';
 
 class BrowserScreen extends React.Component {
@@ -35,12 +36,13 @@ class BrowserScreen extends React.Component {
 
   static getDataProps(data, props) {
     let { url } = props;
-    let { foregroundTaskUrl, isShell, shellManifestUrl, shellInitialUrl, isHomeVisible } = data.browser;
+    let { foregroundTaskUrl, isShell, shellManifestUrl, shellInitialUrl, isHomeVisible, isMenuVisible } = data.browser;
     let isForegrounded = (url === foregroundTaskUrl && !isHomeVisible);
     let shellTask = (shellManifestUrl) ? data.browser.tasks.get(shellManifestUrl) : null;
     return {
       url,
       isForegrounded,
+      isMenuVisible,
       isShell: (isShell && url === shellManifestUrl),
       isLetterboxed: (isShell && url !== shellManifestUrl),
       task: data.browser.tasks.get(url),
@@ -64,10 +66,8 @@ class BrowserScreen extends React.Component {
   }
 
   render() {
-    let content;
-    let loadingIndicator;
-    let errorView;
-    let { task } = this.props;
+    let content, loadingIndicator, menuView, errorView;
+    let { task, isMenuVisible } = this.props;
     if (task) {
       if (task.loadingError) {
         errorView = (
@@ -76,6 +76,12 @@ class BrowserScreen extends React.Component {
             onRefresh={this._refresh}
             style={styles.errorView}
           />);
+      } else if (isMenuVisible) {
+        menuView = (
+          <MenuView
+            task={task}
+          />
+        );
       }
       if (task.bundleUrl) {
         content = (this.props.isLetterboxed) ? this._renderFrameWithLetterbox() : this._renderFrame();
@@ -93,6 +99,7 @@ class BrowserScreen extends React.Component {
       <View style={styles.container}>
         {content}
         {loadingIndicator}
+        {menuView}
         {errorView}
       </View>
     );

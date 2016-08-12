@@ -17,6 +17,7 @@ const BrowserState = Record({
   shellManifestUrl: null,
   shellInitialUrl: null,
   isHomeVisible: true,
+  isMenuVisible: false,
   isKernelLoading: false,
   foregroundTaskUrl: null,
   tasks: Map(),
@@ -58,6 +59,7 @@ export default Flux.createReducer(new BrowserState(), {
       return validateBrowserState(
         state.merge({
           isHomeVisible: false,
+          isMenuVisible: false,
           foregroundTaskUrl: url,
           tasks: state.tasks.set(url, task),
           history,
@@ -84,6 +86,7 @@ export default Flux.createReducer(new BrowserState(), {
     if (url == null || state.tasks.has(url)) {
       return state.merge({
         isHomeVisible: false,
+        isMenuVisible: false,
         foregroundTaskUrl: url,
       });
     }
@@ -96,7 +99,12 @@ export default Flux.createReducer(new BrowserState(), {
       console.error(`Tried to foreground Exponent home while in a shell`);
       return state;
     }
-    return state.merge({ isHomeVisible: true });
+    return state.merge({ isHomeVisible: true, isMenuVisible: false });
+  },
+
+  [BrowserActionTypes.showMenuAsync](state, action) {
+    let { isVisible } = action.payload;
+    return state.merge({ isMenuVisible: isVisible });
   },
 
   [BrowserActionTypes.setKernelLoadingState](state, action) {
@@ -127,6 +135,7 @@ export default Flux.createReducer(new BrowserState(), {
     return state.merge({
       isShell,
       isHomeVisible: false,
+      isMenuVisible: false,
       shellManifestUrl,
     });
   },
@@ -183,6 +192,7 @@ export default Flux.createReducer(new BrowserState(), {
     return validateBrowserState(
       state.merge({
         isHomeVisible: false,
+        isMenuVisible: false,
         foregroundTaskUrl: originalUrl,
         isKernelLoading: isAnythingLoading,
         tasks: updatedTasks,
@@ -195,6 +205,7 @@ export default Flux.createReducer(new BrowserState(), {
     if (task) {
       return state.merge({
         isHomeVisible: true,
+        isMenuVisible: false,
         foregroundTaskUrl: null,
         tasks: state.tasks.remove(action.payload.url),
       });
