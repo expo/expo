@@ -22,6 +22,8 @@ If you want to build a standalone app that has a custom icon, a custom name, and
 
 ## Set Up
 
+Please use Node 6 and npm 3. We recommend installing Node using [nvm](https://github.com/creationix/nvm).
+
 - `npm install` in the `js` and `tools-public` directories.
 - Install [the Gulp CLI](http://gulpjs.com/) globally: `npm i gulp-cli -g`.
 - Run the packager with `cd tools-public && gulp`. Leave this running while you run the clients.
@@ -31,6 +33,7 @@ If you want to build a standalone app that has a custom icon, a custom name, and
 - Build and install Android with `cd android && ./run.sh && cd ..`.
 
 ### iOS
+- Make sure you have Xcode 7 installed.
 - Install [Cocoapods](https://cocoapods.org/): `gem install cocoapods --no-ri --no-rdoc`.
 - `cd tools-public && ./generate-files-ios.sh && cd ..`.
 - `cd ios && pod install && cd ..`.
