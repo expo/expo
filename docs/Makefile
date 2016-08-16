@@ -12,7 +12,7 @@ ifeq ($(shell which $(SPHINXBUILD) >/dev/null 2>&1; echo $$?), 1)
 	$(error The '$(SPHINXBUILD)' command was not found. Make sure you have Sphinx installed, then set the SPHINXBUILD environment variable to point to the full path of the '$(SPHINXBUILD)' executable. Alternatively you can add the directory with the executable to your PATH. If you don\'t have Sphinx installed, grab it from http://sphinx-doc.org/)
 endif
 
-.PHONY: clean
+.PHONY: clean deploy
 clean:
 	rm -rf $(BUILDDIR)/*
 
@@ -31,5 +31,8 @@ version/%:
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 	@echo "The start page for version '$(@F)' is $(BUILDDIR)/html/versions/$(@F)/index.html."
+
+deploy:
+	DOCS_VERSION=$(DEFAULT_VERSION) ./scripts/deploy.sh
 
 all: $(subst versions/,version/,$(sort $(wildcard versions/*))) redirect
