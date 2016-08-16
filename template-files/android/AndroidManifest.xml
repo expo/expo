@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+  package="host.exp.exponent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <permission
+    android:name="host.exp.exponent.permission.C2D_MESSAGE"
+    android:protectionLevel="signature"/>
+
+  <uses-permission android:name="android.permission.INTERNET"/>
+  <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
+  <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+  <uses-permission android:name="android.permission.WAKE_LOCK"/>
+  <uses-permission android:name="host.exp.exponent.permission.C2D_MESSAGE"/>
+  <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+  <uses-permission android:name="android.permission.MANAGE_DOCUMENTS" />
+  <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+
+  <!-- These require runtime permissions on M -->
+  <uses-permission android:name="android.permission.READ_CONTACTS"/>
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.CAMERA"/>
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+  <application
+    android:name=".ExponentApplication"
+    android:allowBackup="true"
+    android:icon="@mipmap/ic_launcher"
+    android:label="@string/app_name"
+    android:largeHeap="true">
+
+    <activity
+      android:name=".LauncherActivity"
+      android:exported="true"
+      android:launchMode="singleTask"
+      android:screenOrientation="portrait"
+      android:theme="@android:style/Theme.Translucent.NoTitleBar">
+      <!-- ADD SHELL SCHEME HERE -->
+      <!-- DELETE AFTER -->
+      <intent-filter>
+        <data android:scheme="exp"/>
+        <data android:scheme="exps"/>
+
+        <action android:name="android.intent.action.VIEW"/>
+
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+      </intent-filter>
+
+      <!-- This has to be separate from the exp[s]:// scheme filter. No idea why -->
+      <intent-filter>
+        <data
+          android:host="exp.host"
+          android:pathPrefix="/@"
+          android:scheme="http"/>
+        <data
+          android:host="exp.host"
+          android:pathPrefix="/@"
+          android:scheme="https"/>
+        <data
+          android:host="*.exp.direct"
+          android:pathPattern=".*"
+          android:scheme="http"/>
+        <data
+          android:host="*.exp.direct"
+          android:pathPattern=".*"
+          android:scheme="https"/>
+
+        <action android:name="android.intent.action.VIEW"/>
+
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+      </intent-filter>
+      <!-- DELETE BEFORE -->
+
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
+
+        <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+    </activity>
+
+    <activity
+      android:name=".experience.ExperienceActivity"
+      android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+      android:theme="@style/Theme.Exponent.Light"
+      android:windowSoftInputMode="adjustResize">
+    </activity>
+
+    <activity
+      android:name=".experience.HomeActivity"
+      android:label="@string/app_name"
+      android:launchMode="singleTask"
+      android:screenOrientation="portrait"
+      android:theme="@style/Theme.Exponent.Light">
+    </activity>
+
+    <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>
+    <!-- ADD DEV SETTINGS HERE -->
+    <activity android:name="abi8_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
+    <activity android:name="abi7_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
+    <activity android:name="abi5_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
+    <activity android:name="abi6_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
+
+    <activity
+      android:name=".ExponentDevActivity"
+      android:exported="true"
+      android:label="@string/dev_activity_name"
+      android:screenOrientation="portrait"
+      android:theme="@style/Theme.Exponent.Dark"
+      android:windowSoftInputMode="adjustPan">
+    </activity>
+
+    <activity
+      android:name=".experience.ErrorActivity"
+      android:theme="@style/Theme.Exponent.Dark"
+      android:screenOrientation="portrait">
+    </activity>
+
+    <activity
+      android:name=".experience.InfoActivity"
+      android:screenOrientation="portrait"
+      android:theme="@style/Theme.Exponent.Light">
+    </activity>
+
+    <activity
+      android:name="com.facebook.FacebookActivity"
+      android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+      android:label="@string/app_name"
+      android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+
+    <service
+      android:name=".ExponentIntentService"
+      android:exported="false">
+    </service>
+
+
+    <!-- Analytics -->
+    <receiver
+      android:name="host.exp.exponent.referrer.InstallReferrerReceiver"
+      android:exported="true">
+      <intent-filter>
+        <action android:name="com.android.vending.INSTALL_REFERRER" />
+      </intent-filter>
+    </receiver>
+
+    <!--
+    This crashes: https://code.google.com/p/analytics-issues/issues/detail?id=667
+    TODO: turn it back on when it's fixed
+    <service
+      android:name="com.google.android.gms.analytics.CampaignTrackingService"
+      android:enabled="true"
+      android:exported="false" />-->
+
+    <receiver android:name="com.google.android.gms.analytics.AnalyticsReceiver"
+              android:enabled="true">
+      <intent-filter>
+        <action android:name="com.google.android.gms.analytics.ANALYTICS_DISPATCH" />
+      </intent-filter>
+    </receiver>
+
+    <service android:name="com.google.android.gms.analytics.AnalyticsService"
+             android:enabled="true"
+             android:exported="false"/>
+
+    <!-- GCM -->
+    <receiver
+      android:name="com.google.android.gms.gcm.GcmReceiver"
+      android:exported="true"
+      android:permission="com.google.android.c2dm.permission.SEND">
+      <intent-filter>
+        <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+        <action android:name="com.google.android.c2dm.intent.REGISTRATION"/>
+
+        <category android:name="host.exp.exponent"/>
+      </intent-filter>
+    </receiver>
+
+    <service
+      android:name=".gcm.ExponentGcmListenerService"
+      android:exported="false">
+      <intent-filter>
+        <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+      </intent-filter>
+    </service>
+    <service
+      android:name=".gcm.ExponentInstanceIDListenerService"
+      android:exported="false">
+      <intent-filter>
+        <action android:name="com.google.android.gms.iid.InstanceID"/>
+      </intent-filter>
+    </service>
+    <service
+      android:name=".gcm.RegistrationIntentService"
+      android:exported="false">
+    </service>
+
+    <!-- ImagePicker native module -->
+    <activity
+      android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+      android:theme="@style/Base.Theme.AppCompat">
+    </activity>
+
+
+    <!-- ADD FABRIC CONFIG HERE -->
+    <!-- BEGIN FABRIC CONFIG -->
+    <meta-data
+      android:name="io.fabric.ApiKey"
+      android:value="${FABRIC_API_KEY}"/>
+    <!-- END FABRIC CONFIG -->
+  </application>
+
+</manifest>

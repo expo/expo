@@ -1,0 +1,8 @@
+<resources>
+  <string name="app_name">Exponent</string>
+  <string name="dev_activity_name">Exponent Dev</string>
+  <string name="preference_file_key">host.exp.exponent.SharedPreferences</string>
+  <string name="error_default">Something went wrong. Sorry about that.</string>
+  <string name="error_unable_to_load_kernel">Exponent requires an internet connection.</string>
+  <string name="error_unable_to_load_experience">Unable to load Experience.</string>
+</resources>
