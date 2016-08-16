@@ -16,14 +16,14 @@ endif
 clean:
 	rm -rf $(BUILDDIR)/*
 
-redirect:
-	mkdir -p _build/html
-	sed -e 's/REPLACE_ME/$(DEFAULT_VERSION)/g' index-template.html > _build/html/index.html
+# redirect:
+# 	mkdir -p _build/html
+# 	sed -e 's/REPLACE_ME/$(DEFAULT_VERSION)/g' index-template.html > _build/html/index.html
 
 update-exp-json-guide:
 	DOCS_VERSION=$(DEFAULT_VERSION) node scripts/generate-exp-docs.js versions/$(DEFAULT_VERSION)/guides/configuration.rst
 
-serve: clean redirect update-exp-json-guide
+serve: clean update-exp-json-guide
 	DOCS_VERSION=$(DEFAULT_VERSION) sphinx-autobuild --host 0.0.0.0 . _build/html
 
 version/%:
@@ -35,4 +35,4 @@ version/%:
 deploy:
 	DOCS_VERSION=$(DEFAULT_VERSION) ./scripts/deploy.sh
 
-all: $(subst versions/,version/,$(sort $(wildcard versions/*))) redirect
+all: $(subst versions/,version/,$(sort $(wildcard versions/*)))
