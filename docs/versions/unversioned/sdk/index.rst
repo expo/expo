@@ -40,3 +40,4 @@ example.
    linear-gradient
    location
    permissions
+   video
