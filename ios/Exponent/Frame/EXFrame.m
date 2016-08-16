@@ -148,10 +148,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 
 - (void)reload
 {
-  if (_source) {
+  if ([self validateProps:@[ @"manifest", @"source" ]]) {
     [[EXAnalytics sharedInstance] logEvent:@"RELOAD_EXPERIENCE" manifestUrl:_source eventProperties:nil];
+    [self _reloadContent];
   }
-  [self _reloadContent];
 }
 
 - (void)_checkForReload
