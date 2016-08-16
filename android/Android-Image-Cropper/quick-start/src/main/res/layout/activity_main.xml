@@ -1,0 +1,31 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/black">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#7000"
+        android:padding="12dp"
+        android:text="@string/main_activity_desciption"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="12dp"
+        android:onClick="onSelectImageClick"
+        android:text="@string/main_button_select_image"/>
+
+    <ImageView
+        android:id="@+id/quick_start_cropped_image"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:contentDescription="@string/result_image_desc"
+        android:src="@drawable/placeholder"/>
+
+</LinearLayout>

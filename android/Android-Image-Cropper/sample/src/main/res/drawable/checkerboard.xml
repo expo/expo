@@ -1,0 +1,5 @@
+<bitmap
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:dither="true"
+    android:src="@drawable/checktile"
+    android:tileMode="repeat"/>

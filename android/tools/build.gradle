@@ -1,0 +1,12 @@
+apply plugin: 'java'
+
+dependencies {
+  compile fileTree(dir: 'libs', include: ['*.jar'])
+  compile group: 'com.github.javaparser', name: 'javaparser-core', version: '2.5.1'
+  compile group: 'commons-io', name: 'commons-io', version: '2.5'
+}
+
+task execute(type: JavaExec) {
+  main = 'host.exp.exponent.tools.ReactAndroidCodeTransformer'
+  classpath = sourceSets.main.runtimeClasspath
+}

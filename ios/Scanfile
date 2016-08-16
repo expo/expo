@@ -1,0 +1,5 @@
+scheme "Exponent"
+devices ["iPhone 5"]
+
+clean true
+output_types "html"

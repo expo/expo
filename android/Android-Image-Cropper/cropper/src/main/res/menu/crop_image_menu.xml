@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/crop_image_menu_rotate"
+        android:icon="@drawable/crop_image_menu_rotate_right"
+        android:title="@string/crop_image_menu_rotate_right"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/crop_image_menu_crop"
+        android:title="@string/crop_image_menu_crop"
+        app:showAsAction="always"/>
+
+</menu>

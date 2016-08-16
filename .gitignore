@@ -1,0 +1,103 @@
+# Xcode
+.DS_Store
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata
+*.moved-aside
+DerivedData
+*.hmap
+*.xccheckout
+*.xcscmblueprint
+
+# Android Studio
+**/.idea/libraries
+**/.idea/workspace.xml
+**/.idea/gradle.xml
+**/.idea/misc.xml
+**/.idea/modules.xml
+**/.idea/vcs.xml
+*.iml
+.gradle
+/android/app/build
+/android/build
+/android/captures
+/android/local.properties
+/android/tools/build
+/android/ReactAndroid/build
+/android/app/libs/ReactAndroid-temp
+/android/versioned-react-native/build
+/android/versioned-react-native/local.properties
+/android/versioned-react-native/ReactAndroid
+ReactAndroid-temp.aar
+*.apk
+
+# Tools
+jarjar-rules.txt
+
+# Node
+node_modules
+npm-debug.log
+
+# Hyperinstall
+.hyperinstall-state.json
+
+# Dynamic Macros
+/ios/Exponent/Supporting/Generated/EXDynamicMacros.h
+/android/app/src/main/java/host/exp/exponent/generated/ExponentBuildConstants.java
+/android/app/src/androidTest/java/host/exp/exponent/generated/TestBuildConstants.java
+.kernel-ngrok-url
+
+# Python
+*.pyc
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Floobits
+.floo
+.flooignore
+
+# Vim temporary files
+.*.swp
+.*.swo
+.*.swn
+.*.swm
+
+# Codemod
+.codemod.bookmark
+
+# Fastlane
+/*.cer
+/fastlane/report.xml
+/fastlane/Preview.html
+/Deployment
+/Preview.html
+
+# Emacs
+*~
+
+# CI
+android/logcat.txt
+
+# Shell apps
+android-shell-app
+
+# Template files
+android/app/src/main/AndroidManifest.xml
+android/app/google-services.json
+android/app/src/main/java/host/exp/exponent/generated/ExponentKeys.java
+android/app/fabric.properties
+ios/Exponent/Supporting/Generated/EXKeys.h
+ios/Podfile
+ios/RCTTest.podspec
+
+# Open source
+ios/Podfile.lock
+ios/Pods

@@ -1,0 +1,17 @@
+{
+  "default": {
+    "keyword": {
+      "font": "./fonts/SF-UI-Text-Regular.otf",
+      "color": "#023c69"
+    },
+    "title": {
+      "font": "./fonts/SF-UI-Text-Light.otf",
+      "color": "#023c69"
+    },
+    "background": "./background.jpg",
+    "padding": 50
+  },
+
+  "data": {
+  }
+}

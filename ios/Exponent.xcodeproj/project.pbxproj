@@ -1,0 +1,1332 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		200C29ED1855EF40345E4BA2 /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B84B3DEFB2C488FAE7279AD /* libPods-ExponentIntegrationTests.a */; };
+		785045DB1D33AE6E0000E59B /* EXProvisioningProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 785045DA1D33AE6E0000E59B /* EXProvisioningProfile.m */; };
+		78CEE2D11ACD07D70095B124 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 78CEE2D01ACD07D70095B124 /* Images.xcassets */; };
+		78CEE2D41ACD07D70095B124 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 78CEE2D21ACD07D70095B124 /* LaunchScreen.xib */; };
+		78CEE2ED1ACD22D90095B124 /* EXAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 78CEE2EC1ACD22D90095B124 /* EXAppDelegate.m */; };
+		8454E6DA1D4E95B800B9E8EF /* EXBlurView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8454E6D91D4E95B800B9E8EF /* EXBlurView.m */; };
+		8454E6DC1D4E960F00B9E8EF /* EXBlurViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8454E6DB1D4E960F00B9E8EF /* EXBlurViewManager.m */; };
+		A1158D321D4C4AA400286352 /* EXAppLoadingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A1158D301D4C4AA400286352 /* EXAppLoadingManager.m */; };
+		A12CC94C1D11E80E0023A57B /* EXLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = A12CC94B1D11E80E0023A57B /* EXLocation.m */; };
+		A15DC4BC1CFF99FE009F940D /* EXImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = A15DC4BA1CFF99FE009F940D /* EXImagePicker.m */; };
+		A15DC4CC1D011248009F940D /* EXFacebook.m in Sources */ = {isa = PBXBuildFile; fileRef = A15DC4CA1D011248009F940D /* EXFacebook.m */; };
+		A16EE77D1D56911100634425 /* EXVideo.m in Sources */ = {isa = PBXBuildFile; fileRef = A16EE7751D56911100634425 /* EXVideo.m */; };
+		A16EE77E1D56911100634425 /* EXVideoManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A16EE7771D56911100634425 /* EXVideoManager.m */; };
+		A16EE77F1D56911100634425 /* EXVideoPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A16EE7791D56911100634425 /* EXVideoPlayerViewController.m */; };
+		A16EE7801D56911100634425 /* UIView+FindUIViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A16EE77C1D56911100634425 /* UIView+FindUIViewController.m */; };
+		A1CDBE8B1D30781000C2A670 /* EXLinearGradient.m in Sources */ = {isa = PBXBuildFile; fileRef = A1CDBE881D30781000C2A670 /* EXLinearGradient.m */; };
+		A1CDBE8C1D30781000C2A670 /* EXLinearGradientManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A1CDBE8A1D30781000C2A670 /* EXLinearGradientManager.m */; };
+		A1CDBE991D3851F700C2A670 /* EXFileSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = A1CDBE981D3851F700C2A670 /* EXFileSystem.m */; };
+		A1F37F711CEFD6B2001E9EFC /* EXConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = A1F37F5C1CEFD6B2001E9EFC /* EXConstants.m */; };
+		A1F37F721CEFD6B2001E9EFC /* EXContacts.m in Sources */ = {isa = PBXBuildFile; fileRef = A1F37F5E1CEFD6B2001E9EFC /* EXContacts.m */; };
+		A1F37F731CEFD6B2001E9EFC /* EXFontLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = A1F37F601CEFD6B2001E9EFC /* EXFontLoader.m */; };
+		A1F37F751CEFD6B2001E9EFC /* EXDisabledDevLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = A1F37F651CEFD6B2001E9EFC /* EXDisabledDevLoadingView.m */; };
+		A1F37F761CEFD6B2001E9EFC /* EXDisabledDevMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = A1F37F681CEFD6B2001E9EFC /* EXDisabledDevMenu.m */; };
+		A1F37F771CEFD6B2001E9EFC /* RCTDevMenu+Device.m in Sources */ = {isa = PBXBuildFile; fileRef = A1F37F6A1CEFD6B2001E9EFC /* RCTDevMenu+Device.m */; };
+		A1F37F781CEFD6B2001E9EFC /* EXDisabledRedBox.m in Sources */ = {isa = PBXBuildFile; fileRef = A1F37F6C1CEFD6B2001E9EFC /* EXDisabledRedBox.m */; };
+		A1F37F791CEFD6B2001E9EFC /* EXFrameExceptionsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A1F37F6E1CEFD6B2001E9EFC /* EXFrameExceptionsManager.m */; };
+		A1F37F7A1CEFD6B2001E9EFC /* EXVersionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A1F37F701CEFD6B2001E9EFC /* EXVersionManager.m */; };
+		A2AABA28A2AEAFB462697CB3 /* libPods-Exponent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B1D1884419563A8205AED29 /* libPods-Exponent.a */; };
+		B509BCC51C6A88EC00A67CBB /* EXVersions.m in Sources */ = {isa = PBXBuildFile; fileRef = B509BCBB1C6A88EC00A67CBB /* EXVersions.m */; };
+		B51333431CE649FE00E9FC9E /* ExponentIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B51333421CE649FE00E9FC9E /* ExponentIntegrationTests.m */; };
+		B513336F1CEA7F4600E9FC9E /* EXKernelModuleProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = B513336E1CEA7F4600E9FC9E /* EXKernelModuleProvider.m */; };
+		B5218E731D22FC7800C54B61 /* EXRemoteNotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5218E721D22FC7800C54B61 /* EXRemoteNotificationManager.m */; };
+		B5218E7A1D232B8800C54B61 /* EXNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = B5218E791D232B8800C54B61 /* EXNotifications.m */; };
+		B5218E801D2461F600C54B61 /* EXFrameUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B5218E7F1D2461F600C54B61 /* EXFrameUtils.m */; };
+		B5218E851D2475A000C54B61 /* EXKernelBridgeRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = B5218E841D2475A000C54B61 /* EXKernelBridgeRecord.m */; };
+		B5218E8A1D24806400C54B61 /* EXKernelBridgeRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = B5218E891D24806400C54B61 /* EXKernelBridgeRegistry.m */; };
+		B55089791D06378B009FBBC5 /* EXKernel.m in Sources */ = {isa = PBXBuildFile; fileRef = B55089781D06378B009FBBC5 /* EXKernel.m */; };
+		B550897C1D063C29009FBBC5 /* EXKernelModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B550897B1D063C29009FBBC5 /* EXKernelModule.m */; };
+		B55089821D06455D009FBBC5 /* EXLinkingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B55089811D06455D009FBBC5 /* EXLinkingManager.m */; };
+		B5553F961CEFBD1200555008 /* EXShellManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5553F951CEFBD1200555008 /* EXShellManager.m */; };
+		B55FDEE41C7FDA560020AA8F /* EXFatalHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B55FDEE21C7FDA560020AA8F /* EXFatalHandler.m */; };
+		B55FDEE91C7FDB690020AA8F /* EXExceptionHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B55FDEE81C7FDB690020AA8F /* EXExceptionHandler.m */; };
+		B55FDEF61C7FDD380020AA8F /* EXDevMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B55FDEF51C7FDD380020AA8F /* EXDevMenuViewController.m */; };
+		B55FDEFA1C7FE1310020AA8F /* EXRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B55FDEF91C7FE1310020AA8F /* EXRootViewController.m */; };
+		B55FDEFD1C800D170020AA8F /* EXErrorView.m in Sources */ = {isa = PBXBuildFile; fileRef = B55FDEFC1C800D170020AA8F /* EXErrorView.m */; };
+		B5657E521CFE1309006EF8E1 /* LaunchScreenShell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B5657E501CFE1309006EF8E1 /* LaunchScreenShell.xib */; };
+		B56FACA21D4AB279009FC106 /* EXAppState.m in Sources */ = {isa = PBXBuildFile; fileRef = B56FACA11D4AB279009FC106 /* EXAppState.m */; };
+		B56FACAD1D4C0266009FC106 /* EXFingerprint.m in Sources */ = {isa = PBXBuildFile; fileRef = B56FACAC1D4C0266009FC106 /* EXFingerprint.m */; };
+		B575EE9A1D53E0AB00DCABBC /* EXCachedResource.m in Sources */ = {isa = PBXBuildFile; fileRef = B575EE991D53E0AB00DCABBC /* EXCachedResource.m */; };
+		B575EE9E1D53EEC300DCABBC /* EXJavaScriptResource.m in Sources */ = {isa = PBXBuildFile; fileRef = B575EE9D1D53EEC300DCABBC /* EXJavaScriptResource.m */; };
+		B575EEA11D54053500DCABBC /* EXManifestResource.m in Sources */ = {isa = PBXBuildFile; fileRef = B575EEA01D54053500DCABBC /* EXManifestResource.m */; };
+		B575EEA41D54175B00DCABBC /* shell-app-manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = B575EEA21D54175A00DCABBC /* shell-app-manifest.json */; };
+		B575EEA51D54175B00DCABBC /* shell-app.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B575EEA31D54175B00DCABBC /* shell-app.bundle */; };
+		B5844C371D482C3D0015C683 /* EXPermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = B5844C361D482C3D0015C683 /* EXPermissions.m */; };
+		B5844C3B1D482D710015C683 /* EXRemoteNotificationRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = B5844C3A1D482D710015C683 /* EXRemoteNotificationRequester.m */; };
+		B5844C3F1D482EA40015C683 /* EXLocationRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = B5844C3E1D482EA40015C683 /* EXLocationRequester.m */; };
+		B587F1E01D53DEB70071715C /* EXFileDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = B587F1DF1D53DEB70071715C /* EXFileDownloader.m */; };
+		B5884A7B1C7FD2E700F01BE4 /* EXFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = B5884A731C7FD2E700F01BE4 /* EXFrame.m */; };
+		B5884A7D1C7FD2E700F01BE4 /* EXFrameManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5884A771C7FD2E700F01BE4 /* EXFrameManager.m */; };
+		B597EF1E1CD98654004A48AD /* EXLog.m in Sources */ = {isa = PBXBuildFile; fileRef = B597EF1D1CD98654004A48AD /* EXLog.m */; };
+		B5A358621C7E6C4300D1BE67 /* EXAnalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A358611C7E6C4300D1BE67 /* EXAnalytics.m */; };
+		B5E49B571D1346FA00AA6436 /* Exponent.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = B5E49B551D1346FA00AA6436 /* Exponent.entitlements */; };
+		B5E49B631D1347B800AA6436 /* EXSDKVersions.plist in Resources */ = {isa = PBXBuildFile; fileRef = B5E49B621D1347B800AA6436 /* EXSDKVersions.plist */; };
+		B5E49B691D1348E800AA6436 /* EXShell.plist in Resources */ = {isa = PBXBuildFile; fileRef = B5E49B671D1348E800AA6436 /* EXShell.plist */; };
+		B5E49B6E1D13491B00AA6436 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E49B6D1D13491B00AA6436 /* main.m */; };
+		B5E49B751D134F0700AA6436 /* kernel.ios.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B5E49B741D134F0700AA6436 /* kernel.ios.bundle */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		787C91291B27EC6700786A57 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 787C91251B27EC6700786A57 /* EXURLHandler.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 789788DE1AF23588009CD9D5;
+			remoteInfo = EXURLHandler;
+		};
+		B51333451CE649FE00E9FC9E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 78CEE2B81ACD07D70095B124 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 78CEE2BF1ACD07D70095B124;
+			remoteInfo = Exponent;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0B84B3DEFB2C488FAE7279AD /* libPods-ExponentIntegrationTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ExponentIntegrationTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1B1D1884419563A8205AED29 /* libPods-Exponent.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Exponent.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		34B965207078EF139F54C545 /* Pods-ExponentIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
+		785045D91D33AE6E0000E59B /* EXProvisioningProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXProvisioningProfile.h; sourceTree = "<group>"; };
+		785045DA1D33AE6E0000E59B /* EXProvisioningProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXProvisioningProfile.m; sourceTree = "<group>"; };
+		787C91251B27EC6700786A57 /* EXURLHandler.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXURLHandler.xcodeproj; path = "../js/node_modules/react-native-url-handler/iOS/EXURLHandler.xcodeproj"; sourceTree = "<group>"; };
+		78CEE2C01ACD07D70095B124 /* Exponent.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Exponent.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		78CEE2D01ACD07D70095B124 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		78CEE2D31ACD07D70095B124 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
+		78CEE2EB1ACD22D90095B124 /* EXAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAppDelegate.h; sourceTree = "<group>"; };
+		78CEE2EC1ACD22D90095B124 /* EXAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppDelegate.m; sourceTree = "<group>"; };
+		8454E6D81D4E95A300B9E8EF /* EXBlurView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXBlurView.h; sourceTree = "<group>"; };
+		8454E6D91D4E95B800B9E8EF /* EXBlurView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXBlurView.m; sourceTree = "<group>"; };
+		8454E6DB1D4E960F00B9E8EF /* EXBlurViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXBlurViewManager.m; sourceTree = "<group>"; };
+		8454E6DD1D4E963A00B9E8EF /* EXBlurViewManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXBlurViewManager.h; sourceTree = "<group>"; };
+		A1158D301D4C4AA400286352 /* EXAppLoadingManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppLoadingManager.m; sourceTree = "<group>"; };
+		A1158D311D4C4AA400286352 /* EXAppLoadingManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAppLoadingManager.h; sourceTree = "<group>"; };
+		A12CC94A1D11E80E0023A57B /* EXLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXLocation.h; sourceTree = "<group>"; };
+		A12CC94B1D11E80E0023A57B /* EXLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXLocation.m; sourceTree = "<group>"; };
+		A15DC4BA1CFF99FE009F940D /* EXImagePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXImagePicker.m; sourceTree = "<group>"; };
+		A15DC4BB1CFF99FE009F940D /* EXImagePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXImagePicker.h; sourceTree = "<group>"; };
+		A15DC4CA1D011248009F940D /* EXFacebook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFacebook.m; sourceTree = "<group>"; };
+		A15DC4CB1D011248009F940D /* EXFacebook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFacebook.h; sourceTree = "<group>"; };
+		A16EE7741D56911100634425 /* EXVideo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXVideo.h; sourceTree = "<group>"; };
+		A16EE7751D56911100634425 /* EXVideo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXVideo.m; sourceTree = "<group>"; };
+		A16EE7761D56911100634425 /* EXVideoManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXVideoManager.h; sourceTree = "<group>"; };
+		A16EE7771D56911100634425 /* EXVideoManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXVideoManager.m; sourceTree = "<group>"; };
+		A16EE7781D56911100634425 /* EXVideoPlayerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXVideoPlayerViewController.h; sourceTree = "<group>"; };
+		A16EE7791D56911100634425 /* EXVideoPlayerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXVideoPlayerViewController.m; sourceTree = "<group>"; };
+		A16EE77A1D56911100634425 /* EXVideoPlayerViewControllerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXVideoPlayerViewControllerDelegate.h; sourceTree = "<group>"; };
+		A16EE77B1D56911100634425 /* UIView+FindUIViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+FindUIViewController.h"; sourceTree = "<group>"; };
+		A16EE77C1D56911100634425 /* UIView+FindUIViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+FindUIViewController.m"; sourceTree = "<group>"; };
+		A1CDBE871D30781000C2A670 /* EXLinearGradient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXLinearGradient.h; sourceTree = "<group>"; };
+		A1CDBE881D30781000C2A670 /* EXLinearGradient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXLinearGradient.m; sourceTree = "<group>"; };
+		A1CDBE891D30781000C2A670 /* EXLinearGradientManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXLinearGradientManager.h; sourceTree = "<group>"; };
+		A1CDBE8A1D30781000C2A670 /* EXLinearGradientManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXLinearGradientManager.m; sourceTree = "<group>"; };
+		A1CDBE971D3851F700C2A670 /* EXFileSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFileSystem.h; sourceTree = "<group>"; };
+		A1CDBE981D3851F700C2A670 /* EXFileSystem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFileSystem.m; sourceTree = "<group>"; };
+		A1F37F5B1CEFD6B2001E9EFC /* EXConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXConstants.h; sourceTree = "<group>"; };
+		A1F37F5C1CEFD6B2001E9EFC /* EXConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXConstants.m; sourceTree = "<group>"; };
+		A1F37F5D1CEFD6B2001E9EFC /* EXContacts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXContacts.h; sourceTree = "<group>"; };
+		A1F37F5E1CEFD6B2001E9EFC /* EXContacts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXContacts.m; sourceTree = "<group>"; };
+		A1F37F5F1CEFD6B2001E9EFC /* EXFontLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFontLoader.h; sourceTree = "<group>"; };
+		A1F37F601CEFD6B2001E9EFC /* EXFontLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFontLoader.m; sourceTree = "<group>"; };
+		A1F37F641CEFD6B2001E9EFC /* EXDisabledDevLoadingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXDisabledDevLoadingView.h; sourceTree = "<group>"; };
+		A1F37F651CEFD6B2001E9EFC /* EXDisabledDevLoadingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXDisabledDevLoadingView.m; sourceTree = "<group>"; };
+		A1F37F671CEFD6B2001E9EFC /* EXDisabledDevMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXDisabledDevMenu.h; sourceTree = "<group>"; };
+		A1F37F681CEFD6B2001E9EFC /* EXDisabledDevMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXDisabledDevMenu.m; sourceTree = "<group>"; };
+		A1F37F691CEFD6B2001E9EFC /* RCTDevMenu+Device.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RCTDevMenu+Device.h"; sourceTree = "<group>"; };
+		A1F37F6A1CEFD6B2001E9EFC /* RCTDevMenu+Device.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTDevMenu+Device.m"; sourceTree = "<group>"; };
+		A1F37F6B1CEFD6B2001E9EFC /* EXDisabledRedBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXDisabledRedBox.h; sourceTree = "<group>"; };
+		A1F37F6C1CEFD6B2001E9EFC /* EXDisabledRedBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXDisabledRedBox.m; sourceTree = "<group>"; };
+		A1F37F6D1CEFD6B2001E9EFC /* EXFrameExceptionsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFrameExceptionsManager.h; sourceTree = "<group>"; };
+		A1F37F6E1CEFD6B2001E9EFC /* EXFrameExceptionsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFrameExceptionsManager.m; sourceTree = "<group>"; };
+		A1F37F6F1CEFD6B2001E9EFC /* EXVersionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXVersionManager.h; sourceTree = "<group>"; };
+		A1F37F701CEFD6B2001E9EFC /* EXVersionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXVersionManager.m; sourceTree = "<group>"; };
+		B509BCBA1C6A88EC00A67CBB /* EXVersions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXVersions.h; sourceTree = "<group>"; };
+		B509BCBB1C6A88EC00A67CBB /* EXVersions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXVersions.m; sourceTree = "<group>"; };
+		B51333401CE649FE00E9FC9E /* ExponentIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ExponentIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B51333421CE649FE00E9FC9E /* ExponentIntegrationTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExponentIntegrationTests.m; sourceTree = "<group>"; };
+		B51333441CE649FE00E9FC9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B513336D1CEA7F4600E9FC9E /* EXKernelModuleProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelModuleProvider.h; sourceTree = "<group>"; };
+		B513336E1CEA7F4600E9FC9E /* EXKernelModuleProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelModuleProvider.m; sourceTree = "<group>"; };
+		B5218E711D22FC7800C54B61 /* EXRemoteNotificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXRemoteNotificationManager.h; sourceTree = "<group>"; };
+		B5218E721D22FC7800C54B61 /* EXRemoteNotificationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXRemoteNotificationManager.m; sourceTree = "<group>"; };
+		B5218E781D232B8800C54B61 /* EXNotifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXNotifications.h; sourceTree = "<group>"; };
+		B5218E791D232B8800C54B61 /* EXNotifications.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXNotifications.m; sourceTree = "<group>"; };
+		B5218E7E1D2461F600C54B61 /* EXFrameUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFrameUtils.h; sourceTree = "<group>"; };
+		B5218E7F1D2461F600C54B61 /* EXFrameUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFrameUtils.m; sourceTree = "<group>"; };
+		B5218E831D2475A000C54B61 /* EXKernelBridgeRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelBridgeRecord.h; sourceTree = "<group>"; };
+		B5218E841D2475A000C54B61 /* EXKernelBridgeRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelBridgeRecord.m; sourceTree = "<group>"; };
+		B5218E881D24806400C54B61 /* EXKernelBridgeRegistry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelBridgeRegistry.h; sourceTree = "<group>"; };
+		B5218E891D24806400C54B61 /* EXKernelBridgeRegistry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelBridgeRegistry.m; sourceTree = "<group>"; };
+		B55089771D06378B009FBBC5 /* EXKernel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernel.h; sourceTree = "<group>"; };
+		B55089781D06378B009FBBC5 /* EXKernel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernel.m; sourceTree = "<group>"; };
+		B550897A1D063C29009FBBC5 /* EXKernelModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelModule.h; sourceTree = "<group>"; };
+		B550897B1D063C29009FBBC5 /* EXKernelModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelModule.m; sourceTree = "<group>"; };
+		B55089801D06455D009FBBC5 /* EXLinkingManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXLinkingManager.h; sourceTree = "<group>"; };
+		B55089811D06455D009FBBC5 /* EXLinkingManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXLinkingManager.m; sourceTree = "<group>"; };
+		B5553F941CEFBD1200555008 /* EXShellManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXShellManager.h; sourceTree = "<group>"; };
+		B5553F951CEFBD1200555008 /* EXShellManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXShellManager.m; sourceTree = "<group>"; };
+		B55FDEE11C7FDA560020AA8F /* EXFatalHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFatalHandler.h; sourceTree = "<group>"; };
+		B55FDEE21C7FDA560020AA8F /* EXFatalHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFatalHandler.m; sourceTree = "<group>"; };
+		B55FDEE71C7FDB690020AA8F /* EXExceptionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXExceptionHandler.h; sourceTree = "<group>"; };
+		B55FDEE81C7FDB690020AA8F /* EXExceptionHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXExceptionHandler.m; sourceTree = "<group>"; };
+		B55FDEF41C7FDD380020AA8F /* EXDevMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXDevMenuViewController.h; sourceTree = "<group>"; };
+		B55FDEF51C7FDD380020AA8F /* EXDevMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXDevMenuViewController.m; sourceTree = "<group>"; };
+		B55FDEF81C7FE1310020AA8F /* EXRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXRootViewController.h; sourceTree = "<group>"; };
+		B55FDEF91C7FE1310020AA8F /* EXRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXRootViewController.m; sourceTree = "<group>"; };
+		B55FDEFB1C800D170020AA8F /* EXErrorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXErrorView.h; sourceTree = "<group>"; };
+		B55FDEFC1C800D170020AA8F /* EXErrorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXErrorView.m; sourceTree = "<group>"; };
+		B5657E511CFE1309006EF8E1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreenShell.xib; sourceTree = "<group>"; };
+		B56FACA01D4AB279009FC106 /* EXAppState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAppState.h; sourceTree = "<group>"; };
+		B56FACA11D4AB279009FC106 /* EXAppState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppState.m; sourceTree = "<group>"; };
+		B56FACAB1D4C0266009FC106 /* EXFingerprint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFingerprint.h; sourceTree = "<group>"; };
+		B56FACAC1D4C0266009FC106 /* EXFingerprint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFingerprint.m; sourceTree = "<group>"; };
+		B575EE981D53E0AB00DCABBC /* EXCachedResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXCachedResource.h; sourceTree = "<group>"; };
+		B575EE991D53E0AB00DCABBC /* EXCachedResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXCachedResource.m; sourceTree = "<group>"; };
+		B575EE9C1D53EEC300DCABBC /* EXJavaScriptResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXJavaScriptResource.h; sourceTree = "<group>"; };
+		B575EE9D1D53EEC300DCABBC /* EXJavaScriptResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXJavaScriptResource.m; sourceTree = "<group>"; };
+		B575EE9F1D54053500DCABBC /* EXManifestResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXManifestResource.h; sourceTree = "<group>"; };
+		B575EEA01D54053500DCABBC /* EXManifestResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXManifestResource.m; sourceTree = "<group>"; };
+		B575EEA21D54175A00DCABBC /* shell-app-manifest.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "shell-app-manifest.json"; sourceTree = "<group>"; };
+		B575EEA31D54175B00DCABBC /* shell-app.bundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "shell-app.bundle"; sourceTree = "<group>"; };
+		B575EEC51D5A9BBE00DCABBC /* EXKeys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKeys.h; sourceTree = "<group>"; };
+		B5844C351D482C3D0015C683 /* EXPermissions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXPermissions.h; sourceTree = "<group>"; };
+		B5844C361D482C3D0015C683 /* EXPermissions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXPermissions.m; sourceTree = "<group>"; };
+		B5844C391D482D710015C683 /* EXRemoteNotificationRequester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXRemoteNotificationRequester.h; sourceTree = "<group>"; };
+		B5844C3A1D482D710015C683 /* EXRemoteNotificationRequester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXRemoteNotificationRequester.m; sourceTree = "<group>"; };
+		B5844C3D1D482EA40015C683 /* EXLocationRequester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXLocationRequester.h; sourceTree = "<group>"; };
+		B5844C3E1D482EA40015C683 /* EXLocationRequester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXLocationRequester.m; sourceTree = "<group>"; };
+		B587F1DE1D53DEB70071715C /* EXFileDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFileDownloader.h; sourceTree = "<group>"; };
+		B587F1DF1D53DEB70071715C /* EXFileDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFileDownloader.m; sourceTree = "<group>"; };
+		B5884A721C7FD2E700F01BE4 /* EXFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFrame.h; sourceTree = "<group>"; };
+		B5884A731C7FD2E700F01BE4 /* EXFrame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFrame.m; sourceTree = "<group>"; };
+		B5884A761C7FD2E700F01BE4 /* EXFrameManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFrameManager.h; sourceTree = "<group>"; };
+		B5884A771C7FD2E700F01BE4 /* EXFrameManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFrameManager.m; sourceTree = "<group>"; };
+		B597EF1C1CD98654004A48AD /* EXLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXLog.h; sourceTree = "<group>"; };
+		B597EF1D1CD98654004A48AD /* EXLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXLog.m; sourceTree = "<group>"; };
+		B5A358601C7E6C4300D1BE67 /* EXAnalytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAnalytics.h; sourceTree = "<group>"; };
+		B5A358611C7E6C4300D1BE67 /* EXAnalytics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAnalytics.m; sourceTree = "<group>"; };
+		B5E49B541D1346FA00AA6436 /* Exponent-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Exponent-Prefix.pch"; sourceTree = "<group>"; };
+		B5E49B551D1346FA00AA6436 /* Exponent.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Exponent.entitlements; sourceTree = "<group>"; };
+		B5E49B561D1346FA00AA6436 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B5E49B621D1347B800AA6436 /* EXSDKVersions.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = EXSDKVersions.plist; sourceTree = "<group>"; };
+		B5E49B671D1348E800AA6436 /* EXShell.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = EXShell.plist; sourceTree = "<group>"; };
+		B5E49B6D1D13491B00AA6436 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		B5E49B741D134F0700AA6436 /* kernel.ios.bundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = kernel.ios.bundle; sourceTree = "<group>"; };
+		BD69154E1D289060B003BB86 /* Pods-Exponent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Exponent.release.xcconfig"; path = "Pods/Target Support Files/Pods-Exponent/Pods-Exponent.release.xcconfig"; sourceTree = "<group>"; };
+		D045154CF3903164C70A59B6 /* Pods-ExponentIntegrationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.debug.xcconfig"; sourceTree = "<group>"; };
+		F8B7CBE8449DB220A8A6DF82 /* Pods-Exponent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Exponent.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Exponent/Pods-Exponent.debug.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		78CEE2BD1ACD07D70095B124 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A2AABA28A2AEAFB462697CB3 /* libPods-Exponent.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B513333D1CE649FE00E9FC9E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				200C29ED1855EF40345E4BA2 /* libPods-ExponentIntegrationTests.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3050F5A98E56E9379C36ABD2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				787C91251B27EC6700786A57 /* EXURLHandler.xcodeproj */,
+				1B1D1884419563A8205AED29 /* libPods-Exponent.a */,
+				0B84B3DEFB2C488FAE7279AD /* libPods-ExponentIntegrationTests.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		787C91261B27EC6700786A57 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				787C912A1B27EC6700786A57 /* libEXURLHandler.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		78CEE2B71ACD07D70095B124 = {
+			isa = PBXGroup;
+			children = (
+				78CEE2C21ACD07D70095B124 /* Exponent */,
+				B51333411CE649FE00E9FC9E /* ExponentIntegrationTests */,
+				3050F5A98E56E9379C36ABD2 /* Frameworks */,
+				A17682721BE42C7F0057BBF2 /* Libraries */,
+				FBBF25BCC6E70D733A60A01D /* Pods */,
+				78CEE2C11ACD07D70095B124 /* Products */,
+			);
+			indentWidth = 2;
+			sourceTree = "<group>";
+			tabWidth = 2;
+		};
+		78CEE2C11ACD07D70095B124 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				78CEE2C01ACD07D70095B124 /* Exponent.app */,
+				B51333401CE649FE00E9FC9E /* ExponentIntegrationTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		78CEE2C21ACD07D70095B124 /* Exponent */ = {
+			isa = PBXGroup;
+			children = (
+				B53BB2851C7E6C1E00D52FBD /* Analytics */,
+				B587F1DB1D53DE600071715C /* Api */,
+				B55FDEF31C7FDD380020AA8F /* DevMenu */,
+				B509BCB51C6A88EC00A67CBB /* Environment */,
+				B55FDEDE1C7FDA560020AA8F /* Errors */,
+				B5884A6F1C7FD2E700F01BE4 /* Frame */,
+				B509BCBC1C6A88EC00A67CBB /* Modules */,
+				B5E49B521D1346FA00AA6436 /* Supporting */,
+				B5812C331C9CD59200A10345 /* Versioned */,
+				78CEE2EB1ACD22D90095B124 /* EXAppDelegate.h */,
+				78CEE2EC1ACD22D90095B124 /* EXAppDelegate.m */,
+				B55FDEF81C7FE1310020AA8F /* EXRootViewController.h */,
+				B55FDEF91C7FE1310020AA8F /* EXRootViewController.m */,
+				78CEE2D01ACD07D70095B124 /* Images.xcassets */,
+				78CEE2D21ACD07D70095B124 /* LaunchScreen.xib */,
+				B5657E501CFE1309006EF8E1 /* LaunchScreenShell.xib */,
+			);
+			path = Exponent;
+			sourceTree = "<group>";
+		};
+		A16EE7731D56911100634425 /* Video */ = {
+			isa = PBXGroup;
+			children = (
+				A16EE7741D56911100634425 /* EXVideo.h */,
+				A16EE7751D56911100634425 /* EXVideo.m */,
+				A16EE7761D56911100634425 /* EXVideoManager.h */,
+				A16EE7771D56911100634425 /* EXVideoManager.m */,
+				A16EE7781D56911100634425 /* EXVideoPlayerViewController.h */,
+				A16EE7791D56911100634425 /* EXVideoPlayerViewController.m */,
+				A16EE77A1D56911100634425 /* EXVideoPlayerViewControllerDelegate.h */,
+				A16EE77B1D56911100634425 /* UIView+FindUIViewController.h */,
+				A16EE77C1D56911100634425 /* UIView+FindUIViewController.m */,
+			);
+			path = Video;
+			sourceTree = "<group>";
+		};
+		A17682721BE42C7F0057BBF2 /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Libraries;
+			sourceTree = "<group>";
+		};
+		A1CDBE861D30781000C2A670 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				A16EE7731D56911100634425 /* Video */,
+				8454E6D81D4E95A300B9E8EF /* EXBlurView.h */,
+				8454E6D91D4E95B800B9E8EF /* EXBlurView.m */,
+				8454E6DD1D4E963A00B9E8EF /* EXBlurViewManager.h */,
+				8454E6DB1D4E960F00B9E8EF /* EXBlurViewManager.m */,
+				A1CDBE871D30781000C2A670 /* EXLinearGradient.h */,
+				A1CDBE881D30781000C2A670 /* EXLinearGradient.m */,
+				A1CDBE891D30781000C2A670 /* EXLinearGradientManager.h */,
+				A1CDBE8A1D30781000C2A670 /* EXLinearGradientManager.m */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		A1F37F591CEFD6B2001E9EFC /* Modules */ = {
+			isa = PBXGroup;
+			children = (
+				A1F37F5A1CEFD6B2001E9EFC /* Api */,
+				A1F37F631CEFD6B2001E9EFC /* Internal */,
+			);
+			path = Modules;
+			sourceTree = "<group>";
+		};
+		A1F37F5A1CEFD6B2001E9EFC /* Api */ = {
+			isa = PBXGroup;
+			children = (
+				A1CDBE861D30781000C2A670 /* Components */,
+				B5844C341D482C3D0015C683 /* Permissions */,
+				A1F37F5B1CEFD6B2001E9EFC /* EXConstants.h */,
+				A1F37F5C1CEFD6B2001E9EFC /* EXConstants.m */,
+				A1F37F5D1CEFD6B2001E9EFC /* EXContacts.h */,
+				A1F37F5E1CEFD6B2001E9EFC /* EXContacts.m */,
+				A15DC4CB1D011248009F940D /* EXFacebook.h */,
+				A15DC4CA1D011248009F940D /* EXFacebook.m */,
+				A1CDBE971D3851F700C2A670 /* EXFileSystem.h */,
+				A1CDBE981D3851F700C2A670 /* EXFileSystem.m */,
+				B56FACAB1D4C0266009FC106 /* EXFingerprint.h */,
+				B56FACAC1D4C0266009FC106 /* EXFingerprint.m */,
+				A1F37F5F1CEFD6B2001E9EFC /* EXFontLoader.h */,
+				A1F37F601CEFD6B2001E9EFC /* EXFontLoader.m */,
+				A15DC4BB1CFF99FE009F940D /* EXImagePicker.h */,
+				A15DC4BA1CFF99FE009F940D /* EXImagePicker.m */,
+				A12CC94A1D11E80E0023A57B /* EXLocation.h */,
+				A12CC94B1D11E80E0023A57B /* EXLocation.m */,
+				B5218E781D232B8800C54B61 /* EXNotifications.h */,
+				B5218E791D232B8800C54B61 /* EXNotifications.m */,
+			);
+			path = Api;
+			sourceTree = "<group>";
+		};
+		A1F37F631CEFD6B2001E9EFC /* Internal */ = {
+			isa = PBXGroup;
+			children = (
+				A1F37F661CEFD6B2001E9EFC /* EXDisabledDevMenu */,
+				A1158D311D4C4AA400286352 /* EXAppLoadingManager.h */,
+				A1158D301D4C4AA400286352 /* EXAppLoadingManager.m */,
+				B56FACA01D4AB279009FC106 /* EXAppState.h */,
+				B56FACA11D4AB279009FC106 /* EXAppState.m */,
+				A1F37F641CEFD6B2001E9EFC /* EXDisabledDevLoadingView.h */,
+				A1F37F651CEFD6B2001E9EFC /* EXDisabledDevLoadingView.m */,
+				A1F37F6B1CEFD6B2001E9EFC /* EXDisabledRedBox.h */,
+				A1F37F6C1CEFD6B2001E9EFC /* EXDisabledRedBox.m */,
+				A1F37F6D1CEFD6B2001E9EFC /* EXFrameExceptionsManager.h */,
+				A1F37F6E1CEFD6B2001E9EFC /* EXFrameExceptionsManager.m */,
+				B55089801D06455D009FBBC5 /* EXLinkingManager.h */,
+				B55089811D06455D009FBBC5 /* EXLinkingManager.m */,
+			);
+			path = Internal;
+			sourceTree = "<group>";
+		};
+		A1F37F661CEFD6B2001E9EFC /* EXDisabledDevMenu */ = {
+			isa = PBXGroup;
+			children = (
+				A1F37F671CEFD6B2001E9EFC /* EXDisabledDevMenu.h */,
+				A1F37F681CEFD6B2001E9EFC /* EXDisabledDevMenu.m */,
+				A1F37F691CEFD6B2001E9EFC /* RCTDevMenu+Device.h */,
+				A1F37F6A1CEFD6B2001E9EFC /* RCTDevMenu+Device.m */,
+			);
+			path = EXDisabledDevMenu;
+			sourceTree = "<group>";
+		};
+		B509BCB51C6A88EC00A67CBB /* Environment */ = {
+			isa = PBXGroup;
+			children = (
+				B55089771D06378B009FBBC5 /* EXKernel.h */,
+				B55089781D06378B009FBBC5 /* EXKernel.m */,
+				B5218E831D2475A000C54B61 /* EXKernelBridgeRecord.h */,
+				B5218E841D2475A000C54B61 /* EXKernelBridgeRecord.m */,
+				B5218E881D24806400C54B61 /* EXKernelBridgeRegistry.h */,
+				B5218E891D24806400C54B61 /* EXKernelBridgeRegistry.m */,
+				785045D91D33AE6E0000E59B /* EXProvisioningProfile.h */,
+				785045DA1D33AE6E0000E59B /* EXProvisioningProfile.m */,
+				B5218E711D22FC7800C54B61 /* EXRemoteNotificationManager.h */,
+				B5218E721D22FC7800C54B61 /* EXRemoteNotificationManager.m */,
+				B5553F941CEFBD1200555008 /* EXShellManager.h */,
+				B5553F951CEFBD1200555008 /* EXShellManager.m */,
+				B509BCBA1C6A88EC00A67CBB /* EXVersions.h */,
+				B509BCBB1C6A88EC00A67CBB /* EXVersions.m */,
+			);
+			path = Environment;
+			sourceTree = "<group>";
+		};
+		B509BCBC1C6A88EC00A67CBB /* Modules */ = {
+			isa = PBXGroup;
+			children = (
+				B55FDEE71C7FDB690020AA8F /* EXExceptionHandler.h */,
+				B55FDEE81C7FDB690020AA8F /* EXExceptionHandler.m */,
+				B550897A1D063C29009FBBC5 /* EXKernelModule.h */,
+				B550897B1D063C29009FBBC5 /* EXKernelModule.m */,
+				B513336D1CEA7F4600E9FC9E /* EXKernelModuleProvider.h */,
+				B513336E1CEA7F4600E9FC9E /* EXKernelModuleProvider.m */,
+			);
+			path = Modules;
+			sourceTree = "<group>";
+		};
+		B51333411CE649FE00E9FC9E /* ExponentIntegrationTests */ = {
+			isa = PBXGroup;
+			children = (
+				B51333421CE649FE00E9FC9E /* ExponentIntegrationTests.m */,
+				B51333441CE649FE00E9FC9E /* Info.plist */,
+			);
+			path = ExponentIntegrationTests;
+			sourceTree = "<group>";
+		};
+		B53BB2851C7E6C1E00D52FBD /* Analytics */ = {
+			isa = PBXGroup;
+			children = (
+				B5A358601C7E6C4300D1BE67 /* EXAnalytics.h */,
+				B5A358611C7E6C4300D1BE67 /* EXAnalytics.m */,
+			);
+			path = Analytics;
+			sourceTree = "<group>";
+		};
+		B55FDEDE1C7FDA560020AA8F /* Errors */ = {
+			isa = PBXGroup;
+			children = (
+				B55FDEFB1C800D170020AA8F /* EXErrorView.h */,
+				B55FDEFC1C800D170020AA8F /* EXErrorView.m */,
+				B55FDEE11C7FDA560020AA8F /* EXFatalHandler.h */,
+				B55FDEE21C7FDA560020AA8F /* EXFatalHandler.m */,
+				B597EF1C1CD98654004A48AD /* EXLog.h */,
+				B597EF1D1CD98654004A48AD /* EXLog.m */,
+			);
+			path = Errors;
+			sourceTree = "<group>";
+		};
+		B55FDEF31C7FDD380020AA8F /* DevMenu */ = {
+			isa = PBXGroup;
+			children = (
+				B55FDEF41C7FDD380020AA8F /* EXDevMenuViewController.h */,
+				B55FDEF51C7FDD380020AA8F /* EXDevMenuViewController.m */,
+			);
+			path = DevMenu;
+			sourceTree = "<group>";
+		};
+		B575EEC31D5A9BBE00DCABBC /* Generated */ = {
+			isa = PBXGroup;
+			children = (
+				B575EEC51D5A9BBE00DCABBC /* EXKeys.h */,
+			);
+			path = Generated;
+			sourceTree = "<group>";
+		};
+		B5812C331C9CD59200A10345 /* Versioned */ = {
+			isa = PBXGroup;
+			children = (
+				A1F37F591CEFD6B2001E9EFC /* Modules */,
+				A1F37F6F1CEFD6B2001E9EFC /* EXVersionManager.h */,
+				A1F37F701CEFD6B2001E9EFC /* EXVersionManager.m */,
+			);
+			path = Versioned;
+			sourceTree = "<group>";
+		};
+		B5844C341D482C3D0015C683 /* Permissions */ = {
+			isa = PBXGroup;
+			children = (
+				B5844C3D1D482EA40015C683 /* EXLocationRequester.h */,
+				B5844C3E1D482EA40015C683 /* EXLocationRequester.m */,
+				B5844C351D482C3D0015C683 /* EXPermissions.h */,
+				B5844C361D482C3D0015C683 /* EXPermissions.m */,
+				B5844C391D482D710015C683 /* EXRemoteNotificationRequester.h */,
+				B5844C3A1D482D710015C683 /* EXRemoteNotificationRequester.m */,
+			);
+			path = Permissions;
+			sourceTree = "<group>";
+		};
+		B587F1DB1D53DE600071715C /* Api */ = {
+			isa = PBXGroup;
+			children = (
+				B575EE981D53E0AB00DCABBC /* EXCachedResource.h */,
+				B575EE991D53E0AB00DCABBC /* EXCachedResource.m */,
+				B587F1DE1D53DEB70071715C /* EXFileDownloader.h */,
+				B587F1DF1D53DEB70071715C /* EXFileDownloader.m */,
+				B575EE9C1D53EEC300DCABBC /* EXJavaScriptResource.h */,
+				B575EE9D1D53EEC300DCABBC /* EXJavaScriptResource.m */,
+				B575EE9F1D54053500DCABBC /* EXManifestResource.h */,
+				B575EEA01D54053500DCABBC /* EXManifestResource.m */,
+			);
+			path = Api;
+			sourceTree = "<group>";
+		};
+		B5884A6F1C7FD2E700F01BE4 /* Frame */ = {
+			isa = PBXGroup;
+			children = (
+				B5884A721C7FD2E700F01BE4 /* EXFrame.h */,
+				B5884A731C7FD2E700F01BE4 /* EXFrame.m */,
+				B5884A761C7FD2E700F01BE4 /* EXFrameManager.h */,
+				B5884A771C7FD2E700F01BE4 /* EXFrameManager.m */,
+				B5218E7E1D2461F600C54B61 /* EXFrameUtils.h */,
+				B5218E7F1D2461F600C54B61 /* EXFrameUtils.m */,
+			);
+			path = Frame;
+			sourceTree = "<group>";
+		};
+		B5E49B521D1346FA00AA6436 /* Supporting */ = {
+			isa = PBXGroup;
+			children = (
+				B575EEC31D5A9BBE00DCABBC /* Generated */,
+				B5E49B541D1346FA00AA6436 /* Exponent-Prefix.pch */,
+				B5E49B551D1346FA00AA6436 /* Exponent.entitlements */,
+				B5E49B621D1347B800AA6436 /* EXSDKVersions.plist */,
+				B5E49B671D1348E800AA6436 /* EXShell.plist */,
+				B5E49B561D1346FA00AA6436 /* Info.plist */,
+				B5E49B741D134F0700AA6436 /* kernel.ios.bundle */,
+				B5E49B6D1D13491B00AA6436 /* main.m */,
+				B575EEA21D54175A00DCABBC /* shell-app-manifest.json */,
+				B575EEA31D54175B00DCABBC /* shell-app.bundle */,
+			);
+			path = Supporting;
+			sourceTree = "<group>";
+		};
+		FBBF25BCC6E70D733A60A01D /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				F8B7CBE8449DB220A8A6DF82 /* Pods-Exponent.debug.xcconfig */,
+				BD69154E1D289060B003BB86 /* Pods-Exponent.release.xcconfig */,
+				D045154CF3903164C70A59B6 /* Pods-ExponentIntegrationTests.debug.xcconfig */,
+				34B965207078EF139F54C545 /* Pods-ExponentIntegrationTests.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		78CEE2BF1ACD07D70095B124 /* Exponent */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 78CEE2E31ACD07D70095B124 /* Build configuration list for PBXNativeTarget "Exponent" */;
+			buildPhases = (
+				E1984121CC98A2D2ECE1FC70 /* 📦 Check Pods Manifest.lock */,
+				9CC2B288B6A3F241D421F586 /* [CP] Check Pods Manifest.lock */,
+				78CA08F5B853ED11AAC0A098 /* [CP] Check Pods Manifest.lock */,
+				F6995799E920278704FBB57E /* [CP] Check Pods Manifest.lock */,
+				78CEE2F21ACDF25E0095B124 /* Generate Dynamic Macros */,
+				78CEE2BC1ACD07D70095B124 /* Sources */,
+				78CEE2BD1ACD07D70095B124 /* Frameworks */,
+				78CEE2E91ACD1CBD0095B124 /* Set Bundle Version */,
+				78CEE2BE1ACD07D70095B124 /* Resources */,
+				78CEE2EA1ACD22AF0095B124 /* Clear Bundle Version */,
+				B575EEC61D5AA56100DCABBC /* Clean Up Dynamic Macros */,
+				78F81D401B70746F000E5595 /* Fabric */,
+				5C7566D244261794D7E39C2E /* [CP] Embed Pods Frameworks */,
+				8B4DC8ADD4224A9E1D4FCDF3 /* [CP] Copy Pods Resources */,
+				579CA9D683ED9AF9FD67558D /* 📦 Embed Pods Frameworks */,
+				784170E2BD0535D944CB800B /* 📦 Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Exponent;
+			productName = Exponent;
+			productReference = 78CEE2C01ACD07D70095B124 /* Exponent.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B513333F1CE649FE00E9FC9E /* ExponentIntegrationTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B513334A1CE649FE00E9FC9E /* Build configuration list for PBXNativeTarget "ExponentIntegrationTests" */;
+			buildPhases = (
+				F976496B69F7AF7E130D3222 /* 📦 Check Pods Manifest.lock */,
+				FC15528E39164A6CE1511926 /* [CP] Check Pods Manifest.lock */,
+				D2BB6DB08919DCAB66111FD5 /* [CP] Check Pods Manifest.lock */,
+				031B1A3DDA2CE47D6997E09A /* [CP] Check Pods Manifest.lock */,
+				B513333C1CE649FE00E9FC9E /* Sources */,
+				B513333D1CE649FE00E9FC9E /* Frameworks */,
+				B513333E1CE649FE00E9FC9E /* Resources */,
+				E32FCF9DC76C03757050AE89 /* [CP] Embed Pods Frameworks */,
+				C1116E60D0A3FBE3DFFED56F /* [CP] Copy Pods Resources */,
+				DE14179FC023AE8AEEDB1E30 /* 📦 Embed Pods Frameworks */,
+				5629D5C6E3C593982543F2A5 /* 📦 Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B51333461CE649FE00E9FC9E /* PBXTargetDependency */,
+			);
+			name = ExponentIntegrationTests;
+			productName = ExponentIntegrationTests;
+			productReference = B51333401CE649FE00E9FC9E /* ExponentIntegrationTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		78CEE2B81ACD07D70095B124 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = EX;
+				LastUpgradeCheck = 0700;
+				ORGANIZATIONNAME = "650 Industries";
+				TargetAttributes = {
+					78CEE2BF1ACD07D70095B124 = {
+						CreatedOnToolsVersion = 6.2;
+						DevelopmentTeam = C8D8QTF339;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 0;
+							};
+							com.apple.BackgroundModes = {
+								enabled = 0;
+							};
+							com.apple.SafariKeychain = {
+								enabled = 1;
+							};
+						};
+					};
+					B513333F1CE649FE00E9FC9E = {
+						CreatedOnToolsVersion = 7.3.1;
+						TestTargetID = 78CEE2BF1ACD07D70095B124;
+					};
+				};
+			};
+			buildConfigurationList = 78CEE2BB1ACD07D70095B124 /* Build configuration list for PBXProject "Exponent" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 78CEE2B71ACD07D70095B124;
+			productRefGroup = 78CEE2C11ACD07D70095B124 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 787C91261B27EC6700786A57 /* Products */;
+					ProjectRef = 787C91251B27EC6700786A57 /* EXURLHandler.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				78CEE2BF1ACD07D70095B124 /* Exponent */,
+				B513333F1CE649FE00E9FC9E /* ExponentIntegrationTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		787C912A1B27EC6700786A57 /* libEXURLHandler.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libEXURLHandler.a;
+			remoteRef = 787C91291B27EC6700786A57 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		78CEE2BE1ACD07D70095B124 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B5E49B571D1346FA00AA6436 /* Exponent.entitlements in Resources */,
+				B5E49B631D1347B800AA6436 /* EXSDKVersions.plist in Resources */,
+				B5E49B691D1348E800AA6436 /* EXShell.plist in Resources */,
+				78CEE2D11ACD07D70095B124 /* Images.xcassets in Resources */,
+				B5E49B751D134F0700AA6436 /* kernel.ios.bundle in Resources */,
+				78CEE2D41ACD07D70095B124 /* LaunchScreen.xib in Resources */,
+				B5657E521CFE1309006EF8E1 /* LaunchScreenShell.xib in Resources */,
+				B575EEA41D54175B00DCABBC /* shell-app-manifest.json in Resources */,
+				B575EEA51D54175B00DCABBC /* shell-app.bundle in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B513333E1CE649FE00E9FC9E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		031B1A3DDA2CE47D6997E09A /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		5629D5C6E3C593982543F2A5 /* 📦 Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		579CA9D683ED9AF9FD67558D /* 📦 Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Exponent/Pods-Exponent-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		5C7566D244261794D7E39C2E /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Exponent/Pods-Exponent-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		784170E2BD0535D944CB800B /* 📦 Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Exponent/Pods-Exponent-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		78CA08F5B853ED11AAC0A098 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		78CEE2E91ACD1CBD0095B124 /* Set Bundle Version */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Set Bundle Version";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "TOOLS_DIR=\"${SRCROOT}/../tools-public\"\n\"${TOOLS_DIR}/set-bundle-version.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		78CEE2EA1ACD22AF0095B124 /* Clear Bundle Version */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Clear Bundle Version";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "TOOLS_DIR=\"${SRCROOT}/../tools-public\"\n\"${TOOLS_DIR}/set-bundle-version.sh\" -c";
+			showEnvVarsInLog = 0;
+		};
+		78CEE2F21ACDF25E0095B124 /* Generate Dynamic Macros */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Generate Dynamic Macros";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -eo pipefail\n\nif [ -f ~/.bash_profile ]; then\n    source ~/.bash_profile >/dev/null 2>/dev/null\nfi\n\nif [ -z \"$EXPONENT_TOOLS_DIR\" ]; then\n    EXPONENT_TOOLS_DIR=\"${SRCROOT}/../tools-public\"\nfi\n\nmkdir -p \"${SRCROOT}/Exponent/Supporting/Generated/\"\npushd ${EXPONENT_TOOLS_DIR}\ngulp generate-dynamic-macros --buildConstantsPath \"${SRCROOT}/Exponent/Supporting/Generated/EXDynamicMacros.h\" --infoPlistPath \"${SRCROOT}/Exponent/Supporting\" --platform ios\npopd\n";
+		};
+		78F81D401B70746F000E5595 /* Fabric */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = Fabric;
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -eo pipefail\n\nif [ -f ~/.bash_profile ]; then\nsource ~/.bash_profile >/dev/null 2>/dev/null\nfi\n\nif [ -z \"$EXPONENT_TOOLS_DIR\" ]; then\nEXPONENT_TOOLS_DIR=\"${SRCROOT}/../tools-public\"\nfi\n\npushd ${EXPONENT_TOOLS_DIR}\ngulp run-fabric-ios --fabricPath \"${PODS_ROOT}/Fabric/run\" --iosPath \"${SRCROOT}\"\npopd\n";
+		};
+		8B4DC8ADD4224A9E1D4FCDF3 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Exponent/Pods-Exponent-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		9CC2B288B6A3F241D421F586 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		B575EEC61D5AA56100DCABBC /* Clean Up Dynamic Macros */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Clean Up Dynamic Macros";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -eo pipefail\n\nif [ -f ~/.bash_profile ]; then\n    source ~/.bash_profile >/dev/null 2>/dev/null\nfi\n\nif [ -z \"$EXPONENT_TOOLS_DIR\" ]; then\n    EXPONENT_TOOLS_DIR=\"${SRCROOT}/../tools-public\"\nfi\n\npushd ${EXPONENT_TOOLS_DIR}\ngulp cleanup-dynamic-macros --infoPlistPath \"${SRCROOT}/Exponent/Supporting\" --platform ios\npopd";
+		};
+		C1116E60D0A3FBE3DFFED56F /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D2BB6DB08919DCAB66111FD5 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		DE14179FC023AE8AEEDB1E30 /* 📦 Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E1984121CC98A2D2ECE1FC70 /* 📦 Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		E32FCF9DC76C03757050AE89 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F6995799E920278704FBB57E /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		F976496B69F7AF7E130D3222 /* 📦 Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		FC15528E39164A6CE1511926 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		78CEE2BC1ACD07D70095B124 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B5A358621C7E6C4300D1BE67 /* EXAnalytics.m in Sources */,
+				78CEE2ED1ACD22D90095B124 /* EXAppDelegate.m in Sources */,
+				A1158D321D4C4AA400286352 /* EXAppLoadingManager.m in Sources */,
+				B56FACA21D4AB279009FC106 /* EXAppState.m in Sources */,
+				8454E6DA1D4E95B800B9E8EF /* EXBlurView.m in Sources */,
+				8454E6DC1D4E960F00B9E8EF /* EXBlurViewManager.m in Sources */,
+				B575EE9A1D53E0AB00DCABBC /* EXCachedResource.m in Sources */,
+				A1F37F711CEFD6B2001E9EFC /* EXConstants.m in Sources */,
+				A1F37F721CEFD6B2001E9EFC /* EXContacts.m in Sources */,
+				B55FDEF61C7FDD380020AA8F /* EXDevMenuViewController.m in Sources */,
+				A1F37F751CEFD6B2001E9EFC /* EXDisabledDevLoadingView.m in Sources */,
+				A1F37F761CEFD6B2001E9EFC /* EXDisabledDevMenu.m in Sources */,
+				A1F37F781CEFD6B2001E9EFC /* EXDisabledRedBox.m in Sources */,
+				B55FDEFD1C800D170020AA8F /* EXErrorView.m in Sources */,
+				B55FDEE91C7FDB690020AA8F /* EXExceptionHandler.m in Sources */,
+				A15DC4CC1D011248009F940D /* EXFacebook.m in Sources */,
+				B55FDEE41C7FDA560020AA8F /* EXFatalHandler.m in Sources */,
+				B587F1E01D53DEB70071715C /* EXFileDownloader.m in Sources */,
+				A1CDBE991D3851F700C2A670 /* EXFileSystem.m in Sources */,
+				B56FACAD1D4C0266009FC106 /* EXFingerprint.m in Sources */,
+				A1F37F731CEFD6B2001E9EFC /* EXFontLoader.m in Sources */,
+				B5884A7B1C7FD2E700F01BE4 /* EXFrame.m in Sources */,
+				A1F37F791CEFD6B2001E9EFC /* EXFrameExceptionsManager.m in Sources */,
+				B5884A7D1C7FD2E700F01BE4 /* EXFrameManager.m in Sources */,
+				B5218E801D2461F600C54B61 /* EXFrameUtils.m in Sources */,
+				A15DC4BC1CFF99FE009F940D /* EXImagePicker.m in Sources */,
+				B575EE9E1D53EEC300DCABBC /* EXJavaScriptResource.m in Sources */,
+				B55089791D06378B009FBBC5 /* EXKernel.m in Sources */,
+				B5218E851D2475A000C54B61 /* EXKernelBridgeRecord.m in Sources */,
+				B5218E8A1D24806400C54B61 /* EXKernelBridgeRegistry.m in Sources */,
+				B550897C1D063C29009FBBC5 /* EXKernelModule.m in Sources */,
+				B513336F1CEA7F4600E9FC9E /* EXKernelModuleProvider.m in Sources */,
+				A1CDBE8B1D30781000C2A670 /* EXLinearGradient.m in Sources */,
+				A1CDBE8C1D30781000C2A670 /* EXLinearGradientManager.m in Sources */,
+				B55089821D06455D009FBBC5 /* EXLinkingManager.m in Sources */,
+				A12CC94C1D11E80E0023A57B /* EXLocation.m in Sources */,
+				B5844C3F1D482EA40015C683 /* EXLocationRequester.m in Sources */,
+				B597EF1E1CD98654004A48AD /* EXLog.m in Sources */,
+				B575EEA11D54053500DCABBC /* EXManifestResource.m in Sources */,
+				B5218E7A1D232B8800C54B61 /* EXNotifications.m in Sources */,
+				B5844C371D482C3D0015C683 /* EXPermissions.m in Sources */,
+				785045DB1D33AE6E0000E59B /* EXProvisioningProfile.m in Sources */,
+				B5218E731D22FC7800C54B61 /* EXRemoteNotificationManager.m in Sources */,
+				B5844C3B1D482D710015C683 /* EXRemoteNotificationRequester.m in Sources */,
+				B55FDEFA1C7FE1310020AA8F /* EXRootViewController.m in Sources */,
+				B5553F961CEFBD1200555008 /* EXShellManager.m in Sources */,
+				A1F37F7A1CEFD6B2001E9EFC /* EXVersionManager.m in Sources */,
+				B509BCC51C6A88EC00A67CBB /* EXVersions.m in Sources */,
+				A16EE77D1D56911100634425 /* EXVideo.m in Sources */,
+				A16EE77E1D56911100634425 /* EXVideoManager.m in Sources */,
+				A16EE77F1D56911100634425 /* EXVideoPlayerViewController.m in Sources */,
+				B5E49B6E1D13491B00AA6436 /* main.m in Sources */,
+				A1F37F771CEFD6B2001E9EFC /* RCTDevMenu+Device.m in Sources */,
+				A16EE7801D56911100634425 /* UIView+FindUIViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B513333C1CE649FE00E9FC9E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B51333431CE649FE00E9FC9E /* ExponentIntegrationTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B51333461CE649FE00E9FC9E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 78CEE2BF1ACD07D70095B124 /* Exponent */;
+			targetProxy = B51333451CE649FE00E9FC9E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		78CEE2D21ACD07D70095B124 /* LaunchScreen.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				78CEE2D31ACD07D70095B124 /* Base */,
+			);
+			name = LaunchScreen.xib;
+			sourceTree = "<group>";
+		};
+		B5657E501CFE1309006EF8E1 /* LaunchScreenShell.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B5657E511CFE1309006EF8E1 /* Base */,
+			);
+			name = LaunchScreenShell.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		78CEE2E11ACD07D70095B124 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		78CEE2E21ACD07D70095B124 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		78CEE2E41ACD07D70095B124 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F8B7CBE8449DB220A8A6DF82 /* Pods-Exponent.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Exponent/Supporting/Exponent.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				EX_BUNDLE_NAME = "$(PRODUCT_NAME)";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Exponent/Supporting/Exponent-Prefix.pch";
+				INFOPLIST_FILE = Exponent/Supporting/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "host.exp.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "$(APP_PROVISIONING_PROFILE)";
+			};
+			name = Debug;
+		};
+		78CEE2E51ACD07D70095B124 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BD69154E1D289060B003BB86 /* Pods-Exponent.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Exponent/Supporting/Exponent.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				EX_BUNDLE_NAME = "$(PRODUCT_NAME)";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Exponent/Supporting/Exponent-Prefix.pch";
+				INFOPLIST_FILE = Exponent/Supporting/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "host.exp.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "$(APP_PROVISIONING_PROFILE)";
+			};
+			name = Release;
+		};
+		B51333471CE649FE00E9FC9E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D045154CF3903164C70A59B6 /* Pods-ExponentIntegrationTests.debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = ExponentIntegrationTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = host.exp.ExponentIntegrationTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Exponent.app/Exponent";
+			};
+			name = Debug;
+		};
+		B51333481CE649FE00E9FC9E /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 34B965207078EF139F54C545 /* Pods-ExponentIntegrationTests.release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = ExponentIntegrationTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = host.exp.ExponentIntegrationTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Exponent.app/Exponent";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		78CEE2BB1ACD07D70095B124 /* Build configuration list for PBXProject "Exponent" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				78CEE2E11ACD07D70095B124 /* Debug */,
+				78CEE2E21ACD07D70095B124 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		78CEE2E31ACD07D70095B124 /* Build configuration list for PBXNativeTarget "Exponent" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				78CEE2E41ACD07D70095B124 /* Debug */,
+				78CEE2E51ACD07D70095B124 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B513334A1CE649FE00E9FC9E /* Build configuration list for PBXNativeTarget "ExponentIntegrationTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B51333471CE649FE00E9FC9E /* Debug */,
+				B51333481CE649FE00E9FC9E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 78CEE2B81ACD07D70095B124 /* Project object */;
+}

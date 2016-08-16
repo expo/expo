@@ -1,0 +1,423 @@
+// Copyright 2015-present 650 Industries. All rights reserved.
+
+#import "EXAnalytics.h"
+#import "EXAppDelegate.h"
+#import "EXAppState.h"
+#import "EXDevMenuViewController.h"
+#import "EXKernel.h"
+#import "EXKernelBridgeRecord.h"
+#import "EXKernelModule.h"
+#import "EXLinkingManager.h"
+#import "EXRootViewController.h"
+#import "EXShellManager.h"
+#import "EXVersions.h"
+
+#import "RCTBridge+Private.h"
+#import "RCTEventDispatcher.h"
+#import "RCTModuleData.h"
+#import "RCTUtils.h"
+
+NS_ASSUME_NONNULL_BEGIN
+
+NSString *kEXKernelErrorDomain = @"EXKernelErrorDomain";
+NSString *kEXKernelOpenUrlNotification = @"EXKernelOpenUrlNotification";
+NSString *kEXKernelGetPushTokenNotification = @"EXKernelGetPushTokenNotification";
+NSString *kEXKernelShouldForegroundTaskEvent = @"foregroundTask";
+NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
+NSString *kEXKernelBundleResourceName = @"kernel.ios";
+
+@implementation EXKernel
+
++ (instancetype)sharedInstance
+{
+  static EXKernel *theKernel;
+  static dispatch_once_t once;
+  dispatch_once(&once, ^{
+    if (!theKernel) {
+      theKernel = [[EXKernel alloc] init];
+    }
+  });
+  return theKernel;
+}
+
+- (instancetype)init
+{
+  if (self = [super init]) {
+    _bridgeRegistry = [[EXKernelBridgeRegistry alloc] init];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(_routeUrl:)
+                                                 name:kEXKernelOpenUrlNotification
+                                               object:nil];
+    for (NSString *name in @[UIApplicationDidBecomeActiveNotification,
+                             UIApplicationDidEnterBackgroundNotification,
+                             UIApplicationDidFinishLaunchingNotification,
+                             UIApplicationWillResignActiveNotification,
+                             UIApplicationWillEnterForegroundNotification]) {
+      
+      [[NSNotificationCenter defaultCenter] addObserver:self
+                                               selector:@selector(_handleAppStateDidChange:)
+                                                   name:name
+                                                 object:nil];
+    }
+  }
+  return self;
+}
+
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)sendNotification:(NSString *)notifBody toExperienceWithId:(NSString *)experienceId
+{
+  id destinationBridge = _bridgeRegistry.kernelBridge;
+  for (id bridge in [_bridgeRegistry bridgeEnumerator]) {
+    EXKernelBridgeRecord *bridgeRecord = [_bridgeRegistry recordForBridge:bridge];
+    if (bridgeRecord.experienceId && [bridgeRecord.experienceId isEqualToString:experienceId]) {
+      destinationBridge = bridge;
+      break;
+    }
+  }
+  NSDictionary *bodyWithOrigin = @{
+                                   @"origin": @"received",
+                                   @"data": notifBody,
+                                   };
+  if (destinationBridge) {
+    if (destinationBridge == _bridgeRegistry.kernelBridge) {
+      // send both the body and the experience id, so we can open a new experience from the kernel
+      [self _dispatchJSEvent:@"Exponent.notification"
+                        body:@{
+                               @"body": bodyWithOrigin,
+                               @"experienceId": experienceId,
+                               }
+                    onBridge:_bridgeRegistry.kernelBridge];
+    } else {
+      // send the body to the already-open experience
+      [self _dispatchJSEvent:@"Exponent.notification" body:bodyWithOrigin onBridge:destinationBridge];
+      [self _moveBridgeToForeground:destinationBridge];
+    }
+  }
+}
+
+#pragma mark - Linking
+
+/**
+ *  Expected notif.userInfo keys:
+ *   url - the url (NSString) to route
+ *   bridge - (optional) if this event came from a bridge, a pointer to that bridge
+ */
+- (void)_routeUrl: (NSNotification *)notif
+{
+  NSURL *notifUri = [NSURL URLWithString:notif.userInfo[@"url"]];
+  if (!notifUri) {
+    DDLogInfo(@"Tried to route invalid url: %@", notif.userInfo[@"url"]);
+    return;
+  }
+  NSString *urlToRoute = [[self class] _uriTransformedForRouting:notifUri].absoluteString;
+  
+  // kernel bridge is our default handler for this url
+  // because it can open a new bridge if we don't already have one.
+  id destinationBridge = _bridgeRegistry.kernelBridge;
+
+  for (id bridge in [_bridgeRegistry bridgeEnumerator]) {
+    EXKernelBridgeRecord *bridgeRecord = [_bridgeRegistry recordForBridge:bridge];
+    if ([urlToRoute hasPrefix:[[self class] linkingUriForExperienceUri:bridgeRecord.initialUri]]) {
+      // this is a link into a bridge we already have running.
+      // use this bridge as the link's destination instead of the kernel.
+      destinationBridge = bridge;
+      break;
+    }
+  }
+  
+  if (destinationBridge) {
+    // fire a Linking url event on this (possibly versioned) bridge
+    id linkingModule = [self _nativeModuleForBridge:destinationBridge named:@"RCTLinkingManager"];
+    if (linkingModule && [linkingModule respondsToSelector:@selector(dispatchOpenUrlEvent:)]) {
+      [linkingModule dispatchOpenUrlEvent:[NSURL URLWithString:urlToRoute]];
+    }
+    [self _moveBridgeToForeground:destinationBridge];
+  }
+}
+
++ (NSString *)linkingUriForExperienceUri:(NSURL *)uri
+{
+  uri = [self _uriTransformedForRouting:uri];
+  NSURLComponents *components = [NSURLComponents componentsWithURL:uri resolvingAgainstBaseURL:YES];
+
+  // if the provided uri is the shell app manifest uri,
+  // this should have been transformed into customscheme://+deep-link
+  // and then all we do here is strip off the deep-link part, leaving +.
+  if ([EXShellManager sharedInstance].isShell && [components.scheme isEqualToString:[EXShellManager sharedInstance].urlScheme]) {
+    return [NSString stringWithFormat:@"%@://+", [EXShellManager sharedInstance].urlScheme];
+  }
+
+  NSMutableString* path = [NSMutableString stringWithString:components.path];
+
+  // if the uri already contains a deep link, strip everything specific to that
+  NSRange deepLinkRange = [path rangeOfString:@"+"];
+  if (deepLinkRange.length > 0) {
+    path = [[path substringToIndex:deepLinkRange.location] mutableCopy];
+  }
+
+  if (path.length == 0 || [path characterAtIndex:path.length - 1] != '/') {
+    [path appendString:@"/"];
+  }
+  [path appendString:@"+"];
+  components.path = path;
+
+  components.query = nil;
+
+  return [components string];
+}
+
++ (NSURL *)_uriTransformedForRouting: (NSURL *)uri
+{
+  if (!uri) {
+    return nil;
+  }
+  
+  NSURL *normalizedUri = [self _uriNormalizedForRouting:uri];
+  
+  if ([EXShellManager sharedInstance].isShell && [EXShellManager sharedInstance].urlScheme) {
+    // if the provided uri is the shell app manifest uri,
+    // transform this into customscheme://+deep-link
+    NSURL *shellManifestUrl = [NSURL URLWithString:[EXShellManager sharedInstance].shellManifestUrl];
+    NSURL *normalizedShellManifestURL = [self _uriNormalizedForRouting:shellManifestUrl];
+    if ([normalizedShellManifestURL.absoluteString isEqualToString:normalizedUri.absoluteString]) {
+      NSString *uriString = normalizedUri.absoluteString;
+      NSRange deepLinkRange = [uriString rangeOfString:@"+"];
+      NSString *deepLink = @"";
+      if (deepLinkRange.length > 0) {
+        deepLink = [uriString substringFromIndex:deepLinkRange.location];
+      }
+      NSString *result = [NSString stringWithFormat:@"%@://%@", [EXShellManager sharedInstance].urlScheme, deepLink];
+      return [NSURL URLWithString:result];
+    }
+  }
+  return normalizedUri;
+}
+
++ (NSURL *)_uriNormalizedForRouting: (NSURL *)uri
+{
+  NSURLComponents *components = [NSURLComponents componentsWithURL:uri resolvingAgainstBaseURL:YES];
+  
+  if ([EXShellManager sharedInstance].isShell && [components.scheme isEqualToString:[EXShellManager sharedInstance].urlScheme]) {
+    // if we're a shell and this uri had the shell scheme, leave it alone.
+  } else {
+    if ([components.scheme isEqualToString:@"https"]) {
+      components.scheme = @"exps";
+    } else {
+      components.scheme = @"exp";
+    }
+  }
+  
+  if ([components.scheme isEqualToString:@"exp"] && [components.port integerValue] == 80) {
+    components.port = nil;
+  } else if ([components.scheme isEqualToString:@"exps"] && [components.port integerValue] == 443) {
+    components.port = nil;
+  }
+  
+  return [components URL];
+}
+
++ (BOOL)application:(UIApplication *)application
+            openURL:(NSURL *)URL
+  sourceApplication:(NSString *)sourceApplication
+         annotation:(id)annotation
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:kEXKernelOpenUrlNotification
+                                                      object:nil
+                                                    userInfo:@{
+                                                               @"url": URL.absoluteString
+                                                               }];
+  return YES;
+}
+
++ (BOOL)application:(UIApplication *)application
+continueUserActivity:(NSUserActivity *)userActivity
+ restorationHandler:(void (^)(NSArray *))restorationHandler
+{
+  if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+    [[NSNotificationCenter defaultCenter] postNotificationName:kEXKernelOpenUrlNotification
+                                                        object:nil
+                                                      userInfo:@{
+                                                                 @"url": userActivity.webpageURL.absoluteString
+                                                                 }];
+  }
+  return YES;
+}
+
++ (NSURL *)initialUrlFromLaunchOptions:(NSDictionary *)launchOptions
+{
+  NSURL *initialUrl;
+
+  if (launchOptions) {
+    if (launchOptions[UIApplicationLaunchOptionsURLKey]) {
+      initialUrl = launchOptions[UIApplicationLaunchOptionsURLKey];
+    } else if (launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey]) {
+      NSDictionary *userActivityDictionary = launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
+      
+      if ([userActivityDictionary[UIApplicationLaunchOptionsUserActivityTypeKey] isEqual:NSUserActivityTypeBrowsingWeb]) {
+        initialUrl = ((NSUserActivity *)userActivityDictionary[@"UIApplicationLaunchOptionsUserActivityKey"]).webpageURL;
+      }
+    }
+  }
+
+  return initialUrl;
+}
+
++ (NSString *)deviceInstallUUID
+{
+  NSString *uuid = [[NSUserDefaults standardUserDefaults] stringForKey:kEXDeviceInstallUUIDKey];
+  if (!uuid) {
+    uuid = [[NSUUID UUID] UUIDString];
+    [[NSUserDefaults standardUserDefaults] setObject:uuid forKey:kEXDeviceInstallUUIDKey];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+  }
+  return uuid;
+}
+
+#pragma mark - Bridge stuff
+
+- (void)dispatchKernelJSEvent:(NSString *)eventName body:(NSDictionary *)eventBody onSuccess:(void (^_Nullable)(NSDictionary * _Nullable))success onFailure:(void (^_Nullable)(NSString * _Nullable))failure
+{
+  EXKernelModule *kernelModule = [self _nativeModuleForBridge:_bridgeRegistry.kernelBridge named:@"ExponentKernel"];
+  if (kernelModule) {
+    [kernelModule dispatchJSEvent:eventName body:eventBody onSuccess:success onFailure:failure];
+  }
+}
+
+- (void)_dispatchJSEvent:(NSString *)eventName body:(NSDictionary *)eventBody onBridge:(id)destinationBridge
+{
+  [destinationBridge enqueueJSCall:@"RCTDeviceEventEmitter.emit"
+                    args:eventBody ? @[eventName, eventBody] : @[eventName]];
+}
+
+- (id)_nativeModuleForBridge:(id)destinationBridge named:(NSString *)moduleName
+{
+  if ([destinationBridge respondsToSelector:@selector(batchedBridge)]) {
+    id batchedBridge = [destinationBridge batchedBridge];
+    id moduleData = [batchedBridge moduleDataForName:moduleName];
+    if (moduleData) {
+      return [moduleData instance];
+    }
+  }
+  return nil;
+}
+
+- (void)_moveBridgeToForeground: (id)destinationBridge
+{
+  if (destinationBridge != _bridgeRegistry.kernelBridge) {
+    // kernel JS needs to bring the relevant frame/bridge to visibility.
+    NSURL *frameUrlToForeground = [_bridgeRegistry recordForBridge:destinationBridge].initialUri;
+    [self dispatchKernelJSEvent:kEXKernelShouldForegroundTaskEvent body:@{ @"taskUrl":frameUrlToForeground.absoluteString } onSuccess:nil onFailure:nil];
+  }
+}
+
+#pragma mark - EXKernelModuleDelegate
+
+- (void)kernelModuleDidSelectDevMenu:(__unused EXKernelModule *)module
+{
+  EXDevMenuViewController *vcDevMenu = [[EXDevMenuViewController alloc] init];
+  [((EXAppDelegate *)[UIApplication sharedApplication].delegate).rootViewController presentViewController:vcDevMenu animated:YES completion:nil];
+}
+
+- (void)kernelModule:(__unused EXKernelModule *)module taskDidForegroundWithType:(NSInteger)type params:(NSDictionary *)params
+{
+  EXKernelRoute routetype = (EXKernelRoute)type;
+  [[EXAnalytics sharedInstance] logForegroundEventForRoute:routetype fromJS:YES];
+  
+  if (params) {
+    NSString *urlToForeground = params[@"url"];
+    NSString *urlToBackground = params[@"urlToBackground"];
+    id bridgeToForeground = nil;
+    id bridgeToBackground = nil;
+    
+    if (routetype == kEXKernelRouteHome) {
+      bridgeToForeground = _bridgeRegistry.kernelBridge;
+    }
+    if (routetype == kEXKernelRouteBrowser && !urlToBackground) {
+      bridgeToBackground = _bridgeRegistry.kernelBridge;
+    }
+
+    for (id bridge in [_bridgeRegistry bridgeEnumerator]) {
+      EXKernelBridgeRecord *bridgeRecord = [_bridgeRegistry recordForBridge:bridge];
+      if (urlToForeground && [bridgeRecord.initialUri.absoluteString isEqualToString:urlToForeground]) {
+        bridgeToForeground = bridge;
+      } else if (urlToBackground && [bridgeRecord.initialUri.absoluteString isEqualToString:urlToBackground]) {
+        bridgeToBackground = bridge;
+      }
+    }
+    
+    if (bridgeToForeground) {
+      [[NSNotificationCenter defaultCenter] postNotificationName:kEXKernelBridgeDidForegroundNotification
+                                                          object:bridgeToForeground];
+      id appStateModule = [self _nativeModuleForBridge:bridgeToForeground named:@"RCTAppState"];
+      if ([appStateModule respondsToSelector:@selector(setState:)]) {
+        [appStateModule setState:@"active"];
+      }
+      _bridgeRegistry.lastKnownForegroundBridge = bridgeToForeground;
+    } else {
+      _bridgeRegistry.lastKnownForegroundBridge = nil;
+    }
+    if (bridgeToBackground) {
+      [[NSNotificationCenter defaultCenter] postNotificationName:kEXKernelBridgeDidBackgroundNotification
+                                                          object:bridgeToBackground];
+      id appStateModule = [self _nativeModuleForBridge:bridgeToBackground named:@"RCTAppState"];
+      if ([appStateModule respondsToSelector:@selector(setState:)]) {
+        [appStateModule setState:@"background"];
+      }
+    }
+  }
+}
+
+#pragma mark - App State
+
+- (void)_handleAppStateDidChange:(NSNotification *)notification
+{
+  NSString *newState;
+  
+  if ([notification.name isEqualToString:UIApplicationWillResignActiveNotification]) {
+    newState = @"inactive";
+  } else if ([notification.name isEqualToString:UIApplicationWillEnterForegroundNotification]) {
+    newState = @"background";
+  } else {
+    switch (RCTSharedApplication().applicationState) {
+      case UIApplicationStateActive:
+        newState = @"active";
+        break;
+      case UIApplicationStateBackground: {
+        newState = @"background";
+        break;
+      }
+      default: {
+        newState = @"unknown";
+        break;
+      }
+    }
+  }
+  
+  if (_bridgeRegistry.lastKnownForegroundBridge) {
+    id appStateModule = [self _nativeModuleForBridge:_bridgeRegistry.lastKnownForegroundBridge named:@"RCTAppState"];
+    if ([appStateModule respondsToSelector:@selector(setState:)]) {
+      [appStateModule setState:newState];
+    }
+    NSString *lastKnownState;
+    if ([appStateModule respondsToSelector:@selector(lastKnownState)]) {
+      lastKnownState = [appStateModule lastKnownState];
+    }
+    if (!lastKnownState || ![newState isEqualToString:lastKnownState]) {
+      if ([newState isEqualToString:@"active"]) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:kEXKernelBridgeDidForegroundNotification
+                                                            object:_bridgeRegistry.lastKnownForegroundBridge];
+      } else if ([newState isEqualToString:@"background"]) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:kEXKernelBridgeDidBackgroundNotification
+                                                            object:_bridgeRegistry.lastKnownForegroundBridge];
+      }
+    }
+  }
+}
+
+@end
+
+NS_ASSUME_NONNULL_END

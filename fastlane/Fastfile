@@ -1,0 +1,128 @@
+# Customise this file, documentation can be found here:
+# https://github.com/KrauseFx/fastlane/tree/master/docs
+require 'fileutils'
+require 'shellwords'
+
+fastlane_version "1.30.0"
+
+default_platform :ios
+
+output_directory = File.expand_path('../Deployment')
+
+platform :ios do
+
+  before_all do
+    ENV["SLACK_URL"] = "https://hooks.slack.com/services/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"
+    FileUtils.mkdir_p(output_directory)
+  end
+
+  lane :release do
+    cert(
+      team_id: "C8D8QTF339",
+    )
+
+    sigh(
+      output_path: output_directory,
+      filename: "Exponent-distribution.mobileprovision",
+    )
+
+    xcodebuild_args = {
+      APP_PROVISIONING_PROFILE: Actions.lane_context[Actions::SharedValues::SIGH_UDID],
+    }
+    xcodebuild_args = xcodebuild_args.map do |k,v|
+      "#{k.to_s.shellescape}=#{v.shellescape}"
+    end.join ' '
+
+    gym(
+      workspace: "ios/Exponent.xcworkspace",
+      scheme: "Exponent",
+      configuration: "Release",
+      provisioning_profile_path: Actions.lane_context[Actions::SharedValues::SIGH_PROFILE_PATH],
+      xcargs: xcodebuild_args,
+      clean: true,
+      output_directory: output_directory,
+      output_name: "Exponent.ipa",
+    )
+
+    deliver(
+      submit_for_review: false
+    )
+
+    slack(
+      message: "Uploaded a new release to iTunes Connect.",
+      success: true,
+      default_payloads: [:lane, :git_branch]
+    )
+  end
+
+  lane :enterprise do
+    sigh(
+      cert_id: "LY98UNXV9P",
+      output_path: output_directory,
+      filename: "ExponentBeta-distribution.mobileprovision",
+    )
+
+    xcodebuild_args = {
+      APP_PROVISIONING_PROFILE: Actions.lane_context[Actions::SharedValues::SIGH_UDID],
+      PRODUCT_BUNDLE_IDENTIFIER: "host.exp.ExponentBeta",
+      EX_BUNDLE_NAME: "Exponent Beta",
+    }
+    xcodebuild_args = xcodebuild_args.map do |k,v|
+      "#{k.to_s.shellescape}=#{v.shellescape}"
+    end.join ' '
+
+    gym(
+      workspace: "ios/Exponent.xcworkspace",
+      scheme: "Exponent",
+      configuration: "Release",
+      provisioning_profile_path: Actions.lane_context[Actions::SharedValues::SIGH_PROFILE_PATH],
+      xcargs: xcodebuild_args,
+      output_directory: output_directory,
+      output_name: "ExponentBeta.ipa",
+      use_legacy_build_api: true,
+    )
+
+    ipa_path = Actions.lane_context[Actions::SharedValues::IPA_OUTPUT_PATH]
+    FileUtils.cp(ipa_path, File.join(Dir.home, "Dropbox/Exponent"))
+
+    # Save a timestamped copy of the IPA
+    ipa_extension = File.extname(ipa_path)
+    ipa_basename = File.basename(ipa_path, ipa_extension)
+    dated_ipa_filename = "#{ipa_basename}-#{Time.now.strftime("%Y-%m-%d")}#{ipa_extension}"
+    FileUtils.cp(
+      ipa_path,
+      File.join(Dir.home, "Dropbox/Exponent", dated_ipa_filename),
+    )
+
+    slack(
+      message: "Deployed a new enterprise build to Dropbox.",
+      success: true,
+      default_payloads: [:lane, :git_branch]
+    )
+  end
+
+  lane :screenshots do
+    snapshot
+    frameit(
+      white: true,
+      path: "fastlane/screenshots",
+    )
+    deliver(
+      skip_screenshots: false,
+      skip_metadata: true,
+      submit_for_review: false,
+    )
+  end
+
+  after_all do |lane|
+    FileUtils.rm_rf(output_directory)
+  end
+
+  error do |lane, exception|
+    # slack(
+    #   message: exception.message,
+    #   success: false
+    # )
+  end
+
+end

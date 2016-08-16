@@ -1,0 +1,7 @@
+{
+  npmLock: {
+    repo: "git@gitlab.com:exponentjs-npm-lock/exponent.git",
+    incrementalInstall: true,
+    crossPlatform: true
+  }
+}

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- the checkerboard pattern. -->
+    <item android:drawable="@drawable/checkerboard"/>
+
+    <!-- This mutes the checkerboard similar to the styled background. -->
+    <item android:drawable="@drawable/muted"/>
+
+
+</layer-list>

@@ -1,0 +1,5 @@
+{
+  "EXKeys.h": "ios/Exponent/Supporting/Generated/",
+  "Podfile": "ios",
+  "RCTTest.podspec": "ios"
+}

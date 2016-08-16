@@ -1,0 +1,146 @@
+source 'https://github.com/CocoaPods/Specs.git'
+platform :ios, '8.0'
+
+target 'Exponent' do
+  # Published CocoaPods
+  pod 'CocoaLumberjack', '~> 2.3'
+  pod 'Crashlytics', '~> 3.4'
+  pod 'Fabric', '~> 1.6'
+  pod 'SimulatorStatusMagic', '~> 1.7', :configurations => ['Debug']
+  pod 'Amplitude-iOS', '~> 3.8'
+  pod 'FBSDKCoreKit', '~> 4.14'
+  pod 'FBSDKLoginKit', '~> 4.14'
+  pod 'FBSDKShareKit', '~> 4.14'
+
+  # Local CocoaPods
+  pod 'React', :path => '${REACT_NATIVE_PATH}', :subspecs => [
+    'Core',
+    'ART',
+    'RCTActionSheet',
+    'RCTGeolocation',
+    'RCTImage',
+    'RCTNetwork',
+    'RCTText',
+    'RCTVibration',
+    'RCTWebSocket',
+  ]
+
+    # Generated dependency: ReactABI8_0_0
+    pod 'ReactABI8_0_0', :path => 'versioned-react-native/ABI8_0_0', :subspecs => [
+      'Core',
+      'ART',
+      'CSSLayout',
+      'Exponent',
+      'RCTActionSheet',
+      'RCTGeolocation',
+      'RCTImage',
+      'RCTNetwork',
+      'RCTText',
+      'RCTVibration',
+      'RCTWebSocket',
+    ]
+    # End generated dependency
+
+    # Generated dependency: ReactABI7_0_0
+    pod 'ReactABI7_0_0', :path => 'versioned-react-native/ABI7_0_0', :subspecs => [
+      'Core',
+      'ART',
+      'Exponent',
+      'RCTActionSheet',
+      'RCTGeolocation',
+      'RCTImage',
+      'RCTNetwork',
+      'RCTText',
+      'RCTVibration',
+      'RCTWebSocket',
+    ]
+    # End generated dependency
+
+    # Generated dependency: ReactABI6_0_0
+    pod 'ReactABI6_0_0', :path => 'versioned-react-native/ABI6_0_0', :subspecs => [
+      'Core',
+      'ART',
+      'Exponent',
+      'RCTActionSheet',
+      'RCTGeolocation',
+      'RCTImage',
+      'RCTNetwork',
+      'RCTText',
+      'RCTVibration',
+      'RCTWebSocket',
+    ]
+    # End generated dependency
+
+  # Generated dependency: ReactABI5_0_0
+  pod 'ReactABI5_0_0', :path => 'versioned-react-native/ABI5_0_0', :subspecs => [
+    'Core',
+    'ART',
+    'Exponent',
+    'RCTActionSheet',
+    'RCTGeolocation',
+    'RCTImage',
+    'RCTNetwork',
+    'RCTText',
+    'RCTVibration',
+    'RCTWebSocket',
+  ]
+  # End generated dependency
+
+  # Build React Native with RCT_DEV enabled
+  post_install do |installer|
+    installer.pod_targets.each do |target|
+
+    # Generated postinstall: ReactABI8_0_0
+    if target.pod_name == 'ReactABI8_0_0'
+      target.native_target.build_configurations.each do |config|
+        config.build_settings['OTHER_CFLAGS'] = ['-DkNeverRequested=ReactABI8_0_0kNeverRequested','-DkNeverProgressed=ReactABI8_0_0kNeverProgressed','-DZINDEX_DEFAULT=ReactABI8_0_0ZINDEX_DEFAULT','-DZINDEX_STICKY_HEADER=ReactABI8_0_0ZINDEX_STICKY_HEADER','-DgCurrentGenerationCount=ReactABI8_0_0gCurrentGenerationCount','-DgPrintSkips=ReactABI8_0_0gPrintSkips','-DgPrintChanges=ReactABI8_0_0gPrintChanges','-DlayoutNodeInternal=ReactABI8_0_0layoutNodeInternal','-DgDepth=ReactABI8_0_0gDepth','-DgPrintTree=ReactABI8_0_0gPrintTree','-DisUndefined=ReactABI8_0_0isUndefined']
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'ABI8_0_0RCT_DEV=1'
+      end
+    end
+    # End generated postinstall
+
+    # Generated postinstall: ReactABI7_0_0
+    if target.pod_name == 'ReactABI7_0_0'
+      target.native_target.build_configurations.each do |config|
+        config.build_settings['OTHER_CFLAGS'] = ['-DkNeverRequested=ReactABI7_0_0kNeverRequested','-DkNeverProgressed=ReactABI7_0_0kNeverProgressed','-DZINDEX_DEFAULT=ReactABI7_0_0ZINDEX_DEFAULT','-DZINDEX_STICKY_HEADER=ReactABI7_0_0ZINDEX_STICKY_HEADER']
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'ABI7_0_0RCT_DEV=1'
+      end
+    end
+    # End generated postinstall
+
+    # Generated postinstall: ReactABI6_0_0
+    if target.pod_name == 'ReactABI6_0_0'
+      target.native_target.build_configurations.each do |config|
+        config.build_settings['OTHER_CFLAGS'] = ['-DkNeverRequested=ReactABI6_0_0kNeverRequested','-DkNeverProgressed=ReactABI6_0_0kNeverProgressed','-DZINDEX_DEFAULT=ReactABI6_0_0ZINDEX_DEFAULT','-DZINDEX_STICKY_HEADER=ReactABI6_0_0ZINDEX_STICKY_HEADER']
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'ABI6_0_0RCT_DEV=1'
+      end
+    end
+    # End generated postinstall
+
+      # Generated postinstall: ReactABI5_0_0
+      if target.pod_name == 'ReactABI5_0_0'
+        target.native_target.build_configurations.each do |config|
+          config.build_settings['OTHER_CFLAGS'] = ['-DkNeverRequested=ReactABI5_0_0kNeverRequested','-DkNeverProgressed=ReactABI5_0_0kNeverProgressed','-DZINDEX_DEFAULT=ReactABI5_0_0ZINDEX_DEFAULT','-DZINDEX_STICKY_HEADER=ReactABI5_0_0ZINDEX_STICKY_HEADER']
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'ABI5_0_0RCT_DEV=1'
+        end
+      end
+      # End generated postinstall
+
+      next unless target.pod_name == 'React'
+      target.native_target.build_configurations.each do |config|
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'RCT_DEV=1'
+      end
+    end
+  end
+
+  # if you run into problems pre-downloading this, rm Pods/Local\ Podspecs/RCTTest.podspec.json
+  target 'ExponentIntegrationTests' do
+    inherit! :search_paths
+    pod 'RCTTest', :podspec => './RCTTest.podspec', :path => '${REACT_NATIVE_PATH}'
+  end
+end

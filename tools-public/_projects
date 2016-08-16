@@ -1,0 +1,7 @@
+[Exponent]
+project=ios/Exponent.xcodeproj
+src=ios/Exponent
+format=no
+sort=yes
+exclude_dirs=node_modules
+exclude_files=EmbeddedNativeSources.m

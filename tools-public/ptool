@@ -1,0 +1,141 @@
+#!/usr/bin/env python
+
+import argparse
+import itertools
+import os
+import subprocess
+import sys
+import time
+import ConfigParser
+
+DEFAULT_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+DEFAULT_BASE_DIR = os.path.normpath(os.path.join(DEFAULT_SCRIPT_DIR, ".."))
+FORMAT_EXTENSIONS = ('.m', '.h', '.mm', '.c', '.hpp', '.cpp')
+
+class StepFailedException(Exception): pass
+
+class ProjectTool:
+	def __init__(self, sort_cmd, format_cmd):
+		self.log = sys.stderr
+		self.sort_cmd = sort_cmd
+		self.format_cmd = format_cmd
+
+	def sort_projects(self, lst):
+		# Calculate padding for justification in log
+		longest_name = max([len(name) for name, xcproject in lst])
+		padding = longest_name + 3
+
+		# Dispatch sort processes
+		processes = {}
+		for name, xcproject in lst:
+			pbxproj = os.path.join(xcproject, 'project.pbxproj')
+			self.log.write('{} sorting...\n'.format(('[' + name + ']').rjust(padding)))
+			processes[name] = subprocess.Popen([self.sort_cmd, pbxproj], stderr=subprocess.PIPE)
+
+		# Wait for all processes to finish and log completion
+		while processes:
+			for name, process in processes.items():
+				log_tag = ('[' + name + ']').rjust(padding)
+				return_code = process.poll()
+				if return_code is not None:
+					del processes[name]
+					if return_code == 0:
+						self.log.write('{} sorted.\n'.format(log_tag))
+					else:
+						out, err = process.communicate()
+						self.log.write('{} ERROR: sort failed with nonzero return code ({}): {}'.format(log_tag, return_code, err))
+				else:
+					time.sleep(0.01)
+
+	def format_projects(self, lst, dir_exclusions, file_exclusions):
+		# Calculate padding for justification in log
+		longest_name = max([len(name) for name, xcproject in lst])
+		padding = longest_name + 3
+
+		# Dispatch format processes
+		processes = {}
+		for name, srcdir in lst:
+			log_tag = ('[' + name + ']').rjust(padding)
+			self.log.write('{} formatting...\n'.format(log_tag))
+			src_files = []
+
+			# List source files
+			for root, dirs, files in os.walk(srcdir):
+				for dir_exclusion in dir_exclusions[name]:
+					if dir_exclusion in dirs:
+						dirs.remove(dir_exclusion)
+				for file in files:
+					if name in file_exclusions and file in file_exclusions[name]:
+						continue
+					if not os.path.isfile(os.path.join(root, file)):
+						continue
+					if any(itertools.ifilter(lambda ext: file.endswith(ext), FORMAT_EXTENSIONS)):
+						src_files.append(os.path.join(root, file))
+
+			if src_files:
+				args = [self.format_cmd, '-style=file', '-i']
+				args.extend(src_files)
+				processes[name] = subprocess.Popen(args, stderr=subprocess.PIPE)
+			else:
+				self.log.write('{} ERROR: format failed: No source files found.\n'.format(log_tag))
+
+		# Wait for all processes to finish and log completion
+		while processes:
+			for name, process in processes.items():
+				return_code = process.poll()
+				if return_code is not None:
+					del processes[name]
+					if return_code == 0:
+						self.log.write('{} formatted.\n'.format(('[' + name + ']').rjust(padding)))
+					else:
+						out, err = process.communicate()
+						self.log.write('{} ERROR: format failed with nonzero return code ({}): {}'.format(log_tag, return_code, err))
+				else:
+					time.sleep(0.01)
+
+if __name__ == '__main__':
+	parser = argparse.ArgumentParser(description='Tool for scripting some basic project operations such as sorting and formatting')
+	parser.add_argument('config', type=file, help='The ptool configuration file.')
+	parser.add_argument('--sort-cmd', default=os.path.join(DEFAULT_SCRIPT_DIR, 'sort-Xcode-project-file.pl'), help='The sort command.')
+	parser.add_argument('--format-cmd', default=os.path.join(DEFAULT_SCRIPT_DIR, 'clang-format'), help='The format command.')
+	parser.add_argument('--base-dir', default=DEFAULT_BASE_DIR, help='The base directory from which the paths in the configuration file are rooted.')
+	args = parser.parse_args()
+
+	config = ConfigParser.ConfigParser()
+	config.readfp(args.config)
+
+	tool = ProjectTool(args.sort_cmd, args.format_cmd)
+
+	dir_exclusions = {}
+	file_exclusions = {}
+	format_queue = []
+	sort_queue = []
+
+	for section in config.sections():
+		project = os.path.join(args.base_dir, config.get(section, 'project'))
+		src = os.path.join(args.base_dir, config.get(section, 'src'))
+		format = config.getboolean(section, 'format') if config.has_option(section, 'format') else False
+		sort = config.getboolean(section, 'sort') if config.has_option(section, 'sort') else False
+		exclude_dirs_str = config.get(section, 'exclude_dirs') if config.has_option(section, 'exclude_dirs') else None
+		exclude_dirs = exclude_dirs_str.split(',') if exclude_dirs_str else None
+		exclude_files_str = config.get(section, 'exclude_files') if config.has_option(section, 'exclude_files') else None
+		exclude_files = exclude_files_str.split(',') if exclude_files_str else None
+		if format:
+			format_queue.append((section, src))
+		if sort:
+			sort_queue.append((section, project))
+		if exclude_dirs:
+			dir_exclusions[section] = exclude_dirs
+		if exclude_files:
+			file_exclusions[section] = exclude_files
+
+	try:
+		if sort_queue:
+			tool.sort_projects(sort_queue)
+		if format_queue:
+			tool.format_projects(format_queue, dir_exclusions, file_exclusions)
+	except StepFailedException as e:
+		#TODO: something
+		os.exit(1)
+		
+	

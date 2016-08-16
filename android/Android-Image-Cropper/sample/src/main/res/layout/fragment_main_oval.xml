@@ -1,0 +1,10 @@
+<com.theartofdev.edmodo.cropper.CropImageView
+    android:id="@+id/cropImageView"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:cropAspectRatioX="5"
+    app:cropAspectRatioY="5"
+    app:cropFixAspectRatio="true"
+    app:cropShape="oval"/>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Image Cropper Quick Start</string>
+    <string name="result_image_desc">crop result</string>
+    <string name="main_button_select_image">Select Image</string>
+    <string name="main_activity_desciption">Sample activity to start image cropping.\nExample: User profile activity to select avatar.</string>
+</resources>

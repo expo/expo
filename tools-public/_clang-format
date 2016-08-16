@@ -1,0 +1,11 @@
+AllowShortFunctionsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+BasedOnStyle: LLVM
+BreakBeforeBraces: Stroustrup
+ColumnLimit: 140
+ContinuationIndentWidth: 2
+IndentCaseLabels: true
+MaxEmptyLinesToKeep: 2
+ObjCSpaceAfterProperty: true
+SpacesInContainerLiterals: false
