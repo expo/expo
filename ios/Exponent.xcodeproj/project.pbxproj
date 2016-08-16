@@ -861,7 +861,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "set -eo pipefail\n\nif [ -f ~/.bash_profile ]; then\n    source ~/.bash_profile >/dev/null 2>/dev/null\nfi\n\nif [ -z \"$EXPONENT_TOOLS_DIR\" ]; then\n    EXPONENT_TOOLS_DIR=\"${SRCROOT}/../tools-public\"\nfi\n\nmkdir -p \"${SRCROOT}/Exponent/Supporting/Generated/\"\npushd ${EXPONENT_TOOLS_DIR}\ngulp generate-dynamic-macros --buildConstantsPath \"${SRCROOT}/Exponent/Supporting/Generated/EXDynamicMacros.h\" --infoPlistPath \"${SRCROOT}/Exponent/Supporting\" --platform ios\npopd\n";
+			shellScript = "set -eo pipefail\n\nif [ -z \"$EXPONENT_TOOLS_DIR\" ]; then\n    EXPONENT_TOOLS_DIR=\"${SRCROOT}/../tools-public\"\nfi\n\nmkdir -p \"${SRCROOT}/Exponent/Supporting/Generated/\"\npushd ${EXPONENT_TOOLS_DIR}\nsource source-login-scripts.sh\ngulp generate-dynamic-macros --buildConstantsPath \"${SRCROOT}/Exponent/Supporting/Generated/EXDynamicMacros.h\" --infoPlistPath \"${SRCROOT}/Exponent/Supporting\" --platform ios\npopd\n";
 		};
 		78F81D401B70746F000E5595 /* Fabric */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -875,7 +875,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "set -eo pipefail\n\nif [ -f ~/.bash_profile ]; then\nsource ~/.bash_profile >/dev/null 2>/dev/null\nfi\n\nif [ -z \"$EXPONENT_TOOLS_DIR\" ]; then\nEXPONENT_TOOLS_DIR=\"${SRCROOT}/../tools-public\"\nfi\n\npushd ${EXPONENT_TOOLS_DIR}\ngulp run-fabric-ios --fabricPath \"${PODS_ROOT}/Fabric/run\" --iosPath \"${SRCROOT}\"\npopd\n";
+			shellScript = "set -eo pipefail\n\nif [ -z \"$EXPONENT_TOOLS_DIR\" ]; then\nEXPONENT_TOOLS_DIR=\"${SRCROOT}/../tools-public\"\nfi\n\npushd ${EXPONENT_TOOLS_DIR}\nsource source-login-scripts.sh\ngulp run-fabric-ios --fabricPath \"${PODS_ROOT}/Fabric/run\" --iosPath \"${SRCROOT}\"\npopd\n";
 		};
 		8B4DC8ADD4224A9E1D4FCDF3 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -919,7 +919,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "set -eo pipefail\n\nif [ -f ~/.bash_profile ]; then\n    source ~/.bash_profile >/dev/null 2>/dev/null\nfi\n\nif [ -z \"$EXPONENT_TOOLS_DIR\" ]; then\n    EXPONENT_TOOLS_DIR=\"${SRCROOT}/../tools-public\"\nfi\n\npushd ${EXPONENT_TOOLS_DIR}\ngulp cleanup-dynamic-macros --infoPlistPath \"${SRCROOT}/Exponent/Supporting\" --platform ios\npopd";
+			shellScript = "set -eo pipefail\n\nif [ -z \"$EXPONENT_TOOLS_DIR\" ]; then\n    EXPONENT_TOOLS_DIR=\"${SRCROOT}/../tools-public\"\nfi\n\npushd ${EXPONENT_TOOLS_DIR}\nsource source-login-scripts.sh\ngulp cleanup-dynamic-macros --infoPlistPath \"${SRCROOT}/Exponent/Supporting\" --platform ios\npopd";
 		};
 		C1116E60D0A3FBE3DFFED56F /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
