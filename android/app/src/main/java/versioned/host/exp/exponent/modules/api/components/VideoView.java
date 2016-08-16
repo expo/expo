@@ -175,11 +175,11 @@ public class VideoView extends ScalableVideoView implements MediaPlayer.OnPrepar
 
         WritableMap src = Arguments.createMap();
         src.putString(VideoViewManager.PROP_SRC_URI, uriString);
-        src.putString(VideoViewManager.PROP_SRC_TYPE, type);
-        src.putBoolean(VideoViewManager.PROP_SRC_IS_NETWORK, isNetwork);
-        WritableMap event = Arguments.createMap();
-        event.putMap(VideoViewManager.PROP_SRC, src);
-        mEventEmitter.receiveEvent(getId(), Events.EVENT_LOAD_START.toString(), event);
+        // src.putString(VideoViewManager.PROP_SRC_TYPE, type);
+        // src.putBoolean(VideoViewManager.PROP_SRC_IS_NETWORK, isNetwork);
+        // WritableMap event = Arguments.createMap();
+        // event.putMap(VideoViewManager.PROP_SRC, src);
+        mEventEmitter.receiveEvent(getId(), Events.EVENT_LOAD_START.toString(), src);
 
         prepareAsync(this);
     }

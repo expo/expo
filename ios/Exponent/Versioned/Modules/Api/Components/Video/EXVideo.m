@@ -240,11 +240,9 @@ static NSString *const EXVideoPlaybackRateKeyPath = @"rate";
   if ([changedProps containsObject:@"src"]) {
     if (_onVideoLoadStart) {
       _onVideoLoadStart(@{
-                          @"src": @{
-                              @"uri": [_src objectForKey:@"uri"],
-                              @"type": [_src objectForKey:@"type"],
-                              @"isNetwork":[NSNumber numberWithBool:(BOOL)[_src objectForKey:@"isNetwork"]]
-                              },
+                          @"uri": [_src objectForKey:@"uri"],
+                          // @"type": [_src objectForKey:@"type"],
+                          // @"isNetwork":[NSNumber numberWithBool:(BOOL)[_src objectForKey:@"isNetwork"]]
                           });
     }
   }
