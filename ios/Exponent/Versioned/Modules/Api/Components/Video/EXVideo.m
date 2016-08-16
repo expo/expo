@@ -347,11 +347,11 @@ static NSString *const EXVideoPlaybackRateKeyPath = @"rate";
   } else if (object == _player) {
     if ([keyPath isEqualToString:EXVideoPlaybackRateKeyPath]) {
       if (_onPlaybackRateChange) {
-        _onPlaybackRateChange(@{@"EXVideoPlaybackRateKeyPath": [NSNumber numberWithFloat:_player.rate]});
+        _onPlaybackRateChange(@{@"playbackRate": [NSNumber numberWithFloat:_player.rate]});
       }
       if (_playbackStalled && _player.rate > 0) {
         if (_onPlaybackResume) {
-          _onPlaybackResume(@{@"EXVideoPlaybackRateKeyPath": [NSNumber numberWithFloat:_player.rate]});
+          _onPlaybackResume(@{@"playbackRate": [NSNumber numberWithFloat:_player.rate]});
         }
         _playbackStalled = NO;
       }
