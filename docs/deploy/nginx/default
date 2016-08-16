@@ -10,6 +10,8 @@ server {
         expires 1d;
     }
 
+    rewrite ^/$ /versions/${DOCS_VERSION}/index.html redirect;
+
     location ~ ^/versions/latest/(.*) {
         return 302 /versions/${DOCS_VERSION}/$1;
     }
