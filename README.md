@@ -16,13 +16,14 @@ If you want to build a standalone app that has a custom icon and name, see [our 
 to build the Exponent clients from source.
 
 If you want to build a standalone app that has a custom icon, a custom name, and needs custom native modules, you're in the right place! There are a few steps to getting this working:
+* Join us on Slack at https://slack.exponentjs.com/. The code base and build process is complicated so feel free to ask us if you get stuck.
 * Get the iOS and Android clients building on your machine using the [Set Up](#set-up) section below.
 * Add your native modules and test. You can still use [XDE](https://github.com/exponentjs/xde) or [exp](https://github.com/exponentjs/exp) and the rest of Exponent's infrastructure.
 * When you want to create your final `.apk` and `.ipa` files, follow the instructions in the [Standalone Apps](#standalone-apps) section below.
 
 ## Set Up
 
-Please use Node 6 and npm 3. We recommend installing Node using [nvm](https://github.com/creationix/nvm).
+Please use Node 6 and npm 3. We recommend installing Node using [nvm](https://github.com/creationix/nvm). We only support macOS.
 
 - `npm install` in the `js` and `tools-public` directories.
 - Install [the Gulp CLI](http://gulpjs.com/) globally: `npm i gulp-cli -g`.
@@ -50,7 +51,7 @@ Note: If you have the Exponent app from the Play Store or the App Store you will
 - `android` contains the Android project.
 - `ios/Exponent.xcworkspace` is the Xcode workspace. Always open this instead of `Exponent.xcodeproj` because the workspace also loads the CocoaPods dependencies.
 - `ios` contains the iOS project.
-- `ios/Podfile` specifies the CocoaPods dependencies of the app.
+- `template-files/ios/Podfile` specifies the CocoaPods dependencies of the app.
 - `js` contains the JavaScript source code of the app.
 - `tools-public` contains programs to launch the packager and also build tools.
 
