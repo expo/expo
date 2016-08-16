@@ -95,62 +95,55 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 
 #pragma mark - Setting Properties
 
-- (void)setInitialUri:(nullable NSURL *)initialUri
+- (void)didSetProps:(NSArray<NSString *> *)changedProps
 {
-  _initialUri = initialUri;
-  _needsReload = YES;
-  [self performSelectorOnMainThread:@selector(_checkForReload) withObject:nil waitUntilDone:YES];
-}
-
-- (void)setManifest:(nullable NSDictionary *)manifest
-{
-  if (![manifest objectForKey:@"id"]) {
-    // we can't load an experience with no id
-    NSDictionary *errorInfo = @{
-                                NSLocalizedDescriptionKey: @"Cannot open an experience with no id",
-                                NSLocalizedFailureReasonErrorKey: @"Tried to load a manifest with no experience id",
-                                };
-    [self _sendLoadingError:[NSError errorWithDomain:kEXKernelErrorDomain code:-1 userInfo:errorInfo]];
-  } else {
-    _manifest = manifest;
-    _needsReload = YES;
-    [self performSelectorOnMainThread:@selector(_checkForReload) withObject:nil waitUntilDone:YES];
+  NSSet <NSString *> *changedPropsSet = [NSSet setWithArray:changedProps];
+  NSSet <NSString *> *propsForReload = [NSSet setWithArray:@[
+    @"initialUri", @"manifest", @"source", @"applicationKey", @"debuggerHostname", @"debuggerPort",
+  ]];
+  if ([changedPropsSet intersectsSet:propsForReload]) {
+    if ([self validateProps:changedProps]) {
+      _needsReload = YES;
+      [self performSelectorOnMainThread:@selector(_checkForReload) withObject:nil waitUntilDone:YES];
+    } else {
+      if (_tmrReload) {
+        [_tmrReload invalidate];
+        _tmrReload = nil;
+      }
+    }
   }
 }
 
-- (void)setSource:(nullable NSURL *)source
+- (BOOL)validateProps:(NSArray<NSString *> *)changedProps
 {
-  // Performed in additon to JS-side validation because RN iOS websockets will crash without a port.
-  source = [EXFrameUtils ensureUrlHasPort:source];
-
-  if (_source == source || [_source isEqual:source]) {
-    return;
+  BOOL isValid = YES;
+  if ([changedProps containsObject:@"manifest"]) {
+    if (!_manifest || ![_manifest objectForKey:@"id"]) {
+      // we can't load an experience with no id
+      NSDictionary *errorInfo = @{
+                                  NSLocalizedDescriptionKey: @"Cannot open an experience with no id",
+                                  NSLocalizedFailureReasonErrorKey: @"Tried to load a manifest with no experience id, or a null manifest",
+                                  };
+      [self _sendLoadingError:[NSError errorWithDomain:kEXKernelErrorDomain code:-1 userInfo:errorInfo]];
+      isValid = NO;
+    }
   }
-  _source = source;
-
-  _sourceSet = YES;
-  _needsReload = YES;
-  [self performSelectorOnMainThread:@selector(_checkForReload) withObject:nil waitUntilDone:YES];
-}
-
-- (void)setApplicationKey:(nullable NSString *)applicationKey
-{
-  // TODO: remove when we move above sdk 5.0.0
-  return;
-}
-
-- (void)setDebuggerHostname:(nullable NSString *)debuggerHostname
-{
-  _debuggerHostname = debuggerHostname;
-  _needsReload = YES;
-  [self performSelectorOnMainThread:@selector(_checkForReload) withObject:nil waitUntilDone:YES];
-}
-
-- (void)setDebuggerPort:(NSInteger)debuggerPort
-{
-  _debuggerPort = debuggerPort;
-  _needsReload = YES;
-  [self performSelectorOnMainThread:@selector(_checkForReload) withObject:nil waitUntilDone:YES];
+  if ([changedProps containsObject:@"source"]) {
+    // Performed in additon to JS-side validation because RN iOS websockets will crash without a port.
+    _source = [EXFrameUtils ensureUrlHasPort:_source];
+    if (_source) {
+      _sourceSet = YES;
+    } else {
+      // we had issues with this bundle url
+      NSDictionary *errorInfo = @{
+                                  NSLocalizedDescriptionKey: @"Cannot open the given bundle url",
+                                  NSLocalizedFailureReasonErrorKey: [NSString stringWithFormat:@"Cannot parse bundle url %@", [_source absoluteString]],
+                                  };
+      [self _sendLoadingError:[NSError errorWithDomain:kEXKernelErrorDomain code:-1 userInfo:errorInfo]];
+      isValid = NO;
+    }
+  }
+  return isValid;
 }
 
 - (void)reload
