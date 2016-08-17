@@ -13,6 +13,7 @@ async function spawnAsyncThrowError(...args) {
   if (args.length === 2) {
     return spawnAsyncQuiet(args[0], args[1], {
       stdio: 'inherit',
+      cwd: __dirname,
     });
   } else {
     return spawnAsyncQuiet(...args);
@@ -161,6 +162,7 @@ export async function createAndroidShellApp(args) {
     await spawnAsync(`/bin/rm`, [`shell-unaligned.apk`]);
     await spawnAsync(`/bin/rm`, [`shell.apk`]);
     await spawnAsyncThrowError(`gradle`, [`assembleProdRelease`], {
+      stdio: 'inherit',
       cwd: shellPath,
     });
     await spawnAsync(`/bin/cp`, [`${shellPath}app/build/outputs/apk/app-prod-release-unsigned.apk`, `shell-unaligned.apk`]);
@@ -173,6 +175,7 @@ export async function createAndroidShellApp(args) {
     await spawnAsync(`/bin/rm`, ['shell-unaligned.apk']);
     await spawnAsync(`/bin/rm`, ['shell.apk']);
     await spawnAsyncThrowError(`gradle`, ['assembleProdRelease'], {
+      stdio: 'inherit',
       cwd: shellPath,
     });
     await spawnAsyncThrowError(`/bin/cp`, [`${shellPath}app/build/outputs/apk/app-prod-release-unsigned.apk`, `/tmp/shell-unaligned.apk`]);
