@@ -1,3 +1,5 @@
+// Copyright 2015-present 650 Industries. All rights reserved.
+
 package abi5_0_0.host.exp.exponent.modules.filesystem;
 
 import java.io.FileOutputStream;

@@ -13,7 +13,7 @@ This is the source code for the Exponent app used to view experiences published 
 If you want to build a standalone app that has a custom icon and name, see [our documentation here](https://docs.getexponent.com/versions/latest/guides/building-standalone-apps.html). You shouldn't need to build the Exponent clients from source.
 
 If you want to build a standalone app that needs custom native modules, you're in the right place! There are a few steps to getting this working:
-- Join us on Slack at https://slack.exponentjs.com/. The code base and build process is complicated so feel free to ask us if you get stuck.
+- Join us on Slack at https://slack.exponentjs.com/. The code base and build process is complicated so please ask us if you get stuck.
 - Get the iOS and Android clients building on your machine using the [Set Up](#set-up) section below.
 - Add your native modules and test. You can still use [XDE](https://github.com/exponentjs/xde) or [exp](https://github.com/exponentjs/exp) and the rest of Exponent's infrastructure.
 - When you want to create your final `.apk` and `.ipa` files, follow the instructions in the [Standalone Apps](#standalone-apps) section below.
