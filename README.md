@@ -16,10 +16,10 @@ If you want to build a standalone app that has a custom icon and name, see [our 
 to build the Exponent clients from source.
 
 If you want to build a standalone app that has a custom icon, a custom name, and needs custom native modules, you're in the right place! There are a few steps to getting this working:
-* Join us on Slack at https://slack.exponentjs.com/. The code base and build process is complicated so feel free to ask us if you get stuck.
-* Get the iOS and Android clients building on your machine using the [Set Up](#set-up) section below.
-* Add your native modules and test. You can still use [XDE](https://github.com/exponentjs/xde) or [exp](https://github.com/exponentjs/exp) and the rest of Exponent's infrastructure.
-* When you want to create your final `.apk` and `.ipa` files, follow the instructions in the [Standalone Apps](#standalone-apps) section below.
+- Join us on Slack at https://slack.exponentjs.com/. The code base and build process is complicated so feel free to ask us if you get stuck.
+- Get the iOS and Android clients building on your machine using the [Set Up](#set-up) section below.
+- Add your native modules and test. You can still use [XDE](https://github.com/exponentjs/xde) or [exp](https://github.com/exponentjs/exp) and the rest of Exponent's infrastructure.
+- When you want to create your final `.apk` and `.ipa` files, follow the instructions in the [Standalone Apps](#standalone-apps) section below.
 
 ## Set Up
 
@@ -45,6 +45,20 @@ Once the you have the clients running you should be able to open any Exponent ex
 Note: If you have the Exponent app from the Play Store or the App Store you will have to uninstall those before installing this client.
 
 ## Standalone Apps
+
+### Android
+The Android standalone app script creates a new directory `android-shell-app` with the modified Android project in it. It then compiles that new directory giving you a signed or unsigned `.apk` depending on whether you provide a keystore and the necessary passwords. If there are issues with the app you can open the `android-shell-app` project in Android Studio to debug.
+
+Here are the steps to build a standalone Android app:
+- Publish your experience from `XDE` or `exp`. Note the published url.
+- `cd tools-public`.
+- If you want a signed `.apk`, run `gulp android-shell-app --url [the published experience url] --sdkVersion [sdk version of your experience] --keystore [path to keystore] --alias [keystore alias] --keystorePassword [keystore password] --keyPassword [key password]`.
+- If you don't want a signed `.apk`, run `gulp android-shell-app --url [the published experience url] --sdkVersion [sdk version of your experience]`.
+- The `.apk` file will be at `/tmp/shell-signed.apk` for a signed `.apk` or at `/tmp/shell-unaligned.apk` for an unsigned `.apk`.
+
+### iOS
+TODO
+
 
 ## Project Layout
 
