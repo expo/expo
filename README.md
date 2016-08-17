@@ -23,17 +23,17 @@ If you want to build a standalone app that has a custom icon, a custom name, and
 
 ## Set Up
 
-Please use Node 6 and npm 3. We recommend installing Node using [nvm](https://github.com/creationix/nvm). We only support macOS.
+Please use Node 6 and npm 3. We recommend installing Node using [nvm](https://github.com/creationix/nvm). We only support building the clients on macOS.
 
 - `npm install` in the `js` and `tools-public` directories.
 - Install [the Gulp CLI](http://gulpjs.com/) globally: `npm i gulp-cli -g`.
-- Run the packager with `cd tools-public && gulp`. Leave this running while you run the clients.
+- Run the packager with `cd tools-public && gulp`. Leave this running while you run the clients. The clients access this packager using your computer's IP, so make sure that your computer and device are on the same WIFI network.
 
-### Android
+#### Android
 - Make sure you have Android Studio 2 and the [Android NDK](https://facebook.github.io/react-native/docs/android-building-from-source.html#download-links-for-android-ndk) version `r10e` installed.
 - Build and install Android with `cd android && ./run.sh && cd ..`.
 
-### iOS
+#### iOS
 - Make sure you have Xcode 7 installed.
 - Install [Cocoapods](https://cocoapods.org/): `gem install cocoapods --no-ri --no-rdoc`.
 - `cd tools-public && ./generate-files-ios.sh && cd ..`.
@@ -46,7 +46,11 @@ Note: If you have the Exponent app from the Play Store or the App Store you will
 
 ## Standalone Apps
 
-### Android
+If you don't need custom native modules, head over to [our documentation on building standalone apps without needing Android Studio and Xcode](https://docs.getexponent.com/versions/latest/guides/building-standalone-apps.html).
+
+If you're still here, make sure to follow the [Configure exp.json](https://docs.getexponent.com/versions/latest/guides/building-standalone-apps.html#configure-exp-json) section of the docs before continuing. You'll need to add the appropriate fields to your `exp.json` before the shell app scripts can run. Once that's done, continue on to the platform specific instructions.
+
+#### Android
 The Android standalone app script creates a new directory `android-shell-app` with the modified Android project in it. It then compiles that new directory giving you a signed or unsigned `.apk` depending on whether you provide a keystore and the necessary passwords. If there are issues with the app you can open the `android-shell-app` project in Android Studio to debug.
 
 Here are the steps to build a standalone Android app:
@@ -55,19 +59,21 @@ Here are the steps to build a standalone Android app:
 - If you want a signed `.apk`, run `gulp android-shell-app --url [the published experience url] --sdkVersion [sdk version of your experience] --keystore [path to keystore] --alias [keystore alias] --keystorePassword [keystore password] --keyPassword [key password]`.
 - If you don't want a signed `.apk`, run `gulp android-shell-app --url [the published experience url] --sdkVersion [sdk version of your experience]`.
 - The `.apk` file will be at `/tmp/shell-signed.apk` for a signed `.apk` or at `/tmp/shell-unaligned.apk` for an unsigned `.apk`.
+- `adb install` the `.apk` file to test it.
+- Upload to the Play Store!
 
-### iOS
+#### iOS
 TODO
-
 
 ## Project Layout
 
 - `android` contains the Android project.
-- `ios/Exponent.xcworkspace` is the Xcode workspace. Always open this instead of `Exponent.xcodeproj` because the workspace also loads the CocoaPods dependencies.
 - `ios` contains the iOS project.
-- `template-files/ios/Podfile` specifies the CocoaPods dependencies of the app.
+- `ios/Exponent.xcworkspace` is the Xcode workspace. Always open this instead of `Exponent.xcodeproj` because the workspace also loads the CocoaPods dependencies.
 - `js` contains the JavaScript source code of the app.
 - `tools-public` contains programs to launch the packager and also build tools.
+- `template-files` contains templates for files that require private keys. They are populated using the keys in `template-files/keys.json`.
+- `template-files/ios/Podfile` specifies the CocoaPods dependencies of the app.
 
 ## Contributing
 Please check with us before putting work into a Pull Request! The best place to talk to us is on
