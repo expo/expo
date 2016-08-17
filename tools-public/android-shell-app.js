@@ -22,7 +22,7 @@ async function spawnAsyncThrowError(...args) {
 
 async function spawnAsync(...args) {
   try {
-    spawnAsyncThrowError(...args);
+    return spawnAsyncThrowError(...args);
   } catch (e) {
     console.error(e.message);
   }
