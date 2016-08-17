@@ -46,9 +46,20 @@ class ExponentApp extends React.Component {
   componentDidMount() {
     Linking.addEventListener('url', this._handleUrl);
     DeviceEventEmitter.addListener('Exponent.notification', this._handleNotification);
-    if (this.props.shell) {
-      this._handleUrl({ url: this.props.shellManifestUrl });
-    }
+    requestAnimationFrame(async () => {
+      let initialUrl = await Linking.getInitialURL();
+      if (this.props.shell) {
+        if (initialUrl) {
+          ExStore.dispatch(BrowserActions.setInitialShellUrl(initialUrl));
+        }
+        this._handleUrl({ url: this.props.shellManifestUrl });
+      } else {
+        if (initialUrl) {
+          // browser launched with an initial url
+          this._handleUrl({ url: initialUrl });
+        }
+      }
+    });
   }
 
   componentWillUnmount() {

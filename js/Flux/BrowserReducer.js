@@ -13,6 +13,7 @@ const ConsoleActionTypes = Flux.getActionTypes(ConsoleActions);
 const BrowserState = Record({
   isShell: false,
   shellManifestUrl: null,
+  shellInitialUrl: null,
   isHomeVisible: true,
   isKernelLoading: false,
   foregroundTaskUrl: null,
@@ -125,6 +126,13 @@ export default Flux.createReducer(new BrowserState(), {
       isShell,
       isHomeVisible: false,
       shellManifestUrl,
+    });
+  },
+
+  [BrowserActionTypes.setInitialShellUrl](state, action) {
+    let { url } = action.payload;
+    return state.merge({
+      shellInitialUrl: url,
     });
   },
 

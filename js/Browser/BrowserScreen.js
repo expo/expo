@@ -35,7 +35,7 @@ class BrowserScreen extends React.Component {
 
   static getDataProps(data, props) {
     let { url } = props;
-    let { foregroundTaskUrl, isShell, shellManifestUrl } = data.browser;
+    let { foregroundTaskUrl, isShell, shellManifestUrl, shellInitialUrl } = data.browser;
     let isForegrounded = (url === foregroundTaskUrl);
     let shellTask = (shellManifestUrl) ? data.browser.tasks.get(shellManifestUrl) : null;
     return {
@@ -45,6 +45,7 @@ class BrowserScreen extends React.Component {
       isLetterboxed: (isShell && url !== shellManifestUrl),
       task: data.browser.tasks.get(url),
       shellManifestUrl,
+      shellInitialUrl,
       shellTask,
     };
   }
@@ -220,7 +221,11 @@ class BrowserScreen extends React.Component {
     // add a few more things
     baseProps.manifest = this.state.manifestJS;
     baseProps.shell = this.props.isShell;
-    baseProps.initialUri = this.props.url;
+    if (this.props.isShell && this.props.shellInitialUrl) {
+      baseProps.initialUri = this.props.shellInitialUrl;
+    } else {
+      baseProps.initialUri = this.props.url;
+    }
 
     return baseProps;
   }

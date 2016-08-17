@@ -123,6 +123,11 @@ let BrowserActions = {
   },
 
   @action
+  setInitialShellUrl(url) {
+    return { url };
+  },
+
+  @action
   async loadHistoryAsync() {
     let history = await loadLocalHistoryAsync();
     return { history };

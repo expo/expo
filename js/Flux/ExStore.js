@@ -5,8 +5,6 @@
 
 import {
   AsyncStorage,
-  Linking,
-  Platform,
 } from 'react-native';
 
 import AccountActions from 'AccountActions';
@@ -28,13 +26,6 @@ let reducers = {
 let store = Flux.createStore(reducers);
 
 store.dispatch(BrowserActions.loadHistoryAsync());
-if (Platform.OS === 'ios') {
-  Linking.getInitialURL().then((url) => {
-    if (url) {
-      store.dispatch(BrowserActions.navigateToUrlAsync(url));
-    }
-  }).catch(e => { console.warn('Error retrieving initial url:', e); });
-}
 
 // Populate the stores with data from disk. Currently this is super simple since
 // we have only one item to read. Later this initialization may get more complex
