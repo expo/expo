@@ -2,20 +2,17 @@
 
 The Exponent app for Android and iOS.
 
-[Download for Android 4.4+ from the Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent) or [for iOS 8+ from the App Store](https://itunes.com/apps/exponent).
+To develop or run Exponent experiences on your device, download Exponent [for Android 4.4+ from the Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent) or [for iOS 8+ from the App Store](https://itunes.com/apps/exponent). [Click here for instructions to install the app on an iOS simulator or Android emulator](https://docs.getexponent.com/versions/latest/introduction/installation.html#mobile-client-exponent-for-ios-and-android).
 
-[Click here for instructions to install the app on an iOS simulator or Android emulator](https://docs.getexponent.com/versions/latest/introduction/installation.html#mobile-client-exponent-for-ios-and-android).
-
-[Click here to view our documentation](https://docs.getexponent.com).
+[Click here to view our documentation](https://docs.getexponent.com) for developing on Exponent.
 
 ## Introduction
 
 This is the source code for the Exponent app used to view experiences published to the Exponent service. **Most people will not need to build Exponent from source**. If you don't need any custom native modules that we don't support you should download the client from one of the links above.
 
-If you want to build a standalone app that has a custom icon and name, see [our documentation here](https://docs.getexponent.com/versions/latest/guides/building-standalone-apps.html). You shouldn't need
-to build the Exponent clients from source.
+If you want to build a standalone app that has a custom icon and name, see [our documentation here](https://docs.getexponent.com/versions/latest/guides/building-standalone-apps.html). You shouldn't need to build the Exponent clients from source.
 
-If you want to build a standalone app that has a custom icon, a custom name, and needs custom native modules, you're in the right place! There are a few steps to getting this working:
+If you want to build a standalone app that needs custom native modules, you're in the right place! There are a few steps to getting this working:
 - Join us on Slack at https://slack.exponentjs.com/. The code base and build process is complicated so feel free to ask us if you get stuck.
 - Get the iOS and Android clients building on your machine using the [Set Up](#set-up) section below.
 - Add your native modules and test. You can still use [XDE](https://github.com/exponentjs/xde) or [exp](https://github.com/exponentjs/exp) and the rest of Exponent's infrastructure.
@@ -23,11 +20,11 @@ If you want to build a standalone app that has a custom icon, a custom name, and
 
 ## Set Up
 
-Please use Node 6 and npm 3. We recommend installing Node using [nvm](https://github.com/creationix/nvm). We only support building the clients on macOS.
+Please use Node 6 and npm 3. We recommend installing Node using [nvm](https://github.com/creationix/nvm). We support building the clients only on macOS.
 
 - `npm install` in the `js` and `tools-public` directories.
 - Install [the Gulp CLI](http://gulpjs.com/) globally: `npm i gulp-cli -g`.
-- Run the packager with `cd tools-public && gulp`. Leave this running while you run the clients. The clients access this packager using your computer's IP, so make sure that your computer and device are on the same WIFI network.
+- Run the packager with `cd tools-public && gulp`. Leave this running while you run the clients. The clients access this packager using your computer's IP, so make sure that your computer and device are on the same WiFi network.
 
 #### Android
 - Make sure you have Android Studio 2 and the [Android NDK](https://facebook.github.io/react-native/docs/android-building-from-source.html#download-links-for-android-ndk) version `r10e` installed.
@@ -48,7 +45,7 @@ Note: If you have the Exponent app from the Play Store or the App Store you will
 
 If you don't need custom native modules, head over to [our documentation on building standalone apps without needing Android Studio and Xcode](https://docs.getexponent.com/versions/latest/guides/building-standalone-apps.html).
 
-If you're still here, make sure to follow the [Configure exp.json](https://docs.getexponent.com/versions/latest/guides/building-standalone-apps.html#configure-exp-json) section of the docs before continuing. You'll need to add the appropriate fields to your `exp.json` before the shell app scripts can run. Once that's done, continue on to the platform specific instructions.
+If you're still here, make sure to follow the [Configure exp.json](https://docs.getexponent.com/versions/latest/guides/building-standalone-apps.html#configure-exp-json) section of the docs before continuing. You'll need to add the appropriate fields to your `exp.json` before the standalone app scripts can run. Once that's done, continue on to the platform-specific instructions.
 
 #### Android
 The Android standalone app script creates a new directory `android-shell-app` with the modified Android project in it. It then compiles that new directory giving you a signed or unsigned `.apk` depending on whether you provide a keystore and the necessary passwords. If there are issues with the app you can open the `android-shell-app` project in Android Studio to debug.
@@ -63,7 +60,7 @@ Here are the steps to build a standalone Android app:
 - Upload to the Play Store!
 
 #### iOS
-The iOS standalone app script has two actions, `build` and `configure`. `build` creates an archive or a simulator build of the Exponent iOS workspace. `configure` accepts a path to an existing archive and modifies all its configuration files so that it will run as a standalone Exponent experience rather than as the Exponent browser.
+The iOS standalone app script has two actions, `build` and `configure`. `build` creates an archive or a simulator build of the Exponent iOS workspace. `configure` accepts a path to an existing archive and modifies all its configuration files so that it will run as a standalone Exponent experience rather than as the Exponent app.
 
 Here are the steps to build a standalone iOS app:
 - Publish your experience from `XDE` or `exp`. Note the published url.
@@ -86,5 +83,7 @@ Here are the steps to build a standalone iOS app:
 - `template-files/ios/Podfile` specifies the CocoaPods dependencies of the app.
 
 ## Contributing
-Please check with us before putting work into a Pull Request! The best place to talk to us is on
-Slack at https://slack.exponentjs.com/.
+Please check with us before putting work into a Pull Request! It is often harder to maintain code than it is to write it. The best place to talk to us is on Slack at https://slack.exponentjs.com.
+
+## License
+The Exponent source code is made available under the [BSD 3-clause license](LICENSE). Some of the dependencies are licensed differently, with the MIT license, for example.
