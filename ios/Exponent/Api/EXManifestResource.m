@@ -11,6 +11,7 @@
   NSString *resourceName;
   if ([EXShellManager sharedInstance].isShell && [originalUrl.absoluteString isEqual:[EXShellManager sharedInstance].shellManifestUrl]) {
     resourceName = kEXShellManifestResourceName;
+    DDLogError(@"%s: Standalone manifest remote url is %@ (%@)", __PRETTY_FUNCTION__, url, originalUrl);
   } else {
     resourceName = [EXKernel linkingUriForExperienceUri:url];
   }

@@ -390,7 +390,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
   // clear any potentially old loading state
   [[EXKernel sharedInstance].bridgeRegistry setError:nil forBridge:_reactBridge];
 
-  NSString *bundleName = (_initialProps && [_initialProps[@"shell"] boolValue]) ? kEXShellBundleResourceName : _manifest[@"id"];
+  NSString *bundleName;
+  if (_initialProps && [_initialProps[@"shell"] boolValue]) {
+    bundleName = kEXShellBundleResourceName;
+    DDLogError(@"%s: Standalone bundle remote url is %@", __PRETTY_FUNCTION__, bridge.bundleURL);
+  } else {
+    bundleName = _manifest[@"id"];
+  }
   _jsResource = [[EXJavaScriptResource alloc] initWithBundleName:bundleName remoteUrl:bridge.bundleURL];
   _jsResource.abiVersion = _utils.validatedVersion;
   EXCachedResourceBehavior cacheBehavior = ([_utils doesManifestEnableDeveloperTools]) ? kEXCachedResourceNoCache : kEXCachedResourceFallBackToCache;
