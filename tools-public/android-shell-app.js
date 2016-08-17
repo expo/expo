@@ -9,7 +9,7 @@ import shell from 'shelljs';
 import spawnAsyncQuiet from '@exponent/spawn-async';
 import { getManifestAsync, saveUrlToPathAsync } from './shell-app-utils';
 
-async function spawnAsync(...args) {
+async function spawnAsyncThrowError(...args) {
   if (args.length === 2) {
     return spawnAsyncQuiet(args[0], args[1], {
       stdio: 'inherit',
@@ -19,9 +19,9 @@ async function spawnAsync(...args) {
   }
 }
 
-async function spawnAsyncCatchError(...args) {
+async function spawnAsync(...args) {
   try {
-    await spawnAsync(...args);
+    spawnAsyncThrowError(...args);
   } catch (e) {
     console.error(e.message);
   }
@@ -68,7 +68,7 @@ export async function createAndroidShellApp(args) {
   let notificationIconUrl = manifest.notification ? manifest.notification.iconUrl : null;
 
   let shellPath = '../android-shell-app/';
-  await spawnAsyncCatchError(`/bin/rm`, ['-rf', shellPath]);
+  await spawnAsync(`/bin/rm`, ['-rf', shellPath]);
   await spawnAsync(`/bin/mkdir`, [shellPath]);
   await spawnAsync(`/bin/cp`, ['-r', '../android/ReactCommon', `${shellPath}/ReactCommon`]);
   await spawnAsync(`/bin/cp`, ['-r', '../android/ReactAndroid', `${shellPath}/ReactAndroid`]);
@@ -83,7 +83,7 @@ export async function createAndroidShellApp(args) {
   await spawnAsync(`/bin/cp`, ['../android/settings.gradle', `${shellPath}/`]);
 
   // Clean build directories
-  await spawnAsyncCatchError(`/bin/rm`, ['-rf', `${shellPath}app/build/`]);
+  await spawnAsync(`/bin/rm`, ['-rf', `${shellPath}app/build/`]);
 
   // Package
   shell.sed('-i', `applicationId 'host.exp.exponent'`, `applicationId '${javaPackage}'`, `${shellPath}app/build.gradle`);
@@ -158,9 +158,9 @@ export async function createAndroidShellApp(args) {
   }
 
   if (keystore && alias && keystorePassword && keyPassword) {
-    await spawnAsyncCatchError(`/bin/rm`, [`shell-unaligned.apk`]);
-    await spawnAsyncCatchError(`/bin/rm`, [`shell.apk`]);
-    await spawnAsync(`gradle`, [`assembleProdRelease`], {
+    await spawnAsync(`/bin/rm`, [`shell-unaligned.apk`]);
+    await spawnAsync(`/bin/rm`, [`shell.apk`]);
+    await spawnAsyncThrowError(`gradle`, [`assembleProdRelease`], {
       cwd: shellPath,
     });
     await spawnAsync(`/bin/cp`, [`${shellPath}app/build/outputs/apk/app-prod-release-unsigned.apk`, `shell-unaligned.apk`]);
@@ -168,13 +168,13 @@ export async function createAndroidShellApp(args) {
     await spawnAsync(`zipalign`, ['-v', '4', 'shell-unaligned.apk', 'shell.apk']);
     await spawnAsync(`/bin/rm`, ['shell-unaligned.apk']);
     await spawnAsync(`jarsigner`, ['-verify', '-verbose', '-certs', '-keystore', keystore, 'shell.apk']);
-    await spawnAsync(`/bin/cp`, ['shell.apk', '/tmp/shell-signed.apk']);
+    await spawnAsyncThrowError(`/bin/cp`, ['shell.apk', '/tmp/shell-signed.apk']);
   } else {
-    await spawnAsyncCatchError(`/bin/rm`, ['shell-unaligned.apk']);
-    await spawnAsyncCatchError(`/bin/rm`, ['shell.apk']);
-    await spawnAsync(`gradle`, ['assembleProdRelease'], {
+    await spawnAsync(`/bin/rm`, ['shell-unaligned.apk']);
+    await spawnAsync(`/bin/rm`, ['shell.apk']);
+    await spawnAsyncThrowError(`gradle`, ['assembleProdRelease'], {
       cwd: shellPath,
     });
-    await spawnAsync(`/bin/cp`, [`${shellPath}app/build/outputs/apk/app-prod-release-unsigned.apk`, `/tmp/shell-unaligned.apk`]);
+    await spawnAsyncThrowError(`/bin/cp`, [`${shellPath}app/build/outputs/apk/app-prod-release-unsigned.apk`, `/tmp/shell-unaligned.apk`]);
   }
 }
