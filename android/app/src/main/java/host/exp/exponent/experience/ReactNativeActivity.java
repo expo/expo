@@ -3,15 +3,19 @@
 package host.exp.exponent.experience;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.view.KeyEvent;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import host.exp.exponent.RNObject;
+import host.exp.exponent.analytics.EXL;
 
 // Implement for each version.
 public abstract class ReactNativeActivity extends Activity implements com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, abi8_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, abi7_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, abi6_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, abi5_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler {
+
+  private static final String TAG = ReactNativeActivity.class.getSimpleName();
 
   protected RNObject mReactInstanceManager = new RNObject("com.facebook.react.ReactInstanceManager");
   protected boolean mIsCrashed = false;
@@ -80,6 +84,20 @@ public abstract class ReactNativeActivity extends Activity implements com.facebo
 
     if (mReactInstanceManager.isNotNull() && !mIsCrashed && mShouldDestroyRNInstanceOnExit) {
       mReactInstanceManager.call("destroy");
+    }
+  }
+
+  @Override
+  public void onNewIntent(Intent intent) {
+    if (mReactInstanceManager.isNotNull() && !mIsCrashed) {
+      try {
+        mReactInstanceManager.call("onNewIntent", intent);
+      } catch (Throwable e) {
+        EXL.e(TAG, e.toString());
+        super.onNewIntent(intent);
+      }
+    } else {
+      super.onNewIntent(intent);
     }
   }
 }

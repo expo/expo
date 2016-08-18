@@ -75,6 +75,6 @@ public class ExponentIntentModule extends IntentModule {
   }
 
   private void handleExpUrl(final String url) {
-    mKernel.openExperience(new Kernel.ExperienceOptions(url, null));
+    mKernel.openExperience(new Kernel.ExperienceOptions(url, url, null));
   }
 }

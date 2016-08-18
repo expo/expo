@@ -90,7 +90,8 @@ public class Kernel {
 
   public static final String HOME_MANIFEST_URL = "";
   public static final String MANIFEST_URL_KEY = "experienceUrl";
-  public static final String LINKING_URI = "linkingUri";
+  public static final String LINKING_URI_KEY = "linkingUri";
+  public static final String INTENT_URI_KEY = "intentUri";
   public static final String IS_OPTIMISTIC_KEY = "isOptimistic";
   public static final String MANIFEST_KEY = "manifest";
   public static final String BUNDLE_URL_KEY = "bundleUrl";
@@ -121,10 +122,12 @@ public class Kernel {
   }
 
   public static class ExperienceOptions {
+    public final String manifestUri;
     public final String uri;
     public final String notification;
 
-    public ExperienceOptions(String uri, String notification) {
+    public ExperienceOptions(String manifestUri, String uri, String notification) {
+      this.manifestUri = manifestUri;
       this.uri = uri;
       this.notification = notification;
     }
@@ -492,7 +495,7 @@ public class Kernel {
    */
 
   public void openExperience(final ExperienceOptions options) {
-    openManifestUrl(getManifestUrlFromFullUri(options.uri), options, true);
+    openManifestUrl(getManifestUrlFromFullUri(options.manifestUri), options, true);
   }
 
   private String getManifestUrlFromFullUri(String uri) {

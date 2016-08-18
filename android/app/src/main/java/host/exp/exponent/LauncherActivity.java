@@ -116,6 +116,9 @@ public class LauncherActivity extends Activity {
     Bundle bundle = intent.getExtras();
     mKernel.setActivityContext(this);
 
+    Uri uri = intent.getData();
+    String intentUri = uri == null ? null : uri.toString();
+
     if (bundle != null) {
       if (bundle.getBoolean(DEV_FLAG)) {
         openDevActivity();
@@ -125,16 +128,15 @@ public class LauncherActivity extends Activity {
       String notification = bundle.getString(NOTIFICATION_KEY);
       String manifestUrl = bundle.getString(MANIFEST_URL_KEY);
       if (manifestUrl != null) {
-        mKernel.openExperience(new Kernel.ExperienceOptions(manifestUrl, notification));
+        mKernel.openExperience(new Kernel.ExperienceOptions(manifestUrl, intentUri == null ? manifestUrl : intentUri, notification));
         return;
       }
     }
 
-    Uri uri = intent.getData();
     if (uri != null) {
       if (Constants.INITIAL_URL == null) {
         // We got an "exp://" link
-        mKernel.openExperience(new Kernel.ExperienceOptions(intent.getData().toString(), null));
+        mKernel.openExperience(new Kernel.ExperienceOptions(intentUri, intentUri, null));
         return;
       } else {
         // We got a custom scheme link
@@ -142,13 +144,13 @@ public class LauncherActivity extends Activity {
         // shell app. For example, we are running Brighten in the List shell and go to Twitter login.
         // We might want to set the return uri to thelistapp://exp.host/@brighten/brighten+deeplink
         // But we also can't break thelistapp:// deep links that look like thelistapp://l/listid
-        mKernel.openExperience(new Kernel.ExperienceOptions(Constants.INITIAL_URL, null));
+        mKernel.openExperience(new Kernel.ExperienceOptions(Constants.INITIAL_URL, intentUri, null));
         return;
       }
     }
 
     String defaultUrl = Constants.INITIAL_URL == null ? Kernel.HOME_MANIFEST_URL : Constants.INITIAL_URL;
-    mKernel.openExperience(new Kernel.ExperienceOptions(defaultUrl, null));
+    mKernel.openExperience(new Kernel.ExperienceOptions(defaultUrl, defaultUrl, null));
   }
 
   // Handle this here since we want the dev activity to be as separate from the kernel as possible.

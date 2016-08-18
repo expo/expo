@@ -6,6 +6,7 @@ import 'instapromise';
 
 import crayon from '@ccheever/crayon';
 import fs from 'fs';
+import path from 'path';
 import JsonFile from '@exponent/json-file';
 import shell from 'shelljs';
 import spawnAsyncQuiet from '@exponent/spawn-async';
@@ -73,6 +74,10 @@ export async function createAndroidShellApp(args) {
   let shellPath = '../android-shell-app/';
   await spawnAsync(`/bin/rm`, ['-rf', shellPath]);
   await spawnAsync(`/bin/mkdir`, [shellPath]);
+  await spawnAsync(`../../tools-public/generate-dynamic-macros-android.sh`, [], {
+    stdio: 'inherit',
+    cwd: path.join(__dirname, '..', 'android', 'app'),
+  }); // populate android template files
   await spawnAsync(`/bin/cp`, ['-r', '../android/ReactCommon', `${shellPath}/ReactCommon`]);
   await spawnAsync(`/bin/cp`, ['-r', '../android/ReactAndroid', `${shellPath}/ReactAndroid`]);
   await spawnAsync(`/bin/cp`, ['-r', '../android/Android-Image-Cropper', `${shellPath}/Android-Image-Cropper`]);

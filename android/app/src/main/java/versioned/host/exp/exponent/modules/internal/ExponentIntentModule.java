@@ -12,6 +12,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.modules.intent.IntentModule;
 
 import java.net.URL;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -27,9 +28,13 @@ public class ExponentIntentModule extends IntentModule {
   @Inject
   Kernel mKernel;
 
-  public ExponentIntentModule(ReactApplicationContext reactContext, ExponentApplication application) {
+  private Map<String, Object> mExperienceProperties;
+
+  public ExponentIntentModule(ReactApplicationContext reactContext, ExponentApplication application, Map<String, Object> experienceProperties) {
     super(reactContext);
     application.getAppComponent().inject(this);
+
+    mExperienceProperties = experienceProperties;
   }
 
   @Override
@@ -39,7 +44,12 @@ public class ExponentIntentModule extends IntentModule {
 
   @ReactMethod
   public void getInitialURL(Promise promise) {
-    super.getInitialURL(promise);
+    try {
+      promise.resolve(mExperienceProperties.get(Kernel.INTENT_URI_KEY));
+    } catch (Exception e) {
+      promise.reject(new JSApplicationIllegalArgumentException(
+          "Could not get the initial URL : " + e.getMessage()));
+    }
   }
 
   @ReactMethod
@@ -75,6 +85,6 @@ public class ExponentIntentModule extends IntentModule {
   }
 
   private void handleExpUrl(final String url) {
-    mKernel.openExperience(new Kernel.ExperienceOptions(url, null));
+    mKernel.openExperience(new Kernel.ExperienceOptions(url, url, null));
   }
 }

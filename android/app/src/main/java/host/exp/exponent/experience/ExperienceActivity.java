@@ -66,7 +66,8 @@ import versioned.host.exp.exponent.ReactUnthemedRootView;
 
 import static host.exp.exponent.kernel.Kernel.IS_OPTIMISTIC_KEY;
 import static host.exp.exponent.kernel.Kernel.MANIFEST_URL_KEY;
-import static host.exp.exponent.kernel.Kernel.LINKING_URI;
+import static host.exp.exponent.kernel.Kernel.LINKING_URI_KEY;
+import static host.exp.exponent.kernel.Kernel.INTENT_URI_KEY;
 
 public class ExperienceActivity extends BaseExperienceActivity {
 
@@ -477,6 +478,10 @@ public class ExperienceActivity extends BaseExperienceActivity {
     if (mLinkingPackage != null && mLinkingPackage.isNotNull()) {
       mLinkingPackage.call("onNewUri", uri);
     }
+
+    // Emits a "url" event to the Linking event emitter
+    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+    super.onNewIntent(intent);
   }
 
   private void setTaskDescription(final JSONObject manifest) {
@@ -578,7 +583,8 @@ public class ExperienceActivity extends BaseExperienceActivity {
     String linkingUri = Constants.SHELL_APP_SCHEME != null ? Constants.SHELL_APP_SCHEME + "://" : mManifestUrl + "/+";
     Map<String, Object> experienceProperties = MapBuilder.<String, Object>of(
         MANIFEST_URL_KEY, mManifestUrl,
-        LINKING_URI, linkingUri
+        LINKING_URI_KEY, linkingUri,
+        INTENT_URI_KEY, mIntentUri
     );
 
     InstanceManagerBuilderProperties instanceManagerBuilderProperties = new InstanceManagerBuilderProperties();
