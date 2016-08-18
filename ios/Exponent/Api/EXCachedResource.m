@@ -109,7 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
       errorBlock(error);
     }
   };
-  
+
   [self loadRemoteResourceWithSuccess:onSuccess error:onError];
 }
 
@@ -118,7 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   NSString *resourceCachePath = [self resourceCachePath];
   NSString *resourceLocalPath = [self resourceLocalPathPreferringCache];
-  
+
   [self loadRemoteResourceWithSuccess:^(NSData * _Nonnull data) {
     // write to cache for next time
     DDLogError(@"%s: Caching resource to %@...", __PRETTY_FUNCTION__, resourceCachePath);
