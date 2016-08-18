@@ -1,3 +1,5 @@
+// Copyright 2015-present 650 Industries. All rights reserved.
+
 #import "EXLinearGradientManager.h"
 #import "EXLinearGradient.h"
 #import "RCTBridge.h"

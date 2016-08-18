@@ -1,3 +1,5 @@
+// Copyright 2015-present 650 Industries. All rights reserved.
+
 #import "EXVideoManager.h"
 #import "EXVideo.h"
 #import "RCTBridge.h"
