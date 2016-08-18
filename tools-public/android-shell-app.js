@@ -24,7 +24,7 @@ async function spawnAsyncThrowError(...args) {
 
 async function spawnAsync(...args) {
   try {
-    return spawnAsyncThrowError(...args);
+    return await spawnAsyncThrowError(...args);
   } catch (e) {
     console.error(e.message);
   }
