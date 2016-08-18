@@ -637,6 +637,7 @@ static NSString *const EXVideoPlaybackRateKeyPath = @"rate";
 
   if (_controls)
   {
+    [super insertReactSubview:view atIndex:atIndex];
     view.frame = self.bounds;
     [_playerViewController.contentOverlayView insertSubview:view atIndex:atIndex];
   }
@@ -651,6 +652,7 @@ static NSString *const EXVideoPlaybackRateKeyPath = @"rate";
 {
   if (_controls)
   {
+    [super removeReactSubview:subview];
     [subview removeFromSuperview];
   }
   else
