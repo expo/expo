@@ -1,4 +1,6 @@
 /**
+ * Copyright 2015-present 650 Industries. All rights reserved.
+ *
  * @providesModule ExStore
  */
 'use strict';
@@ -30,7 +32,7 @@ store.dispatch(BrowserActions.loadHistoryAsync());
 // Populate the stores with data from disk. Currently this is super simple since
 // we have only one item to read. Later this initialization may get more complex
 store.initialization = AsyncStorage.multiGet([StorageKeys.Email, StorageKeys.SkipRegistration]).
-  then(([[,email], [,skipRegistration]]) => {
+  then(([[, email], [, skipRegistration]]) => {
   store.dispatch(AccountActions.setAccount(email, skipRegistration));
 }, error => {
   console.error(error.stack);
