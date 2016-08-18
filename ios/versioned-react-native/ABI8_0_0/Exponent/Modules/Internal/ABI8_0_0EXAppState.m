@@ -7,6 +7,12 @@
 #import "ABI8_0_0RCTEventDispatcher.h"
 #import "ABI8_0_0RCTUtils.h"
 
+@interface ABI8_0_0EXAppState ()
+
+@property (nonatomic, assign) BOOL isObserving;
+
+@end
+
 @implementation ABI8_0_0EXAppState
 
 + (NSString *)moduleName { return @"ABI8_0_0RCTAppState"; }
@@ -30,6 +36,7 @@
 
 - (void)startObserving
 {
+  _isObserving = YES;
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(handleMemoryWarning)
                                                name:UIApplicationDidReceiveMemoryWarningNotification
@@ -38,6 +45,7 @@
 
 - (void)stopObserving
 {
+  _isObserving = NO;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -52,8 +60,10 @@
 {
   if (![state isEqualToString:_lastKnownState]) {
     _lastKnownState = state;
-    [self sendEventWithName:@"appStateDidChange"
-                       body:@{@"app_state": _lastKnownState}];
+    if (_isObserving) {
+      [self sendEventWithName:@"appStateDidChange"
+                         body:@{@"app_state": _lastKnownState}];
+    }
   }
 }
 
