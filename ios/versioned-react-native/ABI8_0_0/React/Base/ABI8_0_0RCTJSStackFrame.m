@@ -42,7 +42,7 @@ static NSRegularExpression *ABI8_0_0RCTJSStackFrameRegex()
 {
   return @{
            @"methodName": self.methodName,
-           @"file": self.file,
+           @"file": self.file ?: @"",
            @"lineNumber": @(self.lineNumber),
            @"column": @(self.column)
            };
