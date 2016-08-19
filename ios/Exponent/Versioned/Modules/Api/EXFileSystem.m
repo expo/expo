@@ -6,6 +6,21 @@
 
 #import "EXVersionManager.h"
 
+@implementation NSData (EXFileSystem)
+
+- (NSString *)md5String
+{
+  unsigned char digest[CC_MD5_DIGEST_LENGTH];
+  CC_MD5(self.bytes, (CC_LONG) self.length, digest);
+  NSMutableString *md5 = [NSMutableString stringWithCapacity:2 * CC_MD5_DIGEST_LENGTH];
+  for (unsigned int i = 0; i < CC_MD5_DIGEST_LENGTH; ++i) {
+    [md5 appendFormat:@"%02x", digest[i]];
+  }
+  return md5;
+}
+
+@end
+
 @interface EXFileSystem ()
 
 @property (nonatomic, strong) NSString *rootDir;
@@ -54,7 +69,7 @@ RCT_REMAP_METHOD(downloadAsync,
     NSMutableDictionary *result = [NSMutableDictionary dictionary];
     result[@"uri"] = [NSURL fileURLWithPath:scopedPath].absoluteString;
     if (options[@"md5"]) {
-      result[@"md5"] = [EXFileSystem md5WithPath:scopedPath];
+      result[@"md5"] = [data md5String];
     }
     resolve(result);
   }];
@@ -81,7 +96,7 @@ RCT_REMAP_METHOD(getInfoAsync,
     result[@"isDirectory"] = @(isDirectory);
     result[@"uri"] = [NSURL fileURLWithPath:scopedPath].absoluteString;
     if (options[@"md5"]) {
-      result[@"md5"] = [EXFileSystem md5WithPath:scopedPath];
+      result[@"md5"] = [[NSData dataWithContentsOfFile:scopedPath] md5String];
     }
     resolve(result);
   } else {
@@ -96,8 +111,6 @@ RCT_REMAP_METHOD(deleteAsync,
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
 }
-
-// Utility functions that take scoped paths
 
 - (NSString *)scopedPathWithPath:(NSString *)path withOptions:(NSDictionary *)options
 {
@@ -118,8 +131,6 @@ RCT_REMAP_METHOD(deleteAsync,
   }
 }
 
-// Utility functions that take unscoped paths
-
 + (BOOL)ensureDirExistsWithPath:(NSString *)path
 {
   BOOL isDir = NO;
@@ -132,18 +143,6 @@ RCT_REMAP_METHOD(deleteAsync,
     }
   }
   return YES;
-}
-
-+ (NSString *)md5WithPath:(NSString *)path
-{
-  NSData *data = [NSData dataWithContentsOfFile:path];
-  unsigned char digest[CC_MD5_DIGEST_LENGTH];
-  CC_MD5(data.bytes, (CC_LONG) data.length, digest);
-  NSMutableString *md5 = [NSMutableString stringWithCapacity:2 * CC_MD5_DIGEST_LENGTH];
-  for (unsigned int i = 0; i < CC_MD5_DIGEST_LENGTH; ++i) {
-    [md5 appendFormat:@"%02x", digest[i]];
-  }
-  return md5;
 }
 
 @end
