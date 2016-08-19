@@ -113,7 +113,7 @@ gulp.task('kernel-ngrok:clean', function(done) {
 
 gulp.task('kernel-ngrok', async function(done) {
   let user = await username();
-  let hostname = [Math.ceil(10000 * Math.random()).toString(16), 'kernel', user.toLowerCase(), 'exp.pub'].join('.');
+  let hostname = [`kernel${Math.ceil(10000 * Math.random()).toString(16)}`, user.toLowerCase(), 'exp.direct'].join('.');
   let url = await ngrok.promise.connect({
     hostname,
     port: 8081,
