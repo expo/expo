@@ -8,6 +8,7 @@ import android.os.Build;
 import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -73,18 +74,26 @@ public class ConstantsModule extends ReactContextBaseJavaModule {
   @Nullable
   @Override
   public Map<String, Object> getConstants() {
-    Map<String, Object> constants = MapBuilder.<String, Object>of(
-        "sessionId", mSessionId,
-        "exponentVersion", Kernel.getVersionName(),
-        "statusBarHeight", mStatusBarHeight,
-        "deviceYearClass", YearClass.get(getReactApplicationContext()),
-        "deviceId", mExponentSharedPreferences.getOrCreateUUID(),
-        "deviceName", Build.MODEL,
-        "manifest", mManifest.toString()
-    );
+    Map<String, Object> constants = new HashMap<>();
+    constants.put("sessionId", mSessionId);
+    constants.put("exponentVersion", Kernel.getVersionName());
+    constants.put("statusBarHeight", mStatusBarHeight);
+    constants.put("deviceYearClass", YearClass.get(getReactApplicationContext()));
+    constants.put("deviceId", mExponentSharedPreferences.getOrCreateUUID());
+    constants.put("deviceName", Build.MODEL);
+    constants.put("manifest", mManifest.toString());
+    constants.put("isDevice", !isRunningOnGenymotion() && !isRunningOnStockEmulator());
     if (mExperienceProperties != null) {
       constants.putAll(mExperienceProperties);
     }
     return constants;
+  }
+
+  private static boolean isRunningOnGenymotion() {
+    return Build.FINGERPRINT.contains("vbox");
+  }
+
+  private static boolean isRunningOnStockEmulator() {
+    return Build.FINGERPRINT.contains("generic");
   }
 }
