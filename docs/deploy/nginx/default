@@ -10,10 +10,12 @@ server {
         expires 1d;
     }
 
-    rewrite ^/$ /versions/${DOCS_VERSION}/index.html redirect;
-
     location ~ ^/versions/latest/(.*) {
         return 302 /versions/${DOCS_VERSION}/$1;
+    }
+
+    location ~ ^/$ {
+        return 302 /versions/${DOCS_VERSION}/index.html;
     }
 
     location / {
@@ -24,7 +26,7 @@ server {
 
     # If nginx can't find a file, fallback to the homepage.
     location @root {
-        rewrite .* / redirect;
+        rewrite .* /versions/${DOCS_VERSION}/index.html redirect;
     }
 
     include /etc/nginx/basic.conf;
