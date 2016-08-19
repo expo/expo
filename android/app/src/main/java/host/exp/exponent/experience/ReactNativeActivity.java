@@ -13,7 +13,7 @@ import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.EXL;
 
 // Implement for each version.
-public abstract class ReactNativeActivity extends Activity implements com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, abi8_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, abi7_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, abi6_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, abi5_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler {
+public abstract class ReactNativeActivity extends Activity implements com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, abi9_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, abi8_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, abi7_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, abi6_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, abi5_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler {
 
   private static final String TAG = ReactNativeActivity.class.getSimpleName();
 

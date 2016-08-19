@@ -24,6 +24,7 @@ public class Constants {
   static {
     List<String> abiVersions = new ArrayList<>();
     // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+    abiVersions.add("9.0.0");
     abiVersions.add("8.0.0");
     abiVersions.add("7.0.0");
     abiVersions.add("6.0.0");

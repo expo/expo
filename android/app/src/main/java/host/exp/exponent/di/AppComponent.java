@@ -62,23 +62,27 @@ public interface AppComponent {
   void inject(abi5_0_0.host.exp.exponent.modules.ExponentVersionsModule module);
 
   void inject(URLHandlerModule module);
+  void inject(abi9_0_0.host.exp.exponent.modules.api.URLHandlerModule module);
   void inject(abi8_0_0.host.exp.exponent.modules.api.URLHandlerModule module);
   void inject(abi7_0_0.host.exp.exponent.modules.api.URLHandlerModule module);
   void inject(abi6_0_0.host.exp.exponent.modules.api.URLHandlerModule module);
   void inject(abi5_0_0.host.exp.exponent.modules.ExURLHandlerModule module);
 
   void inject(NotificationsModule module);
+  void inject(abi9_0_0.host.exp.exponent.modules.api.NotificationsModule module);
   void inject(abi8_0_0.host.exp.exponent.modules.api.NotificationsModule module);
   void inject(abi7_0_0.host.exp.exponent.modules.api.NotificationsModule module);
   void inject(abi6_0_0.host.exp.exponent.modules.api.NotificationsModule module);
   void inject(abi5_0_0.host.exp.exponent.modules.ExponentNotificationsModule module);
 
   void inject(ConstantsModule module);
+  void inject(abi9_0_0.host.exp.exponent.modules.api.ConstantsModule module);
   void inject(abi8_0_0.host.exp.exponent.modules.api.ConstantsModule module);
   void inject(abi7_0_0.host.exp.exponent.modules.api.ConstantsModule module);
   void inject(abi6_0_0.host.exp.exponent.modules.api.ConstantsModule module);
   void inject(abi5_0_0.host.exp.exponent.modules.ExponentConstantsModule module);
 
   void inject(ExponentIntentModule module);
+  void inject(abi9_0_0.host.exp.exponent.modules.internal.ExponentIntentModule module);
   void inject(abi8_0_0.host.exp.exponent.modules.internal.ExponentIntentModule module);
 }
