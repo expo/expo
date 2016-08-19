@@ -20,25 +20,26 @@ import host.exp.exponent.ActivityResultDelegator;
 import host.exp.exponent.ExponentApplication;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.modules.ExponentKernelModule;
+import versioned.host.exp.exponent.modules.api.ConstantsModule;
+import versioned.host.exp.exponent.modules.api.ContactsModule;
 import versioned.host.exp.exponent.modules.api.CryptoModule;
 import versioned.host.exp.exponent.modules.api.FabricModule;
 import versioned.host.exp.exponent.modules.api.FacebookModule;
+import versioned.host.exp.exponent.modules.api.FileSystemModule;
 import versioned.host.exp.exponent.modules.api.FingerprintModule;
-import versioned.host.exp.exponent.modules.api.PermissionsModule;
-import versioned.host.exp.exponent.modules.api.URLHandlerModule;
-import versioned.host.exp.exponent.modules.api.ConstantsModule;
-import versioned.host.exp.exponent.modules.api.ContactsModule;
 import versioned.host.exp.exponent.modules.api.FontLoaderModule;
 import versioned.host.exp.exponent.modules.api.ImageCropperModule;
+import versioned.host.exp.exponent.modules.api.ImagePickerModule;
 import versioned.host.exp.exponent.modules.api.KeyboardModule;
 import versioned.host.exp.exponent.modules.api.LocationModule;
 import versioned.host.exp.exponent.modules.api.NotificationsModule;
+import versioned.host.exp.exponent.modules.api.PermissionsModule;
 import versioned.host.exp.exponent.modules.api.ShakeModule;
+import versioned.host.exp.exponent.modules.api.URLHandlerModule;
 import versioned.host.exp.exponent.modules.api.UtilModule;
-import versioned.host.exp.exponent.modules.api.ImagePickerModule;
 import versioned.host.exp.exponent.modules.api.components.LinearGradientManager;
-import versioned.host.exp.exponent.modules.api.FileSystemModule;
 import versioned.host.exp.exponent.modules.api.components.VideoViewManager;
+import versioned.host.exp.exponent.modules.api.components.svg.RNSvgPackage;
 import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule;
 import versioned.host.exp.exponent.modules.internal.ExponentIntentModule;
 import versioned.host.exp.exponent.modules.internal.ExponentUnsignedAsyncStorageModule;
@@ -117,9 +118,15 @@ public class ExponentPackage implements ReactPackage {
 
   @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-    return Arrays.<ViewManager>asList(
-            new LinearGradientManager(),
-            new VideoViewManager()
-            );
+    List<ViewManager> viewManagers = new ArrayList<>(Arrays.<ViewManager>asList(
+        new LinearGradientManager(),
+        new VideoViewManager()
+    ));
+
+    // Add view managers from the react-native-svg package.
+    RNSvgPackage svgPackage = new RNSvgPackage();
+    viewManagers.addAll(svgPackage.createViewManagers(reactContext));
+
+    return viewManagers;
   }
 }
