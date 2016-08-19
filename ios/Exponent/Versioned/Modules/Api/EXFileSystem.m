@@ -1,6 +1,9 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import "EXFileSystem.h"
+
+#import <CommonCrypto/CommonDigest.h>
+
 #import "EXVersionManager.h"
 
 @interface EXFileSystem ()
@@ -47,7 +50,13 @@ RCT_REMAP_METHOD(downloadAsync,
              error);
     }
     [data writeToFile:scopedPath atomically:YES];
-    resolve(@{@"uri": [NSURL fileURLWithPath:scopedPath].absoluteString});
+
+    NSMutableDictionary *result = [NSMutableDictionary dictionary];
+    result[@"uri"] = [NSURL fileURLWithPath:scopedPath].absoluteString;
+    if (options[@"md5"]) {
+      result[@"md5"] = [EXFileSystem md5WithPath:scopedPath];
+    }
+    resolve(result);
   }];
   [task resume];
 }
@@ -67,7 +76,14 @@ RCT_REMAP_METHOD(getInfoAsync,
 
   BOOL isDirectory;
   if ([[NSFileManager defaultManager] fileExistsAtPath:scopedPath isDirectory:&isDirectory]) {
-    resolve(@{@"exists": @(true), @"isDirectory": @(isDirectory), @"uri": [NSURL fileURLWithPath:scopedPath].absoluteString});
+    NSMutableDictionary *result = [NSMutableDictionary dictionary];
+    result[@"exists"] = @(true);
+    result[@"isDirectory"] = @(isDirectory);
+    result[@"uri"] = [NSURL fileURLWithPath:scopedPath].absoluteString;
+    if (options[@"md5"]) {
+      result[@"md5"] = [EXFileSystem md5WithPath:scopedPath];
+    }
+    resolve(result);
   } else {
     resolve(@{@"exists": @(false), @"isDirectory": @(false)});
   }
@@ -80,6 +96,8 @@ RCT_REMAP_METHOD(deleteAsync,
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
 }
+
+// Utility functions that take scoped paths
 
 - (NSString *)scopedPathWithPath:(NSString *)path withOptions:(NSDictionary *)options
 {
@@ -100,6 +118,8 @@ RCT_REMAP_METHOD(deleteAsync,
   }
 }
 
+// Utility functions that take unscoped paths
+
 + (BOOL)ensureDirExistsWithPath:(NSString *)path
 {
   BOOL isDir = NO;
@@ -112,6 +132,18 @@ RCT_REMAP_METHOD(deleteAsync,
     }
   }
   return YES;
+}
+
++ (NSString *)md5WithPath:(NSString *)path
+{
+  NSData *data = [NSData dataWithContentsOfFile:path];
+  unsigned char digest[CC_MD5_DIGEST_LENGTH];
+  CC_MD5(data.bytes, (CC_LONG) data.length, digest);
+  NSMutableString *md5 = [NSMutableString stringWithCapacity:2 * CC_MD5_DIGEST_LENGTH];
+  for (unsigned int i = 0; i < CC_MD5_DIGEST_LENGTH; ++i) {
+    [md5 appendFormat:@"%02x", digest[i]];
+  }
+  return md5;
 }
 
 @end
