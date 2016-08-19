@@ -217,7 +217,11 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
                                     [[EXNotifications alloc] initWithExperienceId:experienceId],
                                     ]];
 
-  if (!isDeveloper) {
+  if (isDeveloper) {
+    [extraModules addObjectsFromArray:@[
+                                        [[RCTDevMenu alloc] init],
+                                        ]];
+  } else {
     // user-facing (not debugging).
     // additionally disable RCTRedBox and RCTDevMenu
     [extraModules addObjectsFromArray:@[
