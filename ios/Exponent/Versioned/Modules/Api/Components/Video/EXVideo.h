@@ -3,7 +3,7 @@
 #import "RCTView.h"
 #import "RCTBridge.h"
 #import <AVFoundation/AVFoundation.h>
-#import "AVKit/AVKit.h"
+#import <AVKit/AVKit.h>
 #import "UIView+FindUIViewController.h"
 #import "EXVideoPlayerViewController.h"
 #import "EXVideoPlayerViewControllerDelegate.h"

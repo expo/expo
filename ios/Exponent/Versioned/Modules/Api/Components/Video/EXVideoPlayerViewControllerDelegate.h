@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import "AVKit/AVKit.h"
+#import <AVKit/AVKit.h>
 
 @protocol EXVideoPlayerViewControllerDelegate <NSObject>
 
