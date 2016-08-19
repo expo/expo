@@ -203,7 +203,11 @@ void ABI5_0_0EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
                                     [[ABI5_0_0EXFrameExceptionsManager alloc] initWithDelegate:frame],
                                     ]];
   
-  if (!isDeveloper) {
+  if (isDeveloper) {
+    [extraModules addObjectsFromArray:@[
+                                        [[ABI5_0_0RCTDevMenu alloc] init],
+                                        ]];
+  } else {
     // user-facing (not debugging).
     // additionally disable RCTRedBox and RCTDevMenu
     [extraModules addObjectsFromArray:@[

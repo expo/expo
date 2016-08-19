@@ -209,7 +209,11 @@ void ABI6_0_0EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
                                     [[ABI6_0_0EXLinkingManager alloc] initWithInitialUrl:initialUri],
                                     ]];
   
-  if (!isDeveloper) {
+  if (isDeveloper) {
+    [extraModules addObjectsFromArray:@[
+                                        [[ABI6_0_0RCTDevMenu alloc] init],
+                                        ]];
+  } else {
     // user-facing (not debugging).
     // additionally disable RCTRedBox and RCTDevMenu
     [extraModules addObjectsFromArray:@[

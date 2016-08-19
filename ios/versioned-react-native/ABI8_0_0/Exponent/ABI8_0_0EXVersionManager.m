@@ -217,7 +217,11 @@ void ABI8_0_0EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
                                     [[ABI8_0_0EXNotifications alloc] initWithExperienceId:experienceId],
                                     ]];
   
-  if (!isDeveloper) {
+  if (isDeveloper) {
+    [extraModules addObjectsFromArray:@[
+                                        [[ABI8_0_0RCTDevMenu alloc] init],
+                                        ]];
+  } else {
     // user-facing (not debugging).
     // additionally disable ABI8_0_0RCTRedBox and ABI8_0_0RCTDevMenu
     [extraModules addObjectsFromArray:@[
