@@ -136,6 +136,7 @@ dependencies {
   compile project(':Android-Image-Cropper:cropper')
   compile 'com.facebook.rebound:rebound:0.3.8' // Needed for native animations in SDK 6
   compile 'com.yqritc:android-scalablevideoview:1.0.1'
+  compile 'commons-codec:commons-codec:1.10'
 
   // Testing
   androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
