@@ -2,10 +2,14 @@
 
 package versioned.host.exp.exponent.modules.api;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import android.content.Context;
 import android.net.Uri;
@@ -73,40 +77,23 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
     FileUtils.deleteDirectory(new File(cachePathForExperience(context, experienceId)));
   }
 
-  private File ensureDirExists(String path) throws IOException {
-    File rootDir = new File(path);
-    if (!(rootDir.isDirectory() || rootDir.mkdirs())) {
-      throw new IOException("Couldn't create directory '" + path + "'");
-    }
-    return rootDir;
-  }
-
-  private String toScopedPath(String path, ReadableMap options) throws IOException {
-    String prefix = options.hasKey("cache") && options.getBoolean("cache") ? mCachePath : mRootPath;
-    ensureDirExists(prefix);
-    File file = new File(prefix + "/" + path);
-    String fileCanonicalPath = file.getCanonicalPath();
-    String rootCanonicalPath = new File(prefix).getCanonicalPath();
-    if (!fileCanonicalPath.startsWith(rootCanonicalPath)) {
-      throw new IOException("Path '" + path + "' leads outside root directory of experience");
-    }
-    return file.getAbsolutePath();
-  }
-
   @ReactMethod
   public void getInfoAsync(String filepath, ReadableMap options, Promise promise) {
     try {
       File file = new File(toScopedPath(filepath, options));
-      WritableMap response = Arguments.createMap();
+      WritableMap result = Arguments.createMap();
       if (file.exists()) {
-        response.putBoolean("exists", true);
-        response.putBoolean("isDirectory", file.isDirectory());
-        response.putString("uri", Uri.fromFile(file).toString());
-        promise.resolve(response);
+        result.putBoolean("exists", true);
+        result.putBoolean("isDirectory", file.isDirectory());
+        result.putString("uri", Uri.fromFile(file).toString());
+        if (options.hasKey("md5") && options.getBoolean("md5")) {
+          result.putString("md5", md5(file));
+        }
+        promise.resolve(result);
       } else {
-        response.putBoolean("exists", false);
-        response.putBoolean("isDirectory", false);
-        promise.resolve(response);
+        result.putBoolean("exists", false);
+        result.putBoolean("isDirectory", false);
+        promise.resolve(result);
       }
     } catch (Exception e) {
       EXL.e(TAG, e.getMessage());
@@ -151,6 +138,9 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
 
           WritableMap result = Arguments.createMap();
           result.putString("uri", Uri.fromFile(file).toString());
+          if (options.hasKey("md5") && options.getBoolean("md5")) {
+            result.putString("md5", md5(file));
+          }
           promise.resolve(result);
         } catch (Exception e) {
           EXL.e(TAG, e.getMessage());
@@ -158,5 +148,39 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
         }
       }
     });
+  }
+
+  // Utility functions that take scoped paths
+
+  private String toScopedPath(String path, ReadableMap options) throws IOException {
+    String prefix = options.hasKey("cache") && options.getBoolean("cache") ? mCachePath : mRootPath;
+    ensureDirExists(prefix);
+    File file = new File(prefix + "/" + path);
+    String fileCanonicalPath = file.getCanonicalPath();
+    String rootCanonicalPath = new File(prefix).getCanonicalPath();
+    if (!fileCanonicalPath.startsWith(rootCanonicalPath)) {
+      throw new IOException("Path '" + path + "' leads outside root directory of experience");
+    }
+    return file.getAbsolutePath();
+  }
+
+  // Utility functions that take unscoped paths
+
+  private File ensureDirExists(String path) throws IOException {
+    File rootDir = new File(path);
+    if (!(rootDir.isDirectory() || rootDir.mkdirs())) {
+      throw new IOException("Couldn't create directory '" + path + "'");
+    }
+    return rootDir;
+  }
+
+  private String md5(File file) throws IOException {
+    InputStream is = new FileInputStream(file);
+    try {
+      byte[] md5bytes = DigestUtils.md5(is);
+      return String.valueOf(Hex.encodeHex(md5bytes));
+    } finally {
+      is.close();
+    }
   }
 }
