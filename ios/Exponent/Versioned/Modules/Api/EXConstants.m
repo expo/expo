@@ -69,7 +69,13 @@
 
 - (NSString *)_getBundleVersion
 {
-  return [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+  NSString *exponentClientVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"EXClientVersion"];
+  if (exponentClientVersion) {
+    return exponentClientVersion;
+  } else {
+    // not correct in standalone apps
+    return [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+  }
 }
 
 - (NSString *)_devicePlatform

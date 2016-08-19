@@ -205,6 +205,7 @@ async function modifyIOSInfoPlistAsync(path, filename, templateSubstitutions) {
         }],
       };
     }
+    config.EXClientVersion = config.CFBundleVersion;
     return config;
   });
 }

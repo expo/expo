@@ -95,6 +95,9 @@ async function configurePropertyListsAsync(manifest, args, configFilePath) {
     // use shell-specific launch screen
     config.UILaunchStoryboardName = 'LaunchScreenShell';
 
+    // permanently save the exponent client version at time of configuration
+    config.EXClientVersion = config.CFBundleVersion;
+
     // use version from manifest
     let version = (manifest.version) ? manifest.version : '0.0.0';
     config.CFBundleShortVersionString = version;

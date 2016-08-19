@@ -59,6 +59,7 @@ NSString *kEXKernelBundleResourceName = @"kernel.ios";
                                                    name:name
                                                  object:nil];
     }
+    DDLogError(@"Exponent iOS Client Version %@", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"EXClientVersion"]);
   }
   return self;
 }
