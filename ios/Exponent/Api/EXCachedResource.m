@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   switch (behavior) {
     case kEXCachedResourceNoCache: {
-      DDLogError(@"%s: Not using cache for %@", __PRETTY_FUNCTION__, _resourceName);
+      NSLog(@"EXCachedResource: Not using cache for %@", _resourceName);
       [self loadRemoteResourceWithSuccess:success error:error];
       break;
     }
@@ -88,7 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSData *data = [NSData dataWithContentsOfFile:resourceLocalPath];
     if (data && data.length) {
       hasLocalBundle = YES;
-      DDLogError(@"%s: Using cached resource at %@...", __PRETTY_FUNCTION__, resourceLocalPath);
+      NSLog(@"EXCachedResource: Using cached resource at %@...", resourceLocalPath);
       successBlock(data);
     }
   }
@@ -100,7 +100,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     // write to cache for next time
-    DDLogError(@"%s: Caching resource to %@...", __PRETTY_FUNCTION__, resourceCachePath);
+    NSLog(@"EXCachedResource: Caching resource to %@...", resourceCachePath);
     [data writeToFile:resourceCachePath atomically:YES];
   };
   EXCachedResourceErrorBlock onError = ^(NSError *error) {
@@ -121,7 +121,7 @@ NS_ASSUME_NONNULL_BEGIN
 
   [self loadRemoteResourceWithSuccess:^(NSData * _Nonnull data) {
     // write to cache for next time
-    DDLogError(@"%s: Caching resource to %@...", __PRETTY_FUNCTION__, resourceCachePath);
+    NSLog(@"EXCachedResource: Caching resource to %@...", resourceCachePath);
     [data writeToFile:resourceCachePath atomically:YES];
     successBlock(data);
   } error:^(NSError * _Nonnull error) {
@@ -131,7 +131,7 @@ NS_ASSUME_NONNULL_BEGIN
       NSData *data = [NSData dataWithContentsOfFile:resourceLocalPath];
       if (data && data.length) {
         hasLocalBundle = YES;
-        DDLogError(@"%s: Using cached resource at %@...", __PRETTY_FUNCTION__, resourceLocalPath);
+        NSLog(@"EXCachedResource: Using cached resource at %@...", resourceLocalPath);
         successBlock(data);
       }
     }

@@ -393,7 +393,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
   NSString *bundleName;
   if (_initialProps && [_initialProps[@"shell"] boolValue]) {
     bundleName = kEXShellBundleResourceName;
-    DDLogError(@"%s: Standalone bundle remote url is %@", __PRETTY_FUNCTION__, bridge.bundleURL);
+    NSLog(@"EXFrame: Standalone bundle remote url is %@", bridge.bundleURL);
   } else {
     bundleName = _manifest[@"id"];
   }
