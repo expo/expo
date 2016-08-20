@@ -200,7 +200,7 @@ void _ABI6_0_0RCTLogNativeInternal(ABI6_0_0RCTLogLevel level, const char *fileNa
       logFunction(level, ABI6_0_0RCTLogSourceNative, fileName ? @(fileName) : nil, lineNumber > 0 ? @(lineNumber) : nil, message);
     }
 
-#if ABI6_0_0RCT_DEBUG
+#if ABI6_0_0RCT_DEV
 
     // Log to red box in debug mode.
     if ([UIApplication sharedApplication] && level >= ABI6_0_0RCTLOG_REDBOX_LEVEL) {
