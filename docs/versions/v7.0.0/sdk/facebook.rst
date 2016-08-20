@@ -10,13 +10,20 @@ example).
 Follow `Facebook's developer documentation
 <https://developers.facebook.com/docs/apps/register>`_ to register an
 application with Facebook's API and get an application ID. For iOS, make sure to
-add `host.exp.Exponent` as a 'Bundle ID'. For Android no further steps are
-required. You may have to switch the app from 'development mode' to 'public
-mode' before other users can log in.
+add `host.exp.Exponent` as a 'Bundle ID'. For Android add the key hash
+``rRW++LUjmZZ+58EbN5DVhGAnkX4=``. Your app's settings should end up including the
+following under "Settings > Basic":
+
+.. image:: img/facebook-app-settings.png
+  :width: 95%
+  :align: center
+
+You may have to switch the app from 'development mode' to 'public mode' before
+other users can log in.
 
 .. function:: Exponent.Facebook.logInWithReadPermissionsAsync(appId, options)
 
-   Prompts the user to log into Facebook and grants your app permission
+  Prompts the user to log into Facebook and grants your app permission
    to access their Facebook data.
 
    :param string appId:
