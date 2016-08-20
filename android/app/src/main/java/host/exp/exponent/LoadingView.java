@@ -118,15 +118,20 @@ public class LoadingView extends RelativeLayout {
     }
     mIsLoading = true;
     mIsLoadingImageView = false;
-    revealView(mMadeForExponent);
 
     if (manifest == null) {
+      revealView(mMadeForExponent);
       return;
     }
 
     JSONObject loadingInfo = manifest.optJSONObject(ExponentManifest.MANIFEST_LOADING_INFO_KEY);
     if (loadingInfo == null) {
+      revealView(mMadeForExponent);
       return;
+    }
+
+    if (!loadingInfo.optBoolean(ExponentManifest.MANIFEST_LOADING_HIDE_EXPONENT_TEXT_KEY)) {
+      revealView(mMadeForExponent);
     }
 
     if (loadingInfo.has(ExponentManifest.MANIFEST_LOADING_ICON_URL)) {

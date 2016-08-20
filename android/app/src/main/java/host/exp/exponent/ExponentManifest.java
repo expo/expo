@@ -66,6 +66,7 @@ public class ExponentManifest {
   public static final String MANIFEST_PACKAGER_OPTS_DEV_KEY = "dev";
   public static final String MANIFEST_BUNDLE_URL_KEY = "bundleUrl";
   public static final String MANIFEST_STATUS_BAR_COLOR = "androidStatusBarColor";
+  public static final String MANIFEST_HIDE_EXPONENT_NOTIFICATION_KEY = "androidHideExponentNotificationInShellApp";
 
   // Notification
   public static final String MANIFEST_NOTIFICATION_INFO_KEY = "notification";
@@ -85,6 +86,7 @@ public class ExponentManifest {
   public static final String MANIFEST_LOADING_EXPONENT_ICON_GRAYSCALE = "exponentIconGrayscale";
   public static final String MANIFEST_LOADING_BACKGROUND_IMAGE_URL = "backgroundImageUrl";
   public static final String MANIFEST_LOADING_BACKGROUND_COLOR = "backgroundColor";
+  public static final String MANIFEST_LOADING_HIDE_EXPONENT_TEXT_KEY = "hideExponentText";
 
   private static final int MAX_BITMAP_SIZE = 192;
 
