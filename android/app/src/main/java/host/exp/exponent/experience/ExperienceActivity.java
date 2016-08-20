@@ -723,6 +723,10 @@ public class ExperienceActivity extends BaseExperienceActivity {
       return;
     }
 
+    if (mManifest.optBoolean(ExponentManifest.MANIFEST_HIDE_EXPONENT_NOTIFICATION_KEY) && mIsShellApp) {
+      return;
+    }
+
     RemoteViews remoteViews = new RemoteViews(getPackageName(), mIsShellApp ? R.layout.notification_shell_app : R.layout.notification);
     remoteViews.setCharSequence(R.id.home_text_button, "setText", name);
 
