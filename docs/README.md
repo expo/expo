@@ -16,6 +16,19 @@ Version names correspond to directory names under `versions/`.
 actually an SDK version, it's just a special version that corresponds to the
 "Tool Developer Documentation" website.
 
+Some times you want to make an edit in version `X` but then have that edit also
+be applied in versions `Y, Z, ...` (say when you're fixing documentation for an
+API call that existed in old versions too). You can use the
+`./scripts/versionpatch.sh` utiltiy to apply your `git diff` in one version in
+other versions. For example, to update the docs in `unversioned` then apply it
+on `v8.0.0` and `v7.0.0`, you'd do the following after editing the docs in
+`unversioned` such that it shows up in `git diff`:
+
+```./scripts/versionpatch.sh unversioned v8.0.0 v7.0.0```
+
+Any changes in your `git diff` outside the `unversioned` directory are ignored
+so don't worry if you have code changes or such elsewhere.
+
 ### As a random person
 
 Thanks for helping! :D Just make your changes on a fork of this repository or
