@@ -40,4 +40,5 @@ example.
    linear-gradient
    location
    permissions
+   svg
    video

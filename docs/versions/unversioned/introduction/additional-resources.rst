@@ -1,5 +1,5 @@
-Learning
-============
+Additional Resources
+====================
 
 The following resources are useful for learning Exponent and some of the projects that it depends on.
 

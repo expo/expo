@@ -6,5 +6,5 @@ Introduction
 
    installation
    xde-tour
-   learning
    community
+   additional-resources

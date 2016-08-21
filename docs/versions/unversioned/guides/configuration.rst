@@ -92,6 +92,10 @@ Configuration with exp.json
     Color to fill the loading screen background
     6 character long hex color string, eg: ``'#000000'``
 
+   .. attribute:: hideExponentText
+
+    By default, Exponent shows some text at the bottom of the loading screen. Set this to ``true`` to disable.
+
 .. attribute:: appKey
 
  By default, Exponent looks for the application registered with the AppRegistry as ``main``. If you would like to change this, you can specify the name in this property.
@@ -99,6 +103,10 @@ Configuration with exp.json
 .. attribute:: androidStatusBarColor
 
   6 character long hex color string, eg: ``'#000000'``
+
+.. attribute:: androidHideExponentNotificationInShellApp
+
+ By default, Exponent adds a notification to your app with refresh button and debug info. Set this to ``true`` to disable.
 
 .. attribute:: scheme
 
@@ -115,6 +123,9 @@ Configuration with exp.json
 
  
 .. attribute:: ignoreNodeModulesValidation
+
+ 
+.. attribute:: nodeModulesPath
 
  
 .. attribute:: ios
