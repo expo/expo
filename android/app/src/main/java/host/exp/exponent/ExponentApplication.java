@@ -27,6 +27,7 @@ import java.security.Security;
 
 import javax.inject.Inject;
 
+import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.AppComponent;
 import host.exp.exponent.di.AppModule;
@@ -108,6 +109,7 @@ public class ExponentApplication extends MultiDexApplication {
     Fresco.initialize(this);
 
     // Amplitude
+    Analytics.resetAmplitudeDatabaseHelper();
     Amplitude.getInstance().initialize(this, BuildConfig.DEBUG ? ExponentKeys.AMPLITUDE_DEV_KEY : ExponentKeys.AMPLITUDE_KEY)
         .enableForegroundTracking(this);
     try {
