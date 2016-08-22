@@ -56,6 +56,7 @@
 		78CEE2ED1ACD22D90095B124 /* EXAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 78CEE2EC1ACD22D90095B124 /* EXAppDelegate.m */; };
 		8454E6DA1D4E95B800B9E8EF /* EXBlurView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8454E6D91D4E95B800B9E8EF /* EXBlurView.m */; };
 		8454E6DC1D4E960F00B9E8EF /* EXBlurViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8454E6DB1D4E960F00B9E8EF /* EXBlurViewManager.m */; };
+		88E089A41D6BC02200562FA1 /* EXAmplitude.m in Sources */ = {isa = PBXBuildFile; fileRef = 88E089A31D6BC02200562FA1 /* EXAmplitude.m */; };
 		A1158D321D4C4AA400286352 /* EXAppLoadingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A1158D301D4C4AA400286352 /* EXAppLoadingManager.m */; };
 		A12CC94C1D11E80E0023A57B /* EXLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = A12CC94B1D11E80E0023A57B /* EXLocation.m */; };
 		A15DC4BC1CFF99FE009F940D /* EXImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = A15DC4BA1CFF99FE009F940D /* EXImagePicker.m */; };
@@ -240,6 +241,8 @@
 		8454E6D91D4E95B800B9E8EF /* EXBlurView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXBlurView.m; sourceTree = "<group>"; };
 		8454E6DB1D4E960F00B9E8EF /* EXBlurViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXBlurViewManager.m; sourceTree = "<group>"; };
 		8454E6DD1D4E963A00B9E8EF /* EXBlurViewManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXBlurViewManager.h; sourceTree = "<group>"; };
+		88E089A31D6BC02200562FA1 /* EXAmplitude.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAmplitude.m; sourceTree = "<group>"; };
+		88E089A61D6BC04800562FA1 /* EXAmplitude.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAmplitude.h; sourceTree = "<group>"; };
 		A1158D301D4C4AA400286352 /* EXAppLoadingManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppLoadingManager.m; sourceTree = "<group>"; };
 		A1158D311D4C4AA400286352 /* EXAppLoadingManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAppLoadingManager.h; sourceTree = "<group>"; };
 		A12CC94A1D11E80E0023A57B /* EXLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXLocation.h; sourceTree = "<group>"; };
@@ -611,6 +614,8 @@
 				A12CC94B1D11E80E0023A57B /* EXLocation.m */,
 				B5218E781D232B8800C54B61 /* EXNotifications.h */,
 				B5218E791D232B8800C54B61 /* EXNotifications.m */,
+				88E089A61D6BC04800562FA1 /* EXAmplitude.h */,
+				88E089A31D6BC02200562FA1 /* EXAmplitude.m */,
 			);
 			path = Api;
 			sourceTree = "<group>";
@@ -1298,6 +1303,7 @@
 				A1F37F761CEFD6B2001E9EFC /* EXDisabledDevMenu.m in Sources */,
 				1936010D1D67ABCF007C0EE0 /* RNSVGCircleManager.m in Sources */,
 				A1F37F781CEFD6B2001E9EFC /* EXDisabledRedBox.m in Sources */,
+				88E089A41D6BC02200562FA1 /* EXAmplitude.m in Sources */,
 				B55FDEFD1C800D170020AA8F /* EXErrorView.m in Sources */,
 				B55FDEE91C7FDB690020AA8F /* EXExceptionHandler.m in Sources */,
 				A15DC4CC1D011248009F940D /* EXFacebook.m in Sources */,

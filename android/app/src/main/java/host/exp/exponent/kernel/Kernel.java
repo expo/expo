@@ -1086,7 +1086,7 @@ public class Kernel {
    */
 
   public void installShortcut(final String manifestUrl, final ReadableMap manifest, final String bundleUrl) {
-    JSONObject manifestJson = mExponentManifest.readableMapToJson(manifest);
+    JSONObject manifestJson = JSONBundleConverter.readableMapToJson(manifest);
     mExponentSharedPreferences.updateManifest(manifestUrl, manifestJson, bundleUrl);
     installShortcut(manifestUrl);
   }

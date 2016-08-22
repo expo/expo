@@ -10,6 +10,7 @@
 #import "EXLinkingManager.h"
 #import "EXNotifications.h"
 #import "EXVersionManager.h"
+#import "EXAmplitude.h"
 
 #import "RCTAssert.h"
 #import "RCTDevMenu+Device.h"
@@ -215,6 +216,7 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
                                     [[EXFrameExceptionsManager alloc] initWithDelegate:frame],
                                     [[EXLinkingManager alloc] initWithInitialUrl:initialUri],
                                     [[EXNotifications alloc] initWithExperienceId:experienceId],
+                                    [[EXAmplitude alloc] initWithExperienceId:experienceId],
                                     ]];
 
   if (isDeveloper) {

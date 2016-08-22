@@ -8,8 +8,11 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -19,7 +22,10 @@ import java.util.Map;
 import host.exp.exponent.ActivityResultDelegator;
 import host.exp.exponent.ExponentApplication;
 import host.exp.exponent.ExponentManifest;
+import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.modules.ExponentKernelModule;
+import versioned.host.exp.exponent.modules.api.AmplitudeModule;
 import versioned.host.exp.exponent.modules.api.ConstantsModule;
 import versioned.host.exp.exponent.modules.api.ContactsModule;
 import versioned.host.exp.exponent.modules.api.CryptoModule;
@@ -45,6 +51,8 @@ import versioned.host.exp.exponent.modules.internal.ExponentIntentModule;
 import versioned.host.exp.exponent.modules.internal.ExponentUnsignedAsyncStorageModule;
 
 public class ExponentPackage implements ReactPackage {
+
+  private static final String TAG = ExponentPackage.class.getSimpleName();
 
   private final ExponentApplication mApplication;
   private final boolean mIsKernel;
@@ -91,17 +99,27 @@ public class ExponentPackage implements ReactPackage {
       nativeModules.add(new ExponentKernelModule(reactContext, mApplication));
     } else {
       if (isVerified) {
-        nativeModules.add(new ExponentAsyncStorageModule(reactContext, mManifest));
-        nativeModules.add(new NotificationsModule(reactContext, mApplication, mManifest));
-        nativeModules.add(new ContactsModule(reactContext, mApplication));
-        nativeModules.add(new FileSystemModule(reactContext, mManifest));
-        nativeModules.add(new LocationModule(reactContext));
-        nativeModules.add(new CryptoModule(reactContext));
-        nativeModules.add(new ImagePickerModule(reactContext, mDelegator));
-        nativeModules.add(new FacebookModule(reactContext, mDelegator, mApplication));
-        nativeModules.add(new FabricModule(reactContext, mExperienceProperties));
-        nativeModules.add(new FingerprintModule(reactContext));
-        nativeModules.add(new PermissionsModule(reactContext));
+        try {
+          String experienceId = mManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+          String experienceIdEncoded = URLEncoder.encode(experienceId, "UTF-8");
+
+          nativeModules.add(new ExponentAsyncStorageModule(reactContext, mManifest));
+          nativeModules.add(new NotificationsModule(reactContext, mApplication, mManifest));
+          nativeModules.add(new ContactsModule(reactContext, mApplication));
+          nativeModules.add(new FileSystemModule(reactContext, mManifest));
+          nativeModules.add(new LocationModule(reactContext));
+          nativeModules.add(new CryptoModule(reactContext));
+          nativeModules.add(new ImagePickerModule(reactContext, mDelegator));
+          nativeModules.add(new FacebookModule(reactContext, mDelegator, mApplication));
+          nativeModules.add(new FabricModule(reactContext, mExperienceProperties));
+          nativeModules.add(new FingerprintModule(reactContext));
+          nativeModules.add(new PermissionsModule(reactContext));
+          nativeModules.add(new AmplitudeModule(reactContext, experienceIdEncoded));
+        } catch (JSONException e) {
+          EXL.e(TAG, e.toString());
+        } catch (UnsupportedEncodingException e) {
+          EXL.e(TAG, e.toString());
+        }
       } else {
         nativeModules.add(new ExponentUnsignedAsyncStorageModule(reactContext));
       }

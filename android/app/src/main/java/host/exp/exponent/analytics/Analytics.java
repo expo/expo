@@ -7,6 +7,7 @@ import com.amplitude.api.Amplitude;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -115,6 +116,16 @@ public class Analytics {
   private static void addDuration(JSONObject eventProperties, String eventName, TimedEvent end, TimedEvent start) throws JSONException {
     if (getDuration(end, start) != null) {
       eventProperties.put(eventName, getDuration(end, start));
+    }
+  }
+
+  public static void resetAmplitudeDatabaseHelper() {
+    try {
+      Field field = Class.forName("com.amplitude.api.DatabaseHelper").getDeclaredField("instance");
+      field.setAccessible(true);
+      field.set(null, null);
+    } catch (Throwable e) {
+      EXL.e(TAG, e.toString());
     }
   }
 }

@@ -119,7 +119,7 @@ dependencies {
   compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
     transitive = true;
   }
-  compile 'com.amplitude:android-sdk:2.2.0'
+  compile 'com.amplitude:android-sdk:2.9.2' // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
   compile 'com.squareup.picasso:picasso:2.5.2'
   compile 'com.google.android.gms:play-services-gcm:8.4.0'
   compile 'com.google.android.gms:play-services-analytics:8.4.0'

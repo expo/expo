@@ -315,41 +315,4 @@ public class ExponentManifest {
       return R.color.colorPrimary;
     }
   }
-
-  public JSONObject readableMapToJson(ReadableMap map) {
-    // TODO: maybe leverage Arguments.toBundle somehow?
-    JSONObject json = new JSONObject();
-
-    try {
-      ReadableMapKeySetIterator iterator = map.keySetIterator();
-      while (iterator.hasNextKey()) {
-        String key = iterator.nextKey();
-        switch (map.getType(key)) {
-          case Null:
-            json.put(key, null);
-            break;
-          case Boolean:
-            json.put(key, map.getBoolean(key));
-            break;
-          case Number:
-            json.put(key, map.getDouble(key));
-            break;
-          case String:
-            json.put(key, map.getString(key));
-            break;
-          case Map:
-            json.put(key, readableMapToJson(map.getMap(key)));
-            break;
-          case Array:
-            // TODO
-            break;
-        }
-      }
-    } catch (JSONException e) {
-      // TODO
-      EXL.d(TAG, "Error converting ReadableMap to json: " + e.toString());
-    }
-
-    return json;
-  }
 }

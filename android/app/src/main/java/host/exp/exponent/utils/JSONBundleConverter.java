@@ -4,6 +4,9 @@ package host.exp.exponent.utils;
 
 import android.os.Bundle;
 
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,9 +15,13 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import host.exp.exponent.analytics.EXL;
+
 // From com.facebook.internal.BundleJSONConverter. BundleJSONConverter doesn't support
 // JSONObjects inside of JSONArrays
 public class JSONBundleConverter {
+
+  private static final String TAG = JSONBundleConverter.class.getSimpleName();
 
   public static Bundle JSONToBundle(JSONObject jsonObject) {
     Bundle bundle = new Bundle();
@@ -117,5 +124,42 @@ public class JSONBundleConverter {
         throw new IllegalArgumentException("Unexpected type in an array: " + first.getClass());
       }
     }
+  }
+
+  public static JSONObject readableMapToJson(ReadableMap map) {
+    // TODO: maybe leverage Arguments.toBundle somehow?
+    JSONObject json = new JSONObject();
+
+    try {
+      ReadableMapKeySetIterator iterator = map.keySetIterator();
+      while (iterator.hasNextKey()) {
+        String key = iterator.nextKey();
+        switch (map.getType(key)) {
+          case Null:
+            json.put(key, null);
+            break;
+          case Boolean:
+            json.put(key, map.getBoolean(key));
+            break;
+          case Number:
+            json.put(key, map.getDouble(key));
+            break;
+          case String:
+            json.put(key, map.getString(key));
+            break;
+          case Map:
+            json.put(key, readableMapToJson(map.getMap(key)));
+            break;
+          case Array:
+            // TODO
+            break;
+        }
+      }
+    } catch (JSONException e) {
+      // TODO
+      EXL.d(TAG, "Error converting ReadableMap to json: " + e.toString());
+    }
+
+    return json;
   }
 }
