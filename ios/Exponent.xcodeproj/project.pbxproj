@@ -57,6 +57,7 @@
 		8454E6DA1D4E95B800B9E8EF /* EXBlurView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8454E6D91D4E95B800B9E8EF /* EXBlurView.m */; };
 		8454E6DC1D4E960F00B9E8EF /* EXBlurViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8454E6DB1D4E960F00B9E8EF /* EXBlurViewManager.m */; };
 		88E089A41D6BC02200562FA1 /* EXAmplitude.m in Sources */ = {isa = PBXBuildFile; fileRef = 88E089A31D6BC02200562FA1 /* EXAmplitude.m */; };
+		88E089AB1D6BCF5800562FA1 /* EXSegment.m in Sources */ = {isa = PBXBuildFile; fileRef = 88E089AA1D6BCF5800562FA1 /* EXSegment.m */; };
 		A1158D321D4C4AA400286352 /* EXAppLoadingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A1158D301D4C4AA400286352 /* EXAppLoadingManager.m */; };
 		A12CC94C1D11E80E0023A57B /* EXLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = A12CC94B1D11E80E0023A57B /* EXLocation.m */; };
 		A15DC4BC1CFF99FE009F940D /* EXImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = A15DC4BA1CFF99FE009F940D /* EXImagePicker.m */; };
@@ -243,6 +244,8 @@
 		8454E6DD1D4E963A00B9E8EF /* EXBlurViewManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXBlurViewManager.h; sourceTree = "<group>"; };
 		88E089A31D6BC02200562FA1 /* EXAmplitude.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAmplitude.m; sourceTree = "<group>"; };
 		88E089A61D6BC04800562FA1 /* EXAmplitude.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAmplitude.h; sourceTree = "<group>"; };
+		88E089A81D6BCF4300562FA1 /* EXSegment.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSegment.h; sourceTree = "<group>"; };
+		88E089AA1D6BCF5800562FA1 /* EXSegment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXSegment.m; sourceTree = "<group>"; };
 		A1158D301D4C4AA400286352 /* EXAppLoadingManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppLoadingManager.m; sourceTree = "<group>"; };
 		A1158D311D4C4AA400286352 /* EXAppLoadingManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAppLoadingManager.h; sourceTree = "<group>"; };
 		A12CC94A1D11E80E0023A57B /* EXLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXLocation.h; sourceTree = "<group>"; };
@@ -616,6 +619,8 @@
 				B5218E791D232B8800C54B61 /* EXNotifications.m */,
 				88E089A61D6BC04800562FA1 /* EXAmplitude.h */,
 				88E089A31D6BC02200562FA1 /* EXAmplitude.m */,
+				88E089A81D6BCF4300562FA1 /* EXSegment.h */,
+				88E089AA1D6BCF5800562FA1 /* EXSegment.m */,
 			);
 			path = Api;
 			sourceTree = "<group>";
@@ -819,7 +824,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 78CEE2E31ACD07D70095B124 /* Build configuration list for PBXNativeTarget "Exponent" */;
 			buildPhases = (
-				E1984121CC98A2D2ECE1FC70 /* 📦 Check Pods Manifest.lock */,
+				E1984121CC98A2D2ECE1FC70 /* [CP] Check Pods Manifest.lock */,
 				9CC2B288B6A3F241D421F586 /* [CP] Check Pods Manifest.lock */,
 				78CA08F5B853ED11AAC0A098 /* [CP] Check Pods Manifest.lock */,
 				F6995799E920278704FBB57E /* [CP] Check Pods Manifest.lock */,
@@ -849,7 +854,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B513334A1CE649FE00E9FC9E /* Build configuration list for PBXNativeTarget "ExponentIntegrationTests" */;
 			buildPhases = (
-				F976496B69F7AF7E130D3222 /* 📦 Check Pods Manifest.lock */,
+				F976496B69F7AF7E130D3222 /* [CP] Check Pods Manifest.lock */,
 				FC15528E39164A6CE1511926 /* [CP] Check Pods Manifest.lock */,
 				D2BB6DB08919DCAB66111FD5 /* [CP] Check Pods Manifest.lock */,
 				031B1A3DDA2CE47D6997E09A /* [CP] Check Pods Manifest.lock */,
@@ -1201,19 +1206,19 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		E1984121CC98A2D2ECE1FC70 /* 📦 Check Pods Manifest.lock */ = {
+		E1984121CC98A2D2ECE1FC70 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "📦 Check Pods Manifest.lock";
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		E32FCF9DC76C03757050AE89 /* [CP] Embed Pods Frameworks */ = {
@@ -1246,19 +1251,19 @@
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		F976496B69F7AF7E130D3222 /* 📦 Check Pods Manifest.lock */ = {
+		F976496B69F7AF7E130D3222 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "📦 Check Pods Manifest.lock";
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		FC15528E39164A6CE1511926 /* [CP] Check Pods Manifest.lock */ = {
@@ -1349,6 +1354,7 @@
 				1936010A1D67ABCF007C0EE0 /* RNSVGBrush.m in Sources */,
 				1936012F1D67ABCF007C0EE0 /* RNSVGViewBox.m in Sources */,
 				B597EF1E1CD98654004A48AD /* EXLog.m in Sources */,
+				88E089AB1D6BCF5800562FA1 /* EXSegment.m in Sources */,
 				B575EEA11D54053500DCABBC /* EXManifestResource.m in Sources */,
 				B5218E7A1D232B8800C54B61 /* EXNotifications.m in Sources */,
 				B5844C371D482C3D0015C683 /* EXPermissions.m in Sources */,

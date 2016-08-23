@@ -40,6 +40,7 @@ import versioned.host.exp.exponent.modules.api.KeyboardModule;
 import versioned.host.exp.exponent.modules.api.LocationModule;
 import versioned.host.exp.exponent.modules.api.NotificationsModule;
 import versioned.host.exp.exponent.modules.api.PermissionsModule;
+import versioned.host.exp.exponent.modules.api.SegmentModule;
 import versioned.host.exp.exponent.modules.api.ShakeModule;
 import versioned.host.exp.exponent.modules.api.URLHandlerModule;
 import versioned.host.exp.exponent.modules.api.UtilModule;
@@ -115,6 +116,7 @@ public class ExponentPackage implements ReactPackage {
           nativeModules.add(new FingerprintModule(reactContext));
           nativeModules.add(new PermissionsModule(reactContext));
           nativeModules.add(new AmplitudeModule(reactContext, experienceIdEncoded));
+          nativeModules.add(new SegmentModule(reactContext, experienceIdEncoded));
         } catch (JSONException e) {
           EXL.e(TAG, e.toString());
         } catch (UnsupportedEncodingException e) {

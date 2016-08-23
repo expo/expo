@@ -11,6 +11,7 @@
 #import "EXNotifications.h"
 #import "EXVersionManager.h"
 #import "EXAmplitude.h"
+#import "EXSegment.h"
 
 #import "RCTAssert.h"
 #import "RCTDevMenu+Device.h"
@@ -217,6 +218,7 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
                                     [[EXLinkingManager alloc] initWithInitialUrl:initialUri],
                                     [[EXNotifications alloc] initWithExperienceId:experienceId],
                                     [[EXAmplitude alloc] initWithExperienceId:experienceId],
+                                    [[EXSegment alloc] init],
                                     ]];
 
   if (isDeveloper) {

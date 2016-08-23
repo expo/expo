@@ -2,6 +2,7 @@
 
 package host.exp.exponent.utils;
 
+import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
@@ -40,12 +41,10 @@ import java.util.List;
 public class ScopedContext extends Context {
 
   private Context mContext;
-  private String mOriginalScope;
   private String mScope;
 
   public ScopedContext(final Context context, final String scope) {
     mContext = context;
-    mOriginalScope = scope;
     mScope = scope + '-';
   }
 
@@ -76,7 +75,7 @@ public class ScopedContext extends Context {
 
   @Override
   public Context getApplicationContext() {
-    return new ScopedContext(mContext.getApplicationContext(), mOriginalScope);
+    return new ScopedApplicationContext((Application) mContext.getApplicationContext(), this);
   }
 
   @Override
