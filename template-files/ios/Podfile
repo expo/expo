@@ -7,10 +7,13 @@ target 'Exponent' do
   pod 'Crashlytics', '~> 3.4'
   pod 'Fabric', '~> 1.6'
   pod 'SimulatorStatusMagic', '~> 1.7', :configurations => ['Debug']
+  # Be careful when updating. Could break versioning.
   pod 'Amplitude-iOS', '~> 3.8'
   pod 'FBSDKCoreKit', '~> 4.14'
   pod 'FBSDKLoginKit', '~> 4.14'
   pod 'FBSDKShareKit', '~> 4.14'
+  # Segment. Be careful when updating. Could break versioning.
+  pod 'Analytics', '~> 3.0'
 
   # Local CocoaPods
   pod 'React', :path => '${REACT_NATIVE_PATH}', :subspecs => [
