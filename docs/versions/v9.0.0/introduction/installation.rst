@@ -12,7 +12,9 @@ Desktop Development Tool: XDE
 XDE stands for Exponent Development Environment. It is a standalone
 desktop app that includes all dependencies you'll need to get started.
 
-Download the latest version of `XDE for macOS (stable) <https://xde-updates.exponentjs.com/download/mac>`_ or `XDE for Windows (alpha) <https://xde-updates.exponentjs.com/download/win32>`_.
+Download the latest version of `XDE for macOS (stable) <https://xde-updates.exponentjs.com/download/mac>`_ , `XDE for Windows (alpha) <https://xde-updates.exponentjs.com/download/win32>`_.
+
+For Linux, you will need to build XDE from the source. Follow the `building from source guide in the XDE repository <https://github.com/exponentjs/xde#build-from-source>`_.
 
 Mobile Client: Exponent for iOS and Android
 --------------------------------------------
