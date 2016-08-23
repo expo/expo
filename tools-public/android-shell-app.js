@@ -31,6 +31,15 @@ async function spawnAsync(...args) {
   }
 }
 
+async function sedInPlaceAsync(...args) {
+  const isDarwin = /^darwin/.test(process.platform);
+  if (isDarwin) {
+    await spawnAsync(`sed`, ['-i', `''`, ...args]);
+  } else {
+    await spawnAsync(`sed`, ['-i', ...args]);
+  }
+}
+
 export async function createAndroidShellApp(args) {
   let {
     url,
@@ -96,7 +105,7 @@ export async function createAndroidShellApp(args) {
 
   // Package
   shell.sed('-i', `applicationId 'host.exp.exponent'`, `applicationId '${javaPackage}'`, `${shellPath}app/build.gradle`);
-  await spawnAsync(`sed`, ['-i', `''`, '-e', `s/android:name="host.exp.exponent"/android:name="${javaPackage}"/g`, `${shellPath}app/src/main/AndroidManifest.xml`]);
+  await sedInPlaceAsync('-e', `s/android:name="host.exp.exponent"/android:name="${javaPackage}"/g`, `${shellPath}app/src/main/AndroidManifest.xml`);
 
   // Remove Exponent build script
   shell.sed('-i', `preBuild.dependsOn generateDynamicMacros`, ``, `${shellPath}app/build.gradle`);
@@ -106,7 +115,7 @@ export async function createAndroidShellApp(args) {
 
   // Push notifications
   shell.sed('-i', '"package_name": "host.exp.exponent"', `"package_name": "${javaPackage}"`, `${shellPath}app/google-services.json`); // TODO: actually use the correct file
-  await spawnAsync(`sed`, ['-i', `''`, '-e', `s/host.exp.exponent.permission.C2D_MESSAGE/${javaPackage}.permission.C2D_MESSAGE/g`, `${shellPath}app/src/main/AndroidManifest.xml`]);
+  await sedInPlaceAsync('-e', `s/host.exp.exponent.permission.C2D_MESSAGE/${javaPackage}.permission.C2D_MESSAGE/g`, `${shellPath}app/src/main/AndroidManifest.xml`);
 
   // Set INITIAL_URL and SHELL_APP_SCHEME
   shell.sed('-i', 'INITIAL_URL = null', `INITIAL_URL = "${url}"`, `${shellPath}app/src/main/java/host/exp/exponent/Constants.java`);
@@ -116,7 +125,7 @@ export async function createAndroidShellApp(args) {
   shell.sed('-i', '"app_name">Exponent', `"app_name">${name}`, `${shellPath}app/src/main/res/values/strings.xml`);
 
   // Remove exp:// scheme
-  await spawnAsync(`sed`, ['-i', `''`, '-e', `/DELETE\ AFTER/,/DELETE\ BEFORE/d`, `${shellPath}app/src/main/AndroidManifest.xml`]);
+  await sedInPlaceAsync('-e', `/DELETE\ AFTER/,/DELETE\ BEFORE/d`, `${shellPath}app/src/main/AndroidManifest.xml`);
 
   // Add shell app scheme
   if (scheme) {
@@ -159,7 +168,7 @@ export async function createAndroidShellApp(args) {
       await fs.promise.unlink(`${shellPath}app/fabric.properties`);
       await fs.promise.writeFile(`${shellPath}app/fabric.properties`, `apiSecret=${fabric.buildSecret}\n`);
 
-      await spawnAsync(`sed`, ['-i', `''`, '-e', `/BEGIN\ FABRIC\ CONFIG/,/END\ FABRIC\ CONFIG/d`, `${shellPath}app/src/main/AndroidManifest.xml`]);
+      await sedInPlaceAsync('-e', `/BEGIN\ FABRIC\ CONFIG/,/END\ FABRIC\ CONFIG/d`, `${shellPath}app/src/main/AndroidManifest.xml`);
       shell.sed('-i', '<!-- ADD FABRIC CONFIG HERE -->', `<meta-data
       android:name="io.fabric.ApiKey"
       android:value="${fabric.apiKey}"/>`, `${shellPath}app/src/main/AndroidManifest.xml`);
