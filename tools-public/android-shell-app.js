@@ -41,6 +41,7 @@ export async function createAndroidShellApp(args) {
     alias,
     keystorePassword,
     keyPassword,
+    outputFile,
   } = args;
 
   let manifest = await getManifestAsync(url, {
@@ -177,7 +178,7 @@ export async function createAndroidShellApp(args) {
     await spawnAsync(`zipalign`, ['-v', '4', 'shell-unaligned.apk', 'shell.apk']);
     await spawnAsync(`/bin/rm`, ['shell-unaligned.apk']);
     await spawnAsync(`jarsigner`, ['-verify', '-verbose', '-certs', '-keystore', keystore, 'shell.apk']);
-    await spawnAsyncThrowError(`/bin/cp`, ['shell.apk', '/tmp/shell-signed.apk']);
+    await spawnAsyncThrowError(`/bin/cp`, ['shell.apk', outputFile || '/tmp/shell-signed.apk']);
   } else {
     await spawnAsync(`/bin/rm`, ['shell-unaligned.apk']);
     await spawnAsync(`/bin/rm`, ['shell.apk']);
