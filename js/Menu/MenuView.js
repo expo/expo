@@ -7,12 +7,13 @@
 
 import React, { PropTypes } from 'react';
 import {
+  Image,
+  PixelRatio,
   StyleSheet,
-  ScrollView,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
-import Button from 'react-native-button';
 
 import autobind from 'autobind-decorator';
 import Browser from 'Browser';
@@ -33,22 +34,47 @@ export default class MenuView extends React.Component {
 
   render() {
     let taskUrl = (this.props.task.manifestUrl) ? FriendlyUrls.toFriendlyString(this.props.task.manifestUrl) : '';
+    let iconUrl = this.props.task.manifest.get('iconUrl');
+    let iconStyles = (iconUrl) ? [styles.taskIcon, {backgroundColor: 'transparent'}] : styles.taskIcon;
     return (
-      <View style={styles.container}>
+      <View style={styles.container}
+        onStartShouldSetResponder={() => true}
+        onResponderGrant={this._onPressContainer}>
         <View style={styles.overlay}>
-          <Text style={styles.taskName}>{this.props.task.manifest.get('name')}</Text>
-          <Text style={styles.taskUrl}>{taskUrl}</Text>
+          <View style={styles.taskMetaRow}>
+            <View style={styles.taskIconColumn}>
+              <Image source={{uri: iconUrl}} style={iconStyles} />
+            </View>
+            <View style={styles.taskInfoColumn}>
+              <Text style={styles.taskName}>{this.props.task.manifest.get('name')}</Text>
+              <Text style={styles.taskUrl}>{taskUrl}</Text>
+            </View>
+          </View>
+          <View style={styles.separator} />
           <View style={styles.buttonContainer}>
-            <Button onPress={Browser.refresh} style={styles.button}>
-              Reload
-            </Button>
-            <Button onPress={this._goToHome} style={styles.button}>
-              Go To Exponent Home
-            </Button>
+            {this._renderButton('Reload', Browser.refresh)}
+            {this._renderButton('Go To Exponent Home', this._goToHome)}
           </View>
         </View>
       </View>
     );
+  }
+
+  _renderButton(text, onPress) {
+    return (
+      <TouchableOpacity
+        style={styles.button}
+        onPress={onPress}>
+        <Text style={styles.buttonText}>
+          {text}
+        </Text>
+      </TouchableOpacity>
+    );
+  }
+
+  @autobind
+  _onPressContainer() {
+    ExStore.dispatch(BrowserActions.showMenuAsync(false));
   }
 
   @autobind
@@ -67,25 +93,53 @@ let styles = StyleSheet.create({
     right: 0,
     alignItems: 'center',
     justifyContent: 'center',
+    flexDirection: 'row',
   },
   overlay: {
+    flex: 1,
     backgroundColor: '#ffffff',
-    margin: 32,
     borderRadius: 6,
+    marginHorizontal: 16,
+  },
+  taskMetaRow: {
+    flexDirection: 'row',
+  },
+  taskInfoColumn: {
+    flex: 4,
+  },
+  taskIconColumn: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   taskName: {
-    color: '#000000',
+    color: '#595c68',
     backgroundColor: 'transparent',
     fontWeight: '700',
+    fontSize: 18,
     marginTop: 16,
-    marginHorizontal: 16,
-    marginBottom: 4,
+    marginRight: 16,
+    marginBottom: 2,
   },
   taskUrl: {
-    color: '#cccccc',
+    color: '#9ca0a6',
     backgroundColor: 'transparent',
-    marginHorizontal: 16,
+    marginRight: 16,
     marginVertical: 4,
+    fontSize: 14,
+  },
+  taskIcon: {
+    width: 52,
+    height: 52,
+    marginTop: 12,
+    alignSelf: 'center',
+    backgroundColor: '#c5c6c7',
+  },
+  separator: {
+    height: 1 / PixelRatio.get(),
+    backgroundColor: '#c5c6c7',
+    marginHorizontal: 16,
+    marginVertical: 12,
   },
   buttonContainer: {
     marginTop: 4,
@@ -93,10 +147,19 @@ let styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   button: {
-    fontSize: 14,
-    fontWeight: 'normal',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
     backgroundColor: 'transparent',
+    borderRadius: 3,
+    borderWidth: 1,
+    borderColor: '#4596e1',
+    alignItems: 'center',
+    marginVertical: 8,
+    marginHorizontal: 12,
+  },
+  buttonText: {
+    color: '#056ecf',
+    fontSize: 14,
+    textAlign: 'center',
+    marginVertical: 12,
+    fontWeight: '700',
   },
 });
