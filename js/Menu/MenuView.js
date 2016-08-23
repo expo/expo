@@ -7,6 +7,8 @@
 
 import React, { PropTypes } from 'react';
 import {
+  Animated,
+  Easing,
   Image,
   PixelRatio,
   StyleSheet,
@@ -18,7 +20,6 @@ import {
 import autobind from 'autobind-decorator';
 import Browser from 'Browser';
 import BrowserActions from 'BrowserActions';
-import ExColors from 'ExColors';
 import FriendlyUrls from 'FriendlyUrls';
 import ExStore from 'ExStore';
 
@@ -26,21 +27,46 @@ export default class MenuView extends React.Component {
 
   static propTypes = {
     task: PropTypes.object.isRequired,
+    shouldFadeIn: PropTypes.bool,
   };
 
   constructor(props, context) {
     super(props, context);
+
+    this.state = {
+      transitionIn: new Animated.Value(props.shouldFadeIn ? 0 : 1),
+    };
+  }
+
+  componentDidMount() {
+    if (this.props.shouldFadeIn) {
+      Animated.timing(this.state.transitionIn, {
+        easing: Easing.inOut(Easing.quad),
+        toValue: 1,
+        duration: 200,
+      }).start();
+    }
   }
 
   render() {
     let taskUrl = (this.props.task.manifestUrl) ? FriendlyUrls.toFriendlyString(this.props.task.manifestUrl) : '';
     let iconUrl = this.props.task.manifest.get('iconUrl');
     let iconStyles = (iconUrl) ? [styles.taskIcon, {backgroundColor: 'transparent'}] : styles.taskIcon;
+
+    let backgroundColor = this.state.transitionIn.interpolate({
+      inputRange: [0, 1],
+      outputRange: ['rgba(0, 0, 0, 0.001)', 'rgba(0, 0, 0, 0.5)'],
+    });
+    let scale = this.state.transitionIn.interpolate({
+      inputRange: [0, 1],
+      outputRange: [1.1, 1],
+    });
+
     return (
-      <View style={styles.container}
+      <Animated.View style={[styles.container, {backgroundColor}]}
         onStartShouldSetResponder={() => true}
         onResponderGrant={this._onPressContainer}>
-        <View style={styles.overlay}>
+        <Animated.View style={[styles.overlay, {opacity: this.state.transitionIn, transform: [{scale}]}]}>
           <View style={styles.taskMetaRow}>
             <View style={styles.taskIconColumn}>
               <Image source={{uri: iconUrl}} style={iconStyles} />
@@ -55,8 +81,8 @@ export default class MenuView extends React.Component {
             {this._renderButton('Reload', Browser.refresh)}
             {this._renderButton('Go To Exponent Home', this._goToHome)}
           </View>
-        </View>
-      </View>
+        </Animated.View>
+      </Animated.View>
     );
   }
 
@@ -85,7 +111,6 @@ export default class MenuView extends React.Component {
 
 let styles = StyleSheet.create({
   container: {
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
     position: 'absolute',
     left: 0,
     top: 0,

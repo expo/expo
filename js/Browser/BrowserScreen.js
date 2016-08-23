@@ -80,6 +80,7 @@ class BrowserScreen extends React.Component {
         menuView = (
           <MenuView
             task={task}
+            shouldFadeIn
           />
         );
       }
