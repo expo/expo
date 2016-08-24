@@ -280,6 +280,11 @@ class BrowserScreen extends React.Component {
   @autobind
   _handleFrameLoadingFinish(event) {
     this.props.dispatch(BrowserActions.setLoadingState(this.props.url, false));
+    if (!this.props.isNuxFinished) {
+      setTimeout(() => {
+        this.props.dispatch(BrowserActions.showMenuAsync(true));
+      }, 200);
+    }
   }
 
   @autobind
