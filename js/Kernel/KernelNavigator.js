@@ -8,6 +8,7 @@
 
 import React from 'react';
 import {
+  AsyncStorage,
   DeviceEventEmitter,
   NativeModules,
   StyleSheet,
@@ -23,6 +24,7 @@ import ConsoleActions from 'ConsoleActions';
 import ExRouter from 'ExRouter';
 import reactMixin from 'react-mixin';
 import { connect } from 'react-redux';
+import StorageKeys from 'StorageKeys';
 
 const {
   ExponentKernel,
@@ -76,6 +78,12 @@ class KernelNavigator extends React.Component {
       }
     });
     DeviceEventEmitter.addListener('ExponentKernel.foregroundTask', this._foregroundTask);
+    requestAnimationFrame(async () => {
+      let isNuxFinished = await AsyncStorage.getItem(StorageKeys.NuxIsFinished);
+      if (isNuxFinished) {
+        this.props.dispatch(BrowserActions.finishNuxAsync());
+      }
+    });
   }
 
   componentWillUnmount() {

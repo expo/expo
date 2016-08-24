@@ -112,6 +112,24 @@ export default Flux.createReducer(new BrowserState(), {
     return state.merge({ isNuxFinished: true });
   },
 
+  [BrowserActionTypes.finishNuxAsync]: {
+    begin(state, action) {
+      return state.merge({ isNuxFinished: true });
+    },
+    // overwrite the nux state with the result of the promise in action.payload,
+    // which wrote the state to disk async.
+    then(state, action) {
+      let asyncStorageResult = action.payload;
+      return state.merge({
+        isNuxFinished: asyncStorageResult,
+      });
+    },
+    catch(state, action) {
+      console.error(action.payload);
+      return state;
+    },
+  },
+
   [BrowserActionTypes.setKernelLoadingState](state, action) {
     let { isLoading } = action.payload;
     return state.merge({ isKernelLoading: isLoading });

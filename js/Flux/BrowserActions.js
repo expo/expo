@@ -104,9 +104,15 @@ let BrowserActions = {
     return { isVisible };
   },
 
-  @action
-  finishNuxAsync() {
-    return {};
+  async finishNuxAsync() {
+    return {
+      type: 'finishNuxAsync',
+      meta: {},
+      payload: async function() {
+        await AsyncStorage.setItem(StorageKeys.NuxIsFinished, JSON.stringify(true));
+        return true;
+      }(),
+    };
   },
 
   @action
