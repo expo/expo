@@ -21,6 +21,7 @@ import autobind from 'autobind-decorator';
 import Browser from 'Browser';
 import BrowserActions from 'BrowserActions';
 import ConsoleActions from 'ConsoleActions';
+import ExButton from 'ExButton';
 import ExRouter from 'ExRouter';
 import reactMixin from 'react-mixin';
 import { connect } from 'react-redux';
@@ -28,6 +29,7 @@ import StorageKeys from 'StorageKeys';
 
 const {
   ExponentKernel,
+  ExponentConstants,
 } = NativeModules;
 
 const KERNEL_ROUTE_HOME = 0;
@@ -39,6 +41,8 @@ class KernelNavigator extends React.Component {
       isShell,
       shellManifestUrl,
       isHomeVisible,
+      isMenuVisible,
+      isNuxFinished,
       foregroundTaskUrl,
       tasks,
       history,
@@ -47,6 +51,8 @@ class KernelNavigator extends React.Component {
       isShell,
       shellManifestUrl,
       isHomeVisible,
+      isMenuVisible,
+      isNuxFinished,
       foregroundTaskUrl,
       tasks,
       history,
@@ -96,6 +102,16 @@ class KernelNavigator extends React.Component {
   render() {
     let initialRouteStack = (this.props.isShell) ? [this._findOrCreateBrowserRoute(this.props.shellManifestUrl)] : [this._homeRoute];
 
+    let simulatorButton;
+    // EXButton appears for simulators on computers with no force touch
+    // because all the gestures are too annoying in this circumstance.
+    if (!ExponentConstants.isDevice && !View.forceTouchAvailable && this.props.tasks.size > 0) {
+      // don't show it if the menu is currently on screen.
+      if (this.props.isHomeVisible || !this.props.isMenuVisible || !this.props.isNuxFinished) {
+        simulatorButton = (<ExButton onPress={this._switchTasks} />);
+      }
+    }
+
     return (
       <View
         style={styles.container}
@@ -111,6 +127,7 @@ class KernelNavigator extends React.Component {
           style={styles.navigator}
           sceneStyle={styles.scene}
         />
+        {simulatorButton}
       </View>
     );
   }

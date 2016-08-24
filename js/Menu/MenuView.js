@@ -11,6 +11,7 @@ import {
   Dimensions,
   Easing,
   Image,
+  NativeModules,
   PixelRatio,
   StyleSheet,
   Text,
@@ -81,9 +82,16 @@ export default class MenuView extends React.Component {
   }
 
   _renderNUXRow() {
-    let tooltipMessage = (View.forceTouchAvailable) ?
-      'Press harder (use 3D touch) anywhere on your screen to show this menu.' :
-      'Long press with two fingers anywhere on your screen to show this menu.';
+    let tooltipMessage;
+    if (View.forceTouchAvailable) {
+      tooltipMessage = 'Press harder (use 3D touch) anywhere on your screen to show this menu.';
+    } else {
+      if (NativeModules.ExponentConstants.isDevice) {
+        tooltipMessage = 'Long press with two fingers anywhere on your screen to show this menu.';
+      } else {
+        tooltipMessage = 'In iPhone Simulator, tap the Exponent button in the corner of the screen to show this menu. The button does not appear on physical devices.';
+      }
+    }
     let headingStyles = (SCREEN_WIDTH < 375) ?
       [styles.nuxHeading, styles.nuxHeadingNarrow] :
       styles.nuxHeading;
