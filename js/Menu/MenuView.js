@@ -8,6 +8,7 @@
 import React, { PropTypes } from 'react';
 import {
   Animated,
+  Dimensions,
   Easing,
   Image,
   PixelRatio,
@@ -17,11 +18,15 @@ import {
   View,
 } from 'react-native';
 
+import ResponsiveImage from '@exponent/react-native-responsive-image';
+
 import autobind from 'autobind-decorator';
 import Browser from 'Browser';
 import BrowserActions from 'BrowserActions';
-import FriendlyUrls from 'FriendlyUrls';
 import ExStore from 'ExStore';
+import FriendlyUrls from 'FriendlyUrls';
+
+let SCREEN_WIDTH = Dimensions.get('window').width;
 
 export default class MenuView extends React.Component {
 
@@ -79,11 +84,23 @@ export default class MenuView extends React.Component {
     let tooltipMessage = (View.forceTouchAvailable) ?
       'Press harder (use 3D touch) anywhere on your screen to show this menu.' :
       'Long press with two fingers anywhere on your screen to show this menu.';
+    let headingStyles = (SCREEN_WIDTH < 375) ?
+      [styles.nuxHeading, styles.nuxHeadingNarrow] :
+      styles.nuxHeading;
     return (
       <View style={styles.nuxRow}>
-        <Text style={styles.nuxHeading}>
-          Welcome to Exponent!
-        </Text>
+        <View style={styles.nuxHeadingRow}>
+          <ResponsiveImage
+            sources={{
+              2: { uri: 'https://s3.amazonaws.com/exp-us-standard/exponent-icon@2x.png' },
+              3: { uri: 'https://s3.amazonaws.com/exp-us-standard/exponent-icon@3x.png' },
+            }}
+            style={styles.nuxLogo}
+          />
+          <Text style={headingStyles}>
+            Welcome to Exponent!
+          </Text>
+        </View>
         <Text style={styles.nuxTooltip}>
           {tooltipMessage}
         </Text>
@@ -225,13 +242,28 @@ let styles = StyleSheet.create({
   nuxRow: {
     paddingHorizontal: 12,
   },
+  nuxHeadingRow: {
+    flexDirection: 'row',
+    marginTop: 16,
+    marginRight: 16,
+    marginBottom: 8,
+  },
+  nuxLogo: {
+    width: 47 * 0.7,
+    height: 40 * 0.7,
+    marginRight: 12,
+    marginLeft: 8,
+    alignSelf: 'flex-start',
+  },
   nuxHeading: {
+    flex: 1,
     color: '#595c68',
     fontWeight: '700',
     fontSize: 22,
-    marginTop: 16,
-    marginRight: 16,
-    marginBottom: 4,
+  },
+  nuxHeadingNarrow: {
+    fontSize: 18,
+    marginTop: 2,
   },
   nuxTooltip: {
     color: '#595c68',
