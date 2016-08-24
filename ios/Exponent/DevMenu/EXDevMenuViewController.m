@@ -15,6 +15,7 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
 
 @property (nonatomic, strong) UINavigationBar *vTitleBar;
 @property (nonatomic, strong) UIButton *btnReloadKernel;
+@property (nonatomic, strong) UIButton *btnResetNux;
 @property (nonatomic, strong) UILabel *lblKernelHeading;
 @property (nonatomic, strong) UILabel *lblKernelInfo;
 @property (nonatomic, strong) UILabel *lblCacheHeading;
@@ -45,9 +46,13 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
   self.btnReloadKernel = [UIButton buttonWithType:UIButtonTypeSystem];
   [_btnReloadKernel setTitle:@"Reload Kernel" forState:UIControlStateNormal];
   [_btnReloadKernel addTarget:self action:@selector(_onTapReloadKernel) forControlEvents:UIControlEventTouchUpInside];
-  _btnReloadKernel.layer.cornerRadius = 3.0f;
-  _btnReloadKernel.backgroundColor = [UIColor colorWithWhite:0.9f alpha:1.0f];
   [self.view addSubview:_btnReloadKernel];
+  
+  // reset nux button
+  self.btnResetNux = [UIButton buttonWithType:UIButtonTypeSystem];
+  [_btnResetNux setTitle:@"Reset NUX" forState:UIControlStateNormal];
+  [_btnResetNux addTarget:self action:@selector(_onTapResetNux) forControlEvents:UIControlEventTouchUpInside];
+  [self.view addSubview:_btnResetNux];
   
   // kernel info heading
   self.lblKernelHeading = [[UILabel alloc] init];
@@ -76,6 +81,11 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
   _vUseCache = [[UISwitch alloc] init];
   [_vUseCache addTarget:self action:@selector(_handleUseCacheChanged:) forControlEvents:UIControlEventValueChanged];
   [self.view addSubview:_vUseCache];
+  
+  for (UIButton *btn in @[ _btnReloadKernel, _btnResetNux ]) {
+    btn.layer.cornerRadius = 3.0f;
+    btn.backgroundColor = [UIColor colorWithWhite:0.9f alpha:1.0f];
+  }
   
   for (UILabel *lbl in @[ _lblKernelHeading, _lblCacheHeading, _lblUseCache ]) {
     lbl.font = [UIFont boldSystemFontOfSize:10.0f];
@@ -108,6 +118,9 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
   
   _btnReloadKernel.frame = CGRectMake(0, 0, _lblKernelHeading.bounds.size.width, 42.0f);
   _btnReloadKernel.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMaxY(_vUseCache.frame) + 42.0f);
+
+  _btnResetNux.frame = CGRectMake(0, 0, _btnReloadKernel.bounds.size.width, _btnReloadKernel.bounds.size.height);
+  _btnResetNux.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMaxY(_btnReloadKernel.frame) + 42.0f);
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -137,6 +150,12 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
 {
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification
                                                       object:[[EXKernel sharedInstance].bridgeRegistry kernelBridge].baseBridge];
+  [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)_onTapResetNux
+{
+  [[EXKernel sharedInstance] dispatchKernelJSEvent:@"resetNuxState" body:@{} onSuccess:nil onFailure:nil];
   [self dismissViewControllerAnimated:YES completion:nil];
 }
 
