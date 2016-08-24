@@ -28,6 +28,7 @@ import ExStore from 'ExStore';
 import FriendlyUrls from 'FriendlyUrls';
 
 let SCREEN_WIDTH = Dimensions.get('window').width;
+let MENU_NARROW_SCREEN = (SCREEN_WIDTH < 375);
 
 export default class MenuView extends React.Component {
 
@@ -83,16 +84,16 @@ export default class MenuView extends React.Component {
 
   _renderNUXRow() {
     let tooltipMessage;
-    if (View.forceTouchAvailable) {
-      tooltipMessage = 'Press harder (use 3D touch) anywhere on your screen to show this menu.';
-    } else {
-      if (NativeModules.ExponentConstants.isDevice) {
-        tooltipMessage = 'Long press with two fingers anywhere on your screen to show this menu.';
+    if (NativeModules.ExponentConstants.isDevice) {
+      if (View.forceTouchAvailable) {
+        tooltipMessage = 'Press harder (use 3D touch) anywhere on your screen to show this menu.';
       } else {
-        tooltipMessage = 'In iPhone Simulator, tap the Exponent button in the corner of the screen to show this menu. The button does not appear on physical devices.';
+        tooltipMessage = 'Long press with two fingers anywhere on your screen to show this menu.';
       }
+    } else {
+      tooltipMessage = 'In iPhone Simulator, tap the Exponent button in the corner of the screen to show this menu. The button does not appear on physical devices.';
     }
-    let headingStyles = (SCREEN_WIDTH < 375) ?
+    let headingStyles = (MENU_NARROW_SCREEN) ?
       [styles.nuxHeading, styles.nuxHeadingNarrow] :
       styles.nuxHeading;
     return (
@@ -188,6 +189,7 @@ let styles = StyleSheet.create({
   },
   taskMetaRow: {
     flexDirection: 'row',
+    paddingHorizontal: 16,
   },
   taskInfoColumn: {
     flex: 4,
@@ -203,7 +205,6 @@ let styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 18,
     marginTop: 16,
-    marginRight: 16,
     marginBottom: 2,
   },
   taskUrl: {
@@ -217,6 +218,7 @@ let styles = StyleSheet.create({
     width: 52,
     height: 52,
     marginTop: 12,
+    marginRight: 12,
     alignSelf: 'center',
     backgroundColor: '#c5c6c7',
   },

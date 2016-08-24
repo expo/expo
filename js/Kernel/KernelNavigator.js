@@ -105,7 +105,7 @@ class KernelNavigator extends React.Component {
     let simulatorButton;
     // EXButton appears for simulators on computers with no force touch
     // because all the gestures are too annoying in this circumstance.
-    if (!ExponentConstants.isDevice && !View.forceTouchAvailable && this.props.tasks.size > 0) {
+    if (!ExponentConstants.isDevice && this.props.tasks.size > 0) {
       // don't show it if the menu is currently on screen.
       if (this.props.isHomeVisible || !this.props.isMenuVisible || !this.props.isNuxFinished) {
         simulatorButton = (<ExButton onPress={this._switchTasks} />);
