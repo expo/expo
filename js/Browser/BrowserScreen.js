@@ -36,13 +36,14 @@ class BrowserScreen extends React.Component {
 
   static getDataProps(data, props) {
     let { url } = props;
-    let { foregroundTaskUrl, isShell, shellManifestUrl, shellInitialUrl, isHomeVisible, isMenuVisible } = data.browser;
+    let { foregroundTaskUrl, isShell, shellManifestUrl, shellInitialUrl, isHomeVisible, isMenuVisible, isNuxFinished } = data.browser;
     let isForegrounded = (url === foregroundTaskUrl && !isHomeVisible);
     let shellTask = (shellManifestUrl) ? data.browser.tasks.get(shellManifestUrl) : null;
     return {
       url,
       isForegrounded,
       isMenuVisible,
+      isNuxFinished,
       isShell: (isShell && url === shellManifestUrl),
       isLetterboxed: (isShell && url !== shellManifestUrl),
       task: data.browser.tasks.get(url),
@@ -67,7 +68,7 @@ class BrowserScreen extends React.Component {
 
   render() {
     let content, loadingIndicator, menuView, errorView;
-    let { task, isMenuVisible } = this.props;
+    let { task, isMenuVisible, isNuxFinished } = this.props;
     if (task) {
       if (task.loadingError) {
         errorView = (
@@ -80,6 +81,7 @@ class BrowserScreen extends React.Component {
         menuView = (
           <MenuView
             task={task}
+            isNuxFinished={isNuxFinished}
             shouldFadeIn
           />
         );

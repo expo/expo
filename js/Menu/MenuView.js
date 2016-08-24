@@ -28,6 +28,7 @@ export default class MenuView extends React.Component {
   static propTypes = {
     task: PropTypes.object.isRequired,
     shouldFadeIn: PropTypes.bool,
+    isNuxFinished: PropTypes.bool,
   };
 
   constructor(props, context) {
@@ -49,10 +50,6 @@ export default class MenuView extends React.Component {
   }
 
   render() {
-    let taskUrl = (this.props.task.manifestUrl) ? FriendlyUrls.toFriendlyString(this.props.task.manifestUrl) : '';
-    let iconUrl = this.props.task.manifest.get('iconUrl');
-    let iconStyles = (iconUrl) ? [styles.taskIcon, {backgroundColor: 'transparent'}] : styles.taskIcon;
-
     let backgroundColor = this.state.transitionIn.interpolate({
       inputRange: [0, 1],
       outputRange: ['rgba(0, 0, 0, 0.001)', 'rgba(0, 0, 0, 0.5)'],
@@ -67,15 +64,7 @@ export default class MenuView extends React.Component {
         onStartShouldSetResponder={() => true}
         onResponderGrant={this._onPressContainer}>
         <Animated.View style={[styles.overlay, {opacity: this.state.transitionIn, transform: [{scale}]}]}>
-          <View style={styles.taskMetaRow}>
-            <View style={styles.taskIconColumn}>
-              <Image source={{uri: iconUrl}} style={iconStyles} />
-            </View>
-            <View style={styles.taskInfoColumn}>
-              <Text style={styles.taskName}>{this.props.task.manifest.get('name')}</Text>
-              <Text style={styles.taskUrl}>{taskUrl}</Text>
-            </View>
-          </View>
+          {this.props.isNuxFinished ? this._renderTaskInfoRow() : this._renderNUXRow()}
           <View style={styles.separator} />
           <View style={styles.buttonContainer}>
             {this._renderButton('Reload', Browser.refresh)}
@@ -83,6 +72,46 @@ export default class MenuView extends React.Component {
           </View>
         </Animated.View>
       </Animated.View>
+    );
+  }
+
+  _renderNUXRow() {
+    let tooltipMessage = (View.forceTouchAvailable) ?
+      'Press harder (use 3D touch) anywhere on your screen to show this menu.' :
+      'Long press with two fingers anywhere on your screen to show this menu.';
+    return (
+      <View style={styles.nuxRow}>
+        <Text style={styles.nuxHeading}>
+          Welcome to Exponent!
+        </Text>
+        <Text style={styles.nuxTooltip}>
+          {tooltipMessage}
+        </Text>
+        <TouchableOpacity
+          style={styles.nuxButton}
+          onPress={this._onPressFinishNux}>
+          <Text style={styles.nuxButtonLabel}>
+            Got it
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  _renderTaskInfoRow() {
+    let taskUrl = (this.props.task.manifestUrl) ? FriendlyUrls.toFriendlyString(this.props.task.manifestUrl) : '';
+    let iconUrl = this.props.task.manifest.get('iconUrl');
+    let iconStyles = (iconUrl) ? [styles.taskIcon, {backgroundColor: 'transparent'}] : styles.taskIcon;
+    return (
+      <View style={styles.taskMetaRow}>
+        <View style={styles.taskIconColumn}>
+          <Image source={{uri: iconUrl}} style={iconStyles} />
+        </View>
+        <View style={styles.taskInfoColumn}>
+          <Text style={styles.taskName}>{this.props.task.manifest.get('name')}</Text>
+          <Text style={styles.taskUrl}>{taskUrl}</Text>
+        </View>
+      </View>
     );
   }
 
@@ -96,6 +125,12 @@ export default class MenuView extends React.Component {
         </Text>
       </TouchableOpacity>
     );
+  }
+
+  @autobind
+  _onPressFinishNux() {
+    ExStore.dispatch(BrowserActions.finishNuxAsync());
+    ExStore.dispatch(BrowserActions.showMenuAsync(false));
   }
 
   @autobind
@@ -186,5 +221,33 @@ let styles = StyleSheet.create({
     textAlign: 'center',
     marginVertical: 12,
     fontWeight: '700',
+  },
+  nuxRow: {
+    paddingHorizontal: 12,
+  },
+  nuxHeading: {
+    color: '#595c68',
+    fontWeight: '700',
+    fontSize: 22,
+    marginTop: 16,
+    marginRight: 16,
+    marginBottom: 4,
+  },
+  nuxTooltip: {
+    color: '#595c68',
+    marginRight: 16,
+    marginVertical: 4,
+    fontSize: 16,
+  },
+  nuxButton: {
+    alignItems: 'center',
+    marginVertical: 12,
+    paddingVertical: 10,
+    backgroundColor: '#056ecf',
+    borderRadius: 3,
+  },
+  nuxButtonLabel: {
+    color: '#ffffff',
+    fontSize: 16,
   },
 });

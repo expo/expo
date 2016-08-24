@@ -18,6 +18,7 @@ const BrowserState = Record({
   shellInitialUrl: null,
   isHomeVisible: true,
   isMenuVisible: false,
+  isNuxFinished: false,
   isKernelLoading: false,
   foregroundTaskUrl: null,
   tasks: Map(),
@@ -105,6 +106,10 @@ export default Flux.createReducer(new BrowserState(), {
   [BrowserActionTypes.showMenuAsync](state, action) {
     let { isVisible } = action.payload;
     return state.merge({ isMenuVisible: isVisible });
+  },
+
+  [BrowserActionTypes.finishNuxAsync](state, action) {
+    return state.merge({ isNuxFinished: true });
   },
 
   [BrowserActionTypes.setKernelLoadingState](state, action) {

@@ -105,6 +105,11 @@ let BrowserActions = {
   },
 
   @action
+  finishNuxAsync() {
+    return {};
+  },
+
+  @action
   showLoadingError(code, message, originalUrl, manifest = null) {
     return { code, message, originalUrl, manifest };
   },
