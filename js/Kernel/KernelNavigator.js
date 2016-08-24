@@ -78,12 +78,7 @@ class KernelNavigator extends React.Component {
       }
     });
     DeviceEventEmitter.addListener('ExponentKernel.foregroundTask', this._foregroundTask);
-    requestAnimationFrame(async () => {
-      let isNuxFinished = await AsyncStorage.getItem(StorageKeys.NuxIsFinished);
-      if (isNuxFinished) {
-        this.props.dispatch(BrowserActions.finishNuxAsync());
-      }
-    });
+    this._loadNuxStateAsync();
   }
 
   componentWillUnmount() {
@@ -326,6 +321,19 @@ class KernelNavigator extends React.Component {
       return (lastConsoleItem && lastConsoleItem.get('fatal'));
     }
     return false;
+  }
+
+  async _loadNuxStateAsync() {
+    // load wherever the previous nux left off
+    let isNuxFinished = await AsyncStorage.getItem(StorageKeys.NuxIsFinished);
+    if (isNuxFinished === 'true') {
+      this.props.dispatch(BrowserActions.setIsNuxFinishedAsync(true));
+    }
+
+    // listen for kernel nux events
+    DeviceEventEmitter.addListener('ExponentKernel.resetNuxState', () => {
+      this.props.dispatch(BrowserActions.setIsNuxFinishedAsync(false));
+    });
   }
 }
 

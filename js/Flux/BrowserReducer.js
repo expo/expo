@@ -108,13 +108,10 @@ export default Flux.createReducer(new BrowserState(), {
     return state.merge({ isMenuVisible: isVisible });
   },
 
-  [BrowserActionTypes.finishNuxAsync](state, action) {
-    return state.merge({ isNuxFinished: true });
-  },
-
-  [BrowserActionTypes.finishNuxAsync]: {
+  [BrowserActionTypes.setIsNuxFinishedAsync]: {
     begin(state, action) {
-      return state.merge({ isNuxFinished: true });
+      let { isFinished } = action.meta;
+      return state.merge({ isNuxFinished: isFinished });
     },
     // overwrite the nux state with the result of the promise in action.payload,
     // which wrote the state to disk async.

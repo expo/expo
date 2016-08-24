@@ -104,13 +104,13 @@ let BrowserActions = {
     return { isVisible };
   },
 
-  async finishNuxAsync() {
+  async setIsNuxFinishedAsync(isFinished) {
     return {
-      type: 'finishNuxAsync',
-      meta: {},
+      type: 'setIsNuxFinishedAsync',
+      meta: { isFinished },
       payload: async function() {
-        await AsyncStorage.setItem(StorageKeys.NuxIsFinished, JSON.stringify(true));
-        return true;
+        await AsyncStorage.setItem(StorageKeys.NuxIsFinished, JSON.stringify(isFinished));
+        return isFinished;
       }(),
     };
   },
