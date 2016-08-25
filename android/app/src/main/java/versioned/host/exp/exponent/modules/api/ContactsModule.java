@@ -83,20 +83,15 @@ public class ContactsModule extends ReactContextBaseJavaModule {
           String phoneNumber = (fieldsSet.contains("phone_number")) ? cursor.getString(numberIndex) : null;
           String email = (fieldsSet.contains("email")) ? getEmailFromContentResolver(id, cr) : null;
           WritableMap contact = Arguments.createMap();
-          boolean isValid = false;
           if (phoneNumber != null && !phoneNumber.isEmpty()) {
             contact.putString("phoneNumber", phoneNumber.substring(1));
-            isValid = true;
           }
           if (email != null && !email.isEmpty()) {
             contact.putString("email", email);
-            isValid = true;
           }
-          if (isValid) {
-            contact.putInt("id", id);
-            contact.putString("name", name);
-            response.pushMap(contact);
-          }
+          contact.putInt("id", id);
+          contact.putString("name", name);
+          response.pushMap(contact);
         }
       } finally {
         cursor.close();

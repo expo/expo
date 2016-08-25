@@ -65,7 +65,6 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
   NSMutableArray *response = [[NSMutableArray alloc] init];
   
   for (NSUInteger index = 0; index < numberOfPeople; index++) {
-    BOOL isValid = NO;
     NSMutableDictionary *contact = [NSMutableDictionary dictionary];
     
     ABRecordRef person = CFArrayGetValueAtIndex(allPeople, index);
@@ -83,7 +82,6 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
       if (phoneNumbers) {
         if (ABMultiValueGetCount(phoneNumbers) > 0) {
           contact[@"phoneNumber"] = (__bridge_transfer NSString *)ABMultiValueCopyValueAtIndex(phoneNumbers, 0);
-          isValid = YES;
         }
         CFRelease(phoneNumbers);
       }
@@ -94,15 +92,12 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
       if (emails) {
         if (ABMultiValueGetCount(emails) > 0) {
           contact[@"email"] = (__bridge_transfer NSString *)ABMultiValueCopyValueAtIndex(emails, 0);
-          isValid = YES;
         }
         CFRelease(emails);
       }
     }
     
-    if (isValid) {
-      [response addObject:contact];
-    }
+    [response addObject:contact];
   }
   
   CFRelease(allPeople);
