@@ -104,6 +104,9 @@ target 'Exponent' do
 
   # Build React Native with RCT_DEV enabled
   post_install do |installer|
+    installer.pods_project.main_group.tab_width = '2';
+    installer.pods_project.main_group.indent_width = '2';
+
     installer.pod_targets.each do |target|
 
     # Generated postinstall: ReactABI9_0_0
