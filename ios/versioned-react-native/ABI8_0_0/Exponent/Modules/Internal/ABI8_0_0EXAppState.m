@@ -17,6 +17,14 @@
 
 + (NSString *)moduleName { return @"ABI8_0_0RCTAppState"; }
 
+- (instancetype)init
+{
+  if (self = [super init]) {
+    _lastKnownState = @"active";
+  }
+  return self;
+}
+
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
