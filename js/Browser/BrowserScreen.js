@@ -35,8 +35,8 @@ class BrowserScreen extends React.Component {
 
   static getDataProps(data, props) {
     let { url } = props;
-    let { foregroundTaskUrl, isShell, shellManifestUrl, shellInitialUrl } = data.browser;
-    let isForegrounded = (url === foregroundTaskUrl);
+    let { foregroundTaskUrl, isShell, shellManifestUrl, shellInitialUrl, isHomeVisible } = data.browser;
+    let isForegrounded = (url === foregroundTaskUrl && !isHomeVisible);
     let shellTask = (shellManifestUrl) ? data.browser.tasks.get(shellManifestUrl) : null;
     return {
       url,

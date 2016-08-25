@@ -74,7 +74,7 @@ class KernelNavigator extends React.Component {
   componentDidMount() {
     this._refreshSubscription = Browser.addRefreshListener(() => {
       // bypass validation of the link and just try to open it again
-      if (this.props.foregroundTaskUrl) {
+      if (this.props.foregroundTaskUrl && this.props.isHomeVisible) {
         ExponentKernel.openURL(this.props.foregroundTaskUrl);
       }
     });
