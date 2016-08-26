@@ -69,7 +69,7 @@ Make sure you have `python` and `pip` installed. Run,
 
 Then run,
 
-```make serve```
+```DEFAULT_VERSION=unversioned make serve```
 
 This will serve the docs site accessible at the URL given in the output of the
 command. This will preview the `DEFAULT_VERSION` according to the `Makefile`.
@@ -78,5 +78,4 @@ page automatically. You can also try a specific version like this,
 
 ```DEFAULT_VERSION=v6.0.0 make serve```
 
-The site is viewable at `localhost:8000`.
-
+The site is viewable at `http://0.0.0.0:8000/versions/unversioned/index.html`.
