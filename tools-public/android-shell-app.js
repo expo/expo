@@ -87,7 +87,7 @@ export async function createAndroidShellApp(args) {
   await spawnAsync(`../../tools-public/generate-dynamic-macros-android.sh`, [], {
     stdio: 'inherit',
     cwd: path.join(__dirname, '..', 'android', 'app'),
-  }); // populate android template files
+  }); // populate android template files now since we take out the prebuild step later on
   await spawnAsync(`/bin/cp`, ['-r', '../android/ReactCommon', `${shellPath}/ReactCommon`]);
   await spawnAsync(`/bin/cp`, ['-r', '../android/ReactAndroid', `${shellPath}/ReactAndroid`]);
   await spawnAsync(`/bin/cp`, ['-r', '../android/Android-Image-Cropper', `${shellPath}/Android-Image-Cropper`]);
@@ -119,7 +119,9 @@ export async function createAndroidShellApp(args) {
 
   // Set INITIAL_URL and SHELL_APP_SCHEME
   shell.sed('-i', 'INITIAL_URL = null', `INITIAL_URL = "${url}"`, `${shellPath}app/src/main/java/host/exp/exponent/Constants.java`);
-  shell.sed('-i', 'SHELL_APP_SCHEME = null', `SHELL_APP_SCHEME = "${scheme}"`, `${shellPath}app/src/main/java/host/exp/exponent/Constants.java`);
+  if (scheme) {
+    shell.sed('-i', 'SHELL_APP_SCHEME = null', `SHELL_APP_SCHEME = "${scheme}"`, `${shellPath}app/src/main/java/host/exp/exponent/Constants.java`);
+  }
 
   // App name
   shell.sed('-i', '"app_name">Exponent', `"app_name">${name}`, `${shellPath}app/src/main/res/values/strings.xml`);
