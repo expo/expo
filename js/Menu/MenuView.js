@@ -121,16 +121,34 @@ export default class MenuView extends React.Component {
   }
 
   _renderTaskInfoRow() {
-    let taskUrl = (this.props.task.manifestUrl) ? FriendlyUrls.toFriendlyString(this.props.task.manifestUrl) : '';
-    let iconUrl = this.props.task.manifest.get('iconUrl');
-    let iconStyles = (iconUrl) ? [styles.taskIcon, {backgroundColor: 'transparent'}] : styles.taskIcon;
+    let { task } = this.props;
+    let taskUrl;
+    if (task.loadingError) {
+      taskUrl = task.loadingError.originalUrl;
+    } else {
+      taskUrl = (task.manifestUrl) ? FriendlyUrls.toFriendlyString(task.manifestUrl) : '';
+    }
+    let iconUrl = task.manifest && task.manifest.get('iconUrl');
+    let taskName = task.manifest && task.manifest.get('name');
+
+    let icon = (iconUrl) ?
+      <Image source={{uri: iconUrl}} style={styles.taskIcon} /> :
+      <ResponsiveImage
+        resizeMode="contain"
+        sources={{
+          2: { uri: 'https://s3.amazonaws.com/exp-us-standard/exponent-icon@2x.png' },
+          3: { uri: 'https://s3.amazonaws.com/exp-us-standard/exponent-icon@3x.png' },
+        }}
+        style={styles.taskIcon}
+      />
+    let taskNameStyles = (taskName) ? styles.taskName : [styles.taskName, { color: '#c5c6c7' }];
     return (
       <View style={styles.taskMetaRow}>
         <View style={styles.taskIconColumn}>
-          <Image source={{uri: iconUrl}} style={iconStyles} />
+          {icon}
         </View>
         <View style={styles.taskInfoColumn}>
-          <Text style={styles.taskName}>{this.props.task.manifest.get('name')}</Text>
+          <Text style={taskNameStyles}>{(taskName) ? taskName : 'Untitled Experience'}</Text>
           <Text style={styles.taskUrl}>{taskUrl}</Text>
         </View>
       </View>
@@ -216,7 +234,7 @@ let styles = StyleSheet.create({
     marginTop: 12,
     marginRight: 12,
     alignSelf: 'center',
-    backgroundColor: '#c5c6c7',
+    backgroundColor: 'transparent',
   },
   separator: {
     height: 1 / PixelRatio.get(),
