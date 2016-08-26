@@ -23,6 +23,7 @@ import BrowserActions from 'BrowserActions';
 import ConsoleActions from 'ConsoleActions';
 import ExButton from 'ExButton';
 import ExRouter from 'ExRouter';
+import MenuView from 'MenuView';
 import reactMixin from 'react-mixin';
 import { connect } from 'react-redux';
 import StorageKeys from 'StorageKeys';
@@ -99,19 +100,35 @@ class KernelNavigator extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     this._updateNavigator(nextProps);
+    // TODO:
+    // if menu is showing, fade in overlay (force touch case captured here)
+    // if menu's not showing, fade out overlay (all menu vanishing cases captured here)
   }
 
   render() {
-    let initialRouteStack = (this.props.isShell) ? [this._findOrCreateBrowserRoute(this.props.shellManifestUrl)] : [this._homeRoute];
+    let { isShell, shellManifestUrl, tasks, foregroundTaskUrl, isHomeVisible, isMenuVisible, isNuxFinished } = this.props;
+    let initialRouteStack = (isShell) ? [this._findOrCreateBrowserRoute(shellManifestUrl)] : [this._homeRoute];
 
     let simulatorButton;
     // EXButton appears for simulators on computers with no force touch
     // because all the gestures are too annoying in this circumstance.
-    if (!ExponentConstants.isDevice && this.props.tasks.size > 0) {
+    if (!ExponentConstants.isDevice && tasks.size > 0) {
       // don't show it if the menu is currently on screen.
-      if (this.props.isHomeVisible || !this.props.isMenuVisible || !this.props.isNuxFinished) {
+      if (isHomeVisible || !isMenuVisible || !isNuxFinished) {
         simulatorButton = (<ExButton onPress={this._switchTasks} />);
       }
+    }
+
+    let menuView;
+    if (isMenuVisible) {
+      let task = tasks.get(foregroundTaskUrl);
+      menuView = (
+        <MenuView
+          task={task}
+          isNuxFinished={isNuxFinished}
+          shouldFadeIn
+        />
+      );
     }
 
     return (
@@ -130,6 +147,7 @@ class KernelNavigator extends React.Component {
           sceneStyle={styles.scene}
         />
         {simulatorButton}
+        {menuView}
       </View>
     );
   }
@@ -150,7 +168,7 @@ class KernelNavigator extends React.Component {
 
   @autobind
   _onContainerStartShouldSetResponder() {
-    return (!this.props.isShell && this.props.tasks.size > 0);
+    return (!this.props.isShell && this.props.tasks.size > 0 && !this.props.isMenuVisible);
   }
 
   @autobind
@@ -182,6 +200,7 @@ class KernelNavigator extends React.Component {
       if (touches) {
         if (touches.length === 2 && !this._hasDoubleTouch) {
           this._hasDoubleTouch = true;
+          // TODO: set shorter timeout to start fading in
           this.setTimeout(() => {
             if (this._hasDoubleTouch) {
               this._switchTasks();
@@ -189,6 +208,7 @@ class KernelNavigator extends React.Component {
           }, 600);
         }
         if (touches.length !== 2 && this._hasDoubleTouch) {
+          // TODO: cancel fade in
           this._hasDoubleTouch = false;
         }
       }
