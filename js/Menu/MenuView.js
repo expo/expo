@@ -175,7 +175,9 @@ export default class MenuView extends React.Component {
 
   @autobind
   _onPressContainer() {
-    ExStore.dispatch(BrowserActions.showMenuAsync(false));
+    if (this.props.isNuxFinished) {
+      ExStore.dispatch(BrowserActions.showMenuAsync(false));
+    }
   }
 
   @autobind
