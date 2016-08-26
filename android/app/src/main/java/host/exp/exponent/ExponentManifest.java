@@ -89,6 +89,7 @@ public class ExponentManifest {
   public static final String MANIFEST_LOADING_HIDE_EXPONENT_TEXT_KEY = "hideExponentText";
 
   private static final int MAX_BITMAP_SIZE = 192;
+  private static final String REDIRECT_SNIPPET = "exp.host/--/to-exp/";
 
   Context mContext;
   ExponentNetwork mExponentNetwork;
@@ -128,7 +129,24 @@ public class ExponentManifest {
   public void fetchManifest(final String manifestUrl, final ManifestListener listener) {
     Analytics.markEvent(Analytics.TimedEvent.STARTED_FETCHING_MANIFEST);
 
-    String httpManifestUrl = ExponentUrls.toHttp(manifestUrl);
+    String realManifestUrl = manifestUrl;
+    if (manifestUrl.contains(REDIRECT_SNIPPET)) {
+      // Redirect urls look like "https://exp.host/--/to-exp/exp%3A%2F%2Fgj-5x6.jesse.internal.exp.direct%3A80".
+      // Android is crazy and catches this url with this intent filter:
+      //  <data
+      //    android:host="*.exp.direct"
+      //    android:pathPattern=".*"
+      //    android:scheme="http"/>
+      //  <data
+      //    android:host="*.exp.direct"
+      //    android:pathPattern=".*"
+      //    android:scheme="https"/>
+      // so we have to add some special logic to handle that. This is than handling arbitrary HTTP 301s and 302
+      // because we need to add /index.exp to the paths.
+      realManifestUrl = Uri.decode(realManifestUrl.substring(realManifestUrl.indexOf(REDIRECT_SNIPPET) + REDIRECT_SNIPPET.length()));
+    }
+
+    String httpManifestUrl = ExponentUrls.toHttp(realManifestUrl);
     final boolean isSecureDomain = httpManifestUrl.startsWith(Constants.API_HOST);
 
     // Append index.exp to path
