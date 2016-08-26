@@ -34,6 +34,8 @@ const {
 
 const KERNEL_ROUTE_HOME = 0;
 const KERNEL_ROUTE_BROWSER = 1;
+const FORCE_TOUCH_SWITCH_THRESHOLD = 0.995;
+const FORCE_TOUCH_CAPTURE_THRESHOLD = 0.8;
 
 class KernelNavigator extends React.Component {
   static getDataProps(data) {
@@ -140,7 +142,7 @@ class KernelNavigator extends React.Component {
     if (this._onContainerStartShouldSetResponder()) {
       if (View.forceTouchAvailable) {
         let { force } = event.nativeEvent;
-        return (force > 0.8);
+        return (force > FORCE_TOUCH_CAPTURE_THRESHOLD);
       }
     }
     return false;
@@ -173,7 +175,7 @@ class KernelNavigator extends React.Component {
     let { force, touches } = event.nativeEvent;
     if (this._hasTouch) {
       if (View.forceTouchAvailable) {
-        if (force >= 0.99) {
+        if (force >= FORCE_TOUCH_SWITCH_THRESHOLD) {
           this._switchTasks();
         }
       }
