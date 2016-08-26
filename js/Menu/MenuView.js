@@ -57,17 +57,13 @@ export default class MenuView extends React.Component {
   }
 
   render() {
-    let backgroundColor = this.state.transitionIn.interpolate({
-      inputRange: [0, 1],
-      outputRange: ['rgba(0, 0, 0, 0.001)', 'rgba(0, 0, 0, 0.5)'],
-    });
     let scale = this.state.transitionIn.interpolate({
       inputRange: [0, 1],
       outputRange: [1.1, 1],
     });
 
     return (
-      <Animated.View style={[styles.container, {backgroundColor}]}
+      <Animated.View style={styles.container}
         onStartShouldSetResponder={() => true}
         onResponderGrant={this._onPressContainer}>
         <Animated.View style={[styles.overlay, {opacity: this.state.transitionIn, transform: [{scale}]}]}>

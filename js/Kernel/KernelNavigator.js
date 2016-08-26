@@ -8,8 +8,10 @@
 
 import React from 'react';
 import {
+  Animated,
   AsyncStorage,
   DeviceEventEmitter,
+  Easing,
   NativeModules,
   StyleSheet,
   View,
@@ -38,6 +40,9 @@ const KERNEL_ROUTE_BROWSER = 1;
 const FORCE_TOUCH_SWITCH_THRESHOLD = 0.995;
 const FORCE_TOUCH_CAPTURE_THRESHOLD = 0.8;
 
+const MENU_FADE_IN_TOTAL_MS = 400;
+const MENU_FADE_IN_BEGIN_MS = 50; // make this one shorter
+
 class KernelNavigator extends React.Component {
   static getDataProps(data) {
     let {
@@ -65,6 +70,16 @@ class KernelNavigator extends React.Component {
 
   constructor(props, context) {
     super(props, context);
+    this.state = {
+      menuTransition: new Animated.Value(0),
+      isShowingOverlay: false,
+    };
+    this.state.menuTransition.addListener((event) => {
+      let isShowingOverlay = (event.value > 0);
+      if (isShowingOverlay !== this.state.isShowingOverlay) {
+        this.setState({ isShowingOverlay });
+      }
+    });
   }
 
   componentWillMount() {
@@ -100,9 +115,7 @@ class KernelNavigator extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     this._updateNavigator(nextProps);
-    // TODO:
-    // if menu is showing, fade in overlay (force touch case captured here)
-    // if menu's not showing, fade out overlay (all menu vanishing cases captured here)
+    this._updateMenuFromProps(nextProps);
   }
 
   render() {
@@ -119,7 +132,16 @@ class KernelNavigator extends React.Component {
       }
     }
 
-    let menuView;
+    let menuView, menuOverlay;
+    if (this.state.isShowingOverlay) {
+      let backgroundColor = this.state.menuTransition.interpolate({
+        inputRange: [0, 1],
+        outputRange: ['rgba(0, 0, 0, 0.001)', 'rgba(0, 0, 0, 0.5)'],
+      });
+      menuOverlay = (
+        <Animated.View style={[styles.menuOverlay, {backgroundColor}]} />
+      );
+    }
     if (isMenuVisible) {
       let task = tasks.get(foregroundTaskUrl);
       menuView = (
@@ -147,6 +169,7 @@ class KernelNavigator extends React.Component {
           sceneStyle={styles.scene}
         />
         {simulatorButton}
+        {menuOverlay}
         {menuView}
       </View>
     );
@@ -186,6 +209,7 @@ class KernelNavigator extends React.Component {
   _onContainerResponderRelease(event) {
     this._hasTouch = false;
     this._hasDoubleTouch = false;
+    this._interruptMenuTransition();
   }
 
   @autobind
@@ -200,19 +224,48 @@ class KernelNavigator extends React.Component {
       if (touches) {
         if (touches.length === 2 && !this._hasDoubleTouch) {
           this._hasDoubleTouch = true;
-          // TODO: set shorter timeout to start fading in
+          // quickly start fading in the menu to respond to double touch
+          this.setTimeout(() => {
+            if (this._hasDoubleTouch) {
+              this._transitionMenu(0.75, MENU_FADE_IN_TOTAL_MS - MENU_FADE_IN_BEGIN_MS);
+            }
+          }, MENU_FADE_IN_BEGIN_MS);
           this.setTimeout(() => {
             if (this._hasDoubleTouch) {
               this._switchTasks();
             }
-          }, 600);
+          }, MENU_FADE_IN_TOTAL_MS);
         }
         if (touches.length !== 2 && this._hasDoubleTouch) {
-          // TODO: cancel fade in
+          this._interruptMenuTransition();
           this._hasDoubleTouch = false;
         }
       }
     }
+  }
+
+  _updateMenuFromProps(nextProps) {
+    if (nextProps.isMenuVisible) {
+      this._transitionMenu(1, 200);
+    } else {
+      this._transitionMenu(0, 200);
+    }
+  }
+
+  _interruptMenuTransition() {
+    if (!this.props.isMenuVisible) {
+      this._transitionMenu(0, 100);
+    }
+  }
+
+  _transitionMenu(toValue, duration) {
+    this.state.menuTransition.stopAnimation(() => {
+      Animated.timing(this.state.menuTransition, {
+        easing: Easing.inOut(Easing.quad),
+        toValue,
+        duration,
+      }).start();
+    });
   }
 
   @autobind
@@ -391,5 +444,12 @@ let styles = StyleSheet.create({
   },
   scene: {
     backgroundColor: 'transparent',
+  },
+  menuOverlay: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    right: 0,
   },
 });
