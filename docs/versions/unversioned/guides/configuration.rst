@@ -116,6 +116,10 @@ Configuration with exp.json
 
  The relative path to your main JavaScript file.
 
+.. attribute:: extra
+
+ Any extra fields you want to pass to your experience.
+
 .. attribute:: rnCliPath
 
  

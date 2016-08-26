@@ -29,6 +29,7 @@ example.
 .. toctree::
    :maxdepth: 2
 
+   amplitude
    app-loading
    asset
    blur-view
@@ -40,5 +41,6 @@ example.
    linear-gradient
    location
    permissions
+   segment
    svg
    video
