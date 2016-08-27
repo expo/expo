@@ -35,13 +35,14 @@ class BrowserScreen extends React.Component {
 
   static getDataProps(data, props) {
     let { url } = props;
-    let { foregroundTaskUrl, isShell, shellManifestUrl, shellInitialUrl, isHomeVisible, isNuxFinished } = data.browser;
+    let { foregroundTaskUrl, isShell, shellManifestUrl, shellInitialUrl, isHomeVisible, isMenuVisible, isNuxFinished } = data.browser;
     let isForegrounded = (url === foregroundTaskUrl && !isHomeVisible);
     let shellTask = (shellManifestUrl) ? data.browser.tasks.get(shellManifestUrl) : null;
     return {
       url,
       isForegrounded,
       isNuxFinished,
+      isMenuVisible,
       isShell: (isShell && url === shellManifestUrl),
       isLetterboxed: (isShell && url !== shellManifestUrl),
       task: data.browser.tasks.get(url),
@@ -273,6 +274,8 @@ class BrowserScreen extends React.Component {
       setTimeout(() => {
         this.props.dispatch(BrowserActions.showMenuAsync(true));
       }, 200);
+    } else if (this.props.isMenuVisible) {
+      this.props.dispatch(BrowserActions.showMenuAsync(false));
     }
   }
 
