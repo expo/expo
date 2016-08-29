@@ -16,6 +16,7 @@
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 
 #import "EXRootViewController.h"
+#import "EXConstants.h"
 #import "EXFatalHandler.h"
 #import "EXKernel.h"
 #import "EXKeys.h"
@@ -42,6 +43,7 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions
 {
   [Fabric with:@[CrashlyticsKit]];
+  [CrashlyticsKit setObjectValue:[EXConstants getExponentClientVersion] forKey:@"exp_client_version"];
   
   RCTSetFatalHandler(handleFatalReactError);
 

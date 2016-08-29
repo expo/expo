@@ -6,4 +6,6 @@
 
 - (instancetype)initWithProperties: (NSDictionary *)props;
 
++ (NSString *)getExponentClientVersion;
+
 @end

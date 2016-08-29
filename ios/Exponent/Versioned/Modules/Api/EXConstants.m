@@ -39,7 +39,7 @@
   }
   NSMutableDictionary *constants = [@{
                                       @"sessionId": _sessionId,
-                                      @"exponentVersion": [self _getBundleVersion],
+                                      @"exponentVersion": [[self class] getExponentClientVersion],
                                       @"statusBarHeight": @([self _getStatusBarHeight]),
                                       @"deviceYearClass": [self _deviceYear],
                                       @"deviceName": [self _deviceName],
@@ -57,17 +57,7 @@
   return constants;
 }
 
-#pragma mark - Internal
-
-- (BOOL)_isDevice
-{
-#if TARGET_IPHONE_SIMULATOR
-  return NO;
-#endif
-  return YES;
-}
-
-- (NSString *)_getBundleVersion
++ (NSString *)getExponentClientVersion
 {
   NSString *exponentClientVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"EXClientVersion"];
   if (exponentClientVersion) {
@@ -76,6 +66,16 @@
     // not correct in standalone apps
     return [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
   }
+}
+
+#pragma mark - Internal
+
+- (BOOL)_isDevice
+{
+#if TARGET_IPHONE_SIMULATOR
+  return NO;
+#endif
+  return YES;
 }
 
 - (NSString *)_devicePlatform
