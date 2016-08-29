@@ -22,8 +22,11 @@ android {
   defaultConfig {
     applicationId 'host.exp.exponent'
     targetSdkVersion 23
+    // ADD VERSIONS HERE
+    // BEGIN VERSIONS
     versionCode 41
     versionName '1.8.0'
+    // END VERSIONS
     ndk {
       abiFilters 'armeabi-v7a', 'x86'
     }
