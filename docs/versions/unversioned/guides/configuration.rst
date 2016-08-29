@@ -164,3 +164,11 @@ Configuration with exp.json
            .. attribute:: buildSecret
 
             Your Fabric build secret
+
+       .. attribute:: googleMaps
+
+        `Google Maps Android SDK <https://developers.google.com/maps/documentation/android-api/signup>`_ key for your standalone app.
+
+           .. attribute:: apiKey
+
+            Your Google Maps Android SDK API key
