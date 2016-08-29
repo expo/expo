@@ -343,8 +343,13 @@ class KernelNavigator extends React.Component {
   }
 
   _foregroundHome(urlToBackground) {
-    this._navigator.jumpTo(this._homeRoute);
-    ExponentKernel.routeDidForeground(KERNEL_ROUTE_HOME, { urlToBackground });
+    if (this.props.isShell) {
+      // there is no home in this case, go back to the root shell task
+      this._foregroundRouteForUrl(this.props.shellManifestUrl, urlToBackground);
+    } else {
+      this._navigator.jumpTo(this._homeRoute);
+      ExponentKernel.routeDidForeground(KERNEL_ROUTE_HOME, { urlToBackground });
+    }
   }
 
   _findOrCreateBrowserRoute(url) {
