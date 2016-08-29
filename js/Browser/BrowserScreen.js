@@ -345,12 +345,12 @@ let styles = StyleSheet.create({
     backgroundColor: 'black',
   },
   letterboxTopBar: {
-    height: 40,
+    height: 42,
     alignItems: 'center',
   },
   letterboxText: {
     color: 'white',
-    paddingTop: 18,
+    paddingTop: 20,
   },
   loadingIndicatorContainer: {
     backgroundColor: 'white',
