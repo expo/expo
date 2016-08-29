@@ -78,7 +78,7 @@ class BrowserScreen extends React.Component {
           />);
       }
       if (task.bundleUrl) {
-        content = (this.props.isLetterboxed) ? this._renderFrameWithLetterbox() : this._renderFrame();
+        content = this._renderFrame();
         if (task.isLoading) {
           loadingIndicator = this._renderLoadingIndicator();
         }
@@ -89,11 +89,16 @@ class BrowserScreen extends React.Component {
       content = this._renderPlaceholder();
     }
 
-    return (
-      <View style={styles.container}>
+    let everything = (
+      <View style={{flex: 1}}>
         {content}
         {loadingIndicator}
         {errorView}
+      </View>
+    );
+    return (
+      <View style={styles.container}>
+        {(this.props.isLetterboxed) ? this._renderLetterboxWithContent(everything) : everything}
       </View>
     );
   }
@@ -124,7 +129,7 @@ class BrowserScreen extends React.Component {
     );
   }
 
-  _renderFrameWithLetterbox() {
+  _renderLetterboxWithContent(content) {
     let backButtonText;
     if (this.props.shellTask && this.props.shellTask.manifest && this.props.shellTask.manifest.get('name')) {
       backButtonText = `Back to ${this.props.shellTask.manifest.get('name')}`;
@@ -143,7 +148,7 @@ class BrowserScreen extends React.Component {
             <View><Text style={styles.letterboxText}>{backButtonText}</Text></View>
           </TouchableWithoutFeedback>
         </View>
-        {this._renderFrame()}
+        {content}
       </View>
     );
   }
