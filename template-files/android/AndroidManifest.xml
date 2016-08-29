@@ -212,6 +212,13 @@
       android:name="io.fabric.ApiKey"
       android:value="${FABRIC_API_KEY}"/>
     <!-- END FABRIC CONFIG -->
+
+    <!-- ADD GOOGLE MAPS CONFIG HERE -->
+    <!-- BEGIN GOOGLE MAPS CONFIG -->
+    <meta-data
+      android:name="com.google.android.geo.API_KEY"
+      android:value="${GOOGLE_MAPS_API_KEY}"/>
+    <!-- END GOOGLE MAPS CONFIG -->
   </application>
 
 </manifest>
