@@ -177,6 +177,7 @@ export async function createAndroidShellApp(args) {
   if (privateConfigFile) {
     let configJsonFile = new JsonFile(privateConfigFile);
     let fabric = await configJsonFile.getAsync('fabric', null);
+    let googleMaps = await configJsonFile.getAsync('googleMaps', null);
 
     // Fabric
     if (fabric) {
@@ -187,6 +188,14 @@ export async function createAndroidShellApp(args) {
       shell.sed('-i', '<!-- ADD FABRIC CONFIG HERE -->', `<meta-data
       android:name="io.fabric.ApiKey"
       android:value="${fabric.apiKey}"/>`, `${shellPath}app/src/main/AndroidManifest.xml`);
+    }
+
+    // Google Maps
+    if (googleMaps) {
+      await sedInPlaceAsync('-e', `/BEGIN\ GOOGLE\ MAPS\ CONFIG/,/END\ GOOGLE\ MAPS\ CONFIG/d`, `${shellPath}app/src/main/AndroidManifest.xml`);
+      shell.sed('-i', '<!-- ADD GOOGLE MAPS CONFIG HERE -->', `<meta-data
+      android:name="com.google.android.geo.API_KEY"
+      android:value="${googleMaps.apiKey}"/>`, `${shellPath}app/src/main/AndroidManifest.xml`);
     }
   }
 

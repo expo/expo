@@ -47,6 +47,7 @@ import versioned.host.exp.exponent.modules.api.UtilModule;
 import versioned.host.exp.exponent.modules.api.components.LinearGradientManager;
 import versioned.host.exp.exponent.modules.api.components.VideoViewManager;
 import versioned.host.exp.exponent.modules.api.components.svg.RNSvgPackage;
+import versioned.host.exp.exponent.modules.api.components.maps.MapsPackage;
 import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule;
 import versioned.host.exp.exponent.modules.internal.ExponentIntentModule;
 import versioned.host.exp.exponent.modules.internal.ExponentUnsignedAsyncStorageModule;
@@ -146,6 +147,10 @@ public class ExponentPackage implements ReactPackage {
     // Add view managers from the react-native-svg package.
     RNSvgPackage svgPackage = new RNSvgPackage();
     viewManagers.addAll(svgPackage.createViewManagers(reactContext));
+
+    // Add view managers from the react-native-maps package.
+    MapsPackage mapsPackage = new MapsPackage();
+    viewManagers.addAll(mapsPackage.createViewManagers(reactContext));
 
     return viewManagers;
   }
