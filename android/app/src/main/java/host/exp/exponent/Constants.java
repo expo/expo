@@ -2,14 +2,22 @@
 
 package host.exp.exponent;
 
+import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.text.TextUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import host.exp.exponent.analytics.EXL;
+
 public class Constants {
 
+  private static final String TAG = Constants.class.getSimpleName();
+
+  public static final String VERSION_NAME = null;
   public static final String INITIAL_URL = null;
   public static final String SHELL_APP_SCHEME = null;
   public static final String API_HOST = "https://exp.host";
@@ -73,6 +81,21 @@ public class Constants {
       this.url = url;
       this.responseFilePath = responseFilePath;
       this.mediaType = mediaType;
+    }
+  }
+
+  public static String getVersionName(Context context) {
+    if (VERSION_NAME != null) {
+      // This will be set in shell apps
+      return VERSION_NAME;
+    } else {
+      try {
+        PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+        return pInfo.versionName;
+      } catch (PackageManager.NameNotFoundException e) {
+        EXL.e(TAG, e.toString());
+        return "";
+      }
     }
   }
 }

@@ -65,10 +65,14 @@ export async function createAndroidShellApp(args) {
   let fullManifestUrl = `${url.replace('exp://', 'https://')}/index.exp`;
 
   let javaPackage;
+  let versionCode = 1;
   if (!manifest.android) {
     javaPackage = androidPackage;
   } else {
     javaPackage = manifest.android.package || androidPackage;
+    if (manifest.android.versionCode) {
+      versionCode = manifest.android.versionCode;
+    }
   }
 
   if (!javaPackage) {
@@ -80,6 +84,7 @@ export async function createAndroidShellApp(args) {
   let scheme = manifest.scheme;
   let bundleUrl = manifest.bundleUrl;
   let notificationIconUrl = manifest.notification ? manifest.notification.iconUrl : null;
+  let version = (manifest.version) ? manifest.version : '0.0.0';
 
   let shellPath = '../android-shell-app/';
   await spawnAsync(`/bin/rm`, ['-rf', shellPath]);
@@ -106,6 +111,14 @@ export async function createAndroidShellApp(args) {
   // Package
   shell.sed('-i', `applicationId 'host.exp.exponent'`, `applicationId '${javaPackage}'`, `${shellPath}app/build.gradle`);
   await sedInPlaceAsync('-e', `s/android:name="host.exp.exponent"/android:name="${javaPackage}"/g`, `${shellPath}app/src/main/AndroidManifest.xml`);
+
+  // Versions
+  let buildGradleFile = await fs.promise.readFile(`${shellPath}app/build.gradle`, 'utf8');
+  let androidVersion = buildGradleFile.match(/versionName '(\S+)'/)[1];
+  shell.sed('-i', 'VERSION_NAME = null', `VERSION_NAME = "${androidVersion}"`, `${shellPath}app/src/main/java/host/exp/exponent/Constants.java`);
+  await sedInPlaceAsync('-e', `/BEGIN\ VERSIONS/,/END\ VERSIONS/d`, `${shellPath}app/build.gradle`);
+  shell.sed('-i', '// ADD VERSIONS HERE', `versionCode ${versionCode}
+    versionName '${version}'`, `${shellPath}app/build.gradle`);
 
   // Remove Exponent build script
   shell.sed('-i', `preBuild.dependsOn generateDynamicMacros`, ``, `${shellPath}app/build.gradle`);

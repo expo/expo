@@ -72,6 +72,13 @@ public class ExponentApplication extends MultiDexApplication {
 
     if (!BuildConfig.DEBUG) {
       Fabric.with(this, new Crashlytics());
+
+      try {
+        String versionName = Constants.getVersionName(this);
+        Crashlytics.setString("exp_client_version", versionName);
+      } catch (Throwable e) {
+        EXL.e(TAG, e.toString());
+      }
     }
 
     sApplication = this;
