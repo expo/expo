@@ -29,3 +29,4 @@ knowledge with `React Native Express <http://www.reactnativeexpress.com>`_.
    introduction/index
    guides/index
    sdk/index
+   faq/index
