@@ -99,7 +99,7 @@ public class ExponentApplication extends MultiDexApplication {
           EXL.d(TAG, "Loaded status page.");
         }
       });
-    } catch (RuntimeException e) {
+    } catch (Throwable e) {
       EXL.e(TAG, e);
     }
 
@@ -138,7 +138,7 @@ public class ExponentApplication extends MultiDexApplication {
       // Remove the badge count on weird launchers
       // TODO: doesn't work on the Xiaomi phone. bug with the library
       ShortcutBadger.removeCount(this);
-    } catch (RuntimeException e) {
+    } catch (Throwable e) {
       EXL.e(TAG, e);
     }
 
@@ -163,7 +163,7 @@ public class ExponentApplication extends MultiDexApplication {
     if (!BuildConfig.DEBUG) {
       try {
         Crashlytics.logException(throwable);
-      } catch (RuntimeException e) {
+      } catch (Throwable e) {
         Log.e(TAG, e.toString());
       }
     }

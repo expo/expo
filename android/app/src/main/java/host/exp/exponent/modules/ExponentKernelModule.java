@@ -123,7 +123,7 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule {
       params.putBoolean("isFatal", error.isFatal);
 
       queueEvent("ExponentKernel.addError", params, null);
-    } catch (RuntimeException e) {
+    } catch (Throwable e) {
       EXL.e(TAG, e);
     }
   }

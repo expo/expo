@@ -308,7 +308,7 @@ public class ExponentManifest {
           } catch (IOException e) {
             EXL.e(TAG, e);
             return BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_launcher);
-          } catch (RuntimeException e) {
+          } catch (Throwable e) {
             EXL.e(TAG, e);
             return BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_launcher);
           }
