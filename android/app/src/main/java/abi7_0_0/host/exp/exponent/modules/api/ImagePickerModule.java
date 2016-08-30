@@ -235,14 +235,14 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
                     new DisplayImageOptions.Builder()
                             .considerExifParams(true)
                             .build());
-          } catch (RuntimeException e) {}
+          } catch (Throwable e) {}
           if (bmp == null) {
             try {
               bmp = ImageLoader.getInstance().loadImageSync(beforeDecode,
                       new DisplayImageOptions.Builder()
                               .considerExifParams(true)
                               .build());
-            } catch (RuntimeException e) {}
+            } catch (Throwable e) {}
           }
           if (bmp == null) {
             promise.reject(new IllegalStateException("Image decoding failed."));

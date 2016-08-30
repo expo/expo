@@ -67,7 +67,7 @@ public class ExponentIntentModule extends IntentModule {
         handleExpUrl(url);
         return;
       }
-    } catch (RuntimeException e) {
+    } catch (Throwable e) {
       EXL.e(TAG, e.toString());
     }
 

@@ -193,7 +193,7 @@ public class Kernel {
       sVersionName = application.getPackageManager().getPackageInfo(mContext.getPackageName(), 0).versionName;
     } catch (PackageManager.NameNotFoundException e) {
       EXL.e(TAG, e);
-    } catch (RuntimeException e) {
+    } catch (Throwable e) {
       EXL.e(TAG, e);
     }
   }
@@ -674,7 +674,7 @@ public class Kernel {
       intent.putExtra(MANIFEST_URL_KEY, manifestUrl);
       intent.putExtra(IS_OPTIMISTIC_KEY, true);
       mActivityContext.startActivity(intent);
-    } catch (RuntimeException e) {
+    } catch (Throwable e) {
       EXL.e(TAG, e);
     }
   }
@@ -758,7 +758,7 @@ public class Kernel {
       } catch (NoSuchFieldException e) {
         // Don't EXL here because this isn't actually a problem
         Log.e(TAG, e.toString());
-      } catch (RuntimeException e) {
+      } catch (Throwable e) {
         EXL.e(TAG, e);
       }
     }
@@ -956,7 +956,7 @@ public class Kernel {
           onResponse(call, response);
         }
       });
-    } catch (RuntimeException e) {
+    } catch (Exception e) {
       bundleListener.onError(e);
     }
 

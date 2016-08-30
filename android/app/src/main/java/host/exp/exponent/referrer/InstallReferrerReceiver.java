@@ -70,7 +70,7 @@ public class InstallReferrerReceiver extends CampaignTrackingReceiver {
     // Preload manifest + bundle if possible
     try {
       preload();
-    } catch (RuntimeException e) {
+    } catch (Throwable e) {
       // Don't let any errors through
       EXL.e(TAG, "Couldn't preload: " + e.toString());
     }
@@ -94,7 +94,7 @@ public class InstallReferrerReceiver extends CampaignTrackingReceiver {
               manifest.getString(ExponentManifest.MANIFEST_SDK_VERSION_KEY));
         } catch (JSONException e) {
           EXL.e(TAG, e);
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
           // Don't let any errors through
           EXL.e(TAG, "Couldn't preload bundle: " + e.toString());
         }

@@ -114,7 +114,7 @@ public class ExponentHttpClient {
           return;
         }
       }
-    } catch (RuntimeException e) {
+    } catch (Throwable e) {
       EXL.e(TAG, e);
     }
 

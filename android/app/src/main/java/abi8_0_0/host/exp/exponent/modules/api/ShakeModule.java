@@ -39,7 +39,7 @@ public class ShakeModule extends ReactContextBaseJavaModule {
       getReactApplicationContext()
           .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
           .emit("Exponent.shake", null);
-    } catch (RuntimeException e) {
+    } catch (Throwable e) {
       EXL.e(TAG, e);
     }
   }

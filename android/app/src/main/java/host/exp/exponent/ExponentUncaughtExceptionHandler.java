@@ -24,7 +24,7 @@ public class ExponentUncaughtExceptionHandler implements Thread.UncaughtExceptio
   public void uncaughtException(Thread thread, Throwable ex) {
     try {
       ExperienceActivity.removeNotification(mContext);
-    } catch (RuntimeException e) {
+    } catch (Throwable e) {
       // Don't ever want to crash before getting to Crashlytics
       EXL.e(TAG, e);
     }

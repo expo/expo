@@ -425,7 +425,7 @@ public class ExperienceActivity extends BaseExperienceActivity {
         mReactInstanceManager.callRecursive("getCurrentReactContext")
             .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
             .call("emit", "Exponent.notification", args.get());
-      } catch (RuntimeException e) {
+      } catch (Throwable e) {
         EXL.e(TAG, e);
       }
     }
@@ -469,7 +469,7 @@ public class ExperienceActivity extends BaseExperienceActivity {
               .call("emit", "Exponent.notification", args.get());
         }
       }
-    } catch (RuntimeException e) {
+    } catch (Throwable e) {
       EXL.e(TAG, e);
     }
   }
@@ -519,7 +519,7 @@ public class ExperienceActivity extends BaseExperienceActivity {
     try {
       getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
       getWindow().setStatusBarColor(Color.parseColor(statusBarColor));
-    } catch (RuntimeException e) {
+    } catch (Throwable e) {
       EXL.e(TAG, e);
     }
   }
@@ -829,7 +829,7 @@ public class ExperienceActivity extends BaseExperienceActivity {
           mNotificationBuilder.setOngoing(false);
         }
       }
-    } catch (RuntimeException e) {
+    } catch (Throwable e) {
       EXL.e(TAG, e);
     }
   }

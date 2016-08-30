@@ -166,7 +166,7 @@ public class RNObject {
       EXL.e(TAG, e);
     } catch (NoSuchMethodError e) {
       EXL.e(TAG, e);
-    } catch (RuntimeException e) {
+    } catch (Throwable e) {
       EXL.e(TAG, "Runtime exception in RNObject: " + e.toString());
     }
 
@@ -182,7 +182,7 @@ public class RNObject {
       EXL.e(TAG, e);
     } catch (NoSuchMethodError e) {
       EXL.e(TAG, e);
-    } catch (RuntimeException e) {
+    } catch (Throwable e) {
       EXL.e(TAG, "Runtime exception in RNObject: " + e.toString());
     }
   }
