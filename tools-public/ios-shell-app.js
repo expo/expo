@@ -201,15 +201,15 @@ async function cleanPropertyListBackupsAsync(configFilePath, restoreOriginals) {
 async function buildAsync(args, iOSRootPath, relativeBuildDestination) {
   let { action, configuration, verbose, type } = args;
 
-  let buildCmd, pathToApp;
+  let buildCmd, buildDest, pathToApp;
   if (type === 'simulator') {
-    relativeBuildDestination += '-simulator';
-    buildCmd = `xcodebuild -workspace Exponent.xcworkspace -scheme Exponent -sdk iphonesimulator -configuration ${configuration} -arch i386 -derivedDataPath ./${relativeBuildDestination} CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO SKIP_INSTALL=NO`;
-    pathToApp = `${iOSRootPath}/${relativeBuildDestination}/Build/Products/${configuration}-iphonesimulator/Exponent.app`;
+    buildDest = `${iOSRootPath}/${relativeBuildDestination}-simulator`;
+    buildCmd = `xcodebuild -workspace Exponent.xcworkspace -scheme Exponent -sdk iphonesimulator -configuration ${configuration} -arch i386 -derivedDataPath ${buildDest} CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO SKIP_INSTALL=NO | xcpretty`;
+    pathToApp = `${buildDest}/Build/Products/${configuration}-iphonesimulator/Exponent.app`;
   } else if (type === 'archive') {
-    relativeBuildDestination += '-archive';
-    buildCmd = `xcodebuild -workspace Exponent.xcworkspace -scheme Exponent archive -configuration ${configuration} -archivePath ./${relativeBuildDestination}/Exponent.xcarchive CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO SKIP_INSTALL=NO`;
-    pathToApp = `${iOSRootPath}/${relativeBuildDestination}/Exponent.xcarchive/Products/Applications/Exponent.app`;
+    buildDest = `${iOSRootPath}/${relativeBuildDestination}-archive`;
+    buildCmd = `xcodebuild -workspace Exponent.xcworkspace -scheme Exponent archive -configuration ${configuration} -derivedDataPath ${buildDest} -archivePath ${buildDest}/Exponent.xcarchive CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO SKIP_INSTALL=NO | xcpretty`;
+    pathToApp = `${buildDest}/Exponent.xcarchive/Products/Applications/Exponent.app`;
   }
 
   if (buildCmd) {
@@ -221,6 +221,17 @@ async function buildAsync(args, iOSRootPath, relativeBuildDestination) {
     console.log(`  (action: ${action}, configuration: ${configuration})...`);
     console.log(buildCmd);
     shell.exec(`pushd ${iOSRootPath} && ${buildCmd}`);
+
+    let artifactLocation = `${iOSRootPath}/../shellAppBase-builds/${type}/${configuration}/`;
+    shell.rm('-rf', artifactLocation);
+    shell.mkdir('-p', artifactLocation);
+
+    if (type === 'archive') {
+      shell.cp('-R', `${buildDest}/Exponent.xcarchive`, artifactLocation);
+    } else if (type === 'simulator') {
+      shell.cp('-R', pathToApp, artifactLocation);
+    }
+
   }
   return pathToApp;
 }

@@ -88,6 +88,7 @@ android/logcat.txt
 
 # Shell apps
 android-shell-app
+shellAppBase-*
 
 # Template files
 android/app/src/main/AndroidManifest.xml
