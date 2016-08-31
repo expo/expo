@@ -16,6 +16,13 @@ platform :ios do
     FileUtils.mkdir_p(output_directory)
   end
 
+  lane :test do
+    scan(
+      workspace: "ios/Exponent.xcworkspace",
+      skip_slack: true
+    )
+  end
+
   lane :release do
     cert(
       team_id: "C8D8QTF339",
