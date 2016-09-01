@@ -378,6 +378,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
                                @"linkingUri": [EXKernel linkingUriForExperienceUri:_initialUri],
                                @"deviceId": [EXKernel deviceInstallUUID],
                                @"manifest": _manifest,
+                               @"appOwnership": [_initialProps objectForKey:@"appOwnership"] ?: @"exponent",
                                },
                            @"initialUri": _initialUri,
                            @"isDeveloper": @([_utils doesManifestEnableDeveloperTools]),

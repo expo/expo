@@ -232,6 +232,16 @@ class BrowserScreen extends React.Component {
       baseProps.initialUri = this.props.url;
     }
 
+    let appOwnership;
+    if (this.props.isShell) {
+      appOwnership = 'standalone';
+    } else if (this.props.isLetterboxed) {
+      appOwnership = 'guest';
+    } else {
+      appOwnership = 'exponent';
+    }
+    baseProps.appOwnership = appOwnership;
+
     return baseProps;
   }
 
