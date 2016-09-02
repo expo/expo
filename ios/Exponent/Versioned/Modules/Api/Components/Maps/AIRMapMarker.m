@@ -53,7 +53,7 @@
     if ([subview isKindOfClass:[AIRMapCallout class]]) {
         self.calloutView = (AIRMapCallout *)subview;
     } else {
-        [super insertReactSubview:subview atIndex:atIndex];
+        [super insertReactSubview:(UIView *)subview atIndex:atIndex];
     }
 }
 
@@ -61,7 +61,7 @@
     if ([subview isKindOfClass:[AIRMapCallout class]] && self.calloutView == subview) {
         self.calloutView = nil;
     } else {
-        [super removeReactSubview:subview];
+        [super removeReactSubview:(UIView *)subview];
     }
 }
 
@@ -213,7 +213,7 @@
                                                                             size:self.bounds.size
                                                                            scale:RCTScreenScale()
                                                                          clipped:YES
-                                                                      resizeMode:UIViewContentModeCenter
+                                                                      resizeMode:RCTResizeModeCenter
                                                                    progressBlock:nil
                                                                  completionBlock:^(NSError *error, UIImage *image) {
                                                                      if (error) {

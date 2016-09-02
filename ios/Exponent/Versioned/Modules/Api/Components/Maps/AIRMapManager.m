@@ -172,7 +172,7 @@ RCT_EXPORT_METHOD(fitToSuppliedMarkers:(nonnull NSNumber *)reactTag
         } else {
             AIRMap *mapView = (AIRMap *)view;
             // TODO(lmr): we potentially want to include overlays here... and could concat the two arrays together.
-            id annotations = mapView.annotations;
+            // id annotations = mapView.annotations;
 
             NSPredicate *filterMarkers = [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
                 AIRMapMarker *marker = (AIRMapMarker *)evaluatedObject;
