@@ -9,7 +9,7 @@ try {
 }
 
 if (!process.argv[2]) {
-  console.error('Please path in the path to the target file');
+  console.error('Please pass in the path to the target file');
 }
 
 const filePath = path.resolve(process.argv[2]);
