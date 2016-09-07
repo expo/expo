@@ -937,7 +937,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B513334A1CE649FE00E9FC9E /* Build configuration list for PBXNativeTarget "ExponentIntegrationTests" */;
 			buildPhases = (
-				8409A3DB3E5C26248C3ABF34 /* 📦 Check Pods Manifest.lock */,
+				8409A3DB3E5C26248C3ABF34 /* [CP] Check Pods Manifest.lock */,
 				F976496B69F7AF7E130D3222 /* [CP] Check Pods Manifest.lock */,
 				FC15528E39164A6CE1511926 /* [CP] Check Pods Manifest.lock */,
 				D2BB6DB08919DCAB66111FD5 /* [CP] Check Pods Manifest.lock */,
@@ -1156,14 +1156,14 @@
 			shellPath = /bin/bash;
 			shellScript = "set -eo pipefail\n\nif [ -z \"$EXPONENT_TOOLS_DIR\" ]; then\nEXPONENT_TOOLS_DIR=\"${SRCROOT}/../tools-public\"\nfi\n\npushd ${EXPONENT_TOOLS_DIR}\nsource source-login-scripts.sh\ngulp run-fabric-ios --fabricPath \"${PODS_ROOT}/Fabric/run\" --iosPath \"${SRCROOT}\"\npopd\n";
 		};
-		8409A3DB3E5C26248C3ABF34 /* 📦 Check Pods Manifest.lock */ = {
+		8409A3DB3E5C26248C3ABF34 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "📦 Check Pods Manifest.lock";
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
