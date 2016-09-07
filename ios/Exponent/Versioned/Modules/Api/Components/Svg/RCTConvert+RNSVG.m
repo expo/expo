@@ -15,6 +15,12 @@
 #import "RNSVGCGFCRule.h"
 #import "RNSVGVBMOS.h"
 
+@interface RCTConvert (UIFont)
+
++ (UIFont *)UIFont:(id)json;
+
+@end
+
 @implementation RCTConvert (RNSVG)
 
 + (CGPathRef)CGPath:(id)json
@@ -98,17 +104,11 @@ RCT_ENUM_CONVERTER(RNSVGVBMOS, (@{
         return frame;
     }
     
-    NSDictionary *fontDict = dict[@"font"];
-    NSString *fontFamily = fontDict[@"fontFamily"];
-    
-    if (![[UIFont familyNames] containsObject:fontFamily]) {
-        fontFamily = nil;
-    }
-    
-    CTFontRef font = (__bridge CTFontRef)[self UIFont:nil withFamily:fontFamily size:fontDict[@"fontSize"] weight:fontDict[@"fontWeight"] style:fontDict[@"fontStyle"] scaleMultiplier:1.0];
+    CTFontRef font = (__bridge CTFontRef)[self UIFont:dict[@"font"]];
     if (!font) {
-        return frame;
+      return frame;
     }
+  
     
     // Create a dictionary for this font
     CFDictionaryRef attributes = (__bridge CFDictionaryRef)@{

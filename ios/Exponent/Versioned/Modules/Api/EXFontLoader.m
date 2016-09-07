@@ -10,6 +10,7 @@
 #import <objc/runtime.h>
 
 #import "RCTConvert.h"
+#import "RCTFont.h"
 #import "RCTUtils.h"
 
 static NSMutableDictionary *EXFonts = nil;
@@ -52,21 +53,26 @@ static NSMutableDictionary *EXFonts = nil;
 @end
 
 
-@implementation RCTConvert (EXFontLoader)
+@implementation RCTFont (EXFontLoader)
 
-// Will swap this with UIFont:withFamily:size:weight:style:scaleMultiplier:
-
-+ (UIFont *)EXFont:(UIFont *)font withFamily:(id)family
-                    size:(id)size weight:(id)weight style:(id)style
-         scaleMultiplier:(CGFloat)scaleMultiplier
+// Will swap this with +[RCTConvert UIFont:]
++ (UIFont *)ex_UIFont:(id)json
 {
-  if ([family hasPrefix:@"ExponentFont-"] && EXFonts) {
-    NSString *suffix = [family substringFromIndex:[@"ExponentFont-" length]];
+  NSString * const exponentPrefix = @"ExponentFont-";
+  const CGFloat defaultFontSize = 14;
+  
+  NSString *family = [RCTConvert NSString:json[@"fontFamily"]];
+  NSNumber *size = [RCTConvert NSNumber:json[@"fontSize"]];
+
+  // TODO: Figure out a way to support the other fields in the JSON configuration
+  if ([family hasPrefix:exponentPrefix] && EXFonts) {
+    NSString *suffix = [family substringFromIndex:exponentPrefix.length];
     if (EXFonts[suffix]) {
-      return [EXFonts[suffix] UIFontWithSize:[self CGFloat:size] ?: 14];
+      return [EXFonts[suffix] UIFontWithSize:[RCTConvert CGFloat:size] ?: defaultFontSize];
     }
   }
-  return [self EXFont:font withFamily:family size:size weight:weight style:style scaleMultiplier:scaleMultiplier];
+  
+  return [self ex_UIFont:json];
 }
 
 @end
@@ -77,8 +83,8 @@ static NSMutableDictionary *EXFonts = nil;
 RCT_EXPORT_MODULE(ExponentFontLoader);
 
 + (void)initialize {
-  SEL a = @selector(EXFont:withFamily:size:weight:style:scaleMultiplier:);
-  SEL b = @selector(UIFont:withFamily:size:weight:style:scaleMultiplier:);
+  SEL a = @selector(ex_UIFont:);
+  SEL b = @selector(UIFont:);
   method_exchangeImplementations(class_getClassMethod([RCTConvert class], a),
                                  class_getClassMethod([RCTConvert class], b));
 }
