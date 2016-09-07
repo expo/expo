@@ -77,12 +77,18 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(__unused RCTPromiseRejectBlock)reject)
 {
-  [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXKernelOpenUrlNotification")
-                                                      object:nil
-                                                    userInfo:@{
-                                                               @"bridge": self.bridge,
-                                                               @"url": URL.absoluteString,
-                                                               }];
+  if (URL) {
+    [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXKernelOpenUrlNotification")
+                                                        object:nil
+                                                      userInfo:@{
+                                                                 @"bridge": self.bridge,
+                                                                 @"url": URL.absoluteString,
+                                                                 }];
+    resolve(@YES);
+  } else {
+    NSError *err = [NSError errorWithDomain:kEXKernelErrorDomain code:-1 userInfo:@{ NSLocalizedDescriptionKey: @"Cannot open a nil url" }];
+    reject(@"E_INVALID_URL", err.localizedDescription, err);
+  }
 }
 
 RCT_EXPORT_METHOD(addDevMenu)
