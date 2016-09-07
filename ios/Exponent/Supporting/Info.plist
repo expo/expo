@@ -32,8 +32,10 @@
 			</array>
 		</dict>
 	</array>
+	<key>CFBundleVersion</key>
+	<string>1.8.1.103646</string>
 	<key>EXClientVersion</key>
-	<string>1.8.1.103668</string>
+	<string>1.8.1.103646</string>
 	<key>Fabric</key>
 	<dict>
 		<key>APIKey</key>
