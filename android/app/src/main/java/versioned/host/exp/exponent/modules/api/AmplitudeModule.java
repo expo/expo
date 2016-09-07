@@ -6,6 +6,7 @@ import com.amplitude.api.AmplitudeClient;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 
 import host.exp.exponent.analytics.Analytics;
@@ -68,6 +69,13 @@ public class AmplitudeModule extends ReactContextBaseJavaModule {
   public void logEventWithProperties(final String eventName, final ReadableMap properties) {
     if (mClient != null) {
       mClient.logEvent(eventName, JSONBundleConverter.readableMapToJson(properties));
+    }
+  }
+
+  @ReactMethod
+  public void setGroup(final String groupType, final ReadableArray groupNames) {
+    if (mClient != null) {
+      mClient.setGroup(groupType, JSONBundleConverter.readableArrayToJson(groupNames));
     }
   }
 }

@@ -56,4 +56,9 @@ RCT_EXPORT_METHOD(logEventWithProperties:(NSString *)eventName withProperties:(N
   [[Amplitude instanceWithName:_escapedExperienceId] logEvent:eventName withEventProperties:properties];
 }
 
+RCT_EXPORT_METHOD(setGroup:(NSString *)groupType withGroupNames:(NSArray *)groupNames)
+{
+  [[Amplitude instanceWithName:_escapedExperienceId] setGroup:groupType groupName:groupNames];
+}
+
 @end

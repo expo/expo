@@ -4,6 +4,7 @@ package host.exp.exponent.utils;
 
 import android.os.Bundle;
 
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 
@@ -151,13 +152,48 @@ public class JSONBundleConverter {
             json.put(key, readableMapToJson(map.getMap(key)));
             break;
           case Array:
-            // TODO
+            json.put(key, readableArrayToJson(map.getArray(key)));
             break;
         }
       }
     } catch (JSONException e) {
       // TODO
       EXL.d(TAG, "Error converting ReadableMap to json: " + e.toString());
+    }
+
+    return json;
+  }
+
+  public static JSONArray readableArrayToJson(ReadableArray array) {
+    // TODO: maybe leverage Arguments.toBundle somehow?
+    JSONArray json = new JSONArray();
+
+    try {
+      for (int i = 0; i < array.size(); i++) {
+        switch (array.getType(i)) {
+          case Null:
+            json.put(null);
+            break;
+          case Boolean:
+            json.put(array.getBoolean(i));
+            break;
+          case Number:
+            json.put(array.getDouble(i));
+            break;
+          case String:
+            json.put(array.getString(i));
+            break;
+          case Map:
+            json.put(readableMapToJson(array.getMap(i)));
+            break;
+          case Array:
+            json.put(readableArrayToJson(array.getArray(i)));
+            break;
+        }
+      }
+    } catch (JSONException e) {
+      // TODO
+      EXL.d(TAG, "Error converting ReadableArray to json: " + e.toString());
     }
 
     return json;
