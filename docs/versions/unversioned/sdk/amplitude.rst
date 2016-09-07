@@ -49,3 +49,13 @@ Note: Session tracking may not work correctly when running Experiences in the ma
 
    :param object properties:
       A map of custom properties.
+
+.. function:: Exponent.Amplitude.setGroup(groupType, groupNames)
+
+   Add the current user to a group. See https://github.com/amplitude/Amplitude-iOS#setting-groups and https://github.com/amplitude/Amplitude-Android#setting-groups.
+
+   :param string groupType:
+      The group name, e.g. "sports".
+
+   :param object groupNames:
+      An array of group names, e.g. ["tennis", "soccer"]. Note: the iOS and Android Amplitude SDKs allow you to use a string or an array of strings. We only support an array of strings. Just use an array with one element if you only want one group name.
