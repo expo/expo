@@ -13,110 +13,75 @@ import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
-import com.facebook.react.bridge.ReadableType;
-import com.facebook.react.bridge.WritableArray;
-import com.facebook.react.uimanager.MatrixMathHelper;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 /**
  * Native counterpart of transform animated node (see AnimatedTransform class in AnimatedImplementation.js)
  */
 /* package */ class TransformAnimatedNode extends AnimatedNode {
 
+  private class TransformConfig {
+    public String mProperty;
+  }
+
+  private class AnimatedTransformConfig extends TransformConfig {
+    public int mNodeTag;
+  }
+
+  private class StaticTransformConfig extends TransformConfig {
+    public double mValue;
+  }
+
   private final NativeAnimatedNodesManager mNativeAnimatedNodesManager;
-  private final Map<String, Object> mPropMapping;
+  private final List<TransformConfig> mTransformConfigs;
 
   TransformAnimatedNode(ReadableMap config, NativeAnimatedNodesManager nativeAnimatedNodesManager) {
-    ReadableMap transforms = config.getMap("animated");
-    ReadableMapKeySetIterator iter = transforms.keySetIterator();
-    mPropMapping = new HashMap<>();
-    while (iter.hasNextKey()) {
-      String propKey = iter.nextKey();
-      int nodeIndex = transforms.getInt(propKey);
-      mPropMapping.put(propKey, nodeIndex);
-    }
-    ReadableMap statics = config.getMap("statics");
-    iter = statics.keySetIterator();
-    while (iter.hasNextKey()) {
-      String propKey = iter.nextKey();
-      switch (statics.getType(propKey)) {
-        case Number:
-          mPropMapping.put(propKey, statics.getDouble(propKey));
-          break;
-        case String:
-          mPropMapping.put(
-            propKey,
-            NativeAnimatedHelper.parseAngle(statics.getString(propKey)));
-          break;
+    ReadableArray transforms = config.getArray("transforms");
+    mTransformConfigs = new ArrayList<>(transforms.size());
+    for (int i = 0; i < transforms.size(); i++) {
+      ReadableMap transformConfigMap = transforms.getMap(i);
+      String property = transformConfigMap.getString("property");
+      String type = transformConfigMap.getString("type");
+      if (type.equals("animated")) {
+        AnimatedTransformConfig transformConfig = new AnimatedTransformConfig();
+        transformConfig.mProperty = property;
+        transformConfig.mNodeTag = transformConfigMap.getInt("nodeTag");
+        mTransformConfigs.add(transformConfig);
+      } else {
+        StaticTransformConfig transformConfig = new StaticTransformConfig();
+        transformConfig.mProperty = property;
+        transformConfig.mValue = transformConfigMap.getDouble("value");
+        mTransformConfigs.add(transformConfig);
       }
-
     }
     mNativeAnimatedNodesManager = nativeAnimatedNodesManager;
   }
 
   public void collectViewUpdates(JavaOnlyMap propsMap) {
-    double[] matrix = MatrixMathHelper.createIdentity();
+    List<JavaOnlyMap> transforms = new ArrayList<>(mTransformConfigs.size());
 
-    // Convert each transform to a matrix and multiply them together.
-    for (Map.Entry<String, Object> entry : mPropMapping.entrySet()) {
-      Object entryValue = entry.getValue();
-      String entryKey = entry.getKey();
-
-      // Get the current value of the transform. Animated nodes will be an Integer
-      // representing the node id and static values will be a Double.
-      double transformValue = -1;
-      if (entryValue instanceof Integer) {
-        AnimatedNode node = mNativeAnimatedNodesManager.getNodeById((Integer) entryValue);
+    for (TransformConfig transformConfig : mTransformConfigs) {
+      double value;
+      if (transformConfig instanceof AnimatedTransformConfig) {
+        int nodeTag = ((AnimatedTransformConfig) transformConfig).mNodeTag;
+        AnimatedNode node = mNativeAnimatedNodesManager.getNodeById(nodeTag);
         if (node == null) {
           throw new IllegalArgumentException("Mapped style node does not exists");
         } else if (node instanceof ValueAnimatedNode) {
-          transformValue = ((ValueAnimatedNode) node).mValue;
+          value = ((ValueAnimatedNode) node).mValue;
         } else {
           throw new IllegalArgumentException("Unsupported type of node used as a transform child " +
             "node " + node.getClass());
         }
       } else {
-        transformValue = (double) entryValue;
+        value = ((StaticTransformConfig) transformConfig).mValue;
       }
 
-      // TODO: Optimise these matrix maths to avoid allocations for each transform.
-      switch(entryKey) {
-        case "scaleX":
-          matrix = MatrixMathHelper.multiply(
-            MatrixMathHelper.createScale3d(transformValue, 1, 1), matrix);
-          break;
-        case "scaleY":
-          matrix = MatrixMathHelper.multiply(
-            MatrixMathHelper.createScale3d(1, transformValue, 1), matrix);
-          break;
-        case "scale":
-          matrix = MatrixMathHelper.multiply(
-            MatrixMathHelper.createScale3d(transformValue, transformValue, 1), matrix);
-          break;
-        case "translateX":
-          matrix = MatrixMathHelper.multiply(
-            MatrixMathHelper.createTranslate3d(transformValue, 0, 0), matrix);
-          break;
-        case "translateY":
-          matrix = MatrixMathHelper.multiply(
-            MatrixMathHelper.createTranslate3d(0, transformValue, 0), matrix);
-          break;
-        case "rotate":
-          matrix = MatrixMathHelper.multiply(
-            MatrixMathHelper.createRotateZ(transformValue), matrix);
-      }
+      transforms.add(JavaOnlyMap.of(transformConfig.mProperty, value));
     }
 
-    // Box the double array to allow passing it as a JavaOnlyArray.
-    ArrayList<Double> matrixList = new ArrayList<>(16);
-    for (double ele : matrix) {
-      matrixList.add(ele);
-    }
-
-    propsMap.putArray("transform", JavaOnlyArray.from(matrixList));
+    propsMap.putArray("transform", JavaOnlyArray.from(transforms));
   }
 }

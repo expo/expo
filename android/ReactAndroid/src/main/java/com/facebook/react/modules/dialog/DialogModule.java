@@ -60,6 +60,9 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
     public static String KEY_ITEMS = "items";
 
     /* package */
+    public static String KEY_CANCELABLE = "cancelable";
+
+    /* package */
     public static Map<String, Object> CONSTANTS = MapBuilder.<String, Object>of(ACTION_BUTTON_CLICKED, ACTION_BUTTON_CLICKED, ACTION_DISMISSED, ACTION_DISMISSED, KEY_BUTTON_POSITIVE, DialogInterface.BUTTON_POSITIVE, KEY_BUTTON_NEGATIVE, DialogInterface.BUTTON_NEGATIVE, KEY_BUTTON_NEUTRAL, DialogInterface.BUTTON_NEUTRAL);
 
     public boolean mIsInForeground;
@@ -143,6 +146,9 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
             if (isUsingSupportLibrary()) {
                 SupportAlertFragment alertFragment = new SupportAlertFragment(actionListener, arguments);
                 if (isInForeground) {
+                    if (arguments.containsKey(KEY_CANCELABLE)) {
+                        alertFragment.setCancelable(arguments.getBoolean(KEY_CANCELABLE));
+                    }
                     alertFragment.show(mSupportFragmentManager, FRAGMENT_TAG);
                 } else {
                     mFragmentToShow = alertFragment;
@@ -150,6 +156,9 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
             } else {
                 AlertFragment alertFragment = new AlertFragment(actionListener, arguments);
                 if (isInForeground) {
+                    if (arguments.containsKey(KEY_CANCELABLE)) {
+                        alertFragment.setCancelable(arguments.getBoolean(KEY_CANCELABLE));
+                    }
                     alertFragment.show(mFragmentManager, FRAGMENT_TAG);
                 } else {
                     mFragmentToShow = alertFragment;
@@ -257,6 +266,9 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
                 itemsArray[i] = items.getString(i);
             }
             args.putCharSequenceArray(AlertFragment.ARG_ITEMS, itemsArray);
+        }
+        if (options.hasKey(KEY_CANCELABLE)) {
+            args.putBoolean(KEY_CANCELABLE, options.getBoolean(KEY_CANCELABLE));
         }
         fragmentManagerHelper.showNewAlert(mIsInForeground, args, actionCallback);
     }

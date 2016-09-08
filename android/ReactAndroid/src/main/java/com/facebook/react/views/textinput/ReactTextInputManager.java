@@ -34,7 +34,6 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.PixelUtil;
@@ -232,6 +231,17 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
+  @ReactProp(name = "selection")
+  public void setSelection(ReactEditText view, @Nullable ReadableMap selection) {
+    if (selection == null) {
+      return;
+    }
+
+    if (selection.hasKey("start") && selection.hasKey("end")) {
+      view.setSelection(selection.getInt("start"), selection.getInt("end"));
+    }
+  }
+
   @ReactProp(name = "onSelectionChange", defaultBoolean = false)
   public void setOnSelectionChange(final ReactEditText view, boolean onSelectionChange) {
     if (onSelectionChange) {
@@ -266,19 +276,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       view.setHintTextColor(DefaultStyleValuesUtil.getDefaultTextColorHint(view.getContext()));
     } else {
       view.setHintTextColor(color);
-    }
-  }
-
-  @ReactProp(name = "selection")
-  public void setSelection(ReactEditText view, @Nullable ReadableMap selection) {
-    if (selection != null) {
-      if (selection.hasKey("start") && selection.hasKey("end")) {
-        view.setSelection(selection.getInt("start"), selection.getInt("end"));
-      } else if (selection.hasKey("start")) {
-        view.setSelection(selection.getInt("start"), selection.getInt("start"));
-      } else if (selection.hasKey("end")) {
-        view.setSelection(view.getSelectionStart(), selection.getInt("end"));
-      }
     }
   }
 
@@ -592,16 +589,14 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       mEventDispatcher.dispatchEvent(
           new ReactTextChangedEvent(
               mEditText.getId(),
-              SystemClock.nanoTime(),
               s.toString(),
-              (int) PixelUtil.toDIPFromPixel(contentWidth),
-              (int) PixelUtil.toDIPFromPixel(contentHeight),
+              PixelUtil.toDIPFromPixel(contentWidth),
+              PixelUtil.toDIPFromPixel(contentHeight),
               mEditText.incrementAndGetEventCounter()));
 
       mEventDispatcher.dispatchEvent(
           new ReactTextInputEvent(
               mEditText.getId(),
-              SystemClock.nanoTime(),
               newText,
               oldText,
               start,
@@ -626,18 +621,15 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
             if (hasFocus) {
               eventDispatcher.dispatchEvent(
                   new ReactTextInputFocusEvent(
-                      editText.getId(),
-                      SystemClock.nanoTime()));
+                      editText.getId()));
             } else {
               eventDispatcher.dispatchEvent(
                   new ReactTextInputBlurEvent(
-                      editText.getId(),
-                      SystemClock.nanoTime()));
+                      editText.getId()));
 
               eventDispatcher.dispatchEvent(
                   new ReactTextInputEndEditingEvent(
                       editText.getId(),
-                      SystemClock.nanoTime(),
                       editText.getText().toString()));
             }
           }
@@ -655,7 +647,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
               eventDispatcher.dispatchEvent(
                   new ReactTextInputSubmitEditingEvent(
                       editText.getId(),
-                      SystemClock.nanoTime(),
                       editText.getText().toString()));
             }
             if (actionId == EditorInfo.IME_ACTION_NEXT ||
@@ -692,7 +683,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         contentWidth = mEditText.getCompoundPaddingLeft() + mEditText.getLayout().getWidth() +
           mEditText.getCompoundPaddingRight();
         contentHeight = mEditText.getCompoundPaddingTop() + mEditText.getLayout().getHeight() +
-          mEditText.getCompoundPaddingTop();
+          mEditText.getCompoundPaddingBottom();
       }
 
       if (contentWidth != mPreviousContentWidth || contentHeight != mPreviousContentHeight) {
@@ -702,9 +693,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         mEventDispatcher.dispatchEvent(
           new ReactContentSizeChangedEvent(
             mEditText.getId(),
-            SystemClock.nanoTime(),
-            (int) PixelUtil.toDIPFromPixel(contentWidth),
-            (int) PixelUtil.toDIPFromPixel(contentHeight)));
+            PixelUtil.toDIPFromPixel(contentWidth),
+            PixelUtil.toDIPFromPixel(contentHeight)));
       }
     }
   }
@@ -731,7 +721,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         mEventDispatcher.dispatchEvent(
             new ReactTextInputSelectionEvent(
                 mReactEditText.getId(),
-                SystemClock.nanoTime(),
                 start,
                 end
             )

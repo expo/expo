@@ -26,6 +26,7 @@ import com.facebook.react.uimanager.GuardedChoreographerFrameCallback;
 import com.facebook.react.uimanager.ReactChoreographer;
 import com.facebook.react.uimanager.UIImplementation;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.events.EventDispatcher;
 
 import java.util.ArrayList;
 
@@ -93,11 +94,9 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
     mReactChoreographer = ReactChoreographer.getInstance();
 
     ReactApplicationContext reactCtx = getReactApplicationContext();
-    UIImplementation uiImplementation =
-      reactCtx.getNativeModule(UIManagerModule.class).getUIImplementation();
+    UIManagerModule uiManager = reactCtx.getNativeModule(UIManagerModule.class);
 
-    final NativeAnimatedNodesManager nodesManager =
-      new NativeAnimatedNodesManager(uiImplementation);
+    final NativeAnimatedNodesManager nodesManager = new NativeAnimatedNodesManager(uiManager);
     mAnimatedFrameCallback = new GuardedChoreographerFrameCallback(reactCtx) {
       @Override
       protected void doFrameGuarded(final long frameTimeNanos) {
@@ -307,6 +306,26 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
       @Override
       public void execute(NativeAnimatedNodesManager animatedNodesManager) {
         animatedNodesManager.disconnectAnimatedNodeFromView(animatedNodeTag, viewTag);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void addAnimatedEventToView(final int viewTag, final String eventName, final ReadableMap eventMapping) {
+    mOperations.add(new UIThreadOperation() {
+      @Override
+      public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+        animatedNodesManager.addAnimatedEventToView(viewTag, eventName, eventMapping);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void removeAnimatedEventFromView(final int viewTag, final String eventName) {
+    mOperations.add(new UIThreadOperation() {
+      @Override
+      public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+        animatedNodesManager.removeAnimatedEventFromView(viewTag, eventName);
       }
     });
   }
