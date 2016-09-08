@@ -188,12 +188,13 @@ class BrowserScreen extends React.Component {
     let { task } = this.props;
     if (task) {
       let { manifest } = task;
-      if (manifest && manifest.getIn(['loading', 'iconUrl'])) {
+      let iconUrl = manifest.getIn(['loading', 'iconUrl']);
+      if (manifest && iconUrl) {
         return (
           <Image
-            source={{uri: manifest.getIn(['loading', 'iconUrl'])}}
-            resizeMode="contain"
-            style={{width: 96, height: 96, marginVertical: 16}}
+            source={{uri: iconUrl}}
+            resizeMode="center"
+            style={{width: 200, height: 200, marginVertical: 16}}
           />
         );
       }
