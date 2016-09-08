@@ -309,7 +309,14 @@ class BrowserScreen extends React.Component {
     let action = ConsoleActions.logUncaughtError(id, message, stack, fatal, this.props.url);
     dispatch(action);
     if (fatal) {
-      dispatch(BrowserActions.showLoadingError(id, message, this.props.url, this.props.task.manifest));
+      let isDeveloper = false;
+      if (this.props.task && this.props.task.manifest) {
+        isDeveloper = this.props.task.manifest.get('developer');
+      }
+      if (!isDeveloper) {
+        // if developer == true, RCTRedBox will show up instead
+        dispatch(BrowserActions.showLoadingError(id, message, this.props.url, this.props.task.manifest));
+      }
     }
   }
 
