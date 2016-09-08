@@ -77,4 +77,9 @@ public class ExponentIntentModule extends IntentModule {
   private void handleExpUrl(final String url) {
     mKernel.openExperience(new Kernel.ExperienceOptions(url, url, null));
   }
+
+  @ReactMethod
+  public void canOpenURL(String url, Promise promise) {
+    super.canOpenURL(url, promise);
+  }
 }
