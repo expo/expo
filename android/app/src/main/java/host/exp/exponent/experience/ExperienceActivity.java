@@ -609,7 +609,14 @@ public class ExperienceActivity extends BaseExperienceActivity {
     if (mNotification != null) {
       bundle.putString("notification", mNotification.toString()); // Deprecated
       try {
-        exponentProps.put("notification", mNotification.toString());
+        if (ABIVersion.toNumber(mSDKVersion) < ABIVersion.toNumber("10.0.0")) {
+          exponentProps.put("notification", mNotification.toString());
+        } else {
+          JSONObject notificationObject = new JSONObject();
+          notificationObject.put("origin", "selected");
+          notificationObject.put("data", mNotification.toString());
+          exponentProps.put("notification", notificationObject);
+        }
       } catch (JSONException e) {
         e.printStackTrace();
       }
