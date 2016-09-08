@@ -188,18 +188,6 @@ public class ReactAndroidCodeTransformer {
         return n;
       }
     });
-    FILES_TO_MODIFY.put("bridge/JSBundleLoader.java", new MethodVisitor() {
-
-      @Override
-      public Node visit(String methodName, MethodDeclaration n) {
-        switch (methodName) {
-          case "createFileLoader":
-            return createFileLoader(n);
-        }
-
-        return n;
-      }
-    });
     FILES_TO_MODIFY.put("modules/storage/AsyncStorageModule.java", null);
     FILES_TO_MODIFY.put("modules/storage/ReactDatabaseSupplier.java", null);
     FILES_TO_MODIFY.put("modules/dialog/DialogModule.java", new MethodVisitor() {
@@ -494,19 +482,6 @@ public class ReactAndroidCodeTransformer {
       e.printStackTrace();
       return null;
     }
-  }
-
-  private static Node createFileLoader(final MethodDeclaration n) {
-    return mapBlockStatement(n, new StatementMapper() {
-      @Override
-      public Statement map(Statement statement) {
-        if (!statement.toString().equals("bridge.loadScriptFromFile(fileName, fileName);")) {
-          return statement;
-        }
-
-        return getTryCatch(statement, "exponentException.getMessage()", "null", "-1", "true");
-      }
-    });
   }
 
   private static Node hasUpToDateJSBundleInCache(final MethodDeclaration n) {
