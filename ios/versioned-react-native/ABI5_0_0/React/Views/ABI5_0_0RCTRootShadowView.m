@@ -34,8 +34,8 @@
   [self applySizeConstraints];
 
   [self fillCSSNode:self.cssNode];
-  resetNodeLayout(self.cssNode);
-  layoutNode(self.cssNode, CSS_UNDEFINED, CSS_UNDEFINED, CSS_DIRECTION_INHERIT);
+  ABI5_0_0CSSresetNodeLayout(self.cssNode);
+  ABI5_0_0CSSlayoutNode(self.cssNode, CSS_UNDEFINED, CSS_UNDEFINED, CSS_DIRECTION_INHERIT);
 
   NSMutableSet<ABI5_0_0RCTShadowView *> *viewsWithNewFrame = [NSMutableSet set];
   [self applyLayoutNode:self.cssNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:CGPointZero];

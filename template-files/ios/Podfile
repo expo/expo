@@ -4,22 +4,23 @@ platform :ios, '8.0'
 target 'Exponent' do
   # Published CocoaPods
   pod 'CocoaLumberjack', '~> 2.3'
-  pod 'Crashlytics', '~> 3.4'
+  pod 'Crashlytics', '~> 3.8'
   pod 'Fabric', '~> 1.6'
-  pod 'SimulatorStatusMagic', '~> 1.7', :configurations => ['Debug']
+  pod 'SimulatorStatusMagic', '~> 1.9', :configurations => ['Debug']
   # Be careful when updating. Could break versioning.
   pod 'Amplitude-iOS', '~> 3.8'
-  pod 'FBSDKCoreKit', '~> 4.14'
-  pod 'FBSDKLoginKit', '~> 4.14'
-  pod 'FBSDKShareKit', '~> 4.14'
+  pod 'FBSDKCoreKit', '~> 4.15'
+  pod 'FBSDKLoginKit', '~> 4.15'
+  pod 'FBSDKShareKit', '~> 4.15'
   # Segment. Be careful when updating. Could break versioning.
-  pod 'Analytics', '~> 3.0'
+  pod 'Analytics', '~> 3.4'
 
   # Local CocoaPods
   pod 'React', :path => '${REACT_NATIVE_PATH}', :subspecs => [
     'Core',
     'ART',
     'RCTActionSheet',
+    'RCTAnimation',
     'RCTCameraRoll',
     'RCTGeolocation',
     'RCTImage',

@@ -166,9 +166,9 @@
  };
 
  // Lifecycle of nodes and children
- css_node_t *new_css_node(void);
- void init_css_node(css_node_t *node);
- void free_css_node(css_node_t *node);
+ css_node_t *ABI5_0_0new_css_node(void);
+ void ABI5_0_0init_css_node(css_node_t *node);
+ void ABI5_0_0free_css_node(css_node_t *node);
 
  // Print utilities
  typedef enum {
@@ -176,14 +176,14 @@
    CSS_PRINT_STYLE = 2,
    CSS_PRINT_CHILDREN = 4,
  } css_print_options_t;
- void print_css_node(css_node_t *node, css_print_options_t options);
+ void ABI5_0_0print_css_node(css_node_t *node, css_print_options_t options);
 
  bool ABI5_0_0CSSisUndefined(float value);
 
  // Function that computes the layout!
- void layoutNode(css_node_t *node, float maxWidth, float maxHeight, css_direction_t parentDirection);
+ void ABI5_0_0CSSlayoutNode(css_node_t *node, float maxWidth, float maxHeight, css_direction_t parentDirection);
 
- // Reset the calculated layout values for a given node. You should call this before `layoutNode`.
- void resetNodeLayout(css_node_t *node);
+ // Reset the calculated layout values for a given node. You should call this before `ABI5_0_0CSSlayoutNode`.
+ void ABI5_0_0CSSresetNodeLayout(css_node_t *node);
 
  #endif

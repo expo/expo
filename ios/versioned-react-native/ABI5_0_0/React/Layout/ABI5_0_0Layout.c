@@ -52,7 +52,7 @@
    return fabs(a - b) < 0.0001;
  }
 
- void init_css_node(css_node_t *node) {
+ void ABI5_0_0init_css_node(css_node_t *node) {
    node->style.align_items = CSS_ALIGN_STRETCH;
    node->style.align_content = CSS_ALIGN_FLEX_START;
 
@@ -93,13 +93,13 @@
    node->layout.should_update = true;
  }
 
- css_node_t *new_css_node() {
+ css_node_t *ABI5_0_0new_css_node() {
    css_node_t *node = (css_node_t *)calloc(1, sizeof(*node));
-   init_css_node(node);
+   ABI5_0_0init_css_node(node);
    return node;
  }
 
- void free_css_node(css_node_t *node) {
+ void ABI5_0_0free_css_node(css_node_t *node) {
    free(node);
  }
 
@@ -129,7 +129,7 @@
  }
 
 
- static void print_css_node_rec(
+ static void ABI5_0_0print_css_node_rec(
    css_node_t *node,
    css_print_options_t options,
    int level
@@ -248,7 +248,7 @@
    if (options & CSS_PRINT_CHILDREN && node->children_count > 0) {
      printf("children: [\n");
      for (int i = 0; i < node->children_count; ++i) {
-       print_css_node_rec(node->get_child(node->context, i), options, level + 1);
+       ABI5_0_0print_css_node_rec(node->get_child(node->context, i), options, level + 1);
      }
      indent(level);
      printf("]},\n");
@@ -257,8 +257,8 @@
    }
  }
 
- void print_css_node(css_node_t *node, css_print_options_t options) {
-   print_css_node_rec(node, options, 0);
+ void ABI5_0_0print_css_node(css_node_t *node, css_print_options_t options) {
+   ABI5_0_0print_css_node_rec(node, options, 0);
  }
 
 
@@ -813,7 +813,7 @@
 
          // This is the main recursive call. We layout non flexible children.
          if (alreadyComputedNextLayout == 0) {
-           layoutNode(child, maxWidth, maxHeight, direction);
+           ABI5_0_0CSSlayoutNode(child, maxWidth, maxHeight, direction);
          }
 
          // Absolute positioned elements do not take part of the layout, so we
@@ -954,7 +954,7 @@
          }
 
          // And we recursively call the layout algorithm for this child
-         layoutNode(currentFlexChild, maxWidth, maxHeight, direction);
+         ABI5_0_0CSSlayoutNode(currentFlexChild, maxWidth, maxHeight, direction);
 
          child = currentFlexChild;
          currentFlexChild = currentFlexChild->next_flex_child;
@@ -1075,7 +1075,7 @@
 
                // If the size has changed, and this child has children we need to re-layout this child
                if (dimCrossAxis != child->layout.dimensions[dim[crossAxis]] && child->children_count > 0) {
-                 // Reset child margins before re-layout as they are added back in layoutNode and would be doubled
+                 // Reset child margins before re-layout as they are added back in ABI5_0_0CSSlayoutNode and would be doubled
                  child->layout.position[leading[mainAxis]] -= getLeadingMargin(child, mainAxis) +
                    getRelativePosition(child, mainAxis);
                  child->layout.position[trailing[mainAxis]] -= getTrailingMargin(child, mainAxis) +
@@ -1085,7 +1085,7 @@
                  child->layout.position[trailing[crossAxis]] -= getTrailingMargin(child, crossAxis) +
                    getRelativePosition(child, crossAxis);
 
-                 layoutNode(child, maxWidth, maxHeight, direction);
+                 ABI5_0_0CSSlayoutNode(child, maxWidth, maxHeight, direction);
                }
              }
            } else if (alignItem != CSS_ALIGN_FLEX_START) {
@@ -1289,7 +1289,7 @@
    /** END_GENERATED **/
  }
 
- void layoutNode(css_node_t *node, float parentMaxWidth, float parentMaxHeight, css_direction_t parentDirection) {
+ void ABI5_0_0CSSlayoutNode(css_node_t *node, float parentMaxWidth, float parentMaxHeight, css_direction_t parentDirection) {
    css_layout_t *layout = &node->layout;
    css_direction_t direction = node->style.direction;
    layout->should_update = true;
@@ -1315,7 +1315,7 @@
      layout->last_direction = direction;
 
      for (int i = 0, childCount = node->children_count; i < childCount; i++) {
-       resetNodeLayout(node->get_child(node->context, i));
+       ABI5_0_0CSSresetNodeLayout(node->get_child(node->context, i));
      }
 
      layoutNodeImpl(node, parentMaxWidth, parentMaxHeight, parentDirection);
@@ -1327,7 +1327,7 @@
    }
  }
 
- void resetNodeLayout(css_node_t *node) {
+ void ABI5_0_0CSSresetNodeLayout(css_node_t *node) {
    node->layout.dimensions[CSS_WIDTH] = CSS_UNDEFINED;
    node->layout.dimensions[CSS_HEIGHT] = CSS_UNDEFINED;
    node->layout.position[CSS_LEFT] = 0;
