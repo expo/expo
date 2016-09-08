@@ -69,7 +69,7 @@ NSString *kEXKernelBundleResourceName = @"kernel.ios";
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)sendNotification:(NSString *)notifBody toExperienceWithId:(NSString *)experienceId
+- (void)sendNotification:(NSDictionary *)notifBody toExperienceWithId:(NSString *)experienceId
 {
   id destinationBridge = _bridgeRegistry.kernelBridge;
   for (id bridge in [_bridgeRegistry bridgeEnumerator]) {

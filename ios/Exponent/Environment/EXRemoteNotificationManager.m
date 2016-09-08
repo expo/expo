@@ -72,7 +72,7 @@ NSString * const kEXCurrentAPNSTokenDefaultsKey = @"EXCurrentAPNSTokenDefaultsKe
 - (void)handleRemoteNotification:(NSDictionary *)notification
 {
   if (notification) {
-    NSString *body = [notification objectForKey:@"body"];
+    NSDictionary *body = [notification objectForKey:@"body"];
     NSString *experienceId = [notification objectForKey:@"experienceId"];
     if (body && experienceId) {
       [[EXKernel sharedInstance] sendNotification:body toExperienceWithId:experienceId];
