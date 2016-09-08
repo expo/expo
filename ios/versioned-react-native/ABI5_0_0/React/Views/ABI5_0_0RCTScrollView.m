@@ -154,7 +154,7 @@ ABI5_0_0RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 @property (nonatomic, copy) NSIndexSet *stickyHeaderIndices;
 @property (nonatomic, assign) BOOL centerContent;
-@property (nonatomic, strong) ABI5_0_0RCTRefreshControl *refreshControl;
+@property (nonatomic, strong) ABI5_0_0RCTRefreshControl *reactRefreshControl;
 
 @end
 
@@ -289,8 +289,8 @@ ABI5_0_0RCT_NOT_IMPLEMENTED(- (instancetype)init)
   CGFloat scrollTop = self.bounds.origin.y + self.contentInset.top;
   // If the RefreshControl is refreshing, remove it's height so sticky headers are
   // positioned properly when scrolling down while refreshing.
-  if (self.refreshControl != nil && self.refreshControl.refreshing) {
-    scrollTop -= self.refreshControl.frame.size.height;
+  if (self.reactRefreshControl != nil && self.reactRefreshControl.refreshing) {
+    scrollTop -= self.reactRefreshControl.frame.size.height;
   }
 
   // Find the section headers that need to be docked
@@ -372,13 +372,13 @@ ABI5_0_0RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [super hitTest:point withEvent:event];
 }
 
-- (void)setRefreshControl:(ABI5_0_0RCTRefreshControl *)refreshControl
+- (void)setReactRefreshControl:(ABI5_0_0RCTRefreshControl *)refreshControl
 {
-  if (_refreshControl) {
-    [_refreshControl removeFromSuperview];
+  if (_reactRefreshControl) {
+    [_reactRefreshControl removeFromSuperview];
   }
-  _refreshControl = refreshControl;
-  [self addSubview:_refreshControl];
+  _reactRefreshControl = refreshControl;
+  [self addSubview:_reactRefreshControl];
 }
 
 @end
@@ -432,7 +432,7 @@ ABI5_0_0RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)insertReactABI5_0_0Subview:(UIView *)view atIndex:(__unused NSInteger)atIndex
 {
   if ([view isKindOfClass:[ABI5_0_0RCTRefreshControl class]]) {
-    _scrollView.refreshControl = (ABI5_0_0RCTRefreshControl*)view;
+    _scrollView.reactRefreshControl = (ABI5_0_0RCTRefreshControl*)view;
   } else {
     ABI5_0_0RCTAssert(_contentView == nil, @"ABI5_0_0RCTScrollView may only contain a single subview");
     _contentView = view;
@@ -443,7 +443,7 @@ ABI5_0_0RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)removeReactABI5_0_0Subview:(UIView *)subview
 {
   if ([subview isKindOfClass:[ABI5_0_0RCTRefreshControl class]]) {
-    _scrollView.refreshControl = nil;
+    _scrollView.reactRefreshControl = nil;
   } else {
     ABI5_0_0RCTAssert(_contentView == subview, @"Attempted to remove non-existent subview");
     _contentView = nil;
@@ -453,8 +453,8 @@ ABI5_0_0RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (NSArray<UIView *> *)ReactABI5_0_0Subviews
 {
-  if (_contentView && _scrollView.refreshControl) {
-    return @[_contentView, _scrollView.refreshControl];
+  if (_contentView && _scrollView.reactRefreshControl) {
+    return @[_contentView, _scrollView.reactRefreshControl];
   }
   return _contentView ? @[_contentView] : @[];
 }
@@ -503,7 +503,7 @@ ABI5_0_0RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _scrollView.contentOffset = originalOffset;
 
   // Adjust the refresh control frame if the scrollview layout changes.
-  ABI5_0_0RCTRefreshControl *refreshControl = _scrollView.refreshControl;
+  ABI5_0_0RCTRefreshControl *refreshControl = _scrollView.reactRefreshControl;
   if (refreshControl && refreshControl.refreshing) {
     refreshControl.frame = (CGRect){_scrollView.contentOffset, {_scrollView.frame.size.width, refreshControl.frame.size.height}};
   }
@@ -898,15 +898,15 @@ ABI5_0_0RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorIns
 {
   if (!onRefreshStart) {
     _onRefreshStart = nil;
-    _scrollView.refreshControl = nil;
+    _scrollView.reactRefreshControl = nil;
     return;
   }
   _onRefreshStart = [onRefreshStart copy];
 
-  if (!_scrollView.refreshControl) {
+  if (!_scrollView.reactRefreshControl) {
     ABI5_0_0RCTRefreshControl *refreshControl = [ABI5_0_0RCTRefreshControl new];
     [refreshControl addTarget:self action:@selector(refreshControlValueChanged) forControlEvents:UIControlEventValueChanged];
-    _scrollView.refreshControl = refreshControl;
+    _scrollView.reactRefreshControl = refreshControl;
   }
 }
 
@@ -919,7 +919,7 @@ ABI5_0_0RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorIns
 
 - (void)endRefreshing
 {
-  [_scrollView.refreshControl endRefreshing];
+  [_scrollView.reactRefreshControl endRefreshing];
 }
 
 - (void)sendScrollEventWithType:(ABI5_0_0RCTScrollEventType)type
