@@ -31,7 +31,7 @@ let BrowserActions = {
 
       // this can happen if fetching a local manifest (e.g. from a developer tool)
       if (!ExManifests.isManifestSdkVersionSupported(manifest)) {
-        throw new Error(`This experience requires a newer version of Exponent (SDK ${manifest.sdkVersion}).`);
+        throw new Error(`This experience uses an unsupported version of Exponent (SDK ${manifest.sdkVersion}). You may need to update Exponent.`);
       }
 
       return BrowserActions.navigateToBundleUrlAsync(manifestUrl, manifest, bundleUrl, initialProps);
