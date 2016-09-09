@@ -83,11 +83,6 @@
     self.backgroundColor = inheritedBackgroundColor;
 }
 
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
-{
-    return self.responsible ? [super hitTest:point withEvent:event] : nil;
-}
-
 - (void)defineClipPath:(__kindof RNSVGNode *)clipPath clipPathRef:(NSString *)clipPathRef
 {
     if (!clipPaths) {

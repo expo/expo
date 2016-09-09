@@ -103,12 +103,11 @@ RCT_ENUM_CONVERTER(RNSVGVBMOS, (@{
     if (lineCount == 0) {
         return frame;
     }
-    
+
     CTFontRef font = (__bridge CTFontRef)[self UIFont:dict[@"font"]];
     if (!font) {
       return frame;
     }
-  
     
     // Create a dictionary for this font
     CFDictionaryRef attributes = (__bridge CFDictionaryRef)@{

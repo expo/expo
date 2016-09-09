@@ -27,7 +27,7 @@
     if (template) {
         [self beginTransparencyLayer:context];
         [self clip:context];
-        [template mergeProperties:self mergeList:self.propList];
+        [template mergeProperties:self mergeList:self.ownedPropList];
         [template renderTo:context];
         [template resetProperties];
         [self endTransparencyLayer:context];

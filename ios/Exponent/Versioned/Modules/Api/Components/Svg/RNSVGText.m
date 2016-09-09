@@ -112,6 +112,12 @@ static void RNSVGFreeTextFrame(RNSVGTextFrame frame)
             // draw glyphs along path
             if (self.path) {
                 transform = [bezierPath transformAtDistance:point.x];
+                
+                // break loop if line reaches the end of the Path.
+                if (!transform.a || !transform.d) {
+                    CGPathRelease(letter);
+                    break;
+                }
                 transform = CGAffineTransformScale(transform, 1.0, -1.0);
             } else {
                 transform = CGAffineTransformTranslate(upsideDown, point.x, point.y);

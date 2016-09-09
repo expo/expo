@@ -149,6 +149,7 @@
         return;
     }
     _propList = propList;
+    self.ownedPropList = [propList mutableCopy];
     [self invalidate];
 }
 
@@ -253,12 +254,14 @@
     if (mergeList.count == 0) {
         return;
     }
-
+    
+    self.ownedPropList = [self.propList mutableCopy];
+    
     if (!inherited) {
         _originProperties = [[NSMutableDictionary alloc] init];
         _changedList = mergeList;
     }
-
+    
     for (NSString *key in mergeList) {
         if (inherited) {
             [self inheritProperty:target propName:key];
@@ -281,12 +284,9 @@
 
 - (void)inheritProperty:(__kindof RNSVGNode *)parent propName:(NSString *)propName
 {
-    if (![self.propList containsObject:propName]) {
-        // add prop to propList
-        NSMutableArray *copy = [self.propList mutableCopy];
-        [copy addObject:propName];
-        self.propList = [copy copy];
-
+    if (![self.ownedPropList containsObject:propName]) {
+        // add prop to props
+        [self.ownedPropList addObject:propName];
         [self setValue:[parent valueForKey:propName] forKey:propName];
     }
 }

@@ -106,7 +106,11 @@ static CGFloat Distance(CGPoint a, CGPoint b) {
 - (CGAffineTransform)transformAtDistance:(CGFloat)distance
 {
     if (_offset == 0) {
-        [self setControlPoints];
+        if (_bezierCurves.count == _bezierIndex) {
+            return CGAffineTransformMakeScale(0, 0);
+        } else {
+            [self setControlPoints];
+        }
     }
 
     CGFloat offset = [self offsetAtDistance:distance - _lastX
