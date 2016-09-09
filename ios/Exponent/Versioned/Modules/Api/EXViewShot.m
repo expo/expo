@@ -1,5 +1,5 @@
 
-#import "RNViewShot.h"
+#import "EXViewShot.h"
 #import <AVFoundation/AVFoundation.h>
 #import "UIView+React.h"
 #import "RCTUtils.h"
@@ -8,9 +8,9 @@
 #import "RCTBridge.h"
 
 
-@implementation RNViewShot
+@implementation EXViewShot
 
-RCT_EXPORT_MODULE()
+RCT_EXPORT_MODULE(RNViewShot)
 
 @synthesize bridge = _bridge;
 
