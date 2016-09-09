@@ -38,7 +38,7 @@ function getFeatured() {
       },
     },
     {
-      url: 'exp://exp.host/@exponent/fluxpybird',
+      url: 'exp://exp.host/@exponent/floatyplane',
       manifest: {
         name: 'Floaty Plane',
         desc: 'Touch the plane until you die!',
