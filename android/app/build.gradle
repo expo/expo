@@ -94,7 +94,6 @@ dependencies {
   compile(name: 'ReactAndroid-release-abi8_0_0', ext: 'aar')
   compile(name: 'ReactAndroid-release-abi7_0_0', ext: 'aar')
   compile(name: 'ReactAndroid-release-abi6_0_0', ext: 'aar')
-  compile(name: 'ReactAndroid-release-abi5_0_0', ext: 'aar')
 
   // React native dependencies
   // We use a different version of appcompat
