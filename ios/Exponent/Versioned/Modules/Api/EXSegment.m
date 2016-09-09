@@ -2,7 +2,7 @@
 
 #import "EXSegment.h"
 
-#import "SEGAnalytics.h"
+#import <SEGAnalytics.h>
 
 @interface EXSegment ()
 

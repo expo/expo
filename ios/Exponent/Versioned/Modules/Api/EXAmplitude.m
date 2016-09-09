@@ -2,7 +2,7 @@
 
 #import "EXAmplitude.h"
 
-#import "Amplitude.h"
+#import <Amplitude.h>
 #import "EXVersionManager.h"
 
 @interface EXAmplitude ()
