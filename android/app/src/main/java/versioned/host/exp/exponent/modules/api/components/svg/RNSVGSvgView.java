@@ -9,8 +9,6 @@
 
 package versioned.host.exp.exponent.modules.api.components.svg;
 
-import javax.annotation.Nullable;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -20,18 +18,17 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.common.SystemClock;
-import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.uimanager.events.TouchEvent;
 import com.facebook.react.uimanager.events.TouchEventCoalescingKeyHelper;
 import com.facebook.react.uimanager.events.TouchEventType;
-import com.facebook.react.uimanager.events.EventDispatcher;
+
+import javax.annotation.Nullable;
 
 /**
  * Custom {@link View} implementation that draws an RNSVGSvg React view and its \children.
@@ -113,7 +110,6 @@ public class RNSVGSvgView extends ViewGroup {
         mEventDispatcher.dispatchEvent(
             TouchEvent.obtain(
                 mTargetTag,
-                SystemClock.nanoTime(),
                 type,
                 ev,
                 ev.getX(),

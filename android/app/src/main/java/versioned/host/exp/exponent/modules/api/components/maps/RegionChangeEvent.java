@@ -13,7 +13,7 @@ public class RegionChangeEvent extends Event<RegionChangeEvent> {
     private final boolean continuous;
 
     public RegionChangeEvent(int id, LatLngBounds bounds, LatLng center, boolean continuous) {
-        super(id, System.currentTimeMillis());
+        super(id);
         this.bounds = bounds;
         this.center = center;
         this.continuous = continuous;
