@@ -15,7 +15,7 @@
 #import "RCTUtils.h"
 #import "RCTImageLoader.h"
 
-@implementation EmptyCalloutBackgroundView
+@implementation AIREmptyCalloutBackgroundView
 @end
 
 @implementation AIRMapMarker {
@@ -110,7 +110,7 @@
         if (self.calloutView.tooltip) {
             // if tooltip is true, then the user wants their react view to be the "tooltip" as wwell, so we set
             // the background view to something empty/transparent
-            calloutView.backgroundView = [EmptyCalloutBackgroundView new];
+            calloutView.backgroundView = [AIREmptyCalloutBackgroundView new];
         } else {
             // the default tooltip look is wanted, and the user is just filling the content with their react subviews.
             // as a result, we use the default "masked" background view.

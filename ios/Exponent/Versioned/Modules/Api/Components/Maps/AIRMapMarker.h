@@ -51,5 +51,5 @@
 @end
 
 
-@interface EmptyCalloutBackgroundView : SMCalloutBackgroundView
+@interface AIREmptyCalloutBackgroundView : SMCalloutBackgroundView
 @end

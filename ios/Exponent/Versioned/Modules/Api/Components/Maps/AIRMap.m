@@ -168,7 +168,7 @@ const CGFloat AIRMapZoomBoundBuffer = 0.01;
     [self setCenterCoordinate:coordinate animated:YES];
 
     // tell the callout to wait for a while while we scroll (we assume the scroll delay for MKMapView matches UIScrollView)
-    return kSMCalloutViewRepositionDelayForUIScrollView;
+    return SMCalloutViewRepositionDelayForUIScrollView;
 }
 
 #pragma mark Accessors

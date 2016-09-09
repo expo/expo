@@ -28,7 +28,7 @@
 #define TOP_ANCHOR_MARGIN 13 // all the above measurements assume a bottom anchor! if we're pointing "up" we'll need to add this top margin to everything.
 #define COMFORTABLE_MARGIN 10 // when we try to reposition content to be visible, we'll consider this margin around your target rect
 
-NSTimeInterval const kSMCalloutViewRepositionDelayForUIScrollView = 1.0/3.0;
+NSTimeInterval const SMCalloutViewRepositionDelayForUIScrollView = 1.0/3.0;
 
 @interface SMCalloutView ()
 @property (nonatomic, strong) UIButton *containerView; // for masking and interaction
