@@ -135,7 +135,8 @@ public class RNViewShotModule extends ReactContextBaseJavaModule {
             cacheDir = externalCacheDir.getFreeSpace() > internalCacheDir.getFreeSpace() ?
                     externalCacheDir : internalCacheDir;
         }
-        return File.createTempFile(TEMP_FILE_PREFIX, ext, cacheDir);
+        String suffix = "." + ext;
+        return File.createTempFile(TEMP_FILE_PREFIX, suffix, cacheDir);
     }
 
 }
