@@ -176,7 +176,7 @@ RCT_EXPORT_METHOD(fitToSuppliedMarkers:(nonnull NSNumber *)reactTag
 
             NSPredicate *filterMarkers = [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
                 AIRMapMarker *marker = (AIRMapMarker *)evaluatedObject;
-                return [markers containsObject:marker.identifier];
+                return [marker isKindOfClass:[AIRMapMarker class]] && [markers containsObject:marker.identifier];
             }];
 
             NSArray *filteredMarkers = [mapView.annotations filteredArrayUsingPredicate:filterMarkers];
