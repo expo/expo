@@ -1,1 +1,1 @@
-This update contains minor improvements.
+This update adds support for React Native 0.33.
