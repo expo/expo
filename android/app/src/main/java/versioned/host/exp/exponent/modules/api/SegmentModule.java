@@ -19,6 +19,7 @@ import java.util.Iterator;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.utils.JSONBundleConverter;
 import host.exp.exponent.utils.ScopedContext;
+import versioned.host.exp.exponent.ReadableObjectUtils;
 
 public class SegmentModule extends ReactContextBaseJavaModule {
 
@@ -36,7 +37,7 @@ public class SegmentModule extends ReactContextBaseJavaModule {
 
   private static Traits readableMapToTraits(ReadableMap properties) {
     Traits traits = new Traits();
-    JSONObject json = JSONBundleConverter.readableMapToJson(properties);
+    JSONObject json = ReadableObjectUtils.readableMapToJson(properties);
     Iterator<String> iterator = json.keys();
     while (iterator.hasNext()) {
       String key = iterator.next();
@@ -52,7 +53,7 @@ public class SegmentModule extends ReactContextBaseJavaModule {
 
   private static Properties readableMapToProperties(ReadableMap properties) {
     Properties result = new Properties();
-    JSONObject json = JSONBundleConverter.readableMapToJson(properties);
+    JSONObject json = ReadableObjectUtils.readableMapToJson(properties);
     Iterator<String> iterator = json.keys();
     while (iterator.hasNext()) {
       String key = iterator.next();

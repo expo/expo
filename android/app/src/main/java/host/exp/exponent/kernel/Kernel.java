@@ -79,6 +79,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import versioned.host.exp.exponent.ExponentPackage;
 import versioned.host.exp.exponent.ReactUnthemedRootView;
+import versioned.host.exp.exponent.ReadableObjectUtils;
 
 // TOOD: need to figure out when we should reload the kernel js. Do we do it every time you visit
 // the home screen? only when the app gets kicked out of memory?
@@ -1086,7 +1087,7 @@ public class Kernel {
    */
 
   public void installShortcut(final String manifestUrl, final ReadableMap manifest, final String bundleUrl) {
-    JSONObject manifestJson = JSONBundleConverter.readableMapToJson(manifest);
+    JSONObject manifestJson = ReadableObjectUtils.readableMapToJson(manifest);
     mExponentSharedPreferences.updateManifest(manifestUrl, manifestJson, bundleUrl);
     installShortcut(manifestUrl);
   }

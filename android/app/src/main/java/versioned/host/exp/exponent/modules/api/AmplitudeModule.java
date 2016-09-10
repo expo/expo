@@ -12,6 +12,7 @@ import com.facebook.react.bridge.ReadableMap;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.utils.JSONBundleConverter;
 import host.exp.exponent.utils.ScopedContext;
+import versioned.host.exp.exponent.ReadableObjectUtils;
 
 public class AmplitudeModule extends ReactContextBaseJavaModule {
 
@@ -47,7 +48,7 @@ public class AmplitudeModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void setUserProperties(final ReadableMap properties) {
     if (mClient != null) {
-      mClient.setUserProperties(JSONBundleConverter.readableMapToJson(properties));
+      mClient.setUserProperties(ReadableObjectUtils.readableMapToJson(properties));
     }
   }
 
@@ -68,14 +69,14 @@ public class AmplitudeModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void logEventWithProperties(final String eventName, final ReadableMap properties) {
     if (mClient != null) {
-      mClient.logEvent(eventName, JSONBundleConverter.readableMapToJson(properties));
+      mClient.logEvent(eventName, ReadableObjectUtils.readableMapToJson(properties));
     }
   }
 
   @ReactMethod
   public void setGroup(final String groupType, final ReadableArray groupNames) {
     if (mClient != null) {
-      mClient.setGroup(groupType, JSONBundleConverter.readableArrayToJson(groupNames));
+      mClient.setGroup(groupType, ReadableObjectUtils.readableArrayToJson(groupNames));
     }
   }
 }
