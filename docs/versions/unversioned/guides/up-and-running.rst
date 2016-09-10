@@ -26,8 +26,10 @@ XDE is now initializing a new project in selected directory: it copies a basic t
 
 When the project is initialized and ready to go you will see the message "React packager ready" in the XDE logs.
 
+The "React packager" is a simple HTTP server that compiles our app JavaScript code using `Babel <https://babeljs.io/>`_ and serves it to the Exponent app.
+
 .. epigraph::
-  **Note:** The "React packager" is a simple HTTP server that compiles our app JavaScript code using `Babel <https://babeljs.io/>`_ and serves it to the Exponent app.
+  **Note:** If you are on MacOS and XDE gets stuck on "Waiting for packager and tunnel to start", you may need to `install watchman on your machine <https://facebook.github.io/watchman/docs/install.html#build-install>`_. The easiest way to do this is with `Homebrew <http://brew.sh/>`_, ``brew install watchman``.
 
 Open the app on your phone or simulator
 """""""""""""""""""""""""""""""""""""""

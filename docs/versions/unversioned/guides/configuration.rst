@@ -150,6 +150,10 @@ Configuration with exp.json
     The package name for your Android standalone app. You make it up, but it needs to be unique on the Play Store. See `this StackOverflow question <http://stackoverflow.com/questions/6273892/android-package-name-convention>`_.
     Reverse DNS notation unique name for your app. For example, host.exp.exponent, where exp.host is our domain and Exponent is our app.
 
+   .. attribute:: versionCode
+
+    Version number required by Google Play. Increment by one for each release. https://developer.android.com/studio/publish/versioning.html.
+
    .. attribute:: config
 
     
