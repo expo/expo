@@ -5,6 +5,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := libreactnativefb
 
 LOCAL_SRC_FILES := \
+  CxxNativeModule.cpp \
   Executor.cpp \
   Instance.cpp \
   JSCExecutor.cpp \
@@ -32,7 +33,7 @@ CXX11_FLAGS := -std=c++11
 LOCAL_CFLAGS += $(CXX11_FLAGS)
 LOCAL_EXPORT_CPPFLAGS := $(CXX11_FLAGS)
 
-LOCAL_SHARED_LIBRARIES := libfb_abi9_0_0 libfolly_json_abi9_0_0 libjsc libglog_abi9_0_0
+LOCAL_SHARED_LIBRARIES := libfb_abi10_0_0 libfolly_json_abi10_0_0 libjsc libglog_abi10_0_0
 
 include $(BUILD_STATIC_LIBRARY)
 
