@@ -21,6 +21,7 @@ import org.json.JSONObject;
 
 import javax.inject.Inject;
 
+import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentApplication;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.kernel.Kernel;
@@ -84,6 +85,7 @@ public class ConstantsModule extends ReactContextBaseJavaModule {
     constants.put("manifest", mManifest.toString());
     constants.put("isDevice", !isRunningOnGenymotion() && !isRunningOnStockEmulator());
     if (mExperienceProperties != null) {
+      constants.put("appOwnership", getAppOwnership(mExperienceProperties));
       constants.putAll(mExperienceProperties);
     }
     return constants;
@@ -95,5 +97,21 @@ public class ConstantsModule extends ReactContextBaseJavaModule {
 
   private static boolean isRunningOnStockEmulator() {
     return Build.FINGERPRINT.contains("generic");
+  }
+
+  private static String getAppOwnership(Map<String, Object> experienceProperties) {
+    if (experienceProperties.containsKey(Kernel.MANIFEST_URL_KEY)) {
+      String manifestUrl = (String) experienceProperties.get(Kernel.MANIFEST_URL_KEY);
+
+      if (Constants.INITIAL_URL == null) {
+        return "exponent";
+      } else if (manifestUrl.equals(Constants.INITIAL_URL)) {
+        return "standalone";
+      } else {
+        return "guest";
+      }
+    } else {
+      return "exponent";
+    }
   }
 }
