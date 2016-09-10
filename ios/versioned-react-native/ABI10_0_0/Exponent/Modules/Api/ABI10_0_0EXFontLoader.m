@@ -55,15 +55,18 @@ static NSMutableDictionary *ABI10_0_0EXFonts = nil;
 
 @implementation ABI10_0_0RCTFont (ABI10_0_0EXFontLoader)
 
-// Will swap this with +[ABI10_0_0RCTConvert UIFont:]
-+ (UIFont *)ex_UIFont:(id)json
+// Will swap this with +[ABI10_0_0RCTFont updateFont: ...]
++ (UIFont *)ex_updateFont:(UIFont *)font
+            withFamily:(NSString *)family
+                  size:(NSNumber *)size
+                weight:(NSString *)weight
+                 style:(NSString *)style
+               variant:(NSArray<NSDictionary *> *)variant
+       scaleMultiplier:(CGFloat)scaleMultiplier
 {
   NSString * const exponentPrefix = @"ExponentFont-";
   const CGFloat defaultFontSize = 14;
   
-  NSString *family = [ABI10_0_0RCTConvert NSString:json[@"fontFamily"]];
-  NSNumber *size = [ABI10_0_0RCTConvert NSNumber:json[@"fontSize"]];
-
   // TODO: Figure out a way to support the other fields in the JSON configuration
   if ([family hasPrefix:exponentPrefix] && ABI10_0_0EXFonts) {
     NSString *suffix = [family substringFromIndex:exponentPrefix.length];
@@ -72,21 +75,20 @@ static NSMutableDictionary *ABI10_0_0EXFonts = nil;
     }
   }
   
-  return [self ex_UIFont:json];
+  return [self ex_updateFont:font withFamily:family size:size weight:weight style:style variant:variant scaleMultiplier:scaleMultiplier];
 }
 
 @end
-
 
 @implementation ABI10_0_0EXFontLoader
 
 ABI10_0_0RCT_EXPORT_MODULE(ExponentFontLoader);
 
 + (void)initialize {
-  SEL a = @selector(ex_UIFont:);
-  SEL b = @selector(UIFont:);
-  method_exchangeImplementations(class_getClassMethod([ABI10_0_0RCTConvert class], a),
-                                 class_getClassMethod([ABI10_0_0RCTConvert class], b));
+  SEL a = @selector(ex_updateFont:withFamily:size:weight:style:variant:scaleMultiplier:);
+  SEL b = @selector(updateFont:withFamily:size:weight:style:variant:scaleMultiplier:);
+  method_exchangeImplementations(class_getClassMethod([ABI10_0_0RCTFont class], a),
+                                 class_getClassMethod([ABI10_0_0RCTFont class], b));
 }
 
 ABI10_0_0RCT_REMAP_METHOD(loadAsync,
