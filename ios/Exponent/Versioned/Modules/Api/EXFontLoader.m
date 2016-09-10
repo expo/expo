@@ -55,15 +55,18 @@ static NSMutableDictionary *EXFonts = nil;
 
 @implementation RCTFont (EXFontLoader)
 
-// Will swap this with +[RCTConvert UIFont:]
-+ (UIFont *)ex_UIFont:(id)json
+// Will swap this with +[RCTFont updateFont: ...]
++ (UIFont *)ex_updateFont:(UIFont *)font
+               withFamily:(NSString *)family
+                     size:(NSNumber *)size
+                   weight:(NSString *)weight
+                    style:(NSString *)style
+                  variant:(NSArray<NSDictionary *> *)variant
+          scaleMultiplier:(CGFloat)scaleMultiplier
 {
   NSString * const exponentPrefix = @"ExponentFont-";
   const CGFloat defaultFontSize = 14;
   
-  NSString *family = [RCTConvert NSString:json[@"fontFamily"]];
-  NSNumber *size = [RCTConvert NSNumber:json[@"fontSize"]];
-
   // TODO: Figure out a way to support the other fields in the JSON configuration
   if ([family hasPrefix:exponentPrefix] && EXFonts) {
     NSString *suffix = [family substringFromIndex:exponentPrefix.length];
@@ -72,7 +75,7 @@ static NSMutableDictionary *EXFonts = nil;
     }
   }
   
-  return [self ex_UIFont:json];
+  return [self ex_updateFont:font withFamily:family size:size weight:weight style:style variant:variant scaleMultiplier:scaleMultiplier];
 }
 
 @end
@@ -83,10 +86,10 @@ static NSMutableDictionary *EXFonts = nil;
 RCT_EXPORT_MODULE(ExponentFontLoader);
 
 + (void)initialize {
-  SEL a = @selector(ex_UIFont:);
-  SEL b = @selector(UIFont:);
-  method_exchangeImplementations(class_getClassMethod([RCTConvert class], a),
-                                 class_getClassMethod([RCTConvert class], b));
+  SEL a = @selector(ex_updateFont:withFamily:size:weight:style:variant:scaleMultiplier:);
+  SEL b = @selector(updateFont:withFamily:size:weight:style:variant:scaleMultiplier:);
+  method_exchangeImplementations(class_getClassMethod([RCTFont class], a),
+                                 class_getClassMethod([RCTFont class], b));
 }
 
 RCT_REMAP_METHOD(loadAsync,
