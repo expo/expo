@@ -2,7 +2,7 @@
   "name": "@exponent/exponent",
   "version": "1.4.0",
   "exp": {
-    "sdkVersion": "9.0.0"
+    "sdkVersion": "10.0.0"
   },
   "private": true,
   "scripts": {
