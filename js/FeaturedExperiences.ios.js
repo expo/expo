@@ -35,6 +35,14 @@ function getFeatured() {
         iconUrl: 'https://s3.amazonaws.com/pomodoro-exp/icon.png',
       },
     },
+    {
+      url: 'exp://exp.host/@notbrent/native-component-list',
+      manifest: {
+        name: 'Native Component List',
+        desc: 'Demonstration of some native components.',
+        iconUrl: 'https://s3.amazonaws.com/exp-brand-assets/ExponentEmptyManifest_192.png',
+      },
+    },
   ];
 }
 
