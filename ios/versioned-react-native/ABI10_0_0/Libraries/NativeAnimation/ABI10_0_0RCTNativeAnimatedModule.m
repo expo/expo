@@ -283,7 +283,7 @@ ABI10_0_0RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewT
   if (driver) {
     [driver updateWithEvent:event];
     [_updatedValueNodes addObject:driver.valueNode];
-    [self startAnimationLoopIfNeeded];
+    [self updateAnimations];
     return YES;
   }
 
