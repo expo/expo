@@ -1,4 +1,4 @@
-FROM gcr.io/exponentjs/node-base:6.4.0-0
+FROM gcr.io/exponentjs/node-base:6.4.0-2
 
 ADD .npmrc /root/.npmrc
 ADD node_modules-tarballs /root/node_modules-tarballs
