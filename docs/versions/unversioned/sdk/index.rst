@@ -40,6 +40,7 @@ example.
    imagepicker
    linear-gradient
    location
+   map-view
    permissions
    segment
    svg
