@@ -6,6 +6,7 @@ Guides
 
    up-and-running
    .. project-structure
+   development-mode
    configuration
    logging
    debugging
