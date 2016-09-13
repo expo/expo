@@ -11,8 +11,6 @@ build:
 		template-files \
 		shellAppBase-builds \
 		tools-public \
-		../node_modules-tarballs \
-		../.npmrc \
 		tools | \
 		docker build -t ${IMAGE_NAME}:${IMAGE_TAG} -f ${DOCKERFILE} -
 
