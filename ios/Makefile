@@ -10,6 +10,7 @@ build:
 		${DOCKERFILE} \
 		template-files \
 		shellAppBase-builds \
+		ios \
 		tools-public \
 		tools | \
 		docker build -t ${IMAGE_NAME}:${IMAGE_TAG} -f ${DOCKERFILE} -
