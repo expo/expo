@@ -8,3 +8,4 @@ Introduction
    xde-tour
    community
    additional-resources
+   faq

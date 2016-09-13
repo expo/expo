@@ -93,3 +93,25 @@ that are written as native modules (there are almost always good pure JavaScript
 But there are often things that come up that you can't do in Exponent and you just need to use React Native if you want
 to do those things. Tell us about what's missing, and we'll try to add what you need if we think there are other people
 who would use it too. (Tweet @ us or join our Slack or e-mail support@getexponent.com).
+
+
+Can I use Exponent with Relay?
+------------------------------
+
+You can! Update your ``.babelrc`` you get on a new Exponent project to the following:
+
+.. code-block:: json
+
+  {
+    "presets": [
+      "react-native-stage-0/decorator-support",
+      {"plugins": ["./pathToYourBabelRelayPlugin/babelRelayPlugin"]}
+    ],
+    "env": {
+      "development": {
+        "plugins": ["transform-react-jsx-source"]
+      }
+    }
+  };
+
+Substitute ``./pathToYourBabelRelayPlugin`` with the path to your Relay plugin.
