@@ -7,7 +7,6 @@ build:
 		--exclude-from=./.dockerignore \
 		-zcf - \
 		package.json \
-		${DOCKERFILE} \
 		template-files \
 		shellAppBase-builds \
 		ios \
