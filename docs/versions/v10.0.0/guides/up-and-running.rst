@@ -38,7 +38,7 @@ You'll see that XDE shows you a URL like ``http://4v-9wa.notbrent.mynewproject.e
 We can open our app by opening the Exponent app on our phone typing this URL into the address bar. Alternatively, press ``Send Link``, enter your phone number, and press ``Send Link`` again. Open the message on your phone and tap on the link to open it in Exponent.
 You can share this link with anybody else who has the Exponent app installed, but it will only be available as long as you have the project open in XDE.
 
-To open the app in the iOS simulator you can press the ``Device`` button and choose ``Open on iOS`` (macOS only).
+To open the app in the iOS simulator you can press the ``Device`` button and choose ``Open on iOS Simulator`` (macOS only).
 To open the app in the Android emulator, first boot it up and then press ``Device`` and ``Open on Android``.
 
 Making your first change
