@@ -152,10 +152,13 @@ export default Flux.createReducer(new BrowserState(), {
 
   [BrowserActionTypes.setShellPropertiesAsync](state, action) {
     let { isShell, shellManifestUrl } = action.payload;
+    // always immediately finish nux if we're a shell app
+    let isNuxFinished = (isShell) ? true : state.isNuxFinished;
     return state.merge({
       isShell,
       isHomeVisible: false,
       isMenuVisible: false,
+      isNuxFinished,
       shellManifestUrl,
     });
   },
