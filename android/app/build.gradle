@@ -74,48 +74,20 @@ android {
   }
 }
 
-
-task generateDynamicMacros(type: Exec) {
-  // This gets run from the 'app' directory
-  commandLine 'bash', '../../tools-public/generate-dynamic-macros-android.sh'
-}
-preBuild.dependsOn generateDynamicMacros
-
 dependencies {
   compile fileTree(dir: 'libs', include: ['*.jar'])
+  //debugCompile project(path: ':exponentview', configuration: 'debug')
+  //releaseCompile project(path: ':exponentview', configuration: 'release')
+  //compile project(':ExponentView')
+  //compile(name: 'ExponentView-prod-release', ext: 'aar')
+
   compile 'com.android.support:multidex:1.0.1'
 
-  // Current react native
-  compile project(':ReactAndroid')
-
-  // Versioned react native
-  // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
-  compile(name: 'ReactAndroid-release-abi10_0_0', ext: 'aar')
-  compile(name: 'ReactAndroid-release-abi9_0_0', ext: 'aar')
-  compile(name: 'ReactAndroid-release-abi8_0_0', ext: 'aar')
-  compile(name: 'ReactAndroid-release-abi7_0_0', ext: 'aar')
-  compile(name: 'ReactAndroid-release-abi6_0_0', ext: 'aar')
-
-  // React native dependencies
-  // We use a different version of appcompat
-  // compile 'com.android.support:appcompat-v7:23.0.1'
-  compile 'com.android.support:recyclerview-v7:23.0.1'
-  compile 'com.facebook.fresco:fresco:0.11.0'
-  compile 'com.facebook.fresco:animated-gif:0.11.0'
-  compile 'com.facebook.fresco:animated-webp:0.11.0'
-  compile 'com.facebook.fresco:webpsupport:0.11.0'
-  compile 'com.facebook.fresco:webpsupport:0.11.0'
-  compile 'com.facebook.fresco:imagepipeline-okhttp:0.8.1'
-  compile 'com.facebook.stetho:stetho:1.3.1'
-  compile 'com.facebook.stetho:stetho-okhttp3:1.3.1'
-  compile 'com.fasterxml.jackson.core:jackson-core:2.2.3'
-  compile 'com.google.code.findbugs:jsr305:3.0.0'
-  compile 'com.squareup.okhttp3:okhttp:3.4.1'
-  compile 'com.squareup.okhttp3:okhttp-ws:3.4.1'
-  compile 'com.squareup.okio:okio:1.8.0'
-  compile 'org.webkit:android-jsc:r174650'
-
   // Our dependencies
+  compile 'com.android.support:appcompat-v7:23.1.1'
+
+  // Our dependencies from ExponentView
+  // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPONENTVIEW. ONLY COPY THINGS FROM EXPONENTVIEW TO HERE.
   compile 'com.android.support:appcompat-v7:23.1.1'
   compile ('com.facebook.android:facebook-android-sdk:4.7.0') {
     exclude module: 'bolts-android'
@@ -125,9 +97,6 @@ dependencies {
   provided 'org.glassfish:javax.annotation:3.1.1'
   compile 'com.jakewharton:butterknife:7.0.1'
   compile 'de.greenrobot:eventbus:2.4.0'
-  compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
-    transitive = true;
-  }
   compile 'com.amplitude:android-sdk:2.9.2' // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
   compile 'com.squareup.picasso:picasso:2.5.2'
   compile 'com.google.android.gms:play-services-gcm:8.4.0'
@@ -156,6 +125,7 @@ dependencies {
   androidTestCompile 'com.android.support:support-annotations:23.2.1'
   androidTestCompile 'com.google.code.findbugs:jsr305:3.0.0'
   androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
+  compile project(path: ':exponentview')
 }
 
 // This has to be down here for some reason

@@ -1,0 +1,116 @@
+apply plugin: 'com.android.library'
+
+buildscript {
+  repositories {
+    maven { url 'https://maven.fabric.io/public' }
+
+    flatDir {
+      dirs 'libs'
+    }
+  }
+}
+
+apply plugin: 'com.neenbedankt.android-apt'
+
+repositories {
+  maven { url 'https://maven.fabric.io/public' }
+  flatDir {
+    dirs 'libs'
+  }
+}
+
+android {
+  compileSdkVersion 23
+  buildToolsVersion "23.0.3"
+
+  defaultConfig {
+    minSdkVersion 19
+    targetSdkVersion 23
+    versionCode 1
+    versionName "1.0"
+    ndk {
+      abiFilters 'armeabi-v7a', 'x86'
+    }
+  }
+  buildTypes {
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+  }
+}
+
+task generateDynamicMacros(type: Exec) {
+  // This gets run from the 'app' directory
+  commandLine 'bash', '../../tools-public/generate-dynamic-macros-android.sh'
+}
+preBuild.dependsOn generateDynamicMacros
+
+dependencies {
+  compile fileTree(dir: 'libs', include: ['*.jar'])
+  compile 'com.android.support:multidex:1.0.1'
+
+  // Current react native
+  compile project(':ReactAndroid')
+
+  // Versioned react native
+  // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+  compile(name: 'ReactAndroid-release-abi10_0_0', ext: 'aar')
+  compile(name: 'ReactAndroid-release-abi9_0_0', ext: 'aar')
+  compile(name: 'ReactAndroid-release-abi8_0_0', ext: 'aar')
+  compile(name: 'ReactAndroid-release-abi7_0_0', ext: 'aar')
+  compile(name: 'ReactAndroid-release-abi6_0_0', ext: 'aar')
+
+  // React native dependencies
+  // We use a different version of appcompat
+  // compile 'com.android.support:appcompat-v7:23.0.1'
+  compile 'com.android.support:recyclerview-v7:23.0.1'
+  compile 'com.facebook.fresco:fresco:0.11.0'
+  compile 'com.facebook.fresco:animated-gif:0.11.0'
+  compile 'com.facebook.fresco:animated-webp:0.11.0'
+  compile 'com.facebook.fresco:webpsupport:0.11.0'
+  compile 'com.facebook.fresco:webpsupport:0.11.0'
+  compile 'com.facebook.fresco:imagepipeline-okhttp:0.8.1'
+  compile 'com.facebook.stetho:stetho:1.3.1'
+  compile 'com.facebook.stetho:stetho-okhttp3:1.3.1'
+  compile 'com.fasterxml.jackson.core:jackson-core:2.2.3'
+  compile 'com.google.code.findbugs:jsr305:3.0.0'
+  compile 'com.squareup.okhttp3:okhttp:3.4.1'
+  compile 'com.squareup.okhttp3:okhttp-ws:3.4.1'
+  compile 'com.squareup.okio:okio:1.8.0'
+  compile 'org.webkit:android-jsc:r174650'
+
+  // Our dependencies
+  compile 'com.android.support:appcompat-v7:23.1.1'
+  compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
+    transitive = true;
+  }
+  compile ('com.facebook.android:facebook-android-sdk:4.7.0') {
+    exclude module: 'bolts-android'
+  }
+  compile 'com.google.dagger:dagger:2.0.1'
+  apt 'com.google.dagger:dagger-compiler:2.0.1'
+  provided 'org.glassfish:javax.annotation:3.1.1'
+  compile 'de.greenrobot:eventbus:2.4.0'
+  compile 'com.amplitude:android-sdk:2.9.2' // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
+  compile 'com.squareup.picasso:picasso:2.5.2'
+  compile 'com.google.android.gms:play-services-gcm:8.4.0'
+  compile 'com.google.android.gms:play-services-analytics:8.4.0'
+  compile 'com.google.android.gms:play-services-maps:8.4.0'
+  apt 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
+  compile "com.raizlabs.android:DBFlow-Core:2.2.1"
+  compile "com.raizlabs.android:DBFlow:2.2.1"
+  compile "com.madgag.spongycastle:core:1.53.0.0"
+  compile "com.madgag.spongycastle:prov:1.53.0.0"
+  debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta1'
+  releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
+  compile 'com.facebook.device.yearclass:yearclass:1.0.1'
+  compile 'commons-io:commons-io:1.3.2'
+  compile 'me.leolin:ShortcutBadger:1.1.4@aar'
+  compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+  compile project(':Android-Image-Cropper:cropper')
+  compile 'com.facebook.rebound:rebound:0.3.8' // Needed for native animations in SDK 6
+  compile 'com.yqritc:android-scalablevideoview:1.0.1'
+  compile 'commons-codec:commons-codec:1.10'
+  compile 'com.segment.analytics.android:analytics:4.+'
+}
