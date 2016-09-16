@@ -5,16 +5,33 @@ package abi10_0_0.host.exp.exponent.modules.api;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 
+import java.util.Map;
+
+import javax.inject.Inject;
+
 import abi10_0_0.com.facebook.react.bridge.Promise;
 import abi10_0_0.com.facebook.react.bridge.ReactApplicationContext;
 import abi10_0_0.com.facebook.react.bridge.ReactContextBaseJavaModule;
 import abi10_0_0.com.facebook.react.bridge.ReactMethod;
 
+import host.exp.exponent.ExponentApplication;
 import host.exp.exponent.experience.BaseExperienceActivity;
+import host.exp.exponent.kernel.Kernel;
 
 public class UtilModule extends ReactContextBaseJavaModule {
-  public UtilModule(ReactApplicationContext reactContext) {
+
+  @Inject
+  Kernel mKernel;
+
+  private final Map<String, Object> mExperienceProperties;
+
+  public UtilModule(ReactApplicationContext reactContext,
+                    ExponentApplication application,
+                    Map<String, Object> experienceProperties) {
     super(reactContext);
+    application.getAppComponent().inject(this);
+
+    mExperienceProperties = experienceProperties;
   }
 
   @Override
@@ -32,5 +49,10 @@ public class UtilModule extends ReactContextBaseJavaModule {
     }
     BaseExperienceActivity.getVisibleActivity().startActivity(Intent.createChooser(intent, prompt));
     promise.resolve(true);
+  }
+
+  @ReactMethod
+  public void reload() {
+    mKernel.reloadVisibleExperience((String) mExperienceProperties.get(Kernel.MANIFEST_URL_KEY));
   }
 }

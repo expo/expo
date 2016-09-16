@@ -92,7 +92,7 @@ public class ExponentPackage implements ReactPackage {
         new ShakeModule(reactContext),
         new FontLoaderModule(reactContext),
         new KeyboardModule(reactContext),
-        new UtilModule(reactContext),
+        new UtilModule(reactContext, mApplication, mExperienceProperties),
         new ExponentIntentModule(reactContext, mApplication, mExperienceProperties)
     ));
 

@@ -22,6 +22,7 @@ import host.exp.exponent.referrer.InstallReferrerReceiver;
 import versioned.host.exp.exponent.modules.api.URLHandlerModule;
 import versioned.host.exp.exponent.modules.api.ConstantsModule;
 import versioned.host.exp.exponent.modules.api.NotificationsModule;
+import versioned.host.exp.exponent.modules.api.UtilModule;
 import versioned.host.exp.exponent.modules.internal.ExponentIntentModule;
 
 @Singleton
@@ -84,4 +85,7 @@ public interface AppComponent {
   void inject(abi10_0_0.host.exp.exponent.modules.internal.ExponentIntentModule module);
   void inject(abi9_0_0.host.exp.exponent.modules.internal.ExponentIntentModule module);
   void inject(abi8_0_0.host.exp.exponent.modules.internal.ExponentIntentModule module);
+
+  void inject(UtilModule module);
+  void inject(abi10_0_0.host.exp.exponent.modules.api.UtilModule module);
 }
