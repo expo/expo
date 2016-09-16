@@ -1,6 +1,6 @@
 {
   "AndroidManifest.xml": "android/app/src/main/",
   "google-services.json": "android/app/",
-  "ExponentKeys.java": "android/app/src/main/java/host/exp/exponent/generated/",
+  "ExponentKeys.java": "android/exponentview/src/main/java/host/exp/exponent/generated/",
   "fabric.properties": "android/app/"
 }
