@@ -12,6 +12,7 @@
 #import "ABI10_0_0EXVersionManager.h"
 #import "ABI10_0_0EXAmplitude.h"
 #import "ABI10_0_0EXSegment.h"
+#import "ABI10_0_0EXUtil.h"
 
 #import "ABI10_0_0RCTAssert.h"
 #import "ABI10_0_0RCTDevMenu+Device.h"
@@ -219,6 +220,7 @@ void ABI10_0_0EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
                                     [[ABI10_0_0EXNotifications alloc] initWithExperienceId:experienceId],
                                     [[ABI10_0_0EXAmplitude alloc] initWithExperienceId:experienceId],
                                     [[ABI10_0_0EXSegment alloc] init],
+                                    [[ABI10_0_0EXUtil alloc] init],
                                     ]];
 
   if (isDeveloper) {
