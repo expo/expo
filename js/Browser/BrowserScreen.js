@@ -38,6 +38,7 @@ class BrowserScreen extends React.Component {
     let { foregroundTaskUrl, isShell, shellManifestUrl, shellInitialUrl, isHomeVisible, isMenuVisible, isNuxFinished } = data.browser;
     let isForegrounded = (url === foregroundTaskUrl && !isHomeVisible);
     let shellTask = (shellManifestUrl) ? data.browser.tasks.get(shellManifestUrl) : null;
+
     return {
       url,
       isForegrounded,
@@ -286,7 +287,7 @@ class BrowserScreen extends React.Component {
   @autobind
   _handleFrameLoadingFinish(event) {
     this.props.dispatch(BrowserActions.setLoadingState(this.props.url, false));
-    if (!this.props.isNuxFinished && !this.props.isShell) {
+    if (!this.props.isNuxFinished && !this.props.isLetterboxed && !this.props.isShell) {
       setTimeout(() => {
         this.props.dispatch(BrowserActions.showMenuAsync(true));
       }, 200);
