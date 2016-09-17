@@ -588,7 +588,9 @@ public class Kernel {
     manifest = mExponentManifest.normalizeManifest(manifestUrl, manifest);
     boolean isFirstRunFinished = mExponentSharedPreferences.getBoolean(ExponentSharedPreferences.NUX_HAS_FINISHED_FIRST_RUN_KEY);
 
-    boolean shouldShowNux = !manifestUrl.equals(Constants.INITIAL_URL);
+    // TODO: shouldShowNux used to be set to `!manifestUrl.equals(Constants.INITIAL_URL);`.
+    // This caused nux to show up in RNPlay. What's the right behavior here?
+    boolean shouldShowNux = !Constants.isShellApp();
     boolean loadNux = shouldShowNux && !isFirstRunFinished;
     JSONObject opts = new JSONObject();
     opts.put("loadNux", loadNux);
