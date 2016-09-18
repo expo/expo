@@ -6,7 +6,7 @@
 
 @implementation ABI10_0_0EXUtil
 
-ABI10_0_0RCT_EXPORT_MODULE(ExponentUtil)
++ (NSString *)moduleName { return @"ExponentUtil"; }
 
 @synthesize bridge = _bridge;
 

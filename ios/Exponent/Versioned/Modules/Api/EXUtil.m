@@ -4,7 +4,7 @@
 
 @implementation EXUtil
 
-RCT_EXPORT_MODULE(ExponentUtil)
++ (NSString *)moduleName { return @"ExponentUtil"; }
 
 @synthesize bridge = _bridge;
 
