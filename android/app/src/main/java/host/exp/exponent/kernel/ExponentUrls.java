@@ -34,7 +34,7 @@ public class ExponentUrls {
     }
 
     Uri uri = Uri.parse(rawUrl);
-    boolean useHttps = isHttpsHost(uri.getHost());
+    boolean useHttps = isHttpsHost(uri.getHost()) || rawUrl.startsWith("exps");
     return uri.buildUpon().scheme(useHttps ? "https" : "http").build().toString();
   }
 
