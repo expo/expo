@@ -5,7 +5,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:2.2.0'
+    classpath 'com.android.tools.build:gradle:2.1.0'
     classpath 'com.google.gms:google-services:2.0.0-alpha6'
     classpath 'de.undercouch:gradle-download-task:2.0.0'
     classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
