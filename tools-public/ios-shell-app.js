@@ -100,8 +100,11 @@ async function configurePropertyListsAsync(manifest, args, configFilePath) {
 
     // use version from manifest
     let version = (manifest.version) ? manifest.version : '0.0.0';
+    let buildNumber = (manifest.ios && manifest.ios.buildNumber) ?
+      manifest.ios.buildNumber :
+      '1';
     config.CFBundleShortVersionString = version;
-    config.CFBundleVersion = version;
+    config.CFBundleVersion = buildNumber;
 
     let internalKeys;
     try {
