@@ -19,6 +19,7 @@ import ReactNative, {
   Text,
   TextInput,
   View,
+  RCTLog,
 } from 'react-native';
 import { connect } from 'react-redux';
 import UrlHandler from 'react-native-url-handler';
