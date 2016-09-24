@@ -3,6 +3,13 @@ Constants
 
 System information that remains constant throughout the lifetime of your app.
 
+.. attribute:: Exponent.Constants.appOwnership
+
+   Returns ``exponent``, ``standalone``, or ``guest``. If ``exponent``,
+   the experience is running inside of the Exponent client. If
+   ``standalone``, it is a standalone app. If ``guest``, it has been
+   opened through a link from a standalone app.
+
 .. attribute:: Exponent.Constants.exponentVersion
 
    The version string of the Exponent client currently running.
@@ -14,7 +21,7 @@ System information that remains constant throughout the lifetime of your app.
 
 .. attribute:: Exponent.Constants.deviceName
 
-   A human-readable name for the device type. 
+   A human-readable name for the device type.
 
 .. attribute:: Exponent.Constants.deviceYearClass
 
