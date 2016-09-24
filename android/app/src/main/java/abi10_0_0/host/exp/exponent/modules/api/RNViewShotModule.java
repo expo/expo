@@ -1,5 +1,4 @@
-
-package abi10_0_0.host.exp.exponent.modules.api.viewshot;
+package abi10_0_0.host.exp.exponent.modules.api;
 
 import android.content.Context;
 import android.graphics.Bitmap;

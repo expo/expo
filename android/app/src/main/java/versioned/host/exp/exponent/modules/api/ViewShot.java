@@ -1,4 +1,4 @@
-package versioned.host.exp.exponent.modules.api.viewshot;
+package versioned.host.exp.exponent.modules.api;
 
 import javax.annotation.Nullable;
 import android.graphics.Bitmap;

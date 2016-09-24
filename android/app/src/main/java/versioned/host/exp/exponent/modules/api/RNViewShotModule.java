@@ -1,5 +1,4 @@
-
-package versioned.host.exp.exponent.modules.api.viewshot;
+package versioned.host.exp.exponent.modules.api;
 
 import android.content.Context;
 import android.graphics.Bitmap;
