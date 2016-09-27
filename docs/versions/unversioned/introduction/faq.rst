@@ -32,7 +32,7 @@ is just to make Exponent work really well and be as popular as possible.
 What is the difference between Exponent and React Native?
 ---------------------------------------------------------
 
-Exponent is kind of like Rails for React Native. Lots of things are set up for you, and so it's quicker to get started
+Exponent is kind of like Rails for React Native. Lots of things are set up for you, so it's quicker to get started
 and on the right path.
 
 With Exponent, you don't need Xcode or Android Studio. You just write JavaScript using whatever text editor you are
