@@ -264,7 +264,7 @@ function createImmutableTask(meta) {
       bundleUrl,
       manifestUrl,
       manifest: Immutable.fromJS(manifest),
-      initialProps,
+      initialProps: Immutable.fromJS(initialProps),
       isLoading: false,
       loadingError: null,
     }),

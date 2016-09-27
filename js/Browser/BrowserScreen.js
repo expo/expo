@@ -219,10 +219,15 @@ class BrowserScreen extends React.Component {
     this._recomputePropsJS(nextProps);
   }
 
-  _getInitialProps(baseProps) {
+  _getInitialProps(baseInitialProps) {
     // start with whatever came from the browser task's initial props (e.g. a push notification payload)
-    if (!baseProps) {
-      baseProps = {};
+    let baseProps = {};
+    if (baseInitialProps) {
+      for (let key in baseInitialProps) {
+        if (baseInitialProps.hasOwnProperty(key)) {
+          baseProps[key] = baseInitialProps[key];
+        }
+      }
     }
 
     // add a few more things
