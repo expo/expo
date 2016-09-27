@@ -116,7 +116,6 @@ You can! Update your ``.babelrc`` you get on a new Exponent project to the follo
 
 Substitute ``./pathToYourBabelRelayPlugin`` with the path to your Relay plugin.
 
-
 How do I get my existing React Native project running with Exponent?
 --------------------------------------------------------------------
 
