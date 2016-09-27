@@ -47,3 +47,11 @@ Node.js
 To get started wtih Exponent you don't necessarily need to have Node.js
 installed, but as soon as you start actually building something you'll want to
 have it. `Download the latest version of Node.js <https://nodejs.org/en/>`_.
+
+Watchman
+--------
+
+Some users encounter issues if they do not have this installed on their machine,
+so we recommend that you install Watchman. Watchman watches files and records
+when they change, then triggers actions in response to this, and it's used
+internally by React Native. `Download and install Watchman <https://facebook.github.io/watchman/docs/install.html>`_
