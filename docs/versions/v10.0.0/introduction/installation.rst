@@ -29,10 +29,14 @@ On your device
 
 `Download for Android 4.4+ from the Play Store <https://play.google.com/store/apps/details?id=host.exp.exponent>`_ or `for iOS 8+ from the App Store <https://itunes.com/apps/exponent>`_
 
+Note: you don't need to install the Exponent client on emulators separately. It will be done on the first project deployment.
+
 iOS simulator
 ^^^^^^^^^^^^^
 
 Install `Xcode through the Apple App Store <https://itunes.apple.com/app/xcode/id497799835>`_. It'll take a while, go have a nap. Next, open up Xcode, go to preferences and click the Components tab, install a simulator from the list `(screenshot). </_static/img/xcode-simulator.png>`_
+
+Once the simulator is open and you have a project open in XDE, you can press *Open on iOS simulator* in XDE and it will install the Exponent client to the emulator and open up your app inside of it.
 
 Android emulator
 ^^^^^^^^^^^^^^^^
