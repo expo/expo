@@ -62,6 +62,16 @@ NS_ASSUME_NONNULL_BEGIN
   _loadingIndicator = (UIActivityIndicatorView *)[placeholder viewWithTag:1];
 }
 
+- (BOOL)shouldAutorotate
+{
+  return YES;
+}
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+  return [[EXKernel sharedInstance] supportedInterfaceOrientationsForForegroundTask];
+}
+
 #pragma mark - Public
 
 - (void)applicationWillEnterForeground
