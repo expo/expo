@@ -23,6 +23,12 @@ FOUNDATION_EXPORT NSString *kEXKernelBundleResourceName;
               onFailure: (void (^_Nullable)(NSString * _Nullable ))failure;
 - (void)sendNotification: (NSDictionary *)notifBody toExperienceWithId: (NSString *)experienceId;
 
+/**
+ *  Similar to UIViewController::supportedInterfaceOrientations, but the value can vary depending on
+ *  which JS task is visible.
+ */
+- (UIInterfaceOrientationMask)supportedInterfaceOrientationsForForegroundTask;
+
 @property (nonatomic, strong, readonly) EXKernelBridgeRegistry *bridgeRegistry;
 
 # pragma mark - app-wide linking handlers

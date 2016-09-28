@@ -101,6 +101,30 @@ NSString *kEXKernelBundleResourceName = @"kernel.ios";
   }
 }
 
+- (UIInterfaceOrientationMask)supportedInterfaceOrientationsForForegroundTask
+{
+  if (_bridgeRegistry.lastKnownForegroundBridge) {
+    if (_bridgeRegistry.lastKnownForegroundBridge != _bridgeRegistry.kernelBridge) {
+      EXKernelBridgeRecord *foregroundBridgeRecord = [_bridgeRegistry recordForBridge:_bridgeRegistry.lastKnownForegroundBridge];
+      if (foregroundBridgeRecord.frame && foregroundBridgeRecord.frame.manifest) {
+        NSString *orientationConfig = foregroundBridgeRecord.frame.manifest[@"orientation"];
+        if ([orientationConfig isEqualToString:@"portrait"]) {
+          // lock to portrait
+          return UIInterfaceOrientationMaskPortrait;
+        } else if ([orientationConfig isEqualToString:@"landscape"]) {
+          // lock to landscape
+          return UIInterfaceOrientationMaskLandscape;
+        } else {
+          // no config or default value: allow autorotation
+          return UIInterfaceOrientationMaskAllButUpsideDown;
+        }
+      }
+    }
+  }
+  // kernel or unknown bridge: lock to portrait
+  return UIInterfaceOrientationMaskPortrait;
+}
+
 #pragma mark - Linking
 
 /**
