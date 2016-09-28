@@ -21,7 +21,7 @@
   return self;
 }
 
-- (void)registerBridge:(id)bridge forExperienceId:(NSString *)experienceId initialUri:(NSURL *)initialUri
+- (void)registerBridge:(id)bridge forExperienceId:(NSString *)experienceId frame:(EXFrame *)frame
 {
   NSAssert(experienceId, @"Cannot register a bridge with no experience id");
   for (id bridge in self.bridgeEnumerator) {
@@ -30,7 +30,7 @@
       NSAssert(NO, @"Cannot register a bridge with a non-unique experience id");
     }
   }
-  [_bridgeRegistry setObject:[EXKernelBridgeRecord recordWithExperienceId:experienceId initialUri:initialUri] forKey:bridge];
+  [_bridgeRegistry setObject:[EXKernelBridgeRecord recordWithExperienceId:experienceId frame:frame] forKey:bridge];
 }
 
 - (void)unregisterBridge:(id)bridge

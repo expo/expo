@@ -3,13 +3,14 @@
 #import "EXKernelBridgeRecord.h"
 
 @class RCTBridge;
+@class EXFrame;
 
 @interface EXKernelBridgeRegistry : NSObject
 
 - (void)registerKernelBridge: (RCTBridge *)bridge;
 - (void)unregisterKernelBridge;
 
-- (void)registerBridge: (id)bridge forExperienceId: (NSString *)experienceId initialUri: (NSURL *)initialUri;
+- (void)registerBridge: (id)bridge forExperienceId: (NSString *)experienceId frame: (EXFrame *)frame;
 - (void)unregisterBridge: (id)bridge;
 
 /**

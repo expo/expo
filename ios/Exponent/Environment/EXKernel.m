@@ -4,6 +4,7 @@
 #import "EXAppDelegate.h"
 #import "EXAppState.h"
 #import "EXDevMenuViewController.h"
+#import "EXFrame.h"
 #import "EXKernel.h"
 #import "EXKernelBridgeRecord.h"
 #import "EXKernelModule.h"
@@ -122,7 +123,7 @@ NSString *kEXKernelBundleResourceName = @"kernel.ios";
 
   for (id bridge in [_bridgeRegistry bridgeEnumerator]) {
     EXKernelBridgeRecord *bridgeRecord = [_bridgeRegistry recordForBridge:bridge];
-    if ([urlToRoute hasPrefix:[[self class] linkingUriForExperienceUri:bridgeRecord.initialUri]]) {
+    if ([urlToRoute hasPrefix:[[self class] linkingUriForExperienceUri:bridgeRecord.frame.initialUri]]) {
       // this is a link into a bridge we already have running.
       // use this bridge as the link's destination instead of the kernel.
       destinationBridge = bridge;
@@ -310,7 +311,7 @@ continueUserActivity:(NSUserActivity *)userActivity
 {
   if (destinationBridge != _bridgeRegistry.kernelBridge) {
     // kernel JS needs to bring the relevant frame/bridge to visibility.
-    NSURL *frameUrlToForeground = [_bridgeRegistry recordForBridge:destinationBridge].initialUri;
+    NSURL *frameUrlToForeground = [_bridgeRegistry recordForBridge:destinationBridge].frame.initialUri;
     [self dispatchKernelJSEvent:kEXKernelShouldForegroundTaskEvent body:@{ @"taskUrl":frameUrlToForeground.absoluteString } onSuccess:nil onFailure:nil];
   }
 }
@@ -343,9 +344,9 @@ continueUserActivity:(NSUserActivity *)userActivity
 
     for (id bridge in [_bridgeRegistry bridgeEnumerator]) {
       EXKernelBridgeRecord *bridgeRecord = [_bridgeRegistry recordForBridge:bridge];
-      if (urlToForeground && [bridgeRecord.initialUri.absoluteString isEqualToString:urlToForeground]) {
+      if (urlToForeground && [bridgeRecord.frame.initialUri.absoluteString isEqualToString:urlToForeground]) {
         bridgeToForeground = bridge;
-      } else if (urlToBackground && [bridgeRecord.initialUri.absoluteString isEqualToString:urlToBackground]) {
+      } else if (urlToBackground && [bridgeRecord.frame.initialUri.absoluteString isEqualToString:urlToBackground]) {
         bridgeToBackground = bridge;
       }
     }

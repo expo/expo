@@ -214,7 +214,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
     NSAssert([_reactBridge isLoading], @"React bridge should be loading once initialized");
     [[EXKernel sharedInstance].bridgeRegistry registerBridge:_reactBridge
                                              forExperienceId:_manifest[@"id"]
-                                                  initialUri:_initialUri];
+                                                       frame:self];
     [self _startObservingBridgeNotifications];
     [_versionManager bridgeWillStartLoading:_reactBridge];
   }

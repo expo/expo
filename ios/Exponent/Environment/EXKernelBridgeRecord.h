@@ -7,13 +7,15 @@ NS_ASSUME_NONNULL_BEGIN
 FOUNDATION_EXPORT NSString *kEXKernelBridgeDidForegroundNotification;
 FOUNDATION_EXPORT NSString *kEXKernelBridgeDidBackgroundNotification;
 
+@class EXFrame;
+
 @interface EXKernelBridgeRecord : NSObject
 
-+ (instancetype)recordWithExperienceId: (NSString *)experienceId initialUri: (NSURL *)initialUri;
-- (instancetype)initWithExperienceId: (NSString *)experienceId initialUri: (NSURL *)initialUri;
++ (instancetype)recordWithExperienceId: (NSString *)experienceId frame: (EXFrame *)frame;
+- (instancetype)initWithExperienceId: (NSString *)experienceId frame: (EXFrame *)frame;
 
 @property (nonatomic, readonly, strong) NSString *experienceId;
-@property (nonatomic, readonly, strong) NSURL *initialUri;
+@property (nonatomic, readonly, weak) EXFrame *frame;
 
 /**
  *  See EXKernelBridgeRegistry::setError:forBridge:
