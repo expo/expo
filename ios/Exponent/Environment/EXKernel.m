@@ -415,12 +415,12 @@ continueUserActivity:(NSUserActivity *)userActivity
   
   if (_bridgeRegistry.lastKnownForegroundBridge) {
     id appStateModule = [self _nativeModuleForBridge:_bridgeRegistry.lastKnownForegroundBridge named:@"RCTAppState"];
-    if ([appStateModule respondsToSelector:@selector(setState:)]) {
-      [appStateModule setState:newState];
-    }
     NSString *lastKnownState;
     if ([appStateModule respondsToSelector:@selector(lastKnownState)]) {
       lastKnownState = [appStateModule lastKnownState];
+    }
+    if ([appStateModule respondsToSelector:@selector(setState:)]) {
+      [appStateModule setState:newState];
     }
     if (!lastKnownState || ![newState isEqualToString:lastKnownState]) {
       if ([newState isEqualToString:@"active"]) {
