@@ -16,7 +16,13 @@ let ExUrls = {
       (components.protocol === 'localhost:') ||
       (components.host == null && !components.protocol && !components.slashes)
     ) {
-      components = url.parse('exp://' + rawUrl);
+      if (components.path && components.path.charAt(0) === '@') {
+        // try parsing as @user/experience-id shortcut
+        components = url.parse('exp://exp.host/' + rawUrl);
+      } else {
+        // just treat it as a url with no protocol and assume exp://
+        components = url.parse('exp://' + rawUrl);
+      }
     }
     if (!components.protocol) {
       components.protocol = 'exp:';
