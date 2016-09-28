@@ -49,7 +49,8 @@ let ExManifests = {
       try {
         manifestString = await ExponentKernel.getManifestAsync(httpManifestUrl, manifestUrl);
       } catch (e) {
-        throw new Error(`Error fetching ${manifestUrl}: ${e.message}.`);
+        e.message = `Error fetching ${manifestUrl}: ${e.message}.`;
+        throw e;
       }
     } else {
       manifestString = await ApiClient.fetchManifestAsync(httpManifestUrl, shouldRequestSignedManifest);

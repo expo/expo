@@ -36,7 +36,7 @@ let BrowserActions = {
 
       return BrowserActions.navigateToBundleUrlAsync(manifestUrl, manifest, bundleUrl, initialProps);
     } catch (e) {
-      return BrowserActions.showLoadingError(-1, e.message, originalUrl);
+      return BrowserActions.showLoadingError(e.code, e.message, originalUrl);
     }
   },
 

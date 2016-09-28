@@ -129,7 +129,7 @@ RCT_REMAP_METHOD(getManifestAsync,
     NSString *manifestString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     resolve(manifestString);
   } errorBlock:^(NSError * _Nonnull error) {
-    reject(@"E_REQUEST_FAILED", error.localizedDescription, error);
+    reject([NSString stringWithFormat:@"%d", error.code], error.localizedDescription, error);
   }];
 }
 
