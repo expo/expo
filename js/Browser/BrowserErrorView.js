@@ -12,9 +12,11 @@ import {
   Text,
   View,
 } from 'react-native';
-import Button from 'react-native-button';
 
+import BrowserActions from 'BrowserActions';
+import Button from 'react-native-button';
 import ExColors from 'ExColors';
+import ExStore from 'ExStore';
 
 export default class BrowserErrorView extends React.Component {
 
@@ -64,6 +66,20 @@ export default class BrowserErrorView extends React.Component {
     }
 
     let message = this._readableMessage(error);
+    let actionButton;
+    if (error.code === '404') {
+      actionButton = (
+        <Button onPress={this._goToHome.bind(this)} style={styles.button}>
+          Back to Exponent Home
+        </Button>
+      );
+    } else {
+      actionButton = (
+        <Button onPress={onRefresh} style={styles.button}>
+          Try Again
+        </Button>
+      );
+    }
 
     return (
       <ScrollView
@@ -72,9 +88,7 @@ export default class BrowserErrorView extends React.Component {
         style={[styles.container, style]}>
         <Text style={styles.message}>{message}</Text>
         <View style={styles.buttonContainer}>
-          <Button onPress={onRefresh} style={styles.button}>
-            Try Again
-          </Button>
+          {actionButton}
           {detailButton}
         </View>
         {detailContent}
@@ -91,6 +105,10 @@ export default class BrowserErrorView extends React.Component {
       } */
     }
     return 'There was a problem loading the experience.';
+  }
+
+  _goToHome() {
+    ExStore.dispatch(BrowserActions.foregroundHomeAsync());
   }
 }
 
