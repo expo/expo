@@ -180,6 +180,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
   _reactRootView.frame = self.bounds;
 }
 
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+  if (_manifest) {
+    NSString *orientationConfig = _manifest[@"orientation"];
+    if ([orientationConfig isEqualToString:@"portrait"]) {
+      // lock to portrait
+      return UIInterfaceOrientationMaskPortrait;
+    } else if ([orientationConfig isEqualToString:@"landscape"]) {
+      // lock to landscape
+      return UIInterfaceOrientationMaskLandscape;
+    }
+  }
+  // no config or default value: allow autorotation
+  return UIInterfaceOrientationMaskAllButUpsideDown;
+}
+
 #pragma mark - Loading Content
 
 - (void)_reloadContent

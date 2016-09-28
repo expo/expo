@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)reload;
 
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations;
+
 @end
 
 NS_ASSUME_NONNULL_END

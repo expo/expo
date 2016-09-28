@@ -106,18 +106,8 @@ NSString *kEXKernelBundleResourceName = @"kernel.ios";
   if (_bridgeRegistry.lastKnownForegroundBridge) {
     if (_bridgeRegistry.lastKnownForegroundBridge != _bridgeRegistry.kernelBridge) {
       EXKernelBridgeRecord *foregroundBridgeRecord = [_bridgeRegistry recordForBridge:_bridgeRegistry.lastKnownForegroundBridge];
-      if (foregroundBridgeRecord.frame && foregroundBridgeRecord.frame.manifest) {
-        NSString *orientationConfig = foregroundBridgeRecord.frame.manifest[@"orientation"];
-        if ([orientationConfig isEqualToString:@"portrait"]) {
-          // lock to portrait
-          return UIInterfaceOrientationMaskPortrait;
-        } else if ([orientationConfig isEqualToString:@"landscape"]) {
-          // lock to landscape
-          return UIInterfaceOrientationMaskLandscape;
-        } else {
-          // no config or default value: allow autorotation
-          return UIInterfaceOrientationMaskAllButUpsideDown;
-        }
+      if (foregroundBridgeRecord.frame) {
+        return [foregroundBridgeRecord.frame supportedInterfaceOrientations];
       }
     }
   }

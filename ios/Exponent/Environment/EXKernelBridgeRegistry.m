@@ -3,6 +3,7 @@
 #import "EXKernelBridgeRegistry.h"
 
 #import "RCTBridge.h"
+#import "EXFrame.h"
 
 @interface EXKernelBridgeRegistry ()
 
@@ -31,6 +32,10 @@
     }
   }
   [_bridgeRegistry setObject:[EXKernelBridgeRecord recordWithExperienceId:experienceId frame:frame] forKey:bridge];
+  if (_lastKnownForegroundBridge == nil) {
+    // TODO: this assumes we always load bridges in the foreground (true at time of writing)
+    _lastKnownForegroundBridge = bridge;
+  }
 }
 
 - (void)unregisterBridge:(id)bridge
