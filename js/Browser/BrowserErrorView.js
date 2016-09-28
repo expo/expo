@@ -63,12 +63,14 @@ export default class BrowserErrorView extends React.Component {
       );
     }
 
+    let message = this._readableMessage(error);
+
     return (
       <ScrollView
         alwaysBounceVertical={false}
         {...props}
         style={[styles.container, style]}>
-        <Text style={styles.message}>There was a problem loading the experience.</Text>
+        <Text style={styles.message}>{message}</Text>
         <View style={styles.buttonContainer}>
           <Button onPress={onRefresh} style={styles.button}>
             Try Again
@@ -78,6 +80,17 @@ export default class BrowserErrorView extends React.Component {
         {detailContent}
       </ScrollView>
     );
+  }
+
+  _readableMessage(error) {
+    if (error.code === '404') {
+      return `No experience found at ${error.originalUrl}.`;
+      // TODO: identify this case in the server response
+      /* if (error.message.indexOf('compatible with this version') !== -1) {
+        return `Looks like your copy of Exponent can't run this experience. Try updating Exponent.`;
+      } */
+    }
+    return 'There was a problem loading the experience.';
   }
 }
 
