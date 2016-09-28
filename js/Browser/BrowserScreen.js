@@ -170,9 +170,17 @@ class BrowserScreen extends React.Component {
   }
 
   _renderLoadingIndicator() {
+    let { task } = this.props;
+    let { manifest } = task;
+
+    let loadingBackgroundColor = 'white';
+    if (manifest && manifest.getIn(['loading', 'backgroundColor'])) {
+      loadingBackgroundColor = manifest.getIn(['loading', 'backgroundColor']);
+    }
     let loadingIcon = this._renderManifestLoadingIcon();
+
     return (
-      <View pointerEvents="none" style={styles.loadingIndicatorContainer}>
+      <View pointerEvents="none" style={[styles.loadingIndicatorContainer, { backgroundColor: loadingBackgroundColor }]}>
         <View>
           {loadingIcon}
           <ActivityIndicator
@@ -377,7 +385,6 @@ let styles = StyleSheet.create({
     paddingTop: 20,
   },
   loadingIndicatorContainer: {
-    backgroundColor: 'white',
     position: 'absolute',
     top: 0,
     bottom: 0,
