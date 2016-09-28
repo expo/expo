@@ -196,6 +196,24 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
   return UIInterfaceOrientationMaskAllButUpsideDown;
 }
 
+/**
+ *  If a developer has locked their experience to a particular orientation,
+ *  but some other experience has allowed the device to rotate to something unsupported,
+ *  attempt to resolve that discrepancy here by forcing the device to rotate.
+ */
+- (void)enforceDesiredDeviceOrientation
+{
+  EXAssertMainThread();
+  UIInterfaceOrientationMask mask = [self supportedInterfaceOrientations];
+  UIDeviceOrientation currentOrientation = [[UIDevice currentDevice] orientation];
+  if (mask == UIInterfaceOrientationMaskLandscape && (currentOrientation == UIDeviceOrientationPortrait)) {
+    [[UIDevice currentDevice] setValue:@(UIInterfaceOrientationLandscapeLeft) forKey:@"orientation"];
+  } else if (mask == UIInterfaceOrientationMaskPortrait && (currentOrientation != UIDeviceOrientationPortrait)) {
+    [[UIDevice currentDevice] setValue:@(UIDeviceOrientationPortrait) forKey:@"orientation"];
+  }
+  [UIViewController attemptRotationToDeviceOrientation];
+}
+
 #pragma mark - Loading Content
 
 - (void)_reloadContent
@@ -300,6 +318,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"websocket-executor-port"];
   }
   [_versionManager bridgeDidForeground];
+
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self enforceDesiredDeviceOrientation];
+  });
 }
 
 - (void)_handleBridgeBackgroundEvent:(NSNotification *)notification
