@@ -178,9 +178,11 @@ class BrowserScreen extends React.Component {
       loadingBackgroundColor = manifest.getIn(['loading', 'backgroundColor']);
     }
     let loadingIcon = this._renderManifestLoadingIcon();
+    let loadingBackgroundImage = this._renderManifestLoadingBackgroundImage();
 
     return (
       <View pointerEvents="none" style={[styles.loadingIndicatorContainer, { backgroundColor: loadingBackgroundColor }]}>
+        {loadingBackgroundImage}
         <View>
           {loadingIcon}
           <ActivityIndicator
@@ -204,6 +206,24 @@ class BrowserScreen extends React.Component {
             source={{uri: iconUrl}}
             resizeMode="center"
             style={{width: 200, height: 200, marginVertical: 16}}
+          />
+        );
+      }
+    }
+    return null;
+  }
+
+  _renderManifestLoadingBackgroundImage() {
+    let { task } = this.props;
+    if (task) {
+      let { manifest } = task;
+      let iconUrl = manifest.getIn(['loading', 'backgroundImageUrl']);
+      if (manifest && iconUrl) {
+        return (
+          <Image
+            source={{uri: iconUrl}}
+            resizeMode="contain"
+            style={styles.loadingBackgroundImage}
           />
         );
       }
@@ -392,6 +412,13 @@ let styles = StyleSheet.create({
     right: 0,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  loadingBackgroundImage: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    right: 0,
   },
   errorView: {
     position: 'absolute',
