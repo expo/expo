@@ -2,8 +2,11 @@
 
 #import "RCTConvert.h"
 #import "EXVideo.h"
+
+#import "RCTAssert.h"
 #import "RCTBridgeModule.h"
 #import "RCTEventDispatcher.h"
+#import "RCTUtils.h"
 #import "UIView+React.h"
 
 static NSString *const EXVideoStatusKeyPath = @"status";
@@ -255,11 +258,14 @@ static NSString *const EXVideoPlaybackRateKeyPath = @"rate";
   BOOL isNetwork = [RCTConvert BOOL:[source objectForKey:@"isNetwork"]];
   BOOL isAsset = [RCTConvert BOOL:[source objectForKey:@"isAsset"]];
   NSString *uri = [source objectForKey:@"uri"];
-  NSString *type = [source objectForKey:@"type"];
 
-  NSURL *url = (isNetwork || isAsset) ?
-  [NSURL URLWithString:uri] :
-  [[NSURL alloc] initFileURLWithPath:[[NSBundle mainBundle] pathForResource:uri ofType:type]];
+  NSURL *url;
+  if (isNetwork || isAsset)  {
+    url = [NSURL URLWithString:uri];
+  } else {
+    RCTFatal(RCTErrorWithMessage(@"Source must specify isNetwork or isAsset"));
+    return nil;
+  }
 
   if (isAsset) {
     AVURLAsset *asset = [AVURLAsset URLAssetWithURL:url options:nil];
