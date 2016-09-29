@@ -196,6 +196,33 @@ public class ExperienceActivity extends BaseExperienceActivity {
     if (mManifestUrl != null && mKernel.hasOptionsForManifestUrl(mManifestUrl)) {
       handleOptions(mKernel.popOptionsForManifestUrl(mManifestUrl));
     }
+
+    clearNotifications();
+  }
+
+  private void clearNotifications() {
+    String experienceId = mManifest.optString(ExponentManifest.MANIFEST_ID_KEY);
+    if (experienceId != null) {
+      JSONObject metadata = mExponentSharedPreferences.getExperienceMetadata(experienceId);
+      if (metadata != null) {
+        if (metadata.has(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_NOTIFICATIONS)) {
+          try {
+            JSONArray unreadNotifications = metadata.getJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_NOTIFICATIONS);
+
+            ExponentGcmListenerService gcmListenerService = ExponentGcmListenerService.getInstance();
+            if (gcmListenerService != null) {
+              gcmListenerService.removeNotifications(unreadNotifications);
+            }
+          } catch (JSONException e) {
+            e.printStackTrace();
+          }
+
+          metadata.remove(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_NOTIFICATIONS);
+        }
+
+        mExponentSharedPreferences.updateExperienceMetadata(experienceId, metadata);
+      }
+    }
   }
 
   @Override
