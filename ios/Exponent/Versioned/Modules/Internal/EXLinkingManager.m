@@ -48,6 +48,10 @@ NSString * const EXLinkingEventOpenUrl = @"url";
 
 - (void)dispatchOpenUrlEvent:(NSURL *)url
 {
+  if (!url || !url.absoluteString) {
+    RCTFatal(RCTErrorWithMessage([NSString stringWithFormat:@"Tried to open a deep link to an invalid url: %@", url]));
+    return;
+  }
   if (_hasListeners) {
     [self sendEventWithName:EXLinkingEventOpenUrl body:@{@"url": url.absoluteString}];
   }
