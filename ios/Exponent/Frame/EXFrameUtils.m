@@ -95,10 +95,8 @@
   NSDictionary *manifest = _frame.manifest;
   if (manifest) {
     NSDictionary *manifestDeveloperConfig = manifest[@"developer"];
-    NSDictionary *manifestPackagerConfig = manifest[@"packagerOpts"];
     BOOL isDeployedFromTool = (manifestDeveloperConfig && manifestDeveloperConfig[@"tool"] != nil);
-    BOOL isPackagerDev = (manifestPackagerConfig && [manifestPackagerConfig[@"dev"] boolValue]);
-    return (isDeployedFromTool && isPackagerDev);
+    return (isDeployedFromTool);
   }
   return false;
 }
