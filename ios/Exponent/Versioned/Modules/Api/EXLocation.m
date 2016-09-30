@@ -41,13 +41,17 @@ NSString * const EXLocationChangedEventName = @"Exponent.locationChanged";
 // Delegate method called by CLLocationManager
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations
 {
-  _onUpdateLocations(locations);
+  if (_onUpdateLocations) {
+    _onUpdateLocations(locations);
+  }
 }
 
 // Delegate method called by CLLocationManager
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(nonnull NSError *)error
 {
-  _onError(error);
+  if (_onError) {
+    _onError(error);
+  }
 }
 
 @end
@@ -151,6 +155,7 @@ RCT_REMAP_METHOD(removeWatchAsync,
   EXLocationDelegate *delegate = _delegates[watchId];
   if (delegate) {
     [delegate.locMgr stopUpdatingLocation];
+    delegate.locMgr.delegate = nil;
     [_delegates removeObjectForKey:watchId];
   }
 }
