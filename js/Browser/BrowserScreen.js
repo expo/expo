@@ -231,18 +231,6 @@ class BrowserScreen extends React.Component {
     return null;
   }
 
-  componentDidMount() {
-    this._refreshSub = Browser.addRefreshListener(() => {
-      if (this.props.isForegrounded) {
-        this._refresh();
-      }
-    });
-  }
-
-  componentWillUnmount() {
-    this._refreshSub.remove();
-  }
-
   componentWillReceiveProps(nextProps) {
     this._recomputePropsJS(nextProps);
   }
