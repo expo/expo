@@ -21,7 +21,7 @@ FOUNDATION_EXPORT NSString *kEXKernelBundleResourceName;
                    body: (NSDictionary *)eventBody
               onSuccess: (void (^_Nullable)(NSDictionary * _Nullable ))success
               onFailure: (void (^_Nullable)(NSString * _Nullable ))failure;
-- (void)sendNotification: (NSDictionary *)notifBody toExperienceWithId: (NSString *)experienceId;
+- (void)sendNotification: (NSDictionary *)notifBody toExperienceWithId: (NSString *)experienceId fromBackground:(BOOL)isFromBackground;
 
 /**
  *  Similar to UIViewController::supportedInterfaceOrientations, but the value can vary depending on

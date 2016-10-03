@@ -72,7 +72,7 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
   [EXRemoteNotificationManager sharedInstance];
   NSDictionary *remoteNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
   if (remoteNotification || application.applicationIconBadgeNumber > 0) {
-    [[EXRemoteNotificationManager sharedInstance] handleRemoteNotification:remoteNotification];
+    [[EXRemoteNotificationManager sharedInstance] handleRemoteNotification:remoteNotification fromBackground:YES];
   }
 
   return YES;
@@ -139,7 +139,8 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
 {
-  [[EXRemoteNotificationManager sharedInstance] handleRemoteNotification:notification];
+  BOOL isFromBackground = !(application.applicationState == UIApplicationStateActive);
+  [[EXRemoteNotificationManager sharedInstance] handleRemoteNotification:notification fromBackground:isFromBackground];
 }
 
 @end

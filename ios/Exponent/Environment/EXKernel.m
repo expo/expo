@@ -70,7 +70,7 @@ NSString *kEXKernelBundleResourceName = @"kernel.ios";
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)sendNotification:(NSDictionary *)notifBody toExperienceWithId:(NSString *)experienceId
+- (void)sendNotification:(NSDictionary *)notifBody toExperienceWithId:(NSString *)experienceId fromBackground:(BOOL)isFromBackground
 {
   id destinationBridge = _bridgeRegistry.kernelBridge;
   for (id bridge in [_bridgeRegistry bridgeEnumerator]) {
@@ -80,8 +80,13 @@ NSString *kEXKernelBundleResourceName = @"kernel.ios";
       break;
     }
   }
+  // if the notification came from the background, in most but not all cases, this means the user acted on an iOS notification
+  // and caused the app to launch.
+  // From SO:
+  // > Note that "App opened from Notification" will be a false positive if the notification is sent while the user is on a different
+  // > screen (for example, if they pull down the status bar and then receive a notification from your app).
   NSDictionary *bodyWithOrigin = @{
-                                   @"origin": @"received",
+                                   @"origin": (isFromBackground) ? @"selected" : @"received",
                                    @"data": notifBody,
                                    };
   if (destinationBridge) {

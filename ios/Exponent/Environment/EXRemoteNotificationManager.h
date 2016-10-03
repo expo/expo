@@ -7,6 +7,6 @@
 + (instancetype)sharedInstance;
 
 - (void)registerAPNSToken: (NSData *)token;
-- (void)handleRemoteNotification: (NSDictionary *)notification;
+- (void)handleRemoteNotification: (NSDictionary *)notification fromBackground:(BOOL)isFromBackground;
 
 @end
