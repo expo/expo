@@ -128,6 +128,7 @@
 		B5884A7D1C7FD2E700F01BE4 /* EXFrameManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5884A771C7FD2E700F01BE4 /* EXFrameManager.m */; };
 		B597EF1E1CD98654004A48AD /* EXLog.m in Sources */ = {isa = PBXBuildFile; fileRef = B597EF1D1CD98654004A48AD /* EXLog.m */; };
 		B5A358621C7E6C4300D1BE67 /* EXAnalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A358611C7E6C4300D1BE67 /* EXAnalytics.m */; };
+		B5C0CD351DA57DBA003B8537 /* EXViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5C0CD341DA57DBA003B8537 /* EXViewController.m */; };
 		B5E49B571D1346FA00AA6436 /* Exponent.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = B5E49B551D1346FA00AA6436 /* Exponent.entitlements */; };
 		B5E49B631D1347B800AA6436 /* EXSDKVersions.plist in Resources */ = {isa = PBXBuildFile; fileRef = B5E49B621D1347B800AA6436 /* EXSDKVersions.plist */; };
 		B5E49B691D1348E800AA6436 /* EXShell.plist in Resources */ = {isa = PBXBuildFile; fileRef = B5E49B671D1348E800AA6436 /* EXShell.plist */; };
@@ -401,6 +402,8 @@
 		B597EF1D1CD98654004A48AD /* EXLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXLog.m; sourceTree = "<group>"; };
 		B5A358601C7E6C4300D1BE67 /* EXAnalytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAnalytics.h; sourceTree = "<group>"; };
 		B5A358611C7E6C4300D1BE67 /* EXAnalytics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAnalytics.m; sourceTree = "<group>"; };
+		B5C0CD331DA57DBA003B8537 /* EXViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXViewController.h; sourceTree = "<group>"; };
+		B5C0CD341DA57DBA003B8537 /* EXViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXViewController.m; sourceTree = "<group>"; };
 		B5E49B541D1346FA00AA6436 /* Exponent-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Exponent-Prefix.pch"; sourceTree = "<group>"; };
 		B5E49B551D1346FA00AA6436 /* Exponent.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Exponent.entitlements; sourceTree = "<group>"; };
 		B5E49B561D1346FA00AA6436 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -581,6 +584,7 @@
 				B55FDEF31C7FDD380020AA8F /* DevMenu */,
 				B509BCB51C6A88EC00A67CBB /* Environment */,
 				B55FDEDE1C7FDA560020AA8F /* Errors */,
+				B5C0CD321DA57D9A003B8537 /* ExponentViewController */,
 				B5884A6F1C7FD2E700F01BE4 /* Frame */,
 				B509BCBC1C6A88EC00A67CBB /* Modules */,
 				B5E49B521D1346FA00AA6436 /* Supporting */,
@@ -880,6 +884,15 @@
 				B5218E7F1D2461F600C54B61 /* EXFrameUtils.m */,
 			);
 			path = Frame;
+			sourceTree = "<group>";
+		};
+		B5C0CD321DA57D9A003B8537 /* ExponentViewController */ = {
+			isa = PBXGroup;
+			children = (
+				B5C0CD331DA57DBA003B8537 /* EXViewController.h */,
+				B5C0CD341DA57DBA003B8537 /* EXViewController.m */,
+			);
+			path = ExponentViewController;
 			sourceTree = "<group>";
 		};
 		B5E49B521D1346FA00AA6436 /* Supporting */ = {
@@ -1426,6 +1439,7 @@
 				1936011B1D67ABCF007C0EE0 /* RNSVGLineManager.m in Sources */,
 				84EC97571D728A24009EEB4E /* AIRMap.m in Sources */,
 				A16EE77F1D56911100634425 /* EXVideoPlayerViewController.m in Sources */,
+				B5C0CD351DA57DBA003B8537 /* EXViewController.m in Sources */,
 				B5E49B6E1D13491B00AA6436 /* main.m in Sources */,
 				A1F37F771CEFD6B2001E9EFC /* RCTDevMenu+Device.m in Sources */,
 				193601071D67ABCF007C0EE0 /* RCTConvert+RNSVG.m in Sources */,
