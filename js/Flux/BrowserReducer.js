@@ -100,7 +100,12 @@ export default Flux.createReducer(new BrowserState(), {
       console.error(`Tried to foreground Exponent home while in a shell`);
       return state;
     }
-    return state.merge({ isHomeVisible: true, isMenuVisible: false });
+    let { clearTasks } = action.payload;
+    return state.merge({
+      isHomeVisible: true,
+      isMenuVisible: false,
+      tasks: (clearTasks) ? Map() : state.tasks,
+    });
   },
 
   [BrowserActionTypes.showMenuAsync](state, action) {

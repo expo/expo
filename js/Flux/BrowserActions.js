@@ -95,8 +95,8 @@ let BrowserActions = {
   },
 
   @action
-  foregroundHomeAsync() {
-    return {};
+  foregroundHomeAsync(clearTasks = false) {
+    return { clearTasks };
   },
 
   @action
