@@ -20,6 +20,7 @@ import com.facebook.soloader.SoLoader;
 
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.exceptions.ExceptionUtils;
+import host.exp.exponent.gcm.ExponentGcmListenerService;
 import host.exp.exponent.kernel.Kernel;
 
 // This activity is transparent. It uses android:style/Theme.Translucent.NoTitleBar.
@@ -28,6 +29,7 @@ public class LauncherActivity extends Activity {
 
   public static final String MANIFEST_URL_KEY = "manifest_url";
   public static final String NOTIFICATION_KEY = "notification";
+  public static final String NOTIFICATION_OBJECT_KEY = "notification_object";
   public static final String DEV_FLAG = "dev_flag";
 
   @Inject
@@ -125,10 +127,11 @@ public class LauncherActivity extends Activity {
         return;
       }
 
-      String notification = bundle.getString(NOTIFICATION_KEY);
+      String notification = bundle.getString(NOTIFICATION_KEY); // deprecated
+      String notificationObject = bundle.getString(NOTIFICATION_OBJECT_KEY);
       String manifestUrl = bundle.getString(MANIFEST_URL_KEY);
       if (manifestUrl != null) {
-        mKernel.openExperience(new Kernel.ExperienceOptions(manifestUrl, intentUri == null ? manifestUrl : intentUri, notification));
+        mKernel.openExperience(new Kernel.ExperienceOptions(manifestUrl, intentUri == null ? manifestUrl : intentUri, notification, ExponentGcmListenerService.ExponentPushNotification.fromJSONObjectString(notificationObject)));
         return;
       }
     }

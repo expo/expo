@@ -90,7 +90,7 @@ public class ExperienceActivity extends BaseExperienceActivity {
   private RNObject mLinkingPackage = null;
   private ReactUnthemedRootView mNuxOverlayView;
   private String mJSBundlePath;
-  private String mNotification;
+  private ExponentGcmListenerService.ExponentPushNotification mNotification;
   private boolean mIsShellApp;
   private String mIntentUri;
   private int mActivityId;
@@ -352,7 +352,7 @@ public class ExperienceActivity extends BaseExperienceActivity {
     updateOrientation();
     addNotification(kernelOptions);
 
-    String notification = null;
+    ExponentGcmListenerService.ExponentPushNotification notificationObject = null;
     if (mKernel.hasOptionsForManifestUrl(manifestUrl)) {
       Kernel.ExperienceOptions options = mKernel.popOptionsForManifestUrl(manifestUrl);
 
@@ -362,9 +362,10 @@ public class ExperienceActivity extends BaseExperienceActivity {
         mIntentUri = options.uri;
       }
 
-      notification = options.notification;
+      notificationObject = options.notificationObject;
     }
-    final String finalNotification = notification;
+
+    final ExponentGcmListenerService.ExponentPushNotification finalNotificationObject = notificationObject;
 
     // TODO: deprecated
     // LinkingPackage was removed after ABI 5.0.0
@@ -405,13 +406,13 @@ public class ExperienceActivity extends BaseExperienceActivity {
         boolean hasCachedBundle;
         if (isDebugModeEnabled()) {
           hasCachedBundle = false;
-          waitForDrawOverOtherAppPermission("", finalNotification);
+          waitForDrawOverOtherAppPermission("", finalNotificationObject);
         } else {
           hasCachedBundle = mKernel.loadJSBundle(bundleUrl, id, mSDKVersion,
               new Kernel.BundleListener() {
                 @Override
                 public void onBundleLoaded(String localBundlePath) {
-                  waitForDrawOverOtherAppPermission(localBundlePath, finalNotification);
+                  waitForDrawOverOtherAppPermission(localBundlePath, finalNotificationObject);
                 }
 
                 @Override
@@ -442,16 +443,12 @@ public class ExperienceActivity extends BaseExperienceActivity {
 
     if (event.experienceId.equals(mManifestId)) {
       try {
-        RNObject args = new RNObject("com.facebook.react.bridge.Arguments").loadVersion(mSDKVersion).callStaticRecursive("createMap");
-        args.call("putString", "origin", "received");
-        args.call("putString", "data", event.body);
-
         RNObject rctDeviceEventEmitter = new RNObject("com.facebook.react.modules.core.DeviceEventManagerModule$RCTDeviceEventEmitter");
         rctDeviceEventEmitter.loadVersion(mSDKVersion);
 
         mReactInstanceManager.callRecursive("getCurrentReactContext")
             .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
-            .call("emit", "Exponent.notification", args.get());
+            .call("emit", "Exponent.notification", event.toWriteableMap(mSDKVersion, "received"));
       } catch (Throwable e) {
         EXL.e(TAG, e);
       }
@@ -474,7 +471,7 @@ public class ExperienceActivity extends BaseExperienceActivity {
         }
       }
 
-      if (options.notification != null && mSDKVersion != null) {
+      if ((options.notification != null || options.notificationObject != null) && mSDKVersion != null) {
         if (ABIVersion.toNumber(mSDKVersion) < ABIVersion.toNumber("8.0.0")) {
           // TODO: kill
           RNObject rctDeviceEventEmitter = new RNObject("com.facebook.react.modules.core.DeviceEventManagerModule$RCTDeviceEventEmitter");
@@ -484,16 +481,12 @@ public class ExperienceActivity extends BaseExperienceActivity {
               .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
               .call("emit", "Exponent.notification", options.notification);
         } else {
-          RNObject args = new RNObject("com.facebook.react.bridge.Arguments").loadVersion(mSDKVersion).callStaticRecursive("createMap");
-          args.call("putString", "origin", "selected");
-          args.call("putString", "data", options.notification);
-
           RNObject rctDeviceEventEmitter = new RNObject("com.facebook.react.modules.core.DeviceEventManagerModule$RCTDeviceEventEmitter");
           rctDeviceEventEmitter.loadVersion(mSDKVersion);
 
           mReactInstanceManager.callRecursive("getCurrentReactContext")
               .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
-              .call("emit", "Exponent.notification", args.get());
+              .call("emit", "Exponent.notification", options.notificationObject.toWriteableMap(mSDKVersion, "selected"));
         }
       }
     } catch (Throwable e) {
@@ -574,9 +567,9 @@ public class ExperienceActivity extends BaseExperienceActivity {
     }
   }
 
-  private void waitForDrawOverOtherAppPermission(String jsBundlePath, String notification) {
+  private void waitForDrawOverOtherAppPermission(String jsBundlePath, ExponentGcmListenerService.ExponentPushNotification notificationObject) {
     mJSBundlePath = jsBundlePath;
-    mNotification = notification;
+    mNotification = notificationObject;
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       if (isDebugModeEnabled() && !Settings.canDrawOverlays(this)) {
@@ -634,15 +627,12 @@ public class ExperienceActivity extends BaseExperienceActivity {
     Bundle bundle = new Bundle();
     JSONObject exponentProps = new JSONObject();
     if (mNotification != null) {
-      bundle.putString("notification", mNotification.toString()); // Deprecated
+      bundle.putString("notification", mNotification.body); // Deprecated
       try {
         if (ABIVersion.toNumber(mSDKVersion) < ABIVersion.toNumber("10.0.0")) {
-          exponentProps.put("notification", mNotification.toString());
+          exponentProps.put("notification", mNotification.body);
         } else {
-          JSONObject notificationObject = new JSONObject();
-          notificationObject.put("origin", "selected");
-          notificationObject.put("data", mNotification.toString());
-          exponentProps.put("notification", notificationObject);
+          exponentProps.put("notification", mNotification.toJSONObject("selected"));
         }
       } catch (JSONException e) {
         e.printStackTrace();
@@ -672,6 +662,7 @@ public class ExperienceActivity extends BaseExperienceActivity {
           metadata.remove(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS);
         }
 
+        // Copy unreadNotifications into exponentProps
         if (metadata.has(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_NOTIFICATIONS)) {
           try {
             JSONArray unreadNotifications = metadata.getJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_NOTIFICATIONS);

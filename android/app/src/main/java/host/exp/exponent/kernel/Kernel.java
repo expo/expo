@@ -66,6 +66,7 @@ import host.exp.exponent.exceptions.ExceptionUtils;
 import host.exp.exponent.experience.BaseExperienceActivity;
 import host.exp.exponent.experience.ExperienceActivity;
 import host.exp.exponent.experience.HomeActivity;
+import host.exp.exponent.gcm.ExponentGcmListenerService;
 import host.exp.exponent.generated.ExponentBuildConstants;
 import host.exp.exponent.modules.ExponentKernelModule;
 import host.exp.exponent.network.ExponentHttpClient;
@@ -125,12 +126,21 @@ public class Kernel {
   public static class ExperienceOptions {
     public final String manifestUri;
     public final String uri;
-    public final String notification;
+    public final String notification; // deprecated
+    public final ExponentGcmListenerService.ExponentPushNotification notificationObject;
 
     public ExperienceOptions(String manifestUri, String uri, String notification) {
       this.manifestUri = manifestUri;
       this.uri = uri;
       this.notification = notification;
+      this.notificationObject = null;
+    }
+
+    public ExperienceOptions(String manifestUri, String uri, String notification, ExponentGcmListenerService.ExponentPushNotification notificationObject) {
+      this.manifestUri = manifestUri;
+      this.uri = uri;
+      this.notification = notification;
+      this.notificationObject = notificationObject;
     }
   }
 

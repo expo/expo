@@ -2,6 +2,8 @@
 
 package versioned.host.exp.exponent.modules.api;
 
+import android.support.v4.app.NotificationManagerCompat;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -69,5 +71,11 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
         promise.reject(errorMessage);
       }
     });
+  }
+
+  @ReactMethod
+  public void cancelNotification(final int notificationId) {
+    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getReactApplicationContext());
+    notificationManager.cancel(notificationId);
   }
 }
