@@ -35,6 +35,7 @@ import host.exp.exponent.ExponentApplication;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.LauncherActivity;
 import host.exp.exponent.R;
+import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
@@ -43,20 +44,78 @@ import host.exp.exponent.utils.ColorParser;
 
 public class ExponentGcmListenerService extends GcmListenerService {
 
-  public static class ReceivedPushNotificationEvent {
+  public static class ExponentPushNotification {
     public final String experienceId;
     public final String body;
+    public final int notificationId;
+    public final boolean isMultiple;
 
-    public ReceivedPushNotificationEvent(final String experienceId, final String body) {
+    public ExponentPushNotification(final String experienceId, final String body, final int notificationId, final boolean isMultiple) {
       this.experienceId = experienceId;
       this.body = body;
+      this.notificationId = notificationId;
+      this.isMultiple = isMultiple;
+    }
+
+    public static ExponentPushNotification fromJSONObjectString(final String json) {
+      if (json == null) {
+        return null;
+      }
+
+      try {
+        JSONObject object = new JSONObject(json);
+        return new ExponentPushNotification(object.getString(NOTIFICATION_EXPERIENCE_ID_KEY), object.getString(NOTIFICATION_MESSAGE_KEY), object.getInt(NOTIFICATION_ID_KEY), object.getBoolean(NOTIFICATION_IS_MULTIPLE_KEY));
+      } catch (JSONException e) {
+        EXL.e(TAG, e.toString());
+        return null;
+      }
+    }
+
+    public JSONObject toJSONObject(String origin) {
+      JSONObject notification = new JSONObject();
+      try {
+        notification.put(NOTIFICATION_EXPERIENCE_ID_KEY, experienceId);
+        if (origin != null) {
+          notification.put(NOTIFICATION_ORIGIN_KEY, origin);
+        }
+        notification.put(NOTIFICATION_MESSAGE_KEY, body); // deprecated
+        notification.put(NOTIFICATION_DATA_KEY, body);
+        notification.put(NOTIFICATION_ID_KEY, notificationId);
+        notification.put(NOTIFICATION_IS_MULTIPLE_KEY, isMultiple);
+      } catch (JSONException e) {
+        EXL.e(TAG, e.toString());
+      }
+
+      return notification;
+    }
+
+    public Object toWriteableMap(String sdkVersion, String origin) {
+      RNObject args = new RNObject("com.facebook.react.bridge.Arguments").loadVersion(sdkVersion).callStaticRecursive("createMap");
+      if (origin != null) {
+        args.call("putString", NOTIFICATION_ORIGIN_KEY, origin);
+      }
+      args.call("putString", NOTIFICATION_DATA_KEY, body);
+      args.call("putInt", NOTIFICATION_ID_KEY, notificationId);
+      args.call("putBoolean", NOTIFICATION_IS_MULTIPLE_KEY, isMultiple);
+      return args.get();
+    }
+  }
+
+  public static class ReceivedPushNotificationEvent extends ExponentPushNotification {
+
+    public ReceivedPushNotificationEvent(String experienceId, String body, int notificationId, boolean isMultiple) {
+      super(experienceId, body, notificationId, isMultiple);
     }
   }
 
   private static final String TAG = ExponentGcmListenerService.class.getSimpleName();
   private static final int MAX_COLLAPSED_NOTIFICATIONS = 5;
-  private static final String NOTIFICATION_MESSAGE_KEY = "message";
+  private static final String NOTIFICATION_MESSAGE_KEY = "message"; // deprecated
+  private static final String NOTIFICATION_EXPERIENCE_ID_KEY = "experienceId";
+  private static final String NOTIFICATION_DATA_KEY = "data";
+  private static final String NOTIFICATION_ORIGIN_KEY = "origin";
   private static final String NOTIFICATION_ID_KEY = "notificationId";
+  private static final String NOTIFICATION_IS_MULTIPLE_KEY = "isMultiple";
   private static final String NOTIFICATION_COLLAPSE_MODE = "collapse";
   private static final String NOTIFICATION_UNREAD_COUNT_KEY = "#{unread_notifications}";
 
@@ -106,7 +165,6 @@ public class ExponentGcmListenerService extends GcmListenerService {
         try {
           JSONObject manifest = new JSONObject(experience.manifest);
           sendNotification(message, experienceId, experience.manifestUrl, manifest, body);
-          EventBus.getDefault().post(new ReceivedPushNotificationEvent(experienceId, body));
         } catch (JSONException e) {
           EXL.e(TAG, "Couldn't deserialize JSON for experience id " + experienceId);
         }
@@ -174,10 +232,15 @@ public class ExponentGcmListenerService extends GcmListenerService {
           color = mExponentManifest.getColorFromManifest(manifest);
         }
 
+        // Create notification object
+        boolean isMultiple = mode == Mode.COLLAPSE && unreadNotifications.length() > 1;
+        ReceivedPushNotificationEvent notificationEvent = new ReceivedPushNotificationEvent(experienceId, body, notificationId, isMultiple);
+
         // Create pending intent
         Intent intent = new Intent(ExponentGcmListenerService.this, LauncherActivity.class);
         intent.putExtra(LauncherActivity.MANIFEST_URL_KEY, manifestUrl);
-        intent.putExtra(LauncherActivity.NOTIFICATION_KEY, body);
+        intent.putExtra(LauncherActivity.NOTIFICATION_KEY, body); // deprecated
+        intent.putExtra(LauncherActivity.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString());
         PendingIntent pendingIntent = PendingIntent.getActivity(ExponentGcmListenerService.this, 0, intent,
             PendingIntent.FLAG_ONE_SHOT);
 
@@ -185,7 +248,7 @@ public class ExponentGcmListenerService extends GcmListenerService {
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder;
 
-        if (mode == Mode.COLLAPSE && unreadNotifications.length() > 1) {
+        if (isMultiple) {
           NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle()
               .setBigContentTitle(collapsedTitle);
 
@@ -234,6 +297,9 @@ public class ExponentGcmListenerService extends GcmListenerService {
         // Display
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(ExponentGcmListenerService.this);
         notificationManager.notify(notificationId, notification);
+
+        // Send event. Will be consumed if experience is already open.
+        EventBus.getDefault().post(notificationEvent);
       }
     });
   }
@@ -242,7 +308,7 @@ public class ExponentGcmListenerService extends GcmListenerService {
     try {
       JSONObject notification = new JSONObject();
       notification.put(NOTIFICATION_MESSAGE_KEY, message);
-      notification.put(NOTIFICATION_ID_KEY, "" + notificationId);
+      notification.put(NOTIFICATION_ID_KEY, notificationId);
 
       JSONObject metadata = mExponentSharedPreferences.getExperienceMetadata(experienceId);
       if (metadata == null) {
