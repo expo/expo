@@ -92,6 +92,7 @@
 - (NSString *)_devicePlatform
 {
   // https://gist.github.com/Jaybles/1323251
+  // https://www.theiphonewiki.com/wiki/Models
   size_t size;
   sysctlbyname("hw.machine", NULL, &size, NULL, 0);
   char *machine = malloc(size);
@@ -134,6 +135,10 @@
   if ([platform isEqualToString:@"iPhone8,1"])    return @"iPhone 6s";
   if ([platform isEqualToString:@"iPhone8,2"])    return @"iPhone 6s Plus";
   if ([platform isEqualToString:@"iPhone8,4"])    return @"iPhone SE";
+  if ([platform isEqualToString:@"iPhone9,1"])    return @"iPhone 7";
+  if ([platform isEqualToString:@"iPhone9,3"])    return @"iPhone 7";
+  if ([platform isEqualToString:@"iPhone9,2"])    return @"iPhone 7 Plus";
+  if ([platform isEqualToString:@"iPhone9,4"])    return @"iPhone 7 Plus";
 
   // iPod
   if ([platform isEqualToString:@"iPod1,1"])      return @"iPod Touch";
@@ -160,6 +165,8 @@
   if ([platform isEqualToString:@"iPad4,3"])      return @"iPad Air";
   if ([platform isEqualToString:@"iPad5,3"])      return @"iPad Air 2 (WiFi)";
   if ([platform isEqualToString:@"iPad5,4"])      return @"iPad Air 2 (Cellular)";
+  if ([platform isEqualToString:@"iPad6,3"])      return @"iPad Pro 9.7 inch (WiFi)";
+  if ([platform isEqualToString:@"iPad6,4"])      return @"iPad Pro 9.7 inch (Cellular)";
   if ([platform isEqualToString:@"iPad6,7"])      return @"iPad Pro (WiFi)";
   if ([platform isEqualToString:@"iPad6,8"])      return @"iPad Pro (Cellular)";
 
@@ -227,6 +234,13 @@
   // iPhone SE
   if ([platform isEqualToString:@"iPhone8,4"])    return @2016;
 
+  // iPhone 7 and 7 Plus
+  if ([platform isEqualToString:@"iPhone9,1"])    return @2016;
+  if ([platform isEqualToString:@"iPhone9,3"])    return @2016;
+  if ([platform isEqualToString:@"iPhone9,2"])    return @2016;
+  if ([platform isEqualToString:@"iPhone9,4"])    return @2016;
+
+
   // iPod
   if ([platform isEqualToString:@"iPod1,1"])      return @2007;
   if ([platform isEqualToString:@"iPod2,1"])      return @2008;
@@ -254,6 +268,8 @@
   if ([platform isEqualToString:@"iPad5,4"])      return @2014;
   if ([platform isEqualToString:@"iPad6,7"])      return @2015;
   if ([platform isEqualToString:@"iPad6,8"])      return @2015;
+  if ([platform isEqualToString:@"iPad6,3"])      return @2016;
+  if ([platform isEqualToString:@"iPad6,4"])      return @2016;
 
   // iPad Mini
   if ([platform isEqualToString:@"iPad2,5"])      return @2012;
