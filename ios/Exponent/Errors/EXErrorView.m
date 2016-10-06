@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXErrorView.h"
+#import "EXShellManager.h"
 
 @interface EXErrorView ()
 
@@ -50,13 +51,20 @@
 - (void)setType:(EXFatalErrorType)type
 {
   _type = type;
+  NSString *appOwnerName;
+  if ([EXShellManager sharedInstance].isShell) {
+    // TODO: allow the developer to configure this somehow
+    appOwnerName = @"the app";
+  } else {
+    appOwnerName = @"Exponent";
+  }
   switch (type) {
     case kEXFatalErrorTypeLoading: {
-      _lblError.text = @"There was a problem loading Exponent. Make sure you're connected to the internet and retry.";
+      _lblError.text = [NSString stringWithFormat:@"There was a problem loading %@. Make sure you're connected to the internet and retry.", appOwnerName];
       break;
     }
     case kEXFatalErrorTypeException: {
-      _lblError.text = @"There was a problem running Exponent.";
+      _lblError.text = [NSString stringWithFormat:@"There was a problem running %@.", appOwnerName];
       break;
     }
   }
