@@ -44,6 +44,7 @@
                                       @"deviceYearClass": [self _deviceYear],
                                       @"deviceName": [self _deviceName],
                                       @"isDevice": @([self _isDevice]),
+                                      @"systemFonts": [self _getSystemFontNames],
                                       @"platform": @{
                                           @"ios": @{
                                               @"platform": [self _devicePlatform],
@@ -76,6 +77,16 @@
   return NO;
 #endif
   return YES;
+}
+
+- (NSArray<NSString *> *)_getSystemFontNames
+{
+  NSArray<NSString *> *familyNames = [UIFont familyNames];
+  NSMutableArray<NSString *> *fontNames = [NSMutableArray array];
+  for (NSString *familyName in familyNames) {
+    [fontNames addObjectsFromArray:[UIFont fontNamesForFamilyName:familyName]];
+  }
+  return [fontNames sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
 }
 
 - (NSString *)_devicePlatform
