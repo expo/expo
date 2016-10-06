@@ -1,6 +1,7 @@
 #import "EXUtil.h"
 #import "RCTUIManager.h"
 #import "RCTBridge.h"
+#import "RCTUtils.h"
 
 @implementation EXUtil
 
@@ -16,6 +17,19 @@
 RCT_EXPORT_METHOD(reload)
 {
   [_bridge reload];
+}
+
+RCT_REMAP_METHOD(getCurrentLocaleAsync,
+                 getCurrentLocaleWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+  NSArray<NSString *> *preferredLanguages = [NSLocale preferredLanguages];
+  if (preferredLanguages.count > 0) {
+    resolve(preferredLanguages[0]);
+  } else {
+    NSString *errMsg = @"This device does not indicate its locale";
+    reject(@"E_NO_PREFERRED_LOCALE", errMsg, RCTErrorWithMessage(errMsg));
+  }
 }
 
 @end
