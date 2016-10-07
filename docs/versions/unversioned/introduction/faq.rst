@@ -81,19 +81,18 @@ Here are some of the things Exponent gives you out of the box that work right aw
 
 **But no native modules...**
 
-The most limiting thing about Exponent is that you can't add in your own native modules. We give you most of the
-most commonly desired things, but if you need something very custom--like on-the-fly video processing or low level
-control over the Bluetooth radio to do a firmware update--then Exponent won't work for you and you should just use
-regular React Native.
+The most limiting thing about Exponent is that you can't add in your own native modules. Continue reading the next question for a full explanation.
 
-You can do more in just JavaScript than you realize--and in fact, we recommend doing as much in JS as possible, since
-it will immediately work across both platforms and is less fragile--so you shouldn't need to include UI widgets
-that are written as native modules (there are almost always good pure JavaScript alternatives that are better).
+How do I add custom native code to my Exponent project?
+-------------------------------------------------------
 
-But there are often things that come up that you can't do in Exponent and you just need to use React Native if you want
-to do those things. Tell us about what's missing, and we'll try to add what you need if we think there are other people
-who would use it too. (Tweet @ us or join our Slack or e-mail support@getexponent.com).
+Right now, Exponent doesn't support custom native code, including third-party libraries which require custom native components. In an Exponent project, you never write native code-- only pure JS.
 
+In :ref:`our SDK <exponent-sdk>`, we give you a large set of the commonly desired, high-quality native modules. However, if you need something very custom-- like on-the-fly video processing or low level control over the Bluetooth radio to do a firmware update-- then Exponent won't work for you and you should instead use regular React Native.
+
+You can do more in just JavaScript than you realize-- and in fact, we recommend doing as much in JS as possible, since it will immediately work across both platforms and is less fragile-- so you shouldn't need to include UI widgets that are written as native modules (there are almost always good pure JavaScript alternatives that are better).
+
+We're always improving our SDK and its native capabilities. Tell us about what's missing, and we'll try to add what you need if we think there are other people who would use it too. (Tweet @ us or join our Slack or e-mail support@getexponent.com).
 
 Can I use Exponent with Relay?
 ------------------------------
