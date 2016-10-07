@@ -22,8 +22,7 @@ account on that store.
 """"""""""""""
 
 XDE currently doesn't include an option for building a standalone app, so we'll
-need ``exp`` for this. And not just any version of ``exp``, because this is an
-alpha feature you'll need to run ``npm install -g exp@next``.
+need ``exp`` for this. Run ``npm install -g exp@latest`` to get it.
 
 If you haven't used ``exp`` before, the first thing you'll need to do is login
 with your Exponent account using ``exp login``.
@@ -121,6 +120,11 @@ address bar to download -- it won't work with ``curl`` or ``wget`` unless you
 happen to know the correct incantation to download a gzipped file from S3.
 We will fix this.
 
+.. epigraph::
+   **Note:** We enable bitcode for iOS, so the ``.ipa`` files for iOS are much
+   larger than the eventual App Store download available to your users. For more
+   information, see `App Thinning <https://developer.apple.com/library/content/documentation/IDEs/Conceptual/AppDistributionGuide/AppThinning/AppThinning.html>`_.
+
 5. Test it on your device or simulator
 """"""""""""""""""""""""""""""""""""""
 
@@ -133,11 +137,14 @@ We will fix this.
 6. Submit it to the appropriate store
 """""""""""""""""""""""""""""""""""""
 
-Alas this last piece remains unexplored territory for Exponent. In the future
-we do plan to help you as much as we can with automating submission to the app
-store, but for now you'll need to do this on your own. It's not too hard though,
-follow the guides in the Apple and Google docs and let us know if you get confused,
-we're more than happy (I think that's ecstatic?) to help.
+We don't automate this step (yet), but at this point you should be able to follow
+the Apple and Google documentation to submit your standalone binary to each
+respective store.
+
+If you run into problems during this process, we're more than happy to help out!
+Join our Slack and let us know if you have any questions.
 
 .. epigraph::
-  **Note:** Are you curious how this works? We embed the Exponent runtime into a new app and make it always point to the exp.host URL of your app. We mentioned a few of the required properties here but you're free to configure everything from the push notification icon to the deep-linking url scheme (see :ref:`the guide on exp.json <configuration>` for more information), and we take care of building it for you so you never have to open Xcode or Android Studio. 
+  **Note:** Are you curious how this works? We embed the Exponent runtime into a new app and make it always point to the published URL of your app.
+
+  We mentioned a few of the required properties here, but you're free to configure everything from the push notification icon to the deep-linking url scheme (see :ref:`the guide on exp.json <configuration>` for more information), and we take care of building it for you so you never have to open Xcode or Android Studio. 
