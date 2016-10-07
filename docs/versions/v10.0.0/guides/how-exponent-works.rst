@@ -6,17 +6,24 @@ How Exponent Works
 
 While it's certainly not necessary to know any of this to use Exponent, many
 engineers like to know how their tools work. We'll walk through a few key
-concepts here. You can also browse the source, fork, hack on and contribute to
+concepts here, including:
+
+- Local development of your app
+- Publishing/deploying a production version of your app
+- How Exponent manages changes to its SDK
+- Opening Exponent apps offline
+
+You can also browse the source, fork, hack on and contribute to
 the Exponent tooling on `github/@exponentjs <http://github.com/exponentjs>`_.
 
-Opening an app from Exponent in development
-"""""""""""""""""""""""""""""""""""""""""""
+Serving an Exponent project for local development
+"""""""""""""""""""""""""""""""""""""""""""""""""
 
 .. image:: img/fetch-app-from-xde.png
   :width: 100%
 
-There are two user facing pieces here: the Exponent app and the Exponent
-development tool (either XDE or exp CLI). We'll just assume XDE here for
+There are two pieces here: the Exponent app and the Exponent
+development tool (either XDE or ``exp`` CLI). We'll just assume XDE here for
 simplicity of naming. When you open an app up in XDE, it spawns and manages two
 server processes in the background: the Exponent Development Server and the
 React Native Packager Server.
@@ -116,16 +123,17 @@ like: ``<START> processing asset request my-proejct/assets/example@3x.png``.
 Notice that it serves up the correct asset for the your screen DPI, assuming
 that it exists.
 
-Deployment
-""""""""""
+Publishing/Deploying an Exponent app in Production
+""""""""""""""""""""""""""""""""""""""""""""""""""
 
-Deployment for Exponent means compiling your JavaScript bundle with production
-flags enabled (minify, disable runtime development checks) and upload it along
-with any assets that it requires (see :ref:`Assets <all-about-assets>`) to
-CloudFront. We upload your ``exp.json`` configuration to our server. As soon as
-the publish is complete, users will receive the new version next time they open
-the app or refresh it, provided that they have a version of the Exponent client that
-supports the ``sdkVersion`` specified in your ``exp.json``.
+When you Publish an Exponent app, we compile it into a JavaScript bundle with production flags enabled (minify, disable runtime development checks) and upload that bundle, along with any assets that it requires (see :ref:`Assets <all-about-assets>`) to CloudFront. We also upload your :ref:`Manifest <exponent-manifest>` (including most of your ``exp.json`` configuration) to our server.
+
+When publishing is complete, we'll give you a URL to your app which you can send to anybody who has the Exponent client.
+
+.. epigraph::
+  **Note:** Publishing an Exponent app does not make it publicly searchable or discoverable anywhere. It is up to you to share the link.
+
+As soon as the publish is complete, the new version of your code is available to all your existing users. They'll get the updated version next time they open the app or refresh it, provided that they have a version of the Exponent client that supports the ``sdkVersion`` specified in your ``exp.json``.
 
 .. epigraph::
   **Note:** To package your app for deployment on the Apple App Store or Google Play Store, see :ref:`Building Standalone Apps<building-standalone-apps>`. Each time you update the SDK version you will need to rebuild your binary.
@@ -159,12 +167,25 @@ Opening a deployed Exponent app
   :width: 500
 
 The process is essentially the same as opening an Exponent app in development, only now
-we hit the Exponent backend to get the manifest, and manifest points us to your app's
-JavaScript which now lives on CloudFront.
+we hit an Exponent server to get the manifest, and manifest points us to CloudFront to retrieve your app's JavaScript.
 
-Standalone apps
+Opening Exponent Apps Offline
+"""""""""""""""""""""""""""""
+
+The Exponent client will automatically cache the most recent version of every app it
+has opened. When you try to open an Exponent app, it will always try and fetch the latest
+version, but if that fails for whatever reason (including being totally offline) then it
+will load the most recent cached version.
+
+If you build a standalone app with Exponent, that standalone binary will also ship
+with a "pre-cached" version of your JavaScript so that it can cold launch the very
+first time with no internet. Continue reading for more information about standalone
+apps.
+
+Standalone Apps
 """""""""""""""
 
-We also refer to these as "shell apps", because they are essentially a modified version
-of the Exponent client that always points to a single published URL and does not include
-the Exponent home screen.
+You can also package your Exponent app into a standalone binary for submission to
+the Apple iTunes Store or Google Play.
+
+Under the hood, it's a modified version of the Exponent client which is designed only to load a single URL (the one for your app) and which will never show the Exponent home screen or brand. For more information, see :ref:`Building Standalone Apps <building-standalone-apps>`.
