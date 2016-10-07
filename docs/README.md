@@ -52,7 +52,7 @@ Navigate to the documentation root.
 
 #### With Docker (easy)
 
-If your machine has Docker for Mac you can run:
+If your machine has Docker for Mac and the Gcloud tools, you can run:
 
 ```bash
 ./scripts/watch.sh <versionname>
@@ -60,6 +60,11 @@ If your machine has Docker for Mac you can run:
 
 from this directory. So for example, `./scripts/watch.sh v7.0.0` will preview
 docs for sdk 7. The site is viewable at `localhost:8000`.
+
+If your machine does not have Docker or GCloud, do the following:
+
+* Go to https://docs.docker.com/docker-for-mac/ and download and install Docker for Mac.
+* From universe root, run `server/infra/tools/install-cli-tools.sh`, and follow the prompts.
 
 #### With Python (still easy, but environment dependent)
 
