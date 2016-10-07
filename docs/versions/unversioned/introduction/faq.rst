@@ -86,13 +86,15 @@ The most limiting thing about Exponent is that you can't add in your own native 
 How do I add custom native code to my Exponent project?
 -------------------------------------------------------
 
-Right now, Exponent doesn't support custom native code, including third-party libraries which require custom native components. In an Exponent project, you never write native code-- only pure JS.
+Right now, Exponent doesn't support custom native code, including third-party libraries which require custom native components. In an Exponent project, you never write native code--only pure JS.
 
-In :ref:`our SDK <exponent-sdk>`, we give you a large set of the commonly desired, high-quality native modules. However, if you need something very custom-- like on-the-fly video processing or low level control over the Bluetooth radio to do a firmware update-- then Exponent won't work for you and you should instead use regular React Native.
+In :ref:`our SDK <exponent-sdk>`, we give you a large set of commonly desired, high-quality native modules. However, if you need something very custom--like on-the-fly video processing or low level control over the Bluetooth radio to do a firmware update--then Exponent won't work for you and you should instead use regular React Native.
 
-You can do more in just JavaScript than you realize-- and in fact, we recommend doing as much in JS as possible, since it will immediately work across both platforms and is less fragile-- so you shouldn't need to include UI widgets that are written as native modules (there are almost always good pure JavaScript alternatives that are better).
+You can do more in just JavaScript than you realize--and in fact, we recommend doing as much in JS as possible, since it will immediately work across both platforms and is less fragile--so you shouldn't need to include UI widgets that are written as native modules (there are almost always good pure JavaScript alternatives that are better).
 
 We're always improving our SDK and its native capabilities. Tell us about what's missing, and we'll try to add what you need if we think there are other people who would use it too. (Tweet @ us or join our Slack or e-mail support@getexponent.com).
+
+Lastly, Exponent is open source, so you always have the option of forking our native code or contributing to it. Please get in touch on our Slack if you're interested in sending a pull request!
 
 Can I use Exponent with Relay?
 ------------------------------
