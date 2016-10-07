@@ -7,8 +7,8 @@ System information that remains constant throughout the lifetime of your app.
 
    Returns ``exponent``, ``standalone``, or ``guest``. If ``exponent``,
    the experience is running inside of the Exponent client. If
-   ``standalone``, it is a standalone app. If ``guest``, it has been
-   opened through a link from a standalone app.
+   ``standalone``, it is a :ref:`standalone app <building-standalone-apps>`.
+   If ``guest``, it has been opened through a link from a standalone app.
 
 .. attribute:: Exponent.Constants.exponentVersion
 
@@ -28,22 +28,22 @@ System information that remains constant throughout the lifetime of your app.
    The `device year class <https://github.com/facebook/device-year-class>`_ of
    this device.
 
-..
-  .. attribute:: Exponent.Constants.platform
+.. attribute:: Exponent.Constants.isDevice
 
-    TODO
+   ``true`` if the app is running on a device, ``false`` if running in a simulator
+   or emulator.
+
+
+.. attribute:: Exponent.Constants.platform
 
     .. attribute:: ios
 
-        TODO
-
         .. attribute:: platform
 
-        TODO
-
+           The Apple internal model identifier for this device, e.g. ``iPhone1,1``.
         .. attribute:: model
 
-        TODO
+           The human-readable model name of this device, e.g. ``iPhone 7 Plus``.
 
 .. attribute:: Exponent.Constants.sessionId
 
@@ -57,7 +57,9 @@ System information that remains constant throughout the lifetime of your app.
 .. attribute:: Exponent.Constants.linkingUri
 
    When an app is opened due to a deep link, the prefix of the URI without the
-   deep link part.
+   deep link part. This value depends on ``Exponent.Constants.appOwnership``:
+   it may be different if your app is running standalone vs. in the Exponent
+   client.
 
 ..
   .. attribute:: Exponent.Constants.statusBarHeight
