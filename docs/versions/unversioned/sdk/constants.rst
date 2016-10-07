@@ -50,6 +50,9 @@ System information that remains constant throughout the lifetime of your app.
    A string that is unique to the current session of your app. It is different
    across apps and across multiple launches of the same app.
 
+.. attribute:: Exponent.Constants.systemFonts
+
+   A list of the system font names available on the current device.
 .. attribute:: Exponent.Constants.manifest
 
    The :ref:`manifest <exponent-manifest>` object for the app.
