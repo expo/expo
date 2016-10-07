@@ -55,4 +55,9 @@ public class UtilModule extends ReactContextBaseJavaModule {
   public void reload() {
     mKernel.reloadVisibleExperience((String) mExperienceProperties.get(Kernel.MANIFEST_URL_KEY));
   }
+
+  @ReactMethod
+  public void getCurrentLocaleAsync(final Promise promise) {
+    promise.resolve(getReactApplicationContext().getResources().getConfiguration().locale.toString());
+  }
 }

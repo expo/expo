@@ -8,7 +8,9 @@ import android.os.Build;
 import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -84,6 +86,7 @@ public class ConstantsModule extends ReactContextBaseJavaModule {
     constants.put("deviceName", Build.MODEL);
     constants.put("manifest", mManifest.toString());
     constants.put("isDevice", !isRunningOnGenymotion() && !isRunningOnStockEmulator());
+    constants.put("systemFonts", getSystemFonts());
     if (mExperienceProperties != null) {
       constants.put("appOwnership", getAppOwnership(mExperienceProperties));
       constants.putAll(mExperienceProperties);
@@ -113,5 +116,21 @@ public class ConstantsModule extends ReactContextBaseJavaModule {
     } else {
       return "exponent";
     }
+  }
+
+  private List<String> getSystemFonts() {
+    // From https://github.com/dabit3/react-native-fonts
+    List<String> result = new ArrayList<>();
+    result.add("normal");
+    result.add("notoserif");
+    result.add("sans-serif");
+    result.add("sans-serif-light");
+    result.add("sans-serif-thin");
+    result.add("sans-serif-condensed");
+    result.add("sans-serif-medium");
+    result.add("serif");
+    result.add("Roboto");
+    result.add("monospace");
+    return result;
   }
 }
