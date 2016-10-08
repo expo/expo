@@ -1,49 +1,32 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXFrame.h"
-#import "EXFrameUtils.h"
+#import "EXReactAppManagerUtils.h"
 #import "EXVersions.h"
 #import "EXShellManager.h"
 
-@interface EXFrameUtils ()
+@interface EXReactAppManagerUtils ()
 
 @property (nonatomic, strong) NSString *versionSymbolPrefix;
 @property (nonatomic, strong) NSString *validatedVersion; // redeclare
 
 @property (nonatomic, weak) EXFrame *frame;
+@property (nonatomic, assign) BOOL isKernel;
 
 @end
 
-@implementation EXFrameUtils
+@implementation EXReactAppManagerUtils
 
-- (instancetype)initWithFrame:(EXFrame *)frame
+- (instancetype)initWithFrame:(EXFrame *)frame isKernel:(BOOL)isKernel
 {
   if (self = [super init]) {
+    _isKernel = isKernel;
     _frame = frame;
     _versionSymbolPrefix = @"";
     _validatedVersion = nil;
     [self _computeVersionSymbolPrefix];
   }
   return self;
-}
-
-+ (NSURL *)ensureUrlHasPort:(NSURL *)url
-{
-  NSURLComponents *components = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:YES];
-  if (components) {
-    NSString *host = components.host;
-    if (host) {
-      if (!components.port) {
-        if ([url.scheme isEqualToString:@"https"] || [url.scheme isEqualToString:@"exps"]) {
-          components.port = @443;
-        } else {
-          components.port = @80;
-        }
-      }
-      return [components URL];
-    }
-  }
-  return nil;
 }
 
 - (Class)versionedClassFromString: (NSString *)classString
@@ -58,17 +41,21 @@
 
 - (NSString *)computedApplicationKey
 {
-  NSDictionary *manifest = _frame.manifest;
-  if (manifest && manifest[@"appKey"]) {
-    return manifest[@"appKey"];
-  }
-  
-  if (_frame.source) {
-    NSURLComponents *components = [NSURLComponents componentsWithURL:_frame.source resolvingAgainstBaseURL:YES];
-    NSArray<NSURLQueryItem *> *queryItems = components.queryItems;
-    for (NSURLQueryItem *item in queryItems) {
-      if ([item.name isEqualToString:@"app"]) {
-        return item.value;
+  if (_isKernel) {
+    return @"ExponentApp";
+  } else if (_frame) {
+    NSDictionary *manifest = _frame.manifest;
+    if (manifest && manifest[@"appKey"]) {
+      return manifest[@"appKey"];
+    }
+    
+    if (_frame.source) {
+      NSURLComponents *components = [NSURLComponents componentsWithURL:_frame.source resolvingAgainstBaseURL:YES];
+      NSArray<NSURLQueryItem *> *queryItems = components.queryItems;
+      for (NSURLQueryItem *item in queryItems) {
+        if ([item.name isEqualToString:@"app"]) {
+          return item.value;
+        }
       }
     }
   }
@@ -81,8 +68,16 @@
   NSMutableDictionary *props = [NSMutableDictionary dictionary];
   NSMutableDictionary *expProps = [NSMutableDictionary dictionary];
 
-  if (_frame.initialProps) {
+  if (_frame && _frame.initialProps) {
     [expProps addEntriesFromDictionary:_frame.initialProps];
+  }
+  if (_isKernel) {
+    if ([EXShellManager sharedInstance].isShell) {
+      [props addEntriesFromDictionary:@{
+                                        @"shell": @YES,
+                                        @"shellManifestUrl": [EXShellManager sharedInstance].shellManifestUrl,
+                                        }];
+    }
   }
 
   props[@"exp"] = expProps;
@@ -105,8 +100,13 @@
 
 - (void)_computeVersionSymbolPrefix
 {
-  _versionSymbolPrefix = [[EXVersions sharedInstance] symbolPrefixForManifest:_frame.manifest];
-  _validatedVersion = [[EXVersions sharedInstance] versionForManifest:_frame.manifest];
+  if (_isKernel) {
+    _versionSymbolPrefix = @"";
+    _validatedVersion = @"";
+  } else {
+    _versionSymbolPrefix = [[EXVersions sharedInstance] symbolPrefixForManifest:_frame.manifest];
+    _validatedVersion = [[EXVersions sharedInstance] versionForManifest:_frame.manifest];
+  }
 }
 
 @end

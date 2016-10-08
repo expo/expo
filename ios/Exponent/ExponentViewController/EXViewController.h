@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXErrorView.h"
+#import "EXReactAppManager.h"
 
 #import "RCTBridge.h"
 
@@ -8,7 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXViewController : UIViewController <RCTBridgeDelegate>
+@interface EXViewController : UIViewController <EXReactAppManagerDelegate>
 
 - (instancetype)initWithLaunchOptions: (NSDictionary *)launchOptions;
 - (void)loadReactApplication;

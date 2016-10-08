@@ -4,9 +4,9 @@
 
 @class EXFrame;
 
-@interface EXFrameUtils : NSObject
+@interface EXReactAppManagerUtils : NSObject
 
-- (instancetype)initWithFrame: (EXFrame *)frame;
+- (instancetype)initWithFrame:(EXFrame *)frame isKernel:(BOOL)isKernel;
 
 @property (nonatomic, readonly) NSString *validatedVersion;
 
@@ -15,7 +15,5 @@
 - (BOOL)doesManifestEnableDeveloperTools;
 - (Class)versionedClassFromString: (NSString *)classString;
 - (NSString *)versionedString: (NSString *)string;
-
-+ (NSURL *)ensureUrlHasPort:(NSURL *)url;
 
 @end

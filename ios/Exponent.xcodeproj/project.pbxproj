@@ -100,9 +100,10 @@
 		B513336F1CEA7F4600E9FC9E /* EXKernelModuleProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = B513336E1CEA7F4600E9FC9E /* EXKernelModuleProvider.m */; };
 		B5218E731D22FC7800C54B61 /* EXRemoteNotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5218E721D22FC7800C54B61 /* EXRemoteNotificationManager.m */; };
 		B5218E7A1D232B8800C54B61 /* EXNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = B5218E791D232B8800C54B61 /* EXNotifications.m */; };
-		B5218E801D2461F600C54B61 /* EXFrameUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B5218E7F1D2461F600C54B61 /* EXFrameUtils.m */; };
 		B5218E851D2475A000C54B61 /* EXKernelBridgeRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = B5218E841D2475A000C54B61 /* EXKernelBridgeRecord.m */; };
 		B5218E8A1D24806400C54B61 /* EXKernelBridgeRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = B5218E891D24806400C54B61 /* EXKernelBridgeRegistry.m */; };
+		B54D925F1DA852770002F894 /* EXReactAppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B54D925E1DA852770002F894 /* EXReactAppManager.m */; };
+		B54D92621DA869BD0002F894 /* EXReactAppManagerUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B54D92611DA869BD0002F894 /* EXReactAppManagerUtils.m */; };
 		B55089791D06378B009FBBC5 /* EXKernel.m in Sources */ = {isa = PBXBuildFile; fileRef = B55089781D06378B009FBBC5 /* EXKernel.m */; };
 		B550897C1D063C29009FBBC5 /* EXKernelModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B550897B1D063C29009FBBC5 /* EXKernelModule.m */; };
 		B55089821D06455D009FBBC5 /* EXLinkingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B55089811D06455D009FBBC5 /* EXLinkingManager.m */; };
@@ -348,12 +349,14 @@
 		B5218E721D22FC7800C54B61 /* EXRemoteNotificationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXRemoteNotificationManager.m; sourceTree = "<group>"; };
 		B5218E781D232B8800C54B61 /* EXNotifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXNotifications.h; sourceTree = "<group>"; };
 		B5218E791D232B8800C54B61 /* EXNotifications.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXNotifications.m; sourceTree = "<group>"; };
-		B5218E7E1D2461F600C54B61 /* EXFrameUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFrameUtils.h; sourceTree = "<group>"; };
-		B5218E7F1D2461F600C54B61 /* EXFrameUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFrameUtils.m; sourceTree = "<group>"; };
 		B5218E831D2475A000C54B61 /* EXKernelBridgeRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelBridgeRecord.h; sourceTree = "<group>"; };
 		B5218E841D2475A000C54B61 /* EXKernelBridgeRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelBridgeRecord.m; sourceTree = "<group>"; };
 		B5218E881D24806400C54B61 /* EXKernelBridgeRegistry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelBridgeRegistry.h; sourceTree = "<group>"; };
 		B5218E891D24806400C54B61 /* EXKernelBridgeRegistry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelBridgeRegistry.m; sourceTree = "<group>"; };
+		B54D925D1DA852770002F894 /* EXReactAppManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXReactAppManager.h; sourceTree = "<group>"; };
+		B54D925E1DA852770002F894 /* EXReactAppManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXReactAppManager.m; sourceTree = "<group>"; };
+		B54D92601DA869BD0002F894 /* EXReactAppManagerUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXReactAppManagerUtils.h; sourceTree = "<group>"; };
+		B54D92611DA869BD0002F894 /* EXReactAppManagerUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXReactAppManagerUtils.m; sourceTree = "<group>"; };
 		B55089771D06378B009FBBC5 /* EXKernel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernel.h; sourceTree = "<group>"; };
 		B55089781D06378B009FBBC5 /* EXKernel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernel.m; sourceTree = "<group>"; };
 		B550897A1D063C29009FBBC5 /* EXKernelModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelModule.h; sourceTree = "<group>"; };
@@ -764,6 +767,10 @@
 				B5218E891D24806400C54B61 /* EXKernelBridgeRegistry.m */,
 				785045D91D33AE6E0000E59B /* EXProvisioningProfile.h */,
 				785045DA1D33AE6E0000E59B /* EXProvisioningProfile.m */,
+				B54D925D1DA852770002F894 /* EXReactAppManager.h */,
+				B54D925E1DA852770002F894 /* EXReactAppManager.m */,
+				B54D92601DA869BD0002F894 /* EXReactAppManagerUtils.h */,
+				B54D92611DA869BD0002F894 /* EXReactAppManagerUtils.m */,
 				B5218E711D22FC7800C54B61 /* EXRemoteNotificationManager.h */,
 				B5218E721D22FC7800C54B61 /* EXRemoteNotificationManager.m */,
 				B5553F941CEFBD1200555008 /* EXShellManager.h */,
@@ -880,8 +887,6 @@
 				B5884A731C7FD2E700F01BE4 /* EXFrame.m */,
 				B5884A761C7FD2E700F01BE4 /* EXFrameManager.h */,
 				B5884A771C7FD2E700F01BE4 /* EXFrameManager.m */,
-				B5218E7E1D2461F600C54B61 /* EXFrameUtils.h */,
-				B5218E7F1D2461F600C54B61 /* EXFrameUtils.m */,
 			);
 			path = Frame;
 			sourceTree = "<group>";
@@ -1373,7 +1378,6 @@
 				B5884A7D1C7FD2E700F01BE4 /* EXFrameManager.m in Sources */,
 				193601121D67ABCF007C0EE0 /* RNSVGEllipse.m in Sources */,
 				193601281D67ABCF007C0EE0 /* RNSVGSolidColorBrush.m in Sources */,
-				B5218E801D2461F600C54B61 /* EXFrameUtils.m in Sources */,
 				A15DC4BC1CFF99FE009F940D /* EXImagePicker.m in Sources */,
 				193601171D67ABCF007C0EE0 /* RNSVGImageManager.m in Sources */,
 				193601081D67ABCF007C0EE0 /* RNSVGBaseBrush.m in Sources */,
@@ -1383,6 +1387,7 @@
 				84EC975F1D728A24009EEB4E /* AIRMapMarkerManager.m in Sources */,
 				B55089791D06378B009FBBC5 /* EXKernel.m in Sources */,
 				B5218E851D2475A000C54B61 /* EXKernelBridgeRecord.m in Sources */,
+				B54D92621DA869BD0002F894 /* EXReactAppManagerUtils.m in Sources */,
 				193601251D67ABCF007C0EE0 /* RNSVGRectManager.m in Sources */,
 				B5218E8A1D24806400C54B61 /* EXKernelBridgeRegistry.m in Sources */,
 				193601201D67ABCF007C0EE0 /* RNSVGPattern.m in Sources */,
@@ -1446,6 +1451,7 @@
 				84EC97631D728A24009EEB4E /* AIRMapPolylineManager.m in Sources */,
 				A16EE7801D56911100634425 /* UIView+FindUIViewController.m in Sources */,
 				1936010F1D67ABCF007C0EE0 /* RNSVGClipPathManager.m in Sources */,
+				B54D925F1DA852770002F894 /* EXReactAppManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

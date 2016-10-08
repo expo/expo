@@ -3,17 +3,9 @@
 @import ObjectiveC;
 
 #import "EXViewController.h"
-#import "EXDevMenuViewController.h"
 #import "EXErrorView.h"
-#import "EXExceptionHandler.h"
-#import "EXFatalHandler.h"
 #import "EXFileDownloader.h"
-#import "EXJavaScriptResource.h"
 #import "EXKernel.h"
-#import "EXKernelModuleProvider.h"
-#import "EXLog.h"
-#import "EXShellManager.h"
-#import "EXVersionManager.h"
 
 #import "RCTDevLoadingView.h"
 #import "RCTRootView.h"
@@ -23,11 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXViewController () <EXErrorViewDelegate>
 
 @property (nonatomic, strong) UIActivityIndicatorView *loadingIndicator;
-@property (nonatomic, strong) NSDictionary *launchOptions;
 @property (nonatomic, strong) EXErrorView *errorView;
-@property (nonnull, strong) RCTBridge *bridge;
-@property (nonatomic, strong) EXVersionManager *versionManager;
-@property (nonnull, strong) EXJavaScriptResource *jsResource;
+
+@property (nonatomic, strong) EXReactAppManager *appManager;
 
 @end
 
@@ -38,7 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithLaunchOptions:(NSDictionary *)launchOptions
 {
   if (self = [super init]) {
-    _launchOptions = launchOptions;
+    _appManager = [[EXReactAppManager alloc] initWithFrame:nil isKernel:YES launchOptions:launchOptions];
+    _appManager.delegate = self;
   }
   return self;
 }
@@ -62,49 +53,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Public
 
-- (void)loadReactApplication
-{
-  EXAssertMainThread();
-  
-  if (_versionManager) {
-    [_versionManager invalidate];
-    _versionManager = nil;
-  }
-  [[EXKernel sharedInstance].bridgeRegistry unregisterKernelBridge];
-  [self _stopObservingBridgeNotifications];
-  [_bridge invalidate];
-  _bridge = nil;
-  _jsResource = nil;
-  
-  [RCTDevLoadingView setEnabled:NO];
-  
-  NSDictionary *initialProps = nil;
-  if ([EXShellManager sharedInstance].isShell) {
-    initialProps = @{
-                     @"shell": @YES,
-                     @"shellManifestUrl": [EXShellManager sharedInstance].shellManifestUrl,
-                     };
-  }
-  
-  _versionManager = [[EXVersionManager alloc] initWithFatalHandler:handleFatalReactError logFunction:EXGetKernelRCTLogFunction() logThreshold:RCTLogLevelInfo];
-  _bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:_launchOptions];
-  RCTRootView *reactView = [[RCTRootView alloc] initWithBridge:_bridge
-                                                    moduleName:@"ExponentApp"
-                                             initialProperties:initialProps];
-  reactView.frame = self.view.bounds;
-  reactView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-  reactView.backgroundColor = [UIColor clearColor];
-  
-  [_contentView removeFromSuperview];
-  _contentView = reactView;
-  [self.view addSubview:_contentView];
-  [reactView becomeFirstResponder];
-  
-  self.isLoading = YES;
-  [[EXKernel sharedInstance].bridgeRegistry registerKernelBridge:_bridge];
-  [self _startObservingBridgeNotifications];
-}
-
 - (void)showErrorWithType:(EXFatalErrorType)type error:(nullable NSError *)error
 {
   EXAssertMainThread();
@@ -125,9 +73,24 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-#pragma mark - RCTBridgeDelegate
+- (void)loadReactApplication
+{
+  [_appManager reload];
+}
 
-- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
+- (void)setIsLoading:(BOOL)isLoading
+{
+  _isLoading = isLoading;
+  if (_isLoading) {
+    [_loadingIndicator startAnimating];
+  } else {
+    [_loadingIndicator stopAnimating];
+  }
+}
+
+#pragma mark - EXReactAppManagerDelegate
+
+- (NSURL *)bundleUrl
 {
 #if DEBUG
   NSString *kernelNgrokUrl = BUILD_MACHINE_KERNEL_NGROK_URL;
@@ -142,126 +105,62 @@ NS_ASSUME_NONNULL_BEGIN
 #endif
 }
 
-- (NSArray *)extraModulesForBridge:(RCTBridge *)bridge
+- (BOOL)isReadyToLoad
 {
-  static NSString * const EXExceptionHandlerKey = @"EXExceptionHandler";
-  EXExceptionHandler *exceptionHandler = [[EXExceptionHandler alloc] initWithBridge:bridge];
-  RCTExceptionsManager *exceptionsManager = [[RCTExceptionsManager alloc] initWithDelegate:exceptionHandler];
-  objc_setAssociatedObject(exceptionsManager, &EXExceptionHandlerKey, exceptionHandler, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-  
-  NSMutableArray *modules = [EXKernelModuleProvider(_launchOptions) mutableCopy];
-  [modules addObject:exceptionsManager];
-  
-  return modules;
+  return YES;
 }
 
-- (void)loadSourceForBridge:(RCTBridge *)bridge withBlock:(RCTSourceLoadBlock)loadCallback
+- (void)reactAppManagerDidInitApp:(EXReactAppManager *)appManager
 {
-  _jsResource = [[EXJavaScriptResource alloc] initWithBundleName:kEXKernelBundleResourceName remoteUrl:bridge.bundleURL];
+  UIView *reactView = appManager.reactRootView;
+  reactView.frame = self.view.bounds;
+  reactView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  reactView.backgroundColor = [UIColor clearColor];
+
+  [_contentView removeFromSuperview];
+  _contentView = reactView;
+  [self.view addSubview:_contentView];
+  [reactView becomeFirstResponder];
   
-  EXCachedResourceBehavior cacheBehavior = [[NSUserDefaults standardUserDefaults] boolForKey:kEXSkipCacheUserDefaultsKey] ?
-  kEXCachedResourceNoCache :
-  kEXCachedResourceUseCacheImmediately;
-  
-  [_jsResource loadResourceWithBehavior:cacheBehavior successBlock:^(NSData * _Nonnull sourceData) {
-    loadCallback(nil, sourceData, sourceData.length);
-  } errorBlock:^(NSError * _Nonnull error) {
-    BOOL isNetworkError = ([error.domain isEqualToString:(NSString *)kCFErrorDomainCFNetwork] ||
-                           [error.domain isEqualToString:EXNetworkErrorDomain]);
-    if (isNetworkError &&
-        error.code == kCFURLErrorNotConnectedToInternet) {
-      // show a human-readable reachability error
-      __weak typeof(self) weakSelf = self;
-      dispatch_async(dispatch_get_main_queue(), ^{
-        [weakSelf showErrorWithType:kEXFatalErrorTypeLoading error:error];
-      });
-    }
-    loadCallback(error, nil, 0);
-  }];
+  self.isLoading = YES;
 }
 
-#pragma mark - Internal
-
-- (void)setIsLoading:(BOOL)isLoading
+- (void)reactAppManagerDidDestroyApp:(EXReactAppManager *)appManager
 {
-  _isLoading = isLoading;
-  if (_isLoading) {
-    [_loadingIndicator startAnimating];
-  } else {
-    [_loadingIndicator stopAnimating];
+  
+}
+
+- (void)reactAppManager:(EXReactAppManager *)appManager failedToDownloadBundleWithError:(NSError *)error
+{
+  BOOL isNetworkError = ([error.domain isEqualToString:(NSString *)kCFErrorDomainCFNetwork] ||
+                         [error.domain isEqualToString:EXNetworkErrorDomain]);
+  if (isNetworkError &&
+      error.code == kCFURLErrorNotConnectedToInternet) {
+    // show a human-readable reachability error
+    __weak typeof(self) weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [weakSelf showErrorWithType:kEXFatalErrorTypeLoading error:error];
+    });
   }
 }
 
-- (void)_handleJavaScriptStartLoadingEvent:(NSNotification *)notification
-{
-  [self performSelectorOnMainThread:@selector(_handleJavaScriptStartLoadingEventMainThread:) withObject:notification waitUntilDone:YES];
-}
-
-- (void)_handleJavaScriptLoadEvent:(NSNotification *)notification
-{
-  [self performSelectorOnMainThread:@selector(_handleJavaScriptLoadEventMainThread:) withObject:notification waitUntilDone:YES];
-}
-
-- (void)_handleBridgeForegroundEvent:(NSNotification * _Nullable)notification
-{
-  [_versionManager bridgeDidForeground];
-}
-
-- (void)_handleBridgeBackgroundEvent:(NSNotification * _Nullable)notification
-{
-  [_versionManager bridgeDidBackground];
-}
-
-- (void)_handleJavaScriptStartLoadingEventMainThread:(NSNotification *)notification
+- (void)reactAppManagerStartedLoadingJavaScript:(EXReactAppManager *)appManager
 {
   EXAssertMainThread();
   self.isLoading = YES;
 }
 
-- (void)_handleJavaScriptLoadEventMainThread:(NSNotification *)notification
+- (void)reactAppManagerFinishedLoadingJavaScript:(EXReactAppManager *)appManager
 {
   EXAssertMainThread();
   self.isLoading = NO;
-  if ([notification.name isEqualToString:RCTJavaScriptDidLoadNotification]) {
-    [_versionManager bridgeFinishedLoading];
-    [self _handleBridgeForegroundEvent:nil];
-  } else if ([notification.name isEqualToString:RCTJavaScriptDidFailToLoadNotification]) {
-    NSError *error = (notification.userInfo) ? notification.userInfo[@"error"] : nil;
-    [self showErrorWithType:kEXFatalErrorTypeLoading error:error];
-  }
 }
 
-- (void)_startObservingBridgeNotifications
+- (void)reactAppManager:(EXReactAppManager *)appManager failedToLoadJavaScriptWithError:(NSError *)error
 {
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(_handleJavaScriptStartLoadingEvent:)
-                                               name:RCTJavaScriptWillStartLoadingNotification
-                                             object:_bridge];
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(_handleJavaScriptLoadEvent:)
-                                               name:RCTJavaScriptDidLoadNotification
-                                             object:_bridge];
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(_handleJavaScriptLoadEvent:)
-                                               name:RCTJavaScriptDidFailToLoadNotification
-                                             object:_bridge];
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(_handleBridgeForegroundEvent:)
-                                               name:kEXKernelBridgeDidForegroundNotification
-                                             object:_bridge];
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(_handleBridgeBackgroundEvent:)
-                                               name:kEXKernelBridgeDidBackgroundNotification
-                                             object:_bridge];
-}
-
-- (void)_stopObservingBridgeNotifications
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTJavaScriptWillStartLoadingNotification object:_bridge];
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTJavaScriptDidLoadNotification object:_bridge];
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTJavaScriptDidFailToLoadNotification object:_bridge];
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:kEXKernelBridgeDidForegroundNotification object:_bridge];
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:kEXKernelBridgeDidBackgroundNotification object:_bridge];
+  EXAssertMainThread();
+  self.isLoading = NO;
+  [self showErrorWithType:kEXFatalErrorTypeLoading error:error];
 }
 
 #pragma mark - Delegate
@@ -270,7 +169,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   // if the app launched with some options, clear them-- this is no longer a new launch,
   // and it's possible that these options were what caused the error (e.g. a bad initial url)
-  _launchOptions = nil;
+  _appManager.launchOptions = nil;
   
   [self loadReactApplication];
 }
