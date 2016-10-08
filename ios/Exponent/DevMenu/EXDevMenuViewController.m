@@ -175,7 +175,7 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
 
 - (void)_populateKernelInfoLabel
 {
-  NSURL *kernelUrl = [((EXAppDelegate *)[UIApplication sharedApplication].delegate).rootViewController sourceURLForBridge:nil];
+  NSURL *kernelUrl = [((EXAppDelegate *)[UIApplication sharedApplication].delegate).rootViewController bundleUrl];
   _lblKernelInfo.text = (kernelUrl) ? kernelUrl.absoluteString : @"";
 
   NSMutableURLRequest *kernelReq = [NSMutableURLRequest requestWithURL:kernelUrl];
