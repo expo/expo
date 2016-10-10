@@ -38,7 +38,7 @@ const {
 const KERNEL_ROUTE_HOME = 0;
 const KERNEL_ROUTE_BROWSER = 1;
 const FORCE_TOUCH_SWITCH_THRESHOLD = 0.995;
-const FORCE_TOUCH_CAPTURE_THRESHOLD = 0.8;
+const FORCE_TOUCH_CAPTURE_THRESHOLD = 0.85;
 
 const MENU_FADE_IN_TOTAL_MS = 400;
 const MENU_FADE_IN_BEGIN_MS = 50; // make this one shorter
@@ -220,11 +220,10 @@ class KernelNavigator extends React.Component {
     let { force, touches } = event.nativeEvent;
     if (this._hasTouch) {
       if (View.forceTouchAvailable) {
-        if (force >= FORCE_TOUCH_SWITCH_THRESHOLD) {
+        if (force >= FORCE_TOUCH_SWITCH_THRESHOLD && touches.length === 2) {
           this._switchTasks();
         }
-      }
-      if (touches) {
+      } else if (touches) {
         if (touches.length === 2 && !this._hasDoubleTouch) {
           this._hasDoubleTouch = true;
           // quickly start fading in the menu to respond to double touch

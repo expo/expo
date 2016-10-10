@@ -82,7 +82,7 @@ export default class MenuView extends React.Component {
     let tooltipMessage;
     if (NativeModules.ExponentConstants.isDevice) {
       if (View.forceTouchAvailable) {
-        tooltipMessage = 'Press harder (use 3D touch) anywhere on your screen to show this menu.';
+        tooltipMessage = 'Press harder (use 3D touch) with two fingers anywhere on your screen to show this menu.';
       } else {
         tooltipMessage = 'Long press with two fingers anywhere on your screen to show this menu.';
       }
