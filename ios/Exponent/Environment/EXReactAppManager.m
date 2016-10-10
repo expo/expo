@@ -141,7 +141,7 @@
     return modules;
   } else {
     NSDictionary *params = @{
-                             @"frame": self,
+                             @"frame": _frame,
                              @"manifest": _frame.manifest,
                              @"constants": @{
                                  @"linkingUri": [EXKernel linkingUriForExperienceUri:_frame.initialUri],
@@ -288,6 +288,5 @@
   }
   [_versionManager bridgeDidBackground];
 }
-
 
 @end
