@@ -55,6 +55,8 @@
 		78CEE2D41ACD07D70095B124 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 78CEE2D21ACD07D70095B124 /* LaunchScreen.xib */; };
 		78CEE2ED1ACD22D90095B124 /* EXAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 78CEE2EC1ACD22D90095B124 /* EXAppDelegate.m */; };
 		840D8EE21D8CB91E00CD88DE /* EXUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 840D8EE11D8CB91E00CD88DE /* EXUtil.m */; };
+		841AB1161DA6F56D008C0720 /* EXBarCodeScanner.m in Sources */ = {isa = PBXBuildFile; fileRef = 841AB1131DA6F56D008C0720 /* EXBarCodeScanner.m */; };
+		841AB1171DA6F56D008C0720 /* EXBarCodeScannerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 841AB1151DA6F56D008C0720 /* EXBarCodeScannerManager.m */; };
 		8454E6DA1D4E95B800B9E8EF /* EXBlurView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8454E6D91D4E95B800B9E8EF /* EXBlurView.m */; };
 		8454E6DC1D4E960F00B9E8EF /* EXBlurViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8454E6DB1D4E960F00B9E8EF /* EXBlurViewManager.m */; };
 		84EC97571D728A24009EEB4E /* AIRMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 84EC973A1D728A24009EEB4E /* AIRMap.m */; };
@@ -259,6 +261,10 @@
 		78CEE2EC1ACD22D90095B124 /* EXAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppDelegate.m; sourceTree = "<group>"; };
 		840D8EE01D8CB91E00CD88DE /* EXUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXUtil.h; sourceTree = "<group>"; };
 		840D8EE11D8CB91E00CD88DE /* EXUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXUtil.m; sourceTree = "<group>"; };
+		841AB1121DA6F56D008C0720 /* EXBarCodeScanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXBarCodeScanner.h; sourceTree = "<group>"; };
+		841AB1131DA6F56D008C0720 /* EXBarCodeScanner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXBarCodeScanner.m; sourceTree = "<group>"; };
+		841AB1141DA6F56D008C0720 /* EXBarCodeScannerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXBarCodeScannerManager.h; sourceTree = "<group>"; };
+		841AB1151DA6F56D008C0720 /* EXBarCodeScannerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXBarCodeScannerManager.m; sourceTree = "<group>"; };
 		8454E6D81D4E95A300B9E8EF /* EXBlurView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXBlurView.h; sourceTree = "<group>"; };
 		8454E6D91D4E95B800B9E8EF /* EXBlurView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXBlurView.m; sourceTree = "<group>"; };
 		8454E6DB1D4E960F00B9E8EF /* EXBlurViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXBlurViewManager.m; sourceTree = "<group>"; };
@@ -669,6 +675,10 @@
 				84EC97381D728A24009EEB4E /* Maps */,
 				193600AC1D67ABCF007C0EE0 /* Svg */,
 				A16EE7731D56911100634425 /* Video */,
+				841AB1121DA6F56D008C0720 /* EXBarCodeScanner.h */,
+				841AB1131DA6F56D008C0720 /* EXBarCodeScanner.m */,
+				841AB1141DA6F56D008C0720 /* EXBarCodeScannerManager.h */,
+				841AB1151DA6F56D008C0720 /* EXBarCodeScannerManager.m */,
 				8454E6D81D4E95A300B9E8EF /* EXBlurView.h */,
 				8454E6D91D4E95B800B9E8EF /* EXBlurView.m */,
 				8454E6DD1D4E963A00B9E8EF /* EXBlurViewManager.h */,
@@ -1376,6 +1386,7 @@
 				A1F37F791CEFD6B2001E9EFC /* EXFrameExceptionsManager.m in Sources */,
 				193601301D67ABCF007C0EE0 /* RNSVGViewBoxManager.m in Sources */,
 				B5884A7D1C7FD2E700F01BE4 /* EXFrameManager.m in Sources */,
+				841AB1161DA6F56D008C0720 /* EXBarCodeScanner.m in Sources */,
 				193601121D67ABCF007C0EE0 /* RNSVGEllipse.m in Sources */,
 				193601281D67ABCF007C0EE0 /* RNSVGSolidColorBrush.m in Sources */,
 				A15DC4BC1CFF99FE009F940D /* EXImagePicker.m in Sources */,
@@ -1410,6 +1421,7 @@
 				193601151D67ABCF007C0EE0 /* RNSVGGroupManager.m in Sources */,
 				1936010A1D67ABCF007C0EE0 /* RNSVGBrush.m in Sources */,
 				1936012F1D67ABCF007C0EE0 /* RNSVGViewBox.m in Sources */,
+				841AB1171DA6F56D008C0720 /* EXBarCodeScannerManager.m in Sources */,
 				B597EF1E1CD98654004A48AD /* EXLog.m in Sources */,
 				84EC97651D728A24009EEB4E /* SMCalloutView.m in Sources */,
 				88E089AB1D6BCF5800562FA1 /* EXSegment.m in Sources */,

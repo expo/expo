@@ -58,6 +58,9 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
           askForLocationPermissions(promise);
           break;
         }
+        case "camera": {
+          askForCameraPermissions(promise);
+        }
         default:
           promise.reject("E_PERMISSION_UNSUPPORTED", String.format("Cannot request permission: %s", type));
       }
@@ -72,6 +75,9 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
       }
       case "location": {
         return getLocationPermissions();
+      }
+      case "camera": {
+        return getCameraPermissions();
       }
       default:
         return null;
@@ -110,6 +116,27 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
     return response;
   }
 
+  private WritableMap getCameraPermissions() {
+    WritableMap response = Arguments.createMap();
+    Boolean isGranted = false;
+
+    if (Build.VERSION.SDK_INT >= 23) {
+      int cameraPermission = ContextCompat.checkSelfPermission(getReactApplicationContext(), android.Manifest.permission.CAMERA);
+      if (cameraPermission == PackageManager.PERMISSION_GRANTED) {
+        response.putString("status", "granted");
+      } else {
+        response.putString("status", "denied");
+      }
+    } else {
+      response.putString("status", "granted");
+    }
+
+    response.putString("expires", PERMISSION_EXPIRES_NEVER);
+    WritableMap platformMap = Arguments.createMap();
+
+    return response;
+  }
+
   private WritableMap getAlwaysGrantedPermissions() {
     WritableMap response = Arguments.createMap();
     response.putString("status", "granted");
@@ -136,5 +163,27 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
     if (!gotPermissions) {
       promise.reject("E_ACTIVITY_DOES_NOT_EXIST", "No visible activity. Must request location when visible.");
     }
+  }
+
+  private void askForCameraPermissions(final Promise promise) {
+    BaseExperienceActivity activity = BaseExperienceActivity.getVisibleActivity();
+    if (activity == null) {
+      promise.reject("E_ACTIVITY_DOES_NOT_EXIST", "No visible activity. Must request camera when visible.");
+      return;
+    }
+
+    final String[] permissions = new String[]{
+        Manifest.permission.CAMERA,
+    };
+    activity.getPermissions(new BaseExperienceActivity.PermissionsListener() {
+      @Override
+      public void permissionsGranted() {
+        promise.resolve(getCameraPermissions());
+      }
+      @Override
+      public void permissionsDenied() {
+        promise.resolve(getCameraPermissions());
+      }
+    }, permissions);
   }
 }

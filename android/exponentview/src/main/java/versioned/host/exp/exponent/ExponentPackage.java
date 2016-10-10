@@ -46,6 +46,8 @@ import versioned.host.exp.exponent.modules.api.components.LinearGradientManager;
 import versioned.host.exp.exponent.modules.api.components.VideoViewManager;
 import versioned.host.exp.exponent.modules.api.components.svg.RNSvgPackage;
 import versioned.host.exp.exponent.modules.api.components.maps.MapsPackage;
+import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerViewManager;
+import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerModule;
 import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule;
 import versioned.host.exp.exponent.modules.internal.ExponentIntentModule;
 import versioned.host.exp.exponent.modules.internal.ExponentUnsignedAsyncStorageModule;
@@ -109,6 +111,7 @@ public class ExponentPackage implements ReactPackage {
           nativeModules.add(new PermissionsModule(reactContext));
           nativeModules.add(new AmplitudeModule(reactContext, experienceIdEncoded));
           nativeModules.add(new SegmentModule(reactContext, experienceIdEncoded));
+          nativeModules.add(new BarCodeScannerModule(reactContext));
           nativeModules.add(new RNViewShotModule(reactContext));
         } catch (JSONException e) {
           EXL.e(TAG, e.toString());
@@ -133,7 +136,8 @@ public class ExponentPackage implements ReactPackage {
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
     List<ViewManager> viewManagers = new ArrayList<>(Arrays.<ViewManager>asList(
         new LinearGradientManager(),
-        new VideoViewManager()
+        new VideoViewManager(),
+        new BarCodeScannerViewManager()
     ));
 
     // Add view managers from the react-native-svg package.
