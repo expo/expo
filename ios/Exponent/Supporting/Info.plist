@@ -64,14 +64,14 @@
 	</dict>
 	<key>NSBluetoothPeripheralUsageDescription </key>
 	<string>Give Exponent experiences permission to connect over Bluetooth</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Allow Exponent experiences to use your location</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Give Exponent experiences permission to access your photos</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Allow Exponent experiences to use your camera</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Allow Exponent experiences to use your location</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow Exponent experiences to access your microphone</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Give Exponent experiences permission to access your photos</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
