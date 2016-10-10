@@ -12,6 +12,6 @@ const NAMESPACE = 'Exponent';
 export default mapValues({
   Email: 'email',
   History: 'history',
-  NuxIsFinished: 'nuxIsFinished',
+  NuxIsFinished: 'nuxIsFinishedOct-10-2016',
   SkipRegistration: 'skipRegistration',
 }, value => `${NAMESPACE}.${value}`);
