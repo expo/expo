@@ -18,12 +18,23 @@
 RCT_EXPORT_MODULE(ExponentBarCodeScannerManager);
 RCT_EXPORT_VIEW_PROPERTY(onBarCodeRead, RCTDirectEventBlock);
 
-- (UIView *)viewWithProps:(__unused NSDictionary *)props {
+- (id)init
+{
+  if (self = [super init]) {
+    self.sessionQueue =
+    dispatch_queue_create("cameraManagerQueue", DISPATCH_QUEUE_SERIAL);
+  }
+  return self;
+}
+
+- (UIView *)viewWithProps:(__unused NSDictionary *)props
+{
   self.presetCamera = ((NSNumber *)props[@"type"]).integerValue;
   return [self view];
 }
 
-- (UIView *)view {
+- (UIView *)view
+{
   self.session = [AVCaptureSession new];
 #if !(TARGET_IPHONE_SIMULATOR)
   self.previewLayer =
@@ -38,7 +49,8 @@ RCT_EXPORT_VIEW_PROPERTY(onBarCodeRead, RCTDirectEventBlock);
   return self.camera;
 }
 
-- (NSDictionary *)constantsToExport {
+- (NSDictionary *)constantsToExport
+{
   return @{
     @"BarCodeType" : @{
       @"upce" : AVMetadataObjectTypeUPCECode,
@@ -74,7 +86,8 @@ RCT_EXPORT_VIEW_PROPERTY(onBarCodeRead, RCTDirectEventBlock);
   };
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(type, NSInteger, EXBarCodeScanner) {
+RCT_CUSTOM_VIEW_PROPERTY(type, NSInteger, EXBarCodeScanner)
+{
   NSInteger type = [RCTConvert NSInteger:json];
 
   self.presetCamera = type;
@@ -117,9 +130,10 @@ RCT_CUSTOM_VIEW_PROPERTY(type, NSInteger, EXBarCodeScanner) {
   }
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(torchMode, NSInteger, EXBarCodeScanner) {
+RCT_CUSTOM_VIEW_PROPERTY(torchMode, NSInteger, EXBarCodeScanner)
+{
   dispatch_async(self.sessionQueue, ^{
-    NSInteger *torchMode = [RCTConvert NSInteger:json];
+    NSInteger torchMode = [RCTConvert NSInteger:json];
     AVCaptureDevice *device = [self.videoCaptureDeviceInput device];
     NSError *error = nil;
 
@@ -134,23 +148,18 @@ RCT_CUSTOM_VIEW_PROPERTY(torchMode, NSInteger, EXBarCodeScanner) {
   });
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(barCodeTypes, NSArray, EXBarCodeScanner) {
+RCT_CUSTOM_VIEW_PROPERTY(barCodeTypes, NSArray, EXBarCodeScanner)
+{
   self.barCodeTypes = [RCTConvert NSArray:json];
 }
 
-- (NSArray *)customDirectEventTypes {
+- (NSArray *)customDirectEventTypes
+{
   return @[];
 }
 
-- (id)init {
-  if ((self = [super init])) {
-    self.sessionQueue =
-        dispatch_queue_create("cameraManagerQueue", DISPATCH_QUEUE_SERIAL);
-  }
-  return self;
-}
-
-- (void)startSession {
+- (void)startSession
+{
 #if TARGET_IPHONE_SIMULATOR
   return;
 #endif
@@ -187,7 +196,8 @@ RCT_CUSTOM_VIEW_PROPERTY(barCodeTypes, NSArray, EXBarCodeScanner) {
   });
 }
 
-- (void)stopSession {
+- (void)stopSession
+{
 #if TARGET_IPHONE_SIMULATOR
   return;
 #endif
@@ -208,8 +218,8 @@ RCT_CUSTOM_VIEW_PROPERTY(barCodeTypes, NSArray, EXBarCodeScanner) {
 
 - (void)captureOutput:(AVCaptureOutput *)captureOutput
     didOutputMetadataObjects:(NSArray *)metadataObjects
-              fromConnection:(AVCaptureConnection *)connection {
-
+              fromConnection:(AVCaptureConnection *)connection
+{
   for (AVMetadataMachineReadableCodeObject *metadata in metadataObjects) {
     for (id barcodeType in self.barCodeTypes) {
       if ([metadata.type isEqualToString:barcodeType]) {
@@ -225,7 +235,8 @@ RCT_CUSTOM_VIEW_PROPERTY(barCodeTypes, NSArray, EXBarCodeScanner) {
   }
 }
 
-- (void)initializeCaptureSessionInput:(NSString *)type {
+- (void)initializeCaptureSessionInput:(NSString *)type
+{
   dispatch_async(self.sessionQueue, ^{
     [self.session beginConfiguration];
 
@@ -255,7 +266,8 @@ RCT_CUSTOM_VIEW_PROPERTY(barCodeTypes, NSArray, EXBarCodeScanner) {
 }
 
 - (AVCaptureDevice *)deviceWithMediaType:(NSString *)mediaType
-                      preferringPosition:(AVCaptureDevicePosition)position {
+                      preferringPosition:(AVCaptureDevicePosition)position
+{
   NSArray *devices = [AVCaptureDevice devicesWithMediaType:mediaType];
   AVCaptureDevice *captureDevice = [devices firstObject];
 
