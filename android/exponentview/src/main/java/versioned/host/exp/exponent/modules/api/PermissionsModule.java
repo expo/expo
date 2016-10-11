@@ -175,7 +175,7 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
     final String[] permissions = new String[]{
         Manifest.permission.CAMERA,
     };
-    activity.getPermissions(new BaseExperienceActivity.PermissionsListener() {
+    Exponent.getInstance().getPermissions(new Exponent.PermissionsListener() {
       @Override
       public void permissionsGranted() {
         promise.resolve(getCameraPermissions());
