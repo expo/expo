@@ -13,7 +13,7 @@ target 'Exponent' do
   pod 'FBSDKLoginKit', '~> 4.15'
   pod 'FBSDKShareKit', '~> 4.15'
   # Segment. Be careful when updating. Could break versioning.
-  pod 'Analytics', '~> 3.4'
+  pod 'Analytics', '~> 3.5'
 
   # Local CocoaPods
   pod 'React', :path => '${REACT_NATIVE_PATH}', :subspecs => [
