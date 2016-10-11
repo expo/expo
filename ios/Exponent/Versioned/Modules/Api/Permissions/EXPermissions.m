@@ -3,6 +3,7 @@
 #import "EXPermissions.h"
 #import "EXLocationRequester.h"
 #import "EXRemoteNotificationRequester.h"
+#import "EXAVPermissionRequester.h"
 
 NSString * const EXPermissionExpiresNever = @"never";
 
@@ -34,7 +35,7 @@ RCT_REMAP_METHOD(getAsync,
   } else if ([type isEqualToString:@"location"]) {
     resolve([EXLocationRequester permissions]);
   } else if ([type isEqualToString:@"camera"]) {
-    resolve([EXPermissions alwaysGrantedPermissions]);
+    resolve([EXAVPermissionRequester permissions]);
   } else {
     reject(@"E_PERMISSION_UNKNOWN", [NSString stringWithFormat:@"Unrecognized permission: %@", type], nil);
   }
@@ -56,7 +57,7 @@ RCT_REMAP_METHOD(askAsync,
       } else if ([type isEqualToString:@"location"]) {
         requester = [[EXLocationRequester alloc] init];
       } else if ([type isEqualToString:@"camera"]) {
-        resolve([EXPermissions alwaysGrantedPermissions]);
+        requester = [[EXAVPermissionRequester alloc] init];
       } else {
         // TODO: other types of permission requesters, e.g. facebook
         reject(@"E_PERMISSION_UNSUPPORTED", [NSString stringWithFormat:@"Cannot request permission: %@", type], nil);
