@@ -2,6 +2,8 @@
 
 #import "EXReactAppManager.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class EXFrame;
 
 @interface EXFrameReactAppManager : EXReactAppManager
@@ -11,3 +13,5 @@
 @property (nonatomic, weak, readonly) EXFrame *frame;
 
 @end
+
+NS_ASSUME_NONNULL_END

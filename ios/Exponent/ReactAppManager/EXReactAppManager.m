@@ -222,6 +222,7 @@ method \
                              userInfo:nil]; \
 }
 
+EX_APP_MANAGER_ABSTRACT(- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge)
 EX_APP_MANAGER_ABSTRACT(- (BOOL)isReadyToLoad)
 EX_APP_MANAGER_ABSTRACT(- (void)computeVersionSymbolPrefix)
 EX_APP_MANAGER_ABSTRACT(- (NSString *)bundleNameForJSResource)
