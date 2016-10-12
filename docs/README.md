@@ -39,7 +39,7 @@ incorporate them!
 
 - Make your changes in `universe/docs` and commit them. Our `shipit` bot
 synchronizes the changes to the public `exponent-docs` repository. To deploy,
-you will need Docker for Mac. Just run `make deploy` from
+you will need Docker for Mac + GCloud tools. Just run `make deploy` from
 `universe/docs`.
 
 ### Manually restart docs pod (for some reason?)
