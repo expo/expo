@@ -6,13 +6,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class EXFrame;
 @class EXReactAppManager;
 
 @protocol EXReactAppManagerDelegate <NSObject>
-
-- (BOOL)isReadyToLoad;
-- (NSURL *)bundleUrl;
 
 - (void)reactAppManagerDidInitApp:(EXReactAppManager *)appManager;
 - (void)reactAppManagerDidDestroyApp:(EXReactAppManager *)appManager;
@@ -30,17 +26,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXReactAppManager : NSObject <RCTBridgeDelegate>
 
-- (instancetype)initWithFrame:(EXFrame * _Nullable)frame isKernel:(BOOL)isKernel launchOptions:(NSDictionary * _Nullable)launchOptions;
 - (void)reload;
 - (void)invalidate;
-
-@property (nonatomic, weak, readonly) EXFrame *frame;
-@property (nonatomic, readonly) BOOL isKernel;
 
 @property (nonatomic, assign) id<EXReactAppManagerDelegate> delegate;
 @property (nonatomic, strong) UIView * __nullable reactRootView;
 @property (nonatomic, strong) id __nullable reactBridge;
-@property (nonatomic, strong) NSDictionary * __nullable launchOptions;
 
 @end
 

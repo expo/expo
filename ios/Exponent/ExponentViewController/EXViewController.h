@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXErrorView.h"
-#import "EXReactAppManager.h"
+#import "EXKernelReactAppManager.h"
 
 #import "RCTBridge.h"
 

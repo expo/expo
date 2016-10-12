@@ -5,7 +5,7 @@
 #import "EXAnalytics.h"
 #import "EXKernel.h"
 #import "EXAppLoadingManager.h"
-#import "EXReactAppManager.h"
+#import "EXFrameReactAppManager.h"
 
 #import "RCTBridge.h"
 #import "RCTExceptionsManager.h"
@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSTimer *viewTestTimer;
 @property (nonatomic, strong) NSTimer *tmrReload;
 
-@property (nonatomic, strong) EXReactAppManager *appManager;
+@property (nonatomic, strong) EXFrameReactAppManager *appManager;
 
 @end
 
@@ -40,7 +40,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
   if (self = [super initWithFrame:CGRectZero]) {
-    _appManager = [[EXReactAppManager alloc] initWithFrame:self isKernel:NO launchOptions:nil];
+    _appManager = [[EXFrameReactAppManager alloc] initWithFrame:self];
     _appManager.delegate = self;
   }
   return self;
@@ -194,11 +194,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 
 #pragma mark - EXReactAppManagerDelegate
 
-- (NSURL *)bundleUrl
-{
-  return _source;
-}
-
 - (void)reactAppManagerDidInitApp:(EXReactAppManager *)appManager
 {
   UIView *reactRootView = appManager.reactRootView;
@@ -212,11 +207,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
     [_tmrReload invalidate];
     _tmrReload = nil;
   }
-}
-
-- (BOOL)isReadyToLoad
-{
-  return (_source != nil);
 }
 
 - (void)reactAppManagerStartedLoadingJavaScript:(EXReactAppManager *)appManager

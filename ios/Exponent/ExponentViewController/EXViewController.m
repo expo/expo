@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) UIActivityIndicatorView *loadingIndicator;
 @property (nonatomic, strong) EXErrorView *errorView;
 
-@property (nonatomic, strong) EXReactAppManager *appManager;
+@property (nonatomic, strong) EXKernelReactAppManager *appManager;
 
 @end
 
@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithLaunchOptions:(NSDictionary *)launchOptions
 {
   if (self = [super init]) {
-    _appManager = [[EXReactAppManager alloc] initWithFrame:nil isKernel:YES launchOptions:launchOptions];
+    _appManager = [[EXKernelReactAppManager alloc] initWithLaunchOptions:launchOptions];
     _appManager.delegate = self;
   }
   return self;
@@ -89,26 +89,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark - EXReactAppManagerDelegate
-
-- (NSURL *)bundleUrl
-{
-#if DEBUG
-  NSString *kernelNgrokUrl = BUILD_MACHINE_KERNEL_NGROK_URL;
-  NSString *kernelPath = @"exponent.bundle?dev=true&platform=ios";
-  if (kernelNgrokUrl.length) {
-    return [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kernelNgrokUrl, kernelPath]];
-  } else {
-    return [NSURL URLWithString:[NSString stringWithFormat:@"http://%@:8081/%@", BUILD_MACHINE_LOCAL_HOSTNAME, kernelPath]];
-  }
-#else
-  return [NSURL URLWithString:@"https://exp.host/~exponent/kernel"];
-#endif
-}
-
-- (BOOL)isReadyToLoad
-{
-  return YES;
-}
 
 - (void)reactAppManagerDidInitApp:(EXReactAppManager *)appManager
 {
