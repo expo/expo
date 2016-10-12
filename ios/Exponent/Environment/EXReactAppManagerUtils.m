@@ -1,5 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+#import "EXDevMenuViewController.h"
 #import "EXFrame.h"
 #import "EXReactAppManagerUtils.h"
 #import "EXVersions.h"
@@ -94,6 +95,19 @@
     return (isDeployedFromTool);
   }
   return false;
+}
+
+- (EXCachedResourceBehavior)cacheBehaviorForJSResource
+{
+  EXCachedResourceBehavior cacheBehavior;
+  if (_isKernel) {
+    cacheBehavior = [[NSUserDefaults standardUserDefaults] boolForKey:kEXSkipCacheUserDefaultsKey] ?
+    kEXCachedResourceNoCache :
+    kEXCachedResourceUseCacheImmediately;
+  } else {
+    cacheBehavior = ([self doesManifestEnableDeveloperTools]) ? kEXCachedResourceNoCache : kEXCachedResourceFallBackToCache;
+  }
+  return cacheBehavior;
 }
 
 #pragma mark - internal

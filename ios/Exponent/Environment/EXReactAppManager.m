@@ -2,7 +2,6 @@
 
 @import ObjectiveC;
 
-#import "EXDevMenuViewController.h"
 #import "EXExceptionHandler.h"
 #import "EXFatalHandler.h"
 #import "EXFrame.h"
@@ -177,18 +176,8 @@
   _jsResource = [[EXJavaScriptResource alloc] initWithBundleName:bundleName remoteUrl:bridge.bundleURL];
   _jsResource.abiVersion = _utils.validatedVersion;
   
-  // TODO: pass cache behavior unto utils
-  EXCachedResourceBehavior cacheBehavior;
-  if (_isKernel) {
-    cacheBehavior = [[NSUserDefaults standardUserDefaults] boolForKey:kEXSkipCacheUserDefaultsKey] ?
-      kEXCachedResourceNoCache :
-      kEXCachedResourceUseCacheImmediately;
-  } else {
-    cacheBehavior = ([_utils doesManifestEnableDeveloperTools]) ? kEXCachedResourceNoCache : kEXCachedResourceFallBackToCache;
-  }
-  
   __weak typeof(self) weakSelf = self;
-  [_jsResource loadResourceWithBehavior:cacheBehavior successBlock:^(NSData * _Nonnull sourceData) {
+  [_jsResource loadResourceWithBehavior:[_utils cacheBehaviorForJSResource] successBlock:^(NSData * _Nonnull sourceData) {
     loadCallback(nil, sourceData, sourceData.length);
   } errorBlock:^(NSError * _Nonnull error) {
     __strong typeof(self) strongSelf = weakSelf;
