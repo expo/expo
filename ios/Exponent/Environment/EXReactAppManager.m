@@ -187,17 +187,21 @@
     cacheBehavior = ([_utils doesManifestEnableDeveloperTools]) ? kEXCachedResourceNoCache : kEXCachedResourceFallBackToCache;
   }
   
+  __weak typeof(self) weakSelf = self;
   [_jsResource loadResourceWithBehavior:cacheBehavior successBlock:^(NSData * _Nonnull sourceData) {
     loadCallback(nil, sourceData, sourceData.length);
   } errorBlock:^(NSError * _Nonnull error) {
-    [_delegate reactAppManager:self failedToDownloadBundleWithError:error];
+    __strong typeof(self) strongSelf = weakSelf;
+    if (strongSelf) {
+      [_delegate reactAppManager:strongSelf failedToDownloadBundleWithError:error];
 
-    // RN is going to call RCTFatal() on this error, so keep a reference to it for later
-    // so we can distinguish this non-fatal error from actual fatal cases.
-    [[EXKernel sharedInstance].bridgeRegistry setError:error forBridge:_reactBridge];
-    
-    // react won't post this for us
-    [[NSNotificationCenter defaultCenter] postNotificationName:[_utils versionedString:RCTJavaScriptDidFailToLoadNotification] object:error];
+      // RN is going to call RCTFatal() on this error, so keep a reference to it for later
+      // so we can distinguish this non-fatal error from actual fatal cases.
+      [[EXKernel sharedInstance].bridgeRegistry setError:error forBridge:strongSelf.reactBridge];
+      
+      // react won't post this for us
+      [[NSNotificationCenter defaultCenter] postNotificationName:[strongSelf.utils versionedString:RCTJavaScriptDidFailToLoadNotification] object:error];
+    }
     loadCallback(error, nil, 0);
   }];
 }
