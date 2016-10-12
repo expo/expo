@@ -55,7 +55,7 @@ steps to enable it in case somehow things just aren't working.
 
 - First, make sure you have :ref:`development mode enabled in XDE <development-mode>`.
 - Next, close the app and reopen it.
-- Once the app is open again, shake your device to reveal the developer menu. If you are using an emulator, press ``⌘+d`` for iOS or ``ctrl+m`` for Android (in Genymotion).
+- Once the app is open again, shake your device to reveal the developer menu. If you are using an emulator, press ``⌘+d`` for iOS or ``ctrl+m`` for Android.
 - If you see ``Enable Live Reload``, press it and your app will reload. If you
   see ``Disable Live Reload`` then exit the developer menu and try making
   another change.

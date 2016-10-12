@@ -23,15 +23,8 @@ if you haven't already.
 Android
 ^^^^^^^
 
-On Android we recommend the Genymotion emulator over the standard emulator --
-we have found it to be more feature complete, faster and easier to use.
-
-- `Install VirtualBox platform package AND VirtualBox Extension Pack <https://www.virtualbox.org/wiki/Downloads>`_
-- `Install Genymotion <https://www.genymotion.com/>`_: the "Basic" version is
-  free version and available under the "Individual" plan section (next to
-  Enterprise).
-- *Optional*: `Install Frappe <https://github.com/niftylettuce/frappe>`_ to
-  quickly reload JS on your device or emulator with a global keyboard shortcut.
+For Android, you should use the emulators provided by `Android Studio <https://developer.android.com/studio/run/emulator.html#runningemulator>`_.
+See `here <https://developer.android.com/studio/run/emulator.html#runningemulator>`_ for how to open the emulator once Android Studio is installed.
 
 Debugging Javascript
 ====================

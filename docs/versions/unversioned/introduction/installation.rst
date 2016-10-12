@@ -41,7 +41,8 @@ Once the simulator is open and you have a project open in XDE, you can press *Op
 Android emulator
 ^^^^^^^^^^^^^^^^
 
-Follow the `Genymotion Installation guide <https://docs.genymotion.com/Content/01_Get_Started/Installation.htm>`_ -- the Individual Basic plan is free and works great with Exponent. Once you've installed Genymotion, create a virtual device - we recommend a Nexus 5, the Android version is up to you. Start up the virtual device when it's ready.
+You should use the emulators provided by `Android Studio <https://developer.android.com/studio/run/emulator.html#runningemulator>`_.
+See `here <https://developer.android.com/studio/run/emulator.html#runningemulator>`_ for how to open the emulator once Android Studio is installed.
 
 Once the emulator is open and you have a project open in XDE, you can press *Open project in Exponent on Android* in XDE and it will install the Exponent client to the emulator and open up your app inside of it.
 
