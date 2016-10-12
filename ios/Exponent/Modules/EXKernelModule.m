@@ -47,6 +47,7 @@ NSString * const kEXKernelJSIsLoadedNotification = @"EXKernelModuleIsLoadedNotif
  */
 - (void)sendEventWithName:(NSString *)eventName body:(id)body
 {
+  // Note that this could be a versioned bridge!
   [self.bridge enqueueJSCall:@"RCTDeviceEventEmitter.emit"
                         args:body ? @[eventName, body] : @[eventName]];
 }

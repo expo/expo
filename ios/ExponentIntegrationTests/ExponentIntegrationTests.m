@@ -28,7 +28,8 @@
   RCTAssert((version.majorVersion == 8 && version.minorVersion >= 3) || version.majorVersion >= 9, @"Tests should be run on iOS 8.3+, found %zd.%zd.%zd", version.majorVersion, version.minorVersion, version.patchVersion);
   
   NSArray<id<RCTBridgeModule>> *(^testModuleProvider)(void) = ^NSArray<id<RCTBridgeModule>> *(void) {
-    return EXKernelModuleProvider(nil);
+    // TODO: get the contents of EXVersionManager::versionedModulesForKernel in here
+    return EXKernelModuleProvider();
   };
   _runner = RCTInitRunnerForApp(@"ExponentTestsApp", testModuleProvider);
 }

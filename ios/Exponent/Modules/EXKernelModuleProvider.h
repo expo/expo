@@ -5,4 +5,4 @@
 /**
  *  Provides the extra native modules required to set up the exponent kernel environment.
  */
-extern __attribute__((visibility("default"))) NSArray<id<RCTBridgeModule>> *(^EXKernelModuleProvider)(NSDictionary *launchOptions);
+extern __attribute__((visibility("default"))) NSArray<id<RCTBridgeModule>> *(^EXKernelModuleProvider)(void);

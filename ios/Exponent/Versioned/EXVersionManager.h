@@ -23,4 +23,11 @@
  */
 - (NSArray *)extraModulesWithParams:(NSDictionary *)params;
 
+/**
+ *  Provides the versioned native modules required to set up the exponent kernel with this version.
+ *  Note: This is not the only source of kernel native modules. Unversioned modules are determined by
+ *  EX_UNVERSIONED(EXKernelModuleProvider)
+ */
+- (NSArray *)versionedModulesForKernelWithParams:(NSDictionary *)params;
+
 @end

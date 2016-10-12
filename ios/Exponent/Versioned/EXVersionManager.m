@@ -236,7 +236,47 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
                                         ]];
   }
   return extraModules;
-};
+}
+
+/**
+ *  Expected params:
+ *    NSDictionary *launchOptions
+ *    NSDictionary *constants
+ *    NSURL *initialUriFromLaunchOptions
+ */
+- (NSArray *)versionedModulesForKernelWithParams:(NSDictionary *)params
+{
+  NSURL *initialKernelUrl;
+  NSDictionary *constants = params[@"constants"];
+  
+  // used by appetize - override the kernel initial url if there's something in NSUserDefaults
+  NSString *launchUrlDefaultsKey = EX_UNVERSIONED(@"EXKernelLaunchUrlDefaultsKey");
+  NSString *kernelInitialUrlDefaultsValue = [[NSUserDefaults standardUserDefaults] stringForKey:launchUrlDefaultsKey];
+  if (kernelInitialUrlDefaultsValue) {
+    initialKernelUrl = [NSURL URLWithString:kernelInitialUrlDefaultsValue];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:launchUrlDefaultsKey];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+  } else {
+    NSURL *initialUriFromLaunchOptions = params[@"initialUriFromLaunchOptions"];
+    initialKernelUrl = initialUriFromLaunchOptions;
+  }
+
+  NSMutableArray *modules = [NSMutableArray arrayWithArray:
+                             @[
+                               [[EXDisabledDevMenu alloc] init],
+                               [[EXLinkingManager alloc] initWithInitialUrl:initialKernelUrl],
+                               [[EXConstants alloc] initWithProperties:constants],
+                               ]];
+  
+#if DEBUG
+  // enable redbox only for debug builds
+#else
+  EXDisabledRedBox *disabledRedBox = [[EXDisabledRedBox alloc] init];
+  [modules addObject:disabledRedBox];
+#endif
+  
+  return modules;
+}
 
 + (NSString *)escapedResourceName:(NSString *)name
 {

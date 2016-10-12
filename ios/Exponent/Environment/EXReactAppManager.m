@@ -128,14 +128,27 @@
 - (NSArray *)extraModulesForBridge:(RCTBridge *)bridge
 {
   if (_isKernel) {
-    // TODO: pass this into versionManager
     static NSString * const EXExceptionHandlerKey = @"EXExceptionHandler";
     EXExceptionHandler *exceptionHandler = [[EXExceptionHandler alloc] initWithBridge:bridge];
     RCTExceptionsManager *exceptionsManager = [[RCTExceptionsManager alloc] initWithDelegate:exceptionHandler];
     objc_setAssociatedObject(exceptionsManager, &EXExceptionHandlerKey, exceptionHandler, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     
-    NSMutableArray *modules = [EXKernelModuleProvider(_launchOptions) mutableCopy];
+    NSMutableArray *modules = [EXKernelModuleProvider() mutableCopy];
     [modules addObject:exceptionsManager];
+    
+    if ([_versionManager respondsToSelector:@selector(versionedModulesForKernelWithParams:)]) {
+      NSMutableDictionary *params = [@{
+                               @"launchOptions": (_launchOptions) ?: @{},
+                               @"constants": @{
+                                   @"deviceId": [EXKernel deviceInstallUUID]
+                                   },
+                               } mutableCopy];
+      NSURL *initialUriFromLaunchOptions = [EXKernel initialUrlFromLaunchOptions:_launchOptions];
+      if (initialUriFromLaunchOptions) {
+        params[@"initialUriFromLaunchOptions"] = initialUriFromLaunchOptions;
+      }
+      [modules addObjectsFromArray:[_versionManager versionedModulesForKernelWithParams:params]];
+    }
     
     return modules;
   } else {
