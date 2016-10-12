@@ -21,7 +21,7 @@
 @interface EXReactAppManager ()
 
 @property (nonatomic, strong) EXReactAppManagerUtils *utils;
-@property (nonatomic, weak) EXFrame *frame;
+@property (nonatomic, weak, readwrite) EXFrame *frame;
 @property (nonatomic, assign) BOOL isKernel;
 @property (nonnull, strong) EXJavaScriptResource *jsResource;
 
@@ -48,7 +48,7 @@
   NSAssert((_delegate != nil), @"Cannot init react app without EXReactAppManagerDelegate");
   [self invalidate];
   [RCTDevLoadingView setEnabled:NO];
-  _utils = [[EXReactAppManagerUtils alloc] initWithFrame:_frame isKernel:_isKernel];
+  _utils = [[EXReactAppManagerUtils alloc] initWithAppManager:self];
   
   if ([_delegate isReadyToLoad]) {
     RCTLogFunction logFunction;
@@ -161,19 +161,8 @@
   if (!_isKernel) {
     [[EXKernel sharedInstance].bridgeRegistry setError:nil forBridge:_reactBridge];
   }
-  
-  NSString *bundleName;
-  if (_isKernel) {
-    bundleName = kEXKernelBundleResourceName;
-  } else {
-    if (_frame.initialProps && [_frame.initialProps[@"shell"] boolValue]) {
-      bundleName = kEXShellBundleResourceName;
-      NSLog(@"EXFrame: Standalone bundle remote url is %@", bridge.bundleURL);
-    } else {
-      bundleName = _frame.manifest[@"id"];
-    }
-  }
-  _jsResource = [[EXJavaScriptResource alloc] initWithBundleName:bundleName remoteUrl:bridge.bundleURL];
+
+  _jsResource = [[EXJavaScriptResource alloc] initWithBundleName:[_utils bundleNameForJSResource] remoteUrl:bridge.bundleURL];
   _jsResource.abiVersion = _utils.validatedVersion;
   
   __weak typeof(self) weakSelf = self;

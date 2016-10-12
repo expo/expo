@@ -34,6 +34,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)reload;
 - (void)invalidate;
 
+@property (nonatomic, weak, readonly) EXFrame *frame;
+@property (nonatomic, readonly) BOOL isKernel;
+
 @property (nonatomic, assign) id<EXReactAppManagerDelegate> delegate;
 @property (nonatomic, strong) UIView * __nullable reactRootView;
 @property (nonatomic, strong) id __nullable reactBridge;
