@@ -5,7 +5,7 @@
 #import "EXFileDownloader.h"
 #import "EXJavaScriptResource.h"
 #import "EXKernel.h"
-#import "EXRootViewController.h"
+#import "EXKernelReactAppManager.h"
 
 #import "RCTBridge.h"
 
@@ -175,7 +175,7 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
 
 - (void)_populateKernelInfoLabel
 {
-  NSURL *kernelUrl = [((EXAppDelegate *)[UIApplication sharedApplication].delegate).rootViewController bundleUrl];
+  NSURL *kernelUrl = [EXKernelReactAppManager kernelBundleUrl];
   _lblKernelInfo.text = (kernelUrl) ? kernelUrl.absoluteString : @"";
 
   NSMutableURLRequest *kernelReq = [NSMutableURLRequest requestWithURL:kernelUrl];
@@ -189,7 +189,7 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
 
 - (void)_populateCacheInfoLabel
 {
-  // the actual logic for downloading the kernel JS lives in EXRootViewController and EXJavaScriptLoader;
+  // the actual logic for downloading the kernel JS lives in EXKernelReactAppManager and EXJavaScriptLoader;
   // we just provide diagnostics on it here
 
   NSURL *dummyUrl = [NSURL URLWithString:@""]; // we're just making this for diagnostic purposes and won't download anything here
