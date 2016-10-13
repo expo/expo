@@ -1,17 +1,13 @@
 ROOT = ../
-IMAGE_NAME = gcr.io/exponentjs/ios-base
-DOCKERFILE = ios/Dockerfile
 
-build:
+build-archive:
 	gtar -C ${ROOT} \
-		--exclude-from=./.dockerignore \
-		-zcf - \
+		-zcf ${OUTPUT} \
 		package.json \
 		template-files \
 		shellAppBase-builds \
 		ios \
 		tools-public \
-		tools | \
-		docker build -t ${IMAGE_NAME}:${IMAGE_TAG} -f ${DOCKERFILE} -
+		tools
 
-.PHONY: build push
+.PHONY: build-archive
