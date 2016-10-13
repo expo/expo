@@ -44,27 +44,27 @@
   return self;
 }
 
-+ (NSString *)versionedString:(NSString *)string withPrefix:(NSString *)versionPrefix
++ (NSString *)versionedString:(NSString *)string withPrefix:(NSString *)symbolPrefix
 {
-  if (!string ||!versionPrefix) {
+  if (!string || !symbolPrefix) {
     return nil;
   }
-  return [NSString stringWithFormat:@"%@%@", versionPrefix, string];
+  return [NSString stringWithFormat:@"%@%@", symbolPrefix, string];
 }
 
-- (NSString *)symbolPrefixForManifest:(NSDictionary * _Nullable)manifest
+- (NSString *)symbolPrefixForSdkVersion:(NSString *)version
 {
-  return [self _versionForManifest:manifest computePrefix:YES];
+  return [[@"ABI" stringByAppendingString:version] stringByReplacingOccurrencesOfString:@"." withString:@"_"];
 }
 
-- (NSString *)versionForManifest:(NSDictionary * _Nullable)manifest
+- (NSString *)availableSdkVersionForManifest: (NSDictionary * _Nullable)manifest
 {
-  return [self _versionForManifest:manifest computePrefix:NO];
+  return [self _versionForManifest:manifest];
 }
 
 #pragma mark - Internal
 
-- (NSString *)_versionForManifest:(NSDictionary * _Nullable)manifest computePrefix: (BOOL)computePrefix
+- (NSString *)_versionForManifest:(NSDictionary * _Nullable)manifest
 {
   if (manifest && manifest[@"sdkVersion"]) {
     NSString *sdkVersion = manifest[@"sdkVersion"];
@@ -80,11 +80,7 @@
             break;
           }
   #endif
-          if (computePrefix) {
-            return [[@"ABI" stringByAppendingString:availableVersion] stringByReplacingOccurrencesOfString:@"." withString:@"_"];
-          } else {
-            return availableVersion;
-          }
+          return availableVersion;
         }
       }
     }

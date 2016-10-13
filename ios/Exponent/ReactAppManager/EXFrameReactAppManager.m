@@ -27,8 +27,8 @@
 
 - (void)computeVersionSymbolPrefix
 {
-  self.versionSymbolPrefix = [[EXVersions sharedInstance] symbolPrefixForManifest:_frame.manifest];
-  self.validatedVersion = [[EXVersions sharedInstance] versionForManifest:_frame.manifest];
+  self.validatedVersion = [[EXVersions sharedInstance] availableSdkVersionForManifest:_frame.manifest];
+  self.versionSymbolPrefix = [[EXVersions sharedInstance] symbolPrefixForSdkVersion:self.validatedVersion];
 }
 
 - (NSString *)bundleNameForJSResource
