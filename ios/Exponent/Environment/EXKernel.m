@@ -9,6 +9,7 @@
 #import "EXKernelBridgeRecord.h"
 #import "EXKernelModule.h"
 #import "EXLinkingManager.h"
+#import "EXManifestResource.h"
 #import "EXRootViewController.h"
 #import "EXShellManager.h"
 #import "EXVersions.h"
@@ -390,6 +391,17 @@ continueUserActivity:(NSUserActivity *)userActivity
       }
     }
   }
+}
+
+- (void)kernelModule:(EXKernelModule *)module didRequestManifestWithUrl:(NSURL *)url originalUrl:(NSURL *)originalUrl success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
+{
+  EXManifestResource *manifestResource = [[EXManifestResource alloc] initWithManifestUrl:url originalUrl:originalUrl];
+  [manifestResource loadResourceWithBehavior:kEXCachedResourceFallBackToCache successBlock:^(NSData * _Nonnull data) {
+    NSString *manifestString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    success(manifestString);
+  } errorBlock:^(NSError * _Nonnull error) {
+    failure(error);
+  }];
 }
 
 #pragma mark - App State

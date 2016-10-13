@@ -54,7 +54,10 @@
 
 - (NSString *)symbolPrefixForSdkVersion:(NSString *)version
 {
-  return [[@"ABI" stringByAppendingString:version] stringByReplacingOccurrencesOfString:@"." withString:@"_"];
+  if (version && version.length) {
+    return [[@"ABI" stringByAppendingString:version] stringByReplacingOccurrencesOfString:@"." withString:@"_"];
+  }
+  return @"";
 }
 
 - (NSString *)availableSdkVersionForManifest: (NSDictionary * _Nullable)manifest

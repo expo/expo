@@ -1,10 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXKernelModule.h"
-#import "EXAppDelegate.h"
-#import "EXKernel.h"
-#import "EXVersions.h"
-#import "EXManifestResource.h"
 #import "RCTEventDispatcher.h"
 
 NSString * const kEXKernelJSIsLoadedNotification = @"EXKernelModuleIsLoadedNotification";
@@ -14,6 +10,7 @@ NSString * const kEXKernelJSIsLoadedNotification = @"EXKernelModuleIsLoadedNotif
 @property (nonatomic, assign) BOOL hasListeners;
 @property (nonatomic, strong) NSMutableDictionary *eventSuccessBlocks;
 @property (nonatomic, strong) NSMutableDictionary *eventFailureBlocks;
+@property (nonatomic, strong) NSArray * _Nonnull sdkVersions;
 
 @end
 
@@ -21,18 +18,19 @@ NSString * const kEXKernelJSIsLoadedNotification = @"EXKernelModuleIsLoadedNotif
 
 + (NSString *)moduleName { return @"ExponentKernel"; }
 
-- (instancetype)init
+- (instancetype)initWithVersions:(NSArray *)supportedSdkVersions
 {
   if (self = [super init]) {
     _eventSuccessBlocks = [NSMutableDictionary dictionary];
     _eventFailureBlocks = [NSMutableDictionary dictionary];
+    _sdkVersions = supportedSdkVersions;
   }
   return self;
 }
 
 - (NSDictionary *)constantsToExport
 {
-  return @{ @"sdkVersions": [EXVersions sharedInstance].versions[@"sdkVersions"] };
+  return @{ @"sdkVersions": _sdkVersions };
 }
 
 #pragma mark - RCTEventEmitter methods
@@ -87,7 +85,7 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL
                                                                  }];
     resolve(@YES);
   } else {
-    NSError *err = [NSError errorWithDomain:kEXKernelErrorDomain code:-1 userInfo:@{ NSLocalizedDescriptionKey: @"Cannot open a nil url" }];
+    NSError *err = [NSError errorWithDomain:EX_UNVERSIONED(@"EXKernelErrorDomain") code:-1 userInfo:@{ NSLocalizedDescriptionKey: @"Cannot open a nil url" }];
     reject(@"E_INVALID_URL", err.localizedDescription, err);
   }
 }
@@ -125,13 +123,13 @@ RCT_REMAP_METHOD(getManifestAsync,
                  resolve:(RCTPromiseResolveBlock)resolve
                  reject:(RCTPromiseRejectBlock)reject)
 {
-  EXManifestResource *manifestResource = [[EXManifestResource alloc] initWithManifestUrl:url originalUrl:originalUrl];
-  [manifestResource loadResourceWithBehavior:kEXCachedResourceFallBackToCache successBlock:^(NSData * _Nonnull data) {
-    NSString *manifestString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    resolve(manifestString);
-  } errorBlock:^(NSError * _Nonnull error) {
-    reject([NSString stringWithFormat:@"%d", error.code], error.localizedDescription, error);
-  }];
+  if (_delegate) {
+    [_delegate kernelModule:self didRequestManifestWithUrl:url originalUrl:originalUrl success:^(NSString *manifestString) {
+      resolve(manifestString);
+    } failure:^(NSError *error) {
+      reject([NSString stringWithFormat:@"%d", error.code], error.localizedDescription, error);
+    }];
+  }
 }
 
 RCT_REMAP_METHOD(onEventSuccess,

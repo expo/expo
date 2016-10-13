@@ -6,10 +6,10 @@
 #import "EXDevMenuViewController.h"
 #import "EXExceptionHandler.h"
 #import "EXKernel.h"
-#import "EXKernelModuleProvider.h"
 #import "EXLog.h"
 #import "EXShellManager.h"
 #import "EXVersionManager.h"
+#import "EXVersions.h"
 
 @import ObjectiveC;
 
@@ -46,8 +46,8 @@
 - (void)computeVersionSymbolPrefix
 {
   // kernel is always unversioned at the moment
-  self.versionSymbolPrefix = @"";
   self.validatedVersion = @"";
+  self.versionSymbolPrefix = [[EXVersions sharedInstance] symbolPrefixForSdkVersion:self.validatedVersion];
 }
 
 - (NSString *)bundleNameForJSResource
@@ -119,8 +119,7 @@
   RCTExceptionsManager *exceptionsManager = [[RCTExceptionsManager alloc] initWithDelegate:exceptionHandler];
   objc_setAssociatedObject(exceptionsManager, &EXExceptionHandlerKey, exceptionHandler, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
   
-  NSMutableArray *modules = [EXKernelModuleProvider() mutableCopy];
-  [modules addObject:exceptionsManager];
+  NSMutableArray *modules = [@[exceptionsManager] mutableCopy];
   
   if ([self.versionManager respondsToSelector:@selector(versionedModulesForKernelWithParams:)]) {
     NSMutableDictionary *params = [@{
@@ -128,6 +127,8 @@
                                      @"constants": @{
                                          @"deviceId": [EXKernel deviceInstallUUID]
                                          },
+                                     @"kernel": [EXKernel sharedInstance],
+                                     @"supportedSdkVersions": [EXVersions sharedInstance].versions[@"sdkVersions"],
                                      } mutableCopy];
     NSURL *initialUriFromLaunchOptions = [EXKernel initialUrlFromLaunchOptions:_launchOptions];
     if (initialUriFromLaunchOptions) {
