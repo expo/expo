@@ -11,7 +11,12 @@
 #import "EXVersionManager.h"
 #import "EXVersions.h"
 
-@import ObjectiveC;
+@interface EXKernelReactAppManager ()
+
+// we retain this because RCTExceptionsManager won't retain it
+@property (nonatomic, strong) EXExceptionHandler *exceptionHandler;
+
+@end
 
 @implementation EXKernelReactAppManager
 
@@ -103,6 +108,7 @@
 - (void)unregisterBridge
 {
   [[EXKernel sharedInstance].bridgeRegistry unregisterKernelBridge];
+  _exceptionHandler = nil;
 }
 
 #pragma mark - RCTBridgeDelegate
@@ -114,12 +120,8 @@
 
 - (NSArray *)extraModulesForBridge:(RCTBridge *)bridge
 {
-  static NSString * const EXExceptionHandlerKey = @"EXExceptionHandler";
-  EXExceptionHandler *exceptionHandler = [[EXExceptionHandler alloc] initWithBridge:self.reactBridge];
-  RCTExceptionsManager *exceptionsManager = [[RCTExceptionsManager alloc] initWithDelegate:exceptionHandler];
-  objc_setAssociatedObject(exceptionsManager, &EXExceptionHandlerKey, exceptionHandler, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-  
-  NSMutableArray *modules = [@[exceptionsManager] mutableCopy];
+  _exceptionHandler = [[EXExceptionHandler alloc] initWithBridge:self.reactBridge];
+  NSMutableArray *modules = [NSMutableArray array];
   
   if ([self.versionManager respondsToSelector:@selector(versionedModulesForKernelWithParams:)]) {
     NSMutableDictionary *params = [@{
@@ -129,6 +131,7 @@
                                          },
                                      @"kernel": [EXKernel sharedInstance],
                                      @"supportedSdkVersions": [EXVersions sharedInstance].versions[@"sdkVersions"],
+                                     @"exceptionsManagerDelegate": _exceptionHandler,
                                      } mutableCopy];
     NSURL *initialUriFromLaunchOptions = [EXKernel initialUrlFromLaunchOptions:_launchOptions];
     if (initialUriFromLaunchOptions) {

@@ -246,6 +246,7 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
  *    NSDictionary *constants
  *    NSURL *initialUriFromLaunchOptions
  *    NSArray *supportedSdkVersions
+ *    id exceptionsManagerDelegate
  */
 - (NSArray *)versionedModulesForKernelWithParams:(NSDictionary *)params
 {
@@ -273,6 +274,12 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
   EXKernelModule *kernel = [[EXKernelModule alloc] initWithVersions:params[@"supportedSdkVersions"]];
   kernel.delegate = params[@"kernel"];
   [modules addObject:kernel];
+  
+  id exceptionsManagerDelegate = params[@"exceptionsManagerDelegate"];
+  if (exceptionsManagerDelegate) {
+    RCTExceptionsManager *exceptionsManager = [[RCTExceptionsManager alloc] initWithDelegate:exceptionsManagerDelegate];
+    [modules addObject:exceptionsManager];
+  }
   
 #if DEBUG
   // enable redbox only for debug builds
