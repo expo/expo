@@ -1,9 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXKernelModule.h"
-#import "RCTEventDispatcher.h"
+#import "ABI10_0_0EXKernelModule.h"
+#import "ABI10_0_0RCTEventDispatcher.h"
 
-@interface EXKernelModule ()
+@interface ABI10_0_0EXKernelModule ()
 
 @property (nonatomic, assign) BOOL hasListeners;
 @property (nonatomic, strong) NSMutableDictionary *eventSuccessBlocks;
@@ -12,7 +12,7 @@
 
 @end
 
-@implementation EXKernelModule
+@implementation ABI10_0_0EXKernelModule
 
 + (NSString *)moduleName { return @"ExponentKernel"; }
 
@@ -31,7 +31,7 @@
   return @{ @"sdkVersions": _sdkVersions };
 }
 
-#pragma mark - RCTEventEmitter methods
+#pragma mark - ABI10_0_0RCTEventEmitter methods
 
 - (NSArray<NSString *> *)supportedEvents
 {
@@ -70,12 +70,12 @@
  *  in other words, we just take your word for it and never hand it off to iOS.
  *  Used by the home screen URL bar.
  */
-RCT_EXPORT_METHOD(openURL:(NSURL *)URL
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(__unused RCTPromiseRejectBlock)reject)
+ABI10_0_0RCT_EXPORT_METHOD(openURL:(NSURL *)URL
+                  resolve:(ABI10_0_0RCTPromiseResolveBlock)resolve
+                  reject:(__unused ABI10_0_0RCTPromiseRejectBlock)reject)
 {
   if (URL) {
-    [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXKernelOpenUrlNotification")
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"EXKernelOpenUrlNotification"
                                                         object:nil
                                                       userInfo:@{
                                                                  @"bridge": self.bridge,
@@ -83,12 +83,12 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL
                                                                  }];
     resolve(@YES);
   } else {
-    NSError *err = [NSError errorWithDomain:EX_UNVERSIONED(@"EXKernelErrorDomain") code:-1 userInfo:@{ NSLocalizedDescriptionKey: @"Cannot open a nil url" }];
+    NSError *err = [NSError errorWithDomain:@"EXKernelErrorDomain" code:-1 userInfo:@{ NSLocalizedDescriptionKey: @"Cannot open a nil url" }];
     reject(@"E_INVALID_URL", err.localizedDescription, err);
   }
 }
 
-RCT_EXPORT_METHOD(addDevMenu)
+ABI10_0_0RCT_EXPORT_METHOD(addDevMenu)
 {
   __weak typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
@@ -98,7 +98,7 @@ RCT_EXPORT_METHOD(addDevMenu)
   });
 }
 
-RCT_REMAP_METHOD(routeDidForeground,
+ABI10_0_0RCT_REMAP_METHOD(routeDidForeground,
                  routeDidForegroundWithType:(NSUInteger)routeType
                  params:(NSDictionary *)params)
 {
@@ -110,16 +110,16 @@ RCT_REMAP_METHOD(routeDidForeground,
   });
 }
 
-RCT_EXPORT_METHOD(onLoaded)
+ABI10_0_0RCT_EXPORT_METHOD(onLoaded)
 {
-  [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXKernelJSIsLoadedNotification") object:self];
+  [[NSNotificationCenter defaultCenter] postNotificationName:@"EXKernelJSIsLoadedNotification" object:self];
 }
 
-RCT_REMAP_METHOD(getManifestAsync,
+ABI10_0_0RCT_REMAP_METHOD(getManifestAsync,
                  getManifestWithUrl:(NSURL *)url
                  originalUrl:(NSURL *)originalUrl
-                 resolve:(RCTPromiseResolveBlock)resolve
-                 reject:(RCTPromiseRejectBlock)reject)
+                 resolve:(ABI10_0_0RCTPromiseResolveBlock)resolve
+                 reject:(ABI10_0_0RCTPromiseRejectBlock)reject)
 {
   if (_delegate) {
     [_delegate kernelModule:self didRequestManifestWithUrl:url originalUrl:originalUrl success:^(NSString *manifestString) {
@@ -130,7 +130,7 @@ RCT_REMAP_METHOD(getManifestAsync,
   }
 }
 
-RCT_REMAP_METHOD(onEventSuccess,
+ABI10_0_0RCT_REMAP_METHOD(onEventSuccess,
                  eventId:(NSString *)eventId
                  body:(NSDictionary *)body)
 {
@@ -142,7 +142,7 @@ RCT_REMAP_METHOD(onEventSuccess,
   }
 }
 
-RCT_REMAP_METHOD(onEventFailure,
+ABI10_0_0RCT_REMAP_METHOD(onEventFailure,
                  eventId:(NSString *)eventId
                  message:(NSString *)message)
 {

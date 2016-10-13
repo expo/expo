@@ -7,6 +7,7 @@
 #import "ABI10_0_0EXDisabledRedBox.h"
 #import "ABI10_0_0EXFileSystem.h"
 #import "ABI10_0_0EXFrameExceptionsManager.h"
+#import "ABI10_0_0EXKernelModule.h"
 #import "ABI10_0_0EXLinkingManager.h"
 #import "ABI10_0_0EXNotifications.h"
 #import "ABI10_0_0EXVersionManager.h"
@@ -236,7 +237,59 @@ void ABI10_0_0EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
                                         ]];
   }
   return extraModules;
-};
+}
+
+/**
+ *  Expected params:
+ *    EXKernel *kernel
+ *    NSDictionary *launchOptions
+ *    NSDictionary *constants
+ *    NSURL *initialUriFromLaunchOptions
+ *    NSArray *supportedSdkVersions
+ *    id exceptionsManagerDelegate
+ */
+- (NSArray *)versionedModulesForKernelWithParams:(NSDictionary *)params
+{
+  NSURL *initialKernelUrl;
+  NSDictionary *constants = params[@"constants"];
+  
+  // used by appetize - override the kernel initial url if there's something in NSUserDefaults
+  NSString *launchUrlDefaultsKey = @"EXKernelLaunchUrlDefaultsKey";
+  NSString *kernelInitialUrlDefaultsValue = [[NSUserDefaults standardUserDefaults] stringForKey:launchUrlDefaultsKey];
+  if (kernelInitialUrlDefaultsValue) {
+    initialKernelUrl = [NSURL URLWithString:kernelInitialUrlDefaultsValue];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:launchUrlDefaultsKey];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+  } else {
+    NSURL *initialUriFromLaunchOptions = params[@"initialUriFromLaunchOptions"];
+    initialKernelUrl = initialUriFromLaunchOptions;
+  }
+  
+  NSMutableArray *modules = [NSMutableArray arrayWithArray:
+                             @[
+                               [[ABI10_0_0EXDisabledDevMenu alloc] init],
+                               [[ABI10_0_0EXLinkingManager alloc] initWithInitialUrl:initialKernelUrl],
+                               [[ABI10_0_0EXConstants alloc] initWithProperties:constants],
+                               ]];
+  ABI10_0_0EXKernelModule *kernel = [[ABI10_0_0EXKernelModule alloc] initWithVersions:params[@"supportedSdkVersions"]];
+  kernel.delegate = params[@"kernel"];
+  [modules addObject:kernel];
+  
+  id exceptionsManagerDelegate = params[@"exceptionsManagerDelegate"];
+  if (exceptionsManagerDelegate) {
+    ABI10_0_0RCTExceptionsManager *exceptionsManager = [[ABI10_0_0RCTExceptionsManager alloc] initWithDelegate:exceptionsManagerDelegate];
+    [modules addObject:exceptionsManager];
+  }
+  
+#if DEBUG
+  // enable redbox only for debug builds
+#else
+  ABI10_0_0EXDisabledRedBox *disabledRedBox = [[ABI10_0_0EXDisabledRedBox alloc] init];
+  [modules addObject:disabledRedBox];
+#endif
+  
+  return modules;
+}
 
 + (NSString *)escapedResourceName:(NSString *)name
 {

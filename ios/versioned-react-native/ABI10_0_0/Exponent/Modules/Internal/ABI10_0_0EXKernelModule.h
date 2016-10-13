@@ -1,14 +1,14 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "RCTEventEmitter.h"
+#import "ABI10_0_0RCTEventEmitter.h"
 
-@class EXKernelModule;
+@class ABI10_0_0EXKernelModule;
 
-@protocol EXKernelModuleDelegate <NSObject>
+@protocol ABI10_0_0EXKernelModuleDelegate <NSObject>
 
-- (void)kernelModuleDidSelectDevMenu: (EXKernelModule *)module;
-- (void)kernelModule: (EXKernelModule *)module taskDidForegroundWithType: (NSInteger)type params: (NSDictionary *)params;
-- (void)kernelModule:(EXKernelModule *)module
+- (void)kernelModuleDidSelectDevMenu: (ABI10_0_0EXKernelModule *)module;
+- (void)kernelModule: (ABI10_0_0EXKernelModule *)module taskDidForegroundWithType: (NSInteger)type params: (NSDictionary *)params;
+- (void)kernelModule:(ABI10_0_0EXKernelModule *)module
 didRequestManifestWithUrl:(NSURL *)url
          originalUrl:(NSURL *)originalUrl
              success:(void (^)(NSString *manifestString))success
@@ -16,9 +16,9 @@ didRequestManifestWithUrl:(NSURL *)url
 
 @end
 
-@interface EXKernelModule : RCTEventEmitter
+@interface ABI10_0_0EXKernelModule : ABI10_0_0RCTEventEmitter
 
-@property (nonatomic, assign) id<EXKernelModuleDelegate> delegate;
+@property (nonatomic, assign) id<ABI10_0_0EXKernelModuleDelegate> delegate;
 
 - (instancetype)initWithVersions: (NSArray *)supportedSdkVersions;
 - (void)dispatchJSEvent: (NSString *)eventName
