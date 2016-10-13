@@ -7,6 +7,7 @@
 #import "EXDisabledRedBox.h"
 #import "EXFileSystem.h"
 #import "EXFrameExceptionsManager.h"
+#import "EXKernelModule.h"
 #import "EXLinkingManager.h"
 #import "EXNotifications.h"
 #import "EXVersionManager.h"
@@ -240,9 +241,11 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
 
 /**
  *  Expected params:
+ *    EXKernel *kernel
  *    NSDictionary *launchOptions
  *    NSDictionary *constants
  *    NSURL *initialUriFromLaunchOptions
+ *    NSArray *supportedSdkVersions
  */
 - (NSArray *)versionedModulesForKernelWithParams:(NSDictionary *)params
 {
@@ -267,6 +270,9 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
                                [[EXLinkingManager alloc] initWithInitialUrl:initialKernelUrl],
                                [[EXConstants alloc] initWithProperties:constants],
                                ]];
+  EXKernelModule *kernel = [[EXKernelModule alloc] initWithVersions:params[@"supportedSdkVersions"]];
+  kernel.delegate = params[@"kernel"];
+  [modules addObject:kernel];
   
 #if DEBUG
   // enable redbox only for debug builds
