@@ -34,12 +34,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXFrame
 
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (instancetype)init
 {
-  if (self = [super initWithFrame:CGRectZero]) {
+  if (self = [super init]) {
     _appManager = [[EXFrameReactAppManager alloc] initWithFrame:self];
     _appManager.delegate = self;
   }

@@ -13,7 +13,7 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  return [[EXFrame alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
+  return [[EXFrame alloc] init];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(initialUri, NSURL);
