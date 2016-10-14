@@ -19,7 +19,7 @@
     "co": "^4.6.0",
     "gulp": "gulpjs/gulp#4.0",
     "gulp-shell": "^0.5.2",
-    "instapromise": "^2.0.2",
+    "instapromise": "latest",
     "lodash": "^4.13.1",
     "minimist": "^1.2.0",
     "ngrok": "^2.2.1",
