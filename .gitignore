@@ -50,6 +50,7 @@ npm-debug.log
 # Dynamic Macros
 /ios/Exponent/Supporting/Generated/EXDynamicMacros.h
 /android/app/src/main/java/host/exp/exponent/generated/ExponentBuildConstants.java
+/android/exponentview/src/main/java/host/exp/exponent/generated/ExponentBuildConstants.java
 /android/app/src/androidTest/java/host/exp/exponent/generated/TestBuildConstants.java
 .kernel-ngrok-url
 
