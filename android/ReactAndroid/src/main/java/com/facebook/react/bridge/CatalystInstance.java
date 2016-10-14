@@ -75,4 +75,6 @@ public interface CatalystInstance extends MemoryPressureListener {
 
   @VisibleForTesting
   void setGlobalVariable(String propName, String jsonValue);
+
+  long getJavaScriptContext();
 }
