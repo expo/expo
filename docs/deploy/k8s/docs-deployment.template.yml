@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: ${APP_NAME}
+  name: docs
   namespace: ${KUBE_NAMESPACE}
 spec:
   replicas: 2
@@ -15,17 +15,18 @@ spec:
   template:
     metadata:
       labels:
-        app: ${APP_NAME}
+        app: docs
       annotations:
         commit: ${COMMIT_HASH}
     spec:
+      restartPolicy: Always
       containers:
-      - name: ${APP_NAME}
-        image: ${DOCKER_IMAGE}:${DOCKER_TAG}
-        resources:
-          requests:
-            cpu: 100m
-            memory: 100Mi
-        ports:
-        - containerPort: 80
-          name: http
+        - name: ${APP_NAME}
+          image: ${DOCKER_IMAGE}:${DOCKER_TAG}
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+          ports:
+          - containerPort: 80
+            name: http

@@ -18,7 +18,7 @@ const stream = fs.createWriteStream(filePath);
 const preamble = `
 \`\`exp.json\`\` is your go-to place for configuring parts of your app that don't belong in code. The following is a full list of properties available to you.\
 \n\n
-`
+`;
 
 // Open and write!
 stream.once('open', function(fd) {
@@ -62,7 +62,7 @@ function propertyDescription(prop, depthSpacing) {
   }
 
   if (prop.description) {
-    result += prop.description + '\n';
+    result += `${prop.description}\n`;
   }
 
   if (prop.validOptions) {
