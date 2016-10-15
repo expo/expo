@@ -32,7 +32,4 @@ version/%:
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 	@echo "The start page for version '$(@F)' is $(BUILDDIR)/html/versions/$(@F)/index.html."
 
-deploy:
-	DOCS_VERSION=$(DEFAULT_VERSION) ./scripts/deploy.sh
-
 all: $(subst versions/,version/,$(sort $(wildcard versions/*)))
