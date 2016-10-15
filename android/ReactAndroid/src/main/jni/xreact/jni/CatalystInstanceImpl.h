@@ -55,7 +55,7 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   local_ref<JExecutorToken::JavaPart> getMainExecutorToken();
   void setGlobalVariable(std::string propName,
                          std::string&& jsonValue);
-  jlong getJavaScriptContext(void);
+  jlong getJavaScriptContext();
   void handleMemoryPressureUiHidden();
   void handleMemoryPressureModerate();
   void handleMemoryPressureCritical();

@@ -220,7 +220,7 @@ void CatalystInstanceImpl::setGlobalVariable(std::string propName,
                                folly::make_unique<JSBigStdString>(std::move(jsonValue)));
 }
 
-jlong CatalystInstanceImpl::getJavaScriptContext(void) {
+jlong CatalystInstanceImpl::getJavaScriptContext() {
   return (jlong) (intptr_t) instance_->getJavaScriptContext();
 }
 
