@@ -111,7 +111,7 @@ void Instance::setGlobalVariable(std::string propName,
   nativeToJsBridge_->setGlobalVariable(std::move(propName), std::move(jsonValue));
 }
 
-void *Instance::getJavaScriptContext(void) {
+void *Instance::getJavaScriptContext() {
   return nativeToJsBridge_->getJavaScriptContext();
 }
 

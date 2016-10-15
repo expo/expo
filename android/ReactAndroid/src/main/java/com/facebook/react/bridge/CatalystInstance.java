@@ -76,5 +76,8 @@ public interface CatalystInstance extends MemoryPressureListener {
   @VisibleForTesting
   void setGlobalVariable(String propName, String jsonValue);
 
+  /**
+   * Get the C pointer (as a long) to the JavaScriptCore context associated with this instance.
+   */
   long getJavaScriptContext();
 }
