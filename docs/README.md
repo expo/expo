@@ -38,13 +38,10 @@ incorporate them!
 ### As an Exponent developer
 
 - Make your changes in `universe/docs` and commit them. Our `shipit` bot
-synchronizes the changes to the public `exponent-docs` repository. To deploy,
-you will need Docker for Mac + GCloud tools. Just run `make deploy` from
-`universe/docs`.
-
-### Manually restart docs pod (for some reason?)
-
-- Run `node scripts/restart-docs-pod.js`
+synchronizes the changes to the public `exponent-docs` repository. Changes will
+automatically be deployed to https://docs.getexponent.com on deploy. To change
+the default version, update the version key in `docs/package.json` (the
+deploy script will respect this value).
 
 ### Testing changes locally
 
