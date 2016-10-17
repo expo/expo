@@ -120,9 +120,16 @@ Substitute ``./pathToYourBabelRelayPlugin`` with the path to your Relay plugin.
 How do I get my existing React Native project running with Exponent?
 --------------------------------------------------------------------
 
-Install the command line tool `exp` with `npm install exp@next -g`, then `cd`
-into your project directory and run `exp convert` and we will do anything
-that we can do automatically for you and provide followup instructions for
-steps you will have to perform manually. If you have similar native module
-dependencies to what is exposed through the Exponent SDK, it shouldn't
-take more than a few minutes (not including `npm install` time).
+We provide a conversion tool for this:
+
+- Make sure you have the Exponent command line utility: ``npm install -g exp``
+- From your project directory, run ``exp convert``
+
+We will do anything that we can do to convert your project automatically, and we'll
+provide followup instructions for steps you will have to perform manually.
+
+Note that the results of this tool might vary widely depending on what your project
+contains. If you have similar native module dependencies to what is exposed through
+the Exponent SDK, this process shouldn't take more than a few minutes (not including
+``npm install`` time). Please feel free to ask us questions if you run into any
+issues.
