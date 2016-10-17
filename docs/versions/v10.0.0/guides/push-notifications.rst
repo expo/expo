@@ -73,7 +73,13 @@ screen that the notification refers to).
   :width: 100%
   :alt: Diagram explaining sending a push from your server to device
 
-  Push notifications have to come from somewhere, and that somewhere is your server, probably (you could write a command line tool to send them if you wanted, it's all the same). When you're ready to send a push notification, grab the Exponent push token off of the user record and send it over to the Exponent API using a plain old HTTP POST request. We've taken care of wrapping that for you in with `exponent-server-sdk-ruby <https://github.com/exponentjs/exponent-server-sdk-ruby>`_ and `exponent-server-sdk-python <https://github.com/exponentjs/exponent-server-sdk-python>`_, check out the source if you would like to implement it in another language. For the sake of demonstration, let's look at our `simple-rails-push-server-example <https://github.com/exponentjs/simple-rails-push-server-example>`_.
+  Push notifications have to come from somewhere, and that somewhere is your server, probably (you could write a command line tool to send them if you wanted, it's all the same). When you're ready to send a push notification, grab the Exponent push token off of the user record and send it over to the Exponent API using a plain old HTTP POST request. We've taken care of wrapping that for you in a few languages:
+
+  - `exponent-server-sdk-ruby <https://github.com/exponentjs/exponent-server-sdk-ruby>`_
+  - `exponent-server-sdk-python <https://github.com/exponentjs/exponent-server-sdk-python>`_
+  - `exponent-server-sdk-node <https://github.com/exponentjs/exponent-server-sdk-node>`_
+
+  Check out the source if you would like to implement it in another language. For the sake of demonstration, let's look at our `simple-rails-push-server-example <https://github.com/exponentjs/simple-rails-push-server-example>`_.
 
 .. code-block:: ruby
 
