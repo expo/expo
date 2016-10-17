@@ -67,6 +67,9 @@ And so we have the ``Permissions`` module.
 
    The permission type for push notifications.
 
+   .. epigraph::
+      **Note:** On iOS, this does not disambiguate ``undetermined`` from ``denied`` and so will only ever return ``granted`` or ``undetermined``. This is due to the way the underlying native API is implemented.
+
 .. attribute:: Exponent.Permissions.LOCATION
 
    The permission type for location access.
