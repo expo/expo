@@ -2,7 +2,6 @@
 
 #import "EXFrame.h"
 
-#import "EXAnalytics.h"
 #import "EXKernel.h"
 #import "EXAppLoadingManager.h"
 
@@ -19,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXFrameReactAppManagerWithNoWarningsHack
 
 - (instancetype)initWithEXFrame:(id)frame;
+- (void)logKernelAnalyticsEventWithParams:(NSDictionary *)params;
 @property (nonatomic, strong) UIView * __nullable reactRootView;
 @property (nonatomic, strong) id __nullable reactBridge;
 
@@ -137,7 +137,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 - (void)reload
 {
   if ([self validateProps:@[ @"manifest", @"source" ]]) {
-    [[EXAnalytics sharedInstance] logEvent:@"RELOAD_EXPERIENCE" manifestUrl:_source eventProperties:nil];
+    [_appManager logKernelAnalyticsEventWithParams:@{
+                                                     @"eventIdentifier": @"RELOAD_EXPERIENCE",
+                                                     @"manifestUrl": _source,
+                                                     }];
     [_appManager reload];
   }
 }
@@ -147,7 +150,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
   EXAssertMainThread();
   if (_needsReload) {
     if (_sourceSet && _source) {
-      [[EXAnalytics sharedInstance] logEvent:@"LOAD_EXPERIENCE" manifestUrl:_source eventProperties:nil];
+      [_appManager logKernelAnalyticsEventWithParams:@{
+                                                       @"eventIdentifier": @"LOAD_EXPERIENCE",
+                                                       @"manifestUrl": _source,
+                                                       }];
     }
     _sourceSet = NO;
     _needsReload = NO;

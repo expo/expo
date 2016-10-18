@@ -1,5 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+#import "EXAnalytics.h"
 #import "EXCachedResource.h"
 #import "EXFrame.h"
 #import "EXFrameReactAppManager.h"
@@ -143,6 +144,17 @@
     return (isDeployedFromTool);
   }
   return false;
+}
+
+#pragma mark - Unversioned utilities for EXFrame
+
+- (void)logKernelAnalyticsEventWithParams:(NSDictionary *)params
+{
+  NSString *eventId = params[@"eventIdentifier"];
+  NSURL *manifestUrl = params[@"manifestUrl"];
+  NSDictionary *eventProperties = params[@"eventProperties"];
+
+  [[EXAnalytics sharedInstance] logEvent:eventId manifestUrl:manifestUrl eventProperties:eventProperties];
 }
 
 @end
