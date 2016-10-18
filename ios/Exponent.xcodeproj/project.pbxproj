@@ -114,6 +114,8 @@
 		B55FDEFA1C7FE1310020AA8F /* EXRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B55FDEF91C7FE1310020AA8F /* EXRootViewController.m */; };
 		B55FDEFD1C800D170020AA8F /* EXErrorView.m in Sources */ = {isa = PBXBuildFile; fileRef = B55FDEFC1C800D170020AA8F /* EXErrorView.m */; };
 		B5657E521CFE1309006EF8E1 /* LaunchScreenShell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B5657E501CFE1309006EF8E1 /* LaunchScreenShell.xib */; };
+		B5678C5F1DB6D65B00380A6E /* EXFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = B5678C5C1DB6D65B00380A6E /* EXFrame.m */; };
+		B5678C601DB6D65B00380A6E /* EXFrameManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5678C5E1DB6D65B00380A6E /* EXFrameManager.m */; };
 		B56FACA21D4AB279009FC106 /* EXAppState.m in Sources */ = {isa = PBXBuildFile; fileRef = B56FACA11D4AB279009FC106 /* EXAppState.m */; };
 		B56FACAD1D4C0266009FC106 /* EXFingerprint.m in Sources */ = {isa = PBXBuildFile; fileRef = B56FACAC1D4C0266009FC106 /* EXFingerprint.m */; };
 		B575EE9A1D53E0AB00DCABBC /* EXCachedResource.m in Sources */ = {isa = PBXBuildFile; fileRef = B575EE991D53E0AB00DCABBC /* EXCachedResource.m */; };
@@ -125,8 +127,6 @@
 		B5844C3B1D482D710015C683 /* EXRemoteNotificationRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = B5844C3A1D482D710015C683 /* EXRemoteNotificationRequester.m */; };
 		B5844C3F1D482EA40015C683 /* EXLocationRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = B5844C3E1D482EA40015C683 /* EXLocationRequester.m */; };
 		B587F1E01D53DEB70071715C /* EXFileDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = B587F1DF1D53DEB70071715C /* EXFileDownloader.m */; };
-		B5884A7B1C7FD2E700F01BE4 /* EXFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = B5884A731C7FD2E700F01BE4 /* EXFrame.m */; };
-		B5884A7D1C7FD2E700F01BE4 /* EXFrameManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5884A771C7FD2E700F01BE4 /* EXFrameManager.m */; };
 		B597EF1E1CD98654004A48AD /* EXLog.m in Sources */ = {isa = PBXBuildFile; fileRef = B597EF1D1CD98654004A48AD /* EXLog.m */; };
 		B5A358621C7E6C4300D1BE67 /* EXAnalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A358611C7E6C4300D1BE67 /* EXAnalytics.m */; };
 		B5C0CD351DA57DBA003B8537 /* EXViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5C0CD341DA57DBA003B8537 /* EXViewController.m */; };
@@ -380,6 +380,10 @@
 		B55FDEFB1C800D170020AA8F /* EXErrorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXErrorView.h; sourceTree = "<group>"; };
 		B55FDEFC1C800D170020AA8F /* EXErrorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXErrorView.m; sourceTree = "<group>"; };
 		B5657E511CFE1309006EF8E1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreenShell.xib; sourceTree = "<group>"; };
+		B5678C5B1DB6D65B00380A6E /* EXFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFrame.h; sourceTree = "<group>"; };
+		B5678C5C1DB6D65B00380A6E /* EXFrame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFrame.m; sourceTree = "<group>"; };
+		B5678C5D1DB6D65B00380A6E /* EXFrameManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFrameManager.h; sourceTree = "<group>"; };
+		B5678C5E1DB6D65B00380A6E /* EXFrameManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFrameManager.m; sourceTree = "<group>"; };
 		B56FACA01D4AB279009FC106 /* EXAppState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAppState.h; sourceTree = "<group>"; };
 		B56FACA11D4AB279009FC106 /* EXAppState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppState.m; sourceTree = "<group>"; };
 		B56FACAB1D4C0266009FC106 /* EXFingerprint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFingerprint.h; sourceTree = "<group>"; };
@@ -401,10 +405,6 @@
 		B5844C3E1D482EA40015C683 /* EXLocationRequester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXLocationRequester.m; sourceTree = "<group>"; };
 		B587F1DE1D53DEB70071715C /* EXFileDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFileDownloader.h; sourceTree = "<group>"; };
 		B587F1DF1D53DEB70071715C /* EXFileDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFileDownloader.m; sourceTree = "<group>"; };
-		B5884A721C7FD2E700F01BE4 /* EXFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFrame.h; sourceTree = "<group>"; };
-		B5884A731C7FD2E700F01BE4 /* EXFrame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFrame.m; sourceTree = "<group>"; };
-		B5884A761C7FD2E700F01BE4 /* EXFrameManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFrameManager.h; sourceTree = "<group>"; };
-		B5884A771C7FD2E700F01BE4 /* EXFrameManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFrameManager.m; sourceTree = "<group>"; };
 		B597EF1C1CD98654004A48AD /* EXLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXLog.h; sourceTree = "<group>"; };
 		B597EF1D1CD98654004A48AD /* EXLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXLog.m; sourceTree = "<group>"; };
 		B5A358601C7E6C4300D1BE67 /* EXAnalytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAnalytics.h; sourceTree = "<group>"; };
@@ -601,7 +601,6 @@
 				B509BCB51C6A88EC00A67CBB /* Environment */,
 				B55FDEDE1C7FDA560020AA8F /* Errors */,
 				B5C0CD321DA57D9A003B8537 /* ExponentViewController */,
-				B5884A6F1C7FD2E700F01BE4 /* Frame */,
 				B509BCBC1C6A88EC00A67CBB /* Modules */,
 				B5F12C901DAEDC980080ECA6 /* ReactAppManager */,
 				B5E49B521D1346FA00AA6436 /* Supporting */,
@@ -747,6 +746,7 @@
 			isa = PBXGroup;
 			children = (
 				A1F37F661CEFD6B2001E9EFC /* EXDisabledDevMenu */,
+				B5678C5A1DB6D65B00380A6E /* Frame */,
 				A1158D311D4C4AA400286352 /* EXAppLoadingManager.h */,
 				A1158D301D4C4AA400286352 /* EXAppLoadingManager.m */,
 				B56FACA01D4AB279009FC106 /* EXAppState.h */,
@@ -848,6 +848,17 @@
 			path = DevMenu;
 			sourceTree = "<group>";
 		};
+		B5678C5A1DB6D65B00380A6E /* Frame */ = {
+			isa = PBXGroup;
+			children = (
+				B5678C5B1DB6D65B00380A6E /* EXFrame.h */,
+				B5678C5C1DB6D65B00380A6E /* EXFrame.m */,
+				B5678C5D1DB6D65B00380A6E /* EXFrameManager.h */,
+				B5678C5E1DB6D65B00380A6E /* EXFrameManager.m */,
+			);
+			path = Frame;
+			sourceTree = "<group>";
+		};
 		B575EEC31D5A9BBE00DCABBC /* Generated */ = {
 			isa = PBXGroup;
 			children = (
@@ -894,17 +905,6 @@
 				B575EEA01D54053500DCABBC /* EXManifestResource.m */,
 			);
 			path = Api;
-			sourceTree = "<group>";
-		};
-		B5884A6F1C7FD2E700F01BE4 /* Frame */ = {
-			isa = PBXGroup;
-			children = (
-				B5884A721C7FD2E700F01BE4 /* EXFrame.h */,
-				B5884A731C7FD2E700F01BE4 /* EXFrame.m */,
-				B5884A761C7FD2E700F01BE4 /* EXFrameManager.h */,
-				B5884A771C7FD2E700F01BE4 /* EXFrameManager.m */,
-			);
-			path = Frame;
 			sourceTree = "<group>";
 		};
 		B5C0CD321DA57D9A003B8537 /* ExponentViewController */ = {
@@ -1404,11 +1404,10 @@
 				A1F37F731CEFD6B2001E9EFC /* EXFontLoader.m in Sources */,
 				B5F12C991DAEDF960080ECA6 /* EXKernelReactAppManager.m in Sources */,
 				1936012B1D67ABCF007C0EE0 /* RNSVGText.m in Sources */,
-				B5884A7B1C7FD2E700F01BE4 /* EXFrame.m in Sources */,
 				A1F37F791CEFD6B2001E9EFC /* EXFrameExceptionsManager.m in Sources */,
 				193601301D67ABCF007C0EE0 /* RNSVGViewBoxManager.m in Sources */,
-				B5884A7D1C7FD2E700F01BE4 /* EXFrameManager.m in Sources */,
 				841AB1161DA6F56D008C0720 /* EXBarCodeScanner.m in Sources */,
+				B5678C601DB6D65B00380A6E /* EXFrameManager.m in Sources */,
 				193601121D67ABCF007C0EE0 /* RNSVGEllipse.m in Sources */,
 				193601281D67ABCF007C0EE0 /* RNSVGSolidColorBrush.m in Sources */,
 				A15DC4BC1CFF99FE009F940D /* EXImagePicker.m in Sources */,
@@ -1419,6 +1418,7 @@
 				B575EE9E1D53EEC300DCABBC /* EXJavaScriptResource.m in Sources */,
 				1936011D1D67ABCF007C0EE0 /* RNSVGNodeManager.m in Sources */,
 				84EC975F1D728A24009EEB4E /* AIRMapMarkerManager.m in Sources */,
+				B5678C5F1DB6D65B00380A6E /* EXFrame.m in Sources */,
 				B55089791D06378B009FBBC5 /* EXKernel.m in Sources */,
 				B5218E851D2475A000C54B61 /* EXKernelBridgeRecord.m in Sources */,
 				193601251D67ABCF007C0EE0 /* RNSVGRectManager.m in Sources */,

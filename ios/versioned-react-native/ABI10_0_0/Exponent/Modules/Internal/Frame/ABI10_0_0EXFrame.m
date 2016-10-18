@@ -1,19 +1,19 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXAppLoadingManager.h"
-#import "EXFrame.h"
+#import "ABI10_0_0EXAppLoadingManager.h"
+#import "ABI10_0_0EXFrame.h"
 
-#import "RCTBridge.h"
-#import "RCTExceptionsManager.h"
+#import "ABI10_0_0RCTBridge.h"
+#import "ABI10_0_0RCTExceptionsManager.h"
 #import "UIView+React.h"
 
-#define EX_FRAME_RELOAD_DEBOUNCE_SEC 0.05
+#define ABI10_0_0EX_FRAME_RELOAD_DEBOUNCE_SEC 0.05
 
 NS_ASSUME_NONNULL_BEGIN
 
-// we don't import EXFrameReactAppManager.h because it's unversioned,
+// we don't import ABI10_0_0EXFrameReactAppManager.h because it's unversioned,
 // so we need to let the compiler know that somebody, somewhere, supports this interface.
-@interface EXFrameReactAppManagerWithNoWarningsHack
+@interface ABI10_0_0EXFrameReactAppManagerWithNoWarningsHack
 
 - (instancetype)initWithEXFrame:(id)frame;
 - (void)logKernelAnalyticsEventWithParams:(NSDictionary *)params;
@@ -24,15 +24,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface EXFrame () <RCTInvalidating, RCTExceptionsManagerDelegate>
+@interface ABI10_0_0EXFrame () <ABI10_0_0RCTInvalidating, ABI10_0_0RCTExceptionsManagerDelegate>
 
 @property (nonatomic, assign) BOOL sourceSet;
 @property (nonatomic, assign) BOOL needsReload;
 
-@property (nonatomic, copy) RCTDirectEventBlock onLoadingStart;
-@property (nonatomic, copy) RCTDirectEventBlock onLoadingFinish;
-@property (nonatomic, copy) RCTDirectEventBlock onLoadingError;
-@property (nonatomic, copy) RCTDirectEventBlock onError;
+@property (nonatomic, copy) ABI10_0_0RCTDirectEventBlock onLoadingStart;
+@property (nonatomic, copy) ABI10_0_0RCTDirectEventBlock onLoadingFinish;
+@property (nonatomic, copy) ABI10_0_0RCTDirectEventBlock onLoadingError;
+@property (nonatomic, copy) ABI10_0_0RCTDirectEventBlock onError;
 
 @property (nonatomic, strong) NSTimer *viewTestTimer;
 @property (nonatomic, strong) NSTimer *tmrReload;
@@ -42,15 +42,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@implementation EXFrame
+@implementation ABI10_0_0EXFrame
 
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
+ABI10_0_0RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 
 - (instancetype)init
 {
   if (self = [super init]) {
-    Class unversionedAppManagerClass = NSClassFromString(EX_UNVERSIONED(@"EXFrameReactAppManager"));
-    RCTAssert(unversionedAppManagerClass, @"Cannot init a Frame with no %@ class", EX_UNVERSIONED(@"EXFrameReactAppManager"));
+    Class unversionedAppManagerClass = NSClassFromString(@"EXFrameReactAppManager");
+    ABI10_0_0RCTAssert(unversionedAppManagerClass, @"Cannot init a Frame with no %@ class", @"EXFrameReactAppManager");
 
     _appManager = [[unversionedAppManagerClass alloc] initWithEXFrame:self];
     [_appManager setDelegate:self];
@@ -107,12 +107,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
   BOOL isValid = YES;
   if ([changedProps containsObject:@"manifest"]) {
     if (!_manifest || ![_manifest objectForKey:@"id"]) {
-      // we can't load an experience with no id
+      // we can't load an ABI10_0_0EXperience with no id
       NSDictionary *errorInfo = @{
                                   NSLocalizedDescriptionKey: @"Cannot open an experience with no id",
                                   NSLocalizedFailureReasonErrorKey: @"Tried to load a manifest with no experience id, or a null manifest",
                                   };
-      [self _sendLoadingError:[NSError errorWithDomain:EX_UNVERSIONED(@"EXKernelErrorDomain") code:-1 userInfo:errorInfo]];
+      [self _sendLoadingError:[NSError errorWithDomain:@"EXKernelErrorDomain" code:-1 userInfo:errorInfo]];
       isValid = NO;
     }
   }
@@ -127,7 +127,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
                                   NSLocalizedDescriptionKey: @"Cannot open the given bundle url",
                                   NSLocalizedFailureReasonErrorKey: [NSString stringWithFormat:@"Cannot parse bundle url %@", [_source absoluteString]],
                                   };
-      [self _sendLoadingError:[NSError errorWithDomain:EX_UNVERSIONED(@"EXKernelErrorDomain") code:-1 userInfo:errorInfo]];
+      [self _sendLoadingError:[NSError errorWithDomain:@"EXKernelErrorDomain" code:-1 userInfo:errorInfo]];
       isValid = NO;
     }
   }
@@ -147,7 +147,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 
 - (void)_checkForReload
 {
-  EXAssertMainThread();
+  ABI10_0_0RCTAssertMainThread();
   if (_needsReload) {
     if (_sourceSet && _source) {
       [_appManager logKernelAnalyticsEventWithParams:@{
@@ -162,7 +162,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
       [_tmrReload invalidate];
       _tmrReload = nil;
     }
-    _tmrReload = [NSTimer scheduledTimerWithTimeInterval:EX_FRAME_RELOAD_DEBOUNCE_SEC target:_appManager selector:@selector(reload) userInfo:nil repeats:NO];
+    _tmrReload = [NSTimer scheduledTimerWithTimeInterval:ABI10_0_0EX_FRAME_RELOAD_DEBOUNCE_SEC target:_appManager selector:@selector(reload) userInfo:nil repeats:NO];
   }
 }
 
@@ -193,13 +193,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 }
 
 /**
- *  If a developer has locked their experience to a particular orientation,
- *  but some other experience has allowed the device to rotate to something unsupported,
+ *  If a developer has locked their ABI10_0_0EXperience to a particular orientation,
+ *  but some other ABI10_0_0EXperience has allowed the device to rotate to something unsupported,
  *  attempt to resolve that discrepancy here by forcing the device to rotate.
  */
 - (void)enforceDesiredDeviceOrientation
 {
-  EXAssertMainThread();
+  ABI10_0_0RCTAssertMainThread();
   UIInterfaceOrientationMask mask = [self supportedInterfaceOrientations];
   UIDeviceOrientation currentOrientation = [[UIDevice currentDevice] orientation];
   if (mask == UIInterfaceOrientationMaskLandscape && (currentOrientation == UIDeviceOrientationPortrait)) {
@@ -210,7 +210,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
   [UIViewController attemptRotationToDeviceOrientation];
 }
 
-#pragma mark - EXReactAppManagerDelegate
+#pragma mark - ABI10_0_0EXReactAppManagerDelegate
 
 - (void)reactAppManagerDidInitApp:(id)appManager
 {
@@ -284,10 +284,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
   if ([_appManager reactRootView] &&
       [_appManager reactRootView].subviews.count > 0 &&
       [_appManager reactRootView].subviews.firstObject.subviews.count > 0) {
-    EXAppLoadingManager *appLoading = nil;
+    ABI10_0_0EXAppLoadingManager *appLoading = nil;
     for (Class class in [[_appManager reactBridge] moduleClasses]) {
-      if ([class isSubclassOfClass:[EXAppLoadingManager class]]) {
-        appLoading = [[_appManager reactBridge] moduleForClass:[EXAppLoadingManager class]];
+      if ([class isSubclassOfClass:[ABI10_0_0EXAppLoadingManager class]]) {
+        appLoading = [[_appManager reactBridge] moduleForClass:[ABI10_0_0EXAppLoadingManager class]];
         break;
       }
     }
@@ -339,7 +339,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
   return nil;
 }
 
-# pragma mark - RCTExceptionsManagerDelegate
+# pragma mark - ABI10_0_0RCTABI10_0_0EXceptionsManagerDelegate
 
 - (void)handleSoftJSExceptionWithMessage:(NSString *)message stack:(NSArray *)stack exceptionId:(NSNumber *)exceptionId
 {
