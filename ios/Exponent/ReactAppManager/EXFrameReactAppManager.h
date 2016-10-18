@@ -10,6 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithEXFrame:(EXFrame *)frame;
 - (void)logKernelAnalyticsEventWithParams:(NSDictionary *)params;
+- (void)registerErrorForBridge:(NSError *)error;
 
 @property (nonatomic, weak, readonly) EXFrame *frame;
 

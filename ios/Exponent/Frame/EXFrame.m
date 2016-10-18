@@ -1,9 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXFrame.h"
-
-#import "EXKernel.h"
 #import "EXAppLoadingManager.h"
+#import "EXFrame.h"
 
 #import "RCTBridge.h"
 #import "RCTExceptionsManager.h"
@@ -19,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithEXFrame:(id)frame;
 - (void)logKernelAnalyticsEventWithParams:(NSDictionary *)params;
+- (void)registerErrorForBridge:(NSError *)error;
+
 @property (nonatomic, strong) UIView * __nullable reactRootView;
 @property (nonatomic, strong) id __nullable reactBridge;
 
@@ -112,7 +112,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
                                   NSLocalizedDescriptionKey: @"Cannot open an experience with no id",
                                   NSLocalizedFailureReasonErrorKey: @"Tried to load a manifest with no experience id, or a null manifest",
                                   };
-      [self _sendLoadingError:[NSError errorWithDomain:kEXKernelErrorDomain code:-1 userInfo:errorInfo]];
+      [self _sendLoadingError:[NSError errorWithDomain:EX_UNVERSIONED(@"EXKernelErrorDomain") code:-1 userInfo:errorInfo]];
       isValid = NO;
     }
   }
@@ -127,7 +127,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
                                   NSLocalizedDescriptionKey: @"Cannot open the given bundle url",
                                   NSLocalizedFailureReasonErrorKey: [NSString stringWithFormat:@"Cannot parse bundle url %@", [_source absoluteString]],
                                   };
-      [self _sendLoadingError:[NSError errorWithDomain:kEXKernelErrorDomain code:-1 userInfo:errorInfo]];
+      [self _sendLoadingError:[NSError errorWithDomain:EX_UNVERSIONED(@"EXKernelErrorDomain") code:-1 userInfo:errorInfo]];
       isValid = NO;
     }
   }
@@ -303,7 +303,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 
 - (void)_sendLoadingError: (NSError *)error
 {
-  [[EXKernel sharedInstance].bridgeRegistry setError:error forBridge:[_appManager reactBridge]];
+  [_appManager registerErrorForBridge:error];
   if (_onLoadingError) {
     NSMutableDictionary *event = [@{
                                     @"domain": error.domain,

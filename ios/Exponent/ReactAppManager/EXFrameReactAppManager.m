@@ -157,4 +157,9 @@
   [[EXAnalytics sharedInstance] logEvent:eventId manifestUrl:manifestUrl eventProperties:eventProperties];
 }
 
+- (void)registerErrorForBridge:(NSError *)error
+{
+  [[EXKernel sharedInstance].bridgeRegistry setError:error forBridge:self.reactBridge];
+}
+
 @end
