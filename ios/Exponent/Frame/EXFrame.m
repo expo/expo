@@ -5,7 +5,6 @@
 #import "EXAnalytics.h"
 #import "EXKernel.h"
 #import "EXAppLoadingManager.h"
-#import "EXFrameReactAppManager.h"
 
 #import "RCTBridge.h"
 #import "RCTExceptionsManager.h"
@@ -15,7 +14,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXFrame () <EXReactAppManagerDelegate, RCTInvalidating, RCTExceptionsManagerDelegate>
+// we don't import EXFrameReactAppManager.h because it's unversioned,
+// so we need to let the compiler know that somebody, somewhere, supports this interface.
+@interface EXFrameReactAppManagerWithNoWarningsHack
+
+- (instancetype)initWithEXFrame:(id)frame;
+@property (nonatomic, strong) UIView * __nullable reactRootView;
+@property (nonatomic, strong) id __nullable reactBridge;
+
+@end
+
+@interface EXFrame () <RCTInvalidating, RCTExceptionsManagerDelegate>
 
 @property (nonatomic, assign) BOOL sourceSet;
 @property (nonatomic, assign) BOOL needsReload;
@@ -28,7 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSTimer *viewTestTimer;
 @property (nonatomic, strong) NSTimer *tmrReload;
 
-@property (nonatomic, strong) EXFrameReactAppManager *appManager;
+// unversioned
+@property (nonatomic, strong) id appManager;
 
 @end
 
@@ -39,8 +49,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 - (instancetype)init
 {
   if (self = [super init]) {
-    _appManager = [[EXFrameReactAppManager alloc] initWithFrame:self];
-    _appManager.delegate = self;
+    Class unversionedAppManagerClass = NSClassFromString(EX_UNVERSIONED(@"EXFrameReactAppManager"));
+    RCTAssert(unversionedAppManagerClass, @"Cannot init a Frame with no %@ class", EX_UNVERSIONED(@"EXFrameReactAppManager"));
+
+    _appManager = [[unversionedAppManagerClass alloc] initWithEXFrame:self];
+    [_appManager setDelegate:self];
   }
   return self;
 }
@@ -152,8 +165,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 - (void)layoutSubviews
 {
   [super layoutSubviews];
-  if (_appManager.reactRootView) {
-    _appManager.reactRootView.frame = self.bounds;
+  if ([_appManager reactRootView]) {
+    [_appManager reactRootView].frame = self.bounds;
   }
 }
 
@@ -193,14 +206,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 
 #pragma mark - EXReactAppManagerDelegate
 
-- (void)reactAppManagerDidInitApp:(EXReactAppManager *)appManager
+- (void)reactAppManagerDidInitApp:(id)appManager
 {
-  UIView *reactRootView = appManager.reactRootView;
+  UIView *reactRootView = [appManager reactRootView];
   reactRootView.frame = self.bounds;
   [self addSubview:reactRootView];
 }
 
-- (void)reactAppManagerDidDestroyApp:(EXReactAppManager *)appManager
+- (void)reactAppManagerDidDestroyApp:(id)appManager
 {
   if (_tmrReload) {
     [_tmrReload invalidate];
@@ -208,14 +221,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
   }
 }
 
-- (void)reactAppManagerStartedLoadingJavaScript:(EXReactAppManager *)appManager
+- (void)reactAppManagerStartedLoadingJavaScript:(id)appManager
 {
   if (_onLoadingStart) {
     _onLoadingStart(nil);
   }
 }
 
-- (void)reactAppManagerFinishedLoadingJavaScript:(EXReactAppManager *)appManager
+- (void)reactAppManagerFinishedLoadingJavaScript:(id)appManager
 {
   if (_viewTestTimer) {
     [_viewTestTimer invalidate];
@@ -227,17 +240,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
                                                    repeats:YES];
 }
 
-- (void)reactAppManager:(EXReactAppManager *)appManager failedToLoadJavaScriptWithError:(NSError *)error
+- (void)reactAppManager:(id)appManager failedToLoadJavaScriptWithError:(NSError *)error
 {
   [self _sendLoadingError:error];
 }
 
-- (void)reactAppManager:(EXReactAppManager *)appManager failedToDownloadBundleWithError:(NSError *)error
+- (void)reactAppManager:(id)appManager failedToDownloadBundleWithError:(NSError *)error
 {
   
 }
 
-- (void)reactAppManagerDidForeground:(EXReactAppManager *)appManager
+- (void)reactAppManagerDidForeground:(id)appManager
 {
   if (_debuggerHostname) {
     [[NSUserDefaults standardUserDefaults] setObject:_debuggerHostname forKey:@"websocket-executor-hostname"];
@@ -262,13 +275,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
   // When root view has been filled with something, there are two cases:
   //   1. AppLoading was never mounted, in which case we hide the loading indicator immediately
   //   2. AppLoading was mounted, in which case we wait till it is unmounted to hide the loading indicator
-  if (_appManager.reactRootView &&
-      _appManager.reactRootView.subviews.count > 0 &&
-      _appManager.reactRootView.subviews.firstObject.subviews.count > 0) {
+  if ([_appManager reactRootView] &&
+      [_appManager reactRootView].subviews.count > 0 &&
+      [_appManager reactRootView].subviews.firstObject.subviews.count > 0) {
     EXAppLoadingManager *appLoading = nil;
-    for (Class class in [_appManager.reactBridge moduleClasses]) {
+    for (Class class in [[_appManager reactBridge] moduleClasses]) {
       if ([class isSubclassOfClass:[EXAppLoadingManager class]]) {
-        appLoading = [_appManager.reactBridge moduleForClass:[EXAppLoadingManager class]];
+        appLoading = [[_appManager reactBridge] moduleForClass:[EXAppLoadingManager class]];
         break;
       }
     }
@@ -284,7 +297,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 
 - (void)_sendLoadingError: (NSError *)error
 {
-  [[EXKernel sharedInstance].bridgeRegistry setError:error forBridge:_appManager.reactBridge];
+  [[EXKernel sharedInstance].bridgeRegistry setError:error forBridge:[_appManager reactBridge]];
   if (_onLoadingError) {
     NSMutableDictionary *event = [@{
                                     @"domain": error.domain,

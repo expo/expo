@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXFrameReactAppManager : EXReactAppManager
 
-- (instancetype)initWithFrame:(EXFrame *)frame;
+- (instancetype)initWithEXFrame:(EXFrame *)frame;
 
 @property (nonatomic, weak, readonly) EXFrame *frame;
 

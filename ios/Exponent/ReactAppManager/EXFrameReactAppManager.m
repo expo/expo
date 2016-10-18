@@ -12,7 +12,7 @@
 
 @implementation EXFrameReactAppManager
 
-- (instancetype)initWithFrame:(EXFrame *)frame
+- (instancetype)initWithEXFrame:(EXFrame *)frame
 {
   if (self = [super init]) {
     _frame = frame;
@@ -22,7 +22,7 @@
 
 - (BOOL)isReadyToLoad
 {
-  return (_frame.source != nil);
+  return (_frame && _frame.source != nil);
 }
 
 - (void)computeVersionSymbolPrefix
