@@ -2,7 +2,8 @@
 #
 
 # You can set these variables from the command line.
-DEFAULT_VERSION ?= v10.0.0
+# grab default version from the docs package.json
+DEFAULT_VERSION ?= v$(shell cat package.json | grep "version" | awk '{ print $$2 }' | tr -d \" | tr -d \,)
 SPHINXBUILD   = sphinx-build
 BUILDDIR      = _build
 export PYGMENTS_NODE_COMMAND = node
@@ -16,15 +17,14 @@ endif
 clean:
 	rm -rf $(BUILDDIR)/*
 
-# redirect:
-# 	mkdir -p _build/html
-# 	sed -e 's/REPLACE_ME/$(DEFAULT_VERSION)/g' index-template.html > _build/html/index.html
-
 update-exp-json-guide:
 	DOCS_VERSION=$(DEFAULT_VERSION) node scripts/generate-exp-docs.js versions/$(DEFAULT_VERSION)/guides/configuration.rst
 
 serve: clean update-exp-json-guide
 	DOCS_VERSION=$(DEFAULT_VERSION) sphinx-autobuild --host 0.0.0.0 . _build/html
+
+watch:
+	@./scripts/watch.sh unversioned
 
 version/%:
 	DOCS_VERSION=$(@F) $(SPHINXBUILD) . -d $(BUILDDIR)/doctrees/$(@F) -b html $(BUILDDIR)/html

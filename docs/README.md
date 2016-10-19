@@ -52,11 +52,14 @@ Navigate to the documentation root.
 If your machine has Docker for Mac and the Gcloud tools, you can run:
 
 ```bash
-./scripts/watch.sh <versionname>
+DEFAULT_VERSION=[version goes here] make watch
 ```
 
-from this directory. So for example, `./scripts/watch.sh v7.0.0` will preview
+from this directory. So for example, `DEFAULT_VERSION=v7.0.0 make watch` will preview
 docs for sdk 7. The site is viewable at `localhost:8000`.
+
+If you just run `make watch`, it will start the previewing unversioned docs, which
+is what you want in development.
 
 If your machine does not have Docker or GCloud, do the following:
 
@@ -74,7 +77,7 @@ Then run,
 ```DEFAULT_VERSION=unversioned make serve```
 
 This will serve the docs site accessible at the URL given in the output of the
-command. This will preview the `DEFAULT_VERSION` according to the `Makefile`.
+command. This will preview the `DEFAULT_VERSION` according to the `docs/package.json`.
 When you edit and save one of the docs source files it builds and refreshes the
 page automatically. You can also try a specific version like this,
 
