@@ -72,7 +72,7 @@ Configuration with exp.json
 
    .. attribute:: iconUrl
 
-    Url that points to the icon to display while starting up the app. Image size and aspect ratio are up to you.
+    Url that points to the icon to display while starting up the app. Image size and aspect ratio are up to you. Must be a .png.
 
    .. attribute:: exponentIconColor
 
@@ -85,7 +85,7 @@ Configuration with exp.json
 
    .. attribute:: backgroundImageUrl
 
-    Url that points to an image to fill the background of the loading screen. Image size and aspect ratio are up to you.
+    Url that points to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
 
    .. attribute:: backgroundColor
 
@@ -140,6 +140,21 @@ Configuration with exp.json
 
     The bundle identifier for your iOS standalone app. You make it up, but it needs to be unique on the App Store. See `this StackOverflow question <http://stackoverflow.com/questions/11347470/what-does-bundle-identifier-mean-in-the-ios-project>`_.
     Reverse DNS notation unique name for your app. For example, host.exp.exponent, where exp.host is our domain and Exponent is our app.
+
+   .. attribute:: config
+
+    
+       .. attribute:: fabric
+
+        `Twitter Fabric <https://get.fabric.io/>`_ keys to hook up Crashlytics and other services.
+
+           .. attribute:: apiKey
+
+            Your Fabric API key
+
+           .. attribute:: buildSecret
+
+            Your Fabric build secret
 
 .. attribute:: android
 
