@@ -14,7 +14,7 @@ Video
 
       The source of the video data to display. The following forms are supported:
 
-      - A string with a network URL pointing to a video file on the web.
+      - A hash of the format ``{ uri: my_url }`` where ``my_url`` is a string with a network URL pointing to a video file on the web.
       - ``require('path/to/file')`` for a video file asset in the source code
         directory.
 
