@@ -1,6 +1,5 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXAppDelegate.h"
 #import "EXDevMenuViewController.h"
 #import "EXFileDownloader.h"
 #import "EXJavaScriptResource.h"

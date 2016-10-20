@@ -30,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
   if (self = [super init]) {
     _appManager = [[EXKernelReactAppManager alloc] initWithLaunchOptions:launchOptions];
     _appManager.delegate = self;
+    [[EXKernel sharedInstance] registerRootExponentViewController:self];
   }
   return self;
 }

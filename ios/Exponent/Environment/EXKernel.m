@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXAnalytics.h"
-#import "EXAppDelegate.h"
 #import "EXAppState.h"
 #import "EXDevMenuViewController.h"
 #import "EXFrame.h"
@@ -13,6 +12,7 @@
 #import "EXRootViewController.h"
 #import "EXShellManager.h"
 #import "EXVersions.h"
+#import "EXViewController.h"
 
 #import "RCTBridge+Private.h"
 #import "RCTEventDispatcher.h"
@@ -27,6 +27,12 @@ NSString *kEXKernelGetPushTokenNotification = @"EXKernelGetPushTokenNotification
 NSString *kEXKernelShouldForegroundTaskEvent = @"foregroundTask";
 NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
 NSString *kEXKernelBundleResourceName = @"kernel.ios";
+
+@interface EXKernel ()
+
+@property (nonatomic, weak) EXViewController *vcExponentRoot;
+
+@end
 
 @implementation EXKernel
 
@@ -105,6 +111,16 @@ NSString *kEXKernelBundleResourceName = @"kernel.ios";
       [self _moveBridgeToForeground:destinationBridge];
     }
   }
+}
+
+- (void)registerRootExponentViewController:(EXViewController *)exponentViewController
+{
+  _vcExponentRoot = exponentViewController;
+}
+
+- (EXViewController *)rootViewController
+{
+  return _vcExponentRoot;
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientationsForForegroundTask
@@ -341,7 +357,9 @@ continueUserActivity:(NSUserActivity *)userActivity
 - (void)kernelModuleDidSelectDevMenu:(__unused EXKernelModule *)module
 {
   EXDevMenuViewController *vcDevMenu = [[EXDevMenuViewController alloc] init];
-  [((EXAppDelegate *)[UIApplication sharedApplication].delegate).rootViewController presentViewController:vcDevMenu animated:YES completion:nil];
+  if (_vcExponentRoot) {
+    [_vcExponentRoot presentViewController:vcDevMenu animated:YES completion:nil];
+  }
 }
 
 - (void)kernelModule:(__unused EXKernelModule *)module taskDidForegroundWithType:(NSInteger)type params:(NSDictionary *)params

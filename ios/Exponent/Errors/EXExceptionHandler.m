@@ -1,8 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXExceptionHandler.h"
-#import "EXAppDelegate.h"
-#import "EXRootViewController.h"
+#import "EXKernel.h"
+#import "EXViewController.h"
 
 #import <Crashlytics/Crashlytics.h>
 #import "RCTAssert.h"
@@ -47,7 +47,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   dispatch_async(dispatch_get_main_queue(), ^{
     // human-readable error, since RCTRedBox is disabled in production
-    [((EXAppDelegate *)[UIApplication sharedApplication].delegate).rootViewController
+    [[EXKernel sharedInstance].rootViewController
      showErrorWithType:kEXFatalErrorTypeException
      error:error];
   });

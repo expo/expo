@@ -1,9 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXFatalHandler.h"
-#import "EXAppDelegate.h"
 #import "EXKernel.h"
-#import "EXRootViewController.h"
+#import "EXViewController.h"
 
 #import <CocoaLumberjack/CocoaLumberjack.h>
 
@@ -15,7 +14,7 @@ RCTFatalHandler handleFatalReactError = ^(NSError *error) {
     BOOL isFrameError = [[EXKernel sharedInstance].bridgeRegistry errorBelongsToBridge:error];
 
     if (!isFrameError) {
-      [((EXAppDelegate *)[UIApplication sharedApplication].delegate).rootViewController
+      [[EXKernel sharedInstance].rootViewController
        showErrorWithType:kEXFatalErrorTypeException
        error:error];
     }
