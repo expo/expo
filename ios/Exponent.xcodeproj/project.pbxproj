@@ -108,10 +108,10 @@
 		B55089821D06455D009FBBC5 /* EXLinkingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B55089811D06455D009FBBC5 /* EXLinkingManager.m */; };
 		B5553F961CEFBD1200555008 /* EXShellManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5553F951CEFBD1200555008 /* EXShellManager.m */; };
 		B55FDEE41C7FDA560020AA8F /* EXFatalHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B55FDEE21C7FDA560020AA8F /* EXFatalHandler.m */; };
-		B55FDEE91C7FDB690020AA8F /* EXExceptionHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B55FDEE81C7FDB690020AA8F /* EXExceptionHandler.m */; };
 		B55FDEF61C7FDD380020AA8F /* EXDevMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B55FDEF51C7FDD380020AA8F /* EXDevMenuViewController.m */; };
 		B55FDEFA1C7FE1310020AA8F /* EXRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B55FDEF91C7FE1310020AA8F /* EXRootViewController.m */; };
 		B55FDEFD1C800D170020AA8F /* EXErrorView.m in Sources */ = {isa = PBXBuildFile; fileRef = B55FDEFC1C800D170020AA8F /* EXErrorView.m */; };
+		B56386361DB961DF00A0598C /* EXExceptionHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B56386351DB961DF00A0598C /* EXExceptionHandler.m */; };
 		B5657E521CFE1309006EF8E1 /* LaunchScreenShell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B5657E501CFE1309006EF8E1 /* LaunchScreenShell.xib */; };
 		B5678C5F1DB6D65B00380A6E /* EXFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = B5678C5C1DB6D65B00380A6E /* EXFrame.m */; };
 		B5678C601DB6D65B00380A6E /* EXFrameManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5678C5E1DB6D65B00380A6E /* EXFrameManager.m */; };
@@ -368,14 +368,14 @@
 		B5553F951CEFBD1200555008 /* EXShellManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXShellManager.m; sourceTree = "<group>"; };
 		B55FDEE11C7FDA560020AA8F /* EXFatalHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFatalHandler.h; sourceTree = "<group>"; };
 		B55FDEE21C7FDA560020AA8F /* EXFatalHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFatalHandler.m; sourceTree = "<group>"; };
-		B55FDEE71C7FDB690020AA8F /* EXExceptionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXExceptionHandler.h; sourceTree = "<group>"; };
-		B55FDEE81C7FDB690020AA8F /* EXExceptionHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXExceptionHandler.m; sourceTree = "<group>"; };
 		B55FDEF41C7FDD380020AA8F /* EXDevMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXDevMenuViewController.h; sourceTree = "<group>"; };
 		B55FDEF51C7FDD380020AA8F /* EXDevMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXDevMenuViewController.m; sourceTree = "<group>"; };
 		B55FDEF81C7FE1310020AA8F /* EXRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXRootViewController.h; sourceTree = "<group>"; };
 		B55FDEF91C7FE1310020AA8F /* EXRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXRootViewController.m; sourceTree = "<group>"; };
 		B55FDEFB1C800D170020AA8F /* EXErrorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXErrorView.h; sourceTree = "<group>"; };
 		B55FDEFC1C800D170020AA8F /* EXErrorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXErrorView.m; sourceTree = "<group>"; };
+		B56386341DB961DF00A0598C /* EXExceptionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXExceptionHandler.h; sourceTree = "<group>"; };
+		B56386351DB961DF00A0598C /* EXExceptionHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXExceptionHandler.m; sourceTree = "<group>"; };
 		B5657E511CFE1309006EF8E1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreenShell.xib; sourceTree = "<group>"; };
 		B5678C5B1DB6D65B00380A6E /* EXFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFrame.h; sourceTree = "<group>"; };
 		B5678C5C1DB6D65B00380A6E /* EXFrame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFrame.m; sourceTree = "<group>"; };
@@ -598,7 +598,6 @@
 				B509BCB51C6A88EC00A67CBB /* Environment */,
 				B55FDEDE1C7FDA560020AA8F /* Errors */,
 				B5C0CD321DA57D9A003B8537 /* ExponentViewController */,
-				B509BCBC1C6A88EC00A67CBB /* Modules */,
 				B5F12C901DAEDC980080ECA6 /* ReactAppManager */,
 				B5E49B521D1346FA00AA6436 /* Supporting */,
 				B5812C331C9CD59200A10345 /* Versioned */,
@@ -794,15 +793,6 @@
 			path = Environment;
 			sourceTree = "<group>";
 		};
-		B509BCBC1C6A88EC00A67CBB /* Modules */ = {
-			isa = PBXGroup;
-			children = (
-				B55FDEE71C7FDB690020AA8F /* EXExceptionHandler.h */,
-				B55FDEE81C7FDB690020AA8F /* EXExceptionHandler.m */,
-			);
-			path = Modules;
-			sourceTree = "<group>";
-		};
 		B51333411CE649FE00E9FC9E /* ExponentIntegrationTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -826,6 +816,8 @@
 			children = (
 				B55FDEFB1C800D170020AA8F /* EXErrorView.h */,
 				B55FDEFC1C800D170020AA8F /* EXErrorView.m */,
+				B56386341DB961DF00A0598C /* EXExceptionHandler.h */,
+				B56386351DB961DF00A0598C /* EXExceptionHandler.m */,
 				B55FDEE11C7FDA560020AA8F /* EXFatalHandler.h */,
 				B55FDEE21C7FDA560020AA8F /* EXFatalHandler.m */,
 				B597EF1C1CD98654004A48AD /* EXLog.h */,
@@ -1390,7 +1382,6 @@
 				84EC97621D728A24009EEB4E /* AIRMapPolyline.m in Sources */,
 				B5F12C951DAEDC980080ECA6 /* EXReactAppManager.m in Sources */,
 				84EC975E1D728A24009EEB4E /* AIRMapMarker.m in Sources */,
-				B55FDEE91C7FDB690020AA8F /* EXExceptionHandler.m in Sources */,
 				A15DC4CC1D011248009F940D /* EXFacebook.m in Sources */,
 				B55FDEE41C7FDA560020AA8F /* EXFatalHandler.m in Sources */,
 				B587F1E01D53DEB70071715C /* EXFileDownloader.m in Sources */,
@@ -1458,6 +1449,7 @@
 				A1F37F7A1CEFD6B2001E9EFC /* EXVersionManager.m in Sources */,
 				1936012C1D67ABCF007C0EE0 /* RNSVGTextManager.m in Sources */,
 				1936011E1D67ABCF007C0EE0 /* RNSVGPath.m in Sources */,
+				B56386361DB961DF00A0598C /* EXExceptionHandler.m in Sources */,
 				B509BCC51C6A88EC00A67CBB /* EXVersions.m in Sources */,
 				B5F12C9D1DAEE1240080ECA6 /* EXFrameReactAppManager.m in Sources */,
 				193601221D67ABCF007C0EE0 /* RNSVGRadialGradient.m in Sources */,
