@@ -1,7 +1,5 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXKernelModuleProvider.h"
-
 #import "RCTTestRunner.h"
 #import "RCTAssert.h"
 
@@ -29,7 +27,7 @@
   
   NSArray<id<RCTBridgeModule>> *(^testModuleProvider)(void) = ^NSArray<id<RCTBridgeModule>> *(void) {
     // TODO: get the contents of EXVersionManager::versionedModulesForKernel in here
-    return EXKernelModuleProvider();
+    return @[];
   };
   _runner = RCTInitRunnerForApp(@"ExponentTestsApp", testModuleProvider);
 }
