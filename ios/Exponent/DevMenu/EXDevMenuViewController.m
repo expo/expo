@@ -5,6 +5,7 @@
 #import "EXJavaScriptResource.h"
 #import "EXKernel.h"
 #import "EXKernelReactAppManager.h"
+#import "EXKernelUtil.h"
 
 #import "RCTBridge.h"
 

@@ -1,6 +1,7 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import "EXNotifications.h"
+#import "EXUnversioned.h"
 
 @interface EXNotifications ()
 

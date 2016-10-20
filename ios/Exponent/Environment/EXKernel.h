@@ -5,6 +5,7 @@
 
 #import "EXKernelBridgeRegistry.h"
 #import "EXKernelModule.h"
+#import "EXKernelUtil.h"
 
 @class EXViewController;
 

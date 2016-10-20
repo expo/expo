@@ -6,6 +6,7 @@
 #import "EXErrorView.h"
 #import "EXFileDownloader.h"
 #import "EXKernel.h"
+#import "EXKernelUtil.h"
 
 #import "RCTDevLoadingView.h"
 #import "RCTRootView.h"

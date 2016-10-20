@@ -376,6 +376,8 @@
 		B55FDEFC1C800D170020AA8F /* EXErrorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXErrorView.m; sourceTree = "<group>"; };
 		B56386341DB961DF00A0598C /* EXExceptionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXExceptionHandler.h; sourceTree = "<group>"; };
 		B56386351DB961DF00A0598C /* EXExceptionHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXExceptionHandler.m; sourceTree = "<group>"; };
+		B56386621DB9870D00A0598C /* EXKernelUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXKernelUtil.h; sourceTree = "<group>"; };
+		B56386651DB98BAA00A0598C /* EXUnversioned.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXUnversioned.h; sourceTree = "<group>"; };
 		B5657E511CFE1309006EF8E1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreenShell.xib; sourceTree = "<group>"; };
 		B5678C5B1DB6D65B00380A6E /* EXFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFrame.h; sourceTree = "<group>"; };
 		B5678C5C1DB6D65B00380A6E /* EXFrame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFrame.m; sourceTree = "<group>"; };
@@ -775,6 +777,7 @@
 		B509BCB51C6A88EC00A67CBB /* Environment */ = {
 			isa = PBXGroup;
 			children = (
+				B56386621DB9870D00A0598C /* EXKernelUtil.h */,
 				B55089771D06378B009FBBC5 /* EXKernel.h */,
 				B55089781D06378B009FBBC5 /* EXKernel.m */,
 				B5218E831D2475A000C54B61 /* EXKernelBridgeRecord.h */,
@@ -858,6 +861,7 @@
 			isa = PBXGroup;
 			children = (
 				A1F37F591CEFD6B2001E9EFC /* Modules */,
+				B56386651DB98BAA00A0598C /* EXUnversioned.h */,
 				A1F37F6F1CEFD6B2001E9EFC /* EXVersionManager.h */,
 				A1F37F701CEFD6B2001E9EFC /* EXVersionManager.m */,
 			);

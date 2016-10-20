@@ -2,6 +2,7 @@
 
 #import "EXAppLoadingManager.h"
 #import "EXFrame.h"
+#import "EXUnversioned.h"
 
 #import "RCTBridge.h"
 #import "RCTExceptionsManager.h"

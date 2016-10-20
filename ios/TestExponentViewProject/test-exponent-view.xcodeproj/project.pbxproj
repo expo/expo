@@ -10,7 +10,6 @@
 		B56386491DB9693800A0598C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B56386481DB9693800A0598C /* AppDelegate.m */; };
 		B563864C1DB9693800A0598C /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B563864B1DB9693800A0598C /* ViewController.m */; };
 		B56386511DB9693800A0598C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B56386501DB9693800A0598C /* Assets.xcassets */; };
-		B563865F1DB96A5E00A0598C /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B563865C1DB96A5E00A0598C /* Info.plist */; };
 		B56386601DB96A5E00A0598C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B563865D1DB96A5E00A0598C /* LaunchScreen.storyboard */; };
 		B56386611DB96A5E00A0598C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B563865E1DB96A5E00A0598C /* main.m */; };
 		EBB8117C1BFA0514F79CAF74 /* libPods-test-exponent-view.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C4A88D15726AD99E8A257BC7 /* libPods-test-exponent-view.a */; };
@@ -164,7 +163,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				B56386601DB96A5E00A0598C /* LaunchScreen.storyboard in Resources */,
-				B563865F1DB96A5E00A0598C /* Info.plist in Resources */,
 				B56386511DB9693800A0598C /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

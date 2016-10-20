@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
   s.source = { :git => "http://github.com/exponentjs/exponent.git" }
   s.source_files = "ios/Exponent/**/*.{h,m}"
   s.preserve_paths = "ios/Exponent/**/*.{h,m}"
-  s.exclude_files = "ios/Exponent/EXAppDelegate.*", "ios/Exponent/EXRootViewController.*"
+  s.exclude_files = "ios/Exponent/EXAppDelegate.*", "ios/Exponent/EXRootViewController.*", "ios/Exponent/Supporting/**"
 
   s.dependency 'CocoaLumberjack', '~> 2.3'
   s.dependency 'Crashlytics', '~> 3.8'

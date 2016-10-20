@@ -1,23 +1,19 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXAppDelegate.h"
-
 @import ObjectiveC;
 
-#import "EXFileDownloader.h"
+#import "EXAppDelegate.h"
 
 #import "Amplitude.h"
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <Crashlytics/Crashlytics.h>
 #import <Fabric/Fabric.h>
-#if DEBUG
-#import <SimulatorStatusMagic/SDStatusBarManager.h>
-#endif
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 
 #import "EXRootViewController.h"
 #import "EXConstants.h"
 #import "EXFatalHandler.h"
+#import "EXFileDownloader.h"
 #import "EXKernel.h"
 #import "EXKeys.h"
 #import "EXRemoteNotificationManager.h"
@@ -47,11 +43,6 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
   
   RCTSetFatalHandler(handleFatalReactError);
 
-#if SNAPSHOT
-  [SDStatusBarManager sharedInstance].timeString = @"6:50 PM";
-  [[SDStatusBarManager sharedInstance] enableOverrides];
-#endif
-  
 #if DEBUG
   [[Amplitude instance] initializeApiKey:AMPLITUDE_DEV_KEY];
 #else
@@ -81,13 +72,6 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
   [_rootViewController applicationWillEnterForeground];
-}
-
-- (void)applicationWillTerminate:(UIApplication *)application
-{
-#if DEBUG
-  [[SDStatusBarManager sharedInstance] disableOverrides];
-#endif
 }
 
 #pragma mark - Handling URLs

@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXJavaScriptResource.h"
+#import "EXKernelUtil.h"
 
 @implementation EXJavaScriptResource
 

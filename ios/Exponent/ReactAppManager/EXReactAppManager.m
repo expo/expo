@@ -4,6 +4,7 @@
 #import "EXFrame.h"
 #import "EXJavaScriptResource.h"
 #import "EXKernel.h"
+#import "EXKernelUtil.h"
 #import "EXReactAppManager+Private.h"
 #import "EXShellManager.h"
 #import "EXVersionManager.h"

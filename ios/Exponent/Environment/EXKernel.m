@@ -9,7 +9,6 @@
 #import "EXKernelModule.h"
 #import "EXLinkingManager.h"
 #import "EXManifestResource.h"
-#import "EXRootViewController.h"
 #import "EXShellManager.h"
 #import "EXVersions.h"
 #import "EXViewController.h"

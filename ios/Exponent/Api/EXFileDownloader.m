@@ -2,6 +2,7 @@
 
 #import "EXFileDownloader.h"
 #import "EXVersions.h"
+#import "EXKernelUtil.h"
 
 #import "RCTUtils.h"
 

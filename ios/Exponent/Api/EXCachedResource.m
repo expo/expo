@@ -3,8 +3,7 @@
 #import "EXCachedResource.h"
 #import "EXFileDownloader.h"
 #import "EXVersionManager.h"
-
-#import <CocoaLumberjack/CocoaLumberjack.h>
+#import "EXKernelUtil.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

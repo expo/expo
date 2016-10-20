@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <CocoaLumberjack/CocoaLumberjack.h>
-
+#import "EXKernelUtil.h"
 #import "EXLog.h"
 
 RCTLogFunction EXDefaultRCTLogFunction = ^(RCTLogLevel level, RCTLogSource source, NSString *fileName, NSNumber *lineNumber, NSString *message) {

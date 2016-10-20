@@ -1,6 +1,8 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import "EXRemoteNotificationRequester.h"
+#import "EXUnversioned.h"
+
 #import "RCTUtils.h"
 
 @interface EXRemoteNotificationRequester ()

@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXProvisioningProfile.h"
+#import "EXKernelUtil.h"
 
 @implementation EXProvisioningProfile {
   NSDictionary *_plist;

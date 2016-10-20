@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXLinkingManager.h"
+#import "EXUnversioned.h"
 
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
