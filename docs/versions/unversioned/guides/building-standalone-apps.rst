@@ -16,7 +16,7 @@ If you'd like to submit to either app store, you will of course need a developer
 account on that store.
 
 .. epigraph::
-  **Warning:** Standalone apps are currently in alpha! While the Android version has been heavily tested with `li.st <https://li.st/>`_, the iOS version and our automated build pipeline for both are brand new so you may run into some issues. Be sure to reach out to us on Slack or Twitter if you do and we'll fix them up right away and send you an Exponent t-shirt.
+  **Warning:** Standalone apps are currently in alpha! While the Android version has been heavily tested with `li.st <https://li.st/>`_, the iOS version and our automated build pipeline for both are brand new so you may run into some issues. Be sure to reach out to us on Slack or Twitter if you do and we'll put them on our roadmap, much appreciated!
 
 1. Install exp
 """"""""""""""
@@ -106,6 +106,9 @@ send off push notifications.
   What is your Apple Team ID (you can find that on this page:
   https://developer.apple.com/account/#/membership)? XY1234567
 
+.. epigraph::
+  **Note:** We currently don't support Apple's two-factor authentication, so you'll have to temporarily turn off 2FA on your Apple ID account to use exp build. The GitHub issue for 2FA support is `#17 <https://github.com/exponentjs/exp/issues/17>`_.
+
 Next we will ask you if you'd like us to handle your distribution certificate
 or use your own. Similar to the Android keystore, if you don't know what a
 distribution certificate is, just let us handle it for you.
@@ -147,4 +150,4 @@ Join our Slack and let us know if you have any questions.
 .. epigraph::
   **Note:** Are you curious how this works? We embed the Exponent runtime into a new app and make it always point to the published URL of your app.
 
-  We mentioned a few of the required properties here, but you're free to configure everything from the push notification icon to the deep-linking url scheme (see :ref:`the guide on exp.json <configuration>` for more information), and we take care of building it for you so you never have to open Xcode or Android Studio. 
+  We mentioned a few of the required properties here, but you're free to configure everything from the push notification icon to the deep-linking url scheme (see :ref:`the guide on exp.json <configuration>` for more information), and we take care of building it for you so you never have to open Xcode or Android Studio.
