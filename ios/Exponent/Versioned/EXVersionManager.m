@@ -10,6 +10,7 @@
 #import "EXKernelModule.h"
 #import "EXLinkingManager.h"
 #import "EXNotifications.h"
+#import "EXUnversioned.h"
 #import "EXVersionManager.h"
 #import "EXAmplitude.h"
 #import "EXSegment.h"
