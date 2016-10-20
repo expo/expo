@@ -144,6 +144,12 @@ We don't automate this step (yet), but at this point you should be able to follo
 the Apple and Google documentation to submit your standalone binary to each
 respective store.
 
+7. Update your app
+""""""""""""""""""
+
+When you want to update your app you can simply publish through XDE or ``exp``! As long as you don't change the ``sdkVersion`` version in ``exp.json`` your standalone app will get the new code next time users open the app.
+If you want to change the icon or the app name you'll need to resubmit your app to each store.
+
 If you run into problems during this process, we're more than happy to help out!
 Join our Slack and let us know if you have any questions.
 
