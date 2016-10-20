@@ -1,0 +1,22 @@
+source 'https://github.com/CocoaPods/Specs.git'
+platform :ios, '8.0'
+
+target 'test-exponent-view' do
+  pod 'ExponentView', :podspec => './ExponentView.podspec', :path => '../..'
+  pod 'React',
+      :git => 'https://github.com/exponentjs/react-native.git',
+      :branch => 'sdk-10',
+      :subspecs => [
+        'Core',
+        'ART',
+        'RCTActionSheet',
+        'RCTAnimation',
+        'RCTCameraRoll',
+        'RCTGeolocation',
+        'RCTImage',
+        'RCTNetwork',
+        'RCTText',
+        'RCTVibration',
+        'RCTWebSocket',
+      ]
+end
