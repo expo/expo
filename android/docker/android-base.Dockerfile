@@ -21,5 +21,5 @@ COPY ./package.json ./package.json
 
 ENV SHELL_APP_BUILDER 1
 
-RUN mkdir -p ./android/app/src/main/java/host/exp/exponent/generated/
+RUN mkdir -p ./android/exponentview/src/main/java/host/exp/exponent/generated/
 RUN cd ./tools-public && gulp generate-dynamic-macros --buildConstantsPath ../android/exponentview/src/main/java/host/exp/exponent/generated/ExponentBuildConstants.java --platform android
