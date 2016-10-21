@@ -1,6 +1,7 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import "EXAVPermissionRequester.h"
+#import "RCTUtils.h"
 
 #import <AVFoundation/AVFoundation.h>
 
@@ -14,8 +15,17 @@
 
 + (NSDictionary *)permissions
 {
-  AVAuthorizationStatus systemStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+  AVAuthorizationStatus systemStatus;
   EXPermissionStatus status;
+
+  NSString *cameraUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSCameraUsageDescription"];
+  NSString *microphoneUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSMicrophoneUsageDescription"];
+  if (!(cameraUsageDescription && microphoneUsageDescription)) {
+    RCTFatal(RCTErrorWithMessage(@"This app is missing either NSCameraUsageDescription or NSMicrophoneUsageDescription, so audio/video services will fail. Add one of these keys to your bundle's Info.plist."));
+    systemStatus = AVAuthorizationStatusDenied;
+  } else {
+    systemStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+  }
   switch (systemStatus) {
     case AVAuthorizationStatusAuthorized:
       status = EXPermissionStatusGranted;
