@@ -73,3 +73,7 @@ And so we have the ``Permissions`` module.
 .. attribute:: Exponent.Permissions.LOCATION
 
    The permission type for location access.
+
+.. attribute:: Exponent.Permissions.CAMERA
+
+   The permission type for camera access.
