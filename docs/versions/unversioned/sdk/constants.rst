@@ -50,9 +50,15 @@ System information that remains constant throughout the lifetime of your app.
    A string that is unique to the current session of your app. It is different
    across apps and across multiple launches of the same app.
 
+.. attribute:: Exponent.Constants.statusBarHeight
+
+   The default status bar height for the device. Does not factor in changes when
+   location tracking is in use or a phone call is active.
+
 .. attribute:: Exponent.Constants.systemFonts
 
    A list of the system font names available on the current device.
+
 .. attribute:: Exponent.Constants.manifest
 
    The :ref:`manifest <exponent-manifest>` object for the app.
@@ -63,9 +69,3 @@ System information that remains constant throughout the lifetime of your app.
    deep link part. This value depends on ``Exponent.Constants.appOwnership``:
    it may be different if your app is running standalone vs. in the Exponent
    client.
-
-..
-  .. attribute:: Exponent.Constants.statusBarHeight
-
-    Height of the top status bar in pixels.
-
