@@ -1,3 +1,5 @@
+.. _using-custom-fonts:
+
 ******************
 Using Custom Fonts
 ******************
