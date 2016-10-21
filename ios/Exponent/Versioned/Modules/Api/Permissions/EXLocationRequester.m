@@ -2,6 +2,8 @@
 
 #import "EXLocationRequester.h"
 
+#import "RCTUtils.h"
+
 #import <CoreLocation/CLLocationManager.h>
 #import <CoreLocation/CLLocationManagerDelegate.h>
 
@@ -21,7 +23,16 @@
   EXPermissionStatus status;
   NSString *scope = @"none";
   
-  CLAuthorizationStatus systemStatus = [CLLocationManager authorizationStatus];
+  CLAuthorizationStatus systemStatus;
+  NSString *alwaysUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"];
+  NSString *whenInUseUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"];
+  if (!(alwaysUsageDescription || whenInUseUsageDescription)) {
+    RCTFatal(RCTErrorWithMessage(@"This app is missing NSLocationAlwaysUsageDescription or NSLocationWhenInUseUsageDescription, so location services will fail. Add one of these keys to your bundle's Info.plist."));
+    systemStatus = kCLAuthorizationStatusDenied;
+  } else {
+    systemStatus = [CLLocationManager authorizationStatus];
+  }
+  
   switch (systemStatus) {
     case kCLAuthorizationStatusAuthorizedWhenInUse: {
       status = EXPermissionStatusGranted;
