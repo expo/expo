@@ -12,6 +12,7 @@
 		B56386511DB9693800A0598C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B56386501DB9693800A0598C /* Assets.xcassets */; };
 		B56386601DB96A5E00A0598C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B563865D1DB96A5E00A0598C /* LaunchScreen.storyboard */; };
 		B56386611DB96A5E00A0598C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B563865E1DB96A5E00A0598C /* main.m */; };
+		B56386671DB9994300A0598C /* EXSDKVersions.plist in Resources */ = {isa = PBXBuildFile; fileRef = B56386661DB9994300A0598C /* EXSDKVersions.plist */; };
 		EBB8117C1BFA0514F79CAF74 /* libPods-test-exponent-view.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C4A88D15726AD99E8A257BC7 /* libPods-test-exponent-view.a */; };
 /* End PBXBuildFile section */
 
@@ -27,6 +28,7 @@
 		B563865C1DB96A5E00A0598C /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B563865D1DB96A5E00A0598C /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B563865E1DB96A5E00A0598C /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		B56386661DB9994300A0598C /* EXSDKVersions.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = EXSDKVersions.plist; sourceTree = "<group>"; };
 		C4A88D15726AD99E8A257BC7 /* libPods-test-exponent-view.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-test-exponent-view.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -93,6 +95,7 @@
 		B563865B1DB96A5E00A0598C /* Supporting */ = {
 			isa = PBXGroup;
 			children = (
+				B56386661DB9994300A0598C /* EXSDKVersions.plist */,
 				B563865C1DB96A5E00A0598C /* Info.plist */,
 				B563865D1DB96A5E00A0598C /* LaunchScreen.storyboard */,
 				B563865E1DB96A5E00A0598C /* main.m */,
@@ -163,6 +166,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B56386601DB96A5E00A0598C /* LaunchScreen.storyboard in Resources */,
+				B56386671DB9994300A0598C /* EXSDKVersions.plist in Resources */,
 				B56386511DB9693800A0598C /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
