@@ -74,3 +74,11 @@ other users can log in.
       <https://facebook.github.io/react-native/docs/network.html#fetch>`_ to
       query Facebook's `Graph API
       <https://developers.facebook.com/docs/graph-api>`_.
+
+
+Deploying to a standalone app on Android
+""""""""""""""""""""""""""""""""""""""""
+
+1. Build the standalone app
+2. Run ``keytool -list -printcert -jarfile growler.apk | grep SHA1 | awk '{ print $2 }' | xxd -r -p | openssl base64`` (where ``growler.apk`` is the name of the apk produced in step 1).
+3. Take the output from that and add it to the ``Key Hashes`` option in your Facebook developer app page, under Basic Settings. Save and you're done.
