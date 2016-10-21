@@ -46,6 +46,63 @@ only difference is ``@exponent/vector-icons`` uses a more idiomatic ``import`` s
 
 .. epigraph::
   **Note:** As with :ref:`any custom font <using-custom-fonts>` in Exponent, you may want to preload icon fonts before rendering your app. The font object is available as a static property on the font component, so in the case above it is ``Ionicons.font``, which evaluates to ``{ionicons: require('path/to/ionicons.ttf')}``. :ref:`Read more about preloading assets <all-about-assets>`.
+  
+Custom Icon Fonts
+=================
+
+First, make sure you import your custom icon font. :ref:`Read more about loading custom fonts <using-custom-fonts>`. Once your font has loaded, you'll need to create an Icon Set. `@exponent/vector-icons` exposes three methods to help you create an icon set.
+
+``createIconSet(glyphMap, fontFamily[, fontFile])``
+'''''''''''''''''''''''''''''''''''''''''''''''''''
+Returns your own custom font based on the ``glyphMap`` where the key is the icon name and the value is either a UTF-8 character or it's character code.  ``fontFamily`` is the name of the font **NOT** the filename. See `react-native-vector-icons <https://github.com/oblador/react-native-vector-icons/blob/master/README.md#custom-fonts>`_ for more details.
+
+.. code-block:: javascript
+
+  
+  import { Font } from 'exponent';
+  import { createIconSet } from '@exponent/vector-icons';
+  const glyphMap = { 'icon-name': 1234, test: '∆' };
+  const CustomIcon = createIconSet(glyphMap, 'FontName');
+
+  export default class CustomIconExample extends React.Component {
+    state = {
+      fontLoaded: false
+    }
+    async componentDidMount() {
+      await Font.loadAsync({
+        'FontName': require('assets/fonts/custom-icon-font.ttf')
+      });
+
+      this.setState({fontLoaded: true});
+    }
+    render() {
+      if (!this.state.fontLoaded) { return null;}
+
+      return (
+        <CustomIcon name="icon-name" size={32} color="red" />
+      );
+    }
+  }
+
+``createIconSetFromFontello(config[, fontFamily[, fontFile]])``
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Convenience method to create a custom font based on a `fontello <http://fontello.com>`_ config file. Don't forget to import the font as described above and drop the ``config.json`` somewhere convenient in your project. 
+
+.. code-block:: javascript
+
+  // Once your custom font has been loaded...
+  import { createIconSetFromFontello } from '@exponent/vector-icons';
+  import fontelloConfig from './config.json';
+  const Icon = createIconSetFromFontello(fontelloConfig, 'FontName');
+
+``createIconSetFromIcoMoon(config[, fontFamily[, fontFile]])``
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+.. code-block:: javascript
+
+  // Once your custom font has been loaded...
+  import { createIconSetFromIcoMoon } from '@exponent/vector-icons';
+  import icoMoonConfig from './config.json';
+  const Icon = createIconSetFromIcoMoon(icoMoonConfig, 'FontName');
 
 Icon images
 ===========
