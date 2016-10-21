@@ -13,7 +13,7 @@ Alright, let's get started.
 Creating the project
 """"""""""""""""""""
 
-Open XDE and press ``New Project``, create a new directory and give it the name that you would like for your project. I'll call it ``FirstProject``. Select the directory and press ``Open``.
+Open XDE and press ``New Project``, create a new directory and give it the name that you would like for your project. I'll call it ``first-project``. Select the directory and press ``Open``.
 
 XDE is now initializing a new project in selected directory: it copies a basic template and installs ``react``, ``react-native`` and ``exponent``.
 

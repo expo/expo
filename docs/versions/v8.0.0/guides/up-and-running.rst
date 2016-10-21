@@ -18,7 +18,7 @@ Upon opening XDE you will be prompted for a username and password. Fill this in 
 Creating the project
 """"""""""""""""""""
 
-Press ``Project`` and select ``New Project``, then enter the name of your project in the dialog that pops up. I'll call mine ``FirstProject``, and press create.
+Press ``Project`` and select ``New Project``, then enter the name of your project in the dialog that pops up. I'll call mine ``first-project``, and press create.
 
 Next, choose where to save the project. I keep all of my fun projects in ``~/coding``, so I navigate to that directory and press open.
 
