@@ -103,6 +103,9 @@
     }
   }
 #endif
+
+  NSAssert((mutableVersions[@"sdkVersions"] != nil), @"No SDK versions are specified for the Exponent kernel. Is the project missing EXSDKVersions.plist?");
+
   _versions = mutableVersions;
 }
 
