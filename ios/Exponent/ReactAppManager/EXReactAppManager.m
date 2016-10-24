@@ -95,7 +95,7 @@
   } errorBlock:^(NSError * _Nonnull error) {
     __strong typeof(self) strongSelf = weakSelf;
     if (strongSelf) {
-      [_delegate reactAppManager:strongSelf failedToDownloadBundleWithError:error];
+      [strongSelf.delegate reactAppManager:strongSelf failedToDownloadBundleWithError:error];
 
       // RN is going to call RCTFatal() on this error, so keep a reference to it for later
       // so we can distinguish this non-fatal error from actual fatal cases.
