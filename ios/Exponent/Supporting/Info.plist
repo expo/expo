@@ -66,6 +66,8 @@
 	<string>Give Exponent experiences permission to connect over Bluetooth</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Allow Exponent experiences to use your camera</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Allow Exponent experiences to access your contacts</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Allow Exponent experiences to use your location</string>
 	<key>NSMicrophoneUsageDescription</key>
