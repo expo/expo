@@ -10,8 +10,7 @@ actual device**, but when it comes to debugging you might have an easier time
 using an emulator/simulator.
 
 Apple refers to their emulator as a "Simulator" and Google refers to theirs as
-an "Emulator" -- I have no idea why this is the case, but this is why you will
-see these two terms.
+an "Emulator".
 
 iOS
 ^^^
@@ -23,8 +22,10 @@ if you haven't already.
 Android
 ^^^^^^^
 
-For Android, you should use the emulators provided by `Android Studio <https://developer.android.com/studio/run/emulator.html#runningemulator>`_.
-See `here <https://developer.android.com/studio/run/emulator.html#runningemulator>`_ for how to open the emulator once Android Studio is installed.
+On Android we recommend the Genymotion emulator over the standard emulator --
+we have found it to be more feature complete, faster and easier to use.
+
+`Download Genymotion <https://www.genymotion.com/fun-zone/>`_ (free version) and follow the `Genymotion installation guide <https://docs.genymotion.com/Content/01_Get_Started/Installation.htm>`_. Once you've installed Genymotion, create a virtual device - we recommend a Nexus 5, the Android version is up to you. Start up the virtual device when it's ready.
 
 Debugging Javascript
 ====================
