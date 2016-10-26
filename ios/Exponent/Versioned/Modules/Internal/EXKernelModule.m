@@ -127,7 +127,7 @@ RCT_REMAP_METHOD(getManifestAsync,
     [_delegate kernelModule:self didRequestManifestWithUrl:url originalUrl:originalUrl success:^(NSString *manifestString) {
       resolve(manifestString);
     } failure:^(NSError *error) {
-      reject([NSString stringWithFormat:@"%d", error.code], error.localizedDescription, error);
+      reject([NSString stringWithFormat:@"%ld", (long)error.code], error.localizedDescription, error);
     }];
   }
 }
