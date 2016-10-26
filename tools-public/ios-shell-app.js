@@ -137,9 +137,15 @@ async function configureIconsAsync(manifest, args, configFilePath) {
      await saveUrlToPathAsync(manifest.iconUrl, `${configFilePath}/${defaultIconFilename}`);
    }
 
-  let iconSizes = [29, 40, 60];
-  let iconResolutions = [2, 3];
+  let iconSizes = [29, 40, 60, 76, 83.5];
   iconSizes.forEach(iconSize => {
+    let iconResolutions;
+    if (iconSize === 76) {
+      // iPad has 1x and 2x icons for this size only
+      iconResolutions = [1, 2];
+    } else {
+      iconResolutions = [2, 3];
+    }
     iconResolutions.forEach(async (iconResolution) => {
       let iconQualifier = `${iconSize}x${iconSize}@${iconResolution}x`;
       let iconKey = `iconUrl${iconQualifier}`;
