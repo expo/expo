@@ -44,6 +44,9 @@ System information that remains constant throughout the lifetime of your app.
         .. attribute:: model
 
            The human-readable model name of this device, e.g. ``iPhone 7 Plus``.
+        .. attribute:: userInterfaceIdiom
+
+           The user interface idiom of this device, i.e. whether the app is running on an iPhone or an iPad. Current supported values are ``handset`` and ``tablet``. Apple TV and CarPlay will show up as ``unsupported``.
 
 .. attribute:: Exponent.Constants.sessionId
 
