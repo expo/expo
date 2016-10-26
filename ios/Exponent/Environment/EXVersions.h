@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly, nonnull) NSDictionary *versions;
 
-- (NSString *)symbolPrefixForSdkVersion: (NSString * _Nullable)version;
+- (NSString *)symbolPrefixForSdkVersion: (NSString * _Nullable)version isKernel:(BOOL)isKernel;
 - (NSString *)availableSdkVersionForManifest: (NSDictionary * _Nullable)manifest;
 + (NSString * _Nullable)versionedString: (NSString * _Nullable)string withPrefix: (NSString * _Nullable)symbolPrefix;
 

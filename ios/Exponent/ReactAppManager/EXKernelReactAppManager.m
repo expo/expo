@@ -52,7 +52,7 @@
 {
   // kernel is always unversioned at the moment
   self.validatedVersion = @"";
-  self.versionSymbolPrefix = [[EXVersions sharedInstance] symbolPrefixForSdkVersion:self.validatedVersion];
+  self.versionSymbolPrefix = [[EXVersions sharedInstance] symbolPrefixForSdkVersion:self.validatedVersion isKernel:YES];
 }
 
 - (NSString *)bundleNameForJSResource

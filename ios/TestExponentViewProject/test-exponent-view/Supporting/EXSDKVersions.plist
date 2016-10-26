@@ -2,6 +2,13 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>detachedNativeVersions</key>
+	<dict>
+		<key>shell</key>
+		<string>10.0.0</string>
+		<key>kernel</key>
+		<string>10.0.0</string>
+	</dict>
 	<key>sdkVersions</key>
 	<array>
 		<string>10.0.0</string>
