@@ -49,6 +49,7 @@
                                           @"ios": @{
                                               @"platform": [self _devicePlatform],
                                               @"model": [self _deviceModel],
+                                              @"userInterfaceIdiom": [self _userInterfaceIdiom],
                                               },
                                           },
                                       } mutableCopy];
@@ -70,6 +71,21 @@
 }
 
 #pragma mark - Internal
+
+- (NSString *)_userInterfaceIdiom
+{
+  UIUserInterfaceIdiom idiom = UI_USER_INTERFACE_IDIOM();
+
+  // tv and carplay aren't accounted for here
+  switch (idiom) {
+    case UIUserInterfaceIdiomPhone:
+      return @"handset";
+    case UIUserInterfaceIdiomPad:
+      return @"tablet";
+    default:
+      return @"unsupported";
+  }
+}
 
 - (BOOL)_isDevice
 {
