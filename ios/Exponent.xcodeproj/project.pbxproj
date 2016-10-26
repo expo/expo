@@ -1672,6 +1672,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "host.exp.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "$(APP_PROVISIONING_PROFILE)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -1743,6 +1744,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "host.exp.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "$(APP_PROVISIONING_PROFILE)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
