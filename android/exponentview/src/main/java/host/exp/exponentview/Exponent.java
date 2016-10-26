@@ -160,7 +160,7 @@ public class Exponent {
     return mComponent;
   }
 
-  public void updateCurrentActivity(Activity activity) {
+  public void setCurrentActivity(Activity activity) {
     mActivity = activity;
   }
 

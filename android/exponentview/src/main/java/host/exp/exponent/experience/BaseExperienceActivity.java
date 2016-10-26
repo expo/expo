@@ -99,6 +99,7 @@ public abstract class BaseExperienceActivity extends ReactNativeActivity {
   protected void onResume() {
     super.onResume();
     mKernel.setActivityContext(this);
+    Exponent.getInstance().setCurrentActivity(this);
 
     sVisibleActivity = this;
 
