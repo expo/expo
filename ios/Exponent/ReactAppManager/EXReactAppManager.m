@@ -31,9 +31,9 @@
   [RCTDevLoadingView setEnabled:NO];
   
   if ([self isReadyToLoad]) {
-    Class versionManagerClass = [self _versionedClassFromString:@"EXVersionManager"];
-    Class bridgeClass = [self _versionedClassFromString:@"RCTBridge"];
-    Class rootViewClass = [self _versionedClassFromString:@"RCTRootView"];
+    Class versionManagerClass = [self versionedClassFromString:@"EXVersionManager"];
+    Class bridgeClass = [self versionedClassFromString:@"RCTBridge"];
+    Class rootViewClass = [self versionedClassFromString:@"RCTRootView"];
     
     _versionManager = [[versionManagerClass alloc]
                        initWithFatalHandler:handleFatalReactError
@@ -203,7 +203,7 @@
   _validatedVersion = nil;
 }
 
-- (Class)_versionedClassFromString: (NSString *)classString
+- (Class)versionedClassFromString: (NSString *)classString
 {
   return NSClassFromString([self _versionedString:classString]);
 }

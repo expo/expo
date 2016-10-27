@@ -162,4 +162,15 @@
   [[EXKernel sharedInstance].bridgeRegistry setError:error forBridge:self.reactBridge];
 }
 
+- (id)appLoadingManagerInstance
+{
+  Class loadingManagerClass = [self versionedClassFromString:@"EXAppLoadingManager"];
+  for (Class class in [self.reactBridge moduleClasses]) {
+    if ([class isSubclassOfClass:loadingManagerClass]) {
+      return [self.reactBridge moduleForClass:loadingManagerClass];
+    }
+  }
+  return nil;
+}
+
 @end

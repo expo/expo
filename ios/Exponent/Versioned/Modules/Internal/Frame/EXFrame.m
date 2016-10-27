@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithEXFrame:(id)frame;
 - (void)logKernelAnalyticsEventWithParams:(NSDictionary *)params;
 - (void)registerErrorForBridge:(NSError *)error;
+- (id)appLoadingManagerInstance;
 
 @property (nonatomic, strong) UIView * __nullable reactRootView;
 @property (nonatomic, strong) id __nullable reactBridge;
@@ -285,13 +286,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
   if ([_appManager reactRootView] &&
       [_appManager reactRootView].subviews.count > 0 &&
       [_appManager reactRootView].subviews.firstObject.subviews.count > 0) {
-    EXAppLoadingManager *appLoading = nil;
-    for (Class class in [[_appManager reactBridge] moduleClasses]) {
-      if ([class isSubclassOfClass:[EXAppLoadingManager class]]) {
-        appLoading = [[_appManager reactBridge] moduleForClass:[EXAppLoadingManager class]];
-        break;
-      }
-    }
+    EXAppLoadingManager *appLoading = [_appManager appLoadingManagerInstance];
     if (!appLoading || !appLoading.started || appLoading.finished) {
       if (_onLoadingFinish) {
         _onLoadingFinish(nil);
