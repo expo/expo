@@ -93,6 +93,7 @@ export async function createAndroidShellApp(args) {
     stdio: 'inherit',
     cwd: path.join(__dirname, '..', 'android', 'app'),
   }); // populate android template files now since we take out the prebuild step later on
+  await spawnAsync(`/bin/cp`, ['-r', '../android/exponentview', `${shellPath}/exponentview`]);
   await spawnAsync(`/bin/cp`, ['-r', '../android/ReactCommon', `${shellPath}/ReactCommon`]);
   await spawnAsync(`/bin/cp`, ['-r', '../android/ReactAndroid', `${shellPath}/ReactAndroid`]);
   await spawnAsync(`/bin/cp`, ['-r', '../android/Android-Image-Cropper', `${shellPath}/Android-Image-Cropper`]);
@@ -115,25 +116,27 @@ export async function createAndroidShellApp(args) {
   // Versions
   let buildGradleFile = await fs.promise.readFile(`${shellPath}app/build.gradle`, 'utf8');
   let androidVersion = buildGradleFile.match(/versionName '(\S+)'/)[1];
-  shell.sed('-i', 'VERSION_NAME = null', `VERSION_NAME = "${androidVersion}"`, `${shellPath}app/src/main/java/host/exp/exponent/Constants.java`);
+  shell.sed('-i', 'VERSION_NAME = null', `VERSION_NAME = "${androidVersion}"`, `${shellPath}exponentview/src/main/java/host/exp/exponent/Constants.java`);
   await sedInPlaceAsync('-e', `/BEGIN\ VERSIONS/,/END\ VERSIONS/d`, `${shellPath}app/build.gradle`);
   shell.sed('-i', '// ADD VERSIONS HERE', `versionCode ${versionCode}
     versionName '${version}'`, `${shellPath}app/build.gradle`);
 
   // Remove Exponent build script
-  shell.sed('-i', `preBuild.dependsOn generateDynamicMacros`, ``, `${shellPath}app/build.gradle`);
+  shell.sed('-i', `preBuild.dependsOn generateDynamicMacros`, ``, `${shellPath}exponentview/build.gradle`);
 
   // change javaMaxHeapSize
   shell.sed('-i', `javaMaxHeapSize "8g"`, `javaMaxHeapSize "6g"`, `${shellPath}app/build.gradle`);
 
   // Push notifications
   shell.sed('-i', '"package_name": "host.exp.exponent"', `"package_name": "${javaPackage}"`, `${shellPath}app/google-services.json`); // TODO: actually use the correct file
+  // TODO: probably don't need this in both places
   await sedInPlaceAsync('-e', `s/host.exp.exponent.permission.C2D_MESSAGE/${javaPackage}.permission.C2D_MESSAGE/g`, `${shellPath}app/src/main/AndroidManifest.xml`);
+  await sedInPlaceAsync('-e', `s/host.exp.exponent.permission.C2D_MESSAGE/${javaPackage}.permission.C2D_MESSAGE/g`, `${shellPath}exponentview/src/main/AndroidManifest.xml`);
 
   // Set INITIAL_URL and SHELL_APP_SCHEME
-  shell.sed('-i', 'INITIAL_URL = null', `INITIAL_URL = "${url}"`, `${shellPath}app/src/main/java/host/exp/exponent/Constants.java`);
+  shell.sed('-i', 'INITIAL_URL = null', `INITIAL_URL = "${url}"`, `${shellPath}exponentview/src/main/java/host/exp/exponent/Constants.java`);
   if (scheme) {
-    shell.sed('-i', 'SHELL_APP_SCHEME = null', `SHELL_APP_SCHEME = "${scheme}"`, `${shellPath}app/src/main/java/host/exp/exponent/Constants.java`);
+    shell.sed('-i', 'SHELL_APP_SCHEME = null', `SHELL_APP_SCHEME = "${scheme}"`, `${shellPath}exponentview/src/main/java/host/exp/exponent/Constants.java`);
   }
 
   // App name
@@ -161,7 +164,7 @@ export async function createAndroidShellApp(args) {
   shell.sed('-i', '// ADD EMBEDDED RESPONSES HERE', `
     embeddedResponses.add(new EmbeddedResponse("${fullManifestUrl}", "assets://shell-app-manifest.json", "application/json"));
     embeddedResponses.add(new EmbeddedResponse("${bundleUrl}", "assets://shell-app.bundle", "application/javascript"));`,
-    `${shellPath}app/src/main/java/host/exp/exponent/Constants.java`);
+    `${shellPath}exponentview/src/main/java/host/exp/exponent/Constants.java`);
 
   // Icon
   if (iconUrl) {

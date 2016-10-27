@@ -172,7 +172,6 @@ public class Exponent {
 
 
   private String mGCMSenderId;
-  // getString(R.string.gcm_defaultSenderId)
   public void setGCMSenderId(final String senderId) {
     mGCMSenderId = senderId;
   }

@@ -43,6 +43,7 @@ public class ExponentApplication extends MultiDexApplication {
 
     sApplication = this;
     Exponent.initialize(this, this);
+    Exponent.getInstance().setGCMSenderId(getString(R.string.gcm_defaultSenderId));
 
     try {
       // Remove the badge count on weird launchers
