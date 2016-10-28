@@ -53,6 +53,7 @@ add any that are missing.
   notation, but don't have to be related to a domain. In this case I chose
   ``org.rnplay.exp`` because the app's website is rnplay.org and this is the
   Exponent version of the app. Yours might be ``com.yourcompany.appname``.
+  
   You're probably not surprised that ``name``, ``iconUrl`` and ``version`` are
   required, but if you haven't used Exponent much you might be confused by
   ``slug`` and ``sdkVersion``. ``slug`` is the url name that your app's
@@ -61,6 +62,10 @@ add any that are missing.
   tells Exponent what Exponent runtime version to use, which corresponds to a
   React Native version.
 
+There are other options you might want to add to ``exp.json``. We have only
+covered what is required. See :ref:`Configuration with exp.json <exp>` for
+the full spec.
+  
 3. Start the build
 """"""""""""""""""
 
@@ -131,11 +136,11 @@ We will fix this.
 5. Test it on your device or simulator
 """"""""""""""""""""""""""""""""""""""
 
-- You can drag and drop the ``.apk``/``.ipa`` into your Android/iOS simulator,
-  this is the easiest way to test out that the build was successful. But it's
+- You can drag and drop the ``.apk`` into your Android emulator.
+  This is the easiest way to test out that the build was successful. But it's
   not the most satisfying.
 - **To run it on your Android device**, make sure you have the Android platform tools installed along with ``adb``, then just run ``adb install app-filename.apk`` with your device plugged in.
-- **To run it on your iOS device**, you will need to put in a bit more work :( We are working on producing simulator builds to make it easier to test, but for now you will need to use TestFlight. Go to iTunes connect and create a new app and pick your bundle identifier. After that, I recommend using `pilot <https://github.com/fastlane/fastlane/tree/master/pilot>`_ to upload the build and add testers.
+- **To run it on your iOS device**, you will need to put in a bit more work :( We are working on producing simulator builds to make it easier to test, but for now you will need to use Apple TestFlight. Go to iTunes connect and create a new app and pick your bundle identifier. After that, I recommend using `pilot <https://github.com/fastlane/fastlane/tree/master/pilot>`_ to upload the build and add testers.
 
 6. Submit it to the appropriate store
 """""""""""""""""""""""""""""""""""""
@@ -143,6 +148,12 @@ We will fix this.
 We don't automate this step (yet), but at this point you should be able to follow
 the Apple and Google documentation to submit your standalone binary to each
 respective store.
+
+.. epigraph::
+   **Note:** When submitting to the iTunes Store, you'll be asked whether your app
+   uses the advertising identifier (IDFA). Because Exponent depends on Segment
+   Analytics, the answer is yes, and you'll need to check a couple boxes on the Apple
+   submission form. See `Segment's Guide <https://segment.com/docs/sources/mobile/ios/quickstart/#step-5-submitting-to-the-app-store>`_ for which specific boxes to fill in.
 
 7. Update your app
 """"""""""""""""""
