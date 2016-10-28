@@ -37,92 +37,92 @@ Pod::Spec.new do |s|
   end
 
     s.subspec 'Exponent' do |ss|
-    ss.dependency         'React/Core'
+    ss.dependency         'ReactABI6_0_0/Core'
     ss.source_files     = "Exponent/**/*.{h,m}"
     end
 
   s.subspec 'ART' do |ss|
-    ss.dependency       'React/Core'
+    ss.dependency       'ReactABI6_0_0/Core'
     ss.source_files   = "Libraries/ART/**/*.{h,m}"
     ss.preserve_paths = "Libraries/ART/**/*.js"
   end
 
   s.subspec 'RCTActionSheet' do |ss|
-    ss.dependency       'React/Core'
+    ss.dependency       'ReactABI6_0_0/Core'
     ss.source_files   = "Libraries/ActionSheetIOS/*.{h,m}"
     ss.preserve_paths = "Libraries/ActionSheetIOS/*.js"
   end
 
   s.subspec 'RCTAdSupport' do |ss|
-    ss.dependency       'React/Core'
+    ss.dependency       'ReactABI6_0_0/Core'
     ss.source_files   = "Libraries/AdSupport/*.{h,m}"
     ss.preserve_paths = "Libraries/AdSupport/*.js"
   end
 
   s.subspec 'RCTCameraRoll' do |ss|
-    ss.dependency       'React/Core'
-    ss.dependency       'React/RCTImage'
+    ss.dependency       'ReactABI6_0_0/Core'
+    ss.dependency       'ReactABI6_0_0/RCTImage'
     ss.source_files   = "Libraries/CameraRoll/*.{h,m}"
     ss.preserve_paths = "Libraries/CameraRoll/*.js"
   end
 
   s.subspec 'RCTGeolocation' do |ss|
-    ss.dependency       'React/Core'
+    ss.dependency       'ReactABI6_0_0/Core'
     ss.source_files   = "Libraries/Geolocation/*.{h,m}"
     ss.preserve_paths = "Libraries/Geolocation/*.js"
   end
 
   s.subspec 'RCTImage' do |ss|
-    ss.dependency       'React/Core'
-    ss.dependency       'React/RCTNetwork'
+    ss.dependency       'ReactABI6_0_0/Core'
+    ss.dependency       'ReactABI6_0_0/RCTNetwork'
     ss.source_files   = "Libraries/Image/*.{h,m}"
     ss.preserve_paths = "Libraries/Image/*.js"
   end
 
   s.subspec 'RCTNetwork' do |ss|
-    ss.dependency       'React/Core'
+    ss.dependency       'ReactABI6_0_0/Core'
     ss.source_files   = "Libraries/Network/*.{h,m}"
     ss.preserve_paths = "Libraries/Network/*.js"
   end
 
   s.subspec 'RCTPushNotification' do |ss|
-    ss.dependency       'React/Core'
+    ss.dependency       'ReactABI6_0_0/Core'
     ss.source_files   = "Libraries/PushNotificationIOS/*.{h,m}"
     ss.preserve_paths = "Libraries/PushNotificationIOS/*.js"
   end
 
   s.subspec 'RCTSettings' do |ss|
-    ss.dependency       'React/Core'
+    ss.dependency       'ReactABI6_0_0/Core'
     ss.source_files   = "Libraries/Settings/*.{h,m}"
     ss.preserve_paths = "Libraries/Settings/*.js"
   end
 
   s.subspec 'RCTText' do |ss|
-    ss.dependency       'React/Core'
+    ss.dependency       'ReactABI6_0_0/Core'
     ss.source_files   = "Libraries/Text/*.{h,m}"
     ss.preserve_paths = "Libraries/Text/*.js"
   end
 
   s.subspec 'RCTVibration' do |ss|
-    ss.dependency       'React/Core'
+    ss.dependency       'ReactABI6_0_0/Core'
     ss.source_files   = "Libraries/Vibration/*.{h,m}"
     ss.preserve_paths = "Libraries/Vibration/*.js"
   end
 
   s.subspec 'RCTWebSocket' do |ss|
-    ss.dependency       'React/Core'
+    ss.dependency       'ReactABI6_0_0/Core'
     ss.source_files   = "Libraries/WebSocket/*.{h,m}"
     ss.preserve_paths = "Libraries/WebSocket/*.js"
   end
 
   s.subspec 'RCTLinkingIOS' do |ss|
-    ss.dependency       'React/Core'
+    ss.dependency       'ReactABI6_0_0/Core'
     ss.source_files   = "Libraries/LinkingIOS/*.{h,m}"
     ss.preserve_paths = "Libraries/LinkingIOS/*.js"
   end
 
   s.subspec 'RCTTest' do |ss|
-    ss.dependency       'React/Core'
+    ss.dependency       'ReactABI6_0_0/Core'
     ss.source_files   = "Libraries/RCTTest/**/*.{h,m}"
     ss.preserve_paths = "Libraries/RCTTest/**/*.js"
     ss.frameworks     = "XCTest"
