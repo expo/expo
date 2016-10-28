@@ -126,14 +126,15 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
 - (void)viewWillAppear:(BOOL)animated
 {
   [super viewWillAppear:animated];
+  RCTBridge *kernelBridge = [[EXKernel sharedInstance].bridgeRegistry kernelBridge];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleKernelLoadEvent:)
                                                name:RCTJavaScriptDidLoadNotification
-                                             object:[[EXKernel sharedInstance].bridgeRegistry kernelBridge].baseBridge];
+                                             object:kernelBridge];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleKernelLoadEvent:)
                                                name:RCTJavaScriptDidFailToLoadNotification
-                                             object:[[EXKernel sharedInstance].bridgeRegistry kernelBridge].baseBridge];
+                                             object:kernelBridge];
   [self _populateContent];
 }
 
@@ -148,8 +149,8 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
 
 - (void)_onTapReloadKernel
 {
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification
-                                                      object:[[EXKernel sharedInstance].bridgeRegistry kernelBridge].baseBridge];
+  RCTBridge *kernelBridge = [[EXKernel sharedInstance].bridgeRegistry kernelBridge];
+  [kernelBridge requestReload];
   [self dismissViewControllerAnimated:YES completion:nil];
 }
 
