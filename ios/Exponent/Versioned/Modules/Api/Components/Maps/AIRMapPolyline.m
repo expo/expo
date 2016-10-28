@@ -104,4 +104,43 @@
     return NO;
 }
 
+
+#pragma mark AIRMapSnapshot implementation
+
+- (void) drawToSnapshot:(MKMapSnapshot *) snapshot context:(CGContextRef) context
+{
+    // Prepare context
+    CGContextSetStrokeColorWithColor(context, self.strokeColor.CGColor);
+    CGContextSetLineWidth(context, self.strokeWidth);
+    CGContextSetLineCap(context, self.lineCap);
+    CGContextSetLineJoin(context, self.lineJoin);
+    CGContextSetMiterLimit(context, self.miterLimit);
+    CGFloat dashes[self.lineDashPattern.count];
+    for (NSUInteger i = 0; i < self.lineDashPattern.count; i++) {
+        dashes[i] = self.lineDashPattern[i].floatValue;
+    }
+    CGContextSetLineDash(context, self.lineDashPhase, dashes, self.lineDashPattern.count);
+    
+    // Begin path
+    CGContextBeginPath(context);
+    
+    // Get coordinates
+    CLLocationCoordinate2D coordinates[[self.polyline pointCount]];
+    [self.polyline getCoordinates:coordinates range:NSMakeRange(0, [self.polyline pointCount])];
+    
+    // Draw line segments
+    for(int i = 0; i < [self.polyline pointCount]; i++) {
+        CGPoint point = [snapshot pointForCoordinate:coordinates[i]];
+        if (i == 0) {
+            CGContextMoveToPoint(context,point.x, point.y);
+        }
+        else{
+            CGContextAddLineToPoint(context,point.x, point.y);
+        }
+    }
+    
+    // Finish path
+    CGContextStrokePath(context);
+}
+
 @end

@@ -24,6 +24,8 @@
 #import "AIRMapPolygon.h"
 #import "AIRMapCircle.h"
 #import "SMCalloutView.h"
+#import "AIRMapUrlTile.h"
+#import "AIRMapSnapshot.h"
 
 #import <MapKit/MapKit.h>
 
@@ -186,6 +188,38 @@ RCT_EXPORT_METHOD(fitToSuppliedMarkers:(nonnull NSNumber *)reactTag
     }];
 }
 
+RCT_EXPORT_METHOD(fitToCoordinates:(nonnull NSNumber *)reactTag
+                  coordinates:(nonnull NSArray<AIRMapCoordinate *> *)coordinates
+                  edgePadding:(nonnull NSDictionary *)edgePadding
+                  animated:(BOOL)animated)
+{
+    [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+        id view = viewRegistry[reactTag];
+        if (![view isKindOfClass:[AIRMap class]]) {
+            RCTLogError(@"Invalid view returned from registry, expecting AIRMap, got: %@", view);
+        } else {
+            AIRMap *mapView = (AIRMap *)view;
+
+            // Create Polyline with coordinates
+            CLLocationCoordinate2D coords[coordinates.count];
+            for(int i = 0; i < coordinates.count; i++)
+            {
+                coords[i] = coordinates[i].coordinate;
+            }
+            MKPolyline *polyline = [MKPolyline polylineWithCoordinates:coords count:coordinates.count];
+
+            // Set Map viewport
+            CGFloat top = [RCTConvert CGFloat:edgePadding[@"top"]];
+            CGFloat right = [RCTConvert CGFloat:edgePadding[@"right"]];
+            CGFloat bottom = [RCTConvert CGFloat:edgePadding[@"bottom"]];
+            CGFloat left = [RCTConvert CGFloat:edgePadding[@"left"]];
+
+            [mapView setVisibleMapRect:[polyline boundingMapRect] edgePadding:UIEdgeInsetsMake(top, left, bottom, right) animated:animated];
+
+        }
+    }];
+}
+
 RCT_EXPORT_METHOD(takeSnapshot:(nonnull NSNumber *)reactTag
         withWidth:(nonnull NSNumber *)width
         withHeight:(nonnull NSNumber *)height
@@ -249,6 +283,12 @@ RCT_EXPORT_METHOD(takeSnapshot:(nonnull NSNumber *)reactTag
                               point.x = point.x + pin.centerOffset.x - (pin.bounds.size.width / 2.0f);
                               point.y = point.y + pin.centerOffset.y - (pin.bounds.size.height / 2.0f);
                               [pin.image drawAtPoint:point];
+                          }
+                      }
+                      
+                      for (id <AIRMapSnapshot> overlay in mapView.overlays) {
+                          if ([overlay respondsToSelector:@selector(drawToSnapshot:context:)]) {
+                                  [overlay drawToSnapshot:snapshot context:UIGraphicsGetCurrentContext()];
                           }
                       }
 
@@ -342,6 +382,8 @@ RCT_EXPORT_METHOD(takeSnapshot:(nonnull NSNumber *)reactTag
         return ((AIRMapPolygon *)overlay).renderer;
     } else if ([overlay isKindOfClass:[AIRMapCircle class]]) {
         return ((AIRMapCircle *)overlay).renderer;
+    } else if ([overlay isKindOfClass:[AIRMapUrlTile class]]) {
+        return ((AIRMapUrlTile *)overlay).renderer;
     } else {
         return nil;
     }

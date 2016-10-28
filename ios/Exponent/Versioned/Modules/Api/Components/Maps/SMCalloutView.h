@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// when delaying our popup in order to scroll content into view, you can use this amount to match the
 /// animation duration of UIScrollView when using @c -setContentOffset:animated.
-extern NSTimeInterval const SMCalloutViewRepositionDelayForUIScrollView;
+extern NSTimeInterval const kSMCalloutViewRepositionDelayForUIScrollView;
 
 @protocol SMCalloutViewDelegate;
 @class SMCalloutBackgroundView;
@@ -40,7 +40,7 @@ extern NSTimeInterval const SMCalloutViewRepositionDelayForUIScrollView;
 // Callout view.
 //
 
-@interface SMCalloutView : UIView
+@interface SMCalloutView : UIView <CAAnimationDelegate>
 
 @property (nonatomic, weak, nullable) id<SMCalloutViewDelegate> delegate;
 /// title/titleView relationship mimics UINavigationBar.
@@ -176,7 +176,7 @@ extern NSTimeInterval const SMCalloutViewRepositionDelayForUIScrollView;
  to respond to this situation by repositioning your content first in order to make everything visible.
  The @c CGSize passed is the calculated offset necessary to make everything visible (plus a nice margin). 
  It expects you to return the amount of time you need to reposition things so the popup can be delayed. 
- Typically you would return @c SMCalloutViewRepositionDelayForUIScrollView if you're repositioning by calling @c [UIScrollView @c setContentOffset:animated:].
+ Typically you would return @c kSMCalloutViewRepositionDelayForUIScrollView if you're repositioning by calling @c [UIScrollView @c setContentOffset:animated:].
  
  @param calloutView the @c SMCalloutView to reposition
  @param offset caluclated offset necessary to make everything visible

@@ -86,11 +86,11 @@ static NSString *const EXVideoPlaybackRateKeyPath = @"rate";
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(bridgeDidForeground:)
                                                name:EX_UNVERSIONED(@"EXKernelBridgeDidForegroundNotification")
-                                             object:bridge.baseBridge];
+                                             object:bridge];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(bridgeDidBackground:)
                                                name:EX_UNVERSIONED(@"EXKernelBridgeDidBackgroundNotification")
-                                             object:bridge.baseBridge];
+                                             object:bridge];
   return self;
 }
 
