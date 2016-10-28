@@ -80,3 +80,16 @@ Congratulations!
 ----------------
 
 You have created a new Exponent project, made a change, and seen it update.
+
+Next Steps
+----------
+
+- The :ref:`Additional Resources <additional-resources>` page has links to several
+  open-source Exponent projects so you can see some working examples.
+- Read about the :ref:`Exponent SDK <exponent-sdk>` to learn about some useful
+  APIs we provide out of the box.
+- Read some of our other guides, such as how to implement
+  :ref:`Push Notifications <push-notifications>`, how we can take care of
+  :ref:`Assets <all-about-assets>` for you, or how to build
+  :ref:`Standalone Apps <building-standalone-apps>` you can submit to Apple or Google.
+- Join us on Slack to get your questions answered.

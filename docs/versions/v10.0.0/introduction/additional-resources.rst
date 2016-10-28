@@ -1,18 +1,26 @@
+.. _additional-resources:
+
 Additional Resources
 ====================
 
 The following resources are useful for learning Exponent and some of the projects that it depends on.
 
-Exponent
-"""""""""""""
+Exponent Articles
+"""""""""""""""""
 
 * `The Exponent Log <https://blog.getexponent.com/>`_ - our official blog
 * `Building li.st for Android with Exponent and React Native <https://www.youtube.com/watch?v=cI9bDvDEsYE>`_ - conference talk
 * `Build Cross Platform React Native Apps with Exponent and Redux <https://www.pluralsight.com/courses/build-react-native-exponent-redux-apps>`_ (video course on PluralSight)
-* `Pomodoro <https://github.com/exponentjs/pomodoroexp>`_ - sample Pomodoro app
-* `Floatyplane <https://github.com/exponentjs/floatyplane>`_ - a game you might be familiar with
-* `Foodwheel <https://github.com/exponentjs/foodwheel>`_ - how we decide where to eat lunch
-* `React Native Playground <https://github.com/exponentjs/rnplay>`_ - source of the client app for `rnplay.org <https://www.rnplay.org>`_
+
+Example Projects built with Exponent
+""""""""""""""""""""""""""""""""""""
+
+* `Growler Prowler <https://getexponent.com/@community/growler-prowler>`_ (`source <https://github.com/brentvatne/growler-prowler>`_) - a useful demo project showing how to use maps, navigation, Facebook auth, and more
+* `Floatyplane <https://getexponent.com/@exponent/floatyplane>`_ (`source <https://github.com/exponentjs/floatyplane>`_) - a game you might be familiar with
+* `Foodwheel <https://getexponent.com/@exponent/foodwheel>`_ (`source <https://github.com/exponentjs/foodwheel>`_) - how we decide where to eat lunch
+* `React Native Playground <http://rnplay.org>`_ (`source <https://github.com/exponentjs/rnplay>`_) - client app for RNPlay
+* `Instagram Stories Clone <https://getexponent.com/@mastermo/instagram-stories>`_ (`source <https://github.com/mastermoo/rn-instagram-stories>`_)
+* `Pomodoro <https://getexponent.com/@exponent/pomodoro>`_ (`source <https://github.com/exponentjs/pomodoroexp>`_) - sample Pomodoro app
 
 React Native
 """"""""""""""
