@@ -35,7 +35,7 @@
 - (NSString *)bundleNameForJSResource
 {
   if (_frame.initialProps && [_frame.initialProps[@"shell"] boolValue]) {
-    NSLog(@"EXAppManager: Standalone bundle remote url is %@", [self.reactBridge bundleURL]);
+    NSLog(@"EXFrameReactAppManager: Standalone bundle remote url is %@", [EXShellManager sharedInstance].shellManifestUrl);
     return kEXShellBundleResourceName;
   } else {
     return _frame.manifest[@"id"];

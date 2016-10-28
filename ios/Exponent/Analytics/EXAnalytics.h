@@ -17,6 +17,8 @@ typedef enum EXKernelRoute : NSUInteger {
      manifestUrl: (nonnull NSURL *)url
  eventProperties: (nullable NSDictionary *)properties;
 
+- (void)setUserProperties: (nonnull NSDictionary *)props;
+
 /**
  *  @param isFromJS true if the event came from an action taken in JS.
  *         false if the event came from iOS.

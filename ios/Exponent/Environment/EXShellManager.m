@@ -1,6 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+#import "EXAnalytics.h"
 #import "EXShellManager.h"
+#import "RCTUtils.h"
 
 NSString * const kEXShellBundleResourceName = @"shell-app";
 NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
@@ -45,7 +47,10 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
     _isShell = [mutableConfig[@"isShell"] boolValue];
     if (_isShell) {
       _shellManifestUrl = mutableConfig[@"manifestUrl"];
+      RCTAssert((_shellManifestUrl), @"This app is configured to be a standalone app, but does not specify a standalone experience url.");
       // other shell config goes here
+
+      [[EXAnalytics sharedInstance] setUserProperties:@{ @"INITIAL_URL": _shellManifestUrl }];
     }
     
     NSDictionary *iosConfig = [[NSBundle mainBundle] infoDictionary];

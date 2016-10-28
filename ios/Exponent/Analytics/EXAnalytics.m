@@ -40,6 +40,11 @@
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (void)setUserProperties: (nonnull NSDictionary *)props
+{
+  [[Amplitude instance] setUserProperties:props];
+}
+
 - (void)logEvent:(NSString *)eventIdentifier manifestUrl:(nonnull NSURL *)url eventProperties:(nullable NSDictionary *)properties
 {
   NSMutableDictionary *mutableProps = (properties) ? [properties mutableCopy] : [NSMutableDictionary dictionary];
