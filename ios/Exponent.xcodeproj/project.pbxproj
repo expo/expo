@@ -89,6 +89,8 @@
 		A1CDBE8B1D30781000C2A670 /* EXLinearGradient.m in Sources */ = {isa = PBXBuildFile; fileRef = A1CDBE881D30781000C2A670 /* EXLinearGradient.m */; };
 		A1CDBE8C1D30781000C2A670 /* EXLinearGradientManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A1CDBE8A1D30781000C2A670 /* EXLinearGradientManager.m */; };
 		A1CDBE991D3851F700C2A670 /* EXFileSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = A1CDBE981D3851F700C2A670 /* EXFileSystem.m */; };
+		A1DCE8471DC3FC63009665FD /* EXGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = A1DCE8441DC3FC63009665FD /* EXGLView.m */; };
+		A1DCE8481DC3FC63009665FD /* EXGLViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A1DCE8461DC3FC63009665FD /* EXGLViewManager.m */; };
 		A1F37F711CEFD6B2001E9EFC /* EXConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = A1F37F5C1CEFD6B2001E9EFC /* EXConstants.m */; };
 		A1F37F721CEFD6B2001E9EFC /* EXContacts.m in Sources */ = {isa = PBXBuildFile; fileRef = A1F37F5E1CEFD6B2001E9EFC /* EXContacts.m */; };
 		A1F37F731CEFD6B2001E9EFC /* EXFontLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = A1F37F601CEFD6B2001E9EFC /* EXFontLoader.m */; };
@@ -336,6 +338,10 @@
 		A1CDBE8A1D30781000C2A670 /* EXLinearGradientManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXLinearGradientManager.m; sourceTree = "<group>"; };
 		A1CDBE971D3851F700C2A670 /* EXFileSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFileSystem.h; sourceTree = "<group>"; };
 		A1CDBE981D3851F700C2A670 /* EXFileSystem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFileSystem.m; sourceTree = "<group>"; };
+		A1DCE8431DC3FC63009665FD /* EXGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGLView.h; sourceTree = "<group>"; };
+		A1DCE8441DC3FC63009665FD /* EXGLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGLView.m; sourceTree = "<group>"; };
+		A1DCE8451DC3FC63009665FD /* EXGLViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGLViewManager.h; sourceTree = "<group>"; };
+		A1DCE8461DC3FC63009665FD /* EXGLViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGLViewManager.m; sourceTree = "<group>"; };
 		A1F37F5B1CEFD6B2001E9EFC /* EXConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXConstants.h; sourceTree = "<group>"; };
 		A1F37F5C1CEFD6B2001E9EFC /* EXConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXConstants.m; sourceTree = "<group>"; };
 		A1F37F5D1CEFD6B2001E9EFC /* EXContacts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXContacts.h; sourceTree = "<group>"; };
@@ -714,6 +720,17 @@
 			path = Components;
 			sourceTree = "<group>";
 		};
+		A1DCE8421DC3FC63009665FD /* GL */ = {
+			isa = PBXGroup;
+			children = (
+				A1DCE8431DC3FC63009665FD /* EXGLView.h */,
+				A1DCE8441DC3FC63009665FD /* EXGLView.m */,
+				A1DCE8451DC3FC63009665FD /* EXGLViewManager.h */,
+				A1DCE8461DC3FC63009665FD /* EXGLViewManager.m */,
+			);
+			path = GL;
+			sourceTree = "<group>";
+		};
 		A1F37F591CEFD6B2001E9EFC /* Modules */ = {
 			isa = PBXGroup;
 			children = (
@@ -726,6 +743,7 @@
 		A1F37F5A1CEFD6B2001E9EFC /* Api */ = {
 			isa = PBXGroup;
 			children = (
+				A1DCE8421DC3FC63009665FD /* GL */,
 				A1CDBE861D30781000C2A670 /* Components */,
 				B51C2AFF1DC7BB3200120834 /* OAuthViewController */,
 				B5844C341D482C3D0015C683 /* Permissions */,
@@ -1443,6 +1461,8 @@
 				193601131D67ABCF007C0EE0 /* RNSVGEllipseManager.m in Sources */,
 				B575EE9E1D53EEC300DCABBC /* EXJavaScriptResource.m in Sources */,
 				1936011D1D67ABCF007C0EE0 /* RNSVGNodeManager.m in Sources */,
+				84EC975F1D728A24009EEB4E /* AIRMapMarkerManager.m in Sources */,
+				A1DCE8471DC3FC63009665FD /* EXGLView.m in Sources */,
 				B5678C5F1DB6D65B00380A6E /* EXFrame.m in Sources */,
 				B55089791D06378B009FBBC5 /* EXKernel.m in Sources */,
 				B5218E851D2475A000C54B61 /* EXKernelBridgeRecord.m in Sources */,
@@ -1489,6 +1509,7 @@
 				B5844C3B1D482D710015C683 /* EXRemoteNotificationRequester.m in Sources */,
 				B55FDEFA1C7FE1310020AA8F /* EXRootViewController.m in Sources */,
 				B5553F961CEFBD1200555008 /* EXShellManager.m in Sources */,
+				A1DCE8481DC3FC63009665FD /* EXGLViewManager.m in Sources */,
 				1936012A1D67ABCF007C0EE0 /* RNSVGSvgViewManager.m in Sources */,
 				A1F37F7A1CEFD6B2001E9EFC /* EXVersionManager.m in Sources */,
 				1936012C1D67ABCF007C0EE0 /* RNSVGTextManager.m in Sources */,
@@ -1706,7 +1727,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "host.exp.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "$(APP_PROVISIONING_PROFILE)";
-				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -1778,7 +1798,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "host.exp.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "$(APP_PROVISIONING_PROFILE)";
-				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
