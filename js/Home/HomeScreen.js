@@ -19,7 +19,6 @@ import {
 } from 'react-native';
 import ResponsiveImage from '@exponent/react-native-responsive-image';
 
-import autobind from 'autobind-decorator';
 import Browser from 'Browser';
 import BrowserActions from 'BrowserActions';
 import ExColors from 'ExColors';
@@ -128,7 +127,7 @@ class HomeScreen extends React.Component {
           renderRow={this._renderHistoryItem}
           renderSeparator={this._renderHistoryItemSeparator}
           alwaysBounceVertical={hasRecentLinks}
-          removeClippedSubviews={false}
+          removeClippedSubviews
           style={styles.historyList}
         />
 
@@ -139,8 +138,7 @@ class HomeScreen extends React.Component {
     );
   }
 
-  @autobind
-  _renderSectionHeader(sectionData, sectionId) {
+  _renderSectionHeader = (sectionData, sectionId) => {
     switch (sectionId) {
     case 'featured':
       return (
@@ -167,31 +165,26 @@ class HomeScreen extends React.Component {
         return null;
       }
     }
-  }
+  };
 
-  @autobind
-  _renderHistoryItem(item, sectionId, rowId, highlightRow) {
+  _renderHistoryItem = (item, sectionId, rowId, highlightRow) => {
     let key = `${item.url}-${item.time}`;
-    let selectedStyle = (this.state.highlightedItemKey === key) ?
-      styles.highlightedHistoryItem :
-      null;
     return (
-      <TouchableOpacity
+      <HomeListItem
         key={key}
         activeOpacity={1}
         delayPressIn={50}
         onPressIn={() => {
           highlightRow(sectionId, rowId);
-          this.setState({ highlightedItemKey: key });
         }}
         onPressOut={() => {
           highlightRow(null);
-          this.setState({ highlightedItemKey: null });
         }}
         onPress={() => {
-          this._loadUrlAsync(item.url);
+          this._loadUrlAsync(item.url).done();
         }}
-        style={[styles.historyItem, selectedStyle]}>
+        highlightedStyle={styles.highlightedHistoryItem}
+        style={styles.historyItem}>
         <View>
           {item.manifest &&
             <Text style={styles.historyName}>
@@ -202,32 +195,31 @@ class HomeScreen extends React.Component {
             {FriendlyUrls.toFriendlyString(item.url)}
           </Text>
         </View>
-      </TouchableOpacity>
+      </HomeListItem>
     );
-  }
+  };
 
-  @autobind
-  _renderHistoryItemSeparator(sectionId, rowId, adjacentRowHighlighted) {
+  _renderHistoryItemSeparator = (sectionId, rowId, adjacentRowHighlighted) => {
+    let highlightedStyle = adjacentRowHighlighted ? { marginLeft: 0 } : null;
     return (
       <View
         key={`sep-${sectionId}-${rowId}`}
-        style={styles.historyItemSeparator}
+        style={[styles.historyItemSeparator, highlightedStyle]}
       />
     );
-  }
+  };
 
-  @autobind
-  _handleUrlSubmit(event) {
+  _handleUrlSubmit = (event) => {
     let url = event.nativeEvent.text.trim();
     if (url.toLowerCase() === 'dev menu' || url.toLowerCase() === 'dm') {
       ExponentKernel.addDevMenu();
     } else {
       url = ExUrls.normalizeUrl(url);
       if (url) {
-        this._loadUrlAsync(url, true);
+        this._loadUrlAsync(url, true).done();
       }
     }
-  }
+  };
 
   async _loadUrlAsync(url, isFromUrlBar = false) {
     if (isFromUrlBar) {
@@ -242,7 +234,6 @@ class HomeScreen extends React.Component {
     }
   }
 
-  @autobind
   _refresh() {
     Browser.refresh();
   }
@@ -252,6 +243,42 @@ export default connect(
   data => HomeScreen.getDataProps(data),
   dispatch => HomeScreen.getDispatchActions(dispatch),
 )(HomeScreen);
+
+class HomeListItem extends React.Component {
+  state = {
+    isHighlighted: false,
+  };
+
+  render() {
+    let {
+      style,
+      highlightedStyle,
+      ...props,
+    } = this.props;
+    return (
+      <TouchableOpacity
+        {...props}
+        onPressIn={this._handlePressIn}
+        onPressOut={this._handlePressOut}
+        style={[style, this.state.isHighlighted && highlightedStyle]}
+      />
+    );
+  }
+
+  _handlePressIn = (event) => {
+    this.setState({ isHighlighted: true });
+    if (this.props.onPressIn) {
+      this.props.onPressIn(event);
+    }
+  };
+
+  _handlePressOut = (event) => {
+    this.setState({ isHighlighted: false });
+    if (this.props.onPressOut) {
+      this.props.onPressOut(event);
+    }
+  };
+}
 
 let styles = StyleSheet.create({
   container: {
@@ -313,9 +340,8 @@ let styles = StyleSheet.create({
   },
   historyItem: {
     backgroundColor: '#ffffff',
-    marginHorizontal: 16,
     paddingVertical: 12,
-    paddingHorizontal: 6,
+    paddingHorizontal: 22,
   },
   highlightedHistoryItem: {
     backgroundColor: ExColors.selectedRow,
@@ -333,7 +359,7 @@ let styles = StyleSheet.create({
     marginTop: 4,
   },
   historyItemSeparator: {
-    height: 1,
+    height: StyleSheet.hairlineWidth,
     backgroundColor: '#f0f0f0',
     marginLeft: 16,
   },
