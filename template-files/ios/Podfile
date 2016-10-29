@@ -17,6 +17,7 @@ target 'Exponent' do
   pod 'Analytics', '~> 3.5'
 
   # Local CocoaPods
+  pod 'ExponentCPP', :path => '../cpp'
   pod 'React', :path => '${REACT_NATIVE_PATH}', :subspecs => [
     'Core',
     'ART',
