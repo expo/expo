@@ -49,6 +49,7 @@ import versioned.host.exp.exponent.modules.api.components.svg.RNSvgPackage;
 import versioned.host.exp.exponent.modules.api.components.maps.MapsPackage;
 import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerViewManager;
 import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerModule;
+import versioned.host.exp.exponent.modules.api.gl.GLViewManager;
 import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule;
 import versioned.host.exp.exponent.modules.internal.ExponentIntentModule;
 import versioned.host.exp.exponent.modules.internal.ExponentUnsignedAsyncStorageModule;
@@ -139,7 +140,8 @@ public class ExponentPackage implements ReactPackage {
     List<ViewManager> viewManagers = new ArrayList<>(Arrays.<ViewManager>asList(
         new LinearGradientManager(),
         new VideoViewManager(),
-        new BarCodeScannerViewManager()
+        new BarCodeScannerViewManager(),
+        new GLViewManager()
     ));
 
     // Add view managers from the react-native-svg package.
