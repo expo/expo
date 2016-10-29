@@ -47,7 +47,7 @@ execute code, etc, as you would when debugging a web app.
   as your development machine. This may not work on some public networks.
   ``localhost`` will not work for iOS unless you are in the simulator, and it
   only work on Android if your device is connected to your machine via usb.
-- Open the app on your device, then shake the device a little bit to reveal the
+- Open the app on your device, then shake the device a little bit (or hit `Ctrl-Cmd-Z` on a Mac in the emulator) to reveal the
   developer menu. Tap on ``Debug JS Remotely``. This should open up a Chrome
   tab with the URL ``http://localhost:19001/debugger-ui``. From there, you can
   set breakpoints and interact through the JavaScript console. Shake the
@@ -99,7 +99,7 @@ Hot Reloading and Live Reloading
 ================================
 `Hot Module Reloading <http://facebook.github.io/react-native/blog/2016/03/24/introducing-hot-reloading.html>`_
 is a quick way to reload changes without losing your state in the screen or
-navigation stack. To enable, just shake your device and tap the "Enable Hot
+navigation stack. To enable, just shake your device (or hit `Ctrl-Cmd-Z` on a Mac in the emulator) and tap the "Enable Hot
 Reloading" item. Whereas Live Reload will reload the entire JS context, Hot
 Module Reloading will make your debug cycles even faster. However, make sure
 you don't have both options turned on, as that is unsupported behavior.
