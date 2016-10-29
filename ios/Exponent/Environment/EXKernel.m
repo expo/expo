@@ -168,9 +168,13 @@ NSString *kEXKernelBundleResourceName = @"kernel.ios";
   
   if (destinationBridge) {
     // fire a Linking url event on this (possibly versioned) bridge
-    id linkingModule = [self _nativeModuleForBridge:destinationBridge named:@"RCTLinkingManager"];
-    if (linkingModule && [linkingModule respondsToSelector:@selector(dispatchOpenUrlEvent:)]) {
+    id linkingModule = [self _nativeModuleForBridge:destinationBridge named:@"LinkingManager"];
+    if (!linkingModule) {
+      DDLogError(@"Could not find the Linking module to open URL (%@)", urlToRoute);
+    } else if ([linkingModule respondsToSelector:@selector(dispatchOpenUrlEvent:)]) {
       [linkingModule dispatchOpenUrlEvent:[NSURL URLWithString:urlToRoute]];
+    } else {
+      DDLogError(@"Linking module doesn't support the API we use to open URL (%@)", urlToRoute);
     }
     [self _moveBridgeToForeground:destinationBridge];
   }
@@ -335,9 +339,17 @@ continueUserActivity:(NSUserActivity *)userActivity
   if ([destinationBridge respondsToSelector:@selector(batchedBridge)]) {
     id batchedBridge = [destinationBridge batchedBridge];
     id moduleData = [batchedBridge moduleDataForName:moduleName];
+    
+    // React Native before SDK 11 didn't strip the "RCT" prefix from module names
+    if (!moduleData && ![moduleName hasPrefix:@"RCT"]) {
+      moduleData = [batchedBridge moduleDataForName:[@"RCT" stringByAppendingString:moduleName]];
+    }
+    
     if (moduleData) {
       return [moduleData instance];
     }
+  } else {
+    DDLogError(@"Bridge does not support the API we use to get its underlying batched bridge");
   }
   return nil;
 }
@@ -391,7 +403,7 @@ continueUserActivity:(NSUserActivity *)userActivity
     if (bridgeToForeground) {
       [[NSNotificationCenter defaultCenter] postNotificationName:kEXKernelBridgeDidForegroundNotification
                                                           object:bridgeToForeground];
-      id appStateModule = [self _nativeModuleForBridge:bridgeToForeground named:@"RCTAppState"];
+      id appStateModule = [self _nativeModuleForBridge:bridgeToForeground named:@"AppState"];
       if ([appStateModule respondsToSelector:@selector(setState:)]) {
         [appStateModule setState:@"active"];
       }
@@ -402,7 +414,7 @@ continueUserActivity:(NSUserActivity *)userActivity
     if (bridgeToBackground) {
       [[NSNotificationCenter defaultCenter] postNotificationName:kEXKernelBridgeDidBackgroundNotification
                                                           object:bridgeToBackground];
-      id appStateModule = [self _nativeModuleForBridge:bridgeToBackground named:@"RCTAppState"];
+      id appStateModule = [self _nativeModuleForBridge:bridgeToBackground named:@"AppState"];
       if ([appStateModule respondsToSelector:@selector(setState:)]) {
         [appStateModule setState:@"background"];
       }
@@ -448,7 +460,7 @@ continueUserActivity:(NSUserActivity *)userActivity
   }
   
   if (_bridgeRegistry.lastKnownForegroundBridge) {
-    id appStateModule = [self _nativeModuleForBridge:_bridgeRegistry.lastKnownForegroundBridge named:@"RCTAppState"];
+    id appStateModule = [self _nativeModuleForBridge:_bridgeRegistry.lastKnownForegroundBridge named:@"AppState"];
     NSString *lastKnownState;
     if ([appStateModule respondsToSelector:@selector(lastKnownState)]) {
       lastKnownState = [appStateModule lastKnownState];
