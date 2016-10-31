@@ -68,7 +68,7 @@ RUN echo y | android update sdk --no-ui --all --filter "${ANDROID_COMPONENTS}" ;
 # Install Android NDK
 ENV ANDROID_NDK_URL http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin
 RUN wget $ANDROID_NDK_URL
-RUN chmod a+x android-ndk-r10e-linux-x86_64.bin && ./android-ndk-r10e-linux-x86_64.bin && mv ./android-ndk-r10e /usr/local/android-ndk-r10e
+RUN chmod a+x android-ndk-r10e-linux-x86_64.bin && sync && ./android-ndk-r10e-linux-x86_64.bin && mv ./android-ndk-r10e /usr/local/android-ndk-r10e
 RUN cp -R /usr/local/android-ndk-r10e/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64 /usr/local/android-ndk-r10e/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86
 RUN cp -R /usr/local/android-ndk-r10e/toolchains/x86-4.8/prebuilt/linux-x86_64 /usr/local/android-ndk-r10e/toolchains/x86-4.8/prebuilt/linux-x86
 ENV ANDROID_NDK /usr/local/android-ndk-r10e
