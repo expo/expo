@@ -28,12 +28,9 @@ public class AirMapCalloutManager extends ViewGroupManager<AirMapCallout> {
     }
 
     @Override
-    public
     @Nullable
-    Map getExportedCustomDirectEventTypeConstants() {
-        return MapBuilder.of(
-                "onPress", MapBuilder.of("registrationName", "onPress")
-        );
+    public Map getExportedCustomDirectEventTypeConstants() {
+        return MapBuilder.of("onPress", MapBuilder.of("registrationName", "onPress"));
     }
 
     @Override

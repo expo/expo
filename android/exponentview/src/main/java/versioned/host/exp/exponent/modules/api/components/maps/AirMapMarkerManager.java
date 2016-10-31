@@ -19,8 +19,8 @@ import javax.annotation.Nullable;
 
 public class AirMapMarkerManager extends ViewGroupManager<AirMapMarker> {
 
-    public static final int SHOW_INFO_WINDOW = 1;
-    public static final int HIDE_INFO_WINDOW = 2;
+    private static final int SHOW_INFO_WINDOW = 1;
+    private static final int HIDE_INFO_WINDOW = 2;
 
     public AirMapMarkerManager() {
     }
@@ -117,6 +117,14 @@ public class AirMapMarkerManager extends ViewGroupManager<AirMapMarker> {
     }
 
     @Override
+    @ReactProp(name = "zIndex", defaultFloat = 0.0f)
+    public void setZIndex(AirMapMarker view, float zIndex) {
+      super.setZIndex(view, zIndex);
+      int integerZIndex = Math.round(zIndex);
+      view.setZIndex(integerZIndex);
+    }
+
+    @Override
     public void addView(AirMapMarker parent, View child, int index) {
         // if an <Callout /> component is a child, then it is a callout view, NOT part of the
         // marker.
@@ -159,7 +167,7 @@ public class AirMapMarkerManager extends ViewGroupManager<AirMapMarker> {
     @Override
     @Nullable
     public Map getExportedCustomDirectEventTypeConstants() {
-        Map map = MapBuilder.of(
+        Map<String, Map<String, String>> map = MapBuilder.of(
                 "onPress", MapBuilder.of("registrationName", "onPress"),
                 "onCalloutPress", MapBuilder.of("registrationName", "onCalloutPress"),
                 "onDragStart", MapBuilder.of("registrationName", "onDragStart"),
