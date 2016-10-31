@@ -94,9 +94,10 @@ dependencies {
   compile 'de.greenrobot:eventbus:2.4.0'
   compile 'com.amplitude:android-sdk:2.9.2' // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
   compile 'com.squareup.picasso:picasso:2.5.2'
-  compile 'com.google.android.gms:play-services-gcm:8.4.0'
-  compile 'com.google.android.gms:play-services-analytics:8.4.0'
-  compile 'com.google.android.gms:play-services-maps:8.4.0'
+  compile 'com.google.android.gms:play-services-gcm:9.4.0'
+  compile 'com.google.android.gms:play-services-analytics:9.4.0'
+  compile 'com.google.android.gms:play-services-maps:9.4.0'
+  compile 'com.google.android.gms:play-services-auth:9.4.0'
   apt 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
   compile "com.raizlabs.android:DBFlow-Core:2.2.1"
   compile "com.raizlabs.android:DBFlow:2.2.1"

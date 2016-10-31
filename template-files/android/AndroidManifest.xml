@@ -117,6 +117,12 @@
     </activity>
 
     <activity
+      android:name=".OAuthWebViewActivity"
+      android:screenOrientation="portrait"
+      android:theme="@style/Theme.Exponent.Light">
+    </activity>
+
+    <activity
       android:name=".experience.ErrorActivity"
       android:theme="@style/Theme.Exponent.Dark"
       android:screenOrientation="portrait">

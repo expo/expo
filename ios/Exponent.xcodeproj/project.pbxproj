@@ -101,6 +101,8 @@
 		A2AABA28A2AEAFB462697CB3 /* libPods-Exponent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B1D1884419563A8205AED29 /* libPods-Exponent.a */; };
 		B509BCC51C6A88EC00A67CBB /* EXVersions.m in Sources */ = {isa = PBXBuildFile; fileRef = B509BCBB1C6A88EC00A67CBB /* EXVersions.m */; };
 		B51333431CE649FE00E9FC9E /* ExponentIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B51333421CE649FE00E9FC9E /* ExponentIntegrationTests.m */; };
+		B51C2AFD1DC7BB2000120834 /* EXGoogle.m in Sources */ = {isa = PBXBuildFile; fileRef = B51C2AFC1DC7BB2000120834 /* EXGoogle.m */; };
+		B51C2B021DC7BB3200120834 /* EXOAuthViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B51C2B011DC7BB3200120834 /* EXOAuthViewController.m */; };
 		B5218E731D22FC7800C54B61 /* EXRemoteNotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5218E721D22FC7800C54B61 /* EXRemoteNotificationManager.m */; };
 		B5218E7A1D232B8800C54B61 /* EXNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = B5218E791D232B8800C54B61 /* EXNotifications.m */; };
 		B5218E851D2475A000C54B61 /* EXKernelBridgeRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = B5218E841D2475A000C54B61 /* EXKernelBridgeRecord.m */; };
@@ -357,6 +359,10 @@
 		B51333401CE649FE00E9FC9E /* ExponentIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ExponentIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B51333421CE649FE00E9FC9E /* ExponentIntegrationTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExponentIntegrationTests.m; sourceTree = "<group>"; };
 		B51333441CE649FE00E9FC9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B51C2AFB1DC7BB2000120834 /* EXGoogle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGoogle.h; sourceTree = "<group>"; };
+		B51C2AFC1DC7BB2000120834 /* EXGoogle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGoogle.m; sourceTree = "<group>"; };
+		B51C2B001DC7BB3200120834 /* EXOAuthViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXOAuthViewController.h; sourceTree = "<group>"; };
+		B51C2B011DC7BB3200120834 /* EXOAuthViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXOAuthViewController.m; sourceTree = "<group>"; };
 		B5218E711D22FC7800C54B61 /* EXRemoteNotificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXRemoteNotificationManager.h; sourceTree = "<group>"; };
 		B5218E721D22FC7800C54B61 /* EXRemoteNotificationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXRemoteNotificationManager.m; sourceTree = "<group>"; };
 		B5218E781D232B8800C54B61 /* EXNotifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXNotifications.h; sourceTree = "<group>"; };
@@ -721,6 +727,7 @@
 			isa = PBXGroup;
 			children = (
 				A1CDBE861D30781000C2A670 /* Components */,
+				B51C2AFF1DC7BB3200120834 /* OAuthViewController */,
 				B5844C341D482C3D0015C683 /* Permissions */,
 				A1F37F5B1CEFD6B2001E9EFC /* EXConstants.h */,
 				A1F37F5C1CEFD6B2001E9EFC /* EXConstants.m */,
@@ -734,6 +741,8 @@
 				B56FACAC1D4C0266009FC106 /* EXFingerprint.m */,
 				A1F37F5F1CEFD6B2001E9EFC /* EXFontLoader.h */,
 				A1F37F601CEFD6B2001E9EFC /* EXFontLoader.m */,
+				B51C2AFB1DC7BB2000120834 /* EXGoogle.h */,
+				B51C2AFC1DC7BB2000120834 /* EXGoogle.m */,
 				A15DC4BB1CFF99FE009F940D /* EXImagePicker.h */,
 				A15DC4BA1CFF99FE009F940D /* EXImagePicker.m */,
 				A12CC94A1D11E80E0023A57B /* EXLocation.h */,
@@ -815,6 +824,15 @@
 				B51333441CE649FE00E9FC9E /* Info.plist */,
 			);
 			path = ExponentIntegrationTests;
+			sourceTree = "<group>";
+		};
+		B51C2AFF1DC7BB3200120834 /* OAuthViewController */ = {
+			isa = PBXGroup;
+			children = (
+				B51C2B001DC7BB3200120834 /* EXOAuthViewController.h */,
+				B51C2B011DC7BB3200120834 /* EXOAuthViewController.m */,
+			);
+			path = OAuthViewController;
 			sourceTree = "<group>";
 		};
 		B53BB2851C7E6C1E00D52FBD /* Analytics */ = {
@@ -1227,7 +1245,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		8B4DC8ADD4224A9E1D4FCDF3 /* [CP] Copy Pods Resources */ = {
@@ -1331,7 +1349,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		F976496B69F7AF7E130D3222 /* [CP] Check Pods Manifest.lock */ = {
@@ -1394,6 +1412,7 @@
 				B55FDEF61C7FDD380020AA8F /* EXDevMenuViewController.m in Sources */,
 				A1F37F751CEFD6B2001E9EFC /* EXDisabledDevLoadingView.m in Sources */,
 				A1F37F761CEFD6B2001E9EFC /* EXDisabledDevMenu.m in Sources */,
+				B51C2B021DC7BB3200120834 /* EXOAuthViewController.m in Sources */,
 				1936010D1D67ABCF007C0EE0 /* RNSVGCircleManager.m in Sources */,
 				78C77D241DC332870069CC59 /* AIRMapCircle.m in Sources */,
 				A1F37F781CEFD6B2001E9EFC /* EXDisabledRedBox.m in Sources */,
@@ -1448,6 +1467,7 @@
 				840D8EE21D8CB91E00CD88DE /* EXUtil.m in Sources */,
 				78C77D291DC332870069CC59 /* AIRMapMarkerManager.m in Sources */,
 				1936011C1D67ABCF007C0EE0 /* RNSVGNode.m in Sources */,
+				B51C2AFD1DC7BB2000120834 /* EXGoogle.m in Sources */,
 				193601151D67ABCF007C0EE0 /* RNSVGGroupManager.m in Sources */,
 				1936010A1D67ABCF007C0EE0 /* RNSVGBrush.m in Sources */,
 				1936012F1D67ABCF007C0EE0 /* RNSVGViewBox.m in Sources */,

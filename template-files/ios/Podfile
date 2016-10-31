@@ -6,6 +6,7 @@ target 'Exponent' do
   pod 'CocoaLumberjack', '~> 2.3'
   pod 'Crashlytics', '~> 3.8'
   pod 'Fabric', '~> 1.6'
+  pod 'Google/SignIn', '~> 3.0'
   pod 'SimulatorStatusMagic', '~> 1.9', :configurations => ['Debug']
   # Be careful when updating. Could break versioning.
   pod 'Amplitude-iOS', '~> 3.8'
