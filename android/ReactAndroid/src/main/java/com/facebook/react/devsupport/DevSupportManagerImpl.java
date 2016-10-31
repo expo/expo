@@ -44,6 +44,7 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.ShakeDetector;
 import com.facebook.react.common.futures.SimpleSettableFuture;
+import com.facebook.react.devsupport.DevServerHelper.PackagerCommandListener;
 import com.facebook.react.devsupport.StackTraceHelper.StackFrame;
 import com.facebook.react.modules.debug.DeveloperSettings;
 import okhttp3.MediaType;
@@ -103,7 +104,7 @@ import okhttp3.RequestBody;
  * {@code <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>}
  * {@code <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>}
  */
-public class DevSupportManagerImpl implements DevSupportManager {
+public class DevSupportManagerImpl implements DevSupportManager, PackagerCommandListener {
 
     public static int JAVA_ERROR_COOKIE = -1;
 
@@ -207,19 +208,7 @@ public class DevSupportManagerImpl implements DevSupportManager {
         mApplicationContext = applicationContext;
         mJSAppBundleName = packagerPathForJSBundleName;
         mDevSettings = new DevInternalSettings(applicationContext, this);
-        mDevServerHelper = new DevServerHelper(mDevSettings, new DevServerHelper.PackagerCommandListener() {
-
-            @Override
-            public void onReload() {
-                UiThreadUtil.runOnUiThread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        handleReloadJS();
-                    }
-                });
-            }
-        });
+        mDevServerHelper = new DevServerHelper(mDevSettings);
         // Prepare shake gesture detector (will be started/stopped from #reload)
         mShakeDetector = new ShakeDetector(new ShakeDetector.ShakeListener() {
 
@@ -639,6 +628,17 @@ public class DevSupportManagerImpl implements DevSupportManager {
         return mLastErrorStack;
     }
 
+    @Override
+    public void onPackagerReloadCommand() {
+        UiThreadUtil.runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
+                handleReloadJS();
+            }
+        });
+    }
+
     private void updateLastErrorInfo(final String message, final StackFrame[] stack, final int errorCookie, final ErrorType errorType) {
         mLastErrorTitle = message;
         mLastErrorStack = stack;
@@ -751,6 +751,7 @@ public class DevSupportManagerImpl implements DevSupportManager {
                 mApplicationContext.registerReceiver(mReloadAppBroadcastReceiver, filter);
                 mIsReceiverRegistered = true;
             }
+            mDevServerHelper.openPackagerConnection(this);
             if (mDevSettings.isReloadOnJSChangeEnabled()) {
                 mDevServerHelper.startPollingOnChangeEndpoint(new DevServerHelper.OnServerContentChangeListener() {
 
@@ -785,6 +786,7 @@ public class DevSupportManagerImpl implements DevSupportManager {
             if (mDevOptionsDialog != null) {
                 mDevOptionsDialog.dismiss();
             }
+            mDevServerHelper.closePackagerConnection();
             mDevServerHelper.stopPollingOnChangeEndpoint();
         }
     }

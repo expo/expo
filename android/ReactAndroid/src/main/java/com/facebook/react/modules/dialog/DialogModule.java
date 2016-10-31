@@ -17,7 +17,6 @@ import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import com.facebook.common.logging.FLog;
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -26,14 +25,16 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.module.annotations.ReactModule;
 
+@ReactModule(name = DialogModule.NAME)
 public class DialogModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
 
     /* package */
     public static String FRAGMENT_TAG = "com.facebook.catalyst.react.dialog.DialogModule";
 
     /* package */
-    public static String NAME = "DialogManagerAndroid";
+    public static final String NAME = "DialogManagerAndroid";
 
     /* package */
     public static String ACTION_BUTTON_CLICKED = "buttonClicked";

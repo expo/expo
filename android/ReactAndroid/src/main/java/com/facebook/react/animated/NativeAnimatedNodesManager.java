@@ -22,7 +22,6 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.UIImplementation;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.Event;
-import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcherListener;
 
 import java.util.ArrayDeque;
@@ -90,6 +89,8 @@ import javax.annotation.Nullable;
       node = new InterpolationAnimatedNode(config);
     } else if ("addition".equals(type)) {
       node = new AdditionAnimatedNode(config, this);
+    } else if ("division".equals(type)) {
+      node = new DivisionAnimatedNode(config, this);
     } else if ("multiplication".equals(type)) {
       node = new MultiplicationAnimatedNode(config, this);
     } else if ("diffclamp".equals(type)) {
@@ -292,7 +293,7 @@ import javax.annotation.Nullable;
       if (customEventType != null) {
         eventName = customEventType.get("registrationName");
       }
-      
+
       EventAnimationDriver eventDriver = mEventDrivers.get(event.getViewTag() + eventName);
       if (eventDriver != null) {
         event.dispatch(eventDriver);

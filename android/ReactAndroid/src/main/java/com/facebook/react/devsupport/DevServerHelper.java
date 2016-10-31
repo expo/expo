@@ -8,7 +8,13 @@
  */
 package com.facebook.react.devsupport;
 
+import javax.annotation.Nullable;
+import java.io.File;
+import java.io.IOException;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.text.TextUtils;
 import com.facebook.common.logging.FLog;
@@ -17,11 +23,6 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.network.OkHttpCallUtil;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
-import java.io.File;
-import java.io.IOException;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-import javax.annotation.Nullable;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.ConnectionPool;
@@ -95,7 +96,7 @@ public class DevServerHelper {
 
     public interface PackagerCommandListener {
 
-        void onReload();
+        void onPackagerReloadCommand();
     }
 
     public interface PackagerStatusCallback {
@@ -107,11 +108,12 @@ public class DevServerHelper {
 
     public final OkHttpClient mClient;
 
-    public final JSPackagerWebSocketClient mPackagerConnection;
-
     public final Handler mRestartOnChangePollingHandler;
 
     public boolean mOnChangePollingEnabled;
+
+    @Nullable
+    public JSPackagerWebSocketClient mPackagerConnection;
 
     @Nullable
     public OkHttpClient mOnChangePollingClient;
@@ -122,20 +124,48 @@ public class DevServerHelper {
     @Nullable
     public Call mDownloadBundleFromURLCall;
 
-    public DevServerHelper(DevInternalSettings settings, final PackagerCommandListener commandListener) {
+    public DevServerHelper(DevInternalSettings settings) {
         mSettings = settings;
         mClient = new OkHttpClient.Builder().connectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS).readTimeout(0, TimeUnit.MILLISECONDS).writeTimeout(0, TimeUnit.MILLISECONDS).build();
         mRestartOnChangePollingHandler = new Handler();
-        mPackagerConnection = new JSPackagerWebSocketClient(getPackagerConnectionURL(), new JSPackagerWebSocketClient.JSPackagerCallback() {
+    }
+
+    public void openPackagerConnection(final PackagerCommandListener commandListener) {
+        if (mPackagerConnection != null) {
+            FLog.w(ReactConstants.TAG, "Packager connection already open, nooping.");
+            return;
+        }
+        new AsyncTask<Void, Void, Void>() {
 
             @Override
-            public void onMessage(String target, String action) {
-                if (commandListener != null && "bridge".equals(target) && "reload".equals(action)) {
-                    commandListener.onReload();
-                }
+            protected Void doInBackground(Void... params) {
+                mPackagerConnection = new JSPackagerWebSocketClient(getPackagerConnectionURL(), new JSPackagerWebSocketClient.JSPackagerCallback() {
+
+                    @Override
+                    public void onMessage(String target, String action) {
+                        if (commandListener != null && "bridge".equals(target) && "reload".equals(action)) {
+                            commandListener.onPackagerReloadCommand();
+                        }
+                    }
+                });
+                mPackagerConnection.connect();
+                return null;
             }
-        });
-        mPackagerConnection.connect();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    public void closePackagerConnection() {
+        new AsyncTask<Void, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                if (mPackagerConnection != null) {
+                    mPackagerConnection.closeQuietly();
+                    mPackagerConnection = null;
+                }
+                return null;
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     /** Intent action for reloading the JS */
