@@ -181,6 +181,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
     }
 
     mLayoutState = LayoutState.DIRTY;
+    layout.computedFlexBasis = CSSConstants.UNDEFINED;
 
     if (mParent != null) {
       mParent.dirty();
@@ -361,16 +362,71 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
    */
   @Override
   public float getFlex() {
-    return style.flex;
+    if (style.flexGrow > 0) {
+      return style.flexGrow;
+    } else if (style.flexShrink > 0) {
+      return -style.flexShrink;
+    }
+
+    return 0;
   }
 
   @Override
   public void setFlex(float flex) {
-    if (!valuesEqual(style.flex, flex)) {
-      style.flex = flex;
+    if (CSSConstants.isUndefined(flex) || flex == 0) {
+      setFlexGrow(0);
+      setFlexShrink(0);
+      setFlexBasis(CSSConstants.UNDEFINED);
+    } else if (flex > 0) {
+      setFlexGrow(flex);
+      setFlexShrink(0);
+      setFlexBasis(0);
+    } else {
+      setFlexGrow(0);
+      setFlexShrink(-flex);
+      setFlexBasis(CSSConstants.UNDEFINED);
+    }
+  }
+
+  @Override
+  public float getFlexGrow() {
+    return style.flexGrow;
+  }
+
+  @Override
+  public void setFlexGrow(float flexGrow) {
+    if (!valuesEqual(style.flexGrow, flexGrow)) {
+      style.flexGrow = flexGrow;
       dirty();
     }
   }
+
+  @Override
+  public float getFlexShrink() {
+    return style.flexShrink;
+  }
+
+  @Override
+  public void setFlexShrink(float flexShrink) {
+    if (!valuesEqual(style.flexShrink, flexShrink)) {
+      style.flexShrink = flexShrink;
+      dirty();
+    }
+  }
+
+  @Override
+  public float getFlexBasis() {
+    return style.flexBasis;
+  }
+
+  @Override
+  public void setFlexBasis(float flexBasis) {
+    if (!valuesEqual(style.flexBasis, flexBasis)) {
+      style.flexBasis = flexBasis;
+      dirty();
+    }
+  }
+
 
   /**
    * Get this node's margin, as defined by style + default margin.
@@ -593,5 +649,6 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
     layout.resetResult();
     lineIndex = 0;
     mLayoutState = LayoutState.DIRTY;
+    mMeasureFunction = null;
   }
 }

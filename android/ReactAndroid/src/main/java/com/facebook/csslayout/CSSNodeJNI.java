@@ -56,6 +56,9 @@ public class CSSNodeJNI implements CSSNodeAPI<CSSNodeJNI> {
   @Override
   public void reset() {
     assertNativeInstance();
+    if (mParent != null || (mChildren != null && mChildren.size() > 0)) {
+      throw new IllegalStateException("You should not reset an attached CSSNode");
+    }
 
     jni_CSSNodeFree(mNativePointer);
     mNativePointer = 0;
@@ -78,6 +81,9 @@ public class CSSNodeJNI implements CSSNodeAPI<CSSNodeJNI> {
   @Override
   public void addChildAt(CSSNodeJNI child, int i) {
     assertNativeInstance();
+    if (child.mParent != null) {
+      throw new IllegalStateException("Child already has a parent, it must be removed first.");
+    }
 
     mChildren.add(i, child);
     child.mParent = this;
@@ -291,6 +297,48 @@ public class CSSNodeJNI implements CSSNodeAPI<CSSNodeJNI> {
   public void setFlex(float flex) {
     assertNativeInstance();
     jni_CSSNodeStyleSetFlex(mNativePointer, flex);
+  }
+
+  private native float jni_CSSNodeStyleGetFlexGrow(long nativePointer);
+  @Override
+  public float getFlexGrow() {
+    assertNativeInstance();
+    return jni_CSSNodeStyleGetFlexGrow(mNativePointer);
+  }
+
+  private native void jni_CSSNodeStyleSetFlexGrow(long nativePointer, float flexGrow);
+  @Override
+  public void setFlexGrow(float flexGrow) {
+    assertNativeInstance();
+    jni_CSSNodeStyleSetFlexGrow(mNativePointer, flexGrow);
+  }
+
+  private native float jni_CSSNodeStyleGetFlexShrink(long nativePointer);
+  @Override
+  public float getFlexShrink() {
+    assertNativeInstance();
+    return jni_CSSNodeStyleGetFlexShrink(mNativePointer);
+  }
+
+  private native void jni_CSSNodeStyleSetFlexShrink(long nativePointer, float flexShrink);
+  @Override
+  public void setFlexShrink(float flexShrink) {
+    assertNativeInstance();
+    jni_CSSNodeStyleSetFlexShrink(mNativePointer, flexShrink);
+  }
+
+  private native float jni_CSSNodeStyleGetFlexBasis(long nativePointer);
+  @Override
+  public float getFlexBasis() {
+    assertNativeInstance();
+    return jni_CSSNodeStyleGetFlexBasis(mNativePointer);
+  }
+
+  private native void jni_CSSNodeStyleSetFlexBasis(long nativePointer, float flexBasis);
+  @Override
+  public void setFlexBasis(float flexBasis) {
+    assertNativeInstance();
+    jni_CSSNodeStyleSetFlexBasis(mNativePointer, flexBasis);
   }
 
   private native float jni_CSSNodeStyleGetMargin(long nativePointer, int edge);
