@@ -12,11 +12,15 @@
         "client_type": 1,
         "android_client_info": {
           "package_name": "host.exp.exponent",
-          "certificate_hash": []
+          "certificate_hash": "${CERTIFICATE_HASH}"
         }
       },
       "oauth_client": [],
-      "api_key": [],
+      "api_key": [
+        {
+          "current_key": "${GOOGLE_CLIENT_API_KEY}"
+        }
+      ],
       "services": {
         "analytics_service": {
           "status": 2,

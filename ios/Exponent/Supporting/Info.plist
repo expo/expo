@@ -29,11 +29,12 @@
 			<array>
 				<string>exp</string>
 				<string>exps</string>
+				<string>com.googleusercontent.apps.367315174693-isv5r1cbirdpj7l2n8g56cipnjnig7hq</string>
 			</array>
 		</dict>
 	</array>
 	<key>EXClientVersion</key>
-	<string>1.9.4.104384</string>
+	<string>1.9.4.104415</string>
 	<key>Fabric</key>
 	<dict>
 		<key>APIKey</key>
