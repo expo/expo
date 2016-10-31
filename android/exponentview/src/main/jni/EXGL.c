@@ -10,8 +10,8 @@
 
 JNIEXPORT jint JNICALL
 Java_host_exp_exponent_exgl_EXGL_EXGLContextCreate
-(JNIEnv *env, jclass clazz, jlong jsCtxL) {
-  JSGlobalContextRef jsCtx = (JSGlobalContextRef) (intptr_t) jsCtxL;
+(JNIEnv *env, jclass clazz, jlong jsCtxPtr) {
+  JSGlobalContextRef jsCtx = (JSGlobalContextRef) (intptr_t) jsCtxPtr;
   if (jsCtx) {
     return EXGLContextCreate(jsCtx);
   }
@@ -29,4 +29,3 @@ Java_host_exp_exponent_exgl_EXGL_EXGLContextFlush
 (JNIEnv *env, jclass clazz, jint exglCtxId) {
   EXGLContextFlush(exglCtxId);
 }
-
