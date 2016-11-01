@@ -67,6 +67,7 @@ typedef void (^ABI11_0_0RCTPropBlock)(id<ABI11_0_0RCTComponent> view, id json);
     if (name.length == 0) {
       name = NSStringFromClass(managerClass);
     }
+    name = ABI11_0_0EX_REMOVE_VERSION(name);
     if ([name hasPrefix:@"RK"]) {
       name = [name stringByReplacingCharactersInRange:(NSRange){0, @"RK".length} withString:@"RCT"];
     }

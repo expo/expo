@@ -67,6 +67,8 @@ NSString *ABI11_0_0RCTBridgeModuleNameForClass(Class cls)
   if (name.length == 0) {
     name = NSStringFromClass(cls);
   }
+  
+  name = ABI11_0_0EX_REMOVE_VERSION(name);
 
   if ([name hasPrefix:@"RK"]) {
     name = [name substringFromIndex:2];
@@ -74,7 +76,7 @@ NSString *ABI11_0_0RCTBridgeModuleNameForClass(Class cls)
     name = [name substringFromIndex:3];
   }
 
-  return ABI11_0_0EX_REMOVE_VERSION(name);
+  return name;
 }
 
 #if ABI11_0_0RCT_DEBUG
