@@ -17,6 +17,7 @@ COPY ./template-files ./template-files
 COPY ./android ./android
 COPY ./tools ./tools
 COPY ./tools-public ./tools-public
+COPY ./cpp ./cpp
 COPY ./package.json ./package.json
 
 ENV SHELL_APP_BUILDER 1
