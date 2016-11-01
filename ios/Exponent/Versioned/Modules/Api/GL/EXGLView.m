@@ -2,7 +2,7 @@
 
 #import "RCTJSCExecutor.h"
 
-#import "EXGL.h"
+#import <EXGL.h>
 
 
 @interface EXGLView ()
