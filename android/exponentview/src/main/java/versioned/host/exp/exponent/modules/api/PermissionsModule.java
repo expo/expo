@@ -89,19 +89,17 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
     Boolean isGranted = false;
     String scope = "none";
 
-    if (Build.VERSION.SDK_INT >= 23) {
-      int finePermission = ContextCompat.checkSelfPermission(getReactApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION);
-      if (finePermission == PackageManager.PERMISSION_GRANTED) {
+    int finePermission = ContextCompat.checkSelfPermission(getReactApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION);
+    if (finePermission == PackageManager.PERMISSION_GRANTED) {
+      response.putString("status", "granted");
+      scope =  "fine";
+      isGranted = true;
+    } else {
+      int coarsePermission = ContextCompat.checkSelfPermission(getReactApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION);
+      if (coarsePermission == PackageManager.PERMISSION_GRANTED) {
         response.putString("status", "granted");
-        scope =  "fine";
+        scope = "coarse";
         isGranted = true;
-      } else {
-        int coarsePermission = ContextCompat.checkSelfPermission(getReactApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION);
-        if (coarsePermission == PackageManager.PERMISSION_GRANTED) {
-          response.putString("status", "granted");
-          scope = "coarse";
-          isGranted = true;
-        }
       }
     }
 
