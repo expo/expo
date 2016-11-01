@@ -62,10 +62,10 @@
 
 - (EXCachedResourceBehavior)cacheBehaviorForJSResource
 {
-  if (DEBUG) {
+#if DEBUG
     // to prevent running dev native code against prod js.
     return kEXCachedResourceNoCache;
-  }
+#endif
   return [[NSUserDefaults standardUserDefaults] boolForKey:kEXSkipCacheUserDefaultsKey] ?
     kEXCachedResourceNoCache :
     kEXCachedResourceUseCacheImmediately;
