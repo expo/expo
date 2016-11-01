@@ -208,7 +208,7 @@ public class Exponent {
     }
     // Dumb compiler.
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      return false;
+      return true;
     }
 
     boolean isGranted = true;
