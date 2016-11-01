@@ -25,6 +25,8 @@ public class SegmentModule extends ReactContextBaseJavaModule {
 
   private static final String TAG = SegmentModule.class.getSimpleName();
 
+  private static int sCurrentTag = 0;
+
   private ReactApplicationContext mReactApplicationContext;
   private String mExperienceIdEncoded;
   private Analytics mClient;
@@ -74,7 +76,9 @@ public class SegmentModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void initializeAndroid(final String writeKey) {
-    mClient = new Analytics.Builder(new ScopedContext(mReactApplicationContext, mExperienceIdEncoded), writeKey).build();
+    Analytics.Builder builder = new Analytics.Builder(new ScopedContext(mReactApplicationContext, mExperienceIdEncoded), writeKey);
+    builder.tag(Integer.toString(sCurrentTag++));
+    mClient = builder.build();
   }
 
   @ReactMethod
