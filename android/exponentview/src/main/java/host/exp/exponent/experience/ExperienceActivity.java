@@ -566,7 +566,7 @@ public class ExperienceActivity extends BaseExperienceActivity {
       if (isDebugModeEnabled() && !Settings.canDrawOverlays(this)) {
         new AlertDialog.Builder(this)
             .setTitle("Please enable \"Permit drawing over other apps\"")
-            .setMessage("Click \"ok\" to open settings")
+            .setMessage("Click \"ok\" to open settings. Press the back button once you've enabled the setting.")
             .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
               public void onClick(DialogInterface dialog, int which) {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
