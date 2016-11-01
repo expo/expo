@@ -19,6 +19,7 @@ RUN dpkg --add-architecture i386 && \
       unzip\
       ant\
       build-essential\
+      file\
 
       --no-install-recommends && \
     apt-get clean
