@@ -76,10 +76,6 @@ android {
 
 dependencies {
   compile fileTree(dir: 'libs', include: ['*.jar'])
-  //debugCompile project(path: ':exponentview', configuration: 'debug')
-  //releaseCompile project(path: ':exponentview', configuration: 'release')
-  //compile project(':ExponentView')
-  //compile(name: 'ExponentView-prod-release', ext: 'aar')
 
   compile 'com.android.support:multidex:1.0.1'
 
