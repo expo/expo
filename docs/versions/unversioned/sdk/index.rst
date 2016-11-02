@@ -37,6 +37,7 @@ example.
    contacts
    facebook
    font
+   gl-view
    imagepicker
    linear-gradient
    location
