@@ -137,19 +137,17 @@ foregrounded, but do not have that conversation open, you will see the
 notification slide down from the top of the screen with a custom notification
 UI.
 
-Thankfully, handling push notifications is straightforward with Exponent. There
-are two possible ways that we can access notifications: through props on the root
-component if selecting the notification triggers the app opening, or by subscribing
-to ``Exponent.notification`` with the ``DeviceEventEmitter``. Let's look at how
-this is done.
+Thankfully, handling push notifications is straightforward with Exponent, all
+you need to do is add a listener to the ``Notifications`` object.
 
 
 .. code-block:: javascript
 
   import React from 'react';
+  import Exponent, {
+    Notifications,
+  } from 'exponent';
   import {
-    AppRegistry,
-    DeviceEventEmitter,
     Text,
     View,
   } from 'react-native';
@@ -165,20 +163,11 @@ this is done.
       registerForPushNotificationsAsync();
 
       // Handle notifications that are received or selected while the app
-      // is open
-      this._notificationSubscription = DeviceEventEmitter.addListener(
-        'Exponent.notification', this._handleNotification
-      );
-
-      // Handle notifications that are received or selected while the app
-      // is closed, and selected in order to open the app.
-      //
-      // `exp` is a special prop that is only available on your app's
-      // root component -- the one that is registered with `AppRegistry`
-      // as main.
-      if (this.props.exp.notification) {
-        this._handleNotification(this.props.exp.notification);
-      }
+      // is open. If the app was closed and then opened by tapping the
+      // notification (rather than just tapping the app icon to open it),
+      // this function will fire on the next tick after the app starts
+      // with the notification data.
+      this._notificationSubscription = Notifications.addListener(this._handleNotification);
     }
 
     _handleNotification = (notification) => {
@@ -195,7 +184,7 @@ this is done.
     }
   }
 
-  AppRegistry.registerComponent('main', () => AppContainer);
+  Exponent.registerRootComponent(AppContainer);
 
 Notification handling timing
 """"""""""""""""""""""""""""
