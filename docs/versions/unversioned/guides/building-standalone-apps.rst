@@ -16,13 +16,13 @@ If you'd like to submit to either app store, you will of course need a developer
 account on that store.
 
 .. epigraph::
-  **Warning:** Standalone apps are currently in alpha! While the Android version has been heavily tested with `li.st <https://li.st/>`_, the iOS version and our automated build pipeline for both are brand new so you may run into some issues. Be sure to reach out to us on Slack or Twitter if you do and we'll put them on our roadmap, much appreciated!
+  **Warning:** Standalone apps are currently in beta! While the Android version has been heavily tested with `li.st <https://li.st/>`_, the iOS version and our automated build pipeline for both are brand new so you may run into some issues. Be sure to reach out to us on Slack or Twitter if you do and we'll put them on our roadmap, much appreciated!
 
 1. Install exp
 """"""""""""""
 
 XDE currently doesn't include an option for building a standalone app, so we'll
-need ``exp`` for this. Run ``npm install -g exp@latest`` to get it.
+need ``exp`` for this. Run ``npm install -g exp`` to get it.
 
 If you haven't used ``exp`` before, the first thing you'll need to do is login
 with your Exponent account using ``exp login``.
