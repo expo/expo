@@ -11,9 +11,10 @@ Guides
    logging
    debugging
    assets
+   preloading-and-caching-assets
    icons
    using-custom-fonts
-   .. routing-and-navigation
+   routing-and-navigation
    .. social-authentication
    push-notifications
    building-standalone-apps

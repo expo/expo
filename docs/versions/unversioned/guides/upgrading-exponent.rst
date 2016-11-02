@@ -1,6 +1,6 @@
-**********************
+******************
 Upgrading Exponent
-**********************
+******************
 
 It isn't strictly necessary to update your app when a new version of Exponent
 is released.  New versions of the Exponent client are backwards compatible

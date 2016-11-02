@@ -7,10 +7,26 @@ Assets
 Images, fonts, videos, sounds, any other file that your app depends on that is
 not JavaScript is considered to be an *asset*. Just as on the web, assets are
 fetched or streamed over HTTP on demand. This is different from your typical
-mobile app, where assets are bundled with your application binary. Let's look
-at how your assets go from your local machine to a fast, persistent home on
-the web, and how you can download & cache assets that are important to properly
-rendering your app and available offline.
+mobile app, where assets are bundled with your application binary.
+
+However, there is a distiction in Exponent between an asset that you use with
+the require syntax because they are available at build time on your local
+filesystem, eg: ``<Image source={require('./assets/images/example.png')} />``,
+and web images that you refer to by a web URL, eg: ``<Image source={{uri:
+'http://yourwebsite.com/logo.png'} />``. We can make no guarantees about
+the availability of the images that you refer to with a web URI because
+we don't manage those assets. Additionally, we don't have the same amount
+of information about arbitrary web URIS: when your assets are available on the
+local filesystem, the packager is able to read some metadata (width, height,
+for example) and pass that through to your app, so you actually don't need to
+specify a width and height, for example. When specifying a remote web URL, you
+will need to explicitly specify a width and height, or it will default to 0x0.
+Lastly, as you will see later, caching behaviour is different in both cases.
+
+The following is an explaination of the former type of assets: those that you
+have on your filesystem at build time. In the latter case, it is assumed that
+you are familiar with how to upload an image to somewhere on the web where it
+can be accessed by any web or mobile app.
 
 Where assets live
 """""""""""""""""
@@ -36,8 +52,8 @@ your deploys remain fast: if an asset has not changed since your previous
 deploy, it is skipped. You don't have to do anything for this to work, it
 is all automatically handled by Exponent.
 
-Preloading & caching assets
-"""""""""""""""""""""""""""
+Performance
+"""""""""""
 
 Some assets are too important to start your app without. Fonts often fall
 into this category.
@@ -50,57 +66,4 @@ cached. Users have higher standards for mobile than web, so you might want to
 take it a step further by preloading and caching the font and important images
 during the initial loading screen.
 
-In order to keep the loading screen visible while we cache our assets, we
-render :ref:`Exponent.Components.AppLoading <app-loading>` and only that
-component until everything is ready.
-
-.. code-block:: javascript
-
-  import * as Exponent from 'Exponent';
-
-  function cacheImages(images) {
-    return images.map(image => Exponent.Asset.fromModule(image).downloadAsync());
-  }
-
-  function cacheFonts(fonts) {
-    return fonts.map(font => Exponent.Font.loadAsync(font));
-  }
-
-  class AppContainer extends React.Component {
-    state = {
-      appIsReady: false,
-    }
-
-    componentWillMount() {
-      this._loadAssetsAsync();
-    }
-
-    render() {
-      if (!this.state.appIsReady) {
-        return <Components.AppLoading />;
-      }
-
-      return <MyApp />;
-    }
-
-    async _loadAssetsAsync() {
-      const imageAssets = cacheImages([
-        require('./assets/images/exponent-wordmark.png'),
-        require('./assets/images/exponent-icon.png'),
-        require('./assets/images/slack-icon.png'),
-      ]);
-
-      const fontAssets = cacheFonts([
-        FontAwesome.font,
-      ]);
-
-      await Promise.all([
-        ...imageAssets,
-        ...fontAssets,
-      ]);
-
-      this.setState({appIsReady: true});
-    }
-  }
-
-See a full working example in `github/exponentjs/new-project-template <https://github.com/exponentjs/new-project-template/blob/9c5f99efa9afcbefdadefe752ea350cc378c0f0d/main.js>`_.
+:ref:`Read more about preloading & caching assets <preloading-and-caching-assets>`_.
