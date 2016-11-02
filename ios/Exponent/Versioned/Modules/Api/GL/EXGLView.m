@@ -1,4 +1,5 @@
 #import "EXGLView.h"
+#import "EXUnversioned.h"
 
 #import "RCTJSCExecutor.h"
 
@@ -10,7 +11,7 @@
 @property (nonatomic, weak) EXGLViewManager *viewManager;
 @property (nonatomic, strong) GLKViewController *controller;
 @property (nonatomic, assign) BOOL onSurfaceCreateCalled;
-@property (nonatomic, assign) EXGLContextId exglCtxId;
+@property (nonatomic, assign) EX_UNVERSIONED(EXGLContextId) exglCtxId;
 
 @end
 
@@ -43,7 +44,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 - (void)removeFromSuperview
 {
   _controller = nil;
-  EXGLContextDestroy(_exglCtxId);
+  EX_UNVERSIONED(EXGLContextDestroy(_exglCtxId));
   [super removeFromSuperview];
 }
 
@@ -60,7 +61,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
         __typeof__(self) self = weakSelf;
         RCTJSCExecutor *executor = weakExecutor;
         if (self && executor) {
-          _exglCtxId = EXGLContextCreate(executor.jsContext.JSGlobalContextRef);
+          _exglCtxId = EX_UNVERSIONED(EXGLContextCreate(executor.jsContext.JSGlobalContextRef));
           _onSurfaceCreate(@{ @"exglCtxId": @(_exglCtxId) });
         }
       }];
@@ -70,8 +71,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     _onSurfaceCreateCalled = YES;
   }
 
-  if (_exglCtxId > 0) { // zero indicates invalid EXGLContextId
-    EXGLContextFlush(_exglCtxId);
+  if (_exglCtxId > 0) { // zero indicates invalid EX_UNVERSIONED(EXGLContextId)
+    EX_UNVERSIONED(EXGLContextFlush(_exglCtxId));
   }
 }
 
