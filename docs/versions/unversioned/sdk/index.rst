@@ -32,6 +32,7 @@ example.
    amplitude
    app-loading
    asset
+   bar-code-scanner
    blur-view
    constants
    contacts
