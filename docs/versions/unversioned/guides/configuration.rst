@@ -72,7 +72,7 @@ Configuration with exp.json
 
    .. attribute:: iconUrl
 
-    Url that points to the icon to display while starting up the app. Image size and aspect ratio are up to you.
+    Url that points to the icon to display while starting up the app. Image size and aspect ratio are up to you. Must be a .png.
 
    .. attribute:: exponentIconColor
 
@@ -85,7 +85,7 @@ Configuration with exp.json
 
    .. attribute:: backgroundImageUrl
 
-    Url that points to an image to fill the background of the loading screen. Image size and aspect ratio are up to you.
+    Url that points to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
 
    .. attribute:: backgroundColor
 
@@ -139,7 +139,30 @@ Configuration with exp.json
    .. attribute:: bundleIdentifier
 
     The bundle identifier for your iOS standalone app. You make it up, but it needs to be unique on the App Store. See `this StackOverflow question <http://stackoverflow.com/questions/11347470/what-does-bundle-identifier-mean-in-the-ios-project>`_.
-    Reverse DNS notation unique name for your app. For example, host.exp.exponent, where exp.host is our domain and Exponent is our app.
+    iOS bundle identifier notation unique name for your app. For example, host.exp.exponent, where exp.host is our domain and Exponent is our app.
+
+   .. attribute:: config
+
+    
+       .. attribute:: fabric
+
+        `Twitter Fabric <https://get.fabric.io/>`_ keys to hook up Crashlytics and other services.
+
+           .. attribute:: apiKey
+
+            Your Fabric API key
+
+           .. attribute:: buildSecret
+
+            Your Fabric build secret
+
+       .. attribute:: googleSignIn
+
+        `Google Sign-In iOS SDK <https://developers.google.com/identity/sign-in/ios/start-integrating>`_ keys for your standalone app.
+
+           .. attribute:: reservedClientId
+
+            The reserved client id url scheme. Can be found in `GoogeService-Info.plist`.
 
 .. attribute:: android
 
@@ -176,3 +199,15 @@ Configuration with exp.json
            .. attribute:: apiKey
 
             Your Google Maps Android SDK API key
+
+       .. attribute:: googleSignIn
+
+        `Google Sign-In Android SDK <https://developers.google.com/identity/sign-in/android/start-integrating>`_ keys for your standalone app.
+
+           .. attribute:: apiKey
+
+            The Android API key. Can be found in the credentials section of the developer console or in `google-services.json`.
+
+           .. attribute:: certificateHash
+
+            The SHA-1 hash of the signing certificate used to build the apk without any separator `:`. Can be found in `google-services.json`. https://developers.google.com/android/guides/client-auth
