@@ -179,11 +179,17 @@ export async function createAndroidShellApp(args) {
   if (iconUrl) {
     await spawnAsync(`find`, [`${shellPath}app/src/main/res`, '-iname', 'ic_launcher.png', '-delete']);
     await saveUrlToPathAsync(iconUrl, `${shellPath}app/src/main/res/mipmap-hdpi/ic_launcher.png`);
+
+    await spawnAsync(`find`, [`${shellPath}exponentview/src/main/res`, '-iname', 'ic_launcher.png', '-delete']);
+    await saveUrlToPathAsync(iconUrl, `${shellPath}exponentview/src/main/res/mipmap-hdpi/ic_launcher.png`);
   }
 
   if (notificationIconUrl) {
     await spawnAsync(`find`, [`${shellPath}app/src/main/res`, '-iname', 'shell_notification_icon.png', '-delete']);
     await saveUrlToPathAsync(notificationIconUrl, `${shellPath}app/src/main/res/drawable-hdpi/shell_notification_icon.png`);
+
+    await spawnAsync(`find`, [`${shellPath}exponentview/src/main/res`, '-iname', 'shell_notification_icon.png', '-delete']);
+    await saveUrlToPathAsync(notificationIconUrl, `${shellPath}exponentview/src/main/res/drawable-hdpi/shell_notification_icon.png`);
   }
 
   if (privateConfigFile) {
