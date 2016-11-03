@@ -23,12 +23,12 @@ First let's start with a basic "Hello world!" app. Create a new project in XDE/e
 .. code-block:: javascript
 
   import {
-    AppRegistry,
     Text,
     View,
   } from 'react-native';
 
   import React from 'react';
+  import Exponent from 'exponent';
 
   class App extends React.Component {
     render() {
@@ -42,7 +42,7 @@ First let's start with a basic "Hello world!" app. Create a new project in XDE/e
     }
   }
 
-  AppRegistry.registerComponent('main', () => App);
+  Exponent.registerRootComponent(App);
 
 Try getting this basic app running before playing with Open Sans, so you can
 get any basic setup issues out of the way.
@@ -110,7 +110,7 @@ to do is change your ``Text`` element to the following:
 
 .. code-block:: javascript
 
-          <Text style={{ ...Font.style('open-sans-bold'), fontSize: 56 }}>
+          <Text style={{ fontFamily: 'open-sans-bold', fontSize: 56 }}>
             Hello, world!
           </Text>
 
@@ -171,7 +171,7 @@ Finally, we want to only render the ``Text`` component if ``fontLoaded`` is
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             {
               this.state.fontLoaded ? (
-                <Text style={{ ...Font.style('open-sans-bold'), fontSize: 56 }}>
+                <Text style={{ fontFamily: 'open-sans-bold', fontSize: 56 }}>
                   Hello, world!
                 </Text>
               ) : null
@@ -183,4 +183,4 @@ rendering the ``Text`` component when ``fontLoaded`` is ``false``. Now on
 refreshing the app you should see that it renders the Font Awesome glass icon!
 
 .. epigraph::
-  **Note:** Typically you will want to load your apps primary fonts before the app is displayed to avoid text flashing in after the font loads. For the moment, the recommended approach is to move the ``Font.loadAsync`` call to your top-level component. We are working on integrating an official resource preloading and caching API that will be available in SDK8.
+  **Note:** Typically you will want to load your apps primary fonts before the app is displayed to avoid text flashing in after the font loads. The recommended approach is to move the ``Font.loadAsync`` call to your top-level component.

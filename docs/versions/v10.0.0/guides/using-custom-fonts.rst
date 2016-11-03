@@ -181,4 +181,4 @@ rendering the ``Text`` component when ``fontLoaded`` is ``false``. Now on
 refreshing the app you should see that it renders the Font Awesome glass icon!
 
 .. epigraph::
-  **Note:** Typically you will want to load your apps primary fonts before the app is displayed to avoid text flashing in after the font loads. For the moment, the recommended approach is to move the ``Font.loadAsync`` call to your top-level component. We are working on integrating an official resource preloading and caching API that will be available in SDK8.
+  **Note:** Typically you will want to load your apps primary fonts before the app is displayed to avoid text flashing in after the font loads. The recommended approach is to move the ``Font.loadAsync`` call to your top-level component.
