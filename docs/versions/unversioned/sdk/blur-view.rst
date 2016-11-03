@@ -26,7 +26,7 @@ Example: tintEffect
     StyleSheet,
     View,
   } from 'react-native';
-  import {
+  import Exponent, {
     Components
   } from 'exponent';
 
@@ -47,7 +47,7 @@ Example: tintEffect
     }
   }
 
-  AppRegistry.registerComponent('main', () => BlurViewExample);
+  Exponent.registerRootComponent(BlurViewExample);
 
 Example: blur strength with opacity
 """""""""""""""""""""""""""""""""""
