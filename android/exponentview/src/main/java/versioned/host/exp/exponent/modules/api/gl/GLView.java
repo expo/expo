@@ -51,9 +51,10 @@ public class GLView extends GLSurfaceView implements GLSurfaceView.Renderer {
   }
 
   public void onDrawFrame(GL10 unused) {
-    // The EXGLContextId might not be set yet if onDrawFrame, which is called on the GL thread, is
-    // called before EXGLContextCreate has been called on the JS thread
-    if (exglCtxId > 0) { // zero indicates invalid EXGLContextId
+    // exglCtxId may be unset if we get here (on the GL thread) before EXGLContextCreate(...) is
+    // called on the JS thread to create the EXGL context and save its id (see above in
+    // the implementation of `onSurfaceCreated(...)`)
+    if (exglCtxId > 0) {
       EXGLContextFlush(exglCtxId);
     }
   }
