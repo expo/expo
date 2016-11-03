@@ -17,6 +17,7 @@ Pod::Spec.new do |s|
   s.dependency 'CocoaLumberjack', '~> 2.3'
   s.dependency 'Crashlytics', '~> 3.8'
   s.dependency 'Fabric', '~> 1.6'
+  s.dependency 'Google/SignIn', '~> 3.0'
   s.dependency 'Amplitude-iOS', '~> 3.8'
   s.dependency 'FBSDKCoreKit', '~> 4.15'
   s.dependency 'FBSDKLoginKit', '~> 4.15'
