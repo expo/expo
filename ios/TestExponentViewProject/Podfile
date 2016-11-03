@@ -3,9 +3,10 @@ platform :ios, '8.0'
 
 target 'test-exponent-view' do
   pod 'ExponentView', :path => '../..'
+  pod 'ExponentCPP', :path => '../../cpp'
   pod 'React',
       :git => 'https://github.com/exponentjs/react-native.git',
-      :branch => 'sdk-10',
+      :branch => 'sdk-11',
       :subspecs => [
         'Core',
         'ART',
@@ -19,12 +20,11 @@ target 'test-exponent-view' do
         'RCTVibration',
         'RCTWebSocket',
       ]
-  pod 'ReactABI10_0_0', :path => '../versioned-react-native/ABI10_0_0', :subspecs => [
+  pod 'ReactABI11_0_0', :path => '../versioned-react-native/ABI11_0_0', :subspecs => [
     'Core',
     'ART',
     'RCTAnimation',
     'RCTCameraRoll',
-    'CSSLayout',
     'Exponent',
     'RCTActionSheet',
     'RCTGeolocation',
@@ -42,15 +42,16 @@ target 'test-exponent-view' do
 
     installer.pod_targets.each do |target|
 
-    # Generated postinstall: ReactABI10_0_0
-    if target.pod_name == 'ReactABI10_0_0'
+    # Generated postinstall: ReactABI11_0_0
+    if target.pod_name == 'ReactABI11_0_0'
       target.native_target.build_configurations.each do |config|
-        config.build_settings['OTHER_CFLAGS'] = ['-DkNeverRequested=ReactABI10_0_0kNeverRequested','-DkNeverProgressed=ReactABI10_0_0kNeverProgressed','-DZINDEX_DEFAULT=ReactABI10_0_0ZINDEX_DEFAULT','-DZINDEX_STICKY_HEADER=ReactABI10_0_0ZINDEX_STICKY_HEADER','-DgCurrentGenerationCount=ReactABI10_0_0gCurrentGenerationCount','-DgPrintSkips=ReactABI10_0_0gPrintSkips','-DgPrintChanges=ReactABI10_0_0gPrintChanges','-DlayoutNodeInternal=ReactABI10_0_0layoutNodeInternal','-DgDepth=ReactABI10_0_0gDepth','-DgPrintTree=ReactABI10_0_0gPrintTree','-DisUndefined=ReactABI10_0_0isUndefined','-DSINGLE_FRAME_INTERVAL=ReactABI10_0_0SINGLE_FRAME_INTERVAL']
+        config.build_settings['OTHER_CFLAGS'] = ['-DkNeverRequested=ReactABI11_0_0kNeverRequested','-DkNeverProgressed=ReactABI11_0_0kNeverProgressed','-DZINDEX_DEFAULT=ReactABI11_0_0ZINDEX_DEFAULT','-DZINDEX_STICKY_HEADER=ReactABI11_0_0ZINDEX_STICKY_HEADER','-DgCurrentGenerationCount=ReactABI11_0_0gCurrentGenerationCount','-DgPrintSkips=ReactABI11_0_0gPrintSkips','-DgPrintChanges=ReactABI11_0_0gPrintChanges','-DlayoutNodeInternal=ReactABI11_0_0layoutNodeInternal','-DgDepth=ReactABI11_0_0gDepth','-DgPrintTree=ReactABI11_0_0gPrintTree','-DisUndefined=ReactABI11_0_0isUndefined','-DSINGLE_FRAME_INTERVAL=ReactABI11_0_0SINGLE_FRAME_INTERVAL','-DkSMCalloutViewRepositionDelayForUIScrollView=ReactABI11_0_0kSMCalloutViewRepositionDelayForUIScrollView']
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'ABI10_0_0RCT_DEV=1'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'ABI11_0_0RCT_DEV=1'
       end
     end
     # End generated postinstall
+
     next unless target.pod_name == 'React'
       target.native_target.build_configurations.each do |config|
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
