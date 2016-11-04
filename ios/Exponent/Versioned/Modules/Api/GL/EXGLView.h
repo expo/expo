@@ -1,9 +1,8 @@
-#import <GLKit/GLKit.h>
 #import "RCTBridge.h"
 
 #import "EXGLViewManager.h"
 
-@interface EXGLView : GLKView
+@interface EXGLView : UIView
 
 - (instancetype)initWithManager:(EXGLViewManager *)mgr;
 
