@@ -47,7 +47,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     };
 
     // Initialize GL context, view buffers will be created on layout event
-    self.eaglCtx = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+    _eaglCtx = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
     _viewFramebuffer = _viewColorbuffer = _viewDepthStencilbuffer = 0;
 
     // Set up a draw loop
@@ -84,7 +84,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
 - (void)deleteViewBuffers
 {
-  [EAGLContext setCurrentContext:self.eaglCtx];
+  [EAGLContext setCurrentContext:_eaglCtx];
   if (_viewDepthStencilbuffer != 0) {
     glDeleteRenderbuffers(1, &_viewDepthStencilbuffer);
     _viewDepthStencilbuffer = 0;
@@ -101,7 +101,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
 - (void)resizeViewBuffersToWidth:(short)width height:(short)height
 {
-  [EAGLContext setCurrentContext:self.eaglCtx];
+  [EAGLContext setCurrentContext:_eaglCtx];
 
   // Save surrounding framebuffer/renderbuffer
   GLint prevFramebuffer;
@@ -122,7 +122,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   // Set up new color renderbuffer
   glGenRenderbuffers(1, &_viewColorbuffer);
   glBindRenderbuffer(GL_RENDERBUFFER, _viewColorbuffer);
-  [self.eaglCtx renderbufferStorage:GL_RENDERBUFFER fromDrawable:(CAEAGLLayer *)self.layer];
+  [_eaglCtx renderbufferStorage:GL_RENDERBUFFER fromDrawable:(CAEAGLLayer *)self.layer];
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                             GL_RENDERBUFFER, _viewColorbuffer);
 
@@ -174,7 +174,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   // framebuffer to create is unknown. In this case we have nowhere to render to so we skip
   // this frame (the GL work to run remains on the queue for next time).
   if (_exglCtxId != 0 && _viewFramebuffer != 0) {
-    [EAGLContext setCurrentContext:self.eaglCtx];
+    [EAGLContext setCurrentContext:_eaglCtx];
     EX_UNVERSIONED(EXGLContextSetDefaultFramebuffer)(_exglCtxId, _viewFramebuffer);
     EX_UNVERSIONED(EXGLContextFlush)(_exglCtxId);
 
@@ -186,7 +186,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
       GLint prevRenderbuffer;
       glGetIntegerv(GL_RENDERBUFFER_BINDING, &prevRenderbuffer);
       glBindRenderbuffer(GL_RENDERBUFFER, _viewColorbuffer);
-      [self.eaglCtx presentRenderbuffer:GL_RENDERBUFFER];
+      [_eaglCtx presentRenderbuffer:GL_RENDERBUFFER];
       glBindRenderbuffer(GL_RENDERBUFFER, prevRenderbuffer);
     }
   }
