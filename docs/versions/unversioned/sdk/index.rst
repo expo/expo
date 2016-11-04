@@ -39,6 +39,7 @@ example.
    facebook
    font
    gl-view
+   google
    imagepicker
    linear-gradient
    location
@@ -46,4 +47,5 @@ example.
    permissions
    segment
    svg
+   util
    video
