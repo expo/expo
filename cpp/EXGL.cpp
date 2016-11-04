@@ -202,7 +202,8 @@ public:
     installConstants(jsCtx);
 
     // Clear everything to initial values
-    addToNextBatch([] {
+    addToNextBatch([this] {
+      glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebuffer);
       glClearColor(0, 0, 0, 0);
       glClearDepthf(1);
       glClearStencil(0);
@@ -212,6 +213,16 @@ public:
 
   JSObjectRef getJSObject(void) const noexcept {
     return jsGl;
+  }
+
+
+  // --- GL state --------------------------------------------------------------
+private:
+  GLint defaultFramebuffer = 0;
+
+public:
+  void setDefaultFramebuffer(GLint framebuffer) {
+    defaultFramebuffer = framebuffer;
   }
 
 
@@ -634,7 +645,7 @@ private:
   _WRAP_METHOD(bindFramebuffer, 2) {
     EXJS_UNPACK_ARGV(GLenum target);
     if (JSValueIsNull(jsCtx, jsArgv[1])) {
-      addToNextBatch([=] { glBindFramebuffer(target, 0); });
+      addToNextBatch([=] { glBindFramebuffer(target, defaultFramebuffer); });
       return nullptr;
     } else {
       throw std::runtime_error("EXGL: gl.bindframebuffer() does't support non-null"
@@ -1773,6 +1784,13 @@ void EXGLContextFlush(EXGLContextId exglCtxId) {
   EXGLContext *exglCtx = EXGLContextGet(exglCtxId);
   if (exglCtx) {
     exglCtx->flush();
+  }
+}
+
+void EXGLContextSetDefaultFramebuffer(EXGLContextId exglCtxId, GLint framebuffer) {
+  EXGLContext *exglCtx = EXGLContextGet(exglCtxId);
+  if (exglCtx) {
+    exglCtx->setDefaultFramebuffer(framebuffer);
   }
 }
 

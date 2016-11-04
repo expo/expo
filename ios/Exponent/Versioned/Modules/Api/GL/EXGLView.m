@@ -56,6 +56,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
 
     // Setup JS binding -- only possible on JavaScriptCore
+    _exglCtxId = 0;
     id<RCTJavaScriptExecutor> executor = [_viewManager.bridge valueForKey:@"javaScriptExecutor"];
     if ([executor isKindOfClass:NSClassFromString(@"RCTJSCExecutor")]) {
       // On JS thread, extract JavaScriptCore context, create EXGL context, call JS callback
@@ -86,12 +87,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   [EAGLContext setCurrentContext:self.eaglCtx];
   if (_viewDepthStencilbuffer != 0) {
     glDeleteRenderbuffers(1, &_viewDepthStencilbuffer);
+    _viewDepthStencilbuffer = 0;
   }
   if (_viewColorbuffer != 0) {
     glDeleteRenderbuffers(1, &_viewColorbuffer);
+    _viewColorbuffer = 0;
   }
   if (_viewFramebuffer != 0) {
     glDeleteFramebuffers(1, &_viewFramebuffer);
+    _viewFramebuffer = 0;
   }
 }
 
@@ -163,21 +167,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 - (void)draw
 {
   // _exglCtxId may be unset if we get here (on the UI thread) before EXGLContextCreate(...) is
-  // called on the JS thread to create the EXGL context and save its id (see init method)
-  if (_exglCtxId != 0) {
+  // called on the JS thread to create the EXGL context and save its id (see init method). In
+  // this case no GL work has been sent yet so we skip this frame.
+  //
+  // _viewFramebuffer may be 0 if we haven't had a layout event yet and so the size of the
+  // framebuffer to create is unknown. In this case we have nowhere to render to so we skip
+  // this frame (the GL work to run remains on the queue for next time).
+  if (_exglCtxId != 0 && _viewFramebuffer != 0) {
     [EAGLContext setCurrentContext:self.eaglCtx];
-
-    // Bind view framebuffer if at zero
-    // TODO(nikki): Put this in JS binding for `gl.bindFramebuffer(GL_FRAMEBUFFER, 0)`
-    {
-      GLint framebuffer;
-      glGetIntegerv(GL_FRAMEBUFFER_BINDING, &framebuffer);
-      if (framebuffer == 0) {
-        glBindFramebuffer(GL_FRAMEBUFFER, _viewFramebuffer);
-      }
-    }
-
-    // Run GL commands queued from JS
+    EX_UNVERSIONED(EXGLContextSetDefaultFramebuffer)(_exglCtxId, _viewFramebuffer);
     EX_UNVERSIONED(EXGLContextFlush)(_exglCtxId);
 
     // Present current state of view buffers

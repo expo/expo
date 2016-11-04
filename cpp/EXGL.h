@@ -2,6 +2,7 @@
 #define __EXGL_H__
 
 
+#include <OpenGLES/ES2/gl.h>
 #include <JavaScriptCore/JSBase.h>
 
 
@@ -25,6 +26,8 @@ void EXGLContextDestroy(EXGLContextId exglCtxId);
 // [GL thread] Perform one frame's worth of queued up GL work
 void EXGLContextFlush(EXGLContextId exglCtxId);
 
+// [GL thread] Set the default framebuffer (used when binding 0)
+void EXGLContextSetDefaultFramebuffer(EXGLContextId exglCtxId, GLint framebuffer);
 
 #ifdef __cplusplus
 }
