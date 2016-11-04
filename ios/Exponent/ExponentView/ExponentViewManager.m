@@ -26,10 +26,14 @@
 - (EXViewController *)rootViewController
 {
   if (!_rootViewController) {
-    // TODO: launch options
     _rootViewController = [[EXViewController alloc] initWithLaunchOptions:@{}];
   }
   return _rootViewController;
+}
+
+- (void)setLaunchOptions:(NSDictionary *)launchOptions
+{
+  self.rootViewController.appManager.launchOptions = launchOptions;
 }
 
 @end

@@ -16,6 +16,7 @@
 {
     _window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     _window.backgroundColor = [UIColor whiteColor];
+    [[ExponentViewManager sharedInstance] setLaunchOptions:launchOptions];
     _rootViewController = [ExponentViewManager sharedInstance].rootViewController;
     _window.rootViewController = _rootViewController;
     

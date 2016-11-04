@@ -28,6 +28,14 @@
   return self;
 }
 
+- (void)setLaunchOptions:(NSDictionary *)launchOptions
+{
+  if (self.reactBridge) {
+    DDLogError(@"%s: Setting launch options while bridge is already running. These won't take affect until you reload the ReactAppManager.", __PRETTY_FUNCTION__);
+  }
+  _launchOptions = launchOptions;
+}
+
 + (NSURL *)kernelBundleUrl
 {
 #if DEBUG

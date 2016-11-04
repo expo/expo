@@ -2,6 +2,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class EXViewController;
 
 @interface ExponentViewManager : NSObject
@@ -13,4 +15,8 @@
  */
 - (EXViewController *)rootViewController;
 
+- (void)setLaunchOptions:(NSDictionary * _Nullable)launchOptions;
+
 @end
+
+NS_ASSUME_NONNULL_END

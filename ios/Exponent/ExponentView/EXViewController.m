@@ -18,8 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) UIActivityIndicatorView *loadingIndicator;
 @property (nonatomic, strong) EXErrorView *errorView;
 
-@property (nonatomic, strong) EXKernelReactAppManager *appManager;
-
 @end
 
 @implementation EXViewController

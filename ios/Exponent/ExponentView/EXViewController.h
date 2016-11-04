@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 // TODO: make private
 @property (nonatomic, assign) BOOL isLoading;
 @property (nonatomic, strong) UIView *contentView;
+@property (nonatomic, strong) EXKernelReactAppManager *appManager;
 
 @end
 
