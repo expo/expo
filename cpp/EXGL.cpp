@@ -518,13 +518,24 @@ private:
       }
 
         // Future
+      case GL_ARRAY_BUFFER_BINDING:
+      case GL_ELEMENT_ARRAY_BUFFER_BINDING:
+      case GL_CURRENT_PROGRAM: {
+        GLint glInt;
+        addBlockingToNextBatch([&] { glGetIntegerv(pname, &glInt); });
+        for (const auto &pair : futures) {
+          if (pair.second == glInt) {
+            return JSValueMakeNumber(jsCtx, glInt);
+          }
+        }
+        return nullptr;
+      }
+
+        // Unimplemented...
 #define _GET_PARAMETER_UNIMPL(param)                                         \
       case GL_##param:                                                       \
         throw std::runtime_error("EXGL: getParameter() doesn't support gl."  \
                                  #param " yet!");
-        _GET_PARAMETER_UNIMPL(ARRAY_BUFFER_BINDING);
-        _GET_PARAMETER_UNIMPL(ELEMENT_ARRAY_BUFFER_BINDING);
-        _GET_PARAMETER_UNIMPL(CURRENT_PROGRAM);
         _GET_PARAMETER_UNIMPL(FRAMEBUFFER_BINDING);
         _GET_PARAMETER_UNIMPL(RENDERBUFFER_BINDING);
         _GET_PARAMETER_UNIMPL(TEXTURE_BINDING_2D);
