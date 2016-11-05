@@ -144,7 +144,7 @@ private:
 
   using Future = unsigned int;
   std::unordered_map<Future, GLuint> futures;
-  Future nextFuture = 0;
+  Future nextFuture = 1; // Start at 1 so that Futures are truthy in JS
 
   // [JS thread] Enqueue a function and return a Future that will have its
   // result when the function is called
