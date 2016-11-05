@@ -67,8 +67,10 @@ Developer Console and create an OAuth 2.0 client ID.
       A map of options:
 
       * **behavior** (*string*) -- The type of behavior to use for login,
-        either web or native. Native can only be used inside of a standalone
-        app when built using the steps described below. Default is web.
+        either ``web`` or ``system``. Native (``system``) can only be used
+        inside of a standalone app when built using the steps described below.
+        Default is ``web`` inside of Exponent app, and ``system`` in
+        standalone.
 
       * **scopes** (*array*) -- An array specifying the scopes to ask
         for from Google for this login (`more information here <https://gsuite-developers.googleblog.com/2012/01/tips-on-using-apis-discovery-service.html>`_).
@@ -92,15 +94,20 @@ If you want to use native sign in for a standalone app, you can follow these
 steps. If not, you can just specify ``behavior: 'web'`` in the options when
 using ``signInAsync`` and skip the following steps.
 
-1. Build the standalone app
-2. Run ``keytool -list -printcert -jarfile growler.apk | grep SHA1 | awk '{ print $2 }'`` (where ``growler.apk`` is the name of the apk produced in step 1). You'll need the output from this later.
-3. Create an app in the Google Developer Console (if you haven't already for this project).
-4. Click "Add Credentials" and then "OAuth client ID".
-5. Choose "Android" as the "Application Type".
-6. Take the output from step 2 and insert it in the "Signing-certificate fingerprint" field.
-7. Add the package name (eg: ca.brentvatne.growlerprowler) to the Package name field. Press save.
-8. Open ``exp.json`` and add the api key to the ``android.config.googleSignIn.apiKey``.
-9. Rebuild your standalone app.
+1. If you haven't created a "Web Application" client ID as described above, do that now. You will need the client ID for later.
+2. Build the standalone app. You will need this for later.
+3. Go to your app in the Google Developer console (you may have created this in step 1 or before).
+4. Click "Add Credentials" and then "API Key".
+5. Click "Restrict Key".
+6. Choose "Android apps" from "Key restriction", then click "Add package name and fingerprint".
+7. Run ``keytool -list -printcert -jarfile growler.apk | grep SHA1 | awk '{ print $2 }'`` (where ``growler.apk`` is the name of the apk produced in step 2).
+8. Fill in your Take the output from step 7 and insert it in the "Signing-certificate fingerprint" field.
+9. Add the package name from ``exp.json`` (eg: ca.brentvatne.growlerprowler) to the Package name field. Press save.
+10. Open ``exp.json`` and add the client id to the ``android.config.googleSignIn.apiKey``.
+10. Run ``keytool -list -printcert -jarfile growler.apk | grep SHA1 | awk '{ print $2 } | sed -e 's/\://g'`` (where ``growler.apk`` is the name of the apk produced in step 2).
+11. Add the result from step 10 to ``exp.json`` under ``android.config.googleSignIn.certificateHash``.
+12. When you use ``Exponent.Google.logInAsync(..)``, be sure to pass in the Web Application client ID from step 1 as the ``webClientId`` option. I have no idea why Google requires this on Android, so let's just blindly follow the incantation.
+13. Rebuild your standalone app.
 
 Deploying to a standalone app on iOS
 """"""""""""""""""""""""""""""""""""
