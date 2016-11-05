@@ -720,14 +720,12 @@ private:
       size_t byteLength = width * height * bytesPerPixel(type, format);
       auto pixels = std::shared_ptr<void>(malloc(byteLength), free);
       addBlockingToNextBatch([&] {
-        glFlush();
         glReadPixels(x, y, width, height, format, type, pixels.get());
       });
       JSObjectSetTypedArrayData(jsCtx, (JSObjectRef) jsArgv[6], pixels.get(), byteLength);
     } else {
       void *pixels = JSObjectGetTypedArrayBytesPtr(jsCtx, (JSObjectRef) jsArgv[6], NULL);
       addBlockingToNextBatch([&] {
-        glFlush();
         glReadPixels(x, y, width, height, format, type, pixels);
       });
     }
