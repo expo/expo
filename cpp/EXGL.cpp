@@ -914,7 +914,12 @@ private:
     return nullptr;
   }
 
-  _WRAP_METHOD_UNIMPL(bindAttribLocation)
+  _WRAP_METHOD(bindAttribLocation, 3) {
+    EXJS_UNPACK_ARGV(Future fProgram, GLuint index);
+    auto name = jsValueToSharedStr(jsCtx, jsArgv[2]);
+    addToNextBatch([=] { glBindAttribLocation(peekFuture(fProgram), index, name.get()); });
+    return nullptr;
+  }
 
   _WRAP_METHOD(compileShader, 1) {
     EXJS_UNPACK_ARGV(Future fShader);
