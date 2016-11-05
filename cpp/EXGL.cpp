@@ -596,6 +596,8 @@ private:
     if (JSValueIsNumber(jsCtx, jsSecond)) {
       GLsizeiptr length = EXJSValueToNumberFast(jsCtx, jsSecond);
       addToNextBatch([=] { glBufferData(target, length, nullptr, usage); });
+    } else if (JSValueIsNull(jsCtx, jsSecond)) {
+      addToNextBatch([=] { glBufferData(target, 0, NULL, usage); });
     } else {
       size_t length;
       auto data = jsValueToSharedArray(jsCtx, jsSecond, &length);
@@ -605,10 +607,12 @@ private:
   }
 
   _WRAP_METHOD(bufferSubData, 3) {
-    EXJS_UNPACK_ARGV(GLenum target, GLintptr offset);
-    size_t length;
-    auto data = jsValueToSharedArray(jsCtx, jsArgv[2], &length);
-    addToNextBatch([=] { glBufferSubData(target, offset, length, data.get()); });
+    if (!JSValueIsNull(jsCtx, jsArgv[2])) {
+      EXJS_UNPACK_ARGV(GLenum target, GLintptr offset);
+      size_t length;
+      auto data = jsValueToSharedArray(jsCtx, jsArgv[2], &length);
+      addToNextBatch([=] { glBufferSubData(target, offset, length, data.get()); });
+    }
     return nullptr;
   }
 
