@@ -127,7 +127,7 @@ class HomeScreen extends React.Component {
           renderRow={this._renderHistoryItem}
           renderSeparator={this._renderHistoryItemSeparator}
           alwaysBounceVertical={hasRecentLinks}
-          removeClippedSubviews
+          removeClippedSubviews={false}
           style={styles.historyList}
         />
 
