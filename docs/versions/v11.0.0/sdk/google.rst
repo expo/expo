@@ -104,10 +104,10 @@ using ``signInAsync`` and skip the following steps.
 8. Fill in your Take the output from step 7 and insert it in the "Signing-certificate fingerprint" field.
 9. Add the package name from ``exp.json`` (eg: ca.brentvatne.growlerprowler) to the Package name field. Press save.
 10. Open ``exp.json`` and add the client id to the ``android.config.googleSignIn.apiKey``.
-10. Run ``keytool -list -printcert -jarfile growler.apk | grep SHA1 | awk '{ print $2 } | sed -e 's/\://g'`` (where ``growler.apk`` is the name of the apk produced in step 2).
-11. Add the result from step 10 to ``exp.json`` under ``android.config.googleSignIn.certificateHash``.
-12. When you use ``Exponent.Google.logInAsync(..)``, be sure to pass in the Web Application client ID from step 1 as the ``webClientId`` option. I have no idea why Google requires this on Android, so let's just blindly follow the incantation.
-13. Rebuild your standalone app.
+11. Run ``keytool -list -printcert -jarfile growler.apk | grep SHA1 | awk '{ print $2 } | sed -e 's/\://g'`` (where ``growler.apk`` is the name of the apk produced in step 2).
+12. Add the result from step 11 to ``exp.json`` under ``android.config.googleSignIn.certificateHash``.
+13. When you use ``Exponent.Google.logInAsync(..)``, be sure to pass in the Web Application client ID from step 1 as the ``webClientId`` option. I have no idea why Google requires this on Android, so let's just blindly follow the incantation.
+14. Rebuild your standalone app.
 
 Deploying to a standalone app on iOS
 """"""""""""""""""""""""""""""""""""
