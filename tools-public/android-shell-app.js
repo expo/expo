@@ -85,12 +85,6 @@ export async function createAndroidShellApp(args) {
   let bundleUrl = manifest.bundleUrl;
   let notificationIconUrl = manifest.notification ? manifest.notification.iconUrl : null;
   let version = (manifest.version) ? manifest.version : '0.0.0';
-  let certificateHash = '';
-  let googleAndroidApiKey = '';
-  if (manifest.android && manifest.android.config && manifest.android.config.googleSignIn) {
-    certificateHash = manifest.android.config.googleSignIn.certificateHash;
-    googleAndroidApiKey = manifest.android.config.googleSignIn.apiKey;
-  }
   let shellPath = '../android-shell-app/';
   await spawnAsync(`/bin/rm`, ['-rf', shellPath]);
   await spawnAsync(`/bin/mkdir`, [shellPath]);
@@ -137,10 +131,6 @@ export async function createAndroidShellApp(args) {
   // TODO: probably don't need this in both places
   await sedInPlaceAsync('-e', `s/host.exp.exponent.permission.C2D_MESSAGE/${javaPackage}.permission.C2D_MESSAGE/g`, `${shellPath}app/src/main/AndroidManifest.xml`);
   await sedInPlaceAsync('-e', `s/host.exp.exponent.permission.C2D_MESSAGE/${javaPackage}.permission.C2D_MESSAGE/g`, `${shellPath}exponentview/src/main/AndroidManifest.xml`);
-
-  // Google sign in
-  shell.sed('-i', /"current_key": "(.*?)"/, `"current_key": "${googleAndroidApiKey}"`, `${shellPath}app/google-services.json`);
-  shell.sed('-i', /"certificate_hash": "(.*?)"/, `"certificate_hash": "${certificateHash}"`, `${shellPath}app/google-services.json`);
 
   // Set INITIAL_URL and SHELL_APP_SCHEME
   shell.sed('-i', 'INITIAL_URL = null', `INITIAL_URL = "${url}"`, `${shellPath}exponentview/src/main/java/host/exp/exponent/Constants.java`);
@@ -192,10 +182,13 @@ export async function createAndroidShellApp(args) {
     await saveUrlToPathAsync(notificationIconUrl, `${shellPath}exponentview/src/main/res/drawable-hdpi/shell_notification_icon.png`);
   }
 
+  let certificateHash = '';
+  let googleAndroidApiKey = '';
   if (privateConfigFile) {
     let configJsonFile = new JsonFile(privateConfigFile);
     let fabric = await configJsonFile.getAsync('fabric', null);
     let googleMaps = await configJsonFile.getAsync('googleMaps', null);
+    let googleSignIn = await configJsonFile.getAsync('googleSignIn', null);
 
     // Fabric
     if (fabric) {
@@ -215,7 +208,17 @@ export async function createAndroidShellApp(args) {
       android:name="com.google.android.geo.API_KEY"
       android:value="${googleMaps.apiKey}"/>`, `${shellPath}app/src/main/AndroidManifest.xml`);
     }
+
+    // Google Login
+    if (googleSignIn) {
+      certificateHash = googleSignIn.certificateHash;
+      googleAndroidApiKey = googleSignIn.apiKey;
+    }
   }
+
+  // Google sign in
+  shell.sed('-i', /"current_key": "(.*?)"/, `"current_key": "${googleAndroidApiKey}"`, `${shellPath}app/google-services.json`);
+  shell.sed('-i', /"certificate_hash": "(.*?)"/, `"certificate_hash": "${certificateHash}"`, `${shellPath}app/google-services.json`);
 
   if (keystore && alias && keystorePassword && keyPassword) {
     await spawnAsync(`/bin/rm`, [`shell-unaligned.apk`]);
