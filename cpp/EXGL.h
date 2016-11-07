@@ -2,7 +2,13 @@
 #define __EXGL_H__
 
 
+#ifdef __ANDROID__
+#include <GLES2/gl2.h>
+#endif
+#ifdef __APPLE__
 #include <OpenGLES/ES2/gl.h>
+#endif
+
 #include <JavaScriptCore/JSBase.h>
 
 
