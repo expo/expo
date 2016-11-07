@@ -86,9 +86,9 @@ async function configurePropertyListsAsync(manifest, args, configFilePath) {
     if (manifest.facebookScheme && manifest.facebookScheme.startsWith('fb')) {
       linkingSchemes.push(manifest.facebookScheme);
     }
-    if (manifest.ios && manifest.ios.config && manifest.ios.config.googleSignIn &&
-        manifest.ios.config.googleSignIn.reservedClientId) {
-      linkingSchemes.push(manifest.ios.config.google.reservedClientId);
+    if (privateConfig && privateConfig.googleSignIn &&
+        privateConfig.googleSignIn.reservedClientId) {
+      linkingSchemes.push(privateConfig.googleSignIn.reservedClientId);
     }
 
     // remove exp scheme, add app scheme(s)
