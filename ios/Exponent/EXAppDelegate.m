@@ -4,7 +4,6 @@
 
 #import "EXAppDelegate.h"
 
-#import "Amplitude.h"
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <Crashlytics/Crashlytics.h>
 #import <Fabric/Fabric.h>
@@ -14,39 +13,18 @@
 #import "ExponentViewManager.h"
 #import "EXRootViewController.h"
 #import "EXConstants.h"
-#import "EXFatalHandler.h"
 #import "EXFileDownloader.h"
 #import "EXKernel.h"
-#import "EXKeys.h"
 #import "EXShellManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@implementation EXAppDelegate {
-  NSDictionary *_launchOptions;
-}
-
-- (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions
-{
-  _launchOptions = launchOptions;
-
-  [DDLog addLogger:[DDASLLogger sharedInstance]];
-  [DDLog addLogger:[DDTTYLogger sharedInstance]];
-  return YES;
-}
+@implementation EXAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions
 {
   [Fabric with:@[CrashlyticsKit]];
   [CrashlyticsKit setObjectValue:[EXConstants getExponentClientVersion] forKey:@"exp_client_version"];
-  
-  RCTSetFatalHandler(handleFatalReactError);
-
-#if DEBUG
-  [[Amplitude instance] initializeApiKey:AMPLITUDE_DEV_KEY];
-#else
-  [[Amplitude instance] initializeApiKey:AMPLITUDE_KEY];
-#endif
 
   [[FBSDKApplicationDelegate sharedInstance] application:application
                            didFinishLaunchingWithOptions:launchOptions];
