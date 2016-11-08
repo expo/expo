@@ -523,6 +523,7 @@ ABI11_0_0RCT_EXPORT_METHOD(show)
         [_actionSheet addAction:[UIAlertAction actionWithTitle:item.title
                                                          style:UIAlertActionStyleDefault
                                                        handler:^(UIAlertAction *action) {
+                                                         _actionSheet = nil;
                                                          // Cancel button tappped.
                                                          [item callHandler];
                                                        }]];
@@ -533,6 +534,7 @@ ABI11_0_0RCT_EXPORT_METHOD(show)
         [_actionSheet addAction:[UIAlertAction actionWithTitle:(selected? item.selectedTitle : item.title)
                                                          style:UIAlertActionStyleDefault
                                                        handler:^(UIAlertAction *action) {
+                                                         _actionSheet = nil;
                                                          BOOL value = [self->_settings[item.key] boolValue];
                                                          [self updateSetting:item.key value:@(!value)]; // will call handler
                                                        }]];
@@ -545,6 +547,7 @@ ABI11_0_0RCT_EXPORT_METHOD(show)
   [_actionSheet addAction:[UIAlertAction actionWithTitle:@"Cancel"
                                                    style:UIAlertActionStyleCancel
                                                  handler:^(UIAlertAction *action) {
+                                                   _actionSheet = nil;
                                                  }]];
 
   _presentedItems = items;
