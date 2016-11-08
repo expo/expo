@@ -100,6 +100,7 @@
   NSArray<NSString *> *familyNames = [UIFont familyNames];
   NSMutableArray<NSString *> *fontNames = [NSMutableArray array];
   for (NSString *familyName in familyNames) {
+    [fontNames addObject:familyName];
     [fontNames addObjectsFromArray:[UIFont fontNamesForFamilyName:familyName]];
   }
   return [fontNames sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
