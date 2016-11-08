@@ -16,7 +16,7 @@
 {
     _window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     _window.backgroundColor = [UIColor whiteColor];
-    [[ExponentViewManager sharedInstance] setLaunchOptions:launchOptions];
+    [[ExponentViewManager sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
     _rootViewController = [ExponentViewManager sharedInstance].rootViewController;
     _window.rootViewController = _rootViewController;
     
@@ -26,5 +26,21 @@
     return YES;
 }
 
+#pragma mark - Notifications
+
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)token
+{
+    [[ExponentViewManager sharedInstance] application:application didRegisterForRemoteNotificationsWithDeviceToken:token];
+}
+
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)err
+{
+    [[ExponentViewManager sharedInstance] application:application didFailToRegisterForRemoteNotificationsWithError:err];
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
+{
+    [[ExponentViewManager sharedInstance] application:application didReceiveRemoteNotification:notification];
+}
 
 @end

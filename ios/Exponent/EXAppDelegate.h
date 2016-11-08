@@ -4,8 +4,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-FOUNDATION_EXPORT NSString * const EXAppDidRegisterForRemoteNotificationsNotification;
-
 @class EXRootViewController;
 
 @interface EXAppDelegate : UIResponder <UIApplicationDelegate>
