@@ -1,9 +1,13 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "ExponentViewManager.h"
+#import "EXFatalHandler.h"
 #import "EXKernelUtil.h"
+#import "EXKeys.h"
 #import "EXRemoteNotificationManager.h"
 #import "EXViewController.h"
+
+#import "Amplitude.h"
 
 NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDidRegisterForRemoteNotificationsNotification";
 
@@ -61,6 +65,18 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
 
 - (void)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  [DDLog addLogger:[DDASLLogger sharedInstance]];
+  [DDLog addLogger:[DDTTYLogger sharedInstance]];
+
+  RCTSetFatalHandler(handleFatalReactError);
+  
+  // TODO: open up an api for this in ExponentView
+#if DEBUG
+  [[Amplitude instance] initializeApiKey:AMPLITUDE_DEV_KEY];
+#else
+  [[Amplitude instance] initializeApiKey:AMPLITUDE_KEY];
+#endif
+  
   [EXRemoteNotificationManager sharedInstance];
   [self setLaunchOptions:launchOptions];
 

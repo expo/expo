@@ -2,4 +2,4 @@
 
 #import "RCTAssert.h"
 
-RCTFatalHandler handleFatalReactError;
+extern RCTFatalHandler handleFatalReactError;
