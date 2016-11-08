@@ -18,7 +18,6 @@ import {
 } from 'react-native';
 
 import autobind from 'autobind-decorator';
-import Browser from 'Browser';
 import BrowserActions from 'BrowserActions';
 import BrowserErrorView from 'BrowserErrorView';
 import ConsoleActions from 'ConsoleActions';
@@ -174,8 +173,12 @@ class BrowserScreen extends React.Component {
     let { manifest } = task;
 
     let loadingBackgroundColor = 'white';
+    let loadingIndicatorStyle = 'default';
     if (manifest && manifest.getIn(['loading', 'backgroundColor'])) {
       loadingBackgroundColor = manifest.getIn(['loading', 'backgroundColor']);
+    }
+    if (manifest && manifest.getIn(['loading', 'loadingIndicatorStyleExperimental'])) {
+      loadingIndicatorStyle = manifest.getIn(['loading', 'loadingIndicatorStyleExperimental']);
     }
     let loadingIcon = this._renderManifestLoadingIcon();
     let loadingBackgroundImage = this._renderManifestLoadingBackgroundImage();
@@ -187,7 +190,7 @@ class BrowserScreen extends React.Component {
           {loadingIcon}
           <ActivityIndicator
             size="large"
-            color={ExColors.navy}
+            color={((loadingIndicatorStyle === 'light') ? '#ffffff' : '#333333')}
             style={styles.loadingIndicator}
           />
         </View>
