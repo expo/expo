@@ -121,6 +121,6 @@ using ``signInAsync`` and skip the following steps.
 3. Click "Add Credentials" and then "OAuth client ID".
 4. Choose "iOS" as the "Application Type".
 5. Provide your ``bundleIdentifier`` in the "Bundle ID" field, then press "Create".
-6. Add the given client ID to your ``exp.json`` under ``ios.config.googleSignIn.reservedClientId``.
-7. Wherever you use ``Exponent.Google.logInAsync``, provide the client id as the ``iosClientId`` option, for example: ``Exponent.Google.logInAsync({iosClientId: YOUR_CLIENT_ID, ...etc});``.
+6. Add the given "iOS URL scheme" to your ``exp.json`` under ``ios.config.googleSignIn.reservedClientId``.
+7. Wherever you use ``Exponent.Google.logInAsync``, provide the "Client ID" as the ``iosClientId`` option, for example: ``Exponent.Google.logInAsync({iosClientId: YOUR_CLIENT_ID, ...etc});``.
 8. Rebuild your standalone app.
