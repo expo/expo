@@ -137,6 +137,21 @@ async function configurePropertyListsAsync(manifest, args, configFilePath) {
   });
 }
 
+function getAppleIconQualifier(iconSize, iconResolution) {
+  let iconQualifier;
+  if (iconResolution !== 1) {
+    // e.g. "29x29@3x"
+    iconQualifier = `${iconSize}x${iconSize}@${iconResolution}x`;
+  } else {
+    iconQualifier = `${iconSize}x${iconSize}`;
+  }
+  if (iconSize === 76 || iconSize === 83.5) {
+    // ipad sizes require ~ipad at the end
+    iconQualifier = `${iconQualifier}~ipad`;
+  }
+  return iconQualifier;
+}
+
 /**
  * Ensure that the proper icon images exist -- Info.plist already points at them
  * under CFBundleIcons.CFBundlePrimaryIcon.CFBundleIconFiles
@@ -158,7 +173,7 @@ async function configureIconsAsync(manifest, args, configFilePath) {
       iconResolutions = [2, 3];
     }
     iconResolutions.forEach(async (iconResolution) => {
-      let iconQualifier = `${iconSize}x${iconSize}@${iconResolution}x`;
+      let iconQualifier = getAppleIconQualifier(iconSize, iconResolution);
       let iconKey = `iconUrl${iconQualifier}`;
       let rawIconFilename;
       let usesDefault = false;
