@@ -11,18 +11,16 @@
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <GoogleSignIn/GoogleSignIn.h>
 
+#import "ExponentViewManager.h"
 #import "EXRootViewController.h"
 #import "EXConstants.h"
 #import "EXFatalHandler.h"
 #import "EXFileDownloader.h"
 #import "EXKernel.h"
 #import "EXKeys.h"
-#import "EXRemoteNotificationManager.h"
 #import "EXShellManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
-
-NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDidRegisterForRemoteNotificationsNotification";
 
 @implementation EXAppDelegate {
   NSDictionary *_launchOptions;
@@ -52,20 +50,16 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
 
   [[FBSDKApplicationDelegate sharedInstance] application:application
                            didFinishLaunchingWithOptions:launchOptions];
+  [[ExponentViewManager sharedInstance] registerRootViewControllerClass:[EXRootViewController class]];
+  [[ExponentViewManager sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
 
   _window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   _window.backgroundColor = [UIColor whiteColor];
-  _rootViewController = [[EXRootViewController alloc] initWithLaunchOptions:_launchOptions];
+  _rootViewController = (EXRootViewController *)[ExponentViewManager sharedInstance].rootViewController;
   _window.rootViewController = _rootViewController;
 
   [_rootViewController loadReactApplication];
   [_window makeKeyAndVisible];
-
-  [EXRemoteNotificationManager sharedInstance];
-  NSDictionary *remoteNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
-  if (remoteNotification || application.applicationIconBadgeNumber > 0) {
-    [[EXRemoteNotificationManager sharedInstance] handleRemoteNotification:remoteNotification fromBackground:YES];
-  }
 
   return YES;
 }
@@ -115,23 +109,17 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)token
 {
-  [[EXRemoteNotificationManager sharedInstance] registerAPNSToken:token];
-  [[NSNotificationCenter defaultCenter] postNotificationName:EXAppDidRegisterForRemoteNotificationsNotification object:nil];
+  [[ExponentViewManager sharedInstance] application:application didRegisterForRemoteNotificationsWithDeviceToken:token];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)err
 {
-  DDLogWarn(@"Failed to register for remote notifs: %@", err);
-  [[EXRemoteNotificationManager sharedInstance] registerAPNSToken:nil];
-
-  // Post this even in the failure case -- up to subscribers to subsequently read the system permission state
-  [[NSNotificationCenter defaultCenter] postNotificationName:EXAppDidRegisterForRemoteNotificationsNotification object:nil];
+  [[ExponentViewManager sharedInstance] application:application didFailToRegisterForRemoteNotificationsWithError:err];
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
 {
-  BOOL isFromBackground = !(application.applicationState == UIApplicationStateActive);
-  [[EXRemoteNotificationManager sharedInstance] handleRemoteNotification:notification fromBackground:isFromBackground];
+  [[ExponentViewManager sharedInstance] application:application didReceiveRemoteNotification:notification];
 }
 
 @end
