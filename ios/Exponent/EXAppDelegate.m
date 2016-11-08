@@ -4,18 +4,12 @@
 
 #import "EXAppDelegate.h"
 
-#import <CocoaLumberjack/CocoaLumberjack.h>
 #import <Crashlytics/Crashlytics.h>
 #import <Fabric/Fabric.h>
-#import <FBSDKCoreKit/FBSDKCoreKit.h>
-#import <GoogleSignIn/GoogleSignIn.h>
 
 #import "ExponentViewManager.h"
 #import "EXRootViewController.h"
 #import "EXConstants.h"
-#import "EXFileDownloader.h"
-#import "EXKernel.h"
-#import "EXShellManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -26,8 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
   [Fabric with:@[CrashlyticsKit]];
   [CrashlyticsKit setObjectValue:[EXConstants getExponentClientVersion] forKey:@"exp_client_version"];
 
-  [[FBSDKApplicationDelegate sharedInstance] application:application
-                           didFinishLaunchingWithOptions:launchOptions];
   [[ExponentViewManager sharedInstance] registerRootViewControllerClass:[EXRootViewController class]];
   [[ExponentViewManager sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
 
@@ -51,36 +43,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(nullable NSString *)sourceApplication annotation:(id)annotation
 {
-  if ([[GIDSignIn sharedInstance] handleURL:url
-                          sourceApplication:sourceApplication
-                                 annotation:annotation]) {
-    return YES;
-  }
-
-  if ([[FBSDKApplicationDelegate sharedInstance] application:application
-                                                 openURL:url
-                                       sourceApplication:sourceApplication
-                                                  annotation:annotation]) {
-    return YES;
-  }
-  return [EXKernel application:application openURL:url sourceApplication:sourceApplication annotation:annotation];
+  return [[ExponentViewManager sharedInstance] application:application openURL:url sourceApplication:sourceApplication annotation:annotation];
 }
 
 - (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray * _Nullable))restorationHandler
 {
-  if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
-    NSURL *webpageURL = userActivity.webpageURL;
-    NSString *path = [webpageURL path];
-    if ([path hasPrefix:@"/@"]) {
-      [EXKernel application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
-      return YES;
-    } else {
-      [[UIApplication sharedApplication] openURL:webpageURL];
-      return YES;
-    }
-  } else {
-    return NO;
-  }
+  return [[ExponentViewManager sharedInstance] application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
 }
 
 #pragma mark - Notifications
