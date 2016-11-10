@@ -8,7 +8,7 @@ import crayon from '@ccheever/crayon';
 import fs from 'fs';
 import shell from 'shelljs';
 import path from 'path';
-import { getManifestAsync, saveUrlToPathAsync } from './shell-app-utils';
+import { getManifestAsync, saveUrlToPathAsync } from './tools-utils';
 import {
   modifyIOSPropertyListAsync,
   cleanIOSPropertyListBackupAsync,

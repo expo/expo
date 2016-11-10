@@ -4,6 +4,7 @@
 
 import fs from 'fs';
 import request from 'request';
+import spawnAsyncQuiet from '@exponent/spawn-async';
 
 function saveUrlToPathAsync(url, path) {
   return new Promise(function(resolve, reject) {
@@ -39,7 +40,28 @@ async function getManifestAsync(url, headers) {
   return manifest;
 }
 
+async function spawnAsyncThrowError(...args) {
+  if (args.length === 2) {
+    return spawnAsyncQuiet(args[0], args[1], {
+      stdio: 'inherit',
+      cwd: __dirname,
+    });
+  } else {
+    return spawnAsyncQuiet(...args);
+  }
+}
+
+async function spawnAsync(...args) {
+  try {
+    return await spawnAsyncThrowError(...args);
+  } catch (e) {
+    console.error(e.message);
+  }
+}
+
 export {
   saveUrlToPathAsync,
   getManifestAsync,
+  spawnAsyncThrowError,
+  spawnAsync,
 };

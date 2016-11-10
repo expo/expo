@@ -9,27 +9,8 @@ import fs from 'fs';
 import path from 'path';
 import JsonFile from '@exponent/json-file';
 import shell from 'shelljs';
-import spawnAsyncQuiet from '@exponent/spawn-async';
-import { getManifestAsync, saveUrlToPathAsync } from './shell-app-utils';
 
-async function spawnAsyncThrowError(...args) {
-  if (args.length === 2) {
-    return spawnAsyncQuiet(args[0], args[1], {
-      stdio: 'inherit',
-      cwd: __dirname,
-    });
-  } else {
-    return spawnAsyncQuiet(...args);
-  }
-}
-
-async function spawnAsync(...args) {
-  try {
-    return await spawnAsyncThrowError(...args);
-  } catch (e) {
-    console.error(e.message);
-  }
-}
+import { getManifestAsync, saveUrlToPathAsync, spawnAsyncThrowError, spawnAsync } from './tools-utils';
 
 async function sedInPlaceAsync(...args) {
   const isDarwin = /^darwin/.test(process.platform);
