@@ -23,6 +23,7 @@ import javax.inject.Inject;
 
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
+import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponentview.Exponent;
@@ -49,7 +50,7 @@ public class ConstantsModule extends ReactContextBaseJavaModule {
       Map<String, Object> experienceProperties,
       JSONObject manifest) {
     super(reactContext);
-    Exponent.di().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(this);
 
     mManifest = manifest;
 

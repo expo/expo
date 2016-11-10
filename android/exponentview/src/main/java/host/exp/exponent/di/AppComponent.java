@@ -57,34 +57,5 @@ public interface AppComponent {
 
   void inject(ExponentKernelModule module);
 
-  void inject(URLHandlerModule module);
-  void inject(abi11_0_0.host.exp.exponent.modules.api.URLHandlerModule module);
-  void inject(abi10_0_0.host.exp.exponent.modules.api.URLHandlerModule module);
-  void inject(abi9_0_0.host.exp.exponent.modules.api.URLHandlerModule module);
-  void inject(abi8_0_0.host.exp.exponent.modules.api.URLHandlerModule module);
-  void inject(abi7_0_0.host.exp.exponent.modules.api.URLHandlerModule module);
-
-  void inject(NotificationsModule module);
-  void inject(abi11_0_0.host.exp.exponent.modules.api.NotificationsModule module);
-  void inject(abi10_0_0.host.exp.exponent.modules.api.NotificationsModule module);
-  void inject(abi9_0_0.host.exp.exponent.modules.api.NotificationsModule module);
-  void inject(abi8_0_0.host.exp.exponent.modules.api.NotificationsModule module);
-  void inject(abi7_0_0.host.exp.exponent.modules.api.NotificationsModule module);
-
-  void inject(ConstantsModule module);
-  void inject(abi11_0_0.host.exp.exponent.modules.api.ConstantsModule module);
-  void inject(abi10_0_0.host.exp.exponent.modules.api.ConstantsModule module);
-  void inject(abi9_0_0.host.exp.exponent.modules.api.ConstantsModule module);
-  void inject(abi8_0_0.host.exp.exponent.modules.api.ConstantsModule module);
-  void inject(abi7_0_0.host.exp.exponent.modules.api.ConstantsModule module);
-
-  void inject(ExponentIntentModule module);
-  void inject(abi11_0_0.host.exp.exponent.modules.internal.ExponentIntentModule module);
-  void inject(abi10_0_0.host.exp.exponent.modules.internal.ExponentIntentModule module);
-  void inject(abi9_0_0.host.exp.exponent.modules.internal.ExponentIntentModule module);
-  void inject(abi8_0_0.host.exp.exponent.modules.internal.ExponentIntentModule module);
-
-  void inject(UtilModule module);
-  void inject(abi11_0_0.host.exp.exponent.modules.api.UtilModule module);
-  void inject(abi10_0_0.host.exp.exponent.modules.api.UtilModule module);
+  void inject(NativeModuleDepsProvider nativeModuleDepsProvider);
 }

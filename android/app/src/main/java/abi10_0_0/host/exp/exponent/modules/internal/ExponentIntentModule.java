@@ -18,6 +18,7 @@ import javax.inject.Inject;
 
 import host.exp.exponent.Constants;
 import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponentview.Exponent;
 
@@ -32,7 +33,7 @@ public class ExponentIntentModule extends IntentModule {
 
   public ExponentIntentModule(ReactApplicationContext reactContext, Map<String, Object> experienceProperties) {
     super(reactContext);
-    Exponent.di().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(this);
 
     mExperienceProperties = experienceProperties;
   }

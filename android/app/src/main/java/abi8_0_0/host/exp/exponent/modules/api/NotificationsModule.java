@@ -15,6 +15,7 @@ import abi8_0_0.com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import host.exp.exponent.ExponentManifest;
+import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.modules.ExponentKernelModule;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponentview.Exponent;
@@ -29,7 +30,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   public NotificationsModule(ReactApplicationContext reactContext,
                              JSONObject manifest) {
     super(reactContext);
-    Exponent.di().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(this);
     mManifest = manifest;
   }
 

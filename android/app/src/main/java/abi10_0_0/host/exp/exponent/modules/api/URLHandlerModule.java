@@ -17,6 +17,7 @@ import abi10_0_0.com.facebook.react.bridge.ReactApplicationContext;
 import abi10_0_0.com.facebook.react.bridge.ReactContextBaseJavaModule;
 import abi10_0_0.com.facebook.react.bridge.ReactMethod;
 import abi10_0_0.com.facebook.react.common.MapBuilder;
+import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponentview.Exponent;
 
@@ -29,7 +30,7 @@ public class URLHandlerModule extends ReactContextBaseJavaModule {
 
   public URLHandlerModule(ReactApplicationContext reactContext) {
     super(reactContext);
-    Exponent.di().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(this);
   }
 
   @Override
