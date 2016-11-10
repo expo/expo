@@ -38,17 +38,17 @@
 
 + (NSURL *)kernelBundleUrl
 {
-#if DEBUG
-  NSString *kernelNgrokUrl = BUILD_MACHINE_KERNEL_NGROK_URL;
-  NSString *kernelPath = @"exponent.bundle?dev=true&platform=ios";
-  if (kernelNgrokUrl.length) {
-    return [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kernelNgrokUrl, kernelPath]];
+  if ([self _isDevelopingKernel]) {
+    NSString *kernelNgrokUrl = BUILD_MACHINE_KERNEL_NGROK_URL;
+    NSString *kernelPath = @"exponent.bundle?dev=true&platform=ios";
+    if (kernelNgrokUrl.length) {
+      return [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kernelNgrokUrl, kernelPath]];
+    } else {
+      return [NSURL URLWithString:[NSString stringWithFormat:@"http://%@:8081/%@", BUILD_MACHINE_LOCAL_HOSTNAME, kernelPath]];
+    }
   } else {
-    return [NSURL URLWithString:[NSString stringWithFormat:@"http://%@:8081/%@", BUILD_MACHINE_LOCAL_HOSTNAME, kernelPath]];
+    return [NSURL URLWithString:@"https://exp.host/~exponent/kernel"];
   }
-#else
-  return [NSURL URLWithString:@"https://exp.host/~exponent/kernel"];
-#endif
 }
 
 - (BOOL)isReadyToLoad
@@ -58,8 +58,12 @@
 
 - (void)computeVersionSymbolPrefix
 {
-  // kernel is always unversioned at the moment
-  self.validatedVersion = @"";
+  NSDictionary *detachedVersions = [EXVersions sharedInstance].versions[@"detachedNativeVersions"];
+  if (detachedVersions) {
+    self.validatedVersion = detachedVersions[@"kernel"];
+  } else {
+    self.validatedVersion = @"";
+  }
   self.versionSymbolPrefix = [[EXVersions sharedInstance] symbolPrefixForSdkVersion:self.validatedVersion isKernel:YES];
 }
 
@@ -70,13 +74,14 @@
 
 - (EXCachedResourceBehavior)cacheBehaviorForJSResource
 {
-#if DEBUG
+  if ([[self class] _isDevelopingKernel]) {
     // to prevent running dev native code against prod js.
     return kEXCachedResourceNoCache;
-#endif
-  return [[NSUserDefaults standardUserDefaults] boolForKey:kEXSkipCacheUserDefaultsKey] ?
-    kEXCachedResourceNoCache :
-    kEXCachedResourceUseCacheImmediately;
+  } else {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:kEXSkipCacheUserDefaultsKey] ?
+      kEXCachedResourceNoCache :
+      kEXCachedResourceUseCacheImmediately;
+  }
 }
 
 - (NSDictionary * _Nullable)launchOptionsForBridge
@@ -153,6 +158,23 @@
   }
   
   return modules;
+}
+
+#pragma mark - internal
+
++ (BOOL)_isDevelopingKernel
+{
+  // if we're in detached state (i.e. ExponentView) then never expect local kernel
+  BOOL isDetachedKernel = ([[EXVersions sharedInstance].versions objectForKey:@"detachedNativeVersions"] != nil);
+  if (isDetachedKernel) {
+    return NO;
+  }
+
+  // otherwise, expect local kernel when we are attached to xcode
+#if DEBUG
+  return YES;
+#endif
+  return NO;
 }
 
 @end
