@@ -17,6 +17,7 @@ Guides
    routing-and-navigation
    .. social-authentication
    push-notifications
+   exp-cli
    building-standalone-apps
    how-exponent-works
    upgrading-exponent
