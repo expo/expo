@@ -5,8 +5,17 @@ package host.exp.exponent;
 import android.support.multidex.MultiDexApplication;
 
 import com.crashlytics.android.Crashlytics;
+import com.facebook.react.bridge.ReactApplicationContext;
+
+import javax.inject.Inject;
 
 import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.di.NativeModuleDepsProvider;
+import host.exp.exponent.kernel.ExponentKernelModuleInterface;
+import host.exp.exponent.kernel.ExponentKernelModuleProvider;
+import host.exp.exponent.kernel.Kernel;
+import host.exp.exponent.kernel.KernelProvider;
+import host.exp.exponent.modules.ExponentKernelModule;
 import host.exp.exponentview.Exponent;
 import host.exp.exponentview.ExponentViewBuildConfig;
 import io.fabric.sdk.android.Fabric;
@@ -42,7 +51,17 @@ public class ExponentApplication extends MultiDexApplication {
     }
 
     sApplication = this;
+    KernelProvider.setInstance(new Kernel());
+
+    ExponentKernelModuleProvider.setFactory(new ExponentKernelModuleProvider.ExponentKernelModuleFactory() {
+      @Override
+      public ExponentKernelModuleInterface create(ReactApplicationContext reactContext) {
+        return new ExponentKernelModule(reactContext);
+      }
+    });
+
     Exponent.initialize(this, this);
+    NativeModuleDepsProvider.getInstance().add(Kernel.class, KernelProvider.getInstance());
     Exponent.getInstance().setGCMSenderId(getString(R.string.gcm_defaultSenderId));
 
     try {
