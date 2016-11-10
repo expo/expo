@@ -14,9 +14,9 @@ import abi9_0_0.com.facebook.react.bridge.ReadableMapKeySetIterator;
 
 import java.util.Map;
 
+import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponentview.BuildConfig;
 import host.exp.exponent.Constants;
-import host.exp.exponent.kernel.Kernel;
 
 public class FabricModule extends ReactContextBaseJavaModule {
   boolean mInScope = false;
@@ -24,7 +24,7 @@ public class FabricModule extends ReactContextBaseJavaModule {
   public FabricModule(ReactApplicationContext reactContext, Map<String, Object> experienceProperties) {
 
     super(reactContext);
-    String manifestUrl = (String) experienceProperties.get(Kernel.MANIFEST_URL_KEY);
+    String manifestUrl = (String) experienceProperties.get(KernelConstants.MANIFEST_URL_KEY);
     mInScope = manifestUrl != null && manifestUrl.equals(Constants.INITIAL_URL);
   }
 

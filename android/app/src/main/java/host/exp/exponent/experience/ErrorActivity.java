@@ -21,6 +21,7 @@ import de.greenrobot.event.EventBus;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.Constants;
 import host.exp.exponent.LauncherActivity;
+import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponentview.Exponent;
 import host.exp.exponentview.R;
 import host.exp.exponent.analytics.EXL;
@@ -86,7 +87,7 @@ public class ErrorActivity extends ReactNativeActivity {
       }
     });
 
-    Exponent.di().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(this);
 
     ExperienceActivity.removeNotification(this);
 

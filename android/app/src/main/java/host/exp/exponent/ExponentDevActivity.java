@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import javax.inject.Inject;
 
+import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponentview.Exponent;
@@ -43,7 +44,7 @@ public class ExponentDevActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.exponent_dev_activity);
     mLinearLayout = (LinearLayout) findViewById(R.id.linearLayout);
-    Exponent.di().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(this);
 
     addCheckbox("Debug Mode Enabled" + (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ?
             " (must enable \"Draw over other apps\" in Settings)" : ""),

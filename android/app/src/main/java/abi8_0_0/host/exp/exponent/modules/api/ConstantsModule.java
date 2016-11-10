@@ -22,6 +22,7 @@ import javax.inject.Inject;
 
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.di.NativeModuleDepsProvider;
+import host.exp.exponent.kernel.ExponentViewKernel;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponentview.Exponent;
@@ -75,7 +76,7 @@ public class ConstantsModule extends ReactContextBaseJavaModule {
   public Map<String, Object> getConstants() {
     Map<String, Object> constants = MapBuilder.<String, Object>of(
         "sessionId", mSessionId,
-        "exponentVersion", Kernel.getVersionName(),
+        "exponentVersion", ExponentViewKernel.getInstance().getVersionName(),
         "statusBarHeight", mStatusBarHeight,
         "deviceYearClass", YearClass.get(getReactApplicationContext()),
         "deviceId", mExponentSharedPreferences.getOrCreateUUID(),

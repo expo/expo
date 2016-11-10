@@ -11,15 +11,13 @@ import abi8_0_0.com.facebook.react.bridge.ReactApplicationContext;
 import abi8_0_0.com.facebook.react.bridge.ReactMethod;
 import abi8_0_0.com.facebook.react.modules.intent.IntentModule;
 
-import java.net.URL;
-
 import javax.inject.Inject;
 
 import host.exp.exponent.Constants;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.Kernel;
-import host.exp.exponentview.Exponent;
+import host.exp.exponent.kernel.KernelConstants;
 
 public class ExponentIntentModule extends IntentModule {
 
@@ -76,7 +74,7 @@ public class ExponentIntentModule extends IntentModule {
   }
 
   private void handleExpUrl(final String url) {
-    mKernel.openExperience(new Kernel.ExperienceOptions(url, url, null));
+    mKernel.openExperience(new KernelConstants.ExperienceOptions(url, url, null));
   }
 
   @ReactMethod

@@ -35,7 +35,7 @@ public class ExponentUncaughtExceptionHandler implements Thread.UncaughtExceptio
     }
 
     // TODO: open up home screen with error screen preloaded.
-    // Kernel.handleError doesn't always work because sometimes the process gets corrupted.
+    // KernelProvider.getInstance().handleError doesn't always work because sometimes the process gets corrupted.
     System.exit(1);
   }
 }

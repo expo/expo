@@ -30,6 +30,7 @@ import org.json.JSONObject;
 
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.kernel.Kernel;
+import host.exp.exponent.kernel.KernelProvider;
 
 public class FileSystemModule extends ReactContextBaseJavaModule {
   private SparseArray<Downloader> mDownloaders = new SparseArray<Downloader>();
@@ -47,9 +48,9 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
       String experienceId = manifest.getString(ExponentManifest.MANIFEST_ID_KEY);
       mRootPath = experienceIdToRootPath(reactContext, experienceId);
     } catch (JSONException e) {
-      Kernel.handleError("Requires Experience Id");
+      KernelProvider.getInstance().handleError("Requires Experience Id");
     } catch (UnsupportedEncodingException e) {
-      Kernel.handleError("Couldn't URL encode Experience Id");
+      KernelProvider.getInstance().handleError("Couldn't URL encode Experience Id");
     }
   }
 

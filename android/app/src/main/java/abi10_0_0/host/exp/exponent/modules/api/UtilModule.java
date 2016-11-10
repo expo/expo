@@ -16,6 +16,7 @@ import abi10_0_0.com.facebook.react.bridge.ReactMethod;
 
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.Kernel;
+import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponentview.Exponent;
 
 public class UtilModule extends ReactContextBaseJavaModule {
@@ -52,6 +53,6 @@ public class UtilModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void reload() {
-    mKernel.reloadVisibleExperience((String) mExperienceProperties.get(Kernel.MANIFEST_URL_KEY));
+    mKernel.reloadVisibleExperience((String) mExperienceProperties.get(KernelConstants.MANIFEST_URL_KEY));
   }
 }

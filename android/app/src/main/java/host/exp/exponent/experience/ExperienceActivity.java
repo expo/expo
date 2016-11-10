@@ -49,6 +49,10 @@ import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentIntentService;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.LauncherActivity;
+import host.exp.exponent.di.NativeModuleDepsProvider;
+import host.exp.exponent.gcm.ExponentPushNotification;
+import host.exp.exponent.kernel.KernelConstants;
+import host.exp.exponent.kernel.KernelProvider;
 import host.exp.exponentview.Exponent;
 import host.exp.exponentview.R;
 import host.exp.exponent.RNObject;
@@ -64,10 +68,10 @@ import host.exp.exponent.utils.ColorParser;
 import host.exp.exponent.utils.JSONBundleConverter;
 import versioned.host.exp.exponent.ReactUnthemedRootView;
 
-import static host.exp.exponent.kernel.Kernel.IS_OPTIMISTIC_KEY;
-import static host.exp.exponent.kernel.Kernel.MANIFEST_URL_KEY;
-import static host.exp.exponent.kernel.Kernel.LINKING_URI_KEY;
-import static host.exp.exponent.kernel.Kernel.INTENT_URI_KEY;
+import static host.exp.exponent.kernel.KernelConstants.IS_OPTIMISTIC_KEY;
+import static host.exp.exponent.kernel.KernelConstants.MANIFEST_URL_KEY;
+import static host.exp.exponent.kernel.KernelConstants.LINKING_URI_KEY;
+import static host.exp.exponent.kernel.KernelConstants.INTENT_URI_KEY;
 
 public class ExperienceActivity extends BaseExperienceActivity {
 
@@ -90,7 +94,7 @@ public class ExperienceActivity extends BaseExperienceActivity {
   private RNObject mLinkingPackage = null;
   private ReactUnthemedRootView mNuxOverlayView;
   private String mJSBundlePath;
-  private ExponentGcmListenerService.ExponentPushNotification mNotification;
+  private ExponentPushNotification mNotification;
   private boolean mIsShellApp;
   private String mIntentUri;
   private int mActivityId;
@@ -114,7 +118,7 @@ public class ExperienceActivity extends BaseExperienceActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    Exponent.di().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(this);
     EventBus.getDefault().registerSticky(this);
 
     mActivityId = Kernel.getActivityId();
@@ -325,7 +329,7 @@ public class ExperienceActivity extends BaseExperienceActivity {
       }
 
       if (!isValidVersion) {
-        Kernel.handleError(mSDKVersion + " is not a valid SDK version. Options are " +
+        KernelProvider.getInstance().handleError(mSDKVersion + " is not a valid SDK version. Options are " +
             TextUtils.join(", ", Constants.SDK_VERSIONS_LIST) + ", " + RNObject.UNVERSIONED + ".");
         return;
       }
@@ -338,7 +342,7 @@ public class ExperienceActivity extends BaseExperienceActivity {
     try {
       mManifestId = manifest.getString(ExponentManifest.MANIFEST_ID_KEY);
     } catch (JSONException e) {
-      Kernel.handleError("No ID found in manifest.");
+      KernelProvider.getInstance().handleError("No ID found in manifest.");
       return;
     }
     mIsCrashed = false;
@@ -352,9 +356,9 @@ public class ExperienceActivity extends BaseExperienceActivity {
     updateOrientation();
     addNotification(kernelOptions);
 
-    ExponentGcmListenerService.ExponentPushNotification notificationObject = null;
+    ExponentPushNotification notificationObject = null;
     if (mKernel.hasOptionsForManifestUrl(manifestUrl)) {
-      Kernel.ExperienceOptions options = mKernel.popOptionsForManifestUrl(manifestUrl);
+      KernelConstants.ExperienceOptions options = mKernel.popOptionsForManifestUrl(manifestUrl);
 
       // if the kernel has an intent for our manifest url, that's the intent that triggered
       // the loading of this experience.
@@ -365,7 +369,7 @@ public class ExperienceActivity extends BaseExperienceActivity {
       notificationObject = options.notificationObject;
     }
 
-    final ExponentGcmListenerService.ExponentPushNotification finalNotificationObject = notificationObject;
+    final ExponentPushNotification finalNotificationObject = notificationObject;
 
     // TODO: deprecated
     // LinkingPackage was removed after ABI 5.0.0
@@ -399,7 +403,7 @@ public class ExperienceActivity extends BaseExperienceActivity {
         try {
           id = mKernel.encodeExperienceId(mManifestId);
         } catch (UnsupportedEncodingException e) {
-          Kernel.handleError("Can't URL encode manifest ID");
+          KernelProvider.getInstance().handleError("Can't URL encode manifest ID");
           return;
         }
 
@@ -417,7 +421,7 @@ public class ExperienceActivity extends BaseExperienceActivity {
 
                 @Override
                 public void onError(Exception e) {
-                  Kernel.handleError(e);
+                  KernelProvider.getInstance().handleError(e);
                 }
               });
         }
@@ -455,7 +459,7 @@ public class ExperienceActivity extends BaseExperienceActivity {
     }
   }
 
-  public void handleOptions(Kernel.ExperienceOptions options) {
+  public void handleOptions(KernelConstants.ExperienceOptions options) {
     try {
       if (options.uri != null) {
         handleUri(options.uri);
@@ -558,7 +562,7 @@ public class ExperienceActivity extends BaseExperienceActivity {
     }
   }
 
-  private void waitForDrawOverOtherAppPermission(String jsBundlePath, ExponentGcmListenerService.ExponentPushNotification notificationObject) {
+  private void waitForDrawOverOtherAppPermission(String jsBundlePath, ExponentPushNotification notificationObject) {
     mJSBundlePath = jsBundlePath;
     mNotification = notificationObject;
 
@@ -781,7 +785,7 @@ public class ExperienceActivity extends BaseExperienceActivity {
     boolean isAnimated = false;
     if (options != null) {
       try {
-        if (options.getBoolean(Kernel.OPTION_LOAD_NUX_KEY)) {
+        if (options.getBoolean(KernelConstants.OPTION_LOAD_NUX_KEY)) {
           isAnimated = true;
         }
       } catch (JSONException e) {
@@ -869,7 +873,7 @@ public class ExperienceActivity extends BaseExperienceActivity {
   private void handleExperienceOptions(JSONObject options) {
     if (options != null) {
       try {
-        if (options.getBoolean(Kernel.OPTION_LOAD_NUX_KEY)) {
+        if (options.getBoolean(KernelConstants.OPTION_LOAD_NUX_KEY)) {
           addNuxView();
         }
       } catch (JSONException e) {

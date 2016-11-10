@@ -17,7 +17,7 @@ import javax.inject.Inject;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.experience.BaseExperienceActivity;
 import host.exp.exponent.kernel.Kernel;
-import host.exp.exponentview.Exponent;
+import host.exp.exponent.kernel.KernelConstants;
 
 public class UtilModule extends ReactContextBaseJavaModule {
 
@@ -53,7 +53,7 @@ public class UtilModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void reload() {
-    mKernel.reloadVisibleExperience((String) mExperienceProperties.get(Kernel.MANIFEST_URL_KEY));
+    mKernel.reloadVisibleExperience((String) mExperienceProperties.get(KernelConstants.MANIFEST_URL_KEY));
   }
 
   @ReactMethod

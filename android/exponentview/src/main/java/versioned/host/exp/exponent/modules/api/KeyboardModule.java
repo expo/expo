@@ -11,8 +11,6 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 
-import host.exp.exponent.experience.BaseExperienceActivity;
-
 public class KeyboardModule extends ReactContextBaseJavaModule {
   public KeyboardModule(ReactApplicationContext context) {
     super(context);
@@ -26,7 +24,7 @@ public class KeyboardModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void hideAsync(final Promise promise) {
     Boolean success = false;
-    BaseExperienceActivity activity = BaseExperienceActivity.getVisibleActivity();
+    Activity activity = getCurrentActivity();
     if (activity != null) {
       InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
       View view = activity.getCurrentFocus();

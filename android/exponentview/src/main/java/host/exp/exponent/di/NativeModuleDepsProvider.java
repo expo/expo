@@ -2,6 +2,9 @@
 
 package host.exp.exponent.di;
 
+import android.app.Application;
+import android.content.Context;
+
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +13,6 @@ import javax.inject.Inject;
 
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
-import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponentview.Exponent;
@@ -20,9 +22,6 @@ public class NativeModuleDepsProvider {
   private static final String TAG = NativeModuleDepsProvider.class.getSimpleName();
 
   @Inject
-  Kernel mKernel;
-
-  @Inject
   ExponentSharedPreferences mExponentSharedPreferences;
 
   @Inject
@@ -30,6 +29,12 @@ public class NativeModuleDepsProvider {
 
   @Inject
   ExponentManifest mExponentManifest;
+
+  @Inject
+  Context mContext;
+
+  @Inject
+  Application mApplicationContext;
 
 
   private Map<Class, Object> mClassesToInjectedObjects = new HashMap<>();
@@ -55,6 +60,10 @@ public class NativeModuleDepsProvider {
         }
       }
     }
+  }
+
+  public void add(final Class clazz, final Object object) {
+    mClassesToInjectedObjects.put(clazz, object);
   }
 
   public void inject(Object object) {

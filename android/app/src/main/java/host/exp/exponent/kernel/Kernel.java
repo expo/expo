@@ -7,7 +7,6 @@ import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
@@ -49,10 +48,10 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.LauncherActivity;
+import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.experience.BaseExperienceActivity;
 import host.exp.exponent.experience.ExperienceActivity;
 import host.exp.exponent.experience.HomeActivity;
@@ -65,9 +64,7 @@ import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.exceptions.ExceptionUtils;
-import host.exp.exponent.gcm.ExponentGcmListenerService;
 import host.exp.exponent.generated.ExponentBuildConstants;
-import host.exp.exponent.modules.ExponentKernelModule;
 import host.exp.exponent.network.ExponentHttpClient;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
@@ -83,29 +80,9 @@ import versioned.host.exp.exponent.ReadableObjectUtils;
 
 // TOOD: need to figure out when we should reload the kernel js. Do we do it every time you visit
 // the home screen? only when the app gets kicked out of memory?
-@Singleton
-public class Kernel {
+public class Kernel implements KernelInterface {
 
   private static final String TAG = Kernel.class.getSimpleName();
-  private static final String BUNDLE_TAG = "BUNDLE";
-
-  public static final String HOME_MANIFEST_URL = "";
-  public static final String MANIFEST_URL_KEY = "experienceUrl";
-  public static final String LINKING_URI_KEY = "linkingUri";
-  public static final String INTENT_URI_KEY = "intentUri";
-  public static final String IS_OPTIMISTIC_KEY = "isOptimistic";
-  public static final String MANIFEST_KEY = "manifest";
-  public static final String BUNDLE_URL_KEY = "bundleUrl";
-
-  public static final String OPTION_LOAD_NUX_KEY = "loadNux";
-
-  private static final String HOME_MODULE_NAME = "ExponentApp";
-  private static final String BUNDLE_FILE_PREFIX = "cached-bundle-";
-  private static final String KERNEL_BUNDLE_ID = "kernel";
-  private static final String OPEN_EXPERIENCE_ACTIVITY_KEY = "openExperienceActivity";
-  private static final long DELAY_TO_PRELOAD_KERNEL_JS = 5000;
-
-  private static final int HTTP_NOT_MODIFIED = 304;
 
   private static Kernel sInstance;
   private static int currentActivityId = 0;
@@ -120,27 +97,6 @@ public class Kernel {
   }
 
   public static class KernelStartedRunningEvent {
-  }
-
-  public static class ExperienceOptions {
-    public final String manifestUri;
-    public final String uri;
-    public final String notification; // deprecated
-    public final ExponentGcmListenerService.ExponentPushNotification notificationObject;
-
-    public ExperienceOptions(String manifestUri, String uri, String notification) {
-      this.manifestUri = manifestUri;
-      this.uri = uri;
-      this.notification = notification;
-      this.notificationObject = null;
-    }
-
-    public ExperienceOptions(String manifestUri, String uri, String notification, ExponentGcmListenerService.ExponentPushNotification notificationObject) {
-      this.manifestUri = manifestUri;
-      this.uri = uri;
-      this.notification = notification;
-      this.notificationObject = notificationObject;
-    }
   }
 
   public static class ExperienceActivityTask {
@@ -159,8 +115,12 @@ public class Kernel {
   private ReactInstanceManager mReactInstanceManager;
 
   // Contexts
-  private final Context mContext;
-  private final Application mApplicationContext;
+  @Inject
+  Context mContext;
+
+  @Inject
+  Application mApplicationContext;
+
   private Activity mActivityContext;
 
   // Activities/Tasks
@@ -178,34 +138,27 @@ public class Kernel {
   }
 
   // Misc
-  private static String sVersionName;
   private boolean mIsStarted = false;
   private boolean mIsRunning = false;
   private boolean mHasError = false;
-  private ExponentManifest mExponentManifest;
-  private ExponentSharedPreferences mExponentSharedPreferences;
-  private static final Map<String, ExperienceOptions> mManifestUrlToOptions = new HashMap<>();
-  private ExponentNetwork mExponentNetwork;
 
   @Inject
-  public Kernel(Context context, ExponentManifest exponentManifest, Application application,
-                ExponentSharedPreferences exponentSharedPreferences, final ExponentNetwork exponentNetwork) {
+  ExponentManifest mExponentManifest;
+
+  @Inject
+  ExponentSharedPreferences mExponentSharedPreferences;
+
+  private static final Map<String, KernelConstants.ExperienceOptions> mManifestUrlToOptions = new HashMap<>();
+
+  @Inject
+  ExponentNetwork mExponentNetwork;
+
+  public Kernel() {
+    NativeModuleDepsProvider.getInstance().inject(this);
+
     sInstance = this;
-    mContext = context;
-    mExponentManifest = exponentManifest;
-    mApplicationContext = application;
-    mExponentSharedPreferences = exponentSharedPreferences;
-    mExponentNetwork = exponentNetwork;
 
     updateKernelRNOkHttp();
-
-    try {
-      sVersionName = application.getPackageManager().getPackageInfo(mContext.getPackageName(), 0).versionName;
-    } catch (PackageManager.NameNotFoundException e) {
-      EXL.e(TAG, e);
-    } catch (Throwable e) {
-      EXL.e(TAG, e);
-    }
   }
 
   private void updateKernelRNOkHttp() {
@@ -242,7 +195,7 @@ public class Kernel {
       new Handler().postDelayed(new Runnable() {
         @Override
         public void run() {
-          loadJSBundle(bundleUrl, KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, new BundleListener() {
+          loadJSBundle(bundleUrl, KernelConstants.KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, new BundleListener() {
             @Override
             public void onBundleLoaded(String localBundlePath) {
               EXL.d(TAG, "Successfully preloaded kernel bundle");
@@ -254,16 +207,16 @@ public class Kernel {
             }
           });
         }
-      }, DELAY_TO_PRELOAD_KERNEL_JS);
+      }, KernelConstants.DELAY_TO_PRELOAD_KERNEL_JS);
     } else {
-      loadJSBundle(bundleUrl, KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, kernelBundleListener());
+      loadJSBundle(bundleUrl, KernelConstants.KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, kernelBundleListener());
     }
   }
 
   public void reloadJSBundle() {
     String bundleUrl = getBundleUrl();
     mHasError = false;
-    loadJSBundle(bundleUrl, KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, kernelBundleListener());
+    loadJSBundle(bundleUrl, KernelConstants.KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, kernelBundleListener());
   }
 
   private static boolean hasDeclaredField(Class clazz, String field) {
@@ -396,10 +349,6 @@ public class Kernel {
     return mIsStarted;
   }
 
-  public static String getVersionName() {
-    return sVersionName;
-  }
-
   public Activity getActivityContext() {
     return mActivityContext;
   }
@@ -418,7 +367,7 @@ public class Kernel {
     ReactRootView reactRootView = new ReactUnthemedRootView(mContext);
     reactRootView.startReactApplication(
         mReactInstanceManager,
-        HOME_MODULE_NAME,
+        KernelConstants.HOME_MODULE_NAME,
         getKernelLaunchOptions());
 
     return reactRootView;
@@ -451,7 +400,7 @@ public class Kernel {
     return mManifestUrlToOptions.containsKey(manifestUrl);
   }
 
-  public ExperienceOptions popOptionsForManifestUrl(String manifestUrl) {
+  public KernelConstants.ExperienceOptions popOptionsForManifestUrl(String manifestUrl) {
     return mManifestUrlToOptions.remove(manifestUrl);
   }
 
@@ -504,7 +453,7 @@ public class Kernel {
    *
    */
 
-  public void openExperience(final ExperienceOptions options) {
+  public void openExperience(final KernelConstants.ExperienceOptions options) {
     openManifestUrl(getManifestUrlFromFullUri(options.manifestUri), options, true);
   }
 
@@ -528,7 +477,7 @@ public class Kernel {
     return null;
   }
 
-  private void openManifestUrl(final String manifestUrl, final ExperienceOptions options, final Boolean isOptimistic) {
+  private void openManifestUrl(final String manifestUrl, final KernelConstants.ExperienceOptions options, final Boolean isOptimistic) {
     SoLoader.init(mContext, false);
 
     if (options == null) {
@@ -537,12 +486,12 @@ public class Kernel {
       mManifestUrlToOptions.put(manifestUrl, options);
     }
 
-    if (manifestUrl == null || manifestUrl.equals(HOME_MANIFEST_URL)) {
+    if (manifestUrl == null || manifestUrl.equals(KernelConstants.HOME_MANIFEST_URL)) {
       openHomeActivity();
       return;
     }
 
-    ExponentKernelModule.queueEvent("ExponentKernel.clearConsole", Arguments.createMap(), null);
+    ExponentKernelModuleProvider.getInstance().queueEvent("ExponentKernel.clearConsole", Arguments.createMap(), null);
 
     final List<ActivityManager.AppTask> tasks = getExperienceActivityTasks();
     ActivityManager.AppTask existingTask = null;
@@ -550,7 +499,7 @@ public class Kernel {
       for (int i = 0; i < tasks.size(); i++) {
         ActivityManager.AppTask task = tasks.get(i);
         Intent baseIntent = task.getTaskInfo().baseIntent;
-        if (baseIntent.hasExtra(MANIFEST_URL_KEY) && baseIntent.getStringExtra(MANIFEST_URL_KEY).equals(manifestUrl)) {
+        if (baseIntent.hasExtra(KernelConstants.MANIFEST_URL_KEY) && baseIntent.getStringExtra(KernelConstants.MANIFEST_URL_KEY).equals(manifestUrl)) {
           existingTask = task;
           break;
         }
@@ -626,7 +575,7 @@ public class Kernel {
     params.putString("manifestUrl", manifestUrl);
     params.putString("manifestString", manifest.toString());
     params.putString("bundleUrl", bundleUrl);
-    ExponentKernelModule.queueEvent("ExponentKernel.openManifestUrl", params, new ExponentKernelModule.KernelEventCallback() {
+    ExponentKernelModuleProvider.getInstance().queueEvent("ExponentKernel.openManifestUrl", params, new ExponentKernelModuleProvider.KernelEventCallback() {
       @Override
       public void onEventSuccess(ReadableMap result) {
         EXL.d(TAG, "Successfully called ExponentKernel.openManifestUrl in kernel JS.");
@@ -683,8 +632,8 @@ public class Kernel {
     try {
       Intent intent = new Intent(mActivityContext, ExperienceActivity.class);
       addIntentDocumentFlags(intent);
-      intent.putExtra(MANIFEST_URL_KEY, manifestUrl);
-      intent.putExtra(IS_OPTIMISTIC_KEY, true);
+      intent.putExtra(KernelConstants.MANIFEST_URL_KEY, manifestUrl);
+      intent.putExtra(KernelConstants.IS_OPTIMISTIC_KEY, true);
       mActivityContext.startActivity(intent);
     } catch (Throwable e) {
       EXL.e(TAG, e);
@@ -695,12 +644,12 @@ public class Kernel {
     mOptimisticActivity = experienceActivity;
     mOptimisticTaskId = taskId;
 
-    AsyncCondition.notify(OPEN_EXPERIENCE_ACTIVITY_KEY);
+    AsyncCondition.notify(KernelConstants.OPEN_EXPERIENCE_ACTIVITY_KEY);
   }
 
   public void populateOptimisticExperienceActivity(
       final String manifestUrl, final JSONObject manifest, final String bundleUrl, final JSONObject kernelOptions) {
-    AsyncCondition.wait(OPEN_EXPERIENCE_ACTIVITY_KEY, new AsyncCondition.AsyncConditionListener() {
+    AsyncCondition.wait(KernelConstants.OPEN_EXPERIENCE_ACTIVITY_KEY, new AsyncCondition.AsyncConditionListener() {
       @Override
       public boolean isReady() {
         return mOptimisticActivity != null && mOptimisticTaskId != null;
@@ -866,7 +815,7 @@ public class Kernel {
 
   // `id` must be URL encoded. Returns true if found cached bundle.
   public boolean loadJSBundle(final String urlString, final String id, String abiVersion, final BundleListener bundleListener) {
-    if (!id.equals(KERNEL_BUNDLE_ID)) {
+    if (!id.equals(KernelConstants.KERNEL_BUNDLE_ID)) {
       Analytics.markEvent(Analytics.TimedEvent.STARTED_FETCHING_BUNDLE);
     }
 
@@ -878,7 +827,7 @@ public class Kernel {
     // getCacheDir() doesn't work here! Some phones clean the file up in between when we check
     // file.exists() and when we feed it into React Native!
     // TODO: clean up files here!
-    final String fileName = BUNDLE_FILE_PREFIX + id;
+    final String fileName = KernelConstants.BUNDLE_FILE_PREFIX + id;
     final File directory = new File(mContext.getFilesDir(), abiVersion);
     if (!directory.exists()) {
       directory.mkdir();
@@ -907,18 +856,18 @@ public class Kernel {
             return;
           }
 
-          if (!id.equals(KERNEL_BUNDLE_ID)) {
+          if (!id.equals(KernelConstants.KERNEL_BUNDLE_ID)) {
             Analytics.markEvent(Analytics.TimedEvent.FINISHED_FETCHING_BUNDLE);
           }
 
           try {
-            if (!id.equals(KERNEL_BUNDLE_ID)) {
+            if (!id.equals(KernelConstants.KERNEL_BUNDLE_ID)) {
               Analytics.markEvent(Analytics.TimedEvent.STARTED_WRITING_BUNDLE);
             }
             final File sourceFile = new File(directory, fileName);
             boolean hasCachedSourceFile = false;
 
-            if (response.networkResponse() == null || response.networkResponse().code() == HTTP_NOT_MODIFIED) {
+            if (response.networkResponse() == null || response.networkResponse().code() == KernelConstants.HTTP_NOT_MODIFIED) {
               // If we're getting a cached response don't rewrite the file to disk.
               EXL.d(TAG, "Got cached OkHttp response for " + urlString);
               if (sourceFile.exists()) {
@@ -943,7 +892,7 @@ public class Kernel {
               inputStream.close();
             }
 
-            if (!id.equals(KERNEL_BUNDLE_ID)) {
+            if (!id.equals(KernelConstants.KERNEL_BUNDLE_ID)) {
               Analytics.markEvent(Analytics.TimedEvent.FINISHED_WRITING_BUNDLE);
             }
 
@@ -978,7 +927,7 @@ public class Kernel {
   }
 
   private void printSourceFile(String path) {
-    EXL.d(BUNDLE_TAG, "Printing bundle:");
+    EXL.d(KernelConstants.BUNDLE_TAG, "Printing bundle:");
     InputStream inputStream = null;
     try {
       inputStream = new FileInputStream(path);
@@ -989,16 +938,16 @@ public class Kernel {
       String line;
       do {
         line = bufferedReader.readLine();
-        EXL.d(BUNDLE_TAG, line);
+        EXL.d(KernelConstants.BUNDLE_TAG, line);
       } while (line != null);
     } catch (Exception e) {
-      EXL.e(BUNDLE_TAG, e.toString());
+      EXL.e(KernelConstants.BUNDLE_TAG, e.toString());
     } finally {
       if (inputStream != null) {
         try {
           inputStream.close();
         } catch (IOException e) {
-          EXL.e(BUNDLE_TAG, e.toString());
+          EXL.e(KernelConstants.BUNDLE_TAG, e.toString());
         }
       }
     }
@@ -1069,11 +1018,11 @@ public class Kernel {
         getExceptionId(exceptionId), isFatal));
   }
 
-  public static void handleError(String errorMessage) {
+  public void handleError(String errorMessage) {
     handleReactNativeError(ExponentErrorMessage.developerErrorMessage(errorMessage), null, -1, true);
   }
 
-  public static void handleError(Exception exception) {
+  public void handleError(Exception exception) {
     handleReactNativeError(ExceptionUtils.exceptionToErrorMessage(exception), null, -1, true);
     Exponent.logException(exception);
   }

@@ -19,8 +19,10 @@ import javax.inject.Inject;
 import com.facebook.soloader.SoLoader;
 
 import host.exp.exponent.analytics.Analytics;
-import host.exp.exponent.gcm.ExponentGcmListenerService;
+import host.exp.exponent.di.NativeModuleDepsProvider;
+import host.exp.exponent.gcm.ExponentPushNotification;
 import host.exp.exponent.kernel.Kernel;
+import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponentview.BuildConfig;
 import host.exp.exponentview.Exponent;
 
@@ -63,7 +65,7 @@ public class LauncherActivity extends Activity {
 
     SoLoader.init(getApplicationContext(), false);
 
-    Exponent.di().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(this);
 
     mKernel.setActivityContext(this);
 
@@ -132,7 +134,7 @@ public class LauncherActivity extends Activity {
       String notificationObject = bundle.getString(NOTIFICATION_OBJECT_KEY);
       String manifestUrl = bundle.getString(MANIFEST_URL_KEY);
       if (manifestUrl != null) {
-        mKernel.openExperience(new Kernel.ExperienceOptions(manifestUrl, intentUri == null ? manifestUrl : intentUri, notification, ExponentGcmListenerService.ExponentPushNotification.fromJSONObjectString(notificationObject)));
+        mKernel.openExperience(new KernelConstants.ExperienceOptions(manifestUrl, intentUri == null ? manifestUrl : intentUri, notification, ExponentPushNotification.fromJSONObjectString(notificationObject)));
         return;
       }
     }
@@ -140,7 +142,7 @@ public class LauncherActivity extends Activity {
     if (uri != null) {
       if (Constants.INITIAL_URL == null) {
         // We got an "exp://" link
-        mKernel.openExperience(new Kernel.ExperienceOptions(intentUri, intentUri, null));
+        mKernel.openExperience(new KernelConstants.ExperienceOptions(intentUri, intentUri, null));
         return;
       } else {
         // We got a custom scheme link
@@ -148,13 +150,13 @@ public class LauncherActivity extends Activity {
         // shell app. For example, we are running Brighten in the List shell and go to Twitter login.
         // We might want to set the return uri to thelistapp://exp.host/@brighten/brighten+deeplink
         // But we also can't break thelistapp:// deep links that look like thelistapp://l/listid
-        mKernel.openExperience(new Kernel.ExperienceOptions(Constants.INITIAL_URL, intentUri, null));
+        mKernel.openExperience(new KernelConstants.ExperienceOptions(Constants.INITIAL_URL, intentUri, null));
         return;
       }
     }
 
-    String defaultUrl = Constants.INITIAL_URL == null ? Kernel.HOME_MANIFEST_URL : Constants.INITIAL_URL;
-    mKernel.openExperience(new Kernel.ExperienceOptions(defaultUrl, defaultUrl, null));
+    String defaultUrl = Constants.INITIAL_URL == null ? KernelConstants.HOME_MANIFEST_URL : Constants.INITIAL_URL;
+    mKernel.openExperience(new KernelConstants.ExperienceOptions(defaultUrl, defaultUrl, null));
   }
 
   // Handle this here since we want the dev activity to be as separate from the kernel as possible.

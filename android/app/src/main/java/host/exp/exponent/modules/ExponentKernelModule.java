@@ -28,9 +28,12 @@ import javax.inject.Inject;
 
 import host.exp.exponent.Constants;
 import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.experience.ErrorActivity;
 import host.exp.exponent.experience.ExperienceActivity;
 import host.exp.exponent.kernel.ExponentError;
+import host.exp.exponent.kernel.ExponentKernelModuleInterface;
+import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.network.ExponentNetwork;
@@ -41,22 +44,16 @@ import okhttp3.Callback;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class ExponentKernelModule extends ReactContextBaseJavaModule {
+public class ExponentKernelModule extends ReactContextBaseJavaModule implements ExponentKernelModuleInterface {
 
   private static final String TAG = ExponentKernelModule.class.getSimpleName();
-
-  public interface KernelEventCallback {
-    void onEventSuccess(ReadableMap result);
-
-    void onEventFailure(String errorMessage);
-  }
 
   public static class KernelEvent {
     final String name;
     final WritableMap data;
-    final KernelEventCallback callback;
+    final ExponentKernelModuleProvider.KernelEventCallback callback;
 
-    public KernelEvent(String name, WritableMap data, KernelEventCallback callback) {
+    public KernelEvent(String name, WritableMap data, ExponentKernelModuleProvider.KernelEventCallback callback) {
       this.name = name;
       this.data = data;
       this.callback = callback;
@@ -90,12 +87,12 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule {
   ExponentNetwork mExponentNetwork;
 
   private static Queue<KernelEvent> sEventQueue = new LinkedList<>();
-  private static Map<String, KernelEventCallback> sKernelEventCallbacks = new HashMap<>();
+  private static Map<String, ExponentKernelModuleProvider.KernelEventCallback> sKernelEventCallbacks = new HashMap<>();
   private boolean mIsLoaded = false;
 
   public ExponentKernelModule(ReactApplicationContext reactContext) {
     super(reactContext);
-    Exponent.di().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(this);
 
     sInstance = this;
   }
@@ -122,13 +119,17 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule {
       params.putInt("exceptionId", error.exceptionId);
       params.putBoolean("isFatal", error.isFatal);
 
-      queueEvent("ExponentKernel.addError", params, null);
+      queueEventStatic("ExponentKernel.addError", params, null);
     } catch (Throwable e) {
       EXL.e(TAG, e);
     }
   }
 
-  public static void queueEvent(String name, WritableMap data, KernelEventCallback callback) {
+  public void queueEvent(String name, WritableMap data, ExponentKernelModuleProvider.KernelEventCallback callback) {
+    queueEvent(new KernelEvent(name, data, callback));
+  }
+
+  public static void queueEventStatic(String name, WritableMap data, ExponentKernelModuleProvider.KernelEventCallback callback) {
     queueEvent(new KernelEvent(name, data, callback));
   }
 
@@ -218,7 +219,7 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule {
       return;
     }
 
-    KernelEventCallback callback = sKernelEventCallbacks.remove(eventId);
+    ExponentKernelModuleProvider.KernelEventCallback callback = sKernelEventCallbacks.remove(eventId);
     callback.onEventSuccess(result);
   }
 
@@ -228,7 +229,7 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule {
       return;
     }
 
-    KernelEventCallback callback = sKernelEventCallbacks.remove(eventId);
+    ExponentKernelModuleProvider.KernelEventCallback callback = sKernelEventCallbacks.remove(eventId);
     callback.onEventFailure(errorMessage);
   }
 

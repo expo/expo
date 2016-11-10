@@ -15,6 +15,7 @@ import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.JSONBundleConverter;
@@ -43,7 +44,7 @@ public class InfoActivity extends ReactNativeActivity {
     super.onCreate(savedInstanceState);
     mShouldDestroyRNInstanceOnExit = false;
 
-    Exponent.di().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(this);
 
     Bundle bundle = getIntent().getExtras();
     mManifestUrl = bundle.getString(MANIFEST_URL_KEY);

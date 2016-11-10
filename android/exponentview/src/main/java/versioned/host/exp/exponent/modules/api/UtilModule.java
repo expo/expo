@@ -15,14 +15,10 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.experience.BaseExperienceActivity;
-import host.exp.exponent.kernel.Kernel;
-import host.exp.exponentview.Exponent;
+import host.exp.exponent.kernel.KernelConstants;
+import host.exp.exponent.kernel.KernelProvider;
 
 public class UtilModule extends ReactContextBaseJavaModule {
-
-  @Inject
-  Kernel mKernel;
 
   private final Map<String, Object> mExperienceProperties;
 
@@ -47,13 +43,13 @@ public class UtilModule extends ReactContextBaseJavaModule {
     if (contents != null) {
       intent.putExtra(Intent.EXTRA_TEXT, contents);
     }
-    BaseExperienceActivity.getVisibleActivity().startActivity(Intent.createChooser(intent, prompt));
+    getCurrentActivity().startActivity(Intent.createChooser(intent, prompt));
     promise.resolve(true);
   }
 
   @ReactMethod
   public void reload() {
-    mKernel.reloadVisibleExperience((String) mExperienceProperties.get(Kernel.MANIFEST_URL_KEY));
+    KernelProvider.getInstance().reloadVisibleExperience((String) mExperienceProperties.get(KernelConstants.MANIFEST_URL_KEY));
   }
 
   @ReactMethod

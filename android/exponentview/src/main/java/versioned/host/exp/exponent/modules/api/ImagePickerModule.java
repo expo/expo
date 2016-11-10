@@ -28,7 +28,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import host.exp.exponent.ActivityResultListener;
-import host.exp.exponent.experience.BaseExperienceActivity;
 import host.exp.exponentview.Exponent;
 
 public class ImagePickerModule extends ReactContextBaseJavaModule implements ActivityResultListener {

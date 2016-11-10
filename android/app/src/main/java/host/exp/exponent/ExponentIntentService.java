@@ -19,6 +19,7 @@ import org.json.JSONObject;
 import javax.inject.Inject;
 
 import host.exp.exponent.analytics.Analytics;
+import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.experience.BaseExperienceActivity;
 import host.exp.exponent.experience.ExperienceActivity;
 import host.exp.exponent.experience.InfoActivity;
@@ -27,7 +28,7 @@ import host.exp.exponent.kernel.Kernel;
 import host.exp.exponentview.Exponent;
 import host.exp.exponentview.R;
 
-import static host.exp.exponent.kernel.Kernel.MANIFEST_URL_KEY;
+import static host.exp.exponent.kernel.KernelConstants.MANIFEST_URL_KEY;
 
 public class ExponentIntentService extends IntentService {
 
@@ -83,7 +84,7 @@ public class ExponentIntentService extends IntentService {
   @Override
   public void onCreate() {
     super.onCreate();
-    Exponent.di().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(this);
   }
 
   @Override

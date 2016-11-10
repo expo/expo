@@ -19,8 +19,8 @@ import host.exp.exponentview.ExponentViewBuildConfig;
 import host.exp.exponentview.R;
 import host.exp.exponent.analytics.EXL;
 
-import static host.exp.exponent.kernel.Kernel.BUNDLE_URL_KEY;
-import static host.exp.exponent.kernel.Kernel.MANIFEST_KEY;
+import static host.exp.exponent.kernel.KernelConstants.BUNDLE_URL_KEY;
+import static host.exp.exponent.kernel.KernelConstants.MANIFEST_KEY;
 
 @Singleton
 public class ExponentSharedPreferences {

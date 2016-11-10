@@ -16,9 +16,10 @@ import javax.inject.Inject;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
-import host.exp.exponentview.R;
+
+import host.exp.exponent.di.NativeModuleDepsProvider;
+import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 import host.exp.exponent.analytics.EXL;
-import host.exp.exponent.modules.ExponentKernelModule;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponentview.Exponent;
 
@@ -38,7 +39,7 @@ public class RegistrationIntentService extends IntentService {
   @Override
   public void onCreate() {
     super.onCreate();
-    Exponent.di().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(this);
   }
 
   @Override
@@ -63,7 +64,7 @@ public class RegistrationIntentService extends IntentService {
       WritableMap params = Arguments.createMap();
       params.putString("deviceToken", token);
       params.putString("deviceId", uuid);
-      ExponentKernelModule.queueEvent("ExponentKernel.updateDeviceToken", params, new ExponentKernelModule.KernelEventCallback() {
+      ExponentKernelModuleProvider.getInstance().queueEvent("ExponentKernel.updateDeviceToken", params, new ExponentKernelModuleProvider.KernelEventCallback() {
         @Override
         public void onEventSuccess(ReadableMap result) {
           mExponentSharedPreferences.setString(ExponentSharedPreferences.GCM_TOKEN_KEY, token);

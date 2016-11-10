@@ -45,8 +45,8 @@ public class ExponentUrls {
         .header("Exponent-SDK-Version", Constants.SDK_VERSIONS)
         .header("Exponent-Platform", "android");
 
-    if (Kernel.getVersionName() != null) {
-      builder = builder.header("Exponent-Version", Kernel.getVersionName());
+    if (ExponentViewKernel.getInstance().getVersionName() != null) {
+      builder = builder.header("Exponent-Version", ExponentViewKernel.getInstance().getVersionName());
     }
 
     return builder;

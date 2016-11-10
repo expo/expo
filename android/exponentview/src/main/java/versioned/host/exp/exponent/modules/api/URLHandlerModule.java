@@ -19,15 +19,10 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.common.MapBuilder;
 
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.kernel.Kernel;
-import host.exp.exponentview.Exponent;
 
 // TODO: kill
 @Deprecated
 public class URLHandlerModule extends ReactContextBaseJavaModule {
-
-  @Inject
-  Kernel mKernel;
 
   public URLHandlerModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -63,7 +58,7 @@ public class URLHandlerModule extends ReactContextBaseJavaModule {
     Intent intent = new Intent(Intent.ACTION_VIEW, uri);
     PackageManager packageManager = getReactApplicationContext().getPackageManager();
     if (intent.resolveActivity(packageManager) != null) {
-      mKernel.getActivityContext().startActivity(intent);
+      getCurrentActivity().startActivity(intent);
       promise.resolve(true);
     } else {
       promise.resolve(false);

@@ -2,7 +2,7 @@
 
 package versioned.host.exp.exponent.modules.api;
 
-import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -25,8 +25,6 @@ import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEm
 
 import java.util.HashMap;
 import java.util.Map;
-
-import host.exp.exponent.experience.BaseExperienceActivity;
 
 public class LocationModule extends ReactContextBaseJavaModule {
   Map<Integer, LocationListener> mLocationListeners = new HashMap<>();
@@ -70,7 +68,7 @@ public class LocationModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void getCurrentPositionAsync(final ReadableMap options, final Promise promise) {
     // Need to run when experience activity visible
-    BaseExperienceActivity activity = BaseExperienceActivity.getVisibleActivity();
+    Activity activity = getCurrentActivity();
     if (activity == null) {
       promise.reject("E_ACTIVITY_DOES_NOT_EXIST", "No visible activity. Must request location when visible.");
       return;
@@ -168,7 +166,7 @@ public class LocationModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void watchPositionImplAsync(final int watchId, final ReadableMap options, final Promise promise) {
     // Need to run when experience activity visible
-    BaseExperienceActivity activity = BaseExperienceActivity.getVisibleActivity();
+    Activity activity = getCurrentActivity();
     if (activity == null) {
       promise.reject("E_ACTIVITY_DOES_NOT_EXIST", "No visible activity. Must request location when visible.");
       return;

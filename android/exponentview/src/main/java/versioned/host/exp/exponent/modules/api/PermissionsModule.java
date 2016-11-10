@@ -3,6 +3,7 @@
 package versioned.host.exp.exponent.modules.api;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
@@ -14,7 +15,6 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
 
-import host.exp.exponent.experience.BaseExperienceActivity;
 import host.exp.exponentview.Exponent;
 
 public class PermissionsModule  extends ReactContextBaseJavaModule {
@@ -164,7 +164,7 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
   }
 
   private void askForCameraPermissions(final Promise promise) {
-    BaseExperienceActivity activity = BaseExperienceActivity.getVisibleActivity();
+    Activity activity = getCurrentActivity();
     if (activity == null) {
       promise.reject("E_ACTIVITY_DOES_NOT_EXIST", "No visible activity. Must request camera when visible.");
       return;

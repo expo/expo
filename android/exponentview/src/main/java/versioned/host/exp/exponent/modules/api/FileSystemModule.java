@@ -30,7 +30,7 @@ import org.json.JSONObject;
 
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
-import host.exp.exponent.kernel.Kernel;
+import host.exp.exponent.kernel.KernelProvider;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -53,9 +53,9 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
       mRootPath = rootPathForExperience(reactContext, experienceId);
       mCachePath = cachePathForExperience(reactContext, experienceId);
     } catch (JSONException e) {
-      Kernel.handleError("Requires Experience Id");
+      KernelProvider.getInstance().handleError("Requires Experience Id");
     } catch (UnsupportedEncodingException e) {
-      Kernel.handleError("Couldn't URL encode Experience Id");
+      KernelProvider.getInstance().handleError("Couldn't URL encode Experience Id");
     }
   }
 

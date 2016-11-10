@@ -23,6 +23,7 @@ import java.util.Queue;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
+import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.gcm.RegistrationIntentService;
 import host.exp.exponentview.BuildConfig;
 import host.exp.exponent.LoadingView;
@@ -92,7 +93,7 @@ public abstract class BaseExperienceActivity extends ReactNativeActivity {
     mLayout.addView(mContainer);
     mLayout.addView(mLoadingView);
 
-    Exponent.di().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(this);
   }
 
   @Override

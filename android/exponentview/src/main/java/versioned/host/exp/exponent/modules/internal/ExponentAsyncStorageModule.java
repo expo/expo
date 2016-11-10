@@ -15,7 +15,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.modules.storage.AsyncStorageModule;
 import com.facebook.react.modules.storage.ReactDatabaseSupplier;
 import host.exp.exponent.ExponentManifest;
-import host.exp.exponent.kernel.Kernel;
+import host.exp.exponent.kernel.KernelProvider;
 
 public class ExponentAsyncStorageModule extends AsyncStorageModule {
 
@@ -32,9 +32,9 @@ public class ExponentAsyncStorageModule extends AsyncStorageModule {
       String databaseName = experienceIdToDatabaseName(experienceId);
       mReactDatabaseSupplier = new ReactDatabaseSupplier(reactContext, databaseName);
     } catch (JSONException e) {
-      Kernel.handleError("Requires Experience Id");
+      KernelProvider.getInstance().handleError("Requires Experience Id");
     } catch (UnsupportedEncodingException e) {
-      Kernel.handleError("Couldn't URL encode Experience Id");
+      KernelProvider.getInstance().handleError("Couldn't URL encode Experience Id");
     }
   }
 

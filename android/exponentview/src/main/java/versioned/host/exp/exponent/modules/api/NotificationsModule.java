@@ -18,9 +18,8 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.modules.ExponentKernelModule;
+import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 import host.exp.exponent.storage.ExponentSharedPreferences;
-import host.exp.exponentview.Exponent;
 
 public class NotificationsModule extends ReactContextBaseJavaModule {
 
@@ -59,7 +58,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
       return;
     }
 
-    ExponentKernelModule.queueEvent("ExponentKernel.getExponentPushToken", params, new ExponentKernelModule.KernelEventCallback() {
+    ExponentKernelModuleProvider.getInstance().queueEvent("ExponentKernel.getExponentPushToken", params, new ExponentKernelModuleProvider.KernelEventCallback() {
       @Override
       public void onEventSuccess(ReadableMap result) {
         String exponentPushToken = result.getString("exponentPushToken");

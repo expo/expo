@@ -8,6 +8,7 @@ import abi11_0_0.com.facebook.react.bridge.ReactContextBaseJavaModule;
 import abi11_0_0.com.facebook.react.bridge.ReactMethod;
 import abi11_0_0.com.facebook.react.bridge.ReadableArray;
 import host.exp.exponent.kernel.Kernel;
+import host.exp.exponent.kernel.KernelProvider;
 
 public class ExponentUnsignedAsyncStorageModule extends ReactContextBaseJavaModule {
 
@@ -29,31 +30,31 @@ public class ExponentUnsignedAsyncStorageModule extends ReactContextBaseJavaModu
 
   @ReactMethod
   public void multiGet(final ReadableArray keys, final Callback callback) {
-    Kernel.handleError(ERROR_MESSAGE);
+    KernelProvider.getInstance().handleError(ERROR_MESSAGE);
   }
 
   @ReactMethod
   public void multiSet(final ReadableArray keyValueArray, final Callback callback) {
-    Kernel.handleError(ERROR_MESSAGE);
+    KernelProvider.getInstance().handleError(ERROR_MESSAGE);
   }
 
   @ReactMethod
   public void multiRemove(final ReadableArray keys, final Callback callback) {
-    Kernel.handleError(ERROR_MESSAGE);
+    KernelProvider.getInstance().handleError(ERROR_MESSAGE);
   }
 
   @ReactMethod
   public void multiMerge(final ReadableArray keyValueArray, final Callback callback) {
-    Kernel.handleError(ERROR_MESSAGE);
+    KernelProvider.getInstance().handleError(ERROR_MESSAGE);
   }
 
   @ReactMethod
   public void clear(final Callback callback) {
-    Kernel.handleError(ERROR_MESSAGE);
+    KernelProvider.getInstance().handleError(ERROR_MESSAGE);
   }
 
   @ReactMethod
   public void getAllKeys(final Callback callback) {
-    Kernel.handleError(ERROR_MESSAGE);
+    KernelProvider.getInstance().handleError(ERROR_MESSAGE);
   }
 }

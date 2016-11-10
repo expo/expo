@@ -11,7 +11,6 @@ import abi10_0_0.com.facebook.react.bridge.ReactApplicationContext;
 import abi10_0_0.com.facebook.react.bridge.ReactMethod;
 import abi10_0_0.com.facebook.react.modules.intent.IntentModule;
 
-import java.net.URL;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -20,7 +19,7 @@ import host.exp.exponent.Constants;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.Kernel;
-import host.exp.exponentview.Exponent;
+import host.exp.exponent.kernel.KernelConstants;
 
 public class ExponentIntentModule extends IntentModule {
 
@@ -46,7 +45,7 @@ public class ExponentIntentModule extends IntentModule {
   @ReactMethod
   public void getInitialURL(Promise promise) {
     try {
-      promise.resolve(mExperienceProperties.get(Kernel.INTENT_URI_KEY));
+      promise.resolve(mExperienceProperties.get(KernelConstants.INTENT_URI_KEY));
     } catch (Exception e) {
       promise.reject(new JSApplicationIllegalArgumentException(
           "Could not get the initial URL : " + e.getMessage()));
@@ -86,7 +85,7 @@ public class ExponentIntentModule extends IntentModule {
   }
 
   private void handleExpUrl(final String url) {
-    mKernel.openExperience(new Kernel.ExperienceOptions(url, url, null));
+    mKernel.openExperience(new KernelConstants.ExperienceOptions(url, url, null));
   }
 
   @ReactMethod

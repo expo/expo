@@ -21,7 +21,7 @@ import java.util.Map;
 
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
-import host.exp.exponent.modules.ExponentKernelModule;
+import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 import versioned.host.exp.exponent.modules.api.AmplitudeModule;
 import versioned.host.exp.exponent.modules.api.ConstantsModule;
 import versioned.host.exp.exponent.modules.api.ContactsModule;
@@ -93,7 +93,7 @@ public class ExponentPackage implements ReactPackage {
 
     if (mIsKernel) {
       // Never need this in versioned code. Comment this out if this is in an abi package
-      nativeModules.add(new ExponentKernelModule(reactContext));
+      nativeModules.add((NativeModule) ExponentKernelModuleProvider.newInstance(reactContext));
     } else {
       if (isVerified) {
         try {

@@ -25,9 +25,10 @@ import javax.inject.Inject;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.di.NativeModuleDepsProvider;
+import host.exp.exponent.kernel.ExponentViewKernel;
 import host.exp.exponent.kernel.Kernel;
+import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.storage.ExponentSharedPreferences;
-import host.exp.exponentview.Exponent;
 
 public class ConstantsModule extends ReactContextBaseJavaModule {
 
@@ -78,7 +79,7 @@ public class ConstantsModule extends ReactContextBaseJavaModule {
   public Map<String, Object> getConstants() {
     Map<String, Object> constants = new HashMap<>();
     constants.put("sessionId", mSessionId);
-    constants.put("exponentVersion", Kernel.getVersionName());
+    constants.put("exponentVersion", ExponentViewKernel.getInstance().getVersionName());
     constants.put("statusBarHeight", mStatusBarHeight);
     constants.put("deviceYearClass", YearClass.get(getReactApplicationContext()));
     constants.put("deviceId", mExponentSharedPreferences.getOrCreateUUID());
@@ -102,8 +103,8 @@ public class ConstantsModule extends ReactContextBaseJavaModule {
   }
 
   private static String getAppOwnership(Map<String, Object> experienceProperties) {
-    if (experienceProperties.containsKey(Kernel.MANIFEST_URL_KEY)) {
-      String manifestUrl = (String) experienceProperties.get(Kernel.MANIFEST_URL_KEY);
+    if (experienceProperties.containsKey(KernelConstants.MANIFEST_URL_KEY)) {
+      String manifestUrl = (String) experienceProperties.get(KernelConstants.MANIFEST_URL_KEY);
 
       if (Constants.INITIAL_URL == null) {
         return "exponent";

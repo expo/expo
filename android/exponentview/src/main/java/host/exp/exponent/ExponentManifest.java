@@ -12,9 +12,6 @@ import android.os.Debug;
 import android.util.Log;
 import android.util.LruCache;
 
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
