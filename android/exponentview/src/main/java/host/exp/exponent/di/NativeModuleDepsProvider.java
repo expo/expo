@@ -8,8 +8,10 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.kernel.Kernel;
+import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponentview.Exponent;
 
@@ -22,6 +24,13 @@ public class NativeModuleDepsProvider {
 
   @Inject
   ExponentSharedPreferences mExponentSharedPreferences;
+
+  @Inject
+  ExponentNetwork mExponentNetwork;
+
+  @Inject
+  ExponentManifest mExponentManifest;
+
 
   private Map<Class, Object> mClassesToInjectedObjects = new HashMap<>();
 

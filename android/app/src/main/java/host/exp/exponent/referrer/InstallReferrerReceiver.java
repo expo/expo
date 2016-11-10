@@ -15,19 +15,20 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 
 import javax.inject.Inject;
-/*
+
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentApplication;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.storage.ExponentSharedPreferences;
-*/
+
 public class InstallReferrerReceiver extends CampaignTrackingReceiver {
 
   private static final String TAG = InstallReferrerReceiver.class.getSimpleName();
-/*
+
   @Inject
   ExponentSharedPreferences mExponentSharedPreferences;
 
@@ -49,7 +50,7 @@ public class InstallReferrerReceiver extends CampaignTrackingReceiver {
       return;
     }
 
-    ((ExponentApplication) context.getApplicationContext()).getAppComponent().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(this);
 
     String referrer = intent.getStringExtra("referrer");
     EXL.d(TAG, "Referrer: " + referrer);
@@ -128,5 +129,5 @@ public class InstallReferrerReceiver extends CampaignTrackingReceiver {
     } catch (UnsupportedEncodingException e) {
       EXL.e(TAG, "Couldn't encode preloaded bundle id: " + e.toString());
     }
-  }*/
+  }
 }

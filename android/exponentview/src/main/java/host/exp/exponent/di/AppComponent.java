@@ -10,19 +10,12 @@ import host.exp.exponent.ExponentIntentService;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.LauncherActivity;
 import host.exp.exponent.experience.BaseExperienceActivity;
-import host.exp.exponent.experience.ErrorActivity;
 import host.exp.exponent.experience.ExperienceActivity;
-import host.exp.exponent.experience.InfoActivity;
 import host.exp.exponent.gcm.ExponentGcmListenerService;
 import host.exp.exponent.gcm.RegistrationIntentService;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.modules.ExponentKernelModule;
 import host.exp.exponentview.Exponent;
-import versioned.host.exp.exponent.modules.api.URLHandlerModule;
-import versioned.host.exp.exponent.modules.api.ConstantsModule;
-import versioned.host.exp.exponent.modules.api.NotificationsModule;
-import versioned.host.exp.exponent.modules.api.UtilModule;
-import versioned.host.exp.exponent.modules.internal.ExponentIntentModule;
 
 @Singleton
 @Component(
@@ -50,10 +43,6 @@ public interface AppComponent {
   void inject(BaseExperienceActivity activity);
 
   void inject(ExperienceActivity activity);
-
-  void inject(ErrorActivity activity);
-
-  void inject(InfoActivity activity);
 
   void inject(ExponentKernelModule module);
 

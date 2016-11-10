@@ -79,6 +79,14 @@ dependencies {
 
   compile 'com.android.support:multidex:1.0.1'
 
+  // Versioned react native
+  // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+  compile(name: 'ReactAndroid-release-abi11_0_0', ext: 'aar')
+  compile(name: 'ReactAndroid-release-abi10_0_0', ext: 'aar')
+  compile(name: 'ReactAndroid-release-abi9_0_0', ext: 'aar')
+  compile(name: 'ReactAndroid-release-abi8_0_0', ext: 'aar')
+  compile(name: 'ReactAndroid-release-abi7_0_0', ext: 'aar')
+
   // Our dependencies
   compile 'com.android.support:appcompat-v7:23.1.1'
 
