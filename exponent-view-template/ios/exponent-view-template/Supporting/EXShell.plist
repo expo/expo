@@ -5,6 +5,6 @@
 	<key>isShell</key>
 	<true/>
 	<key>manifestUrl</key>
-	<string>exp://exp.host/@ben/test-sdk10</string>
+	<string>exp://exp.host/@ben/test-sdk11-shell</string>
 </dict>
 </plist>
