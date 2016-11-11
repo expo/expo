@@ -1,4 +1,42 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven'
+
+//maven repository info
+group = 'host.exp.exponent'
+version = '1.0.0'
+
+//Upload android library to maven with javadoc and android sources
+configurations {
+  deployerJars
+}
+
+//Creating sources with comments
+task androidSourcesJar(type: Jar) {
+  classifier = 'sources'
+  from android.sourceSets.main.java.srcDirs
+}
+
+//Put the androidSources and javadoc to the artifacts
+artifacts {
+  archives androidSourcesJar
+}
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      configuration = configurations.deployerJars
+      repository(url: mavenLocal().url) {
+        //if your repository needs authentication
+        // authentication(userName: "username", password: "password")
+      }
+    }
+  }
+}
+
+
+
+
+
 
 buildscript {
   repositories {
@@ -101,12 +139,12 @@ task packageExponentNdkLibs(dependsOn: buildExponentNdkLib, type: Copy) {
 
 
 android {
-  compileSdkVersion 23
+  compileSdkVersion 24
   buildToolsVersion "23.0.3"
 
   defaultConfig {
     minSdkVersion 19
-    targetSdkVersion 23
+    targetSdkVersion 24
     versionCode 1
     versionName "1.0"
     ndk {
@@ -147,8 +185,7 @@ dependencies {
 
   // React native dependencies
   // We use a different version of appcompat
-  // compile 'com.android.support:appcompat-v7:23.0.1'
-  compile 'com.android.support:recyclerview-v7:23.0.1'
+  compile 'com.android.support:recyclerview-v7:24.0.0'
   compile 'com.facebook.fresco:fresco:0.11.0'
   compile 'com.facebook.fresco:animated-gif:0.11.0'
   compile 'com.facebook.fresco:animated-webp:0.11.0'
@@ -165,7 +202,7 @@ dependencies {
   compile 'org.webkit:android-jsc:r174650'
 
   // Our dependencies
-  compile 'com.android.support:appcompat-v7:23.1.1'
+  compile 'com.android.support:appcompat-v7:24.1.1'
   compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
     transitive = true;
   }
@@ -191,7 +228,7 @@ dependencies {
   compile 'commons-io:commons-io:1.3.2'
   compile 'me.leolin:ShortcutBadger:1.1.4@aar'
   compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
-  compile project(':Android-Image-Cropper:cropper')
+  compile 'com.theartofdev.edmodo:android-image-cropper:2.3.+'
   compile 'com.facebook.rebound:rebound:0.3.8' // Needed for native animations in SDK 6
   compile 'com.yqritc:android-scalablevideoview:1.0.1'
   compile 'commons-codec:commons-codec:1.10'

@@ -16,12 +16,12 @@ repositories {
 }
 
 android {
-  compileSdkVersion 23
+  compileSdkVersion 24
   buildToolsVersion '23.0.3'
 
   defaultConfig {
     applicationId 'host.exp.exponent'
-    targetSdkVersion 23
+    targetSdkVersion 24
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
     versionCode 45
@@ -88,11 +88,11 @@ dependencies {
   compile(name: 'ReactAndroid-release-abi7_0_0', ext: 'aar')
 
   // Our dependencies
-  compile 'com.android.support:appcompat-v7:23.1.1'
+  compile 'com.android.support:appcompat-v7:24.1.1'
 
   // Our dependencies from ExponentView
   // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPONENTVIEW. ONLY COPY THINGS FROM EXPONENTVIEW TO HERE.
-  compile 'com.android.support:appcompat-v7:23.1.1'
+  compile 'com.android.support:appcompat-v7:24.1.1'
   compile ('com.facebook.android:facebook-android-sdk:4.7.0') {
     exclude module: 'bolts-android'
   }
@@ -116,7 +116,7 @@ dependencies {
   compile 'commons-io:commons-io:1.3.2'
   compile 'me.leolin:ShortcutBadger:1.1.4@aar'
   compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
-  compile project(':Android-Image-Cropper:cropper')
+  compile 'com.theartofdev.edmodo:android-image-cropper:2.3.+'
   compile 'com.facebook.rebound:rebound:0.3.8' // Needed for native animations in SDK 6
   compile 'com.yqritc:android-scalablevideoview:1.0.1'
   compile 'commons-codec:commons-codec:1.10'
@@ -126,7 +126,7 @@ dependencies {
   // Testing
   androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
   androidTestCompile 'com.android.support.test:runner:0.5'
-  androidTestCompile 'com.android.support:support-annotations:23.2.1'
+  androidTestCompile 'com.android.support:support-annotations:24.1.1'
   androidTestCompile 'com.google.code.findbugs:jsr305:3.0.0'
   androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
   compile project(path: ':exponentview')

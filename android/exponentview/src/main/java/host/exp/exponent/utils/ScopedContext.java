@@ -118,6 +118,16 @@ public class ScopedContext extends Context {
     return mContext.getSharedPreferences(mScope + name, mode);
   }
 
+  @Override
+  public boolean moveSharedPreferencesFrom(Context context, String s) {
+    return mContext.moveSharedPreferencesFrom(context, mScope + s);
+  }
+
+  @Override
+  public boolean deleteSharedPreferences(String s) {
+    return mContext.deleteSharedPreferences(mScope + s);
+  }
+
   // TODO: scope all file methods
   @Override
   public FileInputStream openFileInput(String name) throws FileNotFoundException {
@@ -137,6 +147,11 @@ public class ScopedContext extends Context {
   @Override
   public File getFileStreamPath(String name) {
     return mContext.getFileStreamPath(name);
+  }
+
+  @Override
+  public File getDataDir() {
+    return mContext.getDataDir();
   }
 
   @Override
@@ -214,6 +229,11 @@ public class ScopedContext extends Context {
   @Override
   public SQLiteDatabase openOrCreateDatabase(String name, int mode, SQLiteDatabase.CursorFactory factory, DatabaseErrorHandler errorHandler) {
     return mContext.openOrCreateDatabase(mScope + name, mode, factory, errorHandler);
+  }
+
+  @Override
+  public boolean moveDatabaseFrom(Context context, String s) {
+    return false;
   }
 
   @Override
@@ -520,5 +540,15 @@ public class ScopedContext extends Context {
   @Override
   public Context createDisplayContext(Display display) {
     return mContext.createDisplayContext(display);
+  }
+
+  @Override
+  public Context createDeviceProtectedStorageContext() {
+    return mContext.createDeviceProtectedStorageContext();
+  }
+
+  @Override
+  public boolean isDeviceProtectedStorage() {
+    return mContext.isDeviceProtectedStorage();
   }
 }
