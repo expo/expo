@@ -277,6 +277,15 @@ public class ReactAndroidCodeTransformer {
         "https://downloads.sourceforge.net/project/boost/boost/1.57.0/boost_1_57_0.zip",
         "http://exp-us-standard.s3.amazonaws.com/boost_1_57_0.zip");
 
+    // Update release.gradle
+    replaceInFile(new File(projectRoot + REACT_ANDROID_DEST_ROOT + "/release.gradle"),
+        "'https://oss.sonatype.org/service/local/staging/deploy/maven2/'",
+        "\"file:${System.env.HOME}/.m2/repository/\"");
+
+    replaceInFile(new File(projectRoot + REACT_ANDROID_DEST_ROOT + "/release.gradle"),
+        "group = GROUP",
+        "group = 'host.exp.exponent'");
+
     // RN uses a weird directory structure for soloader to build with Buck. Change this so that Android Studio doesn't complain.
     replaceInFile(new File(projectRoot + REACT_ANDROID_DEST_ROOT + "/build.gradle"),
         "'src/main/libraries/soloader'",
@@ -296,7 +305,7 @@ public class ReactAndroidCodeTransformer {
   private static void replaceInFile(final File file, final String searchString, final String replaceString) {
     try {
       String content = FileUtils.readFileToString(file, "UTF-8");
-      content = content.replaceAll(searchString, replaceString);
+      content = content.replace(searchString, replaceString);
       FileUtils.writeStringToFile(file, content, "UTF-8");
     } catch (IOException e) {
       throw new RuntimeException("Generating file failed", e);

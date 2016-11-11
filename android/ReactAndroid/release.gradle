@@ -12,7 +12,7 @@ def isReleaseBuild() {
 }
 
 def getRepositoryUrl() {
-    return hasProperty('repositoryUrl') ? property('repositoryUrl') : 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+    return hasProperty('repositoryUrl') ? property('repositoryUrl') : "file:${System.env.HOME}/.m2/repository/"
 }
 
 def getRepositoryUsername() {
@@ -89,7 +89,7 @@ afterEvaluate { project ->
     }
 
     version = VERSION_NAME
-    group = GROUP
+    group = 'host.exp.exponent'
 
     signing {
         required { isReleaseBuild() && gradle.taskGraph.hasTask('uploadArchives') }
