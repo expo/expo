@@ -43,10 +43,6 @@ public class LauncherActivity extends Activity {
     super.onCreate(savedInstanceState);
 
     if (BuildConfig.DEBUG) {
-      if (Constants.WAIT_FOR_DEBUGGER) {
-        Debug.waitForDebugger();
-      }
-
       // Need WRITE_EXTERNAL_STORAGE for method tracing
       if (Constants.DEBUG_METHOD_TRACING) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -65,7 +61,7 @@ public class LauncherActivity extends Activity {
 
     SoLoader.init(getApplicationContext(), false);
 
-    NativeModuleDepsProvider.getInstance().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(LauncherActivity.class, this);
 
     mKernel.setActivityContext(this);
 

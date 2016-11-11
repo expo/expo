@@ -84,7 +84,7 @@ public class ExponentIntentService extends IntentService {
   @Override
   public void onCreate() {
     super.onCreate();
-    NativeModuleDepsProvider.getInstance().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(ExponentIntentService.class, this);
   }
 
   @Override

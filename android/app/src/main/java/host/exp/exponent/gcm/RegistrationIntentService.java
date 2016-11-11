@@ -39,7 +39,7 @@ public class RegistrationIntentService extends IntentService {
   @Override
   public void onCreate() {
     super.onCreate();
-    NativeModuleDepsProvider.getInstance().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(RegistrationIntentService.class, this);
   }
 
   @Override
@@ -64,7 +64,7 @@ public class RegistrationIntentService extends IntentService {
       WritableMap params = Arguments.createMap();
       params.putString("deviceToken", token);
       params.putString("deviceId", uuid);
-      ExponentKernelModuleProvider.getInstance().queueEvent("ExponentKernel.updateDeviceToken", params, new ExponentKernelModuleProvider.KernelEventCallback() {
+      ExponentKernelModuleProvider.queueEvent("ExponentKernel.updateDeviceToken", params, new ExponentKernelModuleProvider.KernelEventCallback() {
         @Override
         public void onEventSuccess(ReadableMap result) {
           mExponentSharedPreferences.setString(ExponentSharedPreferences.GCM_TOKEN_KEY, token);

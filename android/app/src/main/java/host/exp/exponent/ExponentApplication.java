@@ -2,6 +2,7 @@
 
 package host.exp.exponent;
 
+import android.os.Debug;
 import android.support.multidex.MultiDexApplication;
 
 import com.crashlytics.android.Crashlytics;
@@ -14,6 +15,7 @@ import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExponentKernelModuleInterface;
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 import host.exp.exponent.kernel.Kernel;
+import host.exp.exponent.kernel.KernelInterface;
 import host.exp.exponent.kernel.KernelProvider;
 import host.exp.exponent.modules.ExponentKernelModule;
 import host.exp.exponentview.Exponent;
@@ -39,6 +41,10 @@ public class ExponentApplication extends MultiDexApplication {
   public void onCreate() {
     super.onCreate();
 
+    if (host.exp.exponentview.BuildConfig.DEBUG && Constants.WAIT_FOR_DEBUGGER) {
+      Debug.waitForDebugger();
+    }
+
     if (!BuildConfig.DEBUG) {
       Fabric.with(this, new Crashlytics());
 
@@ -51,7 +57,13 @@ public class ExponentApplication extends MultiDexApplication {
     }
 
     sApplication = this;
-    KernelProvider.setInstance(new Kernel());
+
+    KernelProvider.setFactory(new KernelProvider.KernelFactory() {
+      @Override
+      public KernelInterface create() {
+        return new Kernel();
+      }
+    });
 
     ExponentKernelModuleProvider.setFactory(new ExponentKernelModuleProvider.ExponentKernelModuleFactory() {
       @Override

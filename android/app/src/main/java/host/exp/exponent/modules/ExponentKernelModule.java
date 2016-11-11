@@ -19,9 +19,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Queue;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -38,7 +36,6 @@ import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
-import host.exp.exponentview.Exponent;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Request;
@@ -47,30 +44,6 @@ import okhttp3.Response;
 public class ExponentKernelModule extends ReactContextBaseJavaModule implements ExponentKernelModuleInterface {
 
   private static final String TAG = ExponentKernelModule.class.getSimpleName();
-
-  public static class KernelEvent {
-    final String name;
-    final WritableMap data;
-    final ExponentKernelModuleProvider.KernelEventCallback callback;
-
-    public KernelEvent(String name, WritableMap data, ExponentKernelModuleProvider.KernelEventCallback callback) {
-      this.name = name;
-      this.data = data;
-      this.callback = callback;
-    }
-  }
-
-  private static class OpenUrlRequest {
-    final String manifestUrl;
-    final boolean isOptimistic;
-    final boolean shouldRefresh;
-
-    OpenUrlRequest(String manifestUrl, boolean isOptimistic, boolean shouldRefresh) {
-      this.manifestUrl = manifestUrl;
-      this.isOptimistic = isOptimistic;
-      this.shouldRefresh = shouldRefresh;
-    }
-  }
 
   private static ExponentKernelModule sInstance;
 
@@ -86,13 +59,12 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
   @Inject
   ExponentNetwork mExponentNetwork;
 
-  private static Queue<KernelEvent> sEventQueue = new LinkedList<>();
   private static Map<String, ExponentKernelModuleProvider.KernelEventCallback> sKernelEventCallbacks = new HashMap<>();
   private boolean mIsLoaded = false;
 
   public ExponentKernelModule(ReactApplicationContext reactContext) {
     super(reactContext);
-    NativeModuleDepsProvider.getInstance().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(ExponentKernelModule.class, this);
 
     sInstance = this;
   }
@@ -119,22 +91,18 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
       params.putInt("exceptionId", error.exceptionId);
       params.putBoolean("isFatal", error.isFatal);
 
-      queueEventStatic("ExponentKernel.addError", params, null);
+      queueEvent("ExponentKernel.addError", params, null);
     } catch (Throwable e) {
       EXL.e(TAG, e);
     }
   }
 
-  public void queueEvent(String name, WritableMap data, ExponentKernelModuleProvider.KernelEventCallback callback) {
-    queueEvent(new KernelEvent(name, data, callback));
+  public static void queueEvent(String name, WritableMap data, ExponentKernelModuleProvider.KernelEventCallback callback) {
+    queueEvent(new ExponentKernelModuleProvider.KernelEvent(name, data, callback));
   }
 
-  public static void queueEventStatic(String name, WritableMap data, ExponentKernelModuleProvider.KernelEventCallback callback) {
-    queueEvent(new KernelEvent(name, data, callback));
-  }
-
-  public static void queueEvent(KernelEvent event) {
-    sEventQueue.add(event);
+  public static void queueEvent(ExponentKernelModuleProvider.KernelEvent event) {
+    ExponentKernelModuleProvider.sEventQueue.add(event);
 
     if (sInstance != null) {
       sInstance.consumeEventQueue();
@@ -150,12 +118,13 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
     return "ExponentKernel";
   }
 
-  private void consumeEventQueue() {
-    if (!mIsLoaded || sEventQueue.size() == 0) {
+  @Override
+  public void consumeEventQueue() {
+    if (!mIsLoaded || ExponentKernelModuleProvider.sEventQueue.size() == 0) {
       return;
     }
 
-    KernelEvent event = sEventQueue.remove();
+    ExponentKernelModuleProvider.KernelEvent event = ExponentKernelModuleProvider.sEventQueue.remove();
 
     String eventId = UUID.randomUUID().toString();
     event.data.putString("eventId", eventId);
