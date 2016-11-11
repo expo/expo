@@ -26,6 +26,7 @@ import com.github.javaparser.ast.type.UnionType;
 import com.github.javaparser.ast.visitor.ModifierVisitorAdapter;
 
 import org.apache.commons.io.FileUtils;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -259,6 +260,12 @@ public class ReactAndroidCodeTransformer {
     String executionPath = ReactAndroidCodeTransformer.class.getProtectionDomain().getCodeSource().getLocation().getPath();
     String projectRoot = new File(executionPath + "../../../../../").getCanonicalPath() + '/';
 
+    // Get current SDK version
+    File exponentPackageJsonFile = new File(projectRoot + "package.json");
+    String exponentPackageJsonString = FileUtils.readFileToString(exponentPackageJsonFile, "UTF-8");
+    JSONObject exponentPackageJson = new JSONObject(exponentPackageJsonString);
+    String sdkVersion = exponentPackageJson.getJSONObject("exp").getString("sdkVersion");
+
     // Don't want to mess up our original copy of ReactCommon and ReactAndroid if something goes wrong.
     File reactCommonDestRoot = new File(projectRoot + REACT_COMMON_DEST_ROOT);
     File reactAndroidDestRoot = new File(projectRoot + REACT_ANDROID_DEST_ROOT);
@@ -285,6 +292,10 @@ public class ReactAndroidCodeTransformer {
     replaceInFile(new File(projectRoot + REACT_ANDROID_DEST_ROOT + "/release.gradle"),
         "group = GROUP",
         "group = 'host.exp.exponent'");
+
+    replaceInFile(new File(projectRoot + REACT_ANDROID_DEST_ROOT + "/release.gradle"),
+        "version = VERSION_NAME",
+        "version = '" + sdkVersion + "'");
 
     // RN uses a weird directory structure for soloader to build with Buck. Change this so that Android Studio doesn't complain.
     replaceInFile(new File(projectRoot + REACT_ANDROID_DEST_ROOT + "/build.gradle"),
