@@ -172,8 +172,6 @@ dependencies {
   compile ('com.facebook.android:facebook-android-sdk:4.7.0') {
     exclude module: 'bolts-android'
   }
-  compile 'com.google.dagger:dagger:2.0.1'
-  apt 'com.google.dagger:dagger-compiler:2.0.1'
   provided 'org.glassfish:javax.annotation:3.1.1'
   compile 'de.greenrobot:eventbus:2.4.0'
   compile 'com.amplitude:android-sdk:2.9.2' // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper

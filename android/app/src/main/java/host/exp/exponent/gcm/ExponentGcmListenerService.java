@@ -66,7 +66,7 @@ public class ExponentGcmListenerService extends GcmListenerService {
   @Override
   public void onCreate() {
     super.onCreate();
-    NativeModuleDepsProvider.getInstance().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(ExponentGcmListenerService.class, this);
 
     sInstance = this;
   }

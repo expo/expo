@@ -29,7 +29,7 @@ public class UtilModule extends ReactContextBaseJavaModule {
   public UtilModule(ReactApplicationContext reactContext,
                     Map<String, Object> experienceProperties) {
     super(reactContext);
-    NativeModuleDepsProvider.getInstance().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(UtilModule.class, this);
 
     mExperienceProperties = experienceProperties;
   }

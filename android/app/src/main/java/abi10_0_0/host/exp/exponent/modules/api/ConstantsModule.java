@@ -50,7 +50,7 @@ public class ConstantsModule extends ReactContextBaseJavaModule {
       Map<String, Object> experienceProperties,
       JSONObject manifest) {
     super(reactContext);
-    NativeModuleDepsProvider.getInstance().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(ConstantsModule.class, this);
 
     mManifest = manifest;
 

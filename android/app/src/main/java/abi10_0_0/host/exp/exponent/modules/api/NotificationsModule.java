@@ -33,7 +33,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   public NotificationsModule(ReactApplicationContext reactContext,
                              JSONObject manifest) {
     super(reactContext);
-    NativeModuleDepsProvider.getInstance().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(NotificationsModule.class, this);
     mManifest = manifest;
   }
 
@@ -60,7 +60,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
       return;
     }
 
-    ExponentKernelModuleProvider.getInstance().queueEvent("ExponentKernel.getExponentPushToken", params, new ExponentKernelModuleProvider.KernelEventCallback() {
+    ExponentKernelModuleProvider.queueEvent("ExponentKernel.getExponentPushToken", params, new ExponentKernelModuleProvider.KernelEventCallback() {
       @Override
       public void onEventSuccess(ReadableMap result) {
         String exponentPushToken = result.getString("exponentPushToken");

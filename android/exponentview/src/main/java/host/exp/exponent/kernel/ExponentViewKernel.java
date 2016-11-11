@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import javax.inject.Inject;
 
 import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponentview.Exponent;
 
 public class ExponentViewKernel implements KernelInterface {
@@ -33,7 +34,7 @@ public class ExponentViewKernel implements KernelInterface {
   }
 
   private ExponentViewKernel() {
-    Exponent.di().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(ExponentViewKernel.class, this);
 
     try {
       sVersionName = mApplicationContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0).versionName;

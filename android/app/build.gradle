@@ -96,8 +96,6 @@ dependencies {
   compile ('com.facebook.android:facebook-android-sdk:4.7.0') {
     exclude module: 'bolts-android'
   }
-  compile 'com.google.dagger:dagger:2.0.1'
-  apt 'com.google.dagger:dagger-compiler:2.0.1'
   provided 'org.glassfish:javax.annotation:3.1.1'
   compile 'com.jakewharton:butterknife:7.0.1'
   compile 'de.greenrobot:eventbus:2.4.0'

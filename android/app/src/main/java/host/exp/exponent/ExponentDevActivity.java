@@ -44,7 +44,7 @@ public class ExponentDevActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.exponent_dev_activity);
     mLinearLayout = (LinearLayout) findViewById(R.id.linearLayout);
-    NativeModuleDepsProvider.getInstance().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(ExponentDevActivity.class, this);
 
     addCheckbox("Debug Mode Enabled" + (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ?
             " (must enable \"Draw over other apps\" in Settings)" : ""),

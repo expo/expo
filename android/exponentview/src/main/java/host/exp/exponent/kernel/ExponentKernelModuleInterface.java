@@ -2,9 +2,6 @@
 
 package host.exp.exponent.kernel;
 
-import com.facebook.react.bridge.WritableMap;
-
 public interface ExponentKernelModuleInterface {
-
-  void queueEvent(String name, WritableMap data, ExponentKernelModuleProvider.KernelEventCallback callback);
+  void consumeEventQueue();
 }

@@ -28,7 +28,7 @@ public class ExponentIntentModule extends IntentModule {
 
   public ExponentIntentModule(ReactApplicationContext reactContext) {
     super(reactContext);
-    NativeModuleDepsProvider.getInstance().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(ExponentIntentModule.class, this);
   }
 
   @Override

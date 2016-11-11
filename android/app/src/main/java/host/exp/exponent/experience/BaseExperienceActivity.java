@@ -93,7 +93,7 @@ public abstract class BaseExperienceActivity extends ReactNativeActivity {
     mLayout.addView(mContainer);
     mLayout.addView(mLoadingView);
 
-    NativeModuleDepsProvider.getInstance().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(BaseExperienceActivity.class, this);
   }
 
   @Override

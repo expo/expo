@@ -2,17 +2,28 @@
 
 package host.exp.exponent.kernel;
 
+
 public class KernelProvider {
 
+  public interface KernelFactory {
+    KernelInterface create();
+  }
+
+  private static KernelFactory sFactory = new KernelFactory() {
+    @Override
+    public KernelInterface create() {
+      return ExponentViewKernel.getInstance();
+    }
+  };
   private static KernelInterface sInstance;
 
-  public static void setInstance(KernelInterface instance) {
-    sInstance = instance;
+  public static void setFactory(KernelFactory factory) {
+    sFactory = factory;
   }
 
   public static KernelInterface getInstance() {
     if (sInstance == null) {
-      sInstance = ExponentViewKernel.getInstance();
+      sInstance = sFactory.create();
     }
 
     return sInstance;

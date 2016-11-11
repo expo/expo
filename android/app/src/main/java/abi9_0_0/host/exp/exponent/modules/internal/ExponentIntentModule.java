@@ -32,7 +32,7 @@ public class ExponentIntentModule extends IntentModule {
 
   public ExponentIntentModule(ReactApplicationContext reactContext, Map<String, Object> experienceProperties) {
     super(reactContext);
-    NativeModuleDepsProvider.getInstance().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(ExponentIntentModule.class, this);
 
     mExperienceProperties = experienceProperties;
   }

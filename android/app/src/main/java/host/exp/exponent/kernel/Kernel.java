@@ -154,7 +154,7 @@ public class Kernel implements KernelInterface {
   ExponentNetwork mExponentNetwork;
 
   public Kernel() {
-    NativeModuleDepsProvider.getInstance().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(Kernel.class, this);
 
     sInstance = this;
 
@@ -491,7 +491,7 @@ public class Kernel implements KernelInterface {
       return;
     }
 
-    ExponentKernelModuleProvider.getInstance().queueEvent("ExponentKernel.clearConsole", Arguments.createMap(), null);
+    ExponentKernelModuleProvider.queueEvent("ExponentKernel.clearConsole", Arguments.createMap(), null);
 
     final List<ActivityManager.AppTask> tasks = getExperienceActivityTasks();
     ActivityManager.AppTask existingTask = null;
@@ -575,7 +575,7 @@ public class Kernel implements KernelInterface {
     params.putString("manifestUrl", manifestUrl);
     params.putString("manifestString", manifest.toString());
     params.putString("bundleUrl", bundleUrl);
-    ExponentKernelModuleProvider.getInstance().queueEvent("ExponentKernel.openManifestUrl", params, new ExponentKernelModuleProvider.KernelEventCallback() {
+    ExponentKernelModuleProvider.queueEvent("ExponentKernel.openManifestUrl", params, new ExponentKernelModuleProvider.KernelEventCallback() {
       @Override
       public void onEventSuccess(ReadableMap result) {
         EXL.d(TAG, "Successfully called ExponentKernel.openManifestUrl in kernel JS.");

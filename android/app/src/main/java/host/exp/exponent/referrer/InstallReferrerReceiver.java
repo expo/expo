@@ -50,7 +50,7 @@ public class InstallReferrerReceiver extends CampaignTrackingReceiver {
       return;
     }
 
-    NativeModuleDepsProvider.getInstance().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(InstallReferrerReceiver.class, this);
 
     String referrer = intent.getStringExtra("referrer");
     EXL.d(TAG, "Referrer: " + referrer);

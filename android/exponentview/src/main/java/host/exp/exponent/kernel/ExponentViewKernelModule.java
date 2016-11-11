@@ -12,7 +12,7 @@ public class ExponentViewKernelModule implements ExponentKernelModuleInterface {
   }
 
   @Override
-  public void queueEvent(String name, WritableMap data, ExponentKernelModuleProvider.KernelEventCallback callback) {
+  public void consumeEventQueue() {
     // TODO
   }
 }

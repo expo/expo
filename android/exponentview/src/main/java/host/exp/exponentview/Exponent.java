@@ -38,10 +38,9 @@ import host.exp.exponent.Constants;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
-import host.exp.exponent.di.AppComponent;
-import host.exp.exponent.di.AppModule;
-import host.exp.exponent.di.DaggerAppComponent;
+import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.generated.ExponentKeys;
+import host.exp.exponent.kernel.KernelProvider;
 import host.exp.exponent.network.ExponentNetwork;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -61,7 +60,6 @@ public class Exponent {
   private Context mContext;
   private Application mApplication;
   private Activity mActivity;
-  private AppComponent mComponent;
 
   @Inject
   ExponentNetwork mExponentNetwork;
@@ -74,17 +72,14 @@ public class Exponent {
     return sInstance;
   }
 
-  public static AppComponent di() {
-    return getInstance().getAppComponent();
-  }
-
   private Exponent(Context context, Application application) {
     sInstance = this;
 
     mContext = context;
     mApplication = application;
 
-    getAppComponent().inject(this);
+    NativeModuleDepsProvider.initialize(application);
+    NativeModuleDepsProvider.getInstance().inject(Exponent.class, this);
 
     // Verifying SSL certs is slow on Android, so send an HTTPS request to our server as early as possible.
     // This speeds up the manifest request in a shell app from ~500ms to ~250ms.
@@ -104,8 +99,6 @@ public class Exponent {
     } catch (Throwable e) {
       EXL.e(TAG, e);
     }
-
-
 
 
     // Fixes Android memory leak
@@ -148,16 +141,6 @@ public class Exponent {
     }
 
     ImageLoader.getInstance().init(new ImageLoaderConfiguration.Builder(context).build());
-  }
-
-  public AppComponent getAppComponent() {
-    if (mComponent == null) {
-      mComponent = DaggerAppComponent.builder()
-          .appModule(new AppModule(mApplication))
-          .build();
-    }
-
-    return mComponent;
   }
 
   public void setCurrentActivity(Activity activity) {

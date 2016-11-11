@@ -26,7 +26,7 @@ public class URLHandlerModule extends ReactContextBaseJavaModule {
 
   public URLHandlerModule(ReactApplicationContext reactContext) {
     super(reactContext);
-    NativeModuleDepsProvider.getInstance().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(URLHandlerModule.class, this);
   }
 
   @Override

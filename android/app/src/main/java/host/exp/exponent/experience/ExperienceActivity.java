@@ -118,7 +118,7 @@ public class ExperienceActivity extends BaseExperienceActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    NativeModuleDepsProvider.getInstance().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(ExperienceActivity.class, this);
     EventBus.getDefault().registerSticky(this);
 
     mActivityId = Kernel.getActivityId();

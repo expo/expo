@@ -44,7 +44,7 @@ public class InfoActivity extends ReactNativeActivity {
     super.onCreate(savedInstanceState);
     mShouldDestroyRNInstanceOnExit = false;
 
-    NativeModuleDepsProvider.getInstance().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(InfoActivity.class, this);
 
     Bundle bundle = getIntent().getExtras();
     mManifestUrl = bundle.getString(MANIFEST_URL_KEY);

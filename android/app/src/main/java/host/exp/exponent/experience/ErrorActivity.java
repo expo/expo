@@ -87,7 +87,7 @@ public class ErrorActivity extends ReactNativeActivity {
       }
     });
 
-    NativeModuleDepsProvider.getInstance().inject(this);
+    NativeModuleDepsProvider.getInstance().inject(ErrorActivity.class, this);
 
     ExperienceActivity.removeNotification(this);
 
