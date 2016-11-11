@@ -15,6 +15,7 @@ let argv = require('minimist')(process.argv.slice(2));
 import { startReactNativeServer } from './react-native-tasks';
 import { createAndroidShellApp } from './android-shell-app';
 import { createIOSShellAppAsync } from './ios-shell-app';
+import { detachIOSAsync } from './ios-detach';
 import { generateDynamicMacrosAsync, cleanupDynamicMacrosAsync, runFabricIOSAsync } from './generate-dynamic-macros';
 
 const ptool = './ptool';
@@ -83,6 +84,10 @@ function createIOSShellAppWithArguments() {
   return createIOSShellAppAsync(argv);
 }
 
+function detachIOSWithArguments() {
+  return detachIOSAsync(argv);
+}
+
 let watcher = null;
 
 gulp.task('watch', function(done) {
@@ -130,8 +135,9 @@ gulp.task('kernel-ngrok', async function(done) {
 // Shell app (android)
 gulp.task('android-shell-app', createAndroidShellAppWithArguments);
 
-// Shell app (ios)
+// iOS
 gulp.task('ios-shell-app', createIOSShellAppWithArguments);
+gulp.task('ios-detach', detachIOSWithArguments);
 
 gulp.task('ptool', shell.task([`${ptool} ${_projects}`]));
 gulp.task('ptool:watch', gulp.series('ptool', 'watch'));
