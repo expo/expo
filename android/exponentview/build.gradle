@@ -33,11 +33,6 @@ uploadArchives {
   }
 }
 
-
-
-
-
-
 buildscript {
   repositories {
     maven { url 'https://maven.fabric.io/public' }
@@ -181,7 +176,9 @@ dependencies {
   compile 'com.android.support:multidex:1.0.1'
 
   // Current react native
-  compile project(':ReactAndroid')
+  debugCompile project(':ReactAndroid')
+  // TODO: only use this in exponentview
+  releaseCompile 'host.exp.exponent:react-native:0.36.0'
 
   // React native dependencies
   // We use a different version of appcompat

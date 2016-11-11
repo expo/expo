@@ -59,7 +59,7 @@ ENV PATH ${ANDROID_HOME}/tools:/usr/local/android-sdk-linux/build-tools/23.0.3/:
 
 # Install Android SDK components
 # License Id: android-sdk-license-ed0d0a5b
-ENV ANDROID_COMPONENTS platform-tools,build-tools-23.0.1,build-tools-23.0.2,build-tools-23.0.3,android-23
+ENV ANDROID_COMPONENTS platform-tools,build-tools-23.0.1,build-tools-23.0.2,build-tools-23.0.3,android-24
 # License Id: android-sdk-license-5be876d5
 ENV GOOGLE_COMPONENTS extra-android-m2repository,extra-google-m2repository
 

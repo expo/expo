@@ -34,9 +34,6 @@ dependencies {
   compile 'com.android.support:appcompat-v7:24.1.1'
   compile 'com.android.support:multidex:1.0.0'
 
-  compile(name: 'ReactAndroid-release', ext: 'aar') {
-    transitive = true;
-  }
   compile('host.exp.exponent:exponentview:1.0.0@aar') {
     transitive = true;
   }
