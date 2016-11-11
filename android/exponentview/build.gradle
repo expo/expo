@@ -178,7 +178,7 @@ dependencies {
   // Current react native
   debugCompile project(':ReactAndroid')
   // TODO: only use this in exponentview
-  //releaseCompile 'host.exp.exponent:react-native:0.36.0'
+  //releaseCompile 'host.exp.exponent:react-native:11.0.0'
   releaseCompile project(':ReactAndroid')
 
   // React native dependencies
