@@ -3,3 +3,5 @@ project(':exponentview').projectDir = new File(rootDir, 'exponentview')
 include ':tools'
 include ':ReactAndroid'
 project(':ReactAndroid').projectDir = new File(rootDir, 'ReactAndroid')
+include ':DetachAppTemplate'
+project(':DetachAppTemplate').projectDir = new File(rootDir, '../exponent-view-template/android/app')

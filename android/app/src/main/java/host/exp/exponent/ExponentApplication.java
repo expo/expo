@@ -45,6 +45,8 @@ public class ExponentApplication extends MultiDexApplication {
       Debug.waitForDebugger();
     }
 
+    Constants.setIsDetached(false);
+
     if (!BuildConfig.DEBUG) {
       Fabric.with(this, new Crashlytics());
 
