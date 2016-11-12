@@ -64,7 +64,6 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
     super.onCreate(savedInstanceState);
 
     mLayout = new FrameLayout(this);
-    mLayout.setBackgroundColor(Color.BLUE);
     setContentView(mLayout);
 
     Exponent.initialize(this, getApplication());
