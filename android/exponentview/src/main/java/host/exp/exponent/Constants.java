@@ -98,4 +98,13 @@ public class Constants {
       }
     }
   }
+
+  private static boolean sIsDetached = true;
+  public static void setIsDetached(boolean isDetached) {
+    sIsDetached = isDetached;
+  }
+
+  public static boolean isDetached() {
+    return sIsDetached;
+  }
 }

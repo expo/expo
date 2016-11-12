@@ -13,13 +13,15 @@ public class KernelConstants {
   public static final String INTENT_URI_KEY = "intentUri";
   public static final String IS_OPTIMISTIC_KEY = "isOptimistic";
   public static final String OPTION_LOAD_NUX_KEY = "loadNux";
-  static final String BUNDLE_TAG = "BUNDLE";
-  static final String HOME_MODULE_NAME = "ExponentApp";
-  static final String BUNDLE_FILE_PREFIX = "cached-bundle-";
-  static final String KERNEL_BUNDLE_ID = "kernel";
-  static final String OPEN_EXPERIENCE_ACTIVITY_KEY = "openExperienceActivity";
-  static final long DELAY_TO_PRELOAD_KERNEL_JS = 5000;
-  static final int HTTP_NOT_MODIFIED = 304;
+  public static final String BUNDLE_TAG = "BUNDLE";
+  public static final String HOME_MODULE_NAME = "ExponentApp";
+  public static final String BUNDLE_FILE_PREFIX = "cached-bundle-";
+  public static final String KERNEL_BUNDLE_ID = "kernel";
+  public static final String OPEN_EXPERIENCE_ACTIVITY_KEY = "openExperienceActivity";
+  public static final long DELAY_TO_PRELOAD_KERNEL_JS = 5000;
+  public static final int HTTP_NOT_MODIFIED = 304;
+  public static final int OVERLAY_PERMISSION_REQUEST_CODE = 123;
+  public static final String DEFAULT_APPLICATION_KEY = "main";
 
   public static class ExperienceOptions {
     public final String manifestUri;

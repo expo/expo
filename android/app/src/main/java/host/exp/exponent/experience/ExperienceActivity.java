@@ -53,6 +53,7 @@ import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.gcm.ExponentPushNotification;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.kernel.KernelProvider;
+import host.exp.exponent.utils.ExperienceActivityUtils;
 import host.exp.exponentview.Exponent;
 import host.exp.exponentview.R;
 import host.exp.exponent.RNObject;
@@ -73,15 +74,13 @@ import static host.exp.exponent.kernel.KernelConstants.MANIFEST_URL_KEY;
 import static host.exp.exponent.kernel.KernelConstants.LINKING_URI_KEY;
 import static host.exp.exponent.kernel.KernelConstants.INTENT_URI_KEY;
 
-public class ExperienceActivity extends BaseExperienceActivity {
+public class ExperienceActivity extends BaseExperienceActivity implements Exponent.StartReactInstanceDelegate {
 
   private static final String TAG = ExperienceActivity.class.getSimpleName();
 
-  private static final String DEFAULT_APPLICATION_KEY = "main";
   private static final String KERNEL_STARTED_RUNNING_KEY = "experienceActivityKernelDidLoad";
   private static final String NUX_REACT_MODULE_NAME = "ExperienceNuxApp";
   private static final int NOTIFICATION_ID = 10101;
-  private static final int OVERLAY_PERMISSION_REQUEST_CODE = 123;
   // Shell apps only refresh on an error if it's been > 10s since the last error
   private static final int MIN_TIME_BETWEEN_ERROR_REFRESHES = 10000;
 
@@ -121,7 +120,7 @@ public class ExperienceActivity extends BaseExperienceActivity {
     NativeModuleDepsProvider.getInstance().inject(ExperienceActivity.class, this);
     EventBus.getDefault().registerSticky(this);
 
-    mActivityId = Kernel.getActivityId();
+    mActivityId = Exponent.getActivityId();
 
     // TODO: audit this now that kernel logic is in Java
     boolean shouldOpenImmediately = true;
@@ -271,7 +270,7 @@ public class ExperienceActivity extends BaseExperienceActivity {
     super.onActivityResult(requestCode, resultCode, data);
 
     // Have permission to draw over other apps. Resume loading.
-    if (requestCode == OVERLAY_PERMISSION_REQUEST_CODE) {
+    if (requestCode == KernelConstants.OVERLAY_PERMISSION_REQUEST_CODE) {
       // startReactInstance() checks isInForeground and onActivityResult is called before onResume,
       // so manually set this here.
       setIsInForeground(true);
@@ -353,7 +352,7 @@ public class ExperienceActivity extends BaseExperienceActivity {
 
     Analytics.logEventWithManifestUrl(Analytics.LOAD_EXPERIENCE, mManifestUrl);
 
-    updateOrientation();
+    ExperienceActivityUtils.updateOrientation(mManifest, this);
     addNotification(kernelOptions);
 
     ExponentPushNotification notificationObject = null;
@@ -401,7 +400,7 @@ public class ExperienceActivity extends BaseExperienceActivity {
 
         String id;
         try {
-          id = mKernel.encodeExperienceId(mManifestId);
+          id = Exponent.getInstance().encodeExperienceId(mManifestId);
         } catch (UnsupportedEncodingException e) {
           KernelProvider.getInstance().handleError("Can't URL encode manifest ID");
           return;
@@ -412,8 +411,8 @@ public class ExperienceActivity extends BaseExperienceActivity {
           hasCachedBundle = false;
           waitForDrawOverOtherAppPermission("", finalNotificationObject);
         } else {
-          hasCachedBundle = mKernel.loadJSBundle(bundleUrl, id, mSDKVersion,
-              new Kernel.BundleListener() {
+          hasCachedBundle = Exponent.getInstance().loadJSBundle(bundleUrl, id, mSDKVersion,
+              new Exponent.BundleListener() {
                 @Override
                 public void onBundleLoaded(String localBundlePath) {
                   waitForDrawOverOtherAppPermission(localBundlePath, finalNotificationObject);
@@ -426,7 +425,7 @@ public class ExperienceActivity extends BaseExperienceActivity {
               });
         }
 
-        setWindowTransparency(manifest);
+        ExperienceActivityUtils.setWindowTransparency(mSDKVersion, manifest, ExperienceActivity.this);
 
         if (hasCachedBundle) {
           showLoadingScreen(manifest);
@@ -434,7 +433,7 @@ public class ExperienceActivity extends BaseExperienceActivity {
           showLongLoadingScreen(manifest);
         }
 
-        setTaskDescription(manifest);
+        ExperienceActivityUtils.setTaskDescription(mExponentManifest, manifest, ExperienceActivity.this);
         handleExperienceOptions(kernelOptions);
       }
     });
@@ -508,46 +507,6 @@ public class ExperienceActivity extends BaseExperienceActivity {
     super.onNewIntent(intent);
   }
 
-  private void setTaskDescription(final JSONObject manifest) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      final String iconUrl = manifest.optString(ExponentManifest.MANIFEST_ICON_URL_KEY);
-      final int color = mExponentManifest.getColorFromManifest(manifest);
-
-      mExponentManifest.loadIconBitmap(iconUrl, new ExponentManifest.BitmapListener() {
-        @Override
-        public void onLoadBitmap(Bitmap bitmap) {
-          // This if statement is only needed so the compiler doesn't show an error.
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            setTaskDescription(new ActivityManager.TaskDescription(
-                manifest.optString(ExponentManifest.MANIFEST_NAME_KEY),
-                bitmap,
-                color
-            ));
-          }
-        }
-      });
-    }
-  }
-
-  private void setWindowTransparency(final JSONObject manifest) {
-    // For 5.0.0 and below everything has transparent status
-    if (ABIVersion.toNumber(mSDKVersion) <= ABIVersion.toNumber("5.0.0")) {
-      return;
-    }
-
-    String statusBarColor = manifest.optString(ExponentManifest.MANIFEST_STATUS_BAR_COLOR);
-    if (statusBarColor == null || !ColorParser.isValid(statusBarColor)) {
-      return;
-    }
-
-    try {
-      getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-      getWindow().setStatusBarColor(Color.parseColor(statusBarColor));
-    } catch (Throwable e) {
-      EXL.e(TAG, e);
-    }
-  }
-
   @Override
   public boolean isDebugModeEnabled() {
     try {
@@ -575,7 +534,7 @@ public class ExperienceActivity extends BaseExperienceActivity {
               public void onClick(DialogInterface dialog, int which) {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                     Uri.parse("package:" + getPackageName()));
-                startActivityForResult(intent, OVERLAY_PERMISSION_REQUEST_CODE);
+                startActivityForResult(intent, KernelConstants.OVERLAY_PERMISSION_REQUEST_CODE);
               }
             })
             .setCancelable(false)
@@ -589,141 +548,20 @@ public class ExperienceActivity extends BaseExperienceActivity {
   }
 
   private void startReactInstance() {
-    if (mIsCrashed || !isInForeground()) {
-      // Can sometimes get here after an error has occurred. Return early or else we'll hit
-      // a null pointer at mReactRootView.startReactApplication
-      return;
-    }
+    mReactInstanceManager = Exponent.getInstance().startReactInstance(this, this, mManifestUrl, mIntentUri, mJSBundlePath, mLinkingPackage, mManifest, mSDKVersion, mNotification, mIsShellApp, mExponentSharedPreferences, mReactRootView, mActivityId, mIsCrashed);
+  }
 
-    String linkingUri = Constants.SHELL_APP_SCHEME != null ? Constants.SHELL_APP_SCHEME + "://" : mManifestUrl + "/+";
-    Map<String, Object> experienceProperties = MapBuilder.<String, Object>of(
-        MANIFEST_URL_KEY, mManifestUrl,
-        LINKING_URI_KEY, linkingUri,
-        INTENT_URI_KEY, mIntentUri
-    );
-
-    Exponent.InstanceManagerBuilderProperties instanceManagerBuilderProperties = new Exponent.InstanceManagerBuilderProperties();
-    instanceManagerBuilderProperties.application = getApplication();
-    instanceManagerBuilderProperties.jsBundlePath = mJSBundlePath;
-    instanceManagerBuilderProperties.linkingPackage = mLinkingPackage;
-    instanceManagerBuilderProperties.experienceProperties = experienceProperties;
-    instanceManagerBuilderProperties.manifest = mManifest;
-
-    RNObject versionedUtils = new RNObject("host.exp.exponent.VersionedUtils").loadVersion(mSDKVersion);
-    RNObject builder = versionedUtils.callRecursive("getReactInstanceManagerBuilder", instanceManagerBuilderProperties);
-
-    if (isDebugModeEnabled()) {
-      String debuggerHost = mManifest.optString(ExponentManifest.MANIFEST_DEBUGGER_HOST_KEY);
-      String mainModuleName = mManifest.optString(ExponentManifest.MANIFEST_MAIN_MODULE_NAME_KEY);
-      Kernel.enableDeveloperSupport(debuggerHost, mainModuleName, builder);
-    }
-
-    Bundle bundle = new Bundle();
-    JSONObject exponentProps = new JSONObject();
-    if (mNotification != null) {
-      bundle.putString("notification", mNotification.body); // Deprecated
-      try {
-        if (ABIVersion.toNumber(mSDKVersion) < ABIVersion.toNumber("10.0.0")) {
-          exponentProps.put("notification", mNotification.body);
-        } else {
-          exponentProps.put("notification", mNotification.toJSONObject("selected"));
-        }
-      } catch (JSONException e) {
-        e.printStackTrace();
-      }
-    }
-
-    try {
-      exponentProps.put("manifest", mManifest);
-      exponentProps.put("shell", mIsShellApp);
-      exponentProps.put("initialUri", mIntentUri == null ? null : mIntentUri.toString());
-    } catch (JSONException e) {
-      EXL.e(TAG, e);
-    }
-
-    String experienceId = mManifest.optString(ExponentManifest.MANIFEST_ID_KEY);
-    if (experienceId != null) {
-      JSONObject metadata = mExponentSharedPreferences.getExperienceMetadata(experienceId);
-      if (metadata != null) {
-        if (metadata.has(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS)) {
-          try {
-            exponentProps.put(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS,
-                metadata.getJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS));
-          } catch (JSONException e) {
-            e.printStackTrace();
-          }
-
-          metadata.remove(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS);
-        }
-
-        // Copy unreadNotifications into exponentProps
-        if (metadata.has(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_NOTIFICATIONS)) {
-          try {
-            JSONArray unreadNotifications = metadata.getJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_NOTIFICATIONS);
-            exponentProps.put(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_NOTIFICATIONS, unreadNotifications);
-
-            ExponentGcmListenerService gcmListenerService = ExponentGcmListenerService.getInstance();
-            if (gcmListenerService != null) {
-              gcmListenerService.removeNotifications(unreadNotifications);
-            }
-          } catch (JSONException e) {
-            e.printStackTrace();
-          }
-
-          metadata.remove(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_NOTIFICATIONS);
-        }
-
-        mExponentSharedPreferences.updateExperienceMetadata(experienceId, metadata);
-      }
-    }
-
-    bundle.putBundle("exp", JSONBundleConverter.JSONToBundle(exponentProps));
-
-    if (!isInForeground()) {
-      return;
-    }
-
-    Analytics.markEvent(Analytics.TimedEvent.STARTED_LOADING_REACT_NATIVE);
-    mReactInstanceManager = builder.callRecursive("build");
-    mReactInstanceManager.onHostResume(this, this);
-    mReactRootView.call("startReactApplication",
-        mReactInstanceManager.get(),
-        mManifest.optString(ExponentManifest.MANIFEST_APP_KEY_KEY, DEFAULT_APPLICATION_KEY),
-        bundle);
-
-    RNObject devSettings = mReactInstanceManager.callRecursive("getDevSupportManager").callRecursive("getDevSettings");
-    if (devSettings != null) {
-      devSettings.setField("exponentActivityId", mActivityId);
+  @Override
+  public void handleUnreadNotifications(JSONArray unreadNotifications) {
+    ExponentGcmListenerService gcmListenerService = ExponentGcmListenerService.getInstance();
+    if (gcmListenerService != null) {
+      gcmListenerService.removeNotifications(unreadNotifications);
     }
   }
 
   public void onEvent(BaseExperienceActivity.ExperienceDoneLoadingEvent event) {
     // On cold boot to this experience, wait until we're done loading to load the kernel.
     mKernel.startJSKernel();
-  }
-
-  private void updateOrientation() {
-    if (mManifest == null) {
-      return;
-    }
-
-    String orientation = mManifest.optString(ExponentManifest.MANIFEST_ORIENTATION_KEY, null);
-    if (orientation == null) {
-      setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-      return;
-    }
-
-    switch (orientation) {
-      case "default":
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-        break;
-      case "portrait":
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        break;
-      case "landscape":
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        break;
-    }
   }
 
   /*

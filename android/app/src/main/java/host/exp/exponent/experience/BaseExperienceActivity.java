@@ -139,7 +139,7 @@ public abstract class BaseExperienceActivity extends ReactNativeActivity {
     }
   }
 
-  protected boolean isInForeground() {
+  public boolean isInForeground() {
     return mIsInForeground;
   }
 

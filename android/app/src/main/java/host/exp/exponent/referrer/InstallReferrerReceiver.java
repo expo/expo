@@ -24,6 +24,7 @@ import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.storage.ExponentSharedPreferences;
+import host.exp.exponentview.Exponent;
 
 public class InstallReferrerReceiver extends CampaignTrackingReceiver {
 
@@ -115,7 +116,7 @@ public class InstallReferrerReceiver extends CampaignTrackingReceiver {
 
   private void preloadBundle(final String bundleUrl, final String id, final String sdkVersion) {
     try {
-      mKernel.loadJSBundle(bundleUrl, mKernel.encodeExperienceId(id), sdkVersion, new Kernel.BundleListener() {
+      Exponent.getInstance().loadJSBundle(bundleUrl, Exponent.getInstance().encodeExperienceId(id), sdkVersion, new Exponent.BundleListener() {
         @Override
         public void onError(Exception e) {
           EXL.e(TAG, "Couldn't preload bundle: " + e.toString());

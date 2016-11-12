@@ -85,16 +85,6 @@ public class Kernel implements KernelInterface {
   private static final String TAG = Kernel.class.getSimpleName();
 
   private static Kernel sInstance;
-  private static int currentActivityId = 0;
-  public static int getActivityId() {
-    return currentActivityId++;
-  }
-
-  public interface BundleListener {
-    void onBundleLoaded(String localBundlePath);
-
-    void onError(Exception e);
-  }
 
   public static class KernelStartedRunningEvent {
   }
@@ -195,7 +185,7 @@ public class Kernel implements KernelInterface {
       new Handler().postDelayed(new Runnable() {
         @Override
         public void run() {
-          loadJSBundle(bundleUrl, KernelConstants.KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, new BundleListener() {
+          Exponent.getInstance().loadJSBundle(bundleUrl, KernelConstants.KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, new Exponent.BundleListener() {
             @Override
             public void onBundleLoaded(String localBundlePath) {
               EXL.d(TAG, "Successfully preloaded kernel bundle");
@@ -209,53 +199,14 @@ public class Kernel implements KernelInterface {
         }
       }, KernelConstants.DELAY_TO_PRELOAD_KERNEL_JS);
     } else {
-      loadJSBundle(bundleUrl, KernelConstants.KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, kernelBundleListener());
+      Exponent.getInstance().loadJSBundle(bundleUrl, KernelConstants.KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, kernelBundleListener());
     }
   }
 
   public void reloadJSBundle() {
     String bundleUrl = getBundleUrl();
     mHasError = false;
-    loadJSBundle(bundleUrl, KernelConstants.KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, kernelBundleListener());
-  }
-
-  private static boolean hasDeclaredField(Class clazz, String field) {
-    try {
-      clazz.getDeclaredField(field);
-      return true;
-    } catch (NoSuchFieldException e) {
-      return false;
-    }
-  }
-
-  public static void enableDeveloperSupport(String debuggerHost, String mainModuleName,
-                                            RNObject builder) {
-    if (!debuggerHost.isEmpty() && !mainModuleName.isEmpty()) {
-      try {
-        RNObject fieldObject;
-        fieldObject = new RNObject("com.facebook.react.devsupport.DevServerHelper");
-        fieldObject.loadVersion(builder.version());
-        if (!hasDeclaredField(fieldObject.rnClass(), "DEVICE_LOCALHOST")) {
-          fieldObject = new RNObject("com.facebook.react.modules.systeminfo.AndroidInfoHelpers");
-          fieldObject.loadVersion(builder.version());
-        }
-
-        Field deviceField = fieldObject.rnClass().getDeclaredField("DEVICE_LOCALHOST");
-        deviceField.setAccessible(true);
-        deviceField.set(null, debuggerHost);
-
-        Field genymotionField = fieldObject.rnClass().getDeclaredField("GENYMOTION_LOCALHOST");
-        genymotionField.setAccessible(true);
-        genymotionField.set(null, debuggerHost);
-
-        builder.callRecursive("setUseDeveloperSupport", true)
-            .callRecursive("setJSMainModuleName", mainModuleName);
-      } catch (IllegalAccessException e) {
-        e.printStackTrace();
-      } catch (NoSuchFieldException e) {
-        e.printStackTrace();
-      }
-    }
+    Exponent.getInstance().loadJSBundle(bundleUrl, KernelConstants.KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, kernelBundleListener());
   }
 
   public static void addIntentDocumentFlags(Intent intent) {
@@ -269,8 +220,8 @@ public class Kernel implements KernelInterface {
     }
   }
 
-  private BundleListener kernelBundleListener() {
-    return new BundleListener() {
+  private Exponent.BundleListener kernelBundleListener() {
+    return new Exponent.BundleListener() {
       @Override
       public void onBundleLoaded(final String localBundlePath) {
         runOnUiThread(new Runnable() {
@@ -285,7 +236,7 @@ public class Kernel implements KernelInterface {
 
             if (mExponentSharedPreferences.isKernelDebugModeEnabled()) {
               // Won't work with ngrok url.
-              enableDeveloperSupport(ExponentBuildConstants.BUILD_MACHINE_IP_ADDRESS + ":8081",
+              Exponent.enableDeveloperSupport(ExponentBuildConstants.BUILD_MACHINE_IP_ADDRESS + ":8081",
                   "exponent", RNObject.wrap(builder));
             }
 
@@ -800,156 +751,6 @@ public class Kernel implements KernelInterface {
         killActivityStack(activity);
       }
       openManifestUrl(manifestUrl, null, true);
-    }
-  }
-
-  /*
-   *
-   * Bundle loading
-   *
-   */
-
-  public String encodeExperienceId(final String manifestId) throws UnsupportedEncodingException{
-    return URLEncoder.encode("experience-" + manifestId, "UTF-8");
-  }
-
-  // `id` must be URL encoded. Returns true if found cached bundle.
-  public boolean loadJSBundle(final String urlString, final String id, String abiVersion, final BundleListener bundleListener) {
-    if (!id.equals(KernelConstants.KERNEL_BUNDLE_ID)) {
-      Analytics.markEvent(Analytics.TimedEvent.STARTED_FETCHING_BUNDLE);
-    }
-
-    // The bundle is cached in two places:
-    //   1. The OkHttp cache (which lives in internal storage)
-    //   2. Written to our own file (in cache dir)
-    // Ideally we'd take the OkHttp response and send the InputStream directly to RN but RN doesn't
-    // support that right now so we need to write the response to a file.
-    // getCacheDir() doesn't work here! Some phones clean the file up in between when we check
-    // file.exists() and when we feed it into React Native!
-    // TODO: clean up files here!
-    final String fileName = KernelConstants.BUNDLE_FILE_PREFIX + id;
-    final File directory = new File(mContext.getFilesDir(), abiVersion);
-    if (!directory.exists()) {
-      directory.mkdir();
-    }
-
-    try {
-      Request request = ExponentUrls.addExponentHeadersToUrl(urlString).build();
-      // Use OkHttpClient with long read timeout for dev bundles
-      mExponentNetwork.getLongTimeoutClient().callSafe(request, new ExponentHttpClient.SafeCallback() {
-        @Override
-        public void onFailure(Call call, IOException e) {
-          bundleListener.onError(e);
-        }
-
-        @Override
-        public void onResponse(Call call, Response response) {
-          if (!response.isSuccessful()) {
-            String body = "(could not render body)";
-            try {
-              body = response.body().string();
-            } catch (IOException e) {
-              EXL.e(TAG, e);
-            }
-            bundleListener.onError(new Exception("Bundle return code: " + response.code() +
-                ". With body: " + body));
-            return;
-          }
-
-          if (!id.equals(KernelConstants.KERNEL_BUNDLE_ID)) {
-            Analytics.markEvent(Analytics.TimedEvent.FINISHED_FETCHING_BUNDLE);
-          }
-
-          try {
-            if (!id.equals(KernelConstants.KERNEL_BUNDLE_ID)) {
-              Analytics.markEvent(Analytics.TimedEvent.STARTED_WRITING_BUNDLE);
-            }
-            final File sourceFile = new File(directory, fileName);
-            boolean hasCachedSourceFile = false;
-
-            if (response.networkResponse() == null || response.networkResponse().code() == KernelConstants.HTTP_NOT_MODIFIED) {
-              // If we're getting a cached response don't rewrite the file to disk.
-              EXL.d(TAG, "Got cached OkHttp response for " + urlString);
-              if (sourceFile.exists()) {
-                hasCachedSourceFile = true;
-                EXL.d(TAG, "Have cached source file for " + urlString);
-              }
-            }
-
-            if (!hasCachedSourceFile) {
-              EXL.d(TAG, "Do not have cached source file for " + urlString);
-              InputStream inputStream = response.body().byteStream();
-
-              FileOutputStream fileOutputStream = new FileOutputStream(sourceFile);
-              BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
-              // TODO: close the streams using the try () syntax
-              ByteStreams.copy(inputStream, bufferedOutputStream);
-              bufferedOutputStream.flush();
-              fileOutputStream.flush();
-              fileOutputStream.getFD().sync();
-              bufferedOutputStream.close();
-              fileOutputStream.close();
-              inputStream.close();
-            }
-
-            if (!id.equals(KernelConstants.KERNEL_BUNDLE_ID)) {
-              Analytics.markEvent(Analytics.TimedEvent.FINISHED_WRITING_BUNDLE);
-            }
-
-            if (Constants.WRITE_BUNDLE_TO_LOG) {
-              printSourceFile(sourceFile.getAbsolutePath());
-            }
-
-            new Handler(mContext.getMainLooper()).post(new Runnable() {
-              @Override
-              public void run() {
-                bundleListener.onBundleLoaded(sourceFile.getAbsolutePath());
-              }
-            });
-          } catch (Exception e) {
-            bundleListener.onError(e);
-          }
-        }
-
-        @Override
-        public void onErrorCacheResponse(Call call, Response response) {
-          EXL.d(TAG, "Initial HTTP request failed. Using cached or embedded response.");
-          onResponse(call, response);
-        }
-      });
-    } catch (Exception e) {
-      bundleListener.onError(e);
-    }
-
-    // Guess whether we'll use the cache based on whether the source file is saved.
-    final File sourceFile = new File(directory, fileName);
-    return sourceFile.exists();
-  }
-
-  private void printSourceFile(String path) {
-    EXL.d(KernelConstants.BUNDLE_TAG, "Printing bundle:");
-    InputStream inputStream = null;
-    try {
-      inputStream = new FileInputStream(path);
-
-      InputStreamReader inputReader = new InputStreamReader(inputStream);
-      BufferedReader bufferedReader = new BufferedReader(inputReader);
-
-      String line;
-      do {
-        line = bufferedReader.readLine();
-        EXL.d(KernelConstants.BUNDLE_TAG, line);
-      } while (line != null);
-    } catch (Exception e) {
-      EXL.e(KernelConstants.BUNDLE_TAG, e.toString());
-    } finally {
-      if (inputStream != null) {
-        try {
-          inputStream.close();
-        } catch (IOException e) {
-          EXL.e(KernelConstants.BUNDLE_TAG, e.toString());
-        }
-      }
     }
   }
 

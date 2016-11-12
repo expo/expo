@@ -1,0 +1,48 @@
+apply plugin: 'com.android.application'
+
+android {
+  compileSdkVersion 24
+  buildToolsVersion '23.0.3'
+
+  defaultConfig {
+    applicationId "detach.app.template.pkg.name"
+    minSdkVersion 19
+    targetSdkVersion 24
+    versionCode 1
+    versionName "1.0"
+    multiDexEnabled true
+    ndk {
+      abiFilters 'armeabi-v7a', 'x86'
+    }
+  }
+  buildTypes {
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+  }
+}
+
+repositories{
+  flatDir{
+    dirs 'libs'
+  }
+  mavenLocal()
+  maven { url 'https://maven.fabric.io/public' }
+}
+
+dependencies {
+  compile fileTree(dir: 'libs', include: ['*.jar'])
+  testCompile 'junit:junit:4.12'
+  compile 'com.android.support:appcompat-v7:24.1.1'
+  compile 'com.android.support:multidex:1.0.0'
+
+  // START UNCOMMENT AFTER DETACH
+  /*compile('host.exp.exponent:exponentview:1.0.0@aar') {
+    transitive = true;
+  }*/
+  // END UNCOMMENT AFTER DETACH
+  // START DELETE AFTER DETACH
+  compile project(':exponentview')
+  // END DELETE AFTER DETACH
+}
