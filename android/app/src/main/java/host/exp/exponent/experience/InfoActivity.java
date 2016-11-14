@@ -21,7 +21,7 @@ import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.JSONBundleConverter;
 import host.exp.exponentview.Exponent;
 
-public class InfoActivity extends ReactNativeActivity {
+public class InfoActivity extends MultipleVersionReactNativeActivity {
 
   private static final String TAG = InfoActivity.class.getSimpleName();
 

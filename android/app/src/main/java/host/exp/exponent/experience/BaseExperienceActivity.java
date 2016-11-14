@@ -36,7 +36,7 @@ import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.modules.ExponentKernelModule;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 
-public abstract class BaseExperienceActivity extends ReactNativeActivity {
+public abstract class BaseExperienceActivity extends MultipleVersionReactNativeActivity {
 
   public static class ExperienceDoneLoadingEvent {
   }

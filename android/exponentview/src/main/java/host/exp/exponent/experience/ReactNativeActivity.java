@@ -27,7 +27,7 @@ public abstract class ReactNativeActivity extends Activity implements com.facebo
 
   @Override
   public boolean onKeyUp(int keyCode, KeyEvent event) {
-    if (keyCode == KeyEvent.KEYCODE_MENU && mReactInstanceManager.isNotNull() && !mIsCrashed) {
+    if (keyCode == KeyEvent.KEYCODE_MENU && mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
       mReactInstanceManager.call("showDevOptionsDialog");
       return true;
     }
@@ -36,7 +36,7 @@ public abstract class ReactNativeActivity extends Activity implements com.facebo
 
   @Override
   public void onBackPressed() {
-    if (mReactInstanceManager.isNotNull() && !mIsCrashed) {
+    if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
       mReactInstanceManager.call("onBackPressed");
     } else {
       super.onBackPressed();
@@ -52,7 +52,7 @@ public abstract class ReactNativeActivity extends Activity implements com.facebo
   protected void onPause() {
     super.onPause();
 
-    if (mReactInstanceManager.isNotNull() && !mIsCrashed) {
+    if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
       mReactInstanceManager.onHostPause();
       // TODO: use onHostPause(activity)
     }
@@ -68,7 +68,7 @@ public abstract class ReactNativeActivity extends Activity implements com.facebo
   protected void onResume() {
     super.onResume();
 
-    if (mReactInstanceManager.isNotNull() && !mIsCrashed) {
+    if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
       mReactInstanceManager.onHostResume(this, this);
     }
 
@@ -81,14 +81,14 @@ public abstract class ReactNativeActivity extends Activity implements com.facebo
   protected void onDestroy() {
     super.onDestroy();
 
-    if (mReactInstanceManager.isNotNull() && !mIsCrashed && mShouldDestroyRNInstanceOnExit) {
+    if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed && mShouldDestroyRNInstanceOnExit) {
       mReactInstanceManager.call("destroy");
     }
   }
 
   @Override
   public void onNewIntent(Intent intent) {
-    if (mReactInstanceManager.isNotNull() && !mIsCrashed) {
+    if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
       try {
         mReactInstanceManager.call("onNewIntent", intent);
       } catch (Throwable e) {

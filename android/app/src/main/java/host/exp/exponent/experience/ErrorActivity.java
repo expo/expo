@@ -29,7 +29,7 @@ import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.JSONBundleConverter;
 
-public class ErrorActivity extends ReactNativeActivity {
+public class ErrorActivity extends MultipleVersionReactNativeActivity {
 
   private static final String TAG = ErrorActivity.class.getSimpleName();
 
