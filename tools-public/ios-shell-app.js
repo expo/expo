@@ -237,48 +237,29 @@ async function cleanPropertyListBackupsAsync(configFilePath, restoreOriginals) {
 async function buildAsync(args, iOSRootPath, relativeBuildDestination) {
   let { action, configuration, verbose, type } = args;
 
-  let buildArgs, buildDest, pathToApp;
+  let buildCmd, buildDest, pathToApp;
   if (type === 'simulator') {
     buildDest = `${iOSRootPath}/${relativeBuildDestination}-simulator`;
-    buildArgs = [
-      '-workspace', 'Exponent.xcworkspace',
-      '-scheme', 'Exponent',
-      '-sdk', 'iphonesimulator',
-      '-configuration', configuration,
-      '-arch', 'i386',
-      '-derivedDataPath', buildDest,
-      'CODE_SIGN_IDENTITY=""',
-      'CODE_SIGNING_REQUIRED=NO',
-      'SKIP_INSTALL=NO',
-    ];
+    buildCmd = `xcodebuild -workspace Exponent.xcworkspace -scheme Exponent -sdk iphonesimulator -configuration ${configuration} -arch i386 -derivedDataPath ${buildDest} CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO SKIP_INSTALL=NO | xcpretty`;
     pathToApp = `${buildDest}/Build/Products/${configuration}-iphonesimulator/Exponent.app`;
   } else if (type === 'archive') {
     buildDest = `${iOSRootPath}/${relativeBuildDestination}-archive`;
-    buildArgs = [
-      '-workspace', 'Exponent.xcworkspace',
-      '-scheme', 'Exponent',
-      'archive',
-      '-configuration', configuration,
-      '-derivedDataPath', buildDest,
-      '-archivePath', `${buildDest}/Exponent.xcarchive`,
-      'CODE_SIGN_IDENTITY=""',
-      'CODE_SIGNING_REQUIRED=NO',
-      'SKIP_INSTALL=NO',
-    ];
+    buildCmd = `xcodebuild -workspace Exponent.xcworkspace -scheme Exponent archive -configuration ${configuration} -derivedDataPath ${buildDest} -archivePath ${buildDest}/Exponent.xcarchive CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO SKIP_INSTALL=NO | xcpretty`;
     pathToApp = `${buildDest}/Exponent.xcarchive/Products/Applications/Exponent.app`;
   }
 
-  if (buildArgs) {
+  if (buildCmd) {
     console.log(`Building shell app under ${iOSRootPath}/${relativeBuildDestination}`);
     console.log(`  (action: ${action}, configuration: ${configuration})...`);
-    console.log('xcodebuild', buildArgs.join(' '));
-    await spawnAsyncThrowError('xcodebuild', buildArgs, {
+    console.log(buildCmd);
+    await spawnAsyncThrowError(buildCmd, null, {
       stdio: (
         (verbose) ?
         'inherit' :
         ['ignore', 'ignore', 'inherit'] // only stderr
       ),
       cwd: iOSRootPath,
+      shell: true,
     });
 
     let artifactLocation = `${iOSRootPath}/../shellAppBase-builds/${type}/${configuration}/`;
