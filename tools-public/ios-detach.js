@@ -2,7 +2,13 @@
 
 'use strict';
 
-import { getManifestAsync, saveUrlToPathAsync, spawnAsyncThrowError, spawnAsync } from './tools-utils';
+import {
+  getManifestAsync,
+  spawnAsyncThrowError,
+  spawnAsync,
+  modifyIOSPropertyListAsync,
+  cleanIOSPropertyListBackupAsync,
+} from './tools-utils';
 import {
   configureStandaloneIOSInfoPlistAsync,
   configureStandaloneIOSShellPlistAsync,
@@ -31,6 +37,24 @@ function validateManifest(manifest) {
     throw new Error('Manifest is missing `name`');
   }
   return manifest;
+}
+
+async function configureDetachedVersionsPlistAsync(configFilePath, detachedSDKVersion, kernelSDKVersion) {
+  await modifyIOSPropertyListAsync(configFilePath, 'EXSDKVersions', (versionConfig) => {
+    versionConfig.sdkVersions = [detachedSDKVersion];
+    versionConfig.detachedNativeVersions = {
+      shell: detachedSDKVersion,
+      kernel: kernelSDKVersion,
+    };
+    return versionConfig;
+  });
+}
+
+async function cleanPropertyListBackupsAsync(configFilePath) {
+  console.log('Cleaning up...');
+  await cleanIOSPropertyListBackupAsync(configFilePath, 'EXShell', false);
+  await cleanIOSPropertyListBackupAsync(configFilePath, 'Info', false);
+  await cleanIOSPropertyListBackupAsync(configFilePath, 'EXSDKVersions', false);
 }
 
 /**
@@ -90,8 +114,11 @@ export async function detachIOSAsync(args) {
   let infoPlistPath = `${iosProjectDirectory}/${projectName}/Supporting`;
   await configureStandaloneIOSInfoPlistAsync(infoPlistPath, manifest);
   await configureStandaloneIOSShellPlistAsync(infoPlistPath, manifest, args.url);
+  // TODO: logic for when kernel sdk version is different from detached sdk version
+  await configureDetachedVersionsPlistAsync(infoPlistPath, args.sdkVersion, args.sdkVersion);
 
   console.log('Cleaning up...');
+  await cleanPropertyListBackupsAsync(infoPlistPath);
   await spawnAsync('/bin/rm', ['-rf', tmpExponentDirectory]);
 
   /*
@@ -104,7 +131,7 @@ export async function detachIOSAsync(args) {
   --- versioned React local pod, if needed
   ----- postinstall
   - modify copied project template
-  --- generate EXSDKVersions.plist
+  --- icons etc. same stuff as shell app
    */
   return;
 }
