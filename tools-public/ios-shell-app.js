@@ -6,9 +6,8 @@ import 'instapromise';
 
 import crayon from '@ccheever/crayon';
 import fs from 'fs';
-import shell from 'shelljs';
 import path from 'path';
-import { getManifestAsync, saveUrlToPathAsync } from './tools-utils';
+import { getManifestAsync, saveUrlToPathAsync, spawnAsync, spawnAsyncThrowError } from './tools-utils';
 import {
   modifyIOSPropertyListAsync,
   cleanIOSPropertyListBackupAsync,
@@ -41,7 +40,7 @@ async function configureShellAppSecretsAsync(args, iosDir) {
     return;
   }
 
-  shell.exec(`cp ${args.privateConfigFile} ${path.join(iosDir, 'private-shell-app-config.json')}`);
+  spawnAsyncThrowError('/bin/cp', [args.privateConfigFile, path.join(iosDir, 'private-shell-app-config.json')]);
 }
 
 async function configurePropertyListsAsync(manifest, args, configFilePath) {
@@ -193,22 +192,24 @@ async function configureIconsAsync(manifest, args, configFilePath) {
       }
       let iconFilename = `AppIcon${iconQualifier}.png`;
       let iconSizePx = iconSize * iconResolution;
-      let iconCommands = [
-        `pushd ${configFilePath}`,
-        `cp ${rawIconFilename} ${iconFilename}`,
-        `sips -Z ${iconSizePx} ${iconFilename}`,
-      ];
+      await spawnAsyncThrowError('/bin/cp', [rawIconFilename, iconFilename], {
+        stdio: 'inherit',
+        cwd: configFilePath,
+      });
+      await spawnAsyncThrowError('sips', ['-Z', iconSizePx, iconFilename], {
+        stdio: 'inherit',
+        cwd: configFilePath,
+      });
       if (!usesDefault) {
         // non-default icon used, clean up the downloaded version
-        iconCommands = iconCommands.concat([`rm ${rawIconFilename}`]);
+        await spawnAsyncThrowError('/bin/rm', [path.join(configFilePath, rawIconFilename)]);
       }
-      shell.exec(iconCommands.join(' && '));
     });
   });
 
   // clean up default icon
   if (defaultIconFilename) {
-    shell.exec(`rm ${configFilePath}/${defaultIconFilename}`);
+    await spawnAsyncThrowError('/bin/rm', [path.join(configFilePath, defaultIconFilename)]);
   }
   return;
 }
@@ -236,35 +237,58 @@ async function cleanPropertyListBackupsAsync(configFilePath, restoreOriginals) {
 async function buildAsync(args, iOSRootPath, relativeBuildDestination) {
   let { action, configuration, verbose, type } = args;
 
-  let buildCmd, buildDest, pathToApp;
+  let buildArgs, buildDest, pathToApp;
   if (type === 'simulator') {
     buildDest = `${iOSRootPath}/${relativeBuildDestination}-simulator`;
-    buildCmd = `xcodebuild -workspace Exponent.xcworkspace -scheme Exponent -sdk iphonesimulator -configuration ${configuration} -arch i386 -derivedDataPath ${buildDest} CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO SKIP_INSTALL=NO | xcpretty`;
+    buildArgs = [
+      '-workspace', 'Exponent.xcworkspace',
+      '-scheme', 'Exponent',
+      '-sdk', 'iphonesimulator',
+      '-configuration', configuration,
+      '-arch', 'i386',
+      '-derivedDataPath', buildDest,
+      'CODE_SIGN_IDENTITY=""',
+      'CODE_SIGNING_REQUIRED=NO',
+      'SKIP_INSTALL=NO',
+    ];
     pathToApp = `${buildDest}/Build/Products/${configuration}-iphonesimulator/Exponent.app`;
   } else if (type === 'archive') {
     buildDest = `${iOSRootPath}/${relativeBuildDestination}-archive`;
-    buildCmd = `xcodebuild -workspace Exponent.xcworkspace -scheme Exponent archive -configuration ${configuration} -derivedDataPath ${buildDest} -archivePath ${buildDest}/Exponent.xcarchive CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO SKIP_INSTALL=NO | xcpretty`;
+    buildArgs = [
+      '-workspace', 'Exponent.xcworkspace',
+      '-scheme', 'Exponent',
+      'archive',
+      '-configuration', configuration,
+      '-derivedDataPath', buildDest,
+      '-archivePath', `${buildDest}/Exponent.xcarchive`,
+      'CODE_SIGN_IDENTITY=""',
+      'CODE_SIGNING_REQUIRED=NO',
+      'SKIP_INSTALL=NO',
+    ];
     pathToApp = `${buildDest}/Exponent.xcarchive/Products/Applications/Exponent.app`;
   }
 
-  if (buildCmd) {
-    if (!verbose) {
-      buildCmd = `${buildCmd} > /dev/null`;
-    }
-
+  if (buildArgs) {
     console.log(`Building shell app under ${iOSRootPath}/${relativeBuildDestination}`);
     console.log(`  (action: ${action}, configuration: ${configuration})...`);
-    console.log(buildCmd);
-    shell.exec(`pushd ${iOSRootPath} && ${buildCmd}`);
+    console.log('xcodebuild', buildArgs.join(' '));
+    await spawnAsyncThrowError('xcodebuild', buildArgs, {
+      stdio: (
+        (verbose) ?
+        'inherit' :
+        ['ignore', 'ignore', 'inherit'] // only stderr
+      ),
+      cwd: iOSRootPath,
+    });
 
     let artifactLocation = `${iOSRootPath}/../shellAppBase-builds/${type}/${configuration}/`;
-    shell.rm('-rf', artifactLocation);
-    shell.mkdir('-p', artifactLocation);
+    await spawnAsyncThrowError('/bin/rm', ['-rf', artifactLocation]);
+    await spawnAsyncThrowError('/bin/mkdir', ['-p', artifactLocation]);
 
     if (type === 'archive') {
-      shell.cp('-R', `${buildDest}/Exponent.xcarchive`, artifactLocation);
+      await spawnAsyncThrowError('/bin/cp', ['-R', `${buildDest}/Exponent.xcarchive`, artifactLocation]);
     } else if (type === 'simulator') {
-      shell.cp('-R', pathToApp, artifactLocation);
+      await spawnAsyncThrowError('/bin/cp', ['-R', pathToApp, artifactLocation]);
     }
 
   }
@@ -363,9 +387,16 @@ export async function createIOSShellAppAsync(args) {
 
     let archiveName = manifest.name.replace(/\s+/g, '');
     if (type === 'simulator') {
-      shell.exec(`cd ${configFilePath}/.. && mv Exponent.app ${archiveName}.app && tar cvf ${output} ${archiveName}.app`);
+      await spawnAsync(`mv Exponent.app ${archiveName}.app && tar cvf ${output} ${archiveName}.app`, null, {
+        stdio: 'inherit',
+        cwd: `${configFilePath}/..`,
+        shell: true,
+      });
     } else if (type === 'archive') {
-      shell.exec(`cd ${configFilePath}/../../../.. && mv Exponent.xcarchive ${output}`);
+      await spawnAsync('/bin/mv', ['Exponent.xcarchive', output], {
+        stdio: 'inherit',
+        cwd: `${configFilePath}/../../../..`,
+      });
     }
   }
 
