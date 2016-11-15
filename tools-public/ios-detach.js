@@ -3,6 +3,10 @@
 'use strict';
 
 import { getManifestAsync, saveUrlToPathAsync, spawnAsyncThrowError, spawnAsync } from './tools-utils';
+import {
+  configureStandaloneIOSInfoPlistAsync,
+  configureStandaloneIOSShellPlistAsync,
+} from './ios-shell-app';
 
 const EXPONENT_SRC_URL = 'https://github.com/exponentjs/exponent.git';
 const EXPONENT_ARCHIVE_URL = 'https://api.github.com/repos/exponentjs/exponent/tarball/master';
@@ -82,6 +86,11 @@ export async function detachIOSAsync(args) {
   await spawnAsync('/bin/mv', [`${iosProjectDirectory}/exponent-view-template.xcodeproj`, `${iosProjectDirectory}/${projectName}.xcodeproj`]);
   await spawnAsync('/bin/mv', [`${iosProjectDirectory}/exponent-view-template.xcworkspace`, `${iosProjectDirectory}/${projectName}.xcworkspace`]);
 
+  console.log('Configuring project...');
+  let infoPlistPath = `${iosProjectDirectory}/${projectName}/Supporting`;
+  await configureStandaloneIOSInfoPlistAsync(infoPlistPath, manifest);
+  await configureStandaloneIOSShellPlistAsync(infoPlistPath, manifest, args.url);
+
   console.log('Cleaning up...');
   await spawnAsync('/bin/rm', ['-rf', tmpExponentDirectory]);
 
@@ -95,8 +104,6 @@ export async function detachIOSAsync(args) {
   --- versioned React local pod, if needed
   ----- postinstall
   - modify copied project template
-  --- generate Info.plist?
-  --- generate EXShell.plist
   --- generate EXSDKVersions.plist
    */
   return;

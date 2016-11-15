@@ -46,36 +46,14 @@ async function configureShellAppSecretsAsync(args, iosDir) {
   spawnAsyncThrowError('/bin/cp', [args.privateConfigFile, path.join(iosDir, 'private-shell-app-config.json')]);
 }
 
-async function configurePropertyListsAsync(manifest, args, configFilePath) {
-  // make sure we have all the required info
-  validateConfigArguments(manifest, args, configFilePath);
-  console.log(`Modifying config files under ${configFilePath}...`);
-
-  let {
-    url,
-    bundleIdentifier,
-    privateConfigFile,
-  } = args;
-
-  let privateConfig;
-  if (privateConfigFile) {
-    let privateConfigContents = await fs.promise.readFile(privateConfigFile, 'utf8');
-    privateConfig = JSON.parse(privateConfigContents);
-  }
-
-  // generate new shell config
-  await modifyIOSPropertyListAsync(configFilePath, 'EXShell', (shellConfig) => {
-    shellConfig.isShell = true;
-    shellConfig.manifestUrl = shellConfig.manifestUrl || url;
-    if (manifest.ios && manifest.ios.permissions) {
-      shellConfig.permissions = manifest.ios.permissions;
-    }
-
-    console.log('Using shell config:', shellConfig);
-    return shellConfig;
-  });
-
-  // modify Info.plist based on manifest
+/**
+ * Configure an iOS Info.plist for a standalone app given its exponent configuration.
+ * @param configFilePath Path to Info.plist
+ * @param manifest the app's manifest
+ * @param privateConfig optional config with the app's private keys
+ * @param optional bundle id if the manifest doesn't contain one already
+ */
+async function configureStandaloneIOSInfoPlistAsync(configFilePath, manifest, privateConfig = null, bundleIdentifier = null) {
   await modifyIOSPropertyListAsync(configFilePath, 'Info', (config) => {
     // bundle id
     config.CFBundleIdentifier = manifest.ios.bundleIdentifier || bundleIdentifier;
@@ -97,9 +75,6 @@ async function configurePropertyListsAsync(manifest, args, configFilePath) {
     config.CFBundleURLTypes = [{
       CFBundleURLSchemes: linkingSchemes,
     }];
-
-    // use shell-specific launch screen
-    config.UILaunchStoryboardName = 'LaunchScreenShell';
 
     // permanently save the exponent client version at time of configuration
     config.EXClientVersion = config.CFBundleVersion;
@@ -137,6 +112,54 @@ async function configurePropertyListsAsync(manifest, args, configFilePath) {
 
     return config;
   });
+}
+
+/**
+ * Configure EXShell.plist for a standalone app given its exponent configuration.
+ * @param configFilePath Path to Info.plist
+ * @param manifest the app's manifest
+ * @param manifestUrl the app's manifest url
+ */
+async function configureStandaloneIOSShellPlistAsync(configFilePath, manifest, manifestUrl) {
+  await modifyIOSPropertyListAsync(configFilePath, 'EXShell', (shellConfig) => {
+    shellConfig.isShell = true;
+    shellConfig.manifestUrl = manifestUrl;
+    if (manifest.ios && manifest.ios.permissions) {
+      shellConfig.permissions = manifest.ios.permissions;
+    }
+
+    console.log('Using shell config:', shellConfig);
+    return shellConfig;
+  });
+}
+
+async function configurePropertyListsAsync(manifest, args, configFilePath) {
+  // make sure we have all the required info
+  validateConfigArguments(manifest, args, configFilePath);
+  console.log(`Modifying config files under ${configFilePath}...`);
+
+  let {
+    privateConfigFile,
+  } = args;
+
+  let privateConfig;
+  if (privateConfigFile) {
+    let privateConfigContents = await fs.promise.readFile(privateConfigFile, 'utf8');
+    privateConfig = JSON.parse(privateConfigContents);
+  }
+
+  // generate new shell config
+  await configureStandaloneIOSShellPlistAsync(configFilePath, manifest, args.url);
+
+  // Info.plist changes specific to turtle
+  await modifyIOSPropertyListAsync(configFilePath, 'Info', (config) => {
+    // use shell-specific launch screen
+    config.UILaunchStoryboardName = 'LaunchScreenShell';
+    return config;
+  });
+
+  // common standalone Info.plist config changes
+  await configureStandaloneIOSInfoPlistAsync(configFilePath, manifest, privateConfig, args.bundleIdentifier);
 }
 
 function getAppleIconQualifier(iconSize, iconResolution) {
@@ -339,7 +362,7 @@ function validateArgs(args) {
 *  @param bundleIdentifier iOS CFBundleIdentifier to use in the bundle config
 *  @param verbose show all xcodebuild output (default false)
 */
-export async function createIOSShellAppAsync(args) {
+async function createIOSShellAppAsync(args) {
   let configFilePath;
   args = validateArgs(args);
 
@@ -386,3 +409,9 @@ export async function createIOSShellAppAsync(args) {
 
   return;
 }
+
+export {
+  createIOSShellAppAsync,
+  configureStandaloneIOSInfoPlistAsync,
+  configureStandaloneIOSShellPlistAsync,
+};
