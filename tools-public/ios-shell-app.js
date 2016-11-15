@@ -7,11 +7,14 @@ import 'instapromise';
 import crayon from '@ccheever/crayon';
 import fs from 'fs';
 import path from 'path';
-import { getManifestAsync, saveUrlToPathAsync, spawnAsync, spawnAsyncThrowError } from './tools-utils';
 import {
+  getManifestAsync,
+  saveUrlToPathAsync,
+  spawnAsync,
+  spawnAsyncThrowError,
   modifyIOSPropertyListAsync,
   cleanIOSPropertyListBackupAsync,
-} from './ios-utils';
+ } from './tools-utils';
 
 function validateConfigArguments(manifest, cmdArgs, configFilePath) {
   if (!configFilePath) {

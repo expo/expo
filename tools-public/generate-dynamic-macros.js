@@ -14,7 +14,7 @@ import JsonFile from '@exponent/json-file';
 import {
   modifyIOSPropertyListAsync,
   cleanIOSPropertyListBackupAsync,
-} from './ios-utils';
+} from './tools-utils';
 
 const ProjectVersions = require('./project-versions');
 
