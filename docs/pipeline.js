@@ -1,4 +1,4 @@
-/* global CI, git, Promise */
+/* global CI, git, Promise, spawnAsync */
 
 const {
   Docker,
@@ -16,6 +16,8 @@ export default {
     build(branch, tag),
     CI.waitStep(),
     deploy(branch, tag),
+    CI.waitStep(),
+    updateSearchIndex(branch, tag),
   ]),
 };
 
@@ -89,6 +91,27 @@ fi`;
   },
 });
 
+const updateSearchIndex = (branch, tag) => ({
+  name: `:feelsgood: Update Search Index`,
+  async command() {
+    if (branch !== 'master' && !tag) {
+      return;
+    }
+
+    Log.collapsed(':timer_clock: Waiting 10 seconds...');
+
+    await setTimeoutAsync(10);
+
+    Log.collapsed(':open_mouth: Updating search index...');
+
+    await spawnAsync('node', [
+      'scripts/update-search-index.js',
+    ], {
+      stdio: 'inherit',
+    });
+  },
+});
+
 function pad(n) {
   return n < 10 ? `0${n}` : `${n}`;
 }
@@ -99,4 +122,8 @@ async function makeVersionName() {
 
   return `${today.getFullYear()}-` +
     `${pad(today.getMonth() + 1)}-${pad(today.getDate())}-${hash}`;
+}
+
+function setTimeoutAsync(timeout) {
+  return new Promise(resolve => setTimeout(resolve, timeout));
 }
