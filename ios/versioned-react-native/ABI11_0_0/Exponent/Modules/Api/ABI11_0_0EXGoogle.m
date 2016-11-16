@@ -64,7 +64,7 @@ ABI11_0_0RCT_REMAP_METHOD(logInAsync,
 {
   ABI11_0_0EXOAuthViewController *viewController = [ABI11_0_0EXOAuthViewController new];
   viewController.url = [NSString stringWithFormat:
-                        @"https://accounts.google.com/o/oauth2/v2/auth?scope=%@&redirect_uri=https://oauth.host.exp.com&response_type=token&client_id=%@",
+                        @"https://accounts.google.com/o/oauth2/v2/auth?scope=%@&suppress_webview_warning=true&redirect_uri=https://oauth.host.exp.com&response_type=token&client_id=%@",
                         [scopes componentsJoinedByString: @"%20"],
                         clientId];
   viewController.delegate = self;
