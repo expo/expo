@@ -103,3 +103,7 @@ h5 > code {
 }
 
 
+#left-column {
+  position: relative !important;
+  overflow: inherit !important;
+}

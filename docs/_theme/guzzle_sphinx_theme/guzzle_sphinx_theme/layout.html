@@ -16,6 +16,7 @@
   <meta name="msapplication-TileColor" content="#023c69"/>
   <meta name="msapplication-TileImage" content="{{ pathto('_static/img/mstile-144x144.png', 1) }}"/>
   <meta name="theme-color" content="#023c69"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
 
   {{ super() }}
 {%- endblock %}
@@ -111,7 +112,7 @@
       {%- block document_wrapper %}
         {%- block document %}
         <div id="right-column">
-          <div class="document clearer body">
+          <div class="document body">
             {% block body %} {% endblock %}
           </div>
           {%- block bottom_rel_links %}

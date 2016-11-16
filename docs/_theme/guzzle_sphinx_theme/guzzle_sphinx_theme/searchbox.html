@@ -4,12 +4,20 @@
     <div id="main-search">
       <form class="form-inline" action="{{ pathto('search') }}" method="GET" role="form">
         <div class="input-group">
-          <input name="q" type="text" class="form-control" placeholder="Search...">
+          <input id="algolia-search-box" name="q" type="text" class="form-control" placeholder="Search...">
         </div>
-        <input type="hidden" name="check_keywords" value="yes" />
-        <input type="hidden" name="area" value="default" />
       </form>
     </div>
   </div>
 </div>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js"></script>
+<script type="text/javascript">
+docsearch({
+  appId: 'S6DBW4862L',
+  apiKey: '59ebba04e5d2e4bed5d5ae12eed28bdd',
+  indexName: 'exponent-docs',
+  inputSelector: '#algolia-search-box',
+  algoliaOptions: { facetFilters: [ "tags:{{ release }}" ], hitsPerPage: 5 }
+});
+</script>
 {%- endif %}

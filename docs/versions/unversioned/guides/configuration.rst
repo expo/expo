@@ -141,6 +141,10 @@ Configuration with exp.json
     The bundle identifier for your iOS standalone app. You make it up, but it needs to be unique on the App Store. See `this StackOverflow question <http://stackoverflow.com/questions/11347470/what-does-bundle-identifier-mean-in-the-ios-project>`_.
     iOS bundle identifier notation unique name for your app. For example, host.exp.exponent, where exp.host is our domain and Exponent is our app.
 
+   .. attribute:: buildNumber
+
+    Build number for your iOS standalone app
+
    .. attribute:: config
 
     
