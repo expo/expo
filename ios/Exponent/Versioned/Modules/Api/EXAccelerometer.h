@@ -4,6 +4,4 @@
 
 @interface EXAccelerometer : RCTEventEmitter
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId;
-
 @end

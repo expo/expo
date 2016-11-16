@@ -14,32 +14,37 @@
 
 @implementation EXAccelerometer
 
-+ (NSString *)moduleName { return @"ExponentAccelerometer"; }
+RCT_EXPORT_MODULE(ExponentAccelerometer);
 
-
-- (instancetype)initWithExperienceId:(NSString *)experienceId
+- (instancetype)init
 {
   if (self = [super init]) {
     _paused = NO;
+  
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(bridgeDidForeground:)
+                                                 name:EX_UNVERSIONED(@"EXKernelBridgeDidForegroundNotification")
+                                               object:self.bridge];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(bridgeDidBackground:)
+                                                 name:EX_UNVERSIONED(@"EXKernelBridgeDidBackgroundNotification")
+                                               object:self.bridge];
+  }
+  return self;
+}
+
+- (CMMotionManager *)manager
+{
+  // TODO (brent): singleton
+  if (!_manager) {
     _manager = [[CMMotionManager alloc] init];
     
     if ([_manager isAccelerometerAvailable]) {
       [_manager setAccelerometerUpdateInterval:0.1f];
     }
   }
-  
-  
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(bridgeDidForeground:)
-                                               name:EX_UNVERSIONED(@"EXKernelBridgeDidForegroundNotification")
-                                             object:self.bridge];
-  
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(bridgeDidBackground:)
-                                               name:EX_UNVERSIONED(@"EXKernelBridgeDidBackgroundNotification")
-                                             object:self.bridge];
-  
-  return self;
+  return _manager;
 }
 
 - (NSArray<NSString *> *)supportedEvents
@@ -49,7 +54,7 @@
 
 RCT_EXPORT_METHOD(setUpdateInterval:(nonnull NSNumber *)intervalMs) {
   double intervalAsFractionOfSecond = [intervalMs doubleValue] / 1000;
-  [_manager setAccelerometerUpdateInterval:intervalAsFractionOfSecond];
+  [self.manager setAccelerometerUpdateInterval:intervalAsFractionOfSecond];
 }
 
 - (void)bridgeDidForeground:(NSNotification *)notification
@@ -62,7 +67,7 @@ RCT_EXPORT_METHOD(setUpdateInterval:(nonnull NSNumber *)intervalMs) {
 
 - (void)bridgeDidBackground:(NSNotification *)notification
 {
-  if ([_manager isGyroActive]) {
+  if ([self.manager isGyroActive]) {
     [self setPaused:YES];
   }
   
@@ -71,9 +76,9 @@ RCT_EXPORT_METHOD(setUpdateInterval:(nonnull NSNumber *)intervalMs) {
 
 - (void)startObserving
 {
-  if (![_manager isAccelerometerActive] && [_manager isAccelerometerAvailable]) {
+  if (![self.manager isAccelerometerActive] && [self.manager isAccelerometerAvailable]) {
     __weak typeof(self) weakSelf = self;
-    [_manager startAccelerometerUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMAccelerometerData *data, NSError *error) {
+    [self.manager startAccelerometerUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMAccelerometerData *data, NSError *error) {
       [weakSelf sendEventWithName:@"accelerometerDidUpdate" body:@{
                                                                    @"x": [NSNumber numberWithDouble:data.acceleration.x],
                                                                    @"y": [NSNumber numberWithDouble:data.acceleration.y],
@@ -85,8 +90,8 @@ RCT_EXPORT_METHOD(setUpdateInterval:(nonnull NSNumber *)intervalMs) {
 
 - (void)stopObserving
 {
-  if ([_manager isGyroActive]) {
-    [_manager stopGyroUpdates];
+  if ([self.manager isGyroActive]) {
+    [self.manager stopGyroUpdates];
   }
 }
 

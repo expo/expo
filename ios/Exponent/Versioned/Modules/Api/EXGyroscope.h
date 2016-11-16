@@ -4,6 +4,4 @@
 
 @interface EXGyroscope : RCTEventEmitter
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId;
-
 @end
