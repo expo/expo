@@ -67,7 +67,7 @@ RCT_EXPORT_METHOD(setUpdateInterval:(nonnull NSNumber *)intervalMs) {
 
 - (void)bridgeDidBackground:(NSNotification *)notification
 {
-  if ([self.manager isGyroActive]) {
+  if ([self.manager isAccelerometerActive]) {
     [self setPaused:YES];
   }
   
@@ -90,8 +90,8 @@ RCT_EXPORT_METHOD(setUpdateInterval:(nonnull NSNumber *)intervalMs) {
 
 - (void)stopObserving
 {
-  if ([self.manager isGyroActive]) {
-    [self.manager stopGyroUpdates];
+  if ([self.manager isAccelerometerActive]) {
+    [self.manager stopAccelerometerUpdates];
   }
 }
 
