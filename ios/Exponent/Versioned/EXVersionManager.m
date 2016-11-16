@@ -1,5 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+#import "EXAccelerometer.h"
 #import "EXAppState.h"
 #import "EXConstants.h"
 #import "EXDisabledDevLoadingView.h"
@@ -7,6 +8,7 @@
 #import "EXDisabledRedBox.h"
 #import "EXFileSystem.h"
 #import "EXFrameExceptionsManager.h"
+#import "EXGyroscope.h"
 #import "EXKernelModule.h"
 #import "EXLinkingManager.h"
 #import "EXNotifications.h"
@@ -213,11 +215,13 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
 
   NSMutableArray *extraModules = [NSMutableArray arrayWithArray:
                                   @[
+                                    [[EXAccelerometer alloc] initWithExperienceId:experienceId],
                                     [[EXAppState alloc] init],
                                     [[EXConstants alloc] initWithProperties:constants],
                                     [[EXDisabledDevLoadingView alloc] init],
                                     [[EXFileSystem alloc] initWithExperienceId:experienceId],
                                     [[EXFrameExceptionsManager alloc] initWithDelegate:frame],
+                                    [[EXGyroscope alloc] initWithExperienceId:experienceId],
                                     [[EXLinkingManager alloc] initWithInitialUrl:initialUri],
                                     [[EXNotifications alloc] initWithExperienceId:experienceId],
                                     [[EXAmplitude alloc] initWithExperienceId:experienceId],
