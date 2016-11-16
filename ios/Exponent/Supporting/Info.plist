@@ -34,7 +34,7 @@
 		</dict>
 	</array>
 	<key>EXClientVersion</key>
-	<string>1.10.2.104661</string>
+	<string></string>
 	<key>Fabric</key>
 	<dict>
 		<key>APIKey</key>
@@ -73,6 +73,8 @@
 	<string>Allow Exponent experiences to use your location</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow Exponent experiences to access your microphone</string>
+	<key>NSMotionUsageDescription</key>
+	<string>Allow Exponent experiences to access your device's accelerometer</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Give Exponent experiences permission to access your photos</string>
 	<key>UILaunchStoryboardName</key>
