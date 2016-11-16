@@ -22,6 +22,7 @@ import java.util.Map;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
+import versioned.host.exp.exponent.modules.api.AccelerometerModule;
 import versioned.host.exp.exponent.modules.api.AmplitudeModule;
 import versioned.host.exp.exponent.modules.api.ConstantsModule;
 import versioned.host.exp.exponent.modules.api.ContactsModule;
@@ -32,6 +33,7 @@ import versioned.host.exp.exponent.modules.api.FileSystemModule;
 import versioned.host.exp.exponent.modules.api.FingerprintModule;
 import versioned.host.exp.exponent.modules.api.FontLoaderModule;
 import versioned.host.exp.exponent.modules.api.GoogleModule;
+import versioned.host.exp.exponent.modules.api.GyroscopeModule;
 import versioned.host.exp.exponent.modules.api.ImageCropperModule;
 import versioned.host.exp.exponent.modules.api.ImagePickerModule;
 import versioned.host.exp.exponent.modules.api.KeyboardModule;
@@ -101,6 +103,8 @@ public class ExponentPackage implements ReactPackage {
           String experienceIdEncoded = URLEncoder.encode(experienceId, "UTF-8");
 
           nativeModules.add(new ExponentAsyncStorageModule(reactContext, mManifest));
+          nativeModules.add(new AccelerometerModule(reactContext));
+          nativeModules.add(new GyroscopeModule(reactContext));
           nativeModules.add(new NotificationsModule(reactContext, mManifest));
           nativeModules.add(new ContactsModule(reactContext));
           nativeModules.add(new FileSystemModule(reactContext, mManifest));
