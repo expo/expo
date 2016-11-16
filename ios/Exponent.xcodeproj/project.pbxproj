@@ -74,6 +74,8 @@
 		840D8EE21D8CB91E00CD88DE /* EXUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 840D8EE11D8CB91E00CD88DE /* EXUtil.m */; };
 		841AB1161DA6F56D008C0720 /* EXBarCodeScanner.m in Sources */ = {isa = PBXBuildFile; fileRef = 841AB1131DA6F56D008C0720 /* EXBarCodeScanner.m */; };
 		841AB1171DA6F56D008C0720 /* EXBarCodeScannerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 841AB1151DA6F56D008C0720 /* EXBarCodeScannerManager.m */; };
+		843175B41DDCF0440092B68B /* EXAccelerometer.m in Sources */ = {isa = PBXBuildFile; fileRef = 843175B31DDCF0440092B68B /* EXAccelerometer.m */; };
+		844341F71DDBA1B600AC3795 /* EXGyroscope.m in Sources */ = {isa = PBXBuildFile; fileRef = 844341F61DDBA1B600AC3795 /* EXGyroscope.m */; };
 		8454E6DA1D4E95B800B9E8EF /* EXBlurView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8454E6D91D4E95B800B9E8EF /* EXBlurView.m */; };
 		8454E6DC1D4E960F00B9E8EF /* EXBlurViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8454E6DB1D4E960F00B9E8EF /* EXBlurViewManager.m */; };
 		88E089A41D6BC02200562FA1 /* EXAmplitude.m in Sources */ = {isa = PBXBuildFile; fileRef = 88E089A31D6BC02200562FA1 /* EXAmplitude.m */; };
@@ -308,6 +310,10 @@
 		841AB1131DA6F56D008C0720 /* EXBarCodeScanner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXBarCodeScanner.m; sourceTree = "<group>"; };
 		841AB1141DA6F56D008C0720 /* EXBarCodeScannerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXBarCodeScannerManager.h; sourceTree = "<group>"; };
 		841AB1151DA6F56D008C0720 /* EXBarCodeScannerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXBarCodeScannerManager.m; sourceTree = "<group>"; };
+		843175B21DDCF0440092B68B /* EXAccelerometer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EXAccelerometer.h; path = Exponent/Versioned/Modules/Api/EXAccelerometer.h; sourceTree = SOURCE_ROOT; };
+		843175B31DDCF0440092B68B /* EXAccelerometer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EXAccelerometer.m; path = Exponent/Versioned/Modules/Api/EXAccelerometer.m; sourceTree = SOURCE_ROOT; };
+		844341F51DDBA1B600AC3795 /* EXGyroscope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGyroscope.h; sourceTree = "<group>"; };
+		844341F61DDBA1B600AC3795 /* EXGyroscope.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGyroscope.m; sourceTree = "<group>"; };
 		8454E6D81D4E95A300B9E8EF /* EXBlurView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXBlurView.h; sourceTree = "<group>"; };
 		8454E6D91D4E95B800B9E8EF /* EXBlurView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXBlurView.m; sourceTree = "<group>"; };
 		8454E6DB1D4E960F00B9E8EF /* EXBlurViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXBlurViewManager.m; sourceTree = "<group>"; };
@@ -750,6 +756,8 @@
 				A1CDBE861D30781000C2A670 /* Components */,
 				B51C2AFF1DC7BB3200120834 /* OAuthViewController */,
 				B5844C341D482C3D0015C683 /* Permissions */,
+				843175B21DDCF0440092B68B /* EXAccelerometer.h */,
+				843175B31DDCF0440092B68B /* EXAccelerometer.m */,
 				A1F37F5B1CEFD6B2001E9EFC /* EXConstants.h */,
 				A1F37F5C1CEFD6B2001E9EFC /* EXConstants.m */,
 				A1F37F5D1CEFD6B2001E9EFC /* EXContacts.h */,
@@ -764,6 +772,8 @@
 				A1F37F601CEFD6B2001E9EFC /* EXFontLoader.m */,
 				B51C2AFB1DC7BB2000120834 /* EXGoogle.h */,
 				B51C2AFC1DC7BB2000120834 /* EXGoogle.m */,
+				844341F51DDBA1B600AC3795 /* EXGyroscope.h */,
+				844341F61DDBA1B600AC3795 /* EXGyroscope.m */,
 				A15DC4BB1CFF99FE009F940D /* EXImagePicker.h */,
 				A15DC4BA1CFF99FE009F940D /* EXImagePicker.m */,
 				A12CC94A1D11E80E0023A57B /* EXLocation.h */,
@@ -1412,6 +1422,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				844341F71DDBA1B600AC3795 /* EXGyroscope.m in Sources */,
 				B5D0748F1DCBF0C3003ED863 /* ExponentViewManager.m in Sources */,
 				1936012E1D67ABCF007C0EE0 /* RNSVGUseManager.m in Sources */,
 				193601111D67ABCF007C0EE0 /* RNSVGDefsManager.m in Sources */,
@@ -1515,6 +1526,7 @@
 				B5844C3B1D482D710015C683 /* EXRemoteNotificationRequester.m in Sources */,
 				B55FDEFA1C7FE1310020AA8F /* EXRootViewController.m in Sources */,
 				B5553F961CEFBD1200555008 /* EXShellManager.m in Sources */,
+				843175B41DDCF0440092B68B /* EXAccelerometer.m in Sources */,
 				A1DCE8481DC3FC63009665FD /* EXGLViewManager.m in Sources */,
 				1936012A1D67ABCF007C0EE0 /* RNSVGSvgViewManager.m in Sources */,
 				A1F37F7A1CEFD6B2001E9EFC /* EXVersionManager.m in Sources */,
