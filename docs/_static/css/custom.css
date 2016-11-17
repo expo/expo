@@ -107,3 +107,8 @@ h5 > code {
   position: relative !important;
   overflow: inherit !important;
 }
+
+.container-wrapper {
+  max-width: 1280px;
+  margin: 0 auto;
+}
