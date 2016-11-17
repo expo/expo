@@ -4,7 +4,6 @@ require 'fileutils'
 require 'shellwords'
 
 fastlane_version "1.30.0"
-itc_team_id "17102800"
 default_platform :ios
 
 output_directory = File.expand_path('../Deployment')
