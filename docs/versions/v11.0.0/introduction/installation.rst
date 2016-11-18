@@ -49,7 +49,7 @@ Once the emulator is open and you have a project open in XDE, you can press *Ope
 Node.js
 --------
 
-To get started wtih Exponent you don't necessarily need to have Node.js
+To get started with Exponent you don't necessarily need to have Node.js
 installed, but as soon as you start actually building something you'll want to
 have it. `Download the latest version of Node.js <https://nodejs.org/en/>`_.
 

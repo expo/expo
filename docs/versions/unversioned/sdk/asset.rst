@@ -55,7 +55,7 @@ out of the box with Exponent.
 
    .. py:attribute:: height
 
-      If the asset is an image, the width of the image data divided by the scale
+      If the asset is an image, the height of the image data divided by the scale
       factor. The scale factor is the number after ``@`` in the filename, or
       ``1`` if not present.
 
@@ -87,4 +87,3 @@ out of the box with Exponent.
       On running this piece of code, ``imageURI`` gives the remote URI that the
       contents of ``images/hello.jpg`` can be read from. The path is resolved
       relative to the source file that this code is evaluated in.
-

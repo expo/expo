@@ -107,7 +107,7 @@ props
    When ``'on'``, the flash on your device will turn on, when ``'off'``, it
    will be off. Defaults to ``'off'``.
 
-.. attribute:: torchMode
+.. attribute:: barCodeTypes
 
    An array of bar code types, see ``BarCodeScanner.BarCodeType`` for supported
    types on the platform and device. Default: all supported bar code types.
