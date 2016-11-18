@@ -167,7 +167,7 @@ android {
 
 task generateDynamicMacros(type: Exec) {
   // This gets run from the 'app' directory
-  commandLine 'bash', '../../tools-public/generate-dynamic-macros-android.sh'
+  commandLine '../../tools-public/generate-dynamic-macros-android.sh'
 }
 preBuild.dependsOn generateDynamicMacros
 
