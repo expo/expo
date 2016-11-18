@@ -1072,6 +1072,10 @@ private:
   template<typename F>
   inline JSValueRef getActiveInfo(JSContextRef jsCtx, const JSValueRef jsArgv[],
                                   GLenum lengthParam, F &&glFunc) {
+    if (JSValueIsNull(jsCtx, jsArgv[0])) {
+      return JSValueMakeNull(jsCtx);
+    }
+
     EXJS_UNPACK_ARGV(Future fProgram, GLuint index);
 
     GLsizei length;
@@ -1085,6 +1089,10 @@ private:
       name.resize(maxNameLength);
       glFunc(program, index, maxNameLength, &length, &size, &type, &name[0]);
     });
+
+    if (strlen(name.c_str()) == 0) { // name.length() may be larger
+      return JSValueMakeNull(jsCtx);
+    }
 
     JSObjectRef jsResult = JSObjectMake(jsCtx, nullptr, nullptr);
     EXJSObjectSetValueWithUTF8CStringName(jsCtx, jsResult, "name",
