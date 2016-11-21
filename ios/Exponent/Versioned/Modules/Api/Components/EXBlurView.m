@@ -4,33 +4,54 @@
 
 @implementation EXBlurView
 
-- (void)setTintEffect:(NSString *)tintEffect
+- (void)applyStyle
 {
-  _tintEffect = tintEffect;
-  
-  if (_visualEffectView) {
-    [_visualEffectView removeFromSuperview];
+  self.clipsToBounds = true;
+  if ([_tint isEqual: @"light"]) {
+    _blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight];
+  } else if ([_tint isEqual: @"default"]) {
+    _blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+  } else if ([_tint isEqual: @"dark"]) {
+    _blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
   }
   
-  UIBlurEffect *blurEffect;
-  
-  if ([tintEffect isEqual: @"light"]) {
-    blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight];
-  } else if ([tintEffect isEqual: @"default"]) {
-    blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
-  } else if ([tintEffect isEqual: @"dark"]) {
-    blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-  }
-  
-  _visualEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+  __weak typeof(self) weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    __typeof(self) strongSelf = weakSelf;
+
+    if (strongSelf) {
+      UIVisualEffectView *blockVisualEffectView = strongSelf.visualEffectView;
+
+      if (blockVisualEffectView) {
+        [blockVisualEffectView removeFromSuperview];
+        [blockVisualEffectView setEffect:strongSelf.blurEffect];
+      } else {
+        [strongSelf setVisualEffectView:[[UIVisualEffectView alloc] initWithEffect:strongSelf.blurEffect]];
+        blockVisualEffectView = strongSelf.visualEffectView;
+        [[strongSelf visualEffectView] setAutoresizingMask: UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+      }
+
+      blockVisualEffectView.alpha = [strongSelf.intensity floatValue] / 100.0;
+      blockVisualEffectView.frame = strongSelf.bounds;
+      [strongSelf insertSubview:strongSelf.visualEffectView atIndex:0];
+    }
+  });
 }
 
--(void)layoutSubviews
+- (void)didSetProps:(NSArray<NSString *> *)changedProps {
+  if ([changedProps containsObject:@"tint"] || [changedProps containsObject:@"intensity"]) {
+    [self applyStyle];
+  }
+}
+
+- (void)setTint:(NSString *)tint
 {
-  [super layoutSubviews];
-  
-  _visualEffectView.frame = self.bounds;
-  [self insertSubview:_visualEffectView atIndex:0];
+  _tint = tint;
+}
+
+- (void)setIntensity:(NSNumber *)intensity
+{
+  _intensity = intensity;
 }
 
 @end

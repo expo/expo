@@ -12,6 +12,7 @@ RCT_EXPORT_MODULE(ExponentBlurViewManager);
   return [[EXBlurView alloc] init];
 }
 
-RCT_EXPORT_VIEW_PROPERTY(tintEffect, NSString);
+RCT_EXPORT_VIEW_PROPERTY(tint, NSString);
+RCT_EXPORT_VIEW_PROPERTY(intensity, NSNumber);
 
 @end
