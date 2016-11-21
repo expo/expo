@@ -39,7 +39,7 @@ Example: tintEffect
           <Image style={{width: 192, height: 192}} source={{uri}} />
 
           { /* Change tintEffect here to reproduce the above image */ }
-          <Components.BlurView tintEffect="light" style={StyleSheet.absoluteFill}>
+          <Components.BlurView tint="light" style={StyleSheet.absoluteFill}>
             <Image style={{width: 96, height: 96}} source={{uri}} />
           </Components.BlurView>
         </View>
@@ -49,7 +49,7 @@ Example: tintEffect
 
   Exponent.registerRootComponent(BlurViewExample);
 
-Example: blur strength with opacity
+Example: blur strength with intensity
 """""""""""""""""""""""""""""""""""
 
 You can change ``opacity`` style on the component to change the strength of the
@@ -63,20 +63,18 @@ blur.
   import React from 'react';
   import {
     Animated,
-    AppRegistry,
     Image,
     StyleSheet,
     View,
   } from 'react-native';
-  import {
+  import Exponent, {
     Components,
   } from 'exponent';
 
   const AnimatedBlurView = Animated.createAnimatedComponent(Components.BlurView);
-
   class BlurViewExample extends React.Component {
     state = {
-      opacity: new Animated.Value(0),
+      intensity: new Animated.Value(0),
     }
 
     componentDidMount() {
@@ -84,9 +82,9 @@ blur.
     }
 
     _animate = () => {
-      let { opacity } = this.state;
-      Animated.timing(opacity, {duration: 2500, toValue: 1}).start((value) => {
-        Animated.timing(opacity, {duration: 2500, toValue: 0}).start(this._animate);
+      let { intensity } = this.state;
+      Animated.timing(intensity, {duration: 2500, toValue: 100}).start((value) => {
+        Animated.timing(intensity, {duration: 2500, toValue: 0}).start(this._animate);
       });
     }
 
@@ -94,24 +92,27 @@ blur.
       const uri = 'https://s3.amazonaws.com/exp-brand-assets/ExponentEmptyManifest_192.png';
 
       return (
-        <View style={{flex: 1, margin: 30}}>
-          <View style={{flex: 1, padding: 55, paddingTop: 60}}>
-            <Image style={{width: 180, height: 180}} source={{uri}} />
+        <View style={{flex: 1, padding: 50, alignItems: 'center', justifyContent: 'center'}}>
+          <Image style={{width: 180, height: 180}} source={{uri}} />
 
-            <AnimatedBlurView
-              tintEffect="default"
-              style={[StyleSheet.absoluteFill, {opacity: this.state.opacity}]} />
-          </View>
+          <AnimatedBlurView
+            tint="default"
+            intensity={this.state.intensity}
+            style={StyleSheet.absoluteFill} />
         </View>
       );
     }
   }
 
-  AppRegistry.registerComponent('main', () => BlurViewExample);
+  Exponent.registerRootComponent(BlurViewExample);
 
 props
 '''''
 
-.. attribute:: tintEffect
+.. attribute:: tint
 
    A string: ``light``, ``default``, or ``dark``.
+
+.. attribute:: intensity
+
+   A number from 1 to 100 to control the intensity of the blur effect.
