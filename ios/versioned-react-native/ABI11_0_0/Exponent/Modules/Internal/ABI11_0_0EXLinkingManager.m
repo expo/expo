@@ -102,6 +102,13 @@ ABI11_0_0RCT_EXPORT_METHOD(getInitialURL:(ABI11_0_0RCTPromiseResolveBlock)resolv
 
 - (BOOL)_isExponentUrl: (NSURL *)url
 {
+  // do not attempt to route internal exponent links at all if we're in a detached exponent app.
+  NSString *versionsPath = [[NSBundle mainBundle] pathForResource:@"EXSDKVersions" ofType:@"plist"];
+  NSDictionary *versionsConfig = (versionsPath) ? [NSDictionary dictionaryWithContentsOfFile:versionsPath] : [NSDictionary dictionary];
+  if (versionsConfig && versionsConfig[@"detachedNativeVersions"]) {
+    return NO;
+  }
+  
   // we don't need to explicitly include a shell app custom URL scheme here
   // because the default iOS linking behavior will still hand those links back to Exponent.
 
