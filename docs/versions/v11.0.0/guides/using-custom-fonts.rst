@@ -101,18 +101,15 @@ component.
 Using the font in a ``Text`` component
 ======================================
 
-You may remember that in React Native you specify fonts in ``Text`` components
-using the ``fontFamily`` style property. Since it can be confusing to keep track
-of the font family for the various .ttf files you load, Exponent provides the
-function :func:`Exponent.Font.style` which returns the style properties
-(including ``fontFamily``) for a font that you specify by name. So all you need
-to do is change your ``Text`` element to the following:
+With React Native you specify fonts in ``Text`` components using the
+``fontFamily`` style property. The ``fontFamily`` is the key that we used
+with ``Font.loadAsync``.
 
 .. code-block:: javascript
 
-          <Text style={{ fontFamily: 'open-sans-bold', fontSize: 56 }}>
-            Hello, world!
-          </Text>
+      <Text style={{ fontFamily: 'open-sans-bold', fontSize: 56 }}>
+        Hello, world!
+      </Text>
 
 On next refresh the app seems to still not display the text with Open Sans Bold.
 You will see that it is still using the default system font. The problem is that
@@ -120,9 +117,6 @@ You will see that it is still using the default system font. The problem is that
 complete. Before it completes, the ``Text`` component is already rendered with
 the default font since it can't find the ``'open-sans-bold'`` font (which hasn't been
 loaded yet).
-
-.. epigraph::
-  **Note:** If you're curious, go ahead and add ``console.log(Font.style('open-sans-bold'));`` to your code and you'll see that it evaluates to {fontFamily: 'some-long-id-open-sans-bold'}. We prepend the family name with a session id in order to prevent fonts from different apps opened through Exponent from clashing.
 
 Waiting for the font to load before rendering
 =============================================
@@ -180,7 +174,10 @@ Finally, we want to only render the ``Text`` component if ``fontLoaded`` is
 
 A ``null`` child element is simply ignored by React Native, so this skips
 rendering the ``Text`` component when ``fontLoaded`` is ``false``. Now on
-refreshing the app you should see that it renders the Font Awesome glass icon!
+refreshing the app you will see that ``open-sans-bold`` is used.
+
+This technique is built into the Tabs template for convenience, as you can see
+`here <https://github.com/exponentjs/new-project-template/blob/2fdf49b77090124c317e4eb73684f6bae782a4fd/main.js#L30-L50>`_.
 
 .. epigraph::
   **Note:** Typically you will want to load your apps primary fonts before the app is displayed to avoid text flashing in after the font loads. The recommended approach is to move the ``Font.loadAsync`` call to your top-level component.
