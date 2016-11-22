@@ -29,6 +29,7 @@ import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.LauncherActivity;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
+import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.storage.ExponentSharedPreferences;
@@ -166,9 +167,9 @@ public class ExponentGcmListenerService extends GcmListenerService {
 
         // Create pending intent
         Intent intent = new Intent(ExponentGcmListenerService.this, LauncherActivity.class);
-        intent.putExtra(LauncherActivity.MANIFEST_URL_KEY, manifestUrl);
-        intent.putExtra(LauncherActivity.NOTIFICATION_KEY, body); // deprecated
-        intent.putExtra(LauncherActivity.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString());
+        intent.putExtra(KernelConstants.MANIFEST_URL_KEY, manifestUrl);
+        intent.putExtra(KernelConstants.NOTIFICATION_KEY, body); // deprecated
+        intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString());
         PendingIntent pendingIntent = PendingIntent.getActivity(ExponentGcmListenerService.this, 0, intent,
             PendingIntent.FLAG_ONE_SHOT);
 

@@ -5,8 +5,8 @@ package versioned.host.exp.exponent.modules.api;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -33,12 +33,17 @@ import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.storage.ExponentSharedPreferences;
+import host.exp.exponent.utils.ColorParser;
 import host.exp.exponentview.Exponent;
+import host.exp.exponentview.R;
 
 public class NotificationsModule extends ReactContextBaseJavaModule {
 
   @Inject
   ExponentSharedPreferences mExponentSharedPreferences;
+
+  @Inject
+  ExponentManifest mExponentManifest;
 
   private final static String NO_ACTIVITY_ERROR = "NO_ACTIVITY_ERROR";
 
@@ -93,16 +98,9 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void presentLocalNotification(final ReadableMap details, final Promise promise) {
     ReactApplicationContext context = getReactApplicationContext();
-    NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+    final NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
 
-    try {
-      PackageManager pm = context.getPackageManager();
-      ApplicationInfo info = pm.getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
-      builder.setSmallIcon(info.icon);
-    } catch (PackageManager.NameNotFoundException e) {
-      builder.setSmallIcon(android.R.drawable.sym_def_app_icon);
-    }
-
+    builder.setSmallIcon(R.drawable.shell_notification_icon);
     builder.setAutoCancel(true);
 
     if (!(details.hasKey("silent") && details.getBoolean("silent"))) {
@@ -166,28 +164,66 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
       return;
     }
 
-    Class activityClass = currentActivity.getClass();
-    String manifestUrl = (String) mExperienceProperties.get(KernelConstants.MANIFEST_URL_KEY);
-    Intent intent = new Intent(getReactApplicationContext(), activityClass);
-
-    try {
-      intent.putExtra((String) activityClass.getDeclaredField("MANIFEST_URL_KEY").get(null), manifestUrl);
-    } catch (NoSuchFieldException | IllegalAccessException e) {
-      promise.reject(e);
-      return;
-    }
+    Intent intent;
 
     if (details.hasKey("link")) {
-      intent.setAction(Intent.ACTION_VIEW);
-      intent.setData(Uri.parse(details.getString("link")));
+      intent = new Intent(Intent.ACTION_VIEW, Uri.parse(details.getString("link")));
+    } else {
+      Class activityClass = currentActivity.getClass();
+      String manifestUrl = (String) mExperienceProperties.get(KernelConstants.MANIFEST_URL_KEY);
+      intent = new Intent(getReactApplicationContext(), activityClass);
+      intent.putExtra(KernelConstants.MANIFEST_URL_KEY, manifestUrl);
     }
 
     PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
     builder.setContentIntent(contentIntent);
 
-    int notificationId = new Random().nextInt();
-    getNotificationManager().notify(null, notificationId, builder.build());
-    promise.resolve(notificationId);
+
+    JSONObject notificationPreferences = mManifest.optJSONObject(ExponentManifest.MANIFEST_NOTIFICATION_INFO_KEY);
+
+    String colorString;
+
+    if (details.hasKey("color")) {
+      colorString = details.getString("color");
+      if (colorString.length() < 1) {
+        colorString = null;
+      }
+    } else {
+      colorString = notificationPreferences == null ? null :
+              notificationPreferences.optString(ExponentManifest.MANIFEST_NOTIFICATION_COLOR_KEY);
+    }
+
+    int color;
+
+    if (colorString != null && ColorParser.isValid(colorString)) {
+      color = Color.parseColor(colorString);
+    } else {
+      color = mExponentManifest.getColorFromManifest(mManifest);
+    }
+
+    builder.setColor(color);
+
+    String iconUrl;
+
+    if (details.hasKey("icon")) {
+      iconUrl = details.getString("icon");
+    } else {
+      iconUrl = mManifest.optString(ExponentManifest.MANIFEST_ICON_URL_KEY);
+      if (notificationPreferences != null) {
+        iconUrl = notificationPreferences.optString(ExponentManifest.MANIFEST_NOTIFICATION_ICON_URL_KEY, null);
+      }
+    }
+
+    mExponentManifest.loadIconBitmap(iconUrl, new ExponentManifest.BitmapListener() {
+      @Override
+      public void onLoadBitmap(Bitmap bitmap) {
+        builder.setLargeIcon(bitmap);
+
+        int notificationId = new Random().nextInt();
+        getNotificationManager().notify(null, notificationId, builder.build());
+        promise.resolve(notificationId);
+      }
+    });
   }
 
   @ReactMethod

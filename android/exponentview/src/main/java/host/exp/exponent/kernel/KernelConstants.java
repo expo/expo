@@ -23,6 +23,10 @@ public class KernelConstants {
   public static final int OVERLAY_PERMISSION_REQUEST_CODE = 123;
   public static final String DEFAULT_APPLICATION_KEY = "main";
 
+  public static final String NOTIFICATION_KEY = "notification";
+  public static final String NOTIFICATION_OBJECT_KEY = "notification_object";
+  public static final String DEV_FLAG = "dev_flag";
+
   public static class ExperienceOptions {
     public final String manifestUri;
     public final String uri;

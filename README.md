@@ -23,7 +23,8 @@ If you want to build a standalone app that needs custom native modules, you're i
 Please use Node 6 and npm 3. We recommend installing Node using [nvm](https://github.com/creationix/nvm). We support building the clients only on macOS.
 
 - `npm install` in the `js` and `tools-public` directories.
-- Run the packager with `cd tools-public && npm run packager`. Leave this running while you run the clients. The clients access this packager using your computer's IP, so make sure that your computer and device are on the same WiFi network.
+- Install [the Gulp CLI](http://gulpjs.com/) globally: `npm i gulp-cli -g`.
+- Run the packager with `cd tools-public && npm run gulp`. Leave this running while you run the clients. The clients access this packager using your computer's IP, so make sure that your computer and device are on the same WiFi network.
 
 #### Android
 - Make sure you have Android Studio 2 and the [Android NDK](https://facebook.github.io/react-native/docs/android-building-from-source.html#download-links-for-android-ndk) version `r10e` installed.
