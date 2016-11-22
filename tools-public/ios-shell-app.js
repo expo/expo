@@ -14,6 +14,7 @@ import {
   spawnAsyncThrowError,
   modifyIOSPropertyListAsync,
   cleanIOSPropertyListBackupAsync,
+  configureIOSIconsAsync,
  } from './tools-utils';
 
 function validateConfigArguments(manifest, cmdArgs, configFilePath) {
@@ -160,84 +161,6 @@ async function configurePropertyListsAsync(manifest, args, configFilePath) {
 
   // common standalone Info.plist config changes
   await configureStandaloneIOSInfoPlistAsync(configFilePath, manifest, privateConfig, args.bundleIdentifier);
-}
-
-function getAppleIconQualifier(iconSize, iconResolution) {
-  let iconQualifier;
-  if (iconResolution !== 1) {
-    // e.g. "29x29@3x"
-    iconQualifier = `${iconSize}x${iconSize}@${iconResolution}x`;
-  } else {
-    iconQualifier = `${iconSize}x${iconSize}`;
-  }
-  if (iconSize === 76 || iconSize === 83.5) {
-    // ipad sizes require ~ipad at the end
-    iconQualifier = `${iconQualifier}~ipad`;
-  }
-  return iconQualifier;
-}
-
-/**
- * Ensure that the proper icon images exist -- Info.plist already points at them
- * under CFBundleIcons.CFBundlePrimaryIcon.CFBundleIconFiles
- */
-async function configureIconsAsync(manifest, args, configFilePath) {
-  let defaultIconFilename;
-  if (manifest.iconUrl) {
-     defaultIconFilename = 'exp-icon.png';
-     await saveUrlToPathAsync(manifest.iconUrl, `${configFilePath}/${defaultIconFilename}`);
-   }
-
-  let iconSizes = [29, 40, 60, 76, 83.5];
-  iconSizes.forEach(iconSize => {
-    let iconResolutions;
-    if (iconSize === 76) {
-      // iPad has 1x and 2x icons for this size only
-      iconResolutions = [1, 2];
-    } else {
-      iconResolutions = [2, 3];
-    }
-    iconResolutions.forEach(async (iconResolution) => {
-      let iconQualifier = getAppleIconQualifier(iconSize, iconResolution);
-      let iconKey = `iconUrl${iconQualifier}`;
-      let rawIconFilename;
-      let usesDefault = false;
-      if (manifest.ios && manifest.ios.hasOwnProperty(iconKey)) {
-        // manifest specifies an image just for this size/resolution, use that
-        rawIconFilename = `exp-icon${iconQualifier}.png`;
-        await saveUrlToPathAsync(manifest.ios[iconKey], `${configFilePath}/${rawIconFilename}`);
-      } else {
-        // use default manifest.iconUrl
-        usesDefault = true;
-        if (defaultIconFilename) {
-          rawIconFilename = defaultIconFilename;
-        } else {
-          console.warn(`Manifest does not specify ios.${iconKey} nor a default iconUrl. Bundle will use the Exponent logo.`);
-          return;
-        }
-      }
-      let iconFilename = `AppIcon${iconQualifier}.png`;
-      let iconSizePx = iconSize * iconResolution;
-      await spawnAsyncThrowError('/bin/cp', [rawIconFilename, iconFilename], {
-        stdio: 'inherit',
-        cwd: configFilePath,
-      });
-      await spawnAsyncThrowError('sips', ['-Z', iconSizePx, iconFilename], {
-        stdio: 'inherit',
-        cwd: configFilePath,
-      });
-      if (!usesDefault) {
-        // non-default icon used, clean up the downloaded version
-        await spawnAsyncThrowError('/bin/rm', [path.join(configFilePath, rawIconFilename)]);
-      }
-    });
-  });
-
-  // clean up default icon
-  if (defaultIconFilename) {
-    await spawnAsyncThrowError('/bin/rm', [path.join(configFilePath, defaultIconFilename)]);
-  }
-  return;
 }
 
 /**
@@ -388,7 +311,7 @@ async function createIOSShellAppAsync(args) {
     configFilePath = args.archivePath;
     // just configure, don't build anything
     await configurePropertyListsAsync(manifest, args, configFilePath);
-    await configureIconsAsync(manifest, args, configFilePath);
+    await configureIOSIconsAsync(manifest, configFilePath);
     await preloadManifestAndBundleAsync(manifest, args, configFilePath);
     await cleanPropertyListBackupsAsync(configFilePath, false);
 

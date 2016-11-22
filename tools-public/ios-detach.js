@@ -12,6 +12,7 @@ import {
 import {
   configureStandaloneIOSInfoPlistAsync,
   configureStandaloneIOSShellPlistAsync,
+  configureIOSIconsAsync,
 } from './ios-shell-app';
 
 const EXPONENT_SRC_URL = 'https://github.com/exponentjs/exponent.git';
@@ -112,10 +113,13 @@ export async function detachIOSAsync(args) {
 
   console.log('Configuring project...');
   let infoPlistPath = `${iosProjectDirectory}/${projectName}/Supporting`;
+  let iconPath = `${iosProjectDirectory}/${projectName}/Images.xcassets/AppIcon.appiconset`;
   await configureStandaloneIOSInfoPlistAsync(infoPlistPath, manifest);
   await configureStandaloneIOSShellPlistAsync(infoPlistPath, manifest, args.url);
   // TODO: logic for when kernel sdk version is different from detached sdk version
   await configureDetachedVersionsPlistAsync(infoPlistPath, args.sdkVersion, args.sdkVersion);
+  await configureIOSIconsAsync(manifest, iconPath);
+  // we don't pre-cache JS in this case, TODO: think about whether that's correct
 
   console.log('Cleaning up...');
   await cleanPropertyListBackupsAsync(infoPlistPath);
@@ -130,8 +134,6 @@ export async function detachIOSAsync(args) {
   ----- postinstall
   --- versioned React local pod, if needed
   ----- postinstall
-  - modify copied project template
-  --- icons etc. same stuff as shell app
    */
   return;
 }
