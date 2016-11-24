@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXLocalNotificationManager.h"
+#import "EXKernel.h"
 
 @implementation EXLocalNotificationManager
 
@@ -18,7 +19,15 @@
 
 - (void)handleLocalNotification:(UILocalNotification *)notification fromBackground:(BOOL)isFromBackground
 {
+  NSDictionary *payload = notification.userInfo;
   
+  if (payload) {
+    NSDictionary *body = [payload objectForKey:@"body"];
+    NSString *experienceId = [payload objectForKey:@"experienceId"];
+    if (body && experienceId) {
+      [[EXKernel sharedInstance] sendNotification:body toExperienceWithId:experienceId fromBackground:isFromBackground];
+    }
+  }
 }
 
 @end
