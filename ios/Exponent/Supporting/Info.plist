@@ -77,6 +77,10 @@
 	<string>Allow Exponent experiences to access your device's accelerometer</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Give Exponent experiences permission to access your photos</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
