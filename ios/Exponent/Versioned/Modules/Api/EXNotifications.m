@@ -58,6 +58,7 @@ RCT_EXPORT_METHOD(presentLocalNotification:(NSDictionary *)payload
   localNotification.alertTitle = payload[@"title"];
   localNotification.alertBody = payload[@"body"];
   localNotification.fireDate = [RCTConvert NSDate:payload[@"fireDate"]] ?: [NSDate new];
+  localNotification.applicationIconBadgeNumber = [RCTConvert NSInteger:payload[@"count"]] ?: 0;
   
   localNotification.userInfo = @{
     @"body": payload[@"data"],
