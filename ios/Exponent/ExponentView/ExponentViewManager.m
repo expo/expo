@@ -6,6 +6,7 @@
 #import "EXKernelUtil.h"
 #import "EXKeys.h"
 #import "EXRemoteNotificationManager.h"
+#import "EXLocalNotificationManager.h"
 #import "EXViewController.h"
 
 #import "Amplitude.h"
@@ -113,6 +114,12 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
 {
   BOOL isFromBackground = !(application.applicationState == UIApplicationStateActive);
   [[EXRemoteNotificationManager sharedInstance] handleRemoteNotification:notification fromBackground:isFromBackground];
+}
+
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+{
+  BOOL isFromBackground = !(application.applicationState == UIApplicationStateActive);
+  [[EXLocalNotificationManager sharedInstance] handleLocalNotification:notification fromBackground:isFromBackground];
 }
 
 #pragma mark - deep linking hooks

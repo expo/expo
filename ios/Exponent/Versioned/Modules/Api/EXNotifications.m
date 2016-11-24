@@ -2,6 +2,8 @@
 
 #import "EXNotifications.h"
 #import "EXUnversioned.h"
+#import "RCTUtils.h"
+#import "RCTConvert.h"
 
 @interface EXNotifications ()
 
@@ -43,6 +45,53 @@ RCT_REMAP_METHOD(getExponentPushTokenAsync,
                                                                @"onSuccess": success,
                                                                @"onFailure": failure,
                                                                }];
+}
+
+RCT_EXPORT_METHOD(presentLocalNotification:(NSDictionary *)payload
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(__unused RCTPromiseRejectBlock)reject)
+{
+  UILocalNotification *localNotification = [UILocalNotification new];
+  
+  NSString *uniqueId = [[NSUUID new] UUIDString];
+  
+  localNotification.alertTitle = payload[@"title"];
+  localNotification.alertBody = payload[@"body"];
+  localNotification.fireDate = [RCTConvert NSDate:payload[@"fireDate"]] ?: [NSDate new];
+  localNotification.applicationIconBadgeNumber = [RCTConvert NSInteger:payload[@"count"]] ?: 0;
+  
+  localNotification.userInfo = @{
+    @"body": payload[@"data"],
+    @"experienceId": _experienceId,
+    @"id": uniqueId,
+  };
+  
+  [RCTSharedApplication() scheduleLocalNotification:localNotification];
+  
+  resolve(uniqueId);
+}
+
+RCT_EXPORT_METHOD(cancelNotification:(NSString *)uniqueId)
+{
+  for (UILocalNotification *notification in [RCTSharedApplication() scheduledLocalNotifications])
+  {
+    if ([notification.userInfo[@"id"] isEqualToString:uniqueId])
+    {
+      [RCTSharedApplication() cancelLocalNotification:notification];
+      break;
+    }
+  }
+}
+
+RCT_EXPORT_METHOD(cancelAllNotifications)
+{
+  for (UILocalNotification *notification in [RCTSharedApplication() scheduledLocalNotifications])
+  {
+    if ([notification.userInfo[@"experienceId"] isEqualToString:_experienceId])
+    {
+      [RCTSharedApplication() cancelLocalNotification:notification];
+    }
+  }
 }
 
 @end
