@@ -59,6 +59,8 @@ public class DevServerHelper {
 
     public static String BUNDLE_URL_FORMAT = "http://%s/%s.bundle?platform=android&dev=%s&hot=%s&minify=%s";
 
+    public static String RESOURCE_URL_FORMAT = "http://%s/%s";
+
     public static String SOURCE_MAP_URL_FORMAT = BUNDLE_URL_FORMAT.replaceFirst("\\.bundle", ".map");
 
     public static String LAUNCH_JS_DEVTOOLS_COMMAND_URL_FORMAT = "http://%s/launch-js-devtools";
@@ -253,6 +255,10 @@ public class DevServerHelper {
             exponentHandleErrorException.printStackTrace();
             return null;
         }
+    }
+
+    private static String createResourceURL(String host, String resourcePath) {
+        return String.format(Locale.US, RESOURCE_URL_FORMAT, host, resourcePath);
     }
 
     public void downloadBundleFromURL(final BundleDownloadCallback callback, final String jsModulePath, final File outputFile) {
@@ -454,5 +460,42 @@ public class DevServerHelper {
     public String getJSBundleURLForRemoteDebugging(String mainModuleName) {
         // host itself.
         return createBundleURL(getHostForJSProxy(), mainModuleName, getDevMode(), getHMR(), getJSMinifyMode());
+    }
+
+    /**
+   * This is a debug-only utility to allow fetching a file via packager.
+   * It's made synchronous for simplicity, but should only be used if it's absolutely
+   * necessary.
+   * @return the file with the fetched content, or null if there's any failure.
+   */
+    /**
+   * This is a debug-only utility to allow fetching a file via packager.
+   * It's made synchronous for simplicity, but should only be used if it's absolutely
+   * necessary.
+   * @return the file with the fetched content, or null if there's any failure.
+   */
+    @Nullable
+    public File downloadBundleResourceFromUrlSync(final String resourcePath, final File outputFile) {
+        final String resourceURL = createResourceURL(getDebugServerHost(), resourcePath);
+        final Request request = new Request.Builder().url(resourceURL).build();
+        try {
+            Response response = mClient.newCall(request).execute();
+            if (!response.isSuccessful()) {
+                return null;
+            }
+            Sink output = null;
+            try {
+                output = Okio.sink(outputFile);
+                Okio.buffer(response.body().source()).readAll(output);
+            } finally {
+                if (output != null) {
+                    output.close();
+                }
+            }
+            return outputFile;
+        } catch (Exception ex) {
+            FLog.e(ReactConstants.TAG, "Failed to fetch resource synchronously - resourcePath: \"%s\", outputFile: \"%s\"", resourcePath, outputFile.getAbsolutePath(), ex);
+            return null;
+        }
     }
 }
