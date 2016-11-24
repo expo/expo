@@ -69,14 +69,15 @@ NSString * const kEXCurrentAPNSTokenDefaultsKey = @"EXCurrentAPNSTokenDefaultsKe
   }
 }
 
-- (void)handleNotification:(NSDictionary *)notification fromBackground:(BOOL)isFromBackground
+- (void)handleRemoteNotification:(NSDictionary *)notification fromBackground:(BOOL)isFromBackground
 {
-  [self _handleNotification:notification fromBackground:isFromBackground];
-}
-
-- (void)handleLocalNotification:(NSDictionary *)notification fromBackground:(BOOL)isFromBackground
-{
-  [self _handleNotification:notification fromBackground:isFromBackground];
+  if (notification) {
+    NSDictionary *body = [notification objectForKey:@"body"];
+    NSString *experienceId = [notification objectForKey:@"experienceId"];
+    if (body && experienceId) {
+      [[EXKernel sharedInstance] sendNotification:body toExperienceWithId:experienceId fromBackground:isFromBackground];
+    }
+  }
 }
 
 #pragma mark - Internal
@@ -122,17 +123,6 @@ NSString * const kEXCurrentAPNSTokenDefaultsKey = @"EXCurrentAPNSTokenDefaultsKe
                                   @"deviceId": [EXKernel deviceInstallUUID],
                                   };
     [[EXKernel sharedInstance] dispatchKernelJSEvent:@"getExponentPushToken" body:eventParams onSuccess:success onFailure:failure];
-  }
-}
-
-- (void)_handleNotification: (NSDictionary *)notification fromBackground:(BOOL)isFromBackground
-{
-  if (notification) {
-    NSDictionary *body = [notification objectForKey:@"body"];
-    NSString *experienceId = [notification objectForKey:@"experienceId"];
-    if (body && experienceId) {
-      [[EXKernel sharedInstance] sendNotification:body toExperienceWithId:experienceId fromBackground:isFromBackground];
-    }
   }
 }
 
