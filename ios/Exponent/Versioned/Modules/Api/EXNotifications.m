@@ -2,6 +2,7 @@
 
 #import "EXNotifications.h"
 #import "EXUnversioned.h"
+#import "RCTUtils.h"
 
 @interface EXNotifications ()
 
@@ -43,6 +44,16 @@ RCT_REMAP_METHOD(getExponentPushTokenAsync,
                                                                @"onSuccess": success,
                                                                @"onFailure": failure,
                                                                }];
+}
+
+RCT_EXPORT_METHOD(presentLocalNotification:(NSDictionary *)payload)
+{
+  UILocalNotification *localNotification = [UILocalNotification new];
+  
+  localNotification.alertTitle = @"Foo";
+  localNotification.alertBody = @"Bar";
+  
+  [RCTSharedApplication() presentLocalNotificationNow:localNotification];
 }
 
 @end
