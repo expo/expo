@@ -8,5 +8,6 @@
 
 - (void)registerAPNSToken: (NSData *)token;
 - (void)handleRemoteNotification: (NSDictionary *)notification fromBackground:(BOOL)isFromBackground;
+- (void)handleLocalNotification: (NSDictionary *)notification fromBackground:(BOOL)isFromBackground;
 
 @end

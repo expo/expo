@@ -115,6 +115,12 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
   [[EXRemoteNotificationManager sharedInstance] handleRemoteNotification:notification fromBackground:isFromBackground];
 }
 
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(nonnull UILocalNotification *)notification
+{
+  BOOL isFromBackground = !(application.applicationState == UIApplicationStateActive);
+  [[EXRemoteNotificationManager sharedInstance] handleLocalNotification:notification.userInfo fromBackground:isFromBackground];
+}
+
 #pragma mark - deep linking hooks
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(nullable NSString *)sourceApplication annotation:(id)annotation
