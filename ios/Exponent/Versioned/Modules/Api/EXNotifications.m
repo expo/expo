@@ -50,8 +50,8 @@ RCT_EXPORT_METHOD(presentLocalNotification:(NSDictionary *)payload)
 {
   UILocalNotification *localNotification = [UILocalNotification new];
   
-  localNotification.alertTitle = @"Foo";
-  localNotification.alertBody = @"Bar";
+  localNotification.alertTitle = payload[@"title"];
+  localNotification.alertBody = payload[@"body"];
   
   [RCTSharedApplication() presentLocalNotificationNow:localNotification];
 }
