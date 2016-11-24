@@ -57,6 +57,7 @@ RCT_EXPORT_METHOD(presentLocalNotification:(NSDictionary *)payload
   
   localNotification.alertTitle = payload[@"title"];
   localNotification.alertBody = payload[@"body"];
+  localNotification.fireDate = [RCTConvert NSDate:payload[@"fireDate"]] ?: [NSDate new];
   
   localNotification.userInfo = @{
     @"body": payload[@"data"],
@@ -64,7 +65,7 @@ RCT_EXPORT_METHOD(presentLocalNotification:(NSDictionary *)payload
     @"id": uniqueId,
   };
   
-  [RCTSharedApplication() presentLocalNotificationNow:localNotification];
+  [RCTSharedApplication() scheduleLocalNotification:localNotification];
   
   resolve(uniqueId);
 }
@@ -83,7 +84,14 @@ RCT_EXPORT_METHOD(cancelNotification:(NSString *)uniqueId)
 
 RCT_EXPORT_METHOD(cancelAllNotifications)
 {
-  [RCTSharedApplication() cancelAllLocalNotifications];
+  for (UILocalNotification *notification in [RCTSharedApplication() scheduledLocalNotifications])
+  {
+    if ([notification.userInfo[@"experienceId"] isEqualToString:_experienceId])
+    {
+      [RCTSharedApplication() cancelLocalNotification:notification];
+    }
+  }
+
 }
 
 @end
