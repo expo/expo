@@ -64,7 +64,6 @@ RCT_EXPORT_METHOD(presentLocalNotification:(NSDictionary *)payload
     @"id": uniqueId,
   };
   
-  
   [RCTSharedApplication() presentLocalNotificationNow:localNotification];
   
   resolve(uniqueId);
