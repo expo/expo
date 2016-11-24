@@ -47,19 +47,26 @@ RCT_REMAP_METHOD(getExponentPushTokenAsync,
                                                                }];
 }
 
-RCT_EXPORT_METHOD(presentLocalNotification:(NSDictionary *)payload)
+RCT_EXPORT_METHOD(presentLocalNotification:(NSDictionary *)payload
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(__unused RCTPromiseRejectBlock)reject)
 {
   UILocalNotification *localNotification = [UILocalNotification new];
+  
+  NSString *uniqueId = [[NSUUID new] UUIDString];
   
   localNotification.alertTitle = payload[@"title"];
   localNotification.alertBody = payload[@"body"];
   localNotification.userInfo = @{
     @"body": payload[@"data"],
     @"experienceId": _experienceId,
+    @"id": uniqueId,
   };
   
   
   [RCTSharedApplication() presentLocalNotificationNow:localNotification];
+  
+  resolve(uniqueId);
 }
 
 @end
