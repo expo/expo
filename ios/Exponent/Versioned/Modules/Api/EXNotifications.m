@@ -5,6 +5,22 @@
 #import "RCTUtils.h"
 #import "RCTConvert.h"
 
+@implementation RCTConvert (NSCalendarUnit)
+
+RCT_ENUM_CONVERTER(NSCalendarUnit,
+                   (@{
+                      @"year": @(NSCalendarUnitYear),
+                      @"month": @(NSCalendarUnitMonth),
+                      @"week": @(NSCalendarUnitWeekOfYear),
+                      @"day": @(NSCalendarUnitDay),
+                      @"hour": @(NSCalendarUnitHour),
+                      @"minute": @(NSCalendarUnitMinute)
+                      }),
+                   0,
+                   integerValue);
+
+@end
+
 @interface EXNotifications ()
 
 @property (nonatomic, strong) NSString *experienceId;
@@ -51,24 +67,26 @@ RCT_EXPORT_METHOD(presentLocalNotification:(NSDictionary *)payload
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(__unused RCTPromiseRejectBlock)reject)
 {
-  UILocalNotification *localNotification = [UILocalNotification new];
+  UILocalNotification *notification = [self _localNotificationFromPayload:payload];
+
+  [RCTSharedApplication() presentLocalNotificationNow:notification];
   
-  NSString *uniqueId = [[NSUUID new] UUIDString];
+  resolve(notification.userInfo[@"id"]);
+}
+
+RCT_EXPORT_METHOD(scheduleLocalNotification:(NSDictionary *)payload
+                  withOptions:(NSDictionary *)options
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(__unused RCTPromiseRejectBlock)reject)
+{
+  UILocalNotification *notification = [self _localNotificationFromPayload:payload];
   
-  localNotification.alertTitle = payload[@"title"];
-  localNotification.alertBody = payload[@"body"];
-  localNotification.fireDate = [RCTConvert NSDate:payload[@"fireDate"]] ?: [NSDate new];
-  localNotification.applicationIconBadgeNumber = [RCTConvert NSInteger:payload[@"count"]] ?: 0;
+  notification.fireDate = [RCTConvert NSDate:options[@"time"]] ?: [NSDate new];
+  notification.repeatInterval = [RCTConvert NSCalendarUnit:options[@"repeat"]] ?: 0;
   
-  localNotification.userInfo = @{
-    @"body": payload[@"data"],
-    @"experienceId": _experienceId,
-    @"id": uniqueId,
-  };
+  [RCTSharedApplication() scheduleLocalNotification:notification];
   
-  [RCTSharedApplication() scheduleLocalNotification:localNotification];
-  
-  resolve(uniqueId);
+  resolve(notification.userInfo[@"id"]);
 }
 
 RCT_EXPORT_METHOD(cancelNotification:(NSString *)uniqueId)
@@ -92,6 +110,27 @@ RCT_EXPORT_METHOD(cancelAllNotifications)
       [RCTSharedApplication() cancelLocalNotification:notification];
     }
   }
+}
+
+#pragma mark - internal
+
+- (UILocalNotification *)_localNotificationFromPayload:(NSDictionary *)payload
+{
+  UILocalNotification *localNotification = [UILocalNotification new];
+  
+  NSString *uniqueId = [[NSUUID new] UUIDString];
+  
+  localNotification.alertTitle = payload[@"title"];
+  localNotification.alertBody = payload[@"body"];
+  localNotification.applicationIconBadgeNumber = [RCTConvert NSInteger:payload[@"count"]] ?: 0;
+  
+  localNotification.userInfo = @{
+                                 @"body": payload[@"data"],
+                                 @"experienceId": _experienceId,
+                                 @"id": uniqueId,
+                                 };
+  
+  return localNotification;
 }
 
 @end
