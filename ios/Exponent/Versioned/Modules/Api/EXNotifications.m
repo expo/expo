@@ -81,7 +81,7 @@ RCT_EXPORT_METHOD(scheduleLocalNotification:(NSDictionary *)payload
 {
   UILocalNotification *notification = [self _localNotificationFromPayload:payload];
   
-  notification.fireDate = [RCTConvert NSDate:options[@"fireDate"]] ?: [NSDate new];
+  notification.fireDate = [RCTConvert NSDate:options[@"time"]] ?: [NSDate new];
   notification.repeatInterval = [RCTConvert NSCalendarUnit:options[@"repeat"]] ?: 0;
   
   [RCTSharedApplication() scheduleLocalNotification:notification];
