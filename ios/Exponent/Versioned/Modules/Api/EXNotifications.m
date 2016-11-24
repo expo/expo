@@ -91,7 +91,6 @@ RCT_EXPORT_METHOD(cancelAllNotifications)
       [RCTSharedApplication() cancelLocalNotification:notification];
     }
   }
-
 }
 
 @end
