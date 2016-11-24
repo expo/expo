@@ -57,6 +57,7 @@ RCT_EXPORT_METHOD(presentLocalNotification:(NSDictionary *)payload
   
   localNotification.alertTitle = payload[@"title"];
   localNotification.alertBody = payload[@"body"];
+  
   localNotification.userInfo = @{
     @"body": payload[@"data"],
     @"experienceId": _experienceId,

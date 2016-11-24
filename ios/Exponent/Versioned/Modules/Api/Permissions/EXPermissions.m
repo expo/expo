@@ -3,6 +3,7 @@
 #import "EXPermissions.h"
 #import "EXLocationRequester.h"
 #import "EXRemoteNotificationRequester.h"
+#import "EXLocalNotificationRequester.h"
 #import "EXAVPermissionRequester.h"
 
 NSString * const EXPermissionExpiresNever = @"never";
@@ -32,6 +33,8 @@ RCT_REMAP_METHOD(getAsync,
 {
   if ([type isEqualToString:@"remoteNotifications"]) {
     resolve([EXRemoteNotificationRequester permissions]);
+  } else if ([type isEqualToString:@"localNotifications"]) {
+    resolve([EXLocalNotificationRequester permissions]);
   } else if ([type isEqualToString:@"location"]) {
     resolve([EXLocationRequester permissions]);
   } else if ([type isEqualToString:@"camera"]) {
@@ -54,6 +57,8 @@ RCT_REMAP_METHOD(askAsync,
       NSObject<EXPermissionRequester> *requester;
       if ([type isEqualToString:@"remoteNotifications"]) {
         requester = [[EXRemoteNotificationRequester alloc] init];
+      } else if ([type isEqualToString:@"localNotifications"]) {
+        requester = [[EXLocalNotificationRequester alloc] init];
       } else if ([type isEqualToString:@"location"]) {
         requester = [[EXLocationRequester alloc] init];
       } else if ([type isEqualToString:@"camera"]) {
