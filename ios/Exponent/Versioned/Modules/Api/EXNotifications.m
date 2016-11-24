@@ -5,6 +5,22 @@
 #import "RCTUtils.h"
 #import "RCTConvert.h"
 
+@implementation RCTConvert (NSCalendarUnit)
+
+RCT_ENUM_CONVERTER(NSCalendarUnit,
+                   (@{
+                      @"year": @(NSCalendarUnitYear),
+                      @"month": @(NSCalendarUnitMonth),
+                      @"week": @(NSCalendarUnitWeekOfYear),
+                      @"day": @(NSCalendarUnitDay),
+                      @"hour": @(NSCalendarUnitHour),
+                      @"minute": @(NSCalendarUnitMinute)
+                      }),
+                   0,
+                   integerValue);
+
+@end
+
 @interface EXNotifications ()
 
 @property (nonatomic, strong) NSString *experienceId;
@@ -66,6 +82,7 @@ RCT_EXPORT_METHOD(scheduleLocalNotification:(NSDictionary *)payload
   UILocalNotification *notification = [self _localNotificationFromPayload:payload];
   
   notification.fireDate = [RCTConvert NSDate:options[@"fireDate"]] ?: [NSDate new];
+  notification.repeatInterval = [RCTConvert NSCalendarUnit:options[@"repeat"]] ?: 0;
   
   [RCTSharedApplication() scheduleLocalNotification:notification];
   
@@ -95,7 +112,7 @@ RCT_EXPORT_METHOD(cancelAllNotifications)
   }
 }
 
-#pragma - internal
+#pragma mark - internal
 
 - (UILocalNotification *)_localNotificationFromPayload:(NSDictionary *)payload
 {
