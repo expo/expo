@@ -3,6 +3,7 @@
 #import "EXNotifications.h"
 #import "EXUnversioned.h"
 #import "RCTUtils.h"
+#import "RCTConvert.h"
 
 @interface EXNotifications ()
 
@@ -52,6 +53,11 @@ RCT_EXPORT_METHOD(presentLocalNotification:(NSDictionary *)payload)
   
   localNotification.alertTitle = payload[@"title"];
   localNotification.alertBody = payload[@"body"];
+  localNotification.userInfo = @{
+    @"body": payload[@"data"],
+    @"experienceId": _experienceId,
+  };
+  
   
   [RCTSharedApplication() presentLocalNotificationNow:localNotification];
 }
