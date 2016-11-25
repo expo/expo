@@ -27,6 +27,8 @@ public class KernelConstants {
   public static final String NOTIFICATION_OBJECT_KEY = "notification_object";
   public static final String DEV_FLAG = "dev_flag";
 
+  public static String MAIN_ACTIVITY_NAME = "host.exp.exponentview.ExponentActivity";
+
   public static class ExperienceOptions {
     public final String manifestUri;
     public final String uri;

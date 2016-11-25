@@ -34,7 +34,6 @@ import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.ColorParser;
-import host.exp.exponentview.Exponent;
 import host.exp.exponentview.R;
 
 public class NotificationsModule extends ReactContextBaseJavaModule {
@@ -157,22 +156,20 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
       builder.setVibrate(pattern);
     }
 
-    Activity currentActivity = Exponent.getInstance().getCurrentActivity();
-
-    if (currentActivity == null) {
-      promise.reject(NO_ACTIVITY_ERROR, "Activity not found");
-      return;
-    }
-
     Intent intent;
 
     if (details.hasKey("link")) {
       intent = new Intent(Intent.ACTION_VIEW, Uri.parse(details.getString("link")));
     } else {
-      Class activityClass = currentActivity.getClass();
-      String manifestUrl = (String) mExperienceProperties.get(KernelConstants.MANIFEST_URL_KEY);
-      intent = new Intent(getReactApplicationContext(), activityClass);
-      intent.putExtra(KernelConstants.MANIFEST_URL_KEY, manifestUrl);
+      try {
+        Class activityClass = Class.forName(KernelConstants.MAIN_ACTIVITY_NAME);
+        String manifestUrl = (String) mExperienceProperties.get(KernelConstants.MANIFEST_URL_KEY);
+        intent = new Intent(getReactApplicationContext(), activityClass);
+        intent.putExtra(KernelConstants.MANIFEST_URL_KEY, manifestUrl);
+      } catch (ClassNotFoundException e) {
+        promise.reject(e);
+        return;
+      }
     }
 
     PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
