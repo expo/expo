@@ -6,7 +6,6 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -33,9 +32,8 @@ import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.storage.ExponentSharedPreferences;
-import host.exp.exponent.utils.ColorParser;
-
 import host.exp.exponentview.R;
+import versioned.host.exp.exponent.modules.api.notifications.NotificationsHelper;
 
 public class ExponentGcmListenerService extends GcmListenerService {
 
@@ -116,13 +114,7 @@ public class ExponentGcmListenerService extends GcmListenerService {
 
     final JSONObject notificationPreferences = manifest.optJSONObject(ExponentManifest.MANIFEST_NOTIFICATION_INFO_KEY);
 
-    // Icon
-    String iconUrl = manifest.optString(ExponentManifest.MANIFEST_ICON_URL_KEY);
-    if (notificationPreferences != null) {
-      iconUrl = notificationPreferences.optString(ExponentManifest.MANIFEST_NOTIFICATION_ICON_URL_KEY, null);
-    }
-
-    mExponentManifest.loadIconBitmap(iconUrl, new ExponentManifest.BitmapListener() {
+    NotificationsHelper.loadIcon(null, manifest, mExponentManifest, new ExponentManifest.BitmapListener() {
       @Override
       public void onLoadBitmap(Bitmap bitmap) {
         Mode mode = Mode.DEFAULT;
@@ -151,15 +143,7 @@ public class ExponentGcmListenerService extends GcmListenerService {
           }
         }
 
-        // Color
-        int color;
-        String colorString = notificationPreferences == null ? null :
-            notificationPreferences.optString(ExponentManifest.MANIFEST_NOTIFICATION_COLOR_KEY);
-        if (colorString != null && ColorParser.isValid(colorString)) {
-          color = Color.parseColor(colorString);
-        } else {
-          color = mExponentManifest.getColorFromManifest(manifest);
-        }
+        int color = NotificationsHelper.getColor(null, manifest, mExponentManifest);
 
         // Create notification object
         boolean isMultiple = mode == Mode.COLLAPSE && unreadNotifications.length() > 1;

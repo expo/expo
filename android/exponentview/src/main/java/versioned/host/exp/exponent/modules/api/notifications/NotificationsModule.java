@@ -1,12 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-package versioned.host.exp.exponent.modules.api;
+package versioned.host.exp.exponent.modules.api.notifications;
 
-import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -33,7 +31,6 @@ import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.storage.ExponentSharedPreferences;
-import host.exp.exponent.utils.ColorParser;
 import host.exp.exponentview.R;
 
 public class NotificationsModule extends ReactContextBaseJavaModule {
@@ -43,8 +40,6 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
 
   @Inject
   ExponentManifest mExponentManifest;
-
-  private final static String NO_ACTIVITY_ERROR = "NO_ACTIVITY_ERROR";
 
   private final JSONObject mManifest;
   private final Map<String, Object> mExperienceProperties;
@@ -175,52 +170,26 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
     builder.setContentIntent(contentIntent);
 
-
-    JSONObject notificationPreferences = mManifest.optJSONObject(ExponentManifest.MANIFEST_NOTIFICATION_INFO_KEY);
-
-    String colorString;
-
-    if (details.hasKey("color")) {
-      colorString = details.getString("color");
-      if (colorString.length() < 1) {
-        colorString = null;
-      }
-    } else {
-      colorString = notificationPreferences == null ? null :
-              notificationPreferences.optString(ExponentManifest.MANIFEST_NOTIFICATION_COLOR_KEY);
-    }
-
-    int color;
-
-    if (colorString != null && ColorParser.isValid(colorString)) {
-      color = Color.parseColor(colorString);
-    } else {
-      color = mExponentManifest.getColorFromManifest(mManifest);
-    }
+    int color = NotificationsHelper.getColor(
+            details.hasKey("color") ? details.getString("color") : null,
+            mManifest,
+            mExponentManifest);
 
     builder.setColor(color);
 
-    String iconUrl;
-
-    if (details.hasKey("icon")) {
-      iconUrl = details.getString("icon");
-    } else {
-      iconUrl = mManifest.optString(ExponentManifest.MANIFEST_ICON_URL_KEY);
-      if (notificationPreferences != null) {
-        iconUrl = notificationPreferences.optString(ExponentManifest.MANIFEST_NOTIFICATION_ICON_URL_KEY, null);
-      }
-    }
-
-    mExponentManifest.loadIconBitmap(iconUrl, new ExponentManifest.BitmapListener() {
-      @Override
-      public void onLoadBitmap(Bitmap bitmap) {
-        builder.setLargeIcon(bitmap);
-
-        int notificationId = new Random().nextInt();
-        getNotificationManager().notify(null, notificationId, builder.build());
-        promise.resolve(notificationId);
-      }
-    });
+    NotificationsHelper.loadIcon(
+            details.hasKey("icon") ? details.getString("icon") : null,
+            mManifest,
+            mExponentManifest,
+            new ExponentManifest.BitmapListener() {
+              @Override
+              public void onLoadBitmap(Bitmap bitmap) {
+                builder.setLargeIcon(bitmap);
+                int notificationId = new Random().nextInt();
+                getNotificationManager().notify(null, notificationId, builder.build());
+                promise.resolve(notificationId);
+              }
+            });
   }
 
   @ReactMethod
