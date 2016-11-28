@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -180,7 +179,8 @@ public class NotificationsHelper {
                                 @Override
                                 public void onLoadBitmap(Bitmap bitmap) {
                                     builder.setLargeIcon(bitmap);
-                                    NotificationManagerCompat.from(context).notify(experienceId, id, builder.build());
+                                    NotificationsManager manager = new NotificationsManager(context);
+                                    manager.notify(experienceId, id, builder.build());
                                     listener.onSuccess(id);
                                 }
                             });

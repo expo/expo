@@ -7,7 +7,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
-import android.support.v4.app.NotificationManagerCompat;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -145,11 +144,27 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void cancelNotification(final int notificationId) {
-    getNotificationManager().cancel(notificationId);
+  public void cancelNotification(final int notificationId, Promise promise) {
+    try {
+      NotificationsManager manager = new NotificationsManager(getReactApplicationContext());
+      manager.cancel(
+              mManifest.getString(ExponentManifest.MANIFEST_ID_KEY),
+              notificationId
+      );
+      promise.resolve(true);
+    } catch (JSONException e) {
+      promise.reject(e);
+    }
   }
 
-  private NotificationManagerCompat getNotificationManager() {
-    return NotificationManagerCompat.from(getReactApplicationContext());
+  @ReactMethod
+  public void cancelAllNotifications(Promise promise) {
+    try {
+      NotificationsManager manager = new NotificationsManager(getReactApplicationContext());
+      manager.cancelAll(mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
+      promise.resolve(true);
+    } catch (JSONException e) {
+      promise.reject(e);
+    }
   }
 }

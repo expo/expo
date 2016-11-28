@@ -55,6 +55,7 @@ public class ExponentSharedPreferences {
   public static final String EXPERIENCE_METADATA_PREFIX = "experience_metadata_";
   public static final String EXPERIENCE_METADATA_LAST_ERRORS = "lastErrors";
   public static final String EXPERIENCE_METADATA_UNREAD_NOTIFICATIONS = "unreadNotifications";
+  public static final String EXPERIENCE_METADATA_ALL_NOTIFICATION_IDS = "allNotificationIds";
 
   private static final Map<String, Boolean> DEFAULT_VALUES = new HashMap<>();
 

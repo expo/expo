@@ -34,6 +34,7 @@ import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponentview.R;
 import versioned.host.exp.exponent.modules.api.notifications.NotificationsHelper;
+import versioned.host.exp.exponent.modules.api.notifications.NotificationsManager;
 
 public class ExponentGcmListenerService extends GcmListenerService {
 
@@ -208,8 +209,8 @@ public class ExponentGcmListenerService extends GcmListenerService {
         }
 
         // Display
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(ExponentGcmListenerService.this);
-        notificationManager.notify(experienceId, notificationId, notification);
+        NotificationsManager manager = new NotificationsManager(ExponentGcmListenerService.this);
+        manager.notify(experienceId, notificationId, notification);
 
         // Send event. Will be consumed if experience is already open.
         EventBus.getDefault().post(notificationEvent);
