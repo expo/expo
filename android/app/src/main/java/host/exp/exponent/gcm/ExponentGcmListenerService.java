@@ -209,7 +209,7 @@ public class ExponentGcmListenerService extends GcmListenerService {
 
         // Display
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(ExponentGcmListenerService.this);
-        notificationManager.notify(notificationId, notification);
+        notificationManager.notify(experienceId, notificationId, notification);
 
         // Send event. Will be consumed if experience is already open.
         EventBus.getDefault().post(notificationEvent);

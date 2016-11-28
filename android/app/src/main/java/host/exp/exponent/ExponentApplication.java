@@ -41,6 +41,7 @@ public class ExponentApplication extends MultiDexApplication {
     super.onCreate();
 
     KernelConstants.MAIN_ACTIVITY_NAME = "host.exp.exponent.LauncherActivity";
+    KernelConstants.SCHEDULED_NOTIFICATION_RECEIVER_NAME = "host.exp.exponent.notifications.ScheduledNotificationReceiver";
 
     if (host.exp.exponentview.BuildConfig.DEBUG && Constants.WAIT_FOR_DEBUGGER) {
       Debug.waitForDebugger();

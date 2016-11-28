@@ -2,11 +2,11 @@
 
 package versioned.host.exp.exponent.modules.api.notifications;
 
+import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.support.v4.app.NotificationCompat;
+import android.os.SystemClock;
 import android.support.v4.app.NotificationManagerCompat;
 
 import com.facebook.react.bridge.Arguments;
@@ -14,13 +14,14 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.WritableMap;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
@@ -31,7 +32,6 @@ import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.storage.ExponentSharedPreferences;
-import host.exp.exponentview.R;
 
 public class NotificationsModule extends ReactContextBaseJavaModule {
 
@@ -42,14 +42,12 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   ExponentManifest mExponentManifest;
 
   private final JSONObject mManifest;
-  private final Map<String, Object> mExperienceProperties;
 
   public NotificationsModule(ReactApplicationContext reactContext,
                              JSONObject manifest, Map<String, Object> experienceProperties) {
     super(reactContext);
     NativeModuleDepsProvider.getInstance().inject(NotificationsModule.class, this);
     mManifest = manifest;
-    mExperienceProperties = experienceProperties;
   }
 
   @Override
@@ -90,106 +88,60 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void presentLocalNotification(final ReadableMap details, final Promise promise) {
-    ReactApplicationContext context = getReactApplicationContext();
-    final NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+  public void presentLocalNotification(final ReadableMap data, final Promise promise) {
+    HashMap<String, java.io.Serializable> details = new HashMap<>();
 
-    builder.setSmallIcon(R.drawable.shell_notification_icon);
-    builder.setAutoCancel(true);
+    details.put("data", ((ReadableNativeMap) data).toHashMap());
 
-    if (!(details.hasKey("silent") && details.getBoolean("silent"))) {
-      builder.setDefaults(NotificationCompat.DEFAULT_SOUND);
+    try {
+      details.put("experienceId", mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
+    } catch (Exception e) {
+      promise.reject("Requires Experience Id");
+      return;
     }
 
-    if (details.hasKey("title")) {
-      String title = details.getString("title");
-      builder.setContentTitle(title);
-      builder.setTicker(title);
-    }
+    int notificationId = new Random().nextInt();
 
-    if (details.hasKey("body")) {
-      builder.setContentText(details.getString("body"));
-    }
-
-    if (details.hasKey("count")) {
-      builder.setNumber(details.getInt("count"));
-    }
-
-    if (details.hasKey("sticky")) {
-      builder.setOngoing(details.getBoolean("sticky"));
-    }
-
-    if (details.hasKey("priority")) {
-      int priority;
-
-      switch (details.getString("priority")) {
-        case "max":
-          priority = NotificationCompat.PRIORITY_MAX;
-          break;
-        case "high":
-          priority = NotificationCompat.PRIORITY_HIGH;
-          break;
-        case "low":
-          priority = NotificationCompat.PRIORITY_LOW;
-          break;
-        case "min":
-          priority = NotificationCompat.PRIORITY_MIN;
-          break;
-        default:
-          priority = NotificationCompat.PRIORITY_DEFAULT;
-      }
-
-      builder.setPriority(priority);
-    }
-
-    if (details.hasKey("vibrate")) {
-      ReadableArray vibrate = details.getArray("vibrate");
-      long[] pattern = new long[vibrate.size()];
-      for (int i = 0; i < vibrate.size(); i++) {
-        pattern[i] = vibrate.getInt(i);
-      }
-      builder.setVibrate(pattern);
-    }
-
-    Intent intent;
-
-    if (details.hasKey("link")) {
-      intent = new Intent(Intent.ACTION_VIEW, Uri.parse(details.getString("link")));
-    } else {
-      try {
-        Class activityClass = Class.forName(KernelConstants.MAIN_ACTIVITY_NAME);
-        String manifestUrl = (String) mExperienceProperties.get(KernelConstants.MANIFEST_URL_KEY);
-        intent = new Intent(getReactApplicationContext(), activityClass);
-        intent.putExtra(KernelConstants.MANIFEST_URL_KEY, manifestUrl);
-      } catch (ClassNotFoundException e) {
-        promise.reject(e);
-        return;
-      }
-    }
-
-    PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
-    builder.setContentIntent(contentIntent);
-
-    int color = NotificationsHelper.getColor(
-            details.hasKey("color") ? details.getString("color") : null,
-            mManifest,
-            mExponentManifest);
-
-    builder.setColor(color);
-
-    NotificationsHelper.loadIcon(
-            details.hasKey("icon") ? details.getString("icon") : null,
-            mManifest,
+    NotificationsHelper.showNotification(
+            getReactApplicationContext(),
+            notificationId,
+            details,
             mExponentManifest,
-            new ExponentManifest.BitmapListener() {
-              @Override
-              public void onLoadBitmap(Bitmap bitmap) {
-                builder.setLargeIcon(bitmap);
-                int notificationId = new Random().nextInt();
-                getNotificationManager().notify(null, notificationId, builder.build());
-                promise.resolve(notificationId);
+            new NotificationsHelper.Listener() {
+              public void onSuccess(int id) {
+                promise.resolve(id);
+              }
+
+              public void onFailure(Exception e) {
+                promise.reject(e);
               }
             });
+  }
+
+  @ReactMethod
+  public void scheduleLocalNotification(final ReadableMap details, int delay, Promise promise) {
+    int notificationId = new Random().nextInt();
+    Context context = getReactApplicationContext();
+
+    Class receiverClass;
+
+    try {
+      receiverClass = Class.forName(KernelConstants.SCHEDULED_NOTIFICATION_RECEIVER_NAME);
+    } catch (ClassNotFoundException e) {
+      promise.reject(e);
+      return;
+    }
+
+    Intent notificationIntent = new Intent(context, receiverClass);
+
+    notificationIntent.putExtra(KernelConstants.NOTIFICATION_ID_KEY, notificationId);
+    notificationIntent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, ((ReadableNativeMap) details).toHashMap());
+    PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+    long futureInMillis = SystemClock.elapsedRealtime() + delay;
+    AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+    alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
+    promise.resolve(notificationId);
   }
 
   @ReactMethod
