@@ -113,7 +113,7 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
           CFStringRef emailLabelRef = ABMultiValueCopyLabelAtIndex(emails, index);
           NSString *emailLabel = (__bridge_transfer NSString *)(ABAddressBookCopyLocalizedLabel(emailLabelRef));
           
-          [contact[@"phoneNumbers"] addObject:@{ @"email": emailAddress, @"label": emailLabel }];
+          [contact[@"emails"] addObject:@{ @"email": emailAddress, @"label": emailLabel }];
           
           CFRelease(emailLabelRef);
         }
