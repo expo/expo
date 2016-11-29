@@ -91,10 +91,8 @@ RCT_EXPORT_METHOD(scheduleLocalNotification:(NSDictionary *)payload
 
 RCT_EXPORT_METHOD(cancelScheduledNotification:(NSString *)uniqueId)
 {
-  for (UILocalNotification *notification in [RCTSharedApplication() scheduledLocalNotifications])
-  {
-    if ([notification.userInfo[@"id"] isEqualToString:uniqueId])
-    {
+  for (UILocalNotification *notification in [RCTSharedApplication() scheduledLocalNotifications]) {
+    if ([notification.userInfo[@"id"] isEqualToString:uniqueId]) {
       [RCTSharedApplication() cancelLocalNotification:notification];
       break;
     }
@@ -103,10 +101,8 @@ RCT_EXPORT_METHOD(cancelScheduledNotification:(NSString *)uniqueId)
 
 RCT_EXPORT_METHOD(cancelAllScheduledNotifications)
 {
-  for (UILocalNotification *notification in [RCTSharedApplication() scheduledLocalNotifications])
-  {
-    if ([notification.userInfo[@"experienceId"] isEqualToString:_experienceId])
-    {
+  for (UILocalNotification *notification in [RCTSharedApplication() scheduledLocalNotifications]) {
+    if ([notification.userInfo[@"experienceId"] isEqualToString:_experienceId]) {
       [RCTSharedApplication() cancelLocalNotification:notification];
     }
   }

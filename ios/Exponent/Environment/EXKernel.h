@@ -24,7 +24,10 @@ FOUNDATION_EXPORT NSString *kEXKernelBundleResourceName;
                    body: (NSDictionary *)eventBody
               onSuccess: (void (^_Nullable)(NSDictionary * _Nullable ))success
               onFailure: (void (^_Nullable)(NSString * _Nullable ))failure;
-- (void)sendNotification: (NSDictionary *)notifBody toExperienceWithId: (NSString *)experienceId fromBackground:(BOOL)isFromBackground;
+- (void)sendNotification: (NSDictionary *)notifBody
+      toExperienceWithId: (NSString *)experienceId
+          fromBackground: (BOOL)isFromBackground
+                isRemote: (BOOL)isRemote;
 
 - (void)registerRootExponentViewController: (EXViewController *)exponentViewController;
 - (EXViewController *)rootViewController;

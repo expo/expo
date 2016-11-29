@@ -25,7 +25,10 @@
     NSDictionary *body = [payload objectForKey:@"body"];
     NSString *experienceId = [payload objectForKey:@"experienceId"];
     if (body && experienceId) {
-      [[EXKernel sharedInstance] sendNotification:body toExperienceWithId:experienceId fromBackground:isFromBackground];
+      [[EXKernel sharedInstance] sendNotification:body
+                               toExperienceWithId:experienceId
+                                   fromBackground:isFromBackground
+                                         isRemote:NO];
     }
   }
 }
