@@ -29,7 +29,7 @@
   };
 }
 
-- (void)requestPermissionsWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(__unused RCTPromiseRejectBlock)reject
+- (void)requestPermissionsWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject
 {
   resolve = _resolve;
   reject = _reject;
