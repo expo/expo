@@ -14,7 +14,7 @@ these approaches.
 @exponent/vector-icons
 ======================
 
-This library is installed by default on the template project that you create through XDE. It includes eight icon sets,
+This library is installed by default on the template project that you create through XDE. (If you're adding it to an existing project, you'll need to follow the special instructions in `Existing Projects <#for-existing-projects>`_ below). It includes eight icon sets,
 you can browse all of the icons using the `@exponent/vector-icons directory <https://exponentjs.github.io/vector-icons/>`_.
 
 .. image:: img/vector-icons-directory.png
@@ -46,6 +46,20 @@ only difference is ``@exponent/vector-icons`` uses a more idiomatic ``import`` s
 
 .. epigraph::
   **Note:** As with :ref:`any custom font <using-custom-fonts>` in Exponent, you may want to preload icon fonts before rendering your app. The font object is available as a static property on the font component, so in the case above it is ``Ionicons.font``, which evaluates to ``{ionicons: require('path/to/ionicons.ttf')}``. :ref:`Read more about preloading assets <all-about-assets>`.
+
+.. _for-existing-projects:
+
+Existing Projects
+=================
+
+``@exponent/vector-icons`` uses .ttf fonts as assets. When you add this library to an existing Experience, you'll need to make sure the following package option appears in your `exp.json`:
+
+.. code-block:: javascript
+
+  // exp.json
+  "packagerOpts": {
+    "assetExts": ["ttf"]
+  }
 
 Custom Icon Fonts
 =================
