@@ -63,10 +63,9 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
   NSMutableArray *response = [[NSMutableArray alloc] init];
   
   for (NSUInteger index = 0; index < numberOfPeople; index++) {
-    NSMutableDictionary *contact = [NSMutableDictionary dictionary];
-    
     ABRecordRef person = CFArrayGetValueAtIndex(allPeople, index);
     
+    NSMutableDictionary *contact = [NSMutableDictionary dictionary];
     contact[@"id"] = @(ABRecordGetRecordID(person));
     contact[@"firstName"] = (__bridge_transfer NSString *)(ABRecordCopyValue(person, kABPersonFirstNameProperty));
     contact[@"lastName"] = (__bridge_transfer NSString *)(ABRecordCopyValue(person, kABPersonLastNameProperty));
