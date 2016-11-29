@@ -1050,8 +1050,12 @@ private:
   }
 
   _WRAP_METHOD(useProgram, 1) {
-    EXJS_UNPACK_ARGV(Future fProgram);
-    addToNextBatch([=] { glUseProgram(peekFuture(fProgram)); });
+    if (JSValueIsNull(jsCtx, jsArgv[0])) {
+      addToNextBatch(std::bind(glUseProgram, 0));
+    } else {
+      EXJS_UNPACK_ARGV(Future fProgram);
+      addToNextBatch([=] { glUseProgram(peekFuture(fProgram)); });
+    }
     return nullptr;
   }
 
