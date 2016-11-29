@@ -1,9 +1,10 @@
-package versioned.host.exp.exponent.modules.api.notifications;
+package host.exp.exponent.notifications;
 
 import android.app.Notification;
 import android.content.Context;
 import android.support.v4.app.NotificationManagerCompat;
 
+import host.exp.exponent.di.NativeModuleDepsProvider;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,11 +18,11 @@ public class NotificationsManager {
     @Inject
     ExponentSharedPreferences mExponentSharedPreferences;
 
-    private static final String NOTIFICATIONS_PREFERENCES = "status_bar_notifications";
     private Context mContext;
 
     public NotificationsManager(Context context) {
         mContext = context;
+        NativeModuleDepsProvider.getInstance().inject(NotificationsManager.class, this);
     }
 
     public void notify(String experienceId, int id, Notification notification) {

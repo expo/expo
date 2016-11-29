@@ -33,8 +33,8 @@ import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponentview.R;
-import versioned.host.exp.exponent.modules.api.notifications.NotificationsHelper;
-import versioned.host.exp.exponent.modules.api.notifications.NotificationsManager;
+import host.exp.exponent.notifications.NotificationsHelper;
+import host.exp.exponent.notifications.NotificationsManager;
 
 public class ExponentGcmListenerService extends GcmListenerService {
 

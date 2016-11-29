@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-package versioned.host.exp.exponent.modules.api.notifications;
+package versioned.host.exp.exponent.modules.api;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -17,6 +17,8 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.WritableMap;
 
+import host.exp.exponent.notifications.NotificationsHelper;
+import host.exp.exponent.notifications.NotificationsManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -118,7 +120,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void scheduleLocalNotification(final ReadableMap details, int delay, Promise promise) {
+  public void scheduleLocalNotification(final ReadableMap data, int delay, Promise promise) {
     int notificationId = new Random().nextInt();
     Context context = getReactApplicationContext();
 
@@ -131,10 +133,21 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
       return;
     }
 
+    HashMap<String, java.io.Serializable> details = new HashMap<>();
+
+    details.put("data", ((ReadableNativeMap) data).toHashMap());
+
+    try {
+      details.put("experienceId", mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
+    } catch (Exception e) {
+      promise.reject("Requires Experience Id");
+      return;
+    }
+
     Intent notificationIntent = new Intent(context, receiverClass);
 
     notificationIntent.putExtra(KernelConstants.NOTIFICATION_ID_KEY, notificationId);
-    notificationIntent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, ((ReadableNativeMap) details).toHashMap());
+    notificationIntent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, details);
     PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
     long futureInMillis = SystemClock.elapsedRealtime() + delay;
