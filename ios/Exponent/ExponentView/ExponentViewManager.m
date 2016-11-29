@@ -14,6 +14,7 @@
 #import <GoogleSignIn/GoogleSignIn.h>
 
 NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDidRegisterForRemoteNotificationsNotification";
+NSString * const EXAppDidRegisterUserNotificationSettings = @"ExAppDidRegisterUserNotificationSettings";
 
 @interface ExponentViewManager ()
 {
@@ -125,6 +126,11 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
 {
   BOOL isFromBackground = !(application.applicationState == UIApplicationStateActive);
   [[EXLocalNotificationManager sharedInstance] handleLocalNotification:notification fromBackground:isFromBackground];
+}
+
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:EXAppDidRegisterUserNotificationSettings object:notificationSettings];
 }
 
 #pragma mark - deep linking hooks
