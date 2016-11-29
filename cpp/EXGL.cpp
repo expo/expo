@@ -954,7 +954,34 @@ private:
     return nullptr;
   }
 
-  _WRAP_METHOD_UNIMPL(getAttachedShaders)
+  _WRAP_METHOD(getAttachedShaders, 1) {
+    EXJS_UNPACK_ARGV(Future fProgram);
+
+    GLint count;
+    std::vector<GLuint> glResults;
+    addBlockingToNextBatch([&] {
+      GLuint program = peekFuture(fProgram);
+      glGetProgramiv(program, GL_ATTACHED_SHADERS, &count);
+      glResults.resize(count);
+      glGetAttachedShaders(program, count, NULL, glResults.data());
+    });
+
+    JSValueRef jsResults[count];
+    for (auto i = 0; i < count; ++i) {
+      Future future = 0;
+      for (const auto &pair : futures) {
+        if (pair.second == glResults[i]) {
+          future = pair.first;
+        }
+      }
+      if (future == 0) {
+        throw new std::runtime_error("EXGL: Internal error: couldn't find Future "
+                                     "associated with shader in getAttachedShaders()!");
+      }
+      jsResults[i] = JSValueMakeNumber(jsCtx, future);
+    }
+    return JSObjectMakeArray(jsCtx, count, jsResults, NULL);
+  }
 
   _WRAP_METHOD(getProgramParameter, 2) {
     EXJS_UNPACK_ARGV(Future fProgram, GLenum pname);
