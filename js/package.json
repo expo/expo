@@ -14,6 +14,7 @@
     "xcodeProjectDirectory": ".."
   },
   "dependencies": {
+    "@exponent/react-native-fade-in-image": "^1.0.0",
     "@exponent/react-native-navigator": "^0.4.9",
     "@exponent/react-native-responsive-image": "^1.0.0",
     "@exponent/react-native-touchable-native-feedback-safe": "^1.0.0",

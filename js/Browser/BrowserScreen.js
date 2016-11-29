@@ -16,6 +16,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import FadeIn from '@exponent/react-native-fade-in-image';
 
 import autobind from 'autobind-decorator';
 import BrowserActions from 'BrowserActions';
@@ -168,18 +169,36 @@ class BrowserScreen extends React.Component {
     );
   }
 
-  _renderLoadingIndicator() {
+  _getLoadingBackgroundColor() {
     let { task } = this.props;
     let { manifest } = task;
 
     let loadingBackgroundColor = 'white';
-    let loadingIndicatorStyle = 'default';
     if (manifest && manifest.getIn(['loading', 'backgroundColor'])) {
       loadingBackgroundColor = manifest.getIn(['loading', 'backgroundColor']);
     }
+
+    return loadingBackgroundColor;
+  }
+
+  _getLoadingIndicatorStyle() {
+    let { task } = this.props;
+    let { manifest } = task;
+
+    let loadingIndicatorStyle = 'default';
     if (manifest && manifest.getIn(['loading', 'loadingIndicatorStyleExperimental'])) {
       loadingIndicatorStyle = manifest.getIn(['loading', 'loadingIndicatorStyleExperimental']);
     }
+
+    return loadingIndicatorStyle;
+  }
+
+  _renderLoadingIndicator() {
+    let { task } = this.props;
+    let { manifest } = task;
+
+    let loadingBackgroundColor = this._getLoadingBackgroundColor();
+    let loadingIndicatorStyle = this._getLoadingIndicatorStyle();
     let loadingIcon = this._renderManifestLoadingIcon();
     let loadingBackgroundImage = this._renderManifestLoadingBackgroundImage();
 
@@ -203,13 +222,24 @@ class BrowserScreen extends React.Component {
     if (task) {
       let { manifest } = task;
       let iconUrl = manifest.getIn(['loading', 'iconUrl']);
+      let loadingBackgroundColor = this._getLoadingBackgroundColor();
+      let backgroundImageUrl = manifest.getIn(['loading', 'backgroundImageUrl']);
+
+      let placeholderBackgroundColor = loadingBackgroundColor;
+      if (backgroundImageUrl) {
+        placeholderBackgroundColor = 'transparent';
+      }
+
       if (manifest && iconUrl) {
         return (
-          <Image
-            source={{uri: iconUrl}}
-            resizeMode="center"
-            style={{width: 200, height: 200, marginVertical: 16}}
-          />
+          <FadeIn
+            placeholderStyle={{backgroundColor: placeholderBackgroundColor}}>
+            <Image
+              source={{uri: iconUrl}}
+              resizeMode="center"
+              style={{width: 200, height: 200, marginVertical: 16}}
+            />
+          </FadeIn>
         );
       }
     }
