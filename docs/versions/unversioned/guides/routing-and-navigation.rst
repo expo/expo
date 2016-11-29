@@ -133,7 +133,7 @@ main.js
 In Exponent apps, this file is typically where you will register the root
 component of your app. At the root, you typically include any higher order
 ``Provider`` components, such as the ``react-redux`` ``Provider``, and the
-ExNavigation ``NavigationProvider``. As you can see in the baove example, we
+ExNavigation ``NavigationProvider``. As you can see in the above example, we
 usually also render our root ``StackNavigation`` component at the root. Most
 apps are composed of many nested stacks, which we will see here.
 
