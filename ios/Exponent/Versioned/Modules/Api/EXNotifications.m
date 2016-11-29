@@ -70,7 +70,7 @@ RCT_EXPORT_METHOD(presentLocalNotification:(NSDictionary *)payload
   UILocalNotification *notification = [self _localNotificationFromPayload:payload];
 
   [RCTSharedApplication() presentLocalNotificationNow:notification];
-  
+
   resolve(notification.userInfo[@"id"]);
 }
 
@@ -80,16 +80,16 @@ RCT_EXPORT_METHOD(scheduleLocalNotification:(NSDictionary *)payload
                   rejecter:(__unused RCTPromiseRejectBlock)reject)
 {
   UILocalNotification *notification = [self _localNotificationFromPayload:payload];
-  
+
   notification.fireDate = [RCTConvert NSDate:options[@"time"]] ?: [NSDate new];
   notification.repeatInterval = [RCTConvert NSCalendarUnit:options[@"repeat"]] ?: 0;
-  
+
   [RCTSharedApplication() scheduleLocalNotification:notification];
-  
+
   resolve(notification.userInfo[@"id"]);
 }
 
-RCT_EXPORT_METHOD(cancelNotification:(NSString *)uniqueId)
+RCT_EXPORT_METHOD(cancelScheduledNotification:(NSString *)uniqueId)
 {
   for (UILocalNotification *notification in [RCTSharedApplication() scheduledLocalNotifications])
   {
@@ -101,7 +101,7 @@ RCT_EXPORT_METHOD(cancelNotification:(NSString *)uniqueId)
   }
 }
 
-RCT_EXPORT_METHOD(cancelAllNotifications)
+RCT_EXPORT_METHOD(cancelAllScheduledNotifications)
 {
   for (UILocalNotification *notification in [RCTSharedApplication() scheduledLocalNotifications])
   {
@@ -117,19 +117,19 @@ RCT_EXPORT_METHOD(cancelAllNotifications)
 - (UILocalNotification *)_localNotificationFromPayload:(NSDictionary *)payload
 {
   UILocalNotification *localNotification = [UILocalNotification new];
-  
+
   NSString *uniqueId = [[NSUUID new] UUIDString];
-  
+
   localNotification.alertTitle = payload[@"title"];
   localNotification.alertBody = payload[@"body"];
   localNotification.applicationIconBadgeNumber = [RCTConvert NSInteger:payload[@"count"]] ?: 0;
-  
+
   localNotification.userInfo = @{
                                  @"body": payload[@"data"],
                                  @"experienceId": _experienceId,
                                  @"id": uniqueId,
                                  };
-  
+
   return localNotification;
 }
 
