@@ -76,7 +76,10 @@ NSString *kEXKernelBundleResourceName = @"kernel.ios";
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)sendNotification:(NSDictionary *)notifBody toExperienceWithId:(NSString *)experienceId fromBackground:(BOOL)isFromBackground
+- (void)sendNotification:(NSDictionary *)notifBody
+      toExperienceWithId:(NSString *)experienceId
+          fromBackground:(BOOL)isFromBackground
+                isRemote:(BOOL)isRemote
 {
   id destinationBridge = _bridgeRegistry.kernelBridge;
   for (id bridge in [_bridgeRegistry bridgeEnumerator]) {
@@ -93,6 +96,7 @@ NSString *kEXKernelBundleResourceName = @"kernel.ios";
   // > screen (for example, if they pull down the status bar and then receive a notification from your app).
   NSDictionary *bodyWithOrigin = @{
                                    @"origin": (isFromBackground) ? @"selected" : @"received",
+                                   @"remote": @(isRemote),
                                    @"data": notifBody,
                                    };
   if (destinationBridge) {

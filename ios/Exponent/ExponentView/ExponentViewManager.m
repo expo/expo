@@ -91,6 +91,11 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
   if (remoteNotification || application.applicationIconBadgeNumber > 0) {
     [[EXRemoteNotificationManager sharedInstance] handleRemoteNotification:remoteNotification fromBackground:YES];
   }
+  
+  UILocalNotification *localNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
+  if (localNotification) {
+    [[EXLocalNotificationManager sharedInstance] handleLocalNotification:localNotification fromBackground:YES];
+  }
 }
 
 #pragma mark - APNS hooks
