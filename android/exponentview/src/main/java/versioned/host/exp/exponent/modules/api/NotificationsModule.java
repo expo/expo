@@ -159,33 +159,23 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void cancelScheduledNotification(final int notificationId, final Promise promise) {
-    NotificationsHelper.cancelScheduledNotifications(
-        getReactApplicationContext(),
-        notificationId,
-        mManifest,
-        new NotificationsHelper.Listener() {
-          public void onSuccess(int id) {
-            promise.resolve(id);
-          }
-          public void onFailure(Exception e) {
-            promise.reject(e);
-          }
-        });
+    try {
+      NotificationsManager manager = new NotificationsManager(getReactApplicationContext());
+      manager.cancelScheduled(mManifest.getString(ExponentManifest.MANIFEST_ID_KEY), notificationId);
+      promise.resolve(true);
+    } catch (Exception e) {
+      promise.reject(e);
+    }
   }
 
   @ReactMethod
   public void cancelAllScheduledNotifications(final Promise promise) {
-    NotificationsHelper.cancelScheduledNotifications(
-        getReactApplicationContext(),
-        null,
-        mManifest,
-        new NotificationsHelper.Listener() {
-          public void onSuccess(int id) {
-            promise.resolve(id);
-          }
-          public void onFailure(Exception e) {
-            promise.reject(e);
-          }
-        });
+    try {
+      NotificationsManager manager = new NotificationsManager(getReactApplicationContext());
+      manager.cancelAllScheduled(mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
+      promise.resolve(true);
+    } catch (Exception e) {
+      promise.reject(e);
+    }
   }
 }
