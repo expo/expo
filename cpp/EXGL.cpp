@@ -755,7 +755,7 @@ private:
   _WRAP_METHOD(bindTexture, 2) {
     EXJS_UNPACK_ARGV(GLenum target);
     if (JSValueIsNull(jsCtx, jsArgv[1])) {
-      addToNextBatch([=] { glBindTexture(target, 0); });
+      addToNextBatch(std::bind(glBindTexture, target, 0));
     } else {
       Future fTexture = EXJSValueToNumberFast(jsCtx, jsArgv[1]);
       addToNextBatch([=] { glBindTexture(target, peekFuture(fTexture)); });
