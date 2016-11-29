@@ -14,9 +14,9 @@ import android.os.Debug;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 
-import javax.inject.Inject;
-
 import com.facebook.soloader.SoLoader;
+
+import javax.inject.Inject;
 
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.di.NativeModuleDepsProvider;
@@ -24,16 +24,10 @@ import host.exp.exponent.gcm.ExponentPushNotification;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponentview.BuildConfig;
-import host.exp.exponentview.Exponent;
 
 // This activity is transparent. It uses android:style/Theme.Translucent.NoTitleBar.
 // Calls finish() once it is done processing Intent.
 public class LauncherActivity extends Activity {
-
-  public static final String MANIFEST_URL_KEY = "manifest_url";
-  public static final String NOTIFICATION_KEY = "notification";
-  public static final String NOTIFICATION_OBJECT_KEY = "notification_object";
-  public static final String DEV_FLAG = "dev_flag";
 
   @Inject
   Kernel mKernel;
@@ -121,14 +115,14 @@ public class LauncherActivity extends Activity {
     String intentUri = uri == null ? null : uri.toString();
 
     if (bundle != null) {
-      if (bundle.getBoolean(DEV_FLAG)) {
+      if (bundle.getBoolean(KernelConstants.DEV_FLAG)) {
         openDevActivity();
         return;
       }
 
-      String notification = bundle.getString(NOTIFICATION_KEY); // deprecated
-      String notificationObject = bundle.getString(NOTIFICATION_OBJECT_KEY);
-      String manifestUrl = bundle.getString(MANIFEST_URL_KEY);
+      String notification = bundle.getString(KernelConstants.NOTIFICATION_KEY); // deprecated
+      String notificationObject = bundle.getString(KernelConstants.NOTIFICATION_OBJECT_KEY);
+      String manifestUrl = bundle.getString(KernelConstants.MANIFEST_URL_KEY);
       if (manifestUrl != null) {
         mKernel.openExperience(new KernelConstants.ExperienceOptions(manifestUrl, intentUri == null ? manifestUrl : intentUri, notification, ExponentPushNotification.fromJSONObjectString(notificationObject)));
         return;

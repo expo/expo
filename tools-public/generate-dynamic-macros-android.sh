@@ -8,5 +8,6 @@ fi
 
 pushd ../../tools-public/
 mkdir -p ../android/exponentview/src/main/java/host/exp/exponent/generated/
+
 gulp generate-dynamic-macros --buildConstantsPath ../android/exponentview/src/main/java/host/exp/exponent/generated/ExponentBuildConstants.java --platform android
 popd

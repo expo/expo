@@ -6,7 +6,6 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -29,12 +28,13 @@ import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.LauncherActivity;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
+import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.storage.ExponentSharedPreferences;
-import host.exp.exponent.utils.ColorParser;
-
 import host.exp.exponentview.R;
+import host.exp.exponent.notifications.NotificationsHelper;
+import host.exp.exponent.notifications.NotificationsManager;
 
 public class ExponentGcmListenerService extends GcmListenerService {
 
@@ -115,13 +115,7 @@ public class ExponentGcmListenerService extends GcmListenerService {
 
     final JSONObject notificationPreferences = manifest.optJSONObject(ExponentManifest.MANIFEST_NOTIFICATION_INFO_KEY);
 
-    // Icon
-    String iconUrl = manifest.optString(ExponentManifest.MANIFEST_ICON_URL_KEY);
-    if (notificationPreferences != null) {
-      iconUrl = notificationPreferences.optString(ExponentManifest.MANIFEST_NOTIFICATION_ICON_URL_KEY, null);
-    }
-
-    mExponentManifest.loadIconBitmap(iconUrl, new ExponentManifest.BitmapListener() {
+    NotificationsHelper.loadIcon(null, manifest, mExponentManifest, new ExponentManifest.BitmapListener() {
       @Override
       public void onLoadBitmap(Bitmap bitmap) {
         Mode mode = Mode.DEFAULT;
@@ -150,15 +144,7 @@ public class ExponentGcmListenerService extends GcmListenerService {
           }
         }
 
-        // Color
-        int color;
-        String colorString = notificationPreferences == null ? null :
-            notificationPreferences.optString(ExponentManifest.MANIFEST_NOTIFICATION_COLOR_KEY);
-        if (colorString != null && ColorParser.isValid(colorString)) {
-          color = Color.parseColor(colorString);
-        } else {
-          color = mExponentManifest.getColorFromManifest(manifest);
-        }
+        int color = NotificationsHelper.getColor(null, manifest, mExponentManifest);
 
         // Create notification object
         boolean isMultiple = mode == Mode.COLLAPSE && unreadNotifications.length() > 1;
@@ -166,9 +152,9 @@ public class ExponentGcmListenerService extends GcmListenerService {
 
         // Create pending intent
         Intent intent = new Intent(ExponentGcmListenerService.this, LauncherActivity.class);
-        intent.putExtra(LauncherActivity.MANIFEST_URL_KEY, manifestUrl);
-        intent.putExtra(LauncherActivity.NOTIFICATION_KEY, body); // deprecated
-        intent.putExtra(LauncherActivity.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString());
+        intent.putExtra(KernelConstants.MANIFEST_URL_KEY, manifestUrl);
+        intent.putExtra(KernelConstants.NOTIFICATION_KEY, body); // deprecated
+        intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString());
         PendingIntent pendingIntent = PendingIntent.getActivity(ExponentGcmListenerService.this, 0, intent,
             PendingIntent.FLAG_ONE_SHOT);
 
@@ -223,8 +209,8 @@ public class ExponentGcmListenerService extends GcmListenerService {
         }
 
         // Display
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(ExponentGcmListenerService.this);
-        notificationManager.notify(notificationId, notification);
+        NotificationsManager manager = new NotificationsManager(ExponentGcmListenerService.this);
+        manager.notify(experienceId, notificationId, notification);
 
         // Send event. Will be consumed if experience is already open.
         EventBus.getDefault().post(notificationEvent);

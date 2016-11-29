@@ -23,6 +23,14 @@ public class KernelConstants {
   public static final int OVERLAY_PERMISSION_REQUEST_CODE = 123;
   public static final String DEFAULT_APPLICATION_KEY = "main";
 
+  public static final String NOTIFICATION_KEY = "notification";
+  public static final String NOTIFICATION_ID_KEY = "notification_id";
+  public static final String NOTIFICATION_OBJECT_KEY = "notification_object";
+  public static final String DEV_FLAG = "dev_flag";
+
+  public static String MAIN_ACTIVITY_NAME = "host.exp.exponentview.ExponentActivity";
+  public static String SCHEDULED_NOTIFICATION_RECEIVER_NAME = "host.exp.exponentview.notifications.ScheduledNotificationReceiver";
+
   public static class ExperienceOptions {
     public final String manifestUri;
     public final String uri;

@@ -8,13 +8,12 @@ import android.support.multidex.MultiDexApplication;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.react.bridge.ReactApplicationContext;
 
-import javax.inject.Inject;
-
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExponentKernelModuleInterface;
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 import host.exp.exponent.kernel.Kernel;
+import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.kernel.KernelInterface;
 import host.exp.exponent.kernel.KernelProvider;
 import host.exp.exponent.modules.ExponentKernelModule;
@@ -40,6 +39,9 @@ public class ExponentApplication extends MultiDexApplication {
   @Override
   public void onCreate() {
     super.onCreate();
+
+    KernelConstants.MAIN_ACTIVITY_NAME = "host.exp.exponent.LauncherActivity";
+    KernelConstants.SCHEDULED_NOTIFICATION_RECEIVER_NAME = "host.exp.exponent.notifications.ScheduledNotificationReceiver";
 
     if (host.exp.exponentview.BuildConfig.DEBUG && Constants.WAIT_FOR_DEBUGGER) {
       Debug.waitForDebugger();

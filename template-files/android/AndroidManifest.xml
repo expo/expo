@@ -139,13 +139,16 @@
       android:name="com.facebook.FacebookActivity"
       android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
       android:label="@string/app_name"
-      android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+      android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
     <service
       android:name=".ExponentIntentService"
-      android:exported="false">
-    </service>
+      android:exported="false" />
 
+    <!-- Scheduled notifications -->
+    <receiver
+        android:name=".notifications.ScheduledNotificationReceiver"
+        android:exported="false" />
 
     <!-- Analytics -->
     <receiver
