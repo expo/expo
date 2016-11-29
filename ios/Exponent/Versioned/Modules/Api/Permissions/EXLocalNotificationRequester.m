@@ -15,9 +15,9 @@
 {
   UIUserNotificationSettings *currentSettings = RCTSharedApplication().currentUserNotificationSettings;
   
-  EXPermissionStatus status = currentSettings != UIUserNotificationTypeNone
-    ? EXPermissionStatusGranted
-    : EXPermissionStatusUndetermined;
+  EXPermissionStatus status = currentSettings != UIUserNotificationTypeNone ?
+    EXPermissionStatusGranted :
+    EXPermissionStatusUndetermined;
   
   return @{
     @"status": [EXPermissions permissionStringForStatus:status],
