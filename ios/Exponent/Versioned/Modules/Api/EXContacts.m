@@ -66,15 +66,14 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
     NSMutableDictionary *contact = [NSMutableDictionary dictionary];
     
     ABRecordRef person = CFArrayGetValueAtIndex(allPeople, index);
-    contact[@"id"] = @(ABRecordGetRecordID(person));
     
+    contact[@"id"] = @(ABRecordGetRecordID(person));
     contact[@"firstName"] = (__bridge_transfer NSString *)(ABRecordCopyValue(person, kABPersonFirstNameProperty));
     contact[@"lastName"] = (__bridge_transfer NSString *)(ABRecordCopyValue(person, kABPersonLastNameProperty));
     contact[@"middleName"] = (__bridge_transfer NSString *)(ABRecordCopyValue(person, kABPersonMiddleNameProperty));
     contact[@"name"] = [self _assembleDisplayNameFromFirstName:contact[@"firstName"] lastName:contact[@"lastName"]];
-    
     contact[@"company"] = (__bridge_transfer NSString *)(ABRecordCopyValue(person, kABPersonOrganizationProperty));
-    contact[@"jobTitle"] = nil;
+    contact[@"jobTitle"] = (__bridge_transfer NSString *)(ABRecordCopyValue(person, kABPersonJobTitleProperty));
     
     ABMultiValueRef phoneNumbers = ABRecordCopyValue(person, kABPersonPhoneProperty);
     if (phoneNumbers) {
@@ -87,11 +86,15 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
           NSString *phoneNumber = (__bridge_transfer NSString *)(ABMultiValueCopyValueAtIndex(phoneNumbers, index));
           
           CFStringRef phoneLabelRef = ABMultiValueCopyLabelAtIndex(phoneNumbers, index);
-          NSString *phoneLabel = (__bridge_transfer NSString *)(ABAddressBookCopyLocalizedLabel(phoneLabelRef));
+          NSString *phoneLabel = phoneLabelRef ?
+            (__bridge_transfer NSString *)(ABAddressBookCopyLocalizedLabel(phoneLabelRef)) :
+            nil;
           
           [contact[@"phoneNumbers"] addObject:@{ @"number": phoneNumber, @"label": phoneLabel }];
           
-          CFRelease(phoneLabelRef);
+          if (phoneLabelRef) {
+            CFRelease(phoneLabelRef);
+          }
         }
       }
       
@@ -109,11 +112,15 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
           NSString *emailAddress = (__bridge_transfer NSString *)(ABMultiValueCopyValueAtIndex(emails, index));
           
           CFStringRef emailLabelRef = ABMultiValueCopyLabelAtIndex(emails, index);
-          NSString *emailLabel = (__bridge_transfer NSString *)(ABAddressBookCopyLocalizedLabel(emailLabelRef));
+          NSString *emailLabel = emailLabelRef ?
+            (__bridge_transfer NSString *)(ABAddressBookCopyLocalizedLabel(emailLabelRef)) :
+            nil;
           
           [contact[@"emails"] addObject:@{ @"email": emailAddress, @"label": emailLabel }];
           
-          CFRelease(emailLabelRef);
+          if (emailLabelRef) {
+            CFRelease(emailLabelRef);
+          }
         }
       }
       
