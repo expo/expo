@@ -25,9 +25,10 @@ Example Projects built with Exponent
 React Native
 """"""""""""""
 
-* `React Native Express <http://www.reactnativeexpress.com/>`_ - a walkthrough the building blocks of React and React Native.
+* `React Native Express <http://www.reactnativeexpress.com/>`_ - The best way to get started with React Native! It's a walkthrough the building blocks of React and React Native.
 * `Official React Native Documentation <https://facebook.github.io/react-native/docs/sample-application-movies.html>`_
 * `React Native Fundamentals <https://egghead.io/courses/react-native-fundamentals>`_ (video course on Egghead.io)
+* `Animating React Native UI Elements <https://egghead.io/courses/animate-react-native-ui-elements>`_ (video course on Egghead.io)
 * `Learning React Native <http://shop.oreilly.com/product/0636920041511.do>`_ (book)
 
 React
