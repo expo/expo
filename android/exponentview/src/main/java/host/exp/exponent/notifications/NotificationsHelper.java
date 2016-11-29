@@ -1,19 +1,28 @@
 package host.exp.exponent.notifications;
 
+import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
+import android.text.format.DateUtils;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableNativeMap;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.kernel.KernelConstants;
@@ -194,5 +203,134 @@ public class NotificationsHelper {
                 listener.onFailure(new Exception("No experience found for id " + experienceId));
             }
         });
+    }
+
+    public static void scheduleLocalNotification(
+        final Context context,
+        final int id,
+        final ReadableMap data,
+        final ReadableMap options,
+        final JSONObject manifest,
+        final Listener listener) {
+
+        Class receiverClass;
+
+        try {
+            receiverClass = Class.forName(KernelConstants.SCHEDULED_NOTIFICATION_RECEIVER_NAME);
+        } catch (ClassNotFoundException e) {
+            listener.onFailure(e);
+            return;
+        }
+
+        HashMap<String, java.io.Serializable> details = new HashMap<>();
+
+        details.put("data", ((ReadableNativeMap) data).toHashMap());
+
+        String experienceId;
+
+        try {
+            experienceId = manifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+            details.put("experienceId", experienceId);
+        } catch (Exception e) {
+            listener.onFailure(new Exception("Requires Experience Id"));
+            return;
+        }
+
+        Intent notificationIntent = new Intent(context, receiverClass);
+
+        notificationIntent.setType(experienceId);
+        notificationIntent.setAction(String.valueOf(id));
+
+        notificationIntent.putExtra(KernelConstants.NOTIFICATION_ID_KEY, id);
+        notificationIntent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, details);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        long time = 0;
+
+        if (options.hasKey("time")) {
+            try {
+                DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
+                time = format.parse(options.getString("time")).getTime() - System.currentTimeMillis();
+            } catch (ParseException e) {
+                listener.onFailure(e);
+                return;
+            }
+        }
+
+        time += SystemClock.elapsedRealtime();
+
+        if (options.hasKey("repeat")) {
+            long interval;
+
+            switch (options.getString("repeat")) {
+                case "minute":
+                    interval = DateUtils.MINUTE_IN_MILLIS;
+                    break;
+                case "hour":
+                    interval = DateUtils.HOUR_IN_MILLIS;
+                    break;
+                case "day":
+                    interval = DateUtils.DAY_IN_MILLIS;
+                    break;
+                case "week":
+                    interval = DateUtils.WEEK_IN_MILLIS;
+                    break;
+                case "month":
+                    interval = DateUtils.DAY_IN_MILLIS * 30;
+                    break;
+                case "year":
+                    interval = DateUtils.DAY_IN_MILLIS * 365;
+                    break;
+                default:
+                    listener.onFailure(new Exception("Invalid repeat interval specified"));
+                    return;
+            }
+
+            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, time, interval, pendingIntent);
+        } else {
+            alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, time, pendingIntent);
+        }
+
+        listener.onSuccess(id);
+    }
+
+    public static void cancelScheduledNotifications(
+        Context context,
+        @Nullable Integer id,
+        JSONObject manifest,
+        Listener listener) {
+        Class receiverClass;
+
+        try {
+            receiverClass = Class.forName(KernelConstants.SCHEDULED_NOTIFICATION_RECEIVER_NAME);
+        } catch (ClassNotFoundException e) {
+            listener.onFailure(e);
+            return;
+        }
+
+        String experienceId;
+
+        try {
+            experienceId = manifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+        } catch (Exception e) {
+            listener.onFailure(new Exception("Requires Experience Id"));
+            return;
+        }
+
+        Intent notificationIntent = new Intent(context, receiverClass);
+
+        notificationIntent.setType(experienceId);
+
+        if (id != null) {
+            notificationIntent.setAction(String.valueOf(id));
+        }
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        alarmManager.cancel(pendingIntent);
     }
 }

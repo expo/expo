@@ -2,12 +2,6 @@
 
 package versioned.host.exp.exponent.modules.api;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.os.SystemClock;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -27,11 +21,11 @@ import java.util.Map;
 import java.util.Random;
 
 import javax.inject.Inject;
+import javax.xml.datatype.Duration;
 
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
-import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 
 public class NotificationsModule extends ReactContextBaseJavaModule {
@@ -112,7 +106,6 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
               public void onSuccess(int id) {
                 promise.resolve(id);
               }
-
               public void onFailure(Exception e) {
                 promise.reject(e);
               }
@@ -120,44 +113,27 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void scheduleLocalNotification(final ReadableMap data, int delay, Promise promise) {
+  public void scheduleLocalNotification(final ReadableMap data, final ReadableMap options, final Promise promise) {
     int notificationId = new Random().nextInt();
-    Context context = getReactApplicationContext();
 
-    Class receiverClass;
-
-    try {
-      receiverClass = Class.forName(KernelConstants.SCHEDULED_NOTIFICATION_RECEIVER_NAME);
-    } catch (ClassNotFoundException e) {
-      promise.reject(e);
-      return;
-    }
-
-    HashMap<String, java.io.Serializable> details = new HashMap<>();
-
-    details.put("data", ((ReadableNativeMap) data).toHashMap());
-
-    try {
-      details.put("experienceId", mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
-    } catch (Exception e) {
-      promise.reject("Requires Experience Id");
-      return;
-    }
-
-    Intent notificationIntent = new Intent(context, receiverClass);
-
-    notificationIntent.putExtra(KernelConstants.NOTIFICATION_ID_KEY, notificationId);
-    notificationIntent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, details);
-    PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-    long futureInMillis = SystemClock.elapsedRealtime() + delay;
-    AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-    alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
-    promise.resolve(notificationId);
+    NotificationsHelper.scheduleLocalNotification(
+        getReactApplicationContext(),
+        notificationId,
+        data,
+        options,
+        mManifest,
+        new NotificationsHelper.Listener() {
+          public void onSuccess(int id) {
+            promise.resolve(id);
+          }
+          public void onFailure(Exception e) {
+            promise.reject(e);
+          }
+        });
   }
 
   @ReactMethod
-  public void cancelNotification(final int notificationId, Promise promise) {
+  public void dismissNotification(final int notificationId, final Promise promise) {
     try {
       NotificationsManager manager = new NotificationsManager(getReactApplicationContext());
       manager.cancel(
@@ -171,7 +147,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void cancelAllNotifications(Promise promise) {
+  public void dismissAllNotifications(final Promise promise) {
     try {
       NotificationsManager manager = new NotificationsManager(getReactApplicationContext());
       manager.cancelAll(mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
@@ -179,5 +155,37 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     } catch (JSONException e) {
       promise.reject(e);
     }
+  }
+
+  @ReactMethod
+  public void cancelScheduledNotification(final int notificationId, final Promise promise) {
+    NotificationsHelper.cancelScheduledNotifications(
+        getReactApplicationContext(),
+        notificationId,
+        mManifest,
+        new NotificationsHelper.Listener() {
+          public void onSuccess(int id) {
+            promise.resolve(id);
+          }
+          public void onFailure(Exception e) {
+            promise.reject(e);
+          }
+        });
+  }
+
+  @ReactMethod
+  public void cancelAllScheduledNotifications(final Promise promise) {
+    NotificationsHelper.cancelScheduledNotifications(
+        getReactApplicationContext(),
+        null,
+        mManifest,
+        new NotificationsHelper.Listener() {
+          public void onSuccess(int id) {
+            promise.resolve(id);
+          }
+          public void onFailure(Exception e) {
+            promise.reject(e);
+          }
+        });
   }
 }
