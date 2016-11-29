@@ -32,7 +32,7 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
         // initial permissions grant
         dispatch_async(dispatch_get_main_queue(), ^{
           __strong typeof(self) strongSelf = weakSelf;
-          [strongSelf _getContactsWithPermissionGrantedAsync:fields addressBook:strongSelf.addressBookRef resolver:resolve rejecter:reject];
+          [strongSelf _getContactsWithPermissionGrantedAsync:strongSelf.addressBookRef resolver:resolve rejecter:reject];
         });
       } else {
         reject(0, @"User rejected contacts permission.", (__bridge NSError *)(error));
@@ -40,7 +40,7 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
       }
     });
   } else if (permissions == kABAuthorizationStatusAuthorized) {
-    [self _getContactsWithPermissionGrantedAsync:fields addressBook:_addressBookRef resolver:resolve rejecter:reject];
+    [self _getContactsWithPermissionGrantedAsync:_addressBookRef resolver:resolve rejecter:reject];
     [self _releaseAddressBook];
   } else {
     reject(0, @"User rejected contacts permission.", nil);
@@ -53,15 +53,13 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
   [self _releaseAddressBook];
 }
 
-- (void)_getContactsWithPermissionGrantedAsync: (NSArray *)fields addressBook:(ABAddressBookRef)addressBook resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject
+- (void)_getContactsWithPermissionGrantedAsync:(ABAddressBookRef)addressBook resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject
 {
-  NSSet *fieldsSet = [NSSet setWithArray:fields];
   CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
   CFIndex numberOfPeople = ABAddressBookGetPersonCount(addressBook);
   
   // response: array of maps, each map has potential keys
-  //   id, name, email, phoneNumber
-  //   if the contact has neither an email nor a phone number, we skip it
+  // id, name, emails (email, label), phoneNumbers (number, label), middleName, company, jobTitle
   NSMutableArray *response = [[NSMutableArray alloc] init];
   
   for (NSUInteger index = 0; index < numberOfPeople; index++) {
@@ -70,31 +68,60 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
     ABRecordRef person = CFArrayGetValueAtIndex(allPeople, index);
     contact[@"id"] = @(ABRecordGetRecordID(person));
     
-    NSString *firstName = (__bridge_transfer NSString *)(ABRecordCopyValue(person, kABPersonFirstNameProperty));
-    NSString *lastName = (__bridge_transfer NSString *)(ABRecordCopyValue(person, kABPersonLastNameProperty));
-    NSString *name = [self _assembleDisplayNameFromFirstName:firstName lastName:lastName];
-    if (name) {
-      contact[@"name"] = name;
+    contact[@"firstName"] = (__bridge_transfer NSString *)(ABRecordCopyValue(person, kABPersonFirstNameProperty));
+    contact[@"lastName"] = (__bridge_transfer NSString *)(ABRecordCopyValue(person, kABPersonLastNameProperty));
+    contact[@"middleName"] = (__bridge_transfer NSString *)(ABRecordCopyValue(person, kABPersonMiddleNameProperty));
+    contact[@"name"] = [self _assembleDisplayNameFromFirstName:contact[@"firstName"] lastName:contact[@"lastName"]];
+    
+    contact[@"company"] = (__bridge_transfer NSString *)(ABRecordCopyValue(person, kABPersonOrganizationProperty));
+    contact[@"jobTitle"] = (__bridge_transfer NSString *)(ABRecordCopyValue(person, kABPersonJobTitleProperty));
+    
+    ABMultiValueRef phoneNumbers = ABRecordCopyValue(person, kABPersonPhoneProperty);
+    if (phoneNumbers) {
+      CFIndex numberOfPhones = ABMultiValueGetCount(phoneNumbers);
+      
+      if (numberOfPhones > 0) {
+        contact[@"phoneNumbers"] = [NSMutableArray new];
+        
+        for (NSUInteger index = 0; index < numberOfPhones; index++) {
+          NSString *phoneNumber = (__bridge_transfer NSString *)(ABMultiValueCopyValueAtIndex(phoneNumbers, index));
+          
+          CFStringRef phoneLabelRef = ABMultiValueCopyLabelAtIndex(phoneNumbers, index);
+          NSString *phoneLabel = (__bridge_transfer NSString *)(ABAddressBookCopyLocalizedLabel(phoneLabelRef));
+          
+          [contact[@"phoneNumbers"] addObject:@{ @"number": phoneNumber, @"label": phoneLabel }];
+          
+          CFRelease(phoneLabelRef);
+        }
+        
+        contact[@"phoneNumber"] = contact[@"phoneNumbers"][0][@"number"];
+      }
+      
+      CFRelease(phoneNumbers);
     }
     
-    if ([fieldsSet containsObject:@"phone_number"]) {
-      ABMultiValueRef phoneNumbers = ABRecordCopyValue(person, kABPersonPhoneProperty);
-      if (phoneNumbers) {
-        if (ABMultiValueGetCount(phoneNumbers) > 0) {
-          contact[@"phoneNumber"] = (__bridge_transfer NSString *)ABMultiValueCopyValueAtIndex(phoneNumbers, 0);
+    ABMultiValueRef emails = ABRecordCopyValue(person, kABPersonEmailProperty);
+    if (emails) {
+      CFIndex numberOfEmails = ABMultiValueGetCount(emails);
+      
+      if (numberOfEmails > 0) {
+        contact[@"emails"] = [NSMutableArray new];
+        
+        for (NSUInteger index = 0; index < numberOfEmails; index++) {
+          NSString *emailAddress = (__bridge_transfer NSString *)(ABMultiValueCopyValueAtIndex(emails, index));
+          
+          CFStringRef emailLabelRef = ABMultiValueCopyLabelAtIndex(emails, index);
+          NSString *emailLabel = (__bridge_transfer NSString *)(ABAddressBookCopyLocalizedLabel(emailLabelRef));
+          
+          [contact[@"phoneNumbers"] addObject:@{ @"email": emailAddress, @"label": emailLabel }];
+          
+          CFRelease(emailLabelRef);
         }
-        CFRelease(phoneNumbers);
+        
+        contact[@"email"] = contact[@"emails"][0][@"email"];
       }
-    }
-    
-    if ([fieldsSet containsObject:@"email"]) {
-      ABMultiValueRef emails = ABRecordCopyValue(person, kABPersonEmailProperty);
-      if (emails) {
-        if (ABMultiValueGetCount(emails) > 0) {
-          contact[@"email"] = (__bridge_transfer NSString *)ABMultiValueCopyValueAtIndex(emails, 0);
-        }
-        CFRelease(emails);
-      }
+      
+      CFRelease(emails);
     }
     
     [response addObject:contact];
