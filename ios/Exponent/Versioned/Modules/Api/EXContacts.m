@@ -74,7 +74,7 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
     contact[@"name"] = [self _assembleDisplayNameFromFirstName:contact[@"firstName"] lastName:contact[@"lastName"]];
     
     contact[@"company"] = (__bridge_transfer NSString *)(ABRecordCopyValue(person, kABPersonOrganizationProperty));
-    contact[@"jobTitle"] = (__bridge_transfer NSString *)(ABRecordCopyValue(person, kABPersonJobTitleProperty));
+    contact[@"jobTitle"] = nil;
     
     ABMultiValueRef phoneNumbers = ABRecordCopyValue(person, kABPersonPhoneProperty);
     if (phoneNumbers) {
@@ -93,8 +93,6 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
           
           CFRelease(phoneLabelRef);
         }
-        
-        contact[@"phoneNumber"] = contact[@"phoneNumbers"][0][@"number"];
       }
       
       CFRelease(phoneNumbers);
@@ -117,8 +115,6 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
           
           CFRelease(emailLabelRef);
         }
-        
-        contact[@"email"] = contact[@"emails"][0][@"email"];
       }
       
       CFRelease(emails);
