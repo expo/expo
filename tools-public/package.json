@@ -4,7 +4,6 @@
   "private": true,
   "description": "",
   "scripts": {
-    "gulp": "gulp",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "650 Industries",
@@ -19,7 +18,6 @@
     "babel-preset-es2016-node5": "^1.1.2",
     "co": "^4.6.0",
     "gulp": "gulpjs/gulp#4.0",
-    "gulp-cli": "^1.2.2",
     "gulp-shell": "^0.5.2",
     "instapromise": "latest",
     "lodash": "^4.13.1",
