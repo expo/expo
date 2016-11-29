@@ -50,3 +50,70 @@ library or taking a photo with the camera.
       ``uri`` is a URI to the local image file (useable in a React Native
       ``Image`` tag) and ``width, height`` specify the dimensions of the image.
 
+
+
+Example: pick from camera roll
+''''''''''''''''''''''''''''''
+
+.. code-block:: javascript
+
+  import React from 'react';
+  import {
+    Image,
+    Text,
+    TouchableOpacity,
+    View,
+  } from 'react-native';
+  import Exponent from 'exponent';
+
+  export default class ImagePickerExample extends React.Component {
+    state = {
+      image: null,
+    }
+
+    render() {
+      let { image } = this.state;
+
+      return (
+        <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+          <TouchableOpacity onPress={this._pickImage}>
+            <View>
+              <Text>Pick an image from camera roll</Text>
+            </View>
+          </TouchableOpacity>
+
+          {image &&
+            <Image source={{uri: image}} style={{width: 200, height: 200}} /> }
+        </View>
+      );
+    }
+
+    _pickImage = async () => {
+      let result = await Exponent.ImagePicker.launchImageLibraryAsync({
+        allowsEditing: true,
+        aspect: [4,3]
+      });
+
+      console.log(result);
+
+      if (!result.cancelled) {
+        this.setState({image: result.uri});
+      }
+    }
+  }
+
+  Exponent.registerRootComponent(ImagePickerExample);
+
+
+When you run this example and pick an image, you will see the image that you
+picked show up in your app, and something similar to the following logged to
+your console:
+
+.. code-block:: json
+
+  {
+    "cancelled":false,
+    "height":1611,
+    "width":2148,
+    "uri":"file:///data/user/0/host.exp.exponent/cache/cropped1814158652.jpg"
+  }
