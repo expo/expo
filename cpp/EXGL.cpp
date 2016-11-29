@@ -933,7 +933,11 @@ private:
 
   _WRAP_METHOD(createShader, 1) {
     EXJS_UNPACK_ARGV(GLenum type);
-    return addFutureToNextBatch(jsCtx, std::bind(glCreateShader, type));
+    if (type == GL_VERTEX_SHADER || type == GL_FRAGMENT_SHADER) {
+      return addFutureToNextBatch(jsCtx, std::bind(glCreateShader, type));
+    } else {
+      return JSValueMakeNull(jsCtx);
+    }
   }
 
   _WRAP_METHOD(deleteProgram, 1) {
