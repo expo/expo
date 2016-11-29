@@ -525,7 +525,7 @@ private:
         addBlockingToNextBatch([&] { glGetIntegerv(pname, &glInt); });
         for (const auto &pair : futures) {
           if (pair.second == glInt) {
-            return JSValueMakeNumber(jsCtx, glInt);
+            return JSValueMakeNumber(jsCtx, pair.first);
           }
         }
         return nullptr;
