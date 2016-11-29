@@ -13,7 +13,7 @@ when new SDKs are relased. The website documents previous SDK versions too.
 Version names correspond to directory names under `versions/`.
 
 `unversioned` is a special version for the next SDK release. `devdocs` isn't
-actually an SDK version, it's just a special version that corresponds to the
+actually an SDK version, it's a special version that corresponds to the
 "Tool Developer Documentation" website.
 
 Sometimes you want to make an edit in version `X` and have that edit also
@@ -31,7 +31,7 @@ so don't worry if you have code changes or such elsewhere.
 
 ### As a random person
 
-Thanks for helping! :D Just make your changes on a fork of this repository or
+Thanks for helping! :D make your changes on a fork of this repository or
 whatever works for you and submit a pull request. We'll take a look and
 incorporate them!
 
@@ -47,7 +47,7 @@ deploy script will respect this value).
 
 Navigate to the documentation root.
 
-#### With Docker (easy)
+#### With Docker (recommended)
 
 If your machine has Docker for Mac and the Gcloud tools, you can run:
 
@@ -58,7 +58,7 @@ DEFAULT_VERSION=[version goes here] make watch
 from this directory. So for example, `DEFAULT_VERSION=v7.0.0 make watch` will preview
 docs for sdk 7. The site is viewable at `localhost:8000`.
 
-If you just run `make watch`, it will start the previewing unversioned docs, which
+If you run `make watch`, it will start the previewing unversioned docs, which
 is what you want in development.
 
 If your machine does not have Docker or GCloud, do the following:
@@ -66,7 +66,7 @@ If your machine does not have Docker or GCloud, do the following:
 * Go to https://docs.docker.com/docker-for-mac/ and download and install Docker for Mac.
 * From universe root, run `server/infra/tools/install-cli-tools.sh`, and follow the prompts.
 
-#### With Python (still easy, but environment dependent)
+#### With Python (environment dependent)
 
 Make sure you have `python` and `pip` installed. Run,
 
