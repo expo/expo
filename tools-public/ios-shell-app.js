@@ -21,8 +21,8 @@ function validateConfigArguments(manifest, cmdArgs, configFilePath) {
   if (!configFilePath) {
     throw new Error('No path to config files provided');
   }
-  if ((!manifest.ios && !cmdArgs.bundleIdentifier) ||
-      (!manifest.ios.bundleIdentifier && !cmdArgs.bundleIdentifier)) {
+  let bundleIdentifierFromManifest = (manifest.ios) ? manifest.ios.bundleIdentifier : null;
+  if (!bundleIdentifierFromManifest && !cmdArgs.bundleIdentifier) {
     throw new Error('No bundle identifier found in either the manifest or argv');
   }
   if (!manifest.name) {
@@ -57,7 +57,7 @@ async function configureShellAppSecretsAsync(args, iosDir) {
 async function configureStandaloneIOSInfoPlistAsync(configFilePath, manifest, privateConfig = null, bundleIdentifier = null) {
   await modifyIOSPropertyListAsync(configFilePath, 'Info', (config) => {
     // bundle id
-    config.CFBundleIdentifier = manifest.ios.bundleIdentifier || bundleIdentifier;
+    config.CFBundleIdentifier = (manifest.ios && manifest.ios.bundleIdentifier) ? manifest.ios.bundleIdentifier : bundleIdentifier;
 
     // app name
     config.CFBundleName = manifest.name;
