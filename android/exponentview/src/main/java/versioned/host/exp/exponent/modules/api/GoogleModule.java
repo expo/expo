@@ -3,12 +3,12 @@
 package versioned.host.exp.exponent.modules.api;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.facebook.infer.annotation.Assertions;
@@ -30,20 +30,31 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
 
+import net.openid.appauth.AuthorizationRequest;
+import net.openid.appauth.AuthorizationService;
+import net.openid.appauth.AuthorizationServiceConfiguration;
+import net.openid.appauth.ResponseTypeValues;
+
+import java.util.Map;
+
+import de.greenrobot.event.EventBus;
 import host.exp.exponent.ActivityResultListener;
-import host.exp.exponent.OAuthWebViewActivity;
+import host.exp.exponent.OAuthResultActivity;
+import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponentview.Exponent;
 
 public class GoogleModule extends ReactContextBaseJavaModule implements ActivityResultListener {
   private final static int RC_LOG_IN = 1737;
-  private final static int RC_WEB_LOG_IN = 1738;
   private final static String GOOGLE_ERROR = "GOOGLE_ERROR";
   private static final String TAG = GoogleModule.class.getSimpleName();
 
   private @Nullable Promise mLogInPromise;
+  private final Map<String, Object> mExperienceProperties;
 
-  public GoogleModule(ReactApplicationContext reactContext) {
+  public GoogleModule(ReactApplicationContext reactContext, Map<String, Object> experienceProperties) {
     super(reactContext);
+
+    mExperienceProperties = experienceProperties;
 
     Exponent.getInstance().addActivityResultListener(this);
   }
@@ -65,20 +76,20 @@ public class GoogleModule extends ReactContextBaseJavaModule implements Activity
         mLogInPromise = promise;
 
         String behavior = config.getString("behavior");
-        String webClientId = config.getString("webClientId");
+        String androidClientId = config.getString("androidClientId");
         ReadableArray scopesConfig = config.getArray("scopes");
         if ("system".equals(behavior)) {
           Scope[] scopes = new Scope[scopesConfig.size()];
           for (int i = 0; i < scopesConfig.size(); i++) {
             scopes[i] = new Scope(scopesConfig.getString(i));
           }
-          systemLogIn(scopes, webClientId);
+          systemLogIn(scopes);
         } else if ("web".equals(behavior)) {
           String[] scopes = new String[scopesConfig.size()];
           for (int i = 0; i < scopesConfig.size(); i++) {
             scopes[i] = scopesConfig.getString(i);
           }
-          webLogIn(scopes, webClientId);
+          webLogIn(scopes, androidClientId);
         } else {
           reject("Invalid behavior. Expected 'system' or 'web', got " + behavior, null);
         }
@@ -91,12 +102,10 @@ public class GoogleModule extends ReactContextBaseJavaModule implements Activity
     if (requestCode == RC_LOG_IN) {
       GoogleSignInResult logInResult = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
       handleLogInResult(logInResult);
-    } else if (requestCode == RC_WEB_LOG_IN) {
-      handleWebLogInResult(resultCode, data);
     }
   }
 
-  private void systemLogIn(Scope[] scopes, String clientId) {
+  private void systemLogIn(Scope[] scopes) {
     Activity activity = getCurrentActivity();
     if (activity == null) {
       reject("No activity", null);
@@ -116,9 +125,6 @@ public class GoogleModule extends ReactContextBaseJavaModule implements Activity
     for (Scope scope : scopes) {
       builder.requestScopes(scope);
     }
-
-    builder.requestIdToken(clientId);
-    builder.requestServerAuthCode(clientId);
 
     GoogleSignInOptions gso = builder.build();
 
@@ -147,24 +153,59 @@ public class GoogleModule extends ReactContextBaseJavaModule implements Activity
     activity.startActivityForResult(signInIntent, RC_LOG_IN);
   }
 
-  private void webLogIn(String[] scopes, @Nullable String clientId) {
-    Activity activity = getCurrentActivity();
+  private void webLogIn(String[] scopes, String clientId) {
+    Activity activity = Exponent.getInstance().getCurrentActivity();
     if (activity == null) {
       reject("No activity", null);
       return;
     }
-    Intent webViewIntent = new Intent(
-        activity,
-        OAuthWebViewActivity.class);
-    String url =
-        "https://accounts.google.com/o/oauth2/v2/auth?" +
-        "scope=" + TextUtils.join("%20", scopes) + "&" +
-        "redirect_uri=https://oauth.host.exp.com&" +
-        "response_type=token&" +
-        "client_id=" + clientId;
-    webViewIntent.putExtra(OAuthWebViewActivity.DATA_URL, url);
 
-    activity.startActivityForResult(webViewIntent, RC_WEB_LOG_IN);
+    AuthorizationServiceConfiguration configuration = new AuthorizationServiceConfiguration(
+        Uri.parse("https://accounts.google.com/o/oauth2/v2/auth"),
+        Uri.parse("https://www.googleapis.com/oauth2/v4/token"),
+        null);
+
+    AuthorizationRequest request = new AuthorizationRequest.Builder(configuration,
+        clientId,
+        ResponseTypeValues.CODE,
+        Uri.parse(getReactApplicationContext().getPackageName() + ":/oauthredirect"))
+        .setScopes(scopes)
+        .build();
+
+    EventBus.getDefault().register(this);
+
+    Intent postAuthIntent = new Intent(activity, OAuthResultActivity.class);
+
+    // The auth intent gets started in the root task because it uses `singleTask` launch mode so if
+    // we are not a standalone app we need to redirect back to the proper task when done.
+    if (!ConstantsModule.getAppOwnership(mExperienceProperties).equals("standalone")) {
+      postAuthIntent.putExtra(
+          OAuthResultActivity.EXTRA_REDIRECT_EXPERIENCE_URL,
+          (String) mExperienceProperties.get(KernelConstants.MANIFEST_URL_KEY));
+    }
+
+    AuthorizationService service = new AuthorizationService(activity);
+    service.performAuthorizationRequest(
+        request,
+        PendingIntent.getActivity(activity, request.hashCode(), postAuthIntent, 0),
+        PendingIntent.getActivity(activity, request.hashCode(), postAuthIntent, 0));
+  }
+
+  public void onEvent(OAuthResultActivity.OAuthResultEvent event) {
+    EventBus.getDefault().unregister(this);
+
+    if (event.error != null) {
+      reject(event.error.getMessage(), event.error);
+    } else if (event.response != null) {
+      WritableMap response = Arguments.createMap();
+      response.putString("type", "success");
+      response.putString("accessToken", event.response.accessToken);
+      resolve(response);
+    } else {
+      WritableMap response = Arguments.createMap();
+      response.putString("type", "cancel");
+      resolve(response);
+    }
   }
 
   private void handleLogInResult(GoogleSignInResult logInResult) {
@@ -191,22 +232,6 @@ public class GoogleModule extends ReactContextBaseJavaModule implements Activity
       resolve(response);
     } else {
       reject(logInResult.getStatus().toString(), null);
-    }
-  }
-
-  private void handleWebLogInResult(int result, Intent data) {
-    WritableMap response = Arguments.createMap();
-    if (result == Activity.RESULT_OK) {
-      String resUrl = data.getStringExtra(OAuthWebViewActivity.DATA_RESULT_URL);
-      // The response url from google uses the format '<url>/#<query_params>' so we can just replace
-      // '/#' with '?' to have a valid uri and parse it with Uri#getQueryParameter.
-      Uri uri = Uri.parse(resUrl.replace("/#", "?"));
-      response.putString("type", "success");
-      response.putString("accessToken", uri.getQueryParameter("access_token"));
-      resolve(response);
-    } else {
-      response.putString("type", "cancel");
-      resolve(response);
     }
   }
 

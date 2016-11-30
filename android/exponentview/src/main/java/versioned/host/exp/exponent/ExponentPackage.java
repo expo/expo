@@ -114,7 +114,7 @@ public class ExponentPackage implements ReactPackage {
           nativeModules.add(new FacebookModule(reactContext));
           nativeModules.add(new FabricModule(reactContext, mExperienceProperties));
           nativeModules.add(new FingerprintModule(reactContext));
-          nativeModules.add(new GoogleModule(reactContext));
+          nativeModules.add(new GoogleModule(reactContext, mExperienceProperties));
           nativeModules.add(new PermissionsModule(reactContext));
           nativeModules.add(new AmplitudeModule(reactContext, experienceIdEncoded));
           nativeModules.add(new SegmentModule(reactContext, experienceIdEncoded));

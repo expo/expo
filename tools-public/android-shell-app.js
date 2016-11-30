@@ -137,6 +137,9 @@ export async function createAndroidShellApp(args) {
       </intent-filter>`, `${shellPath}app/src/main/AndroidManifest.xml`);
   }
 
+  // OAuth redirect scheme
+  shell.sed('-i', `'appAuthRedirectScheme': 'host.exp.exponent'`, `'appAuthRedirectScheme': '${javaPackage}'`, `${shellPath}app/build.gradle`);
+
   // Embed manifest and bundle
   await fs.promise.writeFile(`${shellPath}app/src/main/assets/shell-app-manifest.json`, JSON.stringify(manifest));
   await saveUrlToPathAsync(bundleUrl, `${shellPath}app/src/main/assets/shell-app.bundle`);

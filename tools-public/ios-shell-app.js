@@ -75,6 +75,11 @@ async function configureStandaloneIOSInfoPlistAsync(configFilePath, manifest, pr
     // remove exp scheme, add app scheme(s)
     config.CFBundleURLTypes = [{
       CFBundleURLSchemes: linkingSchemes,
+    }, {
+      // Add the generic oauth redirect, it's important that it has the name
+      // 'OAuthRedirect' so we can find it in app code.
+      CFBundleURLName: 'OAuthRedirect',
+      CFBundleURLSchemes: [config.CFBundleIdentifier],
     }];
 
     // permanently save the exponent client version at time of configuration

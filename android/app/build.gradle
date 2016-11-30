@@ -32,6 +32,9 @@ android {
     }
     multiDexEnabled true
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    manifestPlaceholders = [
+      'appAuthRedirectScheme': 'host.exp.exponent'
+    ]
   }
   dexOptions {
     javaMaxHeapSize "8g"
@@ -121,12 +124,13 @@ dependencies {
   compile 'com.yqritc:android-scalablevideoview:1.0.1'
   compile 'commons-codec:commons-codec:1.10'
   compile 'com.segment.analytics.android:analytics:4.+'
-  compile "com.google.zxing:core:3.2.1"
+  compile 'com.google.zxing:core:3.2.1'
+  compile 'net.openid:appauth:0.4.1'
 
   // Testing
   androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
   androidTestCompile 'com.android.support.test:runner:0.5'
-  androidTestCompile 'com.android.support:support-annotations:24.1.1'
+  androidTestCompile 'com.android.support:support-annotations:24.2.1'
   androidTestCompile 'com.google.code.findbugs:jsr305:3.0.0'
   androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
   compile project(path: ':exponentview')

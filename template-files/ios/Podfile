@@ -3,6 +3,7 @@ platform :ios, '8.0'
 
 target 'Exponent' do
   # Published CocoaPods
+  pod 'AppAuth', '~> 0.4'
   pod 'CocoaLumberjack', '~> 2.3'
   pod 'Crashlytics', '~> 3.8'
   pod 'Fabric', '~> 1.6'

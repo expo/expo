@@ -11,12 +11,14 @@
 #import "Amplitude.h"
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <GoogleSignIn/GoogleSignIn.h>
+#import <AppAuth.h>
 
 NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDidRegisterForRemoteNotificationsNotification";
 
 @interface ExponentViewManager ()
 {
   Class _rootViewControllerClass;
+  __nullable id<OIDAuthorizationFlowSession> _currentAuthorizationFlow;
 }
 
 @property (nonatomic, nullable, strong) EXViewController *rootViewController;
@@ -41,8 +43,18 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
 {
   if (self = [super init]) {
     _rootViewControllerClass = [EXViewController class];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didBeginOAuthFlow:)
+                                                 name:@"EXDidBeginOAuthFlow"
+                                               object:nil];
   }
   return self;
+}
+
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)registerRootViewControllerClass:(Class)rootViewControllerClass
@@ -119,6 +131,11 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(nullable NSString *)sourceApplication annotation:(id)annotation
 {
+  if ([_currentAuthorizationFlow resumeAuthorizationFlowWithURL:url]) {
+    _currentAuthorizationFlow = nil;
+    return YES;
+  }
+
   if ([[GIDSignIn sharedInstance] handleURL:url
                           sourceApplication:sourceApplication
                                  annotation:annotation]) {
@@ -151,6 +168,11 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
   } else {
     return NO;
   }
+}
+
+- (void)didBeginOAuthFlow:(NSNotification *)notification
+{
+  _currentAuthorizationFlow = notification.userInfo[@"authorizationFlow"];
 }
 
 @end

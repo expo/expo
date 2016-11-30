@@ -101,7 +101,7 @@ public class ConstantsModule extends ReactContextBaseJavaModule {
     return Build.FINGERPRINT.contains("generic");
   }
 
-  private static String getAppOwnership(Map<String, Object> experienceProperties) {
+  public static String getAppOwnership(Map<String, Object> experienceProperties) {
     if (experienceProperties.containsKey(KernelConstants.MANIFEST_URL_KEY)) {
       String manifestUrl = (String) experienceProperties.get(KernelConstants.MANIFEST_URL_KEY);
 

@@ -231,5 +231,6 @@ dependencies {
   compile 'com.yqritc:android-scalablevideoview:1.0.1'
   compile 'commons-codec:commons-codec:1.10'
   compile 'com.segment.analytics.android:analytics:4.+'
-  compile "com.google.zxing:core:3.2.1"
+  compile 'com.google.zxing:core:3.2.1'
+  compile 'net.openid:appauth:0.4.1'
 }
