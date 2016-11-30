@@ -865,7 +865,7 @@ public class Kernel implements KernelInterface {
         Intent shortcutIntent = new Intent(mContext, LauncherActivity.class);
         shortcutIntent.setAction(Intent.ACTION_MAIN);
         shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        shortcutIntent.putExtra(LauncherActivity.MANIFEST_URL_KEY, manifestUrl);
+        shortcutIntent.putExtra(KernelConstants.MANIFEST_URL_KEY, manifestUrl);
 
         Intent addIntent = new Intent();
         addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
@@ -884,7 +884,7 @@ public class Kernel implements KernelInterface {
     Intent shortcutIntent = new Intent(mContext, LauncherActivity.class);
     shortcutIntent.setAction(Intent.ACTION_MAIN);
     shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-    shortcutIntent.putExtra(LauncherActivity.DEV_FLAG, true);
+    shortcutIntent.putExtra(KernelConstants.DEV_FLAG, true);
 
     Intent addIntent = new Intent();
     addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);

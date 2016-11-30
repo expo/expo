@@ -6,6 +6,7 @@
 #import "EXKernelUtil.h"
 #import "EXKeys.h"
 #import "EXRemoteNotificationManager.h"
+#import "EXLocalNotificationManager.h"
 #import "EXViewController.h"
 
 #import "Amplitude.h"
@@ -14,6 +15,7 @@
 #import <AppAuth.h>
 
 NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDidRegisterForRemoteNotificationsNotification";
+NSString * const EXAppDidRegisterUserNotificationSettings = @"ExAppDidRegisterUserNotificationSettings";
 
 @interface ExponentViewManager ()
 {
@@ -102,6 +104,11 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
   if (remoteNotification || application.applicationIconBadgeNumber > 0) {
     [[EXRemoteNotificationManager sharedInstance] handleRemoteNotification:remoteNotification fromBackground:YES];
   }
+  
+  UILocalNotification *localNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
+  if (localNotification) {
+    [[EXLocalNotificationManager sharedInstance] handleLocalNotification:localNotification fromBackground:YES];
+  }
 }
 
 #pragma mark - APNS hooks
@@ -125,6 +132,17 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
 {
   BOOL isFromBackground = !(application.applicationState == UIApplicationStateActive);
   [[EXRemoteNotificationManager sharedInstance] handleRemoteNotification:notification fromBackground:isFromBackground];
+}
+
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+{
+  BOOL isFromBackground = !(application.applicationState == UIApplicationStateActive);
+  [[EXLocalNotificationManager sharedInstance] handleLocalNotification:notification fromBackground:isFromBackground];
+}
+
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:EXAppDidRegisterUserNotificationSettings object:notificationSettings];
 }
 
 #pragma mark - deep linking hooks

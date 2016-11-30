@@ -2,16 +2,12 @@
 
 package host.exp.exponent.experience;
 
-import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,7 +17,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -29,7 +24,6 @@ import android.widget.RemoteViews;
 
 import com.amplitude.api.Amplitude;
 import com.facebook.react.ReactInstanceManager;
-import com.facebook.react.common.MapBuilder;
 import com.facebook.soloader.SoLoader;
 
 import org.json.JSONArray;
@@ -38,7 +32,6 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -50,7 +43,7 @@ import host.exp.exponent.ExponentIntentService;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.LauncherActivity;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.gcm.ExponentPushNotification;
+import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.kernel.KernelProvider;
 import host.exp.exponent.utils.ExperienceActivityUtils;
@@ -65,14 +58,10 @@ import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.AsyncCondition;
-import host.exp.exponent.utils.ColorParser;
-import host.exp.exponent.utils.JSONBundleConverter;
 import versioned.host.exp.exponent.ReactUnthemedRootView;
 
 import static host.exp.exponent.kernel.KernelConstants.IS_OPTIMISTIC_KEY;
 import static host.exp.exponent.kernel.KernelConstants.MANIFEST_URL_KEY;
-import static host.exp.exponent.kernel.KernelConstants.LINKING_URI_KEY;
-import static host.exp.exponent.kernel.KernelConstants.INTENT_URI_KEY;
 
 public class ExperienceActivity extends BaseExperienceActivity implements Exponent.StartReactInstanceDelegate {
 
@@ -93,7 +82,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   private RNObject mLinkingPackage = null;
   private ReactUnthemedRootView mNuxOverlayView;
   private String mJSBundlePath;
-  private ExponentPushNotification mNotification;
+  private ExponentNotification mNotification;
   private boolean mIsShellApp;
   private String mIntentUri;
   private int mActivityId;
@@ -355,7 +344,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     ExperienceActivityUtils.updateOrientation(mManifest, this);
     addNotification(kernelOptions);
 
-    ExponentPushNotification notificationObject = null;
+    ExponentNotification notificationObject = null;
     if (mKernel.hasOptionsForManifestUrl(manifestUrl)) {
       KernelConstants.ExperienceOptions options = mKernel.popOptionsForManifestUrl(manifestUrl);
 
@@ -368,7 +357,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       notificationObject = options.notificationObject;
     }
 
-    final ExponentPushNotification finalNotificationObject = notificationObject;
+    final ExponentNotification finalNotificationObject = notificationObject;
 
     // TODO: deprecated
     // LinkingPackage was removed after ABI 5.0.0
@@ -521,7 +510,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     }
   }
 
-  private void waitForDrawOverOtherAppPermission(String jsBundlePath, ExponentPushNotification notificationObject) {
+  private void waitForDrawOverOtherAppPermission(String jsBundlePath, ExponentNotification notificationObject) {
     mJSBundlePath = jsBundlePath;
     mNotification = notificationObject;
 

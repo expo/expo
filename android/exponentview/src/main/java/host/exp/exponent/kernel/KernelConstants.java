@@ -2,7 +2,7 @@
 
 package host.exp.exponent.kernel;
 
-import host.exp.exponent.gcm.ExponentPushNotification;
+import host.exp.exponent.notifications.ExponentNotification;
 
 public class KernelConstants {
   public static final String MANIFEST_KEY = "manifest";
@@ -23,11 +23,19 @@ public class KernelConstants {
   public static final int OVERLAY_PERMISSION_REQUEST_CODE = 123;
   public static final String DEFAULT_APPLICATION_KEY = "main";
 
+  public static final String NOTIFICATION_KEY = "notification";
+  public static final String NOTIFICATION_ID_KEY = "notification_id";
+  public static final String NOTIFICATION_OBJECT_KEY = "notification_object";
+  public static final String DEV_FLAG = "dev_flag";
+
+  public static String MAIN_ACTIVITY_NAME = "host.exp.exponentview.ExponentActivity";
+  public static String SCHEDULED_NOTIFICATION_RECEIVER_NAME = "host.exp.exponentview.notifications.ScheduledNotificationReceiver";
+
   public static class ExperienceOptions {
     public final String manifestUri;
     public final String uri;
     public final String notification; // deprecated
-    public final ExponentPushNotification notificationObject;
+    public final ExponentNotification notificationObject;
 
     public ExperienceOptions(String manifestUri, String uri, String notification) {
       this.manifestUri = manifestUri;
@@ -36,7 +44,7 @@ public class KernelConstants {
       this.notificationObject = null;
     }
 
-    public ExperienceOptions(String manifestUri, String uri, String notification, ExponentPushNotification notificationObject) {
+    public ExperienceOptions(String manifestUri, String uri, String notification, ExponentNotification notificationObject) {
       this.manifestUri = manifestUri;
       this.uri = uri;
       this.notification = notification;
