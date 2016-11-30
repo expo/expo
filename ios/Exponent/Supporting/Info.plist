@@ -29,7 +29,16 @@
 			<array>
 				<string>exp</string>
 				<string>exps</string>
-				<string>com.googleusercontent.apps.367315174693-isv5r1cbirdpj7l2n8g56cipnjnig7hq</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>OAuthRedirect</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>host.exp.exponent</string>
 			</array>
 		</dict>
 	</array>
