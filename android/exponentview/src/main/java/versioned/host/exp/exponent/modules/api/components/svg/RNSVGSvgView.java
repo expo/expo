@@ -9,6 +9,8 @@
 
 package versioned.host.exp.exponent.modules.api.components.svg;
 
+import javax.annotation.Nullable;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -18,17 +20,17 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.UIManagerModule;
-import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.uimanager.events.TouchEvent;
 import com.facebook.react.uimanager.events.TouchEventCoalescingKeyHelper;
 import com.facebook.react.uimanager.events.TouchEventType;
-
-import javax.annotation.Nullable;
+import com.facebook.react.uimanager.events.EventDispatcher;
 
 /**
  * Custom {@link View} implementation that draws an RNSVGSvg React view and its \children.
@@ -86,14 +88,14 @@ public class RNSVGSvgView extends ViewGroup {
     }
 
     @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        mTargetTag = mSvgViewShadowNode.hitTest(new Point((int) event.getX(), (int) event.getY()), this);
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        mTargetTag = mSvgViewShadowNode.hitTest(new Point((int) ev.getX(), (int) ev.getY()), this);
+
         if (mTargetTag != -1) {
-            handleTouchEvent(event);
-            return true;
+            handleTouchEvent(ev);
         }
 
-        return super.dispatchTouchEvent(event);
+        return super.dispatchTouchEvent(ev);
     }
 
     @Override
@@ -106,14 +108,37 @@ public class RNSVGSvgView extends ViewGroup {
         shadowNode.setSvgView(this);
     }
 
+    private int getAbsoluteLeft(View view) {
+        int left = view.getLeft() - view.getScrollX();
+
+        if (view.getParent() == view.getRootView() || view.getParent() instanceof ReactRootView) {
+            return left;
+        }
+
+        View parent = (View) view.getParent();
+        return left + getAbsoluteLeft(parent);
+    }
+
+    private int getAbsoluteTop(View view) {
+        int top = view.getTop() - view.getScrollY();
+
+        if (view.getParent() == view.getRootView() || view.getParent() instanceof ReactRootView) {
+            return top;
+        }
+
+        View parent = (View) view.getParent();
+        return top + getAbsoluteTop(parent);
+    }
+
     private void dispatch(MotionEvent ev, TouchEventType type) {
+        ev.offsetLocation(getAbsoluteLeft(this), getAbsoluteTop(this));
         mEventDispatcher.dispatchEvent(
             TouchEvent.obtain(
                 mTargetTag,
                 type,
                 ev,
                 ev.getX(),
-                ev.getX(),
+                ev.getY(),
                 mTouchEventCoalescingKeyHelper));
     }
 

@@ -42,7 +42,7 @@ public class RNSVGGroupShadowNode extends RNSVGPathShadowNode {
                 RNSVGVirtualNode child = (RNSVGVirtualNode) getChildAt(i);
                 child.setupDimensions(canvas);
 
-                child.mergeProperties(this, mPropList, true);
+                child.mergeProperties(this, mOwnedPropList, true);
                 child.draw(canvas, paint, opacity * mOpacity);
 
                 if (child.isResponsible()) {

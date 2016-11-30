@@ -283,7 +283,6 @@ public abstract class RNSVGVirtualNode extends LayoutShadowNode {
     }
 
     protected void setupDimensions(Canvas canvas) {
-        // TODO: not sure this is a right way to get canvas boundingBox
         Rect mCanvasClipBounds = canvas.getClipBounds();
         mCanvasX = mCanvasClipBounds.left;
         mCanvasY = mCanvasClipBounds.top;

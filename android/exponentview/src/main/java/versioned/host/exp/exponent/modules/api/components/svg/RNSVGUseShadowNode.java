@@ -59,7 +59,7 @@ public class RNSVGUseShadowNode extends RNSVGPathShadowNode {
             int count = saveAndSetupCanvas(canvas);
 
             clip(canvas, paint);
-            template.mergeProperties(this, mPropList);
+            template.mergeProperties(this, mOwnedPropList);
             template.draw(canvas, paint, opacity * mOpacity);
             template.resetProperties();
 

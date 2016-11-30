@@ -72,6 +72,7 @@ public class RNSVGPathShadowNode extends RNSVGVirtualNode {
     private ArrayList<String> mChangedList;
     private ArrayList<Object> mOriginProperties;
     protected ReadableArray mPropList = new JavaOnlyArray();
+    protected WritableArray mOwnedPropList = new JavaOnlyArray();
 
     @ReactProp(name = "d")
     public void setPath(@Nullable ReadableArray shapePath) {
@@ -196,8 +197,11 @@ public class RNSVGPathShadowNode extends RNSVGVirtualNode {
 
         if (propList != null) {
             for (int i = 0; i < propList.size(); i++) {
-                copy.pushString(propertyNameToFieldName(propList.getString(i)));
+                String fieldName = propertyNameToFieldName(propList.getString(i));
+                copy.pushString(fieldName);
+                mOwnedPropList.pushString(fieldName);
             }
+
         }
 
         mPropList = copy;
@@ -404,6 +408,7 @@ public class RNSVGPathShadowNode extends RNSVGVirtualNode {
         for (int i = 0; i < mPropList.size(); i++) {
             propList.pushString(mPropList.getString(i));
         }
+        mOwnedPropList = propList;
 
         for (int i = 0, size = mergeList.size(); i < size; i++) {
             try {
@@ -425,11 +430,6 @@ public class RNSVGPathShadowNode extends RNSVGVirtualNode {
                 throw new IllegalStateException(e);
             }
         }
-
-        if (inherited) {
-            mPropList = propList;
-        }
-
     }
 
     @Override
@@ -467,8 +467,8 @@ public class RNSVGPathShadowNode extends RNSVGVirtualNode {
     }
 
     private boolean hasOwnProperty(String propName) {
-        for (int i = mPropList.size() - 1; i >= 0; i--) {
-            if (mPropList.getString(i).equals(propName)) {
+        for (int i = mOwnedPropList.size() - 1; i >= 0; i--) {
+            if (mOwnedPropList.getString(i).equals(propName)) {
                 return true;
             }
         }
