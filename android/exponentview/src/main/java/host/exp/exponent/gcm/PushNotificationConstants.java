@@ -12,4 +12,5 @@ public class PushNotificationConstants {
   public static final String NOTIFICATION_IS_MULTIPLE_KEY = "isMultiple";
   public static final String NOTIFICATION_COLLAPSE_MODE = "collapse";
   public static final String NOTIFICATION_UNREAD_COUNT_KEY = "#{unread_notifications}";
+  public static final String NOTIFICATION_REMOTE_KEY = "remote";
 }

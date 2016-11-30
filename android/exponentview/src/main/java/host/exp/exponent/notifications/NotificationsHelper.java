@@ -1,7 +1,5 @@
 package host.exp.exponent.notifications;
 
-import android.app.AlarmManager;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +13,7 @@ import android.support.v4.app.NotificationCompat;
 import android.text.format.DateUtils;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
+import host.exp.exponent.gcm.PushNotificationConstants;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -171,6 +170,16 @@ public class NotificationsHelper {
               return;
             }
           }
+
+          JSONObject notification = new JSONObject();
+          notification.put(PushNotificationConstants.NOTIFICATION_EXPERIENCE_ID_KEY, experienceId);
+          notification.put(PushNotificationConstants.NOTIFICATION_REMOTE_KEY, false);
+          if (data.containsKey("data")) {
+            HashMap d = (HashMap) data.get("data");
+            notification.put(PushNotificationConstants.NOTIFICATION_DATA_KEY, d.toString());
+          }
+
+          intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notification.toString());
 
           PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, FLAG_UPDATE_CURRENT);
           builder.setContentIntent(contentIntent);
