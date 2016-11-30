@@ -13,7 +13,6 @@ import android.support.v4.app.NotificationCompat;
 import android.text.format.DateUtils;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
-import host.exp.exponent.gcm.PushNotificationConstants;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,7 +32,7 @@ import host.exp.exponentview.R;
 
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 
-public class NotificationsHelper {
+public class NotificationHelper {
 
   public interface Listener {
     void onSuccess(int id);
@@ -171,27 +170,23 @@ public class NotificationsHelper {
             }
           }
 
-          JSONObject notification = new JSONObject();
-          notification.put(PushNotificationConstants.NOTIFICATION_EXPERIENCE_ID_KEY, experienceId);
-          notification.put(PushNotificationConstants.NOTIFICATION_REMOTE_KEY, false);
-          if (data.containsKey("data")) {
-            HashMap d = (HashMap) data.get("data");
-            notification.put(PushNotificationConstants.NOTIFICATION_DATA_KEY, d.toString());
-          }
+          String body = data.containsKey("data") ? data.get("data").toString() : "";
 
-          intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notification.toString());
+          ExponentNotification notification = new ExponentNotification(experienceId, body, id, false, false);
+
+          intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notification.toJSONObject(null).toString());
 
           PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, FLAG_UPDATE_CURRENT);
           builder.setContentIntent(contentIntent);
 
-          int color = NotificationsHelper.getColor(
+          int color = NotificationHelper.getColor(
               data.containsKey("color") ? (String) data.get("color") : null,
               manifest,
               exponentManifest);
 
           builder.setColor(color);
 
-          NotificationsHelper.loadIcon(
+          NotificationHelper.loadIcon(
               data.containsKey("icon") ? (String) data.get("icon") : null,
               manifest,
               exponentManifest,
@@ -199,7 +194,7 @@ public class NotificationsHelper {
                 @Override
                 public void onLoadBitmap(Bitmap bitmap) {
                   builder.setLargeIcon(bitmap);
-                  NotificationsManager manager = new NotificationsManager(context);
+                  NotificationManager manager = new NotificationManager(context);
                   manager.notify(experienceId, id, builder.build());
                   listener.onSuccess(id);
                 }
@@ -261,7 +256,7 @@ public class NotificationsHelper {
 
     time += SystemClock.elapsedRealtime();
 
-    NotificationsManager manager = new NotificationsManager(context);
+    NotificationManager manager = new NotificationManager(context);
 
     Long interval = null;
 

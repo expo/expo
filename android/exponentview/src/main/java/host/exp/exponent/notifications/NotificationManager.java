@@ -19,16 +19,16 @@ import host.exp.exponent.storage.ExponentSharedPreferences;
 
 import java.util.HashMap;
 
-public class NotificationsManager {
+public class NotificationManager {
 
   @Inject
   ExponentSharedPreferences mExponentSharedPreferences;
 
   private Context mContext;
 
-  public NotificationsManager(Context context) {
+  public NotificationManager(Context context) {
     mContext = context;
-    NativeModuleDepsProvider.getInstance().inject(NotificationsManager.class, this);
+    NativeModuleDepsProvider.getInstance().inject(NotificationManager.class, this);
   }
 
   public void notify(String experienceId, int id, Notification notification) {

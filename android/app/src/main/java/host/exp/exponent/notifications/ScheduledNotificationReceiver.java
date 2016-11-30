@@ -28,12 +28,12 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
     HashMap details = (HashMap) bundle.getSerializable(KernelConstants.NOTIFICATION_OBJECT_KEY);
     int notificationId = bundle.getInt(KernelConstants.NOTIFICATION_ID_KEY, 0);
 
-    NotificationsHelper.showNotification(
+    NotificationHelper.showNotification(
             context,
             notificationId,
             details,
             mExponentManifest,
-            new NotificationsHelper.Listener() {
+            new NotificationHelper.Listener() {
                 public void onSuccess(int id) {
                     // do nothing
                 }

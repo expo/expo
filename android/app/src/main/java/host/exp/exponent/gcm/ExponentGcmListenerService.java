@@ -14,6 +14,8 @@ import android.support.v4.app.NotificationManagerCompat;
 
 import com.google.android.gms.gcm.GcmListenerService;
 
+import host.exp.exponent.notifications.ExponentNotification;
+import host.exp.exponent.notifications.NotificationConstants;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,15 +35,15 @@ import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponentview.R;
-import host.exp.exponent.notifications.NotificationsHelper;
-import host.exp.exponent.notifications.NotificationsManager;
+import host.exp.exponent.notifications.NotificationHelper;
+import host.exp.exponent.notifications.NotificationManager;
 
 public class ExponentGcmListenerService extends GcmListenerService {
 
-  public static class ReceivedPushNotificationEvent extends ExponentPushNotification {
+  public static class ReceivedPushNotificationEvent extends ExponentNotification {
 
     public ReceivedPushNotificationEvent(String experienceId, String body, int notificationId, boolean isMultiple) {
-      super(experienceId, body, notificationId, isMultiple);
+      super(experienceId, body, notificationId, isMultiple, true);
     }
   }
 
@@ -115,7 +117,7 @@ public class ExponentGcmListenerService extends GcmListenerService {
 
     final JSONObject notificationPreferences = manifest.optJSONObject(ExponentManifest.MANIFEST_NOTIFICATION_INFO_KEY);
 
-    NotificationsHelper.loadIcon(null, manifest, mExponentManifest, new ExponentManifest.BitmapListener() {
+    NotificationHelper.loadIcon(null, manifest, mExponentManifest, new ExponentManifest.BitmapListener() {
       @Override
       public void onLoadBitmap(Bitmap bitmap) {
         Mode mode = Mode.DEFAULT;
@@ -125,7 +127,7 @@ public class ExponentGcmListenerService extends GcmListenerService {
         // Modes
         if (notificationPreferences != null) {
           String modeString = notificationPreferences.optString(ExponentManifest.MANIFEST_NOTIFICATION_ANDROID_MODE);
-          if (PushNotificationConstants.NOTIFICATION_COLLAPSE_MODE.equals(modeString)) {
+          if (NotificationConstants.NOTIFICATION_COLLAPSE_MODE.equals(modeString)) {
             mode = Mode.COLLAPSE;
           }
         }
@@ -140,11 +142,11 @@ public class ExponentGcmListenerService extends GcmListenerService {
 
           String collapsedTitleRaw = notificationPreferences.optString(ExponentManifest.MANIFEST_NOTIFICATION_ANDROID_COLLAPSED_TITLE);
           if (collapsedTitleRaw != null) {
-            collapsedTitle = collapsedTitleRaw.replace(PushNotificationConstants.NOTIFICATION_UNREAD_COUNT_KEY, "" + unreadNotifications.length());
+            collapsedTitle = collapsedTitleRaw.replace(NotificationConstants.NOTIFICATION_UNREAD_COUNT_KEY, "" + unreadNotifications.length());
           }
         }
 
-        int color = NotificationsHelper.getColor(null, manifest, mExponentManifest);
+        int color = NotificationHelper.getColor(null, manifest, mExponentManifest);
 
         // Create notification object
         boolean isMultiple = mode == Mode.COLLAPSE && unreadNotifications.length() > 1;
@@ -166,17 +168,17 @@ public class ExponentGcmListenerService extends GcmListenerService {
           NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle()
               .setBigContentTitle(collapsedTitle);
 
-          for (int i = 0; i < Math.min(unreadNotifications.length(), PushNotificationConstants.MAX_COLLAPSED_NOTIFICATIONS); i++) {
+          for (int i = 0; i < Math.min(unreadNotifications.length(), NotificationConstants.MAX_COLLAPSED_NOTIFICATIONS); i++) {
             try {
               JSONObject unreadNotification = (JSONObject) unreadNotifications.get(i);
-              style.addLine(unreadNotification.getString(PushNotificationConstants.NOTIFICATION_MESSAGE_KEY));
+              style.addLine(unreadNotification.getString(NotificationConstants.NOTIFICATION_MESSAGE_KEY));
             } catch (JSONException e) {
               e.printStackTrace();
             }
           }
 
-          if (unreadNotifications.length() > PushNotificationConstants.MAX_COLLAPSED_NOTIFICATIONS) {
-            style.addLine("and " + (unreadNotifications.length() - PushNotificationConstants.MAX_COLLAPSED_NOTIFICATIONS) + " more...");
+          if (unreadNotifications.length() > NotificationConstants.MAX_COLLAPSED_NOTIFICATIONS) {
+            style.addLine("and " + (unreadNotifications.length() - NotificationConstants.MAX_COLLAPSED_NOTIFICATIONS) + " more...");
           }
 
           notificationBuilder = new NotificationCompat.Builder(ExponentGcmListenerService.this)
@@ -209,7 +211,7 @@ public class ExponentGcmListenerService extends GcmListenerService {
         }
 
         // Display
-        NotificationsManager manager = new NotificationsManager(ExponentGcmListenerService.this);
+        NotificationManager manager = new NotificationManager(ExponentGcmListenerService.this);
         manager.notify(experienceId, notificationId, notification);
 
         // Send event. Will be consumed if experience is already open.
@@ -221,8 +223,8 @@ public class ExponentGcmListenerService extends GcmListenerService {
   private void addUnreadNotificationToMetadata(String experienceId, String message, int notificationId) {
     try {
       JSONObject notification = new JSONObject();
-      notification.put(PushNotificationConstants.NOTIFICATION_MESSAGE_KEY, message);
-      notification.put(PushNotificationConstants.NOTIFICATION_ID_KEY, notificationId);
+      notification.put(NotificationConstants.NOTIFICATION_MESSAGE_KEY, message);
+      notification.put(NotificationConstants.NOTIFICATION_ID_KEY, notificationId);
 
       JSONObject metadata = mExponentSharedPreferences.getExperienceMetadata(experienceId);
       if (metadata == null) {
@@ -266,7 +268,7 @@ public class ExponentGcmListenerService extends GcmListenerService {
     NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
     for (int i = 0; i < unreadNotifications.length(); i++) {
       try {
-        notificationManager.cancel(Integer.parseInt(((JSONObject) unreadNotifications.get(i)).getString(PushNotificationConstants.NOTIFICATION_ID_KEY)));
+        notificationManager.cancel(Integer.parseInt(((JSONObject) unreadNotifications.get(i)).getString(NotificationConstants.NOTIFICATION_ID_KEY)));
       } catch (JSONException e) {
         e.printStackTrace();
       }

@@ -2,7 +2,7 @@
 
 package host.exp.exponent.kernel;
 
-import host.exp.exponent.gcm.ExponentPushNotification;
+import host.exp.exponent.notifications.ExponentNotification;
 
 public class KernelConstants {
   public static final String MANIFEST_KEY = "manifest";
@@ -35,7 +35,7 @@ public class KernelConstants {
     public final String manifestUri;
     public final String uri;
     public final String notification; // deprecated
-    public final ExponentPushNotification notificationObject;
+    public final ExponentNotification notificationObject;
 
     public ExperienceOptions(String manifestUri, String uri, String notification) {
       this.manifestUri = manifestUri;
@@ -44,7 +44,7 @@ public class KernelConstants {
       this.notificationObject = null;
     }
 
-    public ExperienceOptions(String manifestUri, String uri, String notification, ExponentPushNotification notificationObject) {
+    public ExperienceOptions(String manifestUri, String uri, String notification, ExponentNotification notificationObject) {
       this.manifestUri = manifestUri;
       this.uri = uri;
       this.notification = notification;

@@ -56,11 +56,10 @@ import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.gcm.ExponentPushNotification;
+import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.generated.ExponentKeys;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.KernelConstants;
-import host.exp.exponent.kernel.KernelProvider;
 import host.exp.exponent.network.ExponentHttpClient;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
@@ -560,8 +559,8 @@ public class Exponent {
   }
 
   public RNObject startReactInstance(final Object activity, final StartReactInstanceDelegate delegate, final String mManifestUrl, final String mIntentUri, final String mJSBundlePath, final RNObject mLinkingPackage, final JSONObject mManifest,
-                                  final String mSDKVersion, final ExponentPushNotification mNotification, final boolean mIsShellApp, final ExponentSharedPreferences mExponentSharedPreferences,
-                                  final RNObject mReactRootView, final int mActivityId, final boolean mIsCrashed) {
+                                     final String mSDKVersion, final ExponentNotification mNotification, final boolean mIsShellApp, final ExponentSharedPreferences mExponentSharedPreferences,
+                                     final RNObject mReactRootView, final int mActivityId, final boolean mIsCrashed) {
 
     if (mIsCrashed || !delegate.isInForeground()) {
       // Can sometimes get here after an error has occurred. Return early or else we'll hit

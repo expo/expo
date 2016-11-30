@@ -20,7 +20,7 @@ import javax.inject.Inject;
 
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.gcm.ExponentPushNotification;
+import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponentview.BuildConfig;
@@ -124,7 +124,7 @@ public class LauncherActivity extends Activity {
       String notificationObject = bundle.getString(KernelConstants.NOTIFICATION_OBJECT_KEY);
       String manifestUrl = bundle.getString(KernelConstants.MANIFEST_URL_KEY);
       if (manifestUrl != null) {
-        mKernel.openExperience(new KernelConstants.ExperienceOptions(manifestUrl, intentUri == null ? manifestUrl : intentUri, notification, ExponentPushNotification.fromJSONObjectString(notificationObject)));
+        mKernel.openExperience(new KernelConstants.ExperienceOptions(manifestUrl, intentUri == null ? manifestUrl : intentUri, notification, ExponentNotification.fromJSONObjectString(notificationObject)));
         return;
       }
     }

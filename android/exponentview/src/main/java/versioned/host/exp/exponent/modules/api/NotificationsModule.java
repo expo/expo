@@ -11,8 +11,8 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.WritableMap;
 
-import host.exp.exponent.notifications.NotificationsHelper;
-import host.exp.exponent.notifications.NotificationsManager;
+import host.exp.exponent.notifications.NotificationHelper;
+import host.exp.exponent.notifications.NotificationManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Random;
 
 import javax.inject.Inject;
-import javax.xml.datatype.Duration;
 
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.di.NativeModuleDepsProvider;
@@ -97,12 +96,12 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
 
     int notificationId = new Random().nextInt();
 
-    NotificationsHelper.showNotification(
+    NotificationHelper.showNotification(
             getReactApplicationContext(),
             notificationId,
             details,
             mExponentManifest,
-            new NotificationsHelper.Listener() {
+            new NotificationHelper.Listener() {
               public void onSuccess(int id) {
                 promise.resolve(id);
               }
@@ -116,13 +115,13 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   public void scheduleLocalNotification(final ReadableMap data, final ReadableMap options, final Promise promise) {
     int notificationId = new Random().nextInt();
 
-    NotificationsHelper.scheduleLocalNotification(
+    NotificationHelper.scheduleLocalNotification(
         getReactApplicationContext(),
         notificationId,
         data,
         options,
         mManifest,
-        new NotificationsHelper.Listener() {
+        new NotificationHelper.Listener() {
           public void onSuccess(int id) {
             promise.resolve(id);
           }
@@ -135,7 +134,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void dismissNotification(final int notificationId, final Promise promise) {
     try {
-      NotificationsManager manager = new NotificationsManager(getReactApplicationContext());
+      NotificationManager manager = new NotificationManager(getReactApplicationContext());
       manager.cancel(
               mManifest.getString(ExponentManifest.MANIFEST_ID_KEY),
               notificationId
@@ -149,7 +148,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void dismissAllNotifications(final Promise promise) {
     try {
-      NotificationsManager manager = new NotificationsManager(getReactApplicationContext());
+      NotificationManager manager = new NotificationManager(getReactApplicationContext());
       manager.cancelAll(mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
       promise.resolve(true);
     } catch (JSONException e) {
@@ -160,7 +159,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void cancelScheduledNotification(final int notificationId, final Promise promise) {
     try {
-      NotificationsManager manager = new NotificationsManager(getReactApplicationContext());
+      NotificationManager manager = new NotificationManager(getReactApplicationContext());
       manager.cancelScheduled(mManifest.getString(ExponentManifest.MANIFEST_ID_KEY), notificationId);
       promise.resolve(true);
     } catch (Exception e) {
@@ -171,7 +170,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void cancelAllScheduledNotifications(final Promise promise) {
     try {
-      NotificationsManager manager = new NotificationsManager(getReactApplicationContext());
+      NotificationManager manager = new NotificationManager(getReactApplicationContext());
       manager.cancelAllScheduled(mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
       promise.resolve(true);
     } catch (Exception e) {
