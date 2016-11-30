@@ -71,7 +71,7 @@ static NSMutableDictionary *EXFonts = nil;
   if ([family hasPrefix:exponentPrefix] && EXFonts) {
     NSString *suffix = [family substringFromIndex:exponentPrefix.length];
     if (EXFonts[suffix]) {
-      return [EXFonts[suffix] UIFontWithSize:[RCTConvert CGFloat:size] ?: defaultFontSize];
+      return [EXFonts[suffix] UIFontWithSize:[RCTConvert CGFloat:size] ?: font.pointSize ?: defaultFontSize];
     }
   }
   
