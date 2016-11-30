@@ -112,7 +112,7 @@ public class NotificationsHelper {
     }
 
     if (data.containsKey("count")) {
-      builder.setNumber((Integer) data.get("count"));
+      builder.setNumber(((Double) data.get("count")).intValue());
     }
 
     if (data.containsKey("sticky")) {
@@ -146,7 +146,7 @@ public class NotificationsHelper {
       ArrayList vibrate = (ArrayList) data.get("vibrate");
       long[] pattern = new long[vibrate.size()];
       for (int i = 0; i < vibrate.size(); i++) {
-        pattern[i] = (Integer) vibrate.get(i);
+        pattern[i] = ((Double) vibrate.get(i)).intValue();
       }
       builder.setVibrate(pattern);
     }
