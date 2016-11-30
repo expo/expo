@@ -111,6 +111,9 @@ async function configureStandaloneIOSInfoPlistAsync(configFilePath, manifest, pr
       }
     }
 
+    // 1 is iPhone, 2 is iPad
+    config.UIDeviceFamily = (manifest.ios && manifest.ios.supportsTablet) ? [1, 2] : [1];
+
     return config;
   });
 }
