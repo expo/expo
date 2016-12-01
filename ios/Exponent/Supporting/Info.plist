@@ -34,11 +34,11 @@
 		</dict>
 	</array>
 	<key>EXClientVersion</key>
-	<string></string>
+	<string>1.10.3.10408</string>
 	<key>Fabric</key>
 	<dict>
 		<key>APIKey</key>
-		<string>a25fafe9f9edee11a9882b32e0cd7a26df6e2c42</string>
+		<string>81130e95ea13cd7ed9a4f455e96214902c721c99</string>
 		<key>Kits</key>
 		<array>
 			<dict>

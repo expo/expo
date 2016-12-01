@@ -89,11 +89,11 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
             
             NSMutableDictionary *address = [NSMutableDictionary new];
             
-            address[@"street"] = (__bridge_transfer NSString *)(CFDictionaryGetValue(dict, kABPersonAddressStreetKey));
-            address[@"city"] = (__bridge_transfer NSString *)(CFDictionaryGetValue(dict, kABPersonAddressCityKey));
-            address[@"region"] = (__bridge_transfer NSString *)(CFDictionaryGetValue(dict, kABPersonAddressStateKey));
-            address[@"postcode"] = (__bridge_transfer NSString *)(CFDictionaryGetValue(dict, kABPersonAddressZIPKey));
-            address[@"country"] = (__bridge_transfer NSString *)(CFDictionaryGetValue(dict, kABPersonAddressCountryKey));
+            address[@"street"] = (NSString *)(CFDictionaryGetValue(dict, kABPersonAddressStreetKey));
+            address[@"city"] = (NSString *)(CFDictionaryGetValue(dict, kABPersonAddressCityKey));
+            address[@"region"] = (NSString *)(CFDictionaryGetValue(dict, kABPersonAddressStateKey));
+            address[@"postcode"] = (NSString *)(CFDictionaryGetValue(dict, kABPersonAddressZIPKey));
+            address[@"country"] = (NSString *)(CFDictionaryGetValue(dict, kABPersonAddressCountryKey));
             
             CFStringRef labelRef = ABMultiValueCopyLabelAtIndex(addresses, index);
             
