@@ -102,7 +102,7 @@ screen that the notification refers to).
       exponent.publish(
         exponentPushToken: @token.value,
         message: message,
-        data: {a: 'b'}, # Any arbitrary data to include with the notification
+        data: {a: 'b'}, # Data is required, pass any arbitrary data to include with the notification
       )
 
       render json: {success: true}
