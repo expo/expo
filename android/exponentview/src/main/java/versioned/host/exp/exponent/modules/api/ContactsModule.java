@@ -133,7 +133,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
       CommonDataKinds.Email.CONTENT_URI,
       null,
       CommonDataKinds.Email.CONTACT_ID + " = ?",
-      new String[]{Integer.toString(id)},
+      new String[] { Integer.toString(id) },
       null
     );
     if (cursor != null) {
@@ -193,7 +193,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
         CommonDataKinds.Phone.CONTENT_URI,
         null,
         CommonDataKinds.Phone.CONTACT_ID + " = ?",
-        new String[]{Integer.toString(id)},
+        new String[] { Integer.toString(id) },
         null
     );
     if (cursor != null) {
@@ -253,7 +253,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
         CommonDataKinds.StructuredPostal.CONTENT_URI,
         null,
         CommonDataKinds.StructuredPostal.CONTACT_ID + " = ?",
-        new String[]{Integer.toString(id)},
+        new String[] { Integer.toString(id) },
         null
     );
 
@@ -333,8 +333,8 @@ public class ContactsModule extends ReactContextBaseJavaModule {
     Cursor cursor = cr.query(
         ContactsContract.Data.CONTENT_URI,
         null,
-        ContactsContract.Data.CONTACT_ID + " = ?",
-        new String[]{Integer.toString(id)},
+        ContactsContract.Data.CONTACT_ID + " = ? AND " + ContactsContract.Data.MIMETYPE + " = ?",
+        new String[] { Integer.toString(id), ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE },
         null
     );
     if (cursor != null) {
