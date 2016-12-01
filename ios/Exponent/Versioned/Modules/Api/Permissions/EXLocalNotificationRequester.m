@@ -31,12 +31,12 @@
 
 - (void)requestPermissionsWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject
 {
-  resolve = _resolve;
-  reject = _reject;
+  _resolve = resolve;
+  _reject = reject;
   
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleDidRegisterForLocalNotifications:)
-                                               name:EX_UNVERSIONED(@"ExAppDidRegisterUserNotificationSettings")
+                                               name:EX_UNVERSIONED(@"EXAppDidRegisterUserNotificationSettings")
                                              object:nil];
   
   UIUserNotificationType types = UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert;

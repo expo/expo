@@ -15,7 +15,7 @@
 #import <AppAuth.h>
 
 NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDidRegisterForRemoteNotificationsNotification";
-NSString * const EXAppDidRegisterUserNotificationSettings = @"ExAppDidRegisterUserNotificationSettings";
+NSString * const EXAppDidRegisterUserNotificationSettings = @"EXAppDidRegisterUserNotificationSettings";
 
 @interface ExponentViewManager ()
 {
@@ -101,7 +101,7 @@ NSString * const EXAppDidRegisterUserNotificationSettings = @"ExAppDidRegisterUs
   [self setLaunchOptions:launchOptions];
 
   NSDictionary *remoteNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
-  if (remoteNotification || application.applicationIconBadgeNumber > 0) {
+  if (remoteNotification) {
     [[EXRemoteNotificationManager sharedInstance] handleRemoteNotification:remoteNotification fromBackground:YES];
   }
   
