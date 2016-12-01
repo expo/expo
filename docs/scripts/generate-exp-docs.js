@@ -1,10 +1,13 @@
 const path = require('path');
 const fs = require('fs');
 
+let sdkVersion = process.env.DOCS_VERSION.substring(1);
+
 let ExpSchema;
 try {
-  ExpSchema = require('../../dev/xdl/src/project/ExpSchema');
+  ExpSchema = require(`../../server/www/xdl-schemas/${sdkVersion}-schema.json`).schema;
 } catch (e) {
+  console.error(e.toString());
   return;
 }
 
@@ -22,8 +25,9 @@ const preamble = `
 
 // Open and write!
 stream.once('open', function(fd) {
-  const readableSchema = ExpSchema._inner.children.map(property => {
-    return extractData(property);
+  const readableSchema = [];
+  Object.keys(ExpSchema.properties).forEach(key => {
+    readableSchema.push(extractData(key, ExpSchema.properties[key], ExpSchema));
   });
 
   stream.write(".. _exp:\n\n");
@@ -73,36 +77,22 @@ function propertyDescription(prop, depthSpacing) {
 }
 
 function extractValidOptions(property) {
-  let { schema } = property;
-  if (schema._valids && schema._valids._set.length) {
-    return schema._valids._set.join(', ');
-  } else if (schema._meta[0] && schema._meta[0].regexHuman) {
-    return schema._meta[0].regexHuman;
+  if (property.enum && property.enum.length) {
+    return property.enum.join(', ');
+  } else if (property.meta && property.meta.regexHuman) {
+    return property.meta.regexHuman;
   }
 }
 
 function determineIfStandaloneOnly(property) {
-  let { schema } = property;
-  let result = false;
-
-  if (schema._meta) {
-    schema._meta.forEach(meta => {
-      if (meta.standaloneOnly) {
-        result = true;
-      }
-    });
-  }
-
-  return result;
+  return property.meta && property.meta.standaloneOnly;
 }
 
-function extractData(property) {
-  let key = property.key;
-  let { schema } = property;
-  let description = (schema._description || '').trim();
-  let type = schema._type;
+function extractData(key, property, parent) {
+  let description = (property.description || '').trim();
+  let type = property.type;
   let validOptions = extractValidOptions(property);
-  let isRequired = !!(schema._flags && schema._flags.presence === 'required');
+  let isRequired = parent.required && parent.required.includes(key);
   let isStandaloneOnly = determineIfStandaloneOnly(property);
 
   let data = {
@@ -114,9 +104,13 @@ function extractData(property) {
     validOptions,
   };
 
-  let children = property.schema._inner.children;
+  let children = property.properties;
   if (children) {
-    data = Object.assign(data, {children: children.map(child => extractData(child))});
+    let mappedChildren = [];
+    Object.keys(children).forEach(key => {
+      mappedChildren.push(extractData(key, children[key], property));
+    });
+    data = Object.assign(data, {children: mappedChildren});
   }
 
   return data;
