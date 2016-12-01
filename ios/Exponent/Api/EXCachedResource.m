@@ -55,6 +55,9 @@ NS_ASSUME_NONNULL_BEGIN
                                  error:(EXCachedResourceErrorBlock)errorBlock
 {
   EXFileDownloader *downloader = [[EXFileDownloader alloc] init];
+  if (_requestTimeoutInterval) {
+    downloader.timeoutInterval = _requestTimeoutInterval;
+  }
   if (_abiVersion) {
     downloader.abiVersion = _abiVersion;
   }

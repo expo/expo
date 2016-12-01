@@ -14,6 +14,8 @@
 #import "RCTDevLoadingView.h"
 #import "RCTRootView.h"
 
+NSTimeInterval const kEXJavaScriptResourceLongerTimeout = 120;
+
 @interface EXReactAppManager ()
 
 @property (nonnull, strong) EXJavaScriptResource *jsResource;
@@ -90,7 +92,12 @@
   _jsResource.abiVersion = _validatedVersion;
   
   __weak typeof(self) weakSelf = self;
-  [_jsResource loadResourceWithBehavior:[self cacheBehaviorForJSResource] successBlock:^(NSData * _Nonnull sourceData) {
+  EXCachedResourceBehavior cacheBehavior = [self cacheBehaviorForJSResource];
+  if (cacheBehavior == kEXCachedResourceNoCache) {
+    // no cache - wait longer before timing out
+    _jsResource.requestTimeoutInterval = kEXJavaScriptResourceLongerTimeout;
+  }
+  [_jsResource loadResourceWithBehavior:cacheBehavior successBlock:^(NSData * _Nonnull sourceData) {
     loadCallback(nil, sourceData, sourceData.length);
   } errorBlock:^(NSError * _Nonnull error) {
     __strong typeof(self) strongSelf = weakSelf;

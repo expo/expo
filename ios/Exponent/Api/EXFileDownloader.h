@@ -5,6 +5,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSString * const EXNetworkErrorDomain;
+extern NSTimeInterval const EXFileDownloaderDefaultTimeoutInterval;
 
 typedef void (^EXFileDownloaderSuccessBlock)(NSData *data, NSURLResponse *response);
 typedef void (^EXFileDownloaderErrorBlock)(NSError *error, NSURLResponse *response);
@@ -13,6 +14,7 @@ typedef void (^EXFileDownloaderErrorBlock)(NSError *error, NSURLResponse *respon
 
 @property (nonatomic, strong, nullable) NSString *abiVersion;
 @property (nonatomic, strong) NSURLCache *urlCache;
+@property (nonatomic, assign) NSTimeInterval timeoutInterval; // default is NSURLRequest's default of 60 seconds.
 
 - (void)downloadFileFromURL:(NSURL *)url
                successBlock:(EXFileDownloaderSuccessBlock)successBlock

@@ -21,6 +21,7 @@ typedef enum EXCachedResourceBehavior {
 @property (nonatomic, assign) BOOL shouldVersionCache;
 @property (nonatomic, strong, nullable) NSString *abiVersion;
 @property (nonatomic, strong) NSURLCache *urlCache;
+@property (nonatomic, assign) NSTimeInterval requestTimeoutInterval;
 
 - (instancetype)initWithResourceName:(NSString *)resourceName
                         resourceType:(NSString *)resourceType

@@ -11,11 +11,20 @@
 #import <sys/utsname.h>
 
 NSString * const EXNetworkErrorDomain = @"EXNetwork";
+NSTimeInterval const EXFileDownloaderDefaultTimeoutInterval = 60;
 
 @interface EXFileDownloader () <NSURLSessionDataDelegate>
 @end
 
 @implementation EXFileDownloader
+
+- (instancetype)init
+{
+  if (self = [super init]) {
+    _timeoutInterval = EXFileDownloaderDefaultTimeoutInterval;
+  }
+  return self;
+}
 
 - (void)downloadFileFromURL:(NSURL *)url
                      successBlock:(EXFileDownloaderSuccessBlock)successBlock
@@ -27,7 +36,7 @@ NSString * const EXNetworkErrorDomain = @"EXNetwork";
   }
   
   NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
-  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:_timeoutInterval];
   [self setHTTPHeaderFields:request];
   
   __weak typeof(self) weakSelf = self;
