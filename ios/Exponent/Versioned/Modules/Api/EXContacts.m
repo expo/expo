@@ -75,7 +75,44 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
     contact[@"company"] = (__bridge_transfer NSString *)(ABRecordCopyValue(person, kABPersonOrganizationProperty));
     contact[@"jobTitle"] = (__bridge_transfer NSString *)(ABRecordCopyValue(person, kABPersonJobTitleProperty));
     
-    if ([fieldsSet containsObject:@"phone_number"]) {
+    if ([fieldsSet containsObject:@"addresses"]) {
+      ABMultiValueRef addresses = ABRecordCopyValue(person, kABPersonAddressProperty);
+      
+      if (addresses) {
+        CFIndex numberOfAddresses = ABMultiValueGetCount(addresses);
+        
+        if (numberOfAddresses > 0) {
+          contact[@"addresses"] = [NSMutableArray new];
+          
+          for (NSUInteger index = 0; index < numberOfAddresses; index++) {
+            CFDictionaryRef dict = ABMultiValueCopyValueAtIndex(addresses, index);
+            
+            NSMutableDictionary *address = [NSMutableDictionary new];
+            
+            address[@"street"] = (__bridge_transfer NSString *)(CFDictionaryGetValue(dict, kABPersonAddressStreetKey));
+            address[@"city"] = (__bridge_transfer NSString *)(CFDictionaryGetValue(dict, kABPersonAddressCityKey));
+            address[@"region"] = (__bridge_transfer NSString *)(CFDictionaryGetValue(dict, kABPersonAddressStateKey));
+            address[@"postcode"] = (__bridge_transfer NSString *)(CFDictionaryGetValue(dict, kABPersonAddressZIPKey));
+            address[@"country"] = (__bridge_transfer NSString *)(CFDictionaryGetValue(dict, kABPersonAddressCountryKey));
+            
+            CFStringRef labelRef = ABMultiValueCopyLabelAtIndex(addresses, index);
+            
+            if (labelRef) {
+              address[@"label"] = (__bridge_transfer NSString *)(ABAddressBookCopyLocalizedLabel(labelRef));
+              CFRelease(labelRef);
+            }
+            
+            [contact[@"addresses"] addObject:address];
+            
+            CFRelease(dict);
+          }
+        }
+        
+        CFRelease(addresses);
+      }
+    }
+    
+    if ([fieldsSet containsObject:@"phoneNumbers"]) {
       ABMultiValueRef phoneNumbers = ABRecordCopyValue(person, kABPersonPhoneProperty);
       if (phoneNumbers) {
         CFIndex numberOfPhones = ABMultiValueGetCount(phoneNumbers);
@@ -91,11 +128,7 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
               (__bridge_transfer NSString *)(ABAddressBookCopyLocalizedLabel(phoneLabelRef)) :
               nil;
           
-            [contact[@"phoneNumbers"] addObject:@{
-                                                  @"number": phoneNumber,
-                                                  @"label": phoneLabel,
-                                                  @"default": @(index == 0),
-                                                  }];
+            [contact[@"phoneNumbers"] addObject:@{ @"number": phoneNumber, @"label": phoneLabel }];
           
             if (phoneLabelRef) {
               CFRelease(phoneLabelRef);
@@ -107,7 +140,7 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
       }
     }
     
-    if ([fieldsSet containsObject:@"email"]) {
+    if ([fieldsSet containsObject:@"emails"]) {
       ABMultiValueRef emails = ABRecordCopyValue(person, kABPersonEmailProperty);
       if (emails) {
         CFIndex numberOfEmails = ABMultiValueGetCount(emails);
@@ -123,11 +156,7 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
               (__bridge_transfer NSString *)(ABAddressBookCopyLocalizedLabel(emailLabelRef)) :
               nil;
           
-            [contact[@"emails"] addObject:@{
-                                            @"email": emailAddress,
-                                            @"label": emailLabel,
-                                            @"default": @(index == 0),
-                                            }];
+            [contact[@"emails"] addObject:@{ @"email": emailAddress, @"label": emailLabel }];
           
             if (emailLabelRef) {
               CFRelease(emailLabelRef);
