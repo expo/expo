@@ -4,8 +4,9 @@ package versioned.host.exp.exponent.modules.api;
 
 import android.content.ContentResolver;
 import android.database.Cursor;
-import android.provider.ContactsContract;
 
+import android.provider.ContactsContract;
+import android.support.annotation.Nullable;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -15,6 +16,8 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -72,14 +75,31 @@ public class ContactsModule extends ReactContextBaseJavaModule {
       try {
         final int contactIdIndex = cursor.getColumnIndex(CommonDataKinds.Phone.CONTACT_ID);
         final int displayNameIndex = cursor.getColumnIndex(Contacts.DISPLAY_NAME);
-        final int numberIndex = cursor.getColumnIndex(CommonDataKinds.Phone.NORMALIZED_NUMBER);
         while (cursor.moveToNext()) {
           int id = (int) cursor.getLong(contactIdIndex);
           String name = cursor.getString(displayNameIndex);
-          WritableArray emails = (fieldsSet.contains("emails")) ? getEmailsFromContentResolver(id, cr) : null;
-          WritableArray phoneNumbers = (fieldsSet.contains("phoneNumbers")) ? getPhoneNumbersFromContentResolver(id, cr) : null;
-          WritableArray addresses = (fieldsSet.contains("addresses")) ? getAddressesFromContentResolver(id, cr) : null;
+
+          String company = null;
+          String jobTitle = null;
+
+          if (fieldsSet.contains("company") || fieldsSet.contains("jobTitle")) {
+            HashMap<String, String> organization = getOrganizationFromContentResolver(id, cr);
+            if (organization != null) {
+              if (fieldsSet.contains("company")) {
+                company = organization.get("company");
+              }
+              if (fieldsSet.contains("jobTitle")) {
+                jobTitle = organization.get("jobTitle");
+              }
+            }
+          }
+
+          WritableArray emails = fieldsSet.contains("emails") ? getEmailsFromContentResolver(id, cr) : null;
+          WritableArray phoneNumbers = fieldsSet.contains("phoneNumbers") ? getPhoneNumbersFromContentResolver(id, cr) : null;
+          WritableArray addresses = fieldsSet.contains("addresses") ? getAddressesFromContentResolver(id, cr) : null;
+
           WritableMap contact = Arguments.createMap();
+
           if (emails != null && emails.size() > 0) {
             contact.putArray("emails", emails);
           }
@@ -88,6 +108,12 @@ public class ContactsModule extends ReactContextBaseJavaModule {
           }
           if (addresses != null && addresses.size() > 0) {
             contact.putArray("addresses", addresses);
+          }
+          if (company != null && !company.isEmpty()) {
+            contact.putString("company", company);
+          }
+          if (jobTitle != null && !jobTitle.isEmpty()) {
+            contact.putString("jobTitle", jobTitle);
           }
           contact.putInt("id", id);
           contact.putString("name", name);
@@ -107,7 +133,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
       CommonDataKinds.Email.CONTENT_URI,
       null,
       CommonDataKinds.Email.CONTACT_ID + " = ?",
-      new String[]{Integer.toString(id)},
+      new String[] { Integer.toString(id) },
       null
     );
     if (cursor != null) {
@@ -124,7 +150,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
           }
 
           if (isPrimary == 1) {
-            details.putBoolean("default", true);
+            details.putBoolean("primary", true);
           }
 
           String label;
@@ -164,27 +190,27 @@ public class ContactsModule extends ReactContextBaseJavaModule {
   private WritableArray getPhoneNumbersFromContentResolver(int id, ContentResolver cr) {
     WritableArray phoneNumbers = Arguments.createArray();
     Cursor cursor = cr.query(
-        CommonDataKinds.Email.CONTENT_URI,
+        CommonDataKinds.Phone.CONTENT_URI,
         null,
-        CommonDataKinds.Email.CONTACT_ID + " = ?",
-        new String[]{Integer.toString(id)},
+        CommonDataKinds.Phone.CONTACT_ID + " = ?",
+        new String[] { Integer.toString(id) },
         null
     );
     if (cursor != null) {
       try {
         while (cursor.moveToNext()) {
           String number = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Phone.NORMALIZED_NUMBER));
-          int isPrimary = cursor.getInt(cursor.getColumnIndex(CommonDataKinds.Email.IS_PRIMARY));
-          int type = cursor.getInt(cursor.getColumnIndex(CommonDataKinds.Email.TYPE));
+          int isPrimary = cursor.getInt(cursor.getColumnIndex(CommonDataKinds.Phone.IS_PRIMARY));
+          int type = cursor.getInt(cursor.getColumnIndex(CommonDataKinds.Phone.TYPE));
 
           WritableMap details = Arguments.createMap();
 
           if (number != null) {
-            details.putString("email", number);
+            details.putString("number", number);
           }
 
           if (isPrimary == 1) {
-            details.putBoolean("default", true);
+            details.putBoolean("primary", true);
           }
 
           String label;
@@ -227,7 +253,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
         CommonDataKinds.StructuredPostal.CONTENT_URI,
         null,
         CommonDataKinds.StructuredPostal.CONTACT_ID + " = ?",
-        new String[]{Integer.toString(id)},
+        new String[] { Integer.toString(id) },
         null
     );
 
@@ -302,6 +328,31 @@ public class ContactsModule extends ReactContextBaseJavaModule {
     return addresses;
   }
 
+  @Nullable
+  private HashMap<String, String> getOrganizationFromContentResolver(int id, ContentResolver cr) {
+    Cursor cursor = cr.query(
+        ContactsContract.Data.CONTENT_URI,
+        null,
+        ContactsContract.Data.CONTACT_ID + " = ? AND " + ContactsContract.Data.MIMETYPE + " = ?",
+        new String[] { Integer.toString(id), ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE },
+        null
+    );
+    if (cursor != null) {
+      try {
+        if (cursor.moveToNext()) {
+          HashMap<String, String> organization = new HashMap<>();
+          String company = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Organization.COMPANY));
+          String jobTitle = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Organization.TITLE));
+          organization.put("company", company);
+          organization.put("jobTitle", jobTitle);
+          return organization;
+        }
+      } finally {
+        cursor.close();
+      }
+    }
+    return null;
+  }
 
   private Set<String> getFieldsSet(final ReadableArray fields) {
     Set<String> fieldStrings = new HashSet<>();
