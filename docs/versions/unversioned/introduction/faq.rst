@@ -3,6 +3,10 @@
 Frequently Asked Questions
 ==========================
 
+In addition to the questions below, see the `Exponent AMA on Hashnode
+<https://hashnode.com/ama/with-exponent-ciw1qxry118wl4353o9kxaowl#ciw43q029007fxr53pkuftwhu>`_
+for more common questions and answers.
+
 How much does Exponent Cost?
 ----------------------------
 
