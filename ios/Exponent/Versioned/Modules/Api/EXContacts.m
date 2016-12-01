@@ -115,19 +115,14 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
         CFIndex numberOfPhones = ABMultiValueGetCount(phoneNumbers);
       
         if (numberOfPhones > 0) {
-          contact[@"phoneNumbers"] = [NSMutableArray new];
+          contact[@"phoneNumbers"] = [NSMutableArray arrayWithCapacity:numberOfPhones];
         
           for (NSUInteger index = 0; index < numberOfPhones; index++) {
             NSString *phoneNumber = (__bridge_transfer NSString *)(ABMultiValueCopyValueAtIndex(phoneNumbers, index));
-            
             CFStringRef phoneLabelRef = ABMultiValueCopyLabelAtIndex(phoneNumbers, index);
-            NSString *phoneLabel = phoneLabelRef ?
-              (__bridge_transfer NSString *)(ABAddressBookCopyLocalizedLabel(phoneLabelRef)) :
-              nil;
-          
-            [contact[@"phoneNumbers"] addObject:@{ @"number": phoneNumber, @"label": phoneLabel }];
-          
             if (phoneLabelRef) {
+              NSString *phoneLabel = (__bridge_transfer NSString *)(ABAddressBookCopyLocalizedLabel(phoneLabelRef));
+              [contact[@"phoneNumbers"] addObject:@{ @"number": phoneNumber, @"label": phoneLabel }];
               CFRelease(phoneLabelRef);
             }
           }
@@ -143,19 +138,14 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
         CFIndex numberOfEmails = ABMultiValueGetCount(emails);
       
         if (numberOfEmails > 0) {
-          contact[@"emails"] = [NSMutableArray new];
+          contact[@"emails"] = [NSMutableArray arrayWithCapacity:numberOfEmails];
         
           for (NSUInteger index = 0; index < numberOfEmails; index++) {
             NSString *emailAddress = (__bridge_transfer NSString *)(ABMultiValueCopyValueAtIndex(emails, index));
-          
             CFStringRef emailLabelRef = ABMultiValueCopyLabelAtIndex(emails, index);
-            NSString *emailLabel = emailLabelRef ?
-              (__bridge_transfer NSString *)(ABAddressBookCopyLocalizedLabel(emailLabelRef)) :
-              nil;
-          
-            [contact[@"emails"] addObject:@{ @"email": emailAddress, @"label": emailLabel }];
-          
             if (emailLabelRef) {
+              NSString *emailLabel = (__bridge_transfer NSString *)(ABAddressBookCopyLocalizedLabel(emailLabelRef));
+              [contact[@"emails"] addObject:@{ @"email": emailAddress, @"label": emailLabel }];
               CFRelease(emailLabelRef);
             }
           }
