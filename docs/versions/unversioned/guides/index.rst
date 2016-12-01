@@ -21,3 +21,4 @@ Guides
    building-standalone-apps
    how-exponent-works
    upgrading-exponent
+   using-clojurescript
