@@ -145,11 +145,6 @@
       android:name=".ExponentIntentService"
       android:exported="false" />
 
-    <!-- Scheduled notifications -->
-    <receiver
-        android:name=".notifications.ScheduledNotificationReceiver"
-        android:exported="false" />
-
     <!-- Analytics -->
     <receiver
       android:name="host.exp.exponent.referrer.InstallReferrerReceiver"

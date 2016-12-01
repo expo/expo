@@ -99,8 +99,7 @@ public class NotificationManager {
   }
 
   public void schedule(String experienceId, int id, HashMap details, long time, Long interval) throws ClassNotFoundException {
-    Class receiverClass = Class.forName(KernelConstants.SCHEDULED_NOTIFICATION_RECEIVER_NAME);
-    Intent notificationIntent = new Intent(mContext, receiverClass);
+    Intent notificationIntent = new Intent(mContext, ScheduledNotificationReceiver.class);
 
     notificationIntent.setType(experienceId);
     notificationIntent.setAction(String.valueOf(id));
@@ -137,8 +136,7 @@ public class NotificationManager {
   }
 
   public void cancelScheduled(String experienceId, int id) throws ClassNotFoundException {
-    Class receiverClass = Class.forName(KernelConstants.SCHEDULED_NOTIFICATION_RECEIVER_NAME);
-    Intent notificationIntent = new Intent(mContext, receiverClass);
+    Intent notificationIntent = new Intent(mContext, ScheduledNotificationReceiver.class);
 
     notificationIntent.setType(experienceId);
     notificationIntent.setAction(String.valueOf(id));

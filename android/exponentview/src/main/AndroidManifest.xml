@@ -19,6 +19,12 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
-    <application />
+    <application>
+
+      <!-- Scheduled notifications -->
+      <receiver
+        android:name="host.exp.exponent.notifications.ScheduledNotificationReceiver"
+        android:exported="false" />
+    </application>
 
 </manifest>

@@ -3,11 +3,13 @@
 package host.exp.exponent.kernel;
 
 import host.exp.exponent.notifications.ExponentNotification;
+import host.exp.exponentview.ExponentActivity;
 
 public class KernelConstants {
   public static final String MANIFEST_KEY = "manifest";
   public static final String BUNDLE_URL_KEY = "bundleUrl";
   public static final String MANIFEST_URL_KEY = "experienceUrl";
+  public static final String NOTIFICATION_MANIFEST_URL_KEY = "notificationExperienceUrl";
   public static final String HOME_MANIFEST_URL = "";
   public static final String LINKING_URI_KEY = "linkingUri";
   public static final String INTENT_URI_KEY = "intentUri";
@@ -28,8 +30,7 @@ public class KernelConstants {
   public static final String NOTIFICATION_OBJECT_KEY = "notification_object";
   public static final String DEV_FLAG = "dev_flag";
 
-  public static String MAIN_ACTIVITY_NAME = "host.exp.exponentview.ExponentActivity";
-  public static String SCHEDULED_NOTIFICATION_RECEIVER_NAME = "host.exp.exponentview.notifications.ScheduledNotificationReceiver";
+  public static Class MAIN_ACTIVITY_CLASS = ExponentActivity.class;
 
   public static class ExperienceOptions {
     public final String manifestUri;

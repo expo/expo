@@ -30,8 +30,6 @@ import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.utils.ColorParser;
 import host.exp.exponentview.R;
 
-import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
-
 public class NotificationHelper {
 
   public interface Listener {
@@ -160,23 +158,19 @@ public class NotificationHelper {
           if (data.containsKey("link")) {
             intent = new Intent(Intent.ACTION_VIEW, Uri.parse((String) data.get("link")));
           } else {
-            try {
-              Class activityClass = Class.forName(KernelConstants.MAIN_ACTIVITY_NAME);
-              intent = new Intent(context, activityClass);
-              intent.putExtra(KernelConstants.MANIFEST_URL_KEY, experience.manifestUrl);
-            } catch (ClassNotFoundException e) {
-              listener.onFailure(e);
-              return;
-            }
+            Class activityClass = KernelConstants.MAIN_ACTIVITY_CLASS;
+            intent = new Intent(context, activityClass);
+            intent.putExtra(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY, experience.manifestUrl);
           }
 
           String body = data.containsKey("data") ? data.get("data").toString() : "";
 
           ExponentNotification notification = new ExponentNotification(experienceId, body, id, false, false);
 
+          intent.putExtra(KernelConstants.NOTIFICATION_KEY, body); // deprecated
           intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notification.toJSONObject(null).toString());
 
-          PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, FLAG_UPDATE_CURRENT);
+          PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
           builder.setContentIntent(contentIntent);
 
           int color = NotificationHelper.getColor(
@@ -218,15 +212,6 @@ public class NotificationHelper {
       final ReadableMap options,
       final JSONObject manifest,
       final Listener listener) {
-
-    Class receiverClass;
-
-    try {
-      receiverClass = Class.forName(KernelConstants.SCHEDULED_NOTIFICATION_RECEIVER_NAME);
-    } catch (ClassNotFoundException e) {
-      listener.onFailure(e);
-      return;
-    }
 
     HashMap<String, java.io.Serializable> details = new HashMap<>();
 

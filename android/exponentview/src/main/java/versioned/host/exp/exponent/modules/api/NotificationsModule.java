@@ -2,6 +2,8 @@
 
 package versioned.host.exp.exponent.modules.api;
 
+import android.support.v4.app.NotificationManagerCompat;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -79,6 +81,12 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
         promise.reject(errorMessage);
       }
     });
+  }
+
+  @ReactMethod
+  public void cancelNotification(final int notificationId) {
+    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getReactApplicationContext());
+    notificationManager.cancel(notificationId);
   }
 
   @ReactMethod

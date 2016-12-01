@@ -154,7 +154,7 @@ public class ExponentGcmListenerService extends GcmListenerService {
 
         // Create pending intent
         Intent intent = new Intent(ExponentGcmListenerService.this, LauncherActivity.class);
-        intent.putExtra(KernelConstants.MANIFEST_URL_KEY, manifestUrl);
+        intent.putExtra(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY, manifestUrl);
         intent.putExtra(KernelConstants.NOTIFICATION_KEY, body); // deprecated
         intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString());
         PendingIntent pendingIntent = PendingIntent.getActivity(ExponentGcmListenerService.this, 0, intent,
@@ -211,8 +211,8 @@ public class ExponentGcmListenerService extends GcmListenerService {
         }
 
         // Display
-        NotificationManager manager = new NotificationManager(ExponentGcmListenerService.this);
-        manager.notify(experienceId, notificationId, notification);
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(ExponentGcmListenerService.this);
+        notificationManager.notify(experienceId, notificationId, notification);
 
         // Send event. Will be consumed if experience is already open.
         EventBus.getDefault().post(notificationEvent);

@@ -17,6 +17,7 @@ import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.kernel.KernelInterface;
 import host.exp.exponent.kernel.KernelProvider;
 import host.exp.exponent.modules.ExponentKernelModule;
+import host.exp.exponent.notifications.ScheduledNotificationReceiver;
 import host.exp.exponentview.Exponent;
 import host.exp.exponentview.ExponentViewBuildConfig;
 import io.fabric.sdk.android.Fabric;
@@ -40,8 +41,7 @@ public class ExponentApplication extends MultiDexApplication {
   public void onCreate() {
     super.onCreate();
 
-    KernelConstants.MAIN_ACTIVITY_NAME = "host.exp.exponent.LauncherActivity";
-    KernelConstants.SCHEDULED_NOTIFICATION_RECEIVER_NAME = "host.exp.exponent.notifications.ScheduledNotificationReceiver";
+    KernelConstants.MAIN_ACTIVITY_CLASS = LauncherActivity.class;
 
     if (host.exp.exponentview.BuildConfig.DEBUG && Constants.WAIT_FOR_DEBUGGER) {
       Debug.waitForDebugger();
