@@ -17,7 +17,6 @@ import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.kernel.KernelInterface;
 import host.exp.exponent.kernel.KernelProvider;
 import host.exp.exponent.modules.ExponentKernelModule;
-import host.exp.exponent.notifications.ScheduledNotificationReceiver;
 import host.exp.exponentview.Exponent;
 import host.exp.exponentview.ExponentViewBuildConfig;
 import io.fabric.sdk.android.Fabric;
