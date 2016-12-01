@@ -4,7 +4,6 @@ package versioned.host.exp.exponent.modules.api;
 
 import android.content.ContentResolver;
 import android.database.Cursor;
-import android.provider.ContactsContract;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -72,13 +71,16 @@ public class ContactsModule extends ReactContextBaseJavaModule {
       try {
         final int contactIdIndex = cursor.getColumnIndex(CommonDataKinds.Phone.CONTACT_ID);
         final int displayNameIndex = cursor.getColumnIndex(Contacts.DISPLAY_NAME);
-        final int numberIndex = cursor.getColumnIndex(CommonDataKinds.Phone.NORMALIZED_NUMBER);
+        final int companyNameIndex = cursor.getColumnIndex(CommonDataKinds.Organization.COMPANY);
+        final int jobTitleIndex = cursor.getColumnIndex(CommonDataKinds.Organization.JOB_DESCRIPTION);
         while (cursor.moveToNext()) {
           int id = (int) cursor.getLong(contactIdIndex);
           String name = cursor.getString(displayNameIndex);
-          WritableArray emails = (fieldsSet.contains("emails")) ? getEmailsFromContentResolver(id, cr) : null;
-          WritableArray phoneNumbers = (fieldsSet.contains("phoneNumbers")) ? getPhoneNumbersFromContentResolver(id, cr) : null;
-          WritableArray addresses = (fieldsSet.contains("addresses")) ? getAddressesFromContentResolver(id, cr) : null;
+          String company = fieldsSet.contains("company") ? cursor.getString(companyNameIndex) : null;
+          String jobTitle = fieldsSet.contains("jobTitle") ? cursor.getString(jobTitleIndex) : null;
+          WritableArray emails = fieldsSet.contains("emails") ? getEmailsFromContentResolver(id, cr) : null;
+          WritableArray phoneNumbers = fieldsSet.contains("phoneNumbers") ? getPhoneNumbersFromContentResolver(id, cr) : null;
+          WritableArray addresses = fieldsSet.contains("addresses") ? getAddressesFromContentResolver(id, cr) : null;
           WritableMap contact = Arguments.createMap();
           if (emails != null && emails.size() > 0) {
             contact.putArray("emails", emails);
@@ -88,6 +90,12 @@ public class ContactsModule extends ReactContextBaseJavaModule {
           }
           if (addresses != null && addresses.size() > 0) {
             contact.putArray("addresses", addresses);
+          }
+          if (company != null && !company.isEmpty()) {
+            contact.putString("company", company);
+          }
+          if (jobTitle != null && !jobTitle.isEmpty()) {
+            contact.putString("jobTitle", jobTitle);
           }
           contact.putInt("id", id);
           contact.putString("name", name);
@@ -124,7 +132,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
           }
 
           if (isPrimary == 1) {
-            details.putBoolean("default", true);
+            details.putBoolean("primary", true);
           }
 
           String label;
@@ -184,7 +192,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
           }
 
           if (isPrimary == 1) {
-            details.putBoolean("default", true);
+            details.putBoolean("primary", true);
           }
 
           String label;
