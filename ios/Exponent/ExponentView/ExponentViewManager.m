@@ -20,10 +20,10 @@ NSString * const EXAppDidRegisterUserNotificationSettings = @"EXAppDidRegisterUs
 @interface ExponentViewManager ()
 {
   Class _rootViewControllerClass;
-  __nullable id<OIDAuthorizationFlowSession> _currentAuthorizationFlow;
 }
 
 @property (nonatomic, nullable, strong) EXViewController *rootViewController;
+@property (nonatomic, nullable, strong) id<OIDAuthorizationFlowSession> currentAuthorizationFlow;
 
 @end
 

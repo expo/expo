@@ -73,6 +73,14 @@ RCT_REMAP_METHOD(logInAsync,
       *stop = YES;
     }
   }];
+  if (!urlSchemes || !urlSchemes.count) {
+    _logInReject(EXGoogleErrorCode,
+                 @"Google sign in error",
+                 RCTErrorWithMessage(@"No OAuthRedirect bundle url type was configured in this app's Info.plist."));
+    _logInResolve = nil;
+    _logInReject = nil;
+    return;
+  }
   NSString *urlScheme = [urlSchemes objectAtIndex:0];
   NSURL *redirect = [NSURL URLWithString:[NSString stringWithFormat:@"%@:/oauthredirect", urlScheme]];
 
