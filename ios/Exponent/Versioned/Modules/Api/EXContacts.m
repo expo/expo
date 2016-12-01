@@ -40,7 +40,7 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
       }
     });
   } else if (permissions == kABAuthorizationStatusAuthorized) {
-    [self _getContactsWithPermissionGrantedAsync:fields: addressBook:_addressBookRef resolver:resolve rejecter:reject];
+    [self _getContactsWithPermissionGrantedAsync:fields addressBook:_addressBookRef resolver:resolve rejecter:reject];
     [self _releaseAddressBook];
   } else {
     reject(0, @"User rejected contacts permission.", nil);
