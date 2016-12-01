@@ -122,9 +122,9 @@ public class LauncherActivity extends Activity {
 
       String notification = bundle.getString(KernelConstants.NOTIFICATION_KEY); // deprecated
       String notificationObject = bundle.getString(KernelConstants.NOTIFICATION_OBJECT_KEY);
-      String manifestUrl = bundle.getString(KernelConstants.MANIFEST_URL_KEY);
-      if (manifestUrl != null) {
-        mKernel.openExperience(new KernelConstants.ExperienceOptions(manifestUrl, intentUri == null ? manifestUrl : intentUri, notification, ExponentNotification.fromJSONObjectString(notificationObject)));
+      String notificationManifestUrl = bundle.getString(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY);
+      if (notificationManifestUrl != null) {
+        mKernel.openExperience(new KernelConstants.ExperienceOptions(notificationManifestUrl, intentUri == null ? notificationManifestUrl : intentUri, notification, ExponentNotification.fromJSONObjectString(notificationObject)));
         return;
       }
     }
