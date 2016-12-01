@@ -53,14 +53,11 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
   [self _releaseAddressBook];
 }
 
-- (void)_getContactsWithPermissionGrantedAsync: (NSArray *)fields addressBook:(ABAddressBookRef)addressBook resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject
+- (void)_getContactsWithPermissionGrantedAsync:(NSArray *)fields addressBook:(ABAddressBookRef)addressBook resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject
 {
   NSSet *fieldsSet = [NSSet setWithArray:fields];
   CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
   CFIndex numberOfPeople = ABAddressBookGetPersonCount(addressBook);
-  
-  // response: array of maps, each map has potential keys
-  // id, name, emails (email, label), phoneNumbers (number, label), middleName, company, jobTitle
   NSMutableArray *response = [[NSMutableArray alloc] init];
   
   for (NSUInteger index = 0; index < numberOfPeople; index++) {
