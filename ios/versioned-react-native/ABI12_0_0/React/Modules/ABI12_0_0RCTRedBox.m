@@ -16,7 +16,7 @@
 #import "ABI12_0_0RCTUtils.h"
 #import "ABI12_0_0RCTJSStackFrame.h"
 
-#if ABI12_0_0RCT_DEBUG
+#if ABI12_0_0RCT_DEV
 
 @class ABI12_0_0RCTRedBoxWindow;
 

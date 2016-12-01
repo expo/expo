@@ -66,7 +66,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
         __typeof__(self) self = weakSelf;
         RCTJSCExecutor *executor = weakExecutor;
         if (self && executor) {
-          _exglCtxId = EX_UNVERSIONED(EXGLContextCreate)(executor.jsContext.JSGlobalContextRef);
+          _exglCtxId = EX_UNVERSIONED(EXGLContextCreate(executor.jsContext.JSGlobalContextRef));
           _onSurfaceCreate(@{ @"exglCtxId": @(_exglCtxId) });
         }
       }];
@@ -152,7 +152,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 - (void)removeFromSuperview
 {
   // Destroy JS binding
-  EX_UNVERSIONED(EXGLContextDestroy)(_exglCtxId);
+  EX_UNVERSIONED(EXGLContextDestroy(_exglCtxId));
 
   // Destroy GL objects owned by us
   [self deleteViewBuffers];
@@ -175,8 +175,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   // this frame (the GL work to run remains on the queue for next time).
   if (_exglCtxId != 0 && _viewFramebuffer != 0) {
     [EAGLContext setCurrentContext:_eaglCtx];
-    EX_UNVERSIONED(EXGLContextSetDefaultFramebuffer)(_exglCtxId, _viewFramebuffer);
-    EX_UNVERSIONED(EXGLContextFlush)(_exglCtxId);
+    EX_UNVERSIONED(EXGLContextSetDefaultFramebuffer(_exglCtxId, _viewFramebuffer));
+    EX_UNVERSIONED(EXGLContextFlush(_exglCtxId));
 
     // Present current state of view buffers
     // TODO(nikki): This should happen exactly at `gl.endFrameEXP()` in the queue

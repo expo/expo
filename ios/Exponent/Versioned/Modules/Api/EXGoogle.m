@@ -7,7 +7,6 @@
 
 #import "RCTUtils.h"
 #import "EXOAuthViewController.h"
-#import "ExponentViewManager.h"
 #import "EXUnversioned.h"
 
 NSString *EXGoogleErrorCode = @"GOOGLE_ERROR";
