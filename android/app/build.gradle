@@ -17,7 +17,7 @@ repositories {
 
 android {
   compileSdkVersion 24
-  buildToolsVersion '23.0.3'
+  buildToolsVersion '24.0.1'
 
   defaultConfig {
     applicationId 'host.exp.exponent'
@@ -91,7 +91,7 @@ dependencies {
   compile(name: 'ReactAndroid-release-abi7_0_0', ext: 'aar')
 
   // Our dependencies
-  compile 'com.android.support:appcompat-v7:24.1.1'
+  compile 'com.android.support:appcompat-v7:24.2.0'
 
   // Our dependencies from ExponentView
   // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPONENTVIEW. ONLY COPY THINGS FROM EXPONENTVIEW TO HERE.

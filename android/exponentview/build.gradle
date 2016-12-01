@@ -135,7 +135,7 @@ task packageExponentNdkLibs(dependsOn: buildExponentNdkLib, type: Copy) {
 
 android {
   compileSdkVersion 24
-  buildToolsVersion "23.0.3"
+  buildToolsVersion "24.0.1"
 
   defaultConfig {
     minSdkVersion 19
@@ -183,7 +183,7 @@ dependencies {
 
   // React native dependencies
   // We use a different version of appcompat
-  compile 'com.android.support:recyclerview-v7:24.0.0'
+  compile 'com.android.support:recyclerview-v7:24.+'
   compile 'com.facebook.fresco:fresco:0.11.0'
   compile 'com.facebook.fresco:animated-gif:0.11.0'
   compile 'com.facebook.fresco:animated-webp:0.11.0'
@@ -200,7 +200,7 @@ dependencies {
   compile 'org.webkit:android-jsc:r174650'
 
   // Our dependencies
-  compile 'com.android.support:appcompat-v7:24.1.1'
+  compile 'com.android.support:appcompat-v7:24.2.0'
   compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
     transitive = true;
   }
