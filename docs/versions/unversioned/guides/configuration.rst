@@ -168,6 +168,10 @@ Configuration with exp.json
 
             The reserved client id url scheme. Can be found in `GoogeService-Info.plist`.
 
+   .. attribute:: supportsTablet
+
+    Whether your standalone iOS app supports tablet screen sizes.
+
 .. attribute:: android
 
  **Standalone Apps Only**. Android standalone app specific configuration
