@@ -91,7 +91,11 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
               (__bridge_transfer NSString *)(ABAddressBookCopyLocalizedLabel(phoneLabelRef)) :
               nil;
           
-            [contact[@"phoneNumbers"] addObject:@{ @"number": phoneNumber, @"label": phoneLabel }];
+            [contact[@"phoneNumbers"] addObject:@{
+                                                  @"number": phoneNumber,
+                                                  @"label": phoneLabel,
+                                                  @"default": @(index == 0),
+                                                  }];
           
             if (phoneLabelRef) {
               CFRelease(phoneLabelRef);
@@ -119,7 +123,11 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
               (__bridge_transfer NSString *)(ABAddressBookCopyLocalizedLabel(emailLabelRef)) :
               nil;
           
-            [contact[@"emails"] addObject:@{ @"email": emailAddress, @"label": emailLabel }];
+            [contact[@"emails"] addObject:@{
+                                            @"email": emailAddress,
+                                            @"label": emailLabel,
+                                            @"default": @(index == 0),
+                                            }];
           
             if (emailLabelRef) {
               CFRelease(emailLabelRef);
