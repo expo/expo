@@ -11,7 +11,7 @@ happens in an app so I can jump back into it and read more. Let's look at how
 to do this with Exponent. Spoiler alert: it's almost too easy.
 
 .. epigraph::
-  **Note:** iOS and Android simulators cannot receive push notifications, to test them out you will need to use a real-life device.
+  **Note:** iOS and Android simulators cannot receive push notifications, to test them out you will need to use a real-life device. Additionally, when calling Permissions.askAsync on the simulator, it will resolve immediately with "undetermined" as the status, regardless of whether you choose to allow or not.
 
 There are three main steps to wiring up push notifications: sending a user's
 Exponent Push Token to your server, calling Exponent's Push API with the token
