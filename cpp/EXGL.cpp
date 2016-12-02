@@ -834,8 +834,13 @@ private:
       EXJS_UNPACK_ARGV(GLenum target, GLint level, GLint internalformat,
                        GLsizei width, GLsizei height, GLsizei border,
                        GLenum format, GLenum type);
-      // Null? (to support Khronos' conformance test)
+      // Null?
       if (JSValueIsNull(jsCtx, jsArgv[8])) {
+        addToNextBatch([=] {
+          glTexImage2D(target, level, internalformat,
+                       width, height, border,
+                       format, type, nullptr);
+        });
         return nullptr;
       }
 
