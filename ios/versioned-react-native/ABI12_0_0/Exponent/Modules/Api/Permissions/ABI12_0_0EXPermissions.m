@@ -3,7 +3,6 @@
 #import "ABI12_0_0EXPermissions.h"
 #import "ABI12_0_0EXLocationRequester.h"
 #import "ABI12_0_0EXRemoteNotificationRequester.h"
-#import "ABI12_0_0EXLocalNotificationRequester.h"
 #import "ABI12_0_0EXAVPermissionRequester.h"
 
 NSString * const ABI12_0_0EXPermissionExpiresNever = @"never";
@@ -33,8 +32,6 @@ ABI12_0_0RCT_REMAP_METHOD(getAsync,
 {
   if ([type isEqualToString:@"remoteNotifications"]) {
     resolve([ABI12_0_0EXRemoteNotificationRequester permissions]);
-  } else if ([type isEqualToString:@"localNotifications"]) {
-    resolve([ABI12_0_0EXLocalNotificationRequester permissions]);
   } else if ([type isEqualToString:@"location"]) {
     resolve([ABI12_0_0EXLocationRequester permissions]);
   } else if ([type isEqualToString:@"camera"]) {
@@ -57,8 +54,6 @@ ABI12_0_0RCT_REMAP_METHOD(askAsync,
       NSObject<ABI12_0_0EXPermissionRequester> *requester;
       if ([type isEqualToString:@"remoteNotifications"]) {
         requester = [[ABI12_0_0EXRemoteNotificationRequester alloc] init];
-      } else if ([type isEqualToString:@"localNotifications"]) {
-        requester = [[ABI12_0_0EXLocalNotificationRequester alloc] init];
       } else if ([type isEqualToString:@"location"]) {
         requester = [[ABI12_0_0EXLocationRequester alloc] init];
       } else if ([type isEqualToString:@"camera"]) {
