@@ -15,7 +15,6 @@
 #import <AppAuth.h>
 
 NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDidRegisterForRemoteNotificationsNotification";
-NSString * const EXAppDidRegisterUserNotificationSettings = @"EXAppDidRegisterUserNotificationSettings";
 
 @interface ExponentViewManager ()
 {
@@ -138,11 +137,6 @@ NSString * const EXAppDidRegisterUserNotificationSettings = @"EXAppDidRegisterUs
 {
   BOOL isFromBackground = !(application.applicationState == UIApplicationStateActive);
   [[EXLocalNotificationManager sharedInstance] handleLocalNotification:notification fromBackground:isFromBackground];
-}
-
-- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
-{
-  [[NSNotificationCenter defaultCenter] postNotificationName:EXAppDidRegisterUserNotificationSettings object:notificationSettings];
 }
 
 #pragma mark - deep linking hooks

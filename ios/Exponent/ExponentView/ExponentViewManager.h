@@ -34,7 +34,6 @@ FOUNDATION_EXPORT NSString * const EXAppDidRegisterForRemoteNotificationsNotific
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification;
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)token;
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)err;
-- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings;
 
 #pragma mark - deep linking hooks
 
