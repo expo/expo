@@ -112,6 +112,7 @@ RCT_EXPORT_METHOD(cancelAllScheduledNotifications)
 
 - (UILocalNotification *)_localNotificationFromPayload:(NSDictionary *)payload
 {
+  RCTAssert((payload[@"data"] != nil), @"Attempted to send a local notification with no `data` property.");
   UILocalNotification *localNotification = [UILocalNotification new];
 
   NSString *uniqueId = [[NSUUID new] UUIDString];
