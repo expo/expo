@@ -17,6 +17,19 @@ GLView
       the underlying OpenGL ES context.
 
 
+Examples
+--------
+
+.. image:: img/gl-test.gif
+  :width: 60%
+
+The `@community/gl-test <https://getexponent.com/@community/gl-test>`_ Exponent
+app demonstrates a number of example scenes. The image above is a low-quality
+capture, try the app on Exponent for the best-quality experience. The source
+code for these scenes is available `here
+<https://github.com/exponentjs/gl-test/tree/master/Scenes>`_.
+
+
 .. _gl-object:
 
 The ``gl`` object
@@ -52,8 +65,6 @@ The following `WebGLRenderContext` methods are currently unimplemented:
 
 * Program an shaders
 
-  * ``bindAttribLocation``
-  * ``getAttachedShaders``
   * ``isProgram``
   * ``isShader``
 
@@ -62,10 +73,6 @@ The following `WebGLRenderContext` methods are currently unimplemented:
   * ``getUniform``
   * ``getVertexAttrib``
   * ``getVertexAttribOffset``
-  * ``vertexAttrib1fv``
-  * ``vertexAttrib2fv``
-  * ``vertexAttrib3fv``
-  * ``vertexAttrib4fv``
 
 * Misc
 
@@ -74,11 +81,7 @@ The following `WebGLRenderContext` methods are currently unimplemented:
 
 * Framebuffer
 
-  * ``checkFramebufferStatus``
-  * ``createFramebuffer``
-  * ``deleteFramebuffer``
   * ``framebufferRenderbuffer``
-  * ``framebufferTexture2D``
   * ``getFramebufferAttachmentParameter``
   * ``isFramebuffer``
 
@@ -93,12 +96,16 @@ The following `WebGLRenderContext` methods are currently unimplemented:
 
 ``readPixels`` is currently only supported on Android.
 
-``texImage2D`` only supports the 9-argument form. The last argument must either be
-an `ArrayBuffer` with the texture data as in the WebGL spec, or be an
-`Exponent.Asset` refering to an image to use as the source for the texture.
+``texImage2D`` only supports the 9-argument form. The last argument must either
+be an `ArrayBuffer` with the texture data as in the WebGL spec, an
+`Exponent.Asset` refering to an image to use as the source for the texture, or
+`null`.
 
 For efficiency reasons the current implementations of the methods don't perform
 type or bounds checking on their arguments. So, passing invalid arguments could
 cause a native crash. We plan to update the API to perform argument checking in
-upcoming SDK versions.
+upcoming SDK versions. Currently the priority for error checking is low since
+engines generally don't rely on the OpenGL API to perform argument checking and,
+even otherwise, checks performed by the underlying OpenGL ES implementation are
+often sufficient.
 
