@@ -60,7 +60,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
       return;
     }
 
-    WritableMap params = Arguments.createMap();
+    com.facebook.react.bridge.WritableMap params = com.facebook.react.bridge.Arguments.createMap();
     params.putString("deviceId", uuid);
     try {
       params.putString("experienceId", mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
@@ -71,7 +71,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
 
     ExponentKernelModuleProvider.queueEvent("ExponentKernel.getExponentPushToken", params, new ExponentKernelModuleProvider.KernelEventCallback() {
       @Override
-      public void onEventSuccess(ReadableMap result) {
+      public void onEventSuccess(com.facebook.react.bridge.ReadableMap result) {
         String exponentPushToken = result.getString("exponentPushToken");
         promise.resolve(exponentPushToken);
       }
@@ -126,8 +126,8 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     NotificationHelper.scheduleLocalNotification(
         getReactApplicationContext(),
         notificationId,
-        data,
-        options,
+        ((ReadableNativeMap) data).toHashMap(),
+        ((ReadableNativeMap) options).toHashMap(),
         mManifest,
         new NotificationHelper.Listener() {
           public void onSuccess(int id) {

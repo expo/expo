@@ -11,8 +11,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
 import android.text.format.DateUtils;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableNativeMap;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.kernel.KernelConstants;
@@ -208,14 +207,14 @@ public class NotificationHelper {
   public static void scheduleLocalNotification(
       final Context context,
       final int id,
-      final ReadableMap data,
-      final ReadableMap options,
+      final HashMap data,
+      final HashMap options,
       final JSONObject manifest,
       final Listener listener) {
 
     HashMap<String, java.io.Serializable> details = new HashMap<>();
 
-    details.put("data", ((ReadableNativeMap) data).toHashMap());
+    details.put("data", data);
 
     String experienceId;
 
@@ -229,10 +228,10 @@ public class NotificationHelper {
 
     long time = 0;
 
-    if (options.hasKey("time")) {
+    if (options.containsKey("time")) {
       try {
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
-        time = format.parse(options.getString("time")).getTime() - System.currentTimeMillis();
+        time = format.parse((String) options.get("time")).getTime() - System.currentTimeMillis();
       } catch (ParseException e) {
         listener.onFailure(e);
         return;
@@ -245,8 +244,8 @@ public class NotificationHelper {
 
     Long interval = null;
 
-    if (options.hasKey("repeat")) {
-      switch (options.getString("repeat")) {
+    if (options.containsKey("repeat")) {
+      switch ((String) options.get("repeat")) {
         case "minute":
           interval = DateUtils.MINUTE_IN_MILLIS;
           break;

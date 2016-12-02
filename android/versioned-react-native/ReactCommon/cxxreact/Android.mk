@@ -13,14 +13,15 @@ LOCAL_SRC_FILES := \
   JSCLegacyProfiler.cpp \
   JSCLegacyTracing.cpp \
   JSCMemory.cpp \
+  JSCNativeModules.cpp \
   JSCPerfStats.cpp \
   JSCTracing.cpp \
   JSCWebWorker.cpp \
   MethodCall.cpp \
   ModuleRegistry.cpp \
   NativeToJsBridge.cpp \
-  Value.cpp \
   Platform.cpp \
+  Value.cpp \
   Unicode.cpp \
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/..
@@ -30,15 +31,15 @@ LOCAL_CFLAGS := \
   -DLOG_TAG=\"ReactNative\"
 
 LOCAL_CFLAGS += -Wall -Werror -fexceptions -frtti
-LOCAL_CFLAGS += $(CXX11_FLAGS)
 CXX11_FLAGS := -std=c++11
+LOCAL_CFLAGS += $(CXX11_FLAGS)
 LOCAL_EXPORT_CPPFLAGS := $(CXX11_FLAGS)
 
-LOCAL_SHARED_LIBRARIES := libfb_abi11_0_0 libfolly_json_abi11_0_0 libjsc libglog_abi11_0_0
+LOCAL_SHARED_LIBRARIES := libfb_abi12_0_0 libfolly_json_abi12_0_0 libjsc libglog_abi12_0_0
 
 include $(BUILD_STATIC_LIBRARY)
-$(call import-module,fb)
 
+$(call import-module,fb)
 $(call import-module,folly)
 $(call import-module,jsc)
 $(call import-module,glog)
