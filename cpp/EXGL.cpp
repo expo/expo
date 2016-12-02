@@ -791,7 +791,9 @@ private:
 
   _WRAP_METHOD_UNIMPL(compressedTexSubImage2D)
 
-  _WRAP_METHOD_UNIMPL(copyTexImage2D)
+  _WRAP_METHOD_SIMPLE(copyTexImage2D, glCopyTexImage2D,
+                      target, level, internalformat,
+                      x, y, width, height, border)
 
   _WRAP_METHOD_UNIMPL(copyTexSubImage2D)
 
