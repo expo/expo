@@ -661,22 +661,46 @@ private:
     EXJS_UNPACK_ARGV(GLenum target);
     if (JSValueIsNull(jsCtx, jsArgv[1])) {
       addToNextBatch([=] { glBindFramebuffer(target, defaultFramebuffer); });
-      return nullptr;
     } else {
-      throw std::runtime_error("EXGL: gl.bindframebuffer() does't support non-null"
-                               " framebuffer yet!");
+      Future fFramebuffer = EXJSValueToNumberFast(jsCtx, jsArgv[1]);
+      addToNextBatch([=] { glBindFramebuffer(target, peekFuture(fFramebuffer)); });
     }
+    return nullptr;
   }
 
-  _WRAP_METHOD_UNIMPL(checkFramebufferStatus)
+  _WRAP_METHOD(checkFramebufferStatus, 1) {
+    GLenum glResult;
+    EXJS_UNPACK_ARGV(GLenum target);
+    addBlockingToNextBatch([&] { glResult = glCheckFramebufferStatus(target); });
+    return JSValueMakeNumber(jsCtx, glResult);
+  }
 
-  _WRAP_METHOD_UNIMPL(createFramebuffer)
+  _WRAP_METHOD(createFramebuffer, 0) {
+    return addFutureToNextBatch(jsCtx, [] {
+      GLuint framebuffer;
+      glGenFramebuffers(1, &framebuffer);
+      return framebuffer;
+    });
+  }
 
-  _WRAP_METHOD_UNIMPL(deleteFramebuffer)
+  _WRAP_METHOD(deleteFramebuffer, 1) {
+    EXJS_UNPACK_ARGV(Future fFramebuffer);
+    addToNextBatch([=] {
+      GLuint framebuffer = peekFuture(fFramebuffer);
+      glDeleteFramebuffers(1, &framebuffer);
+    });
+    return nullptr;
+  }
 
   _WRAP_METHOD_UNIMPL(framebufferRenderbuffer)
 
-  _WRAP_METHOD_UNIMPL(framebufferTexture2D)
+  _WRAP_METHOD(framebufferTexture2D, 5) {
+    EXJS_UNPACK_ARGV(GLenum target, GLenum attachment, GLenum textarget, Future fTexture, GLint level);
+    addToNextBatch([=] {
+      glFramebufferTexture2D(target, attachment, textarget, peekFuture(fTexture), level);
+    });
+    return nullptr;
+  }
 
   _WRAP_METHOD_UNIMPL(getFramebufferAttachmentParameter)
 
