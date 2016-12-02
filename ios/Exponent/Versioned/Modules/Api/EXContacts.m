@@ -17,7 +17,7 @@ RCT_EXPORT_MODULE(ExponentContacts);
 // TODO: iOS 9: use Contacts framework instead of deprecated AddressBook
 
 /**
- * @param fields array with possible values 'phone_number', 'email'
+ * @param fields array with possible values 'addresses, 'phoneNumbers', 'emails'
  */
 RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
@@ -73,86 +73,13 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
     contact[@"jobTitle"] = (__bridge_transfer NSString *)(ABRecordCopyValue(person, kABPersonJobTitleProperty));
     
     if ([fieldsSet containsObject:@"addresses"]) {
-      ABMultiValueRef addresses = ABRecordCopyValue(person, kABPersonAddressProperty);
-      
-      if (addresses) {
-        CFIndex numberOfAddresses = ABMultiValueGetCount(addresses);
-        
-        if (numberOfAddresses > 0) {
-          contact[@"addresses"] = [NSMutableArray new];
-          
-          for (NSUInteger index = 0; index < numberOfAddresses; index++) {
-            CFDictionaryRef dict = ABMultiValueCopyValueAtIndex(addresses, index);
-            
-            NSMutableDictionary *address = [NSMutableDictionary new];
-            
-            address[@"street"] = (NSString *)(CFDictionaryGetValue(dict, kABPersonAddressStreetKey));
-            address[@"city"] = (NSString *)(CFDictionaryGetValue(dict, kABPersonAddressCityKey));
-            address[@"region"] = (NSString *)(CFDictionaryGetValue(dict, kABPersonAddressStateKey));
-            address[@"postcode"] = (NSString *)(CFDictionaryGetValue(dict, kABPersonAddressZIPKey));
-            address[@"country"] = (NSString *)(CFDictionaryGetValue(dict, kABPersonAddressCountryKey));
-            
-            CFStringRef labelRef = ABMultiValueCopyLabelAtIndex(addresses, index);
-            
-            if (labelRef) {
-              address[@"label"] = (__bridge_transfer NSString *)(ABAddressBookCopyLocalizedLabel(labelRef));
-              CFRelease(labelRef);
-            }
-            
-            [contact[@"addresses"] addObject:address];
-            
-            CFRelease(dict);
-          }
-        }
-        
-        CFRelease(addresses);
-      }
+      contact[@"addresses"] = [self _addressesForContact:person];
     }
-    
     if ([fieldsSet containsObject:@"phoneNumbers"]) {
-      ABMultiValueRef phoneNumbers = ABRecordCopyValue(person, kABPersonPhoneProperty);
-      if (phoneNumbers) {
-        CFIndex numberOfPhones = ABMultiValueGetCount(phoneNumbers);
-      
-        if (numberOfPhones > 0) {
-          contact[@"phoneNumbers"] = [NSMutableArray arrayWithCapacity:numberOfPhones];
-        
-          for (NSUInteger index = 0; index < numberOfPhones; index++) {
-            NSString *phoneNumber = (__bridge_transfer NSString *)(ABMultiValueCopyValueAtIndex(phoneNumbers, index));
-            CFStringRef phoneLabelRef = ABMultiValueCopyLabelAtIndex(phoneNumbers, index);
-            if (phoneLabelRef) {
-              NSString *phoneLabel = (__bridge_transfer NSString *)(ABAddressBookCopyLocalizedLabel(phoneLabelRef));
-              [contact[@"phoneNumbers"] addObject:@{ @"number": phoneNumber, @"label": phoneLabel }];
-              CFRelease(phoneLabelRef);
-            }
-          }
-        }
-      
-        CFRelease(phoneNumbers);
-      }
+      contact[@"phoneNumbers"] = [self _phoneNumbersForContact:person];
     }
-    
     if ([fieldsSet containsObject:@"emails"]) {
-      ABMultiValueRef emails = ABRecordCopyValue(person, kABPersonEmailProperty);
-      if (emails) {
-        CFIndex numberOfEmails = ABMultiValueGetCount(emails);
-      
-        if (numberOfEmails > 0) {
-          contact[@"emails"] = [NSMutableArray arrayWithCapacity:numberOfEmails];
-        
-          for (NSUInteger index = 0; index < numberOfEmails; index++) {
-            NSString *emailAddress = (__bridge_transfer NSString *)(ABMultiValueCopyValueAtIndex(emails, index));
-            CFStringRef emailLabelRef = ABMultiValueCopyLabelAtIndex(emails, index);
-            if (emailLabelRef) {
-              NSString *emailLabel = (__bridge_transfer NSString *)(ABAddressBookCopyLocalizedLabel(emailLabelRef));
-              [contact[@"emails"] addObject:@{ @"email": emailAddress, @"label": emailLabel }];
-              CFRelease(emailLabelRef);
-            }
-          }
-        }
-      
-        CFRelease(emails);
-      }
+      contact[@"emails"] = [self _emailsForContact:person];
     }
     
     [response addObject:contact];
@@ -160,6 +87,98 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
   
   CFRelease(allPeople);
   resolve(response);
+}
+
+- (NSArray *)_addressesForContact:(ABRecordRef)person
+{
+  NSMutableArray *results = nil;
+  ABMultiValueRef addresses = ABRecordCopyValue(person, kABPersonAddressProperty);
+  if (addresses) {
+    CFIndex numberOfAddresses = ABMultiValueGetCount(addresses);
+    if (numberOfAddresses > 0) {
+      results = [NSMutableArray arrayWithCapacity:numberOfAddresses];
+      
+      for (NSUInteger index = 0; index < numberOfAddresses; index++) {
+        CFDictionaryRef dict = ABMultiValueCopyValueAtIndex(addresses, index);
+        
+        NSMutableDictionary *address = [NSMutableDictionary dictionary];
+        
+        address[@"street"] = (NSString *)(CFDictionaryGetValue(dict, kABPersonAddressStreetKey));
+        address[@"city"] = (NSString *)(CFDictionaryGetValue(dict, kABPersonAddressCityKey));
+        address[@"region"] = (NSString *)(CFDictionaryGetValue(dict, kABPersonAddressStateKey));
+        address[@"postcode"] = (NSString *)(CFDictionaryGetValue(dict, kABPersonAddressZIPKey));
+        address[@"country"] = (NSString *)(CFDictionaryGetValue(dict, kABPersonAddressCountryKey));
+        
+        CFStringRef labelRef = ABMultiValueCopyLabelAtIndex(addresses, index);
+        
+        if (labelRef) {
+          address[@"label"] = (__bridge_transfer NSString *)(ABAddressBookCopyLocalizedLabel(labelRef));
+          CFRelease(labelRef);
+        }
+        [results addObject:address];
+        CFRelease(dict);
+      }
+    }
+    
+    CFRelease(addresses);
+  }
+  return results;
+}
+
+- (NSArray *)_phoneNumbersForContact:(ABRecordRef)person
+{
+  NSMutableArray *results = nil;
+  ABMultiValueRef phoneNumbers = ABRecordCopyValue(person, kABPersonPhoneProperty);
+  if (phoneNumbers) {
+    CFIndex numberOfPhones = ABMultiValueGetCount(phoneNumbers);
+    
+    if (numberOfPhones > 0) {
+      results = [NSMutableArray arrayWithCapacity:numberOfPhones];
+      
+      for (NSUInteger index = 0; index < numberOfPhones; index++) {
+        NSString *phoneNumber = (__bridge_transfer NSString *)(ABMultiValueCopyValueAtIndex(phoneNumbers, index));
+        CFStringRef phoneLabelRef = ABMultiValueCopyLabelAtIndex(phoneNumbers, index);
+        if (phoneLabelRef) {
+          NSString *phoneLabel = (__bridge_transfer NSString *)(ABAddressBookCopyLocalizedLabel(phoneLabelRef));
+          [results addObject:@{ @"number": phoneNumber, @"label": phoneLabel }];
+          CFRelease(phoneLabelRef);
+        } else {
+          [results addObject:@{ @"number": phoneNumber }];
+        }
+      }
+    }
+    
+    CFRelease(phoneNumbers);
+  }
+  return results;
+}
+
+- (NSArray *)_emailsForContact:(ABRecordRef)person
+{
+  NSMutableArray *results = nil;
+  ABMultiValueRef emails = ABRecordCopyValue(person, kABPersonEmailProperty);
+  if (emails) {
+    CFIndex numberOfEmails = ABMultiValueGetCount(emails);
+    
+    if (numberOfEmails > 0) {
+      results = [NSMutableArray arrayWithCapacity:numberOfEmails];
+      
+      for (NSUInteger index = 0; index < numberOfEmails; index++) {
+        NSString *emailAddress = (__bridge_transfer NSString *)(ABMultiValueCopyValueAtIndex(emails, index));
+        CFStringRef emailLabelRef = ABMultiValueCopyLabelAtIndex(emails, index);
+        if (emailLabelRef) {
+          NSString *emailLabel = (__bridge_transfer NSString *)(ABAddressBookCopyLocalizedLabel(emailLabelRef));
+          [results addObject:@{ @"email": emailAddress, @"label": emailLabel }];
+          CFRelease(emailLabelRef);
+        } else {
+          [results addObject:@{ @"email": emailAddress }];
+        }
+      }
+    }
+
+    CFRelease(emails);
+  }
+  return results;
 }
 
 - (NSString *)_assembleDisplayNameFromFirstName: (NSString *)firstName lastName: (NSString *)lastName
