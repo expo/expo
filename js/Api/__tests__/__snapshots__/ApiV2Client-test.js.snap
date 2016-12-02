@@ -1,0 +1,7 @@
+exports[`test handles malformed responses 1`] = `"There was a problem communicating with the server. Please try again."`;
+
+exports[`test supports GET requests 1`] = `"https://exp.host/--/api/v2/example?a=1&b=true&c=hi"`;
+
+exports[`test supports POST requests 1`] = `"https://exp.host/--/api/v2/example"`;
+
+exports[`test supports POST requests 2`] = `"{\"a\":1,\"b\":true,\"c\":\"hi\",\"d\":[\"list\"],\"e\":{\"nested\":true}}"`;

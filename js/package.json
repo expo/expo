@@ -5,13 +5,16 @@
   "description": "The Exponent app",
   "main": "exponent.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "postinstall": "find node_modules -type f -not -regex \".*react-native\\/.*\" -name \".babelrc\" -exec rm -rf {} \\;"
   },
   "author": "650 Industries",
   "license": "Copyright 650 Industries, Inc. All rights reserved.",
   "reactNativeApp": {
     "xcodeProjectDirectory": ".."
+  },
+  "jest": {
+    "preset": "jest-react-native"
   },
   "dependencies": {
     "@exponent/react-native-fade-in-image": "^1.0.0",
@@ -21,6 +24,7 @@
     "autobind-decorator": "^1.3.2",
     "autoproxy": "^1.0.1",
     "email-validator": "^1.0.3",
+    "es6-error": "^4.0.0",
     "fbemitter": "^2.0.2",
     "immutable": "^3.8.1",
     "lodash": "^4.13.1",
@@ -30,7 +34,7 @@
     "react": "~15.3.2",
     "react-apple-easing": "0.0.2",
     "react-mixin": "^3.0.4",
-    "react-native": "exponentjs/react-native#sdk-12.0.0",
+    "react-native": "github:exponentjs/react-native#sdk-12.0.0",
     "react-native-button": "^1.7.1",
     "react-native-scrollable-mixin": "1.0.1",
     "react-native-url-handler": "^0.4.3",
@@ -44,6 +48,8 @@
   },
   "devDependencies": {
     "babel-plugin-transform-decorators-legacy": "^1.3.4",
-    "babel-preset-react-native": "^1.9.0"
+    "babel-preset-react-native": "^1.9.0",
+    "jest": "^17.0.3",
+    "jest-react-native": "~17.0.3"
   }
 }
