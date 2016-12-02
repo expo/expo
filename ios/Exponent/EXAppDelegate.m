@@ -73,11 +73,6 @@ NS_ASSUME_NONNULL_BEGIN
   [[ExponentViewManager sharedInstance] application:application didReceiveLocalNotification:notification];
 }
 
-- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
-{
-  [[ExponentViewManager sharedInstance] application:application didRegisterUserNotificationSettings:notificationSettings];
-}
-
 @end
 
 NS_ASSUME_NONNULL_END
