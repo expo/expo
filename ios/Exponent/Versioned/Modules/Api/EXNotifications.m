@@ -119,6 +119,11 @@ RCT_EXPORT_METHOD(cancelAllScheduledNotifications)
 
   localNotification.alertTitle = payload[@"title"];
   localNotification.alertBody = payload[@"body"];
+  
+  if (payload[@"sound"] != nil) {
+    localNotification.soundName = UILocalNotificationDefaultSoundName;
+  }
+  
   localNotification.applicationIconBadgeNumber = [RCTConvert NSInteger:payload[@"count"]] ?: 0;
 
   localNotification.userInfo = @{
