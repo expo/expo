@@ -30,6 +30,7 @@ FOUNDATION_EXPORT NSString * const EXAppDidRegisterForRemoteNotificationsNotific
 
 #pragma mark - APNS hooks
 
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification;
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification;
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)token;
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)err;
