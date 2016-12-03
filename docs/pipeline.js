@@ -125,5 +125,7 @@ async function makeVersionName() {
 }
 
 function setTimeoutAsync(timeout) {
-  return new Promise(resolve => setTimeout(resolve, timeout));
+  return new Promise(resolve => {
+    setTimeout(() => { resolve(); }, timeout);
+  });
 }
