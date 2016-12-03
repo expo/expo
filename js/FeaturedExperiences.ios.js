@@ -12,14 +12,6 @@ function setReferrer(newReferrer) {
 function getFeatured() {
   return [
     {
-      url: 'exp://exp.host/@exponent/floatyplane',
-      manifest: {
-        name: 'Floaty Plane',
-        desc: 'Touch the plane until you die!',
-        iconUrl: 'https://s3-us-west-2.amazonaws.com/examples-exp/floaty_icon.png',
-      },
-    },
-    {
       url: 'exp://exp.host/@exponent/react-native-for-curious-people',
       manifest: {
         name: 'React Native for Curious People',
