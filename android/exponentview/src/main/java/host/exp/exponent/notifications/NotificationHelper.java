@@ -148,7 +148,7 @@ public class NotificationHelper {
         }
         builder.setVibrate(pattern);
       } else if (vibrate instanceof Boolean) {
-        builder.setVibrate(new long[] { 1000 });
+        builder.setVibrate(new long[] { 0, 500 });
       }
     }
 
