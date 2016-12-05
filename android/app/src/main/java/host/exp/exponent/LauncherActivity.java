@@ -120,11 +120,19 @@ public class LauncherActivity extends Activity {
         return;
       }
 
+      // Notification
       String notification = bundle.getString(KernelConstants.NOTIFICATION_KEY); // deprecated
       String notificationObject = bundle.getString(KernelConstants.NOTIFICATION_OBJECT_KEY);
       String notificationManifestUrl = bundle.getString(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY);
       if (notificationManifestUrl != null) {
         mKernel.openExperience(new KernelConstants.ExperienceOptions(notificationManifestUrl, intentUri == null ? notificationManifestUrl : intentUri, notification, ExponentNotification.fromJSONObjectString(notificationObject)));
+        return;
+      }
+
+      // Shortcut
+      String shortcutManifestUrl = bundle.getString(KernelConstants.SHORTCUT_MANIFEST_URL_KEY);
+      if (shortcutManifestUrl != null) {
+        mKernel.openExperience(new KernelConstants.ExperienceOptions(shortcutManifestUrl, intentUri, null));
         return;
       }
     }
