@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.kernel.KernelConstants;
@@ -138,12 +139,17 @@ public class NotificationHelper {
     }
 
     if (data.containsKey("vibrate")) {
-      ArrayList vibrate = (ArrayList) data.get("vibrate");
-      long[] pattern = new long[vibrate.size()];
-      for (int i = 0; i < vibrate.size(); i++) {
-        pattern[i] = ((Double) vibrate.get(i)).intValue();
+      Object vibrate = data.get("vibrate");
+      if (vibrate instanceof ArrayList) {
+        ArrayList vibrateArrayList = (ArrayList) data.get("vibrate");
+        long[] pattern = new long[vibrateArrayList.size()];
+        for (int i = 0; i < vibrateArrayList.size(); i++) {
+          pattern[i] = ((Double) vibrateArrayList.get(i)).intValue();
+        }
+        builder.setVibrate(pattern);
+      } else if (vibrate instanceof Boolean) {
+        builder.setVibrate(new long[] { 1000 });
       }
-      builder.setVibrate(pattern);
     }
 
     ExponentDB.experienceIdToExperience(experienceId, new ExponentDB.ExperienceResultListener() {
@@ -230,7 +236,8 @@ public class NotificationHelper {
 
     if (options.containsKey("time")) {
       try {
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        format.setTimeZone(TimeZone.getTimeZone("UTC"));
         time = format.parse((String) options.get("time")).getTime() - System.currentTimeMillis();
       } catch (ParseException e) {
         listener.onFailure(e);
