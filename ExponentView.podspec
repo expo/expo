@@ -14,6 +14,7 @@ Pod::Spec.new do |s|
   s.preserve_paths = "ios/Exponent/**/*.{h,m}"
   s.exclude_files = "ios/Exponent/EXAppDelegate.*", "ios/Exponent/EXRootViewController.*", "ios/Exponent/Supporting/**"
 
+  s.dependency 'AppAuth', '~> 0.4'
   s.dependency 'CocoaLumberjack', '~> 2.3'
   s.dependency 'Crashlytics', '~> 3.8'
   s.dependency 'Fabric', '~> 1.6'
