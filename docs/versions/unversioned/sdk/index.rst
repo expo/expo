@@ -47,5 +47,6 @@ example.
    permissions
    segment
    svg
+   take-snapshot-async
    util
    video
