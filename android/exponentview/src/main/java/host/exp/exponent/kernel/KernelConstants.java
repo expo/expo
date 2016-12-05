@@ -10,6 +10,7 @@ public class KernelConstants {
   public static final String BUNDLE_URL_KEY = "bundleUrl";
   public static final String MANIFEST_URL_KEY = "experienceUrl";
   public static final String NOTIFICATION_MANIFEST_URL_KEY = "notificationExperienceUrl";
+  public static final String SHORTCUT_MANIFEST_URL_KEY = "shortcutExperienceUrl";
   public static final String HOME_MANIFEST_URL = "";
   public static final String LINKING_URI_KEY = "linkingUri";
   public static final String INTENT_URI_KEY = "intentUri";
