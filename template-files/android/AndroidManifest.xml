@@ -126,6 +126,10 @@
     </activity>
 
     <activity
+      android:name=".OAuthResultActivity">
+    </activity>
+
+    <activity
       android:name=".experience.ErrorActivity"
       android:theme="@style/Theme.Exponent.Dark"
       android:screenOrientation="portrait">
