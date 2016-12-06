@@ -30,9 +30,9 @@ Developer Console and create an OAuth 2.0 client ID.
 
 - Go to the `Credentials Page <https://console.developers.google.com/apis/credentials>`_
 - Create an app for your project if you haven't already
-- Once that is complete, click "Add Credentials" and then "OAuth client ID." You will be prompted to set the product name on the consent screen, go ahead and do that.
-- Select "Web Application" as the Application Type. Give it a name if you want. You don't need to provide authorized origin.
-- Add ``https://oauth.host.exp.com`` to the "Authorised redirect URIs"
+- Once that is complete, click "Create Credentials" and then "OAuth client ID." You will be prompted to set the product name on the consent screen, go ahead and do that.
+- Select "iOS Application" as the Application Type. Give it a name if you want.
+- Use ``host.exp.exponent`` as the bundle identifier.
 - Click "Create"
 - You will now see a modal with the client ID and secret.
 - The client ID is used to sign in, as follows:
@@ -44,7 +44,7 @@ Developer Console and create an OAuth 2.0 client ID.
   async function signInWithGoogleAsync() {
     try {
       const result = await Exponent.Google.logInAsync({
-        webClientId: YOUR_CLIENT_ID_HERE,
+        iosClientId: YOUR_CLIENT_ID_HERE,
         scopes: ['profile', 'email'],
       });
 

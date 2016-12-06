@@ -9,27 +9,28 @@ Provides access to the phone's system contacts.
    optionally phone number and email of each contact.
 
    :param array fields:
-      An array describing fields to retrieve per contact. Each element bust be
-      one of ``Exponent.Contacts.PHONE_NUMBER`` or ``Exponent.Contacts.EMAIL``.
+      An array describing fields to retrieve per contact. Each element must be
+      one of ``Exponent.Contacts.PHONE_NUMBERS`` or ``Exponent.Contacts.EMAILS``.
    :returns:
-      An array of objects of the form ``{ id, name, phoneNumber, email }`` with
-      ``phoneNumber`` and ``email`` only present if they were requested through
-      the ``fields`` parameter.
+      An array of objects of the form ``{ id, firstName, middleName, lastName,
+      name, phoneNumbers, emails, addresses, jobTitle, company  }`` with
+      ``phoneNumbers``, ``emails``, and ``addresses`` only present if they were
+      requested through the ``fields`` parameter.
 
    :example:
       .. code-block:: javascript
 
         async function showFirstContactAsync() {
           const contacts = await Exponent.Contacts.getContactsAsync([
-            Exponent.Contacts.PHONE_NUMBER,
-            Exponent.Contacts.EMAIL,
+            Exponent.Contacts.PHONE_NUMBERS,
+            Exponent.Contacts.EMAILS,
           ]);
           if (contacts.length > 0) {
             Alert.alert(
               'Your first contact is...',
               `Name: ${contacts[0].name}\n` +
-              `Phone: ${contacts[0].phoneNumber}\n` +
-              `Email: ${contacts[0].email}`
+              `Phone: ${JSON.stringify(contacts[0].phoneNumbers)}\n` +
+              `Email: ${JSON.stringify(contacts[0].emails)}`
             );
           }
         }
