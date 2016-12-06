@@ -3,7 +3,7 @@
 Frequently Asked Questions
 ==========================
 
-How much does Exponent Cost?
+How much does Exponent cost?
 ----------------------------
 
 Exponent is free.
@@ -95,6 +95,18 @@ You can do more in just JavaScript than you realize--and in fact, we recommend d
 We're always improving our SDK and its native capabilities. Tell us about what's missing, and we'll try to add what you need if we think there are other people who would use it too. (Tweet @ us or join our Slack or e-mail support@getexponent.com).
 
 Lastly, Exponent is open source, so you always have the option of forking our native code or contributing to it. Please get in touch on our Slack if you're interested in sending a pull request!
+
+Is Exponent similar to React for web development?
+-------------------------------------------------
+
+Exponent and React Native are similar to React. You'll have to learn a new set of components (``View`` instead of ``div``, for example) and writing mobile apps is very different from websites; you think more in terms of screens and different navigators instead of separate web pages, but much more your knowledge carries over than if you were writing a traditional Android or iOS app.
+
+How do I publish my Exponent project? Can I submit it to the app stores?
+------------------------------------------------------------------------
+
+With Exponent you have two options to publish your project. The first is to create a standalone app that you submit to Apple and Google's app stores. It's easy to build standalone apps with Exponent; see :ref:`our guide <building-standalone-apps>` to learn how to create the iOS IPA and Android APK binaries. Apple charges $99/year to publish your app in the App Store and Google charges a $25 one-time fee for the Play Store.
+
+The second option is to publish your project using Exponent. Anyone with the Exponent app can then open your project if they have the URL for it. This option is free and is wonderful for sharing your project with friends. These two options aren't mutually exclusive so you can choose both of them.
 
 Can I use Exponent with Relay?
 ------------------------------
