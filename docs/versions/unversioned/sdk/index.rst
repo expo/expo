@@ -29,6 +29,7 @@ example.
 .. toctree::
    :maxdepth: 2
 
+   accelerometer
    amplitude
    app-loading
    asset
@@ -40,6 +41,7 @@ example.
    font
    gl-view
    google
+   gyroscope
    imagepicker
    linear-gradient
    location
