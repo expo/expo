@@ -119,7 +119,7 @@ ABI12_0_0RCT_EXPORT_METHOD(cancelAllScheduledNotifications)
   localNotification.alertTitle = payload[@"title"];
   localNotification.alertBody = payload[@"body"];
   
-  if (payload[@"sound"] != nil) {
+  if ([payload[@"sound"] boolValue]) {
     localNotification.soundName = UILocalNotificationDefaultSoundName;
   }
   
