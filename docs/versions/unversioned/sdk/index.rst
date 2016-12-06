@@ -44,6 +44,7 @@ example.
    linear-gradient
    location
    map-view
+   notifications
    permissions
    segment
    svg
