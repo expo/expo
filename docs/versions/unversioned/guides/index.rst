@@ -22,3 +22,4 @@ Guides
    how-exponent-works
    upgrading-exponent
    using-clojurescript
+   using-firebase
