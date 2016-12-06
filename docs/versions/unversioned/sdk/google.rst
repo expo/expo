@@ -1,8 +1,12 @@
 Google
 ======
 
-Provides Google integration for Exponent apps. Exponent exposes a minimal
-native API since you can access Google's `REST APIs
+Provides Google authentication integration for Exponent apps, using either
+the native Google Sign In SDK (only in standalone apps) or a system web browser
+(not WebView, so credentials saved on the device can be re-used!).
+
+Once you have the token, if you would like to make further calls to the Google API,
+you can use Google's `REST APIs
 <https://developers.google.com/apis-explorer/>`_ directly through HTTP (using
 `fetch <https://facebook.github.io/react-native/docs/network.html#fetch>`_, for
 example).
@@ -18,45 +22,8 @@ example).
     return userInfoResponse;
   }
 
-Using it inside of the Exponent app
-"""""""""""""""""""""""""""""""""""
-
-In the Exponent client app, you can only use WebView-based login. If you build
-a standalone app, you can use the native login for the platform, as described
-at the end of this doc.
-
-To use Google Sign In, you will need to create a project on the Google
-Developer Console and create an OAuth 2.0 client ID.
-
-- Go to the `Credentials Page <https://console.developers.google.com/apis/credentials>`_
-- Create an app for your project if you haven't already
-- Once that is complete, click "Create Credentials" and then "OAuth client ID." You will be prompted to set the product name on the consent screen, go ahead and do that.
-- Select "iOS Application" as the Application Type. Give it a name if you want.
-- Use ``host.exp.exponent`` as the bundle identifier.
-- Click "Create"
-- You will now see a modal with the client ID and secret.
-- The client ID is used to sign in, as follows:
-
-.. code-block:: javascript
-
-  import Exponent from 'exponent';
-
-  async function signInWithGoogleAsync() {
-    try {
-      const result = await Exponent.Google.logInAsync({
-        iosClientId: YOUR_CLIENT_ID_HERE,
-        scopes: ['profile', 'email'],
-      });
-
-      if (result.type === 'success') {
-        return result.accessToken;
-      } else {
-        return {cancelled: true};
-      }
-    } catch(e) {
-      return {error: true};
-    }
-  }
+Usage
+-----
 
 .. function:: Exponent.Google.logInAsync(options)
 
@@ -70,15 +37,20 @@ Developer Console and create an OAuth 2.0 client ID.
         either ``web`` or ``system``. Native (``system``) can only be used
         inside of a standalone app when built using the steps described below.
         Default is ``web`` inside of Exponent app, and ``system`` in
-        standalone.
+        standalone. The only case where you would need to change this is if
+        you would prefer to use ``web`` inside of a standalone app.
 
       * **scopes** (*array*) -- An array specifying the scopes to ask
         for from Google for this login (`more information here <https://gsuite-developers.googleblog.com/2012/01/tips-on-using-apis-discovery-service.html>`_).
         Default scopes are ``['profile', 'email']``.
 
-      * **webClientId** (*string*) -- The client id registered with Google for the app, used with the web behavior.
+      * **androidClientId** (*string*) -- The Android client id registered with Google for use in the Exponent client app.
 
-      * **iosClientId** (*string*) -- The client id registered with Google for the, used with the native behavior inside of a standalone app.
+      * **iosClientId** (*string*) -- The iOS client id registered with Google for use in the Exponent client app.
+
+      * **androidStandaloneAppClientId** (*string*) -- The Android client id registered with Google for use in a standalone app.
+
+      * **iosStandaloneClientId** (*string*) -- The iOS client id registered with Google for use in a standalone app.
 
    :returns:
       If the user or Google cancelled the login, returns ``{ type: 'cancel' }``.
@@ -87,8 +59,69 @@ Developer Console and create an OAuth 2.0 client ID.
       serverAuthCode, user: {...profileInformation} }``. ``accessToken`` is a string
       giving the access token to use with Google HTTP API requests.
 
+Using it inside of the Exponent app
+-----------------------------------
+
+In the Exponent client app, you can only use browser-based login (this works very well
+actually because it re-uses credentials saved in your system browser). If you build
+a standalone app, you can use the native login for the platform.
+
+To use Google Sign In, you will need to create a project on the Google
+Developer Console and create an OAuth 2.0 client ID. This is, unfortunately,
+super annoying to do and we wish there was a way we could automate this for
+you, but at the moment the Google Developer Console does not expose an API.
+*You also need to register a separate set of Client IDs for a standalone app,
+the process for this is described later in this document*.
+
+- **Get an app set up on the Google Developer Console**
+  * Go to the `Credentials Page <https://console.developers.google.com/apis/credentials>`_
+  * Create an app for your project if you haven't already.
+  * Once that is complete, click "Create Credentials" and then "OAuth client ID." You will be prompted to set the product name on the consent screen, go ahead and do that.
+
+- **Create an iOS OAuth Client ID**
+
+  * Select "iOS Application" as the Application Type. Give it a name if you want (maybe "iOS Development").
+  * Use ``host.exp.exponent`` as the bundle identifier.
+  * Click "Create"
+  * You will now see a modal with the client ID.
+  * The client ID is used in the ``iosClientId`` option for ``Exponent.Google.loginAsync`` (see code example below).
+
+- **Create an Android OAuth Client ID**
+
+  * Select "iOS Application" as the Application Type. Give it a name if you want (maybe "Android Development").
+  * Enter ``AD:15:BE:F8:B5:23:99:96:7E:E7:C1:1B:37:90:D5:84:60:27:91:7E`` as the "Signing-certificate fingerprint".
+  * Use ``host.exp.exponent`` as the "Package name".
+  * Click "Create"
+  * You will now see a modal with the Client ID.
+  * The client ID is used in the ``androidClientId`` option for ``Exponent.Google.loginAsync`` (see code example below).
+
+
+- **Add the Client IDs to your app**
+
+  .. code-block:: javascript
+
+    import Exponent from 'exponent';
+
+    async function signInWithGoogleAsync() {
+      try {
+        const result = await Exponent.Google.logInAsync({
+          androidClientId: YOUR_CLIENT_ID_HERE,
+          iosClientId: YOUR_CLIENT_ID_HERE,
+          scopes: ['profile', 'email'],
+        });
+
+        if (result.type === 'success') {
+          return result.accessToken;
+        } else {
+          return {cancelled: true};
+        }
+      } catch(e) {
+        return {error: true};
+      }
+    }
+
 Deploying to a standalone app on Android
-""""""""""""""""""""""""""""""""""""""""
+----------------------------------------
 
 If you want to use native sign in for a standalone app, you can follow these
 steps. If not, you can just specify ``behavior: 'web'`` in the options when
@@ -110,7 +143,7 @@ using ``signInAsync`` and skip the following steps.
 14. Rebuild your standalone app.
 
 Deploying to a standalone app on iOS
-""""""""""""""""""""""""""""""""""""
+------------------------------------
 
 If you want to use native sign in for a standalone app, you can follow these
 steps. If not, you can just specify ``behavior: 'web'`` in the options when
