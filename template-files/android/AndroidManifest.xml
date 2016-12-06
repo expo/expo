@@ -16,6 +16,7 @@
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
   <uses-permission android:name="android.permission.MANAGE_DOCUMENTS" />
   <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+  <uses-permission android:name="android.permission.VIBRATE" />
 
   <!-- These require runtime permissions on M -->
   <uses-permission android:name="android.permission.READ_CONTACTS"/>
