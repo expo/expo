@@ -10,7 +10,8 @@ import path from 'path';
 import JsonFile from '@exponent/json-file';
 import shell from 'shelljs';
 
-import { getManifestAsync, saveUrlToPathAsync, spawnAsyncThrowError, spawnAsync } from './tools-utils';
+import { ExponentTools } from 'xdl';
+let { getManifestAsync, saveUrlToPathAsync, spawnAsyncThrowError, spawnAsync } = ExponentTools;
 
 async function sedInPlaceAsync(...args) {
   const isDarwin = /^darwin/.test(process.platform);
@@ -76,7 +77,6 @@ export async function createAndroidShellApp(args) {
   await spawnAsync(`/bin/cp`, ['-r', '../android/exponentview', `${shellPath}/exponentview`]);
   await spawnAsync(`/bin/cp`, ['-r', '../android/ReactCommon', `${shellPath}/ReactCommon`]);
   await spawnAsync(`/bin/cp`, ['-r', '../android/ReactAndroid', `${shellPath}/ReactAndroid`]);
-  await spawnAsync(`/bin/cp`, ['-r', '../android/Android-Image-Cropper', `${shellPath}/Android-Image-Cropper`]);
   await spawnAsync(`/bin/cp`, ['../android/android.iml', `${shellPath}/`]);
   await spawnAsync(`/bin/cp`, ['-r', '../android/app', `${shellPath}/app`]);
   await spawnAsync(`/bin/cp`, ['../android/build.gradle', `${shellPath}/`]);

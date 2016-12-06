@@ -11,10 +11,11 @@ import path from 'path';
 import process from 'process';
 import spawnAsync from '@exponent/spawn-async';
 import JsonFile from '@exponent/json-file';
-import {
+import { ExponentTools } from 'xdl';
+let {
   modifyIOSPropertyListAsync,
   cleanIOSPropertyListBackupAsync,
-} from './tools-utils';
+} = ExponentTools;
 
 const ProjectVersions = require('./project-versions');
 
