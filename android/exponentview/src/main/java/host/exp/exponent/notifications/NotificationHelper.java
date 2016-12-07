@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
 import android.text.format.DateUtils;
+import de.greenrobot.event.EventBus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -169,10 +170,10 @@ public class NotificationHelper {
 
           String body = data.containsKey("data") ? getJSONString(data.get("data")) : "";
 
-          ExponentNotification notification = new ExponentNotification(experienceId, body, id, false, false);
+          final ReceivedNotificationEvent notificationEvent = new ReceivedNotificationEvent(experienceId, body, id, false, false);
 
           intent.putExtra(KernelConstants.NOTIFICATION_KEY, body); // deprecated
-          intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notification.toJSONObject(null).toString());
+          intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString());
 
           PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
           builder.setContentIntent(contentIntent);
@@ -194,6 +195,7 @@ public class NotificationHelper {
                   builder.setLargeIcon(bitmap);
                   NotificationManager manager = new NotificationManager(context);
                   manager.notify(experienceId, id, builder.build());
+                  EventBus.getDefault().post(notificationEvent);
                   listener.onSuccess(id);
                 }
               });

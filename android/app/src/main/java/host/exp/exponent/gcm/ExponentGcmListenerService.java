@@ -14,8 +14,7 @@ import android.support.v4.app.NotificationManagerCompat;
 
 import com.google.android.gms.gcm.GcmListenerService;
 
-import host.exp.exponent.notifications.ExponentNotification;
-import host.exp.exponent.notifications.NotificationConstants;
+import host.exp.exponent.notifications.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,17 +34,8 @@ import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponentview.R;
-import host.exp.exponent.notifications.NotificationHelper;
-import host.exp.exponent.notifications.NotificationManager;
 
 public class ExponentGcmListenerService extends GcmListenerService {
-
-  public static class ReceivedPushNotificationEvent extends ExponentNotification {
-
-    public ReceivedPushNotificationEvent(String experienceId, String body, int notificationId, boolean isMultiple) {
-      super(experienceId, body, notificationId, isMultiple, true);
-    }
-  }
 
   private static final String TAG = ExponentGcmListenerService.class.getSimpleName();
 
@@ -150,7 +140,7 @@ public class ExponentGcmListenerService extends GcmListenerService {
 
         // Create notification object
         boolean isMultiple = mode == Mode.COLLAPSE && unreadNotifications.length() > 1;
-        ReceivedPushNotificationEvent notificationEvent = new ReceivedPushNotificationEvent(experienceId, body, notificationId, isMultiple);
+        ReceivedNotificationEvent notificationEvent = new ReceivedNotificationEvent(experienceId, body, notificationId, isMultiple, true);
 
         // Create pending intent
         Intent intent = new Intent(ExponentGcmListenerService.this, LauncherActivity.class);

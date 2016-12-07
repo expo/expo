@@ -26,6 +26,7 @@ import com.amplitude.api.Amplitude;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.soloader.SoLoader;
 
+import host.exp.exponent.notifications.ReceivedNotificationEvent;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -428,7 +429,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     });
   }
 
-  public void onEventMainThread(ExponentGcmListenerService.ReceivedPushNotificationEvent event) {
+  public void onEventMainThread(ReceivedNotificationEvent event) {
     if (ABIVersion.toNumber(mSDKVersion) < ABIVersion.toNumber("8.0.0")) {
       return;
     }
