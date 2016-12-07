@@ -11,8 +11,8 @@ and tab bars, like the following:
 .. image:: img/nav-bar-blur.png
   :width: 400
 
-Example: tintEffect
-'''''''''''''''''''
+Example: tint
+'''''''''''''
 
 .. image:: img/tint-effect-example.png
   :width: 100%
@@ -21,7 +21,6 @@ Example: tintEffect
 
   import React from 'react';
   import {
-    AppRegistry,
     Image,
     StyleSheet,
     View,
@@ -52,7 +51,7 @@ Example: tintEffect
 Example: blur strength with intensity
 """""""""""""""""""""""""""""""""""
 
-You can change ``opacity`` style on the component to change the strength of the
+You can change ``intensity`` prop on the component to change the strength of the
 blur.
 
 .. image:: img/blur-opacity-example.gif
