@@ -50,7 +50,7 @@ Usage
 
       * **androidStandaloneAppClientId** (*string*) -- The Android client id registered with Google for use in a standalone app.
 
-      * **iosStandaloneClientId** (*string*) -- The iOS client id registered with Google for use in a standalone app.
+      * **iosStandaloneAppClientId** (*string*) -- The iOS client id registered with Google for use in a standalone app.
 
    :returns:
       If the user or Google cancelled the login, returns ``{ type: 'cancel' }``.
@@ -74,6 +74,7 @@ you, but at the moment the Google Developer Console does not expose an API.
 the process for this is described later in this document*.
 
 - **Get an app set up on the Google Developer Console**
+
   * Go to the `Credentials Page <https://console.developers.google.com/apis/credentials>`_
   * Create an app for your project if you haven't already.
   * Once that is complete, click "Create Credentials" and then "OAuth client ID." You will be prompted to set the product name on the consent screen, go ahead and do that.
@@ -123,37 +124,53 @@ the process for this is described later in this document*.
 Deploying to a standalone app on Android
 ----------------------------------------
 
-If you want to use native sign in for a standalone app, you can follow these
-steps. If not, you can just specify ``behavior: 'web'`` in the options when
-using ``signInAsync`` and skip the following steps.
+If you want to use Google Sign In for a standalone app, you can follow these
+steps. These steps assume that you already have it working on the Exponent client app.
+If you have already created an API key for Google Maps, you skip steps 3 through 8,
+inclusive.
 
-1. If you haven't created a "Web Application" client ID as described above, do that now. You will need the client ID for later.
-2. Build the standalone app. You will need this for later.
-3. Go to your app in the Google Developer console (you may have created this in step 1 or before).
-4. Click "Add Credentials" and then "API Key".
-5. Click "Restrict Key".
-6. Choose "Android apps" from "Key restriction", then click "Add package name and fingerprint".
-7. Run ``keytool -list -printcert -jarfile growler.apk | grep SHA1 | awk '{ print $2 }'`` (where ``growler.apk`` is the name of the apk produced in step 2).
-8. Fill in your Take the output from step 7 and insert it in the "Signing-certificate fingerprint" field.
-9. Add the package name from ``exp.json`` (eg: ca.brentvatne.growlerprowler) to the Package name field. Press save.
-10. Open ``exp.json`` and add the client id to the ``android.config.googleSignIn.apiKey``.
-11. Run ``keytool -list -printcert -jarfile growler.apk | grep SHA1 | awk '{ print $2 } | sed -e 's/\://g'`` (where ``growler.apk`` is the name of the apk produced in step 2).
-12. Add the result from step 11 to ``exp.json`` under ``android.config.googleSignIn.certificateHash``.
-13. When you use ``Exponent.Google.logInAsync(..)``, be sure to pass in the Web Application client ID from step 1 as the ``webClientId`` option. I have no idea why Google requires this on Android, so let's just blindly follow the incantation.
-14. Rebuild your standalone app.
+- **Get a Google API Key for your app** (*skip this if you already have one, eg: for Google Maps*)
+
+  1. Build a standalone app and download the apk, or find one that you have already built.
+  2. Go to the `Google Developer Credentials <https://console.developers.google.com/apis/credentials>`_
+  3. Click **Create credentials**, then **API Key**, and finally click **RESTRICT KEY** in the modal that pops up.
+  4. Click the **Android apps** radio button under **Key restriction**, then click **+ Add package name and fingerprint**.
+  5. Add your ``android.package`` from ``exp.json`` (eg: ``ca.brentvatne.growlerprowler``) to the **Package name** field.
+  6. Run ``keytool -list -printcert -jarfile growler.apk | grep SHA1 | awk '{ print $2 }'`` (where ``growler.apk`` is the name of the apk produced in step 1).
+  7. Take the output from the previous step and insert it in the **SHA-1 certificate fingerprint** field.
+  8. Press **Save**.
+
+- **Get an OAuth client ID for your app**
+
+  1. Build a standalone app and download the apk, or find one that you have already built.
+  2. Go to the `Google Developer Credentials <https://console.developers.google.com/apis/credentials>`_.
+  3. Click **Create credentials**, then **OAuth client ID**, then select the **Android** radio button.
+  4. Run ``keytool -list -printcert -jarfile growler.apk | grep SHA1 | awk '{ print $2 }'`` (where ``growler.apk`` is the name of the apk produced in step 1).
+  5. Take the output from the previous step and insert it in the **Signing-certificate fingerprint** field.
+  6. Add your ``android.package`` from ``exp.json`` (eg: ``ca.brentvatne.growlerprowler``) to the **Package name** field.
+  7. Press **Create**.
+
+- **Add the configuration to your app**
+
+  1. Build a standalone app and download the apk, or find one that you have already built.
+  2. Go to the `Google Developer Credentials <https://console.developers.google.com/apis/credentials>`_ and find your API key.
+  3. Open ``exp.json`` and add your **Google API Key** to ``android.config.googleSignIn.apiKey``.
+  4. Run ``keytool -list -printcert -jarfile growler.apk | grep SHA1 | awk '{ print $2 } | sed -e 's/\://g'`` (where ``growler.apk`` is the name of the apk produced in step 1).
+  5. Add the result from the previous step to ``exp.json`` under ``android.config.googleSignIn.certificateHash``.
+  6. When you use ``Exponent.Google.logInAsync(..)``, pass in the **OAuth client ID** as the ``androidStandaloneAppClientId`` option.
+  7. Rebuild your standalone app.
 
 Deploying to a standalone app on iOS
 ------------------------------------
 
 If you want to use native sign in for a standalone app, you can follow these
-steps. If not, you can just specify ``behavior: 'web'`` in the options when
-using ``signInAsync`` and skip the following steps.
+steps. These steps assume that you already have it working on the Exponent
+client app.
 
 1. Add a ``bundleIdentifier`` to your ``exp.json`` if you don't already have one.
-2. Create an app in the Google Developer Console (if you haven't already for this project).
-3. Click "Add Credentials" and then "OAuth client ID".
-4. Choose "iOS" as the "Application Type".
-5. Provide your ``bundleIdentifier`` in the "Bundle ID" field, then press "Create".
-6. Add the given "iOS URL scheme" to your ``exp.json`` under ``ios.config.googleSignIn.reservedClientId``.
-7. Wherever you use ``Exponent.Google.logInAsync``, provide the "Client ID" as the ``iosClientId`` option, for example: ``Exponent.Google.logInAsync({iosClientId: YOUR_CLIENT_ID, ...etc});``.
-8. Rebuild your standalone app.
+2. Open your browser to `Google Developer Credentials <https://console.developers.google.com/apis/credentials>`_
+3. Click **Create credentials** and then **OAuth client ID**, then choose **iOS**.
+4. Provide your ``bundleIdentifier`` in the **Bundle ID** field, then press **Create**.
+5. Add the given **iOS URL scheme** to your ``exp.json`` under ``ios.config.googleSignIn.reservedClientId``.
+6. Wherever you use ``Exponent.Google.logInAsync``, provide the **OAuth client ID** as the ``iosStandaloneAppClientId`` option.
+7. Rebuild your standalone app.

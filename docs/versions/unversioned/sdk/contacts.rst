@@ -12,10 +12,9 @@ Provides access to the phone's system contacts.
       An array describing fields to retrieve per contact. Each element must be
       one of ``Exponent.Contacts.PHONE_NUMBERS`` or ``Exponent.Contacts.EMAILS``.
    :returns:
-      An array of objects of the form ``{ id, firstName, middleName, lastName,
-      name, phoneNumbers, emails, addresses, jobTitle, company  }`` with
+      An array of objects of the form ``{ id, name, phoneNumbers, emails, addresses, jobTitle, company  }`` with
       ``phoneNumbers``, ``emails``, and ``addresses`` only present if they were
-      requested through the ``fields`` parameter.
+      requested through the ``fields`` parameter. iOS also includes ``firstName, middleName, lastName``.
 
    :example:
       .. code-block:: javascript
