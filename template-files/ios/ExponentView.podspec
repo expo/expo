@@ -14,5 +14,5 @@ Pod::Spec.new do |s|
   s.preserve_paths = "ios/Exponent/**/*.{h,m}"
   s.exclude_files = "ios/Exponent/EXAppDelegate.*", "ios/Exponent/EXRootViewController.*", "ios/Exponent/Supporting/**"
 
-  ${IOS_EXPONENT_VIEW_DEPS}
+${IOS_EXPONENT_VIEW_DEPS}
 end
