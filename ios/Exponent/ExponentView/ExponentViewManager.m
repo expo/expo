@@ -85,10 +85,10 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
   [DDLog addLogger:[DDTTYLogger sharedInstance]];
 
   RCTSetFatalHandler(handleFatalReactError);
-  
+
   [[FBSDKApplicationDelegate sharedInstance] application:application
                            didFinishLaunchingWithOptions:launchOptions];
-  
+
   // TODO: open up an api for this in ExponentView
 #ifdef AMPLITUDE_DEV_KEY
 #if DEBUG
@@ -97,15 +97,18 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
   [[Amplitude instance] initializeApiKey:AMPLITUDE_KEY];
 #endif
 #endif
-  
+
   [EXRemoteNotificationManager sharedInstance];
+  // This is safe to call; if the app doesn't have permission to display user-facing notifications
+  // then registering for a push token is a no-op
+  [[EXRemoteNotificationManager sharedInstance] registerForRemoteNotifications];
   [self setLaunchOptions:launchOptions];
 
   NSDictionary *remoteNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
   if (remoteNotification) {
     [[EXRemoteNotificationManager sharedInstance] handleRemoteNotification:remoteNotification fromBackground:YES];
   }
-  
+
   UILocalNotification *localNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
   if (localNotification) {
     [[EXLocalNotificationManager sharedInstance] handleLocalNotification:localNotification fromBackground:YES];
@@ -124,7 +127,7 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
 {
   DDLogWarn(@"Failed to register for remote notifs: %@", err);
   [[EXRemoteNotificationManager sharedInstance] registerAPNSToken:nil];
-  
+
   // Post this even in the failure case -- up to subscribers to subsequently read the system permission state
   [[NSNotificationCenter defaultCenter] postNotificationName:EXAppDidRegisterForRemoteNotificationsNotification object:nil];
 }
@@ -155,7 +158,7 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
                                  annotation:annotation]) {
     return YES;
   }
-  
+
   if ([[FBSDKApplicationDelegate sharedInstance] application:application
                                                      openURL:url
                                            sourceApplication:sourceApplication

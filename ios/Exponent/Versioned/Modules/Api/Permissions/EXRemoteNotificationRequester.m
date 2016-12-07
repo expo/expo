@@ -1,5 +1,6 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
+#import "EXRemoteNotificationManager.h"
 #import "EXRemoteNotificationRequester.h"
 #import "EXUnversioned.h"
 
@@ -37,7 +38,7 @@
                                              object:nil];
   UIUserNotificationType types = UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
   [RCTSharedApplication() registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:types categories:nil]];
-  [RCTSharedApplication() registerForRemoteNotifications];
+  [[EXRemoteNotificationManager sharedInstance] registerForRemoteNotifications];
 }
 
 - (void)setDelegate:(id<EXPermissionRequesterDelegate>)delegate

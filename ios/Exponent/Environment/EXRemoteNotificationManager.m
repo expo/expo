@@ -5,6 +5,8 @@
 #import "EXProvisioningProfile.h"
 #import "EXRemoteNotificationManager.h"
 
+#import <React/RCTUtils.h>
+
 NSString * const kEXCurrentAPNSTokenDefaultsKey = @"EXCurrentAPNSTokenDefaultsKey";
 
 @implementation NSData (EXRemoteNotification)
@@ -52,6 +54,11 @@ NSString * const kEXCurrentAPNSTokenDefaultsKey = @"EXCurrentAPNSTokenDefaultsKe
                                                object:nil];
   }
   return self;
+}
+
+- (void)registerForRemoteNotifications
+{
+  [RCTSharedApplication() registerForRemoteNotifications];
 }
 
 - (void)registerAPNSToken:(NSData *)token
