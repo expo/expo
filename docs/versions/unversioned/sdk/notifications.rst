@@ -117,9 +117,6 @@ Related types
 
   * **data** (*optional*) (*object*) -- Any data that has been attached with the notification.
 
-  * **silent** (*optional*) (*object*) -- ``true`` if the notification is a push notification, ``false``
-    if it is a local notification.
-
   * **ios** (*optional*) (*object*) -- notification configuration specific to iOS.
 
     * **sound** (*optional*) (*boolean*) -- if ``true``, play a sound. Default: ``false``.
