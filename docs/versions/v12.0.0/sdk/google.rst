@@ -89,7 +89,8 @@ the process for this is described later in this document*.
 
 - **Create an Android OAuth Client ID**
 
-  * Select "iOS Application" as the Application Type. Give it a name if you want (maybe "Android Development").
+  * **This is currently not enabled in the Exponent client, we will be releasing a patch the week of Dec 11 to enable it**
+  * Select "Android Application" as the Application Type. Give it a name if you want (maybe "Android Development").
   * Enter ``AD:15:BE:F8:B5:23:99:96:7E:E7:C1:1B:37:90:D5:84:60:27:91:7E`` as the "Signing-certificate fingerprint".
   * Use ``host.exp.exponent`` as the "Package name".
   * Click "Create"
