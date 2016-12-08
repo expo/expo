@@ -2,8 +2,8 @@ source 'https://github.com/CocoaPods/Specs.git'
 platform :ios, '8.0'
 
 target '${TARGET_NAME}' do
-  pod 'ExponentView', :path => '../exponent'
-  pod 'ExponentCPP', :path => '../exponent/cpp'
+  pod 'ExponentView', :path => '${EXPONENT_ROOT_PATH}'
+  pod 'ExponentCPP', :path => '${EXPONENT_ROOT_PATH}/cpp'
 ${PODFILE_UNVERSIONED_RN_DEPENDENCY}
 ${PODFILE_VERSIONED_RN_DEPENDENCIES}
 
