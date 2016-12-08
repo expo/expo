@@ -25,13 +25,12 @@ DerivedData
 *.iml
 .gradle
 /android/app/build
-/android/exponentview/build
 /android/build
 /android/captures
 /android/local.properties
 /android/tools/build
 /android/ReactAndroid/build
-/android/exponentview/libs/ReactAndroid-temp
+/android/app/libs/ReactAndroid-temp
 /android/versioned-react-native/build
 /android/versioned-react-native/local.properties
 /android/versioned-react-native/ReactAndroid
@@ -50,7 +49,7 @@ npm-debug.log
 
 # Dynamic Macros
 /ios/Exponent/Supporting/Generated/EXDynamicMacros.h
-/android/exponentview/src/main/java/host/exp/exponent/generated/ExponentBuildConstants.java
+/android/app/src/main/java/host/exp/exponent/generated/ExponentBuildConstants.java
 /android/app/src/androidTest/java/host/exp/exponent/generated/TestBuildConstants.java
 .kernel-ngrok-url
 
@@ -89,12 +88,11 @@ android/logcat.txt
 
 # Shell apps
 android-shell-app
-shellAppBase-*
 
 # Template files
 android/app/src/main/AndroidManifest.xml
 android/app/google-services.json
-android/exponentview/src/main/java/host/exp/exponent/generated/ExponentKeys.java
+android/app/src/main/java/host/exp/exponent/generated/ExponentKeys.java
 android/app/fabric.properties
 ios/Exponent/Supporting/Generated/EXKeys.h
 ios/Podfile
