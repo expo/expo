@@ -19,8 +19,10 @@ COPY ./tools ./tools
 COPY ./tools-public ./tools-public
 COPY ./cpp ./cpp
 COPY ./package.json ./package.json
+COPY ./xdlpackfile.tgz ./xdlpackfile.tgz
 
 ENV SHELL_APP_BUILDER 1
 
+RUN cd ./tools-public && npm install --save ../xdlpackfile.tgz
 RUN mkdir -p ./android/exponentview/src/main/java/host/exp/exponent/generated/
 RUN cd ./tools-public && gulp generate-dynamic-macros --buildConstantsPath ../android/exponentview/src/main/java/host/exp/exponent/generated/ExponentBuildConstants.java --platform android
