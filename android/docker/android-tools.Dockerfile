@@ -85,3 +85,6 @@ RUN mv gradle-2.13 /usr/local
 RUN rm gradle-2.13-all.zip
 ENV GRADLE_HOME /usr/local/gradle-2.13
 ENV PATH ${GRADLE_HOME}/bin:$PATH
+
+# Install Gulp
+RUN npm install -g gulp-cli
