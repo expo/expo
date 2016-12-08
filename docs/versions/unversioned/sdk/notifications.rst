@@ -111,11 +111,11 @@ Related types
 
   An object used to describe the local notification that you would like to present or schedule.
 
-  * **title** (*string*) -- Either ``selected`` or ``received``. ``selected``
-    if the notification was tapped on by the user, ``received`` if the
-    notification was received while the user was in the app.
+  * **title** (*string*) -- title text of the notification.
 
-  * **data** (*optional*) (*object*) -- Any data that has been attached with the notification.
+  * **body** (*string*) -- body text of the notification.
+
+  * **data** (*optional*) (*object*) -- any data that has been attached with the notification.
 
   * **ios** (*optional*) (*object*) -- notification configuration specific to iOS.
 
@@ -123,14 +123,16 @@ Related types
 
   * **android** (*optional*) (*object*) -- notification configuration specific to Android.
 
-    * **icon** (*optional*) (*string*)
+    * **sound** (*optional*) (*boolean*) -- if ``true``, play a sound. Default: ``false``.
 
-    * **color** (*optional*) (*string*)
+    * **icon** (*optional*) (*string*) -- URL of icon to display in notification drawer.
 
-    * **priority** (*optional*) (*string*)
+    * **color** (*optional*) (*string*) -- color of the notification icon in notification drawer.
 
-    * **sticky** (*optional*) (*boolean*)
+    * **priority** (*optional*) (*min | low | high | max*) -- android may present notifications acccording to the priority, for example a ``high`` priority notification will likely to be shown as a heads-up notification.
 
-    * **vibrate** (*optional*) (*boolean* or *array*)
+    * **sticky** (*optional*) (*boolean*) -- if ``true``, the notification will be sticky and not dissmissable by user. The notification must be programmatically dismissed. Default: ``false``.
 
-    * **link** (*optional*) (*array*)
+    * **vibrate** (*optional*) (*boolean* or *array*) -- if ``true``, vibrate the device. An array can be supplied to specify the vibration pattern, e.g. - ``[ 0, 500 ]``.
+
+    * **link** (*optional*) (*string*) -- external link to open when notification is selected.
