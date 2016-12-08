@@ -93,7 +93,7 @@ public class NotificationHelper {
     final String experienceId = (String) details.get("experienceId");
     final HashMap data = (HashMap) details.get("data");
 
-    if (!(data.containsKey("silent") && (Boolean) data.get("silent"))) {
+    if (data.containsKey("sound") && (Boolean) data.get("sound")) {
       builder.setDefaults(NotificationCompat.DEFAULT_SOUND);
     }
 
@@ -236,9 +236,14 @@ public class NotificationHelper {
 
     if (options.containsKey("time")) {
       try {
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        format.setTimeZone(TimeZone.getTimeZone("UTC"));
-        time = format.parse((String) options.get("time")).getTime() - System.currentTimeMillis();
+        Object suppliedTime = options.get("time");
+        if (suppliedTime instanceof String) {
+          DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+          format.setTimeZone(TimeZone.getTimeZone("UTC"));
+          time = format.parse((String) suppliedTime).getTime() - System.currentTimeMillis();
+        } else {
+          time = Long.valueOf((String) suppliedTime) - System.currentTimeMillis();
+        }
       } catch (ParseException e) {
         listener.onFailure(e);
         return;
