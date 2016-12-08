@@ -3,7 +3,7 @@ apply plugin: 'maven'
 
 //maven repository info
 group = 'host.exp.exponent'
-version = '1.0.0'
+version = '12.0.0'
 
 //Upload android library to maven with javadoc and android sources
 configurations {
@@ -176,10 +176,10 @@ dependencies {
   compile 'com.android.support:multidex:1.0.1'
 
   // Current react native
-  debugCompile project(':ReactAndroid')
-  // TODO: only use this in exponentview
-  //releaseCompile 'host.exp.exponent:react-native:11.0.0'
-  releaseCompile project(':ReactAndroid')
+  compile project(':ReactAndroid')
+  /* UNCOMMENT WHEN DISTRIBUTING
+  compile 'host.exp.exponent:react-native:11.0.0'
+  END UNCOMMENT WHEN DISTRIBUTING */
 
   // React native dependencies
   // We use a different version of appcompat
