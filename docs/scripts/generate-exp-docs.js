@@ -19,7 +19,7 @@ const filePath = path.resolve(process.argv[2]);
 const stream = fs.createWriteStream(filePath);
 
 const preamble = `
-\`\`exp.json\`\` is your go-to place for configuring parts of your app that don't belong in code. The following is a full list of properties available to you.\
+\`\`exp.json\`\` is your go-to place for configuring parts of your app that don't belong in code. It is located at the root of your project next to your \`\`package.json\`\`.  The following is a full list of properties available to you.\
 \n\n
 `;
 
@@ -31,7 +31,7 @@ stream.once('open', function(fd) {
   });
 
   stream.write(".. _exp:\n\n");
-  stream.write("Configuration with exp.json\n");
+  stream.write("Configuration with ``exp.json``\n");
   stream.write("========\n\n\n");
 
 
