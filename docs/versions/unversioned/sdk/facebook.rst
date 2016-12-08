@@ -49,14 +49,16 @@ other users can log in.
         * ``'browser'`` -- Attempts to log in through Safari or
           ``SFSafariViewController``. This is only supported for standalone
           apps.
-        * ``'system'`` -- Attempts to log in through the Facebook account currently
-          signed in through the device Settings.
+        * ``'system'`` -- Attempts to log in through the Facebook account
+          currently signed in through the device Settings. This is only
+          supported for standalone apps.
 
-      An array specifying the permissions to ask
-        for from Facebook for this login. The permissions are strings as
-        specified in the `Facebook API documentation
-        <https://developers.facebook.com/docs/facebook-login/permissions>`_. The
-        default permissions are ``['public_profile', 'email', 'user_friends']``.
+        For the ``'native'``, ``'browser'`` and ``'system'`` options, which are
+        only supported on standalone apps, you will have to add a field
+        ``facebookScheme`` in your :ref:`exp.json <exp>` with your Facebook login
+        redirect URL scheme found `here
+        <https://developers.facebook.com/docs/facebook-login/ios>`_ under "4.
+        Configure Your info.plist." It should look like ``"fb123456"``.
 
    :returns:
       If the user or Facebook cancelled the login, returns ``{ type: 'cancel' }``.
