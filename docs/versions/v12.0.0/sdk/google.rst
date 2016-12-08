@@ -55,8 +55,8 @@ Usage
    :returns:
       If the user or Google cancelled the login, returns ``{ type: 'cancel' }``.
 
-      Otherwise, returns ``{ type: 'success', accessToken, idToken,
-      serverAuthCode, user: {...profileInformation} }``. ``accessToken`` is a string
+      Otherwise, returns ``{ type: 'success', accessToken, serverAuthCode,
+      user: {...profileInformation} }``. ``accessToken`` is a string
       giving the access token to use with Google HTTP API requests.
 
 Using it inside of the Exponent app
@@ -89,14 +89,15 @@ the process for this is described later in this document*.
 
 - **Create an Android OAuth Client ID**
 
-  * **This is currently not enabled in the Exponent client, we will be releasing a patch the week of Dec 11 to enable it**
   * Select "Android Application" as the Application Type. Give it a name if you want (maybe "Android Development").
-  * Enter ``AD:15:BE:F8:B5:23:99:96:7E:E7:C1:1B:37:90:D5:84:60:27:91:7E`` as the "Signing-certificate fingerprint".
+  * Run ``openssl rand -base64 32 | openssl sha1 -c`` in your terminal, it will
+    output a string that looks like ``A1:B2:C3`` but longer. Copy the output to
+    your clipboard.
+  * Paste the output from the previous step into the "Signing-certificate fingerprint" text field.
   * Use ``host.exp.exponent`` as the "Package name".
   * Click "Create"
   * You will now see a modal with the Client ID.
   * The client ID is used in the ``androidClientId`` option for ``Exponent.Google.loginAsync`` (see code example below).
-
 
 - **Add the Client IDs to your app**
 
