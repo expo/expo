@@ -29,7 +29,7 @@ public class DefaultNativeModuleCallExceptionHandler implements NativeModuleCall
             }
         } catch (RuntimeException exponentException) {
             try {
-                Class.forName("host.exp.exponent.kernel.Kernel").getMethod("handleReactNativeError", Throwable.class, String.class, Object.class, Integer.class, Boolean.class).invoke(null, exponentException, exponentException.getMessage(), null, -1, true);
+                Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("handleReactNativeError", Throwable.class, String.class, Object.class, Integer.class, Boolean.class).invoke(null, exponentException, exponentException.getMessage(), null, -1, true);
             } catch (Exception exponentHandleErrorException) {
                 exponentHandleErrorException.printStackTrace();
             }
