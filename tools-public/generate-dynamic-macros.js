@@ -240,6 +240,14 @@ async function copyTemplateFilesAsync(platform, args) {
   if (platform === 'ios') {
     let infoPlistPath = args.infoPlistPath;
     await modifyIOSInfoPlistAsync(infoPlistPath, 'Info', templateSubstitutions);
+    await renderPodfileAsync(
+      path.join(templateFilesPath, platform, 'Podfile'),
+      path.join(EXPONENT_DIR, 'ios', 'Podfile'),
+      {
+        TARGET_NAME: 'Exponent',
+        REACT_NATIVE_PATH: templateSubstitutions.REACT_NATIVE_PATH,
+      }
+    );
 
     if (args.exponentViewPath) {
       let exponentViewPath = path.join(process.cwd(), args.exponentViewPath);
@@ -248,10 +256,12 @@ async function copyTemplateFilesAsync(platform, args) {
         path.join(exponentViewPath, 'ExponentView.podspec')
       );
       await renderPodfileAsync(
-        'exponent-view-template',
-        '../..',
         path.join(templateFilesPath, platform, 'ExponentView-Podfile'),
-        path.join(exponentViewPath, 'exponent-view-template', 'ios', 'Podfile')
+        path.join(exponentViewPath, 'exponent-view-template', 'ios', 'Podfile'),
+        {
+          TARGET_NAME: 'exponent-view-template',
+          EXPONENT_ROOT_PATH: '../..',
+        }
       );
     }
   }
