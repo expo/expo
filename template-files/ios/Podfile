@@ -1,136 +1,13 @@
 source 'https://github.com/CocoaPods/Specs.git'
 platform :ios, '8.0'
 
-target 'Exponent' do
-  # Published CocoaPods
-  pod 'AppAuth', '~> 0.4'
-  pod 'CocoaLumberjack', '~> 2.3'
-  pod 'Crashlytics', '~> 3.8'
-  pod 'Fabric', '~> 1.6'
-  pod 'Google/SignIn', '~> 3.0'
-  pod 'SimulatorStatusMagic', '~> 1.9', :configurations => ['Debug']
-  # Be careful when updating. Could break versioning.
-  pod 'Amplitude-iOS', '~> 3.8'
-  pod 'FBSDKCoreKit', '~> 4.15'
-  pod 'FBSDKLoginKit', '~> 4.15'
-  pod 'FBSDKShareKit', '~> 4.15'
-  # Segment. Be careful when updating. Could break versioning.
-  pod 'Analytics', '~> 3.5'
+target '${TARGET_NAME}' do
+${EXPONENT_CLIENT_DEPS}
 
   # Local CocoaPods
   pod 'ExponentCPP', :path => '../cpp'
-  pod 'React', :path => '${REACT_NATIVE_PATH}', :subspecs => [
-    'Core',
-    'ART',
-    'RCTActionSheet',
-    'RCTAnimation',
-    'RCTCameraRoll',
-    'RCTGeolocation',
-    'RCTImage',
-    'RCTNetwork',
-    'RCTText',
-    'RCTVibration',
-    'RCTWebSocket',
-  ]
-
-    # Generated dependency: ReactABI12_0_0
-    pod 'ReactABI12_0_0', :path => 'versioned-react-native/ABI12_0_0', :subspecs => [
-      'Core',
-      'ART',
-      'Exponent',
-      'RCTActionSheet',
-      'RCTAnimation',
-      'RCTCameraRoll',
-      'RCTGeolocation',
-      'RCTImage',
-      'RCTNetwork',
-      'RCTText',
-      'RCTVibration',
-      'RCTWebSocket',
-    ]
-    # End generated dependency
-
-    # Generated dependency: ReactABI11_0_0
-    pod 'ReactABI11_0_0', :path => 'versioned-react-native/ABI11_0_0', :subspecs => [
-      'Core',
-      'ART',
-      'Exponent',
-      'RCTActionSheet',
-      'RCTAnimation',
-      'RCTCameraRoll',
-      'RCTGeolocation',
-      'RCTImage',
-      'RCTNetwork',
-      'RCTText',
-      'RCTVibration',
-      'RCTWebSocket',
-    ]
-    # End generated dependency
-
-    # Generated dependency: ReactABI10_0_0
-    pod 'ReactABI10_0_0', :path => 'versioned-react-native/ABI10_0_0', :subspecs => [
-      'Core',
-      'ART',
-      'CSSLayout',
-      'Exponent',
-      'RCTActionSheet',
-      'RCTAnimation',
-      'RCTCameraRoll',
-      'RCTGeolocation',
-      'RCTImage',
-      'RCTNetwork',
-      'RCTText',
-      'RCTVibration',
-      'RCTWebSocket',
-    ]
-    # End generated dependency
-
-    # Generated dependency: ReactABI9_0_0
-    pod 'ReactABI9_0_0', :path => 'versioned-react-native/ABI9_0_0', :subspecs => [
-      'Core',
-      'ART',
-      'CSSLayout',
-      'Exponent',
-      'RCTActionSheet',
-      'RCTGeolocation',
-      'RCTImage',
-      'RCTNetwork',
-      'RCTText',
-      'RCTVibration',
-      'RCTWebSocket',
-    ]
-    # End generated dependency
-
-    # Generated dependency: ReactABI8_0_0
-    pod 'ReactABI8_0_0', :path => 'versioned-react-native/ABI8_0_0', :subspecs => [
-      'Core',
-      'ART',
-      'CSSLayout',
-      'Exponent',
-      'RCTActionSheet',
-      'RCTGeolocation',
-      'RCTImage',
-      'RCTNetwork',
-      'RCTText',
-      'RCTVibration',
-      'RCTWebSocket',
-    ]
-    # End generated dependency
-
-    # Generated dependency: ReactABI7_0_0
-    pod 'ReactABI7_0_0', :path => 'versioned-react-native/ABI7_0_0', :subspecs => [
-      'Core',
-      'ART',
-      'Exponent',
-      'RCTActionSheet',
-      'RCTGeolocation',
-      'RCTImage',
-      'RCTNetwork',
-      'RCTText',
-      'RCTVibration',
-      'RCTWebSocket',
-    ]
-    # End generated dependency
+${PODFILE_UNVERSIONED_RN_DEPENDENCY}
+${PODFILE_VERSIONED_RN_DEPENDENCIES}
 
     # Build React Native with RCT_DEV enabled
   post_install do |installer|
@@ -138,78 +15,10 @@ target 'Exponent' do
     installer.pods_project.main_group.indent_width = '2';
 
     installer.pod_targets.each do |target|
-
-    # Generated postinstall: ReactABI12_0_0
-    if target.pod_name == 'ReactABI12_0_0'
-      target.native_target.build_configurations.each do |config|
-        config.build_settings['OTHER_CFLAGS'] = ['-DkNeverRequested=ReactABI12_0_0kNeverRequested','-DkNeverProgressed=ReactABI12_0_0kNeverProgressed','-DZINDEX_DEFAULT=ReactABI12_0_0ZINDEX_DEFAULT','-DZINDEX_STICKY_HEADER=ReactABI12_0_0ZINDEX_STICKY_HEADER','-DgCurrentGenerationCount=ReactABI12_0_0gCurrentGenerationCount','-DgPrintSkips=ReactABI12_0_0gPrintSkips','-DgPrintChanges=ReactABI12_0_0gPrintChanges','-DlayoutNodeInternal=ReactABI12_0_0layoutNodeInternal','-DgDepth=ReactABI12_0_0gDepth','-DgPrintTree=ReactABI12_0_0gPrintTree','-DisUndefined=ReactABI12_0_0isUndefined','-DSINGLE_FRAME_INTERVAL=ReactABI12_0_0SINGLE_FRAME_INTERVAL','-DkSMCalloutViewRepositionDelayForUIScrollView=ReactABI12_0_0kSMCalloutViewRepositionDelayForUIScrollView']
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'ABI12_0_0RCT_DEV=1'
-      end
-    end
-    # End generated postinstall
-
-    # Generated postinstall: ReactABI11_0_0
-    if target.pod_name == 'ReactABI11_0_0'
-      target.native_target.build_configurations.each do |config|
-        config.build_settings['OTHER_CFLAGS'] = ['-DkNeverRequested=ReactABI11_0_0kNeverRequested','-DkNeverProgressed=ReactABI11_0_0kNeverProgressed','-DZINDEX_DEFAULT=ReactABI11_0_0ZINDEX_DEFAULT','-DZINDEX_STICKY_HEADER=ReactABI11_0_0ZINDEX_STICKY_HEADER','-DgCurrentGenerationCount=ReactABI11_0_0gCurrentGenerationCount','-DgPrintSkips=ReactABI11_0_0gPrintSkips','-DgPrintChanges=ReactABI11_0_0gPrintChanges','-DlayoutNodeInternal=ReactABI11_0_0layoutNodeInternal','-DgDepth=ReactABI11_0_0gDepth','-DgPrintTree=ReactABI11_0_0gPrintTree','-DisUndefined=ReactABI11_0_0isUndefined','-DSINGLE_FRAME_INTERVAL=ReactABI11_0_0SINGLE_FRAME_INTERVAL','-DkSMCalloutViewRepositionDelayForUIScrollView=ReactABI11_0_0kSMCalloutViewRepositionDelayForUIScrollView']
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'ABI11_0_0RCT_DEV=1'
-      end
-    end
-    # End generated postinstall
-
-    # Generated postinstall: ReactABI10_0_0
-    if target.pod_name == 'ReactABI10_0_0'
-      target.native_target.build_configurations.each do |config|
-        config.build_settings['OTHER_CFLAGS'] = ['-DkNeverRequested=ReactABI10_0_0kNeverRequested','-DkNeverProgressed=ReactABI10_0_0kNeverProgressed','-DZINDEX_DEFAULT=ReactABI10_0_0ZINDEX_DEFAULT','-DZINDEX_STICKY_HEADER=ReactABI10_0_0ZINDEX_STICKY_HEADER','-DgCurrentGenerationCount=ReactABI10_0_0gCurrentGenerationCount','-DgPrintSkips=ReactABI10_0_0gPrintSkips','-DgPrintChanges=ReactABI10_0_0gPrintChanges','-DlayoutNodeInternal=ReactABI10_0_0layoutNodeInternal','-DgDepth=ReactABI10_0_0gDepth','-DgPrintTree=ReactABI10_0_0gPrintTree','-DisUndefined=ReactABI10_0_0isUndefined','-DSINGLE_FRAME_INTERVAL=ReactABI10_0_0SINGLE_FRAME_INTERVAL']
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'ABI10_0_0RCT_DEV=1'
-      end
-    end
-    # End generated postinstall
-
-    # Generated postinstall: ReactABI9_0_0
-    if target.pod_name == 'ReactABI9_0_0'
-      target.native_target.build_configurations.each do |config|
-        config.build_settings['OTHER_CFLAGS'] = ['-DkNeverRequested=ReactABI9_0_0kNeverRequested','-DkNeverProgressed=ReactABI9_0_0kNeverProgressed','-DZINDEX_DEFAULT=ReactABI9_0_0ZINDEX_DEFAULT','-DZINDEX_STICKY_HEADER=ReactABI9_0_0ZINDEX_STICKY_HEADER','-DgCurrentGenerationCount=ReactABI9_0_0gCurrentGenerationCount','-DgPrintSkips=ReactABI9_0_0gPrintSkips','-DgPrintChanges=ReactABI9_0_0gPrintChanges','-DlayoutNodeInternal=ReactABI9_0_0layoutNodeInternal','-DgDepth=ReactABI9_0_0gDepth','-DgPrintTree=ReactABI9_0_0gPrintTree','-DisUndefined=ReactABI9_0_0isUndefined']
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'ABI9_0_0RCT_DEV=1'
-      end
-    end
-    # End generated postinstall
-
-    # Generated postinstall: ReactABI8_0_0
-    if target.pod_name == 'ReactABI8_0_0'
-      target.native_target.build_configurations.each do |config|
-        config.build_settings['OTHER_CFLAGS'] = ['-DkNeverRequested=ReactABI8_0_0kNeverRequested','-DkNeverProgressed=ReactABI8_0_0kNeverProgressed','-DZINDEX_DEFAULT=ReactABI8_0_0ZINDEX_DEFAULT','-DZINDEX_STICKY_HEADER=ReactABI8_0_0ZINDEX_STICKY_HEADER','-DgCurrentGenerationCount=ReactABI8_0_0gCurrentGenerationCount','-DgPrintSkips=ReactABI8_0_0gPrintSkips','-DgPrintChanges=ReactABI8_0_0gPrintChanges','-DlayoutNodeInternal=ReactABI8_0_0layoutNodeInternal','-DgDepth=ReactABI8_0_0gDepth','-DgPrintTree=ReactABI8_0_0gPrintTree','-DisUndefined=ReactABI8_0_0isUndefined']
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'ABI8_0_0RCT_DEV=1'
-      end
-    end
-    # End generated postinstall
-
-    # Generated postinstall: ReactABI7_0_0
-    if target.pod_name == 'ReactABI7_0_0'
-      target.native_target.build_configurations.each do |config|
-        config.build_settings['OTHER_CFLAGS'] = ['-DkNeverRequested=ReactABI7_0_0kNeverRequested','-DkNeverProgressed=ReactABI7_0_0kNeverProgressed','-DZINDEX_DEFAULT=ReactABI7_0_0ZINDEX_DEFAULT','-DZINDEX_STICKY_HEADER=ReactABI7_0_0ZINDEX_STICKY_HEADER']
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'ABI7_0_0RCT_DEV=1'
-      end
-    end
-    # End generated postinstall
-
-    next unless target.pod_name == 'React'
-      target.native_target.build_configurations.each do |config|
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'RCT_DEV=1'
-      end
+${PODFILE_VERSIONED_POSTINSTALLS}
+${PODFILE_UNVERSIONED_POSTINSTALL}
     end
   end
 
-  # if you run into problems pre-downloading this, rm Pods/Local\ Podspecs/RCTTest.podspec.json
-  target 'ExponentIntegrationTests' do
-    inherit! :search_paths
-    pod 'RCTTest', :podspec => './RCTTest.podspec', :path => '${REACT_NATIVE_PATH}'
-  end
+${PODFILE_TEST_TARGET}
 end
