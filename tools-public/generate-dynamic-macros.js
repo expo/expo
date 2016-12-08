@@ -11,11 +11,18 @@ import path from 'path';
 import process from 'process';
 import spawnAsync from '@exponent/spawn-async';
 import JsonFile from '@exponent/json-file';
-import { ExponentTools } from 'xdl';
+import {
+  ExponentTools,
+  IosPodsTools,
+} from 'xdl';
 let {
   modifyIOSPropertyListAsync,
   cleanIOSPropertyListBackupAsync,
 } = ExponentTools;
+let {
+  renderExponentViewPodspecAsync,
+  renderPodfileAsync,
+} = IosPodsTools;
 
 const ProjectVersions = require('./project-versions');
 
@@ -221,22 +228,45 @@ async function getTemplateSubstitutions() {
 }
 
 async function copyTemplateFilesAsync(platform, args) {
-  let templatePaths = await new JsonFile(path.join(EXPONENT_DIR, 'template-files', `${platform}-paths.json`)).readAsync();
+  let templateFilesPath = path.join(EXPONENT_DIR, 'template-files');
+  let templatePaths = await new JsonFile(path.join(templateFilesPath, `${platform}-paths.json`)).readAsync();
   let templateSubstitutions = await getTemplateSubstitutions();
 
   let promises = [];
   _.forEach(templatePaths, (dest, source) => {
-    promises.push(copyTemplateFileAsync(path.join(EXPONENT_DIR, 'template-files', platform, source), path.join(EXPONENT_DIR, dest, source), templateSubstitutions));
+    promises.push(copyTemplateFileAsync(path.join(templateFilesPath, platform, source), path.join(EXPONENT_DIR, dest, source), templateSubstitutions));
   });
 
   if (platform === 'ios') {
     let infoPlistPath = args.infoPlistPath;
     await modifyIOSInfoPlistAsync(infoPlistPath, 'Info', templateSubstitutions);
+
+    if (args.exponentViewPath) {
+      let exponentViewPath = path.join(process.cwd(), args.exponentViewPath);
+      await renderExponentViewPodspecAsync(
+        path.join(templateFilesPath, platform, 'ExponentView.podspec'),
+        path.join(exponentViewPath, 'ExponentView.podspec')
+      );
+      await renderPodfileAsync(
+        'exponent-view-template',
+        '../..',
+        path.join(templateFilesPath, platform, 'ExponentView-Podfile'),
+        path.join(exponentViewPath, 'exponent-view-template', 'ios', 'Podfile')
+      );
+    }
   }
 
   await Promise.all(promises);
 }
 
+/**
+ *  args:
+ *    platform (ios|android)
+ *    buildConstantsPath
+ *  ios-only:
+ *    infoPlistPath
+ *    exponentViewPath (optional - if provided, generate files for exponent-view-template)
+ */
 export async function generateDynamicMacrosAsync(args) {
   try {
     let filepath = path.resolve(args.buildConstantsPath);
