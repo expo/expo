@@ -14,7 +14,12 @@ buildscript {
 
 allprojects {
   repositories {
+    mavenLocal()
     jcenter()
+    maven {
+      // Point to local maven repository
+      url "$rootDir/../exponent/maven"
+    }
   }
 }
 
