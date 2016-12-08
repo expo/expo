@@ -67,6 +67,7 @@ public class ExponentNotification {
     args.call("putString", NotificationConstants.NOTIFICATION_DATA_KEY, body);
     args.call("putInt", NotificationConstants.NOTIFICATION_ID_KEY, notificationId);
     args.call("putBoolean", NotificationConstants.NOTIFICATION_IS_MULTIPLE_KEY, isMultiple);
+    args.call("putBoolean", NotificationConstants.NOTIFICATION_REMOTE_KEY, isRemote);
     return args.get();
   }
 }
