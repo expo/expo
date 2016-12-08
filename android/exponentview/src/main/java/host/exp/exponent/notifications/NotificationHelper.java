@@ -11,6 +11,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
 import android.text.format.DateUtils;
+import host.exp.exponent.utils.JSONUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -19,8 +21,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
 import java.util.TimeZone;
 
 import host.exp.exponent.ExponentManifest;
@@ -168,7 +168,7 @@ public class NotificationHelper {
             intent.putExtra(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY, experience.manifestUrl);
           }
 
-          String body = data.containsKey("data") ? data.get("data").toString() : "";
+          String body = data.containsKey("data") ? JSONUtils.getJSONString(data.get("data")) : "";
 
           ExponentNotification notification = new ExponentNotification(experienceId, body, id, false, false);
 
@@ -213,7 +213,7 @@ public class NotificationHelper {
   public static void scheduleLocalNotification(
       final Context context,
       final int id,
-      final HashMap data,
+      final HashMap<String, Object> data,
       final HashMap options,
       final JSONObject manifest,
       final Listener listener) {
