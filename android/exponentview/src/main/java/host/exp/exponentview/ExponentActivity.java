@@ -21,9 +21,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 import javax.inject.Inject;
 
+import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.Analytics;
@@ -40,8 +42,7 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
 
   // Override me!
   public abstract String initialUrl();
-
-  private static final String TAG = ExponentActivity.class.getSimpleName();
+  public abstract List<String> sdkVersions();
 
   @Inject
   ExponentManifest mExponentManifest;
@@ -62,6 +63,8 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
+    Constants.setSdkVersions(sdkVersions());
 
     mLayout = new FrameLayout(this);
     setContentView(mLayout);

@@ -250,7 +250,7 @@ public class DevServerHelper {
 
     private String createBundleURL(String host, String jsModulePath, boolean devMode, boolean hmr, boolean jsMinify) {
         try {
-            return (String) Class.forName("host.exp.exponent.kernel.Kernel").getMethod("getBundleUrlForActivityId", int.class, String.class, String.class, boolean.class, boolean.class, boolean.class).invoke(null, mSettings.exponentActivityId, host, jsModulePath, devMode, hmr, jsMinify);
+            return (String) Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("getBundleUrlForActivityId", int.class, String.class, String.class, boolean.class, boolean.class, boolean.class).invoke(null, mSettings.exponentActivityId, host, jsModulePath, devMode, hmr, jsMinify);
         } catch (Exception exponentHandleErrorException) {
             exponentHandleErrorException.printStackTrace();
             return null;

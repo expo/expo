@@ -74,7 +74,7 @@ public class ExceptionsManagerModule extends BaseJavaModule {
         } else {
             {
                 try {
-                    Class.forName("host.exp.exponent.kernel.Kernel").getMethod("handleReactNativeError", Throwable.class, String.class, Object.class, Integer.class, Boolean.class).invoke(null, null, title, details, exceptionId, true);
+                    Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("handleReactNativeError", Throwable.class, String.class, Object.class, Integer.class, Boolean.class).invoke(null, null, title, details, exceptionId, true);
                 } catch (Exception exponentHandleErrorException) {
                     exponentHandleErrorException.printStackTrace();
                 }
@@ -95,7 +95,7 @@ public class ExceptionsManagerModule extends BaseJavaModule {
         } else {
             {
                 try {
-                    Class.forName("host.exp.exponent.kernel.Kernel").getMethod("handleReactNativeError", Throwable.class, String.class, Object.class, Integer.class, Boolean.class).invoke(null, null, title, details, exceptionId, false);
+                    Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("handleReactNativeError", Throwable.class, String.class, Object.class, Integer.class, Boolean.class).invoke(null, null, title, details, exceptionId, false);
                 } catch (Exception exponentHandleErrorException) {
                     exponentHandleErrorException.printStackTrace();
                 }
@@ -122,7 +122,7 @@ public class ExceptionsManagerModule extends BaseJavaModule {
         } else {
             {
                 try {
-                    Class.forName("host.exp.exponent.kernel.Kernel").getMethod("handleReactNativeError", Throwable.class, String.class, Object.class, Integer.class, Boolean.class).invoke(null, null, title, details, exceptionId, false);
+                    Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("handleReactNativeError", Throwable.class, String.class, Object.class, Integer.class, Boolean.class).invoke(null, null, title, details, exceptionId, false);
                 } catch (Exception exponentHandleErrorException) {
                     exponentHandleErrorException.printStackTrace();
                 }

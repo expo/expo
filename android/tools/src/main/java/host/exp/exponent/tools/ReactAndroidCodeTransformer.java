@@ -71,7 +71,7 @@ public class ReactAndroidCodeTransformer {
   }
 
   private static String getHandleErrorBlockString(String throwable, String title, String details, String exceptionId, String isFatal) {
-    return getCallMethodReflectionBlock("host.exp.exponent.kernel.Kernel", "\"handleReactNativeError\", Throwable.class, String.class, Object.class, Integer.class, Boolean.class", "null, " + throwable + ", " + title + ", " + details + ", " + exceptionId + ", " + isFatal);
+    return getCallMethodReflectionBlock("host.exp.exponent.ReactNativeStaticHelpers", "\"handleReactNativeError\", Throwable.class, String.class, Object.class, Integer.class, Boolean.class", "null, " + throwable + ", " + title + ", " + details + ", " + exceptionId + ", " + isFatal);
   }
 
   private static BlockStmt getHandleErrorBlock(String throwable, String title, String details, String exceptionId, String isFatal) {
@@ -138,7 +138,7 @@ public class ReactAndroidCodeTransformer {
         switch (methodName) {
           case "createBundleURL":
             try {
-              BlockStmt stmt = JavaParser.parseBlock(getCallMethodReflectionBlock("host.exp.exponent.kernel.Kernel", "\"getBundleUrlForActivityId\", int.class, String.class, String.class, boolean.class, boolean.class, boolean.class", "null, mSettings.exponentActivityId, host, jsModulePath, devMode, hmr, jsMinify", "return (String) ", "return null;"));
+              BlockStmt stmt = JavaParser.parseBlock(getCallMethodReflectionBlock("host.exp.exponent.ReactNativeStaticHelpers", "\"getBundleUrlForActivityId\", int.class, String.class, String.class, boolean.class, boolean.class, boolean.class", "null, mSettings.exponentActivityId, host, jsModulePath, devMode, hmr, jsMinify", "return (String) ", "return null;"));
               n.setBody(stmt);
               n.setModifiers(n.getModifiers() & ~Modifier.STATIC);
               return n;

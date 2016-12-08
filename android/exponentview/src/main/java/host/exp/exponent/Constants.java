@@ -21,13 +21,22 @@ public class Constants {
   public static final String INITIAL_URL = null;
   public static final String SHELL_APP_SCHEME = null;
   public static final String API_HOST = "https://exp.host";
-  public static final String ABI_VERSIONS;
-  public static final String SDK_VERSIONS;
-  public static final List<String> SDK_VERSIONS_LIST;
+  public static String ABI_VERSIONS;
+  public static String SDK_VERSIONS;
+  public static List<String> SDK_VERSIONS_LIST;
   public static final String TEMPORARY_ABI_VERSION = null;
   public static final String KERNEL_URL;
   public static final String EMBEDDED_KERNEL_PATH = "assets://kernel.android.bundle";
   public static final List<EmbeddedResponse> EMBEDDED_RESPONSES;
+
+  public static void setSdkVersions(List<String> sdkVersions) {
+    ABI_VERSIONS = TextUtils.join(",", sdkVersions);
+
+    // NOTE: Currently public-facing SDK versions and internal ABI versions are the same, but
+    // eventually we may decouple them
+    SDK_VERSIONS = ABI_VERSIONS;
+    SDK_VERSIONS_LIST = sdkVersions;
+  }
 
   static {
     List<String> abiVersions = new ArrayList<>();
@@ -43,12 +52,7 @@ public class Constants {
       abiVersions.add(TEMPORARY_ABI_VERSION);
     }
 
-    ABI_VERSIONS = TextUtils.join(",", abiVersions);
-
-    // NOTE: Currently public-facing SDK versions and internal ABI versions are the same, but
-    // eventually we may decouple them
-    SDK_VERSIONS = ABI_VERSIONS;
-    SDK_VERSIONS_LIST = abiVersions;
+    setSdkVersions(abiVersions);
 
     Uri.Builder builder = new Uri.Builder();
     builder.scheme("https")
