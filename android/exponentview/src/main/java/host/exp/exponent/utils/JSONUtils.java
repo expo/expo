@@ -1,6 +1,7 @@
+// Copyright 2015-present 650 Industries. All rights reserved.
+
 package host.exp.exponent.utils;
 
-import host.exp.exponent.notifications.NotificationHelper;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
