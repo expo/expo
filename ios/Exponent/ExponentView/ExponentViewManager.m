@@ -90,10 +90,12 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
                            didFinishLaunchingWithOptions:launchOptions];
   
   // TODO: open up an api for this in ExponentView
+#ifdef AMPLITUDE_DEV_KEY
 #if DEBUG
   [[Amplitude instance] initializeApiKey:AMPLITUDE_DEV_KEY];
 #else
   [[Amplitude instance] initializeApiKey:AMPLITUDE_KEY];
+#endif
 #endif
   
   [EXRemoteNotificationManager sharedInstance];
