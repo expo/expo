@@ -90,7 +90,8 @@ ENV PATH ${GRADLE_HOME}/bin:$PATH
 RUN npm install -g gulp-cli
 
 # Install Git
-RUN aptitude update && \
-    aptitude -t wheezy-backports install git && \
+RUN echo 'deb http://http.debian.net/debian wheezy-backports main' >> /etc/apt/sources.list && \
+    apt-get update && \
+    apt-get -t wheezy-backports install git-core && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
