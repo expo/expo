@@ -44,7 +44,7 @@
     if (kernelNgrokUrl.length) {
       return [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kernelNgrokUrl, kernelPath]];
     } else {
-      return [NSURL URLWithString:[NSString stringWithFormat:@"http://%@:8081/%@", BUILD_MACHINE_LOCAL_HOSTNAME, kernelPath]];
+      return [NSURL URLWithString:[NSString stringWithFormat:@"http://%@:8081/%@", BUILD_MACHINE_IP_ADDRESS, kernelPath]];
     }
   } else {
     return [NSURL URLWithString:@"https://exp.host/~exponent/kernel"];
