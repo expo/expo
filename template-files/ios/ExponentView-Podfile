@@ -11,7 +11,8 @@ ${PODFILE_UNVERSIONED_RN_DEPENDENCY}
     installer.pods_project.main_group.indent_width = '2';
 
     installer.pod_targets.each do |target|
-${PODFILE_VERSIONED_POSTINSTALLS}
+${PODFILE_DETACHED_POSTINSTALL}
+${PODFILE_UNVERSIONED_POSTINSTALL}
     end
   end
 end
