@@ -1,0 +1,12 @@
+[
+  { "name": "AppAuth", "version": "~> 0.4" },
+  { "name": "CocoaLumberjack", "version": "~> 2.3" },
+  { "name": "Crashlytics", "version": "~> 3.8" },
+  { "name": "Fabric", "version": "~> 1.6" },
+  { "name": "Google/SignIn", "version": "~> 3.0" },
+  { "name": "Amplitude-iOS", "version": "~> 3.8" },
+  { "name": "FBSDKCoreKit", "version": "~> 4.15" },
+  { "name": "FBSDKLoginKit", "version": "~> 4.15" },
+  { "name": "FBSDKShareKit", "version": "~> 4.15" },
+  { "name": "Analytics", "version": "~> 3.5" }
+]
