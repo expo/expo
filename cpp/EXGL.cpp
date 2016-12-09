@@ -1289,7 +1289,10 @@ private:
     return nullptr;
   }
 
-  _WRAP_METHOD_UNIMPL(finish)
+  _WRAP_METHOD(finish, 0) {
+    addToNextBatch(glFinish);
+    return nullptr;
+  }
 
   _WRAP_METHOD(flush, 0) {
     addToNextBatch(glFlush);
