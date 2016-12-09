@@ -113,16 +113,18 @@ gulp.task('kernel-ngrok:clean', function(done) {
 });
 
 gulp.task('kernel-ngrok', async function(done) {
-  let user = await username();
-  let hostname = [`kernel${Math.ceil(10000 * Math.random()).toString(16)}`, user.toLowerCase(), 'exp.direct'].join('.');
-  let url = await ngrok.promise.connect({
-    hostname,
-    port: 8081,
-  });
-  url = url.replace(/^https/, 'http');
-  console.log(`Started ngrok at url: ${url}`);
+  try {
+    let url = await ngrok.promise.connect({
+      port: 8081,
+    });
+    console.log(`url: ${JSON.stringify(url)}`);
+    url = url.replace(/^https/, 'http');
+    console.log(`Started ngrok at url: ${url}`);
 
-  fs.writeFile(kernelNgrokFile, url);
+    fs.writeFile(kernelNgrokFile, url);
+  } catch (e) {
+    console.log(e);
+  }
 
   process.on('exit', gulp.series('kernel-ngrok:clean'));
   process.on('SIGINT', gulp.series('kernel-ngrok:clean'));
