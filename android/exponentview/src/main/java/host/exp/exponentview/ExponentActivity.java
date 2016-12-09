@@ -50,6 +50,8 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
   @Inject
   ExponentSharedPreferences mExponentSharedPreferences;
 
+  private String mIntentUri = null;
+
   private String mManifestUrl;
   private String mManifestId;
   private String mSDKVersion;
@@ -64,7 +66,20 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
+    // Set SDK versions
     Constants.setSdkVersions(sdkVersions());
+
+    // Check if opened from xdl
+    if (BuildConfig.DEBUG) {
+      Intent intent = getIntent();
+      Uri uri = intent.getData();
+      String intentUri = uri == null ? null : uri.toString();
+      if (intentUri.startsWith("exp")) {
+        // Replace scheme with exp://
+        int indexOfEndOfScheme = intentUri.indexOf("://");
+        mIntentUri = "exp" + intentUri.substring(indexOfEndOfScheme);
+      }
+    }
 
     mLayout = new FrameLayout(this);
     setContentView(mLayout);
@@ -78,7 +93,7 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
 
     NativeModuleDepsProvider.getInstance().inject(ExponentActivity.class, this);
 
-    mManifestUrl = initialUrl();
+    mManifestUrl = mIntentUri == null ? initialUrl() : mIntentUri;
     mExponentManifest.fetchManifest(mManifestUrl, new ExponentManifest.ManifestListener() {
       @Override
       public void onCompleted(JSONObject manifest) {
