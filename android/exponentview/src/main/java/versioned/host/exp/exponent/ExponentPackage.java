@@ -96,6 +96,8 @@ public class ExponentPackage implements ReactPackage {
     if (mIsKernel) {
       // Never need this in versioned code. Comment this out if this is in an abi package
       nativeModules.add((NativeModule) ExponentKernelModuleProvider.newInstance(reactContext));
+      nativeModules.add(new PermissionsModule(reactContext));
+      nativeModules.add(new BarCodeScannerModule(reactContext));
     } else {
       if (isVerified) {
         try {
