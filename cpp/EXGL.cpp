@@ -608,7 +608,7 @@ private:
       GLsizeiptr length = EXJSValueToNumberFast(jsCtx, jsSecond);
       addToNextBatch([=] { glBufferData(target, length, nullptr, usage); });
     } else if (JSValueIsNull(jsCtx, jsSecond)) {
-      addToNextBatch([=] { glBufferData(target, 0, NULL, usage); });
+      addToNextBatch([=] { glBufferData(target, 0, nullptr, usage); });
     } else {
       size_t length;
       auto data = jsValueToSharedArray(jsCtx, jsSecond, &length);
@@ -748,12 +748,12 @@ private:
       });
       JSObjectSetTypedArrayData(jsCtx, (JSObjectRef) jsArgv[6], pixels.get(), byteLength);
     } else {
-      void *pixels = JSObjectGetTypedArrayBytesPtr(jsCtx, (JSObjectRef) jsArgv[6], NULL);
+      void *pixels = JSObjectGetTypedArrayBytesPtr(jsCtx, (JSObjectRef) jsArgv[6], nullptr);
       addBlockingToNextBatch([&] {
         glReadPixels(x, y, width, height, format, type, pixels);
       });
     }
-    return NULL;
+    return nullptr;
   }
 
 
@@ -998,7 +998,7 @@ private:
       GLuint program = peekFuture(fProgram);
       glGetProgramiv(program, GL_ATTACHED_SHADERS, &count);
       glResults.resize(count);
-      glGetAttachedShaders(program, count, NULL, glResults.data());
+      glGetAttachedShaders(program, count, nullptr, glResults.data());
     });
 
     JSValueRef jsResults[count];
@@ -1015,7 +1015,7 @@ private:
       }
       jsResults[i] = JSValueMakeNumber(jsCtx, future);
     }
-    return JSObjectMakeArray(jsCtx, count, jsResults, NULL);
+    return JSObjectMakeArray(jsCtx, count, jsResults, nullptr);
   }
 
   _WRAP_METHOD(getProgramParameter, 2) {
@@ -1252,7 +1252,7 @@ private:
 #define _WRAP_METHOD_VERTEX_ATTRIB_V(suffix, dim)                       \
   _WRAP_METHOD(vertexAttrib##suffix, 2) {                               \
     GLuint index = EXJSValueToNumberFast(jsCtx, jsArgv[0]);             \
-    auto data = jsValueToSharedArray(jsCtx, jsArgv[1], NULL);           \
+    auto data = jsValueToSharedArray(jsCtx, jsArgv[1], nullptr);        \
     addToNextBatch([=] { glVertexAttrib##suffix(index, (GLfloat *) data.get());}); \
     return nullptr;                                                     \
   }
