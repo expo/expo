@@ -43,6 +43,7 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
   // Override me!
   public abstract String initialUrl();
   public abstract List<String> sdkVersions();
+  public abstract boolean isDebug();
 
   @Inject
   ExponentManifest mExponentManifest;
@@ -70,7 +71,7 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
     Constants.setSdkVersions(sdkVersions());
 
     // Check if opened from xdl
-    if (BuildConfig.DEBUG) {
+    if (isDebug()) {
       Intent intent = getIntent();
       Uri uri = intent.getData();
       String intentUri = uri == null ? null : uri.toString();

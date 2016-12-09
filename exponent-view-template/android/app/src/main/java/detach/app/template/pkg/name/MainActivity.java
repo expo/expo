@@ -17,4 +17,9 @@ public class MainActivity extends ExponentActivity {
   public List<String> sdkVersions() {
     return new ArrayList<>(Arrays.asList("12.0.0"));
   }
+
+  @Override
+  public boolean isDebug() {
+    return BuildConfig.DEBUG;
+  }
 }
