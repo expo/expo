@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nonnull instancetype)sharedInstance;
 
 @property (nonatomic, readonly, nonnull) NSDictionary *versions;
+@property (nonatomic, readonly, nonnull) NSString *temporarySdkVersion;
 
 - (NSString *)symbolPrefixForSdkVersion: (NSString * _Nullable)version isKernel:(BOOL)isKernel;
 - (NSString *)availableSdkVersionForManifest: (NSDictionary * _Nullable)manifest;

@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXVersions.h"
+#import "EXKernelUtil.h"
 
 @interface EXVersions ()
 
@@ -91,14 +92,14 @@
     if (sdkVersion && sdkVersions) {
       for (NSString *availableVersion in sdkVersions) {
         if ([sdkVersion isEqualToString:availableVersion]) {
-  #ifdef TEMPORARY_SDK_VERSION
-          NSArray <NSNumber *>* versionComponents = [availableVersion versionComponents];
-          BOOL isTemporary = (versionComponents.count > 1 && versionComponents[1].integerValue != 0);
-          if (isTemporary && [availableVersion isEqualToString:TEMPORARY_SDK_VERSION]) {
-            // no prefix if we're just using the current version
-            break;
+          if (_temporarySdkVersion) {
+            NSArray <NSNumber *>* versionComponents = [availableVersion versionComponents];
+            BOOL isTemporary = (versionComponents.count > 1 && versionComponents[1].integerValue != 0);
+            if (isTemporary && [availableVersion isEqualToString:_temporarySdkVersion]) {
+              // no prefix if we're just using the current version
+              break;
+            }
           }
-  #endif
           return availableVersion;
         }
       }
@@ -111,14 +112,35 @@
 {
   NSString *versionsPath = [[NSBundle mainBundle] pathForResource:@"EXSDKVersions" ofType:@"plist"];
   NSMutableDictionary *mutableVersions = (versionsPath) ? [NSMutableDictionary dictionaryWithContentsOfFile:versionsPath] : [NSMutableDictionary dictionary];
+  if (mutableVersions[@"detachedNativeVersions"]) {
+    NSDictionary *detachedNativeVersions = mutableVersions[@"detachedNativeVersions"];
+    _temporarySdkVersion = detachedNativeVersions[@"shell"];
+  } else {
 #ifdef TEMPORARY_SDK_VERSION
-  if (mutableVersions[@"sdkVersions"]) {
-    NSArray *existingVersions = mutableVersions[@"sdkVersions"];
-    if ([existingVersions indexOfObject:TEMPORARY_SDK_VERSION] == NSNotFound) {
-      mutableVersions[@"sdkVersions"] = [[existingVersions mutableCopy] arrayByAddingObject:TEMPORARY_SDK_VERSION];
+    _temporarySdkVersion = TEMPORARY_SDK_VERSION;
+#endif
+  }
+  if (_temporarySdkVersion) {
+    if (mutableVersions[@"sdkVersions"]) {
+      NSArray *existingVersions = mutableVersions[@"sdkVersions"];
+      if ([existingVersions indexOfObject:_temporarySdkVersion] == NSNotFound) {
+        mutableVersions[@"sdkVersions"] = [[existingVersions mutableCopy] arrayByAddingObject:_temporarySdkVersion];
+      }
+    }
+  } else {
+    // no temporary sdk version specified in any way, fall back to using the highest version
+    NSArray *sdkVersions = mutableVersions[@"sdkVersions"];
+    NSUInteger highestVersion = 0;
+    if (sdkVersions) {
+      for (NSString *availableVersion in sdkVersions) {
+        NSArray <NSNumber *>* versionComponents = [availableVersion versionComponents];
+        if (versionComponents.count > 1 && versionComponents[0].integerValue > highestVersion) {
+          highestVersion = versionComponents[0].integerValue;
+          _temporarySdkVersion = availableVersion;
+        }
+      }
     }
   }
-#endif
 
   NSAssert((mutableVersions[@"sdkVersions"] != nil), @"No SDK versions are specified for the Exponent kernel. Is the project missing EXSDKVersions.plist?");
 

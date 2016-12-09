@@ -3,6 +3,7 @@
 #import "EXCachedResource.h"
 #import "EXFileDownloader.h"
 #import "EXVersionManager.h"
+#import "EXVersions.h"
 #import "EXKernelUtil.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -149,7 +150,7 @@ NS_ASSUME_NONNULL_BEGIN
   NSString *resourceFilename = [NSString stringWithFormat:@"%@.%@", _resourceName, _resourceType];
   NSString *versionedResourceFilename;
   if (_shouldVersionCache) {
-    versionedResourceFilename = [NSString stringWithFormat:@"%@-%@", (_abiVersion) ?: TEMPORARY_SDK_VERSION, resourceFilename];
+    versionedResourceFilename = [NSString stringWithFormat:@"%@-%@", (_abiVersion) ?: [EXVersions sharedInstance].temporarySdkVersion, resourceFilename];
   } else {
     versionedResourceFilename = resourceFilename;
   }
