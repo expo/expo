@@ -10,7 +10,7 @@ public class MainActivity extends ExponentActivity {
 
   @Override
   public String initialUrl() {
-    return "exp://exp.host/@jesse/native-component-list";
+    return "TEMPLATE_INITIAL_URL";
   }
 
   @Override
