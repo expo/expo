@@ -8,12 +8,18 @@ import com.facebook.react.common.JavascriptException;
 @DoNotStrip
 public class ReactNativeStaticHelpers {
 
+  private static String sBundleUrl = null;
+
+  public static void setBundleUrl(final String bundleUrl) {
+    sBundleUrl = bundleUrl;
+  }
+
   @DoNotStrip
   public static String getBundleUrlForActivityId(final int activityId, String host, String jsModulePath, boolean devMode, boolean hmr, boolean jsMinify) {
     try {
       return (String) Class.forName("host.exp.exponent.kernel.Kernel").getMethod("getBundleUrlForActivityId", int.class, String.class, String.class, boolean.class, boolean.class, boolean.class).invoke(activityId, host, jsModulePath, devMode, hmr, jsMinify);
     } catch (Exception e) {
-      return null;
+      return sBundleUrl;
     }
   }
 

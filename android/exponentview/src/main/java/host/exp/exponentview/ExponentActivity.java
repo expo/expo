@@ -28,6 +28,7 @@ import javax.inject.Inject;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.RNObject;
+import host.exp.exponent.ReactNativeStaticHelpers;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.experience.ReactNativeActivity;
@@ -121,6 +122,7 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
     mManifest = manifest;
 
     final String bundleUrl = ExponentUrls.toHttp(manifest.getString("bundleUrl"));
+    ReactNativeStaticHelpers.setBundleUrl(bundleUrl);
     manifest = mExponentManifest.normalizeManifest(mManifestUrl, manifest);
 
     // TODO: consolidate this with ExperienceActivity
