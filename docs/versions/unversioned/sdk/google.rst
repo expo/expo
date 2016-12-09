@@ -55,9 +55,9 @@ Usage
    :returns:
       If the user or Google cancelled the login, returns ``{ type: 'cancel' }``.
 
-      Otherwise, returns ``{ type: 'success', accessToken, serverAuthCode,
-      user: {...profileInformation} }``. ``accessToken`` is a string giving the
-      access token to use with Google HTTP API requests.
+      Otherwise, returns ``{ type: 'success', accessToken, user:
+      {...profileInformation} }``. ``accessToken`` is a string
+      giving the access token to use with Google HTTP API requests.
 
 Using it inside of the Exponent app
 -----------------------------------
