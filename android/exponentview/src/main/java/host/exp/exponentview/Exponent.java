@@ -560,7 +560,7 @@ public class Exponent {
 
   public RNObject startReactInstance(final Object activity, final StartReactInstanceDelegate delegate, final String mManifestUrl, final String mIntentUri, final String mJSBundlePath, final RNObject mLinkingPackage, final JSONObject mManifest,
                                      final String mSDKVersion, final ExponentNotification mNotification, final boolean mIsShellApp, final ExponentSharedPreferences mExponentSharedPreferences,
-                                     final RNObject mReactRootView, final int mActivityId, final boolean mIsCrashed) {
+                                     final RNObject mReactRootView, final int mActivityId, final boolean mIsCrashed, final List<? extends Object> extraNativeModules) {
 
     if (mIsCrashed || !delegate.isInForeground()) {
       // Can sometimes get here after an error has occurred. Return early or else we'll hit
@@ -584,6 +584,11 @@ public class Exponent {
 
     RNObject versionedUtils = new RNObject("host.exp.exponent.VersionedUtils").loadVersion(mSDKVersion);
     RNObject builder = versionedUtils.callRecursive("getReactInstanceManagerBuilder", instanceManagerBuilderProperties);
+    if (extraNativeModules != null) {
+      for (Object nativeModule : extraNativeModules) {
+        builder.call("addPackage", nativeModule);
+      }
+    }
 
     if (delegate.isDebugModeEnabled()) {
       String debuggerHost = mManifest.optString(ExponentManifest.MANIFEST_DEBUGGER_HOST_KEY);

@@ -4,16 +4,15 @@ package host.exp.exponentview;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Debug;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
 
 import org.json.JSONArray;
@@ -44,6 +43,7 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
   // Override me!
   public abstract String initialUrl();
   public abstract List<String> sdkVersions();
+  public abstract List<ReactPackage> reactPackages();
   public abstract boolean isDebug();
 
   @Inject
@@ -229,7 +229,7 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
 
   private void startReactInstance() {
     // TODO: annoying that we need to use RNObject.UNVERSIONED here
-    mReactInstanceManager = Exponent.getInstance().startReactInstance(this, this, mManifestUrl, null, mJSBundlePath, null, mManifest, RNObject.UNVERSIONED, null, true, mExponentSharedPreferences, mReactRootView, mActivityId, mIsCrashed);
+    mReactInstanceManager = Exponent.getInstance().startReactInstance(this, this, mManifestUrl, null, mJSBundlePath, null, mManifest, RNObject.UNVERSIONED, null, true, mExponentSharedPreferences, mReactRootView, mActivityId, mIsCrashed, reactPackages());
   }
 
   @Override

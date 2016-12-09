@@ -537,7 +537,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   }
 
   private void startReactInstance() {
-    mReactInstanceManager = Exponent.getInstance().startReactInstance(this, this, mManifestUrl, mIntentUri, mJSBundlePath, mLinkingPackage, mManifest, mSDKVersion, mNotification, mIsShellApp, mExponentSharedPreferences, mReactRootView, mActivityId, mIsCrashed);
+    mReactInstanceManager = Exponent.getInstance().startReactInstance(this, this, mManifestUrl, mIntentUri, mJSBundlePath, mLinkingPackage, mManifest, mSDKVersion, mNotification, mIsShellApp, mExponentSharedPreferences, mReactRootView, mActivityId, mIsCrashed, null);
   }
 
   @Override
