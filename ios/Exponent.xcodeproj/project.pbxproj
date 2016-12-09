@@ -416,6 +416,7 @@
 		B56FACA11D4AB279009FC106 /* EXAppState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppState.m; sourceTree = "<group>"; };
 		B56FACAB1D4C0266009FC106 /* EXFingerprint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFingerprint.h; sourceTree = "<group>"; };
 		B56FACAC1D4C0266009FC106 /* EXFingerprint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFingerprint.m; sourceTree = "<group>"; };
+		B5722ACA1DFB36440084848F /* EXKeys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKeys.h; sourceTree = "<group>"; };
 		B575EE981D53E0AB00DCABBC /* EXCachedResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXCachedResource.h; sourceTree = "<group>"; };
 		B575EE991D53E0AB00DCABBC /* EXCachedResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXCachedResource.m; sourceTree = "<group>"; };
 		B575EE9C1D53EEC300DCABBC /* EXJavaScriptResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXJavaScriptResource.h; sourceTree = "<group>"; };
@@ -424,7 +425,6 @@
 		B575EEA01D54053500DCABBC /* EXManifestResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXManifestResource.m; sourceTree = "<group>"; };
 		B575EEA21D54175A00DCABBC /* shell-app-manifest.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "shell-app-manifest.json"; sourceTree = "<group>"; };
 		B575EEA31D54175B00DCABBC /* shell-app.bundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "shell-app.bundle"; sourceTree = "<group>"; };
-		B575EEC51D5A9BBE00DCABBC /* EXKeys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKeys.h; sourceTree = "<group>"; };
 		B5844C351D482C3D0015C683 /* EXPermissions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXPermissions.h; sourceTree = "<group>"; };
 		B5844C361D482C3D0015C683 /* EXPermissions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXPermissions.m; sourceTree = "<group>"; };
 		B5844C391D482D710015C683 /* EXRemoteNotificationRequester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXRemoteNotificationRequester.h; sourceTree = "<group>"; };
@@ -631,6 +631,7 @@
 				B509BCB51C6A88EC00A67CBB /* Environment */,
 				B55FDEDE1C7FDA560020AA8F /* Errors */,
 				B5D074891DCBEA9A003ED863 /* ExponentView */,
+				B5722AC81DFB36440084848F /* Generated */,
 				B5F12C901DAEDC980080ECA6 /* ReactAppManager */,
 				B5E49B521D1346FA00AA6436 /* Supporting */,
 				B5812C331C9CD59200A10345 /* Versioned */,
@@ -915,10 +916,10 @@
 			path = Frame;
 			sourceTree = "<group>";
 		};
-		B575EEC31D5A9BBE00DCABBC /* Generated */ = {
+		B5722AC81DFB36440084848F /* Generated */ = {
 			isa = PBXGroup;
 			children = (
-				B575EEC51D5A9BBE00DCABBC /* EXKeys.h */,
+				B5722ACA1DFB36440084848F /* EXKeys.h */,
 			);
 			path = Generated;
 			sourceTree = "<group>";
@@ -978,7 +979,6 @@
 		B5E49B521D1346FA00AA6436 /* Supporting */ = {
 			isa = PBXGroup;
 			children = (
-				B575EEC31D5A9BBE00DCABBC /* Generated */,
 				B5E49B541D1346FA00AA6436 /* Exponent-Prefix.pch */,
 				B5E49B551D1346FA00AA6436 /* Exponent.entitlements */,
 				B5E49B621D1347B800AA6436 /* EXSDKVersions.plist */,
@@ -1255,7 +1255,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "set -eo pipefail\n\nif [ -z \"$EXPONENT_TOOLS_DIR\" ]; then\n    EXPONENT_TOOLS_DIR=\"${SRCROOT}/../tools-public\"\nfi\n\nmkdir -p \"${SRCROOT}/Exponent/Supporting/Generated/\"\npushd ${EXPONENT_TOOLS_DIR}\nsource source-login-scripts.sh\ngulp generate-dynamic-macros --buildConstantsPath \"${SRCROOT}/Exponent/Supporting/Generated/EXDynamicMacros.h\" --infoPlistPath \"${SRCROOT}/Exponent/Supporting\" --platform ios\npopd\n";
+			shellScript = "set -eo pipefail\n\nif [ -z \"$EXPONENT_TOOLS_DIR\" ]; then\n    EXPONENT_TOOLS_DIR=\"${SRCROOT}/../tools-public\"\nfi\n\nmkdir -p \"${SRCROOT}/Exponent/Generated/\"\npushd ${EXPONENT_TOOLS_DIR}\nsource source-login-scripts.sh\ngulp generate-dynamic-macros --buildConstantsPath \"${SRCROOT}/Exponent/Generated/EXDynamicMacros.h\" --infoPlistPath \"${SRCROOT}/Exponent/Supporting\" --platform ios\npopd\n";
 		};
 		78F81D401B70746F000E5595 /* Fabric */ = {
 			isa = PBXShellScriptBuildPhase;

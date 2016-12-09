@@ -38,6 +38,7 @@
 
 + (NSURL *)kernelBundleUrl
 {
+#ifdef BUILD_MACHINE_KERNEL_NGROK_URL
   if ([self _isDevelopingKernel]) {
     NSString *kernelNgrokUrl = BUILD_MACHINE_KERNEL_NGROK_URL;
     NSString *kernelPath = @"exponent.bundle?dev=true&platform=ios";
@@ -46,9 +47,9 @@
     } else {
       return [NSURL URLWithString:[NSString stringWithFormat:@"http://%@:8081/%@", BUILD_MACHINE_IP_ADDRESS, kernelPath]];
     }
-  } else {
-    return [NSURL URLWithString:@"https://exp.host/~exponent/kernel"];
   }
+#endif
+  return [NSURL URLWithString:@"https://exp.host/~exponent/kernel"];
 }
 
 - (BOOL)isReadyToLoad
