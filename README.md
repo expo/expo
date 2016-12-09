@@ -80,7 +80,7 @@ Here are the steps to build a standalone iOS app:
 - `js` contains the JavaScript source code of the app.
 - `tools-public` contains programs to launch the packager and also build tools.
 - `template-files` contains templates for files that require private keys. They are populated using the keys in `template-files/keys.json`.
-- `template-files/ios/Podfile` specifies the CocoaPods dependencies of the app.
+- `template-files/ios/dependencies.json` specifies the CocoaPods dependencies of the app.
 
 ## Contributing
 Please check with us before putting work into a Pull Request! It is often harder to maintain code than it is to write it. The best place to talk to us is on Slack at https://slack.exponentjs.com.
