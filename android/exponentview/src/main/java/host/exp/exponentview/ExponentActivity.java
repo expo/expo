@@ -76,7 +76,7 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
       Intent intent = getIntent();
       Uri uri = intent.getData();
       String intentUri = uri == null ? null : uri.toString();
-      if (intentUri.startsWith("exp")) {
+      if (intentUri != null && intentUri.startsWith("exp")) {
         // Replace scheme with exp://
         int indexOfEndOfScheme = intentUri.indexOf("://");
         mIntentUri = "exp" + intentUri.substring(indexOfEndOfScheme);
