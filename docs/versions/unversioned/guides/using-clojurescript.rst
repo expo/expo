@@ -19,7 +19,7 @@ we encourage you to read the entire guide.
    lein figwheel
 
    # Now in a new tab, open the project in a simulator
-   exp start -i ios
+   exp start -i
 
 .. epigraph::
   **Note:** This guide was written by `@tiensonqin <https://github.com/tiensonqin>`_, feel free to reach out to him on the `Exponent Slack <http://slack.getexponent.com/>`_ if you have questions!
@@ -113,10 +113,10 @@ Using ``exp`` CLI
    npm install -g exp
 
    # Connect to iOS simulator
-   exp start -i ios
+   exp start -i
 
    # Or connect to Android devices or simulators
-   exp start -i android
+   exp start -a
 
 For more information, see :ref:`exp Command-Line Interface <exp-cli>`.
 
