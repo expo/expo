@@ -17,7 +17,7 @@ public class ReactNativeStaticHelpers {
   @DoNotStrip
   public static String getBundleUrlForActivityId(final int activityId, String host, String jsModulePath, boolean devMode, boolean hmr, boolean jsMinify) {
     try {
-      return (String) Class.forName("host.exp.exponent.kernel.Kernel").getMethod("getBundleUrlForActivityId", int.class, String.class, String.class, boolean.class, boolean.class, boolean.class).invoke(activityId, host, jsModulePath, devMode, hmr, jsMinify);
+      return (String) Class.forName("host.exp.exponent.kernel.Kernel").getMethod("getBundleUrlForActivityId", int.class, String.class, String.class, boolean.class, boolean.class, boolean.class).invoke(null, activityId, host, jsModulePath, devMode, hmr, jsMinify);
     } catch (Exception e) {
       return sBundleUrl;
     }
@@ -27,7 +27,7 @@ public class ReactNativeStaticHelpers {
   public static void handleReactNativeError(String errorMessage, Object detailsUnversioned,
                                             Integer exceptionId, Boolean isFatal) {
     try {
-      Class.forName("host.exp.exponent.kernel.Kernel").getMethod("handleReactNativeError", String.class, Object.class, Integer.class, Boolean.class).invoke(errorMessage, detailsUnversioned, exceptionId, isFatal);
+      Class.forName("host.exp.exponent.kernel.Kernel").getMethod("handleReactNativeError", String.class, Object.class, Integer.class, Boolean.class).invoke(null, errorMessage, detailsUnversioned, exceptionId, isFatal);
     } catch (Exception e) {
       throw new JavascriptException(errorMessage);
     }
@@ -37,7 +37,7 @@ public class ReactNativeStaticHelpers {
   public static void handleReactNativeError(Throwable throwable, String errorMessage, Object detailsUnversioned,
                                             Integer exceptionId, Boolean isFatal) {
     try {
-      Class.forName("host.exp.exponent.kernel.Kernel").getMethod("handleReactNativeError", Throwable.class, String.class, Object.class, Integer.class, Boolean.class).invoke(throwable, errorMessage, detailsUnversioned, exceptionId, isFatal);
+      Class.forName("host.exp.exponent.kernel.Kernel").getMethod("handleReactNativeError", Throwable.class, String.class, Object.class, Integer.class, Boolean.class).invoke(null, throwable, errorMessage, detailsUnversioned, exceptionId, isFatal);
     } catch (Exception e) {
       throw new JavascriptException(errorMessage);
     }
