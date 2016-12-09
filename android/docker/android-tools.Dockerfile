@@ -90,8 +90,7 @@ ENV PATH ${GRADLE_HOME}/bin:$PATH
 RUN npm install -g gulp-cli
 
 # Install Git
-RUN apt-get update -y && \
-    apt-get install --no-install-recommends -y software-properties-common python-software-properties && \
-    add-apt-repository ppa:git-core/ppa -y && apt-get update -y && apt-get install git -y && \
+RUN aptitude update && \
+    aptitude -t wheezy-backports install git && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
