@@ -428,6 +428,11 @@ continueUserActivity:(NSUserActivity *)userActivity
 
 - (void)kernelModule:(EXKernelModule *)module didRequestManifestWithUrl:(NSURL *)url originalUrl:(NSURL *)originalUrl success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
 {
+  if (!([url.scheme isEqualToString:@"http"] || [url.scheme isEqualToString:@"https"])) {
+    NSURLComponents *components = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO];
+    components.scheme = @"http";
+    url = [components URL];
+  }
   EXManifestResource *manifestResource = [[EXManifestResource alloc] initWithManifestUrl:url originalUrl:originalUrl];
   [manifestResource loadResourceWithBehavior:kEXCachedResourceFallBackToCache successBlock:^(NSData * _Nonnull data) {
     NSString *manifestString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];

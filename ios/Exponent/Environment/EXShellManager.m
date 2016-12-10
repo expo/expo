@@ -47,6 +47,11 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
     _isShell = [mutableConfig[@"isShell"] boolValue];
     if (_isShell) {
       _shellManifestUrl = mutableConfig[@"manifestUrl"];
+#if DEBUG
+      if (mutableConfig[@"developmentUrl"]) {
+        _shellManifestUrl = mutableConfig[@"developmentUrl"];
+      }
+#endif
       RCTAssert((_shellManifestUrl), @"This app is configured to be a standalone app, but does not specify a standalone experience url.");
       // other shell config goes here
 
