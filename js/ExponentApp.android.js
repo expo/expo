@@ -8,6 +8,7 @@
 
 import React, { PropTypes } from 'react';
 import ReactNative, {
+  BackAndroid,
   Dimensions,
   Image,
   Linking,
@@ -35,6 +36,8 @@ import ExUrls from 'ExUrls';
 import ExperienceCollection from 'ExperienceCollection';
 import FeaturedExperiences from 'FeaturedExperiences';
 import NuxFirstExperienceOverlay from 'NuxFirstExperienceOverlay';
+
+import { Components, Permissions } from 'exponent';
 
 const {
   ExponentConstants,
@@ -83,6 +86,8 @@ class ExponentApp extends React.Component {
   constructor(props, context) {
     super(props, context);
 
+    BackAndroid.addEventListener('hardwareBackPress', this._closeCamera);
+
     FeaturedExperiences.setReferrer(this.props.exp.referrer);
 
     this.state = {
@@ -92,6 +97,8 @@ class ExponentApp extends React.Component {
       urlSubmitButtonStyle: styles.urlBarSubmitButton,
       isShowingNux: false,
       nuxTooltipFrame: null,
+      viewFinderActive: false,
+      hasCameraPermission: null,
     };
   }
 
@@ -129,6 +136,25 @@ class ExponentApp extends React.Component {
   }
 
   render() {
+    let camera;
+
+    // TODO figure out the correct way to position the X
+    if (this.state.viewFinderActive) {
+      camera = (
+        <View style={StyleSheet.absoluteFill}>
+          <Components.BarCodeScanner
+            style={StyleSheet.absoluteFill}
+            onBarCodeRead={this._handleBarCodeRead}
+          />
+          <TouchableOpacity
+            onPress={this._closeCamera}
+            style={{position: 'absolute', top: 85, left: 15}}>
+            <Text style={{fontSize: 40, color: '#fff'}}>X</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+
     return (
       <View style={styles.container} ref={component => this._rootView = component}>
         {this._renderTitleBar()}
@@ -146,6 +172,7 @@ class ExponentApp extends React.Component {
         </ScrollView>
         {this._renderNux()}
         {this._renderInputAccessory()}
+        {camera}
       </View>
     );
   }
@@ -241,6 +268,7 @@ class ExponentApp extends React.Component {
 
   _renderURLBar() {
     let clearButton;
+    let qrButton;
     let { urlBarIsFocused, settingsUrl } = this.state;
 
     if (urlBarIsFocused) {
@@ -256,10 +284,23 @@ class ExponentApp extends React.Component {
           </Text>
         </TouchableNativeFeedbackSafe>
       );
+    } else {
+      // TODO size this correctly
+      // TODO upload a proper image to s3
+      qrButton = (
+        <TouchableNativeFeedbackSafe
+          onPress={this._onQrPress}>
+          <Image
+            style={{width: 50, height: 50}}
+            source={{uri: 'https://i.imgur.com/ccaJ2WN.png'}}
+          />
+        </TouchableNativeFeedbackSafe>
+      );
     }
 
     return (
       <View style={[styles.urlBarContainer, urlBarIsFocused ? {opacity: 1} : {opacity: 0.5}]}>
+        {qrButton}
         <TextInput
           testID="url_bar"
           value={settingsUrl}
@@ -280,6 +321,31 @@ class ExponentApp extends React.Component {
         {clearButton}
       </View>
     );
+  }
+
+  _openCamera = () => {
+    this.setState({viewFinderActive: true});
+  }
+
+  _closeCamera = () => {
+    let alreadyOpen = this.state.viewFinderActive;
+    this.setState({viewFinderActive: false});
+    return alreadyOpen; // the event handler will still exit if the camera was not already open
+  }
+
+  _onQrPress = async () => {
+    if (!this.state.hasCameraPermission) {
+      const { status } = await Permissions.askAsync('camera');
+      this.setState({hasCameraPermission: status === 'granted'});
+    }
+
+    // toggle the viewfinder so people can turn it off
+    this._openCamera();
+  }
+
+  _handleBarCodeRead = ({ data: url }) => {
+    this.setState({viewFinderActive: false});
+    Linking.openURL(url);
   }
 
   _onClearUrlBar = () => {
