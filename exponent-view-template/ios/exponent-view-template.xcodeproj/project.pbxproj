@@ -231,7 +231,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "set -eo pipefail\n\nif [ -d \"${SRCROOT}/../exponent\" ]; then\npushd ${SRCROOT}/../exponent\nsource exponent-path.sh\nexp prepare-detached-build --platform ios\npopd\nfi\n";
+			shellScript = "set -eo pipefail\n\nif [ -d \"${SRCROOT}/../exponent\" ]; then\npushd ${SRCROOT}/../exponent\nsource exponent-path.sh\npopd\npushd ${SRCROOT}/..\nexp prepare-detached-build --platform ios\npopd\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
