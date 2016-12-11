@@ -54,6 +54,7 @@ RCT_REMAP_METHOD(logInAsync,
   [GIDSignIn sharedInstance].delegate = self;
   [GIDSignIn sharedInstance].uiDelegate = self;
   [GIDSignIn sharedInstance].clientID = clientId;
+  [GIDSignIn sharedInstance].serverClientID = clientId;
   [GIDSignIn sharedInstance].scopes = scopes;
   [GIDSignIn sharedInstance].shouldFetchBasicProfile = YES;
   [[GIDSignIn sharedInstance] signIn];
@@ -101,6 +102,9 @@ RCT_REMAP_METHOD(logInAsync,
         _logInResolve(@{
           @"type": @"success",
           @"accessToken": authState.lastTokenResponse.accessToken,
+          @"idToken": authState.lastTokenResponse.idToken ? authState.lastTokenResponse.idToken : [NSNull null],
+          @"refreshToken": authState.lastTokenResponse.refreshToken,
+          @"serverAuthCode": authState.lastAuthorizationResponse.authorizationCode,
         });
       } else {
         _logInResolve(@{@"type": @"cancel"});
@@ -131,8 +135,9 @@ RCT_REMAP_METHOD(logInAsync,
     _logInResolve(@{
       @"type": @"success",
       @"accessToken": user.authentication.accessToken,
-      @"serverAuthCode": user.serverAuthCode ? user.serverAuthCode : [NSNull null],
+      @"serverAuthCode": user.serverAuthCode,
       @"idToken": user.authentication.idToken ? user.authentication.idToken : [NSNull null],
+      @"refreshToken": user.authentication.refreshToken,
       @"user": @{
         @"id": user.userID,
         @"name": user.profile.name,
