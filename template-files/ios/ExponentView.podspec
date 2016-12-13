@@ -1,9 +1,9 @@
 
 Pod::Spec.new do |s|
   s.name = "ExponentView"
-  s.version = "0.1"
-  s.summary = 'YOOOOO'
-  s.description = 'HAAAAAY'
+  s.version = "${IOS_EXPONENT_CLIENT_VERSION}"
+  s.summary = 'Exponent'
+  s.description = 'Exponent lets web developers build truly native apps that work across both iOS and Android by writing them once in just JavaScript.'
   s.homepage = 'http://docs.getexponent.com'
   s.license = 'BSD'
   s.author = "650 Industries, Inc."
