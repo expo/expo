@@ -27,9 +27,12 @@ Android, either on a real device or in a simulator.
 On your device
 ^^^^^^^^^^^^^^
 
-`Download for Android 4.4+ from the Play Store <https://play.google.com/store/apps/details?id=host.exp.exponent>`_ or `for iOS 8+ from the App Store <https://itunes.com/apps/exponent>`_
+`Download for Android from the Play Store <https://play.google.com/store/apps/details?id=host.exp.exponent>`_ or `for iOS from the App Store <https://itunes.com/apps/exponent>`_
 
-Note: you don't need to install the Exponent client on emulators separately. It will be done on the first project deployment.
+.. epigraph::
+  **Required Android and iOS versions:** The minimum Android version Exponent supports is Android 4.4 and the minimum iOS version is iOS 8.0.
+
+You don't need to manually install the Exponent client on your emulator/simulator, because XDE will do that automatically. See the next sections of this guide.
 
 iOS simulator
 ^^^^^^^^^^^^^
