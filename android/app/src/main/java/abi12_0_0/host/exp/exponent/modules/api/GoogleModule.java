@@ -196,10 +196,10 @@ public class GoogleModule extends ReactContextBaseJavaModule implements Activity
 
     if (event.error != null) {
       reject(event.error.getMessage(), event.error);
-    } else if (event.response != null) {
+    } else if (event.tokenResponse != null) {
       WritableMap response = Arguments.createMap();
       response.putString("type", "success");
-      response.putString("accessToken", event.response.accessToken);
+      response.putString("accessToken", event.tokenResponse.accessToken);
       resolve(response);
     } else {
       WritableMap response = Arguments.createMap();

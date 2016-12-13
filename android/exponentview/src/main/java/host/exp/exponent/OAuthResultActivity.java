@@ -19,11 +19,15 @@ public class OAuthResultActivity extends Activity {
   public static final String EXTRA_REDIRECT_EXPERIENCE_URL = "redirectExperienceUrl";
 
   public static class OAuthResultEvent {
-    @Nullable public TokenResponse response;
+    @Nullable public AuthorizationResponse authorizationResponse;
+    @Nullable public TokenResponse tokenResponse;
     @Nullable public AuthorizationException error;
 
-    public OAuthResultEvent(@Nullable TokenResponse response, @Nullable AuthorizationException error) {
-      this.response = response;
+    public OAuthResultEvent(@Nullable AuthorizationResponse authorizationResponse,
+                            @Nullable TokenResponse tokenResponse,
+                            @Nullable AuthorizationException error) {
+      this.authorizationResponse = authorizationResponse;
+      this.tokenResponse = tokenResponse;
       this.error = error;
     }
   }
@@ -45,24 +49,24 @@ public class OAuthResultActivity extends Activity {
   private void handleIntent(Intent intent) {
     AuthorizationService service = new AuthorizationService(this);
 
-    AuthorizationResponse resp = AuthorizationResponse.fromIntent(intent);
-    AuthorizationException ex = AuthorizationException.fromIntent(intent);
+    final AuthorizationResponse authorizationResponse = AuthorizationResponse.fromIntent(intent);
+    AuthorizationException authorizationException = AuthorizationException.fromIntent(intent);
 
-    if (resp != null) {
+    if (authorizationResponse != null) {
       service.performTokenRequest(
-          resp.createTokenExchangeRequest(),
+              authorizationResponse.createTokenExchangeRequest(),
           new AuthorizationService.TokenResponseCallback() {
             @Override public void onTokenRequestCompleted(
-                TokenResponse resp, AuthorizationException ex) {
-              if (resp != null) {
-                EventBus.getDefault().post(new OAuthResultEvent(resp, null));
+                TokenResponse tokenResponse, AuthorizationException tokenException) {
+              if (tokenResponse != null) {
+                EventBus.getDefault().post(new OAuthResultEvent(authorizationResponse, tokenResponse, null));
               } else {
-                EventBus.getDefault().post(new OAuthResultEvent(null, ex));
+                EventBus.getDefault().post(new OAuthResultEvent(null, null, tokenException));
               }
             }
           });
     } else {
-      EventBus.getDefault().post(new OAuthResultEvent(null, ex));
+      EventBus.getDefault().post(new OAuthResultEvent(null, null, authorizationException));
     }
 
     if (intent.hasExtra(EXTRA_REDIRECT_EXPERIENCE_URL)) {

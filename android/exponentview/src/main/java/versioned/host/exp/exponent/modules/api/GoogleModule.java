@@ -83,7 +83,7 @@ public class GoogleModule extends ReactContextBaseJavaModule implements Activity
           for (int i = 0; i < scopesConfig.size(); i++) {
             scopes[i] = new Scope(scopesConfig.getString(i));
           }
-          systemLogIn(scopes);
+          systemLogIn(scopes, androidClientId);
         } else if ("web".equals(behavior)) {
           String[] scopes = new String[scopesConfig.size()];
           for (int i = 0; i < scopesConfig.size(); i++) {
@@ -105,7 +105,7 @@ public class GoogleModule extends ReactContextBaseJavaModule implements Activity
     }
   }
 
-  private void systemLogIn(Scope[] scopes) {
+  private void systemLogIn(Scope[] scopes, String clientId) {
     Activity activity = getCurrentActivity();
     if (activity == null) {
       reject("No activity", null);
@@ -122,6 +122,8 @@ public class GoogleModule extends ReactContextBaseJavaModule implements Activity
     }
 
     GoogleSignInOptions.Builder builder = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN);
+    builder.requestIdToken(clientId);
+    builder.requestServerAuthCode(clientId);
     for (Scope scope : scopes) {
       builder.requestScopes(scope);
     }
@@ -196,10 +198,13 @@ public class GoogleModule extends ReactContextBaseJavaModule implements Activity
 
     if (event.error != null) {
       reject(event.error.getMessage(), event.error);
-    } else if (event.response != null) {
+    } else if (event.authorizationResponse != null && event.tokenResponse != null) {
       WritableMap response = Arguments.createMap();
       response.putString("type", "success");
-      response.putString("accessToken", event.response.accessToken);
+      response.putString("accessToken", event.tokenResponse.accessToken);
+      response.putString("idToken", event.tokenResponse.idToken);
+      response.putString("refreshToken", event.tokenResponse.refreshToken);
+      response.putString("serverAuthCode", event.authorizationResponse.authorizationCode);
       resolve(response);
     } else {
       WritableMap response = Arguments.createMap();
@@ -216,6 +221,7 @@ public class GoogleModule extends ReactContextBaseJavaModule implements Activity
       response.putString("type", "success");
       response.putString("serverAuthCode", account.getServerAuthCode());
       response.putString("idToken", account.getIdToken());
+      response.putString("refreshToken", null);
 
       WritableMap user = Arguments.createMap();
       user.putString("id", account.getId());
