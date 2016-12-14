@@ -1,7 +1,12 @@
 const path = require('path');
 const fs = require('fs');
 
-let sdkVersion = process.env.DOCS_VERSION.substring(1);
+let sdkVersion = process.env.DOCS_VERSION;
+if (sdkVersion === 'unversioned') {
+  sdkVersion = 'UNVERSIONED'; // www API calls expect UNVERSIONED in all caps
+} else {
+  sdkVersion = sdkVersion.substring(1); // Remove the leading 'v' for numeric versions
+}
 
 let ExpSchema;
 try {
