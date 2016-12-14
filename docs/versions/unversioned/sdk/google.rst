@@ -158,7 +158,7 @@ inclusive.
   1. Build a standalone app and download the apk, or find one that you have already built.
   2. Go to the `Google Developer Credentials <https://console.developers.google.com/apis/credentials>`_ and find your API key.
   3. Open ``exp.json`` and add your **Google API Key** to ``android.config.googleSignIn.apiKey``.
-  4. Run ``keytool -list -printcert -jarfile growler.apk | grep SHA1 | awk '{ print $2 } | sed -e 's/\://g'`` (where ``growler.apk`` is the name of the apk produced in step 1).
+  4. Run ``keytool -list -printcert -jarfile growler.apk | grep SHA1 | awk '{ print $2 }' | sed -e 's/\://g'`` (where ``growler.apk`` is the name of the apk produced in step 1).
   5. Add the result from the previous step to ``exp.json`` under ``android.config.googleSignIn.certificateHash``.
   6. When you use ``Exponent.Google.logInAsync(..)``, pass in the **OAuth client ID** as the ``androidStandaloneAppClientId`` option.
   7. Rebuild your standalone app.
