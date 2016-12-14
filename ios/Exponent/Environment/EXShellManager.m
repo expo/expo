@@ -76,6 +76,16 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
         }
       }
     }
+    
+#if DEBUG
+    // TODO: need to allow both schemes during development, so they can still test their production scheme.
+    if (_shellManifestUrl) {
+      NSURLComponents *components = [NSURLComponents componentsWithURL:[NSURL URLWithString:_shellManifestUrl] resolvingAgainstBaseURL:YES];
+      if (components.scheme) {
+        _urlScheme = components.scheme;
+      }
+    }
+#endif
   }
 }
 
