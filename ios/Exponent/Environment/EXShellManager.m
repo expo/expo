@@ -35,6 +35,9 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
 {
   _isShell = NO;
   _shellManifestUrl = nil;
+  _devUrlScheme = nil;
+  _urlScheme = nil;
+  _allManifestUrls = @[];
 }
 
 - (void)_loadShellConfig
@@ -42,14 +45,21 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
   [self _reset];
   NSString *configPath = [[NSBundle mainBundle] pathForResource:@"EXShell" ofType:@"plist"];
   NSMutableDictionary *mutableConfig = (configPath) ? [NSMutableDictionary dictionaryWithContentsOfFile:configPath] : [NSMutableDictionary dictionary];
+  NSMutableArray *allManifestUrls = [NSMutableArray array];
 
   if (mutableConfig) {
     _isShell = [mutableConfig[@"isShell"] boolValue];
     if (_isShell) {
       _shellManifestUrl = mutableConfig[@"manifestUrl"];
+      [allManifestUrls addObject:mutableConfig[@"manifestUrl"]];
 #if DEBUG
       if (mutableConfig[@"developmentUrl"]) {
         _shellManifestUrl = mutableConfig[@"developmentUrl"];
+        [allManifestUrls addObject:mutableConfig[@"developmentUrl"]];
+        NSURLComponents *components = [NSURLComponents componentsWithURL:[NSURL URLWithString:_shellManifestUrl] resolvingAgainstBaseURL:YES];
+        if (components.scheme) {
+          _devUrlScheme = components.scheme;
+        }
       }
 #endif
       RCTAssert((_shellManifestUrl), @"This app is configured to be a standalone app, but does not specify a standalone experience url.");
@@ -76,17 +86,21 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
         }
       }
     }
-    
-#if DEBUG
-    // TODO: need to allow both schemes during development, so they can still test their production scheme.
-    if (mutableConfig[@"developmentUrl"]) {
-      NSURLComponents *components = [NSURLComponents componentsWithURL:[NSURL URLWithString:_shellManifestUrl] resolvingAgainstBaseURL:YES];
-      if (components.scheme) {
-        _urlScheme = components.scheme;
-      }
-    }
-#endif
   }
+  _allManifestUrls = allManifestUrls;
+}
+
+- (BOOL)isShellUrlScheme:(NSString *)scheme
+{
+  return (
+          (_urlScheme && [scheme isEqualToString:_urlScheme]) ||
+          (_devUrlScheme && [scheme isEqualToString:_devUrlScheme])
+          );
+}
+
+- (BOOL)hasUrlScheme
+{
+  return (_urlScheme || _devUrlScheme);
 }
 
 @end

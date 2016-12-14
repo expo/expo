@@ -192,8 +192,8 @@ NSString *kEXKernelBundleResourceName = @"kernel.ios";
   // if the provided uri is the shell app manifest uri,
   // this should have been transformed into customscheme://+deep-link
   // and then all we do here is strip off the deep-link part, leaving +.
-  if ([EXShellManager sharedInstance].isShell && [components.scheme isEqualToString:[EXShellManager sharedInstance].urlScheme]) {
-    return [NSString stringWithFormat:@"%@://", [EXShellManager sharedInstance].urlScheme];
+  if ([EXShellManager sharedInstance].isShell && [[EXShellManager sharedInstance] isShellUrlScheme:components.scheme]) {
+    return [NSString stringWithFormat:@"%@://", components.scheme];
   }
 
   NSMutableString* path = [NSMutableString stringWithString:components.path];
@@ -223,19 +223,18 @@ NSString *kEXKernelBundleResourceName = @"kernel.ios";
   
   NSURL *normalizedUri = [self _uriNormalizedForRouting:uri];
   
-  if ([EXShellManager sharedInstance].isShell && [EXShellManager sharedInstance].urlScheme) {
+  if ([EXShellManager sharedInstance].isShell && [EXShellManager sharedInstance].hasUrlScheme) {
     // if the provided uri is the shell app manifest uri,
     // transform this into customscheme://deep-link
-    NSURL *shellManifestUrl = [NSURL URLWithString:[EXShellManager sharedInstance].shellManifestUrl];
-    NSURL *normalizedShellManifestURL = [self _uriNormalizedForRouting:shellManifestUrl];
-    if ([normalizedShellManifestURL.absoluteString isEqualToString:normalizedUri.absoluteString]) {
+    if ([self _isShellManifestUrl:normalizedUri]) {
       NSString *uriString = normalizedUri.absoluteString;
       NSRange deepLinkRange = [uriString rangeOfString:@"+"];
       NSString *deepLink = @"";
       if (deepLinkRange.length > 0) {
         deepLink = [uriString substringFromIndex:deepLinkRange.location + 1];
       }
-      NSString *result = [NSString stringWithFormat:@"%@://%@", [EXShellManager sharedInstance].urlScheme, deepLink];
+      NSString *deepLinkScheme = [EXShellManager sharedInstance].devUrlScheme ? [EXShellManager sharedInstance].devUrlScheme : [EXShellManager sharedInstance].urlScheme;
+      NSString *result = [NSString stringWithFormat:@"%@://%@", deepLinkScheme, deepLink];
       return [NSURL URLWithString:result];
     }
   }
@@ -246,7 +245,7 @@ NSString *kEXKernelBundleResourceName = @"kernel.ios";
 {
   NSURLComponents *components = [NSURLComponents componentsWithURL:uri resolvingAgainstBaseURL:YES];
   
-  if ([EXShellManager sharedInstance].isShell && [components.scheme isEqualToString:[EXShellManager sharedInstance].urlScheme]) {
+  if ([EXShellManager sharedInstance].isShell && [[EXShellManager sharedInstance] isShellUrlScheme:components.scheme]) {
     // if we're a shell and this uri had the shell scheme, leave it alone.
   } else {
     if ([components.scheme isEqualToString:@"https"]) {
@@ -263,6 +262,18 @@ NSString *kEXKernelBundleResourceName = @"kernel.ios";
   }
   
   return [components URL];
+}
+
++ (BOOL)_isShellManifestUrl: (NSURL *)normalizedUri
+{
+  NSString *uriString = normalizedUri.absoluteString;
+  for (NSString *shellManifestUrl in [EXShellManager sharedInstance].allManifestUrls) {
+    NSURL *normalizedShellManifestURL = [self _uriNormalizedForRouting:[NSURL URLWithString:shellManifestUrl]];
+    if ([normalizedShellManifestURL.absoluteString isEqualToString:uriString]) {
+      return YES;
+    }
+  }
+  return NO;
 }
 
 + (BOOL)application:(UIApplication *)application
