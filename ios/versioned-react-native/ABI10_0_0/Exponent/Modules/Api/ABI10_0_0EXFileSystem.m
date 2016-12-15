@@ -57,6 +57,8 @@ ABI10_0_0RCT_REMAP_METHOD(downloadAsync,
   }
   
   NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
+  sessionConfiguration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
+  sessionConfiguration.URLCache = nil;
   NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfiguration];
   NSURLSessionDataTask *task = [session dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
     if (error) {
