@@ -448,6 +448,13 @@ continueUserActivity:(NSUserActivity *)userActivity
     NSString *manifestString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     success(manifestString);
   } errorBlock:^(NSError * _Nonnull error) {
+#if DEBUG
+    if ([EXShellManager sharedInstance].isShell && error && error.code == 404) {
+      NSString *message = error.localizedDescription;
+      message = [NSString stringWithFormat:@"Make sure you are serving your project from XDE or exp (%@)", message];
+      error = [NSError errorWithDomain:error.domain code:error.code userInfo:@{ NSLocalizedDescriptionKey: message }];
+    }
+#endif
     failure(error);
   }];
 }

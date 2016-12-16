@@ -67,7 +67,7 @@ export default class BrowserErrorView extends React.Component {
 
     let message = this._readableMessage(error);
     let actionButton;
-    if (error.code === '404') {
+    if (error.code === '404' && !this.props.isShell) {
       actionButton = (
         <Button onPress={this._goToHome.bind(this)} style={styles.button}>
           Back to Exponent Home
@@ -98,7 +98,11 @@ export default class BrowserErrorView extends React.Component {
 
   _readableMessage(error) {
     if (error.code === '404') {
-      return `No experience found at ${error.originalUrl}.`;
+      if (this.props.isShell) {
+        return `There was a problem loading the app.`;
+      } else {
+        return `No experience found at ${error.originalUrl}.`;
+      }
       // TODO: identify this case in the server response
       /* if (error.message.indexOf('compatible with this version') !== -1) {
         return `Looks like your copy of Exponent can't run this experience. Try updating Exponent.`;

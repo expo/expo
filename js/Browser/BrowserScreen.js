@@ -74,6 +74,8 @@ class BrowserScreen extends React.Component {
         errorView = (
           <BrowserErrorView
             error={task.loadingError}
+            isShell={this.props.isShell}
+            shellManifestUrl={this.props.shellManifestUrl}
             onRefresh={this._refresh}
             style={styles.errorView}
           />);
@@ -221,26 +223,28 @@ class BrowserScreen extends React.Component {
     let { task } = this.props;
     if (task) {
       let { manifest } = task;
-      let iconUrl = manifest.getIn(['loading', 'iconUrl']);
-      let loadingBackgroundColor = this._getLoadingBackgroundColor();
-      let backgroundImageUrl = manifest.getIn(['loading', 'backgroundImageUrl']);
-
-      let placeholderBackgroundColor = loadingBackgroundColor;
-      if (backgroundImageUrl) {
-        placeholderBackgroundColor = 'transparent';
-      }
-
-      if (manifest && iconUrl) {
-        return (
-          <FadeIn
-            placeholderStyle={{backgroundColor: placeholderBackgroundColor}}>
-            <Image
-              source={{uri: iconUrl}}
-              resizeMode="center"
-              style={{width: 200, height: 200, marginVertical: 16}}
-            />
-          </FadeIn>
-        );
+      if (manifest) {
+        let iconUrl = manifest.getIn(['loading', 'iconUrl']);
+        let loadingBackgroundColor = this._getLoadingBackgroundColor();
+        let backgroundImageUrl = manifest.getIn(['loading', 'backgroundImageUrl']);
+        
+        let placeholderBackgroundColor = loadingBackgroundColor;
+        if (backgroundImageUrl) {
+          placeholderBackgroundColor = 'transparent';
+        }
+        
+        if (iconUrl) {
+          return (
+            <FadeIn
+              placeholderStyle={{backgroundColor: placeholderBackgroundColor}}>
+              <Image
+                source={{uri: iconUrl}}
+                resizeMode="center"
+                style={{width: 200, height: 200, marginVertical: 16}}
+                />
+            </FadeIn>
+          );
+        }
       }
     }
     return null;
