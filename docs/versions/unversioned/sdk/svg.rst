@@ -1,6 +1,7 @@
+.. _svg:
+
 Svg
 ===
-
 
 .. attribute:: Exponent.Components.Svg
 

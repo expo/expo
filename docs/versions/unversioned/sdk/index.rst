@@ -32,6 +32,7 @@ example.
    accelerometer
    amplitude
    app-loading
+   art
    asset
    bar-code-scanner
    blur-view
