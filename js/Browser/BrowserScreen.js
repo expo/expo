@@ -385,7 +385,11 @@ class BrowserScreen extends React.Component {
     if (this.props.task.loadingError) {
       let urlToRefresh = this.props.task.loadingError.originalUrl;
       this.props.dispatch(BrowserActions.clearTaskWithError(urlToRefresh));
-      ExponentKernel.openURL(urlToRefresh);
+      if (this.props.isShell) {
+        this.props.dispatch(BrowserActions.navigateToUrlAsync(this.props.shellManifestUrl));
+      } else {
+        ExponentKernel.openURL(urlToRefresh);
+      }
       return;
     }
     this.setState(state => {
