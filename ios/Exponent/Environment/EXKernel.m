@@ -233,8 +233,7 @@ NSString *kEXKernelBundleResourceName = @"kernel.ios";
       if (deepLinkRange.length > 0) {
         deepLink = [uriString substringFromIndex:deepLinkRange.location + 1];
       }
-      NSString *deepLinkScheme = [EXShellManager sharedInstance].devUrlScheme ? [EXShellManager sharedInstance].devUrlScheme : [EXShellManager sharedInstance].urlScheme;
-      NSString *result = [NSString stringWithFormat:@"%@://%@", deepLinkScheme, deepLink];
+      NSString *result = [NSString stringWithFormat:@"%@://%@", [EXShellManager sharedInstance].urlScheme, deepLink];
       return [NSURL URLWithString:result];
     }
   }

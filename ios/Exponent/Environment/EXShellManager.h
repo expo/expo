@@ -12,16 +12,16 @@ FOUNDATION_EXPORT NSString * const kEXShellManifestResourceName;
 @property (nonatomic, readonly) BOOL isShell;
 @property (nonatomic, readonly) NSString *shellManifestUrl;
 @property (nonatomic, readonly) NSString *urlScheme;
-@property (nonatomic, readonly) NSString *devUrlScheme;
+@property (nonatomic, readonly) BOOL usesPublishedManifest;
 @property (nonatomic, readonly) NSArray *allManifestUrls;
 
 /**
- *  True if the given string is not null and equals self.urlScheme or self.devUrlScheme 
+ *  True if the given string is not null and equals self.urlScheme
  */
 - (BOOL)isShellUrlScheme: (NSString *)scheme;
 
 /**
- *  True if either urlScheme or devUrlScheme is nonnull.
+ *  True if urlScheme is nonnull.
  */
 - (BOOL)hasUrlScheme;
 

@@ -35,7 +35,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
 {
   _isShell = NO;
   _shellManifestUrl = nil;
-  _devUrlScheme = nil;
+  _usesPublishedManifest = YES;
   _urlScheme = nil;
   _allManifestUrls = @[];
 }
@@ -51,14 +51,38 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
     _isShell = [mutableConfig[@"isShell"] boolValue];
     if (_isShell) {
       _shellManifestUrl = mutableConfig[@"manifestUrl"];
-      [allManifestUrls addObject:mutableConfig[@"manifestUrl"]];
+      if (_shellManifestUrl) {
+        [allManifestUrls addObject:_shellManifestUrl];
+      }
 #if DEBUG
       if (mutableConfig[@"developmentUrl"]) {
         _shellManifestUrl = mutableConfig[@"developmentUrl"];
         [allManifestUrls addObject:mutableConfig[@"developmentUrl"]];
         NSURLComponents *components = [NSURLComponents componentsWithURL:[NSURL URLWithString:_shellManifestUrl] resolvingAgainstBaseURL:YES];
         if (components.scheme) {
-          _devUrlScheme = components.scheme;
+          _urlScheme = components.scheme;
+        }
+        _usesPublishedManifest = NO;
+      } else {
+        NSAssert(NO, @"No development url was configured. You must open this project with Exponent before running it from XCode.");
+      }
+#else
+      NSDictionary *iosConfig = [[NSBundle mainBundle] infoDictionary];
+      if (iosConfig[@"CFBundleURLTypes"]) {
+        // if the shell app has a custom url scheme, read that.
+        // this was configured when the shell app was built.
+        NSArray *urlTypes = iosConfig[@"CFBundleURLTypes"];
+        if (urlTypes && urlTypes.count) {
+          NSDictionary *urlType = urlTypes[0];
+          NSArray *urlSchemes = urlType[@"CFBundleURLSchemes"];
+          if (urlSchemes) {
+            for (NSString *urlScheme in urlSchemes) {
+              if (urlScheme.length && ![urlScheme hasPrefix:@"exp"]) {
+                _urlScheme = urlScheme;
+                break;
+              }
+            }
+          }
         }
       }
 #endif
@@ -67,40 +91,18 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
 
       [[EXAnalytics sharedInstance] setUserProperties:@{ @"INITIAL_URL": _shellManifestUrl }];
     }
-    
-    NSDictionary *iosConfig = [[NSBundle mainBundle] infoDictionary];
-    if (iosConfig[@"CFBundleURLTypes"]) {
-      // if the shell app has a custom url scheme, read that.
-      // this was configured when the shell app was built.
-      NSArray *urlTypes = iosConfig[@"CFBundleURLTypes"];
-      if (urlTypes && urlTypes.count) {
-        NSDictionary *urlType = urlTypes[0];
-        NSArray *urlSchemes = urlType[@"CFBundleURLSchemes"];
-        if (urlSchemes) {
-          for (NSString *urlScheme in urlSchemes) {
-            if (urlScheme.length && ![urlScheme hasPrefix:@"exp"]) {
-              _urlScheme = urlScheme;
-              break;
-            }
-          }
-        }
-      }
-    }
   }
   _allManifestUrls = allManifestUrls;
 }
 
 - (BOOL)isShellUrlScheme:(NSString *)scheme
 {
-  return (
-          (_urlScheme && [scheme isEqualToString:_urlScheme]) ||
-          (_devUrlScheme && [scheme isEqualToString:_devUrlScheme])
-          );
+  return (_urlScheme && [scheme isEqualToString:_urlScheme]);
 }
 
 - (BOOL)hasUrlScheme
 {
-  return (_urlScheme || _devUrlScheme);
+  return (_urlScheme != nil);
 }
 
 @end
