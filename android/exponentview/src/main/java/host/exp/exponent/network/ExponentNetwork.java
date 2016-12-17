@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import host.exp.exponentview.BuildConfig;
+import host.exp.exponentview.ExponentViewBuildConfig;
 import okhttp3.Cache;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -62,7 +63,7 @@ public class ExponentNetwork {
   private OkHttpClient.Builder createHttpClientBuilder() {
     OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
         .cache(mCache);
-    if (BuildConfig.DEBUG) {
+    if (ExponentViewBuildConfig.DEBUG) {
       clientBuilder.addNetworkInterceptor(new StethoInterceptor());
     }
     addOfflineInterceptors(clientBuilder);

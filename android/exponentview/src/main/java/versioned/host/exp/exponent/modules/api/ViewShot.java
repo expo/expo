@@ -16,6 +16,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import host.exp.exponent.utils.ExpFileUtils;
+
 /**
  * Snapshot utility class allow to screenshot a view.
  */
@@ -66,7 +68,7 @@ public class ViewShot implements UIBlock {
             if ("file".equals(result)) {
                 os = new FileOutputStream(output);
                 captureView(view, os);
-                String uri = Uri.fromFile(output).toString();
+                String uri = ExpFileUtils.uriFromFile(output).toString();
                 promise.resolve(uri);
             }
             else if ("base64".equals(result)) {

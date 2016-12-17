@@ -9,6 +9,7 @@ import android.view.View;
 import abi10_0_0.com.facebook.react.bridge.Promise;
 import abi10_0_0.com.facebook.react.uimanager.NativeViewHierarchyManager;
 import abi10_0_0.com.facebook.react.uimanager.UIBlock;
+import host.exp.exponent.utils.ExpFileUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -66,7 +67,7 @@ public class ViewShot implements UIBlock {
             if ("file".equals(result)) {
                 os = new FileOutputStream(output);
                 captureView(view, os);
-                String uri = Uri.fromFile(output).toString();
+                String uri = ExpFileUtils.uriFromFile(output).toString();
                 promise.resolve(uri);
             }
             else if ("base64".equals(result)) {

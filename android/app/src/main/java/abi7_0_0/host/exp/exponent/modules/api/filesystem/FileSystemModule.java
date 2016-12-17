@@ -31,6 +31,7 @@ import org.json.JSONObject;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.kernel.KernelProvider;
+import host.exp.exponent.utils.ExpFileUtils;
 
 public class FileSystemModule extends ReactContextBaseJavaModule {
   private SparseArray<Downloader> mDownloaders = new SparseArray<Downloader>();
@@ -129,7 +130,7 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
           if (res.exception == null) {
             WritableMap infoMap = Arguments.createMap();
 
-            infoMap.putString("uri", Uri.fromFile(file).toString());
+            infoMap.putString("uri", ExpFileUtils.uriFromFile(file).toString());
             infoMap.putInt("jobId", jobId);
             infoMap.putInt("statusCode", res.statusCode);
             infoMap.putInt("bytesWritten", res.bytesWritten);

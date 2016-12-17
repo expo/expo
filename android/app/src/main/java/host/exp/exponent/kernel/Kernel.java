@@ -59,6 +59,7 @@ import host.exp.exponentview.BuildConfig;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponentview.Exponent;
+import host.exp.exponentview.ExponentViewBuildConfig;
 import host.exp.exponentview.R;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.Analytics;
@@ -258,10 +259,10 @@ public class Kernel implements KernelInterface {
       public void onError(Exception e) {
         setHasError();
 
-        if (BuildConfig.DEBUG) {
-          handleError(e.getMessage());
+        if (ExponentViewBuildConfig.DEBUG) {
+          handleError("Can't load kernel. Are you sure your packager is running and your phone is on the same wifi? " + e.getMessage());
         } else {
-          handleError(mContext.getString(R.string.error_unable_to_load_kernel));
+          handleError("Exponent requires an internet connection.");
         }
       }
     };

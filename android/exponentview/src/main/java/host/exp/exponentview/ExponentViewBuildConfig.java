@@ -6,4 +6,6 @@ public class ExponentViewBuildConfig {
 
   public static boolean USE_INTERNET_KERNEL = true;
 
+  public static boolean DEBUG = false;
+
 }

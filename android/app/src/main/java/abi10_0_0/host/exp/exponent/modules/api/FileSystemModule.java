@@ -32,6 +32,7 @@ import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.kernel.KernelProvider;
+import host.exp.exponent.utils.ExpFileUtils;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -86,7 +87,7 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
       if (file.exists()) {
         result.putBoolean("exists", true);
         result.putBoolean("isDirectory", file.isDirectory());
-        result.putString("uri", Uri.fromFile(file).toString());
+        result.putString("uri", ExpFileUtils.uriFromFile(file).toString());
         if (options.hasKey("md5") && options.getBoolean("md5")) {
           result.putString("md5", md5(file));
         }
@@ -138,7 +139,7 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
           sink.close();
 
           WritableMap result = Arguments.createMap();
-          result.putString("uri", Uri.fromFile(file).toString());
+          result.putString("uri", ExpFileUtils.uriFromFile(file).toString());
           if (options.hasKey("md5") && options.getBoolean("md5")) {
             result.putString("md5", md5(file));
           }

@@ -28,6 +28,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import host.exp.exponent.ActivityResultListener;
+import host.exp.exponent.utils.ExpFileUtils;
 import host.exp.exponentview.Exponent;
 
 public class ImagePickerModule extends ReactContextBaseJavaModule implements ActivityResultListener {
@@ -117,8 +118,10 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
       promise.reject(new IOException("Could not create temporary image file."));
       return;
     }
-    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(imageFile));
-    mCameraCaptureURI = Uri.fromFile(imageFile);
+
+    Uri uri = ExpFileUtils.uriFromFile(imageFile);
+    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+    mCameraCaptureURI = uri;
     mPromise = promise;
     Exponent.getInstance().getCurrentActivity().startActivityForResult(cameraIntent, REQUEST_LAUNCH_CAMERA);
   }
@@ -248,7 +251,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
           String path = writeImage(bmp);
 
           WritableMap response = Arguments.createMap();
-          response.putString("uri", Uri.fromFile(new File(path)).toString());
+          response.putString("uri", ExpFileUtils.uriFromFile(new File(path)).toString());
           response.putInt("width", bmp.getWidth());
           response.putInt("height", bmp.getHeight());
           response.putBoolean("cancelled", false);

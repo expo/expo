@@ -144,7 +144,7 @@ public class Exponent {
 
     // Amplitude
     Analytics.resetAmplitudeDatabaseHelper();
-    Amplitude.getInstance().initialize(context, BuildConfig.DEBUG ? ExponentKeys.AMPLITUDE_DEV_KEY : ExponentKeys.AMPLITUDE_KEY);
+    Amplitude.getInstance().initialize(context, ExponentViewBuildConfig.DEBUG ? ExponentKeys.AMPLITUDE_DEV_KEY : ExponentKeys.AMPLITUDE_KEY);
     if (application != null) {
       Amplitude.getInstance().enableForegroundTracking(application);
     }
@@ -165,7 +165,7 @@ public class Exponent {
     FacebookSdk.sdkInitialize(context);
 
 
-    if (BuildConfig.DEBUG) {
+    if (ExponentViewBuildConfig.DEBUG) {
       Stetho.initializeWithDefaults(context);
     }
 
@@ -318,7 +318,7 @@ public class Exponent {
 
 
   public static void logException(Throwable throwable) {
-    if (!BuildConfig.DEBUG) {
+    if (!ExponentViewBuildConfig.DEBUG) {
       try {
         Crashlytics.logException(throwable);
       } catch (Throwable e) {
