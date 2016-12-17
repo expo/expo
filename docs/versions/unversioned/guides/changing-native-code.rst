@@ -21,7 +21,7 @@ need to make native code changes not available in the Exponent SDK.
    **Warning:** We discourage most of our developers from taking this route, as we believe almost
    everything you need to do is better accomplished in a cross-platform way with JS.
 
-   Writing in JS you to best take advantage of over-the-air code deployment and benefit from
+   Writing in JS enables you to best take advantage of over-the-air code deployment and benefit from
    ongoing updates and support from Exponent. You should only do this if you have a particular
    demand from native code which Exponent won't do a good job supporting, such as (for example)
    specialized CPU-intensive video processing that must happen locally on the device.
@@ -34,7 +34,7 @@ How it works
 ============
 
 After you ``detach``, all your JS files will stay the same, but we'll additionally create ``ios`` and
-``android`` directories in your project folder. These will contain XCode and Andriod Studio projects
+``android`` directories in your project folder. These will contain XCode and Android Studio projects
 respectively, and they'll have dependencies on React Native and on Exponent's core SDK.
 
 You'll still be able to develop and test your project from XDE, and you'll still be able to publish
