@@ -8,15 +8,16 @@ To develop or run Exponent experiences on your device, download Exponent [for An
 
 ## Introduction
 
-This is the source code for the Exponent app used to view experiences published to the Exponent service. **Most people will not need to build Exponent from source**. If you don't need any custom native modules that we don't support you should download the client from one of the links above.
+This is the source code for the Exponent app used to view experiences published to the Exponent service. **Most people will not need to build Exponent from source**.
 
-If you want to build a standalone app that has a custom icon and name, see [our documentation here](https://docs.getexponent.com/versions/latest/guides/building-standalone-apps.html). You shouldn't need to build the Exponent clients from source.
+If you want to build a standalone app that has a custom icon and name, see [our documentation here](https://docs.getexponent.com/versions/latest/guides/building-standalone-apps.html). You're in the wrong place, you shouldn't need to build the Exponent clients from source.
 
-If you want to build a standalone app that needs custom native modules, you're in the right place! There are a few steps to getting this working:
+If you need to make native code changes to your Exponent project, such as adding custom native modules, we can [generate a native project for you](https://docs.getexponent.com/versions/latest/guides/changing-native-code.html). You're in the wrong place, you shouldn't need to build the Exponent clients from source.
+
+If you want to build the Exponent client apps for some reason, there are a few steps to getting this working:
 - Join us on Slack at https://slack.exponentjs.com/. The code base and build process is complicated so please ask us if you get stuck.
 - Get the iOS and Android clients building on your machine using the [Set Up](#set-up) section below.
-- Add your native modules and test. You can still use [XDE](https://github.com/exponentjs/xde) or [exp](https://github.com/exponentjs/exp) and the rest of Exponent's infrastructure.
-- When you want to create your final `.apk` and `.ipa` files, follow the instructions in the [Standalone Apps](#standalone-apps) section below.
+- Make your native changes and test. You can still use [XDE](https://github.com/exponentjs/xde) or [exp](https://github.com/exponentjs/exp) and the rest of Exponent's infrastructure.
 
 ## Set Up
 
@@ -31,7 +32,7 @@ Please use Node 6 and npm 3. We recommend installing Node using [nvm](https://gi
 - Build and install Android with `cd android && ./run.sh && cd ..`.
 
 #### iOS
-- Make sure you have Xcode 7 installed.
+- Make sure you have latest non-beta Xcode installed.
 - Install [Cocoapods](https://cocoapods.org/): `gem install cocoapods --no-ri --no-rdoc`.
 - `cd tools-public && ./generate-files-ios.sh && cd ..`.
 - `cd ios && pod install && cd ..`.
@@ -43,7 +44,7 @@ Note: If you have the Exponent app from the Play Store or the App Store you will
 
 ## Standalone Apps
 
-If you don't need custom native modules, head over to [our documentation on building standalone apps without needing Android Studio and Xcode](https://docs.getexponent.com/versions/latest/guides/building-standalone-apps.html).
+If you don't need custom native code outside of the Exponent SDK, head over to [our documentation on building standalone apps without needing Android Studio and Xcode](https://docs.getexponent.com/versions/latest/guides/building-standalone-apps.html).
 
 If you're still here, make sure to follow the [Configure exp.json](https://docs.getexponent.com/versions/latest/guides/building-standalone-apps.html#configure-exp-json) section of the docs before continuing. You'll need to add the appropriate fields to your `exp.json` before the standalone app scripts can run. Once that's done, continue on to the platform-specific instructions.
 
