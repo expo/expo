@@ -2,6 +2,7 @@
 
 package host.exp.exponent;
 
+import android.os.Build;
 import android.os.Debug;
 import android.support.multidex.MultiDexApplication;
 
@@ -26,6 +27,7 @@ public class ExponentApplication extends MultiDexApplication {
 
   static {
     ExponentViewBuildConfig.USE_INTERNET_KERNEL = BuildVariantConstants.USE_INTERNET_KERNEL;
+    ExponentViewBuildConfig.DEBUG = BuildConfig.DEBUG;
   }
 
   private static final String TAG = ExponentApplication.class.getSimpleName();
