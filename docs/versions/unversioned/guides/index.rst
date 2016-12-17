@@ -19,6 +19,7 @@ Guides
    push-notifications
    exp-cli
    building-standalone-apps
+   changing-native-code
    how-exponent-works
    upgrading-exponent
    using-clojurescript
