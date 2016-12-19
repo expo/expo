@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
   s.author = "Facebook"
   s.requires_arc = true
   s.platform = :ios, "7.0"
-  s.source = { :git => "https://github.com/exponentjs/react-native.git" }
+  s.source = { :git => "https://github.com/exponent/react-native.git" }
   s.source_files = "Libraries/RCTTest/**/*.{h,m}"
   s.preserve_paths = "Libraries/RCTTest/**/*.js"
   s.frameworks = "XCTest"
