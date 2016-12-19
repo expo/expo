@@ -137,8 +137,6 @@ class ExponentApp extends React.Component {
 
   render() {
     let camera;
-
-    // TODO figure out the correct way to position the X
     if (this.state.viewFinderActive) {
       camera = (
         <View style={StyleSheet.absoluteFill}>
@@ -285,14 +283,13 @@ class ExponentApp extends React.Component {
         </TouchableNativeFeedbackSafe>
       );
     } else {
-      // TODO size this correctly
       // TODO upload a proper image to s3
       qrButton = (
         <TouchableNativeFeedbackSafe
           onPress={this._onQrPress}>
           <Image
-            style={{width: 50, height: 50}}
-            source={{uri: 'https://i.imgur.com/ccaJ2WN.png'}}
+            style={{width: 60, height: 60}}
+            source={{uri: 'https://s3.amazonaws.com/exp-us-standard/qr-code-exponent-is-pretty-cool.png'}}
           />
         </TouchableNativeFeedbackSafe>
       );
