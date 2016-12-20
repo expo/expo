@@ -7,9 +7,8 @@
 'use strict';
 
 import React, { PropTypes } from 'react';
-import ReactNative, {
+import {
   BackAndroid,
-  Dimensions,
   Image,
   Linking,
   NativeModules,
@@ -22,11 +21,9 @@ import ReactNative, {
   View,
 } from 'react-native';
 import { connect } from 'react-redux';
-import UrlHandler from 'react-native-url-handler';
 import ResponsiveImage from '@exponent/react-native-responsive-image';
 import TouchableNativeFeedbackSafe from '@exponent/react-native-touchable-native-feedback-safe';
 
-import autobind from 'autobind-decorator';
 import { bindActionCreators } from 'redux';
 
 import BrowserActions from 'BrowserActions';
@@ -35,7 +32,6 @@ import ExLayout from 'ExLayout';
 import ExUrls from 'ExUrls';
 import ExperienceCollection from 'ExperienceCollection';
 import FeaturedExperiences from 'FeaturedExperiences';
-import NuxFirstExperienceOverlay from 'NuxFirstExperienceOverlay';
 
 import { Components, Permissions } from 'exponent';
 
@@ -44,8 +40,6 @@ const {
   ExponentKernel,
 } = NativeModules;
 
-let deviceHeight = Dimensions.get('window').height;
-let deviceMinusHeaderHeight = deviceHeight - ExLayout.headerHeight;
 const AutoFillUrl = '';
 
 class InputAccessoryButton extends React.Component {
@@ -95,8 +89,6 @@ class ExponentApp extends React.Component {
       urlBarIsFocused: false,
       settingsUrl: '',
       urlSubmitButtonStyle: styles.urlBarSubmitButton,
-      isShowingNux: false,
-      nuxTooltipFrame: null,
       viewFinderActive: false,
       hasCameraPermission: null,
     };
@@ -111,17 +103,6 @@ class ExponentApp extends React.Component {
       this.setState({keyboardHeight: 0});
       TextInput.State.blurTextInput(TextInput.State.currentlyFocusedField());
     });
-
-    let isFirstRunFinished = this.props.exp.nuxHasFinishedFirstRun;
-    if (!isFirstRunFinished) {
-      requestAnimationFrame(() => {
-        this.setState({
-          isShowingNux: true,
-        }, () => {
-          requestAnimationFrame(this._scrollPastUrlBar);
-        });
-      });
-    }
 
     requestAnimationFrame(this._scrollPastUrlBar);
   }
@@ -157,13 +138,11 @@ class ExponentApp extends React.Component {
           showsVerticalScrollIndicator={false}
           ref={view => { this._scrollView = view; }}
           keyboardShouldPersistTaps>
-          {this._renderNuxSpacer()}
           {this._renderRecentSection()}
           {this._renderFeaturedSection()}
           {this._renderOverlay()}
           {this._renderURLBar()}
         </ScrollView>
-        {this._renderNux()}
         {this._renderInputAccessory()}
         {camera}
       </View>
@@ -365,17 +344,6 @@ class ExponentApp extends React.Component {
     this.setState({settingsUrl: AutoFillUrl});
   }
 
-  _renderNuxSpacer() {
-    // if we're showing the nux, render some space
-    // underneath the nux featured experiences row.
-    if (!this.state.isShowingNux) {
-      return;
-    }
-    return (
-      <View ref={this._measureNux} style={styles.nuxSpacer} />
-    );
-  }
-
   _renderRecentSection() {
     if (this.props.history.size === 0) {
       return null;
@@ -405,44 +373,6 @@ class ExponentApp extends React.Component {
         onPressItem={(experience) => this._onPressLink(experience.url)}
       />
     );
-  }
-
-  _renderNux() {
-    if (!this.state.isShowingNux) {
-      return null;
-    }
-    return (
-      <NuxFirstExperienceOverlay
-        referrer={this.props.exp.referrer}
-        firstExperienceFrame={this.state.nuxTooltipFrame}
-        onPressExperience={this._onPressNuxIcon}
-      />
-    );
-  }
-
-  @autobind
-  async _onPressNuxIcon(experience) {
-    this.setState(() => ({
-        isShowingNux: false,
-    }));
-
-    this._onPressLink(experience.url);
-  }
-
-  _measureNux = (view) => {
-    // needed to correctly position the nux tooltip.
-    if (view) {
-      requestAnimationFrame(() => {
-        view.measureLayout(
-          ReactNative.findNodeHandle(this._rootView), (x, y, width, height) => {
-            // account for initial scroll position with URL bar.
-            y -= ExLayout.navigationBarHeight;
-            this.setState((state) => ({
-              nuxTooltipFrame: { x, y, width, height },
-            }));
-        });
-      });
-    }
   }
 
   _onPressLink = (url) => {
@@ -563,9 +493,6 @@ let styles = StyleSheet.create({
   },
   urlClearSubmitButtonText: {
     color: 'white',
-  },
-  nuxSpacer: {
-    height: 140,
   },
   inputAccessory: {
     flexDirection: 'row',

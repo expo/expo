@@ -336,13 +336,6 @@ public class Kernel implements KernelInterface {
       }
     }
 
-    boolean nuxHasFinishedFirstRun = mExponentSharedPreferences.getBoolean(ExponentSharedPreferences.NUX_HAS_FINISHED_FIRST_RUN_KEY);
-    try {
-      exponentProps.put("nuxHasFinishedFirstRun", nuxHasFinishedFirstRun);
-    } catch (JSONException e) {
-      EXL.e(TAG, e);
-    }
-
     Bundle bundle = new Bundle();
     bundle.putBundle("exp", JSONBundleConverter.JSONToBundle(exponentProps));
     return bundle;
