@@ -237,10 +237,14 @@ static UIImage *ABI11_0_0RCTResizeImageIfNeeded(UIImage *image,
 {
   dispatch_async(_URLRequestQueue, ^{
     // Remove completed tasks
+    NSMutableArray *tasksToRemove = nil;
     for (ABI11_0_0RCTNetworkTask *task in self->_pendingTasks.reverseObjectEnumerator) {
       switch (task.status) {
         case ABI11_0_0RCTNetworkTaskFinished:
-          [self->_pendingTasks removeObject:task];
+          if (!tasksToRemove) {
+            tasksToRemove = [NSMutableArray new];
+          }
+          [tasksToRemove addObject:task];
           self->_activeTasks--;
           break;
         case ABI11_0_0RCTNetworkTaskPending:
@@ -249,12 +253,19 @@ static UIImage *ABI11_0_0RCTResizeImageIfNeeded(UIImage *image,
           // Check task isn't "stuck"
           if (task.requestToken == nil) {
             ABI11_0_0RCTLogWarn(@"Task orphaned for request %@", task.request);
-            [self->_pendingTasks removeObject:task];
+            if (!tasksToRemove) {
+              tasksToRemove = [NSMutableArray new];
+            }
+            [tasksToRemove addObject:task];
             self->_activeTasks--;
             [task cancel];
           }
           break;
       }
+    }
+
+    if (tasksToRemove) {
+      [self->_pendingTasks removeObjectsInArray:tasksToRemove];
     }
 
     // Start queued decode
