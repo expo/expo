@@ -145,7 +145,6 @@ public class ExponentManifest {
     }
 
     String httpManifestUrl = ExponentUrls.toHttp(realManifestUrl);
-    final boolean isSecureDomain = httpManifestUrl.startsWith(Constants.API_HOST);
 
     // Append index.exp to path
     Uri uri = Uri.parse(httpManifestUrl);
@@ -160,11 +159,8 @@ public class ExponentManifest {
     httpManifestUrl = uri.buildUpon().encodedPath(newPath).build().toString();
 
     // Fetch manifest
-    final boolean shouldRequestSignedManifest = !isSecureDomain;
     Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToUrl(httpManifestUrl);
-    if (shouldRequestSignedManifest) {
-      requestBuilder.header("Exponent-Accept-Signature", "true");
-    }
+    requestBuilder.header("Exponent-Accept-Signature", "true");
 
     Analytics.markEvent(Analytics.TimedEvent.STARTED_MANIFEST_NETWORK_REQUEST);
     if (Constants.DEBUG_MANIFEST_METHOD_TRACING) {
@@ -189,7 +185,7 @@ public class ExponentManifest {
         Analytics.markEvent(Analytics.TimedEvent.FINISHED_MANIFEST_NETWORK_REQUEST);
         try {
           String manifestString = response.body().string();
-          fetchManifestStep2(manifestString, isSecureDomain, shouldRequestSignedManifest, listener);
+          fetchManifestStep2(manifestString, listener);
         } catch (JSONException e) {
           listener.onError(e);
         } catch (IOException e) {
@@ -205,18 +201,16 @@ public class ExponentManifest {
     });
   }
 
-  private void fetchManifestStep2(final String manifestString, final boolean isSecureDomain,
-                                  final boolean shouldRequestSignedManifest, final ManifestListener listener) throws JSONException {
+  private void fetchManifestStep2(final String manifestString, final ManifestListener listener) throws JSONException {
     final JSONObject manifest = new JSONObject(manifestString);
-    final boolean isVerified = isSecureDomain;
-    if (shouldRequestSignedManifest && manifest.has("manifestString") && manifest.has("signature")) {
+    if (manifest.has("manifestString") && manifest.has("signature")) {
       final JSONObject innerManifest = new JSONObject(manifest.getString("manifestString"));
       mCrypto.verifyPublicRSASignature(Constants.API_HOST + "/--/manifest-public-key",
           manifest.getString("manifestString"), manifest.getString("signature"), new Crypto.RSASignatureListener() {
         @Override
         public void onError(String errorMessage) {
           Log.w(TAG, errorMessage);
-          fetchManifestStep3(innerManifest, isVerified, listener);
+          fetchManifestStep3(innerManifest, false, listener);
         }
 
         @Override
@@ -225,7 +219,7 @@ public class ExponentManifest {
         }
       });
     } else {
-      fetchManifestStep3(manifest, isVerified, listener);
+      fetchManifestStep3(manifest, false, listener);
     }
   }
 
