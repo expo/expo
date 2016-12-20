@@ -190,7 +190,7 @@ public class LocationModule extends ReactContextBaseJavaModule {
     if (Build.VERSION.SDK_INT >= 23 &&
         ContextCompat.checkSelfPermission(getReactApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
         ContextCompat.checkSelfPermission(getReactApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-      promise.reject("E_MISSING_PERMISSION", "Missing location permissions.");
+      promise.reject("E_LOCATION_UNAUTHORIZED", "Not authorized to use location services");
       return;
     }
 
@@ -228,7 +228,7 @@ public class LocationModule extends ReactContextBaseJavaModule {
     if (Build.VERSION.SDK_INT >= 23 &&
             ContextCompat.checkSelfPermission(getReactApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
             ContextCompat.checkSelfPermission(getReactApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-      promise.reject("E_MISSING_PERMISSION", "Missing location permissions.");
+      promise.reject("E_LOCATION_UNAUTHORIZED", "Not authorized to use location services");
       return;
     }
     locMgr.removeUpdates(listener);
