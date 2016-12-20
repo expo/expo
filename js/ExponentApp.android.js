@@ -144,11 +144,6 @@ class ExponentApp extends React.Component {
             style={StyleSheet.absoluteFill}
             onBarCodeRead={this._handleBarCodeRead}
           />
-          <TouchableOpacity
-            onPress={this._closeCamera}
-            style={{position: 'absolute', top: 85, left: 15}}>
-            <Text style={{fontSize: 40, color: '#fff'}}>X</Text>
-          </TouchableOpacity>
         </View>
       );
     }
@@ -223,26 +218,43 @@ class ExponentApp extends React.Component {
   }
 
   _renderTitleBar() {
-    return (
-      <View style={styles.titleBar}>
-        <ResponsiveImage
-          sources={{
-            2: { uri: 'https://s3.amazonaws.com/exp-us-standard/ios-home-header-logo@2x.png' },
-            3: { uri: 'https://s3.amazonaws.com/exp-us-standard/ios-home-header-logo@3x.png' },
-          }}
-          style={styles.titleBarLogo}
-        />
-        <View>
+    if (this.state.viewFinderActive) {
+      const BackButtonImageUri = `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAQAAAD/5HvMAAAAbklEQVR4Ae3ZxQHDMAxAUZ197sBasQu1gXuoaHhfC7ygAyFJktYysi7Oc56si7OS6uKspLo4z7hHqYtzw8HBwemNg4ODg/OtqY3zfIkD9FdSVEZq5bJvn4SEhISEhISEVHw43yGlny9Hv6ckSdIEb5dSW8V5J5sAAAAASUVORK5CYII=`;
+      return (
+        <View style={styles.titleBar}>
+          <TouchableNativeFeedbackSafe
+            onPress={this._closeCamera}
+            hitSlop={{ top: 0, bottom: 0, left: 0, right: 30 }}
+            style={{}}>
+            <Image
+              style={{ height: 28, width: 28, tintColor: '#fff'}}
+              source={{ uri: BackButtonImageUri }}
+            />
+          </TouchableNativeFeedbackSafe>
+        </View>
+      );
+    } else {
+      return (
+        <View style={styles.titleBar}>
           <ResponsiveImage
             sources={{
-              2: { uri: 'https://s3.amazonaws.com/exp-us-standard/ios-home-header-wordmark@2x.png' },
-              3: { uri: 'https://s3.amazonaws.com/exp-us-standard/ios-home-header-wordmark@3x.png' },
+              2: { uri: 'https://s3.amazonaws.com/exp-us-standard/ios-home-header-logo@2x.png' },
+              3: { uri: 'https://s3.amazonaws.com/exp-us-standard/ios-home-header-logo@3x.png' },
             }}
-            style={styles.titleBarWordmark}
+            style={styles.titleBarLogo}
           />
+          <View>
+            <ResponsiveImage
+              sources={{
+                2: { uri: 'https://s3.amazonaws.com/exp-us-standard/ios-home-header-wordmark@2x.png' },
+                3: { uri: 'https://s3.amazonaws.com/exp-us-standard/ios-home-header-wordmark@3x.png' },
+              }}
+              style={styles.titleBarWordmark}
+            />
+          </View>
         </View>
-      </View>
-    );
+      );
+    }
   }
 
   _handleFocus = () => {
@@ -266,7 +278,6 @@ class ExponentApp extends React.Component {
 
   _renderURLBar() {
     let clearButton;
-    let qrButton;
     let { urlBarIsFocused, settingsUrl } = this.state;
 
     if (urlBarIsFocused) {
@@ -275,29 +286,17 @@ class ExponentApp extends React.Component {
         <TouchableNativeFeedbackSafe
           testID="clear_button"
           hitSlop={{left: 10, top: 10, right: 10, bottom: 10}}
-          style={[styles.urlBarClearButtonContainer, isEmpty ? {opacity: 0.5} : {}]}
+          style={[styles.urlBarClearButtonContainer, isEmpty ? {opacity: 0.5, backgroundColor: 'rgba(0,0,0,0.1)'} : {}]}
           onPress={this._onClearUrlBar}>
           <Text style={styles.urlBarClearButtonText}>
             X
           </Text>
         </TouchableNativeFeedbackSafe>
       );
-    } else {
-      // TODO upload a proper image to s3
-      qrButton = (
-        <TouchableNativeFeedbackSafe
-          onPress={this._onQrPress}>
-          <Image
-            style={{width: 60, height: 60}}
-            source={{uri: 'https://s3.amazonaws.com/exp-us-standard/qr-code-exponent-is-pretty-cool.png'}}
-          />
-        </TouchableNativeFeedbackSafe>
-      );
     }
 
     return (
-      <View style={[styles.urlBarContainer, urlBarIsFocused ? {opacity: 1} : {opacity: 0.5}]}>
-        {qrButton}
+      <View style={styles.urlBarContainer}>
         <TextInput
           testID="url_bar"
           value={settingsUrl}
@@ -311,11 +310,28 @@ class ExponentApp extends React.Component {
           onFocus={this._handleFocus}
           onBlur={this._handleBlur}
           placeholder={`Enter an experience URL`}
-          placeholderTextColor="#888"
+          placeholderTextColor={urlBarIsFocused ? "#eee" : "#888"}
           underlineColorAndroid="transparent"
           style={styles.urlBarTextInput}
         />
         {clearButton}
+        {!urlBarIsFocused && this._renderQrButton()}
+      </View>
+    );
+  }
+
+  _renderQrButton = () => {
+    return (
+      <View style={styles.qrButtonContainer}>
+        <TouchableNativeFeedbackSafe onPress={this._onQrPress} style={styles.qrButton}>
+          <Text>
+            Scan QR
+          </Text>
+          <Image
+            style={{width: 27, height: 27, marginLeft: 8}}
+            source={{uri: 'https://s3.amazonaws.com/exp-us-standard/qr-code-exponent-is-pretty-cool.png'}}
+          />
+        </TouchableNativeFeedbackSafe>
       </View>
     );
   }
@@ -568,5 +584,25 @@ let styles = StyleSheet.create({
   inputAccessoryButtonText: {
     color: 'rgba(0,0,0,0.7)',
     fontSize: 15,
+  },
+  qrButtonContainer: {
+    position: 'absolute',
+    top: 0,
+    right: 10,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    opacity: 0.7,
+  },
+  qrButton: {
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    borderRadius: 3,
+    paddingVertical: 5,
+    paddingHorizontal: 8,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(0,0,0,0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
