@@ -16,11 +16,11 @@ Example Projects built with Exponent
 """"""""""""""""""""""""""""""""""""
 
 * `Growler Prowler <https://getexponent.com/@community/growler-prowler>`_ (`source <https://github.com/brentvatne/growler-prowler>`_) - a useful demo project showing how to use maps, navigation, Facebook auth, and more
-* `Floatyplane <https://getexponent.com/@exponent/floatyplane>`_ (`source <https://github.com/exponentjs/floatyplane>`_) - a game you might be familiar with
-* `Foodwheel <https://getexponent.com/@exponent/foodwheel>`_ (`source <https://github.com/exponentjs/foodwheel>`_) - how we decide where to eat lunch
-* `React Native Playground <http://rnplay.org>`_ (`source <https://github.com/exponentjs/rnplay>`_) - client app for RNPlay
+* `Floatyplane <https://getexponent.com/@exponent/floatyplane>`_ (`source <https://github.com/exponent/floatyplane>`_) - a game you might be familiar with
+* `Foodwheel <https://getexponent.com/@exponent/foodwheel>`_ (`source <https://github.com/exponent/foodwheel>`_) - how we decide where to eat lunch
+* `React Native Playground <http://rnplay.org>`_ (`source <https://github.com/exponent/rnplay>`_) - client app for RNPlay
 * `Instagram Stories Clone <https://getexponent.com/@mastermo/instagram-stories>`_ (`source <https://github.com/mastermoo/rn-instagram-stories>`_)
-* `Pomodoro <https://getexponent.com/@exponent/pomodoro>`_ (`source <https://github.com/exponentjs/pomodoroexp>`_) - sample Pomodoro app
+* `Pomodoro <https://getexponent.com/@exponent/pomodoro>`_ (`source <https://github.com/exponent/pomodoroexp>`_) - sample Pomodoro app
 
 React Native
 """"""""""""""

@@ -14,7 +14,7 @@ desktop app that includes all dependencies you'll need to get started.
 
 Download the latest version of `XDE for macOS (stable) <https://xde-updates.exponentjs.com/download/mac>`_ or `XDE for Windows (alpha) <https://xde-updates.exponentjs.com/download/win32>`_.
 
-If you would like to use XDE for Linux, please follow the guide to `build XDE from source <https://github.com/exponentjs/xde#build-from-source>`_.
+If you would like to use XDE for Linux, please follow the guide to `build XDE from source <https://github.com/exponent/xde#build-from-source>`_.
 
 Mobile Client: Exponent for iOS and Android
 --------------------------------------------

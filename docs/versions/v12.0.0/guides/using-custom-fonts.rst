@@ -177,7 +177,7 @@ rendering the ``Text`` component when ``fontLoaded`` is ``false``. Now on
 refreshing the app you will see that ``open-sans-bold`` is used.
 
 This technique is built into the Tabs template for convenience, as you can see
-`here <https://github.com/exponentjs/new-project-template/blob/2fdf49b77090124c317e4eb73684f6bae782a4fd/main.js#L30-L50>`_.
+`here <https://github.com/exponent/new-project-template/blob/2fdf49b77090124c317e4eb73684f6bae782a4fd/main.js#L30-L50>`_.
 
 .. epigraph::
   **Note:** Typically you will want to load your apps primary fonts before the app is displayed to avoid text flashing in after the font loads. The recommended approach is to move the ``Font.loadAsync`` call to your top-level component.

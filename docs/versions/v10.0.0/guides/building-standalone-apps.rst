@@ -107,7 +107,7 @@ send off push notifications.
   https://developer.apple.com/account/#/membership)? XY1234567
 
 .. epigraph::
-  **Note:** We currently don't support Apple's two-factor authentication, so you'll have to temporarily turn off 2FA on your Apple ID account to use exp build. The GitHub issue for 2FA support is `#17 <https://github.com/exponentjs/exp/issues/17>`_.
+  **Note:** We currently don't support Apple's two-factor authentication, so you'll have to temporarily turn off 2FA on your Apple ID account to use exp build. The GitHub issue for 2FA support is `#17 <https://github.com/exponent/exp/issues/17>`_.
 
 Next we will ask you if you'd like us to handle your distribution certificate
 or use your own. Similar to the Android keystore, if you don't know what a

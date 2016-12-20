@@ -24,7 +24,7 @@ so that it's compatible with the latest version.
 * **Update the version of react-native that your project depends on:**
 
   * Open your project's ``package.json`` file and find the ``"react-native"`` entry under the ``"dependencies"`` section.
-  * Its value should look like ``"exponentjs/react-native#sdk-x.y.z"``. Replace the ``sdk-x.y.z`` with the ``exponent-react-native-tag`` from the previous step.
+  * Its value should look like ``"exponent/react-native#sdk-x.y.z"``. Replace the ``sdk-x.y.z`` with the ``exponent-react-native-tag`` from the previous step.
 
 * **Update the version of Exponent SDK:**
 
@@ -34,7 +34,7 @@ so that it's compatible with the latest version.
 
 * **Update XDE**
 
-  XDE looks for updates automatically, so it might already have already installed and asked you to restart it. If it didn't, you can grab the latest release `from Github <https://github.com/exponentjs/xde/releases>`_.
+  XDE looks for updates automatically, so it might already have already installed and asked you to restart it. If it didn't, you can grab the latest release `from Github <https://github.com/exponent/xde/releases>`_.
 
 * **Open your project and clear the packager cache**
 

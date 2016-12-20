@@ -27,7 +27,7 @@ The `@community/gl-test <https://getexponent.com/@community/gl-test>`_ Exponent
 app demonstrates a number of example scenes. The image above is a low-quality
 capture, try the app on Exponent for the best-quality experience. The source
 code for these scenes is available `here
-<https://github.com/exponentjs/gl-test/tree/master/Scenes>`_.
+<https://github.com/exponent/gl-test/tree/master/Scenes>`_.
 
 
 .. _gl-object:

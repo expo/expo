@@ -9,9 +9,9 @@ Exponent
 * `The Exponent Log <https://blog.getexponent.com/>`_ - our official blog
 * `Building li.st for Android with Exponent and React Native <https://www.youtube.com/watch?v=cI9bDvDEsYE>`_ - conference talk
 * `Build Cross Platform React Native Apps with Exponent and Redux <https://www.pluralsight.com/courses/build-react-native-exponent-redux-apps>`_ (video course on PluralSight)
-* `Pomodoro <https://github.com/exponentjs/pomodoroexp>`_ - sample Pomodoro app
-* `Floatyplane <https://github.com/exponentjs/floatyplane>`_ - a game you might be familiar with
-* `Foodwheel <https://github.com/exponentjs/foodwheel>`_ - how we decide where to eat lunch
+* `Pomodoro <https://github.com/exponent/pomodoroexp>`_ - sample Pomodoro app
+* `Floatyplane <https://github.com/exponent/floatyplane>`_ - a game you might be familiar with
+* `Foodwheel <https://github.com/exponent/foodwheel>`_ - how we decide where to eat lunch
 
 React Native
 """"""""""""""

@@ -165,4 +165,4 @@ rendering the ``Text`` component when ``fontLoaded`` is ``false``. Now on
 refreshing the app you should see that it renders the Font Awesome glass icon!
 
 The finished version of this tutorial is available as an Exponent project on
-`GitHub <https://github.com/exponentjs/font-awesome-example/tree/9f84ed1593c925b5c15a6842ac881c1689eceb38>`_.
+`GitHub <https://github.com/exponent/font-awesome-example/tree/9f84ed1593c925b5c15a6842ac881c1689eceb38>`_.

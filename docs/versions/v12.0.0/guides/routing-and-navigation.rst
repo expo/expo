@@ -19,8 +19,8 @@ screen, the screen is pushed onto a navigation stack and animated into view
 according to its configuration.
 
 The library that we recommend to use for routing & navigation in Exponent
-is `ExNavigation <https://github.com/exponentjs/ex-navigation>`_. You can see
-the `full documentation for ExNavigation on Github. <https://github.com/exponentjs/ex-navigation>`_.
+is `ExNavigation <https://github.com/exponent/ex-navigation>`_. You can see
+the `full documentation for ExNavigation on Github. <https://github.com/exponent/ex-navigation>`_.
 
 Try it out
 ^^^^^^^^^^
@@ -171,7 +171,7 @@ Learning more about routing & navigation
 
 ``ExNavigation`` is not the only routing library, but it is our
 recommended approach and we might not be able to answer your questions about other libraries.
-You can learn more about it `on the Github repository <https://github.com/exponentjs/ex-navigation>`_,
+You can learn more about it `on the Github repository <https://github.com/exponent/ex-navigation>`_,
 and by reading the code of other applications built with ``ExNavigation``, such as
-`Growler Prowler <https://github.com/brentvatne/growler-prowler>`_, `React Native Playground <https://github.com/exponentjs/rnplay>`_,
-and the `ExNavigation example app <https://github.com/exponentjs/ex-navigation/tree/master/example>`_.
+`Growler Prowler <https://github.com/brentvatne/growler-prowler>`_, `React Native Playground <https://github.com/exponent/rnplay>`_,
+and the `ExNavigation example app <https://github.com/exponent/ex-navigation/tree/master/example>`_.

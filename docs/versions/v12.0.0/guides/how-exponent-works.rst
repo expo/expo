@@ -14,7 +14,7 @@ concepts here, including:
 - Opening Exponent apps offline
 
 You can also browse the source, fork, hack on and contribute to
-the Exponent tooling on `github/@exponentjs <http://github.com/exponentjs>`_.
+the Exponent tooling on `github/@exponent <http://github.com/exponent>`_.
 
 Serving an Exponent project for local development
 """""""""""""""""""""""""""""""""""""""""""""""""

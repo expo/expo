@@ -7,7 +7,7 @@ How Exponent Works
 While it's certainly not necessary to know any of this to use Exponent, many
 engineers like to know how their tools work. We'll walk through a few key
 concepts here. You can also browse the source, fork, hack on and contribute to
-the Exponent tooling on `github/@exponentjs <http://github.com/exponentjs>`_.
+the Exponent tooling on `github/@exponent <http://github.com/exponent>`_.
 
 Opening an app from Exponent in development
 """""""""""""""""""""""""""""""""""""""""""

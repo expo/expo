@@ -15,11 +15,11 @@ these approaches.
 ======================
 
 This library is installed by default on the template project that you create through XDE. (If you're adding it to an existing project, you'll need to follow the special instructions in `Existing Projects <#for-existing-projects>`_ below). It includes eight icon sets,
-you can browse all of the icons using the `@exponent/vector-icons directory <https://exponentjs.github.io/vector-icons/>`_.
+you can browse all of the icons using the `@exponent/vector-icons directory <https://exponent.github.io/vector-icons/>`_.
 
 .. image:: img/vector-icons-directory.png
   :width: 100%
-  :target: https://exponentjs.github.io/vector-icons/
+  :target: https://exponent.github.io/vector-icons/
 
 
 .. code-block:: javascript

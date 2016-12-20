@@ -71,4 +71,4 @@ a helpful shortcut for this object, which you see below as ``FontAwesome.font``.
     }
   }
 
-See a full working example in `github/exponentjs/new-project-template <https://github.com/exponentjs/new-project-template/blob/9c5f99efa9afcbefdadefe752ea350cc378c0f0d/main.js>`_.
+See a full working example in `github/exponent/new-project-template <https://github.com/exponent/new-project-template/blob/9c5f99efa9afcbefdadefe752ea350cc378c0f0d/main.js>`_.
