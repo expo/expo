@@ -340,7 +340,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     mExponentSharedPreferences.updateManifest(manifestUrl, manifest, bundleUrl);
     ExponentDB.saveExperience(manifestUrl, manifest, bundleUrl);
 
-    Analytics.logEventWithManifestUrl(Analytics.LOAD_EXPERIENCE, mManifestUrl);
+    Analytics.logEventWithManifestUrlSdkVersion(Analytics.LOAD_EXPERIENCE, mManifestUrl, mSDKVersion);
 
     ExperienceActivityUtils.updateOrientation(mManifest, this);
     addNotification(kernelOptions);

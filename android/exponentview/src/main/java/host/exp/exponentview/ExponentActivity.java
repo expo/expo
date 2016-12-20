@@ -139,7 +139,7 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
     mExponentSharedPreferences.updateManifest(mManifestUrl, manifest, bundleUrl);
     ExponentDB.saveExperience(mManifestUrl, manifest, bundleUrl);
 
-    Analytics.logEventWithManifestUrl(Analytics.LOAD_EXPERIENCE, mManifestUrl);
+    Analytics.logEventWithManifestUrlSdkVersion(Analytics.LOAD_EXPERIENCE, mManifestUrl, mSDKVersion);
 
     ExperienceActivityUtils.updateOrientation(manifest, this);
 

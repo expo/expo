@@ -30,6 +30,7 @@ public class Analytics {
   public static final String HTTP_ERROR_USED_EMBEDDED_RESPONSE = "HTTP_ERROR_USED_EMBEDDED_RESPONSE";
 
   public static final String MANIFEST_URL = "MANIFEST_URL";
+  public static final String SDK_VERSION = "SDK_VERSION";
   public static final String USER_ERROR_MESSAGE = "USER_ERROR_MESSAGE";
   public static final String DEVELOPER_ERROR_MESSAGE = "DEVELOPER_ERROR_MESSAGE";
 
@@ -54,10 +55,17 @@ public class Analytics {
   private static final Map<TimedEvent, Long> sShellTimedEvents = new HashMap<>();
 
   public static void logEventWithManifestUrl(String eventType, String manifestUrl) {
+    logEventWithManifestUrlSdkVersion(eventType, manifestUrl, null);
+  }
+
+  public static void logEventWithManifestUrlSdkVersion(String eventType, String manifestUrl, String sdkVersion) {
     try {
       JSONObject eventProperties = new JSONObject();
       if (manifestUrl != null) {
         eventProperties.put(MANIFEST_URL, manifestUrl);
+      }
+      if (sdkVersion != null) {
+        eventProperties.put(SDK_VERSION, sdkVersion);
       }
       Amplitude.getInstance().logEvent(eventType, eventProperties);
     } catch (Exception e) {
