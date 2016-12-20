@@ -32,10 +32,14 @@ public class HomeActivity extends BaseExperienceActivity {
     mKernel.startJSKernel();
     showLoadingScreen(null);
 
+    tryInstallLeakCanary(true);
+  }
+
+  private void tryInstallLeakCanary(boolean shouldAskForPermissions) {
     if (BuildConfig.DEBUG && Constants.ENABLE_LEAK_CANARY) {
       // Leak canary needs WRITE_EXTERNAL_STORAGE permission
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+        if (shouldAskForPermissions && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
           requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1248919246);
         } else {
           LeakCanary.install(getApplication());
@@ -50,7 +54,7 @@ public class HomeActivity extends BaseExperienceActivity {
   public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-    LeakCanary.install(getApplication());
+    tryInstallLeakCanary(false);
   }
 
   @Override
