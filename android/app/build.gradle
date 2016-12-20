@@ -25,7 +25,7 @@ android {
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
     versionCode 46
-    versionName '1.11.0'
+    versionName '1.11.1'
     // END VERSIONS
     ndk {
       abiFilters 'armeabi-v7a', 'x86'
