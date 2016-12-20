@@ -34,7 +34,7 @@
     "react": "~15.3.2",
     "react-apple-easing": "0.0.2",
     "react-mixin": "^3.0.4",
-    "react-native": "github:exponentjs/react-native#sdk-12.0.0",
+    "react-native": "github:exponent/react-native#sdk-12.0.0",
     "react-native-button": "^1.7.1",
     "react-native-scrollable-mixin": "1.0.1",
     "react-native-url-handler": "^0.4.3",

@@ -1,7 +1,7 @@
 # based on https://registry.hub.docker.com/u/samtstern/android-sdk/dockerfile/ with openjdk-8
 FROM java:8
 
-MAINTAINER Adam Miskiewicz <skevy@exponentjs.com>
+MAINTAINER Adam Miskiewicz <skevy@getexponent.com>
 
 ENV DEBIAN_FRONTEND noninteractive
 

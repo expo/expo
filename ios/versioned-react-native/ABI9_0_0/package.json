@@ -1,11 +1,11 @@
 {
   "_args": [
     [
-      "react-native@git://github.com/exponentjs/react-native.git#492fdde6a307c40635c920af6c2c3d19a3579796",
+      "react-native@git://github.com/exponent/react-native.git#492fdde6a307c40635c920af6c2c3d19a3579796",
       "/Users/ben/Documents/code/exponentjs/universe/exponent/js"
     ]
   ],
-  "_from": "exponentjs/react-native#sdk-8.0.0",
+  "_from": "exponent/react-native#sdk-8.0.0",
   "_id": "react-native@0.31.0",
   "_inCache": true,
   "_location": "/react-native",
@@ -18,28 +18,28 @@
   },
   "_requested": {
     "hosted": {
-      "directUrl": "https://raw.githubusercontent.com/exponentjs/react-native/492fdde6a307c40635c920af6c2c3d19a3579796/package.json",
-      "gitUrl": "git://github.com/exponentjs/react-native.git#492fdde6a307c40635c920af6c2c3d19a3579796",
-      "httpsUrl": "git+https://github.com/exponentjs/react-native.git#492fdde6a307c40635c920af6c2c3d19a3579796",
-      "shortcut": "github:exponentjs/react-native#492fdde6a307c40635c920af6c2c3d19a3579796",
-      "ssh": "git@github.com:exponentjs/react-native.git#492fdde6a307c40635c920af6c2c3d19a3579796",
-      "sshUrl": "git+ssh://git@github.com/exponentjs/react-native.git#492fdde6a307c40635c920af6c2c3d19a3579796",
+      "directUrl": "https://raw.githubusercontent.com/exponent/react-native/492fdde6a307c40635c920af6c2c3d19a3579796/package.json",
+      "gitUrl": "git://github.com/exponent/react-native.git#492fdde6a307c40635c920af6c2c3d19a3579796",
+      "httpsUrl": "git+https://github.com/exponent/react-native.git#492fdde6a307c40635c920af6c2c3d19a3579796",
+      "shortcut": "github:exponent/react-native#492fdde6a307c40635c920af6c2c3d19a3579796",
+      "ssh": "git@github.com:exponent/react-native.git#492fdde6a307c40635c920af6c2c3d19a3579796",
+      "sshUrl": "git+ssh://git@github.com/exponent/react-native.git#492fdde6a307c40635c920af6c2c3d19a3579796",
       "type": "github"
     },
     "name": "react-native",
-    "raw": "react-native@git://github.com/exponentjs/react-native.git#492fdde6a307c40635c920af6c2c3d19a3579796",
-    "rawSpec": "git://github.com/exponentjs/react-native.git#492fdde6a307c40635c920af6c2c3d19a3579796",
+    "raw": "react-native@git://github.com/exponent/react-native.git#492fdde6a307c40635c920af6c2c3d19a3579796",
+    "rawSpec": "git://github.com/exponent/react-native.git#492fdde6a307c40635c920af6c2c3d19a3579796",
     "scope": null,
-    "spec": "git://github.com/exponentjs/react-native.git#492fdde6a307c40635c920af6c2c3d19a3579796",
+    "spec": "git://github.com/exponent/react-native.git#492fdde6a307c40635c920af6c2c3d19a3579796",
     "type": "hosted"
   },
   "_requiredBy": [
     "/"
   ],
-  "_resolved": "git://github.com/exponentjs/react-native.git#492fdde6a307c40635c920af6c2c3d19a3579796",
+  "_resolved": "git://github.com/exponent/react-native.git#492fdde6a307c40635c920af6c2c3d19a3579796",
   "_shasum": "a999fe150a97960fad45fbd02a21051c34e6d2c4",
   "_shrinkwrap": null,
-  "_spec": "react-native@git://github.com/exponentjs/react-native.git#492fdde6a307c40635c920af6c2c3d19a3579796",
+  "_spec": "react-native@git://github.com/exponent/react-native.git#492fdde6a307c40635c920af6c2c3d19a3579796",
   "_where": "/Users/ben/Documents/code/exponentjs/universe/exponent/js",
   "bin": {
     "react-native": "local-cli/wrong-react-native.js"

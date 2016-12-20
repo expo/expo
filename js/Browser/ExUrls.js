@@ -7,7 +7,7 @@
 
 import url from 'url';
 
-const HTTPS_HOSTS = ['exp.host', 'exponentjs.com'];
+const HTTPS_HOSTS = ['exp.host', 'exponentjs.com', 'getexponent.com'];
 
 let ExUrls = {
   normalizeUrl(rawUrl) {

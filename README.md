@@ -1,4 +1,4 @@
-# Exponent [![Slack](http://slack.exponentjs.com/badge.svg)](http://slack.exponentjs.com)
+# Exponent [![Slack](https://slack.getexponent.com/badge.svg)](https://slack.getexponent.com)
 
 The Exponent app for Android and iOS.
 
@@ -15,9 +15,9 @@ If you want to build a standalone app that has a custom icon and name, see [our 
 If you need to make native code changes to your Exponent project, such as adding custom native modules, we can [generate a native project for you](https://docs.getexponent.com/versions/latest/guides/changing-native-code.html). You're in the wrong place, you shouldn't need to build the Exponent clients from source.
 
 If you want to build the Exponent client apps for some reason, there are a few steps to getting this working:
-- Join us on Slack at https://slack.exponentjs.com/. The code base and build process is complicated so please ask us if you get stuck.
+- Join us on Slack at https://slack.getexponent.com/. The code base and build process is complicated so please ask us if you get stuck.
 - Get the iOS and Android clients building on your machine using the [Set Up](#set-up) section below.
-- Make your native changes and test. You can still use [XDE](https://github.com/exponentjs/xde) or [exp](https://github.com/exponentjs/exp) and the rest of Exponent's infrastructure.
+- Make your native changes and test. You can still use [XDE](https://github.com/exponent/xde) or [exp](https://github.com/exponent/exp) and the rest of Exponent's infrastructure.
 
 ## Set Up
 
@@ -84,7 +84,7 @@ Here are the steps to build a standalone iOS app:
 - `template-files/ios/dependencies.json` specifies the CocoaPods dependencies of the app.
 
 ## Contributing
-Please check with us before putting work into a Pull Request! It is often harder to maintain code than it is to write it. The best place to talk to us is on Slack at https://slack.exponentjs.com.
+Please check with us before putting work into a Pull Request! It is often harder to maintain code than it is to write it. The best place to talk to us is on Slack at https://slack.getexponent.com.
 
 ## License
 The Exponent source code is made available under the [BSD 3-clause license](LICENSE). Some of the dependencies are licensed differently, with the MIT license, for example.
