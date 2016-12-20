@@ -12,14 +12,6 @@ function setReferrer(newReferrer) {
 function getFeatured() {
   return [
     {
-      url: 'exp://exp.host/@exponent/react-native-for-curious-people',
-      manifest: {
-        name: 'React Native for Curious People',
-        desc: 'Learn about React Native.',
-        iconUrl: 'https://s3.amazonaws.com/rnfcp/icon.png',
-      },
-    },
-    {
       url: 'exp://exp.host/@exponent/pomodoro',
       manifest: {
         name: 'Pomodoro',
@@ -32,6 +24,22 @@ function getFeatured() {
       manifest: {
         name: 'Native Component List',
         desc: 'Demonstration of some native components.',
+        iconUrl: 'https://s3.amazonaws.com/exp-brand-assets/ExponentEmptyManifest_192.png',
+      },
+    },
+    {
+      url: 'exp://exp.host/@exponent/floatyplane',
+      manifest: {
+        name: 'Floaty Plane',
+        desc: 'Touch the plane until you die!',
+        iconUrl: 'https://s3-us-west-2.amazonaws.com/examples-exp/floaty_icon.png',
+      },
+    },
+    {
+      url: 'exp://exp.host/@community/growler-prowler',
+      manifest: {
+        name: 'Growler Prowler',
+        desc: 'Browse craft beer in Vancouver',
         iconUrl: 'https://s3.amazonaws.com/exp-brand-assets/ExponentEmptyManifest_192.png',
       },
     },
