@@ -28,7 +28,6 @@ import { bindActionCreators } from 'redux';
 
 import BrowserActions from 'BrowserActions';
 import ExColors from 'ExColors';
-import ExLayout from 'ExLayout';
 import ExUrls from 'ExUrls';
 import ExperienceCollection from 'ExperienceCollection';
 import FeaturedExperiences from 'FeaturedExperiences';
@@ -103,12 +102,6 @@ class ExponentApp extends React.Component {
       this.setState({keyboardHeight: 0});
       TextInput.State.blurTextInput(TextInput.State.currentlyFocusedField());
     });
-
-    requestAnimationFrame(this._scrollPastUrlBar);
-  }
-
-  _scrollPastUrlBar = () => {
-    this._scrollView.scrollTo({ y: ExLayout.navigationBarHeight + 4, x: 0, animated: false });
   }
 
   componentWillUnmount() {
