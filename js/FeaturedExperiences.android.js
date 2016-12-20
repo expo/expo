@@ -29,15 +29,6 @@ function getFeatured() {
       },
     },
     {
-      nux: false,
-      url: 'exp://exp.host/@brighten/brighten',
-      manifest: {
-        name: 'Brighten',
-        desc: 'Make someone\'s day with a compliment',
-        iconUrl: 'https://dck6ribk2zdl4.cloudfront.net/brighten-192-rounded.png',
-      },
-    },
-    {
       url: 'exp://exp.host/@exponent/floatyplane',
       manifest: {
         name: 'Floaty Plane',
@@ -46,19 +37,20 @@ function getFeatured() {
       },
     },
     {
-      url: 'exp://exp.host/@exponent/react-native-for-curious-people',
-      manifest: {
-        name: 'React Native for Curious People',
-        desc: 'Learn about React Native.',
-        iconUrl: 'https://s3.amazonaws.com/rnfcp/icon.png',
-      },
-    },
-    {
       url: 'exp://exp.host/@exponent/pomodoro',
       manifest: {
         name: 'Pomodoro',
         desc: 'Be careful or the tomatoes might explode!',
         iconUrl: 'https://s3.amazonaws.com/pomodoro-exp/icon.png',
+      },
+    },
+    {
+      nux: false,
+      url: 'exp://exp.host/@notbrent/native-component-list',
+      manifest: {
+        name: 'Native Component List',
+        desc: 'Try some of the components built into Exponent',
+        iconUrl: 'https://s3.amazonaws.com/exp-brand-assets/ExponentEmptyManifest_192.png',
       },
     },
   ];

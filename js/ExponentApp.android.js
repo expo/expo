@@ -328,7 +328,7 @@ class ExponentApp extends React.Component {
             Scan QR
           </Text>
           <Image
-            style={{width: 27, height: 27, marginLeft: 8}}
+            style={{width: 30, height: 30, marginLeft: 8}}
             source={{uri: 'https://s3.amazonaws.com/exp-us-standard/qr-code-exponent-is-pretty-cool.png'}}
           />
         </TouchableNativeFeedbackSafe>
@@ -598,10 +598,11 @@ let styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: '#fff',
     borderRadius: 3,
-    paddingVertical: 5,
-    paddingHorizontal: 8,
+    paddingVertical: 7,
+    paddingLeft: 10,
+    paddingRight: 8,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(0,0,0,0.15)',
+    borderColor: 'rgba(0,0,0,0.2)',
     alignItems: 'center',
     justifyContent: 'center',
   },
