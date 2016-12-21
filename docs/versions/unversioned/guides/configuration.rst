@@ -22,6 +22,11 @@ Configuration with ``exp.json``
 
  **Required**. The friendly url name for publishing. eg: ``exp.host/@your-username/slug``.
 
+.. attribute:: privacy
+
+ Either ``public`` or ``unlisted``. If not provided, defaults to ``unlisted``. In the future ``private`` will be supported. ``unlisted`` hides the experience from search results.
+ public, unlisted
+
 .. attribute:: sdkVersion
 
  **Required**. The Exponent sdkVersion to run the project on. This should line up with the version specified in your package.json.
