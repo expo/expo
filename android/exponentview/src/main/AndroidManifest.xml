@@ -28,7 +28,7 @@
 
       <provider
         android:name="android.support.v4.content.FileProvider"
-        android:authorities="host.exp.exponent.provider"
+        android:authorities="${applicationId}.provider"
         android:exported="false"
         android:grantUriPermissions="true">
         <meta-data
