@@ -795,7 +795,9 @@ private:
                       target, level, internalformat,
                       x, y, width, height, border)
 
-  _WRAP_METHOD_UNIMPL(copyTexSubImage2D)
+  _WRAP_METHOD_SIMPLE(copyTexSubImage2D, glCopyTexSubImage2D,
+                      target, level,
+                      xoffset, yoffset, x, y, width, height)
 
   _WRAP_METHOD(createTexture, 0) {
     return addFutureToNextBatch(jsCtx, [] {
