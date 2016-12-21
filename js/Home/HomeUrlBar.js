@@ -10,6 +10,7 @@ import React, { PropTypes } from 'react';
 import {
   ActivityIndicatorIOS,
   Animated,
+  Image,
   StyleSheet,
   Text,
   TextInput,

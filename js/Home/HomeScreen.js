@@ -8,6 +8,7 @@
 import React from 'react';
 import {
   ActivityIndicator,
+  Image,
   Linking,
   ListView,
   NativeModules,
@@ -19,6 +20,7 @@ import {
 } from 'react-native';
 import ResponsiveImage from '@exponent/react-native-responsive-image';
 
+import autobind from 'autobind-decorator';
 import Browser from 'Browser';
 import BrowserActions from 'BrowserActions';
 import ExColors from 'ExColors';
@@ -29,6 +31,8 @@ import HomeUrlBar from 'HomeUrlBar';
 import Button from 'react-native-button';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+
+import { Components, Permissions } from 'exponent';
 
 let {
   ExponentConstants,
@@ -59,6 +63,8 @@ class HomeScreen extends React.Component {
     });
     this.state = {
       dataSource: this._cloneDataSourceWithProps(dataSource, props),
+      viewFinderActive: false,
+      hasCameraPermission: false,
     };
   }
 
@@ -87,12 +93,30 @@ class HomeScreen extends React.Component {
       />
     );
 
+    let camera;
+    if (this.state.viewFinderActive) {
+      camera = (
+        <View style={StyleSheet.absoluteFill}>
+          <Components.BarCodeScanner
+            style={StyleSheet.absoluteFill}
+            onBarCodeRead={this._handleBarCodeRead}
+          />
+          <TouchableOpacity
+            onPress={this._closeCamera}
+            style={{position: 'absolute', top: 15, left: 15}}>
+            <Text style={{fontSize: 20, color: '#fff'}}>Cancel</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+
     return (
       <View {...this.props} style={[styles.container, this.props.style]}>
         <StatusBar
           barStyle="light-content"
-          hidden={false}
+          hidden={this.state.viewFinderActive ? true : false}
           animated
+          showHideTransition="slide"
         />
         <View style={styles.header}>
           <ResponsiveImage
@@ -112,11 +136,14 @@ class HomeScreen extends React.Component {
             />
           </View>
           {activityIndicator}
+
+          {this._renderQRButton()}
         </View>
         <HomeUrlBar
           url={FriendlyUrls.toFriendlyString(this.props.currentUrl, false)}
           onSubmit={this._handleUrlSubmit}
           onRefresh={this._refresh}
+          onQrPress={this._onQrPress}
           style={styles.urlBar}
         />
 
@@ -134,6 +161,22 @@ class HomeScreen extends React.Component {
         <View style={styles.bottomBar}>
           <Text style={styles.bottomBarText}>v{ExponentConstants.exponentVersion}</Text>
         </View>
+        {camera}
+      </View>
+    );
+  }
+
+  _renderQRButton() {
+    return (
+      <View style={{position: 'absolute', right: 5, top: -4, bottom: 0, alignItems: 'center'}}>
+        <TouchableOpacity
+          style={{backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 5, height: 33, width: 33, alignItems: 'center', justifyContent: 'center'}}
+          onPress={this._onQrPress}>
+          <Image
+            style={{width: 22, height: 22}}
+            source={{uri: 'https://static.exponentjs.com/qr-code.png'}}
+          />
+        </TouchableOpacity>
       </View>
     );
   }
@@ -208,6 +251,39 @@ class HomeScreen extends React.Component {
       />
     );
   };
+
+  @autobind
+  _openCamera() {
+    this.setState({viewFinderActive: true});
+  }
+
+  @autobind
+  _closeCamera() {
+    this.setState({viewFinderActive: false});
+  }
+
+  _onQrPress = () => {
+    if (!this.state.hasCameraPermission) {
+      Permissions.askAsync(Permissions.CAMERA).then(({ status }) =>
+        this.setState({hasCameraPermission: status === 'granted'}), (state) => {
+          if (state.hasCameraPermission) {
+            this._openCamera();
+          }
+        });
+    } else {
+      this._openCamera();
+    }
+  }
+
+  @autobind
+  _handleBarCodeRead({ data: url }) {
+    this.setState({viewFinderActive: false}, () => {
+      url = ExUrls.normalizeUrl(url);
+      if (url) {
+        this._loadUrlAsync(url, true).done();
+      }
+    });
+  }
 
   _handleUrlSubmit = (event) => {
     let url = event.nativeEvent.text.trim();
