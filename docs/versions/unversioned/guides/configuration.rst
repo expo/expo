@@ -153,6 +153,10 @@ Configuration with ``exp.json``
    .. attribute:: config
 
     
+       .. attribute:: usesNonExemptEncryption
+
+        Sets ``ITSAppUsesNonExemptEncryption`` in the standalone ipa's Info.plist to the given boolean value.
+
        .. attribute:: fabric
 
         `Twitter Fabric <https://get.fabric.io/>`_ keys to hook up Crashlytics and other services.
