@@ -47,7 +47,7 @@ Android emulator
 `Download Genymotion <https://www.genymotion.com/fun-zone/>`_ (free version) and follow the `Genymotion installation guide <https://docs.genymotion.com/Content/01_Get_Started/Installation.htm>`_. Once you've installed Genymotion, create a virtual device - we recommend a Nexus 5, the Android version is up to you. Start up the virtual device when it's ready.
 
 Once the emulator is open and you have a project open in XDE, you can press *Open project in Exponent on Android* in XDE and it will install the Exponent client to the emulator and open up your app inside of it.
-
+If you run into any issues follow our :ref:`Genymotion guide <genymotion>`.
 
 Node.js
 --------
@@ -62,4 +62,4 @@ Watchman
 Some macOS users encounter issues if they do not have this installed on their machine,
 so we recommend that you install Watchman. Watchman watches files and records
 when they change, then triggers actions in response to this, and it's used
-internally by React Native. `Download and install Watchman <https://facebook.github.io/watchman/docs/install.html>`_
+internally by React Native. `Download and install Watchman <https://facebook.github.io/watchman/docs/install.html>`_.
