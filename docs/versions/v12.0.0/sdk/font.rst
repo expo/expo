@@ -2,6 +2,7 @@ Font
 ====
 
 Allows loading fonts from the web and using them in React Native components.
+See more detailed usage information in the :ref:`Using Custom Fonts <using-custom-fonts>` guide.
 
 .. function:: Exponent.Font.loadAsync(name, url)
 
@@ -9,8 +10,9 @@ Allows loading fonts from the web and using them in React Native components.
 
    :param string name:
       A name by which to identify this font. You can make up any name you want;
-      you just have to specify the same name in :func:`Exponent.Font.style` to
-      use this font.
+      this will be the name that you use when setting ``fontFamily``. For example,
+      if the name is ``'open-sans'`` then your ``Text`` component would look like:
+      ``<Text style={{fontFamily: 'open-sans'}}>Hello world</Text>``
 
    :returns:
       Doesn't return anything and simply awaits till the font is available to
@@ -38,27 +40,3 @@ Allows loading fonts from the web and using them in React Native components.
 
       This is equivalent to calling :func:`Exponent.Font.loadAsync` once per name
       and URL pair.
-
-.. function:: Exponent.Font.style(name)
-
-   Return style properties to use with a ``Text`` or other React Native
-   component. It is safe to call this function before calling
-   :func:`Exponent.Font.loadAsync`; it will still return the correct style
-   properties. This way you can use this function with ``StyleSheet.create()``.
-
-   :param string name:
-      The name for this font specified in :func:`Exponent.Font.loadAsync`.
-
-   :returns:
-      An object with style attributes to use in a ``Text`` or similar component.
-
-   :example:
-      .. code-block:: javascript
-
-        <Text style={{ ...Exponent.Font.style('cursive'), color: 'red' }}>
-          Hello world!
-        </Text>
-
-      Before the component is rendered, the font must be loaded by calling
-      ``Exponent.Font.loadAsync('cursive', 'http://url/to/font.ttf')``.
-
