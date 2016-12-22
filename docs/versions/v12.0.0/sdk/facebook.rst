@@ -7,19 +7,46 @@ native API since you can access Facebook's `Graph API
 `fetch <https://facebook.github.io/react-native/docs/network.html#fetch>`_, for
 example).
 
+Registering your app with Facebook
+-----
+
 Follow `Facebook's developer documentation
 <https://developers.facebook.com/docs/apps/register>`_ to register an
-application with Facebook's API and get an application ID. For iOS, make sure to
-add `host.exp.Exponent` as a 'Bundle ID'. For Android add the key hash
-``rRW++LUjmZZ+58EbN5DVhGAnkX4=``. Your app's settings should end up including the
-following under "Settings > Basic":
+application with Facebook's API and get an application ID. Take note of this
+application ID because it will be used as the ``appId`` option in your
+:any:`Exponent.Facebook.logInWithReadPermissionsAsync` call. Then follow these
+steps based on the platforms you're targetting:
 
-.. image:: img/facebook-app-settings.png
-  :width: 95%
-  :align: center
+* **The Exponent client app**
 
-You may have to switch the app from 'development mode' to 'public mode' before
-other users can log in.
+  * Add ``host.exp.Exponent`` as an iOS *Bundle ID*. Add
+    ``rRW++LUjmZZ+58EbN5DVhGAnkX4=`` as an Android *key hash*. Your app's settings
+    should end up including the following under "Settings > Basic":
+
+    .. image:: img/facebook-app-settings.png
+      :width: 95%
+      :align: center
+
+* **iOS standalone app**
+
+  * Add your app's Bundle ID as a *Bundle ID* in app's settings page pictured above.
+  * In your :ref:`exp.json <exp>`, add a field ``facebookScheme`` with
+    your Facebook login redirect URL scheme found `here
+    <https://developers.facebook.com/docs/facebook-login/ios>`_ under *4.
+    Configure Your info.plist*. It should look like ``"fb123456"``.
+
+* **Android standalone app**
+
+  * :ref:`Build your standalone app <building-standalone-apps>` for Android.
+  * Run ``keytool -list -printcert -jarfile YOUR_APK.apk | grep SHA1 | awk '{ print $2 }' | xxd -r -p | openssl base64`` (replace ``YOUR_APK.apk`` with the name of your APK file).
+  * Add that output as an additional key hash in your Facebook developer page pictured above.
+
+You may have to switch the app from 'development mode' to 'public mode' on the
+Facebook developer page before other users can log in.
+
+
+Usage
+-----
 
 .. function:: Exponent.Facebook.logInWithReadPermissionsAsync(appId, options)
 
@@ -52,13 +79,6 @@ other users can log in.
         * ``'system'`` -- Attempts to log in through the Facebook account
           currently signed in through the device Settings. This is only
           supported for standalone apps.
-
-        For the ``'native'``, ``'browser'`` and ``'system'`` options, which are
-        only supported on standalone apps, you will have to add a field
-        ``facebookScheme`` in your :ref:`exp.json <exp>` with your Facebook login
-        redirect URL scheme found `here
-        <https://developers.facebook.com/docs/facebook-login/ios>`_ under "4.
-        Configure Your info.plist." It should look like ``"fb123456"``.
 
    :returns:
       If the user or Facebook cancelled the login, returns ``{ type: 'cancel' }``.
@@ -94,11 +114,3 @@ other users can log in.
       <https://facebook.github.io/react-native/docs/network.html#fetch>`_ to
       query Facebook's `Graph API
       <https://developers.facebook.com/docs/graph-api>`_.
-
-
-Deploying to a standalone app on Android
-""""""""""""""""""""""""""""""""""""""""
-
-1. Build the standalone app
-2. Run ``keytool -list -printcert -jarfile growler.apk | grep SHA1 | awk '{ print $2 }' | xxd -r -p | openssl base64`` (where ``growler.apk`` is the name of the apk produced in step 1).
-3. Take the output from that and add it to the ``Key Hashes`` option in your Facebook developer app page, under Basic Settings. Save and you're done.
