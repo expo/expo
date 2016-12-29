@@ -150,7 +150,7 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
 - (void)_onTapReloadKernel
 {
   RCTBridge *kernelBridge = [[EXKernel sharedInstance].bridgeRegistry kernelBridge];
-  [kernelBridge requestReload];
+  [kernelBridge reload];
   [self dismissViewControllerAnimated:YES completion:nil];
 }
 
