@@ -16,10 +16,10 @@
 #import "EXSegment.h"
 #import "EXUtil.h"
 
-#import "RCTAssert.h"
+#import <React/RCTAssert.h>
 #import "RCTDevMenu+Device.h"
-#import "RCTLog.h"
-#import "RCTUtils.h"
+#import <React/RCTLog.h>
+#import <React/RCTUtils.h>
 
 #import <objc/message.h>
 
