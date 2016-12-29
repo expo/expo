@@ -2,7 +2,7 @@
 
 #import "EXLocationRequester.h"
 
-#import "RCTUtils.h"
+#import <React/RCTUtils.h>
 
 #import <CoreLocation/CLLocationManager.h>
 #import <CoreLocation/CLLocationManagerDelegate.h>

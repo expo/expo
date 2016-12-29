@@ -7,7 +7,7 @@
  */
 
 #import "RNSVGEllipse.h"
-#import "RCTLog.h"
+#import <React/RCTLog.h>
 
 @implementation RNSVGEllipse
 

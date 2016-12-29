@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "RCTDevMenu+Device.h"
-#import "RCTUtils.h"
+#import <React/RCTUtils.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

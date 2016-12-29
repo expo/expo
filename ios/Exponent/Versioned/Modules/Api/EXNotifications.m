@@ -2,8 +2,8 @@
 
 #import "EXNotifications.h"
 #import "EXUnversioned.h"
-#import "RCTUtils.h"
-#import "RCTConvert.h"
+#import <React/RCTUtils.h>
+#import <React/RCTConvert.h>
 
 @implementation RCTConvert (NSCalendarUnit)
 

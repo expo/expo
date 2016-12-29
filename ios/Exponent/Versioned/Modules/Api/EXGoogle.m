@@ -5,7 +5,7 @@
 #import <GoogleSignIn/GoogleSignIn.h>
 #import <AppAuth.h>
 
-#import "RCTUtils.h"
+#import <React/RCTUtils.h>
 #import "EXOAuthViewController.h"
 #import "EXUnversioned.h"
 

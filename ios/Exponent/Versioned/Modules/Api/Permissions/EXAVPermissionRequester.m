@@ -1,7 +1,7 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import "EXAVPermissionRequester.h"
-#import "RCTUtils.h"
+#import <React/RCTUtils.h>
 
 #import <AVFoundation/AVFoundation.h>
 

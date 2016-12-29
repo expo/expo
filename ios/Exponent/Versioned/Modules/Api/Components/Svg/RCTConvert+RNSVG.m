@@ -11,10 +11,10 @@
 #import "RNSVGBaseBrush.h"
 #import "RNSVGPattern.h"
 #import "RNSVGSolidColorBrush.h"
-#import "RCTLog.h"
+#import <React/RCTLog.h>
 #import "RNSVGCGFCRule.h"
 #import "RNSVGVBMOS.h"
-#import "RCTFont.h"
+#import <React/RCTFont.h>
 
 @implementation RCTConvert (RNSVG)
 

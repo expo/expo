@@ -7,7 +7,7 @@
  */
 
 #import "RNSVGCircle.h"
-#import "RCTLog.h"
+#import <React/RCTLog.h>
 
 @implementation RNSVGCircle
 

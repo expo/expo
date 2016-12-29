@@ -2,7 +2,7 @@
 
 #import "EXReactAppManager.h"
 
-#import "RCTLog.h"
+#import <React/RCTLog.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

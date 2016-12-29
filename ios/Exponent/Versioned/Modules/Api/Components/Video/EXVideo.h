@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "RCTView.h"
-#import "RCTBridge.h"
+#import <React/RCTView.h>
+#import <React/RCTBridge.h>
 #import <AVFoundation/AVFoundation.h>
 #import <AVKit/AVKit.h>
 #import "UIView+FindUIViewController.h"

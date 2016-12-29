@@ -3,7 +3,7 @@
 #import "EXRemoteNotificationRequester.h"
 #import "EXUnversioned.h"
 
-#import "RCTUtils.h"
+#import <React/RCTUtils.h>
 
 @interface EXRemoteNotificationRequester ()
 

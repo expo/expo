@@ -2,8 +2,8 @@
 
 #import "EXGyroscope.h"
 #import "EXUnversioned.h"
-#import "RCTEventEmitter.h"
-#import "RCTEventDispatcher.h"
+#import <React/RCTEventEmitter.h>
+#import <React/RCTEventDispatcher.h>
 
 @interface EXGyroscope ()
 

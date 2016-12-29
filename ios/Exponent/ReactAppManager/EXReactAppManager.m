@@ -10,9 +10,9 @@
 #import "EXVersionManager.h"
 #import "EXVersions.h"
 
-#import "RCTBridge.h"
-#import "RCTDevLoadingView.h"
-#import "RCTRootView.h"
+#import <React/RCTBridge.h>
+#import <React/RCTDevLoadingView.h>
+#import <React/RCTRootView.h>
 
 NSTimeInterval const kEXJavaScriptResourceLongerTimeout = 120;
 

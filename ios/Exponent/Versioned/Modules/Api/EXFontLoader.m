@@ -9,9 +9,9 @@
 
 #import <objc/runtime.h>
 
-#import "RCTConvert.h"
-#import "RCTFont.h"
-#import "RCTUtils.h"
+#import <React/RCTConvert.h>
+#import <React/RCTFont.h>
+#import <React/RCTUtils.h>
 
 static NSMutableDictionary *EXFonts = nil;
 

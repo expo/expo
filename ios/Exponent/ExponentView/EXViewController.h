@@ -3,7 +3,7 @@
 #import "EXErrorView.h"
 #import "EXKernelReactAppManager.h"
 
-#import "RCTBridge.h"
+#import <React/RCTBridge.h>
 
 @import UIKit;
 

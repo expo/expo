@@ -3,7 +3,7 @@
 #include <OpenGLES/ES2/gl.h>
 #include <OpenGLES/ES2/glext.h>
 
-#import "RCTJSCExecutor.h"
+#import <React/RCTJSCExecutor.h>
 
 #import "EXUnversioned.h"
 #import <EXGL.h>

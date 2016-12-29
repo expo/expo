@@ -2,7 +2,7 @@
 
 #import "EXVideoManager.h"
 #import "EXVideo.h"
-#import "RCTBridge.h"
+#import <React/RCTBridge.h>
 #import <AVFoundation/AVFoundation.h>
 
 @implementation EXVideoManager

@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "RCTBridge.h"
+#import <React/RCTBridge.h>
 
 @import UIKit;
 

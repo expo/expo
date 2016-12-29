@@ -7,7 +7,7 @@
 #import "EXKernelReactAppManager.h"
 #import "EXKernelUtil.h"
 
-#import "RCTBridge.h"
+#import <React/RCTBridge.h>
 
 NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
 

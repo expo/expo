@@ -4,7 +4,7 @@
 #import "EXVersions.h"
 #import "EXKernelUtil.h"
 
-#import "RCTUtils.h"
+#import <React/RCTUtils.h>
 
 @import UIKit;
 

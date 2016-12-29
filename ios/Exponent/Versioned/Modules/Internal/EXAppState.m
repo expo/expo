@@ -2,10 +2,10 @@
 
 #import "EXAppState.h"
 
-#import "RCTAssert.h"
-#import "RCTBridge.h"
-#import "RCTEventDispatcher.h"
-#import "RCTUtils.h"
+#import <React/RCTAssert.h>
+#import <React/RCTBridge.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTUtils.h>
 
 @interface EXAppState ()
 

@@ -2,7 +2,7 @@
 
 #import "EXKernelBridgeRegistry.h"
 
-#import "RCTBridge.h"
+#import <React/RCTBridge.h>
 #import "EXFrame.h"
 
 @interface EXKernelBridgeRegistry ()

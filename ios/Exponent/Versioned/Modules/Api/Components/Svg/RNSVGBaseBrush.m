@@ -8,7 +8,7 @@
 
 #import "RNSVGBaseBrush.h"
 #import "RCTConvert+RNSVG.h"
-#import "RCTLog.h"
+#import <React/RCTLog.h>
 
 @implementation RNSVGBaseBrush
 

@@ -2,7 +2,7 @@
 
 #import "EXFacebook.h"
 
-#import "RCTUtils.h"
+#import <React/RCTUtils.h>
 #import "FBSDKCoreKit/FBSDKCoreKit.h"
 #import "FBSDKLoginKit/FBSDKLoginKit.h"
 #import "../Private/FBSDKCoreKit/FBSDKInternalUtility.h"

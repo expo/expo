@@ -8,8 +8,8 @@
 #import "EXKernel.h"
 #import "EXKernelUtil.h"
 
-#import "RCTDevLoadingView.h"
-#import "RCTRootView.h"
+#import <React/RCTDevLoadingView.h>
+#import <React/RCTRootView.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

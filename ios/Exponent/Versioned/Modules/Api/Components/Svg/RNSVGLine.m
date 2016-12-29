@@ -7,7 +7,7 @@
  */
 
 #import "RNSVGLine.h"
-#import "RCTLog.h"
+#import <React/RCTLog.h>
 
 @implementation RNSVGLine
 

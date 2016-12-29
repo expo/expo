@@ -13,10 +13,10 @@
 #import "EXVersions.h"
 #import "EXViewController.h"
 
-#import "RCTBridge+Private.h"
-#import "RCTEventDispatcher.h"
-#import "RCTModuleData.h"
-#import "RCTUtils.h"
+#import <React/RCTBridge+Private.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTModuleData.h>
+#import <React/RCTUtils.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

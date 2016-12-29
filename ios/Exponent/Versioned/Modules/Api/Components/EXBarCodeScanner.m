@@ -1,11 +1,11 @@
-#import "RCTBridge.h"
+#import <React/RCTBridge.h>
 #import "EXBarCodeScanner.h"
 #import "EXBarCodeScannerManager.h"
-#import "RCTEventDispatcher.h"
-#import "RCTLog.h"
-#import "RCTUtils.h"
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTLog.h>
+#import <React/RCTUtils.h>
 
-#import "UIView+React.h"
+#import <React/UIView+React.h>
 
 #import <AVFoundation/AVFoundation.h>
 

@@ -3,7 +3,7 @@
 #import "EXFrameManager.h"
 #import "EXFrame.h"
 
-#import "RCTUIManager.h"
+#import <React/RCTUIManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

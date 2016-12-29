@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "RCTView.h"
-#import "RCTEventDispatcher.h"
+#import <React/RCTView.h>
+#import <React/RCTEventDispatcher.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

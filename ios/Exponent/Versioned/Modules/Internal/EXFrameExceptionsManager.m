@@ -2,8 +2,8 @@
 
 #import "EXFrameExceptionsManager.h"
 
-#import "RCTBridge.h"
-#import "RCTRedBox.h"
+#import <React/RCTBridge.h>
+#import <React/RCTRedBox.h>
 
 @implementation EXFrameExceptionsManager {
   __weak id<RCTExceptionsManagerDelegate> _delegate;

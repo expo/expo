@@ -2,7 +2,7 @@
 
 #import "EXLinearGradientManager.h"
 #import "EXLinearGradient.h"
-#import "RCTBridge.h"
+#import <React/RCTBridge.h>
 
 @implementation EXLinearGradientManager
 

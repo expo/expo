@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "RCTView.h"
-#import "RCTViewManager.h"
+#import <React/RCTView.h>
+#import <React/RCTViewManager.h>
 
 @interface EXAppLoadingManager : RCTViewManager
 

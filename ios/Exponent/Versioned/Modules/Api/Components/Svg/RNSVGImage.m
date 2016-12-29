@@ -7,9 +7,9 @@
  */
 
 #import "RNSVGImage.h"
-#import "RCTImageSource.h"
+#import <React/RCTImageSource.h>
 #import "RCTConvert+RNSVG.h"
-#import "RCTLog.h"
+#import <React/RCTLog.h>
 #import "RNSVGViewBox.h"
 
 @implementation RNSVGImage

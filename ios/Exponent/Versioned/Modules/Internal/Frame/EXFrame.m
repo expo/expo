@@ -4,9 +4,9 @@
 #import "EXFrame.h"
 #import "EXUnversioned.h"
 
-#import "RCTBridge.h"
-#import "RCTExceptionsManager.h"
-#import "UIView+React.h"
+#import <React/RCTBridge.h>
+#import <React/RCTExceptionsManager.h>
+#import <React/UIView+React.h>
 
 #define EX_FRAME_RELOAD_DEBOUNCE_SEC 0.05
 

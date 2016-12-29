@@ -10,7 +10,7 @@
 #import "RCTConvert+RNSVG.h"
 #import "RNSVGCGFloatArray.h"
 #import "RNSVGTextFrame.h"
-#import "RCTConvert.h"
+#import <React/RCTConvert.h>
 #import "RNSVGCGFCRule.h"
 
 @class RNSVGBrush;

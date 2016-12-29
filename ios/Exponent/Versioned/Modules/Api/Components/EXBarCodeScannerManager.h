@@ -1,4 +1,4 @@
-#import "RCTViewManager.h"
+#import <React/RCTViewManager.h>
 #import <AVFoundation/AVFoundation.h>
 
 @class EXBarCodeScanner;

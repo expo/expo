@@ -1,6 +1,6 @@
 #import "EXImagePicker.h"
-#import "RCTConvert.h"
-#import "RCTUtils.h"
+#import <React/RCTConvert.h>
+#import <React/RCTUtils.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 
 @import MobileCoreServices;

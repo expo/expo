@@ -9,13 +9,13 @@
 
 #import "AIRMapCircleManager.h"
 
-#import "RCTBridge.h"
-#import "RCTConvert.h"
-#import "RCTConvert+CoreLocation.h"
-#import "RCTEventDispatcher.h"
-#import "UIView+React.h"
+#import <React/RCTBridge.h>
+#import <React/RCTConvert.h>
+#import <React/RCTConvert+CoreLocation.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/UIView+React.h>
 #import "AIRMapMarker.h"
-#import "RCTViewManager.h"
+#import <React/RCTViewManager.h>
 #import "AIRMapCircle.h"
 
 @interface AIRMapCircleManager()

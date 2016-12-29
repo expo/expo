@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 #import "RNSVGUse.h"
-#import "RCTLog.h"
+#import <React/RCTLog.h>
 
 @implementation RNSVGUse
 

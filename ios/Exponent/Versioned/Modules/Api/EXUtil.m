@@ -1,7 +1,7 @@
 #import "EXUtil.h"
-#import "RCTUIManager.h"
-#import "RCTBridge.h"
-#import "RCTUtils.h"
+#import <React/RCTUIManager.h>
+#import <React/RCTBridge.h>
+#import <React/RCTUtils.h>
 
 @implementation EXUtil
 

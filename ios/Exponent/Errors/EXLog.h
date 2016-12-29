@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "RCTLog.h"
+#import <React/RCTLog.h>
 
 extern RCTLogFunction EXDefaultRCTLogFunction;
 

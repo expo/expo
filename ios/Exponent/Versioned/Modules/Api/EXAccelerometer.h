@@ -1,6 +1,6 @@
 #import <CoreMotion/CoreMotion.h>
-#import "RCTEventEmitter.h"
-#import "RCTBridge.h"
+#import <React/RCTEventEmitter.h>
+#import <React/RCTBridge.h>
 
 @interface EXAccelerometer : RCTEventEmitter
 

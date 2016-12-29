@@ -9,7 +9,7 @@
 #import "RNSVGCircleManager.h"
 
 #import "RNSVGCircle.h"
-#import "RCTConvert+RNSVG.h"
+#import "RCTConvert+MoreMapKit.h"
 
 @implementation RNSVGCircleManager
 

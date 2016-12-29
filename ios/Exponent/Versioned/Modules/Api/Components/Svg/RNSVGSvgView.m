@@ -9,7 +9,7 @@
 #import "RNSVGSvgView.h"
 
 #import "RNSVGNode.h"
-#import "RCTLog.h"
+#import <React/RCTLog.h>
 
 @implementation RNSVGSvgView
 {

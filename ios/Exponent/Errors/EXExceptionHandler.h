@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "RCTExceptionsManager.h"
+#import <React/RCTExceptionsManager.h>
 
 @interface EXExceptionHandler : NSObject <RCTExceptionsManagerDelegate>
 

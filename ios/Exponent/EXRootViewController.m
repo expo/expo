@@ -4,7 +4,7 @@
 
 #import "EXRootViewController.h"
 #import "EXShellManager.h"
-#import "RCTRootView.h"
+#import <React/RCTRootView.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTViewManager.h"
+#import <React/RCTViewManager.h>
 
 @interface RNSVGDefsManager : RCTViewManager
 

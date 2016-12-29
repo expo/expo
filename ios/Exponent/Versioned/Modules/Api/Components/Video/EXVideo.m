@@ -1,14 +1,14 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "RCTConvert.h"
+#import <React/RCTConvert.h>
 #import "EXUnversioned.h"
 #import "EXVideo.h"
 
-#import "RCTAssert.h"
-#import "RCTBridgeModule.h"
-#import "RCTEventDispatcher.h"
-#import "RCTUtils.h"
-#import "UIView+React.h"
+#import <React/RCTAssert.h>
+#import <React/RCTBridgeModule.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTUtils.h>
+#import <React/UIView+React.h>
 
 static NSString *const EXVideoStatusKeyPath = @"status";
 static NSString *const EXVideoPlaybackLikelyToKeepUpKeyPath = @"playbackLikelyToKeepUp";

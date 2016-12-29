@@ -5,9 +5,9 @@
 #import "EXViewController.h"
 
 #import <Crashlytics/Crashlytics.h>
-#import "RCTAssert.h"
-#import "RCTBridge.h"
-#import "RCTRedBox.h"
+#import <React/RCTAssert.h>
+#import <React/RCTBridge.h>
+#import <React/RCTRedBox.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

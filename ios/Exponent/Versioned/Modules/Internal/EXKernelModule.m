@@ -3,7 +3,7 @@
 #import "EXKernelModule.h"
 #import "EXUnversioned.h"
 
-#import "RCTEventDispatcher.h"
+#import <React/RCTEventDispatcher.h>
 
 @interface EXKernelModule ()
 

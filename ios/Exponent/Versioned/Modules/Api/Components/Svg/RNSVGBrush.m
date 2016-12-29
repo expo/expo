@@ -8,7 +8,7 @@
 
 #import "RNSVGBrush.h"
 
-#import "RCTDefines.h"
+#import <React/RCTDefines.h>
 
 @implementation RNSVGBrush
 

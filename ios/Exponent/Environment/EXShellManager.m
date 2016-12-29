@@ -2,7 +2,7 @@
 
 #import "EXAnalytics.h"
 #import "EXShellManager.h"
-#import "RCTUtils.h"
+#import <React/RCTUtils.h>
 
 NSString * const kEXShellBundleResourceName = @"shell-app";
 NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
