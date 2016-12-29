@@ -11,7 +11,8 @@ Pod::Spec.new do |s|
   s.license = package['license']
   s.author = "Facebook"
   s.requires_arc = true
-  s.platform = :ios, "7.0"
+  s.platform = :ios, "8.0"
+  s.header_dir = 'React'
   s.source = { :git => "https://github.com/exponent/react-native.git" }
   s.source_files = "Libraries/RCTTest/**/*.{h,m}"
   s.preserve_paths = "Libraries/RCTTest/**/*.js"
