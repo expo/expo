@@ -124,7 +124,6 @@ class ExponentApp extends React.Component {
 
     return (
       <View style={styles.container} ref={component => this._rootView = component}>
-        {this._renderTitleBar()}
         <ScrollView
           style={styles.scrollView}
           contentContainerStyle={styles.scrollViewContentContainer}
@@ -138,6 +137,7 @@ class ExponentApp extends React.Component {
         </ScrollView>
         {this._renderInputAccessory()}
         {camera}
+        {this._renderTitleBar()}
       </View>
     );
   }
@@ -196,7 +196,7 @@ class ExponentApp extends React.Component {
         <View style={styles.titleBar}>
           <TouchableNativeFeedbackSafe
             onPress={this._closeCamera}
-            hitSlop={{ top: 0, bottom: 0, left: 0, right: 30 }}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 30 }}
             style={{}}>
             <Image
               style={{ height: 28, width: 28, tintColor: '#fff'}}
@@ -296,11 +296,8 @@ class ExponentApp extends React.Component {
     return (
       <View style={styles.qrButtonContainer}>
         <TouchableNativeFeedbackSafe onPress={this._onQrPress} style={styles.qrButton}>
-          <Text>
-            Scan QR
-          </Text>
           <Image
-            style={{width: 30, height: 30, marginLeft: 8}}
+            style={{width: 30, height: 30}}
             source={{uri: 'https://s3.amazonaws.com/exp-us-standard/qr-code-exponent-is-pretty-cool.png'}}
           />
         </TouchableNativeFeedbackSafe>
@@ -349,7 +346,7 @@ class ExponentApp extends React.Component {
       <ExperienceCollection
         experiences={experiences}
         headingLabel="Recent"
-        headingStyle={{marginTop: 0}}
+        headingStyle={{marginBottom: 0, paddingTop: 15}}
         actionLabel={actionLabel}
         onPressItem={(experience) => this._onPressLink(experience.url)}
         onPressHeading={this._onPressRecentHeading}
@@ -362,7 +359,7 @@ class ExponentApp extends React.Component {
       <ExperienceCollection
         experiences={this._getFeaturedExperiences()}
         headingLabel="Featured"
-        headingStyle={{marginBottom: 0}}
+        headingStyle={{marginBottom: 0, paddingTop: 15}}
         onPressItem={(experience) => this._onPressLink(experience.url)}
       />
     );
@@ -417,6 +414,11 @@ let styles = StyleSheet.create({
     paddingLeft: 15,
     flexDirection: 'row',
     backgroundColor: ExColors.exponentBlue,
+    height: 80,
+    top: 0,
+    left: 0,
+    right: 0,
+    position: 'absolute',
   },
   titleBarLogo: {
     width: 19.5,
@@ -431,6 +433,7 @@ let styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+    marginTop: 80,
   },
   scrollViewContentContainer: {
     backgroundColor: '#fff',
