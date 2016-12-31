@@ -13,11 +13,10 @@
 
 - (void)renderTo:(CGContextRef)context
 {
-    for (RNSVGNode *node in self.subviews) {
-        if ([node isKindOfClass:[RNSVGNode class]]) {
-            [node saveDefinition];
-        }
-    }
+    [self traverseSubviews:^(RNSVGNode *node) {
+        [node saveDefinition];
+        return YES;
+    }];
 }
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event

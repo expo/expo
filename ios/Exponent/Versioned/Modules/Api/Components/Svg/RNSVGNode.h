@@ -78,4 +78,6 @@
 
 - (void)endTransparencyLayer:(CGContextRef)context;
 
+- (void)traverseSubviews:(BOOL (^)(RNSVGNode *node))block;
+
 @end

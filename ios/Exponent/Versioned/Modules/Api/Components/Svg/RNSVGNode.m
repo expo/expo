@@ -191,6 +191,17 @@
     // abstract
 }
 
+- (void)traverseSubviews:(BOOL (^)(RNSVGNode *node))block
+{
+    for (RNSVGNode *node in self.subviews) {
+        if ([node isKindOfClass:[RNSVGNode class]]) {
+            if (!block(node)) {
+                break;
+            }
+        }
+    }
+}
+
 - (void)resetProperties
 {
     // abstract

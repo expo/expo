@@ -102,6 +102,23 @@ RCT_ENUM_CONVERTER(RNSVGVBMOS, (@{
     NSDictionary *fontDict = dict[@"font"];
     NSString *fontFamily = fontDict[@"fontFamily"];
     
+    BOOL fontFound = NO;
+    NSArray *supportedFontFamilyNames = [UIFont familyNames];
+
+    if ([supportedFontFamilyNames containsObject:fontFamily]) {
+      fontFound = YES;
+    } else {
+      for (NSString *fontFamilyName in supportedFontFamilyNames) {
+        if ([[UIFont fontNamesForFamilyName: fontFamilyName] containsObject:fontFamily]) {
+          fontFound = YES;
+          break;
+        }
+      }
+    }
+
+    fontFamily = fontFound ? fontFamily : nil;
+
+
     CTFontRef font = (__bridge CTFontRef)[RCTFont updateFont:nil withFamily:fontFamily size:fontDict[@"fontSize"] weight:fontDict[@"fontWeight"] style:fontDict[@"fontStyle"]
                                                       variant:nil scaleMultiplier:1.0];
     if (!font) {
