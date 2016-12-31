@@ -104,3 +104,10 @@ navigation stack. To enable, just shake your device (or hit `Ctrl-Cmd-Z` on a Ma
 Reloading" item. Whereas Live Reload will reload the entire JS context, Hot
 Module Reloading will make your debug cycles even faster. However, make sure
 you don't have both options turned on, as that is unsupported behavior.
+
+Other Debugging Tips
+====================
+
+Dotan Nahum outlined in his `"Debugging React Native Applications" Medium post <https://medium.com/reactnativeacademy/debugging-react-native-applications-6bff3f28c375>`_ other
+useful tools such as spying on bridge messages and JSEventLoopWatchdog.
+
