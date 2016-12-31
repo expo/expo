@@ -34,7 +34,7 @@
     "react": "~15.4.1",
     "react-apple-easing": "0.0.2",
     "react-mixin": "^3.0.4",
-    "react-native": "file:../../react-native-lab/react-native",
+    "react-native": "exponent/react-native#exp-latest",
     "react-native-button": "^1.7.1",
     "react-native-scrollable-mixin": "1.0.1",
     "react-native-url-handler": "^0.4.3",
