@@ -9,17 +9,18 @@
 
 package versioned.host.exp.exponent.modules.api.components.svg;
 
-import android.view.ViewGroup;
+import android.view.View;
 
+import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.ViewGroupManager;
+import com.facebook.react.uimanager.ViewManager;
 
 /**
  * ViewManager for all shadowed RNSVG views: Group, Path and Text. Since these never get rendered
  * into native views and don't need any logic (all the logic is in {@link RNSVGSvgView}), this
  * "stubbed" ViewManager is used for all of them.
  */
-public class RNSVGRenderableViewManager extends ViewGroupManager<ViewGroup> {
+public class RNSVGRenderableViewManager extends ViewManager<View, LayoutShadowNode> {
 
     /* package */ static final String CLASS_GROUP = "RNSVGGroup";
     /* package */ static final String CLASS_PATH = "RNSVGPath";
@@ -38,7 +39,6 @@ public class RNSVGRenderableViewManager extends ViewGroupManager<ViewGroup> {
 
     private final String mClassName;
 
-    protected RNSVGVirtualNode mVirtualNode;
 
     public static RNSVGRenderableViewManager createRNSVGGroupViewManager() {
         return new RNSVGRenderableViewManager(CLASS_GROUP);
@@ -106,60 +106,43 @@ public class RNSVGRenderableViewManager extends ViewGroupManager<ViewGroup> {
     }
 
     @Override
-    public RNSVGVirtualNode createShadowNodeInstance() {
+    public LayoutShadowNode createShadowNodeInstance() {
         switch (mClassName) {
             case CLASS_GROUP:
-                mVirtualNode = new RNSVGGroupShadowNode();
-                break;
+                return new RNSVGGroupShadowNode();
             case CLASS_PATH:
-                mVirtualNode = new RNSVGPathShadowNode();
-                break;
+                return new RNSVGPathShadowNode();
             case CLASS_CIRCLE:
-                mVirtualNode = new RNSVGCircleShadowNode();
-                break;
+                return new RNSVGCircleShadowNode();
             case CLASS_ELLIPSE:
-                mVirtualNode = new RNSVGEllipseShadowNode();
-                break;
+                return new RNSVGEllipseShadowNode();
             case CLASS_LINE:
-                mVirtualNode = new RNSVGLineShadowNode();
-                break;
+                return new RNSVGLineShadowNode();
             case CLASS_RECT:
-                mVirtualNode = new RNSVGRectShadowNode();
-                break;
+                return new RNSVGRectShadowNode();
             case CLASS_TEXT:
-                mVirtualNode = new RNSVGTextShadowNode();
-                break;
+                return new RNSVGTextShadowNode();
             case CLASS_IMAGE:
-                mVirtualNode = new RNSVGImageShadowNode();
-                break;
+                return new RNSVGImageShadowNode();
             case CLASS_CLIP_PATH:
-                mVirtualNode = new RNSVGClipPathShadowNode();
-                break;
+                return new RNSVGClipPathShadowNode();
             case CLASS_DEFS:
-                mVirtualNode = new RNSVGDefsShadowNode();
-                break;
+                return new RNSVGDefsShadowNode();
             case CLASS_USE:
-                mVirtualNode = new RNSVGUseShadowNode();
-                break;
+                return new RNSVGUseShadowNode();
             case CLASS_VIEW_BOX:
-                mVirtualNode = new RNSVGViewBoxShadowNode();
-                break;
+                return new RNSVGViewBoxShadowNode();
             case CLASS_LINEAR_GRADIENT:
-                mVirtualNode = new RNSVGLinearGradientShadowNode();
-                break;
+                return new RNSVGLinearGradientShadowNode();
             case CLASS_RADIAL_GRADIENT:
-                mVirtualNode = new RNSVGRadialGradientShadowNode();
-                break;
+                return new RNSVGRadialGradientShadowNode();
             default:
                 throw new IllegalStateException("Unexpected type " + mClassName);
         }
-
-        return mVirtualNode;
-
     }
 
     @Override
-    public Class<? extends RNSVGVirtualNode> getShadowNodeClass() {
+    public Class<? extends LayoutShadowNode> getShadowNodeClass() {
         switch (mClassName) {
             case CLASS_GROUP:
                 return RNSVGGroupShadowNode.class;
@@ -195,7 +178,12 @@ public class RNSVGRenderableViewManager extends ViewGroupManager<ViewGroup> {
     }
 
     @Override
-    protected ViewGroup createViewInstance(ThemedReactContext reactContext) {
-        return new RNSVGRenderableView(reactContext);
+    protected View createViewInstance(ThemedReactContext reactContext) {
+        throw new IllegalStateException("SVG elements does not map into a native view");
+    }
+
+    @Override
+    public void updateExtraData(View root, Object extraData) {
+        throw new IllegalStateException("SVG elements does not map into a native view");
     }
 }

@@ -22,9 +22,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 public class RNSVGCircleShadowNode extends RNSVGPathShadowNode {
 
     private String mCx;
-
     private String mCy;
-
     private String mR;
 
     @ReactProp(name = "cx")

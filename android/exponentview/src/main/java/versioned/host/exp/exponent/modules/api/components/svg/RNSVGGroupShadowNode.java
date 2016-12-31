@@ -14,8 +14,6 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.ReactShadowNode;
@@ -28,51 +26,50 @@ import javax.annotation.Nullable;
  */
 public class RNSVGGroupShadowNode extends RNSVGPathShadowNode {
 
-    public void draw(Canvas canvas, Paint paint, float opacity) {
-        RNSVGSvgViewShadowNode svg = getSvgShadowNode();
+    public void draw(final Canvas canvas, final Paint paint, final float opacity) {
+        final RNSVGSvgViewShadowNode svg = getSvgShadowNode();
+        final RNSVGVirtualNode self = this;
 
         if (opacity > MIN_OPACITY_FOR_DRAW) {
             int count = saveAndSetupCanvas(canvas);
             clip(canvas, paint);
-            for (int i = 0; i < getChildCount(); i++) {
-                if (!(getChildAt(i) instanceof RNSVGVirtualNode)) {
-                    continue;
+
+            traverseChildren(new NodeRunnable() {
+                public boolean run(RNSVGVirtualNode node) {
+                    node.setupDimensions(canvas);
+
+                    node.mergeProperties(self, mOwnedPropList, true);
+                    node.draw(canvas, paint, opacity * mOpacity);
+                    node.markUpdateSeen();
+
+                    if (node.isResponsible()) {
+                        svg.enableTouchEvents();
+                    }
+                    return true;
                 }
-
-                RNSVGVirtualNode child = (RNSVGVirtualNode) getChildAt(i);
-                child.setupDimensions(canvas);
-
-                child.mergeProperties(this, mOwnedPropList, true);
-                child.draw(canvas, paint, opacity * mOpacity);
-
-                if (child.isResponsible()) {
-                    svg.enableTouchEvents();
-                }
-            }
+            });
 
             restoreCanvas(canvas, count);
         }
     }
 
     @Override
-    protected Path getPath(Canvas canvas, Paint paint) {
-        Path path = new Path();
+    protected Path getPath(final Canvas canvas, final Paint paint) {
+        final Path path = new Path();
 
-        for (int i = 0; i < getChildCount(); i++) {
-            if (!(getChildAt(i) instanceof RNSVGVirtualNode)) {
-                continue;
+        traverseChildren(new NodeRunnable() {
+            public boolean run(RNSVGVirtualNode node) {
+                node.setupDimensions(canvas);
+                path.addPath(node.getPath(canvas, paint));
+                return true;
             }
+        });
 
-            RNSVGVirtualNode child = (RNSVGVirtualNode) getChildAt(i);
-            child.setupDimensions(canvas);
-            path.addPath(child.getPath(canvas, paint));
-        }
         return path;
     }
 
     @Override
-    public int hitTest(Point point, View view, @Nullable Matrix matrix) {
-        int viewTag = -1;
+    public int hitTest(final Point point, final @Nullable Matrix matrix) {
         Matrix combinedMatrix = new Matrix();
 
         if (matrix != null) {
@@ -89,19 +86,13 @@ public class RNSVGGroupShadowNode extends RNSVGPathShadowNode {
 
             RNSVGVirtualNode node = (RNSVGVirtualNode) child;
 
-            View childView = ((ViewGroup) view).getChildAt(i);
-            viewTag = node.hitTest(point, childView, combinedMatrix);
+            int viewTag = node.hitTest(point, combinedMatrix);
             if (viewTag != -1) {
-                return (node.isResponsible() || viewTag != childView.getId()) ? viewTag : view.getId();
+                return (node.isResponsible() || viewTag != child.getReactTag()) ? viewTag : getReactTag();
             }
         }
 
-        return viewTag;
-    }
-
-    @Override
-    public int hitTest(Point point, View view) {
-        return this.hitTest(point, view, null);
+        return -1;
     }
 
     protected void saveDefinition() {
@@ -109,36 +100,31 @@ public class RNSVGGroupShadowNode extends RNSVGPathShadowNode {
             getSvgShadowNode().defineTemplate(this, mName);
         }
 
-        for (int i = getChildCount() - 1; i >= 0; i--) {
-            if (!(getChildAt(i) instanceof RNSVGVirtualNode)) {
-                continue;
+        traverseChildren(new NodeRunnable() {
+            public boolean run(RNSVGVirtualNode node) {
+                node.saveDefinition();
+                return true;
             }
-
-            ((RNSVGVirtualNode) getChildAt(i)).saveDefinition();
-        }
+        });
     }
 
     @Override
-    public void mergeProperties(RNSVGVirtualNode target, ReadableArray mergeList) {
-        if (mergeList.size() != 0) {
-            for (int i = getChildCount() - 1; i >= 0; i--) {
-                if (!(getChildAt(i) instanceof RNSVGVirtualNode)) {
-                    continue;
-                }
-
-                ((RNSVGVirtualNode) getChildAt(i)).mergeProperties(target, mergeList);
+    public void mergeProperties(final RNSVGVirtualNode target, final ReadableArray mergeList) {
+        traverseChildren(new NodeRunnable() {
+            public boolean run(RNSVGVirtualNode node) {
+                node.mergeProperties(target, mergeList);
+                return true;
             }
-        }
+        });
     }
 
     @Override
     public void resetProperties() {
-        for (int i = getChildCount() - 1; i >= 0; i--) {
-            if (!(getChildAt(i) instanceof RNSVGVirtualNode)) {
-                continue;
+        traverseChildren(new NodeRunnable() {
+            public boolean run(RNSVGVirtualNode node) {
+                node.resetProperties();
+                return true;
             }
-
-            ((RNSVGVirtualNode) getChildAt(i)).resetProperties();
-        }
+        });
     }
 }

@@ -21,7 +21,6 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.text.TextUtils;
-import android.view.View;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -53,6 +52,7 @@ public class RNSVGTextShadowNode extends RNSVGPathShadowNode {
     @ReactProp(name = "frame")
     public void setFrame(@Nullable ReadableMap frame) {
         mFrame = frame;
+        markUpdated();
     }
 
     @ReactProp(name = "alignment", defaultInt = TEXT_ALIGNMENT_LEFT)
@@ -193,7 +193,7 @@ public class RNSVGTextShadowNode extends RNSVGPathShadowNode {
     }
 
     @Override
-    public int hitTest(Point point, View view, @Nullable Matrix matrix) {
+    public int hitTest(Point point, @Nullable Matrix matrix) {
         Bitmap bitmap = Bitmap.createBitmap(
             mCanvasWidth,
             mCanvasHeight,
@@ -224,7 +224,7 @@ public class RNSVGTextShadowNode extends RNSVGPathShadowNode {
         canvas.setBitmap(bitmap);
         try {
             if (bitmap.getPixel(point.x, point.y) != 0) {
-                return view.getId();
+                return getReactTag();
             }
         } catch (Exception e) {
             return -1;
@@ -232,11 +232,5 @@ public class RNSVGTextShadowNode extends RNSVGPathShadowNode {
             bitmap.recycle();
         }
         return -1;
-    }
-
-
-    @Override
-    public int hitTest(Point point, View view) {
-        return this.hitTest(point, view, null);
     }
 }

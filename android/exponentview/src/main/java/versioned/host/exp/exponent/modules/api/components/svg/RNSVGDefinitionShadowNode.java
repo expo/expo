@@ -14,7 +14,6 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
-import android.view.View;
 
 import com.facebook.react.bridge.ReadableArray;
 
@@ -36,12 +35,7 @@ public class RNSVGDefinitionShadowNode extends RNSVGVirtualNode {
     }
 
     @Override
-    public int hitTest(Point point, View view, Matrix matrix) {
-        return -1;
-    }
-
-    @Override
-    public int hitTest(Point point, View view) {
+    public int hitTest(Point point, Matrix matrix) {
         return -1;
     }
 

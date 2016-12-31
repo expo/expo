@@ -14,12 +14,14 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.util.Base64;
-import android.view.ViewGroup;
-
-import com.facebook.imagepipeline.request.ImageRequest;
+import android.util.SparseArray;
+import android.graphics.Color;
+import android.view.Surface;
+import android.graphics.PorterDuff;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 
+import javax.annotation.Nullable;
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,50 +31,55 @@ import java.util.Map;
  */
 public class RNSVGSvgViewShadowNode extends LayoutShadowNode {
 
+    private static final SparseArray<RNSVGSvgViewShadowNode> mTagToShadowNode = new SparseArray<>();
+
+    public static RNSVGSvgViewShadowNode getShadowNodeByTag(int tag) {
+        return mTagToShadowNode.get(tag);
+    }
+
     private boolean mResponsible = false;
-    private RNSVGSvgView mSvgView;
     private static final Map<String, RNSVGVirtualNode> mDefinedClipPaths = new HashMap<>();
     private static final Map<String, RNSVGVirtualNode> mDefinedTemplates = new HashMap<>();
     private static final Map<String, PropHelper.RNSVGBrush> mDefinedBrushes = new HashMap<>();
 
     @Override
+    public boolean isVirtual() {
+        return false;
+    }
+
+    @Override
+    public boolean isVirtualAnchor() {
+        return true;
+    }
+
+    @Override
     public void onCollectExtraUpdates(UIViewOperationQueue uiUpdater) {
         super.onCollectExtraUpdates(uiUpdater);
         uiUpdater.enqueueUpdateExtraData(getReactTag(), drawOutput());
+
     }
 
-    private Object drawOutput() {
-        Bitmap bitmap = Bitmap.createBitmap(
-            (int) getLayoutWidth(),
-            (int) getLayoutHeight(),
-            Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        Paint paint = new Paint();
+    @Override
+    public void setReactTag(int reactTag) {
+        super.setReactTag(reactTag);
+        mTagToShadowNode.put(getReactTag(), this);
+    }
 
-        drawChildren(canvas, paint);
+    public Object drawOutput() {
+        Bitmap bitmap = Bitmap.createBitmap(
+                (int) getLayoutWidth(),
+                (int) getLayoutHeight(),
+                Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(bitmap);
+        drawChildren(canvas);
         return bitmap;
     }
 
-    public String getBase64() {
-        Bitmap bitmap = (Bitmap)drawOutput();
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        bitmap.recycle();
-        byte[] bitmapBytes = stream.toByteArray();
-        return Base64.encodeToString(bitmapBytes, Base64.DEFAULT);
-    }
+    private void drawChildren(Canvas canvas) {
+        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+        Paint paint = new Paint();
 
-    /**
-     * Draw all of the child nodes of this root node
-     *
-     * This method is synchronized since
-     * {@link com.horcrux.svg.RNSVGImageShadowNode#loadBitmap(ImageRequest, Canvas, Paint)} calls it
-     * asynchronously after images have loaded and are ready to be drawn.
-     *
-     * @param canvas
-     * @param paint
-     */
-    public synchronized void drawChildren(Canvas canvas, Paint paint) {
         for (int i = 0; i < getChildCount(); i++) {
             if (!(getChildAt(i) instanceof RNSVGVirtualNode)) {
                 continue;
@@ -82,11 +89,26 @@ public class RNSVGSvgViewShadowNode extends LayoutShadowNode {
             child.setupDimensions(canvas);
             child.saveDefinition();
             child.draw(canvas, paint, 1f);
+            child.markUpdateSeen();
 
             if (child.isResponsible() && !mResponsible) {
                 mResponsible = true;
             }
         }
+    }
+
+    public String getBase64() {
+        Bitmap bitmap = Bitmap.createBitmap(
+            (int) getLayoutWidth(),
+            (int) getLayoutHeight(),
+            Bitmap.Config.ARGB_8888);
+
+        drawChildren(new Canvas(bitmap));
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        bitmap.recycle();
+        byte[] bitmapBytes = stream.toByteArray();
+        return Base64.encodeToString(bitmapBytes, Base64.DEFAULT);
     }
 
     public void enableTouchEvents() {
@@ -95,7 +117,7 @@ public class RNSVGSvgViewShadowNode extends LayoutShadowNode {
         }
     }
 
-    public int hitTest(Point point, ViewGroup view) {
+    public int hitTest(Point point) {
         if (!mResponsible) {
             return -1;
         }
@@ -107,7 +129,7 @@ public class RNSVGSvgViewShadowNode extends LayoutShadowNode {
                 continue;
             }
 
-            viewTag = ((RNSVGVirtualNode) getChildAt(i)).hitTest(point, view.getChildAt(i));
+            viewTag = ((RNSVGVirtualNode) getChildAt(i)).hitTest(point);
             if (viewTag != -1) {
                 break;
             }
@@ -140,11 +162,7 @@ public class RNSVGSvgViewShadowNode extends LayoutShadowNode {
         return mDefinedBrushes.get(brushRef);
     }
 
-    public void setSvgView(RNSVGSvgView svgView) {
-        mSvgView = svgView;
-    }
-
-    protected void invalidateView() {
-        mSvgView.invalidate();
+    public void finalize() {
+        mTagToShadowNode.remove(getReactTag());
     }
 }

@@ -11,11 +11,9 @@ package versioned.host.exp.exponent.modules.api.components.svg;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Region;
@@ -123,22 +121,15 @@ public class RNSVGImageShadowNode extends RNSVGPathShadowNode {
         }
     }
 
-    private void loadBitmap(@Nonnull final ImageRequest request, @Nonnull final Canvas canvas, @Nonnull final Paint paint) {
+    private void loadBitmap(ImageRequest request, final Canvas canvas, final Paint paint) {
         final DataSource<CloseableReference<CloseableImage>> dataSource
             = Fresco.getImagePipeline().fetchDecodedImage(request, getThemedContext());
 
         dataSource.subscribe(new BaseBitmapDataSubscriber() {
                                  @Override
-                                 public void onNewResultImpl(@Nullable Bitmap bitmap) {
-                                     if (bitmap != null) {
-                                         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-                                         paint.reset();
-                                         mLoading.set(false);
-
-                                         RNSVGSvgViewShadowNode svgShadowNode = getSvgShadowNode();
-                                         svgShadowNode.drawChildren(canvas, paint);
-                                         svgShadowNode.invalidateView();
-                                     }
+                                 public void onNewResultImpl(Bitmap bitmap) {
+                                     mLoading.set(false);
+                                     getSvgShadowNode().drawOutput();
                                  }
 
                                  @Override
@@ -163,7 +154,7 @@ public class RNSVGImageShadowNode extends RNSVGPathShadowNode {
         return new Rect((int) x, (int) y, (int) (x + w), (int) (y + h));
     }
 
-    private void doRender(@Nonnull final Canvas canvas, @Nonnull final Paint paint, @Nonnull final Bitmap bitmap, final float opacity) {
+    private void doRender(Canvas canvas, Paint paint, Bitmap bitmap, float opacity) {
         final int count = saveAndSetupCanvas(canvas);
         canvas.concat(mMatrix);
 
@@ -192,8 +183,8 @@ public class RNSVGImageShadowNode extends RNSVGPathShadowNode {
         viewBox.setMinY("0");
         viewBox.setVbWidth(renderRect.width() / mScale + "");
         viewBox.setVbHeight(renderRect.height() / mScale + "");
-        viewBox.setWidth(rectWidth / mScale);
-        viewBox.setHeight(rectHeight / mScale);
+        viewBox.setWidth(rectWidth / mScale + "");
+        viewBox.setHeight(rectHeight / mScale + "");
         viewBox.setAlign(mAlign);
         viewBox.setMeetOrSlice(mMeetOrSlice);
         viewBox.setupDimensions(new Rect(0, 0, (int) rectWidth, (int) rectHeight));
@@ -233,7 +224,7 @@ public class RNSVGImageShadowNode extends RNSVGPathShadowNode {
         markUpdateSeen();
     }
 
-    private void tryRender(@Nonnull final ImageRequest request, @Nonnull final Canvas canvas, @Nonnull final Paint paint, final float opacity) {
+    private void tryRender(ImageRequest request, Canvas canvas, Paint paint, float opacity) {
         final DataSource<CloseableReference<CloseableImage>> dataSource
             = Fresco.getImagePipeline().fetchImageFromBitmapCache(request, getThemedContext());
 
@@ -248,10 +239,14 @@ public class RNSVGImageShadowNode extends RNSVGPathShadowNode {
                             doRender(canvas, paint, bitmap, opacity);
                         }
                     }
+                } catch (Exception e) {
+                    throw new IllegalStateException(e);
                 } finally {
                     CloseableReference.closeSafely(imageReference);
                 }
             }
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
         } finally {
             dataSource.close();
         }

@@ -9,22 +9,17 @@
 
 package versioned.host.exp.exponent.modules.api.components.svg;
 
-import javax.annotation.Nullable;
-
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.uimanager.events.TouchEvent;
@@ -32,11 +27,12 @@ import com.facebook.react.uimanager.events.TouchEventCoalescingKeyHelper;
 import com.facebook.react.uimanager.events.TouchEventType;
 import com.facebook.react.uimanager.events.EventDispatcher;
 
+import javax.annotation.Nullable;
+
 /**
  * Custom {@link View} implementation that draws an RNSVGSvg React view and its \children.
  */
-public class RNSVGSvgView extends ViewGroup {
-
+public class RNSVGSvgView extends View {
     public enum Events {
         EVENT_DATA_URL("onDataURL");
 
@@ -55,20 +51,19 @@ public class RNSVGSvgView extends ViewGroup {
     private @Nullable Bitmap mBitmap;
     private RCTEventEmitter mEventEmitter;
     private EventDispatcher mEventDispatcher;
-    private RNSVGSvgViewShadowNode mSvgViewShadowNode;
     private int mTargetTag;
 
     private final TouchEventCoalescingKeyHelper mTouchEventCoalescingKeyHelper =
             new TouchEventCoalescingKeyHelper();
 
-    public RNSVGSvgView(Context context) {
-        super(context);
-    }
-
     public RNSVGSvgView(ReactContext reactContext) {
         super(reactContext);
         mEventEmitter = reactContext.getJSModule(RCTEventEmitter.class);
         mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+    }
+
+    private RNSVGSvgViewShadowNode getShadowNode() {
+        return RNSVGSvgViewShadowNode.getShadowNodeByTag(getId());
     }
 
     public void setBitmap(Bitmap bitmap) {
@@ -89,23 +84,17 @@ public class RNSVGSvgView extends ViewGroup {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        mTargetTag = mSvgViewShadowNode.hitTest(new Point((int) ev.getX(), (int) ev.getY()), this);
+        RNSVGSvgViewShadowNode svg = getShadowNode();
+        if (svg != null) {
+            mTargetTag = getShadowNode().hitTest(new Point((int) ev.getX(), (int) ev.getY()));
 
-        if (mTargetTag != -1) {
-            handleTouchEvent(ev);
+            if (mTargetTag != -1) {
+                handleTouchEvent(ev);
+                return true;
+            }
         }
 
         return super.dispatchTouchEvent(ev);
-    }
-
-    @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-
-    }
-
-    public void setShadowNode(RNSVGSvgViewShadowNode shadowNode) {
-        mSvgViewShadowNode = shadowNode;
-        shadowNode.setSvgView(this);
     }
 
     private int getAbsoluteLeft(View view) {
@@ -195,7 +184,7 @@ public class RNSVGSvgView extends ViewGroup {
 
     public void onDataURL() {
         WritableMap event = Arguments.createMap();
-        event.putString("base64", mSvgViewShadowNode.getBase64());
+        event.putString("base64", getShadowNode().getBase64());
         mEventEmitter.receiveEvent(getId(), Events.EVENT_DATA_URL.toString(), event);
     }
 }

@@ -21,15 +21,10 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 public class RNSVGRectShadowNode extends RNSVGPathShadowNode {
 
     private String mX;
-
     private String mY;
-
     private String mW;
-
     private String mH;
-
     private String mRx;
-
     private String mRy;
 
 

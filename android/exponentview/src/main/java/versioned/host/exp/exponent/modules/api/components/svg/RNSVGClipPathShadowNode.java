@@ -9,8 +9,14 @@
 
 package versioned.host.exp.exponent.modules.api.components.svg;
 
+import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.Point;
-import android.view.View;
+
+import com.facebook.common.logging.FLog;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.common.ReactConstants;
 
 /**
  * Shadow node for virtual RNSVGClipPath view
@@ -18,12 +24,31 @@ import android.view.View;
 public class RNSVGClipPathShadowNode extends RNSVGGroupShadowNode {
 
     @Override
+    public void draw(Canvas canvas, Paint paint, float opacity) {
+        FLog.w(ReactConstants.TAG, "RNSVG: ClipPath can't be drawn, it should be defined as a child component for `Defs` ");
+    }
+
+    @Override
     protected void saveDefinition() {
         getSvgShadowNode().defineClipPath(this, mName);
     }
 
     @Override
-    public int hitTest(Point point, View view) {
+    public boolean isResponsible() {
+        return false;
+    }
+
+    @Override
+    public int hitTest(Point point, Matrix matrix) {
         return -1;
     }
+
+    @Override
+    public void mergeProperties(RNSVGVirtualNode target, ReadableArray mergeList, boolean inherited) {}
+
+    @Override
+    public void mergeProperties(RNSVGVirtualNode target, ReadableArray mergeList) {}
+
+    @Override
+    public void resetProperties() {}
 }

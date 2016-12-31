@@ -20,11 +20,8 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 public class RNSVGLineShadowNode extends RNSVGPathShadowNode {
 
     private String mX1;
-
     private String mY1;
-
     private String mX2;
-
     private String mY2;
 
     @ReactProp(name = "x1")
