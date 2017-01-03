@@ -147,16 +147,25 @@ ABI11_0_0RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
   }
 }
 
+
+- (void)load
+{
+  // we haven't yet validated or loaded this experience, so just record whatever the manifest says.
+  NSString *manifestSdkVersion = (_manifest) ? _manifest[@"sdkVersion"] : nil;
+  [_appManager logKernelAnalyticsEventWithParams:@{
+                                                   @"eventIdentifier": @"LOAD_EXPERIENCE",
+                                                   @"manifestUrl": _source,
+                                                   @"eventProperties": @{
+                                                       @"SDK_VERSION": manifestSdkVersion,
+                                                       },
+                                                   }];
+  [_appManager reload];
+}
+
 - (void)_checkForReload
 {
   ABI11_0_0RCTAssertMainThread();
   if (_needsReload) {
-    if (_sourceSet && _source) {
-      [_appManager logKernelAnalyticsEventWithParams:@{
-                                                       @"eventIdentifier": @"LOAD_EXPERIENCE",
-                                                       @"manifestUrl": _source,
-                                                       }];
-    }
     _sourceSet = NO;
     _needsReload = NO;
     
@@ -164,7 +173,7 @@ ABI11_0_0RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
       [_tmrReload invalidate];
       _tmrReload = nil;
     }
-    _tmrReload = [NSTimer scheduledTimerWithTimeInterval:ABI11_0_0EX_FRAME_RELOAD_DEBOUNCE_SEC target:_appManager selector:@selector(reload) userInfo:nil repeats:NO];
+    _tmrReload = [NSTimer scheduledTimerWithTimeInterval:ABI11_0_0EX_FRAME_RELOAD_DEBOUNCE_SEC target:self selector:@selector(load) userInfo:nil repeats:NO];
   }
 }
 
