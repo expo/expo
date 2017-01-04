@@ -49,6 +49,7 @@
 		1936012E1D67ABCF007C0EE0 /* RNSVGUseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 193601011D67ABCF007C0EE0 /* RNSVGUseManager.m */; };
 		1936012F1D67ABCF007C0EE0 /* RNSVGViewBox.m in Sources */ = {isa = PBXBuildFile; fileRef = 193601041D67ABCF007C0EE0 /* RNSVGViewBox.m */; };
 		193601301D67ABCF007C0EE0 /* RNSVGViewBoxManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 193601061D67ABCF007C0EE0 /* RNSVGViewBoxManager.m */; };
+		1940B3401E15DF760015DA85 /* EXCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = 1940B33F1E15DF760015DA85 /* EXCrypto.m */; };
 		200C29ED1855EF40345E4BA2 /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B84B3DEFB2C488FAE7279AD /* libPods-ExponentIntegrationTests.a */; };
 		785045DB1D33AE6E0000E59B /* EXProvisioningProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 785045DA1D33AE6E0000E59B /* EXProvisioningProfile.m */; };
 		78C77D211DC332870069CC59 /* AIRMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 78C77CFF1DC332870069CC59 /* AIRMap.m */; };
@@ -260,6 +261,8 @@
 		193601041D67ABCF007C0EE0 /* RNSVGViewBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNSVGViewBox.m; sourceTree = "<group>"; };
 		193601051D67ABCF007C0EE0 /* RNSVGViewBoxManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSVGViewBoxManager.h; sourceTree = "<group>"; };
 		193601061D67ABCF007C0EE0 /* RNSVGViewBoxManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNSVGViewBoxManager.m; sourceTree = "<group>"; };
+		1940B33E1E15DF760015DA85 /* EXCrypto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXCrypto.h; sourceTree = "<group>"; };
+		1940B33F1E15DF760015DA85 /* EXCrypto.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXCrypto.m; sourceTree = "<group>"; };
 		1B1D1884419563A8205AED29 /* libPods-Exponent.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Exponent.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		34B965207078EF139F54C545 /* Pods-ExponentIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
 		785045D91D33AE6E0000E59B /* EXProvisioningProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXProvisioningProfile.h; sourceTree = "<group>"; };
@@ -850,6 +853,8 @@
 				B5553F951CEFBD1200555008 /* EXShellManager.m */,
 				B509BCBA1C6A88EC00A67CBB /* EXVersions.h */,
 				B509BCBB1C6A88EC00A67CBB /* EXVersions.m */,
+				1940B33E1E15DF760015DA85 /* EXCrypto.h */,
+				1940B33F1E15DF760015DA85 /* EXCrypto.m */,
 			);
 			path = Environment;
 			sourceTree = "<group>";
@@ -1464,6 +1469,7 @@
 				B5F12C951DAEDC980080ECA6 /* EXReactAppManager.m in Sources */,
 				A15DC4CC1D011248009F940D /* EXFacebook.m in Sources */,
 				B55FDEE41C7FDA560020AA8F /* EXFatalHandler.m in Sources */,
+				1940B3401E15DF760015DA85 /* EXCrypto.m in Sources */,
 				B587F1E01D53DEB70071715C /* EXFileDownloader.m in Sources */,
 				A1CDBE991D3851F700C2A670 /* EXFileSystem.m in Sources */,
 				B56FACAD1D4C0266009FC106 /* EXFingerprint.m in Sources */,
