@@ -75,6 +75,8 @@ public class DevServerHelper {
 
     public static String HEAP_CAPTURE_UPLOAD_URL_FORMAT = "http://%s/jscheapcaptureupload";
 
+    public static String INSPECTOR_DEVICE_URL_FORMAT = "http://%s/inspector/device?name=%s";
+
     public static String PACKAGER_OK_STATUS = "packager-status:running";
 
     // 2 mins
@@ -116,6 +118,9 @@ public class DevServerHelper {
 
     @Nullable
     public JSPackagerWebSocketClient mPackagerConnection;
+
+    @Nullable
+    public InspectorPackagerConnection mInspectorPackagerConnection;
 
     @Nullable
     public OkHttpClient mOnChangePollingClient;
@@ -170,6 +175,42 @@ public class DevServerHelper {
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+    public void openInspectorConnection() {
+        if (mInspectorPackagerConnection != null) {
+            FLog.w(ReactConstants.TAG, "Inspector connection already open, nooping.");
+            return;
+        }
+        new AsyncTask<Void, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                mInspectorPackagerConnection = new InspectorPackagerConnection(getInspectorDeviceUrl());
+                mInspectorPackagerConnection.connect();
+                return null;
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    public void openInspector(String id) {
+        if (mInspectorPackagerConnection != null) {
+            mInspectorPackagerConnection.sendOpenEvent(id);
+        }
+    }
+
+    public void closeInspectorConnection() {
+        new AsyncTask<Void, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                if (mInspectorPackagerConnection != null) {
+                    mInspectorPackagerConnection.closeQuietly();
+                    mInspectorPackagerConnection = null;
+                }
+                return null;
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
     /** Intent action for reloading the JS */
     /** Intent action for reloading the JS */
     public static String getReloadAppAction(Context context) {
@@ -186,6 +227,10 @@ public class DevServerHelper {
 
     public String getHeapCaptureUploadUrl() {
         return String.format(Locale.US, HEAP_CAPTURE_UPLOAD_URL_FORMAT, getDebugServerHost());
+    }
+
+    public String getInspectorDeviceUrl() {
+        return String.format(Locale.US, INSPECTOR_DEVICE_URL_FORMAT, getDebugServerHost(), AndroidInfoHelpers.getFriendlyDeviceName());
     }
 
     /**
@@ -261,8 +306,11 @@ public class DevServerHelper {
         return String.format(Locale.US, RESOURCE_URL_FORMAT, host, resourcePath);
     }
 
-    public void downloadBundleFromURL(final BundleDownloadCallback callback, final String jsModulePath, final File outputFile) {
-        final String bundleURL = createBundleURL(getDebugServerHost(), jsModulePath, getDevMode(), getHMR(), getJSMinifyMode());
+    public String getDevServerBundleURL(final String jsModulePath) {
+        return createBundleURL(getDebugServerHost(), jsModulePath, getDevMode(), getHMR(), getJSMinifyMode());
+    }
+
+    public void downloadBundleFromURL(final BundleDownloadCallback callback, final File outputFile, final String bundleURL) {
         final Request request = new Request.Builder().url(bundleURL).build();
         mDownloadBundleFromURLCall = Assertions.assertNotNull(mClient.newCall(request));
         mDownloadBundleFromURLCall.enqueue(new Callback() {
