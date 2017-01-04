@@ -211,10 +211,10 @@ dependencies {
   compile 'de.greenrobot:eventbus:2.4.0'
   compile 'com.amplitude:android-sdk:2.9.2' // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
   compile 'com.squareup.picasso:picasso:2.5.2'
-  compile 'com.google.android.gms:play-services-gcm:9.4.0'
-  compile 'com.google.android.gms:play-services-analytics:9.4.0'
-  compile 'com.google.android.gms:play-services-maps:9.4.0'
-  compile 'com.google.android.gms:play-services-auth:9.4.0'
+  compile 'com.google.android.gms:play-services-gcm:9.8.0'
+  compile 'com.google.android.gms:play-services-analytics:9.8.0'
+  compile 'com.google.android.gms:play-services-maps:9.8.0'
+  compile 'com.google.android.gms:play-services-auth:9.8.0'
   apt 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
   compile "com.raizlabs.android:DBFlow-Core:2.2.1"
   compile "com.raizlabs.android:DBFlow:2.2.1"
@@ -227,7 +227,6 @@ dependencies {
   compile 'me.leolin:ShortcutBadger:1.1.4@aar'
   compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
   compile 'com.theartofdev.edmodo:android-image-cropper:2.3.+'
-  compile 'com.facebook.rebound:rebound:0.3.8' // Needed for native animations in SDK 6
   compile 'com.yqritc:android-scalablevideoview:1.0.1'
   compile 'commons-codec:commons-codec:1.10'
   compile 'com.segment.analytics.android:analytics:4.+'
