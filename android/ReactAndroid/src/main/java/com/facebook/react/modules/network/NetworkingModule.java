@@ -461,6 +461,9 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
             }
             String headerName = header.getString(0);
             String headerValue = header.getString(1);
+            if (headerName == null || headerValue == null) {
+                return null;
+            }
             headersBuilder.add(headerName, headerValue);
         }
         if (headersBuilder.get(USER_AGENT_HEADER_NAME) == null && mDefaultUserAgent != null) {
