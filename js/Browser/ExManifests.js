@@ -10,8 +10,6 @@ import {
   Platform,
 } from 'react-native';
 
-import ApiClient from 'ApiClient';
-import Config from 'Config';
 import ExUrls from 'ExUrls';
 import url from 'url';
 
@@ -21,11 +19,10 @@ const {
 
 let ExManifests = {
   async manifestUrlToBundleUrlAndManifestAsync(manifestUrl) {
-    console.log(`Begin fetching manifest for ${manifestUrl}`);
-    let startTime = new Date();
-
+    if (Platform.OS !== 'ios') {
+      throw new Error('This method is only supported on iOS');
+    }
     let httpManifestUrl = ExUrls.toHttp(manifestUrl);
-    let isSecureDomain = httpManifestUrl.startsWith('https://exp.host');
     let httpManifestUrlComponents = url.parse(httpManifestUrl);
     // Append index.exp to path
     if (!httpManifestUrlComponents.pathname) {
@@ -42,20 +39,13 @@ let ExManifests = {
     httpManifestUrl = url.format(httpManifestUrlComponents);
 
     // Fetch manifest
-    let shouldRequestSignedManifest = (Platform.OS === 'ios' || !isSecureDomain);
-    let newtorkStartTime = new Date();
     let manifestString;
-    if (Platform.OS === 'ios' && ExponentKernel.getManifestAsync) {
-      try {
-        manifestString = await ExponentKernel.getManifestAsync(httpManifestUrl, manifestUrl);
-      } catch (e) {
-        e.message = `Error while loading: ${e.message}.`;
-        throw e;
-      }
-    } else {
-      manifestString = await ApiClient.fetchManifestAsync(httpManifestUrl, shouldRequestSignedManifest);
+    try {
+      manifestString = await ExponentKernel.getManifestAsync(httpManifestUrl, manifestUrl);
+    } catch (e) {
+      e.message = `Error while loading: ${e.message}.`;
+      throw e;
     }
-    let networkDuration = new Date() - newtorkStartTime;
 
     // Parse JSON
     let manifest;
@@ -69,45 +59,16 @@ let ExManifests = {
       };
     }
 
-    // Verify signature. If using secure domain, don't need to check signature.
-    let isVerified = isSecureDomain;
-    if (shouldRequestSignedManifest && manifest.manifestString && manifest.signature) {
-      try {
-        isVerified = await ExponentKernel.verifyPublicRSASignatureAsync(
-          Config.api.host + '/--/manifest-public-key',
-          manifest.manifestString,
-          manifest.signature
-        );
-      } catch (decryptError) {
-        // isVerified is already false
-      }
-
-      manifest = JSON.parse(manifest.manifestString);
-    }
-    manifest.isVerified = isVerified;
-
     // Build bundleUrl
     if (!manifest.bundleUrl) {
       throw new Error('No bundleUrl in manifest.');
     }
 
-    let duration = new Date() - startTime;
-    console.log(`Done fetching manifest for ${manifestUrl}. Took ${duration}ms. Network request took ${networkDuration}ms.`);
     return {
       // TODO: remove url.resolve and only use manifest.bundleUrl
       bundleUrl: url.resolve(httpManifestUrl, manifest.bundleUrl),
       manifest,
     };
-  },
-
-  normalizeManifest(manifestUrl, manifest) {
-    return Object.assign(manifest, {
-      id: manifest.id || manifestUrl,
-      name: manifest.name || 'My New Experience',
-      primaryColor: manifest.primaryColor || '#023C69',
-      iconUrl: manifest.iconUrl || 'https://d3lwq5rlu14cro.cloudfront.net/ExponentEmptyManifest_192.png',
-      orientation: manifest.orientation || 'default',
-    });
   },
 
   getFramePropsFromManifest(manifest, bundleUrl) {
