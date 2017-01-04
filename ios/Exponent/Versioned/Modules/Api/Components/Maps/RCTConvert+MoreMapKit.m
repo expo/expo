@@ -4,9 +4,9 @@
 //
 
 #import "RCTConvert+MoreMapKit.h"
-#import "AIRMapCoordinate.h"
-#import <React/RCTConvert+CoreLocation.h>
 
+#import <React/RCTConvert+CoreLocation.h>
+#import "AIRMapCoordinate.h"
 
 @implementation RCTConvert (MoreMapKit)
 
@@ -23,5 +23,10 @@
 }
 
 RCT_ARRAY_CONVERTER(AIRMapCoordinate)
+
++ (NSArray<NSArray<AIRMapCoordinate *> *> *)AIRMapCoordinateArrayArray:(id)json
+{
+    return RCTConvertArrayValue(@selector(AIRMapCoordinateArray:), json);
+}
 
 @end

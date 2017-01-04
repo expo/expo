@@ -58,11 +58,29 @@
     {
         coords[i] = coordinates[i].coordinate;
     }
-    self.polygon = [MKPolygon polygonWithCoordinates:coords count:coordinates.count];
+    self.polygon = [MKPolygon polygonWithCoordinates:coords count:coordinates.count interiorPolygons:_interiorPolygons];
     // TODO: we could lazy-initialize the polygon, since we don't need it until the
     // polygon is in view.
     self.renderer = [[MKPolygonRenderer alloc] initWithPolygon:self.polygon];
     [self update];
+}
+
+- (void)setHoles:(NSArray<NSArray<AIRMapCoordinate *> *> *)holes {
+    _holes = holes;
+    if (holes.count)
+    {
+        NSMutableArray<MKPolygon *> *polygons = [NSMutableArray array];
+        for(int h = 0; h < holes.count; h++)
+        {
+            CLLocationCoordinate2D coords[holes[h].count];
+            for(int i = 0; i < holes[h].count; i++)
+            {
+                coords[i] = holes[h][i].coordinate;
+            }
+            [polygons addObject:[MKPolygon polygonWithCoordinates:coords count:holes[h].count]];
+        }
+        _interiorPolygons = polygons;
+    }
 }
 
 - (void) update

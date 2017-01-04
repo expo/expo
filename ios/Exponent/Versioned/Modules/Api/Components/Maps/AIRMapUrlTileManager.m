@@ -10,9 +10,9 @@
 #import <React/RCTConvert.h>
 #import <React/RCTConvert+CoreLocation.h>
 #import <React/RCTEventDispatcher.h>
+#import <React/RCTViewManager.h>
 #import <React/UIView+React.h>
 #import "AIRMapMarker.h"
-#import <React/RCTViewManager.h>
 #import "AIRMapUrlTile.h"
 
 #import "AIRMapUrlTileManager.h"
@@ -35,4 +35,3 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_VIEW_PROPERTY(urlTemplate, NSString)
 
 @end
-

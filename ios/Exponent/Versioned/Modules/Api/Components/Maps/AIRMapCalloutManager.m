@@ -13,9 +13,9 @@
 #import <React/RCTConvert.h>
 #import <React/RCTConvert+CoreLocation.h>
 #import <React/RCTEventDispatcher.h>
+#import <React/RCTViewManager.h>
 #import <React/UIView+React.h>
 #import "AIRMapMarker.h"
-#import <React/RCTViewManager.h>
 #import "AIRMapCallout.h"
 
 @interface AIRMapCalloutManager()

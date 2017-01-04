@@ -39,6 +39,8 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.Polygon;
+import com.google.android.gms.maps.model.Polyline;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -72,6 +74,8 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
 
     private final List<AirMapFeature> features = new ArrayList<>();
     private final Map<Marker, AirMapMarker> markerMap = new HashMap<>();
+    private final Map<Polyline, AirMapPolyline> polylineMap = new HashMap<>();
+    private final Map<Polygon, AirMapPolygon> polygonMap = new HashMap<>();
     private final ScaleGestureDetector scaleDetector;
     private final GestureDetectorCompat gestureDetector;
     private final AirMapManager manager;
@@ -162,6 +166,24 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
                   marker.showInfoWindow();
                   return true;
                 }
+            }
+        });
+
+        map.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
+            @Override
+            public void onPolygonClick(Polygon polygon) {
+                WritableMap event = makeClickEventData(polygon.getPoints().get(0));
+                event.putString("action", "polygon-press");
+                manager.pushEvent(polygonMap.get(polygon), "onPress", event);
+            }
+        });
+
+        map.setOnPolylineClickListener(new GoogleMap.OnPolylineClickListener() {
+            @Override
+            public void onPolylineClick(Polyline polyline) {
+                WritableMap event = makeClickEventData(polyline.getPoints().get(0));
+                event.putString("action", "polyline-press");
+                manager.pushEvent(polylineMap.get(polyline), "onPress", event);
             }
         });
 
@@ -381,10 +403,14 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
             AirMapPolyline polylineView = (AirMapPolyline) child;
             polylineView.addToMap(map);
             features.add(index, polylineView);
+            Polyline polyline = (Polyline) polylineView.getFeature();
+            polylineMap.put(polyline, polylineView);
         } else if (child instanceof AirMapPolygon) {
             AirMapPolygon polygonView = (AirMapPolygon) child;
             polygonView.addToMap(map);
             features.add(index, polygonView);
+            Polygon polygon = (Polygon) polygonView.getFeature();
+            polygonMap.put(polygon, polygonView);
         } else if (child instanceof AirMapCircle) {
             AirMapCircle circleView = (AirMapCircle) child;
             circleView.addToMap(map);
@@ -571,13 +597,15 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
 
         switch (action) {
             case (MotionEvent.ACTION_DOWN):
-                this.getParent().requestDisallowInterceptTouchEvent(true);
+                this.getParent().requestDisallowInterceptTouchEvent(
+                        map != null && map.getUiSettings().isScrollGesturesEnabled());
                 isTouchDown = true;
                 break;
             case (MotionEvent.ACTION_MOVE):
                 startMonitoringRegion();
                 break;
             case (MotionEvent.ACTION_UP):
+                // Clear this regardless, since isScrollGesturesEnabled() may have been updated
                 this.getParent().requestDisallowInterceptTouchEvent(false);
                 isTouchDown = false;
                 break;

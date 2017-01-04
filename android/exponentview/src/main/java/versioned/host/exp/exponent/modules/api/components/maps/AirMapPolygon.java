@@ -102,6 +102,7 @@ public class AirMapPolygon extends AirMapFeature {
     @Override
     public void addToMap(GoogleMap map) {
         polygon = map.addPolygon(getPolygonOptions());
+        polygon.setClickable(true);
     }
 
     @Override

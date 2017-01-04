@@ -12,9 +12,9 @@
 
 #import <React/RCTConvert+MapKit.h>
 #import <React/RCTComponent.h>
+#import <React/RCTView.h>
 #import "AIRMapCoordinate.h"
 #import "AIRMap.h"
-#import <React/RCTView.h>
 
 @interface AIRMapUrlTile : MKAnnotationView <MKOverlay>
 

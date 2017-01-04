@@ -10,9 +10,9 @@
 
 #import <React/RCTConvert+MapKit.h>
 #import <React/RCTComponent.h>
+#import <React/RCTView.h>
 #import "AIRMapCoordinate.h"
 #import "AIRMap.h"
-#import <React/RCTView.h>
 
 
 @interface AIRMapPolyline: MKAnnotationView <MKOverlay>
@@ -31,6 +31,7 @@
 @property (nonatomic, assign) CGLineJoin lineJoin;
 @property (nonatomic, assign) CGFloat lineDashPhase;
 @property (nonatomic, strong) NSArray <NSNumber *> *lineDashPattern;
+@property (nonatomic, copy) RCTBubblingEventBlock onPress;
 
 #pragma mark MKOverlay protocol
 

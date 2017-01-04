@@ -10,8 +10,8 @@
 #import "AIRMap.h"
 
 #import <React/RCTEventDispatcher.h>
-#import "AIRMapMarker.h"
 #import <React/UIView+React.h>
+#import "AIRMapMarker.h"
 #import "AIRMapPolyline.h"
 #import "AIRMapPolygon.h"
 #import "AIRMapCircle.h"
@@ -381,7 +381,33 @@ const CGFloat AIRMapZoomBoundBuffer = 0.01;
 
         [self updateScrollEnabled];
         [self updateZoomEnabled];
+        [self updateLegalLabelInsets];
     }
+}
+
+- (void)updateLegalLabelInsets {
+    if (_legalLabel) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            CGRect frame = _legalLabel.frame;
+            if (_legalLabelInsets.left) {
+                frame.origin.x = _legalLabelInsets.left;
+            } else if (_legalLabelInsets.right) {
+                frame.origin.x = self.frame.size.width - _legalLabelInsets.right - frame.size.width;
+            }
+            if (_legalLabelInsets.top) {
+                frame.origin.y = _legalLabelInsets.top;
+            } else if (_legalLabelInsets.bottom) {
+                frame.origin.y = self.frame.size.height - _legalLabelInsets.bottom - frame.size.height;
+            }
+            _legalLabel.frame = frame;
+        });
+    }
+}
+
+
+- (void)setLegalLabelInsets:(UIEdgeInsets)legalLabelInsets {
+  _legalLabelInsets = legalLabelInsets;
+  [self updateLegalLabelInsets];
 }
 
 - (void)beginLoading {

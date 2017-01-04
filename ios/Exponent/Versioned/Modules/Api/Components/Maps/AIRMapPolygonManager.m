@@ -11,12 +11,12 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
-#import "RCTConvert+MoreMapKit.h"
 #import <React/RCTConvert+CoreLocation.h>
 #import <React/RCTEventDispatcher.h>
-#import <React/UIView+React.h>
-#import "AIRMapMarker.h"
 #import <React/RCTViewManager.h>
+#import <React/UIView+React.h>
+#import "RCTConvert+MoreMapKit.h"
+#import "AIRMapMarker.h"
 #import "AIRMapPolygon.h"
 
 @interface AIRMapPolygonManager()
@@ -34,6 +34,7 @@ RCT_EXPORT_MODULE()
 }
 
 RCT_EXPORT_VIEW_PROPERTY(coordinates, AIRMapCoordinateArray)
+RCT_EXPORT_VIEW_PROPERTY(holes, AIRMapCoordinateArrayArray)
 RCT_EXPORT_VIEW_PROPERTY(fillColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(strokeColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(strokeWidth, CGFloat)
@@ -42,10 +43,7 @@ RCT_EXPORT_VIEW_PROPERTY(lineJoin, CGLineJoin)
 RCT_EXPORT_VIEW_PROPERTY(miterLimit, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(lineDashPhase, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(lineDashPattern, NSArray)
+RCT_EXPORT_VIEW_PROPERTY(onPress, RCTBubblingEventBlock)
 
-// NOTE(lmr):
-// for now, onPress events for overlays will be left unimplemented. Seems it is possible with some work, but
-// it is difficult to achieve in both ios and android so I decided to leave it out.
-//RCT_EXPORT_VIEW_PROPERTY(onPress, RCTBubblingEventBlock)
 
 @end

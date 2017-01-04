@@ -20,6 +20,7 @@ import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MapStyleOptions;
 
 import java.util.Map;
 
@@ -91,6 +92,11 @@ public class AirMapManager extends ViewGroupManager<AirMapView> {
     public void setMapType(AirMapView view, @Nullable String mapType) {
         int typeId = MAP_TYPES.get(mapType);
         view.map.setMapType(typeId);
+    }
+    
+    @ReactProp(name = "customMapStyleString")
+    public void setMapStyle(AirMapView view, @Nullable String customMapStyleString) {
+        view.map.setMapStyle(new MapStyleOptions(customMapStyleString));
     }
 
     @ReactProp(name = "showsUserLocation", defaultBoolean = false)

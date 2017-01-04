@@ -8,9 +8,14 @@ import android.view.WindowManager;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
+
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.Nullable;
 
 public class AirMapPolygonManager extends ViewGroupManager<AirMapPolygon> {
     private final DisplayMetrics metrics;
@@ -66,5 +71,13 @@ public class AirMapPolygonManager extends ViewGroupManager<AirMapPolygon> {
     @ReactProp(name = "zIndex", defaultFloat = 1.0f)
     public void setZIndex(AirMapPolygon view, float zIndex) {
         view.setZIndex(zIndex);
+    }
+
+    @Override
+    @Nullable
+    public Map getExportedCustomDirectEventTypeConstants() {
+        return MapBuilder.of(
+            "onPress", MapBuilder.of("registrationName", "onPress")
+        );
     }
 }

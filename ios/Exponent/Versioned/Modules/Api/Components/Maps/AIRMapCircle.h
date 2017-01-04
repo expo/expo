@@ -10,11 +10,10 @@
 
 #import <React/RCTConvert+MapKit.h>
 #import <React/RCTComponent.h>
-#import "AIRMapCoordinate.h"
-#import "AIRMap.h"
 #import <React/RCTView.h>
 
-
+#import "AIRMapCoordinate.h"
+#import "AIRMap.h"
 
 @interface AIRMapCircle: MKAnnotationView <MKOverlay>
 

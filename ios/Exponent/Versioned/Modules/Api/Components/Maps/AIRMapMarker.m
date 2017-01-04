@@ -9,11 +9,11 @@
 
 #import "AIRMapMarker.h"
 
-#import <React/RCTEventDispatcher.h>
-#import <React/UIView+React.h>
 #import <React/RCTBridge.h>
-#import <React/RCTUtils.h>
+#import <React/RCTEventDispatcher.h>
 #import <React/RCTImageLoader.h>
+#import <React/RCTUtils.h>
+#import <React/UIView+React.h>
 
 @implementation AIREmptyCalloutBackgroundView
 @end
@@ -232,7 +232,7 @@
 - (void)setPinColor:(UIColor *)pinColor
 {
     _pinColor = pinColor;
-    
+
     if ([_pinView respondsToSelector:@selector(setPinTintColor:)]) {
         _pinView.pinTintColor = _pinColor;
     }
