@@ -279,11 +279,6 @@ public class ReactAndroidCodeTransformer {
     FileUtils.copyDirectory(new File(projectRoot + REACT_COMMON_SOURCE_ROOT), reactCommonDestRoot);
     FileUtils.copyDirectory(new File(projectRoot + REACT_ANDROID_SOURCE_ROOT), reactAndroidDestRoot);
 
-    // Sourceforge is slow. Use our copy in S3
-    replaceInFile(new File(projectRoot + REACT_ANDROID_DEST_ROOT + "/build.gradle"),
-        "https://downloads.sourceforge.net/project/boost/boost/1.57.0/boost_1_57_0.zip",
-        "http://exp-us-standard.s3.amazonaws.com/boost_1_57_0.zip");
-
     // Update release.gradle
     replaceInFile(new File(projectRoot + REACT_ANDROID_DEST_ROOT + "/release.gradle"),
         "'https://oss.sonatype.org/service/local/staging/deploy/maven2/'",
