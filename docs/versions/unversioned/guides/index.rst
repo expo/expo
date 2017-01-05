@@ -24,4 +24,5 @@ Guides
    upgrading-exponent
    using-clojurescript
    using-firebase
+   using-apollo
    genymotion
