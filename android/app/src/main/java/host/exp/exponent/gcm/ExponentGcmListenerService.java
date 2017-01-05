@@ -186,6 +186,8 @@ public class ExponentGcmListenerService extends GcmListenerService {
               .setContentTitle(name)
               .setColor(color)
               .setContentText(message)
+              .setStyle(new NotificationCompat.BigTextStyle()
+                .bigText(message))
               .setAutoCancel(true)
               .setSound(defaultSoundUri)
               .setContentIntent(pendingIntent);
