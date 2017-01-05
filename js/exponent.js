@@ -27,25 +27,7 @@ import 'Kernel';
 let { JSCExecutor } = NativeModules;
 
 class WrapWithStore extends React.Component {
-  constructor(props, context) {
-    super(props, context);
-    this.state = {
-      isFluxInitialized: false,
-    };
-  }
-
-  componentDidMount() {
-    ExStore.initialization.finally(() => {
-      this.setState({
-        isFluxInitialized: true,
-      });
-    }).done();
-  }
-
   render() {
-    if (!this.state.isFluxInitialized) {
-      return null;
-    }
     return (
       <Provider store={ExStore}>
         {this.props.children}

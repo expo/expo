@@ -68,28 +68,6 @@ export default class ApiClient {
       });
   }
 
-  static async fetchManifestAsync(url, shouldRequestSignedManifest) {
-    try {
-      let headers = exponentHeaders();
-      if (shouldRequestSignedManifest) {
-        headers['Exponent-Accept-Signature'] = true;
-      }
-      let response = await fetch(url, {headers});
-      let text = await response.text();
-      if (response.ok) {
-        return text;
-      } else {
-        throw new Error(text);
-      }
-    } catch (e) {
-      throw new Error(`Error fetching ${url}: ${e.message}.`);
-    }
-  }
-
-  static recordEmailAsync(emailAddress) {
-    return ApiClient.callExpHostMethodAsync('recordEmail', [emailAddress]);
-  }
-
   static updateDeviceToken(deviceToken, deviceId, appId, development, type) {
     let payload = {deviceToken, deviceId, appId, type};
     if (development) {
