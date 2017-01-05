@@ -42,6 +42,14 @@ let BrowserActions = {
 
   async navigateToExperienceIdWithNotificationAsync(experienceId, notificationBody) {
     let history = await loadLocalHistoryAsync();
+    history = history.sort((item1, item2) => {
+      // date descending -- we want to pick the most recent experience with this id,
+      // in case there are multiple (e.g. somebody was developing against various URLs of the
+      // same app)
+      let item2time = (item2.time) ? item2.time : 0;
+      let item1time = (item1.time) ? item1.time : 0;
+      return item2time - item1time;
+    });
     let historyItem = history.find(item => (item.manifest && item.manifest.id === experienceId));
     if (historyItem) {
       // don't use the cached manifest, start over
