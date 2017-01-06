@@ -52,14 +52,18 @@ public class LocationModule extends ReactContextBaseJavaModule {
     return map;
   }
 
+  private static boolean isProviderAvailable(LocationManager locMgr, String provider) {
+    return locMgr.getAllProviders().contains(provider) && locMgr.isProviderEnabled(provider);
+  }
+
   private static String selectProvider(LocationManager locMgr, boolean highAccuracy) {
     String provider = highAccuracy ? LocationManager.GPS_PROVIDER : LocationManager.NETWORK_PROVIDER;
-    if (!locMgr.isProviderEnabled(provider)) {
+    if (!isProviderAvailable(locMgr, provider)) {
       provider = provider.equals(LocationManager.GPS_PROVIDER) ?
               LocationManager.NETWORK_PROVIDER :
               LocationManager.GPS_PROVIDER;
     }
-    if (locMgr.isProviderEnabled(provider)) {
+    if (isProviderAvailable(locMgr, provider)) {
       return provider;
     }
     return null;
