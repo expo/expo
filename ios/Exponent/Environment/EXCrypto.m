@@ -12,19 +12,7 @@ static NSString* kPublicKeyTag = @"exp.host.publickey";
 
 @implementation EXCrypto
 
-+ (instancetype)sharedInstance
-{
-  static EXCrypto *theCrypto;
-  static dispatch_once_t once;
-  dispatch_once(&once, ^{
-    if (!theCrypto) {
-      theCrypto = [EXCrypto new];
-    }
-  });
-  return theCrypto;
-}
-
-- (void)verifySignatureWithPublicKeyUrl:(NSURL *)publicKeyUrl
++ (void)verifySignatureWithPublicKeyUrl:(NSURL *)publicKeyUrl
                                    data:(NSString *)data
                               signature:(NSString *)signature
                            successBlock:(EXVerifySignatureSuccessBlock)successBlock
@@ -38,7 +26,7 @@ static NSString* kPublicKeyTag = @"exp.host.publickey";
                                      errorBlock:errorBlock];
 }
 
-- (void)fetchAndVerifySignatureWithPublicKeyUrl:(NSURL *)publicKeyUrl
++ (void)fetchAndVerifySignatureWithPublicKeyUrl:(NSURL *)publicKeyUrl
                                            data:(NSString *)data
                                       signature:(NSString *)signature
                                        useCache:(BOOL)useCache
@@ -72,7 +60,7 @@ static NSString* kPublicKeyTag = @"exp.host.publickey";
   }];
 }
 
-- (_Nullable SecKeyRef)keyRefFromPEMData:(NSData *)pemData
++ (_Nullable SecKeyRef)keyRefFromPEMData:(NSData *)pemData
 {
   NSString *pemString = [[NSString alloc] initWithData:pemData encoding:NSUTF8StringEncoding];
 
@@ -136,7 +124,7 @@ static NSString* kPublicKeyTag = @"exp.host.publickey";
   return keyRef;
 }
 
-- (BOOL)verifyRSASHA256SignedData:(NSData *)signedData signatureData:(NSData *)signatureData publicKey:(_Nullable SecKeyRef)publicKey
++ (BOOL)verifyRSASHA256SignedData:(NSData *)signedData signatureData:(NSData *)signatureData publicKey:(_Nullable SecKeyRef)publicKey
 {
   if (!publicKey) {
     return NO;

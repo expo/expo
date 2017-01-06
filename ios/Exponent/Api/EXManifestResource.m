@@ -5,6 +5,8 @@
 #import "EXKernel.h"
 #import "EXShellManager.h"
 
+NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
+
 @implementation EXManifestResource
 
 - (instancetype)initWithManifestUrl:(NSURL *)url originalUrl:(NSURL * _Nullable)originalUrl
@@ -55,12 +57,12 @@
     };
 
     if (innerManifestString && manifestSignature) {
-      NSURL *publicKeyUrl = [NSURL URLWithString:@"https://exp.host/--/manifest-public-key"];
-      [[EXCrypto sharedInstance] verifySignatureWithPublicKeyUrl:publicKeyUrl
-                                                            data:innerManifestString
-                                                       signature:manifestSignature
-                                                    successBlock:signatureSuccess
-                                                      errorBlock:errorBlock];
+      NSURL *publicKeyUrl = [NSURL URLWithString:kEXPublicKeyUrl];
+      [EXCrypto verifySignatureWithPublicKeyUrl:publicKeyUrl
+                                           data:innerManifestString
+                                      signature:manifestSignature
+                                   successBlock:signatureSuccess
+                                     errorBlock:errorBlock];
     }
   } errorBlock:errorBlock];
 }

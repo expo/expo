@@ -9,8 +9,6 @@ typedef void (^EXVerifySignatureErrorBlock)(NSError *error);
 
 @interface EXCrypto : NSObject
 
-+ (instancetype)sharedInstance;
-
 /**
  * Verify data using a RSA+SHA256 base64 signature string and the public key at #{publicKeyUrl}.
  * The public key must be in `pem` format and will be downloaded and cached.
@@ -21,7 +19,7 @@ typedef void (^EXVerifySignatureErrorBlock)(NSError *error);
  * @param successBlock Called when the verification is finished with the result
  * @param errorBlock   Called if an error occured, eg. a network error downloading the key
  */
-- (void)verifySignatureWithPublicKeyUrl:(NSURL *)publicKeyUrl
++ (void)verifySignatureWithPublicKeyUrl:(NSURL *)publicKeyUrl
                                    data:(NSString *)data
                               signature:(NSString *)signature
                            successBlock:(EXVerifySignatureSuccessBlock)successBlock
