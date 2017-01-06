@@ -17,6 +17,11 @@ NSString * const ABI12_0_0EXPermissionExpiresNever = @"never";
 
 ABI12_0_0RCT_EXPORT_MODULE(ExponentPermissions);
 
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
+}
+
 - (instancetype)init
 {
   if (self = [super init]) {

@@ -77,20 +77,15 @@
     _resolve = resolve;
     _reject = reject;
 
-    __weak typeof(self) weakSelf = self;
     _locMgr = [[CLLocationManager alloc] init];
     _locMgr.delegate = self;
 
     if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"] &&
         [_locMgr respondsToSelector:@selector(requestAlwaysAuthorization)]) {
-      dispatch_async(dispatch_get_main_queue(), ^{
-        [weakSelf.locMgr requestAlwaysAuthorization];
-      });
+      [_locMgr requestAlwaysAuthorization];
     } else if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"] &&
                [_locMgr respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
-      dispatch_async(dispatch_get_main_queue(), ^{
-        [weakSelf.locMgr requestWhenInUseAuthorization];
-      });
+      [_locMgr requestWhenInUseAuthorization];
     } else {
       _reject(@"E_LOCATION_INFO_PLIST", @"Either NSLocationWhenInUseUsageDescription or NSLocationAlwaysUsageDescription key must be present in Info.plist to use geolocation.", nil);
       if (_delegate) {
@@ -121,6 +116,12 @@
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
 {
+  if (status == kCLAuthorizationStatusNotDetermined) {
+    // CLLocationManager calls this delegate method once on start with kCLAuthorizationNotDetermined even before the user responds
+    // to the "Don't Allow" / "Allow" dialog box. This isn't the event we care about so we skip it. See:
+    // http://stackoverflow.com/questions/30106341/swift-locationmanager-didchangeauthorizationstatus-always-called/30107511#30107511
+    return;
+  }
   if (_resolve) {
     _resolve([[self class] permissions]);
     _resolve = nil;
