@@ -91,7 +91,7 @@ similar to how the ``Provider`` component works in ``react-redux``.
     import { ApolloProvider } from 'react-apollo';
 
     // Your client from the last step.
-    const client = new ApolloClient({ ... });
+    const client = new ApolloClient({ /* ... */ });
 
     class App extends React.Component {
       render() {
