@@ -41,7 +41,7 @@ dependencies {
   compile 'com.android.support:multidex:1.0.0'
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  compile('host.exp.exponent:exponentview:12.0.0@aar') {
+  compile('host.exp.exponent:exponentview:13.0.0@aar') {
     transitive = true;
   }
   END UNCOMMENT WHEN DISTRIBUTING */

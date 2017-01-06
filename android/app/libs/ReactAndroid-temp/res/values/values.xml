@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:ns1="http://schemas.android.com/tools">
     <color name="catalyst_redbox_background">#eecc0000</color>
     <string name="catalyst_copy_button" project="catalyst" translatable="false">Copy</string>
     <string name="catalyst_debugjs" project="catalyst" translatable="false">Debug JS Remotely</string>
@@ -28,6 +28,12 @@
     <item name="android:windowEnterAnimation">@anim/catalyst_push_up_in</item>
     <item name="android:windowExitAnimation">@anim/catalyst_push_up_out</item>
   </style>
+    <style name="CalendarDatePickerDialog" parent="Theme.AppCompat.Light.Dialog" ns1:targetApi="lollipop">
+        <item name="android:datePickerStyle">@style/CalendarDatePickerStyle</item>
+    </style>
+    <style name="CalendarDatePickerStyle" parent="android:Widget.Material.Light.DatePicker" ns1:targetApi="lollipop">
+        <item name="android:datePickerMode">calendar</item>
+    </style>
     <style name="DialogAnimationFade">
     <item name="android:windowEnterAnimation">@anim/fade_in</item>
     <item name="android:windowExitAnimation">@anim/fade_out</item>
@@ -36,6 +42,12 @@
     <item name="android:windowEnterAnimation">@anim/slide_up</item>
     <item name="android:windowExitAnimation">@anim/slide_down</item>
   </style>
+    <style name="SpinnerDatePickerDialog" parent="Theme.AppCompat.Light.Dialog" ns1:targetApi="lollipop">
+        <item name="android:datePickerStyle">@style/SpinnerDatePickerStyle</item>
+    </style>
+    <style name="SpinnerDatePickerStyle" parent="android:Widget.Material.Light.DatePicker" ns1:targetApi="lollipop">
+        <item name="android:datePickerMode">spinner</item>
+    </style>
     <style name="Theme"/>
     <style name="Theme.Catalyst"/>
     <style name="Theme.Catalyst.RedBox" parent="@style/Theme.AppCompat.DialogWhenLarge">
