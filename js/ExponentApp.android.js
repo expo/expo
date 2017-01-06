@@ -129,7 +129,7 @@ class ExponentApp extends React.Component {
           contentContainerStyle={styles.scrollViewContentContainer}
           showsVerticalScrollIndicator={false}
           ref={view => { this._scrollView = view; }}
-          keyboardShouldPersistTaps>
+          keyboardShouldPersistTaps="always">
           {this._renderRecentSection()}
           {this._renderFeaturedSection()}
           {this._renderOverlay()}
