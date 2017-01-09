@@ -67,13 +67,15 @@ NSString *ABI13_0_0RCTBridgeModuleNameForClass(Class cls)
     name = NSStringFromClass(cls);
   }
 
+  name = ABI13_0_0EX_REMOVE_VERSION(name);
+
   if ([name hasPrefix:@"RK"]) {
     name = [name substringFromIndex:2];
   } else if ([name hasPrefix:@"RCT"]) {
     name = [name substringFromIndex:3];
   }
 
-  return ABI13_0_0EX_REMOVE_VERSION(name);
+  return name;
 }
 
 #if ABI13_0_0RCT_DEBUG
