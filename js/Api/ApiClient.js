@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 
 import Config from 'Config';
-import ExStore from 'ExStore';
 
 let {
   ExponentKernel,
@@ -26,10 +25,8 @@ function exponentHeaders() {
 
 export default class ApiClient {
   static callExpHostMethodAsync(methodName, args, method, requestBody) {
-    let emailAddress = ExStore.getState().account.email;
     let url = Config.api.host + '/--/api/' + encodeURIComponent(methodName) + '/' +
-      encodeURIComponent(JSON.stringify(args)) +
-      '?emailAddress=' + encodeURIComponent(emailAddress);
+      encodeURIComponent(JSON.stringify(args));
 
     let fetchOpts = {
       method: method || 'get',
