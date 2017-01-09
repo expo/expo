@@ -1,3 +1,1 @@
-This update contains minor improvements.
-
-Version 1.11.0 added support for React Native 0.37.
+This update adds support for React Native 0.40.
