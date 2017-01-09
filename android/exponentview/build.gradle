@@ -176,10 +176,10 @@ dependencies {
   compile 'com.android.support:multidex:1.0.1'
 
   // Current react native
-  
-  
+  compile project(':ReactAndroid')
+  /* UNCOMMENT WHEN DISTRIBUTING
   compile 'host.exp.exponent:react-native:13.0.0'
-  
+  END UNCOMMENT WHEN DISTRIBUTING */
 
   // React native dependencies
   // We use a different version of appcompat
