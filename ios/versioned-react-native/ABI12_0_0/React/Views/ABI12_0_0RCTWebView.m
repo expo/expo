@@ -19,7 +19,7 @@
 #import "ABI12_0_0RCTView.h"
 #import "UIView+ReactABI12_0_0.h"
 
-NSString *const ABI12_0_0RCTJSNavigationScheme = @"ReactABI12_0_0-js-navigation";
+NSString *const ABI12_0_0RCTJSNavigationScheme = @"react-js-navigation";
 NSString *const ABI12_0_0RCTJSPostMessageHost = @"postMessage";
 
 @interface ABI12_0_0RCTWebView () <UIWebViewDelegate, ABI12_0_0RCTAutoInsetsProtocol>

@@ -19,7 +19,7 @@
 #import "ABI9_0_0RCTView.h"
 #import "UIView+ReactABI9_0_0.h"
 
-NSString *const ABI9_0_0RCTJSNavigationScheme = @"ReactABI9_0_0-js-navigation";
+NSString *const ABI9_0_0RCTJSNavigationScheme = @"react-js-navigation";
 
 @interface ABI9_0_0RCTWebView () <UIWebViewDelegate, ABI9_0_0RCTAutoInsetsProtocol>
 
