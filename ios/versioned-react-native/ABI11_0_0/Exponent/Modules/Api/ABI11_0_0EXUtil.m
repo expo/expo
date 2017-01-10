@@ -16,7 +16,11 @@
 
 ABI11_0_0RCT_EXPORT_METHOD(reload)
 {
-  [_bridge reload];
+  [[NSNotificationCenter defaultCenter] postNotificationName:@"EXKernelRefreshForegroundTaskNotification"
+                                                      object:nil
+                                                    userInfo:@{
+                                                               @"bridge": self.bridge
+                                                               }];
 }
 
 ABI11_0_0RCT_REMAP_METHOD(getCurrentLocaleAsync,
