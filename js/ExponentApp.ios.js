@@ -14,6 +14,7 @@ import {
 
 import autobind from 'autobind-decorator';
 
+import Browser from 'Browser';
 import BrowserActions from 'BrowserActions';
 import ExStore from 'ExStore';
 import KernelNavigator from 'KernelNavigator';
@@ -46,6 +47,7 @@ class ExponentApp extends React.Component {
   componentDidMount() {
     Linking.addEventListener('url', this._handleUrl);
     DeviceEventEmitter.addListener('Exponent.notification', this._handleNotification);
+    DeviceEventEmitter.addListener('ExponentKernel.refresh', Browser.refresh);
     requestAnimationFrame(async () => {
       let initialUrl = await Linking.getInitialURL();
       if (this.props.shell) {

@@ -97,7 +97,14 @@ class KernelNavigator extends React.Component {
   componentDidMount() {
     this._refreshSubscription = Browser.addRefreshListener(async () => {
       // bypass validation of the link and just try to open it again
-      if (this.props.foregroundTaskUrl) {
+      if (this.props.isShell) {
+        // don't clean browser routes: we'll make a new history item and task for
+        // the same url, and the existing route's props will update.
+        // don't call ExponentKernel.openURL because we don't want to re-route
+        // the existing url. we want to force a reload of the manifest.
+        this.props.dispatch(BrowserActions.setKernelLoadingState(true));
+        this.props.dispatch(BrowserActions.navigateToUrlAsync(this.props.shellManifestUrl));
+      } else if (this.props.foregroundTaskUrl) {
         let urlToRefresh = this.props.foregroundTaskUrl;
         await this.props.dispatch(BrowserActions.foregroundHomeAsync(true));
         this._cleanUnusedBrowserRoutes();

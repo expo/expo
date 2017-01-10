@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *kEXKernelErrorDomain = @"EXKernelErrorDomain";
 NSString *kEXKernelOpenUrlNotification = @"EXKernelOpenUrlNotification";
+NSString *kEXKernelRefreshForegroundTaskNotification = @"EXKernelRefreshForegroundTaskNotification";
 NSString *kEXKernelGetPushTokenNotification = @"EXKernelGetPushTokenNotification";
 NSString *kEXKernelShouldForegroundTaskEvent = @"foregroundTask";
 NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
@@ -54,6 +55,10 @@ NSString *kEXKernelBundleResourceName = @"kernel.ios";
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(_routeUrl:)
                                                  name:kEXKernelOpenUrlNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(_refreshForegroundTask:)
+                                                 name:kEXKernelRefreshForegroundTaskNotification
                                                object:nil];
     for (NSString *name in @[UIApplicationDidBecomeActiveNotification,
                              UIApplicationDidEnterBackgroundNotification,
@@ -141,6 +146,18 @@ NSString *kEXKernelBundleResourceName = @"kernel.ios";
 }
 
 #pragma mark - Linking
+
+- (void)_refreshForegroundTask:(NSNotification *)notif
+{
+  id notifBridge = notif.userInfo[@"bridge"];
+  if ([notifBridge respondsToSelector:@selector(parentBridge)]) {
+    notifBridge = [notifBridge parentBridge];
+  }
+  if (notifBridge == _bridgeRegistry.lastKnownForegroundBridge) {
+    // only the foreground task is allowed to force a reload
+    [self dispatchKernelJSEvent:@"refresh" body:@{} onSuccess:nil onFailure:nil];
+  }
+}
 
 /**
  *  Expected notif.userInfo keys:

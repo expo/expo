@@ -12,6 +12,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 FOUNDATION_EXPORT NSString *kEXKernelOpenUrlNotification;
+FOUNDATION_EXPORT NSString *kEXKernelRefreshForegroundTaskNotification;
 FOUNDATION_EXPORT NSString *kEXKernelGetPushTokenNotification;
 FOUNDATION_EXPORT NSString *kEXKernelErrorDomain;
 FOUNDATION_EXPORT NSString *kEXKernelBundleResourceName;

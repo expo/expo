@@ -1,4 +1,5 @@
 #import "EXUtil.h"
+#import "EXUnversioned.h"
 #import <React/RCTUIManager.h>
 #import <React/RCTBridge.h>
 #import <React/RCTUtils.h>
@@ -16,7 +17,11 @@
 
 RCT_EXPORT_METHOD(reload)
 {
-  [_bridge reload];
+  [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXKernelRefreshForegroundTaskNotification")
+                                                      object:nil
+                                                    userInfo:@{
+                                                               @"bridge": self.bridge
+                                                               }];
 }
 
 RCT_REMAP_METHOD(getCurrentLocaleAsync,
