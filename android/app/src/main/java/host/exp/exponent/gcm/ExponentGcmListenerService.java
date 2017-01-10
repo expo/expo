@@ -148,7 +148,7 @@ public class ExponentGcmListenerService extends GcmListenerService {
         intent.putExtra(KernelConstants.NOTIFICATION_KEY, body); // deprecated
         intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString());
         PendingIntent pendingIntent = PendingIntent.getActivity(ExponentGcmListenerService.this, 0, intent,
-            PendingIntent.FLAG_ONE_SHOT);
+            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
         // Build notification
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
