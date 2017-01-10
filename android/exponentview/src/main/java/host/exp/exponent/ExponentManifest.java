@@ -11,18 +11,6 @@ import android.os.AsyncTask;
 import android.os.Debug;
 import android.util.Log;
 import android.util.LruCache;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.exceptions.ManifestException;
@@ -35,6 +23,15 @@ import host.exp.exponentview.R;
 import okhttp3.Call;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 @Singleton
 public class ExponentManifest {
@@ -63,8 +60,14 @@ public class ExponentManifest {
   public static final String MANIFEST_PACKAGER_OPTS_KEY = "packagerOpts";
   public static final String MANIFEST_PACKAGER_OPTS_DEV_KEY = "dev";
   public static final String MANIFEST_BUNDLE_URL_KEY = "bundleUrl";
-  public static final String MANIFEST_STATUS_BAR_COLOR = "androidStatusBarColor";
   public static final String MANIFEST_HIDE_EXPONENT_NOTIFICATION_KEY = "androidHideExponentNotificationInShellApp";
+
+  // Statusbar
+  public static final String MANIFEST_STATUS_BAR_KEY = "androidStatusBar";
+  public static final String MANIFEST_STATUS_BAR_APPEARANCE = "barStyle";
+  public static final String MANIFEST_STATUS_BAR_BACKGROUND_COLOR = "backgroundColor";
+  @Deprecated
+  public static final String MANIFEST_STATUS_BAR_COLOR = "androidStatusBarColor";
 
   // Notification
   public static final String MANIFEST_NOTIFICATION_INFO_KEY = "notification";
