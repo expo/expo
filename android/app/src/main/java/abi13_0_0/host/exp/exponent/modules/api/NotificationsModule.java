@@ -4,17 +4,15 @@ package abi13_0_0.host.exp.exponent.modules.api;
 
 import android.support.v4.app.NotificationManagerCompat;
 
-import abi13_0_0.com.facebook.react.bridge.Arguments;
 import abi13_0_0.com.facebook.react.bridge.Promise;
 import abi13_0_0.com.facebook.react.bridge.ReactApplicationContext;
 import abi13_0_0.com.facebook.react.bridge.ReactContextBaseJavaModule;
 import abi13_0_0.com.facebook.react.bridge.ReactMethod;
 import abi13_0_0.com.facebook.react.bridge.ReadableMap;
 import abi13_0_0.com.facebook.react.bridge.ReadableNativeMap;
-import abi13_0_0.com.facebook.react.bridge.WritableMap;
 
 import host.exp.exponent.notifications.NotificationHelper;
-import host.exp.exponent.notifications.NotificationManager;
+import host.exp.exponent.notifications.ExponentNotificationManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -142,7 +140,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void dismissNotification(final int notificationId, final Promise promise) {
     try {
-      NotificationManager manager = new NotificationManager(getReactApplicationContext());
+      ExponentNotificationManager manager = new ExponentNotificationManager(getReactApplicationContext());
       manager.cancel(
               mManifest.getString(ExponentManifest.MANIFEST_ID_KEY),
               notificationId
@@ -156,7 +154,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void dismissAllNotifications(final Promise promise) {
     try {
-      NotificationManager manager = new NotificationManager(getReactApplicationContext());
+      ExponentNotificationManager manager = new ExponentNotificationManager(getReactApplicationContext());
       manager.cancelAll(mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
       promise.resolve(true);
     } catch (JSONException e) {
@@ -167,7 +165,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void cancelScheduledNotification(final int notificationId, final Promise promise) {
     try {
-      NotificationManager manager = new NotificationManager(getReactApplicationContext());
+      ExponentNotificationManager manager = new ExponentNotificationManager(getReactApplicationContext());
       manager.cancelScheduled(mManifest.getString(ExponentManifest.MANIFEST_ID_KEY), notificationId);
       promise.resolve(true);
     } catch (Exception e) {
@@ -178,7 +176,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void cancelAllScheduledNotifications(final Promise promise) {
     try {
-      NotificationManager manager = new NotificationManager(getReactApplicationContext());
+      ExponentNotificationManager manager = new ExponentNotificationManager(getReactApplicationContext());
       manager.cancelAllScheduled(mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
       promise.resolve(true);
     } catch (Exception e) {

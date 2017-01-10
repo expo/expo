@@ -634,18 +634,20 @@ public class Exponent {
           metadata.remove(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS);
         }
 
+        // TODO: fix this. this is the only place that EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS is sent to the experience,
+        // we need to sent them with the standard notification events so that you can get all the unread notification through an event
         // Copy unreadNotifications into exponentProps
-        if (metadata.has(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_NOTIFICATIONS)) {
+        if (metadata.has(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS)) {
           try {
-            JSONArray unreadNotifications = metadata.getJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_NOTIFICATIONS);
-            exponentProps.put(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_NOTIFICATIONS, unreadNotifications);
+            JSONArray unreadNotifications = metadata.getJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS);
+            exponentProps.put(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS, unreadNotifications);
 
             delegate.handleUnreadNotifications(unreadNotifications);
           } catch (JSONException e) {
             e.printStackTrace();
           }
 
-          metadata.remove(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_NOTIFICATIONS);
+          metadata.remove(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS);
         }
 
         mExponentSharedPreferences.updateExperienceMetadata(experienceId, metadata);

@@ -13,7 +13,7 @@ import android.support.v4.app.NotificationCompat;
 import android.text.format.DateUtils;
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.utils.JSONUtils;
-import org.json.JSONArray;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -194,7 +194,7 @@ public class NotificationHelper {
                 @Override
                 public void onLoadBitmap(Bitmap bitmap) {
                   builder.setLargeIcon(bitmap);
-                  NotificationManager manager = new NotificationManager(context);
+                  ExponentNotificationManager manager = new ExponentNotificationManager(context);
                   manager.notify(experienceId, id, builder.build());
                   EventBus.getDefault().post(notificationEvent);
                   listener.onSuccess(id);
@@ -254,7 +254,7 @@ public class NotificationHelper {
 
     time += SystemClock.elapsedRealtime();
 
-    NotificationManager manager = new NotificationManager(context);
+    ExponentNotificationManager manager = new ExponentNotificationManager(context);
 
     Long interval = null;
 

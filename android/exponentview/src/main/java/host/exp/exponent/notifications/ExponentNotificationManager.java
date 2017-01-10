@@ -19,16 +19,16 @@ import host.exp.exponent.storage.ExponentSharedPreferences;
 
 import java.util.HashMap;
 
-public class NotificationManager {
+public class ExponentNotificationManager {
 
   @Inject
   ExponentSharedPreferences mExponentSharedPreferences;
 
   private Context mContext;
 
-  public NotificationManager(Context context) {
+  public ExponentNotificationManager(Context context) {
     mContext = context;
-    NativeModuleDepsProvider.getInstance().inject(NotificationManager.class, this);
+    NativeModuleDepsProvider.getInstance().inject(ExponentNotificationManager.class, this);
   }
 
   public void notify(String experienceId, int id, Notification notification) {
@@ -92,6 +92,8 @@ public class NotificationManager {
         manager.cancel(experienceId, notifications.getInt(i));
       }
       metadata.put(ExponentSharedPreferences.EXPERIENCE_METADATA_ALL_NOTIFICATION_IDS, null);
+      metadata.put(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS, null);
+
       mExponentSharedPreferences.updateExperienceMetadata(experienceId, metadata);
     } catch (JSONException e) {
       e.printStackTrace();

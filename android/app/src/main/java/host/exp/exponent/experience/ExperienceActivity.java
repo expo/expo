@@ -26,6 +26,7 @@ import com.amplitude.api.Amplitude;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.soloader.SoLoader;
 
+import host.exp.exponent.notifications.ExponentNotificationManager;
 import host.exp.exponent.notifications.ReceivedNotificationEvent;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -196,25 +197,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   private void clearNotifications() {
     String experienceId = mManifest.optString(ExponentManifest.MANIFEST_ID_KEY);
     if (experienceId != null) {
-      JSONObject metadata = mExponentSharedPreferences.getExperienceMetadata(experienceId);
-      if (metadata != null) {
-        if (metadata.has(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_NOTIFICATIONS)) {
-          try {
-            JSONArray unreadNotifications = metadata.getJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_NOTIFICATIONS);
-
-            ExponentGcmListenerService gcmListenerService = ExponentGcmListenerService.getInstance();
-            if (gcmListenerService != null) {
-              gcmListenerService.removeNotifications(unreadNotifications);
-            }
-          } catch (JSONException e) {
-            e.printStackTrace();
-          }
-
-          metadata.remove(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_NOTIFICATIONS);
-        }
-
-        mExponentSharedPreferences.updateExperienceMetadata(experienceId, metadata);
-      }
+      ExponentNotificationManager manager = new ExponentNotificationManager(this);
+      manager.cancelAll(experienceId);
     }
   }
 

@@ -203,7 +203,7 @@ public class ExponentGcmListenerService extends GcmListenerService {
         }
 
         // Display
-        NotificationManager manager = new NotificationManager(ExponentGcmListenerService.this);
+        ExponentNotificationManager manager = new ExponentNotificationManager(ExponentGcmListenerService.this);
         manager.notify(experienceId, notificationId, notification);
 
         // Send event. Will be consumed if experience is already open.
@@ -223,14 +223,14 @@ public class ExponentGcmListenerService extends GcmListenerService {
         metadata = new JSONObject();
       }
 
-      JSONArray unreadNotifications = metadata.optJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_NOTIFICATIONS);
+      JSONArray unreadNotifications = metadata.optJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS);
       if (unreadNotifications == null) {
         unreadNotifications = new JSONArray();
       }
 
       unreadNotifications.put(notification);
 
-      metadata.put(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_NOTIFICATIONS, unreadNotifications);
+      metadata.put(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS, unreadNotifications);
       mExponentSharedPreferences.updateExperienceMetadata(experienceId, metadata);
     } catch (JSONException e) {
       e.printStackTrace();
@@ -240,9 +240,9 @@ public class ExponentGcmListenerService extends GcmListenerService {
   private JSONArray getUnreadNotificationsFromMetadata(String experienceId) {
     JSONObject metadata = mExponentSharedPreferences.getExperienceMetadata(experienceId);
     if (metadata != null) {
-      if (metadata.has(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_NOTIFICATIONS)) {
+      if (metadata.has(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS)) {
         try {
-          return metadata.getJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_NOTIFICATIONS);
+          return metadata.getJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS);
         } catch (JSONException e) {
           e.printStackTrace();
         }
