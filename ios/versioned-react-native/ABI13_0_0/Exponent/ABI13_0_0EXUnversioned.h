@@ -3,7 +3,6 @@
 @import Foundation;
 
 // noop (used by code transform)
-#define symbol symbol
 
 @protocol ABI13_0_0EXUnversioned <NSObject>
 
