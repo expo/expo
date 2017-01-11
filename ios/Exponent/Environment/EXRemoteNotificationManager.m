@@ -74,7 +74,11 @@ NSString * const kEXCurrentAPNSTokenDefaultsKey = @"EXCurrentAPNSTokenDefaultsKe
   if (notification) {
     NSDictionary *body = [notification objectForKey:@"body"];
     NSString *experienceId = [notification objectForKey:@"experienceId"];
-    if (body && experienceId) {
+    if (experienceId) {
+      // Let the kernel rely on the presence of a body
+      if (!body) {
+        body = @{};
+      }
       [[EXKernel sharedInstance] sendNotification:body
                                toExperienceWithId:experienceId
                                    fromBackground:isFromBackground
