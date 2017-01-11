@@ -1,0 +1,14 @@
+# Android Studio
+**/.idea/libraries
+**/.idea/workspace.xml
+**/.idea/gradle.xml
+**/.idea/misc.xml
+**/.idea/modules.xml
+**/.idea/vcs.xml
+*.iml
+.gradle
+app/build
+build
+captures
+local.properties
+*.apk
