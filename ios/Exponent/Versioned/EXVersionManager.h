@@ -13,8 +13,6 @@
 - (void)bridgeDidBackground;
 - (void)invalidate;
 
-+ (void)registerOnceToken: (dispatch_once_t *)token forClass: (NSString *)someClass;
-
 + (NSString *)escapedResourceName:(NSString *)name;
 
 /**

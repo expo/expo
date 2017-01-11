@@ -23,14 +23,7 @@
 
 #import <objc/message.h>
 
-typedef NSMutableDictionary <NSString *, NSMutableArray<NSValue *> *> EXClassPointerMap;
-
-static EXClassPointerMap *EXVersionedOnceTokens;
-EXClassPointerMap *EXGetVersionedOnceTokens(void);
-EXClassPointerMap *EXGetVersionedOnceTokens(void)
-{
-  return EXVersionedOnceTokens;
-}
+static NSNumber *EXVersionManagerIsFirstLoad;
 
 void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
 {
@@ -94,22 +87,7 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
 
 - (void)invalidate
 {
-  [self resetOnceTokens];
-}
 
-+ (void)registerOnceToken:(dispatch_once_t *)token forClass:(NSString *)someClass
-{
-  EXClassPointerMap *onceTokens = EXGetVersionedOnceTokens();
-  if (!onceTokens[someClass]) {
-    [onceTokens setObject:[NSMutableArray array] forKey:someClass];
-  }
-  NSMutableArray<NSValue *> *tokensForClass = onceTokens[someClass];
-  for (NSValue *val in tokensForClass) {
-    dispatch_once_t *existing = [val pointerValue];
-    if (existing == token)
-      return;
-  }
-  [tokensForClass addObject:[NSValue valueWithPointer:token]];
 }
 
 
@@ -119,25 +97,14 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
                          logFunction:(void (^)(NSInteger, NSInteger, NSString *, NSNumber *, NSString *))logFunction
                         logThreshold:(NSInteger)threshold
 {
-  if (EXVersionedOnceTokens == nil) {
+  if (EXVersionManagerIsFirstLoad == nil) {
     // first time initializing this RN version at runtime
     _isFirstLoad = YES;
   }
-  EXVersionedOnceTokens = [NSMutableDictionary dictionary];
+  EXVersionManagerIsFirstLoad = @(NO);
   RCTSetFatalHandler(fatalHandler);
   RCTSetLogThreshold(threshold);
   RCTSetLogFunction(logFunction);
-}
-
-- (void)resetOnceTokens
-{
-  EXClassPointerMap *onceTokens = EXGetVersionedOnceTokens();
-  [onceTokens enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull className, NSMutableArray<NSValue *> * _Nonnull tokensForClass, BOOL * _Nonnull stop) {
-    for (NSValue *val in tokensForClass) {
-      dispatch_once_t *existing = [val pointerValue];
-      *existing = 0;
-    }
-  }];
 }
 
 - (void)swapSystemMethods
