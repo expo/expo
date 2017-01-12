@@ -59,9 +59,10 @@ let ExManifests = {
       };
     }
 
-    if (!manifest.isVerified) {
+    // TODO: re-enable
+    /* if (!manifest.isVerified) {
       throw new Error('This experience could not be verified.');
-    }
+    } */
     if (!manifest.bundleUrl) {
       throw new Error('No bundleUrl in manifest.');
     }
