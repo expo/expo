@@ -90,22 +90,38 @@ static NSString* kPublicKeyTag = @"exp.host.publickey";
   NSData *tag = [NSData dataWithBytes:[kPublicKeyTag UTF8String] length:[kPublicKeyTag length]];
 
   // Delete any old lingering key with the same tag.
-  NSMutableDictionary *publicKey = [[NSMutableDictionary alloc] init];
-  [publicKey setObject:(id) kSecClassKey forKey:(id)kSecClass];
-  [publicKey setObject:(id) kSecAttrKeyTypeRSA forKey:(id)kSecAttrKeyType];
-  [publicKey setObject:tag forKey:(id)kSecAttrApplicationTag];
-  SecItemDelete((CFDictionaryRef)publicKey);
+  NSDictionary *deleteParams = @{
+                                 (__bridge id)kSecClass: (__bridge id)kSecClassKey,
+                                 (__bridge id)kSecAttrKeyType: (__bridge id)kSecAttrKeyTypeRSA,
+                                 (__bridge id)kSecAttrApplicationTag: tag,
+                                 };
+  OSStatus secStatus = SecItemDelete((CFDictionaryRef)deleteParams);
 
-  CFTypeRef persistKey = nil;
+  SecKeyRef savedKeyRef = nil;
 
   // Add key to system keychain.
-  [publicKey setObject:keyData forKey:(id)kSecValueData];
-  [publicKey setObject:(id) kSecAttrKeyClassPublic forKey:(id)kSecAttrKeyClass];
-  [publicKey setObject:[NSNumber numberWithBool:YES] forKey:(id)kSecReturnPersistentRef];
+  NSDictionary *saveParams = @{
+                             (__bridge id)kSecClass: (__bridge id) kSecClassKey,
+                             (__bridge id)kSecAttrKeyType: (__bridge id) kSecAttrKeyTypeRSA,
+                             (__bridge id)kSecAttrApplicationTag: tag,
+                             (__bridge id)kSecAttrKeyClass: (__bridge id) kSecAttrKeyClassPublic,
+                             (__bridge id)kSecReturnPersistentRef: (__bridge id)kCFBooleanTrue,
+                             (__bridge id)kSecValueData: keyData,
+                             (__bridge id)kSecAttrKeySizeInBits: [NSNumber numberWithUnsignedInteger:keyData.length],
+                             (__bridge id)kSecAttrEffectiveKeySize: [NSNumber numberWithUnsignedInteger:keyData.length],
+                             (__bridge id)kSecAttrCanDerive: (__bridge id) kCFBooleanFalse,
+                             (__bridge id)kSecAttrCanEncrypt: (__bridge id) kCFBooleanTrue,
+                             (__bridge id)kSecAttrCanDecrypt: (__bridge id) kCFBooleanFalse,
+                             (__bridge id)kSecAttrCanVerify: (__bridge id) kCFBooleanTrue,
+                             (__bridge id)kSecAttrCanSign: (__bridge id) kCFBooleanFalse,
+                             (__bridge id)kSecAttrCanWrap: (__bridge id) kCFBooleanTrue,
+                             (__bridge id)kSecAttrCanUnwrap: (__bridge id) kCFBooleanFalse,
+                             };
 
-  OSStatus secStatus = SecItemAdd((CFDictionaryRef)publicKey, &persistKey);
-  if (persistKey != nil) {
-    CFRelease(persistKey);
+  secStatus = SecItemAdd((CFDictionaryRef)saveParams, (CFTypeRef *)&savedKeyRef);
+
+  if (savedKeyRef != nil) {
+    CFRelease(savedKeyRef);
   }
 
   if (secStatus != noErr && secStatus != errSecDuplicateItem) {
@@ -114,12 +130,18 @@ static NSString* kPublicKeyTag = @"exp.host.publickey";
 
   // Fetch the SecKeyRef version of the key.
   SecKeyRef keyRef = nil;
-
-  [publicKey removeObjectForKey:(id)kSecValueData];
-  [publicKey removeObjectForKey:(id)kSecReturnPersistentRef];
-  [publicKey setObject:[NSNumber numberWithBool:YES] forKey:(id)kSecReturnRef];
-  [publicKey setObject:(id)kSecAttrKeyTypeRSA forKey:(id)kSecAttrKeyType];
-  secStatus = SecItemCopyMatching((CFDictionaryRef)publicKey, (CFTypeRef *)&keyRef);
+  NSDictionary *queryParams = @{
+                              (__bridge id)kSecClass: (__bridge id) kSecClassKey,
+                              (__bridge id)kSecAttrKeyType: (__bridge id) kSecAttrKeyTypeRSA,
+                              (__bridge id)kSecAttrApplicationTag: tag,
+                              (__bridge id)kSecAttrKeyClass: (__bridge id) kSecAttrKeyClassPublic,
+                              (__bridge id)kSecReturnRef: (__bridge id) kCFBooleanTrue
+                              };
+  secStatus = SecItemCopyMatching((CFDictionaryRef)queryParams, (CFTypeRef *)&keyRef);
+  
+  if (secStatus != noErr) {
+    return nil;
+  }
   
   return keyRef;
 }
