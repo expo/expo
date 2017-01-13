@@ -63,7 +63,7 @@
   if (detachedVersions) {
     self.validatedVersion = detachedVersions[@"kernel"];
   } else {
-    self.validatedVersion = @"";
+    self.validatedVersion = nil;
   }
   self.versionSymbolPrefix = [[EXVersions sharedInstance] symbolPrefixForSdkVersion:self.validatedVersion isKernel:YES];
 }
