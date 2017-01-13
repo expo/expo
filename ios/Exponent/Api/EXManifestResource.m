@@ -51,6 +51,10 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
         return;
       }
 
+      // HACK: because `SecItemCopyMatching` doesn't work in older iOS (see EXCrypto.m)
+      if ([UIDevice currentDevice].systemVersion.floatValue < 10) {
+        isValid = YES;
+      }
       [manifestObj setObject:@(isValid) forKey:@"isVerified"];
 
       successBlock([NSJSONSerialization dataWithJSONObject:manifestObj options:0 error:&jsonError]);

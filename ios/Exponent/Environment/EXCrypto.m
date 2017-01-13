@@ -60,6 +60,10 @@ static NSString* kPublicKeyTag = @"exp.host.publickey";
   }];
 }
 
+/**
+ *  Here is the Apple doc for this black hole:
+ *  https://developer.apple.com/library/prerelease/content/documentation/Security/Conceptual/CertKeyTrustProgGuide/iPhone_Tasks/iPhone_Tasks.html#//apple_ref/doc/uid/TP40001358-CH208-SW13
+ */
 + (_Nullable SecKeyRef)keyRefFromPEMData:(NSData *)pemData
 {
   NSString *pemString = [[NSString alloc] initWithData:pemData encoding:NSUTF8StringEncoding];
@@ -129,13 +133,14 @@ static NSString* kPublicKeyTag = @"exp.host.publickey";
   }
 
   // Fetch the SecKeyRef version of the key.
+  // note that kSecAttrKeyClass: kSecAttrKeyClassPublic doesn't seem to be required here.
+  // also: this doesn't work on iOS < 10.0
   SecKeyRef keyRef = nil;
   NSDictionary *queryParams = @{
                               (__bridge id)kSecClass: (__bridge id) kSecClassKey,
                               (__bridge id)kSecAttrKeyType: (__bridge id) kSecAttrKeyTypeRSA,
                               (__bridge id)kSecAttrApplicationTag: tag,
-                              (__bridge id)kSecAttrKeyClass: (__bridge id) kSecAttrKeyClassPublic,
-                              (__bridge id)kSecReturnRef: (__bridge id) kCFBooleanTrue
+                              (__bridge id)kSecReturnRef: (__bridge id) kCFBooleanTrue,
                               };
   secStatus = SecItemCopyMatching((CFDictionaryRef)queryParams, (CFTypeRef *)&keyRef);
   
