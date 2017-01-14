@@ -95,3 +95,12 @@ RUN echo 'deb http://http.debian.net/debian wheezy-backports main' >> /etc/apt/s
     apt-get -t wheezy-backports install git-core && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+# Tag/Push images
+PUSH {{ .ImageName }}:{{ .ImageTag }}
+
+{{ $shouldTagStableLatest := (or .ShouldTagStableLatest "0") }}
+
+{{ if eq $shouldTagStableLatest "1" }}
+PUSH {{ .ImageName }}:{{ .StableOrLatest }}
+{{ end }}
