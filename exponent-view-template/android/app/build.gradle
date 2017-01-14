@@ -26,6 +26,14 @@ android {
   }
 }
 
+task exponentPrebuildStep(type: Exec) {
+  workingDir '../../'
+
+  commandLine 'cmd', '/c', '.exponent-source/android/detach-scripts/prepare-detached-build.bat'
+  commandLine './.exponent-source/android/detach-scripts/prepare-detached-build.sh'
+}
+preBuild.dependsOn exponentPrebuildStep
+
 repositories{
   flatDir{
     dirs 'libs'

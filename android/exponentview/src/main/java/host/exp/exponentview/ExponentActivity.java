@@ -41,7 +41,8 @@ import host.exp.exponent.utils.ExperienceActivityUtils;
 public abstract class ExponentActivity extends ReactNativeActivity implements Exponent.StartReactInstanceDelegate {
 
   // Override me!
-  public abstract String initialUrl();
+  public abstract String publishedUrl();
+  public abstract String developmentUrl();
   public abstract List<String> sdkVersions();
   public abstract List<ReactPackage> reactPackages();
   public abstract boolean isDebug();
@@ -77,6 +78,7 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
       Uri uri = intent.getData();
       String intentUri = uri == null ? null : uri.toString();
       if (intentUri != null && intentUri.startsWith("exp")) {
+        // TODO: do we need to do this?
         // Replace scheme with exp://
         int indexOfEndOfScheme = intentUri.indexOf("://");
         mIntentUri = "exp" + intentUri.substring(indexOfEndOfScheme);
@@ -95,7 +97,8 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
 
     NativeModuleDepsProvider.getInstance().inject(ExponentActivity.class, this);
 
-    mManifestUrl = mIntentUri == null ? initialUrl() : mIntentUri;
+    String defaultUrl = isDebug() ? developmentUrl() : publishedUrl();
+    mManifestUrl = mIntentUri == null ? defaultUrl : mIntentUri;
     mExponentManifest.fetchManifest(mManifestUrl, new ExponentManifest.ManifestListener() {
       @Override
       public void onCompleted(JSONObject manifest) {

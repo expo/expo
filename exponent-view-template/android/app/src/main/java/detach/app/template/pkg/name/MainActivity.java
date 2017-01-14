@@ -6,13 +6,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import detach.app.template.pkg.name.generated.ExponentBuildConstants;
 import host.exp.exponentview.ExponentActivity;
 
 public class MainActivity extends ExponentActivity {
 
   @Override
-  public String initialUrl() {
+  public String publishedUrl() {
     return "TEMPLATE_INITIAL_URL";
+  }
+
+  @Override
+  public String developmentUrl() {
+    return ExponentBuildConstants.DEVELOPMENT_URL;
   }
 
   @Override
