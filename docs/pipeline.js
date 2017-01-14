@@ -1,9 +1,11 @@
-/* global CI, git, Promise, spawnAsync */
+import Promise from 'bluebird';
+import git from 'git-promise';
+import spawnAsync from '@exponent/spawn-async';
 
-const {
+import CI, {
   Docker,
   Log,
-} = CI;
+} from 'ci';
 
 export default {
   config: {
