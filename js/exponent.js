@@ -5,6 +5,7 @@
  */
 'use strict';
 
+import Exponent from 'exponent';
 import React from 'react';
 import {
   AppRegistry,
@@ -74,6 +75,7 @@ DeviceEventEmitter.addListener('ExponentKernel.addError', async (event) => {
   let action = ConsoleActions.logUncaughtError(exceptionId, errorMessage, stack, isFatal);
   ExStore.dispatch(action);
 });
+
 
 AppRegistry.registerComponent('ExponentApp', () => App);
 AppRegistry.registerComponent('ErrorScreenApp', () => ErrorScreenAppWithStore);
