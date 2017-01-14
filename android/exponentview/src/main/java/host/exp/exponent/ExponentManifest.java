@@ -91,6 +91,7 @@ public class ExponentManifest {
 
   private static final int MAX_BITMAP_SIZE = 192;
   private static final String REDIRECT_SNIPPET = "exp.host/--/to-exp/";
+  private static final String ANONYMOUS_EXPERIENCE_PREFIX = "@anonymous/";
 
   Context mContext;
   ExponentNetwork mExponentNetwork;
@@ -208,19 +209,25 @@ public class ExponentManifest {
     final JSONObject manifest = new JSONObject(manifestString);
     if (manifest.has("manifestString") && manifest.has("signature")) {
       final JSONObject innerManifest = new JSONObject(manifest.getString("manifestString"));
-      mCrypto.verifyPublicRSASignature(Constants.API_HOST + "/--/manifest-public-key",
-          manifest.getString("manifestString"), manifest.getString("signature"), new Crypto.RSASignatureListener() {
-        @Override
-        public void onError(String errorMessage) {
-          Log.w(TAG, errorMessage);
-          fetchManifestStep3(innerManifest, false, listener);
-        }
 
-        @Override
-        public void onCompleted(boolean isValid) {
-          fetchManifestStep3(innerManifest, isValid, listener);
-        }
-      });
+      if (isAnonymousExperience(innerManifest)) {
+        // Automatically verified.
+        fetchManifestStep3(innerManifest, true, listener);
+      } else {
+        mCrypto.verifyPublicRSASignature(Constants.API_HOST + "/--/manifest-public-key",
+            manifest.getString("manifestString"), manifest.getString("signature"), new Crypto.RSASignatureListener() {
+              @Override
+              public void onError(String errorMessage) {
+                Log.w(TAG, errorMessage);
+                fetchManifestStep3(innerManifest, false, listener);
+              }
+
+              @Override
+              public void onCompleted(boolean isValid) {
+                fetchManifestStep3(innerManifest, isValid, listener);
+              }
+            });
+      }
     } else {
       fetchManifestStep3(manifest, false, listener);
     }
@@ -327,5 +334,16 @@ public class ExponentManifest {
     } else {
       return R.color.colorPrimary;
     }
+  }
+
+  private boolean isAnonymousExperience(final JSONObject manifest) {
+    if (manifest.has(MANIFEST_ID_KEY)) {
+      final String id = manifest.optString(MANIFEST_ID_KEY);
+      if (id != null && id.startsWith(ANONYMOUS_EXPERIENCE_PREFIX)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }
