@@ -145,6 +145,3 @@ gulp.task('react-native-server', startReactNativeServer);
 gulp.task('generate-dynamic-macros', generateDynamicMacrosWithArguments);
 gulp.task('cleanup-dynamic-macros', cleanupDynamicMacrosWithArguments);
 gulp.task('run-fabric-ios', runFabricIOSWithArguments);
-
-// Used to also run 'ptool:watch' here but was causing issues
-gulp.task('default', gulp.parallel('react-native-server'));

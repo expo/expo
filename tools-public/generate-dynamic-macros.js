@@ -14,6 +14,7 @@ import JsonFile from '@exponent/json-file';
 import {
   ExponentTools,
   IosPodsTools,
+  UrlUtils,
 } from 'xdl';
 let {
   modifyIOSPropertyListAsync,
@@ -79,9 +80,11 @@ const macrosFuncs = {
     }
 
     try {
-      let configPath = path.join(__dirname, '.kernel-ngrok-url');
-      let data = await fs.promise.readFile(configPath, 'utf8');
-      return data.trim();
+      let url = await UrlUtils.constructBundleUrlAsync(
+        path.join(__dirname, '..', 'js'),
+        { urlType: 'http', hostType: 'tunnel' }
+      );
+      return url;
     } catch (e) {
       if (e.code !== 'ENOENT') {
         console.error(e.stack);
