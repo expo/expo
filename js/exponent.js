@@ -76,8 +76,7 @@ DeviceEventEmitter.addListener('ExponentKernel.addError', async (event) => {
   ExStore.dispatch(action);
 });
 
-
-AppRegistry.registerComponent('ExponentApp', () => App);
+Exponent.registerRootComponent(App);
 AppRegistry.registerComponent('ErrorScreenApp', () => ErrorScreenAppWithStore);
 AppRegistry.registerComponent('InfoScreenApp', () => InfoScreenApp);
 AppRegistry.registerComponent('ExperienceNuxApp', () => ExperienceNuxAppWithStore);

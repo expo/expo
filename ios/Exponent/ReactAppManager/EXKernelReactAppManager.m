@@ -101,13 +101,15 @@ NSString * const kEXKernelLaunchUrlDefaultsKey = @"EXKernelLaunchUrlDefaultsKey"
                                       @"shellManifestUrl": [EXShellManager sharedInstance].shellManifestUrl,
                                       }];
   }
+  // TODO: do we want to use this for anything? needed for exponent-sdk to function
+  props[@"exp"] = @{};
   
   return props;
 }
 
 - (NSString *)applicationKeyForRootView
 {
-  return @"ExponentApp";
+  return @"main";
 }
 
 - (RCTLogFunction)logFunction
@@ -144,15 +146,20 @@ NSString * const kEXKernelLaunchUrlDefaultsKey = @"EXKernelLaunchUrlDefaultsKey"
   NSMutableArray *modules = [NSMutableArray array];
   
   if ([self.versionManager respondsToSelector:@selector(extraModulesWithParams:)]) {
+    NSDictionary *shittyManifest = @{ @"id": @"@ben/test-kernel" }; // TODO: BEN
+    // TODO: common constants impl?
     NSMutableDictionary *params = [@{
                                      @"constants": @{
-                                         @"deviceId": [EXKernel deviceInstallUUID]
+                                         @"deviceId": [EXKernel deviceInstallUUID],
+                                         @"linkingUri": @"exp://",
+                                         @"manifest": shittyManifest,
+                                         @"appOwnership": @"exponent",
                                          },
                                      @"kernel": [EXKernel sharedInstance],
                                      @"supportedSdkVersions": [EXVersions sharedInstance].versions[@"sdkVersions"],
                                      @"exceptionsManagerDelegate": _exceptionHandler,
                                      @"isDeveloper": @([[self class] _isDevelopingKernel]),
-                                     @"manifest": @{ @"id": @"@ben/test-kernel" }, // TODO: BEN
+                                     @"manifest": shittyManifest,
                                      } mutableCopy];
 
     // used by appetize - override the kernel initial url if there's something in NSUserDefaults
