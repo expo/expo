@@ -8,11 +8,22 @@ import android.content.pm.PackageManager;
 
 import javax.inject.Inject;
 
+import de.greenrobot.event.EventBus;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponentview.Exponent;
+import host.exp.exponentview.ExponentViewBuildConfig;
 
 public class ExponentViewKernel implements KernelInterface {
+
+  public static class ExponentViewErrorEvent {
+
+    public final String errorMessage;
+
+    ExponentViewErrorEvent(final String errorMessage) {
+      this.errorMessage = errorMessage;
+    }
+  }
 
   private static final String TAG = ExponentViewKernel.class.getSimpleName();
 
@@ -51,12 +62,20 @@ public class ExponentViewKernel implements KernelInterface {
 
   @Override
   public void handleError(String errorMessage) {
-
+    if (ExponentViewBuildConfig.DEBUG) {
+      EventBus.getDefault().post(new ExponentViewErrorEvent(errorMessage));
+    } else {
+      throw new RuntimeException(errorMessage);
+    }
   }
 
   @Override
   public void handleError(Exception exception) {
-
+    if (ExponentViewBuildConfig.DEBUG) {
+      EventBus.getDefault().post(new ExponentViewErrorEvent(exception.getMessage()));
+    } else {
+      throw new RuntimeException(exception);
+    }
   }
 
   @Override

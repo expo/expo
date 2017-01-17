@@ -24,6 +24,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import de.greenrobot.event.EventBus;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.RNObject;
@@ -32,6 +33,7 @@ import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.experience.ReactNativeActivity;
 import host.exp.exponent.kernel.ExponentUrls;
+import host.exp.exponent.kernel.ExponentViewKernel;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.kernel.KernelProvider;
 import host.exp.exponent.storage.ExponentDB;
@@ -68,6 +70,10 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
+    EventBus.getDefault().registerSticky(this);
+
+    ExponentViewBuildConfig.DEBUG = isDebug();
 
     // Set SDK versions
     Constants.setSdkVersions(sdkVersions());
@@ -119,6 +125,17 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
         KernelProvider.getInstance().handleError(e);
       }
     });
+  }
+
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
+
+    EventBus.getDefault().unregister(this);
+  }
+
+  public void onEventMainThread(ExponentViewKernel.ExponentViewErrorEvent event) {
+
   }
 
   private void onManifestLoaded(JSONObject manifest) throws JSONException {

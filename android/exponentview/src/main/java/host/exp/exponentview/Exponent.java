@@ -80,6 +80,7 @@ import static host.exp.exponent.kernel.KernelConstants.MANIFEST_URL_KEY;
 public class Exponent {
 
   private static final String TAG = Exponent.class.getSimpleName();
+  private static final String PACKAGER_RUNNING = "running";
 
   private static Exponent sInstance;
 
@@ -121,7 +122,7 @@ public class Exponent {
         @Override
         public void onResponse(Call call, Response response) throws IOException {
           ExponentNetwork.flushResponse(response);
-          EXL.d(TAG, "Loaded status page.");
+          EXL.d(TAG, "Loaded exp.host status page.");
         }
       });
     } catch (Throwable e) {
@@ -558,6 +559,24 @@ public class Exponent {
     void handleUnreadNotifications(JSONArray unreadNotifications);
   }
 
+  private void testPackagerStatus(final JSONObject mManifest) {
+    String debuggerHost = mManifest.optString(ExponentManifest.MANIFEST_DEBUGGER_HOST_KEY);
+    mExponentNetwork.getClient().call(new Request.Builder().url(debuggerHost + "/status").build(), new Callback() {
+      @Override
+      public void onFailure(Call call, IOException e) {
+        EXL.d(TAG, e.toString());
+      }
+
+      @Override
+      public void onResponse(Call call, Response response) throws IOException {
+        final String responseString = response.body().string();
+        if (responseString.contains(PACKAGER_RUNNING)) {
+
+        }
+      }
+    });
+  }
+
   public RNObject startReactInstance(final Object activity, final StartReactInstanceDelegate delegate, final String mManifestUrl, final String mIntentUri, final String mJSBundlePath, final RNObject mLinkingPackage, final JSONObject mManifest,
                                      final String mSDKVersion, final ExponentNotification mNotification, final boolean mIsShellApp, final ExponentSharedPreferences mExponentSharedPreferences,
                                      final RNObject mReactRootView, final int mActivityId, final boolean mIsCrashed, final List<? extends Object> extraNativeModules) {
@@ -675,7 +694,6 @@ public class Exponent {
 
     return mReactInstanceManager;
   }
-
 
   private static int currentActivityId = 0;
   public static int getActivityId() {
