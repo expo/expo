@@ -10,7 +10,6 @@
 #import "EXKernelModule.h"
 #import "EXLinkingManager.h"
 #import "EXNotifications.h"
-#import "EXUnversioned.h"
 #import "EXVersionManager.h"
 #import "EXAmplitude.h"
 #import "EXSegment.h"
@@ -163,15 +162,21 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
 
 /**
  *  Expected params:
- *    EXFrame *frame
  *    NSDictionary *manifest
  *    NSDictionary *constants
  *    NSURL *initialUri
  *    @BOOL isDeveloper
+ *
+ * Kernel-only:
+ *    EXKernel *kernel
+ *    NSArray *supportedSdkVersions
+ *    id exceptionsManagerDelegate
+ *
+ * Frame-only:
+ *    EXFrame *frame
  */
 - (NSArray *)extraModulesWithParams:(NSDictionary *)params
 {
-  id frame = params[@"frame"];
   NSDictionary *manifest = params[@"manifest"];
   NSURL *initialUri = params[@"initialUri"];
   NSDictionary *constants = params[@"constants"];
@@ -184,14 +189,30 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
                                     [[EXConstants alloc] initWithProperties:constants],
                                     [[EXDisabledDevLoadingView alloc] init],
                                     [[EXFileSystem alloc] initWithExperienceId:experienceId],
-                                    [[EXFrameExceptionsManager alloc] initWithDelegate:frame],
                                     [[EXLinkingManager alloc] initWithInitialUrl:initialUri],
                                     [[EXNotifications alloc] initWithExperienceId:experienceId],
                                     [[EXAmplitude alloc] initWithExperienceId:experienceId],
                                     [[EXSegment alloc] init],
                                     [[EXUtil alloc] init],
                                     ]];
-
+  if (params[@"frame"]) {
+    [extraModules addObject:[[EXFrameExceptionsManager alloc] initWithDelegate:params[@"frame"]]];
+  } else {
+    id exceptionsManagerDelegate = params[@"exceptionsManagerDelegate"];
+    if (exceptionsManagerDelegate) {
+      RCTExceptionsManager *exceptionsManager = [[RCTExceptionsManager alloc] initWithDelegate:exceptionsManagerDelegate];
+      [extraModules addObject:exceptionsManager];
+    } else {
+      RCTLogWarn(@"No exceptions manager provided when building extra modules for bridge.");
+    }
+  }
+  
+  if (params[@"kernel"]) {
+    EXKernelModule *kernel = [[EXKernelModule alloc] initWithVersions:params[@"supportedSdkVersions"]];
+    kernel.delegate = params[@"kernel"];
+    [extraModules addObject:kernel];
+  }
+  
   if (isDeveloper) {
     [extraModules addObjectsFromArray:@[
                                         [[RCTDevMenu alloc] init],
@@ -205,58 +226,6 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
                                         ]];
   }
   return extraModules;
-}
-
-/**
- *  Expected params:
- *    EXKernel *kernel
- *    NSDictionary *launchOptions
- *    NSDictionary *constants
- *    NSURL *initialUriFromLaunchOptions
- *    NSArray *supportedSdkVersions
- *    id exceptionsManagerDelegate
- */
-- (NSArray *)versionedModulesForKernelWithParams:(NSDictionary *)params
-{
-  NSURL *initialKernelUrl;
-  NSDictionary *constants = params[@"constants"];
-  
-  // used by appetize - override the kernel initial url if there's something in NSUserDefaults
-  NSString *launchUrlDefaultsKey = EX_UNVERSIONED(@"EXKernelLaunchUrlDefaultsKey");
-  NSString *kernelInitialUrlDefaultsValue = [[NSUserDefaults standardUserDefaults] stringForKey:launchUrlDefaultsKey];
-  if (kernelInitialUrlDefaultsValue) {
-    initialKernelUrl = [NSURL URLWithString:kernelInitialUrlDefaultsValue];
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:launchUrlDefaultsKey];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-  } else {
-    NSURL *initialUriFromLaunchOptions = params[@"initialUriFromLaunchOptions"];
-    initialKernelUrl = initialUriFromLaunchOptions;
-  }
-
-  NSMutableArray *modules = [NSMutableArray arrayWithArray:
-                             @[
-                               [[EXDisabledDevMenu alloc] init],
-                               [[EXLinkingManager alloc] initWithInitialUrl:initialKernelUrl],
-                               [[EXConstants alloc] initWithProperties:constants],
-                               ]];
-  EXKernelModule *kernel = [[EXKernelModule alloc] initWithVersions:params[@"supportedSdkVersions"]];
-  kernel.delegate = params[@"kernel"];
-  [modules addObject:kernel];
-  
-  id exceptionsManagerDelegate = params[@"exceptionsManagerDelegate"];
-  if (exceptionsManagerDelegate) {
-    RCTExceptionsManager *exceptionsManager = [[RCTExceptionsManager alloc] initWithDelegate:exceptionsManagerDelegate];
-    [modules addObject:exceptionsManager];
-  }
-  
-#if DEBUG
-  // enable redbox only for debug builds
-#else
-  EXDisabledRedBox *disabledRedBox = [[EXDisabledRedBox alloc] init];
-  [modules addObject:disabledRedBox];
-#endif
-  
-  return modules;
 }
 
 + (NSString *)escapedResourceName:(NSString *)name
