@@ -11,6 +11,8 @@
 #import "EXVersionManager.h"
 #import "EXVersions.h"
 
+NSString * const kEXKernelLaunchUrlDefaultsKey = @"EXKernelLaunchUrlDefaultsKey";
+
 @interface EXKernelReactAppManager ()
 
 // we retain this because RCTExceptionsManager won't retain it
@@ -141,21 +143,31 @@
   _exceptionHandler = [[EXExceptionHandler alloc] initWithBridge:self.reactBridge];
   NSMutableArray *modules = [NSMutableArray array];
   
-  if ([self.versionManager respondsToSelector:@selector(versionedModulesForKernelWithParams:)]) {
+  if ([self.versionManager respondsToSelector:@selector(extraModulesWithParams:)]) {
     NSMutableDictionary *params = [@{
-                                     @"launchOptions": (_launchOptions) ?: @{},
                                      @"constants": @{
                                          @"deviceId": [EXKernel deviceInstallUUID]
                                          },
                                      @"kernel": [EXKernel sharedInstance],
                                      @"supportedSdkVersions": [EXVersions sharedInstance].versions[@"sdkVersions"],
                                      @"exceptionsManagerDelegate": _exceptionHandler,
+                                     @"isDeveloper": @([[self class] _isDevelopingKernel]),
+                                     @"manifest": @{ @"id": @"@ben/test-kernel" }, // TODO: BEN
                                      } mutableCopy];
-    NSURL *initialUriFromLaunchOptions = [EXKernel initialUrlFromLaunchOptions:_launchOptions];
-    if (initialUriFromLaunchOptions) {
-      params[@"initialUriFromLaunchOptions"] = initialUriFromLaunchOptions;
+
+    // used by appetize - override the kernel initial url if there's something in NSUserDefaults
+    NSURL *initialKernelUrl;
+    NSString *kernelInitialUrlDefaultsValue = [[NSUserDefaults standardUserDefaults] stringForKey:kEXKernelLaunchUrlDefaultsKey];
+    if (kernelInitialUrlDefaultsValue) {
+      initialKernelUrl = [NSURL URLWithString:kernelInitialUrlDefaultsValue];
+      [[NSUserDefaults standardUserDefaults] removeObjectForKey:kEXKernelLaunchUrlDefaultsKey];
+      [[NSUserDefaults standardUserDefaults] synchronize];
+    } else {
+      initialKernelUrl = [EXKernel initialUrlFromLaunchOptions:_launchOptions];
     }
-    [modules addObjectsFromArray:[self.versionManager versionedModulesForKernelWithParams:params]];
+    params[@"initialUri"] = initialKernelUrl;
+    
+    [modules addObjectsFromArray:[self.versionManager extraModulesWithParams:params]];
   }
   
   return modules;
