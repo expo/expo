@@ -5,17 +5,11 @@ package host.exp.exponent.experience;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v4.content.ContextCompat;
 import android.util.Pair;
-import android.view.View;
-import android.widget.FrameLayout;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-
-import org.json.JSONObject;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -26,9 +20,7 @@ import de.greenrobot.event.EventBus;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.gcm.RegistrationIntentService;
 import host.exp.exponentview.BuildConfig;
-import host.exp.exponent.LoadingView;
 import host.exp.exponentview.Exponent;
-import host.exp.exponentview.R;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.kernel.ExponentError;
 import host.exp.exponent.kernel.ExponentErrorMessage;
@@ -38,23 +30,10 @@ import host.exp.exponent.storage.ExponentSharedPreferences;
 
 public abstract class BaseExperienceActivity extends MultipleVersionReactNativeActivity {
 
-  public static class ExperienceDoneLoadingEvent {
-  }
-
-  private static final long VIEW_TEST_INTERVAL_MS = 20;
-
   private static BaseExperienceActivity sVisibleActivity;
   protected static Queue<ExponentError> sErrorQueue = new LinkedList<>();
 
-  protected RNObject mReactRootView = new RNObject("com.facebook.react.ReactRootView");
-
-  private FrameLayout mLayout;
-  private FrameLayout mContainer;
-  private LoadingView mLoadingView;
   private boolean mIsInForeground = false;
-  private Handler mHandler = new Handler();
-  private Handler mLoadingHandler = new Handler();
-  private boolean mIsLoading = true;
 
   @Inject
   Kernel mKernel;
@@ -84,14 +63,7 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     mIsInForeground = true;
-    mLayout = new FrameLayout(this);
-    setContentView(mLayout);
-
-    mContainer = new FrameLayout(this);
-    mContainer.setBackgroundColor(ContextCompat.getColor(this, R.color.white));
-    mLoadingView = new LoadingView(this);
-    mLayout.addView(mContainer);
-    mLayout.addView(mLoadingView);
+    mReactRootView = new RNObject("com.facebook.react.ReactRootView");
 
     NativeModuleDepsProvider.getInstance().inject(BaseExperienceActivity.class, this);
   }
@@ -161,8 +133,6 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
       mReactInstanceManager.assign(null);
     }
     mReactRootView.assign(null);
-    mHandler.removeCallbacksAndMessages(null);
-    mLoadingHandler.removeCallbacksAndMessages(null);
 
     // Fresco leaks ReactApplicationContext
     Fresco.initialize(getApplicationContext());
@@ -173,89 +143,6 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
     Exponent.getInstance().onActivityResult(requestCode, resultCode, data);
-  }
-
-  protected void setView(final View view) {
-    mContainer.removeAllViews();
-    addView(view);
-    checkForReactViews();
-  }
-
-  protected void addView(final View view) {
-    removeViewFromParent(view);
-    mContainer.addView(view);
-  }
-
-  protected void removeViewFromParent(final View view) {
-    if (view.getParent() != null) {
-      ((FrameLayout) view.getParent()).removeView(view);
-    }
-  }
-
-  protected void removeViews() {
-    mContainer.removeAllViews();
-  }
-
-  // Loop until a view is added to the React root view.
-  private void checkForReactViews() {
-    if (mReactRootView.isNull()) {
-      return;
-    }
-
-    if ((int) mReactRootView.call("getChildCount") > 0) {
-      fadeLoadingScreen();
-      onDoneLoading();
-    } else {
-      mHandler.postDelayed(new Runnable() {
-        @Override
-        public void run() {
-          checkForReactViews();
-        }
-      }, VIEW_TEST_INTERVAL_MS);
-    }
-  }
-
-  public void showLoadingScreen(JSONObject manifest) {
-    // Start of by not showing the icon since it hopefully won't take long.
-    // If it takes more than 3 seconds start flashing the icon so it doesn't look like it's frozen.
-    mLoadingView.setManifest(manifest);
-    mLoadingView.setShowIcon(false);
-    mLoadingHandler.postDelayed(new Runnable() {
-      @Override
-      public void run() {
-        mLoadingView.setShowIcon(true);
-      }
-    }, 3000);
-    mLoadingView.clearAnimation();
-    mLoadingView.setAlpha(1.0f);
-    mIsLoading = true;
-  }
-
-  public void showLongLoadingScreen(JSONObject manifest) {
-    mLoadingView.setManifest(manifest);
-    mLoadingView.setShowIcon(true);
-    mLoadingView.clearAnimation();
-    mLoadingView.setAlpha(1.0f);
-    mIsLoading = true;
-  }
-
-  public boolean isLoading() {
-    return mIsLoading;
-  }
-
-  private void fadeLoadingScreen() {
-    runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        mLoadingView.setAlpha(0.0f);
-        mLoadingView.setShowIcon(false);
-        mLoadingView.setDoneLoading();
-        mIsLoading = false;
-        mLoadingHandler.removeCallbacksAndMessages(null);
-
-        EventBus.getDefault().post(new ExperienceDoneLoadingEvent());
-      }
-    });
   }
 
   protected void consumeErrorQueue() {
@@ -343,11 +230,6 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   // Override
   protected void onError(final ExponentError error) {
     // Called for each JS error
-  }
-
-  // Override
-  protected void onDoneLoading() {
-
   }
 
   protected void registerForNotifications() {

@@ -63,13 +63,13 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
   private JSONObject mManifest;
   private String mJSBundlePath;
   private int mActivityId;
-  private RNObject mReactRootView;
   private boolean mIsInForeground = false;
-  private FrameLayout mLayout;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
+    mReactRootView = new RNObject("host.exp.exponent.ReactUnthemedRootView");
 
     EventBus.getDefault().registerSticky(this);
 
@@ -90,9 +90,6 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
         mIntentUri = "exp" + intentUri.substring(indexOfEndOfScheme);
       }
     }
-
-    mLayout = new FrameLayout(this);
-    setContentView(mLayout);
 
     Exponent.initialize(this, getApplication());
 
@@ -171,10 +168,8 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
           return;
         }
 
-        mReactRootView = new RNObject("host.exp.exponent.ReactUnthemedRootView");
         mReactRootView.loadVersion(RNObject.UNVERSIONED).construct(ExponentActivity.this);
-        mLayout.removeAllViews();
-        mLayout.addView((View) mReactRootView.get());
+        setView((View) mReactRootView.get());
 
         String id;
         try {
@@ -184,11 +179,13 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
           return;
         }
 
+        boolean hasCachedBundle;
         if (isDebugModeEnabled()) {
+          hasCachedBundle = false;
           waitForDrawOverOtherAppPermission("");
         } else {
           // TODO: make sure sdk version usage is safe here
-          Exponent.getInstance().loadJSBundle(bundleUrl, id, mSDKVersion,
+          hasCachedBundle = Exponent.getInstance().loadJSBundle(bundleUrl, id, mSDKVersion,
               new Exponent.BundleListener() {
                 @Override
                 public void onBundleLoaded(String localBundlePath) {
@@ -203,6 +200,13 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
         }
 
         ExperienceActivityUtils.setWindowTransparency(mSDKVersion, finalManifest, ExponentActivity.this);
+
+        if (hasCachedBundle) {
+          showLoadingScreen(finalManifest);
+        } else {
+          showLongLoadingScreen(finalManifest);
+        }
+
         ExperienceActivityUtils.setTaskDescription(mExponentManifest, finalManifest, ExponentActivity.this);
       }
     });
