@@ -559,6 +559,7 @@ public class Exponent {
     void handleUnreadNotifications(JSONArray unreadNotifications);
   }
 
+  // TODO: use this
   private void testPackagerStatus(final JSONObject mManifest) {
     String debuggerHost = mManifest.optString(ExponentManifest.MANIFEST_DEBUGGER_HOST_KEY);
     mExponentNetwork.getClient().call(new Request.Builder().url(debuggerHost + "/status").build(), new Callback() {

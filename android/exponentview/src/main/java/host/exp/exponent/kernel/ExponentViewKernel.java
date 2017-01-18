@@ -72,7 +72,7 @@ public class ExponentViewKernel implements KernelInterface {
   @Override
   public void handleError(Exception exception) {
     if (ExponentViewBuildConfig.DEBUG) {
-      EventBus.getDefault().post(new ExponentViewErrorEvent(exception.getMessage()));
+      EventBus.getDefault().post(new ExponentViewErrorEvent(exception.toString()));
     } else {
       throw new RuntimeException(exception);
     }

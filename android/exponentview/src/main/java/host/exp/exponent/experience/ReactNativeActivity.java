@@ -83,6 +83,15 @@ public abstract class ReactNativeActivity extends Activity implements com.facebo
     }
   }
 
+  protected void stopLoading() {
+    mHandler.removeCallbacksAndMessages(null);
+    mLoadingView.setAlpha(0.0f);
+    mLoadingView.setShowIcon(false);
+    mLoadingView.setDoneLoading();
+    mIsLoading = false;
+    mLoadingHandler.removeCallbacksAndMessages(null);
+  }
+
   protected void removeViews() {
     mContainer.removeAllViews();
   }

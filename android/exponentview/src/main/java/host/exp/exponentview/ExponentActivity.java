@@ -11,6 +11,7 @@ import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
@@ -132,7 +133,17 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
   }
 
   public void onEventMainThread(ExponentViewKernel.ExponentViewErrorEvent event) {
+    TextView textView = new TextView(this);
+    textView.setText(event.errorMessage);
 
+    int statusBarHeight = 0;
+    int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+    if (resourceId > 0) {
+      statusBarHeight = getResources().getDimensionPixelSize(resourceId);
+    }
+    textView.setPadding(0, statusBarHeight, 0, 0);
+    setView(textView);
+    stopLoading();
   }
 
   private void onManifestLoaded(JSONObject manifest) throws JSONException {
