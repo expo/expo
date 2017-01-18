@@ -5,6 +5,7 @@
  */
 'use strict';
 
+import Exponent from 'exponent';
 import React from 'react';
 import {
   ActivityIndicator,
@@ -32,15 +33,24 @@ import Button from 'react-native-button';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { Components, Permissions } from 'exponent';
+let {
+  Asset,
+  Components,
+  Constants,
+  Permissions,
+} = Exponent;
 
 let {
-  ExponentConstants,
   ExponentKernel,
 } = NativeModules;
 
-class HomeScreen extends React.Component {
+function cacheImages(imageModules) {
+  return imageModules.map(imageModule => {
+    return Asset.fromModule(imageModule).downloadAsync();
+  });
+}
 
+class HomeScreen extends React.Component {
   static getDataProps(data) {
     return {
       currentUrl: data.browser.foregroundTaskUrl,
@@ -65,13 +75,24 @@ class HomeScreen extends React.Component {
       dataSource: this._cloneDataSourceWithProps(dataSource, props),
       viewFinderActive: false,
       hasCameraPermission: false,
+      assetsAreLoaded: false,
     };
+  }
+
+  componentWillMount() {
+    this._loadAssetsAsync();
   }
 
   componentWillReceiveProps(nextProps) {
     this.setState(state => ({
       dataSource: this._cloneDataSourceWithProps(state.dataSource, nextProps),
     }));
+  }
+
+  async _loadAssetsAsync() {
+    const imageAssets = cacheImages([ require('../Assets/ios-home-header-wordmark.png') ]);
+    await Promise.all(imageAssets);
+    this.setState({ assetsAreLoaded: true });
   }
 
   _cloneDataSourceWithProps(dataSource, props) {
@@ -110,6 +131,17 @@ class HomeScreen extends React.Component {
       );
     }
 
+    // TODO: this is mostly just an asset test until @brent replaces HomeScreen
+    let wordmark;
+    if (this.state.assetsAreLoaded) {
+      wordmark = (
+        <Image
+          source={require('../Assets/ios-home-header-wordmark.png')}
+          style={styles.exponent}
+          />
+      );
+    }
+
     return (
       <View {...this.props} style={[styles.container, this.props.style]}>
         <StatusBar
@@ -127,13 +159,7 @@ class HomeScreen extends React.Component {
             style={styles.logo}
           />
           <View>
-            <ResponsiveImage
-              sources={{
-                2: { uri: 'https://s3.amazonaws.com/exp-us-standard/ios-home-header-wordmark@2x.png' },
-                3: { uri: 'https://s3.amazonaws.com/exp-us-standard/ios-home-header-wordmark@3x.png' },
-              }}
-              style={styles.exponent}
-            />
+            {wordmark}
           </View>
           {activityIndicator}
 
@@ -159,7 +185,7 @@ class HomeScreen extends React.Component {
         />
 
         <View style={styles.bottomBar}>
-          <Text style={styles.bottomBarText}>v{ExponentConstants.exponentVersion}</Text>
+          <Text style={styles.bottomBarText}>v{Constants.exponentVersion}</Text>
         </View>
         {camera}
       </View>

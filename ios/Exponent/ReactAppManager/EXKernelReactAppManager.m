@@ -42,8 +42,9 @@ NSString * const kEXKernelLaunchUrlDefaultsKey = @"EXKernelLaunchUrlDefaultsKey"
 {
 #ifdef BUILD_MACHINE_KERNEL_NGROK_URL
   if ([self _isDevelopingKernel]) {
+    // TODO: embed manifest
     NSString *kernelNgrokUrl = BUILD_MACHINE_KERNEL_NGROK_URL;
-    NSString *kernelPath = @"exponent.bundle?dev=true&platform=ios";
+    NSString *kernelPath = @"exponent.bundle?dev=true&platform=ios&&assetPlugin=exponent/tools/hashAssetFiles";
     if (kernelNgrokUrl.length) {
       return [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kernelNgrokUrl, kernelPath]];
     } else {
@@ -146,7 +147,15 @@ NSString * const kEXKernelLaunchUrlDefaultsKey = @"EXKernelLaunchUrlDefaultsKey"
   NSMutableArray *modules = [NSMutableArray array];
   
   if ([self.versionManager respondsToSelector:@selector(extraModulesWithParams:)]) {
-    NSDictionary *shittyManifest = @{ @"id": @"@ben/test-kernel" }; // TODO: BEN
+     // TODO: embed manifest
+    NSMutableDictionary *shittyManifest = [@{
+                                             @"id": @"@ben/test-kernel",
+                                             @"bundleUrl": [[self class] kernelBundleUrl].absoluteString,
+                                             } mutableCopy];
+    if ([[self class] _isDevelopingKernel]) {
+      // needed for Assets
+      shittyManifest[@"xde"] = @(YES);
+    }
     // TODO: common constants impl?
     NSMutableDictionary *params = [@{
                                      @"constants": @{
