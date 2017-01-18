@@ -153,6 +153,10 @@ NSString *kEXKernelBundleResourceName = @"kernel.ios";
   if ([notifBridge respondsToSelector:@selector(parentBridge)]) {
     notifBridge = [notifBridge parentBridge];
   }
+  if (notifBridge == _bridgeRegistry.kernelBridge) {
+    DDLogError(@"Can't use ExponentUtil.reload() on the kernel bridge. Use RN dev tools to reload the bundle.");
+    return;
+  }
   if (notifBridge == _bridgeRegistry.lastKnownForegroundBridge) {
     // only the foreground task is allowed to force a reload
     [self dispatchKernelJSEvent:@"refresh" body:@{} onSuccess:nil onFailure:nil];
