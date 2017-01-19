@@ -74,17 +74,19 @@ const macrosFuncs = {
     }
   },
 
-  BUILD_MACHINE_KERNEL_NGROK_URL: async () => {
+  BUILD_MACHINE_KERNEL_MANIFEST: async () => {
     if (process.env.SHELL_APP_BUILDER) {
       return '';
     }
 
     try {
-      let url = await UrlUtils.constructBundleUrlAsync(
+      let url = await UrlUtils.constructManifestUrlAsync(
         path.join(__dirname, '..', 'js'),
         { urlType: 'http', hostType: 'tunnel' }
       );
-      return url;
+      let manifest = await ExponentTools.getManifestAsync(url, {});
+      let manifestJson = JSON.stringify(manifest);
+      return manifestJson;
     } catch (e) {
       if (e.code !== 'ENOENT') {
         console.error(e.stack);
@@ -136,6 +138,7 @@ function formatObjCLiteral(value) {
   if (value == null) {
     return 'nil';
   } else if (typeof value === 'string') {
+    value = value.replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0');
     return `@"${value}"`;
   } else if (typeof value === 'number') {
     return value;

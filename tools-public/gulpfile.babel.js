@@ -5,7 +5,6 @@
 import assert from 'assert';
 import fs from 'fs';
 import path from 'path';
-import ngrok from 'ngrok';
 import username from 'username';
 
 import gulp from 'gulp';
@@ -20,7 +19,6 @@ import { generateDynamicMacrosAsync, cleanupDynamicMacrosAsync, runFabricIOSAsyn
 
 const ptool = './ptool';
 const _projects = './_projects';
-const kernelNgrokFile = '.kernel-ngrok-url';
 
 /**
  * Reads a _projects file and returns the project paths in it.
@@ -102,32 +100,6 @@ gulp.task('watch:stop', function(done) {
     watcher = null;
   }
   done();
-});
-
-
-gulp.task('kernel-ngrok:clean', function(done) {
-  if (fs.existsSync(kernelNgrokFile)) {
-    fs.unlinkSync(kernelNgrokFile);
-    done();
-  }
-});
-
-gulp.task('kernel-ngrok', async function(done) {
-  try {
-    let url = await ngrok.promise.connect({
-      port: 8081,
-    });
-    console.log(`url: ${JSON.stringify(url)}`);
-    url = url.replace(/^https/, 'http');
-    console.log(`Started ngrok at url: ${url}`);
-
-    fs.writeFile(kernelNgrokFile, url);
-  } catch (e) {
-    console.log(e);
-  }
-
-  process.on('exit', gulp.series('kernel-ngrok:clean'));
-  process.on('SIGINT', gulp.series('kernel-ngrok:clean'));
 });
 
 // Shell app (android)
