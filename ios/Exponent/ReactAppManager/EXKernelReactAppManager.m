@@ -11,6 +11,8 @@
 #import "EXVersionManager.h"
 #import "EXVersions.h"
 
+#import <React/RCTUtils.h>
+
 NSString * const kEXKernelLaunchUrlDefaultsKey = @"EXKernelLaunchUrlDefaultsKey";
 
 @interface EXKernelReactAppManager ()
@@ -38,20 +40,29 @@ NSString * const kEXKernelLaunchUrlDefaultsKey = @"EXKernelLaunchUrlDefaultsKey"
   _launchOptions = launchOptions;
 }
 
-+ (NSURL *)kernelBundleUrl
++ (NSDictionary * _Nullable)kernelManifest
 {
-#ifdef BUILD_MACHINE_KERNEL_NGROK_URL
+#ifdef BUILD_MACHINE_KERNEL_MANIFEST
   if ([self _isDevelopingKernel]) {
-    // TODO: embed manifest
-    NSString *kernelNgrokUrl = BUILD_MACHINE_KERNEL_NGROK_URL;
-    NSString *kernelPath = @"exponent.bundle?dev=true&platform=ios&&assetPlugin=exponent/tools/hashAssetFiles";
-    if (kernelNgrokUrl.length) {
-      return [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kernelNgrokUrl, kernelPath]];
-    } else {
-      return [NSURL URLWithString:[NSString stringWithFormat:@"http://%@:8081/%@", BUILD_MACHINE_IP_ADDRESS, kernelPath]];
+    id localManifest = RCTJSONParse(BUILD_MACHINE_KERNEL_MANIFEST, nil);
+    if ([localManifest isKindOfClass:[NSDictionary class]]) {
+      return localManifest;
     }
   }
 #endif
+  return nil;
+}
+
++ (NSURL *)kernelBundleUrl
+{
+  NSDictionary *localManifest = [self kernelManifest];
+  if (localManifest) {
+    NSURL *bundleUrl = [NSURL URLWithString:localManifest[@"bundleUrl"]];
+    if (bundleUrl) {
+      return bundleUrl;
+    }
+  }
+  // TODO: remove
   return [NSURL URLWithString:@"https://exp.host/~exponent/kernel"];
 }
 
@@ -147,28 +158,20 @@ NSString * const kEXKernelLaunchUrlDefaultsKey = @"EXKernelLaunchUrlDefaultsKey"
   NSMutableArray *modules = [NSMutableArray array];
   
   if ([self.versionManager respondsToSelector:@selector(extraModulesWithParams:)]) {
-     // TODO: embed manifest
-    NSMutableDictionary *shittyManifest = [@{
-                                             @"id": @"@ben/test-kernel",
-                                             @"bundleUrl": [[self class] kernelBundleUrl].absoluteString,
-                                             } mutableCopy];
-    if ([[self class] _isDevelopingKernel]) {
-      // needed for Assets
-      shittyManifest[@"xde"] = @(YES);
-    }
+    NSDictionary *manifest = [[self class] kernelManifest];
     // TODO: common constants impl?
     NSMutableDictionary *params = [@{
                                      @"constants": @{
                                          @"deviceId": [EXKernel deviceInstallUUID],
                                          @"linkingUri": @"exp://",
-                                         @"manifest": shittyManifest,
+                                         @"manifest": manifest,
                                          @"appOwnership": @"exponent",
                                          },
                                      @"kernel": [EXKernel sharedInstance],
                                      @"supportedSdkVersions": [EXVersions sharedInstance].versions[@"sdkVersions"],
                                      @"exceptionsManagerDelegate": _exceptionHandler,
                                      @"isDeveloper": @([[self class] _isDevelopingKernel]),
-                                     @"manifest": shittyManifest,
+                                     @"manifest": manifest,
                                      } mutableCopy];
 
     // used by appetize - override the kernel initial url if there's something in NSUserDefaults
