@@ -139,7 +139,7 @@ ABI10_0_0RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
   if ([self validateProps:@[ @"manifest", @"source" ]]) {
     [_appManager logKernelAnalyticsEventWithParams:@{
                                                      @"eventIdentifier": @"RELOAD_EXPERIENCE",
-                                                     @"manifestUrl": _source,
+                                                     @"manifestUrl": _initialUri,
                                                      }];
     [_appManager reload];
   }
@@ -151,7 +151,7 @@ ABI10_0_0RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
   NSString *manifestSdkVersion = (_manifest) ? _manifest[@"sdkVersion"] : nil;
   [_appManager logKernelAnalyticsEventWithParams:@{
                                                    @"eventIdentifier": @"LOAD_EXPERIENCE",
-                                                   @"manifestUrl": _source,
+                                                   @"manifestUrl": _initialUri,
                                                    @"eventProperties": @{
                                                        @"SDK_VERSION": manifestSdkVersion,
                                                        },

@@ -141,7 +141,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
   if ([self validateProps:@[ @"manifest", @"source" ]]) {
     [_appManager logKernelAnalyticsEventWithParams:@{
                                                      @"eventIdentifier": EX_UNVERSIONED(@"RELOAD_EXPERIENCE"),
-                                                     @"manifestUrl": _source,
+                                                     @"manifestUrl": _initialUri,
                                                      }];
     [_appManager reload];
   }
@@ -153,7 +153,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
   NSString *manifestSdkVersion = (_manifest) ? _manifest[@"sdkVersion"] : nil;
   [_appManager logKernelAnalyticsEventWithParams:@{
                                                    @"eventIdentifier": EX_UNVERSIONED(@"LOAD_EXPERIENCE"),
-                                                   @"manifestUrl": _source,
+                                                   @"manifestUrl": _initialUri,
                                                    @"eventProperties": @{
                                                        @"SDK_VERSION": manifestSdkVersion,
                                                        },
