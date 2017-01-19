@@ -34,6 +34,7 @@ public class ExponentNetwork {
   private Context mContext;
   private ExponentHttpClient mClient;
   private ExponentHttpClient mLongTimeoutClient;
+  private OkHttpClient mNoCacheClient;
   private Cache mCache;
 
   // This fixes OkHttp bug where if you don't read a response, it'll never cache that request in the future
@@ -58,6 +59,8 @@ public class ExponentNetwork {
         .writeTimeout(1, TimeUnit.MINUTES)
         .build();
     mLongTimeoutClient = new ExponentHttpClient(mContext, longTimeoutHttpClient);
+
+    mNoCacheClient = new OkHttpClient.Builder().build();
   }
 
   private OkHttpClient.Builder createHttpClientBuilder() {
@@ -77,6 +80,10 @@ public class ExponentNetwork {
 
   public ExponentHttpClient getLongTimeoutClient() {
     return mLongTimeoutClient;
+  }
+
+  public OkHttpClient getNoCacheClient() {
+    return mNoCacheClient;
   }
 
   public Cache getCache() {

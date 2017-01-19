@@ -21,6 +21,7 @@ import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.utils.ColorParser;
 import host.exp.exponentview.R;
 import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.json.JSONException;
@@ -170,42 +171,77 @@ public class ExponentManifest {
     if (Constants.DEBUG_MANIFEST_METHOD_TRACING) {
       Debug.startMethodTracing("manifest");
     }
-    mExponentNetwork.getClient().callSafe(requestBuilder.build(), new ExponentHttpClient.SafeCallback() {
-      @Override
-      public void onFailure(Call call, IOException e) {
-        listener.onError(new ManifestException(e, manifestUrl));
-      }
 
-      @Override
-      public void onResponse(Call call, Response response) {
-        if (!response.isSuccessful()) {
-          listener.onError(new ManifestException(null, manifestUrl));
-          return;
+    boolean isDevelopment = false;
+    if (uri.getHost().equals("localhost") || uri.getHost().endsWith(".exp.direct")) {
+      isDevelopment = true;
+    }
+
+    if (isDevelopment) {
+      // If we're sure this is a development url, don't cache. Note that LAN development urls
+      // might still be cached
+      mExponentNetwork.getNoCacheClient().newCall(requestBuilder.build()).enqueue(new Callback() {
+        @Override
+        public void onFailure(Call call, IOException e) {
+          listener.onError(new ManifestException(e, manifestUrl));
         }
 
-        if (Constants.DEBUG_MANIFEST_METHOD_TRACING) {
-          Debug.stopMethodTracing();
-        }
-        Analytics.markEvent(Analytics.TimedEvent.FINISHED_MANIFEST_NETWORK_REQUEST);
-        try {
-          String manifestString = response.body().string();
-          fetchManifestStep2(manifestString, listener);
-        } catch (JSONException e) {
-          listener.onError(e);
-        } catch (IOException e) {
-          listener.onError(e);
-        }
-      }
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
+          if (!response.isSuccessful()) {
+            listener.onError(new ManifestException(null, manifestUrl));
+            return;
+          }
 
-      @Override
-      public void onErrorCacheResponse(Call call, Response response) {
-        EXL.d(TAG, "Initial HTTP request failed. Using cached or embedded response.");
-        onResponse(call, response);
-      }
-    });
+          try {
+            String manifestString = response.body().string();
+            fetchManifestStep2(manifestString, listener);
+          } catch (JSONException e) {
+            listener.onError(e);
+          } catch (IOException e) {
+            listener.onError(e);
+          }
+        }
+      });
+    } else {
+      mExponentNetwork.getClient().callSafe(requestBuilder.build(), new ExponentHttpClient.SafeCallback() {
+        @Override
+        public void onFailure(Call call, IOException e) {
+          listener.onError(new ManifestException(e, manifestUrl));
+        }
+
+        @Override
+        public void onResponse(Call call, Response response) {
+          if (!response.isSuccessful()) {
+            listener.onError(new ManifestException(null, manifestUrl));
+            return;
+          }
+
+          try {
+            String manifestString = response.body().string();
+            fetchManifestStep2(manifestString, listener);
+          } catch (JSONException e) {
+            listener.onError(e);
+          } catch (IOException e) {
+            listener.onError(e);
+          }
+        }
+
+        @Override
+        public void onErrorCacheResponse(Call call, Response response) {
+          EXL.d(TAG, "Initial HTTP request failed. Using cached or embedded response.");
+          onResponse(call, response);
+        }
+      });
+    }
   }
 
   private void fetchManifestStep2(final String manifestString, final ManifestListener listener) throws JSONException {
+    if (Constants.DEBUG_MANIFEST_METHOD_TRACING) {
+      Debug.stopMethodTracing();
+    }
+    Analytics.markEvent(Analytics.TimedEvent.FINISHED_MANIFEST_NETWORK_REQUEST);
+
     final JSONObject manifest = new JSONObject(manifestString);
     if (manifest.has("manifestString") && manifest.has("signature")) {
       final JSONObject innerManifest = new JSONObject(manifest.getString("manifestString"));

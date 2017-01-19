@@ -263,8 +263,18 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
   }
 
   private void startReactInstance() {
-    // TODO: annoying that we need to use RNObject.UNVERSIONED here
-    mReactInstanceManager = Exponent.getInstance().startReactInstance(this, this, mManifestUrl, null, mJSBundlePath, null, mManifest, RNObject.UNVERSIONED, null, true, mExponentSharedPreferences, mReactRootView, mActivityId, mIsCrashed, reactPackages());
+    Exponent.getInstance().testPackagerStatus(isDebugModeEnabled(), mManifest, new Exponent.PackagerStatusCallback() {
+      @Override
+      public void onSuccess() {
+        // TODO: annoying that we need to use RNObject.UNVERSIONED here
+        mReactInstanceManager = Exponent.getInstance().startReactInstance(ExponentActivity.this, ExponentActivity.this, mManifestUrl, null, mJSBundlePath, null, mManifest, RNObject.UNVERSIONED, null, true, mExponentSharedPreferences, mReactRootView, mActivityId, mIsCrashed, reactPackages());
+      }
+
+      @Override
+      public void onFailure(final String errorMessage) {
+        KernelProvider.getInstance().handleError(errorMessage);
+      }
+    });
   }
 
   @Override

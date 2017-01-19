@@ -30,18 +30,7 @@ import com.facebook.stetho.okhttp3.StethoInterceptor;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Field;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -225,7 +214,7 @@ public class Kernel implements KernelInterface {
     return new Exponent.BundleListener() {
       @Override
       public void onBundleLoaded(final String localBundlePath) {
-        runOnUiThread(new Runnable() {
+        Exponent.getInstance().runOnUiThread(new Runnable() {
           @Override
           public void run() {
             ReactInstanceManager.Builder builder = ReactInstanceManager.builder()
@@ -282,14 +271,6 @@ public class Kernel implements KernelInterface {
     } else {
       return mExponentSharedPreferences.getString(ExponentSharedPreferences.LOCAL_KERNEL_URL_KEY,
           defaultLocalKernelUrl()) + "/exponent.bundle?dev=true&platform=android";
-    }
-  }
-
-  public final void runOnUiThread(Runnable action) {
-    if (Thread.currentThread() != Looper.getMainLooper().getThread()) {
-      new Handler(mContext.getMainLooper()).post(action);
-    } else {
-      action.run();
     }
   }
 
@@ -459,7 +440,7 @@ public class Kernel implements KernelInterface {
     mExponentManifest.fetchManifest(manifestUrl, new ExponentManifest.ManifestListener() {
       @Override
       public void onCompleted(final JSONObject manifest) {
-        runOnUiThread(new Runnable() {
+        Exponent.getInstance().runOnUiThread(new Runnable() {
           @Override
           public void run() {
             try {
@@ -730,7 +711,7 @@ public class Kernel implements KernelInterface {
             // Already loading. Don't need to do anything.
             return;
           } else {
-            runOnUiThread(new Runnable() {
+            Exponent.getInstance().runOnUiThread(new Runnable() {
               @Override
               public void run() {
                 weakActivity.showLongLoadingScreen(null);

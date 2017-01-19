@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.UserManager;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -21,6 +22,7 @@ import com.facebook.FacebookSdk;
 import com.facebook.common.internal.ByteStreams;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.devsupport.DevServerHelper;
 import com.facebook.stetho.Stetho;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -181,6 +183,13 @@ public class Exponent {
     return mActivity;
   }
 
+  public final void runOnUiThread(Runnable action) {
+    if (Thread.currentThread() != Looper.getMainLooper().getThread()) {
+      new Handler(mContext.getMainLooper()).post(action);
+    } else {
+      action.run();
+    }
+  }
 
 
 
@@ -550,32 +559,47 @@ public class Exponent {
   }
 
 
-
-
-
-  public interface StartReactInstanceDelegate {
-    boolean isDebugModeEnabled();
-    boolean isInForeground();
-    void handleUnreadNotifications(JSONArray unreadNotifications);
+  public interface PackagerStatusCallback {
+    void onSuccess();
+    void onFailure(String errorMessage);
   }
 
-  // TODO: use this
-  private void testPackagerStatus(final JSONObject mManifest) {
-    String debuggerHost = mManifest.optString(ExponentManifest.MANIFEST_DEBUGGER_HOST_KEY);
-    mExponentNetwork.getClient().call(new Request.Builder().url(debuggerHost + "/status").build(), new Callback() {
+  public void testPackagerStatus(final boolean isDebug, final JSONObject mManifest, final PackagerStatusCallback callback) {
+    if (!isDebug) {
+      callback.onSuccess();
+      return;
+    }
+
+    final String debuggerHost = mManifest.optString(ExponentManifest.MANIFEST_DEBUGGER_HOST_KEY);
+    mExponentNetwork.getNoCacheClient().newCall(new Request.Builder().url("http://" + debuggerHost + "/status").build()).enqueue(new Callback() {
       @Override
       public void onFailure(Call call, IOException e) {
         EXL.d(TAG, e.toString());
+        callback.onFailure("Packager is not running at http://" + debuggerHost);
       }
 
       @Override
       public void onResponse(Call call, Response response) throws IOException {
         final String responseString = response.body().string();
         if (responseString.contains(PACKAGER_RUNNING)) {
-
+          runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              callback.onSuccess();
+            }
+          });
+        } else {
+          callback.onFailure("Packager is not running at http://" + debuggerHost);
         }
       }
     });
+  }
+
+
+  public interface StartReactInstanceDelegate {
+    boolean isDebugModeEnabled();
+    boolean isInForeground();
+    void handleUnreadNotifications(JSONArray unreadNotifications);
   }
 
   public RNObject startReactInstance(final Object activity, final StartReactInstanceDelegate delegate, final String mManifestUrl, final String mIntentUri, final String mJSBundlePath, final RNObject mLinkingPackage, final JSONObject mManifest,
