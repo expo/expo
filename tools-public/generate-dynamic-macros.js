@@ -30,6 +30,13 @@ const ProjectVersions = require('./project-versions');
 const LOCALHOST = '127.0.0.1';
 const EXPONENT_DIR = path.join(__dirname, '..');
 
+let isInUniverse = true;
+try {
+  let _unused = require('../../react-native-lab/blacklist').exponentBlacklist;
+} catch (e) {
+  isInUniverse = false;
+}
+
 const macrosFuncs = {
   BUILD_MACHINE_IP_ADDRESS: async () => {
     if (process.env.SHELL_APP_BUILDER) {
@@ -79,9 +86,16 @@ const macrosFuncs = {
       return '';
     }
 
+    let projectUrl;
+    if (isInUniverse) {
+      projectUrl = path.join(__dirname, '..', 'js', '__internal__');
+    } else {
+      projectUrl = path.join(__dirname, '..', 'js');
+    }
+
     try {
       let url = await UrlUtils.constructManifestUrlAsync(
-        path.join(__dirname, '..', 'js'),
+        projectUrl,
         { urlType: 'http', hostType: 'tunnel' }
       );
       let manifest = await ExponentTools.getManifestAsync(url, {});

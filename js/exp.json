@@ -1,7 +1,7 @@
 {
-  "name": "exponent-app",
+  "name": "exponent-home-oss",
   "description": "",
-  "slug": "kernel",
+  "slug": "home",
   "privacy": "unlisted",
   "sdkVersion": "UNVERSIONED",
   "version": "13.0.0",
@@ -20,10 +20,8 @@
     "projectRoots": "",
     "assetExts": ["ttf"],
     "config": "./rn-cli.config.js",
-    "transformer": "../../react-native-lab/transformer.js"
   },
   "nodeModulesPath": ".",
-  "rnCliPath": "../../react-native-lab/react-native/local-cli/cli.js",
   "ios": {
     "supportsTablet": true,
     "bundleIdentifier": "host.exp.exponent"
