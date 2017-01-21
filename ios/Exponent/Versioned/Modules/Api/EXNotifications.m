@@ -108,6 +108,25 @@ RCT_EXPORT_METHOD(cancelAllScheduledNotifications)
   }
 }
 
+#pragma mark - Badges
+
+// TODO: Make this read from the kernel instead of UIApplication for the main Exponent app
+
+RCT_REMAP_METHOD(getBadgeNumberAsync,
+                 getBadgeNumberAsyncWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(__unused RCTPromiseRejectBlock)reject)
+{
+  resolve(@(RCTSharedApplication().applicationIconBadgeNumber));
+}
+
+RCT_EXPORT_METHOD(setBadgeNumberAsync:(nonnull NSNumber *)number
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(__unused RCTPromiseRejectBlock)reject)
+{
+  RCTSharedApplication().applicationIconBadgeNumber = number.integerValue;
+  resolve(nil);
+}
+
 #pragma mark - internal
 
 - (UILocalNotification *)_localNotificationFromPayload:(NSDictionary *)payload
