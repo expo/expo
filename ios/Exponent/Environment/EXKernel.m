@@ -26,7 +26,6 @@ NSString *kEXKernelRefreshForegroundTaskNotification = @"EXKernelRefreshForegrou
 NSString *kEXKernelGetPushTokenNotification = @"EXKernelGetPushTokenNotification";
 NSString *kEXKernelShouldForegroundTaskEvent = @"foregroundTask";
 NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
-NSString *kEXKernelBundleResourceName = @"kernel.ios";
 
 @interface EXKernel ()
 

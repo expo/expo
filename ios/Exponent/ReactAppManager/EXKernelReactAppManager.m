@@ -14,6 +14,8 @@
 #import <React/RCTUtils.h>
 
 NSString * const kEXKernelLaunchUrlDefaultsKey = @"EXKernelLaunchUrlDefaultsKey";
+NSString *kEXKernelBundleResourceName = @"kernel.ios";
+NSString *kEXKernelManifestResourceName = @"kernel-manifest";
 
 @interface EXKernelReactAppManager ()
 
@@ -42,14 +44,31 @@ NSString * const kEXKernelLaunchUrlDefaultsKey = @"EXKernelLaunchUrlDefaultsKey"
 
 + (NSDictionary * _Nullable)kernelManifest
 {
+  NSString *manifestJson = nil;
 #ifdef BUILD_MACHINE_KERNEL_MANIFEST
+  // if developing, use development manifest from generateDynamicMacros.js
   if ([self _isDevelopingKernel]) {
-    id localManifest = RCTJSONParse(BUILD_MACHINE_KERNEL_MANIFEST, nil);
-    if ([localManifest isKindOfClass:[NSDictionary class]]) {
-      return localManifest;
-    }
+    manifestJson = BUILD_MACHINE_KERNEL_MANIFEST;
   }
 #endif
+  // otherwise use published manifest
+  if (!manifestJson) {
+    NSString *manifestPath = [[NSBundle mainBundle] pathForResource:kEXKernelManifestResourceName ofType:@"json"];
+    if (manifestPath) {
+      NSError *error;
+      manifestJson = [NSString stringWithContentsOfFile:manifestPath encoding:NSUTF8StringEncoding error:&error];
+      if (error) {
+        manifestJson = nil;
+      }
+    }
+  }
+  
+  if (manifestJson) {
+    id manifest = RCTJSONParse(manifestJson, nil);
+    if ([manifest isKindOfClass:[NSDictionary class]]) {
+      return manifest;
+    }
+  }
   return nil;
 }
 

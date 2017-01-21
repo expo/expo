@@ -4,6 +4,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+FOUNDATION_EXPORT NSString *kEXKernelBundleResourceName;
+FOUNDATION_EXPORT NSString *kEXKernelManifestResourceName;
+
 @interface EXKernelReactAppManager : EXReactAppManager
 
 - (instancetype)initWithLaunchOptions:(NSDictionary *)launchOptions;
