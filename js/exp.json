@@ -3,7 +3,7 @@
   "description": "",
   "slug": "home",
   "privacy": "unlisted",
-  "sdkVersion": "UNVERSIONED",
+  "sdkVersion": "13.0.0",
   "version": "13.0.0",
   "orientation": "portrait",
   "primaryColor": "#cccccc",
