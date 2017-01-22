@@ -190,7 +190,7 @@ We are now ready to connect the Facebook login code with our Firebase Database i
       // Do other things
     });
 
-    async loginWithFacebook() {
+    async function loginWithFacebook() {
       const { type, token } = await Exponent.Facebook.logInWithReadPermissionsAsync(
         '<APP_ID>',
         { permissions: ['public_profile'] }
