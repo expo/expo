@@ -13,8 +13,6 @@
 - (void)bridgeDidBackground;
 - (void)invalidate;
 
-+ (void)registerOnceToken: (dispatch_once_t *)token forClass: (NSString *)someClass;
-
 + (NSString *)escapedResourceName:(NSString *)name;
 
 /**
@@ -22,10 +20,5 @@
  *  Uses a params dict since the internal workings may change over time, but we want to keep the interface the same.
  */
 - (NSArray *)extraModulesWithParams:(NSDictionary *)params;
-
-/**
- *  Provides the versioned native modules required to set up the exponent kernel with this version.
- */
-- (NSArray *)versionedModulesForKernelWithParams:(NSDictionary *)params;
 
 @end
