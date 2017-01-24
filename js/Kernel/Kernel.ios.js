@@ -2,6 +2,7 @@
  * Copyright 2015-present 650 Industries. All rights reserved.
  *
  * @providesModule Kernel
+ * @flow
  */
 'use strict';
 
@@ -10,7 +11,7 @@ import {
   NativeModules,
 } from 'react-native';
 
-import ApiClient from 'ApiClient';
+import ApiV2Client from 'ApiV2Client';
 
 const {
   ExponentKernel,
@@ -33,13 +34,19 @@ if (ExponentKernel && ExponentKernel.onLoaded) {
 
   addListenerWithNativeCallback('ExponentKernel.updateDeviceToken', async (event) => {
     let { deviceToken, deviceId, appId, development } = event;
-    await ApiClient.updateDeviceToken(deviceToken, deviceId, appId, development, 'apns');
+    return ApiV2Client.updateDeviceTokenAsync(deviceToken, 'apns', {
+      appId,
+      deviceId,
+      development,
+    });
   });
 
   addListenerWithNativeCallback('ExponentKernel.getExponentPushToken', async (event) => {
     let { deviceId, experienceId } = event;
-    let result = await ApiClient.getExponentPushToken(deviceId, experienceId);
-    return result;
+    return ApiV2Client.getExponentPushTokenAsync(
+      deviceId,
+      experienceId,
+    );
   });
 
   ExponentKernel.onLoaded();

@@ -1,4 +1,4 @@
-import ApiV2Client from 'ApiV2Client';
+import ApiV2HttpClient from 'ApiV2HttpClient';
 import ApiV2Error from 'ApiV2Error';
 
 jest.mock('react-native', () => {
@@ -14,6 +14,11 @@ let originalFetch;
 beforeEach(() => {
   originalFetch = global.fetch;
   global.fetch = jest.fn();
+  global.fetch.mockReturnValue(Promise.resolve({
+    async text() {
+      return '{}';
+    },
+  }));
 });
 
 afterEach(() => {
@@ -22,9 +27,9 @@ afterEach(() => {
 });
 
 it(`supports GET requests`, async () => {
-  _setFakeHttpResponse('{"test":"yes"}');
+  _setFakeHttpResponse('{"data": {"test":"yes"}}');
 
-  let client = new ApiV2Client();
+  let client = new ApiV2HttpClient();
   let response = await client.getAsync(
     'example',
     { a: 1, b: true, c: 'hi' },
@@ -37,9 +42,9 @@ it(`supports GET requests`, async () => {
 });
 
 it(`supports POST requests`, async () => {
-  _setFakeHttpResponse('{"test":"yes"}');
+  _setFakeHttpResponse('{"data": {"test":"yes"}}');
 
-  let client = new ApiV2Client();
+  let client = new ApiV2HttpClient();
   let response = await client.postAsync(
     'example',
     { a: 1, b: true, c: 'hi', d: ['list'], e: { nested: true } },
@@ -53,10 +58,17 @@ it(`supports POST requests`, async () => {
   expect(global.fetch.mock.calls[0][1].body).toMatchSnapshot();
 });
 
-it(`sets custom Exponent headers`, async () => {
-  _setFakeHttpResponse('{"test":"yes"}');
+it(`supports slashes in method names`, async () => {
+  let client = new ApiV2HttpClient();
+  await client.getAsync('prefix/method');
+  expect(global.fetch.mock.calls.length).toBe(1);
+  expect(global.fetch.mock.calls[0][0]).toMatch(/\/api\/v2\/prefix\/method$/);
+});
 
-  let client = new ApiV2Client();
+it(`sets custom Exponent headers`, async () => {
+  _setFakeHttpResponse('{"data": {"test":"yes"}}');
+
+  let client = new ApiV2HttpClient();
   await client.getAsync('example');
 
   let headers = global.fetch.mock.calls[0][1].headers;
@@ -65,9 +77,9 @@ it(`sets custom Exponent headers`, async () => {
 });
 
 it(`handles API errors`, async () => {
-  _setFakeHttpResponse('{"error":"Intentional","code":"TEST_CODE"}');
+  _setFakeHttpResponse('{"errors": [{"message":"Intentional","code":"TEST_CODE"}]}');
 
-  let client = new ApiV2Client();
+  let client = new ApiV2HttpClient();
   try {
     await client.getAsync('example');
     throw new Error('Expected API client to throw an error');
@@ -81,7 +93,7 @@ it(`handles API errors`, async () => {
 it(`handles malformed responses`, async () => {
   _setFakeHttpResponse('Bad gateway');
 
-  let client = new ApiV2Client();
+  let client = new ApiV2HttpClient();
   try {
     await client.getAsync('example');
     throw new Error('Expected API client to throw an error');

@@ -1,4 +1,4 @@
-exports[`test handles malformed responses 1`] = `"There was a problem communicating with the server. Please try again."`;
+exports[`test handles malformed responses 1`] = `"There was a problem understanding the server."`;
 
 exports[`test supports GET requests 1`] = `"https://exp.host/--/api/v2/example?a=1&b=true&c=hi"`;
 
