@@ -16,6 +16,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -64,17 +65,23 @@ public class ExponentPackage implements ReactPackage {
   private final Map<String, Object> mExperienceProperties;
   private final JSONObject mManifest;
 
+  private ExponentPackage(boolean isKernel, Map<String, Object> experienceProperties, JSONObject manifest) {
+    mIsKernel = isKernel;
+    mExperienceProperties = experienceProperties;
+    mManifest = manifest;
+  }
+
   public ExponentPackage(Map<String, Object> experienceProperties, JSONObject manifest) {
     mIsKernel = false;
     mExperienceProperties = experienceProperties;
     mManifest = manifest;
   }
 
-  public ExponentPackage() {
-    mIsKernel = true;
-    mExperienceProperties = null;
-    mManifest = new JSONObject();
+  public static ExponentPackage kernelExponentPackage(JSONObject manifest) {
+    Map<String, Object> kernelExperienceProperties = new HashMap<>();
+    return new ExponentPackage(true, kernelExperienceProperties, manifest);
   }
+
 
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
@@ -96,42 +103,40 @@ public class ExponentPackage implements ReactPackage {
     if (mIsKernel) {
       // Never need this in versioned code. Comment this out if this is in an abi package
       nativeModules.add((NativeModule) ExponentKernelModuleProvider.newInstance(reactContext));
-      nativeModules.add(new PermissionsModule(reactContext));
-      nativeModules.add(new BarCodeScannerModule(reactContext));
-    } else {
-      if (isVerified) {
-        try {
-          String experienceId = mManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
-          String experienceIdEncoded = URLEncoder.encode(experienceId, "UTF-8");
-
-          nativeModules.add(new ExponentAsyncStorageModule(reactContext, mManifest));
-          nativeModules.add(new AccelerometerModule(reactContext));
-          nativeModules.add(new GyroscopeModule(reactContext));
-          nativeModules.add(new NotificationsModule(reactContext, mManifest, mExperienceProperties));
-          nativeModules.add(new ContactsModule(reactContext));
-          nativeModules.add(new FileSystemModule(reactContext, mManifest));
-          nativeModules.add(new LocationModule(reactContext));
-          nativeModules.add(new CryptoModule(reactContext));
-          nativeModules.add(new ImagePickerModule(reactContext));
-          nativeModules.add(new FacebookModule(reactContext));
-          nativeModules.add(new FabricModule(reactContext, mExperienceProperties));
-          nativeModules.add(new FingerprintModule(reactContext));
-          nativeModules.add(new GoogleModule(reactContext, mExperienceProperties));
-          nativeModules.add(new PermissionsModule(reactContext));
-          nativeModules.add(new AmplitudeModule(reactContext, experienceIdEncoded));
-          nativeModules.add(new SegmentModule(reactContext, experienceIdEncoded));
-          nativeModules.add(new BarCodeScannerModule(reactContext));
-          nativeModules.add(new RNViewShotModule(reactContext));
-        } catch (JSONException e) {
-          EXL.e(TAG, e.toString());
-        } catch (UnsupportedEncodingException e) {
-          EXL.e(TAG, e.toString());
-        }
-      } else {
-        nativeModules.add(new ExponentUnsignedAsyncStorageModule(reactContext));
-      }
-      nativeModules.add(new ImageCropperModule(reactContext));
     }
+
+    if (isVerified) {
+      try {
+        String experienceId = mManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+        String experienceIdEncoded = URLEncoder.encode(experienceId, "UTF-8");
+
+        nativeModules.add(new ExponentAsyncStorageModule(reactContext, mManifest));
+        nativeModules.add(new AccelerometerModule(reactContext));
+        nativeModules.add(new GyroscopeModule(reactContext));
+        nativeModules.add(new NotificationsModule(reactContext, mManifest, mExperienceProperties));
+        nativeModules.add(new ContactsModule(reactContext));
+        nativeModules.add(new FileSystemModule(reactContext, mManifest));
+        nativeModules.add(new LocationModule(reactContext));
+        nativeModules.add(new CryptoModule(reactContext));
+        nativeModules.add(new ImagePickerModule(reactContext));
+        nativeModules.add(new FacebookModule(reactContext));
+        nativeModules.add(new FabricModule(reactContext, mExperienceProperties));
+        nativeModules.add(new FingerprintModule(reactContext));
+        nativeModules.add(new GoogleModule(reactContext, mExperienceProperties));
+        nativeModules.add(new PermissionsModule(reactContext));
+        nativeModules.add(new AmplitudeModule(reactContext, experienceIdEncoded));
+        nativeModules.add(new SegmentModule(reactContext, experienceIdEncoded));
+        nativeModules.add(new BarCodeScannerModule(reactContext));
+        nativeModules.add(new RNViewShotModule(reactContext));
+      } catch (JSONException e) {
+        EXL.e(TAG, e.toString());
+      } catch (UnsupportedEncodingException e) {
+        EXL.e(TAG, e.toString());
+      }
+    } else {
+      nativeModules.add(new ExponentUnsignedAsyncStorageModule(reactContext));
+    }
+    nativeModules.add(new ImageCropperModule(reactContext));
 
     return nativeModules;
   }

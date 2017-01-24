@@ -223,18 +223,8 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
     });
   }
 
-  // Consolidate with ExperienceActivity
   public boolean isDebugModeEnabled() {
-    try {
-      return mExponentSharedPreferences.isDebugModeEnabled() ||
-          (mManifest != null &&
-              mManifest.has(ExponentManifest.MANIFEST_DEVELOPER_KEY) &&
-              mManifest.has(ExponentManifest.MANIFEST_PACKAGER_OPTS_KEY) &&
-              mManifest.getJSONObject(ExponentManifest.MANIFEST_PACKAGER_OPTS_KEY)
-                  .optBoolean(ExponentManifest.MANIFEST_PACKAGER_OPTS_DEV_KEY, false));
-    } catch (JSONException e) {
-      return false;
-    }
+    return ExponentManifest.isDebugModeEnabled(mManifest);
   }
 
   private void waitForDrawOverOtherAppPermission(String jsBundlePath) {

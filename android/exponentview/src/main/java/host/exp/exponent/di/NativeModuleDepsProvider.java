@@ -47,7 +47,7 @@ public class NativeModuleDepsProvider {
     mExponentSharedPreferences = new ExponentSharedPreferences(mContext);
     mExponentNetwork = new ExponentNetwork(mContext);
     mCrypto = new Crypto(mExponentNetwork);
-    mExponentManifest = new ExponentManifest(mContext, mExponentNetwork, mCrypto);
+    mExponentManifest = new ExponentManifest(mContext, mExponentNetwork, mCrypto, mExponentSharedPreferences);
 
     for (Field field : NativeModuleDepsProvider.class.getDeclaredFields()) {
       if (field.isAnnotationPresent(Inject.class)) {

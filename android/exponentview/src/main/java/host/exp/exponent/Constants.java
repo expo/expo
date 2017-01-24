@@ -25,7 +25,6 @@ public class Constants {
   public static String SDK_VERSIONS;
   public static List<String> SDK_VERSIONS_LIST;
   public static final String TEMPORARY_ABI_VERSION = null;
-  public static final String KERNEL_URL;
   public static final String EMBEDDED_KERNEL_PATH = "assets://kernel.android.bundle";
   public static final List<EmbeddedResponse> EMBEDDED_RESPONSES;
 
@@ -55,14 +54,8 @@ public class Constants {
 
     setSdkVersions(abiVersions);
 
-    Uri.Builder builder = new Uri.Builder();
-    builder.scheme("https")
-        .authority("exp.host")
-        .encodedPath("/~exponent/kernel");
-    KERNEL_URL = builder.build().toString();
-
     List<EmbeddedResponse> embeddedResponses = new ArrayList<>();
-    embeddedResponses.add(new EmbeddedResponse(KERNEL_URL, EMBEDDED_KERNEL_PATH, "application/javascript"));
+    embeddedResponses.add(new EmbeddedResponse("https://exp.host/@exponent/home/bundle", EMBEDDED_KERNEL_PATH, "application/javascript"));
     // ADD EMBEDDED RESPONSES HERE
     EMBEDDED_RESPONSES = embeddedResponses;
   }

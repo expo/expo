@@ -214,7 +214,7 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
 
   // Override
   public boolean isDebugModeEnabled() {
-    return mExponentSharedPreferences.isDebugModeEnabled();
+    return false;
   }
 
   // Override

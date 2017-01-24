@@ -27,7 +27,6 @@ let {
 
 const ProjectVersions = require('./project-versions');
 
-const LOCALHOST = '127.0.0.1';
 const EXPONENT_DIR = path.join(__dirname, '..');
 
 let isInUniverse = true;
@@ -38,32 +37,6 @@ try {
 }
 
 const macrosFuncs = {
-  BUILD_MACHINE_IP_ADDRESS: async () => {
-    if (process.env.SHELL_APP_BUILDER) {
-      return '';
-    }
-
-    let interfaces = os.networkInterfaces();
-    let enInterfaceNames = Object.keys(interfaces)
-      .filter(name => /^en\d$/.test(name));
-    let enAddressData = interfaces[enInterfaceNames[0]];
-    if (!enAddressData) {
-      return LOCALHOST;
-    }
-
-    let ipv4Addresses = enAddressData
-      .filter(data => data.family === 'IPv4')
-      .map(data => data.address);
-    if (ipv4Addresses[0]) {
-      return ipv4Addresses[0];
-    }
-
-    if (enAddressData[0] && enAddressData[0].address) {
-      return enAddressData[0].address;
-    }
-
-    return LOCALHOST;
-  },
 
   BUILD_MACHINE_LOCAL_HOSTNAME: async () => {
     if (process.env.SHELL_APP_BUILDER) {
@@ -81,7 +54,7 @@ const macrosFuncs = {
     }
   },
 
-  BUILD_MACHINE_KERNEL_MANIFEST: async () => {
+  BUILD_MACHINE_KERNEL_MANIFEST: async (platform) => {
     if (process.env.SHELL_APP_BUILDER) {
       return '';
     }
@@ -94,11 +67,15 @@ const macrosFuncs = {
     }
 
     try {
-      let url = await UrlUtils.constructManifestUrlAsync(
-        projectUrl,
-        { urlType: 'http', hostType: 'tunnel' }
-      );
-      let manifest = await ExponentTools.getManifestAsync(url, {});
+      let url = await UrlUtils.constructManifestUrlAsync(projectUrl);
+      let manifest = await ExponentTools.getManifestAsync(url, {
+        'Exponent-Platform': platform,
+      });
+      if (!manifest.id) {
+        // TODO: let xdl handle this
+        // hack for now because unsigned manifest won't have an id
+        manifest.id = '@exponent/home';
+      }
       let manifestJson = JSON.stringify(manifest);
       return manifestJson;
     } catch (e) {
@@ -120,7 +97,7 @@ const macrosFuncs = {
 };
 
 async function generateSourceAsync(filename, platform) {
-  let macros = await generateMacrosAsync();
+  let macros = await generateMacrosAsync(platform);
   let source;
   if (platform === 'ios') {
     source = _.map(macros, (value, name) =>
@@ -175,6 +152,7 @@ function formatJavaLiteral(value) {
   if (value == null) {
     return 'null';
   } else if (typeof value === 'string') {
+    value = value.replace(/"/g, '\\"');
     return `"${value}"`;
   } else if (typeof value === 'number') {
     return value;
@@ -182,12 +160,12 @@ function formatJavaLiteral(value) {
   throw new Error(`Unsupported literal value: ${value}`);
 }
 
-async function generateMacrosAsync() {
+async function generateMacrosAsync(platform) {
   let names = [];
   let promises = [];
   _.forEach(macrosFuncs, (func, name) => {
     names.push(name);
-    promises.push(func());
+    promises.push(func(platform));
   });
   let values = await Promise.all(promises);
 

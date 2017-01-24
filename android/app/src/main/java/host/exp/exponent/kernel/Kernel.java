@@ -221,13 +221,12 @@ public class Kernel implements KernelInterface {
                 .setApplication(mApplicationContext)
                 .setJSBundleFile(localBundlePath)
                 .addPackage(new MainReactPackage())
-                .addPackage(new ExponentPackage())
+                .addPackage(ExponentPackage.kernelExponentPackage(mExponentManifest.getKernelManifest()))
                 .setInitialLifecycleState(LifecycleState.RESUMED);
 
-            if (mExponentSharedPreferences.isKernelDebugModeEnabled()) {
-              // Won't work with ngrok url.
-              Exponent.enableDeveloperSupport(ExponentBuildConstants.BUILD_MACHINE_IP_ADDRESS + ":8081",
-                  "exponent", RNObject.wrap(builder));
+            if (mExponentManifest.isDebugModeEnabled(mExponentManifest.getKernelManifest())) {
+              Exponent.enableDeveloperSupport(mExponentManifest.getKernelManifestField(ExponentManifest.MANIFEST_DEBUGGER_HOST_KEY),
+                  mExponentManifest.getKernelManifestField(ExponentManifest.MANIFEST_MAIN_MODULE_NAME_KEY), RNObject.wrap(builder));
             }
 
             mReactInstanceManager = builder.build();
@@ -257,21 +256,8 @@ public class Kernel implements KernelInterface {
     };
   }
 
-  public static String defaultLocalKernelUrl() {
-    if (ExponentBuildConstants.BUILD_MACHINE_KERNEL_NGROK_URL.isEmpty()) {
-      return "http://" + ExponentBuildConstants.BUILD_MACHINE_IP_ADDRESS + ":8081";
-    } else {
-      return ExponentBuildConstants.BUILD_MACHINE_KERNEL_NGROK_URL;
-    }
-  }
-
   private String getBundleUrl() {
-    if (mExponentSharedPreferences.shouldUseInternetKernel()) {
-      return Constants.KERNEL_URL;
-    } else {
-      return mExponentSharedPreferences.getString(ExponentSharedPreferences.LOCAL_KERNEL_URL_KEY,
-          defaultLocalKernelUrl()) + "/exponent.bundle?dev=true&platform=android";
-    }
+    return mExponentManifest.getKernelManifestField(ExponentManifest.MANIFEST_BUNDLE_URL_KEY);
   }
 
   public Boolean isRunning() {
@@ -515,7 +501,6 @@ public class Kernel implements KernelInterface {
 
     killOrphanedLauncherActivities();
   }
-
 
   // Called from DevServerHelper
   @DoNotStrip

@@ -14,23 +14,32 @@ import android.util.LruCache;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.exceptions.ManifestException;
+import host.exp.exponent.generated.ExponentBuildConstants;
 import host.exp.exponent.kernel.Crypto;
 import host.exp.exponent.kernel.ExponentUrls;
+import host.exp.exponent.kernel.KernelProvider;
 import host.exp.exponent.network.ExponentHttpClient;
 import host.exp.exponent.network.ExponentNetwork;
+import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.ColorParser;
 import host.exp.exponentview.R;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -93,17 +102,20 @@ public class ExponentManifest {
   private static final int MAX_BITMAP_SIZE = 192;
   private static final String REDIRECT_SNIPPET = "exp.host/--/to-exp/";
   private static final String ANONYMOUS_EXPERIENCE_PREFIX = "@anonymous/";
+  private static final String EMBEDDED_KERNEL_MANIFEST_ASSET = "kernel-manifest.json";
 
   Context mContext;
   ExponentNetwork mExponentNetwork;
   Crypto mCrypto;
   private LruCache<String, Bitmap> mMemoryCache;
+  ExponentSharedPreferences mExponentSharedPreferences;
 
   @Inject
-  public ExponentManifest(Context context, ExponentNetwork exponentNetwork, Crypto crypto) {
+  public ExponentManifest(Context context, ExponentNetwork exponentNetwork, Crypto crypto, ExponentSharedPreferences exponentSharedPreferences) {
     mContext = context;
     mExponentNetwork = exponentNetwork;
     mCrypto = crypto;
+    mExponentSharedPreferences = exponentSharedPreferences;
 
     int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
     // Use 1/16th of the available memory for this memory cache.
@@ -271,7 +283,7 @@ public class ExponentManifest {
 
   private void fetchManifestStep3(final JSONObject manifest, final boolean isVerified, final ManifestListener listener) {
     try {
-      manifest.put("isVerified", isVerified);
+      manifest.put(MANIFEST_IS_VERIFIED_KEY, isVerified);
     } catch (JSONException e) {
       listener.onError(e);
     }
@@ -381,5 +393,57 @@ public class ExponentManifest {
     }
 
     return false;
+  }
+
+  private JSONObject getLocalKernelManifest() {
+    try {
+      JSONObject manifest = new JSONObject(ExponentBuildConstants.BUILD_MACHINE_KERNEL_MANIFEST);
+      manifest.put(MANIFEST_IS_VERIFIED_KEY, true);
+      return manifest;
+    } catch (JSONException e) {
+      throw new RuntimeException("Can't get local manifest: " + e.toString());
+    }
+  }
+
+  private JSONObject getRemoteKernelManifest() {
+    try {
+      InputStream inputStream = mContext.getAssets().open(EMBEDDED_KERNEL_MANIFEST_ASSET);
+      String jsonString = IOUtils.toString(inputStream);
+      JSONObject manifest = new JSONObject(jsonString);
+      manifest.put(MANIFEST_IS_VERIFIED_KEY, true);
+      return manifest;
+    } catch (Exception e) {
+      KernelProvider.getInstance().handleError(e);
+      return null;
+    }
+  }
+
+  public JSONObject getKernelManifest() {
+    if (mExponentSharedPreferences.shouldUseInternetKernel()) {
+      return getRemoteKernelManifest();
+    } else {
+      return getLocalKernelManifest();
+    }
+  }
+
+  public String getKernelManifestField(final String fieldName) {
+    try {
+      return getKernelManifest().getString(fieldName);
+    } catch (JSONException e) {
+      KernelProvider.getInstance().handleError(e);
+      return null;
+    }
+  }
+
+  public static boolean isDebugModeEnabled(final JSONObject manifest) {
+    try {
+      return (manifest != null &&
+          manifest.has(ExponentManifest.MANIFEST_DEVELOPER_KEY) &&
+          manifest.has(ExponentManifest.MANIFEST_PACKAGER_OPTS_KEY) &&
+          manifest.getJSONObject(ExponentManifest.MANIFEST_PACKAGER_OPTS_KEY)
+              .optBoolean(ExponentManifest.MANIFEST_PACKAGER_OPTS_DEV_KEY, false));
+    } catch (JSONException e) {
+      return false;
+    }
   }
 }

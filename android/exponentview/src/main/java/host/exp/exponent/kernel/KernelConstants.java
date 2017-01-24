@@ -17,7 +17,7 @@ public class KernelConstants {
   public static final String IS_OPTIMISTIC_KEY = "isOptimistic";
   public static final String OPTION_LOAD_NUX_KEY = "loadNux";
   public static final String BUNDLE_TAG = "BUNDLE";
-  public static final String HOME_MODULE_NAME = "ExponentApp";
+  public static final String HOME_MODULE_NAME = "main";
   public static final String BUNDLE_FILE_PREFIX = "cached-bundle-";
   public static final String KERNEL_BUNDLE_ID = "kernel";
   public static final String OPEN_EXPERIENCE_ACTIVITY_KEY = "openExperienceActivity";

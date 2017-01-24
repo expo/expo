@@ -38,10 +38,7 @@ public class ExponentSharedPreferences {
   }
 
   // Dev options
-  public static final String DEBUG_MODE_KEY = "debug_mode";
   public static final String USE_INTERNET_KERNEL_KEY = "use_internet_kernel";
-  public static final String KERNEL_DEBUG_MODE_KEY = "kernel_debug_kernel";
-  public static final String LOCAL_KERNEL_URL_KEY = "local_kernel_url";
 
   // Other
   public static final String IS_FIRST_KERNEL_RUN_KEY = "is_first_kernel_run";
@@ -61,9 +58,7 @@ public class ExponentSharedPreferences {
   private static final Map<String, Boolean> DEFAULT_VALUES = new HashMap<>();
 
   static {
-    DEFAULT_VALUES.put(DEBUG_MODE_KEY, false);
     DEFAULT_VALUES.put(USE_INTERNET_KERNEL_KEY, ExponentViewBuildConfig.USE_INTERNET_KERNEL);
-    DEFAULT_VALUES.put(KERNEL_DEBUG_MODE_KEY, false);
     DEFAULT_VALUES.put(HAS_SAVED_SHORTCUT_KEY, false);
     DEFAULT_VALUES.put(IS_FIRST_KERNEL_RUN_KEY, true);
     DEFAULT_VALUES.put(NUX_HAS_FINISHED_FIRST_RUN_KEY, false);
@@ -100,16 +95,8 @@ public class ExponentSharedPreferences {
     mSharedPreferences.edit().remove(key).apply();
   }
 
-  public boolean isDebugModeEnabled() {
-    return getBoolean(DEBUG_MODE_KEY);
-  }
-
   public boolean shouldUseInternetKernel() {
     return getBoolean(USE_INTERNET_KERNEL_KEY);
-  }
-
-  public boolean isKernelDebugModeEnabled() {
-    return getBoolean(KERNEL_DEBUG_MODE_KEY);
   }
 
   public boolean hasSavedShortcut() {
