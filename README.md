@@ -25,7 +25,8 @@ Please use Node 6 and npm 3. We recommend installing Node using [nvm](https://gi
 
 - `npm install` in the `js` and `tools-public` directories.
 - Install [the Gulp CLI](http://gulpjs.com/) globally: `npm i gulp-cli -g`.
-- Run the packager with `cd tools-public && gulp`. Leave this running while you run the clients. The clients access this packager using your computer's IP, so make sure that your computer and device are on the same WiFi network.
+- If you don't have it yet, install [exp](https://github.com/exponent/exp), the Exponent cli.
+- The exponent client apps run a root Exponent project in addition to native code. Serve this project by running `exp start` from the `js` directory. The native Android Studio and XCode projects have a build hook which will fail if this is not being served.
 
 #### Android
 - Make sure you have Android Studio 2 and the [Android NDK](https://facebook.github.io/react-native/docs/android-building-from-source.html#download-links-for-android-ndk) version `r10e` installed.
@@ -36,7 +37,7 @@ Please use Node 6 and npm 3. We recommend installing Node using [nvm](https://gi
 - Install [Cocoapods](https://cocoapods.org/): `gem install cocoapods --no-ri --no-rdoc`.
 - `cd tools-public && ./generate-files-ios.sh && cd ..`.
 - `cd ios && pod install && cd ..`.
-- Run iOS project by opening `ios/Exponent.xcworkspace` in Xcode.
+- Run iOS project by running `ios/Exponent.xcworkspace` in Xcode.
 
 Once the you have the clients running you should be able to open any Exponent experience in them by opening an `exp://` url on the device or navigating to a url in the app's url bar.
 
@@ -79,7 +80,7 @@ Here are the steps to build a standalone iOS app:
 - `ios` contains the iOS project.
 - `ios/Exponent.xcworkspace` is the Xcode workspace. Always open this instead of `Exponent.xcodeproj` because the workspace also loads the CocoaPods dependencies.
 - `js` contains the JavaScript source code of the app.
-- `tools-public` contains programs to launch the packager and also build tools.
+- `tools-public` contains build and configuration tools.
 - `template-files` contains templates for files that require private keys. They are populated using the keys in `template-files/keys.json`.
 - `template-files/ios/dependencies.json` specifies the CocoaPods dependencies of the app.
 
