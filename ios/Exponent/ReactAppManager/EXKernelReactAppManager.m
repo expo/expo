@@ -81,8 +81,7 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
       return bundleUrl;
     }
   }
-  // TODO: remove
-  return [NSURL URLWithString:@"https://exp.host/~exponent/kernel"];
+  return nil;
 }
 
 - (BOOL)isReadyToLoad
@@ -178,6 +177,8 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
   
   if ([self.versionManager respondsToSelector:@selector(extraModulesWithParams:)]) {
     NSDictionary *manifest = [[self class] kernelManifest];
+    RCTAssert([manifest objectForKey:@"id"], @"Cannot load kernel manifest with no id.");
+
     // TODO: common constants impl?
     NSMutableDictionary *params = [@{
                                      @"constants": @{
