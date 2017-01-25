@@ -17,6 +17,8 @@ const {
   ExponentKernel,
 } = NativeModules;
 
+const ANONYMOUS_EXPERIENCE_ID_PREFIX = '@anonymous/';
+
 let ExManifests = {
   async manifestUrlToBundleUrlAndManifestAsync(manifestUrl) {
     if (Platform.OS !== 'ios') {
@@ -59,10 +61,14 @@ let ExManifests = {
       };
     }
 
-    // TODO: re-enable
-    /* if (!manifest.isVerified) {
+    // disregard manifest verification for anonymous experiences
+    if (manifest.id && manifest.id.indexOf(ANONYMOUS_EXPERIENCE_ID_PREFIX) === 0) {
+      manifest.isVerified = true;
+    }
+
+    if (!manifest.isVerified) {
       throw new Error('This experience could not be verified.');
-    } */
+    }
     if (!manifest.bundleUrl) {
       throw new Error('No bundleUrl in manifest.');
     }
