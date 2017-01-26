@@ -6,6 +6,7 @@ RUN apk add --update \
     python-dev \
     py-pip \
     build-base \
+    bash \
     git \
       && rm -rf /var/cache/apk/*
 
