@@ -96,7 +96,7 @@ Standard Exponent projects don't support custom native code, including third-par
 
 In :ref:`our SDK <exponent-sdk>`, we give you a large set of commonly desired, high-quality native modules. We recommend doing as much in JS as possible, since it can immediately deploy to all your users and work across both platforms, and will always continue to benefit from Exponent SDK updates. Especially in the case of UI components, there is pretty much always a better option written in JS.
 
-However, if you need something very custom--like on-the-fly video processing or low level control over the Bluetooth radio to do a firmware update--we do have early/alpha support for :ref:`detaching to native Xcode and Android Studio projects <changing-native-code>`.
+However, if you need something very custom--like on-the-fly video processing or low level control over the Bluetooth radio to do a firmware update--we do have early/alpha support for :ref:`using Exponent in native Xcode and Android Studio projects <exponentkit>`.
 
 Is Exponent similar to React for web development?
 -------------------------------------------------
