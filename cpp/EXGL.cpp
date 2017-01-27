@@ -219,6 +219,7 @@ public:
   // --- GL state --------------------------------------------------------------
 private:
   GLint defaultFramebuffer = 0;
+  bool unpackFLipY = false;
 
 public:
   void setDefaultFramebuffer(GLint framebuffer) {
@@ -255,6 +256,71 @@ private:
 
   static inline void *bufferOffset(GLint offset) noexcept {
     return (char *) 0 + offset;
+  }
+
+  static inline GLuint bytesPerPixel(GLenum type, GLenum format) {
+    int bytesPerComponent = 0;
+    switch (type) {
+      case GL_UNSIGNED_BYTE:
+        bytesPerComponent = 1;
+        break;
+      case GL_FLOAT:
+        bytesPerComponent = 4;
+        break;
+      case GL_HALF_FLOAT_OES:
+        bytesPerComponent = 2;
+        break;
+      case GL_UNSIGNED_SHORT_5_6_5:
+      case GL_UNSIGNED_SHORT_4_4_4_4:
+      case GL_UNSIGNED_SHORT_5_5_5_1:
+        return 2;
+    }
+
+    switch (format) {
+      case GL_LUMINANCE:
+      case GL_ALPHA:
+        return 1 * bytesPerComponent;
+      case GL_LUMINANCE_ALPHA:
+        return 2 * bytesPerComponent;
+      case GL_RGB:
+        return 3 * bytesPerComponent;
+      case GL_RGBA:
+        return 4 * bytesPerComponent;
+    }
+    return 0;
+  }
+
+  static inline void flipPixels(GLubyte *pixels, size_t bytesPerRow, size_t rows) {
+    if (!pixels) {
+      return;
+    }
+
+    GLuint middle = rows / 2;
+    GLuint intsPerRow = bytesPerRow / sizeof(GLuint);
+    GLuint remainingBytes = bytesPerRow - intsPerRow * sizeof(GLuint);
+
+    for (GLuint rowTop = 0, rowBottom = rows - 1; rowTop < middle; ++rowTop, --rowBottom) {
+      // Swap in packs of sizeof(GLuint) bytes
+      GLuint *iTop = (GLuint *) (pixels + rowTop * bytesPerRow);
+      GLuint *iBottom = (GLuint *) (pixels + rowBottom * bytesPerRow);
+      GLuint iTmp;
+      GLuint n = intsPerRow;
+      do {
+        iTmp = *iTop;
+        *iTop++ = *iBottom;
+        *iBottom++ = iTmp;
+      } while(--n > 0);
+
+      // Swap remainder bytes
+      GLubyte *bTop = (GLubyte *) iTop;
+      GLubyte *bBottom = (GLubyte *) iBottom;
+      GLubyte bTmp;
+      switch (remainingBytes) {
+        case 3: bTmp = *bTop; *bTop++ = *bBottom; *bBottom++ = bTmp;
+        case 2: bTmp = *bTop; *bTop++ = *bBottom; *bBottom++ = bTmp;
+        case 1: bTmp = *bTop; *bTop = *bBottom; *bBottom = bTmp;
+      }
+    }
   }
 
 
@@ -491,9 +557,9 @@ private:
 
         // boolean
       case GL_UNPACK_FLIP_Y_WEBGL:
+        return JSValueMakeBoolean(jsCtx, unpackFLipY);
       case GL_UNPACK_PREMULTIPLY_ALPHA_WEBGL:
       case GL_UNPACK_COLORSPACE_CONVERSION_WEBGL:
-        // TODO(nikki): GL extensions
         return JSValueMakeBoolean(jsCtx, false);
 
         // string
@@ -569,7 +635,15 @@ private:
   _WRAP_METHOD_SIMPLE(lineWidth, glLineWidth, width)
 
   _WRAP_METHOD(pixelStorei, 2) {
-    EXGLSysLog("EXGL: gl.pixelStorei() currently does nothing!");
+    EXJS_UNPACK_ARGV(GLenum pname, GLint param);
+    switch (pname) {
+      case GL_UNPACK_FLIP_Y_WEBGL:
+        unpackFLipY = param;
+        break;
+      default:
+        EXGLSysLog("EXGL: gl.pixelStorei() doesn't support this parameter yet!");
+        break;
+    }
     return nullptr;
   }
 
@@ -705,38 +779,6 @@ private:
   _WRAP_METHOD_UNIMPL(getFramebufferAttachmentParameter)
 
   _WRAP_METHOD_UNIMPL(isFramebuffer)
-
-  static inline GLuint bytesPerPixel(GLenum type, GLenum format) {
-    int bytesPerComponent = 0;
-    switch (type) {
-      case GL_UNSIGNED_BYTE:
-        bytesPerComponent = 1;
-        break;
-      case GL_FLOAT:
-        bytesPerComponent = 4;
-        break;
-      case GL_HALF_FLOAT_OES:
-        bytesPerComponent = 2;
-        break;
-      case GL_UNSIGNED_SHORT_5_6_5:
-      case GL_UNSIGNED_SHORT_4_4_4_4:
-      case GL_UNSIGNED_SHORT_5_5_5_1:
-        return 2;
-    }
-
-    switch (format) {
-      case GL_LUMINANCE:
-      case GL_ALPHA:
-        return 1 * bytesPerComponent;
-      case GL_LUMINANCE_ALPHA:
-        return 2 * bytesPerComponent;
-      case GL_RGB:
-        return 3 * bytesPerComponent;
-      case GL_RGBA:
-        return 4 * bytesPerComponent;
-    }
-    return 0;
-  }
 
   _WRAP_METHOD(readPixels, 7) {
     EXJS_UNPACK_ARGV(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type);
@@ -877,6 +919,9 @@ private:
       // Raw texture data TypedArray?
       {
         auto data = jsValueToSharedArray(jsCtx, jsPixels, nullptr);
+        if (unpackFLipY) {
+          flipPixels((GLubyte *) data.get(), width * bytesPerPixel(type, format), height);
+        }
         if (data) {
           addToNextBatch([=] {
             glTexImage2D(target, level, internalformat,
