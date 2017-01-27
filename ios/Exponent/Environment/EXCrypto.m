@@ -39,22 +39,24 @@ static NSString* kPublicKeyTag = @"exp.host.publickey";
                                                                              cachePath:nil];
   EXCachedResourceBehavior cacheBehavior = useCache ? kEXCachedResourceUseCacheImmediately : kEXCachedResourceNoCache;
   [publicKeyResource loadResourceWithBehavior:cacheBehavior successBlock:^(NSData *publicKeyData) {
-    SecKeyRef publicKey = [self keyRefFromPEMData:publicKeyData];
-
-    NSData *signatureData = [[NSData alloc] initWithBase64EncodedString:signature options:0];
-    NSData *signedData = [data dataUsingEncoding:NSUTF8StringEncoding];
-
-    BOOL isValid = [self verifyRSASHA256SignedData:signedData signatureData:signatureData publicKey:publicKey];
-    if (!isValid && useCache) {
-      [self fetchAndVerifySignatureWithPublicKeyUrl:publicKeyUrl
-                                               data:data
-                                          signature:signature
-                                           useCache:NO
-                                       successBlock:successBlock
-                                         errorBlock:errorBlock];
-    } else {
-      successBlock(isValid);
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+      SecKeyRef publicKey = [self keyRefFromPEMData:publicKeyData];
+      
+      NSData *signatureData = [[NSData alloc] initWithBase64EncodedString:signature options:0];
+      NSData *signedData = [data dataUsingEncoding:NSUTF8StringEncoding];
+      
+      BOOL isValid = [self verifyRSASHA256SignedData:signedData signatureData:signatureData publicKey:publicKey];
+      if (!isValid && useCache) {
+        [self fetchAndVerifySignatureWithPublicKeyUrl:publicKeyUrl
+                                                 data:data
+                                            signature:signature
+                                             useCache:NO
+                                         successBlock:successBlock
+                                           errorBlock:errorBlock];
+      } else {
+        successBlock(isValid);
+      }
+    });
   } errorBlock:^(NSError *error) {
     errorBlock(error);
   }];

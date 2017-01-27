@@ -2,6 +2,7 @@
 
 #import "EXManifestResource.h"
 #import "EXCrypto.h"
+#import "EXFileDownloader.h"
 #import "EXKernel.h"
 #import "EXShellManager.h"
 
@@ -67,6 +68,8 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
                                       signature:manifestSignature
                                    successBlock:signatureSuccess
                                      errorBlock:errorBlock];
+    } else {
+      errorBlock([NSError errorWithDomain:EXNetworkErrorDomain code:-1 userInfo:@{ NSLocalizedDescriptionKey: @"Cannot verify the manifest because it has no signature." }]);
     }
   } errorBlock:errorBlock];
 }
