@@ -919,10 +919,10 @@ private:
       // Raw texture data TypedArray?
       {
         auto data = jsValueToSharedArray(jsCtx, jsPixels, nullptr);
-        if (unpackFLipY) {
-          flipPixels((GLubyte *) data.get(), width * bytesPerPixel(type, format), height);
-        }
         if (data) {
+          if (unpackFLipY) {
+            flipPixels((GLubyte *) data.get(), width * bytesPerPixel(type, format), height);
+          }
           addToNextBatch([=] {
             glTexImage2D(target, level, internalformat,
                          width, height, border,
@@ -955,6 +955,9 @@ private:
         if (width != fileWidth || height != fileHeight) {
           throw std::runtime_error("EXGL: Asset's width and height don't match"
                                    " given width and height for gl.texImage2D()!");
+        }
+        if (unpackFLipY) {
+          flipPixels((GLubyte *) data.get(), width * bytesPerPixel(type, format), height);
         }
         addToNextBatch([=] {
           glTexImage2D(target, level, internalformat,
