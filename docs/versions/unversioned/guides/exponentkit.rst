@@ -1,11 +1,12 @@
 .. _exponentkit:
 
-************************************
-Using ExponentKit in Native Projects
-************************************
+**********************************************
+Using ExponentKit to add Custom Native Modules
+**********************************************
 
-ExponentKit is an Objective-C and Java library that allows you to use the Exponent platform inside a
-native project.
+ExponentKit is an Objective-C and Java library that allows you to use the Exponent platform and
+your existing Exponent project as part of a larger standard native project -- one that you would
+normally create using Xcode, Android Studio, or ``react-native init``.
 
 What is this for?
 =================
