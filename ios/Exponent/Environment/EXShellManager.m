@@ -97,7 +97,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
 
 - (BOOL)isShellUrlScheme:(NSString *)scheme
 {
-  return false;//(_urlScheme && [scheme isEqualToString:_urlScheme]);
+  return (_urlScheme && [scheme isEqualToString:_urlScheme]);
 }
 
 - (BOOL)hasUrlScheme
