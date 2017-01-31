@@ -59,7 +59,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
         _shellManifestUrl = mutableConfig[@"developmentUrl"];
         [allManifestUrls addObject:mutableConfig[@"developmentUrl"]];
         NSURLComponents *components = [NSURLComponents componentsWithURL:[NSURL URLWithString:_shellManifestUrl] resolvingAgainstBaseURL:YES];
-        if (components.scheme) {
+        if ([self _isValidShellUrlScheme:components.scheme]) {
           _urlScheme = components.scheme;
         }
         _usesPublishedManifest = NO;
@@ -77,7 +77,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
           NSArray *urlSchemes = urlType[@"CFBundleURLSchemes"];
           if (urlSchemes) {
             for (NSString *urlScheme in urlSchemes) {
-              if (urlScheme.length && ![urlScheme hasPrefix:@"exp"]) {
+              if ([self _isValidShellUrlScheme:urlScheme]) {
                 _urlScheme = urlScheme;
                 break;
               }
@@ -97,12 +97,18 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
 
 - (BOOL)isShellUrlScheme:(NSString *)scheme
 {
-  return (_urlScheme && [scheme isEqualToString:_urlScheme]);
+  return false;//(_urlScheme && [scheme isEqualToString:_urlScheme]);
 }
 
 - (BOOL)hasUrlScheme
 {
   return (_urlScheme != nil);
+}
+
+- (BOOL)_isValidShellUrlScheme:(NSString *)urlScheme
+{
+  // don't allow shell apps to intercept exp links
+  return (urlScheme && urlScheme.length && ![urlScheme hasPrefix:@"exp"]);
 }
 
 @end
