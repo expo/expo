@@ -397,6 +397,19 @@ continueUserActivity:(NSUserActivity *)userActivity
   }
 }
 
+/**
+ *  If the bridge has a batchedBridge or parentBridge selector, posts the notification on that object as well.
+ */
+- (void)_postNotificationName: (NSNotificationName)name onAbstractBridge: (id)bridge
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:name object:bridge];
+  if ([bridge respondsToSelector:@selector(batchedBridge)]) {
+    [[NSNotificationCenter defaultCenter] postNotificationName:name object:[bridge batchedBridge]];
+  } else if ([bridge respondsToSelector:@selector(parentBridge)]) {
+    [[NSNotificationCenter defaultCenter] postNotificationName:name object:[bridge parentBridge]];
+  }
+}
+
 #pragma mark - EXKernelModuleDelegate
 
 - (void)kernelModuleDidSelectDevMenu:(__unused EXKernelModule *)module
@@ -434,9 +447,15 @@ continueUserActivity:(NSUserActivity *)userActivity
       }
     }
     
+    if (bridgeToBackground) {
+      [self _postNotificationName:kEXKernelBridgeDidBackgroundNotification onAbstractBridge:bridgeToBackground];
+      id appStateModule = [self _nativeModuleForBridge:bridgeToBackground named:@"AppState"];
+      if ([appStateModule respondsToSelector:@selector(setState:)]) {
+        [appStateModule setState:@"background"];
+      }
+    }
     if (bridgeToForeground) {
-      [[NSNotificationCenter defaultCenter] postNotificationName:kEXKernelBridgeDidForegroundNotification
-                                                          object:bridgeToForeground];
+      [self _postNotificationName:kEXKernelBridgeDidForegroundNotification onAbstractBridge:bridgeToBackground];
       id appStateModule = [self _nativeModuleForBridge:bridgeToForeground named:@"AppState"];
       if ([appStateModule respondsToSelector:@selector(setState:)]) {
         [appStateModule setState:@"active"];
@@ -445,14 +464,7 @@ continueUserActivity:(NSUserActivity *)userActivity
     } else {
       _bridgeRegistry.lastKnownForegroundBridge = nil;
     }
-    if (bridgeToBackground) {
-      [[NSNotificationCenter defaultCenter] postNotificationName:kEXKernelBridgeDidBackgroundNotification
-                                                          object:bridgeToBackground];
-      id appStateModule = [self _nativeModuleForBridge:bridgeToBackground named:@"AppState"];
-      if ([appStateModule respondsToSelector:@selector(setState:)]) {
-        [appStateModule setState:@"background"];
-      }
-    }
+
   }
 }
 
@@ -516,11 +528,9 @@ continueUserActivity:(NSUserActivity *)userActivity
     }
     if (!lastKnownState || ![newState isEqualToString:lastKnownState]) {
       if ([newState isEqualToString:@"active"]) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:kEXKernelBridgeDidForegroundNotification
-                                                            object:_bridgeRegistry.lastKnownForegroundBridge];
+        [self _postNotificationName:kEXKernelBridgeDidForegroundNotification onAbstractBridge:_bridgeRegistry.lastKnownForegroundBridge];
       } else if ([newState isEqualToString:@"background"]) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:kEXKernelBridgeDidBackgroundNotification
-                                                            object:_bridgeRegistry.lastKnownForegroundBridge];
+        [self _postNotificationName:kEXKernelBridgeDidBackgroundNotification onAbstractBridge:_bridgeRegistry.lastKnownForegroundBridge];
       }
     }
   }
