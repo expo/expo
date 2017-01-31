@@ -61,10 +61,7 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
   private String mManifestUrl;
   private String mManifestId;
   private String mSDKVersion;
-  private JSONObject mManifest;
-  private String mJSBundlePath;
   private int mActivityId;
-  private boolean mIsInForeground = false;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -223,36 +220,8 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
     });
   }
 
-  public boolean isDebugModeEnabled() {
-    return ExponentManifest.isDebugModeEnabled(mManifest);
-  }
-
-  private void waitForDrawOverOtherAppPermission(String jsBundlePath) {
-    mJSBundlePath = jsBundlePath;
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      if (isDebugModeEnabled() && !Settings.canDrawOverlays(this)) {
-        new AlertDialog.Builder(this)
-            .setTitle("Please enable \"Permit drawing over other apps\"")
-            .setMessage("Click \"ok\" to open settings. Press the back button once you've enabled the setting.")
-            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-              public void onClick(DialogInterface dialog, int which) {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + getPackageName()));
-                startActivityForResult(intent, KernelConstants.OVERLAY_PERMISSION_REQUEST_CODE);
-              }
-            })
-            .setCancelable(false)
-            .show();
-
-        return;
-      }
-    }
-
-    startReactInstance();
-  }
-
-  private void startReactInstance() {
+  @Override
+  protected void startReactInstance() {
     Exponent.getInstance().testPackagerStatus(isDebugModeEnabled(), mManifest, new Exponent.PackagerStatusCallback() {
       @Override
       public void onSuccess() {
@@ -291,18 +260,6 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
     super.onPause();
 
     mIsInForeground = false;
-  }
-
-  @Override
-  public void onActivityResult(int requestCode, int resultCode, Intent data) {
-    Exponent.getInstance().onActivityResult(requestCode, resultCode, data);
-
-    if (requestCode == KernelConstants.OVERLAY_PERMISSION_REQUEST_CODE) {
-      // startReactInstance() checks isInForeground and onActivityResult is called before onResume,
-      // so manually set this here.
-      mIsInForeground = true;
-      startReactInstance();
-    }
   }
 
   @Override

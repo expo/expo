@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.UserManager;
+import android.provider.Settings;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
@@ -723,5 +724,9 @@ public class Exponent {
   private static int currentActivityId = 0;
   public static int getActivityId() {
     return currentActivityId++;
+  }
+
+  public boolean shouldRequestDrawOverOtherAppsPermission() {
+    return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(mContext));
   }
 }

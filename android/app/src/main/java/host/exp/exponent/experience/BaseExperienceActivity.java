@@ -33,8 +33,6 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   private static BaseExperienceActivity sVisibleActivity;
   protected static Queue<ExponentError> sErrorQueue = new LinkedList<>();
 
-  private boolean mIsInForeground = false;
-
   @Inject
   Kernel mKernel;
 
@@ -111,14 +109,6 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
     }
   }
 
-  public boolean isInForeground() {
-    return mIsInForeground;
-  }
-
-  protected void setIsInForeground(boolean isInForeground) {
-    mIsInForeground = isInForeground;
-  }
-
   @Override
   protected void onDestroy() {
     super.onDestroy();
@@ -138,11 +128,6 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
     Fresco.initialize(getApplicationContext());
 
     // TODO: OkHttpClientProvider leaks Activity. Clean it up.
-  }
-
-  @Override
-  public void onActivityResult(int requestCode, int resultCode, Intent data) {
-    Exponent.getInstance().onActivityResult(requestCode, resultCode, data);
   }
 
   protected void consumeErrorQueue() {

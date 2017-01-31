@@ -6,12 +6,16 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
 import com.facebook.common.internal.ByteStreams;
@@ -225,6 +229,22 @@ public class Kernel implements KernelInterface {
                 .setInitialLifecycleState(LifecycleState.RESUMED);
 
             if (mExponentManifest.isDebugModeEnabled(mExponentManifest.getKernelManifest())) {
+              if (Exponent.getInstance().shouldRequestDrawOverOtherAppsPermission()) {
+                new AlertDialog.Builder(mActivityContext)
+                    .setTitle("Please enable \"Permit drawing over other apps\"")
+                    .setMessage("Click \"ok\" to open settings. Once you've enabled the setting you'll have to restart the app.")
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                      public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                            Uri.parse("package:" + mActivityContext.getPackageName()));
+                        mActivityContext.startActivityForResult(intent, KernelConstants.OVERLAY_PERMISSION_REQUEST_CODE);
+                      }
+                    })
+                    .setCancelable(false)
+                    .show();
+                return;
+              }
+
               Exponent.enableDeveloperSupport(mExponentManifest.getKernelManifestField(ExponentManifest.MANIFEST_DEBUGGER_HOST_KEY),
                   mExponentManifest.getKernelManifestField(ExponentManifest.MANIFEST_MAIN_MODULE_NAME_KEY), RNObject.wrap(builder));
             }

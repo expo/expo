@@ -3,10 +3,15 @@
 package host.exp.exponent.experience;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -17,9 +22,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.greenrobot.event.EventBus;
+import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.LoadingView;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.kernel.KernelConstants;
+import host.exp.exponentview.Exponent;
 import host.exp.exponentview.R;
 
 public abstract class ReactNativeActivity extends Activity implements com.facebook.react.modules.core.DefaultHardwareBackBtnHandler {
@@ -29,6 +37,12 @@ public abstract class ReactNativeActivity extends Activity implements com.facebo
 
   // Override
   protected void onDoneLoading() {
+
+  }
+
+  // Override
+  // Will be called after waitForDrawOverOtherAppPermission
+  protected void startReactInstance() {
 
   }
 
@@ -47,9 +61,16 @@ public abstract class ReactNativeActivity extends Activity implements com.facebo
   private Handler mHandler = new Handler();
   private Handler mLoadingHandler = new Handler();
   protected boolean mIsLoading = true;
+  protected String mJSBundlePath;
+  protected JSONObject mManifest;
+  protected boolean mIsInForeground = false;
 
   public boolean isLoading() {
     return mIsLoading;
+  }
+
+  public boolean isInForeground() {
+    return mIsInForeground;
   }
 
   @Override
@@ -219,6 +240,48 @@ public abstract class ReactNativeActivity extends Activity implements com.facebo
       }
     } else {
       super.onNewIntent(intent);
+    }
+  }
+
+  public boolean isDebugModeEnabled() {
+    return ExponentManifest.isDebugModeEnabled(mManifest);
+  }
+
+  protected void waitForDrawOverOtherAppPermission(String jsBundlePath) {
+    mJSBundlePath = jsBundlePath;
+
+    if (isDebugModeEnabled() && Exponent.getInstance().shouldRequestDrawOverOtherAppsPermission()) {
+      new AlertDialog.Builder(this)
+          .setTitle("Please enable \"Permit drawing over other apps\"")
+          .setMessage("Click \"ok\" to open settings. Press the back button once you've enabled the setting.")
+          .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+              Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                  Uri.parse("package:" + getPackageName()));
+              startActivityForResult(intent, KernelConstants.OVERLAY_PERMISSION_REQUEST_CODE);
+            }
+          })
+          .setCancelable(false)
+          .show();
+
+      return;
+    }
+
+    startReactInstance();
+  }
+
+  @Override
+  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+
+    Exponent.getInstance().onActivityResult(requestCode, resultCode, data);
+
+    // Have permission to draw over other apps. Resume loading.
+    if (requestCode == KernelConstants.OVERLAY_PERMISSION_REQUEST_CODE) {
+      // startReactInstance() checks isInForeground and onActivityResult is called before onResume,
+      // so manually set this here.
+      mIsInForeground = true;
+      startReactInstance();
     }
   }
 }

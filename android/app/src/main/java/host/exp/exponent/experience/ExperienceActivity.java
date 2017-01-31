@@ -78,12 +78,10 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   private static Long sLastErrorRefreshTime = null;
 
   private String mManifestUrl;
-  private JSONObject mManifest;
   private String mManifestId;
   private String mSDKVersion;
   private RNObject mLinkingPackage = null;
   private ReactUnthemedRootView mNuxOverlayView;
-  private String mJSBundlePath;
   private ExponentNotification mNotification;
   private boolean mIsShellApp;
   private String mIntentUri;
@@ -239,19 +237,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     }
   }
 
-  @Override
-  public void onActivityResult(int requestCode, int resultCode, Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
-
-    // Have permission to draw over other apps. Resume loading.
-    if (requestCode == KernelConstants.OVERLAY_PERMISSION_REQUEST_CODE) {
-      // startReactInstance() checks isInForeground and onActivityResult is called before onResume,
-      // so manually set this here.
-      setIsInForeground(true);
-      startReactInstance();
-    }
-  }
-
   public void onEventMainThread(Kernel.KernelStartedRunningEvent event) {
     AsyncCondition.notify(KERNEL_STARTED_RUNNING_KEY);
   }
@@ -383,13 +368,15 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
         boolean hasCachedBundle;
         if (isDebugModeEnabled()) {
           hasCachedBundle = false;
-          waitForDrawOverOtherAppPermission("", finalNotificationObject);
+          mNotification = finalNotificationObject;
+          waitForDrawOverOtherAppPermission("");
         } else {
           hasCachedBundle = Exponent.getInstance().loadJSBundle(bundleUrl, id, mSDKVersion,
               new Exponent.BundleListener() {
                 @Override
                 public void onBundleLoaded(String localBundlePath) {
-                  waitForDrawOverOtherAppPermission(localBundlePath, finalNotificationObject);
+                  mNotification = finalNotificationObject;
+                  waitForDrawOverOtherAppPermission(localBundlePath);
                 }
 
                 @Override
@@ -486,33 +473,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     return ExponentManifest.isDebugModeEnabled(mManifest);
   }
 
-  private void waitForDrawOverOtherAppPermission(String jsBundlePath, ExponentNotification notificationObject) {
-    mJSBundlePath = jsBundlePath;
-    mNotification = notificationObject;
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      if (isDebugModeEnabled() && !Settings.canDrawOverlays(this)) {
-        new AlertDialog.Builder(this)
-            .setTitle("Please enable \"Permit drawing over other apps\"")
-            .setMessage("Click \"ok\" to open settings. Press the back button once you've enabled the setting.")
-            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-              public void onClick(DialogInterface dialog, int which) {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + getPackageName()));
-                startActivityForResult(intent, KernelConstants.OVERLAY_PERMISSION_REQUEST_CODE);
-              }
-            })
-            .setCancelable(false)
-            .show();
-
-        return;
-      }
-    }
-
-    startReactInstance();
-  }
-
-  private void startReactInstance() {
+  @Override
+  protected void startReactInstance() {
     Exponent.getInstance().testPackagerStatus(isDebugModeEnabled(), mManifest, new Exponent.PackagerStatusCallback() {
       @Override
       public void onSuccess() {
