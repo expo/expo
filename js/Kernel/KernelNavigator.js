@@ -332,8 +332,13 @@ class KernelNavigator extends React.Component {
         let urlToBackground;
         if (prevUrl !== newUrl && !this.props.isHomeVisible) {
           urlToBackground = prevUrl;
+          requestAnimationFrame(() => {
+            this._foregroundHome(prevUrl);
+            this._foregroundRouteForUrl(newUrl, null);
+          });
+        } else {
+          requestAnimationFrame(() => this._foregroundRouteForUrl(newUrl, urlToBackground));
         }
-        requestAnimationFrame(() => this._foregroundRouteForUrl(newUrl, urlToBackground));
       }
     }
   }

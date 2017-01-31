@@ -90,4 +90,17 @@
   return [_bridgeRegistry keyEnumerator];
 }
 
+- (NSString *)description
+{
+  if (_bridgeRegistry.count > 0) {
+    NSMutableString *results = [NSMutableString string];
+    for (id bridge in self.bridgeEnumerator) {
+      EXKernelBridgeRecord *record = [self recordForBridge:bridge];
+      [results appendString:[NSString stringWithFormat:@"  %@: %@\n", bridge, record.experienceId]];
+    }
+    return [NSString stringWithFormat:@"EXKernelBridgeRegistry with bridges: {\n%@}", results];
+  }
+  return @"EXKernelBridgeRegistry (empty)";
+}
+
 @end
