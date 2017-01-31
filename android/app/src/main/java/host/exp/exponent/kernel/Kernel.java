@@ -17,6 +17,7 @@ import android.os.Looper;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.facebook.common.internal.ByteStreams;
 import com.facebook.proguard.annotations.DoNotStrip;
@@ -167,6 +168,25 @@ public class Kernel implements KernelInterface {
     }
 
     mHasError = false;
+
+    if (!mExponentSharedPreferences.shouldUseInternetKernel()) {
+      try {
+        // Make sure we can get the manifest successfully. This can fail in dev mode
+        // if the kernel packager is not running.
+        mExponentManifest.getKernelManifest();
+      } catch (Throwable e) {
+        Exponent.getInstance().runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            // Hack to make this show up for a while. Can't use an Alert because LauncherActivity has a transparent theme. This should only be seen by internal developers.
+            for (int i = 0; i < 3; i++) {
+              Toast.makeText(mActivityContext, "Kernel manifest invalid. Make sure `exp start` is running inside of exponent/js/__internal__ and rebuild the app.", Toast.LENGTH_LONG).show();
+            }
+          }
+        });
+        return;
+      }
+    }
 
     // On first run use the embedded kernel js but fire off a request for the new js in the background.
     final String bundleUrl = getBundleUrl();
