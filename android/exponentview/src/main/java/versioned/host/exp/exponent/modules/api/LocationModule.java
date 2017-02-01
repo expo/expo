@@ -89,6 +89,7 @@ public class LocationModule extends ReactContextBaseJavaModule {
     final String provider = selectProvider(locMgr, highAccuracy);
     if (provider == null) {
       promise.reject("E_NO_LOCATION_PROVIDER", "No location provider available.");
+      return;
     }
 
     // Check for permissions
