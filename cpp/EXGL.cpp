@@ -1353,7 +1353,9 @@ private:
   // Extensions
   // ----------
 
-  _WRAP_METHOD_UNIMPL(getSupportedExtensions)
+  _WRAP_METHOD(getSupportedExtensions, 0) {
+    return JSObjectMakeArray(jsCtx, 0, NULL, NULL);
+  }
 
   _WRAP_METHOD(getExtension, 1) {
     return JSValueMakeNull(jsCtx);
