@@ -87,6 +87,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
       }
 #endif
       RCTAssert((_shellManifestUrl), @"This app is configured to be a standalone app, but does not specify a standalone experience url.");
+      _isManifestVerificationBypassed = [[mutableConfig objectForKey:@"isManifestVerificationBypassed"] boolValue];
       // other shell config goes here
 
       [[EXAnalytics sharedInstance] setUserProperties:@{ @"INITIAL_URL": _shellManifestUrl }];

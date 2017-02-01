@@ -4,7 +4,11 @@
 <dict>
 	<key>isShell</key>
 	<true/>
+	<key>developmentUrl</key>
+	<string>exp://exp.host/@exponent/pomodoro</string>
 	<key>manifestUrl</key>
-	<string>exp://exp.host/@exponent/react-native-for-curious-people</string>
+	<string>exp://exp.host/@exponent/pomodoro</string>
+	<key>isManifestVerificationBypassed</key>
+	<false/>
 </dict>
 </plist>
