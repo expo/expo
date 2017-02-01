@@ -6,6 +6,10 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.util.Log;
 
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.soloader.SoLoader;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 
@@ -13,17 +17,11 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
-
+import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
-import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponentview.Exponent;
-
-import com.facebook.soloader.SoLoader;
 
 public class RegistrationIntentService extends IntentService {
 
@@ -64,6 +62,7 @@ public class RegistrationIntentService extends IntentService {
       WritableMap params = Arguments.createMap();
       params.putString("deviceToken", token);
       params.putString("deviceId", uuid);
+      params.putString("appId", getApplicationContext().getPackageName());
       ExponentKernelModuleProvider.queueEvent("ExponentKernel.updateDeviceToken", params, new ExponentKernelModuleProvider.KernelEventCallback() {
         @Override
         public void onEventSuccess(ReadableMap result) {

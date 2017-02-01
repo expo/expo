@@ -10,7 +10,7 @@ import {
   NativeModules,
 } from 'react-native';
 
-import ApiClient from 'ApiClient';
+import ApiV2Client from 'ApiV2Client';
 import BrowserActions from 'BrowserActions';
 import ConsoleActions from 'ConsoleActions';
 import ExStore from 'ExStore';
@@ -49,16 +49,21 @@ addListenerWithJavaCallback('ExponentKernel.openManifestUrl', async (event) => {
 });
 
 addListenerWithJavaCallback('ExponentKernel.updateDeviceToken', async (event) => {
-  let { deviceToken, deviceId } = event;
-  let appId = null;
+  let { deviceToken, deviceId, appId } = event;
   let development = null;  // GCM doesn't discriminate between dev and prod
-  await ApiClient.updateDeviceToken(deviceToken, deviceId, appId, development, 'gcm');
+  return ApiV2Client.updateDeviceTokenAsync(deviceToken, 'gcm', {
+    appId,
+    deviceId,
+    development,
+  });
 });
 
 addListenerWithJavaCallback('ExponentKernel.getExponentPushToken', async (event) => {
   let { deviceId, experienceId } = event;
-  let result = await ApiClient.getExponentPushToken(deviceId, experienceId);
-  return result;
+  return ApiV2Client.getExponentPushTokenAsync(
+    deviceId,
+    experienceId,
+  );
 });
 
 // Tell Java that it can send us DeviceEventEmitter events now.
