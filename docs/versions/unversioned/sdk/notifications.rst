@@ -90,7 +90,7 @@ Local Notifications
 
 .. function:: Exponent.Notifications.dismissAllNotificationsAsync()
 
-   *Android only*. Clears any notificatons that have been presented by the app.
+   *Android only*. Clears any notifications that have been presented by the app.
 
 .. function:: Exponent.Notifications.cancelScheduledNotificationAsync(localNotificationId)
 
@@ -129,10 +129,23 @@ Related types
 
     * **color** (*optional*) (*string*) -- color of the notification icon in notification drawer.
 
-    * **priority** (*optional*) (*min | low | high | max*) -- android may present notifications acccording to the priority, for example a ``high`` priority notification will likely to be shown as a heads-up notification.
+    * **priority** (*optional*) (*min | low | high | max*) -- android may present notifications according to the priority, for example a ``high`` priority notification will likely to be shown as a heads-up notification.
 
-    * **sticky** (*optional*) (*boolean*) -- if ``true``, the notification will be sticky and not dissmissable by user. The notification must be programmatically dismissed. Default: ``false``.
+    * **sticky** (*optional*) (*boolean*) -- if ``true``, the notification will be sticky and not dismissable by user. The notification must be programmatically dismissed. Default: ``false``.
 
     * **vibrate** (*optional*) (*boolean* or *array*) -- if ``true``, vibrate the device. An array can be supplied to specify the vibration pattern, e.g. - ``[ 0, 500 ]``.
 
     * **link** (*optional*) (*string*) -- external link to open when notification is selected.
+
+App Icon Badge Number (iOS)
+"""""""""""""""""""""""""""
+
+.. function:: Exponent.Notifications.getBadgeNumberAsync()
+
+   :returns:
+      Returns a promise that resolves to the number that is displayed in a badge on the app icon. This method returns zero when there is no badge (or when on Android).
+
+.. function:: Exponent.Notifications.setBadgeNumberAsync(number)
+
+   :returns:
+      Sets the number displayed in the app icon's badge to the given number. Setting the number to zero will both clear the badge and the list of notifications in the device's notification center on iOS. On Android this method does nothing.
