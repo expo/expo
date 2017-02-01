@@ -11,6 +11,9 @@ package abi13_0_0.host.exp.exponent.modules.api.components.svg;
 
 import android.graphics.Bitmap;
 
+import abi13_0_0.com.facebook.yoga.YogaMeasureMode;
+import abi13_0_0.com.facebook.yoga.YogaMeasureFunction;
+import abi13_0_0.com.facebook.yoga.YogaNodeAPI;
 import abi13_0_0.com.facebook.react.bridge.ReadableArray;
 import abi13_0_0.com.facebook.react.common.MapBuilder;
 import abi13_0_0.com.facebook.react.uimanager.BaseViewManager;
@@ -29,6 +32,17 @@ public class RNSVGSvgViewManager extends BaseViewManager<RNSVGSvgView, RNSVGSvgV
 
     private static final String REACT_CLASS = "RNSVGSvgView";
     private static final int COMMAND_TO_DATA_URL = 100;
+    private static final YogaMeasureFunction MEASURE_FUNCTION = new YogaMeasureFunction() {
+        @Override
+        public long measure(
+                YogaNodeAPI node,
+                float width,
+                YogaMeasureMode widthMode,
+                float height,
+                YogaMeasureMode heightMode) {
+            throw new IllegalStateException("SurfaceView should have explicit width and height set");
+        }
+    };
 
     @Override
     public String getName() {
@@ -42,7 +56,9 @@ public class RNSVGSvgViewManager extends BaseViewManager<RNSVGSvgView, RNSVGSvgV
 
     @Override
     public RNSVGSvgViewShadowNode createShadowNodeInstance() {
-        return new RNSVGSvgViewShadowNode();
+        RNSVGSvgViewShadowNode node = new RNSVGSvgViewShadowNode();
+        node.setMeasureFunction(MEASURE_FUNCTION);
+        return node;
     }
 
     @Override
