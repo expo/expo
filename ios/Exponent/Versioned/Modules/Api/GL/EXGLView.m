@@ -17,10 +17,14 @@
 @property (nonatomic, assign) GLuint viewFramebuffer;
 @property (nonatomic, assign) GLuint viewColorbuffer;
 @property (nonatomic, assign) GLuint viewDepthStencilbuffer;
+@property (nonatomic, assign) GLuint msaaFramebuffer;
+@property (nonatomic, assign) GLuint msaaRenderbuffer;
 
 @property (nonatomic, strong) CADisplayLink *displayLink;
 
 @property (nonatomic, assign) EX_UNVERSIONED(EXGLContextId) exglCtxId;
+
+@property (nonatomic, assign) NSNumber *msaaSamples;
 
 @end
 
@@ -48,7 +52,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
     // Initialize GL context, view buffers will be created on layout event
     _eaglCtx = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
-    _viewFramebuffer = _viewColorbuffer = _viewDepthStencilbuffer = 0;
+    _msaaFramebuffer = _msaaRenderbuffer = _viewFramebuffer = _viewColorbuffer = _viewDepthStencilbuffer = 0;
 
     // Set up a draw loop
     _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(draw)];
@@ -97,6 +101,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     glDeleteFramebuffers(1, &_viewFramebuffer);
     _viewFramebuffer = 0;
   }
+  if (_msaaRenderbuffer != 0) {
+    glDeleteRenderbuffers(1, &_msaaRenderbuffer);
+    _msaaRenderbuffer = 0;
+  }
+  if (_msaaFramebuffer != 0) {
+    glDeleteFramebuffers(1, &_msaaFramebuffer);
+    _msaaFramebuffer = 0;
+  }
 }
 
 - (void)resizeViewBuffersToWidth:(short)width height:(short)height
@@ -115,7 +127,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   // Delete old buffers if they exist
   [self deleteViewBuffers];
 
-  // Set up new framebuffer
+  // Set up view framebuffer
   glGenFramebuffers(1, &_viewFramebuffer);
   glBindFramebuffer(GL_FRAMEBUFFER, _viewFramebuffer);
 
@@ -125,12 +137,25 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   [_eaglCtx renderbufferStorage:GL_RENDERBUFFER fromDrawable:(CAEAGLLayer *)self.layer];
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                             GL_RENDERBUFFER, _viewColorbuffer);
+  GLint realWidth, realHeight;
+  glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &realWidth);
+  glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &realHeight);
+
+  // Set up MSAA framebuffer/renderbuffer
+  glGenFramebuffers(1, &_msaaFramebuffer);
+  glGenRenderbuffers(1, &_msaaRenderbuffer);
+  glBindFramebuffer(GL_FRAMEBUFFER, _msaaFramebuffer);
+  glBindRenderbuffer(GL_RENDERBUFFER, _msaaRenderbuffer);
+  glRenderbufferStorageMultisampleAPPLE(GL_RENDERBUFFER, self.msaaSamples.intValue, GL_RGBA8_OES,
+                                        realWidth, realHeight);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                            GL_RENDERBUFFER, _msaaRenderbuffer);
 
   // Set up new depth+stencil renderbuffer
   glGenRenderbuffers(1, &_viewDepthStencilbuffer);
   glBindRenderbuffer(GL_RENDERBUFFER, _viewDepthStencilbuffer);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8_OES,
-                        self.frame.size.width, self.frame.size.height);
+  glRenderbufferStorageMultisampleAPPLE(GL_RENDERBUFFER, self.msaaSamples.intValue, GL_DEPTH24_STENCIL8_OES,
+                                        realWidth, realHeight);
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
                             GL_RENDERBUFFER, _viewDepthStencilbuffer);
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT,
@@ -175,18 +200,33 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   // this frame (the GL work to run remains on the queue for next time).
   if (_exglCtxId != 0 && _viewFramebuffer != 0) {
     [EAGLContext setCurrentContext:_eaglCtx];
-    EX_UNVERSIONED(EXGLContextSetDefaultFramebuffer(_exglCtxId, _viewFramebuffer));
+    EX_UNVERSIONED(EXGLContextSetDefaultFramebuffer(_exglCtxId, _msaaFramebuffer));
     EX_UNVERSIONED(EXGLContextFlush(_exglCtxId));
 
     // Present current state of view buffers
     // TODO(nikki): This should happen exactly at `gl.endFrameEXP()` in the queue
     if (_viewColorbuffer != 0)
     {
-      // Present view color renderbuffer
+      // Save surrounding framebuffer/renderbuffer
+      GLint prevFramebuffer;
       GLint prevRenderbuffer;
+      glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFramebuffer);
       glGetIntegerv(GL_RENDERBUFFER_BINDING, &prevRenderbuffer);
+      if (prevFramebuffer == _viewFramebuffer) {
+        prevFramebuffer = 0;
+      }
+
+      // Resolve multisampling and present
+      glBindFramebuffer(GL_READ_FRAMEBUFFER_APPLE, _msaaFramebuffer);
+      glBindFramebuffer(GL_DRAW_FRAMEBUFFER_APPLE, _viewFramebuffer);
+      glResolveMultisampleFramebufferAPPLE();
       glBindRenderbuffer(GL_RENDERBUFFER, _viewColorbuffer);
       [_eaglCtx presentRenderbuffer:GL_RENDERBUFFER];
+
+      // Restore surrounding framebuffer/renderbuffer
+      if (prevFramebuffer != 0) {
+        glBindFramebuffer(GL_FRAMEBUFFER, prevFramebuffer);
+      }
       glBindRenderbuffer(GL_RENDERBUFFER, prevRenderbuffer);
     }
   }

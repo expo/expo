@@ -12,5 +12,6 @@ RCT_EXPORT_MODULE(ExponentGLViewManager);
 }
 
 RCT_EXPORT_VIEW_PROPERTY(onSurfaceCreate, RCTDirectEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(msaaSamples, NSNumber);
 
 @end
