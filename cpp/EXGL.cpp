@@ -725,13 +725,13 @@ private:
     return JSValueMakeNumber(jsCtx, glResult);
   }
 
-#define _WRAP_METHOD_IS_OBJECT(type) \
-  _WRAP_METHOD(is ## type, 1) { \
-    EXJS_UNPACK_ARGV(Future f); \
-    GLboolean glResult; \
-    addBlockingToNextBatch([&] { \
-      glResult = glIs ## type(peekFuture(f)); \
-    }); \
+#define _WRAP_METHOD_IS_OBJECT(type)            \
+  _WRAP_METHOD(is ## type, 1) {                 \
+    EXJS_UNPACK_ARGV(Future f);                 \
+    GLboolean glResult;                         \
+    addBlockingToNextBatch([&] {                \
+      glResult = glIs ## type(peekFuture(f));   \
+    });                                         \
     return JSValueMakeBoolean(jsCtx, glResult); \
   }
 
