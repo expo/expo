@@ -147,5 +147,4 @@ App Icon Badge Number (iOS)
 
 .. function:: Exponent.Notifications.setBadgeNumberAsync(number)
 
-   :returns:
-      Sets the number displayed in the app icon's badge to the given number. Setting the number to zero will both clear the badge and the list of notifications in the device's notification center on iOS. On Android this method does nothing.
+    Sets the number displayed in the app icon's badge to the given number. Setting the number to zero will both clear the badge and the list of notifications in the device's notification center on iOS. On Android this method does nothing.
