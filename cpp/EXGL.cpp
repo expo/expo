@@ -725,7 +725,17 @@ private:
     return JSValueMakeNumber(jsCtx, glResult);
   }
 
-  _WRAP_METHOD_UNIMPL(isBuffer)
+#define _WRAP_METHOD_IS_OBJECT(type) \
+  _WRAP_METHOD(is ## type, 1) { \
+    EXJS_UNPACK_ARGV(Future f); \
+    GLboolean glResult; \
+    addBlockingToNextBatch([&] { \
+      glResult = glIs ## type(peekFuture(f)); \
+    }); \
+    return JSValueMakeBoolean(jsCtx, glResult); \
+  }
+
+  _WRAP_METHOD_IS_OBJECT(Buffer)
 
 
   // Framebuffers
@@ -778,7 +788,7 @@ private:
 
   _WRAP_METHOD_UNIMPL(getFramebufferAttachmentParameter)
 
-  _WRAP_METHOD_UNIMPL(isFramebuffer)
+  _WRAP_METHOD_IS_OBJECT(Framebuffer)
 
   _WRAP_METHOD(readPixels, 7) {
     EXJS_UNPACK_ARGV(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type);
@@ -810,7 +820,7 @@ private:
 
   _WRAP_METHOD_UNIMPL(getRenderbufferParameter)
 
-  _WRAP_METHOD_UNIMPL(isRenderbuffer)
+  _WRAP_METHOD_IS_OBJECT(Renderbuffer)
 
   _WRAP_METHOD_UNIMPL(renderbufferStorage)
 
@@ -862,7 +872,7 @@ private:
 
   _WRAP_METHOD_UNIMPL(getTexParameter)
 
-  _WRAP_METHOD_UNIMPL(isTexture)
+  _WRAP_METHOD_IS_OBJECT(Texture)
 
   inline void decodeURI(char *dst, const char *src) {
     char a, b;
@@ -1141,9 +1151,9 @@ private:
                                  glGetShaderSource);
   }
 
-  _WRAP_METHOD_UNIMPL(isProgram)
+  _WRAP_METHOD_IS_OBJECT(Program)
 
-  _WRAP_METHOD_UNIMPL(isShader)
+  _WRAP_METHOD_IS_OBJECT(Shader)
 
   _WRAP_METHOD(linkProgram, 1) {
     EXJS_UNPACK_ARGV(Future fProgram);
