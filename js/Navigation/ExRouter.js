@@ -15,7 +15,7 @@ let ExRouter = {
   getHomeRoute() {
     return {
       getSceneClass() {
-        return require('HomeScreen').default;
+        return require('../Home/HomeApp').default;
       },
     };
   },

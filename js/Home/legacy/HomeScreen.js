@@ -87,7 +87,7 @@ class HomeScreen extends React.Component {
   }
 
   async _loadAssetsAsync() {
-    const imageAssets = cacheImages([ require('../Assets/ios-home-header-wordmark.png') ]);
+    const imageAssets = cacheImages([ require('../../Assets/ios-home-header-wordmark.png') ]);
     await Promise.all(imageAssets);
     this.setState({ assetsAreLoaded: true });
   }
@@ -132,7 +132,7 @@ class HomeScreen extends React.Component {
     if (this.state.assetsAreLoaded) {
       wordmark = (
         <Image
-          source={require('../Assets/ios-home-header-wordmark.png')}
+          source={require('../../Assets/ios-home-header-wordmark.png')}
           style={styles.exponent}
           />
       );

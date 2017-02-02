@@ -1,0 +1,147 @@
+import React from 'react';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+import {
+  Components,
+} from 'exponent';
+import {
+  connect,
+} from 'react-redux';
+
+import Actions from '../state/actions';
+import Alerts from '../constants/Alerts';
+import Colors from '../constants/Colors';
+import Form from '../components/Form';
+import PrimaryButton from '../components/PrimaryButton';
+import Auth0Api from '../api/Auth0Api';
+
+@connect(data => SignInScreen.getDataProps(data))
+export default class SignInScreen extends React.Component {
+  static route = {
+    navigationBar: {
+      title: 'Sign In',
+    },
+  }
+
+  static getDataProps(data) {
+    return {
+      authTokens: data.authTokens,
+    };
+  }
+
+  state = {
+    email: 'testing@getexponent.com',
+    password: 'pass123',
+    isLoading: false,
+  }
+
+  componentDidMount() {
+    this._isMounted = true;
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.authTokens && !this.props.authTokens) {
+      TextInput.State.blurTextInput(TextInput.State.currentlyFocusedField());
+      this.props.navigation.dismissModal();
+    }
+  }
+
+  render() {
+    return (
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={{paddingTop: 15}}
+        keyboardShouldPersistTaps
+        keyboardDismissMode="on-drag">
+        <Form>
+          <Form.Input
+            autoCapitalize="none"
+            autoCorrect={false}
+            autofocus
+            blurOnSubmit={false}
+            keyboardType="email-address"
+            label="E-mail address"
+            onChangeText={this._handleChangeEmail}
+            returnKeyType="next"
+            value={this.state.email}
+          />
+          <Form.Input
+            hideBottomBorder
+            label="Password"
+            onChangeText={this._handleChangePassword}
+            returnKeyType="done"
+            secureTextEntry
+            value={this.state.password}
+          />
+        </Form>
+
+        <PrimaryButton
+          isLoading={this.state.isLoading}
+          style={{margin: 20}}
+          onPress={this._handleSubmit}>
+          Sign In
+        </PrimaryButton>
+      </ScrollView>
+    );
+  }
+
+  _handleChangeEmail = (email) => {
+    this.setState({email});
+  }
+
+  _handleChangePassword = (password) => {
+    this.setState({password});
+  }
+
+  _handleSubmit = async () => {
+    let { email, password, isLoading } = this.state;
+
+    if (isLoading) {
+      return;
+    }
+
+    this.setState({ isLoading: true });
+
+    try {
+      let result = await Auth0Api.signInAsync(email, password);
+      if (this._isMounted) {
+        if (result.error) {
+          this._handleError(result);
+        } else {
+          this.props.navigator.hideLocalAlert();
+          this.props.dispatch(Actions.setAuthTokens({
+            refreshToken: result.refresh_token,
+            accessToken: result.access_token,
+            idToken: result.id_token,
+          }));
+        }
+      }
+    } catch(e) {
+      this._isMounted && this._handleError(e);
+    } finally {
+      this._isMounted && this.setState({ isLoading: false });
+    }
+  }
+
+  _handleError = (error) => {
+    console.log({error});
+    let message = error.error_description || error.message || "Sorry, something went wrong.";
+    this.props.navigator.showLocalAlert(message, Alerts.error);
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: Colors.greyBackground,
+  },
+});
