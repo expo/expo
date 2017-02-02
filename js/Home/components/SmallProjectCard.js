@@ -11,8 +11,9 @@ import {
 import { withNavigation } from '@exponent/ex-navigation';
 
 import Colors from '../constants/Colors';
-import TouchableNativeFeedbackSafe from '@exponent/react-native-touchable-native-feedback-safe';
+import ExUrls from 'ExUrls';
 import FadeIn from '@exponent/react-native-fade-in-image';
+import TouchableNativeFeedbackSafe from '@exponent/react-native-touchable-native-feedback-safe';
 
 @withNavigation
 export default class SmallProjectCard extends React.Component {
@@ -58,7 +59,8 @@ export default class SmallProjectCard extends React.Component {
   }
 
   _handlePressProject = () => {
-    Linking.openURL(this.props.projectUrl);
+    let url = ExUrls.normalizeUrl(this.props.projectUrl);
+    Linking.openURL(url);
   }
 
   _handlePressUsername = () => {

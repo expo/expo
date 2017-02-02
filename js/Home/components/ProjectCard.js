@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   Image,
+  Linking,
   Platform,
   StyleSheet,
   Text,
@@ -12,9 +13,10 @@ import {
 } from '@exponent/ex-navigation';
 
 import Colors from '../constants/Colors';
-import TouchableNativeFeedbackSafe from '@exponent/react-native-touchable-native-feedback-safe';
+import ExUrls from 'ExUrls';
 import FadeIn from '@exponent/react-native-fade-in-image';
 import LikeButton from './LikeButton';
+import TouchableNativeFeedbackSafe from '@exponent/react-native-touchable-native-feedback-safe';
 
 @withNavigation
 export default class ProjectCard extends React.Component {
@@ -30,7 +32,7 @@ export default class ProjectCard extends React.Component {
     return (
       <View style={styles.spacerContainer}>
         <TouchableNativeFeedbackSafe
-          onPress={() => {}}
+          onPress={this._handlePressProject}
           fallback={TouchableHighlight}
           underlayColor="#b7b7b7"
           style={[styles.container, styles.bottomBorder]}>
@@ -82,6 +84,11 @@ export default class ProjectCard extends React.Component {
         />
       </View>
     );
+  }
+
+  _handlePressProject = () => {
+    let url = ExUrls.normalizeUrl(this.props.projectUrl);
+    Linking.openURL(url);
   }
 
   _handlePressUsername = () => {

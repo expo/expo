@@ -55,6 +55,7 @@ export default class ExploreTab extends React.Component {
         key={i}
         iconUrl={app.iconUrl}
         projectName={app.name}
+        projectUrl={app.fullName}
         username={app.packageUsername}
         description={app.description}
         onPressUsername={this.props.onPressUsername}
