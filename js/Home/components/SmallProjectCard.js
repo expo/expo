@@ -1,17 +1,20 @@
 import React from 'react';
 import {
   Image,
+  Linking,
   Platform,
   StyleSheet,
   Text,
   TouchableHighlight,
   View,
 } from 'react-native';
+import { withNavigation } from '@exponent/ex-navigation';
 
 import Colors from '../constants/Colors';
 import TouchableNativeFeedbackSafe from '@exponent/react-native-touchable-native-feedback-safe';
 import FadeIn from '@exponent/react-native-fade-in-image';
 
+@withNavigation
 export default class SmallProjectCard extends React.Component {
   render() {
     let {
@@ -23,7 +26,7 @@ export default class SmallProjectCard extends React.Component {
 
     return (
       <TouchableNativeFeedbackSafe
-        onPress={() => {}}
+        onPress={this._handlePressProject}
         fallback={TouchableHighlight}
         underlayColor="#b7b7b7"
         style={[styles.container, this.props.fullWidthBorder && styles.bottomBorder]}>
@@ -52,6 +55,10 @@ export default class SmallProjectCard extends React.Component {
         </View>
       </TouchableNativeFeedbackSafe>
     );
+  }
+
+  _handlePressProject = () => {
+    Linking.openURL(this.props.projectUrl);
   }
 
   _handlePressUsername = () => {

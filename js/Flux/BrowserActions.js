@@ -84,7 +84,7 @@ let BrowserActions = {
         initialProps,
       },
       payload: async function() {
-        let history = await loadLocalHistoryAsync();
+        let history = await LocalStorage.getHistoryAsync();
         history = history.filter(item => item.url !== historyItem.url);
         history.unshift(historyItem);
         await LocalStorage.saveHistoryAsync(history);
