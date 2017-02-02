@@ -97,7 +97,7 @@ RUN echo 'deb http://http.debian.net/debian wheezy-backports main' >> /etc/apt/s
     rm -rf /var/lib/apt/lists/*
 
 # Install Yarn
-ADD ../tools/yarn/:/root/yarn
+ADD ../tools/yarn/ /root/yarn
 RUN cd /root/yarn && \
   npm install && \
   npm run build && \
