@@ -15,6 +15,7 @@ import { take, takeRight } from 'lodash';
 
 import Alerts from '../constants/Alerts';
 import AddProjectButton from '../components/AddProjectButton';
+import BrowserActions from 'BrowserActions';
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
 import FakeProjects from '../FakeProjects';
@@ -50,7 +51,7 @@ export default class HomeScreen extends React.Component {
 
           <View style={SharedStyles.sectionLabelContainer}>
             <Text style={SharedStyles.sectionLabelText}>RECENTLY VISITED</Text>
-            <TouchableOpacity onPress={() => {}} style={styles.clearButton}>
+            <TouchableOpacity onPress={this._handlePressClearHistory} style={styles.clearButton}>
               <Text style={styles.clearButtonText}>CLEAR</Text>
             </TouchableOpacity>
           </View>
@@ -104,6 +105,10 @@ export default class HomeScreen extends React.Component {
         />
       </View>
     );
+  }
+
+  _handlePressClearHistory = () => {
+    this.props.dispatch(BrowserActions.clearHistoryAsync());
   }
 
   _renderRecentHistory = () => {
