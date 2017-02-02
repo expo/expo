@@ -14,10 +14,7 @@ import ApiV2Client from 'ApiV2Client';
 import BrowserActions from 'BrowserActions';
 import ConsoleActions from 'ConsoleActions';
 import ExStore from 'ExStore';
-
-const {
-  ExponentKernel,
-} = NativeModules;
+import ExponentKernel from 'ExponentKernel';
 
 let addListenerWithJavaCallback = (eventName, eventListener) => {
   DeviceEventEmitter.addListener(eventName, async (event) => {

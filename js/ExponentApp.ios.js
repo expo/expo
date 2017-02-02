@@ -17,6 +17,7 @@ import autobind from 'autobind-decorator';
 import Browser from 'Browser';
 import BrowserActions from 'BrowserActions';
 import ExStore from 'ExStore';
+import ExponentKernel from 'ExponentKernel';
 import KernelNavigator from 'KernelNavigator';
 
 class ExponentApp extends React.Component {
@@ -45,6 +46,10 @@ class ExponentApp extends React.Component {
   }
 
   componentDidMount() {
+    if (ExponentKernel.__isFake) {
+      return;
+    }
+
     Linking.addEventListener('url', this._handleUrl);
     DeviceEventEmitter.addListener('Exponent.notification', this._handleNotification);
     DeviceEventEmitter.addListener('ExponentKernel.refresh', Browser.refresh);

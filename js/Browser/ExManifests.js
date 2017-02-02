@@ -11,11 +11,8 @@ import {
 } from 'react-native';
 
 import ExUrls from 'ExUrls';
+import ExponentKernel from 'ExponentKernel';
 import url from 'url';
-
-const {
-  ExponentKernel,
-} = NativeModules;
 
 const ANONYMOUS_EXPERIENCE_ID_PREFIX = '@anonymous/';
 

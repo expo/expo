@@ -32,6 +32,7 @@ import HomeUrlBar from 'HomeUrlBar';
 import Button from 'react-native-button';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import ExponentKernel from 'ExponentKernel';
 
 let {
   Asset,
@@ -39,10 +40,6 @@ let {
   Constants,
   Permissions,
 } = Exponent;
-
-let {
-  ExponentKernel,
-} = NativeModules;
 
 function cacheImages(imageModules) {
   return imageModules.map(imageModule => {
@@ -110,7 +107,6 @@ class HomeScreen extends React.Component {
         hidesWhenStopped
         animating={this.props.isLoading}
         style={styles.activityIndicator}
-        color="white"
       />
     );
 
@@ -185,7 +181,7 @@ class HomeScreen extends React.Component {
         />
 
         <View style={styles.bottomBar}>
-          <Text style={styles.bottomBarText}>v{Constants.exponentVersion}</Text>
+          <Text style={styles.bottomBarText}>v{Constants.exponentVersion} {ExponentKernel.__isFake && '(fake)'}</Text>
         </View>
         {camera}
       </View>

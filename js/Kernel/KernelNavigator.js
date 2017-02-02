@@ -25,13 +25,13 @@ import BrowserActions from 'BrowserActions';
 import ConsoleActions from 'ConsoleActions';
 import ExButton from 'ExButton';
 import ExRouter from 'ExRouter';
+import ExponentKernel from 'ExponentKernel';
 import MenuView from 'MenuView';
 import reactMixin from 'react-mixin';
 import { connect } from 'react-redux';
 import StorageKeys from 'StorageKeys';
 
 const {
-  ExponentKernel,
   ExponentConstants,
 } = NativeModules;
 

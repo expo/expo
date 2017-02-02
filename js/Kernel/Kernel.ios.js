@@ -12,10 +12,7 @@ import {
 } from 'react-native';
 
 import ApiV2Client from 'ApiV2Client';
-
-const {
-  ExponentKernel,
-} = NativeModules;
+import ExponentKernel from 'ExponentKernel';
 
 if (ExponentKernel && ExponentKernel.onLoaded) {
   let addListenerWithNativeCallback = (eventName, eventListener) => {

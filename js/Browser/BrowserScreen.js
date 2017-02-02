@@ -24,7 +24,7 @@ import BrowserErrorView from 'BrowserErrorView';
 import ConsoleActions from 'ConsoleActions';
 import ExColors from 'ExColors';
 import ExManifests from 'ExManifests';
-let { ExponentKernel } = NativeModules;
+import ExponentKernel from 'ExponentKernel';
 import Frame from 'Frame';
 import { connect } from 'react-redux';
 

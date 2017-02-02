@@ -15,6 +15,8 @@ import ReactNative, {
   requireNativeComponent,
 } from 'react-native';
 
+import ExponentKernel from 'ExponentKernel';
+
 const {
   EXFrameManager,
   UIManager,
