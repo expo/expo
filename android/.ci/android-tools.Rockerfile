@@ -101,7 +101,7 @@ ADD ../tools/yarn/:/root/yarn
 RUN cd /root/yarn && \
   npm install && \
   npm run build && \
-  npm install -g ./ &&
+  npm install -g ./ && \
   rm -rf /root/yarn
 
 # Tag/Push images
