@@ -1,49 +1,34 @@
 FROM gcr.io/exponentjs/android-tools:{{ .ToolsVersion }}
 
 # Mount universe and node_modules-tarballs
-MOUNT ../:/universe
+MOUNT ../.yarnrc:/root/.yarnrc
 MOUNT ../node_modules-tarballs:/root/node_modules-tarballs
 
-RUN cp /universe/.yarnrc /root/.yarnrc
-
-# Install Yarn
-RUN cd /universe/tools/yarn && \
-  npm install && \
-  npm run build && \
-  npm install -g ./
-
 ## Build XDL
-
-# Backup git dir so yarn doesn't complain
-RUN mv /universe/.git /universe/.git.bak
-
-RUN cd /universe/dev/xdl && \
+ADD ../dev/xdl /src/xdl
+RUN cd /src/xdl && \
   yarn && \
   gulp build && \
   cp `npm pack` xdl-packaged.tgz
 
-## Yarn
-WORKDIR /universe/exponent
-RUN cd ./tools && npm install
-RUN cd ./tools-public && yarn --pure-lockfile && npm install --save /universe/dev/xdl/xdl-packaged.tgz
-
+# Use Docker caching
 RUN mkdir -p /src/exponent
 
-# Copy relevant files
-RUN cp -R ./__internal__ /src/exponent/__internal__
-RUN cp -R ./template-files /src/exponent/template-files
-RUN cp -R ./android /src/exponent/android
-RUN cp -R ./tools /src/exponent/tools
-RUN cp -R ./tools-public /src/exponent/tools-public
-RUN cp -R ./cpp /src/exponent/cpp
-RUN cp -R ./package.json /src/exponent/package.json
+WORKDIR /src/exponent
+ADD ./tools /src/exponent/tools
+RUN cd ./tools && npm install
 
-# Restore .git dir
-RUN /bin/bash -c "if [[ -f /universe/.git.bak ]]; then mv /universe/.git.bak /universe/.git; fi"
+ADD ./tools-public /src/exponent/tools-public
+RUN cd ./tools-public && yarn --pure-lockfile && npm install --save /src/xdl/xdl-packaged.tgz && rm -rf /src/xdl
+
+# Copy relevant files
+ADD ./__internal__ /src/exponent/__internal__
+ADD ./template-files /src/exponent/template-files
+ADD ./android /src/exponent/android
+ADD ./cpp /src/exponent/cpp
+ADD ./package.json /src/exponent/package.json
 
 ENV SHELL_APP_BUILDER 1
-
-WORKDIR /src/exponent
 
 # Generate dynamic macros
 RUN mkdir -p ./android/exponentview/src/main/java/host/exp/exponent/generated/

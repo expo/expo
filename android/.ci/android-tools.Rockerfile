@@ -96,6 +96,14 @@ RUN echo 'deb http://http.debian.net/debian wheezy-backports main' >> /etc/apt/s
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# Install Yarn
+ADD ../tools/yarn/:/root/yarn
+RUN cd /root/yarn && \
+  npm install && \
+  npm run build && \
+  npm install -g ./ &&
+  rm -rf /root/yarn
+
 # Tag/Push images
 PUSH {{ .ImageName }}:{{ .ImageTag }}
 
