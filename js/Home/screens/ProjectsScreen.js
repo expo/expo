@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Clipboard,
   Platform,
   ScrollView,
   StatusBar,
@@ -12,6 +13,7 @@ import { Constants } from 'exponent';
 import { connect } from 'react-redux';
 import { take, takeRight } from 'lodash';
 
+import Alerts from '../constants/Alerts';
 import AddProjectButton from '../components/AddProjectButton';
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
@@ -71,9 +73,16 @@ export default class HomeScreen extends React.Component {
   _renderExponentVersion = () => {
     return (
       <View style={styles.exponentVersionContainer}>
-        <Text style={styles.exponentVersionText}>Client version: {Constants.exponentVersion}</Text>
+        <Text style={styles.exponentVersionText} onPress={this._copyClientVersionToClipboard}>
+          Client version: {Constants.exponentVersion}
+        </Text>
       </View>
     );
+  }
+
+  _copyClientVersionToClipboard = () => {
+    Clipboard.setString(Constants.exponentVersion);
+    this.props.navigator.showLocalAlert('The client version has been copied to your clipboard', Alerts.notice);
   }
 
   _renderInDevelopment = () => {
