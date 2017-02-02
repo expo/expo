@@ -20,6 +20,7 @@ Guides
    exp-cli
    building-standalone-apps
    exponentkit
+   advanced-exponentkit-topics
    how-exponent-works
    upgrading-exponent
    using-clojurescript

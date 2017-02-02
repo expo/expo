@@ -127,3 +127,6 @@ they try to use features that depend on those changes.
 If you decide to distribute your app as an ``ipa`` or ``apk``, it will automatically hit
 your app's published URL instead of your development XDE url. You can examine this configuration
 in the contents of ``EXShell.plist`` (iOS) or ``MainActivity.java`` (Android).
+
+Before taking your app all the way to production, it's a good idea to glance over the :ref:`Advanced
+ExponentKit Topics<advanced-exponentkit-topics>` guide.
