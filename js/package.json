@@ -50,7 +50,6 @@
     "react-timer-mixin": "^0.13.3",
     "redux": "^3.5.1",
     "redux-actions": "^0.10.0",
-    "redux-effex": "^1.1.2",
     "redux-promise": "^0.6.0-alpha",
     "url": "^0.11.0"
   },

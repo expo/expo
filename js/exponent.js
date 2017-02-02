@@ -12,11 +12,12 @@ import {
   DeviceEventEmitter,
   NativeModules,
 } from 'react-native';
-import { Provider } from 'react-redux';
+import { ApolloProvider } from 'react-apollo';
 
 // This has to be first.
 import ExStore from 'ExStore';
 
+import ApolloClient from './Api/ApolloClient';
 import ConsoleActions from 'ConsoleActions';
 import ErrorScreenApp from 'ErrorScreenApp';
 import ExperienceNuxApp from 'ExperienceNuxApp';
@@ -30,9 +31,9 @@ let { JSCExecutor } = NativeModules;
 class WrapWithStore extends React.Component {
   render() {
     return (
-      <Provider store={ExStore}>
+      <ApolloProvider client={ApolloClient} store={ExStore}>
         {this.props.children}
-      </Provider>
+      </ApolloProvider>
     );
   }
 }

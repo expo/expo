@@ -6,13 +6,18 @@
 'use strict';
 
 import mapValues from 'lodash/mapValues';
-import { applyMiddleware, combineReducers, createStore } from 'redux';
+import { applyMiddleware, combineReducers, createStore, compose } from 'redux';
 import { createAction } from 'redux-actions';
 import promiseMiddleware from 'redux-promise';
 
+import ApolloClient from '../Api/ApolloClient';
+
 export default class Flux {
   static createStore(reducers) {
-    let createExponentStore = applyMiddleware(promiseMiddleware)(createStore);
+    let createExponentStore = applyMiddleware(
+      promiseMiddleware,
+      ApolloClient.middleware()
+    )(createStore);
     return createExponentStore(combineReducers(reducers));
   }
 
@@ -26,7 +31,7 @@ export default class Flux {
     return mapValues(actionCreators, (createAction, name) => name);
   }
 
-  static createReducer(initialState, actionHandlers) {
+  static createReducer(initialState, actionHandlers, name = '') {
     return function(state = initialState, action) {
       let actionHandler = actionHandlers[action.type];
       if (actionHandler == null) {

@@ -21,6 +21,16 @@ async function saveAuthTokensAsync(authTokens) {
   return AsyncStorage.setItem(Keys.AuthTokens, JSON.stringify(authTokens));
 }
 
+async function updateIdTokenAsync(idToken) {
+  let tokens = await getAuthTokensAsync();
+  if (!tokens) {
+    await clearAllAsync();
+    throw new Error('Missing cached authentication tokens');
+  }
+
+  return saveAuthTokensAsync({...tokens, idToken});
+}
+
 async function removeAuthTokensAsync() {
   return AsyncStorage.removeItem(Keys.AuthTokens);
 }
@@ -33,5 +43,6 @@ export default {
   getAuthTokensAsync,
   saveAuthTokensAsync,
   removeAuthTokensAsync,
+  updateIdTokenAsync,
   clearAllAsync,
 };

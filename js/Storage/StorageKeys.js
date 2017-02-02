@@ -5,6 +5,14 @@
  */
 'use strict';
 
+/**
+  * DEPRECATION WARNING
+  *
+  * This file is deprecated and should be migrated to LocalStorage.js, and
+  * we should export functions to get/set/clear the data rather than the keys
+  *
+  */
+
 import mapValues from 'lodash/mapValues';
 
 const NAMESPACE = 'Exponent';

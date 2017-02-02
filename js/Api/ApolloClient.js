@@ -1,10 +1,10 @@
 import ApolloClient, { createNetworkInterface } from 'apollo-client';
 import createAuthAwareNetworkInterface from './createAuthAwareNetworkInterface';
 import Auth0Api from './Auth0Api';
-import Actions from '../state/actions';
+import AuthTokenActions from '../Flux/AuthTokenActions';
 
 function getIdToken() {
-  let Store = require('../state/Store').default;
+  let Store = require('../Flux/ExStore').default;
   let state = Store.getState();
   if (state.authTokens) {
     return state.authTokens.idToken;
@@ -14,7 +14,7 @@ function getIdToken() {
 }
 
 function getRefreshToken() {
-  let Store = require('../state/Store').default;
+  let Store = require('../Flux/ExStore').default;
   let state = Store.getState();
   if (state.authTokens) {
     return state.authTokens.refreshToken;
@@ -24,8 +24,8 @@ function getRefreshToken() {
 }
 
 function setIdToken(idToken) {
-  let Store = require('../state/Store').default;
-  Store.dispatch(Actions.updateIdToken(idToken));
+  let Store = require('../Flux/ExStore').default;
+  Store.dispatch(AuthTokenActions.updateIdToken(idToken));
 }
 
 function idTokenIsValid() {

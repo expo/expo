@@ -13,12 +13,12 @@ import {
   connect,
 } from 'react-redux';
 
-import Actions from '../state/actions';
 import Alerts from '../constants/Alerts';
+import AuthTokenActions from '../../Flux/AuthTokenActions';
 import Colors from '../constants/Colors';
 import Form from '../components/Form';
 import PrimaryButton from '../components/PrimaryButton';
-import Auth0Api from '../api/Auth0Api';
+import Auth0Api from '../../Api/Auth0Api';
 
 @connect(data => SignInScreen.getDataProps(data))
 export default class SignInScreen extends React.Component {
@@ -29,6 +29,9 @@ export default class SignInScreen extends React.Component {
   }
 
   static getDataProps(data) {
+    console.log('got here!');
+    console.log('getDataProps');
+    console.log(data.authTokens.toJS());
     return {
       authTokens: data.authTokens,
     };
@@ -49,7 +52,7 @@ export default class SignInScreen extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.authTokens && !this.props.authTokens) {
+    if (nextProps.authTokens.idToken && !this.props.authTokens.isToken) {
       TextInput.State.blurTextInput(TextInput.State.currentlyFocusedField());
       this.props.navigation.dismissModal();
     }
@@ -60,7 +63,7 @@ export default class SignInScreen extends React.Component {
       <ScrollView
         style={styles.container}
         contentContainerStyle={{paddingTop: 15}}
-        keyboardShouldPersistTaps
+        keyboardShouldPersistTaps="always"
         keyboardDismissMode="on-drag">
         <Form>
           <Form.Input
@@ -118,7 +121,7 @@ export default class SignInScreen extends React.Component {
           this._handleError(result);
         } else {
           this.props.navigator.hideLocalAlert();
-          this.props.dispatch(Actions.setAuthTokens({
+          this.props.dispatch(AuthTokenActions.setAuthTokens({
             refreshToken: result.refresh_token,
             accessToken: result.access_token,
             idToken: result.id_token,

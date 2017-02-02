@@ -17,11 +17,11 @@ import {
   ApolloProvider,
 } from 'react-apollo';
 
-import Actions from './state/actions';
-import ApolloClient from './api/ApolloClient';
-import LocalStorage from './state/LocalStorage';
+import AuthTokenActions from '../Flux/AuthTokenActions';
+import LocalStorage from '../Storage/LocalStorage';
+import ExStore from '../Flux/ExStore';
+
 import Router from './navigation/Router';
-import Store from './state/Store';
 import customNavigationContext from './navigation/customNavigationContext';
 
 export default class AppContainer extends React.Component {
@@ -33,7 +33,7 @@ export default class AppContainer extends React.Component {
     let storedAuthTokens = await LocalStorage.getAuthTokensAsync();
 
     if (storedAuthTokens) {
-      Store.dispatch(Actions.setAuthTokens(storedAuthTokens));
+      ExStore.dispatch(AuthTokenActions.setAuthTokens(storedAuthTokens));
     }
 
     this.setState({isReady: true});
@@ -42,18 +42,16 @@ export default class AppContainer extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <ApolloProvider client={ApolloClient} store={Store}>
-          <ActionSheetProvider>
-            <NavigationProvider context={customNavigationContext}>
-              { this.state.isReady && (
-                <StackNavigation
-                  id="root"
-                  initialRoute={"rootNavigation"}
-                />
-              )}
-            </NavigationProvider>
-          </ActionSheetProvider>
-        </ApolloProvider>
+        <ActionSheetProvider>
+          <NavigationProvider context={customNavigationContext}>
+            { this.state.isReady && (
+              <StackNavigation
+                id="root"
+                initialRoute="rootNavigation"
+              />
+            )}
+          </NavigationProvider>
+        </ActionSheetProvider>
 
         {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
         {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}

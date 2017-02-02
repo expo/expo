@@ -11,9 +11,10 @@ import {
   connect,
 } from 'react-redux';
 
+import AuthTokenActions from '../../Flux/AuthTokenActions';
+
 import Alerts from '../constants/Alerts';
-import Actions from '../state/actions';
-import Auth0Api from '../api/Auth0Api';
+import Auth0Api from '../../Api/Auth0Api';
 import Colors from '../constants/Colors';
 import Form from '../components/Form';
 import PrimaryButton from '../components/PrimaryButton';
@@ -62,7 +63,7 @@ export default class SignUpScreen extends React.Component {
       <ScrollView
         contentContainerStyle={{paddingTop: 20}}
         keyboardDismissMode="on-drag"
-        keyboardShouldPersistTaps
+        keyboardShouldPersistTaps="always"
         style={styles.container}>
         <Form>
           <Form.Input
@@ -159,7 +160,7 @@ export default class SignUpScreen extends React.Component {
           this._handleError(signInResult);
         } else {
           this.props.navigator.hideLocalAlert();
-          this.props.dispatch(Actions.setAuthTokens({
+          this.props.dispatch(AuthTokenActions.setAuthTokens({
             refreshToken: signInResult.refresh_token,
             accessToken: signInResult.access_token,
             idToken: signInResult.id_token,

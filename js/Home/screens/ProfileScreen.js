@@ -15,7 +15,8 @@ import {
   connect,
 } from 'react-redux';
 
-import Actions from '../state/actions';
+import AuthTokenActions from '../../Flux/AuthTokenActions';
+
 import Colors from '../constants/Colors';
 import Profile from '../components/Profile';
 import ProfileUnauthenticated from '../components/ProfileUnauthenticated';
@@ -104,7 +105,7 @@ class SignOutButtonAndroid extends React.Component {
     let handle = findNodeHandle(this._anchor);
     NativeModules.UIManager.showPopupMenu(handle, ['Sign out'], (err) => {}, (action, selectedIndex) => {
       if (selectedIndex === 0) {
-        this.props.dispatch(Actions.signOut());
+        this.props.dispatch(AuthTokenActions.signOut());
       }
     });
   }
@@ -124,7 +125,7 @@ class SignOutButtonIOS extends React.Component {
   }
 
   _handlePress = () => {
-    this.props.dispatch(Actions.signOut());
+    this.props.dispatch(AuthTokenActions.signOut());
   }
 }
 
