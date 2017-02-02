@@ -9,7 +9,6 @@
 import React from 'react';
 import {
   Animated,
-  AsyncStorage,
   DeviceEventEmitter,
   Easing,
   NativeModules,
@@ -26,10 +25,10 @@ import ConsoleActions from 'ConsoleActions';
 import ExButton from 'ExButton';
 import ExRouter from 'ExRouter';
 import ExponentKernel from 'ExponentKernel';
+import LocalStorage from 'LocalStorage';
 import MenuView from 'MenuView';
 import reactMixin from 'react-mixin';
 import { connect } from 'react-redux';
-import StorageKeys from 'StorageKeys';
 
 const {
   ExponentConstants,
@@ -436,7 +435,7 @@ class KernelNavigator extends React.Component {
 
   async _loadNuxStateAsync() {
     // load wherever the previous nux left off
-    let isNuxFinished = await AsyncStorage.getItem(StorageKeys.NuxIsFinished);
+    let isNuxFinished = await LocalStorage.getIsNuxFinishedAsync();
     if (isNuxFinished === 'true') {
       this.props.dispatch(BrowserActions.setIsNuxFinishedAsync(true));
     }

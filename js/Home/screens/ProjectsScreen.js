@@ -8,6 +8,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { Constants } from 'exponent';
+import { connect } from 'react-redux';
+import { take, takeRight } from 'lodash';
 
 import AddProjectButton from '../components/AddProjectButton';
 import Colors from '../constants/Colors';
@@ -16,12 +19,22 @@ import FakeProjects from '../FakeProjects';
 import SeeAllProjectsButton from '../components/SeeAllProjectsButton';
 import SmallProjectCard from '../components/SmallProjectCard';
 
+@connect(data => HomeScreen.getDataProps(data))
 export default class HomeScreen extends React.Component {
   static route = {
     navigationBar: {
       title: 'Projects',
       renderRight: () => <AddProjectButton />,
     },
+  }
+
+  static getDataProps(data) {
+    let { history } = data.browser;
+
+    return {
+      recentHistory: history.take(5),
+      allHistory: history,
+    }
   }
 
   render() {
@@ -31,51 +44,79 @@ export default class HomeScreen extends React.Component {
           style={styles.container}
           contentContainerStyle={styles.contentContainer}>
 
+          {this._renderInDevelopment()}
+
           <View style={SharedStyles.sectionLabelContainer}>
-            <View style={styles.greenDot} />
-            <Text style={SharedStyles.sectionLabelText}>IN DEVELOPMENT</Text>
-          </View>
-
-          <SmallProjectCard
-            iconUrl="https://s3.amazonaws.com/exp-brand-assets/ExponentEmptyManifest_192.png"
-            projectName="Tab bar experiment"
-            projectUrl="exp://m2-6dz.community.exponent-home.exp.direct:80"
-            fullWidthBorder
-          />
-
-          <View style={[SharedStyles.sectionLabelContainer, styles.recentlyVisitedSectionLabelContainer]}>
             <Text style={SharedStyles.sectionLabelText}>RECENTLY VISITED</Text>
             <TouchableOpacity onPress={() => {}} style={styles.clearButton}>
               <Text style={styles.clearButtonText}>CLEAR</Text>
             </TouchableOpacity>
           </View>
 
-          <SmallProjectCard
-            iconUrl="https://s3.amazonaws.com/exp-brand-assets/ExponentEmptyManifest_192.png"
-            projectName="native-component-list"
-            username="@notbrent"
-          />
-          <SmallProjectCard
-            iconUrl="https://s3.amazonaws.com/exp-brand-assets/ExponentEmptyManifest_192.png"
-            projectName="navigation"
-            projectUrl="exp://8k-23z.community.exponent-home.exp.direct:80"
-          />
-          <SmallProjectCard
-            iconUrl="https://s3-us-west-2.amazonaws.com/examples-exp/floaty_icon.png"
-            projectName="Floaty Plane"
-            username="@nikki"
-            fullWidthBorder
-          />
+          {this._renderRecentHistory()}
 
           <SeeAllProjectsButton
             onPress={() => {}}
             projects={FakeProjects}
           />
+
+          {this._renderExponentVersion()}
         </ScrollView>
 
         <StatusBar barStyle="default" />
       </View>
     );
+  }
+
+  _renderExponentVersion = () => {
+    return (
+      <View style={styles.exponentVersionContainer}>
+        <Text style={styles.exponentVersionText}>Client version: {Constants.exponentVersion}</Text>
+      </View>
+    );
+  }
+
+  _renderInDevelopment = () => {
+    // Nothing here for now
+    return null;
+
+    return (
+      <View style={{marginBottom: 10}}>
+        <View style={SharedStyles.sectionLabelContainer}>
+          <View style={styles.greenDot} />
+          <Text style={SharedStyles.sectionLabelText}>IN DEVELOPMENT</Text>
+        </View>
+
+        <SmallProjectCard
+          iconUrl="https://s3.amazonaws.com/exp-brand-assets/ExponentEmptyManifest_192.png"
+          projectName="Tab bar experiment"
+          projectUrl="exp://m2-6dz.community.exponent-home.exp.direct:80"
+          fullWidthBorder
+        />
+      </View>
+    );
+  }
+
+  _renderRecentHistory = () => {
+    const extractUsername = (manifestUrl) => {
+      let username = manifestUrl.match(/@.*?\//)[0];
+      if (!username) {
+        return null
+      } else {
+        return username.slice(0, username.length - 1);
+      }
+    }
+
+    return this.props.recentHistory.map((project, i) => (
+      <SmallProjectCard
+        key={project.manifestUrl}
+        iconUrl={project.manifest.iconUrl}
+        projectName={project.manifest.name}
+        username={project.manifestUrl.includes('exp://exp.host') ? extractUsername(project.manifestUrl) : null}
+        projectUrl={project.manifestUrl}
+        fullWidthBorder={i === this.props.recentHistory.count() - 1}
+      />
+    ));
   }
 }
 
@@ -90,6 +131,7 @@ const styles = StyleSheet.create({
   clearButton: {
     position: 'absolute',
     right: 15,
+    top: 10,
   },
   clearButtonText: {
     color: Colors.greyText,
@@ -108,7 +150,16 @@ const styles = StyleSheet.create({
     borderRadius: 3.5,
     marginRight: 7,
   },
-  recentlyVisitedSectionLabelContainer: {
-    marginTop: 10,
+  exponentVersionContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 15,
+    paddingBottom: 20,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    flex: 1,
+  },
+  exponentVersionText: {
+    color: 'rgba(0,0,0,0.1)',
+    fontSize: 11,
   },
 });

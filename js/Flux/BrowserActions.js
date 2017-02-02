@@ -5,13 +5,9 @@
  */
 'use strict';
 
-import {
-  AsyncStorage,
-} from 'react-native';
-
-import ExManifests from 'ExManifests';
 import { action } from 'Flux';
-import StorageKeys from 'StorageKeys';
+import ExManifests from 'ExManifests';
+import LocalStorage from 'LocalStorage';
 
 /**
  * The browser history is stored in AsyncStorage. Its format is:
@@ -41,7 +37,7 @@ let BrowserActions = {
   },
 
   async navigateToExperienceIdWithNotificationAsync(experienceId, notificationBody) {
-    let history = await loadLocalHistoryAsync();
+    let history = await LocalStorage.getHistoryAsync();
     history = history.sort((item1, item2) => {
       // date descending -- we want to pick the most recent experience with this id,
       // in case there are multiple (e.g. somebody was developing against various URLs of the
@@ -91,7 +87,7 @@ let BrowserActions = {
         let history = await loadLocalHistoryAsync();
         history = history.filter(item => item.url !== historyItem.url);
         history.unshift(historyItem);
-        await AsyncStorage.setItem(StorageKeys.History, JSON.stringify(history));
+        await LocalStorage.saveHistoryAsync(history);
         return history;
       }(),
     };
@@ -117,7 +113,7 @@ let BrowserActions = {
       type: 'setIsNuxFinishedAsync',
       meta: { isFinished },
       payload: async function() {
-        await AsyncStorage.setItem(StorageKeys.NuxIsFinished, JSON.stringify(isFinished));
+        await LocalStorage.saveIsNuxFinishedAsync(isFinished);
         return isFinished;
       }(),
     };
@@ -155,26 +151,14 @@ let BrowserActions = {
 
   @action
   async loadHistoryAsync() {
-    let history = await loadLocalHistoryAsync();
+    let history = await LocalStorage.getHistoryAsync();
     return { history };
   },
 
   @action
   async clearHistoryAsync() {
-    await AsyncStorage.removeItem(StorageKeys.History);
+    await LocalStorage.clearHistoryAsync();
   },
 };
-
-async function loadLocalHistoryAsync() {
-  let jsonHistory = await AsyncStorage.getItem(StorageKeys.History);
-  if (jsonHistory) {
-    try {
-      return JSON.parse(jsonHistory);
-    } catch (e) {
-      console.error(e);
-    }
-  }
-  return [];
-}
 
 export default BrowserActions;
