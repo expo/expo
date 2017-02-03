@@ -341,7 +341,7 @@ The response is a JSON object with two optional fields, ``data`` and ``errors``.
     }]
   }
 
-If there are errors that affect individual messages but not the entire request, the ``errors`` field will be empty and the ``data`` field wil contain push receipts that describe the errors:
+If there are errors that affect individual messages but not the entire request, the ``errors`` field will be empty and the ``data`` field will contain push receipts that describe the errors:
 
 .. code-block:: json
 
