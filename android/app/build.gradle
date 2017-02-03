@@ -1,5 +1,6 @@
 buildscript {
   repositories {
+    jcenter()
     maven { url 'https://maven.fabric.io/public' }
   }
 
@@ -11,7 +12,9 @@ apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 apply plugin: 'com.neenbedankt.android-apt'
 
-repositories {
+repositories
+{
+  jcenter()
   maven { url 'https://maven.fabric.io/public' }
 }
 

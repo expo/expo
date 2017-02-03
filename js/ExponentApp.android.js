@@ -19,6 +19,7 @@ import {
   Text,
   TextInput,
   View,
+  RCTLog,
 } from 'react-native';
 import { connect } from 'react-redux';
 import ResponsiveImage from '@exponent/react-native-responsive-image';

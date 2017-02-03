@@ -10,6 +10,7 @@ import React, { PropTypes } from 'react';
 import {
   DeviceEventEmitter,
   Linking,
+  RCTLog,
 } from 'react-native';
 
 import autobind from 'autobind-decorator';
