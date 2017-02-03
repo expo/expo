@@ -108,6 +108,10 @@ export default class BrowserErrorView extends React.Component {
         return `Looks like your copy of Exponent can't run this experience. Try updating Exponent.`;
       } */
     }
+    if (error.originalUrl &&
+        error.originalUrl.indexOf('.local') !== -1 || error.originalUrl.indexOf('192.') !== -1) {
+      return `There was a problem loading the experience. It looks like you may be using a LAN url. Make sure your device is on the same network as the server or try using a tunnel.`;
+    }
     return 'There was a problem loading the experience.';
   }
 
