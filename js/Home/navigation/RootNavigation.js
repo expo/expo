@@ -25,6 +25,8 @@ export default class RootNavigation extends React.Component {
         tabBarColor={Colors.tabBar}
         tabBarStyle={{borderTopColor: '#f2f2f2'}}
         tabBarHeight={50}
+        id="main"
+        navigatorUID="main"
         initialTab="projects">
         <TabNavigationItem
           id="projects"

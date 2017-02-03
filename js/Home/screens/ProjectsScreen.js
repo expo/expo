@@ -17,6 +17,7 @@ import Alerts from '../constants/Alerts';
 import AddProjectButton from '../components/AddProjectButton';
 import BrowserActions from 'BrowserActions';
 import Colors from '../constants/Colors';
+import EmptyProjectsNotice from '../components/EmptyProjectsNotice';
 import SharedStyles from '../constants/SharedStyles';
 import FakeProjects from '../FakeProjects';
 import SeeAllProjectsButton from '../components/SeeAllProjectsButton';
@@ -41,6 +42,10 @@ export default class HomeScreen extends React.Component {
   }
 
   render() {
+    if (this.props.allHistory.count() === 0) {
+      return <EmptyProjectsNotice />
+    }
+
     return (
       <View style={styles.container}>
         <ScrollView

@@ -29,9 +29,6 @@ export default class SignInScreen extends React.Component {
   }
 
   static getDataProps(data) {
-    console.log('got here!');
-    console.log('getDataProps');
-    console.log(data.authTokens.toJS());
     return {
       authTokens: data.authTokens,
     };
