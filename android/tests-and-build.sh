@@ -2,11 +2,15 @@
 # ./gradlew :app:connectedDevDebugAndroidTest runs test differently than Android Studio.
 # This script runs the same commands as Android Studio and seems to behave more predictably.
 
+adb uninstall host.exp.exponent
 adb uninstall host.exp.exponent.test
 # Clear logs
 adb logcat -c
 
-./gradlew :app:assembleDevDebugAndroidTest
+./gradlew :app:assembleDevDebug :app:assembleDevDebugAndroidTest
+
+adb push app/build/outputs/apk/app-dev-debug.apk /data/local/tmp/host.exp.exponent
+adb shell pm install -r "/data/local/tmp/host.exp.exponent"
 
 adb push app/build/outputs/apk/app-dev-debug-androidTest-unaligned.apk /data/local/tmp/host.exp.exponent.test
 adb shell pm install -r "/data/local/tmp/host.exp.exponent.test"

@@ -18,7 +18,6 @@ import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiSelector;
 import android.support.test.uiautomator.Until;
-import android.test.suitebuilder.annotation.LargeTest;
 import android.widget.Switch;
 
 import org.junit.After;
@@ -31,21 +30,17 @@ import org.junit.runners.MethodSorters;
 
 import java.util.concurrent.TimeUnit;
 
-import host.exp.exponent.generated.TestBuildConstants;
+import host.exp.exponent.experience.BaseExperienceActivity;
 import host.exp.exponent.utils.ElapsedTimeIdlingResource;
 import host.exp.exponent.utils.LoadingScreenIdlingResource;
 
 import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static host.exp.exponent.utils.ExponentMatchers.withTestId;
-import static host.exp.exponent.utils.ExponentScrollToAction.exponentScrollTo;
 
 @RunWith(AndroidJUnit4.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-@LargeTest
 public class EspressoTest {
 
   private static final int LAUNCH_TIMEOUT = 5000;
@@ -67,7 +62,7 @@ public class EspressoTest {
     sUiDevice.wait(Until.hasObject(By.pkg(launcherPackage).depth(0)), LAUNCH_TIMEOUT);
 
     // Enable draw over other apps if necessary
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(InstrumentationRegistry.getTargetContext())) {
       // Open settings
       Context context = InstrumentationRegistry.getContext();
       Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:host.exp.exponent"));
@@ -102,15 +97,6 @@ public class EspressoTest {
     final String launcherPackage = sUiDevice.getLauncherPackageName();
     sUiDevice.wait(Until.hasObject(By.pkg(launcherPackage).depth(0)), LAUNCH_TIMEOUT);
 
-    // Launch the app
-    Context context = InstrumentationRegistry.getContext();
-    final Intent intent = context.getPackageManager().getLaunchIntentForPackage("host.exp.exponent");
-    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-    context.startActivity(intent);
-
-    // Wait for the app to appear
-    sUiDevice.wait(Until.hasObject(By.pkg("host.exp.exponent").depth(0)), LAUNCH_TIMEOUT);
-
     // Setup Espresso
     mLoadingScreenIdlingResource = new LoadingScreenIdlingResource();
     mElapsedTimeIdlingResource = new ElapsedTimeIdlingResource();
@@ -122,57 +108,18 @@ public class EspressoTest {
     Espresso.unregisterIdlingResources(mLoadingScreenIdlingResource, mElapsedTimeIdlingResource);
   }
 
-  // This test needs to run first to clear the nux so prefix with "aaa". Gross but easiest way to handle this without
-  // injecting JS code.
   @Test
-  public void aaa_nux() {
-    onView(withTestId("first_nux_experience")).perform(click());
-    mElapsedTimeIdlingResource.sleep(3000);
-    onView(withTestId("nux_no_thanks")).perform(click());
-  }
+  public void nativeComponentList() {
+    // Launch the app
+    Context context = InstrumentationRegistry.getContext();
+    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("exp://jh-cqd.jesse.native-component-list.exp.direct:80"));
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    context.startActivity(intent);
 
-  @Test
-  public void movies() {
-    onView(withTestId("url_bar")).check(matches(isEnabled())).perform(exponentScrollTo(), typeText("exp://exp.host/@reactnative/movies"));
-    onView(withTestId("go_button")).perform(click());
-  }
-
-  @Test
-  public void showcase() {
-    if (TestBuildConstants.SHOWCASE_URL == null) {
-      return;
-    }
-
-    onView(withTestId("url_bar")).perform(exponentScrollTo(), typeText(TestBuildConstants.SHOWCASE_URL));
-    onView(withTestId("go_button")).perform(click());
+    // Wait for the app to appear
+    sUiDevice.wait(Until.hasObject(By.pkg("host.exp.exponent").depth(0)), LAUNCH_TIMEOUT);
 
     // Check to make sure we actually loaded it
-    onView(withTestId("exponent_showcase")).check(matches(isEnabled()));
-  }
-
-  @Test
-  public void template() {
-    if (TestBuildConstants.TEMPLATE_PROJECT_URL == null) {
-      return;
-    }
-
-    onView(withTestId("url_bar")).perform(exponentScrollTo(), typeText(TestBuildConstants.TEMPLATE_PROJECT_URL));
-    onView(withTestId("go_button")).perform(click());
-
-    // TODO: Check to make sure we actually loaded it
-    // onView(withTestId("exponent_showcase")).check(matches(isEnabled()));
-  }
-
-  @Test
-  public void publishedTemplate() {
-    if (TestBuildConstants.TEMPLATE_PROJECT_PUBLISHED_URL == null) {
-      return;
-    }
-
-    onView(withTestId("url_bar")).perform(exponentScrollTo(), typeText(TestBuildConstants.TEMPLATE_PROJECT_PUBLISHED_URL));
-    onView(withTestId("go_button")).perform(click());
-
-    // TODO: Check to make sure we actually loaded it
-    // onView(withTestId("exponent_showcase")).check(matches(isEnabled()));
+    onView(withTestId("native_component_list")).check(matches(isEnabled()));
   }
 }
