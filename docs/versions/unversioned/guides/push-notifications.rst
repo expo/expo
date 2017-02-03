@@ -206,9 +206,7 @@ Although we provide server-side SDKs in several languages to help you send push 
 Sending notifications
 _____________________
 
-Send a POST request to ``https://exp.host/--/api/v2/push/send`` with the following HTTP headers:
-
-.. code-block::
+Send a POST request to ``https://exp.host/--/api/v2/push/send`` with the following HTTP headers::
 
   accept: application/json
   accept-encoding: gzip, deflate
@@ -361,7 +359,7 @@ If there are errors that affect individual messages but not the entire request, 
 
 * ``DeviceNotRegistered``: the device cannot receive push notifications anymore and you should stop sending messages to the given Exponent push token.
 
-* ``MessageTooBig``: the total notification payload was too large. On Android and iOS the total payload must be at most 4096 KiB.
+* ``MessageTooBig``: the total notification payload was too large. On Android and iOS the total payload must be at most 4096 bytes.
 
 * ``MessageRateExceeded``: you are sending messages too frequently to the given device. Implement exponential backoff and slowly retry sending messages.
 
