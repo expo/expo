@@ -197,3 +197,172 @@ For clarification, see the following table:
 .. figure:: img/receiving-push.png
   :width: 100%
   :alt: Timing of notifications
+
+HTTP/2 API
+""""""""""
+
+Although we provide server-side SDKs in several languages to help you send push notifications, you may want to directly send requests to our HTTP/2 API.
+
+Sending notifications
+_____________________
+
+Send a POST request to ``https://exp.host/--/api/v2/push/send`` with the following HTTP headers:
+
+.. code-block::
+
+  accept: application/json
+  accept-encoding: gzip, deflate
+  content-type: application/json
+
+The HTTP request body must be JSON. It may either be a single message object or an array of up to 100 messages. **We recommend using an array when you want to send multiple messages to efficiently minimize the number of requests you need to make to Exponent servers.** This is an example request body that sends two messages:
+
+.. code-block:: json
+
+  [{
+    "to": "ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]",
+    "sound": "default",
+    "body": "Hello world!"
+  }, {
+    "to": "ExponentPushToken[yyyyyyyyyyyyyyyyyyyyyy]",
+    "badge": 1,
+    "body": "You've got mail"
+  }]
+
+Upon success, the HTTP response will be a JSON object whose ``data`` field is an array of push receipts, each of which corresponds to the message at its respective index in the request. Continuing the above example, this is what a successful response body looks like:
+
+.. code-block:: json
+
+  {
+    "data": [
+      {"status": "ok"},
+      {"status": "ok"}
+    ]
+  }
+
+When there is an error delivering a message, the receipt's status will be "error" and the receipt will contain information about the error, documented below.
+
+.. epigraph::
+  **Note:** Even if a receipt says "ok", it doesn't guarantee that the device has received the messsage; "ok" means that we successfully delivered the message to the Android or iOS push notification service. If the recipient device is turned off, for example, the Android or iOS push notification service will try to deliver the message but the device won't necessarily receive it.
+
+If you send a single message that isn't wrapped in an array, the ``data`` field will be the push receipt also not wrapped in an array.
+
+Message format
+~~~~~~~~~~~~~~
+
+Each message must be a JSON object with the given fields:
+
+.. code-block:: javascript
+
+  type PushMessage = {
+    /**
+     * An Exponent push token specifying the recipient of this message.
+     */
+    to: string,
+
+    /**
+     * A JSON object delivered to your app. It may be up to about 4KiB; the total
+     * notification payload sent to Apple and Google must be at most 4KiB or else
+     * you will get a "Message Too Big" error.
+     */
+    data?: Object,
+
+    /**
+     * The title to display in the notification. On iOS this is displayed only
+     * on Apple Watch.
+     */
+    title?: string,
+
+    /**
+     * The message to display in the notification
+     */
+    body?: string,
+
+    /**
+     * A sound to play when the recipient receives this notification. Specify
+     * "default" to play the device's default notification sound, or omit this
+     * field to play no sound.
+     */
+    sound?: 'default' | null,
+
+    /**
+     * Time to Live: the number of seconds for which the message may be kept
+     * around for redelivery if it hasn't been delivered yet. Defaults to 0.
+     *
+     * On Android, we make a best effort to deliver messages with zero TTL
+     * immediately and do not throttle them
+     *
+     * This field takes precedence over `expiration` when both are specified.
+     */
+    ttl?: number,
+
+    /**
+     * A timestamp since the UNIX epoch specifying when the message expires. This
+     * has the same effect as the `ttl` field and is just an absolute timestamp
+     * instead of a relative time.
+     */
+    expiration?: number,
+
+    /**
+     * The delivery priority of the message. Specify "default" or omit this field
+     * to use the default priority on each platform, which is "normal" on Android
+     * and "high" on iOS.
+     *
+     * On Android, normal-priority messages won't open network connections on
+     * sleeping devices and their delivery may be delayed to conserve the battery.
+     * High-priority messages are delivered immediately if possible and may wake
+     * sleeping devices to open network connections, consuming energy.
+     *
+     * On iOS, normal-priority messages are sent at a time that takes into account
+     * power considerations for the device, and may be grouped and delivered in
+     * bursts. They are throttled and may not be delivered by Apple. High-priority
+     * messages are sent immediately. Normal priority corresponds to APNs priority
+     * level 5 and high priority to 10.
+     */
+    priority?: 'default' | 'normal' | 'high',
+
+    // iOS-specific fields
+
+    /**
+     * Number to display in the badge on the app icon. Specify zero to clear the
+     * badge.
+     */
+    badge?: number,
+  }
+
+Response format
+~~~~~~~~~~~~~~~
+
+The response is a JSON object with two optional fields, ``data`` and ``errors``. If there is an error with the entire request, ``errors`` will be an array of error objects (usually just one):
+
+.. code-block:: json
+
+  {
+    "errors": [{
+      "code": "INTERNAL_SERVER_ERROR",
+      "message": "An unknown error occurred."
+    }]
+  }
+
+If there are errors that affect individual messages but not the entire request, the ``errors`` field will be empty and the ``data`` field wil contain push receipts that describe the errors:
+
+.. code-block:: json
+
+  {
+    "data": [{
+      "status": "error",
+      "message": "\"ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]\" is not a registered push notification recipient",
+      "details": {
+        "error": "DeviceNotRegistered"
+      }
+    }]
+  }
+
+**Important:** in particular, look for an ``details`` object with an ``error`` field. If present, it may be one of three values: ``DeviceNotRegistered``, ``MessageTooBig``, and ``MessageRateExceeded``. You should handle these errors like so:
+
+* ``DeviceNotRegistered``: the device cannot receive push notifications anymore and you should stop sending messages to the given Exponent push token.
+
+* ``MessageTooBig``: the total notification payload was too large. On Android and iOS the total payload must be at most 4096 KiB.
+
+* ``MessageRateExceeded``: you are sending messages too frequently to the given device. Implement exponential backoff and slowly retry sending messages.
+
+If we couldn't deliver the message to the Android or iOS push notification service, the receipt's details may also include service-specific information. This is useful mostly for debugging and reporting possible bugs to us.
