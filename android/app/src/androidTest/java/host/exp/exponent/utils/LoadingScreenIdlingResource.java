@@ -32,7 +32,7 @@ public class LoadingScreenIdlingResource implements IdlingResource {
   @Override
   public boolean isIdleNow() {
     if (BaseExperienceActivity.getVisibleActivity() == null) {
-      return true;
+      return false;
     }
 
     boolean isIdle = !BaseExperienceActivity.getVisibleActivity().isLoading();
