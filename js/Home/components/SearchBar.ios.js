@@ -124,7 +124,7 @@ export default class SearchBar extends React.Component {
           <TouchableOpacity
             style={styles.button}
             onLayout={this._handleLayoutCancelButton}
-            onPress={this._handlePress}>
+            onPress={this._handlePressCancelButton}>
             <Text style={{fontSize: 16, color: '#4E9BDE'}}>
               Cancel
             </Text>
