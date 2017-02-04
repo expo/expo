@@ -3,6 +3,7 @@ import {
   LayoutAnimation,
   StyleSheet,
   TextInput,
+  Linking,
   Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
@@ -15,6 +16,7 @@ import {
   withNavigation,
 } from '@exponent/ex-navigation';
 
+import ExUrls from 'ExUrls';
 import Layout from '../constants/Layout';
 
 const SearchContainerHorizontalMargin = 10;
@@ -35,7 +37,7 @@ class PlaceholderButtonSearchBar extends React.Component {
           <View style={styles.searchContainer}>
             <TextInput
               editable={false}
-              placeholder="Find a project..."
+              placeholder="Find a project or enter a URL..."
               placeholderStyle={styles.searchInputPlaceholderText}
               style={styles.searchInput}
             />
@@ -57,6 +59,7 @@ export default class SearchBar extends React.Component {
   static PlaceholderButton = PlaceholderButtonSearchBar;
 
   state = {
+    text: '',
     showCancelButton: false,
     inputWidth: Layout.window.width,
   }
@@ -103,8 +106,12 @@ export default class SearchBar extends React.Component {
         <View style={[styles.searchContainer, {width: inputWidth}]}>
           <TextInput
             ref={view => { this._textInput = view; }}
-            placeholder="Find a project..."
+            onChangeText={this._handleChangeText}
+            value={this.state.text}
+            returnKeyType="go"
+            placeholder="Find a project or enter a URL..."
             placeholderStyle={styles.searchInputPlaceholderText}
+            onSubmitEditing={this._handleSubmit}
             style={styles.searchInput}
           />
 
@@ -127,7 +134,16 @@ export default class SearchBar extends React.Component {
     );
   }
 
-  _handlePress = () => {
+  _handleChangeText = (text) => {
+    this.setState({text});
+  }
+
+  _handleSubmit = () => {
+    let url = ExUrls.normalizeUrl(this.state.text);
+    Linking.openURL(url);
+  }
+
+  _handlePressCancelButton = () => {
     this.props.navigator.pop();
   }
 }

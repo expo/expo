@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   LayoutAnimation,
+  Linking,
   StyleSheet,
   TextInput,
   Text,
@@ -17,6 +18,7 @@ import {
 } from '@exponent/ex-navigation';
 
 import Colors from '../constants/Colors';
+import ExUrls from 'ExUrls';
 import Layout from '../constants/Layout';
 
 @withNavigation
@@ -27,18 +29,34 @@ export default class SearchBar extends React.Component {
     });
   }
 
+  state = {
+    text: '',
+  }
+
   render() {
     return (
       <View style={styles.container}>
         <TextInput
           ref={view => { this._textInput = view; }}
-          placeholder="Find a project..."
+          placeholder="Find a project or enter a URL..."
           placeholderStyle={styles.sear}
+          value={this.state.text}
           underlineColorAndroid={Colors.tintColor}
+          onSubmitEditing={this._handleSubmit}
+          onChangeText={this._handleChangeText}
           style={styles.searchInput}
         />
       </View>
     );
+  }
+
+  _handleChangeText = (text) => {
+    this.setState({text});
+  }
+
+  _handleSubmit = () => {
+    let url = ExUrls.normalizeUrl(this.state.text);
+    Linking.openURL(url);
   }
 }
 
