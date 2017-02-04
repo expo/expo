@@ -43,7 +43,7 @@ export default class AddProjectButton extends React.Component {
         } else {
           alert('In order to use the QR Code scanner you need to provide camera permissions');
         }
-      } else {
+      } else if (buttonIndex === 1) {
         let clipboardString = await Clipboard.getString();
         let url = ExUrls.normalizeUrl(clipboardString);
         if (Linking.canOpenURL(url)) {
