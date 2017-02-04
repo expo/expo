@@ -73,16 +73,17 @@ const styles = StyleSheet.create({
   descriptionText: {
     color: 'rgba(36, 44, 58, 0.7)',
     textAlign: 'center',
-    marginHorizontal: 10,
     marginBottom: 20,
     ...Platform.select({
       ios: {
         fontSize: 15,
         lineHeight: 20,
+        marginHorizontal: 10,
       },
       android: {
         fontSize: 16,
         lineHeight: 24,
+        marginHorizontal: 15,
       },
     }),
   },

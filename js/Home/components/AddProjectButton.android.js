@@ -1,5 +1,7 @@
 import React from 'react';
 import {
+  Clipboard,
+  Linking,
   NativeModules,
   StyleSheet,
   TouchableOpacity,
@@ -12,7 +14,9 @@ import {
 
 import { withNavigation } from '@exponent/ex-navigation';
 
+import ExUrls from 'ExUrls';
 import Colors from '../constants/Colors';
+import requestCameraPermissionsAsync from '../utils/requestCameraPermissionsAsync';
 
 @withNavigation
 export default class AddProjectButton extends React.Component {
@@ -36,8 +40,20 @@ export default class AddProjectButton extends React.Component {
   _handlePress = () => {
     let options = ['Scan QR Code', 'Open from Clipboard'];
     let handle = findNodeHandle(this._anchor);
-    NativeModules.UIManager.showPopupMenu(handle, options, (err) => {}, (action, selectedIndex) => {
-      console.log({action, selectedIndex});
+    NativeModules.UIManager.showPopupMenu(handle, options, (err) => {}, async (action, buttonIndex) => {
+      if (buttonIndex === 0) {
+        if (await requestCameraPermissionsAsync()) {
+          this.props.navigation.showModal('qrCode');
+        } else {
+          alert('In order to use the QR Code scanner you need to provide camera permissions');
+        }
+      } else if (buttonIndex === 1) {
+        let clipboardString = await Clipboard.getString();
+        let url = ExUrls.normalizeUrl(clipboardString);
+        if (Linking.canOpenURL(url)) {
+          Linking.openURL(url);
+        }
+      }
     });
   }
 }

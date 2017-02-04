@@ -1,5 +1,7 @@
 import React from 'react';
 import {
+  Linking,
+  Platform,
   StatusBar,
   StyleSheet,
   Text,
@@ -23,6 +25,7 @@ export default class BarCodeScreen extends React.Component {
     return (
       <View style={styles.container}>
         <Components.BarCodeScanner
+          onBarCodeRead={this._handleBarCodeRead}
           style={StyleSheet.absoluteFill}
         />
 
@@ -36,7 +39,9 @@ export default class BarCodeScreen extends React.Component {
         <View style={styles.bottomRightCorner} />
 
         <View style={styles.header}>
-          <Text style={styles.headerText}>Scan QR Code</Text>
+          <Text style={styles.headerText}>
+            Scan QR Code
+          </Text>
         </View>
 
         <View style={styles.footer}>
@@ -48,6 +53,13 @@ export default class BarCodeScreen extends React.Component {
         <StatusBar barStyle="light-content" />
       </View>
     );
+  }
+
+  _handleBarCodeRead = ({ data: url }) => {
+    this.props.navigation.dismissModal();
+    requestAnimationFrame(() => {
+      Linking.openURL(url);
+    });
   }
 
   _handlePressCancel = () => {
@@ -141,14 +153,31 @@ const styles = StyleSheet.create({
     top: 40,
     left: 0,
     right: 0,
-    alignItems: 'center',
+    ...Platform.select({
+      ios: {
+        alignItems: 'center',
+        left: 0,
+      },
+      android: {
+        alignItems: 'flex-start',
+        left: 25,
+      },
+    }),
   },
   headerText: {
     color: '#fff',
     backgroundColor: 'transparent',
-    fontSize: 20,
-    fontWeight: '500',
-    textAlign: 'center',
+    ...Platform.select({
+      ios: {
+        textAlign: 'center',
+        fontSize: 20,
+        fontWeight: '500',
+      },
+      android: {
+        fontSize: 22,
+        fontWeight: '400',
+      },
+    }),
   },
   footer: {
     position: 'absolute',

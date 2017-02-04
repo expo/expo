@@ -12,8 +12,6 @@ import {
   Linking,
 } from 'react-native';
 
-import autobind from 'autobind-decorator';
-
 import Browser from 'Browser';
 import BrowserActions from 'BrowserActions';
 import ExStore from 'ExStore';
@@ -73,8 +71,7 @@ class ExponentApp extends React.Component {
     Linking.removeEventListener('url', this._handleUrl);
   }
 
-  @autobind
-  _handleUrl(event) {
+  _handleUrl = (event) => {
     let targetUrl = event.url;
 
     // don't compare to old url and refresh, because the manifest at this url may have changed
@@ -82,8 +79,7 @@ class ExponentApp extends React.Component {
     ExStore.dispatch(BrowserActions.navigateToUrlAsync(targetUrl));
   }
 
-  @autobind
-  _handleNotification(event) {
+  _handleNotification = (event) => {
     let { body, experienceId } = event;
     ExStore.dispatch(BrowserActions.setKernelLoadingState(true));
     ExStore.dispatch(BrowserActions.navigateToExperienceIdWithNotificationAsync(experienceId, body));

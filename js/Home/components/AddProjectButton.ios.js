@@ -1,5 +1,7 @@
 import React from 'react';
 import {
+  Clipboard,
+  Linking,
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
@@ -8,6 +10,7 @@ import {
 } from '@exponent/vector-icons';
 
 import Colors from '../constants/Colors';
+import ExUrls from 'ExUrls';
 
 import { withNavigation } from '@exponent/ex-navigation';
 import { connectActionSheet } from '@exponent/react-native-action-sheet';
@@ -41,7 +44,11 @@ export default class AddProjectButton extends React.Component {
           alert('In order to use the QR Code scanner you need to provide camera permissions');
         }
       } else {
-        // Do something
+        let clipboardString = await Clipboard.getString();
+        let url = ExUrls.normalizeUrl(clipboardString);
+        if (Linking.canOpenURL(url)) {
+          Linking.openURL(url);
+        }
       }
     });
   }
