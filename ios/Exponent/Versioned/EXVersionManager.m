@@ -41,6 +41,8 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
 
 // is this the first time this ABI has been touched at runtime?
 @property (nonatomic, assign) BOOL isFirstLoad;
+@property (nonatomic, assign) BOOL isStatusBarHidden;
+@property (nonatomic, assign) UIStatusBarStyle statusbarStyle;
 
 @end
 
@@ -74,14 +76,31 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
     // reverse the RCT-triggered first swap, so the RCT implementation is back in its original place
     [self swapSystemMethods];
     _isFirstLoad = NO; // in case the same VersionManager instance is used between multiple bridge loads
+  } else {
+    // some state is shared between bridges, for example status bar
+    [self resetSharedState];
   }
+
   // now modify system behavior with no swap
   [self setSystemMethods];
 }
 
 - (void)bridgeDidBackground
 {
-  
+  [self saveSharedState];
+}
+
+- (void)saveSharedState
+{
+  _statusbarStyle = [RCTSharedApplication() statusBarStyle];
+  _isStatusBarHidden = [RCTSharedApplication() isStatusBarHidden];
+}
+
+- (void)resetSharedState
+{
+
+  [RCTSharedApplication() setStatusBarStyle:_statusbarStyle];
+  [RCTSharedApplication() setStatusBarHidden: _isStatusBarHidden];
 }
 
 - (void)invalidate

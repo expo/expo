@@ -19,7 +19,7 @@
     _frame = frame;
   }
   return self;
-}
+} 
 
 - (BOOL)isReadyToLoad
 {
