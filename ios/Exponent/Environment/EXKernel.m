@@ -455,7 +455,7 @@ continueUserActivity:(NSUserActivity *)userActivity
       }
     }
     if (bridgeToForeground) {
-      [self _postNotificationName:kEXKernelBridgeDidForegroundNotification onAbstractBridge:bridgeToBackground];
+      [self _postNotificationName:kEXKernelBridgeDidForegroundNotification onAbstractBridge:bridgeToForeground];
       id appStateModule = [self _nativeModuleForBridge:bridgeToForeground named:@"AppState"];
       if ([appStateModule respondsToSelector:@selector(setState:)]) {
         [appStateModule setState:@"active"];
