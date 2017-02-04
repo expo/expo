@@ -237,7 +237,7 @@ Upon success, the HTTP response will be a JSON object whose ``data`` field is an
     ]
   }
 
-When there is an error delivering a message, the receipt's status will be "error" and the receipt will contain information about the error, documented below.
+When there is an error delivering a message, the receipt's status will be "error" and the receipt will contain information about the error. More information about the response format is documented below.
 
 .. epigraph::
   **Note:** Even if a receipt says "ok", it doesn't guarantee that the device has received the messsage; "ok" means that we successfully delivered the message to the Android or iOS push notification service. If the recipient device is turned off, for example, the Android or iOS push notification service will try to deliver the message but the device won't necessarily receive it.
@@ -330,7 +330,7 @@ Each message must be a JSON object with the given fields:
 Response format
 ~~~~~~~~~~~~~~~
 
-The response is a JSON object with two optional fields, ``data`` and ``errors``. If there is an error with the entire request, ``errors`` will be an array of error objects (usually just one):
+The response is a JSON object with two optional fields, ``data`` and ``errors``. If there is an error with the entire request, the HTTP status code will be 4xx or 5xx and ``errors`` will be an array of error objects (usually just one):
 
 .. code-block:: json
 
@@ -341,7 +341,7 @@ The response is a JSON object with two optional fields, ``data`` and ``errors``.
     }]
   }
 
-If there are errors that affect individual messages but not the entire request, the ``errors`` field will be empty and the ``data`` field will contain push receipts that describe the errors:
+If there are errors that affect individual messages but not the entire request, the HTTP status code will be 200, the ``errors`` field will be empty, and the ``data`` field will contain push receipts that describe the errors:
 
 .. code-block:: json
 
@@ -354,6 +354,8 @@ If there are errors that affect individual messages but not the entire request, 
       }
     }]
   }
+
+The HTTP status code will be 200 also if all of the messages were successfully delivered to the Android and iOS push notification services.
 
 **Important:** in particular, look for an ``details`` object with an ``error`` field. If present, it may be one of three values: ``DeviceNotRegistered``, ``MessageTooBig``, and ``MessageRateExceeded``. You should handle these errors like so:
 
