@@ -37,6 +37,7 @@ import versioned.host.exp.exponent.modules.api.GoogleModule;
 import versioned.host.exp.exponent.modules.api.GyroscopeModule;
 import versioned.host.exp.exponent.modules.api.ImageCropperModule;
 import versioned.host.exp.exponent.modules.api.ImagePickerModule;
+import versioned.host.exp.exponent.modules.api.KeepAwakeModule;
 import versioned.host.exp.exponent.modules.api.KeyboardModule;
 import versioned.host.exp.exponent.modules.api.LocationModule;
 import versioned.host.exp.exponent.modules.api.NotificationsModule;
@@ -130,6 +131,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new BarCodeScannerModule(reactContext));
         nativeModules.add(new RNViewShotModule(reactContext));
         nativeModules.add(new ExponentTestNativeModule(reactContext));
+        nativeModules.add(new KeepAwakeModule(reactContext));
       } catch (JSONException e) {
         EXL.e(TAG, e.toString());
       } catch (UnsupportedEncodingException e) {
