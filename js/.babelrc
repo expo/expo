@@ -1,6 +1,3 @@
 {
-  "presets": ["react-native"],
-  "plugins": [
-    "transform-decorators-legacy"
-  ]
+  "presets": ["babel-preset-exponent"]
 }
