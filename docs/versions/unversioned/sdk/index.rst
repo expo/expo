@@ -44,6 +44,7 @@ example.
    google
    gyroscope
    imagepicker
+   keep-awake
    linear-gradient
    location
    map-view
