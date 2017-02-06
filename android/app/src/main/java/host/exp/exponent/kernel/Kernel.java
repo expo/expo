@@ -248,7 +248,7 @@ public class Kernel implements KernelInterface {
                 .addPackage(ExponentPackage.kernelExponentPackage(mExponentManifest.getKernelManifest()))
                 .setInitialLifecycleState(LifecycleState.RESUMED);
 
-            if (mExponentManifest.isDebugModeEnabled(mExponentManifest.getKernelManifest())) {
+            if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE && mExponentManifest.isDebugModeEnabled(mExponentManifest.getKernelManifest())) {
               if (Exponent.getInstance().shouldRequestDrawOverOtherAppsPermission()) {
                 new AlertDialog.Builder(mActivityContext)
                     .setTitle("Please enable \"Permit drawing over other apps\"")
