@@ -20,6 +20,10 @@ import android.support.test.uiautomator.UiSelector;
 import android.support.test.uiautomator.Until;
 import android.widget.Switch;
 
+import junit.framework.Assert;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -30,9 +34,11 @@ import org.junit.runners.MethodSorters;
 
 import java.util.concurrent.TimeUnit;
 
-import host.exp.exponent.experience.BaseExperienceActivity;
+import host.exp.exponent.kernel.KernelConfig;
 import host.exp.exponent.utils.ElapsedTimeIdlingResource;
+import host.exp.exponent.utils.JSTestRunnerIdlingResource;
 import host.exp.exponent.utils.LoadingScreenIdlingResource;
+import host.exp.exponent.utils.TestNativeModuleServer;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
@@ -49,10 +55,14 @@ public class EspressoTest {
 
   private IdlingResource mLoadingScreenIdlingResource;
   private ElapsedTimeIdlingResource mElapsedTimeIdlingResource;
+  private JSTestRunnerIdlingResource mJSTestRunnerIdlingResource;
 
   @BeforeClass
   public static void enableDrawOverOtherApps() {
+    KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE = true;
+
     sUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+    TestNativeModuleServer.getInstance().setUiDevice(sUiDevice);
 
     // Start from the home screen
     sUiDevice.pressHome();
@@ -100,26 +110,39 @@ public class EspressoTest {
     // Setup Espresso
     mLoadingScreenIdlingResource = new LoadingScreenIdlingResource();
     mElapsedTimeIdlingResource = new ElapsedTimeIdlingResource();
-    Espresso.registerIdlingResources(mLoadingScreenIdlingResource, mElapsedTimeIdlingResource);
+    mJSTestRunnerIdlingResource = new JSTestRunnerIdlingResource();
+    Espresso.registerIdlingResources(mLoadingScreenIdlingResource, mElapsedTimeIdlingResource, mJSTestRunnerIdlingResource);
   }
 
   @After
   public void after() {
-    Espresso.unregisterIdlingResources(mLoadingScreenIdlingResource, mElapsedTimeIdlingResource);
+    Espresso.unregisterIdlingResources(mLoadingScreenIdlingResource, mElapsedTimeIdlingResource, mJSTestRunnerIdlingResource);
   }
 
   @Test
-  public void nativeComponentList() {
+  public void testSuite() {
     // Launch the app
     Context context = InstrumentationRegistry.getContext();
-    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("exp://jh-cqd.jesse.native-component-list.exp.direct:80"));
+    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("exp://rq-v6e.jesse.test-suite.exp.direct:80"));
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     context.startActivity(intent);
 
     // Wait for the app to appear
     sUiDevice.wait(Until.hasObject(By.pkg("host.exp.exponent").depth(0)), LAUNCH_TIMEOUT);
 
-    // Check to make sure we actually loaded it
-    onView(withTestId("native_component_list")).check(matches(isEnabled()));
+    // Need this to wait on idling resources
+    onView(withTestId("test_suite_container")).check(matches(isEnabled()));
+
+    String result = mJSTestRunnerIdlingResource.getTestResult();
+    try {
+      JSONObject object = new JSONObject(result);
+
+      int numFailed = object.getInt("failed");
+      if (numFailed > 0) {
+        throw new AssertionError(numFailed + " JS test(s) failed");
+      }
+    } catch (JSONException e) {
+      throw new AssertionError("JSON error " + e.toString());
+    }
   }
 }

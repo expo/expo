@@ -11,6 +11,13 @@ adb logcat -c
 adb push app/build/outputs/apk/app-dev-debug-androidTest-unaligned.apk /data/local/tmp/host.exp.exponent.test
 adb shell pm install -r "/data/local/tmp/host.exp.exponent.test"
 
+adb shell pm revoke "host.exp.exponent" android.permission.READ_CONTACTS
+adb shell pm revoke "host.exp.exponent" android.permission.READ_EXTERNAL_STORAGE
+adb shell pm revoke "host.exp.exponent" android.permission.WRITE_EXTERNAL_STORAGE
+adb shell pm revoke "host.exp.exponent" android.permission.CAMERA
+adb shell pm revoke "host.exp.exponent" android.permission.ACCESS_COARSE_LOCATION
+adb shell pm revoke "host.exp.exponent" android.permission.ACCESS_FINE_LOCATION
+
 # Run the tests and grab the logs even if it fails
 adb shell am instrument -w -r -e debug false host.exp.exponent.test/android.support.test.runner.AndroidJUnitRunner
 ANDROID_TEST_RESULT=$?
