@@ -87,7 +87,7 @@ If you prefer ``exp``, run ``exp start`` from the project directory.
 3. (iOS only) Configure, build and run
 """"""""""""""""""""""""""""""""""""""
 To configure the Xcode project, make sure you have `CocoaPods <https://cocoapods.org>`_, then
-run ``pod install`` from your project's ``ios`` directory.
+run ``./pod-install-exponent.sh`` from your project's ``ios`` directory.
 
 You can now open your project's ``xcworkspace`` file in Xcode, build and run the project
 on an iOS device or Simulator.
