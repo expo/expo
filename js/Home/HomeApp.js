@@ -19,6 +19,7 @@ import {
 
 import AuthTokenActions from '../Flux/AuthTokenActions';
 import LocalStorage from '../Storage/LocalStorage';
+import GlobalLoadingOverlay from './containers/GlobalLoadingOverlay';
 import ExStore from '../Flux/ExStore';
 
 import Router from './navigation/Router';
@@ -53,6 +54,7 @@ export default class AppContainer extends React.Component {
           </NavigationProvider>
         </ActionSheetProvider>
 
+        {Platform.OS === 'ios' && <GlobalLoadingOverlay />}
         {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
         {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
       </View>
