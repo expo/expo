@@ -360,6 +360,9 @@ class KernelNavigator extends React.Component {
       // there is no home in this case, go back to the root shell task
       this._foregroundRouteForUrl(this.props.shellManifestUrl, urlToBackground);
     } else {
+      if (this.isConsolePresented()) {
+        this._navigator.pop();
+      }
       this._navigator.jumpTo(this._homeRoute);
       ExponentKernel.routeDidForeground(KERNEL_ROUTE_HOME, { urlToBackground });
     }
@@ -389,19 +392,25 @@ class KernelNavigator extends React.Component {
     this._browserRoutes = newBrowserRoutes;
   }
 
-  /**
-   *  @param isUserFacing: if true, console should show a end-user-readable "oops" message
-   *    overlaying the technical details of the console.
-   */
   @autobind
-  pushConsole(isUserFacing) {
+  isConsolePresented() {
     let currentRoute = this._navigator.navigationContext.currentRoute;
     let currentRoutes = this._navigator.getCurrentRoutes();
     let currentIndex = currentRoutes.findIndex(route => route === currentRoute);
     let isConsolePresented = currentRoutes
       .slice(0, currentIndex + 1)
       .some(route => route.isConsole);
-    if (!isConsolePresented) {
+
+    return isConsolePresented;
+  }
+
+  /**
+   *  @param isUserFacing: if true, console should show a end-user-readable "oops" message
+   *    overlaying the technical details of the console.
+   */
+  @autobind
+  pushConsole(isUserFacing) {
+    if (!this.isConsolePresented()) {
       this._navigator.push(ExRouter.getConsoleRoute(Browser.refresh, isUserFacing));
     }
   }
