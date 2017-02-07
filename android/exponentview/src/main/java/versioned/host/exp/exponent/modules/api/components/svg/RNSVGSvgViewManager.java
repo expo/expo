@@ -15,6 +15,9 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.yoga.YogaMeasureFunction;
+import com.facebook.yoga.YogaMeasureMode;
+import com.facebook.yoga.YogaNodeAPI;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +32,17 @@ public class RNSVGSvgViewManager extends BaseViewManager<RNSVGSvgView, RNSVGSvgV
 
     private static final String REACT_CLASS = "RNSVGSvgView";
     private static final int COMMAND_TO_DATA_URL = 100;
+    private static final YogaMeasureFunction MEASURE_FUNCTION = new YogaMeasureFunction() {
+      @Override
+      public long measure(
+          YogaNodeAPI node,
+          float width,
+          YogaMeasureMode widthMode,
+          float height,
+          YogaMeasureMode heightMode) {
+        throw new IllegalStateException("SurfaceView should have explicit width and height set");
+      }
+    };
 
     @Override
     public String getName() {
@@ -42,7 +56,9 @@ public class RNSVGSvgViewManager extends BaseViewManager<RNSVGSvgView, RNSVGSvgV
 
     @Override
     public RNSVGSvgViewShadowNode createShadowNodeInstance() {
-        return new RNSVGSvgViewShadowNode();
+        RNSVGSvgViewShadowNode node = new RNSVGSvgViewShadowNode();
+        node.setMeasureFunction(MEASURE_FUNCTION);
+        return node;
     }
 
     @Override
