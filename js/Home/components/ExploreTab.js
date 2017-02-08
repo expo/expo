@@ -13,6 +13,7 @@ import InfiniteScrollView from 'react-native-infinite-scroll-view';
 import dedent from 'dedent';
 
 import Colors from '../constants/Colors';
+import FeatureFlags from '../../FeatureFlags';
 import ProjectCard from './ProjectCard';
 import PrimaryButton from './PrimaryButton';
 import SharedStyles from '../constants/SharedStyles';
@@ -94,14 +95,22 @@ export default class ExploreTab extends React.Component {
   }
 
   _renderContent() {
+    let extraOptions = {};
+
+    if (FeatureFlags.INFINITE_SCROLL_EXPLORE_TABS) {
+      extraOptions = {
+        renderScrollComponent: (props) => <InfiniteScrollView {...props} />,
+        canLoadMore: true,
+        onLoadMoreAsync: this.props.loadMoreAsync,
+      }
+    }
+
     return (
       <ListView
         dataSource={this.state.dataSource}
         renderRow={this._renderRow}
         style={styles.container}
-        // renderScrollComponent={props => <InfiniteScrollView {...props} />}
-        // canLoadMore={true}
-        // onLoadMoreAsync={this.props.loadMoreAsync}
+        {...extraOptions}
       />
     );
   }
