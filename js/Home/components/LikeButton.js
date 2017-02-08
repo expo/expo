@@ -7,27 +7,77 @@ import {
 import {
   Ionicons,
 } from '@exponent/vector-icons';
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
+import TouchableNativeFeedbackSafe from '@exponent/react-native-touchable-native-feedback-safe';
 
-import createSelectableComponent from '../utils/createSelectableComponent';
+const likeProject = gql`
+  mutation PerformLike($appId: ID!) {
+    likeApp(appId: $appId) {
+      id
+      name
+      likeCount
+    }
+  }
+`;
 
-@createSelectableComponent
+const unlikeProject = gql`
+  mutation UndoLike($appId: ID!) {
+    unlikeApp(appId: $appId) {
+      id
+      name
+      likeCount
+    }
+  }
+`;
+
+@graphql(unlikeProject, {name: 'unlikeMutation'})
+@graphql(likeProject, {name: 'likeMutation'})
 export default class LikeButton extends React.Component {
-
   render() {
     let { liked } = this.props;
 
     return (
-      <View {...this.props} style={[styles.container, liked && styles.containerLiked, this.props.style]}>
-        <Ionicons
-          style={[styles.icon, liked && styles.iconLiked]}
-          name={liked ? 'md-heart' : 'md-heart-outline'}
-          size={14}
-        />
-        <Text style={[styles.text, liked && styles.textLiked]}>
-          {liked ? 'Liked' : 'Like'}
-        </Text>
+      <View style={this.props.style}>
+        <TouchableNativeFeedbackSafe
+          {...this.props}
+          onPress={this._handlePressAsync}
+          style={[styles.container, liked && styles.containerLiked]}>
+          <Ionicons
+            style={[styles.icon, liked && styles.iconLiked]}
+            name={liked ? 'md-heart' : 'md-heart-outline'}
+            size={14}
+          />
+          <Text style={[styles.text, liked && styles.textLiked]}>
+            {liked ? 'Liked' : 'Like'}
+          </Text>
+        </TouchableNativeFeedbackSafe>
       </View>
     );
+  }
+
+  _handlePressAsync = async () => {
+    try {
+      let result;
+
+      if (this.props.liked) {
+        result = await this.unlikeAsync();
+      } else {
+        result = await this.likeAsync();
+      }
+
+      console.log({result});
+    } catch(e) {
+      console.log({e});
+    }
+  }
+
+  likeAsync = async () => {
+    return this.props.likeMutation({variables: {appId: this.props.appId}});
+  }
+
+  unlikeAsync  = async () => {
+    return this.props.unlikeMutation({variables: {appId: this.props.appId}});
   }
 }
 

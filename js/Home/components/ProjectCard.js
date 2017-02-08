@@ -22,11 +22,14 @@ import TouchableNativeFeedbackSafe from '@exponent/react-native-touchable-native
 export default class ProjectCard extends React.Component {
   render() {
     let {
+      id,
       description,
       iconUrl,
       projectName,
       projectUrl,
       username,
+      isLikedByMe,
+      likeCount,
     } = this.props;
 
     return (
@@ -65,7 +68,7 @@ export default class ProjectCard extends React.Component {
                   <Text
                     onPress={() => {}}
                     style={styles.projectExtraInfoText}>
-                    12 likes
+                    {likeCount} {likeCount === 1 ? 'like' : 'likes'}
                   </Text>
                 </View>
               </View>
@@ -80,7 +83,8 @@ export default class ProjectCard extends React.Component {
 
         <LikeButton
           style={{position: 'absolute', top: 12, right: 12}}
-          onPress={() => alert('hi')} liked={this.props.liked}
+          appId={id}
+          liked={isLikedByMe}
         />
       </View>
     );

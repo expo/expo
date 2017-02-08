@@ -6,6 +6,7 @@ import ExploreTab from '../components/ExploreTab';
 const PublicAppsQuery = gql`
   query FindPublicApps($limit: Int, $offset: Int, $filter: AppsFilter!) {
     apps: allPublicApps(limit: $limit, offset: $offset, sort: RECENTLY_PUBLISHED, filter: $filter) {
+      id
       fullName
       name
       iconUrl
@@ -13,6 +14,8 @@ const PublicAppsQuery = gql`
       packageUsername
       description
       lastPublishedTime
+      isLikedByMe
+      likeCount
     }
   }
 `;
