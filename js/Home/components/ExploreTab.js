@@ -22,9 +22,9 @@ const NETWORK_ERROR_TEXT = dedent(`
   Get out of the subway tunnel or connect to a better wifi network and check back.
 `);
 
-const SERVER_ERROR_TEXt = dedent(`
+const SERVER_ERROR_TEXT = dedent(`
   An unexpected server error has occurred.
-  Sorry about this. We have been notified and will resolve the issue as soon as quickly as possible.
+  Sorry about this. We will resolve the issue as soon as quickly as possible.
 `);
 
 export default class ExploreTab extends React.Component {
@@ -60,7 +60,7 @@ export default class ExploreTab extends React.Component {
     return (
       <View style={{flex: 1, alignItems: 'center', paddingTop: 30}}>
         <Text style={SharedStyles.noticeDescriptionText}>
-          {isConnectionError ? NETWORK_ERROR_TEXT : SERVER_ERROR_TEXt}
+          {isConnectionError ? NETWORK_ERROR_TEXT : SERVER_ERROR_TEXT}
         </Text>
 
         <PrimaryButton
