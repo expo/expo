@@ -109,6 +109,20 @@ Configuration with ``exp.json``
 
   6 character long hex color string, eg: ``'#000000'``
 
+.. attribute:: androidStatusBar
+
+ Configuration for android statusbar.
+
+   .. attribute:: barStyle
+
+    Configure the statusbar icons to have light or dark color.
+    light-content, dark-content
+
+   .. attribute:: backgroundColor
+
+    Configuration for android statusbar.
+    6 character long hex color string, eg: ``'#000000'``
+
 .. attribute:: androidHideExponentNotificationInShellApp
 
  By default, Exponent adds a notification to your app with refresh button and debug info. Set this to ``true`` to disable.
@@ -159,15 +173,7 @@ Configuration with ``exp.json``
 
        .. attribute:: fabric
 
-        `Twitter Fabric <https://get.fabric.io/>`_ keys to hook up Crashlytics and other services.
-
-           .. attribute:: apiKey
-
-            Your Fabric API key
-
-           .. attribute:: buildSecret
-
-            Your Fabric build secret
+        This key is **not supported** on iOS because of a limitation in our standalone app infrastructure and the build requirements for Fabric. We recommend using Sentry to track JS issues and Segment for analytics. If you must use Fabric, consider building your own native project with :ref:`ExponentKit<exponentkit>`.
 
        .. attribute:: googleSignIn
 
@@ -180,6 +186,10 @@ Configuration with ``exp.json``
    .. attribute:: supportsTablet
 
     Whether your standalone iOS app supports tablet screen sizes.
+
+   .. attribute:: infoPlist
+
+    Arbitrary configuration to add to your standalone app's native Info.plist. Applied prior to all other Exponent-specific configuration. No other validation is performed, so use this at your own risk of rejection from the App Store.
 
 .. attribute:: android
 
@@ -199,7 +209,7 @@ Configuration with ``exp.json``
     
        .. attribute:: fabric
 
-        `Twitter Fabric <https://get.fabric.io/>`_ keys to hook up Crashlytics and other services.
+        `Twitter Fabric <https://get.fabric.io/>`_ keys to hook up Crashlytics and other services. Note that this key is Android-only, and has no complementary iOS option.
 
            .. attribute:: apiKey
 
