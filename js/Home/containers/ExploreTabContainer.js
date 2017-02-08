@@ -17,7 +17,6 @@ const PublicAppsQuery = gql`
   }
 `;
 
-
 export default graphql(PublicAppsQuery, {
   props: (props) => {
     let { data: { apps, fetchMore } } = props;

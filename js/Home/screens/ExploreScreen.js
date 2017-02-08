@@ -23,12 +23,13 @@ import Colors from '../constants/Colors';
 import SearchBar from '../components/SearchBar';
 import StyledSlidingTabNavigation from '../navigation/StyledSlidingTabNavigation';
 import ExploreTabContainer from '../containers/ExploreTabContainer';
+import FeatureFlags from '../../FeatureFlags';
 
 const TabTitles = {
   'top': 'Top projects',
   'new': 'New projects',
-  'featured': 'Featured',
-}
+  'featured': FeatureFlags.DISPLAY_ALL_EXPLORE_TABS ? 'Featured' : 'Featured projects',
+};
 
 @withNavigation
 class SearchButton extends React.Component {
@@ -64,29 +65,44 @@ export default class ExploreScreen extends React.Component {
           tabBarStyle={Platform.OS === 'android' && styles.tabBarAndroid}
           initialTab="featured"
           keyToTitle={TabTitles}>
-          <SlidingTabNavigationItem id="featured">
-            <ExploreTabContainer
-              filter="FEATURED"
-              onPressUsername={this._handlePressUsername}
-            />
-          </SlidingTabNavigationItem>
-
-          <SlidingTabNavigationItem id="top">
-            <ExploreTabContainer
-              filter="TOP"
-              onPressUsername={this._handlePressUsername}
-            />
-          </SlidingTabNavigationItem>
-
-          <SlidingTabNavigationItem id="new">
-            <ExploreTabContainer
-              filter="NEW"
-              onPressUsername={this._handlePressUsername}
-            />
-          </SlidingTabNavigationItem>
+          {this._renderTabs()}
         </StyledSlidingTabNavigation>
       </View>
     );
+  }
+
+  _renderTabs() {
+    let tabs = [
+      <SlidingTabNavigationItem id="featured" key="featured">
+        <ExploreTabContainer
+          filter="FEATURED"
+          onPressUsername={this._handlePressUsername}
+        />
+      </SlidingTabNavigationItem>
+    ];
+
+
+    if (FeatureFlags.DISPLAY_ALL_EXPLORE_TABS) {
+      tabs.push(
+        <SlidingTabNavigationItem id="top" key="top">
+          <ExploreTabContainer
+            filter="TOP"
+            onPressUsername={this._handlePressUsername}
+          />
+        </SlidingTabNavigationItem>
+      );
+
+      tabs.push(
+        <SlidingTabNavigationItem id="new" key="new">
+          <ExploreTabContainer
+            filter="NEW"
+            onPressUsername={this._handlePressUsername}
+          />
+        </SlidingTabNavigationItem>
+      );
+    }
+
+    return tabs;
   }
 
   _renderSearchBar() {
@@ -129,6 +145,9 @@ const styles = StyleSheet.create({
   tabBarAndroid: {
     paddingTop: 5,
     paddingBottom: 5,
+    // note(brentvatne): B&B design called for a border here but in the
+    // app it didn't look as nice as in the design, so we'll see if they
+    // feel the same
     // borderTopWidth: StyleSheet.hairlineWidth * 2,
     // marginTop: 1,
   },

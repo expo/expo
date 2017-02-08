@@ -10,6 +10,8 @@ import {
 
 import { capitalize } from 'lodash';
 
+import FeatureFlags from '../../FeatureFlags';
+
 export default class StyledSlidingTabNavigation extends React.Component {
 
   render() {
@@ -42,12 +44,18 @@ export default class StyledSlidingTabNavigation extends React.Component {
 
     const selectedColor = '#0F73B6';
     const unselectedColor = 'rgba(36, 44, 58, 0.4)';
-    const inputRange = props.navigationState.routes.map((x, i) => i);
-    const outputRange = inputRange.map(inputIndex => inputIndex === index ? selectedColor : unselectedColor);
-    const color = props.position.interpolate({
-      inputRange,
-      outputRange,
-    });
+    let color;
+
+    if (FeatureFlags.DISPLAY_ALL_EXPLORE_TABS) {
+      const inputRange = props.navigationState.routes.map((x, i) => i);
+      const outputRange = inputRange.map(inputIndex => inputIndex === index ? selectedColor : unselectedColor);
+      color = props.position.interpolate({
+        inputRange,
+        outputRange,
+      });
+    } else {
+      color = selectedColor;
+    }
 
     return (
       <Animated.Text style={{ color, fontWeight: '500', fontSize: 13, letterSpacing: 0.46 }}>
