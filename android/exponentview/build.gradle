@@ -233,4 +233,5 @@ dependencies {
   compile 'com.segment.analytics.android:analytics:4.+'
   compile 'com.google.zxing:core:3.2.1'
   compile 'net.openid:appauth:0.4.1'
+  compile 'com.airbnb.android:lottie:1.0.0'
 }

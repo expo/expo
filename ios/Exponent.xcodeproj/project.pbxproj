@@ -106,6 +106,8 @@
 		A1F37F7A1CEFD6B2001E9EFC /* EXVersionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A1F37F701CEFD6B2001E9EFC /* EXVersionManager.m */; };
 		A2AABA28A2AEAFB462697CB3 /* libPods-Exponent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B1D1884419563A8205AED29 /* libPods-Exponent.a */; };
 		ADC3A9161DE68A56006C82DF /* EXLocalNotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = ADC3A9151DE68A56006C82DF /* EXLocalNotificationManager.m */; };
+		B50625FF1E4B9E6100AC2748 /* EXAnimationViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B50625FC1E4B9E6100AC2748 /* EXAnimationViewManager.m */; };
+		B50626001E4B9E6100AC2748 /* EXContainerView.m in Sources */ = {isa = PBXBuildFile; fileRef = B50625FE1E4B9E6100AC2748 /* EXContainerView.m */; };
 		B509BCC51C6A88EC00A67CBB /* EXVersions.m in Sources */ = {isa = PBXBuildFile; fileRef = B509BCBB1C6A88EC00A67CBB /* EXVersions.m */; };
 		B51333431CE649FE00E9FC9E /* ExponentIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B51333421CE649FE00E9FC9E /* ExponentIntegrationTests.m */; };
 		B51C2AFD1DC7BB2000120834 /* EXGoogle.m in Sources */ = {isa = PBXBuildFile; fileRef = B51C2AFC1DC7BB2000120834 /* EXGoogle.m */; };
@@ -377,6 +379,10 @@
 		A1F37F701CEFD6B2001E9EFC /* EXVersionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXVersionManager.m; sourceTree = "<group>"; };
 		ADC3A9141DE68A56006C82DF /* EXLocalNotificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXLocalNotificationManager.h; sourceTree = "<group>"; };
 		ADC3A9151DE68A56006C82DF /* EXLocalNotificationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXLocalNotificationManager.m; sourceTree = "<group>"; };
+		B50625FB1E4B9E6100AC2748 /* EXAnimationViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAnimationViewManager.h; sourceTree = "<group>"; };
+		B50625FC1E4B9E6100AC2748 /* EXAnimationViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAnimationViewManager.m; sourceTree = "<group>"; };
+		B50625FD1E4B9E6100AC2748 /* EXContainerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXContainerView.h; sourceTree = "<group>"; };
+		B50625FE1E4B9E6100AC2748 /* EXContainerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXContainerView.m; sourceTree = "<group>"; };
 		B509BCBA1C6A88EC00A67CBB /* EXVersions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXVersions.h; sourceTree = "<group>"; };
 		B509BCBB1C6A88EC00A67CBB /* EXVersions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXVersions.m; sourceTree = "<group>"; };
 		B51333401CE649FE00E9FC9E /* ExponentIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ExponentIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -722,6 +728,7 @@
 		A1CDBE861D30781000C2A670 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				B50625FA1E4B9E6100AC2748 /* Lottie */,
 				84EC97381D728A24009EEB4E /* Maps */,
 				193600AC1D67ABCF007C0EE0 /* Svg */,
 				A16EE7731D56911100634425 /* Video */,
@@ -838,6 +845,17 @@
 				A1F37F6A1CEFD6B2001E9EFC /* RCTDevMenu+Device.m */,
 			);
 			path = EXDisabledDevMenu;
+			sourceTree = "<group>";
+		};
+		B50625FA1E4B9E6100AC2748 /* Lottie */ = {
+			isa = PBXGroup;
+			children = (
+				B50625FB1E4B9E6100AC2748 /* EXAnimationViewManager.h */,
+				B50625FC1E4B9E6100AC2748 /* EXAnimationViewManager.m */,
+				B50625FD1E4B9E6100AC2748 /* EXContainerView.h */,
+				B50625FE1E4B9E6100AC2748 /* EXContainerView.m */,
+			);
+			path = Lottie;
 			sourceTree = "<group>";
 		};
 		B509BCB51C6A88EC00A67CBB /* Environment */ = {
@@ -1529,6 +1547,7 @@
 				193601151D67ABCF007C0EE0 /* RNSVGGroupManager.m in Sources */,
 				1936010A1D67ABCF007C0EE0 /* RNSVGBrush.m in Sources */,
 				1936012F1D67ABCF007C0EE0 /* RNSVGViewBox.m in Sources */,
+				B50625FF1E4B9E6100AC2748 /* EXAnimationViewManager.m in Sources */,
 				841AB1171DA6F56D008C0720 /* EXBarCodeScannerManager.m in Sources */,
 				B597EF1E1CD98654004A48AD /* EXLog.m in Sources */,
 				88E089AB1D6BCF5800562FA1 /* EXSegment.m in Sources */,
@@ -1561,6 +1580,7 @@
 				A16EE77D1D56911100634425 /* EXVideo.m in Sources */,
 				1936010B1D67ABCF007C0EE0 /* RNSVGBrushConverter.m in Sources */,
 				1981B9F71E3C28BA00057CA9 /* EXKeepAwake.m in Sources */,
+				B50626001E4B9E6100AC2748 /* EXContainerView.m in Sources */,
 				193601291D67ABCF007C0EE0 /* RNSVGSvgView.m in Sources */,
 				1936011F1D67ABCF007C0EE0 /* RNSVGPathManager.m in Sources */,
 				A16EE77E1D56911100634425 /* EXVideoManager.m in Sources */,

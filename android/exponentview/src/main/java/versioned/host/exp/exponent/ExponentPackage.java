@@ -51,6 +51,7 @@ import versioned.host.exp.exponent.modules.api.components.LinearGradientManager;
 import versioned.host.exp.exponent.modules.api.components.VideoViewManager;
 import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerModule;
 import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerViewManager;
+import versioned.host.exp.exponent.modules.api.components.lottie.LottiePackage;
 import versioned.host.exp.exponent.modules.api.components.maps.MapsPackage;
 import versioned.host.exp.exponent.modules.api.components.svg.RNSvgPackage;
 import versioned.host.exp.exponent.modules.api.gl.GLViewManager;
@@ -159,14 +160,21 @@ public class ExponentPackage implements ReactPackage {
         new GLViewManager()
     ));
 
-    // Add view managers from the react-native-svg package.
-    RNSvgPackage svgPackage = new RNSvgPackage();
-    viewManagers.addAll(svgPackage.createViewManagers(reactContext));
-
-    // Add view managers from the react-native-maps package.
-    MapsPackage mapsPackage = new MapsPackage();
-    viewManagers.addAll(mapsPackage.createViewManagers(reactContext));
+    // Add view manager from 3rd party library packages.
+    addViewManagersFromPackages(reactContext, viewManagers, Arrays.<ReactPackage>asList(
+      new RNSvgPackage(),
+      new MapsPackage(),
+      new LottiePackage()
+    ));
 
     return viewManagers;
+  }
+
+  private void addViewManagersFromPackages(ReactApplicationContext reactContext,
+                                           List<ViewManager> viewManagers,
+                                           List<ReactPackage> packages) {
+    for (ReactPackage pack : packages) {
+      viewManagers.addAll(pack.createViewManagers(reactContext));
+    }
   }
 }
