@@ -66,4 +66,4 @@ cached. Users have higher standards for mobile than web, so you might want to
 take it a step further by preloading and caching the font and important images
 during the initial loading screen.
 
-:ref:`Read more about preloading & caching assets <preloading-and-caching-assets>`_.
+:ref:`Read more about preloading & caching assets <preloading-and-caching-assets>`.

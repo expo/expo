@@ -1,4 +1,4 @@
-.. _all-about-assets:
+.. _preloading-and-caching-assets:
 
 ***************************
 Preloading & Caching Assets
