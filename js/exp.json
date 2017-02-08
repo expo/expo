@@ -19,7 +19,7 @@
   "packagerOpts": {
     "projectRoots": "",
     "assetExts": ["ttf"],
-    "config": "./rn-cli.config.js",
+    "config": "./rn-cli.config.js"
   },
   "nodeModulesPath": ".",
   "ios": {

@@ -77,6 +77,7 @@ const macrosFuncs = {
         // hack for now because unsigned manifest won't have an id
         manifest.id = '@exponent/home';
       }
+      manifest.sdkVersion = 'UNVERSIONED';
       let manifestJson = JSON.stringify(manifest);
       return manifestJson;
     } catch (e) {
