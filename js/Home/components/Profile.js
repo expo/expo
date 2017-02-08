@@ -6,6 +6,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import FadeIn from '@exponent/react-native-fade-in-image';
@@ -17,19 +18,38 @@ import {
   take,
   takeRight,
 } from 'lodash';
+import dedent from 'dedent';
 
-import SeeAllProjectsButton from './SeeAllProjectsButton';
-import SmallProjectCard from './SmallProjectCard';
-import SharedStyles from '../constants/SharedStyles';
 import Colors from '../constants/Colors';
-import FakeCards from '../FakeCards';
+import PrimaryButton from './PrimaryButton';
+import SeeAllProjectsButton from './SeeAllProjectsButton';
+import SharedStyles from '../constants/SharedStyles';
+import SmallProjectCard from './SmallProjectCard';
 import StyledSlidingTabNavigation from '../navigation/StyledSlidingTabNavigation';
 
 const MAX_APPS_TO_DISPLAY = 3;
 const MAX_LIKES_TO_DISPLAY = 3;
 
+const NETWORK_ERROR_TEXT = dedent(`
+  Your connection appears to be offline.
+  Get out of the subway tunnel or connect to a better wifi network and check back.
+`);
+
+const SERVER_ERROR_TEXt = dedent(`
+  An unexpected server error has occurred.
+  Sorry about this. We have been notified and will resolve the issue as soon as quickly as possible.
+`);
+
 export default class Profile extends React.Component {
+  state = {
+    isRefetching: false,
+  }
+
   render() {
+    if (this.props.data.error) {
+      return this._renderError();
+    }
+
     return (
       <ScrollView style={styles.container}>
         {this._renderHeader()}
@@ -38,13 +58,52 @@ export default class Profile extends React.Component {
     );
   }
 
+  _renderError = () => {
+    if (this.state.isRefetching) {
+      return this._renderLoading();
+    }
+
+    let isConnectionError = this.props.data.error.message.includes('No connection available');
+
+    return (
+      <View style={{flex: 1, alignItems: 'center', paddingTop: 30}}>
+        <Text style={SharedStyles.noticeDescriptionText}>
+          {isConnectionError ? NETWORK_ERROR_TEXT : SERVER_ERROR_TEXt}
+        </Text>
+
+        <PrimaryButton
+          plain
+          onPress={this._refetchDataAsync}
+          fallback={TouchableOpacity}>
+          Try again
+        </PrimaryButton>
+      </View>
+    );
+  }
+
+  _refetchDataAsync = async () => {
+    try {
+      this.setState({isRefetching: true});
+      await this.props.data.refetch()
+    } catch(e) {
+      console.log({e});
+      // Error!
+    } finally {
+      this.setState({isRefetching: false});
+    }
+  }
+
+  _renderLoading() {
+    return (
+      <View style={{flex: 1, padding: 30, alignItems: 'center'}}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
+
   _renderHeader = () => {
     if (this.props.data.loading && !this.props.data.user) {
-      return (
-        <View style={{flex: 1, padding: 30, alignItems: 'center'}}>
-          <ActivityIndicator />
-        </View>
-      );
+      return this._renderLoading();
     }
 
     if (!this.props.data.user) {

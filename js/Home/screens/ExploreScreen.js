@@ -60,6 +60,7 @@ export default class ExploreScreen extends React.Component {
       <View style={{flex: 1, backgroundColor: Colors.greyBackground}}>
         {this._renderSearchBar()}
         <StyledSlidingTabNavigation
+          lazy
           tabBarStyle={Platform.OS === 'android' && styles.tabBarAndroid}
           initialTab="featured"
           keyToTitle={TabTitles}>

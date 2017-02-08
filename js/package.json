@@ -24,6 +24,7 @@
     "apollo-client": "^0.6.0",
     "autobind-decorator": "^1.3.2",
     "autoproxy": "^1.0.1",
+    "dedent": "^0.7.0",
     "email-validator": "^1.0.3",
     "es6-error": "^4.0.1",
     "exponent": "~13.0.0",

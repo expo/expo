@@ -19,7 +19,6 @@ import BrowserActions from 'BrowserActions';
 import Colors from '../constants/Colors';
 import EmptyProjectsNotice from '../components/EmptyProjectsNotice';
 import SharedStyles from '../constants/SharedStyles';
-import FakeProjects from '../FakeProjects';
 import SeeAllProjectsButton from '../components/SeeAllProjectsButton';
 import SmallProjectCard from '../components/SmallProjectCard';
 
@@ -63,10 +62,7 @@ export default class HomeScreen extends React.Component {
 
           {this._renderRecentHistory()}
 
-          <SeeAllProjectsButton
-            onPress={() => {}}
-            projects={FakeProjects}
-          />
+          { /* <SeeAllProjectsButton onPress={() => {}} projects={FakeProjects} /> */ }
 
           {this._renderExponentVersion()}
         </ScrollView>

@@ -13,6 +13,7 @@ import {
 
 import Colors from '../constants/Colors';
 import PrimaryButton from './PrimaryButton';
+import SharedStyles from '../constants/SharedStyles';
 
 @withNavigation
 export default class EmptyProjectsNotice extends React.Component {
@@ -20,11 +21,11 @@ export default class EmptyProjectsNotice extends React.Component {
   render() {
     return (
       <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-        <Text style={styles.titleText}>
+        <Text style={SharedStyles.noticeTitleText}>
           Nothing to see here, yet
         </Text>
 
-        <Text style={styles.descriptionText}>
+        <Text style={SharedStyles.noticeDescriptionText}>
           This screen is where you’ll be able to open any project you have
           running in your Exponent XDE. You’ll also find your recently opened
           projects here.
@@ -56,35 +57,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingBottom: 30,
-  },
-  titleText: {
-    color: '#232b3a',
-    marginBottom: 15,
-    fontWeight: '400',
-    ...Platform.select({
-      ios: {
-        fontSize: 22,
-      },
-      android: {
-        fontSize: 23,
-      },
-    }),
-  },
-  descriptionText: {
-    color: 'rgba(36, 44, 58, 0.7)',
-    textAlign: 'center',
-    marginBottom: 20,
-    ...Platform.select({
-      ios: {
-        fontSize: 15,
-        lineHeight: 20,
-        marginHorizontal: 10,
-      },
-      android: {
-        fontSize: 16,
-        lineHeight: 24,
-        marginHorizontal: 15,
-      },
-    }),
   },
 });

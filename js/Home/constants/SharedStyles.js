@@ -26,4 +26,34 @@ export default StyleSheet.create({
       },
     }),
   },
+  noticeTitleText: {
+    color: '#232b3a',
+    marginBottom: 15,
+    fontWeight: '400',
+    ...Platform.select({
+      ios: {
+        fontSize: 22,
+      },
+      android: {
+        fontSize: 23,
+      },
+    }),
+  },
+  noticeDescriptionText: {
+    color: 'rgba(36, 44, 58, 0.7)',
+    textAlign: 'center',
+    marginBottom: 20,
+    ...Platform.select({
+      ios: {
+        fontSize: 15,
+        lineHeight: 20,
+        marginHorizontal: 10,
+      },
+      android: {
+        fontSize: 16,
+        lineHeight: 24,
+        marginHorizontal: 15,
+      },
+    }),
+  },
 });

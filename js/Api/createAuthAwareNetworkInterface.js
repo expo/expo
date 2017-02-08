@@ -1,4 +1,5 @@
 import { createNetworkInterface } from 'apollo-client';
+import ConnectivityAwareHTTPNetworkInterface from './ConnectivityAwareHTTPNetworkInterface';
 
 type AuthAwareNetworkInterfaceOptions = {
   getIdToken: () => string,
@@ -12,7 +13,7 @@ class AuthAwareNetworkInterface {
   _requestQueue = [];
 
   constructor(uri: string, options: AuthAwareNetworkInterfaceOptions = {}) {
-    this._networkInterface = createNetworkInterface({ uri });
+    this._networkInterface = new ConnectivityAwareHTTPNetworkInterface(uri, options);
     this._getIdToken = options.getIdToken;
     this._setIdToken = options.setIdToken;
     this._getRefreshToken = options.getRefreshToken;
