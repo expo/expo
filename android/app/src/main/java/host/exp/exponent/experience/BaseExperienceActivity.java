@@ -118,7 +118,7 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
       return;
     }
 
-    if (mReactInstanceManager.isNotNull()) {
+    if (mReactInstanceManager != null && mReactInstanceManager.isNotNull()) {
       mReactInstanceManager.onHostDestroy();
       mReactInstanceManager.assign(null);
     }
