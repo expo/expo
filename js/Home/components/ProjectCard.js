@@ -8,15 +8,15 @@ import {
   TouchableHighlight,
   View,
 } from 'react-native';
+import TouchableNativeFeedbackSafe from '@exponent/react-native-touchable-native-feedback-safe';
+import FadeIn from '@exponent/react-native-fade-in-image';
 import {
   withNavigation,
 } from '@exponent/ex-navigation';
 
 import Colors from '../constants/Colors';
 import ExUrls from 'ExUrls';
-import FadeIn from '@exponent/react-native-fade-in-image';
-import LikeButton from './LikeButton';
-import TouchableNativeFeedbackSafe from '@exponent/react-native-touchable-native-feedback-safe';
+import LikeButtonContainer from '../containers/LikeButtonContainer';
 
 @withNavigation
 export default class ProjectCard extends React.Component {
@@ -81,7 +81,7 @@ export default class ProjectCard extends React.Component {
           </View>
         </TouchableNativeFeedbackSafe>
 
-        <LikeButton
+        <LikeButtonContainer
           style={{position: 'absolute', top: 12, right: 12}}
           appId={id}
           liked={isLikedByMe}
