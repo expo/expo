@@ -1,4 +1,4 @@
-.. _bar-code-scanner
+.. _bar-code-scanner:
 
 **************
 BarCodeScanner

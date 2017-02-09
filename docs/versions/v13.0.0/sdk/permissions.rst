@@ -73,3 +73,9 @@ And so we have the ``Permissions`` module.
 .. attribute:: Exponent.Permissions.LOCATION
 
    The permission type for location access.
+
+.. attribute:: Exponent.Permissions.CAMERA
+
+   The permission type for camera access. Currently this is only used for
+   :ref:`BarCodeScanner <bar-code-scanner>`. :ref:`ImagePicker <imagepicker>`
+   automatically asks for permissions if they aren't already granted.
