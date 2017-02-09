@@ -34,6 +34,7 @@ import org.junit.runners.MethodSorters;
 
 import java.util.concurrent.TimeUnit;
 
+import host.exp.exponent.generated.ExponentBuildConstants;
 import host.exp.exponent.kernel.KernelConfig;
 import host.exp.exponent.utils.ElapsedTimeIdlingResource;
 import host.exp.exponent.utils.JSTestRunnerIdlingResource;
@@ -60,6 +61,7 @@ public class EspressoTest {
   @BeforeClass
   public static void enableDrawOverOtherApps() {
     KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE = true;
+    KernelConfig.FORCE_UNVERSIONED_PUBLISHED_EXPERIENCES = true;
 
     sUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
     TestNativeModuleServer.getInstance().setUiDevice(sUiDevice);
@@ -123,7 +125,7 @@ public class EspressoTest {
   public void testSuite() {
     // Launch the app
     Context context = InstrumentationRegistry.getContext();
-    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("exp://rq-v6e.jesse.test-suite.exp.direct:80"));
+    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(ExponentBuildConstants.TEST_APP_URI));
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     context.startActivity(intent);
 
