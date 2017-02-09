@@ -38,6 +38,14 @@ try {
 
 const macrosFuncs = {
 
+  TEST_APP_URI: async () => {
+    if (!process.env.UNIVERSE_BUILD_ID) {
+      return '';
+    }
+
+    return `exp://exp.host/@exponent_ci_bot/test-suite-${process.env.UNIVERSE_BUILD_ID}`;
+  },
+
   BUILD_MACHINE_LOCAL_HOSTNAME: async () => {
     if (process.env.SHELL_APP_BUILDER) {
       return '';

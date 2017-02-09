@@ -40,9 +40,13 @@ public class ExponentUrls {
 
   public static Request.Builder addExponentHeadersToUrl(String urlString) {
     // TODO: set user agent
+    String sdkVersions = Constants.SDK_VERSIONS;
+    if (KernelConfig.FORCE_UNVERSIONED_PUBLISHED_EXPERIENCES) {
+      sdkVersions = "UNVERSIONED";
+    }
     Request.Builder builder = new Request.Builder()
         .url(urlString)
-        .header("Exponent-SDK-Version", Constants.SDK_VERSIONS)
+        .header("Exponent-SDK-Version", sdkVersions)
         .header("Exponent-Platform", "android");
 
     if (ExponentViewKernel.getInstance().getVersionName() != null) {

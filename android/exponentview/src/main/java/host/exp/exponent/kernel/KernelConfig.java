@@ -7,4 +7,7 @@ public class KernelConfig {
   // Used for testing. Don't want the "Fetching JS Bundle" screen to pop up.
   public static boolean FORCE_NO_KERNEL_DEBUG_MODE = false;
 
+  // Used for testing.
+  public static boolean FORCE_UNVERSIONED_PUBLISHED_EXPERIENCES = false;
+
 }
