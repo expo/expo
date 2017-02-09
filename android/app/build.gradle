@@ -32,6 +32,10 @@ android {
     }
     multiDexEnabled true
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    // Deprecated. Used by net.openid:appauth
+    manifestPlaceholders = [
+      'appAuthRedirectScheme': 'host.exp.exponent'
+    ]
   }
   dexOptions {
     javaMaxHeapSize "8g"
@@ -129,7 +133,7 @@ dependencies {
   // Testing
   androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
   androidTestCompile 'com.android.support.test:runner:0.5'
-  androidTestCompile 'com.android.support:support-annotations:24.2.1'
+  androidTestCompile 'com.android.support:support-annotations:25.0.1'
   androidTestCompile 'com.google.code.findbugs:jsr305:3.0.0'
   androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
   compile project(path: ':exponentview')
