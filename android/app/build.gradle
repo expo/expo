@@ -32,9 +32,6 @@ android {
     }
     multiDexEnabled true
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-    manifestPlaceholders = [
-      'appAuthRedirectScheme': 'host.exp.exponent'
-    ]
   }
   dexOptions {
     javaMaxHeapSize "8g"

@@ -47,6 +47,7 @@ import versioned.host.exp.exponent.modules.api.SegmentModule;
 import versioned.host.exp.exponent.modules.api.ShakeModule;
 import versioned.host.exp.exponent.modules.api.URLHandlerModule;
 import versioned.host.exp.exponent.modules.api.UtilModule;
+import versioned.host.exp.exponent.modules.api.WebBrowserModule;
 import versioned.host.exp.exponent.modules.api.components.LinearGradientManager;
 import versioned.host.exp.exponent.modules.api.components.VideoViewManager;
 import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerModule;
@@ -133,6 +134,8 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new RNViewShotModule(reactContext));
         nativeModules.add(new ExponentTestNativeModule(reactContext));
         nativeModules.add(new KeepAwakeModule(reactContext));
+        nativeModules.add(new ExponentTestNativeModule(reactContext));
+        nativeModules.add(new WebBrowserModule(reactContext));
       } catch (JSONException e) {
         EXL.e(TAG, e.toString());
       } catch (UnsupportedEncodingException e) {

@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-package host.exp.exponent;
+package host.exp.exponent.oauth;
 
 import android.app.Activity;
 import android.content.Intent;

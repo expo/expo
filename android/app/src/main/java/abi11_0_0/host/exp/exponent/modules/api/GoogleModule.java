@@ -31,7 +31,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
 
 import host.exp.exponent.ActivityResultListener;
-import host.exp.exponent.OAuthWebViewActivity;
+import host.exp.exponent.oauth.OAuthWebViewActivity;
 import host.exp.exponentview.Exponent;
 
 public class GoogleModule extends ReactContextBaseJavaModule implements ActivityResultListener {

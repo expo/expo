@@ -154,6 +154,8 @@
 		B5F12C991DAEDF960080ECA6 /* EXKernelReactAppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5F12C981DAEDF960080ECA6 /* EXKernelReactAppManager.m */; };
 		B5F12C9D1DAEE1240080ECA6 /* EXFrameReactAppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5F12C9C1DAEE1240080ECA6 /* EXFrameReactAppManager.m */; };
 		B5F12CA21DB009A40080ECA6 /* EXKernelModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B5F12CA11DB009A40080ECA6 /* EXKernelModule.m */; };
+		F77DDB8B1E04774000624CA2 /* EXWebBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = F77DDB8A1E04774000624CA2 /* EXWebBrowser.m */; };
+		F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F77DDB921E04AC1100624CA2 /* SafariServices.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -475,6 +477,9 @@
 		B5F12CA11DB009A40080ECA6 /* EXKernelModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelModule.m; sourceTree = "<group>"; };
 		BD69154E1D289060B003BB86 /* Pods-Exponent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Exponent.release.xcconfig"; path = "Pods/Target Support Files/Pods-Exponent/Pods-Exponent.release.xcconfig"; sourceTree = "<group>"; };
 		D045154CF3903164C70A59B6 /* Pods-ExponentIntegrationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.debug.xcconfig"; sourceTree = "<group>"; };
+		F77DDB891E04774000624CA2 /* EXWebBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXWebBrowser.h; sourceTree = "<group>"; };
+		F77DDB8A1E04774000624CA2 /* EXWebBrowser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXWebBrowser.m; sourceTree = "<group>"; };
+		F77DDB921E04AC1100624CA2 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
 		F8B7CBE8449DB220A8A6DF82 /* Pods-Exponent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Exponent.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Exponent/Pods-Exponent.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -483,6 +488,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */,
 				A2AABA28A2AEAFB462697CB3 /* libPods-Exponent.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -598,6 +604,7 @@
 		3050F5A98E56E9379C36ABD2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F77DDB921E04AC1100624CA2 /* SafariServices.framework */,
 				787C91251B27EC6700786A57 /* EXURLHandler.xcodeproj */,
 				1B1D1884419563A8205AED29 /* libPods-Exponent.a */,
 				0B84B3DEFB2C488FAE7279AD /* libPods-ExponentIntegrationTests.a */,
@@ -807,6 +814,8 @@
 				88E089A31D6BC02200562FA1 /* EXAmplitude.m */,
 				88E089A81D6BCF4300562FA1 /* EXSegment.h */,
 				88E089AA1D6BCF5800562FA1 /* EXSegment.m */,
+				F77DDB891E04774000624CA2 /* EXWebBrowser.h */,
+				F77DDB8A1E04774000624CA2 /* EXWebBrowser.m */,
 				840D8EE01D8CB91E00CD88DE /* EXUtil.h */,
 				840D8EE11D8CB91E00CD88DE /* EXUtil.m */,
 			);
@@ -1578,6 +1587,7 @@
 				193601221D67ABCF007C0EE0 /* RNSVGRadialGradient.m in Sources */,
 				193601141D67ABCF007C0EE0 /* RNSVGGroup.m in Sources */,
 				A16EE77D1D56911100634425 /* EXVideo.m in Sources */,
+				F77DDB8B1E04774000624CA2 /* EXWebBrowser.m in Sources */,
 				1936010B1D67ABCF007C0EE0 /* RNSVGBrushConverter.m in Sources */,
 				1981B9F71E3C28BA00057CA9 /* EXKeepAwake.m in Sources */,
 				B50626001E4B9E6100AC2748 /* EXContainerView.m in Sources */,
@@ -1784,6 +1794,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "host.exp.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "$(APP_PROVISIONING_PROFILE)";
+				STRIP_STYLE = "non-global";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -1855,6 +1866,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "host.exp.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "$(APP_PROVISIONING_PROFILE)";
+				STRIP_STYLE = "non-global";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
