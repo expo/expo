@@ -25,6 +25,7 @@ import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 import versioned.host.exp.exponent.modules.api.AccelerometerModule;
 import versioned.host.exp.exponent.modules.api.AmplitudeModule;
+import versioned.host.exp.exponent.modules.api.AudioModule;
 import versioned.host.exp.exponent.modules.api.ConstantsModule;
 import versioned.host.exp.exponent.modules.api.ContactsModule;
 import versioned.host.exp.exponent.modules.api.CryptoModule;
@@ -136,6 +137,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new KeepAwakeModule(reactContext));
         nativeModules.add(new ExponentTestNativeModule(reactContext));
         nativeModules.add(new WebBrowserModule(reactContext));
+        nativeModules.add(new AudioModule(reactContext));
       } catch (JSONException e) {
         EXL.e(TAG, e.toString());
       } catch (UnsupportedEncodingException e) {
