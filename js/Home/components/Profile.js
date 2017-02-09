@@ -63,7 +63,9 @@ export default class Profile extends React.Component {
       return this._renderLoading();
     }
 
-    let isConnectionError = this.props.data.error.message.includes('No connection available');
+    // NOTE(brentvatne): sorry for this
+    let isConnectionError =
+      this.props.data.error.message.includes('No connection available');
 
     return (
       <View style={{flex: 1, alignItems: 'center', paddingTop: 30}}>

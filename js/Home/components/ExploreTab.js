@@ -56,7 +56,9 @@ export default class ExploreTab extends React.Component {
   }
 
   _renderError() {
-    let isConnectionError = this.props.data.error.message.includes('No connection available');
+    // NOTE(brentvatne): sorry for this
+    let isConnectionError =
+      this.props.data.error.message.includes('No connection available');
 
     return (
       <View style={{flex: 1, alignItems: 'center', paddingTop: 30}}>
