@@ -2,6 +2,7 @@ import React from 'react';
 import {
   Animated,
   StyleSheet,
+  View,
 } from 'react-native';
 
 import {
@@ -21,6 +22,8 @@ export default class StyledSlidingTabNavigation extends React.Component {
       <SlidingTabNavigation
         {...props}
         tabBarStyle={[styles.tabBar, props.tabBarStyle]}
+        renderIndicator={() => <View />}
+        indicatorStyle={{backgroundColor: '#fff'}}
         tabStyle={{
           flex: 0,
           paddingBottom: 12,
