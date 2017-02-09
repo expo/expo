@@ -23,6 +23,7 @@ let AuthTokenActions = {
 
   @action
   signOut() {
+    LocalStorage.removeAuthTokensAsync();
     return null;
   },
 };
