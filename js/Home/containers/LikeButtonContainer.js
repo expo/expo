@@ -4,7 +4,7 @@ import gql from 'graphql-tag';
 import LikeButton from '../components/LikeButton';
 import onlyIfAuthenticated from '../utils/onlyIfAuthenticated';
 
-const likeProject = gql`
+const LikeProjectMutation = gql`
   mutation PerformLike($appId: ID!) {
     likeApp(appId: $appId) {
       id
@@ -15,7 +15,7 @@ const likeProject = gql`
   }
 `;
 
-const unlikeProject = gql`
+const UnlikeProjectMutation = gql`
   mutation UndoLike($appId: ID!) {
     unlikeApp(appId: $appId) {
       id
@@ -27,8 +27,8 @@ const unlikeProject = gql`
 `;
 
 @onlyIfAuthenticated
-@graphql(unlikeProject, {name: 'unlikeMutation'})
-@graphql(likeProject, {name: 'likeMutation'})
+@graphql(UnlikeProjectMutation, {name: 'unlikeMutation'})
+@graphql(LikeProjectMutation, {name: 'likeMutation'})
 export default class LikeButtonContainer extends React.Component {
   render() {
     return (

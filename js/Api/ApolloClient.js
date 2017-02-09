@@ -44,6 +44,14 @@ async function refreshIdTokenAsync() {
 }
 
 export default new ApolloClient({
+  dataIdFromObject: (result) => {
+    if (result.id && result.__typename) {
+      return result.__typename + result.id;
+    }
+
+    // Make sure to return null if this object doesn't have an ID
+    return null;
+  },
   networkInterface: createAuthAwareNetworkInterface({
     uri: 'https://16.pr.www.exp.host/--/graphql',
     getIdToken,
