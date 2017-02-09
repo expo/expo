@@ -108,6 +108,8 @@ export default class SearchBar extends React.Component {
             ref={view => { this._textInput = view; }}
             onChangeText={this._handleChangeText}
             value={this.state.text}
+            autoCapitalize="none"
+            autoCorrect={false}
             returnKeyType="go"
             placeholder="Find a project or enter a URL..."
             placeholderStyle={styles.searchInputPlaceholderText}

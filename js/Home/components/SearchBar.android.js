@@ -41,6 +41,8 @@ export default class SearchBar extends React.Component {
           placeholder="Find a project or enter a URL..."
           placeholderStyle={styles.sear}
           value={this.state.text}
+          autoCapitalize="none"
+          autoCorrect={false}
           underlineColorAndroid={Colors.tintColor}
           onSubmitEditing={this._handleSubmit}
           onChangeText={this._handleChangeText}
