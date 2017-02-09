@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
   package="host.exp.exponent"
-  xmlns:android="http://schemas.android.com/apk/res/android">
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools">
 
   <permission
     android:name="host.exp.exponent.permission.C2D_MESSAGE"
@@ -121,13 +122,24 @@
     </activity>
 
     <activity
-      android:name=".OAuthWebViewActivity"
+      android:name=".oauth.OAuthWebViewActivity"
       android:screenOrientation="portrait"
       android:theme="@style/Theme.Exponent.Light">
     </activity>
 
     <activity
-      android:name=".OAuthResultActivity">
+        android:name="net.openid.appauth.RedirectUriReceiverActivity"
+        tools:node="replace">
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <data android:scheme="host.exp.exponent" android:host="oauthredirect"/>
+      </intent-filter>
+    </activity>
+
+    <activity
+      android:name=".oauth.OAuthResultActivity">
     </activity>
 
     <activity
