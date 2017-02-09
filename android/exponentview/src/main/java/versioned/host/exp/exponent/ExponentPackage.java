@@ -133,7 +133,6 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new SegmentModule(reactContext, experienceIdEncoded));
         nativeModules.add(new BarCodeScannerModule(reactContext));
         nativeModules.add(new RNViewShotModule(reactContext));
-        nativeModules.add(new ExponentTestNativeModule(reactContext));
         nativeModules.add(new KeepAwakeModule(reactContext));
         nativeModules.add(new ExponentTestNativeModule(reactContext));
         nativeModules.add(new WebBrowserModule(reactContext));
