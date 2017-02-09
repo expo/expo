@@ -12,14 +12,15 @@ const ownProfileQuery = gql`
         lastName
         email
         profilePhoto
-        apps {
+        appCount
+        apps(limit: 15, offset: 0) {
           fullName
           iconUrl
           packageName
           description
           lastPublishedTime
         }
-        likes {
+        likes(limit: 15, offset: 0) {
           id
         }
       }

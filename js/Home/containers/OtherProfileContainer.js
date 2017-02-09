@@ -11,7 +11,9 @@ const otherProfileQuery = gql`
       lastName
       email
       profilePhoto
-      apps {
+      isLegacy
+      appCount
+      apps(limit: 15, offset: 0) {
         fullName
         name
         iconUrl
@@ -27,7 +29,7 @@ const otherProfileQuery = gql`
 export default graphql(otherProfileQuery, {
   options: (props) => ({
     variables: {
-      username: props.username,
+      username: props.username.replace('@',''),
     }
   })
 })(Profile);
