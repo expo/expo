@@ -1,4 +1,5 @@
 import React from 'react';
+import { Asset } from 'exponent';
 import {
   ActivityIndicator,
   Image,
@@ -112,6 +113,10 @@ export default class Profile extends React.Component {
       return;
     }
 
+    if (this.props.data.user.isLegacy) {
+      return this._renderLegacyHeader();
+    }
+
     let {
       firstName,
       lastName,
@@ -135,6 +140,21 @@ export default class Profile extends React.Component {
             @{username}
           </Text>
           {this._maybeRenderGithubAccount()}
+        </View>
+      </View>
+    );
+  }
+
+  _renderLegacyHeader = () => {
+    let { username } = this.props.data.user;
+
+    return (
+      <View style={styles.header}>
+        <View style={[styles.headerAvatar, styles.legacyHeaderAvatar]} />
+        <View style={styles.headerAccountsList}>
+          <Text style={styles.headerAccountText}>
+            @{username}
+          </Text>
         </View>
       </View>
     );
@@ -203,6 +223,9 @@ const styles = StyleSheet.create({
     height: 64,
     width: 64,
     borderRadius: 5,
+  },
+  legacyHeaderAvatar: {
+    backgroundColor: '#eee',
   },
   headerAccountsList: {
     paddingBottom: 20,

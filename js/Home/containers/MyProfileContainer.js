@@ -13,6 +13,7 @@ const ownProfileQuery = gql`
         email
         profilePhoto
         appCount
+        isLegacy
         apps(limit: 15, offset: 0) {
           fullName
           iconUrl
