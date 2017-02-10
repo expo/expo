@@ -39,16 +39,6 @@
     _midInterruption = NO;
     _backgrounded = NO;
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(_bridgeDidForeground:)
-                                                 name:@"EXKernelBridgeDidForegroundNotification"
-                                               object:_bridge];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(_bridgeDidBackground:)
-                                                 name:@"EXKernelBridgeDidBackgroundNotification"
-                                               object:_bridge];
-
     AVAudioSession *session = [AVAudioSession sharedInstance];
 
     // These only need to be set once:
@@ -65,6 +55,21 @@
   }
   
   return self;
+}
+
+- (void)setBridge:(ABI14_0_0RCTBridge *)bridge
+{
+  _bridge = bridge;
+  
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(_bridgeDidForeground:)
+                                               name:@"EXKernelBridgeDidForegroundNotification"
+                                             object:_bridge];
+  
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(_bridgeDidBackground:)
+                                               name:@"EXKernelBridgeDidBackgroundNotification"
+                                             object:_bridge];
 }
 
 #pragma mark - Internal
