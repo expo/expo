@@ -71,6 +71,7 @@ export default class ProjectList extends React.Component {
         renderScrollComponent={(props) => <InfiniteScrollView {...props} />}
         canLoadMore={this._canLoadMore()}
         onLoadMoreAsync={this._handleLoadMoreAsync}
+        removeClippedSubviews={false}
       />
     );
   }
