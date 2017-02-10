@@ -26,6 +26,7 @@ import OtherProfileContainer from '../containers/OtherProfileContainer';
 
 import onlyIfAuthenticated from '../utils/onlyIfAuthenticated';
 import isUserAuthenticated from '../utils/isUserAuthenticated';
+import isCurrentUser from '../utils/isCurrentUser';
 
 @connect((data, props) => ProfileScreen.getDataProps(data, props))
 export default class ProfileScreen extends React.Component {
@@ -63,7 +64,7 @@ export default class ProfileScreen extends React.Component {
 
   static getDataProps(data, props) {
     let isAuthenticated = isUserAuthenticated(data.authTokens);
-    let isOwnProfile = !props.username;
+    let isOwnProfile = !props.username || isCurrentUser(data.authTokens, props.username);
 
     return {
       isAuthenticated,
