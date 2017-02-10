@@ -1,8 +1,10 @@
 import React from 'react';
+import { Alert } from 'react-native';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import LikeButton from '../components/LikeButton';
 import onlyIfAuthenticated from '../utils/onlyIfAuthenticated';
+import Connectivity from '../../Api/Connectivity';
 
 const LikeProjectMutation = gql`
   mutation PerformLike($appId: ID!) {
@@ -40,11 +42,24 @@ export default class LikeButtonContainer extends React.Component {
     );
   }
 
-  _handlePressAsync = async () => {
-    try {
-      let result;
+  _alertNoInternetConnection = (message = '') => {
+    Alert.alert(
+      "No internet connection available",
+      message || "Please try again when you're back online"
+    );
+  }
 
-      if (this.props.liked) {
+  _handlePressAsync = async () => {
+    if (!(await Connectivity.isAvailableAsync())) {
+      this._alertNoInternetConnection();
+      return;
+    }
+
+    let { liked } = this.props;
+    let result;
+
+    try {
+      if (liked) {
         result = await this.unlikeAsync();
       } else {
         result = await this.likeAsync();
@@ -52,6 +67,12 @@ export default class LikeButtonContainer extends React.Component {
 
       console.log({result, appId: this.props.appId});
     } catch(e) {
+      if (liked) {
+        this._alertNoInternetConnection("Unable to like the project, try again later.");
+      } else {
+        this._alertNoInternetConnection("Unable to unlike the project, try again later.");
+      }
+
       console.log({e});
     }
   }
