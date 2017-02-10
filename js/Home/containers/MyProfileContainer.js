@@ -22,6 +22,7 @@ const ownProfileQuery = gql`
           packageName
           description
           lastPublishedTime
+          likeCount
         }
         likes(limit: 15, offset: 0) {
           id

@@ -100,6 +100,7 @@ export default class ProjectList extends React.Component {
         <SmallProjectCard
           key={i}
           iconUrl={app.iconUrl}
+          likeCount={app.likeCount}
           projectName={app.packageName}
           projectUrl={app.fullName}
           fullWidthBorder

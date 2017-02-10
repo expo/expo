@@ -22,6 +22,7 @@ const otherProfileQuery = gql`
         packageUsername
         description
         lastPublishedTime
+        likeCount
       }
     }
   }

@@ -19,11 +19,14 @@ import TouchableNativeFeedbackSafe from '@exponent/react-native-touchable-native
 export default class SmallProjectCard extends React.Component {
   render() {
     let {
+      likeCount,
       projectName,
       projectUrl,
       username,
       iconUrl,
     } = this.props;
+
+    const renderLikes = typeof likeCount === 'number' && likeCount > 0;
 
     return (
       <TouchableNativeFeedbackSafe
@@ -41,13 +44,22 @@ export default class SmallProjectCard extends React.Component {
             numberOfLines={1}>
             {projectName}
           </Text>
-          <Text
-            onPress={username ? this._handlePressUsername : null}
-            style={styles.projectExtraInfoText}
-            ellipsizeMode="tail"
-            numberOfLines={1}>
-            {username || projectUrl}
-          </Text>
+          <View style={styles.projectExtraInfoContainer}>
+            <Text
+              onPress={username ? this._handlePressUsername : null}
+              style={styles.projectExtraInfoText}
+              ellipsizeMode="tail"
+              numberOfLines={1}>
+              {username || projectUrl}
+            </Text>
+            { renderLikes && <View style={styles.bullet} /> }
+            { renderLikes && (
+              <Text
+                onPress={() => {}}
+                style={styles.projectExtraInfoText}>
+                {likeCount} {likeCount === 1 ? 'like' : 'likes'}
+              </Text> )}
+          </View>
         </View>
       </TouchableNativeFeedbackSafe>
     );
@@ -129,11 +141,20 @@ const styles = StyleSheet.create({
       },
     }),
   },
+  projectExtraInfoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   projectExtraInfoText: {
     color: Colors.greyText,
     fontSize: 13,
-    marginRight: 70,
-    paddingRight: 30,
+  },
+  bullet: {
+    width: 3.5,
+    height: 3.5,
+    borderRadius: 3.5/2,
+    backgroundColor: 'rgba(36, 44, 58, 0.2)',
+    marginHorizontal: 6,
   },
 });
 
