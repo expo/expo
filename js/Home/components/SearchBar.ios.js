@@ -145,7 +145,7 @@ export default class SearchBar extends React.Component {
 
   _handleSubmit = () => {
     let url = this.state.text;
-    if (ExponentKernel && url.toLowerCase() === 'dev menu' || url.toLowerCase() === 'dm') {
+    if (ExponentKernel && (url.toLowerCase() === 'dev menu' || url.toLowerCase() === 'dm')) {
       ExponentKernel.addDevMenu();
     } else {
       url = ExUrls.normalizeUrl(url);
