@@ -32,12 +32,7 @@ export default class SmallProjectCard extends React.Component {
         underlayColor="#b7b7b7"
         style={[styles.container, this.props.fullWidthBorder && styles.bottomBorder]}>
         <View style={styles.iconContainer}>
-          <FadeIn placeholderColor="#eee">
-            <Image
-              source={{uri: iconUrl}}
-              style={styles.icon}
-            />
-          </FadeIn>
+          {this._maybeRenderIcon()}
         </View>
         <View style={[styles.infoContainer, !this.props.fullWidthBorder && styles.bottomBorder]}>
           <Text
@@ -56,6 +51,25 @@ export default class SmallProjectCard extends React.Component {
         </View>
       </TouchableNativeFeedbackSafe>
     );
+  }
+
+  _maybeRenderIcon = () => {
+    let { iconUrl } = this.props;
+
+    if (iconUrl) {
+      return (
+        <FadeIn placeholderColor="#eee">
+          <Image
+            source={{uri: iconUrl}}
+            style={styles.icon}
+          />
+        </FadeIn>
+      );
+    } else {
+      return (
+        <View style={[styles.icon, {backgroundColor: '#eee'}]} />
+      );
+    }
   }
 
   _handlePressProject = () => {

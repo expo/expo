@@ -11,5 +11,6 @@ export default createRouter(() => ({
   signIn: () => require('../screens/SignInScreen').default,
   signUp: () => require('../screens/SignUpScreen').default,
   qrCode: () => require('../screens/QRCodeScreen').default,
+  projectsForUser: () => require('../screens/ProjectsForUserScreen').default,
   rootNavigation: () => require('./RootNavigation').default,
 }), {ignoreSerializableWarnings: true});

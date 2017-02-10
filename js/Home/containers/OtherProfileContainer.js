@@ -6,6 +6,7 @@ import Profile from '../components/Profile';
 const otherProfileQuery = gql`
   query findUserByUsername($username: String!) {
     user: userByUsername(username: $username) {
+      id
       username
       firstName
       lastName

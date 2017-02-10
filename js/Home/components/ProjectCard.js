@@ -24,7 +24,6 @@ export default class ProjectCard extends React.Component {
     let {
       id,
       description,
-      iconUrl,
       projectName,
       projectUrl,
       username,
@@ -42,12 +41,7 @@ export default class ProjectCard extends React.Component {
           <View>
             <View style={styles.header}>
               <View style={styles.iconContainer}>
-                <FadeIn placeholderColor="#eee">
-                  <Image
-                    source={{uri: iconUrl}}
-                    style={styles.icon}
-                  />
-                </FadeIn>
+                {this._maybeRenderIcon()}
               </View>
               <View style={styles.infoContainer}>
                 <Text
@@ -88,6 +82,25 @@ export default class ProjectCard extends React.Component {
         />
       </View>
     );
+  }
+
+  _maybeRenderIcon = () => {
+    let { iconUrl } = this.props;
+
+    if (iconUrl) {
+      return (
+        <FadeIn placeholderColor="#eee">
+          <Image
+            source={{uri: iconUrl}}
+            style={styles.icon}
+          />
+        </FadeIn>
+      );
+    } else {
+      return (
+        <View style={[styles.icon, {backgroundColor: '#eee'}]} />
+      );
+    }
   }
 
   _handlePressProject = () => {

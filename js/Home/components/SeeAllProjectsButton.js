@@ -29,11 +29,13 @@ export default class SeeAllProjectsButton extends React.Component {
   }
 
   render() {
-    let { apps, label, maxIconCount } = this.props;
+    let { apps, appCount, label, maxIconCount } = this.props;
 
     if (!apps || !apps.length) {
       return <View />;
     }
+
+    let otherAppCount = appCount - Math.min(apps.length, maxIconCount);
 
     return (
       <TouchableNativeFeedback
@@ -54,11 +56,13 @@ export default class SeeAllProjectsButton extends React.Component {
             </FadeIn>
           ))}
 
-          <View style={styles.projectsNumberContainer}>
-            <Text style={styles.projectsNumberText}>
-              +12
-            </Text>
-          </View>
+          {otherAppCount > 0 && (
+            <View style={styles.projectsNumberContainer}>
+              <Text style={styles.projectsNumberText}>
+                +{otherAppCount}
+              </Text>
+            </View>
+            )}
 
           <Ionicons
             name="ios-arrow-forward"

@@ -7,6 +7,7 @@ const ownProfileQuery = gql`
   {
     viewer {
       me {
+        id
         username
         firstName
         lastName
@@ -15,6 +16,7 @@ const ownProfileQuery = gql`
         appCount
         isLegacy
         apps(limit: 15, offset: 0) {
+          id
           fullName
           iconUrl
           packageName

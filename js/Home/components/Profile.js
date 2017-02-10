@@ -165,7 +165,7 @@ export default class Profile extends React.Component {
       return;
     }
 
-    let { apps } = this.props.data.user;
+    let { apps, appCount } = this.props.data.user;
 
     if (!apps || !apps.length) {
       // Handle empty app case
@@ -181,13 +181,23 @@ export default class Profile extends React.Component {
           </View>
 
           {take(apps, 3).map(this._renderApp)}
-          <SeeAllProjectsButton label="See all projects" apps={otherApps} />
+          <SeeAllProjectsButton
+            apps={otherApps}
+            appCount={appCount - 3}
+            label="See all projects"
+            onPress={this._handlePressProjectList}
+          />
         </View>
       );
     }
   }
 
-
+  _handlePressProjectList = () => {
+    this.props.navigator.push('projectsForUser', {
+      username: this.props.username,
+      belongsToCurrentUser: this.props.isOwnProfile
+    });
+  }
 
   _renderApp = (app, i) => {
     return (
