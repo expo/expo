@@ -14,24 +14,24 @@
 
 @implementation EXGyroscope
 
+@synthesize bridge = _bridge;
+
 RCT_EXPORT_MODULE(ExponentGyroscope);
 
-- (instancetype)init
+- (void)setBridge:(RCTBridge *)bridge
 {
-  if (self = [super init]) {
-    _paused = NO;
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(bridgeDidForeground:)
-                                                 name:EX_UNVERSIONED(@"EXKernelBridgeDidForegroundNotification")
-                                               object:self.bridge];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(bridgeDidBackground:)
-                                                 name:EX_UNVERSIONED(@"EXKernelBridgeDidBackgroundNotification")
-                                               object:self.bridge];
-  }
-  return self;
+  _bridge = bridge;
+  _paused = NO;
+  
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(bridgeDidForeground:)
+                                               name:EX_UNVERSIONED(@"EXKernelBridgeDidForegroundNotification")
+                                             object:self.bridge];
+  
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(bridgeDidBackground:)
+                                               name:EX_UNVERSIONED(@"EXKernelBridgeDidBackgroundNotification")
+                                             object:self.bridge];
 }
 
 - (CMMotionManager *)manager
