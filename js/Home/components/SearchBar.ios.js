@@ -4,6 +4,7 @@ import {
   StyleSheet,
   TextInput,
   Linking,
+  NativeModules,
   Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
@@ -21,6 +22,8 @@ import Layout from '../constants/Layout';
 
 const SearchContainerHorizontalMargin = 10;
 const SearchContainerWidth = Layout.window.width - SearchContainerHorizontalMargin * 2;
+
+let { ExponentKernel } = NativeModules;
 
 const SearchIcon = () => (
   <View style={styles.searchIconContainer}>
@@ -141,8 +144,18 @@ export default class SearchBar extends React.Component {
   }
 
   _handleSubmit = () => {
-    let url = ExUrls.normalizeUrl(this.state.text);
-    Linking.openURL(url);
+    let url = this.state.text;
+    if (ExponentKernel && url.toLowerCase() === 'dev menu' || url.toLowerCase() === 'dm') {
+      ExponentKernel.addDevMenu();
+    } else {
+      url = ExUrls.normalizeUrl(url);
+      if (ExponentKernel) {
+        // don't validate that we can open the url, just go ahead and try it.
+        ExponentKernel.openURL(url);
+      } else {
+        Linking.openURL(url);
+      }
+    }
   }
 
   _handlePressCancelButton = () => {
