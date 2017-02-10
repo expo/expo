@@ -48,6 +48,7 @@ export default graphql(ownProfileQuery, {
     };
   },
   options: {
+    returnPartialData: true,
     forceFetch: true,
   },
 })(Profile);
