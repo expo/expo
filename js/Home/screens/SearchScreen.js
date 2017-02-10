@@ -10,27 +10,43 @@ import {
 } from '@exponent/ex-navigation';
 
 import SearchBar from '../components/SearchBar';
+import SearchResultsContainer from '../containers/SearchResultsContainer';
 
 export default class SearchScreen extends React.Component {
   static route = {
     styles: NavigationStyles.NoAnimation,
     navigationBar: {
+      renderTitle: ({ config: { eventEmitter } }) => {
+        return <SearchBar emitter={eventEmitter} />;
+      },
       ...Platform.select({
         ios: {
           height: 70,
           renderLeft: () => null,
-          renderTitle: () => <SearchBar />,
-        },
-        android: {
-          renderTitle: () => <SearchBar />,
         },
       }),
     }
   }
 
+  state = {
+    text: '',
+  }
+
+  componentWillMount() {
+    const emitter = this.props.route.getEventEmitter();
+    this._searchSubscription = emitter.addListener('change', (text) => {
+      this.setState({text});
+    });
+  }
+
+  componentWillUnmount() {
+    this._searchSubscription.remove();
+  }
+
   render() {
     return (
       <View style={styles.container}>
+        <SearchResultsContainer query={this.state.text} />
       </View>
     );
   }

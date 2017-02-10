@@ -141,6 +141,7 @@ export default class SearchBar extends React.Component {
 
   _handleChangeText = (text) => {
     this.setState({text});
+    this.props.emitter && this.props.emitter.emit('change', text);
   }
 
   _handleSubmit = () => {
