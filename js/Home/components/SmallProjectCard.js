@@ -19,10 +19,12 @@ import TouchableNativeFeedbackSafe from '@exponent/react-native-touchable-native
 export default class SmallProjectCard extends React.Component {
   render() {
     let {
+      hideUsername,
       likeCount,
       projectName,
       projectUrl,
       username,
+      slug,
       iconUrl,
     } = this.props;
 
@@ -50,7 +52,7 @@ export default class SmallProjectCard extends React.Component {
               style={styles.projectExtraInfoText}
               ellipsizeMode="tail"
               numberOfLines={1}>
-              {username || projectUrl}
+              {hideUsername ? slug : username || projectUrl}
             </Text>
             { renderLikes && <View style={styles.bullet} /> }
             { renderLikes && (

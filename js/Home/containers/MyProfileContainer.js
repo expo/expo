@@ -19,6 +19,7 @@ const ownProfileQuery = gql`
           id
           fullName
           iconUrl
+          name
           packageName
           description
           lastPublishedTime

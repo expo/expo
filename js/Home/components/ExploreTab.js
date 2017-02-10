@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   ListView,
   ScrollView,
+  Platform,
   TouchableOpacity,
   StyleSheet,
   Text,
@@ -110,11 +111,24 @@ export default class ExploreTab extends React.Component {
     return (
       <ListView
         dataSource={this.state.dataSource}
+        renderHeader={this._renderHeader}
         renderRow={this._renderRow}
         style={styles.container}
         {...extraOptions}
       />
     );
+  }
+
+  _renderHeader = () => {
+    if (this.props.listTitle) {
+      return (
+        <View style={SharedStyles.sectionLabelContainer}>
+          <Text style={SharedStyles.sectionLabelText}>
+            {this.props.listTitle}
+          </Text>
+        </View>
+      );
+    }
   }
 
   _renderRow = (app, i) => {
@@ -138,7 +152,7 @@ export default class ExploreTab extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 15,
+    paddingTop: FeatureFlags.HIDE_EXPLORE_TABS && Platform.OS === 'ios' ? 5 : 15,
     backgroundColor: Colors.greyBackground,
     borderRightWidth: 1,
     borderRightColor: '#f6f6f6',

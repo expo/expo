@@ -12,4 +12,5 @@ export default {
   greyText: '#a7aab0',
   blackText: '#242c39',
   separator: '#f4f4f5',
+  navBarBorderBottom: 'rgba(46, 59, 76, 0.10)',
 };

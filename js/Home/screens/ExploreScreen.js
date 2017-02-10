@@ -60,6 +60,22 @@ export default class ExploreScreen extends React.Component {
     return (
       <View style={{flex: 1, backgroundColor: Colors.greyBackground}}>
         {this._renderSearchBar()}
+        {this._renderContent()}
+      </View>
+    );
+  }
+
+  _renderContent() {
+    if (FeatureFlags.HIDE_EXPLORE_TABS) {
+      return (
+        <ExploreTabContainer
+          filter="FEATURED"
+          listTitle={Platform.OS === 'ios' ? 'FEATURED PROJECTS' : ''}
+          onPressUsername={this._handlePressUsername}
+        />
+      );
+    } else {
+      return (
         <StyledSlidingTabNavigation
           lazy
           tabBarStyle={Platform.OS === 'android' && styles.tabBarAndroid}
@@ -67,8 +83,8 @@ export default class ExploreScreen extends React.Component {
           keyToTitle={TabTitles}>
           {this._renderTabs()}
         </StyledSlidingTabNavigation>
-      </View>
-    );
+      );
+    }
   }
 
   _renderTabs() {
@@ -111,7 +127,7 @@ export default class ExploreScreen extends React.Component {
         <View style={styles.titleBarAndroid}>
           <View style={styles.titleAndroid}>
             <Text numberOfLines={1} style={styles.titleTextAndroid}>
-              Projects
+              { FeatureFlags.HIDE_EXPLORE_TABS ? 'Featured Projects' : 'Projects' }
             </Text>
           </View>
 
@@ -122,7 +138,7 @@ export default class ExploreScreen extends React.Component {
       );
     } else {
       return (
-        <View style={{height: 70, backgroundColor: '#fff', paddingTop: 20}}>
+        <View style={styles.titleBarIOS}>
           <SearchBar.PlaceholderButton />
         </View>
       );
@@ -132,6 +148,15 @@ export default class ExploreScreen extends React.Component {
   _handlePressUsername = (username) => {
     this.props.navigator.push('profile', { username });
   }
+}
+
+let navBarBorder = {};
+
+if (FeatureFlags.HIDE_EXPLORE_TABS) {
+  navBarBorder = {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: Colors.navBarBorderBottom,
+  };
 }
 
 const styles = StyleSheet.create({
@@ -151,11 +176,18 @@ const styles = StyleSheet.create({
     // borderTopWidth: StyleSheet.hairlineWidth * 2,
     // marginTop: 1,
   },
+  titleBarIOS: {
+    height: 70,
+    backgroundColor: '#fff',
+    paddingTop: 20,
+    ...navBarBorder,
+  },
   titleBarAndroid: {
     height: 79,
     backgroundColor: '#fff',
     paddingTop: 26,
     marginBottom: 0,
+    ...navBarBorder,
   },
   titleAndroid: {
     flex: 1,

@@ -203,9 +203,11 @@ export default class Profile extends React.Component {
     return (
       <SmallProjectCard
         key={i}
+        hideUsername
         iconUrl={app.iconUrl}
         likeCount={app.likeCount}
-        projectName={app.packageName}
+        projectName={app.name}
+        slug={app.packageName}
         projectUrl={app.fullName}
         fullWidthBorder
       />

@@ -1,4 +1,5 @@
 export default {
+  HIDE_EXPLORE_TABS: true,
   DISPLAY_ALL_EXPLORE_TABS: false,
   INFINITE_SCROLL_EXPLORE_TABS: false,
 }
