@@ -78,6 +78,7 @@ export default class SignUpScreen extends React.Component {
         <Form>
           <Form.Input
             onChangeText={this._updateValue.bind(this, 'firstName')}
+            onSubmitEditing={() => this._handleSubmitEditing('firstName')}
             value={this.state.firstName}
             autofocus
             blurOnSubmit={false}
@@ -86,7 +87,9 @@ export default class SignUpScreen extends React.Component {
             returnKeyType="next"
           />
           <Form.Input
+            ref={view => { this._lastNameInput = view; }}
             onChangeText={this._updateValue.bind(this, 'lastName')}
+            onSubmitEditing={() => this._handleSubmitEditing('lastName')}
             value={this.state.lastName}
             blurOnSubmit={false}
             keyboardType="default"
@@ -94,7 +97,9 @@ export default class SignUpScreen extends React.Component {
             returnKeyType="next"
           />
           <Form.Input
+            ref={view => { this._usernameInput = view; }}
             onChangeText={this._updateValue.bind(this, 'username')}
+            onSubmitEditing={() => this._handleSubmitEditing('username')}
             value={this.state.username}
             blurOnSubmit={false}
             keyboardType="default"
@@ -102,6 +107,8 @@ export default class SignUpScreen extends React.Component {
             returnKeyType="next"
           />
           <Form.Input
+            ref={view => { this._emailInput = view; }}
+            onSubmitEditing={() => this._handleSubmitEditing('email')}
             onChangeText={this._updateValue.bind(this, 'email')}
             value={this.state.email}
             autoCapitalize="none"
@@ -112,6 +119,8 @@ export default class SignUpScreen extends React.Component {
             returnKeyType="next"
           />
           <Form.Input
+            ref={view => { this._passwordInput = view; }}
+            onSubmitEditing={() => this._handleSubmitEditing('password')}
             onChangeText={this._updateValue.bind(this, 'password')}
             value={this.state.password}
             label="Password"
@@ -119,6 +128,8 @@ export default class SignUpScreen extends React.Component {
             secureTextEntry
           />
           <Form.Input
+            ref={view => { this._passwordConfirmationInput = view; }}
+            onSubmitEditing={() => this._handleSubmitEditing('passwordConfirmation')}
             onChangeText={this._updateValue.bind(this, 'passwordConfirmation')}
             value={this.state.passwordConfirmation}
             hideBottomBorder
@@ -136,6 +147,29 @@ export default class SignUpScreen extends React.Component {
         </PrimaryButton>
       </ScrollView>
     );
+  }
+
+  _handleSubmitEditing = (field) => {
+    switch(field) {
+      case 'firstName':
+        this._lastNameInput.focus();
+        break;
+      case 'lastName':
+        this._usernameInput.focus();
+        break;
+      case 'username':
+        this._emailInput.focus();
+        break;
+      case 'email':
+        this._passwordInput.focus();
+        break;
+      case 'password':
+        this._passwordConfirmationInput.focus();
+        break;
+      case 'passwordConfirmation':
+        this._handleSubmit();
+        break;
+    }
   }
 
   _updateValue = (key, value) => {
