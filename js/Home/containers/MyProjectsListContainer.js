@@ -12,6 +12,7 @@ const MyAppsQuery = gql`
         apps(limit: $limit, offset: $offset) {
           id
           fullName
+          name
           iconUrl
           packageName
           description

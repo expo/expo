@@ -19,21 +19,26 @@ import Colors from '../constants/Colors';
 import defaultRouteConfig from './defaultRouteConfig';
 
 export default class RootNavigation extends React.Component {
+  _currentTab = "projects";
+
   render() {
     return (
       <TabNavigation
         tabBarColor={Colors.tabBar}
         tabBarStyle={{borderTopColor: '#f2f2f2'}}
         tabBarHeight={50}
+        onTabPress={this._handleTabPress}
         id="main"
         navigatorUID="main"
-        initialTab="projects">
+        initialTab={this._currentTab}>
         <TabNavigationItem
           id="projects"
           renderIcon={isSelected => this._renderIcon(Entypo, 'grid', 24, 'Projects', isSelected)}>
           <StackNavigation
-            defaultRouteConfig={defaultRouteConfig}
+            id="projects"
+            navigatorUID="projects"
             initialRoute="projects"
+            defaultRouteConfig={defaultRouteConfig}
           />
         </TabNavigationItem>
 
@@ -41,8 +46,10 @@ export default class RootNavigation extends React.Component {
           id="explore"
           renderIcon={isSelected => this._renderIcon(Ionicons, 'ios-search', 24, 'Explore', isSelected)}>
           <StackNavigation
-            defaultRouteConfig={defaultRouteConfig}
+            id="explore"
+            navigatorUID="explore"
             initialRoute="explore"
+            defaultRouteConfig={defaultRouteConfig}
           />
         </TabNavigationItem>
 
@@ -50,11 +57,27 @@ export default class RootNavigation extends React.Component {
           id="profile"
           renderIcon={isSelected => this._renderIcon(Ionicons, 'ios-person', 26, 'Profile', isSelected)}>
           <StackNavigation
+            id="profile"
+            navigatorUID="profile"
+            initialRoute="profile"
             defaultRouteConfig={defaultRouteConfig}
-            initialRoute="profile" />
+          />
         </TabNavigationItem>
       </TabNavigation>
     );
+  }
+
+  _handleTabPress = (tabKey) => {
+    if (this._currentTab !== tabKey) {
+      this._currentTab = tabKey;
+      return;
+    }
+
+    const navigatorForTab = this.props.navigation.getNavigator(tabKey);
+
+    if (navigatorForTab.getCurrentIndex() > 0) {
+      navigatorForTab.pop();
+    }
   }
 
   _renderIcon(IconComponent, iconName, iconSize, title, isSelected) {
