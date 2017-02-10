@@ -1,6 +1,8 @@
 import React from 'react';
 import {
+  ActivityIndicator,
   ListView,
+  StyleSheet,
   Text,
   View,
 } from 'react-native';
@@ -10,6 +12,11 @@ import Layout from '../constants/Layout';
 import ProfileCard from '../components/ProfileCard';
 import ProjectCard from '../components/ProjectCard';
 import SharedStyles from '../constants/SharedStyles';
+
+const SectionIds = [
+  'UserSearchResult',
+  'AppSearchResult',
+];
 
 export default class SearchResults extends React.Component {
   state = {
@@ -37,7 +44,7 @@ export default class SearchResults extends React.Component {
 
       let newDataSource = dataSource.cloneWithRowsAndSections(
         results,
-        ['UserSearchResult', 'AppSearchResult'],
+        SectionIds,
       );
 
       this.setState({ dataSource: newDataSource });
@@ -48,9 +55,19 @@ export default class SearchResults extends React.Component {
     return (
       <View style={{flex: 1}}>
         {this._renderContent()}
-        {false && this.props.data.loading && <Text>Loading!</Text>}
+        {this._maybeRenderLoading()}
       </View>
     );
+  }
+
+  _maybeRenderLoading = () => {
+    if (this.props.data.loading) {
+      return (
+        <View style={[StyleSheet.absoluteFill, {padding: 30, alignItems: 'center'}]} pointerEvents="none">
+          <ActivityIndicator />
+        </View>
+      );
+    }
   }
 
   _renderContent = () => {
@@ -78,11 +95,15 @@ export default class SearchResults extends React.Component {
   }
 
   _isLastAppSearchResult = (index) => {
-    return parseInt(index, 0) + 1 === this.state.dataSource.getSectionLengths()[1];
+    let appSectionIdx = SectionIds.indexOf('AppSearchResult');
+    let appSectionLength = this.state.dataSource.getSectionLengths()[appSectionIdx];
+    return parseInt(index, 0) + 1 === appSectionLength;
   }
 
   _isLastUserSearchResult = (index) => {
-    return parseInt(index, 0) + 1 === this.state.dataSource.getSectionLengths()[0];
+    let userSectionIdx = SectionIds.indexOf('UserSearchResult');
+    let userSectionLength = this.state.dataSource.getSectionLengths()[userSectionIdx];
+    return parseInt(index, 0) + 1 === userSectionLength;
   }
 
   _renderRow = (rowData, sectionId, rowId) => {
@@ -91,7 +112,7 @@ export default class SearchResults extends React.Component {
 
       return (
         <ProjectCard
-          style={{marginBottom: this._isLastAppSearchResult(rowId) ? 5 : 15}}
+          style={{marginBottom: this._isLastAppSearchResult(rowId) ? 0 : 15}}
           isLikedByMe={app.isLikedByMe}
           likeCount={app.likeCount}
           id={app.id}

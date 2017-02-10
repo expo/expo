@@ -38,7 +38,6 @@ const SearchQuery = gql`
   }
 `
 
-// data.searchUsersandApps
 export default graphql(SearchQuery, {
   props: (props) => {
     let { data } = props;
@@ -50,7 +49,10 @@ export default graphql(SearchQuery, {
       };
     }
 
-    let results = groupBy(data.searchUsersAndApps, (result) => result.__typename);
+    let results = groupBy(
+      data.searchUsersAndApps,
+      (result) => result.__typename
+    );
 
     return {
       ...props,
@@ -63,7 +65,7 @@ export default graphql(SearchQuery, {
   options: (props) => ({
     variables: {
       offset: 0,
-      limit: 10,
+      limit: props.query.length < 2 ? 0 : 10,
       query: props.query,
     },
     returnPartialData: true,

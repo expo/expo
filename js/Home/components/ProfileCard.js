@@ -60,7 +60,7 @@ export default class ProfileCard extends React.Component {
                     <View style={styles.bullet} />
                   )}
                   <Text
-                    onPress={this._handlePressProjects}
+                    onPress={appCount > 0 ? this._handlePressProjects : null}
                     style={styles.profileExtraInfoText}>
                     {appCount} {appCount === 1 ? 'project' : 'projects'}
                   </Text>
@@ -93,10 +93,12 @@ export default class ProfileCard extends React.Component {
   }
 
   _handlePressProjects = () => {
-    // go to project list
+    this.props.navigator.push('projectsForUser', {
+      username: this.props.username,
+    });
   }
 
-  _handlePressUsername = () => {
+  _handlePressProfile = () => {
     if (this.props.onPressUsername) {
       this.props.onPressUsername(this.props.username);
     } else {

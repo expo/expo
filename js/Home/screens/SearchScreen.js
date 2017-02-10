@@ -9,6 +9,10 @@ import {
   NavigationStyles,
 } from '@exponent/ex-navigation';
 
+import {
+  debounce,
+} from 'lodash';
+
 import SearchBar from '../components/SearchBar';
 import SearchResultsContainer from '../containers/SearchResultsContainer';
 
@@ -34,9 +38,14 @@ export default class SearchScreen extends React.Component {
 
   componentWillMount() {
     const emitter = this.props.route.getEventEmitter();
-    this._searchSubscription = emitter.addListener('change', (text) => {
-      this.setState({text});
-    });
+    this._searchSubscription = emitter.addListener(
+      'change',
+      debounce(this._handleChangeQuery, 350)
+    );
+  }
+
+  _handleChangeQuery = (text) => {
+    this.setState({text});
   }
 
   componentWillUnmount() {

@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     top: 0,
-    bottom: 0,
+    paddingTop: 13,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',

@@ -35,7 +35,7 @@ export default class HomeScreen extends React.Component {
     let { history } = data.browser;
 
     return {
-      recentHistory: history.take(5),
+      recentHistory: history.take(6),
       allHistory: history,
     }
   }
