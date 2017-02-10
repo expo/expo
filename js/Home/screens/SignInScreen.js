@@ -77,13 +77,16 @@ export default class SignInScreen extends React.Component {
             keyboardType="email-address"
             label="E-mail or username"
             onChangeText={this._handleChangeEmail}
+            onSubmitEditing={this._handleSubmitEmail}
             returnKeyType="next"
             value={this.state.email}
           />
           <Form.Input
             hideBottomBorder
             label="Password"
+            ref={view => { this._passwordInput = view; }}
             onChangeText={this._handleChangePassword}
+            onSubmitEditing={this._handleSubmitPassword}
             returnKeyType="done"
             secureTextEntry
             value={this.state.password}
@@ -98,6 +101,14 @@ export default class SignInScreen extends React.Component {
         </PrimaryButton>
       </ScrollView>
     );
+  }
+
+  _handleSubmitEmail = () => {
+    this._passwordInput.focus();
+  }
+
+  _handleSubmitPassword = () => {
+    this._handleSubmit();
   }
 
   _handleChangeEmail = (email) => {

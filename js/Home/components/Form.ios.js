@@ -31,6 +31,14 @@ export class FormInput extends React.Component {
     }
   }
 
+  focus() {
+    this._input.focus();
+  }
+
+  blur() {
+    this._input.blur();
+  }
+
   _handleLayoutLabel = (e) => {
     let width = e.nativeEvent.layout.width;
     this.setState({labelWidth: width});
