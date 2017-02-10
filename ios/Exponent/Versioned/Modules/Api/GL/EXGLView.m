@@ -75,7 +75,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
         }
       }];
     } else {
-      RCTLog(@"EXGL: Can only run on JavaScriptCore!");
+      RCTLog(@"EXGL: Can only run on JavaScriptCore! Do you have 'Remote Debugging' enabled in your app's Developer Menu (https://facebook.github.io/react-native/docs/debugging.html)? EXGL is not supported while using Remote Debugging, you will need to disable it to use EXGL.");
     }
   }
   return self;
