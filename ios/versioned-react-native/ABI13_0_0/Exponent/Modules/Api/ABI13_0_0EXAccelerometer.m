@@ -14,24 +14,24 @@
 
 @implementation ABI13_0_0EXAccelerometer
 
+@synthesize bridge = _bridge;
+
 ABI13_0_0RCT_EXPORT_MODULE(ExponentAccelerometer);
 
-- (instancetype)init
+- (void)setBridge:(ABI13_0_0RCTBridge *)bridge
 {
-  if (self = [super init]) {
-    _paused = NO;
+  _bridge = bridge;
+  _paused = NO;
   
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(bridgeDidForeground:)
-                                                 name:@"EXKernelBridgeDidForegroundNotification"
-                                               object:self.bridge];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(bridgeDidBackground:)
-                                                 name:@"EXKernelBridgeDidBackgroundNotification"
-                                               object:self.bridge];
-  }
-  return self;
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(bridgeDidForeground:)
+                                               name:@"EXKernelBridgeDidForegroundNotification"
+                                             object:self.bridge];
+  
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(bridgeDidBackground:)
+                                               name:@"EXKernelBridgeDidBackgroundNotification"
+                                             object:self.bridge];
 }
 
 - (CMMotionManager *)manager
