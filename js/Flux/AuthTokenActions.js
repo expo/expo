@@ -7,6 +7,7 @@
 
 import { action } from 'Flux';
 import LocalStorage from '../Storage/LocalStorage';
+import ApolloClient from '../Api/ApolloClient';
 
 let AuthTokenActions = {
   @action
@@ -24,6 +25,7 @@ let AuthTokenActions = {
   @action
   signOut() {
     LocalStorage.removeAuthTokensAsync();
+    ApolloClient.resetStore();
     return null;
   },
 };
