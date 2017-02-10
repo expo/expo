@@ -32,7 +32,7 @@ export default class ProjectCard extends React.Component {
     } = this.props;
 
     return (
-      <View style={styles.spacerContainer}>
+      <View style={[styles.spacerContainer, this.props.style]}>
         <TouchableNativeFeedbackSafe
           onPress={this._handlePressProject}
           fallback={TouchableHighlight}
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
   projectNameText: {
     color: Colors.blackText,
     fontSize: 15,
-    marginRight: 70,
+    marginRight: 170,
     marginBottom: 2,
     ...Platform.select({
       ios: {

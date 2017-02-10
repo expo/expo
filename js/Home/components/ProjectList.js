@@ -2,18 +2,31 @@ import React from 'react';
 import {
   ActivityIndicator,
   ListView,
+  StyleSheet,
   Text,
   View,
 } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
+import { withNavigation } from '@exponent/ex-navigation';
 
+import Colors from '../constants/Colors';
+import ProjectCard from './ProjectCard';
 import SmallProjectCard from './SmallProjectCard';
 
+@withNavigation
 export default class ProjectList extends React.Component {
   state = {
     dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2 }),
     isRefetching: false,
     isLoadingMore: false,
+  }
+
+  componentDidMount() {
+    this._isMounted = true;
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   componentWillReceiveProps(nextProps) {
@@ -54,7 +67,7 @@ export default class ProjectList extends React.Component {
       <ListView
         dataSource={this.state.dataSource}
         renderRow={this._renderRow}
-        style={{flex: 1}}
+        style={[{flex: 1}, !this.props.belongsToCurrentUser && styles.largeProjectCardList]}
         renderScrollComponent={(props) => <InfiniteScrollView {...props} />}
         canLoadMore={this._canLoadMore()}
         onLoadMoreAsync={this._handleLoadMoreAsync}
@@ -73,7 +86,7 @@ export default class ProjectList extends React.Component {
     } catch(e) {
       console.log({e});
     } finally {
-      this.setState({isLoadingMore: false});
+      this._isMounted && this.setState({isLoadingMore: false});
     }
   }
 
@@ -82,7 +95,7 @@ export default class ProjectList extends React.Component {
   }
 
   _renderRow = (app, i) => {
-    if (this.props.data.belongsToCurrentUser) {
+    if (this.props.belongsToCurrentUser) {
       return (
         <SmallProjectCard
           key={i}
@@ -93,7 +106,36 @@ export default class ProjectList extends React.Component {
         />
       );
     } else {
-
+      return (
+        <ProjectCard
+          key={i}
+          style={styles.largeProjectCard}
+          isLikedByMe={app.isLikedByMe}
+          likeCount={app.likeCount}
+          id={app.id}
+          iconUrl={app.iconUrl}
+          projectName={app.name}
+          projectUrl={app.fullName}
+          username={app.packageUsername}
+          description={app.description}
+          onPressUsername={this._handlePressUsername}
+        />
+      );
     }
   }
+
+  _handlePressUsername = (username) => {
+    this.props.navigator.push('profile', { username });
+  }
 }
+
+const styles = StyleSheet.create({
+  largeProjectCardList: {
+    paddingTop: 10,
+    paddingBottom: 10,
+    backgroundColor: Colors.greyBackground,
+  },
+  largeProjectCard: {
+    marginBottom: 10,
+  },
+});

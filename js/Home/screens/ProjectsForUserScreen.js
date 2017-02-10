@@ -15,9 +15,9 @@ export default class ProjectsForUserScreen extends React.Component {
 
   render() {
     if (this.props.belongsToCurrentUser) {
-      return <MyProjectsListContainer />
+      return <MyProjectsListContainer belongsToCurrentUser />
     } else {
-      return <View />
+      return <OtherUserProjectListContainer username={this.props.username} />
     }
   }
 }

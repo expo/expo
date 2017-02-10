@@ -35,7 +35,6 @@ export default graphql(MyAppsQuery, {
     return {
       ...props,
       data: {
-        belongsToCurrentUser: true,
         ...data,
         appCount,
         apps,
@@ -50,7 +49,7 @@ export default graphql(MyAppsQuery, {
               return previousResult;
             }
 
-            let newData = Object.assign({}, previousData, {
+            return Object.assign({}, previousData, {
               viewer: {
                 me: {
                   ...fetchMoreResult.data.viewer.me,
@@ -61,7 +60,6 @@ export default graphql(MyAppsQuery, {
                 }
               },
             });
-            return newData;
           },
         });
       }
