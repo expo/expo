@@ -23,7 +23,7 @@ export default Flux.createReducer(new AuthTokenState(), {
   },
 
   [AuthTokenActionTypes.updateIdToken](state, action) {
-    return state.set('idToken', action.idToken);
+    return state.set('idToken', action.payload.idToken);
   },
 
   [AuthTokenActionTypes.signOut](state, action) {

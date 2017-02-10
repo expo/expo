@@ -60,6 +60,7 @@ async function saveIsNuxFinishedAsync(isFinished) {
 
 async function updateIdTokenAsync(idToken) {
   let tokens = await getAuthTokensAsync();
+
   if (!tokens) {
     await clearAllAsync();
     throw new Error('Missing cached authentication tokens');
