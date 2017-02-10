@@ -75,7 +75,7 @@ export default class SignInScreen extends React.Component {
             autofocus
             blurOnSubmit={false}
             keyboardType="email-address"
-            label="E-mail address"
+            label="E-mail or username"
             onChangeText={this._handleChangeEmail}
             returnKeyType="next"
             value={this.state.email}
@@ -119,6 +119,7 @@ export default class SignInScreen extends React.Component {
 
     try {
       let result = await Auth0Api.signInAsync(email, password);
+
       if (this._isMounted) {
         if (result.error) {
           this._handleError(result);
