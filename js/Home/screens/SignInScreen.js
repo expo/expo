@@ -20,6 +20,8 @@ import Form from '../components/Form';
 import PrimaryButton from '../components/PrimaryButton';
 import Auth0Api from '../../Api/Auth0Api';
 
+const DEBUG = false;
+
 @connect(data => SignInScreen.getDataProps(data))
 export default class SignInScreen extends React.Component {
   static route = {
@@ -34,9 +36,13 @@ export default class SignInScreen extends React.Component {
     };
   }
 
-  state = {
+  state = DEBUG ? {
     email: 'testing@getexponent.com',
     password: 'pass123',
+    isLoading: false,
+  } : {
+    email: '',
+    password: '',
     isLoading: false,
   }
 

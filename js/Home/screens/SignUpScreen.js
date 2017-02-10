@@ -19,6 +19,8 @@ import Colors from '../constants/Colors';
 import Form from '../components/Form';
 import PrimaryButton from '../components/PrimaryButton';
 
+const DEBUG = false;
+
 @connect(data => SignUpScreen.getDataProps(data))
 export default class SignUpScreen extends React.Component {
   static route = {
@@ -33,13 +35,21 @@ export default class SignUpScreen extends React.Component {
     };
   }
 
-  state = {
+  state = DEBUG ? {
     firstName: 'Brent',
     lastName: 'Vatne',
     username: `brentvatne${(new Date() - 0)}`,
     email: `brentvatne+${(new Date() - 0)}@gmail.com`,
     password: 'pass123!!!1',
     passwordConfirmation: 'pass123!!!1',
+    isLoading: false,
+  } : {
+    firstName: '',
+    lastName: '',
+    username: '',
+    email: '',
+    password: '',
+    passwordConfirmation: '',
     isLoading: false,
   }
 
