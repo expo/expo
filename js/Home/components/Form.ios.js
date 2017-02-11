@@ -105,8 +105,9 @@ const styles = StyleSheet.create({
   inputContainer: {
     height: 50,
     marginHorizontal: 10,
-    borderBottomWidth: 0.5,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     flexDirection: 'row',
+    backgroundColor: '#fff',
     borderColor: 'rgba(46, 59, 76, 0.10)',
   },
   inputContainerWithoutBorderBottom: {
