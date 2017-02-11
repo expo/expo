@@ -3,17 +3,19 @@
 package host.exp.exponent.utils;
 
 import android.os.Handler;
+import android.support.test.uiautomator.Configurator;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiSelector;
-
-import java.util.HashMap;
-import java.util.Map;
+import android.util.Log;
 
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.test.TestActionEvent;
+import host.exp.exponent.test.TestResolvePromiseEvent;
 
 public class TestNativeModuleServer {
+
+  private static final String TAG = TestNativeModuleServer.class.getSimpleName();
 
   private static TestNativeModuleServer sInstance;
   private UiDevice mUiDevice;
@@ -48,9 +50,18 @@ public class TestNativeModuleServer {
   }
 
   private void performAction(final TestActionEvent event) {
-    UiSelector selector = getSelectorForObject(event);
-    UiObject object = mUiDevice.findObject(selector);
-    runActionOnObject(event, object);
+    synchronized (this) {
+      try {
+        Configurator.getInstance().setWaitForSelectorTimeout(event.timeout);
+        UiSelector selector = getSelectorForObject(event);
+        UiObject object = mUiDevice.findObject(selector);
+        runActionOnObject(event, object);
+      } catch (Throwable e) {
+        Log.d(TAG, "Error in performAction: " + e.toString());
+      } finally {
+        EventBus.getDefault().post(new TestResolvePromiseEvent(event.id));
+      }
+    }
   }
 
   private UiSelector getSelectorForObject(TestActionEvent event) {

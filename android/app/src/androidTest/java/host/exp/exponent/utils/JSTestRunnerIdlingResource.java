@@ -6,6 +6,7 @@ import android.support.test.espresso.IdlingResource;
 
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.test.TestCompletedEvent;
+import host.exp.exponent.test.TestResolvePromiseEvent;
 
 public class JSTestRunnerIdlingResource implements IdlingResource {
 
@@ -28,6 +29,8 @@ public class JSTestRunnerIdlingResource implements IdlingResource {
     if (mResourceCallback != null) {
       mResourceCallback.onTransitionToIdle();
     }
+
+    EventBus.getDefault().post(new TestResolvePromiseEvent(event.id));
   }
 
   @Override

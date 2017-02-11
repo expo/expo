@@ -39,11 +39,18 @@ try {
 const macrosFuncs = {
 
   TEST_APP_URI: async () => {
-    if (!process.env.UNIVERSE_BUILD_ID) {
+    if (process.env.UNIVERSE_BUILD_ID) {
+      return `exp://exp.host/@exponent_ci_bot/test-suite-${process.env.UNIVERSE_BUILD_ID}`;
+    } else if (isInUniverse) {
+      try {
+        let testSuitePath = path.join(__dirname, '..', '..', 'apps', 'test-suite');
+        return await UrlUtils.constructManifestUrlAsync(testSuitePath);
+      } catch (e) {
+        return '';
+      }
+    } else {
       return '';
     }
-
-    return `exp://exp.host/@exponent_ci_bot/test-suite-${process.env.UNIVERSE_BUILD_ID}`;
   },
 
   BUILD_MACHINE_LOCAL_HOSTNAME: async () => {

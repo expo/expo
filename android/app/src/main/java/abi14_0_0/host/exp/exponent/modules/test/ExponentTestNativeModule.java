@@ -23,29 +23,4 @@ public class ExponentTestNativeModule extends ReactContextBaseJavaModule {
     return "ExponentTest";
   }
 
-  @ReactMethod
-  public void action(final ReadableMap options) {
-    String selectorType = options.getString("selectorType");
-    String selectorValue = null;
-    if (options.hasKey("selectorValue")) {
-      selectorValue = options.getString("selectorValue");
-    }
-
-    String actionType = options.getString("actionType");
-    String actionValue = null;
-    if (options.hasKey("actionValue")) {
-      actionValue = options.getString("actionValue");
-    }
-
-    int delay = 0;
-    if (options.hasKey("delay")) {
-      delay = options.getInt("delay");
-    }
-    EventBus.getDefault().post(new TestActionEvent(selectorType, selectorValue, actionType, actionValue, delay));
-  }
-
-  @ReactMethod
-  public void completed(final String stringifiedJson) {
-    EventBus.getDefault().post(new TestCompletedEvent(stringifiedJson));
-  }
 }

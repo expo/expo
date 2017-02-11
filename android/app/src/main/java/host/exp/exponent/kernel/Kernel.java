@@ -500,10 +500,10 @@ public class Kernel implements KernelInterface {
 
     // TODO: shouldShowNux used to be set to `!manifestUrl.equals(Constants.INITIAL_URL);`.
     // This caused nux to show up in RNPlay. What's the right behavior here?
-    boolean shouldShowNux = !Constants.isShellApp();
+    boolean shouldShowNux = !Constants.isShellApp() && !KernelConfig.HIDE_NUX;
     boolean loadNux = shouldShowNux && !isFirstRunFinished;
     JSONObject opts = new JSONObject();
-    opts.put("loadNux", loadNux);
+    opts.put(KernelConstants.OPTION_LOAD_NUX_KEY, loadNux);
 
     if (existingTask != null) {
       try {
