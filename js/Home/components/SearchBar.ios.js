@@ -1,11 +1,11 @@
 import React from 'react';
 import {
   LayoutAnimation,
-  StyleSheet,
-  TextInput,
   Linking,
   NativeModules,
+  StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
@@ -17,13 +17,12 @@ import {
   withNavigation,
 } from '@exponent/ex-navigation';
 
-import ExUrls from 'ExUrls';
 import Layout from '../constants/Layout';
+
+const { ExponentKernel } = NativeModules;
 
 const SearchContainerHorizontalMargin = 10;
 const SearchContainerWidth = Layout.window.width - SearchContainerHorizontalMargin * 2;
-
-let { ExponentKernel } = NativeModules;
 
 const SearchIcon = () => (
   <View style={styles.searchIconContainer}>
@@ -109,11 +108,12 @@ export default class SearchBar extends React.Component {
         <View style={[styles.searchContainer, {width: inputWidth}]}>
           <TextInput
             ref={view => { this._textInput = view; }}
+            clearButtonMode="while-editing"
             onChangeText={this._handleChangeText}
             value={this.state.text}
             autoCapitalize="none"
             autoCorrect={false}
-            returnKeyType="go"
+            returnKeyType="search"
             placeholder="Find a project or enter a URL..."
             placeholderStyle={styles.searchInputPlaceholderText}
             onSubmitEditing={this._handleSubmit}
@@ -145,17 +145,11 @@ export default class SearchBar extends React.Component {
   }
 
   _handleSubmit = () => {
-    let url = this.state.text;
-    if (ExponentKernel && (url.toLowerCase() === 'dev menu' || url.toLowerCase() === 'dm')) {
+    let { text } = this.state;
+    if (ExponentKernel && (text.toLowerCase() === '^dev menu' || text.toLowerCase() === '^dm')) {
       ExponentKernel.addDevMenu();
     } else {
-      url = ExUrls.normalizeUrl(url);
-      if (ExponentKernel) {
-        // don't validate that we can open the url, just go ahead and try it.
-        ExponentKernel.openURL(url);
-      } else {
-        Linking.openURL(url);
-      }
+      this._textInput.blur();
     }
   }
 

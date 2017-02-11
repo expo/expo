@@ -42,13 +42,6 @@ export default graphql(SearchQuery, {
   props: (props) => {
     let { data } = props;
 
-    if (!data.searchUsersAndApps) {
-      return {
-        ...props,
-        ...data,
-      };
-    }
-
     let results = groupBy(
       data.searchUsersAndApps,
       (result) => result.__typename
