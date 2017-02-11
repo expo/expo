@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   Image,
+  Keyboard,
   Linking,
   Platform,
   StyleSheet,
@@ -104,11 +105,17 @@ export default class ProjectCard extends React.Component {
   }
 
   _handlePressProject = () => {
+    // note(brentvatne): navigation should do this automatically
+    Keyboard.dismiss();
+
     let url = ExUrls.normalizeUrl(this.props.projectUrl);
     Linking.openURL(url);
   }
 
   _handlePressUsername = () => {
+    // note(brentvatne): navigation should do this automatically
+    Keyboard.dismiss();
+
     if (this.props.onPressUsername) {
       this.props.onPressUsername(this.props.username);
     } else {

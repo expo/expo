@@ -2,9 +2,10 @@ import React from 'react';
 import {
   LayoutAnimation,
   Linking,
+  NativeModules,
   StyleSheet,
-  TextInput,
   Text,
+  TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
@@ -20,6 +21,8 @@ import {
 import Colors from '../constants/Colors';
 import ExUrls from 'ExUrls';
 import Layout from '../constants/Layout';
+
+const { ExponentKernel } = NativeModules;
 
 @withNavigation
 export default class SearchBar extends React.Component {
@@ -58,8 +61,12 @@ export default class SearchBar extends React.Component {
   }
 
   _handleSubmit = () => {
-    let url = ExUrls.normalizeUrl(this.state.text);
-    Linking.openURL(url);
+    let { text } = this.state;
+    if (ExponentKernel && (text.toLowerCase() === '^dev menu' || text.toLowerCase() === '^dm')) {
+      ExponentKernel.addDevMenu();
+    } else {
+      this._textInput.blur();
+    }
   }
 }
 
