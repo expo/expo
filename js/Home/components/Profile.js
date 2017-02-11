@@ -38,7 +38,7 @@ const NETWORK_ERROR_TEXT = dedent(`
 
 const SERVER_ERROR_TEXT = dedent(`
   An unexpected server error has occurred.
-  Sorry about this. We will resolve the issue as soon as quickly as possible.
+  Sorry about this. We will resolve the issue as soon as possible.
 `);
 
 export default class Profile extends React.Component {
