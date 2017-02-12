@@ -4,7 +4,7 @@ import { graphql } from 'react-apollo';
 import Profile from '../components/Profile';
 
 const MyProfileQuery = gql`
-  {
+  query MyProfile {
     viewer {
       me {
         id
@@ -31,10 +31,10 @@ const MyProfileQuery = gql`
       }
     }
   }
-`
+`;
 
 export default graphql(MyProfileQuery, {
-  props: (props) => {
+  props: props => {
     let { data } = props;
     let user;
     if (data.viewer && data.viewer.me) {
