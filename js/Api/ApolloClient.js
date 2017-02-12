@@ -53,7 +53,7 @@ export default new ApolloClient({
     return null;
   },
   networkInterface: createAuthAwareNetworkInterface({
-    uri: 'https://exp.host/--/graphql',
+    uri: 'https://getexponent.com/--/graphql',
     getIdToken,
     setIdToken,
     getRefreshToken,
