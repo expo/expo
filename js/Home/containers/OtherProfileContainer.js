@@ -3,7 +3,7 @@ import { graphql } from 'react-apollo';
 
 import Profile from '../components/Profile';
 
-const otherProfileQuery = gql`
+const UserProfileQuery = gql`
   query findUserByUsername($username: String!) {
     user: userByUsername(username: $username) {
       id
@@ -15,6 +15,7 @@ const otherProfileQuery = gql`
       isLegacy
       appCount
       apps(limit: 15, offset: 0) {
+        id
         fullName
         name
         iconUrl
@@ -22,13 +23,14 @@ const otherProfileQuery = gql`
         packageUsername
         description
         lastPublishedTime
+        isLikedByMe
         likeCount
       }
     }
   }
 `;
 
-export default graphql(otherProfileQuery, {
+export default graphql(UserProfileQuery, {
   options: (props) => ({
     variables: {
       username: props.username.replace('@',''),

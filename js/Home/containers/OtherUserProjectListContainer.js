@@ -4,11 +4,11 @@ import { graphql } from 'react-apollo';
 import ProjectList from '../components/ProjectList';
 
 const UsersAppsQuery = gql`
-  query UsersApps($username: String!, $limit:Int!, $offset: Int!) {
-    usersApps: userByUsername(username:$username) {
+  query UsersApps($username: String!, $limit: Int!, $offset: Int!) {
+    usersApps: userByUsername(username: $username) {
       id
       appCount
-      apps(limit:$limit, offset:$offset) {
+      apps(limit: $limit, offset: $offset) {
         id
         fullName
         name

@@ -3,7 +3,7 @@ import { graphql } from 'react-apollo';
 
 import Profile from '../components/Profile';
 
-const ownProfileQuery = gql`
+const MyProfileQuery = gql`
   {
     viewer {
       me {
@@ -33,7 +33,7 @@ const ownProfileQuery = gql`
   }
 `
 
-export default graphql(ownProfileQuery, {
+export default graphql(MyProfileQuery, {
   props: (props) => {
     let { data } = props;
     let user;
