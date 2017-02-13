@@ -45,7 +45,11 @@ static NSString* kPublicKeyTag = @"exp.host.publickey";
       NSData *signatureData = [[NSData alloc] initWithBase64EncodedString:signature options:0];
       NSData *signedData = [data dataUsingEncoding:NSUTF8StringEncoding];
       
-      BOOL isValid = [self verifyRSASHA256SignedData:signedData signatureData:signatureData publicKey:publicKey];
+      BOOL isValid = NO;
+      if (publicKey) {
+        isValid = [self verifyRSASHA256SignedData:signedData signatureData:signatureData publicKey:publicKey];
+        CFRelease(publicKey);
+      }
       if (!isValid && useCache) {
         [self fetchAndVerifySignatureWithPublicKeyUrl:publicKeyUrl
                                                  data:data
@@ -63,6 +67,9 @@ static NSString* kPublicKeyTag = @"exp.host.publickey";
 }
 
 /**
+ *  Returns a CFRef to a SecKey given the raw pem data.
+ *  The CFRef should be CFReleased when you're finished.
+ *
  *  Here is the Apple doc for this black hole:
  *  https://developer.apple.com/library/prerelease/content/documentation/Security/Conceptual/CertKeyTrustProgGuide/iPhone_Tasks/iPhone_Tasks.html#//apple_ref/doc/uid/TP40001358-CH208-SW13
  */
