@@ -171,7 +171,12 @@ export default class SearchResults extends React.Component {
     Keyboard.dismiss();
     let url = ExUrls.normalizeUrl(this.props.query);
     if (ExponentKernel && ExponentKernel.openURL) {
-      // don't validate that we can open the url, just go ahead and try it.
+      // ExponentKernel.openURL exists on iOS, and it's the same as Linking.openURL
+      // except it will never validate whether Exponent can open this url.
+      // this addresses cases where, e.g., someone types in a http://localhost url directly into
+      // the URL bar. we know they implicitly expect Exponent to open this, even though
+      // it won't validate as an Exponent url.
+      // By contrast, Linking.openURL would pass such a URL on to the system url handler.
       ExponentKernel.openURL(url);
     } else {
       Linking.openURL(url);
