@@ -170,7 +170,7 @@ export default class SearchResults extends React.Component {
   _handleOpenUrl = () => {
     Keyboard.dismiss();
     let url = ExUrls.normalizeUrl(this.props.query);
-    if (ExponentKernel) {
+    if (ExponentKernel && ExponentKernel.openURL) {
       // don't validate that we can open the url, just go ahead and try it.
       ExponentKernel.openURL(url);
     } else {
