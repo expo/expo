@@ -11,6 +11,7 @@ import {
 import { withNavigation } from '@exponent/ex-navigation';
 
 import Colors from '../constants/Colors';
+import Layout from '../constants/Layout';
 import ExUrls from 'ExUrls';
 import FadeIn from '@exponent/react-native-fade-in-image';
 import TouchableNativeFeedbackSafe from '@exponent/react-native-touchable-native-feedback-safe';
@@ -28,7 +29,7 @@ export default class SmallProjectCard extends React.Component {
       iconUrl,
     } = this.props;
 
-    const renderLikes = typeof likeCount === 'number' && likeCount > 0;
+    const renderLikes = typeof likeCount === 'number';
 
     return (
       <TouchableNativeFeedbackSafe
@@ -49,18 +50,22 @@ export default class SmallProjectCard extends React.Component {
           <View style={styles.projectExtraInfoContainer}>
             <Text
               onPress={username ? this._handlePressUsername : null}
-              style={styles.projectExtraInfoText}
+              style={[styles.projectExtraInfoText, renderLikes ? {flexShrink: 4} : {flex: 1}]}
               ellipsizeMode="tail"
               numberOfLines={1}>
               {hideUsername ? slug : username || projectUrl}
             </Text>
-            { renderLikes && <View style={styles.bullet} /> }
-            { renderLikes && (
-              <Text
-                onPress={() => {}}
-                style={styles.projectExtraInfoText}>
-                {likeCount} {likeCount === 1 ? 'like' : 'likes'}
-              </Text> )}
+            {renderLikes && (
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <View style={styles.bullet} />
+                <Text
+                  onPress={() => {}}
+                  numberOfLines={1}
+                  style={styles.projectExtraInfoText}>
+                  {likeCount} {likeCount === 1 ? 'like' : 'likes'}
+                </Text>
+              </View>
+            )}
           </View>
         </View>
       </TouchableNativeFeedbackSafe>
@@ -96,6 +101,13 @@ export default class SmallProjectCard extends React.Component {
   }
 }
 
+// note(brentvatne): we need to know this value so we can set the width of
+// extra info container so it properly sizes the url / likes, otherwise it
+// just overflows. I think this is a yoga bug
+const IconPaddingLeft = 15;
+const IconPaddingRight = 10;
+const IconWidth = 40;
+
 const styles = StyleSheet.create({
   bottomBorder: {
     flexGrow: 1,
@@ -106,16 +118,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: '#fff',
     alignItems: 'center',
+    flex: 1,
   },
   iconContainer: {
-    paddingLeft: 15,
-    paddingRight: 10,
+    paddingLeft: IconPaddingLeft,
+    paddingRight: IconPaddingRight,
     paddingTop: 12,
     paddingBottom: 10,
   },
   icon: {
-    width: 40,
-    height: 40,
+    width: IconWidth,
+    height: IconWidth,
     ...Platform.select({
       android: {
         marginTop: 3,
@@ -146,6 +159,7 @@ const styles = StyleSheet.create({
   projectExtraInfoContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    width: Layout.window.width - IconPaddingRight - IconPaddingLeft - IconWidth - 10,
   },
   projectExtraInfoText: {
     color: Colors.greyText,
