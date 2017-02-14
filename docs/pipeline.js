@@ -2,10 +2,7 @@ import Promise from 'bluebird';
 import git from 'git-promise';
 import spawnAsync from '@exponent/spawn-async';
 
-import CI, {
-  Docker,
-  Log,
-} from 'ci';
+import CI, { Docker, Log } from 'ci';
 
 export default {
   config: {
@@ -14,13 +11,13 @@ export default {
     description: 'Docs Build/Deploy',
     branches: 'master',
   },
-  steps: (branch, tag) => ([
+  steps: (branch, tag) => [
     build(branch, tag),
     CI.waitStep(),
     deploy(branch, tag),
     CI.waitStep(),
     updateSearchIndex(branch, tag),
-  ]),
+  ],
 };
 
 const build = (branch, tag) => ({
@@ -36,12 +33,15 @@ const build = (branch, tag) => ({
 
     const buildScript = `make all`;
 
-    await Docker.runInContainer({
-      image: 'gcr.io/exponentjs/docs-builder:latest',
-      volumes: {
-        [`${CI.getBuildDir()}`]: '/root/docs',
+    await Docker.runInContainer(
+      {
+        image: 'gcr.io/exponentjs/docs-builder:latest',
+        volumes: {
+          [`${CI.getHostBuildDir()}`]: '/root/docs',
+        },
       },
-    }, buildScript);
+      buildScript,
+    );
 
     Log.collapsed(':docker: Building docker image...');
 
@@ -77,19 +77,22 @@ else # create the app deployment
   envsubst < ./deploy/k8s/docs-deployment.template.yml | kubectl create --record -f -
 fi`;
 
-    await Docker.runInContainer({
-      image: 'gcr.io/exponentjs/deployer',
-      env: {
-        DOCKER_IMAGE: imageName,
-        DOCKER_TAG: imageTag,
-        APP_NAME: 'docs',
-        KUBE_NAMESPACE: 'production',
-        COMMIT_HASH: process.env.BUILDKITE_COMMIT,
+    await Docker.runInContainer(
+      {
+        image: 'gcr.io/exponentjs/deployer',
+        env: {
+          DOCKER_IMAGE: imageName,
+          DOCKER_TAG: imageTag,
+          APP_NAME: 'docs',
+          KUBE_NAMESPACE: 'production',
+          COMMIT_HASH: process.env.BUILDKITE_COMMIT,
+        },
+        volumes: {
+          [CI.getHostBuildDir()]: '/workdir',
+        },
       },
-      volumes: {
-        [CI.getBuildDir()]: '/workdir',
-      },
-    }, deployScript);
+      deployScript,
+    );
   },
 });
 
@@ -106,9 +109,7 @@ const updateSearchIndex = (branch, tag) => ({
 
     Log.collapsed(':open_mouth: Updating search index...');
 
-    await spawnAsync('node', [
-      'scripts/update-search-index.js',
-    ], {
+    await spawnAsync('node', ['scripts/update-search-index.js'], {
       stdio: 'inherit',
     });
   },
@@ -122,12 +123,16 @@ async function makeVersionName() {
   const hash = (await git('rev-parse --short=12 HEAD')).trim();
   const today = new Date();
 
-  return `${today.getFullYear()}-` +
-    `${pad(today.getMonth() + 1)}-${pad(today.getDate())}-${hash}`;
+  return `${today.getFullYear()}-` + `${pad(today.getMonth() + 1)}-${pad(today.getDate())}-${hash}`;
 }
 
 function setTimeoutAsync(timeout) {
   return new Promise(resolve => {
-    setTimeout(() => { resolve(); }, timeout);
+    setTimeout(
+      () => {
+        resolve();
+      },
+      timeout,
+    );
   });
 }
