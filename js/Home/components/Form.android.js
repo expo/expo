@@ -69,6 +69,15 @@ export class FormInput extends React.Component {
     );
   }
 
+  focus() {
+    this._input.focus();
+  }
+
+  blur() {
+    this._input.blur();
+  }
+
+
   _handleFocus = () => {
     this.setState({isFocused: true});
   }
