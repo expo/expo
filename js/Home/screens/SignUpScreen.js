@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Keyboard,
   ScrollView,
   StyleSheet,
   Text,
@@ -36,6 +37,7 @@ export default class SignUpScreen extends React.Component {
   }
 
   state = DEBUG ? {
+    keyboardHeight: 0,
     firstName: 'Brent',
     lastName: 'Vatne',
     username: `brentvatne${(new Date() - 0)}`,
@@ -44,6 +46,7 @@ export default class SignUpScreen extends React.Component {
     passwordConfirmation: 'pass123!!!1',
     isLoading: false,
   } : {
+    keyboardHeight: 0,
     firstName: '',
     lastName: '',
     username: '',
@@ -62,17 +65,28 @@ export default class SignUpScreen extends React.Component {
 
   componentDidMount() {
     this._isMounted = true;
+
+    this._keyboardDidShowSubscription = Keyboard.addListener('keyboardDidShow', ({endCoordinates}) => {
+      const keyboardHeight = endCoordinates.height;
+      this.setState({keyboardHeight});
+    });
+
+    this._keyboardDidHideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+      this.setState({keyboardHeight: 0});
+    });
   }
 
   componentWillUnmount() {
     this._isMounted = false;
+
+    this._keyboardDidShowSubscription.remove();
+    this._keyboardDidHideSubscription.remove();
   }
 
   render() {
     return (
       <ScrollView
         contentContainerStyle={{paddingTop: 20}}
-        keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps="always"
         style={styles.container}>
         <Form>
@@ -145,6 +159,8 @@ export default class SignUpScreen extends React.Component {
           isLoading={this.state.isLoading}>
           Sign Up
         </PrimaryButton>
+
+        <View style={{height: this.state.keyboardHeight}} />
       </ScrollView>
     );
   }
