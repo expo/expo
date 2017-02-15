@@ -14,13 +14,11 @@
 
 @implementation ABI13_0_0EXAccelerometer
 
-@synthesize bridge = _bridge;
-
 ABI13_0_0RCT_EXPORT_MODULE(ExponentAccelerometer);
 
 - (void)setBridge:(ABI13_0_0RCTBridge *)bridge
 {
-  _bridge = bridge;
+  [super setBridge:bridge];
   _paused = NO;
   
   [[NSNotificationCenter defaultCenter] addObserver:self

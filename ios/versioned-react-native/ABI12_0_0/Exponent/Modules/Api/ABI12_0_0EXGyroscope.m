@@ -14,13 +14,11 @@
 
 @implementation ABI12_0_0EXGyroscope
 
-@synthesize bridge = _bridge;
-
 ABI12_0_0RCT_EXPORT_MODULE(ExponentGyroscope);
 
 - (void)setBridge:(ABI12_0_0RCTBridge *)bridge
 {
-  _bridge = bridge;
+  [super setBridge:bridge];
   _paused = NO;
   
   [[NSNotificationCenter defaultCenter] addObserver:self
