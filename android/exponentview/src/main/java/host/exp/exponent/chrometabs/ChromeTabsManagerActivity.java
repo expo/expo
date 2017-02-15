@@ -37,7 +37,7 @@ public class ChromeTabsManagerActivity extends Activity {
   }
 
   private static Intent createBaseIntent(Context context) {
-    return new Intent(context, ChromeTabsDismissedEvent.class);
+    return new Intent(context, ChromeTabsManagerActivity.class);
   }
 
   @Override
