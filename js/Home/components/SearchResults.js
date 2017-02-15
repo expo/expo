@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Keyboard,
   ListView,
+  Linking,
   NativeModules,
   Platform,
   ScrollView,
