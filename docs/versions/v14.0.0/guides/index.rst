@@ -26,4 +26,5 @@ Guides
    using-clojurescript
    using-firebase
    using-apollo
+   using-graphcool
    genymotion
