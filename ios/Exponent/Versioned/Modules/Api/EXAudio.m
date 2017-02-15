@@ -8,16 +8,99 @@
 #import "EXAudio.h"
 #import "EXUnversioned.h"
 
+@interface EXAudioPlayerData: NSObject
+
+@property (nonatomic, strong) AVPlayer *player;
+@property (nonatomic, strong) NSNumber *rate;
+@property (nonatomic, strong) id <NSObject> finishObserver;
+@property (nonatomic, strong) RCTResponseSenderBlock finishCallback;
+@property (nonatomic, strong) void (^internalFinishCallback)();
+@property (nonatomic, assign) BOOL isLooping;
+@property (nonatomic, assign) BOOL shouldCorrectPitch;
+
+@end
+
+@implementation EXAudioPlayerData
+
+- (instancetype)initWithPlayer:(AVPlayer *)player
+                   withLooping:(BOOL)isLooping
+           withPitchCorrection:(BOOL)shouldCorrectPitch
+                      withRate:(NSNumber *)rate
+    withInternalFinishCallback:(void (^)())internalFinishCallback
+{
+  _player = player;
+  _finishCallback = nil;
+  _internalFinishCallback = internalFinishCallback; // TODO: @terribleben, I need to keep this around, right?
+  _isLooping = isLooping;
+  _shouldCorrectPitch = shouldCorrectPitch;
+  _rate = rate;
+  
+  __weak __typeof__(self) weakSelf = self;
+  void (^didPlayToEndTimeObserverBlock)(NSNotification *note) = ^(NSNotification *note) {
+    if (weakSelf.isLooping) {
+      [weakSelf.player seekToTime:kCMTimeZero];
+      [weakSelf playPlayerWithRate];
+    } else {
+      weakSelf.internalFinishCallback();
+      RCTResponseSenderBlock callback = weakSelf.finishCallback;
+      weakSelf.finishCallback = nil; // Callback can only be invoked once.
+      if (callback) {
+        callback(@[[weakSelf getStatus]]);
+      }
+    }
+  };
+  
+  _finishObserver = [[NSNotificationCenter defaultCenter] addObserverForName:AVPlayerItemDidPlayToEndTimeNotification
+                                                                      object:[_player currentItem]
+                                                                       queue:nil
+                                                                  usingBlock:didPlayToEndTimeObserverBlock];
+  return self;
+}
+
+- (void)playPlayerWithRate
+{
+  _player.rate = [_rate floatValue];
+}
+
+- (BOOL)isPlayerPlaying
+{
+  if ([_player respondsToSelector:@selector(timeControlStatus)]) {
+    // Only available after iOS 10
+    return [_player timeControlStatus] == AVPlayerTimeControlStatusPlaying;
+  } else {
+    // timeControlStatus is preferable to this when available
+    // See http://stackoverflow.com/questions/5655864/check-play-state-of-avplayer
+    return (_player.rate != 0) && (_player.error == nil);
+  }
+}
+
+- (NSDictionary *)getStatus
+{
+  Float64 duration = CMTimeGetSeconds(_player.currentItem.duration);
+  Float64 seconds = CMTimeGetSeconds([_player currentTime]);
+  // Sometimes [player currentTime] erroneously returns a value out of bounds:
+  seconds = seconds < 0 ? 0 : seconds > duration ? duration : seconds;
+  return @{@"positionMillis": @((int) (seconds * 1000)),
+           @"rate": _rate,
+           @"shouldCorrectPitch": @(_shouldCorrectPitch),
+           @"volume": @(_player.volume),
+           @"isPlaying": @([self isPlayerPlaying]),
+           @"isMuted": @(_player.muted),
+           @"isLooping": @(_isLooping)};
+}
+
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:_finishObserver];
+}
+
+@end
+
 @interface EXAudio ()
 
 @property (nonatomic, assign) int keyCount;
-@property (nonatomic, assign) BOOL enabled;
-@property (nonatomic, assign) BOOL midInterruption;
-@property (nonatomic, assign) BOOL backgrounded;
-@property (nonatomic, strong) NSMutableDictionary *playerPool;
-@property (nonatomic, strong) NSMutableDictionary *finishObserverPool;
-@property (nonatomic, strong) NSMutableDictionary *finishCallbackPool;
-@property (nonatomic, strong) NSMutableSet *loopSet;
+@property (nonatomic, assign) BOOL audioSessionActive;
+@property (nonatomic, strong) NSMutableDictionary *playerDataPool;
 @property (nonatomic, strong) NSMutableSet *pausedOnBackgroundingSet;
 
 @end
@@ -30,14 +113,9 @@
 {
   if ((self = [super init])) {
     _keyCount = 0;
-    _playerPool = [NSMutableDictionary new];
-    _finishObserverPool = [NSMutableDictionary new];
-    _finishCallbackPool = [NSMutableDictionary new];
-    _loopSet = [NSMutableSet new];
+    _playerDataPool = [NSMutableDictionary new];
     _pausedOnBackgroundingSet = [NSMutableSet new];
-    _enabled = NO;
-    _midInterruption = NO;
-    _backgrounded = NO;
+    _audioSessionActive = NO;
 
     AVAudioSession *session = [AVAudioSession sharedInstance];
 
@@ -72,61 +150,76 @@
                                              object:_bridge];
 }
 
+
+
 #pragma mark - Internal
 
-- (void)_activateAudioSession:(NSError **)outError
+- (NSError *)_activateAudioSessionIfNecessary
 {
+  if (_audioSessionActive) {
+    return nil;
+  }
+  NSError *error;
   AVAudioSession *session = [AVAudioSession sharedInstance];
-  [session setActive:YES error:outError];
-  [session setCategory:AVAudioSessionCategoryAmbient error:outError];
+  [session setActive:YES error:&error];
+  if (!error) {
+    _audioSessionActive = YES;
+    [session setCategory:AVAudioSessionCategoryAmbient error:nil];
+  }
+  return error;
 }
 
-- (void)_deactivateAudioSession:(NSError **)outError
+- (NSError *)_deactivateAudioSession
 {
+  if (!_audioSessionActive) {
+    return nil;
+  }
   // We must have all players paused in order to effectively deactivate the session.
-  for (AVPlayer *player in [_playerPool allValues]) {
-    [player pause];
+  for (EXAudioPlayerData *data in [_playerDataPool allValues]) {
+    [data.player pause];
   }
-  [[AVAudioSession sharedInstance] setActive:NO error:outError];
+  NSError *error;
+  [[AVAudioSession sharedInstance] setActive:NO error:&error];
+  if (!error) {
+    _audioSessionActive = NO;
+  }
+  return error;
 }
 
-- (void)_resumeAllPausedOnBackgrounding
+- (NSError *)_deactivateAudioSessionIfNoPlayersPlaying
 {
-  for (NSNumber *key in _pausedOnBackgroundingSet) {
-    AVPlayer *player = _playerPool[key];
-    [player play];
+  for (EXAudioPlayerData *data in [_playerDataPool allValues]) {
+    if ([data isPlayerPlaying]) {
+      return nil;
+    }
   }
-  [_pausedOnBackgroundingSet removeAllObjects];
+  return [self _deactivateAudioSession];
 }
 
 - (void)_bridgeDidForeground:(NSNotification *)notification
 {
-  _backgrounded = NO;
-  if (!_midInterruption && _enabled) {
-    NSError *error;
-    [self _activateAudioSession:&error];
-    if (error) {
-      _enabled = NO;
-      [_pausedOnBackgroundingSet removeAllObjects];
-    } else {
-      [self _resumeAllPausedOnBackgrounding];
+  if ([_pausedOnBackgroundingSet count] > 0) {
+    NSError *error = [self _activateAudioSessionIfNecessary];
+    if (!error) {
+      for (NSNumber *key in _pausedOnBackgroundingSet) {
+        EXAudioPlayerData *data = _playerDataPool[key];
+        [data playPlayerWithRate];
+      }
     }
+    [_pausedOnBackgroundingSet removeAllObjects];
   }
 }
 
 - (void)_bridgeDidBackground:(NSNotification *)notification
 {
-  _backgrounded = YES;
-  if (!_midInterruption && _enabled) {
-    for (NSNumber *key in [_playerPool allKeys]) {
-      AVPlayer *player = _playerPool[key];
-      if ([self _getIsPlaying:player]) {
-        [_pausedOnBackgroundingSet addObject:key];
-        [player pause];
-      }
+  for (NSNumber *key in [_playerDataPool allKeys]) {
+    EXAudioPlayerData *data = _playerDataPool[key];
+    if ([data isPlayerPlaying]) {
+      [_pausedOnBackgroundingSet addObject:key];
+      [data.player pause];
     }
-    [self _deactivateAudioSession:nil];
   }
+  [self _deactivateAudioSession];
 }
 
 - (void)_handleAudioSessionInterruption:(NSNotification*)notification
@@ -135,20 +228,11 @@
   switch (interruptionType.unsignedIntegerValue) {
     case AVAudioSessionInterruptionTypeBegan:{
       // Audio has stopped, session is already inactive
-      _midInterruption = YES;
+      _audioSessionActive = NO;
+      [_pausedOnBackgroundingSet removeAllObjects];
     } break;
     case AVAudioSessionInterruptionTypeEnded:{
-      _midInterruption = NO;
-      if (!_backgrounded && _enabled) {
-        NSError *error;
-        [self _activateAudioSession:&error];
-        if (error) {
-          _enabled = NO;
-          [_pausedOnBackgroundingSet removeAllObjects];
-        } else {
-          [self _resumeAllPausedOnBackgrounding]; // In case we were interrupted while backgrounded.
-        }
-      }
+      // play must be called again.
     } break;
     default:
       break;
@@ -157,95 +241,32 @@
 
 - (void)_handleMediaServicesReset
 {
-  if (_enabled && !_midInterruption && !_backgrounded) {
-    [self _activateAudioSession:nil];
-  }
+  _audioSessionActive = NO;
   // TODO : reset all objects according to https://developer.apple.com/library/content/qa/qa1749/_index.html
   // (this is an unlikely notification to receive, but best practices suggests that we catch it just in case)
 }
 
-- (void)_setIsLooping:(nonnull NSNumber *)key
-              toValue:(BOOL)value
+- (void)_runBlock:(void (^)(EXAudioPlayerData *data))block
+withPlayerDataForKey:(nonnull NSNumber *)key
+        withRejecter:(RCTPromiseRejectBlock)reject
 {
-  if (value) {
-    [_loopSet addObject:key];
+  EXAudioPlayerData *data = _playerDataPool[key];
+  if (data) {
+    block(data);
   } else {
-    [_loopSet removeObject:key];
+    reject(@"E_AUDIO_NOPLAYER", @"Player does not exist.", nil);
   }
 }
 
-- (BOOL)_getIsLooping:(nonnull NSNumber *)key
+- (void)_removePlayerForKey:(NSNumber *)key
 {
-  return [_loopSet containsObject:key];
-}
-
-- (BOOL)_getIsPlaying:(AVPlayer *)player
-{
-  if ([player respondsToSelector:@selector(timeControlStatus)]) {
-    // Only available after iOS 10
-    return [player timeControlStatus] == AVPlayerTimeControlStatusPlaying;
-  } else {
-    // timeControlStatus is preferable to this when available
-    // See http://stackoverflow.com/questions/5655864/check-play-state-of-avplayer
-    return (player.rate != 0) && (player.error == nil);
+  EXAudioPlayerData *data = _playerDataPool[key];
+  if (data) {
+    [data.player pause];
+    [self _deactivateAudioSessionIfNoPlayersPlaying];
   }
-}
-
-- (NSDictionary *)_getStatusForKey:(NSNumber *)key
-{
-  AVPlayer *player = _playerPool[key];
-  if (player) {
-    Float64 seconds = CMTimeGetSeconds([player currentTime]);
-    seconds = seconds < 0 ? 0 : seconds; // Sometimes [player currentTime] erroneously returns a negative value when actually at zero.
-    return @{@"position_millis": @((int) (seconds * 1000)),
-             @"is_playing": @([self _getIsPlaying:player]),
-             @"is_muted": @(player.muted),
-             @"is_looping": @([self _getIsLooping:key])};
-  }
-  return @{};
-}
-
-- (void)_runIfEnabled:(void (^)())block
-         withRejecter:(RCTPromiseRejectBlock)reject
-{
-  // If we are enabled but otherwise backgrounded or mid-interruption, the audio session will be inactive, so certain operations will be impossible.
-  // We allow these operations to fail because the audio session is inactive, and allow all other operations to proceed as normal.
-  if (_enabled) {
-    block();
-  } else {
-    reject(@"E_AUDIO_DISABLED", @"Audio not enabled.", nil);
-  }
-}
-
-- (void)_runWithPlayerIfEnabled:(void (^)(AVPlayer *player))block
-                        withKey:(nonnull NSNumber *)key
-                   withRejecter:(RCTPromiseRejectBlock)reject
-{
-  [self _runIfEnabled:^{
-    AVPlayer *player = _playerPool[key];
-    if (player) {
-      block(player);
-    } else {
-      reject(@"E_AUDIO_NOPLAYER", @"Player does not exist.", nil);
-    }
-  } withRejecter:reject];
-}
-
-- (void)_releaseForKey:(NSNumber *)key
-{
-  AVPlayer *player = _playerPool[key];
-  if (player) {
-    [player pause];
-  }
-  id <NSObject> loopObserver = _finishObserverPool[key];
-  if (loopObserver) {
-    [[NSNotificationCenter defaultCenter] removeObserver:loopObserver];
-  }
-  _finishObserverPool[key] = nil;
-  _finishCallbackPool[key] = nil;
-  [_loopSet removeObject:key];
   [_pausedOnBackgroundingSet removeObject:key];
-  _playerPool[key] = nil;
+  _playerDataPool[key] = nil;
 }
 
 #pragma mark - Audio API
@@ -253,207 +274,185 @@
 RCT_EXPORT_MODULE(ExponentAudio);
 
 RCT_EXPORT_METHOD(setIsEnabled:(BOOL)value
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
+                      resolver:(RCTPromiseResolveBlock)resolve
+                      rejecter:(RCTPromiseRejectBlock)reject)
 {
-  NSError *error;
-  if (value == _enabled) {
-    resolve(nil); // There is no change in state.
-  } else if (value) {
-    if (_midInterruption || _backgrounded) { // The audio session is inactive and will reactivate when the interruption ends.
-      _enabled = YES;
-      resolve(nil);
-    } else {
-      [self _activateAudioSession:&error];
-      if (error) {
-        reject(@"E_AUDIO_ENABLEERROR", @"Could not enable Audio.", error);
-        [_pausedOnBackgroundingSet removeAllObjects];
-      } else {
-        _enabled = YES;
-        [self _resumeAllPausedOnBackgrounding]; // In case we disabled while backgrounded.
-        resolve(nil);
-      }
-    }
-  } else {
-    if (_midInterruption || _backgrounded) { // The audio session is inactive and nothing is playing.
-      _enabled = NO;
-      resolve(nil);
-    } else {
-      [self _deactivateAudioSession:&error];
-      if (error) {
-        reject(@"E_AUDIO_DISABLEERROR", @"Could not disable Audio.", error);
-      } else {
-        _enabled = NO;
-        resolve(nil);
-      }
-    }
+  if (!value) {
+    [_pausedOnBackgroundingSet removeAllObjects];
+    [self _deactivateAudioSession];
   }
+  resolve(nil);
 }
 
 RCT_EXPORT_METHOD(load:(NSString *)uriString
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
+              resolver:(RCTPromiseResolveBlock)resolve
+              rejecter:(RCTPromiseRejectBlock)reject)
 {
-  [self _runIfEnabled:^{
-    NSURL *url = [NSURL URLWithString:uriString];
-    AVURLAsset *avAsset = [AVURLAsset URLAssetWithURL:url options:nil];
-    AVPlayerItem *playerItem = [AVPlayerItem playerItemWithAsset:avAsset];
-    AVPlayer *player = [AVPlayer playerWithPlayerItem:playerItem];
-    if (player) {
-      NSNumber *key = @(_keyCount++);
-      _playerPool[key] = player;
-      [self _setIsLooping:key toValue:false];
-
-      __weak __typeof__(self) weakSelf = self;
-      void (^didPlayToEndTimeObserverBlock)(NSNotification *note) = ^(NSNotification *note) {
-        if ([weakSelf _getIsLooping:key]) {
-          [player seekToTime:kCMTimeZero];
-          [player play];
-        } else {
-          RCTResponseSenderBlock callback = _finishCallbackPool[key];
-          _finishCallbackPool[key] = nil;
-          if (callback) {
-            callback(@[[weakSelf _getStatusForKey:key]]);
-          }
-        }
-      };
-      _finishObserverPool[key] = [[NSNotificationCenter defaultCenter] addObserverForName:AVPlayerItemDidPlayToEndTimeNotification
-                                                                                   object:[player currentItem]
-                                                                                    queue:nil
-                                                                               usingBlock:didPlayToEndTimeObserverBlock];
-
-      resolve(@{@"key": key,
-                @"duration_millis": @((int) (CMTimeGetSeconds(avAsset.duration) * 1000)),
-                @"status": [self _getStatusForKey:key]});
-    } else {
-      reject(@"E_AUDIO_PLAYERNOTCREATED", @"Load encountered an error: player not created.", nil);
-    }
-  } withRejecter:reject];
+  NSURL *url = [NSURL URLWithString:uriString];
+  AVURLAsset *avAsset = [AVURLAsset URLAssetWithURL:url options:nil];
+  AVPlayerItem *playerItem = [AVPlayerItem playerItemWithAsset:avAsset];
+  AVPlayer *player = [AVPlayer playerWithPlayerItem:playerItem];
+  if (player) {
+    NSNumber *key = @(_keyCount++);
+    
+    __weak __typeof__(self) weakSelf = self;
+    EXAudioPlayerData *data = [[EXAudioPlayerData alloc] initWithPlayer:player
+                                                            withLooping:NO
+                                                    withPitchCorrection:NO
+                                                               withRate:@(1)
+                                             withInternalFinishCallback:^() {
+                                               [weakSelf _deactivateAudioSessionIfNoPlayersPlaying];
+                                             }];
+    _playerDataPool[key] = data;
+    resolve(@{@"key": key,
+              @"durationMillis": @((int) (CMTimeGetSeconds(avAsset.duration) * 1000)),
+              @"status": [data getStatus]});
+  } else {
+    reject(@"E_AUDIO_PLAYERNOTCREATED", @"Load encountered an error: player not created.", nil);
+  }
 }
 
 RCT_EXPORT_METHOD(play:(nonnull NSNumber *)key
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
+              resolver:(RCTPromiseResolveBlock)resolve
+              rejecter:(RCTPromiseRejectBlock)reject)
 {
-  [self _runWithPlayerIfEnabled:^(AVPlayer *player) {
-    [player play];
-    resolve(@{@"status": [self _getStatusForKey:key]});
-  } withKey:key withRejecter:reject];
+  [self _runBlock:^(EXAudioPlayerData *data) {
+    NSError *error = [self _activateAudioSessionIfNecessary];
+    if (!error) {
+      [data playPlayerWithRate];
+    }
+    resolve(@{@"status": [data getStatus]});
+  } withPlayerDataForKey:key withRejecter:reject];
 }
 
 RCT_EXPORT_METHOD(pause:(nonnull NSNumber *)key
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
+               resolver:(RCTPromiseResolveBlock)resolve
+               rejecter:(RCTPromiseRejectBlock)reject)
 {
-  [self _runWithPlayerIfEnabled:^(AVPlayer *player) {
-    [player pause];
-    resolve(@{@"status": [self _getStatusForKey:key]});
-  } withKey:key withRejecter:reject];
+  [self _runBlock:^(EXAudioPlayerData *data) {
+    [data.player pause];
+    [self _deactivateAudioSessionIfNoPlayersPlaying];
+    resolve(@{@"status": [data getStatus]});
+  } withPlayerDataForKey:key withRejecter:reject];
 }
 
 RCT_EXPORT_METHOD(stop:(nonnull NSNumber *)key
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
+              resolver:(RCTPromiseResolveBlock)resolve
+              rejecter:(RCTPromiseRejectBlock)reject)
 {
-  [self _runWithPlayerIfEnabled:^(AVPlayer *player) {
-    [player pause];
-    [player seekToTime:kCMTimeZero completionHandler:^(BOOL finished) {
-      resolve(@{@"status": [self _getStatusForKey:key]});
+  [self _runBlock:^(EXAudioPlayerData *data) {
+    [data.player pause];
+    [data.player seekToTime:kCMTimeZero completionHandler:^(BOOL finished) {
+      [self _deactivateAudioSessionIfNoPlayersPlaying];
+      resolve(@{@"status": [data getStatus]});
     }];
-  } withKey:key withRejecter:reject];
+  } withPlayerDataForKey:key withRejecter:reject];
 }
 
 RCT_EXPORT_METHOD(unload:(nonnull NSNumber *)key
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
+                resolver:(RCTPromiseResolveBlock)resolve
+                rejecter:(RCTPromiseRejectBlock)reject)
 {
-  [self _runWithPlayerIfEnabled:^(AVPlayer *player) {
-    [self _releaseForKey:key];
+  [self _runBlock:^(EXAudioPlayerData *data) {
+    [self _removePlayerForKey:key];
     resolve(nil);
-  } withKey:key withRejecter:reject];
+  } withPlayerDataForKey:key withRejecter:reject];
 }
 
 RCT_EXPORT_METHOD(setPosition:(nonnull NSNumber *)key
-                  toMillis:(nonnull NSNumber *)millis
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
+                     toMillis:(nonnull NSNumber *)millis
+                     resolver:(RCTPromiseResolveBlock)resolve
+                     rejecter:(RCTPromiseRejectBlock)reject)
 {
-  [self _runWithPlayerIfEnabled:^(AVPlayer *player) {
-    [player seekToTime:CMTimeMake(millis.intValue, 1000) completionHandler:^(BOOL finished) {
+  [self _runBlock:^(EXAudioPlayerData *data) {
+    [data.player seekToTime:CMTimeMake(millis.intValue, 1000) completionHandler:^(BOOL finished) {
       if (finished) {
-        resolve(@{@"status": [self _getStatusForKey:key]});
+        resolve(@{@"status": [data getStatus]});
       } else {
         reject(0, @"Seeking interrupted.", nil);
       }
     }];
-  } withKey:key withRejecter:reject];
+  } withPlayerDataForKey:key withRejecter:reject];
+}
+
+RCT_EXPORT_METHOD(setRate:(nonnull NSNumber *)key
+                  toValue:(nonnull NSNumber *)value
+      withPitchCorrection:(BOOL)shouldCorrectPitch
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+  [self _runBlock:^(EXAudioPlayerData *data) {
+    if ([data isPlayerPlaying]) {
+      data.player.rate = value.floatValue; // TODO
+    }
+    if (shouldCorrectPitch) {
+      data.player.currentItem.audioTimePitchAlgorithm = AVAudioTimePitchAlgorithmLowQualityZeroLatency;
+    } else {
+      data.player.currentItem.audioTimePitchAlgorithm = AVAudioTimePitchAlgorithmVarispeed;
+    }
+    data.rate = value;
+    data.shouldCorrectPitch = shouldCorrectPitch;
+    resolve(@{@"status": [data getStatus]});
+  } withPlayerDataForKey:key withRejecter:reject];
 }
 
 RCT_EXPORT_METHOD(setVolume:(nonnull NSNumber *)key
-                  toValue:(nonnull NSNumber *)value
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
+                    toValue:(nonnull NSNumber *)value
+                   resolver:(RCTPromiseResolveBlock)resolve
+                   rejecter:(RCTPromiseRejectBlock)reject)
 {
-  if (value.doubleValue < 0.0 || value.doubleValue > 1.0) {
-    reject(@"E_AUDIO_INCORRECTPARAMETERS", @"Volume value must be between 0.0 and 1.0.", nil);
-    return;
-  }
-  
-  [self _runWithPlayerIfEnabled:^(AVPlayer *player) {
-    player.volume = value.floatValue;
-    resolve(@{@"status": [self _getStatusForKey:key]});
-  } withKey:key withRejecter:reject];
+  [self _runBlock:^(EXAudioPlayerData *data) {
+    data.player.volume = value.floatValue;
+    resolve(@{@"status": [data getStatus]});
+  } withPlayerDataForKey:key withRejecter:reject];
 }
 
 RCT_EXPORT_METHOD(setIsMuted:(nonnull NSNumber *)key
-                  toValue:(BOOL)value
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
+                     toValue:(BOOL)value
+                    resolver:(RCTPromiseResolveBlock)resolve
+                    rejecter:(RCTPromiseRejectBlock)reject)
 {
-  [self _runWithPlayerIfEnabled:^(AVPlayer *player) {
-    player.muted = value;
-    resolve(@{@"status": [self _getStatusForKey:key]});
-  } withKey:key withRejecter:reject];
+  [self _runBlock:^(EXAudioPlayerData *data) {
+    data.player.muted = value;
+    resolve(@{@"status": [data getStatus]});
+  } withPlayerDataForKey:key withRejecter:reject];
 }
 
 RCT_EXPORT_METHOD(setIsLooping:(nonnull NSNumber *)key
-                  toValue:(BOOL)value
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
+                       toValue:(BOOL)value
+                      resolver:(RCTPromiseResolveBlock)resolve
+                      rejecter:(RCTPromiseRejectBlock)reject)
 {
-  [self _runWithPlayerIfEnabled:^(AVPlayer *player) {
-    [self _setIsLooping:key toValue:value];
-    resolve(@{@"status": [self _getStatusForKey:key]});
-  } withKey:key withRejecter:reject];
+  [self _runBlock:^(EXAudioPlayerData *data) {
+    data.isLooping = value;
+    resolve(@{@"status": [data getStatus]});
+  } withPlayerDataForKey:key withRejecter:reject];
 }
 
 RCT_EXPORT_METHOD(getStatus:(nonnull NSNumber *)key
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
+                   resolver:(RCTPromiseResolveBlock)resolve
+                   rejecter:(RCTPromiseRejectBlock)reject)
 {
-  [self _runWithPlayerIfEnabled:^(AVPlayer *player) {
-    resolve(@{@"status": [self _getStatusForKey:key]});
-  } withKey:key withRejecter:reject];
+  [self _runBlock:^(EXAudioPlayerData *data) {
+    resolve(@{@"status": [data getStatus]});
+  } withPlayerDataForKey:key withRejecter:reject];
 }
 
 RCT_EXPORT_METHOD(setPlaybackFinishedCallback:(nonnull NSNumber *)key
-                  withCallback:(RCTResponseSenderBlock)callback)
+                                 withCallback:(RCTResponseSenderBlock)callback)
 {
-  if (_enabled) {
-    AVPlayer *player = _playerPool[key];
-    if (player) {
-      _finishCallbackPool[key] = callback;
-    }
+  EXAudioPlayerData *data = _playerDataPool[key];
+  if (data) {
+    data.finishCallback = callback;
   }
 }
 
 - (void)dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  for (NSNumber *key in [_playerPool allKeys]) {
-    [self _releaseForKey:key];
+  for (NSNumber *key in [_playerDataPool allKeys]) {
+    [self _removePlayerForKey:key]; // This will clear all @properties and deactivate the audio session.
   }
-  [self _deactivateAudioSession:nil];
 }
 
 
