@@ -1,0 +1,29 @@
+- title: Introduction
+  index: /versions/v7.0.0/introduction/
+  links:
+    Installation: /versions/v7.0.0/introduction/installation/
+    Community: /versions/v7.0.0/introduction/community/
+    Learning: /versions/v7.0.0/introduction/learning/
+- title: Guides
+  index: /versions/v7.0.0/guides/
+  links:
+    Up and Running: /versions/v7.0.0/guides/up-and-running/
+    Configuration with exp.json: /versions/v7.0.0/guides/configuration/
+    Viewing Logs: /versions/v7.0.0/guides/logging/
+    Debugging: /versions/v7.0.0/guides/debugging/
+    Icons: /versions/v7.0.0/guides/icons/
+    Using Custom Fonts: /versions/v7.0.0/guides/using-custom-fonts/
+    Push Notifications: /versions/v7.0.0/guides/push-notifications/
+    Building Standalone Apps: /versions/v7.0.0/guides/building-standalone-apps/
+    Upgrading Exponent: /versions/v7.0.0/guides/upgrading-exponent/
+- title: SDK API Reference
+  index: /versions/v7.0.0/sdk/
+  links:
+    Introduction: /versions/v7.0.0/sdk/
+    Asset: /versions/v7.0.0/sdk/asset/
+    Constants: /versions/v7.0.0/sdk/constants/
+    Contacts: /versions/v7.0.0/sdk/contacts/
+    Facebook: /versions/v7.0.0/sdk/facebook/
+    Font: /versions/v7.0.0/sdk/font/
+    ImagePicker: /versions/v7.0.0/sdk/imagepicker/
+    Location: /versions/v7.0.0/sdk/location/

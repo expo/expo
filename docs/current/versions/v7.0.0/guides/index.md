@@ -1,0 +1,42 @@
+---
+title: Guides
+old_permalink: /versions/v7.0.0/guides/index.html
+previous___FILE: ./../introduction/community.md
+next___FILE: ./up-and-running.md
+
+---
+
+-   [Up and Running](https://docs.getexponent.com/versions/v7.0.0/up-and-running.html)
+    -   [Create an account](https://docs.getexponent.com/versions/v7.0.0/up-and-running.html#create-an-account)
+    -   [Creating the project](https://docs.getexponent.com/versions/v7.0.0/up-and-running.html#creating-the-project)
+    -   [Open the app on your phone or simulator](https://docs.getexponent.com/versions/v7.0.0/up-and-running.html#open-the-app-on-your-phone-or-simulator)
+-   [Configuration with exp.json](https://docs.getexponent.com/versions/v7.0.0/configuration.html)
+-   [Viewing Logs](https://docs.getexponent.com/versions/v7.0.0/logging.html)
+    -   [Recommended: View logs with Exponent tools](https://docs.getexponent.com/versions/v7.0.0/logging.html#recommended-view-logs-with-exponent-tools)
+    -   [Optional: Manually access device logs](https://docs.getexponent.com/versions/v7.0.0/logging.html#optional-manually-access-device-logs)
+-   [Debugging](https://docs.getexponent.com/versions/v7.0.0/debugging.html)
+    -   [Using a Simulator / Emulator](https://docs.getexponent.com/versions/v7.0.0/debugging.html#using-a-simulator-emulator)
+    -   [Debugging Javascript](https://docs.getexponent.com/versions/v7.0.0/debugging.html#debugging-javascript)
+    -   [Debugging HTTP](https://docs.getexponent.com/versions/v7.0.0/debugging.html#debugging-http)
+    -   [Hot Reloading and Live Reloading](https://docs.getexponent.com/versions/v7.0.0/debugging.html#hot-reloading-and-live-reloading)
+-   [Icons](https://docs.getexponent.com/versions/v7.0.0/icons.html)
+    -   [@exponent/vector-icons](https://docs.getexponent.com/versions/v7.0.0/icons.html#exponent-vector-icons)
+    -   [Icon images](https://docs.getexponent.com/versions/v7.0.0/icons.html#icon-images)
+-   [Using Custom Fonts](https://docs.getexponent.com/versions/v7.0.0/using-custom-fonts.html)
+    -   [Starting code](https://docs.getexponent.com/versions/v7.0.0/using-custom-fonts.html#starting-code)
+    -   [Downloading the font](https://docs.getexponent.com/versions/v7.0.0/using-custom-fonts.html#downloading-the-font)
+    -   [Loading the font in your app](https://docs.getexponent.com/versions/v7.0.0/using-custom-fonts.html#loading-the-font-in-your-app)
+    -   [Using the font in a `Text` component](https://docs.getexponent.com/versions/v7.0.0/using-custom-fonts.html#using-the-font-in-a-text-component)
+    -   [Waiting for the font to load before rendering](https://docs.getexponent.com/versions/v7.0.0/using-custom-fonts.html#waiting-for-the-font-to-load-before-rendering)
+-   [Push Notifications](https://docs.getexponent.com/versions/v7.0.0/push-notifications.html)
+    -   [1. Save the user's Exponent Push Token on your server](https://docs.getexponent.com/versions/v7.0.0/push-notifications.html#save-the-user-s-exponent-push-token-on-your-server)
+    -   [2. Call Exponent's Push API with the user's token](https://docs.getexponent.com/versions/v7.0.0/push-notifications.html#call-exponent-s-push-api-with-the-user-s-token)
+    -   [3. Handle receiving and/or selecting the notification](https://docs.getexponent.com/versions/v7.0.0/push-notifications.html#handle-receiving-and-or-selecting-the-notification)
+-   [Building Standalone Apps](https://docs.getexponent.com/versions/v7.0.0/building-standalone-apps.html)
+    -   [1. Install exp](https://docs.getexponent.com/versions/v7.0.0/building-standalone-apps.html#install-exp)
+    -   [2. Configure exp.json](https://docs.getexponent.com/versions/v7.0.0/building-standalone-apps.html#configure-exp-json)
+    -   [3. Start the build](https://docs.getexponent.com/versions/v7.0.0/building-standalone-apps.html#start-the-build)
+    -   [4. Wait for it to finish building](https://docs.getexponent.com/versions/v7.0.0/building-standalone-apps.html#wait-for-it-to-finish-building)
+    -   [5. Test it on your device or simulator](https://docs.getexponent.com/versions/v7.0.0/building-standalone-apps.html#test-it-on-your-device-or-simulator)
+    -   [6. Submit it to the appropriate store](https://docs.getexponent.com/versions/v7.0.0/building-standalone-apps.html#submit-it-to-the-appropriate-store)
+-   [Upgrading Exponent](https://docs.getexponent.com/versions/v7.0.0/upgrading-exponent.html)

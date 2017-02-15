@@ -1,0 +1,42 @@
+{
+  "name": "Exponent",
+  "version": "12.0.0",
+  "description": "Exponent documentation site",
+  "scripts": {
+    "build": "gatsby build",
+    "develop": "gatsby develop"
+  },
+  "dependencies": {
+    "bluebird": "^3.4.7",
+    "gatsby": "1.0.0-alpha11",
+    "gatsby-link": "1.0.0-alpha11",
+    "gatsby-parser-remark": "1.0.0-alpha11",
+    "gatsby-parser-sharp": "1.0.0-alpha11",
+    "gatsby-parser-yaml": "1.0.0-alpha11",
+    "gatsby-plugin-glamor": "1.0.0-alpha11",
+    "gatsby-plugin-google-analytics": "1.0.0-alpha11",
+    "gatsby-plugin-sharp": "1.0.0-alpha11",
+    "gatsby-source-filesystem": "1.0.0-alpha11",
+    "gatsby-typegen-filesystem": "1.0.0-alpha11",
+    "gatsby-typegen-remark": "1.0.0-alpha11",
+    "gatsby-typegen-remark-autolink-headers": "1.0.0-alpha11",
+    "gatsby-typegen-remark-copy-linked-files": "1.0.0-alpha11",
+    "gatsby-typegen-remark-prismjs": "1.0.0-alpha11",
+    "gatsby-typegen-remark-responsive-iframe": "1.0.0-alpha11",
+    "gatsby-typegen-remark-responsive-image": "1.0.0-alpha11",
+    "gatsby-typegen-remark-smartypants": "1.0.0-alpha11",
+    "gatsby-typegen-sharp": "1.0.0-alpha11",
+    "lodash": "^4.17.3",
+    "react-helmet": "^3.3.0",
+    "react-icons": "^2.2.3",
+    "react-motion-drawer": "^2.1.2",
+    "react-sidebar": "^2.2.1",
+    "react-typography": "^0.15.0",
+    "slug": "^0.9.1",
+    "typeface-source-code-pro": "^0.0.21",
+    "typeface-source-sans-pro": "^0.0.21",
+    "typography": "^0.15.4",
+    "typography-plugin-code": "^0.15.2",
+    "unist-util-inspect": "^4.0.0"
+  }
+}

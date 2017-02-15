@@ -1,0 +1,50 @@
+- title: Introduction
+  index: /versions/v11.0.0/introduction/
+  links:
+    Installation: /versions/v11.0.0/introduction/installation/
+    XDE Tour: /versions/v11.0.0/introduction/xde-tour/
+    Community: /versions/v11.0.0/introduction/community/
+    Additional Resources: /versions/v11.0.0/introduction/additional-resources/
+    Frequently Asked Questions: /versions/v11.0.0/introduction/faq/
+- title: Guides
+  index: /versions/v11.0.0/guides/
+  links:
+    Up and Running: /versions/v11.0.0/guides/up-and-running/
+    Development Mode: /versions/v11.0.0/guides/development-mode/
+    Configuration with exp.json: /versions/v11.0.0/guides/configuration/
+    Viewing Logs: /versions/v11.0.0/guides/logging/
+    Debugging: /versions/v11.0.0/guides/debugging/
+    Assets: /versions/v11.0.0/guides/assets/
+    Preloading & Caching Assets: /versions/v11.0.0/guides/preloading-and-caching-assets/
+    Icons: /versions/v11.0.0/guides/icons/
+    Using Custom Fonts: /versions/v11.0.0/guides/using-custom-fonts/
+    Routing & Navigation: /versions/v11.0.0/guides/routing-and-navigation/
+    Push Notifications: /versions/v11.0.0/guides/push-notifications/
+    exp Command-Line Interface: /versions/v11.0.0/guides/exp-cli/
+    Building Standalone Apps: /versions/v11.0.0/guides/building-standalone-apps/
+    How Exponent Works: /versions/v11.0.0/guides/how-exponent-works/
+    Upgrading Exponent: /versions/v11.0.0/guides/upgrading-exponent/
+- title: SDK API Reference
+  index: /versions/v11.0.0/sdk/
+  links:
+    Introduction: /versions/v11.0.0/sdk/
+    Amplitude: /versions/v11.0.0/sdk/amplitude/
+    AppLoading: /versions/v11.0.0/sdk/app-loading/
+    Asset: /versions/v11.0.0/sdk/asset/
+    BarCodeScanner: /versions/v11.0.0/sdk/bar-code-scanner/
+    BlurView: /versions/v11.0.0/sdk/blur-view/
+    Constants: /versions/v11.0.0/sdk/constants/
+    Contacts: /versions/v11.0.0/sdk/contacts/
+    Facebook: /versions/v11.0.0/sdk/facebook/
+    Font: /versions/v11.0.0/sdk/font/
+    GLView: /versions/v11.0.0/sdk/gl-view/
+    Google: /versions/v11.0.0/sdk/google/
+    ImagePicker: /versions/v11.0.0/sdk/imagepicker/
+    LinearGradient: /versions/v11.0.0/sdk/linear-gradient/
+    Location: /versions/v11.0.0/sdk/location/
+    MapView: /versions/v11.0.0/sdk/map-view/
+    Permissions: /versions/v11.0.0/sdk/permissions/
+    Segment: /versions/v11.0.0/sdk/segment/
+    Svg: /versions/v11.0.0/sdk/svg/
+    Util: /versions/v11.0.0/sdk/util/
+    Video: /versions/v11.0.0/sdk/video/

@@ -1,0 +1,59 @@
+- title: Introduction
+  index: /versions/v14.0.0/introduction/
+  links:
+    Learn Exponent: /versions/v14.0.0/
+    Installation: /versions/v14.0.0/introduction/installation/
+    XDE Tour: /versions/v14.0.0/introduction/xde-tour/
+    Community: /versions/v14.0.0/introduction/community/
+    Additional Resources: /versions/v14.0.0/introduction/additional-resources/
+    Frequently Asked Questions: /versions/v14.0.0/introduction/faq/
+- title: Guides
+  index: /versions/v14.0.0/guides/
+  links:
+    Up and Running: /versions/v14.0.0/guides/up-and-running/
+    Development Mode: /versions/v14.0.0/guides/development-mode/
+    Configuration with exp.json: /versions/v14.0.0/guides/configuration/
+    Viewing Logs: /versions/v14.0.0/guides/logging/
+    Debugging: /versions/v14.0.0/guides/debugging/
+    Assets: /versions/v14.0.0/guides/assets/
+    Preloading & Caching Assets: /versions/v14.0.0/guides/preloading-and-caching-assets/
+    Icons: /versions/v14.0.0/guides/icons/
+    Using Custom Fonts: /versions/v14.0.0/guides/using-custom-fonts/
+    Routing & Navigation: /versions/v14.0.0/guides/routing-and-navigation/
+    Push Notifications: /versions/v14.0.0/guides/push-notifications/
+    Genymotion: /versions/v14.0.0/guides/genymotion/
+    exp Command-Line Interface: /versions/v14.0.0/guides/exp-cli/
+    Building Standalone Apps: /versions/v14.0.0/guides/building-standalone-apps/
+    How Exponent Works: /versions/v14.0.0/guides/how-exponent-works/
+    Upgrading Exponent: /versions/v14.0.0/guides/upgrading-exponent/
+    Using ClojureScript: /versions/v14.0.0/guides/using-clojurescript/
+    Using Firebase: /versions/v14.0.0/guides/using-firebase/
+- title: SDK API Reference
+  index: /versions/v14.0.0/sdk/
+  links:
+    Introduction: /versions/v14.0.0/sdk/
+    Accelerometer: /versions/v14.0.0/sdk/accelerometer/
+    Amplitude: /versions/v14.0.0/sdk/amplitude/
+    AppLoading: /versions/v14.0.0/sdk/app-loading/
+    Art: /versions/v14.0.0/sdk/art/
+    Asset: /versions/v14.0.0/sdk/asset/
+    BarCodeScanner: /versions/v14.0.0/sdk/bar-code-scanner/
+    BlurView: /versions/v14.0.0/sdk/blur-view/
+    Constants: /versions/v14.0.0/sdk/constants/
+    Contacts: /versions/v14.0.0/sdk/contacts/
+    Facebook: /versions/v14.0.0/sdk/facebook/
+    Font: /versions/v14.0.0/sdk/font/
+    GLView: /versions/v14.0.0/sdk/gl-view/
+    Google: /versions/v14.0.0/sdk/google/
+    Gyroscope: /versions/v14.0.0/sdk/gyroscope/
+    ImagePicker: /versions/v14.0.0/sdk/imagepicker/
+    LinearGradient: /versions/v14.0.0/sdk/linear-gradient/
+    Location: /versions/v14.0.0/sdk/location/
+    MapView: /versions/v14.0.0/sdk/map-view/
+    Notifications: /versions/v14.0.0/sdk/notifications/
+    Permissions: /versions/v14.0.0/sdk/permissions/
+    Segment: /versions/v14.0.0/sdk/segment/
+    Svg: /versions/v14.0.0/sdk/svg/
+    takeSnapshotAsync: /versions/v14.0.0/sdk/take-snapshot-async/
+    Util: /versions/v14.0.0/sdk/util/
+    Video: /versions/v14.0.0/sdk/video/

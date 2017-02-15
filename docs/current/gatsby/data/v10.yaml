@@ -1,0 +1,43 @@
+- title: Introduction
+  index: /versions/v10.0.0/introduction/
+  links:
+    Installation: /versions/v10.0.0/introduction/installation/
+    XDE Tour: /versions/v10.0.0/introduction/xde-tour/
+    Community: /versions/v10.0.0/introduction/community/
+    Additional Resources: /versions/v10.0.0/introduction/additional-resources/
+    Frequently Asked Questions: /versions/v10.0.0/introduction/faq/
+- title: Guides
+  index: /versions/v10.0.0/guides/
+  links:
+    Up and Running: /versions/v10.0.0/guides/up-and-running/
+    Development Mode: /versions/v10.0.0/guides/development-mode/
+    Configuration with exp.json: /versions/v10.0.0/guides/configuration/
+    Viewing Logs: /versions/v10.0.0/guides/logging/
+    Debugging: /versions/v10.0.0/guides/debugging/
+    Assets: /versions/v10.0.0/guides/assets/
+    Icons: /versions/v10.0.0/guides/icons/
+    Using Custom Fonts: /versions/v10.0.0/guides/using-custom-fonts/
+    Push Notifications: /versions/v10.0.0/guides/push-notifications/
+    Building Standalone Apps: /versions/v10.0.0/guides/building-standalone-apps/
+    How Exponent Works: /versions/v10.0.0/guides/how-exponent-works/
+    Upgrading Exponent: /versions/v10.0.0/guides/upgrading-exponent/
+- title: SDK API Reference
+  index: /versions/v10.0.0/sdk/
+  links:
+    Introduction: /versions/v10.0.0/sdk/
+    Amplitude: /versions/v10.0.0/sdk/amplitude/
+    AppLoading: /versions/v10.0.0/sdk/app-loading/
+    Asset: /versions/v10.0.0/sdk/asset/
+    BlurView: /versions/v10.0.0/sdk/blur-view/
+    Constants: /versions/v10.0.0/sdk/constants/
+    Contacts: /versions/v10.0.0/sdk/contacts/
+    Facebook: /versions/v10.0.0/sdk/facebook/
+    Font: /versions/v10.0.0/sdk/font/
+    ImagePicker: /versions/v10.0.0/sdk/imagepicker/
+    LinearGradient: /versions/v10.0.0/sdk/linear-gradient/
+    Location: /versions/v10.0.0/sdk/location/
+    MapView: /versions/v10.0.0/sdk/map-view/
+    Permissions: /versions/v10.0.0/sdk/permissions/
+    Segment: /versions/v10.0.0/sdk/segment/
+    Svg: /versions/v10.0.0/sdk/svg/
+    Video: /versions/v10.0.0/sdk/video/

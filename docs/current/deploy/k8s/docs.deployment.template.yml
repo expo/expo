@@ -1,0 +1,32 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: ${APP_NAME}
+  namespace: ${KUBE_NAMESPACE}
+spec:
+  replicas: ${NUM_REPLICAS}
+  minReadySeconds: 10
+  revisionHistoryLimit: 10
+  strategy:
+    type: 'RollingUpdate'
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 5
+  template:
+    metadata:
+      labels:
+        app: ${APP_NAME}
+      annotations:
+        commit: ${COMMIT_HASH}
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: ${APP_NAME}
+          image: ${DOCKER_IMAGE}:${DOCKER_TAG}
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+          ports:
+          - containerPort: 80
+            name: http

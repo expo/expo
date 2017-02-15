@@ -1,0 +1,23 @@
+- title: Introduction
+  index: /versions/v6.0.0/introduction/
+  links:
+    Installation: /versions/v6.0.0/introduction/installation/
+    Community: /versions/v6.0.0/introduction/community/
+    Learning: /versions/v6.0.0/introduction/learning/
+- title: Guides
+  index: /versions/v6.0.0/guides/
+  links:
+    Up and Running: /versions/v6.0.0/guides/up-and-running/
+    Viewing Logs: /versions/v6.0.0/guides/logging/
+    Font Awesome: /versions/v6.0.0/guides/font-awesome/
+    Installing Node: /versions/v6.0.0/guides/installing-node/
+    Upgrading Exponent: /versions/v6.0.0/guides/upgrading-exponent/
+- title: SDK API Reference
+  index: /versions/v6.0.0/sdk/
+  links:
+    Introduction: /versions/v6.0.0/sdk/
+    Constants: /versions/v6.0.0/sdk/constants/
+    Contacts: /versions/v6.0.0/sdk/contacts/
+    Facebook: /versions/v6.0.0/sdk/facebook/
+    Font: /versions/v6.0.0/sdk/font/
+    ImagePicker: /versions/v6.0.0/sdk/imagepicker/
