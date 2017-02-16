@@ -31,115 +31,144 @@ Playing sounds
 
    This class represents a sound corresponding to an Asset or URL.
 
-   :param source:
-      The source of the audio data to display. The following forms are supported:
+   .. py:method:: Sound
 
-         - A string with a network URL pointing to an audio file on the web.
-         - ``require('path/to/file')`` for an audio file asset in the source code directory.
-         - An Exponent Asset object for an audio file asset in the source code directory.
+      The constructor for this class
 
-      The `iOS developer documentation
-      <https://developer.apple.com/library/ios/documentation/Miscellaneous/Conceptual/iPhoneOSTechOverview/MediaLayer/MediaLayer.html>`_
-      lists the audio formats supported on iOS.
+      :param object options:
+         A map of options:
 
-      The `Android developer documentation
-      <https://developer.android.com/guide/appendix/media-formats.html#formats-table>`_
-      lists the audio formats supported on Android.
+         * **source** -- The source of the audio data to display. The following
+           forms are supported:
+
+            * A string with a network URL pointing to an audio file on the web.
+            * ``require('path/to/file')`` for an audio file asset in the source code directory.
+            * An :py:class:`Exponent.Asset` object for an audio file asset.
+
+           The `iOS developer documentation
+           <https://developer.apple.com/library/ios/documentation/Miscellaneous/Conceptual/iPhoneOSTechOverview/MediaLayer/MediaLayer.html>`_
+           lists the audio formats supported on iOS.
+
+           The `Android developer documentation
+           <https://developer.android.com/guide/appendix/media-formats.html#formats-table>`_
+           lists the audio formats supported on Android.
+
+      :returns:
+         A newly constructed instance of ``Exponent.Audio.Sound``.
+
+      :example:
+         .. code-block:: javascript
+
+           const sound = new Exponent.Audio.Sound({
+             source: require('./assets/sounds/hello.mp3'),
+           });
 
    .. py:method:: loadAsync
 
-      Loads the ``Sound`` into memory and prepares it for playing.
+      Loads the sound into memory and prepares it for playing. This must be
+      called before calling ``play``.
+
+      :returns:
+         A ``Promise`` that is fulfilled when the sound is loaded, or rejects if loading failed.
 
    .. py:method:: unload
 
-      Unloads the ``Sound``. ``loadAsync`` must be called again in order to be able to play the ``Sound``.
+      Unloads the sound. ``loadAsync`` must be called again in order to be able to play the sound.
 
    .. py:method:: isLoaded
 
       :returns:
-        A ``boolean`` that is true just if the ``Sound`` is loaded.
+        A ``boolean`` that is true if and only if the sound is loaded.
 
    .. py:method:: getDurationMillis
 
       :returns:
-        The duration of the ``Sound`` in milliseconds. This is available only after the ``Sound`` is loaded.
+        The duration of the sound in milliseconds. This is available only after the sound is loaded.
 
    .. py:method:: play
 
-      Plays the ``Sound`` and awaits the result.
+      Plays the sound.
 
       :returns:
-        The ``status`` of the ``Sound`` (see ``getStatus`` for details).
+         A ``Promise`` that is resolved, once the sound starts playing, with the
+         ``status`` of the sound (see ``getStatus`` for details).
 
    .. py:method:: pause
 
-      Pauses the ``Sound`` and awaits the result.
+      Pauses the sound.
 
       :returns:
-        The ``status`` of the ``Sound`` (see ``getStatus`` for details).
+         A ``Promise`` that is resolved, once playback is paused, with the
+         ``status`` of the sound (see ``getStatus`` for details).
 
    .. py:method:: stop
 
-      Stops the ``Sound`` and awaits the result.
+      Stops the sound.
 
       :returns:
-        The ``status`` of the ``Sound`` (see ``getStatus`` for details).
+         A ``Promise`` that is resolved, once playback is stopped, with the
+         ``status`` of the sound (see ``getStatus`` for details).
 
    .. py:method:: setPosition
 
-      Seeks the position of the ``Sound`` and awaits the result.
+      Sets the playback position of the sound.
 
       :param number millis:
-        The position to seek the ``Sound`` to.
+        The position to seek the sound to.
 
       :returns:
-        The ``status`` of the ``Sound`` (see ``getStatus`` for details).
+         A ``Promise`` that is resolved, once the seek occurs, with the
+         ``status`` of the sound (see ``getStatus`` for details).
 
    .. py:method:: setVolume
 
-      Sets the volume of the ``Sound`` and awaits the result. This is NOT the system volume,
-      and will only affect this ``Sound``. This value defaults to ``1``.
+      Sets the volume of the sound. This is NOT the system volume,
+      and will only affect this sound. This value defaults to ``1``.
 
       :param number value:
         A number between ``0`` (silence) and ``1`` (maximum volume).
 
       :returns:
-        The ``status`` of the ``Sound`` (see ``getStatus`` for details).
+         A ``Promise`` that is resolved, once the volume is set, with the
+         ``status`` of the sound (see ``getStatus`` for details).
 
    .. py:method:: setIsMuted
 
-      Sets the volume of the ``Sound`` and awaits the result. This is independent of the
-      volume of the ``Sound`` set in ``setVolume``. This also does not affect the system
-      volume, and only pertains to this ``Sound``. This value defaults to ``true``.
+      Sets whether the sound is muted. This is independent of the volume of the
+      sound set in ``setVolume``. This also does not affect the system volume,
+      and only pertains to this sound. This value defaults to ``true``.
 
       :param boolean value:
-        ``true`` mutes the ``Sound``, and ``false`` unmutes it.
+        ``true`` mutes the sound, and ``false`` unmutes it.
 
       :returns:
-        The ``status`` of the ``Sound`` (see ``getStatus`` for details).
+         A ``Promise`` that is resolved, once the mute state is set, with the
+         ``status`` of the sound (see ``getStatus`` for details).
 
    .. py:method:: setIsLooping
 
-      Sets the looping value of the ``Sound`` and awaits the result. When ``true``, it will loop
+      Sets whether playback of the sound should loop. When ``true``, it will loop
       indefinitely. This value defaults to ``false``.
 
       :param boolean value:
-        ``true`` sets the ``Sound`` to loop indefinitely.
+        ``true`` sets the sound to loop indefinitely.
 
       :returns:
-        The ``status`` of the ``Sound`` (see ``getStatus`` for details).
+         A ``Promise`` that is resolved, once the loop state is set, with the
+         ``status`` of the sound (see ``getStatus`` for details).
 
    .. py:method:: getStatus
 
-      Awaits the ``status`` of the ``Sound``.
+      Gets the ``status`` of the sound.
 
       :returns:
-        The ``status`` of the ``Sound``: a dictionary with the following key-value pairs.
+         A ``Promise`` that is resolved with the ``status`` of the sound: a
+         dictionary with the following key-value pairs.
 
-            - ``position_millis`` : the current position of the ``Sound`` in milliseconds.
-            - ``is_playing`` : a boolean describing if the ``Sound`` is currently playing.
-            - ``is_muted`` : a boolean describing if the ``Sound`` is currently muted.
-            - ``is_looping`` : a boolean describing if the ``Sound`` is currently looping.
+            - ``position_millis`` : the current position of playback in milliseconds.
+            - ``is_playing`` : a boolean describing if the sound is currently playing.
+            - ``is_muted`` : a boolean describing if the sound is currently muted.
+            - ``is_looping`` : a boolean describing if the sound is currently looping.
 
    .. py:method:: setStatusChangeCallback
 
@@ -148,8 +177,8 @@ Playing sounds
       details on the regularity with which this function is called.
 
       :param function callback:
-        A function taking the parameter ``status`` (a dictionary, described in ``getStatus``)
-        and returning ``void``.
+        A function taking a single parameter ``status`` (a dictionary, described
+        in ``getStatus``).
 
    .. py:method:: setStatusPollingTimeoutMillis
 
@@ -158,17 +187,17 @@ Playing sounds
       to 100 milliseconds.
 
       Note that the status change callback will automatically be called when another call to the
-      API for this ``Sound`` completes (such as ``play``, ``pause``, or ``stop``) regardless of
+      API for this sound completes (such as ``play``, ``pause``, or ``stop``) regardless of
       this value.
 
       :param number millis:
-        The new interval to call the status change callback.
+        The new interval between calls of the status change callback.
 
    .. py:method:: setPlaybackFinishedCallback
 
-      Sets a function to be called whenever this ``Sound`` is finished playing to the end. This
+      Sets a function to be called whenever this sound is finished playing to the end. This
       callback is not called when looping is enabled, or when the sound is stopped or paused
       before it finishes playing.
 
       :param function callback:
-        A ``void -> void`` function.
+         The callback receives no parameters.
