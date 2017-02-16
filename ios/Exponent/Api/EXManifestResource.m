@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXManifestResource.h"
+#import "EXAnalytics.h"
 #import "EXCrypto.h"
 #import "EXFileDownloader.h"
 #import "EXKernel.h"
@@ -100,6 +101,27 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   // HACK: because `SecItemCopyMatching` doesn't work in older iOS (see EXCrypto.m)
   return (([UIDevice currentDevice].systemVersion.floatValue < 10) ||
           [EXShellManager sharedInstance].isManifestVerificationBypassed);
+}
+
+- (NSError *)_validateResponseData:(NSData *)data response:(NSURLResponse *)response
+{
+  if (response && [response isKindOfClass:[NSHTTPURLResponse class]]) {
+    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+    NSDictionary *headers = httpResponse.allHeaderFields;
+
+    // pass the Exponent-Server header to Amplitude if it exists.
+    // this is generated only from XDE and exp while serving local bundles.
+    NSString *serverHeaderJson = headers[@"Exponent-Server"];
+    if (serverHeaderJson) {
+      NSError *jsonError;
+      NSDictionary *serverHeader = [NSJSONSerialization JSONObjectWithData:[serverHeaderJson dataUsingEncoding:NSUTF8StringEncoding] options:0 error:&jsonError];
+      if (serverHeader && !jsonError) {
+        [[EXAnalytics sharedInstance] logEvent:@"LOAD_DEVELOPER_MANIFEST" manifestUrl:response.URL eventProperties:serverHeader];
+      }
+    }
+  }
+  // indicate that the response is valid
+  return nil;
 }
 
 @end
