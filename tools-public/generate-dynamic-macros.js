@@ -59,15 +59,16 @@ const macrosFuncs = {
       return '';
     }
 
-    let projectUrl;
+    let projectRoot;
     if (isInUniverse) {
-      projectUrl = path.join(__dirname, '..', 'js', '__internal__');
+      projectRoot = path.join(__dirname, '..', 'js', '__internal__');
     } else {
-      projectUrl = path.join(__dirname, '..', 'js');
+      projectRoot = path.join(__dirname, '..', 'js');
     }
 
     try {
-      let url = await UrlUtils.constructManifestUrlAsync(projectUrl);
+      let url = await UrlUtils.constructManifestUrlAsync(projectRoot);
+      console.log(`Project root: ${projectRoot}. Url: ${url}.`);
       let manifest = await ExponentTools.getManifestAsync(url, {
         'Exponent-Platform': platform,
       });
