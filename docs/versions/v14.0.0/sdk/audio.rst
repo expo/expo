@@ -12,7 +12,7 @@ Try the `playlist example app <http://getexponent.com/@exponent/playlist>`_
 (source code is `on GitHub <https://github.com/exponent/playlist>`_) to see an
 example usage of this API.
 
-Enabling Exponent Audio
+Enabling Audio
 """"""""""""""""""""""""""""
 
 Audio is disabled by default, so your app must enable it explicitly to play sounds.
