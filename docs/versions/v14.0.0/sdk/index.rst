@@ -34,6 +34,7 @@ example.
    app-loading
    art
    asset
+   audio
    bar-code-scanner
    blur-view
    constants
