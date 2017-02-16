@@ -30,19 +30,15 @@ import StyledSlidingTabNavigation
 const MAX_APPS_TO_DISPLAY = 3;
 const MAX_LIKES_TO_DISPLAY = 3;
 
-const NETWORK_ERROR_TEXT = dedent(
-  `
+const NETWORK_ERROR_TEXT = dedent`
   Your connection appears to be offline.
   Get out of the subway tunnel or connect to a better wifi network and check back.
-`,
-);
+`;
 
-const SERVER_ERROR_TEXT = dedent(
-  `
+const SERVER_ERROR_TEXT = dedent`
   An unexpected server error has occurred.
   Sorry about this. We will resolve the issue as soon as possible.
-`,
-);
+`;
 
 export default class Profile extends React.Component {
   state = {

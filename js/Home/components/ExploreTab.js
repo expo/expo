@@ -21,19 +21,15 @@ import ProjectCard from './ProjectCard';
 import PrimaryButton from './PrimaryButton';
 import SharedStyles from '../constants/SharedStyles';
 
-const NETWORK_ERROR_TEXT = dedent(
-  `
+const NETWORK_ERROR_TEXT = dedent`
   Your connection appears to be offline.
   Get out of the subway tunnel or connect to a better wifi network and check back.
-`,
-);
+`;
 
-const SERVER_ERROR_TEXT = dedent(
-  `
+const SERVER_ERROR_TEXT = dedent`
   An unexpected server error has occurred.
   Sorry about this. We will resolve the issue as soon as quickly as possible.
-`,
-);
+`;
 
 export default class ExploreTab extends React.Component {
   state = {
@@ -164,9 +160,9 @@ export default class ExploreTab extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: (
-      FeatureFlags.HIDE_EXPLORE_TABS && Platform.OS === 'ios' ? 5 : 15
-    ),
+    paddingTop: FeatureFlags.HIDE_EXPLORE_TABS && Platform.OS === 'ios'
+      ? 5
+      : 15,
     backgroundColor: Colors.greyBackground,
     borderRightWidth: 1,
     borderRightColor: '#f6f6f6',
