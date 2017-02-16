@@ -99,8 +99,8 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
 #endif
 #endif
   
-#ifdef GOOGLE_MAPS_API_KEY
-  [GMSServices provideAPIKey:GOOGLE_MAPS_API_KEY];
+#ifdef GOOGLE_MAPS_IOS_API_KEY
+  [GMSServices provideAPIKey:GOOGLE_MAPS_IOS_API_KEY];
 #endif
 
   [EXRemoteNotificationManager sharedInstance];
