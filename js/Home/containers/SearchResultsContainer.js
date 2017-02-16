@@ -36,16 +36,13 @@ const SearchQuery = gql`
       }
     }
   }
-`
+`;
 
 export default graphql(SearchQuery, {
-  props: (props) => {
+  props: props => {
     let { data } = props;
 
-    let results = groupBy(
-      data.searchUsersAndApps,
-      (result) => result.__typename
-    );
+    let results = groupBy(data.searchUsersAndApps, result => result.__typename);
 
     return {
       ...props,
@@ -53,9 +50,9 @@ export default graphql(SearchQuery, {
         ...data,
         results,
       },
-    }
+    };
   },
-  options: (props) => ({
+  options: props => ({
     variables: {
       offset: 0,
       limit: props.query.length < 2 ? 0 : 10,

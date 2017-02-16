@@ -1,15 +1,6 @@
 import React from 'react';
-import {
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {
-  withNavigation,
-} from '@exponent/ex-navigation';
+import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { withNavigation } from '@exponent/ex-navigation';
 
 import Colors from '../constants/Colors';
 import PrimaryButton from './PrimaryButton';
@@ -17,7 +8,6 @@ import SharedStyles from '../constants/SharedStyles';
 
 @withNavigation
 export default class EmptyProjectsNotice extends React.Component {
-
   render() {
     return (
       <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
@@ -31,9 +21,7 @@ export default class EmptyProjectsNotice extends React.Component {
           projects here.
         </Text>
 
-        <PrimaryButton
-          onPress={this._handleExplorePress}
-          fallback={TouchableOpacity}>
+        <PrimaryButton onPress={this._handleExplorePress} fallback={TouchableOpacity}>
           Explore Exponent projects
         </PrimaryButton>
       </ScrollView>
@@ -44,7 +32,7 @@ export default class EmptyProjectsNotice extends React.Component {
     this.props.navigation.performAction(({ tabs, stacks }) => {
       tabs('main').jumpToTab('explore');
     });
-  }
+  };
 }
 
 const styles = StyleSheet.create({

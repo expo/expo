@@ -6,15 +6,7 @@
 'use strict';
 
 import React, { PropTypes } from 'react';
-import {
-  Animated,
-  Dimensions,
-  Easing,
-  PanResponder,
-  Platform,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { Animated, Dimensions, Easing, PanResponder, Platform, StyleSheet, View } from 'react-native';
 import TimerMixin from 'react-timer-mixin';
 import ResponsiveImage from '@exponent/react-native-responsive-image';
 
@@ -44,7 +36,6 @@ let ScreenCenter = DeviceWidth / 2;
 // TODO(brentvatne): Move away from getValue() if possible
 
 class ExButton extends React.Component {
-
   static getDataProps(data) {
     return {
       isVisible: data.exponentButton.isVisible,
@@ -128,10 +119,9 @@ class ExButton extends React.Component {
     let panResponder = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onPanResponderGrant: this._handlePanResponderGrant,
-      onPanResponderMove: Animated.event(
-        [null, { dx: position.x, dy: position.y }],
-        { listener: this._handlePanResponderMove }
-      ),
+      onPanResponderMove: Animated.event([null, { dx: position.x, dy: position.y }], {
+        listener: this._handlePanResponderMove,
+      }),
       onPanResponderRelease: this._handlePanResponderRelease,
       onPanResponderTerminate: this._handlePanResponderRelease,
     });
@@ -145,24 +135,31 @@ class ExButton extends React.Component {
   }
 
   componentDidMount() {
-    this.setTimeout(() => {
-      this._becomeInactiveSoon();
-    }, this.props.msUntilInactiveOnMount);
+    this.setTimeout(
+      () => {
+        this._becomeInactiveSoon();
+      },
+      this.props.msUntilInactiveOnMount,
+    );
   }
 
   componentWillReceiveProps(nextProps) {
     if (this.props.isVisible && !nextProps.isVisible) {
-      Animated.timing(this.state.scale, {
-        toValue: 0,
-        duration: 250,
-        easing: Easing.inOut(Easing.linear),
-      }).start();
+      Animated
+        .timing(this.state.scale, {
+          toValue: 0,
+          duration: 250,
+          easing: Easing.inOut(Easing.linear),
+        })
+        .start();
     } else if (!this.props.isVisible && nextProps.isVisible) {
-      Animated.timing(this.state.scale, {
-        toValue: 1,
-        duration: 250,
-        easing: Easing.inOut(Easing.linear),
-      }).start();
+      Animated
+        .timing(this.state.scale, {
+          toValue: 1,
+          duration: 250,
+          easing: Easing.inOut(Easing.linear),
+        })
+        .start();
     }
   }
 
@@ -177,10 +174,7 @@ class ExButton extends React.Component {
     let animatedContainerStyle = {
       top: position.y,
       left: position.x,
-      transform: [
-        { scaleX: scale },
-        { scaleY: scale },
-      ],
+      transform: [{ scaleX: scale }, { scaleY: scale }],
     };
 
     let bubbleBorderColor = active.interpolate({
@@ -214,10 +208,10 @@ class ExButton extends React.Component {
         <Animated.View style={[styles.bubble, animatedBubbleStyle]}>
           <AnimatedResponsiveImage
             sources={{
-              2: {uri: 'https://s3.amazonaws.com/exp-us-standard/ios-home-btn-logo@2x.png'},
-              3: {uri: 'https://s3.amazonaws.com/exp-us-standard/ios-home-btn-logo@3x.png'},
+              2: { uri: 'https://s3.amazonaws.com/exp-us-standard/ios-home-btn-logo@2x.png' },
+              3: { uri: 'https://s3.amazonaws.com/exp-us-standard/ios-home-btn-logo@3x.png' },
             }}
-            style={[styles.icon, {tintColor}]}
+            style={[styles.icon, { tintColor }]}
           />
         </Animated.View>
       </Animated.View>
@@ -227,27 +221,33 @@ class ExButton extends React.Component {
   _interactionHasStarted() {
     this.clearTimeout(this._inactiveWait);
 
-    Animated.timing(this.state.active, {
-      easing: Easing.inOut(Easing.linear),
-      toValue: 1,
-      duration: 200,
-    }).start();
+    Animated
+      .timing(this.state.active, {
+        easing: Easing.inOut(Easing.linear),
+        toValue: 1,
+        duration: 200,
+      })
+      .start();
   }
 
   _becomeInactiveSoon() {
     this.clearTimeout(this._inactiveWait);
 
-    this._inactiveWait = this.setTimeout(() => {
-      Animated.timing(this.state.active, {
-        easing: Easing.out(Easing.quad),
-        toValue: 0,
-        duration: 300,
-      }).start();
-    }, this.props.msUntilInactiveOnInteraction);
+    this._inactiveWait = this.setTimeout(
+      () => {
+        Animated
+          .timing(this.state.active, {
+            easing: Easing.out(Easing.quad),
+            toValue: 0,
+            duration: 300,
+          })
+          .start();
+      },
+      this.props.msUntilInactiveOnInteraction,
+    );
   }
 
-  @autobind
-  _handlePanResponderGrant(event, gestureState) {
+  @autobind _handlePanResponderGrant(event, gestureState) {
     var { position } = this.state;
 
     // Re-set the offset to the current value, otherwise when we set the value
@@ -257,22 +257,25 @@ class ExButton extends React.Component {
       x: position.x.__getValue(),
       y: position.y.__getValue(),
     });
-    position.setValue({x: 0, y: 0});
+    position.setValue({ x: 0, y: 0 });
 
     this._interactionHasStarted();
     Animated.spring(this.state.scale, { toValue: 0.9 }).start();
   }
 
-  @autobind
-  _handlePanResponderMove(event, {dx, dy}) {
+  @autobind _handlePanResponderMove(event, { dx, dy }) {
   }
 
-  @autobind
-  _handlePanResponderRelease(event, gestureState) {
+  @autobind _handlePanResponderRelease(event, gestureState) {
     let { dx, dy, vx, vy } = gestureState;
     let { position } = this.state;
-    const { velocityThreshold, bottomDockDistance, topDockDistance,
-            velocityMultiplier, extraVelocityMultiplierY } = this.props;
+    const {
+      velocityThreshold,
+      bottomDockDistance,
+      topDockDistance,
+      velocityMultiplier,
+      extraVelocityMultiplierY,
+    } = this.props;
 
     this._becomeInactiveSoon();
 
@@ -291,8 +294,7 @@ class ExButton extends React.Component {
     /* Calculate the X position */
     let currentX = position.x.__getValue();
     let targetX;
-    if (currentX >= ScreenCenter && vx > -velocityThreshold ||
-        vx >= velocityThreshold) {
+    if (currentX >= ScreenCenter && vx > -velocityThreshold || vx >= velocityThreshold) {
       targetX = RightDock;
     } else {
       targetX = LeftDock;
@@ -314,28 +316,28 @@ class ExButton extends React.Component {
       targetY = topDockDistance;
     }
 
-    let springConfig = {bounciness: this.props.bounciness, speed: this.props.speed};
+    let springConfig = { bounciness: this.props.bounciness, speed: this.props.speed };
 
-    Animated.parallel([
-      Animated.spring(position.x, {
-        toValue: targetX - BubbleHitTestSlop,
-        ...springConfig,
-        velocity: gestureState.vx * velocityMultiplier,
-      }),
-      Animated.spring(position.y, {
-        toValue: targetY - BubbleHitTestSlop,
-        ...springConfig,
-        velocity: vy * velocityMultiplier * extraVelocityMultiplierY,
-      }),
-    ]).start();
+    Animated
+      .parallel([
+        Animated.spring(position.x, {
+          toValue: targetX - BubbleHitTestSlop,
+          ...springConfig,
+          velocity: gestureState.vx * velocityMultiplier,
+        }),
+        Animated.spring(position.y, {
+          toValue: targetY - BubbleHitTestSlop,
+          ...springConfig,
+          velocity: vy * velocityMultiplier * extraVelocityMultiplierY,
+        }),
+      ])
+      .start();
   }
 }
 
 reactMixin(ExButton.prototype, TimerMixin);
 
-export default connect(
-  data => ExButton.getDataProps(data),
-)(ExButton);
+export default connect(data => ExButton.getDataProps(data))(ExButton);
 
 var styles = StyleSheet.create({
   container: {
@@ -349,7 +351,7 @@ var styles = StyleSheet.create({
     borderRadius: BubbleSize / 2,
     borderWidth: ExLayout.pixel * 2,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowRadius: 1,
     justifyContent: 'center',
     alignItems: 'center',

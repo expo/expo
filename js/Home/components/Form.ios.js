@@ -1,13 +1,6 @@
 import React from 'react';
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
-import {
-  Components,
-} from 'exponent';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { Components } from 'exponent';
 
 export class FormInput extends React.Component {
   state = {
@@ -15,8 +8,7 @@ export class FormInput extends React.Component {
   };
 
   shouldComponentUpdate(nextProps, nextState) {
-    if (nextProps.value === this.props.value &&
-        nextProps.labelWidth === this.props.labelWidth) {
+    if (nextProps.value === this.props.value && nextProps.labelWidth === this.props.labelWidth) {
       return false;
     }
 
@@ -39,10 +31,10 @@ export class FormInput extends React.Component {
     this._input.blur();
   }
 
-  _handleLayoutLabel = (e) => {
+  _handleLayoutLabel = e => {
     let width = e.nativeEvent.layout.width;
-    this.setState({labelWidth: width});
-  }
+    this.setState({ labelWidth: width });
+  };
 
   _renderGradientOverlay = () => {
     return (
@@ -50,9 +42,10 @@ export class FormInput extends React.Component {
         colors={['rgba(255,255,255, 1)', 'rgba(255,255,255, 0.2)']}
         start={[0.5, 0]}
         end={[1, 0]}
-        style={{position: 'absolute', left: this.state.labelWidth, right: 0, top: 0, bottom: 0, width: 30}} />
+        style={{ position: 'absolute', left: this.state.labelWidth, right: 0, top: 0, bottom: 0, width: 30 }}
+      />
     );
-  }
+  };
 
   render() {
     let {
@@ -60,7 +53,7 @@ export class FormInput extends React.Component {
       autofocus,
       hideBottomBorder,
       style,
-      ...props,
+      ...props
     } = this.props;
 
     return (
@@ -72,7 +65,9 @@ export class FormInput extends React.Component {
         </View>
 
         <TextInput
-          ref={view => { this._input = view; }}
+          ref={view => {
+            this._input = view;
+          }}
           {...props}
           style={[styles.textInput, style]}
         />

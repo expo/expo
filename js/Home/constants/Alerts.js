@@ -27,4 +27,4 @@ export default {
       color: '#666804',
     },
   }),
-}
+};

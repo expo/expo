@@ -1,17 +1,7 @@
 import React from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
-import {
-  Components,
-} from 'exponent';
-import {
-  connect,
-} from 'react-redux';
+import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Components } from 'exponent';
+import { connect } from 'react-redux';
 
 import Alerts from '../constants/Alerts';
 import AuthTokenActions from '../../Flux/AuthTokenActions';
@@ -28,7 +18,7 @@ export default class SignInScreen extends React.Component {
     navigationBar: {
       title: 'Sign In',
     },
-  }
+  };
 
   static getDataProps(data) {
     return {
@@ -36,15 +26,17 @@ export default class SignInScreen extends React.Component {
     };
   }
 
-  state = DEBUG ? {
-    email: 'testing@getexponent.com',
-    password: 'pass123',
-    isLoading: false,
-  } : {
-    email: '',
-    password: '',
-    isLoading: false,
-  }
+  state = DEBUG
+    ? {
+        email: 'testing@getexponent.com',
+        password: 'pass123',
+        isLoading: false,
+      }
+    : {
+        email: '',
+        password: '',
+        isLoading: false,
+      };
 
   componentDidMount() {
     this._isMounted = true;
@@ -65,7 +57,7 @@ export default class SignInScreen extends React.Component {
     return (
       <ScrollView
         style={styles.container}
-        contentContainerStyle={{paddingTop: 15}}
+        contentContainerStyle={{ paddingTop: 15 }}
         keyboardShouldPersistTaps="always"
         keyboardDismissMode="on-drag">
         <Form>
@@ -84,7 +76,9 @@ export default class SignInScreen extends React.Component {
           <Form.Input
             hideBottomBorder
             label="Password"
-            ref={view => { this._passwordInput = view; }}
+            ref={view => {
+              this._passwordInput = view;
+            }}
             onChangeText={this._handleChangePassword}
             onSubmitEditing={this._handleSubmitPassword}
             returnKeyType="done"
@@ -93,10 +87,7 @@ export default class SignInScreen extends React.Component {
           />
         </Form>
 
-        <PrimaryButton
-          isLoading={this.state.isLoading}
-          style={{margin: 20}}
-          onPress={this._handleSubmit}>
+        <PrimaryButton isLoading={this.state.isLoading} style={{ margin: 20 }} onPress={this._handleSubmit}>
           Sign In
         </PrimaryButton>
       </ScrollView>
@@ -105,19 +96,19 @@ export default class SignInScreen extends React.Component {
 
   _handleSubmitEmail = () => {
     this._passwordInput.focus();
-  }
+  };
 
   _handleSubmitPassword = () => {
     this._handleSubmit();
-  }
+  };
 
-  _handleChangeEmail = (email) => {
-    this.setState({email});
-  }
+  _handleChangeEmail = email => {
+    this.setState({ email });
+  };
 
-  _handleChangePassword = (password) => {
-    this.setState({password});
-  }
+  _handleChangePassword = password => {
+    this.setState({ password });
+  };
 
   _handleSubmit = async () => {
     let { email, password, isLoading } = this.state;
@@ -136,25 +127,27 @@ export default class SignInScreen extends React.Component {
           this._handleError(result);
         } else {
           this.props.navigator.hideLocalAlert();
-          this.props.dispatch(AuthTokenActions.setAuthTokens({
-            refreshToken: result.refresh_token,
-            accessToken: result.access_token,
-            idToken: result.id_token,
-          }));
+          this.props.dispatch(
+            AuthTokenActions.setAuthTokens({
+              refreshToken: result.refresh_token,
+              accessToken: result.access_token,
+              idToken: result.id_token,
+            }),
+          );
         }
       }
-    } catch(e) {
+    } catch (e) {
       this._isMounted && this._handleError(e);
     } finally {
       this._isMounted && this.setState({ isLoading: false });
     }
-  }
+  };
 
-  _handleError = (error) => {
-    console.log({error});
-    let message = error.error_description || error.message || "Sorry, something went wrong.";
+  _handleError = error => {
+    console.log({ error });
+    let message = error.error_description || error.message || 'Sorry, something went wrong.';
     this.props.navigator.showLocalAlert(message, Alerts.error);
-  }
+  };
 }
 
 const styles = StyleSheet.create({

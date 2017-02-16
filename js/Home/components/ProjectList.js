@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  ActivityIndicator,
-  ListView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, ListView, StyleSheet, Text, View } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 import { withNavigation } from '@exponent/ex-navigation';
 
@@ -16,10 +10,10 @@ import SmallProjectCard from './SmallProjectCard';
 @withNavigation
 export default class ProjectList extends React.Component {
   state = {
-    dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2 }),
+    dataSource: new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 }),
     isRefetching: false,
     isLoadingMore: false,
-  }
+  };
 
   componentDidMount() {
     this._isMounted = true;
@@ -36,16 +30,14 @@ export default class ProjectList extends React.Component {
 
     if (nextProps.data.apps !== this.props.data.apps) {
       let dataSource = this.state.dataSource.cloneWithRows(nextProps.data.apps);
-      this.setState({dataSource});
+      this.setState({ dataSource });
     }
   }
 
   render() {
     return (
-      <View style={{flex: 1}}>
-        { this.props.data.apps && this.props.data.apps.length ?
-          this._renderContent() :
-          this._maybeRenderLoading() }
+      <View style={{ flex: 1 }}>
+        {this.props.data.apps && this.props.data.apps.length ? this._renderContent() : this._maybeRenderLoading()}
       </View>
     );
   }
@@ -56,25 +48,25 @@ export default class ProjectList extends React.Component {
     }
 
     return (
-      <View style={{flex: 1, padding: 30, alignItems: 'center'}}>
+      <View style={{ flex: 1, padding: 30, alignItems: 'center' }}>
         <ActivityIndicator />
       </View>
     );
-  }
+  };
 
   _renderContent = () => {
     return (
       <ListView
         dataSource={this.state.dataSource}
         renderRow={this._renderRow}
-        style={[{flex: 1}, !this.props.belongsToCurrentUser && styles.largeProjectCardList]}
-        renderScrollComponent={(props) => <InfiniteScrollView {...props} />}
+        style={[{ flex: 1 }, !this.props.belongsToCurrentUser && styles.largeProjectCardList]}
+        renderScrollComponent={props => <InfiniteScrollView {...props} />}
         canLoadMore={this._canLoadMore()}
         onLoadMoreAsync={this._handleLoadMoreAsync}
         removeClippedSubviews={false}
       />
     );
-  }
+  };
 
   _handleLoadMoreAsync = async () => {
     if (this.state.isLoadingMore) {
@@ -82,18 +74,18 @@ export default class ProjectList extends React.Component {
     }
 
     try {
-      this.setState({isLoadingMore: true});
+      this.setState({ isLoadingMore: true });
       await this.props.loadMoreAsync();
-    } catch(e) {
-      console.log({e});
+    } catch (e) {
+      console.log({ e });
     } finally {
-      this._isMounted && this.setState({isLoadingMore: false});
+      this._isMounted && this.setState({ isLoadingMore: false });
     }
-  }
+  };
 
   _canLoadMore = () => {
     return this.props.data.apps.length < this.props.data.appCount;
-  }
+  };
 
   _renderRow = (app, i) => {
     if (this.props.belongsToCurrentUser) {
@@ -126,11 +118,11 @@ export default class ProjectList extends React.Component {
         />
       );
     }
-  }
+  };
 
-  _handlePressUsername = (username) => {
+  _handlePressUsername = username => {
     this.props.navigator.push('profile', { username });
-  }
+  };
 }
 
 const styles = StyleSheet.create({

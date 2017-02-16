@@ -1,7 +1,4 @@
-import {
-  Platform,
-  StyleSheet,
-} from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 export default {
   navigationBar: {
@@ -13,4 +10,4 @@ export default {
       fontWeight: Platform.OS === 'ios' ? '600' : '400',
     },
   },
-}
+};

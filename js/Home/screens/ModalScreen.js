@@ -1,24 +1,17 @@
 import React from 'react';
-import {
-  Animated,
-  Platform,
-  View,
-} from 'react-native';
-import {
-  NavigationStyles,
-  StackNavigation,
-} from '@exponent/ex-navigation';
+import { Animated, Platform, View } from 'react-native';
+import { NavigationStyles, StackNavigation } from '@exponent/ex-navigation';
 import CloseButton from '../components/CloseButton';
 import defaultRouteConfig from '../navigation/defaultRouteConfig';
 
 function withoutShadow(transition) {
   return {
     ...transition,
-    sceneAnimations: (props) => ({
+    sceneAnimations: props => ({
       ...transition.sceneAnimations(props),
       shadowOpacity: 0,
     }),
-  }
+  };
 }
 
 export default class ModalScreen extends React.Component {
@@ -40,13 +33,12 @@ export default class ModalScreen extends React.Component {
 
   render() {
     return (
-      <View style={{flex: 1, backgroundColor: '#000'}}>
+      <View style={{ flex: 1, backgroundColor: '#000' }}>
         <StackNavigation
           initialRoute={this.props.route.params.initialRoute}
           defaultRouteConfig={{
-            styles: (Platform.OS === 'android' ?
-              NavigationStyles.Fade :
-              withoutShadow(NavigationStyles.SlideHorizontalIOS)
+            styles: (
+              Platform.OS === 'android' ? NavigationStyles.Fade : withoutShadow(NavigationStyles.SlideHorizontalIOS)
             ),
             navigationBar: {
               visible: true,

@@ -1,22 +1,7 @@
 import React from 'react';
-import {
-  Animated,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
-import {
-  SlidingTabNavigation,
-  SlidingTabNavigationItem,
-  NavigationBar,
-  withNavigation,
-} from '@exponent/ex-navigation';
-import {
-  Ionicons,
-} from '@exponent/vector-icons';
+import { Animated, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { SlidingTabNavigation, SlidingTabNavigationItem, NavigationBar, withNavigation } from '@exponent/ex-navigation';
+import { Ionicons } from '@exponent/vector-icons';
 import TouchableNativeFeedback from '@exponent/react-native-touchable-native-feedback-safe';
 
 import Colors from '../constants/Colors';
@@ -26,18 +11,17 @@ import ExploreTabContainer from '../containers/ExploreTabContainer';
 import FeatureFlags from '../../FeatureFlags';
 
 const TabTitles = {
-  'top': 'Top projects',
-  'new': 'New projects',
-  'featured': FeatureFlags.DISPLAY_ALL_EXPLORE_TABS ? 'Featured' : 'Featured projects',
+  top: 'Top projects',
+  new: 'New projects',
+  featured: FeatureFlags.DISPLAY_ALL_EXPLORE_TABS ? 'Featured' : 'Featured projects',
 };
 
-@withNavigation
-class SearchButton extends React.Component {
+@withNavigation class SearchButton extends React.Component {
   render() {
     return (
       <TouchableNativeFeedback
         onPress={this._handlePress}
-        style={{flex: 1, paddingLeft: 20, paddingRight: 20, alignItems: 'center', justifyContent: 'center'}}>
+        style={{ flex: 1, paddingLeft: 20, paddingRight: 20, alignItems: 'center', justifyContent: 'center' }}>
         <Ionicons name="md-search" size={27} color="#4E9BDE" />
       </TouchableNativeFeedback>
     );
@@ -45,7 +29,7 @@ class SearchButton extends React.Component {
 
   _handlePress = () => {
     this.props.navigator.push('search');
-  }
+  };
 }
 
 export default class ExploreScreen extends React.Component {
@@ -53,12 +37,12 @@ export default class ExploreScreen extends React.Component {
     navigationBar: {
       // Disable the built-in navigation bar for better transitions
       visible: false,
-    }
-  }
+    },
+  };
 
   render() {
     return (
-      <View style={{flex: 1, backgroundColor: Colors.greyBackground}}>
+      <View style={{ flex: 1, backgroundColor: Colors.greyBackground }}>
         {this._renderSearchBar()}
         {this._renderContent()}
       </View>
@@ -89,32 +73,24 @@ export default class ExploreScreen extends React.Component {
 
   _renderTabs() {
     let tabs = [
-      <SlidingTabNavigationItem id="featured" key="featured">
-        <ExploreTabContainer
-          filter="FEATURED"
-          onPressUsername={this._handlePressUsername}
-        />
-      </SlidingTabNavigationItem>
+      (
+        <SlidingTabNavigationItem id="featured" key="featured">
+          <ExploreTabContainer filter="FEATURED" onPressUsername={this._handlePressUsername} />
+        </SlidingTabNavigationItem>
+      ),
     ];
-
 
     if (FeatureFlags.DISPLAY_ALL_EXPLORE_TABS) {
       tabs.push(
         <SlidingTabNavigationItem id="top" key="top">
-          <ExploreTabContainer
-            filter="TOP"
-            onPressUsername={this._handlePressUsername}
-          />
-        </SlidingTabNavigationItem>
+          <ExploreTabContainer filter="TOP" onPressUsername={this._handlePressUsername} />
+        </SlidingTabNavigationItem>,
       );
 
       tabs.push(
         <SlidingTabNavigationItem id="new" key="new">
-          <ExploreTabContainer
-            filter="NEW"
-            onPressUsername={this._handlePressUsername}
-          />
-        </SlidingTabNavigationItem>
+          <ExploreTabContainer filter="NEW" onPressUsername={this._handlePressUsername} />
+        </SlidingTabNavigationItem>,
       );
     }
 
@@ -127,7 +103,7 @@ export default class ExploreScreen extends React.Component {
         <View style={styles.titleBarAndroid}>
           <View style={styles.titleAndroid}>
             <Text numberOfLines={1} style={styles.titleTextAndroid}>
-              { FeatureFlags.HIDE_EXPLORE_TABS ? 'Featured Projects' : 'Projects' }
+              {FeatureFlags.HIDE_EXPLORE_TABS ? 'Featured Projects' : 'Projects'}
             </Text>
           </View>
 
@@ -145,9 +121,9 @@ export default class ExploreScreen extends React.Component {
     }
   }
 
-  _handlePressUsername = (username) => {
+  _handlePressUsername = username => {
     this.props.navigator.push('profile', { username });
-  }
+  };
 }
 
 let navBarBorder = {};

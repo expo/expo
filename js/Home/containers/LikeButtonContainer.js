@@ -29,25 +29,16 @@ const UnlikeProjectMutation = gql`
 `;
 
 @onlyIfAuthenticated
-@graphql(UnlikeProjectMutation, {name: 'unlikeMutation'})
-@graphql(LikeProjectMutation, {name: 'likeMutation'})
+@graphql(UnlikeProjectMutation, { name: 'unlikeMutation' })
+@graphql(LikeProjectMutation, { name: 'likeMutation' })
 export default class LikeButtonContainer extends React.Component {
   render() {
-    return (
-      <LikeButton
-        style={this.props.style}
-        liked={this.props.liked}
-        onPress={this._handlePressAsync}
-      />
-    );
+    return <LikeButton style={this.props.style} liked={this.props.liked} onPress={this._handlePressAsync} />;
   }
 
   _alertNoInternetConnection = (message = '') => {
-    Alert.alert(
-      "No internet connection available",
-      message || "Please try again when you're back online"
-    );
-  }
+    Alert.alert('No internet connection available', message || "Please try again when you're back online");
+  };
 
   _handlePressAsync = async () => {
     if (!(await Connectivity.isAvailableAsync())) {
@@ -65,23 +56,23 @@ export default class LikeButtonContainer extends React.Component {
         result = await this.likeAsync();
       }
 
-      console.log({result, appId: this.props.appId});
-    } catch(e) {
+      console.log({ result, appId: this.props.appId });
+    } catch (e) {
       if (liked) {
-        this._alertNoInternetConnection("Unable to like the project, try again later.");
+        this._alertNoInternetConnection('Unable to like the project, try again later.');
       } else {
-        this._alertNoInternetConnection("Unable to unlike the project, try again later.");
+        this._alertNoInternetConnection('Unable to unlike the project, try again later.');
       }
 
-      console.log({e});
+      console.log({ e });
     }
-  }
+  };
 
   likeAsync = async () => {
-    return this.props.likeMutation({variables: {appId: this.props.appId}});
-  }
+    return this.props.likeMutation({ variables: { appId: this.props.appId } });
+  };
 
-  unlikeAsync  = async () => {
-    return this.props.unlikeMutation({variables: {appId: this.props.appId}});
-  }
+  unlikeAsync = async () => {
+    return this.props.unlikeMutation({ variables: { appId: this.props.appId } });
+  };
 }

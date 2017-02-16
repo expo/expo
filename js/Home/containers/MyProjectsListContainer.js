@@ -23,10 +23,10 @@ const MyAppsQuery = gql`
     }
   }
 
-`
+`;
 
 export default graphql(MyAppsQuery, {
-  props: (props) => {
+  props: props => {
     let { data } = props;
     let apps, appCount;
     if (data.viewer && data.viewer.me) {
@@ -55,16 +55,13 @@ export default graphql(MyAppsQuery, {
               viewer: {
                 me: {
                   ...fetchMoreResult.data.viewer.me,
-                  apps: [
-                    ...previousData.viewer.me.apps,
-                    ...fetchMoreResult.data.viewer.me.apps
-                  ],
-                }
+                  apps: [...previousData.viewer.me.apps, ...fetchMoreResult.data.viewer.me.apps],
+                },
               },
             });
           },
         });
-      }
+      },
     };
   },
   options: {

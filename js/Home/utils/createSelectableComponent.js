@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  TouchableWithoutFeedback,
-} from 'react-native';
+import { TouchableWithoutFeedback } from 'react-native';
 
 const DEFAULT_PRESS_IN_DELAY_MS = 80;
 
@@ -13,7 +11,7 @@ export default function createSelectableComponent(TargetComponent, selectablePro
         onPress,
         onPressIn,
         onPressOut,
-        ...childProps,
+        ...childProps
       } = this.props;
 
       return (
@@ -48,8 +46,8 @@ class Selectable extends React.Component {
       <TouchableWithoutFeedback
         delayPressIn={DEFAULT_PRESS_IN_DELAY_MS}
         {...this.props}
-        onPressIn={(e) => this._handlePressIn(e)}
-        onPressOut={(e) => this._handlePressOut(e)}>
+        onPressIn={e => this._handlePressIn(e)}
+        onPressOut={e => this._handlePressOut(e)}>
         {child}
       </TouchableWithoutFeedback>
     );

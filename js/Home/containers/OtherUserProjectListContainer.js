@@ -22,10 +22,10 @@ const UsersAppsQuery = gql`
       }
     }
   }
-`
+`;
 
 export default graphql(UsersAppsQuery, {
-  props: (props) => {
+  props: props => {
     let { data } = props;
     let apps, appCount;
     if (data.usersApps) {
@@ -53,10 +53,7 @@ export default graphql(UsersAppsQuery, {
             return Object.assign({}, previousData, {
               usersApps: {
                 ...fetchMoreResult.data.usersApps,
-                apps: [
-                  ...previousData.usersApps.apps,
-                  ...fetchMoreResult.data.usersApps.apps,
-                ],
+                apps: [...previousData.usersApps.apps, ...fetchMoreResult.data.usersApps.apps],
               },
             });
           },
@@ -64,9 +61,9 @@ export default graphql(UsersAppsQuery, {
       },
     };
   },
-  options: (props) => ({
+  options: props => ({
     variables: {
-      username: props.username.replace('@',''),
+      username: props.username.replace('@', ''),
       limit: 15,
       offset: 0,
     },

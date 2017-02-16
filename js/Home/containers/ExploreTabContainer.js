@@ -21,7 +21,7 @@ const PublicAppsQuery = gql`
 `;
 
 export default graphql(PublicAppsQuery, {
-  props: (props) => {
+  props: props => {
     let { data: { apps, fetchMore } } = props;
 
     return {
@@ -37,21 +37,18 @@ export default graphql(PublicAppsQuery, {
             }
 
             return Object.assign({}, previousData, {
-              apps: [
-                ...previousData.apps,
-                ...fetchMoreResult.data.apps
-              ],
+              apps: [...previousData.apps, ...fetchMoreResult.data.apps],
             });
           },
         });
-      }
-    }
+      },
+    };
   },
-  options: (props) => ({
+  options: props => ({
     variables: {
       filter: props.filter,
       limit: 10,
       offset: 0,
-    }
-  })
+    },
+  }),
 })(ExploreTab);

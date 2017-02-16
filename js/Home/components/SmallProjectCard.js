@@ -1,19 +1,7 @@
 import React from 'react';
-import {
-  Image,
-  Linking,
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  View,
-} from 'react-native';
-import {
-  Ionicons,
-} from '@exponent/vector-icons';
-import {
-  withNavigation,
-} from '@exponent/ex-navigation';
+import { Image, Linking, Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import { Ionicons } from '@exponent/vector-icons';
+import { withNavigation } from '@exponent/ex-navigation';
 
 import Colors from '../constants/Colors';
 import Layout from '../constants/Layout';
@@ -49,45 +37,37 @@ export default class SmallProjectCard extends React.Component {
         </View>
 
         <View style={[styles.infoContainer, !this.props.fullWidthBorder && styles.bottomBorder]}>
-          <Text
-            style={styles.projectNameText}
-            ellipsizeMode="tail"
-            numberOfLines={1}>
+          <Text style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
             {projectName}
           </Text>
 
           <View style={styles.projectExtraInfoContainer}>
             <Text
               onPress={username ? this._handlePressUsername : null}
-              style={[styles.projectExtraInfoText, renderLikes || isUnlisted ? {flexShrink: 4} : {flex: 1}]}
+              style={[styles.projectExtraInfoText, renderLikes || isUnlisted ? { flexShrink: 4 } : { flex: 1 }]}
               ellipsizeMode="tail"
               numberOfLines={1}>
               {hideUsername ? slug : username || projectUrl}
             </Text>
 
-            {isUnlisted && (
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            {isUnlisted &&
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <View style={styles.bullet} />
                 <View style={styles.unlistedIconContainer}>
-                  <Ionicons name="ios-eye-off" size={15} color="rgba(36, 44, 58, 0.3)" style={{marginTop: 1}} />
+                  <Ionicons name="ios-eye-off" size={15} color="rgba(36, 44, 58, 0.3)" style={{ marginTop: 1 }} />
                   <Text style={styles.unlistedText}>
                     Unlisted
                   </Text>
                 </View>
-              </View>
-            )}
+              </View>}
 
-            {renderLikes && (
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            {renderLikes &&
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <View style={styles.bullet} />
-                <Text
-                  onPress={() => {}}
-                  numberOfLines={1}
-                  style={styles.projectExtraInfoText}>
+                <Text onPress={() => {}} numberOfLines={1} style={styles.projectExtraInfoText}>
                   {likeCount} {likeCount === 1 ? 'like' : 'likes'}
                 </Text>
-              </View>
-            )}
+              </View>}
 
           </View>
         </View>
@@ -102,27 +82,22 @@ export default class SmallProjectCard extends React.Component {
     if (iconUrl) {
       return (
         <FadeIn placeholderColor="#eee">
-          <Image
-            source={{uri: iconUrl}}
-            style={styles.icon}
-          />
+          <Image source={{ uri: iconUrl }} style={styles.icon} />
         </FadeIn>
       );
     } else {
-      return (
-        <View style={[styles.icon, {backgroundColor: '#eee'}]} />
-      );
+      return <View style={[styles.icon, { backgroundColor: '#eee' }]} />;
     }
-  }
+  };
 
   _handlePressProject = () => {
     let url = ExUrls.normalizeUrl(this.props.projectUrl);
     Linking.openURL(url);
-  }
+  };
 
   _handlePressUsername = () => {
     this.props.navigator.push('profile', { username: this.props.username });
-  }
+  };
 }
 
 // note(brentvatne): we need to know this value so we can set the width of
@@ -191,7 +166,7 @@ const styles = StyleSheet.create({
   bullet: {
     width: 3.5,
     height: 3.5,
-    borderRadius: 3.5/2,
+    borderRadius: 3.5 / 2,
     backgroundColor: 'rgba(36, 44, 58, 0.2)',
     marginHorizontal: 6,
   },
@@ -204,4 +179,3 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
 });
-

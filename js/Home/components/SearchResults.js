@@ -23,10 +23,7 @@ import SharedStyles from '../constants/SharedStyles';
 
 let { ExponentKernel } = NativeModules;
 
-const SectionIds = [
-  'UserSearchResult',
-  'AppSearchResult',
-];
+const SectionIds = ['UserSearchResult', 'AppSearchResult'];
 
 function resultsAreEmpty(results) {
   if (!results) {
@@ -47,7 +44,7 @@ export default class SearchResults extends React.Component {
       rowHasChanged: (r1, r2) => r1 !== r2,
       lastQueryHadNoResults: false,
     }),
-  }
+  };
 
   componentWillMount() {
     this._maybeUpdateDataSource(this.props);
@@ -60,7 +57,7 @@ export default class SearchResults extends React.Component {
 
   render() {
     return (
-      <View style={{flex: 1}}>
+      <View style={{ flex: 1 }}>
         {this._renderContent()}
         {this._maybeRenderLoading()}
       </View>
@@ -69,10 +66,10 @@ export default class SearchResults extends React.Component {
 
   // PLEASE DO NOT MAKE FUN OF ME :<
   // I will improve this soon - Brent
-  _maybeSetPreviousQueryNoResults = (newProps) => {
+  _maybeSetPreviousQueryNoResults = newProps => {
     if (newProps.query.length < 2) {
       if (this.state.lastQueryHadNoResults) {
-        this.setState({lastQueryHadNoResults: false});
+        this.setState({ lastQueryHadNoResults: false });
       }
 
       return;
@@ -88,16 +85,16 @@ export default class SearchResults extends React.Component {
 
     if (resultsAreEmpty(newProps.results)) {
       if (!this.state.lastQueryHadNoResults) {
-        this.setState({lastQueryHadNoResults: true});
+        this.setState({ lastQueryHadNoResults: true });
       }
-    } else  {
+    } else {
       if (this.state.lastQueryHadNoResults) {
-        this.setState({lastQueryHadNoResults: false});
+        this.setState({ lastQueryHadNoResults: false });
       }
     }
-  }
+  };
 
-  _maybeUpdateDataSource = (newProps) => {
+  _maybeUpdateDataSource = newProps => {
     if (newProps.data.results !== this.props.data.results) {
       let { dataSource } = this.state;
       let { results } = newProps.data;
@@ -105,14 +102,11 @@ export default class SearchResults extends React.Component {
       results.UserSearchResult = results.UserSearchResult || [];
       results.AppSearchResult = results.AppSearchResult || [];
 
-      let newDataSource = dataSource.cloneWithRowsAndSections(
-        results,
-        SectionIds,
-      );
+      let newDataSource = dataSource.cloneWithRowsAndSections(results, SectionIds);
 
       this.setState({ dataSource: newDataSource });
     }
-  }
+  };
 
   _maybeRenderLoading = () => {
     // if (this.props.data.loading) {
@@ -122,18 +116,17 @@ export default class SearchResults extends React.Component {
     //     </View>
     //   );
     // }
-  }
+  };
 
   _renderContent = () => {
-    if (this.state.dataSource.getRowCount() === 0 &&
-        (!this.props.data.loading || this.state.lastQueryHadNoResults) &&
-        this.props.query.length >= 2) {
+    if (
+      this.state.dataSource.getRowCount() === 0 &&
+      (!this.props.data.loading || this.state.lastQueryHadNoResults) &&
+      this.props.query.length >= 2
+    ) {
       return (
-        <ScrollView
-          keyboardShouldPersistTaps="always"
-          keyboardDismissMode="on-drag"
-          style={styles.scrollContainer}>
-          <View style={[SharedStyles.sectionLabelContainer, {backgroundColor: Colors.greyBackground, marginTop: 7,}]}>
+        <ScrollView keyboardShouldPersistTaps="always" keyboardDismissMode="on-drag" style={styles.scrollContainer}>
+          <View style={[SharedStyles.sectionLabelContainer, { backgroundColor: Colors.greyBackground, marginTop: 7 }]}>
             <Text style={SharedStyles.sectionLabelText}>
               NO RESULTS FOUND
             </Text>
@@ -161,12 +154,12 @@ export default class SearchResults extends React.Component {
           dataSource={this.state.dataSource}
           renderRow={this._renderRow}
           renderSectionHeader={this._renderSectionHeader}
-          contentContainerStyle={{paddingTop: 5, paddingBottom: 15}}
-          style={{flex: 1, backgroundColor: Colors.greyBackground}}
+          contentContainerStyle={{ paddingTop: 5, paddingBottom: 15 }}
+          style={{ flex: 1, backgroundColor: Colors.greyBackground }}
         />
       );
     }
-  }
+  };
 
   _handleOpenUrl = () => {
     Keyboard.dismiss();
@@ -182,30 +175,29 @@ export default class SearchResults extends React.Component {
     } else {
       Linking.openURL(url);
     }
-  }
-
+  };
 
   _renderSectionHeader = (sectionData, sectionId) => {
     return (
-      <View style={[SharedStyles.sectionLabelContainer, {backgroundColor: Colors.greyBackground}]}>
+      <View style={[SharedStyles.sectionLabelContainer, { backgroundColor: Colors.greyBackground }]}>
         <Text style={SharedStyles.sectionLabelText}>
           {sectionId === 'AppSearchResult' ? 'PROJECTS' : 'PEOPLE'}
         </Text>
       </View>
     );
-  }
+  };
 
-  _isLastAppSearchResult = (index) => {
+  _isLastAppSearchResult = index => {
     let appSectionIdx = SectionIds.indexOf('AppSearchResult');
     let appSectionLength = this.state.dataSource.getSectionLengths()[appSectionIdx];
     return parseInt(index, 0) + 1 === appSectionLength;
-  }
+  };
 
-  _isLastUserSearchResult = (index) => {
+  _isLastUserSearchResult = index => {
     let userSectionIdx = SectionIds.indexOf('UserSearchResult');
     let userSectionLength = this.state.dataSource.getSectionLengths()[userSectionIdx];
     return parseInt(index, 0) + 1 === userSectionLength;
-  }
+  };
 
   _renderRow = (rowData, sectionId, rowId) => {
     if (sectionId === 'AppSearchResult') {
@@ -213,7 +205,7 @@ export default class SearchResults extends React.Component {
 
       return (
         <ProjectCard
-          style={{marginBottom: this._isLastAppSearchResult(rowId) ? 0 : 15}}
+          style={{ marginBottom: this._isLastAppSearchResult(rowId) ? 0 : 15 }}
           isLikedByMe={app.isLikedByMe}
           likeCount={app.likeCount}
           id={app.id}
@@ -229,7 +221,7 @@ export default class SearchResults extends React.Component {
 
       return (
         <ProfileCard
-          style={{marginBottom: this._isLastUserSearchResult(rowId) ? 7 : 0}}
+          style={{ marginBottom: this._isLastUserSearchResult(rowId) ? 7 : 0 }}
           fullName={user.fullName}
           username={user.username}
           appCount={user.appCount}
@@ -238,9 +230,8 @@ export default class SearchResults extends React.Component {
         />
       );
     }
-  }
+  };
 }
-
 
 const styles = StyleSheet.create({
   scrollContainer: {

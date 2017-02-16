@@ -1,28 +1,10 @@
-import Exponent, {
-  Font,
-} from 'exponent';
+import Exponent, { Font } from 'exponent';
 import React from 'react';
-import {
-  ActivityIndicator,
-  Platform,
-  StatusBar,
-  StyleSheet,
-  View,
-} from 'react-native';
-import {
-  NavigationProvider,
-  StackNavigation,
-} from '@exponent/ex-navigation';
-import {
-  ActionSheetProvider,
-} from '@exponent/react-native-action-sheet';
-import {
-  Ionicons,
-  MaterialIcons,
-} from '@exponent/vector-icons';
-import {
-  ApolloProvider,
-} from 'react-apollo';
+import { ActivityIndicator, Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { NavigationProvider, StackNavigation } from '@exponent/ex-navigation';
+import { ActionSheetProvider } from '@exponent/react-native-action-sheet';
+import { Ionicons, MaterialIcons } from '@exponent/vector-icons';
+import { ApolloProvider } from 'react-apollo';
 
 import AuthTokenActions from '../Flux/AuthTokenActions';
 import LocalStorage from '../Storage/LocalStorage';
@@ -35,7 +17,7 @@ import customNavigationContext from './navigation/customNavigationContext';
 export default class AppContainer extends React.Component {
   state = {
     isReady: false,
-  }
+  };
 
   async componentDidMount() {
     try {
@@ -50,17 +32,16 @@ export default class AppContainer extends React.Component {
       } else {
         await Font.loadAsync(MaterialIcons.font);
       }
-    } catch(e) {
-
+    } catch (e) {
     } finally {
-      this.setState({isReady: true});
+      this.setState({ isReady: true });
     }
   }
 
   render() {
     if (!this.state.isReady) {
       return (
-        <View style={{flex: 1, backgroundColor: 'white', alignItems: 'center', justifyContent: 'center'}}>
+        <View style={{ flex: 1, backgroundColor: 'white', alignItems: 'center', justifyContent: 'center' }}>
           <ActivityIndicator />
         </View>
       );
@@ -70,12 +51,7 @@ export default class AppContainer extends React.Component {
       <View style={styles.container}>
         <ActionSheetProvider>
           <NavigationProvider context={customNavigationContext}>
-            { this.state.isReady && (
-              <StackNavigation
-                id="root"
-                initialRoute="rootNavigation"
-              />
-            )}
+            {this.state.isReady && <StackNavigation id="root" initialRoute="rootNavigation" />}
           </NavigationProvider>
         </ActionSheetProvider>
 

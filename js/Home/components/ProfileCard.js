@@ -1,18 +1,8 @@
 import React from 'react';
-import {
-  Image,
-  Linking,
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  View,
-} from 'react-native';
+import { Image, Linking, Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 import TouchableNativeFeedbackSafe from '@exponent/react-native-touchable-native-feedback-safe';
 import FadeIn from '@exponent/react-native-fade-in-image';
-import {
-  withNavigation,
-} from '@exponent/ex-navigation';
+import { withNavigation } from '@exponent/ex-navigation';
 
 import Colors from '../constants/Colors';
 import ExUrls from 'ExUrls';
@@ -41,27 +31,16 @@ export default class ProfileCard extends React.Component {
                 {this._maybeRenderPhoto()}
               </View>
               <View style={styles.infoContainer}>
-                <Text
-                  style={styles.profileNameText}
-                  ellipsizeMode="tail"
-                  numberOfLines={1}>
+                <Text style={styles.profileNameText} ellipsizeMode="tail" numberOfLines={1}>
                   {isLegacy ? username : fullName}
                 </Text>
                 <View style={styles.profileExtraInfoContainer}>
-                  {!isLegacy && (
-                    <Text
-                      style={styles.profileExtraInfoText}
-                      ellipsizeMode="tail"
-                      numberOfLines={1}>
+                  {!isLegacy &&
+                    <Text style={styles.profileExtraInfoText} ellipsizeMode="tail" numberOfLines={1}>
                       @{username}
-                    </Text>
-                  )}
-                  {!isLegacy && (
-                    <View style={styles.bullet} />
-                  )}
-                  <Text
-                    onPress={appCount > 0 ? this._handlePressProjects : null}
-                    style={styles.profileExtraInfoText}>
+                    </Text>}
+                  {!isLegacy && <View style={styles.bullet} />}
+                  <Text onPress={appCount > 0 ? this._handlePressProjects : null} style={styles.profileExtraInfoText}>
                     {appCount} {appCount === 1 ? 'project' : 'projects'}
                   </Text>
                 </View>
@@ -79,24 +58,19 @@ export default class ProfileCard extends React.Component {
     if (profilePhoto) {
       return (
         <FadeIn placeholderColor="#eee">
-          <Image
-            source={{uri: profilePhoto}}
-            style={styles.icon}
-          />
+          <Image source={{ uri: profilePhoto }} style={styles.icon} />
         </FadeIn>
       );
     } else {
-      return (
-        <View style={[styles.icon, {backgroundColor: '#eee'}]} />
-      );
+      return <View style={[styles.icon, { backgroundColor: '#eee' }]} />;
     }
-  }
+  };
 
   _handlePressProjects = () => {
     this.props.navigator.push('projectsForUser', {
       username: this.props.username,
     });
-  }
+  };
 
   _handlePressProfile = () => {
     if (this.props.onPressUsername) {
@@ -104,7 +78,7 @@ export default class ProfileCard extends React.Component {
     } else {
       this.props.navigator.push('profile', { username: this.props.username });
     }
-  }
+  };
 }
 
 const styles = StyleSheet.create({
@@ -170,7 +144,7 @@ const styles = StyleSheet.create({
   bullet: {
     width: 3.5,
     height: 3.5,
-    borderRadius: 3.5/2,
+    borderRadius: 3.5 / 2,
     backgroundColor: 'rgba(36, 44, 58, 0.2)',
     marginHorizontal: 6,
   },
@@ -180,4 +154,3 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
 });
-

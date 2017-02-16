@@ -1,22 +1,12 @@
 import React from 'react';
-import {
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {
-  withNavigation,
-} from '@exponent/ex-navigation';
+import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { withNavigation } from '@exponent/ex-navigation';
 
 import Colors from '../constants/Colors';
 import PrimaryButton from './PrimaryButton';
 
 @withNavigation
 export default class ProfileUnauthenticated extends React.Component {
-
   render() {
     return (
       <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
@@ -30,7 +20,7 @@ export default class ProfileUnauthenticated extends React.Component {
         </Text>
 
         {this._renderSignInButton()}
-        <View style={{marginBottom: 20}} />
+        <View style={{ marginBottom: 20 }} />
         {this._renderSignUpButton()}
       </ScrollView>
     );
@@ -38,9 +28,7 @@ export default class ProfileUnauthenticated extends React.Component {
 
   _renderSignInButton() {
     return (
-      <PrimaryButton
-        onPress={this._handleSignInPress}
-        fallback={TouchableOpacity}>
+      <PrimaryButton onPress={this._handleSignInPress} fallback={TouchableOpacity}>
         Sign in to your account
       </PrimaryButton>
     );
@@ -48,10 +36,7 @@ export default class ProfileUnauthenticated extends React.Component {
 
   _renderSignUpButton() {
     return (
-      <PrimaryButton
-        plain
-        onPress={this._handleSignUpPress}
-        fallback={TouchableOpacity}>
+      <PrimaryButton plain onPress={this._handleSignUpPress} fallback={TouchableOpacity}>
         Sign up for Exponent
       </PrimaryButton>
     );
@@ -59,11 +44,11 @@ export default class ProfileUnauthenticated extends React.Component {
 
   _handleSignInPress = () => {
     this.props.navigation.showModal('signIn');
-  }
+  };
 
   _handleSignUpPress = () => {
     this.props.navigation.showModal('signUp');
-  }
+  };
 }
 
 const styles = StyleSheet.create({

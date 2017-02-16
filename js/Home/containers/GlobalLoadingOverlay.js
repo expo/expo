@@ -1,16 +1,9 @@
 import React from 'react';
-import {
-  ActivityIndicator,
-  StyleSheet,
-  View,
-} from 'react-native';
-import {
-  connect,
-} from 'react-redux';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { connect } from 'react-redux';
 
 @connect(data => GlobalLoadingOverlay.getDataProps(data))
 export default class GlobalLoadingOverlay extends React.Component {
-
   static getDataProps(data) {
     return {
       isLoading: data.browser.isKernelLoading,

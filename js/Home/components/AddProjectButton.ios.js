@@ -1,13 +1,6 @@
 import React from 'react';
-import {
-  Clipboard,
-  Linking,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
-import {
-  Ionicons,
-} from '@exponent/vector-icons';
+import { Clipboard, Linking, StyleSheet, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@exponent/vector-icons';
 
 import Colors from '../constants/Colors';
 import ExUrls from 'ExUrls';
@@ -21,9 +14,7 @@ import requestCameraPermissionsAsync from '../utils/requestCameraPermissionsAsyn
 export default class AddProjectButton extends React.Component {
   render() {
     return (
-      <TouchableOpacity
-        style={styles.buttonContainer}
-        onPress={this._handlePress}>
+      <TouchableOpacity style={styles.buttonContainer} onPress={this._handlePress}>
         <Ionicons size={37} name="ios-add" color={Colors.tintColor} />
       </TouchableOpacity>
     );
@@ -32,26 +23,28 @@ export default class AddProjectButton extends React.Component {
   _handlePress = () => {
     let options = ['Scan QR Code', 'Open from Clipboard', 'Cancel'];
     let cancelButtonIndex = 2;
-    this.props.showActionSheetWithOptions({
-      options,
-      cancelButtonIndex,
-    },
-    async (buttonIndex) => {
-      if (buttonIndex === 0) {
-        if (await requestCameraPermissionsAsync()) {
-          this.props.navigation.showModal('qrCode');
-        } else {
-          alert('In order to use the QR Code scanner you need to provide camera permissions');
+    this.props.showActionSheetWithOptions(
+      {
+        options,
+        cancelButtonIndex,
+      },
+      async buttonIndex => {
+        if (buttonIndex === 0) {
+          if (await requestCameraPermissionsAsync()) {
+            this.props.navigation.showModal('qrCode');
+          } else {
+            alert('In order to use the QR Code scanner you need to provide camera permissions');
+          }
+        } else if (buttonIndex === 1) {
+          let clipboardString = await Clipboard.getString();
+          let url = ExUrls.normalizeUrl(clipboardString);
+          if (Linking.canOpenURL(url)) {
+            Linking.openURL(url);
+          }
         }
-      } else if (buttonIndex === 1) {
-        let clipboardString = await Clipboard.getString();
-        let url = ExUrls.normalizeUrl(clipboardString);
-        if (Linking.canOpenURL(url)) {
-          Linking.openURL(url);
-        }
-      }
-    });
-  }
+      },
+    );
+  };
 }
 
 const styles = StyleSheet.create({
@@ -62,4 +55,3 @@ const styles = StyleSheet.create({
     paddingRight: 15,
   },
 });
-

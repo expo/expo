@@ -31,11 +31,11 @@ const UserProfileQuery = gql`
 `;
 
 export default graphql(UserProfileQuery, {
-  options: (props) => ({
+  options: props => ({
     variables: {
-      username: props.username.replace('@',''),
+      username: props.username.replace('@', ''),
     },
     returnPartialData: true,
     forceFetch: true,
-  })
+  }),
 })(Profile);

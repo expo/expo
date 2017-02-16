@@ -12,7 +12,7 @@ export default function isCurrentUser(authTokens, username) {
   }
 
   if (username.match(/@/)) {
-    username = username.replace('@','');
+    username = username.replace('@', '');
   }
 
   return extractUsername(authTokens.idToken) === username;

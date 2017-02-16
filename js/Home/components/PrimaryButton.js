@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  ActivityIndicator,
-  TouchableOpacity,
-  Platform,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, TouchableOpacity, Platform, StyleSheet, Text, View } from 'react-native';
 import TouchableNativeFeedback from '@exponent/react-native-touchable-native-feedback-safe';
 
 import Colors from '../constants/Colors';
@@ -19,7 +12,7 @@ export default class PrimaryButton extends React.Component {
       plain,
       style,
       textStyle,
-      ...props,
+      ...props
     } = this.props;
 
     return (
@@ -42,7 +35,7 @@ export default class PrimaryButton extends React.Component {
         <ActivityIndicator color="#fff" />
       </View>
     );
-  }
+  };
 }
 
 const styles = StyleSheet.create({
@@ -73,8 +66,7 @@ const styles = StyleSheet.create({
       },
     }),
   },
-  plainButton: {
-  },
+  plainButton: {},
   plainButtonText: {
     color: '#0f73b6',
     textAlign: 'center',

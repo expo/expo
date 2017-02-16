@@ -1,16 +1,6 @@
 import React from 'react';
-import {
-  Linking,
-  Platform,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {
-  Components,
-} from 'exponent';
+import { Linking, Platform, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Components } from 'exponent';
 
 import Layout from '../constants/Layout';
 
@@ -18,16 +8,13 @@ export default class BarCodeScreen extends React.Component {
   static route = {
     navigationBar: {
       visible: false,
-    }
-  }
+    },
+  };
 
   render() {
     return (
       <View style={styles.container}>
-        <Components.BarCodeScanner
-          onBarCodeRead={this._handleBarCodeRead}
-          style={StyleSheet.absoluteFill}
-        />
+        <Components.BarCodeScanner onBarCodeRead={this._handleBarCodeRead} style={StyleSheet.absoluteFill} />
 
         <View style={styles.topOverlay} />
         <View style={styles.leftOverlay} />
@@ -45,7 +32,7 @@ export default class BarCodeScreen extends React.Component {
         </View>
 
         <View style={styles.footer}>
-          <TouchableOpacity onPress={this._handlePressCancel} hitSlop={{top: 40, bottom: 40, right: 40, left: 40}}>
+          <TouchableOpacity onPress={this._handlePressCancel} hitSlop={{ top: 40, bottom: 40, right: 40, left: 40 }}>
             <Text style={styles.cancelText}>Cancel</Text>
           </TouchableOpacity>
         </View>
@@ -60,16 +47,16 @@ export default class BarCodeScreen extends React.Component {
     requestAnimationFrame(() => {
       Linking.openURL(url);
     });
-  }
+  };
 
   _handlePressCancel = () => {
     this.props.navigation.dismissModal();
-  }
+  };
 }
 
 const BOX_MARGIN = 30;
 const BOX_SIZE = Layout.window.width - BOX_MARGIN * 2;
-const BOX_TOP = (Layout.window.height / 2) - (BOX_SIZE / 2);
+const BOX_TOP = Layout.window.height / 2 - BOX_SIZE / 2;
 const BOX_BOTTOM = BOX_TOP + BOX_SIZE;
 const BOX_LEFT = BOX_MARGIN;
 const BOX_RIGHT = Layout.window.width - BOX_MARGIN;

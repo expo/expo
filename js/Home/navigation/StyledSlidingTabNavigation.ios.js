@@ -1,20 +1,13 @@
 import React from 'react';
-import {
-  Animated,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { Animated, StyleSheet, View } from 'react-native';
 
-import {
-  SlidingTabNavigation
-} from '@exponent/ex-navigation';
+import { SlidingTabNavigation } from '@exponent/ex-navigation';
 
 import { capitalize } from 'lodash';
 
 import FeatureFlags from '../../FeatureFlags';
 
 export default class StyledSlidingTabNavigation extends React.Component {
-
   render() {
     let { keyToTitle, children, ...props } = this.props;
 
@@ -23,7 +16,7 @@ export default class StyledSlidingTabNavigation extends React.Component {
         {...props}
         tabBarStyle={[styles.tabBar, props.tabBarStyle]}
         renderIndicator={() => <View />}
-        indicatorStyle={{backgroundColor: '#fff'}}
+        indicatorStyle={{ backgroundColor: '#fff' }}
         tabStyle={{
           flex: 0,
           paddingBottom: 12,
@@ -40,9 +33,8 @@ export default class StyledSlidingTabNavigation extends React.Component {
     );
   }
 
-  _getRenderLabel = (props) => (scene) => {
+  _getRenderLabel = props => scene => {
     const { route, index } = scene;
-
 
     let title;
     if (this.props.keyToTitle) {
@@ -71,7 +63,7 @@ export default class StyledSlidingTabNavigation extends React.Component {
         {title}
       </Animated.Text>
     );
-  }
+  };
 }
 
 const styles = StyleSheet.create({

@@ -1,31 +1,19 @@
 import React from 'react';
-import {
-  Platform,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import {
-  StackNavigation,
-  TabNavigation,
-  TabNavigationItem,
-} from '@exponent/ex-navigation';
-import {
-  Entypo,
-  Ionicons,
-} from '@exponent/vector-icons';
+import { Platform, StyleSheet, Text, View } from 'react-native';
+import { StackNavigation, TabNavigation, TabNavigationItem } from '@exponent/ex-navigation';
+import { Entypo, Ionicons } from '@exponent/vector-icons';
 
 import Colors from '../constants/Colors';
 import defaultRouteConfig from './defaultRouteConfig';
 
 export default class RootNavigation extends React.Component {
-  _currentTab = "projects";
+  _currentTab = 'projects';
 
   render() {
     return (
       <TabNavigation
         tabBarColor={Colors.tabBar}
-        tabBarStyle={{borderTopColor: '#f2f2f2'}}
+        tabBarStyle={{ borderTopColor: '#f2f2f2' }}
         tabBarHeight={50}
         onTabPress={this._handleTabPress}
         id="main"
@@ -67,7 +55,7 @@ export default class RootNavigation extends React.Component {
     );
   }
 
-  _handleTabPress = (tabKey) => {
+  _handleTabPress = tabKey => {
     if (this._currentTab !== tabKey) {
       this._currentTab = tabKey;
       return;
@@ -78,23 +66,16 @@ export default class RootNavigation extends React.Component {
     if (navigatorForTab.getCurrentIndex() > 0) {
       navigatorForTab.pop();
     }
-  }
+  };
 
   _renderIcon(IconComponent, iconName, iconSize, title, isSelected) {
     let color = isSelected ? Colors.tabIconSelected : Colors.tabIconDefault;
 
     return (
       <View style={styles.tabItemContainer}>
-        <IconComponent
-          name={iconName}
-          size={iconSize}
-          color={color}
-          style={styles.icon}
-        />
+        <IconComponent name={iconName} size={iconSize} color={color} style={styles.icon} />
 
-        <Text
-          style={[styles.tabTitleText, {color}]}
-          numberOfLines={1}>
+        <Text style={[styles.tabTitleText, { color }]} numberOfLines={1}>
           {title}
         </Text>
       </View>

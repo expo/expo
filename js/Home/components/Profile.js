@@ -12,14 +12,9 @@ import {
   View,
 } from 'react-native';
 import FadeIn from '@exponent/react-native-fade-in-image';
-import {
-  SlidingTabNavigationItem,
-} from '@exponent/ex-navigation';
+import { SlidingTabNavigationItem } from '@exponent/ex-navigation';
 
-import {
-  take,
-  takeRight,
-} from 'lodash';
+import { take, takeRight } from 'lodash';
 import dedent from 'dedent';
 
 import Colors from '../constants/Colors';
@@ -32,20 +27,24 @@ import StyledSlidingTabNavigation from '../navigation/StyledSlidingTabNavigation
 const MAX_APPS_TO_DISPLAY = 3;
 const MAX_LIKES_TO_DISPLAY = 3;
 
-const NETWORK_ERROR_TEXT = dedent(`
+const NETWORK_ERROR_TEXT = dedent(
+  `
   Your connection appears to be offline.
   Get out of the subway tunnel or connect to a better wifi network and check back.
-`);
+`,
+);
 
-const SERVER_ERROR_TEXT = dedent(`
+const SERVER_ERROR_TEXT = dedent(
+  `
   An unexpected server error has occurred.
   Sorry about this. We will resolve the issue as soon as possible.
-`);
+`,
+);
 
 export default class Profile extends React.Component {
   state = {
     isRefetching: false,
-  }
+  };
 
   componentWillMount() {
     this._isMounted = true;
@@ -62,12 +61,7 @@ export default class Profile extends React.Component {
 
     return (
       <ScrollView
-        refreshControl={
-          <RefreshControl
-            refreshing={this.state.isRefetching}
-            onRefresh={this._handleRefreshAsync}
-          />
-        }
+        refreshControl={<RefreshControl refreshing={this.state.isRefetching} onRefresh={this._handleRefreshAsync} />}
         style={styles.container}>
         {this._renderHeader()}
         {this._renderApps()}
@@ -81,22 +75,25 @@ export default class Profile extends React.Component {
     }
 
     try {
-      this.setState({isRefetching: true});
-      this.props.data.refetch({forceFetch: true});
-    } catch(e) {
+      this.setState({ isRefetching: true });
+      this.props.data.refetch({ forceFetch: true });
+    } catch (e) {
       // TODO(brentvatne): Put this into Sentry
-      console.log({e});
+      console.log({ e });
     } finally {
       // Add a slight delay so it doesn't just disappear immediately,
       // this actually looks nicer because you might think that it
       // didn't work if it disappears too quickly
-      setTimeout(() => {
-        if (this._isMounted) {
-          this.setState({isRefetching: false});
-        }
-      }, 500);
+      setTimeout(
+        () => {
+          if (this._isMounted) {
+            this.setState({ isRefetching: false });
+          }
+        },
+        500,
+      );
     }
-  }
+  };
 
   _renderError = () => {
     if (this.state.isRefetching) {
@@ -104,40 +101,36 @@ export default class Profile extends React.Component {
     }
 
     // NOTE(brentvatne): sorry for this
-    let isConnectionError =
-      this.props.data.error.message.includes('No connection available');
+    let isConnectionError = this.props.data.error.message.includes('No connection available');
 
     return (
-      <View style={{flex: 1, alignItems: 'center', paddingTop: 30}}>
+      <View style={{ flex: 1, alignItems: 'center', paddingTop: 30 }}>
         <Text style={SharedStyles.noticeDescriptionText}>
           {isConnectionError ? NETWORK_ERROR_TEXT : SERVER_ERROR_TEXT}
         </Text>
 
-        <PrimaryButton
-          plain
-          onPress={this._refetchDataAsync}
-          fallback={TouchableOpacity}>
+        <PrimaryButton plain onPress={this._refetchDataAsync} fallback={TouchableOpacity}>
           Try again
         </PrimaryButton>
       </View>
     );
-  }
+  };
 
   _refetchDataAsync = async () => {
     try {
-      this.setState({isRefetching: true});
-      await this.props.data.refetch()
-    } catch(e) {
-      console.log({e});
+      this.setState({ isRefetching: true });
+      await this.props.data.refetch();
+    } catch (e) {
+      console.log({ e });
       // Error!
     } finally {
-      this.setState({isRefetching: false});
+      this.setState({ isRefetching: false });
     }
-  }
+  };
 
   _renderLoading() {
     return (
-      <View style={{flex: 1, padding: 30, alignItems: 'center'}}>
+      <View style={{ flex: 1, padding: 30, alignItems: 'center' }}>
         <ActivityIndicator />
       </View>
     );
@@ -166,10 +159,7 @@ export default class Profile extends React.Component {
     return (
       <View style={styles.header}>
         <FadeIn>
-          <Image
-            style={styles.headerAvatar}
-            source={{uri: profilePhoto}}
-          />
+          <Image style={styles.headerAvatar} source={{ uri: profilePhoto }} />
         </FadeIn>
         <Text style={styles.headerFullNameText}>
           {firstName} {lastName}
@@ -182,7 +172,7 @@ export default class Profile extends React.Component {
         </View>
       </View>
     );
-  }
+  };
 
   _renderLegacyHeader = () => {
     let { username } = this.props.data.user;
@@ -197,7 +187,7 @@ export default class Profile extends React.Component {
         </View>
       </View>
     );
-  }
+  };
 
   _renderApps = () => {
     if (!this.props.data.user) {
@@ -215,7 +205,7 @@ export default class Profile extends React.Component {
 
       return (
         <View>
-          <View style={[SharedStyles.sectionLabelContainer, {marginTop: 10}]}>
+          <View style={[SharedStyles.sectionLabelContainer, { marginTop: 10 }]}>
             <Text style={SharedStyles.sectionLabelText}>PROJECTS</Text>
           </View>
 
@@ -229,14 +219,14 @@ export default class Profile extends React.Component {
         </View>
       );
     }
-  }
+  };
 
   _handlePressProjectList = () => {
     this.props.navigator.push('projectsForUser', {
       username: this.props.username,
-      belongsToCurrentUser: this.props.isOwnProfile
+      belongsToCurrentUser: this.props.isOwnProfile,
     });
-  }
+  };
 
   _renderApp = (app, i) => {
     return (
@@ -252,7 +242,7 @@ export default class Profile extends React.Component {
         fullWidthBorder
       />
     );
-  }
+  };
 
   _maybeRenderGithubAccount() {
     // ..

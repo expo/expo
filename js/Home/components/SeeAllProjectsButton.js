@@ -1,20 +1,9 @@
 import React from 'react';
-import {
-  Image,
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  View,
-} from 'react-native';
-import {
-  Ionicons,
-} from '@exponent/vector-icons';
+import { Image, Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import { Ionicons } from '@exponent/vector-icons';
 import FadeIn from '@exponent/react-native-fade-in-image';
 import TouchableNativeFeedback from '@exponent/react-native-touchable-native-feedback-safe';
-import {
-  take,
-} from 'lodash';
+import { take } from 'lodash';
 
 import Colors from '../constants/Colors';
 import SmallProjectCard from '../components/SmallProjectCard';
@@ -26,7 +15,7 @@ export default class SeeAllProjectsButton extends React.Component {
     label: 'See all',
     apps: [],
     maxIconCount: MAX_ICON_COUNT,
-  }
+  };
 
   render() {
     let { apps, appCount, label, maxIconCount } = this.props;
@@ -46,29 +35,23 @@ export default class SeeAllProjectsButton extends React.Component {
         <Text style={styles.buttonText}>{this.props.label}</Text>
         <View style={styles.appIconContainer}>
           {take(apps, maxIconCount).map((app, i) => (
-            <FadeIn
-              key={i}
-              placeholderColor="#eee">
-              <Image
-                source={{uri: app.iconUrl}}
-                style={styles.appIcon}
-              />
+            <FadeIn key={i} placeholderColor="#eee">
+              <Image source={{ uri: app.iconUrl }} style={styles.appIcon} />
             </FadeIn>
           ))}
 
-          {otherAppCount > 0 && (
+          {otherAppCount > 0 &&
             <View style={styles.projectsNumberContainer}>
               <Text style={styles.projectsNumberText}>
                 +{otherAppCount}
               </Text>
-            </View>
-            )}
+            </View>}
 
           <Ionicons
             name="ios-arrow-forward"
             size={22}
             color={Colors.greyText}
-            style={{marginTop: -1, marginLeft: 15}}
+            style={{ marginTop: -1, marginLeft: 15 }}
           />
         </View>
       </TouchableNativeFeedback>

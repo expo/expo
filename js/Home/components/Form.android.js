@@ -1,14 +1,6 @@
 import React from 'react';
-import {
-  Animated,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
-import {
-  Components,
-} from 'exponent';
+import { Animated, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Components } from 'exponent';
 
 import Colors from '../constants/Colors';
 
@@ -18,13 +10,12 @@ export class FormInput extends React.Component {
 
     this.state = {
       isFocused: false,
-      labelPosition: new Animated.Value(this.props.value ? 1 : 0),
+      labelPosition: new Animated.Value((this.props.value ? 1 : 0)),
     };
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if (nextProps.value === this.props.value &&
-        nextState.isFocused === this.state.isFocused) {
+    if (nextProps.value === this.props.value && nextState.isFocused === this.state.isFocused) {
       return false;
     }
 
@@ -47,13 +38,15 @@ export class FormInput extends React.Component {
       autofocus,
       hideBottomBorder,
       style,
-      ...props,
+      ...props
     } = this.props;
 
     return (
       <View style={styles.inputContainer}>
         <TextInput
-          ref={view => { this._input = view; }}
+          ref={view => {
+            this._input = view;
+          }}
           onFocus={this._handleFocus}
           onBlur={this._handleBlur}
           underlineColorAndroid={this.state.isFocused ? Colors.tintColor : 'rgba(46, 59, 76, 0.10)'}
@@ -77,14 +70,13 @@ export class FormInput extends React.Component {
     this._input.blur();
   }
 
-
   _handleFocus = () => {
-    this.setState({isFocused: true});
-  }
+    this.setState({ isFocused: true });
+  };
 
   _handleBlur = () => {
-    this.setState({isFocused: false});
-  }
+    this.setState({ isFocused: false });
+  };
 
   componentWillReceiveProps(nextProps) {
     this._updateLabel(nextProps.value, this.props.value);
@@ -96,16 +88,18 @@ export class FormInput extends React.Component {
 
     if (nextValue.length === previousValue.length) {
       return;
-    } else if (nextValue.length > 0  && previousValue.length > 0) {
+    } else if (nextValue.length > 0 && previousValue.length > 0) {
       return;
     }
 
     if (nextValue.length > 0) {
-      Animated.timing(this.state.labelPosition, {
-        toValue: 1,
-        duration: 150,
-        useNativeDriver: true,
-      }).start();
+      Animated
+        .timing(this.state.labelPosition, {
+          toValue: 1,
+          duration: 150,
+          useNativeDriver: true,
+        })
+        .start();
     } else {
       this.state.labelPosition.setValue(0);
     }
@@ -126,11 +120,9 @@ export class FormInput extends React.Component {
 
     return {
       opacity,
-      transform: [
-        {translateY},
-      ],
-    }
-  }
+      transform: [{ translateY }],
+    };
+  };
 }
 
 export default class Form extends React.Component {
@@ -146,8 +138,7 @@ export default class Form extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  formContainer: {
-  },
+  formContainer: {},
   inputContainer: {
     height: 60,
     marginHorizontal: 10,

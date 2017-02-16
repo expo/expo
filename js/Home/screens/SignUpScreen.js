@@ -1,16 +1,6 @@
 import React from 'react';
-import {
-  Keyboard,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {
-  connect,
-} from 'react-redux';
+import { Keyboard, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { connect } from 'react-redux';
 
 import AuthTokenActions from '../../Flux/AuthTokenActions';
 
@@ -28,7 +18,7 @@ export default class SignUpScreen extends React.Component {
     navigationBar: {
       title: 'Sign Up',
     },
-  }
+  };
 
   static getDataProps(data) {
     return {
@@ -36,25 +26,27 @@ export default class SignUpScreen extends React.Component {
     };
   }
 
-  state = DEBUG ? {
-    keyboardHeight: 0,
-    firstName: 'Brent',
-    lastName: 'Vatne',
-    username: `brentvatne${(new Date() - 0)}`,
-    email: `brentvatne+${(new Date() - 0)}@gmail.com`,
-    password: 'pass123!!!1',
-    passwordConfirmation: 'pass123!!!1',
-    isLoading: false,
-  } : {
-    keyboardHeight: 0,
-    firstName: '',
-    lastName: '',
-    username: '',
-    email: '',
-    password: '',
-    passwordConfirmation: '',
-    isLoading: false,
-  }
+  state = DEBUG
+    ? {
+        keyboardHeight: 0,
+        firstName: 'Brent',
+        lastName: 'Vatne',
+        username: `brentvatne${new Date() - 0}`,
+        email: `brentvatne+${new Date() - 0}@gmail.com`,
+        password: 'pass123!!!1',
+        passwordConfirmation: 'pass123!!!1',
+        isLoading: false,
+      }
+    : {
+        keyboardHeight: 0,
+        firstName: '',
+        lastName: '',
+        username: '',
+        email: '',
+        password: '',
+        passwordConfirmation: '',
+        isLoading: false,
+      };
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.authTokens && !this.props.authTokens) {
@@ -66,13 +58,13 @@ export default class SignUpScreen extends React.Component {
   componentDidMount() {
     this._isMounted = true;
 
-    this._keyboardDidShowSubscription = Keyboard.addListener('keyboardDidShow', ({endCoordinates}) => {
+    this._keyboardDidShowSubscription = Keyboard.addListener('keyboardDidShow', ({ endCoordinates }) => {
       const keyboardHeight = endCoordinates.height;
-      this.setState({keyboardHeight});
+      this.setState({ keyboardHeight });
     });
 
     this._keyboardDidHideSubscription = Keyboard.addListener('keyboardDidHide', () => {
-      this.setState({keyboardHeight: 0});
+      this.setState({ keyboardHeight: 0 });
     });
   }
 
@@ -86,7 +78,7 @@ export default class SignUpScreen extends React.Component {
   render() {
     return (
       <ScrollView
-        contentContainerStyle={{paddingTop: 20}}
+        contentContainerStyle={{ paddingTop: 20 }}
         keyboardShouldPersistTaps="always"
         style={styles.container}>
         <Form>
@@ -101,7 +93,9 @@ export default class SignUpScreen extends React.Component {
             returnKeyType="next"
           />
           <Form.Input
-            ref={view => { this._lastNameInput = view; }}
+            ref={view => {
+              this._lastNameInput = view;
+            }}
             onChangeText={this._updateValue.bind(this, 'lastName')}
             onSubmitEditing={() => this._handleSubmitEditing('lastName')}
             value={this.state.lastName}
@@ -111,7 +105,9 @@ export default class SignUpScreen extends React.Component {
             returnKeyType="next"
           />
           <Form.Input
-            ref={view => { this._usernameInput = view; }}
+            ref={view => {
+              this._usernameInput = view;
+            }}
             onChangeText={this._updateValue.bind(this, 'username')}
             onSubmitEditing={() => this._handleSubmitEditing('username')}
             value={this.state.username}
@@ -121,7 +117,9 @@ export default class SignUpScreen extends React.Component {
             returnKeyType="next"
           />
           <Form.Input
-            ref={view => { this._emailInput = view; }}
+            ref={view => {
+              this._emailInput = view;
+            }}
             onSubmitEditing={() => this._handleSubmitEditing('email')}
             onChangeText={this._updateValue.bind(this, 'email')}
             value={this.state.email}
@@ -133,7 +131,9 @@ export default class SignUpScreen extends React.Component {
             returnKeyType="next"
           />
           <Form.Input
-            ref={view => { this._passwordInput = view; }}
+            ref={view => {
+              this._passwordInput = view;
+            }}
             onSubmitEditing={() => this._handleSubmitEditing('password')}
             onChangeText={this._updateValue.bind(this, 'password')}
             value={this.state.password}
@@ -142,7 +142,9 @@ export default class SignUpScreen extends React.Component {
             secureTextEntry
           />
           <Form.Input
-            ref={view => { this._passwordConfirmationInput = view; }}
+            ref={view => {
+              this._passwordConfirmationInput = view;
+            }}
             onSubmitEditing={() => this._handleSubmitEditing('passwordConfirmation')}
             onChangeText={this._updateValue.bind(this, 'passwordConfirmation')}
             value={this.state.passwordConfirmation}
@@ -153,20 +155,17 @@ export default class SignUpScreen extends React.Component {
           />
         </Form>
 
-        <PrimaryButton
-          style={{margin: 20}}
-          onPress={this._handleSubmit}
-          isLoading={this.state.isLoading}>
+        <PrimaryButton style={{ margin: 20 }} onPress={this._handleSubmit} isLoading={this.state.isLoading}>
           Sign Up
         </PrimaryButton>
 
-        <View style={{height: this.state.keyboardHeight}} />
+        <View style={{ height: this.state.keyboardHeight }} />
       </ScrollView>
     );
   }
 
-  _handleSubmitEditing = (field) => {
-    switch(field) {
+  _handleSubmitEditing = field => {
+    switch (field) {
       case 'firstName':
         this._lastNameInput.focus();
         break;
@@ -186,11 +185,11 @@ export default class SignUpScreen extends React.Component {
         this._handleSubmit();
         break;
     }
-  }
+  };
 
   _updateValue = (key, value) => {
-    this.setState({[key]: value});
-  }
+    this.setState({ [key]: value });
+  };
 
   _handleSubmit = async () => {
     let { isLoading } = this.state;
@@ -210,35 +209,34 @@ export default class SignUpScreen extends React.Component {
         return;
       }
 
-      let signInResult = await Auth0Api.signInAsync(
-        this.state.email,
-        this.state.password
-      );
+      let signInResult = await Auth0Api.signInAsync(this.state.email, this.state.password);
 
       if (this._isMounted) {
         if (signInResult.error) {
           this._handleError(signInResult);
         } else {
           this.props.navigator.hideLocalAlert();
-          this.props.dispatch(AuthTokenActions.setAuthTokens({
-            refreshToken: signInResult.refresh_token,
-            accessToken: signInResult.access_token,
-            idToken: signInResult.id_token,
-          }));
+          this.props.dispatch(
+            AuthTokenActions.setAuthTokens({
+              refreshToken: signInResult.refresh_token,
+              accessToken: signInResult.access_token,
+              idToken: signInResult.id_token,
+            }),
+          );
         }
       }
-    } catch(e) {
+    } catch (e) {
       this._isMounted && this._handleError(e);
     } finally {
       this._isMounted && this.setState({ isLoading: false });
     }
-  }
+  };
 
-  _handleError = (error) => {
-    console.log({error});
-    let message = error.error_description || error.message || "Sorry, something went wrong.";
+  _handleError = error => {
+    console.log({ error });
+    let message = error.error_description || error.message || 'Sorry, something went wrong.';
     this.props.navigator.showLocalAlert(message, Alerts.error);
-  }
+  };
 }
 
 const styles = StyleSheet.create({

@@ -1,14 +1,5 @@
 import React from 'react';
-import {
-  Clipboard,
-  Platform,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Clipboard, Platform, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Constants } from 'exponent';
 import { connect } from 'react-redux';
 import { take, takeRight } from 'lodash';
@@ -29,7 +20,7 @@ export default class HomeScreen extends React.Component {
       title: 'Projects',
       renderRight: () => <AddProjectButton />,
     },
-  }
+  };
 
   static getDataProps(data) {
     let { history } = data.browser;
@@ -37,19 +28,17 @@ export default class HomeScreen extends React.Component {
     return {
       recentHistory: history.take(6),
       allHistory: history,
-    }
+    };
   }
 
   render() {
     if (this.props.allHistory.count() === 0) {
-      return <EmptyProjectsNotice />
+      return <EmptyProjectsNotice />;
     }
 
     return (
       <View style={styles.container}>
-        <ScrollView
-          style={styles.container}
-          contentContainerStyle={styles.contentContainer}>
+        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
 
           {this._renderInDevelopment()}
 
@@ -62,7 +51,7 @@ export default class HomeScreen extends React.Component {
 
           {this._renderRecentHistory()}
 
-          { /* <SeeAllProjectsButton onPress={() => {}} projects={FakeProjects} /> */ }
+          {/* <SeeAllProjectsButton onPress={() => {}} projects={FakeProjects} /> */}
 
           {this._renderExponentVersion()}
         </ScrollView>
@@ -80,19 +69,19 @@ export default class HomeScreen extends React.Component {
         </Text>
       </View>
     );
-  }
+  };
 
   _copyClientVersionToClipboard = () => {
     Clipboard.setString(Constants.exponentVersion);
     this.props.navigator.showLocalAlert('The client version has been copied to your clipboard', Alerts.notice);
-  }
+  };
 
   _renderInDevelopment = () => {
     // Nothing here for now
     return null;
 
     return (
-      <View style={{marginBottom: 10}}>
+      <View style={{ marginBottom: 10 }}>
         <View style={SharedStyles.sectionLabelContainer}>
           <View style={styles.greenDot} />
           <Text style={SharedStyles.sectionLabelText}>IN DEVELOPMENT</Text>
@@ -106,21 +95,21 @@ export default class HomeScreen extends React.Component {
         />
       </View>
     );
-  }
+  };
 
   _handlePressClearHistory = () => {
     this.props.dispatch(BrowserActions.clearHistoryAsync());
-  }
+  };
 
   _renderRecentHistory = () => {
-    const extractUsername = (manifestUrl) => {
+    const extractUsername = manifestUrl => {
       let username = manifestUrl.match(/@.*?\//)[0];
       if (!username) {
-        return null
+        return null;
       } else {
         return username.slice(0, username.length - 1);
       }
-    }
+    };
 
     return this.props.recentHistory.map((project, i) => (
       <SmallProjectCard
@@ -132,7 +121,7 @@ export default class HomeScreen extends React.Component {
         fullWidthBorder={i === this.props.recentHistory.count() - 1}
       />
     ));
-  }
+  };
 }
 
 const styles = StyleSheet.create({

@@ -10,13 +10,8 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import {
-  Ionicons,
-} from '@exponent/vector-icons';
-import {
-  NavigationBar,
-  withNavigation,
-} from '@exponent/ex-navigation';
+import { Ionicons } from '@exponent/vector-icons';
+import { NavigationBar, withNavigation } from '@exponent/ex-navigation';
 
 import Colors from '../constants/Colors';
 import ExUrls from 'ExUrls';
@@ -34,13 +29,15 @@ export default class SearchBar extends React.Component {
 
   state = {
     text: '',
-  }
+  };
 
   render() {
     return (
       <View style={styles.container}>
         <TextInput
-          ref={view => { this._textInput = view; }}
+          ref={view => {
+            this._textInput = view;
+          }}
           placeholder="Find a project or enter a URL..."
           placeholderStyle={styles.sear}
           value={this.state.text}
@@ -55,10 +52,10 @@ export default class SearchBar extends React.Component {
     );
   }
 
-  _handleChangeText = (text) => {
-    this.setState({text});
+  _handleChangeText = text => {
+    this.setState({ text });
     this.props.emitter.emit('change', text);
-  }
+  };
 
   _handleSubmit = () => {
     let { text } = this.state;
@@ -67,7 +64,7 @@ export default class SearchBar extends React.Component {
     } else {
       this._textInput.blur();
     }
-  }
+  };
 }
 
 const styles = StyleSheet.create({
@@ -82,6 +79,5 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
     marginRight: 5,
   },
-  searchInputPlaceholderText: {
-  },
+  searchInputPlaceholderText: {},
 });

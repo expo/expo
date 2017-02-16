@@ -10,12 +10,8 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import {
-  Ionicons,
-} from '@exponent/vector-icons';
-import {
-  withNavigation,
-} from '@exponent/ex-navigation';
+import { Ionicons } from '@exponent/vector-icons';
+import { withNavigation } from '@exponent/ex-navigation';
 
 import Layout from '../constants/Layout';
 
@@ -30,8 +26,7 @@ const SearchIcon = () => (
   </View>
 );
 
-@withNavigation
-class PlaceholderButtonSearchBar extends React.Component {
+@withNavigation class PlaceholderButtonSearchBar extends React.Component {
   render() {
     return (
       <View style={styles.container}>
@@ -44,7 +39,7 @@ class PlaceholderButtonSearchBar extends React.Component {
               style={styles.searchInput}
             />
 
-          <SearchIcon />
+            <SearchIcon />
           </View>
         </TouchableWithoutFeedback>
       </View>
@@ -53,7 +48,7 @@ class PlaceholderButtonSearchBar extends React.Component {
 
   _handlePress = () => {
     this.props.navigator.push('search');
-  }
+  };
 }
 
 @withNavigation
@@ -64,7 +59,7 @@ export default class SearchBar extends React.Component {
     text: '',
     showCancelButton: false,
     inputWidth: Layout.window.width,
-  }
+  };
 
   componentDidMount() {
     requestAnimationFrame(() => {
@@ -72,7 +67,7 @@ export default class SearchBar extends React.Component {
     });
   }
 
-  _handleLayoutCancelButton = (e) => {
+  _handleLayoutCancelButton = e => {
     if (this.state.showCancelButton) {
       return;
     }
@@ -90,7 +85,7 @@ export default class SearchBar extends React.Component {
           type: LayoutAnimation.Types.spring,
           springDamping: 0.9,
           initialVelocity: 10,
-        }
+        },
       });
 
       this.setState({
@@ -98,16 +93,18 @@ export default class SearchBar extends React.Component {
         inputWidth: SearchContainerWidth - cancelButtonWidth,
       });
     });
-  }
+  };
 
   render() {
     let { inputWidth, showCancelButton } = this.state;
 
     return (
       <View style={styles.container}>
-        <View style={[styles.searchContainer, {width: inputWidth}]}>
+        <View style={[styles.searchContainer, { width: inputWidth }]}>
           <TextInput
-            ref={view => { this._textInput = view; }}
+            ref={view => {
+              this._textInput = view;
+            }}
             clearButtonMode="while-editing"
             onChangeText={this._handleChangeText}
             value={this.state.text}
@@ -124,13 +121,13 @@ export default class SearchBar extends React.Component {
         </View>
 
         <View
-          key={showCancelButton ? "visible-cancel-button" : "layout-only-cancel-button"}
-          style={[styles.buttonContainer, {opacity: showCancelButton ? 1 : 0}]}>
+          key={showCancelButton ? 'visible-cancel-button' : 'layout-only-cancel-button'}
+          style={[styles.buttonContainer, { opacity: showCancelButton ? 1 : 0 }]}>
           <TouchableOpacity
             style={styles.button}
             onLayout={this._handleLayoutCancelButton}
             onPress={this._handlePressCancelButton}>
-            <Text style={{fontSize: 16, color: '#4E9BDE'}}>
+            <Text style={{ fontSize: 16, color: '#4E9BDE' }}>
               Cancel
             </Text>
           </TouchableOpacity>
@@ -139,10 +136,10 @@ export default class SearchBar extends React.Component {
     );
   }
 
-  _handleChangeText = (text) => {
-    this.setState({text});
+  _handleChangeText = text => {
+    this.setState({ text });
     this.props.emitter && this.props.emitter.emit('change', text);
-  }
+  };
 
   _handleSubmit = () => {
     let { text } = this.state;
@@ -151,11 +148,11 @@ export default class SearchBar extends React.Component {
     } else {
       this._textInput.blur();
     }
-  }
+  };
 
   _handlePressCancelButton = () => {
     this.props.navigator.pop();
-  }
+  };
 }
 
 const styles = StyleSheet.create({
@@ -196,6 +193,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     paddingTop: 1,
   },
-  searchInputPlaceholderText: {
-  },
+  searchInputPlaceholderText: {},
 });
