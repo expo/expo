@@ -8,7 +8,12 @@ import {
   TouchableHighlight,
   View,
 } from 'react-native';
-import { withNavigation } from '@exponent/ex-navigation';
+import {
+  Ionicons,
+} from '@exponent/vector-icons';
+import {
+  withNavigation,
+} from '@exponent/ex-navigation';
 
 import Colors from '../constants/Colors';
 import Layout from '../constants/Layout';
@@ -25,11 +30,13 @@ export default class SmallProjectCard extends React.Component {
       projectName,
       projectUrl,
       username,
+      privacy,
       slug,
       iconUrl,
     } = this.props;
 
-    const renderLikes = typeof likeCount === 'number';
+    const isUnlisted = privacy === 'unlisted';
+    const renderLikes = typeof likeCount === 'number' && !isUnlisted;
 
     return (
       <TouchableNativeFeedbackSafe
@@ -40,6 +47,7 @@ export default class SmallProjectCard extends React.Component {
         <View style={styles.iconContainer}>
           {this._maybeRenderIcon()}
         </View>
+
         <View style={[styles.infoContainer, !this.props.fullWidthBorder && styles.bottomBorder]}>
           <Text
             style={styles.projectNameText}
@@ -47,14 +55,28 @@ export default class SmallProjectCard extends React.Component {
             numberOfLines={1}>
             {projectName}
           </Text>
+
           <View style={styles.projectExtraInfoContainer}>
             <Text
               onPress={username ? this._handlePressUsername : null}
-              style={[styles.projectExtraInfoText, renderLikes ? {flexShrink: 4} : {flex: 1}]}
+              style={[styles.projectExtraInfoText, renderLikes || isUnlisted ? {flexShrink: 4} : {flex: 1}]}
               ellipsizeMode="tail"
               numberOfLines={1}>
               {hideUsername ? slug : username || projectUrl}
             </Text>
+
+            {isUnlisted && (
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <View style={styles.bullet} />
+                <View style={styles.unlistedIconContainer}>
+                  <Ionicons name="ios-eye-off" size={15} color="rgba(36, 44, 58, 0.3)" style={{marginTop: 1}} />
+                  <Text style={styles.unlistedText}>
+                    Unlisted
+                  </Text>
+                </View>
+              </View>
+            )}
+
             {renderLikes && (
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
                 <View style={styles.bullet} />
@@ -66,8 +88,10 @@ export default class SmallProjectCard extends React.Component {
                 </Text>
               </View>
             )}
+
           </View>
         </View>
+
       </TouchableNativeFeedbackSafe>
     );
   }
@@ -117,13 +141,12 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     backgroundColor: '#fff',
-    alignItems: 'center',
     flex: 1,
   },
   iconContainer: {
     paddingLeft: IconPaddingLeft,
     paddingRight: IconPaddingRight,
-    paddingTop: 12,
+    paddingTop: 15,
     paddingBottom: 10,
   },
   icon: {
@@ -171,6 +194,14 @@ const styles = StyleSheet.create({
     borderRadius: 3.5/2,
     backgroundColor: 'rgba(36, 44, 58, 0.2)',
     marginHorizontal: 6,
+  },
+  unlistedIconContainer: {
+    flexDirection: 'row',
+  },
+  unlistedText: {
+    marginLeft: 3,
+    color: Colors.greyText,
+    fontSize: 13,
   },
 });
 

@@ -7,23 +7,24 @@ const MyProfileQuery = gql`
   query MyProfile {
     viewer {
       me {
-        id
-        username
-        firstName
-        lastName
-        email
-        profilePhoto
         appCount
+        email
+        firstName
+        id
         isLegacy
+        lastName
+        profilePhoto
+        username
         apps(limit: 15, offset: 0) {
-          id
+          description
           fullName
           iconUrl
-          name
-          packageName
-          description
+          id
           lastPublishedTime
           likeCount
+          name
+          packageName
+          privacy
         }
         likes(limit: 15, offset: 0) {
           id

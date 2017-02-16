@@ -209,6 +209,7 @@ export default class Profile extends React.Component {
         projectName={app.name}
         slug={app.packageName}
         projectUrl={app.fullName}
+        privacy={app.privacy}
         fullWidthBorder
       />
     );
