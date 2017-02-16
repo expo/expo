@@ -59,7 +59,7 @@ export default class SignUpScreen extends React.Component {
       };
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.authTokens && !this.props.authTokens) {
+    if (nextProps.authTokens.idToken && !this.props.authTokens.isToken) {
       TextInput.State.blurTextInput(TextInput.State.currentlyFocusedField());
       this.props.navigation.dismissModal();
     }
