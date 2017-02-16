@@ -1,3 +1,5 @@
+/* @flow */
+
 import jwtDecode from 'jwt-decode';
 import { Constants } from 'exponent';
 

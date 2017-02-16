@@ -1,3 +1,5 @@
+/* @flow */
+
 import React from 'react';
 import { Animated, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Components } from 'exponent';

@@ -1,3 +1,5 @@
+/* @flow */
+
 import { createNetworkInterface } from 'apollo-client';
 import ConnectivityAwareHTTPNetworkInterface from './ConnectivityAwareHTTPNetworkInterface';
 

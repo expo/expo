@@ -1,3 +1,5 @@
+/* @flow */
+
 import Exponent, { Font } from 'exponent';
 import React from 'react';
 import {

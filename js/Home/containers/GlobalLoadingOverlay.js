@@ -1,3 +1,5 @@
+/* @flow */
+
 import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { connect } from 'react-redux';

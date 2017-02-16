@@ -1,3 +1,5 @@
+/* @flow */
+
 import React from 'react';
 import { Clipboard, Linking, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@exponent/vector-icons';

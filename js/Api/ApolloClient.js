@@ -1,3 +1,5 @@
+/* @flow */
+
 import ApolloClient, { createNetworkInterface } from 'apollo-client';
 import createAuthAwareNetworkInterface from './createAuthAwareNetworkInterface';
 import Auth0Api from './Auth0Api';

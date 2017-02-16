@@ -1,3 +1,5 @@
+/* @flow */
+
 import { NetInfo } from 'react-native';
 
 class Connectivity {

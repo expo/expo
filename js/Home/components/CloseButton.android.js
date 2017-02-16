@@ -1,3 +1,5 @@
+/* @flow */
+
 import React from 'react';
 import { withNavigation } from '@exponent/ex-navigation';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';

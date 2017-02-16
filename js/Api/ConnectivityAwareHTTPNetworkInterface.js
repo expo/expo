@@ -1,3 +1,5 @@
+/* @flow */
+
 import { HTTPFetchNetworkInterface } from 'apollo-client';
 import Connectivity from './Connectivity';
 

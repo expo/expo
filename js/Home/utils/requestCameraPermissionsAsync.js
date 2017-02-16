@@ -1,3 +1,5 @@
+/* @flow */
+
 import { Permissions } from 'exponent';
 
 export default (async function requestCameraPermissionsAsync() {

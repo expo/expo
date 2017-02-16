@@ -1,3 +1,5 @@
+/* @flow */
+
 import { createRouter } from '@exponent/ex-navigation';
 
 export default createRouter(

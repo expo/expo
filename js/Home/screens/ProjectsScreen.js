@@ -1,3 +1,5 @@
+/* @flow */
+
 import React from 'react';
 import {
   Clipboard,
@@ -64,7 +66,7 @@ export default class HomeScreen extends React.Component {
 
           {this._renderRecentHistory()}
 
-          {/* <SeeAllProjectsButton onPress={() => {}} projects={FakeProjects} /> */
+          {// <SeeAllProjectsButton onPress={() => {}} projects={FakeProjects} />
           }
 
           {this._renderExponentVersion()}

@@ -1,3 +1,5 @@
+/* @flow */
+
 import { NavigationContext, NavigationStyles } from '@exponent/ex-navigation';
 
 import Router from './Router';
