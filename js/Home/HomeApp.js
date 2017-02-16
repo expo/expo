@@ -1,6 +1,9 @@
-import Exponent from 'exponent';
+import Exponent, {
+  Font,
+} from 'exponent';
 import React from 'react';
 import {
+  ActivityIndicator,
   Platform,
   StatusBar,
   StyleSheet,
@@ -13,6 +16,10 @@ import {
 import {
   ActionSheetProvider,
 } from '@exponent/react-native-action-sheet';
+import {
+  Ionicons,
+  MaterialIcons,
+} from '@exponent/vector-icons';
 import {
   ApolloProvider,
 } from 'react-apollo';
@@ -31,16 +38,34 @@ export default class AppContainer extends React.Component {
   }
 
   async componentDidMount() {
-    let storedAuthTokens = await LocalStorage.getAuthTokensAsync();
+    try {
+      let storedAuthTokens = await LocalStorage.getAuthTokensAsync();
 
-    if (storedAuthTokens) {
-      ExStore.dispatch(AuthTokenActions.setAuthTokens(storedAuthTokens));
+      if (storedAuthTokens) {
+        ExStore.dispatch(AuthTokenActions.setAuthTokens(storedAuthTokens));
+      }
+
+      if (Platform.OS === 'ios') {
+        await Font.loadAsync(Ionicons.font);
+      } else {
+        await Font.loadAsync(MaterialIcons.font);
+      }
+    } catch(e) {
+
+    } finally {
+      this.setState({isReady: true});
     }
-
-    this.setState({isReady: true});
   }
 
   render() {
+    if (!this.state.isReady) {
+      return (
+        <View style={{flex: 1, backgroundColor: 'white', alignItems: 'center', justifyContent: 'center'}}>
+          <ActivityIndicator />
+        </View>
+      );
+    }
+
     return (
       <View style={styles.container}>
         <ActionSheetProvider>
