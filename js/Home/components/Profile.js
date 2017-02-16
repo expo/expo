@@ -6,6 +6,7 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
+  RefreshControl,
   Text,
   TouchableOpacity,
   View,
@@ -46,17 +47,55 @@ export default class Profile extends React.Component {
     isRefetching: false,
   }
 
+  componentWillMount() {
+    this._isMounted = true;
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
   render() {
     if (this.props.data.error) {
       return this._renderError();
     }
 
     return (
-      <ScrollView style={styles.container}>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.isRefetching}
+            onRefresh={this._handleRefreshAsync}
+          />
+        }
+        style={styles.container}>
         {this._renderHeader()}
         {this._renderApps()}
       </ScrollView>
     );
+  }
+
+  _handleRefreshAsync = async () => {
+    if (this.state.isRefetching) {
+      return;
+    }
+
+    try {
+      this.setState({isRefetching: true});
+      this.props.data.refetch({forceFetch: true});
+    } catch(e) {
+      // TODO(brentvatne): Put this into Sentry
+      console.log({e});
+    } finally {
+      // Add a slight delay so it doesn't just disappear immediately,
+      // this actually looks nicer because you might think that it
+      // didn't work if it disappears too quickly
+      setTimeout(() => {
+        if (this._isMounted) {
+          this.setState({isRefetching: false});
+        }
+      }, 500);
+    }
   }
 
   _renderError = () => {
