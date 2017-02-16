@@ -15,7 +15,10 @@ export class FormInput extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if (nextProps.value === this.props.value && nextState.isFocused === this.state.isFocused) {
+    if (
+      nextProps.value === this.props.value &&
+      nextState.isFocused === this.state.isFocused
+    ) {
       return false;
     }
 
@@ -49,13 +52,16 @@ export class FormInput extends React.Component {
           }}
           onFocus={this._handleFocus}
           onBlur={this._handleBlur}
-          underlineColorAndroid={this.state.isFocused ? Colors.tintColor : 'rgba(46, 59, 76, 0.10)'}
+          underlineColorAndroid={
+            this.state.isFocused ? Colors.tintColor : 'rgba(46, 59, 76, 0.10)'
+          }
           {...props}
           placeholder={this.props.label}
           placeholderTextColor="rgba(36, 44, 58, 0.4)"
           style={[styles.textInput, style]}
         />
-        <Animated.View style={[styles.floatingLabel, this._getAnimatedLabelStyles()]}>
+        <Animated.View
+          style={[styles.floatingLabel, this._getAnimatedLabelStyles()]}>
           <Text style={styles.floatingLabelText}>{this.props.label}</Text>
         </Animated.View>
       </View>

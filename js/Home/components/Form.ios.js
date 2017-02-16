@@ -8,7 +8,10 @@ export class FormInput extends React.Component {
   };
 
   shouldComponentUpdate(nextProps, nextState) {
-    if (nextProps.value === this.props.value && nextProps.labelWidth === this.props.labelWidth) {
+    if (
+      nextProps.value === this.props.value &&
+      nextProps.labelWidth === this.props.labelWidth
+    ) {
       return false;
     }
 
@@ -42,7 +45,14 @@ export class FormInput extends React.Component {
         colors={['rgba(255,255,255, 1)', 'rgba(255,255,255, 0.2)']}
         start={[0.5, 0]}
         end={[1, 0]}
-        style={{ position: 'absolute', left: this.state.labelWidth, right: 0, top: 0, bottom: 0, width: 30 }}
+        style={{
+          position: 'absolute',
+          left: this.state.labelWidth,
+          right: 0,
+          top: 0,
+          bottom: 0,
+          width: 30,
+        }}
       />
     );
   };
@@ -57,8 +67,14 @@ export class FormInput extends React.Component {
     } = this.props;
 
     return (
-      <View style={[styles.inputContainer, hideBottomBorder && styles.inputContainerWithoutBorderBottom]}>
-        <View style={styles.inputLabelContainer} onLayout={this._handleLayoutLabel}>
+      <View
+        style={[
+          styles.inputContainer,
+          hideBottomBorder && styles.inputContainerWithoutBorderBottom,
+        ]}>
+        <View
+          style={styles.inputLabelContainer}
+          onLayout={this._handleLayoutLabel}>
           <Text style={styles.inputLabelText}>
             {label}
           </Text>

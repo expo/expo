@@ -7,14 +7,17 @@ import ExUrls from 'ExUrls';
 
 import { withNavigation } from '@exponent/ex-navigation';
 import { connectActionSheet } from '@exponent/react-native-action-sheet';
-import requestCameraPermissionsAsync from '../utils/requestCameraPermissionsAsync';
+import requestCameraPermissionsAsync
+  from '../utils/requestCameraPermissionsAsync';
 
 @connectActionSheet
 @withNavigation
 export default class AddProjectButton extends React.Component {
   render() {
     return (
-      <TouchableOpacity style={styles.buttonContainer} onPress={this._handlePress}>
+      <TouchableOpacity
+        style={styles.buttonContainer}
+        onPress={this._handlePress}>
         <Ionicons size={37} name="ios-add" color={Colors.tintColor} />
       </TouchableOpacity>
     );
@@ -33,7 +36,9 @@ export default class AddProjectButton extends React.Component {
           if (await requestCameraPermissionsAsync()) {
             this.props.navigation.showModal('qrCode');
           } else {
-            alert('In order to use the QR Code scanner you need to provide camera permissions');
+            alert(
+              'In order to use the QR Code scanner you need to provide camera permissions',
+            );
           }
         } else if (buttonIndex === 1) {
           let clipboardString = await Clipboard.getString();

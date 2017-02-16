@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@exponent/vector-icons';
-import TouchableNativeFeedbackSafe from '@exponent/react-native-touchable-native-feedback-safe';
+import TouchableNativeFeedbackSafe
+  from '@exponent/react-native-touchable-native-feedback-safe';
 
 export default class LikeButton extends React.Component {
   render() {
@@ -9,7 +10,9 @@ export default class LikeButton extends React.Component {
 
     return (
       <View style={this.props.style}>
-        <TouchableNativeFeedbackSafe {...this.props} style={[styles.container, liked && styles.containerLiked]}>
+        <TouchableNativeFeedbackSafe
+          {...this.props}
+          style={[styles.container, liked && styles.containerLiked]}>
           <Ionicons
             style={[styles.icon, liked && styles.iconLiked]}
             name={liked ? 'md-heart' : 'md-heart-outline'}

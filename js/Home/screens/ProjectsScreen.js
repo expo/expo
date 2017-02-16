@@ -1,5 +1,14 @@
 import React from 'react';
-import { Clipboard, Platform, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Clipboard,
+  Platform,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { Constants } from 'exponent';
 import { connect } from 'react-redux';
 import { take, takeRight } from 'lodash';
@@ -38,20 +47,25 @@ export default class HomeScreen extends React.Component {
 
     return (
       <View style={styles.container}>
-        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={styles.contentContainer}>
 
           {this._renderInDevelopment()}
 
           <View style={SharedStyles.sectionLabelContainer}>
             <Text style={SharedStyles.sectionLabelText}>RECENTLY VISITED</Text>
-            <TouchableOpacity onPress={this._handlePressClearHistory} style={styles.clearButton}>
+            <TouchableOpacity
+              onPress={this._handlePressClearHistory}
+              style={styles.clearButton}>
               <Text style={styles.clearButtonText}>CLEAR</Text>
             </TouchableOpacity>
           </View>
 
           {this._renderRecentHistory()}
 
-          {/* <SeeAllProjectsButton onPress={() => {}} projects={FakeProjects} /> */}
+          {/* <SeeAllProjectsButton onPress={() => {}} projects={FakeProjects} /> */
+          }
 
           {this._renderExponentVersion()}
         </ScrollView>
@@ -64,7 +78,9 @@ export default class HomeScreen extends React.Component {
   _renderExponentVersion = () => {
     return (
       <View style={styles.exponentVersionContainer}>
-        <Text style={styles.exponentVersionText} onPress={this._copyClientVersionToClipboard}>
+        <Text
+          style={styles.exponentVersionText}
+          onPress={this._copyClientVersionToClipboard}>
           Client version: {Constants.exponentVersion}
         </Text>
       </View>
@@ -73,7 +89,10 @@ export default class HomeScreen extends React.Component {
 
   _copyClientVersionToClipboard = () => {
     Clipboard.setString(Constants.exponentVersion);
-    this.props.navigator.showLocalAlert('The client version has been copied to your clipboard', Alerts.notice);
+    this.props.navigator.showLocalAlert(
+      'The client version has been copied to your clipboard',
+      Alerts.notice,
+    );
   };
 
   _renderInDevelopment = () => {
@@ -116,7 +135,11 @@ export default class HomeScreen extends React.Component {
         key={project.manifestUrl}
         iconUrl={project.manifest.iconUrl}
         projectName={project.manifest.name}
-        username={project.manifestUrl.includes('exp://exp.host') ? extractUsername(project.manifestUrl) : null}
+        username={
+          project.manifestUrl.includes('exp://exp.host')
+            ? extractUsername(project.manifestUrl)
+            : null
+        }
         projectUrl={project.manifestUrl}
         fullWidthBorder={i === this.props.recentHistory.count() - 1}
       />

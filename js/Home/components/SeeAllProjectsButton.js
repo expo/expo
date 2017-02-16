@@ -1,8 +1,16 @@
 import React from 'react';
-import { Image, Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import {
+  Image,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View,
+} from 'react-native';
 import { Ionicons } from '@exponent/vector-icons';
 import FadeIn from '@exponent/react-native-fade-in-image';
-import TouchableNativeFeedback from '@exponent/react-native-touchable-native-feedback-safe';
+import TouchableNativeFeedback
+  from '@exponent/react-native-touchable-native-feedback-safe';
 import { take } from 'lodash';
 
 import Colors from '../constants/Colors';

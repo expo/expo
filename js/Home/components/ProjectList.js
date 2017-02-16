@@ -1,5 +1,11 @@
 import React from 'react';
-import { ActivityIndicator, ListView, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  ListView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 import { withNavigation } from '@exponent/ex-navigation';
 
@@ -10,7 +16,9 @@ import SmallProjectCard from './SmallProjectCard';
 @withNavigation
 export default class ProjectList extends React.Component {
   state = {
-    dataSource: new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 }),
+    dataSource: new ListView.DataSource({
+      rowHasChanged: (r1, r2) => r1 !== r2,
+    }),
     isRefetching: false,
     isLoadingMore: false,
   };
@@ -37,7 +45,9 @@ export default class ProjectList extends React.Component {
   render() {
     return (
       <View style={{ flex: 1 }}>
-        {this.props.data.apps && this.props.data.apps.length ? this._renderContent() : this._maybeRenderLoading()}
+        {this.props.data.apps && this.props.data.apps.length
+          ? this._renderContent()
+          : this._maybeRenderLoading()}
       </View>
     );
   }
@@ -59,7 +69,10 @@ export default class ProjectList extends React.Component {
       <ListView
         dataSource={this.state.dataSource}
         renderRow={this._renderRow}
-        style={[{ flex: 1 }, !this.props.belongsToCurrentUser && styles.largeProjectCardList]}
+        style={[
+          { flex: 1 },
+          !this.props.belongsToCurrentUser && styles.largeProjectCardList,
+        ]}
         renderScrollComponent={props => <InfiniteScrollView {...props} />}
         canLoadMore={this._canLoadMore()}
         onLoadMoreAsync={this._handleLoadMoreAsync}

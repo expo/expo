@@ -1,6 +1,16 @@
 import React from 'react';
-import { Image, Keyboard, Linking, Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
-import TouchableNativeFeedbackSafe from '@exponent/react-native-touchable-native-feedback-safe';
+import {
+  Image,
+  Keyboard,
+  Linking,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View,
+} from 'react-native';
+import TouchableNativeFeedbackSafe
+  from '@exponent/react-native-touchable-native-feedback-safe';
 import FadeIn from '@exponent/react-native-fade-in-image';
 import { withNavigation } from '@exponent/ex-navigation';
 
@@ -34,7 +44,10 @@ export default class ProjectCard extends React.Component {
                 {this._maybeRenderIcon()}
               </View>
               <View style={styles.infoContainer}>
-                <Text style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
+                <Text
+                  style={styles.projectNameText}
+                  ellipsizeMode="tail"
+                  numberOfLines={1}>
                   {projectName}
                 </Text>
                 <View style={styles.projectExtraInfoContainer}>
@@ -60,7 +73,11 @@ export default class ProjectCard extends React.Component {
           </View>
         </TouchableNativeFeedbackSafe>
 
-        <LikeButtonContainer style={{ position: 'absolute', top: 12, right: 12 }} appId={id} liked={isLikedByMe} />
+        <LikeButtonContainer
+          style={{ position: 'absolute', top: 12, right: 12 }}
+          appId={id}
+          liked={isLikedByMe}
+        />
       </View>
     );
   }

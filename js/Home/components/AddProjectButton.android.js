@@ -1,12 +1,21 @@
 import React from 'react';
-import { Clipboard, Linking, NativeModules, StyleSheet, TouchableOpacity, View, findNodeHandle } from 'react-native';
+import {
+  Clipboard,
+  Linking,
+  NativeModules,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  findNodeHandle,
+} from 'react-native';
 import { MaterialIcons } from '@exponent/vector-icons';
 
 import { withNavigation } from '@exponent/ex-navigation';
 
 import ExUrls from 'ExUrls';
 import Colors from '../constants/Colors';
-import requestCameraPermissionsAsync from '../utils/requestCameraPermissionsAsync';
+import requestCameraPermissionsAsync
+  from '../utils/requestCameraPermissionsAsync';
 
 @withNavigation
 export default class AddProjectButton extends React.Component {
@@ -20,7 +29,9 @@ export default class AddProjectButton extends React.Component {
           }}
           style={{ position: 'absolute', top: 5, left: 0 }}
         />
-        <TouchableOpacity style={styles.buttonContainer} onPress={this._handlePress}>
+        <TouchableOpacity
+          style={styles.buttonContainer}
+          onPress={this._handlePress}>
           <MaterialIcons size={30} name="add" color={Colors.tintColor} />
         </TouchableOpacity>
       </View>
@@ -30,12 +41,17 @@ export default class AddProjectButton extends React.Component {
   _handlePress = () => {
     let options = ['Scan QR Code', 'Open from Clipboard'];
     let handle = findNodeHandle(this._anchor);
-    NativeModules.UIManager.showPopupMenu(handle, options, err => {}, async (action, buttonIndex) => {
+    NativeModules.UIManager.showPopupMenu(handle, options, err => {}, async (
+      action,
+      buttonIndex,
+    ) => {
       if (buttonIndex === 0) {
         if (await requestCameraPermissionsAsync()) {
           this.props.navigation.showModal('qrCode');
         } else {
-          alert('In order to use the QR Code scanner you need to provide camera permissions');
+          alert(
+            'In order to use the QR Code scanner you need to provide camera permissions',
+          );
         }
       } else if (buttonIndex === 1) {
         let clipboardString = await Clipboard.getString();

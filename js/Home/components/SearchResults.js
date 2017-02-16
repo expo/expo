@@ -12,7 +12,8 @@ import {
   TouchableHighlight,
   View,
 } from 'react-native';
-import TouchableNativeFeedbackSafe from '@exponent/react-native-touchable-native-feedback-safe';
+import TouchableNativeFeedbackSafe
+  from '@exponent/react-native-touchable-native-feedback-safe';
 
 import Colors from '../constants/Colors';
 import ExUrls from 'ExUrls';
@@ -102,7 +103,10 @@ export default class SearchResults extends React.Component {
       results.UserSearchResult = results.UserSearchResult || [];
       results.AppSearchResult = results.AppSearchResult || [];
 
-      let newDataSource = dataSource.cloneWithRowsAndSections(results, SectionIds);
+      let newDataSource = dataSource.cloneWithRowsAndSections(
+        results,
+        SectionIds,
+      );
 
       this.setState({ dataSource: newDataSource });
     }
@@ -125,8 +129,15 @@ export default class SearchResults extends React.Component {
       this.props.query.length >= 2
     ) {
       return (
-        <ScrollView keyboardShouldPersistTaps="always" keyboardDismissMode="on-drag" style={styles.scrollContainer}>
-          <View style={[SharedStyles.sectionLabelContainer, { backgroundColor: Colors.greyBackground, marginTop: 7 }]}>
+        <ScrollView
+          keyboardShouldPersistTaps="always"
+          keyboardDismissMode="on-drag"
+          style={styles.scrollContainer}>
+          <View
+            style={[
+              SharedStyles.sectionLabelContainer,
+              { backgroundColor: Colors.greyBackground, marginTop: 7 },
+            ]}>
             <Text style={SharedStyles.sectionLabelText}>
               NO RESULTS FOUND
             </Text>
@@ -179,7 +190,11 @@ export default class SearchResults extends React.Component {
 
   _renderSectionHeader = (sectionData, sectionId) => {
     return (
-      <View style={[SharedStyles.sectionLabelContainer, { backgroundColor: Colors.greyBackground }]}>
+      <View
+        style={[
+          SharedStyles.sectionLabelContainer,
+          { backgroundColor: Colors.greyBackground },
+        ]}>
         <Text style={SharedStyles.sectionLabelText}>
           {sectionId === 'AppSearchResult' ? 'PROJECTS' : 'PEOPLE'}
         </Text>
@@ -189,13 +204,17 @@ export default class SearchResults extends React.Component {
 
   _isLastAppSearchResult = index => {
     let appSectionIdx = SectionIds.indexOf('AppSearchResult');
-    let appSectionLength = this.state.dataSource.getSectionLengths()[appSectionIdx];
+    let appSectionLength = this.state.dataSource.getSectionLengths()[
+      appSectionIdx
+    ];
     return parseInt(index, 0) + 1 === appSectionLength;
   };
 
   _isLastUserSearchResult = index => {
     let userSectionIdx = SectionIds.indexOf('UserSearchResult');
-    let userSectionLength = this.state.dataSource.getSectionLengths()[userSectionIdx];
+    let userSectionLength = this.state.dataSource.getSectionLengths()[
+      userSectionIdx
+    ];
     return parseInt(index, 0) + 1 === userSectionLength;
   };
 

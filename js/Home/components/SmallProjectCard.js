@@ -1,5 +1,13 @@
 import React from 'react';
-import { Image, Linking, Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import {
+  Image,
+  Linking,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View,
+} from 'react-native';
 import { Ionicons } from '@exponent/vector-icons';
 import { withNavigation } from '@exponent/ex-navigation';
 
@@ -7,7 +15,8 @@ import Colors from '../constants/Colors';
 import Layout from '../constants/Layout';
 import ExUrls from 'ExUrls';
 import FadeIn from '@exponent/react-native-fade-in-image';
-import TouchableNativeFeedbackSafe from '@exponent/react-native-touchable-native-feedback-safe';
+import TouchableNativeFeedbackSafe
+  from '@exponent/react-native-touchable-native-feedback-safe';
 
 @withNavigation
 export default class SmallProjectCard extends React.Component {
@@ -31,20 +40,33 @@ export default class SmallProjectCard extends React.Component {
         onPress={this._handlePressProject}
         fallback={TouchableHighlight}
         underlayColor="#b7b7b7"
-        style={[styles.container, this.props.fullWidthBorder && styles.bottomBorder]}>
+        style={[
+          styles.container,
+          this.props.fullWidthBorder && styles.bottomBorder,
+        ]}>
         <View style={styles.iconContainer}>
           {this._maybeRenderIcon()}
         </View>
 
-        <View style={[styles.infoContainer, !this.props.fullWidthBorder && styles.bottomBorder]}>
-          <Text style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
+        <View
+          style={[
+            styles.infoContainer,
+            !this.props.fullWidthBorder && styles.bottomBorder,
+          ]}>
+          <Text
+            style={styles.projectNameText}
+            ellipsizeMode="tail"
+            numberOfLines={1}>
             {projectName}
           </Text>
 
           <View style={styles.projectExtraInfoContainer}>
             <Text
               onPress={username ? this._handlePressUsername : null}
-              style={[styles.projectExtraInfoText, renderLikes || isUnlisted ? { flexShrink: 4 } : { flex: 1 }]}
+              style={[
+                styles.projectExtraInfoText,
+                renderLikes || isUnlisted ? { flexShrink: 4 } : { flex: 1 },
+              ]}
               ellipsizeMode="tail"
               numberOfLines={1}>
               {hideUsername ? slug : username || projectUrl}
@@ -54,7 +76,12 @@ export default class SmallProjectCard extends React.Component {
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <View style={styles.bullet} />
                 <View style={styles.unlistedIconContainer}>
-                  <Ionicons name="ios-eye-off" size={15} color="rgba(36, 44, 58, 0.3)" style={{ marginTop: 1 }} />
+                  <Ionicons
+                    name="ios-eye-off"
+                    size={15}
+                    color="rgba(36, 44, 58, 0.3)"
+                    style={{ marginTop: 1 }}
+                  />
                   <Text style={styles.unlistedText}>
                     Unlisted
                   </Text>
@@ -64,7 +91,10 @@ export default class SmallProjectCard extends React.Component {
             {renderLikes &&
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <View style={styles.bullet} />
-                <Text onPress={() => {}} numberOfLines={1} style={styles.projectExtraInfoText}>
+                <Text
+                  onPress={() => {}}
+                  numberOfLines={1}
+                  style={styles.projectExtraInfoText}>
                   {likeCount} {likeCount === 1 ? 'like' : 'likes'}
                 </Text>
               </View>}
@@ -157,7 +187,9 @@ const styles = StyleSheet.create({
   projectExtraInfoContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: Layout.window.width - IconPaddingRight - IconPaddingLeft - IconWidth - 10,
+    width: (
+      Layout.window.width - IconPaddingRight - IconPaddingLeft - IconWidth - 10
+    ),
   },
   projectExtraInfoText: {
     color: Colors.greyText,

@@ -1,5 +1,13 @@
 import React from 'react';
-import { Linking, Platform, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Linking,
+  Platform,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { Components } from 'exponent';
 
 import Layout from '../constants/Layout';
@@ -14,7 +22,10 @@ export default class BarCodeScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Components.BarCodeScanner onBarCodeRead={this._handleBarCodeRead} style={StyleSheet.absoluteFill} />
+        <Components.BarCodeScanner
+          onBarCodeRead={this._handleBarCodeRead}
+          style={StyleSheet.absoluteFill}
+        />
 
         <View style={styles.topOverlay} />
         <View style={styles.leftOverlay} />
@@ -32,7 +43,9 @@ export default class BarCodeScreen extends React.Component {
         </View>
 
         <View style={styles.footer}>
-          <TouchableOpacity onPress={this._handlePressCancel} hitSlop={{ top: 40, bottom: 40, right: 40, left: 40 }}>
+          <TouchableOpacity
+            onPress={this._handlePressCancel}
+            hitSlop={{ top: 40, bottom: 40, right: 40, left: 40 }}>
             <Text style={styles.cancelText}>Cancel</Text>
           </TouchableOpacity>
         </View>

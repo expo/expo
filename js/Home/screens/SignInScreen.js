@@ -87,7 +87,10 @@ export default class SignInScreen extends React.Component {
           />
         </Form>
 
-        <PrimaryButton isLoading={this.state.isLoading} style={{ margin: 20 }} onPress={this._handleSubmit}>
+        <PrimaryButton
+          isLoading={this.state.isLoading}
+          style={{ margin: 20 }}
+          onPress={this._handleSubmit}>
           Sign In
         </PrimaryButton>
       </ScrollView>
@@ -145,7 +148,9 @@ export default class SignInScreen extends React.Component {
 
   _handleError = error => {
     console.log({ error });
-    let message = error.error_description || error.message || 'Sorry, something went wrong.';
+    let message = error.error_description ||
+      error.message ||
+      'Sorry, something went wrong.';
     this.props.navigator.showLocalAlert(message, Alerts.error);
   };
 }

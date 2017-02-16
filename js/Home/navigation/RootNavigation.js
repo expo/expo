@@ -1,6 +1,10 @@
 import React from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
-import { StackNavigation, TabNavigation, TabNavigationItem } from '@exponent/ex-navigation';
+import {
+  StackNavigation,
+  TabNavigation,
+  TabNavigationItem,
+} from '@exponent/ex-navigation';
 import { Entypo, Ionicons } from '@exponent/vector-icons';
 
 import Colors from '../constants/Colors';
@@ -21,7 +25,8 @@ export default class RootNavigation extends React.Component {
         initialTab={this._currentTab}>
         <TabNavigationItem
           id="projects"
-          renderIcon={isSelected => this._renderIcon(Entypo, 'grid', 24, 'Projects', isSelected)}>
+          renderIcon={isSelected =>
+            this._renderIcon(Entypo, 'grid', 24, 'Projects', isSelected)}>
           <StackNavigation
             id="projects"
             navigatorUID="projects"
@@ -32,7 +37,14 @@ export default class RootNavigation extends React.Component {
 
         <TabNavigationItem
           id="explore"
-          renderIcon={isSelected => this._renderIcon(Ionicons, 'ios-search', 24, 'Explore', isSelected)}>
+          renderIcon={isSelected =>
+            this._renderIcon(
+              Ionicons,
+              'ios-search',
+              24,
+              'Explore',
+              isSelected,
+            )}>
           <StackNavigation
             id="explore"
             navigatorUID="explore"
@@ -43,7 +55,14 @@ export default class RootNavigation extends React.Component {
 
         <TabNavigationItem
           id="profile"
-          renderIcon={isSelected => this._renderIcon(Ionicons, 'ios-person', 26, 'Profile', isSelected)}>
+          renderIcon={isSelected =>
+            this._renderIcon(
+              Ionicons,
+              'ios-person',
+              26,
+              'Profile',
+              isSelected,
+            )}>
           <StackNavigation
             id="profile"
             navigatorUID="profile"
@@ -73,7 +92,12 @@ export default class RootNavigation extends React.Component {
 
     return (
       <View style={styles.tabItemContainer}>
-        <IconComponent name={iconName} size={iconSize} color={color} style={styles.icon} />
+        <IconComponent
+          name={iconName}
+          size={iconSize}
+          color={color}
+          style={styles.icon}
+        />
 
         <Text style={[styles.tabTitleText, { color }]} numberOfLines={1}>
           {title}

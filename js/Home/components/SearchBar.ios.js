@@ -18,7 +18,8 @@ import Layout from '../constants/Layout';
 const { ExponentKernel } = NativeModules;
 
 const SearchContainerHorizontalMargin = 10;
-const SearchContainerWidth = Layout.window.width - SearchContainerHorizontalMargin * 2;
+const SearchContainerWidth = Layout.window.width -
+  SearchContainerHorizontalMargin * 2;
 
 const SearchIcon = () => (
   <View style={styles.searchIconContainer}>
@@ -121,8 +122,15 @@ export default class SearchBar extends React.Component {
         </View>
 
         <View
-          key={showCancelButton ? 'visible-cancel-button' : 'layout-only-cancel-button'}
-          style={[styles.buttonContainer, { opacity: showCancelButton ? 1 : 0 }]}>
+          key={
+            showCancelButton
+              ? 'visible-cancel-button'
+              : 'layout-only-cancel-button'
+          }
+          style={[
+            styles.buttonContainer,
+            { opacity: showCancelButton ? 1 : 0 },
+          ]}>
           <TouchableOpacity
             style={styles.button}
             onLayout={this._handleLayoutCancelButton}
@@ -143,7 +151,10 @@ export default class SearchBar extends React.Component {
 
   _handleSubmit = () => {
     let { text } = this.state;
-    if (ExponentKernel && (text.toLowerCase() === '^dev menu' || text.toLowerCase() === '^dm')) {
+    if (
+      ExponentKernel &&
+      (text.toLowerCase() === '^dev menu' || text.toLowerCase() === '^dm')
+    ) {
       ExponentKernel.addDevMenu();
     } else {
       this._textInput.blur();

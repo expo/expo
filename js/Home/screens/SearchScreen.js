@@ -29,7 +29,10 @@ export default class SearchScreen extends React.Component {
 
   componentWillMount() {
     const emitter = this.props.route.getEventEmitter();
-    this._searchSubscription = emitter.addListener('change', debounce(this._handleChangeQuery, 200));
+    this._searchSubscription = emitter.addListener(
+      'change',
+      debounce(this._handleChangeQuery, 200),
+    );
   }
 
   _handleChangeQuery = text => {

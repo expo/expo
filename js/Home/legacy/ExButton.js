@@ -6,7 +6,15 @@
 'use strict';
 
 import React, { PropTypes } from 'react';
-import { Animated, Dimensions, Easing, PanResponder, Platform, StyleSheet, View } from 'react-native';
+import {
+  Animated,
+  Dimensions,
+  Easing,
+  PanResponder,
+  Platform,
+  StyleSheet,
+  View,
+} from 'react-native';
 import TimerMixin from 'react-timer-mixin';
 import ResponsiveImage from '@exponent/react-native-responsive-image';
 
@@ -119,9 +127,12 @@ class ExButton extends React.Component {
     let panResponder = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onPanResponderGrant: this._handlePanResponderGrant,
-      onPanResponderMove: Animated.event([null, { dx: position.x, dy: position.y }], {
-        listener: this._handlePanResponderMove,
-      }),
+      onPanResponderMove: Animated.event(
+        [null, { dx: position.x, dy: position.y }],
+        {
+          listener: this._handlePanResponderMove,
+        },
+      ),
       onPanResponderRelease: this._handlePanResponderRelease,
       onPanResponderTerminate: this._handlePanResponderRelease,
     });
@@ -208,8 +219,12 @@ class ExButton extends React.Component {
         <Animated.View style={[styles.bubble, animatedBubbleStyle]}>
           <AnimatedResponsiveImage
             sources={{
-              2: { uri: 'https://s3.amazonaws.com/exp-us-standard/ios-home-btn-logo@2x.png' },
-              3: { uri: 'https://s3.amazonaws.com/exp-us-standard/ios-home-btn-logo@3x.png' },
+              2: {
+                uri: 'https://s3.amazonaws.com/exp-us-standard/ios-home-btn-logo@2x.png',
+              },
+              3: {
+                uri: 'https://s3.amazonaws.com/exp-us-standard/ios-home-btn-logo@3x.png',
+              },
             }}
             style={[styles.icon, { tintColor }]}
           />
@@ -294,7 +309,10 @@ class ExButton extends React.Component {
     /* Calculate the X position */
     let currentX = position.x.__getValue();
     let targetX;
-    if (currentX >= ScreenCenter && vx > -velocityThreshold || vx >= velocityThreshold) {
+    if (
+      currentX >= ScreenCenter && vx > -velocityThreshold ||
+      vx >= velocityThreshold
+    ) {
       targetX = RightDock;
     } else {
       targetX = LeftDock;
@@ -316,7 +334,10 @@ class ExButton extends React.Component {
       targetY = topDockDistance;
     }
 
-    let springConfig = { bounciness: this.props.bounciness, speed: this.props.speed };
+    let springConfig = {
+      bounciness: this.props.bounciness,
+      speed: this.props.speed,
+    };
 
     Animated
       .parallel([

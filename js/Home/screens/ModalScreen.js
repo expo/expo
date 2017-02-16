@@ -38,7 +38,9 @@ export default class ModalScreen extends React.Component {
           initialRoute={this.props.route.params.initialRoute}
           defaultRouteConfig={{
             styles: (
-              Platform.OS === 'android' ? NavigationStyles.Fade : withoutShadow(NavigationStyles.SlideHorizontalIOS)
+              Platform.OS === 'android'
+                ? NavigationStyles.Fade
+                : withoutShadow(NavigationStyles.SlideHorizontalIOS)
             ),
             navigationBar: {
               visible: true,

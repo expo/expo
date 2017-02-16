@@ -22,7 +22,8 @@ import PrimaryButton from './PrimaryButton';
 import SeeAllProjectsButton from './SeeAllProjectsButton';
 import SharedStyles from '../constants/SharedStyles';
 import SmallProjectCard from './SmallProjectCard';
-import StyledSlidingTabNavigation from '../navigation/StyledSlidingTabNavigation';
+import StyledSlidingTabNavigation
+  from '../navigation/StyledSlidingTabNavigation';
 
 const MAX_APPS_TO_DISPLAY = 3;
 const MAX_LIKES_TO_DISPLAY = 3;
@@ -61,7 +62,14 @@ export default class Profile extends React.Component {
 
     return (
       <ScrollView
-        refreshControl={<RefreshControl refreshing={this.state.isRefetching} onRefresh={this._handleRefreshAsync} />}
+        refreshControl={
+          (
+            <RefreshControl
+              refreshing={this.state.isRefetching}
+              onRefresh={this._handleRefreshAsync}
+            />
+          )
+        }
         style={styles.container}>
         {this._renderHeader()}
         {this._renderApps()}
@@ -101,7 +109,9 @@ export default class Profile extends React.Component {
     }
 
     // NOTE(brentvatne): sorry for this
-    let isConnectionError = this.props.data.error.message.includes('No connection available');
+    let isConnectionError = this.props.data.error.message.includes(
+      'No connection available',
+    );
 
     return (
       <View style={{ flex: 1, alignItems: 'center', paddingTop: 30 }}>
@@ -109,7 +119,10 @@ export default class Profile extends React.Component {
           {isConnectionError ? NETWORK_ERROR_TEXT : SERVER_ERROR_TEXT}
         </Text>
 
-        <PrimaryButton plain onPress={this._refetchDataAsync} fallback={TouchableOpacity}>
+        <PrimaryButton
+          plain
+          onPress={this._refetchDataAsync}
+          fallback={TouchableOpacity}>
           Try again
         </PrimaryButton>
       </View>
@@ -201,7 +214,10 @@ export default class Profile extends React.Component {
       return null;
     } else {
       let appsToDisplay = take(apps, MAX_APPS_TO_DISPLAY);
-      let otherApps = takeRight(apps, Math.max(0, apps.length - MAX_APPS_TO_DISPLAY));
+      let otherApps = takeRight(
+        apps,
+        Math.max(0, apps.length - MAX_APPS_TO_DISPLAY),
+      );
 
       return (
         <View>

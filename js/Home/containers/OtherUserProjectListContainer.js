@@ -53,7 +53,10 @@ export default graphql(UsersAppsQuery, {
             return Object.assign({}, previousData, {
               usersApps: {
                 ...fetchMoreResult.data.usersApps,
-                apps: [...previousData.usersApps.apps, ...fetchMoreResult.data.usersApps.apps],
+                apps: [
+                  ...previousData.usersApps.apps,
+                  ...fetchMoreResult.data.usersApps.apps,
+                ],
               },
             });
           },

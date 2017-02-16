@@ -1,5 +1,13 @@
 import React from 'react';
-import { Keyboard, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  Keyboard,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { connect } from 'react-redux';
 
 import AuthTokenActions from '../../Flux/AuthTokenActions';
@@ -58,14 +66,20 @@ export default class SignUpScreen extends React.Component {
   componentDidMount() {
     this._isMounted = true;
 
-    this._keyboardDidShowSubscription = Keyboard.addListener('keyboardDidShow', ({ endCoordinates }) => {
-      const keyboardHeight = endCoordinates.height;
-      this.setState({ keyboardHeight });
-    });
+    this._keyboardDidShowSubscription = Keyboard.addListener(
+      'keyboardDidShow',
+      ({ endCoordinates }) => {
+        const keyboardHeight = endCoordinates.height;
+        this.setState({ keyboardHeight });
+      },
+    );
 
-    this._keyboardDidHideSubscription = Keyboard.addListener('keyboardDidHide', () => {
-      this.setState({ keyboardHeight: 0 });
-    });
+    this._keyboardDidHideSubscription = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        this.setState({ keyboardHeight: 0 });
+      },
+    );
   }
 
   componentWillUnmount() {
@@ -145,7 +159,8 @@ export default class SignUpScreen extends React.Component {
             ref={view => {
               this._passwordConfirmationInput = view;
             }}
-            onSubmitEditing={() => this._handleSubmitEditing('passwordConfirmation')}
+            onSubmitEditing={() =>
+              this._handleSubmitEditing('passwordConfirmation')}
             onChangeText={this._updateValue.bind(this, 'passwordConfirmation')}
             value={this.state.passwordConfirmation}
             hideBottomBorder
@@ -155,7 +170,10 @@ export default class SignUpScreen extends React.Component {
           />
         </Form>
 
-        <PrimaryButton style={{ margin: 20 }} onPress={this._handleSubmit} isLoading={this.state.isLoading}>
+        <PrimaryButton
+          style={{ margin: 20 }}
+          onPress={this._handleSubmit}
+          isLoading={this.state.isLoading}>
           Sign Up
         </PrimaryButton>
 
@@ -204,12 +222,17 @@ export default class SignUpScreen extends React.Component {
       let signUpResult = await Auth0Api.signUpAsync(this.state);
 
       // What's the failure case here?
-      if (!signUpResult || !signUpResult.data || !signUpResult.data.user.user_id) {
+      if (
+        !signUpResult || !signUpResult.data || !signUpResult.data.user.user_id
+      ) {
         this._isMounted && this._handleError(signUpResult);
         return;
       }
 
-      let signInResult = await Auth0Api.signInAsync(this.state.email, this.state.password);
+      let signInResult = await Auth0Api.signInAsync(
+        this.state.email,
+        this.state.password,
+      );
 
       if (this._isMounted) {
         if (signInResult.error) {
@@ -234,7 +257,9 @@ export default class SignUpScreen extends React.Component {
 
   _handleError = error => {
     console.log({ error });
-    let message = error.error_description || error.message || 'Sorry, something went wrong.';
+    let message = error.error_description ||
+      error.message ||
+      'Sorry, something went wrong.';
     this.props.navigator.showLocalAlert(message, Alerts.error);
   };
 }

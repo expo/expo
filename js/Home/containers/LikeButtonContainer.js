@@ -33,11 +33,20 @@ const UnlikeProjectMutation = gql`
 @graphql(LikeProjectMutation, { name: 'likeMutation' })
 export default class LikeButtonContainer extends React.Component {
   render() {
-    return <LikeButton style={this.props.style} liked={this.props.liked} onPress={this._handlePressAsync} />;
+    return (
+      <LikeButton
+        style={this.props.style}
+        liked={this.props.liked}
+        onPress={this._handlePressAsync}
+      />
+    );
   }
 
   _alertNoInternetConnection = (message = '') => {
-    Alert.alert('No internet connection available', message || "Please try again when you're back online");
+    Alert.alert(
+      'No internet connection available',
+      message || "Please try again when you're back online",
+    );
   };
 
   _handlePressAsync = async () => {
@@ -59,9 +68,13 @@ export default class LikeButtonContainer extends React.Component {
       console.log({ result, appId: this.props.appId });
     } catch (e) {
       if (liked) {
-        this._alertNoInternetConnection('Unable to like the project, try again later.');
+        this._alertNoInternetConnection(
+          'Unable to like the project, try again later.',
+        );
       } else {
-        this._alertNoInternetConnection('Unable to unlike the project, try again later.');
+        this._alertNoInternetConnection(
+          'Unable to unlike the project, try again later.',
+        );
       }
 
       console.log({ e });
@@ -73,6 +86,8 @@ export default class LikeButtonContainer extends React.Component {
   };
 
   unlikeAsync = async () => {
-    return this.props.unlikeMutation({ variables: { appId: this.props.appId } });
+    return this.props.unlikeMutation({
+      variables: { appId: this.props.appId },
+    });
   };
 }

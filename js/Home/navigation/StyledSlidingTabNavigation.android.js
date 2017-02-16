@@ -41,7 +41,9 @@ export default class StyledSlidingTabNavigation extends React.Component {
 
     if (FeatureFlags.DISPLAY_ALL_EXPLORE_TABS) {
       const inputRange = props.navigationState.routes.map((x, i) => i);
-      const outputRange = inputRange.map(inputIndex => inputIndex === index ? selectedColor : unselectedColor);
+      const outputRange = inputRange.map(
+        inputIndex => inputIndex === index ? selectedColor : unselectedColor,
+      );
       color = props.position.interpolate({
         inputRange,
         outputRange,
@@ -51,7 +53,8 @@ export default class StyledSlidingTabNavigation extends React.Component {
     }
 
     return (
-      <Animated.Text style={{ color, fontWeight: '500', fontSize: 13, letterSpacing: 0.46 }}>
+      <Animated.Text
+        style={{ color, fontWeight: '500', fontSize: 13, letterSpacing: 0.46 }}>
         {title.toUpperCase()}
       </Animated.Text>
     );

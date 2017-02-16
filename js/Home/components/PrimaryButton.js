@@ -1,6 +1,14 @@
 import React from 'react';
-import { ActivityIndicator, TouchableOpacity, Platform, StyleSheet, Text, View } from 'react-native';
-import TouchableNativeFeedback from '@exponent/react-native-touchable-native-feedback-safe';
+import {
+  ActivityIndicator,
+  TouchableOpacity,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import TouchableNativeFeedback
+  from '@exponent/react-native-touchable-native-feedback-safe';
 
 import Colors from '../constants/Colors';
 

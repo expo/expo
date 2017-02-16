@@ -35,7 +35,9 @@ const SERVER_ERROR_TEXT = dedent(
 
 export default class ExploreTab extends React.Component {
   state = {
-    dataSource: new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 }),
+    dataSource: new ListView.DataSource({
+      rowHasChanged: (r1, r2) => r1 !== r2,
+    }),
     isRefetching: false,
   };
 
@@ -51,7 +53,10 @@ export default class ExploreTab extends React.Component {
   }
 
   render() {
-    if (this.props.data.loading || this.state.isRefetching && !this.props.data.apps) {
+    if (
+      this.props.data.loading ||
+      this.state.isRefetching && !this.props.data.apps
+    ) {
       return this._renderLoading();
     } else if (this.props.data.error && !this.props.data.apps) {
       return this._renderError();
@@ -62,7 +67,9 @@ export default class ExploreTab extends React.Component {
 
   _renderError() {
     // NOTE(brentvatne): sorry for this
-    let isConnectionError = this.props.data.error.message.includes('No connection available');
+    let isConnectionError = this.props.data.error.message.includes(
+      'No connection available',
+    );
 
     return (
       <View style={{ flex: 1, alignItems: 'center', paddingTop: 30 }}>
@@ -70,7 +77,10 @@ export default class ExploreTab extends React.Component {
           {isConnectionError ? NETWORK_ERROR_TEXT : SERVER_ERROR_TEXT}
         </Text>
 
-        <PrimaryButton plain onPress={this._refetchDataAsync} fallback={TouchableOpacity}>
+        <PrimaryButton
+          plain
+          onPress={this._refetchDataAsync}
+          fallback={TouchableOpacity}>
           Try again
         </PrimaryButton>
       </View>
@@ -152,7 +162,9 @@ export default class ExploreTab extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: FeatureFlags.HIDE_EXPLORE_TABS && Platform.OS === 'ios' ? 5 : 15,
+    paddingTop: (
+      FeatureFlags.HIDE_EXPLORE_TABS && Platform.OS === 'ios' ? 5 : 15
+    ),
     backgroundColor: Colors.greyBackground,
     borderRightWidth: 1,
     borderRightColor: '#f6f6f6',

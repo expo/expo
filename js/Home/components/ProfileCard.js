@@ -1,6 +1,15 @@
 import React from 'react';
-import { Image, Linking, Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
-import TouchableNativeFeedbackSafe from '@exponent/react-native-touchable-native-feedback-safe';
+import {
+  Image,
+  Linking,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View,
+} from 'react-native';
+import TouchableNativeFeedbackSafe
+  from '@exponent/react-native-touchable-native-feedback-safe';
 import FadeIn from '@exponent/react-native-fade-in-image';
 import { withNavigation } from '@exponent/ex-navigation';
 
@@ -31,16 +40,24 @@ export default class ProfileCard extends React.Component {
                 {this._maybeRenderPhoto()}
               </View>
               <View style={styles.infoContainer}>
-                <Text style={styles.profileNameText} ellipsizeMode="tail" numberOfLines={1}>
+                <Text
+                  style={styles.profileNameText}
+                  ellipsizeMode="tail"
+                  numberOfLines={1}>
                   {isLegacy ? username : fullName}
                 </Text>
                 <View style={styles.profileExtraInfoContainer}>
                   {!isLegacy &&
-                    <Text style={styles.profileExtraInfoText} ellipsizeMode="tail" numberOfLines={1}>
+                    <Text
+                      style={styles.profileExtraInfoText}
+                      ellipsizeMode="tail"
+                      numberOfLines={1}>
                       @{username}
                     </Text>}
                   {!isLegacy && <View style={styles.bullet} />}
-                  <Text onPress={appCount > 0 ? this._handlePressProjects : null} style={styles.profileExtraInfoText}>
+                  <Text
+                    onPress={appCount > 0 ? this._handlePressProjects : null}
+                    style={styles.profileExtraInfoText}>
                     {appCount} {appCount === 1 ? 'project' : 'projects'}
                   </Text>
                 </View>

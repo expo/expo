@@ -55,7 +55,10 @@ export default graphql(MyAppsQuery, {
               viewer: {
                 me: {
                   ...fetchMoreResult.data.viewer.me,
-                  apps: [...previousData.viewer.me.apps, ...fetchMoreResult.data.viewer.me.apps],
+                  apps: [
+                    ...previousData.viewer.me.apps,
+                    ...fetchMoreResult.data.viewer.me.apps,
+                  ],
                 },
               },
             });

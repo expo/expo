@@ -3,7 +3,10 @@ import { TouchableWithoutFeedback } from 'react-native';
 
 const DEFAULT_PRESS_IN_DELAY_MS = 80;
 
-export default function createSelectableComponent(TargetComponent, selectableProps = {}) {
+export default function createSelectableComponent(
+  TargetComponent,
+  selectableProps = {},
+) {
   class SelectableComponent extends React.Component {
     render() {
       const {

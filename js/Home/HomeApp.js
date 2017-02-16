@@ -1,6 +1,12 @@
 import Exponent, { Font } from 'exponent';
 import React from 'react';
-import { ActivityIndicator, Platform, StatusBar, StyleSheet, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Platform,
+  StatusBar,
+  StyleSheet,
+  View,
+} from 'react-native';
 import { NavigationProvider, StackNavigation } from '@exponent/ex-navigation';
 import { ActionSheetProvider } from '@exponent/react-native-action-sheet';
 import { Ionicons, MaterialIcons } from '@exponent/vector-icons';
@@ -41,7 +47,13 @@ export default class AppContainer extends React.Component {
   render() {
     if (!this.state.isReady) {
       return (
-        <View style={{ flex: 1, backgroundColor: 'white', alignItems: 'center', justifyContent: 'center' }}>
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: 'white',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
           <ActivityIndicator />
         </View>
       );
@@ -51,7 +63,8 @@ export default class AppContainer extends React.Component {
       <View style={styles.container}>
         <ActionSheetProvider>
           <NavigationProvider context={customNavigationContext}>
-            {this.state.isReady && <StackNavigation id="root" initialRoute="rootNavigation" />}
+            {this.state.isReady &&
+              <StackNavigation id="root" initialRoute="rootNavigation" />}
           </NavigationProvider>
         </ActionSheetProvider>
 
