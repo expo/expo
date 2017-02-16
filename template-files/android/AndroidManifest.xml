@@ -135,7 +135,7 @@
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
-        <data android:scheme="host.exp.exponent" android:host="oauthredirect"/>
+        <data android:scheme="host.exp.exponent" android:path="oauthredirect"/>
       </intent-filter>
     </activity>
 
