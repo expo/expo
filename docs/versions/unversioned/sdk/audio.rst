@@ -8,8 +8,9 @@ We designed the Audio API to be as non-intrusive as possible, so audio will auto
 if other audio starts playing on the device, if the device is locked, if the app / experience is
 backgrounded, or if headphones / bluetooth audio devices are disconnected.
 
-See the "playlist" example app @exponent/playlist for an example implementation of all of this
-functionality.
+Try the `playlist example app <http://getexponent.com/@exponent/playlist>`_
+(source code is `on GitHub <https://github.com/exponent/playlist>`_) to see an
+example usage of this API.
 
 Enabling Exponent Audio
 """"""""""""""""""""""""""""
