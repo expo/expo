@@ -72,6 +72,19 @@ public class EspressoTest {
     mElapsedTimeIdlingResource = new ElapsedTimeIdlingResource();
     mJSTestRunnerIdlingResource = new JSTestRunnerIdlingResource();
     Espresso.registerIdlingResources(mLoadingScreenIdlingResource, mElapsedTimeIdlingResource, mJSTestRunnerIdlingResource);
+
+    // Add contacts
+    Context context = InstrumentationRegistry.getContext();
+    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("exppreparetestsapp://blahblahblah"));
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    context.startActivity(intent);
+
+    sUiDevice.wait(Until.hasObject(By.pkg("host.exp.preparetestsapp").depth(0)), LAUNCH_TIMEOUT);
+
+    // Press home
+    sUiDevice.pressHome();
+    final String launcherPackage = sUiDevice.getLauncherPackageName();
+    sUiDevice.wait(Until.hasObject(By.pkg(launcherPackage).depth(0)), LAUNCH_TIMEOUT);
   }
 
   @After
