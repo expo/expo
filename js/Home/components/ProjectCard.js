@@ -6,6 +6,7 @@ import {
   Keyboard,
   Linking,
   Platform,
+  Share,
   StyleSheet,
   Text,
   TouchableHighlight,
@@ -37,6 +38,7 @@ export default class ProjectCard extends React.Component {
       <View style={[styles.spacerContainer, this.props.style]}>
         <TouchableNativeFeedbackSafe
           onPress={this._handlePressProject}
+          onLongPress={this._handleLongPressProject}
           fallback={TouchableHighlight}
           underlayColor="#b7b7b7"
           style={[styles.container, styles.bottomBorder]}>
@@ -96,6 +98,15 @@ export default class ProjectCard extends React.Component {
     } else {
       return <View style={[styles.icon, { backgroundColor: '#eee' }]} />;
     }
+  };
+
+  _handleLongPressProject = () => {
+    let url = ExUrls.normalizeUrl(this.props.projectUrl);
+    Share.share({
+      title: this.props.projectName,
+      message: url,
+      url,
+    });
   };
 
   _handlePressProject = () => {

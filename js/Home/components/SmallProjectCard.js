@@ -3,8 +3,10 @@
 import React from 'react';
 import {
   Image,
+  Keyboard,
   Linking,
   Platform,
+  Share,
   StyleSheet,
   Text,
   TouchableHighlight,
@@ -39,6 +41,7 @@ export default class SmallProjectCard extends React.Component {
 
     return (
       <TouchableNativeFeedbackSafe
+        onLongPress={this._handleLongPressProject}
         onPress={this._handlePressProject}
         fallback={TouchableHighlight}
         underlayColor="#b7b7b7"
@@ -127,7 +130,19 @@ export default class SmallProjectCard extends React.Component {
     Linking.openURL(url);
   };
 
+  _handleLongPressProject = () => {
+    let url = ExUrls.normalizeUrl(this.props.projectUrl);
+    Share.share({
+      title: this.props.projectName,
+      message: url,
+      url,
+    });
+  };
+
   _handlePressUsername = () => {
+    // note(brentvatne): navigation should do this automatically
+    Keyboard.dismiss();
+
     this.props.navigator.push('profile', { username: this.props.username });
   };
 }
@@ -153,7 +168,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     paddingLeft: IconPaddingLeft,
     paddingRight: IconPaddingRight,
-    paddingTop: 15,
+    paddingTop: 12,
     paddingBottom: 10,
   },
   icon: {
@@ -189,9 +204,11 @@ const styles = StyleSheet.create({
   projectExtraInfoContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: (
-      Layout.window.width - IconPaddingRight - IconPaddingLeft - IconWidth - 10
-    ),
+    width: Layout.window.width -
+      IconPaddingRight -
+      IconPaddingLeft -
+      IconWidth -
+      10,
   },
   projectExtraInfoText: {
     color: Colors.greyText,
