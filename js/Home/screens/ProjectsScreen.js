@@ -50,10 +50,9 @@ export default class HomeScreen extends React.Component {
     return (
       <View style={styles.container}>
         <ScrollView
+          stickyHeaderIndices={[0]}
           style={styles.container}
           contentContainerStyle={styles.contentContainer}>
-
-          {this._renderInDevelopment()}
 
           <View style={SharedStyles.sectionLabelContainer}>
             <Text style={SharedStyles.sectionLabelText}>RECENTLY VISITED</Text>
@@ -65,10 +64,6 @@ export default class HomeScreen extends React.Component {
           </View>
 
           {this._renderRecentHistory()}
-
-          {// <SeeAllProjectsButton onPress={() => {}} projects={FakeProjects} />
-          }
-
           {this._renderExponentVersion()}
         </ScrollView>
 
@@ -155,7 +150,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.greyBackground,
   },
   contentContainer: {
-    paddingTop: 10,
+    paddingTop: 5,
   },
   clearButton: {
     position: 'absolute',

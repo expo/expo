@@ -10,6 +10,7 @@ export default StyleSheet.create({
     paddingVertical: 10,
     alignItems: 'center',
     paddingHorizontal: 15,
+    backgroundColor: Colors.greyBackground,
   },
   sectionLabelText: {
     color: Colors.greyText,
