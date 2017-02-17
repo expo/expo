@@ -151,7 +151,7 @@ export default class SearchResults extends React.Component {
             underlayColor="#b7b7b7"
             style={styles.cardContainer}>
             <Text style={styles.cardTitleText}>
-              Tap to attempt to open project at:
+              Tap to attempt to open project at
             </Text>
             <Text style={styles.urlText}>
               {this.props.query}
