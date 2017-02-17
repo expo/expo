@@ -99,12 +99,17 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
 #endif
 #endif
   
+  NSString *standaloneGMSKey = [[NSBundle mainBundle].infoDictionary objectForKey:@"GMSApiKey"];
+  if (standaloneGMSKey && standaloneGMSKey.length) {
+    [GMSServices provideAPIKey:standaloneGMSKey];
+  } else {
 #ifdef GOOGLE_MAPS_IOS_API_KEY
-  // we may define this as empty
-  if (GOOGLE_MAPS_IOS_API_KEY && GOOGLE_MAPS_IOS_API_KEY.length) {
-    [GMSServices provideAPIKey:GOOGLE_MAPS_IOS_API_KEY];
-  }
+    // we may define this as empty
+    if (GOOGLE_MAPS_IOS_API_KEY && GOOGLE_MAPS_IOS_API_KEY.length) {
+      [GMSServices provideAPIKey:GOOGLE_MAPS_IOS_API_KEY];
+    }
 #endif
+  }
 
   [EXRemoteNotificationManager sharedInstance];
   // This is safe to call; if the app doesn't have permission to display user-facing notifications
