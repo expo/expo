@@ -85,12 +85,12 @@ export default class SmallProjectCard extends React.Component {
                     name="ios-eye-off"
                     size={15}
                     color="rgba(36, 44, 58, 0.3)"
-                    style={{ marginTop: 1 }}
                   />
-                  <Text style={styles.unlistedText}>
-                    Unlisted
-                  </Text>
                 </View>
+
+                <Text style={styles.unlistedText}>
+                  Unlisted
+                </Text>
               </View>}
 
             {renderLikes &&
