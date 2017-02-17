@@ -47,6 +47,7 @@ export default graphql(PublicAppsQuery, {
     };
   },
   options: props => ({
+    forceFetch: true,
     variables: {
       filter: props.filter,
       limit: 10,

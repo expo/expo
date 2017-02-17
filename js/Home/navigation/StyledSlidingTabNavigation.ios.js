@@ -49,18 +49,14 @@ export default class StyledSlidingTabNavigation extends React.Component {
     const unselectedColor = '#232B3A';
     let color;
 
-    if (FeatureFlags.DISPLAY_ALL_EXPLORE_TABS) {
-      const inputRange = props.navigationState.routes.map((x, i) => i);
-      const outputRange = inputRange.map(
-        inputIndex => inputIndex === index ? selectedColor : unselectedColor,
-      );
-      color = props.position.interpolate({
-        inputRange,
-        outputRange,
-      });
-    } else {
-      color = selectedColor;
-    }
+    const inputRange = props.navigationState.routes.map((x, i) => i);
+    const outputRange = inputRange.map(
+      inputIndex => inputIndex === index ? selectedColor : unselectedColor,
+    );
+    color = props.position.interpolate({
+      inputRange,
+      outputRange,
+    });
 
     return (
       <Animated.Text style={{ color, fontSize: 14 }}>

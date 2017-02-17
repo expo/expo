@@ -27,13 +27,14 @@ import StyledSlidingTabNavigation
 import ExploreTabContainer from '../containers/ExploreTabContainer';
 import FeatureFlags from '../../FeatureFlags';
 
-const TabTitles = {
-  top: 'Top projects',
+let TabTitles = {
   new: 'New projects',
-  featured: (
-    FeatureFlags.DISPLAY_ALL_EXPLORE_TABS ? 'Featured' : 'Featured projects'
-  ),
+  featured: 'Featured',
 };
+
+if (FeatureFlags.DISPLAY_EXPERIMENTAL_EXPLORE_TABS) {
+  TabTitles.top = 'Top projects';
+}
 
 @withNavigation class SearchButton extends React.Component {
   render() {
@@ -106,22 +107,21 @@ export default class ExploreScreen extends React.Component {
           />
         </SlidingTabNavigationItem>
       ),
+      (
+        <SlidingTabNavigationItem id="new" key="new">
+          <ExploreTabContainer
+            filter="NEW"
+            onPressUsername={this._handlePressUsername}
+          />
+        </SlidingTabNavigationItem>
+      ),
     ];
 
-    if (FeatureFlags.DISPLAY_ALL_EXPLORE_TABS) {
+    if (FeatureFlags.DISPLAY_EXPERIMENTAL_EXPLORE_TABS) {
       tabs.push(
         <SlidingTabNavigationItem id="top" key="top">
           <ExploreTabContainer
             filter="TOP"
-            onPressUsername={this._handlePressUsername}
-          />
-        </SlidingTabNavigationItem>,
-      );
-
-      tabs.push(
-        <SlidingTabNavigationItem id="new" key="new">
-          <ExploreTabContainer
-            filter="NEW"
             onPressUsername={this._handlePressUsername}
           />
         </SlidingTabNavigationItem>,
