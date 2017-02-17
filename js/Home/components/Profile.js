@@ -19,6 +19,7 @@ import { SlidingTabNavigationItem } from '@exponent/ex-navigation';
 import { take, takeRight } from 'lodash';
 import dedent from 'dedent';
 
+import Alerts from '../constants/Alerts';
 import Colors from '../constants/Colors';
 import PrimaryButton from './PrimaryButton';
 import EmptyProfileProjectsNotice from './EmptyProfileProjectsNotice';
@@ -54,9 +55,37 @@ export default class Profile extends React.Component {
     this._isMounted = false;
   }
 
+  componentWillReceiveProps(nextProps) {
+    const SkipConnectionNotification = true;
+    if (
+      !SkipConnectionNotification &&
+      !this.props.data.error &&
+      nextProps.data.error
+    ) {
+      // NOTE(brentvatne): sorry for this
+      let isConnectionError = nextProps.data.error.message.includes(
+        'No connection available',
+      );
+
+      if (isConnectionError) {
+        this.props.navigator.showLocalAlert(
+          'No connection available',
+          Alerts.error,
+        );
+      }
+    }
+  }
+
   render() {
-    if (this.props.data.error) {
+    // NOTE(brentvatne): investigate why `user` is null when there
+    // is an error, even if it loaded before. This seems undesirable,
+    // can it be avoided with apollo-client?
+    if (this.props.data.error && !this.props.data.user) {
       return this._renderError();
+    }
+
+    if (this.props.data.loading && !this.props.data.user) {
+      return this._renderLoading();
     }
 
     return (
@@ -103,10 +132,6 @@ export default class Profile extends React.Component {
   };
 
   _renderError = () => {
-    if (this.state.isRefetching) {
-      return this._renderLoading();
-    }
-
     // NOTE(brentvatne): sorry for this
     let isConnectionError = this.props.data.error.message.includes(
       'No connection available',
@@ -120,24 +145,17 @@ export default class Profile extends React.Component {
 
         <PrimaryButton
           plain
-          onPress={this._refetchDataAsync}
+          onPress={this._handleRefreshAsync}
           fallback={TouchableOpacity}>
           Try again
         </PrimaryButton>
+
+        {this.state.isRefetching &&
+          <View style={{ marginTop: 20 }}>
+            <ActivityIndicator />
+          </View>}
       </View>
     );
-  };
-
-  _refetchDataAsync = async () => {
-    try {
-      this.setState({ isRefetching: true });
-      await this.props.data.refetch();
-    } catch (e) {
-      console.log({ e });
-      // Error!
-    } finally {
-      this.setState({ isRefetching: false });
-    }
   };
 
   _renderLoading() {
@@ -149,10 +167,6 @@ export default class Profile extends React.Component {
   }
 
   _renderHeader = () => {
-    if (this.props.data.loading && !this.props.data.user) {
-      return this._renderLoading();
-    }
-
     if (!this.props.data.user) {
       return;
     }
