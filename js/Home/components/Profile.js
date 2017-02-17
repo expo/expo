@@ -21,6 +21,7 @@ import dedent from 'dedent';
 
 import Colors from '../constants/Colors';
 import PrimaryButton from './PrimaryButton';
+import EmptyProfileProjectsNotice from './EmptyProfileProjectsNotice';
 import SeeAllProjectsButton from './SeeAllProjectsButton';
 import SharedStyles from '../constants/SharedStyles';
 import SmallProjectCard from './SmallProjectCard';
@@ -169,9 +170,11 @@ export default class Profile extends React.Component {
 
     return (
       <View style={styles.header}>
-        <FadeIn>
-          <Image style={styles.headerAvatar} source={{ uri: profilePhoto }} />
-        </FadeIn>
+        <View style={styles.headerAvatarContainer}>
+          <FadeIn>
+            <Image style={styles.headerAvatar} source={{ uri: profilePhoto }} />
+          </FadeIn>
+        </View>
         <Text style={styles.headerFullNameText}>
           {firstName} {lastName}
         </Text>
@@ -190,7 +193,13 @@ export default class Profile extends React.Component {
 
     return (
       <View style={styles.header}>
-        <View style={[styles.headerAvatar, styles.legacyHeaderAvatar]} />
+        <View
+          style={[
+            styles.headerAvatar,
+            styles.headerAvatarContainer,
+            styles.legacyHeaderAvatar,
+          ]}
+        />
         <View style={styles.headerAccountsList}>
           <Text style={styles.headerAccountText}>
             @{username}
@@ -208,8 +217,9 @@ export default class Profile extends React.Component {
     let { apps, appCount } = this.props.data.user;
 
     if (!apps || !apps.length) {
-      // Handle empty app case
-      return null;
+      return (
+        <EmptyProfileProjectsNotice isOwnProfile={this.props.isOwnProfile} />
+      );
     } else {
       let appsToDisplay = take(apps, MAX_APPS_TO_DISPLAY);
       let otherApps = takeRight(
@@ -267,19 +277,25 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.greyBackground,
+    marginTop: -1,
   },
   header: {
     alignItems: 'center',
     backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: Colors.separator,
     borderBottomWidth: 1,
     borderBottomColor: Colors.separator,
   },
-  headerAvatar: {
+  headerAvatarContainer: {
     marginTop: 20,
     marginBottom: 12,
+    overflow: 'hidden',
+    borderRadius: 5,
+  },
+  headerAvatar: {
     height: 64,
     width: 64,
-    borderRadius: 5,
   },
   legacyHeaderAvatar: {
     backgroundColor: '#eee',
