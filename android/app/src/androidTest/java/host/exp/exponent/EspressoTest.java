@@ -73,13 +73,17 @@ public class EspressoTest {
     mJSTestRunnerIdlingResource = new JSTestRunnerIdlingResource();
     Espresso.registerIdlingResources(mLoadingScreenIdlingResource, mElapsedTimeIdlingResource, mJSTestRunnerIdlingResource);
 
-    // Add contacts
-    Context context = InstrumentationRegistry.getContext();
-    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("exppreparetestsapp://blahblahblah"));
-    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    context.startActivity(intent);
-
-    sUiDevice.wait(Until.hasObject(By.pkg("host.exp.preparetestsapp").depth(0)), LAUNCH_TIMEOUT);
+    try {
+      // Add contacts
+      Context context = InstrumentationRegistry.getContext();
+      Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("exppreparetestsapp://blahblahblah"));
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      context.startActivity(intent);
+      sUiDevice.wait(Until.hasObject(By.pkg("host.exp.preparetestsapp").depth(0)), LAUNCH_TIMEOUT);
+    } catch (Throwable e) {
+      // Don't worry if this isn't installed. Probably means it's running on a developer's device
+      // and they already have contacts.
+    }
 
     // Press home
     sUiDevice.pressHome();
