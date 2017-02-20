@@ -70,7 +70,7 @@ export default class SmallProjectCard extends React.Component {
               onPress={username ? this._handlePressUsername : null}
               style={[
                 styles.projectExtraInfoText,
-                renderLikes || isUnlisted ? { flexShrink: 4 } : { flex: 1 },
+                (renderLikes || isUnlisted) && { flexShrink: 4 },
               ]}
               ellipsizeMode="tail"
               numberOfLines={1}>
