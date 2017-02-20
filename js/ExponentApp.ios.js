@@ -44,6 +44,8 @@ class ExponentApp extends React.Component {
   }
 
   componentDidMount() {
+    ExponentKernel.onLoaded();
+
     if (ExponentKernel.__isFake) {
       return;
     }

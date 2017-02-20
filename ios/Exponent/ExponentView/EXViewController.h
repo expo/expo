@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithLaunchOptions: (NSDictionary *)launchOptions;
 - (void)loadReactApplication;
 - (void)showErrorWithType:(EXFatalErrorType)type error: (nullable NSError *)error;
+- (NSDictionary *)launchOptions;
 
 // TODO: make private
 @property (nonatomic, assign) BOOL isLoading;

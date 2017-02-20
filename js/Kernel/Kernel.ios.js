@@ -45,6 +45,4 @@ if (ExponentKernel && ExponentKernel.onLoaded) {
       experienceId,
     );
   });
-
-  ExponentKernel.onLoaded();
 }

@@ -50,6 +50,11 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
                                              selector:@selector(didBeginOAuthFlow:)
                                                  name:@"EXDidBeginOAuthFlow"
                                                object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(_onKernelJSLoaded)
+                                                 name:@"EXKernelJSIsLoadedNotification"
+                                               object:nil];
   }
   return self;
 }
@@ -82,6 +87,7 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
 
 - (void)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  
   [DDLog addLogger:[DDASLLogger sharedInstance]];
   [DDLog addLogger:[DDTTYLogger sharedInstance]];
 
@@ -116,12 +122,16 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
   // then registering for a push token is a no-op
   [[EXRemoteNotificationManager sharedInstance] registerForRemoteNotifications];
   [self setLaunchOptions:launchOptions];
+}
 
+- (void)_onKernelJSLoaded
+{
+  NSDictionary *launchOptions = self.rootViewController.launchOptions;
   NSDictionary *remoteNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
   if (remoteNotification) {
     [[EXRemoteNotificationManager sharedInstance] handleRemoteNotification:remoteNotification fromBackground:YES];
   }
-
+  
   UILocalNotification *localNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
   if (localNotification) {
     [[EXLocalNotificationManager sharedInstance] handleLocalNotification:localNotification fromBackground:YES];

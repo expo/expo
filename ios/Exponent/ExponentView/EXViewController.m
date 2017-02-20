@@ -88,6 +88,11 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
+- (NSDictionary *)launchOptions
+{
+  return self.appManager.launchOptions;
+}
+
 #pragma mark - EXReactAppManagerDelegate
 
 - (void)reactAppManagerDidInitApp:(EXReactAppManager *)appManager
