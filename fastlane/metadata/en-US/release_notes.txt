@@ -1,1 +1,3 @@
-This update adds support for React Native 0.41. It also makes it easier to see which Exponent projects you and others are working on.
+This update includes minor improvements.
+
+Version 1.13.0 added support for React Native 0.41.
