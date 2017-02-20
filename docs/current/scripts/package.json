@@ -1,0 +1,19 @@
+{
+  "name": "docs-scripts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "scrape-links.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "fs-extra": "^2.0.0",
+    "glob": "^7.1.1",
+    "lodash": "^4.17.4",
+    "remark": "^6.2.0",
+    "unist-util-select": "^1.5.0",
+    "unist-util-visit": "^1.1.1"
+  }
+}
