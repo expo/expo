@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
+    // Compile against 22 so we don't have to worry about runtime permissions
     compileSdkVersion 22
     buildToolsVersion "25.0.2"
     defaultConfig {

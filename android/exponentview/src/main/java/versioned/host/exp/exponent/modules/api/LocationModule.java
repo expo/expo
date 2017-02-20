@@ -27,6 +27,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LocationModule extends ReactContextBaseJavaModule {
+
+  private static final long DEFAULT_TIMEOUT = 20 * 1000;
+
   Map<Integer, LocationListener> mLocationListeners = new HashMap<>();
 
   public LocationModule(ReactApplicationContext reactContext) {
@@ -79,7 +82,7 @@ public class LocationModule extends ReactContextBaseJavaModule {
     }
 
     // Read options
-    final long timeout = options.hasKey("timeout") ? (long) options.getDouble("timeout") : Long.MAX_VALUE;
+    final long timeout = options.hasKey("timeout") ? (long) options.getDouble("timeout") : DEFAULT_TIMEOUT;
     final double maximumAge = options.hasKey("maximumAge") ? options.getDouble("maximumAge") : Double.POSITIVE_INFINITY;
     boolean highAccuracy = options.hasKey("enableHighAccuracy") && options.getBoolean("enableHighAccuracy");
 
@@ -110,7 +113,7 @@ public class LocationModule extends ReactContextBaseJavaModule {
     // No cached location, ask for one
     final Handler handler = new Handler();
     class SingleRequest {
-      private boolean mDone;
+      private boolean mDone = false;
 
       public void invoke() {
         if (Build.VERSION.SDK_INT >= 23 &&
@@ -130,9 +133,9 @@ public class LocationModule extends ReactContextBaseJavaModule {
         public void onLocationChanged(Location location) {
           synchronized (SingleRequest.this) {
             if (!mDone) {
-              promise.resolve(locationToMap(location));
-              handler.removeCallbacks(mTimeoutRunnable);
               mDone = true;
+              handler.removeCallbacks(mTimeoutRunnable);
+              promise.resolve(locationToMap(location));
             }
           }
         }
