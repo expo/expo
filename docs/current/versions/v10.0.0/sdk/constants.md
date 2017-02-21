@@ -9,7 +9,7 @@ System information that remains constant throughout the lifetime of your app.
 
 ### `Exponent.Constants.appOwnership`
 
-Returns `exponent`, `standalone`, or `guest`. If `exponent`, the experience is running inside of the Exponent client. If `standalone`, it is a [standalone app](/versions/latest/guides/building-standalone-apps#building-standalone-apps). If `guest`, it has been opened through a link from a standalone app.
+Returns `exponent`, `standalone`, or `guest`. If `exponent`, the experience is running inside of the Exponent client. If `standalone`, it is a [standalone app](/versions/v10.0.0/guides/building-standalone-apps#building-standalone-apps). If `guest`, it has been opened through a link from a standalone app.
 
 ### `Exponent.Constants.exponentVersion`
 
@@ -50,7 +50,7 @@ The default status bar height for the device. Does not factor in changes when lo
 
 ### `Exponent.Constants.manifest`
 
-The [manifest](/versions/latest/guides/how-exponent-works#exponent-manifest) object for the app.
+The [manifest](/versions/v10.0.0/guides/how-exponent-works#exponent-manifest) object for the app.
 
 ### `Exponent.Constants.linkingUri`
 

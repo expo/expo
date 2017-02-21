@@ -7,7 +7,7 @@ next___FILE: ./configuration.md
 
 The aim of this first guide is to get an Exponent application up and running as quickly as possible.
 
-At this point we should have XDE installed on our development machine and the Exponent client on an iOS or Android physical device or emulator. If not, go back to the [Installation](/versions/latest/introduction/installation#installation) guide before proceeding.
+At this point we should have XDE installed on our development machine and the Exponent client on an iOS or Android physical device or emulator. If not, go back to the [Installation](/versions/v9.0.0/introduction/installation#installation) guide before proceeding.
 
 Alright, let's get started.
 

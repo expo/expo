@@ -20,11 +20,11 @@ Follow [Facebook's developer documentation](https://developers.facebook.com/docs
 -   **iOS standalone app**
 
     -   Add your app's Bundle ID as a _Bundle ID_ in app's settings page pictured above.
-    -   In your [exp.json](/versions/latest/guides/configuration#exp), add a field `facebookScheme` with your Facebook login redirect URL scheme found [here](https://developers.facebook.com/docs/facebook-login/ios) under _4. Configure Your info.plist_. It should look like `"fb123456"`.
+    -   In your [exp.json](/versions/v11.0.0/guides/configuration#exp), add a field `facebookScheme` with your Facebook login redirect URL scheme found [here](https://developers.facebook.com/docs/facebook-login/ios) under _4. Configure Your info.plist_. It should look like `"fb123456"`.
 
 -   **Android standalone app**
 
-    -   [Build your standalone app](/versions/latest/guides/building-standalone-apps#building-standalone-apps) for Android.
+    -   [Build your standalone app](/versions/v11.0.0/guides/building-standalone-apps#building-standalone-apps) for Android.
     -   Run `keytool -list -printcert -jarfile YOUR_APK.apk | grep SHA1 | awk '{ print $2 }' | xxd -r -p | openssl base64` (replace `YOUR_APK.apk` with the name of your APK file).
     -   Add that output as an additional key hash in your Facebook developer page pictured above.
 

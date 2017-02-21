@@ -40,7 +40,7 @@ An object that is passed into each event listener when a notification is receive
 
 #### Returns
 
-Returns a Promise that resolves to a token string. This token can be provided to the Exponent notifications backend to send a push notification to this device. [Read more in the Push Notifications guide](/versions/latest/guides/push-notifications#push-notifications).
+Returns a Promise that resolves to a token string. This token can be provided to the Exponent notifications backend to send a push notification to this device. [Read more in the Push Notifications guide](/versions/v13.0.0/guides/push-notifications#push-notifications).
 
 ## Local Notifications
 

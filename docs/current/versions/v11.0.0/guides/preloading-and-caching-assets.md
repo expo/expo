@@ -5,7 +5,7 @@ previous___FILE: ./assets.md
 next___FILE: ./icons.md
 ---
 
-In order to keep the loading screen visible while we cache our assets, we render [Exponent.Components.AppLoading](/versions/latest/sdk/app-loading#app-loading) and only that component until everything is ready.
+In order to keep the loading screen visible while we cache our assets, we render [Exponent.Components.AppLoading](/versions/v11.0.0/sdk/app-loading#app-loading) and only that component until everything is ready.
 
 For images that we have saved to our local filesytem, we can use `Exponent.Asset.fromModule(image).downloadAsync()` to download and cache the image. For web images, we can use `Image.prefetch(image)`.
 

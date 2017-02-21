@@ -7,7 +7,7 @@ next___FILE: ./development-mode.md
 
 The aim of this first guide is to get an Exponent application up and running as quickly as possible.
 
-At this point we should have XDE installed on our development machine and the Exponent client on an iOS or Android physical device or emulator. If not, go back to the [Installation](/versions/latest/introduction/installation) guide before proceeding.
+At this point we should have XDE installed on our development machine and the Exponent client on an iOS or Android physical device or emulator. If not, go back to the [Installation](/versions/v14.0.0/introduction/installation) guide before proceeding.
 
 Alright, let's get started.
 
@@ -66,6 +66,6 @@ You have created a new Exponent project, made a change, and seen it update.
 #### Next Steps
 
 -   The [Additional Resources](https://docs.getexponent.com/versions/introduction/additional-resources.html#additional-resources) page has links to several open-source Exponent projects so you can see some working examples.
--   Read about the [Exponent SDK](/versions/latest/sdk/index#exponent-sdk) to learn about some useful APIs we provide out of the box.
+-   Read about the [Exponent SDK](/versions/v14.0.0/sdk/index#exponent-sdk) to learn about some useful APIs we provide out of the box.
 -   Read some of our other guides, such as how to implement [Push Notifications](/versions/v12.0.0/guides/push-notifications#push-notifications), how we can take care of [Assets](/versions/v12.0.0/guides/preloading-and-caching-assets#all-about-assets) for you, or how to build [Standalone Apps](/versions/v12.0.0/guides/building-standalone-apps#building-standalone-apps) you can submit to Apple or Google.
 -   Join us on Slack to get your questions answered.

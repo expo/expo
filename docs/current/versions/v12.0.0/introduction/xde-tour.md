@@ -23,7 +23,7 @@ At any time you can click on your username in the top right and sign out. Or log
 
 ## Project screen
 
-So we've opened up a new project. The left pane is the React Packager, which you can learn more about in [Up and Running](/versions/latest/guides/up-and-running#up-and-running) and in [How Exponent Works](/versions/latest/guides/how-exponent-works#how-exponent-works). The right pane is for device logs, which you can read more about in [Viewing Logs](/versions/latest/guides/logging#logging).![XDE project](./xde-project-opened.png)
+So we've opened up a new project. The left pane is the React Packager, which you can learn more about in [Up and Running](/versions/v12.0.0/guides/up-and-running#up-and-running) and in [How Exponent Works](/versions/v12.0.0/guides/how-exponent-works#how-exponent-works). The right pane is for device logs, which you can read more about in [Viewing Logs](/versions/v12.0.0/guides/logging#logging).![XDE project](./xde-project-opened.png)
 
 ## Send link
 
@@ -31,7 +31,7 @@ Send a link to your app to anybody with an internet connection. This is also use
 
 ## Opening on a device
 
-The device button lets you quickly open your app on a device or simulator. Read more in [Up and Running](/versions/latest/guides/up-and-running#up-and-running).![XDE open on device](./xde-device.png)
+The device button lets you quickly open your app on a device or simulator. Read more in [Up and Running](/versions/v12.0.0/guides/up-and-running#up-and-running).![XDE open on device](./xde-device.png)
 
 ## Development mode
 
@@ -43,4 +43,4 @@ In addition to the options provided from the home screen, with a project opened 
 
 ## Publish
 
-When you hit publish you'll be asked to confirm that you want your project to be available to the public. Hitting yes will upload all of your assets and your apps JavaScript to our servers so that users can access it at any time from `exp.host/@your-username/your-app-slug`. More on what slug means in [Configuration with exp.json](/versions/latest/guides/configuration#exp), and more details about how publishing work in [How Exponent Works](/versions/latest/guides/how-exponent-works#how-exponent-works).![XDE publish](./xde-publish.png)
+When you hit publish you'll be asked to confirm that you want your project to be available to the public. Hitting yes will upload all of your assets and your apps JavaScript to our servers so that users can access it at any time from `exp.host/@your-username/your-app-slug`. More on what slug means in [Configuration with exp.json](/versions/v12.0.0/guides/configuration#exp), and more details about how publishing work in [How Exponent Works](/versions/v12.0.0/guides/how-exponent-works#how-exponent-works).![XDE publish](./xde-publish.png)
