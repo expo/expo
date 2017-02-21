@@ -2,20 +2,14 @@
 
 package versioned.host.exp.exponent.modules.api;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
@@ -23,17 +17,24 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
-import java.util.HashMap;
-import java.util.Map;
+import host.exp.exponent.utils.TimeoutObject;
+import io.nlopez.smartlocation.OnLocationUpdatedListener;
+import io.nlopez.smartlocation.SmartLocation;
+import io.nlopez.smartlocation.location.config.LocationAccuracy;
+import io.nlopez.smartlocation.location.config.LocationParams;
+import versioned.host.exp.exponent.ScopedReactApplicationContext;
 
-public class LocationModule extends ReactContextBaseJavaModule {
+public class LocationModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
 
-  private static final long DEFAULT_TIMEOUT = 20 * 1000;
+  private ScopedReactApplicationContext mScopedReactApplicationContext;
+  private LocationParams mLocationParams;
+  private OnLocationUpdatedListener mOnLocationUpdatedListener;
 
-  Map<Integer, LocationListener> mLocationListeners = new HashMap<>();
-
-  public LocationModule(ReactApplicationContext reactContext) {
+  public LocationModule(ScopedReactApplicationContext reactContext) {
     super(reactContext);
+    reactContext.addLifecycleEventListener(this);
+
+    mScopedReactApplicationContext = reactContext;
   }
 
   @Override
@@ -55,192 +56,132 @@ public class LocationModule extends ReactContextBaseJavaModule {
     return map;
   }
 
-  private static boolean isProviderAvailable(LocationManager locMgr, String provider) {
-    return locMgr.getAllProviders().contains(provider) && locMgr.isProviderEnabled(provider);
-  }
-
-  private static String selectProvider(LocationManager locMgr, boolean highAccuracy) {
-    String provider = highAccuracy ? LocationManager.GPS_PROVIDER : LocationManager.NETWORK_PROVIDER;
-    if (!isProviderAvailable(locMgr, provider)) {
-      provider = provider.equals(LocationManager.GPS_PROVIDER) ?
-              LocationManager.NETWORK_PROVIDER :
-              LocationManager.GPS_PROVIDER;
-    }
-    if (isProviderAvailable(locMgr, provider)) {
-      return provider;
-    }
-    return null;
+  private boolean isMissingPermissions() {
+    return Build.VERSION.SDK_INT >= 23 &&
+        ContextCompat.checkSelfPermission(getReactApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
+        ContextCompat.checkSelfPermission(getReactApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED;
   }
 
   @ReactMethod
   public void getCurrentPositionAsync(final ReadableMap options, final Promise promise) {
-    // Need to run when experience activity visible
-    Activity activity = getCurrentActivity();
-    if (activity == null) {
-      promise.reject("E_ACTIVITY_DOES_NOT_EXIST", "No visible activity. Must request location when visible.");
-      return;
-    }
-
     // Read options
-    final long timeout = options.hasKey("timeout") ? (long) options.getDouble("timeout") : DEFAULT_TIMEOUT;
+    final Long timeout = options.hasKey("timeout") ? (long) options.getDouble("timeout") : null;
     final double maximumAge = options.hasKey("maximumAge") ? options.getDouble("maximumAge") : Double.POSITIVE_INFINITY;
     boolean highAccuracy = options.hasKey("enableHighAccuracy") && options.getBoolean("enableHighAccuracy");
 
-    // Select location provider
-    final LocationManager locMgr = (LocationManager)
-            getReactApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-    final String provider = selectProvider(locMgr, highAccuracy);
-    if (provider == null) {
-      promise.reject("E_NO_LOCATION_PROVIDER", "No location provider available.");
-      return;
-    }
-
     // Check for permissions
-    if (Build.VERSION.SDK_INT >= 23 &&
-        ContextCompat.checkSelfPermission(getReactApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
-        ContextCompat.checkSelfPermission(getReactApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+    if (isMissingPermissions()) {
       promise.reject("E_MISSING_PERMISSION", "Missing location permissions.");
       return;
     }
 
+    final LocationParams locationParams = highAccuracy ? LocationParams.NAVIGATION : LocationParams.BEST_EFFORT;
+    // LocationControl has an internal map from Context -> LocationProvider, so each experience
+    // will only have one instance of a LocationProvider.
+    SmartLocation.LocationControl locationControl = SmartLocation.with(mScopedReactApplicationContext).location().oneFix().config(locationParams);
+
     // Have location cached already?
-    Location location = locMgr.getLastKnownLocation(provider);
+    Location location = locationControl.getLastLocation();
     if (location != null && SystemClock.currentTimeMillis() - location.getTime() < maximumAge) {
       promise.resolve(locationToMap(location));
       return;
     }
 
-    // No cached location, ask for one
-    final Handler handler = new Handler();
-    class SingleRequest {
-      private boolean mDone = false;
+    final TimeoutObject timeoutObject = new TimeoutObject(timeout);
 
-      public void invoke() {
-        if (Build.VERSION.SDK_INT >= 23 &&
-            ContextCompat.checkSelfPermission(getReactApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
-            ContextCompat.checkSelfPermission(getReactApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-          promise.reject("E_MISSING_PERMISSION", "Missing location permissions.");
-          return;
-        }
-
-        locMgr.requestSingleUpdate(provider, mLocListener, null);
-        handler.postDelayed(mTimeoutRunnable, timeout);
+    timeoutObject.onTimeout(new TimeoutObject.TimeoutListener() {
+      @Override
+      public void onTimeout() {
+        promise.reject("E_TIMEOUT", "Location request timed out.");
       }
+    });
 
-      // Called when location request fulfilled
-      private final LocationListener mLocListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(Location location) {
-          synchronized (SingleRequest.this) {
-            if (!mDone) {
-              mDone = true;
-              handler.removeCallbacks(mTimeoutRunnable);
-              promise.resolve(locationToMap(location));
-            }
-          }
+    locationControl.start(new OnLocationUpdatedListener() {
+      @Override
+      public void onLocationUpdated(Location location) {
+        if (timeoutObject.markDoneIfNotTimedOut()) {
+          promise.resolve(locationToMap(location));
         }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {}
-        @Override
-        public void onProviderEnabled(String provider) {}
-        @Override
-        public void onProviderDisabled(String provider) {}
-      };
-
-      // Called on timeout
-      private final Runnable mTimeoutRunnable = new Runnable() {
-        @Override
-        public void run() {
-          synchronized (SingleRequest.this) {
-            if (!mDone) {
-              if (Build.VERSION.SDK_INT >= 23 &&
-                  ContextCompat.checkSelfPermission(getReactApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
-                  ContextCompat.checkSelfPermission(getReactApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                promise.reject("E_MISSING_PERMISSION", "Missing location permissions.");
-                return;
-              }
-              promise.reject("E_TIMEOUT", "Location request timed out.");
-              locMgr.removeUpdates(mLocListener);
-              mDone = true;
-            }
-          }
-        }
-      };
-    }
-    new SingleRequest().invoke();
+      }
+    });
   }
 
-  @ReactMethod
-  public void watchPositionImplAsync(final int watchId, final ReadableMap options, final Promise promise) {
-    // Need to run when experience activity visible
-    Activity activity = getCurrentActivity();
-    if (activity == null) {
-      promise.reject("E_ACTIVITY_DOES_NOT_EXIST", "No visible activity. Must request location when visible.");
+  private void startWatching() {
+    if (mScopedReactApplicationContext == null || mLocationParams == null || mOnLocationUpdatedListener == null) {
       return;
     }
 
+    // LocationControl has an internal map from Context -> LocationProvider, so each experience
+    // will only have one instance of a LocationProvider.
+    SmartLocation.with(mScopedReactApplicationContext).location().config(mLocationParams).start(mOnLocationUpdatedListener);
+  }
+
+  private void stopWatching() {
+    if (mScopedReactApplicationContext == null || mLocationParams == null || mOnLocationUpdatedListener == null) {
+      return;
+    }
+
+    SmartLocation.with(mScopedReactApplicationContext).location().stop();
+  }
+
+  // TODO: Stop sending watchId from JS since we ignore it.
+  @ReactMethod
+  public void watchPositionImplAsync(final int watchId, final ReadableMap options, final Promise promise) {
     // Read options
     final boolean highAccuracy = options.hasKey("enableHighAccuracy") && options.getBoolean("enableHighAccuracy");
     final int timeInterval = options.hasKey("timeInterval") ? options.getInt("timeInterval") : 1000;
     final int distanceInterval = options.hasKey("distanceInterval") ? options.getInt("distanceInterval") : 100;
 
-    // Select location provider
-    final LocationManager locMgr = (LocationManager)
-            getReactApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-    final String provider = selectProvider(locMgr, highAccuracy);
-    if (provider == null) {
-      promise.reject("E_NO_LOCATION_PROVIDER", "No location provider available.");
-      return;
-    }
-
     // Check for permissions
-    if (Build.VERSION.SDK_INT >= 23 &&
-        ContextCompat.checkSelfPermission(getReactApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
-        ContextCompat.checkSelfPermission(getReactApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+    if (isMissingPermissions()) {
       promise.reject("E_LOCATION_UNAUTHORIZED", "Not authorized to use location services");
       return;
     }
 
-    LocationListener listener = new LocationListener() {
+    mLocationParams = (new LocationParams.Builder()).setAccuracy(highAccuracy ? LocationAccuracy.HIGH : LocationAccuracy.MEDIUM).setDistance(distanceInterval).setInterval(timeInterval).build();
+    mOnLocationUpdatedListener = new OnLocationUpdatedListener() {
       @Override
-      public void onLocationChanged(Location location) {
+      public void onLocationUpdated(Location location) {
         WritableMap response = Arguments.createMap();
         response.putInt("watchId", watchId);
         response.putMap("location", locationToMap(location));
         getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class)
             .emit("Exponent.locationChanged", response);
       }
-      @Override
-      public void onStatusChanged(String provider, int status, Bundle extras) { }
-      @Override
-      public void onProviderEnabled(String provider) { }
-      @Override
-      public void onProviderDisabled(String provider) { }
     };
-    locMgr.requestLocationUpdates(provider, timeInterval, distanceInterval, listener);
-    mLocationListeners.put(watchId, listener);
+
+    startWatching();
     promise.resolve(null);
   }
 
+  // TODO: Stop sending watchId from JS since we ignore it.
   @ReactMethod
   public void removeWatchAsync(final int watchId, final Promise promise) {
-    final LocationManager locMgr = (LocationManager)
-            getReactApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-    final LocationListener listener = mLocationListeners.get(watchId);
-    if (listener == null) {
-      promise.resolve(null);
-      return;
-    }
-
-    if (Build.VERSION.SDK_INT >= 23 &&
-            ContextCompat.checkSelfPermission(getReactApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
-            ContextCompat.checkSelfPermission(getReactApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+    if (isMissingPermissions()) {
       promise.reject("E_LOCATION_UNAUTHORIZED", "Not authorized to use location services");
       return;
     }
-    locMgr.removeUpdates(listener);
-    mLocationListeners.remove(watchId);
+
+    stopWatching();
+
+    mLocationParams = null;
+    mOnLocationUpdatedListener = null;
+
     promise.resolve(null);
+  }
+
+  @Override
+  public void onHostResume() {
+    startWatching();
+  }
+
+  @Override
+  public void onHostPause() {
+    stopWatching();
+  }
+
+  @Override
+  public void onHostDestroy() {
+    stopWatching();
   }
 }

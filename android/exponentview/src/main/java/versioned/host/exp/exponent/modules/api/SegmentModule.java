@@ -20,6 +20,7 @@ import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.utils.JSONBundleConverter;
 import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.ReadableObjectUtils;
+import versioned.host.exp.exponent.ScopedReactApplicationContext;
 
 public class SegmentModule extends ReactContextBaseJavaModule {
 
@@ -27,14 +28,12 @@ public class SegmentModule extends ReactContextBaseJavaModule {
 
   private static int sCurrentTag = 0;
 
-  private ReactApplicationContext mReactApplicationContext;
-  private String mExperienceIdEncoded;
+  private ScopedReactApplicationContext mReactApplicationContext;
   private Analytics mClient;
 
-  public SegmentModule(ReactApplicationContext reactContext, String experienceIdEncoded) {
+  public SegmentModule(ScopedReactApplicationContext reactContext) {
     super(reactContext);
     mReactApplicationContext = reactContext;
-    mExperienceIdEncoded = experienceIdEncoded;
   }
 
   private static Traits readableMapToTraits(ReadableMap properties) {
@@ -76,7 +75,7 @@ public class SegmentModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void initializeAndroid(final String writeKey) {
-    Analytics.Builder builder = new Analytics.Builder(new ScopedContext(mReactApplicationContext, mExperienceIdEncoded), writeKey);
+    Analytics.Builder builder = new Analytics.Builder(mReactApplicationContext, writeKey);
     builder.tag(Integer.toString(sCurrentTag++));
     mClient = builder.build();
   }

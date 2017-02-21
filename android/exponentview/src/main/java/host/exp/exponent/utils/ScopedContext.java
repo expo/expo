@@ -38,10 +38,15 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import host.exp.exponent.analytics.EXL;
+
 public class ScopedContext extends Context {
+
+  private static final String TAG = ScopedContext.class.getSimpleName();
 
   private Context mContext;
   private String mScope;
+  private ScopedApplicationContext mScopedApplicationContext;
 
   public ScopedContext(final Context context, final String scope) {
     mContext = context;
@@ -75,7 +80,11 @@ public class ScopedContext extends Context {
 
   @Override
   public Context getApplicationContext() {
-    return new ScopedApplicationContext((Application) mContext.getApplicationContext(), this);
+    if (mScopedApplicationContext == null) {
+      mScopedApplicationContext = new ScopedApplicationContext((Application) mContext.getApplicationContext(), this);
+    }
+
+    return mScopedApplicationContext;
   }
 
   @Override
@@ -95,7 +104,10 @@ public class ScopedContext extends Context {
 
   @Override
   public String getPackageName() {
-    return mScope + "." + mContext.getPackageName();
+    // Can't scope this because Google Apis rely on this being the same as the actual
+    // package name.
+    EXL.d(TAG, "WARNING: getPackageName called on ScopedContext");
+    return mContext.getPackageName();
   }
 
   @Override

@@ -13,17 +13,16 @@ import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.utils.JSONBundleConverter;
 import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.ReadableObjectUtils;
+import versioned.host.exp.exponent.ScopedReactApplicationContext;
 
 public class AmplitudeModule extends ReactContextBaseJavaModule {
 
-  private ReactApplicationContext mReactApplicationContext;
-  private String mExperienceIdEncoded;
+  private ScopedReactApplicationContext mReactApplicationContext;
   private AmplitudeClient mClient;
 
-  public AmplitudeModule(ReactApplicationContext reactContext, String experienceIdEncoded) {
+  public AmplitudeModule(ScopedReactApplicationContext reactContext) {
     super(reactContext);
     mReactApplicationContext = reactContext;
-    mExperienceIdEncoded = experienceIdEncoded;
   }
 
   @Override
@@ -35,7 +34,7 @@ public class AmplitudeModule extends ReactContextBaseJavaModule {
   public void initialize(final String apiKey) {
     Analytics.resetAmplitudeDatabaseHelper();
     mClient = new AmplitudeClient();
-    mClient.initialize(new ScopedContext(mReactApplicationContext, mExperienceIdEncoded), apiKey);
+    mClient.initialize(mReactApplicationContext, apiKey);
   }
 
   @ReactMethod

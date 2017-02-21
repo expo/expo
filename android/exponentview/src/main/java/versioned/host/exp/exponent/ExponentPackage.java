@@ -23,6 +23,7 @@ import java.util.Map;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
+import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.modules.api.AccelerometerModule;
 import versioned.host.exp.exponent.modules.api.AmplitudeModule;
 import versioned.host.exp.exponent.modules.api.AudioModule;
@@ -115,13 +116,15 @@ public class ExponentPackage implements ReactPackage {
         String experienceId = mManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
         String experienceIdEncoded = URLEncoder.encode(experienceId, "UTF-8");
 
+        ScopedReactApplicationContext scopedReactApplicationContext = new ScopedReactApplicationContext(new ScopedContext(reactContext, experienceIdEncoded));
+
         nativeModules.add(new ExponentAsyncStorageModule(reactContext, mManifest));
         nativeModules.add(new AccelerometerModule(reactContext));
         nativeModules.add(new GyroscopeModule(reactContext));
         nativeModules.add(new NotificationsModule(reactContext, mManifest, mExperienceProperties));
         nativeModules.add(new ContactsModule(reactContext));
         nativeModules.add(new FileSystemModule(reactContext, mManifest));
-        nativeModules.add(new LocationModule(reactContext));
+        nativeModules.add(new LocationModule(scopedReactApplicationContext));
         nativeModules.add(new CryptoModule(reactContext));
         nativeModules.add(new ImagePickerModule(reactContext));
         nativeModules.add(new FacebookModule(reactContext));
@@ -129,8 +132,8 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new FingerprintModule(reactContext));
         nativeModules.add(new GoogleModule(reactContext, mExperienceProperties));
         nativeModules.add(new PermissionsModule(reactContext));
-        nativeModules.add(new AmplitudeModule(reactContext, experienceIdEncoded));
-        nativeModules.add(new SegmentModule(reactContext, experienceIdEncoded));
+        nativeModules.add(new AmplitudeModule(scopedReactApplicationContext));
+        nativeModules.add(new SegmentModule(scopedReactApplicationContext));
         nativeModules.add(new BarCodeScannerModule(reactContext));
         nativeModules.add(new RNViewShotModule(reactContext));
         nativeModules.add(new KeepAwakeModule(reactContext));
