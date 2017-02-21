@@ -28,9 +28,7 @@ const typography = new Typography({
       lineHeight: 1.1
     },
     'tt,code': {
-      fontFamily: (
-        `"Source Code Pro",Consolas,"Roboto Mono","Droid Sans Mono","Liberation Mono",Menlo,Courier,monospace`
-      ),
+      fontFamily: `"Source Code Pro",Consolas,"Roboto Mono","Droid Sans Mono","Liberation Mono",Menlo,Courier,monospace`,
       fontSize: `inherit`,
       paddingTop: `0.05em`,
       paddingBottom: `0.05em`
@@ -57,7 +55,9 @@ const typography = new Typography({
       marginBottom: rhythm(1 / 2)
     },
     'h3 code': {
-      lineHeight: 1.5
+      lineHeight: 1.5,
+      fontSize: '1rem',
+      fontWeight: 'bold'
     },
     strong: {
       color: `rgba(0,0,0,0.65)`
