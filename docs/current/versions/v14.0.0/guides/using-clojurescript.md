@@ -3,7 +3,6 @@ title: Using ClojureScript
 old_permalink: /versions/v12.0.0/guides/using-clojurescript.html
 previous___FILE: ./upgrading-exponent.md
 next___FILE: ./using-firebase.md
-
 ---
 
 ## Quickstart
@@ -98,11 +97,11 @@ exp start --ios
 exp start --android
 ```
 
-For more information, see [exp Command-Line Interface](https://docs.getexponent.com/versions/v12.0.0/exp-cli.html#exp-cli).
+For more information, see [exp Command-Line Interface](/versions/v12.0.0/guides/exp-cli#exp-cli).
 
 ### Using XDE
 
-For more information, see [XDE tour](https://docs.getexponent.com/versions/introduction/xde-tour.html#xde-tour).
+For more information, see [XDE tour](/versions/latest/introduction/xde-tour#xde-tour).
 
 ## 4. Publish your app
 
@@ -119,7 +118,7 @@ This will publish your app to a persistent URL on getexponent.com, for example: 
 
 ### How do I add custom native modules?
 
-See [How do I add custom native code to my Exponent project?](https://docs.getexponent.com/versions/introduction/faq.html#faq).
+See [How do I add custom native code to my Exponent project?](/versions/latest/introduction/faq#faq).
 
 ### Does it support Google Closure advanced compilation?
 

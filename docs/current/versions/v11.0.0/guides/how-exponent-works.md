@@ -3,7 +3,6 @@ title: How Exponent Works
 old_permalink: /versions/v11.0.0/guides/how-exponent-works.html
 previous___FILE: ./building-standalone-apps.md
 next___FILE: ./upgrading-exponent.md
-
 ---
 
 While it's certainly not necessary to know any of this to use Exponent, many engineers like to know how their tools work. We'll walk through a few key concepts here, including:
@@ -17,7 +16,6 @@ You can also browse the source, fork, hack on and contribute to the Exponent too
 
 ## Serving an Exponent project for local development
 
-
 There are two pieces here: the Exponent app and the Exponent development tool (either XDE or `exp` CLI). We'll just assume XDE here for simplicity of naming. When you open an app up in XDE, it spawns and manages two server processes in the background: the Exponent Development Server and the React Native Packager Server.
 
 ![](./fetch-app-from-xde.png)
@@ -30,7 +28,7 @@ This server is the endpoint that you hit first when you type the URL into the Ex
 
 #### `Exponent Manifest`
 
-The following is an example of a manifest being served through XDE. The first thing that you should notice is there are a lot of identical fields to `exp.json` (see the [Configuration with exp.json](https://docs.getexponent.com/versions/v11.0.0/configuration.html#exp) section if you haven't read it yet). These fields are taken directly from that file -- this is how the Exponent app accesses your configuration.
+The following is an example of a manifest being served through XDE. The first thing that you should notice is there are a lot of identical fields to `exp.json` (see the [Configuration with exp.json](/versions/v11.0.0/guides/configuration#exp) section if you haven't read it yet). These fields are taken directly from that file -- this is how the Exponent app accesses your configuration.
 
 ```javascript
 {
@@ -84,7 +82,7 @@ The second purpose is to serve assets. When you include an image in your app, yo
 
 ## Publishing/Deploying an Exponent app in Production
 
-When you Publish an Exponent app, we compile it into a JavaScript bundle with production flags enabled (minify, disable runtime development checks) and upload that bundle, along with any assets that it requires (see [Assets](https://docs.getexponent.com/versions/v11.0.0/preloading-and-caching-assets.html#all-about-assets)) to CloudFront. We also upload your [Manifest](https://docs.getexponent.com/versions/v11.0.0/guides#exponent-manifest) (including most of your `exp.json` configuration) to our server.
+When you Publish an Exponent app, we compile it into a JavaScript bundle with production flags enabled (minify, disable runtime development checks) and upload that bundle, along with any assets that it requires (see [Assets](/versions/v11.0.0/guides/preloading-and-caching-assets#all-about-assets)) to CloudFront. We also upload your [Manifest](#exponent-manifest) (including most of your `exp.json` configuration) to our server.
 
 When publishing is complete, we'll give you a URL to your app which you can send to anybody who has the Exponent client.
 
@@ -92,7 +90,7 @@ When publishing is complete, we'll give you a URL to your app which you can send
 
 As soon as the publish is complete, the new version of your code is available to all your existing users. They'll get the updated version next time they open the app or refresh it, provided that they have a version of the Exponent client that supports the `sdkVersion` specified in your `exp.json`.
 
-> **Note:** To package your app for deployment on the Apple App Store or Google Play Store, see [Building Standalone Apps](https://docs.getexponent.com/versions/v11.0.0/building-standalone-apps.html#building-standalone-apps). Each time you update the SDK version you will need to rebuild your binary.
+> **Note:** To package your app for deployment on the Apple App Store or Google Play Store, see [Building Standalone Apps](/versions/v11.0.0/guides/building-standalone-apps#building-standalone-apps). Each time you update the SDK version you will need to rebuild your binary.
 
 ## SDK Versions
 
@@ -105,7 +103,6 @@ If you publish an update to your app with a new `sdkVersion`, if a user has yet 
 > **Note:** It's likely that eventually we will formulate a policy for how long we want to keep around sdkVersions and begin pruning very old versions of the sdk from the client, but until we do that, everything will remain backwards compatible.
 
 ## Opening a deployed Exponent app
-
 
 The process is essentially the same as opening an Exponent app in development, only now we hit an Exponent server to get the manifest, and manifest points us to CloudFront to retrieve your app's JavaScript.
 
@@ -121,4 +118,4 @@ If you build a standalone app with Exponent, that standalone binary will also sh
 
 You can also package your Exponent app into a standalone binary for submission to the Apple iTunes Store or Google Play.
 
-Under the hood, it's a modified version of the Exponent client which is designed only to load a single URL (the one for your app) and which will never show the Exponent home screen or brand. For more information, see [Building Standalone Apps](https://docs.getexponent.com/versions/v11.0.0/building-standalone-apps.html#building-standalone-apps).
+Under the hood, it's a modified version of the Exponent client which is designed only to load a single URL (the one for your app) and which will never show the Exponent home screen or brand. For more information, see [Building Standalone Apps](/versions/v11.0.0/guides/building-standalone-apps#building-standalone-apps).

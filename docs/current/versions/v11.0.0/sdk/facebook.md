@@ -3,29 +3,28 @@ title: Facebook
 old_permalink: /versions/v11.0.0/sdk/facebook.html
 previous___FILE: ./contacts.md
 next___FILE: ./font.md
-
 ---
 
 Provides Facebook integration for Exponent apps. Exponent exposes a minimal native API since you can access Facebook's [Graph API](https://developers.facebook.com/docs/graph-api) directly through HTTP (using [fetch](https://facebook.github.io/react-native/docs/network.html#fetch), for example).
 
 ## Registering your app with Facebook
 
-Follow [Facebook's developer documentation](https://developers.facebook.com/docs/apps/register) to register an application with Facebook's API and get an application ID. Take note of this application ID because it will be used as the `appId` option in your [`Exponent.Facebook.logInWithReadPermissionsAsync`](https://docs.getexponent.com/versions/v11.0.0/guides#Exponent.Facebook.logInWithReadPermissionsAsync "Exponent.Facebook.logInWithReadPermissionsAsync") call. Then follow these steps based on the platforms you're targetting:
+Follow [Facebook's developer documentation](https://developers.facebook.com/docs/apps/register) to register an application with Facebook's API and get an application ID. Take note of this application ID because it will be used as the `appId` option in your [`Exponent.Facebook.logInWithReadPermissionsAsync`](#Exponent.Facebook.logInWithReadPermissionsAsync "Exponent.Facebook.logInWithReadPermissionsAsync") call. Then follow these steps based on the platforms you're targetting:
 
 -   **The Exponent client app**
 
     -   Add `host.exp.Exponent` as an iOS _Bundle ID_. Add `rRW++LUjmZZ+58EbN5DVhGAnkX4=` as an Android _key hash_. Your app's settings should end up including the following under "Settings > Basic":
 
-[![](./facebook-app-settings.png)](https://docs.getexponent.com/_images/facebook-app-settings.png)
+[![](./facebook-app-settings.png)](/_images/facebook-app-settings.png)
 
 -   **iOS standalone app**
 
     -   Add your app's Bundle ID as a _Bundle ID_ in app's settings page pictured above.
-    -   In your [exp.json](https://docs.getexponent.com/versions/guides/configuration.html#exp), add a field `facebookScheme` with your Facebook login redirect URL scheme found [here](https://developers.facebook.com/docs/facebook-login/ios) under _4. Configure Your info.plist_. It should look like `"fb123456"`.
+    -   In your [exp.json](/versions/latest/guides/configuration#exp), add a field `facebookScheme` with your Facebook login redirect URL scheme found [here](https://developers.facebook.com/docs/facebook-login/ios) under _4. Configure Your info.plist_. It should look like `"fb123456"`.
 
 -   **Android standalone app**
 
-    -   [Build your standalone app](https://docs.getexponent.com/versions/guides/building-standalone-apps.html#building-standalone-apps) for Android.
+    -   [Build your standalone app](/versions/latest/guides/building-standalone-apps#building-standalone-apps) for Android.
     -   Run `keytool -list -printcert -jarfile YOUR_APK.apk | grep SHA1 | awk '{ print $2 }' | xxd -r -p | openssl base64` (replace `YOUR_APK.apk` with the name of your APK file).
     -   Add that output as an additional key hash in your Facebook developer page pictured above.
 
@@ -34,17 +33,20 @@ You may have to switch the app from 'development mode' to 'public mode' on the F
 ## Usage
 
 ### `Exponent.Facebook.logInWithReadPermissionsAsync(appId, options)`
+
 Prompts the user to log into Facebook and grants your app permission  
 to access their Facebook data.
 
 #### param string appId
+
 Your Facebook application ID. [Facebook's developer documentation](https://developers.facebook.com/docs/apps/register) describes how to get one.
 
 #### param object options
+
 A map of options:
 
-* **permissions (_array_)** -- An array specifying the permissions to ask for from Facebook for this login. The permissions are strings as specified in the [Facebook API documentation](https://developers.facebook.com/docs/facebook-login/permissions). The default permissions are `['public_profile', 'email', 'user_friends']`.
-* **behavior (_string_)** -- The type of login prompt to show. Currently this is only supported on iOS, and must be one of the following values:
+-   **permissions (_array_)** -- An array specifying the permissions to ask for from Facebook for this login. The permissions are strings as specified in the [Facebook API documentation](https://developers.facebook.com/docs/facebook-login/permissions). The default permissions are `['public_profile', 'email', 'user_friends']`.
+-   **behavior (_string_)** -- The type of login prompt to show. Currently this is only supported on iOS, and must be one of the following values:
     -   `'web'` (default) -- Attempts to log in through a modal `UIWebView` pop up.
     -   `'native'` -- Attempts to log in through the native Facebook app. This is only supported for standalone apps.
     -   `'browser'` -- Attempts to log in through Safari or `SFSafariViewController`. This is only supported for standalone apps.

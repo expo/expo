@@ -3,7 +3,6 @@ title: Google
 old_permalink: /versions/v11.0.0/sdk/google.html
 previous___FILE: ./gl-view.md
 next___FILE: ./imagepicker.md
-
 ---
 
 Provides Google integration for Exponent apps. Exponent exposes a minimal native API since you can access Google's [REST APIs](https://developers.google.com/apis-explorer/) directly through HTTP (using [fetch](https://facebook.github.io/react-native/docs/network.html#fetch), for example).
@@ -56,9 +55,11 @@ To use Google Sign In, you will need to create a project on the Google Developer
     ```
 
     ### `Exponent.Google.logInAsync(options)`
+
     Prompts the user to log into Google and grants your app permission to access some of their Google data, as specified by the scopes.
 
->#### :param object options
+> #### :param object options
+>
 > A map of options:
 >
 > -   **behavior** (_string_) -- The type of behavior to use for login, either `web` or `system`. Native (`system`) can only be used inside of a standalone app when built using the steps described below. Default is `web` inside of Exponent app, and `system` in standalone.

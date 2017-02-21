@@ -3,7 +3,6 @@ title: exp Command-Line Interface
 old_permalink: /versions/v11.0.0/guides/exp-cli.html
 previous___FILE: ./push-notifications.md
 next___FILE: ./building-standalone-apps.md
-
 ---
 
 In addition to XDE we also have a CLI `exp` if you prefer to work on the command line or want to use Exponent in tests or continuous integration (CI).

@@ -3,7 +3,6 @@ title: Configuration with exp.json
 old_permalink: /versions/v7.0.0/guides/configuration.html
 previous___FILE: ./up-and-running.md
 next___FILE: ./logging.md
-
 ---
 
 `exp.json` is your go-to place for configuring parts of your app that don't belong in code. It's more difficult to explain than it is to show, so let's have a look at a basic example that includes only a few properties.

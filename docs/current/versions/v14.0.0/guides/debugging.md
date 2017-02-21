@@ -3,7 +3,6 @@ title: Debugging
 old_permalink: /versions/v12.0.0/guides/debugging.html
 previous___FILE: ./logging.md
 next___FILE: ./assets.md
-
 ---
 
 ## Using a Simulator / Emulator
@@ -20,7 +19,7 @@ For iOS the Simulator built into Xcode works great, you can install Xcode on the
 
 On Android we recommend the Genymotion emulator over the standard emulator -- we have found it to be more feature complete, faster and easier to use.
 
-[Download Genymotion](https://www.genymotion.com/fun-zone/) (free version) and follow the [Genymotion installation guide](https://docs.genymotion.com/Content/01_Get_Started/Installation.htm). Once you've installed Genymotion, create a virtual device - we recommend a Nexus 5, the Android version is up to you. Start up the virtual device when it's ready. If you run into any issues follow our [Genymotion guide](https://docs.getexponent.com/versions/v12.0.0/genymotion.html#genymotion).
+[Download Genymotion](https://www.genymotion.com/fun-zone/) (free version) and follow the [Genymotion installation guide](https://docs.genymotion.com/Content/01_Get_Started/Installation.htm). Once you've installed Genymotion, create a virtual device - we recommend a Nexus 5, the Android version is up to you. Start up the virtual device when it's ready. If you run into any issues follow our [Genymotion guide](/versions/v12.0.0/guides/genymotion#genymotion).
 
 ## Debugging Javascript
 
@@ -28,7 +27,7 @@ You can debug Exponent apps using the Chrome debugger tools. Rather than running
 
 -   To ensure the best debugging experience, first change your host type in XDE to `LAN` or `localhost`. If you use `Tunnel` with debugging enabled, you are likely to experience so much latency that your app is unusable. While here, also ensure that `Development Mode` is checked.
 
-[![](./debugging-host.png)](https://docs.getexponent.com/_images/debugging-host.png)
+[![](./debugging-host.png)](/_images/debugging-host.png)
 
 -   If you are using `LAN`, make sure your device is on the same wifi network as your development machine. This may not work on some public networks. `localhost` will not work for iOS unless you are in the simulator, and it only work on Android if your device is connected to your machine via usb.
 

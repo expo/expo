@@ -3,7 +3,6 @@ title: Logging
 old_permalink: /versions/v6.0.0/guides/logging.html
 previous___FILE: ./installing-node.md
 next___FILE: ./font-awesome.md
-
 ---
 
 Writing to the logs in an Exponent app works just like in the browser: use `console.log`, `console.warn` and `console.error`. Note: we don't currently support `console.table` outside of remote debugging mode.

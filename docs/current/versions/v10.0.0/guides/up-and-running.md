@@ -3,12 +3,11 @@ title: Up and Running
 old_permalink: /versions/v10.0.0/guides/up-and-running.html
 previous___FILE: ./index.md
 next___FILE: ./development-mode.md
-
 ---
 
 The aim of this first guide is to get an Exponent application up and running as quickly as possible.
 
-At this point we should have XDE installed on our development machine and the Exponent client on an iOS or Android physical device or emulator. If not, go back to the [Installation](https://docs.getexponent.com/versions/introduction/installation.html) guide before proceeding.
+At this point we should have XDE installed on our development machine and the Exponent client on an iOS or Android physical device or emulator. If not, go back to the [Installation](/versions/latest/introduction/installation) guide before proceeding.
 
 Alright, let's get started.
 
@@ -44,7 +43,7 @@ Open up `screens/HomeScreen.js` in your new project and change any of the text i
 
 Live reload is enabled by default, but let's just make sure we go over the steps to enable it in case somehow things just aren't working.
 
--   First, make sure you have [development mode enabled in XDE](https://docs.getexponent.com/versions/v10.0.0/development-mode.html#development-mode).
+-   First, make sure you have [development mode enabled in XDE](/versions/v10.0.0/guides/development-mode#development-mode).
 
 -   Next, close the app and reopen it.
 
@@ -52,13 +51,13 @@ Live reload is enabled by default, but let's just make sure we go over the steps
 
 -   If you see `Enable Live Reload`, press it and your app will reload. If you see `Disable Live Reload` then exit the developer menu and try making another change.
 
-    [![In-app developer menu](./developer-menu.png)](https://docs.getexponent.com/_images/developer-menu.png)
+    [![In-app developer menu](./developer-menu.png)](/_images/developer-menu.png)
 
 #### Manually reloading the app
 
 -   If you've followed the above steps and live reload **still** doesn't work, press the button in the bottom right of XDE to send us a support request. Until we resolve the issue for you, you can either shake the device and press `Reload`, or use one of the following tools which work both with an without development mode.
 
-    [![Refresh using Exponent buttons](./exponent-refresh.png)](https://docs.getexponent.com/_images/exponent-refresh.png)
+    [![Refresh using Exponent buttons](./exponent-refresh.png)](/_images/exponent-refresh.png)
 
 #### Congratulations
 
@@ -67,6 +66,6 @@ You have created a new Exponent project, made a change, and seen it update.
 #### Next Steps
 
 -   The [Additional Resources](https://docs.getexponent.com/versions/introduction/additional-resources.html#additional-resources) page has links to several open-source Exponent projects so you can see some working examples.
--   Read about the [Exponent SDK](https://docs.getexponent.com/versions/sdk/index.html#exponent-sdk) to learn about some useful APIs we provide out of the box.
--   Read some of our other guides, such as how to implement [Push Notifications](https://docs.getexponent.com/versions/v10.0.0/push-notifications.html#push-notifications), how we can take care of [Assets](https://docs.getexponent.com/versions/v10.0.0/assets.html#all-about-assets) for you, or how to build [Standalone Apps](https://docs.getexponent.com/versions/v10.0.0/building-standalone-apps.html#building-standalone-apps) you can submit to Apple or Google.
+-   Read about the [Exponent SDK](/versions/latest/sdk/index#exponent-sdk) to learn about some useful APIs we provide out of the box.
+-   Read some of our other guides, such as how to implement [Push Notifications](/versions/v10.0.0/guides/push-notifications#push-notifications), how we can take care of [Assets](/versions/v10.0.0/guides/assets#all-about-assets) for you, or how to build [Standalone Apps](/versions/v10.0.0/guides/building-standalone-apps#building-standalone-apps) you can submit to Apple or Google.
 -   Join us on Slack to get your questions answered.

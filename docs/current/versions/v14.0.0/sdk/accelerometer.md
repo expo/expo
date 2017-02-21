@@ -3,7 +3,6 @@ title: Accelerometer
 old_permalink: /versions/v12.0.0/sdk/accelerometer.html
 previous___FILE: ./index.md
 next___FILE: ./amplitude.md
-
 ---
 
 Access the device accelerometer sensor(s) to respond to changes in
@@ -14,14 +13,16 @@ acceleration in 3d space.
 Subscribe for updates to the accelerometer.
 
 #### Arguments
-* **listener (*function*)** -- A callback that is invoked when an
-accelerometer update is available. When invoked, the listener is
-provided a single argumument that is an object    containing keys x, y,
-z.
+
+-   **listener (_function_)** -- A callback that is invoked when an
+    accelerometer update is available. When invoked, the listener is
+    provided a single argumument that is an object    containing keys x, y,
+    z.
 
 #### Returns
-* An EventSubscription object that you can call remove() on when you
-would like to unsubscribe the listener.
+
+-   An EventSubscription object that you can call remove() on when you
+    would like to unsubscribe the listener.
 
 ### `Exponent.Accelerometer.removeAllListeners()`
 
@@ -32,8 +33,9 @@ Remove all listeners.
 Subscribe for updates to the accelerometer.
 
 #### Arguments
-* **intervalMs (_number_)** Desired interval in milliseconds between
-accelerometer updates.
+
+-   **intervalMs (_number_)** Desired interval in milliseconds between
+    accelerometer updates.
 
 ## Example: basic subscription
 

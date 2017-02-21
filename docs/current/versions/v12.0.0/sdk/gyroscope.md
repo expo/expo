@@ -3,32 +3,33 @@ title: Gyroscope
 old_permalink: /versions/v12.0.0/sdk/gyroscope.html
 previous___FILE: ./google.md
 next___FILE: ./imagepicker.md
-
 ---
 
 Access the device gyroscope sensor to respond to changes in rotation in 3d space.
 
 ### `Exponent.Gyroscope.addListener(listener)`
+
 Subscribe for updates to the gyroscope.
 
 #### Arguments
 
-* **listener (_function_)** -- A callback that is invoked when an gyroscope update is available. When invoked, the listener is provided a single argumument that is an object containing keys x, y, z.
+-   **listener (_function_)** -- A callback that is invoked when an gyroscope update is available. When invoked, the listener is provided a single argumument that is an object containing keys x, y, z.
 
 #### Returns
+
 An EventSubscription object that you can call remove() on when you would like to unsubscribe the listener.
 
- 
-### `Exponent.Gyroscope.removeAllListeners()`  
+### `Exponent.Gyroscope.removeAllListeners()`
+
 Remove all listeners.
 
- 
 ### `Exponent.Gyroscope.setUpdateInterval(intervalMs)`
+
 Subscribe for updates to the gyroscope.
 
 #### Arguments
 
-* **intervalMs (_number_)** -- Desired interval in milliseconds between gyroscope updates.
+-   **intervalMs (_number_)** -- Desired interval in milliseconds between gyroscope updates.
 
 ## Example: basic subscription
 

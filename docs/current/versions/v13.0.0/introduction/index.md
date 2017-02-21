@@ -3,7 +3,6 @@ title: Introduction
 old_permalink: /versions/v12.0.0/introduction/index.html
 previous___FILE: ./../index.md
 next___FILE: ./installation.md
-
 ---
 
 -   [Installation](/versions/v12.0.0/installation/)

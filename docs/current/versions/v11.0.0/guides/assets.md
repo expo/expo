@@ -3,7 +3,6 @@ title: Assets
 old_permalink: /versions/v11.0.0/guides/assets.html
 previous___FILE: ./debugging.md
 next___FILE: ./preloading-and-caching-assets.md
-
 ---
 
 Images, fonts, videos, sounds, any other file that your app depends on that is not JavaScript is considered to be an _asset_. Just as on the web, assets are fetched or streamed over HTTP on demand. This is different from your typical mobile app, where assets are bundled with your application binary.
@@ -24,6 +23,6 @@ Each time you publish your app, Exponent will upload your assets to Amazon Cloud
 
 ## Performance
 
-Some assets are too important to start your app without. Fonts often fall into this category. On the web the font loading problem is known by several acronyms: FOUT, FOIT, and FOFT, which stand for Flash of Unstyled Text, Flash of Invisible Text, and Flash of Faux Text ([read more here](https://css-tricks.com/fout-foit-foft/)). The default behaviour with the icon-font-powered [@exponent/vector-icons](https://docs.getexponent.com/versions/v11.0.0/icons.html#icons) icons is a FOIT on first load, and on subsequent loads the font will be automatically cached. Users have higher standards for mobile than web, so you might want to take it a step further by preloading and caching the font and important images during the initial loading screen.
+Some assets are too important to start your app without. Fonts often fall into this category. On the web the font loading problem is known by several acronyms: FOUT, FOIT, and FOFT, which stand for Flash of Unstyled Text, Flash of Invisible Text, and Flash of Faux Text ([read more here](https://css-tricks.com/fout-foit-foft/)). The default behaviour with the icon-font-powered [@exponent/vector-icons](/versions/v11.0.0/guides/icons#icons) icons is a FOIT on first load, and on subsequent loads the font will be automatically cached. Users have higher standards for mobile than web, so you might want to take it a step further by preloading and caching the font and important images during the initial loading screen.
 
-[:ref:\`Read more about preloading & caching assets &lt;preloading-and-caching-assets>\`\_](https://docs.getexponent.com/versions/v11.0.0/guides#id1).
+[:ref:\`Read more about preloading & caching assets &lt;preloading-and-caching-assets>\`\_](#id1).

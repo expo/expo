@@ -3,7 +3,6 @@ title: Debugging
 old_permalink: /versions/v7.0.0/guides/debugging.html
 previous___FILE: ./logging.md
 next___FILE: ./icons.md
-
 ---
 
 ## Using a Simulator / Emulator

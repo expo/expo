@@ -3,7 +3,6 @@ title: Installing Node.js
 old_permalink: /versions/v6.0.0/guides/installing-node.html
 previous___FILE: ./up-and-running.md
 next___FILE: ./logging.md
-
 ---
 
 This is a guide to installing Node.js on your computer. To do anything interesting with Exponent, you'll need to have `node` and `npm` installed.
@@ -36,7 +35,7 @@ If for some reason you prefer not to use nvm to install and manage Node on your 
 
 ## If you are running Linux (or similar)
 
-If you are running [\*](https://docs.getexponent.com/versions/v6.0.0/guides#id2)nix, we also recommmend using [nvm](https://github.com/creationix/nvm#install-script) for the same reasons as we do on Mac.
+If you are running [\*](#id2)nix, we also recommmend using [nvm](https://github.com/creationix/nvm#install-script) for the same reasons as we do on Mac.
 
 You should be able to install Node using your package manager of choice and have it work though, as long as its new enough.
 

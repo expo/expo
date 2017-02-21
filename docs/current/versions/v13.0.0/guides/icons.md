@@ -3,14 +3,13 @@ title: Icons
 old_permalink: /versions/v12.0.0/guides/icons.html
 previous___FILE: ./preloading-and-caching-assets.md
 next___FILE: ./using-custom-fonts.md
-
 ---
 
 As trendy as it is these days, not every app has to use emoji for all icons 😳 -- maybe you want to pull in a popular set through an icon font like FontAwesome, Glyphicons or Ionicons, or you just use some PNGs that you carefully picked out on [The Noun Project](https://thenounproject.com/) (Exponent does not currently support SVGs). Let's look at how to do both of these approaches.
 
 ## @exponent/vector-icons
 
-This library is installed by default on the template project that you create through XDE. (If you're adding it to an existing project, you'll need to follow the special instructions in [Existing Projects](https://docs.getexponent.com/versions/v12.0.0/guides#for-existing-projects) below). It includes eight icon sets, you can browse all of the icons using the [@exponent/vector-icons directory](https://exponent.github.io/vector-icons/).
+This library is installed by default on the template project that you create through XDE. (If you're adding it to an existing project, you'll need to follow the special instructions in [Existing Projects](#for-existing-projects) below). It includes eight icon sets, you can browse all of the icons using the [@exponent/vector-icons directory](https://exponent.github.io/vector-icons/).
 
 ![](./vector-icons-directory.png)
 

@@ -3,12 +3,11 @@ title: Up and Running
 old_permalink: /versions/v9.0.0/guides/up-and-running.html
 previous___FILE: ./index.md
 next___FILE: ./configuration.md
-
 ---
 
 The aim of this first guide is to get an Exponent application up and running as quickly as possible.
 
-At this point we should have XDE installed on our development machine and the Exponent client on an iOS or Android physical device or emulator. If not, go back to the [Installation](https://docs.getexponent.com/versions/introduction/installation.html#installation) guide before proceeding.
+At this point we should have XDE installed on our development machine and the Exponent client on an iOS or Android physical device or emulator. If not, go back to the [Installation](/versions/latest/introduction/installation#installation) guide before proceeding.
 
 Alright, let's get started.
 
@@ -50,13 +49,13 @@ Live reload is enabled by default, but let's just make sure we go over the steps
 
 -   If you see `Enable Live Reload`, press it and your app will reload. If you see `Disable Live Reload` then exit the developer menu and try making another change.
 
-    [![In-app developer menu](./developer-menu.png)](https://docs.getexponent.com/_images/developer-menu.png)
+    [![In-app developer menu](./developer-menu.png)](/_images/developer-menu.png)
 
 #### Manually reloading the app
 
 -   If you've followed the above steps and live reload **still** doesn't work, press the button in the bottom right of XDE to send us a support request. Until we resolve the issue for you, you can either shake the device and press `Reload`, or use one of the following tools which work both with an without development mode.
 
-    [![Refresh using Exponent buttons](./exponent-refresh.png)](https://docs.getexponent.com/_images/exponent-refresh.png)
+    [![Refresh using Exponent buttons](./exponent-refresh.png)](/_images/exponent-refresh.png)
 
 #### Congratulations
 

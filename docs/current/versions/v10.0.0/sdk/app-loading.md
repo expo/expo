@@ -3,7 +3,6 @@ title: AppLoading
 old_permalink: /versions/v10.0.0/sdk/app-loading.html
 previous___FILE: ./amplitude.md
 next___FILE: ./asset.md
-
 ---
 
 A React component that tells Exponent to keep the app loading screen open if it is the first and only component rendered in your app. When it is removed, the loading screen will disappear and your app will be visible.

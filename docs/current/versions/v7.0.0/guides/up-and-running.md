@@ -3,7 +3,6 @@ title: Up and Running
 old_permalink: /versions/v7.0.0/guides/up-and-running.html
 previous___FILE: ./index.md
 next___FILE: ./configuration.md
-
 ---
 
 The aim of this first guide is to get an Exponent application up and running as quickly as possible.

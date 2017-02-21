@@ -3,19 +3,20 @@ title: Contacts
 old_permalink: /versions/v12.0.0/sdk/contacts.html
 previous___FILE: ./constants.md
 next___FILE: ./facebook.md
-
 ---
 
 Provides access to the phone's system contacts.
 
 ### `Exponent.Contacts.getContactsAsync(fields)`
+
 Get a list of all entries in the system contacts. This returns the name and optionally phone number and email of each contact.
 
 #### Arguments
 
-* **fields (_array_)** -- An array describing fields to retrieve per contact. Each element must be one of `Exponent.Contacts.PHONE_NUMBERS` or `Exponent.Contacts.EMAILS`.
+-   **fields (_array_)** -- An array describing fields to retrieve per contact. Each element must be one of `Exponent.Contacts.PHONE_NUMBERS` or `Exponent.Contacts.EMAILS`.
 
 #### Returns
+
 An array of objects of the form `{ id, name, phoneNumbers, emails, addresses, jobTitle, company  }` with `phoneNumbers`, `emails`, and `addresses` only present if they were requested through the `fields` parameter. iOS also includes `firstName, middleName, lastName`.
 
 #### Example

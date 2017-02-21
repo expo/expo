@@ -3,7 +3,6 @@ title: Building Standalone Apps
 old_permalink: /versions/v12.0.0/guides/building-standalone-apps.html
 previous___FILE: ./exp-cli.md
 next___FILE: ./how-exponent-works.md
-
 ---
 
 Not everybody wants to tell their customers or friends to download Exponent to use their app; You want to be able to have the app on its own from the App Store and Play Store. We call these "shell apps" or "standalone apps". The purpose of this guide is to walk you through creating a standalone version of your Exponent app for iOS and Android.

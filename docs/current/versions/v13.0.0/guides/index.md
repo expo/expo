@@ -3,7 +3,6 @@ title: Guides
 old_permalink: /versions/v12.0.0/guides/index.html
 previous___FILE: ./../introduction/faq.md
 next___FILE: ./up-and-running.md
-
 ---
 
 -   [Up and Running](/versions/v12.0.0/up-and-running/)

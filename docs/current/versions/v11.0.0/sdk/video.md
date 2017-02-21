@@ -2,10 +2,10 @@
 title: Video
 old_permalink: /versions/v11.0.0/sdk/video.html
 previous___FILE: ./util.md
-
 ---
 
-### `Exponent.Components.Video()`  
+### `Exponent.Components.Video()`
+
 A component that displays a video inline with the other React Native UI elements in your app. The display dimensions and position of the video on screen can be set using usual React Native styling.
 
 The following props are available:
@@ -43,7 +43,7 @@ How the video should be scaled for display in the component view bounds. Must be
     Whether to mute audio playback. The value of the `volume` prop is preserved across changing this prop.
 
      `rate`  
-    Number specifying the rate of playback of the video. A value of 0 pauses playback while a value of 1 plays the video at its normal speed. Values other than 0 or 1 can be used for slow, fast-forward or reverse playback if the parameters to the [onLoad](https://docs.getexponent.com/versions/v11.0.0/guides#video-on-load) callback prop indicate that such special playback is supported.
+    Number specifying the rate of playback of the video. A value of 0 pauses playback while a value of 1 plays the video at its normal speed. Values other than 0 or 1 can be used for slow, fast-forward or reverse playback if the parameters to the [onLoad](#video-on-load) callback prop indicate that such special playback is supported.
 
      `onLoadStart`  
     A function that will be called when the video data will start being fetched over the network. The function is called with a parameter `{ uri }` where `uri` gives the URI that the data is being fetched from.
@@ -76,7 +76,7 @@ How the video should be scaled for display in the component view bounds. Must be
 The following methods are available on the component's ref:
 
  `seek`(_time_)  
-Move playback to the given time in seconds. The parameters to the [onLoad](https://docs.getexponent.com/versions/v11.0.0/guides#video-on-load) callback prop indicate whether forward and/or backward seeking are supported.
+Move playback to the given time in seconds. The parameters to the [onLoad](#video-on-load) callback prop indicate whether forward and/or backward seeking are supported.
 
  `presentFullscreenPlayer`()  
 Switch to fullscreen display.

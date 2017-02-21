@@ -3,12 +3,12 @@ title: Asset
 old_permalink: /versions/v12.0.0/sdk/asset.html
 previous___FILE: ./art.md
 next___FILE: ./bar-code-scanner.md
-
 ---
 
 This module provides an interface to Exponent's asset system. An asset is any file that lives alongside the source code of your app that the app needs at runtime. Examples include images, fonts and sounds. Exponent's asset system integrates with React Native's, so that you can refer to files with `require('path/to/file')`. This is how you refer to static image files in React Native for use in an `Image` component, for example. Check out React Native's [documentation on static image resources](https://facebook.github.io/react-native/docs/images.html#static-image-resources) for more information. This method of referring to static image resources works out of the box with Exponent.
 
-### `Exponent.Asset()`  
+### `Exponent.Asset()`
+
 This class represents an asset in your app. It gives metadata about the asset (such as its name and type) and provides facilities to load the asset data.
 
  `name`  
@@ -24,7 +24,7 @@ The MD5 hash of the asset's data
 A URI that points to the asset's data on the remote server. When running the published version of your app, this refers to the the location on Exponent's asset server where Exponent has stored your asset. When running the app from XDE during development, this URI points to XDE's server running on your computer and the asset is served directly from your computer.
 
  `localUri`  
-If the asset has been downloaded (by calling [`downloadAsync()`](https://docs.getexponent.com/versions/v12.0.0/guides#Exponent.Asset.downloadAsync "Exponent.Asset.downloadAsync")), the `file://` URI pointing to the local file on the device that contains the asset data.
+If the asset has been downloaded (by calling [`downloadAsync()`](#Exponent.Asset.downloadAsync "Exponent.Asset.downloadAsync")), the `file://` URI pointing to the local file on the device that contains the asset data.
 
  `width`  
 If the asset is an image, the width of the image data divided by the scale factor. The scale factor is the number after `@` in the filename, or `1` if not present.
@@ -33,18 +33,19 @@ If the asset is an image, the width of the image data divided by the scale facto
 If the asset is an image, the height of the image data divided by the scale factor. The scale factor is the number after `@` in the filename, or `1` if not present.
 
  `downloadAsync`()  
-Downloads the asset data to a local file in the device's cache directory. Once the returned promise is fulfilled without error, the [`localUri`](https://docs.getexponent.com/versions/v12.0.0/guides#Exponent.Asset.localUri "Exponent.Asset.localUri") field of this asset points to a local file containing the asset data. The asset is only downloaded if an up-to-date local file for the asset isn't already present due to an earlier download.
+Downloads the asset data to a local file in the device's cache directory. Once the returned promise is fulfilled without error, the [`localUri`](#Exponent.Asset.localUri "Exponent.Asset.localUri") field of this asset points to a local file containing the asset data. The asset is only downloaded if an up-to-date local file for the asset isn't already present due to an earlier download.
 
- 
 ### `Exponent.Asset.fromModule(module)`
-Returns the [`Exponent.Asset`](https://docs.getexponent.com/versions/v12.0.0/guides#Exponent.Asset "Exponent.Asset") instance representing an asset given its module
+
+Returns the [`Exponent.Asset`](#Exponent.Asset "Exponent.Asset") instance representing an asset given its module
 
 #### Arguments
 
-* **module (_number_)** -- The value of `require('path/to/file')` for the asset
+-   **module (_number_)** -- The value of `require('path/to/file')` for the asset
 
 #### Returns
-The [`Exponent.Asset`](https://docs.getexponent.com/versions/v12.0.0/guides#Exponent.Asset "Exponent.Asset") instance for the asset
+
+The [`Exponent.Asset`](#Exponent.Asset "Exponent.Asset") instance for the asset
 
 #### Example
 

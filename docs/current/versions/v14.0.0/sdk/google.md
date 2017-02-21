@@ -3,7 +3,6 @@ title: Google
 old_permalink: /versions/v12.0.0/sdk/google.html
 previous___FILE: ./gl-view.md
 next___FILE: ./gyroscope.md
-
 ---
 
 Provides Google authentication integration for Exponent apps, using either the native Google Sign In SDK (only in standalone apps) or a system web browser (not WebView, so credentials saved on the device can be re-used!).
@@ -24,22 +23,24 @@ async function getUserInfo(accessToken) {
 ## Usage
 
 ### `Exponent.Google.logInAsync(options)`
+
 Prompts the user to log into Google and grants your app permission to access some of their Google data, as specified by the scopes.
 
 #### :param object options
+
  A map of options:
 
- -   **behavior** (_string_) -- The type of behavior to use for login, either `web` or `system`. Native (`system`) can only be used inside of a standalone app when built using the steps described below. Default is `web` inside of Exponent app, and `system` in standalone. The only case where you would need to change this is if you would prefer to use `web` inside of a standalone app.
- -   **scopes** (_array_) -- An array specifying the scopes to ask for from Google for this login ([more information here](https://gsuite-developers.googleblog.com/2012/01/tips-on-using-apis-discovery-service.html)). Default scopes are `['profile', 'email']`.
- -   **androidClientId** (_string_) -- The Android client id registered with Google for use in the Exponent client app.
- -   **iosClientId** (_string_) -- The iOS client id registered with Google for use in the Exponent client app.
- -   **androidStandaloneAppClientId** (_string_) -- The Android client id registered with Google for use in a standalone app.
- -   **iosStandaloneAppClientId** (_string_) -- The iOS client id registered with Google for use in a standalone app.
+-   **behavior** (_string_) -- The type of behavior to use for login, either `web` or `system`. Native (`system`) can only be used inside of a standalone app when built using the steps described below. Default is `web` inside of Exponent app, and `system` in standalone. The only case where you would need to change this is if you would prefer to use `web` inside of a standalone app.
+-   **scopes** (_array_) -- An array specifying the scopes to ask for from Google for this login ([more information here](https://gsuite-developers.googleblog.com/2012/01/tips-on-using-apis-discovery-service.html)). Default scopes are `['profile', 'email']`.
+-   **androidClientId** (_string_) -- The Android client id registered with Google for use in the Exponent client app.
+-   **iosClientId** (_string_) -- The iOS client id registered with Google for use in the Exponent client app.
+-   **androidStandaloneAppClientId** (_string_) -- The Android client id registered with Google for use in a standalone app.
+-   **iosStandaloneAppClientId** (_string_) -- The iOS client id registered with Google for use in a standalone app.
 
- returns  
- If the user or Google cancelled the login, returns `{ type: 'cancel' }`.
+    returns  
+    If the user or Google cancelled the login, returns `{ type: 'cancel' }`.
 
- Otherwise, returns `{ type: 'success', accessToken, user: {...profileInformation} }`. `accessToken` is a string giving the access token to use with Google HTTP API requests.
+    Otherwise, returns `{ type: 'success', accessToken, user: {...profileInformation} }`. `accessToken` is a string giving the access token to use with Google HTTP API requests.
 
 ## Using it inside of the Exponent app
 

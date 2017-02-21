@@ -3,13 +3,11 @@ title: How Exponent Works
 old_permalink: /versions/v8.0.0/guides/how-exponent-works.html
 previous___FILE: ./building-standalone-apps.md
 next___FILE: ./upgrading-exponent.md
-
 ---
 
 While it's certainly not necessary to know any of this to use Exponent, many engineers like to know how their tools work. We'll walk through a few key concepts here. You can also browse the source, fork, hack on and contribute to the Exponent tooling on [github/@exponent](http://github.com/exponent).
 
 ## Opening an app from Exponent in development
-
 
 There are two user facing pieces here: the Exponent app and the Exponent development tool (either XDE or exp CLI). We'll just assume XDE here for simplicity of naming. When you open an app up in XDE, it spawns and manages two server processes in the background: the Exponent Development Server and the React Native Packager Server.
 
@@ -23,7 +21,7 @@ This server is the endpoint that you hit first when you type the URL into the Ex
 
 #### `Exponent Manifest`
 
-The following is an example of a manifest being served through XDE. The first thing that you should notice is there are a lot of identical fields to `exp.json` (see the [Configuration with exp.json](https://docs.getexponent.com/versions/v8.0.0/configuration.html#exp) section if you haven't read it yet). These fields are taken directly from that file -- this is how the Exponent app accesses your configuration.
+The following is an example of a manifest being served through XDE. The first thing that you should notice is there are a lot of identical fields to `exp.json` (see the [Configuration with exp.json](/versions/v8.0.0/guides/configuration#exp) section if you haven't read it yet). These fields are taken directly from that file -- this is how the Exponent app accesses your configuration.
 
 ```javascript
 {
@@ -77,9 +75,9 @@ The second purpose is to serve assets. When you include an image in your app, yo
 
 ## Deployment
 
-Deployment for Exponent means compiling your JavaScript bundle with production flags enabled (minify, disable runtime development checks) and upload it along with any assets that it requires (see [Assets](https://docs.getexponent.com/versions/v8.0.0/assets.html#all-about-assets)) to CloudFront. We upload your `exp.json` configuration to our server. As soon as the publish is complete, users will receive the new version next time they open the app or refresh it, provided that they have a version of the Exponent client that supports the `sdkVersion` specified in your `exp.json`.
+Deployment for Exponent means compiling your JavaScript bundle with production flags enabled (minify, disable runtime development checks) and upload it along with any assets that it requires (see [Assets](/versions/v8.0.0/guides/assets#all-about-assets)) to CloudFront. We upload your `exp.json` configuration to our server. As soon as the publish is complete, users will receive the new version next time they open the app or refresh it, provided that they have a version of the Exponent client that supports the `sdkVersion` specified in your `exp.json`.
 
-> **Note:** To package your app for deployment on the Apple App Store or Google Play Store, see [Building Standalone Apps](https://docs.getexponent.com/versions/v8.0.0/building-standalone-apps.html#building-standalone-apps). Each time you update the SDK version you will need to rebuild your binary.
+> **Note:** To package your app for deployment on the Apple App Store or Google Play Store, see [Building Standalone Apps](/versions/v8.0.0/guides/building-standalone-apps#building-standalone-apps). Each time you update the SDK version you will need to rebuild your binary.
 
 ## SDK Versions
 

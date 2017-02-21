@@ -3,7 +3,6 @@ title: Upgrading Exponent
 old_permalink: /versions/v10.0.0/guides/upgrading-exponent.html
 previous___FILE: ./how-exponent-works.md
 next___FILE: ./../sdk/index.md
-
 ---
 
 It isn't strictly necessary to update your app when a new version of Exponent is released. New versions of the Exponent client are backwards compatible with apps published for previous versions for at least one year. This means that you can download a new version of the Exponent client and open apps that were published for previous versions and they will work perfectly.

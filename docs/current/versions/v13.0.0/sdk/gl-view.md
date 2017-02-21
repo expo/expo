@@ -3,19 +3,18 @@ title: GLView
 old_permalink: /versions/v12.0.0/sdk/gl-view.html
 previous___FILE: ./font.md
 next___FILE: ./google.md
-
 ---
 
 ### `Exponent.GLView()`
+
 A `View` that acts as an OpenGL ES render target. On mounting, an OpenGL ES context is created. Its drawing buffer is presented as the contents of the `View` every frame.
 
 Other than the regular `View` props for layout and touch handling, the following props are available:
 
  `onContextCreate`
-A function that will be called when the OpenGL ES context is created. The function is passed a single argument [gl](https://docs.getexponent.com/versions/v12.0.0/guides#gl-object) that acts as an interface to the underlying OpenGL ES context.
+A function that will be called when the OpenGL ES context is created. The function is passed a single argument [gl](#gl-object) that acts as an interface to the underlying OpenGL ES context.
 
 ## Examples
-
 
 The [@community/gl-test](https://getexponent.com/@community/gl-test) Exponent app demonstrates a number of example scenes. The image above is a low-quality capture, try the app on Exponent for the best-quality experience. The source code for these scenes is available [here](https://github.com/exponent/gl-test/tree/master/Scenes)
 
@@ -23,7 +22,7 @@ The [@community/gl-test](https://getexponent.com/@community/gl-test) Exponent ap
 
 ## The `gl` object
 
-Once the component is mounted and the OpenGL ES context has been created, the gl object received through the [`onContextCreate`](https://docs.getexponent.com/versions/v12.0.0/guides#Exponent.GLView.onContextCreate "Exponent.GLView.onContextCreate") prop becomes the interface to the OpenGL ES context, providing a WebGL-like API. It resembles a [WebGLRenderingContext](https://www.khronos.org/registry/webgl/specs/latest/1.0/#5.14) in the WebGL 1 spec. An additional method endFrameExp is present which notifies the context that the current frame is ready to be presented. This is similar to a 'swap buffers' API call in other OpenGL platforms.
+Once the component is mounted and the OpenGL ES context has been created, the gl object received through the [`onContextCreate`](#Exponent.GLView.onContextCreate "Exponent.GLView.onContextCreate") prop becomes the interface to the OpenGL ES context, providing a WebGL-like API. It resembles a [WebGLRenderingContext](https://www.khronos.org/registry/webgl/specs/latest/1.0/#5.14) in the WebGL 1 spec. An additional method endFrameExp is present which notifies the context that the current frame is ready to be presented. This is similar to a 'swap buffers' API call in other OpenGL platforms.
 
 As of SDK 11.0.0, not all WebGL functionality has been implemented. We plan to achieve more coverage of the API in upcoming SDK versions.
 

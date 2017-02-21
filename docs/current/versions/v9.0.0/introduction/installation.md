@@ -3,7 +3,6 @@ title: Installation
 old_permalink: /versions/v9.0.0/introduction/installation.html
 previous___FILE: ./index.md
 next___FILE: ./xde-tour.md
-
 ---
 
 There are two tools that you need to develop apps with Exponent - a desktop development tool and a mobile client to open your app.

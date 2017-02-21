@@ -3,7 +3,6 @@ title: Push Notifications
 old_permalink: /versions/v8.0.0/guides/push-notifications.html
 previous___FILE: ./using-custom-fonts.md
 next___FILE: ./building-standalone-apps.md
-
 ---
 
 Push Notifications are an important feature to, as _"growth hackers"_ would say, retain and re-engage users and monetize on their attention, or something. From my point of view it's just super handy to know when a relevant event happens in an app so I can jump back into it and read more. Let's look at how to do this with Exponent. Spoiler alert: it's almost too easy.
@@ -13,7 +12,6 @@ Push Notifications are an important feature to, as _"growth hackers"_ would say,
 There are three main steps to wiring up push notifications: sending a user's Exponent Push Token to your server, calling Exponent's Push API with the token when you want to send a notification, and responding to receiving and/or selecting the notification in your app (for example to jump to a particular screen that the notification refers to).
 
 ## 1. Save the user's Exponent Push Token on your server
-
 
 In order to send a push notification to somebody, we need to know about their device. Sure, we know our user's account information, but Apple, Google, and Exponent do not understand what devices correspond to "Brent" in your propiertary user account system. Exponent takes care of identifying your device with Apple and Google through the Exponent push token, so all we need to do is send this to your server so you can associate it with the user account and use it in the future for sending push notifications.![Diagram explaining saving tokens](./saving-token.png)
 
@@ -55,7 +53,6 @@ async function registerForPushNotificationsAsync() {
 ```
 
 ## 2. Call Exponent's Push API with the user's token
-
 
 Push notifications have to come from somewhere, and that somewhere is your server, probably (you could write a command line tool to send them if you wanted, it's all the same). When you're ready to send a push notification, grab the Exponent push token off of the user record and send it over to the Exponent API using a plain old HTTP POST request. We've taken care of wrapping that for you in with [exponent-server-sdk-ruby](https://github.com/exponent/exponent-server-sdk-ruby) and [exponent-server-sdk-python](https://github.com/exponent/exponent-server-sdk-python), check out the source if you would like to implement it in another language. For the sake of demonstration, let's look at our [simple-rails-push-server-example](https://github.com/exponent/simple-rails-push-server-example).![Diagram explaining sending a push from your server to device](./sending-notification.png)
 

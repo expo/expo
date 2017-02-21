@@ -3,7 +3,6 @@ title: Using Custom Fonts
 old_permalink: /versions/v9.0.0/guides/using-custom-fonts.html
 previous___FILE: ./icons.md
 next___FILE: ./push-notifications.md
-
 ---
 
 Both iOS and Android come with their own set of platform fonts but if you want to inject some more brand personality into your app, a well picked font can go a long way. In this guide we'll walk you through adding a custom font to your Exponent app. We'll use [Open Sans](https://fonts.google.com/specimen/Open+Sans) from [Google Fonts](https://fonts.google.com/) in the example, and the process is identical for any other font, so feel free to adapt it to your use case. Before proceeding, go ahead and download [Open Sans](https://fonts.google.com/specimen/Open+Sans)
@@ -44,13 +43,13 @@ Take the Open Sans zipfile that you downloaded, extract it and copy `OpenSans-Bo
 
 ## Loading the font in your app
 
-To load and use fonts we will use the [Exponent SDK](https://docs.getexponent.com/versions/sdk/index.html#exponent-sdk), which comes pre-installed when you create a new Exponent project, but if for some reason you don't have it, you can install with `npm install --save exponent` in your project directory. Add the following `import` in your application code:
+To load and use fonts we will use the [Exponent SDK](/versions/latest/sdk/index#exponent-sdk), which comes pre-installed when you create a new Exponent project, but if for some reason you don't have it, you can install with `npm install --save exponent` in your project directory. Add the following `import` in your application code:
 
 ```javascript
 import { Font } from 'exponent';
 ```
 
-The `exponent` library provides an API to access native functionality of the device from your JavaScript code. `Font` is the module that deals with font-related tasks. First, we must load the font from our assets directory using [`Exponent.Font.loadAsync()`](https://docs.getexponent.com/versions/sdk/font.html#Exponent.Font.loadAsync "Exponent.Font.loadAsync"). We can do this in the [componentDidMount()](https://facebook.github.io/react/docs/component-specs.html#mounting-componentdidmount) lifecycle method of the `App` component. Add the following method in `App`: Now that we have the font files saved to disk and the Font SDK imported, let's add this code:
+The `exponent` library provides an API to access native functionality of the device from your JavaScript code. `Font` is the module that deals with font-related tasks. First, we must load the font from our assets directory using [`Exponent.Font.loadAsync()`](/versions/latest/sdk/font#Exponent.Font.loadAsync "Exponent.Font.loadAsync"). We can do this in the [componentDidMount()](https://facebook.github.io/react/docs/component-specs.html#mounting-componentdidmount) lifecycle method of the `App` component. Add the following method in `App`: Now that we have the font files saved to disk and the Font SDK imported, let's add this code:
 
 ```javascript
 class App extends React.Component {
@@ -70,7 +69,7 @@ This loads Font Awesome and associates it with the name `'open-sans-bold'` in Ex
 
 ## Using the font in a `Text` component
 
-You may remember that in React Native you specify fonts in `Text` components using the `fontFamily` style property. Since it can be confusing to keep track of the font family for the various .ttf files you load, Exponent provides the function [`Exponent.Font.style()`](https://docs.getexponent.com/versions/sdk/font.html#Exponent.Font.style "Exponent.Font.style") which returns the style properties (including `fontFamily`) for a font that you specify by name. So all you need to do is change your `Text` element to the following:
+You may remember that in React Native you specify fonts in `Text` components using the `fontFamily` style property. Since it can be confusing to keep track of the font family for the various .ttf files you load, Exponent provides the function [`Exponent.Font.style()`](/versions/latest/sdk/font#Exponent.Font.style "Exponent.Font.style") which returns the style properties (including `fontFamily`) for a font that you specify by name. So all you need to do is change your `Text` element to the following:
 
 ```javascript
 <Text style={{ ...Font.style('open-sans-bold'), fontSize: 56 }}>
@@ -78,7 +77,7 @@ You may remember that in React Native you specify fonts in `Text` components usi
 </Text>
 ```
 
-On next refresh the app seems to still not display the text with Open Sans Bold. You will see that it is still using the default system font. The problem is that [`Exponent.Font.loadAsync()`](https://docs.getexponent.com/versions/sdk/font.html#Exponent.Font.loadAsync "Exponent.Font.loadAsync") is an asynchronous call and takes some time to complete. Before it completes, the `Text` component is already rendered with the default font since it can't find the `'open-sans-bold'` font (which hasn't been loaded yet).
+On next refresh the app seems to still not display the text with Open Sans Bold. You will see that it is still using the default system font. The problem is that [`Exponent.Font.loadAsync()`](/versions/latest/sdk/font#Exponent.Font.loadAsync "Exponent.Font.loadAsync") is an asynchronous call and takes some time to complete. Before it completes, the `Text` component is already rendered with the default font since it can't find the `'open-sans-bold'` font (which hasn't been loaded yet).
 
 > **Note:** If you're curious, go ahead and add `console.log(Font.style('open-sans-bold'));` to your code and you'll see that it evaluates to {fontFamily: 'some-long-id-open-sans-bold'}. We prepend the family name with a session id in order to prevent fonts from different apps opened through Exponent from clashing.
 
@@ -98,7 +97,7 @@ class App extends React.Component {
 }
 ```
 
-Next, we must set `fontLoaded` to `true` when the font is done loading. [`Exponent.Font.loadAsync()`](https://docs.getexponent.com/versions/sdk/font.html#Exponent.Font.loadAsync "Exponent.Font.loadAsync") returns a `Promise` that is fulfilled when the font is successfully loaded and ready to use. So we can use [async/await](https://blog.getexponent.com/react-native-meets-async-functions-3e6f81111173) with `componentDidMount()` to wait until the font is loaded, then update our state.
+Next, we must set `fontLoaded` to `true` when the font is done loading. [`Exponent.Font.loadAsync()`](/versions/latest/sdk/font#Exponent.Font.loadAsync "Exponent.Font.loadAsync") returns a `Promise` that is fulfilled when the font is successfully loaded and ready to use. So we can use [async/await](https://blog.getexponent.com/react-native-meets-async-functions-3e6f81111173) with `componentDidMount()` to wait until the font is loaded, then update our state.
 
 ```javascript
 class App extends React.Component {

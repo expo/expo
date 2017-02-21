@@ -3,7 +3,6 @@ title: BlurView
 old_permalink: /versions/v12.0.0/sdk/blur-view.html
 previous___FILE: ./bar-code-scanner.md
 next___FILE: ./constants.md
-
 ---
 
 A React component that renders a native blur view on iOS and falls back to a semi-transparent view on Android. A common usage of this is for navigation bars and tab bars, like the following:
@@ -104,6 +103,5 @@ Exponent.registerRootComponent(BlurViewExample);
  `tint`  
 A string: `light`, `default`, or `dark`.
 
- 
  `intensity`  
 A number from 1 to 100 to control the intensity of the blur effect.

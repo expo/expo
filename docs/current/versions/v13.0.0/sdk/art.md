@@ -3,7 +3,6 @@ title: ART
 old_permalink: /versions/v12.0.0/sdk/art.html
 previous___FILE: ./app-loading.md
 next___FILE: ./asset.md
-
 ---
 
 _Note: This documentation is about a library that is included in Exponent but is not maintained by the Exponent team. It may be out of date._

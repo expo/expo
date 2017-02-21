@@ -3,12 +3,11 @@ title: Up and Running
 old_permalink: /versions/v6.0.0/guides/up-and-running.html
 previous___FILE: ./index.md
 next___FILE: ./installing-node.md
-
 ---
 
 The aim of this first guide is to get an Exponent application up and running as quickly as possible.
 
-At this point we should have XDE installed on our development machine and the Exponent client on an iOS or Android physical device or emulator. If not, go back to the [Installation](https://docs.getexponent.com/versions/introduction/installation.html#installation) guide before proceeding.
+At this point we should have XDE installed on our development machine and the Exponent client on an iOS or Android physical device or emulator. If not, go back to the [Installation](/versions/latest/introduction/installation#installation) guide before proceeding.
 
 Alright, let's get started.
 

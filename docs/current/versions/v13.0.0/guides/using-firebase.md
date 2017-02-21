@@ -3,7 +3,6 @@ title: Using Firebase
 old_permalink: /versions/v12.0.0/guides/using-firebase.html
 previous___FILE: ./using-clojurescript.md
 next___FILE: ./using-apollo.md
-
 ---
 
 Firebase Database is a popular NoSQL cloud database that allows developers realtime synchronization of live data. With multi-platform support, synchronizing data between users and clients is pretty seamless, but it can also be used more generally as a generic persistent NoSQL data backing if you don't care about realtime updates. It has a very flexible rules syntax to allow minute control over data access as well.

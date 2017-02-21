@@ -3,7 +3,6 @@ title: Genymotion
 old_permalink: /versions/v12.0.0/guides/genymotion.html
 previous___FILE: ./using-apollo.md
 next___FILE: ./../sdk/index.md
-
 ---
 
 We recommend the Genymotion emulator over the Android Studio emulator. If you run into any problems using Genymotion, follow the steps in this guide.
@@ -28,7 +27,7 @@ Choose one of these two options:
 
 -   Open Genymotion and navigate to Settings -> ADB. Select "Use custom Android SDK tools" and update with your Android SDK directory:
 
-[![](./genymotion-android-tools.png)](https://docs.getexponent.com/_images/genymotion-android-tools.png)
+[![](./genymotion-android-tools.png)](/_images/genymotion-android-tools.png)
 
 ## Step 2: Set your path in XDE
 

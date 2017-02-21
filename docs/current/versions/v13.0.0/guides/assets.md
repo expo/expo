@@ -3,7 +3,6 @@ title: Assets
 old_permalink: /versions/v12.0.0/guides/assets.html
 previous___FILE: ./debugging.md
 next___FILE: ./preloading-and-caching-assets.md
-
 ---
 
 Images, fonts, videos, sounds, any other file that your app depends on that is not JavaScript is considered to be an _asset_. Just as on the web, assets are fetched or streamed over HTTP on demand. This is different from your typical mobile app, where assets are bundled with your application binary.

@@ -3,7 +3,6 @@ title: MapView
 old_permalink: /versions/v12.0.0/sdk/map-view.html
 previous___FILE: ./location.md
 next___FILE: ./notifications.md
-
 ---
 
 A Map component that uses Apple Maps on iOS and Google Maps on Android. Built by Airbnb at [airbnb/react-native-maps](https://github.com/airbnb/react-native-maps). No setup required for use within the Exponent app, or within a standalone app for iOS. See below for instructions on how to configure for deployment as a standalone app on Android.
@@ -39,7 +38,8 @@ export default class HomeScreen extends React.Component {
 }
 ```
 
-### `Exponent.Components.MapView()`  
+### `Exponent.Components.MapView()`
+
 See full documentation at [airbnb/react-native-maps](https://github.com/airbnb/react-native-maps).
 
 ## Deploying to a standalone app on Android

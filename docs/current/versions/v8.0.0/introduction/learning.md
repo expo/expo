@@ -3,7 +3,6 @@ title: Learning
 old_permalink: /versions/v8.0.0/introduction/learning.html
 previous___FILE: ./xde-tour.md
 next___FILE: ./community.md
-
 ---
 
 The following resources are useful for learning Exponent and some of the projects that it depends on.

@@ -3,7 +3,6 @@ title: Routing & Navigation
 old_permalink: /versions/v11.0.0/guides/routing-and-navigation.html
 previous___FILE: ./using-custom-fonts.md
 next___FILE: ./push-notifications.md
-
 ---
 
 A "single page app" on the web is not an app with a single screen, that would indeed be useless most of the time; rather, it is an app that does not ask the browser to navigate to a new URL for each new screen. Instead, a "single page app" will use its own routing subsystem (eg: react-router) that decouples the screens that are being displayed from the URL bar. Often it will also update the URL bar too, but override the mechanism that will cause the browser to reload the page entirely. The purpose of this is for the experience to be smooth and "app-like".
@@ -99,7 +98,7 @@ Let's look at the project structure of the tab template as it relates to navigat
 
 In Exponent apps, this file is typically where you will register the root component of your app. At the root, you typically include any higher order `Provider` components, such as the `react-redux` `Provider`, and the ExNavigation `NavigationProvider`. As you can see in the above example, we usually also render our root `StackNavigation` component at the root. Most apps are composed of many nested stacks, which we will see here.
 
-### screens/[\*](https://docs.getexponent.com/versions/v11.0.0/guides#id1)Screen.js
+### screens/[\*](#id1)Screen.js
 
 I've organized all of the route components that represent screens in our app into a `Screens` directory (a screen is not strictly defined anywhere, it is up to you to decide what you think fits -- for me this is usually anything that I would `push` or `pop` from a stack).
 

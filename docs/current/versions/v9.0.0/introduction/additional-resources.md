@@ -3,7 +3,6 @@ title: Additional Resources
 old_permalink: /versions/v9.0.0/introduction/additional-resources.html
 previous___FILE: ./community.md
 next___FILE: ./../guides/index.md
-
 ---
 
 The following resources are useful for learning Exponent and some of the projects that it depends on.
