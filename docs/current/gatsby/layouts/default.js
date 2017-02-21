@@ -29,9 +29,6 @@ import v12 from 'data/v12.yaml';
 import v11 from 'data/v11.yaml';
 import v10 from 'data/v10.yaml';
 import v9 from 'data/v9.yaml';
-import v8 from 'data/v8.yaml';
-import v7 from 'data/v7.yaml';
-import v6 from 'data/v6.yaml';
 
 const versions = [
   `v14.0.0`,
@@ -39,10 +36,7 @@ const versions = [
   `v12.0.0`,
   `v11.0.0`,
   `v10.0.0`,
-  `v9.0.0`,
-  `v8.0.0`,
-  `v7.0.0`,
-  `v6.0.0`
+  `v9.0.0`
 ];
 
 class Wrapper extends React.Component {
@@ -86,15 +80,6 @@ class Wrapper extends React.Component {
       case 'v9.0.0':
         routes = v9;
         break;
-      case 'v8.0.0':
-        routes = v8;
-        break;
-      case 'v7.0.0':
-        routes = v7;
-        break;
-      case 'v6.0.0':
-        routes = v6;
-        break;
       default:
         routes = v14;
     }
@@ -107,7 +92,7 @@ class Wrapper extends React.Component {
       activeRoutes: this.getRoutes(version)
     });
 
-    const newRoute = `/versions/${version}/`;
+    const newRoute = `/versions/${version}`;
     this.props.router.push(newRoute);
   };
 
@@ -214,11 +199,7 @@ class Wrapper extends React.Component {
                 }}>
                 © Copyright{' '}
                 {new Date().getFullYear()}
-                , Exponent. Created using{' '}
-                <a target="_blank" href="https://github.com/gatsbyjs/gatsby">
-                  Gatsby
-                </a>
-                .
+                , Exponent.
               </p>
             </div>
           </div>

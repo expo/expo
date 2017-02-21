@@ -63,9 +63,9 @@ exports.modifyAST = ({ args }) => {
     const parsedFilePath = parseFilepath(file.relativePath);
     let fileSlug;
     if (parsedFilePath.name !== `index`) {
-      fileSlug = `/versions/${parsedFilePath.dirname}/${parsedFilePath.name}/`;
+      fileSlug = `/versions/${parsedFilePath.dirname}/${parsedFilePath.name}`;
     } else {
-      fileSlug = `/versions/${parsedFilePath.dirname}/`;
+      fileSlug = `/versions/${parsedFilePath.dirname}`;
     }
 
     file.children[0].fileSlug = fileSlug;

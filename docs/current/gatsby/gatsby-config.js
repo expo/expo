@@ -1,6 +1,6 @@
 module.exports = {
   siteMetadata: {
-    title: 'ExponentJS'
+    title: 'Exponent'
   },
   plugins: [
     `gatsby-plugin-glamor`,
