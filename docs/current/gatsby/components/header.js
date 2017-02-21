@@ -27,14 +27,16 @@ class AlgoliaSearch extends React.Component {
     return (
       <div
         css={{
-          float: `right`
+          float: `left`
         }}>
         <input
           css={{
             ...scale((-1) / 5),
-            border: `1px solid #ccc`,
-            borderRadius: rhythm(1 / 4),
-            padding: `${rhythm(1 / 8)} ${rhythm(1 / 2)}`
+            border: `1px solid #eee`,
+            borderRadius: 3,
+            fontSize: '14px',
+            padding: '2px 10px',
+            marginTop: '2px'
           }}
           id="algolia-search-box"
           type="text"
@@ -57,7 +59,6 @@ class Header extends React.Component {
           background: `white`,
           borderBottom: `1px solid #efefef`,
           position: `fixed`,
-          overflow: 'hidden',
           width: `100%`,
           height: 45,
           [presets.Tablet]: {
@@ -83,7 +84,7 @@ class Header extends React.Component {
           <div
             css={{
               [presets.Tablet]: {
-                marginTop: -4,
+                marginTop: '4px',
                 display: 'inline-block'
               }
             }}>
@@ -101,32 +102,47 @@ class Header extends React.Component {
               />
             </Link>
           </div>
-          <div css={{ paddingTop: 5, display: 'inline-block' }}>
-            <select
-              value={this.props.activeVersion}
-              onChange={e => this.props.setVersion(e.target.value)}
+
+          <div
+            css={{
+              float: `right`
+            }}>
+            <div
               css={{
-                marginLeft: rhythm(1),
-                background: `none`,
-                borderRadius: 0,
-                cursor: `pointer`,
-                outline: `none`,
-                fontSize: `100%`,
-                backgroundColor: '#f7f7f7',
-                borderColor: '#ccc',
-                textAlignLast: `center`,
-                textAlign: `center`
+                paddingTop: '4px',
+                paddingRight: '10px',
+                display: 'inline-block'
               }}>
-              {this.props.versions.map(version => {
-                return (
-                  <option key={version} value={version}>
-                    {version}
-                  </option>
-                );
-              })}
-            </select>
+              <select
+                value={this.props.activeVersion}
+                onChange={e => this.props.setVersion(e.target.value)}
+                css={{
+                  marginLeft: '4px',
+                  background: `none`,
+                  borderRadius: 0,
+                  cursor: `pointer`,
+                  outline: `none`,
+                  fontSize: `100%`,
+                  // backgroundColor: '#f7f7f7',
+                  // borderColor: '#ccc',
+                  border: 'none',
+                  textAlignLast: `center`,
+                  textAlign: `center`
+                }}>
+                {this.props.versions
+                  .map(version => {
+                    return (
+                      <option key={version} value={version}>
+                        {version}
+                      </option>
+                    );
+                  })
+                  .reverse()}
+              </select>
+            </div>
+
+            <AlgoliaSearch activeVersion={this.props.activeVersion} />
           </div>
-          <AlgoliaSearch activeVersion={this.props.activeVersion} />
         </div>
       </div>
     );

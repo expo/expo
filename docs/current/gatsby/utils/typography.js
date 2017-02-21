@@ -80,7 +80,6 @@ const typography = new Typography({
     'li a.anchor svg.anchor-icon': {
       position: 'absolute',
       visibility: 'hidden',
-      backgroundColor: '#fff',
       marginTop: '3px'
     },
     'ol > li': {
@@ -95,11 +94,20 @@ const typography = new Typography({
     'ul > li a.anchor svg.bullet-icon': {
       position: 'absolute',
       visibility: 'visible',
-      backgroundColor: '#fff',
       marginTop: '3px'
     },
     'li > p': {
       marginBottom: rhythm(1 / 2)
+    },
+    'ul ul': {
+      backgroundColor: '#fafaff',
+      paddingBottom: '10px',
+      marginLeft: 0,
+      borderRadius: '4px',
+      paddingTop: '10px'
+    },
+    'ul ul > li': {
+      marginLeft: 0
     },
     'h2 code': {
       fontSize: '20px'
