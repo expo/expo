@@ -159,8 +159,8 @@ class Wrapper extends React.Component {
               padding: rhythm(3 / 4),
               paddingTop: rhythm(2), // extra padding for top navbar on mobile
               [presets.Tablet]: {
-                padding: rhythm(2),
-                paddingTop: rhythm(3)
+                padding: rhythm(1),
+                paddingTop: rhythm(2.5)
               }
             }}>
             <SidebarContent
@@ -173,18 +173,12 @@ class Wrapper extends React.Component {
                 display: `none`, // Hidden on mobile.
                 float: `left`,
                 height: `100%`,
-                width: rhythm(9),
+                width: rhythm(11),
                 [presets.Tablet]: {
                   display: `block`,
                   position: `fixed`,
                   height: `calc(100vh - 58px)`, // 58px is fixed height of header.
                   overflow: `scroll`
-                },
-                [presets.Desktop]: {
-                  width: rhythm(10)
-                },
-                [presets.Hd]: {
-                  width: rhythm(12)
                 }
               }}
             />
@@ -194,13 +188,7 @@ class Wrapper extends React.Component {
                 paddingLeft: 0,
                 [presets.Tablet]: {
                   display: `block`,
-                  paddingLeft: rhythm(10)
-                },
-                [presets.Desktop]: {
-                  paddingLeft: rhythm(12)
-                },
-                [presets.Hd]: {
-                  paddingLeft: rhythm(14)
+                  paddingLeft: rhythm(12.5)
                 }
               }}>
               {this.props.children}
@@ -236,23 +224,24 @@ class Wrapper extends React.Component {
             css={{
               float: `left`,
               paddingLeft: rhythm(1 / 3),
-              paddingRight: rhythm(1)
+              paddingRight: 12,
+              paddingTop: 8
             }}>
             <MenuIcon
               css={{
                 fontSize: rhythm(5 / 3),
-                height: rhythm(2)
+                height: rhythm(1.25)
               }}
             />
           </div>
-          <Link to={`/${this.state.activeVersion}/`}>
+          <Link to={`/versions/${this.state.activeVersion}/`}>
             <img
               src={logoText}
               css={{
                 marginBottom: rhythm(0),
-                marginTop: `0.8rem`,
-                maxHeight: rhythm(1)
-                //verticalAlign: `middle`,
+                marginTop: 15,
+                maxHeight: rhythm(1),
+                width: 100
               }}
             />
           </Link>

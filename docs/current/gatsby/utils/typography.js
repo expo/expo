@@ -18,13 +18,13 @@ const typography = new Typography({
       lineHeight: 1.2
     },
     'h1, h2': {
-      borderBottom: `1px solid #ddd`,
+      borderBottom: `1px solid #efefef`,
       marginBottom: rhythm(3 / 4),
       marginTop: rhythm(1),
       paddingBottom: `calc(${rhythm(1 / 4)} - 1px)`
     },
     'body h1': {
-      marginTop: rhythm(1 / 2),
+      marginTop: rhythm(2 / 3),
       lineHeight: 1.1
     },
     'tt,code': {

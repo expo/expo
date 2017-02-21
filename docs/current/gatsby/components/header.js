@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'gatsby-link';
 import { rhythm, scale } from 'utils/typography';
+import { presets } from 'glamor';
 import logoText from 'images/logo-text.png';
 
 class AlgoliaSearch extends React.Component {
@@ -53,9 +54,14 @@ class Header extends React.Component {
       <div
         css={{
           background: `white`,
-          borderBottom: `1px solid #ccc`,
+          borderBottom: `1px solid #efefef`,
           position: `fixed`,
-          width: `100%`
+          overflow: 'hidden',
+          width: `100%`,
+          height: 45,
+          [presets.Tablet]: {
+            height: 58
+          }
         }}>
         <div
           css={{
@@ -64,46 +70,61 @@ class Header extends React.Component {
             '@media (min-width: 750px)': {
               //[presets.Tablet]: { https://github.com/threepointone/glamor/pull/160
               display: `block`,
-              padding: `${rhythm(1 / 2)} ${rhythm(2)}`,
-              paddingBottom: `calc(${rhythm(1 / 2)} - 1px)`,
               left: 0,
               right: 0,
               top: 0,
+              padding: 15,
+              paddingLeft: 20,
+              height: 58,
               margin: `0 auto`
             }
           }}>
-          <Link to={`/${this.props.activeVersion}/`}>
-            <img
-              src={logoText}
-              css={{
-                marginBottom: rhythm(0),
-                height: rhythm(1.5),
-                verticalAlign: 'middle'
-              }}
-            />
-          </Link>
-          <select
-            value={this.props.activeVersion}
-            onChange={e => this.props.setVersion(e.target.value)}
+          <div
             css={{
-              marginLeft: rhythm(1),
-              border: `none`,
-              background: `none`,
-              borderRadius: 0,
-              cursor: `pointer`,
-              outline: `none`,
-              fontSize: `100%`,
-              textAlignLast: `center`,
-              textAlign: `center`
+              [presets.Tablet]: {
+                marginTop: -4,
+                display: 'inline-block'
+              }
             }}>
-            {this.props.versions.map(version => {
-              return (
-                <option key={version} value={version}>
-                  {version}
-                </option>
-              );
-            })}
-          </select>
+            <Link to={`/versions/${this.props.activeVersion}/`}>
+              <img
+                src={logoText}
+                css={{
+                  marginBottom: rhythm(0),
+                  height: rhythm(1.5),
+                  verticalAlign: 'middle',
+                  [presets.Tablet]: {
+                    height: 25
+                  }
+                }}
+              />
+            </Link>
+          </div>
+          <div css={{ paddingTop: 5, display: 'inline-block' }}>
+            <select
+              value={this.props.activeVersion}
+              onChange={e => this.props.setVersion(e.target.value)}
+              css={{
+                marginLeft: rhythm(1),
+                background: `none`,
+                borderRadius: 0,
+                cursor: `pointer`,
+                outline: `none`,
+                fontSize: `100%`,
+                backgroundColor: '#f7f7f7',
+                borderColor: '#ccc',
+                textAlignLast: `center`,
+                textAlign: `center`
+              }}>
+              {this.props.versions.map(version => {
+                return (
+                  <option key={version} value={version}>
+                    {version}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
           <AlgoliaSearch activeVersion={this.props.activeVersion} />
         </div>
       </div>
