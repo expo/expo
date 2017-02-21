@@ -39,6 +39,15 @@ const versions = [
   `v9.0.0`
 ];
 
+// NOTE(brentvatne): super ugly hack because navbar depends on us adding
+// padding to the entire document which then breaks the regular anchor
+// behaviour
+function offsetAnchor() {
+  if (location.hash.length !== 0) {
+    window.scrollTo(window.scrollX, window.scrollY - 70);
+  }
+}
+
 class Wrapper extends React.Component {
   constructor(props) {
     super();
@@ -57,6 +66,9 @@ class Wrapper extends React.Component {
     // Create references to html/body elements
     this.htmlElement = document.querySelector('html');
     this.bodyElement = document.querySelector('body');
+
+    // This will capture hash changes while on the page
+    window.addEventListener('hashchange', offsetAnchor);
   }
 
   getRoutes = version => {
