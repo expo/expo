@@ -53,6 +53,7 @@ class Header extends React.Component {
     return (
       <div
         css={{
+          zIndex: 1000,
           background: `white`,
           borderBottom: `1px solid #efefef`,
           position: `fixed`,

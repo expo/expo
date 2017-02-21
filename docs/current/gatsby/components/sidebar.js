@@ -10,10 +10,12 @@ class Sidebar extends React.Component {
     const Header = ({ i, link, children }) => (
       <h3
         css={{
-          color: `#888`,
+          color: `rgb(136, 136, 136);`,
+          textTransform: 'uppercase',
+          fontSize: 15,
           fontWeight: `normal`,
           marginBottom: rhythm(1 / 2),
-          marginTop: i === 0 ? 0 : rhythm(1.5) // Except for the first header
+          marginTop: i === 0 ? 0 : rhythm(1.25) // Except for the first header
         }}>
         <Link
           activeClassName="current"
@@ -100,7 +102,7 @@ class Sidebar extends React.Component {
                 </Header>
                 <List>
                   {Object.keys(section.links).map(title => (
-                    <li key={title}>
+                    <li key={title} css={{ marginBottom: 7 }}>
                       <SidebarLink to={section.links[title]}>
                         {/* Needed for search */}
                         <span css={{ display: 'none' }}>{section.title}</span>

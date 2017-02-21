@@ -31,7 +31,15 @@ const typography = new Typography({
       fontFamily: `"Source Code Pro",Consolas,"Roboto Mono","Droid Sans Mono","Liberation Mono",Menlo,Courier,monospace`,
       fontSize: `inherit`,
       paddingTop: `0.05em`,
-      paddingBottom: `0.05em`
+      paddingBottom: `0.05em`,
+      fontSize: '14px',
+      fontWeight: 400
+    },
+    'li code': {
+      fontWeight: 500
+    },
+    'p code': {
+      fontWeight: 500
     },
     a: {
       color: `#428bca`,
@@ -51,13 +59,52 @@ const typography = new Typography({
     'blockquote > pre': {
       background: `none`
     },
-    'li p': {
+    ul: {
+      listStyleType: 'none'
+    },
+    'ul > li': {
+      marginLeft: '-20px',
+      paddingLeft: '20px'
+    },
+    'ul > li:before': {
+      marginLeft: '-20px',
+      paddingLeft: '20px',
+      content: '-'
+    },
+    'li:hover > a.anchor > svg.anchor-icon': {
+      visibility: 'visible'
+    },
+    'li a.anchor svg.anchor-icon': {
+      position: 'absolute',
+      visibility: 'hidden',
+      backgroundColor: '#fff',
+      marginTop: '3px'
+    },
+    'ol > li': {
+      paddingLeft: '3px'
+    },
+    'ol > li > a.anchor > svg.bullet-icon': {
+      visibility: 'hidden !important'
+    },
+    'ul > li:hover > a.anchor > svg.bullet-icon': {
+      visibility: 'hidden'
+    },
+    'ul > li a.anchor svg.bullet-icon': {
+      position: 'absolute',
+      visibility: 'visible',
+      backgroundColor: '#fff',
+      marginTop: '3px'
+    },
+    'li > p': {
       marginBottom: rhythm(1 / 2)
+    },
+    'h2 code': {
+      fontSize: '20px'
     },
     'h3 code': {
       lineHeight: 1.5,
       fontSize: '1rem',
-      fontWeight: 'bold'
+      fontWeight: 500
     },
     strong: {
       color: `rgba(0,0,0,0.65)`
