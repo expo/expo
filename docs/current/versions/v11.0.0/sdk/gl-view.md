@@ -16,7 +16,7 @@ A function that will be called when the OpenGL ES context is created. The functi
 
 ## The `gl` object
 
-Once the component is mounted and the OpenGL ES context has been created, the gl object received through the [`onContextCreate`](#Exponent.GLView.onContextCreate "Exponent.GLView.onContextCreate") prop becomes the interface to the OpenGL ES context, providing a WebGL-like API. It resembles a [WebGLRenderingContext](https://www.khronos.org/registry/webgl/specs/latest/1.0/#5.14) in the WebGL 1 spec. An additional method endFrameExp is present which notifies the context that the current frame is ready to be presented. This is similar to a 'swap buffers' API call in other OpenGL platforms.
+Once the component is mounted and the OpenGL ES context has been created, the gl object received through the [`onContextCreate`](#exponentglviewoncontextcreate "Exponent.GLView.onContextCreate") prop becomes the interface to the OpenGL ES context, providing a WebGL-like API. It resembles a [WebGLRenderingContext](https://www.khronos.org/registry/webgl/specs/latest/1.0/#5.14) in the WebGL 1 spec. An additional method endFrameExp is present which notifies the context that the current frame is ready to be presented. This is similar to a 'swap buffers' API call in other OpenGL platforms.
 
 As of SDK 11.0.0, not all WebGL functionality has been implemented. We plan to achieve more coverage of the API in upcoming SDK versions.
 

@@ -13,7 +13,7 @@ Load a font from the web and associate it with the given name.
 
 #### Arguments
 
--   **name (_string_)** -- A name by which to identify this font. You can make up any name you want; you just have to specify the same name in [`Exponent.Font.style()`](#Exponent.Font.style "Exponent.Font.style") to use this font.
+-   **name (_string_)** -- A name by which to identify this font. You can make up any name you want; you just have to specify the same name in [`Exponent.Font.style()`](#exponentfontstyle "Exponent.Font.style") to use this font.
 
 #### Returns
 
@@ -21,11 +21,11 @@ Doesn't return anything and simply awaits till the font is available to use.
 
 ### `Exponent.Font.loadAsync(map)`
 
-Convenience form of [`Exponent.Font.loadAsync()`](#Exponent.Font.loadAsync "Exponent.Font.loadAsync") that loads multiple fonts at once.
+Convenience form of [`Exponent.Font.loadAsync()`](#exponentfontloadasync "Exponent.Font.loadAsync") that loads multiple fonts at once.
 
 #### Arguments
 
--   **map (_object_)** -- A map of names to urls as in [`Exponent.Font.loadAsync()`](#Exponent.Font.loadAsync "Exponent.Font.loadAsync").
+-   **map (_object_)** -- A map of names to urls as in [`Exponent.Font.loadAsync()`](#exponentfontloadasync "Exponent.Font.loadAsync").
 
 #### Returns
 
@@ -38,15 +38,15 @@ Doesn't return anything and simply awaits till all fonts are available to use.
       cursive: '[http://url/to/font2.ttf'](http://url/to/font2.ttf%27),
     });
 
-This is equivalent to calling [`Exponent.Font.loadAsync()`](#Exponent.Font.loadAsync "Exponent.Font.loadAsync") once per name and URL pair.
+This is equivalent to calling [`Exponent.Font.loadAsync()`](#exponentfontloadasync "Exponent.Font.loadAsync") once per name and URL pair.
 
 ### `Exponent.Font.style(name)`
 
-Return style properties to use with a `Text` or other React Native component. It is safe to call this function before calling [`Exponent.Font.loadAsync()`](#Exponent.Font.loadAsync "Exponent.Font.loadAsync"); it will still return the correct style properties. This way you can use this function with `StyleSheet.create()`.
+Return style properties to use with a `Text` or other React Native component. It is safe to call this function before calling [`Exponent.Font.loadAsync()`](#exponentfontloadasync "Exponent.Font.loadAsync"); it will still return the correct style properties. This way you can use this function with `StyleSheet.create()`.
 
 #### Arguments
 
--   **name (_string_)** -- The name for this font specified in [`Exponent.Font.loadAsync()`](#Exponent.Font.loadAsync "Exponent.Font.loadAsync").
+-   **name (_string_)** -- The name for this font specified in [`Exponent.Font.loadAsync()`](#exponentfontloadasync "Exponent.Font.loadAsync").
 
 #### Returns
 

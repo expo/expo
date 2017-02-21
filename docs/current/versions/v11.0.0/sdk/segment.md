@@ -27,7 +27,7 @@ Segment requires separate write keys for iOS and Android. Call this with the wri
 
 ### `Exponent.Segment.identify(userId)`
 
-Associates the current user with a user ID. Call this after calling [`Exponent.Segment.initializeIOS()`](#Exponent.Segment.initializeIOS "Exponent.Segment.initializeIOS") and [`Exponent.Segment.initializeAndroid()`](#Exponent.Segment.initializeAndroid "Exponent.Segment.initializeAndroid") but before other segment calls. See <https://segment.com/docs/spec/identify/>.
+Associates the current user with a user ID. Call this after calling [`Exponent.Segment.initializeIOS()`](#exponentsegmentinitializeios "Exponent.Segment.initializeIOS") and [`Exponent.Segment.initializeAndroid()`](#exponentsegmentinitializeandroid "Exponent.Segment.initializeAndroid") but before other segment calls. See <https://segment.com/docs/spec/identify/>.
 
 #### Arguments
 
@@ -35,7 +35,7 @@ Associates the current user with a user ID. Call this after calling [`Exponent.S
 
 ### `Exponent.Segment.identifyWithTraits(userId, traits)`
 
-Associates the current user with a user ID and some metadata. Call this after calling [`Exponent.Segment.initializeIOS()`](#Exponent.Segment.initializeIOS "Exponent.Segment.initializeIOS") and [`Exponent.Segment.initializeAndroid()`](#Exponent.Segment.initializeAndroid "Exponent.Segment.initializeAndroid") but before other segment calls. See <https://segment.com/docs/spec/identify/>.
+Associates the current user with a user ID and some metadata. Call this after calling [`Exponent.Segment.initializeIOS()`](#exponentsegmentinitializeios "Exponent.Segment.initializeIOS") and [`Exponent.Segment.initializeAndroid()`](#exponentsegmentinitializeandroid "Exponent.Segment.initializeAndroid") but before other segment calls. See <https://segment.com/docs/spec/identify/>.
 
 #### Arguments
 

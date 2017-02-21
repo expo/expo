@@ -24,7 +24,7 @@ The MD5 hash of the asset's data
 A URI that points to the asset's data on the remote server. When running the published version of your app, this refers to the the location on Exponent's asset server where Exponent has stored your asset. When running the app from XDE during development, this URI points to XDE's server running on your computer and the asset is served directly from your computer.
 
  `localUri`  
-If the asset has been downloaded (by calling [`downloadAsync()`](#Exponent.Asset.downloadAsync "Exponent.Asset.downloadAsync")), the `file://` URI pointing to the local file on the device that contains the asset data.
+If the asset has been downloaded (by calling [`downloadAsync()`](#exponentassetdownloadasync "Exponent.Asset.downloadAsync")), the `file://` URI pointing to the local file on the device that contains the asset data.
 
  `width`  
 If the asset is an image, the width of the image data divided by the scale factor. The scale factor is the number after `@` in the filename, or `1` if not present.
@@ -33,11 +33,11 @@ If the asset is an image, the width of the image data divided by the scale facto
 If the asset is an image, the height of the image data divided by the scale factor. The scale factor is the number after `@` in the filename, or `1` if not present.
 
  `downloadAsync`()  
-Downloads the asset data to a local file in the device's cache directory. Once the returned promise is fulfilled without error, the [`localUri`](#Exponent.Asset.localUri "Exponent.Asset.localUri") field of this asset points to a local file containing the asset data. The asset is only downloaded if an up-to-date local file for the asset isn't already present due to an earlier download.
+Downloads the asset data to a local file in the device's cache directory. Once the returned promise is fulfilled without error, the [`localUri`](#exponentassetlocaluri "Exponent.Asset.localUri") field of this asset points to a local file containing the asset data. The asset is only downloaded if an up-to-date local file for the asset isn't already present due to an earlier download.
 
 ### `Exponent.Asset.fromModule(module)`
 
-Returns the [`Exponent.Asset`](#Exponent.Asset "Exponent.Asset") instance representing an asset given its module
+Returns the [`Exponent.Asset`](#exponentasset "Exponent.Asset") instance representing an asset given its module
 
 #### Arguments
 
@@ -45,7 +45,7 @@ Returns the [`Exponent.Asset`](#Exponent.Asset "Exponent.Asset") instance repres
 
 #### Returns
 
-The [`Exponent.Asset`](#Exponent.Asset "Exponent.Asset") instance for the asset
+The [`Exponent.Asset`](#exponentasset "Exponent.Asset") instance for the asset
 
 #### Example
 

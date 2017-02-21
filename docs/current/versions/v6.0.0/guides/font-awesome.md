@@ -45,7 +45,7 @@ We will load Font Awesome from the .ttf available on the web at <https://github.
 import { Font } from 'exponent';
 ```
 
-The `exponent` library provides an API to access native functionality of the device from your JavaScript code. `Font` is the module that deals with font-related tasks. First, we must load the font from the web using [`Exponent.Font.loadAsync()`](/versions/latest/sdk/font#Exponent.Font.loadAsync "Exponent.Font.loadAsync"). We can do this in the [componentDidMount()](https://facebook.github.io/react/docs/component-specs.html#mounting-componentdidmount) lifecycle method of the `App` component. Add the following method in `App`:
+The `exponent` library provides an API to access native functionality of the device from your JavaScript code. `Font` is the module that deals with font-related tasks. First, we must load the font from the web using [`Exponent.Font.loadAsync()`](/versions/latest/sdk/font#exponentfontloadasync "Exponent.Font.loadAsync"). We can do this in the [componentDidMount()](https://facebook.github.io/react/docs/component-specs.html#mounting-componentdidmount) lifecycle method of the `App` component. Add the following method in `App`:
 
 ```javascript
 class App extends React.Component {
@@ -63,7 +63,7 @@ This loads Font Awesome and associates it with the name `'awesome'` in Exponent'
 
 ## Using the font in a `Text` component
 
-You may remember that in React Native you specify fonts in `Text` components using the `fontFamily` style property. Since it can be confusing to keep track of the font family for the various .ttf files you load, Exponent provides the function [`Exponent.Font.style()`](/versions/latest/sdk/font#Exponent.Font.style "Exponent.Font.style") which returns the style properties (including `fontFamily`) for a font that you specify by name. So all you need to do is change your `Text` element to the following:
+You may remember that in React Native you specify fonts in `Text` components using the `fontFamily` style property. Since it can be confusing to keep track of the font family for the various .ttf files you load, Exponent provides the function [`Exponent.Font.style()`](/versions/latest/sdk/font#exponentfontstyle "Exponent.Font.style") which returns the style properties (including `fontFamily`) for a font that you specify by name. So all you need to do is change your `Text` element to the following:
 
 ```javascript
 <Text style={{ ...Font.style('awesome'), fontSize: 56 }}>
@@ -79,7 +79,7 @@ When you refresh the app, you will notice that the text looks the same. Currentl
 </Text>
 ```
 
-On next refresh the app seems to still not display the text with Font Awesome. You may see that it either shows an error character (like a question mark), or some other character that isn't a glass. The problem is that [`Exponent.Font.loadAsync()`](/versions/latest/sdk/font#Exponent.Font.loadAsync "Exponent.Font.loadAsync") is an asynchronous call and takes some time to complete. Before it completes, the `Text` component is already rendered with the default font since it can't find the `'awesome'` font (which hasn't been loaded yet).
+On next refresh the app seems to still not display the text with Font Awesome. You may see that it either shows an error character (like a question mark), or some other character that isn't a glass. The problem is that [`Exponent.Font.loadAsync()`](/versions/latest/sdk/font#exponentfontloadasync "Exponent.Font.loadAsync") is an asynchronous call and takes some time to complete. Before it completes, the `Text` component is already rendered with the default font since it can't find the `'awesome'` font (which hasn't been loaded yet).
 
 ## Waiting for the font to load before rendering
 
@@ -100,7 +100,7 @@ class App extends React.Component {
 }
 ```
 
-Next, we must set `fontLoaded` to `true` when the font is done loading. [`Exponent.Font.loadAsync()`](/versions/latest/sdk/font#Exponent.Font.loadAsync "Exponent.Font.loadAsync") returns a `Promise` that is fulfilled when the font is successfully loaded and ready to use. So we simply have to add the following after the `await` line in `App.componentDidMount()`:
+Next, we must set `fontLoaded` to `true` when the font is done loading. [`Exponent.Font.loadAsync()`](/versions/latest/sdk/font#exponentfontloadasync "Exponent.Font.loadAsync") returns a `Promise` that is fulfilled when the font is successfully loaded and ready to use. So we simply have to add the following after the `await` line in `App.componentDidMount()`:
 
 ```javascript
 this.setState({ fontLoaded: true });

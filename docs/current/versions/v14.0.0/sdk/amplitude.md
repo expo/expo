@@ -35,7 +35,7 @@ Set properties for the current user. See <https://amplitude.zendesk.com/hc/en-us
 
 ### `Exponent.Amplitude.clearUserProperties()`
 
-Clear properties set by [`Exponent.Amplitude.setUserProperties()`](#Exponent.Amplitude.setUserProperties "Exponent.Amplitude.setUserProperties").
+Clear properties set by [`Exponent.Amplitude.setUserProperties()`](#exponentamplitudesetuserproperties "Exponent.Amplitude.setUserProperties").
 
 ### `Exponent.Amplitude.logEvent(eventName)`
 

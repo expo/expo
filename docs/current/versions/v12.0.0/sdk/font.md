@@ -21,11 +21,11 @@ Doesn't return anything and simply awaits till the font is available to use.
 
 ### `Exponent.Font.loadAsync(map)`
 
-Convenience form of [`Exponent.Font.loadAsync()`](#Exponent.Font.loadAsync "Exponent.Font.loadAsync") that loads multiple fonts at once.
+Convenience form of [`Exponent.Font.loadAsync()`](#exponentfontloadasync "Exponent.Font.loadAsync") that loads multiple fonts at once.
 
 #### Arguments
 
--   **map (_object_)** -- A map of names to urls as in [`Exponent.Font.loadAsync()`](#Exponent.Font.loadAsync "Exponent.Font.loadAsync").
+-   **map (_object_)** -- A map of names to urls as in [`Exponent.Font.loadAsync()`](#exponentfontloadasync "Exponent.Font.loadAsync").
 
 #### Returns
 
@@ -40,4 +40,4 @@ Exponent.Font.loadAsync({
 });
 ```
 
-This is equivalent to calling [`Exponent.Font.loadAsync()`](#Exponent.Font.loadAsync "Exponent.Font.loadAsync") once per name and URL pair.
+This is equivalent to calling [`Exponent.Font.loadAsync()`](#exponentfontloadasync "Exponent.Font.loadAsync") once per name and URL pair.
