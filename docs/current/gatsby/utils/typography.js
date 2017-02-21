@@ -17,6 +17,9 @@ const typography = new Typography({
     'h1,h2,h3,h4,h5.h6': {
       lineHeight: 1.2
     },
+    hr: {
+      background: '#eee'
+    },
     'h1, h2': {
       borderBottom: `1px solid #efefef`,
       marginBottom: rhythm(3 / 4),

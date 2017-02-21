@@ -173,7 +173,7 @@ class Wrapper extends React.Component {
                 display: `none`, // Hidden on mobile.
                 float: `left`,
                 height: `100%`,
-                width: rhythm(11),
+                width: rhythm(10.75),
                 [presets.Tablet]: {
                   display: `block`,
                   position: `fixed`,
@@ -188,7 +188,7 @@ class Wrapper extends React.Component {
                 paddingLeft: 0,
                 [presets.Tablet]: {
                   display: `block`,
-                  paddingLeft: rhythm(12.5)
+                  paddingLeft: rhythm(12)
                 }
               }}>
               {this.props.children}
@@ -212,6 +212,7 @@ class Wrapper extends React.Component {
             right: 0,
             top: 0,
             left: 0,
+            zIndex: 1001,
             height: `calc(${rhythm(2)} - 1px)`,
             borderBottom: `1px solid #ccc`,
             [presets.Tablet]: {
