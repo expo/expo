@@ -5,7 +5,6 @@
 #import "EXDisabledDevLoadingView.h"
 #import "EXDisabledDevMenu.h"
 #import "EXDisabledRedBox.h"
-#import "EXFileSystem.h"
 #import "EXFrameExceptionsManager.h"
 #import "EXKernelModule.h"
 #import "EXLinkingManager.h"
@@ -14,6 +13,7 @@
 #import "EXAmplitude.h"
 #import "EXSegment.h"
 #import "EXUtil.h"
+#import "EXScope.h"
 
 #import <React/RCTAssert.h>
 #import "RCTDevMenu+Device.h"
@@ -197,17 +197,22 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
 - (NSArray *)extraModulesWithParams:(NSDictionary *)params
 {
   NSDictionary *manifest = params[@"manifest"];
+
+  // NOTE(ben): Use a constructor that takes all this rather than setting properties?
+  EXScope *exScope = [[EXScope alloc] init];
+  exScope.initialUri = params[@"initialUri"];
+  exScope.experienceId = [manifest objectForKey:@"id"];
+
   NSURL *initialUri = params[@"initialUri"];
-  NSDictionary *constants = params[@"constants"];
   BOOL isDeveloper = [params[@"isDeveloper"] boolValue];
   NSString *experienceId = [manifest objectForKey:@"id"];
 
   NSMutableArray *extraModules = [NSMutableArray arrayWithArray:
                                   @[
+                                    exScope,
                                     [[EXAppState alloc] init],
-                                    [[EXConstants alloc] initWithProperties:constants],
+                                    [[EXConstants alloc] initWithProperties:params[@"constants"]],
                                     [[EXDisabledDevLoadingView alloc] init],
-                                    [[EXFileSystem alloc] initWithExperienceId:experienceId],
                                     [[EXLinkingManager alloc] initWithInitialUrl:initialUri],
                                     [[EXNotifications alloc] initWithExperienceId:experienceId],
                                     [[EXAmplitude alloc] initWithExperienceId:experienceId],
