@@ -30,6 +30,7 @@
     Upgrading Exponent: /versions/v14.0.0/guides/upgrading-exponent/
     Using ClojureScript: /versions/v14.0.0/guides/using-clojurescript/
     Using Firebase: /versions/v14.0.0/guides/using-firebase/
+    Using GraphQL: /versions/v14.0.0/guides/using-graphql/
 - title: SDK API Reference
   index: /versions/v14.0.0/sdk/
   links:
