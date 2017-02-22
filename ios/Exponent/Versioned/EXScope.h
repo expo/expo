@@ -10,8 +10,8 @@
 
 @interface EXScope : NSObject <RCTBridgeModule>
 
-@property (nonatomic, strong) NSURL *initialUri;
-@property (nonatomic, strong) NSString *experienceId;
+@property (nonatomic, readonly) NSURL *initialUri;
+@property (nonatomic, readonly) NSString *experienceId;
 
 - (instancetype)initWithParams:(NSDictionary *)params;
 
