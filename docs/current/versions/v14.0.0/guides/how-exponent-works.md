@@ -39,13 +39,13 @@ The following is an example of a manifest being served through XDE. The first th
   "version":"1.0.0",
   "orientation":"portrait",
   "primaryColor":"#cccccc",
-  "iconUrl":"https://s3.amazonaws.com/exp-brand-assets/ExponentEmptyManifest_192.png",
+  "icon":"https://s3.amazonaws.com/exp-brand-assets/ExponentEmptyManifest_192.png",
   "notification":{
-    "iconUrl":"https://s3.amazonaws.com/exp-us-standard/placeholder-push-icon.png",
+    "icon":"https://s3.amazonaws.com/exp-us-standard/placeholder-push-icon.png",
     "color":"#000000"
   },
   "loading":{
-    "iconUrl":"https://s3.amazonaws.com/exp-brand-assets/ExponentEmptyManifest_192.png"
+    "icon":"https://s3.amazonaws.com/exp-brand-assets/ExponentEmptyManifest_192.png"
   },
   "entryPoint": "main.js",
   "packagerOpts":{

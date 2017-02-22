@@ -1,8 +1,5 @@
 ---
 title: Push Notifications
-old_permalink: /versions/v12.0.0/guides/push-notifications.html
-previous___FILE: ./routing-and-navigation.md
-next___FILE: ./exp-cli.md
 ---
 
 Push Notifications are an important feature to, as _"growth hackers"_ would say, retain and re-engage users and monetize on their attention, or something. From my point of view it's just super handy to know when a relevant event happens in an app so I can jump back into it and read more. Let's look at how to do this with Exponent. Spoiler alert: it's almost too easy.
@@ -158,3 +155,170 @@ Exponent.registerRootComponent(AppContainer);
 It's not entirely clear from the above when your app will be able to handle the notification depending on it's state at the time the notification is received. For clarification, see the following table:
 
 ![Timing of notifications](./receiving-push.png)
+
+## HTTP/2 API
+
+Although we provide server-side SDKs in several languages to help you send push notifications, you may want to directly send requests to our HTTP/2 API.
+
+### Sending notifications
+
+Send a POST request to `https://exp.host/--/api/v2/push/send` with the following HTTP headers:
+
+```
+accept: application/json
+accept-encoding: gzip, deflate
+content-type: application/json
+```
+
+The HTTP request body must be JSON. It may either be a single message object or an array of up to 100 messages. **We recommend using an array when you want to send multiple messages to efficiently minimize the number of requests you need to make to Exponent servers.** This is an example request body that sends two messages:
+
+```json
+[{
+  "to": "ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]",
+  "sound": "default",
+  "body": "Hello world!"
+}, {
+  "to": "ExponentPushToken[yyyyyyyyyyyyyyyyyyyyyy]",
+  "badge": 1,
+  "body": "You've got mail"
+}]
+```
+
+Upon success, the HTTP response will be a JSON object whose `data` field is an array of push receipts, each of which corresponds to the message at its respective index in the request. Continuing the above example, this is what a successful response body looks like:
+
+
+```
+{
+  "data": [
+    {"status": "ok"},
+    {"status": "ok"}
+  ]
+}
+```
+
+When there is an error delivering a message, the receipt's status will be "error" and the receipt will contain information about the error. More information about the response format is documented below.
+
+> **Note:** Even if a receipt says "ok", it doesn't guarantee that the device has received the messsage; "ok" means that we successfully delivered the message to the Android or iOS push notification service. If the recipient device is turned off, for example, the Android or iOS push notification service will try to deliver the message but the device won't necessarily receive it.
+
+If you send a single message that isn't wrapped in an array, the `data` field will be the push receipt also not wrapped in an array.
+
+### Message format
+
+Each message must be a JSON object with the given fields:
+
+```javascript
+type PushMessage = {
+  /**
+   * An Exponent push token specifying the recipient of this message.
+   */
+  to: string,
+
+  /**
+   * A JSON object delivered to your app. It may be up to about 4KiB; the total
+   * notification payload sent to Apple and Google must be at most 4KiB or else
+   * you will get a "Message Too Big" error.
+   */
+  data?: Object,
+
+  /**
+   * The title to display in the notification. On iOS this is displayed only
+   * on Apple Watch.
+   */
+  title?: string,
+
+  /**
+   * The message to display in the notification
+   */
+  body?: string,
+
+  /**
+   * A sound to play when the recipient receives this notification. Specify
+   * "default" to play the device's default notification sound, or omit this
+   * field to play no sound.
+   */
+  sound?: 'default' | null,
+
+  /**
+   * Time to Live: the number of seconds for which the message may be kept
+   * around for redelivery if it hasn't been delivered yet. Defaults to 0.
+   *
+   * On Android, we make a best effort to deliver messages with zero TTL
+   * immediately and do not throttle them
+   *
+   * This field takes precedence over `expiration` when both are specified.
+   */
+  ttl?: number,
+
+  /**
+   * A timestamp since the UNIX epoch specifying when the message expires. This
+   * has the same effect as the `ttl` field and is just an absolute timestamp
+   * instead of a relative time.
+   */
+  expiration?: number,
+
+  /**
+   * The delivery priority of the message. Specify "default" or omit this field
+   * to use the default priority on each platform, which is "normal" on Android
+   * and "high" on iOS.
+   *
+   * On Android, normal-priority messages won't open network connections on
+   * sleeping devices and their delivery may be delayed to conserve the battery.
+   * High-priority messages are delivered immediately if possible and may wake
+   * sleeping devices to open network connections, consuming energy.
+   *
+   * On iOS, normal-priority messages are sent at a time that takes into account
+   * power considerations for the device, and may be grouped and delivered in
+   * bursts. They are throttled and may not be delivered by Apple. High-priority
+   * messages are sent immediately. Normal priority corresponds to APNs priority
+   * level 5 and high priority to 10.
+   */
+  priority?: 'default' | 'normal' | 'high',
+
+  // iOS-specific fields
+
+  /**
+   * Number to display in the badge on the app icon. Specify zero to clear the
+   * badge.
+   */
+  badge?: number,
+}
+```
+
+### Response format
+
+The response is a JSON object with two optional fields, `data` and `errors`. If there is an error with the entire request, the HTTP status code will be 4xx or 5xx and `errors` will be an array of error objects (usually just one):
+
+```javascript
+{
+  "errors": [{
+    "code": "INTERNAL_SERVER_ERROR",
+    "message": "An unknown error occurred."
+  }]
+}
+```
+
+If there are errors that affect individual messages but not the entire request, the HTTP status code will be 200, the `errors` field will be empty, and the `data` field will contain push receipts that describe the errors:
+
+```javascript
+{
+  "data": [{
+    "status": "error",
+    "message": "\"ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]\" is not a registered push notification recipient",
+    "details": {
+      "error": "DeviceNotRegistered"
+    }
+  }]
+}
+```
+
+The HTTP status code will be 200 also if all of the messages were successfully delivered to the Android and iOS push notification services.
+
+**Important:** in particular, look for an `details` object with an `error` field. If present, it may be one of three values: `DeviceNotRegistered`, `MessageTooBig`, and `MessageRateExceeded`. You should handle these errors like so:
+
+* `DeviceNotRegistered`: the device cannot receive push notifications anymore and you should stop sending messages to the given Exponent push token.
+
+* `MessageTooBig`: the total notification payload was too large. On Android and iOS the total payload must be at most 4096 bytes.
+
+* `MessageRateExceeded`: you are sending messages too frequently to the given device. Implement exponential backoff and slowly retry sending messages.
+
+If we couldn't deliver the message to the Android or iOS push notification service, the receipt's details may also include service-specific information. This is useful mostly for debugging and reporting possible bugs to us.

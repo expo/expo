@@ -160,7 +160,8 @@ class Wrapper extends React.Component {
               paddingTop: rhythm(2), // extra padding for top navbar on mobile
               [presets.Tablet]: {
                 padding: rhythm(1),
-                paddingTop: rhythm(2.5)
+                paddingTop: rhythm(2.5),
+                paddingRight: rhythm(2.5)
               }
             }}>
             <SidebarContent

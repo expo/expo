@@ -1,8 +1,5 @@
 ---
 title: Google
-old_permalink: /versions/v12.0.0/sdk/google.html
-previous___FILE: ./gl-view.md
-next___FILE: ./gyroscope.md
 ---
 
 Provides Google authentication integration for Exponent apps, using either the native Google Sign In SDK (only in standalone apps) or a system web browser (not WebView, so credentials saved on the device can be re-used!).
@@ -40,7 +37,7 @@ Prompts the user to log into Google and grants your app permission to access som
     returns  
     If the user or Google cancelled the login, returns `{ type: 'cancel' }`.
 
-    Otherwise, returns `{ type: 'success', accessToken, user: {...profileInformation} }`. `accessToken` is a string giving the access token to use with Google HTTP API requests.
+    Otherwise, returns `{ type: 'success', accessToken, idToken, refreshToken, {...profileInformation} }`, `accessToken` is a string giving the access token to use with Google HTTP API requests.
 
 ## Using it inside of the Exponent app
 

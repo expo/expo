@@ -1,8 +1,5 @@
 ---
 title: Notifications
-old_permalink: /versions/v12.0.0/sdk/notifications.html
-previous___FILE: ./map-view.md
-next___FILE: ./permissions.md
 ---
 
 Provides access to remote notifications (also known as push notifications) and local notifications (scheduling and immediate) related functions.
@@ -87,7 +84,7 @@ _Android only_. Dismisses the notification with the given id.
 
 ### `Exponent.Notifications.dismissAllNotificationsAsync()`
 
-_Android only_. Clears any notificatons that have been presented by the app.
+_Android only_. Clears any notifications that have been presented by the app.
 
 ### `Exponent.Notifications.cancelScheduledNotificationAsync(localNotificationId)`
 
@@ -103,17 +100,31 @@ Cancel all scheduled notifications.
 
 ### Related types
 
- `LocalNotification`  
+ `LocalNotification`
 An object used to describe the local notification that you would like to present or schedule.
 
--   **title (_string_)** -- Either `selected` or `received`. `selected` if the notification was tapped on by the user, `received` if the notification was received while the user was in the app.
--   **data (_optional_) (_object_)** -- Any data that has been attached with the notification.
+-   **title (_string_)** -- title text of the notification
+-   **body (_string_)** -- body text of the notification.
+-   **data (_optional_) (_object_)** -- any data that has been attached with the notification.
 -   **ios (_optional_) (_object_)** -- notification configuration specific to iOS.
-    -   **sound** (_optional_) (_boolean_) -- if `true`, play a sound. Default: `false`.
+    -  **sound** (_optional_) (_boolean_) -- if `true`, play a sound. Default: `false`.
 -   **android (_optional_) (_object_)** -- notification configuration specific to Android.
-    -   **icon** (_optional_) (_string_)
-    -   **color** (_optional_) (_string_)
-    -   **priority** (_optional_) (_string_)
-    -   **sticky** (_optional_) (_boolean_)
-    -   **vibrate** (_optional_) (_boolean_ or _array_)
-    -   **link** (_optional_) (_array_)
+    - **sound** (_optional_) (_boolean_) -- if `true`, play a sound. Default: `false`.
+    - **icon** (_optional_) (_string_) -- URL of icon to display in notification drawer.
+    - **color** (_optional_) (_string_) -- color of the notification icon in notification drawer.
+    - **priority** (_optional_) (_min | low | high | max_) -- android may present notifications according to the priority, for example a `high` priority notification will likely to be shown as a heads-up notification.
+    - **sticky** (_optional_) (_boolean_) -- if `true`, the notification will be sticky and not dismissable by user. The notification must be programmatically dismissed. Default: `false`.
+    - **vibrate** (_optional_) (_boolean_ or _array_) -- if `true`, vibrate the device. An array can be supplied to specify the vibration pattern, e.g. - `[ 0, 500 ]`.
+    - **link** (_optional_) (_string_) -- external link to open when notification is selected.
+
+## App Icon Badge Number (iOS)
+
+### `Exponent.Notifications.getBadgeNumberAsync()`
+
+#### Returns
+
+Returns a promise that resolves to the number that is displayed in a badge on the app icon. This method returns zero when there is no badge (or when on Android).
+
+### `Exponent.Notifications.setBadgeNumberAsync(number)`
+
+Sets the number displayed in the app icon's badge to the given number. Setting the number to zero will both clear the badge and the list of notifications in the device's notification center on iOS. On Android this method does nothing.
