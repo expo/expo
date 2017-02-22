@@ -107,15 +107,15 @@ An object used to describe the local notification that you would like to present
 -   **body (_string_)** -- body text of the notification.
 -   **data (_optional_) (_object_)** -- any data that has been attached with the notification.
 -   **ios (_optional_) (_object_)** -- notification configuration specific to iOS.
-    -  **sound** (_optional_) (_boolean_) -- if `true`, play a sound. Default: `false`.
+    -   **sound** (_optional_) (_boolean_) -- if `true`, play a sound. Default: `false`.
 -   **android (_optional_) (_object_)** -- notification configuration specific to Android.
-    - **sound** (_optional_) (_boolean_) -- if `true`, play a sound. Default: `false`.
-    - **icon** (_optional_) (_string_) -- URL of icon to display in notification drawer.
-    - **color** (_optional_) (_string_) -- color of the notification icon in notification drawer.
-    - **priority** (_optional_) (_min | low | high | max_) -- android may present notifications according to the priority, for example a `high` priority notification will likely to be shown as a heads-up notification.
-    - **sticky** (_optional_) (_boolean_) -- if `true`, the notification will be sticky and not dismissable by user. The notification must be programmatically dismissed. Default: `false`.
-    - **vibrate** (_optional_) (_boolean_ or _array_) -- if `true`, vibrate the device. An array can be supplied to specify the vibration pattern, e.g. - `[ 0, 500 ]`.
-    - **link** (_optional_) (_string_) -- external link to open when notification is selected.
+    -   **sound** (_optional_) (_boolean_) -- if `true`, play a sound. Default: `false`.
+    -   **icon** (_optional_) (_string_) -- URL of icon to display in notification drawer.
+    -   **color** (_optional_) (_string_) -- color of the notification icon in notification drawer.
+    -   **priority** (_optional_) (_min | low | high | max_) -- android may present notifications according to the priority, for example a `high` priority notification will likely to be shown as a heads-up notification.
+    -   **sticky** (_optional_) (_boolean_) -- if `true`, the notification will be sticky and not dismissable by user. The notification must be programmatically dismissed. Default: `false`.
+    -   **vibrate** (_optional_) (_boolean_ or _array_) -- if `true`, vibrate the device. An array can be supplied to specify the vibration pattern, e.g. - `[ 0, 500 ]`.
+    -   **link** (_optional_) (_string_) -- external link to open when notification is selected.
 
 ## App Icon Badge Number (iOS)
 

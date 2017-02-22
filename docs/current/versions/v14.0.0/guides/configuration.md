@@ -5,161 +5,183 @@ previous___FILE: ./development-mode.md
 next___FILE: ./logging.md
 ---
 
-`exp.json` is your go-to place for configuring parts of your app that don't belong in code. It is located at the root of your project next to your `package.json`. The following is a full list of properties available to you.
+`exp.json` is your go-to place for configuring parts of your app that don't belong in code. It is located at the root of your project next to your `package.json`.  The following is a full list of properties available to you.
 
- `name`  
-**Required**. The name of your app as it appears both within Exponent and on your home screen as a standalone app.
+-   `name`  
+    **Required**. The name of your app as it appears both within Exponent and on your home screen as a standalone app.
 
- `description`  
-A short description of what your app is and why it is great.
+-   `description`  
+    A short description of what your app is and why it is great.
 
- `slug`  
-**Required**. The friendly url name for publishing. eg: `exp.host/@your-username/slug`.
+-   `slug`  
+    **Required**. The friendly url name for publishing. eg: `exp.host/@your-username/slug`.
 
- `privacy`  
-Either `public` or `unlisted`. If not provided, defaults to `unlisted`. In the future `private` will be supported. `unlisted` hides the experience from search results. public, unlisted
+-   `privacy`
 
- `sdkVersion`  
-**Required**. The Exponent sdkVersion to run the project on. This should line up with the version specified in your package.json.
+    Either `public` or `unlisted`. If not provided, defaults to `unlisted`. In the future `private` will be supported. `unlisted` hides the experience from search results.
 
- `version`  
-Your app version, use whatever versioning scheme that you like.
+-   `sdkVersion`  
+    **Required**. The Exponent sdkVersion to run the project on. This should line up with the version specified in your package.json.
 
- `orientation`  
-Lock your app to a specific orientation with `portrait` or `landscape`. Defaults to no lock. default, portrait, landscape
+-   `version`  
+    Your app version, use whatever versioning scheme that you like.
 
- `primaryColor`  
-On Android, this will determine the color of your app in the multitasker. Currently this is not used on iOS, but it may be used for other purposes in the future. 6 character long hex color string, eg: `'#000000'`
+-   `orientation`  
+    Lock your app to a specific orientation with `portrait` or `landscape`. Defaults to no lock. default, portrait, landscape
 
- `iconUrl`  
-A url that points to your app's icon image. We recommend that you use a 512x512 png file with transparency. This icon will appear on the home screen and within the Exponent app.
+-   `primaryColor`  
+    On Android, this will determine the color of your app in the multitasker. Currently this is not used on iOS, but it may be used for other purposes in the future. 6 character long hex color string, eg: `'#000000'`
 
-`notification`  
-Configuration for remote (push) notifications.
+-   `icon`  
+    Local path or remote url to an image to use for your app's icon. We recommend that you use a 512x512 png file with transparency. This icon will appear on the home screen and within the Exponent app.
 
-`iconUrl`  
-Url that points to the icon to use for push notifications. 48x48 png grayscale with transparency.
+-   `notification`  
+    Configuration for remote (push) notifications.
 
-`color`  
-Tint color for the push notification image when it appears in the notification tray. 6 character long hex color string, eg: `'#000000'`
+    -   `icon`  
+        Local path or remote url to an image to use as the icon. 48x48 png grayscale with transparency.
 
-`androidMode`  
-Show each push notification individually (`default`) or collapse into one (`collapse`). default, collapse
+    -   `color`  
+        Tint color for the push notification image when it appears in the notification tray. 6 character long hex color string, eg: `'#000000'`
 
-`androidCollapsedTitle`  
-If `androidMode` is set to `collapse`, this title is used for the collapsed notification message. eg: `'#{unread_notifications} new interactions'`.
+    -   `androidMode`  
+        Show each push notification individually (`default`) or collapse into one (`collapse`). default, collapse
 
-`loading`  
-Configuration for the loading screen that users see when opening your app, while fetching & caching bundle and assets.
+    -   `androidCollapsedTitle`  
+         If `androidMode` is set to `collapse`, this title is used for the collapsed notification message. eg: `'#{unread_notifications} new interactions'`.
 
-`iconUrl`  
-Url that points to the icon to display while starting up the app. Image size and aspect ratio are up to you. Must be a .png.
+-   `loading`  
+    Configuration for the loading screen that users see when opening your app, while fetching & caching bundle and assets.
 
-`exponentIconColor`  
-If no icon is provided, we will show the Exponent logo. You can choose between `white` and `blue`. white, blue
+    -   `icon`  
+        Local path or remote url to an image. Image size and aspect ratio are up to you. Must be a .png.
 
-`exponentIconGrayscale`  
-Similar to `exponentIconColor` but instead indicate if it should be grayscale (`1`) or not (`0`).
+    -   `exponentIconColor`  
+        If no icon is provided, we will show the Exponent logo. You can choose between `white` and `blue`. white, blue
 
-`backgroundImageUrl`  
-Url that points to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
+    -   `exponentIconGrayscale`  
+        Similar to `exponentIconColor` but instead indicate if it should be grayscale (`1`) or not (`0`).
 
-`backgroundColor`  
-Color to fill the loading screen background 6 character long hex color string, eg: `'#000000'`
+    -   `backgroundImage`  
+        Local path or remote url to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
 
-`hideExponentText`  
-By default, Exponent shows some text at the bottom of the loading screen. Set this to `true` to disable.
+    -   `backgroundColor`  
+        Color to fill the loading screen background 6 character long hex color string, eg: `'#000000'`
 
- `appKey`  
-By default, Exponent looks for the application registered with the AppRegistry as `main`. If you would like to change this, you can specify the name in this property.
+    -   `hideExponentText`  
+        By default, Exponent shows some text at the bottom of the loading screen. Set this to `true` to disable.
 
- `androidStatusBarColor`  
-6 character long hex color string, eg: `'#000000'`
+-   `appKey`  
+    By default, Exponent looks for the application registered with the AppRegistry as `main`. If you would like to change this, you can specify the name in this property.
 
- `androidHideExponentNotificationInShellApp`  
-By default, Exponent adds a notification to your app with refresh button and debug info. Set this to `true` to disable.
+-   `androidStatusBarColor`  
+    6 character long hex color string, eg: `'#000000'`
 
- `scheme`  
-**Standalone Apps Only**. Url scheme to link into your app. For example, if we set this to `'rnplay'`, then rnplay:// urls would open your app when tapped.
+- `androidStatusBar`
 
- `entryPoint`  
-The relative path to your main JavaScript file.
+  Configuration for android statusbar.
 
- `extra`  
-Any extra fields you want to pass to your experience.
+  - `barStyle`
 
- `rnCliPath`  
+    Configure the statusbar icons to have light or dark color. `light-content`, `dark-content`
 
- `packagerOpts`  
+  - `backgroundColor`
 
- `ignoreNodeModulesValidation`  
+    Configuration for android statusbar. 6 character long hex color string, eg: `'#000000'`
 
- `nodeModulesPath`  
+-   `androidHideExponentNotificationInShellApp`  
+    By default, Exponent adds a notification to your app with refresh button and debug info. Set this to `true` to disable.
 
- `ios`  
-**Standalone Apps Only**. iOS standalone app specific configuration
+-   `scheme`  
+    **Standalone Apps Only**. Url scheme to link into your app. For example, if we set this to `'rnplay'`, then rnplay:// urls would open your app when tapped.
 
->  `bundleIdentifier`  
-> The bundle identifier for your iOS standalone app. You make it up, but it needs to be unique on the App Store. See [this StackOverflow question](http://stackoverflow.com/questions/11347470/what-does-bundle-identifier-mean-in-the-ios-project). iOS bundle identifier notation unique name for your app. For example, host.exp.exponent, where exp.host is our domain and Exponent is our app.
->
->  `buildNumber`  
-> Build number for your iOS standalone app
->
->  `config`  
->  `usesNonExemptEncryption`  
-> Sets `ITSAppUsesNonExemptEncryption` in the standalone ipa's Info.plist to the given boolean value.
->
->  `fabric`  
-> [Twitter Fabric](https://get.fabric.io/) keys to hook up Crashlytics and other services.
->
-> >  `apiKey`  
-> > Your Fabric API key
-> >
-> >  `buildSecret`  
-> > Your Fabric build secret
->
->  `googleSignIn`  
-> [Google Sign-In iOS SDK](https://developers.google.com/identity/sign-in/ios/start-integrating) keys for your standalone app.
->
-> >  `reservedClientId`  
-> > The reserved client id url scheme. Can be found in GoogeService-Info.plist.
->
->  `supportsTablet`  
-> Whether your standalone iOS app supports tablet screen sizes.
+-   `entryPoint`  
+    The relative path to your main JavaScript file.
 
- `android`  
-**Standalone Apps Only**. Android standalone app specific configuration
+-   `extra`  
+    Any extra fields you want to pass to your experience.
 
->  `package`  
-> The package name for your Android standalone app. You make it up, but it needs to be unique on the Play Store. See [this StackOverflow question](http://stackoverflow.com/questions/6273892/android-package-name-convention). Reverse DNS notation unique name for your app. For example, host.exp.exponent, where exp.host is our domain and Exponent is our app.
->
->  `versionCode`  
-> Version number required by Google Play. Increment by one for each release. <https://developer.android.com/studio/publish/versioning.html>.
->
->  `config`  
->  `fabric`  
-> [Twitter Fabric](https://get.fabric.io/) keys to hook up Crashlytics and other services.
->
-> >  `apiKey`  
-> > Your Fabric API key
-> >
-> >  `buildSecret`  
-> > Your Fabric build secret
->
->  `googleMaps`  
-> [Google Maps Android SDK](https://developers.google.com/maps/documentation/android-api/signup) key for your standalone app.
->
-> >  `apiKey`  
-> > Your Google Maps Android SDK API key
->
->  `googleSignIn`  
-> [Google Sign-In Android SDK](https://developers.google.com/identity/sign-in/android/start-integrating) keys for your standalone app.
->
-> >  `apiKey`  
-> > The Android API key. Can be found in the credentials section of the developer console or in google-services.json.
-> >
-> >  `certificateHash`  
-> > The SHA-1 hash of the signing certificate used to build the apk without any separator :. Can be found in google-services.json. <https://developers.google.com/android/guides/client-auth>
+-   `rnCliPath`  
 
-`facebookScheme`  
-Used for Facebook native login. Starts with 'fb' and followed by a string of digits, like 'fb1234567890'. You can find your scheme at <https://developers.facebook.com/docs/facebook-login/ios> in the 'Configuring Your info.plist' section.
+-   `packagerOpts`  
+
+-   `ignoreNodeModulesValidation`  
+
+-   `nodeModulesPath`  
+
+-   `ios`  
+    **Standalone Apps Only**. iOS standalone app specific configuration
+
+    -   `bundleIdentifier`  
+
+        The bundle identifier for your iOS standalone app. You make it up, but it needs to be unique on the App Store. See [this StackOverflow question](http://stackoverflow.com/questions/11347470/what-does-bundle-identifier-mean-in-the-ios-project). iOS bundle identifier notation unique name for your app. For example, host.exp.exponent, where exp.host is our domain and Exponent is our app.
+
+    -   `buildNumber`
+
+        Build number for your iOS standalone app
+
+    -   `config`  
+
+        -   `usesNonExemptEncryption`
+
+            Sets `ITSAppUsesNonExemptEncryption` in the standalone ipa's Info.plist to the given boolean value.
+
+    -   `googleSignIn`
+
+        Google Sign-In iOS SDK keys for your standalone app
+
+        -   `reservedClientId`
+
+            The reserved client id url scheme. Can be found in GoogeService-Info.plist.
+
+    -   `supportsTablet`
+
+        Whether your standalone iOS app supports tablet screen sizes.
+
+    - `infoPlist`
+
+        Arbitrary configuration to add to your standalone app's native Info.plist. Applied prior to all other Exponent-specific configuration. No other validation is performed, so use this at your own risk of rejection from the App Store.
+
+-   `android`  
+    **Standalone Apps Only**. Android standalone app specific configuration
+
+    -   `package`  
+
+        The package name for your Android standalone app. You make it up, but it needs to be unique on the Play Store. See [this StackOverflow question](http://stackoverflow.com/questions/6273892/android-package-name-convention). Reverse DNS notation unique name for your app. For example, host.exp.exponent, where exp.host is our domain and Exponent is our app.
+
+    -   `versionCode`  
+
+        Version number required by Google Play. Increment by one for each release. <https://developer.android.com/studio/publish/versioning.html>.
+
+    -   `config`  
+
+        -   `fabric`  
+            [Twitter Fabric](https://get.fabric.io/) keys to hook up Crashlytics and other services.
+
+        -   `apiKey`  
+            Your Fabric API key
+
+        -   `buildSecret`  
+            Your Fabric build secret
+
+        -   `googleMaps`  
+            [Google Maps Android SDK](https://developers.google.com/maps/documentation/android-api/signup) key for your standalone app.
+
+            -   `apiKey`  
+                Your Google Maps Android SDK API key
+
+        -   `googleSignIn`
+
+            [Google Sign-In Android](https://developers.google.com/identity/sign-in/android/start-integrating) SDK keys for your standalone app
+
+            -   `apiKey`
+
+                The Android API key. Can be found in the credentials section of the developer console or in google-services.json.
+
+            -   `certificateHash`
+
+                The SHA-1 hash of the signing certificate used to build the apk without any separator :. Can be found in google-services.json. <https://developers.google.com/android/guides/client-auth>
+
+            -   `facebookScheme`
+
+                Used for Facebook native login. Starts with 'fb' and followed by a string of digits, like 'fb1234567890'. You can find your scheme at <https://developers.facebook.com/docs/facebook-login/ios> in the 'Configuring Your info.plist' section.

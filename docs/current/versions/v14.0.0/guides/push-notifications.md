@@ -164,11 +164,9 @@ Although we provide server-side SDKs in several languages to help you send push 
 
 Send a POST request to `https://exp.host/--/api/v2/push/send` with the following HTTP headers:
 
-```
-accept: application/json
-accept-encoding: gzip, deflate
-content-type: application/json
-```
+    accept: application/json
+    accept-encoding: gzip, deflate
+    content-type: application/json
 
 The HTTP request body must be JSON. It may either be a single message object or an array of up to 100 messages. **We recommend using an array when you want to send multiple messages to efficiently minimize the number of requests you need to make to Exponent servers.** This is an example request body that sends two messages:
 
@@ -186,15 +184,12 @@ The HTTP request body must be JSON. It may either be a single message object or 
 
 Upon success, the HTTP response will be a JSON object whose `data` field is an array of push receipts, each of which corresponds to the message at its respective index in the request. Continuing the above example, this is what a successful response body looks like:
 
-
-```
-{
-  "data": [
-    {"status": "ok"},
-    {"status": "ok"}
-  ]
-}
-```
+    {
+      "data": [
+        {"status": "ok"},
+        {"status": "ok"}
+      ]
+    }
 
 When there is an error delivering a message, the receipt's status will be "error" and the receipt will contain information about the error. More information about the response format is documented below.
 
@@ -315,10 +310,10 @@ The HTTP status code will be 200 also if all of the messages were successfully d
 
 **Important:** in particular, look for an `details` object with an `error` field. If present, it may be one of three values: `DeviceNotRegistered`, `MessageTooBig`, and `MessageRateExceeded`. You should handle these errors like so:
 
-* `DeviceNotRegistered`: the device cannot receive push notifications anymore and you should stop sending messages to the given Exponent push token.
+-   `DeviceNotRegistered`: the device cannot receive push notifications anymore and you should stop sending messages to the given Exponent push token.
 
-* `MessageTooBig`: the total notification payload was too large. On Android and iOS the total payload must be at most 4096 bytes.
+-   `MessageTooBig`: the total notification payload was too large. On Android and iOS the total payload must be at most 4096 bytes.
 
-* `MessageRateExceeded`: you are sending messages too frequently to the given device. Implement exponential backoff and slowly retry sending messages.
+-   `MessageRateExceeded`: you are sending messages too frequently to the given device. Implement exponential backoff and slowly retry sending messages.
 
 If we couldn't deliver the message to the Android or iOS push notification service, the receipt's details may also include service-specific information. This is useful mostly for debugging and reporting possible bugs to us.

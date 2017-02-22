@@ -9,7 +9,7 @@ const visit = require('unist-util-visit');
 const select = require('unist-util-select');
 
 const NewVersion = 14;
-const PrevVersion = 12;
+const PrevVersion = 13;
 
 function findMarkdownFiles() {
   const glob = require('glob');

@@ -36,7 +36,6 @@ Hit `Ctrl-Cmd-Z` on a Mac in the emulator to simulate the shake gesture.
 
 Either press "Menu" button in Genymotion's toolbar, or just hit `Cmd-m`.
 
-
 ## Debugging Javascript
 
 You can debug Exponent apps using the Chrome debugger tools. Rather than running your app's JavaScript on your phone, it will instead run it inside of a webworker in Chrome. You can then set breakpoints, inspect variables, execute code, etc, as you would when debugging a web app.
