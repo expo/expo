@@ -4,8 +4,16 @@
 
 @implementation EXScope
 
-// NOTE(ben): Use a more obscure name here to avoid confusion if one looks in `NativeModules` in JS?
 + (NSString *)moduleName { return @"ExponentScope"; }
+
+- (instancetype)initWithParams:(NSDictionary *)params
+{
+  if (self = [super init]) {
+    self.initialUri = params[@"initialUri"];
+    self.experienceId = params[@"manifest"][@"id"];
+  }
+  return self;
+}
 
 @end
 

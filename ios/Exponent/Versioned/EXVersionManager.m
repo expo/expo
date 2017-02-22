@@ -196,20 +196,13 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
  */
 - (NSArray *)extraModulesWithParams:(NSDictionary *)params
 {
-  NSDictionary *manifest = params[@"manifest"];
-
-  // NOTE(ben): Use a constructor that takes all this rather than setting properties?
-  EXScope *exScope = [[EXScope alloc] init];
-  exScope.initialUri = params[@"initialUri"];
-  exScope.experienceId = [manifest objectForKey:@"id"];
-
   NSURL *initialUri = params[@"initialUri"];
   BOOL isDeveloper = [params[@"isDeveloper"] boolValue];
-  NSString *experienceId = [manifest objectForKey:@"id"];
+  NSString *experienceId = [params[@"manifest"] objectForKey:@"id"];
 
   NSMutableArray *extraModules = [NSMutableArray arrayWithArray:
                                   @[
-                                    exScope,
+                                    [[EXScope alloc] initWithParams:params],
                                     [[EXAppState alloc] init],
                                     [[EXConstants alloc] initWithProperties:params[@"constants"]],
                                     [[EXDisabledDevLoadingView alloc] init],

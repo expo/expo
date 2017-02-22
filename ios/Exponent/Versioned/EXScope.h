@@ -13,6 +13,8 @@
 @property (nonatomic, strong) NSURL *initialUri;
 @property (nonatomic, strong) NSString *experienceId;
 
+- (instancetype)initWithParams:(NSDictionary *)params;
+
 @end
 
 @interface RCTBridge (EXScope)
