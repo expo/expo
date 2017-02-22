@@ -1,8 +1,5 @@
 ---
 title: Debugging
-old_permalink: /versions/v12.0.0/guides/debugging.html
-previous___FILE: ./logging.md
-next___FILE: ./assets.md
 ---
 
 ## Using a Simulator / Emulator
@@ -19,7 +16,26 @@ For iOS the Simulator built into Xcode works great, you can install Xcode on the
 
 On Android we recommend the Genymotion emulator over the standard emulator -- we have found it to be more feature complete, faster and easier to use.
 
-[Download Genymotion](https://www.genymotion.com/fun-zone/) (free version) and follow the [Genymotion installation guide](https://docs.genymotion.com/Content/01_Get_Started/Installation.htm). Once you've installed Genymotion, create a virtual device - we recommend a Nexus 5, the Android version is up to you. Start up the virtual device when it's ready. If you run into any issues follow our [Genymotion guide](/versions/v14.0.0/guides/genymotion#genymotion).
+[Download Genymotion](https://www.genymotion.com/fun-zone/) (free version) and follow the [Genymotion installation guide](https://docs.genymotion.com/Content/01_Get_Started/Installation.htm). Once you've installed Genymotion, create a virtual device - we recommend a Nexus 5, the Android version is up to you. Start up the virtual device when it's ready. If you run into any issues follow our [Genymotion guide](/versions/v14.0.0/genymotion/#genymotion).
+
+## Developer Menu
+
+This menu gives you access to several functions which are useful for debugging.
+It is also known as the Debug Menu.
+Invoking it depends on the device where you are running your application.
+
+### On an iOS Device
+
+Shake the device a little bit.
+
+### On Mac's iOS simulator
+
+Hit `Ctrl-Cmd-Z` on a Mac in the emulator to simulate the shake gesture.
+
+### On Genymotion
+
+Either press "Menu" button in Genymotion's toolbar, or just hit `Cmd-m`.
+
 
 ## Debugging Javascript
 
@@ -31,7 +47,7 @@ You can debug Exponent apps using the Chrome debugger tools. Rather than running
 
 -   If you are using `LAN`, make sure your device is on the same wifi network as your development machine. This may not work on some public networks. `localhost` will not work for iOS unless you are in the simulator, and it only work on Android if your device is connected to your machine via usb.
 
--   Open the app on your device, then shake the device a little bit (or hit Ctrl-Cmd-Z on a Mac in the emulator) to reveal the developer menu. Tap on `Debug JS Remotely`. This should open up a Chrome tab with the URL `http://localhost:19001/debugger-ui`. From there, you can set breakpoints and interact through the JavaScript console. Shake the device and stop Chrome debugging when you're done.
+-   Open the app on your device, reveal the developer menu then tap on `Debug JS Remotely`. This should open up a Chrome tab with the URL `http://localhost:19001/debugger-ui`. From there, you can set breakpoints and interact through the JavaScript console. Shake the device and stop Chrome debugging when you're done.
 
 -   Line numbers for `console.log` statements don't work by default when using Chrome debugging. To get correct line numbers open up the Chrome Dev Tools settings, go to the "Blackboxing" tab, make sure that "Blackbox content scripts" is checked, and add `exponent/src/Logs.js` as a pattern with "Blackbox" selected.
 
@@ -57,7 +73,7 @@ There is [future work](https://github.com/facebook/react-native/issues/934) to g
 
 ## Hot Reloading and Live Reloading
 
-[Hot Module Reloading](http://facebook.github.io/react-native/blog/2016/03/24/introducing-hot-reloading.html) is a quick way to reload changes without losing your state in the screen or navigation stack. To enable, just shake your device (or hit Ctrl-Cmd-Z on a Mac in the emulator) and tap the "Enable Hot Reloading" item. Whereas Live Reload will reload the entire JS context, Hot Module Reloading will make your debug cycles even faster. However, make sure you don't have both options turned on, as that is unsupported behavior.
+[Hot Module Reloading](http://facebook.github.io/react-native/blog/2016/03/24/introducing-hot-reloading.html) is a quick way to reload changes without losing your state in the screen or navigation stack. To enable, invoke the developer menu and tap the "Enable Hot Reloading" item. Whereas Live Reload will reload the entire JS context, Hot Module Reloading will make your debug cycles even faster. However, make sure you don't have both options turned on, as that is unsupported behavior.
 
 ## Other Debugging Tips
 

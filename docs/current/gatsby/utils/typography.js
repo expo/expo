@@ -30,7 +30,7 @@ const typography = new Typography({
       paddingBottom: `calc(${rhythm(1 / 4)} - 1px)`
     },
     'body h1': {
-      marginTop: rhythm(1),
+      marginTop: rhythm(0.7),
       lineHeight: 1.1
     },
     'tt,code': {

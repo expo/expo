@@ -1,8 +1,5 @@
 ---
 title: Building Standalone Apps
-old_permalink: /versions/v12.0.0/guides/building-standalone-apps.html
-previous___FILE: ./exp-cli.md
-next___FILE: ./how-exponent-works.md
 ---
 
 Not everybody wants to tell their customers or friends to download Exponent to use their app; You want to be able to have the app on its own from the App Store and Play Store. We call these "shell apps" or "standalone apps". The purpose of this guide is to walk you through creating a standalone version of your Exponent app for iOS and Android.
@@ -21,27 +18,28 @@ If you haven't used `exp` before, the first thing you'll need to do is login wit
 
 The following fields are required in your app's `exp.json`, so open it up and add any that are missing.
 
-> ```javascript
-> {
->   name: "Playground",
->   iconUrl: "https://s3.amazonaws.com/exp-us-standard/rnplay/app-icon.png",
->   version: "2.0.0",
->   slug: "rnplay",
->   sdkVersion: "8.0.0",
->   ios: {
->     bundleIdentifier: "org.rnplay.exp",
->   },
->   android: {
->     package: "org.rnplay.exp",
->   }
-> }
-> ```
->
-> The iOS `bundleIdentifier` and Android `package` fields use reverse DNS notation, but don't have to be related to a domain. In this case I chose `org.rnplay.exp` because the app's website is rnplay.org and this is the Exponent version of the app. Yours might be `com.yourcompany.appname`.
->
-> You're probably not surprised that `name`, `iconUrl` and `version` are required, but if you haven't used Exponent much you might be confused by `slug` and `sdkVersion`. `slug` is the url name that your app's JavaScript is published to, for example `exp.host/@notbrent/rnplay`, where `notbrent` is my username and `rnplay` is the slug. The `sdkVersion` tells Exponent what Exponent runtime version to use, which corresponds to a React Native version.
+```javascript
+ {
+   name: "Playground",
+   icon: "https://s3.amazonaws.com/exp-us-standard/rnplay/app-icon.png",
+   version: "2.0.0",
+   slug: "rnplay",
+   sdkVersion: "14.0.0",
+   ios: {
+     bundleIdentifier: "org.rnplay.exp",
+   },
+   android: {
+     package: "org.rnplay.exp",
+   }
+ }
+```
 
-There are other options you might want to add to `exp.json`. We have only covered what is required. See [Configuration with exp.json](/versions/v14.0.0/guides/configuration#exp) for the full spec.
+The iOS `bundleIdentifier` and Android `package` fields use reverse DNS notation, but don't have to be related to a domain. In this case I chose `org.rnplay.exp` because the app's website is rnplay.org and this is the Exponent version of the app. Yours might be `com.yourcompany.appname`.
+
+
+You're probably not surprised that `name`, `iconUrl` and `version` are required, but if you haven't used Exponent much you might be confused by `slug` and `sdkVersion`. `slug` is the url name that your app's JavaScript is published to, for example `exp.host/@notbrent/rnplay`, where `notbrent` is my username and `rnplay` is the slug. The `sdkVersion` tells Exponent what Exponent runtime version to use, which corresponds to a React Native version.
+
+There are other options you might want to add to `exp.json`. We have only covered what is required. See [Configuration with exp.json](/versions/v14.0.0/guides/configuration) for the full spec.
 
 ## 3. Start the build
 
