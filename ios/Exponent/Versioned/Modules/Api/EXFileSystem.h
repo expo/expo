@@ -4,6 +4,4 @@
 
 @interface EXFileSystem : NSObject <RCTBridgeModule>
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId;
-
 @end

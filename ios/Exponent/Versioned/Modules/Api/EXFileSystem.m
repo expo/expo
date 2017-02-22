@@ -5,6 +5,7 @@
 #import <CommonCrypto/CommonDigest.h>
 
 #import "EXVersionManager.h"
+#import "EXScope.h"
 
 @implementation NSData (EXFileSystem)
 
@@ -30,16 +31,16 @@
 
 @implementation EXFileSystem
 
-+ (NSString *)moduleName { return @"ExponentFileSystem"; }
+RCT_EXPORT_MODULE(ExponentFileSystem);
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId
+@synthesize bridge = _bridge;
+
+- (void)setBridge:(RCTBridge *)bridge
 {
-  if (self = [super init]) {
-    NSString *subdir = [EXVersionManager escapedResourceName:experienceId];
-    _rootDir = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject stringByAppendingPathComponent:@"ExponentExperienceData"] stringByAppendingPathComponent:subdir];
-    _cacheDir = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject stringByAppendingPathComponent:@"ExponentExperienceData"] stringByAppendingPathComponent:subdir];
-  }
-  return self;
+  _bridge = bridge;
+  NSString *subdir = [EXVersionManager escapedResourceName:_bridge.exScope.experienceId];
+  _rootDir = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject stringByAppendingPathComponent:@"ExponentExperienceData"] stringByAppendingPathComponent:subdir];
+  _cacheDir = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject stringByAppendingPathComponent:@"ExponentExperienceData"] stringByAppendingPathComponent:subdir];
 }
 
 RCT_REMAP_METHOD(downloadAsync,
