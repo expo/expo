@@ -6,11 +6,18 @@
 
 + (NSString *)moduleName { return @"ExponentScope"; }
 
+@synthesize initialUri = _initialUri;
+@synthesize experienceId = _experienceId;
+
 - (instancetype)initWithParams:(NSDictionary *)params
 {
   if (self = [super init]) {
-    self.initialUri = params[@"initialUri"];
-    self.experienceId = params[@"manifest"][@"id"];
+    NSDictionary *manifest = params[@"manifest"];
+    if (manifest) {
+      _experienceId = manifest[@"id"];
+    }
+
+    _initialUri = params[@"initialUri"];
   }
   return self;
 }
