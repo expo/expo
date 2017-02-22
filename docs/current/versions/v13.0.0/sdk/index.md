@@ -15,4 +15,4 @@ You can also import all Exponent SDK modules:
 import * as Exponent from 'exponent';
 ```
 
-This allows you to write [`Exponent.Contacts.getContactsAsync()`](/versions/v12.0.0/sdk/contacts#exponentcontactsgetcontactsasync "Exponent.Contacts.getContactsAsync"), for example.
+This allows you to write [`Exponent.Contacts.getContactsAsync()`](/versions/v13.0.0/sdk/contacts#exponentcontactsgetcontactsasync "Exponent.Contacts.getContactsAsync"), for example.

@@ -97,7 +97,7 @@ exp start --ios
 exp start --android
 ```
 
-For more information, see [exp Command-Line Interface](/versions/v12.0.0/guides/exp-cli#exp-cli).
+For more information, see [exp Command-Line Interface](/versions/v14.0.0/guides/exp-cli#exp-cli).
 
 ### Using XDE
 

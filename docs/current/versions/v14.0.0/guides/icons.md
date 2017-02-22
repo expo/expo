@@ -30,7 +30,7 @@ This component loads the Ionicons font if it hasn't been loaded already, and ren
 
 `import { Ionicons } from '@exponent/vector-icons';` instead of.. `import Ionicons from 'react-native-vector-icons/Ionicons';`.
 
-> **Note:** As with [any custom font](/versions/v12.0.0/guides/using-custom-fonts#using-custom-fonts) in Exponent, you may want to preload icon fonts before rendering your app. The font object is available as a static property on the font component, so in the case above it is `Ionicons.font`, which evaluates to `{ionicons: require('path/to/ionicons.ttf')}`. [Read more about preloading assets](/versions/v12.0.0/guides/preloading-and-caching-assets#all-about-assets).
+> **Note:** As with [any custom font](/versions/v14.0.0/guides/using-custom-fonts#using-custom-fonts) in Exponent, you may want to preload icon fonts before rendering your app. The font object is available as a static property on the font component, so in the case above it is `Ionicons.font`, which evaluates to `{ionicons: require('path/to/ionicons.ttf')}`. [Read more about preloading assets](/versions/v14.0.0/guides/preloading-and-caching-assets#all-about-assets).
 
 ## Existing Projects
 
@@ -45,7 +45,7 @@ This component loads the Ionicons font if it hasn't been loaded already, and ren
 
 ## Custom Icon Fonts
 
-First, make sure you import your custom icon font. [Read more about loading custom fonts](/versions/v12.0.0/guides/using-custom-fonts#using-custom-fonts). Once your font has loaded, you'll need to create an Icon Set. `@exponent/vector-icons` exposes three methods to help you create an icon set.
+First, make sure you import your custom icon font. [Read more about loading custom fonts](/versions/v14.0.0/guides/using-custom-fonts#using-custom-fonts). Once your font has loaded, you'll need to create an Icon Set. `@exponent/vector-icons` exposes three methods to help you create an icon set.
 
 ### createIconSet
 
