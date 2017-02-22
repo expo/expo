@@ -34,7 +34,10 @@ const processPage = (document, callback) => {
   //}
   document.title = document.title.slice(0, -1);
   if (document.previous___FILE) {
-    document.previous___FILE = `./${document.previous___FILE.replace('.html', '.md')}`;
+    document.previous___FILE = `./${document.previous___FILE.replace(
+      '.html',
+      '.md'
+    )}`;
   }
   if (document.next___FILE) {
     document.next___FILE = `./${document.next___FILE.replace('.html', '.md')}`;
@@ -56,7 +59,10 @@ const processPage = (document, callback) => {
   // Remove all (other) pointer links created by Sphinx
   const toRemove = [];
   visit(ast, `link`, node => {
-    if (node.title === `Permalink to this headline` || node.title === 'Permalink to this definition') {
+    if (
+      node.title === `Permalink to this headline` ||
+      node.title === 'Permalink to this definition'
+    ) {
       toRemove.push(node);
     } else {
       if (_.includes(node.title, `Permalink`)) {
@@ -67,7 +73,10 @@ const processPage = (document, callback) => {
   // One link (for whatever reason) pandoc is converting to an
   // image
   visit(ast, `image`, node => {
-    if (node.title === `Permalink to this headline` || node.title === 'Permalink to this definition') {
+    if (
+      node.title === `Permalink to this headline` ||
+      node.title === 'Permalink to this definition'
+    ) {
       toRemove.push(node);
     } else {
       if (_.includes(node.title, `Permalink`)) {
@@ -81,7 +90,10 @@ const processPage = (document, callback) => {
   // One link (for whatever reason) pandoc is converting to an
   // image
   visit(ast, `image`, node => {
-    if (node.title === `Permalink to this headline` || node.title === 'Permalink to this definition') {
+    if (
+      node.title === `Permalink to this headline` ||
+      node.title === 'Permalink to this definition'
+    ) {
       toRemove.push(node);
     } else {
       if (_.includes(node.title, `Permalink`)) {
@@ -139,7 +151,11 @@ const processPage = (document, callback) => {
     }
 
     // Replace
-    if (node.type === `link` && node.children[0] && node.children[0].type === `image`) {
+    if (
+      node.type === `link` &&
+      node.children[0] &&
+      node.children[0].type === `image`
+    ) {
       //console.log(`replacing this node`, node)
       //node = node.children[0]
       //delete node.position
@@ -153,7 +169,9 @@ const processPage = (document, callback) => {
     replaceNode(node, ast);
   });
 
-  if (document.old_permalink === `/versions/v12.0.0/guides/development-mode.html`) {
+  if (
+    document.old_permalink === `/versions/v12.0.0/guides/development-mode.html`
+  ) {
     const links = select(ast, `link`);
     const images = select(ast, `image`);
     console.log(JSON.stringify(links, null, 4));
@@ -197,7 +215,12 @@ const processPage = (document, callback) => {
   );
 
   // Add frontmatter
-  const frontmatter = _.pick(document, [`title`, `old_permalink`, `previous___FILE`, `next___FILE`]);
+  const frontmatter = _.pick(document, [
+    `title`,
+    `old_permalink`,
+    `previous___FILE`,
+    `next___FILE`
+  ]);
   ast.children.unshift({
     type: 'yaml',
     value: jsYaml.safeDump(frontmatter)
@@ -211,7 +234,7 @@ const processPage = (document, callback) => {
 const q = async.queue(processPage, 10);
 
 const version = `https://docs.getexponent.com/versions/v12.0.0/guides/logging.html`;
-const onePage = `https://docs.getexponent.com/versions/v12.0.0/sdk/gyroscope.html`;
+const onePage = `https://docs.getexponent.com/versions/v14.0.0/sdk/keep-awake.html`;
 //const version = `https://docs.getexponent.com/versions/v11.0.0/guides/logging.html`
 //const version = `https://docs.getexponent.com/versions/v10.0.0/guides/logging.html`
 //const version = `https://docs.getexponent.com/versions/v9.0.0/guides/logging.html`

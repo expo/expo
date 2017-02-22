@@ -40,6 +40,7 @@
     AppLoading: /versions/v14.0.0/sdk/app-loading/
     Art: /versions/v14.0.0/sdk/art/
     Asset: /versions/v14.0.0/sdk/asset/
+    Audio: /versions/v14.0.0/sdk/audio/
     BarCodeScanner: /versions/v14.0.0/sdk/bar-code-scanner/
     BlurView: /versions/v14.0.0/sdk/blur-view/
     Constants: /versions/v14.0.0/sdk/constants/
@@ -50,6 +51,7 @@
     Google: /versions/v14.0.0/sdk/google/
     Gyroscope: /versions/v14.0.0/sdk/gyroscope/
     ImagePicker: /versions/v14.0.0/sdk/imagepicker/
+    KeepAwake: /versions/v14.0.0/sdk/keep-awake/
     LinearGradient: /versions/v14.0.0/sdk/linear-gradient/
     Location: /versions/v14.0.0/sdk/location/
     MapView: /versions/v14.0.0/sdk/map-view/
