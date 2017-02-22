@@ -77,6 +77,9 @@ const typography = new Typography({
     'li:hover > a.anchor > svg.anchor-icon': {
       visibility: 'visible'
     },
+    'ol > li a.anchor svg.anchor-icon': {
+      background: '#fff'
+    },
     'li a.anchor svg.anchor-icon': {
       position: 'absolute',
       visibility: 'hidden',
