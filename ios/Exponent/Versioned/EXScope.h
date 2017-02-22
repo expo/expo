@@ -17,6 +17,6 @@
 
 @interface RCTBridge (EXScope)
 
-@property (nonatomic, readonly) EXScope *exScope;
+@property (nonatomic, readonly) EXScope *experienceScope;
 
 @end

@@ -38,7 +38,7 @@ RCT_EXPORT_MODULE(ExponentFileSystem);
 - (void)setBridge:(RCTBridge *)bridge
 {
   _bridge = bridge;
-  NSString *subdir = [EXVersionManager escapedResourceName:_bridge.exScope.experienceId];
+  NSString *subdir = [EXVersionManager escapedResourceName:_bridge.experienceScope.experienceId];
   _rootDir = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject stringByAppendingPathComponent:@"ExponentExperienceData"] stringByAppendingPathComponent:subdir];
   _cacheDir = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject stringByAppendingPathComponent:@"ExponentExperienceData"] stringByAppendingPathComponent:subdir];
 }
