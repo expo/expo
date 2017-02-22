@@ -2,6 +2,7 @@
 
 #import "EXNotifications.h"
 #import "EXUnversioned.h"
+#import "EXScope.h"
 #import <React/RCTUtils.h>
 #import <React/RCTConvert.h>
 
@@ -29,14 +30,14 @@ RCT_ENUM_CONVERTER(NSCalendarUnit,
 
 @implementation EXNotifications
 
-+ (NSString *)moduleName { return @"ExponentNotifications"; }
+RCT_EXPORT_MODULE(ExponentNotifications);
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId
+@synthesize bridge = _bridge;
+
+- (void)setBridge:(RCTBridge *)bridge
 {
-  if (self = [super init]) {
-    _experienceId = experienceId;
-  }
-  return self;
+  _bridge = bridge;
+  _experienceId = _bridge.experienceScope.experienceId;
 }
 
 RCT_REMAP_METHOD(getExponentPushTokenAsync,

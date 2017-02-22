@@ -4,6 +4,4 @@
 
 @interface EXNotifications : NSObject <RCTBridgeModule>
 
-- (instancetype)initWithExperienceId: (NSString *)experienceId;
-
 @end

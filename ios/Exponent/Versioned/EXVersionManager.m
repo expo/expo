@@ -8,11 +8,7 @@
 #import "EXFrameExceptionsManager.h"
 #import "EXKernelModule.h"
 #import "EXLinkingManager.h"
-#import "EXNotifications.h"
 #import "EXVersionManager.h"
-#import "EXAmplitude.h"
-#import "EXSegment.h"
-#import "EXUtil.h"
 #import "EXScope.h"
 
 #import <React/RCTAssert.h>
@@ -198,7 +194,6 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
 {
   NSURL *initialUri = params[@"initialUri"];
   BOOL isDeveloper = [params[@"isDeveloper"] boolValue];
-  NSString *experienceId = [params[@"manifest"] objectForKey:@"id"];
 
   NSMutableArray *extraModules = [NSMutableArray arrayWithArray:
                                   @[
@@ -207,10 +202,6 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
                                     [[EXConstants alloc] initWithProperties:params[@"constants"]],
                                     [[EXDisabledDevLoadingView alloc] init],
                                     [[EXLinkingManager alloc] initWithInitialUrl:initialUri],
-                                    [[EXNotifications alloc] initWithExperienceId:experienceId],
-                                    [[EXAmplitude alloc] initWithExperienceId:experienceId],
-                                    [[EXSegment alloc] init],
-                                    [[EXUtil alloc] init],
                                     ]];
   if (params[@"frame"]) {
     [extraModules addObject:[[EXFrameExceptionsManager alloc] initWithDelegate:params[@"frame"]]];

@@ -4,6 +4,4 @@
 
 @interface EXAmplitude : NSObject <RCTBridgeModule>
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId;
-
 @end

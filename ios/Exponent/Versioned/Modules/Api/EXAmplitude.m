@@ -4,6 +4,7 @@
 
 #import <Amplitude.h>
 #import "EXVersionManager.h"
+#import "EXScope.h"
 
 @interface EXAmplitude ()
 
@@ -13,14 +14,14 @@
 
 @implementation EXAmplitude
 
-+ (NSString *)moduleName { return @"ExponentAmplitude"; }
+RCT_EXPORT_MODULE(ExponentAmplitude);
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId
+@synthesize bridge = _bridge;
+
+- (void)setBridge:(RCTBridge *)bridge
 {
-  if (self = [super init]) {
-    _escapedExperienceId = [EXVersionManager escapedResourceName:experienceId];
-  }
-  return self;
+  _bridge = bridge;
+  _escapedExperienceId = [EXVersionManager escapedResourceName:_bridge.experienceScope.experienceId];
 }
 
 RCT_EXPORT_METHOD(initialize:(NSString *)apiKey)

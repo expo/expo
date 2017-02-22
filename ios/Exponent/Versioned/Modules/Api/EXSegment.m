@@ -12,7 +12,7 @@
 
 @implementation EXSegment
 
-+ (NSString *)moduleName { return @"ExponentSegment"; }
+RCT_EXPORT_MODULE(ExponentSegment);
 
 RCT_EXPORT_METHOD(initializeIOS:(NSString *)writeKey)
 {
