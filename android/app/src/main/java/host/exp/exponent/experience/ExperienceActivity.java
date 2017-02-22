@@ -517,7 +517,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       return;
     }
 
-    if (mManifest.optBoolean(ExponentManifest.MANIFEST_HIDE_EXPONENT_NOTIFICATION_KEY) && mIsShellApp) {
+    if (!mManifest.optBoolean(ExponentManifest.MANIFEST_SHOW_EXPONENT_NOTIFICATION_KEY) && mIsShellApp) {
       return;
     }
 
