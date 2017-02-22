@@ -20,6 +20,9 @@ const typography = new Typography({
     hr: {
       background: '#eee'
     },
+    p: {
+      marginBottom: '1rem'
+    },
     'h1, h2': {
       borderBottom: `1px solid #efefef`,
       marginBottom: rhythm(3 / 4),
@@ -27,7 +30,7 @@ const typography = new Typography({
       paddingBottom: `calc(${rhythm(1 / 4)} - 1px)`
     },
     'body h1': {
-      marginTop: rhythm(2 / 3),
+      marginTop: rhythm(1),
       lineHeight: 1.1
     },
     'tt,code': {
@@ -103,11 +106,11 @@ const typography = new Typography({
       marginBottom: rhythm(1 / 2)
     },
     'ul ul': {
-      backgroundColor: '#fafaff',
-      paddingBottom: '10px',
+      // backgroundColor: '#fafaff',
+      paddingBottom: '5px',
       marginLeft: 0,
-      borderRadius: '4px',
-      paddingTop: '10px'
+      borderRadius: '4px'
+      // paddingTop: '10px'
     },
     'ul ul > li': {
       marginLeft: 0
