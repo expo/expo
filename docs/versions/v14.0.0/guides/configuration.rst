@@ -171,6 +171,10 @@ Configuration with ``exp.json``
 
         Sets ``ITSAppUsesNonExemptEncryption`` in the standalone ipa's Info.plist to the given boolean value.
 
+       .. attribute:: googleMapsApiKey
+
+        `Google Maps iOS SDK <https://developers.google.com/maps/documentation/ios-sdk/start>`_ key for your standalone app.
+
        .. attribute:: googleSignIn
 
         `Google Sign-In iOS SDK <https://developers.google.com/identity/sign-in/ios/start-integrating>`_ keys for your standalone app.
