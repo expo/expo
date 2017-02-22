@@ -7,10 +7,10 @@
 //
 
 // import ABI14_0_0RCTViewManager.h
-#if __has_include("ABI14_0_0RCTViewManager.h")
-#import "ABI14_0_0RCTViewManager.h"
-#elif __has_include(<ReactABI14_0_0/ABI14_0_0RCTViewManager.h>)
+#if __has_include(<ReactABI14_0_0/ABI14_0_0RCTViewManager.h>)
 #import <ReactABI14_0_0/ABI14_0_0RCTViewManager.h>
+#elif __has_include("ABI14_0_0RCTViewManager.h")
+#import "ABI14_0_0RCTViewManager.h"
 #else
 #import "ReactABI14_0_0/ABI14_0_0RCTViewManager.h"
 #endif

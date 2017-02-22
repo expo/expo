@@ -11,19 +11,19 @@
 #import "ABI14_0_0EXContainerView.h"
 
 // import ABI14_0_0RCTBridge.h
-#if __has_include("ABI14_0_0RCTBridge.h")
-#import "ABI14_0_0RCTBridge.h"
-#elif __has_include(<ReactABI14_0_0/ABI14_0_0RCTBridge.h>)
+#if __has_include(<ReactABI14_0_0/ABI14_0_0RCTBridge.h>)
 #import <ReactABI14_0_0/ABI14_0_0RCTBridge.h>
+#elif __has_include("ABI14_0_0RCTBridge.h")
+#import "ABI14_0_0RCTBridge.h"
 #else
 #import "ReactABI14_0_0/ABI14_0_0RCTBridge.h"
 #endif
 
 // import ABI14_0_0RCTUIManager.h
-#if __has_include("ABI14_0_0RCTUIManager.h")
-#import "ABI14_0_0RCTUIManager.h"
-#elif __has_include(<ReactABI14_0_0/ABI14_0_0RCTUIManager.h>)
+#if __has_include(<ReactABI14_0_0/ABI14_0_0RCTUIManager.h>)
 #import <ReactABI14_0_0/ABI14_0_0RCTUIManager.h>
+#elif __has_include("ABI14_0_0RCTUIManager.h")
+#import "ABI14_0_0RCTUIManager.h"
 #else
 #import "ReactABI14_0_0/ABI14_0_0RCTUIManager.h"
 #endif

@@ -9,16 +9,16 @@
 #import "ABI14_0_0EXContainerView.h"
 
 // import UIView+ReactABI14_0_0.h
-#if __has_include("UIView+ReactABI14_0_0.h")
-#import "UIView+ReactABI14_0_0.h"
-#elif __has_include(<ReactABI14_0_0/UIView+ReactABI14_0_0.h>)
+#if __has_include(<ReactABI14_0_0/UIView+ReactABI14_0_0.h>)
 #import <ReactABI14_0_0/UIView+ReactABI14_0_0.h>
+#elif __has_include("UIView+ReactABI14_0_0.h")
+#import "UIView+ReactABI14_0_0.h"
 #else
 #import "ReactABI14_0_0/UIView+ReactABI14_0_0.h"
 #endif
 
 @implementation ABI14_0_0EXContainerView {
-  LAAnimationView *_animationView;
+  LOTAnimationView *_animationView;
 }
 
 - (void)ReactABI14_0_0SetFrame:(CGRect)frame
@@ -51,11 +51,11 @@
 }
 
 - (void)setSourceJson:(NSDictionary *)json {
-  [self replaceAnimationView:[LAAnimationView animationFromJSON:json]];
+  [self replaceAnimationView:[LOTAnimationView animationFromJSON:json]];
 }
 
 - (void)setSourceName:(NSString *)name {
-  [self replaceAnimationView:[LAAnimationView animationNamed:name]];
+  [self replaceAnimationView:[LOTAnimationView animationNamed:name]];
 }
 
 - (void)play {
@@ -73,7 +73,7 @@
 
 # pragma mark Private
 
-- (void)replaceAnimationView:(LAAnimationView *)next {
+- (void)replaceAnimationView:(LOTAnimationView *)next {
   if (_animationView != nil) {
     [_animationView removeFromSuperview];
   }

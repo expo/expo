@@ -9,16 +9,16 @@
 #import "EXContainerView.h"
 
 // import UIView+React.h
-#if __has_include("UIView+React.h")
-#import "UIView+React.h"
-#elif __has_include(<React/UIView+React.h>)
+#if __has_include(<React/UIView+React.h>)
 #import <React/UIView+React.h>
+#elif __has_include("UIView+React.h")
+#import "UIView+React.h"
 #else
 #import "React/UIView+React.h"
 #endif
 
 @implementation EXContainerView {
-  LAAnimationView *_animationView;
+  LOTAnimationView *_animationView;
 }
 
 - (void)reactSetFrame:(CGRect)frame
@@ -51,11 +51,11 @@
 }
 
 - (void)setSourceJson:(NSDictionary *)json {
-  [self replaceAnimationView:[LAAnimationView animationFromJSON:json]];
+  [self replaceAnimationView:[LOTAnimationView animationFromJSON:json]];
 }
 
 - (void)setSourceName:(NSString *)name {
-  [self replaceAnimationView:[LAAnimationView animationNamed:name]];
+  [self replaceAnimationView:[LOTAnimationView animationNamed:name]];
 }
 
 - (void)play {
@@ -73,7 +73,7 @@
 
 # pragma mark Private
 
-- (void)replaceAnimationView:(LAAnimationView *)next {
+- (void)replaceAnimationView:(LOTAnimationView *)next {
   if (_animationView != nil) {
     [_animationView removeFromSuperview];
   }

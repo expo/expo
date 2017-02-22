@@ -8,10 +8,10 @@
 
 
 // import ABI14_0_0RCTView.h
-#if __has_include("ABI14_0_0RCTView.h")
-#import "ABI14_0_0RCTView.h"
-#elif __has_include(<ReactABI14_0_0/ABI14_0_0RCTView.h>)
+#if __has_include(<ReactABI14_0_0/ABI14_0_0RCTView.h>)
 #import <ReactABI14_0_0/ABI14_0_0RCTView.h>
+#elif __has_include("ABI14_0_0RCTView.h")
+#import "ABI14_0_0RCTView.h"
 #else
 #import "ReactABI14_0_0/ABI14_0_0RCTView.h"
 #endif
