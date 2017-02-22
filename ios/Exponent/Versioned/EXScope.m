@@ -11,7 +11,7 @@
 
 @implementation  RCTBridge (EXScope)
 
-- (EXScope *)exScope
+- (EXScope *)experienceScope
 {
   return [self moduleForClass:[EXScope class]];
 }
