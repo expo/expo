@@ -1,6 +1,6 @@
 {
   "name": "docs",
-  "version": "12.0.0",
+  "version": "14.0.0",
   "private": true,
   "scripts": {
     "start": "cd gatsby && yarn run develop",
@@ -9,7 +9,5 @@
     "update-search-index": "node ./scripts/update-search-index"
   },
   "dependencies": {
-    "gatsby-typegen-remark-exponent-autolink": "^1.0.0",
-    "gatsby-typegen-remark-exponent-autolink-headers": "file:///Users/brent/coding/gatsby-typegen-remark-exponent-autolink-headers"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "Exponent",
-  "version": "12.0.0",
+  "version": "14.0.0",
   "description": "Exponent documentation site",
   "scripts": {
     "build": "gatsby build",
@@ -21,6 +21,7 @@
     "gatsby-typegen-remark": "1.0.0-alpha11",
     "gatsby-typegen-remark-autolink-headers": "1.0.0-alpha11",
     "gatsby-typegen-remark-copy-linked-files": "1.0.0-alpha11",
+    "gatsby-typegen-remark-exponent-autolink": "^1.0.0",
     "gatsby-typegen-remark-prismjs": "1.0.0-alpha11",
     "gatsby-typegen-remark-responsive-iframe": "1.0.0-alpha11",
     "gatsby-typegen-remark-responsive-image": "1.0.0-alpha11",

@@ -363,6 +363,15 @@ babel-helper-builder-react-jsx@^6.22.0:
     esutils "^2.0.0"
     lodash "^4.2.0"
 
+babel-helper-builder-react-jsx@^6.23.0:
+  version "6.23.0"
+  resolved babel-helper-builder-react-jsx-6.23.0.tgz#d53fc8c996e0bc56d0de0fc4cc55a7138395ea4b
+  dependencies:
+    babel-runtime "^6.22.0"
+    babel-types "^6.23.0"
+    esutils "^2.0.0"
+    lodash "^4.2.0"
+
 babel-helper-call-delegate@^6.22.0:
   version "6.22.0"
   resolved babel-helper-call-delegate-6.22.0.tgz#119921b56120f17e9dae3f74b4f5cc7bcc1b37ef
@@ -489,6 +498,19 @@ babel-plugin-check-es2015-constants@^6.22.0:
   resolved babel-plugin-check-es2015-constants-6.22.0.tgz#35157b101426fd2ffd3da3f75c7d1e91835bbf8a
   dependencies:
     babel-runtime "^6.22.0"
+
+babel-plugin-lodash@^3.2.11:
+  version "3.2.11"
+  resolved babel-plugin-lodash-3.2.11.tgz#21c8fdec9fe1835efaa737873e3902bdd66d5701
+  dependencies:
+    glob "^7.1.1"
+    lodash "^4.17.2"
+
+babel-plugin-react-transform@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/babel-plugin-react-transform/-/babel-plugin-react-transform-2.0.2.tgz#515bbfa996893981142d90b1f9b1635de2995109"
+  dependencies:
+    lodash "^4.6.1"
 
 babel-plugin-syntax-async-functions@^6.8.0:
   version "6.13.0"
@@ -830,6 +852,12 @@ babel-plugin-transform-react-display-name@^6.22.0:
   dependencies:
     babel-runtime "^6.22.0"
 
+babel-plugin-transform-react-display-name@^6.23.0:
+  version "6.23.0"
+  resolved babel-plugin-transform-react-display-name-6.23.0.tgz#4398910c358441dc4cef18787264d0412ed36b37
+  dependencies:
+    babel-runtime "^6.22.0"
+
 babel-plugin-transform-react-jsx-self@^6.22.0:
   version "6.22.0"
   resolved babel-plugin-transform-react-jsx-self-6.22.0.tgz#df6d80a9da2612a121e6ddd7558bcbecf06e636e
@@ -849,6 +877,14 @@ babel-plugin-transform-react-jsx@^6.22.0:
   resolved babel-plugin-transform-react-jsx-6.22.0.tgz#48556b7dd4c3fe97d1c943bcd54fc3f2561c1817
   dependencies:
     babel-helper-builder-react-jsx "^6.22.0"
+    babel-plugin-syntax-jsx "^6.8.0"
+    babel-runtime "^6.22.0"
+
+babel-plugin-transform-react-jsx@^6.23.0:
+  version "6.23.0"
+  resolved babel-plugin-transform-react-jsx-6.23.0.tgz#23e892f7f2e759678eb5e4446a8f8e94e81b3470
+  dependencies:
+    babel-helper-builder-react-jsx "^6.23.0"
     babel-plugin-syntax-jsx "^6.8.0"
     babel-runtime "^6.22.0"
 
@@ -883,7 +919,7 @@ babel-polyfill@^6.22.0:
     core-js "^2.4.0"
     regenerator-runtime "^0.10.0"
 
-babel-preset-es2015@^6.18.0:
+babel-preset-es2015@^6.18.0, babel-preset-es2015@^6.22.0:
   version "6.22.0"
   resolved babel-preset-es2015-6.22.0.tgz#af5a98ecb35eb8af764ad8a5a05eb36dc4386835
   dependencies:
@@ -912,6 +948,21 @@ babel-preset-es2015@^6.18.0:
     babel-plugin-transform-es2015-unicode-regex "^6.22.0"
     babel-plugin-transform-regenerator "^6.22.0"
 
+babel-preset-flow@^6.23.0:
+  version "6.23.0"
+  resolved babel-preset-flow-6.23.0.tgz#e71218887085ae9a24b5be4169affb599816c49d
+  dependencies:
+    babel-plugin-transform-flow-strip-types "^6.22.0"
+
+babel-preset-react-hmre@^1.1.1:
+  version "1.1.1"
+  resolved babel-preset-react-hmre-1.1.1.tgz#d216e60cb5b8d4c873e19ed0f54eaff1437bc492
+  dependencies:
+    babel-plugin-react-transform "^2.0.2"
+    react-transform-catch-errors "^1.0.2"
+    react-transform-hmr "^1.0.3"
+    redbox-react "^1.2.2"
+
 babel-preset-react@^6.11.1:
   version "6.22.0"
   resolved babel-preset-react-6.22.0.tgz#7bc97e2d73eec4b980fb6b4e4e0884e81ccdc165
@@ -923,6 +974,17 @@ babel-preset-react@^6.11.1:
     babel-plugin-transform-react-jsx "^6.22.0"
     babel-plugin-transform-react-jsx-self "^6.22.0"
     babel-plugin-transform-react-jsx-source "^6.22.0"
+
+babel-preset-react@^6.23.0:
+  version "6.23.0"
+  resolved babel-preset-react-6.23.0.tgz#eb7cee4de98a3f94502c28565332da9819455195
+  dependencies:
+    babel-plugin-syntax-jsx "^6.3.13"
+    babel-plugin-transform-react-display-name "^6.23.0"
+    babel-plugin-transform-react-jsx "^6.23.0"
+    babel-plugin-transform-react-jsx-self "^6.22.0"
+    babel-plugin-transform-react-jsx-source "^6.22.0"
+    babel-preset-flow "^6.23.0"
 
 babel-preset-stage-0@^6.22.0, babel-preset-stage-0@^6.5.0:
   version "6.22.0"
@@ -1005,6 +1067,15 @@ babel-traverse@^6.18.0, babel-traverse@^6.22.0, babel-traverse@^6.22.1:
 babel-types@^6.19.0, babel-types@^6.22.0:
   version "6.22.0"
   resolved babel-types-6.22.0.tgz#2a447e8d0ea25d2512409e4175479fd78cc8b1db
+  dependencies:
+    babel-runtime "^6.22.0"
+    esutils "^2.0.2"
+    lodash "^4.2.0"
+    to-fast-properties "^1.0.1"
+
+babel-types@^6.23.0:
+  version "6.23.0"
+  resolved babel-types-6.23.0.tgz#bb17179d7538bad38cd0c9e115d340f77e7e9acf
   dependencies:
     babel-runtime "^6.22.0"
     esutils "^2.0.2"
@@ -3019,6 +3090,21 @@ gatsby-typegen-remark-copy-linked-files@1.0.0-alpha11:
     fs-extra "^1.0.0"
     is-relative-url "^2.0.0"
     lodash "^4.17.3"
+    unist-util-visit "^1.1.1"
+
+gatsby-typegen-remark-exponent-autolink@^1.0.0:
+  version "1.0.0"
+  resolved gatsby-typegen-remark-exponent-autolink-1.0.0.tgz#8d60257447ea6d029b544dfd2c021a94ba644671
+  dependencies:
+    babel-plugin-lodash "^3.2.11"
+    babel-plugin-transform-flow-strip-types "^6.22.0"
+    babel-preset-es2015 "^6.22.0"
+    babel-preset-react "^6.23.0"
+    babel-preset-react-hmre "^1.1.1"
+    babel-preset-stage-0 "^6.22.0"
+    github-slugger "^1.1.1"
+    mdast-util-to-string "^1.0.2"
+    react "^15.4.2"
     unist-util-visit "^1.1.1"
 
 gatsby-typegen-remark-prismjs@1.0.0-alpha11:
@@ -6302,6 +6388,10 @@ rc@^1.1.0, rc@^1.1.2, rc@~1.1.6:
     minimist "^1.2.0"
     strip-json-comments "~1.0.4"
 
+react-deep-force-update@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/react-deep-force-update/-/react-deep-force-update-1.0.1.tgz#f911b5be1d2a6fe387507dd6e9a767aa2924b4c7"
+
 react-deep-force-update@^2.0.1:
   version "2.0.1"
   resolved react-deep-force-update-2.0.1.tgz#4f7f6c12c3e7de42f345992a3c518236fa1ecad3
@@ -6377,6 +6467,13 @@ react-motion@^0.4.7:
     performance-now "^0.2.0"
     raf "^3.1.0"
 
+react-proxy@^1.1.7:
+  version "1.1.8"
+  resolved "https://registry.yarnpkg.com/react-proxy/-/react-proxy-1.1.8.tgz#9dbfd9d927528c3aa9f444e4558c37830ab8c26a"
+  dependencies:
+    lodash "^4.6.1"
+    react-deep-force-update "^1.0.0"
+
 react-proxy@^3.0.0-alpha.0:
   version "3.0.0-alpha.1"
   resolved react-proxy-3.0.0-alpha.1.tgz#4400426bcfa80caa6724c7755695315209fa4b07
@@ -6412,11 +6509,22 @@ react-sidebar@^2.2.1:
   version "2.2.1"
   resolved react-sidebar-2.2.1.tgz#a8faf6a3c62ddc562c70680d5d016fe9741b585f
 
+react-transform-catch-errors@^1.0.2:
+  version "1.0.2"
+  resolved react-transform-catch-errors-1.0.2.tgz#1b4d4a76e97271896fc16fe3086c793ec88a9eeb
+
+react-transform-hmr@^1.0.3:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/react-transform-hmr/-/react-transform-hmr-1.0.4.tgz#e1a40bd0aaefc72e8dfd7a7cda09af85066397bb"
+  dependencies:
+    global "^4.3.0"
+    react-proxy "^1.1.7"
+
 react-typography@^0.15.0:
   version "0.15.0"
   resolved react-typography-0.15.0.tgz#0c7680bcbb12a681950c2187df66c43aa4b02034
 
-react@^15.4.0:
+react@^15.4.0, react@^15.4.2:
   version "15.4.2"
   resolved react-15.4.2.tgz#41f7991b26185392ba9bae96c8889e7e018397ef
   dependencies:
@@ -6515,7 +6623,7 @@ rechoir@^0.6.2:
   dependencies:
     minimatch "3.0.2"
 
-redbox-react@^1.2.5:
+redbox-react@^1.2.2, redbox-react@^1.2.5:
   version "1.3.3"
   resolved redbox-react-1.3.3.tgz#63ec9c2cb9c620c46e2b9f8543b4898f1b787e41
   dependencies:
