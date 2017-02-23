@@ -1,6 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXAnalytics.h"
+#import "EXKernel.h"
+#import "EXKeys.h"
 
 #import "Amplitude.h"
 
@@ -19,11 +21,26 @@
   static EXAnalytics *theAnalytics = nil;
   static dispatch_once_t once;
   dispatch_once(&once, ^{
+    [self initAmplitude];
     if (!theAnalytics) {
       theAnalytics = [[EXAnalytics alloc] init];
     }
   });
   return theAnalytics;
+}
+
++ (void)initAmplitude
+{
+  // TODO: open up an api for this in ExponentView
+  if ([EXKernel isDevKernel]) {
+#ifdef AMPLITUDE_DEV_KEY
+    [[Amplitude instance] initializeApiKey:AMPLITUDE_DEV_KEY];
+#endif
+  } else {
+#ifdef AMPLITUDE_KEY
+    [[Amplitude instance] initializeApiKey:AMPLITUDE_KEY];
+#endif
+  }
 }
 
 - (instancetype)init
