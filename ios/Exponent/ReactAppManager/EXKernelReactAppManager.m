@@ -47,7 +47,7 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
   NSString *manifestJson = nil;
 #ifdef BUILD_MACHINE_KERNEL_MANIFEST
   // if developing, use development manifest from generateDynamicMacros.js
-  if ([self _isDevelopingKernel]) {
+  if ([EXKernel isDevKernel]) {
     manifestJson = BUILD_MACHINE_KERNEL_MANIFEST;
   }
 #endif
@@ -107,7 +107,7 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
 
 - (EXCachedResourceBehavior)cacheBehaviorForJSResource
 {
-  if ([[self class] _isDevelopingKernel]) {
+  if ([EXKernel isDevKernel]) {
     // to prevent running dev native code against prod js.
     return kEXCachedResourceNoCache;
   } else {
@@ -190,7 +190,7 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
                                      @"kernel": [EXKernel sharedInstance],
                                      @"supportedSdkVersions": [EXVersions sharedInstance].versions[@"sdkVersions"],
                                      @"exceptionsManagerDelegate": _exceptionHandler,
-                                     @"isDeveloper": @([[self class] _isDevelopingKernel]),
+                                     @"isDeveloper": @([EXKernel isDevKernel]),
                                      @"manifest": manifest,
                                      } mutableCopy];
 
@@ -210,23 +210,6 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
   }
   
   return modules;
-}
-
-#pragma mark - internal
-
-+ (BOOL)_isDevelopingKernel
-{
-  // if we're in detached state (i.e. ExponentView) then never expect local kernel
-  BOOL isDetachedKernel = ([[EXVersions sharedInstance].versions objectForKey:@"detachedNativeVersions"] != nil);
-  if (isDetachedKernel) {
-    return NO;
-  }
-
-  // otherwise, expect local kernel when we are attached to xcode
-#if DEBUG
-  return YES;
-#endif
-  return NO;
 }
 
 @end

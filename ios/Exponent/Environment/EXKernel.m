@@ -47,6 +47,21 @@ NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
   return theKernel;
 }
 
++ (BOOL)isDevKernel
+{
+  // if we're in detached state (i.e. ExponentView) then never expect local kernel
+  BOOL isDetachedKernel = ([[EXVersions sharedInstance].versions objectForKey:@"detachedNativeVersions"] != nil);
+  if (isDetachedKernel) {
+    return NO;
+  }
+  
+  // otherwise, expect local kernel when we are attached to xcode
+#if DEBUG
+  return YES;
+#endif
+  return NO;
+}
+
 - (instancetype)init
 {
   if (self = [super init]) {

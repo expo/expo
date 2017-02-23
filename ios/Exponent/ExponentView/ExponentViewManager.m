@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "ExponentViewManager.h"
+#import "EXAnalytics.h"
 #import "EXFatalHandler.h"
 #import "EXKernel.h"
 #import "EXKernelUtil.h"
@@ -9,7 +10,6 @@
 #import "EXLocalNotificationManager.h"
 #import "EXViewController.h"
 
-#import "Amplitude.h"
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <GoogleSignIn/GoogleSignIn.h>
 #import <GoogleMaps/GoogleMaps.h>
@@ -96,15 +96,9 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
   [[FBSDKApplicationDelegate sharedInstance] application:application
                            didFinishLaunchingWithOptions:launchOptions];
 
-  // TODO: open up an api for this in ExponentView
-#ifdef AMPLITUDE_DEV_KEY
-#if DEBUG
-  [[Amplitude instance] initializeApiKey:AMPLITUDE_DEV_KEY];
-#else
-  [[Amplitude instance] initializeApiKey:AMPLITUDE_KEY];
-#endif
-#endif
-  
+  // init analytics
+  [EXAnalytics sharedInstance];
+
   NSString *standaloneGMSKey = [[NSBundle mainBundle].infoDictionary objectForKey:@"GMSApiKey"];
   if (standaloneGMSKey && standaloneGMSKey.length) {
     [GMSServices provideAPIKey:standaloneGMSKey];
