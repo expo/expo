@@ -6,11 +6,14 @@
 
 #import "Amplitude.h"
 
+NSString * const kEXAnalyticsDisabledConfigKey = @"EXAnalyticsDisabled";
+
 @import UIKit;
 
 @interface EXAnalytics ()
 
 @property (nonatomic, assign) EXKernelRoute visibleRoute;
+@property (nonatomic, assign) BOOL isDisabled;
 
 @end
 
@@ -31,7 +34,9 @@
 
 + (void)initAmplitude
 {
-  // TODO: open up an api for this in ExponentView
+  if ([self _isAnalyticsDisabled]) {
+    return;
+  }
   if ([EXKernel isDevKernel]) {
 #ifdef AMPLITUDE_DEV_KEY
     [[Amplitude instance] initializeApiKey:AMPLITUDE_DEV_KEY];
@@ -43,9 +48,15 @@
   }
 }
 
++ (BOOL)_isAnalyticsDisabled
+{
+  return [[[NSBundle mainBundle].infoDictionary objectForKey:kEXAnalyticsDisabledConfigKey] boolValue];
+}
+
 - (instancetype)init
 {
   if (self = [super init]) {
+    _isDisabled = [[self class] _isAnalyticsDisabled];
     _visibleRoute = kEXKernelRouteUndefined;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_onApplicationEnterForeground) name:UIApplicationWillEnterForegroundNotification object:nil];
   }
@@ -59,11 +70,17 @@
 
 - (void)setUserProperties: (nonnull NSDictionary *)props
 {
+  if (_isDisabled) {
+    return;
+  }
   [[Amplitude instance] setUserProperties:props];
 }
 
 - (void)logEvent:(NSString *)eventIdentifier manifestUrl:(nonnull NSURL *)url eventProperties:(nullable NSDictionary *)properties
 {
+  if (_isDisabled) {
+    return;
+  }
   NSMutableDictionary *mutableProps = (properties) ? [properties mutableCopy] : [NSMutableDictionary dictionary];
   [mutableProps setObject:url.absoluteString forKey:@"MANIFEST_URL"];
   [[Amplitude instance] logEvent:eventIdentifier withEventProperties:mutableProps];
@@ -71,6 +88,9 @@
 
 - (void)logForegroundEventForRoute:(EXKernelRoute)route fromJS:(BOOL)isFromJS
 {
+  if (_isDisabled) {
+    return;
+  }
   self.visibleRoute = route;
   if (route < kEXKernelRouteUndefined) {
     NSArray *eventIdentifiers = @[ @"HOME_APPEARED", @"EXPERIENCE_APPEARED", @"ERROR_APPEARED" ];
