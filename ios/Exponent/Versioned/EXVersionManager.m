@@ -128,20 +128,9 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
 #if RCT_DEV
   // key commands
   SEL RCTCommandsSelector = NSSelectorFromString(@"RCT_keyCommands");
-  SEL RCTSendActionSelector = NSSelectorFromString(@"RCT_sendAction:to:from:forEvent:");
-  if ([UIDevice currentDevice].systemVersion.floatValue < 9) {
-    RCTSwapInstanceMethods([UIApplication class],
-                           @selector(keyCommands),
-                           RCTCommandsSelector);
-    
-    RCTSwapInstanceMethods([UIApplication class],
-                           @selector(sendAction:to:from:forEvent:),
-                           RCTSendActionSelector);
-  } else {
-    RCTSwapInstanceMethods([UIResponder class],
-                           @selector(keyCommands),
-                           RCTCommandsSelector);
-  }
+  RCTSwapInstanceMethods([UIResponder class],
+                         @selector(keyCommands),
+                         RCTCommandsSelector);
   
   // shake gesture
   SEL RCTMotionSelector = NSSelectorFromString(@"RCT_motionEnded:withEvent:");
@@ -154,22 +143,9 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
 #if RCT_DEV
   // key commands
   SEL RCTCommandsSelector = NSSelectorFromString(@"RCT_keyCommands");
-  if ([UIDevice currentDevice].systemVersion.floatValue < 9) {
-    EXSetInstanceMethod([UIApplication class],
-                           @selector(keyCommands),
-                           RCTCommandsSelector);
-    
-    // don't support this set on iOS 8.x -- results in a recursive call.
-    // in this case people will just need to live without key commands.
-
-    /* EXSetInstanceMethod([UIApplication class],
-                           @selector(sendAction:to:from:forEvent:),
-                           RCTSendActionSelector); */
-  } else {
-    EXSetInstanceMethod([UIResponder class],
-                           @selector(keyCommands),
-                           RCTCommandsSelector);
-  }
+  EXSetInstanceMethod([UIResponder class],
+                         @selector(keyCommands),
+                         RCTCommandsSelector);
   
   // shake gesture
   SEL RCTMotionSelector = NSSelectorFromString(@"RCT_motionEnded:withEvent:");
