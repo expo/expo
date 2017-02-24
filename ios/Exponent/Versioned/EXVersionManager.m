@@ -94,9 +94,11 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
 
 - (void)resetSharedState
 {
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   [RCTSharedApplication() setStatusBarStyle:_statusbarStyle];
   [RCTSharedApplication() setStatusBarHidden: _isStatusBarHidden];
+#pragma clang diagnostic pop
 }
 
 - (void)invalidate
