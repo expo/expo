@@ -104,7 +104,7 @@ class Wrapper extends React.Component {
       activeRoutes: this.getRoutes(version)
     });
 
-    const newRoute = `/versions/${version}`;
+    const newRoute = `/versions/${version}/index.html`;
     this.props.router.push(newRoute);
   };
 
@@ -237,7 +237,7 @@ class Wrapper extends React.Component {
               }}
             />
           </div>
-          <Link to={`/versions/${this.state.activeVersion}/`}>
+          <Link to={`/versions/${this.state.activeVersion}/index.html`}>
             <img
               src={logoText}
               css={{

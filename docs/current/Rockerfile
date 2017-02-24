@@ -9,6 +9,8 @@ ADD gatsby/yarn.lock /root/docs/gatsby/yarn.lock
 ADD gatsby/package.json /root/docs/gatsby/package.json
 WORKDIR /root/docs/gatsby
 
+ATTACH /bin/sh
+
 RUN yarn
 
 MOUNT ./gatsby/public:/root/docs/gatsby/public

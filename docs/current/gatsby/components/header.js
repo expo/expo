@@ -1,3 +1,4 @@
+import { orderBy } from 'lodash';
 import React from 'react';
 import Link from 'gatsby-link';
 import { rhythm, scale } from 'utils/typography';
@@ -88,7 +89,7 @@ class Header extends React.Component {
                 display: 'inline-block'
               }
             }}>
-            <Link to={`/versions/${this.props.activeVersion}/`}>
+            <Link to={`/versions/${this.props.activeVersion}/index.html`}>
               <img
                 src={logoText}
                 css={{
@@ -129,7 +130,7 @@ class Header extends React.Component {
                   textAlignLast: `center`,
                   textAlign: `center`
                 }}>
-                {this.props.versions
+                {orderBy(this.props.versions, v => parseInt(v.match(/v([0-9]+)\./)[1], 10), ['asc'])
                   .map(version => {
                     return (
                       <option key={version} value={version}>
