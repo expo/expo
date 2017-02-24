@@ -22,13 +22,6 @@
 
 @end
 
-@interface EXFileSystem ()
-
-@property (nonatomic, strong) NSString *rootDir;
-@property (nonatomic, strong) NSString *cacheDir;
-
-@end
-
 @implementation EXFileSystem
 
 RCT_EXPORT_MODULE(ExponentFileSystem);
@@ -38,9 +31,6 @@ RCT_EXPORT_MODULE(ExponentFileSystem);
 - (void)setBridge:(RCTBridge *)bridge
 {
   _bridge = bridge;
-  NSString *subdir = [EXVersionManager escapedResourceName:_bridge.experienceScope.experienceId];
-  _rootDir = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject stringByAppendingPathComponent:@"ExponentExperienceData"] stringByAppendingPathComponent:subdir];
-  _cacheDir = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject stringByAppendingPathComponent:@"ExponentExperienceData"] stringByAppendingPathComponent:subdir];
 }
 
 RCT_REMAP_METHOD(downloadAsync,
@@ -117,9 +107,9 @@ RCT_REMAP_METHOD(deleteAsync,
 
 - (NSString *)scopedPathWithPath:(NSString *)path withOptions:(NSDictionary *)options
 {
-  NSString *prefix = _rootDir;
+  NSString *prefix = self.bridge.experienceScope.documentDirectory;
   if ([options objectForKey:@"cache"] && [[options objectForKey:@"cache"] boolValue]) {
-    prefix = _cacheDir;
+    prefix = self.bridge.experienceScope.cachesDirectory;
   }
 
   if (![EXFileSystem ensureDirExistsWithPath:prefix]) {
