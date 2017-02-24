@@ -17,14 +17,20 @@
 {
   [super viewWillAppear:animated];
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   [[UIApplication sharedApplication] setStatusBarStyle: UIStatusBarStyleDefault animated:YES];
+#pragma clang diagnostic pop
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
   [super viewWillDisappear:animated];
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   [[UIApplication sharedApplication] setStatusBarStyle: _initialStatusBarStyle animated:YES];
+#pragma clang diagnostic pop
 }
 
 - (void)viewDidLoad
