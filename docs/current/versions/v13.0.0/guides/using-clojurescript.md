@@ -97,11 +97,11 @@ exp start --ios
 exp start --android
 ```
 
-For more information, see [exp Command-Line Interface](/versions/v13.0.0/exp-cli/#exp-cli).
+For more information, see [exp Command-Line Interface](../.html#exp-cli).
 
 ### Using XDE
 
-For more information, see [XDE tour](/versions/v13.0.0/introduction/xde-tour#xde-tour).
+For more information, see [XDE tour](../introduction/xde-tour.html#xde-tour).
 
 ## 4. Publish your app
 
@@ -118,7 +118,7 @@ This will publish your app to a persistent URL on getexponent.com, for example: 
 
 ### How do I add custom native modules?
 
-See [How do I add custom native code to my Exponent project?](/versions/v13.0.0/introduction/faq#faq).
+See [How do I add custom native code to my Exponent project?](../introduction/faq.html#faq).
 
 ### Does it support Google Closure advanced compilation?
 

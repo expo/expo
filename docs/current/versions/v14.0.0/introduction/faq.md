@@ -67,9 +67,9 @@ TL;DR you can do it, but most people never need to.
 
 Standard Exponent projects don't support custom native code, including third-party libraries which require custom native components. In an Exponent project, you only write pure JS. Exponent is designed this way on purpose and we think it's better this way.
 
-In [our SDK](/versions/v14.0.0/sdk/), we give you a large set of commonly desired, high-quality native modules. We recommend doing as much in JS as possible, since it can immediately deploy to all your users and work across both platforms, and will always continue to benefit from Exponent SDK updates. Especially in the case of UI components, there is pretty much always a better option written in JS.
+In [our SDK](../sdk/.html), we give you a large set of commonly desired, high-quality native modules. We recommend doing as much in JS as possible, since it can immediately deploy to all your users and work across both platforms, and will always continue to benefit from Exponent SDK updates. Especially in the case of UI components, there is pretty much always a better option written in JS.
 
-However, if you need something very custom--like on-the-fly video processing or low level control over the Bluetooth radio to do a firmware update--we do have early/alpha support for [using Exponent in native Xcode and Android Studio projects](/versions/v14.0.0/guides/exponentkit).
+However, if you need something very custom--like on-the-fly video processing or low level control over the Bluetooth radio to do a firmware update--we do have early/alpha support for [using Exponent in native Xcode and Android Studio projects](../guides/exponentkit.html).
 
 ## Is Exponent similar to React for web development?
 
@@ -77,7 +77,7 @@ Exponent and React Native are similar to React. You'll have to learn a new set o
 
 ## How do I publish my Exponent project? Can I submit it to the app stores?
 
-With Exponent you have two options to publish your project. The first is to create a standalone app that you submit to Apple and Google's app stores. It's easy to build standalone apps with Exponent; see [our guide](/versions/v14.0.0/guides/building-standalone-apps#building-standalone-apps) to learn how to create the iOS IPA and Android APK binaries. Apple charges $99/year to publish your app in the App Store and Google charges a $25 one-time fee for the Play Store.
+With Exponent you have two options to publish your project. The first is to create a standalone app that you submit to Apple and Google's app stores. It's easy to build standalone apps with Exponent; see [our guide](../guides/building-standalone-apps.html#building-standalone-apps) to learn how to create the iOS IPA and Android APK binaries. Apple charges $99/year to publish your app in the App Store and Google charges a $25 one-time fee for the Play Store.
 
 The second option is to publish your project using Exponent. Anyone with the Exponent app can then open your project if they have the URL for it. This option is free and is wonderful for sharing your project with friends. These two options aren't mutually exclusive so you can choose both of them.
 

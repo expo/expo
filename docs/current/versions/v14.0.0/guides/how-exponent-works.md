@@ -25,7 +25,7 @@ This server is the endpoint that you hit first when you type the URL into the Ex
 
 #### `Exponent Manifest`
 
-The following is an example of a manifest being served through XDE. The first thing that you should notice is there are a lot of identical fields to `exp.json` (see the [Configuration with exp.json](/versions/v14.0.0/configuration/#exp) section if you haven't read it yet). These fields are taken directly from that file -- this is how the Exponent app accesses your configuration.
+The following is an example of a manifest being served through XDE. The first thing that you should notice is there are a lot of identical fields to `exp.json` (see the [Configuration with exp.json](../.html#exp) section if you haven't read it yet). These fields are taken directly from that file -- this is how the Exponent app accesses your configuration.
 
 ```javascript
 {
@@ -79,7 +79,7 @@ The second purpose is to serve assets. When you include an image in your app, yo
 
 ## Publishing/Deploying an Exponent app in Production
 
-When you Publish an Exponent app, we compile it into a JavaScript bundle with production flags enabled (minify, disable runtime development checks) and upload that bundle, along with any assets that it requires (see [Assets](/versions/v14.0.0/preloading-and-caching-assets/#all-about-assets)) to CloudFront. We also upload your [Manifest](#exponent-manifest) (including most of your `exp.json` configuration) to our server.
+When you Publish an Exponent app, we compile it into a JavaScript bundle with production flags enabled (minify, disable runtime development checks) and upload that bundle, along with any assets that it requires (see [Assets](../.html#all-about-assets)) to CloudFront. We also upload your [Manifest](#exponent-manifest) (including most of your `exp.json` configuration) to our server.
 
 When publishing is complete, we'll give you a URL to your app which you can send to anybody who has the Exponent client.
 
@@ -87,7 +87,7 @@ When publishing is complete, we'll give you a URL to your app which you can send
 
 As soon as the publish is complete, the new version of your code is available to all your existing users. They'll get the updated version next time they open the app or refresh it, provided that they have a version of the Exponent client that supports the `sdkVersion` specified in your `exp.json`.
 
-> **Note:** To package your app for deployment on the Apple App Store or Google Play Store, see [Building Standalone Apps](/versions/v14.0.0/building-standalone-apps/#building-standalone-apps). Each time you update the SDK version you will need to rebuild your binary.
+> **Note:** To package your app for deployment on the Apple App Store or Google Play Store, see [Building Standalone Apps](../.html#building-standalone-apps). Each time you update the SDK version you will need to rebuild your binary.
 
 ## SDK Versions
 
@@ -115,4 +115,4 @@ If you build a standalone app with Exponent, that standalone binary will also sh
 
 You can also package your Exponent app into a standalone binary for submission to the Apple iTunes Store or Google Play.
 
-Under the hood, it's a modified version of the Exponent client which is designed only to load a single URL (the one for your app) and which will never show the Exponent home screen or brand. For more information, see [Building Standalone Apps](/versions/v14.0.0/building-standalone-apps/#building-standalone-apps).
+Under the hood, it's a modified version of the Exponent client which is designed only to load a single URL (the one for your app) and which will never show the Exponent home screen or brand. For more information, see [Building Standalone Apps](../.html#building-standalone-apps).

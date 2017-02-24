@@ -2,9 +2,9 @@
 title: Advanced ExponentKit Topics
 ---
 
-This guide goes deeper into a few [ExponentKit](/versions/v13.0.0/guides/exponentkit) topics that aren't critical
+This guide goes deeper into a few [ExponentKit](exponentkit.html) topics that aren't critical
 right out of the box, but that you may encounter down the road. If you're not familiar with
-ExponentKit, you might want to read [the ExponentKit guide](/versions/v13.0.0/guides/exponentkit) first.
+ExponentKit, you might want to read [the ExponentKit guide](exponentkit.html) first.
 
 ## Verifying Bundles (iOS only)
 
@@ -17,11 +17,11 @@ users.
 
 To enable code verification in your native project with ExponentKit:
 
-- Fulfill one of these two requirements (you only need one):
+-   Fulfill one of these two requirements (you only need one):
 
-  - Use a non-wildcard bundle identifier when provisioning the app (recommended)
-  - Enable **Keychain Sharing** in your Xcode project settings under **Capabilities**. (faster to
-    set up)
+    -   Use a non-wildcard bundle identifier when provisioning the app (recommended)
+    -   Enable **Keychain Sharing** in your Xcode project settings under **Capabilities**. (faster to
+        set up)
 
-- In `ios/your-project/Supporting/EXShell.plist`, set `isManifestVerificationBypassed` to
-  `NO` (or delete this key entirely).
+-   In `ios/your-project/Supporting/EXShell.plist`, set `isManifestVerificationBypassed` to
+    `NO` (or delete this key entirely).

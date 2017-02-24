@@ -19,9 +19,9 @@ Each time you publish your app, Exponent will upload your assets to Amazon Cloud
 
 ## Preloading & caching assets
 
-Some assets are too important to start your app without. Fonts often fall into this category. On the web the font loading problem is known by several acronyms: FOUT, FOIT, and FOFT, which stand for Flash of Unstyled Text, Flash of Invisible Text, and Flash of Faux Text ([read more here](https://css-tricks.com/fout-foit-foft/)). The default behaviour with the icon-font-powered [@exponent/vector-icons](/versions/v9.0.0/guides/icons#icons) icons is a FOIT on first load, and on subsequent loads the font will be automatically cached. Users have higher standards for mobile than web, so you might want to take it a step further by preloading and caching the font and important images during the initial loading screen.
+Some assets are too important to start your app without. Fonts often fall into this category. On the web the font loading problem is known by several acronyms: FOUT, FOIT, and FOFT, which stand for Flash of Unstyled Text, Flash of Invisible Text, and Flash of Faux Text ([read more here](https://css-tricks.com/fout-foit-foft/)). The default behaviour with the icon-font-powered [@exponent/vector-icons](icons.html#icons) icons is a FOIT on first load, and on subsequent loads the font will be automatically cached. Users have higher standards for mobile than web, so you might want to take it a step further by preloading and caching the font and important images during the initial loading screen.
 
-In order to keep the loading screen visible while we cache our assets, we render [Exponent.Components.AppLoading](/versions/v9.0.0/sdk/app-loading#app-loading) and only that component until everything is ready.
+In order to keep the loading screen visible while we cache our assets, we render [Exponent.Components.AppLoading](../sdk/app-loading.html#app-loading) and only that component until everything is ready.
 
 ```javascript
 import * as Exponent from 'Exponent';

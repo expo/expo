@@ -16,7 +16,7 @@ Audio is disabled by default, so your app must enable it explicitly to play soun
 
 #### Arguments
 
-- **value (_boolean_)** -- `true` enables Exponent Audio, and `false` disables it.
+-   **value (_boolean_)** -- `true` enables Exponent Audio, and `false` disables it.
 
 #### Returns
 
@@ -30,18 +30,19 @@ This class represents a sound corresponding to an Asset or URL.
 
 #### Parameters
 
-- **options (_object_)** --
+-   **options (_object_)** --
 
-  A map of options:
+    A map of options:
 
-  - **source** -- The source of the audio data to display. The following forms are supported:
-    -  A string with a network URL pointing to an audio file on the web.
-    -  `require('path/to/file')` for an audio file asset in the source code directory.
-    -  An [`Exponent.Asset`](/versions/v14.0.0/sdk/asset) object for an audio file asset.
+    -   **source** -- The source of the audio data to display. The following forms are supported:
 
-    The [iOS developer documentation](https://developer.apple.com/library/ios/documentation/Miscellaneous/Conceptual/iPhoneOSTechOverview/MediaLayer/MediaLayer.html) lists the audio formats supported on iOS.
+        -   A string with a network URL pointing to an audio file on the web.
+        -   `require('path/to/file')` for an audio file asset in the source code directory.
+        -   An [`Exponent.Asset`](asset.html) object for an audio file asset.
 
-    The [Android developer documentation](https://developer.android.com/guide/appendix/media-formats.html#formats-table) lists the audio formats supported on Android.
+        The [iOS developer documentation](https://developer.apple.com/library/ios/documentation/Miscellaneous/Conceptual/iPhoneOSTechOverview/MediaLayer/MediaLayer.html) lists the audio formats supported on iOS.
+
+        The [Android developer documentation](https://developer.android.com/guide/appendix/media-formats.html#formats-table) lists the audio formats supported on Android.
 
 #### Returns
 
@@ -55,117 +56,136 @@ const sound = new Exponent.Audio.Sound({
 });
 ```
 
-- `soundInstance.loadAsync()`
+-   `soundInstance.loadAsync()`
 
-  Loads the sound into memory and prepares it for playing. This must be called before calling `play`.
+    Loads the sound into memory and prepares it for playing. This must be called before calling `play`.
 
-  #### Returns
-  A `Promise` that is fulfilled when the sound is loaded, or rejects if loading failed.
+    #### Returns
 
-- `soundInstance.unload()`
+    A `Promise` that is fulfilled when the sound is loaded, or rejects if loading failed.
 
-  Unloads the sound. `loadAsync` must be called again in order to be able to play the sound.
+-   `soundInstance.unload()`
 
-- `soundInstance.isLoaded()`
+    Unloads the sound. `loadAsync` must be called again in order to be able to play the sound.
 
-  #### Returns
-  A `boolean` that is true if and only if the sound is loaded.
+-   `soundInstance.isLoaded()`
 
-- `soundInstance.getDurationMillis()`
+    #### Returns
 
-  #### Returns
-  The duration of the sound in milliseconds. This is available only after the sound is loaded.
+    A `boolean` that is true if and only if the sound is loaded.
 
-- `soundInstance.play()`
+-   `soundInstance.getDurationMillis()`
 
-  Plays the sound.
+    #### Returns
 
-  #### Returns
-  A `Promise` that is resolved, once the sound starts playing, with the `status` of the sound (see `getStatus` for details).
+    The duration of the sound in milliseconds. This is available only after the sound is loaded.
 
-- `soundInstance.pause()`
+-   `soundInstance.play()`
 
-  Pauses the sound.
+    Plays the sound.
 
-  #### Returns
-  A `Promise` that is resolved, once playback is paused, with the `status` of the sound (see `getStatus` for details).
+    #### Returns
 
-- `soundInstance.stop()`
+    A `Promise` that is resolved, once the sound starts playing, with the `status` of the sound (see `getStatus` for details).
 
-  Stops the sound.
+-   `soundInstance.pause()`
 
-  #### Returns
-  A `Promise` that is resolved, once playback is stopped, with the `status` of the sound (see `getStatus` for details).
+    Pauses the sound.
 
--  `soundInstance.setPosition(millis)`
-  Sets the playback position of the sound.
+    #### Returns
 
-  #### Parameters
-  - **millis (_number_)** -- The position to seek the sound to.
+    A `Promise` that is resolved, once playback is paused, with the `status` of the sound (see `getStatus` for details).
 
-  #### Returns
-  A `Promise` that is resolved, once the seek occurs, with the `status` of the sound (see `getStatus` for details).
+-   `soundInstance.stop()`
 
-- `soundInstance.setVolume(value)`
+    Stops the sound.
 
-  Sets the volume of the sound. This is NOT the system volume, and will only affect this sound. This value defaults to `1`.
-  #### Parameters
-  - **value (_number_)** -- A number between `0` (silence) and `1` (maximum volume).
+    #### Returns
 
-  #### Returns
-  A `Promise` that is resolved, once the volume is set, with the `status` of the sound (see `getStatus` for details).
+    A `Promise` that is resolved, once playback is stopped, with the `status` of the sound (see `getStatus` for details).
 
--  `soundInstance.setIsMuted(value)`
+-   `soundInstance.setPosition(millis)`
+    Sets the playback position of the sound.
 
-  Sets whether the sound is muted. This is independent of the volume of the sound set in `setVolume`. This also does not affect the system volume, and only pertains to this sound. This value defaults to `true`.
+    #### Parameters
 
-  #### Parameters
-  - **value (_boolean_)** -- `true` mutes the sound, and `false` unmutes it.
+-   **millis (_number_)** -- The position to seek the sound to.
 
-  #### Returns
-  A `Promise` that is resolved, once the mute state is set, with the `status` of the sound (see `getStatus` for details).
+    #### Returns
 
-- `soundInstance.setIsLooping(value)`
+    A `Promise` that is resolved, once the seek occurs, with the `status` of the sound (see `getStatus` for details).
 
-  Sets whether playback of the sound should loop. When `true`, it will loop indefinitely. This value defaults to `false`.
+-   `soundInstance.setVolume(value)`
 
-  #### Parameters
-  - **value (_boolean_)** -- `true` sets the sound to loop indefinitely.
+    Sets the volume of the sound. This is NOT the system volume, and will only affect this sound. This value defaults to `1`.
 
-  #### Returns
-  A `Promise` that is resolved, once the loop state is set, with the `status` of the sound (see `getStatus` for details).
+    #### Parameters
 
-- `soundInstance.getStatus()`
+    -   **value (_number_)** -- A number between `0` (silence) and `1` (maximum volume).
 
-  Gets the `status` of the sound.
+    #### Returns
 
-  #### Returns
-  A `Promise` that is resolved with the `status` of the sound: a dictionary with the following key-value pairs.
+    A `Promise` that is resolved, once the volume is set, with the `status` of the sound (see `getStatus` for details).
 
-  - `position_millis` : the current position of playback in milliseconds.
-  - `is_playing` : a boolean describing if the sound is currently playing.
-  - `is_muted` : a boolean describing if the sound is currently muted.
-  - `is_looping` : a boolean describing if the sound is currently looping.
+-   `soundInstance.setIsMuted(value)`
 
-- `soundInstance.setStatusChangeCallback(callback)`
+    Sets whether the sound is muted. This is independent of the volume of the sound set in `setVolume`. This also does not affect the system volume, and only pertains to this sound. This value defaults to `true`.
 
-  Sets a function to be called at regular intervals with the `status` of the Sound. See `getStatus` for details on `status`, and see `setStatusPollingTimeoutMillis` for details on the regularity with which this function is called.
+    #### Parameters
 
-  #### Parameters
-  - **callback (_function_)** -- A function taking a single parameter `status` (a dictionary, described in `getStatus`).
+-   **value (_boolean_)** -- `true` mutes the sound, and `false` unmutes it.
 
-- `soundInstance.setStatusPollingTimeoutMillis(millis)`
+    #### Returns
 
-  Sets the interval with which the status change callback is called. See `setStatusChangeCallback` for details on the status change callback. This value defaults to 100 milliseconds.
+    A `Promise` that is resolved, once the mute state is set, with the `status` of the sound (see `getStatus` for details).
 
-  Note that the status change callback will automatically be called when another call to the API for this sound completes (such as `play`, `pause`, or `stop`) regardless of this value.
+-   `soundInstance.setIsLooping(value)`
 
-  #### Parameters
-  - **millis (_number_)** -- The new interval between calls of the status change callback.
+    Sets whether playback of the sound should loop. When `true`, it will loop indefinitely. This value defaults to `false`.
 
-- `soundInstance.setPlaybackFinishedCallback(callback)`
+    #### Parameters
 
-  Sets a function to be called whenever this sound is finished playing to the end. This callback is not called when looping is enabled, or when the sound is stopped or paused before it finishes playing.
+    -   **value (_boolean_)** -- `true` sets the sound to loop indefinitely.
 
-  #### Parameters
-  - **callback (_function_)** -- The callback receives no parameters.
+    #### Returns
+
+    A `Promise` that is resolved, once the loop state is set, with the `status` of the sound (see `getStatus` for details).
+
+-   `soundInstance.getStatus()`
+
+    Gets the `status` of the sound.
+
+    #### Returns
+
+    A `Promise` that is resolved with the `status` of the sound: a dictionary with the following key-value pairs.
+
+    -   `position_millis` : the current position of playback in milliseconds.
+    -   `is_playing` : a boolean describing if the sound is currently playing.
+    -   `is_muted` : a boolean describing if the sound is currently muted.
+    -   `is_looping` : a boolean describing if the sound is currently looping.
+
+-   `soundInstance.setStatusChangeCallback(callback)`
+
+    Sets a function to be called at regular intervals with the `status` of the Sound. See `getStatus` for details on `status`, and see `setStatusPollingTimeoutMillis` for details on the regularity with which this function is called.
+
+    #### Parameters
+
+    -   **callback (_function_)** -- A function taking a single parameter `status` (a dictionary, described in `getStatus`).
+
+-   `soundInstance.setStatusPollingTimeoutMillis(millis)`
+
+    Sets the interval with which the status change callback is called. See `setStatusChangeCallback` for details on the status change callback. This value defaults to 100 milliseconds.
+
+    Note that the status change callback will automatically be called when another call to the API for this sound completes (such as `play`, `pause`, or `stop`) regardless of this value.
+
+    #### Parameters
+
+    -   **millis (_number_)** -- The new interval between calls of the status change callback.
+
+-   `soundInstance.setPlaybackFinishedCallback(callback)`
+
+    Sets a function to be called whenever this sound is finished playing to the end. This callback is not called when looping is enabled, or when the sound is stopped or paused before it finishes playing.
+
+    #### Parameters
+
+    -   **callback (_function_)** -- The callback receives no parameters.

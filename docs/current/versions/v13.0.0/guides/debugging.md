@@ -16,7 +16,7 @@ For iOS the Simulator built into Xcode works great, you can install Xcode on the
 
 On Android we recommend the Genymotion emulator over the standard emulator -- we have found it to be more feature complete, faster and easier to use.
 
-[Download Genymotion](https://www.genymotion.com/fun-zone/) (free version) and follow the [Genymotion installation guide](https://docs.genymotion.com/Content/01_Get_Started/Installation.htm). Once you've installed Genymotion, create a virtual device - we recommend a Nexus 5, the Android version is up to you. Start up the virtual device when it's ready. If you run into any issues follow our [Genymotion guide](/versions/v13.0.0/genymotion/#genymotion).
+[Download Genymotion](https://www.genymotion.com/fun-zone/) (free version) and follow the [Genymotion installation guide](https://docs.genymotion.com/Content/01_Get_Started/Installation.htm). Once you've installed Genymotion, create a virtual device - we recommend a Nexus 5, the Android version is up to you. Start up the virtual device when it's ready. If you run into any issues follow our [Genymotion guide](../.html#genymotion).
 
 ## Developer Menu
 
@@ -35,7 +35,6 @@ Hit `Ctrl-Cmd-Z` on a Mac in the emulator to simulate the shake gesture.
 ### On Genymotion
 
 Either press "Menu" button in Genymotion's toolbar, or just hit `Cmd-m`.
-
 
 ## Debugging Javascript
 

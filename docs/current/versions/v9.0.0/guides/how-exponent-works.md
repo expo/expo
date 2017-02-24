@@ -21,7 +21,7 @@ This server is the endpoint that you hit first when you type the URL into the Ex
 
 #### `Exponent Manifest`
 
-The following is an example of a manifest being served through XDE. The first thing that you should notice is there are a lot of identical fields to `exp.json` (see the [Configuration with exp.json](/versions/v9.0.0/guides/configuration#exp) section if you haven't read it yet). These fields are taken directly from that file -- this is how the Exponent app accesses your configuration.
+The following is an example of a manifest being served through XDE. The first thing that you should notice is there are a lot of identical fields to `exp.json` (see the [Configuration with exp.json](configuration.html#exp) section if you haven't read it yet). These fields are taken directly from that file -- this is how the Exponent app accesses your configuration.
 
 ```javascript
 {
@@ -75,9 +75,9 @@ The second purpose is to serve assets. When you include an image in your app, yo
 
 ## Deployment
 
-Deployment for Exponent means compiling your JavaScript bundle with production flags enabled (minify, disable runtime development checks) and upload it along with any assets that it requires (see [Assets](/versions/v9.0.0/guides/assets#all-about-assets)) to CloudFront. We upload your `exp.json` configuration to our server. As soon as the publish is complete, users will receive the new version next time they open the app or refresh it, provided that they have a version of the Exponent client that supports the `sdkVersion` specified in your `exp.json`.
+Deployment for Exponent means compiling your JavaScript bundle with production flags enabled (minify, disable runtime development checks) and upload it along with any assets that it requires (see [Assets](assets.html#all-about-assets)) to CloudFront. We upload your `exp.json` configuration to our server. As soon as the publish is complete, users will receive the new version next time they open the app or refresh it, provided that they have a version of the Exponent client that supports the `sdkVersion` specified in your `exp.json`.
 
-> **Note:** To package your app for deployment on the Apple App Store or Google Play Store, see [Building Standalone Apps](/versions/v9.0.0/guides/building-standalone-apps#building-standalone-apps). Each time you update the SDK version you will need to rebuild your binary.
+> **Note:** To package your app for deployment on the Apple App Store or Google Play Store, see [Building Standalone Apps](building-standalone-apps.html#building-standalone-apps). Each time you update the SDK version you will need to rebuild your binary.
 
 ## SDK Versions
 

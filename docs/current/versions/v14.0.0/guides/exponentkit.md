@@ -20,7 +20,7 @@ or the Exponent SDK.
 ## Detaching an Exponent project into a Native project with ExponentKit
 
 You may find yourself in a situation where your Exponent project needs a native module that Exponent
-doesn't currently support. We're always expanding the [Exponent SDK](/versions/v14.0.0/sdk/),
+doesn't currently support. We're always expanding the [Exponent SDK](../sdk/.html),
 so we hope this is never the case. But it happens, especially if your app has very specific and uncommon
 native demands.
 
@@ -34,7 +34,7 @@ longer lives inside the standard Exponent client. You control the native project
 configuring and building them yourself.
 
 **You don't need to do this if your main goal is to distribute your app in the iTunes Store or
-Google Play.** Exponent can [build binaries for you](/versions/v14.0.0/guides/building-standalone-apps) in that case.
+Google Play.** Exponent can [build binaries for you](building-standalone-apps.html) in that case.
 You should only `detach` if you need to make native code changes not available in the Exponent SDK.
 
 >  **Warning:** We discourage most of our developers from taking this route, as we believe almost
@@ -123,4 +123,4 @@ If you decide to distribute your app as an `ipa` or `apk`, it will automatically
 your app's published URL instead of your development XDE url. You can examine this configuration
 in the contents of `EXShell.plist` (iOS) or `MainActivity.java` (Android).
 
-Before taking your app all the way to production, it's a good idea to glance over the [Advanced ExponentKit Topics](/versions/v14.0.0/guides/advanced-exponentkit-topics) guide.
+Before taking your app all the way to production, it's a good idea to glance over the [Advanced ExponentKit Topics](advanced-exponentkit-topics.html) guide.

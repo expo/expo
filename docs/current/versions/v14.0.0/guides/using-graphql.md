@@ -10,20 +10,17 @@ GraphQL has a number of advantages in terms of flexilibilty and performance comp
 
 For instance, with a GraphQL query you are guaranteed to only ever get the exact data you need. No more overfetching or underfetching from API endpoints. Not only does a GraphQL query allow you to get exactly the data you need, but it also allows you to do so in a single request.
 
-
 ## How to get started with GraphQL?
 
 GraphQL has only been released as a _specification_, that means that you can go and implement a GraphQL **server** yourself in any server-side language of your choice! 
 
 In order to use GraphQL from an application, you will also need a **client** that is responsible for the interaction with the GraphQL server.
 
-
 ### GraphQL Backend
 
 Building your own **GraphQL server** from scratch however is not trivial and potentially gets really complicated once you want to implement more advanced features like proper _permissions_, _filtering_ or _subscriptions_ (which are a GraphQL feature that allow your app to get real-time updates from the database). 
 
 If you don't want to build the backend yourself, you can use [**Graphcool**](www.graph.cool), a powerful and flexible backend platform that combines GraphQL with AWS Lambda to provide you with the means of setting up a fully-fledged GraphQL server in only a few minutes.
-
 
 ### GraphQL Client
 
@@ -33,17 +30,15 @@ But if you want to save time, you can use [**Apollo**](http://dev.apollodata.com
 
 Using the Apollo client, you can benefit from _caching_, _optimistic UI_, _subscriptions_ and a lot more. To learn more, visit [dev.apollodata.com/react](dev.apollodata.com/react.).
 
-
 ### Learn more
 
 In the following, we'll explain how to set up a GraphQL project using these two technologies. For an in-depth tutorial on how to use Graphcool with the Apollo client, visit the [Learn Apollo Exponent Guide](https://www.learnapollo.com/tutorial-react-native-exponent/rne-01/). 
 
 We also prepared a full **Instagram example that uses Graphcool, Apollo and Auth0** - you can check it out [here](https://github.com/graphcool-examples/exponent-auth0-instagram-example). 
 
-
 ## Setting up a Graphcool backend
 
-### Connecting to Graphcool 
+### Connecting to Graphcool
 
 After [creating a Graphcool account](https://console.graph.cool/signup) you can create a new project and define your data model. Once you're done with that, you can start using the backend with the provided endpoint. 
 
@@ -51,9 +46,7 @@ If you want to use the Apollo client, you will need the endpoint for Graphcool's
 
 <img src="http://imgur.com/ZdH5iE2.png" height="450">
 
-
 We will tell you how to set up the Apollo client in a bit.
-
 
 ### Storing and Fetching Data
 
@@ -92,11 +85,9 @@ mutation {
 
 If you just want to play around with a GraphQL endpoint but are too lazy to setup a project yourself, you can use [this playground](https://api.graph.cool/simple/v1/ciwce5xw82kh7017179gwzn7q?query=query%20%7B%0A%20%20allPosts%20%7B%0A%20%20%20%20imageUrl%0A%20%20%20%20comments%20%7B%0A%20%20%20%20%20%20text%0A%20%20%20%20%7D%0A%20%20%7D%0A%7D) that we prepared for you (note that _mutations_ are disabled here).
 
-
 ### User Authentication with Auth0
 
 Graphcool comes with different [authentication integrations](https://blog.graph.cool/user-authentication-in-graphql-with-auth0-digits-4ce01788950#.61e3zh7x4) out of the box. The [Auth0 integration](https://www.graph.cool/docs/reference/platform/integrations/auth0-naed3eecie) works nicely together with the OAuth workflow available in exponent.
-
 
 #### Authenticating as a User
 
@@ -112,7 +103,6 @@ query {
 ```
 
 This query returns the `id` and `name` of the user if they are already authenticated, that is if a token is available.
-
 
 #### User Sign Up
 
@@ -130,7 +120,6 @@ mutation ($idToken: String!, $name: String!) {
 
 Learn how to integrate with Auth0 social providers in the [exponent-auth0-example](https://github.com/graphcool-examples/exponent-auth0-instagram-example) repository.
 
-
 ### Permissions
 
 The permission system at Graphcool complements the employed user authentication nicely. You can control read and write access on a model or field level.
@@ -138,7 +127,6 @@ The permission system at Graphcool complements the employed user authentication 
 For example, if you want to express that only authenticated users can create posts you can enable the create data operation for the `Post` model with `AUTHENTICATED` permission level.
 
 Using so called permission queries, you can even go one step further and describe arbitrary relations between the authenticated user and the manipulated node. For example, you can only allow authenticated users to delete their own posts but not the posts of other users.
-
 
 ## Using the Apollo client
 
@@ -152,11 +140,9 @@ npm install apollo-client react-apollo graphql-tag --save
 
 These packages are modular building blocks that can be used independently in other environments.
 
-
 ### Client Setup
 
 To start using Apollo we need to create an `ApolloClient` and serve that client to our React application with an `ApolloProvider`. The `ApolloClient` is what controls all your GraphQL data and the `ApolloProvider` wires the client into your React component hierarchy.
-
 
 #### Creating a client
 
@@ -170,7 +156,6 @@ const client = new ApolloClient({
   networkInterface: createNetworkInterface({ uri: 'http://api.example.com/graphql' }),
 });
 ```
-
 
 #### Creating a provider
 
@@ -248,9 +233,10 @@ export default graphql(gql`
   }
 `)(PostList);
 ```
+
 There are some Apollo examples written in React Native that you may wish to refer to. All the code should work equally well with Exponent.
 
-1. The [“Hello World” example](https://github.com/apollostack/frontpage-react-native-app) used at [dev.apolldata.com](dev.apolldata.com).
-1. A [GitHub API Example](https://github.com/apollostack/GitHub-GraphQL-API-Example) built to work with GitHub’s new GraphQL API.
+1.  The [“Hello World” example](https://github.com/apollostack/frontpage-react-native-app) used at [dev.apolldata.com](dev.apolldata.com).
+2.  A [GitHub API Example](https://github.com/apollostack/GitHub-GraphQL-API-Example) built to work with GitHub’s new GraphQL API.
 
 You are now ready to use GraphQL in your Exponent app 🚀

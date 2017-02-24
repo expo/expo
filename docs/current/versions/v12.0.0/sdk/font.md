@@ -5,7 +5,7 @@ previous___FILE: ./facebook.md
 next___FILE: ./gl-view.md
 ---
 
-Allows loading fonts from the web and using them in React Native components. See more detailed usage information in the [Using Custom Fonts](/versions/v12.0.0/guides/using-custom-fonts#using-custom-fonts) guide.
+Allows loading fonts from the web and using them in React Native components. See more detailed usage information in the [Using Custom Fonts](../guides/using-custom-fonts.html#using-custom-fonts) guide.
 
 ### `Exponent.Font.loadAsync(name, url)`
 

@@ -8,7 +8,7 @@ const fs = require('fs-extra');
 const visit = require('unist-util-visit');
 const select = require('unist-util-select');
 
-const Version = 10;
+const Version = 14;
 
 function findMarkdownFiles() {
   const glob = require('glob');
@@ -74,6 +74,7 @@ function updateAllLinks(filePaths) {
         }
 
         console.log({ newUrl, url, currentSection });
+        node.url = newUrl;
       }
     });
 

@@ -7,7 +7,7 @@ next___FILE: ./asset.md
 
 _Note: This documentation is about a library that is included in Exponent but is not maintained by the Exponent team. It may be out of date._
 
-React Native comes with a built in library for simple vector drawing called ART. It is barely documented and instead you likely want to use [Svg](/versions/v12.0.0/sdk/svg#svg) which is more feature complete and better documented and more standard implementation of vector graphics.
+React Native comes with a built in library for simple vector drawing called ART. It is barely documented and instead you likely want to use [Svg](svg.html#svg) which is more feature complete and better documented and more standard implementation of vector graphics.
 
 But sometimes you'll find some code that uses ART and you'll want to be able to run it on Exponent, and, since ART is built in to React Native, you can.
 

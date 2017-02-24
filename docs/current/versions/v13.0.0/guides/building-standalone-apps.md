@@ -36,10 +36,9 @@ The following fields are required in your app's `exp.json`, so open it up and ad
 
 The iOS `bundleIdentifier` and Android `package` fields use reverse DNS notation, but don't have to be related to a domain. In this case I chose `org.rnplay.exp` because the app's website is rnplay.org and this is the Exponent version of the app. Yours might be `com.yourcompany.appname`.
 
-
 You're probably not surprised that `name`, `iconUrl` and `version` are required, but if you haven't used Exponent much you might be confused by `slug` and `sdkVersion`. `slug` is the url name that your app's JavaScript is published to, for example `exp.host/@notbrent/rnplay`, where `notbrent` is my username and `rnplay` is the slug. The `sdkVersion` tells Exponent what Exponent runtime version to use, which corresponds to a React Native version.
 
-There are other options you might want to add to `exp.json`. We have only covered what is required. See [Configuration with exp.json](/versions/v13.0.0/guides/configuration) for the full spec.
+There are other options you might want to add to `exp.json`. We have only covered what is required. See [Configuration with exp.json](configuration.html) for the full spec.
 
 ## 3. Start the build
 
