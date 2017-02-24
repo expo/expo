@@ -2,21 +2,17 @@
 
 #import "EXScope.h"
 #import "EXVersionManager.h"
+#import <React/RCTAssert.h>
 
 @implementation EXScope
 
 + (NSString *)moduleName { return @"ExponentScope"; }
 
-@synthesize initialUri = _initialUri;
-@synthesize experienceId = _experienceId;
-@synthesize documentDirectory = _documentDirectory;
-@synthesize cachesDirectory = _cachesDirectory;
-
 - (instancetype)initWithParams:(NSDictionary *)params
 {
   if (self = [super init]) {
     NSDictionary *manifest = params[@"manifest"];
-    assert(manifest);
+    RCTAssert(manifest, @"Need manifest to get experience id.");
     _experienceId = manifest[@"id"];
 
     NSString *subdir = [EXVersionManager escapedResourceName:_experienceId];
