@@ -354,15 +354,6 @@ babel-helper-builder-binary-assignment-operator-visitor@^6.22.0:
     babel-runtime "^6.22.0"
     babel-types "^6.22.0"
 
-babel-helper-builder-react-jsx@^6.22.0:
-  version "6.22.0"
-  resolved babel-helper-builder-react-jsx-6.22.0.tgz#aafb31913e47761fd4d0b6987756a144a65fca0d
-  dependencies:
-    babel-runtime "^6.22.0"
-    babel-types "^6.22.0"
-    esutils "^2.0.0"
-    lodash "^4.2.0"
-
 babel-helper-builder-react-jsx@^6.23.0:
   version "6.23.0"
   resolved babel-helper-builder-react-jsx-6.23.0.tgz#d53fc8c996e0bc56d0de0fc4cc55a7138395ea4b
@@ -508,7 +499,7 @@ babel-plugin-lodash@^3.2.11:
 
 babel-plugin-react-transform@^2.0.2:
   version "2.0.2"
-  resolved "https://registry.yarnpkg.com/babel-plugin-react-transform/-/babel-plugin-react-transform-2.0.2.tgz#515bbfa996893981142d90b1f9b1635de2995109"
+  resolved babel-plugin-react-transform-2.0.2.tgz#515bbfa996893981142d90b1f9b1635de2995109
   dependencies:
     lodash "^4.6.1"
 
@@ -548,7 +539,7 @@ babel-plugin-syntax-export-extensions@^6.8.0:
   version "6.13.0"
   resolved babel-plugin-syntax-export-extensions-6.13.0.tgz#70a1484f0f9089a4e84ad44bac353c95b9b12721
 
-babel-plugin-syntax-flow@^6.18.0, babel-plugin-syntax-flow@^6.3.13:
+babel-plugin-syntax-flow@^6.18.0:
   version "6.18.0"
   resolved babel-plugin-syntax-flow-6.18.0.tgz#4c3ab20a2af26aa20cd25995c398c4eb70310c8d
 
@@ -846,12 +837,6 @@ babel-plugin-transform-object-rest-spread@^6.22.0:
     babel-plugin-syntax-object-rest-spread "^6.8.0"
     babel-runtime "^6.22.0"
 
-babel-plugin-transform-react-display-name@^6.22.0:
-  version "6.22.0"
-  resolved babel-plugin-transform-react-display-name-6.22.0.tgz#077197520fa8562b8d3da4c3c4b0b1bdd7853f26
-  dependencies:
-    babel-runtime "^6.22.0"
-
 babel-plugin-transform-react-display-name@^6.23.0:
   version "6.23.0"
   resolved babel-plugin-transform-react-display-name-6.23.0.tgz#4398910c358441dc4cef18787264d0412ed36b37
@@ -869,14 +854,6 @@ babel-plugin-transform-react-jsx-source@^6.22.0, babel-plugin-transform-react-js
   version "6.22.0"
   resolved babel-plugin-transform-react-jsx-source-6.22.0.tgz#66ac12153f5cd2d17b3c19268f4bf0197f44ecd6
   dependencies:
-    babel-plugin-syntax-jsx "^6.8.0"
-    babel-runtime "^6.22.0"
-
-babel-plugin-transform-react-jsx@^6.22.0:
-  version "6.22.0"
-  resolved babel-plugin-transform-react-jsx-6.22.0.tgz#48556b7dd4c3fe97d1c943bcd54fc3f2561c1817
-  dependencies:
-    babel-helper-builder-react-jsx "^6.22.0"
     babel-plugin-syntax-jsx "^6.8.0"
     babel-runtime "^6.22.0"
 
@@ -963,19 +940,7 @@ babel-preset-react-hmre@^1.1.1:
     react-transform-hmr "^1.0.3"
     redbox-react "^1.2.2"
 
-babel-preset-react@^6.11.1:
-  version "6.22.0"
-  resolved babel-preset-react-6.22.0.tgz#7bc97e2d73eec4b980fb6b4e4e0884e81ccdc165
-  dependencies:
-    babel-plugin-syntax-flow "^6.3.13"
-    babel-plugin-syntax-jsx "^6.3.13"
-    babel-plugin-transform-flow-strip-types "^6.22.0"
-    babel-plugin-transform-react-display-name "^6.22.0"
-    babel-plugin-transform-react-jsx "^6.22.0"
-    babel-plugin-transform-react-jsx-self "^6.22.0"
-    babel-plugin-transform-react-jsx-source "^6.22.0"
-
-babel-preset-react@^6.23.0:
+babel-preset-react@^6.11.1, babel-preset-react@^6.23.0:
   version "6.23.0"
   resolved babel-preset-react-6.23.0.tgz#eb7cee4de98a3f94502c28565332da9819455195
   dependencies:
@@ -2994,48 +2959,48 @@ function-bind@^1.0.2, function-bind@^1.1.0:
   version "1.1.0"
   resolved function-bind-1.1.0.tgz#16176714c801798e4e8f2cf7f7529467bb4a5771
 
-gatsby-link@1.0.0-alpha11:
-  version "1.0.0-alpha11"
-  resolved gatsby-link-1.0.0-alpha11.tgz#0765203d7ce9f92345527ddb2e8c88828ad2253b
+gatsby-link@1.0.0-alpha12:
+  version "1.0.0-alpha12"
+  resolved gatsby-link-1.0.0-alpha12.tgz#d952eb13a1f6956278b0d4095fcfeed5ebf1bef8
 
-gatsby-parser-remark@1.0.0-alpha11:
-  version "1.0.0-alpha11"
-  resolved gatsby-parser-remark-1.0.0-alpha11.tgz#a72ffa4a64bb9eb334165e0cfaf8f5b7a05fe0fc
+gatsby-parser-remark@1.0.0-alpha12:
+  version "1.0.0-alpha12"
+  resolved gatsby-parser-remark-1.0.0-alpha12.tgz#5dff734e647b9ff00bc573544501cdf7a740e0d2
   dependencies:
     bluebird "^3.4.6"
     gray-matter "^2.1.0"
     unist-util-select "^1.5.0"
 
-gatsby-parser-sharp@1.0.0-alpha11:
-  version "1.0.0-alpha11"
-  resolved gatsby-parser-sharp-1.0.0-alpha11.tgz#b05f008d5738253efc920469914af25ce51220c3
+gatsby-parser-sharp@1.0.0-alpha12:
+  version "1.0.0-alpha12"
+  resolved gatsby-parser-sharp-1.0.0-alpha12.tgz#96a448a02bac36bc53c81f7985bf474feee45c2d
   dependencies:
     bluebird "^3.4.6"
     unist-util-select "^1.5.0"
 
-gatsby-parser-yaml@1.0.0-alpha11:
-  version "1.0.0-alpha11"
-  resolved gatsby-parser-yaml-1.0.0-alpha11.tgz#38a68c6bed8fb7f63d240f19e341e7110a40852d
+gatsby-parser-yaml@1.0.0-alpha12:
+  version "1.0.0-alpha12"
+  resolved gatsby-parser-yaml-1.0.0-alpha12.tgz#a9babc561779c4576640468479b108a55e984564
   dependencies:
     bluebird "^3.4.6"
     js-yaml "3.7.0"
     unist-util-select "^1.5.0"
 
-gatsby-plugin-glamor@1.0.0-alpha11:
-  version "1.0.0-alpha11"
-  resolved gatsby-plugin-glamor-1.0.0-alpha11.tgz#3b009e75fba59d55508b4d1778757704f7282c45
+gatsby-plugin-glamor@1.0.0-alpha12:
+  version "1.0.0-alpha12"
+  resolved gatsby-plugin-glamor-1.0.0-alpha12.tgz#fd8f136f7e4ea046793b3341f57843d1a6d1bec2
   dependencies:
     glamor "^2.20.20"
 
-gatsby-plugin-google-analytics@1.0.0-alpha11:
-  version "1.0.0-alpha11"
-  resolved gatsby-plugin-google-analytics-1.0.0-alpha11.tgz#22d1641e4819d06b133f738d454565de9a44aeb4
+gatsby-plugin-google-analytics@1.0.0-alpha12:
+  version "1.0.0-alpha12"
+  resolved gatsby-plugin-google-analytics-1.0.0-alpha12.tgz#9483faccfb03d75a3c5db8b34429067df974439e
   dependencies:
     react-ga "^2.1.2"
 
-gatsby-plugin-sharp@1.0.0-alpha11:
-  version "1.0.0-alpha11"
-  resolved gatsby-plugin-sharp-1.0.0-alpha11.tgz#31a1b092a3af6d0157cba717940003be507aa57e
+gatsby-plugin-sharp@1.0.0-alpha12:
+  version "1.0.0-alpha12"
+  resolved gatsby-plugin-sharp-1.0.0-alpha12.tgz#0dd78bbe8b5deab1375a1df9ffb5811996b5f618
   dependencies:
     async "^2.1.4"
     bluebird "^3.4.7"
@@ -3048,9 +3013,9 @@ gatsby-plugin-sharp@1.0.0-alpha11:
     queue "^4.0.1"
     sharp "^0.17.1"
 
-gatsby-source-filesystem@1.0.0-alpha11:
-  version "1.0.0-alpha11"
-  resolved gatsby-source-filesystem-1.0.0-alpha11.tgz#dace8a8de0055d84c7b8dd3f4084fe134dc3e7d9
+gatsby-source-filesystem@1.0.0-alpha12:
+  version "1.0.0-alpha12"
+  resolved gatsby-source-filesystem-1.0.0-alpha12.tgz#404cb7b07db33290007da2f2673576dfeb44bee7
   dependencies:
     async "^2.1.2"
     babel-cli "^6.18.0"
@@ -3069,23 +3034,23 @@ gatsby-source-filesystem@1.0.0-alpha11:
     slash "^1.0.0"
     unist-builder "^1.0.2"
 
-gatsby-typegen-filesystem@1.0.0-alpha11:
-  version "1.0.0-alpha11"
-  resolved gatsby-typegen-filesystem-1.0.0-alpha11.tgz#300956343b563230ba92abc554d245bec197f784
+gatsby-typegen-filesystem@1.0.0-alpha12:
+  version "1.0.0-alpha12"
+  resolved gatsby-typegen-filesystem-1.0.0-alpha12.tgz#1e6b7cef9888d8bcf19907cfc4741e6f52ad0f9a
   dependencies:
     unist-util-select "^1.5.0"
 
-gatsby-typegen-remark-autolink-headers@1.0.0-alpha11:
-  version "1.0.0-alpha11"
-  resolved gatsby-typegen-remark-autolink-headers-1.0.0-alpha11.tgz#2298885763331ae4771a22869dd30b37ee0e9d43
+gatsby-typegen-remark-autolink-headers@1.0.0-alpha12:
+  version "1.0.0-alpha12"
+  resolved gatsby-typegen-remark-autolink-headers-1.0.0-alpha12.tgz#c7a0a01f1f81ae4843a57f9fee4e45524927f74e
   dependencies:
     github-slugger "^1.1.1"
     mdast-util-to-string "^1.0.2"
     unist-util-visit "^1.1.1"
 
-gatsby-typegen-remark-copy-linked-files@1.0.0-alpha11:
-  version "1.0.0-alpha11"
-  resolved gatsby-typegen-remark-copy-linked-files-1.0.0-alpha11.tgz#703626cc1365677a24f0c427bdb1e0a59600a101
+gatsby-typegen-remark-copy-linked-files@1.0.0-alpha12:
+  version "1.0.0-alpha12"
+  resolved gatsby-typegen-remark-copy-linked-files-1.0.0-alpha12.tgz#7899f35bc7f4503783a75b6a96ad6bf13470267d
   dependencies:
     fs-extra "^1.0.0"
     is-relative-url "^2.0.0"
@@ -3107,42 +3072,42 @@ gatsby-typegen-remark-exponent-autolink@^1.0.0:
     react "^15.4.2"
     unist-util-visit "^1.1.1"
 
-gatsby-typegen-remark-prismjs@1.0.0-alpha11:
-  version "1.0.0-alpha11"
-  resolved gatsby-typegen-remark-prismjs-1.0.0-alpha11.tgz#c2a47d796f659b09d5eba1d1ee9e055c9e2d0ad0
+gatsby-typegen-remark-prismjs@1.0.0-alpha12:
+  version "1.0.0-alpha12"
+  resolved gatsby-typegen-remark-prismjs-1.0.0-alpha12.tgz#ce6c1bfeddfc5f767c94482b0a4537683323609f
   dependencies:
     prismjs "^1.6.0"
     unist-util-visit "^1.1.1"
 
-gatsby-typegen-remark-responsive-iframe@1.0.0-alpha11:
-  version "1.0.0-alpha11"
-  resolved gatsby-typegen-remark-responsive-iframe-1.0.0-alpha11.tgz#b69bea3328b5fccb372de40c7f375a8da6a2feb0
+gatsby-typegen-remark-responsive-iframe@1.0.0-alpha12:
+  version "1.0.0-alpha12"
+  resolved gatsby-typegen-remark-responsive-iframe-1.0.0-alpha12.tgz#3213d78a91dc4bd85de927f8b32296cd79052471
   dependencies:
     bluebird "^3.4.7"
     cheerio "^0.22.0"
     lodash "^4.17.4"
     unist-util-visit "^1.1.1"
 
-gatsby-typegen-remark-responsive-image@1.0.0-alpha11:
-  version "1.0.0-alpha11"
-  resolved gatsby-typegen-remark-responsive-image-1.0.0-alpha11.tgz#8a94728f862da7f0f04ed1a3d6b7aaab85cb8b90
+gatsby-typegen-remark-responsive-image@1.0.0-alpha12:
+  version "1.0.0-alpha12"
+  resolved gatsby-typegen-remark-responsive-image-1.0.0-alpha12.tgz#872c12979425018bf697e6781b5593c153b4c0fc
   dependencies:
     image-size "^0.5.1"
     is-relative-url "^2.0.0"
     lodash "^4.17.3"
     unist-util-select "^1.5.0"
 
-gatsby-typegen-remark-smartypants@1.0.0-alpha11:
-  version "1.0.0-alpha11"
-  resolved gatsby-typegen-remark-smartypants-1.0.0-alpha11.tgz#a1d69cdc380d37c6ef5c9fdb1ef5b9774df82247
+gatsby-typegen-remark-smartypants@1.0.0-alpha12:
+  version "1.0.0-alpha12"
+  resolved gatsby-typegen-remark-smartypants-1.0.0-alpha12.tgz#3bb90d8c32523a30fffb9ab357f71aeff263a6c7
   dependencies:
     retext "^4.0.0"
     retext-smartypants "^2.0.0"
     unist-util-visit "^1.1.1"
 
-gatsby-typegen-remark@1.0.0-alpha11:
-  version "1.0.0-alpha11"
-  resolved gatsby-typegen-remark-1.0.0-alpha11.tgz#380397db40f9acea00724992be5bc5ce1b84261e
+gatsby-typegen-remark@1.0.0-alpha12:
+  version "1.0.0-alpha12"
+  resolved gatsby-typegen-remark-1.0.0-alpha12.tgz#15cb6a507068dfc958c9d498f7de5a556f01cc66
   dependencies:
     excerpt-html "^1.2.0"
     graphql "^0.8.2"
@@ -3158,18 +3123,18 @@ gatsby-typegen-remark@1.0.0-alpha11:
     unist-util-select "^1.5.0"
     unist-util-visit "^1.1.1"
 
-gatsby-typegen-sharp@1.0.0-alpha11:
-  version "1.0.0-alpha11"
-  resolved gatsby-typegen-sharp-1.0.0-alpha11.tgz#e840c723fc4b132490083978e8587d7c13f77d6f
+gatsby-typegen-sharp@1.0.0-alpha12:
+  version "1.0.0-alpha12"
+  resolved gatsby-typegen-sharp-1.0.0-alpha12.tgz#b1b7d5d16498d50070f2701e5406122dc8d067d9
   dependencies:
     graphql "^0.8.2"
     image-size "^0.5.1"
     lodash "^4.17.2"
     sharp "^0.17.0"
 
-gatsby@1.0.0-alpha11:
-  version "1.0.0-alpha11"
-  resolved gatsby-1.0.0-alpha11.tgz#538f8ea3b9e83aafdc2ebc0398bb0ad547c52492
+gatsby@1.0.0-alpha12:
+  version "1.0.0-alpha12"
+  resolved gatsby-1.0.0-alpha12.tgz#5ba87a3538e7d9a7e8623ff0d9b9dcb6b41802bb
   dependencies:
     async "^2.1.2"
     babel-core "^6.18.2"
@@ -6390,7 +6355,7 @@ rc@^1.1.0, rc@^1.1.2, rc@~1.1.6:
 
 react-deep-force-update@^1.0.0:
   version "1.0.1"
-  resolved "https://registry.yarnpkg.com/react-deep-force-update/-/react-deep-force-update-1.0.1.tgz#f911b5be1d2a6fe387507dd6e9a767aa2924b4c7"
+  resolved react-deep-force-update-1.0.1.tgz#f911b5be1d2a6fe387507dd6e9a767aa2924b4c7
 
 react-deep-force-update@^2.0.1:
   version "2.0.1"
@@ -6469,7 +6434,7 @@ react-motion@^0.4.7:
 
 react-proxy@^1.1.7:
   version "1.1.8"
-  resolved "https://registry.yarnpkg.com/react-proxy/-/react-proxy-1.1.8.tgz#9dbfd9d927528c3aa9f444e4558c37830ab8c26a"
+  resolved react-proxy-1.1.8.tgz#9dbfd9d927528c3aa9f444e4558c37830ab8c26a
   dependencies:
     lodash "^4.6.1"
     react-deep-force-update "^1.0.0"
@@ -6515,7 +6480,7 @@ react-transform-catch-errors@^1.0.2:
 
 react-transform-hmr@^1.0.3:
   version "1.0.4"
-  resolved "https://registry.yarnpkg.com/react-transform-hmr/-/react-transform-hmr-1.0.4.tgz#e1a40bd0aaefc72e8dfd7a7cda09af85066397bb"
+  resolved react-transform-hmr-1.0.4.tgz#e1a40bd0aaefc72e8dfd7a7cda09af85066397bb
   dependencies:
     global "^4.3.0"
     react-proxy "^1.1.7"
@@ -6617,9 +6582,9 @@ rechoir@^0.6.2:
   dependencies:
     resolve "^1.1.6"
 
-"recursive-readdir@https://github.com/KyleAMathews/recursive-readdir.git":
+"recursive-readdir@git+https://github.com/KyleAMathews/recursive-readdir.git":
   version "2.1.0"
-  resolved "https://github.com/KyleAMathews/recursive-readdir.git#fbfe835d2e75a977db2d1e794214aa26ecdb0671"
+  resolved "git+https://github.com/KyleAMathews/recursive-readdir.git#fbfe835d2e75a977db2d1e794214aa26ecdb0671"
   dependencies:
     minimatch "3.0.2"
 

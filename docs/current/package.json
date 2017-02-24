@@ -7,7 +7,5 @@
     "postinstall": "cd gatsby && yarn",
     "build-builder": "rocker build --push -f deploy/docker/builder.Rockerfile .",
     "update-search-index": "node ./scripts/update-search-index"
-  },
-  "dependencies": {
   }
 }

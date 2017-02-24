@@ -23,6 +23,7 @@ exports.createPages = ({ args }) => {
         allMarkdownRemark(limit: 10000) {
           edges {
             node {
+              isIndex
               fileSlug
             }
           }
@@ -38,13 +39,15 @@ exports.createPages = ({ args }) => {
       // Create docs pages.
       _.each(result.data.allMarkdownRemark.edges, edge => {
         pages.push({
-          path: edge.node.fileSlug, // required
+          path: edge.node.isIndex ? edge.node.fileSlug + '/index.html' : edge.node.fileSlug + '.html', // required
           component: docsPage,
           context: {
             fileSlug: edge.node.fileSlug
           }
         });
       });
+
+      console.log(pages);
 
       console.log(`num pages`, pages.length);
       console.log(pages.slice(0, 2));
@@ -66,6 +69,8 @@ exports.modifyAST = ({ args }) => {
       fileSlug = `/versions/${parsedFilePath.dirname}/${parsedFilePath.name}`;
     } else {
       fileSlug = `/versions/${parsedFilePath.dirname}`;
+      file.isIndex = true;
+      file.children[0].isIndex = true;
     }
 
     file.children[0].fileSlug = fileSlug;
