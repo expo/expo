@@ -143,9 +143,8 @@ NSTimeInterval const EXFileDownloaderDefaultTimeoutInterval = 60;
 
 - (NSDictionary *)_formattedErrorInfo:(NSDictionary *)errorInfo
 {
-  NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:@{
-                                                                                  NSLocalizedDescriptionKey: errorInfo[@"message"] ?: @"There was a server error.",
-                                                                                  }];
+  NSString *message = errorInfo[@"message"] ?: errorInfo[@"error"] ?: @"There was a server error";
+  NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:@{ NSLocalizedDescriptionKey: message }];
   
   if ([errorInfo[@"errors"] isKindOfClass:[NSArray class]]) {
     NSMutableArray *formattedErrorItems = [NSMutableArray array];
