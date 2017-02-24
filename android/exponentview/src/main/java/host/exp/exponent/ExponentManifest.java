@@ -11,6 +11,9 @@ import android.os.AsyncTask;
 import android.os.Debug;
 import android.util.Log;
 import android.util.LruCache;
+
+import com.amplitude.api.Amplitude;
+
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.exceptions.ManifestException;
@@ -25,6 +28,7 @@ import host.exp.exponent.utils.ColorParser;
 import host.exp.exponentview.R;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.Headers;
 import okhttp3.Request;
 import okhttp3.Response;
 
@@ -103,6 +107,7 @@ public class ExponentManifest {
   private static final String REDIRECT_SNIPPET = "exp.host/--/to-exp/";
   private static final String ANONYMOUS_EXPERIENCE_PREFIX = "@anonymous/";
   private static final String EMBEDDED_KERNEL_MANIFEST_ASSET = "kernel-manifest.json";
+  private static final String EXPONENT_SERVER_HEADER = "Exponent-Server";
 
   Context mContext;
   ExponentNetwork mExponentNetwork;
@@ -126,19 +131,6 @@ public class ExponentManifest {
         return bitmap.getByteCount() / 1024;
       }
     };
-  }
-
-  public static boolean booleanValue(final JSONObject manifest, final String propertyKey, final boolean defaultValue) {
-    String value = manifest.optString(propertyKey);
-    if (value == null) {
-      return defaultValue;
-    } else if (value.toLowerCase().equals("true")) {
-      return true;
-    } else if (value.toLowerCase().equals("false")) {
-      return false;
-    } else {
-      return defaultValue;
-    }
   }
 
   public void fetchManifest(final String manifestUrl, final ManifestListener listener) {
@@ -207,7 +199,7 @@ public class ExponentManifest {
 
           try {
             String manifestString = response.body().string();
-            fetchManifestStep2(manifestString, listener);
+            fetchManifestStep2(manifestString, response.headers(), listener);
           } catch (JSONException e) {
             listener.onError(e);
           } catch (IOException e) {
@@ -231,7 +223,7 @@ public class ExponentManifest {
 
           try {
             String manifestString = response.body().string();
-            fetchManifestStep2(manifestString, listener);
+            fetchManifestStep2(manifestString, response.headers(), listener);
           } catch (JSONException e) {
             listener.onError(e);
           } catch (IOException e) {
@@ -248,7 +240,7 @@ public class ExponentManifest {
     }
   }
 
-  private void fetchManifestStep2(final String manifestString, final ManifestListener listener) throws JSONException {
+  private void fetchManifestStep2(final String manifestString, final Headers headers, final ManifestListener listener) throws JSONException {
     if (Constants.DEBUG_MANIFEST_METHOD_TRACING) {
       Debug.stopMethodTracing();
     }
@@ -278,6 +270,16 @@ public class ExponentManifest {
       }
     } else {
       fetchManifestStep3(manifest, false, listener);
+    }
+
+    final String exponentServerHeader = headers.get(EXPONENT_SERVER_HEADER);
+    if (exponentServerHeader != null) {
+      try {
+        JSONObject eventProperties = new JSONObject(exponentServerHeader);
+        Amplitude.getInstance().logEvent(Analytics.LOAD_DEVELOPER_MANIFEST, eventProperties);
+      } catch (Throwable e) {
+        EXL.e(TAG, e);
+      }
     }
   }
 
