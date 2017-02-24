@@ -26,7 +26,7 @@ FROM nginx:1.11.8-alpine
 
 ENV DOCS_VERSION {{ .DocsVersion }}
 
-RUN mkdir -p /usr/share/nginx/html
+RUN rm -rf /usr/share/nginx/html && mkdir -p /usr/share/nginx/html
 IMPORT public_html/ /usr/share/nginx/html
 COPY ./deploy/nginx/default.conf /etc/nginx/conf.d/default.conf.template
 
