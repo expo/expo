@@ -12,6 +12,8 @@
 
 @property (nonatomic, readonly) NSURL *initialUri;
 @property (nonatomic, readonly) NSString *experienceId;
+@property (nonatomic, readonly) NSString *documentDirectory;
+@property (nonatomic, readonly) NSString *cachesDirectory;
 
 - (instancetype)initWithParams:(NSDictionary *)params;
 
