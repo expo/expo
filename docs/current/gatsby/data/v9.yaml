@@ -1,38 +1,38 @@
 - title: Introduction
-  index: /versions/v9.0.0/introduction/
+  index: /versions/v9.0.0/introduction/index.html
   links:
-    Installation: /versions/v9.0.0/introduction/installation/
-    XDE Tour: /versions/v9.0.0/introduction/xde-tour/
-    Community: /versions/v9.0.0/introduction/community/
-    Additional Resources: /versions/v9.0.0/introduction/additional-resources/
+    Installation: /versions/v9.0.0/introduction/installation.html
+    XDE Tour: /versions/v9.0.0/introduction/xde-tour.html
+    Community: /versions/v9.0.0/introduction/community.html
+    Additional Resources: /versions/v9.0.0/introduction/additional-resources.html
 - title: Guides
-  index: /versions/v9.0.0/guides/
+  index: /versions/v9.0.0/guides/index.html
   links:
-    Up and Running: /versions/v9.0.0/guides/up-and-running/
-    Configuration with exp.json: /versions/v9.0.0/guides/configuration/
-    Viewing Logs: /versions/v9.0.0/guides/logging/
-    Debugging: /versions/v9.0.0/guides/debugging/
-    Assets: /versions/v9.0.0/guides/assets/
-    Icons: /versions/v9.0.0/guides/icons/
-    Using Custom Fonts: /versions/v9.0.0/guides/using-custom-fonts/
-    Push Notifications: /versions/v9.0.0/guides/push-notifications/
-    Building Standalone Apps: /versions/v9.0.0/guides/building-standalone-apps/
-    How Exponent Works: /versions/v9.0.0/guides/how-exponent-works/
-    Upgrading Exponent: /versions/v9.0.0/guides/upgrading-exponent/
+    Up and Running: /versions/v9.0.0/guides/up-and-running.html
+    Configuration with exp.json: /versions/v9.0.0/guides/configuration.html
+    Viewing Logs: /versions/v9.0.0/guides/logging.html
+    Debugging: /versions/v9.0.0/guides/debugging.html
+    Assets: /versions/v9.0.0/guides/assets.html
+    Icons: /versions/v9.0.0/guides/icons.html
+    Using Custom Fonts: /versions/v9.0.0/guides/using-custom-fonts.html
+    Push Notifications: /versions/v9.0.0/guides/push-notifications.html
+    Building Standalone Apps: /versions/v9.0.0/guides/building-standalone-apps.html
+    How Exponent Works: /versions/v9.0.0/guides/how-exponent-works.html
+    Upgrading Exponent: /versions/v9.0.0/guides/upgrading-exponent.html
 - title: SDK API Reference
-  index: /versions/v9.0.0/sdk/
+  index: /versions/v9.0.0/sdk/index.html
   links:
-    Introduction: /versions/v9.0.0/sdk/
-    AppLoading: /versions/v9.0.0/sdk/app-loading/
-    Asset: /versions/v9.0.0/sdk/asset/
-    BlurView: /versions/v9.0.0/sdk/blur-view/
-    Constants: /versions/v9.0.0/sdk/constants/
-    Contacts: /versions/v9.0.0/sdk/contacts/
-    Facebook: /versions/v9.0.0/sdk/facebook/
-    Font: /versions/v9.0.0/sdk/font/
-    ImagePicker: /versions/v9.0.0/sdk/imagepicker/
-    LinearGradient: /versions/v9.0.0/sdk/linear-gradient/
-    Location: /versions/v9.0.0/sdk/location/
-    Permissions: /versions/v9.0.0/sdk/permissions/
-    Svg: /versions/v9.0.0/sdk/svg/
-    Video: /versions/v9.0.0/sdk/video/
+    Introduction: /versions/v9.0.0/sdk/index.html
+    AppLoading: /versions/v9.0.0/sdk/app-loading.html
+    Asset: /versions/v9.0.0/sdk/asset.html
+    BlurView: /versions/v9.0.0/sdk/blur-view.html
+    Constants: /versions/v9.0.0/sdk/constants.html
+    Contacts: /versions/v9.0.0/sdk/contacts.html
+    Facebook: /versions/v9.0.0/sdk/facebook.html
+    Font: /versions/v9.0.0/sdk/font.html
+    ImagePicker: /versions/v9.0.0/sdk/imagepicker.html
+    LinearGradient: /versions/v9.0.0/sdk/linear-gradient.html
+    Location: /versions/v9.0.0/sdk/location.html
+    Permissions: /versions/v9.0.0/sdk/permissions.html
+    Svg: /versions/v9.0.0/sdk/svg.html
+    Video: /versions/v9.0.0/sdk/video.html
