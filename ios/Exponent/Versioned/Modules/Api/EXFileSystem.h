@@ -4,4 +4,6 @@
 
 @interface EXFileSystem : NSObject <RCTBridgeModule>
 
++ (BOOL)ensureDirExistsWithPath:(NSString *)path;
+
 @end
