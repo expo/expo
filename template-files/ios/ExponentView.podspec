@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
   s.license = 'BSD'
   s.author = "650 Industries, Inc."
   s.requires_arc = true
-  s.platform = :ios, "8.0"
+  s.platform = :ios, "9.0"
   s.source = { :git => "http://github.com/exponent/exponent.git" }
   s.source_files = "ios/Exponent/**/*.{h,m}"
   s.preserve_paths = "ios/Exponent/**/*.{h,m}"
