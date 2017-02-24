@@ -2,11 +2,11 @@
 
 #import "EXContacts.h"
 
-@import AddressBook;
+@import Contacts;
 
 @interface EXContacts ()
 
-@property (nonatomic, assign) ABAddressBookRef addressBookRef;
+@property (nonatomic, strong) CNContactStore *contactStore;
 
 @end
 
@@ -14,191 +14,167 @@
 
 RCT_EXPORT_MODULE(ExponentContacts);
 
-// TODO: iOS 9: use Contacts framework instead of deprecated AddressBook
-
 /**
- * @param fields array with possible values 'addresses, 'phoneNumbers', 'emails'
+ * @param fields array with possible values 'addresses', 'phoneNumbers', 'emails'
  */
 RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
-  [self _releaseAddressBook];
-  _addressBookRef = ABAddressBookCreateWithOptions(nil, nil);
-  ABAuthorizationStatus permissions = ABAddressBookGetAuthorizationStatus();
+  if (!_contactStore) {
+    _contactStore = [[CNContactStore alloc] init];
+  }
+  CNAuthorizationStatus permissions = [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
   
-  if (permissions == kABAuthorizationStatusNotDetermined) {
+  if (permissions == CNAuthorizationStatusNotDetermined) {
     __weak typeof(self) weakSelf = self;
-    ABAddressBookRequestAccessWithCompletion(_addressBookRef, ^(bool granted, CFErrorRef error) {
+    [_contactStore requestAccessForEntityType:CNEntityTypeContacts completionHandler:^(BOOL granted, NSError * _Nullable error) {
       if (granted) {
         // initial permissions grant
         dispatch_async(dispatch_get_main_queue(), ^{
           __strong typeof(self) strongSelf = weakSelf;
-          [strongSelf _getContactsWithPermissionGrantedAsync:fields addressBook:strongSelf.addressBookRef resolver:resolve rejecter:reject];
+          [strongSelf _getContactsWithPermissionGrantedAsync:fields resolver:resolve rejecter:reject];
         });
       } else {
-        reject(0, @"User rejected contacts permission.", (__bridge NSError *)(error));
-        [weakSelf _releaseAddressBook];
+        reject(0, @"User rejected contacts permission.", error);
       }
-    });
-  } else if (permissions == kABAuthorizationStatusAuthorized) {
-    [self _getContactsWithPermissionGrantedAsync:fields addressBook:_addressBookRef resolver:resolve rejecter:reject];
-    [self _releaseAddressBook];
+    }];
+  } else if (permissions == CNAuthorizationStatusAuthorized) {
+    [self _getContactsWithPermissionGrantedAsync:fields resolver:resolve rejecter:reject];
   } else {
     reject(0, @"User rejected contacts permission.", nil);
-    [self _releaseAddressBook];
   }
 }
 
-- (void)dealloc
+- (void)_getContactsWithPermissionGrantedAsync:(NSArray *)fields resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject
 {
-  [self _releaseAddressBook];
-}
+  // always include id, name, firstName, middleName, lastName, company, jobTitle
+  NSMutableSet *fieldsSet = [NSMutableSet setWithArray:fields];
+  [fieldsSet addObjectsFromArray:@[@"id", @"name", @"firstName", @"middleName", @"lastName", @"company", @"jobTitle"]];
 
-- (void)_getContactsWithPermissionGrantedAsync:(NSArray *)fields addressBook:(ABAddressBookRef)addressBook resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject
-{
-  NSSet *fieldsSet = [NSSet setWithArray:fields];
-  CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
-  CFIndex numberOfPeople = ABAddressBookGetPersonCount(addressBook);
-  NSMutableArray *response = [[NSMutableArray alloc] init];
+  NSArray *keysToFetch = [self _contactKeysToFetchFromFields:fieldsSet.allObjects];
+  CNContactFetchRequest *fetchRequest = [[CNContactFetchRequest alloc] initWithKeysToFetch:keysToFetch];
+  fetchRequest.unifyResults = YES;
+  fetchRequest.predicate = nil;
   
-  for (NSUInteger index = 0; index < numberOfPeople; index++) {
-    ABRecordRef person = CFArrayGetValueAtIndex(allPeople, index);
-    
+  NSError *err;
+  NSMutableArray *response = [[NSMutableArray alloc] init];
+  BOOL success = [_contactStore enumerateContactsWithFetchRequest:fetchRequest error:&err usingBlock:^(CNContact * _Nonnull person, BOOL * _Nonnull stop) {
     NSMutableDictionary *contact = [NSMutableDictionary dictionary];
-    contact[@"id"] = @(ABRecordGetRecordID(person));
-    contact[@"firstName"] = (__bridge_transfer NSString *)(ABRecordCopyValue(person, kABPersonFirstNameProperty));
-    contact[@"lastName"] = (__bridge_transfer NSString *)(ABRecordCopyValue(person, kABPersonLastNameProperty));
-    contact[@"middleName"] = (__bridge_transfer NSString *)(ABRecordCopyValue(person, kABPersonMiddleNameProperty));
-    contact[@"name"] = [self _assembleDisplayNameFromFirstName:contact[@"firstName"] lastName:contact[@"lastName"]];
-    contact[@"company"] = (__bridge_transfer NSString *)(ABRecordCopyValue(person, kABPersonOrganizationProperty));
-    contact[@"jobTitle"] = (__bridge_transfer NSString *)(ABRecordCopyValue(person, kABPersonJobTitleProperty));
-    
-    if ([fieldsSet containsObject:@"addresses"]) {
+    contact[@"id"] = person.identifier;
+    contact[@"firstName"] = person.givenName;
+    contact[@"lastName"] = person.familyName;
+    contact[@"middleName"] = person.middleName;
+    contact[@"name"] = [self _assembleDisplayNameForContact:person];
+    contact[@"company"] = person.organizationName;
+    contact[@"jobTitle"] = person.jobTitle;
+
+    if ([keysToFetch containsObject:CNContactPostalAddressesKey]) {
       contact[@"addresses"] = [self _addressesForContact:person];
     }
-    if ([fieldsSet containsObject:@"phoneNumbers"]) {
+    if ([keysToFetch containsObject:CNContactPhoneNumbersKey]) {
       contact[@"phoneNumbers"] = [self _phoneNumbersForContact:person];
     }
-    if ([fieldsSet containsObject:@"emails"]) {
+    if ([keysToFetch containsObject:CNContactEmailAddressesKey]) {
       contact[@"emails"] = [self _emailsForContact:person];
     }
-    
+
     [response addObject:contact];
-  }
+  }];
   
-  CFRelease(allPeople);
-  resolve(response);
+  if (success && !err) {
+    resolve(response);
+  } else {
+    reject(0, @"Error while fetching contacts", err);
+  }
 }
 
-- (NSArray *)_addressesForContact:(ABRecordRef)person
+- (NSArray *)_addressesForContact:(CNContact * _Nonnull)person
 {
   NSMutableArray *results = nil;
-  ABMultiValueRef addresses = ABRecordCopyValue(person, kABPersonAddressProperty);
-  if (addresses) {
-    CFIndex numberOfAddresses = ABMultiValueGetCount(addresses);
-    if (numberOfAddresses > 0) {
-      results = [NSMutableArray arrayWithCapacity:numberOfAddresses];
-      
-      for (NSUInteger index = 0; index < numberOfAddresses; index++) {
-        CFDictionaryRef dict = ABMultiValueCopyValueAtIndex(addresses, index);
-        
-        NSMutableDictionary *address = [NSMutableDictionary dictionary];
-        
-        address[@"street"] = (NSString *)(CFDictionaryGetValue(dict, kABPersonAddressStreetKey));
-        address[@"city"] = (NSString *)(CFDictionaryGetValue(dict, kABPersonAddressCityKey));
-        address[@"region"] = (NSString *)(CFDictionaryGetValue(dict, kABPersonAddressStateKey));
-        address[@"postcode"] = (NSString *)(CFDictionaryGetValue(dict, kABPersonAddressZIPKey));
-        address[@"country"] = (NSString *)(CFDictionaryGetValue(dict, kABPersonAddressCountryKey));
-        
-        CFStringRef labelRef = ABMultiValueCopyLabelAtIndex(addresses, index);
-        
-        if (labelRef) {
-          address[@"label"] = (__bridge_transfer NSString *)(ABAddressBookCopyLocalizedLabel(labelRef));
-          CFRelease(labelRef);
-        }
-        [results addObject:address];
-        CFRelease(dict);
-      }
-    }
+  if (person.postalAddresses) {
+    results = [NSMutableArray arrayWithCapacity:person.postalAddresses.count];
     
-    CFRelease(addresses);
+    for (CNLabeledValue<CNPostalAddress *> *container in person.postalAddresses) {
+      CNPostalAddress *val = container.value;
+      NSMutableDictionary *address = [NSMutableDictionary dictionary];
+      address[@"street"] = val.street;
+      address[@"city"] = val.city;
+      address[@"region"] = val.state;
+      address[@"postcode"] = val.postalCode;
+      address[@"country"] = val.country;
+      if (container.label) {
+        address[@"label"] = [CNLabeledValue localizedStringForLabel:container.label];
+        
+      }
+      [results addObject:address];
+    }
   }
   return results;
 }
 
-- (NSArray *)_phoneNumbersForContact:(ABRecordRef)person
+- (NSArray *)_phoneNumbersForContact:(CNContact * _Nonnull) person
 {
   NSMutableArray *results = nil;
-  ABMultiValueRef phoneNumbers = ABRecordCopyValue(person, kABPersonPhoneProperty);
-  if (phoneNumbers) {
-    CFIndex numberOfPhones = ABMultiValueGetCount(phoneNumbers);
+  if (person.phoneNumbers) {
+    results = [NSMutableArray arrayWithCapacity:person.phoneNumbers.count];
     
-    if (numberOfPhones > 0) {
-      results = [NSMutableArray arrayWithCapacity:numberOfPhones];
-      
-      for (NSUInteger index = 0; index < numberOfPhones; index++) {
-        NSString *phoneNumber = (__bridge_transfer NSString *)(ABMultiValueCopyValueAtIndex(phoneNumbers, index));
-        CFStringRef phoneLabelRef = ABMultiValueCopyLabelAtIndex(phoneNumbers, index);
-        if (phoneLabelRef) {
-          NSString *phoneLabel = (__bridge_transfer NSString *)(ABAddressBookCopyLocalizedLabel(phoneLabelRef));
-          [results addObject:@{ @"number": phoneNumber, @"label": phoneLabel }];
-          CFRelease(phoneLabelRef);
-        } else {
-          [results addObject:@{ @"number": phoneNumber }];
-        }
+    for (CNLabeledValue<CNPhoneNumber *> *container in person.phoneNumbers) {
+      NSString *phoneNumber = container.value.stringValue;
+      if (container.label) {
+        NSString *phoneLabel = [CNLabeledValue localizedStringForLabel:container.label];
+        [results addObject:@{ @"number": phoneNumber, @"label": phoneLabel }];
+      } else {
+        [results addObject:@{ @"number": phoneNumber }];
       }
     }
-    
-    CFRelease(phoneNumbers);
   }
   return results;
 }
 
-- (NSArray *)_emailsForContact:(ABRecordRef)person
+- (NSArray *)_emailsForContact:(CNContact * _Nonnull) person
 {
   NSMutableArray *results = nil;
-  ABMultiValueRef emails = ABRecordCopyValue(person, kABPersonEmailProperty);
-  if (emails) {
-    CFIndex numberOfEmails = ABMultiValueGetCount(emails);
+  if (person.emailAddresses) {
+    results = [NSMutableArray arrayWithCapacity:person.emailAddresses.count];
     
-    if (numberOfEmails > 0) {
-      results = [NSMutableArray arrayWithCapacity:numberOfEmails];
-      
-      for (NSUInteger index = 0; index < numberOfEmails; index++) {
-        NSString *emailAddress = (__bridge_transfer NSString *)(ABMultiValueCopyValueAtIndex(emails, index));
-        CFStringRef emailLabelRef = ABMultiValueCopyLabelAtIndex(emails, index);
-        if (emailLabelRef) {
-          NSString *emailLabel = (__bridge_transfer NSString *)(ABAddressBookCopyLocalizedLabel(emailLabelRef));
-          [results addObject:@{ @"email": emailAddress, @"label": emailLabel }];
-          CFRelease(emailLabelRef);
-        } else {
-          [results addObject:@{ @"email": emailAddress }];
-        }
+    for (CNLabeledValue<NSString *> *container in person.emailAddresses) {
+      NSString *emailAddress = container.value;
+      if (container.label) {
+        NSString *emailLabel = [CNLabeledValue localizedStringForLabel:container.label];
+        [results addObject:@{ @"email": emailAddress, @"label": emailLabel }];
+      } else {
+        [results addObject:@{ @"email": emailAddress }];
       }
     }
-
-    CFRelease(emails);
   }
   return results;
 }
 
-- (NSString *)_assembleDisplayNameFromFirstName: (NSString *)firstName lastName: (NSString *)lastName
+- (NSArray <id<CNKeyDescriptor>> *)_contactKeysToFetchFromFields:(NSArray *)fields
 {
-  if (firstName && lastName) {
-    return [NSString stringWithFormat:@"%@ %@", firstName, lastName];
-  } else if (firstName) {
-    return firstName;
-  } else if (lastName) {
-    return lastName;
+  const NSDictionary *mapping = @{
+                                  @"id": CNContactIdentifierKey,
+                                  @"addresses": CNContactPostalAddressesKey,
+                                  @"phoneNumbers": CNContactPhoneNumbersKey,
+                                  @"emails": CNContactEmailAddressesKey,
+                                  @"firstName": CNContactGivenNameKey,
+                                  @"middleName": CNContactMiddleNameKey,
+                                  @"lastName": CNContactFamilyNameKey,
+                                  @"company": CNContactOrganizationNameKey,
+                                  @"jobTitle": CNContactJobTitleKey,
+                                  @"name": [CNContactFormatter descriptorForRequiredKeysForStyle:CNContactFormatterStyleFullName],
+                                  };
+  NSMutableArray <id<CNKeyDescriptor>> *results = [NSMutableArray arrayWithCapacity:fields.count];
+  for (NSString *field in fields) {
+    if (mapping[field]) {
+      [results addObject:mapping[field]];
+    }
   }
-  return nil;
+  return results;
 }
 
-- (void)_releaseAddressBook
+- (NSString *)_assembleDisplayNameForContact:(CNContact * _Nonnull)person
 {
-  if (_addressBookRef) {
-    CFRelease(_addressBookRef);
-    _addressBookRef = nil;
-  }
+  return [CNContactFormatter stringFromContact:person style:CNContactFormatterStyleFullName];
 }
 
 @end
