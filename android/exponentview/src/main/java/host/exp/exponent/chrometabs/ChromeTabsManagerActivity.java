@@ -26,7 +26,6 @@ public class ChromeTabsManagerActivity extends Activity {
   public static Intent createStartIntent(Context context, Intent authIntent) {
     Intent intent = createBaseIntent(context);
     intent.putExtra(KEY_BROWSER_INTENT, authIntent);
-    intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
     return intent;
   }
 

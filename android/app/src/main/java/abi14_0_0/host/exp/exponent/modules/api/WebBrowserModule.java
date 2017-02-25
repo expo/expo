@@ -57,7 +57,6 @@ public class WebBrowserModule extends ReactContextBaseJavaModule {
     Intent intent = customTabsIntent.intent;
     intent.setData(Uri.parse(url));
     intent.putExtra(CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE, CustomTabsIntent.NO_TITLE);
-    intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
     EventBus.getDefault().register(this);
 
