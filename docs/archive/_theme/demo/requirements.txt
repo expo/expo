@@ -1,2 +1,0 @@
-Sphinx>=1.3.0,<1.4.0
-guzzle_sphinx_theme>=0.7.8,<0.8.0
