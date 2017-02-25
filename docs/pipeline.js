@@ -91,7 +91,7 @@ const deploy = (branch, tag, pr) => ({
       });
       currentGithubDeployment = await Github.createDeploymentForPR('universe', pr, {
         task: 'deploy:docs:k8s',
-        environment,
+        environment: `docs-${environment}`,
         required_contexts: [],
       });
       deploymentUrl = `https://${environment}.pr.exp.host`;
