@@ -8,21 +8,21 @@ export default {
     shortname: 'docs',
     description: 'Docs Build/Deploy',
     branches: 'master',
-    allowPRs: true
+    allowPRs: true,
   },
   steps: (branch, tag, pr) => [
     build(branch, tag, pr),
     CI.waitStep(),
     deploy(branch, tag, pr),
-    CI.waitStep()
+    CI.waitStep(),
     // updateSearchIndex(branch, tag)
-  ]
+  ],
 };
 
 const build = (branch, tag, pr) => ({
   name: `:hammer: Build`,
   agents: {
-    queue: 'builder'
+    queue: 'builder',
   },
   async command() {
     let environment;
@@ -38,19 +38,19 @@ const build = (branch, tag, pr) => ({
     Log.collapsed(':hammer: Building Docs...');
 
     await Rocker.build({
-      rockerfile: './Rockerfile',
+      rockerfile: './deploy/docker/deploy.Rockerfile',
       context: '.',
       vars: {
         ImageName: imageName,
         ImageTag: imageTag,
-        DocsVersion: `v${require('./package.json').version}`
+        DocsVersion: `v${require('./package.json').version}`,
       },
       options: {
         pull: true,
-        push: true
-      }
+        push: true,
+      },
     });
-  }
+  },
 });
 
 const deploy = (branch, tag, pr) => ({
@@ -76,17 +76,17 @@ const deploy = (branch, tag, pr) => ({
       // is PR
       await Github.setAllCurrentDeploymentsToInactive('universe', pr, {
         task: 'deploy:docs:k8s',
-        environment
+        environment,
       });
       currentGithubDeployment = await Github.createDeployment('universe', pr, {
         task: 'deploy:docs:k8s',
         environment,
-        required_contexts: []
+        required_contexts: [],
       });
       await Github.createDeploymentStatus('universe', currentGithubDeployment, {
         state: 'pending',
         log_url: process.env.BUILDKITE_BUILD_URL,
-        description: 'Currently deploying. Check CI for details.'
+        description: 'Currently deploying. Check CI for details.',
       });
     }
 
@@ -143,16 +143,14 @@ const deploy = (branch, tag, pr) => ({
             APP_NAME: 'docs',
             KUBE_NAMESPACE: environment,
             COMMIT_HASH: process.env.BUILDKITE_COMMIT,
-            NUM_REPLICAS: (
-              environment === 'production' ? 2 : 1 // PRS
-            ), // Staging
+            NUM_REPLICAS: environment === 'production' ? 2 : 1, // PRS // Staging
             INGRESS_HOSTNAME: environment === 'production' ? 'docs.getexponent.com' : `${environment}.pr.exp.host`, // staging
             VAULT_ADDR: process.env.VAULT_ADDR,
-            VAULT_TOKEN: process.env.VAULT_TOKEN
+            VAULT_TOKEN: process.env.VAULT_TOKEN,
           },
           volumes: {
-            [CI.getHostBuildDir()]: '/workdir'
-          }
+            [CI.getHostBuildDir()]: '/workdir',
+          },
         },
         deployScript
       );
@@ -161,7 +159,7 @@ const deploy = (branch, tag, pr) => ({
         await Github.createDeploymentStatus('universe', currentGithubDeployment, {
           state: 'error',
           log_url: process.env.BUILDKITE_BUILD_URL,
-          description: 'Error during deployment. Check CI for details.'
+          description: 'Error during deployment. Check CI for details.',
         });
       }
       process.exit(1);
@@ -173,10 +171,10 @@ const deploy = (branch, tag, pr) => ({
         state: 'success',
         log_url: process.env.BUILDKITE_BUILD_URL,
         environment_url: `https://${environment}.pr.www.exp.host`,
-        description: 'PR was deployed successfully'
+        description: 'PR was deployed successfully',
       });
     }
-  }
+  },
 });
 
 const updateSearchIndex = (branch, tag) => ({
@@ -189,7 +187,7 @@ const updateSearchIndex = (branch, tag) => ({
     Log.collapsed(':open_mouth: Updating search index...');
 
     await spawnAsync('node', ['scripts/update-search-index.js'], {
-      stdio: 'inherit'
+      stdio: 'inherit',
     });
-  }
+  },
 });
