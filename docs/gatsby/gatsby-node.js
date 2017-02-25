@@ -8,7 +8,7 @@ const slug = require(`slug`);
 const sh = require(`shelljs`);
 const webpack = require(`webpack`);
 const {
-  GraphQLString
+  GraphQLString,
 } = require(`graphql`);
 
 exports.createPages = ({ args }) => {
@@ -42,12 +42,10 @@ exports.createPages = ({ args }) => {
           path: edge.node.isIndex ? edge.node.fileSlug + '/index.html' : edge.node.fileSlug + '.html', // required
           component: docsPage,
           context: {
-            fileSlug: edge.node.fileSlug
-          }
+            fileSlug: edge.node.fileSlug,
+          },
         });
       });
-
-      console.log(pages);
 
       console.log(`num pages`, pages.length);
       console.log(pages.slice(0, 2));

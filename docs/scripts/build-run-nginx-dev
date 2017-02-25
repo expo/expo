@@ -1,0 +1,11 @@
+#!/bin/bash
+
+PACKAGE_VERSION=v$(cat package.json \
+  | grep version \
+  | head -1 \
+  | awk -F: '{ print $2 }' \
+  | sed 's/[",]//g' \
+  | tr -d '[[:space:]]')
+
+rocker build . --var DocsVersion=$PACKAGE_VERSION
+docker run -p 9000:80 gcr.io/exponentjs/docs-nginx-dev:$PACKAGE_VERSION
