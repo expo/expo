@@ -10,13 +10,17 @@ export default {
     branches: 'master',
     allowPRs: true,
   },
-  steps: (branch, tag, pr) => [
-    build(branch, tag, pr),
-    CI.waitStep(),
-    deploy(branch, tag, pr),
-    CI.waitStep(),
-    // updateSearchIndex(branch, tag)
-  ],
+  steps: (branch, tag, pr) => {
+    if (tag) {
+      // all we need to do when there's a tag is deploy
+      return [deploy(branch, tag, pr), updateSearchIndex(branch, tag, pr)];
+    }
+    const steps = [build(branch, tag, pr), CI.waitStep(), deploy(branch, tag, pr)];
+    if (!pr) {
+      steps.push(CI.blockStep(':shipit: Deploy to Production?'), tagRelease);
+    }
+    return steps;
+  },
 };
 
 const build = (branch, tag, pr) => ({
@@ -26,10 +30,12 @@ const build = (branch, tag, pr) => ({
   },
   async command() {
     let environment;
-    if (!pr) {
+    if (tag && !pr) {
       environment = 'production';
-    } else {
+    } else if (pr) {
       environment = `docs-pr-${pr}`;
+    } else {
+      environment = 'staging';
     }
 
     const imageName = `gcr.io/exponentjs/exponent-docs-v2-${environment}`;
@@ -54,41 +60,58 @@ const build = (branch, tag, pr) => ({
 });
 
 const deploy = (branch, tag, pr) => ({
-  name: `:rocket: Deploy`,
+  name: `:rocket: Deploy to ${tag && !pr ? 'Production' : pr ? 'Dev' : 'Staging'}`,
+  concurrency: 1,
+  concurrency_group: `docs/${tag && !pr ? 'prod' : pr ? `pr-${pr}` : 'staging'}/deploy`,
   async command() {
     if (!pr && branch !== 'master') {
       return;
     }
+    const isProduction = tag && !pr;
 
     let environment;
-    if (!pr) {
+    if (tag && !pr) {
       environment = 'production';
-    } else {
+    } else if (pr) {
       environment = `docs-pr-${pr}`;
+    } else {
+      environment = 'staging';
     }
 
     const imageName = `gcr.io/exponentjs/exponent-docs-v2-${environment}`;
     const imageTag = `${process.env.BUILDKITE_COMMIT}`;
 
     Log.collapsed(':gcloud: Deploy to K8s...');
-    let currentGithubDeployment;
+    let currentGithubDeployment, deploymentUrl;
     if (pr) {
       // is PR
       await Github.setAllCurrentDeploymentsToInactive('universe', pr, {
         task: 'deploy:docs:k8s',
         environment,
       });
-      currentGithubDeployment = await Github.createDeployment('universe', pr, {
+      currentGithubDeployment = await Github.createDeploymentForPR('universe', pr, {
         task: 'deploy:docs:k8s',
         environment,
         required_contexts: [],
       });
-      await Github.createDeploymentStatus('universe', currentGithubDeployment, {
-        state: 'pending',
-        log_url: process.env.BUILDKITE_BUILD_URL,
-        description: 'Currently deploying. Check CI for details.',
+      deploymentUrl = `https://${environment}.pr.exp.host`;
+    } else {
+      currentGithubDeployment = await Github.createDeploymentForCommit('universe', process.env.BUILDKITE_COMMIT, {
+        task: 'deploy:docs:k8s',
+        environment,
+        required_contexts: [],
+        ...(environment === 'production' ? { production_environment: true } : {}),
       });
+      deploymentUrl = environment === 'staging'
+        ? 'https://staging.docs.getexponent.com/'
+        : 'https://docs.getexponent.com';
     }
+
+    await Github.createDeploymentStatus('universe', currentGithubDeployment, {
+      state: 'pending',
+      log_url: process.env.BUILDKITE_BUILD_URL,
+      description: 'Currently deploying. Check CI for details.',
+    });
 
     try {
       const deployScript = `#!/bin/bash
@@ -144,7 +167,12 @@ const deploy = (branch, tag, pr) => ({
             KUBE_NAMESPACE: environment,
             COMMIT_HASH: process.env.BUILDKITE_COMMIT,
             NUM_REPLICAS: environment === 'production' ? 2 : 1, // PRS // Staging
-            INGRESS_HOSTNAME: environment === 'production' ? 'docs.getexponent.com' : `${environment}.pr.exp.host`, // staging
+            INGRESS_HOSTNAME: isProduction
+              ? 'docs.getexponent.com'
+              : pr
+                  ? `${environment}.pr.exp.host`
+                  : // prs
+                    'staging.docs.getexponent.com', // staging
             VAULT_ADDR: process.env.VAULT_ADDR,
             VAULT_TOKEN: process.env.VAULT_TOKEN,
           },
@@ -170,7 +198,7 @@ const deploy = (branch, tag, pr) => ({
       await Github.createDeploymentStatus('universe', currentGithubDeployment, {
         state: 'success',
         log_url: process.env.BUILDKITE_BUILD_URL,
-        environment_url: `https://${environment}.pr.www.exp.host`,
+        environment_url: deploymentUrl,
         description: 'PR was deployed successfully',
       });
     }
@@ -191,3 +219,25 @@ const updateSearchIndex = (branch, tag) => ({
     });
   },
 });
+
+const tagRelease = {
+  name: ':git: Tag Release',
+  async command() {
+    Log.collapsed(':git: Tagging Release...'); // Build tag name
+    const tag = `docs/release-${await makeVersionName()}`;
+    await git(`tag ${tag}`);
+    Log.collapsed(':github: Pushing Release...');
+    await git(`push origin ${tag}`); // upload more steps
+    global.currentPipeline.upload(global.currentPipeline.steps(tag, tag, null));
+  },
+};
+
+function pad(n) {
+  return n < 10 ? `0${n}` : `${n}`;
+}
+
+async function makeVersionName() {
+  const hash = (await git('rev-parse --short=12 HEAD')).trim();
+  const today = new Date();
+  return `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}-${hash}`;
+}
