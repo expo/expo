@@ -1,0 +1,11 @@
+{
+  "name": "docs",
+  "version": "14.0.0",
+  "private": true,
+  "scripts": {
+    "start": "cd gatsby && yarn run develop",
+    "postinstall": "cd gatsby && yarn",
+    "build-builder": "rocker build --push -f deploy/docker/builder.Rockerfile .",
+    "update-search-index": "node ./scripts/update-search-index"
+  }
+}

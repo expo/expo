@@ -1,0 +1,40 @@
+FROM gcr.io/exponentjs/docs-builder:v2
+
+MOUNT ../../:/universe
+MOUNT ../../node_modules-tarballs:/root/node_modules-tarballs
+
+RUN cp /universe/.yarnrc /root/.yarnrc
+
+ADD gatsby/yarn.lock /root/docs/gatsby/yarn.lock
+ADD gatsby/package.json /root/docs/gatsby/package.json
+WORKDIR /root/docs/gatsby
+
+ATTACH /bin/sh
+
+RUN yarn
+
+MOUNT ./gatsby/public:/root/docs/gatsby/public
+ADD ./gatsby /root/docs/gatsby
+ADD ./versions /root/docs/versions
+
+RUN yarn run build
+
+EXPORT /root/docs/gatsby/public/ public_html/
+
+# Nginx
+FROM nginx:1.11.8-alpine
+
+ENV DOCS_VERSION {{ .DocsVersion }}
+
+RUN rm -rf /usr/share/nginx/html && mkdir -p /usr/share/nginx/html
+IMPORT public_html/ /usr/share/nginx/html
+COPY ./deploy/nginx/default.conf /etc/nginx/conf.d/default.conf.template
+
+RUN envsubst '$DOCS_VERSION' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf &&\
+  rm -rf /etc/nginx/conf.d/default.conf.template
+
+EXPOSE 80 443
+
+CMD ["nginx", "-g", "daemon off;"]
+
+PUSH {{ .ImageName }}:{{ .ImageTag }}
