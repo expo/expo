@@ -2,7 +2,6 @@
 
 Hi! This is what will make Exponent actually be useable by people. :)
 
-
 ## How to edit
 
 #### A note about versioning
@@ -45,42 +44,17 @@ deploy script will respect this value).
 
 ### Testing changes locally
 
-Navigate to the documentation root.
-
-#### With Docker (recommended)
-
 If your machine has Docker for Mac and the Gcloud tools, you can run:
 
 ```bash
-DEFAULT_VERSION=[version goes here] make watch
+yarn && yarn start
 ```
 
-from this directory. So for example, `DEFAULT_VERSION=v7.0.0 make watch` will preview
-docs for sdk 7. The site is viewable at `localhost:8000`.
-
-If you run `make watch`, it will start the previewing unversioned docs, which
-is what you want in development.
+from this directory. The site is viewable at `http://localhost:9000`.
 
 If your machine does not have Docker or GCloud, do the following:
 
 * Go to https://docs.docker.com/docker-for-mac/ and download and install Docker for Mac.
 * From universe root, run `server/infra/tools/install-cli-tools.sh`, and follow the prompts.
-
-#### With Python (environment dependent)
-
-Make sure you have `python` and `pip` installed. Run,
-
-```pip install -r requirements.txt```
-
-Then run,
-
-```DEFAULT_VERSION=unversioned make serve```
-
-This will serve the docs site accessible at the URL given in the output of the
-command. This will preview the `DEFAULT_VERSION` according to the `docs/package.json`.
-When you edit and save one of the docs source files it builds and refreshes the
-page automatically. You can also try a specific version like this,
-
-```DEFAULT_VERSION=v6.0.0 make serve```
-
-The site is viewable at `http://0.0.0.0:8000/versions/unversioned/index.html`.
+* From universe root, run `install-rocker`.
+* From universe root, run `set-docker-loopback`
