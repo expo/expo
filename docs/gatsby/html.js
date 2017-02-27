@@ -19,12 +19,7 @@ module.exports = React.createClass({
     const head = Helmet.rewind();
     let css;
     if (process.env.NODE_ENV === `production`) {
-      css = (
-        <style
-          id="gatsby-inlined-css"
-          dangerouslySetInnerHTML={{ __html: stylesStr }}
-        />
-      );
+      css = <style id="gatsby-inlined-css" dangerouslySetInnerHTML={{ __html: stylesStr }} />;
     }
 
     return (
@@ -32,19 +27,9 @@ module.exports = React.createClass({
         <head>
           <meta charSet="utf-8" />
           <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-          <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0"
-          />
-          <link
-            rel="stylesheet"
-            href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css"
-          />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
           <link rel="icon" type="image/png" href={favicon} sizes="32x32" />
-          <script
-            type="text/javascript"
-            src="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js"
-          />
           {this.props.headComponents}
           <TypographyStyle typography={typography} />
           {css}
@@ -53,13 +38,10 @@ module.exports = React.createClass({
           {head.link.toComponent()}
         </head>
         <body>
-          <div
-            id="react-mount"
-            dangerouslySetInnerHTML={{ __html: this.props.body }}
-          />
+          <div id="react-mount" dangerouslySetInnerHTML={{ __html: this.props.body }} />
           {this.props.postBodyComponents}
         </body>
       </html>
     );
-  }
+  },
 });

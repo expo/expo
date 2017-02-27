@@ -30,14 +30,7 @@ import v11 from 'data/v11.yaml';
 import v10 from 'data/v10.yaml';
 import v9 from 'data/v9.yaml';
 
-const versions = [
-  `v14.0.0`,
-  `v13.0.0`,
-  `v12.0.0`,
-  `v11.0.0`,
-  `v10.0.0`,
-  `v9.0.0`
-];
+const versions = [`v14.0.0`, `v13.0.0`, `v12.0.0`, `v11.0.0`, `v10.0.0`, `v9.0.0`];
 
 // NOTE(brentvatne): super ugly hack because navbar depends on us adding
 // padding to the entire document which then breaks the regular anchor
@@ -58,7 +51,7 @@ class Wrapper extends React.Component {
     this.state = {
       sidebarOpen: false,
       activeVersion: version,
-      activeRoutes: this.getRoutes(version)
+      activeRoutes: this.getRoutes(version),
     };
   }
 
@@ -101,7 +94,7 @@ class Wrapper extends React.Component {
   setVersion = version => {
     this.setState({
       activeVersion: version,
-      activeRoutes: this.getRoutes(version)
+      activeRoutes: this.getRoutes(version),
     });
 
     const newRoute = `/versions/${version}/index.html`;
@@ -124,14 +117,10 @@ class Wrapper extends React.Component {
       <div>
         <Helmet
           title={`Exponent ${this.state.activeVersion} documentation`}
-          titleTemplate={
-            `%s | Exponent ${this.state.activeVersion} documentation`
-          }
+          titleTemplate={`%s | Exponent ${this.state.activeVersion} documentation`}
         />
 
-        <Drawer
-          open={this.state.sidebarOpen}
-          onChange={open => this.setState({ sidebarOpen: open })}>
+        <Drawer open={this.state.sidebarOpen} onChange={open => this.setState({ sidebarOpen: open })}>
           <div onClick={() => this.setState({ sidebarOpen: false })}>
             <SidebarContent
               id="mobile-sidebar"
@@ -146,6 +135,7 @@ class Wrapper extends React.Component {
         <Header
           activeVersion={this.state.activeVersion}
           versions={versions}
+          router={this.props.router}
           setVersion={this.setVersion}
         />
 
@@ -161,8 +151,8 @@ class Wrapper extends React.Component {
               [presets.Tablet]: {
                 padding: rhythm(1),
                 paddingTop: rhythm(2.5),
-                paddingRight: rhythm(2.5)
-              }
+                paddingRight: rhythm(2.5),
+              },
             }}>
             <SidebarContent
               id="sidebar"
@@ -180,8 +170,8 @@ class Wrapper extends React.Component {
                   display: `block`,
                   position: `fixed`,
                   height: `calc(100vh - 58px)`, // 58px is fixed height of header.
-                  overflow: `scroll`
-                }
+                  overflow: `scroll`,
+                },
               }}
             />
             <div
@@ -190,14 +180,14 @@ class Wrapper extends React.Component {
                 paddingLeft: 0,
                 [presets.Tablet]: {
                   display: `block`,
-                  paddingLeft: rhythm(11.7)
-                }
+                  paddingLeft: rhythm(11.7),
+                },
               }}>
               {this.props.children}
               <p
                 css={{
                   textAlign: `center`,
-                  marginBottom: rhythm(1 / 2)
+                  marginBottom: rhythm(1 / 2),
                 }}>
                 © Copyright{' '}
                 {new Date().getFullYear()}
@@ -218,22 +208,21 @@ class Wrapper extends React.Component {
             height: `calc(${rhythm(2)} - 1px)`,
             borderBottom: `1px solid #ccc`,
             [presets.Tablet]: {
-              display: `none`
-            }
+              display: `none`,
+            },
           }}>
           <div
-            onClick={() =>
-              this.setState({ sidebarOpen: !this.state.sidebarOpen })}
+            onClick={() => this.setState({ sidebarOpen: !this.state.sidebarOpen })}
             css={{
               float: `left`,
               paddingLeft: rhythm(1 / 3),
               paddingRight: 12,
-              paddingTop: 8
+              paddingTop: 8,
             }}>
             <MenuIcon
               css={{
                 fontSize: rhythm(5 / 3),
-                height: rhythm(1.25)
+                height: rhythm(1.25),
               }}
             />
           </div>
@@ -244,7 +233,7 @@ class Wrapper extends React.Component {
                 marginBottom: rhythm(0),
                 marginTop: 15,
                 maxHeight: rhythm(1),
-                width: 100
+                width: 100,
               }}
             />
           </Link>

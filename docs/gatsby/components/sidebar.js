@@ -5,7 +5,7 @@ import { presets } from 'glamor';
 
 class Sidebar extends React.Component {
   render() {
-    const { activeRoutes, id, ...otherProps } = this.props;
+    const { activeRoutes, id, router, activeVersion, versions, setVersion, ...otherProps } = this.props;
 
     const Header = ({ i, link, children }) => (
       <h3
@@ -15,13 +15,13 @@ class Sidebar extends React.Component {
           fontSize: 15,
           fontWeight: `normal`,
           marginBottom: rhythm(1 / 2),
-          marginTop: i === 0 ? 0 : rhythm(1.25) // Except for the first header
+          marginTop: i === 0 ? 0 : rhythm(1.25), // Except for the first header
         }}>
         <Link
           activeClassName="current"
           css={{ color: 'inherit' }}
           activeStyle={{
-            color: `rgba(0,0,0,0.40)`
+            color: `rgba(0,0,0,0.40)`,
           }}
           to={link}>
           {children}
@@ -34,7 +34,7 @@ class Sidebar extends React.Component {
         css={{
           listStyle: `none`,
           marginBottom: 0,
-          marginLeft: 0
+          marginLeft: 0,
         }}>
         {children}
       </ul>
@@ -45,10 +45,10 @@ class Sidebar extends React.Component {
         {...props}
         activeClassName="current"
         activeStyle={{
-          color: `rgba(0,0,0,0.40)`
+          color: `rgba(0,0,0,0.40)`,
         }}
         css={{
-          color: `inherit`
+          color: `inherit`,
         }}
       />
     );
@@ -64,9 +64,9 @@ class Sidebar extends React.Component {
             [presets.Tablet]: {
               paddingTop: rhythm(1),
               paddingBottom: rhythm(1),
-              paddingLeft: 0 // For desktop, let main wrapper take care
+              paddingLeft: 0, // For desktop, let main wrapper take care
               // of padding on left.
-            }
+            },
           }}>
           {/* Show the version switcher on mobile */}
           <select
@@ -82,8 +82,8 @@ class Sidebar extends React.Component {
               marginBottom: rhythm(1),
               marginLeft: 0,
               [presets.Tablet]: {
-                display: `none`
-              }
+                display: `none`,
+              },
             }}>
             {this.props.versions.map(version => {
               return (

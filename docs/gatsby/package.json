@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "bluebird": "^3.4.7",
+    "docsearch.js": "^2.3.1",
     "gatsby": "1.0.0-alpha12",
     "gatsby-link": "1.0.0-alpha12",
     "gatsby-parser-remark": "1.0.0-alpha12",
@@ -27,6 +28,7 @@
     "gatsby-typegen-remark-responsive-image": "1.0.0-alpha12",
     "gatsby-typegen-remark-smartypants": "1.0.0-alpha12",
     "gatsby-typegen-sharp": "1.0.0-alpha12",
+    "hotshot": "^1.0.5",
     "lodash": "^4.17.3",
     "react-helmet": "^3.3.0",
     "react-icons": "^2.2.3",

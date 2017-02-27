@@ -172,3 +172,8 @@ pre[data-line] code {
 pre .line-highlight {
 	margin-top: 0;
 }
+
+.searchbox__input {
+	border-radius: 0px !important;
+	box-shadow: inset 0 0 0 1px #dddddd;
+}

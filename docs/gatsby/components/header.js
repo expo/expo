@@ -1,4 +1,7 @@
+/* global $ */
 import { orderBy } from 'lodash';
+import docsearch from 'docsearch.js';
+import Hotshot from 'hotshot';
 import React from 'react';
 import Link from 'gatsby-link';
 import { rhythm, scale } from 'utils/typography';
@@ -6,29 +9,59 @@ import { presets } from 'glamor';
 import logoText from 'images/logo-text.png';
 
 class AlgoliaSearch extends React.Component {
-  componentDidMount() {
-    setTimeout(
-      () => {
-        docsearch({
-          appId: 'S6DBW4862L',
-          apiKey: '59ebba04e5d2e4bed5d5ae12eed28bdd',
-          indexName: 'exponent-docs-v2',
-          inputSelector: '#algolia-search-box',
-          algoliaOptions: {
-            facetFilters: [`tags:${this.props.activeVersion}`],
-            hitsPerPage: 5
-          }
-        });
-      },
-      1000
-    );
+  componentWillReceiveProps(nextProps) {
+    if (this.props.activeVersion && this.props.activeVersion !== nextProps.activeVersion) {
+      this.docsearch.algoliaOptions = {
+        ...this.docsearch.algoliaOptions,
+        facetFilters: [`tags:${nextProps.activeVersion}`],
+      };
+    }
   }
+
+  componentDidMount() {
+    this.docsearch = docsearch({
+      appId: 'S6DBW4862L',
+      apiKey: '59ebba04e5d2e4bed5d5ae12eed28bdd',
+      indexName: 'exponent-docs-v2',
+      inputSelector: '#algolia-search-box',
+      algoliaOptions: {
+        facetFilters: [`tags:${this.props.activeVersion}`],
+        hitsPerPage: 10,
+      },
+      enhancedSearchInput: true,
+      handleSelected: (input, event, suggestion) => {
+        input.setVal('');
+        const url = suggestion.url;
+        const route = url.match(/https?:\/\/(.*)(\/versions\/.*)/)[2];
+        this.props.router.push(route);
+        document.getElementById('docsearch').blur();
+        const searchbox = document.querySelector('input#docsearch');
+        const reset = document.querySelector('.searchbox [type="reset"]');
+        reset.className = 'searchbox__reset';
+        if (searchbox.value.length === 0) {
+          reset.className += ' hide';
+        }
+      },
+    });
+
+    // add keyboard shortcut
+    this.hotshot = new Hotshot({
+      combos: [
+        {
+          keyCodes: [16, 191], // shift + / (otherwise known as '?')
+          callback: () => setTimeout(() => document.getElementById('docsearch').focus(), 16),
+        },
+      ],
+    });
+  }
+
+  componentWillUnmount() {}
 
   render() {
     return (
       <div
         css={{
-          float: `left`
+          float: `left`,
         }}>
         <input
           css={{
@@ -37,7 +70,7 @@ class AlgoliaSearch extends React.Component {
             borderRadius: 3,
             fontSize: '14px',
             padding: '2px 10px',
-            marginTop: '2px'
+            marginTop: '2px',
           }}
           id="algolia-search-box"
           type="text"
@@ -63,8 +96,8 @@ class Header extends React.Component {
           width: `100%`,
           height: 45,
           [presets.Tablet]: {
-            height: 58
-          }
+            height: 58,
+          },
         }}>
         <div
           css={{
@@ -79,15 +112,15 @@ class Header extends React.Component {
               padding: 15,
               paddingLeft: 20,
               height: 58,
-              margin: `0 auto`
-            }
+              margin: `0 auto`,
+            },
           }}>
           <div
             css={{
               [presets.Tablet]: {
                 marginTop: '4px',
-                display: 'inline-block'
-              }
+                display: 'inline-block',
+              },
             }}>
             <Link to={`/versions/${this.props.activeVersion}/index.html`}>
               <img
@@ -97,8 +130,8 @@ class Header extends React.Component {
                   height: rhythm(1.5),
                   verticalAlign: 'middle',
                   [presets.Tablet]: {
-                    height: 25
-                  }
+                    height: 25,
+                  },
                 }}
               />
             </Link>
@@ -106,13 +139,13 @@ class Header extends React.Component {
 
           <div
             css={{
-              float: `right`
+              float: `right`,
             }}>
             <div
               css={{
                 paddingTop: '4px',
                 paddingRight: '10px',
-                display: 'inline-block'
+                display: 'inline-block',
               }}>
               <select
                 value={this.props.activeVersion}
@@ -128,7 +161,7 @@ class Header extends React.Component {
                   // borderColor: '#ccc',
                   border: 'none',
                   textAlignLast: `center`,
-                  textAlign: `center`
+                  textAlign: `center`,
                 }}>
                 {orderBy(this.props.versions, v => parseInt(v.match(/v([0-9]+)\./)[1], 10), ['asc'])
                   .map(version => {
@@ -142,7 +175,7 @@ class Header extends React.Component {
               </select>
             </div>
 
-            <AlgoliaSearch activeVersion={this.props.activeVersion} />
+            <AlgoliaSearch router={this.props.router} activeVersion={this.props.activeVersion} />
           </div>
         </div>
       </div>
