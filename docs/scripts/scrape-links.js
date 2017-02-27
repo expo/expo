@@ -23,7 +23,7 @@ function findAllLinks(filePaths) {
 
   links = uniq(flatten(links));
   links = links.filter(link => link.match(/docs.getexponent.com/));
-  links = links.map(link => link.replace('https://docs.getexponent.com', ''));
+  links = links.map(link => link.replace('https://docs.expo.io', ''));
   links.sort();
   links = links.map(link => ({ current: link, actual: link }));
   return links;
