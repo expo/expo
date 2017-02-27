@@ -8,7 +8,7 @@ next___FILE: ./logging.md
 `exp.json` is your go-to place for configuring parts of your app that don't belong in code. The following is a full list of properties available to you.
 
  `name`  
-**Required**. The name of your app as it appears both within Exponent and on your home screen as a standalone app.
+**Required**. The name of your app as it appears both within Expo and on your home screen as a standalone app.
 
  `description`  
 A short description of what your app is and why it is great.
@@ -17,7 +17,7 @@ A short description of what your app is and why it is great.
 **Required**. The friendly url name for publishing. eg: `exp.host/@your-username/slug`.
 
  `sdkVersion`  
-**Required**. The Exponent sdkVersion to run the project on. This should line up with the version specified in your package.json.
+**Required**. The Expo sdkVersion to run the project on. This should line up with the version specified in your package.json.
 
  `version`  
 Your app version, use whatever versioning scheme that you like.
@@ -29,7 +29,7 @@ Lock your app to a specific orientation with `portrait` or `landscape`. Defaults
 On Android, this will determine the color of your app in the multitasker. Currently this is not used on iOS, but it may be used for other purposes in the future. 6 character long hex color string, eg: `'#000000'`
 
  `iconUrl`  
-A url that points to your app's icon image. We recommend that you use a 512x512 png file with transparency. This icon will appear on the home screen and within the Exponent app.
+A url that points to your app's icon image. We recommend that you use a 512x512 png file with transparency. This icon will appear on the home screen and within the Expo app.
 
  `notification`  
 Configuration for remote (push) notifications.
@@ -53,7 +53,7 @@ Configuration for the loading screen that users see when opening your app, while
 > Url that points to the icon to display while starting up the app. Image size and aspect ratio are up to you.
 >
 >  `exponentIconColor`  
-> If no icon is provided, we will show the Exponent logo. You can choose between `white` and `blue`. white, blue
+> If no icon is provided, we will show the Expo logo. You can choose between `white` and `blue`. white, blue
 >
 >  `exponentIconGrayscale`  
 > Similar to `exponentIconColor` but instead indicate if it should be grayscale (`1`) or not (`0`).
@@ -65,7 +65,7 @@ Configuration for the loading screen that users see when opening your app, while
 > Color to fill the loading screen background 6 character long hex color string, eg: `'#000000'`
 
  `appKey`  
-By default, Exponent looks for the application registered with the AppRegistry as `main`. If you would like to change this, you can specify the name in this property.
+By default, Expo looks for the application registered with the AppRegistry as `main`. If you would like to change this, you can specify the name in this property.
 
  `androidStatusBarColor`  
 6 character long hex color string, eg: `'#000000'`
@@ -86,13 +86,13 @@ The relative path to your main JavaScript file.
 **Standalone Apps Only**. iOS standalone app specific configuration
 
 >  `bundleIdentifier`  
-> The bundle identifier for your iOS standalone app. You make it up, but it needs to be unique on the App Store. See [this StackOverflow question](http://stackoverflow.com/questions/11347470/what-does-bundle-identifier-mean-in-the-ios-project). Reverse DNS notation unique name for your app. For example, host.exp.exponent, where exp.host is our domain and Exponent is our app.
+> The bundle identifier for your iOS standalone app. You make it up, but it needs to be unique on the App Store. See [this StackOverflow question](http://stackoverflow.com/questions/11347470/what-does-bundle-identifier-mean-in-the-ios-project). Reverse DNS notation unique name for your app. For example, host.exp.exponent, where exp.host is our domain and Expo is our app.
 
  `android`  
 **Standalone Apps Only**. Android standalone app specific configuration
 
 >  `package`  
-> The package name for your Android standalone app. You make it up, but it needs to be unique on the Play Store. See [this StackOverflow question](http://stackoverflow.com/questions/6273892/android-package-name-convention). Reverse DNS notation unique name for your app. For example, host.exp.exponent, where exp.host is our domain and Exponent is our app.
+> The package name for your Android standalone app. You make it up, but it needs to be unique on the Play Store. See [this StackOverflow question](http://stackoverflow.com/questions/6273892/android-package-name-convention). Reverse DNS notation unique name for your app. For example, host.exp.exponent, where exp.host is our domain and Expo is our app.
 >
 >  `config`  
 >  `fabric`  

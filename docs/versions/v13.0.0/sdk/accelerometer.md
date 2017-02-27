@@ -41,7 +41,7 @@ Subscribe for updates to the accelerometer.
 
 ```javascript
 import React from 'react';
-import Exponent, {
+import Expo, {
   Accelerometer,
 } from 'exponent';
 import {

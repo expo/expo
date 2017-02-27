@@ -1,7 +1,7 @@
 - title: Introduction
   index: /versions/v14.0.0/introduction/index.html
   links:
-    Learn Exponent: /versions/v14.0.0/index.html
+    Learn Expo: /versions/v14.0.0/index.html
     Installation: /versions/v14.0.0/introduction/installation.html
     XDE Tour: /versions/v14.0.0/introduction/xde-tour.html
     Community: /versions/v14.0.0/introduction/community.html
@@ -24,10 +24,10 @@
     Genymotion: /versions/v14.0.0/guides/genymotion.html
     exp Command-Line Interface: /versions/v14.0.0/guides/exp-cli.html
     Building Standalone Apps: /versions/v14.0.0/guides/building-standalone-apps.html
-    Using ExponentKit to add Custom Native Modules: /versions/v14.0.0/guides/exponentkit.html
-    Advanced ExponentKit Topics: /versions/v14.0.0/guides/advanced-exponentkit-topics.html
-    How Exponent Works: /versions/v14.0.0/guides/how-exponent-works.html
-    Upgrading Exponent: /versions/v14.0.0/guides/upgrading-exponent.html
+    Using ExpoKit to add Custom Native Modules: /versions/v14.0.0/guides/exponentkit.html
+    Advanced ExpoKit Topics: /versions/v14.0.0/guides/advanced-exponentkit-topics.html
+    How Expo Works: /versions/v14.0.0/guides/how-exponent-works.html
+    Upgrading Expo: /versions/v14.0.0/guides/upgrading-exponent.html
     Using ClojureScript: /versions/v14.0.0/guides/using-clojurescript.html
     Using Firebase: /versions/v14.0.0/guides/using-firebase.html
     Using GraphQL: /versions/v14.0.0/guides/using-graphql.html

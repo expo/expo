@@ -6,7 +6,7 @@ Provides basic sample playback.
 
 We designed the Audio API to be as non-intrusive as possible, so audio will automatically stop if other audio starts playing on the device, if the device is locked, if the app / experience is backgrounded, or if headphones / bluetooth audio devices are disconnected.
 
-Try the [playlist example app](http://getexponent.com/@exponent/playlist) (source code is [on GitHub](https://github.com/exponent/playlist)) to see an example usage of this API.
+Try the [playlist example app](http://expo.io/@exponent/playlist) (source code is [on GitHub](https://github.com/exponent/playlist)) to see an example usage of this API.
 
 ## Enabling Audio
 
@@ -16,7 +16,7 @@ Audio is disabled by default, so your app must enable it explicitly to play soun
 
 #### Arguments
 
--   **value (_boolean_)** -- `true` enables Exponent Audio, and `false` disables it.
+-   **value (_boolean_)** -- `true` enables Expo Audio, and `false` disables it.
 
 #### Returns
 

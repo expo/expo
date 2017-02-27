@@ -26,13 +26,13 @@ If you don't want to build the backend yourself, you can use [**Graphcool**](www
 
 Same goes for the **GraphQL client**, it is of course possible for you to write the client that is responsible for interacting with a GraphQL backend yourself.
 
-But if you want to save time, you can use [**Apollo**](http://dev.apollodata.com/), a ready-made GraphQL client that integrates easily with React Native as well as with any other frontend technology of your choice. This means that you could reuse the code from your Exponent app in your web app regardless of the framework. Apollo also integrates cleanly into popular development tools like Redux, and may be easily extended to fit your apps specific needs. Most important though is that the Apollo client is community driven with all development happening in the open.
+But if you want to save time, you can use [**Apollo**](http://dev.apollodata.com/), a ready-made GraphQL client that integrates easily with React Native as well as with any other frontend technology of your choice. This means that you could reuse the code from your Expo app in your web app regardless of the framework. Apollo also integrates cleanly into popular development tools like Redux, and may be easily extended to fit your apps specific needs. Most important though is that the Apollo client is community driven with all development happening in the open.
 
 Using the Apollo client, you can benefit from _caching_, _optimistic UI_, _subscriptions_ and a lot more. To learn more, visit [dev.apollodata.com/react](http://dev.apollodata.com/react/).
 
 ### Learn more
 
-In the following, we'll explain how to set up a GraphQL project using these two technologies. For an in-depth tutorial on how to use Graphcool with the Apollo client, visit the [Learn Apollo Exponent Guide](https://www.learnapollo.com/tutorial-react-native-exponent/rne-01/).
+In the following, we'll explain how to set up a GraphQL project using these two technologies. For an in-depth tutorial on how to use Graphcool with the Apollo client, visit the [Learn Apollo Expo Guide](https://www.learnapollo.com/tutorial-react-native-exponent/rne-01/).
 
 We also prepared a full **Instagram example that uses Graphcool, Apollo and Auth0** - you can check it out [here](https://github.com/graphcool-examples/exponent-auth0-instagram-example).
 
@@ -132,7 +132,7 @@ Using so called permission queries, you can even go one step further and describ
 
 ### Installing Apollo Client
 
-To get started with Apollo and Exponent, install the [apollo-client](http://npmjs.com/apollo-client) npm package, the [react-apollo](http://npmjs.com/apollo-client) React integration package, and the [graphql-tag](https://www.npmjs.com/package/graphql-tag) library for constructing query documents.
+To get started with Apollo and Expo, install the [apollo-client](http://npmjs.com/apollo-client) npm package, the [react-apollo](http://npmjs.com/apollo-client) React integration package, and the [graphql-tag](https://www.npmjs.com/package/graphql-tag) library for constructing query documents.
 
 ```sh
 npm install apollo-client react-apollo graphql-tag --save
@@ -173,7 +173,7 @@ class App extends React.Component {
     return (
       <ApolloProvider client={client}>
         <View>
-          <Text>Hello, Exponent!</Text>
+          <Text>Hello, Expo!</Text>
         </View>
       </ApolloProvider>
     );
@@ -234,9 +234,9 @@ export default graphql(gql`
 `)(PostList);
 ```
 
-There are some Apollo examples written in React Native that you may wish to refer to. All the code should work equally well with Exponent.
+There are some Apollo examples written in React Native that you may wish to refer to. All the code should work equally well with Expo.
 
 1.  The [“Hello World” example](https://github.com/apollostack/frontpage-react-native-app) used at [dev.apolldata.com](dev.apolldata.com).
 2.  A [GitHub API Example](https://github.com/apollostack/GitHub-GraphQL-API-Example) built to work with GitHub’s new GraphQL API.
 
-You are now ready to use GraphQL in your Exponent app 🚀
+You are now ready to use GraphQL in your Expo app 🚀

@@ -22,8 +22,8 @@
     Push Notifications: /versions/v11.0.0/guides/push-notifications.html
     exp Command-Line Interface: /versions/v11.0.0/guides/exp-cli.html
     Building Standalone Apps: /versions/v11.0.0/guides/building-standalone-apps.html
-    How Exponent Works: /versions/v11.0.0/guides/how-exponent-works.html
-    Upgrading Exponent: /versions/v11.0.0/guides/upgrading-exponent.html
+    How Expo Works: /versions/v11.0.0/guides/how-exponent-works.html
+    Upgrading Expo: /versions/v11.0.0/guides/upgrading-exponent.html
 - title: SDK API Reference
   index: /versions/v11.0.0/sdk/index.html
   links:

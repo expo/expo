@@ -9,15 +9,15 @@ A "single page app" on the web is not an app with a single screen, that would in
 
 This same concept applies to with native mobile apps. When you navigate to a new screen, rather than refreshing the entire app and starting fresh from that screen, the screen is pushed onto a navigation stack and animated into view according to its configuration.
 
-The library that we recommend to use for routing & navigation in Exponent is [ExNavigation](https://github.com/exponent/ex-navigation). You can see the [full documentation for ExNavigation on Github.](https://github.com/exponent/ex-navigation).
+The library that we recommend to use for routing & navigation in Expo is [ExNavigation](https://github.com/exponent/ex-navigation). You can see the [full documentation for ExNavigation on Github.](https://github.com/exponent/ex-navigation).
 
 ## Try it out
 
-The best way to become familiar with what ExNavigation is capable of is to try out the [ExNavigation example Exponent app](https://getexponent.com/@community/ex-navigation-example). Once you've had a chance to try that, come back here and read on!
+The best way to become familiar with what ExNavigation is capable of is to try out the [ExNavigation example Expo app](https://expo.io/@community/ex-navigation-example). Once you've had a chance to try that, come back here and read on!
 
 ## An introduction: the most bare-bones navigation configuration
 
-You can follow along by copying all of the following code into `main.js` on a brand new blank Exponent project, and running `npm install @exponent/ex-navigation --save`.
+You can follow along by copying all of the following code into `main.js` on a brand new blank Expo project, and running `npm install @exponent/ex-navigation --save`.
 
 ```javascript
 import Exponent from 'exponent';
@@ -79,7 +79,7 @@ Exponent.registerRootComponent(App);
 
 ## Reviewing the tab template
 
-You probably don't want to start all of your projects completely from scratch, and the tab template is one of many to come from Exponent that will hopefully give you a headstart on building your app. It comes with `@exponent/ex-navigation` pre-installed, and tab navigation set up for you.
+You probably don't want to start all of your projects completely from scratch, and the tab template is one of many to come from Expo that will hopefully give you a headstart on building your app. It comes with `@exponent/ex-navigation` pre-installed, and tab navigation set up for you.
 
 Let's look at the project structure of the tab template as it relates to navigation. This is not a pattern that you absolutely must follow, but we find it works quite well for us.
 
@@ -96,7 +96,7 @@ Let's look at the project structure of the tab template as it relates to navigat
 
 ### main.js
 
-In Exponent apps, this file is typically where you will register the root component of your app. At the root, you typically include any higher order `Provider` components, such as the `react-redux` `Provider`, and the ExNavigation `NavigationProvider`. As you can see in the above example, we usually also render our root `StackNavigation` component at the root. Most apps are composed of many nested stacks, which we will see here.
+In Expo apps, this file is typically where you will register the root component of your app. At the root, you typically include any higher order `Provider` components, such as the `react-redux` `Provider`, and the ExNavigation `NavigationProvider`. As you can see in the above example, we usually also render our root `StackNavigation` component at the root. Most apps are composed of many nested stacks, which we will see here.
 
 ### screens/[\*](#id1)Screen.js
 

@@ -5,13 +5,13 @@ previous___FILE: ./contacts.md
 next___FILE: ./font.md
 ---
 
-Provides Facebook integration for Exponent apps. Exponent exposes a minimal native API since you can access Facebook's [Graph API](https://developers.facebook.com/docs/graph-api) directly through HTTP (using [fetch](https://facebook.github.io/react-native/docs/network.html#fetch), for example).
+Provides Facebook integration for Expo apps. Expo exposes a minimal native API since you can access Facebook's [Graph API](https://developers.facebook.com/docs/graph-api) directly through HTTP (using [fetch](https://facebook.github.io/react-native/docs/network.html#fetch), for example).
 
 ## Registering your app with Facebook
 
 Follow [Facebook's developer documentation](https://developers.facebook.com/docs/apps/register) to register an application with Facebook's API and get an application ID. Take note of this application ID because it will be used as the `appId` option in your [`Exponent.Facebook.logInWithReadPermissionsAsync`](#exponentfacebookloginwithreadpermissionsasync "Exponent.Facebook.logInWithReadPermissionsAsync") call. Then follow these steps based on the platforms you're targetting:
 
--   **The Exponent client app**
+-   **The Expo client app**
 
     -   Add `host.exp.Exponent` as an iOS _Bundle ID_. Add `rRW++LUjmZZ+58EbN5DVhGAnkX4=` as an Android _key hash_. Your app's settings should end up including the following under "Settings > Basic":
 

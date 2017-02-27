@@ -15,7 +15,7 @@ While you're working on a local copy of your project, assets are served from you
 
 ### In production
 
-Each time you publish your app, Exponent will upload your assets to Amazon CloudFront, a blazing fast CDN. It does this in an intelligent way to ensure your deploys remain fast: if an asset has not changed since your previous deploy, it is skipped. You don't have to do anything for this to work, it is all automatically handled by Exponent.
+Each time you publish your app, Expo will upload your assets to Amazon CloudFront, a blazing fast CDN. It does this in an intelligent way to ensure your deploys remain fast: if an asset has not changed since your previous deploy, it is skipped. You don't have to do anything for this to work, it is all automatically handled by Expo.
 
 ## Preloading & caching assets
 

@@ -7,7 +7,7 @@ next___FILE: ./installation.md
 
 -   [Installation](/versions/v8.0.0/introduction/installation)
     -   [Desktop Development Tool: XDE](/versions/v8.0.0/introduction/installation#desktop-development-tool-xde)
-    -   [Mobile Client: Exponent for iOS and Android](/versions/v8.0.0/introduction/installation#mobile-client-exponent-for-ios-and-android)
+    -   [Mobile Client: Expo for iOS and Android](/versions/v8.0.0/introduction/installation#mobile-client-exponent-for-ios-and-android)
     -   [Node.js](/versions/v8.0.0/introduction/installation#node-js)
 -   [XDE Tour](/versions/v8.0.0/introduction/xde-tour)
     -   [Sign in screen](/versions/v8.0.0/introduction/xde-tour#sign-in-screen)
@@ -21,7 +21,7 @@ next___FILE: ./installation.md
     -   [Project dialog (with project open)](/versions/v8.0.0/introduction/xde-tour#project-dialog-with-project-open)
     -   [Publish](/versions/v8.0.0/introduction/xde-tour#publish)
 -   [Learning](/versions/v8.0.0/introduction/learning)
-    -   [Exponent](/versions/v8.0.0/introduction/learning#exponent)
+    -   [Expo](/versions/v8.0.0/introduction/learning#exponent)
     -   [React Native](/versions/v8.0.0/introduction/learning#react-native)
     -   [React](/versions/v8.0.0/introduction/learning#react)
     -   [JavaScript](/versions/v8.0.0/introduction/learning#javascript)

@@ -5,7 +5,7 @@ previous___FILE: ./icons.md
 next___FILE: ./push-notifications.md
 ---
 
-Both iOS and Android come with their own set of platform fonts but if you want to inject some more brand personality into your app, a well picked font can go a long way. In this guide we'll walk you through adding a custom font to your Exponent app. We'll use [Open Sans](https://fonts.google.com/specimen/Open+Sans) from [Google Fonts](https://fonts.google.com/) in the example, and the process is identical for any other font, so feel free to adapt it to your use case. Before proceeding, go ahead and download [Open Sans](https://fonts.google.com/specimen/Open+Sans)
+Both iOS and Android come with their own set of platform fonts but if you want to inject some more brand personality into your app, a well picked font can go a long way. In this guide we'll walk you through adding a custom font to your Expo app. We'll use [Open Sans](https://fonts.google.com/specimen/Open+Sans) from [Google Fonts](https://fonts.google.com/) in the example, and the process is identical for any other font, so feel free to adapt it to your use case. Before proceeding, go ahead and download [Open Sans](https://fonts.google.com/specimen/Open+Sans)
 
 ## Starting code
 
@@ -45,7 +45,7 @@ Take the Open Sans zipfile that you downloaded, extract it and copy `OpenSans-Bo
 
 ## Loading the font in your app
 
-To load and use fonts we will use the [Exponent SDK](/versions/v7.0.0/sdk/index#exponent-sdk), which comes pre-installed when you create a new Exponent project, but if for some reason you don't have it, you can install with `npm install --save exponent` in your project directory. Add the following `import` in your application code:
+To load and use fonts we will use the [Expo SDK](/versions/v7.0.0/sdk/index#exponent-sdk), which comes pre-installed when you create a new Expo project, but if for some reason you don't have it, you can install with `npm install --save exponent` in your project directory. Add the following `import` in your application code:
 
 ```javascript
 import { Font } from 'exponent';
@@ -65,13 +65,13 @@ class App extends React.Component {
 }
 ```
 
-This loads Font Awesome and associates it with the name `'open-sans-bold'` in Exponent's font map. Now we just have to refer to this font in our `Text` component.
+This loads Font Awesome and associates it with the name `'open-sans-bold'` in Expo's font map. Now we just have to refer to this font in our `Text` component.
 
-> **Note:** Fonts loaded through Exponent don't currently support the `fontWeight` or `fontStyle` properties -- you will need to load those variations of the font and specify them by name, as we have done here with bold.
+> **Note:** Fonts loaded through Expo don't currently support the `fontWeight` or `fontStyle` properties -- you will need to load those variations of the font and specify them by name, as we have done here with bold.
 
 ## Using the font in a `Text` component
 
-You may remember that in React Native you specify fonts in `Text` components using the `fontFamily` style property. Since it can be confusing to keep track of the font family for the various .ttf files you load, Exponent provides the function [`Exponent.Font.style()`](/versions/v7.0.0/sdk/font#exponentfontstyle "Exponent.Font.style") which returns the style properties (including `fontFamily`) for a font that you specify by name. So all you need to do is change your `Text` element to the following:
+You may remember that in React Native you specify fonts in `Text` components using the `fontFamily` style property. Since it can be confusing to keep track of the font family for the various .ttf files you load, Expo provides the function [`Exponent.Font.style()`](/versions/v7.0.0/sdk/font#exponentfontstyle "Exponent.Font.style") which returns the style properties (including `fontFamily`) for a font that you specify by name. So all you need to do is change your `Text` element to the following:
 
 ```javascript
 <Text style={{ ...Font.style('open-sans-bold'), fontSize: 56 }}>
@@ -81,7 +81,7 @@ You may remember that in React Native you specify fonts in `Text` components usi
 
 On next refresh the app seems to still not display the text with Open Sans Bold. You will see that it is still using the default system font. The problem is that [`Exponent.Font.loadAsync()`](/versions/v7.0.0/sdk/font#exponentfontloadasync "Exponent.Font.loadAsync") is an asynchronous call and takes some time to complete. Before it completes, the `Text` component is already rendered with the default font since it can't find the `'open-sans-bold'` font (which hasn't been loaded yet).
 
-> **Note:** If you're curious, go ahead and add `console.log(Font.style('open-sans-bold'));` to your code and you'll see that it evaluates to {fontFamily: 'some-long-id-open-sans-bold'}. We prepend the family name with a session id in order to prevent fonts from different apps opened through Exponent from clashing.
+> **Note:** If you're curious, go ahead and add `console.log(Font.style('open-sans-bold'));` to your code and you'll see that it evaluates to {fontFamily: 'some-long-id-open-sans-bold'}. We prepend the family name with a session id in order to prevent fonts from different apps opened through Expo from clashing.
 
 ## Waiting for the font to load before rendering
 

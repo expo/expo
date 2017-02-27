@@ -35,7 +35,7 @@ Subscribe for updates to the gyroscope.
 
 ```javascript
 import React from 'react';
-import Exponent, {
+import Expo, {
   Gyroscope,
 } from 'exponent';
 import {

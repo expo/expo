@@ -5,7 +5,7 @@ previous___FILE: ./icons.md
 next___FILE: ./routing-and-navigation.md
 ---
 
-Both iOS and Android come with their own set of platform fonts but if you want to inject some more brand personality into your app, a well picked font can go a long way. In this guide we'll walk you through adding a custom font to your Exponent app. We'll use [Open Sans](https://fonts.google.com/specimen/Open+Sans) from [Google Fonts](https://fonts.google.com/) in the example, and the process is identical for any other font, so feel free to adapt it to your use case. Before proceeding, go ahead and download [Open Sans](https://fonts.google.com/specimen/Open+Sans)
+Both iOS and Android come with their own set of platform fonts but if you want to inject some more brand personality into your app, a well picked font can go a long way. In this guide we'll walk you through adding a custom font to your Expo app. We'll use [Open Sans](https://fonts.google.com/specimen/Open+Sans) from [Google Fonts](https://fonts.google.com/) in the example, and the process is identical for any other font, so feel free to adapt it to your use case. Before proceeding, go ahead and download [Open Sans](https://fonts.google.com/specimen/Open+Sans)
 
 ## Starting code
 
@@ -43,7 +43,7 @@ Take the Open Sans zipfile that you downloaded, extract it and copy `OpenSans-Bo
 
 ## Loading the font in your app
 
-To load and use fonts we will use the [Exponent SDK](../sdk/index.html#exponent-sdk), which comes pre-installed when you create a new Exponent project, but if for some reason you don't have it, you can install with `npm install --save exponent` in your project directory. Add the following `import` in your application code:
+To load and use fonts we will use the [Expo SDK](../sdk/index.html#exponent-sdk), which comes pre-installed when you create a new Expo project, but if for some reason you don't have it, you can install with `npm install --save exponent` in your project directory. Add the following `import` in your application code:
 
 ```javascript
 import { Font } from 'exponent';
@@ -63,9 +63,9 @@ class App extends React.Component {
 }
 ```
 
-This loads Font Awesome and associates it with the name `'open-sans-bold'` in Exponent's font map. Now we just have to refer to this font in our `Text` component.
+This loads Font Awesome and associates it with the name `'open-sans-bold'` in Expo's font map. Now we just have to refer to this font in our `Text` component.
 
-> **Note:** Fonts loaded through Exponent don't currently support the `fontWeight` or `fontStyle` properties -- you will need to load those variations of the font and specify them by name, as we have done here with bold.
+> **Note:** Fonts loaded through Expo don't currently support the `fontWeight` or `fontStyle` properties -- you will need to load those variations of the font and specify them by name, as we have done here with bold.
 
 ## Using the font in a `Text` component
 

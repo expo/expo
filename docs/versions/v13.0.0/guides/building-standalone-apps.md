@@ -2,7 +2,7 @@
 title: Building Standalone Apps
 ---
 
-Not everybody wants to tell their customers or friends to download Exponent to use their app; You want to be able to have the app on its own from the App Store and Play Store. We call these "shell apps" or "standalone apps". The purpose of this guide is to walk you through creating a standalone version of your Exponent app for iOS and Android.
+Not everybody wants to tell their customers or friends to download Expo to use their app; You want to be able to have the app on its own from the App Store and Play Store. We call these "shell apps" or "standalone apps". The purpose of this guide is to walk you through creating a standalone version of your Expo app for iOS and Android.
 
 An Apple Developer account is needed to build the iOS standalone app, but a Google Play Developer account is not needed to build the Android standalone app. If you'd like to submit to either app store, you will of course need a developer account on that store.
 
@@ -12,7 +12,7 @@ An Apple Developer account is needed to build the iOS standalone app, but a Goog
 
 XDE currently doesn't include an option for building a standalone app, so we'll need `exp` for this. Run `npm install -g exp` to get it.
 
-If you haven't used `exp` before, the first thing you'll need to do is login with your Exponent account using `exp login`.
+If you haven't used `exp` before, the first thing you'll need to do is login with your Expo account using `exp login`.
 
 ## 2. Configure exp.json
 
@@ -34,15 +34,15 @@ The following fields are required in your app's `exp.json`, so open it up and ad
  }
 ```
 
-The iOS `bundleIdentifier` and Android `package` fields use reverse DNS notation, but don't have to be related to a domain. In this case I chose `org.rnplay.exp` because the app's website is rnplay.org and this is the Exponent version of the app. Yours might be `com.yourcompany.appname`.
+The iOS `bundleIdentifier` and Android `package` fields use reverse DNS notation, but don't have to be related to a domain. In this case I chose `org.rnplay.exp` because the app's website is rnplay.org and this is the Expo version of the app. Yours might be `com.yourcompany.appname`.
 
-You're probably not surprised that `name`, `iconUrl` and `version` are required, but if you haven't used Exponent much you might be confused by `slug` and `sdkVersion`. `slug` is the url name that your app's JavaScript is published to, for example `exp.host/@notbrent/rnplay`, where `notbrent` is my username and `rnplay` is the slug. The `sdkVersion` tells Exponent what Exponent runtime version to use, which corresponds to a React Native version.
+You're probably not surprised that `name`, `iconUrl` and `version` are required, but if you haven't used Expo much you might be confused by `slug` and `sdkVersion`. `slug` is the url name that your app's JavaScript is published to, for example `exp.host/@notbrent/rnplay`, where `notbrent` is my username and `rnplay` is the slug. The `sdkVersion` tells Expo what Expo runtime version to use, which corresponds to a React Native version.
 
 There are other options you might want to add to `exp.json`. We have only covered what is required. See [Configuration with exp.json](configuration.html) for the full spec.
 
 ## 3. Start the build
 
--   Run `exp start` in your app directory to boot up the Exponent packager. This is necessary because during the build process your app will be republished to ensure it is the latest version.
+-   Run `exp start` in your app directory to boot up the Expo packager. This is necessary because during the build process your app will be republished to ensure it is the latest version.
 -   Once the app has started, run `exp build:android` or `exp build:ios`.
 
 ### If you choose to build for Android
@@ -55,7 +55,7 @@ The first time you build the project you will be asked whether you'd like to upl
 Would you like to upload a keystore or have us generate one for you?
 If you don't know what this means, let us handle it! :)
 
-  1) Let Exponent handle the process!
+  1) Let Expo handle the process!
   2) I want to upload my own keystore!
 ```
 
@@ -95,7 +95,7 @@ This will take a few minutes, you can check up on it by running `exp build:statu
 
 We don't automate this step (yet), but at this point you should be able to follow the Apple and Google documentation to submit your standalone binary to each respective store.
 
-> **Note:** When submitting to the iTunes Store, you'll be asked whether your app uses the advertising identifier (IDFA). Because Exponent depends on Segment Analytics, the answer is yes, and you'll need to check a couple boxes on the Apple submission form. See [Segment's Guide](https://segment.com/docs/sources/mobile/ios/quickstart/#step-5-submitting-to-the-app-store) for which specific boxes to fill in.
+> **Note:** When submitting to the iTunes Store, you'll be asked whether your app uses the advertising identifier (IDFA). Because Expo depends on Segment Analytics, the answer is yes, and you'll need to check a couple boxes on the Apple submission form. See [Segment's Guide](https://segment.com/docs/sources/mobile/ios/quickstart/#step-5-submitting-to-the-app-store) for which specific boxes to fill in.
 
 ## 7. Update your app
 
@@ -103,6 +103,6 @@ When you want to update your app you can simply publish through XDE or `exp`! As
 
 If you run into problems during this process, we're more than happy to help out! Join our Slack and let us know if you have any questions.
 
-> **Note:** Are you curious how this works? We embed the Exponent runtime into a new app and make it always point to the published URL of your app.
+> **Note:** Are you curious how this works? We embed the Expo runtime into a new app and make it always point to the published URL of your app.
 >
 > We mentioned a few of the required properties here, but you're free to configure everything from the push notification icon to the deep-linking url scheme (see the guide on exp.json for more information), and we take care of building it for you so you never have to open Xcode or Android Studio.

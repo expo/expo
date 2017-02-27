@@ -16,7 +16,7 @@ A function that will be called when the OpenGL ES context is created. The functi
 
 ## Examples
 
-The [@community/gl-test](https://getexponent.com/@community/gl-test) Exponent app demonstrates a number of example scenes. The image above is a low-quality capture, try the app on Exponent for the best-quality experience. The source code for these scenes is available [here](https://github.com/exponent/gl-test/tree/master/Scenes)
+The [@community/gl-test](https://expo.io/@community/gl-test) Expo app demonstrates a number of example scenes. The image above is a low-quality capture, try the app on Expo for the best-quality experience. The source code for these scenes is available [here](https://github.com/exponent/gl-test/tree/master/Scenes)
 
 ![](./gl-test.gif)
 

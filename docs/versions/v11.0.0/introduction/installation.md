@@ -5,41 +5,41 @@ previous___FILE: ./index.md
 next___FILE: ./xde-tour.md
 ---
 
-There are two tools that you need to develop apps with Exponent - a desktop development tool and a mobile client to open your app.
+There are two tools that you need to develop apps with Expo - a desktop development tool and a mobile client to open your app.
 
 ## Desktop Development Tool: XDE
 
-XDE stands for Exponent Development Environment. It is a standalone desktop app that includes all dependencies you'll need to get started.
+XDE stands for Expo Development Environment. It is a standalone desktop app that includes all dependencies you'll need to get started.
 
 Download the latest version of XDE for [macOS](https://xde-updates.exponentjs.com/download/mac), [Windows (64-bit)](https://xde-updates.exponentjs.com/download/win32), or [Linux](https://xde-updates.exponentjs.com/download/linux).
 
 On Linux, open with `chmod a+x XDE*.AppImage` and `./XDE*.AppImage`.
 
-## Mobile Client: Exponent for iOS and Android
+## Mobile Client: Expo for iOS and Android
 
-The Exponent client is like a browser for apps built with Exponent. When you boot up XDE on your project it generates a unique development URL for you, and you can access that from the Exponent client on iOS or Android, either on a real device or in a simulator.
+The Expo client is like a browser for apps built with Expo. When you boot up XDE on your project it generates a unique development URL for you, and you can access that from the Expo client on iOS or Android, either on a real device or in a simulator.
 
 ### On your device
 
 [Download for Android 4.4+ from the Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent) or [for iOS 8+ from the App Store](https://itunes.com/apps/exponent)
 
-Note: you don't need to install the Exponent client on emulators separately. It will be done on the first project deployment.
+Note: you don't need to install the Expo client on emulators separately. It will be done on the first project deployment.
 
 ### iOS simulator
 
 Install [Xcode through the Apple App Store](https://itunes.apple.com/app/xcode/id497799835). It'll take a while, go have a nap. Next, open up Xcode, go to preferences and click the Components tab, install a simulator from the list [(screenshot).](/_static/img/xcode-simulator.png)
 
-Once the simulator is open and you have a project open in XDE, you can press _Open on iOS simulator_ in XDE and it will install the Exponent client to the emulator and open up your app inside of it.
+Once the simulator is open and you have a project open in XDE, you can press _Open on iOS simulator_ in XDE and it will install the Expo client to the emulator and open up your app inside of it.
 
 ### Android emulator
 
 [Download Genymotion](https://www.genymotion.com/fun-zone/) (free version) and follow the [Genymotion installation guide](https://docs.genymotion.com/Content/01_Get_Started/Installation.htm). Once you've installed Genymotion, create a virtual device - we recommend a Nexus 5, the Android version is up to you. Start up the virtual device when it's ready.
 
-Once the emulator is open and you have a project open in XDE, you can press _Open project in Exponent on Android_ in XDE and it will install the Exponent client to the emulator and open up your app inside of it.
+Once the emulator is open and you have a project open in XDE, you can press _Open project in Expo on Android_ in XDE and it will install the Expo client to the emulator and open up your app inside of it.
 
 ## Node.js
 
-To get started with Exponent you don't necessarily need to have Node.js installed, but as soon as you start actually building something you'll want to have it. [Download the latest version of Node.js](https://nodejs.org/en/).
+To get started with Expo you don't necessarily need to have Node.js installed, but as soon as you start actually building something you'll want to have it. [Download the latest version of Node.js](https://nodejs.org/en/).
 
 ## Watchman
 

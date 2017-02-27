@@ -19,8 +19,8 @@
     Using Custom Fonts: /versions/v10.0.0/guides/using-custom-fonts.html
     Push Notifications: /versions/v10.0.0/guides/push-notifications.html
     Building Standalone Apps: /versions/v10.0.0/guides/building-standalone-apps.html
-    How Exponent Works: /versions/v10.0.0/guides/how-exponent-works.html
-    Upgrading Exponent: /versions/v10.0.0/guides/upgrading-exponent.html
+    How Expo Works: /versions/v10.0.0/guides/how-exponent-works.html
+    Upgrading Expo: /versions/v10.0.0/guides/upgrading-exponent.html
 - title: SDK API Reference
   index: /versions/v10.0.0/sdk/index.html
   links:

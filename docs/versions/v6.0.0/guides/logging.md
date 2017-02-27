@@ -5,13 +5,13 @@ previous___FILE: ./installing-node.md
 next___FILE: ./font-awesome.md
 ---
 
-Writing to the logs in an Exponent app works just like in the browser: use `console.log`, `console.warn` and `console.error`. Note: we don't currently support `console.table` outside of remote debugging mode.
+Writing to the logs in an Expo app works just like in the browser: use `console.log`, `console.warn` and `console.error`. Note: we don't currently support `console.table` outside of remote debugging mode.
 
 ## View logs for an iOS simulator
 
 ### Option 1: Use GUI log
 
--   In simulator, press `⌘ + /`, _or_ go to `Debug -> Open System Log` -- both of these open a log window that displays all of the logs from your device, including the logs from your Exponent app.
+-   In simulator, press `⌘ + /`, _or_ go to `Debug -> Open System Log` -- both of these open a log window that displays all of the logs from your device, including the logs from your Expo app.
 
 ### Option 2: Open it in terminal
 

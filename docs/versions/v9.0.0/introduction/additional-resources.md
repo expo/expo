@@ -5,13 +5,13 @@ previous___FILE: ./community.md
 next___FILE: ./../guides/index.md
 ---
 
-The following resources are useful for learning Exponent and some of the projects that it depends on.
+The following resources are useful for learning Expo and some of the projects that it depends on.
 
-## Exponent
+## Expo
 
--   [The Exponent Log](https://blog.getexponent.com/) - our official blog
--   [Building li.st for Android with Exponent and React Native](https://www.youtube.com/watch?v=cI9bDvDEsYE) - conference talk
--   [Build Cross Platform React Native Apps with Exponent and Redux](https://www.pluralsight.com/courses/build-react-native-exponent-redux-apps) (video course on PluralSight)
+-   [The Expo Log](https://blog.getexponent.com/) - our official blog
+-   [Building li.st for Android with Expo and React Native](https://www.youtube.com/watch?v=cI9bDvDEsYE) - conference talk
+-   [Build Cross Platform React Native Apps with Expo and Redux](https://www.pluralsight.com/courses/build-react-native-exponent-redux-apps) (video course on PluralSight)
 -   [Pomodoro](https://github.com/exponent/pomodoroexp) - sample Pomodoro app
 -   [Floatyplane](https://github.com/exponent/floatyplane) - a game you might be familiar with
 -   [Foodwheel](https://github.com/exponent/foodwheel) - how we decide where to eat lunch

@@ -7,7 +7,7 @@ next___FILE: ./using-firebase.md
 
 ## Quickstart
 
-If you're already convinced about ClojureScript and Exponent and know what to do once you have figwheel running, you can just read this section. Otherwise, we encourage you to read the entire guide.
+If you're already convinced about ClojureScript and Expo and know what to do once you have figwheel running, you can just read this section. Otherwise, we encourage you to read the entire guide.
 
 ```javascript
 lein new exponent your-project
@@ -20,7 +20,7 @@ lein figwheel
 exp start --ios
 ```
 
-> **Note:** This guide was written by [@tiensonqin](https://github.com/tiensonqin), feel free to reach out to him on the [Exponent Slack](http://slack.getexponent.com/) if you have questions!
+> **Note:** This guide was written by [@tiensonqin](https://github.com/tiensonqin), feel free to reach out to him on the [Expo Slack](http://slack.expo.io/) if you have questions!
 
 ## Why Clojurescript?
 
@@ -30,17 +30,17 @@ exp start --ios
 -   Lisp!
 -   Great JavaScript interoperability
 
-## Why on Exponent?
+## Why on Expo?
 
 It all begins with a [Simple Made Easy](https://www.infoq.com/presentations/Simple-Made-Easy) design choice: **you don't write native code**.
 
 -   You only write ClojureScript or JavaScript.
 -   You don't have to install or use Xcode or Android Studio or deal with any of the platform specific configuration and project files.
--   Much easier to upgrade when there is no native code involved -- React Native JavaScript APIs are relatively stable compared to the native side. Exponent will take care of upgrading the native modules and React Native versions, you only need to upgrade your ClojureScript or JavaScript code.
+-   Much easier to upgrade when there is no native code involved -- React Native JavaScript APIs are relatively stable compared to the native side. Expo will take care of upgrading the native modules and React Native versions, you only need to upgrade your ClojureScript or JavaScript code.
 -   You can write iOS apps on Linux or Windows (provided that you have an iPhone to test it with).
 -   It's dead simple to continually share your apps. Once you published your app, you got a link. It is up to you to share the link.
 
-## 1. Create an Exponent project
+## 1. Create an Expo project
 
 ```javascript
 # Default to use Reagent / Re-frame
@@ -82,7 +82,7 @@ In Intellij make sure your REPL config is selected and click the green **play** 
 
 Run `(start-figwheel)` in the connected REPL.
 
-## 3. Start Exponent server
+## 3. Start Expo server
 
 ### Using `exp` CLI
 
@@ -112,13 +112,13 @@ lein prod-build
 exp publish
 ```
 
-This will publish your app to a persistent URL on getexponent.com, for example: <https://getexponent.com/@community/startr>
+This will publish your app to a persistent URL on Expo, for example: <https://expo.io/@community/startr>
 
 ## FAQ
 
 ### How do I add custom native modules?
 
-See [How do I add custom native code to my Exponent project?](../introduction/faq.html#faq).
+See [How do I add custom native code to my Expo project?](../introduction/faq.html#faq).
 
 ### Does it support Google Closure advanced compilation?
 

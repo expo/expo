@@ -2,13 +2,13 @@
 title: exp Command-Line Interface
 ---
 
-In addition to XDE we also have a CLI `exp` if you prefer to work on the command line or want to use Exponent in tests or continuous integration (CI).
+In addition to XDE we also have a CLI `exp` if you prefer to work on the command line or want to use Expo in tests or continuous integration (CI).
 
 ## Installation
 
 Run `npm install -g exp` to install `exp` globally.
 
-If you haven't used `exp` or XDE before, the first thing you'll need to do is login with your Exponent account using `exp login`.
+If you haven't used `exp` or XDE before, the first thing you'll need to do is login with your Expo account using `exp login`.
 
 ## Commands
 
@@ -19,25 +19,25 @@ View the list of commands using `exp --help`:
 
     Commands:
 
-      android [project-dir]                           Opens your app in Exponent on a connected Android device
+      android [project-dir]                           Opens your app in Expo on a connected Android device
       build:ios|bi [options] [project-dir]            Build a standalone IPA for your project, signed and ready for submission to the Apple App Store.
       build:android|ba [options] [project-dir]        Build a standalone APK for your project, signed and ready for submission to the Google Play Store.
       build:status|bs [project-dir]                   Gets the status of a current (or most recently finished) build for your project.
-      convert|onentize [project-dir]                  Initialize Exponent project files within an existing React Native project
+      convert|onentize [project-dir]                  Initialize Expo project files within an existing React Native project
       detach [project-dir]                            Creates Xcode and Android Studio projects for your app. Use this if you need to add custom native functionality.
-      diagnostics [project-dir]                       Uploads diagnostics information and returns a url to share with the Exponent team.
-      doctor [project-dir]                            Diagnoses issues with your Exponent project.
+      diagnostics [project-dir]                       Uploads diagnostics information and returns a url to share with the Expo team.
+      doctor [project-dir]                            Diagnoses issues with your Expo project.
       init|i [options] [project-dir]                  Initializes a directory with an example project. Run it without any options and you will be prompted for the name and type.
-      ios [project-dir]                               Opens your app in Exponent in an iOS simulator on your computer
-      login|signin [options]                          Login to Exponent
+      ios [project-dir]                               Opens your app in Expo in an iOS simulator on your computer
+      login|signin [options]                          Login to Expo
       logout                                          Logout from exp.host
       path                                            Sets PATH for XDE
       prepare-detached-build [options] [project-dir]  Prepares a detached project for building
       publish|p [options] [project-dir]               Publishes your project to exp.host
-      register [options]                              Sign up for a new Exponent account
+      register [options]                              Sign up for a new Expo account
       send [options] [project-dir]                    Sends a link to your project to a phone number or e-mail address
       start|r [options] [project-dir]                 Starts or restarts a local server for your app and gives you a URL to it
-      url|u [options] [project-dir]                   Displays the URL you can use to view your project in Exponent
+      url|u [options] [project-dir]                   Displays the URL you can use to view your project in Expo
       whoami|w                                        Checks with the server and then says who you are logged in as
 
     Options:
@@ -57,8 +57,8 @@ View additional information about a specific command by passing the `--help` fla
       -h, --help             output usage information
       -s, --send-to [dest]   A phone number or e-mail address to send a link to
       -c, --clear            Clear the React Native packager cache
-      -a, --android          Opens your app in Exponent on a connected Android device
-      -i, --ios              Opens your app in Exponent in a currently running iOS simulator on your computer
+      -a, --android          Opens your app in Expo on a connected Android device
+      -i, --ios              Opens your app in Expo in a currently running iOS simulator on your computer
       -m, --host [mode]      tunnel (default), lan, localhost. Type of host to use. "tunnel" allows you to view your link on other networks
       -p, --protocol [mode]  exp (default), http, redirect. Type of protocol. "exp" is recommended right now
       --tunnel               Same as --host tunnel

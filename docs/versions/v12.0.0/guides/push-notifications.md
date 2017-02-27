@@ -5,15 +5,15 @@ previous___FILE: ./routing-and-navigation.md
 next___FILE: ./exp-cli.md
 ---
 
-Push Notifications are an important feature to, as _"growth hackers"_ would say, retain and re-engage users and monetize on their attention, or something. From my point of view it's just super handy to know when a relevant event happens in an app so I can jump back into it and read more. Let's look at how to do this with Exponent. Spoiler alert: it's almost too easy.
+Push Notifications are an important feature to, as _"growth hackers"_ would say, retain and re-engage users and monetize on their attention, or something. From my point of view it's just super handy to know when a relevant event happens in an app so I can jump back into it and read more. Let's look at how to do this with Expo. Spoiler alert: it's almost too easy.
 
 > **Note:** iOS and Android simulators cannot receive push notifications, to test them out you will need to use a real-life device. Additionally, when calling Permissions.askAsync on the simulator, it will resolve immediately with "undetermined" as the status, regardless of whether you choose to allow or not.
 
-There are three main steps to wiring up push notifications: sending a user's Exponent Push Token to your server, calling Exponent's Push API with the token when you want to send a notification, and responding to receiving and/or selecting the notification in your app (for example to jump to a particular screen that the notification refers to).
+There are three main steps to wiring up push notifications: sending a user's Expo Push Token to your server, calling Expo's Push API with the token when you want to send a notification, and responding to receiving and/or selecting the notification in your app (for example to jump to a particular screen that the notification refers to).
 
-## 1. Save the user's Exponent Push Token on your server
+## 1. Save the user's Expo Push Token on your server
 
-In order to send a push notification to somebody, we need to know about their device. Sure, we know our user's account information, but Apple, Google, and Exponent do not understand what devices correspond to "Brent" in your propiertary user account system. Exponent takes care of identifying your device with Apple and Google through the Exponent push token, so all we need to do is send this to your server so you can associate it with the user account and use it in the future for sending push notifications.![Diagram explaining saving tokens](./saving-token.png)
+In order to send a push notification to somebody, we need to know about their device. Sure, we know our user's account information, but Apple, Google, and Expo do not understand what devices correspond to "Brent" in your propiertary user account system. Expo takes care of identifying your device with Apple and Google through the Expo push token, so all we need to do is send this to your server so you can associate it with the user account and use it in the future for sending push notifications.![Diagram explaining saving tokens](./saving-token.png)
 
 ```javascript
 import { Permissions, Notifications } from 'exponent';
@@ -52,9 +52,9 @@ async function registerForPushNotificationsAsync() {
 }
 ```
 
-## 2. Call Exponent's Push API with the user's token
+## 2. Call Expo's Push API with the user's token
 
-Push notifications have to come from somewhere, and that somewhere is your server, probably (you could write a command line tool to send them if you wanted, it's all the same). When you're ready to send a push notification, grab the Exponent push token off of the user record and send it over to the Exponent API using a plain old HTTP POST request. We've taken care of wrapping that for you in a few languages:![Diagram explaining sending a push from your server to device](./sending-notification.png)
+Push notifications have to come from somewhere, and that somewhere is your server, probably (you could write a command line tool to send them if you wanted, it's all the same). When you're ready to send a push notification, grab the Expo push token off of the user record and send it over to the Expo API using a plain old HTTP POST request. We've taken care of wrapping that for you in a few languages:![Diagram explaining sending a push from your server to device](./sending-notification.png)
 
 -   [exponent-server-sdk-ruby](https://github.com/exponent/exponent-server-sdk-ruby)
 -   [exponent-server-sdk-python](https://github.com/exponent/exponent-server-sdk-python)
@@ -76,7 +76,7 @@ class TokensController < ApplicationController
       message = 'Welcome back!'
     else
       @token = Token.create(token_params)
-      message = 'Welcome to Exponent'
+      message = 'Welcome to Expo'
     end
 
     exponent.publish(
@@ -106,11 +106,11 @@ For Android, this step is entirely optional -- if your notifications are purely 
 
 For iOS, you would be wise to handle push notifications that are received while the app is foregrounded, because otherwise the user will never see them. Notifications that arrive while the app are foregrounded on iOS do not show up in the system notification list. A common solution is to just show the notification manually. For example, if you get a message on Messenger for iOS, have the app foregrounded, but do not have that conversation open, you will see the notification slide down from the top of the screen with a custom notification UI.
 
-Thankfully, handling push notifications is straightforward with Exponent, all you need to do is add a listener to the `Notifications` object.
+Thankfully, handling push notifications is straightforward with Expo, all you need to do is add a listener to the `Notifications` object.
 
 ```javascript
 import React from 'react';
-import Exponent, {
+import Expo, {
   Notifications,
 } from 'exponent';
 import {

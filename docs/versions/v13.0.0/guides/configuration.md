@@ -8,7 +8,7 @@ next___FILE: ./logging.md
 `exp.json` is your go-to place for configuring parts of your app that don't belong in code. It is located at the root of your project next to your `package.json`.  The following is a full list of properties available to you.
 
 -   `name`  
-    **Required**. The name of your app as it appears both within Exponent and on your home screen as a standalone app.
+    **Required**. The name of your app as it appears both within Expo and on your home screen as a standalone app.
 
 -   `description`  
     A short description of what your app is and why it is great.
@@ -21,7 +21,7 @@ next___FILE: ./logging.md
     Either `public` or `unlisted`. If not provided, defaults to `unlisted`. In the future `private` will be supported. `unlisted` hides the experience from search results.
 
 -   `sdkVersion`  
-    **Required**. The Exponent sdkVersion to run the project on. This should line up with the version specified in your package.json.
+    **Required**. The Expo sdkVersion to run the project on. This should line up with the version specified in your package.json.
 
 -   `version`  
     Your app version, use whatever versioning scheme that you like.
@@ -33,7 +33,7 @@ next___FILE: ./logging.md
     On Android, this will determine the color of your app in the multitasker. Currently this is not used on iOS, but it may be used for other purposes in the future. 6 character long hex color string, eg: `'#000000'`
 
 -   `icon`  
-    Local path or remote url to an image to use for your app's icon. We recommend that you use a 512x512 png file with transparency. This icon will appear on the home screen and within the Exponent app.
+    Local path or remote url to an image to use for your app's icon. We recommend that you use a 512x512 png file with transparency. This icon will appear on the home screen and within the Expo app.
 
 -   `notification`  
     Configuration for remote (push) notifications.
@@ -57,7 +57,7 @@ next___FILE: ./logging.md
         Local path or remote url to an image. Image size and aspect ratio are up to you. Must be a .png.
 
     -   `exponentIconColor`  
-        If no icon is provided, we will show the Exponent logo. You can choose between `white` and `blue`. white, blue
+        If no icon is provided, we will show the Expo logo. You can choose between `white` and `blue`. white, blue
 
     -   `exponentIconGrayscale`  
         Similar to `exponentIconColor` but instead indicate if it should be grayscale (`1`) or not (`0`).
@@ -69,16 +69,16 @@ next___FILE: ./logging.md
         Color to fill the loading screen background 6 character long hex color string, eg: `'#000000'`
 
     -   `hideExponentText`  
-        By default, Exponent shows some text at the bottom of the loading screen. Set this to `true` to disable.
+        By default, Expo shows some text at the bottom of the loading screen. Set this to `true` to disable.
 
 -   `appKey`  
-    By default, Exponent looks for the application registered with the AppRegistry as `main`. If you would like to change this, you can specify the name in this property.
+    By default, Expo looks for the application registered with the AppRegistry as `main`. If you would like to change this, you can specify the name in this property.
 
 -   `androidStatusBarColor`  
     6 character long hex color string, eg: `'#000000'`
 
 -   `androidHideExponentNotificationInShellApp`  
-    By default, Exponent adds a notification to your app with refresh button and debug info. Set this to `true` to disable.
+    By default, Expo adds a notification to your app with refresh button and debug info. Set this to `true` to disable.
 
 -   `scheme`  
     **Standalone Apps Only**. Url scheme to link into your app. For example, if we set this to `'rnplay'`, then rnplay:// urls would open your app when tapped.
@@ -102,7 +102,7 @@ next___FILE: ./logging.md
 
     -   `bundleIdentifier`  
 
-        The bundle identifier for your iOS standalone app. You make it up, but it needs to be unique on the App Store. See [this StackOverflow question](http://stackoverflow.com/questions/11347470/what-does-bundle-identifier-mean-in-the-ios-project). iOS bundle identifier notation unique name for your app. For example, host.exp.exponent, where exp.host is our domain and Exponent is our app.
+        The bundle identifier for your iOS standalone app. You make it up, but it needs to be unique on the App Store. See [this StackOverflow question](http://stackoverflow.com/questions/11347470/what-does-bundle-identifier-mean-in-the-ios-project). iOS bundle identifier notation unique name for your app. For example, host.exp.exponent, where exp.host is our domain and Expo is our app.
 
     -   `buildNumber`
 
@@ -141,7 +141,7 @@ next___FILE: ./logging.md
 
     -   `package`  
 
-        The package name for your Android standalone app. You make it up, but it needs to be unique on the Play Store. See [this StackOverflow question](http://stackoverflow.com/questions/6273892/android-package-name-convention). Reverse DNS notation unique name for your app. For example, host.exp.exponent, where exp.host is our domain and Exponent is our app.
+        The package name for your Android standalone app. You make it up, but it needs to be unique on the Play Store. See [this StackOverflow question](http://stackoverflow.com/questions/6273892/android-package-name-convention). Reverse DNS notation unique name for your app. For example, host.exp.exponent, where exp.host is our domain and Expo is our app.
 
     -   `versionCode`  
 

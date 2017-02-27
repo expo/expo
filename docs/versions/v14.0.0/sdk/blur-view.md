@@ -20,7 +20,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import Exponent, {
+import Expo, {
   Components
 } from 'exponent';
 
@@ -58,7 +58,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import Exponent, {
+import Expo, {
   Components,
 } from 'exponent';
 

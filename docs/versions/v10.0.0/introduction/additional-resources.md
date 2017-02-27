@@ -5,22 +5,22 @@ previous___FILE: ./community.md
 next___FILE: ./faq.md
 ---
 
-The following resources are useful for learning Exponent and some of the projects that it depends on.
+The following resources are useful for learning Expo and some of the projects that it depends on.
 
-## Exponent Articles
+## Expo Articles
 
--   [The Exponent Log](https://blog.getexponent.com/) - our official blog
--   [Building li.st for Android with Exponent and React Native](https://www.youtube.com/watch?v=cI9bDvDEsYE) - conference talk
--   [Build Cross Platform React Native Apps with Exponent and Redux](https://www.pluralsight.com/courses/build-react-native-exponent-redux-apps) (video course on PluralSight)
+-   [The Expo Log](https://blog.getexponent.com/) - our official blog
+-   [Building li.st for Android with Expo and React Native](https://www.youtube.com/watch?v=cI9bDvDEsYE) - conference talk
+-   [Build Cross Platform React Native Apps with Expo and Redux](https://www.pluralsight.com/courses/build-react-native-exponent-redux-apps) (video course on PluralSight)
 
-## Example Projects built with Exponent
+## Example Projects built with Expo
 
--   [Growler Prowler](https://getexponent.com/@community/growler-prowler) ([source](https://github.com/brentvatne/growler-prowler)) - a useful demo project showing how to use maps, navigation, Facebook auth, and more
--   [Floatyplane](https://getexponent.com/@exponent/floatyplane) ([source](https://github.com/exponent/floatyplane)) - a game you might be familiar with
--   [Foodwheel](https://getexponent.com/@exponent/foodwheel) ([source](https://github.com/exponent/foodwheel)) - how we decide where to eat lunch
+-   [Growler Prowler](https://expo.io/@community/growler-prowler) ([source](https://github.com/brentvatne/growler-prowler)) - a useful demo project showing how to use maps, navigation, Facebook auth, and more
+-   [Floatyplane](https://expo.io/@exponent/floatyplane) ([source](https://github.com/exponent/floatyplane)) - a game you might be familiar with
+-   [Foodwheel](https://expo.io/@exponent/foodwheel) ([source](https://github.com/exponent/foodwheel)) - how we decide where to eat lunch
 -   [React Native Playground](http://rnplay.org/) ([source](https://github.com/exponent/rnplay)) - client app for RNPlay
--   [Instagram Stories Clone](https://getexponent.com/@mastermo/instagram-stories) ([source](https://github.com/mastermoo/rn-instagram-stories))
--   [Pomodoro](https://getexponent.com/@exponent/pomodoro) ([source](https://github.com/exponent/pomodoroexp)) - sample Pomodoro app
+-   [Instagram Stories Clone](https://expo.io/@mastermo/instagram-stories) ([source](https://github.com/mastermoo/rn-instagram-stories))
+-   [Pomodoro](https://expo.io/@exponent/pomodoro) ([source](https://github.com/exponent/pomodoroexp)) - sample Pomodoro app
 
 ## React Native
 

@@ -15,7 +15,7 @@ By default, projects that use ExponentKit have this feature disabled on iOS and 
 Android. We encourage you to enable it on iOS so that your code is verified for all of your
 users.
 
-To enable code verification in your native project with ExponentKit:
+To enable code verification in your native project with ExpoKit:
 
 -   Fulfill one of these two requirements (you only need one):
 

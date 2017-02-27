@@ -116,8 +116,8 @@ class Wrapper extends React.Component {
     return (
       <div>
         <Helmet
-          title={`Exponent ${this.state.activeVersion} documentation`}
-          titleTemplate={`%s | Exponent ${this.state.activeVersion} documentation`}
+          title={`Expo ${this.state.activeVersion} documentation`}
+          titleTemplate={`%s | Expo ${this.state.activeVersion} documentation`}
         />
 
         <Drawer open={this.state.sidebarOpen} onChange={open => this.setState({ sidebarOpen: open })}>
@@ -191,7 +191,7 @@ class Wrapper extends React.Component {
                 }}>
                 © Copyright{' '}
                 {new Date().getFullYear()}
-                , Exponent.
+                , Expo.
               </p>
             </div>
           </div>

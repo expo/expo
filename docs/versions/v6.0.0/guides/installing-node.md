@@ -5,9 +5,9 @@ previous___FILE: ./up-and-running.md
 next___FILE: ./logging.md
 ---
 
-This is a guide to installing Node.js on your computer. To do anything interesting with Exponent, you'll need to have `node` and `npm` installed.
+This is a guide to installing Node.js on your computer. To do anything interesting with Expo, you'll need to have `node` and `npm` installed.
 
-## What versions of Node can I use with Exponent?
+## What versions of Node can I use with Expo?
 
 We recommend running the current stable version of Node (at the time of this writing v6.3.0), but anything as new as the most recent LTS stable version (at the time of this writing v4.4.7) should work.
 
@@ -41,7 +41,7 @@ You should be able to install Node using your package manager of choice and have
 
 ## If you are running Windows
 
-_Exponent support for Windows is currently in Alpha. You'll need to download the source code for xde from master and run it yourself rather than using a release at this time._
+_Expo support for Windows is currently in Alpha. You'll need to download the source code for xde from master and run it yourself rather than using a release at this time._
 
 If you are running Windows, you can either just download Node from the [the nodejs.org website](https://nodejs.org/) (get the current version).
 

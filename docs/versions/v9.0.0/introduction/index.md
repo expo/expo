@@ -7,7 +7,7 @@ next___FILE: ./installation.md
 
 -   [Installation](installation.html)
     -   [Desktop Development Tool: XDE](installation.html#desktop-development-tool-xde)
-    -   [Mobile Client: Exponent for iOS and Android](installation.html#mobile-client-exponent-for-ios-and-android)
+    -   [Mobile Client: Expo for iOS and Android](installation.html#mobile-client-exponent-for-ios-and-android)
     -   [Node.js](installation.html#node-js)
 -   [XDE Tour](xde-tour.html)
     -   [Sign in screen](xde-tour.html#sign-in-screen)
@@ -22,7 +22,7 @@ next___FILE: ./installation.md
     -   [Publish](xde-tour.html#publish)
 -   [Community](community.html)
 -   [Additional Resources](../additional-resources.html)
-    -   [Exponent](../additional-resources.html#exponent)
+    -   [Expo](../additional-resources.html#exponent)
     -   [React Native](../additional-resources.html#react-native)
     -   [React](../additional-resources.html#react)
     -   [JavaScript](../additional-resources.html#javascript)

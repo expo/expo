@@ -5,9 +5,9 @@ previous___FILE: ./contacts.md
 next___FILE: ./font.md
 ---
 
-Provides Facebook integration for Exponent apps. Exponent exposes a minimal native API since you can access Facebook's [Graph API](https://developers.facebook.com/docs/graph-api) directly through HTTP (using [fetch](https://facebook.github.io/react-native/docs/network.html#fetch), for example).
+Provides Facebook integration for Expo apps. Expo exposes a minimal native API since you can access Facebook's [Graph API](https://developers.facebook.com/docs/graph-api) directly through HTTP (using [fetch](https://facebook.github.io/react-native/docs/network.html#fetch), for example).
 
-Follow [Facebook's developer documentation](https://developers.facebook.com/docs/apps/register) to register an application with Facebook's API and get an application ID. For iOS, make sure to add host.exp.Exponent as a 'Bundle ID'. For Android add the key hash `rRW++LUjmZZ+58EbN5DVhGAnkX4=`. Your app's settings should end up including the following under "Settings > Basic":
+Follow [Facebook's developer documentation](https://developers.facebook.com/docs/apps/register) to register an application with Facebook's API and get an application ID. For iOS, make sure to add host.exp.Expo as a 'Bundle ID'. For Android add the key hash `rRW++LUjmZZ+58EbN5DVhGAnkX4=`. Your app's settings should end up including the following under "Settings > Basic":
 
 You may have to switch the app from 'development mode' to 'public mode' before other users can log in.
 

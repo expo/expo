@@ -16,7 +16,7 @@ next___FILE: ./logging.md
   // The url-name of the app: https://exp.host/@your-username/slug
   slug: "my-new-project",
 
-  // The target Exponent SDK version. This must line up with the react-native
+  // The target Expo SDK version. This must line up with the react-native
   // version in package.json
   sdkVersion: "7.0.0",
 

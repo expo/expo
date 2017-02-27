@@ -11,7 +11,7 @@
     Viewing Logs: /versions/v6.0.0/guides/logging.html
     Font Awesome: /versions/v6.0.0/guides/font-awesome.html
     Installing Node: /versions/v6.0.0/guides/installing-node.html
-    Upgrading Exponent: /versions/v6.0.0/guides/upgrading-exponent.html
+    Upgrading Expo: /versions/v6.0.0/guides/upgrading-exponent.html
 - title: SDK API Reference
   index: /versions/v6.0.0/sdk/index.html
   links:

@@ -9,15 +9,15 @@ System information that remains constant throughout the lifetime of your app.
 
 ### `Exponent.Constants.appOwnership`
 
-Returns `exponent`, `standalone`, or `guest`. If `exponent`, the experience is running inside of the Exponent client. If `standalone`, it is a [standalone app](../guides/building-standalone-apps.html#building-standalone-apps). If `guest`, it has been opened through a link from a standalone app.
+Returns `exponent`, `standalone`, or `guest`. If `exponent`, the experience is running inside of the Expo client. If `standalone`, it is a [standalone app](../guides/building-standalone-apps.html#building-standalone-apps). If `guest`, it has been opened through a link from a standalone app.
 
 ### `Exponent.Constants.exponentVersion`
 
-The version string of the Exponent client currently running.
+The version string of the Expo client currently running.
 
 ### `Exponent.Constants.deviceId`
 
-An identifier that is unique to this particular device and installation of the Exponent client.
+An identifier that is unique to this particular device and installation of the Expo client.
 
 ### `Exponent.Constants.deviceName`
 
@@ -61,4 +61,4 @@ The [manifest](../guides/how-exponent-works.html#exponent-manifest) object for t
 
 ### `Exponent.Constants.linkingUri`
 
-When an app is opened due to a deep link, the prefix of the URI without the deep link part. This value depends on `Exponent.Constants.appOwnership`: it may be different if your app is running standalone vs. in the Exponent client.
+When an app is opened due to a deep link, the prefix of the URI without the deep link part. This value depends on `Exponent.Constants.appOwnership`: it may be different if your app is running standalone vs. in the Expo client.

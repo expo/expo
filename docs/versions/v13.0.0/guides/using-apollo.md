@@ -5,7 +5,7 @@ previous___FILE: ./using-firebase.md
 next___FILE: ./genymotion.md
 ---
 
-The [Apollo](http://www.apollodata.com/) client enables you to use [GraphQL](http://graphql.org/) in your Exponent applications. Unlike other GraphQL clients, Apollo works out of the box with Exponent.
+The [Apollo](http://www.apollodata.com/) client enables you to use [GraphQL](http://graphql.org/) in your Expo applications. Unlike other GraphQL clients, Apollo works out of the box with Expo.
 
 ## Why GraphQL?
 
@@ -17,13 +17,13 @@ To learn more about GraphQL see [graphql.org](http://graphql.org/).
 
 ## Why Apollo?
 
-Apollo is not the only library designed to help you manage your API data. However, the principles which Apollo was designed around make it a powerful yet still flexible choice. The client is universally compatible with any JavaScript environment or framework. So the same code you use in your Exponent app may also be used in your web app regardless of the framework. Apollo also integrates cleanly into popular development tools like Redux, and may be easily extended to fit your apps specific needs. Most important though is that the Apollo client is community driven with all development happening in the open.
+Apollo is not the only library designed to help you manage your API data. However, the principles which Apollo was designed around make it a powerful yet still flexible choice. The client is universally compatible with any JavaScript environment or framework. So the same code you use in your Expo app may also be used in your web app regardless of the framework. Apollo also integrates cleanly into popular development tools like Redux, and may be easily extended to fit your apps specific needs. Most important though is that the Apollo client is community driven with all development happening in the open.
 
 The Apollo client does way more then run your queries. To learn more about the advantages of using Apollo client see [dev.apollodata.com/react](http://dev.apollodata.com/react/).
 
 ## 1. Installing Apollo Client
 
-To get started with Apollo and Exponent, install the [apollo-client](http://npmjs.com/apollo-client) npm package, the [react-apollo](https://www.npmjs.com/package/react-apollo) React integration package, and the [graphql-tag](https://www.npmjs.com/package/graphql-tag) library for constructing query documents.
+To get started with Apollo and Expo, install the [apollo-client](http://npmjs.com/apollo-client) npm package, the [react-apollo](https://www.npmjs.com/package/react-apollo) React integration package, and the [graphql-tag](https://www.npmjs.com/package/graphql-tag) library for constructing query documents.
 
 ```javascript
 npm install apollo-client react-apollo graphql-tag --save
@@ -64,7 +64,7 @@ class App extends React.Component {
     return (
       <ApolloProvider client={client}>
         <View>
-          <Text>Hello, Exponent!</Text>
+          <Text>Hello, Expo!</Text>
         </View>
       </ApolloProvider>
     );
@@ -125,9 +125,9 @@ export default graphql(gql`
 `)(PostList);
 ```
 
-You are now ready to use GraphQL in your Exponent app. For an in-depth tutorial read the [Learn Apollo Exponent guide](https://www.learnapollo.com/tutorial-react-native-exponent/rne-01) which will walk you through the process of building a Pokédex Exponent app with Apollo. To learn how to do mutations, subscriptions, pagination, optimistic UI, and more go to the Apollo React documentation at [dev.apollodata.com/react](http://dev.apollodata.com/react/). Everything you learn there will work out of the box with Exponent and React Native.
+You are now ready to use GraphQL in your Expo app. For an in-depth tutorial read the [Learn Apollo Expo guide](https://www.learnapollo.com/tutorial-react-native-exponent/rne-01) which will walk you through the process of building a Pokédex Expo app with Apollo. To learn how to do mutations, subscriptions, pagination, optimistic UI, and more go to the Apollo React documentation at [dev.apollodata.com/react](http://dev.apollodata.com/react/). Everything you learn there will work out of the box with Expo and React Native.
 
-There are some Apollo examples written in React Native that you may wish to refer to. All the code should work equally well with Exponent.
+There are some Apollo examples written in React Native that you may wish to refer to. All the code should work equally well with Expo.
 
 1.  The [“Hello World” example](https://github.com/apollostack/frontpage-react-native-app) used at dev.apolldata.com.
 2.  A [GitHub API Example](https://github.com/apollostack/GitHub-GraphQL-API-Example) built to work with GitHub’s new GraphQL API.

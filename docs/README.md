@@ -1,12 +1,12 @@
-# Exponent Documentation
+# Expo Documentation
 
-Hi! This is what will make Exponent actually be useable by people. :)
+Hi! This is what will make Expo actually be useable by people. :)
 
 ## How to edit
 
 #### A note about versioning
 
-Exponent's SDK is versioned so that apps made on old SDKs are still supported
+Expo's SDK is versioned so that apps made on old SDKs are still supported
 when new SDKs are relased. The website documents previous SDK versions too.
 
 Version names correspond to directory names under `versions/`.
@@ -34,11 +34,11 @@ Thanks for helping! :D make your changes on a fork of this repository or
 whatever works for you and submit a pull request. We'll take a look and
 incorporate them!
 
-### As an Exponent developer
+### As an Expo developer
 
 - Make your changes in `universe/docs` and commit them. Our `shipit` bot
-synchronizes the changes to the public `exponent-docs` repository. Changes will
-automatically be deployed to https://docs.getexponent.com on deploy. To change
+synchronizes the changes to the public `expo-docs` repository. Changes will
+automatically be deployed to https://docs.expo.io on deploy. To change
 the default version, update the version key in `docs/package.json` (the
 deploy script will respect this value).
 

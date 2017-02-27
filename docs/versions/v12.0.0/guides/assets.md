@@ -7,7 +7,7 @@ next___FILE: ./preloading-and-caching-assets.md
 
 Images, fonts, videos, sounds, any other file that your app depends on that is not JavaScript is considered to be an _asset_. Just as on the web, assets are fetched or streamed over HTTP on demand. This is different from your typical mobile app, where assets are bundled with your application binary.
 
-However, there is a distiction in Exponent between an asset that you use with the require syntax because they are available at build time on your local filesystem, eg: `<Image source={require('./assets/images/example.png')} />`, and web images that you refer to by a web URL, eg: `<Image source={{uri: 'http://yourwebsite.com/logo.png'} />`. We can make no guarantees about the availability of the images that you refer to with a web URI because we don't manage those assets. Additionally, we don't have the same amount of information about arbitrary web URIS: when your assets are available on the local filesystem, the packager is able to read some metadata (width, height, for example) and pass that through to your app, so you actually don't need to specify a width and height, for example. When specifying a remote web URL, you will need to explicitly specify a width and height, or it will default to 0x0. Lastly, as you will see later, caching behaviour is different in both cases.
+However, there is a distiction in Expo between an asset that you use with the require syntax because they are available at build time on your local filesystem, eg: `<Image source={require('./assets/images/example.png')} />`, and web images that you refer to by a web URL, eg: `<Image source={{uri: 'http://yourwebsite.com/logo.png'} />`. We can make no guarantees about the availability of the images that you refer to with a web URI because we don't manage those assets. Additionally, we don't have the same amount of information about arbitrary web URIS: when your assets are available on the local filesystem, the packager is able to read some metadata (width, height, for example) and pass that through to your app, so you actually don't need to specify a width and height, for example. When specifying a remote web URL, you will need to explicitly specify a width and height, or it will default to 0x0. Lastly, as you will see later, caching behaviour is different in both cases.
 
 The following is an explaination of the former type of assets: those that you have on your filesystem at build time. In the latter case, it is assumed that you are familiar with how to upload an image to somewhere on the web where it can be accessed by any web or mobile app.
 
@@ -19,7 +19,7 @@ While you're working on a local copy of your project, assets are served from you
 
 ### In production
 
-Each time you publish your app, Exponent will upload your assets to Amazon CloudFront, a blazing fast CDN. It does this in an intelligent way to ensure your deploys remain fast: if an asset has not changed since your previous deploy, it is skipped. You don't have to do anything for this to work, it is all automatically handled by Exponent.
+Each time you publish your app, Expo will upload your assets to Amazon CloudFront, a blazing fast CDN. It does this in an intelligent way to ensure your deploys remain fast: if an asset has not changed since your previous deploy, it is skipped. You don't have to do anything for this to work, it is all automatically handled by Expo.
 
 ## Performance
 

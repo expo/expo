@@ -2,7 +2,7 @@
 title: Google
 ---
 
-Provides Google authentication integration for Exponent apps, using either the native Google Sign In SDK (only in standalone apps) or a system web browser (not WebView, so credentials saved on the device can be re-used!).
+Provides Google authentication integration for Expo apps, using either the native Google Sign In SDK (only in standalone apps) or a system web browser (not WebView, so credentials saved on the device can be re-used!).
 
 Once you have the token, if you would like to make further calls to the Google API, you can use Google's [REST APIs](https://developers.google.com/apis-explorer/) directly through HTTP (using [fetch](https://facebook.github.io/react-native/docs/network.html#fetch), for example).
 
@@ -27,10 +27,10 @@ Prompts the user to log into Google and grants your app permission to access som
 
  A map of options:
 
--   **behavior** (_string_) -- The type of behavior to use for login, either `web` or `system`. Native (`system`) can only be used inside of a standalone app when built using the steps described below. Default is `web` inside of Exponent app, and `system` in standalone. The only case where you would need to change this is if you would prefer to use `web` inside of a standalone app.
+-   **behavior** (_string_) -- The type of behavior to use for login, either `web` or `system`. Native (`system`) can only be used inside of a standalone app when built using the steps described below. Default is `web` inside of Expo app, and `system` in standalone. The only case where you would need to change this is if you would prefer to use `web` inside of a standalone app.
 -   **scopes** (_array_) -- An array specifying the scopes to ask for from Google for this login ([more information here](https://gsuite-developers.googleblog.com/2012/01/tips-on-using-apis-discovery-service.html)). Default scopes are `['profile', 'email']`.
--   **androidClientId** (_string_) -- The Android client id registered with Google for use in the Exponent client app.
--   **iosClientId** (_string_) -- The iOS client id registered with Google for use in the Exponent client app.
+-   **androidClientId** (_string_) -- The Android client id registered with Google for use in the Expo client app.
+-   **iosClientId** (_string_) -- The iOS client id registered with Google for use in the Expo client app.
 -   **androidStandaloneAppClientId** (_string_) -- The Android client id registered with Google for use in a standalone app.
 -   **iosStandaloneAppClientId** (_string_) -- The iOS client id registered with Google for use in a standalone app.
 
@@ -39,9 +39,9 @@ Prompts the user to log into Google and grants your app permission to access som
 
     Otherwise, returns `{ type: 'success', accessToken, idToken, refreshToken, {...profileInformation} }`, `accessToken` is a string giving the access token to use with Google HTTP API requests.
 
-## Using it inside of the Exponent app
+## Using it inside of the Expo app
 
-In the Exponent client app, you can only use browser-based login (this works very well actually because it re-uses credentials saved in your system browser). If you build a standalone app, you can use the native login for the platform.
+In the Expo client app, you can only use browser-based login (this works very well actually because it re-uses credentials saved in your system browser). If you build a standalone app, you can use the native login for the platform.
 
 To use Google Sign In, you will need to create a project on the Google Developer Console and create an OAuth 2.0 client ID. This is, unfortunately, super annoying to do and we wish there was a way we could automate this for you, but at the moment the Google Developer Console does not expose an API. _You also need to register a separate set of Client IDs for a standalone app, the process for this is described later in this document_.
 
@@ -95,7 +95,7 @@ To use Google Sign In, you will need to create a project on the Google Developer
 
 ## Deploying to a standalone app on Android
 
-If you want to use Google Sign In for a standalone app, you can follow these steps. These steps assume that you already have it working on the Exponent client app. If you have already created an API key for Google Maps, you skip steps 3 through 8, inclusive.
+If you want to use Google Sign In for a standalone app, you can follow these steps. These steps assume that you already have it working on the Expo client app. If you have already created an API key for Google Maps, you skip steps 3 through 8, inclusive.
 
 -   **Get a Google API Key for your app** (_skip this if you already have one, eg: for Google Maps_)
     1.  Build a standalone app and download the apk, or find one that you have already built.
@@ -125,7 +125,7 @@ If you want to use Google Sign In for a standalone app, you can follow these ste
 
 ## Deploying to a standalone app on iOS
 
-If you want to use native sign in for a standalone app, you can follow these steps. These steps assume that you already have it working on the Exponent client app.
+If you want to use native sign in for a standalone app, you can follow these steps. These steps assume that you already have it working on the Expo client app.
 
 1.  Add a `bundleIdentifier` to your `exp.json` if you don't already have one.
 2.  Open your browser to [Google Developer Credentials](https://console.developers.google.com/apis/credentials)

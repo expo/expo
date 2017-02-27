@@ -5,7 +5,7 @@ previous___FILE: ./gl-view.md
 next___FILE: ./imagepicker.md
 ---
 
-Provides Google integration for Exponent apps. Exponent exposes a minimal native API since you can access Google's [REST APIs](https://developers.google.com/apis-explorer/) directly through HTTP (using [fetch](https://facebook.github.io/react-native/docs/network.html#fetch), for example).
+Provides Google integration for Expo apps. Expo exposes a minimal native API since you can access Google's [REST APIs](https://developers.google.com/apis-explorer/) directly through HTTP (using [fetch](https://facebook.github.io/react-native/docs/network.html#fetch), for example).
 
 ```javascript
 // Example of using the Google REST API
@@ -18,9 +18,9 @@ async function getUserInfo(accessToken) {
 }
 ```
 
-## Using it inside of the Exponent app
+## Using it inside of the Expo app
 
-In the Exponent client app, you can only use WebView-based login. If you build a standalone app, you can use the native login for the platform, as described at the end of this doc.
+In the Expo client app, you can only use WebView-based login. If you build a standalone app, you can use the native login for the platform, as described at the end of this doc.
 
 To use Google Sign In, you will need to create a project on the Google Developer Console and create an OAuth 2.0 client ID.
 
@@ -62,7 +62,7 @@ To use Google Sign In, you will need to create a project on the Google Developer
 >
 > A map of options:
 >
-> -   **behavior** (_string_) -- The type of behavior to use for login, either `web` or `system`. Native (`system`) can only be used inside of a standalone app when built using the steps described below. Default is `web` inside of Exponent app, and `system` in standalone.
+> -   **behavior** (_string_) -- The type of behavior to use for login, either `web` or `system`. Native (`system`) can only be used inside of a standalone app when built using the steps described below. Default is `web` inside of Expo app, and `system` in standalone.
 > -   **scopes** (_array_) -- An array specifying the scopes to ask for from Google for this login ([more information here](https://gsuite-developers.googleblog.com/2012/01/tips-on-using-apis-discovery-service.html)). Default scopes are `['profile', 'email']`.
 > -   **webClientId** (_string_) -- The client id registered with Google for the app, used with the web behavior.
 > -   **iosClientId** (_string_) -- The client id registered with Google for the, used with the native behavior inside of a standalone app.

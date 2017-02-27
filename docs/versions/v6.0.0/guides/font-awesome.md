@@ -39,7 +39,7 @@ Try getting this basic app running before playing with Font Awesome so you can g
 
 ## Loading the font
 
-We will load Font Awesome from the .ttf available on the web at <https://github.com/FortAwesome/Font-Awesome/raw/master/fonts/fontawesome-webfont.ttf>. To load and use fonts from the web we will use the [Exponent SDK](/versions/v6.0.0/sdk/index#exponent-sdk), which you can install with `npm install --save exponent` in your project directory. Add the following `import` in your application code:
+We will load Font Awesome from the .ttf available on the web at <https://github.com/FortAwesome/Font-Awesome/raw/master/fonts/fontawesome-webfont.ttf>. To load and use fonts from the web we will use the [Expo SDK](/versions/v6.0.0/sdk/index#exponent-sdk), which you can install with `npm install --save exponent` in your project directory. Add the following `import` in your application code:
 
 ```javascript
 import { Font } from 'exponent';
@@ -59,11 +59,11 @@ class App extends React.Component {
 }
 ```
 
-This loads Font Awesome and associates it with the name `'awesome'` in Exponent's font map. Now we just have to refer to this font in our `Text` component.
+This loads Font Awesome and associates it with the name `'awesome'` in Expo's font map. Now we just have to refer to this font in our `Text` component.
 
 ## Using the font in a `Text` component
 
-You may remember that in React Native you specify fonts in `Text` components using the `fontFamily` style property. Since it can be confusing to keep track of the font family for the various .ttf files you load, Exponent provides the function [`Exponent.Font.style()`](/versions/v6.0.0/sdk/font#exponentfontstyle "Exponent.Font.style") which returns the style properties (including `fontFamily`) for a font that you specify by name. So all you need to do is change your `Text` element to the following:
+You may remember that in React Native you specify fonts in `Text` components using the `fontFamily` style property. Since it can be confusing to keep track of the font family for the various .ttf files you load, Expo provides the function [`Exponent.Font.style()`](/versions/v6.0.0/sdk/font#exponentfontstyle "Exponent.Font.style") which returns the style properties (including `fontFamily`) for a font that you specify by name. So all you need to do is change your `Text` element to the following:
 
 ```javascript
 <Text style={{ ...Font.style('awesome'), fontSize: 56 }}>
@@ -120,4 +120,4 @@ Finally, we want to only render the `Text` component if `fontLoaded` is `true`. 
 
 A `null` child element is simply ignored by React Native, so this skips rendering the `Text` component when `fontLoaded` is `false`. Now on refreshing the app you should see that it renders the Font Awesome glass icon!
 
-The finished version of this tutorial is available as an Exponent project on [GitHub](https://github.com/exponent/font-awesome-example/tree/9f84ed1593c925b5c15a6842ac881c1689eceb38).
+The finished version of this tutorial is available as an Expo project on [GitHub](https://github.com/exponent/font-awesome-example/tree/9f84ed1593c925b5c15a6842ac881c1689eceb38).

@@ -4,7 +4,7 @@ title: Using Firebase
 
 Firebase Database is a popular NoSQL cloud database that allows developers realtime synchronization of live data. With multi-platform support, synchronizing data between users and clients is pretty seamless, but it can also be used more generally as a generic persistent NoSQL data backing if you don't care about realtime updates. It has a very flexible rules syntax to allow minute control over data access as well.
 
-Luckily, the Firebase JavaScript SDK starting from version 3.1+ has almost full support for React Native, so adding it to our Exponent app is super easy. The one caveat covered later in this guide is that the user login components typically provided by the Firebase SDKs will **not** work for React Native, and thus we will have to work around it.
+Luckily, the Firebase JavaScript SDK starting from version 3.1+ has almost full support for React Native, so adding it to our Expo app is super easy. The one caveat covered later in this guide is that the user login components typically provided by the Firebase SDKs will **not** work for React Native, and thus we will have to work around it.
 
 See [firebase.google.com/docs/database](https://firebase.google.com/docs/database) for more general information and the [official Firebase blog post announcing React Native compatibility](https://firebase.googleblog.com/2016/07/firebase-react-native.html)
 
@@ -12,7 +12,7 @@ See [firebase.google.com/docs/database](https://firebase.google.com/docs/databas
 
 ## 1. Firebase SDK Setup
 
-First we need to setup a Firebase Account and create a new project. We will be using the JavaScript SDK provided by Firebase, so pull it into your Exponent project.
+First we need to setup a Firebase Account and create a new project. We will be using the JavaScript SDK provided by Firebase, so pull it into your Expo project.
 
 `npm install --save firebase`.
 
@@ -86,15 +86,15 @@ We can choose different login methods that make sense to our application. The lo
 
 ### Facebook Login
 
-A common login system many developers opt for is a simple Facebook login that users are already familiar with. Exponent provides a great Facebook login component already, so we just need to plug that in.
+A common login system many developers opt for is a simple Facebook login that users are already familiar with. Expo provides a great Facebook login component already, so we just need to plug that in.
 
 See the Facebook section of our docs for information on how to set this up. This works just as well with Google and [several others](https://firebase.google.com/docs/reference/android/com/google/firebase/auth/AuthCredential#getProvider()).
 
 ### Tying Sign-In Providers with Firebase
 
-Once you have added Facebook login to your Exponent app, we need to adjust the Firebase console to check for it. Under the Authentication section in the console in the Sign-In Method tab, enable Facebook as a sign-in provider.
+Once you have added Facebook login to your Expo app, we need to adjust the Firebase console to check for it. Under the Authentication section in the console in the Sign-In Method tab, enable Facebook as a sign-in provider.
 
-You can add whichever provider makes sense for you, or even add multiple providers. We will stick with Facebook for now since we already have a simple drop-in Exponent component already built.
+You can add whichever provider makes sense for you, or even add multiple providers. We will stick with Facebook for now since we already have a simple drop-in Expo component already built.
 
 ### Reenable Data Access Security Rule
 

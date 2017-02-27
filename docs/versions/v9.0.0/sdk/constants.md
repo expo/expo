@@ -9,11 +9,11 @@ System information that remains constant throughout the lifetime of your app.
 
 -   `Exponent.Constants.exponentVersion`
 
-The version string of the Exponent client currently running.
+The version string of the Expo client currently running.
 
 -   `Exponent.Constants.deviceId`
 
-An identifier that is unique to this particular device and installation of the Exponent client.
+An identifier that is unique to this particular device and installation of the Expo client.
 
 -   `Exponent.Constants.deviceName`
 

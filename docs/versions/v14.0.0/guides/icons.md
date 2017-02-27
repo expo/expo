@@ -5,7 +5,7 @@ previous___FILE: ./preloading-and-caching-assets.md
 next___FILE: ./using-custom-fonts.md
 ---
 
-As trendy as it is these days, not every app has to use emoji for all icons 😳 -- maybe you want to pull in a popular set through an icon font like FontAwesome, Glyphicons or Ionicons, or you just use some PNGs that you carefully picked out on [The Noun Project](https://thenounproject.com/) (Exponent does not currently support SVGs). Let's look at how to do both of these approaches.
+As trendy as it is these days, not every app has to use emoji for all icons 😳 -- maybe you want to pull in a popular set through an icon font like FontAwesome, Glyphicons or Ionicons, or you just use some PNGs that you carefully picked out on [The Noun Project](https://thenounproject.com/) (Expo does not currently support SVGs). Let's look at how to do both of these approaches.
 
 ## @exponent/vector-icons
 
@@ -30,7 +30,7 @@ This component loads the Ionicons font if it hasn't been loaded already, and ren
 
 `import { Ionicons } from '@exponent/vector-icons';` instead of.. `import Ionicons from 'react-native-vector-icons/Ionicons';`.
 
-> **Note:** As with [any custom font](../.html#using-custom-fonts) in Exponent, you may want to preload icon fonts before rendering your app. The font object is available as a static property on the font component, so in the case above it is `Ionicons.font`, which evaluates to `{ionicons: require('path/to/ionicons.ttf')}`. [Read more about preloading assets](../.html#all-about-assets).
+> **Note:** As with [any custom font](../.html#using-custom-fonts) in Expo, you may want to preload icon fonts before rendering your app. The font object is available as a static property on the font component, so in the case above it is `Ionicons.font`, which evaluates to `{ionicons: require('path/to/ionicons.ttf')}`. [Read more about preloading assets](../.html#all-about-assets).
 
 ## Existing Projects
 

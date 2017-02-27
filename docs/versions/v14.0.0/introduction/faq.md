@@ -5,7 +5,7 @@ previous___FILE: ./additional-resources.md
 next___FILE: ./../guides/index.md
 ---
 
-In addition to the questions below, see the [Exponent AMA on Hashnode](https://hashnode.com/ama/with-exponent-ciw1qxry118wl4353o9kxaowl#ciw43q029007fxr53pkuftwhu) for more common questions and answers.
+In addition to the questions below, see the [Expo AMA on Hashnode](https://hashnode.com/ama/with-exponent-ciw1qxry118wl4353o9kxaowl#ciw43q029007fxr53pkuftwhu) for more common questions and answers.
 
 ## How much does Expo cost?
 
@@ -29,11 +29,11 @@ Expo is kind of like Rails for React Native. Lots of things are set up for you, 
 
 With Expo, you don't need Xcode or Android Studio. You just write JavaScript using whatever text editor you are comfortable with (Atom, vim, emacs, Sublime, VS Code, whatever you like). You can run XDE (our desktop software) on Mac, Windows, and Linux.
 
-Here are some of the things  gives you out of the box that work right away:
+Here are some of the things Expo gives you out of the box that work right away:
 
 -   **Support for iOS and Android**
 
-    You can use apps written in Expo on both iOS and Android right out of the box. You don't need to go through a separate build process for each one. Just open any Expo app in the Expo CLient app from the App Store on either iOS or Android (or in a simulator or emulator on your computer).
+    You can use apps written in Expo on both iOS and Android right out of the box. You don't need to go through a separate build process for each one. Just open any Expo app in the Expo Client app from the App Store on either iOS or Android (or in a simulator or emulator on your computer).
 
 -   **Push Notifications**
 
@@ -114,5 +114,4 @@ Note that the results of this tool might vary widely depending on what your proj
 
 ## What is Exponent and how is it different from Expo?
 
-Exponent is the original name of the Expo project. You might occasionally run across some old
-references to it in blog posts or code or documentation. They are the same thing; we just shortened the name.
+Exponent is the original name of the Expo project. You might occasionally run across some old references to it in blog posts or code or documentation. They are the same thing; we just shortened the name.

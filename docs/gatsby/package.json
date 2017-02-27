@@ -1,7 +1,7 @@
 {
-  "name": "docs-exponent",
+  "name": "docs-expo",
   "version": "14.0.0",
-  "description": "Exponent documentation site",
+  "description": "Expo documentation site",
   "scripts": {
     "build": "gatsby build",
     "develop": "gatsby develop"

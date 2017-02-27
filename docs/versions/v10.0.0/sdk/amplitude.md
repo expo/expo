@@ -7,7 +7,7 @@ next___FILE: ./app-loading.md
 
 Provides access to <https://amplitude.com/> mobile analytics. Wraps Amplitude's [iOS](https://github.com/amplitude/Amplitude-iOS) and [Android](https://github.com/amplitude/Amplitude-Android) SDKs.
 
-Note: Session tracking may not work correctly when running Experiences in the main Exponent app. It will work correctly if you create a standalone app.
+Note: Session tracking may not work correctly when running Experiences in the main Expo app. It will work correctly if you create a standalone app.
 
 ### `Exponent.Amplitude.initialize(apiKey)`
 

@@ -5,19 +5,19 @@ previous___FILE: ./index.md
 next___FILE: ./xde-tour.md
 ---
 
-There are two tools that you need to develop apps with Exponent - a desktop development tool and a mobile client to open your app.
+There are two tools that you need to develop apps with Expo - a desktop development tool and a mobile client to open your app.
 
 ## Desktop Development Tool: XDE
 
-XDE stands for Exponent Development Environment. It is a standalone desktop app that includes all dependencies you'll need to get started.
+XDE stands for Expo Development Environment. It is a standalone desktop app that includes all dependencies you'll need to get started.
 
 Download the latest version of [XDE for macOS (stable)](https://xde-updates.exponentjs.com/download/mac) , [XDE for Windows (alpha)](https://xde-updates.exponentjs.com/download/win32).
 
 For Linux, you will need to build XDE from the source. Follow the [building from source guide in the XDE repository](https://github.com/exponent/xde#build-from-source).
 
-## Mobile Client: Exponent for iOS and Android
+## Mobile Client: Expo for iOS and Android
 
-The Exponent client is like a browser for apps built with Exponent. When you boot up XDE on your project it generates a unique development URL for you, and you can access that from the Exponent client on iOS or Android, either on a real device or in a simulator.
+The Expo client is like a browser for apps built with Expo. When you boot up XDE on your project it generates a unique development URL for you, and you can access that from the Expo client on iOS or Android, either on a real device or in a simulator.
 
 ### On your device
 
@@ -29,10 +29,10 @@ Install [Xcode through the Apple App Store](https://itunes.apple.com/app/xcode/i
 
 ### Android emulator
 
-Follow the [Genymotion Installation guide](https://docs.genymotion.com/Content/01_Get_Started/Installation.htm) -- the Individual Basic plan is free and works great with Exponent. Once you've installed Genymotion, create a virtual device - we recommend a Nexus 5, the Android version is up to you. Start up the virtual device when it's ready.
+Follow the [Genymotion Installation guide](https://docs.genymotion.com/Content/01_Get_Started/Installation.htm) -- the Individual Basic plan is free and works great with Expo. Once you've installed Genymotion, create a virtual device - we recommend a Nexus 5, the Android version is up to you. Start up the virtual device when it's ready.
 
-Once the emulator is open and you have a project open in XDE, you can press _Open project in Exponent on Android_ in XDE and it will install the Exponent client to the emulator and open up your app inside of it.
+Once the emulator is open and you have a project open in XDE, you can press _Open project in Expo on Android_ in XDE and it will install the Expo client to the emulator and open up your app inside of it.
 
 ## Node.js
 
-To get started with Exponent you don't necessarily need to have Node.js installed, but as soon as you start actually building something you'll want to have it. [Download the latest version of Node.js](https://nodejs.org/en/).
+To get started with Expo you don't necessarily need to have Node.js installed, but as soon as you start actually building something you'll want to have it. [Download the latest version of Node.js](https://nodejs.org/en/).

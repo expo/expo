@@ -2,7 +2,7 @@ import Typography from 'typography';
 import CodePlugin from 'typography-plugin-code';
 
 const typography = new Typography({
-  title: 'Exponent',
+  title: 'Expo',
   scaleRatio: 2.5,
   baseLineHeight: 1.45,
   headerFontFamily: ['Source Sans Pro', 'sans-serif'],
