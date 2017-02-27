@@ -6,41 +6,41 @@ title: Using GraphQL
 
 ## Why GraphQL?
 
-GraphQL has a number of advantages in terms of flexilibilty and performance compared to REST and other approaches. 
+GraphQL has a number of advantages in terms of flexilibilty and performance compared to REST and other approaches.
 
 For instance, with a GraphQL query you are guaranteed to only ever get the exact data you need. No more overfetching or underfetching from API endpoints. Not only does a GraphQL query allow you to get exactly the data you need, but it also allows you to do so in a single request.
 
 ## How to get started with GraphQL?
 
-GraphQL has only been released as a _specification_, that means that you can go and implement a GraphQL **server** yourself in any server-side language of your choice! 
+GraphQL has only been released as a _specification_, that means that you can go and implement a GraphQL **server** yourself in any server-side language of your choice!
 
 In order to use GraphQL from an application, you will also need a **client** that is responsible for the interaction with the GraphQL server.
 
 ### GraphQL Backend
 
-Building your own **GraphQL server** from scratch however is not trivial and potentially gets really complicated once you want to implement more advanced features like proper _permissions_, _filtering_ or _subscriptions_ (which are a GraphQL feature that allow your app to get real-time updates from the database). 
+Building your own **GraphQL server** from scratch however is not trivial and potentially gets really complicated once you want to implement more advanced features like proper _permissions_, _filtering_ or _subscriptions_ (which are a GraphQL feature that allow your app to get real-time updates from the database).
 
 If you don't want to build the backend yourself, you can use [**Graphcool**](www.graph.cool), a powerful and flexible backend platform that combines GraphQL with AWS Lambda to provide you with the means of setting up a fully-fledged GraphQL server in only a few minutes.
 
 ### GraphQL Client
 
-Same goes for the **GraphQL client**, it is of course possible for you to write the client that is responsible for interacting with a GraphQL backend yourself. 
+Same goes for the **GraphQL client**, it is of course possible for you to write the client that is responsible for interacting with a GraphQL backend yourself.
 
 But if you want to save time, you can use [**Apollo**](http://dev.apollodata.com/), a ready-made GraphQL client that integrates easily with React Native as well as with any other frontend technology of your choice. This means that you could reuse the code from your Exponent app in your web app regardless of the framework. Apollo also integrates cleanly into popular development tools like Redux, and may be easily extended to fit your apps specific needs. Most important though is that the Apollo client is community driven with all development happening in the open.
 
-Using the Apollo client, you can benefit from _caching_, _optimistic UI_, _subscriptions_ and a lot more. To learn more, visit [dev.apollodata.com/react](dev.apollodata.com/react.).
+Using the Apollo client, you can benefit from _caching_, _optimistic UI_, _subscriptions_ and a lot more. To learn more, visit [dev.apollodata.com/react](http://dev.apollodata.com/react/).
 
 ### Learn more
 
-In the following, we'll explain how to set up a GraphQL project using these two technologies. For an in-depth tutorial on how to use Graphcool with the Apollo client, visit the [Learn Apollo Exponent Guide](https://www.learnapollo.com/tutorial-react-native-exponent/rne-01/). 
+In the following, we'll explain how to set up a GraphQL project using these two technologies. For an in-depth tutorial on how to use Graphcool with the Apollo client, visit the [Learn Apollo Exponent Guide](https://www.learnapollo.com/tutorial-react-native-exponent/rne-01/).
 
-We also prepared a full **Instagram example that uses Graphcool, Apollo and Auth0** - you can check it out [here](https://github.com/graphcool-examples/exponent-auth0-instagram-example). 
+We also prepared a full **Instagram example that uses Graphcool, Apollo and Auth0** - you can check it out [here](https://github.com/graphcool-examples/exponent-auth0-instagram-example).
 
 ## Setting up a Graphcool backend
 
 ### Connecting to Graphcool
 
-After [creating a Graphcool account](https://console.graph.cool/signup) you can create a new project and define your data model. Once you're done with that, you can start using the backend with the provided endpoint. 
+After [creating a Graphcool account](https://console.graph.cool/signup) you can create a new project and define your data model. Once you're done with that, you can start using the backend with the provided endpoint.
 
 If you want to use the Apollo client, you will need the endpoint for Graphcool's [**Simple API**](https://www.graph.cool/docs/reference/simple-api/overview-heshoov3ai):
 
@@ -50,7 +50,7 @@ We will tell you how to set up the Apollo client in a bit.
 
 ### Storing and Fetching Data
 
-When you are done setting up your data model, it's time to start querying your data. A flexible GraphQL API is automatically generated for you and you can explore its query capabilities in a GraphQL playground. 
+When you are done setting up your data model, it's time to start querying your data. A flexible GraphQL API is automatically generated for you and you can explore its query capabilities in a GraphQL playground.
 
 > Note: You can either use the playground that is available directly in the [GraphQL console](https://console.graph.cool) or copy the endpoint into the address bar of your browser if you want to work with it separately. The **autocompletion feature** of the playground is a fantastic tool that helps you to build exactly the queries you need.
 
