@@ -4,7 +4,7 @@ const path = require('path');
 
 const VERSIONS_DIR = path.join(__dirname, '..', 'versions');
 const args = process.argv.slice(2);
-const DOCS_URL = `http://${args[0]}/versions`;
+const DOCS_URL = `https://${args[0]}/versions`;
 
 console.log(`Indexing docs at URL: ${DOCS_URL}`);
 
@@ -18,17 +18,17 @@ function buildAlgoliaConfig() {
       lvl0: {
         selector: '#sidebar a.current > span',
         default_value: 'Documentation',
-        global: true
+        global: true,
       },
       lvl1: '#content h1',
       lvl2: '#content h2',
       lvl3: '#content h3',
       lvl4: '#content h4',
-      text: '#content p, #content li, #content dl, #content pre'
+      text: '#content p, #content li, #content dl, #content pre',
     },
     min_indexed_level: 1,
     scrap_start_urls: false,
-    nb_hits: 63146
+    nb_hits: 63146,
   };
 
   const versionDirs = getDirectories(VERSIONS_DIR);
@@ -39,20 +39,17 @@ function buildAlgoliaConfig() {
       ...[
         {
           url: `${versionUrlBase}/`,
-          tags: [version]
-        }
-        // {
-        //   url: `${versionUrlBase}/index.html`,
-        //   tags: [version],
-        // },
+          tags: [version],
+        },
+        {
+          url: `${versionUrlBase}/index.html`,
+          tags: [version],
+        },
       ]
     );
 
     const sections = getDirectories(path.join(VERSIONS_DIR, version));
-    algoliaConfig.stop_urls = [
-      ...algoliaConfig.stop_urls,
-      ...sections.map(s => `${versionUrlBase}/${s}/$`)
-    ];
+    algoliaConfig.stop_urls = [...algoliaConfig.stop_urls, ...sections.map(s => `${versionUrlBase}/${s}/index.html$`)];
   });
 
   return algoliaConfig;
@@ -90,10 +87,10 @@ spawn(
     'exponent-doc-builder',
     '-t',
     'gcr.io/exponentjs/algolia-documentation-scraper:latest',
-    '/root/run'
+    '/root/run',
   ],
   {
     stdio: 'inherit',
-    shell: true
+    shell: true,
   }
 );
