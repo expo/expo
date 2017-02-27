@@ -1,7 +1,7 @@
 FROM gcr.io/exponentjs/docs-builder:v2
 
-MOUNT ../../:/universe
-MOUNT ../../node_modules-tarballs:/root/node_modules-tarballs
+MOUNT ../:/universe
+MOUNT ../node_modules-tarballs:/root/node_modules-tarballs
 
 RUN cp /universe/.yarnrc /root/.yarnrc
 
