@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXDevMenuViewController.h"
+#import "EXKernelDevMenuViewController.h"
 #import "EXFileDownloader.h"
 #import "EXJavaScriptResource.h"
 #import "EXKernel.h"
@@ -11,7 +11,7 @@
 
 NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
 
-@interface EXDevMenuViewController ()
+@interface EXKernelDevMenuViewController ()
 
 @property (nonatomic, strong) UINavigationBar *vTitleBar;
 @property (nonatomic, strong) UIButton *btnReloadKernel;
@@ -28,7 +28,7 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
 
 @end
 
-@implementation EXDevMenuViewController
+@implementation EXKernelDevMenuViewController
 
 - (void)viewDidLoad
 {
