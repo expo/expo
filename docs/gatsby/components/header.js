@@ -1,7 +1,4 @@
-/* global $ */
 import { orderBy } from 'lodash';
-import docsearch from 'docsearch.js';
-import Hotshot from 'hotshot';
 import React from 'react';
 import Link from 'gatsby-link';
 import { rhythm, scale } from 'utils/typography';
@@ -19,6 +16,8 @@ class AlgoliaSearch extends React.Component {
   }
 
   componentDidMount() {
+    const docsearch = require('docsearch.js');
+    const Hotshot = require('hotshot');
     this.docsearch = docsearch({
       appId: 'S6DBW4862L',
       apiKey: '59ebba04e5d2e4bed5d5ae12eed28bdd',
