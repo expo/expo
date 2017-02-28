@@ -43,7 +43,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
-      android:text="Made with Exponent"
+      android:text="Made with Expo"
       android:textColor="#cccccc"
       android:textSize="14sp"/>
   </FrameLayout>
