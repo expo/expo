@@ -3,7 +3,7 @@
 #import "EXCachedResource.h"
 #import "EXKernelReactAppManager.h"
 #import "EXReactAppManager+Private.h"
-#import "EXDevMenuViewController.h"
+#import "EXKernelDevMenuViewController.h"
 #import "EXExceptionHandler.h"
 #import "EXKernel.h"
 #import "EXLog.h"

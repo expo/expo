@@ -2,7 +2,7 @@
 
 #import "EXAnalytics.h"
 #import "EXAppState.h"
-#import "EXDevMenuViewController.h"
+#import "EXKernelDevMenuViewController.h"
 #import "EXFrame.h"
 #import "EXKernel.h"
 #import "EXKernelBridgeRecord.h"
@@ -429,7 +429,7 @@ continueUserActivity:(NSUserActivity *)userActivity
 
 - (void)kernelModuleDidSelectDevMenu:(__unused EXKernelModule *)module
 {
-  EXDevMenuViewController *vcDevMenu = [[EXDevMenuViewController alloc] init];
+  EXKernelDevMenuViewController *vcDevMenu = [[EXKernelDevMenuViewController alloc] init];
   if (_vcExponentRoot) {
     [_vcExponentRoot presentViewController:vcDevMenu animated:YES completion:nil];
   }
