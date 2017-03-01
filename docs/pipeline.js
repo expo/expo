@@ -1,6 +1,7 @@
 import spawnAsync from '@exponent/spawn-async';
+import git from 'git-promise';
 
-import CI, { Rocker, Docker, Log, Github } from 'ci';
+import CI, { Rocker, Kubernetes as K8S, Log, Github } from 'ci';
 
 export default {
   config: {
@@ -82,126 +83,52 @@ const deploy = (branch, tag, pr) => ({
     const imageTag = `${process.env.BUILDKITE_COMMIT}`;
 
     Log.collapsed(':gcloud: Deploy to K8s...');
-    let currentGithubDeployment, deploymentUrl;
-    if (pr) {
-      // is PR
-      await Github.setAllCurrentDeploymentsToInactive('universe', pr, {
-        task: 'deploy:docs:k8s',
-        environment,
-      });
-      currentGithubDeployment = await Github.createDeploymentForPR('universe', pr, {
-        task: 'deploy:docs:k8s',
-        environment,
-        required_contexts: [],
-      });
-      deploymentUrl = `https://${environment}.pr.exp.host`;
+
+    let ingressHostname;
+    if (isProduction) {
+      ingressHostname = 'docs.getexponent.com';
+    } else if (pr) {
+      ingressHostname = `${environment}.pr.exp.host`;
     } else {
-      currentGithubDeployment = await Github.createDeploymentForCommit('universe', process.env.BUILDKITE_COMMIT, {
-        task: 'deploy:docs:k8s',
-        environment: `docs-${environment}`,
-        required_contexts: [],
-        ...(environment === 'production' ? { production_environment: true } : {}),
-      });
-      deploymentUrl = environment === 'staging'
-        ? 'https://staging.docs.getexponent.com/'
-        : 'https://docs.getexponent.com';
+      ingressHostname = 'staging.docs.getexponent.com';
     }
 
-    await Github.createDeploymentStatus('universe', currentGithubDeployment, {
-      state: 'pending',
-      log_url: process.env.BUILDKITE_BUILD_URL,
-      description: 'Currently deploying. Check CI for details.',
-    });
-
-    try {
-      const deployScript = `#!/bin/bash
-        set -eo pipefail
-
-        echo "Beginning deployment..."
-
-        nsExists=$(kubectl get ns | (grep "$KUBE_NAMESPACE" || true))
-        if [ "$nsExists" == "" ]; then
-          echo "Creating namespace..."
-          envsubst < ./deploy/k8s/$APP_NAME.ns.template.yml | kubectl create --record -f -
-        else
-          echo "Namespace exists."
-        fi
-
-        serviceExists=$(kubectl get svc --namespace="$KUBE_NAMESPACE" | (grep $APP_NAME || true))
-        if [ "$serviceExists" == "" ]; then
-          echo "Creating service..."
-          envsubst < ./deploy/k8s/$APP_NAME.svc.template.yml | kubectl create --record -f -
-        else
-          echo "Updating service..."
-          envsubst < ./deploy/k8s/$APP_NAME.svc.template.yml | kubectl apply --record -f -
-        fi
-
-        ingressExists=$(kubectl get ing --namespace="$KUBE_NAMESPACE" | (grep $APP_NAME-ingress || true))
-        if [ "$ingressExists" == "" ]; then
-          echo "Creating ingress..."
-          envsubst < ./deploy/k8s/$APP_NAME.ingress.template.yml | kubectl create --record -f -
-        else
-          echo "Updating ingress..."
-          envsubst < ./deploy/k8s/$APP_NAME.ingress.template.yml | kubectl apply --record -f -
-        fi
-
-        appExists=$(kubectl get deployments -l app=$APP_NAME -o name --namespace=$KUBE_NAMESPACE)
-        if [ "$appExists" != "" ]; then
-          echo "Updating deployment..."
-          envsubst < ./deploy/k8s/$APP_NAME.deployment.template.yml | kubectl apply --record -f -
-        else # create the app deployment
-          echo "Creating deployment..."
-          envsubst < ./deploy/k8s/$APP_NAME.deployment.template.yml | kubectl create --record -f -
-        fi
-
-        wait-for-deployment $APP_NAME $KUBE_NAMESPACE 240
-      `;
-
-      await Docker.runInContainer(
-        {
-          image: 'gcr.io/exponentjs/deployer',
-          env: {
-            DOCKER_IMAGE: imageName,
-            DOCKER_TAG: imageTag,
-            APP_NAME: 'docs',
-            KUBE_NAMESPACE: environment,
-            COMMIT_HASH: process.env.BUILDKITE_COMMIT,
-            NUM_REPLICAS: environment === 'production' ? 2 : 1, // PRS // Staging
-            INGRESS_HOSTNAME: isProduction
-              ? 'docs.getexponent.com'
-              : pr
-                  ? `${environment}.pr.exp.host`
-                  : // prs
-                    'staging.docs.getexponent.com', // staging
-            VAULT_ADDR: process.env.VAULT_ADDR,
-            VAULT_TOKEN: process.env.VAULT_TOKEN,
+    Github.performDeployment(
+      {
+        projectName: 'docs',
+        environment,
+        deploymentUrl: `https://${ingressHostname}`,
+        deploymentType: 'k8s',
+        prNumber: pr,
+      },
+      // deployment function
+      async () => {
+        await K8S.deployHelmChart({
+          chartPath: './deploy/charts/docs',
+          namespace: environment,
+          releaseName: makeVersionName(),
+          values: {
+            image: {
+              repository: imageName,
+              tag: imageTag,
+            },
+            replicaCount: environment === 'production' ? 2 : 1, // PRS // Staging
+            ingress: [
+              {
+                host: ingressHostname,
+              },
+            ],
           },
-          volumes: {
-            [CI.getHostBuildDir()]: '/workdir',
-          },
-        },
-        deployScript
-      );
-    } catch (e) {
-      if (currentGithubDeployment) {
-        await Github.createDeploymentStatus('universe', currentGithubDeployment, {
-          state: 'error',
-          log_url: process.env.BUILDKITE_BUILD_URL,
-          description: 'Error during deployment. Check CI for details.',
         });
+      },
+      // on error
+      () => {
+        process.exit(1);
       }
-      process.exit(1);
-      return;
-    }
+    );
 
-    if (currentGithubDeployment) {
-      await Github.createDeploymentStatus('universe', currentGithubDeployment, {
-        state: 'success',
-        log_url: process.env.BUILDKITE_BUILD_URL,
-        environment_url: deploymentUrl,
-        description: 'PR was deployed successfully',
-      });
-    }
+    // VAULT_ADDR: process.env.VAULT_ADDR,
+    // VAULT_TOKEN: process.env.VAULT_TOKEN,
   },
 });
 
@@ -237,7 +164,7 @@ function pad(n) {
 }
 
 async function makeVersionName() {
-  const hash = (await git('rev-parse --short=12 HEAD')).trim();
+  const hash = (await git(`rev-parse --short=12 ${process.env.BUILDKITE_COMMIT}`)).trim();
   const today = new Date();
   return `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}-${hash}`;
 }
