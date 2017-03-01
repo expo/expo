@@ -86,11 +86,11 @@ const deploy = (branch, tag, pr) => ({
 
     let ingressHostname;
     if (isProduction) {
-      ingressHostname = 'docs.getexponent.com';
+      ingressHostname = 'docs.expo.io';
     } else if (pr) {
       ingressHostname = `${environment}.pr.exp.host`;
     } else {
-      ingressHostname = 'staging.docs.getexponent.com';
+      ingressHostname = 'staging.docs.expo.io';
     }
 
     Github.performDeployment(
@@ -104,6 +104,7 @@ const deploy = (branch, tag, pr) => ({
       // deployment function
       async () => {
         await K8S.deployHelmChart({
+          clusterName: 'exp-central',
           chartPath: './deploy/charts/docs',
           namespace: environment,
           releaseName: `docs-${environment}`,
