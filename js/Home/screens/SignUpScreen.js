@@ -73,14 +73,14 @@ export default class SignUpScreen extends React.Component {
       ({ endCoordinates }) => {
         const keyboardHeight = endCoordinates.height;
         this.setState({ keyboardHeight });
-      },
+      }
     );
 
     this._keyboardDidHideSubscription = Keyboard.addListener(
       'keyboardDidHide',
       () => {
         this.setState({ keyboardHeight: 0 });
-      },
+      }
     );
   }
 
@@ -223,17 +223,14 @@ export default class SignUpScreen extends React.Component {
     try {
       let signUpResult = await Auth0Api.signUpAsync(this.state);
 
-      // What's the failure case here?
-      if (
-        !signUpResult || !signUpResult.data || !signUpResult.data.user.user_id
-      ) {
+      if (signUpResult.errors) {
         this._isMounted && this._handleError(signUpResult);
         return;
       }
 
       let signInResult = await Auth0Api.signInAsync(
         this.state.email,
-        this.state.password,
+        this.state.password
       );
 
       if (this._isMounted) {
@@ -246,7 +243,7 @@ export default class SignUpScreen extends React.Component {
               refreshToken: signInResult.refresh_token,
               accessToken: signInResult.access_token,
               idToken: signInResult.id_token,
-            }),
+            })
           );
         }
       }
@@ -257,11 +254,33 @@ export default class SignUpScreen extends React.Component {
     }
   };
 
-  _handleError = error => {
-    console.log({ error });
-    let message = error.error_description ||
-      error.message ||
-      'Sorry, something went wrong.';
+  _handleError = result => {
+    // Our signup endpoint has this format for result object if there is an error:
+    // {
+    //  "errors":[
+    //    {
+    //      "code":"AUTHENTICATION_ERROR",
+    //      "message":"Error creating user.",
+    //      "details":{
+    //        "statusCode":400,
+    //        "error":"Bad Request",
+    //        "message":"The user already exists (username: notbrent).",
+    //        "errorCode":"auth0_idp_error"
+    //      }
+    //    }
+    //  ]
+    // }
+
+    let message = 'Sorry, something went wrong.';
+    if (result.errors) {
+      let { details } = result.errors[0];
+      message = details.message;
+    } else if (error.error_description || error.message) {
+      message = error.error_description || error.message;
+    } else {
+      message = 'Sorry, something went wrong.';
+    }
+
     this.props.navigator.showLocalAlert(message, Alerts.error);
   };
 }
