@@ -106,7 +106,7 @@ const deploy = (branch, tag, pr) => ({
         await K8S.deployHelmChart({
           chartPath: './deploy/charts/docs',
           namespace: environment,
-          releaseName: await makeVersionName(),
+          releaseName: `docs-${await makeVersionName()}`,
           values: {
             image: {
               repository: imageName,
