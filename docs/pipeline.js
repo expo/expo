@@ -122,7 +122,8 @@ const deploy = (branch, tag, pr) => ({
         });
       },
       // on error
-      () => {
+      e => {
+        console.error('Error during deployment: ', e);
         process.exit(1);
       }
     );
