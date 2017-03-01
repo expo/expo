@@ -104,7 +104,6 @@ const deploy = (branch, tag, pr) => ({
           namespace: environment,
           releaseName: `docs-${environment}`,
           values: {
-            gitCommit: process.env.BUILDKITE_COMMIT,
             image: {
               repository: imageName,
               tag: imageTag,
