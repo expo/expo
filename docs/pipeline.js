@@ -106,8 +106,9 @@ const deploy = (branch, tag, pr) => ({
         await K8S.deployHelmChart({
           chartPath: './deploy/charts/docs',
           namespace: environment,
-          releaseName: `docs-${await makeVersionName()}`,
+          releaseName: `docs-${environment}`,
           values: {
+            gitCommit: process.env.BUILDKITE_COMMIT,
             image: {
               repository: imageName,
               tag: imageTag,
