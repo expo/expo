@@ -12,5 +12,5 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 */}}
 {{- define "fullname" -}}
 {{- $name := default .Chart.Name .Values.nameOverride -}}
-{{- printf "%s-%s" .Release.Name | trunc 24 | trimSuffix "-" -}}
+{{- printf "%s" .Release.Name | trunc 24 | trimSuffix "-" -}}
 {{- end -}}
