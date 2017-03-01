@@ -103,6 +103,8 @@ export default class SignUpScreen extends React.Component {
             onSubmitEditing={() => this._handleSubmitEditing('firstName')}
             value={this.state.firstName}
             autofocus
+            autoCorrect={false}
+            autoCapitalize="words"
             blurOnSubmit={false}
             keyboardType="default"
             label="First name"
@@ -115,6 +117,8 @@ export default class SignUpScreen extends React.Component {
             onChangeText={this._updateValue.bind(this, 'lastName')}
             onSubmitEditing={() => this._handleSubmitEditing('lastName')}
             value={this.state.lastName}
+            autoCorrect={false}
+            autoCapitalize="words"
             blurOnSubmit={false}
             keyboardType="default"
             label="Last name"
@@ -127,6 +131,8 @@ export default class SignUpScreen extends React.Component {
             onChangeText={this._updateValue.bind(this, 'username')}
             onSubmitEditing={() => this._handleSubmitEditing('username')}
             value={this.state.username}
+            autoCorrect={false}
+            autoCapitalize="none"
             blurOnSubmit={false}
             keyboardType="default"
             label="Username"
@@ -138,6 +144,8 @@ export default class SignUpScreen extends React.Component {
             }}
             onSubmitEditing={() => this._handleSubmitEditing('email')}
             onChangeText={this._updateValue.bind(this, 'email')}
+            autoCorrect={false}
+            autoCapitalize="none"
             value={this.state.email}
             autoCapitalize="none"
             autoCorrect={false}
@@ -153,6 +161,8 @@ export default class SignUpScreen extends React.Component {
             onSubmitEditing={() => this._handleSubmitEditing('password')}
             onChangeText={this._updateValue.bind(this, 'password')}
             value={this.state.password}
+            autoCorrect={false}
+            autoCapitalize="none"
             label="Password"
             returnKeyType="next"
             secureTextEntry
@@ -166,6 +176,8 @@ export default class SignUpScreen extends React.Component {
             onChangeText={this._updateValue.bind(this, 'passwordConfirmation')}
             value={this.state.passwordConfirmation}
             hideBottomBorder
+            autoCorrect={false}
+            autoCapitalize="none"
             label="Repeat your password"
             returnKeyType="done"
             secureTextEntry
