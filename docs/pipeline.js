@@ -30,16 +30,7 @@ const build = (branch, tag, pr) => ({
     queue: 'builder',
   },
   async command() {
-    let environment;
-    if (tag && !pr) {
-      environment = 'production';
-    } else if (pr) {
-      environment = `docs-pr-${pr}`;
-    } else {
-      environment = 'staging';
-    }
-
-    const imageName = `gcr.io/exponentjs/exponent-docs-v2-${environment}`;
+    const imageName = `gcr.io/exponentjs/exponent-docs-v2`;
     const imageTag = `${process.env.BUILDKITE_COMMIT}`;
 
     Log.collapsed(':hammer: Building Docs...');
@@ -83,7 +74,7 @@ const deploy = (branch, tag, pr) => ({
       ingressHostname = 'staging.docs.expo.io';
     }
 
-    const imageName = `gcr.io/exponentjs/exponent-docs-v2-${environment}`;
+    const imageName = `gcr.io/exponentjs/exponent-docs-v2`;
     const imageTag = `${process.env.BUILDKITE_COMMIT}`;
 
     Log.collapsed(':gcloud: Deploy to K8s...');
