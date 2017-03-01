@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "fullname" . }}
+    heritage: {{.Release.Service | quote }}
+    release: {{.Release.Name | quote }}
+    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+spec:
+  selector:
+    app: {{ template "fullname" . }}
+  ports:
+  - name: http
+    port: {{ .Values.service.externalPort }}
+    targetPort: {{ .Values.service.internalPort }}
