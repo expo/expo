@@ -23,7 +23,6 @@ spec:
         app: {{ template "fullname" . }}
         heritage: {{.Release.Service | quote }}
         release: {{.Release.Name | quote }}
-        revision: {{ .Release.Revision | quote }}
         chart: "{{.Chart.Name}}-{{.Chart.Version}}"
     spec:
       restartPolicy: Always
