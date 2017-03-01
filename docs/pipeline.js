@@ -14,7 +14,7 @@ export default {
   steps: (branch, tag, pr) => {
     if (tag) {
       // all we need to do when there's a tag is deploy
-      return [deploy(branch, tag, pr), updateSearchIndex(branch, tag, pr)];
+      return [deploy(branch, tag, pr), CI.waitStep(), updateSearchIndex(branch, tag, pr)];
     }
     const steps = [build(branch, tag, pr), CI.waitStep(), deploy(branch, tag, pr)];
     if (!pr) {
@@ -65,33 +65,28 @@ const deploy = (branch, tag, pr) => ({
   concurrency: 1,
   concurrency_group: `docs/${tag && !pr ? 'prod' : pr ? `pr-${pr}` : 'staging'}/deploy`,
   async command() {
-    if (!pr && branch !== 'master') {
+    if (!pr && branch !== 'master' && !tag) {
       return;
     }
+
     const isProduction = tag && !pr;
 
-    let environment;
-    if (tag && !pr) {
+    let environment, ingressHostname;
+    if (isProduction) {
       environment = 'production';
+      ingressHostname = 'docs.expo.io';
     } else if (pr) {
       environment = `docs-pr-${pr}`;
+      ingressHostname = `${environment}.pr.exp.host`;
     } else {
       environment = 'staging';
+      ingressHostname = 'staging.docs.expo.io';
     }
 
     const imageName = `gcr.io/exponentjs/exponent-docs-v2-${environment}`;
     const imageTag = `${process.env.BUILDKITE_COMMIT}`;
 
     Log.collapsed(':gcloud: Deploy to K8s...');
-
-    let ingressHostname;
-    if (isProduction) {
-      ingressHostname = 'docs.expo.io';
-    } else if (pr) {
-      ingressHostname = `${environment}.pr.exp.host`;
-    } else {
-      ingressHostname = 'staging.docs.expo.io';
-    }
 
     Github.performDeployment(
       {
@@ -129,13 +124,10 @@ const deploy = (branch, tag, pr) => ({
         process.exit(1);
       }
     );
-
-    // VAULT_ADDR: process.env.VAULT_ADDR,
-    // VAULT_TOKEN: process.env.VAULT_TOKEN,
   },
 });
 
-const updateSearchIndex = (branch, tag) => ({
+const updateSearchIndex = (branch, tag, pr) => ({
   name: `:feelsgood: Update Search Index`,
   async command() {
     if (branch !== 'master' && !tag) {
@@ -144,7 +136,7 @@ const updateSearchIndex = (branch, tag) => ({
 
     Log.collapsed(':open_mouth: Updating search index...');
 
-    await spawnAsync('node', ['scripts/update-search-index.js'], {
+    await spawnAsync('yarn', ['run', 'update-search-index', '--', 'docs.expo.io'], {
       stdio: 'inherit',
     });
   },
