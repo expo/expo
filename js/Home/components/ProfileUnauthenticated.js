@@ -11,8 +11,13 @@ import {
 } from 'react-native';
 import { withNavigation } from '@exponent/ex-navigation';
 
+import Exponent from 'exponent';
 import Colors from '../constants/Colors';
 import PrimaryButton from './PrimaryButton';
+
+const CompanyName = Exponent.Constants.exponentVersion.match(/^1.13.2/)
+  ? 'Expo'
+  : 'Exponent';
 
 @withNavigation
 export default class ProfileUnauthenticated extends React.Component {
@@ -27,7 +32,7 @@ export default class ProfileUnauthenticated extends React.Component {
 
         <Text style={styles.descriptionText}>
           To access your own projects or to like projects created by others,
-          please sign in or create an Exponent account.
+          please sign in or create an {CompanyName} account.
         </Text>
 
         {this._renderSignInButton()}
@@ -53,7 +58,7 @@ export default class ProfileUnauthenticated extends React.Component {
         plain
         onPress={this._handleSignUpPress}
         fallback={TouchableOpacity}>
-        Sign up for Exponent
+        Sign up for {CompanyName}
       </PrimaryButton>
     );
   }
