@@ -276,6 +276,7 @@ async function copyTemplateFilesAsync(platform, args) {
         {
           TARGET_NAME: 'exponent-view-template',
           EXPONENT_ROOT_PATH: '../..',
+          REACT_NATIVE_PATH: '../node_modules/react-native',
         }
       );
     }
