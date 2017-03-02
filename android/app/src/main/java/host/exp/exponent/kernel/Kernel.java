@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.facebook.common.internal.ByteStreams;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.ReactInstanceManager;
+import com.facebook.react.ReactInstanceManagerBuilder;
 import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableMap;
@@ -241,7 +242,7 @@ public class Kernel implements KernelInterface {
         Exponent.getInstance().runOnUiThread(new Runnable() {
           @Override
           public void run() {
-            ReactInstanceManager.Builder builder = ReactInstanceManager.builder()
+            ReactInstanceManagerBuilder builder = ReactInstanceManager.builder()
                 .setApplication(mApplicationContext)
                 .setJSBundleFile(localBundlePath)
                 .addPackage(new MainReactPackage())

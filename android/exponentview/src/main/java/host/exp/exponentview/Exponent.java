@@ -23,7 +23,6 @@ import com.facebook.FacebookSdk;
 import com.facebook.common.internal.ByteStreams;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.devsupport.DevServerHelper;
 import com.facebook.stetho.Stetho;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
