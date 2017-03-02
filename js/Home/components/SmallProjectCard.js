@@ -126,6 +126,9 @@ export default class SmallProjectCard extends React.Component {
   };
 
   _handlePressProject = () => {
+    // note(brentvatne): navigation should do this automatically
+    Keyboard.dismiss();
+
     let url = ExUrls.normalizeUrl(this.props.projectUrl);
     Linking.openURL(url);
   };

@@ -38,7 +38,10 @@ export default class AppContainer extends React.Component {
       if (Platform.OS === 'ios') {
         await Font.loadAsync(Ionicons.font);
       } else {
-        await Font.loadAsync(MaterialIcons.font);
+        await Font.loadAsync({
+          ...Ionicons.font,
+          ...MaterialIcons.font,
+        });
       }
     } catch (e) {
     } finally {

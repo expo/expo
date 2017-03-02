@@ -3,6 +3,7 @@
 import React from 'react';
 import {
   Image,
+  Keyboard,
   Linking,
   Platform,
   StyleSheet,
@@ -86,12 +87,18 @@ export default class ProfileCard extends React.Component {
   };
 
   _handlePressProjects = () => {
+    // note(brentvatne): navigation should do this automatically
+    Keyboard.dismiss();
+
     this.props.navigator.push('projectsForUser', {
       username: this.props.username,
     });
   };
 
   _handlePressProfile = () => {
+    // note(brentvatne): navigation should do this automatically
+    Keyboard.dismiss();
+
     if (this.props.onPressUsername) {
       this.props.onPressUsername(this.props.username);
     } else {

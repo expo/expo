@@ -53,7 +53,7 @@ export default class ExploreTab extends React.Component {
   render() {
     if (
       this.props.data.loading ||
-      this.state.isRefetching && !this.props.data.apps
+      (this.state.isRefetching && !this.props.data.apps)
     ) {
       return this._renderLoading();
     } else if (this.props.data.error && !this.props.data.apps) {
@@ -66,7 +66,7 @@ export default class ExploreTab extends React.Component {
   _renderError() {
     // NOTE(brentvatne): sorry for this
     let isConnectionError = this.props.data.error.message.includes(
-      'No connection available',
+      'No connection available'
     );
 
     return (
@@ -122,6 +122,7 @@ export default class ExploreTab extends React.Component {
         renderHeader={this._renderHeader}
         renderRow={this._renderRow}
         style={styles.container}
+        contentContainerStyle={{ paddingBottom: 5 }}
         {...extraOptions}
       />
     );
@@ -152,6 +153,7 @@ export default class ExploreTab extends React.Component {
         username={app.packageUsername}
         description={app.description}
         onPressUsername={this.props.onPressUsername}
+        style={{ marginBottom: 10 }}
       />
     );
   };
@@ -162,7 +164,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: FeatureFlags.HIDE_EXPLORE_TABS && Platform.OS === 'ios'
       ? 5
-      : 15,
+      : 10,
     backgroundColor: Colors.greyBackground,
     borderRightWidth: 1,
     borderRightColor: '#f6f6f6',

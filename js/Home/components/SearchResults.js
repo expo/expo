@@ -54,7 +54,6 @@ export default class SearchResults extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this._maybeSetPreviousQueryNoResults(nextProps);
     this._maybeUpdateDataSource(nextProps);
   }
 
@@ -67,37 +66,11 @@ export default class SearchResults extends React.Component {
     );
   }
 
-  // PLEASE DO NOT MAKE FUN OF ME :<
-  // I will improve this soon - Brent
-  _maybeSetPreviousQueryNoResults = newProps => {
-    if (newProps.query.length < 2) {
-      if (this.state.lastQueryHadNoResults) {
-        this.setState({ lastQueryHadNoResults: false });
-      }
-
-      return;
-    }
-
-    if (!this.props.data.loading && this.props.query.length < 2) {
-      return;
-    }
-
-    if (newProps.loading) {
-      return;
-    }
-
-    if (resultsAreEmpty(newProps.results)) {
-      if (!this.state.lastQueryHadNoResults) {
-        this.setState({ lastQueryHadNoResults: true });
-      }
-    } else {
-      if (this.state.lastQueryHadNoResults) {
-        this.setState({ lastQueryHadNoResults: false });
-      }
-    }
-  };
-
   _maybeUpdateDataSource = newProps => {
+    if (!newProps.data || !newProps.data.results) {
+      return;
+    }
+
     if (newProps.data.results !== this.props.data.results) {
       let { dataSource } = this.state;
       let { results } = newProps.data;
@@ -107,28 +80,41 @@ export default class SearchResults extends React.Component {
 
       let newDataSource = dataSource.cloneWithRowsAndSections(
         results,
-        SectionIds,
+        SectionIds
       );
 
       this.setState({ dataSource: newDataSource });
     }
   };
 
+  _isLoading = () => {
+    return this.props.data && this.props.data.loading;
+  };
+
   _maybeRenderLoading = () => {
-    // if (this.props.data.loading) {
-    //   return (
-    //     <View style={[StyleSheet.absoluteFill, {padding: 30, alignItems: 'center'}]} pointerEvents="none">
-    //       <ActivityIndicator />
-    //     </View>
-    //   );
-    // }
+    if (this._isLoading() && this.props.query.length > 0) {
+      return (
+        <View
+          style={[
+            StyleSheet.absoluteFill,
+            {
+              padding: 30,
+              alignItems: 'center',
+              backgroundColor: Colors.greyBackground,
+            },
+          ]}
+          pointerEvents="none">
+          <ActivityIndicator />
+        </View>
+      );
+    }
   };
 
   _renderContent = () => {
     if (
       this.state.dataSource.getRowCount() === 0 &&
-      (!this.props.data.loading || this.state.lastQueryHadNoResults) &&
-      this.props.query.length >= 2
+      !this._isLoading() &&
+      this.props.query.length >= 1
     ) {
       return (
         <ScrollView

@@ -33,7 +33,9 @@ const SearchIcon = () => (
   render() {
     return (
       <View style={styles.container}>
-        <TouchableWithoutFeedback onPress={this._handlePress}>
+        <TouchableWithoutFeedback
+          hitSlop={{ top: 10, left: 10, bottom: 5, right: 10 }}
+          onPress={this._handlePress}>
           <View style={styles.searchContainer}>
             <TextInput
               editable={false}
