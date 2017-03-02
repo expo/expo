@@ -12,3 +12,5 @@ resources:
   requests:
     cpu: 200m
     memory: 256Mi
+nodeSelector:
+  cloud.google.com/gke-nodepool: "default"
