@@ -53,6 +53,7 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.ws.WebSocket;
 
 /**
  * Interface for accessing and interacting with development features. Following features
@@ -106,7 +107,7 @@ import okhttp3.RequestBody;
  * {@code <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>}
  * {@code <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>}
  */
-public class DevSupportManagerImpl implements DevSupportManager, PackagerCommandListener {
+public class DevSupportManagerImpl implements DevSupportManager, PackagerCommandListener, DevInternalSettings.Listener {
 
     public static int JAVA_ERROR_COOKIE = -1;
 
@@ -423,24 +424,14 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
 
             @Override
             public void onOptionSelected() {
-                JSCHeapCapture.captureHeap(mApplicationContext.getCacheDir().getPath(), JSCHeapUpload.captureCallback(mDevServerHelper.getHeapCaptureUploadUrl()));
+                handleCaptureHeap();
             }
         });
         options.put(mApplicationContext.getString(R.string.catalyst_poke_sampling_profiler), new DevOptionHandler() {
 
             @Override
             public void onOptionSelected() {
-                try {
-                    List<String> pokeResults = JSCSamplingProfiler.poke(60000);
-                    for (String result : pokeResults) {
-                        Toast.makeText(mCurrentContext, result == null ? "Started JSC Sampling Profiler" : "Stopped JSC Sampling Profiler", Toast.LENGTH_LONG).show();
-                        if (result != null) {
-                            new JscProfileTask(getSourceUrl()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, result);
-                        }
-                    }
-                } catch (JSCSamplingProfiler.ProfilerException e) {
-                    showNewJavaError(e.getMessage(), e);
-                }
+                handlePokeSamplingProfiler(null);
             }
         });
         ;
@@ -609,6 +600,10 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
         reload();
     }
 
+    public void onInternalSettingsChanged() {
+        reloadSettings();
+    }
+
     @Override
     public void handleReloadJS() {
         UiThreadUtil.assertOnUiThread();
@@ -656,6 +651,53 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
                 handleReloadJS();
             }
         });
+    }
+
+    @Override
+    public void onCaptureHeapCommand() {
+        UiThreadUtil.runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
+                handleCaptureHeap();
+            }
+        });
+    }
+
+    @Override
+    public void onPokeSamplingProfilerCommand(@Nullable final WebSocket webSocket) {
+        UiThreadUtil.runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
+                handlePokeSamplingProfiler(webSocket);
+            }
+        });
+    }
+
+    private void handleCaptureHeap() {
+        JSCHeapCapture.captureHeap(mApplicationContext.getCacheDir().getPath(), JSCHeapUpload.captureCallback(mDevServerHelper.getHeapCaptureUploadUrl()));
+    }
+
+    private void handlePokeSamplingProfiler(@Nullable WebSocket webSocket) {
+        try {
+            List<String> pokeResults = JSCSamplingProfiler.poke(60000);
+            for (String result : pokeResults) {
+                Toast.makeText(mCurrentContext, result == null ? "Started JSC Sampling Profiler" : "Stopped JSC Sampling Profiler", Toast.LENGTH_LONG).show();
+                if (webSocket != null) {
+                    // WebSocket is provided, so there is a client waiting our response
+                    webSocket.sendMessage(RequestBody.create(WebSocket.TEXT, result == null ? "" : result));
+                } else if (result != null) {
+                    // The profile was not initiated by external client, so process the
+                    // profile if there is one in the result
+                    new JscProfileTask(getSourceUrl()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, result);
+                }
+            }
+        } catch (JSCSamplingProfiler.ProfilerException e) {
+            showNewJavaError(e.getMessage(), e);
+        } catch (IOException e) {
+            showNewJavaError(e.getMessage(), e);
+        }
     }
 
     private void updateLastErrorInfo(final String message, final StackFrame[] stack, final int errorCookie, final ErrorType errorType) {

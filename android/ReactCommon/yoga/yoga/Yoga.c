@@ -47,6 +47,9 @@ typedef struct YGCachedMeasurement {
 typedef struct YGLayout {
   float position[4];
   float dimensions[2];
+  float margin[6];
+  float border[6];
+  float padding[6];
   YGDirection direction;
 
   uint32_t computedFlexBasisGeneration;
@@ -94,16 +97,19 @@ typedef struct YGNode {
   YGStyle style;
   YGLayout layout;
   uint32_t lineIndex;
-  bool hasNewLayout;
+
   YGNodeRef parent;
   YGNodeListRef children;
-  bool isDirty;
 
   struct YGNode *nextChild;
 
   YGMeasureFunc measure;
+  YGBaselineFunc baseline;
   YGPrintFunc print;
   void *context;
+
+  bool isDirty;
+  bool hasNewLayout;
 } YGNode;
 
 #define YG_UNDEFINED_VALUES \
@@ -176,8 +182,6 @@ YGMalloc gYGMalloc = &malloc;
 YGCalloc gYGCalloc = &calloc;
 YGRealloc gYGRealloc = &realloc;
 YGFree gYGFree = &free;
-
-static YGValue YGValueUndefined = YG_UNDEFINED_VALUES;
 
 static YGValue YGValueZero = {.value = 0, .unit = YGUnitPixel};
 
@@ -332,6 +336,14 @@ void YGNodeSetMeasureFunc(const YGNodeRef node, YGMeasureFunc measureFunc) {
 
 YGMeasureFunc YGNodeGetMeasureFunc(const YGNodeRef node) {
   return node->measure;
+}
+
+void YGNodeSetBaselineFunc(const YGNodeRef node, YGBaselineFunc baselineFunc) {
+  node->baseline = baselineFunc;
+}
+
+YGBaselineFunc YGNodeGetBaselineFunc(const YGNodeRef node) {
+  return node->baseline;
 }
 
 void YGNodeInsertChild(const YGNodeRef node, const YGNodeRef child, const uint32_t index) {
@@ -520,6 +532,29 @@ void YGNodeStyleSetFlex(const YGNodeRef node, const float flex) {
     return node->layout.instanceName;                          \
   }
 
+#define YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(type, name, instanceName)                    \
+  type YGNodeLayoutGet##name(const YGNodeRef node, const YGEdge edge) {                    \
+    YG_ASSERT(edge <= YGEdgeEnd, "Cannot get layout properties of multi-edge shorthands"); \
+                                                                                           \
+    if (edge == YGEdgeLeft) {                                                              \
+      if (node->layout.direction == YGDirectionRTL) {                                      \
+        return node->layout.instanceName[YGEdgeEnd];                                       \
+      } else {                                                                             \
+        return node->layout.instanceName[YGEdgeStart];                                     \
+      }                                                                                    \
+    }                                                                                      \
+                                                                                           \
+    if (edge == YGEdgeRight) {                                                             \
+      if (node->layout.direction == YGDirectionRTL) {                                      \
+        return node->layout.instanceName[YGEdgeStart];                                     \
+      } else {                                                                             \
+        return node->layout.instanceName[YGEdgeEnd];                                       \
+      }                                                                                    \
+    }                                                                                      \
+                                                                                           \
+    return node->layout.instanceName[edge];                                                \
+  }
+
 YG_NODE_PROPERTY_IMPL(void *, Context, context, context);
 YG_NODE_PROPERTY_IMPL(YGPrintFunc, PrintFunc, printFunc, print);
 YG_NODE_PROPERTY_IMPL(bool, HasNewLayout, hasNewLayout, hasNewLayout);
@@ -560,6 +595,10 @@ YG_NODE_LAYOUT_PROPERTY_IMPL(float, Bottom, position[YGEdgeBottom]);
 YG_NODE_LAYOUT_PROPERTY_IMPL(float, Width, dimensions[YGDimensionWidth]);
 YG_NODE_LAYOUT_PROPERTY_IMPL(float, Height, dimensions[YGDimensionHeight]);
 YG_NODE_LAYOUT_PROPERTY_IMPL(YGDirection, Direction, direction);
+
+YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Margin, margin);
+YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Border, border);
+YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Padding, padding);
 
 uint32_t gCurrentGenerationCount = 0;
 
@@ -929,7 +968,12 @@ static inline float YGNodePaddingAndBorderForAxis(const YGNodeRef node,
 }
 
 static inline YGAlign YGNodeAlignItem(const YGNodeRef node, const YGNodeRef child) {
-  return child->style.alignSelf == YGAlignAuto ? node->style.alignItems : child->style.alignSelf;
+  const YGAlign align =
+      child->style.alignSelf == YGAlignAuto ? node->style.alignItems : child->style.alignSelf;
+  if (align == YGAlignBaseline && YGFlexDirectionIsColumn(node->style.flexDirection)) {
+    return YGAlignFlexStart;
+  }
+  return align;
 }
 
 static inline YGDirection YGNodeResolveDirection(const YGNodeRef node,
@@ -939,6 +983,42 @@ static inline YGDirection YGNodeResolveDirection(const YGNodeRef node,
   } else {
     return node->style.direction;
   }
+}
+
+static float YGBaseline(const YGNodeRef node) {
+  if (node->baseline != NULL) {
+    const float baseline = node->baseline(node,
+                                          node->layout.measuredDimensions[YGDimensionWidth],
+                                          node->layout.measuredDimensions[YGDimensionHeight]);
+    YG_ASSERT(!YGFloatIsUndefined(baseline), "Expect custom baseline function to not return NaN")
+    return baseline;
+  }
+
+  YGNodeRef baselineChild = NULL;
+  for (uint32_t i = 0; i < YGNodeGetChildCount(node); i++) {
+    const YGNodeRef child = YGNodeGetChild(node, i);
+    if (child->lineIndex > 0) {
+      break;
+    }
+    if (child->style.positionType == YGPositionTypeAbsolute) {
+      continue;
+    }
+    if (YGNodeAlignItem(node, child) == YGAlignBaseline) {
+      baselineChild = child;
+      break;
+    }
+
+    if (baselineChild == NULL) {
+      baselineChild = child;
+    }
+  }
+
+  if (baselineChild == NULL) {
+    return node->layout.measuredDimensions[YGDimensionHeight];
+  }
+
+  const float baseline = YGBaseline(baselineChild);
+  return baseline + baselineChild->layout.position[YGEdgeTop];
 }
 
 static inline YGFlexDirection YGFlexDirectionResolve(const YGFlexDirection flexDirection,
@@ -964,6 +1044,24 @@ static YGFlexDirection YGFlexDirectionCross(const YGFlexDirection flexDirection,
 static inline bool YGNodeIsFlex(const YGNodeRef node) {
   return (node->style.positionType == YGPositionTypeRelative &&
           (YGNodeStyleGetFlexGrow(node) != 0 || YGNodeStyleGetFlexShrink(node) != 0));
+}
+
+static bool YGIsBaselineLayout(const YGNodeRef node) {
+  if (YGFlexDirectionIsColumn(node->style.flexDirection)) {
+    return false;
+  }
+  if (node->style.alignItems == YGAlignBaseline) {
+    return true;
+  }
+  for (uint32_t i = 0; i < YGNodeGetChildCount(node); i++) {
+    const YGNodeRef child = YGNodeGetChild(node, i);
+    if (child->style.positionType == YGPositionTypeRelative &&
+        child->style.alignSelf == YGAlignBaseline) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 static inline float YGNodeDimWithMargin(const YGNodeRef node,
@@ -1176,14 +1274,17 @@ static void YGNodeComputeFlexBasisForChild(const YGNodeRef node,
     childWidthMeasureMode = YGMeasureModeUndefined;
     childHeightMeasureMode = YGMeasureModeUndefined;
 
+    const float marginRow = YGNodeMarginForAxis(child, YGFlexDirectionRow, parentWidth);
+    const float marginColumn = YGNodeMarginForAxis(child, YGFlexDirectionColumn, parentWidth);
+
     if (isRowStyleDimDefined) {
-      childWidth = YGValueResolve(&child->style.dimensions[YGDimensionWidth], parentWidth) +
-                   YGNodeMarginForAxis(child, YGFlexDirectionRow, parentWidth);
+      childWidth =
+          YGValueResolve(&child->style.dimensions[YGDimensionWidth], parentWidth) + marginRow;
       childWidthMeasureMode = YGMeasureModeExactly;
     }
     if (isColumnStyleDimDefined) {
-      childHeight = YGValueResolve(&child->style.dimensions[YGDimensionHeight], parentHeight) +
-                    YGNodeMarginForAxis(child, YGFlexDirectionColumn, parentWidth);
+      childHeight =
+          YGValueResolve(&child->style.dimensions[YGDimensionHeight], parentHeight) + marginColumn;
       childHeightMeasureMode = YGMeasureModeExactly;
     }
 
@@ -1222,12 +1323,12 @@ static void YGNodeComputeFlexBasisForChild(const YGNodeRef node,
     if (!YGFloatIsUndefined(child->style.aspectRatio)) {
       if (!isMainAxisRow && childWidthMeasureMode == YGMeasureModeExactly) {
         child->layout.computedFlexBasis =
-            fmaxf(childWidth / child->style.aspectRatio,
+            fmaxf((childWidth - marginRow) / child->style.aspectRatio,
                   YGNodePaddingAndBorderForAxis(child, YGFlexDirectionColumn, parentWidth));
         return;
       } else if (isMainAxisRow && childHeightMeasureMode == YGMeasureModeExactly) {
         child->layout.computedFlexBasis =
-            fmaxf(childHeight * child->style.aspectRatio,
+            fmaxf((childHeight - marginColumn) * child->style.aspectRatio,
                   YGNodePaddingAndBorderForAxis(child, YGFlexDirectionRow, parentWidth));
         return;
       }
@@ -1278,9 +1379,11 @@ static void YGNodeAbsoluteLayoutChild(const YGNodeRef node,
   YGMeasureMode childWidthMeasureMode = YGMeasureModeUndefined;
   YGMeasureMode childHeightMeasureMode = YGMeasureModeUndefined;
 
+  const float marginRow = YGNodeMarginForAxis(child, YGFlexDirectionRow, width);
+  const float marginColumn = YGNodeMarginForAxis(child, YGFlexDirectionColumn, width);
+
   if (YGNodeIsStyleDimDefined(child, YGFlexDirectionRow)) {
-    childWidth = YGValueResolve(&child->style.dimensions[YGDimensionWidth], width) +
-                 YGNodeMarginForAxis(child, YGFlexDirectionRow, width);
+    childWidth = YGValueResolve(&child->style.dimensions[YGDimensionWidth], width) + marginRow;
   } else {
     // If the child doesn't have a specified width, compute the width based
     // on the left/right
@@ -1297,8 +1400,8 @@ static void YGNodeAbsoluteLayoutChild(const YGNodeRef node,
   }
 
   if (YGNodeIsStyleDimDefined(child, YGFlexDirectionColumn)) {
-    childHeight = YGValueResolve(&child->style.dimensions[YGDimensionHeight], height) +
-                  YGNodeMarginForAxis(child, YGFlexDirectionColumn, width);
+    childHeight =
+        YGValueResolve(&child->style.dimensions[YGDimensionHeight], height) + marginColumn;
   } else {
     // If the child doesn't have a specified height, compute the height
     // based on the top/bottom
@@ -1319,11 +1422,13 @@ static void YGNodeAbsoluteLayoutChild(const YGNodeRef node,
   if (YGFloatIsUndefined(childWidth) ^ YGFloatIsUndefined(childHeight)) {
     if (!YGFloatIsUndefined(child->style.aspectRatio)) {
       if (YGFloatIsUndefined(childWidth)) {
-        childWidth = fmaxf(childHeight * child->style.aspectRatio,
-                           YGNodePaddingAndBorderForAxis(child, YGFlexDirectionColumn, width));
+        childWidth =
+            marginRow + fmaxf((childHeight - marginColumn) * child->style.aspectRatio,
+                              YGNodePaddingAndBorderForAxis(child, YGFlexDirectionColumn, width));
       } else if (YGFloatIsUndefined(childHeight)) {
-        childHeight = fmaxf(childWidth / child->style.aspectRatio,
-                            YGNodePaddingAndBorderForAxis(child, YGFlexDirectionRow, width));
+        childHeight =
+            marginColumn + fmaxf((childWidth - marginRow) / child->style.aspectRatio,
+                                 YGNodePaddingAndBorderForAxis(child, YGFlexDirectionRow, width));
       }
     }
   }
@@ -1335,11 +1440,11 @@ static void YGNodeAbsoluteLayoutChild(const YGNodeRef node,
     childHeightMeasureMode =
         YGFloatIsUndefined(childHeight) ? YGMeasureModeUndefined : YGMeasureModeExactly;
 
-    // According to the spec, if the main size is not definite and the
-    // child's inline axis is parallel to the main axis (i.e. it's
-    // horizontal), the child should be sized using "UNDEFINED" in
-    // the main size. Otherwise use "AT_MOST" in the cross axis.
-    if (!isMainAxisRow && YGFloatIsUndefined(childWidth) && widthMode != YGMeasureModeUndefined) {
+    // If the size of the parent is defined then try to constrain the absolute child to that size
+    // as well. This allows text within the absolute child to wrap to the size of its parent.
+    // This is the same behavior as many browsers implement.
+    if (!isMainAxisRow && YGFloatIsUndefined(childWidth) && widthMode != YGMeasureModeUndefined &&
+        width > 0) {
       childWidth = width;
       childWidthMeasureMode = YGMeasureModeAtMost;
     }
@@ -1376,6 +1481,15 @@ static void YGNodeAbsoluteLayoutChild(const YGNodeRef node,
                                                 child->layout.measuredDimensions[dim[mainAxis]] -
                                                 YGNodeTrailingBorder(node, mainAxis) -
                                                 YGNodeTrailingPosition(child, mainAxis, width);
+  } else if (!YGNodeIsLeadingPosDefined(child, mainAxis) &&
+             node->style.justifyContent == YGJustifyCenter) {
+    child->layout.position[leading[mainAxis]] = (node->layout.measuredDimensions[dim[mainAxis]] -
+                                                 child->layout.measuredDimensions[dim[mainAxis]]) /
+                                                2.0f;
+  } else if (!YGNodeIsLeadingPosDefined(child, mainAxis) &&
+             node->style.justifyContent == YGJustifyFlexEnd) {
+    child->layout.position[leading[mainAxis]] = (node->layout.measuredDimensions[dim[mainAxis]] -
+                                                 child->layout.measuredDimensions[dim[mainAxis]]);
   }
 
   if (YGNodeIsTrailingPosDefined(child, crossAxis) &&
@@ -1384,6 +1498,16 @@ static void YGNodeAbsoluteLayoutChild(const YGNodeRef node,
                                                  child->layout.measuredDimensions[dim[crossAxis]] -
                                                  YGNodeTrailingBorder(node, crossAxis) -
                                                  YGNodeTrailingPosition(child, crossAxis, width);
+  } else if (!YGNodeIsLeadingPosDefined(child, crossAxis) &&
+             YGNodeAlignItem(node, child) == YGAlignCenter) {
+    child->layout.position[leading[crossAxis]] =
+        (node->layout.measuredDimensions[dim[crossAxis]] -
+         child->layout.measuredDimensions[dim[crossAxis]]) /
+        2.0f;
+  } else if (!YGNodeIsLeadingPosDefined(child, crossAxis) &&
+             YGNodeAlignItem(node, child) == YGAlignFlexEnd) {
+    child->layout.position[leading[crossAxis]] = (node->layout.measuredDimensions[dim[crossAxis]] -
+                                                  child->layout.measuredDimensions[dim[crossAxis]]);
   }
 }
 
@@ -1558,8 +1682,6 @@ static bool YGNodeFixedSizeSetMeasuredDimensions(const YGNodeRef node,
 //  * Margins cannot be specified as 'auto'. They must be specified in terms of
 //  pixel
 //    values, and the default value is 0.
-//  * The 'baseline' value is not supported for alignItems and alignSelf
-//  properties.
 //  * Values of width, maxWidth, minWidth, height, maxHeight and minHeight must
 //  be
 //    specified as pixel values, not as percentages.
@@ -1654,6 +1776,26 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   // Set the resolved resolution in the node's layout.
   const YGDirection direction = YGNodeResolveDirection(node, parentDirection);
   node->layout.direction = direction;
+
+  const YGFlexDirection flexRowDirection = YGFlexDirectionResolve(YGFlexDirectionRow, direction);
+  const YGFlexDirection flexColumnDirection =
+      YGFlexDirectionResolve(YGFlexDirectionColumn, direction);
+
+  node->layout.margin[YGEdgeStart] = YGNodeLeadingMargin(node, flexRowDirection, parentWidth);
+  node->layout.margin[YGEdgeEnd] = YGNodeTrailingMargin(node, flexRowDirection, parentWidth);
+  node->layout.margin[YGEdgeTop] = YGNodeLeadingMargin(node, flexColumnDirection, parentWidth);
+  node->layout.margin[YGEdgeBottom] = YGNodeTrailingMargin(node, flexColumnDirection, parentWidth);
+
+  node->layout.border[YGEdgeStart] = YGNodeLeadingBorder(node, flexRowDirection);
+  node->layout.border[YGEdgeEnd] = YGNodeTrailingBorder(node, flexRowDirection);
+  node->layout.border[YGEdgeTop] = YGNodeLeadingBorder(node, flexColumnDirection);
+  node->layout.border[YGEdgeBottom] = YGNodeTrailingBorder(node, flexColumnDirection);
+
+  node->layout.padding[YGEdgeStart] = YGNodeLeadingPadding(node, flexRowDirection, parentWidth);
+  node->layout.padding[YGEdgeEnd] = YGNodeTrailingPadding(node, flexRowDirection, parentWidth);
+  node->layout.padding[YGEdgeTop] = YGNodeLeadingPadding(node, flexColumnDirection, parentWidth);
+  node->layout.padding[YGEdgeBottom] =
+      YGNodeTrailingPadding(node, flexColumnDirection, parentWidth);
 
   if (node->measure) {
     YGNodeWithMeasureFuncSetMeasuredDimensions(
@@ -1856,8 +1998,10 @@ static void YGNodelayoutImpl(const YGNodeRef node,
       child->lineIndex = lineCount;
 
       if (child->style.positionType != YGPositionTypeAbsolute) {
-        const float outerFlexBasis = child->layout.computedFlexBasis +
-                                     YGNodeMarginForAxis(child, mainAxis, availableInnerWidth);
+        const float outerFlexBasis =
+            fmaxf(YGValueResolve(&child->style.minDimensions[dim[mainAxis]], mainAxisParentSize),
+                  child->layout.computedFlexBasis) +
+            YGNodeMarginForAxis(child, mainAxis, availableInnerWidth);
 
         // If this is a multi-line flow and this item pushes us over the
         // available size, we've
@@ -2076,10 +2220,13 @@ static void YGNodelayoutImpl(const YGNodeRef node,
         YGMeasureMode childWidthMeasureMode;
         YGMeasureMode childHeightMeasureMode;
 
+        const float marginRow =
+            YGNodeMarginForAxis(currentRelativeChild, YGFlexDirectionRow, availableInnerWidth);
+        const float marginColumn =
+            YGNodeMarginForAxis(currentRelativeChild, YGFlexDirectionColumn, availableInnerWidth);
+
         if (isMainAxisRow) {
-          childWidth =
-              updatedMainSize +
-              YGNodeMarginForAxis(currentRelativeChild, YGFlexDirectionRow, availableInnerWidth);
+          childWidth = updatedMainSize + marginRow;
           childWidthMeasureMode = YGMeasureModeExactly;
 
           if (!YGFloatIsUndefined(availableInnerCrossDim) &&
@@ -2095,15 +2242,11 @@ static void YGNodelayoutImpl(const YGNodeRef node,
           } else {
             childHeight = YGValueResolve(&currentRelativeChild->style.dimensions[YGDimensionHeight],
                                          availableInnerHeight) +
-                          YGNodeMarginForAxis(currentRelativeChild,
-                                              YGFlexDirectionColumn,
-                                              availableInnerWidth);
+                          marginColumn;
             childHeightMeasureMode = YGMeasureModeExactly;
           }
         } else {
-          childHeight =
-              updatedMainSize +
-              YGNodeMarginForAxis(currentRelativeChild, YGFlexDirectionColumn, availableInnerWidth);
+          childHeight = updatedMainSize + marginColumn;
           childHeightMeasureMode = YGMeasureModeExactly;
 
           if (!YGFloatIsUndefined(availableInnerCrossDim) &&
@@ -2117,33 +2260,43 @@ static void YGNodelayoutImpl(const YGNodeRef node,
             childWidthMeasureMode =
                 YGFloatIsUndefined(childWidth) ? YGMeasureModeUndefined : YGMeasureModeAtMost;
           } else {
-            childWidth =
-                YGValueResolve(&currentRelativeChild->style.dimensions[YGDimensionWidth],
-                               availableInnerWidth) +
-                YGNodeMarginForAxis(currentRelativeChild, YGFlexDirectionRow, availableInnerWidth);
+            childWidth = YGValueResolve(&currentRelativeChild->style.dimensions[YGDimensionWidth],
+                                        availableInnerWidth) +
+                         marginRow;
             childWidthMeasureMode = YGMeasureModeExactly;
           }
         }
 
         if (!YGFloatIsUndefined(currentRelativeChild->style.aspectRatio)) {
           if (isMainAxisRow) {
-            childHeight = fmaxf(childWidth / currentRelativeChild->style.aspectRatio,
+            childHeight = fmaxf((childWidth - marginRow) / currentRelativeChild->style.aspectRatio,
                                 YGNodePaddingAndBorderForAxis(currentRelativeChild,
                                                               YGFlexDirectionColumn,
                                                               availableInnerWidth));
             childHeightMeasureMode = YGMeasureModeExactly;
 
-            childHeight = fminf(childHeight, availableInnerHeight);
-            childWidth = childHeight * currentRelativeChild->style.aspectRatio;
+            // Parent size constraint should have higher priority than flex
+            if (YGNodeIsFlex(currentRelativeChild)) {
+              childHeight = fminf((childHeight - marginColumn), availableInnerHeight);
+              childWidth = marginRow + childHeight * currentRelativeChild->style.aspectRatio;
+            }
+
+            childHeight += marginColumn;
           } else {
-            childWidth = fmaxf(childHeight * currentRelativeChild->style.aspectRatio,
-                               YGNodePaddingAndBorderForAxis(currentRelativeChild,
-                                                             YGFlexDirectionRow,
-                                                             availableInnerWidth));
+            childWidth =
+                fmaxf((childHeight - marginColumn) * currentRelativeChild->style.aspectRatio,
+                      YGNodePaddingAndBorderForAxis(currentRelativeChild,
+                                                    YGFlexDirectionRow,
+                                                    availableInnerWidth));
             childWidthMeasureMode = YGMeasureModeExactly;
 
-            childWidth = fminf(childWidth, availableInnerWidth);
-            childHeight = childWidth / currentRelativeChild->style.aspectRatio;
+            // Parent size constraint should have higher priority than flex
+            if (YGNodeIsFlex(currentRelativeChild)) {
+              childWidth = fminf((childWidth - marginRow), availableInnerWidth);
+              childHeight = marginColumn + childWidth / currentRelativeChild->style.aspectRatio;
+            }
+
+            childWidth += marginRow;
           }
         }
 
@@ -2352,24 +2505,31 @@ static void YGNodelayoutImpl(const YGNodeRef node,
             YGMeasureMode childWidthMeasureMode = YGMeasureModeExactly;
             YGMeasureMode childHeightMeasureMode = YGMeasureModeExactly;
 
+            const float marginRow =
+                YGNodeMarginForAxis(child, YGFlexDirectionRow, availableInnerWidth);
+            const float marginColumn =
+                YGNodeMarginForAxis(child, YGFlexDirectionColumn, availableInnerWidth);
+
             if (isMainAxisRow) {
-              childWidth = child->layout.measuredDimensions[YGDimensionWidth] +
-                           YGNodeMarginForAxis(child, YGFlexDirectionRow, availableInnerWidth);
+              childWidth = child->layout.measuredDimensions[YGDimensionWidth];
 
               if (!YGFloatIsUndefined(child->style.aspectRatio)) {
-                childHeight = childWidth / child->style.aspectRatio;
+                childHeight = marginColumn + childWidth / child->style.aspectRatio;
               } else {
                 childHeight = crossDim;
               }
+
+              childWidth += marginRow;
             } else {
-              childHeight = child->layout.measuredDimensions[YGDimensionHeight] +
-                            YGNodeMarginForAxis(child, YGFlexDirectionColumn, availableInnerWidth);
+              childHeight = child->layout.measuredDimensions[YGDimensionHeight];
 
               if (!YGFloatIsUndefined(child->style.aspectRatio)) {
-                childWidth = childHeight * child->style.aspectRatio;
+                childWidth = marginRow + childHeight * child->style.aspectRatio;
               } else {
                 childWidth = crossDim;
               }
+
+              childHeight += marginColumn;
             }
 
             YGConstrainMaxSizeForMode(YGValueResolve(&child->style.maxDimensions[YGDimensionWidth],
@@ -2422,7 +2582,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   }
 
   // STEP 8: MULTI-LINE CONTENT ALIGNMENT
-  if (lineCount > 1 && performLayout && !YGFloatIsUndefined(availableInnerCrossDim)) {
+  if (performLayout && (lineCount > 1 || YGIsBaselineLayout(node)) &&
+      !YGFloatIsUndefined(availableInnerCrossDim)) {
     const float remainingAlignContentDim = availableInnerCrossDim - totalLineCrossDim;
 
     float crossDimLead = 0;
@@ -2442,6 +2603,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
         break;
       case YGAlignAuto:
       case YGAlignFlexStart:
+      case YGAlignBaseline:
         break;
     }
 
@@ -2452,6 +2614,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
 
       // compute the line's height and find the endIndex
       float lineHeight = 0;
+      float maxAscentForCurrentLine = 0;
+      float maxDescentForCurrentLine = 0;
       for (ii = startIndex; ii < childCount; ii++) {
         const YGNodeRef child = YGNodeListGet(node->children, ii);
 
@@ -2459,11 +2623,21 @@ static void YGNodelayoutImpl(const YGNodeRef node,
           if (child->lineIndex != i) {
             break;
           }
-
           if (YGNodeIsLayoutDimDefined(child, crossAxis)) {
             lineHeight = fmaxf(lineHeight,
                                child->layout.measuredDimensions[dim[crossAxis]] +
                                    YGNodeMarginForAxis(child, crossAxis, availableInnerWidth));
+          }
+          if (YGNodeAlignItem(node, child) == YGAlignBaseline) {
+            const float ascent =
+                YGBaseline(child) +
+                YGNodeLeadingMargin(child, YGFlexDirectionColumn, availableInnerWidth);
+            const float descent =
+                child->layout.measuredDimensions[YGDimensionHeight] +
+                YGNodeMarginForAxis(child, YGFlexDirectionColumn, availableInnerWidth) - ascent;
+            maxAscentForCurrentLine = fmaxf(maxAscentForCurrentLine, ascent);
+            maxDescentForCurrentLine = fmaxf(maxDescentForCurrentLine, descent);
+            lineHeight = fmaxf(lineHeight, maxAscentForCurrentLine + maxDescentForCurrentLine);
           }
         }
       }
@@ -2499,6 +2673,12 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                     currentLead + YGNodeLeadingMargin(child, crossAxis, availableInnerWidth);
                 // TODO(prenaux): Correctly set the height of items with indefinite
                 //                (auto) crossAxis dimension.
+                break;
+              }
+              case YGAlignBaseline: {
+                child->layout.position[YGEdgeTop] =
+                    currentLead + maxAscentForCurrentLine - YGBaseline(child) +
+                    YGNodeLeadingPosition(child, YGFlexDirectionColumn, availableInnerCrossDim);
                 break;
               }
               case YGAlignAuto:
@@ -2631,7 +2811,7 @@ static inline bool YGMeasureModeOldSizeIsUnspecifiedAndStillFits(YGMeasureMode s
                                                                  YGMeasureMode lastSizeMode,
                                                                  float lastComputedSize) {
   return sizeMode == YGMeasureModeAtMost && lastSizeMode == YGMeasureModeUndefined &&
-         size >= lastComputedSize;
+         (size >= lastComputedSize || YGFloatsEqual(size, lastComputedSize));
 }
 
 static inline bool YGMeasureModeNewMeasureSizeIsStricterAndStillValid(YGMeasureMode sizeMode,
@@ -2640,7 +2820,7 @@ static inline bool YGMeasureModeNewMeasureSizeIsStricterAndStillValid(YGMeasureM
                                                                       float lastSize,
                                                                       float lastComputedSize) {
   return lastSizeMode == YGMeasureModeAtMost && sizeMode == YGMeasureModeAtMost &&
-         lastSize > size && lastComputedSize <= size;
+         lastSize > size && (lastComputedSize <= size || YGFloatsEqual(size, lastComputedSize));
 }
 
 bool YGNodeCanUseCachedMeasurement(const YGMeasureMode widthMode,

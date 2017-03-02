@@ -41,6 +41,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import okio.ByteString;
 
 /**
  * Implements the XMLHttpRequest JavaScript interface.
@@ -48,8 +49,10 @@ import okhttp3.ResponseBody;
 /**
  * Implements the XMLHttpRequest JavaScript interface.
  */
-@ReactModule(name = "RCTNetworking", supportsWebWorkers = true)
+@ReactModule(name = NetworkingModule.NAME, supportsWebWorkers = true)
 public class NetworkingModule extends ReactContextBaseJavaModule {
+
+    public static final String NAME = "Networking";
 
     public static String CONTENT_ENCODING_HEADER_NAME = "content-encoding";
 
@@ -60,6 +63,8 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
     public static String REQUEST_BODY_KEY_URI = "uri";
 
     public static String REQUEST_BODY_KEY_FORMDATA = "formData";
+
+    public static String REQUEST_BODY_KEY_BASE64 = "base64";
 
     public static String USER_AGENT_HEADER_NAME = "user-agent";
 
@@ -151,7 +156,7 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
 
     @Override
     public String getName() {
-        return "RCTNetworking";
+        return NAME;
     }
 
     @Override
@@ -234,6 +239,14 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
             } else {
                 requestBuilder.method(method, RequestBody.create(contentMediaType, body));
             }
+        } else if (data.hasKey(REQUEST_BODY_KEY_BASE64)) {
+            if (contentType == null) {
+                ResponseUtil.onRequestError(eventEmitter, requestId, "Payload is set but no content-type header specified", null);
+                return;
+            }
+            String base64String = data.getString(REQUEST_BODY_KEY_BASE64);
+            MediaType contentMediaType = MediaType.parse(contentType);
+            requestBuilder.method(method, RequestBody.create(contentMediaType, ByteString.decodeBase64(base64String)));
         } else if (data.hasKey(REQUEST_BODY_KEY_URI)) {
             if (contentType == null) {
                 ResponseUtil.onRequestError(eventEmitter, requestId, "Payload is set but no content-type header specified", null);
