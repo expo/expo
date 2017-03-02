@@ -91,9 +91,11 @@ export default class ProjectCard extends React.Component {
 
     if (iconUrl) {
       return (
-        <FadeIn placeholderColor="#eee">
-          <Image source={{ uri: iconUrl }} style={styles.icon} />
-        </FadeIn>
+        <View style={styles.iconClipContainer}>
+          <FadeIn placeholderColor="#eee">
+            <Image source={{ uri: iconUrl }} style={styles.icon} />
+          </FadeIn>
+        </View>
       );
     } else {
       return <View style={[styles.icon, { backgroundColor: '#eee' }]} />;
@@ -148,6 +150,10 @@ const styles = StyleSheet.create({
     paddingRight: 10,
     paddingBottom: 17,
   },
+  iconClipContainer: {
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
   iconContainer: {
     paddingLeft: 15,
     paddingRight: 10,
@@ -161,6 +167,7 @@ const styles = StyleSheet.create({
   icon: {
     width: 40,
     height: 40,
+    borderRadius: 3,
     ...Platform.select({
       android: {
         marginTop: 3,

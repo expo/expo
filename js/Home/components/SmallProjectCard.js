@@ -116,9 +116,11 @@ export default class SmallProjectCard extends React.Component {
 
     if (iconUrl) {
       return (
-        <FadeIn placeholderColor="#eee">
-          <Image source={{ uri: iconUrl }} style={styles.icon} />
-        </FadeIn>
+        <View style={styles.iconClipContainer}>
+          <FadeIn placeholderColor="#eee">
+            <Image source={{ uri: iconUrl }} style={styles.icon} />
+          </FadeIn>
+        </View>
       );
     } else {
       return <View style={[styles.icon, { backgroundColor: '#eee' }]} />;
@@ -174,9 +176,15 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingBottom: 10,
   },
+  iconClipContainer: {
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
   icon: {
     width: IconWidth,
     height: IconWidth,
+    backgroundColor: '#fff',
+    borderRadius: 3,
     ...Platform.select({
       android: {
         marginTop: 3,

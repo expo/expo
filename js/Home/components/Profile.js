@@ -64,13 +64,13 @@ export default class Profile extends React.Component {
     ) {
       // NOTE(brentvatne): sorry for this
       let isConnectionError = nextProps.data.error.message.includes(
-        'No connection available',
+        'No connection available'
       );
 
       if (isConnectionError) {
         this.props.navigator.showLocalAlert(
           'No connection available',
-          Alerts.error,
+          Alerts.error
         );
       }
     }
@@ -126,7 +126,7 @@ export default class Profile extends React.Component {
             this.setState({ isRefetching: false });
           }
         },
-        500,
+        500
       );
     }
   };
@@ -134,7 +134,7 @@ export default class Profile extends React.Component {
   _renderError = () => {
     // NOTE(brentvatne): sorry for this
     let isConnectionError = this.props.data.error.message.includes(
-      'No connection available',
+      'No connection available'
     );
 
     return (
@@ -238,7 +238,7 @@ export default class Profile extends React.Component {
       let appsToDisplay = take(apps, MAX_APPS_TO_DISPLAY);
       let otherApps = takeRight(
         apps,
-        Math.max(0, apps.length - MAX_APPS_TO_DISPLAY),
+        Math.max(0, apps.length - MAX_APPS_TO_DISPLAY)
       );
 
       return (
@@ -310,6 +310,7 @@ const styles = StyleSheet.create({
   headerAvatar: {
     height: 64,
     width: 64,
+    borderRadius: 5,
   },
   legacyHeaderAvatar: {
     backgroundColor: '#eee',

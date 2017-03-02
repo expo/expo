@@ -77,9 +77,11 @@ export default class ProfileCard extends React.Component {
 
     if (profilePhoto) {
       return (
-        <FadeIn placeholderColor="#eee">
-          <Image source={{ uri: profilePhoto }} style={styles.icon} />
-        </FadeIn>
+        <View style={styles.iconClipContainer}>
+          <FadeIn placeholderColor="#eee">
+            <Image source={{ uri: profilePhoto }} style={styles.icon} />
+          </FadeIn>
+        </View>
       );
     } else {
       return <View style={[styles.icon, { backgroundColor: '#eee' }]} />;
@@ -133,9 +135,14 @@ const styles = StyleSheet.create({
     color: 'rgba(36, 44, 58, 0.7)',
     lineHeight: 19,
   },
+  iconClipContainer: {
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
   icon: {
     width: 40,
     height: 40,
+    borderRadius: 3,
     ...Platform.select({
       android: {
         marginTop: 3,

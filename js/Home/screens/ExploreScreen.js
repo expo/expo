@@ -124,7 +124,7 @@ export default class ExploreScreen extends React.Component {
             filter="TOP"
             onPressUsername={this._handlePressUsername}
           />
-        </SlidingTabNavigationItem>,
+        </SlidingTabNavigationItem>
       );
     }
 
@@ -137,9 +137,7 @@ export default class ExploreScreen extends React.Component {
         <View style={styles.titleBarAndroid}>
           <View style={styles.titleAndroid}>
             <Text numberOfLines={1} style={styles.titleTextAndroid}>
-              {FeatureFlags.HIDE_EXPLORE_TABS
-                ? 'Featured Projects'
-                : 'Projects'}
+              {FeatureFlags.HIDE_EXPLORE_TABS ? 'Featured Projects' : 'Explore'}
             </Text>
           </View>
 
