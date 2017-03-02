@@ -213,7 +213,7 @@
   if (_enabled) {
     block();
   } else {
-    reject(@"E_AUDIO_DISABLED", @"Exponent Audio not enabled.", nil);
+    reject(@"E_AUDIO_DISABLED", @"Audio not enabled.", nil);
   }
 }
 
@@ -266,7 +266,7 @@ RCT_EXPORT_METHOD(setIsEnabled:(BOOL)value
     } else {
       [self _activateAudioSession:&error];
       if (error) {
-        reject(@"E_AUDIO_ENABLEERROR", @"Could not enable Exponent Audio.", error);
+        reject(@"E_AUDIO_ENABLEERROR", @"Could not enable Audio.", error);
         [_pausedOnBackgroundingSet removeAllObjects];
       } else {
         _enabled = YES;
@@ -281,7 +281,7 @@ RCT_EXPORT_METHOD(setIsEnabled:(BOOL)value
     } else {
       [self _deactivateAudioSession:&error];
       if (error) {
-        reject(@"E_AUDIO_DISABLEERROR", @"Could not disable Exponent Audio.", error);
+        reject(@"E_AUDIO_DISABLEERROR", @"Could not disable Audio.", error);
       } else {
         _enabled = NO;
         resolve(nil);

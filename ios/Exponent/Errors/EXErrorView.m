@@ -56,7 +56,7 @@
     // TODO: allow the developer to configure this somehow
     appOwnerName = @"the app";
   } else {
-    appOwnerName = @"Exponent";
+    appOwnerName = @"Expo";
   }
   switch (type) {
     case kEXFatalErrorTypeLoading: {

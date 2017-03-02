@@ -125,7 +125,7 @@
                                @"linkingUri": [EXKernel linkingUriForExperienceUri:_frame.initialUri],
                                @"deviceId": [EXKernel deviceInstallUUID],
                                @"manifest": _frame.manifest,
-                               @"appOwnership": [_frame.initialProps objectForKey:@"appOwnership"] ?: @"exponent",
+                               @"appOwnership": [_frame.initialProps objectForKey:@"appOwnership"] ?: @"expo",
                                },
                            @"initialUri": _frame.initialUri,
                            @"isDeveloper": @([self doesManifestEnableDeveloperTools]),

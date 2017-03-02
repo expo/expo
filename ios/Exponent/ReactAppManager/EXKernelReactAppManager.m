@@ -185,7 +185,7 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
                                          @"deviceId": [EXKernel deviceInstallUUID],
                                          @"linkingUri": @"exp://",
                                          @"manifest": manifest,
-                                         @"appOwnership": @"exponent",
+                                         @"appOwnership": @"expo",
                                          },
                                      @"kernel": [EXKernel sharedInstance],
                                      @"supportedSdkVersions": [EXVersions sharedInstance].versions[@"sdkVersions"],

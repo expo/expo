@@ -64,7 +64,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
         }
         _usesPublishedManifest = NO;
       } else {
-        NSAssert(NO, @"No development url was configured. You must open this project with Exponent before running it from XCode.");
+        NSAssert(NO, @"No development url was configured. You must open this project with Expo before running it from XCode.");
       }
 #else
       NSDictionary *iosConfig = [[NSBundle mainBundle] infoDictionary];

@@ -85,7 +85,7 @@ NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
                                                    name:name
                                                  object:nil];
     }
-    NSLog(@"Exponent iOS Client Version %@", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"EXClientVersion"]);
+    NSLog(@"Expo iOS Client Version %@", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"EXClientVersion"]);
   }
   return self;
 }
