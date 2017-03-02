@@ -16,6 +16,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import Exponent from 'exponent';
 import FadeIn from '@exponent/react-native-fade-in-image';
 
 import autobind from 'autobind-decorator';
@@ -158,11 +159,12 @@ class BrowserScreen extends React.Component {
 
   _renderPlaceholder() {
     let content;
+    const CompanyName = Exponent.Constants.exponentVersion.match(/^1.13.2/) ? 'EXPO' : 'EXPONENT';
     if (this.props.isShell) {
       // possibly null
       content = this._renderManifestLoadingIcon();
     } else {
-      content = (<Text style={styles.placeholderText}>EXPONENT</Text>);
+      content = (<Text style={styles.placeholderText}>{CompanyName}</Text>);
     }
     return (
       <View style={styles.placeholder}>

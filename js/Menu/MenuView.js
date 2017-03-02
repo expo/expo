@@ -19,6 +19,7 @@ import {
   View,
 } from 'react-native';
 
+import Exponent from 'exponent';
 import ResponsiveImage from '@exponent/react-native-responsive-image';
 
 import autobind from 'autobind-decorator';
@@ -62,6 +63,8 @@ export default class MenuView extends React.Component {
       outputRange: [1.1, 1],
     });
 
+    const CompanyName = Exponent.Constants.exponentVersion.match(/^1.13.2/) ? 'Expo' : 'Exponent';
+
     return (
       <Animated.View style={styles.container}
         onStartShouldSetResponder={() => true}
@@ -71,7 +74,7 @@ export default class MenuView extends React.Component {
           <View style={styles.separator} />
           <View style={styles.buttonContainer}>
             {this._renderButton('Reload', Browser.refresh)}
-            {this._renderButton('Go To Exponent Home', this._goToHome)}
+            {this._renderButton(`Go To ${CompanyName} Home`, this._goToHome)}
           </View>
         </Animated.View>
       </Animated.View>

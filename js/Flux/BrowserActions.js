@@ -6,6 +6,7 @@
 'use strict';
 
 import { action } from 'Flux';
+import Exponent from 'exponent';
 import ExManifests from 'ExManifests';
 import LocalStorage from 'LocalStorage';
 
@@ -22,12 +23,13 @@ import LocalStorage from 'LocalStorage';
 let BrowserActions = {
   async navigateToUrlAsync(originalUrl, initialProps = null) {
     try {
+      const CompanyName = Exponent.Constants.exponentVersion.match(/^1.13.2/) ? 'Expo' : 'Exponent';
       let manifestUrl = originalUrl;
       let { bundleUrl, manifest } = await ExManifests.manifestUrlToBundleUrlAndManifestAsync(manifestUrl);
 
       // this can happen if fetching a local manifest (e.g. from a developer tool)
       if (!ExManifests.isManifestSdkVersionSupported(manifest)) {
-        throw new Error(`This experience uses an unsupported version of Exponent (SDK ${manifest.sdkVersion}). You may need to update Exponent.`);
+        throw new Error(`This experience uses an unsupported version of ${CompanyName} (SDK ${manifest.sdkVersion}). You may need to update ${CompanyName}.`);
       }
 
       return BrowserActions.navigateToBundleUrlAsync(manifestUrl, manifest, bundleUrl, initialProps);
