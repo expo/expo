@@ -41,7 +41,7 @@
     "react-apollo": "~0.9.0",
     "react-apple-easing": "0.0.2",
     "react-mixin": "^3.0.4",
-    "react-native": "exponent/react-native#exp-latest",
+    "react-native": "exponent/react-native#sdk-15",
     "react-native-button": "^1.7.1",
     "react-native-infinite-scroll-view": "^0.4.2",
     "react-native-scrollable-mixin": "1.0.1",
