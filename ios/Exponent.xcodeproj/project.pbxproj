@@ -107,6 +107,13 @@
 		A1F37F791CEFD6B2001E9EFC /* EXFrameExceptionsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A1F37F6E1CEFD6B2001E9EFC /* EXFrameExceptionsManager.m */; };
 		A1F37F7A1CEFD6B2001E9EFC /* EXVersionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A1F37F701CEFD6B2001E9EFC /* EXVersionManager.m */; };
 		A2AABA28A2AEAFB462697CB3 /* libPods-Exponent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B1D1884419563A8205AED29 /* libPods-Exponent.a */; };
+		ADC026641E54C41100A916B5 /* CTKNativeAdEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = ADC026571E54C41100A916B5 /* CTKNativeAdEmitter.m */; };
+		ADC026651E54C41100A916B5 /* CTKNativeAdManager.m in Sources */ = {isa = PBXBuildFile; fileRef = ADC026581E54C41100A916B5 /* CTKNativeAdManager.m */; };
+		ADC026661E54C41200A916B5 /* CTKAdSettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = ADC026591E54C41100A916B5 /* CTKAdSettingsManager.m */; };
+		ADC026671E54C41200A916B5 /* CTKInterstitialAdManager.m in Sources */ = {isa = PBXBuildFile; fileRef = ADC0265A1E54C41100A916B5 /* CTKInterstitialAdManager.m */; };
+		ADC026681E54C41200A916B5 /* CTKBannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = ADC0265B1E54C41100A916B5 /* CTKBannerView.m */; };
+		ADC026691E54C41200A916B5 /* CTKBannerViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = ADC0265D1E54C41100A916B5 /* CTKBannerViewManager.m */; };
+		ADC0266A1E54C41200A916B5 /* CTKNativeAdView.m in Sources */ = {isa = PBXBuildFile; fileRef = ADC0265E1E54C41100A916B5 /* CTKNativeAdView.m */; };
 		ADC3A9161DE68A56006C82DF /* EXLocalNotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = ADC3A9151DE68A56006C82DF /* EXLocalNotificationManager.m */; };
 		B50625FF1E4B9E6100AC2748 /* EXAnimationViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B50625FC1E4B9E6100AC2748 /* EXAnimationViewManager.m */; };
 		B50626001E4B9E6100AC2748 /* EXContainerView.m in Sources */ = {isa = PBXBuildFile; fileRef = B50625FE1E4B9E6100AC2748 /* EXContainerView.m */; };
@@ -403,6 +410,20 @@
 		A1F37F6E1CEFD6B2001E9EFC /* EXFrameExceptionsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFrameExceptionsManager.m; sourceTree = "<group>"; };
 		A1F37F6F1CEFD6B2001E9EFC /* EXVersionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXVersionManager.h; sourceTree = "<group>"; };
 		A1F37F701CEFD6B2001E9EFC /* EXVersionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXVersionManager.m; sourceTree = "<group>"; };
+		ADC026561E54C41100A916B5 /* CTKNativeAdEmitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CTKNativeAdEmitter.h; path = FBAds/CTKNativeAdEmitter.h; sourceTree = "<group>"; };
+		ADC026571E54C41100A916B5 /* CTKNativeAdEmitter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CTKNativeAdEmitter.m; path = FBAds/CTKNativeAdEmitter.m; sourceTree = "<group>"; };
+		ADC026581E54C41100A916B5 /* CTKNativeAdManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CTKNativeAdManager.m; path = FBAds/CTKNativeAdManager.m; sourceTree = "<group>"; };
+		ADC026591E54C41100A916B5 /* CTKAdSettingsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CTKAdSettingsManager.m; path = FBAds/CTKAdSettingsManager.m; sourceTree = "<group>"; };
+		ADC0265A1E54C41100A916B5 /* CTKInterstitialAdManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CTKInterstitialAdManager.m; path = FBAds/CTKInterstitialAdManager.m; sourceTree = "<group>"; };
+		ADC0265B1E54C41100A916B5 /* CTKBannerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CTKBannerView.m; path = FBAds/CTKBannerView.m; sourceTree = "<group>"; };
+		ADC0265C1E54C41100A916B5 /* CTKBannerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CTKBannerView.h; path = FBAds/CTKBannerView.h; sourceTree = "<group>"; };
+		ADC0265D1E54C41100A916B5 /* CTKBannerViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CTKBannerViewManager.m; path = FBAds/CTKBannerViewManager.m; sourceTree = "<group>"; };
+		ADC0265E1E54C41100A916B5 /* CTKNativeAdView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CTKNativeAdView.m; path = FBAds/CTKNativeAdView.m; sourceTree = "<group>"; };
+		ADC0265F1E54C41100A916B5 /* CTKAdSettingsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CTKAdSettingsManager.h; path = FBAds/CTKAdSettingsManager.h; sourceTree = "<group>"; };
+		ADC026601E54C41100A916B5 /* CTKBannerViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CTKBannerViewManager.h; path = FBAds/CTKBannerViewManager.h; sourceTree = "<group>"; };
+		ADC026611E54C41100A916B5 /* CTKInterstitialAdManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CTKInterstitialAdManager.h; path = FBAds/CTKInterstitialAdManager.h; sourceTree = "<group>"; };
+		ADC026621E54C41100A916B5 /* CTKNativeAdManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CTKNativeAdManager.h; path = FBAds/CTKNativeAdManager.h; sourceTree = "<group>"; };
+		ADC026631E54C41100A916B5 /* CTKNativeAdView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CTKNativeAdView.h; path = FBAds/CTKNativeAdView.h; sourceTree = "<group>"; };
 		ADC3A9141DE68A56006C82DF /* EXLocalNotificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXLocalNotificationManager.h; sourceTree = "<group>"; };
 		ADC3A9151DE68A56006C82DF /* EXLocalNotificationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXLocalNotificationManager.m; sourceTree = "<group>"; };
 		B50625FB1E4B9E6100AC2748 /* EXAnimationViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAnimationViewManager.h; sourceTree = "<group>"; };
@@ -839,6 +860,7 @@
 		A1F37F5A1CEFD6B2001E9EFC /* Api */ = {
 			isa = PBXGroup;
 			children = (
+				ADC026541E54C40400A916B5 /* FBAds */,
 				A1DCE8421DC3FC63009665FD /* GL */,
 				A1CDBE861D30781000C2A670 /* Components */,
 				B51C2AFF1DC7BB3200120834 /* OAuthViewController */,
@@ -919,6 +941,27 @@
 				A1F37F6A1CEFD6B2001E9EFC /* RCTDevMenu+Device.m */,
 			);
 			path = EXDisabledDevMenu;
+			sourceTree = "<group>";
+		};
+		ADC026541E54C40400A916B5 /* FBAds */ = {
+			isa = PBXGroup;
+			children = (
+				ADC0265F1E54C41100A916B5 /* CTKAdSettingsManager.h */,
+				ADC026591E54C41100A916B5 /* CTKAdSettingsManager.m */,
+				ADC0265C1E54C41100A916B5 /* CTKBannerView.h */,
+				ADC0265B1E54C41100A916B5 /* CTKBannerView.m */,
+				ADC026601E54C41100A916B5 /* CTKBannerViewManager.h */,
+				ADC0265D1E54C41100A916B5 /* CTKBannerViewManager.m */,
+				ADC026611E54C41100A916B5 /* CTKInterstitialAdManager.h */,
+				ADC0265A1E54C41100A916B5 /* CTKInterstitialAdManager.m */,
+				ADC026561E54C41100A916B5 /* CTKNativeAdEmitter.h */,
+				ADC026571E54C41100A916B5 /* CTKNativeAdEmitter.m */,
+				ADC026621E54C41100A916B5 /* CTKNativeAdManager.h */,
+				ADC026581E54C41100A916B5 /* CTKNativeAdManager.m */,
+				ADC026631E54C41100A916B5 /* CTKNativeAdView.h */,
+				ADC0265E1E54C41100A916B5 /* CTKNativeAdView.m */,
+			);
+			name = FBAds;
 			sourceTree = "<group>";
 		};
 		B50625FA1E4B9E6100AC2748 /* Lottie */ = {
@@ -1622,9 +1665,11 @@
 				A15DC4CC1D011248009F940D /* EXFacebook.m in Sources */,
 				B5E4DB661E566614007D43DD /* AIRGoogleMapURLTileManager.m in Sources */,
 				B55FDEE41C7FDA560020AA8F /* EXFatalHandler.m in Sources */,
+				ADC026661E54C41200A916B5 /* CTKAdSettingsManager.m in Sources */,
 				1940B3401E15DF760015DA85 /* EXCrypto.m in Sources */,
 				B587F1E01D53DEB70071715C /* EXFileDownloader.m in Sources */,
 				A1CDBE991D3851F700C2A670 /* EXFileSystem.m in Sources */,
+				ADC026641E54C41100A916B5 /* CTKNativeAdEmitter.m in Sources */,
 				B56FACAD1D4C0266009FC106 /* EXFingerprint.m in Sources */,
 				A1F37F731CEFD6B2001E9EFC /* EXFontLoader.m in Sources */,
 				B5F12C991DAEDF960080ECA6 /* EXKernelReactAppManager.m in Sources */,
@@ -1644,6 +1689,7 @@
 				193601131D67ABCF007C0EE0 /* RNSVGEllipseManager.m in Sources */,
 				B575EE9E1D53EEC300DCABBC /* EXJavaScriptResource.m in Sources */,
 				B5E4DB611E566614007D43DD /* AIRGoogleMapPolygon.m in Sources */,
+				ADC026671E54C41200A916B5 /* CTKInterstitialAdManager.m in Sources */,
 				1936011D1D67ABCF007C0EE0 /* RNSVGNodeManager.m in Sources */,
 				A1DCE8471DC3FC63009665FD /* EXGLView.m in Sources */,
 				B5678C5F1DB6D65B00380A6E /* EXFrame.m in Sources */,
@@ -1697,6 +1743,7 @@
 				B5218E731D22FC7800C54B61 /* EXRemoteNotificationManager.m in Sources */,
 				B52336AF1DAD6A3A001C0B5E /* EXAVPermissionRequester.m in Sources */,
 				193601181D67ABCF007C0EE0 /* RNSVGLine.m in Sources */,
+				ADC026681E54C41200A916B5 /* CTKBannerView.m in Sources */,
 				B5844C3B1D482D710015C683 /* EXRemoteNotificationRequester.m in Sources */,
 				B55FDEFA1C7FE1310020AA8F /* EXRootViewController.m in Sources */,
 				B5553F961CEFBD1200555008 /* EXShellManager.m in Sources */,
@@ -1714,11 +1761,14 @@
 				193601221D67ABCF007C0EE0 /* RNSVGRadialGradient.m in Sources */,
 				193601141D67ABCF007C0EE0 /* RNSVGGroup.m in Sources */,
 				A16EE77D1D56911100634425 /* EXVideo.m in Sources */,
+				ADC026651E54C41100A916B5 /* CTKNativeAdManager.m in Sources */,
 				F77DDB8B1E04774000624CA2 /* EXWebBrowser.m in Sources */,
+				ADC0266A1E54C41200A916B5 /* CTKNativeAdView.m in Sources */,
 				1936010B1D67ABCF007C0EE0 /* RNSVGBrushConverter.m in Sources */,
 				1981B9F71E3C28BA00057CA9 /* EXKeepAwake.m in Sources */,
 				B50626001E4B9E6100AC2748 /* EXContainerView.m in Sources */,
 				193601291D67ABCF007C0EE0 /* RNSVGSvgView.m in Sources */,
+				ADC026691E54C41200A916B5 /* CTKBannerViewManager.m in Sources */,
 				1936011F1D67ABCF007C0EE0 /* RNSVGPathManager.m in Sources */,
 				A16EE77E1D56911100634425 /* EXVideoManager.m in Sources */,
 				193601101D67ABCF007C0EE0 /* RNSVGDefs.m in Sources */,

@@ -57,6 +57,11 @@ import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCode
 import versioned.host.exp.exponent.modules.api.components.lottie.LottiePackage;
 import versioned.host.exp.exponent.modules.api.components.maps.MapsPackage;
 import versioned.host.exp.exponent.modules.api.components.svg.RNSvgPackage;
+import versioned.host.exp.exponent.modules.api.fbads.AdSettingsManager;
+import versioned.host.exp.exponent.modules.api.fbads.BannerViewManager;
+import versioned.host.exp.exponent.modules.api.fbads.InterstitialAdManager;
+import versioned.host.exp.exponent.modules.api.fbads.NativeAdManager;
+import versioned.host.exp.exponent.modules.api.fbads.NativeAdViewManager;
 import versioned.host.exp.exponent.modules.api.gl.GLViewManager;
 import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule;
 import versioned.host.exp.exponent.modules.internal.ExponentIntentModule;
@@ -140,9 +145,10 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new ExponentTestNativeModule(reactContext));
         nativeModules.add(new WebBrowserModule(reactContext));
         nativeModules.add(new AudioModule(reactContext));
-      } catch (JSONException e) {
-        EXL.e(TAG, e.toString());
-      } catch (UnsupportedEncodingException e) {
+        nativeModules.add(new NativeAdManager(reactContext));
+        nativeModules.add(new AdSettingsManager(reactContext));
+        nativeModules.add(new InterstitialAdManager(reactContext));
+      } catch (JSONException | UnsupportedEncodingException e) {
         EXL.e(TAG, e.toString());
       }
     } else {
@@ -164,7 +170,9 @@ public class ExponentPackage implements ReactPackage {
         new LinearGradientManager(),
         new VideoViewManager(),
         new BarCodeScannerViewManager(),
-        new GLViewManager()
+        new GLViewManager(),
+        new NativeAdViewManager(reactContext),
+        new BannerViewManager(reactContext)
     ));
 
     // Add view manager from 3rd party library packages.

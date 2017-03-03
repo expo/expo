@@ -4,6 +4,7 @@
   { "name": "AppAuth", "version": "~> 0.4" },
   { "name": "CocoaLumberjack", "version": "~> 2.3" },
   { "name": "Crashlytics", "version": "~> 3.8" },
+  { "name": "FBAudienceNetwork", "version": "4.18" },
   { "name": "FBSDKCoreKit", "version": "~> 4.15" },
   { "name": "FBSDKLoginKit", "version": "~> 4.15" },
   { "name": "FBSDKShareKit", "version": "~> 4.15" },

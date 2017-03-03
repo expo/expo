@@ -165,6 +165,12 @@
       android:label="@string/app_name"
       android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
+    <activity
+      android:name="com.facebook.ads.InterstitialAdActivity"
+      android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+      android:label="@string/app_name"
+      android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
     <service
       android:name=".ExponentIntentService"
       android:exported="false" />
