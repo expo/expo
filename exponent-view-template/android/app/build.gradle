@@ -33,9 +33,9 @@ task exponentPrebuildStep(type: Exec) {
   workingDir '../../'
 
   if (System.getProperty('os.name').toLowerCase().contains('windows')) {
-    commandLine 'cmd', '/c', '.\\.exponent-source\\android\\detach-scripts\\prepare-detached-build.bat'
+    commandLine 'cmd', '/c', '.\\.expo-source\\android\\detach-scripts\\prepare-detached-build.bat'
   } else {
-    commandLine './.exponent-source/android/detach-scripts/prepare-detached-build.sh'
+    commandLine './.expo-source/android/detach-scripts/prepare-detached-build.sh'
   }
 }
 preBuild.dependsOn exponentPrebuildStep
