@@ -10,6 +10,23 @@ import Exponent from 'exponent';
 import ExManifests from 'ExManifests';
 import LocalStorage from 'LocalStorage';
 
+let _navigationRequestId = 0;
+let _isFetchingManifest = {};
+let _isLoadingCancelled = {};
+
+async function _fetchManifestAsync(url) {
+  let navigationRequestId = _navigationRequestId;
+  _isFetchingManifest[navigationRequestId] = true;
+  let result = await ExManifests.manifestUrlToBundleUrlAndManifestAsync(url);
+  _isFetchingManifest[navigationRequestId] = false;
+  return result;
+}
+
+function _cleanupNavigationRequest(navigationRequestId) {
+  delete _isFetchingManifest[navigationRequestId];
+  delete _isLoadingCancelled[navigationRequestId];
+}
+
 /**
  * The browser history is stored in AsyncStorage. Its format is:
  *   [{
@@ -21,37 +38,71 @@ import LocalStorage from 'LocalStorage';
  *   }]
  */
 let BrowserActions = {
-  async navigateToUrlAsync(originalUrl, initialProps = null) {
+  cancelLoadingMostRecentManifestRequest() {
+    if (!_isFetchingManifest[_navigationRequestId]) {
+      throw new Error(
+        'Already finished fetching manifest, cancellation is not possible'
+      );
+    }
+
+    _isLoadingCancelled[_navigationRequestId] = true;
+    return BrowserActions.setKernelLoadingState(false);
+  },
+
+  async navigateToUrlAsync(manifestUrl, initialProps = null) {
     try {
-      const CompanyName = Exponent.Constants.exponentVersion.match(/^1.13.2/) ? 'Expo' : 'Exponent';
-      let manifestUrl = originalUrl;
-      let { bundleUrl, manifest } = await ExManifests.manifestUrlToBundleUrlAndManifestAsync(manifestUrl);
+      let navigationRequestId = ++_navigationRequestId;
+      let { bundleUrl, manifest } = await _fetchManifestAsync(manifestUrl);
+
+      let isCancelled = _isLoadingCancelled[navigationRequestId];
+      _cleanupNavigationRequest(navigationRequestId);
+
+      if (isCancelled) {
+        return {};
+      }
 
       // this can happen if fetching a local manifest (e.g. from a developer tool)
       if (!ExManifests.isManifestSdkVersionSupported(manifest)) {
-        throw new Error(`This experience uses an unsupported version of ${CompanyName} (SDK ${manifest.sdkVersion}). You may need to update ${CompanyName}.`);
+        const CompanyName = Exponent.Constants.exponentVersion.match(/^1.13.2/)
+          ? 'Expo'
+          : 'Exponent';
+        throw new Error(
+          `This experience uses an unsupported version of ${CompanyName} (SDK ${manifest.sdkVersion}). You may need to update ${CompanyName}.`
+        );
       }
 
-      return BrowserActions.navigateToBundleUrlAsync(manifestUrl, manifest, bundleUrl, initialProps);
+      return BrowserActions.navigateToBundleUrlAsync(
+        manifestUrl,
+        manifest,
+        bundleUrl,
+        initialProps
+      );
     } catch (e) {
-      return BrowserActions.showLoadingError(e.code, e.message, originalUrl);
+      return BrowserActions.showLoadingError(e.code, e.message, manifestUrl);
     }
   },
 
-  async navigateToExperienceIdWithNotificationAsync(experienceId, notificationBody) {
+  async navigateToExperienceIdWithNotificationAsync(
+    experienceId,
+    notificationBody
+  ) {
     let history = await LocalStorage.getHistoryAsync();
     history = history.sort((item1, item2) => {
       // date descending -- we want to pick the most recent experience with this id,
       // in case there are multiple (e.g. somebody was developing against various URLs of the
       // same app)
-      let item2time = (item2.time) ? item2.time : 0;
-      let item1time = (item1.time) ? item1.time : 0;
+      let item2time = item2.time ? item2.time : 0;
+      let item1time = item1.time ? item1.time : 0;
       return item2time - item1time;
     });
-    let historyItem = history.find(item => (item.manifest && item.manifest.id === experienceId));
+    let historyItem = history.find(
+      item => item.manifest && item.manifest.id === experienceId
+    );
     if (historyItem) {
       // don't use the cached manifest, start over
-      return BrowserActions.navigateToUrlAsync(historyItem.url, { notification: notificationBody });
+      return BrowserActions.navigateToUrlAsync(historyItem.url, {
+        notification: notificationBody,
+      });
     } else {
       // we've never loaded this experience, silently fail
       // (this can happen if the user loads an experience, clears history,
@@ -60,7 +111,12 @@ let BrowserActions = {
     }
   },
 
-  async navigateToBundleUrlAsync(manifestUrl, manifest, bundleUrl, initialProps = null) {
+  async navigateToBundleUrlAsync(
+    manifestUrl,
+    manifest,
+    bundleUrl,
+    initialProps = null
+  ) {
     let originalUrl = manifestUrl;
     // originalUrl was a package, not a manifest.
     if (bundleUrl === manifestUrl) {
@@ -85,28 +141,25 @@ let BrowserActions = {
         historyItem,
         initialProps,
       },
-      payload: async function() {
+      payload: (async function() {
         let history = await LocalStorage.getHistoryAsync();
         history = history.filter(item => item.url !== historyItem.url);
         history.unshift(historyItem);
         await LocalStorage.saveHistoryAsync(history);
         return history;
-      }(),
+      })(),
     };
   },
 
-  @action
-  foregroundUrlAsync(url) {
+  @action foregroundUrlAsync(url) {
     return { url };
   },
 
-  @action
-  foregroundHomeAsync(clearTasks = false) {
+  @action foregroundHomeAsync(clearTasks = false) {
     return { clearTasks };
   },
 
-  @action
-  showMenuAsync(isVisible) {
+  @action showMenuAsync(isVisible) {
     return { isVisible };
   },
 
@@ -114,51 +167,43 @@ let BrowserActions = {
     return {
       type: 'setIsNuxFinishedAsync',
       meta: { isFinished },
-      payload: async function() {
+      payload: (async function() {
         await LocalStorage.saveIsNuxFinishedAsync(isFinished);
         return isFinished;
-      }(),
+      })(),
     };
   },
 
-  @action
-  showLoadingError(code, message, originalUrl, manifest = null) {
+  @action showLoadingError(code, message, originalUrl, manifest = null) {
     return { code, message, originalUrl, manifest };
   },
 
-  @action
-  clearTaskWithError(browserTaskUrl) {
+  @action clearTaskWithError(browserTaskUrl) {
     return { url: browserTaskUrl };
   },
 
-  @action
-  setKernelLoadingState(isLoading) {
+  @action setKernelLoadingState(isLoading) {
     return { isLoading };
   },
 
-  @action
-  setLoadingState(browserTaskUrl, isLoading) {
+  @action setLoadingState(browserTaskUrl, isLoading) {
     return { url: browserTaskUrl, isLoading };
   },
 
-  @action
-  setShellPropertiesAsync(isShell, shellManifestUrl) {
+  @action setShellPropertiesAsync(isShell, shellManifestUrl) {
     return { isShell, shellManifestUrl };
   },
 
-  @action
-  setInitialShellUrl(url) {
+  @action setInitialShellUrl(url) {
     return { url };
   },
 
-  @action
-  async loadHistoryAsync() {
+  @action async loadHistoryAsync() {
     let history = await LocalStorage.getHistoryAsync();
     return { history };
   },
 
-  @action
-  async clearHistoryAsync() {
+  @action async clearHistoryAsync() {
     await LocalStorage.clearHistoryAsync();
   },
 };
