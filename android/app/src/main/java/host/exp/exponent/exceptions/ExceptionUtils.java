@@ -11,7 +11,7 @@ import java.net.UnknownHostException;
 
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.kernel.ExponentErrorMessage;
-import host.exp.exponentview.Exponent;
+import host.exp.expoview.Exponent;
 
 public class ExceptionUtils {
 

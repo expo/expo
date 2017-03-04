@@ -21,7 +21,7 @@ import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 import host.exp.exponent.storage.ExponentSharedPreferences;
-import host.exp.exponentview.Exponent;
+import host.exp.expoview.Exponent;
 
 public class RegistrationIntentService extends IntentService {
 

@@ -17,16 +17,16 @@ import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.kernel.KernelInterface;
 import host.exp.exponent.kernel.KernelProvider;
 import host.exp.exponent.modules.ExponentKernelModule;
-import host.exp.exponentview.Exponent;
-import host.exp.exponentview.ExponentViewBuildConfig;
+import host.exp.expoview.Exponent;
+import host.exp.expoview.ExpoViewBuildConfig;
 import io.fabric.sdk.android.Fabric;
 import me.leolin.shortcutbadger.ShortcutBadger;
 
 public class ExponentApplication extends MultiDexApplication {
 
   static {
-    ExponentViewBuildConfig.USE_INTERNET_KERNEL = BuildVariantConstants.USE_INTERNET_KERNEL;
-    ExponentViewBuildConfig.DEBUG = BuildConfig.DEBUG;
+    ExpoViewBuildConfig.USE_INTERNET_KERNEL = BuildVariantConstants.USE_INTERNET_KERNEL;
+    ExpoViewBuildConfig.DEBUG = BuildConfig.DEBUG;
   }
 
   private static final String TAG = ExponentApplication.class.getSimpleName();
@@ -43,7 +43,7 @@ public class ExponentApplication extends MultiDexApplication {
 
     KernelConstants.MAIN_ACTIVITY_CLASS = LauncherActivity.class;
 
-    if (host.exp.exponentview.BuildConfig.DEBUG && Constants.WAIT_FOR_DEBUGGER) {
+    if (host.exp.expoview.BuildConfig.DEBUG && Constants.WAIT_FOR_DEBUGGER) {
       Debug.waitForDebugger();
     }
 

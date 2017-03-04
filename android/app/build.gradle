@@ -97,8 +97,8 @@ dependencies {
   // Our dependencies
   compile 'com.android.support:appcompat-v7:24.2.0'
 
-  // Our dependencies from ExponentView
-  // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPONENTVIEW. ONLY COPY THINGS FROM EXPONENTVIEW TO HERE.
+  // Our dependencies from ExpoView
+  // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.
   compile 'com.android.support:appcompat-v7:24.1.1'
   compile ('com.facebook.android:facebook-android-sdk:4.7.0') {
     exclude module: 'bolts-android'
@@ -142,7 +142,7 @@ dependencies {
   androidTestCompile 'com.android.support:support-annotations:25.0.1'
   androidTestCompile 'com.google.code.findbugs:jsr305:3.0.0'
   androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
-  compile project(path: ':exponentview')
+  compile project(path: ':expoview')
 }
 
 // This has to be down here for some reason

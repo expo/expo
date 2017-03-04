@@ -25,8 +25,8 @@ import host.exp.exponent.experience.ExperienceActivity;
 import host.exp.exponent.experience.InfoActivity;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.kernel.Kernel;
-import host.exp.exponentview.Exponent;
-import host.exp.exponentview.R;
+import host.exp.expoview.Exponent;
+import host.exp.expoview.R;
 
 import static host.exp.exponent.kernel.KernelConstants.MANIFEST_URL_KEY;
 
