@@ -33,7 +33,7 @@ import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.storage.ExponentSharedPreferences;
-import host.exp.exponentview.R;
+import host.exp.expoview.R;
 
 public class ExponentGcmListenerService extends GcmListenerService {
 

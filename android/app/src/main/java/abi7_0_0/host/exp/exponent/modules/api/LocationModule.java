@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import host.exp.exponent.experience.BaseExperienceActivity;
-import host.exp.exponentview.Exponent;
+import host.exp.expoview.Exponent;
 
 public class LocationModule extends ReactContextBaseJavaModule {
   Map<Integer, LocationListener> mLocationListeners = new HashMap<>();

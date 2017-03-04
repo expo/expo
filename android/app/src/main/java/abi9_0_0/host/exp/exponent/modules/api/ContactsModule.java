@@ -18,7 +18,7 @@ import abi9_0_0.com.facebook.react.bridge.WritableMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import host.exp.exponentview.Exponent;
+import host.exp.expoview.Exponent;
 
 public class ContactsModule extends ReactContextBaseJavaModule {
 

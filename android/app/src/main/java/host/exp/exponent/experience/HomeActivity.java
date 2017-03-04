@@ -15,7 +15,7 @@ import com.amplitude.api.Amplitude;
 import com.squareup.leakcanary.LeakCanary;
 
 import de.greenrobot.event.EventBus;
-import host.exp.exponentview.BuildConfig;
+import host.exp.expoview.BuildConfig;
 import host.exp.exponent.Constants;
 import host.exp.exponent.kernel.Kernel;
 

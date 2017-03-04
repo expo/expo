@@ -41,7 +41,7 @@ import de.greenrobot.event.EventBus;
 import host.exp.exponent.ActivityResultListener;
 import host.exp.exponent.oauth.OAuthResultActivity;
 import host.exp.exponent.kernel.KernelConstants;
-import host.exp.exponentview.Exponent;
+import host.exp.expoview.Exponent;
 
 public class GoogleModule extends ReactContextBaseJavaModule implements ActivityResultListener {
   private final static int RC_LOG_IN = 1737;

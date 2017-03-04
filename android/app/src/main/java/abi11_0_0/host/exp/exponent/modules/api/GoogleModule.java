@@ -32,7 +32,7 @@ import com.google.android.gms.common.api.Scope;
 
 import host.exp.exponent.ActivityResultListener;
 import host.exp.exponent.oauth.OAuthWebViewActivity;
-import host.exp.exponentview.Exponent;
+import host.exp.expoview.Exponent;
 
 public class GoogleModule extends ReactContextBaseJavaModule implements ActivityResultListener {
   private final static int RC_LOG_IN = 1737;

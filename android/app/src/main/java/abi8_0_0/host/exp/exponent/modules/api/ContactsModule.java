@@ -19,7 +19,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import host.exp.exponent.experience.BaseExperienceActivity;
-import host.exp.exponentview.Exponent;
+import host.exp.expoview.Exponent;
 
 public class ContactsModule extends ReactContextBaseJavaModule {
 

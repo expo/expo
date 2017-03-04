@@ -19,7 +19,7 @@ import abi7_0_0.com.facebook.react.bridge.ReactMethod;
 import abi7_0_0.com.facebook.react.common.MapBuilder;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.Kernel;
-import host.exp.exponentview.Exponent;
+import host.exp.expoview.Exponent;
 
 public class URLHandlerModule extends ReactContextBaseJavaModule {
 

@@ -13,13 +13,11 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.facebook.common.internal.ByteStreams;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
@@ -50,26 +48,20 @@ import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.experience.BaseExperienceActivity;
 import host.exp.exponent.experience.ExperienceActivity;
 import host.exp.exponent.experience.HomeActivity;
-import host.exp.exponentview.BuildConfig;
+import host.exp.expoview.BuildConfig;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
-import host.exp.exponentview.Exponent;
-import host.exp.exponentview.ExponentViewBuildConfig;
-import host.exp.exponentview.R;
+import host.exp.expoview.Exponent;
+import host.exp.expoview.ExpoViewBuildConfig;
+import host.exp.expoview.R;
 import host.exp.exponent.RNObject;
-import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.exceptions.ExceptionUtils;
-import host.exp.exponent.generated.ExponentBuildConstants;
-import host.exp.exponent.network.ExponentHttpClient;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.AsyncCondition;
 import host.exp.exponent.utils.JSONBundleConverter;
-import okhttp3.Call;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 import versioned.host.exp.exponent.ExponentPackage;
 import versioned.host.exp.exponent.ReactUnthemedRootView;
 import versioned.host.exp.exponent.ReadableObjectUtils;
@@ -288,7 +280,7 @@ public class Kernel implements KernelInterface {
       public void onError(Exception e) {
         setHasError();
 
-        if (ExponentViewBuildConfig.DEBUG) {
+        if (ExpoViewBuildConfig.DEBUG) {
           handleError("Can't load kernel. Are you sure your packager is running and your phone is on the same wifi? " + e.getMessage());
         } else {
           handleError("Exponent requires an internet connection.");

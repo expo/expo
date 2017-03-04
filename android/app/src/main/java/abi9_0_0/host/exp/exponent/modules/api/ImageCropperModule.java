@@ -14,7 +14,7 @@ import abi9_0_0.com.facebook.react.bridge.ReadableMap;
 import abi9_0_0.com.facebook.react.bridge.ReadableType;
 import abi9_0_0.com.facebook.react.bridge.WritableMap;
 import host.exp.exponent.ActivityResultListener;
-import host.exp.exponentview.Exponent;
+import host.exp.expoview.Exponent;
 
 import com.theartofdev.edmodo.cropper.CropImage;
 

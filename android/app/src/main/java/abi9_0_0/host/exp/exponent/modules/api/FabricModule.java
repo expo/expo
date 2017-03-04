@@ -15,7 +15,7 @@ import abi9_0_0.com.facebook.react.bridge.ReadableMapKeySetIterator;
 import java.util.Map;
 
 import host.exp.exponent.kernel.KernelConstants;
-import host.exp.exponentview.BuildConfig;
+import host.exp.expoview.BuildConfig;
 import host.exp.exponent.Constants;
 
 public class FabricModule extends ReactContextBaseJavaModule {

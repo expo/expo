@@ -17,7 +17,7 @@ import abi10_0_0.com.facebook.react.bridge.ReactMethod;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.kernel.KernelConstants;
-import host.exp.exponentview.Exponent;
+import host.exp.expoview.Exponent;
 
 public class UtilModule extends ReactContextBaseJavaModule {
 

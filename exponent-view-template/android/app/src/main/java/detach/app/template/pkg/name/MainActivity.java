@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import detach.app.template.pkg.name.generated.ExponentBuildConstants;
-import host.exp.exponentview.ExponentActivity;
+import host.exp.expoview.ExponentActivity;
 
 public class MainActivity extends ExponentActivity {
 

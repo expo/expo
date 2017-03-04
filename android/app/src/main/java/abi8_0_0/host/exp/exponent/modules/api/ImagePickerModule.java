@@ -30,7 +30,7 @@ import com.theartofdev.edmodo.cropper.CropImage;
 import host.exp.exponent.ActivityResultListener;
 import host.exp.exponent.experience.BaseExperienceActivity;
 import host.exp.exponent.utils.ExpFileUtils;
-import host.exp.exponentview.Exponent;
+import host.exp.expoview.Exponent;
 
 public class ImagePickerModule extends ReactContextBaseJavaModule implements ActivityResultListener {
   static final int REQUEST_LAUNCH_CAMERA = 1;

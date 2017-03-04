@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import host.exp.exponentview.Exponent;
+import host.exp.expoview.Exponent;
 
 import static android.provider.ContactsContract.*;
 

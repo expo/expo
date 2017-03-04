@@ -6,7 +6,7 @@ import android.content.Context;
 import android.view.ContextThemeWrapper;
 
 import abi7_0_0.com.facebook.react.ReactRootView;
-import host.exp.exponentview.R;
+import host.exp.expoview.R;
 
 public class ReactUnthemedRootView extends ReactRootView {
   public ReactUnthemedRootView(Context context) {

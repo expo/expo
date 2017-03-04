@@ -21,7 +21,7 @@ import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 import host.exp.exponent.modules.ExponentKernelModule;
 import host.exp.exponent.storage.ExponentSharedPreferences;
-import host.exp.exponentview.Exponent;
+import host.exp.expoview.Exponent;
 
 public class NotificationsModule extends ReactContextBaseJavaModule {
 

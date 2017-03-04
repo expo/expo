@@ -14,7 +14,7 @@ import abi10_0_0.com.facebook.react.bridge.ReactContextBaseJavaModule;
 import abi10_0_0.com.facebook.react.bridge.ReactMethod;
 import abi10_0_0.com.facebook.react.bridge.WritableMap;
 
-import host.exp.exponentview.Exponent;
+import host.exp.expoview.Exponent;
 
 public class PermissionsModule  extends ReactContextBaseJavaModule {
   public static String PERMISSION_EXPIRES_NEVER = "never";

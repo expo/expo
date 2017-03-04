@@ -16,7 +16,7 @@ import abi12_0_0.com.facebook.react.bridge.WritableMap;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import host.exp.exponent.ActivityResultListener;
-import host.exp.exponentview.Exponent;
+import host.exp.expoview.Exponent;
 
 public class ImageCropperModule extends ReactContextBaseJavaModule implements ActivityResultListener {
   private boolean mLaunchedCropImage = false; // To keep track of whether we were the one to launch CropImage last

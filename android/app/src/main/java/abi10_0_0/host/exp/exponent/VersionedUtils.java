@@ -5,7 +5,7 @@ package abi10_0_0.host.exp.exponent;
 import abi10_0_0.com.facebook.react.LifecycleState;
 import abi10_0_0.com.facebook.react.ReactInstanceManager;
 import abi10_0_0.com.facebook.react.shell.MainReactPackage;
-import host.exp.exponentview.Exponent;
+import host.exp.expoview.Exponent;
 
 public class VersionedUtils {
 

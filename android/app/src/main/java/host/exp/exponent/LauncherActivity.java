@@ -23,7 +23,7 @@ import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.kernel.KernelConstants;
-import host.exp.exponentview.BuildConfig;
+import host.exp.expoview.BuildConfig;
 
 // This activity is transparent. It uses android:style/Theme.Translucent.NoTitleBar.
 // Calls finish() once it is done processing Intent.

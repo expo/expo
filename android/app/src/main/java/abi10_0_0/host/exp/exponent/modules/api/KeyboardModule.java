@@ -11,7 +11,7 @@ import abi10_0_0.com.facebook.react.bridge.ReactApplicationContext;
 import abi10_0_0.com.facebook.react.bridge.ReactContextBaseJavaModule;
 import abi10_0_0.com.facebook.react.bridge.ReactMethod;
 
-import host.exp.exponentview.Exponent;
+import host.exp.expoview.Exponent;
 
 public class KeyboardModule extends ReactContextBaseJavaModule {
   public KeyboardModule(ReactApplicationContext context) {

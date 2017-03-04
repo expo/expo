@@ -15,9 +15,8 @@ import abi14_0_0.com.facebook.react.bridge.ReadableMapKeySetIterator;
 import java.util.Map;
 
 import host.exp.exponent.kernel.KernelConstants;
-import host.exp.exponentview.BuildConfig;
 import host.exp.exponent.Constants;
-import host.exp.exponentview.ExponentViewBuildConfig;
+import host.exp.expoview.ExpoViewBuildConfig;
 
 public class FabricModule extends ReactContextBaseJavaModule {
   boolean mInScope = false;
@@ -40,7 +39,7 @@ public class FabricModule extends ReactContextBaseJavaModule {
       promise.reject(new IllegalStateException("Not in a standalone app!"));
       return;
     }
-    if (ExponentViewBuildConfig.DEBUG) {
+    if (ExpoViewBuildConfig.DEBUG) {
       promise.resolve(Arguments.createMap());
       return;
     }

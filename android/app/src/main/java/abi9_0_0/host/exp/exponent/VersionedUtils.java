@@ -7,7 +7,7 @@ import abi9_0_0.com.facebook.react.ReactInstanceManager;
 import abi9_0_0.com.facebook.react.shell.MainReactPackage;
 
 import host.exp.exponent.experience.ExperienceActivity;
-import host.exp.exponentview.Exponent;
+import host.exp.expoview.Exponent;
 
 public class VersionedUtils {
 

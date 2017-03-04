@@ -26,7 +26,7 @@ import abi13_0_0.com.facebook.react.bridge.ReadableMap;
 import abi13_0_0.com.facebook.react.bridge.WritableMap;
 
 import host.exp.exponent.ActivityResultListener;
-import host.exp.exponentview.Exponent;
+import host.exp.expoview.Exponent;
 
 public class FacebookModule extends ReactContextBaseJavaModule implements ActivityResultListener {
   private CallbackManager mCallbackManager;

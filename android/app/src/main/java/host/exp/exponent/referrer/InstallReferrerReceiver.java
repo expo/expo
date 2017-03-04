@@ -24,7 +24,7 @@ import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.storage.ExponentSharedPreferences;
-import host.exp.exponentview.Exponent;
+import host.exp.expoview.Exponent;
 
 public class InstallReferrerReceiver extends CampaignTrackingReceiver {
 

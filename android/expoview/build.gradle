@@ -1,0 +1,243 @@
+apply plugin: 'com.android.library'
+apply plugin: 'maven'
+
+//maven repository info
+group = 'host.exp.expo'
+version = '14.0.0'
+
+//Upload android library to maven with javadoc and android sources
+configurations {
+  deployerJars
+}
+
+//Creating sources with comments
+task androidSourcesJar(type: Jar) {
+  classifier = 'sources'
+  from android.sourceSets.main.java.srcDirs
+}
+
+//Put the androidSources and javadoc to the artifacts
+artifacts {
+  archives androidSourcesJar
+}
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      configuration = configurations.deployerJars
+      repository(url: mavenLocal().url) {
+        //if your repository needs authentication
+        // authentication(userName: "username", password: "password")
+      }
+    }
+  }
+}
+
+buildscript {
+  repositories {
+    maven { url 'https://maven.fabric.io/public' }
+
+    flatDir {
+      dirs 'libs'
+    }
+  }
+}
+
+apply plugin: 'com.neenbedankt.android-apt'
+
+import org.apache.tools.ant.taskdefs.condition.Os
+
+repositories {
+  maven { url 'https://maven.fabric.io/public' }
+  flatDir {
+    dirs 'libs'
+  }
+}
+
+
+// Custom task for NDK module
+
+def getNdkBuildName() {
+  if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+    return "ndk-build.cmd"
+  } else {
+    return "ndk-build"
+  }
+}
+
+def findNdkBuildFullPath() {
+  // we allow to provide full path to ndk-build tool
+  if (hasProperty('ndk.command')) {
+    return property('ndk.command')
+  }
+  // or just a path to the containing directory
+  if (hasProperty('ndk.path')) {
+    def ndkDir = property('ndk.path')
+    return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
+  }
+  if (System.getenv('ANDROID_NDK') != null) {
+    def ndkDir = System.getenv('ANDROID_NDK')
+    return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
+  }
+  def ndkDir = android.hasProperty('plugin') ? android.plugin.ndkFolder :
+          plugins.getPlugin('com.android.library').sdkHandler.getNdkFolder()
+  if (ndkDir) {
+    return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
+  }
+  return null
+}
+
+def getNdkBuildFullPath() {
+  def ndkBuildFullPath = findNdkBuildFullPath()
+  if (ndkBuildFullPath == null) {
+    throw new GradleScriptException(
+            "ndk-build binary cannot be found, check if you've set " +
+                    "\$ANDROID_NDK environment variable correctly or if ndk.dir is " +
+                    "setup in local.properties",
+            null)
+  }
+  if (!new File(ndkBuildFullPath).canExecute()) {
+    throw new GradleScriptException(
+            "ndk-build binary " + ndkBuildFullPath + " doesn't exist or isn't executable.\n" +
+                    "Check that the \$ANDROID_NDK environment variable, or ndk.dir in local.proerties, is set correctly.\n" +
+                    "(On Windows, make sure you escape backslashes in local.properties or use forward slashes, e.g. C:\\\\ndk or C:/ndk rather than C:\\ndk)",
+            null)
+  }
+  return ndkBuildFullPath
+}
+
+task buildExponentNdkLib(dependsOn: ':ReactAndroid:prepareJSC', type: Exec) {
+  inputs.file('src/main/jni')
+  inputs.file('../../cpp')
+  outputs.dir("$buildDir/exponent-ndk/all")
+  commandLine getNdkBuildFullPath(),
+          'NDK_PROJECT_PATH=null',
+          "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
+          'NDK_OUT=' + temporaryDir,
+          "NDK_LIBS_OUT=$buildDir/exponent-ndk/all",
+          '-C', file('src/main/jni').absolutePath,
+          '--jobs', Runtime.runtime.availableProcessors()
+}
+
+task cleanExponentNdkLib(type: Exec) {
+  commandLine getNdkBuildFullPath(),
+          '-C', file('src/main/jni').absolutePath,
+          'clean'
+}
+
+task packageExponentNdkLibs(dependsOn: buildExponentNdkLib, type: Copy) {
+  from "$buildDir/exponent-ndk/all"
+  exclude '**/libjsc.so'
+  exclude '**/libgnustl_shared.so'
+  into "$buildDir/exponent-ndk/exported"
+}
+
+
+android {
+  compileSdkVersion 24
+  buildToolsVersion "24.0.3"
+
+  defaultConfig {
+    minSdkVersion 19
+    targetSdkVersion 24
+    versionCode 1
+    versionName "1.0"
+    ndk {
+      abiFilters 'armeabi-v7a', 'x86'
+    }
+  }
+
+  // Use custom task for NDK module from above
+  sourceSets.main {
+    jni.srcDirs = []
+    jniLibs.srcDir "$buildDir/exponent-ndk/exported"
+  }
+  tasks.withType(JavaCompile) {
+    compileTask -> compileTask.dependsOn packageExponentNdkLibs
+  }
+  clean.dependsOn cleanExponentNdkLib
+
+  buildTypes {
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+  }
+}
+
+task generateDynamicMacros(type: Exec) {
+  // This gets run from the 'app' directory
+  commandLine '../../tools-public/generate-dynamic-macros-android.sh'
+}
+preBuild.dependsOn generateDynamicMacros
+
+dependencies {
+  compile fileTree(dir: 'libs', include: ['*.jar'])
+  compile 'com.android.support:multidex:1.0.1'
+
+  // Current react native
+  compile project(':ReactAndroid')
+  /* UNCOMMENT WHEN DISTRIBUTING
+  compile 'host.exp.exponent:react-native:14.0.0'
+  END UNCOMMENT WHEN DISTRIBUTING */
+
+  // React native dependencies
+  // We use a different version of appcompat
+  compile 'com.android.support:recyclerview-v7:24.+'
+  compile 'com.facebook.fresco:fresco:0.11.0'
+  compile 'com.facebook.fresco:animated-gif:0.11.0'
+  compile 'com.facebook.fresco:animated-webp:0.11.0'
+  compile 'com.facebook.fresco:webpsupport:0.11.0'
+  compile 'com.facebook.fresco:webpsupport:0.11.0'
+  compile 'com.facebook.fresco:imagepipeline-okhttp:0.8.1'
+  compile 'com.facebook.stetho:stetho:1.3.1'
+  compile 'com.facebook.stetho:stetho-okhttp3:1.3.1'
+  compile 'com.fasterxml.jackson.core:jackson-core:2.2.3'
+  compile 'com.google.code.findbugs:jsr305:3.0.0'
+  compile 'com.squareup.okhttp3:okhttp:3.4.1'
+  compile 'com.squareup.okhttp3:okhttp-ws:3.4.1'
+  compile 'com.squareup.okio:okio:1.8.0'
+  compile 'org.webkit:android-jsc:r174650'
+
+  // Our dependencies
+  compile 'com.android.support:appcompat-v7:24.2.0'
+  compile 'com.android.support:customtabs:24.2.0'
+  compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
+    transitive = true;
+  }
+  compile ('com.facebook.android:facebook-android-sdk:4.7.0') {
+    exclude module: 'bolts-android'
+  }
+  compile 'com.facebook.android:audience-network-sdk:4.19.0'
+  provided 'org.glassfish:javax.annotation:3.1.1'
+  compile 'de.greenrobot:eventbus:2.4.0'
+  compile 'com.amplitude:android-sdk:2.9.2' // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
+  compile 'com.squareup.picasso:picasso:2.5.2'
+  compile 'com.google.android.gms:play-services-gcm:9.8.0'
+  compile 'com.google.android.gms:play-services-analytics:9.8.0'
+  compile 'com.google.android.gms:play-services-maps:9.8.0'
+  compile 'com.google.android.gms:play-services-auth:9.8.0'
+  compile 'com.google.android.gms:play-services-location:9.8.0'
+  apt 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
+  compile "com.raizlabs.android:DBFlow-Core:2.2.1"
+  compile "com.raizlabs.android:DBFlow:2.2.1"
+  compile "com.madgag.spongycastle:core:1.53.0.0"
+  compile "com.madgag.spongycastle:prov:1.53.0.0"
+  debugCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
+  // debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta1'
+  releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
+  compile 'com.facebook.device.yearclass:yearclass:1.0.1'
+  compile 'commons-io:commons-io:1.3.2'
+  compile 'me.leolin:ShortcutBadger:1.1.4@aar'
+  compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+  compile 'com.theartofdev.edmodo:android-image-cropper:2.3.+'
+  compile 'com.yqritc:android-scalablevideoview:1.0.1'
+  compile 'commons-codec:commons-codec:1.10'
+  compile 'com.segment.analytics.android:analytics:4.+'
+  compile 'com.google.zxing:core:3.2.1'
+  compile 'net.openid:appauth:0.4.1'
+  compile 'com.airbnb.android:lottie:1.0.0'
+  compile('io.nlopez.smartlocation:library:3.2.11') {
+    transitive = false
+  }
+}

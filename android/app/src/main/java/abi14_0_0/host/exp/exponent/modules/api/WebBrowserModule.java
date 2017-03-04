@@ -18,7 +18,7 @@ import abi14_0_0.com.facebook.react.bridge.WritableMap;
 
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.chrometabs.ChromeTabsManagerActivity;
-import host.exp.exponentview.Exponent;
+import host.exp.expoview.Exponent;
 
 public class WebBrowserModule extends ReactContextBaseJavaModule {
   private final static String ERROR_CODE = "EXWebBrowser";

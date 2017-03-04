@@ -26,8 +26,8 @@ import javax.inject.Inject;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.kernel.Kernel;
-import host.exp.exponentview.Exponent;
-import host.exp.exponentview.R;
+import host.exp.expoview.Exponent;
+import host.exp.expoview.R;
 
 public class ExponentDevActivity extends AppCompatActivity {
 

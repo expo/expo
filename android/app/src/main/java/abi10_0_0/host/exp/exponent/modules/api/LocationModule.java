@@ -26,7 +26,7 @@ import abi10_0_0.com.facebook.react.modules.core.DeviceEventManagerModule.RCTDev
 import java.util.HashMap;
 import java.util.Map;
 
-import host.exp.exponentview.Exponent;
+import host.exp.expoview.Exponent;
 
 public class LocationModule extends ReactContextBaseJavaModule {
   Map<Integer, LocationListener> mLocationListeners = new HashMap<>();
