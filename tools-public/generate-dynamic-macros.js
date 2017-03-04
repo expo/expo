@@ -218,7 +218,7 @@ async function copyTemplateFileAsync(source, dest, templateSubstitutions) {
 }
 
 async function modifyIOSInfoPlistAsync(path, filename, templateSubstitutions) {
-  await modifyIOSPropertyListAsync(path, filename, (config) => {
+  let result = await modifyIOSPropertyListAsync(path, filename, (config) => {
     if (templateSubstitutions.FABRIC_API_KEY) {
       config.Fabric = {
         APIKey: templateSubstitutions.FABRIC_API_KEY,
@@ -231,6 +231,7 @@ async function modifyIOSInfoPlistAsync(path, filename, templateSubstitutions) {
     config.EXClientVersion = config.CFBundleVersion;
     return config;
   });
+  return result;
 }
 
 async function getTemplateSubstitutions() {
@@ -254,7 +255,7 @@ async function copyTemplateFilesAsync(platform, args) {
 
   if (platform === 'ios') {
     let infoPlistPath = args.infoPlistPath;
-    await modifyIOSInfoPlistAsync(infoPlistPath, 'Info', templateSubstitutions);
+    let infoPlist = await modifyIOSInfoPlistAsync(infoPlistPath, 'Info', templateSubstitutions);
     await renderPodfileAsync(
       path.join(templateFilesPath, platform, 'Podfile'),
       path.join(EXPONENT_DIR, 'ios', 'Podfile'),
@@ -267,16 +268,19 @@ async function copyTemplateFilesAsync(platform, args) {
     if (args.exponentViewPath) {
       let exponentViewPath = path.join(process.cwd(), args.exponentViewPath);
       await renderExponentViewPodspecAsync(
-        path.join(templateFilesPath, platform, 'ExponentView.podspec'),
-        path.join(exponentViewPath, 'ExponentView.podspec')
+        path.join(templateFilesPath, platform, 'ExpoKit.podspec'),
+        path.join(exponentViewPath, 'ExpoKit.podspec'),
+        {
+          IOS_EXPONENT_CLIENT_VERSION: infoPlist.EXClientVersion,
+        }
       );
       await renderPodfileAsync(
-        path.join(templateFilesPath, platform, 'ExponentView-Podfile'),
+        path.join(templateFilesPath, platform, 'ExpoKit-Podfile'),
         path.join(exponentViewPath, 'exponent-view-template', 'ios', 'Podfile'),
         {
           TARGET_NAME: 'exponent-view-template',
           EXPONENT_ROOT_PATH: '../..',
-          REACT_NATIVE_PATH: '../node_modules/react-native',
+          REACT_NATIVE_PATH: '../../../react-native-lab/react-native',
         }
       );
     }

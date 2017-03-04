@@ -1,10 +1,10 @@
 
 Pod::Spec.new do |s|
-  s.name = "ExponentView"
+  s.name = "ExpoKit"
   s.version = "${IOS_EXPONENT_CLIENT_VERSION}"
-  s.summary = 'Exponent'
-  s.description = 'Exponent lets web developers build truly native apps that work across both iOS and Android by writing them once in just JavaScript.'
-  s.homepage = 'http://docs.getexponent.com'
+  s.summary = 'ExpoKit'
+  s.description = 'ExpoKit allows native projects to integrate with the Expo SDK.'
+  s.homepage = 'http://docs.expo.io'
   s.license = 'BSD'
   s.author = "650 Industries, Inc."
   s.requires_arc = true
