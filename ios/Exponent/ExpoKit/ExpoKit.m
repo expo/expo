@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "ExponentViewManager.h"
+#import "ExpoKit.h"
 #import "EXAnalytics.h"
 #import "EXFatalHandler.h"
 #import "EXKernel.h"
@@ -17,7 +17,7 @@
 
 NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDidRegisterForRemoteNotificationsNotification";
 
-@interface ExponentViewManager ()
+@interface ExpoKit ()
 {
   Class _rootViewControllerClass;
 }
@@ -27,18 +27,18 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
 
 @end
 
-@implementation ExponentViewManager
+@implementation ExpoKit
 
 + (nonnull instancetype)sharedInstance
 {
-  static ExponentViewManager *theExponent = nil;
+  static ExpoKit *theExpoKit = nil;
   static dispatch_once_t once;
   dispatch_once(&once, ^{
-    if (!theExponent) {
-      theExponent = [[ExponentViewManager alloc] init];
+    if (!theExpoKit) {
+      theExpoKit = [[ExpoKit alloc] init];
     }
   });
-  return theExponent;
+  return theExpoKit;
 }
 
 - (instancetype)init
@@ -66,7 +66,7 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
 
 - (void)registerRootViewControllerClass:(Class)rootViewControllerClass
 {
-  NSAssert([rootViewControllerClass isSubclassOfClass:[EXViewController class]], @"ExponentViewManager root view controller class must subclass EXViewController.");
+  NSAssert([rootViewControllerClass isSubclassOfClass:[EXViewController class]], @"ExpoKit root view controller class must subclass EXViewController.");
   _rootViewControllerClass = rootViewControllerClass;
 }
 

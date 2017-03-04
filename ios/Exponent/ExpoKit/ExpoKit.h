@@ -8,13 +8,13 @@ FOUNDATION_EXPORT NSString * const EXAppDidRegisterForRemoteNotificationsNotific
 
 @class EXViewController;
 
-@interface ExponentViewManager : NSObject
+@interface ExpoKit : NSObject
 
 + (instancetype)sharedInstance;
 
 /**
  *  Register an EXViewController subclass as the root class.
- *  This must be the first method called on ExponentViewManager's singleton instance to make any difference.
+ *  This must be the first method called on ExpoKit's singleton instance to make any difference.
  */
 - (void)registerRootViewControllerClass:(Class)rootViewControllerClass;
 
