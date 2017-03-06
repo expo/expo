@@ -531,7 +531,7 @@ babel-plugin-lodash@^3.2.11:
 
 babel-plugin-react-transform@^2.0.2:
   version "2.0.2"
-  resolved babel-plugin-react-transform-2.0.2.tgz#515bbfa996893981142d90b1f9b1635de2995109
+  resolved "https://registry.yarnpkg.com/babel-plugin-react-transform/-/babel-plugin-react-transform-2.0.2.tgz#515bbfa996893981142d90b1f9b1635de2995109"
   dependencies:
     lodash "^4.6.1"
 
@@ -3119,9 +3119,9 @@ gatsby-typegen-remark-copy-linked-files@1.0.0-alpha12:
     lodash "^4.17.3"
     unist-util-visit "^1.1.1"
 
-gatsby-typegen-remark-exponent-autolink@^1.0.0:
-  version "1.0.0"
-  resolved gatsby-typegen-remark-exponent-autolink-1.0.0.tgz#8d60257447ea6d029b544dfd2c021a94ba644671
+gatsby-typegen-remark-expo-autolink@1.0.1:
+  version "1.0.1"
+  resolved gatsby-typegen-remark-expo-autolink-1.0.1.tgz#e96722cce5d59f6997e45909be6a2eb96677dfb7
   dependencies:
     babel-plugin-lodash "^3.2.11"
     babel-plugin-transform-flow-strip-types "^6.22.0"
@@ -4539,10 +4539,6 @@ kebab-case@^1.0.0:
   version "1.0.0"
   resolved kebab-case-1.0.0.tgz#3f9e4990adcad0c686c0e701f7645868f75f91eb
 
-keymaster@^1.6.2:
-  version "1.6.2"
-  resolved keymaster-1.6.2.tgz#e1ae54d0ea9488f9f60b66b668f02e9a1946c6eb
-
 kilt@^1.1.x:
   version "1.1.1"
   resolved kilt-1.1.1.tgz#77b4a6163ca7fa5b2137a88c17334216ec23d5db
@@ -5140,13 +5136,7 @@ minimalistic-assert@^1.0.0:
   version "1.0.0"
   resolved minimalistic-assert-1.0.0.tgz#702be2dda6b37f4836bcb3f5db56641b64a1d3d3
 
-"minimatch@2 || 3", minimatch@^3.0.0, minimatch@^3.0.2:
-  version "3.0.3"
-  resolved minimatch-3.0.3.tgz#2a4e4090b96b2db06a9d7df01055a62a77c9b774
-  dependencies:
-    brace-expansion "^1.0.0"
-
-minimatch@3.0.2:
+"minimatch@2 || 3", minimatch@3.0.2, minimatch@^3.0.0, minimatch@^3.0.2:
   version "3.0.2"
   resolved minimatch-3.0.2.tgz#0f398a7300ea441e9c348c83d98ab8c9dbf9c40a
   dependencies:
@@ -6458,7 +6448,7 @@ re-emitter@^1.0.0:
 
 react-deep-force-update@^1.0.0:
   version "1.0.1"
-  resolved react-deep-force-update-1.0.1.tgz#f911b5be1d2a6fe387507dd6e9a767aa2924b4c7
+  resolved "https://registry.yarnpkg.com/react-deep-force-update/-/react-deep-force-update-1.0.1.tgz#f911b5be1d2a6fe387507dd6e9a767aa2924b4c7"
 
 react-deep-force-update@^2.0.1:
   version "2.0.1"
@@ -6537,7 +6527,7 @@ react-motion@^0.4.7:
 
 react-proxy@^1.1.7:
   version "1.1.8"
-  resolved react-proxy-1.1.8.tgz#9dbfd9d927528c3aa9f444e4558c37830ab8c26a
+  resolved "https://registry.yarnpkg.com/react-proxy/-/react-proxy-1.1.8.tgz#9dbfd9d927528c3aa9f444e4558c37830ab8c26a"
   dependencies:
     lodash "^4.6.1"
     react-deep-force-update "^1.0.0"
@@ -6583,7 +6573,7 @@ react-transform-catch-errors@^1.0.2:
 
 react-transform-hmr@^1.0.3:
   version "1.0.4"
-  resolved react-transform-hmr-1.0.4.tgz#e1a40bd0aaefc72e8dfd7a7cda09af85066397bb
+  resolved "https://registry.yarnpkg.com/react-transform-hmr/-/react-transform-hmr-1.0.4.tgz#e1a40bd0aaefc72e8dfd7a7cda09af85066397bb"
   dependencies:
     global "^4.3.0"
     react-proxy "^1.1.7"
@@ -6687,7 +6677,7 @@ rechoir@^0.6.2:
 
 "recursive-readdir@https://github.com/KyleAMathews/recursive-readdir.git":
   version "2.1.0"
-  resolved "https://github.com/KyleAMathews/recursive-readdir.git#fbfe835d2e75a977db2d1e794214aa26ecdb0671"
+  resolved recursive-readdir.git-fbfe835d2e75a977db2d1e794214aa26ecdb0671#c2017cf4e79556e029da8bae77ff6e0033ecc722
   dependencies:
     minimatch "3.0.2"
 

@@ -41,7 +41,7 @@ module.exports = {
           `gatsby-typegen-remark-prismjs`,
           `gatsby-typegen-remark-smartypants`,
           {
-            resolve: `gatsby-typegen-remark-exponent-autolink`,
+            resolve: `gatsby-typegen-remark-expo-autolink`,
             options: {
               offsetY: 69.6
             }
