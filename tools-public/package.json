@@ -17,7 +17,7 @@
     "babel-plugin-transform-object-rest-spread": "^6.8.0",
     "babel-preset-es2016-node5": "^1.1.2",
     "co": "^4.6.0",
-    "gulp": "gulpjs/gulp#4.0",
+    "gulp": "github:gulpjs/gulp#4.0",
     "gulp-shell": "^0.5.2",
     "instapromise": "latest",
     "lodash": "^4.13.1",
