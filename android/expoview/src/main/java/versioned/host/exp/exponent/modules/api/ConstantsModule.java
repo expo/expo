@@ -106,14 +106,14 @@ public class ConstantsModule extends ReactContextBaseJavaModule {
       String manifestUrl = (String) experienceProperties.get(KernelConstants.MANIFEST_URL_KEY);
 
       if (Constants.INITIAL_URL == null) {
-        return "exponent";
+        return "expo";
       } else if (manifestUrl.equals(Constants.INITIAL_URL)) {
         return "standalone";
       } else {
         return "guest";
       }
     } else {
-      return "exponent";
+      return "expo";
     }
   }
 
