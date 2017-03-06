@@ -61,14 +61,8 @@ let BrowserActions = {
         return {};
       }
 
-      // this can happen if fetching a local manifest (e.g. from a developer tool)
       if (!ExManifests.isManifestSdkVersionSupported(manifest)) {
-        const CompanyName = Exponent.Constants.exponentVersion.match(/^1.13.2/)
-          ? 'Expo'
-          : 'Exponent';
-        throw new Error(
-          `This experience uses an unsupported version of ${CompanyName} (SDK ${manifest.sdkVersion}). You may need to update ${CompanyName}.`
-        );
+        throw new Error(`This experience uses an unsupported version of Expo (SDK ${manifest.sdkVersion}). You may need to update Expo.`);
       }
 
       return BrowserActions.navigateToBundleUrlAsync(

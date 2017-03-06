@@ -159,12 +159,11 @@ class BrowserScreen extends React.Component {
 
   _renderPlaceholder() {
     let content;
-    const CompanyName = Exponent.Constants.exponentVersion.match(/^1.13.2/) ? 'EXPO' : 'EXPONENT';
     if (this.props.isShell) {
       // possibly null
       content = this._renderManifestLoadingIcon();
     } else {
-      content = (<Text style={styles.placeholderText}>{CompanyName}</Text>);
+      content = (<Text style={styles.placeholderText}>EXPO</Text>);
     }
     return (
       <View style={styles.placeholder}>

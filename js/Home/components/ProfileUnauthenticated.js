@@ -15,10 +15,6 @@ import Exponent from 'exponent';
 import Colors from '../constants/Colors';
 import PrimaryButton from './PrimaryButton';
 
-const CompanyName = Exponent.Constants.exponentVersion.match(/^1.13.2/)
-  ? 'Expo'
-  : 'Exponent';
-
 @withNavigation
 export default class ProfileUnauthenticated extends React.Component {
   render() {
@@ -32,7 +28,7 @@ export default class ProfileUnauthenticated extends React.Component {
 
         <Text style={styles.descriptionText}>
           To access your own projects or to like projects created by others,
-          please sign in or create an {CompanyName} account.
+          please sign in or create an Expo account.
         </Text>
 
         {this._renderSignInButton()}
@@ -58,7 +54,7 @@ export default class ProfileUnauthenticated extends React.Component {
         plain
         onPress={this._handleSignUpPress}
         fallback={TouchableOpacity}>
-        Sign up for {CompanyName}
+        Sign up for Expo
       </PrimaryButton>
     );
   }

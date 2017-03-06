@@ -16,10 +16,6 @@ import Exponent from 'exponent';
 import PrimaryButton from './PrimaryButton';
 import SharedStyles from '../constants/SharedStyles';
 
-const CompanyName = Exponent.Constants.exponentVersion.match(/^1.13.2/)
-  ? 'Expo'
-  : 'Exponent';
-
 @withNavigation
 export default class EmptyProjectsNotice extends React.Component {
   render() {
@@ -33,16 +29,14 @@ export default class EmptyProjectsNotice extends React.Component {
 
         <Text style={SharedStyles.noticeDescriptionText}>
           This screen is where you’ll be able to open any project you have
-          running in your{' '}
-          {CompanyName}
-          {' '}XDE. You’ll also find your recently opened
+          running in your Expo XDE. You’ll also find your recently opened
           projects here.
         </Text>
 
         <PrimaryButton
           onPress={this._handleExplorePress}
           fallback={TouchableOpacity}>
-          Explore {CompanyName} projects
+          Explore Expo projects
         </PrimaryButton>
       </ScrollView>
     );
