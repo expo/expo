@@ -128,7 +128,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new GyroscopeModule(reactContext));
         nativeModules.add(new NotificationsModule(reactContext, mManifest, mExperienceProperties));
         nativeModules.add(new ContactsModule(reactContext));
-        nativeModules.add(new FileSystemModule(reactContext, mManifest));
+        nativeModules.add(new FileSystemModule(reactContext, scopedContext));
         nativeModules.add(new LocationModule(reactContext, scopedContext));
         nativeModules.add(new CryptoModule(reactContext));
         nativeModules.add(new ImagePickerModule(reactContext));
