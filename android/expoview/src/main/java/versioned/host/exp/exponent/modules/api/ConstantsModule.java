@@ -78,7 +78,7 @@ public class ConstantsModule extends ReactContextBaseJavaModule {
   public Map<String, Object> getConstants() {
     Map<String, Object> constants = new HashMap<>();
     constants.put("sessionId", mSessionId);
-    constants.put("exponentVersion", ExpoViewKernel.getInstance().getVersionName());
+    constants.put("expoVersion", ExpoViewKernel.getInstance().getVersionName());
     constants.put("statusBarHeight", mStatusBarHeight);
     constants.put("deviceYearClass", YearClass.get(getReactApplicationContext()));
     constants.put("deviceId", mExponentSharedPreferences.getOrCreateUUID());
