@@ -10,4 +10,4 @@ Writing an Expo app is like writing a React Native app, except you never need to
 
 Expo also provides UI components to handle a variety of use-cases that almost all apps will cover but are not baked into React Native core, these include icons, an image lightbox, a loading overlay and more.
 
-Go ahead and give Expo a try! Follow the [Installation](introduction/index.html#installation) and [Up and Running](guides/index.html#up-and-running) guides to launch your first Expo project. If you're not already familiar with React and React Native you can bootstrap your knowledge with [React Native Express](http://www.reactnativeexpress.com/).
+Go ahead and give Expo a try! Follow the [Installation](introduction/installation.html#installation) and [Up and Running](guides/up-and-running.html#up-and-running) guides to launch your first Expo project. If you're not already familiar with React and React Native you can bootstrap your knowledge with [React Native Express](http://www.reactnativeexpress.com/).
