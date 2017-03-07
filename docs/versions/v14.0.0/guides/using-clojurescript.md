@@ -97,7 +97,7 @@ exp start --ios
 exp start --android
 ```
 
-For more information, see [exp Command-Line Interface](../.html#exp-cli).
+For more information, see [exp Command-Line Interface](exp-cli.html#exp-cli).
 
 ### Using XDE
 

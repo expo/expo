@@ -20,7 +20,7 @@ or the Expo SDK.
 ## Detaching an Expo project into a Native project with ExpoKit
 
 You may find yourself in a situation where your Expo project needs a native module that Expo
-doesn't currently support. We're always expanding the [Expo SDK](../sdk/.html),
+doesn't currently support. We're always expanding the [Expo SDK](../sdk/index.html),
 so we hope this is never the case. But it happens, especially if your app has very specific and uncommon
 native demands.
 
