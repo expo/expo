@@ -23,6 +23,7 @@ import logoText from 'images/logo-text.svg';
 import 'typeface-source-sans-pro';
 import 'typeface-source-code-pro';
 
+import v15 from 'data/v15.yaml';
 import v14 from 'data/v14.yaml';
 import v13 from 'data/v13.yaml';
 import v12 from 'data/v12.yaml';
@@ -30,6 +31,7 @@ import v11 from 'data/v11.yaml';
 import v10 from 'data/v10.yaml';
 import v9 from 'data/v9.yaml';
 
+// TODO: Add v15 to the front when we want it to be the default and selectable
 const versions = [`v14.0.0`, `v13.0.0`, `v12.0.0`, `v11.0.0`, `v10.0.0`, `v9.0.0`];
 
 // NOTE(brentvatne): super ugly hack because navbar depends on us adding
@@ -67,6 +69,9 @@ class Wrapper extends React.Component {
   getRoutes = version => {
     let routes;
     switch (version) {
+      case 'v15.0.0':
+        routes = v15;
+        break;
       case 'v14.0.0':
         routes = v14;
         break;
