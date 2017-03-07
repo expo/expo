@@ -16,6 +16,9 @@ FOUNDATION_EXPORT NSString *kEXKernelRefreshForegroundTaskNotification;
 FOUNDATION_EXPORT NSString *kEXKernelGetPushTokenNotification;
 FOUNDATION_EXPORT NSString *kEXKernelErrorDomain;
 
+// this key is set to YES when crashlytics sends a crash report.
+FOUNDATION_EXPORT NSString * const kEXKernelClearJSCacheUserDefaultsKey;
+
 @interface EXKernel : NSObject <EXKernelModuleDelegate>
 
 + (instancetype)sharedInstance;

@@ -97,6 +97,9 @@ NSTimeInterval const kEXJavaScriptResourceLongerTimeout = 120;
     // no cache - wait longer before timing out
     _jsResource.requestTimeoutInterval = kEXJavaScriptResourceLongerTimeout;
   }
+  if ([self shouldInvalidateJSResourceCache]) {
+    [_jsResource removeCache];
+  }
   [_jsResource loadResourceWithBehavior:cacheBehavior successBlock:^(NSData * _Nonnull sourceData) {
     loadCallback(nil, sourceData, sourceData.length);
   } errorBlock:^(NSError * _Nonnull error) {
@@ -235,6 +238,7 @@ EX_APP_MANAGER_ABSTRACT(- (BOOL)isReadyToLoad)
 EX_APP_MANAGER_ABSTRACT(- (void)computeVersionSymbolPrefix)
 EX_APP_MANAGER_ABSTRACT(- (NSString *)bundleNameForJSResource)
 EX_APP_MANAGER_ABSTRACT(- (EXCachedResourceBehavior)cacheBehaviorForJSResource)
+EX_APP_MANAGER_ABSTRACT(- (BOOL)shouldInvalidateJSResourceCache)
 EX_APP_MANAGER_ABSTRACT(- (NSURL *)bundleUrlForBridge)
 EX_APP_MANAGER_ABSTRACT(- (NSDictionary * _Nullable)launchOptionsForBridge)
 EX_APP_MANAGER_ABSTRACT(- (NSDictionary * _Nullable)initialPropertiesForRootView)

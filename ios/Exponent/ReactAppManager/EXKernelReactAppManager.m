@@ -117,6 +117,17 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
   }
 }
 
+- (BOOL)shouldInvalidateJSResourceCache
+{
+  // if crashlytics shows that we're recovering from a native crash, invalidate any downloaded kernel cache.
+  BOOL shouldClearKernelCache = [[NSUserDefaults standardUserDefaults] boolForKey:kEXKernelClearJSCacheUserDefaultsKey];
+  if (shouldClearKernelCache) {
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kEXKernelClearJSCacheUserDefaultsKey];
+    return YES;
+  }
+  return NO;
+}
+
 - (NSDictionary * _Nullable)launchOptionsForBridge
 {
   return _launchOptions;

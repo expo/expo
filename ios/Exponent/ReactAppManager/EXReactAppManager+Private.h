@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)bundleNameForJSResource;
 - (EXCachedResourceBehavior)cacheBehaviorForJSResource;
+- (BOOL)shouldInvalidateJSResourceCache;
 
 - (NSDictionary * _Nullable)launchOptionsForBridge;
 - (NSDictionary * _Nullable)initialPropertiesForRootView;

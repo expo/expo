@@ -26,6 +26,7 @@ NSString *kEXKernelRefreshForegroundTaskNotification = @"EXKernelRefreshForegrou
 NSString *kEXKernelGetPushTokenNotification = @"EXKernelGetPushTokenNotification";
 NSString *kEXKernelShouldForegroundTaskEvent = @"foregroundTask";
 NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
+NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUserDefaultsKey";
 
 @interface EXKernel ()
 

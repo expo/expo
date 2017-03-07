@@ -167,6 +167,17 @@ NS_ASSUME_NONNULL_BEGIN
   return localPath;
 }
 
+- (BOOL)removeCache
+{
+  NSString *localPath = [self resourceCachePath];
+  if ([[NSFileManager defaultManager] fileExistsAtPath:localPath isDirectory:nil]) {
+    NSError *error;
+    [[NSFileManager defaultManager] removeItemAtPath:localPath error:&error];
+    return (error == nil);
+  }
+  return NO;
+}
+
 - (NSError *)_validateResponseData:(NSData *)data response:(NSURLResponse *)response
 {
   // always valid

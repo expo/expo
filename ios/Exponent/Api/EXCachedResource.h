@@ -35,9 +35,21 @@ typedef enum EXCachedResourceBehavior {
 - (void)loadRemoteResourceWithSuccess:(EXCachedResourceSuccessBlock)successBlock
                                 error:(EXCachedResourceErrorBlock)errorBlock;
 
+/**
+ *  Filesystem path to the downloaded and cached copy of this resource.
+ */
 - (NSString *)resourceCachePath;
+/**
+ *  Returns [self resourceCachePath] if a file exists there. Otherwise returns a NSBundle path.
+ */
 - (NSString *)resourceLocalPathPreferringCache;
+
 - (NSError *)_validateResponseData:(NSData *)data response:(NSURLResponse *)response;
+
+/**
+ *  Returns whether a cache was removed.
+ */
+- (BOOL)removeCache;
 
 @end
 

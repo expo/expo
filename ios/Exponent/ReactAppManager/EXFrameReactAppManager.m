@@ -47,6 +47,13 @@
   return ([self doesManifestEnableDeveloperTools]) ? kEXCachedResourceNoCache : kEXCachedResourceFallBackToCache;
 }
 
+- (BOOL)shouldInvalidateJSResourceCache
+{
+  // TODO: we may want cache expiration here eventually.
+  // we are partially protected by the fact that caches are separated by SDK version already.
+  return NO;
+}
+
 
 - (NSDictionary * _Nullable)initialPropertiesForRootView
 {
