@@ -1,7 +1,7 @@
 /* @flow */
 
 import jwtDecode from 'jwt-decode';
-import { Constants } from 'exponent';
+import { Constants } from 'expo';
 
 const AuthScope = 'openid offline_access nickname username';
 const AuthEndpoint = 'https://exponent.auth0.com/oauth/ro';

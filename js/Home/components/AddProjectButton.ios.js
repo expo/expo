@@ -2,13 +2,13 @@
 
 import React from 'react';
 import { Clipboard, Linking, StyleSheet, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@exponent/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 
 import Colors from '../constants/Colors';
 import ExUrls from 'ExUrls';
 
-import { withNavigation } from '@exponent/ex-navigation';
-import { connectActionSheet } from '@exponent/react-native-action-sheet';
+import { withNavigation } from '@expo/ex-navigation';
+import { connectActionSheet } from '@expo/react-native-action-sheet';
 import requestCameraPermissionsAsync
   from '../utils/requestCameraPermissionsAsync';
 

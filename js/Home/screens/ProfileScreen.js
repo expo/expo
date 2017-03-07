@@ -11,9 +11,9 @@ import {
   View,
   findNodeHandle,
 } from 'react-native';
-import { Ionicons, MaterialIcons } from '@exponent/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { connect } from 'react-redux';
-import { connectActionSheet } from '@exponent/react-native-action-sheet';
+import { connectActionSheet } from '@expo/react-native-action-sheet';
 
 import AuthTokenActions from '../../Flux/AuthTokenActions';
 

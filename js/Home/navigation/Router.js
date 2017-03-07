@@ -1,6 +1,6 @@
 /* @flow */
 
-import { createRouter } from '@exponent/ex-navigation';
+import { createRouter } from '@expo/ex-navigation';
 
 export default createRouter(
   () => ({

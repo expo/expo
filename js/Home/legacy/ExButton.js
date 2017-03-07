@@ -18,7 +18,7 @@ import {
   View,
 } from 'react-native';
 import TimerMixin from 'react-timer-mixin';
-import ResponsiveImage from '@exponent/react-native-responsive-image';
+import ResponsiveImage from '@expo/react-native-responsive-image';
 
 import autobind from 'autobind-decorator';
 import reactMixin from 'react-mixin';

@@ -19,8 +19,8 @@ import {
   View,
 } from 'react-native';
 
-import Exponent from 'exponent';
-import ResponsiveImage from '@exponent/react-native-responsive-image';
+import Expo from 'expo';
+import ResponsiveImage from '@expo/react-native-responsive-image';
 
 import autobind from 'autobind-decorator';
 import Browser from 'Browser';
@@ -104,7 +104,7 @@ export default class MenuView extends React.Component {
             style={styles.nuxLogo}
           />
           <Text style={headingStyles}>
-            Welcome to Exponent!
+            Welcome to Expo!
           </Text>
         </View>
         <Text style={styles.nuxTooltip}>

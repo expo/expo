@@ -6,8 +6,8 @@ import {
   StackNavigation,
   TabNavigation,
   TabNavigationItem,
-} from '@exponent/ex-navigation';
-import { Entypo, Ionicons } from '@exponent/vector-icons';
+} from '@expo/ex-navigation';
+import { Entypo, Ionicons } from '@expo/vector-icons';
 
 import Colors from '../constants/Colors';
 import defaultRouteConfig from './defaultRouteConfig';

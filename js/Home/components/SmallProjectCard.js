@@ -12,15 +12,15 @@ import {
   TouchableHighlight,
   View,
 } from 'react-native';
-import { Ionicons } from '@exponent/vector-icons';
-import { withNavigation } from '@exponent/ex-navigation';
+import { Ionicons } from '@expo/vector-icons';
+import { withNavigation } from '@expo/ex-navigation';
 
 import Colors from '../constants/Colors';
 import Layout from '../constants/Layout';
 import ExUrls from 'ExUrls';
-import FadeIn from '@exponent/react-native-fade-in-image';
+import FadeIn from '@expo/react-native-fade-in-image';
 import TouchableNativeFeedbackSafe
-  from '@exponent/react-native-touchable-native-feedback-safe';
+  from '@expo/react-native-touchable-native-feedback-safe';
 
 @withNavigation
 export default class SmallProjectCard extends React.Component {

@@ -13,9 +13,9 @@ import {
   View,
 } from 'react-native';
 import TouchableNativeFeedbackSafe
-  from '@exponent/react-native-touchable-native-feedback-safe';
-import FadeIn from '@exponent/react-native-fade-in-image';
-import { withNavigation } from '@exponent/ex-navigation';
+  from '@expo/react-native-touchable-native-feedback-safe';
+import FadeIn from '@expo/react-native-fade-in-image';
+import { withNavigation } from '@expo/ex-navigation';
 
 import Colors from '../constants/Colors';
 import ExUrls from 'ExUrls';

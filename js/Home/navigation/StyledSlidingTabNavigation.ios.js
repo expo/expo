@@ -3,7 +3,7 @@
 import React from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 
-import { SlidingTabNavigation } from '@exponent/ex-navigation';
+import { SlidingTabNavigation } from '@expo/ex-navigation';
 
 import { capitalize } from 'lodash';
 

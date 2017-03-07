@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
-import { withNavigation } from '@exponent/ex-navigation';
+import { withNavigation } from '@expo/ex-navigation';
 
 import Colors from '../constants/Colors';
 import ProjectCard from './ProjectCard';

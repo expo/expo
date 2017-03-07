@@ -10,7 +10,7 @@ import {
   View,
 } from 'react-native';
 import TouchableNativeFeedback
-  from '@exponent/react-native-touchable-native-feedback-safe';
+  from '@expo/react-native-touchable-native-feedback-safe';
 
 import Colors from '../constants/Colors';
 

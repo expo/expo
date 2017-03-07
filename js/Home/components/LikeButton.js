@@ -2,9 +2,9 @@
 
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@exponent/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import TouchableNativeFeedbackSafe
-  from '@exponent/react-native-touchable-native-feedback-safe';
+  from '@expo/react-native-touchable-native-feedback-safe';
 
 export default class LikeButton extends React.Component {
   render() {

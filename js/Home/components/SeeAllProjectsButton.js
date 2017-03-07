@@ -9,10 +9,10 @@ import {
   TouchableHighlight,
   View,
 } from 'react-native';
-import { Ionicons } from '@exponent/vector-icons';
-import FadeIn from '@exponent/react-native-fade-in-image';
+import { Ionicons } from '@expo/vector-icons';
+import FadeIn from '@expo/react-native-fade-in-image';
 import TouchableNativeFeedback
-  from '@exponent/react-native-touchable-native-feedback-safe';
+  from '@expo/react-native-touchable-native-feedback-safe';
 import { take } from 'lodash';
 
 import Colors from '../constants/Colors';

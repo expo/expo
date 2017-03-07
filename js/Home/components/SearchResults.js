@@ -15,7 +15,7 @@ import {
   View,
 } from 'react-native';
 import TouchableNativeFeedbackSafe
-  from '@exponent/react-native-touchable-native-feedback-safe';
+  from '@expo/react-native-touchable-native-feedback-safe';
 
 import Colors from '../constants/Colors';
 import ExUrls from 'ExUrls';

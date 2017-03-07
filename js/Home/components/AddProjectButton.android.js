@@ -10,9 +10,9 @@ import {
   View,
   findNodeHandle,
 } from 'react-native';
-import { MaterialIcons } from '@exponent/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 
-import { withNavigation } from '@exponent/ex-navigation';
+import { withNavigation } from '@expo/ex-navigation';
 
 import ExUrls from 'ExUrls';
 import Colors from '../constants/Colors';

@@ -16,8 +16,8 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import Exponent from 'exponent';
-import FadeIn from '@exponent/react-native-fade-in-image';
+import Expo from 'expo';
+import FadeIn from '@expo/react-native-fade-in-image';
 
 import autobind from 'autobind-decorator';
 import BrowserActions from 'BrowserActions';

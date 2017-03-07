@@ -10,7 +10,7 @@ import {
   StyleSheet,
 } from 'react-native';
 
-import ExNavigator from '@exponent/react-native-navigator';
+import ExNavigator from '@expo/react-native-navigator';
 import ConsoleRouter from 'ConsoleRouter';
 import ExLayout from 'ExLayout';
 

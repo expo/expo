@@ -1,7 +1,7 @@
 /* @flow */
 
 import React from 'react';
-import { Asset } from 'exponent';
+import { Asset } from 'expo';
 import {
   ActivityIndicator,
   Image,
@@ -13,8 +13,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import FadeIn from '@exponent/react-native-fade-in-image';
-import { SlidingTabNavigationItem } from '@exponent/ex-navigation';
+import FadeIn from '@expo/react-native-fade-in-image';
+import { SlidingTabNavigationItem } from '@expo/ex-navigation';
 
 import { take, takeRight } from 'lodash';
 import dedent from 'dedent';

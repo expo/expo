@@ -1,9 +1,9 @@
 /* @flow */
 
-import Exponent from 'Exponent';
+import Expo from 'expo';
 import React from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
-import { NavigationStyles } from '@exponent/ex-navigation';
+import { NavigationStyles } from '@expo/ex-navigation';
 
 import gql from 'graphql-tag';
 import { groupBy, debounce } from 'lodash';
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
   },
   iosSearchBarContainer: {
     height: 70,
-    paddingTop: Exponent.Constants.statusBarHeight,
+    paddingTop: Expo.Constants.statusBarHeight,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: 'rgba(46, 59, 76, 0.10)',
   },

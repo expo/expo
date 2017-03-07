@@ -6,7 +6,7 @@
  */
 'use strict';
 
-import ExNavigator from '@exponent/react-native-navigator';
+import ExNavigator from '@expo/react-native-navigator';
 import React from 'react';
 
 import SceneConfigs from 'SceneConfigs';

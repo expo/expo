@@ -14,7 +14,7 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
-import TouchableNativeFeedbackSafe from '@exponent/react-native-touchable-native-feedback-safe';
+import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 
 import take from 'lodash/take';
 

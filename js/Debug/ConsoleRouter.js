@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import React from 'react';
 
-import ExNavigator from '@exponent/react-native-navigator';
+import ExNavigator from '@expo/react-native-navigator';
 
 let ConsoleRouter = {
   getConsoleHistoryRoute(onPressReload, isUserFacing) {

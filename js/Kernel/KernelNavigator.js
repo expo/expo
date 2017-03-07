@@ -15,7 +15,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import ExNavigator from '@exponent/react-native-navigator';
+import ExNavigator from '@expo/react-native-navigator';
 import TimerMixin from 'react-timer-mixin';
 
 import autobind from 'autobind-decorator';

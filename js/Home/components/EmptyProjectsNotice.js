@@ -9,10 +9,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { withNavigation } from '@exponent/ex-navigation';
+import { withNavigation } from '@expo/ex-navigation';
 
 import Colors from '../constants/Colors';
-import Exponent from 'exponent';
 import PrimaryButton from './PrimaryButton';
 import SharedStyles from '../constants/SharedStyles';
 

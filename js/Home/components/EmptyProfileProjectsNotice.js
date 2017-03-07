@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { TouchableOpacity, StyleSheet, Text, View } from 'react-native';
-import { WebBrowser } from 'exponent';
+import { WebBrowser } from 'expo';
 
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';

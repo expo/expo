@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Constants } from 'exponent';
+import { Constants } from 'expo';
 import { connect } from 'react-redux';
 import { take, takeRight } from 'lodash';
 
@@ -64,7 +64,7 @@ export default class HomeScreen extends React.Component {
           </View>
 
           {this._renderRecentHistory()}
-          {this._renderExponentVersion()}
+          {this._renderExpoVersion()}
         </ScrollView>
 
         <StatusBar barStyle="default" />
@@ -72,7 +72,7 @@ export default class HomeScreen extends React.Component {
     );
   }
 
-  _renderExponentVersion = () => {
+  _renderExpoVersion = () => {
     return (
       <View style={styles.exponentVersionContainer}>
         <Text
@@ -106,7 +106,7 @@ export default class HomeScreen extends React.Component {
         <SmallProjectCard
           iconUrl="https://s3.amazonaws.com/exp-brand-assets/ExponentEmptyManifest_192.png"
           projectName="Tab bar experiment"
-          projectUrl="exp://m2-6dz.community.exponent-home.exp.direct:80"
+          projectUrl="exp://m2-6dz.community.exponent-home.exp.direct"
           fullWidthBorder
         />
       </View>

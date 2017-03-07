@@ -18,7 +18,7 @@ import {
 } from 'react-native';
 
 import autobind from 'autobind-decorator';
-import ExNavigator from '@exponent/react-native-navigator';
+import ExNavigator from '@expo/react-native-navigator';
 
 import ConsoleRouter from 'ConsoleRouter';
 import ExColors from 'ExColors';

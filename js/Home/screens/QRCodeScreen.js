@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Components } from 'exponent';
+import { Components } from 'expo';
 
 import Layout from '../constants/Layout';
 

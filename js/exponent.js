@@ -5,7 +5,7 @@
  */
 'use strict';
 
-import Exponent from 'exponent';
+import Expo from 'expo';
 import React from 'react';
 import {
   AppRegistry,
@@ -77,7 +77,7 @@ DeviceEventEmitter.addListener('ExponentKernel.addError', async (event) => {
   ExStore.dispatch(action);
 });
 
-Exponent.registerRootComponent(App);
+Expo.registerRootComponent(App);
 AppRegistry.registerComponent('ErrorScreenApp', () => ErrorScreenAppWithStore);
 AppRegistry.registerComponent('InfoScreenApp', () => InfoScreenApp);
 AppRegistry.registerComponent('ExperienceNuxApp', () => ExperienceNuxAppWithStore);

@@ -15,10 +15,10 @@ import {
   SlidingTabNavigationItem,
   NavigationBar,
   withNavigation,
-} from '@exponent/ex-navigation';
-import { Ionicons } from '@exponent/vector-icons';
+} from '@expo/ex-navigation';
+import { Ionicons } from '@expo/vector-icons';
 import TouchableNativeFeedback
-  from '@exponent/react-native-touchable-native-feedback-safe';
+  from '@expo/react-native-touchable-native-feedback-safe';
 
 import Colors from '../constants/Colors';
 import SearchBar from '../components/SearchBar';

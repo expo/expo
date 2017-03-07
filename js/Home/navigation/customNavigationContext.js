@@ -1,6 +1,6 @@
 /* @flow */
 
-import { NavigationContext, NavigationStyles } from '@exponent/ex-navigation';
+import { NavigationContext, NavigationStyles } from '@expo/ex-navigation';
 
 import Router from './Router';
 

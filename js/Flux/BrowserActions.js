@@ -6,7 +6,6 @@
 'use strict';
 
 import { action } from 'Flux';
-import Exponent from 'exponent';
 import ExManifests from 'ExManifests';
 import LocalStorage from 'LocalStorage';
 

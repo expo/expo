@@ -12,8 +12,8 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import { Ionicons } from '@exponent/vector-icons';
-import { NavigationBar, withNavigation } from '@exponent/ex-navigation';
+import { Ionicons } from '@expo/vector-icons';
+import { NavigationBar, withNavigation } from '@expo/ex-navigation';
 
 import Colors from '../constants/Colors';
 import ExUrls from 'ExUrls';

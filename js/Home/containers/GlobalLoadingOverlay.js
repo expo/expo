@@ -1,6 +1,6 @@
 /* @flow */
 
-import Exponent from 'exponent';
+import Expo from 'expo';
 import React from 'react';
 import {
   ActivityIndicator,
@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native';
 import { connect } from 'react-redux';
-import { Ionicons } from '@exponent/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import Colors from '../constants/Colors';
 
 import BrowserActions from 'BrowserActions';
@@ -60,7 +60,7 @@ export default class GlobalLoadingOverlay extends React.Component {
     }
 
     return (
-      <Exponent.Components.BlurView
+      <Expo.Components.BlurView
         tint="default"
         intensity={100}
         style={styles.container}>
@@ -80,7 +80,7 @@ export default class GlobalLoadingOverlay extends React.Component {
           onPress={this._cancelLoadingExperienceAsync}>
           <Text style={styles.cancelText}>Cancel</Text>
         </TouchableOpacity>
-      </Exponent.Components.BlurView>
+      </Expo.Components.BlurView>
     );
   }
 

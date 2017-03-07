@@ -1,6 +1,6 @@
 /* @flow */
 
-import Exponent, { Font } from 'exponent';
+import { Font } from 'expo';
 import React from 'react';
 import {
   ActivityIndicator,
@@ -9,9 +9,9 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import { NavigationProvider, StackNavigation } from '@exponent/ex-navigation';
-import { ActionSheetProvider } from '@exponent/react-native-action-sheet';
-import { Ionicons, MaterialIcons } from '@exponent/vector-icons';
+import { NavigationProvider, StackNavigation } from '@expo/ex-navigation';
+import { ActionSheetProvider } from '@expo/react-native-action-sheet';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { ApolloProvider } from 'react-apollo';
 
 import AuthTokenActions from '../Flux/AuthTokenActions';

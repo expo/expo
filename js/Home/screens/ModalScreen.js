@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Animated, Platform, View } from 'react-native';
-import { NavigationStyles, StackNavigation } from '@exponent/ex-navigation';
+import { NavigationStyles, StackNavigation } from '@expo/ex-navigation';
 import CloseButton from '../components/CloseButton';
 import defaultRouteConfig from '../navigation/defaultRouteConfig';
 
