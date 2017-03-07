@@ -29,6 +29,9 @@ import android.os.UserHandle;
 import android.support.annotation.Nullable;
 import android.view.Display;
 
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReadableMap;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -46,11 +49,32 @@ public class ScopedContext extends Context {
 
   private Context mContext;
   private String mScope;
+  private File mFilesDir;
+  private File mCacheDir;
   private ScopedApplicationContext mScopedApplicationContext;
 
   public ScopedContext(final Context context, final String scope) {
     mContext = context;
     mScope = scope + '-';
+
+    mFilesDir = new File(mContext.getFilesDir() + "/ExperienceData/" + scope);
+    mCacheDir = new File(mContext.getCacheDir() + "/ExperienceData/" + scope);
+  }
+
+  public String toScopedPath(String path) throws IOException {
+    return toScopedPath(path, Arguments.createMap());
+  }
+
+  public String toScopedPath(String path, ReadableMap options) throws IOException {
+    File root = options.hasKey("cache") && options.getBoolean("cache") ? getCacheDir() : getFilesDir();
+    ExpFileUtils.ensureDirExists(root);
+    File file = new File(root + "/" + path);
+    String fileCanonicalPath = file.getCanonicalPath();
+    String rootCanonicalPath = root.getCanonicalPath();
+    if (!fileCanonicalPath.startsWith(rootCanonicalPath)) {
+      throw new IOException("Path '" + path + "' leads outside scoped directory of experience");
+    }
+    return file.getAbsolutePath();
   }
 
   @Override
@@ -168,7 +192,7 @@ public class ScopedContext extends Context {
 
   @Override
   public File getFilesDir() {
-    return mContext.getFilesDir();
+    return mFilesDir;
   }
 
   @Override
@@ -199,7 +223,7 @@ public class ScopedContext extends Context {
 
   @Override
   public File getCacheDir() {
-    return mContext.getCacheDir();
+    return mCacheDir;
   }
 
   @Override
