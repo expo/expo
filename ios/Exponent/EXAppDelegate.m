@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions
 {
   [Fabric with:@[CrashlyticsKit]];
-  [CrashlyticsKit setObjectValue:[EXConstants getExponentClientVersion] forKey:@"exp_client_version"];
+  [CrashlyticsKit setObjectValue:[EXConstants getExpoClientVersion] forKey:@"exp_client_version"];
 
   [[ExpoKit sharedInstance] registerRootViewControllerClass:[EXRootViewController class]];
   [[ExpoKit sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
