@@ -228,12 +228,12 @@ class BrowserScreen extends React.Component {
         let iconUrl = manifest.getIn(['loading', 'iconUrl']);
         let loadingBackgroundColor = this._getLoadingBackgroundColor();
         let backgroundImageUrl = manifest.getIn(['loading', 'backgroundImageUrl']);
-        
+
         let placeholderBackgroundColor = loadingBackgroundColor;
         if (backgroundImageUrl) {
           placeholderBackgroundColor = 'transparent';
         }
-        
+
         if (iconUrl) {
           return (
             <FadeIn
@@ -299,7 +299,7 @@ class BrowserScreen extends React.Component {
     } else if (this.props.isLetterboxed) {
       appOwnership = 'guest';
     } else {
-      appOwnership = 'exponent';
+      appOwnership = 'expo';
     }
     baseProps.appOwnership = appOwnership;
 
