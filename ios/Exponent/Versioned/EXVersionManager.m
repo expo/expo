@@ -2,6 +2,7 @@
 
 #import "EXAppState.h"
 #import "EXConstants.h"
+#import "EXDevSettings.h"
 #import "EXDisabledDevLoadingView.h"
 #import "EXDisabledDevMenu.h"
 #import "EXDisabledRedBox.h"
@@ -172,12 +173,14 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
 {
   NSURL *initialUri = params[@"initialUri"];
   BOOL isDeveloper = [params[@"isDeveloper"] boolValue];
+  EXScope *experienceScope = [[EXScope alloc] initWithParams:params];
 
   NSMutableArray *extraModules = [NSMutableArray arrayWithArray:
                                   @[
-                                    [[EXScope alloc] initWithParams:params],
+                                    experienceScope,
                                     [[EXAppState alloc] init],
                                     [[EXConstants alloc] initWithProperties:params[@"constants"]],
+                                    [[EXDevSettings alloc] initWithExperienceId:experienceScope.experienceId],
                                     [[EXDisabledDevLoadingView alloc] init],
                                     [[EXLinkingManager alloc] initWithInitialUrl:initialUri],
                                     ]];
