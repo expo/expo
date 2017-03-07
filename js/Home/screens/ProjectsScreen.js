@@ -78,14 +78,14 @@ export default class HomeScreen extends React.Component {
         <Text
           style={styles.exponentVersionText}
           onPress={this._copyClientVersionToClipboard}>
-          Client version: {Constants.exponentVersion}
+          Client version: {Constants.expoVersion}
         </Text>
       </View>
     );
   };
 
   _copyClientVersionToClipboard = () => {
-    Clipboard.setString(Constants.exponentVersion);
+    Clipboard.setString(Constants.expoVersion);
     this.props.navigator.showLocalAlert(
       'The client version has been copied to your clipboard',
       Alerts.notice,

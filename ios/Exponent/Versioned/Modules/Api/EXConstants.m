@@ -39,7 +39,7 @@
   }
   NSMutableDictionary *constants = [@{
                                       @"sessionId": _sessionId,
-                                      @"exponentVersion": [[self class] getExponentClientVersion],
+                                      @"expoVersion": [[self class] getExpoClientVersion],
                                       @"statusBarHeight": @([self _getStatusBarHeight]),
                                       @"deviceYearClass": [self _deviceYear],
                                       @"deviceName": [self _deviceName],
@@ -59,11 +59,11 @@
   return constants;
 }
 
-+ (NSString *)getExponentClientVersion
++ (NSString *)getExpoClientVersion
 {
-  NSString *exponentClientVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"EXClientVersion"];
-  if (exponentClientVersion) {
-    return exponentClientVersion;
+  NSString *expoClientVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"EXClientVersion"];
+  if (expoClientVersion) {
+    return expoClientVersion;
   } else {
     // not correct in standalone apps
     return [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
