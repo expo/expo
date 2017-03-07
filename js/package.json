@@ -55,6 +55,7 @@
     "url": "^0.11.0"
   },
   "devDependencies": {
+    "jest": "^18.1.0",
     "jest-expo": "^0.3.0-beta.0"
   }
 }
