@@ -13,10 +13,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface ExpoKit (Crashlytics) <CrashlyticsDelegate>
+
+@end
+
 @implementation EXAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions
 {
+  CrashlyticsKit.delegate = [ExpoKit sharedInstance]; // this must be set prior to init'ing fabric.
   [Fabric with:@[CrashlyticsKit]];
   [CrashlyticsKit setObjectValue:[EXConstants getExpoClientVersion] forKey:@"exp_client_version"];
 
