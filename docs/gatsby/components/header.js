@@ -3,7 +3,7 @@ import React from 'react';
 import Link from 'gatsby-link';
 import { rhythm, scale } from 'utils/typography';
 import { presets } from 'glamor';
-import logoText from 'images/logo-text.png';
+import logoText from 'images/logo-text.svg';
 
 class AlgoliaSearch extends React.Component {
   componentWillReceiveProps(nextProps) {

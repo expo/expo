@@ -17,7 +17,7 @@ import MenuIcon from 'react-icons/lib/md/menu';
 import { presets } from 'glamor';
 import Helmet from 'react-helmet';
 import ArrowIcon from 'react-icons/lib/md/keyboard-arrow-down';
-import logoText from 'images/logo-text.png';
+import logoText from 'images/logo-text.svg';
 
 // Load our typefaces
 import 'typeface-source-sans-pro';
