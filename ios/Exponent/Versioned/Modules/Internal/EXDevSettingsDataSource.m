@@ -6,19 +6,24 @@
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 
-// TODO: implement RCTDevSettingsDataSource protocol
+// redefined from RCTDevMenu.mm
 NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
+
+@interface EXDevSettingsDataSource ()
+
+@property (nonatomic, strong) NSString *experienceId;
+
+@end
 
 @implementation EXDevSettingsDataSource {
   NSMutableDictionary *_settings;
   NSUserDefaults *_userDefaults;
-  RCTBridge *_bridge;
 }
 
-- (instancetype)initWithDefaultValues:(NSDictionary *)defaultValues forBridge:(RCTBridge *)bridge
+- (instancetype)initWithDefaultValues:(NSDictionary *)defaultValues forExperienceId:(NSString *)experienceId
 {
   if (self = [super init]) {
-    _bridge = bridge;
+    _experienceId = experienceId;
     _userDefaults = [NSUserDefaults standardUserDefaults];
     if (defaultValues) {
       [self _reloadWithDefaults:defaultValues];
@@ -65,8 +70,8 @@ NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 
 - (NSString *)_userDefaultsKey
 {
-  if (_bridge) {
-    return [NSString stringWithFormat:@"%@/%@", _bridge.experienceScope.experienceId, kRCTDevSettingsUserDefaultsKey];
+  if (_experienceId) {
+    return [NSString stringWithFormat:@"%@/%@", _experienceId, kRCTDevSettingsUserDefaultsKey];
   } else {
     RCTLogWarn(@"Can't scope dev settings because bridge is not set");
     return kRCTDevSettingsUserDefaultsKey;
