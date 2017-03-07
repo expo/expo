@@ -208,7 +208,9 @@ dependencies {
   compile ('com.facebook.android:facebook-android-sdk:4.7.0') {
     exclude module: 'bolts-android'
   }
-  compile 'com.facebook.android:audience-network-sdk:4.19.0'
+  compile('com.facebook.android:audience-network-sdk:4.19.0') {
+    exclude module: 'play-services-ads'
+  }
   provided 'org.glassfish:javax.annotation:3.1.1'
   compile 'de.greenrobot:eventbus:2.4.0'
   compile 'com.amplitude:android-sdk:2.9.2' // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
@@ -218,6 +220,7 @@ dependencies {
   compile 'com.google.android.gms:play-services-maps:9.8.0'
   compile 'com.google.android.gms:play-services-auth:9.8.0'
   compile 'com.google.android.gms:play-services-location:9.8.0'
+  compile 'com.google.android.gms:play-services-ads:9.8.0'
   apt 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
   compile "com.raizlabs.android:DBFlow-Core:2.2.1"
   compile "com.raizlabs.android:DBFlow:2.2.1"
