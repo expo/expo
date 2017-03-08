@@ -6,7 +6,7 @@ next___FILE: ./introduction/index.md
 
 Expo is a mobile app development tool that enables you to build high quality native iOS and Android applications using JavaScript and deploy them effortlessly.
 
-Writing an Expo app is like writing a React Native app, except you never need to open Xcode / Android Studio, or write any native code. The [Expo SDK](/versions/v6.0.0/sdk/index#exponent-sdk) provides access to system functionality such as contacts, camera and social login. We're continually adding more to our SDK and would like to hear from you if there's something we're missing: [support@expo.io](mailto:support%40expo.io).
+Writing an Expo app is like writing a React Native app, except you never need to open Xcode / Android Studio, or write any native code. The [Expo SDK](/versions/v6.0.0/sdk/index#expo-sdk) provides access to system functionality such as contacts, camera and social login. We're continually adding more to our SDK and would like to hear from you if there's something we're missing: [support@expo.io](mailto:support%40expo.io).
 
 Expo also provides UI components to handle a variety of use-cases that almost all apps will cover but are not baked into React Native core, these include icons, an image lightbox, a loading overlay and more.
 

@@ -21,7 +21,7 @@ next___FILE: ./installation.md
     -   [Project dialog (with project open)](/versions/v8.0.0/introduction/xde-tour#project-dialog-with-project-open)
     -   [Publish](/versions/v8.0.0/introduction/xde-tour#publish)
 -   [Learning](/versions/v8.0.0/introduction/learning)
-    -   [Expo](/versions/v8.0.0/introduction/learning#exponent)
+    -   [Expo](/versions/v8.0.0/introduction/learning#expo)
     -   [React Native](/versions/v8.0.0/introduction/learning#react-native)
     -   [React](/versions/v8.0.0/introduction/learning#react)
     -   [JavaScript](/versions/v8.0.0/introduction/learning#javascript)

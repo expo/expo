@@ -57,7 +57,7 @@ Live reload is enabled by default, but let's just make sure we go over the steps
 
 -   If you've followed the above steps and live reload **still** doesn't work, press the button in the bottom right of XDE to send us a support request. Until we resolve the issue for you, you can either shake the device and press `Reload`, or use one of the following tools which work both with an without development mode.
 
-    [![Refresh using Expo buttons](./exponent-refresh.png)](/_images/exponent-refresh.png)
+    [![Refresh using Expo buttons](./expo-refresh.png)](/_images/expo-refresh.png)
 
 #### Congratulations
 
@@ -66,6 +66,6 @@ You have created a new Expo project, made a change, and seen it update.
 #### Next Steps
 
 -   The [Additional Resources](../introduction/additional-resources.html#additional-resources) page has links to several open-source Expo projects so you can see some working examples.
--   Read about the [Expo SDK](../sdk/index.html#exponent-sdk) to learn about some useful APIs we provide out of the box.
+-   Read about the [Expo SDK](../sdk/index.html#expo-sdk) to learn about some useful APIs we provide out of the box.
 -   Read some of our other guides, such as how to implement [Push Notifications](push-notifications.html#push-notifications), how we can take care of [Assets](assets.html#all-about-assets) for you, or how to build [Standalone Apps](building-standalone-apps.html#building-standalone-apps) you can submit to Apple or Google.
 -   Join us on Slack to get your questions answered.

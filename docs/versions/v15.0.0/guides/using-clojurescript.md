@@ -1,7 +1,7 @@
 ---
 title: Using ClojureScript
 old_permalink: /versions/v12.0.0/guides/using-clojurescript.html
-previous___FILE: ./upgrading-exponent.md
+previous___FILE: ./upgrading-expo.md
 next___FILE: ./using-firebase.md
 ---
 

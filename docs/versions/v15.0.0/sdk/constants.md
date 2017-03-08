@@ -57,7 +57,7 @@ A list of the system font names available on the current device.
 
 ### `Exponent.Constants.manifest`
 
-The [manifest](../guides/how-exponent-works.html#exponent-manifest) object for the app.
+The [manifest](../guides/how-expo-works.html#expo-manifest) object for the app.
 
 ### `Exponent.Constants.linkingUri`
 

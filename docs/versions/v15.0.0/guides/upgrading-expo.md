@@ -1,7 +1,7 @@
 ---
 title: Upgrading Expo
-old_permalink: /versions/v12.0.0/guides/upgrading-exponent.html
-previous___FILE: ./how-exponent-works.md
+old_permalink: /versions/v12.0.0/guides/upgrading-expo.html
+previous___FILE: ./how-expo-works.md
 next___FILE: ./using-clojurescript.md
 ---
 
@@ -11,4 +11,4 @@ That said, each version is better than the last, so you might want to stay up to
 
 **Upgrade guides vary depending on the sdkVersion, so follow the guide in the release notes**
 
-We post our release notes to [The Expo Log](https://blog.getexponent.com/), for example the [v8.0.0 release notes](https://blog.getexponent.com/exponent-sdk-v8-0-0-is-available-581255a279b1#.iw6pjhknl). If you're upgrading by more than one major version, we recommend following the upgrade guide for each major version between your current version and your target.
+We post our release notes to [Exposition](https://blog.expo.io/), for example the [v8.0.0 release notes](https://blog.expo.io/exponent-sdk-v8-0-0-is-available-581255a279b1#.iw6pjhknl). If you're upgrading by more than one major version, we recommend following the upgrade guide for each major version between your current version and your target.

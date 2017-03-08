@@ -123,4 +123,4 @@ If you decide to distribute your app as an `ipa` or `apk`, it will automatically
 your app's published URL instead of your development XDE url. You can examine this configuration
 in the contents of `EXShell.plist` (iOS) or `MainActivity.java` (Android).
 
-Before taking your app all the way to production, it's a good idea to glance over the [Advanced ExpoKit Topics](advanced-exponentkit-topics.html) guide.
+Before taking your app all the way to production, it's a good idea to glance over the [Advanced ExpoKit Topics](advanced-expokit-topics.html) guide.

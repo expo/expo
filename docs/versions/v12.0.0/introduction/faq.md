@@ -65,7 +65,7 @@ The most limiting thing about Expo is that you can't add in your own native modu
 
 Right now, Expo doesn't support custom native code, including third-party libraries which require custom native components. In an Expo project, you never write native code--only pure JS.
 
-In [our SDK](../sdk/index.html#exponent-sdk), we give you a large set of commonly desired, high-quality native modules. However, if you need something very custom--like on-the-fly video processing or low level control over the Bluetooth radio to do a firmware update--then Expo won't work for you and you should instead use regular React Native.
+In [our SDK](../sdk/index.html#expo-sdk), we give you a large set of commonly desired, high-quality native modules. However, if you need something very custom--like on-the-fly video processing or low level control over the Bluetooth radio to do a firmware update--then Expo won't work for you and you should instead use regular React Native.
 
 You can do more in just JavaScript than you realize--and in fact, we recommend doing as much in JS as possible, since it will immediately work across both platforms and is less fragile--so you shouldn't need to include UI widgets that are written as native modules (there are almost always good pure JavaScript alternatives that are better).
 

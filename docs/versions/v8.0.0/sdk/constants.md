@@ -29,7 +29,7 @@ A string that is unique to the current session of your app. It is different acro
 
 ### `Exponent.Constants.manifest`
 
-The [manifest](/versions/v8.0.0/guides/how-exponent-works#exponent-manifest) object for the app.
+The [manifest](/versions/v8.0.0/guides/how-exponent-works#expo-manifest) object for the app.
 
 ### `Exponent.Constants.linkingUri`
 

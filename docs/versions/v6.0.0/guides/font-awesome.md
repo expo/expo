@@ -39,7 +39,7 @@ Try getting this basic app running before playing with Font Awesome so you can g
 
 ## Loading the font
 
-We will load Font Awesome from the .ttf available on the web at <https://github.com/FortAwesome/Font-Awesome/raw/master/fonts/fontawesome-webfont.ttf>. To load and use fonts from the web we will use the [Expo SDK](/versions/v6.0.0/sdk/index#exponent-sdk), which you can install with `npm install --save exponent` in your project directory. Add the following `import` in your application code:
+We will load Font Awesome from the .ttf available on the web at <https://github.com/FortAwesome/Font-Awesome/raw/master/fonts/fontawesome-webfont.ttf>. To load and use fonts from the web we will use the [Expo SDK](/versions/v6.0.0/sdk/index#expo-sdk), which you can install with `npm install --save exponent` in your project directory. Add the following `import` in your application code:
 
 ```javascript
 import { Font } from 'exponent';

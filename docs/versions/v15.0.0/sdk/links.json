@@ -32,12 +32,12 @@
     "actual": "/versions/latest/guides/genymotion#genymotion"
   },
   {
-    "current": "/versions/guides/how-exponent-works#exponent-manifest",
-    "actual": "/versions/latest/guides/how-exponent-works#exponent-manifest"
+    "current": "/versions/guides/how-expo-works#expo-manifest",
+    "actual": "/versions/latest/guides/how-expo-works#expo-manifest"
   },
   {
-    "current": "/versions/guides/how-exponent-works#how-exponent-works",
-    "actual": "/versions/latest/guides/how-exponent-works#how-exponent-works"
+    "current": "/versions/guides/how-expo-works#how-expo-works",
+    "actual": "/versions/latest/guides/how-expo-works#how-expo-works"
   },
   {
     "current": "/versions/guides/logging#logging",
@@ -88,8 +88,8 @@
     "actual": "/versions/latest/sdk/font#Exponent.Font.style"
   },
   {
-    "current": "/versions/sdk/index#exponent-sdk",
-    "actual": "/versions/latest/sdk/index#exponent-sdk"
+    "current": "/versions/sdk/index#expo-sdk",
+    "actual": "/versions/latest/sdk/index#expo-sdk"
   },
   {
     "current": "/versions/v10.0.0/introduction/additional-resources",
@@ -100,8 +100,8 @@
     "actual": "/versions/v10.0.0/introduction/additional-resources#example-projects-built-with-exponent"
   },
   {
-    "current": "/versions/v10.0.0/introduction/additional-resources#exponent-articles",
-    "actual": "/versions/v10.0.0/introduction/additional-resources#exponent-articles"
+    "current": "/versions/v10.0.0/introduction/additional-resources#expo-articles",
+    "actual": "/versions/v10.0.0/introduction/additional-resources#expo-articles"
   },
   {
     "current": "/versions/v10.0.0/introduction/additional-resources#javascript",
@@ -276,8 +276,8 @@
     "actual": "#Exponent.Segment.initializeIOS"
   },
   {
-    "current": "/versions/v10.0.0/guides#exponent-manifest",
-    "actual": "#exponent-manifest"
+    "current": "/versions/v10.0.0/guides#expo-manifest",
+    "actual": "#expo-manifest"
   },
   {
     "current": "/versions/v10.0.0/guides#video-on-load",
@@ -388,8 +388,8 @@
     "actual": "/versions/v10.0.0/guides/push-notifications#save-the-user-s-exponent-push-token-on-your-server"
   },
   {
-    "current": "/versions/v10.0.0/sdk/index#exponent-sdk",
-    "actual": "/versions/v10.0.0/sdk/index#exponent-sdk"
+    "current": "/versions/v10.0.0/sdk/index#expo-sdk",
+    "actual": "/versions/v10.0.0/sdk/index#expo-sdk"
   },
   {
     "current": "/versions/v10.0.0/up-and-running",
@@ -492,8 +492,8 @@
     "actual": "/versions/v11.0.0/introduction/additional-resources#example-projects-built-with-exponent"
   },
   {
-    "current": "/versions/v11.0.0/introduction/additional-resources#exponent-articles",
-    "actual": "/versions/v11.0.0/introduction/additional-resources#exponent-articles"
+    "current": "/versions/v11.0.0/introduction/additional-resources#expo-articles",
+    "actual": "/versions/v11.0.0/introduction/additional-resources#expo-articles"
   },
   {
     "current": "/versions/v11.0.0/introduction/additional-resources#javascript",
@@ -692,8 +692,8 @@
     "actual": "#Exponent.Segment.initializeIOS"
   },
   {
-    "current": "/versions/v11.0.0/guides#exponent-manifest",
-    "actual": "#exponent-manifest"
+    "current": "/versions/v11.0.0/guides#expo-manifest",
+    "actual": "#expo-manifest"
   },
   {
     "current": "/versions/v11.0.0/guides#for-existing-projects",
@@ -852,8 +852,8 @@
     "actual": "/versions/v11.0.0/guides/routing-and-navigation#try-it-out"
   },
   {
-    "current": "/versions/v11.0.0/sdk/index#exponent-sdk",
-    "actual": "/versions/v11.0.0/sdk/index#exponent-sdk"
+    "current": "/versions/v11.0.0/sdk/index#expo-sdk",
+    "actual": "/versions/v11.0.0/sdk/index#expo-sdk"
   },
   {
     "current": "/versions/v11.0.0/up-and-running",
@@ -964,8 +964,8 @@
     "actual": "/versions/v12.0.0/introduction/additional-resources#example-projects-built-with-exponent"
   },
   {
-    "current": "/versions/v12.0.0/introduction/additional-resources#exponent-articles",
-    "actual": "/versions/v12.0.0/introduction/additional-resources#exponent-articles"
+    "current": "/versions/v12.0.0/introduction/additional-resources#expo-articles",
+    "actual": "/versions/v12.0.0/introduction/additional-resources#expo-articles"
   },
   {
     "current": "/versions/v12.0.0/introduction/additional-resources#javascript",
@@ -1192,8 +1192,8 @@
     "actual": "#Notification"
   },
   {
-    "current": "/versions/v12.0.0/guides#exponent-manifest",
-    "actual": "#exponent-manifest"
+    "current": "/versions/v12.0.0/guides#expo-manifest",
+    "actual": "#expo-manifest"
   },
   {
     "current": "/versions/v12.0.0/guides#for-existing-projects",
@@ -1352,8 +1352,8 @@
     "actual": "/versions/v12.0.0/guides/routing-and-navigation#try-it-out"
   },
   {
-    "current": "/versions/v12.0.0/sdk/index#exponent-sdk",
-    "actual": "/versions/v12.0.0/sdk/index#exponent-sdk"
+    "current": "/versions/v12.0.0/sdk/index#expo-sdk",
+    "actual": "/versions/v12.0.0/sdk/index#expo-sdk"
   },
   {
     "current": "/versions/v12.0.0/svg#svg",
@@ -1624,8 +1624,8 @@
     "actual": "/versions/v6.0.0/introduction/learning"
   },
   {
-    "current": "/versions/v6.0.0/learning#exponent",
-    "actual": "/versions/v6.0.0/introduction/learning#exponent"
+    "current": "/versions/v6.0.0/learning#expo",
+    "actual": "/versions/v6.0.0/introduction/learning#expo"
   },
   {
     "current": "/versions/v6.0.0/learning#javascript",
@@ -1656,8 +1656,8 @@
     "actual": "/versions/v6.0.0/guides/logging#view-logs-from-android-device-or-emulator"
   },
   {
-    "current": "/versions/v6.0.0/sdk/index#exponent-sdk",
-    "actual": "/versions/v6.0.0/sdk/index#exponent-sdk"
+    "current": "/versions/v6.0.0/sdk/index#expo-sdk",
+    "actual": "/versions/v6.0.0/sdk/index#expo-sdk"
   },
   {
     "current": "/versions/v6.0.0/up-and-running",
@@ -1784,8 +1784,8 @@
     "actual": "/versions/v7.0.0/introduction/learning"
   },
   {
-    "current": "/versions/v7.0.0/learning#exponent",
-    "actual": "/versions/v7.0.0/introduction/learning#exponent"
+    "current": "/versions/v7.0.0/learning#expo",
+    "actual": "/versions/v7.0.0/introduction/learning#expo"
   },
   {
     "current": "/versions/v7.0.0/learning#javascript",
@@ -1828,8 +1828,8 @@
     "actual": "/versions/v7.0.0/guides/push-notifications#save-the-user-s-exponent-push-token-on-your-server"
   },
   {
-    "current": "/versions/v7.0.0/sdk/index#exponent-sdk",
-    "actual": "/versions/v7.0.0/sdk/index#exponent-sdk"
+    "current": "/versions/v7.0.0/sdk/index#expo-sdk",
+    "actual": "/versions/v7.0.0/sdk/index#expo-sdk"
   },
   {
     "current": "/versions/v7.0.0/up-and-running",
@@ -2048,8 +2048,8 @@
     "actual": "/versions/v8.0.0/introduction/learning"
   },
   {
-    "current": "/versions/v8.0.0/learning#exponent",
-    "actual": "/versions/v8.0.0/introduction/learning#exponent"
+    "current": "/versions/v8.0.0/learning#expo",
+    "actual": "/versions/v8.0.0/introduction/learning#expo"
   },
   {
     "current": "/versions/v8.0.0/learning#javascript",
@@ -2092,8 +2092,8 @@
     "actual": "/versions/v8.0.0/guides/push-notifications#save-the-user-s-exponent-push-token-on-your-server"
   },
   {
-    "current": "/versions/v8.0.0/sdk/index#exponent-sdk",
-    "actual": "/versions/v8.0.0/sdk/index#exponent-sdk"
+    "current": "/versions/v8.0.0/sdk/index#expo-sdk",
+    "actual": "/versions/v8.0.0/sdk/index#expo-sdk"
   },
   {
     "current": "/versions/v8.0.0/up-and-running",
@@ -2192,8 +2192,8 @@
     "actual": "/versions/v9.0.0/introduction/additional-resources"
   },
   {
-    "current": "/versions/v9.0.0/introduction/additional-resources#exponent",
-    "actual": "/versions/v9.0.0/introduction/additional-resources#exponent"
+    "current": "/versions/v9.0.0/introduction/additional-resources#expo",
+    "actual": "/versions/v9.0.0/introduction/additional-resources#expo"
   },
   {
     "current": "/versions/v9.0.0/introduction/additional-resources#javascript",
@@ -2408,8 +2408,8 @@
     "actual": "/versions/v9.0.0/guides/push-notifications#save-the-user-s-exponent-push-token-on-your-server"
   },
   {
-    "current": "/versions/v9.0.0/sdk/index#exponent-sdk",
-    "actual": "/versions/v9.0.0/sdk/index#exponent-sdk"
+    "current": "/versions/v9.0.0/sdk/index#expo-sdk",
+    "actual": "/versions/v9.0.0/sdk/index#expo-sdk"
   },
   {
     "current": "/versions/v9.0.0/up-and-running",

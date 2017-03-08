@@ -22,7 +22,7 @@ next___FILE: ./installation.md
     -   [Publish](xde-tour.html#publish)
 -   [Community](community.html)
 -   [Additional Resources](../additional-resources.html)
-    -   [Expo](../additional-resources.html#exponent)
+    -   [Expo](../additional-resources.html#expo)
     -   [React Native](../additional-resources.html#react-native)
     -   [React](../additional-resources.html#react)
     -   [JavaScript](../additional-resources.html#javascript)

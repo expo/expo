@@ -42,7 +42,7 @@ System information that remains constant throughout the lifetime of your app.
     The default status bar height for the device. Does not factor in changes when location tracking is in use or a phone call is active.
 
 -   `Exponent.Constants.manifest`
-    The [manifest](../guides/how-exponent-works.html#exponent-manifest) object for the app.
+    The [manifest](../guides/how-exponent-works.html#expo-manifest) object for the app.
 
 -   `Exponent.Constants.linkingUri`
     When an app is opened due to a deep link, the prefix of the URI without the deep link part. This value depends on `Exponent.Constants.appOwnership`: it may be different if your app is running standalone vs. in the Expo client.

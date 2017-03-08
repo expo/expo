@@ -61,7 +61,7 @@ System information that remains constant throughout the lifetime of your app.
 
 -   `Exponent.Constants.manifest`
 
-    The [manifest](../guides/how-exponent-works.html#exponent-manifest) object for the app.
+    The [manifest](../guides/how-exponent-works.html#expo-manifest) object for the app.
 
 -   `Exponent.Constants.linkingUri`
 

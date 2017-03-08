@@ -23,7 +23,7 @@ next___FILE: ./installation.md
     -   [Publish](xde-tour.html#publish)
 -   [Community](community.html)
 -   [Additional Resources](../additional-resources.html)
-    -   [Expo Articles](../additional-resources.html#exponent-articles)
+    -   [Expo Articles](../additional-resources.html#expo-articles)
     -   [Example Projects built with Expo](../additional-resources.html#example-projects-built-with-exponent)
     -   [React Native](../additional-resources.html#react-native)
     -   [React](../additional-resources.html#react)
