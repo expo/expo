@@ -539,6 +539,10 @@ public class Exponent {
         genymotionField.setAccessible(true);
         genymotionField.set(null, debuggerHost);
 
+        Field emulatorField = fieldObject.rnClass().getDeclaredField("EMULATOR_LOCALHOST");
+        emulatorField.setAccessible(true);
+        emulatorField.set(null, debuggerHost);
+
         builder.callRecursive("setUseDeveloperSupport", true)
             .callRecursive("setJSMainModuleName", mainModuleName);
       } catch (IllegalAccessException e) {
@@ -706,16 +710,16 @@ public class Exponent {
 
     Analytics.markEvent(Analytics.TimedEvent.STARTED_LOADING_REACT_NATIVE);
     RNObject mReactInstanceManager = builder.callRecursive("build");
+    RNObject devSettings = mReactInstanceManager.callRecursive("getDevSupportManager").callRecursive("getDevSettings");
+    if (devSettings != null) {
+      devSettings.setField("exponentActivityId", mActivityId);
+    }
+
     mReactInstanceManager.onHostResume(activity, activity);
     mReactRootView.call("startReactApplication",
         mReactInstanceManager.get(),
         mManifest.optString(ExponentManifest.MANIFEST_APP_KEY_KEY, KernelConstants.DEFAULT_APPLICATION_KEY),
         bundle);
-
-    RNObject devSettings = mReactInstanceManager.callRecursive("getDevSupportManager").callRecursive("getDevSettings");
-    if (devSettings != null) {
-      devSettings.setField("exponentActivityId", mActivityId);
-    }
 
     return mReactInstanceManager;
   }
