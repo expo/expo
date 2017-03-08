@@ -7,8 +7,6 @@ next___FILE: ./notifications.md
 
 A Map component that uses Apple Maps on iOS and Google Maps on Android. Built by Airbnb at [airbnb/react-native-maps](https://github.com/airbnb/react-native-maps). No setup required for use within the Expo app, or within a standalone app for iOS. See below for instructions on how to configure for deployment as a standalone app on Android.
 
-> **Note:** It is currently not possible to use Google Maps on iOS despite being supported upstream in react-native-maps. We may add this feature if there is enough demand, let us know if you need it.
-
 ![](./maps.png)
 
 ```javascript
