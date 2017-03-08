@@ -1,9 +1,9 @@
 - title: Introduction
-  index: /versions/v14.0.0/introduction/index.html
+  index: /versions/v15.0.0/introduction/index.html
   links:
-    Learn Expo: /versions/v14.0.0/index.html
-    Installation: /versions/v14.0.0/introduction/installation.html
-    XDE Tour: /versions/v14.0.0/introduction/xde-tour.html
+    Learn Expo: /versions/v15.0.0/index.html
+    Installation: /versions/v15.0.0/introduction/installation.html
+    XDE Tour: /versions/v15.0.0/introduction/xde-tour.html
     Community: /versions/v15.0.0/introduction/community.html
     Additional Resources: /versions/v15.0.0/introduction/additional-resources.html
     Frequently Asked Questions: /versions/v15.0.0/introduction/faq.html
