@@ -25,3 +25,11 @@ To enable code verification in your native project with ExpoKit:
 
 -   In `ios/your-project/Supporting/EXShell.plist`, set `isManifestVerificationBypassed` to
     `NO` (or delete this key entirely).
+
+## Disabling Expo Analytics
+
+By default, apps using ExpoKit will track some Expo-specific usage statistics. This is covered
+in our [privacy policy](https://expo.io/privacy). You can disable Expo analytics in your app by
+following these steps:
+
+On iOS, add the key `EXAnalyticsDisabled` to your app's main `Info.plist` with the value `YES`.
