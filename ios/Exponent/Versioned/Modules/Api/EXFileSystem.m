@@ -40,7 +40,7 @@ RCT_REMAP_METHOD(downloadAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  NSString *scopedPath = [self scopedPathWithPath:filePath withOptions:options];
+  NSString *scopedPath = [self.bridge.experienceScope scopedPathWithPath:filePath withOptions:options];
   if (!scopedPath) {
     reject(@"E_INVALID_PATH",
            [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", filePath],
@@ -75,7 +75,7 @@ RCT_REMAP_METHOD(getInfoAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  NSString *scopedPath = [self scopedPathWithPath:filePath withOptions:options];
+  NSString *scopedPath = [self.bridge.experienceScope scopedPathWithPath:filePath withOptions:options];
   if (!scopedPath) {
     reject(@"E_INVALID_PATH",
            [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", filePath],
@@ -103,25 +103,6 @@ RCT_REMAP_METHOD(deleteAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-}
-
-- (NSString *)scopedPathWithPath:(NSString *)path withOptions:(NSDictionary *)options
-{
-  NSString *prefix = self.bridge.experienceScope.documentDirectory;
-  if ([options objectForKey:@"cache"] && [[options objectForKey:@"cache"] boolValue]) {
-    prefix = self.bridge.experienceScope.cachesDirectory;
-  }
-
-  if (![EXFileSystem ensureDirExistsWithPath:prefix]) {
-    return nil;
-  }
-
-  NSString *scopedPath = [[NSString stringWithFormat:@"%@/%@", prefix, path] stringByStandardizingPath];
-  if ([scopedPath hasPrefix:[prefix stringByStandardizingPath]]) {
-    return scopedPath;
-  } else {
-    return nil;
-  }
 }
 
 + (BOOL)ensureDirExistsWithPath:(NSString *)path

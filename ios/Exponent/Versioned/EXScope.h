@@ -17,6 +17,8 @@
 
 - (instancetype)initWithParams:(NSDictionary *)params;
 
+- (NSString *)scopedPathWithPath:(NSString *)path withOptions:(NSDictionary *)options;
+
 @end
 
 @interface RCTBridge (EXScope)
