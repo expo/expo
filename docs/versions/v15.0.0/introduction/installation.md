@@ -23,7 +23,7 @@ The Expo client is like a browser for apps built with Expo. When you boot up XDE
 
 [Download for Android from the Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent) or [for iOS from the App Store](https://itunes.com/apps/exponent)
 
-> **Required Android and iOS versions:** The minimum Android version Expo supports is Android 4.4 and the minimum iOS version is iOS 8.0.
+> **Required Android and iOS versions:** The minimum Android version Expo supports is Android 4.4 and the minimum iOS version is iOS 9.0.
 
 You don't need to manually install the Expo client on your emulator/simulator, because XDE will do that automatically. See the next sections of this guide.
 
