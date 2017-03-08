@@ -14,9 +14,17 @@ export default {
   steps: (branch, tag, pr) => {
     if (tag) {
       // all we need to do when there's a tag is deploy
-      return [deploy(branch, tag, pr), CI.waitStep(), updateSearchIndex(branch, tag, pr)];
+      return [
+        deploy(branch, tag, pr),
+        CI.waitStep(),
+        updateSearchIndex(branch, tag, pr),
+      ];
     }
-    const steps = [build(branch, tag, pr), CI.waitStep(), deploy(branch, tag, pr)];
+    const steps = [
+      build(branch, tag, pr),
+      CI.waitStep(),
+      deploy(branch, tag, pr),
+    ];
     if (!pr) {
       steps.push(CI.blockStep(':shipit: Deploy to Production?'), tagRelease);
     }
@@ -79,7 +87,7 @@ const deploy = (branch, tag, pr) => ({
 
     Log.collapsed(':gcloud: Deploy to K8s...');
 
-    Github.performDeployment(
+    await Github.performDeployment(
       {
         projectName: 'docs',
         environment,
@@ -107,11 +115,6 @@ const deploy = (branch, tag, pr) => ({
             ],
           },
         });
-      },
-      // on error
-      e => {
-        console.error('Error during deployment: ', e);
-        process.exit(1);
       }
     );
   },
@@ -126,9 +129,13 @@ const updateSearchIndex = (branch, tag, pr) => ({
 
     Log.collapsed(':open_mouth: Updating search index...');
 
-    await spawnAsync('yarn', ['run', 'update-search-index', '--', 'docs.expo.io'], {
-      stdio: 'inherit',
-    });
+    await spawnAsync(
+      'yarn',
+      ['run', 'update-search-index', '--', 'docs.expo.io'],
+      {
+        stdio: 'inherit',
+      }
+    );
   },
 });
 
@@ -149,7 +156,9 @@ function pad(n) {
 }
 
 async function makeVersionName() {
-  const hash = (await git(`rev-parse --short=12 ${process.env.BUILDKITE_COMMIT}`)).trim();
+  const hash = (await git(
+    `rev-parse --short=12 ${process.env.BUILDKITE_COMMIT}`
+  )).trim();
   const today = new Date();
   return `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}-${hash}`;
 }
