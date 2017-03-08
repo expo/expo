@@ -2,6 +2,7 @@
 
 #import "EXScope.h"
 #import "EXVersionManager.h"
+#import "EXFileSystem.h"
 #import <React/RCTAssert.h>
 
 @implementation EXScope
@@ -26,6 +27,25 @@
     _initialUri = params[@"initialUri"];
   }
   return self;
+}
+
+- (NSString *)scopedPathWithPath:(NSString *)path withOptions:(NSDictionary *)options
+{
+  NSString *prefix = _documentDirectory;
+  if ([options objectForKey:@"cache"] && [[options objectForKey:@"cache"] boolValue]) {
+    prefix = _cachesDirectory;
+  }
+
+  if (![EXFileSystem ensureDirExistsWithPath:prefix]) {
+    return nil;
+  }
+
+  NSString *scopedPath = [[NSString stringWithFormat:@"%@/%@", prefix, path] stringByStandardizingPath];
+  if ([scopedPath hasPrefix:[prefix stringByStandardizingPath]]) {
+    return scopedPath;
+  } else {
+    return nil;
+  }
 }
 
 @end
