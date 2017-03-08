@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 PACKAGE_VERSION=v$(cat package.json \
   | grep version \
   | head -1 \
