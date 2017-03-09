@@ -82,6 +82,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     backgroundColor: '#fff',
+    paddingLeft: 5,
     flex: 1,
   },
   iconContainer: {
