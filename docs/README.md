@@ -44,17 +44,12 @@ deploy script will respect this value).
 
 ### Testing changes locally
 
-If your machine has Docker for Mac and the Gcloud tools, you can run:
+Make sure your machine has Docker for Mac. If it doesn't go to https://docs.docker.com/docker-for-mac/ and download and install it.
+
+Be sure you've run all unigulp-y things.
 
 ```bash
 yarn && yarn start
 ```
 
 from this directory. The site is viewable at `http://localhost:9000`.
-
-If your machine does not have Docker or GCloud, do the following:
-
-* Go to https://docs.docker.com/docker-for-mac/ and download and install Docker for Mac.
-* From universe root, run `server/infra/tools/install-cli-tools.sh`, and follow the prompts.
-* From universe root, run `install-rocker`.
-* From universe root, run `set-docker-loopback`
