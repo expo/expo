@@ -11,25 +11,26 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { createFocusAwareComponent } from '@expo/ex-navigation';
 import { Constants } from 'expo';
 import { connect } from 'react-redux';
 import { take, takeRight } from 'lodash';
 
 import Alerts from '../constants/Alerts';
-import AddProjectButton from '../components/AddProjectButton';
 import BrowserActions from 'BrowserActions';
 import Colors from '../constants/Colors';
 import EmptyProjectsNotice from '../components/EmptyProjectsNotice';
 import SharedStyles from '../constants/SharedStyles';
 import SeeAllProjectsButton from '../components/SeeAllProjectsButton';
 import SmallProjectCard from '../components/SmallProjectCard';
+import ProjectTools from '../components/ProjectTools';
 
+@createFocusAwareComponent
 @connect(data => HomeScreen.getDataProps(data))
 export default class HomeScreen extends React.Component {
   static route = {
     navigationBar: {
       title: 'Projects',
-      renderRight: () => <AddProjectButton />,
     },
   };
 
@@ -43,16 +44,17 @@ export default class HomeScreen extends React.Component {
   }
 
   render() {
-    if (this.props.allHistory.count() === 0) {
-      return <EmptyProjectsNotice />;
-    }
-
     return (
       <View style={styles.container}>
         <ScrollView
-          stickyHeaderIndices={[0]}
+          stickyHeaderIndices={Platform.OS === 'ios' ? [0, 2] : []}
           style={styles.container}
           contentContainerStyle={styles.contentContainer}>
+
+          <View style={SharedStyles.sectionLabelContainer}>
+            <Text style={SharedStyles.sectionLabelText}>TOOLS</Text>
+          </View>
+          {this._renderProjectTools()}
 
           <View style={SharedStyles.sectionLabelContainer}>
             <Text style={SharedStyles.sectionLabelText}>RECENTLY VISITED</Text>
@@ -62,8 +64,8 @@ export default class HomeScreen extends React.Component {
               <Text style={styles.clearButtonText}>CLEAR</Text>
             </TouchableOpacity>
           </View>
-
           {this._renderRecentHistory()}
+
           {this._renderExpoVersion()}
         </ScrollView>
 
@@ -72,52 +74,33 @@ export default class HomeScreen extends React.Component {
     );
   }
 
-  _renderExpoVersion = () => {
-    return (
-      <View style={styles.exponentVersionContainer}>
-        <Text
-          style={styles.exponentVersionText}
-          onPress={this._copyClientVersionToClipboard}>
-          Client version: {Constants.expoVersion}
-        </Text>
-      </View>
-    );
-  };
-
-  _copyClientVersionToClipboard = () => {
-    Clipboard.setString(Constants.expoVersion);
-    this.props.navigator.showLocalAlert(
-      'The client version has been copied to your clipboard',
-      Alerts.notice,
-    );
-  };
-
-  _renderInDevelopment = () => {
-    // Nothing here for now
-    return null;
-
-    return (
-      <View style={{ marginBottom: 10 }}>
-        <View style={SharedStyles.sectionLabelContainer}>
-          <View style={styles.greenDot} />
-          <Text style={SharedStyles.sectionLabelText}>IN DEVELOPMENT</Text>
-        </View>
-
-        <SmallProjectCard
-          iconUrl="https://s3.amazonaws.com/exp-brand-assets/ExponentEmptyManifest_192.png"
-          projectName="Tab bar experiment"
-          projectUrl="exp://m2-6dz.community.exponent-home.exp.direct"
-          fullWidthBorder
-        />
-      </View>
-    );
-  };
-
   _handlePressClearHistory = () => {
     this.props.dispatch(BrowserActions.clearHistoryAsync());
   };
 
+  _renderProjectTools = () => {
+    return <ProjectTools pollForUpdates={this.props.isFocused} />;
+  };
+
   _renderRecentHistory = () => {
+    return this.props.allHistory.count() === 0
+      ? this._renderEmptyRecentHistory()
+      : this._renderRecentHistoryItems();
+  };
+
+  _renderEmptyRecentHistory = () => {
+    return (
+      <View style={SharedStyles.genericCardContainer} key="empty-history">
+        <View style={SharedStyles.genericCardBody}>
+          <Text style={[SharedStyles.faintText, { textAlign: 'center' }]}>
+            You haven't opened any projects recently.
+          </Text>
+        </View>
+      </View>
+    );
+  };
+
+  _renderRecentHistoryItems = () => {
     const extractUsername = manifestUrl => {
       let username = manifestUrl.match(/@.*?\//)[0];
       if (!username) {
@@ -141,6 +124,47 @@ export default class HomeScreen extends React.Component {
         fullWidthBorder={i === this.props.recentHistory.count() - 1}
       />
     ));
+  };
+
+  _renderExpoVersion = () => {
+    return (
+      <View style={styles.exponentVersionContainer}>
+        <Text
+          style={styles.exponentVersionText}
+          onPress={this._copyClientVersionToClipboard}>
+          Client version: {Constants.expoVersion}
+        </Text>
+      </View>
+    );
+  };
+
+  _copyClientVersionToClipboard = () => {
+    Clipboard.setString(Constants.expoVersion);
+    this.props.navigator.showLocalAlert(
+      'The client version has been copied to your clipboard',
+      Alerts.notice
+    );
+  };
+
+  _renderInDevelopment = () => {
+    // Nothing here for now
+    return null;
+
+    return (
+      <View style={{ marginBottom: 10 }}>
+        <View style={SharedStyles.sectionLabelContainer}>
+          <View style={styles.greenDot} />
+          <Text style={SharedStyles.sectionLabelText}>IN DEVELOPMENT</Text>
+        </View>
+
+        <SmallProjectCard
+          iconUrl="https://s3.amazonaws.com/exp-brand-assets/ExponentEmptyManifest_192.png"
+          projectName="Tab bar experiment"
+          projectUrl="exp://m2-6dz.community.exponent-home.exp.direct"
+          fullWidthBorder
+        />
+      </View>
+    );
   };
 }
 

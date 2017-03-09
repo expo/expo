@@ -26,6 +26,14 @@ export default StyleSheet.create({
       },
     }),
   },
+  regularText: {
+    color: Colors.blackText,
+    fontSize: 13,
+  },
+  faintText: {
+    color: Colors.greyText,
+    fontSize: 13,
+  },
   noticeTitleText: {
     color: '#232b3a',
     marginBottom: 15,
@@ -55,5 +63,17 @@ export default StyleSheet.create({
         marginHorizontal: 15,
       },
     }),
+  },
+  genericCardContainer: {
+    backgroundColor: '#fff',
+    flexGrow: 1,
+    borderBottomColor: Colors.separator,
+    borderBottomWidth: StyleSheet.hairlineWidth * 2,
+  },
+  genericCardBody: {
+    paddingTop: 20,
+    paddingLeft: 15,
+    paddingRight: 10,
+    paddingBottom: 17,
   },
 });
