@@ -43,12 +43,15 @@ typedef struct YGValue {
   YGUnit unit;
 } YGValue;
 
+static const YGValue YGValueUndefined = {YGUndefined, YGUnitUndefined};
+
 typedef struct YGNode *YGNodeRef;
 typedef YGSize (*YGMeasureFunc)(YGNodeRef node,
                                 float width,
                                 YGMeasureMode widthMode,
                                 float height,
                                 YGMeasureMode heightMode);
+typedef float (*YGBaselineFunc)(YGNodeRef node, const float width, const float height);
 typedef void (*YGPrintFunc)(YGNodeRef node);
 typedef int (*YGLogger)(YGLogLevel level, const char *format, va_list args);
 
@@ -136,8 +139,12 @@ WIN_EXPORT void YGNodeCopyStyle(const YGNodeRef dstNode, const YGNodeRef srcNode
 #define YG_NODE_LAYOUT_PROPERTY(type, name) \
   WIN_EXPORT type YGNodeLayoutGet##name(const YGNodeRef node);
 
+#define YG_NODE_LAYOUT_EDGE_PROPERTY(type, name) \
+  WIN_EXPORT type YGNodeLayoutGet##name(const YGNodeRef node, const YGEdge edge);
+
 YG_NODE_PROPERTY(void *, Context, context);
 YG_NODE_PROPERTY(YGMeasureFunc, MeasureFunc, measureFunc);
+YG_NODE_PROPERTY(YGBaselineFunc, BaselineFunc, baselineFunc)
 YG_NODE_PROPERTY(YGPrintFunc, PrintFunc, printFunc);
 YG_NODE_PROPERTY(bool, HasNewLayout, hasNewLayout);
 
@@ -190,6 +197,14 @@ YG_NODE_LAYOUT_PROPERTY(float, Bottom);
 YG_NODE_LAYOUT_PROPERTY(float, Width);
 YG_NODE_LAYOUT_PROPERTY(float, Height);
 YG_NODE_LAYOUT_PROPERTY(YGDirection, Direction);
+
+// Get the computed values for these nodes after performing layout. If they were set using
+// pixel values then the returned value will be the same as YGNodeStyleGetXXX. However if
+// they were set using a percentage value then the returned value is the computed value used
+// during layout.
+YG_NODE_LAYOUT_EDGE_PROPERTY(float, Margin);
+YG_NODE_LAYOUT_EDGE_PROPERTY(float, Border);
+YG_NODE_LAYOUT_EDGE_PROPERTY(float, Padding);
 
 WIN_EXPORT void YGSetLogger(YGLogger logger);
 WIN_EXPORT void YGLog(YGLogLevel level, const char *message, ...);

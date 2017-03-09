@@ -36,7 +36,7 @@ LOCAL_CFLAGS += $(CXX11_FLAGS)
 LOCAL_EXPORT_CPPFLAGS := $(CXX11_FLAGS)
 
 LOCAL_STATIC_LIBRARIES := jschelpers
-LOCAL_SHARED_LIBRARIES := libfb_abi14_0_0 libfolly_json_abi14_0_0 libjsc libglog_abi14_0_0
+LOCAL_SHARED_LIBRARIES := libfb_abi15_0_0 libfolly_json_abi15_0_0 libjsc libglog_abi15_0_0
 
 include $(BUILD_STATIC_LIBRARY)
 
