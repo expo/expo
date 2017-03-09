@@ -96,7 +96,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   infoContainer: {
-    flex: 1,
     paddingTop: 13,
     flexDirection: 'column',
     alignSelf: 'stretch',
