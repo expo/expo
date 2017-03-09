@@ -17,12 +17,12 @@ import versioned.host.exp.exponent.ScopedReactApplicationContext;
 
 public class AmplitudeModule extends ReactContextBaseJavaModule {
 
-  private ScopedReactApplicationContext mReactApplicationContext;
+  private ScopedContext mScopedContext;
   private AmplitudeClient mClient;
 
-  public AmplitudeModule(ScopedReactApplicationContext reactContext) {
+  public AmplitudeModule(ReactApplicationContext reactContext, ScopedContext scopedContext) {
     super(reactContext);
-    mReactApplicationContext = reactContext;
+    mScopedContext = scopedContext;
   }
 
   @Override
@@ -34,7 +34,7 @@ public class AmplitudeModule extends ReactContextBaseJavaModule {
   public void initialize(final String apiKey) {
     Analytics.resetAmplitudeDatabaseHelper();
     mClient = new AmplitudeClient();
-    mClient.initialize(mReactApplicationContext, apiKey);
+    mClient.initialize(mScopedContext, apiKey);
   }
 
   @ReactMethod
