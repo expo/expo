@@ -56,7 +56,7 @@ export default class QRCodeButton extends React.Component {
               style={styles.subtitleText}
               ellipsizeMode="tail"
               numberOfLines={1}>
-              Useful for create-react-native-app and Sketch.
+              It's not pretty, but it beats typing
             </Text>
           </View>
         </View>
