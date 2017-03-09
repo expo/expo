@@ -121,7 +121,7 @@ public class ExponentPackage implements ReactPackage {
         String experienceId = mManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
         String experienceIdEncoded = URLEncoder.encode(experienceId, "UTF-8");
 
-        ScopedReactApplicationContext scopedReactApplicationContext = new ScopedReactApplicationContext(new ScopedContext(reactContext, experienceIdEncoded));
+        ScopedContext scopedContext = new ScopedContext(reactContext, experienceIdEncoded);
 
         nativeModules.add(new ExponentAsyncStorageModule(reactContext, mManifest));
         nativeModules.add(new AccelerometerModule(reactContext));
@@ -129,7 +129,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new NotificationsModule(reactContext, mManifest, mExperienceProperties));
         nativeModules.add(new ContactsModule(reactContext));
         nativeModules.add(new FileSystemModule(reactContext, mManifest));
-        nativeModules.add(new LocationModule(scopedReactApplicationContext));
+        nativeModules.add(new LocationModule(reactContext, scopedContext));
         nativeModules.add(new CryptoModule(reactContext));
         nativeModules.add(new ImagePickerModule(reactContext));
         nativeModules.add(new FacebookModule(reactContext));
@@ -137,8 +137,8 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new FingerprintModule(reactContext));
         nativeModules.add(new GoogleModule(reactContext, mExperienceProperties));
         nativeModules.add(new PermissionsModule(reactContext));
-        nativeModules.add(new AmplitudeModule(scopedReactApplicationContext));
-        nativeModules.add(new SegmentModule(scopedReactApplicationContext));
+        nativeModules.add(new AmplitudeModule(reactContext, scopedContext));
+        nativeModules.add(new SegmentModule(reactContext, scopedContext));
         nativeModules.add(new BarCodeScannerModule(reactContext));
         nativeModules.add(new RNViewShotModule(reactContext));
         nativeModules.add(new KeepAwakeModule(reactContext));

@@ -10,6 +10,7 @@ import android.support.v4.content.ContextCompat;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
@@ -17,6 +18,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
+import host.exp.exponent.utils.ScopedContext;
 import host.exp.exponent.utils.TimeoutObject;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
@@ -26,15 +28,15 @@ import versioned.host.exp.exponent.ScopedReactApplicationContext;
 
 public class LocationModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
 
-  private ScopedReactApplicationContext mScopedReactApplicationContext;
+  private ScopedContext mScopedContext;
   private LocationParams mLocationParams;
   private OnLocationUpdatedListener mOnLocationUpdatedListener;
 
-  public LocationModule(ScopedReactApplicationContext reactContext) {
+  public LocationModule(ReactApplicationContext reactContext, ScopedContext scopedContext) {
     super(reactContext);
     reactContext.addLifecycleEventListener(this);
 
-    mScopedReactApplicationContext = reactContext;
+    mScopedContext = scopedContext;
   }
 
   @Override
@@ -78,7 +80,7 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
     final LocationParams locationParams = highAccuracy ? LocationParams.NAVIGATION : LocationParams.BEST_EFFORT;
     // LocationControl has an internal map from Context -> LocationProvider, so each experience
     // will only have one instance of a LocationProvider.
-    SmartLocation.LocationControl locationControl = SmartLocation.with(mScopedReactApplicationContext).location().oneFix().config(locationParams);
+    SmartLocation.LocationControl locationControl = SmartLocation.with(mScopedContext).location().oneFix().config(locationParams);
 
     // Have location cached already?
     Location location = locationControl.getLastLocation();
@@ -107,21 +109,21 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
   }
 
   private void startWatching() {
-    if (mScopedReactApplicationContext == null || mLocationParams == null || mOnLocationUpdatedListener == null) {
+    if (mScopedContext == null || mLocationParams == null || mOnLocationUpdatedListener == null) {
       return;
     }
 
     // LocationControl has an internal map from Context -> LocationProvider, so each experience
     // will only have one instance of a LocationProvider.
-    SmartLocation.with(mScopedReactApplicationContext).location().config(mLocationParams).start(mOnLocationUpdatedListener);
+    SmartLocation.with(mScopedContext).location().config(mLocationParams).start(mOnLocationUpdatedListener);
   }
 
   private void stopWatching() {
-    if (mScopedReactApplicationContext == null || mLocationParams == null || mOnLocationUpdatedListener == null) {
+    if (mScopedContext == null || mLocationParams == null || mOnLocationUpdatedListener == null) {
       return;
     }
 
-    SmartLocation.with(mScopedReactApplicationContext).location().stop();
+    SmartLocation.with(mScopedContext).location().stop();
   }
 
   // TODO: Stop sending watchId from JS since we ignore it.

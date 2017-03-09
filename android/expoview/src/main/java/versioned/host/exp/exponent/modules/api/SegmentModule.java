@@ -28,12 +28,12 @@ public class SegmentModule extends ReactContextBaseJavaModule {
 
   private static int sCurrentTag = 0;
 
-  private ScopedReactApplicationContext mReactApplicationContext;
+  private ScopedContext mScopedContext;
   private Analytics mClient;
 
-  public SegmentModule(ScopedReactApplicationContext reactContext) {
+  public SegmentModule(ReactApplicationContext reactContext, ScopedContext scopedContext) {
     super(reactContext);
-    mReactApplicationContext = reactContext;
+    mScopedContext = scopedContext;
   }
 
   private static Traits readableMapToTraits(ReadableMap properties) {
@@ -75,7 +75,7 @@ public class SegmentModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void initializeAndroid(final String writeKey) {
-    Analytics.Builder builder = new Analytics.Builder(mReactApplicationContext, writeKey);
+    Analytics.Builder builder = new Analytics.Builder(mScopedContext, writeKey);
     builder.tag(Integer.toString(sCurrentTag++));
     mClient = builder.build();
   }
