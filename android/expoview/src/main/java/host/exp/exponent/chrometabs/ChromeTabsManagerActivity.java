@@ -48,7 +48,7 @@ public class ChromeTabsManagerActivity extends Activity {
     // in order to close the intent that was started previously so we just close this.
     if (getIntent().hasExtra(KEY_BROWSER_INTENT)) {
       Intent browserIntent = getIntent().getParcelableExtra(KEY_BROWSER_INTENT);
-      browserIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+      browserIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY);
       startActivity(browserIntent);
     } else {
       finish();
