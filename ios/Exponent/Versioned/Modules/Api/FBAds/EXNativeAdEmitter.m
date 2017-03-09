@@ -1,8 +1,8 @@
-#import "CTKNativeAdEmitter.h"
+#import "EXNativeAdEmitter.h"
 
-@implementation CTKNativeAdEmitter
+@implementation EXNativeAdEmitter
 
-RCT_EXPORT_MODULE()
+RCT_EXPORT_MODULE(CTKNativeAdEmitter)
 
 - (NSArray<NSString *> *)supportedEvents
 {

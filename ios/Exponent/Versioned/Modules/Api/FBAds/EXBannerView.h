@@ -1,7 +1,7 @@
 #import <React/RCTView.h>
 #import <React/RCTComponent.h>
 
-@interface CTKBannerView : RCTView
+@interface EXBannerView : RCTView
 
 @property (nonatomic, copy) RCTBubblingEventBlock onAdPress;
 @property (nonatomic, copy) RCTBubblingEventBlock onAdError;

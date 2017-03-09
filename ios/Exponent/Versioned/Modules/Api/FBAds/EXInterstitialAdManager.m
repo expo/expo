@@ -1,9 +1,10 @@
-#import "CTKInterstitialAdManager.h"
+#import "EXInterstitialAdManager.h"
 #import "EXUnversioned.h"
-#import <React/RCTUtils.h>
-@import FBAudienceNetwork;
 
-@interface CTKInterstitialAdManager () <FBInterstitialAdDelegate>
+#import <FBAudienceNetwork/FBAudienceNetwork.h>
+#import <React/RCTUtils.h>
+
+@interface EXInterstitialAdManager () <FBInterstitialAdDelegate>
 
 @property (nonatomic, strong) RCTPromiseResolveBlock resolve;
 @property (nonatomic, strong) RCTPromiseRejectBlock reject;
@@ -14,11 +15,11 @@
 
 @end
 
-@implementation CTKInterstitialAdManager
+@implementation EXInterstitialAdManager
 
 @synthesize bridge = _bridge;
 
-RCT_EXPORT_MODULE()
+RCT_EXPORT_MODULE(CTKInterstitialAdManager)
 
 - (void)setBridge:(RCTBridge *)bridge
 {

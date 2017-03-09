@@ -1,15 +1,15 @@
-#import "CTKBannerViewManager.h"
-#import "CTKBannerView.h"
+#import "EXBannerViewManager.h"
+#import "EXBannerView.h"
 
-@implementation CTKBannerViewManager
+@implementation EXBannerViewManager
 
-RCT_EXPORT_MODULE()
+RCT_EXPORT_MODULE(CTKBannerViewManager)
 
 @synthesize bridge = _bridge;
 
 - (UIView *)view
 {
-  return [CTKBannerView new];
+  return [EXBannerView new];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(size, NSNumber)

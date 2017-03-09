@@ -1,12 +1,13 @@
-@import FBAudienceNetwork;
-#import "CTKNativeAdView.h"
+#import "EXNativeAdView.h"
+
+#import <FBAudienceNetwork/FBAudienceNetwork.h>
 #import <React/RCTUtils.h>
 
-@interface CTKNativeAdView ()
+@interface EXNativeAdView ()
 
 @end
 
-@implementation CTKNativeAdView
+@implementation EXNativeAdView
 
 - (void)setNativeAd:(FBNativeAd *)nativeAd
 {

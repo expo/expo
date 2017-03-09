@@ -2,7 +2,7 @@
 #import <React/RCTView.h>
 #import <React/RCTComponent.h>
 
-@interface CTKNativeAdView : RCTView
+@interface EXNativeAdView : RCTView
 
 // `onAdLoaded` event called when ad has been loaded
 @property (nonatomic, copy) RCTBubblingEventBlock onAdLoaded;

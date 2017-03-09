@@ -1,6 +1,6 @@
 #import <React/RCTEventEmitter.h>
 
-@interface CTKNativeAdEmitter : RCTEventEmitter
+@interface EXNativeAdEmitter : RCTEventEmitter
 
 - (void)sendManagersState:(NSDictionary<NSString *, NSNumber *> *)adManagersState;
 

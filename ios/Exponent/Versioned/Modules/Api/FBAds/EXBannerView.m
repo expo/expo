@@ -1,14 +1,15 @@
-@import FBAudienceNetwork;
-#import "CTKBannerView.h"
+#import "EXBannerView.h"
+
+#import <FBAudienceNetwork/FBAudienceNetwork.h>
 #import <React/RCTUtils.h>
 
-@interface CTKBannerView () <FBAdViewDelegate>
+@interface EXBannerView () <FBAdViewDelegate>
 
 @property (nonatomic, strong) FBAdView *adView;
 
 @end
 
-@implementation CTKBannerView
+@implementation EXBannerView
 
 - (void)setSize:(NSNumber *)size
 {

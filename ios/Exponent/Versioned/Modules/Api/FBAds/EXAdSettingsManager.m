@@ -1,10 +1,11 @@
-#import "CTKAdSettingsManager.h"
+#import "EXAdSettingsManager.h"
 #import "EXUnversioned.h"
+
+#import <FBAudienceNetwork/FBAudienceNetwork.h>
 #import <React/RCTUtils.h>
 #import <React/RCTConvert.h>
-@import FBAudienceNetwork;
 
-@implementation RCTConvert (CTKNativeAdView)
+@implementation RCTConvert (EXNativeAdView)
 
 RCT_ENUM_CONVERTER(FBAdLogLevel, (@{
   @"none": @(FBAdLogLevelNone),
@@ -17,7 +18,7 @@ RCT_ENUM_CONVERTER(FBAdLogLevel, (@{
 
 @end
 
-@interface CTKAdSettingsManager ()
+@interface EXAdSettingsManager ()
 
 @property (nonatomic) BOOL isChildDirected;
 @property (nonatomic, strong) NSString *mediationService;
@@ -27,11 +28,11 @@ RCT_ENUM_CONVERTER(FBAdLogLevel, (@{
 
 @end
 
-@implementation CTKAdSettingsManager
+@implementation EXAdSettingsManager
 
 @synthesize bridge = _bridge;
 
-RCT_EXPORT_MODULE()
+RCT_EXPORT_MODULE(CTKAdSettingsManager)
 
 - (instancetype)init {
   if (self = [super init]) {

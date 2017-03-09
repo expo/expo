@@ -1,13 +1,15 @@
-@import FBAudienceNetwork;
-#import "CTKNativeAdManager.h"
-#import "CTKNativeAdView.h"
-#import "CTKNativeAdEmitter.h"
+
+#import "EXNativeAdManager.h"
+#import "EXNativeAdView.h"
+#import "EXNativeAdEmitter.h"
+
+#import <FBAudienceNetwork/FBAudienceNetwork.h>
 #import <React/RCTUtils.h>
 #import <React/RCTAssert.h>
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 
-@implementation RCTConvert (CTKNativeAdView)
+@implementation RCTConvert (EXNativeAdView)
 
 RCT_ENUM_CONVERTER(FBNativeAdsCachePolicy, (@{
   @"none": @(FBNativeAdsCachePolicyNone),
@@ -18,15 +20,15 @@ RCT_ENUM_CONVERTER(FBNativeAdsCachePolicy, (@{
 
 @end
 
-@interface CTKNativeAdManager () <FBNativeAdsManagerDelegate>
+@interface EXNativeAdManager () <FBNativeAdsManagerDelegate>
 
 @property (nonatomic, strong) NSMutableDictionary<NSString*, FBNativeAdsManager*> *adsManagers;
 
 @end
 
-@implementation CTKNativeAdManager
+@implementation EXNativeAdManager
 
-RCT_EXPORT_MODULE()
+RCT_EXPORT_MODULE(CTKNativeAdManager)
 
 @synthesize bridge = _bridge;
 
@@ -69,7 +71,7 @@ RCT_EXPORT_METHOD(disableAutoRefresh:(NSString*)placementId)
     [adsManagersState setValue:@([adManager isValid]) forKey:key];
   }];
   
-  CTKNativeAdEmitter *nativeAdEmitter = [_bridge moduleForClass:[CTKNativeAdEmitter class]];
+  EXNativeAdEmitter *nativeAdEmitter = [_bridge moduleForClass:[EXNativeAdEmitter class]];
   [nativeAdEmitter sendManagersState:adsManagersState];
 }
 
@@ -85,11 +87,11 @@ RCT_EXPORT_METHOD(disableAutoRefresh:(NSString*)placementId)
 
 - (UIView *)view
 {
-  return [CTKNativeAdView new];
+  return [EXNativeAdView new];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(onAdLoaded, RCTBubblingEventBlock)
-RCT_CUSTOM_VIEW_PROPERTY(adsManager, NSString, CTKNativeAdView)
+RCT_CUSTOM_VIEW_PROPERTY(adsManager, NSString, EXNativeAdView)
 {
   view.nativeAd = [_adsManagers[json] nextNativeAd];
 }
