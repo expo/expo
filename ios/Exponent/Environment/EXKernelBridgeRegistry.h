@@ -32,4 +32,10 @@
 - (RCTBridge *)kernelBridge;
 - (NSEnumerator<id> *)bridgeEnumerator; // does not include kernel
 
+/**
+ *  True if any bridge for this experience id had an error, and has not successfully loaded
+ *  since the error was reported.
+ */
+- (BOOL)experienceIdIsRecoveringFromError:(NSString *)experienceId;
+
 @end

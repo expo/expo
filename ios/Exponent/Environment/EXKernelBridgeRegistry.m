@@ -9,6 +9,7 @@
 
 @property (nonatomic, strong) NSMapTable<id, EXKernelBridgeRecord *> *bridgeRegistry;
 @property (nonatomic, assign) RCTBridge *kernelBridge;
+@property (nonatomic, strong) NSMutableSet *experienceIdErrorRecoverySet;
 
 @end
 
@@ -18,6 +19,7 @@
 {
   if (self = [super init]) {
     _bridgeRegistry = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsWeakMemory valueOptions:NSPointerFunctionsStrongMemory];
+    _experienceIdErrorRecoverySet = [NSMutableSet set];
   }
   return self;
 }
@@ -32,6 +34,10 @@
     }
   }
   [_bridgeRegistry setObject:[EXKernelBridgeRecord recordWithExperienceId:experienceId frame:frame] forKey:bridge];
+
+  // if this experience had a loading error previously, consider it recovered now
+  [_experienceIdErrorRecoverySet removeObject:experienceId];
+
   if (_lastKnownForegroundBridge == nil) {
     // TODO: this assumes we always load bridges in the foreground (true at time of writing)
     _lastKnownForegroundBridge = bridge;
@@ -51,6 +57,10 @@
   EXKernelBridgeRecord *record = [self recordForBridge:bridge];
   if (record) {
     record.error = error;
+    if (error) {
+      // mark this experience id as having loading problems, so future attempts will bust the cache
+      [_experienceIdErrorRecoverySet addObject:record.experienceId];
+    }
   }
 }
 
@@ -88,6 +98,11 @@
 - (NSEnumerator<id> *)bridgeEnumerator
 {
   return [_bridgeRegistry keyEnumerator];
+}
+
+- (BOOL)experienceIdIsRecoveringFromError:(NSString *)experienceId
+{
+  return (experienceId && [_experienceIdErrorRecoverySet containsObject:experienceId]);
 }
 
 - (NSString *)description

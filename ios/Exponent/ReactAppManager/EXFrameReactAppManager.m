@@ -44,6 +44,11 @@
 
 - (EXCachedResourceBehavior)cacheBehaviorForJSResource
 {
+  NSString *experienceId = (_frame.manifest) ? _frame.manifest[@"id"] : nil;
+  if ([[EXKernel sharedInstance].bridgeRegistry experienceIdIsRecoveringFromError:experienceId]) {
+    // if this experience id encountered a loading error before, discard any cache we might have
+    return kEXCachedResourceNoCache;
+  }
   return ([self doesManifestEnableDeveloperTools]) ? kEXCachedResourceNoCache : kEXCachedResourceFallBackToCache;
 }
 
