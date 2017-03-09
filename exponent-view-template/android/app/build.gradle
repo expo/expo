@@ -55,7 +55,7 @@ dependencies {
   compile 'com.android.support:multidex:1.0.0'
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  compile('host.exp.exponent:expoview:14.0.0@aar') {
+  compile('host.exp.exponent:expoview:15.0.0@aar') {
     exclude module: 'bolts-android'
     transitive = true;
   }
