@@ -327,6 +327,10 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       notificationObject = options.notificationObject;
     }
 
+    if (mIntentUri == null) {
+      mIntentUri = mManifestUrl;
+    }
+
     final ExponentNotification finalNotificationObject = notificationObject;
 
     // TODO: deprecated
