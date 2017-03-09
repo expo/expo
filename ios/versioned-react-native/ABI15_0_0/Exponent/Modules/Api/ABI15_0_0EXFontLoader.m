@@ -15,6 +15,8 @@
 
 static NSMutableDictionary *ABI15_0_0EXFonts = nil;
 
+static const char *ABI15_0_0EXFontAssocKey = "ABI15_0_0EXFont";
+
 @interface ABI15_0_0EXFont : NSObject
 
 @property (nonatomic, assign) CGFontRef cgFont;
@@ -42,6 +44,7 @@ static NSMutableDictionary *ABI15_0_0EXFonts = nil;
   }
   uiFont = (__bridge_transfer UIFont *)CTFontCreateWithGraphicsFont(_cgFont, fsize, NULL, NULL);
   _sizes[size] = uiFont;
+  objc_setAssociatedObject(uiFont, ABI15_0_0EXFontAssocKey, self, OBJC_ASSOCIATION_ASSIGN);
   return uiFont;
 }
 
@@ -56,7 +59,7 @@ static NSMutableDictionary *ABI15_0_0EXFonts = nil;
 @implementation ABI15_0_0RCTFont (ABI15_0_0EXFontLoader)
 
 // Will swap this with +[ABI15_0_0RCTFont updateFont: ...]
-+ (UIFont *)ex_updateFont:(UIFont *)font
++ (UIFont *)ex_updateFont:(UIFont *)uiFont
                withFamily:(NSString *)family
                      size:(NSNumber *)size
                    weight:(NSString *)weight
@@ -64,18 +67,27 @@ static NSMutableDictionary *ABI15_0_0EXFonts = nil;
                   variant:(NSArray<NSDictionary *> *)variant
           scaleMultiplier:(CGFloat)scaleMultiplier
 {
-  NSString * const exponentPrefix = @"ExponentFont-";
+  NSString *const exponentPrefix = @"ExponentFont-";
   const CGFloat defaultFontSize = 14;
-  
-  // TODO: Figure out a way to support the other fields in the JSON configuration
+  ABI15_0_0EXFont *exFont = nil;
+
+  // Did we get a new family, and if so, is it associated with an ABI15_0_0EXFont?
   if ([family hasPrefix:exponentPrefix] && ABI15_0_0EXFonts) {
     NSString *suffix = [family substringFromIndex:exponentPrefix.length];
-    if (ABI15_0_0EXFonts[suffix]) {
-      return [ABI15_0_0EXFonts[suffix] UIFontWithSize:[ABI15_0_0RCTConvert CGFloat:size] ?: font.pointSize ?: defaultFontSize];
-    }
+    exFont = ABI15_0_0EXFonts[suffix];
   }
-  
-  return [self ex_updateFont:font withFamily:family size:size weight:weight style:style variant:variant scaleMultiplier:scaleMultiplier];
+
+  // Did the passed-in UIFont come from an ABI15_0_0EXFont?
+  if (!exFont && uiFont) {
+    exFont = objc_getAssociatedObject(uiFont, ABI15_0_0EXFontAssocKey);
+  }
+
+  // If it's an ABI15_0_0EXFont, generate the corresponding UIFont, else fallback to ReactABI15_0_0 Native's built-in method
+  if (exFont) {
+    return [exFont UIFontWithSize:[ABI15_0_0RCTConvert CGFloat:size] ?: uiFont.pointSize ?: defaultFontSize];
+  } else {
+    return [self ex_updateFont:uiFont withFamily:family size:size weight:weight style:style variant:variant scaleMultiplier:scaleMultiplier];
+  }
 }
 
 @end
