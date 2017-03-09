@@ -12,7 +12,7 @@ Try the [playlist example app](http://expo.io/@exponent/playlist) (source code i
 
 Audio is disabled by default, so your app must enable it explicitly to play sounds.
 
-### `Exponent.Audio.setIsEnabled(value)`
+### `Exponent.Audio.setIsEnabledAsync(value)`
 
 #### Arguments
 
@@ -58,15 +58,19 @@ const sound = new Exponent.Audio.Sound({
 
 -   `soundInstance.loadAsync()`
 
-    Loads the sound into memory and prepares it for playing. This must be called before calling `play`.
+    Loads the sound into memory and prepares it for playing. This must be called before calling `playAsync`.
 
     #### Returns
 
     A `Promise` that is fulfilled when the sound is loaded, or rejects if loading failed.
 
--   `soundInstance.unload()`
+-   `soundInstance.unloadAsync()`
 
     Unloads the sound. `loadAsync` must be called again in order to be able to play the sound.
+
+    #### Returns
+
+    A `Promise` that is fulfilled when the sound is unloaded, or rejects if unloading failed.
 
 -   `soundInstance.isLoaded()`
 
@@ -80,66 +84,82 @@ const sound = new Exponent.Audio.Sound({
 
     The duration of the sound in milliseconds. This is available only after the sound is loaded.
 
--   `soundInstance.play()`
+-   `soundInstance.playAsync()`
 
     Plays the sound.
 
     #### Returns
 
-    A `Promise` that is resolved, once the sound starts playing, with the `status` of the sound (see `getStatus` for details).
+    A `Promise` that is resolved, once the sound starts playing, with the `status` of the sound (see `getStatusAsync` for details).
 
--   `soundInstance.pause()`
+-   `soundInstance.pauseAsync()`
 
     Pauses the sound.
 
     #### Returns
 
-    A `Promise` that is resolved, once playback is paused, with the `status` of the sound (see `getStatus` for details).
+    A `Promise` that is resolved, once playback is paused, with the `status` of the sound (see `getStatusAsync` for details).
 
--   `soundInstance.stop()`
+-   `soundInstance.stopAsync()`
 
     Stops the sound.
 
     #### Returns
 
-    A `Promise` that is resolved, once playback is stopped, with the `status` of the sound (see `getStatus` for details).
+    A `Promise` that is resolved, once playback is stopped, with the `status` of the sound (see `getStatusAsync` for details).
 
--   `soundInstance.setPosition(millis)`
+-   `soundInstance.setPositionAsync(millis)`
     Sets the playback position of the sound.
 
     #### Parameters
 
--   **millis (_number_)** -- The position to seek the sound to.
+    -   **millis (_number_)** -- The position to seek the sound to.
 
     #### Returns
 
-    A `Promise` that is resolved, once the seek occurs, with the `status` of the sound (see `getStatus` for details).
+    A `Promise` that is resolved, once the seek occurs, with the `status` of the sound (see `getStatusAsync` for details).
 
--   `soundInstance.setVolume(value)`
+-   `soundInstance.setRateAsync(value, shouldCorrectPitch)`
+    Sets the playback rate of the sound.
 
-    Sets the volume of the sound. This is NOT the system volume, and will only affect this sound. This value defaults to `1`.
+    NOTE: This is only available on Android API version 23 and later.
 
     #### Parameters
 
-    -   **value (_number_)** -- A number between `0` (silence) and `1` (maximum volume).
+    -   **value (_number_)** -- The desired playback rate of the sound. This value must be between `0.0` and `32.0`.
+
+    -   **shouldCorrectPitch (_boolean_)** -- If set to `true`, the pitch of the sound will be corrected (so a rate different than `1.0` will timestretch the sound).
 
     #### Returns
 
-    A `Promise` that is resolved, once the volume is set, with the `status` of the sound (see `getStatus` for details).
+    A `Promise` that is resolved once the rate is changed with the `status` of the sound (see `getStatusAsync` for details). If the Android API version is less than 23, the `Promise` will reject.
 
--   `soundInstance.setIsMuted(value)`
 
-    Sets whether the sound is muted. This is independent of the volume of the sound set in `setVolume`. This also does not affect the system volume, and only pertains to this sound. This value defaults to `true`.
+-   `soundInstance.setVolumeAsync(value)`
+
+    Sets the volume of the sound. This is NOT the system volume, and will only affect this sound. This value defaults to `1.0`.
 
     #### Parameters
 
--   **value (_boolean_)** -- `true` mutes the sound, and `false` unmutes it.
+    -   **value (_number_)** -- A number between `0.0` (silence) and `1.0` (maximum volume).
 
     #### Returns
 
-    A `Promise` that is resolved, once the mute state is set, with the `status` of the sound (see `getStatus` for details).
+    A `Promise` that is resolved, once the volume is set, with the `status` of the sound (see `getStatusAsync` for details).
 
--   `soundInstance.setIsLooping(value)`
+-   `soundInstance.setIsMutedAsync(value)`
+
+    Sets whether the sound is muted. This is independent of the volume of the sound set in `setVolumeAsync`. This also does not affect the system volume, and only pertains to this sound. This value defaults to `true`.
+
+    #### Parameters
+
+    -   **value (_boolean_)** -- `true` mutes the sound, and `false` unmutes it.
+
+    #### Returns
+
+    A `Promise` that is resolved, once the mute state is set, with the `status` of the sound (see `getStatusAsync` for details).
+
+-   `soundInstance.setIsLoopingAsync(value)`
 
     Sets whether playback of the sound should loop. When `true`, it will loop indefinitely. This value defaults to `false`.
 
@@ -149,9 +169,9 @@ const sound = new Exponent.Audio.Sound({
 
     #### Returns
 
-    A `Promise` that is resolved, once the loop state is set, with the `status` of the sound (see `getStatus` for details).
+    A `Promise` that is resolved, once the loop state is set, with the `status` of the sound (see `getStatusAsync` for details).
 
--   `soundInstance.getStatus()`
+-   `soundInstance.getStatusAsync()`
 
     Gets the `status` of the sound.
 
@@ -159,14 +179,17 @@ const sound = new Exponent.Audio.Sound({
 
     A `Promise` that is resolved with the `status` of the sound: a dictionary with the following key-value pairs.
 
-    -   `position_millis` : the current position of playback in milliseconds.
-    -   `is_playing` : a boolean describing if the sound is currently playing.
-    -   `is_muted` : a boolean describing if the sound is currently muted.
-    -   `is_looping` : a boolean describing if the sound is currently looping.
+    -   `isPlaying` : a boolean describing if the sound is currently playing.
+    -   `positionMillis` : the current position of playback in milliseconds.
+    -   `rate` : the current rate of the sound.
+    -   `shouldCorrectPitch` : a boolean describing if we are correcting the pitch for a changed rate.
+    -   `volume` : the current volume of the sound.
+    -   `isMuted` : a boolean describing if the sound is currently muted.
+    -   `isLooping` : a boolean describing if the sound is currently looping.
 
 -   `soundInstance.setStatusChangeCallback(callback)`
 
-    Sets a function to be called at regular intervals with the `status` of the Sound. See `getStatus` for details on `status`, and see `setStatusPollingTimeoutMillis` for details on the regularity with which this function is called.
+    Sets a function to be called at regular intervals with the `status` of the Sound. See `getStatusAsync` for details on `status`, and see `setStatusPollingTimeoutMillis` for details on the regularity with which this function is called.
 
     #### Parameters
 
@@ -176,7 +199,7 @@ const sound = new Exponent.Audio.Sound({
 
     Sets the interval with which the status change callback is called. See `setStatusChangeCallback` for details on the status change callback. This value defaults to 100 milliseconds.
 
-    Note that the status change callback will automatically be called when another call to the API for this sound completes (such as `play`, `pause`, or `stop`) regardless of this value.
+    Note that the status change callback will automatically be called when another call to the API for this sound completes (such as `playAsync`, `setRateAsync`, or `getStatusAsync`) regardless of this value.
 
     #### Parameters
 
