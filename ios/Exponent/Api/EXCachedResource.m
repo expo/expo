@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
   switch (behavior) {
     case kEXCachedResourceNoCache: {
       NSLog(@"EXCachedResource: Not using cache for %@", _resourceName);
-      [self loadRemoteResourceWithSuccess:success error:error];
+      [self _loadRemoteResourceWithSuccess:success error:error ignoringCache:YES];
       break;
     }
     case kEXCachedResourceUseCacheImmediately: {
@@ -52,8 +52,12 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-- (void)loadRemoteResourceWithSuccess:(EXCachedResourceSuccessBlock)successBlock
+/**
+ *  If @ignoreCache is true, make sure NSURLSession busts any existing cache.
+ */
+- (void)_loadRemoteResourceWithSuccess:(EXCachedResourceSuccessBlock)successBlock
                                  error:(EXCachedResourceErrorBlock)errorBlock
+                         ignoringCache:(BOOL)ignoreCache
 {
   EXFileDownloader *downloader = [[EXFileDownloader alloc] init];
   if (_requestTimeoutInterval) {
@@ -62,8 +66,15 @@ NS_ASSUME_NONNULL_BEGIN
   if (_abiVersion) {
     downloader.abiVersion = _abiVersion;
   }
-  if (_urlCache) {
-    downloader.urlCache = _urlCache;
+  if (_urlCache || ignoreCache) {
+    NSURLSessionConfiguration *customConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    if (_urlCache) {
+      customConfiguration.URLCache = _urlCache;
+    }
+    if (ignoreCache) {
+      customConfiguration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
+    }
+    downloader.urlSessionConfiguration = customConfiguration;
   }
 
   [downloader downloadFileFromURL:_remoteUrl successBlock:^(NSData *data, NSURLResponse *response) {
@@ -113,7 +124,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
   };
 
-  [self loadRemoteResourceWithSuccess:onSuccess error:onError];
+  [self _loadRemoteResourceWithSuccess:onSuccess error:onError ignoringCache:NO];
 }
 
 - (void)_loadRemoteAndFallBackToCacheWithSuccess:(EXCachedResourceSuccessBlock)successBlock
@@ -122,7 +133,7 @@ NS_ASSUME_NONNULL_BEGIN
   NSString *resourceCachePath = [self resourceCachePath];
   NSString *resourceLocalPath = [self resourceLocalPathPreferringCache];
 
-  [self loadRemoteResourceWithSuccess:^(NSData * _Nonnull data) {
+  [self _loadRemoteResourceWithSuccess:^(NSData * _Nonnull data) {
     // write to cache for next time
     NSLog(@"EXCachedResource: Caching resource to %@...", resourceCachePath);
     [data writeToFile:resourceCachePath atomically:YES];
@@ -141,7 +152,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (!hasLocalBundle) {
       errorBlock(error);
     }
-  }];
+  } ignoringCache:NO];
 }
 
 - (NSString *)resourceCachePath

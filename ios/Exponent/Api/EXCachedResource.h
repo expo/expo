@@ -8,7 +8,7 @@ typedef void (^EXCachedResourceSuccessBlock)(NSData *data);
 typedef void (^EXCachedResourceErrorBlock)(NSError *error);
 
 typedef enum EXCachedResourceBehavior {
-  // same as calling - loadRemoteResource...
+  // load the resource without using any cache.
   kEXCachedResourceNoCache,
   // return immediately with cached data if it exists, then try to download the resource and replace the cache in the background.
   kEXCachedResourceUseCacheImmediately,
@@ -31,9 +31,6 @@ typedef enum EXCachedResourceBehavior {
 - (void)loadResourceWithBehavior:(EXCachedResourceBehavior)behavior
                     successBlock:(EXCachedResourceSuccessBlock)successBlock
                       errorBlock:(EXCachedResourceErrorBlock)errorBlock;
-
-- (void)loadRemoteResourceWithSuccess:(EXCachedResourceSuccessBlock)successBlock
-                                error:(EXCachedResourceErrorBlock)errorBlock;
 
 /**
  *  Filesystem path to the downloaded and cached copy of this resource.

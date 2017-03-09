@@ -30,13 +30,13 @@ NSTimeInterval const EXFileDownloaderDefaultTimeoutInterval = 60;
                      successBlock:(EXFileDownloaderSuccessBlock)successBlock
                        errorBlock:(EXFileDownloaderErrorBlock)errorBlock
 {
-  NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-  if (_urlCache) {
-    configuration.URLCache = _urlCache;
-  }
+  NSURLSessionConfiguration *configuration = _urlSessionConfiguration ?: [NSURLSessionConfiguration defaultSessionConfiguration];
+  
+  // also pass any custom cache policy onto this specific request
+  NSURLRequestCachePolicy cachePolicy = _urlSessionConfiguration ? _urlSessionConfiguration.requestCachePolicy : NSURLRequestUseProtocolCachePolicy;
   
   NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
-  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:_timeoutInterval];
+  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:cachePolicy timeoutInterval:_timeoutInterval];
   [self setHTTPHeaderFields:request];
   
   __weak typeof(self) weakSelf = self;
