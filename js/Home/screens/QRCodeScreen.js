@@ -21,6 +21,10 @@ export default class BarCodeScreen extends React.Component {
     },
   };
 
+  componentWillMount() {
+    this._hasOpenedUrl = false;
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -60,7 +64,10 @@ export default class BarCodeScreen extends React.Component {
   _handleBarCodeRead = ({ data: url }) => {
     this.props.navigation.dismissModal();
     requestAnimationFrame(() => {
-      Linking.openURL(url);
+      if (!this._hasOpenedUrl) {
+        this._hasOpenedUrl = true;
+        Linking.openURL(url);
+      }
     });
   };
 
