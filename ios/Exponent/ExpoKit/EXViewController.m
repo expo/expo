@@ -148,6 +148,13 @@ NS_ASSUME_NONNULL_BEGIN
   [self showErrorWithType:kEXFatalErrorTypeLoading error:error];
 }
 
+- (void)reactAppManagerDidForeground:(EXReactAppManager *)appManager
+{
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self _enforceKernelOrientation];
+  });
+}
+
 #pragma mark - Delegate
 
 - (void)errorViewDidSelectRetry:(EXErrorView *)errorView
@@ -157,6 +164,21 @@ NS_ASSUME_NONNULL_BEGIN
   _appManager.launchOptions = nil;
   
   [self loadReactApplication];
+}
+
+#pragma mark - Internal
+
+- (void)_enforceKernelOrientation
+{
+  EXAssertMainThread();
+  UIInterfaceOrientationMask mask = [self supportedInterfaceOrientations];
+  UIDeviceOrientation currentOrientation = [[UIDevice currentDevice] orientation];
+  if (mask == UIInterfaceOrientationMaskLandscape && (currentOrientation == UIDeviceOrientationPortrait)) {
+    [[UIDevice currentDevice] setValue:@(UIInterfaceOrientationLandscapeLeft) forKey:@"orientation"];
+  } else if (mask == UIInterfaceOrientationMaskPortrait && (currentOrientation != UIDeviceOrientationPortrait)) {
+    [[UIDevice currentDevice] setValue:@(UIDeviceOrientationPortrait) forKey:@"orientation"];
+  }
+  [UIViewController attemptRotationToDeviceOrientation];
 }
 
 @end
