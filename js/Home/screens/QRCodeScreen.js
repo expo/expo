@@ -11,6 +11,7 @@ import {
   View,
 } from 'react-native';
 import { Components } from 'expo';
+import { throttle } from 'lodash';
 
 import Layout from '../constants/Layout';
 
@@ -61,15 +62,18 @@ export default class BarCodeScreen extends React.Component {
     );
   }
 
-  _handleBarCodeRead = ({ data: url }) => {
-    this.props.navigation.dismissModal();
-    requestAnimationFrame(() => {
-      if (!this._hasOpenedUrl) {
-        this._hasOpenedUrl = true;
-        Linking.openURL(url);
-      }
-    });
-  };
+  _handleBarCodeRead = throttle(
+    ({ data: url }) => {
+      this.props.navigation.dismissModal();
+      requestAnimationFrame(() => {
+        if (!this._hasOpenedUrl) {
+          this._hasOpenedUrl = true;
+          Linking.openURL(url);
+        }
+      });
+    },
+    1000
+  );
 
   _handlePressCancel = () => {
     this.props.navigation.dismissModal();
