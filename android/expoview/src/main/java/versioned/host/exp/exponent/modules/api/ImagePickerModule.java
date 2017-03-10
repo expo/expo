@@ -35,8 +35,6 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
   static final int REQUEST_LAUNCH_CAMERA = 1;
   static final int REQUEST_LAUNCH_IMAGE_LIBRARY = 2;
 
-  private final ReactApplicationContext mReactContext;
-
   private Uri mCameraCaptureURI;
   private Promise mPromise;
   private Boolean mLaunchedCropper = false;
@@ -51,8 +49,6 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
 
   public ImagePickerModule(ReactApplicationContext reactContext) {
     super(reactContext);
-
-    mReactContext = reactContext;
     Exponent.getInstance().addActivityResultListener(this);
   }
 
