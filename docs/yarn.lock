@@ -25,8 +25,8 @@ commander@2.6.0:
   resolved commander-2.6.0.tgz#9df7e52fb2a0cb0fb89058ee80c3104225f37e1d
 
 concurrently@^3.3.0:
-  version "3.3.0"
-  resolved concurrently-3.3.0.tgz#d8eb7a9765fdf0b28d12220dc058e14d03c7dd4f
+  version "3.4.0"
+  resolved concurrently-3.4.0.tgz#60662b3defde07375bae19aac0ab780ec748ba79
   dependencies:
     chalk "0.5.1"
     commander "2.6.0"
@@ -38,8 +38,8 @@ concurrently@^3.3.0:
     tree-kill "^1.1.0"
 
 date-fns@^1.23.0:
-  version "1.27.2"
-  resolved date-fns-1.27.2.tgz#ce82f420bc028356cc661fc55c0494a56a990c9c
+  version "1.28.0"
+  resolved date-fns-1.28.0.tgz#3b12f54b66467807bb95e5930caf7bfb4170bc1a
 
 escape-string-regexp@^1.0.0:
   version "1.0.5"
