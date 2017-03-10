@@ -29,6 +29,7 @@ import com.theartofdev.edmodo.cropper.CropImage;
 
 import host.exp.exponent.ActivityResultListener;
 import host.exp.exponent.utils.ExpFileUtils;
+import host.exp.exponent.utils.ScopedContext;
 import host.exp.expoview.Exponent;
 
 public class ImagePickerModule extends ReactContextBaseJavaModule implements ActivityResultListener {
@@ -47,8 +48,11 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
   private Boolean allowsEditing = false;
   private ReadableArray forceAspect = null;
 
-  public ImagePickerModule(ReactApplicationContext reactContext) {
+  private ScopedContext mScopedContext;
+
+  public ImagePickerModule(ReactApplicationContext reactContext, ScopedContext scopedContext) {
     super(reactContext);
+    mScopedContext = scopedContext;
     Exponent.getInstance().addActivityResultListener(this);
   }
 
@@ -166,10 +170,9 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
         }
 
         CropImage.ActivityResult result = CropImage.getActivityResult(intent);
-        Uri uri = result.getUri();
 
         WritableMap response = Arguments.createMap();
-        response.putString("uri", uri.toString());
+        response.putString("uri", result.getUri().toString());
         int rot = result.getRotation() % 360;
         if (rot < 0) {
           rot += 360;
@@ -206,60 +209,75 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
     AsyncTask.execute(new Runnable() {
       @Override
       public void run() {
-        Uri uri = requestCode == REQUEST_LAUNCH_CAMERA ? mCameraCaptureURI : intent.getData();
+        try {
+          Uri uri = requestCode == REQUEST_LAUNCH_CAMERA ? mCameraCaptureURI : intent.getData();
 
-        if (allowsEditing) {
-          mLaunchedCropper = true;
-          mPromise = promise; // Need promise again later
+          if (allowsEditing) {
+            mLaunchedCropper = true;
+            mPromise = promise; // Need promise again later
 
-          CropImage.ActivityBuilder cropImage = CropImage.activity(uri);
-          if (forceAspect != null) {
-            cropImage.
-              setAspectRatio(forceAspect.getInt(0), forceAspect.getInt(1)).
-              setFixAspectRatio(true).
-              setInitialCropWindowPaddingRatio(0);
-          }
-          cropImage.start(Exponent.getInstance().getCurrentActivity());
-        } else {
-          String beforeDecode = uri.toString();
-          String afterDecode = Uri.decode(beforeDecode);
-          Bitmap bmp = null;
-          try {
-            bmp = ImageLoader.getInstance().loadImageSync(afterDecode,
-                    new DisplayImageOptions.Builder()
-                            .considerExifParams(true)
-                            .build());
-          } catch (Throwable e) {}
-          if (bmp == null) {
+            CropImage.ActivityBuilder cropImage = CropImage.activity(uri);
+            if (forceAspect != null) {
+              cropImage
+                  .setAspectRatio(forceAspect.getInt(0), forceAspect.getInt(1))
+                  .setFixAspectRatio(true)
+                  .setInitialCropWindowPaddingRatio(0);
+            }
+            cropImage
+                .setOutputUri(ExpFileUtils.uriFromFile(new File(generateOutputPath())))
+                .start(Exponent.getInstance().getCurrentActivity());
+          } else {
+            String beforeDecode = uri.toString();
+            String afterDecode = Uri.decode(beforeDecode);
+            Bitmap bmp = null;
             try {
-              bmp = ImageLoader.getInstance().loadImageSync(beforeDecode,
-                      new DisplayImageOptions.Builder()
-                              .considerExifParams(true)
-                              .build());
+              bmp = ImageLoader.getInstance().loadImageSync(afterDecode,
+                  new DisplayImageOptions.Builder()
+                      .considerExifParams(true)
+                      .build());
             } catch (Throwable e) {}
-          }
-          if (bmp == null) {
-            promise.reject(new IllegalStateException("Image decoding failed."));
-            return;
-          }
-          String path = writeImage(bmp);
+            if (bmp == null) {
+              try {
+                bmp = ImageLoader.getInstance().loadImageSync(beforeDecode,
+                    new DisplayImageOptions.Builder()
+                        .considerExifParams(true)
+                        .build());
+              } catch (Throwable e) {}
+            }
+            if (bmp == null) {
+              promise.reject(new IllegalStateException("Image decoding failed."));
+              return;
+            }
+            String path = writeImage(bmp);
 
-          WritableMap response = Arguments.createMap();
-          response.putString("uri", ExpFileUtils.uriFromFile(new File(path)).toString());
-          response.putInt("width", bmp.getWidth());
-          response.putInt("height", bmp.getHeight());
-          response.putBoolean("cancelled", false);
-          promise.resolve(response);
+            WritableMap response = Arguments.createMap();
+            response.putString("uri", ExpFileUtils.uriFromFile(new File(path)).toString());
+            response.putInt("width", bmp.getWidth());
+            response.putInt("height", bmp.getHeight());
+            response.putBoolean("cancelled", false);
+            promise.resolve(response);
+          }
+        } catch (Exception e) {
+          e.printStackTrace();
         }
       }
     });
   }
 
+  private String generateOutputPath() throws IOException {
+    String filename = UUID.randomUUID().toString();
+    WritableMap options = Arguments.createMap();
+    options.putBoolean("cache", true);
+    File directory = new File(mScopedContext.toScopedPath("ImagePicker", options));
+    ExpFileUtils.ensureDirExists(directory);
+    return directory + File.separator + filename + ".jpg";
+  }
+
   private String writeImage(Bitmap image) {
     FileOutputStream out = null;
-    String filename = UUID.randomUUID().toString();
-    String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + filename + ".jpg";
+    String path = null;
     try {
+      path = generateOutputPath();
       out = new FileOutputStream(path);
       image.compress(Bitmap.CompressFormat.JPEG, quality, out);
     } catch (Exception e) {
