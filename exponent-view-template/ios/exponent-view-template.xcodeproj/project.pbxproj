@@ -112,7 +112,7 @@
 			buildConfigurationList = B56386581DB9693800A0598C /* Build configuration list for PBXNativeTarget "exponent-view-template" */;
 			buildPhases = (
 				23539343DCC44EF8449429EE /* [CP] Check Pods Manifest.lock */,
-				B5722AD01DFB7E3F0084848F /* Prepare Exponent */,
+				B5722AD01DFB7E3F0084848F /* Prepare Expo */,
 				B563863D1DB9693800A0598C /* Sources */,
 				B563863E1DB9693800A0598C /* Frameworks */,
 				B563863F1DB9693800A0598C /* Resources */,
@@ -223,19 +223,19 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-exponent-view-template/Pods-exponent-view-template-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		B5722AD01DFB7E3F0084848F /* Prepare Exponent */ = {
+		B5722AD01DFB7E3F0084848F /* Prepare Expo */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Prepare Exponent";
+			name = "Prepare Expo";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "set -eo pipefail\n\npushd ${SRCROOT}/..\nvalue=$(cat ~/.exponent/PATH)\nPATH=\"$PATH:$value\" exp prepare-detached-build --platform ios\npopd\n";
+			shellScript = "set -eo pipefail\n\npushd ${SRCROOT}/..\nvalue=$(cat ~/.expo/PATH)\nPATH=\"$PATH:$value\" exp prepare-detached-build --platform ios\npopd\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
