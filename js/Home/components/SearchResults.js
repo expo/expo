@@ -67,20 +67,28 @@ export default class SearchResults extends React.Component {
   }
 
   _maybeUpdateDataSource = newProps => {
-    if (!newProps.data || !newProps.data.results) {
+    if (!newProps.data) {
       return;
     }
 
     if (newProps.data.results !== this.props.data.results) {
       let { dataSource } = this.state;
       let { results } = newProps.data;
+      let populatedSectionIds = [];
+
       results = results || {};
-      results.UserSearchResult = results.UserSearchResult || [];
-      results.AppSearchResult = results.AppSearchResult || [];
+
+      if (results.UserSearchResult) {
+        populatedSectionIds = populatedSectionIds.concat('UserSearchResult');
+      }
+
+      if (results.AppSearchResult) {
+        populatedSectionIds = populatedSectionIds.concat('AppSearchResult');
+      }
 
       let newDataSource = dataSource.cloneWithRowsAndSections(
         results,
-        SectionIds
+        populatedSectionIds
       );
 
       this.setState({ dataSource: newDataSource });
