@@ -11,7 +11,7 @@ There are two tools that you need to develop apps with Expo - a desktop developm
 
 XDE stands for Expo Development Environment. It is a standalone desktop app that includes all dependencies you'll need to get started.
 
-Download the latest version of XDE for [macOS](https://xde-updates.exponentjs.com/download/mac), [Windows (64-bit)](https://xde-updates.exponentjs.com/download/win32), or [Linux](https://xde-updates.exponentjs.com/download/linux).
+Download the latest version of XDE for [macOS](https://xde-updates.exponentjs.com/download/mac), [Windows (64-bit)](https://xde-updates.exponentjs.com/download/win32), or [Linux](https://xde-updates.exponentjs.com/download/linux-x86_64).
 
 On Linux, open with `chmod a+x XDE*.AppImage` and `./XDE*.AppImage`.
 
