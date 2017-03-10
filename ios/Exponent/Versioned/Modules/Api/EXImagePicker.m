@@ -1,7 +1,11 @@
 #import "EXImagePicker.h"
+
 #import <React/RCTConvert.h>
 #import <React/RCTUtils.h>
 #import <AssetsLibrary/AssetsLibrary.h>
+
+#import "EXScope.h"
+#import "EXFileSystem.h"
 
 @import MobileCoreServices;
 
@@ -20,6 +24,13 @@
 @implementation EXImagePicker
 
 RCT_EXPORT_MODULE(ExponentImagePicker);
+
+@synthesize bridge = _bridge;
+
+- (void)setBridge:(RCTBridge *)bridge
+{
+  _bridge = bridge;
+}
 
 - (instancetype)init
 {
@@ -76,13 +87,11 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
     self.picker.sourceType = UIImagePickerControllerSourceTypeCamera;
     if ([[self.options objectForKey:@"cameraType"] isEqualToString:@"front"]) {
       self.picker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
-    }
-    else { // "back"
+    } else { // "back"
       self.picker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
     }
 #endif
-  }
-  else { // RNImagePickerTargetLibrarySingleImage
+  } else { // RNImagePickerTargetLibrarySingleImage
     self.picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
   }
 
@@ -92,11 +101,9 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
 
     if ([[self.options objectForKey:@"videoQuality"] isEqualToString:@"high"]) {
       self.picker.videoQuality = UIImagePickerControllerQualityTypeHigh;
-    }
-    else if ([[self.options objectForKey:@"videoQuality"] isEqualToString:@"low"]) {
+    } else if ([[self.options objectForKey:@"videoQuality"] isEqualToString:@"low"]) {
       self.picker.videoQuality = UIImagePickerControllerQualityTypeLow;
-    }
-    else {
+    } else {
       self.picker.videoQuality = UIImagePickerControllerQualityTypeMedium;
     }
 
@@ -104,8 +111,7 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
     if (durationLimit) {
       self.picker.videoMaximumDuration = [durationLimit doubleValue];
     }
-  }
-  else {
+  } else {
     self.picker.mediaTypes = @[(NSString *)kUTTypeImage];
   }
 
@@ -130,51 +136,25 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
     NSURL *imageURL = [info valueForKey:UIImagePickerControllerReferenceURL];
     NSString *mediaType = [info objectForKey:UIImagePickerControllerMediaType];
 
-
     NSString *fileName;
     if ([mediaType isEqualToString:(NSString *)kUTTypeImage]) {
       NSString *tempFileName = [[NSUUID UUID] UUIDString];
       if (imageURL && [[imageURL absoluteString] rangeOfString:@"ext=GIF"].location != NSNotFound) {
         fileName = [tempFileName stringByAppendingString:@".gif"];
-      }
-      else if ([[[self.options objectForKey:@"imageFileType"] stringValue] isEqualToString:@"png"]) {
+      } else if ([[[self.options objectForKey:@"imageFileType"] stringValue] isEqualToString:@"png"]) {
         fileName = [tempFileName stringByAppendingString:@".png"];
-      }
-      else {
+      } else {
         fileName = [tempFileName stringByAppendingString:@".jpg"];
       }
-    }
-    else {
+    } else {
       NSURL *videoURL = info[UIImagePickerControllerMediaURL];
       fileName = videoURL.lastPathComponent;
     }
 
-    // We default to path to the temporary directory
-    NSString *path = [[NSTemporaryDirectory()stringByStandardizingPath] stringByAppendingPathComponent:fileName];
-
-    // If storage options are provided, we use the documents directory which is persisted
-    if ([self.options objectForKey:@"storageOptions"] && [[self.options objectForKey:@"storageOptions"] isKindOfClass:[NSDictionary class]]) {
-      NSDictionary *storageOptions = [self.options objectForKey:@"storageOptions"];
-
-      NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-      NSString *documentsDirectory = [paths objectAtIndex:0];
-      path = [documentsDirectory stringByAppendingPathComponent:fileName];
-
-      // Creates documents subdirectory, if provided
-      if ([storageOptions objectForKey:@"path"]) {
-        NSString *newPath = [documentsDirectory stringByAppendingPathComponent:[storageOptions objectForKey:@"path"]];
-        NSError *error;
-        [[NSFileManager defaultManager] createDirectoryAtPath:newPath withIntermediateDirectories:YES attributes:nil error:&error];
-        if (error) {
-          NSLog(@"Error creating documents subdirectory: %@", error);
-          self.reject(RCTErrorUnspecified, error.localizedFailureReason, error);
-          return;
-        }
-        else {
-          path = [newPath stringByAppendingPathComponent:fileName];
-        }
-      }
-    }
+    [EXFileSystem ensureDirExistsWithPath:[self.bridge.experienceScope scopedPathWithPath:@"ImagePicker"
+                                                                              withOptions:@{@"cache": @YES}]];
+    NSString *path = [self.bridge.experienceScope scopedPathWithPath:[@"ImagePicker" stringByAppendingPathComponent:fileName]
+                                                         withOptions:@{@"cache": @YES}];
 
     // Create the response object
     NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
@@ -183,8 +163,7 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
       UIImage *image;
       if ([[self.options objectForKey:@"allowsEditing"] boolValue]) {
         image = [info objectForKey:UIImagePickerControllerEditedImage];
-      }
-      else {
+      } else {
         image = [info objectForKey:UIImagePickerControllerOriginalImage];
       }
 
@@ -243,8 +222,7 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
       NSData *data;
       if ([[[self.options objectForKey:@"imageFileType"] stringValue] isEqualToString:@"png"]) {
         data = UIImagePNGRepresentation(image);
-      }
-      else {
+      } else {
         data = UIImageJPEGRepresentation(image, [[self.options valueForKey:@"quality"] floatValue]);
       }
       [data writeToFile:path atomically:YES];
@@ -275,8 +253,7 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
 
       [response setObject:@(image.size.width) forKey:@"width"];
       [response setObject:@(image.size.height) forKey:@"height"];
-    }
-    else { // VIDEO
+    } else { // VIDEO
       NSURL *videoURL = info[UIImagePickerControllerMediaURL];
       NSURL *videoDestinationURL = [NSURL fileURLWithPath:path];
 
@@ -298,15 +275,6 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
         }
       }
       [response setObject:videoDestinationURL.absoluteString forKey:@"uri"];
-    }
-
-    // If storage options are provided, check the skipBackup flag
-    if ([self.options objectForKey:@"storageOptions"] && [[self.options objectForKey:@"storageOptions"] isKindOfClass:[NSDictionary class]]) {
-      NSDictionary *storageOptions = [self.options objectForKey:@"storageOptions"];
-
-      if ([[storageOptions objectForKey:@"skipBackup"] boolValue]) {
-        [self addSkipBackupAttributeToItemAtPath:path]; // Don't back up the file to iCloud
-      }
     }
 
     self.resolve(response);
@@ -425,25 +393,6 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
   CGContextRelease(ctx);
   CGImageRelease(cgimg);
   return img;
-}
-
-- (BOOL)addSkipBackupAttributeToItemAtPath:(NSString *) filePathString
-{
-  NSURL* URL= [NSURL fileURLWithPath: filePathString];
-  if ([[NSFileManager defaultManager] fileExistsAtPath: [URL path]]) {
-    NSError *error = nil;
-    BOOL success = [URL setResourceValue: [NSNumber numberWithBool: YES]
-                                  forKey: NSURLIsExcludedFromBackupKey error: &error];
-
-    if(!success){
-      NSLog(@"Error excluding %@ from backup %@", [URL lastPathComponent], error);
-    }
-    return success;
-  }
-  else {
-    NSLog(@"Error setting skip backup attribute: file not found");
-    return NO;
-  }
 }
 
 @end
