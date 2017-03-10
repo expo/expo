@@ -50,7 +50,7 @@ export default class BarcodeScannerExample extends React.Component {
 
   render() {
     const { hasCameraPermission } = this.state;
-    if (typeof hasCameraPermission === 'null') {
+    if (hasCameraPermission === null) {
       return <View />;
     } else if (hasCameraPermission === false) {
       return <Text>No access to camera</Text>;
