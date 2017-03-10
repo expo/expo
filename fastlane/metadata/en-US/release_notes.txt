@@ -1,3 +1,1 @@
-Exponent is now Expo!
-
-Version 1.13.0 added support for React Native 0.41.
+This version adds support for React Native 0.42.
