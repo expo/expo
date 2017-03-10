@@ -1,4 +1,4 @@
 #!/bin/bash
 
-value=$(cat ~/.exponent/PATH)
+value=$(cat ~/.expo/PATH)
 PATH="$PATH:$value" exp prepare-detached-build --platform android
