@@ -86,6 +86,7 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
     self.picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
   }
 
+  // TODO(nikki): Are we allowing video picking here? Unify into single media picking interface?
   if ([[self.options objectForKey:@"mediaType"] isEqualToString:@"video"]) {
     self.picker.mediaTypes = @[(NSString *)kUTTypeMovie];
 
@@ -103,7 +104,6 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
     if (durationLimit) {
       self.picker.videoMaximumDuration = [durationLimit doubleValue];
     }
-
   }
   else {
     self.picker.mediaTypes = @[(NSString *)kUTTypeImage];
@@ -116,12 +116,12 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
   self.picker.delegate = self;
 
   dispatch_async(dispatch_get_main_queue(), ^{
-      UIViewController *root = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
-      while (root.presentedViewController != nil) {
-        root = root.presentedViewController;
-      }
-      [root presentViewController:self.picker animated:YES completion:nil];
-    });
+    UIViewController *root = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
+    while (root.presentedViewController != nil) {
+      root = root.presentedViewController;
+    }
+    [root presentViewController:self.picker animated:YES completion:nil];
+  });
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
@@ -192,38 +192,38 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
       if (imageURL && [[imageURL absoluteString] rangeOfString:@"ext=GIF"].location != NSNotFound) {
         ALAssetsLibrary* assetsLibrary = [[ALAssetsLibrary alloc] init];
         [assetsLibrary assetForURL:imageURL resultBlock:^(ALAsset *asset) {
-            ALAssetRepresentation *rep = [asset defaultRepresentation];
-            Byte *buffer = (Byte*)malloc((unsigned long)rep.size);
-            NSUInteger buffered = [rep getBytes:buffer fromOffset:0.0 length:(unsigned long)rep.size error:nil];
-            NSData *data = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
-            [data writeToFile:path atomically:YES];
+          ALAssetRepresentation *rep = [asset defaultRepresentation];
+          Byte *buffer = (Byte*)malloc((unsigned long)rep.size);
+          NSUInteger buffered = [rep getBytes:buffer fromOffset:0.0 length:(unsigned long)rep.size error:nil];
+          NSData *data = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
+          [data writeToFile:path atomically:YES];
 
-            NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
-            [response setObject:@(image.size.width) forKey:@"width"];
-            [response setObject:@(image.size.height) forKey:@"height"];
+          NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
+          [response setObject:@(image.size.width) forKey:@"width"];
+          [response setObject:@(image.size.height) forKey:@"height"];
 
-            BOOL vertical = (image.size.width < image.size.height) ? YES : NO;
-            [response setObject:@(vertical) forKey:@"isVertical"];
+          BOOL vertical = (image.size.width < image.size.height) ? YES : NO;
+          [response setObject:@(vertical) forKey:@"isVertical"];
 
-            if (![[self.options objectForKey:@"noData"] boolValue]) {
-              NSString *dataString = [data base64EncodedStringWithOptions:0];
-              [response setObject:dataString forKey:@"data"];
-            }
+          if (![[self.options objectForKey:@"noData"] boolValue]) {
+            NSString *dataString = [data base64EncodedStringWithOptions:0];
+            [response setObject:dataString forKey:@"data"];
+          }
 
-            NSURL *fileURL = [NSURL fileURLWithPath:path];
-            [response setObject:[fileURL absoluteString] forKey:@"uri"];
+          NSURL *fileURL = [NSURL fileURLWithPath:path];
+          [response setObject:[fileURL absoluteString] forKey:@"uri"];
 
-            NSNumber *fileSizeValue = nil;
-            NSError *fileSizeError = nil;
-            [fileURL getResourceValue:&fileSizeValue forKey:NSURLFileSizeKey error:&fileSizeError];
-            if (fileSizeValue){
-              [response setObject:fileSizeValue forKey:@"fileSize"];
-            }
+          NSNumber *fileSizeValue = nil;
+          NSError *fileSizeError = nil;
+          [fileURL getResourceValue:&fileSizeValue forKey:NSURLFileSizeKey error:&fileSizeError];
+          if (fileSizeValue){
+            [response setObject:fileSizeValue forKey:@"fileSize"];
+          }
 
-            self.resolve(response);
-          } failureBlock:^(NSError *error) {
-            self.reject(RCTErrorUnspecified, error.localizedFailureReason, error);
-          }];
+          self.resolve(response);
+        } failureBlock:^(NSError *error) {
+          self.reject(RCTErrorUnspecified, error.localizedFailureReason, error);
+        }];
         return;
       }
 
@@ -312,17 +312,17 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
     self.resolve(response);
   };
   dispatch_async(dispatch_get_main_queue(), ^{
-      [picker dismissViewControllerAnimated:YES completion:dismissCompletionBlock];
-    });
+    [picker dismissViewControllerAnimated:YES completion:dismissCompletionBlock];
+  });
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
 {
   dispatch_async(dispatch_get_main_queue(), ^{
-      [picker dismissViewControllerAnimated:YES completion:^{
-          self.resolve(@{@"cancelled": @YES});
-        }];
-    });
+    [picker dismissViewControllerAnimated:YES completion:^{
+      self.resolve(@{@"cancelled": @YES});
+    }];
+  });
 }
 
 - (UIImage*)downscaleImageIfNecessary:(UIImage*)image maxWidth:(float)maxWidth maxHeight:(float)maxHeight
@@ -364,60 +364,60 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
 
   CGAffineTransform transform = CGAffineTransformIdentity;
   switch (srcImg.imageOrientation) {
-  case UIImageOrientationDown:
-  case UIImageOrientationDownMirrored:
-    transform = CGAffineTransformTranslate(transform, srcImg.size.width, srcImg.size.height);
-    transform = CGAffineTransformRotate(transform, M_PI);
-    break;
+    case UIImageOrientationDown:
+    case UIImageOrientationDownMirrored:
+      transform = CGAffineTransformTranslate(transform, srcImg.size.width, srcImg.size.height);
+      transform = CGAffineTransformRotate(transform, M_PI);
+      break;
 
-  case UIImageOrientationLeft:
-  case UIImageOrientationLeftMirrored:
-    transform = CGAffineTransformTranslate(transform, srcImg.size.width, 0);
-    transform = CGAffineTransformRotate(transform, M_PI_2);
-    break;
+    case UIImageOrientationLeft:
+    case UIImageOrientationLeftMirrored:
+      transform = CGAffineTransformTranslate(transform, srcImg.size.width, 0);
+      transform = CGAffineTransformRotate(transform, M_PI_2);
+      break;
 
-  case UIImageOrientationRight:
-  case UIImageOrientationRightMirrored:
-    transform = CGAffineTransformTranslate(transform, 0, srcImg.size.height);
-    transform = CGAffineTransformRotate(transform, -M_PI_2);
-    break;
-  case UIImageOrientationUp:
-  case UIImageOrientationUpMirrored:
-    break;
+    case UIImageOrientationRight:
+    case UIImageOrientationRightMirrored:
+      transform = CGAffineTransformTranslate(transform, 0, srcImg.size.height);
+      transform = CGAffineTransformRotate(transform, -M_PI_2);
+      break;
+    case UIImageOrientationUp:
+    case UIImageOrientationUpMirrored:
+      break;
   }
 
   switch (srcImg.imageOrientation) {
-  case UIImageOrientationUpMirrored:
-  case UIImageOrientationDownMirrored:
-    transform = CGAffineTransformTranslate(transform, srcImg.size.width, 0);
-    transform = CGAffineTransformScale(transform, -1, 1);
-    break;
+    case UIImageOrientationUpMirrored:
+    case UIImageOrientationDownMirrored:
+      transform = CGAffineTransformTranslate(transform, srcImg.size.width, 0);
+      transform = CGAffineTransformScale(transform, -1, 1);
+      break;
 
-  case UIImageOrientationLeftMirrored:
-  case UIImageOrientationRightMirrored:
-    transform = CGAffineTransformTranslate(transform, srcImg.size.height, 0);
-    transform = CGAffineTransformScale(transform, -1, 1);
-    break;
-  case UIImageOrientationUp:
-  case UIImageOrientationDown:
-  case UIImageOrientationLeft:
-  case UIImageOrientationRight:
-    break;
+    case UIImageOrientationLeftMirrored:
+    case UIImageOrientationRightMirrored:
+      transform = CGAffineTransformTranslate(transform, srcImg.size.height, 0);
+      transform = CGAffineTransformScale(transform, -1, 1);
+      break;
+    case UIImageOrientationUp:
+    case UIImageOrientationDown:
+    case UIImageOrientationLeft:
+    case UIImageOrientationRight:
+      break;
   }
 
   CGContextRef ctx = CGBitmapContextCreate(NULL, srcImg.size.width, srcImg.size.height, CGImageGetBitsPerComponent(srcImg.CGImage), 0, CGImageGetColorSpace(srcImg.CGImage), CGImageGetBitmapInfo(srcImg.CGImage));
   CGContextConcatCTM(ctx, transform);
   switch (srcImg.imageOrientation) {
-  case UIImageOrientationLeft:
-  case UIImageOrientationLeftMirrored:
-  case UIImageOrientationRight:
-  case UIImageOrientationRightMirrored:
-    CGContextDrawImage(ctx, CGRectMake(0,0,srcImg.size.height,srcImg.size.width), srcImg.CGImage);
-    break;
+    case UIImageOrientationLeft:
+    case UIImageOrientationLeftMirrored:
+    case UIImageOrientationRight:
+    case UIImageOrientationRightMirrored:
+      CGContextDrawImage(ctx, CGRectMake(0,0,srcImg.size.height,srcImg.size.width), srcImg.CGImage);
+      break;
 
-  default:
-    CGContextDrawImage(ctx, CGRectMake(0,0,srcImg.size.width,srcImg.size.height), srcImg.CGImage);
-    break;
+    default:
+      CGContextDrawImage(ctx, CGRectMake(0,0,srcImg.size.width,srcImg.size.height), srcImg.CGImage);
+      break;
   }
 
   CGImageRef cgimg = CGBitmapContextCreateImage(ctx);
