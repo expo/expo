@@ -133,11 +133,11 @@ export default class SignInScreen extends React.Component {
         } else {
           this.props.navigator.hideLocalAlert();
           this.props.dispatch(
-            AuthTokenActions.setAuthTokens({
+            AuthTokenActions.signIn({
               refreshToken: result.refresh_token,
               accessToken: result.access_token,
               idToken: result.id_token,
-            }),
+            })
           );
         }
       }

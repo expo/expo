@@ -5,11 +5,13 @@
  */
 'use strict';
 
+import AuthTokenActions from 'AuthTokenActions';
 import BrowserActions from 'BrowserActions';
 import ConsoleActions from 'ConsoleActions';
 import Flux from 'Flux';
 import Immutable, { List, Map, Record } from 'immutable';
 
+const AuthTokenActionTypes = Flux.getActionTypes(AuthTokenActions);
 const BrowserActionTypes = Flux.getActionTypes(BrowserActions);
 const ConsoleActionTypes = Flux.getActionTypes(ConsoleActions);
 const BrowserState = Record({
@@ -54,9 +56,9 @@ export default Flux.createReducer(new BrowserState(), {
       // remove any existing history item with the same url from the middle of the stack
       // and prepend a new history item.
       let historyItem = new HistoryItem(action.meta.historyItem);
-      let history = state.history.filter(item =>
-        item.url !== historyItem.url
-      ).unshift(historyItem);
+      let history = state.history
+        .filter(item => item.url !== historyItem.url)
+        .unshift(historyItem);
       return validateBrowserState(
         state.merge({
           isHomeVisible: false,
@@ -91,7 +93,9 @@ export default Flux.createReducer(new BrowserState(), {
         foregroundTaskUrl: url,
       });
     }
-    console.error(`Tried to foreground a url not already present in the browser: ${url}`);
+    console.error(
+      `Tried to foreground a url not already present in the browser: ${url}`
+    );
     return state;
   },
 
@@ -104,7 +108,7 @@ export default Flux.createReducer(new BrowserState(), {
     return state.merge({
       isHomeVisible: true,
       isMenuVisible: false,
-      tasks: (clearTasks) ? Map() : state.tasks,
+      tasks: clearTasks ? Map() : state.tasks,
     });
   },
 
@@ -141,12 +145,15 @@ export default Flux.createReducer(new BrowserState(), {
     let { url, isLoading } = action.payload;
     let task = state.tasks.get(url, null);
     if (task) {
-      let updatedTasks = state.tasks.set(url, task.merge({
-        isLoading,
-        loadingError: (isLoading) ? null : task.loadingError,
-      }));
+      let updatedTasks = state.tasks.set(
+        url,
+        task.merge({
+          isLoading,
+          loadingError: isLoading ? null : task.loadingError,
+        })
+      );
       let loadingTasks = updatedTasks.valueSeq().filter(task => task.isLoading);
-      let isAnythingLoading = (loadingTasks.size > 0);
+      let isAnythingLoading = loadingTasks.size > 0;
       return state.merge({
         isKernelLoading: isAnythingLoading,
         tasks: updatedTasks,
@@ -158,7 +165,7 @@ export default Flux.createReducer(new BrowserState(), {
   [BrowserActionTypes.setShellPropertiesAsync](state, action) {
     let { isShell, shellManifestUrl } = action.payload;
     // always immediately finish nux if we're a shell app
-    let isNuxFinished = (isShell) ? true : state.isNuxFinished;
+    let isNuxFinished = isShell ? true : state.isNuxFinished;
     return state.merge({
       isShell,
       isHomeVisible: false,
@@ -194,6 +201,12 @@ export default Flux.createReducer(new BrowserState(), {
     },
   },
 
+  [AuthTokenActionTypes.signOut](state, action) {
+    return state.merge({
+      history: state.history.clear(),
+    });
+  },
+
   [BrowserActionTypes.showLoadingError](state, action) {
     let { originalUrl } = action.payload;
     let task = state.tasks.get(originalUrl);
@@ -215,7 +228,7 @@ export default Flux.createReducer(new BrowserState(), {
     }
     let updatedTasks = state.tasks.set(originalUrl, task);
     let loadingTasks = updatedTasks.valueSeq().filter(task => task.isLoading);
-    let isAnythingLoading = (loadingTasks.size > 0);
+    let isAnythingLoading = loadingTasks.size > 0;
 
     return validateBrowserState(
       state.merge({
@@ -247,7 +260,7 @@ export default Flux.createReducer(new BrowserState(), {
       return state.merge({
         tasks: state.tasks.set(
           action.payload.url,
-          task.set('isLoading', false),
+          task.set('isLoading', false)
         ),
       });
     }
@@ -256,9 +269,7 @@ export default Flux.createReducer(new BrowserState(), {
 });
 
 function createImmutableHistory(history) {
-  return new List(history.map(item =>
-    new HistoryItem(item)
-  ));
+  return new List(history.map(item => new HistoryItem(item)));
 }
 
 function createImmutableTask(meta) {
@@ -279,10 +290,11 @@ function createImmutableTask(meta) {
 function validateBrowserState(state) {
   let foregroundTaskUrl = state.foregroundTaskUrl;
   if (foregroundTaskUrl) {
-    let newTasks = state.tasks.filter((task, url) => (
-      (url === foregroundTaskUrl) ||
-      (state.isShell && url === state.shellManifestUrl)
-    ));
+    let newTasks = state.tasks.filter(
+      (task, url) =>
+        url === foregroundTaskUrl ||
+        (state.isShell && url === state.shellManifestUrl)
+    );
     return state.merge({
       tasks: newTasks,
     });

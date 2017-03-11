@@ -10,21 +10,24 @@ import LocalStorage from '../Storage/LocalStorage';
 import ApolloClient from '../Api/ApolloClient';
 
 let AuthTokenActions = {
-  @action
-  setAuthTokens(tokens) {
+  signIn(tokens) {
+    ApolloClient.resetStore();
+    return AuthTokenActions.setAuthTokens(tokens);
+  },
+
+  @action setAuthTokens(tokens) {
     LocalStorage.saveAuthTokensAsync(tokens);
     return tokens;
   },
 
-  @action
-  updateIdToken(idToken) {
+  @action updateIdToken(idToken) {
     LocalStorage.updateIdTokenAsync(idToken);
     return { idToken };
   },
 
-  @action
-  signOut() {
+  @action signOut() {
     LocalStorage.removeAuthTokensAsync();
+    LocalStorage.clearHistoryAsync();
     ApolloClient.resetStore();
     return null;
   },

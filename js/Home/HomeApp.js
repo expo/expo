@@ -12,7 +12,6 @@ import {
 import { NavigationProvider, StackNavigation } from '@expo/ex-navigation';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { ApolloProvider } from 'react-apollo';
 
 import AuthTokenActions from '../Flux/AuthTokenActions';
 import LocalStorage from '../Storage/LocalStorage';
