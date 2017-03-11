@@ -1,7 +1,7 @@
 ---
 title: Installation
 old_permalink: /versions/v12.0.0/introduction/installation.html
-previous___FILE: ./index.md
+previous___FILE: ./why-use-expo.md
 next___FILE: ./xde-tour.md
 ---
 
