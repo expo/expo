@@ -47,12 +47,12 @@ export default class LikeButtonContainer extends React.Component {
   _alertNoInternetConnection = (message = '') => {
     Alert.alert(
       'No internet connection available',
-      message || "Please try again when you're back online",
+      message || "Please try again when you're back online"
     );
   };
 
   _handlePressAsync = async () => {
-    if (!(await Connectivity.isAvailableAsync())) {
+    if (!await Connectivity.isAvailableAsync()) {
       this._alertNoInternetConnection();
       return;
     }
@@ -69,16 +69,23 @@ export default class LikeButtonContainer extends React.Component {
 
       console.log({ result, appId: this.props.appId });
     } catch (e) {
-      if (liked) {
-        this._alertNoInternetConnection(
-          'Unable to like the project, try again later.',
-        );
+      if (e.graphQLErrors) {
+        // TODO: handle error. this can happen if you like a project
+        // from another session, then try to like it here. we should
+        // refetch the data instead, but not sure the best way to do
+        // this with apollo currently.
+        alert('Oops, something went wrong! Sorry about that.');
       } else {
-        this._alertNoInternetConnection(
-          'Unable to unlike the project, try again later.',
-        );
+        if (liked) {
+          this._alertNoInternetConnection(
+            'Unable to like the project, try again later.'
+          );
+        } else {
+          this._alertNoInternetConnection(
+            'Unable to unlike the project, try again later.'
+          );
+        }
       }
-
       console.log({ e });
     }
   };
