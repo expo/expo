@@ -52,4 +52,4 @@ Be sure you've run all unigulp-y things.
 yarn && yarn start
 ```
 
-from this directory. The site is viewable at `http://localhost:9000`.
+from this directory. The site is viewable at `http://localhost:8000`.
