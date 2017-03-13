@@ -3,7 +3,7 @@ title: Expo & "Create React Native App"
 ---
 
 [Create React Native
-App](https://facebook.github.io/react-native/blog/2017/03/13/introducing-create-react-native-app.html) lets you build a React Native app without any build configuration. This may sound familiar to you because Expo does this as well -- whern you create a project with XDE or exp you don't have to deal with Xcode or Android Studio configuration files, it just works. This guide is intended to outline some of the key differences between Expo and CRNA (create-react-native-app).
+App](https://facebook.github.io/react-native/blog/2017/03/13/introducing-create-react-native-app.html) lets you build a React Native app without any build configuration. This may sound familiar to you because Expo does this as well -- when you create a project with XDE or exp you don't have to deal with Xcode or Android Studio configuration files, it just works. This guide is intended to outline some of the key differences between Expo and CRNA (create-react-native-app).
 
 ### CRNA does not require you to have an Expo account
 
