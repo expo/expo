@@ -73,3 +73,6 @@ View additional information about a specific command by passing the `--help` fla
       --exp                  Same as --protocol exp
       --http                 Same as --protocol http
       --redirect             Same as --protocol redirect
+      --offline              Allows this command to run while offline
+      
+Additionally, you can run in offline mode by passing the `--offline` flag to the `android`, `ios`, or `start` commands.
