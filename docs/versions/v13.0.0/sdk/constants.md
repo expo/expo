@@ -33,15 +33,19 @@ The [device year class](https://github.com/facebook/device-year-class) of this d
 
 ### `Exponent.Constants.platform`
 
- `ios`  
- `platform`  
-The Apple internal model identifier for this device, e.g. `iPhone1,1`.
+- `ios`
 
- `model`  
-The human-readable model name of this device, e.g. `iPhone 7 Plus`.
+  - `platform`
 
- `userInterfaceIdiom`  
-The user interface idiom of this device, i.e. whether the app is running on an iPhone or an iPad. Current supported values are `handset` and `tablet`. Apple TV and CarPlay will show up as `unsupported`.
+    The Apple internal model identifier for this device, e.g. `iPhone1,1`.
+
+  -  `model`
+
+    The human-readable model name of this device, e.g. `iPhone 7 Plus`.
+
+  -  `userInterfaceIdiom`
+
+    The user interface idiom of this device, i.e. whether the app is running on an iPhone or an iPad. Current supported values are `handset` and `tablet`. Apple TV and CarPlay will show up as `unsupported`.
 
 ### `Exponent.Constants.sessionId`
 
