@@ -120,7 +120,7 @@ export async function createAndroidShellApp(args) {
   }
 
   // App name
-  shell.sed('-i', '"app_name">Exponent', `"app_name">${name}`, `${shellPath}app/src/main/res/values/strings.xml`);
+  shell.sed('-i', '"app_name">Expo', `"app_name">${name}`, `${shellPath}app/src/main/res/values/strings.xml`);
 
   // Remove exp:// scheme
   await sedInPlaceAsync('-e', `/DELETE\ AFTER/,/DELETE\ BEFORE/d`, `${shellPath}app/src/main/AndroidManifest.xml`);
@@ -223,12 +223,12 @@ export async function createAndroidShellApp(args) {
     await spawnAsync(`jarsigner`, ['-verify', '-verbose', '-certs', '-keystore', keystore, 'shell.apk']);
     await spawnAsyncThrowError(`/bin/cp`, ['shell.apk', outputFile || '/tmp/shell-signed.apk']);
   } else {
-    await spawnAsync(`/bin/rm`, ['shell-unaligned.apk']);
-    await spawnAsync(`/bin/rm`, ['shell.apk']);
-    await spawnAsyncThrowError(`./gradlew`, ['assembleProdRelease'], {
+    await spawnAsync(`/bin/cp`, ['../android/debug.keystore', `${shellPath}/`]);
+    await spawnAsync(`/bin/rm`, ['shell-debug.apk']);
+    await spawnAsyncThrowError(`./gradlew`, ['assembleDevRemoteKernelDebug'], {
       stdio: 'inherit',
       cwd: shellPath,
     });
-    await spawnAsyncThrowError(`/bin/cp`, [`${shellPath}app/build/outputs/apk/app-prod-release-unsigned.apk`, `/tmp/shell-unaligned.apk`]);
+    await spawnAsyncThrowError(`/bin/cp`, [`${shellPath}app/build/outputs/apk/app-devRemoteKernel-debug.apk`, `/tmp/shell-debug.apk`]);
   }
 }
