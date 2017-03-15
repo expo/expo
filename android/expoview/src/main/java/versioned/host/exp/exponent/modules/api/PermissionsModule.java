@@ -3,7 +3,6 @@
 package versioned.host.exp.exponent.modules.api;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
@@ -59,7 +58,11 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
           break;
         }
         case "camera": {
-          askForCameraPermissions(promise);
+          askForSimplePermission(Manifest.permission.CAMERA, promise);
+          break;
+        }
+        case "contacts": {
+          askForSimplePermission(Manifest.permission.READ_CONTACTS, promise);
           break;
         }
         default:
@@ -78,7 +81,10 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
         return getLocationPermissions();
       }
       case "camera": {
-        return getCameraPermissions();
+        return getSimplePermission(android.Manifest.permission.CAMERA);
+      }
+      case "contacts": {
+        return getSimplePermission(Manifest.permission.READ_CONTACTS);
       }
       default:
         return null;
@@ -115,13 +121,12 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
     return response;
   }
 
-  private WritableMap getCameraPermissions() {
+  private WritableMap getSimplePermission(String permission) {
     WritableMap response = Arguments.createMap();
-    Boolean isGranted = false;
 
     if (Build.VERSION.SDK_INT >= 23) {
-      int cameraPermission = ContextCompat.checkSelfPermission(getReactApplicationContext(), android.Manifest.permission.CAMERA);
-      if (cameraPermission == PackageManager.PERMISSION_GRANTED) {
+      int result = ContextCompat.checkSelfPermission(getReactApplicationContext(), permission);
+      if (result == PackageManager.PERMISSION_GRANTED) {
         response.putString("status", "granted");
       } else {
         response.putString("status", "denied");
@@ -131,7 +136,6 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
     }
 
     response.putString("expires", PERMISSION_EXPIRES_NEVER);
-    WritableMap platformMap = Arguments.createMap();
 
     return response;
   }
@@ -141,6 +145,24 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
     response.putString("status", "granted");
     response.putString("expires", PERMISSION_EXPIRES_NEVER);
     return response;
+  }
+
+  private void askForSimplePermission(final String permission, final Promise promise) {
+    boolean gotPermissions = Exponent.getInstance().getPermissions(new Exponent.PermissionsListener() {
+      @Override
+      public void permissionsGranted() {
+        promise.resolve(getSimplePermission(permission));
+      }
+      @Override
+      public void permissionsDenied() {
+        promise.resolve(getSimplePermission(permission));
+      }
+    }, new String[] { permission });
+
+    if (!gotPermissions) {
+      promise.reject("E_ACTIVITY_DOES_NOT_EXIST", "No visible activity. Must request " +
+          permission + " when visible.");
+    }
   }
 
   private void askForLocationPermissions(final Promise promise) {
@@ -162,27 +184,5 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
     if (!gotPermissions) {
       promise.reject("E_ACTIVITY_DOES_NOT_EXIST", "No visible activity. Must request location when visible.");
     }
-  }
-
-  private void askForCameraPermissions(final Promise promise) {
-    Activity activity = getCurrentActivity();
-    if (activity == null) {
-      promise.reject("E_ACTIVITY_DOES_NOT_EXIST", "No visible activity. Must request camera when visible.");
-      return;
-    }
-
-    final String[] permissions = new String[]{
-        Manifest.permission.CAMERA,
-    };
-    Exponent.getInstance().getPermissions(new Exponent.PermissionsListener() {
-      @Override
-      public void permissionsGranted() {
-        promise.resolve(getCameraPermissions());
-      }
-      @Override
-      public void permissionsDenied() {
-        promise.resolve(getCameraPermissions());
-      }
-    }, permissions);
   }
 }

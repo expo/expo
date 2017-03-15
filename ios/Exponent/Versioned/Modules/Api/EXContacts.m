@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXContacts.h"
+#import "EXContactsRequester.h"
 
 @import Contacts;
 
@@ -22,30 +23,12 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
   if (!_contactStore) {
     _contactStore = [[CNContactStore alloc] init];
   }
-  CNAuthorizationStatus permissions = [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
-  
-  if (permissions == CNAuthorizationStatusNotDetermined) {
-    __weak typeof(self) weakSelf = self;
-    [_contactStore requestAccessForEntityType:CNEntityTypeContacts completionHandler:^(BOOL granted, NSError * _Nullable error) {
-      if (granted) {
-        // initial permissions grant
-        dispatch_async(dispatch_get_main_queue(), ^{
-          __strong typeof(self) strongSelf = weakSelf;
-          [strongSelf _getContactsWithPermissionGrantedAsync:fields resolver:resolve rejecter:reject];
-        });
-      } else {
-        reject(0, @"User rejected contacts permission.", error);
-      }
-    }];
-  } else if (permissions == CNAuthorizationStatusAuthorized) {
-    [self _getContactsWithPermissionGrantedAsync:fields resolver:resolve rejecter:reject];
-  } else {
-    reject(0, @"User rejected contacts permission.", nil);
-  }
-}
 
-- (void)_getContactsWithPermissionGrantedAsync:(NSArray *)fields resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject
-{
+  if ([EXPermissions statusForPermissions:[EXContactsRequester permissions]] != EXPermissionStatusGranted) {
+    reject(@"E_MISSING_PERMISSION", @"Missing contacts permission.", nil);
+    return;
+  }
+
   // always include id, name, firstName, middleName, lastName, company, jobTitle
   NSMutableSet *fieldsSet = [NSMutableSet setWithArray:fields];
   [fieldsSet addObjectsFromArray:@[@"id", @"name", @"firstName", @"middleName", @"lastName", @"company", @"jobTitle"]];

@@ -2,11 +2,16 @@
 
 package versioned.host.exp.exponent.modules.api;
 
+import android.Manifest;
 import android.content.ContentResolver;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 
+import android.os.Build;
 import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -16,7 +21,6 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -48,24 +52,11 @@ public class ContactsModule extends ReactContextBaseJavaModule {
    */
   @ReactMethod
   public void getContactsAsync(final ReadableArray fields, final Promise promise) {
-    boolean askedForPermission = Exponent.getInstance().getPermissionToReadUserContacts(new Exponent.PermissionsListener() {
-      @Override
-      public void permissionsGranted() {
-        getContactsWithPermissionGrantedAsync(fields, promise);
-      }
-
-      @Override
-      public void permissionsDenied() {
-        promise.reject("User rejected contacts permission.");
-      }
-    });
-
-    if (!askedForPermission) {
-      promise.reject("No visible activity. Must request contacts when visible.");
+    if (isMissingPermissions()) {
+      promise.reject("E_MISSING_PERMISSION", "Missing contacts permission.");
+      return;
     }
-  }
 
-  private void getContactsWithPermissionGrantedAsync(final ReadableArray fields, final Promise promise) {
     Set<String> fieldsSet = getFieldsSet(fields);
     WritableArray response = Arguments.createArray();
 
@@ -187,6 +178,13 @@ public class ContactsModule extends ReactContextBaseJavaModule {
     return emails;
   }
 
+  private boolean isMissingPermissions() {
+    return Build.VERSION.SDK_INT >= 23 &&
+        ContextCompat.checkSelfPermission(
+            getReactApplicationContext(),
+            Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED;
+  }
+
   private WritableArray getPhoneNumbersFromContentResolver(int id, ContentResolver cr) {
     WritableArray phoneNumbers = Arguments.createArray();
     Cursor cursor = cr.query(
@@ -245,7 +243,6 @@ public class ContactsModule extends ReactContextBaseJavaModule {
     }
     return phoneNumbers;
   }
-
 
   private WritableArray getAddressesFromContentResolver(int id, ContentResolver cr) {
     WritableArray addresses = Arguments.createArray();
@@ -364,6 +361,4 @@ public class ContactsModule extends ReactContextBaseJavaModule {
     }
     return fieldStrings;
   }
-
-
 }

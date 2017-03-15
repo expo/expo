@@ -4,6 +4,7 @@
 #import "EXLocationRequester.h"
 #import "EXRemoteNotificationRequester.h"
 #import "EXAVPermissionRequester.h"
+#import "EXContactsRequester.h"
 
 NSString * const EXPermissionExpiresNever = @"never";
 
@@ -41,6 +42,8 @@ RCT_REMAP_METHOD(getAsync,
     resolve([EXLocationRequester permissions]);
   } else if ([type isEqualToString:@"camera"]) {
     resolve([EXAVPermissionRequester permissions]);
+  } else if ([type isEqualToString:@"contacts"]) {
+    resolve([EXContactsRequester permissions]);
   } else {
     reject(@"E_PERMISSION_UNKNOWN", [NSString stringWithFormat:@"Unrecognized permission: %@", type], nil);
   }
@@ -63,6 +66,8 @@ RCT_REMAP_METHOD(askAsync,
         requester = [[EXLocationRequester alloc] init];
       } else if ([type isEqualToString:@"camera"]) {
         requester = [[EXAVPermissionRequester alloc] init];
+      } else if ([type isEqualToString:@"contacts"]) {
+        requester = [[EXContactsRequester alloc] init];
       } else {
         // TODO: other types of permission requesters, e.g. facebook
         reject(@"E_PERMISSION_UNSUPPORTED", [NSString stringWithFormat:@"Cannot request permission: %@", type], nil);
@@ -92,6 +97,18 @@ RCT_REMAP_METHOD(askAsync,
       return @"denied";
     default:
       return @"undetermined";
+  }
+}
+
++ (EXPermissionStatus)statusForPermissions:(NSDictionary *)permissions
+{
+  NSString *status = permissions[@"status"];
+  if ([status isEqualToString:@"granted"]) {
+    return EXPermissionStatusGranted;
+  } else if ([status isEqualToString:@"denied"]) {
+    return EXPermissionStatusDenied;
+  } else {
+    return EXPermissionStatusUndetermined;
   }
 }
 

@@ -28,4 +28,6 @@ typedef enum EXPermissionStatus {
 
 + (NSString *)permissionStringForStatus:(EXPermissionStatus)status;
 
++ (EXPermissionStatus)statusForPermissions:(NSDictionary *)permissions;
+
 @end
