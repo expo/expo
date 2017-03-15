@@ -66,3 +66,11 @@ The permission type for push notifications.
 ### `Exponent.Permissions.LOCATION`
 
 The permission type for location access.
+
+### `Exponent.Permissions.CAMERA`
+
+The permission type for camera access.
+
+### `Exponent.Permissions.CONTACTS`
+
+The permission type for reading contacts.

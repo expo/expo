@@ -23,6 +23,12 @@ An array of objects of the form `{ id, name, phoneNumbers, emails, addresses, jo
 
 ```javascript
 async function showFirstContactAsync() {
+  // Ask for permission to query contacts.
+  const permission = await Exponent.Permissions.askAsync(Exponent.Permissions.CONTACTS);
+  if (permission.status !== 'granted') {
+    // Permission was denied...
+    return;
+  }
   const contacts = await Exponent.Contacts.getContactsAsync([
     Exponent.Contacts.PHONE_NUMBERS,
     Exponent.Contacts.EMAILS,
