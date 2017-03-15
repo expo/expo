@@ -243,4 +243,6 @@ dependencies {
   compile('io.nlopez.smartlocation:library:3.2.11') {
     transitive = false
   }
+
+  // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
 }
