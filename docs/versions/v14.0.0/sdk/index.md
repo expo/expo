@@ -12,7 +12,26 @@ import { Contacts } from 'exponent';
 You can also import all Expo SDK modules:
 
 ```javascript
-import * as Expo from 'exponent';
+import * as Expo from 'expo';
 ```
 
-This allows you to write [`Exponent.Contacts.getContactsAsync()`](contacts.html#exponentcontactsgetcontactsasync "Exponent.Contacts.getContactsAsync"), for example.
+This allows you to write
+[`Expo.Contacts.getContactsAsync()`](contacts.html#exponentcontactsgetcontactsasync
+"Expo.Contacts.getContactsAsync"), for example.
+
+## SDK Version
+
+Each month there is a new Expo SDK release that typically updates to the
+latest version of React Native and includes a variety of bugfixes,
+features and improvements to the Expo APIs. It's often useful to know
+what version of React Native your Expo project is running on, so the
+following table maps Expo SDK versions to their included React Native
+version.
+
+| Expo SDK Version | React Native Version |
+| ---------------- |:--------------------:|
+| 14.0.0           | 0.41.0               |
+| 13.0.0           | 0.40.0               |
+| 12.0.0           | 0.37.0               |
+| 11.0.0           | 0.37.0               |
+| 10.0.0           | 0.33.0               |
