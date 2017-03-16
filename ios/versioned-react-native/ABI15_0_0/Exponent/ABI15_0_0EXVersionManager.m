@@ -180,7 +180,7 @@ void ABI15_0_0EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
                                     experienceScope,
                                     [[ABI15_0_0EXAppState alloc] init],
                                     [[ABI15_0_0EXConstants alloc] initWithProperties:params[@"constants"]],
-                                    [[ABI15_0_0EXDevSettings alloc] initWithExperienceId:experienceScope.experienceId],
+                                    [[ABI15_0_0EXDevSettings alloc] initWithExperienceId:experienceScope.experienceId isDevelopment:isDeveloper],
                                     [[ABI15_0_0EXDisabledDevLoadingView alloc] init],
                                     [[ABI15_0_0EXLinkingManager alloc] initWithInitialUrl:initialUri],
                                     ]];

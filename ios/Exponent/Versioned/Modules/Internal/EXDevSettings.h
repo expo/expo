@@ -5,6 +5,7 @@
 @interface EXDevSettings : RCTDevSettings
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithExperienceId:(NSString *)experienceId NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithExperienceId:(NSString *)experienceId
+                       isDevelopment:(BOOL)isDevelopment NS_DESIGNATED_INITIALIZER;
 
 @end

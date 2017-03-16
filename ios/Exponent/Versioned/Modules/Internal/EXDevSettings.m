@@ -11,14 +11,15 @@ NSString *const kRCTDevSettingLiveReloadEnabled = @"liveReloadEnabled";
 
 + (NSString *)moduleName { return @"RCTDevSettings"; }
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId
+- (instancetype)initWithExperienceId:(NSString *)experienceId isDevelopment:(BOOL)isDevelopment
 {
   NSDictionary *defaultValues = @{
                                   kRCTDevSettingShakeToShowDevMenu: @YES,
                                   kRCTDevSettingLiveReloadEnabled: @YES,
                                   };
   EXDevSettingsDataSource *dataSource = [[EXDevSettingsDataSource alloc] initWithDefaultValues:defaultValues
-                                                                               forExperienceId:experienceId];
+                                                                               forExperienceId:experienceId
+                                                                                 isDevelopment:isDevelopment];
   return [super initWithDataSource:dataSource];
 }
 

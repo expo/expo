@@ -6,6 +6,8 @@
 @interface EXDevSettingsDataSource : NSObject <RCTDevSettingsDataSource>
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithDefaultValues:(NSDictionary *)defaultValues forExperienceId:(NSString *)experienceId NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithDefaultValues:(NSDictionary *)defaultValues
+                      forExperienceId:(NSString *)experienceId
+                        isDevelopment:(BOOL)isDevelopment NS_DESIGNATED_INITIALIZER;
 
 @end

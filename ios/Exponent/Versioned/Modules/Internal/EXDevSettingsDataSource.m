@@ -7,24 +7,41 @@
 #import <React/RCTUtils.h>
 
 // redefined from RCTDevMenu.mm
-NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
+NSString *const EXDevSettingsUserDefaultsKey = @"RCTDevMenu";
+NSString *const EXDevSettingShakeToShowDevMenu = @"shakeToShow";
+NSString *const EXDevSettingProfilingEnabled = @"profilingEnabled";
+NSString *const EXDevSettingHotLoadingEnabled = @"hotLoadingEnabled";
+NSString *const EXDevSettingLiveReloadEnabled = @"liveReloadEnabled";
+NSString *const EXDevSettingIsInspectorShown = @"showInspector";
+NSString *const EXDevSettingIsDebuggingRemotely = @"isDebuggingRemotely";
 
 @interface EXDevSettingsDataSource ()
 
 @property (nonatomic, strong) NSString *experienceId;
+@property (nonatomic, strong) NSSet *settingsDisabledInProduction;
 
 @end
 
 @implementation EXDevSettingsDataSource {
   NSMutableDictionary *_settings;
   NSUserDefaults *_userDefaults;
+  BOOL _isDevelopment;
 }
 
-- (instancetype)initWithDefaultValues:(NSDictionary *)defaultValues forExperienceId:(NSString *)experienceId
+- (instancetype)initWithDefaultValues:(NSDictionary *)defaultValues forExperienceId:(NSString *)experienceId isDevelopment:(BOOL)isDevelopment
 {
   if (self = [super init]) {
     _experienceId = experienceId;
     _userDefaults = [NSUserDefaults standardUserDefaults];
+    _isDevelopment = isDevelopment;
+    _settingsDisabledInProduction = [NSSet setWithArray:@[
+      EXDevSettingShakeToShowDevMenu,
+      EXDevSettingProfilingEnabled,
+      EXDevSettingHotLoadingEnabled,
+      EXDevSettingLiveReloadEnabled,
+      EXDevSettingIsInspectorShown,
+      EXDevSettingIsDebuggingRemotely,
+    ]];
     if (defaultValues) {
       [self _reloadWithDefaults:defaultValues];
     }
@@ -50,6 +67,10 @@ NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 
 - (id)settingForKey:(NSString *)key
 {
+  // prohibit these settings if not serving the experience as a developer
+  if (!_isDevelopment && [_settingsDisabledInProduction containsObject:key]) {
+    return @NO;
+  }
   return _settings[key];
 }
 
@@ -71,10 +92,10 @@ NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 - (NSString *)_userDefaultsKey
 {
   if (_experienceId) {
-    return [NSString stringWithFormat:@"%@/%@", _experienceId, kRCTDevSettingsUserDefaultsKey];
+    return [NSString stringWithFormat:@"%@/%@", _experienceId, EXDevSettingsUserDefaultsKey];
   } else {
     RCTLogWarn(@"Can't scope dev settings because bridge is not set");
-    return kRCTDevSettingsUserDefaultsKey;
+    return EXDevSettingsUserDefaultsKey;
   }
 }
 
