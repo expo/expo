@@ -1,7 +1,5 @@
 ---
 title: Learn Expo
-old_permalink: /versions/v12.0.0/index.html
-next___FILE: ./introduction/index.md
 ---
 
 Expo is a mobile app development tool that enables you to build high quality native iOS and Android applications using JavaScript and deploy them effortlessly.

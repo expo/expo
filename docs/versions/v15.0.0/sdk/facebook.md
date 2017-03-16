@@ -1,15 +1,12 @@
 ---
 title: Facebook
-old_permalink: /versions/v12.0.0/sdk/facebook.html
-previous___FILE: ./contacts.md
-next___FILE: ./font.md
 ---
 
 Provides Facebook integration for Expo apps. Expo exposes a minimal native API since you can access Facebook's [Graph API](https://developers.facebook.com/docs/graph-api) directly through HTTP (using [fetch](https://facebook.github.io/react-native/docs/network.html#fetch), for example).
 
 ## Registering your app with Facebook
 
-Follow [Facebook's developer documentation](https://developers.facebook.com/docs/apps/register) to register an application with Facebook's API and get an application ID. Take note of this application ID because it will be used as the `appId` option in your [`Exponent.Facebook.logInWithReadPermissionsAsync`](#exponentfacebookloginwithreadpermissionsasync "Exponent.Facebook.logInWithReadPermissionsAsync") call. Then follow these steps based on the platforms you're targetting:
+Follow [Facebook's developer documentation](https://developers.facebook.com/docs/apps/register) to register an application with Facebook's API and get an application ID. Take note of this application ID because it will be used as the `appId` option in your [`Expo.Facebook.logInWithReadPermissionsAsync`](#expofacebookloginwithreadpermissionsasync "Expo.Facebook.logInWithReadPermissionsAsync") call. Then follow these steps based on the platforms you're targetting:
 
 -   **The Expo client app**
 
@@ -32,7 +29,7 @@ You may have to switch the app from 'development mode' to 'public mode' on the F
 
 ## Usage
 
-### `Exponent.Facebook.logInWithReadPermissionsAsync(appId, options)`
+### `Expo.Facebook.logInWithReadPermissionsAsync(appId, options)`
 
 Prompts the user to log into Facebook and grants your app permission
 to access their Facebook data.
@@ -62,7 +59,7 @@ Otherwise, returns `{ type: 'success', token, expires }`. `token` is a string gi
 
 ```javascript
 async function logIn() {
-  const { type, token } = await Exponent.Facebook.logInWithReadPermissionsAsync(
+  const { type, token } = await Expo.Facebook.logInWithReadPermissionsAsync(
     '&lt;APP_ID>', {
       permissions: ['public_profile'],
     });

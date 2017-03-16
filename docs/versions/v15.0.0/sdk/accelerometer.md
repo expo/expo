@@ -1,14 +1,11 @@
 ---
 title: Accelerometer
-old_permalink: /versions/v12.0.0/sdk/accelerometer.html
-previous___FILE: ./index.md
-next___FILE: ./amplitude.md
 ---
 
 Access the device accelerometer sensor(s) to respond to changes in
 acceleration in 3d space.
 
-### `Exponent.Accelerometer.addListener(listener)`
+### `Expo.Accelerometer.addListener(listener)`
 
 Subscribe for updates to the accelerometer.
 
@@ -24,11 +21,11 @@ Subscribe for updates to the accelerometer.
 -   An EventSubscription object that you can call remove() on when you
     would like to unsubscribe the listener.
 
-### `Exponent.Accelerometer.removeAllListeners()`
+### `Expo.Accelerometer.removeAllListeners()`
 
 Remove all listeners.
 
-### `Exponent.Accelerometer.setUpdateInterval(intervalMs)`
+### `Expo.Accelerometer.setUpdateInterval(intervalMs)`
 
 Subscribe for updates to the accelerometer.
 
@@ -43,7 +40,7 @@ Subscribe for updates to the accelerometer.
 import React from 'react';
 import Expo, {
   Accelerometer,
-} from 'exponent';
+} from 'Expo';
 import {
   StyleSheet,
   Text,
@@ -150,5 +147,5 @@ const styles = StyleSheet.create({
   },
 });
 
-Exponent.registerRootComponent(AccelerometerSensor);
+Expo.registerRootComponent(AccelerometerSensor);
 ```

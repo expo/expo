@@ -17,13 +17,12 @@ The best way to become familiar with what ExNavigation is capable of is to try o
 
 ## An introduction: the most bare-bones navigation configuration
 
-You can follow along by copying all of the following code into `main.js` on a brand new blank Expo project, and running `npm install @exponent/ex-navigation --save`.
+You can follow along by copying all of the following code into `main.js` on a brand new blank Expo project, and running `npm install @expo/ex-navigation --save`.
 
 ```javascript
-import Exponent from 'exponent';
+import Expo from 'expo';
 import React from 'react';
 import {
-  AppRegistry,
   Text,
   View,
 } from 'react-native';
@@ -32,7 +31,7 @@ import {
   createRouter,
   NavigationProvider,
   StackNavigation,
-} from '@exponent/ex-navigation';
+} from '@expo/ex-navigation';
 
 const Router = createRouter(() => ({
   home: () => HomeScreen,
@@ -74,12 +73,12 @@ class App extends React.Component {
   }
 }
 
-Exponent.registerRootComponent(App);
+Expo.registerRootComponent(App);
 ```
 
 ## Reviewing the tab template
 
-You probably don't want to start all of your projects completely from scratch, and the tab template is one of many to come from Expo that will hopefully give you a headstart on building your app. It comes with `@exponent/ex-navigation` pre-installed, and tab navigation set up for you.
+You probably don't want to start all of your projects completely from scratch, and the tab template is one of many to come from Expo that will hopefully give you a headstart on building your app. It comes with `@expo/ex-navigation` pre-installed, and tab navigation set up for you.
 
 Let's look at the project structure of the tab template as it relates to navigation. This is not a pattern that you absolutely must follow, but we find it works quite well for us.
 

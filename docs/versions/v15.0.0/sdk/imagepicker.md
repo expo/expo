@@ -1,13 +1,10 @@
 ---
 title: ImagePicker
-old_permalink: /versions/v12.0.0/sdk/imagepicker.html
-previous___FILE: ./gyroscope.md
-next___FILE: ./linear-gradient.md
 ---
 
 Provides access to the system's UI for selecting images from the phone's photo library or taking a photo with the camera.
 
-### `Exponent.ImagePicker.launchImageLibraryAsync(options)`
+### `Expo.ImagePicker.launchImageLibraryAsync(options)`
 
 Display the system UI for choosing an image from the phone's photo library.
 
@@ -26,7 +23,7 @@ If the user cancelled the image picking, returns `{ cancelled: true }`.
 
 Otherwise, returns `{ cancelled: false, uri, width, height }` where `uri` is a URI to the local image file (useable in a react-native `Image` tag) and `width, height` specify the dimensions of the image.
 
-### `Exponent.ImagePicker.launchCameraAsync(options)`
+### `Expo.ImagePicker.launchCameraAsync(options)`
 
 Display the system UI for taking a photo with the camera.
 
@@ -55,7 +52,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import Exponent from 'exponent';
+import Expo from 'expo';
 
 export default class ImagePickerExample extends React.Component {
   state = {
@@ -80,7 +77,7 @@ export default class ImagePickerExample extends React.Component {
   }
 
   _pickImage = async () => {
-    let result = await Exponent.ImagePicker.launchImageLibraryAsync({
+    let result = await Expo.ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       aspect: [4,3]
     });
@@ -93,7 +90,7 @@ export default class ImagePickerExample extends React.Component {
   }
 }
 
-Exponent.registerRootComponent(ImagePickerExample);
+Expo.registerRootComponent(ImagePickerExample);
 ```
 
 When you run this example and pick an image, you will see the image that you picked show up in your app, and something similar to the following logged to your console:

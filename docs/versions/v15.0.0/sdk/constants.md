@@ -1,64 +1,65 @@
 ---
 title: Constants
-old_permalink: /versions/v12.0.0/sdk/constants.html
-previous___FILE: ./blur-view.md
-next___FILE: ./contacts.md
 ---
 
 System information that remains constant throughout the lifetime of your app.
 
-### `Exponent.Constants.appOwnership`
+### `Expo.Constants.appOwnership`
 
-Returns `exponent`, `standalone`, or `guest`. If `exponent`, the experience is running inside of the Expo client. If `standalone`, it is a [standalone app](../guides/building-standalone-apps.html#building-standalone-apps). If `guest`, it has been opened through a link from a standalone app.
+Returns `expo`, `standalone`, or `guest`. If `expo`, the experience is running inside of the Expo client. If `standalone`, it is a [standalone app](../guides/building-standalone-apps.html#building-standalone-apps). If `guest`, it has been opened through a link from a standalone app.
 
-### `Exponent.Constants.exponentVersion`
+### `Expo.Constants.exponentVersion`
 
 The version string of the Expo client currently running.
 
-### `Exponent.Constants.deviceId`
+### `Expo.Constants.deviceId`
 
 An identifier that is unique to this particular device and installation of the Expo client.
 
-### `Exponent.Constants.deviceName`
+### `Expo.Constants.deviceName`
 
 A human-readable name for the device type.
 
-### `Exponent.Constants.deviceYearClass`
+### `Expo.Constants.deviceYearClass`
 
 The [device year class](https://github.com/facebook/device-year-class) of this device.
 
-### `Exponent.Constants.isDevice`
+### `Expo.Constants.isDevice`
 
 `true` if the app is running on a device, `false` if running in a simulator or emulator.
 
-### `Exponent.Constants.platform`
+### `Expo.Constants.platform`
 
- `ios`  
- `platform`  
-The Apple internal model identifier for this device, e.g. `iPhone1,1`.
+- `ios`
 
- `model`  
-The human-readable model name of this device, e.g. `iPhone 7 Plus`.
+  - `platform`
 
- `userInterfaceIdiom`  
-The user interface idiom of this device, i.e. whether the app is running on an iPhone or an iPad. Current supported values are `handset` and `tablet`. Apple TV and CarPlay will show up as `unsupported`.
+    The Apple internal model identifier for this device, e.g. `iPhone1,1`.
 
-### `Exponent.Constants.sessionId`
+  -  `model`
+
+    The human-readable model name of this device, e.g. `iPhone 7 Plus`.
+
+  -  `userInterfaceIdiom`
+
+    The user interface idiom of this device, i.e. whether the app is running on an iPhone or an iPad. Current supported values are `handset` and `tablet`. Apple TV and CarPlay will show up as `unsupported`.
+
+### `Expo.Constants.sessionId`
 
 A string that is unique to the current session of your app. It is different across apps and across multiple launches of the same app.
 
-### `Exponent.Constants.statusBarHeight`
+### `Expo.Constants.statusBarHeight`
 
 The default status bar height for the device. Does not factor in changes when location tracking is in use or a phone call is active.
 
-### `Exponent.Constants.systemFonts`
+### `Expo.Constants.systemFonts`
 
 A list of the system font names available on the current device.
 
-### `Exponent.Constants.manifest`
+### `Expo.Constants.manifest`
 
 The [manifest](../guides/how-expo-works.html#expo-manifest) object for the app.
 
-### `Exponent.Constants.linkingUri`
+### `Expo.Constants.linkingUri`
 
-When an app is opened due to a deep link, the prefix of the URI without the deep link part. This value depends on `Exponent.Constants.appOwnership`: it may be different if your app is running standalone vs. in the Expo client.
+When an app is opened due to a deep link, the prefix of the URI without the deep link part. This value depends on `Expo.Constants.appOwnership`: it may be different if your app is running standalone vs. in the Expo client.

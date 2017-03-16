@@ -1,8 +1,5 @@
 ---
 title: BarCodeScanner
-old_permalink: /versions/v12.0.0/sdk/bar-code-scanner.html
-previous___FILE: ./asset.md
-next___FILE: ./blur-view.md
 ---
 
 A React component that renders a viewfinder for the device's either front or back camera viewfinder and will detect bar codes that show up in the frame.
@@ -36,7 +33,7 @@ Requires `Permissions.CAMERA`.
 ```javascript
 import React from 'react';
 import { Text, View } from 'react-native';
-import Expo, { Components, Permissions } from 'exponent';
+import Expo, { Components, Permissions } from 'expo';
 
 export default class BarcodeScannerExample extends React.Component {
   state = {
@@ -71,16 +68,19 @@ export default class BarcodeScannerExample extends React.Component {
   }
 }
 
-Exponent.registerRootComponent(BarcodeScannerExample);
+Expo.registerRootComponent(BarcodeScannerExample);
 ```
 
 ### props
 
- `type`  
+- `type`
+
 When `'front'`, use the front-facing camera. When `'back'`, use the back-facing camera. Default: `'back'`.
 
- `torchMode`  
+- `torchMode`
+
 When `'on'`, the flash on your device will turn on, when `'off'`, it will be off. Defaults to `'off'`.
 
- `barCodeTypes`  
+- `barCodeTypes`
+
 An array of bar code types, see `BarCodeScanner.BarCodeType` for supported types on the platform and device. Default: all supported bar code types.

@@ -1,8 +1,5 @@
 ---
 title: Up and Running
-old_permalink: /versions/v12.0.0/guides/up-and-running.html
-previous___FILE: ./index.md
-next___FILE: ./development-mode.md
 ---
 
 The aim of this first guide is to get an Expo application up and running as quickly as possible.
@@ -21,7 +18,7 @@ Press `Project` and select `New Project`, then choose the `Tab Navigation` optio
 
 Next, choose where to save the project. I keep all of my fun projects in `~/coding`, so I navigate to that directory and press open.
 
-XDE is now initializing a new project in selected directory: it copies a basic template and installs `react`, `react-native` and `exponent`.
+XDE is now initializing a new project in selected directory: it copies a basic template and installs `react`, `react-native` and `expo`.
 
 When the project is initialized and ready to go you will see the message "React packager ready" in the XDE logs.
 

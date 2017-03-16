@@ -1,31 +1,28 @@
 ---
 title: Preloading & Caching Assets
-old_permalink: /versions/v12.0.0/guides/preloading-and-caching-assets.html
-previous___FILE: ./assets.md
-next___FILE: ./icons.md
 ---
 
-In order to keep the loading screen visible while we cache our assets, we render [Exponent.Components.AppLoading](../sdk/app-loading.html#app-loading) and only that component until everything is ready.
+In order to keep the loading screen visible while we cache our assets, we render [Expo.Components.AppLoading](../sdk/app-loading.html#app-loading) and only that component until everything is ready.
 
-For images that we have saved to our local filesytem, we can use `Exponent.Asset.fromModule(image).downloadAsync()` to download and cache the image. For web images, we can use `Image.prefetch(image)`.
+For images that we have saved to our local filesytem, we can use `Expo.Asset.fromModule(image).downloadAsync()` to download and cache the image. For web images, we can use `Image.prefetch(image)`.
 
-Fonts are preloaded using `Exponent.Font.loadAsync(font)`. The `font` argument in this case is an object such as the following: `{OpenSans: require('./assets/fonts/OpenSans.ttf}`. `@exponent/vector-icons` provides a helpful shortcut for this object, which you see below as `FontAwesome.font`.
+Fonts are preloaded using `Expo.Font.loadAsync(font)`. The `font` argument in this case is an object such as the following: `{OpenSans: require('./assets/fonts/OpenSans.ttf}`. `@exponent/vector-icons` provides a helpful shortcut for this object, which you see below as `FontAwesome.font`.
 
 ```javascript
-import Exponent from 'Exponent';
+import Expo from 'expo';
 
 function cacheImages(images) {
   return images.map(image => {
     if (typeof image === 'string') {
       return Image.prefetch(image);
     } else {
-      return Exponent.Asset.fromModule(image).downloadAsync();
+      return Expo.Asset.fromModule(image).downloadAsync();
     }
   });
 }
 
 function cacheFonts(fonts) {
-  return fonts.map(font => Exponent.Font.loadAsync(font));
+  return fonts.map(font => Expo.Font.loadAsync(font));
 }
 
 class AppContainer extends React.Component {

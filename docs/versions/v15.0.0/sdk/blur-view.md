@@ -1,8 +1,5 @@
 ---
 title: BlurView
-old_permalink: /versions/v12.0.0/sdk/blur-view.html
-previous___FILE: ./bar-code-scanner.md
-next___FILE: ./constants.md
 ---
 
 A React component that renders a native blur view on iOS and falls back to a semi-transparent view on Android. A common usage of this is for navigation bars and tab bars, like the following:
@@ -22,7 +19,7 @@ import {
 } from 'react-native';
 import Expo, {
   Components
-} from 'exponent';
+} from 'expo';
 
 class BlurViewExample extends React.Component {
   render() {
@@ -41,7 +38,7 @@ class BlurViewExample extends React.Component {
   }
 }
 
-Exponent.registerRootComponent(BlurViewExample);
+Expo.registerRootComponent(BlurViewExample);
 ```
 
 ### Example: blur strength with intensity
@@ -60,7 +57,7 @@ import {
 } from 'react-native';
 import Expo, {
   Components,
-} from 'exponent';
+} from 'expo';
 
 const AnimatedBlurView = Animated.createAnimatedComponent(Components.BlurView);
 class BlurViewExample extends React.Component {
@@ -95,7 +92,7 @@ class BlurViewExample extends React.Component {
   }
 }
 
-Exponent.registerRootComponent(BlurViewExample);
+Expo.registerRootComponent(BlurViewExample);
 ```
 
 ## props

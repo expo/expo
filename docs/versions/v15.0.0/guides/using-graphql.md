@@ -87,7 +87,7 @@ If you just want to play around with a GraphQL endpoint but are too lazy to setu
 
 ### User Authentication with Auth0
 
-Graphcool comes with different [authentication integrations](https://blog.graph.cool/user-authentication-in-graphql-with-auth0-digits-4ce01788950#.61e3zh7x4) out of the box. The [Auth0 integration](https://www.graph.cool/docs/reference/platform/integrations/auth0-naed3eecie) works nicely together with the OAuth workflow available in exponent.
+Graphcool comes with different [authentication integrations](https://blog.graph.cool/user-authentication-in-graphql-with-auth0-digits-4ce01788950#.61e3zh7x4) out of the box. The [Auth0 integration](https://www.graph.cool/docs/reference/platform/integrations/auth0-naed3eecie) works nicely together with the OAuth workflow available in Expo.
 
 #### Authenticating as a User
 

@@ -1,8 +1,5 @@
 ---
 title: Genymotion
-old_permalink: /versions/v12.0.0/guides/genymotion.html
-previous___FILE: ./using-apollo.md
-next___FILE: ./../sdk/index.md
 ---
 
 We recommend the Genymotion emulator over the Android Studio emulator. If you run into any problems using Genymotion, follow the steps in this guide.

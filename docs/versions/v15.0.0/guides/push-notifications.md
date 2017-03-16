@@ -13,7 +13,7 @@ There are three main steps to wiring up push notifications: sending a user's Exp
 In order to send a push notification to somebody, we need to know about their device. Sure, we know our user's account information, but Apple, Google, and Expo do not understand what devices correspond to "Brent" in your propiertary user account system. Expo takes care of identifying your device with Apple and Google through the Expo push token, so all we need to do is send this to your server so you can associate it with the user account and use it in the future for sending push notifications.![Diagram explaining saving tokens](./saving-token.png)
 
 ```javascript
-import { Permissions, Notifications } from 'exponent';
+import { Permissions, Notifications } from 'expo';
 
 const PUSH_ENDPOINT = 'https://your-server.com/users/push-token';
 
@@ -109,7 +109,7 @@ Thankfully, handling push notifications is straightforward with Expo, all you ne
 import React from 'react';
 import Expo, {
   Notifications,
-} from 'exponent';
+} from 'expo';
 import {
   Text,
   View,
@@ -147,7 +147,7 @@ class AppContainer extends React.Component {
   }
 }
 
-Exponent.registerRootComponent(AppContainer);
+Expo.registerRootComponent(AppContainer);
 ```
 
 ### Notification handling timing

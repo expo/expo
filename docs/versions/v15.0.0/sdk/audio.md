@@ -12,7 +12,7 @@ Try the [playlist example app](http://expo.io/@exponent/playlist) (source code i
 
 Audio is disabled by default, so your app must enable it explicitly to play sounds.
 
-### `Exponent.Audio.setIsEnabledAsync(value)`
+### `Expo.Audio.setIsEnabledAsync(value)`
 
 #### Arguments
 
@@ -24,7 +24,7 @@ A `Promise` that will reject if audio playback could not be enabled for the devi
 
 ## Playing sounds
 
-### `Exponent.Audio.Sound`
+### `Expo.Audio.Sound`
 
 This class represents a sound corresponding to an Asset or URL.
 
@@ -38,7 +38,7 @@ This class represents a sound corresponding to an Asset or URL.
 
         -   A string with a network URL pointing to an audio file on the web.
         -   `require('path/to/file')` for an audio file asset in the source code directory.
-        -   An [`Exponent.Asset`](asset.html) object for an audio file asset.
+        -   An [`Expo.Asset`](asset.html) object for an audio file asset.
 
         The [iOS developer documentation](https://developer.apple.com/library/ios/documentation/Miscellaneous/Conceptual/iPhoneOSTechOverview/MediaLayer/MediaLayer.html) lists the audio formats supported on iOS.
 
@@ -46,12 +46,12 @@ This class represents a sound corresponding to an Asset or URL.
 
 #### Returns
 
-A newly constructed instance of `Exponent.Audio.Sound`.
+A newly constructed instance of `Expo.Audio.Sound`.
 
 #### Example
 
 ```javascript
-const sound = new Exponent.Audio.Sound({
+const sound = new Expo.Audio.Sound({
   source: require('./assets/sounds/hello.mp3'),
 });
 ```

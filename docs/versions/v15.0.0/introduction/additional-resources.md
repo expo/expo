@@ -1,15 +1,12 @@
 ---
 title: Additional Resources
-old_permalink: /versions/v12.0.0/introduction/additional-resources.html
-previous___FILE: ./community.md
-next___FILE: ./faq.md
 ---
 
 The following resources are useful for learning Expo and some of the projects that it depends on.
 
 ## Expo Articles
 
--   [The Expo Log](https://blog.getexponent.com/) - our official blog
+-   [Exposition](https://blog.expo.io/) - our official blog
 -   [Building li.st for Android with Expo and React Native](https://www.youtube.com/watch?v=cI9bDvDEsYE) - conference talk
 -   [Build Cross Platform React Native Apps with Expo and Redux](https://www.pluralsight.com/courses/build-react-native-exponent-redux-apps) (video course on PluralSight)
 

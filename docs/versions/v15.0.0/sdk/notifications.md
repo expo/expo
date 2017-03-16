@@ -6,7 +6,7 @@ Provides access to remote notifications (also known as push notifications) and l
 
 ## Subscribing to Notifications
 
-### `Exponent.Notifications.addListener(listener)`
+### `Expo.Notifications.addListener(listener)`
 
 #### Arguments
 
@@ -33,7 +33,7 @@ An object that is passed into each event listener when a notification is receive
 
 ## Remote (Push) Notifications
 
-### `Exponent.Notifications.getExponentPushTokenAsync()`
+### `Expo.Notifications.getExponentPushTokenAsync()`
 
 #### Returns
 
@@ -41,7 +41,7 @@ Returns a Promise that resolves to a token string. This token can be provided to
 
 ## Local Notifications
 
-### `Exponent.Notifications.presentLocalNotificationAsync(localNotification)`
+### `Expo.Notifications.presentLocalNotificationAsync(localNotification)`
 
 Trigger a local notification immediately.
 
@@ -53,7 +53,7 @@ Trigger a local notification immediately.
 
 A Promise that resolves to a unique notification id.
 
-### `Exponent.Notifications.scheduleLocalNotificationAsync(localNotification, schedulingOptions)`
+### `Expo.Notifications.scheduleLocalNotificationAsync(localNotification, schedulingOptions)`
 
 Schedule a local notification to fire at some specific time in the future or at a given interval.
 
@@ -74,7 +74,7 @@ Schedule a local notification to fire at some specific time in the future or at 
 
 A Promise that resolves to a unique notification id.
 
-### `Exponent.Notifications.dismissNotificationAsync(localNotificationId)`
+### `Expo.Notifications.dismissNotificationAsync(localNotificationId)`
 
 _Android only_. Dismisses the notification with the given id.
 
@@ -82,11 +82,11 @@ _Android only_. Dismisses the notification with the given id.
 
 -   **localNotificationId (_number_)** -- A unique id assigned to the notification, returned from `scheduleLocalNotificationAsync` or `presentLocalNotificationAsync`.
 
-### `Exponent.Notifications.dismissAllNotificationsAsync()`
+### `Expo.Notifications.dismissAllNotificationsAsync()`
 
 _Android only_. Clears any notifications that have been presented by the app.
 
-### `Exponent.Notifications.cancelScheduledNotificationAsync(localNotificationId)`
+### `Expo.Notifications.cancelScheduledNotificationAsync(localNotificationId)`
 
 Cancels the scheduled notification corresponding to the given id.
 
@@ -94,7 +94,7 @@ Cancels the scheduled notification corresponding to the given id.
 
 -   **localNotificationId (_number_)** -- A unique id assigned to the notification, returned from `scheduleLocalNotificationAsync` or `presentLocalNotificationAsync`.
 
-### `Exponent.Notifications.cancelAllScheduledNotificationsAsync()`
+### `Expo.Notifications.cancelAllScheduledNotificationsAsync()`
 
 Cancel all scheduled notifications.
 
@@ -119,12 +119,12 @@ An object used to describe the local notification that you would like to present
 
 ## App Icon Badge Number (iOS)
 
-### `Exponent.Notifications.getBadgeNumberAsync()`
+### `Expo.Notifications.getBadgeNumberAsync()`
 
 #### Returns
 
 Returns a promise that resolves to the number that is displayed in a badge on the app icon. This method returns zero when there is no badge (or when on Android).
 
-### `Exponent.Notifications.setBadgeNumberAsync(number)`
+### `Expo.Notifications.setBadgeNumberAsync(number)`
 
 Sets the number displayed in the app icon's badge to the given number. Setting the number to zero will both clear the badge and the list of notifications in the device's notification center on iOS. On Android this method does nothing.

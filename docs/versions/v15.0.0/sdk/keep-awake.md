@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import Expo, {
   Components
-} from 'exponent';
+} from 'expo';
 
 class KeepAwakeExample extends React.Component {
   render() {
@@ -28,7 +28,7 @@ class KeepAwakeExample extends React.Component {
   }
 }
 
-Exponent.registerRootComponent(KeepAwakeExample);
+Expo.registerRootComponent(KeepAwakeExample);
 ```
 
 ### Example: static methods
@@ -42,7 +42,7 @@ import {
 } from 'react-native';
 import Expo, {
   Components,
-} from 'exponent';
+} from 'expo';
 
 class KeepAwakeExample extends React.Component {
 
@@ -64,5 +64,5 @@ class KeepAwakeExample extends React.Component {
   }
 }
 
-Exponent.registerRootComponent(KeepAwakeExample);
+Expo.registerRootComponent(KeepAwakeExample);
 ```

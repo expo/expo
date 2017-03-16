@@ -1,13 +1,10 @@
 ---
 title: Location
-old_permalink: /versions/v12.0.0/sdk/location.html
-previous___FILE: ./linear-gradient.md
-next___FILE: ./map-view.md
 ---
 
 This module allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.
 
-### `Exponent.Location.getCurrentPositionAsync(options)`
+### `Expo.Location.getCurrentPositionAsync(options)`
 
 Get the current position of the device.
 
@@ -33,7 +30,7 @@ Returns an object with the following fields:
     -   **speed (_number_)** -- The instantaneous speed of the device in meters per second.
 -   **timestamp (_number_)** -- The time at which this position information was obtained, in milliseconds since epoch.
 
-### `Exponent.Location.watchPositionAsync(options, callback)`
+### `Expo.Location.watchPositionAsync(options, callback)`
 
 Subscribe to location updates from the device.
 

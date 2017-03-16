@@ -1,13 +1,10 @@
 ---
 title: takeSnapshotAsync
-old_permalink: /versions/v12.0.0/sdk/take-snapshot-async.html
-previous___FILE: ./svg.md
-next___FILE: ./util.md
 ---
 
 Given a view, `takeSnapshotAsync` will essentially screenshot that view and return an image for you. This is very useful for things like signature pads, where the user draws something and then you want to save an image from it.
 
-### `Exponent.takeSnapshotAsync(view, options)`
+### `Expo.takeSnapshotAsync(view, options)`
 
 Snapshots the given view.
 

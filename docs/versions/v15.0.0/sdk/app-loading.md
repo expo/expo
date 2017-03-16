@@ -1,8 +1,5 @@
 ---
 title: AppLoading
-old_permalink: /versions/v12.0.0/sdk/app-loading.html
-previous___FILE: ./amplitude.md
-next___FILE: ./art.md
 ---
 
 A React component that tells Expo to keep the app loading screen open if it is the first and only component rendered in your app. When it is removed, the loading screen will disappear and your app will be visible.
@@ -14,15 +11,14 @@ This is incredibly useful to let you download and cache fonts, logo and icon ima
 ```javascript
 import React from 'react';
 import {
-  AppRegistry,
   Image,
   Text,
   View,
 } from 'react-native';
-import {
+import Expo, {
   Asset,
   Components,
-} from 'exponent';
+} from 'expo';
 
 class App extends React.Component {
   state = {
@@ -40,7 +36,7 @@ class App extends React.Component {
 
     return (
       <View>
-        <Image source={require('./assets/images/exponent-icon.png')} />
+        <Image source={require('./assets/images/expo-icon.png')} />
         <Image source={require('./assets/images/slack-icon.png')} />
       </View>
     );
@@ -48,7 +44,7 @@ class App extends React.Component {
 
   async _cacheResourcesAsync() {
     const images = [
-      require('./assets/images/exponent-icon.png'),
+      require('./assets/images/expo-icon.png'),
       require('./assets/images/slack-icon.png'),
     ];
 
@@ -60,5 +56,5 @@ class App extends React.Component {
   }
 }
 
-AppRegistry.registerComponent('main', () => App);
+Expo.registerRootComponent(App);
 ```

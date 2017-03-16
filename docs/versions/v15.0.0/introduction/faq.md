@@ -1,8 +1,5 @@
 ---
 title: Frequently Asked Questions
-old_permalink: /versions/v12.0.0/introduction/faq.html
-previous___FILE: ./additional-resources.md
-next___FILE: ./../guides/index.md
 ---
 
 In addition to the questions below, see the [Expo AMA on Hashnode](https://hashnode.com/ama/with-exponent-ciw1qxry118wl4353o9kxaowl#ciw43q029007fxr53pkuftwhu) for more common questions and answers.

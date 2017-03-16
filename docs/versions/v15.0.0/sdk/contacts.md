@@ -1,19 +1,16 @@
 ---
 title: Contacts
-old_permalink: /versions/v12.0.0/sdk/contacts.html
-previous___FILE: ./constants.md
-next___FILE: ./facebook.md
 ---
 
 Provides access to the phone's system contacts.
 
-### `Exponent.Contacts.getContactsAsync(fields)`
+### `Expo.Contacts.getContactsAsync(fields)`
 
 Get a list of all entries in the system contacts. This returns the name and optionally phone number and email of each contact.
 
 #### Arguments
 
--   **fields (_array_)** -- An array describing fields to retrieve per contact. Each element must be one of `Exponent.Contacts.PHONE_NUMBERS` or `Exponent.Contacts.EMAILS`.
+-   **fields (_array_)** -- An array describing fields to retrieve per contact. Each element must be one of `Expo.Contacts.PHONE_NUMBERS` or `Expo.Contacts.EMAILS`.
 
 #### Returns
 
@@ -24,14 +21,14 @@ An array of objects of the form `{ id, name, phoneNumbers, emails, addresses, jo
 ```javascript
 async function showFirstContactAsync() {
   // Ask for permission to query contacts.
-  const permission = await Exponent.Permissions.askAsync(Exponent.Permissions.CONTACTS);
+  const permission = await Expo.Permissions.askAsync(Expo.Permissions.CONTACTS);
   if (permission.status !== 'granted') {
     // Permission was denied...
     return;
   }
-  const contacts = await Exponent.Contacts.getContactsAsync([
-    Exponent.Contacts.PHONE_NUMBERS,
-    Exponent.Contacts.EMAILS,
+  const contacts = await Expo.Contacts.getContactsAsync([
+    Expo.Contacts.PHONE_NUMBERS,
+    Expo.Contacts.EMAILS,
   ]);
   if (contacts.length > 0) {
     Alert.alert(

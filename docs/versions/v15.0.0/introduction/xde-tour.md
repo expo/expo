@@ -1,8 +1,5 @@
 ---
 title: XDE Tour
-old_permalink: /versions/v12.0.0/introduction/xde-tour.html
-previous___FILE: ./installation.md
-next___FILE: ./community.md
 ---
 
 ## Sign in screen

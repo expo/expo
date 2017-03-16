@@ -1,8 +1,5 @@
 ---
 title: Using Apollo
-old_permalink: /versions/v12.0.0/guides/using-apollo.html
-previous___FILE: ./using-firebase.md
-next___FILE: ./genymotion.md
 ---
 
 The [Apollo](http://www.apollodata.com/) client enables you to use [GraphQL](http://graphql.org/) in your Expo applications. Unlike other GraphQL clients, Apollo works out of the box with Expo.

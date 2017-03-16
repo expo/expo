@@ -31,8 +31,15 @@ import v11 from 'data/v11.yaml';
 import v10 from 'data/v10.yaml';
 import v9 from 'data/v9.yaml';
 
-// TODO: Add v15 to the front when we want it to be the default and selectable
-const versions = [`v14.0.0`, `v13.0.0`, `v12.0.0`, `v11.0.0`, `v10.0.0`, `v9.0.0`];
+const versions = [
+  `v15.0.0`,
+  `v14.0.0`,
+  `v13.0.0`,
+  `v12.0.0`,
+  `v11.0.0`,
+  `v10.0.0`,
+  `v9.0.0`,
+];
 
 // NOTE(brentvatne): super ugly hack because navbar depends on us adding
 // padding to the entire document which then breaks the regular anchor
@@ -125,7 +132,9 @@ class Wrapper extends React.Component {
           titleTemplate={`%s | Expo ${this.state.activeVersion} documentation`}
         />
 
-        <Drawer open={this.state.sidebarOpen} onChange={open => this.setState({ sidebarOpen: open })}>
+        <Drawer
+          open={this.state.sidebarOpen}
+          onChange={open => this.setState({ sidebarOpen: open })}>
           <div onClick={() => this.setState({ sidebarOpen: false })}>
             <SidebarContent
               id="mobile-sidebar"
@@ -217,7 +226,8 @@ class Wrapper extends React.Component {
             },
           }}>
           <div
-            onClick={() => this.setState({ sidebarOpen: !this.state.sidebarOpen })}
+            onClick={() =>
+              this.setState({ sidebarOpen: !this.state.sidebarOpen })}
             css={{
               float: `left`,
               paddingLeft: rhythm(1 / 3),
@@ -247,5 +257,4 @@ class Wrapper extends React.Component {
     );
   }
 }
-
 export default withRouter(Wrapper);

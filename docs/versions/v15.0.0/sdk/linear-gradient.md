@@ -1,8 +1,5 @@
 ---
 title: LinearGradient
-old_permalink: /versions/v12.0.0/sdk/linear-gradient.html
-previous___FILE: ./imagepicker.md
-next___FILE: ./location.md
 ---
 
 A React component that renders a native gradient view.
@@ -19,7 +16,7 @@ import {
 } from 'react-native';
 import {
   Components
-} from 'exponent';
+} from 'expo';
 
 export default class FacebookButton extends React.Component {
   render() {
@@ -42,7 +39,7 @@ export default class FacebookButton extends React.Component {
 
 ```javascript
 import React from 'react';
-import { Components } from 'exponent';
+import { Components } from 'expo';
 
 export default class BlackFade extends React.Component {
   render() {

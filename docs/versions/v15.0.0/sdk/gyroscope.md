@@ -1,13 +1,10 @@
 ---
 title: Gyroscope
-old_permalink: /versions/v12.0.0/sdk/gyroscope.html
-previous___FILE: ./google.md
-next___FILE: ./imagepicker.md
 ---
 
 Access the device gyroscope sensor to respond to changes in rotation in 3d space.
 
-### `Exponent.Gyroscope.addListener(listener)`
+### `Expo.Gyroscope.addListener(listener)`
 
 Subscribe for updates to the gyroscope.
 
@@ -19,11 +16,11 @@ Subscribe for updates to the gyroscope.
 
 An EventSubscription object that you can call remove() on when you would like to unsubscribe the listener.
 
-### `Exponent.Gyroscope.removeAllListeners()`
+### `Expo.Gyroscope.removeAllListeners()`
 
 Remove all listeners.
 
-### `Exponent.Gyroscope.setUpdateInterval(intervalMs)`
+### `Expo.Gyroscope.setUpdateInterval(intervalMs)`
 
 Subscribe for updates to the gyroscope.
 
@@ -37,7 +34,7 @@ Subscribe for updates to the gyroscope.
 import React from 'react';
 import Expo, {
   Gyroscope,
-} from 'exponent';
+} from 'expo';
 import {
   StyleSheet,
   Text,
@@ -144,5 +141,5 @@ const styles = StyleSheet.create({
   },
 });
 
-Exponent.registerRootComponent(GyroscopeSensor);
+Expo.registerRootComponent(GyroscopeSensor);
 ```

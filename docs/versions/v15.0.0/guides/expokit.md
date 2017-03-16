@@ -103,8 +103,7 @@ or `exp`. You can develop your project normally from here.
 
 You can do whatever you want in the Xcode and Android Studio projects.
 
-To add third-party native modules for React Native, non-expo-specific instructions such as
-`react-native link` should be supported.
+To add third-party native modules for React Native, non-Expo-specific instructions such as `react-native link` should be supported.
 
 >  **Note:** You may have to update `android/app/build.gradle` after running `react-native link`.
 >  Change the line added by `react-native link` from `compile project(':library-name')` to

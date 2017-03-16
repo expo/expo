@@ -1,8 +1,5 @@
 ---
 title: Using Custom Fonts
-old_permalink: /versions/v12.0.0/guides/using-custom-fonts.html
-previous___FILE: ./icons.md
-next___FILE: ./routing-and-navigation.md
 ---
 
 Both iOS and Android come with their own set of platform fonts but if you want to inject some more brand personality into your app, a well picked font can go a long way. In this guide we'll walk you through adding a custom font to your Expo app. We'll use [Open Sans](https://fonts.google.com/specimen/Open+Sans) from [Google Fonts](https://fonts.google.com/) in the example, and the process is identical for any other font, so feel free to adapt it to your use case. Before proceeding, go ahead and download [Open Sans](https://fonts.google.com/specimen/Open+Sans)
@@ -18,7 +15,7 @@ import {
 } from 'react-native';
 
 import React from 'react';
-import Exponent from 'exponent';
+import Expo from 'expo';
 
 class App extends React.Component {
   render() {
@@ -32,7 +29,7 @@ class App extends React.Component {
   }
 }
 
-Exponent.registerRootComponent(App);
+Expo.registerRootComponent(App);
 ```
 
 Try getting this basic app running before playing with Open Sans, so you can get any basic setup issues out of the way.
@@ -43,13 +40,13 @@ Take the Open Sans zipfile that you downloaded, extract it and copy `OpenSans-Bo
 
 ## Loading the font in your app
 
-To load and use fonts we will use the [Expo SDK](../sdk/index.html#expo-sdk), which comes pre-installed when you create a new Expo project, but if for some reason you don't have it, you can install with `npm install --save exponent` in your project directory. Add the following `import` in your application code:
+To load and use fonts we will use the [Expo SDK](../sdk/index.html#expo-sdk), which comes pre-installed when you create a new Expo project, but if for some reason you don't have it, you can install with `npm install --save expo` in your project directory. Add the following `import` in your application code:
 
 ```javascript
-import { Font } from 'exponent';
+import { Font } from 'expo';
 ```
 
-The `exponent` library provides an API to access native functionality of the device from your JavaScript code. `Font` is the module that deals with font-related tasks. First, we must load the font from our assets directory using [`Exponent.Font.loadAsync()`](../sdk/font.html#exponentfontloadasync "Exponent.Font.loadAsync"). We can do this in the [componentDidMount()](https://facebook.github.io/react/docs/component-specs.html#mounting-componentdidmount) lifecycle method of the `App` component. Add the following method in `App`: Now that we have the font files saved to disk and the Font SDK imported, let's add this code:
+The `expo` library provides an API to access native functionality of the device from your JavaScript code. `Font` is the module that deals with font-related tasks. First, we must load the font from our assets directory using [`Expo.Font.loadAsync()`](../sdk/font.html#exponentfontloadasync "Expo.Font.loadAsync"). We can do this in the [componentDidMount()](https://facebook.github.io/react/docs/component-specs.html#mounting-componentdidmount) lifecycle method of the `App` component. Add the following method in `App`: Now that we have the font files saved to disk and the Font SDK imported, let's add this code:
 
 ```javascript
 class App extends React.Component {
@@ -77,7 +74,7 @@ With React Native you specify fonts in `Text` components using the `fontFamily` 
 </Text>
 ```
 
-On next refresh the app seems to still not display the text with Open Sans Bold. You will see that it is still using the default system font. The problem is that [`Exponent.Font.loadAsync()`](../sdk/font.html#exponentfontloadasync "Exponent.Font.loadAsync") is an asynchronous call and takes some time to complete. Before it completes, the `Text` component is already rendered with the default font since it can't find the `'open-sans-bold'` font (which hasn't been loaded yet).
+On next refresh the app seems to still not display the text with Open Sans Bold. You will see that it is still using the default system font. The problem is that [`Expo.Font.loadAsync()`](../sdk/font.html#exponentfontloadasync "Expo.Font.loadAsync") is an asynchronous call and takes some time to complete. Before it completes, the `Text` component is already rendered with the default font since it can't find the `'open-sans-bold'` font (which hasn't been loaded yet).
 
 ## Waiting for the font to load before rendering
 
@@ -95,7 +92,7 @@ class App extends React.Component {
 }
 ```
 
-Next, we must set `fontLoaded` to `true` when the font is done loading. [`Exponent.Font.loadAsync()`](../sdk/font.html#exponentfontloadasync "Exponent.Font.loadAsync") returns a `Promise` that is fulfilled when the font is successfully loaded and ready to use. So we can use [async/await](https://blog.getexponent.com/react-native-meets-async-functions-3e6f81111173) with `componentDidMount()` to wait until the font is loaded, then update our state.
+Next, we must set `fontLoaded` to `true` when the font is done loading. [`Expo.Font.loadAsync()`](../sdk/font.html#exponentfontloadasync "Expo.Font.loadAsync") returns a `Promise` that is fulfilled when the font is successfully loaded and ready to use. So we can use [async/await](https://blog.getexponent.com/react-native-meets-async-functions-3e6f81111173) with `componentDidMount()` to wait until the font is loaded, then update our state.
 
 ```javascript
 class App extends React.Component {

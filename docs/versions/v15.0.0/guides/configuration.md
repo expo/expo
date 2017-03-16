@@ -148,7 +148,7 @@ title: Configuration with exp.json
     -   `bundleIdentifier`
 
         The bundle identifier for your iOS standalone app. You make it up, but it needs to be unique on the App Store. See [this StackOverflow question](http://stackoverflow.com/questions/11347470/what-does-bundle-identifier-mean-in-the-ios-project).
-        iOS bundle identifier notation unique name for your app. For example, host.exp.exponent, where exp.host is our domain and Expo is our app.
+        iOS bundle identifier notation unique name for your app. For example, host.exp.expo, where exp.host is our domain and Expo is our app.
 
     -   `buildNumber`
 
@@ -174,7 +174,7 @@ title: Configuration with exp.json
 
     -   `infoPlist`
 
-        Arbitrary configuration to add to your standalone app's native Info.plist. Applied prior to all other Exponent-specific configuration. No other validation is performed, so use this at your own risk of rejection from the App Store.
+        Arbitrary configuration to add to your standalone app's native Info.plist. Applied prior to all other Expo-specific configuration. No other validation is performed, so use this at your own risk of rejection from the App Store.
 
 -   `android`
 
@@ -183,7 +183,7 @@ title: Configuration with exp.json
     -   `package`
 
         The package name for your Android standalone app. You make it up, but it needs to be unique on the Play Store. See [this StackOverflow question](http://stackoverflow.com/questions/6273892/android-package-name-convention).
-        Reverse DNS notation unique name for your app. For example, host.exp.exponent, where exp.host is our domain and Expo is our app.
+        Reverse DNS notation unique name for your app. For example, host.exp.expo, where exp.host is our domain and Expo is our app.
 
     -   `versionCode`
 
