@@ -18,7 +18,7 @@ NSString *const EXDevSettingIsDebuggingRemotely = @"isDebuggingRemotely";
 @interface EXDevSettingsDataSource ()
 
 @property (nonatomic, strong) NSString *experienceId;
-@property (nonatomic, strong) NSSet *settingsDisabledInProduction;
+@property (nonatomic, readonly) NSSet *settingsDisabledInProduction;
 
 @end
 
@@ -69,6 +69,7 @@ NSString *const EXDevSettingIsDebuggingRemotely = @"isDebuggingRemotely";
 {
   // prohibit these settings if not serving the experience as a developer
   if (!_isDevelopment && [_settingsDisabledInProduction containsObject:key]) {
+    // TODO: this logic needs to change if we extend beyond boolean settings.
     return @NO;
   }
   return _settings[key];
