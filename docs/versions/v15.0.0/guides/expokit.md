@@ -83,7 +83,7 @@ If you prefer `exp`, run `exp start` from the project directory.
 ### 4. (iOS only) Configure, build and run
 
 To configure the Xcode project, make sure you have [CocoaPods](https://cocoapods.org), then
-run `./pod-install-exponent.sh` from your project's `ios` directory.
+run `pod install` from your project's `ios` directory.
 
 You can now open your project's `xcworkspace` file in Xcode, build and run the project
 on an iOS device or Simulator.
@@ -103,7 +103,7 @@ or `exp`. You can develop your project normally from here.
 
 You can do whatever you want in the Xcode and Android Studio projects.
 
-To add third-party native modules for React Native, non-exponent-specific instructions such as
+To add third-party native modules for React Native, non-expo-specific instructions such as
 `react-native link` should be supported.
 
 >  **Note:** You may have to update `android/app/build.gradle` after running `react-native link`.
