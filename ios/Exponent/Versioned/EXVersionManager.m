@@ -180,7 +180,7 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
                                     experienceScope,
                                     [[EXAppState alloc] init],
                                     [[EXConstants alloc] initWithProperties:params[@"constants"]],
-                                    [[EXDevSettings alloc] initWithExperienceId:experienceScope.experienceId],
+                                    [[EXDevSettings alloc] initWithExperienceId:experienceScope.experienceId isDevelopment:isDeveloper],
                                     [[EXDisabledDevLoadingView alloc] init],
                                     [[EXLinkingManager alloc] initWithInitialUrl:initialUri],
                                     ]];
