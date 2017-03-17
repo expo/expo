@@ -37,6 +37,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
   _shellManifestUrl = nil;
   _usesPublishedManifest = YES;
   _urlScheme = nil;
+  _isRemoteJSEnabled = YES;
   _allManifestUrls = @[];
 }
 
@@ -88,6 +89,9 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
 #endif
       RCTAssert((_shellManifestUrl), @"This app is configured to be a standalone app, but does not specify a standalone experience url.");
       _isManifestVerificationBypassed = [[mutableConfig objectForKey:@"isManifestVerificationBypassed"] boolValue];
+      _isRemoteJSEnabled = ([mutableConfig objectForKey:@"isRemoteJSEnabled"] == nil) ?
+        YES :
+        [[mutableConfig objectForKey:@"isRemoteJSEnabled"] boolValue];
       // other shell config goes here
 
       [[EXAnalytics sharedInstance] setUserProperties:@{ @"INITIAL_URL": _shellManifestUrl }];

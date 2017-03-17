@@ -2,6 +2,7 @@
 
 #import "EXJavaScriptResource.h"
 #import "EXKernelUtil.h"
+#import "EXShellManager.h"
 
 @implementation EXJavaScriptResource
 
@@ -48,6 +49,18 @@
   });
   
   return cache;
+}
+
+- (void)loadResourceWithBehavior:(EXCachedResourceBehavior)behavior successBlock:(EXCachedResourceSuccessBlock)successBlock errorBlock:(EXCachedResourceErrorBlock)errorBlock
+{
+  if ([EXShellManager sharedInstance].isShell && ![EXShellManager sharedInstance].isRemoteJSEnabled) {
+    // JS downloads are disabled
+    if (behavior != kEXCachedResourceOnlyCache) {
+      behavior = kEXCachedResourceOnlyCache;
+      DDLogWarn(@"%s: JS downloads are not allowed. Local resource will be used if it exists.", __func__);
+    }
+  }
+  [super loadResourceWithBehavior:behavior successBlock:successBlock errorBlock:errorBlock];
 }
 
 - (NSError *)_validateResponseData:(NSData *)data response:(NSURLResponse *)response
