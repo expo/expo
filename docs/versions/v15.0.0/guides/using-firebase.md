@@ -53,7 +53,7 @@ Go into the Firebase console for Database, and under the Rules tab you should se
 
 ## 2. Storing Data and Receiving Updates
 
-Storing data through Firebase can be pretty simple. Image we're creating a game where highscores are stored in Firebase for everyone to see. We could create a users bucket in our data that is referenced by each user. Setting their highscore would be straightforward.
+Storing data through Firebase can be pretty simple. Imagine we're creating a game where highscores are stored in Firebase for everyone to see. We could create a users bucket in our data that is referenced by each user. Setting their highscore would be straightforward.
 
 ```javascript
 function storeHighScore(userId, score) {
