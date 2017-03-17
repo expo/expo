@@ -95,6 +95,12 @@ This will take a few minutes, you can check up on it by running `exp build:statu
 
 We don't automate this step (yet), but at this point you should be able to follow the Apple and Google documentation to submit your standalone binary to each respective store.
 
+If you plan to submit to the Apple App Store, your app will be subject to normal Apple review guidelines. A plain Expo build will have no issues with this, but your app's particular behavior, content, and metadata are all under your control. Some of these resources are worth reading:
+
+-   [App Store Review Guidelines](https://developer.apple.com/app-store/review/guidelines/)
+-   [App Icon Guidelines](https://developer.apple.com/ios/human-interface-guidelines/graphics/app-icon/)
+-   [Common App Rejections](https://developer.apple.com/app-store/review/rejections/)
+
 > **Note:** When submitting to the iTunes Store, you'll be asked whether your app uses the advertising identifier (IDFA). Because Expo depends on Segment Analytics, the answer is yes, and you'll need to check a couple boxes on the Apple submission form. See [Segment's Guide](https://segment.com/docs/sources/mobile/ios/quickstart/#step-5-submitting-to-the-app-store) for which specific boxes to fill in.
 
 ## 7. Update your app
