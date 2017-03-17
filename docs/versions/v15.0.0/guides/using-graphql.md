@@ -20,7 +20,7 @@ In order to use GraphQL from an application, you will also need a **client** tha
 
 Building your own **GraphQL server** from scratch however is not trivial and potentially gets really complicated once you want to implement more advanced features like proper _permissions_, _filtering_ or _subscriptions_ (which are a GraphQL feature that allow your app to get real-time updates from the database).
 
-If you don't want to build the backend yourself, you can use [**Graphcool**](www.graph.cool), a powerful and flexible backend platform that combines GraphQL with AWS Lambda to provide you with the means of setting up a fully-fledged GraphQL server in only a few minutes.
+If you don't want to build the backend yourself, you can use [**Graphcool**](https://www.graph.cool), a powerful and flexible backend platform that combines GraphQL with AWS Lambda to provide you with the means of setting up a fully-fledged GraphQL server in only a few minutes.
 
 ### GraphQL Client
 
