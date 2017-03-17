@@ -23,6 +23,7 @@ import logoText from 'images/logo-text.svg';
 import 'typeface-source-sans-pro';
 import 'typeface-source-code-pro';
 
+import unversioned from 'data/unversioned.yaml';
 import v15 from 'data/v15.yaml';
 import v14 from 'data/v14.yaml';
 import v13 from 'data/v13.yaml';
@@ -32,6 +33,7 @@ import v10 from 'data/v10.yaml';
 import v9 from 'data/v9.yaml';
 
 const versions = [
+  `unversioned`,
   `v15.0.0`,
   `v14.0.0`,
   `v13.0.0`,
@@ -96,6 +98,9 @@ class Wrapper extends React.Component {
         break;
       case 'v9.0.0':
         routes = v9;
+        break;
+      case 'unversioned':
+        routes = unversioned;
         break;
       default:
         routes = v15;

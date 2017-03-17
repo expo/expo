@@ -1,4 +1,4 @@
-import { orderBy } from 'lodash';
+import { orderBy, pullAt } from 'lodash';
 import React from 'react';
 import Link from 'gatsby-link';
 import { rhythm, scale } from 'utils/typography';
@@ -7,7 +7,10 @@ import logoText from 'images/logo-text.svg';
 
 class AlgoliaSearch extends React.Component {
   componentWillReceiveProps(nextProps) {
-    if (this.props.activeVersion && this.props.activeVersion !== nextProps.activeVersion) {
+    if (
+      this.props.activeVersion &&
+      this.props.activeVersion !== nextProps.activeVersion
+    ) {
       this.docsearch.algoliaOptions = {
         ...this.docsearch.algoliaOptions,
         facetFilters: [`tags:${nextProps.activeVersion}`],
@@ -48,7 +51,8 @@ class AlgoliaSearch extends React.Component {
       combos: [
         {
           keyCodes: [16, 191], // shift + / (otherwise known as '?')
-          callback: () => setTimeout(() => document.getElementById('docsearch').focus(), 16),
+          callback: () =>
+            setTimeout(() => document.getElementById('docsearch').focus(), 16),
         },
       ],
     });
@@ -162,7 +166,7 @@ class Header extends React.Component {
                   textAlignLast: `center`,
                   textAlign: `center`,
                 }}>
-                {orderBy(this.props.versions, v => parseInt(v.match(/v([0-9]+)\./)[1], 10), ['asc'])
+                {orderVersions(this.props.versions)
                   .map(version => {
                     return (
                       <option key={version} value={version}>
@@ -174,12 +178,29 @@ class Header extends React.Component {
               </select>
             </div>
 
-            <AlgoliaSearch router={this.props.router} activeVersion={this.props.activeVersion} />
+            <AlgoliaSearch
+              router={this.props.router}
+              activeVersion={this.props.activeVersion}
+            />
           </div>
         </div>
       </div>
     );
   }
+}
+
+function orderVersions(versions) {
+  versions = [...versions];
+  pullAt(versions, versions.indexOf('unversioned'));
+  versions = orderBy(versions, v => parseInt(v.match(/v([0-9]+)\./)[1], 10), [
+    'asc',
+  ]);
+
+  if (window.GATSBY_ENV !== 'production') {
+    versions = versions.concat('unversioned');
+  }
+
+  return versions;
 }
 
 export default Header;
