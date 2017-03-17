@@ -14,6 +14,8 @@ typedef enum EXCachedResourceBehavior {
   kEXCachedResourceUseCacheImmediately,
   // try to download the resource, but fall back to the cached version if the download fails.
   kEXCachedResourceFallBackToCache,
+  // use a cache if it exists, otherwise fail. (don't download anything)
+  kEXCachedResourceOnlyCache,
 } EXCachedResourceBehavior;
 
 @interface EXCachedResource : NSObject

@@ -6,6 +6,8 @@
 #import "EXVersions.h"
 #import "EXKernelUtil.h"
 
+#import <React/RCTUtils.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXCachedResource ()
@@ -42,11 +44,15 @@ NS_ASSUME_NONNULL_BEGIN
       break;
     }
     case kEXCachedResourceUseCacheImmediately: {
-      [self _loadCacheImmediatelyWithSuccess:success error:error];
+      [self _loadCacheImmediatelyAndDownload:YES withSuccess:success error:error];
       break;
     }
     case kEXCachedResourceFallBackToCache: default: {
       [self _loadRemoteAndFallBackToCacheWithSuccess:success error:error];
+      break;
+    }
+    case kEXCachedResourceOnlyCache: {
+      [self _loadCacheImmediatelyAndDownload:NO withSuccess:success error:error];
       break;
     }
   }
@@ -90,7 +96,8 @@ NS_ASSUME_NONNULL_BEGIN
   }];
 }
 
-- (void)_loadCacheImmediatelyWithSuccess:(EXCachedResourceSuccessBlock)successBlock
+- (void)_loadCacheImmediatelyAndDownload:(BOOL)shouldAttemptDownload
+                             withSuccess:(EXCachedResourceSuccessBlock)successBlock
                                    error:(EXCachedResourceErrorBlock)errorBlock
 {
   BOOL hasLocalBundle = NO;
@@ -107,24 +114,31 @@ NS_ASSUME_NONNULL_BEGIN
     }
   }
   
-  EXCachedResourceSuccessBlock onSuccess = ^(NSData *data) {
-    if (!hasLocalBundle) {
-      // no local bundle found, so call back with the newly downloaded resource
-      successBlock(data);
-    }
-    
-    // write to cache for next time
-    NSLog(@"EXCachedResource: Caching resource to %@...", resourceCachePath);
-    [data writeToFile:resourceCachePath atomically:YES];
-  };
-  EXCachedResourceErrorBlock onError = ^(NSError *error) {
-    if (!hasLocalBundle) {
-      // no local bundle found, and download failed, so call back with the bad news
-      errorBlock(error);
-    }
-  };
+  if (shouldAttemptDownload) {
+    EXCachedResourceSuccessBlock onSuccess = ^(NSData *data) {
+      if (!hasLocalBundle) {
+        // no local bundle found, so call back with the newly downloaded resource
+        successBlock(data);
+      }
+      
+      // write to cache for next time
+      NSLog(@"EXCachedResource: Caching resource to %@...", resourceCachePath);
+      [data writeToFile:resourceCachePath atomically:YES];
+    };
+    EXCachedResourceErrorBlock onError = ^(NSError *error) {
+      if (!hasLocalBundle) {
+        // no local bundle found, and download failed, so call back with the bad news
+        errorBlock(error);
+      }
+    };
 
-  [self _loadRemoteResourceWithSuccess:onSuccess error:onError ignoringCache:NO];
+    [self _loadRemoteResourceWithSuccess:onSuccess error:onError ignoringCache:NO];
+  } else {
+    // download not allowed, and we found no cached data, so fail
+    if (!hasLocalBundle) {
+      errorBlock(RCTErrorWithMessage([NSString stringWithFormat:@"No cache exists for this resource: %@.%@", _resourceName, _resourceType]));
+    }
+  }
 }
 
 - (void)_loadRemoteAndFallBackToCacheWithSuccess:(EXCachedResourceSuccessBlock)successBlock
