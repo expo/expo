@@ -8,7 +8,7 @@ System information that remains constant throughout the lifetime of your app.
 
 Returns `expo`, `standalone`, or `guest`. If `expo`, the experience is running inside of the Expo client. If `standalone`, it is a [standalone app](../guides/building-standalone-apps.html#building-standalone-apps). If `guest`, it has been opened through a link from a standalone app.
 
-### `Expo.Constants.exponentVersion`
+### `Expo.Constants.expoVersion`
 
 The version string of the Expo client currently running.
 
