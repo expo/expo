@@ -2,12 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>isRemoteJSEnabled</key>
+	<true/>
 	<key>isShell</key>
 	<true/>
 	<key>developmentUrl</key>
-	<string>exp://exp.host/@exponent/pomodoro</string>
+	<string>exp://exp.host/@community/pomodoro</string>
 	<key>manifestUrl</key>
-	<string>exp://exp.host/@exponent/pomodoro</string>
+	<string>exp://exp.host/@community/pomodoro</string>
 	<key>isManifestVerificationBypassed</key>
 	<false/>
 </dict>
