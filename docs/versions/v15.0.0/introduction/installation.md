@@ -10,7 +10,7 @@ XDE stands for Expo Development Environment. It is a standalone desktop app that
 
 Download the latest version of XDE for [macOS](https://xde-updates.exponentjs.com/download/mac), [Windows (64-bit)](https://xde-updates.exponentjs.com/download/win32), or [Linux](https://xde-updates.exponentjs.com/download/linux-x86_64).
 
-On Linux, open with `chmod a+x XDE*.AppImage` and `./XDE*.AppImage`.
+On Linux, open with `chmod a+x xde*.AppImage` and `./xde*.AppImage`.
 
 ## Mobile Client: Expo for iOS and Android
 
