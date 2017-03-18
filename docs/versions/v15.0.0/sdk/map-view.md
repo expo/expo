@@ -8,7 +8,7 @@ A Map component that uses Apple Maps on iOS and Google Maps on Android. Built by
 
 ```javascript
 import React from 'react';
-import { Components } from 'expo';
+import { MapView } from 'expo';
 
 export default class HomeScreen extends React.Component {
   static route = {
@@ -19,7 +19,7 @@ export default class HomeScreen extends React.Component {
 
   render() {
     return (
-      <Components.MapView
+      <MapView
         style={{flex: 1}}
         initialRegion={{
           latitude: 37.78825,
@@ -33,7 +33,7 @@ export default class HomeScreen extends React.Component {
 }
 ```
 
-### `Expo.Components.MapView()`
+### `Expo.MapView()`
 
 See full documentation at [airbnb/react-native-maps](https://github.com/airbnb/react-native-maps).
 

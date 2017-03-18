@@ -2,7 +2,7 @@
 title: Preloading & Caching Assets
 ---
 
-In order to keep the loading screen visible while we cache our assets, we render [Expo.Components.AppLoading](../sdk/app-loading.html#app-loading) and only that component until everything is ready.
+In order to keep the loading screen visible while we cache our assets, we render [Expo.AppLoading](../sdk/app-loading.html#app-loading) and only that component until everything is ready.
 
 For images that we have saved to our local filesytem, we can use `Expo.Asset.fromModule(image).downloadAsync()` to download and cache the image. For web images, we can use `Image.prefetch(image)`.
 
@@ -36,7 +36,7 @@ class AppContainer extends React.Component {
 
   render() {
     if (!this.state.appIsReady) {
-      return <Components.AppLoading />;
+      return <AppLoading />;
     }
 
     return <MyApp />;
