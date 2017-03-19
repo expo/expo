@@ -78,6 +78,9 @@ class Wrapper extends React.Component {
   getRoutes = version => {
     let routes;
     switch (version) {
+      case 'unversioned':
+        routes = unversioned;
+        break;
       case 'v15.0.0':
         routes = v15;
         break;
@@ -98,9 +101,6 @@ class Wrapper extends React.Component {
         break;
       case 'v9.0.0':
         routes = v9;
-        break;
-      case 'unversioned':
-        routes = unversioned;
         break;
       default:
         routes = v15;
