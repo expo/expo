@@ -191,13 +191,22 @@ class Header extends React.Component {
 
 function orderVersions(versions) {
   versions = [...versions];
-  pullAt(versions, versions.indexOf('unversioned'));
-  versions = orderBy(versions, v => parseInt(v.match(/v([0-9]+)\./)[1], 10), [
-    'asc',
-  ]);
+
+  if (versions.indexOf('unversioned') >= 0) {
+    versions.splice(versions.indexOf('unversioned'), 1);
+  }
+
+  versions = orderBy(
+    versions,
+    v => {
+      let match = v.match(/v([0-9]+)\./);
+      return parseInt(match[1], 10);
+    },
+    ['asc']
+  );
 
   if (window.GATSBY_ENV !== 'production') {
-    versions = versions.concat('unversioned');
+    versions.unshift('unversioned');
   }
 
   return versions;
