@@ -205,7 +205,7 @@ function orderVersions(versions) {
     ['asc']
   );
 
-  if (window.GATSBY_ENV !== 'production') {
+  if (window.GATSBY_ENV === 'development') {
     versions.unshift('unversioned');
   }
 
