@@ -1,5 +1,6 @@
 import spawnAsync from '@exponent/spawn-async';
 import git from 'git-promise';
+import { rmdirSync } from 'rimraf';
 
 import CI, { Rocker, Kubernetes as K8S, Log, Github } from 'ci';
 
@@ -42,6 +43,12 @@ const build = (branch, tag, pr) => ({
     const imageTag = `${process.env.BUILDKITE_COMMIT}`;
 
     Log.collapsed(':hammer: Building Docs...');
+
+    // Added until caching issues between builds have been resolved in Gatsby.
+    // Without it, sometimes docs don't update as expected, eg: a section
+    // that appears locally won't exist on staging/production
+    rmdirSync('./gatsby/.intermediate-representation');
+    rmdirSync('./gatsby/public');
 
     await Rocker.build({
       rockerfile: './deploy/docker/deploy.Rockerfile',
