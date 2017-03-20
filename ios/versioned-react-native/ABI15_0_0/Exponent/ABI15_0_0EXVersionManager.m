@@ -126,24 +126,10 @@ void ABI15_0_0EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
 
 - (void)swapSystemMethods
 {
-#if ABI15_0_0RCT_DEV
-  // key commands
-  SEL ABI15_0_0RCTCommandsSelector = NSSelectorFromString(@"ABI15_0_0RCT_keyCommands");
-  ABI15_0_0RCTSwapInstanceMethods([UIResponder class],
-                         @selector(keyCommands),
-                         ABI15_0_0RCTCommandsSelector);
-#endif
 }
 
 - (void)setSystemMethods
 {
-#if ABI15_0_0RCT_DEV
-  // key commands
-  SEL ABI15_0_0RCTCommandsSelector = NSSelectorFromString(@"ABI15_0_0RCT_keyCommands");
-  ABI15_0_0EXSetInstanceMethod([UIResponder class],
-                         @selector(keyCommands),
-                         ABI15_0_0RCTCommandsSelector);
-#endif
 }
 
 /**

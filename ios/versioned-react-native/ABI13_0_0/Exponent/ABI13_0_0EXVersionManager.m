@@ -127,48 +127,10 @@ void ABI13_0_0EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
 
 - (void)swapSystemMethods
 {
-#if ABI13_0_0RCT_DEV
-  // key commands
-  SEL ABI13_0_0RCTCommandsSelector = NSSelectorFromString(@"ABI13_0_0RCT_keyCommands");
-  SEL ABI13_0_0RCTSendActionSelector = NSSelectorFromString(@"ABI13_0_0RCT_sendAction:to:from:forEvent:");
-  if ([UIDevice currentDevice].systemVersion.floatValue < 9) {
-    ABI13_0_0RCTSwapInstanceMethods([UIApplication class],
-                           @selector(keyCommands),
-                           ABI13_0_0RCTCommandsSelector);
-    
-    ABI13_0_0RCTSwapInstanceMethods([UIApplication class],
-                           @selector(sendAction:to:from:forEvent:),
-                           ABI13_0_0RCTSendActionSelector);
-  } else {
-    ABI13_0_0RCTSwapInstanceMethods([UIResponder class],
-                           @selector(keyCommands),
-                           ABI13_0_0RCTCommandsSelector);
-  }
-#endif
 }
 
 - (void)setSystemMethods
 {
-#if ABI13_0_0RCT_DEV
-  // key commands
-  SEL ABI13_0_0RCTCommandsSelector = NSSelectorFromString(@"ABI13_0_0RCT_keyCommands");
-  if ([UIDevice currentDevice].systemVersion.floatValue < 9) {
-    ABI13_0_0EXSetInstanceMethod([UIApplication class],
-                           @selector(keyCommands),
-                           ABI13_0_0RCTCommandsSelector);
-    
-    // don't support this set on iOS 8.x -- results in a recursive call.
-    // in this case people will just need to live without key commands.
-
-    /* ABI13_0_0EXSetInstanceMethod([UIApplication class],
-                           @selector(sendAction:to:from:forEvent:),
-                           ABI13_0_0RCTSendActionSelector); */
-  } else {
-    ABI13_0_0EXSetInstanceMethod([UIResponder class],
-                           @selector(keyCommands),
-                           ABI13_0_0RCTCommandsSelector);
-  }
-#endif
 }
 
 /**

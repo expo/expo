@@ -210,27 +210,6 @@ ABI15_0_0RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 @implementation ABI15_0_0RCTKeyCommands
 
-+ (void)initialize
-{
-  if (ABI15_0_0RCTIsIOS8OrEarlier()) {
-
-    // swizzle UIApplication
-    ABI15_0_0RCTSwapInstanceMethods([UIApplication class],
-                           @selector(keyCommands),
-                           @selector(ABI15_0_0RCT_keyCommands));
-
-    ABI15_0_0RCTSwapInstanceMethods([UIApplication class],
-                           @selector(sendAction:to:from:forEvent:),
-                           @selector(ABI15_0_0RCT_sendAction:to:from:forEvent:));
-  } else {
-
-    // swizzle UIResponder
-    ABI15_0_0RCTSwapInstanceMethods([UIResponder class],
-                           @selector(keyCommands),
-                           @selector(ABI15_0_0RCT_keyCommands));
-  }
-}
-
 + (instancetype)sharedInstance
 {
   static ABI15_0_0RCTKeyCommands *sharedInstance;
