@@ -175,10 +175,6 @@ void ABI10_0_0EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
                            @selector(keyCommands),
                            ABI10_0_0RCTCommandsSelector);
   }
-  
-  // shake gesture
-  SEL ABI10_0_0RCTMotionSelector = NSSelectorFromString(@"ABI10_0_0RCT_motionEnded:withEvent:");
-  ABI10_0_0RCTSwapInstanceMethods([UIWindow class], @selector(motionEnded:withEvent:), ABI10_0_0RCTMotionSelector);
 #endif
 }
 
@@ -203,10 +199,6 @@ void ABI10_0_0EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
                            @selector(keyCommands),
                            ABI10_0_0RCTCommandsSelector);
   }
-  
-  // shake gesture
-  SEL ABI10_0_0RCTMotionSelector = NSSelectorFromString(@"ABI10_0_0RCT_motionEnded:withEvent:");
-  ABI10_0_0EXSetInstanceMethod([UIWindow class], @selector(motionEnded:withEvent:), ABI10_0_0RCTMotionSelector);
 #endif
 }
 

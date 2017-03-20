@@ -132,10 +132,6 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
   RCTSwapInstanceMethods([UIResponder class],
                          @selector(keyCommands),
                          RCTCommandsSelector);
-  
-  // shake gesture
-  SEL RCTMotionSelector = NSSelectorFromString(@"RCT_motionEnded:withEvent:");
-  RCTSwapInstanceMethods([UIWindow class], @selector(motionEnded:withEvent:), RCTMotionSelector);
 #endif
 }
 
@@ -147,10 +143,6 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
   EXSetInstanceMethod([UIResponder class],
                          @selector(keyCommands),
                          RCTCommandsSelector);
-  
-  // shake gesture
-  SEL RCTMotionSelector = NSSelectorFromString(@"RCT_motionEnded:withEvent:");
-  EXSetInstanceMethod([UIWindow class], @selector(motionEnded:withEvent:), RCTMotionSelector);
 #endif
 }
 
@@ -182,6 +174,7 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
                                     [[EXConstants alloc] initWithProperties:params[@"constants"]],
                                     [[EXDevSettings alloc] initWithExperienceId:experienceScope.experienceId isDevelopment:isDeveloper],
                                     [[EXDisabledDevLoadingView alloc] init],
+                                    [[EXDisabledDevMenu alloc] init],
                                     [[EXLinkingManager alloc] initWithInitialUrl:initialUri],
                                     ]];
   if (params[@"frame"]) {
@@ -202,15 +195,10 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
     [extraModules addObject:kernel];
   }
   
-  if (isDeveloper) {
-    [extraModules addObjectsFromArray:@[
-                                        [[RCTDevMenu alloc] init],
-                                        ]];
-  } else {
+  if (!isDeveloper) {
     // user-facing (not debugging).
-    // additionally disable RCTRedBox and RCTDevMenu
+    // additionally disable RCTRedBox
     [extraModules addObjectsFromArray:@[
-                                        [[EXDisabledDevMenu alloc] init],
                                         [[EXDisabledRedBox alloc] init],
                                         ]];
   }

@@ -132,10 +132,6 @@ void ABI15_0_0EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
   ABI15_0_0RCTSwapInstanceMethods([UIResponder class],
                          @selector(keyCommands),
                          ABI15_0_0RCTCommandsSelector);
-  
-  // shake gesture
-  SEL ABI15_0_0RCTMotionSelector = NSSelectorFromString(@"ABI15_0_0RCT_motionEnded:withEvent:");
-  ABI15_0_0RCTSwapInstanceMethods([UIWindow class], @selector(motionEnded:withEvent:), ABI15_0_0RCTMotionSelector);
 #endif
 }
 
@@ -147,10 +143,6 @@ void ABI15_0_0EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
   ABI15_0_0EXSetInstanceMethod([UIResponder class],
                          @selector(keyCommands),
                          ABI15_0_0RCTCommandsSelector);
-  
-  // shake gesture
-  SEL ABI15_0_0RCTMotionSelector = NSSelectorFromString(@"ABI15_0_0RCT_motionEnded:withEvent:");
-  ABI15_0_0EXSetInstanceMethod([UIWindow class], @selector(motionEnded:withEvent:), ABI15_0_0RCTMotionSelector);
 #endif
 }
 
@@ -182,6 +174,7 @@ void ABI15_0_0EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
                                     [[ABI15_0_0EXConstants alloc] initWithProperties:params[@"constants"]],
                                     [[ABI15_0_0EXDevSettings alloc] initWithExperienceId:experienceScope.experienceId isDevelopment:isDeveloper],
                                     [[ABI15_0_0EXDisabledDevLoadingView alloc] init],
+                                    [[ABI15_0_0EXDisabledDevMenu alloc] init],
                                     [[ABI15_0_0EXLinkingManager alloc] initWithInitialUrl:initialUri],
                                     ]];
   if (params[@"frame"]) {
@@ -202,15 +195,10 @@ void ABI15_0_0EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
     [extraModules addObject:kernel];
   }
   
-  if (isDeveloper) {
-    [extraModules addObjectsFromArray:@[
-                                        [[ABI15_0_0RCTDevMenu alloc] init],
-                                        ]];
-  } else {
+  if (!isDeveloper) {
     // user-facing (not debugging).
-    // additionally disable ABI15_0_0RCTRedBox and ABI15_0_0RCTDevMenu
+    // additionally disable ABI15_0_0RCTRedBox
     [extraModules addObjectsFromArray:@[
-                                        [[ABI15_0_0EXDisabledDevMenu alloc] init],
                                         [[ABI15_0_0EXDisabledRedBox alloc] init],
                                         ]];
   }

@@ -142,14 +142,6 @@ ABI9_0_0RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 + (NSString *)moduleName { return @"RCTDevMenu"; }
 
-+ (void)initialize
-{
-  // We're swizzling here because it's poor form to override methods in a category,
-  // however UIWindow doesn't actually implement motionEnded:withEvent:, so there's
-  // no need to call the original implementation.
-  ABI9_0_0RCTSwapInstanceMethods([UIWindow class], @selector(motionEnded:withEvent:), @selector(ABI9_0_0RCT_motionEnded:withEvent:));
-}
-
 - (instancetype)init
 {
   if ((self = [super init])) {
@@ -200,38 +192,6 @@ ABI9_0_0RCT_NOT_IMPLEMENTED(- (instancetype)init)
       [weakSelf updateSettings:self->_settings];
       [weakSelf connectPackager];
     });
-
-#if TARGET_IPHONE_SIMULATOR
-
-    ABI9_0_0RCTKeyCommands *commands = [ABI9_0_0RCTKeyCommands sharedInstance];
-
-    // Toggle debug menu
-    [commands registerKeyCommandWithInput:@"d"
-                            modifierFlags:UIKeyModifierCommand
-                                   action:^(__unused UIKeyCommand *command) {
-                                     [weakSelf toggle];
-                                   }];
-
-    // Toggle element inspector
-    [commands registerKeyCommandWithInput:@"i"
-                            modifierFlags:UIKeyModifierCommand
-                                   action:^(__unused UIKeyCommand *command) {
-                                     [weakSelf.bridge.eventDispatcher
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-                                      sendDeviceEventWithName:@"toggleElementInspector"
-                                      body:nil];
-#pragma clang diagnostic pop
-                                   }];
-
-    // Reload in normal mode
-    [commands registerKeyCommandWithInput:@"n"
-                            modifierFlags:UIKeyModifierCommand
-                                   action:^(__unused UIKeyCommand *command) {
-                                     weakSelf.executorClass = Nil;
-                                   }];
-#endif
-
   }
   return self;
 }
