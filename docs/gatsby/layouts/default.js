@@ -33,7 +33,7 @@ import v10 from 'data/v10.yaml';
 import v9 from 'data/v9.yaml';
 
 const versions = [
-  `unversioned`,
+  // `unversioned`,
   `v15.0.0`,
   `v14.0.0`,
   `v13.0.0`,
@@ -78,9 +78,9 @@ class Wrapper extends React.Component {
   getRoutes = version => {
     let routes;
     switch (version) {
-      case 'unversioned':
-        routes = unversioned;
-        break;
+      // case 'unversioned':
+      //   routes = unversioned;
+      //   break;
       case 'v15.0.0':
         routes = v15;
         break;

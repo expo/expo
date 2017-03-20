@@ -205,9 +205,9 @@ function orderVersions(versions) {
     ['asc']
   );
 
-  if (window.GATSBY_ENV === 'development') {
-    versions.unshift('unversioned');
-  }
+  // if (window.GATSBY_ENV === 'development') {
+  //   versions.unshift('unversioned');
+  // }
 
   return versions;
 }
