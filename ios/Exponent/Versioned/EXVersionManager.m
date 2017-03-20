@@ -126,24 +126,10 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
 
 - (void)swapSystemMethods
 {
-#if RCT_DEV
-  // key commands
-  SEL RCTCommandsSelector = NSSelectorFromString(@"RCT_keyCommands");
-  RCTSwapInstanceMethods([UIResponder class],
-                         @selector(keyCommands),
-                         RCTCommandsSelector);
-#endif
 }
 
 - (void)setSystemMethods
 {
-#if RCT_DEV
-  // key commands
-  SEL RCTCommandsSelector = NSSelectorFromString(@"RCT_keyCommands");
-  EXSetInstanceMethod([UIResponder class],
-                         @selector(keyCommands),
-                         RCTCommandsSelector);
-#endif
 }
 
 /**
