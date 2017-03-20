@@ -6,6 +6,7 @@
 #import "EXFrame.h"
 #import "EXKernel.h"
 #import "EXKernelBridgeRecord.h"
+#import "EXKernelDevMotionHandler.h"
 #import "EXKernelModule.h"
 #import "EXLinkingManager.h"
 #import "EXManifestResource.h"
@@ -67,6 +68,7 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
 {
   if (self = [super init]) {
     _bridgeRegistry = [[EXKernelBridgeRegistry alloc] init];
+    [EXKernelDevMotionHandler sharedInstance];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(_routeUrl:)
                                                  name:kEXKernelOpenUrlNotification
