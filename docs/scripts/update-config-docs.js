@@ -1,27 +1,34 @@
 const path = require('path');
 const fs = require('fs');
 
-let sdkVersion = process.env.DOCS_VERSION;
+let sdkVersion = process.env.DOCS_VERSION || require('../package.json').version;
 if (sdkVersion === 'unversioned') {
-  sdkVersion = 'UNVERSIONED'; // www API calls expect UNVERSIONED in all caps
+  // www API calls expect UNVERSIONED in all caps
+  sdkVersion = 'UNVERSIONED';
 } else {
-  sdkVersion = sdkVersion.substring(1); // Remove the leading 'v' for numeric versions
+  // Remove the leading 'v' for numeric versions
+  sdkVersion = sdkVersion.includes('v') ? sdkVersion.substring(1) : sdkVersion;
 }
 
 let ExpSchema;
 try {
-  ExpSchema = require(`../../../server/www/xdl-schemas/${sdkVersion}-schema.json`).schema;
+  ExpSchema = require(`../../server/www/xdl-schemas/${sdkVersion}-schema.json`).schema;
 } catch (e) {
   console.error(e.toString());
   return;
 }
 
+let rawPath;
+let filePath;
 if (!process.argv[2]) {
-  console.error('Please pass in the path to the target file');
+  rawPath = `versions/v${sdkVersion}/guides/configuration.md`;
+  filePath = path.resolve(rawPath);
+  console.log('Using default target file path: ' + filePath.toString());
+} else {
+  rawPath = process.argv[2];
+  filePath = path.resolve(rawPath);
 }
 
-const rawPath = process.argv[2];
-const filePath = path.resolve(rawPath);
 const stream = fs.createWriteStream(filePath);
 
 const preamble = `
