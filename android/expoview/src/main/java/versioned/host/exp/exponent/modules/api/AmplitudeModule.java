@@ -47,7 +47,7 @@ public class AmplitudeModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void setUserProperties(final ReadableMap properties) {
     if (mClient != null) {
-      mClient.setUserProperties(ReadableObjectUtils.readableMapToJson(properties));
+      mClient.setUserProperties(ReadableObjectUtils.readableToJson(properties));
     }
   }
 
@@ -68,14 +68,14 @@ public class AmplitudeModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void logEventWithProperties(final String eventName, final ReadableMap properties) {
     if (mClient != null) {
-      mClient.logEvent(eventName, ReadableObjectUtils.readableMapToJson(properties));
+      mClient.logEvent(eventName, ReadableObjectUtils.readableToJson(properties));
     }
   }
 
   @ReactMethod
   public void setGroup(final String groupType, final ReadableArray groupNames) {
     if (mClient != null) {
-      mClient.setGroup(groupType, ReadableObjectUtils.readableArrayToJson(groupNames));
+      mClient.setGroup(groupType, ReadableObjectUtils.readableToJson(groupNames));
     }
   }
 }

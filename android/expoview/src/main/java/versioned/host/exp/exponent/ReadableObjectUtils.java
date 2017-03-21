@@ -2,13 +2,18 @@
 
 package versioned.host.exp.exponent;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Iterator;
 
 import host.exp.exponent.analytics.EXL;
 
@@ -16,7 +21,7 @@ public class ReadableObjectUtils {
 
   private static final String TAG = ReadableObjectUtils.class.getSimpleName();
 
-  public static JSONObject readableMapToJson(ReadableMap map) {
+  public static JSONObject readableToJson(ReadableMap map) {
     // TODO: maybe leverage Arguments.toBundle somehow?
     JSONObject json = new JSONObject();
 
@@ -38,10 +43,10 @@ public class ReadableObjectUtils {
             json.put(key, map.getString(key));
             break;
           case Map:
-            json.put(key, readableMapToJson(map.getMap(key)));
+            json.put(key, readableToJson(map.getMap(key)));
             break;
           case Array:
-            json.put(key, readableArrayToJson(map.getArray(key)));
+            json.put(key, readableToJson(map.getArray(key)));
             break;
         }
       }
@@ -53,7 +58,7 @@ public class ReadableObjectUtils {
     return json;
   }
 
-  public static JSONArray readableArrayToJson(ReadableArray array) {
+  public static JSONArray readableToJson(ReadableArray array) {
     // TODO: maybe leverage Arguments.toBundle somehow?
     JSONArray json = new JSONArray();
 
@@ -73,10 +78,10 @@ public class ReadableObjectUtils {
             json.put(array.getString(i));
             break;
           case Map:
-            json.put(readableMapToJson(array.getMap(i)));
+            json.put(readableToJson(array.getMap(i)));
             break;
           case Array:
-            json.put(readableArrayToJson(array.getArray(i)));
+            json.put(readableToJson(array.getArray(i)));
             break;
         }
       }
@@ -86,5 +91,49 @@ public class ReadableObjectUtils {
     }
 
     return json;
+  }
+
+  static WritableMap jsonToReadable(JSONObject jsonObject) throws JSONException {
+    WritableMap writableMap = Arguments.createMap();
+    Iterator iterator = jsonObject.keys();
+    while (iterator.hasNext()) {
+      String key = (String) iterator.next();
+      Object value = jsonObject.get(key);
+      if (value instanceof Float || value instanceof Double) {
+        writableMap.putDouble(key, jsonObject.getDouble(key));
+      } else if (value instanceof Number) {
+        writableMap.putDouble(key, jsonObject.getLong(key));
+      } else if (value instanceof String) {
+        writableMap.putString(key, jsonObject.getString(key));
+      } else if (value instanceof JSONObject) {
+        writableMap.putMap(key,jsonToReadable(jsonObject.getJSONObject(key)));
+      } else if (value instanceof JSONArray){
+        writableMap.putArray(key, jsonToReadable(jsonObject.getJSONArray(key)));
+      } else if (value == JSONObject.NULL){
+        writableMap.putNull(key);
+      }
+    }
+    return writableMap;
+  }
+
+  static WritableArray jsonToReadable(JSONArray jsonArray) throws JSONException {
+    WritableArray writableArray = Arguments.createArray();
+    for (int i = 0; i < jsonArray.length(); i++) {
+      Object value = jsonArray.get(i);
+      if (value instanceof Float || value instanceof Double) {
+        writableArray.pushDouble(jsonArray.getDouble(i));
+      } else if (value instanceof Number) {
+        writableArray.pushDouble(jsonArray.getLong(i));
+      } else if (value instanceof String) {
+        writableArray.pushString(jsonArray.getString(i));
+      } else if (value instanceof JSONObject) {
+        writableArray.pushMap(jsonToReadable(jsonArray.getJSONObject(i)));
+      } else if (value instanceof JSONArray){
+        writableArray.pushArray(jsonToReadable(jsonArray.getJSONArray(i)));
+      } else if (value == JSONObject.NULL){
+        writableArray.pushNull();
+      }
+    }
+    return writableArray;
   }
 }

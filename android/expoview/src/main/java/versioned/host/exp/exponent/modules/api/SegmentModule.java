@@ -38,7 +38,7 @@ public class SegmentModule extends ReactContextBaseJavaModule {
 
   private static Traits readableMapToTraits(ReadableMap properties) {
     Traits traits = new Traits();
-    JSONObject json = ReadableObjectUtils.readableMapToJson(properties);
+    JSONObject json = ReadableObjectUtils.readableToJson(properties);
     Iterator<String> iterator = json.keys();
     while (iterator.hasNext()) {
       String key = iterator.next();
@@ -54,7 +54,7 @@ public class SegmentModule extends ReactContextBaseJavaModule {
 
   private static Properties readableMapToProperties(ReadableMap properties) {
     Properties result = new Properties();
-    JSONObject json = ReadableObjectUtils.readableMapToJson(properties);
+    JSONObject json = ReadableObjectUtils.readableToJson(properties);
     Iterator<String> iterator = json.keys();
     while (iterator.hasNext()) {
       String key = iterator.next();
