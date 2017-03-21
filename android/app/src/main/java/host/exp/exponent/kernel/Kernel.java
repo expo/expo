@@ -206,7 +206,8 @@ public class Kernel implements KernelInterface {
         }
       }, KernelConstants.DELAY_TO_PRELOAD_KERNEL_JS);
     } else {
-      Exponent.getInstance().loadJSBundle(bundleUrl, KernelConstants.KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, kernelBundleListener());
+      boolean shouldNotUseKernelCache = mExponentSharedPreferences.getBoolean(ExponentSharedPreferences.SHOULD_NOT_USE_KERNEL_CACHE);
+      Exponent.getInstance().loadJSBundle(bundleUrl, KernelConstants.KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, kernelBundleListener(), shouldNotUseKernelCache);
     }
   }
 
@@ -272,6 +273,9 @@ public class Kernel implements KernelInterface {
             mIsRunning = true;
             EventBus.getDefault().postSticky(new KernelStartedRunningEvent());
             EXL.d(TAG, "Kernel started running.");
+
+            // Reset this flag if we crashed
+            mExponentSharedPreferences.setBoolean(ExponentSharedPreferences.SHOULD_NOT_USE_KERNEL_CACHE, false);
           }
         });
       }

@@ -6,7 +6,11 @@ import android.os.Debug;
 import android.support.multidex.MultiDexApplication;
 
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.core.CrashlyticsCore;
+import com.crashlytics.android.core.CrashlyticsListener;
 import com.facebook.react.bridge.ReactApplicationContext;
+
+import javax.inject.Inject;
 
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
@@ -17,6 +21,7 @@ import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.kernel.KernelInterface;
 import host.exp.exponent.kernel.KernelProvider;
 import host.exp.exponent.modules.ExponentKernelModule;
+import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.expoview.Exponent;
 import host.exp.expoview.ExpoViewBuildConfig;
 import io.fabric.sdk.android.Fabric;
@@ -37,6 +42,9 @@ public class ExponentApplication extends MultiDexApplication {
     return sApplication;
   }
 
+  @Inject
+  ExponentSharedPreferences mExponentSharedPreferences;
+
   @Override
   public void onCreate() {
     super.onCreate();
@@ -48,17 +56,6 @@ public class ExponentApplication extends MultiDexApplication {
     }
 
     Constants.setIsDetached(false);
-
-    if (!BuildConfig.DEBUG) {
-      Fabric.with(this, new Crashlytics());
-
-      try {
-        String versionName = Constants.getVersionName(this);
-        Crashlytics.setString("exp_client_version", versionName);
-      } catch (Throwable e) {
-        EXL.e(TAG, e.toString());
-      }
-    }
 
     sApplication = this;
 
@@ -79,6 +76,31 @@ public class ExponentApplication extends MultiDexApplication {
     Exponent.initialize(this, this);
     NativeModuleDepsProvider.getInstance().add(Kernel.class, KernelProvider.getInstance());
     Exponent.getInstance().setGCMSenderId(getString(R.string.gcm_defaultSenderId));
+    
+    NativeModuleDepsProvider.getInstance().inject(ExponentApplication.class, this);
+
+    if (!BuildConfig.DEBUG) {
+      final CrashlyticsListener listener = new CrashlyticsListener() {
+        @Override
+        public void crashlyticsDidDetectCrashDuringPreviousExecution(){
+          mExponentSharedPreferences.setBoolean(ExponentSharedPreferences.SHOULD_NOT_USE_KERNEL_CACHE, true);
+        }
+      };
+
+      final CrashlyticsCore core = new CrashlyticsCore
+          .Builder()
+          .listener(listener)
+          .build();
+
+      Fabric.with(this, new Crashlytics.Builder().core(core).build());
+
+      try {
+        String versionName = Constants.getVersionName(this);
+        Crashlytics.setString("exp_client_version", versionName);
+      } catch (Throwable e) {
+        EXL.e(TAG, e.toString());
+      }
+    }
 
     try {
       // Remove the badge count on weird launchers

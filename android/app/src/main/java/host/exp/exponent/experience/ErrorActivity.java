@@ -58,9 +58,6 @@ public class ErrorActivity extends MultipleVersionReactNativeActivity {
   @Inject
   Kernel mKernel;
 
-  @Inject
-  ExponentSharedPreferences mExponentSharedPreferences;
-
   public static ErrorActivity getVisibleActivity() {
     return sVisibleActivity;
   }
