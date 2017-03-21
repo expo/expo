@@ -133,6 +133,7 @@
 		B5678C5F1DB6D65B00380A6E /* EXFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = B5678C5C1DB6D65B00380A6E /* EXFrame.m */; };
 		B5678C601DB6D65B00380A6E /* EXFrameManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5678C5E1DB6D65B00380A6E /* EXFrameManager.m */; };
 		B56D0A3C1E8058E600504DD2 /* EXKernelDevMotionHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B56D0A3B1E8058E600504DD2 /* EXKernelDevMotionHandler.m */; };
+		B56D0A401E80A15300504DD2 /* EXKernelDevKeyCommands.m in Sources */ = {isa = PBXBuildFile; fileRef = B56D0A3F1E80A15300504DD2 /* EXKernelDevKeyCommands.m */; };
 		B56FACA21D4AB279009FC106 /* EXAppState.m in Sources */ = {isa = PBXBuildFile; fileRef = B56FACA11D4AB279009FC106 /* EXAppState.m */; };
 		B56FACAD1D4C0266009FC106 /* EXFingerprint.m in Sources */ = {isa = PBXBuildFile; fileRef = B56FACAC1D4C0266009FC106 /* EXFingerprint.m */; };
 		B575EE9A1D53E0AB00DCABBC /* EXCachedResource.m in Sources */ = {isa = PBXBuildFile; fileRef = B575EE991D53E0AB00DCABBC /* EXCachedResource.m */; };
@@ -467,6 +468,8 @@
 		B5678C5E1DB6D65B00380A6E /* EXFrameManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFrameManager.m; sourceTree = "<group>"; };
 		B56D0A3A1E8058E600504DD2 /* EXKernelDevMotionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelDevMotionHandler.h; sourceTree = "<group>"; };
 		B56D0A3B1E8058E600504DD2 /* EXKernelDevMotionHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelDevMotionHandler.m; sourceTree = "<group>"; };
+		B56D0A3E1E80A15300504DD2 /* EXKernelDevKeyCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelDevKeyCommands.h; sourceTree = "<group>"; };
+		B56D0A3F1E80A15300504DD2 /* EXKernelDevKeyCommands.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelDevKeyCommands.m; sourceTree = "<group>"; };
 		B56FACA01D4AB279009FC106 /* EXAppState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAppState.h; sourceTree = "<group>"; };
 		B56FACA11D4AB279009FC106 /* EXAppState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppState.m; sourceTree = "<group>"; };
 		B56FACAB1D4C0266009FC106 /* EXFingerprint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFingerprint.h; sourceTree = "<group>"; };
@@ -1136,6 +1139,8 @@
 				B5ACA2D81E650AF700867095 /* EXKernelDevMenuViewController.m */,
 				B56D0A3A1E8058E600504DD2 /* EXKernelDevMotionHandler.h */,
 				B56D0A3B1E8058E600504DD2 /* EXKernelDevMotionHandler.m */,
+				B56D0A3E1E80A15300504DD2 /* EXKernelDevKeyCommands.h */,
+				B56D0A3F1E80A15300504DD2 /* EXKernelDevKeyCommands.m */,
 			);
 			path = DevSupport;
 			sourceTree = "<group>";
@@ -1763,6 +1768,7 @@
 				B5844C3B1D482D710015C683 /* EXRemoteNotificationRequester.m in Sources */,
 				B55FDEFA1C7FE1310020AA8F /* EXRootViewController.m in Sources */,
 				B5553F961CEFBD1200555008 /* EXShellManager.m in Sources */,
+				B56D0A401E80A15300504DD2 /* EXKernelDevKeyCommands.m in Sources */,
 				843175B41DDCF0440092B68B /* EXAccelerometer.m in Sources */,
 				A1DCE8481DC3FC63009665FD /* EXGLViewManager.m in Sources */,
 				1936012A1D67ABCF007C0EE0 /* RNSVGSvgViewManager.m in Sources */,
