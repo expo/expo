@@ -841,7 +841,7 @@ public class Kernel implements KernelInterface {
    */
 
   public void installShortcut(final String manifestUrl, final ReadableMap manifest, final String bundleUrl) {
-    JSONObject manifestJson = ReadableObjectUtils.readableMapToJson(manifest);
+    JSONObject manifestJson = ReadableObjectUtils.readableToJson(manifest);
     mExponentSharedPreferences.updateManifest(manifestUrl, manifestJson, bundleUrl);
     installShortcut(manifestUrl);
   }
