@@ -93,7 +93,7 @@ public class ReadableObjectUtils {
     return json;
   }
 
-  static WritableMap jsonToReadable(JSONObject jsonObject) throws JSONException {
+  public static WritableMap jsonToReadable(JSONObject jsonObject) throws JSONException {
     WritableMap writableMap = Arguments.createMap();
     Iterator iterator = jsonObject.keys();
     while (iterator.hasNext()) {
@@ -116,7 +116,7 @@ public class ReadableObjectUtils {
     return writableMap;
   }
 
-  static WritableArray jsonToReadable(JSONArray jsonArray) throws JSONException {
+  public static WritableArray jsonToReadable(JSONArray jsonArray) throws JSONException {
     WritableArray writableArray = Arguments.createArray();
     for (int i = 0; i < jsonArray.length(); i++) {
       Object value = jsonArray.get(i);
