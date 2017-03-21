@@ -7,15 +7,15 @@ NS_ASSUME_NONNULL_BEGIN
 FOUNDATION_EXPORT NSString *kEXKernelBridgeDidForegroundNotification;
 FOUNDATION_EXPORT NSString *kEXKernelBridgeDidBackgroundNotification;
 
-@class EXFrame;
+@class EXFrameReactAppManager;
 
 @interface EXKernelBridgeRecord : NSObject
 
-+ (instancetype)recordWithExperienceId: (NSString *)experienceId frame: (EXFrame *)frame;
-- (instancetype)initWithExperienceId: (NSString *)experienceId frame: (EXFrame *)frame;
++ (instancetype)recordWithExperienceId: (NSString *)experienceId appManager: (EXFrameReactAppManager *)appMgr;
+- (instancetype)initWithExperienceId: (NSString *)experienceId appManager: (EXFrameReactAppManager *)appMgr;
 
 @property (nonatomic, readonly, strong) NSString *experienceId;
-@property (nonatomic, readonly, weak) EXFrame *frame;
+@property (nonatomic, readonly, weak) EXFrameReactAppManager *appManager;
 
 /**
  *  See EXKernelBridgeRegistry::setError:forBridge:

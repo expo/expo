@@ -3,14 +3,15 @@
 #import "EXKernelBridgeRecord.h"
 
 @class RCTBridge;
-@class EXFrame;
+@class EXFrameReactAppManager;
+@class EXKernelReactAppManager;
 
 @interface EXKernelBridgeRegistry : NSObject
 
-- (void)registerKernelBridge: (RCTBridge *)bridge;
-- (void)unregisterKernelBridge;
+- (void)registerKernelAppManager: (EXKernelReactAppManager *)appManager;
+- (void)unregisterKernelAppManager;
 
-- (void)registerBridge: (id)bridge forExperienceId: (NSString *)experienceId frame: (EXFrame *)frame;
+- (void)registerBridge: (id)bridge withExperienceId: (NSString *)experienceId appManager: (EXFrameReactAppManager *)appManager;
 - (void)unregisterBridge: (id)bridge;
 
 /**
@@ -29,7 +30,7 @@
 - (BOOL)errorBelongsToBridge: (NSError *)error;
 
 - (EXKernelBridgeRecord *)recordForBridge: (id)bridge;
-- (RCTBridge *)kernelBridge;
+- (EXKernelReactAppManager *)kernelAppManager;
 - (NSEnumerator<id> *)bridgeEnumerator; // does not include kernel
 
 /**

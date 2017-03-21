@@ -112,8 +112,8 @@
 - (void)registerBridge
 {
   [[EXKernel sharedInstance].bridgeRegistry registerBridge:self.reactBridge
-                                           forExperienceId:_frame.manifest[@"id"]
-                                                     frame:_frame];
+                                           withExperienceId:_frame.manifest[@"id"]
+                                                appManager:self];
 }
 
 - (void)unregisterBridge

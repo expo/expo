@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXFrame.h"
+#import "EXFrameReactAppManager.h"
 #import "EXKernelBridgeRecord.h"
 
 NSString *kEXKernelBridgeDidForegroundNotification = @"EXKernelBridgeDidForegroundNotification";
@@ -8,16 +9,16 @@ NSString *kEXKernelBridgeDidBackgroundNotification = @"EXKernelBridgeDidBackgrou
 
 @implementation EXKernelBridgeRecord
 
-+ (instancetype)recordWithExperienceId:(NSString *)experienceId frame:(nonnull EXFrame *)frame
++ (instancetype)recordWithExperienceId:(NSString *)experienceId appManager:(nonnull EXFrameReactAppManager *)appMgr
 {
-  return [[EXKernelBridgeRecord alloc] initWithExperienceId:experienceId frame:frame];
+  return [[EXKernelBridgeRecord alloc] initWithExperienceId:experienceId appManager:appMgr];
 }
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId frame:(nonnull EXFrame *)frame
+- (instancetype)initWithExperienceId:(NSString *)experienceId appManager:(nonnull EXFrameReactAppManager *)appMgr
 {
   if (self = [super init]) {
     _experienceId = experienceId;
-    _frame = frame;
+    _appManager = appMgr;
   }
   return self;
 }
@@ -31,13 +32,13 @@ NSString *kEXKernelBridgeDidBackgroundNotification = @"EXKernelBridgeDidBackgrou
     return NO;
   }
   EXKernelBridgeRecord *other = (EXKernelBridgeRecord *)object;
-  return ([other.experienceId isEqualToString:_experienceId] && [other.frame.initialUri isEqual:_frame.initialUri]);
+  return ([other.experienceId isEqualToString:_experienceId] && [other.appManager.frame.initialUri isEqual:_appManager.frame.initialUri]);
 }
 
 - (NSUInteger)hash
 {
   NSUInteger experienceIdHash = (_experienceId) ? _experienceId.hash : NSNotFound;
-  NSUInteger initialUriHash = (_frame && _frame.initialUri) ? _frame.initialUri.hash : NSNotFound;
+  NSUInteger initialUriHash = (_appManager && _appManager.frame && _appManager.frame.initialUri) ? _appManager.frame.initialUri.hash : NSNotFound;
   return experienceIdHash ^ initialUriHash;
 }
 

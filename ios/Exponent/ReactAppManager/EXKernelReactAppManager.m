@@ -165,12 +165,12 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
 
 - (void)registerBridge
 {
-  [[EXKernel sharedInstance].bridgeRegistry registerKernelBridge:self.reactBridge];
+  [[EXKernel sharedInstance].bridgeRegistry registerKernelAppManager:self];
 }
 
 - (void)unregisterBridge
 {
-  [[EXKernel sharedInstance].bridgeRegistry unregisterKernelBridge];
+  [[EXKernel sharedInstance].bridgeRegistry unregisterKernelAppManager];
   _exceptionHandler = nil;
 }
 

@@ -4,6 +4,7 @@
 #import "EXAppState.h"
 #import "EXKernelDevMenuViewController.h"
 #import "EXFrame.h"
+#import "EXFrameReactAppManager.h"
 #import "EXKernel.h"
 #import "EXKernelBridgeRecord.h"
 #import "EXKernelDevMotionHandler.h"
@@ -101,15 +102,15 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
 }
 
 - (void)sendNotification:(NSDictionary *)notifBody
-      toExperienceWithId:(NSString *)experienceId
+      toExperienceWithId:(NSString *)destinationExperienceId
           fromBackground:(BOOL)isFromBackground
                 isRemote:(BOOL)isRemote
 {
-  id destinationBridge = _bridgeRegistry.kernelBridge;
+  EXReactAppManager *destinationAppManager = _bridgeRegistry.kernelAppManager;
   for (id bridge in [_bridgeRegistry bridgeEnumerator]) {
     EXKernelBridgeRecord *bridgeRecord = [_bridgeRegistry recordForBridge:bridge];
-    if (bridgeRecord.experienceId && [bridgeRecord.experienceId isEqualToString:experienceId]) {
-      destinationBridge = bridge;
+    if (bridgeRecord.experienceId && [bridgeRecord.experienceId isEqualToString:destinationExperienceId]) {
+      destinationAppManager = bridgeRecord.appManager;
       break;
     }
   }
@@ -123,19 +124,19 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
                                    @"remote": @(isRemote),
                                    @"data": notifBody,
                                    };
-  if (destinationBridge) {
-    if (destinationBridge == _bridgeRegistry.kernelBridge) {
+  if (destinationAppManager) {
+    if (destinationAppManager == _bridgeRegistry.kernelAppManager) {
       // send both the body and the experience id, so we can open a new experience from the kernel
       [self _dispatchJSEvent:@"Exponent.notification"
                         body:@{
                                @"body": bodyWithOrigin,
-                               @"experienceId": experienceId,
+                               @"experienceId": destinationExperienceId,
                                }
-                    onBridge:_bridgeRegistry.kernelBridge];
+                onAppManager:_bridgeRegistry.kernelAppManager];
     } else {
       // send the body to the already-open experience
-      [self _dispatchJSEvent:@"Exponent.notification" body:bodyWithOrigin onBridge:destinationBridge];
-      [self _moveBridgeToForeground:destinationBridge];
+      [self _dispatchJSEvent:@"Exponent.notification" body:bodyWithOrigin onAppManager:destinationAppManager];
+      [self _moveAppManagerToForeground:destinationAppManager];
     }
   }
 }
@@ -153,10 +154,10 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
 - (UIInterfaceOrientationMask)supportedInterfaceOrientationsForForegroundTask
 {
   if (_bridgeRegistry.lastKnownForegroundBridge) {
-    if (_bridgeRegistry.lastKnownForegroundBridge != _bridgeRegistry.kernelBridge) {
+    if (_bridgeRegistry.lastKnownForegroundBridge != _bridgeRegistry.kernelAppManager.reactBridge) {
       EXKernelBridgeRecord *foregroundBridgeRecord = [_bridgeRegistry recordForBridge:_bridgeRegistry.lastKnownForegroundBridge];
-      if (foregroundBridgeRecord.frame) {
-        return [foregroundBridgeRecord.frame supportedInterfaceOrientations];
+      if (foregroundBridgeRecord.appManager.frame) {
+        return [foregroundBridgeRecord.appManager.frame supportedInterfaceOrientations];
       }
     }
   }
@@ -172,7 +173,7 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
   if ([notifBridge respondsToSelector:@selector(parentBridge)]) {
     notifBridge = [notifBridge parentBridge];
   }
-  if (notifBridge == _bridgeRegistry.kernelBridge) {
+  if (notifBridge == _bridgeRegistry.kernelAppManager.reactBridge) {
     DDLogError(@"Can't use ExponentUtil.reload() on the kernel bridge. Use RN dev tools to reload the bundle.");
     return;
   }
@@ -198,21 +199,21 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
   
   // kernel bridge is our default handler for this url
   // because it can open a new bridge if we don't already have one.
-  id destinationBridge = _bridgeRegistry.kernelBridge;
+  EXReactAppManager *destinationAppManager = _bridgeRegistry.kernelAppManager;
 
   for (id bridge in [_bridgeRegistry bridgeEnumerator]) {
     EXKernelBridgeRecord *bridgeRecord = [_bridgeRegistry recordForBridge:bridge];
-    if ([urlToRoute hasPrefix:[[self class] linkingUriForExperienceUri:bridgeRecord.frame.initialUri]]) {
+    if ([urlToRoute hasPrefix:[[self class] linkingUriForExperienceUri:bridgeRecord.appManager.frame.initialUri]]) {
       // this is a link into a bridge we already have running.
       // use this bridge as the link's destination instead of the kernel.
-      destinationBridge = bridge;
+      destinationAppManager = bridgeRecord.appManager;
       break;
     }
   }
   
-  if (destinationBridge) {
+  if (destinationAppManager) {
     // fire a Linking url event on this (possibly versioned) bridge
-    id linkingModule = [self _nativeModuleForBridge:destinationBridge named:@"LinkingManager"];
+    id linkingModule = [self _nativeModuleForAppManager:destinationAppManager named:@"LinkingManager"];
     if (!linkingModule) {
       DDLogError(@"Could not find the Linking module to open URL (%@)", urlToRoute);
     } else if ([linkingModule respondsToSelector:@selector(dispatchOpenUrlEvent:)]) {
@@ -220,7 +221,7 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
     } else {
       DDLogError(@"Linking module doesn't support the API we use to open URL (%@)", urlToRoute);
     }
-    [self _moveBridgeToForeground:destinationBridge];
+    [self _moveAppManagerToForeground:destinationAppManager];
   }
 }
 
@@ -376,20 +377,22 @@ continueUserActivity:(NSUserActivity *)userActivity
 
 - (void)dispatchKernelJSEvent:(NSString *)eventName body:(NSDictionary *)eventBody onSuccess:(void (^_Nullable)(NSDictionary * _Nullable))success onFailure:(void (^_Nullable)(NSString * _Nullable))failure
 {
-  EXKernelModule *kernelModule = [self _nativeModuleForBridge:_bridgeRegistry.kernelBridge named:@"ExponentKernel"];
+  EXKernelModule *kernelModule = [self _nativeModuleForAppManager:_bridgeRegistry.kernelAppManager named:@"ExponentKernel"];
   if (kernelModule) {
     [kernelModule dispatchJSEvent:eventName body:eventBody onSuccess:success onFailure:failure];
   }
 }
 
-- (void)_dispatchJSEvent:(NSString *)eventName body:(NSDictionary *)eventBody onBridge:(id)destinationBridge
+- (void)_dispatchJSEvent:(NSString *)eventName body:(NSDictionary *)eventBody onAppManager:(EXReactAppManager *)appManager
 {
-  [destinationBridge enqueueJSCall:@"RCTDeviceEventEmitter.emit"
-                    args:eventBody ? @[eventName, eventBody] : @[eventName]];
+  [appManager.reactBridge enqueueJSCall:@"RCTDeviceEventEmitter.emit"
+                                   args:eventBody ? @[eventName, eventBody] : @[eventName]];
 }
 
-- (id)_nativeModuleForBridge:(id)destinationBridge named:(NSString *)moduleName
+- (id)_nativeModuleForAppManager:(EXReactAppManager *)appManager named:(NSString *)moduleName
 {
+  id destinationBridge = appManager.reactBridge;
+
   if ([destinationBridge respondsToSelector:@selector(batchedBridge)]) {
     id batchedBridge = [destinationBridge batchedBridge];
     id moduleData = [batchedBridge moduleDataForName:moduleName];
@@ -408,11 +411,12 @@ continueUserActivity:(NSUserActivity *)userActivity
   return nil;
 }
 
-- (void)_moveBridgeToForeground: (id)destinationBridge
+- (void)_moveAppManagerToForeground: (EXReactAppManager *)appManager
 {
-  if (destinationBridge != _bridgeRegistry.kernelBridge) {
+  if (appManager != _bridgeRegistry.kernelAppManager) {
+    EXFrameReactAppManager *frameAppManager = (EXFrameReactAppManager *)appManager;
     // kernel JS needs to bring the relevant frame/bridge to visibility.
-    NSURL *frameUrlToForeground = [_bridgeRegistry recordForBridge:destinationBridge].frame.initialUri;
+    NSURL *frameUrlToForeground = frameAppManager.frame.initialUri;
     [self dispatchKernelJSEvent:kEXKernelShouldForegroundTaskEvent body:@{ @"taskUrl":frameUrlToForeground.absoluteString } onSuccess:nil onFailure:nil];
   }
 }
@@ -448,39 +452,39 @@ continueUserActivity:(NSUserActivity *)userActivity
   if (params) {
     NSString *urlToForeground = params[@"url"];
     NSString *urlToBackground = params[@"urlToBackground"];
-    id bridgeToForeground = nil;
-    id bridgeToBackground = nil;
+    EXReactAppManager *appManagerToForeground = nil;
+    EXReactAppManager *appManagerToBackground = nil;
     
     if (routetype == kEXKernelRouteHome) {
-      bridgeToForeground = _bridgeRegistry.kernelBridge;
+      appManagerToForeground = _bridgeRegistry.kernelAppManager;
     }
     if (routetype == kEXKernelRouteBrowser && !urlToBackground) {
-      bridgeToBackground = _bridgeRegistry.kernelBridge;
+      appManagerToBackground = _bridgeRegistry.kernelAppManager;
     }
 
     for (id bridge in [_bridgeRegistry bridgeEnumerator]) {
       EXKernelBridgeRecord *bridgeRecord = [_bridgeRegistry recordForBridge:bridge];
-      if (urlToForeground && [bridgeRecord.frame.initialUri.absoluteString isEqualToString:urlToForeground]) {
-        bridgeToForeground = bridge;
-      } else if (urlToBackground && [bridgeRecord.frame.initialUri.absoluteString isEqualToString:urlToBackground]) {
-        bridgeToBackground = bridge;
+      if (urlToForeground && [bridgeRecord.appManager.frame.initialUri.absoluteString isEqualToString:urlToForeground]) {
+        appManagerToForeground = bridgeRecord.appManager;
+      } else if (urlToBackground && [bridgeRecord.appManager.frame.initialUri.absoluteString isEqualToString:urlToBackground]) {
+        appManagerToBackground = bridgeRecord.appManager;
       }
     }
     
-    if (bridgeToBackground) {
-      [self _postNotificationName:kEXKernelBridgeDidBackgroundNotification onAbstractBridge:bridgeToBackground];
-      id appStateModule = [self _nativeModuleForBridge:bridgeToBackground named:@"AppState"];
+    if (appManagerToBackground) {
+      [self _postNotificationName:kEXKernelBridgeDidBackgroundNotification onAbstractBridge:appManagerToBackground.reactBridge];
+      id appStateModule = [self _nativeModuleForAppManager:appManagerToBackground named:@"AppState"];
       if ([appStateModule respondsToSelector:@selector(setState:)]) {
         [appStateModule setState:@"background"];
       }
     }
-    if (bridgeToForeground) {
-      [self _postNotificationName:kEXKernelBridgeDidForegroundNotification onAbstractBridge:bridgeToForeground];
-      id appStateModule = [self _nativeModuleForBridge:bridgeToForeground named:@"AppState"];
+    if (appManagerToForeground) {
+      [self _postNotificationName:kEXKernelBridgeDidForegroundNotification onAbstractBridge:appManagerToForeground.reactBridge];
+      id appStateModule = [self _nativeModuleForAppManager:appManagerToForeground named:@"AppState"];
       if ([appStateModule respondsToSelector:@selector(setState:)]) {
         [appStateModule setState:@"active"];
       }
-      _bridgeRegistry.lastKnownForegroundBridge = bridgeToForeground;
+      _bridgeRegistry.lastKnownForegroundBridge = appManagerToForeground;
     } else {
       _bridgeRegistry.lastKnownForegroundBridge = nil;
     }
@@ -538,7 +542,8 @@ continueUserActivity:(NSUserActivity *)userActivity
   }
   
   if (_bridgeRegistry.lastKnownForegroundBridge) {
-    id appStateModule = [self _nativeModuleForBridge:_bridgeRegistry.lastKnownForegroundBridge named:@"AppState"];
+    EXKernelBridgeRecord *foregroundRecord = [_bridgeRegistry recordForBridge:_bridgeRegistry.lastKnownForegroundBridge];
+    id appStateModule = [self _nativeModuleForAppManager:foregroundRecord.appManager named:@"AppState"];
     NSString *lastKnownState;
     if ([appStateModule respondsToSelector:@selector(lastKnownState)]) {
       lastKnownState = [appStateModule lastKnownState];
