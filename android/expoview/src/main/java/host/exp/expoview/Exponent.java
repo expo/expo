@@ -66,6 +66,7 @@ import host.exp.exponent.network.ExponentHttpClient;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.JSONBundleConverter;
+import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Request;
@@ -367,7 +368,6 @@ public class Exponent {
    *
    */
 
-
   public interface BundleListener {
     void onBundleLoaded(String localBundlePath);
 
@@ -376,6 +376,10 @@ public class Exponent {
 
   // `id` must be URL encoded. Returns true if found cached bundle.
   public boolean loadJSBundle(final String urlString, final String id, String abiVersion, final BundleListener bundleListener) {
+    return loadJSBundle(urlString, id, abiVersion, bundleListener, false);
+  }
+
+  public boolean loadJSBundle(final String urlString, final String id, String abiVersion, final BundleListener bundleListener, final boolean shouldForceNetwork) {
     if (!id.equals(KernelConstants.KERNEL_BUNDLE_ID)) {
       Analytics.markEvent(Analytics.TimedEvent.STARTED_FETCHING_BUNDLE);
     }
@@ -395,7 +399,11 @@ public class Exponent {
     }
 
     try {
-      Request request = ExponentUrls.addExponentHeadersToUrl(urlString).build();
+      Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToUrl(urlString);
+      if (shouldForceNetwork) {
+        requestBuilder.cacheControl(CacheControl.FORCE_NETWORK);
+      }
+      Request request = requestBuilder.build();
       // Use OkHttpClient with long read timeout for dev bundles
       mExponentNetwork.getClient().callSafe(request, new ExponentHttpClient.SafeCallback() {
         @Override

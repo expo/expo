@@ -47,6 +47,7 @@ public class ExponentSharedPreferences {
   public static final String GCM_TOKEN_KEY = "gcm_token";
   public static final String REFERRER_KEY = "referrer";
   public static final String NUX_HAS_FINISHED_FIRST_RUN_KEY = "nux_has_finished_first_run";
+  public static final String SHOULD_NOT_USE_KERNEL_CACHE = "should_not_use_kernel_cache";
 
   // Metadata
   public static final String EXPERIENCE_METADATA_PREFIX = "experience_metadata_";
@@ -62,6 +63,7 @@ public class ExponentSharedPreferences {
     DEFAULT_VALUES.put(HAS_SAVED_SHORTCUT_KEY, false);
     DEFAULT_VALUES.put(IS_FIRST_KERNEL_RUN_KEY, true);
     DEFAULT_VALUES.put(NUX_HAS_FINISHED_FIRST_RUN_KEY, false);
+    DEFAULT_VALUES.put(SHOULD_NOT_USE_KERNEL_CACHE, false);
   }
 
   private SharedPreferences mSharedPreferences;
