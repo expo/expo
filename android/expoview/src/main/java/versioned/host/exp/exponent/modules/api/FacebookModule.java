@@ -51,7 +51,7 @@ public class FacebookModule extends ReactContextBaseJavaModule implements Activi
     FacebookSdk.setApplicationId(appId);
 
     List<String> permissions;
-    if (config.hasKey("permissions")) {
+    if (config != null && config.hasKey("permissions")) {
       permissions = new ArrayList<>();
       ReadableArray ps = config.getArray("permissions");
       for (int i = 0; i < ps.size(); ++i) {
