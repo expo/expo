@@ -121,7 +121,7 @@
   [[EXKernel sharedInstance].bridgeRegistry unregisterBridge:self.reactBridge];
 }
 
-- (void)handleShake
+- (void)showMenu
 {
   if ([self doesManifestEnableDeveloperTools]) {
     [self.versionManager showDevMenuForBridge:self.reactBridge];

@@ -174,7 +174,7 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
   _exceptionHandler = nil;
 }
 
-- (void)handleShake
+- (void)showMenu
 {
   if ([EXKernel isDevKernel]) {
     [self.versionManager showDevMenuForBridge:self.reactBridge];

@@ -1,6 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+#import "EXFrameReactAppManager.h"
 #import "EXKernelDevKeyCommands.h"
+#import "EXKernel.h"
+#import "EXKernelBridgeRegistry.h"
+#import "EXKernelReactAppManager.h"
 
 #import "RCTDefines.h"
 #import "RCTUtils.h"
@@ -134,11 +138,24 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)_addDevCommands
 {
   // TODO
+  __weak typeof(self) weakSelf = self;
   [self registerKeyCommandWithInput:@"d"
                       modifierFlags:UIKeyModifierCommand
                              action:^(__unused UIKeyCommand *_) {
-                               NSLog(@"Exponent dev KeyCommand captured");
+                               [weakSelf _handleMenuCommand];
                              }];
+}
+
+- (void)_handleMenuCommand
+{
+  EXKernelBridgeRegistry *bridgeRegistry = [EXKernel sharedInstance].bridgeRegistry;
+  EXKernelBridgeRecord *foregroundBridgeRecord = [bridgeRegistry recordForBridge:bridgeRegistry.lastKnownForegroundBridge];
+  if (foregroundBridgeRecord) {
+    [foregroundBridgeRecord.appManager showMenu];
+  } else {
+    // maybe handle kernel shake
+    [bridgeRegistry.kernelAppManager showMenu];
+  }
 }
 
 #pragma mark - managing list of commands

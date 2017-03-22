@@ -247,5 +247,6 @@ EX_APP_MANAGER_ABSTRACT(- (RCTLogFunction)logFunction)
 EX_APP_MANAGER_ABSTRACT(- (RCTLogLevel)logLevel)
 EX_APP_MANAGER_ABSTRACT(- (void)registerBridge)
 EX_APP_MANAGER_ABSTRACT(- (void)unregisterBridge)
+EX_APP_MANAGER_ABSTRACT(- (void)showMenu)
 
 @end
