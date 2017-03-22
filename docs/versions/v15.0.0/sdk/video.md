@@ -46,7 +46,7 @@ A component that displays a video inline with the other React Native UI elements
 
   Number between 0 and 1 specifying the volume to play the video's audio at.
 
-- `mute`
+- `muted`
 
   Whether to mute audio playback. The value of the `volume` prop is preserved across changing this prop.
 
