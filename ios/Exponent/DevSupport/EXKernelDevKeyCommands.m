@@ -144,18 +144,31 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                              action:^(__unused UIKeyCommand *_) {
                                [weakSelf _handleMenuCommand];
                              }];
+  [self registerKeyCommandWithInput:@"r"
+                      modifierFlags:UIKeyModifierCommand
+                             action:^(__unused UIKeyCommand *_) {
+                               [weakSelf _handleRefreshCommand];
+                             }];
 }
 
 - (void)_handleMenuCommand
 {
+  [[self _foregroundAppManager] showMenu];
+}
+
+- (void)_handleRefreshCommand
+{
+  [[self _foregroundAppManager] reloadBridge];
+}
+
+- (EXReactAppManager *)_foregroundAppManager
+{
   EXKernelBridgeRegistry *bridgeRegistry = [EXKernel sharedInstance].bridgeRegistry;
   EXKernelBridgeRecord *foregroundBridgeRecord = [bridgeRegistry recordForBridge:bridgeRegistry.lastKnownForegroundBridge];
   if (foregroundBridgeRecord) {
-    [foregroundBridgeRecord.appManager showMenu];
-  } else {
-    // maybe handle kernel shake
-    [bridgeRegistry.kernelAppManager showMenu];
+    return foregroundBridgeRecord.appManager;
   }
+  return bridgeRegistry.kernelAppManager;
 }
 
 #pragma mark - managing list of commands
