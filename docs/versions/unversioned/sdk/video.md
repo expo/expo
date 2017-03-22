@@ -2,11 +2,14 @@
 title: Video
 ---
 
-### `Expo.Components.Video()`
-
 A component that displays a video inline with the other React Native UI elements in your app. The display dimensions and position of the video on screen can be set using usual React Native styling.
 
-The following props are available:
+<div data-sketch-id="B1eqoFkhx" data-sketch-platform="ios" data-sketch-preview="true" class="embedded-example-container"></div>
+<br />
+
+## `Expo.Video`
+
+### props
 
 - `source`
 
@@ -27,9 +30,9 @@ The following props are available:
 
   How the video should be scaled for display in the component view bounds. Must be one of the following values:
 
-  - `Expo.Components.Video.RESIZE_MODE_STRETCH` -- Stretch to fill component bounds.
-  - `Expo.Components.Video.RESIZE_MODE_CONTAIN` -- Fit within component bounds while preserving aspect ratio.
-  - `Expo.Components.Video.RESIZE_MODE_COVER` -- Fill component bounds while preserving aspect ratio.
+  - `Expo.Video.RESIZE_MODE_STRETCH` -- Stretch to fill component bounds.
+  - `Expo.Video.RESIZE_MODE_CONTAIN` -- Fit within component bounds while preserving aspect ratio.
+  - `Expo.Video.RESIZE_MODE_COVER` -- Fill component bounds while preserving aspect ratio.
 
 - `repeat`
 

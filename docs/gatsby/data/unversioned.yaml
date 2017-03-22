@@ -63,3 +63,4 @@
     takeSnapshotAsync: /versions/unversioned/sdk/take-snapshot-async.html
     Util: /versions/unversioned/sdk/util.html
     Video: /versions/unversioned/sdk/video.html
+    WebBrowser: /versions/v15.0.0/sdk/webbrowser.html
