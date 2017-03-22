@@ -67,7 +67,3 @@ The permission type for location access.
 ### `Expo.Permissions.CAMERA`
 
 The permission type for camera access.
-
-### `Expo.Permissions.CONTACTS`
-
-The permission type for reading contacts.

@@ -20,12 +20,6 @@ An array of objects of the form `{ id, name, phoneNumbers, emails, addresses, jo
 
 ```javascript
 async function showFirstContactAsync() {
-  // Ask for permission to query contacts.
-  const permission = await Expo.Permissions.askAsync(Expo.Permissions.CONTACTS);
-  if (permission.status !== 'granted') {
-    // Permission was denied...
-    return;
-  }
   const contacts = await Expo.Contacts.getContactsAsync([
     Expo.Contacts.PHONE_NUMBERS,
     Expo.Contacts.EMAILS,
