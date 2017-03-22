@@ -149,6 +149,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                              action:^(__unused UIKeyCommand *_) {
                                [weakSelf _handleRefreshCommand];
                              }];
+  [self registerKeyCommandWithInput:@"n"
+                      modifierFlags:UIKeyModifierCommand
+                             action:^(__unused UIKeyCommand *_) {
+                               [weakSelf _handleDisableDebuggingCommand];
+                             }];
 }
 
 - (void)_handleMenuCommand
@@ -159,6 +164,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)_handleRefreshCommand
 {
   [[self _foregroundAppManager] reloadBridge];
+}
+
+- (void)_handleDisableDebuggingCommand
+{
+  [[self _foregroundAppManager] disableRemoteDebugging];
 }
 
 - (EXReactAppManager *)_foregroundAppManager

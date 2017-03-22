@@ -17,6 +17,7 @@
  *  Dev tools (implementation varies by SDK)
  */
 - (void)showDevMenuForBridge:(id)bridge;
+- (void)disableRemoteDebuggingForBridge:(id)bridge;
 
 + (NSString *)escapedResourceName:(NSString *)name;
 
