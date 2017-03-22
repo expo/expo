@@ -80,6 +80,27 @@ NSTimeInterval const kEXJavaScriptResourceLongerTimeout = 120;
   _jsResource = nil;
 }
 
+- (void)showMenu
+{
+  if ([self areDevtoolsEnabled]) {
+    [self.versionManager showDevMenuForBridge:self.reactBridge];
+  }
+}
+
+- (void)reloadBridge
+{
+  if ([self areDevtoolsEnabled]) {
+    [self.reactBridge reload];
+  }
+}
+
+- (void)disableRemoteDebugging
+{
+  if ([self areDevtoolsEnabled]) {
+    [self.versionManager disableRemoteDebuggingForBridge:self.reactBridge];
+  }
+}
+
 
 #pragma mark - RCTBridgeDelegate
 
@@ -235,6 +256,7 @@ method \
 
 EX_APP_MANAGER_ABSTRACT(- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge)
 EX_APP_MANAGER_ABSTRACT(- (BOOL)isReadyToLoad)
+EX_APP_MANAGER_ABSTRACT(- (BOOL)areDevtoolsEnabled)
 EX_APP_MANAGER_ABSTRACT(- (void)computeVersionSymbolPrefix)
 EX_APP_MANAGER_ABSTRACT(- (NSString *)bundleNameForJSResource)
 EX_APP_MANAGER_ABSTRACT(- (EXCachedResourceBehavior)cacheBehaviorForJSResource)
@@ -247,7 +269,5 @@ EX_APP_MANAGER_ABSTRACT(- (RCTLogFunction)logFunction)
 EX_APP_MANAGER_ABSTRACT(- (RCTLogLevel)logLevel)
 EX_APP_MANAGER_ABSTRACT(- (void)registerBridge)
 EX_APP_MANAGER_ABSTRACT(- (void)unregisterBridge)
-EX_APP_MANAGER_ABSTRACT(- (void)reloadBridge)
-EX_APP_MANAGER_ABSTRACT(- (void)showMenu)
 
 @end

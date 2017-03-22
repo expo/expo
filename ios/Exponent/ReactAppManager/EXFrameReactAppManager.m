@@ -26,6 +26,11 @@
   return (_frame && _frame.source != nil);
 }
 
+- (BOOL)areDevtoolsEnabled
+{
+  return [self _doesManifestEnableDeveloperTools];
+}
+
 - (void)computeVersionSymbolPrefix
 {
   self.validatedVersion = [[EXVersions sharedInstance] availableSdkVersionForManifest:_frame.manifest];
@@ -49,7 +54,7 @@
     // if this experience id encountered a loading error before, discard any cache we might have
     return kEXCachedResourceNoCache;
   }
-  return ([self doesManifestEnableDeveloperTools]) ? kEXCachedResourceNoCache : kEXCachedResourceFallBackToCache;
+  return ([self _doesManifestEnableDeveloperTools]) ? kEXCachedResourceNoCache : kEXCachedResourceFallBackToCache;
 }
 
 - (BOOL)shouldInvalidateJSResourceCache
@@ -101,12 +106,12 @@
 
 - (RCTLogFunction)logFunction
 {
-  return (([self doesManifestEnableDeveloperTools]) ? EXDeveloperRCTLogFunction : EXDefaultRCTLogFunction);
+  return (([self _doesManifestEnableDeveloperTools]) ? EXDeveloperRCTLogFunction : EXDefaultRCTLogFunction);
 }
 
 - (RCTLogLevel)logLevel
 {
-  return ([self doesManifestEnableDeveloperTools]) ? RCTLogLevelInfo : RCTLogLevelWarning;
+  return ([self _doesManifestEnableDeveloperTools]) ? RCTLogLevelInfo : RCTLogLevelWarning;
 }
 
 - (void)registerBridge
@@ -119,20 +124,6 @@
 - (void)unregisterBridge
 {
   [[EXKernel sharedInstance].bridgeRegistry unregisterBridge:self.reactBridge];
-}
-
-- (void)showMenu
-{
-  if ([self doesManifestEnableDeveloperTools]) {
-    [self.versionManager showDevMenuForBridge:self.reactBridge];
-  }
-}
-
-- (void)reloadBridge
-{
-  if ([self doesManifestEnableDeveloperTools]) {
-    [self.reactBridge reload];
-  }
 }
 
 #pragma mark - RCTBridgeDelegate
@@ -154,14 +145,14 @@
                                @"appOwnership": [_frame.initialProps objectForKey:@"appOwnership"] ?: @"expo",
                                },
                            @"initialUri": _frame.initialUri,
-                           @"isDeveloper": @([self doesManifestEnableDeveloperTools]),
+                           @"isDeveloper": @([self _doesManifestEnableDeveloperTools]),
                            };
   return [self.versionManager extraModulesWithParams:params];
 }
 
 #pragma mark - internal
 
-- (BOOL)doesManifestEnableDeveloperTools
+- (BOOL)_doesManifestEnableDeveloperTools
 {
   NSDictionary *manifest = _frame.manifest;
   if (manifest) {

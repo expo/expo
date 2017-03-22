@@ -89,6 +89,11 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
   return YES;
 }
 
+- (BOOL)areDevtoolsEnabled
+{
+  return [EXKernel isDevKernel];
+}
+
 - (void)computeVersionSymbolPrefix
 {
   NSDictionary *detachedVersions = [EXVersions sharedInstance].versions[@"detachedNativeVersions"];
@@ -172,20 +177,6 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
 {
   [[EXKernel sharedInstance].bridgeRegistry unregisterKernelAppManager];
   _exceptionHandler = nil;
-}
-
-- (void)showMenu
-{
-  if ([EXKernel isDevKernel]) {
-    [self.versionManager showDevMenuForBridge:self.reactBridge];
-  }
-}
-
-- (void)reloadBridge
-{
-  if ([EXKernel isDevKernel]) {
-    [self.reactBridge reload];
-  }
 }
 
 #pragma mark - RCTBridgeDelegate

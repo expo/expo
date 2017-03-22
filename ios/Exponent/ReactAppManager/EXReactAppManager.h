@@ -36,6 +36,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)reloadBridge;
 
+/**
+ * Clear any executor class on the bridge and reload. Used by Cmd+N devtool key command.
+ */
+- (void)disableRemoteDebugging;
+
 - (void)invalidate;
 - (void)showMenu;
 

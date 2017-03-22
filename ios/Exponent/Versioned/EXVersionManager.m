@@ -16,6 +16,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTDevMenu.h>
+#import <React/RCTDevSettings.h>
 #import "RCTDevMenu+Device.h"
 #import <React/RCTLog.h>
 #import <React/RCTModuleData.h>
@@ -113,18 +114,29 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
 
 - (void)showDevMenuForBridge:(id)bridge
 {
-  if ([bridge respondsToSelector:@selector(batchedBridge)]) {
-    bridge = [bridge batchedBridge];
-  }
-  RCTModuleData *data = [bridge moduleDataForName:@"DevMenu"];
-  if (data) {
-    RCTDevMenu *devMenu = [data instance];
-    [devMenu show];
-  }
+  [((RCTDevMenu *)[self _moduleInstanceForBridge:bridge named:@"DevMenu"]) show];
+}
+
+- (void)disableRemoteDebuggingForBridge:(id)bridge
+{
+  RCTDevSettings *devSettings = [self _moduleInstanceForBridge:bridge named:@"DevSettings"];
+  devSettings.isDebuggingRemotely = NO;
 }
 
 
 #pragma mark - internal
+
+- (id<RCTBridgeModule>)_moduleInstanceForBridge:(id)bridge named:(NSString *)name
+{
+  if ([bridge respondsToSelector:@selector(batchedBridge)]) {
+    bridge = [bridge batchedBridge];
+  }
+  RCTModuleData *data = [bridge moduleDataForName:name];
+  if (data) {
+    return [data instance];
+  }
+  return nil;
+}
 
 - (void)configureABIWithFatalHandler:(void (^)(NSError *))fatalHandler
                          logFunction:(void (^)(NSInteger, NSInteger, NSString *, NSNumber *, NSString *))logFunction
