@@ -123,6 +123,12 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
   devSettings.isDebuggingRemotely = NO;
 }
 
+- (void)toggleElementInspectorForBridge:(id)bridge
+{
+  RCTDevSettings *devSettings = [self _moduleInstanceForBridge:bridge named:@"DevSettings"];
+  [devSettings toggleElementInspector];
+}
+
 
 #pragma mark - internal
 
