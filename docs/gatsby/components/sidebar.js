@@ -5,12 +5,20 @@ import { presets } from 'glamor';
 
 class Sidebar extends React.Component {
   render() {
-    const { activeRoutes, id, router, activeVersion, versions, setVersion, ...otherProps } = this.props;
+    const {
+      activeRoutes,
+      id,
+      router,
+      activeVersion,
+      versions,
+      setVersion,
+      ...otherProps
+    } = this.props;
 
     const Header = ({ i, link, children }) => (
       <h3
         css={{
-          color: `rgb(136, 136, 136);`,
+          color: `rgb(136, 136, 136)`,
           textTransform: 'uppercase',
           fontSize: 15,
           fontWeight: `normal`,

@@ -50,6 +50,7 @@ module.exports = React.createClass({
             href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css"
           />
           <link rel="icon" type="image/png" href={favicon} sizes="32x32" />
+
           {this.props.headComponents}
           <TypographyStyle typography={typography} />
           {css}

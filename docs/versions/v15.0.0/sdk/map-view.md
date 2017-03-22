@@ -2,38 +2,11 @@
 title: MapView
 ---
 
-A Map component that uses Apple Maps on iOS and Google Maps on Android. Built by Airbnb at [airbnb/react-native-maps](https://github.com/airbnb/react-native-maps). No setup required for use within the Expo app, or within a standalone app for iOS. See below for instructions on how to configure for deployment as a standalone app on Android.
+A Map component that uses Apple Maps or Google Maps on iOS and Google Maps on Android. Built by Airbnb at [airbnb/react-native-maps](https://github.com/airbnb/react-native-maps). No setup required for use within the Expo app, or within a standalone app for iOS. See below for instructions on how to configure for deployment as a standalone app on Android.
 
-![](./maps.png)
+<div data-sketch-id="H1f3LPkhg" data-sketch-platform="ios" data-sketch-preview="true" class="embedded-example-container"></div>
 
-```javascript
-import React from 'react';
-import { MapView } from 'expo';
-
-export default class HomeScreen extends React.Component {
-  static route = {
-    navigationBar: {
-      visible: false,
-    },
-  }
-
-  render() {
-    return (
-      <MapView
-        style={{flex: 1}}
-        initialRegion={{
-          latitude: 37.78825,
-          longitude: -122.4324,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}
-      />
-    );
-  }
-}
-```
-
-### `Expo.MapView()`
+## `Expo.MapView`
 
 See full documentation at [airbnb/react-native-maps](https://github.com/airbnb/react-native-maps).
 
