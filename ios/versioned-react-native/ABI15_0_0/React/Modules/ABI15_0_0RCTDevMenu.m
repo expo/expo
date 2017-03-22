@@ -91,14 +91,6 @@ typedef void(^ABI15_0_0RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 
 + (NSString *)moduleName { return @"ABI15_0_0RCTDevMenu"; }
 
-+ (void)initialize
-{
-  // We're swizzling here because it's poor form to override methods in a category,
-  // however UIWindow doesn't actually implement motionEnded:withEvent:, so there's
-  // no need to call the original implementation.
-  ABI15_0_0RCTSwapInstanceMethods([UIWindow class], @selector(motionEnded:withEvent:), @selector(ABI15_0_0RCT_motionEnded:withEvent:));
-}
-
 - (instancetype)init
 {
   if ((self = [super init])) {

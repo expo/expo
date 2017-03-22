@@ -13,8 +13,12 @@
 #import "ABI15_0_0EXScope.h"
 
 #import <ReactABI15_0_0/ABI15_0_0RCTAssert.h>
+#import <ReactABI15_0_0/ABI15_0_0RCTBridge.h>
+#import <ReactABI15_0_0/ABI15_0_0RCTBridge+Private.h>
+#import <ReactABI15_0_0/ABI15_0_0RCTDevMenu.h>
 #import "ABI15_0_0RCTDevMenu+Device.h"
 #import <ReactABI15_0_0/ABI15_0_0RCTLog.h>
+#import <ReactABI15_0_0/ABI15_0_0RCTModuleData.h>
 #import <ReactABI15_0_0/ABI15_0_0RCTUtils.h>
 
 #import <objc/message.h>
@@ -107,8 +111,37 @@ void ABI15_0_0EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
 
 }
 
+- (void)showDevMenuForBridge:(id)bridge
+{
+  [((ABI15_0_0RCTDevMenu *)[self _moduleInstanceForBridge:bridge named:@"DevMenu"]) show];
+}
+
+- (void)disableRemoteDebuggingForBridge:(id)bridge
+{
+  ABI15_0_0RCTDevSettings *devSettings = [self _moduleInstanceForBridge:bridge named:@"DevSettings"];
+  devSettings.isDebuggingRemotely = NO;
+}
+
+- (void)toggleElementInspectorForBridge:(id)bridge
+{
+  ABI15_0_0RCTDevSettings *devSettings = [self _moduleInstanceForBridge:bridge named:@"DevSettings"];
+  [devSettings toggleElementInspector];
+}
+
 
 #pragma mark - internal
+
+- (id<ABI15_0_0RCTBridgeModule>)_moduleInstanceForBridge:(id)bridge named:(NSString *)name
+{
+  if ([bridge respondsToSelector:@selector(batchedBridge)]) {
+    bridge = [bridge batchedBridge];
+  }
+  ABI15_0_0RCTModuleData *data = [bridge moduleDataForName:name];
+  if (data) {
+    return [data instance];
+  }
+  return nil;
+}
 
 - (void)configureABIWithFatalHandler:(void (^)(NSError *))fatalHandler
                          logFunction:(void (^)(NSInteger, NSInteger, NSString *, NSNumber *, NSString *))logFunction
@@ -160,7 +193,6 @@ void ABI15_0_0EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
                                     [[ABI15_0_0EXConstants alloc] initWithProperties:params[@"constants"]],
                                     [[ABI15_0_0EXDevSettings alloc] initWithExperienceId:experienceScope.experienceId isDevelopment:isDeveloper],
                                     [[ABI15_0_0EXDisabledDevLoadingView alloc] init],
-                                    [[ABI15_0_0EXDisabledDevMenu alloc] init],
                                     [[ABI15_0_0EXLinkingManager alloc] initWithInitialUrl:initialUri],
                                     ]];
   if (params[@"frame"]) {
@@ -181,10 +213,15 @@ void ABI15_0_0EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
     [extraModules addObject:kernel];
   }
   
-  if (!isDeveloper) {
-    // user-facing (not debugging).
-    // additionally disable ABI15_0_0RCTRedBox
+  if (isDeveloper) {
     [extraModules addObjectsFromArray:@[
+                                        [[ABI15_0_0RCTDevMenu alloc] init],
+                                        ]];
+  } else {
+    // user-facing (not debugging).
+    // additionally disable RCTRedBox
+    [extraModules addObjectsFromArray:@[
+                                        [[ABI15_0_0EXDisabledDevMenu alloc] init],
                                         [[ABI15_0_0EXDisabledRedBox alloc] init],
                                         ]];
   }

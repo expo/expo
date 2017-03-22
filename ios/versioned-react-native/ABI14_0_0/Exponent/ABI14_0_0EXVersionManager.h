@@ -16,6 +16,13 @@
 + (NSString *)escapedResourceName:(NSString *)name;
 
 /**
+ *  Dev tools (implementation varies by SDK)
+ */
+- (void)showDevMenuForBridge:(id)bridge;
+- (void)disableRemoteDebuggingForBridge:(id)bridge;
+- (void)toggleElementInspectorForBridge:(id)bridge;
+
+/**
  *  Provides the extra native modules required to set up a bridge with this version.
  *  Uses a params dict since the internal workings may change over time, but we want to keep the interface the same.
  */

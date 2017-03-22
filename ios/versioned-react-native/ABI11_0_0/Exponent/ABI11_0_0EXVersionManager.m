@@ -17,8 +17,13 @@
 #import "ABI11_0_0EXUtil.h"
 
 #import "ABI11_0_0RCTAssert.h"
+#import "ABI11_0_0RCTBridge.h"
+#import "ABI11_0_0RCTBridge+Private.h"
+#import "ABI11_0_0RCTDevMenu.h"
 #import "ABI11_0_0RCTDevMenu+Device.h"
+#import "ABI11_0_0RCTEventDispatcher.h"
 #import "ABI11_0_0RCTLog.h"
+#import "ABI11_0_0RCTModuleData.h"
 #import "ABI11_0_0RCTUtils.h"
 
 #import <objc/message.h>
@@ -115,6 +120,27 @@ void ABI11_0_0EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
   [self resetOnceTokens];
 }
 
+- (void)showDevMenuForBridge:(id)bridge
+{
+  [[self _devMenuInstanceForBridge:bridge] show];
+}
+
+- (void)disableRemoteDebuggingForBridge:(id)bridge
+{
+  ABI11_0_0RCTDevMenu *devMenuInstance = [self _devMenuInstanceForBridge:bridge];
+  if ([devMenuInstance respondsToSelector:@selector(setExecutorClass:)]) {
+    [devMenuInstance performSelector:@selector(setExecutorClass:) withObject:nil];
+  }
+}
+
+- (void)toggleElementInspectorForBridge:(id)bridge
+{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  [((ABI11_0_0RCTBridge *)bridge).eventDispatcher sendDeviceEventWithName:@"toggleElementInspector" body:nil];
+#pragma clang diagnostic pop
+}
+
 + (void)registerOnceToken:(dispatch_once_t *)token forClass:(NSString *)someClass
 {
   ABI11_0_0EXClassPointerMap *onceTokens = ABI11_0_0EXGetVersionedOnceTokens();
@@ -132,6 +158,18 @@ void ABI11_0_0EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
 
 
 #pragma mark - internal
+
+- (ABI11_0_0RCTDevMenu *)_devMenuInstanceForBridge:(id)bridge
+{
+  if ([bridge respondsToSelector:@selector(batchedBridge)]) {
+    bridge = [bridge batchedBridge];
+  }
+  ABI11_0_0RCTModuleData *data = [bridge moduleDataForName:@"DevMenu"];
+  if (data) {
+    return [data instance];
+  }
+  return nil;
+}
 
 - (void)configureABIWithFatalHandler:(void (^)(NSError *))fatalHandler
                          logFunction:(void (^)(NSInteger, NSInteger, NSString *, NSNumber *, NSString *))logFunction
