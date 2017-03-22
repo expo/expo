@@ -26,7 +26,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXReactAppManager : NSObject <RCTBridgeDelegate>
 
+/**
+ * Tear down and rebuild the bridge (user-facing expo menu reload)
+ */
 - (void)reload;
+
+/**
+ * Call reload on existing bridge (developer-facing devtools reload)
+ */
+- (void)reloadBridge;
+
 - (void)invalidate;
 - (void)showMenu;
 

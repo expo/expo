@@ -128,6 +128,13 @@
   }
 }
 
+- (void)reloadBridge
+{
+  if ([self doesManifestEnableDeveloperTools]) {
+    [self.reactBridge reload];
+  }
+}
+
 #pragma mark - RCTBridgeDelegate
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge

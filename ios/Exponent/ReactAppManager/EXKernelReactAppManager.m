@@ -181,6 +181,13 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
   }
 }
 
+- (void)reloadBridge
+{
+  if ([EXKernel isDevKernel]) {
+    [self.reactBridge reload];
+  }
+}
+
 #pragma mark - RCTBridgeDelegate
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
