@@ -41,6 +41,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)disableRemoteDebugging;
 
+- (void)toggleElementInspector;
+
 - (void)invalidate;
 - (void)showMenu;
 

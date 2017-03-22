@@ -101,6 +101,13 @@ NSTimeInterval const kEXJavaScriptResourceLongerTimeout = 120;
   }
 }
 
+- (void)toggleElementInspector
+{
+  if ([self areDevtoolsEnabled]) {
+    [self.versionManager toggleElementInspectorForBridge:self.reactBridge];
+  }
+}
+
 
 #pragma mark - RCTBridgeDelegate
 

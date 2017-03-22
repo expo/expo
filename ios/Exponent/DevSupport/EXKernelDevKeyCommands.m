@@ -137,7 +137,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)_addDevCommands
 {
-  // TODO
   __weak typeof(self) weakSelf = self;
   [self registerKeyCommandWithInput:@"d"
                       modifierFlags:UIKeyModifierCommand
@@ -154,6 +153,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                              action:^(__unused UIKeyCommand *_) {
                                [weakSelf _handleDisableDebuggingCommand];
                              }];
+  [self registerKeyCommandWithInput:@"i"
+                      modifierFlags:UIKeyModifierCommand
+                             action:^(__unused UIKeyCommand *_) {
+                               [weakSelf _handleToggleInspectorCommand];
+                             }];
 }
 
 - (void)_handleMenuCommand
@@ -169,6 +173,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)_handleDisableDebuggingCommand
 {
   [[self _foregroundAppManager] disableRemoteDebugging];
+}
+
+- (void)_handleToggleInspectorCommand
+{
+  [[self _foregroundAppManager] toggleElementInspector];
 }
 
 - (EXReactAppManager *)_foregroundAppManager

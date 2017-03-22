@@ -18,6 +18,7 @@
  */
 - (void)showDevMenuForBridge:(id)bridge;
 - (void)disableRemoteDebuggingForBridge:(id)bridge;
+- (void)toggleElementInspectorForBridge:(id)bridge;
 
 + (NSString *)escapedResourceName:(NSString *)name;
 
