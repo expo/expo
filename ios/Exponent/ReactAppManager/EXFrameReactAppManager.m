@@ -121,6 +121,13 @@
   [[EXKernel sharedInstance].bridgeRegistry unregisterBridge:self.reactBridge];
 }
 
+- (void)handleShake
+{
+  if ([self doesManifestEnableDeveloperTools]) {
+    [self.versionManager showDevMenuForBridge:self.reactBridge];
+  }
+}
+
 #pragma mark - RCTBridgeDelegate
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge

@@ -13,8 +13,12 @@
 #import "EXScope.h"
 
 #import <React/RCTAssert.h>
+#import <React/RCTBridge.h>
+#import <React/RCTBridge+Private.h>
+#import <React/RCTDevMenu.h>
 #import "RCTDevMenu+Device.h"
 #import <React/RCTLog.h>
+#import <React/RCTModuleData.h>
 #import <React/RCTUtils.h>
 
 #import <objc/message.h>
@@ -107,6 +111,18 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
 
 }
 
+- (void)showDevMenuForBridge:(id)bridge
+{
+  if ([bridge respondsToSelector:@selector(batchedBridge)]) {
+    bridge = [bridge batchedBridge];
+  }
+  RCTModuleData *data = [bridge moduleDataForName:@"DevMenu"];
+  if (data) {
+    RCTDevMenu *devMenu = [data instance];
+    [devMenu show];
+  }
+}
+
 
 #pragma mark - internal
 
@@ -160,7 +176,6 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
                                     [[EXConstants alloc] initWithProperties:params[@"constants"]],
                                     [[EXDevSettings alloc] initWithExperienceId:experienceScope.experienceId isDevelopment:isDeveloper],
                                     [[EXDisabledDevLoadingView alloc] init],
-                                    [[EXDisabledDevMenu alloc] init],
                                     [[EXLinkingManager alloc] initWithInitialUrl:initialUri],
                                     ]];
   if (params[@"frame"]) {
@@ -181,10 +196,15 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
     [extraModules addObject:kernel];
   }
   
-  if (!isDeveloper) {
+  if (isDeveloper) {
+    [extraModules addObjectsFromArray:@[
+                                        [[RCTDevMenu alloc] init],
+                                        ]];
+  } else {
     // user-facing (not debugging).
     // additionally disable RCTRedBox
     [extraModules addObjectsFromArray:@[
+                                        [[EXDisabledDevMenu alloc] init],
                                         [[EXDisabledRedBox alloc] init],
                                         ]];
   }

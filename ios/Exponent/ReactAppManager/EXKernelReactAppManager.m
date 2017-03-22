@@ -174,6 +174,13 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
   _exceptionHandler = nil;
 }
 
+- (void)handleShake
+{
+  if ([EXKernel isDevKernel]) {
+    [self.versionManager showDevMenuForBridge:self.reactBridge];
+  }
+}
+
 #pragma mark - RCTBridgeDelegate
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge

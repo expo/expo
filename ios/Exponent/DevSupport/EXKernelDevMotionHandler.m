@@ -1,5 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
+
+#import "EXFrameReactAppManager.h"
+#import "EXKernel.h"
+#import "EXKernelBridgeRegistry.h"
 #import "EXKernelDevMotionHandler.h"
+#import "EXKernelReactAppManager.h"
 
 #import <React/RCTUtils.h>
 
@@ -52,8 +57,14 @@ static NSNotificationName EXShakeGestureNotification = @"EXShakeGestureNotificat
 
 - (void)_handleShakeGesture
 {
-  // TODO
-  NSLog(@"Exponent shake gesture captured");
+  EXKernelBridgeRegistry *bridgeRegistry = [EXKernel sharedInstance].bridgeRegistry;
+  EXKernelBridgeRecord *foregroundBridgeRecord = [bridgeRegistry recordForBridge:bridgeRegistry.lastKnownForegroundBridge];
+  if (foregroundBridgeRecord) {
+    [foregroundBridgeRecord.appManager handleShake];
+  } else {
+    // maybe handle kernel shake
+    [bridgeRegistry.kernelAppManager handleShake];
+  }
 }
 
 @end

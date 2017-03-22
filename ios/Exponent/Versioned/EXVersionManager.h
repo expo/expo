@@ -13,6 +13,11 @@
 - (void)bridgeDidBackground;
 - (void)invalidate;
 
+/**
+ *  Dev tools (implementation varies by SDK)
+ */
+- (void)showDevMenuForBridge:(id)bridge;
+
 + (NSString *)escapedResourceName:(NSString *)name;
 
 /**
