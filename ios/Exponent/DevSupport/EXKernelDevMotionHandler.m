@@ -60,10 +60,10 @@ static NSNotificationName EXShakeGestureNotification = @"EXShakeGestureNotificat
   EXKernelBridgeRegistry *bridgeRegistry = [EXKernel sharedInstance].bridgeRegistry;
   EXKernelBridgeRecord *foregroundBridgeRecord = [bridgeRegistry recordForBridge:bridgeRegistry.lastKnownForegroundBridge];
   if (foregroundBridgeRecord) {
-    [foregroundBridgeRecord.appManager handleShake];
+    [foregroundBridgeRecord.appManager showMenu];
   } else {
     // maybe handle kernel shake
-    [bridgeRegistry.kernelAppManager handleShake];
+    [bridgeRegistry.kernelAppManager showMenu];
   }
 }
 
