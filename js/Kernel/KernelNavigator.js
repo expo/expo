@@ -39,6 +39,8 @@ const KERNEL_ROUTE_BROWSER = 1;
 const FORCE_TOUCH_SWITCH_THRESHOLD = 0.995;
 const FORCE_TOUCH_CAPTURE_THRESHOLD = 0.85;
 
+const ENABLE_LEGACY_MENU_BEHAVIOR = true;
+
 const MENU_FADE_IN_TOTAL_MS = 400;
 const MENU_FADE_IN_BEGIN_MS = 50; // make this one shorter
 
@@ -132,12 +134,14 @@ class KernelNavigator extends React.Component {
     let initialRouteStack = (isShell) ? [this._findOrCreateBrowserRoute(shellManifestUrl)] : [this._homeRoute];
 
     let simulatorButton;
-    // EXButton appears for simulators on computers with no force touch
-    // because all the gestures are too annoying in this circumstance.
-    if (!ExponentConstants.isDevice && tasks.size > 0 && !isShell) {
-      // don't show it if the menu is currently on screen.
-      if (isHomeVisible || !isMenuVisible || !isNuxFinished) {
-        simulatorButton = (<ExButton onPress={this._switchTasks} />);
+    if (ENABLE_LEGACY_MENU_BEHAVIOR) {
+      // EXButton appears for simulators on computers with no force touch
+      // because all the gestures are too annoying in this circumstance.
+      if (!ExponentConstants.isDevice && tasks.size > 0 && !isShell) {
+        // don't show it if the menu is currently on screen.
+        if (isHomeVisible || !isMenuVisible || !isNuxFinished) {
+          simulatorButton = (<ExButton onPress={this._switchTasks} />);
+        }
       }
     }
 
@@ -162,14 +166,21 @@ class KernelNavigator extends React.Component {
       );
     }
 
+    let responders = {};
+    if (ENABLE_LEGACY_MENU_BEHAVIOR) {
+      responders = {
+        onMoveShouldSetResponderCapture: this._onContainerMoveShouldSetResponderCapture,
+        onStartShouldSetResponder: this._onContainerStartShouldSetResponder,
+        onResponderGrant: this._onContainerResponderGrant,
+        onResponderMove: this._onContainerResponderMove,
+        onResponderRelease: this._onContainerResponderRelease,
+      }
+    }
+
     return (
       <View
         style={styles.container}
-        onMoveShouldSetResponderCapture={this._onContainerMoveShouldSetResponderCapture}
-        onStartShouldSetResponder={this._onContainerStartShouldSetResponder}
-        onResponderGrant={this._onContainerResponderGrant}
-        onResponderMove={this._onContainerResponderMove}
-        onResponderRelease={this._onContainerResponderRelease}>
+        {...responders}>
         <ExNavigator
           ref={component => { this._navigator = component; }}
           initialRouteStack={initialRouteStack}
