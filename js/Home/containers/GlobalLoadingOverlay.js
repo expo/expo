@@ -60,7 +60,7 @@ export default class GlobalLoadingOverlay extends React.Component {
     }
 
     return (
-      <Expo.Components.BlurView
+      <Expo.BlurView
         tint="default"
         intensity={100}
         style={styles.container}>
@@ -80,7 +80,7 @@ export default class GlobalLoadingOverlay extends React.Component {
           onPress={this._cancelLoadingExperienceAsync}>
           <Text style={styles.cancelText}>Cancel</Text>
         </TouchableOpacity>
-      </Expo.Components.BlurView>
+      </Expo.BlurView>
     );
   }
 
