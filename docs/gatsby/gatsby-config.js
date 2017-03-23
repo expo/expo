@@ -1,6 +1,6 @@
 module.exports = {
   siteMetadata: {
-    title: 'Expo',
+    title: `Expo`,
   },
   plugins: [
     `gatsby-plugin-glamor`,
@@ -52,5 +52,23 @@ module.exports = {
     },
     `gatsby-typegen-filesystem`,
     `gatsby-typegen-sharp`,
+    {
+      resolve: `gatsby-plugin-offline`,
+      options: {
+        staticFileGlobs: [
+          `public/**/*.woff2`,
+          `public/commons*.js`,
+          `public/app*.js`,
+          `public/page-component*.js`,
+          // This needs to be updated for every new version.
+          // It sets up pre-caching in the service worker for data
+          // bundles for doc pages.
+          `public/path---versions-v-15*.js`,
+          `public/index.html`,
+          `public/manifest.json`,
+          `public/offline-plugin-app-shell-fallback/index.html`,
+        ],
+      },
+    },
   ],
 };

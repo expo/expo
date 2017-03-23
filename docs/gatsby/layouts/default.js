@@ -14,7 +14,7 @@ const scale = typography.scale;
 import 'css/prism-coy.css';
 import { ScrollContainer } from 'react-router-scroll';
 import MenuIcon from 'react-icons/lib/md/menu';
-import { presets } from 'glamor';
+import presets from 'glamor-media-query-presets';
 import Helmet from 'react-helmet';
 import ArrowIcon from 'react-icons/lib/md/keyboard-arrow-down';
 import logoText from 'images/logo-text.svg';
@@ -203,15 +203,6 @@ class Wrapper extends React.Component {
                 },
               }}>
               {this.props.children}
-              <p
-                css={{
-                  textAlign: `center`,
-                  marginBottom: rhythm(1 / 2),
-                }}>
-                © Copyright{' '}
-                {new Date().getFullYear()}
-                , Expo.
-              </p>
             </div>
           </div>
         </ScrollContainer>

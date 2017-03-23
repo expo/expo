@@ -39,7 +39,9 @@ exports.createPages = ({ args }) => {
       // Create docs pages.
       _.each(result.data.allMarkdownRemark.edges, edge => {
         pages.push({
-          path: edge.node.isIndex ? edge.node.fileSlug + '/index.html' : edge.node.fileSlug + '.html', // required
+          path: edge.node.isIndex
+            ? edge.node.fileSlug + '/index.html'
+            : edge.node.fileSlug + '.html', // required
           component: docsPage,
           context: {
             fileSlug: edge.node.fileSlug,
