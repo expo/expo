@@ -15,7 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) id versionManager;
 
 - (BOOL)isReadyToLoad;
-- (BOOL)areDevtoolsEnabled;
 
 - (void)computeVersionSymbolPrefix;
 

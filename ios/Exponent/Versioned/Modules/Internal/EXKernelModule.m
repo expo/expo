@@ -90,12 +90,30 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL
   }
 }
 
+RCT_REMAP_METHOD(doesCurrentTaskEnableDevtools,
+                 doesCurrentTaskEnableDevtoolsWithResolver:(RCTPromiseResolveBlock)resolve
+                 reject:(RCTPromiseRejectBlock)reject)
+{
+  if (_delegate) {
+    resolve(@([_delegate kernelModuleShouldEnableDevtools:self]));
+  } else {
+    resolve(@NO);
+  }
+}
+
+RCT_EXPORT_METHOD(showReactNativeDevMenu)
+{
+  if (_delegate) {
+    [_delegate kernelModuleDidSelectDevMenu:self];
+  }
+}
+
 RCT_EXPORT_METHOD(addDevMenu)
 {
   __weak typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
     if (weakSelf.delegate) {
-      [weakSelf.delegate kernelModuleDidSelectDevMenu:weakSelf];
+      [weakSelf.delegate kernelModuleDidSelectKernelDevMenu:weakSelf];
     }
   });
 }

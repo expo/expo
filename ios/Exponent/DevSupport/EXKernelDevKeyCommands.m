@@ -163,7 +163,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)_handleMenuCommand
 {
   if (EX_ENABLE_LEGACY_MENU_BEHAVIOR) {
-    [[EXKernel sharedInstance].bridgeRegistry.lastKnownForegroundAppManager showMenu];
+    [[EXKernel sharedInstance].bridgeRegistry.lastKnownForegroundAppManager showDevMenu];
   } else {
     [[EXKernel sharedInstance] dispatchKernelJSEvent:@"switchTasks" body:@{} onSuccess:nil onFailure:nil];
   }

@@ -80,7 +80,7 @@ NSTimeInterval const kEXJavaScriptResourceLongerTimeout = 120;
   _jsResource = nil;
 }
 
-- (void)showMenu
+- (void)showDevMenu
 {
   if ([self areDevtoolsEnabled]) {
     [self.versionManager showDevMenuForBridge:self.reactBridge];

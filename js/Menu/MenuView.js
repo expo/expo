@@ -19,6 +19,10 @@ import {
   View,
 } from 'react-native';
 
+let {
+  ExponentKernel,
+} = NativeModules;
+
 import Expo from 'expo';
 import ResponsiveImage from '@expo/react-native-responsive-image';
 
@@ -44,10 +48,11 @@ export default class MenuView extends React.Component {
 
     this.state = {
       transitionIn: new Animated.Value(props.shouldFadeIn ? 0 : 1),
+      enableDevMenuButton: false,
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     if (this.props.shouldFadeIn) {
       Animated.timing(this.state.transitionIn, {
         easing: Easing.inOut(Easing.quad),
@@ -55,6 +60,8 @@ export default class MenuView extends React.Component {
         duration: 200,
       }).start();
     }
+    let enableDevMenuButton = await ExponentKernel.doesCurrentTaskEnableDevtools();
+    this.setState({ enableDevMenuButton });
   }
 
   render() {
@@ -73,6 +80,7 @@ export default class MenuView extends React.Component {
           <View style={styles.buttonContainer}>
             {this._renderButton('Reload', Browser.refresh)}
             {this._renderButton(`Go to Expo Home`, this._goToHome)}
+            {this._maybeRenderDevMenuButton()}
           </View>
         </Animated.View>
       </Animated.View>
@@ -81,7 +89,7 @@ export default class MenuView extends React.Component {
 
   _renderNUXRow() {
     let tooltipMessage;
-    if (NativeModules.ExponentConstants.isDevice) {
+    if (Expo.Constants.isDevice) {
       if (View.forceTouchAvailable) {
         tooltipMessage = 'Press harder (use 3D touch) with two fingers anywhere on your screen to show this menu.';
       } else {
@@ -168,6 +176,13 @@ export default class MenuView extends React.Component {
     );
   }
 
+  _maybeRenderDevMenuButton() {
+    if (this.state.enableDevMenuButton) {
+      return this._renderButton('Show Dev Menu', this._onPressDevMenuButton);
+    }
+    return null;
+  }
+
   @autobind
   _onPressFinishNux() {
     ExStore.dispatch(BrowserActions.setIsNuxFinishedAsync(true));
@@ -184,6 +199,12 @@ export default class MenuView extends React.Component {
   @autobind
   _goToHome() {
     ExStore.dispatch(BrowserActions.foregroundHomeAsync());
+  }
+
+  @autobind
+  _onPressDevMenuButton() {
+    ExponentKernel.showReactNativeDevMenu();
+    ExStore.dispatch(BrowserActions.showMenuAsync(false));
   }
 }
 

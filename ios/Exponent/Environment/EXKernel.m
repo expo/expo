@@ -436,7 +436,17 @@ continueUserActivity:(NSUserActivity *)userActivity
 
 #pragma mark - EXKernelModuleDelegate
 
+- (BOOL)kernelModuleShouldEnableDevtools:(__unused EXKernelModule *)module
+{
+  return (!EX_ENABLE_LEGACY_MENU_BEHAVIOR) && [_bridgeRegistry.lastKnownForegroundAppManager areDevtoolsEnabled];
+}
+
 - (void)kernelModuleDidSelectDevMenu:(__unused EXKernelModule *)module
+{
+  [_bridgeRegistry.lastKnownForegroundAppManager showDevMenu];
+}
+
+- (void)kernelModuleDidSelectKernelDevMenu:(__unused EXKernelModule *)module
 {
   EXKernelDevMenuViewController *vcDevMenu = [[EXKernelDevMenuViewController alloc] init];
   if (_vcExponentRoot) {

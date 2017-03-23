@@ -44,7 +44,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)toggleElementInspector;
 
 - (void)invalidate;
-- (void)showMenu;
+- (void)showDevMenu;
+
+/**
+ *  Whether or not the managed app enables react dev tools.
+ */
+- (BOOL)areDevtoolsEnabled;
 
 @property (nonatomic, assign) id<EXReactAppManagerDelegate> delegate;
 @property (nonatomic, strong) UIView * __nullable reactRootView;

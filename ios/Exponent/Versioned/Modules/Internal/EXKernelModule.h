@@ -6,13 +6,17 @@
 
 @protocol EXKernelModuleDelegate <NSObject>
 
-- (void)kernelModuleDidSelectDevMenu: (EXKernelModule *)module;
 - (void)kernelModule: (EXKernelModule *)module taskDidForegroundWithType: (NSInteger)type params: (NSDictionary *)params;
 - (void)kernelModule:(EXKernelModule *)module
 didRequestManifestWithUrl:(NSURL *)url
          originalUrl:(NSURL *)originalUrl
              success:(void (^)(NSString *manifestString))success
              failure:(void (^)(NSError *err))failure;
+- (BOOL)kernelModuleShouldEnableDevtools:(EXKernelModule *)module;
+- (void)kernelModuleDidSelectDevMenu:(EXKernelModule *)module;
+
+// TODO: kill this as an RCTDevSettings followup
+- (void)kernelModuleDidSelectKernelDevMenu: (EXKernelModule *)module DEPRECATED_ATTRIBUTE;
 
 @end
 
