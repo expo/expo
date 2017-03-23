@@ -4,16 +4,9 @@ title: Location
 
 This module allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.
 
-You must request permission to access the user's location before
-attempting to get it. To do this, you will want to use the
-[Permissions](permissions.html) API. For example:
+You must request permission to access the user's location before attempting to get it. To do this, you will want to use the [Permissions](permissions.html) API. You can see this in practice in the following example.
 
-```
-let { status } = await Expo.Permissions.askAsync(Expo.Permissions.LOCATION);
-if (status === 'granted') {
-  // Ask location
-}
-```
+![sketch](H14SNiW3g)
 
 ### `Expo.Location.getCurrentPositionAsync(options)`
 

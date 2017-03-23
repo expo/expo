@@ -2379,8 +2379,8 @@ ejs@^2.3.4:
   resolved ejs-2.5.6.tgz#479636bfa3fe3b1debd52087f0acb204b4f19c88
 
 electron-to-chromium@^1.2.7:
-  version "1.2.7"
-  resolved electron-to-chromium-1.2.7.tgz#4f748061407e478c76256d04496972b71f647407
+  version "1.2.8"
+  resolved electron-to-chromium-1.2.8.tgz#22c2e6200d350da27d6050db7e3f6f85d18cf4ed
 
 elliptic@^6.0.0:
   version "6.4.0"
@@ -2412,13 +2412,13 @@ encoding@^0.1.11:
   dependencies:
     iconv-lite "~0.4.13"
 
-end-of-stream@1.0.0, end-of-stream@^1.0.0:
+end-of-stream@1.0.0:
   version "1.0.0"
   resolved end-of-stream-1.0.0.tgz#d4596e702734a93e40e9af864319eabd99ff2f0e
   dependencies:
     once "~1.3.0"
 
-end-of-stream@^1.1.0:
+end-of-stream@^1.0.0, end-of-stream@^1.1.0:
   version "1.4.0"
   resolved end-of-stream-1.4.0.tgz#7a90d833efda6cfa6eac0f4949dbb0fad3a63206
   dependencies:
@@ -4312,9 +4312,9 @@ isemail@2.x.x:
   version "2.2.1"
   resolved isemail-2.2.1.tgz#0353d3d9a62951080c262c2aa0a42b8ea8e9e2a6
 
-isexe@^1.1.1:
-  version "1.1.2"
-  resolved isexe-1.1.2.tgz#36f3e22e60750920f5e7241a476a8c6a42275ad0
+isexe@^2.0.0:
+  version "2.0.0"
+  resolved isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10
 
 isnumeric@^0.2.0:
   version "0.2.0"
@@ -7628,8 +7628,8 @@ systemjs@0.20.10:
   resolved systemjs-0.20.10.tgz#53ece512717fa10fcbf67b4e95fdb7c094219be8
 
 systemjs@^0.19.46:
-  version "0.19.46"
-  resolved systemjs-0.19.46.tgz#c04574b3335f052a0e3c7a00ee4188c6e4c1e38e
+  version "0.19.47"
+  resolved systemjs-0.19.47.tgz#c8c93937180f3f5481c769cd2720763fb4a31c6f
   dependencies:
     when "^3.7.5"
 
@@ -8486,10 +8486,10 @@ whet.extend@~0.9.9:
   resolved whet.extend-0.9.9.tgz#f877d5bf648c97e5aa542fadc16d6a259b9c11a1
 
 which@^1.0.9, which@^1.1.1, which@^1.2.12, which@^1.2.9:
-  version "1.2.12"
-  resolved which-1.2.12.tgz#de67b5e450269f194909ef23ece4ebe416fa1192
+  version "1.2.14"
+  resolved which-1.2.14.tgz#9a87c4378f03e827cecaf1acdf56c736c01c14e5
   dependencies:
-    isexe "^1.1.1"
+    isexe "^2.0.0"
 
 wide-align@^1.1.0:
   version "1.1.0"
