@@ -44,7 +44,7 @@ deploy script will respect this value).
 
 ### Testing changes locally
 
-Make sure your machine has Docker for Mac. If it doesn't go to https://docs.docker.com/docker-for-mac/ and download and install it.
+Make sure your machine has [Docker installed](https://docs.docker.com/engine/installation/#platform-support-matrix).
 
 Be sure you've run all unigulp-y things.
 
