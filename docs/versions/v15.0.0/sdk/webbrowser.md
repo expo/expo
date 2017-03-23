@@ -4,8 +4,7 @@ title: WebBrowser
 
 Provides access to the system's web browser and supports handling redirects. On iOS, it uses SFSafariViewController to provide a secure Safari browser modal that shares cookies with the Safari app, and on Android it uses ChromeCustomTabs for the same reason.
 
-<div data-sketch-id="r116LYJne" data-sketch-platform="ios" data-sketch-preview="true" class="embedded-example-container"></div>
-
+![sketch](r116LYJne)
 <br />
 
 #### Authentication

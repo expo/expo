@@ -3143,6 +3143,19 @@ gatsby-typegen-remark-expo-autolink@1.1.0:
     react "^15.4.2"
     unist-util-visit "^1.1.1"
 
+gatsby-typegen-remark-expo-embed@1.0.1:
+  version "1.0.1"
+  resolved gatsby-typegen-remark-expo-embed-1.0.1.tgz#68e566c79e4e51c32af8d00dc29a3b4a9775e247
+  dependencies:
+    babel-plugin-lodash "^3.2.11"
+    babel-plugin-transform-flow-strip-types "^6.22.0"
+    babel-preset-es2015 "^6.22.0"
+    babel-preset-react "^6.23.0"
+    babel-preset-react-hmre "^1.1.1"
+    babel-preset-stage-0 "^6.22.0"
+    react "^15.4.2"
+    unist-util-visit "^1.1.1"
+
 gatsby-typegen-remark-prismjs@1.0.0-alpha12:
   version "1.0.0-alpha12"
   resolved gatsby-typegen-remark-prismjs-1.0.0-alpha12.tgz#ce6c1bfeddfc5f767c94482b0a4537683323609f

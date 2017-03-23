@@ -42,8 +42,7 @@ If the user cancelled taking a photo, returns `{ cancelled: true }`.
 
 Otherwise, returns `{ cancelled: false, uri, width, height }` where `uri` is a URI to the local image file (useable in a React Native `Image` tag) and `width, height` specify the dimensions of the image.
 
-<div data-sketch-id="S19Ge5k2g" data-sketch-platform="ios" data-sketch-preview="true" class="embedded-example-container"></div>
-<br />
+![sketch](S19Ge5k2g)
 
 When you run this example and pick an image, you will see the image that you picked show up in your app, and something similar to the following logged to your console:
 

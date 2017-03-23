@@ -38,8 +38,8 @@ concurrently@^3.3.0:
     tree-kill "^1.1.0"
 
 date-fns@^1.23.0:
-  version "1.28.0"
-  resolved date-fns-1.28.0.tgz#3b12f54b66467807bb95e5930caf7bfb4170bc1a
+  version "1.28.1"
+  resolved date-fns-1.28.1.tgz#9e2325c77b1cb7da3a9fd9822ba52c188a4ce91b
 
 escape-string-regexp@^1.0.0:
   version "1.0.5"

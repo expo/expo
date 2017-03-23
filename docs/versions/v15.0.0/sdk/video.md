@@ -4,7 +4,7 @@ title: Video
 
 A component that displays a video inline with the other React Native UI elements in your app. The display dimensions and position of the video on screen can be set using usual React Native styling.
 
-<div data-sketch-id="B1eqoFkhx" data-sketch-platform="ios" data-sketch-preview="true" class="embedded-example-container"></div>
+![sketch](B1eqoFkhx)
 <br />
 
 ## `Expo.Video`

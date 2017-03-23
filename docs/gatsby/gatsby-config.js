@@ -1,6 +1,6 @@
 module.exports = {
   siteMetadata: {
-    title: 'Expo'
+    title: 'Expo',
   },
   plugins: [
     `gatsby-plugin-glamor`,
@@ -8,15 +8,15 @@ module.exports = {
     {
       resolve: `gatsby-plugin-google-analytics`,
       options: {
-        trackingId: `UA-53647600-7`
-      }
+        trackingId: `UA-53647600-7`,
+      },
     },
     {
       resolve: `gatsby-source-filesystem`,
       options: {
         name: `docs`,
-        path: `${__dirname}/../versions`
-      }
+        path: `${__dirname}/../versions`,
+      },
     },
     `gatsby-parser-remark`,
     `gatsby-parser-sharp`,
@@ -28,28 +28,29 @@ module.exports = {
             resolve: `gatsby-typegen-remark-responsive-image`,
             options: {
               maxWidth: 800,
-              wrapperStyle: `margin-bottom: 1.45rem;`
-            }
+              wrapperStyle: `margin-bottom: 1.45rem;`,
+            },
           },
           {
             resolve: `gatsby-typegen-remark-responsive-iframe`,
             options: {
-              wrapperStyle: `margin-bottom: 1.45rem;`
-            }
+              wrapperStyle: `margin-bottom: 1.45rem;`,
+            },
           },
           `gatsby-typegen-remark-copy-linked-files`,
           `gatsby-typegen-remark-prismjs`,
           `gatsby-typegen-remark-smartypants`,
+          `gatsby-typegen-remark-expo-embed`,
           {
             resolve: `gatsby-typegen-remark-expo-autolink`,
             options: {
-              offsetY: 69.6
-            }
-          }
-        ]
-      }
+              offsetY: 69.6,
+            },
+          },
+        ],
+      },
     },
     `gatsby-typegen-filesystem`,
-    `gatsby-typegen-sharp`
-  ]
+    `gatsby-typegen-sharp`,
+  ],
 };
