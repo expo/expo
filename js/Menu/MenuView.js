@@ -35,6 +35,8 @@ import FriendlyUrls from 'FriendlyUrls';
 let SCREEN_WIDTH = Dimensions.get('window').width;
 let MENU_NARROW_SCREEN = (SCREEN_WIDTH < 375);
 
+const AnimatedBlurView = Animated.createAnimatedComponent(Expo.BlurView);
+
 export default class MenuView extends React.Component {
 
   static propTypes = {
@@ -69,21 +71,28 @@ export default class MenuView extends React.Component {
       inputRange: [0, 1],
       outputRange: [1.1, 1],
     });
+    let intensity = this.state.transitionIn.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, 90],
+    });
 
     return (
-      <Animated.View style={styles.container}
+      <AnimatedBlurView
+        style={styles.container}
+        tint="light"
+        intensity={intensity}
         onStartShouldSetResponder={() => true}
         onResponderGrant={this._onPressContainer}>
         <Animated.View style={[styles.overlay, {opacity: this.state.transitionIn, transform: [{scale}]}]}>
           {this.props.isNuxFinished ? this._renderTaskInfoRow() : this._renderNUXRow()}
           <View style={styles.separator} />
           <View style={styles.buttonContainer}>
-            {this._renderButton('Reload', Browser.refresh)}
+            {this._renderButton('Refresh', Browser.refresh)}
             {this._renderButton(`Go to Expo Home`, this._goToHome)}
-            {this._maybeRenderDevMenuButton()}
           </View>
+          {this._maybeRenderDevMenuButton()}
         </Animated.View>
-      </Animated.View>
+      </AnimatedBlurView>
     );
   }
 
@@ -178,7 +187,14 @@ export default class MenuView extends React.Component {
 
   _maybeRenderDevMenuButton() {
     if (this.state.enableDevMenuButton) {
-      return this._renderButton('Show Dev Menu', this._onPressDevMenuButton);
+      return (
+        <View>
+          <View style={styles.separator} />
+          <View style={styles.buttonContainer}>
+            {this._renderButton('Show Dev Menu', this._onPressDevMenuButton)}
+          </View>
+        </View>
+      )
     }
     return null;
   }
@@ -221,8 +237,7 @@ let styles = StyleSheet.create({
   },
   overlay: {
     flex: 1,
-    backgroundColor: '#ffffff',
-    borderRadius: 6,
+    backgroundColor: 'transparent',
     marginHorizontal: 16,
   },
   taskMetaRow: {
@@ -268,7 +283,6 @@ let styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 4,
-    marginBottom: 8,
     backgroundColor: 'transparent',
   },
   button: {
