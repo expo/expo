@@ -162,32 +162,26 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)_handleMenuCommand
 {
-  [[self _foregroundAppManager] showMenu];
+  if (EX_ENABLE_LEGACY_MENU_BEHAVIOR) {
+    [[EXKernel sharedInstance].bridgeRegistry.lastKnownForegroundAppManager showMenu];
+  } else {
+    [[EXKernel sharedInstance] dispatchKernelJSEvent:@"switchTasks" body:@{} onSuccess:nil onFailure:nil];
+  }
 }
 
 - (void)_handleRefreshCommand
 {
-  [[self _foregroundAppManager] reloadBridge];
+  [[EXKernel sharedInstance].bridgeRegistry.lastKnownForegroundAppManager reloadBridge];
 }
 
 - (void)_handleDisableDebuggingCommand
 {
-  [[self _foregroundAppManager] disableRemoteDebugging];
+  [[EXKernel sharedInstance].bridgeRegistry.lastKnownForegroundAppManager disableRemoteDebugging];
 }
 
 - (void)_handleToggleInspectorCommand
 {
-  [[self _foregroundAppManager] toggleElementInspector];
-}
-
-- (EXReactAppManager *)_foregroundAppManager
-{
-  EXKernelBridgeRegistry *bridgeRegistry = [EXKernel sharedInstance].bridgeRegistry;
-  EXKernelBridgeRecord *foregroundBridgeRecord = [bridgeRegistry recordForBridge:bridgeRegistry.lastKnownForegroundBridge];
-  if (foregroundBridgeRecord) {
-    return foregroundBridgeRecord.appManager;
-  }
-  return bridgeRegistry.kernelAppManager;
+  [[EXKernel sharedInstance].bridgeRegistry.lastKnownForegroundAppManager toggleElementInspector];
 }
 
 #pragma mark - managing list of commands

@@ -3,6 +3,7 @@
 #import "EXKernelBridgeRegistry.h"
 #import "EXFrame.h"
 #import "EXFrameReactAppManager.h"
+#import "EXKernelReactAppManager.h"
 
 #import <React/RCTBridge.h>
 
@@ -105,6 +106,15 @@
 - (BOOL)experienceIdIsRecoveringFromError:(NSString *)experienceId
 {
   return (experienceId && [_experienceIdErrorRecoverySet containsObject:experienceId]);
+}
+
+- (EXReactAppManager *)lastKnownForegroundAppManager
+{
+  EXKernelBridgeRecord *foregroundBridgeRecord = [self recordForBridge:_lastKnownForegroundBridge];
+  if (foregroundBridgeRecord) {
+    return foregroundBridgeRecord.appManager;
+  }
+  return _kernelAppManager;
 }
 
 - (NSString *)description

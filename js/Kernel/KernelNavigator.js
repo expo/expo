@@ -39,7 +39,7 @@ const KERNEL_ROUTE_BROWSER = 1;
 const FORCE_TOUCH_SWITCH_THRESHOLD = 0.995;
 const FORCE_TOUCH_CAPTURE_THRESHOLD = 0.85;
 
-const ENABLE_LEGACY_MENU_BEHAVIOR = true;
+const ENABLE_LEGACY_MENU_BEHAVIOR = false;
 
 const MENU_FADE_IN_TOTAL_MS = 400;
 const MENU_FADE_IN_BEGIN_MS = 50; // make this one shorter
@@ -113,6 +113,7 @@ class KernelNavigator extends React.Component {
       }
     });
     DeviceEventEmitter.addListener('ExponentKernel.foregroundTask', this._foregroundTask);
+    DeviceEventEmitter.addListener('ExponentKernel.switchTasks', this._handleSwitchTasksEvent);
     this._loadNuxStateAsync();
   }
 
@@ -211,7 +212,7 @@ class KernelNavigator extends React.Component {
 
   @autobind
   _onContainerStartShouldSetResponder() {
-    return (!this.props.isShell && this.props.tasks.size > 0 && !this.props.isMenuVisible);
+    return this._isSwitchTasksAvailable();
   }
 
   @autobind
@@ -287,8 +288,21 @@ class KernelNavigator extends React.Component {
     });
   }
 
-  @autobind
-  _switchTasks() {
+  _handleSwitchTasksEvent = (_) => {
+    if (ENABLE_LEGACY_MENU_BEHAVIOR) {
+      // this behavior is not available if the old button/gesture are being used instead
+      return;
+    }
+    if (this._isSwitchTasksAvailable()) {
+      this._switchTasks();
+    }
+  }
+
+  _isSwitchTasksAvailable = () => {
+    return (!this.props.isShell && this.props.tasks.size > 0 && !this.props.isMenuVisible);
+  }
+
+  _switchTasks = () => {
     this._hasTouch = false;
     this._hasDoubleTouch = false;
     if (this.props.isHomeVisible) {

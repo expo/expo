@@ -3,6 +3,7 @@
 #import "EXKernelBridgeRecord.h"
 
 @class RCTBridge;
+@class EXReactAppManager;
 @class EXFrameReactAppManager;
 @class EXKernelReactAppManager;
 
@@ -19,6 +20,11 @@
  *  but not to any others which may be open, e.g. UIApplicationState changes.
  */
 @property (nonatomic, weak) id lastKnownForegroundBridge;
+
+/**
+ *  Helper method, computed from `self.lastKnownForegroundBridge`.
+ */
+@property (nonatomic, readonly) EXReactAppManager *lastKnownForegroundAppManager;
 
 /**
  *  Sometimes we need to keep a native reference to an EXFrame error that
