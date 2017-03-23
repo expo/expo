@@ -7,6 +7,9 @@
 
 @interface ABI15_0_0EXWebBrowser () <SFSafariViewControllerDelegate>
 
+@property (nonatomic, copy) ABI15_0_0RCTPromiseResolveBlock redirectResolve;
+@property (nonatomic, copy) ABI15_0_0RCTPromiseRejectBlock redirectReject;
+
 @end
 
 NSString *ABI15_0_0EXWebBrowserErrorCode = @"ABI15_0_0EXWebBrowser";
@@ -14,8 +17,6 @@ NSString *ABI15_0_0EXWebBrowserErrorCode = @"ABI15_0_0EXWebBrowser";
 
 @implementation ABI15_0_0EXWebBrowser
 {
-  ABI15_0_0RCTPromiseResolveBlock _redirectResolve;
-  ABI15_0_0RCTPromiseRejectBlock _redirectReject;
   UIStatusBarStyle _initialStatusBarStyle;
 }
 
@@ -59,11 +60,15 @@ ABI15_0_0RCT_EXPORT_METHOD(openBrowserAsync:(NSString *)authURL
 }
 
 ABI15_0_0RCT_EXPORT_METHOD(dismissBrowser) {
-  [ABI15_0_0RCTPresentedViewController() dismissViewControllerAnimated:true completion:^{
-    _redirectResolve(@{
-                       @"type": @"dismissed",
-                       });
-    [self flowDidFinish];
+  __weak typeof(self) weakSelf = self;
+  [ABI15_0_0RCTPresentedViewController() dismissViewControllerAnimated:YES completion:^{
+    __strong typeof(self) strongSelf = weakSelf;
+    if (strongSelf) {
+      strongSelf.redirectResolve(@{
+                         @"type": @"dismissed",
+                         });
+      [strongSelf flowDidFinish];
+    }
   }];
 }
 

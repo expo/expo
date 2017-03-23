@@ -7,6 +7,9 @@
 
 @interface ABI14_0_0EXWebBrowser () <SFSafariViewControllerDelegate>
 
+@property (nonatomic, copy) ABI14_0_0RCTPromiseResolveBlock redirectResolve;
+@property (nonatomic, copy) ABI14_0_0RCTPromiseRejectBlock redirectReject;
+
 @end
 
 NSString *ABI14_0_0EXWebBrowserErrorCode = @"ABI14_0_0EXWebBrowser";
@@ -14,8 +17,6 @@ NSString *ABI14_0_0EXWebBrowserErrorCode = @"ABI14_0_0EXWebBrowser";
 
 @implementation ABI14_0_0EXWebBrowser
 {
-  ABI14_0_0RCTPromiseResolveBlock _redirectResolve;
-  ABI14_0_0RCTPromiseRejectBlock _redirectReject;
   UIStatusBarStyle _initialStatusBarStyle;
 }
 
@@ -37,7 +38,10 @@ ABI14_0_0RCT_EXPORT_METHOD(openBrowserAsync:(NSString *)authURL
   _redirectReject = reject;
   _redirectResolve = resolve;
   _initialStatusBarStyle = ABI14_0_0RCTSharedApplication().statusBarStyle;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   [ABI14_0_0RCTSharedApplication() setStatusBarStyle:UIStatusBarStyleDefault animated: YES];
+#pragma clang diagnostic pop
   
   if ([SFSafariViewController class]) {
     // Safari View Controller to authorize request
@@ -56,11 +60,15 @@ ABI14_0_0RCT_EXPORT_METHOD(openBrowserAsync:(NSString *)authURL
 }
 
 ABI14_0_0RCT_EXPORT_METHOD(dismissBrowser) {
-  [ABI14_0_0RCTPresentedViewController() dismissViewControllerAnimated:true completion:^{
-    _redirectResolve(@{
-                       @"type": @"dismissed",
-                       });
-    [self flowDidFinish];
+  __weak typeof(self) weakSelf = self;
+  [ABI14_0_0RCTPresentedViewController() dismissViewControllerAnimated:YES completion:^{
+    __strong typeof(self) strongSelf = weakSelf;
+    if (strongSelf) {
+      strongSelf.redirectResolve(@{
+                         @"type": @"dismissed",
+                         });
+      [strongSelf flowDidFinish];
+    }
   }];
 }
 
@@ -78,7 +86,10 @@ ABI14_0_0RCT_EXPORT_METHOD(dismissBrowser) {
 
 -(void)flowDidFinish
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   [ABI14_0_0RCTSharedApplication() setStatusBarStyle:_initialStatusBarStyle animated:YES];
+#pragma clang diagnostic pop
   _redirectResolve = nil;
   _redirectReject = nil;
 }
