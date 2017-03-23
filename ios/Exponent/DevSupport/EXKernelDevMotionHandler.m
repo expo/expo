@@ -57,13 +57,10 @@ static NSNotificationName EXShakeGestureNotification = @"EXShakeGestureNotificat
 
 - (void)_handleShakeGesture
 {
-  EXKernelBridgeRegistry *bridgeRegistry = [EXKernel sharedInstance].bridgeRegistry;
-  EXKernelBridgeRecord *foregroundBridgeRecord = [bridgeRegistry recordForBridge:bridgeRegistry.lastKnownForegroundBridge];
-  if (foregroundBridgeRecord) {
-    [foregroundBridgeRecord.appManager showMenu];
+  if (EX_ENABLE_LEGACY_MENU_BEHAVIOR) {
+    [[EXKernel sharedInstance].bridgeRegistry.lastKnownForegroundAppManager showMenu];
   } else {
-    // maybe handle kernel shake
-    [bridgeRegistry.kernelAppManager showMenu];
+    [[EXKernel sharedInstance] dispatchKernelJSEvent:@"switchTasks" body:@{} onSuccess:nil onFailure:nil];
   }
 }
 
