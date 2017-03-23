@@ -158,6 +158,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                              action:^(__unused UIKeyCommand *_) {
                                [weakSelf _handleToggleInspectorCommand];
                              }];
+  [self registerKeyCommandWithInput:@"k"
+                      modifierFlags:UIKeyModifierCommand | UIKeyModifierControl
+                             action:^(__unused UIKeyCommand *_) {
+                               [weakSelf _handleKernelMenuCommand];
+                             }];
 }
 
 - (void)_handleMenuCommand
@@ -182,6 +187,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)_handleToggleInspectorCommand
 {
   [[EXKernel sharedInstance].bridgeRegistry.lastKnownForegroundAppManager toggleElementInspector];
+}
+
+- (void)_handleKernelMenuCommand
+{
+  EXReactAppManager *foregroundAppManager = [EXKernel sharedInstance].bridgeRegistry.lastKnownForegroundAppManager;
+  if (foregroundAppManager == [EXKernel sharedInstance].bridgeRegistry.kernelAppManager) {
+    [foregroundAppManager showDevMenu];
+  }
 }
 
 #pragma mark - managing list of commands
