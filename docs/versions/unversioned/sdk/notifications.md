@@ -10,15 +10,15 @@ Provides access to remote notifications (also known as push notifications) and l
 
 #### Arguments
 
--   **listener (_function_)** -- A callback that is invoked when a remote or local notification is received or selected, with a [Notification](#Notification) object.
+-   **listener (_function_)** -- A callback that is invoked when a remote or local notification is received or selected, with a Notification object.
 
 #### Returns
 
-An [EventSubscription](#EventSubscription) object that you can call remove() on when you would like to unsubscribe the listener.
+An [EventSubscription](#eventsubscription) object that you can call remove() on when you would like to unsubscribe the listener.
 
 ### Related types
 
-`EventSubscription`
+### `EventSubscription`
 
 Returned from `addListener`.
 
