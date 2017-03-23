@@ -10,6 +10,14 @@ if (sdkVersion === 'unversioned') {
   sdkVersion = sdkVersion.includes('v') ? sdkVersion.substring(1) : sdkVersion;
 }
 
+// Stop now if outside of our monorepo
+try {
+  fs.statSync(`../server/www/xdl-schemas/${sdkVersion}-schema.json`);
+  console.log('Schema file found, re-generating configuration docs');
+} catch(e) {
+  process.exit(0);
+}
+
 let ExpSchema;
 try {
   ExpSchema = require(`../../server/www/xdl-schemas/${sdkVersion}-schema.json`).schema;
