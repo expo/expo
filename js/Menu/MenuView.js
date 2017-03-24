@@ -87,8 +87,8 @@ export default class MenuView extends React.Component {
           {this.props.isNuxFinished ? this._renderTaskInfoRow() : this._renderNUXRow()}
           <View style={styles.separator} />
           <View style={styles.buttonContainer}>
-            {this._renderButton('Refresh', Browser.refresh)}
-            {this._renderButton(`Go to Expo Home`, this._goToHome)}
+            {this._renderButton('Refresh', Browser.refresh, require('../Assets/ios-menu-refresh.png'))}
+            {this._renderButton(`Go to Expo Home`, this._goToHome, require('../Assets/ios-menu-home.png'))}
           </View>
           {this._maybeRenderDevMenuButton()}
         </Animated.View>
@@ -173,11 +173,24 @@ export default class MenuView extends React.Component {
     );
   }
 
-  _renderButton(text, onPress) {
+  _renderButton(text, onPress, iconSource) {
+    let icon;
+    if (iconSource) {
+      icon = (
+        <Image
+          style={styles.buttonIcon}
+          source={iconSource} />
+      );
+    } else {
+      icon = (
+        <View style={styles.buttonIcon} />
+      );
+    }
     return (
       <TouchableOpacity
         style={styles.button}
         onPress={onPress}>
+        {icon}
         <Text style={styles.buttonText}>
           {text}
         </Text>
@@ -231,7 +244,6 @@ let styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     right: 0,
-    alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
   },
@@ -239,6 +251,7 @@ let styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'transparent',
     marginHorizontal: 16,
+    marginTop: 32,
   },
   taskMetaRow: {
     flexDirection: 'row',
@@ -256,7 +269,7 @@ let styles = StyleSheet.create({
     color: '#595c68',
     backgroundColor: 'transparent',
     fontWeight: '700',
-    fontSize: 18,
+    fontSize: 16,
     marginTop: 16,
     marginBottom: 2,
   },
@@ -271,7 +284,7 @@ let styles = StyleSheet.create({
     width: 52,
     height: 52,
     marginTop: 12,
-    marginRight: 12,
+    marginRight: 16,
     alignSelf: 'center',
     backgroundColor: 'transparent',
   },
@@ -279,7 +292,7 @@ let styles = StyleSheet.create({
     height: 1 / PixelRatio.get(),
     backgroundColor: '#c5c6c7',
     marginHorizontal: 16,
-    marginVertical: 12,
+    marginVertical: 10,
   },
   buttonContainer: {
     marginTop: 4,
@@ -287,18 +300,21 @@ let styles = StyleSheet.create({
   },
   button: {
     backgroundColor: 'transparent',
-    borderRadius: 3,
-    borderWidth: 1,
-    borderColor: '#4596e1',
-    alignItems: 'center',
-    marginVertical: 8,
     marginHorizontal: 12,
+    flexDirection: 'row',
+  },
+  buttonIcon: {
+    width:16,
+    height: 16,
+    marginVertical: 8,
+    alignSelf:'flex-start'
   },
   buttonText: {
-    color: '#056ecf',
+    color: '#595c68',
     fontSize: 14,
-    textAlign: 'center',
-    marginVertical: 12,
+    textAlign: 'left',
+    marginVertical: 8,
+    paddingLeft: 12,
     fontWeight: '700',
   },
   nuxRow: {
