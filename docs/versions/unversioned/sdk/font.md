@@ -32,8 +32,8 @@ Doesn't return anything and simply awaits till all fonts are available to use.
 
 ```javascript
 Expo.Font.loadAsync({
-  title: '[http://url/to/font1.ttf'](http://url/to/font1.ttf%27),
-  cursive: '[http://url/to/font2.ttf'](http://url/to/font2.ttf%27),
+  title: 'http://url/to/font1.ttf',
+  cursive: 'http://url/to/font2.ttf',
 });
 ```
 
