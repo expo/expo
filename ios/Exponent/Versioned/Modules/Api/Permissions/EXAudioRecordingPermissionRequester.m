@@ -1,42 +1,42 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import "EXAVPermissionRequester.h"
+#import "EXAudioRecordingPermissionRequester.h"
 #import <React/RCTUtils.h>
 
 #import <AVFoundation/AVFoundation.h>
 
-@interface EXAVPermissionRequester ()
+@interface EXAudioRecordingPermissionRequester ()
 
 @property (nonatomic, weak) id<EXPermissionRequesterDelegate> delegate;
 
 @end
 
-@implementation EXAVPermissionRequester
+@implementation EXAudioRecordingPermissionRequester
 
 + (NSDictionary *)permissions
 {
-  AVAuthorizationStatus systemStatus;
+  AVAudioSessionRecordPermission systemStatus;
   EXPermissionStatus status;
 
-  NSString *cameraUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSCameraUsageDescription"];
   NSString *microphoneUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSMicrophoneUsageDescription"];
-  if (!(cameraUsageDescription && microphoneUsageDescription)) {
-    RCTFatal(RCTErrorWithMessage(@"This app is missing either NSCameraUsageDescription or NSMicrophoneUsageDescription, so audio/video services will fail. Add one of these keys to your bundle's Info.plist."));
-    systemStatus = AVAuthorizationStatusDenied;
+  if (!microphoneUsageDescription) {
+    RCTFatal(RCTErrorWithMessage(@"This app is missing NSMicrophoneUsageDescription, so audio services will fail. Add one of these keys to your bundle's Info.plist."));
+    systemStatus = AVAudioSessionRecordPermissionDenied;
   } else {
-    systemStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+    systemStatus = [[AVAudioSession sharedInstance] recordPermission];
   }
   switch (systemStatus) {
-    case AVAuthorizationStatusAuthorized:
+    case AVAudioSessionRecordPermissionGranted:
       status = EXPermissionStatusGranted;
       break;
-    case AVAuthorizationStatusDenied: case AVAuthorizationStatusRestricted:
+    case AVAudioSessionRecordPermissionDenied:
       status = EXPermissionStatusDenied;
       break;
-    case AVAuthorizationStatusNotDetermined:
+    case AVAudioSessionRecordPermissionUndetermined:
       status = EXPermissionStatusUndetermined;
       break;
   }
+
   return @{
     @"status": [EXPermissions permissionStringForStatus:status],
     @"expires": EXPermissionExpiresNever,
@@ -45,7 +45,7 @@
 
 - (void)requestPermissionsWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject
 {
-  [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
+  [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
     resolve([[self class] permissions]);
     if (_delegate) {
       [_delegate permissionRequesterDidFinish:self];

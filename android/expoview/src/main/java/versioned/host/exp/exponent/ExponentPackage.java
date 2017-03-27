@@ -144,7 +144,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new KeepAwakeModule(reactContext));
         nativeModules.add(new ExponentTestNativeModule(reactContext));
         nativeModules.add(new WebBrowserModule(reactContext));
-        nativeModules.add(new AudioModule(reactContext));
+        nativeModules.add(new AudioModule(reactContext, scopedContext));
         nativeModules.add(new NativeAdManager(reactContext));
         nativeModules.add(new AdSettingsManager(reactContext));
         nativeModules.add(new InterstitialAdManager(reactContext));

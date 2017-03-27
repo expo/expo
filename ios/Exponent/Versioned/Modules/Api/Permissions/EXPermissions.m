@@ -1,10 +1,11 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import "EXPermissions.h"
-#import "EXLocationRequester.h"
-#import "EXRemoteNotificationRequester.h"
-#import "EXAVPermissionRequester.h"
+#import "EXAudioRecordingPermissionRequester.h"
+#import "EXCameraPermissionRequester.h"
 #import "EXContactsRequester.h"
+#import "EXLocationRequester.h"
+#import "EXPermissions.h"
+#import "EXRemoteNotificationRequester.h"
 
 NSString * const EXPermissionExpiresNever = @"never";
 
@@ -41,9 +42,11 @@ RCT_REMAP_METHOD(getAsync,
   } else if ([type isEqualToString:@"location"]) {
     resolve([EXLocationRequester permissions]);
   } else if ([type isEqualToString:@"camera"]) {
-    resolve([EXAVPermissionRequester permissions]);
+    resolve([EXCameraPermissionRequester permissions]);
   } else if ([type isEqualToString:@"contacts"]) {
     resolve([EXContactsRequester permissions]);
+  } else if ([type isEqualToString:@"audioRecording"]) {
+    resolve([EXAudioRecordingPermissionRequester permissions]);
   } else {
     reject(@"E_PERMISSION_UNKNOWN", [NSString stringWithFormat:@"Unrecognized permission: %@", type], nil);
   }
@@ -65,9 +68,11 @@ RCT_REMAP_METHOD(askAsync,
       } else if ([type isEqualToString:@"location"]) {
         requester = [[EXLocationRequester alloc] init];
       } else if ([type isEqualToString:@"camera"]) {
-        requester = [[EXAVPermissionRequester alloc] init];
+        requester = [[EXCameraPermissionRequester alloc] init];
       } else if ([type isEqualToString:@"contacts"]) {
         requester = [[EXContactsRequester alloc] init];
+      } else if ([type isEqualToString:@"audioRecording"]) {
+        requester = [[EXAudioRecordingPermissionRequester alloc] init];
       } else {
         // TODO: other types of permission requesters, e.g. facebook
         reject(@"E_PERMISSION_UNSUPPORTED", [NSString stringWithFormat:@"Cannot request permission: %@", type], nil);
