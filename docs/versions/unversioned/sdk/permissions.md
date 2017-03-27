@@ -34,7 +34,7 @@ Prompt the user for a permission. If they have already granted access, response 
 
 #### Arguments
 
-- **type (_string_)** -- The name of the permission.
+-   **type (_string_)** -- The name of the permission.
 
 #### Returns
 
@@ -66,7 +66,11 @@ The permission type for location access.
 
 ### `Expo.Permissions.CAMERA`
 
-The permission type for camera access.
+The permission type for photo and video taking.
+
+### `Expo.Permissions.AUDIO_RECORDING`
+
+The permission type for audio recording.
 
 ### `Expo.Permissions.CONTACTS`
 

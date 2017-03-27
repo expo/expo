@@ -193,7 +193,7 @@ const sound = new Expo.Audio.Sound({
 
     #### Parameters
 
-    -   **callback (_function_)** -- A function taking a single parameter `status` (a dictionary, described in `getStatus`).
+    -   **callback (_function_)** -- A function taking a single parameter `status` (a dictionary, described in `getStatusAsync`).
 
 -   `soundInstance.setStatusPollingTimeoutMillis(millis)`
 
