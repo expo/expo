@@ -520,8 +520,13 @@ continueUserActivity:(NSUserActivity *)userActivity
     components.scheme = @"http";
     url = [components URL];
   }
+  EXCachedResourceBehavior cacheBehavior = kEXCachedResourceFallBackToCache;
+  if ([url.host isEqualToString:@"localhost"]) {
+    // we can't pre-detect if this person is using a developer tool, but using localhost is a pretty solid indicator.
+    cacheBehavior = kEXCachedResourceNoCache;
+  }
   EXManifestResource *manifestResource = [[EXManifestResource alloc] initWithManifestUrl:url originalUrl:originalUrl];
-  [manifestResource loadResourceWithBehavior:kEXCachedResourceFallBackToCache successBlock:^(NSData * _Nonnull data) {
+  [manifestResource loadResourceWithBehavior:cacheBehavior successBlock:^(NSData * _Nonnull data) {
     NSString *manifestString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     success(manifestString);
   } errorBlock:^(NSError * _Nonnull error) {
