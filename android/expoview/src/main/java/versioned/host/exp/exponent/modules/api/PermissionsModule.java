@@ -17,7 +17,7 @@ import com.facebook.react.bridge.WritableMap;
 import host.exp.expoview.Exponent;
 
 public class PermissionsModule  extends ReactContextBaseJavaModule {
-  public static String PERMISSION_EXPIRES_NEVER = "never";
+  private static String PERMISSION_EXPIRES_NEVER = "never";
 
   public PermissionsModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -65,6 +65,10 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
           askForSimplePermission(Manifest.permission.READ_CONTACTS, promise);
           break;
         }
+        case "audioRecording": {
+          askForSimplePermission(Manifest.permission.RECORD_AUDIO, promise);
+          break;
+        }
         default:
           promise.reject("E_PERMISSION_UNSUPPORTED", String.format("Cannot request permission: %s", type));
       }
@@ -86,9 +90,19 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
       case "contacts": {
         return getSimplePermission(Manifest.permission.READ_CONTACTS);
       }
+      case "audioRecording": {
+        return getSimplePermission(Manifest.permission.RECORD_AUDIO);
+      }
       default:
         return null;
     }
+  }
+
+  private WritableMap getAlwaysGrantedPermissions() {
+    WritableMap response = Arguments.createMap();
+    response.putString("status", "granted");
+    response.putString("expires", PERMISSION_EXPIRES_NEVER);
+    return response;
   }
 
   private WritableMap getLocationPermissions() {
@@ -96,13 +110,13 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
     Boolean isGranted = false;
     String scope = "none";
 
-    int finePermission = ContextCompat.checkSelfPermission(getReactApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION);
+    int finePermission = ContextCompat.checkSelfPermission(getReactApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION);
     if (finePermission == PackageManager.PERMISSION_GRANTED) {
       response.putString("status", "granted");
       scope =  "fine";
       isGranted = true;
     } else {
-      int coarsePermission = ContextCompat.checkSelfPermission(getReactApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION);
+      int coarsePermission = ContextCompat.checkSelfPermission(getReactApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION);
       if (coarsePermission == PackageManager.PERMISSION_GRANTED) {
         response.putString("status", "granted");
         scope = "coarse";
@@ -134,16 +148,8 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
     } else {
       response.putString("status", "granted");
     }
-
     response.putString("expires", PERMISSION_EXPIRES_NEVER);
 
-    return response;
-  }
-
-  private WritableMap getAlwaysGrantedPermissions() {
-    WritableMap response = Arguments.createMap();
-    response.putString("status", "granted");
-    response.putString("expires", PERMISSION_EXPIRES_NEVER);
     return response;
   }
 

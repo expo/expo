@@ -2,16 +2,20 @@
 
 package versioned.host.exp.exponent.modules.api;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.media.PlaybackParams;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.support.v4.content.ContextCompat;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -20,19 +24,26 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.SystemClock;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
-import static android.media.AudioManager.AUDIOFOCUS_LOSS_TRANSIENT;
-import static android.media.AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK;
+import host.exp.exponent.utils.ExpFileUtils;
+import host.exp.exponent.utils.ScopedContext;
 
 public class AudioModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
   private static final float INITIAL_VOLUME = 1f;
   private static final float INITIAL_RATE = 1f;
+  private static final String AUDIO_MODE_SHOULD_DUCK_KEY = "shouldDuckAndroid";
+  private static final String AUDIO_MODE_INTERRUPTION_MODE_KEY = "interruptionModeAndroid";
 
   private class PlayerData {
     final MediaPlayer mMediaPlayer;
@@ -52,6 +63,19 @@ public class AudioModule extends ReactContextBaseJavaModule implements Lifecycle
       this.mMuted = muted;
       this.mRate = rate;
       this.mShouldCorrectPitch = shouldCorrectPitch;
+
+      mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+        @Override
+        public void onCompletion(final MediaPlayer mediaPlayer) {
+          if (!mediaPlayer.isLooping()) {
+            if (mFinishCallback != null) {
+              mFinishCallback.invoke(getStatus());
+              mFinishCallback = null; // Callback can only be invoked once.
+            }
+            abandonAudioFocusIfNoPlayersPlaying();
+          }
+        }
+      });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -68,6 +92,7 @@ public class AudioModule extends ReactContextBaseJavaModule implements Lifecycle
         return;
       }
 
+      setVolumeAndMuteWithDuck(mMuted, mVolume); // Just in case duck status has changed.
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
         playMediaPlayerWithRateMAndHigher();
       } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -86,6 +111,13 @@ public class AudioModule extends ReactContextBaseJavaModule implements Lifecycle
       }
     }
 
+    void setVolumeAndMuteWithDuck(final boolean muted, final float volume) {
+      final float value = muted ? 0f : mIsDucking ? volume / 2f : volume;
+      mMediaPlayer.setVolume(value, value);
+      mMuted = muted;
+      mVolume = volume;
+    }
+
     WritableMap getStatus() {
       final WritableMap map = Arguments.createMap();
       map.putInt("positionMillis", this.mMediaPlayer.getCurrentPosition());
@@ -99,26 +131,42 @@ public class AudioModule extends ReactContextBaseJavaModule implements Lifecycle
     }
   }
 
+  private enum InterruptionMode {
+    DO_NOT_MIX,
+    DUCK_OTHERS,
+  }
+
   // There will never be many PlayerData objects in the map, so HashMap is most efficient:
   private final Map<Integer, PlayerData> mPlayerDataPool = new HashMap<>();
   private final Set<Integer> mPausedOnPauseSet = new HashSet<>();
   private final Set<Integer> mPausedOnAudioFocusLossSet = new HashSet<>();
   private final ReactApplicationContext mContext;
+  private final ScopedContext mScopedContext;
   private final AudioManager mAudioManager;
   private final AudioManager.OnAudioFocusChangeListener mAFChangeListener;
   private final BroadcastReceiver mNoisyAudioStreamReceiver;
+  private InterruptionMode mInterruptionMode = InterruptionMode.DUCK_OTHERS;
+  private boolean mShouldDuck = true;
+  private boolean mIsDucking = false;
   private boolean mPaused = false;
   private boolean mAcquiredAudioFocus = false;
   private int mKeyCount = 0;
+  private MediaRecorder mRecorder = null;
+  private String mRecordingFilePath = null;
+  private long mRecorderUptimeOfLastStartResume = 0L;
+  private long mRecorderDurationAlreadyRecorded = 0L;
+  private boolean mRecorderIsRecording = false;
+  private boolean mRecorderIsPaused = false;
 
   @Override
   public String getName() {
     return "ExponentAudio";
   }
 
-  public AudioModule(ReactApplicationContext reactContext) {
+  public AudioModule(final ReactApplicationContext reactContext, final ScopedContext scopedContext) {
     super(reactContext);
     this.mContext = reactContext;
+    this.mScopedContext = scopedContext;
     this.mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
 
     // Implemented because of the suggestion here:
@@ -135,17 +183,26 @@ public class AudioModule extends ReactContextBaseJavaModule implements Lifecycle
     mAFChangeListener = new AudioManager.OnAudioFocusChangeListener() {
       public void onAudioFocusChange(int focusChange) {
         if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
+          mIsDucking = false;
           pauseAll(null); // Permanent loss of focus
           mAcquiredAudioFocus = false;
-        } else if (focusChange == AUDIOFOCUS_LOSS_TRANSIENT) {
+        } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+          mIsDucking = false;
           pauseAll(mPausedOnAudioFocusLossSet);
           mAcquiredAudioFocus = false;
-        } else if (focusChange == AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
-          pauseAll(mPausedOnAudioFocusLossSet); // TODO: Duck volume.
-          mAcquiredAudioFocus = false;
+        } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
+          if (mShouldDuck) {
+            mIsDucking = true;
+            updateDuckStatusForAllPlayersPlaying();
+          } else {
+            pauseAll(mPausedOnAudioFocusLossSet);
+            mAcquiredAudioFocus = false;
+          }
         } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
           mAcquiredAudioFocus = true;
           resumeAllThatWerePaused(mPausedOnAudioFocusLossSet);
+          mIsDucking = false;
+          updateDuckStatusForAllPlayersPlaying();
         }
       }
     };
@@ -155,6 +212,11 @@ public class AudioModule extends ReactContextBaseJavaModule implements Lifecycle
     reactContext.addLifecycleEventListener(this);
   }
 
+  private boolean isMissingRecordingPermissions() {
+    return Build.VERSION.SDK_INT >= 23 &&
+        ContextCompat.checkSelfPermission(getReactApplicationContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED;
+  }
+
   // Rejects the promise and returns null if the PlayerData is not found.
   private PlayerData tryGetDataForKey(final Integer key, final Promise promise) {
     final PlayerData data = this.mPlayerDataPool.get(key);
@@ -162,6 +224,32 @@ public class AudioModule extends ReactContextBaseJavaModule implements Lifecycle
       promise.reject("E_AUDIO_NOPLAYER", "Player does not exist.");
     }
     return data;
+  }
+
+  // Rejects the promise and returns false if the MediaRecorder is not found.
+  private boolean checkRecorderExistsOrReject(final Promise promise) {
+    if (mRecorder == null && promise != null) {
+      promise.reject("E_AUDIO_NORECORDER", "Recorder does not exist.");
+    }
+    return mRecorder != null;
+  }
+
+  private long getRecorderDurationMillis() {
+    if (mRecorder == null) {
+      return 0L;
+    }
+    long duration = mRecorderDurationAlreadyRecorded;
+    if (mRecorderIsRecording && mRecorderUptimeOfLastStartResume > 0) {
+      duration += SystemClock.uptimeMillis() - mRecorderUptimeOfLastStartResume;
+    }
+    return duration;
+  }
+
+  private WritableMap getRecorderStatus() {
+    final WritableMap map = Arguments.createMap();
+    map.putBoolean("isRecording", mRecorderIsRecording);
+    map.putInt("durationMillis", (int) getRecorderDurationMillis());
+    return map;
   }
 
   private int getNumPlayersPlaying() {
@@ -179,8 +267,12 @@ public class AudioModule extends ReactContextBaseJavaModule implements Lifecycle
     if (mAcquiredAudioFocus) {
       return true;
     }
+
+    final int audioFocusRequest = mInterruptionMode == InterruptionMode.DO_NOT_MIX
+        ? AudioManager.AUDIOFOCUS_GAIN : AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK;
+
     int result = mAudioManager.requestAudioFocus(mAFChangeListener,
-        AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        AudioManager.STREAM_MUSIC, audioFocusRequest);
     mAcquiredAudioFocus = result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
     return mAcquiredAudioFocus;
   }
@@ -221,7 +313,16 @@ public class AudioModule extends ReactContextBaseJavaModule implements Lifecycle
     pausedSet.clear();
   }
 
-  private void unload(final Integer key) {
+  private void updateDuckStatusForAllPlayersPlaying() {
+    for (final Map.Entry<Integer, PlayerData> keyDataPair : mPlayerDataPool.entrySet()) {
+      final PlayerData data = keyDataPair.getValue();
+      if (data.mMediaPlayer.isPlaying()) {
+        data.setVolumeAndMuteWithDuck(data.mMuted, data.mVolume);
+      }
+    }
+  }
+
+  private void removePlayerForKey(final Integer key) {
     final PlayerData data = this.mPlayerDataPool.get(key);
     if (data != null) {
       data.mMediaPlayer.stop();
@@ -233,12 +334,52 @@ public class AudioModule extends ReactContextBaseJavaModule implements Lifecycle
     this.mPausedOnAudioFocusLossSet.remove(key);
   }
 
+  private void removeRecorder() {
+    if (mRecorder != null) {
+      try {
+        mRecorder.stop();
+      } catch (final RuntimeException e) {
+        // Do nothing-- this just means that the recorder is already stopped,
+        // or was stopped immediately after starting.
+      }
+      mRecorder.release();
+      mRecorder = null;
+    }
+
+    mRecordingFilePath = null;
+    mRecorderIsRecording = false;
+    mRecorderIsPaused = false;
+    mRecorderDurationAlreadyRecorded = 0L;
+    mRecorderUptimeOfLastStartResume = 0L;
+  }
+
   @ReactMethod
   public void setIsEnabled(final Boolean value, final Promise promise) {
+    // The JS side prevents any calls from coming through if Audio is disabled,
+    // so we just need to stop audio in native when the flag is unset.
     if (!value) {
       pauseAll(null);
       this.mPausedOnPauseSet.clear();
       this.mPausedOnAudioFocusLossSet.clear();
+    }
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void setAudioMode(final ReadableMap map, final Promise promise) {
+    mShouldDuck = map.getBoolean(AUDIO_MODE_SHOULD_DUCK_KEY);
+    if (!mShouldDuck) {
+      mIsDucking = false;
+      updateDuckStatusForAllPlayersPlaying();
+    }
+
+    final int interruptionModeInt = map.getInt(AUDIO_MODE_INTERRUPTION_MODE_KEY);
+    switch (interruptionModeInt) {
+      case 1:
+        mInterruptionMode = InterruptionMode.DO_NOT_MIX;
+      case 2:
+      default:
+        mInterruptionMode = InterruptionMode.DUCK_OTHERS;
     }
     promise.resolve(null);
   }
@@ -266,18 +407,6 @@ public class AudioModule extends ReactContextBaseJavaModule implements Lifecycle
 
         final int key = mKeyCount++;
         final PlayerData data = new PlayerData(mp, INITIAL_VOLUME, false, INITIAL_RATE, false);
-        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-          @Override
-          public void onCompletion(final MediaPlayer mediaPlayer) {
-            if (!mediaPlayer.isLooping()) {
-              if (data.mFinishCallback != null) {
-                data.mFinishCallback.invoke(data.getStatus());
-                data.mFinishCallback = null; // Callback can only be invoked once.
-              }
-              abandonAudioFocusIfNoPlayersPlaying();
-            }
-          }
-        });
 
         mPlayerDataPool.put(key, data);
 
@@ -347,7 +476,7 @@ public class AudioModule extends ReactContextBaseJavaModule implements Lifecycle
       return; // tryGetDataForKey has already rejected the promise.
     }
 
-    unload(key);
+    removePlayerForKey(key);
     abandonAudioFocusIfNoPlayersPlaying();
 
     promise.resolve(null);
@@ -369,11 +498,6 @@ public class AudioModule extends ReactContextBaseJavaModule implements Lifecycle
 
   @ReactMethod
   public void setRate(final Integer key, final Double value, final boolean shouldCorrectPitch, final Promise promise) {
-    if (value < 0.0 || value > 32.0) { // TODO: MOVE TO JS
-      promise.reject("E_AUDIO_INCORRECTPARAMETERS", "Rate value must be between 0.0 and 32.0.");
-      return;
-    }
-
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
       promise.reject("E_AUDIO_VERSIONINCOMPATIBLE", "Changing rate is unsupported on Android devices running SDK < 23.");
     } else {
@@ -404,19 +528,12 @@ public class AudioModule extends ReactContextBaseJavaModule implements Lifecycle
 
   @ReactMethod
   public void setVolume(final Integer key, final Double value, final Promise promise) {
-    if (value < 0.0 || value > 1.0) { // TODO: MOVE TO JS
-      promise.reject("E_AUDIO_INCORRECTPARAMETERS", "Volume value must be between 0.0 and 1.0.");
-      return;
-    }
-
     final PlayerData data = tryGetDataForKey(key, promise);
     if (data == null) {
       return; // tryGetDataForKey has already rejected the promise.
     }
 
-    final float floatValue = value.floatValue();
-    data.mMediaPlayer.setVolume(floatValue, floatValue);
-    data.mVolume = floatValue;
+    data.setVolumeAndMuteWithDuck(data.mMuted, value.floatValue());
 
     final WritableMap map = Arguments.createMap();
     map.putMap("status", data.getStatus());
@@ -430,9 +547,7 @@ public class AudioModule extends ReactContextBaseJavaModule implements Lifecycle
       return; // tryGetDataForKey has already rejected the promise.
     }
 
-    final float newVolume = value ? 0f : data.mVolume;
-    data.mMediaPlayer.setVolume(newVolume, newVolume);
-    data.mMuted = value;
+    data.setVolumeAndMuteWithDuck(value, data.mVolume);
 
     final WritableMap map = Arguments.createMap();
     map.putMap("status", data.getStatus());
@@ -475,6 +590,139 @@ public class AudioModule extends ReactContextBaseJavaModule implements Lifecycle
     data.mFinishCallback = callback;
   }
 
+
+  @ReactMethod
+  public void prepareToRecord(final Promise promise) {
+    if (isMissingRecordingPermissions()) {
+      promise.reject("E_MISSING_PERMISSION", "Missing audio recording permissions.");
+      return;
+    }
+
+    removeRecorder();
+
+    final String filename = "recording-" + UUID.randomUUID().toString() + ".3gp";
+    final WritableMap pathOptions = Arguments.createMap();
+    pathOptions.putBoolean("cache", true);
+    try {
+      final File directory = new File(mScopedContext.toScopedPath("Audio", pathOptions));
+      ExpFileUtils.ensureDirExists(directory);
+      mRecordingFilePath = directory + File.separator + filename;
+    } catch (final IOException e) {
+      // This only occurs in the case that the scoped path is not in this experience's scope,
+      // which is never true.
+    }
+
+    mRecorder = new MediaRecorder();
+    mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+    mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+    mRecorder.setOutputFile(mRecordingFilePath);
+    mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+
+    try {
+      mRecorder.prepare();
+    } catch (final Exception e) {
+      promise.reject("E_AUDIO_RECORDERNOTCREATED", "Prepare encountered an error: recorder not prepared", e);
+      removeRecorder();
+      return;
+    }
+
+    final WritableMap map = Arguments.createMap();
+    map.putString("uri", mRecordingFilePath);
+    map.putMap("status", getRecorderStatus());
+    promise.resolve(map);
+  }
+
+  @ReactMethod
+  public void startRecording(final Promise promise) {
+    if (isMissingRecordingPermissions()) {
+      promise.reject("E_MISSING_PERMISSION", "Missing audio recording permissions.");
+      return;
+    }
+
+    if (checkRecorderExistsOrReject(promise)) {
+      try {
+        if (mRecorderIsPaused && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+          mRecorder.resume();
+        } else {
+          mRecorder.start();
+        }
+      } catch (final IllegalStateException e) {
+        promise.reject("E_AUDIO_RECORDING", "Start encountered an error: recording not started", e);
+        return;
+      }
+
+      mRecorderUptimeOfLastStartResume = SystemClock.uptimeMillis();
+      mRecorderIsRecording = true;
+      mRecorderIsPaused = false;
+
+      final WritableMap map = Arguments.createMap();
+      map.putMap("status", getRecorderStatus());
+      promise.resolve(map);
+    }
+  }
+
+  @ReactMethod
+  public void pauseRecording(final Promise promise) {
+    if (checkRecorderExistsOrReject(promise)) {
+      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+        promise.reject("E_AUDIO_VERSIONINCOMPATIBLE", "Pausing an audio recording is unsupported on" +
+            " Android devices running SDK < 24.");
+      } else {
+        try {
+          mRecorder.pause();
+        } catch (final IllegalStateException e) {
+          promise.reject("E_AUDIO_RECORDINGPAUSE", "Pause encountered an error: recording not paused", e);
+          return;
+        }
+
+        mRecorderDurationAlreadyRecorded = getRecorderDurationMillis();
+        mRecorderIsRecording = false;
+        mRecorderIsPaused = true;
+
+        final WritableMap map = Arguments.createMap();
+        map.putMap("status", getRecorderStatus());
+        promise.resolve(map);
+      }
+    }
+  }
+
+  @ReactMethod
+  public void stopRecording(final Promise promise) {
+    if (checkRecorderExistsOrReject(promise)) {
+      try {
+        mRecorder.stop();
+      } catch (final RuntimeException e) {
+        promise.reject("E_AUDIO_RECORDINGSTOP", "Stop encountered an error: recording not stopped", e);
+        return;
+      }
+
+      mRecorderDurationAlreadyRecorded = getRecorderDurationMillis();
+      mRecorderIsRecording = false;
+      mRecorderIsPaused = false;
+
+      final WritableMap map = Arguments.createMap();
+      map.putMap("status", getRecorderStatus());
+      promise.resolve(map);
+    }
+  }
+
+  @ReactMethod
+  public void getRecordingStatus(final Promise promise) {
+    if (checkRecorderExistsOrReject(promise)) {
+      final WritableMap map = Arguments.createMap();
+      map.putMap("status", getRecorderStatus());
+      promise.resolve(map);
+    }
+  }
+
+  @ReactMethod
+  public void unloadRecorder(final Promise promise) {
+    if (checkRecorderExistsOrReject(promise)) {
+      removeRecorder();
+      promise.resolve(null);
+    }
+  }
+
   @Override
   public void onHostResume() {
     if (mPaused) {
@@ -495,8 +743,9 @@ public class AudioModule extends ReactContextBaseJavaModule implements Lifecycle
   public void onHostDestroy() {
     mContext.unregisterReceiver(mNoisyAudioStreamReceiver);
     for (final Integer key : mPlayerDataPool.keySet()) {
-      unload(key);
+      removePlayerForKey(key);
     }
+    removeRecorder();
     abandonAudioFocus();
   }
 }
