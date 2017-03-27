@@ -31,6 +31,8 @@ NSString *kEXKernelShouldForegroundTaskEvent = @"foregroundTask";
 NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
 NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUserDefaultsKey";
 
+NSString * const kEXDevToolShowDevMenuKey = @"devmenu";
+
 @interface EXKernel ()
 
 @property (nonatomic, weak) EXViewController *vcExponentRoot;
@@ -441,9 +443,18 @@ continueUserActivity:(NSUserActivity *)userActivity
   return (!EX_ENABLE_LEGACY_MENU_BEHAVIOR) && [_bridgeRegistry.lastKnownForegroundAppManager areDevtoolsEnabled];
 }
 
-- (void)kernelModuleDidSelectDevMenu:(__unused EXKernelModule *)module
+- (NSDictionary<NSString *, NSString *> *)devMenuItemsForKernelModule:(EXKernelModule *)module
 {
-  [_bridgeRegistry.lastKnownForegroundAppManager showDevMenu];
+  return @{
+    kEXDevToolShowDevMenuKey: @"Show Dev Menu",
+  };
+}
+
+- (void)kernelModule:(EXKernelModule *)module didSelectDevMenuItemWithKey:(NSString *)key
+{
+  if ([key isEqualToString:kEXDevToolShowDevMenuKey]) {
+    [_bridgeRegistry.lastKnownForegroundAppManager showDevMenu];
+  }
 }
 
 - (void)kernelModuleDidSelectKernelDevMenu:(__unused EXKernelModule *)module

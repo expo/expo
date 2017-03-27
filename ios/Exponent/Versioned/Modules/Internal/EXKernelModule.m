@@ -97,14 +97,27 @@ RCT_REMAP_METHOD(doesCurrentTaskEnableDevtools,
   if (_delegate) {
     resolve(@([_delegate kernelModuleShouldEnableDevtools:self]));
   } else {
+    // don't reject, just disable devtools
     resolve(@NO);
   }
 }
 
-RCT_EXPORT_METHOD(showReactNativeDevMenu)
+RCT_REMAP_METHOD(getDevMenuItemsToShow,
+                 getDevMenuItemsToShowWithResolver:(RCTPromiseResolveBlock)resolve
+                 reject:(RCTPromiseRejectBlock)reject)
+{
+  if (_delegate && [_delegate kernelModuleShouldEnableDevtools:self]) {
+    resolve([_delegate devMenuItemsForKernelModule:self]);
+  } else {
+    // don't reject, just show no devtools
+    resolve(@{});
+  }
+}
+
+RCT_EXPORT_METHOD(selectDevMenuItemWithKey:(NSString *)key)
 {
   if (_delegate) {
-    [_delegate kernelModuleDidSelectDevMenu:self];
+    [_delegate kernelModule:self didSelectDevMenuItemWithKey:key];
   }
 }
 

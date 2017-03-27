@@ -12,8 +12,18 @@ didRequestManifestWithUrl:(NSURL *)url
          originalUrl:(NSURL *)originalUrl
              success:(void (^)(NSString *manifestString))success
              failure:(void (^)(NSError *err))failure;
+
+/**
+ *  Whether the kernel JS should show any devtools UI or respond to devtools commands.
+ */
 - (BOOL)kernelModuleShouldEnableDevtools:(EXKernelModule *)module;
-- (void)kernelModuleDidSelectDevMenu:(EXKernelModule *)module;
+
+/**
+ *  Dictionary of `key` => `user facing label` items to show in the kernel JS dev menu.
+ */
+- (NSDictionary <NSString *, NSString *> *)devMenuItemsForKernelModule:(EXKernelModule *)module;
+
+- (void)kernelModule:(EXKernelModule *)module didSelectDevMenuItemWithKey:(NSString *)key;
 
 // TODO: kill this as an RCTDevSettings followup
 - (void)kernelModuleDidSelectKernelDevMenu: (EXKernelModule *)module DEPRECATED_ATTRIBUTE;

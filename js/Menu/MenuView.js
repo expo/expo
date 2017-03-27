@@ -50,7 +50,8 @@ export default class MenuView extends React.Component {
 
     this.state = {
       transitionIn: new Animated.Value(props.shouldFadeIn ? 0 : 1),
-      enableDevMenuButton: false,
+      enableDevMenuTools: false,
+      devMenuItems: {},
     };
   }
 
@@ -62,8 +63,9 @@ export default class MenuView extends React.Component {
         duration: 200,
       }).start();
     }
-    let enableDevMenuButton = await ExponentKernel.doesCurrentTaskEnableDevtools();
-    this.setState({ enableDevMenuButton });
+    let enableDevMenuTools = await ExponentKernel.doesCurrentTaskEnableDevtools();
+    let devMenuItems = await ExponentKernel.getDevMenuItemsToShow();
+    this.setState({ enableDevMenuTools, devMenuItems });
   }
 
   render() {
@@ -87,10 +89,10 @@ export default class MenuView extends React.Component {
           {this.props.isNuxFinished ? this._renderTaskInfoRow() : this._renderNUXRow()}
           <View style={styles.separator} />
           <View style={styles.buttonContainer}>
-            {this._renderButton('Refresh', Browser.refresh, require('../Assets/ios-menu-refresh.png'))}
-            {this._renderButton(`Go to Expo Home`, this._goToHome, require('../Assets/ios-menu-home.png'))}
+            {this._renderButton('refresh', 'Refresh', Browser.refresh, require('../Assets/ios-menu-refresh.png'))}
+            {this._renderButton('home', 'Go to Expo Home', this._goToHome, require('../Assets/ios-menu-home.png'))}
           </View>
-          {this._maybeRenderDevMenuButton()}
+          {this._maybeRenderDevMenuTools()}
         </Animated.View>
       </AnimatedBlurView>
     );
@@ -173,7 +175,7 @@ export default class MenuView extends React.Component {
     );
   }
 
-  _renderButton(text, onPress, iconSource) {
+  _renderButton(key, text, onPress, iconSource) {
     let icon;
     if (iconSource) {
       icon = (
@@ -188,6 +190,7 @@ export default class MenuView extends React.Component {
     }
     return (
       <TouchableOpacity
+        key={key}
         style={styles.button}
         onPress={onPress}>
         {icon}
@@ -198,16 +201,20 @@ export default class MenuView extends React.Component {
     );
   }
 
-  _maybeRenderDevMenuButton() {
-    if (this.state.enableDevMenuButton) {
+  _maybeRenderDevMenuTools() {
+    if (this.state.enableDevMenuTools && this.state.devMenuItems) {
       return (
         <View>
           <View style={styles.separator} />
           <View style={styles.buttonContainer}>
-            {this._renderButton('Show Dev Menu', this._onPressDevMenuButton)}
+            {
+              Object.keys(this.state.devMenuItems).map((key, idx) => {
+                return this._renderButton(key, this.state.devMenuItems[key], () => { this._onPressDevMenuButton(key); });
+              })
+            }
           </View>
         </View>
-      )
+      );
     }
     return null;
   }
@@ -231,8 +238,8 @@ export default class MenuView extends React.Component {
   }
 
   @autobind
-  _onPressDevMenuButton() {
-    ExponentKernel.showReactNativeDevMenu();
+  _onPressDevMenuButton(key) {
+    ExponentKernel.selectDevMenuItemWithKey(key);
     ExStore.dispatch(BrowserActions.showMenuAsync(false));
   }
 }
