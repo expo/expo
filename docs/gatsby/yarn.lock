@@ -3211,9 +3211,9 @@ gatsby-typegen-remark-expo-autolink@1.0.1:
     react "^15.4.2"
     unist-util-visit "^1.1.1"
 
-gatsby-typegen-remark-expo-embed@^1.0.1:
-  version "1.0.1"
-  resolved gatsby-typegen-remark-expo-embed-1.0.1.tgz#68e566c79e4e51c32af8d00dc29a3b4a9775e247
+gatsby-typegen-remark-expo-embed@1.0.2:
+  version "1.0.2"
+  resolved gatsby-typegen-remark-expo-embed-1.0.2.tgz#7d6dee9204639050b0a9814b597503418bf48b8f
   dependencies:
     babel-plugin-lodash "^3.2.11"
     babel-plugin-transform-flow-strip-types "^6.22.0"
@@ -6842,9 +6842,9 @@ rechoir@^0.6.2:
   dependencies:
     resolve "^1.1.6"
 
-"recursive-readdir@git+https://github.com/KyleAMathews/recursive-readdir.git":
+"recursive-readdir@https://github.com/KyleAMathews/recursive-readdir.git":
   version "2.1.0"
-  resolved recursive-readdir.git-fbfe835d2e75a977db2d1e794214aa26ecdb0671#c2017cf4e79556e029da8bae77ff6e0033ecc722
+  resolved "https://github.com/KyleAMathews/recursive-readdir.git#fbfe835d2e75a977db2d1e794214aa26ecdb0671"
   dependencies:
     minimatch "3.0.2"
 
