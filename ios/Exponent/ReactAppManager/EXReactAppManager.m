@@ -14,6 +14,7 @@
 #import <React/RCTDevLoadingView.h>
 #import <React/RCTRootView.h>
 
+NSString * const kEXDevToolShowDevMenuKey = @"devmenu";
 NSTimeInterval const kEXJavaScriptResourceLongerTimeout = 120;
 
 @interface EXReactAppManager ()
@@ -105,6 +106,29 @@ NSTimeInterval const kEXJavaScriptResourceLongerTimeout = 120;
 {
   if ([self areDevtoolsEnabled]) {
     [self.versionManager toggleElementInspectorForBridge:self.reactBridge];
+  }
+}
+
+- (NSDictionary<NSString *, NSString *> *)devMenuItems
+{
+  if ([self.versionManager respondsToSelector:@selector(devMenuItemsForBridge:)]) {
+    return [self.versionManager devMenuItemsForBridge:self.reactBridge];
+  }
+  // pre-SDK 15 default: just make old RN dev menu available
+  return @{
+    kEXDevToolShowDevMenuKey: @"Show Dev Menu",
+  };
+}
+
+- (void)selectDevMenuItemWithKey:(NSString *)key
+{
+  if ([self.versionManager respondsToSelector:@selector(selectDevMenuItemWithKey:onBridge:)]) {
+    [self.versionManager selectDevMenuItemWithKey:key onBridge:self.reactBridge];
+  } else {
+    // pre-SDK 15 default: only option is RN dev menu
+    if ([key isEqualToString:kEXDevToolShowDevMenuKey]) {
+      [self showDevMenu];
+    }
   }
 }
 
