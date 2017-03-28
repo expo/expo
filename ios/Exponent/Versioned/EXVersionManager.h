@@ -20,6 +20,9 @@
 - (void)disableRemoteDebuggingForBridge:(id)bridge;
 - (void)toggleElementInspectorForBridge:(id)bridge;
 
+- (NSDictionary<NSString *, NSString *> *)devMenuItemsForBridge:(id)bridge;
+- (void)selectDevMenuItemWithKey:(NSString *)key onBridge:(id)bridge;
+
 + (NSString *)escapedResourceName:(NSString *)name;
 
 /**

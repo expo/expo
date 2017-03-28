@@ -112,6 +112,24 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
 
 }
 
+- (NSDictionary<NSString *, NSString *> *)devMenuItemsForBridge:(id)bridge
+{
+  return @{
+    @"dev-reload": @"Reload",
+    @"dev-menu": @"Show Dev Menu",
+  };
+}
+
+- (void)selectDevMenuItemWithKey:(NSString *)key onBridge:(id)bridge
+{
+  // TODO: add remaining devtools via RCTDevSettings
+  if ([key isEqualToString:@"dev-reload"]) {
+    [bridge reload];
+  } else if ([key isEqualToString:@"dev-menu"]) {
+    [self showDevMenuForBridge:bridge];
+  }
+}
+
 - (void)showDevMenuForBridge:(id)bridge
 {
   [((RCTDevMenu *)[self _moduleInstanceForBridge:bridge named:@"DevMenu"]) show];
