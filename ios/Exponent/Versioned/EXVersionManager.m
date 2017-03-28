@@ -39,6 +39,15 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
   }
 }
 
+// this is needed because RCTPerfMonitor does not declare a public interface
+// anywhere that we can import.
+@interface RCTPerfMonitorDevSettingsHack <NSObject>
+
+- (void)hide;
+- (void)show;
+
+@end
+
 @interface EXVersionManager ()
 
 // is this the first time this ABI has been touched at runtime?
@@ -117,21 +126,32 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
   RCTDevSettings *devSettings = [self _moduleInstanceForBridge:bridge named:@"DevSettings"];
   NSMutableDictionary *items = [@{
     @"dev-reload": @"Reload",
-    @"dev-menu": @"Show Dev Menu",
+    @"dev-inspector": @"Toggle Element Inspector",
   } mutableCopy];
   if (devSettings.isRemoteDebuggingAvailable) {
     items[@"dev-remote-debug"] = (devSettings.isDebuggingRemotely) ? @"Stop Remote Debugging" : @"Debug Remote JS";
   }
   if (devSettings.isLiveReloadAvailable) {
     items[@"dev-live-reload"] = (devSettings.isLiveReloadEnabled) ? @"Disable Live Reload" : @"Enable Live Reload";
+    items[@"dev-profiler"] = (devSettings.isProfilingEnabled) ? @"Stop Systrace" : @"Start Systrace";
   }
+  if (devSettings.isHotLoadingAvailable) {
+    items[@"dev-hmr"] = (devSettings.isHotLoadingEnabled) ? @"Disable Hot Reloading" : @"Enable Hot Reloading";
+  }
+  if (devSettings.isJSCSamplingProfilerAvailable) {
+    items[@"dev-jsc-profiler"] = @"Start / Stop JS Sampling Profiler";
+  }
+  id perfMonitor = [self _moduleInstanceForBridge:bridge named:@"PerfMonitor"];
+  if (perfMonitor) {
+    items[@"dev-perf-monitor"] = devSettings.isPerfMonitorShown ? @"Hide Perf Monitor" : @"Show Perf Monitor";
+  }
+
   return items;
 }
 
 - (void)selectDevMenuItemWithKey:(NSString *)key onBridge:(id)bridge
 {
   RCTAssertMainThread();
-  // TODO: add remaining devtools via RCTDevSettings
   RCTDevSettings *devSettings = [self _moduleInstanceForBridge:bridge named:@"DevSettings"];
   if ([key isEqualToString:@"dev-reload"]) {
     [bridge reload];
@@ -139,8 +159,25 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
     devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely;
   } else if ([key isEqualToString:@"dev-live-reload"]) {
     devSettings.isLiveReloadEnabled = !devSettings.isLiveReloadEnabled;
-  } else if ([key isEqualToString:@"dev-menu"]) {
-    [self showDevMenuForBridge:bridge];
+  } else if ([key isEqualToString:@"dev-profiler"]) {
+    devSettings.isProfilingEnabled = !devSettings.isProfilingEnabled;
+  } else if ([key isEqualToString:@"dev-hmr"]) {
+    devSettings.isHotLoadingEnabled = !devSettings.isHotLoadingEnabled;
+  } else if ([key isEqualToString:@"dev-jsc-profiler"]) {
+    [devSettings toggleJSCSamplingProfiler];
+  } else if ([key isEqualToString:@"dev-inspector"]) {
+    [devSettings toggleElementInspector];
+  } else if ([key isEqualToString:@"dev-perf-monitor"]) {
+    id perfMonitor = [self _moduleInstanceForBridge:bridge named:@"PerfMonitor"];
+    if (perfMonitor) {
+      if (devSettings.isPerfMonitorShown) {
+        [perfMonitor hide];
+        devSettings.isPerfMonitorShown = NO;
+      } else {
+        [perfMonitor show];
+        devSettings.isPerfMonitorShown = YES;
+      }
+    }
   }
 }
 
