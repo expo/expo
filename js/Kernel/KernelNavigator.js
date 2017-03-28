@@ -299,7 +299,7 @@ class KernelNavigator extends React.Component {
   }
 
   _isSwitchTasksAvailable = () => {
-    return (!this.props.isShell && this.props.tasks.size > 0 && !this.props.isMenuVisible);
+    return (!this.props.isShell && this.props.tasks.size > 0);
   }
 
   _switchTasks = () => {
@@ -312,7 +312,7 @@ class KernelNavigator extends React.Component {
         this.props.dispatch(BrowserActions.foregroundUrlAsync(urlsToForeground.first()));
       }
     } else {
-      this.props.dispatch(BrowserActions.showMenuAsync(true));
+      this.props.dispatch(BrowserActions.showMenuAsync(!this.props.isMenuVisible));
       // this.props.dispatch(BrowserActions.foregroundHomeAsync());
     }
   }
