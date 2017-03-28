@@ -101,13 +101,9 @@ export default class MenuView extends React.Component {
   _renderNUXRow() {
     let tooltipMessage;
     if (Expo.Constants.isDevice) {
-      if (View.forceTouchAvailable) {
-        tooltipMessage = 'Press harder (use 3D touch) with two fingers anywhere on your screen to show this menu.';
-      } else {
-        tooltipMessage = 'Long press with two fingers anywhere on your screen to show this menu.';
-      }
+      tooltipMessage = 'Shake your device to show this menu.';
     } else {
-      tooltipMessage = 'In iPhone Simulator, tap the Exponent button in the corner of the screen to show this menu. The button does not appear on physical devices.';
+      tooltipMessage = 'In iPhone Simulator, press Cmd+D to show this menu.';
     }
     let headingStyles = (MENU_NARROW_SCREEN) ?
       [styles.nuxHeading, styles.nuxHeadingNarrow] :
