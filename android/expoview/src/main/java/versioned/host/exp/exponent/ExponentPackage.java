@@ -45,6 +45,7 @@ import versioned.host.exp.exponent.modules.api.LocationModule;
 import versioned.host.exp.exponent.modules.api.NotificationsModule;
 import versioned.host.exp.exponent.modules.api.PermissionsModule;
 import versioned.host.exp.exponent.modules.api.RNViewShotModule;
+import versioned.host.exp.exponent.modules.api.SQLiteModule;
 import versioned.host.exp.exponent.modules.api.SegmentModule;
 import versioned.host.exp.exponent.modules.api.ShakeModule;
 import versioned.host.exp.exponent.modules.api.URLHandlerModule;
@@ -148,6 +149,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new NativeAdManager(reactContext));
         nativeModules.add(new AdSettingsManager(reactContext));
         nativeModules.add(new InterstitialAdManager(reactContext));
+        nativeModules.add(new SQLiteModule(reactContext, scopedContext));
       } catch (JSONException | UnsupportedEncodingException e) {
         EXL.e(TAG, e.toString());
       }
