@@ -86,6 +86,7 @@
 		88E089A41D6BC02200562FA1 /* EXAmplitude.m in Sources */ = {isa = PBXBuildFile; fileRef = 88E089A31D6BC02200562FA1 /* EXAmplitude.m */; };
 		88E089AB1D6BCF5800562FA1 /* EXSegment.m in Sources */ = {isa = PBXBuildFile; fileRef = 88E089AA1D6BCF5800562FA1 /* EXSegment.m */; };
 		A1158D321D4C4AA400286352 /* EXAppLoadingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A1158D301D4C4AA400286352 /* EXAppLoadingManager.m */; };
+		A12B68251E8392560079896C /* EXSQLite.m in Sources */ = {isa = PBXBuildFile; fileRef = A12B68241E8392560079896C /* EXSQLite.m */; };
 		A12CC94C1D11E80E0023A57B /* EXLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = A12CC94B1D11E80E0023A57B /* EXLocation.m */; };
 		A15DC4BC1CFF99FE009F940D /* EXImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = A15DC4BA1CFF99FE009F940D /* EXImagePicker.m */; };
 		A15DC4CC1D011248009F940D /* EXFacebook.m in Sources */ = {isa = PBXBuildFile; fileRef = A15DC4CA1D011248009F940D /* EXFacebook.m */; };
@@ -375,6 +376,8 @@
 		88E089AA1D6BCF5800562FA1 /* EXSegment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXSegment.m; sourceTree = "<group>"; };
 		A1158D301D4C4AA400286352 /* EXAppLoadingManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppLoadingManager.m; sourceTree = "<group>"; };
 		A1158D311D4C4AA400286352 /* EXAppLoadingManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAppLoadingManager.h; sourceTree = "<group>"; };
+		A12B68231E8392560079896C /* EXSQLite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXSQLite.h; sourceTree = "<group>"; };
+		A12B68241E8392560079896C /* EXSQLite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXSQLite.m; sourceTree = "<group>"; };
 		A12CC94A1D11E80E0023A57B /* EXLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXLocation.h; sourceTree = "<group>"; };
 		A12CC94B1D11E80E0023A57B /* EXLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXLocation.m; sourceTree = "<group>"; };
 		A15DC4BA1CFF99FE009F940D /* EXImagePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXImagePicker.m; sourceTree = "<group>"; };
@@ -919,6 +922,8 @@
 				88E089AA1D6BCF5800562FA1 /* EXSegment.m */,
 				F77DDB891E04774000624CA2 /* EXWebBrowser.h */,
 				F77DDB8A1E04774000624CA2 /* EXWebBrowser.m */,
+				A12B68231E8392560079896C /* EXSQLite.h */,
+				A12B68241E8392560079896C /* EXSQLite.m */,
 				840D8EE01D8CB91E00CD88DE /* EXUtil.h */,
 				840D8EE11D8CB91E00CD88DE /* EXUtil.m */,
 			);
@@ -1687,6 +1692,7 @@
 				A1F37F781CEFD6B2001E9EFC /* EXDisabledRedBox.m in Sources */,
 				B5E4DB631E566614007D43DD /* AIRGoogleMapPolyline.m in Sources */,
 				78C77D301DC332870069CC59 /* RCTConvert+MoreMapKit.m in Sources */,
+				A12B68251E8392560079896C /* EXSQLite.m in Sources */,
 				78C77D251DC332870069CC59 /* AIRMapCircleManager.m in Sources */,
 				88E089A41D6BC02200562FA1 /* EXAmplitude.m in Sources */,
 				B5A875391E70E8F0006DDECA /* EXScope.m in Sources */,
