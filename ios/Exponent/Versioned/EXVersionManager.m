@@ -125,25 +125,46 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
 {
   RCTDevSettings *devSettings = [self _moduleInstanceForBridge:bridge named:@"DevSettings"];
   NSMutableDictionary *items = [@{
-    @"dev-reload": @"Reload",
-    @"dev-inspector": @"Toggle Element Inspector",
+    @"dev-reload": @{ @"label": @"Reload", @"isEnabled": @YES },
+    @"dev-inspector": @{ @"label": @"Toggle Element Inspector", @"isEnabled": @YES },
   } mutableCopy];
   if (devSettings.isRemoteDebuggingAvailable) {
-    items[@"dev-remote-debug"] = (devSettings.isDebuggingRemotely) ? @"Stop Remote Debugging" : @"Debug Remote JS";
+    items[@"dev-remote-debug"] = @{
+      @"label": (devSettings.isDebuggingRemotely) ? @"Stop Remote Debugging" : @"Debug Remote JS",
+      @"isEnabled": @YES
+    };
+  } else {
+    items[@"dev-remote-debug"] =  @{ @"label": @"Remote Debugger Unavailable", @"isEnabled": @NO };
   }
-  if (devSettings.isLiveReloadAvailable) {
-    items[@"dev-live-reload"] = (devSettings.isLiveReloadEnabled) ? @"Disable Live Reload" : @"Enable Live Reload";
-    items[@"dev-profiler"] = (devSettings.isProfilingEnabled) ? @"Stop Systrace" : @"Start Systrace";
+  if (devSettings.isLiveReloadAvailable && !devSettings.isHotLoadingEnabled) {
+    items[@"dev-live-reload"] = @{
+      @"label": (devSettings.isLiveReloadEnabled) ? @"Disable Live Reload" : @"Enable Live Reload",
+      @"isEnabled": @YES,
+    };
+    items[@"dev-profiler"] = @{
+      @"label": (devSettings.isProfilingEnabled) ? @"Stop Systrace" : @"Start Systrace",
+      @"isEnabled": @YES,
+    };
+  } else {
+    items[@"dev-live-reload"] =  @{ @"label": @"Live Reload Unavailable", @"isEnabled": @NO };
   }
-  if (devSettings.isHotLoadingAvailable) {
-    items[@"dev-hmr"] = (devSettings.isHotLoadingEnabled) ? @"Disable Hot Reloading" : @"Enable Hot Reloading";
+  if (devSettings.isHotLoadingAvailable && !devSettings.isLiveReloadEnabled) {
+    items[@"dev-hmr"] = @{
+      @"label": (devSettings.isHotLoadingEnabled) ? @"Disable Hot Reloading" : @"Enable Hot Reloading",
+      @"isEnabled": @YES,
+    };
+  } else {
+    items[@"dev-hmr"] =  @{ @"label": @"Hot Reloading Unavailable", @"isEnabled": @NO };
   }
   if (devSettings.isJSCSamplingProfilerAvailable) {
-    items[@"dev-jsc-profiler"] = @"Start / Stop JS Sampling Profiler";
+    items[@"dev-jsc-profiler"] = @{ @"label": @"Start / Stop JS Sampling Profiler", @"isEnabled": @YES };
   }
   id perfMonitor = [self _moduleInstanceForBridge:bridge named:@"PerfMonitor"];
   if (perfMonitor) {
-    items[@"dev-perf-monitor"] = devSettings.isPerfMonitorShown ? @"Hide Perf Monitor" : @"Show Perf Monitor";
+    items[@"dev-perf-monitor"] = @{
+      @"label": devSettings.isPerfMonitorShown ? @"Hide Perf Monitor" : @"Show Perf Monitor",
+      @"isEnabled": @YES,
+    };
   }
 
   return items;

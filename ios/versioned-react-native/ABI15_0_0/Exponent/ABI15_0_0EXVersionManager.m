@@ -16,6 +16,7 @@
 #import <ReactABI15_0_0/ABI15_0_0RCTBridge.h>
 #import <ReactABI15_0_0/ABI15_0_0RCTBridge+Private.h>
 #import <ReactABI15_0_0/ABI15_0_0RCTDevMenu.h>
+#import <ReactABI15_0_0/ABI15_0_0RCTDevSettings.h>
 #import "ABI15_0_0RCTDevMenu+Device.h"
 #import <ReactABI15_0_0/ABI15_0_0RCTLog.h>
 #import <ReactABI15_0_0/ABI15_0_0RCTModuleData.h>
@@ -38,7 +39,7 @@ void ABI15_0_0EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
   }
 }
 
-// this is needed because RCTPerfMonitor does not declare a public interface
+// this is needed because ABI15_0_0RCTPerfMonitor does not declare a public interface
 // anywhere that we can import.
 @interface ABI15_0_0RCTPerfMonitorDevSettingsHack <NSObject>
 
@@ -124,27 +125,48 @@ void ABI15_0_0EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
 {
   ABI15_0_0RCTDevSettings *devSettings = [self _moduleInstanceForBridge:bridge named:@"DevSettings"];
   NSMutableDictionary *items = [@{
-                                  @"dev-reload": @"Reload",
-                                  @"dev-inspector": @"Toggle Element Inspector",
-                                  } mutableCopy];
+    @"dev-reload": @{ @"label": @"Reload", @"isEnabled": @YES },
+    @"dev-inspector": @{ @"label": @"Toggle Element Inspector", @"isEnabled": @YES },
+  } mutableCopy];
   if (devSettings.isRemoteDebuggingAvailable) {
-    items[@"dev-remote-debug"] = (devSettings.isDebuggingRemotely) ? @"Stop Remote Debugging" : @"Debug Remote JS";
+    items[@"dev-remote-debug"] = @{
+      @"label": (devSettings.isDebuggingRemotely) ? @"Stop Remote Debugging" : @"Debug Remote JS",
+      @"isEnabled": @YES
+    };
+  } else {
+    items[@"dev-remote-debug"] =  @{ @"label": @"Remote Debugger Unavailable", @"isEnabled": @NO };
   }
-  if (devSettings.isLiveReloadAvailable) {
-    items[@"dev-live-reload"] = (devSettings.isLiveReloadEnabled) ? @"Disable Live Reload" : @"Enable Live Reload";
-    items[@"dev-profiler"] = (devSettings.isProfilingEnabled) ? @"Stop Systrace" : @"Start Systrace";
+  if (devSettings.isLiveReloadAvailable && !devSettings.isHotLoadingEnabled) {
+    items[@"dev-live-reload"] = @{
+      @"label": (devSettings.isLiveReloadEnabled) ? @"Disable Live Reload" : @"Enable Live Reload",
+      @"isEnabled": @YES,
+    };
+    items[@"dev-profiler"] = @{
+      @"label": (devSettings.isProfilingEnabled) ? @"Stop Systrace" : @"Start Systrace",
+      @"isEnabled": @YES,
+    };
+  } else {
+    items[@"dev-live-reload"] =  @{ @"label": @"Live Reload Unavailable", @"isEnabled": @NO };
   }
-  if (devSettings.isHotLoadingAvailable) {
-    items[@"dev-hmr"] = (devSettings.isHotLoadingEnabled) ? @"Disable Hot Reloading" : @"Enable Hot Reloading";
+  if (devSettings.isHotLoadingAvailable && !devSettings.isLiveReloadEnabled) {
+    items[@"dev-hmr"] = @{
+      @"label": (devSettings.isHotLoadingEnabled) ? @"Disable Hot Reloading" : @"Enable Hot Reloading",
+      @"isEnabled": @YES,
+    };
+  } else {
+    items[@"dev-hmr"] =  @{ @"label": @"Hot Reloading Unavailable", @"isEnabled": @NO };
   }
   if (devSettings.isJSCSamplingProfilerAvailable) {
-    items[@"dev-jsc-profiler"] = @"Start / Stop JS Sampling Profiler";
+    items[@"dev-jsc-profiler"] = @{ @"label": @"Start / Stop JS Sampling Profiler", @"isEnabled": @YES };
   }
   id perfMonitor = [self _moduleInstanceForBridge:bridge named:@"PerfMonitor"];
   if (perfMonitor) {
-    items[@"dev-perf-monitor"] = devSettings.isPerfMonitorShown ? @"Hide Perf Monitor" : @"Show Perf Monitor";
+    items[@"dev-perf-monitor"] = @{
+      @"label": devSettings.isPerfMonitorShown ? @"Hide Perf Monitor" : @"Show Perf Monitor",
+      @"isEnabled": @YES,
+    };
   }
-  
+
   return items;
 }
 
@@ -182,6 +204,7 @@ void ABI15_0_0EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
 
 - (void)showDevMenuForBridge:(id)bridge
 {
+  ABI15_0_0RCTAssertMainThread();
   [((ABI15_0_0RCTDevMenu *)[self _moduleInstanceForBridge:bridge named:@"DevMenu"]) show];
 }
 
@@ -288,7 +311,7 @@ void ABI15_0_0EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
                                         ]];
   } else {
     // user-facing (not debugging).
-    // additionally disable RCTRedBox
+    // additionally disable ABI15_0_0RCTRedBox
     [extraModules addObjectsFromArray:@[
                                         [[ABI15_0_0EXDisabledDevMenu alloc] init],
                                         [[ABI15_0_0EXDisabledRedBox alloc] init],

@@ -118,7 +118,7 @@ NSTimeInterval const kEXJavaScriptResourceLongerTimeout = 120;
   }
   // pre-SDK 15 default: just make old RN dev menu available
   return @{
-    kEXDevToolShowDevMenuKey: @"Show Dev Menu",
+    kEXDevToolShowDevMenuKey: @{ @"label": @"Show Dev Menu", @"isEnabled": @YES },
   };
 }
 

@@ -175,6 +175,42 @@ export default class MenuView extends React.Component {
     );
   }
 
+  _maybeRenderDevMenuTools() {
+    if (this.state.enableDevMenuTools && this.state.devMenuItems) {
+      return (
+        <View>
+          <View style={styles.separator} />
+          <View style={styles.buttonContainer}>
+            {
+              Object.keys(this.state.devMenuItems).map((key, idx) => {
+                return this._renderDevMenuItem(key, this.state.devMenuItems[key]);
+              })
+            }
+          </View>
+        </View>
+      );
+    }
+    return null;
+  }
+
+  _renderDevMenuItem(key, item) {
+    let { label, isEnabled } = item;
+    if (isEnabled) {
+      return this._renderButton(key, label, () => { this._onPressDevMenuButton(key); });
+    } else {
+      return (
+        <View
+          style={styles.button}
+          key={key}>
+          <View style={styles.buttonIcon} />
+          <Text style={[styles.buttonText, {color: '#9ca0a6'}]}>
+            {label}
+          </Text>
+        </View>
+      );
+    }
+  }
+
   _renderButton(key, text, onPress, iconSource) {
     let icon;
     if (iconSource) {
@@ -199,24 +235,6 @@ export default class MenuView extends React.Component {
         </Text>
       </TouchableOpacity>
     );
-  }
-
-  _maybeRenderDevMenuTools() {
-    if (this.state.enableDevMenuTools && this.state.devMenuItems) {
-      return (
-        <View>
-          <View style={styles.separator} />
-          <View style={styles.buttonContainer}>
-            {
-              Object.keys(this.state.devMenuItems).map((key, idx) => {
-                return this._renderButton(key, this.state.devMenuItems[key], () => { this._onPressDevMenuButton(key); });
-              })
-            }
-          </View>
-        </View>
-      );
-    }
-    return null;
   }
 
   @autobind
