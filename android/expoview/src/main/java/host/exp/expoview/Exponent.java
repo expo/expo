@@ -405,7 +405,7 @@ public class Exponent {
       }
       Request request = requestBuilder.build();
       // Use OkHttpClient with long read timeout for dev bundles
-      mExponentNetwork.getClient().callSafe(request, new ExponentHttpClient.SafeCallback() {
+      mExponentNetwork.getLongTimeoutClient().callSafe(request, new ExponentHttpClient.SafeCallback() {
         @Override
         public void onFailure(Call call, IOException e) {
           bundleListener.onError(e);
