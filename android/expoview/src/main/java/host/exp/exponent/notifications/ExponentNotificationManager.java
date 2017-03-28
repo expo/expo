@@ -67,7 +67,7 @@ public class ExponentNotificationManager {
       JSONArray newNotifications = new JSONArray();
       for (int i = 0; i < oldNotifications.length(); i++) {
         if (oldNotifications.getInt(i) != id) {
-          newNotifications.put(id);
+          newNotifications.put(oldNotifications.getInt(i));
         }
       }
       metadata.put(ExponentSharedPreferences.EXPERIENCE_METADATA_ALL_NOTIFICATION_IDS, newNotifications);
