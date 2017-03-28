@@ -32,6 +32,7 @@ public class ExponentNetwork {
 
   private Context mContext;
   private ExponentHttpClient mClient;
+  private ExponentHttpClient mLongTimeoutClient;
   private OkHttpClient mNoCacheClient;
   private Cache mCache;
 
@@ -52,6 +53,12 @@ public class ExponentNetwork {
 
     mClient = new ExponentHttpClient(mContext, createHttpClientBuilder().build());
 
+    OkHttpClient longTimeoutHttpClient = createHttpClientBuilder()
+        .readTimeout(3, TimeUnit.MINUTES)
+        .writeTimeout(1, TimeUnit.MINUTES)
+        .build();
+    mLongTimeoutClient = new ExponentHttpClient(mContext, longTimeoutHttpClient);
+
     mNoCacheClient = new OkHttpClient.Builder().build();
   }
 
@@ -68,6 +75,10 @@ public class ExponentNetwork {
 
   public ExponentHttpClient getClient() {
     return mClient;
+  }
+
+  public ExponentHttpClient getLongTimeoutClient() {
+    return mLongTimeoutClient;
   }
 
   public OkHttpClient getNoCacheClient() {
