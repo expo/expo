@@ -54,8 +54,7 @@ public class ExponentNetwork {
     mClient = new ExponentHttpClient(mContext, createHttpClientBuilder().build());
 
     OkHttpClient longTimeoutHttpClient = createHttpClientBuilder()
-        .readTimeout(3, TimeUnit.MINUTES)
-        .writeTimeout(1, TimeUnit.MINUTES)
+        .readTimeout(2, TimeUnit.MINUTES)
         .build();
     mLongTimeoutClient = new ExponentHttpClient(mContext, longTimeoutHttpClient);
 
