@@ -114,17 +114,31 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
 
 - (NSDictionary<NSString *, NSString *> *)devMenuItemsForBridge:(id)bridge
 {
-  return @{
+  RCTDevSettings *devSettings = [self _moduleInstanceForBridge:bridge named:@"DevSettings"];
+  NSMutableDictionary *items = [@{
     @"dev-reload": @"Reload",
     @"dev-menu": @"Show Dev Menu",
-  };
+  } mutableCopy];
+  if (devSettings.isRemoteDebuggingAvailable) {
+    items[@"dev-remote-debug"] = (devSettings.isDebuggingRemotely) ? @"Stop Remote Debugging" : @"Debug Remote JS";
+  }
+  if (devSettings.isLiveReloadAvailable) {
+    items[@"dev-live-reload"] = (devSettings.isLiveReloadEnabled) ? @"Disable Live Reload" : @"Enable Live Reload";
+  }
+  return items;
 }
 
 - (void)selectDevMenuItemWithKey:(NSString *)key onBridge:(id)bridge
 {
+  RCTAssertMainThread();
   // TODO: add remaining devtools via RCTDevSettings
+  RCTDevSettings *devSettings = [self _moduleInstanceForBridge:bridge named:@"DevSettings"];
   if ([key isEqualToString:@"dev-reload"]) {
     [bridge reload];
+  } else if ([key isEqualToString:@"dev-remote-debug"]) {
+    devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely;
+  } else if ([key isEqualToString:@"dev-live-reload"]) {
+    devSettings.isLiveReloadEnabled = !devSettings.isLiveReloadEnabled;
   } else if ([key isEqualToString:@"dev-menu"]) {
     [self showDevMenuForBridge:bridge];
   }
@@ -132,6 +146,7 @@ void EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
 
 - (void)showDevMenuForBridge:(id)bridge
 {
+  RCTAssertMainThread();
   [((RCTDevMenu *)[self _moduleInstanceForBridge:bridge named:@"DevMenu"]) show];
 }
 

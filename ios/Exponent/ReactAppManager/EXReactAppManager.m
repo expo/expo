@@ -84,7 +84,9 @@ NSTimeInterval const kEXJavaScriptResourceLongerTimeout = 120;
 - (void)showDevMenu
 {
   if ([self areDevtoolsEnabled]) {
-    [self.versionManager showDevMenuForBridge:self.reactBridge];
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self.versionManager showDevMenuForBridge:self.reactBridge];
+    });
   }
 }
 
@@ -123,7 +125,9 @@ NSTimeInterval const kEXJavaScriptResourceLongerTimeout = 120;
 - (void)selectDevMenuItemWithKey:(NSString *)key
 {
   if ([self.versionManager respondsToSelector:@selector(selectDevMenuItemWithKey:onBridge:)]) {
-    [self.versionManager selectDevMenuItemWithKey:key onBridge:self.reactBridge];
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self.versionManager selectDevMenuItemWithKey:key onBridge:self.reactBridge];
+    });
   } else {
     // pre-SDK 15 default: only option is RN dev menu
     if ([key isEqualToString:kEXDevToolShowDevMenuKey]) {
