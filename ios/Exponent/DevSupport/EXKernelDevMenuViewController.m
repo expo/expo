@@ -14,7 +14,7 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
 @interface EXKernelDevMenuViewController ()
 
 @property (nonatomic, strong) UINavigationBar *vTitleBar;
-@property (nonatomic, strong) UIButton *btnReloadKernel;
+@property (nonatomic, strong) UIButton *btnDevMenu;
 @property (nonatomic, strong) UIButton *btnResetNux;
 @property (nonatomic, strong) UILabel *lblKernelHeading;
 @property (nonatomic, strong) UILabel *lblKernelInfo;
@@ -24,7 +24,7 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
 @property (nonatomic, strong) UISwitch *vUseCache;
 
 - (void)_onTapCancel;
-- (void)_onTapReloadKernel;
+- (void)_onTapDevMenu;
 
 @end
 
@@ -42,11 +42,11 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
   _vTitleBar.items = @[ self.navigationItem ];
   [self.view addSubview:_vTitleBar];
   
-  // reload kernel button
-  self.btnReloadKernel = [UIButton buttonWithType:UIButtonTypeSystem];
-  [_btnReloadKernel setTitle:@"Reload Kernel" forState:UIControlStateNormal];
-  [_btnReloadKernel addTarget:self action:@selector(_onTapReloadKernel) forControlEvents:UIControlEventTouchUpInside];
-  [self.view addSubview:_btnReloadKernel];
+  // RCTDevMenu button
+  self.btnDevMenu = [UIButton buttonWithType:UIButtonTypeSystem];
+  [_btnDevMenu setTitle:@"Show RCTDevMenu" forState:UIControlStateNormal];
+  [_btnDevMenu addTarget:self action:@selector(_onTapDevMenu) forControlEvents:UIControlEventTouchUpInside];
+  [self.view addSubview:_btnDevMenu];
   
   // reset nux button
   self.btnResetNux = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -82,7 +82,7 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
   [_vUseCache addTarget:self action:@selector(_handleUseCacheChanged:) forControlEvents:UIControlEventValueChanged];
   [self.view addSubview:_vUseCache];
   
-  for (UIButton *btn in @[ _btnReloadKernel, _btnResetNux ]) {
+  for (UIButton *btn in @[ _btnDevMenu, _btnResetNux ]) {
     btn.layer.cornerRadius = 3.0f;
     btn.backgroundColor = [UIColor colorWithWhite:0.9f alpha:1.0f];
   }
@@ -116,11 +116,11 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
   _vUseCache.center = CGPointMake(_lblCacheInfo.frame.origin.x + _vUseCache.bounds.size.width * 0.5f, CGRectGetMaxY(_lblCacheInfo.frame) + _vUseCache.bounds.size.height * 0.5f + 8.0f);
   _lblUseCache.frame = CGRectMake(CGRectGetMaxX(_vUseCache.frame) + 4.0f, _vUseCache.frame.origin.y, self.view.bounds.size.width, _vUseCache.frame.size.height);
   
-  _btnReloadKernel.frame = CGRectMake(0, 0, _lblKernelHeading.bounds.size.width, 42.0f);
-  _btnReloadKernel.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMaxY(_vUseCache.frame) + 42.0f);
+  _btnDevMenu.frame = CGRectMake(0, 0, _lblKernelHeading.bounds.size.width, 42.0f);
+  _btnDevMenu.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMaxY(_vUseCache.frame) + 42.0f);
 
-  _btnResetNux.frame = CGRectMake(0, 0, _btnReloadKernel.bounds.size.width, _btnReloadKernel.bounds.size.height);
-  _btnResetNux.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMaxY(_btnReloadKernel.frame) + 42.0f);
+  _btnResetNux.frame = CGRectMake(0, 0, _btnDevMenu.bounds.size.width, _btnDevMenu.bounds.size.height);
+  _btnResetNux.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMaxY(_btnDevMenu.frame) + 36.0f);
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -147,11 +147,12 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
 
 #pragma mark - Actions
 
-- (void)_onTapReloadKernel
+- (void)_onTapDevMenu
 {
-  RCTBridge *kernelBridge = [EXKernel sharedInstance].bridgeRegistry.kernelAppManager.reactBridge;
-  [kernelBridge reload];
-  [self dismissViewControllerAnimated:YES completion:nil];
+  [self dismissViewControllerAnimated:YES completion:^{
+    EXKernelReactAppManager *appMgr = [EXKernel sharedInstance].bridgeRegistry.kernelAppManager;
+    [appMgr showDevMenu];
+  }];
 }
 
 - (void)_onTapResetNux
