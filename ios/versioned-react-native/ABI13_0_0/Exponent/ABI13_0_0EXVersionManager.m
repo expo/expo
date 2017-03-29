@@ -29,19 +29,6 @@
 
 static NSNumber *ABI13_0_0EXVersionManagerIsFirstLoad;
 
-void ABI13_0_0EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
-{
-  Method originalMethod = class_getInstanceMethod(cls, original);
-  
-  Method replacementMethod = class_getInstanceMethod(cls, replacement);
-  IMP replacementImplementation = method_getImplementation(replacementMethod);
-  const char *replacementArgTypes = method_getTypeEncoding(replacementMethod);
-  
-  if (!class_addMethod(cls, original, replacementImplementation, replacementArgTypes)) {
-    method_setImplementation(originalMethod, replacementImplementation);
-  }
-}
-
 @interface ABI13_0_0EXVersionManager ()
 
 // is this the first time this ABI has been touched at runtime?
