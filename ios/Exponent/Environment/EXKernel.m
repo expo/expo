@@ -438,7 +438,11 @@ continueUserActivity:(NSUserActivity *)userActivity
 
 - (BOOL)kernelModuleShouldEnableDevtools:(__unused EXKernelModule *)module
 {
-  return (!EX_ENABLE_LEGACY_MENU_BEHAVIOR) && [_bridgeRegistry.lastKnownForegroundAppManager areDevtoolsEnabled];
+  return (
+    (!EX_ENABLE_LEGACY_MENU_BEHAVIOR) &&
+    _bridgeRegistry.lastKnownForegroundAppManager != _bridgeRegistry.kernelAppManager &&
+    [_bridgeRegistry.lastKnownForegroundAppManager areDevtoolsEnabled]
+  );
 }
 
 - (NSDictionary<NSString *, NSString *> *)devMenuItemsForKernelModule:(EXKernelModule *)module
