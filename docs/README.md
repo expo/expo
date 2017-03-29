@@ -53,3 +53,5 @@ yarn && yarn start
 ```
 
 from this directory. The site is viewable at `http://localhost:8000`.
+
+If Docker is not available for you, run `yarn run start-no-nginx` -- the site will be available at `http://localhost:8000`. However, certain redirects won't work, and you'll have to navigate directly to the documentation you want to view.
