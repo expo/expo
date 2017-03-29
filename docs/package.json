@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "concurrently 'yarn run update-config-docs' 'yarn run gatsby-develop' 'yarn run nginx-dev'",
+    "start-no-nginx": "concurrently 'yarn run update-config-docs' 'yarn run gatsby-develop'",
     "update-config-docs": "node ./scripts/update-config-docs.js",
     "nginx-dev": "./scripts/build-run-nginx-dev",
     "gatsby-develop": "cd gatsby && yarn run develop",
