@@ -56,6 +56,7 @@ export default class MenuView extends React.Component {
   }
 
   async componentDidMount() {
+    this._mounted = true;
     if (this.props.shouldFadeIn) {
       Animated.timing(this.state.transitionIn, {
         easing: Easing.inOut(Easing.quad),
@@ -65,7 +66,13 @@ export default class MenuView extends React.Component {
     }
     let enableDevMenuTools = await ExponentKernel.doesCurrentTaskEnableDevtools();
     let devMenuItems = await ExponentKernel.getDevMenuItemsToShow();
-    this.setState({ enableDevMenuTools, devMenuItems });
+    if (this._mounted) {
+      this.setState({ enableDevMenuTools, devMenuItems });
+    }
+  }
+
+  componentWillUnmount() {
+    this._mounted = false;
   }
 
   render() {
