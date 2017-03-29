@@ -26,19 +26,6 @@
 
 static NSNumber *ABI15_0_0EXVersionManagerIsFirstLoad;
 
-void ABI15_0_0EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
-{
-  Method originalMethod = class_getInstanceMethod(cls, original);
-  
-  Method replacementMethod = class_getInstanceMethod(cls, replacement);
-  IMP replacementImplementation = method_getImplementation(replacementMethod);
-  const char *replacementArgTypes = method_getTypeEncoding(replacementMethod);
-  
-  if (!class_addMethod(cls, original, replacementImplementation, replacementArgTypes)) {
-    method_setImplementation(originalMethod, replacementImplementation);
-  }
-}
-
 // this is needed because ABI15_0_0RCTPerfMonitor does not declare a public interface
 // anywhere that we can import.
 @interface ABI15_0_0RCTPerfMonitorDevSettingsHack <NSObject>
@@ -84,16 +71,11 @@ void ABI15_0_0EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
 - (void)bridgeDidForeground
 {
   if (_isFirstLoad) {
-    // reverse the ABI15_0_0RCT-triggered first swap, so the ABI15_0_0RCT implementation is back in its original place
-    [self swapSystemMethods];
     _isFirstLoad = NO; // in case the same VersionManager instance is used between multiple bridge loads
   } else {
     // some state is shared between bridges, for example status bar
     [self resetSharedState];
   }
-
-  // now modify system behavior with no swap
-  [self setSystemMethods];
 }
 
 - (void)bridgeDidBackground
@@ -249,14 +231,6 @@ void ABI15_0_0EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
   ABI15_0_0RCTSetLogFunction(logFunction);
 }
 
-- (void)swapSystemMethods
-{
-}
-
-- (void)setSystemMethods
-{
-}
-
 /**
  *  Expected params:
  *    NSDictionary *manifest
@@ -304,18 +278,17 @@ void ABI15_0_0EXSetInstanceMethod(Class cls, SEL original, SEL replacement)
     kernel.delegate = params[@"kernel"];
     [extraModules addObject:kernel];
   }
-  
-  if (isDeveloper) {
-    [extraModules addObjectsFromArray:@[
-                                        [[ABI15_0_0RCTDevMenu alloc] init],
-                                        ]];
+  if (params[@"kernel"] && isDeveloper) {
+    // kernel enables default ABI15_0_0RCTDevMenu
+    [extraModules addObject:[[ABI15_0_0RCTDevMenu alloc] init]];
   } else {
+    // non-kernel, or non-development kernel, uses expo menu instead of ABI15_0_0RCTDevMenu
+    [extraModules addObject:[[ABI15_0_0EXDisabledDevMenu alloc] init]];
+  }
+  if (!isDeveloper) {
     // user-facing (not debugging).
     // additionally disable ABI15_0_0RCTRedBox
-    [extraModules addObjectsFromArray:@[
-                                        [[ABI15_0_0EXDisabledDevMenu alloc] init],
-                                        [[ABI15_0_0EXDisabledRedBox alloc] init],
-                                        ]];
+    [extraModules addObject:[[ABI15_0_0EXDisabledRedBox alloc] init]];
   }
   return extraModules;
 }
