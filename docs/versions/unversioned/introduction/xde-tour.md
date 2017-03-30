@@ -40,4 +40,6 @@ In addition to the options provided from the home screen, with a project opened 
 
 ## Publish
 
-When you hit publish you'll be asked to confirm that you want your project to be available to the public. Hitting yes will upload all of your assets and your apps JavaScript to our servers so that users can access it at any time from `exp.host/@your-username/your-app-slug`. More on what slug means in [Configuration with exp.json](../guides/configuration.html#exp), and more details about how publishing work in [How Expo Works](../guides/how-expo-works.html#how-expo-works).![XDE publish](./xde-publish.png)
+While you work on your project, it is given a temporary URL which is served from your computer. When you're ready to share the project with others, you can **Publish** the project to get a permanent URL (something like `exp.host/@your-username/your-app-slug`) that anybody can open with the Expo Client.
+
+When you click the **Publish** button in XDE, you'll be asked to confirm that you want your project to be available to the public. XDE takes some time to generate your minified JS bundle and upload your Assets to our servers, and once it's done, prints out your app's published URL. You can read more details about how publishing work in [How Expo Works](../guides/how-expo-works.html#how-expo-works) and in [this blog post](https://blog.expo.io/publishing-on-exponent-790493660d24).![XDE publish](./xde-publish.png)

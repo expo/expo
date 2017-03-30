@@ -83,7 +83,7 @@ When you Publish an Expo app, we compile it into a JavaScript bundle with produc
 
 When publishing is complete, we'll give you a URL to your app which you can send to anybody who has the Expo client.
 
-> **Note:** Publishing an Expo app does not make it publicly searchable or discoverable anywhere. It is up to you to share the link.
+> **Note:** By default, all Expo projects are `unlisted`, which means that publishing does not make it publicly searchable or discoverable anywhere. It is up to you to share the link. You can change this setting in [exp.json](configuration.html).
 
 As soon as the publish is complete, the new version of your code is available to all your existing users. They'll get the updated version next time they open the app or refresh it, provided that they have a version of the Expo client that supports the `sdkVersion` specified in your `exp.json`.
 
