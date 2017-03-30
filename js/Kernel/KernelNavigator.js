@@ -150,7 +150,7 @@ class KernelNavigator extends React.Component {
     if (this.state.isShowingOverlay) {
       let backgroundColor = this.state.menuTransition.interpolate({
         inputRange: [0, 1],
-        outputRange: ['rgba(255, 255, 255, 0.001)', 'rgba(255, 255, 255, 0.75)'],
+        outputRange: ['rgba(255, 255, 255, 0.001)', 'rgba(255, 255, 255, 0.9)'],
       });
       menuOverlay = (
         <Animated.View style={[styles.menuOverlay, {backgroundColor}]} />

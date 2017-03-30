@@ -199,11 +199,11 @@ export default class MenuView extends React.Component {
   _renderDevMenuItem(key, item) {
     let { label, isEnabled } = item;
     if (isEnabled) {
-      return this._renderButton(key, label, () => { this._onPressDevMenuButton(key); });
+      return this._renderButton(key, label, () => { this._onPressDevMenuButton(key); }, null, true);
     } else {
       return (
         <View
-          style={styles.button}
+          style={[styles.button, styles.buttonWithSeparator]}
           key={key}>
           <View style={styles.buttonIcon} />
           <Text style={[styles.buttonText, {color: '#9ca0a6'}]}>
@@ -214,8 +214,8 @@ export default class MenuView extends React.Component {
     }
   }
 
-  _renderButton(key, text, onPress, iconSource) {
-    let icon;
+  _renderButton(key, text, onPress, iconSource, withSeparator) {
+    let icon, buttonStyles;
     if (iconSource) {
       icon = (
         <Image
@@ -227,10 +227,15 @@ export default class MenuView extends React.Component {
         <View style={styles.buttonIcon} />
       );
     }
+    if (withSeparator) {
+      buttonStyles = [styles.button, styles.buttonWithSeparator];
+    } else {
+      buttonStyles = styles.button;
+    }
     return (
       <TouchableOpacity
         key={key}
-        style={styles.button}
+        style={buttonStyles}
         onPress={onPress}>
         {icon}
         <Text style={styles.buttonText}>
@@ -278,12 +283,12 @@ let styles = StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'transparent',
-    marginHorizontal: 16,
-    marginTop: 32,
+    marginTop: 24,
   },
   taskMetaRow: {
     flexDirection: 'row',
-    paddingHorizontal: 16,
+    paddingHorizontal: 24,
+    paddingBottom: 16,
   },
   taskInfoColumn: {
     flex: 4,
@@ -317,32 +322,37 @@ let styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   separator: {
-    height: 1 / PixelRatio.get(),
-    backgroundColor: '#c5c6c7',
-    marginHorizontal: 16,
-    marginVertical: 10,
+    borderColor: '#c5c6c7',
+    borderWidth: 1 / PixelRatio.get(),
+    backgroundColor: '#eaeaea',
+    height: 12,
+    marginVertical: 4,
+    marginHorizontal: -1,
   },
   buttonContainer: {
-    marginTop: 4,
     backgroundColor: 'transparent',
   },
   button: {
     backgroundColor: 'transparent',
-    marginHorizontal: 12,
     flexDirection: 'row',
+  },
+  buttonWithSeparator: {
+    borderBottomWidth: 1 / PixelRatio.get(),
+    borderBottomColor: '#dadada',
   },
   buttonIcon: {
     width:16,
     height: 16,
-    marginVertical: 8,
+    marginVertical: 12,
+    marginLeft: 20,
     alignSelf:'flex-start'
   },
   buttonText: {
     color: '#595c68',
     fontSize: 14,
     textAlign: 'left',
-    marginVertical: 8,
-    paddingLeft: 12,
+    marginVertical: 12,
+    paddingHorizontal: 12,
     fontWeight: '700',
   },
   nuxRow: {
