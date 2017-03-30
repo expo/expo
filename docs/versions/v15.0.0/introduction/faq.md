@@ -109,6 +109,12 @@ We will do anything that we can do to convert your project automatically, and we
 
 Note that the results of this tool might vary widely depending on what your project contains. If you have similar native module dependencies to what is exposed through the Expo SDK, this process shouldn't take more than a few minutes (not including `npm install` time). Please feel free to ask us questions if you run into any issues.
 
+## How do I remove an Expo project that I published?
+
+The default [privacy setting](../guides/configuration.html) for Expo apps is `unlisted` so nobody can find your app unless you share the link with them.
+
+If you really want your published app to be 'unpublished', right now the best course of action is to just drop us a note on Slack and we can do this for you. If nobody is awake to help you, you can also publish a blank `<View />` over your app.
+
 ## What is Exponent and how is it different from Expo?
 
 Exponent is the original name of the Expo project. You might occasionally run across some old references to it in blog posts or code or documentation. They are the same thing; we just shortened the name.
