@@ -24,6 +24,7 @@ let {
 } = NativeModules;
 
 import Expo from 'expo';
+import { Ionicons } from '@expo/vector-icons';
 import ResponsiveImage from '@expo/react-native-responsive-image';
 
 import Browser from 'Browser';
@@ -100,6 +101,7 @@ export default class MenuView extends React.Component {
             {this._renderButton('home', 'Go to Expo Home', this._goToHome, require('../Assets/ios-menu-home.png'))}
           </View>
           {this._maybeRenderDevMenuTools()}
+          <Ionicons name="md-close" size={16} style={styles.closeButton} />
         </Animated.View>
       </AnimatedBlurView>
     );
@@ -298,7 +300,12 @@ let styles = StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'transparent',
-    marginTop: 24,
+    marginTop: 28,
+  },
+  closeButton: {
+    color: '#9ca0a6',
+    position: 'absolute',
+    right: 16,
   },
   taskMetaRow: {
     flexDirection: 'row',
@@ -326,7 +333,7 @@ let styles = StyleSheet.create({
     backgroundColor: 'transparent',
     marginRight: 16,
     marginVertical: 4,
-    fontSize: 14,
+    fontSize: 12,
   },
   taskIcon: {
     width: 52,
