@@ -36,6 +36,18 @@ let MENU_NARROW_SCREEN = (SCREEN_WIDTH < 375);
 
 const AnimatedBlurView = Animated.createAnimatedComponent(Expo.BlurView);
 
+class DevIndicator extends React.Component {
+  render() {
+    return (
+      <View
+        style={[
+          {width: 8, height: 8, backgroundColor: '#00c100', borderRadius: 4},
+          this.props.style,
+        ]} />
+    );
+  }
+}
+
 export default class MenuView extends React.Component {
 
   static propTypes = {
@@ -171,10 +183,29 @@ export default class MenuView extends React.Component {
         </View>
         <View style={styles.taskInfoColumn}>
           <Text style={taskNameStyles}>{(taskName) ? taskName : 'Untitled Experience'}</Text>
-          <Text style={styles.taskUrl}>{taskUrl}</Text>
+          <Text style={[styles.taskUrl]}>{taskUrl}</Text>
+          {this._maybeRenderDevServerName()}
         </View>
       </View>
     );
+  }
+
+  _maybeRenderDevServerName() {
+    let { task } = this.props;
+    let devServerName = task.manifest.getIn(['developer', 'tool']);
+    if (devServerName) {
+      // XDE is upper
+      if (devServerName === 'xde') {
+        devServerName = devServerName.toUpperCase();
+      }
+      return (
+        <View style={{flexDirection: 'row'}}>
+          <DevIndicator style={{marginTop: 3.5, marginRight: 6}} />
+          <Text style={styles.taskDevServerName}>{devServerName}</Text>
+        </View>
+      );
+    }
+    return null;
   }
 
   _maybeRenderDevMenuTools() {
@@ -316,10 +347,15 @@ let styles = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: 'transparent',
   },
+  taskDevServerName: {
+    fontSize: 12,
+    color: '#9ca0a6',
+    fontWeight: '700'
+  },
   separator: {
-    borderColor: '#c5c6c7',
-    borderWidth: 1 / PixelRatio.get(),
-    backgroundColor: '#eaeaea',
+    borderColor: '#d5d6d7',
+    borderTopWidth: 1 / PixelRatio.get(),
+    backgroundColor: '#f0f0f1',
     height: 12,
     marginVertical: 4,
     marginHorizontal: -1,
