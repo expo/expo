@@ -32,13 +32,24 @@ Once the component is mounted and the OpenGL ES context has been created, the gl
 
 The following WebGLRenderContext methods are currently unimplemented:
 
--   Renderbuffer
-    -   `bindRenderbuffer`
-    -   `createRenderbuffer`
-    -   `deleteRenderbuffer`
-    -   `getRenderbufferParameter`
-    -   `isRenderbuffer`
-    -   `renderbufferStorage`
+- Framebuffer
+  - `framebufferRenderbuffer`
+  - `getFramebufferAttachmentParameter`
+- Renderbuffer
+  - `bindRenderbuffer`
+  - `createRenderbuffer`
+  - `deleteRenderbuffer`
+  - `getRenderbufferParameter`
+  - `renderbufferStorage`
+- Texture
+  - `compressedTexImage2D`
+  - `compressedTexSubImage2D`
+  - `getTexParameter`
+  - `texSubImage2D`
+- Uniforms and Attributes
+  - `getUniform`
+  - `getVertexAttrib`
+  - `getVertexAttribOffset`
 
 `texImage2D` only supports the 9-argument form. The last argument must either be an ArrayBuffer with the texture data as in the WebGL spec, an `Expo.Asset` refering to an image to use as the source for the texture, or null. See [gl-test](https://github.com/exponent/gl-test/blob/deedfac1b7b6f9c9ce6e42a3b51700cf47da773c/Scenes/BasicTextureScene.js#L85-L88) for an example of using image assets as OpenGL textures.
 
