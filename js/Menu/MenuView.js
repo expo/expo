@@ -26,7 +26,6 @@ let {
 import Expo from 'expo';
 import ResponsiveImage from '@expo/react-native-responsive-image';
 
-import autobind from 'autobind-decorator';
 import Browser from 'Browser';
 import BrowserActions from 'BrowserActions';
 import ExStore from 'ExStore';
@@ -245,26 +244,22 @@ export default class MenuView extends React.Component {
     );
   }
 
-  @autobind
-  _onPressFinishNux() {
+  _onPressFinishNux = () => {
     ExStore.dispatch(BrowserActions.setIsNuxFinishedAsync(true));
     ExStore.dispatch(BrowserActions.showMenuAsync(false));
   }
 
-  @autobind
-  _onPressContainer() {
+  _onPressContainer = () => {
     if (this.props.isNuxFinished) {
       ExStore.dispatch(BrowserActions.showMenuAsync(false));
     }
   }
 
-  @autobind
-  _goToHome() {
+  _goToHome = () => {
     ExStore.dispatch(BrowserActions.foregroundHomeAsync());
   }
 
-  @autobind
-  _onPressDevMenuButton(key) {
+  _onPressDevMenuButton = (key) => {
     ExponentKernel.selectDevMenuItemWithKey(key);
     ExStore.dispatch(BrowserActions.showMenuAsync(false));
   }
