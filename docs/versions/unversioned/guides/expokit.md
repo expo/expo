@@ -1,97 +1,49 @@
 ---
-title: Using ExpoKit to add Custom Native Modules
+title: Developing With ExpoKit
 ---
 
-ExpoKit is an Objective-C and Java library that allows you to use the Expo platform and
-your existing Expo project as part of a larger standard native project -- one that you would
-normally create using Xcode, Android Studio, or `react-native init`.
+ExpoKit is an Objective-C and Java library that allows you to use the Expo platform with a
+native iOS/Android project.
 
-## What is this for?
+## Before you read this guide
 
-Normally, Expo apps are written in pure JS and never "drop down" to the native iOS or Android
-layer. This is core to the Expo philosophy and it's part of what makes Expo fast and
-powerful to use.
+There are two ways to get an ExpoKit project:
 
-However, there are some cases where advanced developers need native capabilities outside of what
-Expo offers out-of-the-box. The most common situation
-is when a project requires a specific Native Module which is not supported by React Native Core
-or the Expo SDK.
+- Create a pure-JS project in XDE, then use [exp detach](detach.html) to add ExpoKit.
+- Create an app with [create-react-native-app](https://github.com/react-community/create-react-native-app), then choose "eject with ExpoKit".
 
-## Detaching an Expo project into a Native project with ExpoKit
+Make sure you follow one of the above paths before continuing in this guide. The remainder of the guide will assume you have created an ExpoKit project.
 
-You may find yourself in a situation where your Expo project needs a native module that Expo
-doesn't currently support. We're always expanding the [Expo SDK](../sdk/index.html),
-so we hope this is never the case. But it happens, especially if your app has very specific and uncommon
-native demands.
+## Setting up your project
 
-In this case, Expo allows you to `detach` your pure-JS project from the Expo iOS/Android
-clients, providing you with native projects that can be opened and built with Xcode and Android
-Studio. Those projects will have dependencies on ExpoKit, so everything you already built
-will keep working as it did before.
+By this point you should have a JS app which additionally contains `ios` and `android` directories.
 
-We call this "detaching" because you still depend on the Expo SDK, but your project no
-longer lives inside the standard Expo client. You control the native projects, including
-configuring and building them yourself.
+### 1. Check JS dependencies
 
-**You don't need to do this if your main goal is to distribute your app in the iTunes Store or
-Google Play.** Expo can [build binaries for you](building-standalone-apps.html) in that case.
-You should only `detach` if you need to make native code changes not available in the Expo SDK.
+- Your project's `package.json` should contain a `react-native` dependency pointing at Expo's fork of React Native. This should already be configured for you.
+- Your JS dependencies should already be installed (via `npm install` or `yarn`).
 
->  **Warning:** We discourage most of our developers from taking this route, as we believe almost
->  everything you need to do is better accomplished in a cross-platform way with JS.
->
->  Writing in JS enables you to best take advantage of over-the-air code deployment and benefit from
->  ongoing updates and support from Expo. You should only do this if you have a particular
->  demand from native code which Expo won't do a good job supporting, such as (for example)
->  specialized CPU-intensive video processing that must happen locally on the device.
+### 2. Run the project in XDE or exp
 
-## Instructions
-
-The following steps are for converting a pure-JS Expo project (such as one created from XDE)
-into a native iOS and Android project which depends on ExpoKit.
-
-After you `detach`, all your JS files will stay the same, but we'll additionally create `ios` and
-`android` directories in your project folder. These will contain Xcode and Android Studio projects
-respectively, and they'll have dependencies on React Native and on Expo's core SDK.
-
-You'll still be able to develop and test your project from XDE, and you'll still be able to publish
-your Expo JS code the same way. However, if you add native dependencies that aren't included
-in Expo, other users won't be able to run those features of your app with the main Expo app.
-You'll need to distribute the native project yourself.
-
->  **Note:** `detach` is currently an alpha feature and you may run into issues. Proceed at your
->  own risk and please reach out to us with any feedback or issues you encounter.
-
-### 1. Install exp
-
-If you don't have it, run `npm install -g exp` to get our command line library.
-
-If you haven't used `exp` or XDE before, the first thing you'll need to do is log in
-with your Expo account using `exp login`.
-
-### 2. Detach
-
-From your project directory, run `exp detach`. This will download the required dependencies and
-build native projects under the `ios` and `android` directories.
-
-### 3. Rerun the project in XDE or exp
-
-Open the project in XDE. If you were already running this project in XDE, press Restart.
+Open the project in XDE. If you were already running this project in XDE, press **Restart**.
 
 If you prefer `exp`, run `exp start` from the project directory.
 
-### 4. (iOS only) Configure, build and run
+This step ensures that the React Native packager is running and serving your app's JS bundle for development. Leave this running and continue with the following steps.
 
-To configure the Xcode project, make sure you have [CocoaPods](https://cocoapods.org), then
-run `pod install` from your project's `ios` directory.
+### 3. iOS: Configure, build and run
 
-You can now open your project's `xcworkspace` file in Xcode, build and run the project
-on an iOS device or Simulator.
+This step ensures the native iOS project is correctly configured and ready for development.
 
-Once the iOS project is running, it should automatically request your development url from XDE
-or `exp`. You can develop your project normally from here.
+- Make sure you have the latest Xcode.
+- If you don't have it already, install [CocoaPods](https://cocoapods.org), which is a native dependency manager for iOS.
+- Run `pod install` from your project's `ios` directory.
+- Open your project's `xcworkspace` file in Xcode.
+- Use Xcode to build, install and run the project on your test device or simulator. (this will happen by default if you click the big "Play" button in Xcode.)
 
-### 4. (Android only) Build and run
+Once it's running, the iOS app should automatically request your JS bundle from the project you're serving from XDE or `exp`.
+
+### 4. Android: Build and run
 
 Open the `android` directory in Android Studio, then build and run the project on an Android device
 or a Genymotion emulator.
@@ -99,27 +51,7 @@ or a Genymotion emulator.
 Once the Android project is running, it should automatically request your development url from XDE
 or `exp`. You can develop your project normally from here.
 
-### 5. Make native changes
+## Continuing with development
 
-You can do whatever you want in the Xcode and Android Studio projects.
-
-To add third-party native modules for React Native, non-Expo-specific instructions such as `react-native link` should be supported.
-
->  **Note:** You may have to update `android/app/build.gradle` after running `react-native link`.
->  Change the line added by `react-native link` from `compile project(':library-name')` to
->  `compile(project(':library-name')) { exclude module: 'react-native' }`.
-
-### 6. Distribute your app
-
-Publishing your JS from XDE/exp will still work. Users of your app will get the new JS on their
-devices as soon as they reload their app; you don't need to rebuild your native code if it has
-not changed.
-
-If you do make native changes, people who don't have your native code may encounter crashes if
-they try to use features that depend on those changes.
-
-If you decide to distribute your app as an `ipa` or `apk`, it will automatically hit
-your app's published URL instead of your development XDE url. You can examine this configuration
-in the contents of `EXShell.plist` (iOS) or `MainActivity.java` (Android).
-
-Before taking your app all the way to production, it's a good idea to glance over the [Advanced ExpoKit Topics](advanced-expokit-topics.html) guide.
+Every time you want to develop, ensure your project's JS is being served by XDE (step 2), then run
+the native code from Xcode or Android Studio respectively.

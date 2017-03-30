@@ -24,7 +24,8 @@
     Genymotion: /versions/unversioned/guides/genymotion.html
     exp Command-Line Interface: /versions/unversioned/guides/exp-cli.html
     Building Standalone Apps: /versions/unversioned/guides/building-standalone-apps.html
-    Using ExpoKit to add Custom Native Modules: /versions/unversioned/guides/expokit.html
+    Detaching to ExpoKit: /versions/unversioned/guides/detach.html
+    Developing with ExpoKit: /versions/unversioned/guides/expokit.html
     Advanced ExpoKit Topics: /versions/unversioned/guides/advanced-expokit-topics.html
     Expo and Create React Native App: /versions/unversioned/guides/create-react-native-app.html
     How Expo Works: /versions/unversioned/guides/how-expo-works.html
