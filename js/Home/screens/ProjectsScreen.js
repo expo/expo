@@ -19,6 +19,7 @@ import { take, takeRight } from 'lodash';
 import Alerts from '../constants/Alerts';
 import BrowserActions from 'BrowserActions';
 import Colors from '../constants/Colors';
+import DevIndicator from '../components/DevIndicator';
 import EmptyProjectsNotice from '../components/EmptyProjectsNotice';
 import SharedStyles from '../constants/SharedStyles';
 import SeeAllProjectsButton from '../components/SeeAllProjectsButton';
@@ -153,7 +154,7 @@ export default class HomeScreen extends React.Component {
     return (
       <View style={{ marginBottom: 10 }}>
         <View style={SharedStyles.sectionLabelContainer}>
-          <View style={styles.greenDot} />
+          <DevIndicator style={{ marginRight: 7 }}/>
           <Text style={SharedStyles.sectionLabelText}>IN DEVELOPMENT</Text>
         </View>
 
@@ -190,13 +191,6 @@ const styles = StyleSheet.create({
         fontWeight: '500',
       },
     }),
-  },
-  greenDot: {
-    backgroundColor: '#28ba20',
-    width: 7,
-    height: 7,
-    borderRadius: 3.5,
-    marginRight: 7,
   },
   exponentVersionContainer: {
     paddingHorizontal: 20,

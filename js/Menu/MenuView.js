@@ -28,6 +28,7 @@ import ResponsiveImage from '@expo/react-native-responsive-image';
 
 import Browser from 'Browser';
 import BrowserActions from 'BrowserActions';
+import DevIndicator from '../Home/components/DevIndicator';
 import ExStore from 'ExStore';
 import FriendlyUrls from 'FriendlyUrls';
 
@@ -35,18 +36,6 @@ let SCREEN_WIDTH = Dimensions.get('window').width;
 let MENU_NARROW_SCREEN = (SCREEN_WIDTH < 375);
 
 const AnimatedBlurView = Animated.createAnimatedComponent(Expo.BlurView);
-
-class DevIndicator extends React.Component {
-  render() {
-    return (
-      <View
-        style={[
-          {width: 8, height: 8, backgroundColor: '#00c100', borderRadius: 4},
-          this.props.style,
-        ]} />
-    );
-  }
-}
 
 export default class MenuView extends React.Component {
 
@@ -200,7 +189,7 @@ export default class MenuView extends React.Component {
       }
       return (
         <View style={{flexDirection: 'row'}}>
-          <DevIndicator style={{marginTop: 3.5, marginRight: 6}} />
+          <DevIndicator style={{marginTop: 4.5, marginRight: 7}} />
           <Text style={styles.taskDevServerName}>{devServerName}</Text>
         </View>
       );
