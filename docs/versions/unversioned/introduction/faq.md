@@ -72,11 +72,11 @@ However, if you need something very custom--like on-the-fly video processing or 
 
 Expo and React Native are similar to React. You'll have to learn a new set of components (`View` instead of `div`, for example) and writing mobile apps is very different from websites; you think more in terms of screens and different navigators instead of separate web pages, but much more your knowledge carries over than if you were writing a traditional Android or iOS app.
 
-## How do I publish my Expo project? Can I submit it to the app stores?
+## How do I share my Expo project? Can I submit it to the app stores?
 
-With Expo you have two options to publish your project. The first is to create a standalone app that you submit to Apple and Google's app stores. It's easy to build standalone apps with Expo; see [our guide](../guides/building-standalone-apps.html#building-standalone-apps) to learn how to create the iOS IPA and Android APK binaries. Apple charges $99/year to publish your app in the App Store and Google charges a $25 one-time fee for the Play Store.
+The fastest way to share your Expo project is to publish it. You can do this by clicking 'Publish' in XDE or running `exp publish` in your project. This gives your app a URL; you can share this URL with anybody who has the Expo client and they can open your app immediately. [Read more about publishing on Expo](https://blog.expo.io/publishing-on-exponent-790493660d24).
 
-The second option is to publish your project using Expo. Anyone with the Expo app can then open your project if they have the URL for it. This option is free and is wonderful for sharing your project with friends. These two options aren't mutually exclusive so you can choose both of them.
+When you're ready, you can also create a standalone app (`.ipa` and `.apk`) for submission to Apple and Google's app stores. Expo will build the binary for you when you run one command; see [Building Standalone Apps](../guides/building-standalone-apps.html#building-standalone-apps). Apple charges $99/year to publish your app in the App Store and Google charges a $25 one-time fee for the Play Store.
 
 ## Can I use Expo with Relay?
 
