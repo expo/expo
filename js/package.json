@@ -27,7 +27,7 @@
     "dedent": "^0.7.0",
     "email-validator": "^1.0.3",
     "es6-error": "^4.0.1",
-    "expo": "~15.0.0-rc.1",
+    "expo": "~16.0.0-beta.0",
     "fbemitter": "^2.0.2",
     "graphql-tag": "^1.2.1",
     "immutable": "^3.8.1",
