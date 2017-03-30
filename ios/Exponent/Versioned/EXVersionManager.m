@@ -22,6 +22,8 @@
 #import <React/RCTModuleData.h>
 #import <React/RCTUtils.h>
 
+#import <React/RCTAsyncLocalStorage.h>
+
 #import <objc/message.h>
 
 static NSNumber *EXVersionManagerIsFirstLoad;
@@ -260,6 +262,7 @@ static NSNumber *EXVersionManagerIsFirstLoad;
                                     [[EXDevSettings alloc] initWithExperienceId:experienceScope.experienceId isDevelopment:isDeveloper],
                                     [[EXDisabledDevLoadingView alloc] init],
                                     [[EXLinkingManager alloc] initWithInitialUrl:initialUri],
+                                    [[RCTAsyncLocalStorage alloc] initWithStorageDirectory:[experienceScope scopedPathWithPath:@"RCTAsyncLocalStorage" withOptions:@{}]],
                                     ]];
   if (params[@"frame"]) {
     [extraModules addObject:[[EXFrameExceptionsManager alloc] initWithDelegate:params[@"frame"]]];
