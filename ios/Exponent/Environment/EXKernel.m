@@ -503,7 +503,7 @@ continueUserActivity:(NSUserActivity *)userActivity
       if ([appStateModule respondsToSelector:@selector(setState:)]) {
         [appStateModule setState:@"active"];
       }
-      _bridgeRegistry.lastKnownForegroundBridge = appManagerToForeground;
+      _bridgeRegistry.lastKnownForegroundBridge = appManagerToForeground.reactBridge;
     } else {
       _bridgeRegistry.lastKnownForegroundBridge = nil;
     }
