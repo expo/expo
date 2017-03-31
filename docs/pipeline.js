@@ -21,7 +21,7 @@ export default {
         updateSearchIndex(branch, tag, pr),
       ];
     }
-    const steps = [build(branch, tag, pr)];
+    let steps = [build(branch, tag, pr)];
     if (!pr) {
       steps = [
         ...steps,
