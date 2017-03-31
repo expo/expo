@@ -21,13 +21,21 @@ export default {
         updateSearchIndex(branch, tag, pr),
       ];
     }
-    const steps = [
-      build(branch, tag, pr),
-      CI.waitStep(),
-      deploy(branch, tag, pr),
-    ];
+    const steps = [build(branch, tag, pr)];
     if (!pr) {
-      steps.push(CI.blockStep(':shipit: Deploy to Production?'), tagRelease);
+      steps = [
+        ...steps,
+        CI.waitStep(),
+        deploy(branch, tag, pr),
+        CI.blockStep(':shipit: Deploy to Production?'),
+        tagRelease,
+      ];
+    } else {
+      steps = [
+        ...steps,
+        CI.blockStep(':shipit: Deploy to Dev Environment?'),
+        deploy(branch, tag, pr),
+      ];
     }
     return steps;
   },
