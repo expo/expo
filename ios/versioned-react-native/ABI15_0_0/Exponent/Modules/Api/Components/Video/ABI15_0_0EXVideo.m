@@ -244,12 +244,26 @@ static NSString *const ABI15_0_0EXVideoPlaybackRateKeyPath = @"rate";
 {
   // Do this in didSetProps so that all props are set by now
   if ([changedProps containsObject:@"src"]) {
-    if (_onVideoLoadStart) {
-      _onVideoLoadStart(@{
-                          @"uri": [_src objectForKey:@"uri"],
-                          // @"type": [_src objectForKey:@"type"],
-                          // @"isNetwork":[NSNumber numberWithBool:(BOOL)[_src objectForKey:@"isNetwork"]]
-                          });
+    id uri = [_src objectForKey:@"uri"];
+    if (uri) {
+      if (_onVideoLoadStart) {
+        _onVideoLoadStart(@{
+                            @"uri": uri,
+                            // @"type": [_src objectForKey:@"type"],
+                            // @"isNetwork":[NSNumber numberWithBool:(BOOL)[_src objectForKey:@"isNetwork"]]
+                            });
+      }
+    } else {
+      if (_onVideoError) {
+        NSError *err = ABI15_0_0RCTErrorWithMessage(@"`src` prop must contain a `uri` property");
+        _onVideoError(@{
+                        @"error": @{
+                            @"code": @(err.code),
+                            @"domain": err.domain,
+                            @"message": err.localizedDescription,
+                            },
+                        });
+      }
     }
   }
 }
