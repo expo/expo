@@ -115,7 +115,7 @@ const deploy = (branch, tag, pr) => ({
         await K8S.deployHelmChart({
           clusterName: 'exp-central',
           chartPath: './deploy/charts/docs',
-          namespace: environment,
+          namespace: 'docs',
           releaseName: `docs-${environment}`,
           values: {
             image: {
