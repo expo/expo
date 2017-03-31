@@ -2,7 +2,6 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: {{ template "fullname" . }}-ingress
-  namespace: {{ .Release.Namespace }}
   labels:
     app: {{ template "fullname" . }}
     heritage: {{.Release.Service | quote }}
