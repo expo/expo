@@ -24,7 +24,7 @@
     "gatsby-typegen-remark": "1.0.0-alpha12-alpha.dfc40de1",
     "gatsby-typegen-remark-autolink-headers": "1.0.0-alpha12-alpha.dfc40de1",
     "gatsby-typegen-remark-copy-linked-files": "1.0.0-alpha12-alpha.dfc40de1",
-    "gatsby-typegen-remark-expo-autolink": "1.0.1",
+    "gatsby-typegen-remark-expo-autolink": "1.1.0",
     "gatsby-typegen-remark-expo-embed": "1.0.2",
     "gatsby-typegen-remark-prismjs": "1.0.0-alpha12-alpha.dfc40de1",
     "gatsby-typegen-remark-responsive-iframe": "1.0.0-alpha12-alpha.dfc40de1",

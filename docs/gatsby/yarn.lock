@@ -53,7 +53,7 @@ ajv@^4.9.1:
     co "^4.6.0"
     json-stable-stringify "^1.0.1"
 
-algoliasearch@^3.18.0:
+algoliasearch@^3.22.1:
   version "3.22.1"
   resolved algoliasearch-3.22.1.tgz#132abb11134c52a3fd3ded3fcf6acb64f5eb738d
   dependencies:
@@ -209,8 +209,8 @@ array-unique@^0.2.1:
   resolved array-unique-0.2.1.tgz#a1d97ccafcbc2625cc70fadceb36a50c58b01a53
 
 array.prototype.find@^2.0.1:
-  version "2.0.3"
-  resolved array.prototype.find-2.0.3.tgz#08c3ec33e32ec4bab362a2958e686ae92f59271d
+  version "2.0.4"
+  resolved array.prototype.find-2.0.4.tgz#556a5c5362c08648323ddaeb9de9d14bc1864c90
   dependencies:
     define-properties "^1.1.2"
     es-abstract "^1.7.0"
@@ -266,8 +266,8 @@ async@^1.3.0, async@^1.5.0:
   resolved async-1.5.2.tgz#ec6a61ae56480c0c3cb241c95618e20892f9672a
 
 async@^2.1.2, async@^2.1.4:
-  version "2.1.5"
-  resolved async-2.1.5.tgz#e587c68580994ac67fc56ff86d3ac56bdbe810bc
+  version "2.2.0"
+  resolved async-2.2.0.tgz#c324eba010a237e4fbd55a12dee86367d5c0ef32
   dependencies:
     lodash "^4.14.0"
 
@@ -279,9 +279,9 @@ asynckit@^0.4.0:
   version "0.4.0"
   resolved asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79
 
-autocomplete.js@^0.25.0:
-  version "0.25.0"
-  resolved autocomplete.js-0.25.0.tgz#6ef7e2f88407402067d65e6d8caec87164743ee4
+autocomplete.js@^0.28.0:
+  version "0.28.1"
+  resolved autocomplete.js-0.28.1.tgz#da9a0ae5919061d6e3927f20994a94214844b84a
   dependencies:
     immediate "^3.2.3"
 
@@ -1283,8 +1283,8 @@ browserify-rsa@^4.0.0:
     randombytes "^2.0.1"
 
 browserify-sign@^4.0.0:
-  version "4.0.0"
-  resolved browserify-sign-4.0.0.tgz#10773910c3c206d5420a46aad8694f820b85968f
+  version "4.0.4"
+  resolved browserify-sign-4.0.4.tgz#aa4eb68e5d7b658baa6bf6a57e630cbd7a93d298
   dependencies:
     bn.js "^4.1.1"
     browserify-rsa "^4.0.0"
@@ -1420,8 +1420,8 @@ caniuse-api@^1.5.2, caniuse-api@^1.5.3:
     lodash.uniq "^4.3.0"
 
 caniuse-db@^1.0.30000346, caniuse-db@^1.0.30000634, caniuse-db@^1.0.30000639:
-  version "1.0.30000640"
-  resolved caniuse-db-1.0.30000640.tgz#7b7fd3cf13c0d9d41f8754b577b202113e2be7ca
+  version "1.0.30000646"
+  resolved caniuse-db-1.0.30000646.tgz#c724b90d61df24286e015fc528d062073c00def4
 
 capture-stack-trace@^1.0.0:
   version "1.0.0"
@@ -1767,10 +1767,10 @@ compass-vertical-rhythm@^1.3.0:
     parse-unit "^1.0.1"
 
 compressible@~2.0.8:
-  version "2.0.9"
-  resolved compressible-2.0.9.tgz#6daab4e2b599c2770dd9e21e7a891b1c5a755425
+  version "2.0.10"
+  resolved compressible-2.0.10.tgz#feda1c7f7617912732b29bf8cf26252a20b9eecd
   dependencies:
-    mime-db ">= 1.24.0 < 2"
+    mime-db ">= 1.27.0 < 2"
 
 compression@^1.5.2:
   version "1.6.2"
@@ -1858,8 +1858,8 @@ convert-css-length@^1.0.1:
     parse-unit "^1.0.1"
 
 convert-source-map@^1.1.0, convert-source-map@^1.1.1:
-  version "1.4.0"
-  resolved convert-source-map-1.4.0.tgz#e3dad195bf61bfe13a7a3c73e9876ec14a0268f3
+  version "1.5.0"
+  resolved convert-source-map-1.5.0.tgz#9acd70851c6d5dfdd93d9282e5edf94a03ff46b5
 
 cookie-signature@1.0.6:
   version "1.0.6"
@@ -2299,11 +2299,11 @@ diffie-hellman@^5.0.0:
     randombytes "^2.0.0"
 
 docsearch.js@^2.3.1:
-  version "2.3.1"
-  resolved docsearch.js-2.3.1.tgz#075d79c802fd55e5263272bdf06998e7b46c7bbe
+  version "2.3.3"
+  resolved docsearch.js-2.3.3.tgz#6daee4fb978365d038960b4d0ae5360a54002a0c
   dependencies:
-    algoliasearch "^3.18.0"
-    autocomplete.js "^0.25.0"
+    algoliasearch "^3.22.1"
+    autocomplete.js "^0.28.0"
     hogan.js "^3.0.2"
     to-factory "^1.0.0"
 
@@ -2433,8 +2433,8 @@ ejs@^2.3.4:
   resolved ejs-2.5.6.tgz#479636bfa3fe3b1debd52087f0acb204b4f19c88
 
 electron-to-chromium@^1.2.7:
-  version "1.2.8"
-  resolved electron-to-chromium-1.2.8.tgz#22c2e6200d350da27d6050db7e3f6f85d18cf4ed
+  version "1.3.2"
+  resolved electron-to-chromium-1.3.2.tgz#b8ce5c93b308db0e92f6d0435c46ddec8f6363ab
 
 elliptic@^6.0.0:
   version "6.4.0"
@@ -2741,8 +2741,8 @@ expand-tilde@^1.2.0, expand-tilde@^1.2.1, expand-tilde@^1.2.2:
     os-homedir "^1.0.1"
 
 express-graphql@^0.6.1:
-  version "0.6.3"
-  resolved express-graphql-0.6.3.tgz#7ad3233b0267de8ba1e4d0b222f6793ed7ae9e8e
+  version "0.6.4"
+  resolved express-graphql-0.6.4.tgz#e51c6281d075613feac72b3fb569440602d3dfe4
   dependencies:
     accepts "^1.3.0"
     content-type "^1.0.2"
@@ -2844,8 +2844,8 @@ fb-watchman@^1.8.0:
     bser "1.0.2"
 
 fbjs@^0.8.1, fbjs@^0.8.4, fbjs@^0.8.8:
-  version "0.8.11"
-  resolved fbjs-0.8.11.tgz#340b590b8a2278a01ef7467c07a16da9b753db24
+  version "0.8.12"
+  resolved fbjs-0.8.12.tgz#10b5d92f76d45575fd63a217d4ea02bea2f8ed04
   dependencies:
     core-js "^1.0.0"
     isomorphic-fetch "^2.1.1"
@@ -3196,9 +3196,9 @@ gatsby-typegen-remark-copy-linked-files@1.0.0-alpha12-alpha.dfc40de1:
     lodash "^4.17.3"
     unist-util-visit "^1.1.1"
 
-gatsby-typegen-remark-expo-autolink@1.0.1:
-  version "1.0.1"
-  resolved gatsby-typegen-remark-expo-autolink-1.0.1.tgz#e96722cce5d59f6997e45909be6a2eb96677dfb7
+gatsby-typegen-remark-expo-autolink@1.1.0:
+  version "1.1.0"
+  resolved gatsby-typegen-remark-expo-autolink-1.1.0.tgz#d54dcb7d546e6ea54b4cae6deae05038451c0013
   dependencies:
     babel-plugin-lodash "^3.2.11"
     babel-plugin-transform-flow-strip-types "^6.22.0"
@@ -3571,8 +3571,8 @@ global@^4.3.0:
     process "~0.5.1"
 
 globals@^9.0.0:
-  version "9.16.0"
-  resolved globals-9.16.0.tgz#63e903658171ec2d9f51b1d31de5e2b8dc01fb80
+  version "9.17.0"
+  resolved globals-9.17.0.tgz#0c0ca696d9b9bb694d2e5470bd37777caad50286
 
 globby@^5.0.0:
   version "5.0.0"
@@ -3901,8 +3901,8 @@ hoek@2.x.x, hoek@^2.14.x, hoek@^2.9.x:
   resolved hoek-2.16.3.tgz#20bb7403d3cea398e91dc4710a8ff1b8274a25ed
 
 hoek@4.x.x:
-  version "4.1.0"
-  resolved hoek-4.1.0.tgz#4a4557460f69842ed463aa00628cc26d2683afa7
+  version "4.1.1"
+  resolved hoek-4.1.1.tgz#9cc573ffba2b7b408fb5e9c2a13796be94cddce9
 
 hogan.js@^3.0.2:
   version "3.0.2"
@@ -4106,8 +4106,8 @@ interpret@^0.6.4:
   resolved interpret-0.6.6.tgz#fecd7a18e7ce5ca6abfb953e1f86213a49f1625b
 
 interpret@^1.0.0:
-  version "1.0.1"
-  resolved interpret-1.0.1.tgz#d579fb7f693b858004947af39fa0db49f795602c
+  version "1.0.2"
+  resolved interpret-1.0.2.tgz#f4f623f0bb7122f15f5717c8e254b8161b5c5b2d
 
 invariant@^2.0.0, invariant@^2.1.0, invariant@^2.2.0, invariant@^2.2.1, invariant@^2.2.2:
   version "2.2.2"
@@ -4123,9 +4123,9 @@ ip-regex@^1.0.1:
   version "1.0.3"
   resolved ip-regex-1.0.3.tgz#dc589076f659f419c222039a33316f1c7387effd
 
-ipaddr.js@1.2.0:
-  version "1.2.0"
-  resolved ipaddr.js-1.2.0.tgz#8aba49c9192799585bdd643e0ccb50e8ae777ba4
+ipaddr.js@1.3.0:
+  version "1.3.0"
+  resolved ipaddr.js-1.3.0.tgz#1e03a52fdad83a8bbb2b25cbf4998b4cffcd3dec
 
 iron@2.x.x:
   version "2.1.3"
@@ -4498,14 +4498,14 @@ js-tokens@^3.0.0:
   version "3.0.1"
   resolved js-tokens-3.0.1.tgz#08e9f132484a2c45a30907e9dc4d5567b7f114d7
 
-js-yaml@3.7.0, js-yaml@^3.4.6, js-yaml@~3.7.0:
+js-yaml@3.7.0, js-yaml@~3.7.0:
   version "3.7.0"
   resolved js-yaml-3.7.0.tgz#5c967ddd837a9bfdca5f2de84253abe8a1c03b80
   dependencies:
     argparse "^1.0.7"
     esprima "^2.6.0"
 
-js-yaml@^3.5.2, js-yaml@^3.8.1:
+js-yaml@^3.4.6, js-yaml@^3.5.2, js-yaml@^3.8.1:
   version "3.8.2"
   resolved js-yaml-3.8.2.tgz#02d3e2c0f6beab20248d412c352203827d786721
   dependencies:
@@ -4581,8 +4581,8 @@ jsonify@~0.0.0:
   resolved jsonify-0.0.0.tgz#2c74b6ee41d93ca51b7b5aaee8f503631d252a73
 
 jspm-github@^0.14.11:
-  version "0.14.11"
-  resolved jspm-github-0.14.11.tgz#5093b3a79289d63ff6e3982f3b527878ac808d5c
+  version "0.14.13"
+  resolved jspm-github-0.14.13.tgz#326e5217d3639b21609293b01e7e18775dd3dcc7
   dependencies:
     bluebird "^3.0.5"
     expand-tilde "^1.2.0"
@@ -4611,8 +4611,8 @@ jspm-npm@^0.30.2:
     which "^1.1.1"
 
 jspm-registry@^0.4.1:
-  version "0.4.3"
-  resolved jspm-registry-0.4.3.tgz#4a9e06550aeffae8624f40bf1b42100750271c67
+  version "0.4.4"
+  resolved jspm-registry-0.4.4.tgz#d53166035a87cdce585d62baa397568546996d70
   dependencies:
     graceful-fs "^4.1.3"
     rimraf "^2.3.2"
@@ -5234,19 +5234,15 @@ miller-rabin@^4.0.0:
     bn.js "^4.0.0"
     brorand "^1.0.1"
 
-mime-db@1.x.x, "mime-db@>= 1.24.0 < 2":
+mime-db@1.x.x, "mime-db@>= 1.27.0 < 2", mime-db@~1.27.0:
   version "1.27.0"
   resolved mime-db-1.27.0.tgz#820f572296bbd20ec25ed55e5b5de869e5436eb1
 
-mime-db@~1.26.0:
-  version "1.26.0"
-  resolved mime-db-1.26.0.tgz#eaffcd0e4fc6935cf8134da246e2e6c35305adff
-
 mime-types@^2.1.12, mime-types@~2.1.11, mime-types@~2.1.13, mime-types@~2.1.7:
-  version "2.1.14"
-  resolved mime-types-2.1.14.tgz#f7ef7d97583fcaf3b7d282b6f8b5679dab1e94ee
+  version "2.1.15"
+  resolved mime-types-2.1.15.tgz#a4ebf5064094569237b8cf70046776d09fc92aed
   dependencies:
-    mime-db "~1.26.0"
+    mime-db "~1.27.0"
 
 mime@1.3.4, mime@1.3.x, mime@^1.3.4:
   version "1.3.4"
@@ -5273,7 +5269,13 @@ minimalistic-crypto-utils@^1.0.0, minimalistic-crypto-utils@^1.0.1:
   version "1.0.1"
   resolved minimalistic-crypto-utils-1.0.1.tgz#f6c00c1c0b082246e5c4d99dfb8c7c083b2b582a
 
-"minimatch@2 || 3", minimatch@3.0.2, minimatch@^3.0.0, minimatch@^3.0.2:
+"minimatch@2 || 3", minimatch@^3.0.0, minimatch@^3.0.2:
+  version "3.0.3"
+  resolved minimatch-3.0.3.tgz#2a4e4090b96b2db06a9d7df01055a62a77c9b774
+  dependencies:
+    brace-expansion "^1.0.0"
+
+minimatch@3.0.2:
   version "3.0.2"
   resolved minimatch-3.0.2.tgz#0f398a7300ea441e9c348c83d98ab8c9dbf9c40a
   dependencies:
@@ -5467,8 +5469,10 @@ normalize-package-data@^2.3.2, normalize-package-data@^2.3.4:
     validate-npm-package-license "^3.0.1"
 
 normalize-path@^2.0.1:
-  version "2.0.1"
-  resolved normalize-path-2.0.1.tgz#47886ac1662760d4261b7d979d241709d3ce3f7a
+  version "2.1.1"
+  resolved normalize-path-2.1.1.tgz#1ab28b556e198363a8c1a6f7e6fa20137fe6aed9
+  dependencies:
+    remove-trailing-separator "^1.0.1"
 
 normalize-range@^0.1.2:
   version "0.1.2"
@@ -6487,11 +6491,11 @@ property-information@^3.1.0:
   resolved property-information-3.1.0.tgz#1581bf8a445dfbfef759775a86700e8dda18b4a1
 
 proxy-addr@~1.1.3:
-  version "1.1.3"
-  resolved proxy-addr-1.1.3.tgz#dc97502f5722e888467b3fa2297a7b1ff47df074
+  version "1.1.4"
+  resolved proxy-addr-1.1.4.tgz#27e545f6960a44a627d9b44467e35c1b6b4ce2f3
   dependencies:
     forwarded "~0.1.0"
-    ipaddr.js "1.2.0"
+    ipaddr.js "1.3.0"
 
 prr@~0.0.0:
   version "0.0.0"
@@ -6611,8 +6615,8 @@ raw-loader@^0.5.1:
   resolved raw-loader-0.5.1.tgz#0c3d0beaed8a01c966d9787bf778281252a979aa
 
 rc@^1.0.1, rc@^1.1.0, rc@^1.1.2, rc@^1.1.6, rc@^1.1.7:
-  version "1.1.7"
-  resolved rc-1.1.7.tgz#c5ea564bb07aff9fd3a5b32e906c1d3a65940fea
+  version "1.2.0"
+  resolved rc-1.2.0.tgz#c7de973b7b46297c041366b2fd3d2363b1697c66
   dependencies:
     deep-extend "~0.4.0"
     ini "~1.3.0"
@@ -6836,9 +6840,9 @@ rechoir@^0.6.2:
   dependencies:
     resolve "^1.1.6"
 
-"recursive-readdir@https://github.com/KyleAMathews/recursive-readdir.git":
+"recursive-readdir@git+https://github.com/KyleAMathews/recursive-readdir.git":
   version "2.1.0"
-  resolved "https://github.com/KyleAMathews/recursive-readdir.git#fbfe835d2e75a977db2d1e794214aa26ecdb0671"
+  resolved recursive-readdir.git-fbfe835d2e75a977db2d1e794214aa26ecdb0671#c2017cf4e79556e029da8bae77ff6e0033ecc722
   dependencies:
     minimatch "3.0.2"
 
@@ -7033,6 +7037,10 @@ remark@^6.2.0:
     remark-parse "^2.2.0"
     remark-stringify "^2.2.0"
     unified "^5.0.0"
+
+remove-trailing-separator@^1.0.1:
+  version "1.0.1"
+  resolved remove-trailing-separator-1.0.1.tgz#615ebb96af559552d4bf4057c8436d486ab63cc4
 
 repeat-element@^1.1.2:
   version "1.1.2"
@@ -7435,9 +7443,9 @@ source-list-map@^0.1.7, source-list-map@~0.1.7:
   version "0.1.8"
   resolved source-list-map-0.1.8.tgz#c550b2ab5427f6b3f21f5afead88c4f5587b2106
 
-source-list-map@^1.0.1:
-  version "1.0.1"
-  resolved source-list-map-1.0.1.tgz#cc1fc17122ae0a51978024c2cc0f8c35659026b8
+source-list-map@^1.1.1:
+  version "1.1.1"
+  resolved source-list-map-1.1.1.tgz#1a33ac210ca144d1e561f906ebccab5669ff4cb4
 
 source-map-support@^0.4.0, source-map-support@^0.4.2:
   version "0.4.14"
@@ -8269,8 +8277,8 @@ update-notifier@^1.0.3:
     xdg-basedir "^2.0.0"
 
 urijs@^1.16.1:
-  version "1.18.9"
-  resolved urijs-1.18.9.tgz#06d503d4f1907dcbd906fbd808b38457ec40dee6
+  version "1.18.10"
+  resolved urijs-1.18.10.tgz#b94463eaba59a1a796036a467bb633c667f221ab
 
 url-loader@^0.5.7:
   version "0.5.8"
@@ -8339,8 +8347,8 @@ uuid@^3.0.0:
   resolved uuid-3.0.1.tgz#6544bba2dfda8c1cf17e629a3a305e2bb1fee6c1
 
 v8flags@^2.0.10:
-  version "2.0.11"
-  resolved v8flags-2.0.11.tgz#bca8f30f0d6d60612cc2c00641e6962d42ae6881
+  version "2.0.12"
+  resolved v8flags-2.0.12.tgz#73235d9f7176f8e8833fb286795445f7938d84e5
   dependencies:
     user-home "^1.1.1"
 
@@ -8584,15 +8592,15 @@ webpack-sources@^0.1.0:
     source-map "~0.5.3"
 
 webpack-sources@^0.2.0:
-  version "0.2.0"
-  resolved webpack-sources-0.2.0.tgz#fea93ba840f16cdd3f246f0ee95f88a9492c69fb
+  version "0.2.3"
+  resolved webpack-sources-0.2.3.tgz#17c62bfaf13c707f9d02c479e0dcdde8380697fb
   dependencies:
-    source-list-map "^1.0.1"
+    source-list-map "^1.1.1"
     source-map "~0.5.3"
 
 webpack-stats-plugin@^0.1.4:
-  version "0.1.4"
-  resolved webpack-stats-plugin-0.1.4.tgz#400dd3967e12e54a54eb968ba368c0d7af334eb2
+  version "0.1.5"
+  resolved webpack-stats-plugin-0.1.5.tgz#29e5f12ebfd53158d31d656a113ac1f7b86179d9
 
 webpack-validator@^2.2.7:
   version "2.3.0"
