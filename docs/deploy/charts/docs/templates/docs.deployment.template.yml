@@ -2,7 +2,6 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: {{ template "fullname" . }}
-  namespace: {{ .Release.Namespace }}
   labels:
     app: {{ template "fullname" . }}
     heritage: {{.Release.Service | quote }}
