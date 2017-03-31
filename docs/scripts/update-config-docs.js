@@ -66,7 +66,7 @@ function writePropertiesToStream(stream, schema, depth = 0) {
   schema.forEach(prop => {
     let depthSpacing = (new Array(depth)).join(' ');
     stream.write(`\n${depthSpacing}- \`${prop.key}\`\n`);
-    stream.write(`\n${depthSpacing} ${propertyDescription(prop, depthSpacing)}`);
+    stream.write(`\n${depthSpacing}   ${propertyDescription(prop, depthSpacing)}`);
     if (prop.children) {
       writePropertiesToStream(stream, prop.children, depth + 4);
     }
