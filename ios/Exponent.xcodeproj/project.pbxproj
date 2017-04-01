@@ -120,7 +120,6 @@
 		B5218E7A1D232B8800C54B61 /* EXNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = B5218E791D232B8800C54B61 /* EXNotifications.m */; };
 		B5218E851D2475A000C54B61 /* EXKernelBridgeRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = B5218E841D2475A000C54B61 /* EXKernelBridgeRecord.m */; };
 		B5218E8A1D24806400C54B61 /* EXKernelBridgeRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = B5218E891D24806400C54B61 /* EXKernelBridgeRegistry.m */; };
-		B52336AF1DAD6A3A001C0B5E /* EXAVPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = B52336AE1DAD6A3A001C0B5E /* EXAVPermissionRequester.m */; };
 		B526B5081E6A543500606CAB /* ExpoKit.m in Sources */ = {isa = PBXBuildFile; fileRef = B526B5051E6A543500606CAB /* ExpoKit.m */; };
 		B526B5091E6A543500606CAB /* EXViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B526B5071E6A543500606CAB /* EXViewController.m */; };
 		B52336AF1DAD6A3A001C0B5E /* EXCameraPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = B52336AE1DAD6A3A001C0B5E /* EXCameraPermissionRequester.m */; };
@@ -444,8 +443,6 @@
 		B5218E841D2475A000C54B61 /* EXKernelBridgeRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelBridgeRecord.m; sourceTree = "<group>"; };
 		B5218E881D24806400C54B61 /* EXKernelBridgeRegistry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelBridgeRegistry.h; sourceTree = "<group>"; };
 		B5218E891D24806400C54B61 /* EXKernelBridgeRegistry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelBridgeRegistry.m; sourceTree = "<group>"; };
-		B52336AD1DAD6A3A001C0B5E /* EXAVPermissionRequester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAVPermissionRequester.h; sourceTree = "<group>"; };
-		B52336AE1DAD6A3A001C0B5E /* EXAVPermissionRequester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAVPermissionRequester.m; sourceTree = "<group>"; };
 		B526B5041E6A543500606CAB /* ExpoKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExpoKit.h; sourceTree = "<group>"; };
 		B526B5051E6A543500606CAB /* ExpoKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExpoKit.m; sourceTree = "<group>"; };
 		B526B5061E6A543500606CAB /* EXViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXViewController.h; sourceTree = "<group>"; };
@@ -1099,8 +1096,6 @@
 				B5844C361D482C3D0015C683 /* EXPermissions.m */,
 				B5844C391D482D710015C683 /* EXRemoteNotificationRequester.h */,
 				B5844C3A1D482D710015C683 /* EXRemoteNotificationRequester.m */,
-				B52336AD1DAD6A3A001C0B5E /* EXAVPermissionRequester.h */,
-				B52336AE1DAD6A3A001C0B5E /* EXAVPermissionRequester.m */,
 				19F72F551E764AE100F9A671 /* EXContactsRequester.h */,
 				19F72F561E764AE100F9A671 /* EXContactsRequester.m */,
 				B52336AD1DAD6A3A001C0B5E /* EXCameraPermissionRequester.h */,
