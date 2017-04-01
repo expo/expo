@@ -120,9 +120,9 @@
 		B5218E7A1D232B8800C54B61 /* EXNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = B5218E791D232B8800C54B61 /* EXNotifications.m */; };
 		B5218E851D2475A000C54B61 /* EXKernelBridgeRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = B5218E841D2475A000C54B61 /* EXKernelBridgeRecord.m */; };
 		B5218E8A1D24806400C54B61 /* EXKernelBridgeRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = B5218E891D24806400C54B61 /* EXKernelBridgeRegistry.m */; };
+		B52336AF1DAD6A3A001C0B5E /* EXCameraPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = B52336AE1DAD6A3A001C0B5E /* EXCameraPermissionRequester.m */; };
 		B526B5081E6A543500606CAB /* ExpoKit.m in Sources */ = {isa = PBXBuildFile; fileRef = B526B5051E6A543500606CAB /* ExpoKit.m */; };
 		B526B5091E6A543500606CAB /* EXViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B526B5071E6A543500606CAB /* EXViewController.m */; };
-		B52336AF1DAD6A3A001C0B5E /* EXCameraPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = B52336AE1DAD6A3A001C0B5E /* EXCameraPermissionRequester.m */; };
 		B55089791D06378B009FBBC5 /* EXKernel.m in Sources */ = {isa = PBXBuildFile; fileRef = B55089781D06378B009FBBC5 /* EXKernel.m */; };
 		B55089821D06455D009FBBC5 /* EXLinkingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B55089811D06455D009FBBC5 /* EXLinkingManager.m */; };
 		B5553F961CEFBD1200555008 /* EXShellManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5553F951CEFBD1200555008 /* EXShellManager.m */; };
@@ -443,12 +443,12 @@
 		B5218E841D2475A000C54B61 /* EXKernelBridgeRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelBridgeRecord.m; sourceTree = "<group>"; };
 		B5218E881D24806400C54B61 /* EXKernelBridgeRegistry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelBridgeRegistry.h; sourceTree = "<group>"; };
 		B5218E891D24806400C54B61 /* EXKernelBridgeRegistry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelBridgeRegistry.m; sourceTree = "<group>"; };
+		B52336AD1DAD6A3A001C0B5E /* EXCameraPermissionRequester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXCameraPermissionRequester.h; sourceTree = "<group>"; };
+		B52336AE1DAD6A3A001C0B5E /* EXCameraPermissionRequester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXCameraPermissionRequester.m; sourceTree = "<group>"; };
 		B526B5041E6A543500606CAB /* ExpoKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExpoKit.h; sourceTree = "<group>"; };
 		B526B5051E6A543500606CAB /* ExpoKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExpoKit.m; sourceTree = "<group>"; };
 		B526B5061E6A543500606CAB /* EXViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXViewController.h; sourceTree = "<group>"; };
 		B526B5071E6A543500606CAB /* EXViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXViewController.m; sourceTree = "<group>"; };
-		B52336AD1DAD6A3A001C0B5E /* EXCameraPermissionRequester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXCameraPermissionRequester.h; sourceTree = "<group>"; };
-		B52336AE1DAD6A3A001C0B5E /* EXCameraPermissionRequester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXCameraPermissionRequester.m; sourceTree = "<group>"; };
 		B55089771D06378B009FBBC5 /* EXKernel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernel.h; sourceTree = "<group>"; };
 		B55089781D06378B009FBBC5 /* EXKernel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernel.m; sourceTree = "<group>"; };
 		B55089801D06455D009FBBC5 /* EXLinkingManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXLinkingManager.h; sourceTree = "<group>"; };
@@ -1317,6 +1317,9 @@
 								enabled = 1;
 							};
 							com.apple.SafariKeychain = {
+								enabled = 1;
+							};
+							com.apple.iCloud = {
 								enabled = 1;
 							};
 						};
