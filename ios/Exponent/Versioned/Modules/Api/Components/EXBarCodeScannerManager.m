@@ -52,30 +52,7 @@ RCT_EXPORT_VIEW_PROPERTY(onBarCodeRead, RCTDirectEventBlock);
 - (NSDictionary *)constantsToExport
 {
   return @{
-    @"BarCodeType" : @{
-      @"upce" : AVMetadataObjectTypeUPCECode,
-      @"code39" : AVMetadataObjectTypeCode39Code,
-      @"code39mod43" : AVMetadataObjectTypeCode39Mod43Code,
-      @"ean13" : AVMetadataObjectTypeEAN13Code,
-      @"ean8" : AVMetadataObjectTypeEAN8Code,
-      @"code93" : AVMetadataObjectTypeCode93Code,
-      @"code138" : AVMetadataObjectTypeCode128Code,
-      @"pdf417" : AVMetadataObjectTypePDF417Code,
-      @"qr" : AVMetadataObjectTypeQRCode,
-      @"aztec" : AVMetadataObjectTypeAztecCode
-#ifdef AVMetadataObjectTypeInterleaved2of5Code
-      ,
-      @"interleaved2of5" : AVMetadataObjectTypeInterleaved2of5Code
-#endif
-#ifdef AVMetadataObjectTypeITF14Code
-      ,
-      @"itf14" : AVMetadataObjectTypeITF14Code
-#endif
-#ifdef AVMetadataObjectTypeDataMatrixCode
-      ,
-      @"datamatrix" : AVMetadataObjectTypeDataMatrixCode
-#endif
-    },
+    @"BarCodeType" : [[self class] validBarCodeTypes],
     @"Type" :
         @{@"front" : @(EXBarCodeScannerTypeFront), @"back" : @(EXBarCodeScannerTypeBack)},
     @"TorchMode" : @{
@@ -83,6 +60,34 @@ RCT_EXPORT_VIEW_PROPERTY(onBarCodeRead, RCTDirectEventBlock);
       @"on" : @(EXBarCodeScannerTorchModeOn),
       @"auto" : @(EXBarCodeScannerTorchModeAuto)
     }
+  };
+}
+
++ (NSDictionary *)validBarCodeTypes
+{
+  return @{
+     @"upce" : AVMetadataObjectTypeUPCECode,
+     @"code39" : AVMetadataObjectTypeCode39Code,
+     @"code39mod43" : AVMetadataObjectTypeCode39Mod43Code,
+     @"ean13" : AVMetadataObjectTypeEAN13Code,
+     @"ean8" : AVMetadataObjectTypeEAN8Code,
+     @"code93" : AVMetadataObjectTypeCode93Code,
+     @"code138" : AVMetadataObjectTypeCode128Code,
+     @"pdf417" : AVMetadataObjectTypePDF417Code,
+     @"qr" : AVMetadataObjectTypeQRCode,
+     @"aztec" : AVMetadataObjectTypeAztecCode
+  #ifdef AVMetadataObjectTypeInterleaved2of5Code
+     ,
+     @"interleaved2of5" : AVMetadataObjectTypeInterleaved2of5Code
+  #endif
+  #ifdef AVMetadataObjectTypeITF14Code
+     ,
+     @"itf14" : AVMetadataObjectTypeITF14Code
+  #endif
+  #ifdef AVMetadataObjectTypeDataMatrixCode
+     ,
+     @"datamatrix" : AVMetadataObjectTypeDataMatrixCode
+  #endif
   };
 }
 
@@ -150,7 +155,15 @@ RCT_CUSTOM_VIEW_PROPERTY(torchMode, NSInteger, EXBarCodeScanner)
 
 RCT_CUSTOM_VIEW_PROPERTY(barCodeTypes, NSArray, EXBarCodeScanner)
 {
-  self.barCodeTypes = [RCTConvert NSArray:json];
+  NSArray *types = [RCTConvert NSArray:json];
+  NSSet *validTypes = [NSSet setWithArray:[[self class] validBarCodeTypes].allValues];
+  for (id type in types) {
+    if (![validTypes containsObject:type]) {
+      RCTLogWarn(@"Unsupported BarCodeType: %@", type);
+      return;
+    }
+  }
+  self.barCodeTypes = types;
 }
 
 - (NSArray *)customDirectEventTypes
