@@ -54,7 +54,7 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(_onKernelJSLoaded)
-                                                 name:@"EXKernelJSIsLoadedNotification"
+                                                 name:kEXKernelJSIsLoadedNotification
                                                object:nil];
   }
   return self;

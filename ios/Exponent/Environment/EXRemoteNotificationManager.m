@@ -47,7 +47,7 @@ NSString * const kEXCurrentAPNSTokenDefaultsKey = @"EXCurrentAPNSTokenDefaultsKe
     _isLatestTokenPosted = NO;
     _isPostingToken = NO;
     _isKernelJSLoaded = NO;
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_onKernelJSLoaded) name:@"EXKernelJSIsLoadedNotification" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_onKernelJSLoaded) name:kEXKernelJSIsLoadedNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(_handleGetPushToken:)
                                                  name:kEXKernelGetPushTokenNotification

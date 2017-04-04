@@ -24,12 +24,14 @@
 NS_ASSUME_NONNULL_BEGIN
 
 NSString *kEXKernelErrorDomain = @"EXKernelErrorDomain";
-NSString *kEXKernelOpenUrlNotification = @"EXKernelOpenUrlNotification";
-NSString *kEXKernelRefreshForegroundTaskNotification = @"EXKernelRefreshForegroundTaskNotification";
-NSString *kEXKernelGetPushTokenNotification = @"EXKernelGetPushTokenNotification";
+NSNotificationName kEXKernelOpenUrlNotification = @"EXKernelOpenUrlNotification";
+NSNotificationName kEXKernelRefreshForegroundTaskNotification = @"EXKernelRefreshForegroundTaskNotification";
+NSNotificationName kEXKernelGetPushTokenNotification = @"EXKernelGetPushTokenNotification";
+NSNotificationName kEXKernelJSIsLoadedNotification = @"EXKernelJSIsLoadedNotification";
 NSString *kEXKernelShouldForegroundTaskEvent = @"foregroundTask";
 NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
 NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUserDefaultsKey";
+NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey";
 
 @interface EXKernel ()
 
@@ -80,6 +82,7 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
                                              selector:@selector(_refreshForegroundTask:)
                                                  name:kEXKernelRefreshForegroundTaskNotification
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_onKernelJSLoaded) name:kEXKernelJSIsLoadedNotification object:nil];
     for (NSString *name in @[UIApplicationDidBecomeActiveNotification,
                              UIApplicationDidEnterBackgroundNotification,
                              UIApplicationDidFinishLaunchingNotification,
@@ -163,6 +166,16 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
   }
   // kernel or unknown bridge: lock to portrait
   return UIInterfaceOrientationMaskPortrait;
+}
+
+- (void)_onKernelJSLoaded
+{
+  // used by appetize: optionally disable nux
+  BOOL disableNuxDefaultsValue = [[NSUserDefaults standardUserDefaults] boolForKey:EXKernelDisableNuxDefaultsKey];
+  if (disableNuxDefaultsValue) {
+    [self dispatchKernelJSEvent:@"resetNuxState" body:@{ @"isNuxCompleted": @YES } onSuccess:nil onFailure:nil];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:EXKernelDisableNuxDefaultsKey];
+  }
 }
 
 #pragma mark - Linking

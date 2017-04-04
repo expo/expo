@@ -475,8 +475,9 @@ class KernelNavigator extends React.Component {
     }
 
     // listen for kernel nux events
-    DeviceEventEmitter.addListener('ExponentKernel.resetNuxState', () => {
-      this.props.dispatch(BrowserActions.setIsNuxFinishedAsync(false));
+    DeviceEventEmitter.addListener('ExponentKernel.resetNuxState', (event) => {
+      let { isNuxCompleted } = event;
+      this.props.dispatch(BrowserActions.setIsNuxFinishedAsync(!!isNuxCompleted));
     });
   }
 }

@@ -11,9 +11,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-FOUNDATION_EXPORT NSString *kEXKernelOpenUrlNotification;
-FOUNDATION_EXPORT NSString *kEXKernelRefreshForegroundTaskNotification;
-FOUNDATION_EXPORT NSString *kEXKernelGetPushTokenNotification;
+FOUNDATION_EXPORT NSNotificationName kEXKernelOpenUrlNotification;
+FOUNDATION_EXPORT NSNotificationName kEXKernelRefreshForegroundTaskNotification;
+FOUNDATION_EXPORT NSNotificationName kEXKernelGetPushTokenNotification;
+FOUNDATION_EXPORT NSNotificationName kEXKernelJSIsLoadedNotification;
 FOUNDATION_EXPORT NSString *kEXKernelErrorDomain;
 
 // this key is set to YES when crashlytics sends a crash report.
