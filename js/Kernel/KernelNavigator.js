@@ -21,7 +21,6 @@ import TimerMixin from 'react-timer-mixin';
 import autobind from 'autobind-decorator';
 import Browser from 'Browser';
 import BrowserActions from 'BrowserActions';
-import ConsoleActions from 'ConsoleActions';
 import ExButton from 'ExButton';
 import ExRouter from 'ExRouter';
 import ExponentKernel from 'ExponentKernel';
@@ -65,7 +64,6 @@ class KernelNavigator extends React.Component {
       foregroundTaskUrl,
       tasks,
       history,
-      consoleHistory: data.console.history,
     };
   }
 
@@ -327,14 +325,8 @@ class KernelNavigator extends React.Component {
   }
 
   _updateNavigator(nextProps) {
-    // present the console if something happened in it
     let isBrowserChanged = false;
-    if (this._shouldPushConsoleFromNextProps(nextProps)) {
-        this.pushConsole(!this._isCurrentTaskDev());
-    } else if (nextProps.foregroundTaskUrl !== this.props.foregroundTaskUrl) {
-      if (nextProps.foregroundTaskUrl) {
-        this.props.dispatch(ConsoleActions.clearConsole());
-      }
+    if (nextProps.foregroundTaskUrl !== this.props.foregroundTaskUrl) {
       isBrowserChanged = true;
     } else {
       // same url but possibly new time (i.e. the user opened it again)
@@ -385,9 +377,6 @@ class KernelNavigator extends React.Component {
       // there is no home in this case, go back to the root shell task
       this._foregroundRouteForUrl(this.props.shellManifestUrl, urlToBackground);
     } else {
-      if (this.isConsolePresented()) {
-        this._navigator.pop();
-      }
       this._navigator.jumpTo(this._homeRoute);
       ExponentKernel.routeDidForeground(KERNEL_ROUTE_HOME, { urlToBackground });
     }
@@ -415,56 +404,6 @@ class KernelNavigator extends React.Component {
       }
     }
     this._browserRoutes = newBrowserRoutes;
-  }
-
-  @autobind
-  isConsolePresented() {
-    let currentRoute = this._navigator.navigationContext.currentRoute;
-    let currentRoutes = this._navigator.getCurrentRoutes();
-    let currentIndex = currentRoutes.findIndex(route => route === currentRoute);
-    let isConsolePresented = currentRoutes
-      .slice(0, currentIndex + 1)
-      .some(route => route.isConsole);
-
-    return isConsolePresented;
-  }
-
-  /**
-   *  @param isUserFacing: if true, console should show a end-user-readable "oops" message
-   *    overlaying the technical details of the console.
-   */
-  @autobind
-  pushConsole(isUserFacing) {
-    if (!this.isConsolePresented()) {
-      this._navigator.push(ExRouter.getConsoleRoute(Browser.refresh, isUserFacing));
-    }
-  }
-
-  _shouldPushConsoleFromNextProps(nextProps) {
-    let currentConsoleSize = this.props.consoleHistory ? this.props.consoleHistory.size : 0;
-    let newConsoleSize = nextProps.consoleHistory ? nextProps.consoleHistory.size : 0;
-    if (newConsoleSize > currentConsoleSize) {
-      // current behavior: Pop the console if the error was fatal and we're NOT developing (so no redbox happened).
-      // TODO: user accounts: Additionally pop the console if the logged in user owns this experience.
-      return this._isLastConsoleItemFatal(nextProps.consoleHistory) && !this._isCurrentTaskDev();
-    }
-    return false;
-  }
-
-  _isCurrentTaskDev() {
-    let currentExperience = this.props.tasks.get(this.props.foregroundTaskUrl);
-    return currentExperience &&
-      currentExperience.manifest &&
-      currentExperience.manifest.get('developer');
-  }
-
-  _isLastConsoleItemFatal(consoleHistory) {
-    consoleHistory = consoleHistory || this.props.consoleHistory;
-    if (consoleHistory) {
-      let lastConsoleItem = consoleHistory.valueSeq().last();
-      return (lastConsoleItem && lastConsoleItem.get('fatal'));
-    }
-    return false;
   }
 
   async _loadNuxStateAsync() {

@@ -22,7 +22,6 @@ import FadeIn from '@expo/react-native-fade-in-image';
 import autobind from 'autobind-decorator';
 import BrowserActions from 'BrowserActions';
 import BrowserErrorView from 'BrowserErrorView';
-import ConsoleActions from 'ConsoleActions';
 import ExColors from 'ExColors';
 import ExManifests from 'ExManifests';
 import ExponentKernel from 'ExponentKernel';
@@ -339,7 +338,6 @@ class BrowserScreen extends React.Component {
 
   @autobind
   _handleFrameLoadingStart(event) {
-    this.props.dispatch(ConsoleActions.clearConsole());
     this.props.dispatch(BrowserActions.setLoadingState(this.props.url, true));
   }
 
@@ -367,8 +365,6 @@ class BrowserScreen extends React.Component {
   _handleUncaughtError(event) {
     let { dispatch } = this.props;
     let { id, message, stack, fatal } = event.nativeEvent;
-    let action = ConsoleActions.logUncaughtError(id, message, stack, fatal, this.props.url);
-    dispatch(action);
     if (fatal) {
       let isDeveloper = false;
       if (this.props.task && this.props.task.manifest) {
