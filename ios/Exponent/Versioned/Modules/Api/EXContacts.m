@@ -16,9 +16,9 @@
 RCT_EXPORT_MODULE(ExponentContacts);
 
 /**
- * @param fields array with possible values 'addresses', 'phoneNumbers', 'emails'
+ * @param options Options including what fields to get and paging information.
  */
-RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(getContactsAsync:(NSDictionary *)options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
   if (!_contactStore) {
     _contactStore = [[CNContactStore alloc] init];
@@ -30,17 +30,28 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
   }
 
   // always include id, name, firstName, middleName, lastName, company, jobTitle
-  NSMutableSet *fieldsSet = [NSMutableSet setWithArray:fields];
+  NSMutableSet *fieldsSet = [NSMutableSet setWithArray:options[@"fields"]];
   [fieldsSet addObjectsFromArray:@[@"id", @"name", @"firstName", @"middleName", @"lastName", @"company", @"jobTitle"]];
 
   NSArray *keysToFetch = [self _contactKeysToFetchFromFields:fieldsSet.allObjects];
   CNContactFetchRequest *fetchRequest = [[CNContactFetchRequest alloc] initWithKeysToFetch:keysToFetch];
   fetchRequest.unifyResults = YES;
   fetchRequest.predicate = nil;
-  
+
+  NSUInteger pageOffset = [options[@"pageOffset"] unsignedIntegerValue];
+  NSUInteger pageSize = [options[@"pageSize"] unsignedIntegerValue];
+  __block NSUInteger currentIndex = 0;
   NSError *err;
   NSMutableArray *response = [[NSMutableArray alloc] init];
   BOOL success = [_contactStore enumerateContactsWithFetchRequest:fetchRequest error:&err usingBlock:^(CNContact * _Nonnull person, BOOL * _Nonnull stop) {
+    // Paginate the result.
+    BOOL shouldAddContact = (currentIndex >= pageOffset) && (currentIndex < pageOffset + pageSize);
+    currentIndex++;
+    if (!shouldAddContact) {
+      // Don't use `stop` because we need to go through every contact to get the total count.
+      return;
+    }
+
     NSMutableDictionary *contact = [NSMutableDictionary dictionary];
     contact[@"id"] = person.identifier;
     contact[@"firstName"] = person.givenName;
@@ -62,9 +73,17 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
 
     [response addObject:contact];
   }];
-  
+
+  // When we are done iterating the total is the current index.
+  NSUInteger total = currentIndex;
+
   if (success && !err) {
-    resolve(response);
+    resolve(@{
+      @"data": response,
+      @"hasNextPage": @(pageOffset + pageSize < total),
+      @"hasPreviousPage": @(pageOffset > 0),
+      @"total": @(total),
+    });
   } else {
     reject(0, @"Error while fetching contacts", err);
   }
@@ -75,7 +94,7 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
   NSMutableArray *results = nil;
   if (person.postalAddresses) {
     results = [NSMutableArray arrayWithCapacity:person.postalAddresses.count];
-    
+
     for (CNLabeledValue<CNPostalAddress *> *container in person.postalAddresses) {
       CNPostalAddress *val = container.value;
       NSMutableDictionary *address = [NSMutableDictionary dictionary];
@@ -86,7 +105,7 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
       address[@"country"] = val.country;
       if (container.label) {
         address[@"label"] = [CNLabeledValue localizedStringForLabel:container.label];
-        
+
       }
       [results addObject:address];
     }
@@ -99,7 +118,7 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
   NSMutableArray *results = nil;
   if (person.phoneNumbers) {
     results = [NSMutableArray arrayWithCapacity:person.phoneNumbers.count];
-    
+
     for (CNLabeledValue<CNPhoneNumber *> *container in person.phoneNumbers) {
       NSString *phoneNumber = container.value.stringValue;
       if (container.label) {
@@ -118,7 +137,7 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSArray *)fields resolver:(RCTPromiseResolve
   NSMutableArray *results = nil;
   if (person.emailAddresses) {
     results = [NSMutableArray arrayWithCapacity:person.emailAddresses.count];
-    
+
     for (CNLabeledValue<NSString *> *container in person.emailAddresses) {
       NSString *emailAddress = container.value;
       if (container.label) {

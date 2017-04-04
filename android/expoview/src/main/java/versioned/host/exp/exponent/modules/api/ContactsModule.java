@@ -18,6 +18,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 
@@ -48,25 +49,35 @@ public class ContactsModule extends ReactContextBaseJavaModule {
   }
 
   /**
-   * @param fields array with possible values 'phone_number', 'email'
+   * @param options Options including what fields to get and paging information.
    */
   @ReactMethod
-  public void getContactsAsync(final ReadableArray fields, final Promise promise) {
+  public void getContactsAsync(final ReadableMap options, final Promise promise) {
     if (isMissingPermissions()) {
       promise.reject("E_MISSING_PERMISSION", "Missing contacts permission.");
       return;
     }
 
-    Set<String> fieldsSet = getFieldsSet(fields);
-    WritableArray response = Arguments.createArray();
+    int pageOffset = options.getInt("pageOffset");
+    int pageSize = options.getInt("pageSize");
+    Set<String> fieldsSet = getFieldsSet(options.getArray("fields"));
+    WritableArray contacts = Arguments.createArray();
+    WritableMap response = Arguments.createMap();
 
     ContentResolver cr = getReactApplicationContext().getContentResolver();
     Cursor cursor = cr.query(CommonDataKinds.Phone.CONTENT_URI, PROJECTION, null, null, null);
     if (cursor != null) {
       try {
+        cursor.move(pageOffset);
+        int currentIndex = 0;
+
         final int contactIdIndex = cursor.getColumnIndex(CommonDataKinds.Phone.CONTACT_ID);
         final int displayNameIndex = cursor.getColumnIndex(Contacts.DISPLAY_NAME);
         while (cursor.moveToNext()) {
+          if (currentIndex >= pageSize) {
+            break;
+          }
+
           int id = (int) cursor.getLong(contactIdIndex);
           String name = cursor.getString(displayNameIndex);
 
@@ -108,8 +119,16 @@ public class ContactsModule extends ReactContextBaseJavaModule {
           }
           contact.putInt("id", id);
           contact.putString("name", name);
-          response.pushMap(contact);
+          contacts.pushMap(contact);
+
+          currentIndex++;
         }
+
+        int total = cursor.getCount();
+        response.putArray("data", contacts);
+        response.putBoolean("hasPreviousPage", pageOffset > 0);
+        response.putBoolean("hasNextPage", pageOffset + pageSize < total);
+        response.putInt("total", total);
       } finally {
         cursor.close();
       }
