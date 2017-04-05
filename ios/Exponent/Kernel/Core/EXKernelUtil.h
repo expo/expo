@@ -13,7 +13,7 @@ static const DDLogLevel ddLogLevel = DDLogLevelWarning;
 
 // Dynamically generated configuration
 #ifndef EX_DETACHED
-#import "../Generated/EXDynamicMacros.h"
+#import "../../Generated/EXDynamicMacros.h"
 #endif
 
 #define EXAssertMainThread() NSAssert([NSThread isMainThread], @"Method must be called on main thread")

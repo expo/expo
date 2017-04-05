@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXCrypto.h"
+#import "EXApiUtil.h"
 
 #import <CommonCrypto/CommonDigest.h>
 
@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 static NSString* kPublicKeyTag = @"exp.host.publickey";
 
-@implementation EXCrypto
+@implementation EXApiUtil
 
 + (void)verifySignatureWithPublicKeyUrl:(NSURL *)publicKeyUrl
                                    data:(NSString *)data

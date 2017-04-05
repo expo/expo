@@ -2,7 +2,7 @@
 
 #import "EXManifestResource.h"
 #import "EXAnalytics.h"
-#import "EXCrypto.h"
+#import "EXApiUtil.h"
 #import "EXFileDownloader.h"
 #import "EXKernel.h"
 #import "EXShellManager.h"
@@ -63,7 +63,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
 
     if (innerManifestString && manifestSignature) {
       NSURL *publicKeyUrl = [NSURL URLWithString:kEXPublicKeyUrl];
-      [EXCrypto verifySignatureWithPublicKeyUrl:publicKeyUrl
+      [EXApiUtil verifySignatureWithPublicKeyUrl:publicKeyUrl
                                            data:innerManifestString
                                       signature:manifestSignature
                                    successBlock:signatureSuccess
@@ -98,7 +98,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
 
 - (BOOL)_isManifestVerificationBypassed
 {
-  // HACK: because `SecItemCopyMatching` doesn't work in older iOS (see EXCrypto.m)
+  // HACK: because `SecItemCopyMatching` doesn't work in older iOS (see EXApiUtil.m)
   return (([UIDevice currentDevice].systemVersion.floatValue < 10) ||
           [EXShellManager sharedInstance].isManifestVerificationBypassed);
 }

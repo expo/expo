@@ -7,7 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void (^EXVerifySignatureSuccessBlock)(BOOL isValid);
 typedef void (^EXVerifySignatureErrorBlock)(NSError *error);
 
-@interface EXCrypto : NSObject
+@interface EXApiUtil : NSObject
 
 /**
  * Verify data using a RSA+SHA256 base64 signature string and the public key at #{publicKeyUrl}.
