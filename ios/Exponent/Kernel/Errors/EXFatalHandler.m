@@ -11,7 +11,7 @@ RCTFatalHandler handleFatalReactError = ^(NSError *error) {
     // generally we want to show a human-readable error, since RCTRedBox is disabled in production.
     // in the case that EXFrame failed to load, this is actually non-fatal and will instead
     // get handled by RCTJavaScriptDidFailToLoadNotification.
-    BOOL isFrameError = [[EXKernel sharedInstance].bridgeRegistry errorBelongsToBridge:error];
+    BOOL isFrameError = [[EXKernel sharedInstance].recoveryManager errorBelongsToExperience:error];
 
     if (!isFrameError) {
       [[EXKernel sharedInstance].rootViewController

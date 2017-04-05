@@ -4,6 +4,7 @@
 #import <UIKit/UIKit.h>
 
 #import "EXKernelBridgeRegistry.h"
+#import "EXErrorRecoveryManager.h"
 #import "EXKernelModule.h"
 #import "EXKernelUtil.h"
 
@@ -43,6 +44,7 @@ FOUNDATION_EXPORT NSString * const kEXKernelClearJSCacheUserDefaultsKey;
 - (UIInterfaceOrientationMask)supportedInterfaceOrientationsForForegroundTask;
 
 @property (nonatomic, strong, readonly) EXKernelBridgeRegistry *bridgeRegistry;
+@property (nonatomic, strong, readonly) EXErrorRecoveryManager *recoveryManager;
 
 # pragma mark - app-wide linking handlers
 

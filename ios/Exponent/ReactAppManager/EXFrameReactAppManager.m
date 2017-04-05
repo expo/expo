@@ -43,14 +43,13 @@
     NSLog(@"EXFrameReactAppManager: Standalone bundle remote url is %@", [EXShellManager sharedInstance].shellManifestUrl);
     return kEXShellBundleResourceName;
   } else {
-    return _frame.manifest[@"id"];
+    return self.experienceId;
   }
 }
 
 - (EXCachedResourceBehavior)cacheBehaviorForJSResource
 {
-  NSString *experienceId = (_frame.manifest) ? _frame.manifest[@"id"] : nil;
-  if ([[EXKernel sharedInstance].bridgeRegistry experienceIdIsRecoveringFromError:experienceId]) {
+  if ([[EXKernel sharedInstance].recoveryManager experienceIdIsRecoveringFromError:self.experienceId]) {
     // if this experience id encountered a loading error before, discard any cache we might have
     return kEXCachedResourceNoCache;
   }
@@ -117,13 +116,18 @@
 - (void)registerBridge
 {
   [[EXKernel sharedInstance].bridgeRegistry registerBridge:self.reactBridge
-                                           withExperienceId:_frame.manifest[@"id"]
+                                           withExperienceId:self.experienceId
                                                 appManager:self];
 }
 
 - (void)unregisterBridge
 {
   [[EXKernel sharedInstance].bridgeRegistry unregisterBridge:self.reactBridge];
+}
+
+- (NSString *)experienceId
+{
+  return (_frame && _frame.manifest) ? _frame.manifest[@"id"] : nil;
 }
 
 #pragma mark - RCTBridgeDelegate
@@ -179,7 +183,7 @@
 
 - (void)registerErrorForBridge:(NSError *)error
 {
-  [[EXKernel sharedInstance].bridgeRegistry setError:error forBridge:self.reactBridge];
+  [[EXKernel sharedInstance].recoveryManager setError:error forExperienceId:self.experienceId];
 }
 
 - (id)appLoadingManagerInstance

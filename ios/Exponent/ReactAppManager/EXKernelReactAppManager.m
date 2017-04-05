@@ -179,6 +179,12 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
   _exceptionHandler = nil;
 }
 
+- (NSString *)experienceId
+{
+  NSDictionary *manifest = [[self class] kernelManifest];
+  return (manifest) ? manifest[@"id"] : nil;
+}
+
 #pragma mark - RCTBridgeDelegate
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
@@ -193,7 +199,7 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
   
   if ([self.versionManager respondsToSelector:@selector(extraModulesWithParams:)]) {
     NSDictionary *manifest = [[self class] kernelManifest];
-    RCTAssert([manifest objectForKey:@"id"], @"Cannot load kernel manifest with no id.");
+    RCTAssert(self.experienceId, @"Cannot load kernel manifest with no id.");
 
     // TODO: common constants impl?
     NSMutableDictionary *params = [@{
