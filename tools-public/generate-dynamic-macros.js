@@ -7,6 +7,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const process = require('process');
+const { mkdir } = require('shelljs');
 const { ExponentTools, IosPodsTools, UrlUtils } = require('xdl');
 const JsonFile = require('@exponent/json-file');
 const spawnAsync = require('@exponent/spawn-async');
@@ -331,6 +332,8 @@ exports.generateDynamicMacrosAsync = async function generateDynamicMacrosAsync(
     let filepath = path.resolve(args.buildConstantsPath);
     let filename = path.basename(filepath);
     let platform = args.platform;
+
+    mkdir('-p', path.dirname(filepath));
 
     let result = await Promise.all([
       generateSourceAsync(filename, platform),
