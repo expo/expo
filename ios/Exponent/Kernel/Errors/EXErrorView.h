@@ -1,4 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
+//
+//  This native view is presented only when the Kernel RN bridge is inoperable.
+//  Typically this is either because the kernel JS couldn't load, or because the kernel JS encountered a fatal error.
+//
 
 #import <UIKit/UIKit.h>
 
