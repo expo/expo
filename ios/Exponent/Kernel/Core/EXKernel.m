@@ -72,6 +72,7 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
 {
   if (self = [super init]) {
     _bridgeRegistry = [[EXKernelBridgeRegistry alloc] init];
+    _recoveryManager = [[EXErrorRecoveryManager alloc] init];
     [EXKernelDevMotionHandler sharedInstance];
     [EXKernelDevKeyCommands sharedInstance];
     [[NSNotificationCenter defaultCenter] addObserver:self
