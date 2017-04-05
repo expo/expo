@@ -18,7 +18,6 @@
 #import <React/RCTBridge+Private.h>
 #import <React/RCTDevMenu.h>
 #import <React/RCTDevSettings.h>
-#import "RCTDevMenu+Device.h"
 #import <React/RCTLog.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTUtils.h>
