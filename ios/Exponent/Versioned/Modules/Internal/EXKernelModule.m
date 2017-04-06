@@ -102,6 +102,17 @@ RCT_REMAP_METHOD(doesCurrentTaskEnableDevtools,
   }
 }
 
+RCT_REMAP_METHOD(shouldCurrentTaskAutoReload,
+                 shouldCurrentTaskAutoReloadWithResolver:(RCTPromiseResolveBlock)resolve
+                 reject:(RCTPromiseRejectBlock)reject)
+{
+  if (_delegate) {
+    resolve(@([_delegate kernelModuleShouldAutoReloadCurrentTask:self]));
+  } else {
+    resolve(@NO);
+  }
+}
+
 RCT_REMAP_METHOD(getDevMenuItemsToShow,
                  getDevMenuItemsToShowWithResolver:(RCTPromiseResolveBlock)resolve
                  reject:(RCTPromiseRejectBlock)reject)

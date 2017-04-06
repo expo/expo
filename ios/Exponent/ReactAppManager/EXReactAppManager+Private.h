@@ -10,7 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) NSString *versionSymbolPrefix;
 @property (nonatomic, strong, nullable) NSString *validatedVersion;
-@property (nonatomic, readonly) NSString *experienceId;
 
 // versioned
 @property (nonatomic, strong) id versionManager;

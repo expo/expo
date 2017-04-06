@@ -19,6 +19,11 @@ didRequestManifestWithUrl:(NSURL *)url
 - (BOOL)kernelModuleShouldEnableDevtools:(EXKernelModule *)module;
 
 /**
+ *  Whether the kernel JS should auto reload an experience after it encounters a fatal JS error.
+ */
+- (BOOL)kernelModuleShouldAutoReloadCurrentTask:(EXKernelModule *)module;
+
+/**
  *  Dictionary of `key` => `user facing label` items to show in the kernel JS dev menu.
  */
 - (NSDictionary <NSString *, NSString *> *)devMenuItemsForKernelModule:(EXKernelModule *)module;

@@ -231,6 +231,7 @@ NSTimeInterval const kEXJavaScriptResourceLongerTimeout = 120;
     dispatch_async(dispatch_get_main_queue(), ^{
       __strong typeof(self) strongSelf = weakSelf;
       if (strongSelf) {
+        [[EXKernel sharedInstance].recoveryManager experienceFinishedLoadingWithId:strongSelf.experienceId];
         [strongSelf.delegate reactAppManagerFinishedLoadingJavaScript:strongSelf];
       }
     });

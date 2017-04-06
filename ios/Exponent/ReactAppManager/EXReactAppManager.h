@@ -56,6 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) id<EXReactAppManagerDelegate> delegate;
 @property (nonatomic, strong) UIView * __nullable reactRootView;
 @property (nonatomic, strong) id __nullable reactBridge;
+@property (nonatomic, readonly) NSString *experienceId;
 
 @end
 
