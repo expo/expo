@@ -7,7 +7,7 @@
  */
 
 #import <UIKit/UIKit.h>
-#import "RNSVGBrushCOnverter.h"
+#import "RNSVGBrushConverter.h"
 #import "RNSVGContainer.h"
 
 @class RNSVGNode;
