@@ -2,6 +2,9 @@
 
 #import "EXErrorRecoveryManager.h"
 
+// if the app crashes and it has not yet been 5 seconds since it loaded, don't auto refresh.
+#define EX_AUTO_REFRESH_BUFFER_SECONDS 5.0
+
 NSNotificationName const kEXErrorRecoverySetPropsNotification = @"EXErrorRecoverySetPropsNotification";
 
 @interface EXErrorRecoveryRecord : NSObject
@@ -90,9 +93,19 @@ NSNotificationName const kEXErrorRecoverySetPropsNotification = @"EXErrorRecover
   return NO;
 }
 
-- (void)experienceFinishedLoadingWithId:(NSString *)experienceId
+- (void)experienceRestartedWithId:(NSString *)experienceId
 {
   [_experienceInfo removeObjectForKey:experienceId];
+}
+
+- (void)experienceFinishedLoadingWithId:(NSString *)experienceId
+{
+  EXErrorRecoveryRecord *record = [self _recordForExperienceId:experienceId];
+  if (!record) {
+    record = [[EXErrorRecoveryRecord alloc] init];
+    _experienceInfo[experienceId] = record;
+  }
+  record.dtmLastLoaded = [NSDate date];
 }
 
 - (BOOL)experienceIdIsRecoveringFromError:(NSString *)experienceId
@@ -102,6 +115,16 @@ NSNotificationName const kEXErrorRecoverySetPropsNotification = @"EXErrorRecover
     return record.isRecovering;
   }
   return NO;
+}
+
+- (BOOL)experienceIdShouldReloadOnError:(NSString *)experienceId
+{
+  EXErrorRecoveryRecord *record = [self _recordForExperienceId:experienceId];
+  if (record) {
+    return ([record.dtmLastLoaded timeIntervalSinceNow] < -EX_AUTO_REFRESH_BUFFER_SECONDS);
+  }
+  // if we have no knowledge of this experience, sure, try reloading right away.
+  return YES;
 }
 
 #pragma mark - internal

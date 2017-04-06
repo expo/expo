@@ -38,7 +38,7 @@
   [_bridgeRegistry setObject:[EXKernelBridgeRecord recordWithExperienceId:experienceId appManager:appManager] forKey:bridge];
 
   // if this experience had a loading error previously, consider it recovered now
-  [[EXKernel sharedInstance].recoveryManager experienceFinishedLoadingWithId:experienceId];
+  [[EXKernel sharedInstance].recoveryManager experienceRestartedWithId:experienceId];
 
   if (_lastKnownForegroundBridge == nil) {
     // TODO: this assumes we always load bridges in the foreground (true at time of writing)

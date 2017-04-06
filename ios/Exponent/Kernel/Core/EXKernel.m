@@ -477,6 +477,12 @@ continueUserActivity:(NSUserActivity *)userActivity
   }
 }
 
+- (BOOL)kernelModuleShouldAutoReloadCurrentTask:(EXKernelModule *)module
+{
+  NSString *foregroundTaskExperienceId = _bridgeRegistry.lastKnownForegroundAppManager.experienceId;
+  return [_recoveryManager experienceIdShouldReloadOnError:foregroundTaskExperienceId];
+}
+
 - (void)kernelModule:(__unused EXKernelModule *)module taskDidForegroundWithType:(NSInteger)type params:(NSDictionary *)params
 {
   EXKernelRoute routetype = (EXKernelRoute)type;

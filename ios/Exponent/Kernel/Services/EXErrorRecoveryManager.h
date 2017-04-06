@@ -24,7 +24,13 @@ FOUNDATION_EXPORT NSNotificationName const kEXErrorRecoverySetPropsNotification;
 - (void)setError: (NSError *)error forExperienceId: (NSString *)experienceId;
 
 /**
- *  Clears all recovery info from previous run of this experience id.
+ *  Indicate that a new bridge has been constructed for this experience id.
+ *  Clears all recovery info from previous runs of this experience id.
+ */
+- (void)experienceRestartedWithId:(NSString *)experienceId;
+
+/**
+ *  Indicate that a JS bundle has successfully loaded for this experience id.
  */
 - (void)experienceFinishedLoadingWithId:(NSString *)experienceId;
 
@@ -38,5 +44,10 @@ FOUNDATION_EXPORT NSNotificationName const kEXErrorRecoverySetPropsNotification;
  *  True if this error object (by `isEqual:`) has been registered for any experience id.
  */
 - (BOOL)errorBelongsToExperience: (NSError *)error;
+
+/**
+ *  Whether we want to auto-reload this experience if it encounters a fatal error.
+ */
+- (BOOL)experienceIdShouldReloadOnError: (NSString *)experienceId;
 
 @end
