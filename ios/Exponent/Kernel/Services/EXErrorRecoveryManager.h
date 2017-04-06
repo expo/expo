@@ -9,14 +9,21 @@
 @interface EXErrorRecoveryManager : NSObject
 
 /**
- *  Sometimes we need to keep a native reference to an EXFrame error that
- *  we want to sandbox to only that experience.
- *  For example, RCTJavaScriptDidFailToLoadNotification will also call RCTFatal(),
- *  but we don't want such an error to take down the entire kernel.
+ *  Associate arbitrary developer info with this experience id. If the experience recovers from an
+ *  error, we can pass this info to the new instance of the experience.
+ */
+- (void)setDeveloperInfo: (NSDictionary *)developerInfo forExperienceid: (NSString *)experienceId;
+- (NSDictionary *)developerInfoForExperienceId: (NSString *)experienceId;
+
+/**
+ *  Associate an error with an experience id. This will never be cleared until the next
+ *  call to `experienceFinishedLoadingWithId:`.
  */
 - (void)setError: (NSError *)error forExperienceId: (NSString *)experienceId;
-- (BOOL)errorBelongsToExperience: (NSError *)error;
 
+/**
+ *  Clears all recovery info from previous run of this experience id.
+ */
 - (void)experienceFinishedLoadingWithId:(NSString *)experienceId;
 
 /**
@@ -24,5 +31,10 @@
  *  since the error was reported.
  */
 - (BOOL)experienceIdIsRecoveringFromError:(NSString *)experienceId;
+
+/**
+ *  True if this error object (by `isEqual:`) has been registered for any experience id.
+ */
+- (BOOL)errorBelongsToExperience: (NSError *)error;
 
 @end

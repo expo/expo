@@ -2,10 +2,22 @@
 
 #import "EXErrorRecoveryManager.h"
 
+@interface EXErrorRecoveryRecord : NSObject
+
+@property (nonatomic, assign) BOOL isRecovering;
+@property (nonatomic, strong) NSError *error;
+@property (nonatomic, assign) NSDate *dtmLastLoaded;
+@property (nonatomic, strong) NSDictionary *developerInfo;
+
+@end
+
+@implementation EXErrorRecoveryRecord
+
+@end
+
 @interface EXErrorRecoveryManager ()
 
-@property (nonatomic, strong) NSMutableDictionary<NSString *, NSError *> *experienceInfo;
-@property (nonatomic, strong) NSMutableSet *experienceIdErrorRecoverySet;
+@property (nonatomic, strong) NSMutableDictionary<NSString *, EXErrorRecoveryRecord *> *experienceInfo;
 
 @end
 
@@ -15,27 +27,52 @@
 {
   if (self = [super init]) {
     _experienceInfo = [NSMutableDictionary dictionary];
-    _experienceIdErrorRecoverySet = [NSMutableSet set];
   }
   return self;
 }
 
+- (void)setDeveloperInfo:(NSDictionary *)developerInfo forExperienceid:(NSString *)experienceId
+{
+  NSAssert(experienceId, @"Cannot associate recovery info with a nil experience id");
+  EXErrorRecoveryRecord *record = [self _recordForExperienceId:experienceId];
+  if (!record) {
+    record = [[EXErrorRecoveryRecord alloc] init];
+    _experienceInfo[experienceId] = record;
+  }
+  record.developerInfo = developerInfo;
+}
+
+- (NSDictionary *)developerInfoForExperienceId:(NSString *)experienceId
+{
+  EXErrorRecoveryRecord *record = [self _recordForExperienceId:experienceId];
+  if (record) {
+    return record.developerInfo;
+  }
+  return nil;
+}
+
 - (void)setError:(NSError *)error forExperienceId:(NSString *)experienceId
 {
-  if (error) {
-    // mark this experience id as having loading problems, so future attempts will bust the cache
-    _experienceInfo[experienceId] = error;
-    [_experienceIdErrorRecoverySet addObject:experienceId];
-  } else {
-    [_experienceInfo removeObjectForKey:experienceId];
+  NSAssert(experienceId, @"Cannot associate an error with a nil experience id");
+  EXErrorRecoveryRecord *record = [self _recordForExperienceId:experienceId];
+  if (!record) {
+    record = [[EXErrorRecoveryRecord alloc] init];
+    _experienceInfo[experienceId] = record;
   }
+  // mark this experience id as having loading problems, so future attempts will bust the cache.
+  // this flag never gets unset until the record is removed, even if the error is nullified.
+  record.isRecovering = YES;
+  record.error = error;
 }
 
 - (BOOL)errorBelongsToExperience:(NSError *)error
 {
+  if (!error) {
+    return NO;
+  }
   for (NSString *experienceId in _experienceInfo.allKeys) {
-    NSError *experienceError = _experienceInfo[experienceId];
-    if ([experienceError isEqual:error]) {
+    EXErrorRecoveryRecord *record = [self _recordForExperienceId:experienceId];
+    if ([record.error isEqual:error]) {
       return YES;
     }
   }
@@ -44,12 +81,26 @@
 
 - (void)experienceFinishedLoadingWithId:(NSString *)experienceId
 {
-  [_experienceIdErrorRecoverySet removeObject:experienceId];
+  [_experienceInfo removeObjectForKey:experienceId];
 }
 
 - (BOOL)experienceIdIsRecoveringFromError:(NSString *)experienceId
 {
-  return (experienceId && [_experienceIdErrorRecoverySet containsObject:experienceId]);
+  EXErrorRecoveryRecord *record = [self _recordForExperienceId:experienceId];
+  if (record) {
+    return record.isRecovering;
+  }
+  return NO;
+}
+
+#pragma mark - internal
+
+- (EXErrorRecoveryRecord *)_recordForExperienceId: (NSString *)experienceId;
+{
+  if (experienceId) {
+    return _experienceInfo[experienceId];
+  }
+  return nil;
 }
 
 @end
