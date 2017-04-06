@@ -6,6 +6,8 @@
 
 #import <Foundation/Foundation.h>
 
+FOUNDATION_EXPORT NSNotificationName const kEXErrorRecoverySetPropsNotification;
+
 @interface EXErrorRecoveryManager : NSObject
 
 /**
