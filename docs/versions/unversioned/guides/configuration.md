@@ -125,10 +125,6 @@ title: Configuration with exp.json
 
     **Standalone Apps Only**. Url scheme to link into your app. For example, if we set this to `'rnplay'`, then rnplay:// urls would open your app when tapped.
 
--   `entryPoint`
-
-    The relative path to your main JavaScript file.
-
 -   `extra`
 
     Any extra fields you want to pass to your experience.
