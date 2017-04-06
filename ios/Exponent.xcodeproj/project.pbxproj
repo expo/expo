@@ -161,6 +161,7 @@
 		B5AC39D21E95B01F00540AA7 /* EXDisabledDevMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC39CC1E95B01F00540AA7 /* EXDisabledDevMenu.m */; };
 		B5AC39D31E95B01F00540AA7 /* EXDisabledRedBox.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC39CE1E95B01F00540AA7 /* EXDisabledRedBox.m */; };
 		B5AC39D61E95B17300540AA7 /* EXErrorRecoveryManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC39D51E95B17300540AA7 /* EXErrorRecoveryManager.m */; };
+		B5AC39D91E96D7A900540AA7 /* EXErrorRecovery.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC39D81E96D7A900540AA7 /* EXErrorRecovery.m */; };
 		B5E49B571D1346FA00AA6436 /* Exponent.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = B5E49B551D1346FA00AA6436 /* Exponent.entitlements */; };
 		B5E49B631D1347B800AA6436 /* EXSDKVersions.plist in Resources */ = {isa = PBXBuildFile; fileRef = B5E49B621D1347B800AA6436 /* EXSDKVersions.plist */; };
 		B5E49B691D1348E800AA6436 /* EXShell.plist in Resources */ = {isa = PBXBuildFile; fileRef = B5E49B671D1348E800AA6436 /* EXShell.plist */; };
@@ -526,6 +527,8 @@
 		B5AC39CE1E95B01F00540AA7 /* EXDisabledRedBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXDisabledRedBox.m; sourceTree = "<group>"; };
 		B5AC39D41E95B17300540AA7 /* EXErrorRecoveryManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXErrorRecoveryManager.h; sourceTree = "<group>"; };
 		B5AC39D51E95B17300540AA7 /* EXErrorRecoveryManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXErrorRecoveryManager.m; sourceTree = "<group>"; };
+		B5AC39D71E96D7A900540AA7 /* EXErrorRecovery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXErrorRecovery.h; sourceTree = "<group>"; };
+		B5AC39D81E96D7A900540AA7 /* EXErrorRecovery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXErrorRecovery.m; sourceTree = "<group>"; };
 		B5E49B541D1346FA00AA6436 /* Exponent-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Exponent-Prefix.pch"; sourceTree = "<group>"; };
 		B5E49B551D1346FA00AA6436 /* Exponent.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Exponent.entitlements; sourceTree = "<group>"; };
 		B5E49B561D1346FA00AA6436 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -892,6 +895,8 @@
 				A1F37F5C1CEFD6B2001E9EFC /* EXConstants.m */,
 				A1F37F5D1CEFD6B2001E9EFC /* EXContacts.h */,
 				A1F37F5E1CEFD6B2001E9EFC /* EXContacts.m */,
+				B5AC39D71E96D7A900540AA7 /* EXErrorRecovery.h */,
+				B5AC39D81E96D7A900540AA7 /* EXErrorRecovery.m */,
 				A15DC4CB1D011248009F940D /* EXFacebook.h */,
 				A15DC4CA1D011248009F940D /* EXFacebook.m */,
 				A1CDBE971D3851F700C2A670 /* EXFileSystem.h */,
@@ -1757,6 +1762,7 @@
 				B5E4DB611E566614007D43DD /* AIRGoogleMapPolygon.m in Sources */,
 				1936011D1D67ABCF007C0EE0 /* RNSVGNodeManager.m in Sources */,
 				A1DCE8471DC3FC63009665FD /* EXGLView.m in Sources */,
+				B5AC39D91E96D7A900540AA7 /* EXErrorRecovery.m in Sources */,
 				B5678C5F1DB6D65B00380A6E /* EXFrame.m in Sources */,
 				78C77D2F1DC332870069CC59 /* AIRMapUrlTileManager.m in Sources */,
 				193601251D67ABCF007C0EE0 /* RNSVGRectManager.m in Sources */,

@@ -2,6 +2,8 @@
 
 #import "EXErrorRecoveryManager.h"
 
+NSNotificationName const kEXErrorRecoverySetPropsNotification = @"EXErrorRecoverySetPropsNotification";
+
 @interface EXErrorRecoveryRecord : NSObject
 
 @property (nonatomic, assign) BOOL isRecovering;
@@ -27,8 +29,17 @@
 {
   if (self = [super init]) {
     _experienceInfo = [NSMutableDictionary dictionary];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(_handleRecoveryPropsNotification:)
+                                                 name:kEXErrorRecoverySetPropsNotification
+                                               object:nil];
   }
   return self;
+}
+
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)setDeveloperInfo:(NSDictionary *)developerInfo forExperienceid:(NSString *)experienceId
@@ -101,6 +112,12 @@
     return _experienceInfo[experienceId];
   }
   return nil;
+}
+
+- (void)_handleRecoveryPropsNotification:(NSNotification *)notif
+{
+  NSDictionary *params = notif.userInfo;
+  [self setDeveloperInfo:params[@"props"] forExperienceid:params[@"experienceId"]];
 }
 
 @end

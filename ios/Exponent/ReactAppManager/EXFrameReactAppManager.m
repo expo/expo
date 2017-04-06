@@ -72,6 +72,10 @@
   if (_frame && _frame.initialProps) {
     [expProps addEntriesFromDictionary:_frame.initialProps];
   }
+  NSDictionary *errorRecoveryProps = [[EXKernel sharedInstance].recoveryManager developerInfoForExperienceId:self.experienceId];
+  if (errorRecoveryProps && [[EXKernel sharedInstance].recoveryManager experienceIdIsRecoveringFromError:self.experienceId]) {
+    expProps[@"errorRecovery"] = errorRecoveryProps;
+  }
   
   props[@"exp"] = expProps;
   
