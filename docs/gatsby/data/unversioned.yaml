@@ -16,6 +16,7 @@
     Viewing Logs: /versions/unversioned/guides/logging.html
     Debugging: /versions/unversioned/guides/debugging.html
     Assets: /versions/unversioned/guides/assets.html
+    Error Handling: /versions/unversioned/guides/errors.html
     Preloading & Caching Assets: /versions/unversioned/guides/preloading-and-caching-assets.html
     Icons: /versions/unversioned/guides/icons.html
     Using Custom Fonts: /versions/unversioned/guides/using-custom-fonts.html
@@ -47,6 +48,7 @@
     BlurView: /versions/unversioned/sdk/blur-view.html
     Constants: /versions/unversioned/sdk/constants.html
     Contacts: /versions/unversioned/sdk/contacts.html
+    ErrorRecovery: /versions/unversioned/sdk/error-recovery.html
     Facebook: /versions/unversioned/sdk/facebook.html
     FacebookAds: /versions/unversioned/sdk/facebook-ads.html
     Font: /versions/unversioned/sdk/font.html
