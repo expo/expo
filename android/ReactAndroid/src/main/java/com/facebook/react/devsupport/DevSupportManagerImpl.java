@@ -47,13 +47,16 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.ShakeDetector;
 import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.react.devsupport.DevServerHelper.PackagerCommandListener;
-import com.facebook.react.devsupport.StackTraceHelper.StackFrame;
-import com.facebook.react.modules.debug.DeveloperSettings;
+import com.facebook.react.devsupport.interfaces.DevOptionHandler;
+import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
+import com.facebook.react.devsupport.interfaces.StackFrame;
+import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
+import com.facebook.react.packagerconnection.JSPackagerClient;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.ws.WebSocket;
 
 /**
  * Interface for accessing and interacting with development features. Following features
@@ -424,7 +427,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
 
             @Override
             public void onOptionSelected() {
-                handleCaptureHeap();
+                handleCaptureHeap(null);
             }
         });
         options.put(mApplicationContext.getString(R.string.catalyst_poke_sampling_profiler), new DevOptionHandler() {
@@ -620,7 +623,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
     }
 
     @Override
-    public void isPackagerRunning(DevServerHelper.PackagerStatusCallback callback) {
+    public void isPackagerRunning(PackagerStatusCallback callback) {
         mDevServerHelper.isPackagerRunning(callback);
     }
 
@@ -654,39 +657,43 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
     }
 
     @Override
-    public void onCaptureHeapCommand() {
+    public void onCaptureHeapCommand(@Nullable final JSPackagerClient.Responder responder) {
         UiThreadUtil.runOnUiThread(new Runnable() {
 
             @Override
             public void run() {
-                handleCaptureHeap();
+                handleCaptureHeap(responder);
             }
         });
     }
 
     @Override
-    public void onPokeSamplingProfilerCommand(@Nullable final WebSocket webSocket) {
+    public void onPokeSamplingProfilerCommand(@Nullable final JSPackagerClient.Responder responder) {
         UiThreadUtil.runOnUiThread(new Runnable() {
 
             @Override
             public void run() {
-                handlePokeSamplingProfiler(webSocket);
+                handlePokeSamplingProfiler(responder);
             }
         });
     }
 
-    private void handleCaptureHeap() {
-        JSCHeapCapture.captureHeap(mApplicationContext.getCacheDir().getPath(), JSCHeapUpload.captureCallback(mDevServerHelper.getHeapCaptureUploadUrl()));
+    private void handleCaptureHeap(@Nullable final JSPackagerClient.Responder responder) {
+        if (mCurrentContext == null) {
+            return;
+        }
+        JSCHeapCapture heapCapture = mCurrentContext.getNativeModule(JSCHeapCapture.class);
+        heapCapture.captureHeap(mApplicationContext.getCacheDir().getPath(), JSCHeapUpload.captureCallback(mDevServerHelper.getHeapCaptureUploadUrl(), responder));
     }
 
-    private void handlePokeSamplingProfiler(@Nullable WebSocket webSocket) {
+    private void handlePokeSamplingProfiler(@Nullable final JSPackagerClient.Responder responder) {
         try {
             List<String> pokeResults = JSCSamplingProfiler.poke(60000);
             for (String result : pokeResults) {
                 Toast.makeText(mCurrentContext, result == null ? "Started JSC Sampling Profiler" : "Stopped JSC Sampling Profiler", Toast.LENGTH_LONG).show();
-                if (webSocket != null) {
-                    // WebSocket is provided, so there is a client waiting our response
-                    webSocket.sendMessage(RequestBody.create(WebSocket.TEXT, result == null ? "" : result));
+                if (responder != null) {
+                    // Responder is provided, so there is a client waiting our response
+                    responder.respond(result == null ? "started" : result);
                 } else if (result != null) {
                     // The profile was not initiated by external client, so process the
                     // profile if there is one in the result
@@ -694,8 +701,6 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
                 }
             }
         } catch (JSCSamplingProfiler.ProfilerException e) {
-            showNewJavaError(e.getMessage(), e);
-        } catch (IOException e) {
             showNewJavaError(e.getMessage(), e);
         }
     }

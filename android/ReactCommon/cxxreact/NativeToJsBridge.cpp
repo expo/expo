@@ -49,6 +49,8 @@ public:
       JSExecutor& executor, folly::dynamic&& calls, bool isEndOfBatch) override {
     ExecutorToken token = m_nativeToJs->getTokenForExecutor(executor);
     m_nativeQueue->runOnQueue([this, token, calls=std::move(calls), isEndOfBatch] () mutable {
+      m_batchHadNativeModuleCalls = m_batchHadNativeModuleCalls || !calls.empty();
+
       // An exception anywhere in here stops processing of the batch.  This
       // was the behavior of the Android bridge, and since exception handling
       // terminates the whole bridge, there's not much point in continuing.
@@ -57,7 +59,10 @@ public:
           token, call.moduleId, call.methodId, std::move(call.arguments), call.callId);
       }
       if (isEndOfBatch) {
-        m_callback->onBatchComplete();
+        if (m_batchHadNativeModuleCalls) {
+          m_callback->onBatchComplete();
+          m_batchHadNativeModuleCalls = false;
+        }
         m_callback->decrementPendingJSCalls();
       }
     });
@@ -85,6 +90,7 @@ private:
   std::shared_ptr<ModuleRegistry> m_registry;
   std::unique_ptr<MessageQueueThread> m_nativeQueue;
   std::shared_ptr<InstanceCallback> m_callback;
+  bool m_batchHadNativeModuleCalls = false;
 };
 
 NativeToJsBridge::NativeToJsBridge(
@@ -109,20 +115,6 @@ NativeToJsBridge::NativeToJsBridge(
 NativeToJsBridge::~NativeToJsBridge() {
   CHECK(*m_destroyed) <<
     "NativeToJsBridge::destroy() must be called before deallocating the NativeToJsBridge!";
-}
-
-void NativeToJsBridge::loadOptimizedApplicationScript(
-    std::string bundlePath,
-    std::string sourceURL,
-    int flags) {
-  runOnExecutorQueue(
-      m_mainExecutorToken,
-      [bundlePath=std::move(bundlePath),
-       sourceURL=std::move(sourceURL),
-       flags=flags]
-        (JSExecutor* executor) {
-    executor->loadApplicationScript(std::move(bundlePath), std::move(sourceURL), flags);
-  });
 }
 
 void NativeToJsBridge::loadApplication(

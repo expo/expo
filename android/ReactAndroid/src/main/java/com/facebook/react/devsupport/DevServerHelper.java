@@ -11,7 +11,9 @@ package com.facebook.react.devsupport;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -22,7 +24,9 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.network.OkHttpCallUtil;
+import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
+import com.facebook.react.packagerconnection.JSPackagerClient;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.ConnectionPool;
@@ -30,7 +34,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import okhttp3.ws.WebSocket;
 import okio.Okio;
 import okio.Sink;
 
@@ -70,7 +73,7 @@ public class DevServerHelper {
 
     public static String WEBSOCKET_PROXY_URL_FORMAT = "ws://%s/debugger-proxy?role=client";
 
-    public static String PACKAGER_CONNECTION_URL_FORMAT = "ws://%s/message?role=shell";
+    public static String PACKAGER_CONNECTION_URL_FORMAT = "ws://%s/message?role=android-rn-devserverhelper";
 
     public static String PACKAGER_STATUS_URL_FORMAT = "http://%s/status";
 
@@ -103,14 +106,9 @@ public class DevServerHelper {
 
         void onPackagerReloadCommand();
 
-        void onCaptureHeapCommand();
+        void onCaptureHeapCommand(@Nullable final JSPackagerClient.Responder responder);
 
-        void onPokeSamplingProfilerCommand(@Nullable final WebSocket webSocket);
-    }
-
-    public interface PackagerStatusCallback {
-
-        void onPackagerStatusFetched(boolean packagerIsRunning);
+        void onPokeSamplingProfilerCommand(@Nullable final JSPackagerClient.Responder responder);
     }
 
     public final DevInternalSettings mSettings;
@@ -122,7 +120,7 @@ public class DevServerHelper {
     public boolean mOnChangePollingEnabled;
 
     @Nullable
-    public JSPackagerWebSocketClient mPackagerConnection;
+    public JSPackagerClient mPackagerClient;
 
     @Nullable
     public InspectorPackagerConnection mInspectorPackagerConnection;
@@ -143,30 +141,38 @@ public class DevServerHelper {
     }
 
     public void openPackagerConnection(final PackagerCommandListener commandListener) {
-        if (mPackagerConnection != null) {
+        if (mPackagerClient != null) {
             FLog.w(ReactConstants.TAG, "Packager connection already open, nooping.");
             return;
         }
         new AsyncTask<Void, Void, Void>() {
 
             @Override
-            protected Void doInBackground(Void... params) {
-                mPackagerConnection = new JSPackagerWebSocketClient(getPackagerConnectionURL(), new JSPackagerWebSocketClient.JSPackagerCallback() {
+            protected Void doInBackground(Void... backgroundParams) {
+                Map<String, JSPackagerClient.RequestHandler> handlers = new HashMap<String, JSPackagerClient.RequestHandler>();
+                handlers.put("reload", new JSPackagerClient.NotificationOnlyHandler() {
 
                     @Override
-                    public void onMessage(@Nullable WebSocket webSocket, String target, String action) {
-                        if (commandListener != null && "bridge".equals(target)) {
-                            if ("reload".equals(action)) {
-                                commandListener.onPackagerReloadCommand();
-                            } else if ("captureHeap".equals(action)) {
-                                commandListener.onCaptureHeapCommand();
-                            } else if ("pokeSamplingProfiler".equals(action)) {
-                                commandListener.onPokeSamplingProfilerCommand(webSocket);
-                            }
-                        }
+                    public void onNotification(@Nullable Object params) {
+                        commandListener.onPackagerReloadCommand();
                     }
                 });
-                mPackagerConnection.connect();
+                handlers.put("captureHeap", new JSPackagerClient.RequestOnlyHandler() {
+
+                    @Override
+                    public void onRequest(@Nullable Object params, JSPackagerClient.Responder responder) {
+                        commandListener.onCaptureHeapCommand(responder);
+                    }
+                });
+                handlers.put("pokeSamplingProfiler", new JSPackagerClient.RequestOnlyHandler() {
+
+                    @Override
+                    public void onRequest(@Nullable Object params, JSPackagerClient.Responder responder) {
+                        commandListener.onPokeSamplingProfilerCommand(responder);
+                    }
+                });
+                mPackagerClient = new JSPackagerClient(getPackagerConnectionURL(), handlers);
+                mPackagerClient.init();
                 return null;
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -177,9 +183,9 @@ public class DevServerHelper {
 
             @Override
             protected Void doInBackground(Void... params) {
-                if (mPackagerConnection != null) {
-                    mPackagerConnection.closeQuietly();
-                    mPackagerConnection = null;
+                if (mPackagerClient != null) {
+                    mPackagerClient.close();
+                    mPackagerClient = null;
                 }
                 return null;
             }
