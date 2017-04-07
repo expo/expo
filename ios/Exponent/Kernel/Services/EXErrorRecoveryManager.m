@@ -3,7 +3,7 @@
 #import "EXErrorRecoveryManager.h"
 
 // if the app crashes and it has not yet been 5 seconds since it loaded, don't auto refresh.
-#define EX_AUTO_REFRESH_BUFFER_SECONDS 5.0
+#define EX_AUTO_REFRESH_BUFFER_BASE_SECONDS 5.0
 
 NSNotificationName const kEXErrorRecoverySetPropsNotification = @"EXErrorRecoverySetPropsNotification";
 
@@ -23,6 +23,8 @@ NSNotificationName const kEXErrorRecoverySetPropsNotification = @"EXErrorRecover
 @interface EXErrorRecoveryManager ()
 
 @property (nonatomic, strong) NSMutableDictionary<NSString *, EXErrorRecoveryRecord *> *experienceInfo;
+@property (nonatomic, assign) NSUInteger reloadBufferDepth;
+@property (nonatomic, strong) NSDate *dtmAnyExperienceLoaded;
 
 @end
 
@@ -31,6 +33,8 @@ NSNotificationName const kEXErrorRecoverySetPropsNotification = @"EXErrorRecover
 - (instancetype)init
 {
   if (self = [super init]) {
+    _reloadBufferDepth = 0;
+    _dtmAnyExperienceLoaded = [NSDate date];
     _experienceInfo = [NSMutableDictionary dictionary];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(_handleRecoveryPropsNotification:)
@@ -114,6 +118,9 @@ NSNotificationName const kEXErrorRecoverySetPropsNotification = @"EXErrorRecover
     _experienceInfo[experienceId] = record;
   }
   record.dtmLastLoaded = [NSDate date];
+
+  // maintain a global record of when anything last loaded, used to calculate autoreload backoff.
+  _dtmAnyExperienceLoaded = [NSDate date];
 }
 
 - (BOOL)experienceIdIsRecoveringFromError:(NSString *)experienceId
@@ -129,10 +136,15 @@ NSNotificationName const kEXErrorRecoverySetPropsNotification = @"EXErrorRecover
 {
   EXErrorRecoveryRecord *record = [self _recordForExperienceId:experienceId];
   if (record) {
-    return ([record.dtmLastLoaded timeIntervalSinceNow] < -EX_AUTO_REFRESH_BUFFER_SECONDS);
+    return ([record.dtmLastLoaded timeIntervalSinceNow] < -[self reloadBufferSeconds]);
   }
   // if we have no knowledge of this experience, sure, try reloading right away.
   return YES;
+}
+
+- (void)increaseAutoReloadBuffer
+{
+  _reloadBufferDepth++;
 }
 
 #pragma mark - internal
@@ -149,6 +161,18 @@ NSNotificationName const kEXErrorRecoverySetPropsNotification = @"EXErrorRecover
 {
   NSDictionary *params = notif.userInfo;
   [self setDeveloperInfo:params[@"props"] forExperienceid:params[@"experienceId"]];
+}
+
+- (NSTimeInterval)reloadBufferSeconds
+{
+  NSTimeInterval interval = MIN(60.0 * 5.0, EX_AUTO_REFRESH_BUFFER_BASE_SECONDS * pow(1.5, _reloadBufferDepth));
+
+  // if nothing has loaded for twice our current backoff interval, reset backoff
+  if ([_dtmAnyExperienceLoaded timeIntervalSinceNow] < -(interval * 2.0)) {
+    _reloadBufferDepth = 0;
+    interval = EX_AUTO_REFRESH_BUFFER_BASE_SECONDS;
+  }
+  return interval;
 }
 
 @end

@@ -75,6 +75,7 @@
   NSDictionary *errorRecoveryProps = [[EXKernel sharedInstance].recoveryManager developerInfoForExperienceId:self.experienceId];
   if (errorRecoveryProps && [[EXKernel sharedInstance].recoveryManager experienceIdIsRecoveringFromError:self.experienceId]) {
     expProps[@"errorRecovery"] = errorRecoveryProps;
+    [[EXKernel sharedInstance].recoveryManager increaseAutoReloadBuffer];
   }
   
   props[@"exp"] = expProps;
