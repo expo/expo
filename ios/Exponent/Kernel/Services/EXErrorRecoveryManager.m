@@ -47,7 +47,9 @@ NSNotificationName const kEXErrorRecoverySetPropsNotification = @"EXErrorRecover
 
 - (void)setDeveloperInfo:(NSDictionary *)developerInfo forExperienceid:(NSString *)experienceId
 {
-  NSAssert(experienceId, @"Cannot associate recovery info with a nil experience id");
+  if (!experienceId) {
+    NSAssert(experienceId, @"Cannot associate recovery info with a nil experience id");
+  }
   EXErrorRecoveryRecord *record = [self _recordForExperienceId:experienceId];
   if (!record) {
     record = [[EXErrorRecoveryRecord alloc] init];
@@ -67,16 +69,22 @@ NSNotificationName const kEXErrorRecoverySetPropsNotification = @"EXErrorRecover
 
 - (void)setError:(NSError *)error forExperienceId:(NSString *)experienceId
 {
-  NSAssert(experienceId, @"Cannot associate an error with a nil experience id");
-  EXErrorRecoveryRecord *record = [self _recordForExperienceId:experienceId];
-  if (!record) {
-    record = [[EXErrorRecoveryRecord alloc] init];
-    _experienceInfo[experienceId] = record;
+  if (!experienceId) {
+    NSAssert(experienceId, @"Cannot associate an error with a nil experience id");
   }
-  // mark this experience id as having loading problems, so future attempts will bust the cache.
-  // this flag never gets unset until the record is removed, even if the error is nullified.
-  record.isRecovering = YES;
-  record.error = error;
+  EXErrorRecoveryRecord *record = [self _recordForExperienceId:experienceId];
+  if (error) {
+    if (!record) {
+      record = [[EXErrorRecoveryRecord alloc] init];
+      _experienceInfo[experienceId] = record;
+    }
+    // mark this experience id as having loading problems, so future attempts will bust the cache.
+    // this flag never gets unset until the record is removed, even if the error is nullified.
+    record.isRecovering = YES;
+  }
+  if (record) {
+    record.error = error;
+  }
 }
 
 - (BOOL)errorBelongsToExperience:(NSError *)error

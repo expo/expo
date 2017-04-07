@@ -6,6 +6,7 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTExceptionsManager.h>
+#import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
 #define EX_FRAME_RELOAD_DEBOUNCE_SEC 0.05
@@ -360,6 +361,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 
 - (void)handleFatalJSExceptionWithMessage:(NSString *)message stack:(NSArray *)stack exceptionId:(NSNumber *)exceptionId
 {
+  // mark the experience as hitting an error so we can recover later
+  [_appManager registerErrorForBridge:RCTErrorWithMessage(message)];
+
   // send the error to the JS console
   if (_onError) {
     _onError(@{
