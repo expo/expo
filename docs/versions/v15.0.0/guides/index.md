@@ -1,7 +1,5 @@
 ---
-title: Guides
+title: Tutorials
 ---
 
-The guides cover a wide range of topics from [Push Notifications](push-notifications.html) to [How Expo Works](how-expo-works.html). Unlike the [SDK API Reference](../sdk), the guide documents are meant to be read individually as you see fit from top to bottom. Each guide should teach you how to use one feature of Expo.
-
-To get started, check out [Up and Running](up-and-running.html)
+These tutorials cover specific goals or features you might want to implement in your Expo project. For example, many people want to [load custom fonts](using-custom-fonts.html) besides those which come with the device, or [send push notifications](push-notifications.html) to their users. Read whichever tutorial suits your needs.

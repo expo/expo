@@ -7,22 +7,16 @@
     Community: /versions/v15.0.0/introduction/community.html
     Additional Resources: /versions/v15.0.0/introduction/additional-resources.html
     Frequently Asked Questions: /versions/v15.0.0/introduction/faq.html
-- title: Guides
-  index: /versions/v15.0.0/guides/index.html
+- title: Working with Expo
+  index: /versions/v15.0.0/workflow/index.html
   links:
     Up and Running: /versions/v15.0.0/guides/up-and-running.html
-    Development Mode: /versions/v15.0.0/guides/development-mode.html
     Configuration with exp.json: /versions/v15.0.0/guides/configuration.html
+    Development Mode: /versions/v15.0.0/guides/development-mode.html
+    exp Command-Line Interface: /versions/v15.0.0/guides/exp-cli.html
     Viewing Logs: /versions/v15.0.0/guides/logging.html
     Debugging: /versions/v15.0.0/guides/debugging.html
-    Assets: /versions/v15.0.0/guides/assets.html
-    Preloading & Caching Assets: /versions/v15.0.0/guides/preloading-and-caching-assets.html
-    Icons: /versions/v15.0.0/guides/icons.html
-    Using Custom Fonts: /versions/v15.0.0/guides/using-custom-fonts.html
-    Routing & Navigation: /versions/v15.0.0/guides/routing-and-navigation.html
-    Push Notifications: /versions/v15.0.0/guides/push-notifications.html
     Genymotion: /versions/v15.0.0/guides/genymotion.html
-    exp Command-Line Interface: /versions/v15.0.0/guides/exp-cli.html
     Building Standalone Apps: /versions/v15.0.0/guides/building-standalone-apps.html
     Detaching to ExpoKit: /versions/v15.0.0/guides/detach.html
     Developing with ExpoKit: /versions/v15.0.0/guides/expokit.html
@@ -30,6 +24,15 @@
     Expo and Create React Native App: /versions/v15.0.0/guides/create-react-native-app.html
     How Expo Works: /versions/v15.0.0/guides/how-expo-works.html
     Upgrading Expo: /versions/v15.0.0/guides/upgrading-expo.html
+- title: Tutorials
+  index: /versions/v15.0.0/guides/index.html
+  links:
+    Assets: /versions/v15.0.0/guides/assets.html
+    Preloading & Caching Assets: /versions/v15.0.0/guides/preloading-and-caching-assets.html
+    Icons: /versions/v15.0.0/guides/icons.html
+    Using Custom Fonts: /versions/v15.0.0/guides/using-custom-fonts.html
+    Routing & Navigation: /versions/v15.0.0/guides/routing-and-navigation.html
+    Push Notifications: /versions/v15.0.0/guides/push-notifications.html
     Using ClojureScript: /versions/v15.0.0/guides/using-clojurescript.html
     Using Firebase: /versions/v15.0.0/guides/using-firebase.html
     Using GraphQL: /versions/v15.0.0/guides/using-graphql.html
