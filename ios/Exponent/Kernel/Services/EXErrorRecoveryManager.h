@@ -50,4 +50,11 @@ FOUNDATION_EXPORT NSNotificationName const kEXErrorRecoverySetPropsNotification;
  */
 - (BOOL)experienceIdShouldReloadOnError: (NSString *)experienceId;
 
+/**
+ *  Back off to a less aggressive autoreload buffer time.
+ *  The longer the time, the longer a experience must wait before a fatal JS error triggers auto reload
+ *  via `experienceIdShouldReloadOnError:`.
+ */
+- (void)increaseAutoReloadBuffer;
+
 @end
