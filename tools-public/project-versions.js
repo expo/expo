@@ -1,13 +1,11 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
-
 'use strict';
 
 require('instapromise');
 
-let JsonFile = require('@exponent/json-file');
-
-let path = require('path');
-let promiseProps = require('promise-props');
+const path = require('path');
+const JsonFile = require('@exponent/json-file');
+const mux = require('@expo/mux');
 
 function sdkVersionAsync(packageJsonFilePath) {
   return new JsonFile(packageJsonFilePath).getAsync('exp').then(exp => {
@@ -20,7 +18,7 @@ function sdkVersionAsync(packageJsonFilePath) {
 
 function getProjectVersionsAsync() {
   let exponentPath = path.join(__dirname, '..');
-  return promiseProps({
+  return mux({
     sdkVersion: sdkVersionAsync(path.join(exponentPath, 'package.json')),
   });
 }

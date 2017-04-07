@@ -1,13 +1,12 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
-
 'use strict';
 
-import child_process from 'child_process';
-import path from 'path';
-import util from 'util';
-import fs from 'fs';
+const child_process = require('child_process');
+const path = require('path');
+const util = require('util');
+const fs = require('fs');
 
-export function startReactNativeServer(callback) {
+exports.startReactNativeServer = function startReactNativeServer(callback) {
   let rootPath = path.join(__dirname, '..');
   let reactNativePath = path.join(rootPath, '../react-native-lab/react-native/');
   let isInUniverse = true;

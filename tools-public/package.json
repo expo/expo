@@ -1,33 +1,23 @@
 {
-  "name": "@exponent/exponent-tools-public",
+  "name": "@expo/expo-tools-public",
   "version": "1.0.0",
   "private": true,
-  "description": "",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "author": "650 Industries",
   "license": "Copyright 2013-present 650 Industries",
   "dependencies": {
     "@ccheever/crayon": "^5.0.0",
+    "@expo/mux": "^1.0.6",
     "@exponent/json-file": "^5.2.0",
     "@exponent/spawn-async": "^1.2.4",
-    "babel-core": "^6.10.4",
-    "babel-plugin-syntax-trailing-function-commas": "^6.8.0",
-    "babel-plugin-transform-object-rest-spread": "^6.8.0",
-    "babel-preset-es2016-node5": "^1.1.2",
-    "co": "^4.6.0",
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-shell": "^0.5.2",
-    "instapromise": "latest",
+    "instapromise": "^2.0.7",
     "lodash": "^4.13.1",
     "minimist": "^1.2.0",
-    "ngrok": "^2.2.1",
     "promise-props": "^1.0.0",
     "request": "^2.72.0",
     "shelljs": "^0.7.0",
     "username": "^2.2.2",
-    "xdl": "33.0.0",
-    "yargs": "^4.7.1"
+    "xdl": "33.0.0"
   }
 }

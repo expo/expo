@@ -1,26 +1,25 @@
-#!/usr/bin/env node
-// Copyright 2015-present 650 Industries. All rights reserved.
 'use strict';
 
 require('instapromise');
 
-import _ from 'lodash';
-import fs from 'fs';
-import os from 'os';
-import path from 'path';
-import process from 'process';
-import spawnAsync from '@exponent/spawn-async';
-import JsonFile from '@exponent/json-file';
-import {
+const _ = require('lodash');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const process = require('process');
+const {
   ExponentTools,
   IosPodsTools,
   UrlUtils,
-} from 'xdl';
-let {
+} = require('xdl');
+const JsonFile = require('@exponent/json-file');
+const spawnAsync = require('@exponent/spawn-async');
+
+const {
   modifyIOSPropertyListAsync,
   cleanIOSPropertyListBackupAsync,
 } = ExponentTools;
-let {
+const {
   renderExponentViewPodspecAsync,
   renderPodfileAsync,
 } = IosPodsTools;
@@ -37,8 +36,7 @@ try {
 }
 
 const macrosFuncs = {
-
-  TEST_APP_URI: async () => {
+  async TEST_APP_URI() {
     if (process.env.UNIVERSE_BUILD_ID) {
       return `exp://exp.host/@exponent_ci_bot/test-suite-${process.env.UNIVERSE_BUILD_ID}`;
     } else if (isInUniverse) {
@@ -53,7 +51,7 @@ const macrosFuncs = {
     }
   },
 
-  BUILD_MACHINE_LOCAL_HOSTNAME: async () => {
+  async BUILD_MACHINE_LOCAL_HOSTNAME() {
     if (process.env.SHELL_APP_BUILDER) {
       return '';
     }
@@ -69,7 +67,7 @@ const macrosFuncs = {
     }
   },
 
-  BUILD_MACHINE_KERNEL_MANIFEST: async (platform) => {
+  async BUILD_MACHINE_KERNEL_MANIFEST(platform) {
     if (process.env.SHELL_APP_BUILDER) {
       return '';
     }
@@ -103,12 +101,12 @@ const macrosFuncs = {
     }
   },
 
-  TEMPORARY_SDK_VERSION: async () => {
+  async TEMPORARY_SDK_VERSION() {
     let versions = await ProjectVersions.getProjectVersionsAsync();
     return versions.sdkVersion;
   },
 
-  INITIAL_URL: async () => {
+  INITIAL_URL() {
     return null;
   },
 };
@@ -297,7 +295,7 @@ async function copyTemplateFilesAsync(platform, args) {
  *    infoPlistPath
  *    exponentViewPath (optional - if provided, generate files for exponent-view-template)
  */
-export async function generateDynamicMacrosAsync(args) {
+exports.generateDynamicMacrosAsync = async function generateDynamicMacrosAsync(args) {
   try {
     let filepath = path.resolve(args.buildConstantsPath);
     let filename = path.basename(filepath);
@@ -321,7 +319,7 @@ export async function generateDynamicMacrosAsync(args) {
   }
 }
 
-export async function cleanupDynamicMacrosAsync(args) {
+exports.cleanupDynamicMacrosAsync = async function cleanupDynamicMacrosAsync(args) {
   try {
     let platform = args.platform;
     if (platform === 'ios') {
@@ -334,7 +332,7 @@ export async function cleanupDynamicMacrosAsync(args) {
   }
 }
 
-export async function runFabricIOSAsync(args) {
+exports.runFabricIOSAsync = async function runFabricIOSAsync(args) {
   let templateSubstitutions = await getTemplateSubstitutions();
   try {
     let configFile = await new JsonFile(path.join(EXPONENT_DIR, 'ios', 'private-shell-app-config.json')).readAsync();

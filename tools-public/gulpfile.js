@@ -1,24 +1,25 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
-
 'use strict';
 
-import assert from 'assert';
-import fs from 'fs';
-import path from 'path';
-import username from 'username';
+const assert = require('assert');
+const fs = require('fs');
+const gulp = require('gulp');
+const shell = require('gulp-shell');
+const minimist = require('minimist');
+const path = require('path');
+const username = require('username');
+const { IosShellApp } = require('xdl');
 
-import gulp from 'gulp';
-import shell from 'gulp-shell';
-let argv = require('minimist')(process.argv.slice(2));
+const { createAndroidShellAppAsync } = require('./android-shell-app');
+const { startReactNativeServer } = require('./react-native-tasks');
+const { generateDynamicMacrosAsync, cleanupDynamicMacrosAsync, runFabricIOSAsync } = require('./generate-dynamic-macros');
 
-import { startReactNativeServer } from './react-native-tasks';
-import { createAndroidShellApp } from './android-shell-app';
-import { IosShellApp } from 'xdl';
-let { createIOSShellAppAsync } = IosShellApp;
-import { generateDynamicMacrosAsync, cleanupDynamicMacrosAsync, runFabricIOSAsync } from './generate-dynamic-macros';
+const { createIOSShellAppAsync } = IosShellApp;
 
 const ptool = './ptool';
 const _projects = './_projects';
+
+const argv = minimist(process.argv.slice(2));
 
 /**
  * Reads a _projects file and returns the project paths in it.
@@ -75,7 +76,7 @@ function createAndroidShellAppWithArguments() {
     throw new Error('Must run with `--sdkVersion SDK_VERSION`');
   }
 
-  return createAndroidShellApp(argv);
+  return createAndroidShellAppAsync(argv);
 }
 
 function createIOSShellAppWithArguments() {

@@ -1,17 +1,16 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
-
 'use strict';
 
-import 'instapromise';
+require('instapromise');
 
-import crayon from '@ccheever/crayon';
-import fs from 'fs';
-import path from 'path';
-import JsonFile from '@exponent/json-file';
-import shell from 'shelljs';
+const fs = require('fs');
+const path = require('path');
+const shell = require('shelljs');
+const { ExponentTools } = require('xdl');
+const crayon = require('@ccheever/crayon');
+const JsonFile = require('@exponent/json-file');
 
-import { ExponentTools } from 'xdl';
-let { getManifestAsync, saveUrlToPathAsync, spawnAsyncThrowError, spawnAsync } = ExponentTools;
+const { getManifestAsync, saveUrlToPathAsync, spawnAsyncThrowError, spawnAsync } = ExponentTools;
 
 async function sedInPlaceAsync(...args) {
   const isDarwin = /^darwin/.test(process.platform);
@@ -22,7 +21,7 @@ async function sedInPlaceAsync(...args) {
   }
 }
 
-export async function createAndroidShellApp(args) {
+exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(args) {
   let {
     url,
     sdkVersion,
@@ -142,7 +141,7 @@ export async function createAndroidShellApp(args) {
     '-i',
     '<data android:scheme="host.exp.exponent" android:path="oauthredirect"/>',
     `<data android:scheme="${javaPackage}" android:path="oauthredirect"/>`,
-    `${shellPath}app/src/main/AndroidManifest.xml`,
+    `${shellPath}app/src/main/AndroidManifest.xml`
   );
 
   // Embed manifest and bundle

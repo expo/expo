@@ -1,4 +1,0 @@
-{
-  "presets": ["es2016-node5"],
-  "plugins": ["transform-object-rest-spread", "syntax-trailing-function-commas"]
-}
