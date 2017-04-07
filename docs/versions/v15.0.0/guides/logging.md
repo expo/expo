@@ -12,15 +12,13 @@ When you open an app that is being served from XDE or exp, the app will send log
 
 ### XDE logging pane
 
-With XDE you will notice that when you open up an app with sdkVersion >= 7.0.0 the log window is split in two. Your app logs show up on the right, and the packager logs show up on the left.![XDE window with logs](./xde-logs.png)
+When you open a project in XDE, the log window is split in two. Your app logs show up on the right, and the packager logs show up on the left.![XDE window with logs](./xde-logs.png)
 
 XDE also lets you switch between the logs for any device that has opened the app.![XDE window with device picker selected](./xde-logs-device-picker.png)
 
-### exp logs
+### Viewing logs with `exp`
 
-If you use our command line tool `exp`, you also have easy access to the logs with the `exp logs` command (be sure to have your server started first! `exp start` in the project directory).
-
-Packager logs and app logs from all connected devices will be streamed to this screen until you exit with `CTRL+C`.![Terminal output from running xde logs](./exp-logs.png)
+If you use our command line tool `exp`, packager logs and app logs will both automatically stream as long as your project is running. To stop your project (and end the logs stream), terminate the process with `ctrl+C`.
 
 ## Optional: Manually access device logs
 
