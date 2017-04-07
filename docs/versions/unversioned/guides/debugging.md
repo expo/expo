@@ -10,7 +10,7 @@ Apple refers to their emulator as a "Simulator" and Google refers to theirs as a
 
 ### iOS
 
-For iOS the Simulator built into Xcode works great, you can install Xcode on the [Mac App Store](https://itunes.apple.com/us/app/xcode/id497799835?mt=12) if you haven't already.
+Make sure you have the latest Xcode (e.g. from the [Mac App Store](https://itunes.apple.com/us/app/xcode/id497799835?mt=12)). This includes the iOS Simulator, among several other tools.
 
 ### Android
 
@@ -28,9 +28,9 @@ Invoking it depends on the device where you are running your application.
 
 Shake the device a little bit.
 
-### On Mac's iOS simulator
+### On iOS Simulator
 
-Hit `Ctrl-Cmd-Z` on a Mac in the emulator to simulate the shake gesture.
+Hit `Ctrl-Cmd-Z` on a Mac in the emulator to simulate the shake gesture, or press `Cmd+D`.
 
 ### On Genymotion
 
