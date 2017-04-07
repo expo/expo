@@ -67,11 +67,7 @@ Congrats, you now have a native project with ExpoKit! Follow the directions unde
 
 You can do whatever you want in the Xcode and Android Studio projects.
 
-To add third-party native modules for React Native, non-Expo-specific instructions such as `react-native link` should be supported.
-
->  **Note:** You may have to update `android/app/build.gradle` after running `react-native link`.
->  Change the line added by `react-native link` from `compile project(':library-name')` to
->  `compile(project(':library-name')) { exclude module: 'react-native' }`.
+To add third-party native modules for React Native, non-Expo-specific instructions such as `react-native link` should be supported. [Read more details about changing native dependencies in your ExpoKit project](expokit.html#changing-native-dependencies).
 
 ### 5. Distribute your app
 

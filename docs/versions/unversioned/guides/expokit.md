@@ -55,3 +55,15 @@ or `exp`. You can develop your project normally from here.
 
 Every time you want to develop, ensure your project's JS is being served by XDE (step 2), then run
 the native code from Xcode or Android Studio respectively.
+
+## Changing Native Dependencies
+
+### iOS
+
+Your ExpoKit project manages its dependencies with [CocoaPods](https://cocoapods.org). If you encounter third-party libraries with CocoaPods instructions, those instructions should apply.
+
+Many libraries in the React Native ecosystem include instructions to run `react-native link`. These are supported with ExpoKit for iOS, but because `react-native link` is not aware of CocoaPods, it may not do a complete job installing your dependency. If you encounter build issues locating the `<React/*>` headers, you may need to manually add `Pods/Headers/Public` to the **Header Search Paths** configuration for your native dependency in Xcode.
+
+### Android
+
+Many libraries in the React Native ecosystem include instructions to run `react-native link`. These are supported with ExpoKit for Android. Note that you may have to update `android/app/build.gradle` after running `react-native link`. Change the line added by `react-native link` from `compile project(':library-name')` to `compile(project(':library-name')) { exclude module: 'react-native' }`.
