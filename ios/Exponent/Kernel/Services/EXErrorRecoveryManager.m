@@ -11,7 +11,7 @@ NSNotificationName const kEXErrorRecoverySetPropsNotification = @"EXErrorRecover
 
 @property (nonatomic, assign) BOOL isRecovering;
 @property (nonatomic, strong) NSError *error;
-@property (nonatomic, assign) NSDate *dtmLastLoaded;
+@property (nonatomic, strong) NSDate *dtmLastLoaded;
 @property (nonatomic, strong) NSDictionary *developerInfo;
 
 @end
