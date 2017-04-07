@@ -20,6 +20,7 @@ import Expo from 'expo';
 import FadeIn from '@expo/react-native-fade-in-image';
 
 import autobind from 'autobind-decorator';
+import Browser from 'Browser';
 import BrowserActions from 'BrowserActions';
 import BrowserErrorView from 'BrowserErrorView';
 import ExColors from 'ExColors';
@@ -363,7 +364,6 @@ class BrowserScreen extends React.Component {
 
   @autobind
   _handleUncaughtError(event) {
-    let { dispatch } = this.props;
     let { id, message, stack, fatal } = event.nativeEvent;
     if (fatal) {
       let isDeveloper = false;
@@ -372,8 +372,19 @@ class BrowserScreen extends React.Component {
       }
       if (!isDeveloper) {
         // if developer == true, RCTRedBox will show up instead
-        dispatch(BrowserActions.showLoadingError(id, message, this.props.url, this.props.task.manifest));
+        this._maybeRecoverFromErrorAsync(event);
       }
+    }
+  }
+
+  _maybeRecoverFromErrorAsync = async (event) => {
+    let { id, message, stack, fatal } = event.nativeEvent;
+    let shouldReload = await ExponentKernel.shouldCurrentTaskAutoReload();
+    if (shouldReload) {
+      Browser.refresh();
+    } else {
+      // show error screen with manual reload button
+      this.props.dispatch(BrowserActions.showLoadingError(id, message, this.props.url, this.props.task.manifest));
     }
   }
 

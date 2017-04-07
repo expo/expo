@@ -69,7 +69,6 @@ NSTimeInterval const kEXJavaScriptResourceLongerTimeout = 120;
     _reactRootView = nil;
   }
   if (_reactBridge) {
-    [[EXKernel sharedInstance].recoveryManager setError:nil forExperienceId:self.experienceId];
     [self unregisterBridge];
     [_reactBridge invalidate];
     _reactBridge = nil;
