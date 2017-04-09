@@ -59,8 +59,7 @@ Otherwise, returns `{ type: 'success', token, expires }`. `token` is a string gi
 
 ```javascript
 async function logIn() {
-  const { type, token } = await Expo.Facebook.logInWithReadPermissionsAsync(
-    '&lt;APP_ID>', {
+  const { type, token } = await Expo.Facebook.logInWithReadPermissionsAsync('<APP_ID>', {
       permissions: ['public_profile'],
     });
   if (type === 'success') {
