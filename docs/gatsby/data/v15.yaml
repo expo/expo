@@ -1,7 +1,7 @@
 - title: Introduction
   index: /versions/v15.0.0/introduction/index.html
   links:
-    Learn Expo: /versions/v15.0.0/index.html
+    Quick Start: /versions/v15.0.0/index.html
     Installation: /versions/v15.0.0/introduction/installation.html
     XDE Tour: /versions/v15.0.0/introduction/xde-tour.html
     Project Lifecycle: /versions/v15.0.0/introduction/project-lifecycle.html
