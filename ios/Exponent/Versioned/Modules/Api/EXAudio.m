@@ -353,15 +353,16 @@ typedef NS_OPTIONS(NSUInteger, EXAudioInterruptionMode)
   _audioSessionActive = NO;
   [_pausedOnBackgroundingSet removeAllObjects];
   
-  for (EXAudioPlayerData *data in [_playerDataPool allValues]) {
-    data.player = [self _createPlayerForUrl:data.url];
-    
-    if (data.shouldCorrectPitch) { // Volume, muted, and seek must be reset through the JS.
-      data.player.currentItem.audioTimePitchAlgorithm = AVAudioTimePitchAlgorithmLowQualityZeroLatency;
-    } else {
-      data.player.currentItem.audioTimePitchAlgorithm = AVAudioTimePitchAlgorithmVarispeed;
-    }
-    [data addFinishObserverForNewPlayer];
+  for (__block EXAudioPlayerData *data in [_playerDataPool allValues]) {
+    [self _createPlayerForUrl:data.url completion:^(AVPlayer *player) {
+      data.player = player;
+      if (data.shouldCorrectPitch) { // Volume, muted, and seek must be reset through the JS.
+        data.player.currentItem.audioTimePitchAlgorithm = AVAudioTimePitchAlgorithmLowQualityZeroLatency;
+      } else {
+        data.player.currentItem.audioTimePitchAlgorithm = AVAudioTimePitchAlgorithmVarispeed;
+      }
+      [data addFinishObserverForNewPlayer];
+    }];
   }
   
   if (_recorder) {
@@ -372,11 +373,16 @@ typedef NS_OPTIONS(NSUInteger, EXAudioInterruptionMode)
 
 #pragma mark - Internal playback helper methods
 
-- (AVPlayer *)_createPlayerForUrl:(NSURL *)url
+- (void)_createPlayerForUrl:(NSURL *)url completion:(void (^_Nonnull)(AVPlayer *player))completion
 {
   AVURLAsset *avAsset = [AVURLAsset URLAssetWithURL:url options:nil];
-  AVPlayerItem *playerItem = [AVPlayerItem playerItemWithAsset:avAsset];
-  return [AVPlayer playerWithPlayerItem:playerItem];
+
+  // unless we preload, the asset will not necessarily load the duration by the time we try to play it.
+  // http://stackoverflow.com/questions/20581567/avplayer-and-avfoundationerrordomain-code-11819
+  [avAsset loadValuesAsynchronouslyForKeys:@[ @"duration" ] completionHandler:^{
+    AVPlayerItem *playerItem = [AVPlayerItem playerItemWithAsset:avAsset];
+    completion([AVPlayer playerWithPlayerItem:playerItem]);
+  }];
 }
 
 - (void)_runBlock:(void (^)(EXAudioPlayerData *data))block
@@ -499,26 +505,26 @@ RCT_EXPORT_METHOD(load:(NSString *)uriString
               rejecter:(RCTPromiseRejectBlock)reject)
 {
   NSURL *url = [NSURL URLWithString:uriString];
-  AVPlayer *player = [self _createPlayerForUrl:url];
-  if (player) {
-    NSNumber *key = @(_keyCount++);
-    
-    __weak __typeof__(self) weakSelf = self;
-    EXAudioPlayerData *data = [[EXAudioPlayerData alloc] initWithPlayer:player
-                                                                withURL:url
-                                                            withLooping:NO
-                                                    withPitchCorrection:NO
-                                                               withRate:@(1)
-                                             withInternalFinishCallback:^() {
-                                               [weakSelf _deactivateAudioSessionIfRecorderDormantAndNoPlayersPlaying];
-                                             }];
-    _playerDataPool[key] = data;
-    resolve(@{@"key": key,
-              @"durationMillis": @((int) (CMTimeGetSeconds(player.currentItem.asset.duration) * 1000)),
-              @"status": [data getStatus]});
-  } else {
-    reject(@"E_AUDIO_PLAYERNOTCREATED", @"Load encountered an error: player not created.", nil);
-  }
+  __weak __typeof__(self) weakSelf = self;
+  [self _createPlayerForUrl:url completion:^(AVPlayer *player) {
+    if (player) {
+      NSNumber *key = @(_keyCount++);
+      EXAudioPlayerData *data = [[EXAudioPlayerData alloc] initWithPlayer:player
+                                                                  withURL:url
+                                                              withLooping:NO
+                                                      withPitchCorrection:NO
+                                                                 withRate:@(1)
+                                               withInternalFinishCallback:^() {
+                                                 [weakSelf _deactivateAudioSessionIfRecorderDormantAndNoPlayersPlaying];
+                                               }];
+      _playerDataPool[key] = data;
+      resolve(@{@"key": key,
+                @"durationMillis": @((int) (CMTimeGetSeconds(player.currentItem.asset.duration) * 1000)),
+                @"status": [data getStatus]});
+    } else {
+      reject(@"E_AUDIO_PLAYERNOTCREATED", @"Load encountered an error: player not created.", nil);
+    }
+  }];
 }
 
 RCT_EXPORT_METHOD(play:(nonnull NSNumber *)key
