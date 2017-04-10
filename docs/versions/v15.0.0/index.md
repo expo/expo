@@ -13,11 +13,11 @@ Expo also provides UI components to handle a variety of use-cases that almost al
 Finally, the Expo SDK provides access to services which typically are a pain to manage but are required by almost every app. Most popular among these: Expo can manage your Assets for you, it can take care of Push Notifications for you, and it can build native binaries which are ready to deploy to the app store.
 
 ## Considering using Expo?
-- If you'd like an overview of what Expo offers, you might want to familiarize yourself with the [lifecycle of an Expo project](project-lifecycle.html), which describes how you go from square one to a production iOS and Android app.
-- For further explanation, it's also good to check out the [Frequently Asked Questions](faq.html).
+- If you'd like an overview of what Expo offers, you might want to familiarize yourself with the [lifecycle of an Expo project](introduction/project-lifecycle.html), which describes how you go from square one to a production iOS and Android app.
+- For further explanation, it's also good to check out the [Frequently Asked Questions](introduction/faq.html).
 
 ## Ready to get started?
-- Head over to [Installation](installation.html) to grab our tools and have a look around.
-- Make your first project by following the [Up and Running](../guides/up-and-running.html) guide.
+- Head over to [Installation](introduction/installation.html) to grab our tools and have a look around.
+- Make your first project by following the [Up and Running](guides/up-and-running.html) guide.
 - If you're not already familiar with React and React Native, you can bootstrap your knowledge with [React Native Express](http://www.reactnativeexpress.com/).
-- Join our [Community](community.html) and let us know what you're working on!
+- Join our [Community](introduction/community.html) and let us know what you're working on!
