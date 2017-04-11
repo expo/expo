@@ -11,6 +11,7 @@
 #import "EXLinkingManager.h"
 #import "EXVersionManager.h"
 #import "EXScope.h"
+#import "EXStatusBarManager.h"
 #import "EXUnversioned.h"
 
 #import <React/RCTAssert.h>
@@ -262,6 +263,7 @@ static NSNumber *EXVersionManagerIsFirstLoad;
                                     [[EXDevSettings alloc] initWithExperienceId:experienceScope.experienceId isDevelopment:isDeveloper],
                                     [[EXDisabledDevLoadingView alloc] init],
                                     [[EXLinkingManager alloc] initWithInitialUrl:initialUri],
+                                    [[EXStatusBarManager alloc] init],
                                     [[RCTAsyncLocalStorage alloc] initWithStorageDirectory:[experienceScope scopedPathWithPath:EX_UNVERSIONED(@"RCTAsyncLocalStorage") withOptions:@{}]],
                                     ]];
   if (params[@"frame"]) {
