@@ -199,6 +199,7 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
             [response setObject:fileSizeValue forKey:@"fileSize"];
           }
 
+          [response setObject:@NO forKey:@"cancelled"];
           self.resolve(response);
         } failureBlock:^(NSError *error) {
           self.reject(RCTErrorUnspecified, error.localizedFailureReason, error);
@@ -277,6 +278,7 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
       [response setObject:videoDestinationURL.absoluteString forKey:@"uri"];
     }
 
+    [response setObject:@NO forKey:@"cancelled"];
     self.resolve(response);
   };
   dispatch_async(dispatch_get_main_queue(), ^{
