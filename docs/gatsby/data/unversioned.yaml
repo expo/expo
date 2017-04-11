@@ -52,6 +52,7 @@
     BlurView: /versions/unversioned/sdk/blur-view.html
     Constants: /versions/unversioned/sdk/constants.html
     Contacts: /versions/unversioned/sdk/contacts.html
+    DocumentPicker: /versions/unversioned/sdk/document-picker.html
     ErrorRecovery: /versions/unversioned/sdk/error-recovery.html
     Facebook: /versions/unversioned/sdk/facebook.html
     FacebookAds: /versions/unversioned/sdk/facebook-ads.html

@@ -33,3 +33,15 @@ in our [privacy policy](https://expo.io/privacy). You can disable Expo analytics
 following these steps:
 
 On iOS, add the key `EXAnalyticsDisabled` to your app's main `Info.plist` with the value `YES`.
+
+## Enabling iCloud entitlement
+
+The DocumentPicker module requires the iCloud entitlement to work properly. If your app doesn't have it already, you can add it by opening the project in Xcode and following these steps:
+
+- In the project go to the `Capabilities` tab.
+- Set the iCloud switch to on.
+- Check the `iCloud Documents` checkbox.
+
+If everything worked properly your screen should look like this:
+
+![](./icloud-entitlement.png)
