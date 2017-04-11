@@ -49,6 +49,7 @@
 		1936012E1D67ABCF007C0EE0 /* RNSVGUseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 193601011D67ABCF007C0EE0 /* RNSVGUseManager.m */; };
 		1936012F1D67ABCF007C0EE0 /* RNSVGViewBox.m in Sources */ = {isa = PBXBuildFile; fileRef = 193601041D67ABCF007C0EE0 /* RNSVGViewBox.m */; };
 		193601301D67ABCF007C0EE0 /* RNSVGViewBoxManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 193601061D67ABCF007C0EE0 /* RNSVGViewBoxManager.m */; };
+		194804CF1E92CFB400623005 /* EXDocumentPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 194804CE1E92CFB400623005 /* EXDocumentPicker.m */; };
 		1981B9F71E3C28BA00057CA9 /* EXKeepAwake.m in Sources */ = {isa = PBXBuildFile; fileRef = 1981B9F61E3C28BA00057CA9 /* EXKeepAwake.m */; };
 		19F72F571E764AE100F9A671 /* EXContactsRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 19F72F561E764AE100F9A671 /* EXContactsRequester.m */; };
 		200C29ED1855EF40345E4BA2 /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B84B3DEFB2C488FAE7279AD /* libPods-ExponentIntegrationTests.a */; };
@@ -303,6 +304,8 @@
 		193601041D67ABCF007C0EE0 /* RNSVGViewBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNSVGViewBox.m; sourceTree = "<group>"; };
 		193601051D67ABCF007C0EE0 /* RNSVGViewBoxManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSVGViewBoxManager.h; sourceTree = "<group>"; };
 		193601061D67ABCF007C0EE0 /* RNSVGViewBoxManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNSVGViewBoxManager.m; sourceTree = "<group>"; };
+		194804CD1E92CFB400623005 /* EXDocumentPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EXDocumentPicker.h; path = Exponent/Versioned/Modules/Api/EXDocumentPicker.h; sourceTree = SOURCE_ROOT; };
+		194804CE1E92CFB400623005 /* EXDocumentPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EXDocumentPicker.m; path = Exponent/Versioned/Modules/Api/EXDocumentPicker.m; sourceTree = SOURCE_ROOT; };
 		1981B9F51E3C28BA00057CA9 /* EXKeepAwake.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKeepAwake.h; sourceTree = "<group>"; };
 		1981B9F61E3C28BA00057CA9 /* EXKeepAwake.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKeepAwake.m; sourceTree = "<group>"; };
 		19F72F551E764AE100F9A671 /* EXContactsRequester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXContactsRequester.h; sourceTree = "<group>"; };
@@ -900,6 +903,8 @@
 				A1F37F5E1CEFD6B2001E9EFC /* EXContacts.m */,
 				B5AC39D71E96D7A900540AA7 /* EXErrorRecovery.h */,
 				B5AC39D81E96D7A900540AA7 /* EXErrorRecovery.m */,
+				194804CD1E92CFB400623005 /* EXDocumentPicker.h */,
+				194804CE1E92CFB400623005 /* EXDocumentPicker.m */,
 				A15DC4CB1D011248009F940D /* EXFacebook.h */,
 				A15DC4CA1D011248009F940D /* EXFacebook.m */,
 				A1CDBE971D3851F700C2A670 /* EXFileSystem.h */,
@@ -1756,6 +1761,7 @@
 				B5678C601DB6D65B00380A6E /* EXFrameManager.m in Sources */,
 				193601121D67ABCF007C0EE0 /* RNSVGEllipse.m in Sources */,
 				193601281D67ABCF007C0EE0 /* RNSVGSolidColorBrush.m in Sources */,
+				194804CF1E92CFB400623005 /* EXDocumentPicker.m in Sources */,
 				A15DC4BC1CFF99FE009F940D /* EXImagePicker.m in Sources */,
 				193601171D67ABCF007C0EE0 /* RNSVGImageManager.m in Sources */,
 				B5F12CA21DB009A40080ECA6 /* EXKernelModule.m in Sources */,

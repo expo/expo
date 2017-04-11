@@ -30,6 +30,7 @@ import versioned.host.exp.exponent.modules.api.AudioModule;
 import versioned.host.exp.exponent.modules.api.ConstantsModule;
 import versioned.host.exp.exponent.modules.api.ContactsModule;
 import versioned.host.exp.exponent.modules.api.CryptoModule;
+import versioned.host.exp.exponent.modules.api.DocumentPickerModule;
 import versioned.host.exp.exponent.modules.api.FabricModule;
 import versioned.host.exp.exponent.modules.api.FacebookModule;
 import versioned.host.exp.exponent.modules.api.FileSystemModule;
@@ -150,6 +151,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new AdSettingsManager(reactContext));
         nativeModules.add(new InterstitialAdManager(reactContext));
         nativeModules.add(new SQLiteModule(reactContext, scopedContext));
+        nativeModules.add(new DocumentPickerModule(reactContext));
       } catch (JSONException | UnsupportedEncodingException e) {
         EXL.e(TAG, e.toString());
       }
