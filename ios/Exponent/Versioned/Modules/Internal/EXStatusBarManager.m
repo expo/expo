@@ -26,9 +26,7 @@ RCT_ENUM_CONVERTER(UIStatusBarAnimation, (@{
 
 @interface EXStatusBarManager ()
 
-@property (nonatomic, assign) BOOL networkActivityIndicatorVisible;
-@property (nonatomic, assign) BOOL hidden;
-@property (nonatomic, assign) UIStatusBarStyle style;
+@property (nonatomic, strong) NSDictionary *capturedStatusBarProperties;
 
 @end
 
@@ -47,7 +45,7 @@ RCT_ENUM_CONVERTER(UIStatusBarAnimation, (@{
 - (void)setBridge:(RCTBridge *)bridge
 {
   [super setBridge:bridge];
-  [self _captureCurrentStatusBarProperties];
+  _capturedStatusBarProperties = [self _currentStatusBarProperties];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_bridgeDidForeground:)
                                                name:EX_UNVERSIONED(@"EXKernelBridgeDidForegroundNotification")
@@ -147,6 +145,26 @@ RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible:(BOOL)visible)
   RCTSharedApplication().networkActivityIndicatorVisible = visible;
 }
 
+/**
+ *  Used by the expo menu to restore status bar state between bridges.
+ *  Normally nobody should use this method because it bypasses the JS state used by the StatusBar component.
+ */
+RCT_REMAP_METHOD(_captureProperties,
+                 _capturePropertiesWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+  resolve([self _currentStatusBarProperties]);
+}
+
+/**
+ *  Used by the expo menu to restore status bar state between bridges.
+ *  Normally nobody should use this method because it bypasses the JS state used by the StatusBar component.
+ */
+RCT_EXPORT_METHOD(_applyPropertiesAndForget:(NSDictionary *)properties)
+{
+  [self _applyCapturedProperties:properties];
+}
+
 #pragma mark - internal
 
 + (BOOL)_viewControllerBasedStatusBarAppearance
@@ -161,35 +179,37 @@ RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible:(BOOL)visible)
   return value;
 }
 
-- (void)_captureCurrentStatusBarProperties
+- (NSDictionary *)_currentStatusBarProperties
 {
   UIApplication *currentApplication = RCTSharedApplication();
-  _style = currentApplication.statusBarStyle;
-  _networkActivityIndicatorVisible = currentApplication.isNetworkActivityIndicatorVisible;
-  _hidden = currentApplication.isStatusBarHidden;
+  return @{
+    @"style": @(currentApplication.statusBarStyle),
+    @"networkActivityIndicatorVisible": @(currentApplication.isNetworkActivityIndicatorVisible),
+    @"hidden": @(currentApplication.isStatusBarHidden),
+  };
 }
 
-- (void)_applyCapturedStatusBarProperties
+- (void)_applyCapturedProperties:(NSDictionary *)properties
 {
   UIApplication *currentApplication = RCTSharedApplication();
   if (![[self class] _viewControllerBasedStatusBarAppearance]) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [currentApplication setStatusBarStyle:_style animated:NO];
-    [currentApplication setStatusBarHidden:_style animated:NO];
+    [currentApplication setStatusBarStyle:(UIStatusBarStyle)[properties[@"style"] integerValue] animated:NO];
+    [currentApplication setStatusBarHidden:[properties[@"hidden"] boolValue] withAnimation:UIStatusBarAnimationNone];
 #pragma clang diagnostic pop
   }
-  currentApplication.networkActivityIndicatorVisible = _networkActivityIndicatorVisible;
+  currentApplication.networkActivityIndicatorVisible = [properties[@"networkActivityIndicatorVisible"] boolValue];
 }
 
 - (void)_bridgeDidForeground:(__unused NSNotification *)notif
 {
-  [self _applyCapturedStatusBarProperties];
+  [self _applyCapturedProperties:_capturedStatusBarProperties];
 }
 
 - (void)_bridgeDidBackground:(__unused NSNotification *)notif
 {
-  [self _captureCurrentStatusBarProperties];
+  _capturedStatusBarProperties = [self _currentStatusBarProperties];
 }
 
 #endif //TARGET_OS_TV

@@ -13,6 +13,7 @@ import {
   Image,
   NativeModules,
   PixelRatio,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -65,6 +66,7 @@ export default class MenuView extends React.Component {
         duration: 200,
       }).start();
     }
+    this.forceStatusBarUpdateAsync();
     let enableDevMenuTools = await ExponentKernel.doesCurrentTaskEnableDevtools();
     let devMenuItems = await ExponentKernel.getDevMenuItemsToShow();
     if (this._mounted) {
@@ -73,7 +75,25 @@ export default class MenuView extends React.Component {
   }
 
   componentWillUnmount() {
+    this.restoreStatusBar();
     this._mounted = false;
+  }
+
+  forceStatusBarUpdateAsync = async () => {
+    if (NativeModules.StatusBarManager._captureProperties) {
+      this._statusBarValuesToRestore = await NativeModules.StatusBarManager._captureProperties();
+      // HACK: StatusBar only updates changed props.
+      // because MenuView typically lives under a different RN bridge, its stack of StatusBar
+      // props does not necessarily reflect what the user is seeing.
+      // so we force StatusBar to clear its state and update all props when we mount.
+      StatusBar._currentValues = null;
+    }
+  }
+
+  restoreStatusBar = () => {
+    if (NativeModules.StatusBarManager._applyPropertiesAndForget && this._statusBarValuesToRestore) {
+      NativeModules.StatusBarManager._applyPropertiesAndForget(this._statusBarValuesToRestore);
+    }
   }
 
   render() {
@@ -93,6 +113,7 @@ export default class MenuView extends React.Component {
         intensity={intensity}
         onStartShouldSetResponder={() => true}
         onResponderGrant={this._onPressContainer}>
+        <StatusBar barStyle="default" />
         <Animated.View style={[styles.overlay, {opacity: this.state.transitionIn, transform: [{scale}]}]}>
           {this.props.isNuxFinished ? this._renderTaskInfoRow() : this._renderNUXRow()}
           <View style={styles.separator} />
