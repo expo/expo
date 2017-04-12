@@ -19,9 +19,5 @@
     "shelljs": "^0.7.0",
     "username": "^2.2.2",
     "xdl": "33.0.0"
-  },
-  "devDependencies": {
-    "babel-core": "^6.24.1",
-    "babel-plugin-transform-async-to-generator": "^6.24.1"
   }
 }
