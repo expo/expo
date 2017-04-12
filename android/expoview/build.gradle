@@ -134,12 +134,12 @@ task packageExponentNdkLibs(dependsOn: buildExponentNdkLib, type: Copy) {
 
 
 android {
-  compileSdkVersion 24
-  buildToolsVersion "24.0.3"
+  compileSdkVersion 25
+  buildToolsVersion "25.0.2"
 
   defaultConfig {
     minSdkVersion 19
-    targetSdkVersion 24
+    targetSdkVersion 25
     versionCode 1
     versionName "1.0"
     ndk {
@@ -183,7 +183,7 @@ dependencies {
 
   // React native dependencies
   // We use a different version of appcompat
-  compile 'com.android.support:recyclerview-v7:24.+'
+  compile 'com.android.support:recyclerview-v7:25.+'
   compile 'com.facebook.fresco:fresco:0.11.0'
   compile 'com.facebook.fresco:animated-gif:0.11.0'
   compile 'com.facebook.fresco:animated-webp:0.11.0'
@@ -200,8 +200,8 @@ dependencies {
   compile 'org.webkit:android-jsc:r174650'
 
   // Our dependencies
-  compile 'com.android.support:appcompat-v7:24.2.0'
-  compile 'com.android.support:customtabs:24.2.0'
+  compile 'com.android.support:appcompat-v7:25.3.1'
+  compile 'com.android.support:customtabs:25.3.1'
   compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
     transitive = true;
   }
@@ -239,7 +239,7 @@ dependencies {
   compile 'com.segment.analytics.android:analytics:4.+'
   compile 'com.google.zxing:core:3.2.1'
   compile 'net.openid:appauth:0.4.1'
-  compile 'com.airbnb.android:lottie:1.0.0'
+  compile 'com.airbnb.android:lottie:2.0.0-beta3'
   compile('io.nlopez.smartlocation:library:3.2.11') {
     transitive = false
   }
