@@ -6,6 +6,11 @@ import com.facebook.react.bridge.ReadableType;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
+
+import java.util.Collection;
+
+import static com.facebook.react.bridge.ReadableType.Array;
 
 /**
  * This class is a thin wrapper around React Native's `ReadableMap` and `ReadableArray` classes,
@@ -31,11 +36,241 @@ import org.json.JSONObject;
 class JSONReadableArray extends JSONArray {
   private final ReadableArray array;
   private final Object[] cache;
+  private static final String NOT_SUPPORTED_MESSAGE = "JSONReadableArray does not implement this method";
 
   JSONReadableArray(ReadableArray array) {
     this.array = array;
     // see description for why this is needed.
     cache = new Object[array.size()];
+  }
+
+  public JSONReadableArray() {
+    throw new UnsupportedOperationException(NOT_SUPPORTED_MESSAGE);
+  }
+
+  public JSONReadableArray(Collection copyFrom) {
+    throw new UnsupportedOperationException(NOT_SUPPORTED_MESSAGE);
+  }
+
+  public JSONReadableArray(JSONTokener readFrom) throws JSONException {
+    throw new UnsupportedOperationException(NOT_SUPPORTED_MESSAGE);
+  }
+
+  public JSONReadableArray(String json) throws JSONException {
+    throw new UnsupportedOperationException(NOT_SUPPORTED_MESSAGE);
+  }
+
+  public JSONReadableArray(Object array) throws JSONException {
+    throw new UnsupportedOperationException(NOT_SUPPORTED_MESSAGE);
+  }
+
+  @Override
+  public JSONArray put(boolean value) {
+    throw new UnsupportedOperationException(NOT_SUPPORTED_MESSAGE);
+  }
+
+  @Override
+  public JSONArray put(double value) throws JSONException {
+    throw new UnsupportedOperationException(NOT_SUPPORTED_MESSAGE);
+  }
+
+  @Override
+  public JSONArray put(int value) {
+    throw new UnsupportedOperationException(NOT_SUPPORTED_MESSAGE);
+  }
+
+  @Override
+  public JSONArray put(long value) {
+    throw new UnsupportedOperationException(NOT_SUPPORTED_MESSAGE);
+  }
+
+  @Override
+  public JSONArray put(Object value) {
+    throw new UnsupportedOperationException(NOT_SUPPORTED_MESSAGE);
+  }
+
+  @Override
+  public JSONArray put(int index, boolean value) throws JSONException {
+    throw new UnsupportedOperationException(NOT_SUPPORTED_MESSAGE);
+  }
+
+  @Override
+  public JSONArray put(int index, double value) throws JSONException {
+    throw new UnsupportedOperationException(NOT_SUPPORTED_MESSAGE);
+  }
+
+  @Override
+  public JSONArray put(int index, int value) throws JSONException {
+    throw new UnsupportedOperationException(NOT_SUPPORTED_MESSAGE);
+  }
+
+  @Override
+  public JSONArray put(int index, long value) throws JSONException {
+    throw new UnsupportedOperationException(NOT_SUPPORTED_MESSAGE);
+  }
+
+  @Override
+  public JSONArray put(int index, Object value) throws JSONException {
+    throw new UnsupportedOperationException(NOT_SUPPORTED_MESSAGE);
+  }
+
+  @Override
+  public Object remove(int index) {
+    throw new UnsupportedOperationException(NOT_SUPPORTED_MESSAGE);
+  }
+
+  @Override
+  public JSONObject toJSONObject(JSONArray names) throws JSONException {
+    throw new UnsupportedOperationException(NOT_SUPPORTED_MESSAGE);
+  }
+
+  @Override
+  public String join(String separator) throws JSONException {
+    throw new UnsupportedOperationException(NOT_SUPPORTED_MESSAGE);
+  }
+
+  @Override
+  public boolean isNull(int index) {
+    return array.isNull(index);
+  }
+
+  @Override
+  public Object opt(int index) {
+    if (index >= array.size()) {
+      return null;
+    }
+    try {
+      switch (array.getType(index)) {
+        case Array:
+          return getJSONArray(index);
+        case Map:
+          return getJSONObject(index);
+        case Boolean:
+          return getBoolean(index);
+        case Number:
+          try {
+            return getInt(index);
+          } catch (Exception e) {
+            return getDouble(index);
+          }
+        case String:
+          return getString(index);
+        case Null:
+        default:
+          return null;
+      }
+    } catch (JSONException e) {
+      return null;
+    }
+  }
+
+  @Override
+  public boolean optBoolean(int index) {
+    return optBoolean(index, false);
+  }
+
+  @Override
+  public boolean optBoolean(int index, boolean fallback) {
+    if (index < array.size() && array.getType(index) == ReadableType.Boolean) {
+      try {
+        return getBoolean(index);
+      } catch (JSONException e) {
+        return fallback;
+      }
+    }
+    return fallback;
+  }
+
+  @Override
+  public double optDouble(int index) {
+    return optDouble(index, Double.NaN);
+  }
+
+  @Override
+  public double optDouble(int index, double fallback) {
+    if (index < array.size() && array.getType(index) == ReadableType.Number) {
+      try {
+        return getDouble(index);
+      } catch (JSONException e) {
+        return fallback;
+      }
+    }
+    return fallback;
+  }
+
+  @Override
+  public int optInt(int index) {
+    return optInt(index, 0);
+  }
+
+  @Override
+  public int optInt(int index, int fallback) {
+    if (index < array.size() && array.getType(index) == ReadableType.Number) {
+      try {
+        return getInt(index);
+      } catch (JSONException e) {
+        return fallback;
+      }
+    }
+    return fallback;
+  }
+
+  @Override
+  public long optLong(int index) {
+    return optLong(index, 0L);
+  }
+
+  @Override
+  public long optLong(int index, long fallback) {
+    if (index < array.size() && array.getType(index) == ReadableType.Number) {
+      try {
+        return getLong(index);
+      } catch (JSONException e) {
+        return fallback;
+      }
+    }
+    return fallback;
+  }
+
+  @Override
+  public String optString(int index) {
+    return optString(index, "");
+  }
+
+  @Override
+  public String optString(int index, String fallback) {
+    if (index < array.size() && array.getType(index) == ReadableType.String) {
+      try {
+        return getString(index);
+      } catch (JSONException e) {
+        return fallback;
+      }
+    }
+    return fallback;
+  }
+
+  @Override
+  public JSONArray optJSONArray(int index) {
+    if (index < array.size() && array.getType(index) == Array) {
+      try {
+        return getJSONArray(index);
+      } catch (JSONException e) {
+        return null;
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public JSONObject optJSONObject(int index) {
+    if (index < array.size() && array.getType(index) == ReadableType.Map) {
+      try {
+        return getJSONObject(index);
+      } catch (JSONException e) {
+        return null;
+      }
+    }
+    return null;
   }
 
   @Override public int length() {

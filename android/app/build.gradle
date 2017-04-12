@@ -16,12 +16,12 @@ repositories {
 }
 
 android {
-  compileSdkVersion 24
-  buildToolsVersion '24.0.3'
+  compileSdkVersion 25
+  buildToolsVersion '25.0.2'
 
   defaultConfig {
     applicationId 'host.exp.exponent'
-    targetSdkVersion 24
+    targetSdkVersion 25
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
     versionCode 55
@@ -96,11 +96,11 @@ dependencies {
   compile(name: 'ReactAndroid-release-abi7_0_0', ext: 'aar')
 
   // Our dependencies
-  compile 'com.android.support:appcompat-v7:24.2.0'
+  compile 'com.android.support:appcompat-v7:25.3.1'
 
   // Our dependencies from ExpoView
   // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.
-  compile 'com.android.support:appcompat-v7:24.1.1'
+  compile 'com.android.support:appcompat-v7:25.3.1'
   compile ('com.facebook.android:facebook-android-sdk:4.7.0') {
     exclude module: 'bolts-android'
   }
@@ -144,7 +144,7 @@ dependencies {
   // Testing
   androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
   androidTestCompile 'com.android.support.test:runner:0.5'
-  androidTestCompile 'com.android.support:support-annotations:25.0.1'
+  androidTestCompile 'com.android.support:support-annotations:25.3.1'
   androidTestCompile 'com.google.code.findbugs:jsr305:3.0.0'
   androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
   compile project(path: ':expoview')
