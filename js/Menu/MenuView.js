@@ -13,6 +13,7 @@ import {
   Image,
   NativeModules,
   PixelRatio,
+  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
@@ -115,14 +116,16 @@ export default class MenuView extends React.Component {
         onResponderGrant={this._onPressContainer}>
         <StatusBar barStyle="default" />
         <Animated.View style={[styles.overlay, {opacity: this.state.transitionIn, transform: [{scale}]}]}>
-          {this.props.isNuxFinished ? this._renderTaskInfoRow() : this._renderNUXRow()}
-          <View style={styles.separator} />
-          <View style={styles.buttonContainer}>
-            {this._renderButton('refresh', 'Refresh', Browser.refresh, require('../Assets/ios-menu-refresh.png'))}
-            {this._renderButton('home', 'Go to Expo Home', this._goToHome, require('../Assets/ios-menu-home.png'))}
-          </View>
-          {this._maybeRenderDevMenuTools()}
-          <Ionicons name="md-close" size={16} style={styles.closeButton} />
+          <ScrollView>
+            {this.props.isNuxFinished ? this._renderTaskInfoRow() : this._renderNUXRow()}
+            <View style={styles.separator} />
+            <View style={styles.buttonContainer}>
+              {this._renderButton('refresh', 'Refresh', Browser.refresh, require('../Assets/ios-menu-refresh.png'))}
+              {this._renderButton('home', 'Go to Expo Home', this._goToHome, require('../Assets/ios-menu-home.png'))}
+            </View>
+            {this._maybeRenderDevMenuTools()}
+            <Ionicons name="md-close" size={16} style={styles.closeButton} />
+          </ScrollView>
         </Animated.View>
       </AnimatedBlurView>
     );
