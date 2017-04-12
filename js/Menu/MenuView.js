@@ -17,6 +17,7 @@ import {
   StatusBar,
   StyleSheet,
   Text,
+  TouchableHighlight,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -111,9 +112,7 @@ export default class MenuView extends React.Component {
       <AnimatedBlurView
         style={styles.container}
         tint="light"
-        intensity={intensity}
-        onStartShouldSetResponder={() => true}
-        onResponderGrant={this._onPressContainer}>
+        intensity={intensity}>
         <StatusBar barStyle="default" />
         <Animated.View style={[styles.overlay, {opacity: this.state.transitionIn, transform: [{scale}]}]}>
           <ScrollView>
@@ -124,7 +123,12 @@ export default class MenuView extends React.Component {
               {this._renderButton('home', 'Go to Expo Home', this._goToHome, require('../Assets/ios-menu-home.png'))}
             </View>
             {this._maybeRenderDevMenuTools()}
-            <Ionicons name="md-close" size={16} style={styles.closeButton} />
+            <TouchableHighlight
+              style={styles.closeButton}
+              onPress={this._onPressClose}
+              hitSlop={{top: 4, bottom: 8, left: 8, right: 4}}>
+              <Ionicons name="md-close" size={20} style={styles.closeButtonIcon} />
+            </TouchableHighlight>
           </ScrollView>
         </Animated.View>
       </AnimatedBlurView>
@@ -295,7 +299,7 @@ export default class MenuView extends React.Component {
     ExStore.dispatch(BrowserActions.showMenuAsync(false));
   }
 
-  _onPressContainer = () => {
+  _onPressClose = () => {
     if (this.props.isNuxFinished) {
       ExStore.dispatch(BrowserActions.showMenuAsync(false));
     }
@@ -324,10 +328,12 @@ let styles = StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'transparent',
-    marginTop: 28,
+    marginTop: 32,
+  },
+  closeButtonIcon: {
+    color: '#49a7e8',
   },
   closeButton: {
-    color: '#9ca0a6',
     position: 'absolute',
     right: 16,
   },
