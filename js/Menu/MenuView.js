@@ -213,6 +213,7 @@ export default class MenuView extends React.Component {
         ? FriendlyUrls.toFriendlyString(task.manifestUrl)
         : '';
     }
+
     let iconUrl = task.manifest && task.manifest.get('iconUrl');
     let taskName = task.manifest && task.manifest.get('name');
 
@@ -253,7 +254,7 @@ export default class MenuView extends React.Component {
 
   _maybeRenderDevServerName() {
     let { task } = this.props;
-    let devServerName = task.manifest.getIn(['developer', 'tool']);
+    let devServerName = task.manifest && task.manifest.getIn(['developer', 'tool']);
     if (devServerName) {
       // XDE is upper
       if (devServerName === 'xde') {
