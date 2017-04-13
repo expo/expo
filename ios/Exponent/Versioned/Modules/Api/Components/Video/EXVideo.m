@@ -641,8 +641,8 @@ static NSString *const EXVideoPlaybackRateKeyPath = @"rate";
     _fullscreenPlayerPresented = NO;
     _presentingViewController = nil;
     [self applyModifiers];
-    if (_onVideoFullscreenPlayerWillDismiss) {
-      _onVideoFullscreenPlayerWillDismiss(nil);
+    if (_onVideoFullscreenPlayerDidDismiss) {
+      _onVideoFullscreenPlayerDidDismiss(nil);
     }
   }
 }
