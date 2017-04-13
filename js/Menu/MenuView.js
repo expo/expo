@@ -26,7 +26,7 @@ let {
   ExponentKernel,
 } = NativeModules;
 
-import Expo from 'expo';
+import Expo, { Constants } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
 import ResponsiveImage from '@expo/react-native-responsive-image';
 
@@ -61,11 +61,13 @@ export default class MenuView extends React.Component {
   async componentDidMount() {
     this._mounted = true;
     if (this.props.shouldFadeIn) {
-      Animated.timing(this.state.transitionIn, {
-        easing: Easing.inOut(Easing.quad),
-        toValue: 1,
-        duration: 100,
-      }).start();
+      requestAnimationFrame(() => {
+        this._mounted && Animated.timing(this.state.transitionIn, {
+          easing: Easing.inOut(Easing.quad),
+          toValue: 1,
+          duration: 100,
+        }).start();
+      });
     }
     this.forceStatusBarUpdateAsync();
     let enableDevMenuTools = await ExponentKernel.doesCurrentTaskEnableDevtools();
@@ -236,10 +238,12 @@ export default class MenuView extends React.Component {
           {icon}
         </View>
         <View style={styles.taskInfoColumn}>
-          <Text style={taskNameStyles}>
+          <Text style={taskNameStyles} numberOfLines={1}>
             {taskName ? taskName : 'Untitled Experience'}
           </Text>
-          <Text style={[styles.taskUrl]}>{taskUrl}</Text>
+          <Text style={[styles.taskUrl]} numberOfLines={1}>
+            {taskUrl}
+          </Text>
           {this._maybeRenderDevServerName()}
         </View>
       </View>
@@ -357,7 +361,7 @@ let styles = StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'transparent',
-    marginTop: 32,
+    marginTop: Constants.statusBarHeight,
   },
   closeButtonIcon: {
     color: '#49a7e8',
@@ -365,14 +369,15 @@ let styles = StyleSheet.create({
   closeButton: {
     position: 'absolute',
     right: 10,
+    top: 10,
     paddingVertical: 2,
     paddingHorizontal: 6,
     borderRadius: 2,
   },
   taskMetaRow: {
     flexDirection: 'row',
-    paddingHorizontal: 24,
-    paddingBottom: 16,
+    paddingHorizontal: 14,
+    paddingBottom: 12,
   },
   taskInfoColumn: {
     flex: 4,
@@ -394,14 +399,15 @@ let styles = StyleSheet.create({
     color: '#9ca0a6',
     backgroundColor: 'transparent',
     marginRight: 16,
-    marginVertical: 4,
+    marginBottom: 2,
+    marginTop: 1,
     fontSize: 12,
   },
   taskIcon: {
     width: 52,
     height: 52,
     marginTop: 12,
-    marginRight: 16,
+    marginRight: 10,
     alignSelf: 'center',
     backgroundColor: 'transparent',
   },
@@ -426,8 +432,8 @@ let styles = StyleSheet.create({
     flexDirection: 'row',
   },
   buttonWithSeparator: {
-    borderBottomWidth: 1 / PixelRatio.get(),
-    borderBottomColor: '#dadada',
+    borderBottomWidth: StyleSheet.hairlineWidth * 2,
+    borderBottomColor: '#f4f4f5',
   },
   buttonIcon: {
     width: 16,
@@ -441,6 +447,7 @@ let styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'left',
     marginVertical: 12,
+    marginRight: 5,
     paddingHorizontal: 12,
     fontWeight: '700',
   },
