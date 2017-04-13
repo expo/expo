@@ -63,7 +63,7 @@ export default class BrowserErrorView extends React.Component {
     if (error.code === '404' && !this.props.isShell) {
       actionButton = (
         <Button onPress={this._goToHome.bind(this)} style={styles.button}>
-          Back to Exponent Home
+          Back to Expo Home
         </Button>
       );
     } else {
