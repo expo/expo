@@ -36,6 +36,7 @@ export default class AppContainer extends React.Component {
 
   _initializeStateAsync = async () => {
     try {
+      await LocalStorage.maybeMigrateFromLegacyAsync();
       let storedAuthTokens = await LocalStorage.getAuthTokensAsync();
 
       if (storedAuthTokens) {

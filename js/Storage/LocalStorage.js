@@ -6,6 +6,7 @@
 'use strict';
 
 import { AsyncStorage } from 'react-native';
+import { LegacyAsyncStorage } from 'expo';
 import mapValues from 'lodash/mapValues';
 
 const Keys = mapValues({
@@ -13,6 +14,10 @@ const Keys = mapValues({
   History: 'history',
   NuxIsFinished: 'nuxIsFinishedOct-10-2016',
 }, value => `Exponent.${value}`);
+
+function maybeMigrateFromLegacyAsync() {
+  return LegacyAsyncStorage.migrateItems(Object.values(Keys));
+}
 
 async function getIsNuxFinishedAsync() {
   let result = await AsyncStorage.getItem(Keys.NuxIsFinished);
@@ -88,4 +93,5 @@ export default {
   saveIsNuxFinishedAsync,
   removeAuthTokensAsync,
   updateIdTokenAsync,
+  maybeMigrateFromLegacyAsync,
 };
