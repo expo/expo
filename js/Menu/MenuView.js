@@ -32,6 +32,7 @@ import ResponsiveImage from '@expo/react-native-responsive-image';
 
 import Browser from 'Browser';
 import BrowserActions from 'BrowserActions';
+import Colors from '../Home/constants/Colors';
 import DevIndicator from '../Home/components/DevIndicator';
 import ExStore from 'ExStore';
 import FriendlyUrls from 'FriendlyUrls';
@@ -381,6 +382,7 @@ let styles = StyleSheet.create({
   },
   taskInfoColumn: {
     flex: 4,
+    justifyContent: 'center',
   },
   taskIconColumn: {
     flex: 1,
@@ -392,8 +394,8 @@ let styles = StyleSheet.create({
     backgroundColor: 'transparent',
     fontWeight: '700',
     fontSize: 16,
-    marginTop: 16,
-    marginBottom: 2,
+    marginTop: 14,
+    marginBottom: 1,
   },
   taskUrl: {
     color: '#9ca0a6',
@@ -417,9 +419,9 @@ let styles = StyleSheet.create({
     fontWeight: '700',
   },
   separator: {
-    borderColor: '#d5d6d7',
+    borderColor: '#e3e3e3',
     borderTopWidth: 1 / PixelRatio.get(),
-    backgroundColor: '#f0f0f1',
+    backgroundColor: '#f6f6f7',
     height: 12,
     marginVertical: 4,
     marginHorizontal: -1,
