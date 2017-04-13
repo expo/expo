@@ -308,12 +308,14 @@ If there are errors that affect individual messages but not the entire request, 
 
 The HTTP status code will be 200 also if all of the messages were successfully delivered to the Android and iOS push notification services.
 
-**Important:** in particular, look for an `details` object with an `error` field. If present, it may be one of three values: `DeviceNotRegistered`, `MessageTooBig`, and `MessageRateExceeded`. You should handle these errors like so:
+**Important:** in particular, look for an `details` object with an `error` field. If present, it may be one of these values: `DeviceNotRegistered`, `MessageTooBig`, `MessageRateExceeded`, and `InvalidCredentials`. You should handle these errors like so:
 
 -   `DeviceNotRegistered`: the device cannot receive push notifications anymore and you should stop sending messages to the given Expo push token.
 
 -   `MessageTooBig`: the total notification payload was too large. On Android and iOS the total payload must be at most 4096 bytes.
 
 -   `MessageRateExceeded`: you are sending messages too frequently to the given device. Implement exponential backoff and slowly retry sending messages.
+
+-   `InvalidCredentials`: your push notification credentials for your standalone app are invalid (ex: you may have revoked them). Run `exp build:ios -c` to regenerate new push notification credentials for iOS.
 
 If we couldn't deliver the message to the Android or iOS push notification service, the receipt's details may also include service-specific information. This is useful mostly for debugging and reporting possible bugs to us.
