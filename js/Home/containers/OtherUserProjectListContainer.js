@@ -72,6 +72,6 @@ export default graphql(UsersAppsQuery, {
       limit: 15,
       offset: 0,
     },
-    forceFetch: true,
+    fetchPolicy: 'network-only',
   }),
 })(ProjectList);

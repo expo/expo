@@ -53,7 +53,6 @@ export default graphql(MyProfileQuery, {
     };
   },
   options: {
-    returnPartialData: true,
-    forceFetch: true,
+    fetchPolicy: 'network-only',
   },
 })(Profile);

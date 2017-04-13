@@ -37,7 +37,6 @@ export default graphql(UserProfileQuery, {
     variables: {
       username: props.username.replace('@', ''),
     },
-    returnPartialData: true,
-    forceFetch: true,
+    fetchPolicy: 'network-only',
   }),
 })(Profile);

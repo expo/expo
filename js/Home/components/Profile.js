@@ -91,12 +91,10 @@ export default class Profile extends React.Component {
     return (
       <ScrollView
         refreshControl={
-          (
-            <RefreshControl
-              refreshing={this.state.isRefetching}
-              onRefresh={this._handleRefreshAsync}
-            />
-          )
+          <RefreshControl
+            refreshing={this.state.isRefetching}
+            onRefresh={this._handleRefreshAsync}
+          />
         }
         style={styles.container}>
         {this._renderHeader()}
@@ -112,7 +110,7 @@ export default class Profile extends React.Component {
 
     try {
       this.setState({ isRefetching: true });
-      this.props.data.refetch({ forceFetch: true });
+      this.props.data.refetch({ fetchPolicy: 'network-only' });
     } catch (e) {
       // TODO(brentvatne): Put this into Sentry
       console.log({ e });

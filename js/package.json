@@ -1,4 +1,3 @@
-
 {
   "name": "exponent-home-oss",
   "version": "16.0.0",
@@ -22,7 +21,7 @@
     "@expo/react-native-responsive-image": "^1.2.1",
     "@expo/react-native-touchable-native-feedback-safe": "^1.1.1",
     "@expo/vector-icons": "~4.0.0",
-    "apollo-client": "^0.8.0",
+    "apollo-client": "^1.0.3",
     "autobind-decorator": "^1.3.2",
     "autoproxy": "^1.0.1",
     "dedent": "^0.7.0",
@@ -39,7 +38,7 @@
     "path": "^0.12.7",
     "querystring": "^0.2.0",
     "react": "16.0.0-alpha.6",
-    "react-apollo": "~0.9.0",
+    "react-apollo": "^1.0.1",
     "react-apple-easing": "0.0.2",
     "react-mixin": "^3.0.4",
     "react-native": "exponent/react-native#sdk-16",
