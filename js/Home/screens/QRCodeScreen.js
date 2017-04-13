@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Components } from 'expo';
+import { BarCodeScanner } from 'expo';
 import { throttle } from 'lodash';
 
 import Layout from '../constants/Layout';
@@ -29,7 +29,7 @@ export default class BarCodeScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Components.BarCodeScanner
+        <BarCodeScanner
           onBarCodeRead={this._handleBarCodeRead}
           style={StyleSheet.absoluteFill}
         />

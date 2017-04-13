@@ -19,6 +19,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import TouchableNativeFeedback
   from '@expo/react-native-touchable-native-feedback-safe';
+import { connect } from 'react-redux';
 
 import Colors from '../constants/Colors';
 import SearchBar from '../components/SearchBar';
@@ -26,6 +27,7 @@ import StyledSlidingTabNavigation
   from '../navigation/StyledSlidingTabNavigation';
 import ExploreTabContainer from '../containers/ExploreTabContainer';
 import FeatureFlags from '../../FeatureFlags';
+import isUserAuthenticated from '../utils/isUserAuthenticated';
 
 let TabTitles = {
   new: 'New projects',
@@ -36,7 +38,8 @@ if (FeatureFlags.DISPLAY_EXPERIMENTAL_EXPLORE_TABS) {
   TabTitles.top = 'Top projects';
 }
 
-@withNavigation class SearchButton extends React.Component {
+@withNavigation
+class SearchButton extends React.Component {
   render() {
     return (
       <TouchableNativeFeedback
@@ -58,6 +61,7 @@ if (FeatureFlags.DISPLAY_EXPERIMENTAL_EXPLORE_TABS) {
   };
 }
 
+@connect(data => ExploreScreen.getDataProps(data))
 export default class ExploreScreen extends React.Component {
   static route = {
     navigationBar: {
@@ -65,6 +69,12 @@ export default class ExploreScreen extends React.Component {
       visible: false,
     },
   };
+
+  static getDataProps(data) {
+    return {
+      isAuthenticated: isUserAuthenticated(data.authTokens),
+    };
+  }
 
   render() {
     return (
@@ -80,6 +90,7 @@ export default class ExploreScreen extends React.Component {
       return (
         <ExploreTabContainer
           filter="FEATURED"
+          key={this.props.isAuthenticated ? 'authenticated' : 'guest'}
           listTitle={Platform.OS === 'ios' ? 'FEATURED PROJECTS' : ''}
           onPressUsername={this._handlePressUsername}
         />
@@ -87,6 +98,7 @@ export default class ExploreScreen extends React.Component {
     } else {
       return (
         <StyledSlidingTabNavigation
+          key={this.props.isAuthenticated ? 'authenticated' : 'guest'}
           lazy
           tabBarStyle={Platform.OS === 'android' && styles.tabBarAndroid}
           initialTab="featured"

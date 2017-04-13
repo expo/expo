@@ -8,29 +8,16 @@ import {
   TabNavigationItem,
 } from '@expo/ex-navigation';
 import { Entypo, Ionicons } from '@expo/vector-icons';
-import { connect } from 'react-redux';
 
 import Colors from '../constants/Colors';
-import isUserAuthenticated from '../utils/isUserAuthenticated';
 import defaultRouteConfig from './defaultRouteConfig';
 
-@connect(data => RootNavigation.getDataProps(data))
 export default class RootNavigation extends React.Component {
   _currentTab = 'projects';
-
-  static getDataProps(data) {
-    return {
-      isAuthenticated: isUserAuthenticated(data.authTokens),
-    };
-  }
 
   render() {
     return (
       <TabNavigation
-        key={
-          /* We keep track of this to reset the navigation when we sign in/out */
-          this.props.isAuthenticated ? 'authenticated' : 'unauthenticated'
-        }
         tabBarColor={Colors.tabBar}
         tabBarStyle={{ borderTopColor: '#f2f2f2' }}
         tabBarHeight={50}

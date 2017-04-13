@@ -287,8 +287,8 @@ export default class SignUpScreen extends React.Component {
     if (result.errors) {
       let { details } = result.errors[0];
       message = details.message;
-    } else if (error.error_description || error.message) {
-      message = error.error_description || error.message;
+    } else if (result.error_description || result.message) {
+      message = result.error_description || result.message;
     } else {
       message = 'Sorry, something went wrong.';
     }

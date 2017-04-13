@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
-import { Components } from 'expo';
+import { LinearGradient } from 'expo';
 
 export class FormInput extends React.Component {
   state = {
@@ -43,7 +43,7 @@ export class FormInput extends React.Component {
 
   _renderGradientOverlay = () => {
     return (
-      <Components.LinearGradient
+      <LinearGradient
         colors={['rgba(255,255,255, 1)', 'rgba(255,255,255, 0.2)']}
         start={[0.5, 0]}
         end={[1, 0]}

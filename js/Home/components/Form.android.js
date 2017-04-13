@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { Animated, StyleSheet, Text, TextInput, View } from 'react-native';
-import { Components } from 'expo';
 
 import Colors from '../constants/Colors';
 
@@ -12,7 +11,7 @@ export class FormInput extends React.Component {
 
     this.state = {
       isFocused: false,
-      labelPosition: new Animated.Value((this.props.value ? 1 : 0)),
+      labelPosition: new Animated.Value(this.props.value ? 1 : 0),
     };
   }
 
@@ -101,13 +100,11 @@ export class FormInput extends React.Component {
     }
 
     if (nextValue.length > 0) {
-      Animated
-        .timing(this.state.labelPosition, {
-          toValue: 1,
-          duration: 150,
-          useNativeDriver: true,
-        })
-        .start();
+      Animated.timing(this.state.labelPosition, {
+        toValue: 1,
+        duration: 150,
+        useNativeDriver: true,
+      }).start();
     } else {
       this.state.labelPosition.setValue(0);
     }

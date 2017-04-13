@@ -26,7 +26,11 @@ export default class AppContainer extends React.Component {
     isReady: false,
   };
 
-  async componentDidMount() {
+  componentDidMount() {
+    this._initializeStateAsync();
+  }
+
+  _initializeStateAsync = async () => {
     try {
       let storedAuthTokens = await LocalStorage.getAuthTokensAsync();
 
@@ -43,10 +47,11 @@ export default class AppContainer extends React.Component {
         });
       }
     } catch (e) {
+      // ..
     } finally {
       this.setState({ isReady: true });
     }
-  }
+  };
 
   render() {
     if (!this.state.isReady) {
