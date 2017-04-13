@@ -37,12 +37,11 @@ import ExStore from 'ExStore';
 import FriendlyUrls from 'FriendlyUrls';
 
 let SCREEN_WIDTH = Dimensions.get('window').width;
-let MENU_NARROW_SCREEN = (SCREEN_WIDTH < 375);
+let MENU_NARROW_SCREEN = SCREEN_WIDTH < 375;
 
 const AnimatedBlurView = Animated.createAnimatedComponent(Expo.BlurView);
 
 export default class MenuView extends React.Component {
-
   static propTypes = {
     task: PropTypes.object.isRequired,
     shouldFadeIn: PropTypes.bool,
@@ -65,7 +64,7 @@ export default class MenuView extends React.Component {
       Animated.timing(this.state.transitionIn, {
         easing: Easing.inOut(Easing.quad),
         toValue: 1,
-        duration: 200,
+        duration: 100,
       }).start();
     }
     this.forceStatusBarUpdateAsync();
@@ -90,22 +89,25 @@ export default class MenuView extends React.Component {
       // so we force StatusBar to clear its state and update all props when we mount.
       StatusBar._currentValues = null;
     }
-  }
-
+  };
   restoreStatusBar = () => {
-    if (NativeModules.StatusBarManager._applyPropertiesAndForget && this._statusBarValuesToRestore) {
-      NativeModules.StatusBarManager._applyPropertiesAndForget(this._statusBarValuesToRestore);
+    if (
+      NativeModules.StatusBarManager._applyPropertiesAndForget &&
+      this._statusBarValuesToRestore
+    ) {
+      NativeModules.StatusBarManager._applyPropertiesAndForget(
+        this._statusBarValuesToRestore
+      );
     }
-  }
-
+  };
   render() {
     let scale = this.state.transitionIn.interpolate({
       inputRange: [0, 1],
-      outputRange: [1.1, 1],
+      outputRange: [1.05, 1],
     });
     let intensity = this.state.transitionIn.interpolate({
       inputRange: [0, 1],
-      outputRange: [0, 90],
+      outputRange: [0, 85],
     });
 
     return (
@@ -114,20 +116,41 @@ export default class MenuView extends React.Component {
         tint="light"
         intensity={intensity}>
         <StatusBar barStyle="default" />
-        <Animated.View style={[styles.overlay, {opacity: this.state.transitionIn, transform: [{scale}]}]}>
+        <Animated.View
+          style={[
+            styles.overlay,
+            { opacity: this.state.transitionIn, transform: [{ scale }] },
+          ]}>
           <ScrollView>
-            {this.props.isNuxFinished ? this._renderTaskInfoRow() : this._renderNUXRow()}
+            {this.props.isNuxFinished
+              ? this._renderTaskInfoRow()
+              : this._renderNUXRow()}
             <View style={styles.separator} />
             <View style={styles.buttonContainer}>
-              {this._renderButton('refresh', 'Refresh', Browser.refresh, require('../Assets/ios-menu-refresh.png'))}
-              {this._renderButton('home', 'Go to Expo Home', this._goToHome, require('../Assets/ios-menu-home.png'))}
+              {this._renderButton(
+                'refresh',
+                'Refresh',
+                Browser.refresh,
+                require('../Assets/ios-menu-refresh.png')
+              )}
+              {this._renderButton(
+                'home',
+                'Go to Expo Home',
+                this._goToHome,
+                require('../Assets/ios-menu-home.png')
+              )}
             </View>
             {this._maybeRenderDevMenuTools()}
             <TouchableHighlight
               style={styles.closeButton}
               onPress={this._onPressClose}
-              hitSlop={{top: 4, bottom: 8, left: 8, right: 4}}>
-              <Ionicons name="md-close" size={20} style={styles.closeButtonIcon} />
+              underlayColor="#eee"
+              hitSlop={{ top: 4, bottom: 8, left: 8, right: 4 }}>
+              <Ionicons
+                name="md-close"
+                size={20}
+                style={styles.closeButtonIcon}
+              />
             </TouchableHighlight>
           </ScrollView>
         </Animated.View>
@@ -142,16 +165,20 @@ export default class MenuView extends React.Component {
     } else {
       tooltipMessage = 'In iPhone Simulator, press Cmd+D to show this menu.';
     }
-    let headingStyles = (MENU_NARROW_SCREEN) ?
-      [styles.nuxHeading, styles.nuxHeadingNarrow] :
-      styles.nuxHeading;
+    let headingStyles = MENU_NARROW_SCREEN
+      ? [styles.nuxHeading, styles.nuxHeadingNarrow]
+      : styles.nuxHeading;
     return (
       <View style={styles.nuxRow}>
         <View style={styles.nuxHeadingRow}>
           <ResponsiveImage
             sources={{
-              2: { uri: 'https://s3.amazonaws.com/exp-us-standard/exponent-icon@2x.png' },
-              3: { uri: 'https://s3.amazonaws.com/exp-us-standard/exponent-icon@3x.png' },
+              2: {
+                uri: 'https://s3.amazonaws.com/exp-us-standard/exponent-icon@2x.png',
+              },
+              3: {
+                uri: 'https://s3.amazonaws.com/exp-us-standard/exponent-icon@3x.png',
+              },
             }}
             style={styles.nuxLogo}
           />
@@ -179,29 +206,39 @@ export default class MenuView extends React.Component {
     if (task.loadingError) {
       taskUrl = task.loadingError.originalUrl;
     } else {
-      taskUrl = (task.manifestUrl) ? FriendlyUrls.toFriendlyString(task.manifestUrl) : '';
+      taskUrl = task.manifestUrl
+        ? FriendlyUrls.toFriendlyString(task.manifestUrl)
+        : '';
     }
     let iconUrl = task.manifest && task.manifest.get('iconUrl');
     let taskName = task.manifest && task.manifest.get('name');
 
-    let icon = (iconUrl) ?
-      <Image source={{uri: iconUrl}} style={styles.taskIcon} /> :
-      <ResponsiveImage
-        resizeMode="contain"
-        sources={{
-          2: { uri: 'https://s3.amazonaws.com/exp-us-standard/exponent-icon@2x.png' },
-          3: { uri: 'https://s3.amazonaws.com/exp-us-standard/exponent-icon@3x.png' },
-        }}
-        style={styles.taskIcon}
-      />
-    let taskNameStyles = (taskName) ? styles.taskName : [styles.taskName, { color: '#c5c6c7' }];
+    let icon = iconUrl
+      ? <Image source={{ uri: iconUrl }} style={styles.taskIcon} />
+      : <ResponsiveImage
+          resizeMode="contain"
+          sources={{
+            2: {
+              uri: 'https://s3.amazonaws.com/exp-us-standard/exponent-icon@2x.png',
+            },
+            3: {
+              uri: 'https://s3.amazonaws.com/exp-us-standard/exponent-icon@3x.png',
+            },
+          }}
+          style={styles.taskIcon}
+        />;
+    let taskNameStyles = taskName
+      ? styles.taskName
+      : [styles.taskName, { color: '#c5c6c7' }];
     return (
       <View style={styles.taskMetaRow}>
         <View style={styles.taskIconColumn}>
           {icon}
         </View>
         <View style={styles.taskInfoColumn}>
-          <Text style={taskNameStyles}>{(taskName) ? taskName : 'Untitled Experience'}</Text>
+          <Text style={taskNameStyles}>
+            {taskName ? taskName : 'Untitled Experience'}
+          </Text>
           <Text style={[styles.taskUrl]}>{taskUrl}</Text>
           {this._maybeRenderDevServerName()}
         </View>
@@ -218,8 +255,8 @@ export default class MenuView extends React.Component {
         devServerName = devServerName.toUpperCase();
       }
       return (
-        <View style={{flexDirection: 'row'}}>
-          <DevIndicator style={{marginTop: 4.5, marginRight: 7}} />
+        <View style={{ flexDirection: 'row' }}>
+          <DevIndicator style={{ marginTop: 4.5, marginRight: 7 }} />
           <Text style={styles.taskDevServerName}>{devServerName}</Text>
         </View>
       );
@@ -233,11 +270,9 @@ export default class MenuView extends React.Component {
         <View>
           <View style={styles.separator} />
           <View style={styles.buttonContainer}>
-            {
-              Object.keys(this.state.devMenuItems).map((key, idx) => {
-                return this._renderDevMenuItem(key, this.state.devMenuItems[key]);
-              })
-            }
+            {Object.keys(this.state.devMenuItems).map((key, idx) => {
+              return this._renderDevMenuItem(key, this.state.devMenuItems[key]);
+            })}
           </View>
         </View>
       );
@@ -248,14 +283,20 @@ export default class MenuView extends React.Component {
   _renderDevMenuItem(key, item) {
     let { label, isEnabled } = item;
     if (isEnabled) {
-      return this._renderButton(key, label, () => { this._onPressDevMenuButton(key); }, null, true);
+      return this._renderButton(
+        key,
+        label,
+        () => {
+          this._onPressDevMenuButton(key);
+        },
+        null,
+        true
+      );
     } else {
       return (
-        <View
-          style={[styles.button, styles.buttonWithSeparator]}
-          key={key}>
+        <View style={[styles.button, styles.buttonWithSeparator]} key={key}>
           <View style={styles.buttonIcon} />
-          <Text style={[styles.buttonText, {color: '#9ca0a6'}]}>
+          <Text style={[styles.buttonText, { color: '#9ca0a6' }]}>
             {label}
           </Text>
         </View>
@@ -266,15 +307,9 @@ export default class MenuView extends React.Component {
   _renderButton(key, text, onPress, iconSource, withSeparator) {
     let icon, buttonStyles;
     if (iconSource) {
-      icon = (
-        <Image
-          style={styles.buttonIcon}
-          source={iconSource} />
-      );
+      icon = <Image style={styles.buttonIcon} source={iconSource} />;
     } else {
-      icon = (
-        <View style={styles.buttonIcon} />
-      );
+      icon = <View style={styles.buttonIcon} />;
     }
     if (withSeparator) {
       buttonStyles = [styles.button, styles.buttonWithSeparator];
@@ -282,10 +317,7 @@ export default class MenuView extends React.Component {
       buttonStyles = styles.button;
     }
     return (
-      <TouchableOpacity
-        key={key}
-        style={buttonStyles}
-        onPress={onPress}>
+      <TouchableOpacity key={key} style={buttonStyles} onPress={onPress}>
         {icon}
         <Text style={styles.buttonText}>
           {text}
@@ -297,22 +329,19 @@ export default class MenuView extends React.Component {
   _onPressFinishNux = () => {
     ExStore.dispatch(BrowserActions.setIsNuxFinishedAsync(true));
     ExStore.dispatch(BrowserActions.showMenuAsync(false));
-  }
-
+  };
   _onPressClose = () => {
     if (this.props.isNuxFinished) {
       ExStore.dispatch(BrowserActions.showMenuAsync(false));
     }
-  }
-
+  };
   _goToHome = () => {
     ExStore.dispatch(BrowserActions.foregroundHomeAsync());
-  }
-
-  _onPressDevMenuButton = (key) => {
+  };
+  _onPressDevMenuButton = key => {
     ExponentKernel.selectDevMenuItemWithKey(key);
     ExStore.dispatch(BrowserActions.showMenuAsync(false));
-  }
+  };
 }
 
 let styles = StyleSheet.create({
@@ -335,7 +364,10 @@ let styles = StyleSheet.create({
   },
   closeButton: {
     position: 'absolute',
-    right: 16,
+    right: 10,
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+    borderRadius: 2,
   },
   taskMetaRow: {
     flexDirection: 'row',
@@ -376,7 +408,7 @@ let styles = StyleSheet.create({
   taskDevServerName: {
     fontSize: 12,
     color: '#9ca0a6',
-    fontWeight: '700'
+    fontWeight: '700',
   },
   separator: {
     borderColor: '#d5d6d7',
@@ -398,11 +430,11 @@ let styles = StyleSheet.create({
     borderBottomColor: '#dadada',
   },
   buttonIcon: {
-    width:16,
+    width: 16,
     height: 16,
     marginVertical: 12,
     marginLeft: 20,
-    alignSelf:'flex-start'
+    alignSelf: 'flex-start',
   },
   buttonText: {
     color: '#595c68',

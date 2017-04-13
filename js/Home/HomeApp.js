@@ -1,6 +1,6 @@
 /* @flow */
 
-import { Font } from 'expo';
+import { Asset, Font } from 'expo';
 import React from 'react';
 import {
   ActivityIndicator,
@@ -21,6 +21,10 @@ import ExStore from '../Flux/ExStore';
 import Router from './navigation/Router';
 import customNavigationContext from './navigation/customNavigationContext';
 
+function cacheImages(images) {
+  return images.map(image => Asset.fromModule(image).downloadAsync());
+}
+
 export default class AppContainer extends React.Component {
   state = {
     isReady: false,
@@ -39,12 +43,20 @@ export default class AppContainer extends React.Component {
       }
 
       if (Platform.OS === 'ios') {
-        await Font.loadAsync(Ionicons.font);
+        let imageAssets = [
+          require('../Assets/ios-menu-refresh.png'),
+          require('../Assets/ios-menu-home.png'),
+        ];
+
+        await Promise.all([
+          ...cacheImages(imageAssets),
+          Font.loadAsync(Ionicons.font),
+        ]);
       } else {
-        await Font.loadAsync({
-          ...Ionicons.font,
-          ...MaterialIcons.font,
-        });
+        await Promise.all([
+          Font.loadAsync(Ionicons.font),
+          Font.loadAsync(MaterialIcons.font),
+        ]);
       }
     } catch (e) {
       // ..
