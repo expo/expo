@@ -27,14 +27,14 @@ var TimePickerDialogTestModule = {
   TimePickerDialogTestApp: TimePickerDialogTestApp,
   showTimePickerDialog: function(options) {
     TimePickerAndroid.open(options).then(
-      ({action, hour, minute}) => {
+      ({ action, hour, minute }) => {
         if (action === TimePickerAndroid.timeSetAction) {
           RecordingModule.recordTime(hour, minute);
         } else if (action === TimePickerAndroid.dismissedAction) {
           RecordingModule.recordDismissed();
         }
       },
-      ({code, message}) => RecordingModule.recordError()
+      ({ code, message }) => RecordingModule.recordError()
     );
   },
 };

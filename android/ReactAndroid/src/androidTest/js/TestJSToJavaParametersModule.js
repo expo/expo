@@ -32,7 +32,7 @@ var TestJSToJavaParametersModule = {
     Recording.receiveArray(['we', ['have', ['to', ['go', ['deeper']]]]]);
   },
   returnArrayWithMaps: function() {
-    Recording.receiveArray([{m1k1: 'm1v1', m1k2: 'm1v2'}, {m2k1: 'm2v1'}]);
+    Recording.receiveArray([{ m1k1: 'm1v1', m1k2: 'm1v2' }, { m2k1: 'm2v1' }]);
   },
   returnMapWithBasicTypes: function() {
     Recording.receiveMap({
@@ -52,9 +52,9 @@ var TestJSToJavaParametersModule = {
   },
   returnMapWithArrays: function() {
     Recording.receiveMap({
-      'empty': [],
-      'ints': [43, 44],
-      'mixed': [77, 'string', ['another', 'array']],
+      empty: [],
+      ints: [43, 44],
+      mixed: [77, 'string', ['another', 'array']],
     });
   },
   returnArrayWithStringDoubleIntMapArrayBooleanNull: function() {
@@ -68,14 +68,14 @@ var TestJSToJavaParametersModule = {
       int: -55,
       array: [],
       boolean: true,
-      null: null
+      null: null,
     });
   },
   returnArrayWithLargeInts: function() {
     Recording.receiveArray([2147483648, -5555555555]);
   },
   returnMapWithLargeInts: function() {
-    Recording.receiveMap({first: -2147483649, second: 5551231231});
+    Recording.receiveMap({ first: -2147483649, second: 5551231231 });
   },
   returnMapForMerge1: function() {
     Recording.receiveMap({
@@ -83,7 +83,7 @@ var TestJSToJavaParametersModule = {
       b: 41,
       c: 'string',
       d: 'other string',
-      e: [1,'foo','bar'],
+      e: [1, 'foo', 'bar'],
       f: null,
     });
   },
@@ -102,7 +102,7 @@ var TestJSToJavaParametersModule = {
       'two-bytes': '\u00A2',
       'three-bytes': '\u20AC',
       'four-bytes': '\uD83D\uDE1C',
-      'mixed': '\u017C\u00F3\u0142\u0107 g\u0119\u015Bl\u0105 \u6211 \uD83D\uDE0E ja\u017A\u0107'
+      mixed: '\u017C\u00F3\u0142\u0107 g\u0119\u015Bl\u0105 \u6211 \uD83D\uDE0E ja\u017A\u0107',
     });
   },
   returnArrayWithMultibyteUTF8CharacterString: function() {
@@ -111,7 +111,7 @@ var TestJSToJavaParametersModule = {
       '\u00A2',
       '\u20AC',
       '\uD83D\uDE1C',
-      '\u017C\u00F3\u0142\u0107 g\u0119\u015Bl\u0105 \u6211 \uD83D\uDE0E ja\u017A\u0107'
+      '\u017C\u00F3\u0142\u0107 g\u0119\u015Bl\u0105 \u6211 \uD83D\uDE0E ja\u017A\u0107',
     ]);
   },
 };

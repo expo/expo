@@ -23,9 +23,6 @@ var TestJSLocaleModule = {
   },
 };
 
-BatchedBridge.registerCallableModule(
-  'TestJSLocaleModule',
-  TestJSLocaleModule
-);
+BatchedBridge.registerCallableModule('TestJSLocaleModule', TestJSLocaleModule);
 
 module.exports = TestJSLocaleModule;
