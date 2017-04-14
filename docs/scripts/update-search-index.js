@@ -49,7 +49,10 @@ function buildAlgoliaConfig() {
     );
 
     const sections = getDirectories(path.join(VERSIONS_DIR, version));
-    algoliaConfig.stop_urls = [...algoliaConfig.stop_urls, ...sections.map(s => `${versionUrlBase}/${s}/index.html$`)];
+    algoliaConfig.stop_urls = [
+      ...algoliaConfig.stop_urls,
+      ...sections.map(s => `${versionUrlBase}/${s}/index.html$`),
+    ];
   });
 
   return algoliaConfig;
