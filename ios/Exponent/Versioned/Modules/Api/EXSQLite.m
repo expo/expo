@@ -2,10 +2,10 @@
 
 #import "EXSQLite.h"
 
-#import "sqlite3.h"
-
 #import "EXScope.h"
 #import "EXFileSystem.h"
+
+#import <sqlite3.h>
 
 @interface EXSQLite ()
 
