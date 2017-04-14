@@ -14,6 +14,7 @@ import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 import AuthTokenActions from '../Flux/AuthTokenActions';
+import BrowserActions from '../Flux/BrowserActions';
 import LocalStorage from '../Storage/LocalStorage';
 import GlobalLoadingOverlay from './containers/GlobalLoadingOverlay';
 import ExStore from '../Flux/ExStore';
@@ -36,7 +37,7 @@ export default class AppContainer extends React.Component {
 
   _initializeStateAsync = async () => {
     try {
-      await LocalStorage.maybeMigrateFromLegacyAsync();
+      ExStore.dispatch(BrowserActions.loadHistoryAsync());
       let storedAuthTokens = await LocalStorage.getAuthTokensAsync();
 
       if (storedAuthTokens) {

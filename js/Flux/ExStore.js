@@ -23,6 +23,4 @@ let reducers = {
 
 let store = Flux.createStore(reducers);
 
-store.dispatch(BrowserActions.loadHistoryAsync());
-
 export default store;

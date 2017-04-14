@@ -4,15 +4,20 @@
  * @providesModule ExponentApp
  * @flow
  */
-'use strict';
 
 import React, { PropTypes } from 'react';
-import { DeviceEventEmitter, Linking } from 'react-native';
+import {
+  ActivityIndicator,
+  DeviceEventEmitter,
+  Linking,
+  View,
+} from 'react-native';
 
 import Browser from 'Browser';
 import BrowserActions from 'BrowserActions';
 import ExStore from 'ExStore';
 import ExponentKernel from 'ExponentKernel';
+import LocalStorage from './Storage/LocalStorage';
 import KernelNavigator from 'KernelNavigator';
 
 class ExponentApp extends React.Component {
@@ -21,7 +26,25 @@ class ExponentApp extends React.Component {
     shellManifestUrl: PropTypes.string,
   };
 
+  state = {
+    dataMigrationComplete: false,
+  };
+
   render() {
+    if (!this.state.dataMigrationComplete) {
+      return (
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: 'white',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <ActivityIndicator />
+        </View>
+      );
+    }
+
     return <KernelNavigator />;
   }
 
@@ -35,6 +58,10 @@ class ExponentApp extends React.Component {
         )
       );
     }
+  }
+
+  componentWillMount() {
+    this._performDataMigrationAsync();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -79,6 +106,11 @@ class ExponentApp extends React.Component {
 
   componentWillUnmount() {
     Linking.removeEventListener('url', this._handleUrl);
+  }
+
+  async _performDataMigrationAsync() {
+    await LocalStorage.maybeMigrateFromLegacyAsync();
+    this.setState({ dataMigrationComplete: true });
   }
 
   _handleUrl = event => {
