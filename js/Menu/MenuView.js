@@ -397,6 +397,7 @@ let styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 14,
     marginBottom: 1,
+    marginRight: 24,
   },
   taskUrl: {
     color: '#9ca0a6',
@@ -420,9 +421,9 @@ let styles = StyleSheet.create({
     fontWeight: '700',
   },
   separator: {
-    borderColor: '#e3e3e3',
+    borderColor: '#d5d6d7',
     borderTopWidth: 1 / PixelRatio.get(),
-    backgroundColor: '#f6f6f7',
+    backgroundColor: '#f0f0f1',
     height: 12,
     marginVertical: 4,
     marginHorizontal: -1,
