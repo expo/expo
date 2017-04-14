@@ -34,10 +34,7 @@ const processPage = (document, callback) => {
   //}
   document.title = document.title.slice(0, -1);
   if (document.previous___FILE) {
-    document.previous___FILE = `./${document.previous___FILE.replace(
-      '.html',
-      '.md'
-    )}`;
+    document.previous___FILE = `./${document.previous___FILE.replace('.html', '.md')}`;
   }
   if (document.next___FILE) {
     document.next___FILE = `./${document.next___FILE.replace('.html', '.md')}`;
@@ -192,7 +189,7 @@ const processPage = (document, callback) => {
     imagesToDownload.push({
       url: node.url,
       newPath,
-      relativePath
+      relativePath,
     });
     // Change node path
     node.url = relativePath;
@@ -219,11 +216,11 @@ const processPage = (document, callback) => {
     `title`,
     `old_permalink`,
     `previous___FILE`,
-    `next___FILE`
+    `next___FILE`,
   ]);
   ast.children.unshift({
     type: 'yaml',
-    value: jsYaml.safeDump(frontmatter)
+    value: jsYaml.safeDump(frontmatter),
   });
 
   console.log(`writing to`, markdownPath);
@@ -258,7 +255,7 @@ osmosis
   .find('.footer-relations')
   .set({
     previous___FILE: '.pull-left a@href',
-    next___FILE: '.pull-right a@href'
+    next___FILE: '.pull-right a@href',
   })
   .data(document => {
     q.push(document);

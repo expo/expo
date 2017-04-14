@@ -1,17 +1,17 @@
-import React from "react";
-import Helmet from "react-helmet";
-import Link from "gatsby-link";
-import get from "lodash/get";
+import React from 'react';
+import Helmet from 'react-helmet';
+import Link from 'gatsby-link';
+import get from 'lodash/get';
 
-import { rhythm } from "../utils/typography";
+import { rhythm } from '../utils/typography';
 
 function initializeEmbeds() {
   if (window.ExpoSketch) {
     window.ExpoSketch.initialize();
   } else {
-    let scriptEl = document.createElement("script");
+    let scriptEl = document.createElement('script');
     scriptEl.async = true;
-    scriptEl.type = "text/javascript";
+    scriptEl.type = 'text/javascript';
     scriptEl.src = `https://sketch.expo.io/embed.js`;
     document.body.appendChild(scriptEl);
   }
@@ -42,9 +42,8 @@ class DocsPage extends React.Component {
           css={{
             textAlign: `center`,
             marginBottom: rhythm(1 / 2),
-          }}
-        >
-          © Copyright{" "}
+          }}>
+          © Copyright{' '}
           {new Date().getFullYear()}
           , Expo.
         </p>

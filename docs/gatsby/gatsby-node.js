@@ -7,9 +7,7 @@ const fs = require(`fs`);
 const slug = require(`slug`);
 const sh = require(`shelljs`);
 const webpack = require(`webpack`);
-const {
-  GraphQLString,
-} = require(`graphql`);
+const { GraphQLString } = require(`graphql`);
 
 exports.createPages = ({ args }) => {
   const { graphql } = args;

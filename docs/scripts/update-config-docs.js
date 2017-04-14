@@ -14,16 +14,16 @@ if (sdkVersion === 'unversioned') {
 try {
   fs.statSync(`../server/www/xdl-schemas/${sdkVersion}-schema.json`);
   console.log('Schema file found, re-generating configuration docs');
-} catch(e) {
+} catch (e) {
   process.exit(0);
 }
 
 let ExpSchema;
 try {
-  ExpSchema = require(`../../server/www/xdl-schemas/${sdkVersion}-schema.json`).schema;
+  ExpSchema = require(`../../server/www/xdl-schemas/${sdkVersion}-schema.json`)
+    .schema;
 } catch (e) {
   console.error(e.toString());
-  return;
 }
 
 let rawPath;
@@ -49,13 +49,15 @@ stream.once('open', function(fd) {
   const readableSchema = [];
   Object.keys(ExpSchema.properties).forEach(key => {
     if (shouldDisplayProperty(ExpSchema.properties[key])) {
-      readableSchema.push(extractData(key, ExpSchema.properties[key], ExpSchema));
+      readableSchema.push(
+        extractData(key, ExpSchema.properties[key], ExpSchema)
+      );
     }
   });
 
-  stream.write("---\n");
-  stream.write("title: Configuration with exp.json\n");
-  stream.write("---\n");
+  stream.write('---\n');
+  stream.write('title: Configuration with exp.json\n');
+  stream.write('---\n');
 
   stream.write(preamble);
   writePropertiesToStream(stream, readableSchema);
@@ -64,9 +66,11 @@ stream.once('open', function(fd) {
 
 function writePropertiesToStream(stream, schema, depth = 0) {
   schema.forEach(prop => {
-    let depthSpacing = (new Array(depth)).join(' ');
+    let depthSpacing = new Array(depth).join(' ');
     stream.write(`\n${depthSpacing}- \`${prop.key}\`\n`);
-    stream.write(`\n${depthSpacing}   ${propertyDescription(prop, depthSpacing)}`);
+    stream.write(
+      `\n${depthSpacing}   ${propertyDescription(prop, depthSpacing)}`
+    );
     if (prop.children) {
       writePropertiesToStream(stream, prop.children, depth + 4);
     }
@@ -141,7 +145,7 @@ function extractData(key, property, parent) {
         mappedChildren.push(extractData(key, children[key], property));
       }
     });
-    data = Object.assign(data, {children: mappedChildren});
+    data = Object.assign(data, { children: mappedChildren });
   }
 
   return data;
