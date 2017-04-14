@@ -5,10 +5,7 @@
  */
 'use strict';
 
-import {
-  Text,
-  TouchableOpacity,
-} from 'react-native';
+import { Text, TouchableOpacity } from 'react-native';
 import React from 'react';
 
 import ExNavigator from '@expo/react-native-navigator';
@@ -17,7 +14,7 @@ let ConsoleRouter = {
   getConsoleHistoryRoute(onPressReload, isUserFacing) {
     return {
       getTitle() {
-        return (isUserFacing) ? 'Error' : 'Console';
+        return isUserFacing ? 'Error' : 'Console';
       },
 
       renderScene(navigator) {
@@ -30,12 +27,13 @@ let ConsoleRouter = {
         );
       },
 
-
       renderLeftButton(navigator) {
         return (
           <TouchableOpacity
             onPress={() => navigator.parentNavigator.pop()}
-            touchRetentionOffset={ExNavigator.Styles.barButtonTouchRetentionOffset}
+            touchRetentionOffset={
+              ExNavigator.Styles.barButtonTouchRetentionOffset
+            }
             style={ExNavigator.Styles.barLeftButton}>
             <Text style={ExNavigator.Styles.barLeftButtonText}>
               Dismiss
@@ -51,7 +49,9 @@ let ConsoleRouter = {
               navigator.parentNavigator.pop();
               onPressReload(event);
             }}
-            touchRetentionOffset={ExNavigator.Styles.barButtonTouchRetentionOffset}
+            touchRetentionOffset={
+              ExNavigator.Styles.barButtonTouchRetentionOffset
+            }
             style={ExNavigator.Styles.barRightButton}>
             <Text style={ExNavigator.Styles.barRightButtonText}>
               Refresh
@@ -70,12 +70,7 @@ let ConsoleRouter = {
 
       renderScene(navigator) {
         let ConsoleErrorScreen = require('ConsoleErrorScreen').default;
-        return (
-          <ConsoleErrorScreen
-            navigator={navigator}
-            errorId={errorId}
-          />
-        );
+        return <ConsoleErrorScreen navigator={navigator} errorId={errorId} />;
       },
     };
   },

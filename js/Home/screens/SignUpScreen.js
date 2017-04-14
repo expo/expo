@@ -68,15 +68,16 @@ export default class SignUpScreen extends React.Component {
   componentDidMount() {
     this._isMounted = true;
 
-    this._keyboardDidShowSubscription = Keyboard.addListener(
-      'keyboardDidShow',
-      ({ endCoordinates }) => {
-        const keyboardHeight = endCoordinates.height;
-        this.setState({ keyboardHeight });
-      }
-    );
+    this
+      ._keyboardDidShowSubscription = Keyboard.addListener('keyboardDidShow', ({
+      endCoordinates,
+    }) => {
+      const keyboardHeight = endCoordinates.height;
+      this.setState({ keyboardHeight });
+    });
 
-    this._keyboardDidHideSubscription = Keyboard.addListener(
+    this
+      ._keyboardDidHideSubscription = Keyboard.addListener(
       'keyboardDidHide',
       () => {
         this.setState({ keyboardHeight: 0 });

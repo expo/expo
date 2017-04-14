@@ -62,23 +62,20 @@ export default class BarCodeScreen extends React.Component {
     );
   }
 
-  _handleBarCodeRead = throttle(
-    ({ data: url }) => {
-      this.props.navigation.dismissModal();
+  _handleBarCodeRead = throttle(({ data: url }) => {
+    this.props.navigation.dismissModal();
 
-      // note(brentvatne): Manually reset the status bar before opening the
-      // experience so that we restore the correct status bar color when
-      // returning to home
-      Platform.OS === 'ios' && StatusBar.setBarStyle('default');
-      requestAnimationFrame(() => {
-        if (!this._hasOpenedUrl) {
-          this._hasOpenedUrl = true;
-          Linking.openURL(url);
-        }
-      });
-    },
-    1000
-  );
+    // note(brentvatne): Manually reset the status bar before opening the
+    // experience so that we restore the correct status bar color when
+    // returning to home
+    Platform.OS === 'ios' && StatusBar.setBarStyle('default');
+    requestAnimationFrame(() => {
+      if (!this._hasOpenedUrl) {
+        this._hasOpenedUrl = true;
+        Linking.openURL(url);
+      }
+    });
+  }, 1000);
 
   _handlePressCancel = () => {
     this.props.navigation.dismissModal();

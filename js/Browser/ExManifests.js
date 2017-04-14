@@ -5,10 +5,7 @@
  */
 'use strict';
 
-import {
-  NativeModules,
-  Platform,
-} from 'react-native';
+import { NativeModules, Platform } from 'react-native';
 
 import ExUrls from 'ExUrls';
 import ExponentKernel from 'ExponentKernel';
@@ -29,7 +26,10 @@ let ExManifests = {
     }
     let indexOfDeepLink = httpManifestUrlComponents.pathname.indexOf('+');
     if (indexOfDeepLink !== -1) {
-      httpManifestUrlComponents.pathname = httpManifestUrlComponents.pathname.substring(0, indexOfDeepLink);
+      httpManifestUrlComponents.pathname = httpManifestUrlComponents.pathname.substring(
+        0,
+        indexOfDeepLink
+      );
     }
     if (!httpManifestUrlComponents.pathname.endsWith('/')) {
       httpManifestUrlComponents.pathname += '/';
@@ -40,7 +40,10 @@ let ExManifests = {
     // Fetch manifest
     let manifestString;
     try {
-      manifestString = await ExponentKernel.getManifestAsync(httpManifestUrl, manifestUrl);
+      manifestString = await ExponentKernel.getManifestAsync(
+        httpManifestUrl,
+        manifestUrl
+      );
     } catch (e) {
       e.message = `Error while loading: ${e.message}.`;
       throw e;
@@ -59,7 +62,9 @@ let ExManifests = {
     }
 
     // disregard manifest verification for anonymous experiences
-    if (manifest.id && manifest.id.indexOf(ANONYMOUS_EXPERIENCE_ID_PREFIX) === 0) {
+    if (
+      manifest.id && manifest.id.indexOf(ANONYMOUS_EXPERIENCE_ID_PREFIX) === 0
+    ) {
       manifest.isVerified = true;
     }
 
@@ -83,10 +88,12 @@ let ExManifests = {
     let appKey = manifest.appKey || query.app || 'main';
 
     let debuggerHost = manifest.debuggerHost;
-    let debuggerHostname = debuggerHost ? ExUrls.getHostnameForHost(debuggerHost) :
-      null;
-    let debuggerPort = debuggerHost ? Number(ExUrls.getPortForHost(debuggerHost)) :
-      -1;
+    let debuggerHostname = debuggerHost
+      ? ExUrls.getHostnameForHost(debuggerHost)
+      : null;
+    let debuggerPort = debuggerHost
+      ? Number(ExUrls.getPortForHost(debuggerHost))
+      : -1;
 
     return { source, appKey, debuggerHostname, debuggerPort };
   },
@@ -102,7 +109,9 @@ let ExManifests = {
     let isManifestSdkVersionSupported = false;
 
     try {
-      sdkVersionComponents = sdkVersion.split('.').map(component => parseInt(component, 10));
+      sdkVersionComponents = sdkVersion
+        .split('.')
+        .map(component => parseInt(component, 10));
     } catch (_) {}
 
     supportedVersions.forEach(supportedVersion => {
@@ -110,8 +119,13 @@ let ExManifests = {
         isManifestSdkVersionSupported = true;
       }
       try {
-        let supportedVersionComponents = supportedVersion.split('.').map(component => parseInt(component, 10));
-        if (sdkVersionComponents[0] === supportedVersionComponents[0] && sdkVersionComponents[1] === supportedVersionComponents[1]) {
+        let supportedVersionComponents = supportedVersion
+          .split('.')
+          .map(component => parseInt(component, 10));
+        if (
+          sdkVersionComponents[0] === supportedVersionComponents[0] &&
+          sdkVersionComponents[1] === supportedVersionComponents[1]
+        ) {
           isManifestSdkVersionSupported = true;
         }
       } catch (_) {}

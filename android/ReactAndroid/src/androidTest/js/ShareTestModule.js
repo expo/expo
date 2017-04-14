@@ -19,7 +19,7 @@ var View = require('View');
 
 class ShareTestApp extends React.Component {
   render() {
-    return (<View />);
+    return <View />;
   }
 }
 
@@ -28,14 +28,11 @@ var ShareTestModule = {
   showShareDialog: function(content, options) {
     Share.share(content, options).then(
       () => RecordingModule.recordOpened(),
-      ({code, message}) => RecordingModule.recordError()
+      ({ code, message }) => RecordingModule.recordError()
     );
   },
 };
 
-BatchedBridge.registerCallableModule(
-  'ShareTestModule',
-  ShareTestModule
-);
+BatchedBridge.registerCallableModule('ShareTestModule', ShareTestModule);
 
 module.exports = ShareTestModule;

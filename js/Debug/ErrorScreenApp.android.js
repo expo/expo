@@ -23,10 +23,7 @@ import ExNavigator from '@expo/react-native-navigator';
 import ConsoleRouter from 'ConsoleRouter';
 import ExColors from 'ExColors';
 
-const {
- ExponentConstants,
- ExponentKernel,
-} = NativeModules;
+const { ExponentConstants, ExponentKernel } = NativeModules;
 
 export default class ErrorScreenApp extends React.Component {
   static propTypes = {
@@ -37,7 +34,10 @@ export default class ErrorScreenApp extends React.Component {
 
   componentDidMount() {
     if (Platform.OS === 'android') {
-      BackAndroid.addEventListener('hardwareBackPress', this._handleBackButtonPress);
+      BackAndroid.addEventListener(
+        'hardwareBackPress',
+        this._handleBackButtonPress
+      );
     }
   }
 
@@ -46,7 +46,9 @@ export default class ErrorScreenApp extends React.Component {
     return (
       <View style={styles.container}>
         <ExNavigator
-          ref={component => { this._navigator = component; }}
+          ref={component => {
+            this._navigator = component;
+          }}
           initialRoute={initialRoute}
           showNavigationBar={false}
           style={styles.container}
@@ -56,14 +58,19 @@ export default class ErrorScreenApp extends React.Component {
     );
   }
 
-  @autobind
-  _handleBackButtonPress() {
-    if (this._consoleNavigator && this._consoleNavigator.getCurrentRoutes() &&
-        this._consoleNavigator.getCurrentRoutes().length > 1) {
+  @autobind _handleBackButtonPress() {
+    if (
+      this._consoleNavigator &&
+      this._consoleNavigator.getCurrentRoutes() &&
+      this._consoleNavigator.getCurrentRoutes().length > 1
+    ) {
       this._consoleNavigator.pop();
       return true;
-    } else if (this._navigator && this._navigator.getCurrentRoutes() &&
-        this._navigator.getCurrentRoutes().length > 1) {
+    } else if (
+      this._navigator &&
+      this._navigator.getCurrentRoutes() &&
+      this._navigator.getCurrentRoutes().length > 1
+    ) {
       this._navigator.pop();
       return true;
     } else {
@@ -71,13 +78,11 @@ export default class ErrorScreenApp extends React.Component {
     }
   }
 
-  @autobind
-  _navigateToConsoleHistory() {
+  @autobind _navigateToConsoleHistory() {
     this._navigator.push(this._getConsoleHistoryRoute());
   }
 
-  @autobind
-  _getErrorScreenRoute() {
+  @autobind _getErrorScreenRoute() {
     let self = this;
     return {
       renderScene() {
@@ -94,7 +99,7 @@ export default class ErrorScreenApp extends React.Component {
             </View>
             <TouchableOpacity
               style={styles.bottomContainer}
-              hitSlop={{top: 20, right: 20, bottom: 20, left: 20}}
+              hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
               onPress={self._navigateToConsoleHistory}>
               <Text style={styles.viewErrorsText}>View error log</Text>
             </TouchableOpacity>
@@ -104,8 +109,7 @@ export default class ErrorScreenApp extends React.Component {
     };
   }
 
-  @autobind
-  _errorText() {
+  @autobind _errorText() {
     if (this.props.userErrorMessage && this.props.userErrorMessage.length > 0) {
       return this.props.userErrorMessage;
     } else if (this.props.isShellApp) {
@@ -115,8 +119,7 @@ export default class ErrorScreenApp extends React.Component {
     }
   }
 
-  @autobind
-  _getConsoleHistoryRoute() {
+  @autobind _getConsoleHistoryRoute() {
     let self = this;
     return {
       renderScene() {
@@ -125,7 +128,9 @@ export default class ErrorScreenApp extends React.Component {
           <View style={styles.consoleHistoryContainer}>
             {self._renderButtons()}
             <ExNavigator
-              ref={component => { self._consoleNavigator = component; }}
+              ref={component => {
+                self._consoleNavigator = component;
+              }}
               initialRoute={initialRoute}
               showNavigationBar={false}
               style={styles.consoleHistoryContainer}
@@ -141,17 +146,24 @@ export default class ErrorScreenApp extends React.Component {
     };
   }
 
-  @autobind
-  _renderButtons() {
+  @autobind _renderButtons() {
     return (
       <View style={styles.navBar}>
-        {this.props.isShellApp ? null :
-          <TouchableOpacity onPress={() => ExponentKernel.goToHomeFromErrorScreen()}>
-            <Image source={{uri: 'ic_home_white_36dp'}} style={styles.icon} />
-          </TouchableOpacity>
-        }
-        <TouchableOpacity onPress={() => ExponentKernel.reloadFromErrorScreen()}>
-          <Image source={{uri: 'ic_refresh_white_36dp'}} style={styles.icon} />
+        {this.props.isShellApp
+          ? null
+          : <TouchableOpacity
+              onPress={() => ExponentKernel.goToHomeFromErrorScreen()}>
+              <Image
+                source={{ uri: 'ic_home_white_36dp' }}
+                style={styles.icon}
+              />
+            </TouchableOpacity>}
+        <TouchableOpacity
+          onPress={() => ExponentKernel.reloadFromErrorScreen()}>
+          <Image
+            source={{ uri: 'ic_refresh_white_36dp' }}
+            style={styles.icon}
+          />
         </TouchableOpacity>
       </View>
     );

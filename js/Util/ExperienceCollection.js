@@ -7,14 +7,9 @@
 'use strict';
 
 import React, { PropTypes } from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-} from 'react-native';
-import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
+import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
+import TouchableNativeFeedbackSafe
+  from '@expo/react-native-touchable-native-feedback-safe';
 
 import take from 'lodash/take';
 
@@ -66,16 +61,28 @@ export default class ExperienceCollection extends React.Component {
   _renderExperiences(experiences) {
     return experiences.map((experience, index) => {
       let isFirst = index === 0;
-      let ref = (isFirst && this.props.firstExperienceRef) ? this.props.firstExperienceRef : null;
+      let ref = isFirst && this.props.firstExperienceRef
+        ? this.props.firstExperienceRef
+        : null;
       let truncatedName = experience.manifest.name;
       if (truncatedName.length > EXPERIENCE_MAX_TITLE_LENGTH_FULL_WIDTH) {
         truncatedName = `${truncatedName.substring(0, EXPERIENCE_MAX_TITLE_LENGTH_FULL_WIDTH - 3)}...`;
       }
 
       if (this.props.headingLabel === 'Featured') {
-        return this._renderFeaturedExperience(experience, ref, truncatedName, isFirst);
+        return this._renderFeaturedExperience(
+          experience,
+          ref,
+          truncatedName,
+          isFirst
+        );
       } else {
-        return this._renderRecentExperience(experience, ref, truncatedName, isFirst);
+        return this._renderRecentExperience(
+          experience,
+          ref,
+          truncatedName,
+          isFirst
+        );
       }
     });
   }
@@ -87,16 +94,20 @@ export default class ExperienceCollection extends React.Component {
     return (
       <TouchableNativeFeedbackSafe
         key={experience.url}
-        background={TouchableNativeFeedbackSafe.Ripple(
-          '#e3e3e3',
-          false,
-        )}
+        background={TouchableNativeFeedbackSafe.Ripple('#e3e3e3', false)}
         onPress={() => this._onPressItem(experience)}
-        style={[styles.experienceFullWidthContainer, isFirst ? {paddingTop: 15} : {}]}>
-        <View style={[styles.experienceIconContainer, styles.fullWidthIconContainer]}>
+        style={[
+          styles.experienceFullWidthContainer,
+          isFirst ? { paddingTop: 15 } : {},
+        ]}>
+        <View
+          style={[
+            styles.experienceIconContainer,
+            styles.fullWidthIconContainer,
+          ]}>
           <Image
             ref={ref}
-            source={{uri: experience.manifest.iconUrl}}
+            source={{ uri: experience.manifest.iconUrl }}
             style={styles.fullWidthIcon}
           />
         </View>
@@ -113,23 +124,29 @@ export default class ExperienceCollection extends React.Component {
     return (
       <TouchableNativeFeedbackSafe
         key={experience.url}
-        background={TouchableNativeFeedbackSafe.Ripple(
-          '#e3e3e3',
-          false,
-        )}
+        background={TouchableNativeFeedbackSafe.Ripple('#e3e3e3', false)}
         onPress={() => this._onPressItem(experience)}
-        style={[styles.experienceFullWidthContainer, isFirst ? {paddingTop: 15} : {}]}>
-        <View style={[styles.experienceIconContainer, styles.fullWidthIconContainer]}>
+        style={[
+          styles.experienceFullWidthContainer,
+          isFirst ? { paddingTop: 15 } : {},
+        ]}>
+        <View
+          style={[
+            styles.experienceIconContainer,
+            styles.fullWidthIconContainer,
+          ]}>
           <Image
             ref={ref}
-            source={{uri: experience.manifest.iconUrl}}
+            source={{ uri: experience.manifest.iconUrl }}
             style={styles.fullWidthIcon}
           />
         </View>
 
         <View style={styles.fullWidthMeta}>
           <Text style={styles.fullWidthTitle}>{title}</Text>
-          <Text style={styles.fullWidthDescription}>{experience.manifest.desc}</Text>
+          <Text style={styles.fullWidthDescription}>
+            {experience.manifest.desc}
+          </Text>
         </View>
       </TouchableNativeFeedbackSafe>
     );
@@ -139,13 +156,13 @@ export default class ExperienceCollection extends React.Component {
     if (this.props.onPressHeading) {
       this.props.onPressHeading();
     }
-  }
+  };
 
-  _onPressItem = (experience) => {
+  _onPressItem = experience => {
     if (this.props.onPressItem) {
       this.props.onPressItem(experience);
     }
-  }
+  };
 }
 
 let styles = StyleSheet.create({

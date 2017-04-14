@@ -13,7 +13,8 @@
 
 var BatchedBridge = require('BatchedBridge');
 var React = require('React');
-var RecordingModule = require('NativeModules').SwipeRefreshLayoutRecordingModule;
+var RecordingModule = require('NativeModules')
+  .SwipeRefreshLayoutRecordingModule;
 var ScrollView = require('ScrollView');
 var RefreshControl = require('RefreshControl');
 var Text = require('Text');
@@ -38,7 +39,7 @@ class Row extends React.Component {
   }
 
   _onPress = () => {
-    this.setState({clicks: this.state.clicks + 1});
+    this.setState({ clicks: this.state.clicks + 1 });
   };
 }
 
@@ -60,10 +61,10 @@ class SwipeRefreshLayoutTestApp extends React.Component {
     }
     return (
       <ScrollView
-        style={{flex: 1}}
+        style={{ flex: 1 }}
         refreshControl={
           <RefreshControl
-            style={{flex: 1}}
+            style={{ flex: 1 }}
             refreshing={false}
             onRefresh={() => RecordingModule.onRefresh()}
           />
@@ -78,9 +79,9 @@ var SwipeRefreshLayoutTestModule = {
   SwipeRefreshLayoutTestApp,
   setRows: function(rows) {
     if (app != null) {
-      app.setState({rows});
+      app.setState({ rows });
     }
-  }
+  },
 };
 
 BatchedBridge.registerCallableModule(

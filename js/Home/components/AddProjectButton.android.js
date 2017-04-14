@@ -43,29 +43,31 @@ export default class AddProjectButton extends React.Component {
   _handlePress = () => {
     let options = ['Scan QR Code', 'Open from Clipboard'];
     let handle = findNodeHandle(this._anchor);
-    NativeModules.UIManager.showPopupMenu(handle, options, err => {}, async (
-      action,
-      buttonIndex
-    ) => {
-      if (buttonIndex === 0) {
-        if (await requestCameraPermissionsAsync()) {
-          this.props.navigation.showModal('qrCode');
-        } else {
-          alert(
-            'In order to use the QR Code scanner you need to provide camera permissions'
-          );
-        }
-      } else if (buttonIndex === 1) {
-        let clipboardString = await Clipboard.getString();
+    NativeModules.UIManager.showPopupMenu(
+      handle,
+      options,
+      err => {},
+      async (action, buttonIndex) => {
+        if (buttonIndex === 0) {
+          if (await requestCameraPermissionsAsync()) {
+            this.props.navigation.showModal('qrCode');
+          } else {
+            alert(
+              'In order to use the QR Code scanner you need to provide camera permissions'
+            );
+          }
+        } else if (buttonIndex === 1) {
+          let clipboardString = await Clipboard.getString();
 
-        if (!clipboardString) {
-          alert('Your clipboard is empty');
-        } else {
-          let url = ExUrls.normalizeUrl(clipboardString);
-          Linking.canOpenURL(url) && Linking.openURL(url);
+          if (!clipboardString) {
+            alert('Your clipboard is empty');
+          } else {
+            let url = ExUrls.normalizeUrl(clipboardString);
+            Linking.canOpenURL(url) && Linking.openURL(url);
+          }
         }
       }
-    });
+    );
   };
 }
 

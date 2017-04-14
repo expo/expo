@@ -14,11 +14,13 @@ let originalFetch;
 beforeEach(() => {
   originalFetch = global.fetch;
   global.fetch = jest.fn();
-  global.fetch.mockReturnValue(Promise.resolve({
-    async text() {
-      return '{}';
-    },
-  }));
+  global.fetch.mockReturnValue(
+    Promise.resolve({
+      async text() {
+        return '{}';
+      },
+    })
+  );
 });
 
 afterEach(() => {
@@ -30,10 +32,7 @@ it(`supports GET requests`, async () => {
   _setFakeHttpResponse('{"data": {"test":"yes"}}');
 
   let client = new ApiV2HttpClient();
-  let response = await client.getAsync(
-    'example',
-    { a: 1, b: true, c: 'hi' },
-  );
+  let response = await client.getAsync('example', { a: 1, b: true, c: 'hi' });
   expect(response).toEqual({ test: 'yes' });
   expect(global.fetch.mock.calls.length).toBe(1);
   expect(global.fetch.mock.calls[0][0]).toMatchSnapshot();
@@ -45,16 +44,20 @@ it(`supports POST requests`, async () => {
   _setFakeHttpResponse('{"data": {"test":"yes"}}');
 
   let client = new ApiV2HttpClient();
-  let response = await client.postAsync(
-    'example',
-    { a: 1, b: true, c: 'hi', d: ['list'], e: { nested: true } },
-  );
+  let response = await client.postAsync('example', {
+    a: 1,
+    b: true,
+    c: 'hi',
+    d: ['list'],
+    e: { nested: true },
+  });
   expect(response).toEqual({ test: 'yes' });
   expect(global.fetch.mock.calls.length).toBe(1);
   expect(global.fetch.mock.calls[0][0]).toMatchSnapshot();
   expect(global.fetch.mock.calls[0][1].method).toBe('post');
-  expect(global.fetch.mock.calls[0][1].headers['Content-Type'])
-    .toBe('application/json');
+  expect(global.fetch.mock.calls[0][1].headers['Content-Type']).toBe(
+    'application/json'
+  );
   expect(global.fetch.mock.calls[0][1].body).toMatchSnapshot();
 });
 
@@ -77,7 +80,9 @@ it(`sets custom Exponent headers`, async () => {
 });
 
 it(`handles API errors`, async () => {
-  _setFakeHttpResponse('{"errors": [{"message":"Intentional","code":"TEST_CODE"}]}');
+  _setFakeHttpResponse(
+    '{"errors": [{"message":"Intentional","code":"TEST_CODE"}]}'
+  );
 
   let client = new ApiV2HttpClient();
   try {
@@ -105,9 +110,11 @@ it(`handles malformed responses`, async () => {
 });
 
 function _setFakeHttpResponse(responseText) {
-  global.fetch.mockReturnValueOnce(Promise.resolve({
-    async text() {
-      return responseText;
-    },
-  }));
+  global.fetch.mockReturnValueOnce(
+    Promise.resolve({
+      async text() {
+        return responseText;
+      },
+    })
+  );
 }

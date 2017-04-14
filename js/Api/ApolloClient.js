@@ -46,7 +46,7 @@ async function refreshIdTokenAsync() {
 }
 
 export default new ApolloClient({
-  dataIdFromObject: (result) => {
+  dataIdFromObject: result => {
     if (result.id && result.__typename) {
       return result.__typename + result.id;
     }

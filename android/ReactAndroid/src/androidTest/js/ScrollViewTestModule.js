@@ -41,7 +41,7 @@ class Item extends React.Component {
 var getInitialState = function() {
   var data = [];
   for (var i = 0; i < NUM_ITEMS; i++) {
-    data[i] = {text: 'Item ' + i + '!'};
+    data[i] = { text: 'Item ' + i + '!' };
   }
   return {
     data: data,
@@ -49,15 +49,24 @@ var getInitialState = function() {
 };
 
 var onScroll = function(e) {
-  ScrollListener.onScroll(e.nativeEvent.contentOffset.x, e.nativeEvent.contentOffset.y);
+  ScrollListener.onScroll(
+    e.nativeEvent.contentOffset.x,
+    e.nativeEvent.contentOffset.y
+  );
 };
 
 var onScrollBeginDrag = function(e) {
-  ScrollListener.onScrollBeginDrag(e.nativeEvent.contentOffset.x, e.nativeEvent.contentOffset.y);
+  ScrollListener.onScrollBeginDrag(
+    e.nativeEvent.contentOffset.x,
+    e.nativeEvent.contentOffset.y
+  );
 };
 
 var onScrollEndDrag = function(e) {
-  ScrollListener.onScrollEndDrag(e.nativeEvent.contentOffset.x, e.nativeEvent.contentOffset.y);
+  ScrollListener.onScrollEndDrag(
+    e.nativeEvent.contentOffset.x,
+    e.nativeEvent.contentOffset.y
+  );
 };
 
 var onItemPress = function(itemNumber) {
@@ -79,11 +88,17 @@ var ScrollViewTestApp = React.createClass({
     scrollViewApp = this;
     var children = this.state.data.map((item, index) => (
       <Item
-        key={index} text={item.text}
-        onPress={this.onItemPress.bind(this, index)} />
+        key={index}
+        text={item.text}
+        onPress={this.onItemPress.bind(this, index)}
+      />
     ));
     return (
-      <ScrollView onScroll={this.onScroll} onScrollBeginDrag={this.onScrollBeginDrag} onScrollEndDrag={this.onScrollEndDrag} ref="scrollView">
+      <ScrollView
+        onScroll={this.onScroll}
+        onScrollBeginDrag={this.onScrollBeginDrag}
+        onScrollEndDrag={this.onScrollEndDrag}
+        ref="scrollView">
         {children}
       </ScrollView>
     );
@@ -103,8 +118,10 @@ var HorizontalScrollViewTestApp = React.createClass({
     scrollViewApp = this;
     var children = this.state.data.map((item, index) => (
       <Item
-        key={index} text={item.text}
-        onPress={this.onItemPress.bind(this, index)} />
+        key={index}
+        text={item.text}
+        onPress={this.onItemPress.bind(this, index)}
+      />
     ));
     return (
       <ScrollView horizontal={true} onScroll={this.onScroll} ref="scrollView">

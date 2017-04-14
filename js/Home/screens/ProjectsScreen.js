@@ -154,7 +154,7 @@ export default class HomeScreen extends React.Component {
     return (
       <View style={{ marginBottom: 10 }}>
         <View style={SharedStyles.sectionLabelContainer}>
-          <DevIndicator style={{ marginRight: 7 }}/>
+          <DevIndicator style={{ marginRight: 7 }} />
           <Text style={SharedStyles.sectionLabelText}>IN DEVELOPMENT</Text>
         </View>
 

@@ -8,7 +8,10 @@ const fs = require('fs');
 
 exports.startReactNativeServer = function startReactNativeServer(callback) {
   let rootPath = path.join(__dirname, '..');
-  let reactNativePath = path.join(rootPath, '../react-native-lab/react-native/');
+  let reactNativePath = path.join(
+    rootPath,
+    '../react-native-lab/react-native/'
+  );
   let isInUniverse = true;
   try {
     if (!fs.statSync(reactNativePath).isDirectory()) {
@@ -26,18 +29,25 @@ exports.startReactNativeServer = function startReactNativeServer(callback) {
 
   let exponentPath = rootPath;
   let exponentReactPath = path.join(exponentPath, 'js');
-  let exponentAssetsPath = path.join(exponentPath, 'ios/Exponent/Images.xcassets');
+  let exponentAssetsPath = path.join(
+    exponentPath,
+    'ios/Exponent/Images.xcassets'
+  );
   let exponentConfigPath = path.join(exponentReactPath, 'rn-cli.config.js');
 
   let serverArgs = [
     'start',
-//    '--root', exponentReactPath,
-//    '--assetRoots', exponentAssetsPath,
-    '--config', exponentConfigPath,
+    //    '--root', exponentReactPath,
+    //    '--assetRoots', exponentAssetsPath,
+    '--config',
+    exponentConfigPath,
     // '--reset-cache',
   ];
   if (isInUniverse) {
-    let exponentTransformerPath = path.join(rootPath, '../react-native-lab/transformer.js');
+    let exponentTransformerPath = path.join(
+      rootPath,
+      '../react-native-lab/transformer.js'
+    );
     serverArgs.push('--transformer', exponentTransformerPath);
   }
 
@@ -58,8 +68,12 @@ exports.startReactNativeServer = function startReactNativeServer(callback) {
     if (code === 0) {
       callback(null, code);
     } else {
-      let message = util.format('React Native server exited with code %d (%s)', code, signal);
+      let message = util.format(
+        'React Native server exited with code %d (%s)',
+        code,
+        signal
+      );
       callback(new Error(message));
     }
   });
-}
+};

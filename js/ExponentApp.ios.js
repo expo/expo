@@ -7,10 +7,7 @@
 'use strict';
 
 import React, { PropTypes } from 'react';
-import {
-  DeviceEventEmitter,
-  Linking,
-} from 'react-native';
+import { DeviceEventEmitter, Linking } from 'react-native';
 
 import Browser from 'Browser';
 import BrowserActions from 'BrowserActions';
@@ -22,24 +19,32 @@ class ExponentApp extends React.Component {
   static propTypes = {
     shell: PropTypes.bool,
     shellManifestUrl: PropTypes.string,
-  }
+  };
 
   render() {
-    return (
-      <KernelNavigator />
-    );
+    return <KernelNavigator />;
   }
 
   constructor(props, context) {
     super(props, context);
     if (props.shell) {
-      ExStore.dispatch(BrowserActions.setShellPropertiesAsync(props.shell, props.shellManifestUrl));
+      ExStore.dispatch(
+        BrowserActions.setShellPropertiesAsync(
+          props.shell,
+          props.shellManifestUrl
+        )
+      );
     }
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.shell !== this.props.shell) {
-      ExStore.dispatch(BrowserActions.setShellPropertiesAsync(nextProps.shell, nextProps.shellManifestUrl));
+      ExStore.dispatch(
+        BrowserActions.setShellPropertiesAsync(
+          nextProps.shell,
+          nextProps.shellManifestUrl
+        )
+      );
     }
   }
 
@@ -51,7 +56,10 @@ class ExponentApp extends React.Component {
     }
 
     Linking.addEventListener('url', this._handleUrl);
-    DeviceEventEmitter.addListener('Exponent.notification', this._handleNotification);
+    DeviceEventEmitter.addListener(
+      'Exponent.notification',
+      this._handleNotification
+    );
     DeviceEventEmitter.addListener('ExponentKernel.refresh', Browser.refresh);
     requestAnimationFrame(async () => {
       let initialUrl = await Linking.getInitialURL();
@@ -73,19 +81,24 @@ class ExponentApp extends React.Component {
     Linking.removeEventListener('url', this._handleUrl);
   }
 
-  _handleUrl = (event) => {
+  _handleUrl = event => {
     let targetUrl = event.url;
 
     // don't compare to old url and refresh, because the manifest at this url may have changed
     ExStore.dispatch(BrowserActions.setKernelLoadingState(true));
     ExStore.dispatch(BrowserActions.navigateToUrlAsync(targetUrl));
-  }
+  };
 
-  _handleNotification = (event) => {
+  _handleNotification = event => {
     let { body, experienceId } = event;
     ExStore.dispatch(BrowserActions.setKernelLoadingState(true));
-    ExStore.dispatch(BrowserActions.navigateToExperienceIdWithNotificationAsync(experienceId, body));
-  }
+    ExStore.dispatch(
+      BrowserActions.navigateToExperienceIdWithNotificationAsync(
+        experienceId,
+        body
+      )
+    );
+  };
 }
 
 export default ExponentApp;

@@ -6,9 +6,7 @@
  */
 'use strict';
 
-import {
-  Dimensions,
-} from 'react-native';
+import { Dimensions } from 'react-native';
 
 import ExColors from 'ExColors';
 

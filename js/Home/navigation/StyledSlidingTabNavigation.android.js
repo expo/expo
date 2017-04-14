@@ -43,7 +43,7 @@ export default class StyledSlidingTabNavigation extends React.Component {
 
     const inputRange = props.navigationState.routes.map((x, i) => i);
     const outputRange = inputRange.map(
-      inputIndex => inputIndex === index ? selectedColor : unselectedColor,
+      inputIndex => (inputIndex === index ? selectedColor : unselectedColor)
     );
     color = props.position.interpolate({
       inputRange,

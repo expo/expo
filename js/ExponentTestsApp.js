@@ -4,10 +4,7 @@
  * @providesModule ExponentTestsApp
  */
 import React from 'react';
-import {
-  AppRegistry,
-  View,
-} from 'react-native';
+import { AppRegistry, View } from 'react-native';
 
 import FrameTests from 'FrameTests';
 AppRegistry.registerComponent('FrameTests', () => FrameTests);

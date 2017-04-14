@@ -40,12 +40,9 @@ export default class GlobalLoadingOverlay extends React.Component {
 
   _initializeWarningTimer = () => {
     this._loadingStartDate = new Date();
-    this._warningTimer = setTimeout(
-      () => {
-        this.setState({ loadingIsSlow: true });
-      },
-      LoadingWarningDelayMs
-    );
+    this._warningTimer = setTimeout(() => {
+      this.setState({ loadingIsSlow: true });
+    }, LoadingWarningDelayMs);
   };
 
   _clearWarningTimer = () => {
@@ -60,10 +57,7 @@ export default class GlobalLoadingOverlay extends React.Component {
     }
 
     return (
-      <Expo.BlurView
-        tint="default"
-        intensity={100}
-        style={styles.container}>
+      <Expo.BlurView tint="default" intensity={100} style={styles.container}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator color={Colors.blackText} size="small" />
           <Text style={[styles.loadingText, { color: Colors.blackText }]}>

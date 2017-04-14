@@ -16,14 +16,7 @@ import Colors from '../constants/Colors';
 
 export default class PrimaryButton extends React.Component {
   render() {
-    let {
-      children,
-      isLoading,
-      plain,
-      style,
-      textStyle,
-      ...props
-    } = this.props;
+    let { children, isLoading, plain, style, textStyle, ...props } = this.props;
 
     return (
       <TouchableNativeFeedback

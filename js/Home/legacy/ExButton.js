@@ -133,7 +133,7 @@ class ExButton extends React.Component {
         [null, { dx: position.x, dy: position.y }],
         {
           listener: this._handlePanResponderMove,
-        },
+        }
       ),
       onPanResponderRelease: this._handlePanResponderRelease,
       onPanResponderTerminate: this._handlePanResponderRelease,
@@ -148,31 +148,24 @@ class ExButton extends React.Component {
   }
 
   componentDidMount() {
-    this.setTimeout(
-      () => {
-        this._becomeInactiveSoon();
-      },
-      this.props.msUntilInactiveOnMount,
-    );
+    this.setTimeout(() => {
+      this._becomeInactiveSoon();
+    }, this.props.msUntilInactiveOnMount);
   }
 
   componentWillReceiveProps(nextProps) {
     if (this.props.isVisible && !nextProps.isVisible) {
-      Animated
-        .timing(this.state.scale, {
-          toValue: 0,
-          duration: 250,
-          easing: Easing.inOut(Easing.linear),
-        })
-        .start();
+      Animated.timing(this.state.scale, {
+        toValue: 0,
+        duration: 250,
+        easing: Easing.inOut(Easing.linear),
+      }).start();
     } else if (!this.props.isVisible && nextProps.isVisible) {
-      Animated
-        .timing(this.state.scale, {
-          toValue: 1,
-          duration: 250,
-          easing: Easing.inOut(Easing.linear),
-        })
-        .start();
+      Animated.timing(this.state.scale, {
+        toValue: 1,
+        duration: 250,
+        easing: Easing.inOut(Easing.linear),
+      }).start();
     }
   }
 
@@ -238,30 +231,23 @@ class ExButton extends React.Component {
   _interactionHasStarted() {
     this.clearTimeout(this._inactiveWait);
 
-    Animated
-      .timing(this.state.active, {
-        easing: Easing.inOut(Easing.linear),
-        toValue: 1,
-        duration: 200,
-      })
-      .start();
+    Animated.timing(this.state.active, {
+      easing: Easing.inOut(Easing.linear),
+      toValue: 1,
+      duration: 200,
+    }).start();
   }
 
   _becomeInactiveSoon() {
     this.clearTimeout(this._inactiveWait);
 
-    this._inactiveWait = this.setTimeout(
-      () => {
-        Animated
-          .timing(this.state.active, {
-            easing: Easing.out(Easing.quad),
-            toValue: 0,
-            duration: 300,
-          })
-          .start();
-      },
-      this.props.msUntilInactiveOnInteraction,
-    );
+    this._inactiveWait = this.setTimeout(() => {
+      Animated.timing(this.state.active, {
+        easing: Easing.out(Easing.quad),
+        toValue: 0,
+        duration: 300,
+      }).start();
+    }, this.props.msUntilInactiveOnInteraction);
   }
 
   @autobind _handlePanResponderGrant(event, gestureState) {
@@ -280,8 +266,7 @@ class ExButton extends React.Component {
     Animated.spring(this.state.scale, { toValue: 0.9 }).start();
   }
 
-  @autobind _handlePanResponderMove(event, { dx, dy }) {
-  }
+  @autobind _handlePanResponderMove(event, { dx, dy }) {}
 
   @autobind _handlePanResponderRelease(event, gestureState) {
     let { dx, dy, vx, vy } = gestureState;
@@ -312,7 +297,7 @@ class ExButton extends React.Component {
     let currentX = position.x.__getValue();
     let targetX;
     if (
-      currentX >= ScreenCenter && vx > -velocityThreshold ||
+      (currentX >= ScreenCenter && vx > -velocityThreshold) ||
       vx >= velocityThreshold
     ) {
       targetX = RightDock;
@@ -341,20 +326,18 @@ class ExButton extends React.Component {
       speed: this.props.speed,
     };
 
-    Animated
-      .parallel([
-        Animated.spring(position.x, {
-          toValue: targetX - BubbleHitTestSlop,
-          ...springConfig,
-          velocity: gestureState.vx * velocityMultiplier,
-        }),
-        Animated.spring(position.y, {
-          toValue: targetY - BubbleHitTestSlop,
-          ...springConfig,
-          velocity: vy * velocityMultiplier * extraVelocityMultiplierY,
-        }),
-      ])
-      .start();
+    Animated.parallel([
+      Animated.spring(position.x, {
+        toValue: targetX - BubbleHitTestSlop,
+        ...springConfig,
+        velocity: gestureState.vx * velocityMultiplier,
+      }),
+      Animated.spring(position.y, {
+        toValue: targetY - BubbleHitTestSlop,
+        ...springConfig,
+        velocity: vy * velocityMultiplier * extraVelocityMultiplierY,
+      }),
+    ]).start();
   }
 }
 

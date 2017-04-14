@@ -15,5 +15,5 @@ export default createRouter(
     projectsForUser: () => require('../screens/ProjectsForUserScreen').default,
     rootNavigation: () => require('./RootNavigation').default,
   }),
-  { ignoreSerializableWarnings: true },
+  { ignoreSerializableWarnings: true }
 );

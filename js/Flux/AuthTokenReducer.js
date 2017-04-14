@@ -17,16 +17,20 @@ const AuthTokenState = Record({
   accessToken: null,
 });
 
-export default Flux.createReducer(new AuthTokenState(), {
-  [AuthTokenActionTypes.setAuthTokens](state, action) {
-    return new AuthTokenState(action.payload);
-  },
+export default Flux.createReducer(
+  new AuthTokenState(),
+  {
+    [AuthTokenActionTypes.setAuthTokens](state, action) {
+      return new AuthTokenState(action.payload);
+    },
 
-  [AuthTokenActionTypes.updateIdToken](state, action) {
-    return state.set('idToken', action.payload.idToken);
-  },
+    [AuthTokenActionTypes.updateIdToken](state, action) {
+      return state.set('idToken', action.payload.idToken);
+    },
 
-  [AuthTokenActionTypes.signOut](state, action) {
-    return new AuthTokenState();
+    [AuthTokenActionTypes.signOut](state, action) {
+      return new AuthTokenState();
+    },
   },
-}, 'authTokensReducer');
+  'authTokensReducer'
+);

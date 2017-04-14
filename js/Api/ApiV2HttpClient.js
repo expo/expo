@@ -4,18 +4,13 @@
  */
 'use strict';
 
-import {
-  NativeModules,
-  Platform,
-} from 'react-native';
+import { NativeModules, Platform } from 'react-native';
 import querystring from 'querystring';
 
 import ApiV2Error from 'ApiV2Error';
 import Config from 'Config';
 
-const {
-  ExponentKernel,
-} = NativeModules;
+const { ExponentKernel } = NativeModules;
 
 type RequestOptions = {
   httpMethod: 'get' | 'post',
@@ -23,7 +18,7 @@ type RequestOptions = {
   body?: ?Object,
 };
 
-type QueryParameters = {[key: string]: ?(string | number | boolean)};
+type QueryParameters = { [key: string]: ?(string | number | boolean) };
 
 export default class ApiV2HttpClient {
   async getAsync(methodName: string, args: ?QueryParameters): Promise<*> {

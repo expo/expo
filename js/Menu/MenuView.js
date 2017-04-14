@@ -22,9 +22,7 @@ import {
   View,
 } from 'react-native';
 
-let {
-  ExponentKernel,
-} = NativeModules;
+let { ExponentKernel } = NativeModules;
 
 import Expo, { Constants } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
@@ -63,11 +61,12 @@ export default class MenuView extends React.Component {
     this._mounted = true;
     if (this.props.shouldFadeIn) {
       requestAnimationFrame(() => {
-        this._mounted && Animated.timing(this.state.transitionIn, {
-          easing: Easing.inOut(Easing.quad),
-          toValue: 1,
-          duration: 100,
-        }).start();
+        this._mounted &&
+          Animated.timing(this.state.transitionIn, {
+            easing: Easing.inOut(Easing.quad),
+            toValue: 1,
+            duration: 100,
+          }).start();
       });
     }
     this.forceStatusBarUpdateAsync();
@@ -85,7 +84,8 @@ export default class MenuView extends React.Component {
 
   forceStatusBarUpdateAsync = async () => {
     if (NativeModules.StatusBarManager._captureProperties) {
-      this._statusBarValuesToRestore = await NativeModules.StatusBarManager._captureProperties();
+      this
+        ._statusBarValuesToRestore = await NativeModules.StatusBarManager._captureProperties();
       // HACK: StatusBar only updates changed props.
       // because MenuView typically lives under a different RN bridge, its stack of StatusBar
       // props does not necessarily reflect what the user is seeing.
@@ -254,7 +254,8 @@ export default class MenuView extends React.Component {
 
   _maybeRenderDevServerName() {
     let { task } = this.props;
-    let devServerName = task.manifest && task.manifest.getIn(['developer', 'tool']);
+    let devServerName =
+      task.manifest && task.manifest.getIn(['developer', 'tool']);
     if (devServerName) {
       // XDE is upper
       if (devServerName === 'xde') {

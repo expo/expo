@@ -24,9 +24,7 @@ import requestCameraPermissionsAsync
 @withNavigation
 export default class QRCodeButton extends React.Component {
   render() {
-    let {
-      fullWidthBorder,
-    } = this.props;
+    let { fullWidthBorder } = this.props;
 
     return (
       <TouchableNativeFeedbackSafe

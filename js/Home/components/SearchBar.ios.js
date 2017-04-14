@@ -20,8 +20,8 @@ import Layout from '../constants/Layout';
 const { ExponentKernel } = NativeModules;
 
 const SearchContainerHorizontalMargin = 10;
-const SearchContainerWidth = Layout.window.width -
-  SearchContainerHorizontalMargin * 2;
+const SearchContainerWidth =
+  Layout.window.width - SearchContainerHorizontalMargin * 2;
 
 const SearchIcon = () => (
   <View style={styles.searchIconContainer}>

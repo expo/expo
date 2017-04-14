@@ -7,11 +7,7 @@
 
 import Expo from 'expo';
 import React from 'react';
-import {
-  AppRegistry,
-  DeviceEventEmitter,
-  NativeModules,
-} from 'react-native';
+import { AppRegistry, DeviceEventEmitter, NativeModules } from 'react-native';
 import { ApolloProvider } from 'react-apollo';
 
 // This has to be first.
@@ -68,19 +64,27 @@ class ExperienceNuxAppWithStore extends React.Component {
   }
 }
 
-DeviceEventEmitter.addListener('ExponentKernel.addError', async (event) => {
+DeviceEventEmitter.addListener('ExponentKernel.addError', async event => {
   let { errorMessage, stack, exceptionId, isFatal } = event;
 
   errorMessage = errorMessage || 'Unknown error occurred';
   stack = stack || [];
-  let action = ConsoleActions.logUncaughtError(exceptionId, errorMessage, stack, isFatal);
+  let action = ConsoleActions.logUncaughtError(
+    exceptionId,
+    errorMessage,
+    stack,
+    isFatal
+  );
   ExStore.dispatch(action);
 });
 
 Expo.registerRootComponent(App);
 AppRegistry.registerComponent('ErrorScreenApp', () => ErrorScreenAppWithStore);
 AppRegistry.registerComponent('InfoScreenApp', () => InfoScreenApp);
-AppRegistry.registerComponent('ExperienceNuxApp', () => ExperienceNuxAppWithStore);
+AppRegistry.registerComponent(
+  'ExperienceNuxApp',
+  () => ExperienceNuxAppWithStore
+);
 if (JSCExecutor) {
   JSCExecutor.setContextName('Exponent');
 }

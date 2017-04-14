@@ -12,7 +12,11 @@ const { IosShellApp } = require('xdl');
 
 const { createAndroidShellAppAsync } = require('./android-shell-app');
 const { startReactNativeServer } = require('./react-native-tasks');
-const { generateDynamicMacrosAsync, cleanupDynamicMacrosAsync, runFabricIOSAsync } = require('./generate-dynamic-macros');
+const {
+  generateDynamicMacrosAsync,
+  cleanupDynamicMacrosAsync,
+  runFabricIOSAsync,
+} = require('./generate-dynamic-macros');
 
 const { createIOSShellAppAsync } = IosShellApp;
 
@@ -37,7 +41,9 @@ function pathsFromProjectsFile(projectsFile) {
 
 function generateDynamicMacrosWithArguments() {
   if (!argv.buildConstantsPath) {
-    throw new Error('Must run with `--buildConstantsPath BUILD_CONSTANTS_PATH`');
+    throw new Error(
+      'Must run with `--buildConstantsPath BUILD_CONSTANTS_PATH`'
+    );
   }
 
   if (!argv.platform) {

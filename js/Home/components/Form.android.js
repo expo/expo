@@ -37,13 +37,7 @@ export class FormInput extends React.Component {
   }
 
   render() {
-    let {
-      label,
-      autofocus,
-      hideBottomBorder,
-      style,
-      ...props
-    } = this.props;
+    let { label, autofocus, hideBottomBorder, style, ...props } = this.props;
 
     return (
       <View style={styles.inputContainer}>

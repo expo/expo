@@ -19,7 +19,7 @@ var View = require('View');
 
 class DatePickerDialogTestApp extends React.Component {
   render() {
-    return (<View />);
+    return <View />;
   }
 }
 
@@ -27,14 +27,14 @@ var DatePickerDialogTestModule = {
   DatePickerDialogTestApp: DatePickerDialogTestApp,
   showDatePickerDialog: function(options) {
     DatePickerAndroid.open(options).then(
-      ({action, year, month, day}) => {
+      ({ action, year, month, day }) => {
         if (action === DatePickerAndroid.dateSetAction) {
           RecordingModule.recordDate(year, month, day);
         } else if (action === DatePickerAndroid.dismissedAction) {
           RecordingModule.recordDismissed();
         }
       },
-      ({code, message}) => RecordingModule.recordError()
+      ({ code, message }) => RecordingModule.recordError()
     );
   },
 };

@@ -17,10 +17,7 @@ import ReactNative, {
 
 import ExponentKernel from 'ExponentKernel';
 
-const {
-  EXFrameManager,
-  UIManager,
-} = NativeModules;
+const { EXFrameManager, UIManager } = NativeModules;
 
 export default class Frame extends React.Component {
   static propTypes = {
@@ -54,7 +51,7 @@ export default class Frame extends React.Component {
      * Initial props to pass to the root component of the Frame's experience.
      * These will all be under the `exp` property.
      */
-     initialProps: PropTypes.object,
+    initialProps: PropTypes.object,
     /**
      * Event handler that is invoked when the frame begins loading its source
      * code.
@@ -86,7 +83,7 @@ export default class Frame extends React.Component {
       UIManager.dispatchViewManagerCommand(
         ReactNative.findNodeHandle(this._frame),
         UIManager.EXFrame.Commands.reload,
-        [],
+        []
       );
     } else {
       EXFrameManager.reload(ReactNative.findNodeHandle(this._frame));
@@ -97,7 +94,9 @@ export default class Frame extends React.Component {
     return (
       <ExFrame
         {...this.props}
-        ref={component => { this._frame = component; }}
+        ref={component => {
+          this._frame = component;
+        }}
         style={[styles.frame, this.props.style]}
       />
     );

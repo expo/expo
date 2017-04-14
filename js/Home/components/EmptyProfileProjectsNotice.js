@@ -39,7 +39,7 @@ export default class EmptyProfileProjectsNotice extends React.Component {
 
   _handleLearnMorePress = () => {
     WebBrowser.openBrowserAsync(
-      'https://blog.getexponent.com/publishing-on-exponent-790493660d24',
+      'https://blog.getexponent.com/publishing-on-exponent-790493660d24'
     );
   };
 }

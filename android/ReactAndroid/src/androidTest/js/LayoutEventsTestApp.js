@@ -17,14 +17,13 @@ var View = require('View');
 var RecordingModule = require('NativeModules').Recording;
 
 const LAYOUT_SPECS = [
- [10, 10, 100, 100],
- [10, 10, 50, 50],
- [0, 0, 50, 50],
- [0, 0, 50, 50],
+  [10, 10, 100, 100],
+  [10, 10, 50, 50],
+  [0, 0, 50, 50],
+  [0, 0, 50, 50],
 ];
 
 class LayoutEventsTestApp extends React.Component {
-
   constructor() {
     super();
     this.state = {
@@ -33,9 +32,11 @@ class LayoutEventsTestApp extends React.Component {
     this.numParentLayouts = 0;
   }
 
-  handleOnLayout = (e) => {
+  handleOnLayout = e => {
     var layout = e.nativeEvent.layout;
-    RecordingModule.record(layout.x + ',' + layout.y + '-' + layout.width + 'x' + layout.height);
+    RecordingModule.record(
+      layout.x + ',' + layout.y + '-' + layout.width + 'x' + layout.height
+    );
 
     if (this.state.specNumber >= LAYOUT_SPECS.length) {
       // This will cause the test to fail
@@ -47,7 +48,7 @@ class LayoutEventsTestApp extends React.Component {
     }
   };
 
-  handleParentOnLayout = (e) => {
+  handleParentOnLayout = e => {
     if (this.numParentLayouts > 0) {
       // This will cause the test to fail - the parent's layout doesn't change
       // so we should only get the event once.
@@ -60,13 +61,19 @@ class LayoutEventsTestApp extends React.Component {
     const layout = LAYOUT_SPECS[this.state.specNumber];
     return (
       <View
-          onLayout={this.handleParentOnLayout}
-          testID="parent"
-          style={{left: 0, top: 0, width: 500, height: 500}}>
+        onLayout={this.handleParentOnLayout}
+        testID="parent"
+        style={{ left: 0, top: 0, width: 500, height: 500 }}>
         <View
-            onLayout={this.handleOnLayout}
-            testID="container"
-            style={{left: layout[0], top: layout[1], width: layout[2], height: layout[3]}}/>
+          onLayout={this.handleOnLayout}
+          testID="container"
+          style={{
+            left: layout[0],
+            top: layout[1],
+            width: layout[2],
+            height: layout[3],
+          }}
+        />
       </View>
     );
   }

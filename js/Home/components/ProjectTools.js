@@ -44,10 +44,7 @@ export default class ProjectTools extends React.Component {
   }
 
   render() {
-    let {
-      clipboardContents,
-      displayOpenClipboardButton,
-    } = this.state;
+    let { clipboardContents, displayOpenClipboardButton } = this.state;
 
     return (
       <View style={{ marginBottom: 15 }}>

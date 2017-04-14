@@ -11,8 +11,6 @@ import NuxContextualMenuOverlay from 'NuxContextualMenuOverlay';
 
 export default class ExperienceNuxApp extends React.Component {
   render() {
-    return (
-      <NuxContextualMenuOverlay />
-    );
+    return <NuxContextualMenuOverlay />;
   }
 }

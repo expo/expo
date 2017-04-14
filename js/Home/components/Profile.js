@@ -118,14 +118,11 @@ export default class Profile extends React.Component {
       // Add a slight delay so it doesn't just disappear immediately,
       // this actually looks nicer because you might think that it
       // didn't work if it disappears too quickly
-      setTimeout(
-        () => {
-          if (this._isMounted) {
-            this.setState({ isRefetching: false });
-          }
-        },
-        500
-      );
+      setTimeout(() => {
+        if (this._isMounted) {
+          this.setState({ isRefetching: false });
+        }
+      }, 500);
     }
   };
 
@@ -173,12 +170,7 @@ export default class Profile extends React.Component {
       return this._renderLegacyHeader();
     }
 
-    let {
-      firstName,
-      lastName,
-      username,
-      profilePhoto,
-    } = this.props.data.user;
+    let { firstName, lastName, username, profilePhoto } = this.props.data.user;
 
     return (
       <View style={styles.header}>

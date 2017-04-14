@@ -6,13 +6,9 @@
  */
 'use strict';
 
-import {
-  NativeModules,
-} from 'react-native';
+import { NativeModules } from 'react-native';
 
-const {
-  ExponentConstants,
-} = NativeModules;
+const { ExponentConstants } = NativeModules;
 
 let ExponentKernel;
 
@@ -43,15 +39,13 @@ if (NativeModules.ExponentKernel) {
       manifest = {
         ...manifest,
         id: '@anonymous/exponent-home',
-      }
+      };
 
       return JSON.stringify(manifest);
     },
-    sdkVersions: [
-      'UNVERSIONED',
-    ],
+    sdkVersions: ['UNVERSIONED'],
     __isFake: true,
-  }
+  };
 }
 
 export default ExponentKernel;

@@ -10,8 +10,7 @@ function setReferrer(newReferrer) {
 }
 
 function getFeatured() {
-  return [
-  ];
+  return [];
 }
 
 module.exports = {

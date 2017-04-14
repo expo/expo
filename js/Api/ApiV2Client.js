@@ -16,7 +16,7 @@ export default {
       appId: string,
       deviceId: string,
       development: boolean,
-    },
+    }
   ): Promise<*> {
     let args = {
       appId: appInfo.appId,
@@ -32,7 +32,7 @@ export default {
 
   async getExponentPushTokenAsync(
     deviceId: string,
-    experienceId: string,
+    experienceId: string
   ): Promise<{ exponentPushToken: string }> {
     let args = { deviceId, experienceId };
     return _getClient().getAsync('push/getExponentPushToken', args);

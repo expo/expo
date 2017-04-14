@@ -13,7 +13,7 @@ let ExUrls = {
   normalizeUrl(rawUrl) {
     var components = url.parse(rawUrl, false, true);
     if (
-      (components.protocol === 'localhost:') ||
+      components.protocol === 'localhost:' ||
       (components.host == null && !components.protocol && !components.slashes)
     ) {
       if (components.path && components.path.charAt(0) === '@') {

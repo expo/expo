@@ -6,12 +6,7 @@
 'use strict';
 
 import React, { PropTypes } from 'react';
-import {
-  StyleSheet,
-  ScrollView,
-  Text,
-  View,
-} from 'react-native';
+import { StyleSheet, ScrollView, Text, View } from 'react-native';
 
 import BrowserActions from 'BrowserActions';
 import Button from 'react-native-button';
@@ -19,7 +14,6 @@ import ExColors from 'ExColors';
 import ExStore from 'ExStore';
 
 export default class BrowserErrorView extends React.Component {
-
   static propTypes = {
     error: PropTypes.object.isRequired,
     ...ScrollView.propTypes,
@@ -30,7 +24,9 @@ export default class BrowserErrorView extends React.Component {
     let isShowingDetails = false;
     if (props.error && props.error.manifest) {
       // if we have a manifest and it has dev=true, go ahead and show details immediately.
-      isShowingDetails = (props.error.manifest.packagerOpts && props.error.manifest.packagerOpts.dev);
+      isShowingDetails =
+        props.error.manifest.packagerOpts &&
+        props.error.manifest.packagerOpts.dev;
     }
     this.state = {
       isShowingDetails,
@@ -38,12 +34,7 @@ export default class BrowserErrorView extends React.Component {
   }
 
   render() {
-    let {
-      error,
-      style,
-      onRefresh,
-      ...props,
-    } = this.props;
+    let { error, style, onRefresh, ...props } = this.props;
 
     let detailContent, detailButton;
     if (this.state.isShowingDetails) {
@@ -59,7 +50,9 @@ export default class BrowserErrorView extends React.Component {
       );
     } else {
       detailButton = (
-        <Button onPress={() => this.setState({ isShowingDetails: true })} style={styles.detailButton}>
+        <Button
+          onPress={() => this.setState({ isShowingDetails: true })}
+          style={styles.detailButton}>
           Show Details
         </Button>
       );
@@ -108,8 +101,10 @@ export default class BrowserErrorView extends React.Component {
         return `Looks like your copy of Exponent can't run this experience. Try updating Exponent.`;
       } */
     }
-    if (error.originalUrl &&
-        error.originalUrl.indexOf('.local') !== -1 || error.originalUrl.indexOf('192.') !== -1) {
+    if (
+      (error.originalUrl && error.originalUrl.indexOf('.local') !== -1) ||
+      error.originalUrl.indexOf('192.') !== -1
+    ) {
       return `There was a problem loading the experience. It looks like you may be using a LAN url. Make sure your device is on the same network as the server or try using a tunnel.`;
     }
     return 'There was a problem loading the experience.';

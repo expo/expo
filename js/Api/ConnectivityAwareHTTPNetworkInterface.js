@@ -3,7 +3,8 @@
 import { HTTPFetchNetworkInterface } from 'apollo-client';
 import Connectivity from './Connectivity';
 
-export default class ConnectivityAwareHTTPFetchNetworkInterface extends HTTPFetchNetworkInterface {
+export default class ConnectivityAwareHTTPFetchNetworkInterface
+  extends HTTPFetchNetworkInterface {
   async fetchFromRemoteEndpoint(options) {
     let isConnected = await Connectivity.isAvailableAsync();
 
@@ -12,5 +13,5 @@ export default class ConnectivityAwareHTTPFetchNetworkInterface extends HTTPFetc
     } else {
       return super.fetchFromRemoteEndpoint(options);
     }
-  };
+  }
 }

@@ -149,7 +149,8 @@ export default class SignInScreen extends React.Component {
 
   _handleError = error => {
     console.log({ error });
-    let message = error.error_description ||
+    let message =
+      error.error_description ||
       error.message ||
       'Sorry, something went wrong.';
     this.props.navigator.showLocalAlert(message, Alerts.error);

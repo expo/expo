@@ -6,10 +6,7 @@
  */
 'use strict';
 
-import {
-  PixelRatio,
-  Platform,
-} from 'react-native';
+import { PixelRatio, Platform } from 'react-native';
 
 let ExLayout = {
   pixel: 1 / PixelRatio.get(),
@@ -29,7 +26,9 @@ if (Platform.OS === 'ios') {
     navigationBarHeight: 56,
   };
 }
-platformDependentLayout.headerHeight = platformDependentLayout.statusBarHeight + platformDependentLayout.navigationBarHeight;
+platformDependentLayout.headerHeight =
+  platformDependentLayout.statusBarHeight +
+  platformDependentLayout.navigationBarHeight;
 Object.assign(ExLayout, platformDependentLayout);
 
 export default ExLayout;

@@ -6,13 +6,9 @@
 'use strict';
 
 import React from 'react';
-import {
-  NativeModules,
-} from 'react-native';
+import { NativeModules } from 'react-native';
 
-const {
-  ExponentConstants,
-} = NativeModules;
+const { ExponentConstants } = NativeModules;
 
 import autobind from 'autobind-decorator';
 
@@ -28,15 +24,14 @@ export default class NuxContextualMenuOverlay extends React.Component {
         tooltipAction="No thanks"
         tooltipActionIsSmall
         tooltipActionTestID="nux_no_thanks"
-        tooltipPoint={{x: 48, y: 28 + ExponentConstants.statusBarHeight}}
+        tooltipPoint={{ x: 48, y: 28 + ExponentConstants.statusBarHeight }}
         onPressAction={this._onPressAction}
         renderAccessories={this._renderExperienceIconAccessory}
       />
     );
   }
 
-  @autobind
-  _onPressAction() {
+  @autobind _onPressAction() {
     ExponentKernel.dismissNuxAsync();
   }
 }

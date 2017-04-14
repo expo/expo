@@ -6,9 +6,7 @@
 'use strict';
 
 import React, { PropTypes } from 'react';
-import {
-  StyleSheet,
-} from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import ExNavigator from '@expo/react-native-navigator';
 import ConsoleRouter from 'ConsoleRouter';
@@ -24,8 +22,10 @@ export default class ConsoleNavigator extends React.Component {
   };
 
   render() {
-    let initialRoute =
-      ConsoleRouter.getConsoleHistoryRoute(this.props.onPressReload, this.props.isUserFacing);
+    let initialRoute = ConsoleRouter.getConsoleHistoryRoute(
+      this.props.onPressReload,
+      this.props.isUserFacing
+    );
     return (
       <ExNavigator
         navigator={this.props.navigator}

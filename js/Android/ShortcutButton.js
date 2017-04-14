@@ -38,8 +38,7 @@ export default class ShortcutButton extends React.Component {
     );
   }
 
-  @autobind
-  onPress() {
+  @autobind onPress() {
     let { url, manifest } = this.props;
     ExponentKernel.createShortcutAsync(url, manifest);
   }

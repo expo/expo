@@ -9,11 +9,14 @@ import { AsyncStorage } from 'react-native';
 import { LegacyAsyncStorage } from 'expo';
 import mapValues from 'lodash/mapValues';
 
-const Keys = mapValues({
-  AuthTokens: 'authTokens',
-  History: 'history',
-  NuxIsFinished: 'nuxIsFinishedOct-10-2016',
-}, value => `Exponent.${value}`);
+const Keys = mapValues(
+  {
+    AuthTokens: 'authTokens',
+    History: 'history',
+    NuxIsFinished: 'nuxIsFinishedOct-10-2016',
+  },
+  value => `Exponent.${value}`
+);
 
 function maybeMigrateFromLegacyAsync() {
   return LegacyAsyncStorage.migrateItems(Object.values(Keys));
@@ -30,7 +33,7 @@ async function getAuthTokensAsync() {
   try {
     let authTokens = JSON.parse(results);
     return authTokens;
-  } catch(e) {
+  } catch (e) {
     return null;
   }
 }
@@ -71,7 +74,7 @@ async function updateIdTokenAsync(idToken) {
     throw new Error('Missing cached authentication tokens');
   }
 
-  return saveAuthTokensAsync({...tokens, idToken});
+  return saveAuthTokensAsync({ ...tokens, idToken });
 }
 
 async function removeAuthTokensAsync() {

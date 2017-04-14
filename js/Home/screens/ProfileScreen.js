@@ -63,8 +63,8 @@ export default class ProfileScreen extends React.Component {
 
   static getDataProps(data, props) {
     let isAuthenticated = isUserAuthenticated(data.authTokens);
-    let isOwnProfile = !props.username ||
-      isCurrentUser(data.authTokens, props.username);
+    let isOwnProfile =
+      !props.username || isCurrentUser(data.authTokens, props.username);
 
     return {
       isAuthenticated,
@@ -107,14 +107,16 @@ class SignOutButtonAndroid extends React.Component {
 
   _handlePress = () => {
     let handle = findNodeHandle(this._anchor);
-    NativeModules.UIManager.showPopupMenu(handle, ['Sign out'], err => {}, (
-      action,
-      selectedIndex,
-    ) => {
-      if (selectedIndex === 0) {
-        this.props.dispatch(AuthTokenActions.signOut());
+    NativeModules.UIManager.showPopupMenu(
+      handle,
+      ['Sign out'],
+      err => {},
+      (action, selectedIndex) => {
+        if (selectedIndex === 0) {
+          this.props.dispatch(AuthTokenActions.signOut());
+        }
       }
-    });
+    );
   };
 }
 
@@ -148,10 +150,10 @@ class OptionsButtonAndroid extends React.Component {
         if (selectedIndex === 0) {
           Alert.alert(
             'Thank you for your report',
-            'We will investigate the case as soon as we can.',
+            'We will investigate the case as soon as we can.'
           );
         }
-      },
+      }
     );
   };
 }
@@ -199,10 +201,10 @@ class SignOutButtonIOS extends React.Component {
         if (buttonIndex === 0) {
           Alert.alert(
             'Thank you for your report',
-            'We will investigate the case as soon as we can.',
+            'We will investigate the case as soon as we can.'
           );
         }
-      },
+      }
     );
   };
 }

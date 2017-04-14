@@ -29,9 +29,7 @@ import MenuView from 'MenuView';
 import reactMixin from 'react-mixin';
 import { connect } from 'react-redux';
 
-const {
-  ExponentConstants,
-} = NativeModules;
+const { ExponentConstants } = NativeModules;
 
 const KERNEL_ROUTE_HOME = 0;
 const KERNEL_ROUTE_BROWSER = 1;
@@ -54,7 +52,8 @@ class KernelNavigator extends React.Component {
       foregroundTaskUrl,
       tasks,
       history,
-    } = data.browser;
+    } =
+      data.browser;
     return {
       isShell,
       shellManifestUrl,
@@ -73,8 +72,8 @@ class KernelNavigator extends React.Component {
       menuTransition: new Animated.Value(0),
       isShowingOverlay: false,
     };
-    this.state.menuTransition.addListener((event) => {
-      let isShowingOverlay = (event.value > 0);
+    this.state.menuTransition.addListener(event => {
+      let isShowingOverlay = event.value > 0;
       if (isShowingOverlay !== this.state.isShowingOverlay) {
         this.setState({ isShowingOverlay });
       }
@@ -102,7 +101,9 @@ class KernelNavigator extends React.Component {
         // don't call ExponentKernel.openURL because we don't want to re-route
         // the existing url. we want to force a reload of the manifest.
         this.props.dispatch(BrowserActions.setKernelLoadingState(true));
-        this.props.dispatch(BrowserActions.navigateToUrlAsync(this.props.shellManifestUrl));
+        this.props.dispatch(
+          BrowserActions.navigateToUrlAsync(this.props.shellManifestUrl)
+        );
       } else if (this.props.foregroundTaskUrl) {
         let urlToRefresh = this.props.foregroundTaskUrl;
         await this.props.dispatch(BrowserActions.foregroundHomeAsync(true));
@@ -110,8 +111,14 @@ class KernelNavigator extends React.Component {
         ExponentKernel.openURL(urlToRefresh);
       }
     });
-    DeviceEventEmitter.addListener('ExponentKernel.foregroundTask', this._foregroundTask);
-    DeviceEventEmitter.addListener('ExponentKernel.switchTasks', this._handleSwitchTasksEvent);
+    DeviceEventEmitter.addListener(
+      'ExponentKernel.foregroundTask',
+      this._foregroundTask
+    );
+    DeviceEventEmitter.addListener(
+      'ExponentKernel.switchTasks',
+      this._handleSwitchTasksEvent
+    );
     this._loadNuxStateAsync();
   }
 
@@ -129,8 +136,18 @@ class KernelNavigator extends React.Component {
   }
 
   render() {
-    let { isShell, shellManifestUrl, tasks, foregroundTaskUrl, isHomeVisible, isMenuVisible, isNuxFinished } = this.props;
-    let initialRouteStack = (isShell) ? [this._findOrCreateBrowserRoute(shellManifestUrl)] : [this._homeRoute];
+    let {
+      isShell,
+      shellManifestUrl,
+      tasks,
+      foregroundTaskUrl,
+      isHomeVisible,
+      isMenuVisible,
+      isNuxFinished,
+    } = this.props;
+    let initialRouteStack = isShell
+      ? [this._findOrCreateBrowserRoute(shellManifestUrl)]
+      : [this._homeRoute];
 
     let simulatorButton;
     if (ENABLE_LEGACY_MENU_BEHAVIOR) {
@@ -139,7 +156,7 @@ class KernelNavigator extends React.Component {
       if (!ExponentConstants.isDevice && tasks.size > 0 && !isShell) {
         // don't show it if the menu is currently on screen.
         if (isHomeVisible || !isMenuVisible || !isNuxFinished) {
-          simulatorButton = (<ExButton onPress={this._switchTasks} />);
+          simulatorButton = <ExButton onPress={this._switchTasks} />;
         }
       }
     }
@@ -151,37 +168,34 @@ class KernelNavigator extends React.Component {
         outputRange: ['rgba(255, 255, 255, 0.001)', 'rgba(255, 255, 255, 0.9)'],
       });
       menuOverlay = (
-        <Animated.View style={[styles.menuOverlay, {backgroundColor}]} />
+        <Animated.View style={[styles.menuOverlay, { backgroundColor }]} />
       );
     }
     if (isMenuVisible) {
       let task = tasks.get(foregroundTaskUrl);
       menuView = (
-        <MenuView
-          task={task}
-          isNuxFinished={isNuxFinished}
-          shouldFadeIn
-        />
+        <MenuView task={task} isNuxFinished={isNuxFinished} shouldFadeIn />
       );
     }
 
     let responders = {};
     if (ENABLE_LEGACY_MENU_BEHAVIOR) {
       responders = {
-        onMoveShouldSetResponderCapture: this._onContainerMoveShouldSetResponderCapture,
+        onMoveShouldSetResponderCapture: this
+          ._onContainerMoveShouldSetResponderCapture,
         onStartShouldSetResponder: this._onContainerStartShouldSetResponder,
         onResponderGrant: this._onContainerResponderGrant,
         onResponderMove: this._onContainerResponderMove,
         onResponderRelease: this._onContainerResponderRelease,
-      }
+      };
     }
 
     return (
-      <View
-        style={styles.container}
-        {...responders}>
+      <View style={styles.container} {...responders}>
         <ExNavigator
-          ref={component => { this._navigator = component; }}
+          ref={component => {
+            this._navigator = component;
+          }}
           initialRouteStack={initialRouteStack}
           showNavigationBar={false}
           style={styles.navigator}
@@ -194,45 +208,39 @@ class KernelNavigator extends React.Component {
     );
   }
 
-  @autobind
-  _onContainerMoveShouldSetResponderCapture(event) {
+  @autobind _onContainerMoveShouldSetResponderCapture(event) {
     // if the force touch gesture is available/meaningful,
     // and user force touches on a subview that would otherwise capture the touch,
     // override that and become the responder.
     if (this._onContainerStartShouldSetResponder()) {
       if (View.forceTouchAvailable) {
         let { force } = event.nativeEvent;
-        return (force > FORCE_TOUCH_CAPTURE_THRESHOLD);
+        return force > FORCE_TOUCH_CAPTURE_THRESHOLD;
       }
     }
     return false;
   }
 
-  @autobind
-  _onContainerStartShouldSetResponder() {
+  @autobind _onContainerStartShouldSetResponder() {
     return this._isSwitchTasksAvailable();
   }
 
-  @autobind
-  _onContainerResponderGrant(event) {
+  @autobind _onContainerResponderGrant(event) {
     this._hasTouch = true;
     this._handleTouch(event);
   }
 
-  @autobind
-  _onContainerResponderMove(event) {
+  @autobind _onContainerResponderMove(event) {
     this._handleTouch(event);
   }
 
-  @autobind
-  _onContainerResponderRelease(event) {
+  @autobind _onContainerResponderRelease(event) {
     this._hasTouch = false;
     this._hasDoubleTouch = false;
     this._interruptMenuTransition();
   }
 
-  @autobind
-  _handleTouch(event) {
+  @autobind _handleTouch(event) {
     let { force, touches } = event.nativeEvent;
     if (this._hasTouch) {
       if (View.forceTouchAvailable) {
@@ -245,7 +253,10 @@ class KernelNavigator extends React.Component {
           // quickly start fading in the menu to respond to double touch
           this.setTimeout(() => {
             if (this._hasDoubleTouch) {
-              this._transitionMenu(0.75, MENU_FADE_IN_TOTAL_MS - MENU_FADE_IN_BEGIN_MS);
+              this._transitionMenu(
+                0.75,
+                MENU_FADE_IN_TOTAL_MS - MENU_FADE_IN_BEGIN_MS
+              );
             }
           }, MENU_FADE_IN_BEGIN_MS);
           this.setTimeout(() => {
@@ -286,7 +297,7 @@ class KernelNavigator extends React.Component {
     });
   }
 
-  _handleSwitchTasksEvent = (_) => {
+  _handleSwitchTasksEvent = _ => {
     if (ENABLE_LEGACY_MENU_BEHAVIOR) {
       // this behavior is not available if the old button/gesture are being used instead
       return;
@@ -294,33 +305,42 @@ class KernelNavigator extends React.Component {
     if (this._isSwitchTasksAvailable()) {
       this._switchTasks();
     }
-  }
+  };
 
   _isSwitchTasksAvailable = () => {
-    return (!this.props.isShell && this.props.tasks.size > 0);
-  }
+    return !this.props.isShell && this.props.tasks.size > 0;
+  };
 
   _switchTasks = () => {
     this._hasTouch = false;
     this._hasDoubleTouch = false;
     if (this.props.isHomeVisible) {
       // since only one task besides Home is allowed, just pick the first nonnull url
-      let urlsToForeground = this.props.tasks.keySeq().filter(taskUrl => (taskUrl !== null));
+      let urlsToForeground = this.props.tasks
+        .keySeq()
+        .filter(taskUrl => taskUrl !== null);
       if (urlsToForeground) {
-        this.props.dispatch(BrowserActions.foregroundUrlAsync(urlsToForeground.first()));
+        this.props.dispatch(
+          BrowserActions.foregroundUrlAsync(urlsToForeground.first())
+        );
       }
     } else {
-      this.props.dispatch(BrowserActions.showMenuAsync(!this.props.isMenuVisible));
+      this.props.dispatch(
+        BrowserActions.showMenuAsync(!this.props.isMenuVisible)
+      );
       // this.props.dispatch(BrowserActions.foregroundHomeAsync());
     }
-  }
+  };
 
-  @autobind
-  _foregroundTask(event) {
+  @autobind _foregroundTask(event) {
     let { taskUrl } = event;
-    let matchingUrlTasks = this.props.tasks.keySeq().filter(url => (url === taskUrl));
+    let matchingUrlTasks = this.props.tasks
+      .keySeq()
+      .filter(url => url === taskUrl);
     if (matchingUrlTasks) {
-      this.props.dispatch(BrowserActions.foregroundUrlAsync(matchingUrlTasks.first()));
+      this.props.dispatch(
+        BrowserActions.foregroundUrlAsync(matchingUrlTasks.first())
+      );
     }
   }
 
@@ -330,8 +350,12 @@ class KernelNavigator extends React.Component {
       isBrowserChanged = true;
     } else {
       // same url but possibly new time (i.e. the user opened it again)
-      let prevTime = (this.props.history && this.props.history.size) ? this.props.history.get(0).get('time') : 0;
-      let nextTime = (nextProps.history && nextProps.history.size) ? nextProps.history.get(0).get('time') : 0;
+      let prevTime = this.props.history && this.props.history.size
+        ? this.props.history.get(0).get('time')
+        : 0;
+      let nextTime = nextProps.history && nextProps.history.size
+        ? nextProps.history.get(0).get('time')
+        : 0;
       if (prevTime !== nextTime && nextTime !== 0) {
         isBrowserChanged = true;
       } else if (nextProps.isHomeVisible !== this.props.isHomeVisible) {
@@ -353,7 +377,9 @@ class KernelNavigator extends React.Component {
             this._foregroundRouteForUrl(newUrl, null);
           });
         } else {
-          requestAnimationFrame(() => this._foregroundRouteForUrl(newUrl, urlToBackground));
+          requestAnimationFrame(() =>
+            this._foregroundRouteForUrl(newUrl, urlToBackground)
+          );
         }
       }
     }
@@ -369,7 +395,10 @@ class KernelNavigator extends React.Component {
       this._cleanUnusedBrowserRoutes();
       this._navigator.push(routeToForeground);
     }
-    ExponentKernel.routeDidForeground(KERNEL_ROUTE_BROWSER, { url, urlToBackground });
+    ExponentKernel.routeDidForeground(KERNEL_ROUTE_BROWSER, {
+      url,
+      urlToBackground,
+    });
   }
 
   _foregroundHome(urlToBackground) {
@@ -397,7 +426,10 @@ class KernelNavigator extends React.Component {
     for (let key in this._browserRoutes) {
       if (this._browserRoutes.hasOwnProperty(key)) {
         let url = key;
-        let matchingTasks = this.props.tasks.keySeq().filter(taskUrl => (taskUrl === url)).toList();
+        let matchingTasks = this.props.tasks
+          .keySeq()
+          .filter(taskUrl => taskUrl === url)
+          .toList();
         if (matchingTasks && matchingTasks.size) {
           newBrowserRoutes[url] = this._browserRoutes[url];
         }
@@ -414,18 +446,20 @@ class KernelNavigator extends React.Component {
     }
 
     // listen for kernel nux events
-    DeviceEventEmitter.addListener('ExponentKernel.resetNuxState', (event) => {
+    DeviceEventEmitter.addListener('ExponentKernel.resetNuxState', event => {
       let { isNuxCompleted } = event;
-      this.props.dispatch(BrowserActions.setIsNuxFinishedAsync(!!isNuxCompleted));
+      this.props.dispatch(
+        BrowserActions.setIsNuxFinishedAsync(!!isNuxCompleted)
+      );
     });
   }
 }
 
 reactMixin(KernelNavigator.prototype, TimerMixin);
 
-export default connect(
-  data => KernelNavigator.getDataProps(data)
-)(KernelNavigator);
+export default connect(data => KernelNavigator.getDataProps(data))(
+  KernelNavigator
+);
 
 let styles = StyleSheet.create({
   container: {

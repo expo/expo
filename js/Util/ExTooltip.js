@@ -74,47 +74,62 @@ export default class ExTooltip extends React.Component {
     });
 
     return (
-      <Animated.View style={[styles.overlay, {
-        backgroundColor,
-      }]}>
+      <Animated.View
+        style={[
+          styles.overlay,
+          {
+            backgroundColor,
+          },
+        ]}>
         {renderAccessories()}
         {this._renderTooltip()}
       </Animated.View>
     );
   }
 
-  @autobind
-  _renderTooltip() {
+  @autobind _renderTooltip() {
     let containerY = this.props.tooltipPoint.y;
-    let arrowLeft = this.props.tooltipPoint.x - (ARROW_WIDTH * 0.5);
+    let arrowLeft = this.props.tooltipPoint.x - ARROW_WIDTH * 0.5;
 
     // TODO: move `opacity: this.state.overlayOpacity` into top level view.
     // wasn't working when i tried. maybe RN bug?
     return (
-      <View style={[styles.tooltipContainer, {
-        top: containerY,
-      }]}>
-        <Animated.View style={[styles.tooltipBody, {
-          opacity: this.state.overlayOpacity,
-        }]}>
+      <View
+        style={[
+          styles.tooltipContainer,
+          {
+            top: containerY,
+          },
+        ]}>
+        <Animated.View
+          style={[
+            styles.tooltipBody,
+            {
+              opacity: this.state.overlayOpacity,
+            },
+          ]}>
           <Text style={styles.title}>{this.props.tooltipTitle}</Text>
           {this._renderDescription()}
           {this._renderAction()}
         </Animated.View>
         <Animated.Image
-          source={{uri: 'https://d3lwq5rlu14cro.cloudfront.net/tooltip_arrow.png'}}
+          source={{
+            uri: 'https://d3lwq5rlu14cro.cloudfront.net/tooltip_arrow.png',
+          }}
           tintColor={ExColors.exponentBlue}
-          style={[styles.arrow, {
-            left: arrowLeft,
-            opacity: this.state.overlayOpacity,
-          }]}
+          style={[
+            styles.arrow,
+            {
+              left: arrowLeft,
+              opacity: this.state.overlayOpacity,
+            },
+          ]}
         />
       </View>
     );
   }
 
-  @autobind
-  _renderDescription() {
+  @autobind _renderDescription() {
     if (!this.props.tooltipDescription) {
       return null;
     }
@@ -123,14 +138,17 @@ export default class ExTooltip extends React.Component {
     );
   }
 
-  @autobind
-  _renderAction() {
+  @autobind _renderAction() {
     if (!this.props.tooltipAction) {
       return null;
     }
 
-    let buttonStyle = (this.props.tooltipActionIsSmall) ? styles.actionButtonSmall : styles.actionButton;
-    let labelStyle = (this.props.tooltipActionIsSmall) ? styles.actionLabelSmall : styles.actionLabel;
+    let buttonStyle = this.props.tooltipActionIsSmall
+      ? styles.actionButtonSmall
+      : styles.actionButton;
+    let labelStyle = this.props.tooltipActionIsSmall
+      ? styles.actionLabelSmall
+      : styles.actionLabel;
 
     return (
       <TouchableOpacity

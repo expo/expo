@@ -61,7 +61,9 @@ let BrowserActions = {
       }
 
       if (!ExManifests.isManifestSdkVersionSupported(manifest)) {
-        throw new Error(`This experience uses an unsupported version of Expo (SDK ${manifest.sdkVersion}). You may need to update Expo Client on your device.`);
+        throw new Error(
+          `This experience uses an unsupported version of Expo (SDK ${manifest.sdkVersion}). You may need to update Expo Client on your device.`
+        );
       }
 
       return BrowserActions.navigateToBundleUrlAsync(

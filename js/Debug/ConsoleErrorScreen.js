@@ -6,12 +6,7 @@
 'use strict';
 
 import React, { PropTypes } from 'react';
-import {
-  ListView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { ListView, StyleSheet, Text, View } from 'react-native';
 
 import autobind from 'autobind-decorator';
 import { connect } from 'react-redux';
@@ -62,7 +57,9 @@ class ConsoleErrorScreen extends React.Component {
 
     return (
       <ListView
-        ref={component => { this._listView = component; }}
+        ref={component => {
+          this._listView = component;
+        }}
         dataSource={this.state.dataSource}
         renderHeader={this._renderHeader}
         renderRow={this._renderStackFrame}
@@ -75,8 +72,7 @@ class ConsoleErrorScreen extends React.Component {
     );
   }
 
-  @autobind
-  _renderHeader() {
+  @autobind _renderHeader() {
     return (
       <View>
         {this._renderErrorMessage()}
@@ -99,13 +95,10 @@ class ConsoleErrorScreen extends React.Component {
     );
   }
 
-  @autobind
-  _renderStackFrame(frame, rowId, sectionId, highlightRow) {
+  @autobind _renderStackFrame(frame, rowId, sectionId, highlightRow) {
     let fileName = /[\\/]?([^\\/]*)$/.exec(frame.file)[1];
     return (
-      <View
-        key={`frame-${rowId}`}
-        style={styles.stackFrame}>
+      <View key={`frame-${rowId}`} style={styles.stackFrame}>
         <Text style={styles.methodName}>
           {frame.methodName}
         </Text>
@@ -117,8 +110,8 @@ class ConsoleErrorScreen extends React.Component {
   }
 }
 
-export default connect(
-  (data, props) => ConsoleErrorScreen.getDataProps(data, props),
+export default connect((data, props) =>
+  ConsoleErrorScreen.getDataProps(data, props)
 )(ConsoleErrorScreen);
 
 var styles = StyleSheet.create({

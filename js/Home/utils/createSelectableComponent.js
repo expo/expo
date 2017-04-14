@@ -7,7 +7,7 @@ const DEFAULT_PRESS_IN_DELAY_MS = 80;
 
 export default function createSelectableComponent(
   TargetComponent,
-  selectableProps = {},
+  selectableProps = {}
 ) {
   class SelectableComponent extends React.Component {
     render() {

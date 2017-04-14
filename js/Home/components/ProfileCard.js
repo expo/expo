@@ -22,13 +22,7 @@ import ExUrls from 'ExUrls';
 @withNavigation
 export default class ProfileCard extends React.Component {
   render() {
-    let {
-      fullName,
-      username,
-      appCount,
-      profilePhoto,
-      isLegacy,
-    } = this.props;
+    let { fullName, username, appCount, profilePhoto, isLegacy } = this.props;
 
     return (
       <View style={this.props.style}>

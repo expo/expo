@@ -89,11 +89,15 @@ class ConsoleHistoryScreen extends React.Component {
           </TouchableOpacity>
         </View>
       );
-    } else if (this.props.consoleHistory && this.props.consoleHistory.size > 0) {
+    } else if (
+      this.props.consoleHistory && this.props.consoleHistory.size > 0
+    ) {
       // show the normal console
       return (
         <ListView
-          ref={component => { this._listView = component; }}
+          ref={component => {
+            this._listView = component;
+          }}
           enableEmptySections
           dataSource={this.state.dataSource}
           renderRow={this._renderRow}
@@ -113,8 +117,7 @@ class ConsoleHistoryScreen extends React.Component {
     }
   }
 
-  @autobind
-  _renderRow(rowData, sectionId, rowId, highlightRow) {
+  @autobind _renderRow(rowData, sectionId, rowId, highlightRow) {
     let message = util.format(...rowData.message);
     let timestamp = moment(rowData.time).format('h:mm:ss');
 
@@ -127,17 +130,19 @@ class ConsoleHistoryScreen extends React.Component {
       } else {
         fileName = '@' + fileName;
       }
-      var stackTracePreview =
+      var stackTracePreview = (
         <Text>
           {frame.methodName}{fileName}:{frame.lineNumber}
-        </Text>;
+        </Text>
+      );
     }
 
     if (rowData.fatal) {
-      var fatalNotice =
+      var fatalNotice = (
         <Text>
           {' '}Fatal Error
-        </Text>;
+        </Text>
+      );
     }
 
     return (
@@ -164,16 +169,14 @@ class ConsoleHistoryScreen extends React.Component {
     );
   }
 
-  @autobind
-  _renderSeparator(sectionId, rowId, adjacentRowSelected) {
-    let style = adjacentRowSelected ?
-      [styles.separator, styles.selectedSeparator] :
-      styles.separator;
+  @autobind _renderSeparator(sectionId, rowId, adjacentRowSelected) {
+    let style = adjacentRowSelected
+      ? [styles.separator, styles.selectedSeparator]
+      : styles.separator;
     return <View key={`sep-${sectionId}-${rowId}`} style={style} />;
   }
 
-  @autobind
-  _onDismissOverlay() {
+  @autobind _onDismissOverlay() {
     this.setState({ hasDismissedOverlay: true });
   }
 
@@ -183,13 +186,12 @@ class ConsoleHistoryScreen extends React.Component {
   }
 }
 
-export default connect(
-  data => ConsoleHistoryScreen.getDataProps(data),
-)(ConsoleHistoryScreen);
+export default connect(data => ConsoleHistoryScreen.getDataProps(data))(
+  ConsoleHistoryScreen
+);
 
 let styles = StyleSheet.create({
-  container: {
-  },
+  container: {},
   row: {
     overflow: 'hidden',
     padding: 10,
@@ -209,8 +211,7 @@ let styles = StyleSheet.create({
     color: ExColors.grayText,
     fontSize: 12,
   },
-  timestamp: {
-  },
+  timestamp: {},
   emptyContainer: {
     paddingHorizontal: 32,
     marginTop: 16,

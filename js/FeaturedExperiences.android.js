@@ -18,8 +18,7 @@ function getFeatured() {
     return [];
   }
 
-  let featuredExperiences = [
-  ];
+  let featuredExperiences = [];
 
   return featuredExperiences;
 }

@@ -58,8 +58,8 @@ export default class Flux {
         if (successHandler || errorHandler) {
           console.error(
             'You have set an "end" handler and a "then" or "catch" handler. ' +
-            'The "end" handler is exclusive to the other two and takes ' +
-            'precedence over them. Your other handlers will not be invoked.'
+              'The "end" handler is exclusive to the other two and takes ' +
+              'precedence over them. Your other handlers will not be invoked.'
           );
         }
         return completionHandler(state, action);

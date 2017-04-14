@@ -38,8 +38,7 @@ if (FeatureFlags.DISPLAY_EXPERIMENTAL_EXPLORE_TABS) {
   TabTitles.top = 'Top projects';
 }
 
-@withNavigation
-class SearchButton extends React.Component {
+@withNavigation class SearchButton extends React.Component {
   render() {
     return (
       <TouchableNativeFeedback
@@ -111,22 +110,18 @@ export default class ExploreScreen extends React.Component {
 
   _renderTabs() {
     let tabs = [
-      (
-        <SlidingTabNavigationItem id="featured" key="featured">
-          <ExploreTabContainer
-            filter="FEATURED"
-            onPressUsername={this._handlePressUsername}
-          />
-        </SlidingTabNavigationItem>
-      ),
-      (
-        <SlidingTabNavigationItem id="new" key="new">
-          <ExploreTabContainer
-            filter="NEW"
-            onPressUsername={this._handlePressUsername}
-          />
-        </SlidingTabNavigationItem>
-      ),
+      <SlidingTabNavigationItem id="featured" key="featured">
+        <ExploreTabContainer
+          filter="FEATURED"
+          onPressUsername={this._handlePressUsername}
+        />
+      </SlidingTabNavigationItem>,
+      <SlidingTabNavigationItem id="new" key="new">
+        <ExploreTabContainer
+          filter="NEW"
+          onPressUsername={this._handlePressUsername}
+        />
+      </SlidingTabNavigationItem>,
     ];
 
     if (FeatureFlags.DISPLAY_EXPERIMENTAL_EXPLORE_TABS) {

@@ -25,10 +25,7 @@ import requestCameraPermissionsAsync
 @withNavigation
 export default class OpenFromClipboardButton extends React.Component {
   render() {
-    let {
-      fullWidthBorder,
-      clipboardContents,
-    } = this.props;
+    let { fullWidthBorder, clipboardContents } = this.props;
 
     return (
       <TouchableNativeFeedbackSafe

@@ -27,12 +27,7 @@ let ExRouter = {
       },
       renderScene(navigator) {
         let BrowserScreen = require('BrowserScreen').default;
-        return (
-          <BrowserScreen
-            navigator={navigator}
-            url={url}
-          />
-        );
+        return <BrowserScreen navigator={navigator} url={url} />;
       },
     };
   },

@@ -1,46 +1,52 @@
 /* @flow */
 
 import { createNetworkInterface } from 'apollo-client';
-import ConnectivityAwareHTTPNetworkInterface from './ConnectivityAwareHTTPNetworkInterface';
+import ConnectivityAwareHTTPNetworkInterface
+  from './ConnectivityAwareHTTPNetworkInterface';
 
 type AuthAwareNetworkInterfaceOptions = {
   getIdToken: () => string,
   setIdToken: (idToken: string) => void,
   getRefreshToken: () => string,
-  idTokenIsValid: () => bool,
+  idTokenIsValid: () => boolean,
   refreshIdTokenAsync: () => string,
-}
+};
 
 class AuthAwareNetworkInterface {
   _requestQueue = [];
 
   constructor(uri: string, options: AuthAwareNetworkInterfaceOptions = {}) {
-    this._networkInterface = new ConnectivityAwareHTTPNetworkInterface(uri, options);
+    this._networkInterface = new ConnectivityAwareHTTPNetworkInterface(
+      uri,
+      options
+    );
     this._getIdToken = options.getIdToken;
     this._setIdToken = options.setIdToken;
     this._getRefreshToken = options.getRefreshToken;
-    this._idTokenIsValid =  options.idTokenIsValid;
+    this._idTokenIsValid = options.idTokenIsValid;
     this._refreshIdTokenAsync = options.refreshIdTokenAsync;
 
     this._applyAuthorizationHeaderMiddleware();
   }
 
   _applyAuthorizationHeaderMiddleware = () => {
-    this._networkInterface.use([{
-      applyMiddleware: (req, next) => {
-        if (!req.options.headers) {
-          req.options.headers = {};
-        }
+    this._networkInterface.use([
+      {
+        applyMiddleware: (req, next) => {
+          if (!req.options.headers) {
+            req.options.headers = {};
+          }
 
-        const idToken = this._getIdToken();
-        if (idToken) {
-          req.options.headers['Authorization'] = `Bearer ${idToken}`;
-        }
+          const idToken = this._getIdToken();
+          if (idToken) {
+            req.options.headers['Authorization'] = `Bearer ${idToken}`;
+          }
 
-        next();
-      }
-    }]);
-  }
+          next();
+        },
+      },
+    ]);
+  };
 
   query(request) {
     if (this._idTokenIsValid() || !this._getIdToken()) {
