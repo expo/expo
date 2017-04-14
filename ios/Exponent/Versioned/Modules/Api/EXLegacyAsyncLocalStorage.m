@@ -21,7 +21,7 @@
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
-static NSString *const RCTStorageDirectory = EX_UNVERSIONED(@"ABI15_0_0RCTAsyncLocalStorage_V1");
+static NSString *const RCTStorageDirectory = EX_UNVERSIONED(@"RCTAsyncLocalStorage_V1");
 static NSString *const RCTManifestFileName = @"manifest.json";
 
 #pragma mark - Static helper functions
