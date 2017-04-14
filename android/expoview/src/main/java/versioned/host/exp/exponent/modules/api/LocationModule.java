@@ -68,7 +68,6 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
   public void getCurrentPositionAsync(final ReadableMap options, final Promise promise) {
     // Read options
     final Long timeout = options.hasKey("timeout") ? (long) options.getDouble("timeout") : null;
-    final double maximumAge = options.hasKey("maximumAge") ? options.getDouble("maximumAge") : Double.POSITIVE_INFINITY;
     boolean highAccuracy = options.hasKey("enableHighAccuracy") && options.getBoolean("enableHighAccuracy");
 
     // Check for permissions
@@ -83,10 +82,13 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
     SmartLocation.LocationControl locationControl = SmartLocation.with(mScopedContext).location().oneFix().config(locationParams);
 
     // Have location cached already?
-    Location location = locationControl.getLastLocation();
-    if (location != null && SystemClock.currentTimeMillis() - location.getTime() < maximumAge) {
-      promise.resolve(locationToMap(location));
-      return;
+    if (options.hasKey("maximumAge")) {
+      double maximumAge = options.getDouble("maximumAge");
+      Location location = locationControl.getLastLocation();
+      if (location != null && SystemClock.currentTimeMillis() - location.getTime() < maximumAge) {
+        promise.resolve(locationToMap(location));
+        return;
+      }
     }
 
     final TimeoutObject timeoutObject = new TimeoutObject(timeout);
