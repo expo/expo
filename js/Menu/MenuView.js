@@ -84,8 +84,7 @@ export default class MenuView extends React.Component {
 
   forceStatusBarUpdateAsync = async () => {
     if (NativeModules.StatusBarManager._captureProperties) {
-      this
-        ._statusBarValuesToRestore = await NativeModules.StatusBarManager._captureProperties();
+      this._statusBarValuesToRestore = await NativeModules.StatusBarManager._captureProperties();
       // HACK: StatusBar only updates changed props.
       // because MenuView typically lives under a different RN bridge, its stack of StatusBar
       // props does not necessarily reflect what the user is seeing.

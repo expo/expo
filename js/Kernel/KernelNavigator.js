@@ -52,8 +52,7 @@ class KernelNavigator extends React.Component {
       foregroundTaskUrl,
       tasks,
       history,
-    } =
-      data.browser;
+    } = data.browser;
     return {
       isShell,
       shellManifestUrl,

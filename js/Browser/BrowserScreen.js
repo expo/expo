@@ -44,8 +44,7 @@ class BrowserScreen extends React.Component {
       isHomeVisible,
       isMenuVisible,
       isNuxFinished,
-    } =
-      data.browser;
+    } = data.browser;
     let isForegrounded = url === foregroundTaskUrl && !isHomeVisible;
     let shellTask = shellManifestUrl
       ? data.browser.tasks.get(shellManifestUrl)
