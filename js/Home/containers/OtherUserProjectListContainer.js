@@ -49,7 +49,7 @@ export default graphql(UsersAppsQuery, {
           },
           updateQuery: (previousData, { fetchMoreResult }) => {
             if (!fetchMoreResult.data) {
-              return previousResult;
+              return previousData;
             }
 
             return Object.assign({}, previousData, {
