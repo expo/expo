@@ -31,6 +31,11 @@ import { connect } from 'react-redux';
 
 const { ExponentConstants } = NativeModules;
 
+const forceTouchAvailable =
+  (NativeModules.PlatformConstants &&
+    NativeModules.PlatformConstants.forceTouchAvailable) ||
+  false;
+
 const KERNEL_ROUTE_HOME = 0;
 const KERNEL_ROUTE_BROWSER = 1;
 const FORCE_TOUCH_SWITCH_THRESHOLD = 0.995;
@@ -212,7 +217,7 @@ class KernelNavigator extends React.Component {
     // and user force touches on a subview that would otherwise capture the touch,
     // override that and become the responder.
     if (this._onContainerStartShouldSetResponder()) {
-      if (View.forceTouchAvailable) {
+      if (forceTouchAvailable) {
         let { force } = event.nativeEvent;
         return force > FORCE_TOUCH_CAPTURE_THRESHOLD;
       }
@@ -242,7 +247,7 @@ class KernelNavigator extends React.Component {
   @autobind _handleTouch(event) {
     let { force, touches } = event.nativeEvent;
     if (this._hasTouch) {
-      if (View.forceTouchAvailable) {
+      if (forceTouchAvailable) {
         if (force >= FORCE_TOUCH_SWITCH_THRESHOLD && touches.length === 2) {
           this._switchTasks();
         }
