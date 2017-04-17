@@ -30,14 +30,13 @@ async function getIsNuxFinishedAsync() {
 
 async function getSettingsAsync() {
   let results = await AsyncStorage.getItem(Keys.Settings);
+  let settings;
 
   try {
     let settings = JSON.parse(results);
+  } catch (e) {}
 
-    return settings;
-  } catch (e) {
-    return {};
-  }
+  return settings || {};
 }
 
 async function updateSettingsAsync(updatedSettings) {
