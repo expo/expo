@@ -128,6 +128,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   if ((self = [super init])) {
     _commands = [NSMutableSet set];
+    _isLegacyMenuBehaviorEnabled = NO;
     [self _addDevCommands];
   }
   return self;
@@ -167,7 +168,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)_handleMenuCommand
 {
-  if (EX_ENABLE_LEGACY_MENU_BEHAVIOR) {
+  if (_isLegacyMenuBehaviorEnabled) {
     [[EXKernel sharedInstance].bridgeRegistry.lastKnownForegroundAppManager showDevMenu];
   } else {
     [[EXKernel sharedInstance] dispatchKernelJSEvent:@"switchTasks" body:@{} onSuccess:nil onFailure:nil];

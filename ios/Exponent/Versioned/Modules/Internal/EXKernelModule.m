@@ -113,6 +113,24 @@ RCT_REMAP_METHOD(shouldCurrentTaskAutoReload,
   }
 }
 
+RCT_REMAP_METHOD(isLegacyMenuBehaviorEnabledAsync,
+                 isLegacyMenuBehaviorEnabledWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+  if (_delegate) {
+    resolve(@([_delegate kernelModuleShouldEnableLegacyMenuBehavior:self]));
+  } else {
+    resolve(@(NO));
+  }
+}
+
+RCT_EXPORT_METHOD(setIsLegacyMenuBehaviorEnabledAsync:(BOOL)isEnabled)
+{
+  if (_delegate) {
+    [_delegate kernelModule:self didSelectEnableLegacyMenuBehavior:isEnabled];
+  }
+}
+
 RCT_REMAP_METHOD(getDevMenuItemsToShow,
                  getDevMenuItemsToShowWithResolver:(RCTPromiseResolveBlock)resolve
                  reject:(RCTPromiseRejectBlock)reject)

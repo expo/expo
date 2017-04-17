@@ -24,6 +24,12 @@ didRequestManifestWithUrl:(NSURL *)url
 - (BOOL)kernelModuleShouldAutoReloadCurrentTask:(EXKernelModule *)module;
 
 /**
+ *  Whether to enable legacy gesture/button for the Expo menu.
+ */
+- (BOOL)kernelModuleShouldEnableLegacyMenuBehavior:(EXKernelModule *)module;
+- (void)kernelModule:(EXKernelModule *)module didSelectEnableLegacyMenuBehavior:(BOOL)isEnabled;
+
+/**
  *  Dictionary of `key` => `user facing label` items to show in the kernel JS dev menu.
  */
 - (NSDictionary <NSString *, NSString *> *)devMenuItemsForKernelModule:(EXKernelModule *)module;
