@@ -3,7 +3,7 @@ apply plugin: 'maven'
 
 //maven repository info
 group = 'host.exp.exponent'
-version = '15.0.0'
+version = '16.0.0'
 
 //Upload android library to maven with javadoc and android sources
 configurations {
@@ -178,7 +178,7 @@ dependencies {
   // Current react native
   compile project(':ReactAndroid')
   /* UNCOMMENT WHEN DISTRIBUTING
-  compile 'host.exp.exponent:react-native:15.0.0'
+  compile 'host.exp.exponent:react-native:16.0.0'
   END UNCOMMENT WHEN DISTRIBUTING */
 
   // React native dependencies

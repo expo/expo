@@ -95,7 +95,7 @@ afterEvaluate { project ->
         archives androidJavadocJar
     }
 
-    version = '15.0.0'
+    version = '16.0.0'
     group = 'host.exp.exponent'
 
     signing {
