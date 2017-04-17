@@ -16,6 +16,7 @@
 
 #import "EXLegacyAsyncLocalStorage.h"
 #import "EXUnversioned.h"
+#import "EXScope.h"
 
 #import "RCTConvert.h"
 #import "RCTLog.h"
@@ -118,6 +119,8 @@ static BOOL RCTHasCreatedStorageDirectory = NO;
   // written to disk after all mutations.
   NSMutableDictionary<NSString *, NSString *> *_manifest;
 }
+
+@synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE(ExponentLegacyAsyncLocalStorage)
 
@@ -228,6 +231,50 @@ RCT_EXPORT_METHOD(getAllKeys:(RCTResponseSenderBlock)callback)
     callback(@[errorOut, (id)kCFNull]);
   } else {
     callback(@[(id)kCFNull, _manifest.allKeys]);
+  }
+}
+
+- (NSString *)migrationDoneKey
+{
+  return [_bridge.experienceScope.experienceId stringByAppendingString:@".migrationDone"];
+}
+
+RCT_REMAP_METHOD(isMigrationDone,
+                 isMigrationDoneWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+  NSDictionary *errorOut = [self _ensureSetup];
+  if (errorOut) {
+    reject(@"E_LEGACY_ASYNCSTORAGE", @"Error setting up LegacyAsyncStorage", nil);
+  } else {
+    NSString *key = [self migrationDoneKey];
+    BOOL done = _manifest[key] && [_manifest[key] isEqualToString:@"YES"];
+    resolve(@(done));
+  }
+}
+
+RCT_REMAP_METHOD(setMigrationDone,
+                 setMigrationDoneWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+  NSDictionary *errorOut = [self _ensureSetup];
+  if (errorOut) {
+    reject(@"E_LEGACY_ASYNCSTORAGE", @"Error setting up LegacyAsyncStorage", nil);
+  } else {
+    _manifest[[self migrationDoneKey]] = @"YES";
+
+    NSError *error = nil;
+    NSString *manifestStr = RCTJSONStringify(_manifest, &error);
+    if (error) {
+      reject(@"E_LEGACY_ASYNCSTORAGE", @"Error writing LegacyAsyncStorage manifest", error);
+    }
+
+    [manifestStr writeToFile:RCTGetManifestFilePath() atomically:YES encoding:NSUTF8StringEncoding error:&error];
+    if (error) {
+      reject(@"E_LEGACY_ASYNCSTORAGE", @"Error writing LegacyAsyncStorage manifest", error);
+    }
+
+    resolve(nil);
   }
 }
 
