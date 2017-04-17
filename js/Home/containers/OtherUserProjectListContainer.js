@@ -48,16 +48,16 @@ export default graphql(UsersAppsQuery, {
             offset: apps.length,
           },
           updateQuery: (previousData, { fetchMoreResult }) => {
-            if (!fetchMoreResult.data) {
+            if (!fetchMoreResult.usersApps) {
               return previousData;
             }
 
             return Object.assign({}, previousData, {
               usersApps: {
-                ...fetchMoreResult.data.usersApps,
+                ...fetchMoreResult.usersApps,
                 apps: [
                   ...previousData.usersApps.apps,
-                  ...fetchMoreResult.data.usersApps.apps,
+                  ...fetchMoreResult.usersApps.apps,
                 ],
               },
             });
@@ -72,6 +72,6 @@ export default graphql(UsersAppsQuery, {
       limit: 15,
       offset: 0,
     },
-    fetchPolicy: 'network-only',
+    fetchPolicy: 'cache-and-network',
   }),
 })(ProjectList);

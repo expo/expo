@@ -67,7 +67,7 @@ const SearchQuery = gql`
       limit: props.limit,
       query: props.query || '',
     },
-    fetchPolicy: 'network-only',
+    fetchPolicy: 'cache-and-network',
   }),
 })
 export default class SearchScreen extends React.Component {

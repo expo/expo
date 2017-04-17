@@ -6,25 +6,35 @@ import { graphql } from 'react-apollo';
 import ProjectList from '../components/ProjectList';
 
 const MyAppsQuery = gql`
-  query MyApps($limit: Int!, $offset: Int!){
+  query MyApps($limit: Int!, $offset: Int!) {
     viewer {
       me {
         id
         appCount
+        email
+        firstName
+        id
+        isLegacy
+        lastName
+        profilePhoto
+        username
         apps(limit: $limit, offset: $offset) {
           id
-          fullName
-          name
-          iconUrl
-          packageName
           description
+          fullName
+          iconUrl
           lastPublishedTime
           likeCount
+          name
+          packageName
+          privacy
+        }
+        likes(limit: 15, offset: 0) {
+          id
         }
       }
     }
   }
-
 `;
 
 export default graphql(MyAppsQuery, {
@@ -49,21 +59,24 @@ export default graphql(MyAppsQuery, {
             offset: apps.length,
           },
           updateQuery: (previousData, { fetchMoreResult }) => {
-            if (!fetchMoreResult.data) {
-              return previousResult;
+            if (!fetchMoreResult || !fetchMoreResult.viewer) {
+              return previousData;
             }
 
-            return Object.assign({}, previousData, {
+            let result = {
               viewer: {
                 me: {
-                  ...fetchMoreResult.data.viewer.me,
+                  ...previousData.viewer.me,
+                  ...fetchMoreResult.viewer.me,
                   apps: [
                     ...previousData.viewer.me.apps,
-                    ...fetchMoreResult.data.viewer.me.apps,
+                    ...fetchMoreResult.viewer.me.apps,
                   ],
                 },
               },
-            });
+            };
+
+            return result;
           },
         });
       },
@@ -74,5 +87,6 @@ export default graphql(MyAppsQuery, {
       limit: 15,
       offset: 0,
     },
+    fetchPolicy: 'cache-and-network',
   },
 })(ProjectList);

@@ -9,19 +9,19 @@ const MyProfileQuery = gql`
   query MyProfile {
     viewer {
       me {
+        id
         appCount
         email
         firstName
-        id
         isLegacy
         lastName
         profilePhoto
         username
         apps(limit: 15, offset: 0) {
+          id
           description
           fullName
           iconUrl
-          id
           lastPublishedTime
           likeCount
           name
@@ -53,6 +53,6 @@ export default graphql(MyProfileQuery, {
     };
   },
   options: {
-    fetchPolicy: 'network-only',
+    fetchPolicy: 'cache-and-network',
   },
 })(Profile);
