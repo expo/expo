@@ -202,7 +202,7 @@ let BrowserActions = {
   @action async loadSettingsAsync() {
     let settings = await LocalStorage.getSettingsAsync();
 
-    if (settings.legacyMenuGesture) {
+    if (settings && settings.legacyMenuGesture) {
       try {
         await ExponentKernel.setIsLegacyMenuBehaviorEnabledAsync(
           useLegacyGesture
