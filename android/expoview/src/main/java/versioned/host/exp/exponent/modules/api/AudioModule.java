@@ -38,6 +38,7 @@ import java.util.UUID;
 
 import host.exp.exponent.utils.ExpFileUtils;
 import host.exp.exponent.utils.ScopedContext;
+import versioned.host.exp.exponent.ReadableObjectUtils;
 
 public class AudioModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
   private static final float INITIAL_VOLUME = 1f;
@@ -604,7 +605,7 @@ public class AudioModule extends ReactContextBaseJavaModule implements Lifecycle
     final WritableMap pathOptions = Arguments.createMap();
     pathOptions.putBoolean("cache", true);
     try {
-      final File directory = new File(mScopedContext.toScopedPath("Audio", pathOptions));
+      final File directory = new File(mScopedContext.toScopedPath("Audio", ReadableObjectUtils.readableToJson(pathOptions)));
       ExpFileUtils.ensureDirExists(directory);
       mRecordingFilePath = directory + File.separator + filename;
     } catch (final IOException e) {

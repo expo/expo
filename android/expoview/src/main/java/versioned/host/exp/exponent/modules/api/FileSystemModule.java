@@ -27,7 +27,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okio.BufferedSink;
 import okio.Okio;
-import versioned.host.exp.exponent.ScopedReactApplicationContext;
+import versioned.host.exp.exponent.ReadableObjectUtils;
 
 public class FileSystemModule extends ReactContextBaseJavaModule {
   private static final String TAG = FileSystemModule.class.getSimpleName();
@@ -47,7 +47,7 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void getInfoAsync(String filepath, ReadableMap options, Promise promise) {
     try {
-      File file = new File(mScopedContext.toScopedPath(filepath, options));
+      File file = new File(mScopedContext.toScopedPath(filepath, ReadableObjectUtils.readableToJson(options)));
       WritableMap result = Arguments.createMap();
       if (file.exists()) {
         result.putBoolean("exists", true);
@@ -71,7 +71,7 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void deleteAsync(String filepath, ReadableMap options, Promise promise) {
     try {
-      File file = new File(mScopedContext.toScopedPath(filepath, options));
+      File file = new File(mScopedContext.toScopedPath(filepath, ReadableObjectUtils.readableToJson(options)));
       if (!file.exists()) {
         throw new IOException("File '" + filepath + "' does not exist");
       }
@@ -97,7 +97,7 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
       @Override
       public void onResponse(Call call, Response response) throws IOException {
         try {
-          File file = new File(mScopedContext.toScopedPath(filepath, options));
+          File file = new File(mScopedContext.toScopedPath(filepath, ReadableObjectUtils.readableToJson(options)));
           file.delete();
           BufferedSink sink = Okio.buffer(Okio.sink(file));
           sink.writeAll(response.body().source());

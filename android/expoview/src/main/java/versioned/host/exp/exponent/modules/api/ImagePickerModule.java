@@ -31,6 +31,7 @@ import host.exp.exponent.ActivityResultListener;
 import host.exp.exponent.utils.ExpFileUtils;
 import host.exp.exponent.utils.ScopedContext;
 import host.exp.expoview.Exponent;
+import versioned.host.exp.exponent.ReadableObjectUtils;
 
 public class ImagePickerModule extends ReactContextBaseJavaModule implements ActivityResultListener {
   static final int REQUEST_LAUNCH_CAMERA = 1;
@@ -268,7 +269,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
     String filename = UUID.randomUUID().toString();
     WritableMap options = Arguments.createMap();
     options.putBoolean("cache", true);
-    File directory = new File(mScopedContext.toScopedPath("ImagePicker", options));
+    File directory = new File(mScopedContext.toScopedPath("ImagePicker", ReadableObjectUtils.readableToJson(options)));
     ExpFileUtils.ensureDirExists(directory);
     return directory + File.separator + filename + ".jpg";
   }

@@ -27,6 +27,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.theartofdev.edmodo.cropper.CropImage;
 
+import abi16_0_0.host.exp.exponent.ReadableObjectUtils;
 import host.exp.exponent.ActivityResultListener;
 import host.exp.exponent.utils.ExpFileUtils;
 import host.exp.exponent.utils.ScopedContext;
@@ -268,7 +269,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
     String filename = UUID.randomUUID().toString();
     WritableMap options = Arguments.createMap();
     options.putBoolean("cache", true);
-    File directory = new File(mScopedContext.toScopedPath("ImagePicker", options));
+    File directory = new File(mScopedContext.toScopedPath("ImagePicker", ReadableObjectUtils.readableToJson(options)));
     ExpFileUtils.ensureDirExists(directory);
     return directory + File.separator + filename + ".jpg";
   }

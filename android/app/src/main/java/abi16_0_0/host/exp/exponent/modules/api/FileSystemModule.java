@@ -17,6 +17,7 @@ import abi16_0_0.com.facebook.react.bridge.WritableMap;
 import abi16_0_0.com.facebook.react.bridge.Arguments;
 import abi16_0_0.com.facebook.react.modules.network.OkHttpClientProvider;
 
+import abi16_0_0.host.exp.exponent.ReadableObjectUtils;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.utils.ExpFileUtils;
 import host.exp.exponent.utils.ScopedContext;
@@ -47,7 +48,7 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void getInfoAsync(String filepath, ReadableMap options, Promise promise) {
     try {
-      File file = new File(mScopedContext.toScopedPath(filepath, options));
+      File file = new File(mScopedContext.toScopedPath(filepath, ReadableObjectUtils.readableToJson(options)));
       WritableMap result = Arguments.createMap();
       if (file.exists()) {
         result.putBoolean("exists", true);
@@ -71,7 +72,7 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void deleteAsync(String filepath, ReadableMap options, Promise promise) {
     try {
-      File file = new File(mScopedContext.toScopedPath(filepath, options));
+      File file = new File(mScopedContext.toScopedPath(filepath, ReadableObjectUtils.readableToJson(options)));
       if (!file.exists()) {
         throw new IOException("File '" + filepath + "' does not exist");
       }
@@ -97,7 +98,7 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
       @Override
       public void onResponse(Call call, Response response) throws IOException {
         try {
-          File file = new File(mScopedContext.toScopedPath(filepath, options));
+          File file = new File(mScopedContext.toScopedPath(filepath, ReadableObjectUtils.readableToJson(options)));
           file.delete();
           BufferedSink sink = Okio.buffer(Okio.sink(file));
           sink.writeAll(response.body().source());

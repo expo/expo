@@ -30,7 +30,8 @@ import android.support.annotation.Nullable;
 import android.view.Display;
 
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ReadableMap;
+
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -62,11 +63,11 @@ public class ScopedContext extends Context {
   }
 
   public String toScopedPath(String path) throws IOException {
-    return toScopedPath(path, Arguments.createMap());
+    return toScopedPath(path, new JSONObject());
   }
 
-  public String toScopedPath(String path, ReadableMap options) throws IOException {
-    File root = options.hasKey("cache") && options.getBoolean("cache") ? getCacheDir() : getFilesDir();
+  public String toScopedPath(String path, JSONObject options) throws IOException {
+    File root = options.optBoolean("cache", false) ? getCacheDir() : getFilesDir();
     ExpFileUtils.ensureDirExists(root);
     File file = new File(root + "/" + path);
     String fileCanonicalPath = file.getCanonicalPath();
