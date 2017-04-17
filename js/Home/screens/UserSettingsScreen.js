@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { connect } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
+import { Constants } from 'expo';
 
 import AuthTokenActions from '../../Flux/AuthTokenActions';
 import BrowserActions from '../../Flux/BrowserActions';
@@ -84,6 +85,7 @@ export default class UserSettingsScreen extends React.Component {
 
   _renderMenuGestureOptions() {
     const { legacyMenuGesture } = this.props;
+    const twoFingerGestureDescription = `Two-finger ${forceTouchAvailable ? 'force touch' : 'long-press'}`;
 
     return (
       <View>
@@ -101,7 +103,7 @@ export default class UserSettingsScreen extends React.Component {
             ]}>
             <View style={styles.cardBody}>
               <Text style={SharedStyles.genericCardTitle}>
-                Shake device
+                {Constants.isDevice ? 'Shake device' : '\u2318D'}
               </Text>
             </View>
             {legacyMenuGesture === false && this._renderCheckmark()}
@@ -119,7 +121,9 @@ export default class UserSettingsScreen extends React.Component {
             ]}>
             <View style={styles.cardBody}>
               <Text style={SharedStyles.genericCardTitle}>
-                Two-finger {forceTouchAvailable ? 'force touch' : 'long-press'}
+                {Constants.isDevice
+                  ? twoFingerGestureDescription
+                  : 'Expo Button'}
               </Text>
             </View>
             {legacyMenuGesture && this._renderCheckmark()}
