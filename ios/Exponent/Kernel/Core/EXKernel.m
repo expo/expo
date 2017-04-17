@@ -596,8 +596,8 @@ continueUserActivity:(NSUserActivity *)userActivity
   }
   
   if (_bridgeRegistry.lastKnownForegroundBridge) {
-    EXKernelBridgeRecord *foregroundRecord = [_bridgeRegistry recordForBridge:_bridgeRegistry.lastKnownForegroundBridge];
-    id appStateModule = [self _nativeModuleForAppManager:foregroundRecord.appManager named:@"AppState"];
+    EXReactAppManager *appManager = [_bridgeRegistry lastKnownForegroundAppManager];
+    id appStateModule = [self _nativeModuleForAppManager:appManager named:@"AppState"];
     NSString *lastKnownState;
     if ([appStateModule respondsToSelector:@selector(lastKnownState)]) {
       lastKnownState = [appStateModule lastKnownState];
