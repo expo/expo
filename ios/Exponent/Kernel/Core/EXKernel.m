@@ -450,10 +450,20 @@ continueUserActivity:(NSUserActivity *)userActivity
 
 #pragma mark - EXKernelModuleDelegate
 
+- (BOOL)kernelModuleShouldEnableLegacyMenuBehavior:(EXKernelModule *)module
+{
+  return [EXKernelDevKeyCommands sharedInstance].isLegacyMenuBehaviorEnabled;
+}
+
+- (void)kernelModule:(EXKernelModule *)module didSelectEnableLegacyMenuBehavior:(BOOL)isEnabled
+{
+  [EXKernelDevKeyCommands sharedInstance].isLegacyMenuBehaviorEnabled = isEnabled;
+}
+
 - (BOOL)kernelModuleShouldEnableDevtools:(__unused EXKernelModule *)module
 {
   return (
-    (!EX_ENABLE_LEGACY_MENU_BEHAVIOR) &&
+    (![EXKernelDevKeyCommands sharedInstance].isLegacyMenuBehaviorEnabled) &&
     _bridgeRegistry.lastKnownForegroundAppManager != _bridgeRegistry.kernelAppManager &&
     [_bridgeRegistry.lastKnownForegroundAppManager areDevtoolsEnabled]
   );
