@@ -87,7 +87,7 @@ export default StyleSheet.create({
   genericCardTitle: {
     color: Colors.blackText,
     fontSize: 16,
-    marginRight: 170,
+    marginRight: 50,
     marginBottom: 2,
     fontWeight: '400',
   },
