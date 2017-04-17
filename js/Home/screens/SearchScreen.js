@@ -92,6 +92,8 @@ export default class SearchScreen extends React.Component {
     text: '',
   };
 
+  _searchSubscription: any;
+
   componentWillMount() {
     const emitter = this.props.route.getEventEmitter();
     this._searchSubscription = emitter.addListener(
@@ -100,7 +102,7 @@ export default class SearchScreen extends React.Component {
     );
   }
 
-  _handleChangeQuery = text => {
+  _handleChangeQuery = (text: string) => {
     this.props.navigator.updateCurrentRouteParams({
       query: text,
       limit: text.length > 0 ? ResultsLimit : 0,
