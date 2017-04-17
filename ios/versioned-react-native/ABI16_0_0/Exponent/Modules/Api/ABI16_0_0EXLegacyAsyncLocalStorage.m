@@ -16,6 +16,7 @@
 
 #import "ABI16_0_0EXLegacyAsyncLocalStorage.h"
 #import "ABI16_0_0EXUnversioned.h"
+#import "ABI16_0_0EXScope.h"
 
 #import "ABI16_0_0RCTConvert.h"
 #import "ABI16_0_0RCTLog.h"
@@ -118,6 +119,8 @@ static BOOL ABI16_0_0RCTHasCreatedStorageDirectory = NO;
   // written to disk after all mutations.
   NSMutableDictionary<NSString *, NSString *> *_manifest;
 }
+
+@synthesize bridge = _bridge;
 
 ABI16_0_0RCT_EXPORT_MODULE(ExponentLegacyAsyncLocalStorage)
 
@@ -228,6 +231,50 @@ ABI16_0_0RCT_EXPORT_METHOD(getAllKeys:(ABI16_0_0RCTResponseSenderBlock)callback)
     callback(@[errorOut, (id)kCFNull]);
   } else {
     callback(@[(id)kCFNull, _manifest.allKeys]);
+  }
+}
+
+- (NSString *)migrationDoneKey
+{
+  return [_bridge.experienceScope.experienceId stringByAppendingString:@".migrationDone"];
+}
+
+ABI16_0_0RCT_REMAP_METHOD(isMigrationDone,
+                 isMigrationDoneWithResolver:(ABI16_0_0RCTPromiseResolveBlock)resolve
+                 rejecter:(ABI16_0_0RCTPromiseRejectBlock)reject)
+{
+  NSDictionary *errorOut = [self _ensureSetup];
+  if (errorOut) {
+    reject(@"E_LEGACY_ASYNCSTORAGE", @"Error setting up LegacyAsyncStorage", nil);
+  } else {
+    NSString *key = [self migrationDoneKey];
+    BOOL done = _manifest[key] && [_manifest[key] isEqualToString:@"YES"];
+    resolve(@(done));
+  }
+}
+
+ABI16_0_0RCT_REMAP_METHOD(setMigrationDone,
+                 setMigrationDoneWithResolver:(ABI16_0_0RCTPromiseResolveBlock)resolve
+                 rejecter:(ABI16_0_0RCTPromiseRejectBlock)reject)
+{
+  NSDictionary *errorOut = [self _ensureSetup];
+  if (errorOut) {
+    reject(@"E_LEGACY_ASYNCSTORAGE", @"Error setting up LegacyAsyncStorage", nil);
+  } else {
+    _manifest[[self migrationDoneKey]] = @"YES";
+
+    NSError *error = nil;
+    NSString *manifestStr = ABI16_0_0RCTJSONStringify(_manifest, &error);
+    if (error) {
+      reject(@"E_LEGACY_ASYNCSTORAGE", @"Error writing LegacyAsyncStorage manifest", error);
+    }
+
+    [manifestStr writeToFile:ABI16_0_0RCTGetManifestFilePath() atomically:YES encoding:NSUTF8StringEncoding error:&error];
+    if (error) {
+      reject(@"E_LEGACY_ASYNCSTORAGE", @"Error writing LegacyAsyncStorage manifest", error);
+    }
+
+    resolve(nil);
   }
 }
 
