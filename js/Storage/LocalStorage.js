@@ -14,7 +14,7 @@ const Keys = mapValues(
     AuthTokens: 'authTokens',
     History: 'history',
     Settings: 'settings',
-    NuxIsFinished: 'nuxIsFinishedOct-10-2016',
+    NuxIsFinished: 'nuxIsFinishedApr-17-2017',
   },
   value => `Exponent.${value}`
 );

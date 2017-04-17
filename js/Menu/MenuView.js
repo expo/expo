@@ -165,7 +165,7 @@ export default class MenuView extends React.Component {
     if (Expo.Constants.isDevice) {
       tooltipMessage = 'Shake your device to show this menu.';
     } else {
-      tooltipMessage = 'In iPhone Simulator, press Cmd+D to show this menu.';
+      tooltipMessage = 'In iPhone Simulator, press \u2318D to show this menu.';
     }
     let headingStyles = MENU_NARROW_SCREEN
       ? [styles.nuxHeading, styles.nuxHeadingNarrow]
