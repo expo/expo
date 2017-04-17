@@ -14,6 +14,7 @@ import {
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { connect } from 'react-redux';
 import { connectActionSheet } from '@expo/react-native-action-sheet';
+import { withNavigation } from '@expo/ex-navigation';
 
 import AuthTokenActions from '../../Flux/AuthTokenActions';
 
@@ -44,7 +45,7 @@ export default class ProfileScreen extends React.Component {
             if (params.username) {
               return <OptionsButtonIOS />;
             } else {
-              return <SignOutButtonIOS />;
+              return <UserSettingsButtonIOS />;
             }
           },
         },
@@ -155,6 +156,26 @@ class OptionsButtonAndroid extends React.Component {
         }
       }
     );
+  };
+}
+
+@onlyIfAuthenticated
+@withNavigation
+class UserSettingsButtonIOS extends React.Component {
+  render() {
+    return (
+      <TouchableOpacity
+        style={styles.buttonContainer}
+        onPress={this._handlePress}>
+        <Text style={{ fontSize: 16, color: '#4E9BDE' }}>
+          Options
+        </Text>
+      </TouchableOpacity>
+    );
+  }
+
+  _handlePress = () => {
+    this.props.navigator.push('userSettings');
   };
 }
 

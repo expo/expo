@@ -37,6 +37,7 @@ export default class AppContainer extends React.Component {
 
   _initializeStateAsync = async () => {
     try {
+      ExStore.dispatch(BrowserActions.loadSettingsAsync());
       ExStore.dispatch(BrowserActions.loadHistoryAsync());
       let storedAuthTokens = await LocalStorage.getAuthTokensAsync();
 

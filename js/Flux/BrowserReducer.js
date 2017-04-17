@@ -25,6 +25,7 @@ const BrowserState = Record({
   foregroundTaskUrl: null,
   tasks: Map(),
   history: List(),
+  settings: Map(),
 });
 const LoadingError = Record({
   code: 0,
@@ -46,6 +47,9 @@ const BrowserTask = Record({
   isLoading: false,
   loadingError: null,
   initialProps: null,
+});
+const Settings = Record({
+  legacyMenuGesture: false,
 });
 
 export default Flux.createReducer(new BrowserState(), {
@@ -182,6 +186,30 @@ export default Flux.createReducer(new BrowserState(), {
     });
   },
 
+  [BrowserActionTypes.loadSettingsAsync]: {
+    then(state, action) {
+      let { payload } = action;
+      let newSettings = createImmutableSettings(payload.settings);
+
+      return state.merge({
+        settings: newSettings,
+      });
+    },
+  },
+
+  [BrowserActionTypes.setLegacyMenuGestureAsync]: {
+    then(state, action) {
+      let { payload } = action;
+      let { legacyMenuGesture } = payload;
+
+      let newSettings = state.settings.merge({ legacyMenuGesture });
+
+      return state.merge({
+        settings: newSettings,
+      });
+    },
+  },
+
   [BrowserActionTypes.loadHistoryAsync]: {
     then(state, action) {
       let { payload } = action;
@@ -270,6 +298,10 @@ export default Flux.createReducer(new BrowserState(), {
 
 function createImmutableHistory(history) {
   return new List(history.map(item => new HistoryItem(item)));
+}
+
+function createImmutableSettings(settings) {
+  return new Settings(settings);
 }
 
 function createImmutableTask(meta) {

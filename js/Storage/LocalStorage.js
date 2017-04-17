@@ -13,6 +13,7 @@ const Keys = mapValues(
   {
     AuthTokens: 'authTokens',
     History: 'history',
+    Settings: 'settings',
     NuxIsFinished: 'nuxIsFinishedOct-10-2016',
   },
   value => `Exponent.${value}`
@@ -25,6 +26,28 @@ function maybeMigrateFromLegacyAsync() {
 async function getIsNuxFinishedAsync() {
   let result = await AsyncStorage.getItem(Keys.NuxIsFinished);
   return result;
+}
+
+async function getSettingsAsync() {
+  let results = await AsyncStorage.getItem(Keys.Settings);
+
+  try {
+    let settings = JSON.parse(results);
+
+    return settings;
+  } catch (e) {
+    return {};
+  }
+}
+
+async function updateSettingsAsync(updatedSettings) {
+  let currentSettings = await getSettingsAsync();
+  let newSettings = {
+    ...currentSettings,
+    ...updatedSettings,
+  };
+
+  return AsyncStorage.setItem(Keys.Settings, JSON.stringify(newSettings));
 }
 
 async function getAuthTokensAsync() {
@@ -91,10 +114,12 @@ export default {
   getAuthTokensAsync,
   getIsNuxFinishedAsync,
   getHistoryAsync,
+  getSettingsAsync,
   saveAuthTokensAsync,
   saveHistoryAsync,
   saveIsNuxFinishedAsync,
   removeAuthTokensAsync,
   updateIdTokenAsync,
+  updateSettingsAsync,
   maybeMigrateFromLegacyAsync,
 };

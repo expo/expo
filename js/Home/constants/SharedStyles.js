@@ -76,4 +76,19 @@ export default StyleSheet.create({
     paddingRight: 10,
     paddingBottom: 17,
   },
+  genericCardDescriptionContainer: {
+    paddingHorizontal: 15,
+    paddingTop: 10,
+  },
+  genericCardDescriptionText: {
+    color: Colors.greyText,
+    fontSize: 13,
+  },
+  genericCardTitle: {
+    color: Colors.blackText,
+    fontSize: 16,
+    marginRight: 170,
+    marginBottom: 2,
+    fontWeight: '400',
+  },
 });

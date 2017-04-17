@@ -12,6 +12,7 @@ export default createRouter(
     signIn: () => require('../screens/SignInScreen').default,
     signUp: () => require('../screens/SignUpScreen').default,
     qrCode: () => require('../screens/QRCodeScreen').default,
+    userSettings: () => require('../screens/UserSettingsScreen').default,
     projectsForUser: () => require('../screens/ProjectsForUserScreen').default,
     rootNavigation: () => require('./RootNavigation').default,
   }),

@@ -7,6 +7,7 @@
 
 import { action } from 'Flux';
 import ExManifests from 'ExManifests';
+import ExponentKernel from 'ExponentKernel';
 import LocalStorage from 'LocalStorage';
 
 let _navigationRequestId = 0;
@@ -196,6 +197,38 @@ let BrowserActions = {
   @action async loadHistoryAsync() {
     let history = await LocalStorage.getHistoryAsync();
     return { history };
+  },
+
+  @action async loadSettingsAsync() {
+    let settings = await LocalStorage.getSettingsAsync();
+
+    if (settings.legacyMenuGesture) {
+      try {
+        await ExponentKernel.setIsLegacyMenuBehaviorEnabledAsync(
+          useLegacyGesture
+        );
+      } catch (e) {}
+    }
+
+    return { settings };
+  },
+
+  @action async setLegacyMenuGestureAsync(useLegacyGesture) {
+    try {
+      await Promise.all([
+        ExponentKernel.setIsLegacyMenuBehaviorEnabledAsync(useLegacyGesture),
+        LocalStorage.updateSettingsAsync({
+          legacyMenuGesture: useLegacyGesture,
+        }),
+      ]);
+    } catch (e) {
+      alert(
+        'Oops, something went wrong and we were unable to change the gesture type!'
+      );
+      return { legacyMenuGesture: !useLegacyGesture };
+    }
+
+    return { legacyMenuGesture: useLegacyGesture };
   },
 
   @action async clearHistoryAsync() {

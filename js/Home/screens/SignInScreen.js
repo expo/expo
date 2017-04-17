@@ -65,7 +65,7 @@ export default class SignInScreen extends React.Component {
           <Form.Input
             autoCapitalize="none"
             autoCorrect={false}
-            autofocus
+            autoFocus
             blurOnSubmit={false}
             keyboardType="email-address"
             label="E-mail or username"

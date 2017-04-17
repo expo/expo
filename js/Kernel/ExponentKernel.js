@@ -20,6 +20,12 @@ if (NativeModules.ExponentKernel) {
   };
 
   ExponentKernel = {
+    setIsLegacyMenuBehaviorEnabledAsync: async () => {
+      log('setIsLegacyMenuBehaviorEnabledAsync');
+    },
+    isLegacyMenuBehaviorEnabledAsync: async () => {
+      log('isLegacyMenuBehaviorEnabledAsync');
+    },
     routeDidForeground: log.bind(null, 'routeDidForeground'),
     onLoaded: log.bind(null, 'onLoaded'),
     openURL: log.bind(null, 'openURL'),

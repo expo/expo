@@ -41,8 +41,6 @@ const KERNEL_ROUTE_BROWSER = 1;
 const FORCE_TOUCH_SWITCH_THRESHOLD = 0.995;
 const FORCE_TOUCH_CAPTURE_THRESHOLD = 0.85;
 
-const ENABLE_LEGACY_MENU_BEHAVIOR = false;
-
 const MENU_FADE_IN_TOTAL_MS = 400;
 const MENU_FADE_IN_BEGIN_MS = 50; // make this one shorter
 
@@ -56,6 +54,7 @@ class KernelNavigator extends React.Component {
       isNuxFinished,
       foregroundTaskUrl,
       tasks,
+      settings,
       history,
     } = data.browser;
     return {
@@ -66,6 +65,7 @@ class KernelNavigator extends React.Component {
       isNuxFinished,
       foregroundTaskUrl,
       tasks,
+      settings,
       history,
     };
   }
@@ -154,7 +154,7 @@ class KernelNavigator extends React.Component {
       : [this._homeRoute];
 
     let simulatorButton;
-    if (ENABLE_LEGACY_MENU_BEHAVIOR) {
+    if (this.props.settings.legacyMenuGesture) {
       // EXButton appears for simulators on computers with no force touch
       // because all the gestures are too annoying in this circumstance.
       if (!ExponentConstants.isDevice && tasks.size > 0 && !isShell) {
@@ -183,7 +183,7 @@ class KernelNavigator extends React.Component {
     }
 
     let responders = {};
-    if (ENABLE_LEGACY_MENU_BEHAVIOR) {
+    if (this.props.settings.legacyMenuGesture) {
       responders = {
         onMoveShouldSetResponderCapture: this
           ._onContainerMoveShouldSetResponderCapture,
@@ -302,7 +302,7 @@ class KernelNavigator extends React.Component {
   }
 
   _handleSwitchTasksEvent = _ => {
-    if (ENABLE_LEGACY_MENU_BEHAVIOR) {
+    if (this.props.settings.legacyMenuGesture) {
       // this behavior is not available if the old button/gesture are being used instead
       return;
     }
