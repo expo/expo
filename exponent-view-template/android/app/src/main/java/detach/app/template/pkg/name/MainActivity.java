@@ -23,7 +23,7 @@ public class MainActivity extends ExponentActivity {
 
   @Override
   public List<String> sdkVersions() {
-    return new ArrayList<>(Arrays.asList("15.0.0"));
+    return new ArrayList<>(Arrays.asList("16.0.0"));
   }
 
   @Override
