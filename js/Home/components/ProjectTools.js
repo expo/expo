@@ -1,3 +1,7 @@
+/**
+ * @flow
+ */
+
 import React from 'react';
 import { AppState, Clipboard, View } from 'react-native';
 
@@ -6,26 +10,38 @@ import OpenFromClipboardButton from './OpenFromClipboardButton';
 
 const CLIPBOARD_POLL_INTERVAL = 2000;
 
-function clipboardMightBeOpenable(str) {
+function clipboardMightBeOpenable(str: string): boolean {
   if (!str) {
-    return;
+    return false;
   }
 
   // @username/experience
-  if (str.match(/@\w+\/\w+/)) {
+  if (str.match(/^@\w+\/\w+/)) {
     return true;
-  } else if (str.includes('exp://')) {
+  } else if (str.match(/^exp:\/\//)) {
     return true;
   }
 
   return false;
 }
 
+type Props = {
+  pollForUpdates: boolean,
+};
+
+type State = {
+  clipboardContents: string,
+  displayOpenClipboardButton: boolean,
+};
+
 export default class ProjectTools extends React.Component {
-  state = {
+  props: Props;
+  state: State = {
     clipboardContents: '',
     displayOpenClipboardButton: false,
   };
+
+  _clipboardUpdateInterval: ?number = null;
 
   componentWillMount() {
     this._fetchClipboardContentsAsync();
@@ -33,14 +49,20 @@ export default class ProjectTools extends React.Component {
 
   componentDidMount() {
     this._startPollingClipboard();
+    AppState.addEventListener('change', this._maybeResumePollingFromAppState);
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps: Props) {
     this._maybeUpdatePollingState(nextProps);
   }
 
   componentWillUnmount() {
     this._stopPollingClipboard();
+
+    AppState.removeEventListener(
+      'change',
+      this._maybeResumePollingFromAppState
+    );
   }
 
   render() {
@@ -58,7 +80,7 @@ export default class ProjectTools extends React.Component {
     );
   }
 
-  _fetchClipboardContentsAsync = async () => {
+  _fetchClipboardContentsAsync = async (): Promise<void> => {
     let clipboardContents = await Clipboard.getString();
 
     if (clipboardContents !== this.state.clipboardContents) {
@@ -73,15 +95,17 @@ export default class ProjectTools extends React.Component {
     }
   };
 
-  _maybeResumePollingFromAppState = nextAppState => {
-    if (nextAppState === 'active') {
-      this._startPollingClipboard();
-    } else {
-      this._stopPollingClipboard();
+  _maybeResumePollingFromAppState = (nextAppState: string): void => {
+    if (this.props.pollForUpdates) {
+      if (nextAppState === 'active') {
+        this._startPollingClipboard();
+      } else {
+        this._stopPollingClipboard();
+      }
     }
   };
 
-  _maybeUpdatePollingState = props => {
+  _maybeUpdatePollingState = (props: Props): void => {
     if (props.pollForUpdates && !this._clipboardUpdateInterval) {
       this._startPollingClipboard();
     } else {
@@ -91,21 +115,17 @@ export default class ProjectTools extends React.Component {
     }
   };
 
-  _startPollingClipboard = () => {
+  _startPollingClipboard = (): void => {
     this._clipboardUpdateInterval = setInterval(
       this._fetchClipboardContentsAsync,
       CLIPBOARD_POLL_INTERVAL
     );
-
-    AppState.addEventListener('change', this._maybeResumePollingFromAppState);
   };
 
-  _stopPollingClipboard = () => {
-    clearInterval(this._clipboardUpdateInterval);
-    this._clipboardUpdateInterval = null;
-    AppState.removeEventListener(
-      'change',
-      this._maybeResumePollingFromAppState
-    );
+  _stopPollingClipboard = (): void => {
+    if (this._clipboardUpdateInterval) {
+      clearInterval(this._clipboardUpdateInterval);
+      this._clipboardUpdateInterval = null;
+    }
   };
 }

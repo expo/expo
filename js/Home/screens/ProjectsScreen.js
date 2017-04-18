@@ -1,4 +1,6 @@
-/* @flow */
+/**
+ * @flow
+ */
 
 import React from 'react';
 import {
@@ -29,6 +31,14 @@ import ProjectTools from '../components/ProjectTools';
 @createFocusAwareComponent
 @connect(data => HomeScreen.getDataProps(data))
 export default class HomeScreen extends React.Component {
+  props: {
+    isFocused: boolean,
+    dispatch: () => void,
+    recentHistory: any,
+    allHistory: any,
+    navigator: any,
+  };
+
   static route = {
     navigationBar: {
       title: 'Projects',
