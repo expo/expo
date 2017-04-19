@@ -66,4 +66,4 @@ Many libraries in the React Native ecosystem include instructions to run `react-
 
 ### Android
 
-Many libraries in the React Native ecosystem include instructions to run `react-native link`. These are supported with ExpoKit for Android. Note that you may have to update `android/app/build.gradle` after running `react-native link`. Change the line added by `react-native link` from `compile project(':library-name')` to `compile(project(':library-name')) { exclude module: 'react-native' }`.
+Many libraries in the React Native ecosystem include instructions to run `react-native link`. These are supported with ExpoKit for Android.
