@@ -24,6 +24,7 @@
     "apollo-client": "^1.0.3",
     "autobind-decorator": "^1.3.2",
     "dedent": "^0.7.0",
+    "es6-error": "^4.0.1",
     "expo": "~16.0.0-beta.0",
     "fbemitter": "^2.0.2",
     "graphql-tag": "^1.2.1",
