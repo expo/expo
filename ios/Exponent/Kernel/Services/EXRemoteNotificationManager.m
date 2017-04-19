@@ -78,6 +78,9 @@ NSString * const kEXCurrentAPNSTokenDefaultsKey = @"EXCurrentAPNSTokenDefaultsKe
 
 - (void)handleRemoteNotification:(NSDictionary *)notification fromBackground:(BOOL)isFromBackground
 {
+#ifdef EX_DETACHED
+  DDLogWarn(@"Expo Remote Notification services won't work in an ExpoKit app because Expo can not manage your APNS certificates.");
+#endif
   if (notification) {
     NSDictionary *body = [notification objectForKey:@"body"];
     NSString *experienceId = [notification objectForKey:@"experienceId"];
