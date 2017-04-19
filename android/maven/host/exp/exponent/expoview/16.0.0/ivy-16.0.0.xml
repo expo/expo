@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expoview" revision="16.0.0" status="integration" publication="20170417102238">
+  <info organisation="host.exp.exponent" module="expoview" revision="16.0.0" status="integration" publication="20170419104736">
     <description/>
   </info>
   <configurations>
@@ -60,7 +60,7 @@
   <dependencies>
     <dependency org="com.raizlabs.android" name="DBFlow-Compiler" rev="2.2.1" conf="apt-&gt;default"/>
     <dependency org="com.android.support" name="multidex" rev="1.0.1" conf="compile-&gt;default"/>
-    <dependency org="host.exp.exponent" name="react-native" rev="16.0.0" conf="compile-&gt;default"/>
+    <dependency org="com.facebook.react" name="react-native" rev="16.0.0" conf="compile-&gt;default"/>
     <dependency org="com.android.support" name="recyclerview-v7" rev="25.+" conf="compile-&gt;default"/>
     <dependency org="com.facebook.fresco" name="fresco" rev="0.11.0" conf="compile-&gt;default"/>
     <dependency org="com.facebook.fresco" name="animated-gif" rev="0.11.0" conf="compile-&gt;default"/>

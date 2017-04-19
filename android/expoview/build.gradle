@@ -178,7 +178,7 @@ dependencies {
   // Current react native
   compile project(':ReactAndroid')
   /* UNCOMMENT WHEN DISTRIBUTING
-  compile 'host.exp.exponent:react-native:16.0.0'
+  compile 'com.facebook.react:react-native:16.0.0'
   END UNCOMMENT WHEN DISTRIBUTING */
 
   // React native dependencies

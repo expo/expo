@@ -286,8 +286,9 @@ public class ReactAndroidCodeTransformer {
 
     replaceInFile(new File(projectRoot + REACT_ANDROID_DEST_ROOT + "/release.gradle"),
         "group = GROUP",
-        "group = 'host.exp.exponent'");
+        "group = 'com.facebook.react'");
 
+    // This version also gets updated in android-tasks.js
     replaceInFile(new File(projectRoot + REACT_ANDROID_DEST_ROOT + "/release.gradle"),
         "version = VERSION_NAME",
         "version = '" + sdkVersion + "'");

@@ -96,7 +96,7 @@ afterEvaluate { project ->
     }
 
     version = '16.0.0'
-    group = 'host.exp.exponent'
+    group = 'com.facebook.react'
 
     signing {
         required { isReleaseBuild() && gradle.taskGraph.hasTask('uploadArchives') }

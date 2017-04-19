@@ -93,6 +93,12 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>com.facebook.react</groupId>
+      <artifactId>react-native</artifactId>
+      <version>16.0.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>com.squareup.okhttp3</groupId>
       <artifactId>okhttp</artifactId>
       <version>3.4.1</version>
@@ -144,12 +150,6 @@
       <groupId>com.facebook.fresco</groupId>
       <artifactId>animated-gif</artifactId>
       <version>0.11.0</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>host.exp.exponent</groupId>
-      <artifactId>react-native</artifactId>
-      <version>16.0.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
