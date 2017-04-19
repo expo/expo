@@ -24,23 +24,21 @@ import 'typeface-source-sans-pro';
 import 'typeface-source-code-pro';
 
 import unversioned from 'data/unversioned.yaml';
+import v16 from 'data/v16.yaml';
 import v15 from 'data/v15.yaml';
 import v14 from 'data/v14.yaml';
 import v13 from 'data/v13.yaml';
 import v12 from 'data/v12.yaml';
 import v11 from 'data/v11.yaml';
-import v10 from 'data/v10.yaml';
-import v9 from 'data/v9.yaml';
 
 const versions = [
   // `unversioned`,
+  `v16.0.0`,
   `v15.0.0`,
   `v14.0.0`,
   `v13.0.0`,
   `v12.0.0`,
   `v11.0.0`,
-  `v10.0.0`,
-  `v9.0.0`,
 ];
 
 // NOTE(brentvatne): super ugly hack because navbar depends on us adding
@@ -81,6 +79,9 @@ class Wrapper extends React.Component {
       // case 'unversioned':
       //   routes = unversioned;
       //   break;
+      case 'v16.0.0':
+        routes = v16;
+        break;
       case 'v15.0.0':
         routes = v15;
         break;
@@ -96,14 +97,8 @@ class Wrapper extends React.Component {
       case 'v11.0.0':
         routes = v11;
         break;
-      case 'v10.0.0':
-        routes = v10;
-        break;
-      case 'v9.0.0':
-        routes = v9;
-        break;
       default:
-        routes = v15;
+        routes = v16;
     }
     return routes;
   };
