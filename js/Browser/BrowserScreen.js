@@ -429,7 +429,9 @@ class BrowserScreen extends React.Component {
     let { id, message, stack, fatal } = event.nativeEvent;
     let shouldReload = await ExponentKernel.shouldCurrentTaskAutoReload();
     if (shouldReload) {
-      Browser.refresh();
+      // call this._refresh rather than Browser.refresh because it works
+      // in both browser and shell apps.
+      this._refresh();
     } else {
       // show error screen with manual reload button
       this.props.dispatch(
