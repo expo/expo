@@ -11,6 +11,7 @@
 #import "ABI15_0_0EXLinkingManager.h"
 #import "ABI15_0_0EXVersionManager.h"
 #import "ABI15_0_0EXScope.h"
+#import "ABI15_0_0EXStatusBarManager.h"
 
 #import <ReactABI15_0_0/ABI15_0_0RCTAssert.h>
 #import <ReactABI15_0_0/ABI15_0_0RCTBridge.h>
@@ -39,8 +40,6 @@ static NSNumber *ABI15_0_0EXVersionManagerIsFirstLoad;
 
 // is this the first time this ABI has been touched at runtime?
 @property (nonatomic, assign) BOOL isFirstLoad;
-@property (nonatomic, assign) BOOL isStatusBarHidden;
-@property (nonatomic, assign) UIStatusBarStyle statusbarStyle;
 
 @end
 
@@ -85,17 +84,12 @@ static NSNumber *ABI15_0_0EXVersionManagerIsFirstLoad;
 
 - (void)saveSharedState
 {
-  _statusbarStyle = [ABI15_0_0RCTSharedApplication() statusBarStyle];
-  _isStatusBarHidden = [ABI15_0_0RCTSharedApplication() isStatusBarHidden];
+
 }
 
 - (void)resetSharedState
 {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  [ABI15_0_0RCTSharedApplication() setStatusBarStyle:_statusbarStyle];
-  [ABI15_0_0RCTSharedApplication() setStatusBarHidden: _isStatusBarHidden];
-#pragma clang diagnostic pop
+
 }
 
 - (void)invalidate
@@ -260,6 +254,7 @@ static NSNumber *ABI15_0_0EXVersionManagerIsFirstLoad;
                                     [[ABI15_0_0EXDevSettings alloc] initWithExperienceId:experienceScope.experienceId isDevelopment:isDeveloper],
                                     [[ABI15_0_0EXDisabledDevLoadingView alloc] init],
                                     [[ABI15_0_0EXLinkingManager alloc] initWithInitialUrl:initialUri],
+                                    [[ABI15_0_0EXStatusBarManager alloc] init],
                                     ]];
   if (params[@"frame"]) {
     [extraModules addObject:[[ABI15_0_0EXFrameExceptionsManager alloc] initWithDelegate:params[@"frame"]]];

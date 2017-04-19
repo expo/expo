@@ -13,6 +13,7 @@
 #import "ABI13_0_0EXVersionManager.h"
 #import "ABI13_0_0EXAmplitude.h"
 #import "ABI13_0_0EXSegment.h"
+#import "ABI13_0_0EXStatusBarManager.h"
 #import "ABI13_0_0EXUtil.h"
 
 #import <ReactABI13_0_0/ABI13_0_0RCTAssert.h>
@@ -33,8 +34,6 @@ static NSNumber *ABI13_0_0EXVersionManagerIsFirstLoad;
 
 // is this the first time this ABI has been touched at runtime?
 @property (nonatomic, assign) BOOL isFirstLoad;
-@property (nonatomic, assign) BOOL isStatusBarHidden;
-@property (nonatomic, assign) UIStatusBarStyle statusbarStyle;
 
 @end
 
@@ -84,15 +83,12 @@ static NSNumber *ABI13_0_0EXVersionManagerIsFirstLoad;
 
 - (void)saveSharedState
 {
-  _statusbarStyle = [ABI13_0_0RCTSharedApplication() statusBarStyle];
-  _isStatusBarHidden = [ABI13_0_0RCTSharedApplication() isStatusBarHidden];
+
 }
 
 - (void)resetSharedState
 {
 
-  [ABI13_0_0RCTSharedApplication() setStatusBarStyle:_statusbarStyle];
-  [ABI13_0_0RCTSharedApplication() setStatusBarHidden: _isStatusBarHidden];
 }
 
 - (void)invalidate
@@ -191,6 +187,7 @@ static NSNumber *ABI13_0_0EXVersionManagerIsFirstLoad;
                                     [[ABI13_0_0EXNotifications alloc] initWithExperienceId:experienceId],
                                     [[ABI13_0_0EXAmplitude alloc] initWithExperienceId:experienceId],
                                     [[ABI13_0_0EXSegment alloc] init],
+                                    [[ABI13_0_0EXStatusBarManager alloc] init],
                                     [[ABI13_0_0EXUtil alloc] init],
                                     ]];
   if (params[@"frame"]) {

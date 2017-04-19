@@ -42,8 +42,6 @@ static NSNumber *ABI16_0_0EXVersionManagerIsFirstLoad;
 
 // is this the first time this ABI has been touched at runtime?
 @property (nonatomic, assign) BOOL isFirstLoad;
-@property (nonatomic, assign) BOOL isStatusBarHidden;
-@property (nonatomic, assign) UIStatusBarStyle statusbarStyle;
 
 @end
 
@@ -88,17 +86,12 @@ static NSNumber *ABI16_0_0EXVersionManagerIsFirstLoad;
 
 - (void)saveSharedState
 {
-  _statusbarStyle = [ABI16_0_0RCTSharedApplication() statusBarStyle];
-  _isStatusBarHidden = [ABI16_0_0RCTSharedApplication() isStatusBarHidden];
+
 }
 
 - (void)resetSharedState
 {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  [ABI16_0_0RCTSharedApplication() setStatusBarStyle:_statusbarStyle];
-  [ABI16_0_0RCTSharedApplication() setStatusBarHidden: _isStatusBarHidden];
-#pragma clang diagnostic pop
+
 }
 
 - (void)invalidate

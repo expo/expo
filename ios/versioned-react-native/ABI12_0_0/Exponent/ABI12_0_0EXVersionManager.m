@@ -14,6 +14,7 @@
 #import "ABI12_0_0EXVersionManager.h"
 #import "ABI12_0_0EXAmplitude.h"
 #import "ABI12_0_0EXSegment.h"
+#import "ABI12_0_0EXStatusBarManager.h"
 #import "ABI12_0_0EXUtil.h"
 
 #import "ABI12_0_0RCTAssert.h"
@@ -41,8 +42,6 @@ ABI12_0_0EXClassPointerMap *ABI12_0_0EXGetVersionedOnceTokens(void)
 
 // is this the first time this ABI has been touched at runtime?
 @property (nonatomic, assign) BOOL isFirstLoad;
-@property (nonatomic, assign) BOOL isStatusBarHidden;
-@property (nonatomic, assign) UIStatusBarStyle statusbarStyle;
 
 @end
 
@@ -92,15 +91,12 @@ ABI12_0_0EXClassPointerMap *ABI12_0_0EXGetVersionedOnceTokens(void)
 
 - (void)saveSharedState
 {
-  _statusbarStyle = [ABI12_0_0RCTSharedApplication() statusBarStyle];
-  _isStatusBarHidden = [ABI12_0_0RCTSharedApplication() isStatusBarHidden];
+
 }
 
 - (void)resetSharedState
 {
 
-  [ABI12_0_0RCTSharedApplication() setStatusBarStyle:_statusbarStyle];
-  [ABI12_0_0RCTSharedApplication() setStatusBarHidden: _isStatusBarHidden];
 }
 
 - (void)invalidate
@@ -220,6 +216,7 @@ ABI12_0_0EXClassPointerMap *ABI12_0_0EXGetVersionedOnceTokens(void)
                                     [[ABI12_0_0EXNotifications alloc] initWithExperienceId:experienceId],
                                     [[ABI12_0_0EXAmplitude alloc] initWithExperienceId:experienceId],
                                     [[ABI12_0_0EXSegment alloc] init],
+                                    [[ABI12_0_0EXStatusBarManager alloc] init],
                                     [[ABI12_0_0EXUtil alloc] init],
                                     ]];
 
