@@ -161,12 +161,6 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
   [[NSNotificationCenter defaultCenter] postNotificationName:EXAppDidRegisterForRemoteNotificationsNotification object:nil];
 }
 
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
-{
-  BOOL isFromBackground = !(application.applicationState == UIApplicationStateActive);
-  [[EXRemoteNotificationManager sharedInstance] handleRemoteNotification:notification fromBackground:isFromBackground];
-}
-
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
   BOOL isFromBackground = !(application.applicationState == UIApplicationStateActive);
