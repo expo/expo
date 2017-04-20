@@ -19,7 +19,7 @@ export default class NuxContextualMenuOverlay extends React.Component {
   render() {
     return (
       <ExTooltip
-        tooltipTitle="Pull down to show the Exponent menu."
+        tooltipTitle="Pull down to show the Expo menu."
         tooltipDescription="This allows you to pin the app to your home screen."
         tooltipAction="No thanks"
         tooltipActionIsSmall
