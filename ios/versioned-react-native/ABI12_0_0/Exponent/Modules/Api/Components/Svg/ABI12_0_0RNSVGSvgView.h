@@ -7,7 +7,7 @@
  */
 
 #import <UIKit/UIKit.h>
-#import "ABI12_0_0RNSVGBrushCOnverter.h"
+#import "ABI12_0_0RNSVGBrushConverter.h"
 #import "ABI12_0_0RNSVGContainer.h"
 
 @class ABI12_0_0RNSVGNode;
