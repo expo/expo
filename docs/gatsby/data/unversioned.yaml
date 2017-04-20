@@ -68,6 +68,7 @@
     Notifications: /versions/unversioned/sdk/notifications.html
     Permissions: /versions/unversioned/sdk/permissions.html
     Segment: /versions/unversioned/sdk/segment.html
+    SQLite: /versions/unversioned/sdk/sqlite.html
     Svg: /versions/unversioned/sdk/svg.html
     takeSnapshotAsync: /versions/unversioned/sdk/take-snapshot-async.html
     Util: /versions/unversioned/sdk/util.html

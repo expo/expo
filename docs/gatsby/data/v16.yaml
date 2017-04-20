@@ -68,6 +68,7 @@
     Notifications: /versions/v16.0.0/sdk/notifications.html
     Permissions: /versions/v16.0.0/sdk/permissions.html
     Segment: /versions/v16.0.0/sdk/segment.html
+    SQLite: /versions/v16.0.0/sdk/sqlite.html
     Svg: /versions/v16.0.0/sdk/svg.html
     takeSnapshotAsync: /versions/v16.0.0/sdk/take-snapshot-async.html
     Util: /versions/v16.0.0/sdk/util.html
