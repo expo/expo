@@ -28,7 +28,7 @@ The "React packager" is a simple HTTP server that compiles our app JavaScript co
 
 ## Open the app on your phone or simulator
 
-You'll see that XDE shows you a URL like `http://4v-9wa.notbrent.mynewproject.exp.direct:80`- feel free to open this up in your browser, you will see that it serves up some JSON. This JSON is the Expo manifest. We can open our app by opening the Expo app on our phone typing this URL into the address bar. Alternatively, press `Send Link`, enter your phone number, and press `Send Link` again. Open the message on your phone and tap on the link to open it in Expo. You can share this link with anybody else who has the Expo app installed, but it will only be available as long as you have the project open in XDE.
+You'll see that XDE shows you a URL like `http://4v-9wa.notbrent.mynewproject.exp.direct:80`- feel free to open this up in your browser, you will see that it serves up some JSON. This JSON is the Expo manifest. We can open our app by opening the Expo app on our phone typing this URL into the address bar. Alternatively, press `Share`, enter your phone number, and press `Send Link`. Open the message on your phone and tap on the link to open it in Expo. You can share this link with anybody else who has the Expo app installed, but it will only be available as long as you have the project open in XDE.
 
 To open the app in the iOS simulator you can press the `Device` button and choose `Open on iOS Simulator` (macOS only). To open the app in the Android emulator, first boot it up and then press `Device` and `Open on Android`.
 

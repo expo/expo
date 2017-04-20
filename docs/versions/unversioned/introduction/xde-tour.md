@@ -22,7 +22,7 @@ At any time you can click on your username in the top right and sign out. Or log
 
 So we've opened up a new project. The left pane is the React Packager, which you can learn more about in [Up and Running](../guides/up-and-running.html#up-and-running) and in [How Expo Works](../guides/how-expo-works.html#how-expo-works). The right pane is for device logs, which you can read more about in [Viewing Logs](../guides/logging.html#logging).![XDE project](./xde-project-opened.png)
 
-## Send link
+## Share
 
 Send a link to your app to anybody with an internet connection. This is also useful for getting the link on your device if you don't have it connected to your computer.![XDE send link](./xde-send-link.png)
 
