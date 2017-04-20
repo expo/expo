@@ -59,7 +59,7 @@ void JSContextPrepareTypedArrayAPI(JSContextRef ctx);
 @function
 @abstract           Returns a JavaScript value's Typed Array type
 @param ctx          The execution context to use.
-@param value        The JSObject whose Typed Array type you want to obtain.
+@param object        The JSObject whose Typed Array type you want to obtain.
 @result             A value of type JSTypedArrayType that identifies value's Typed Array type
 */
 JSTypedArrayType JSObjectGetTypedArrayType(JSContextRef ctx, JSObjectRef object);

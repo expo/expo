@@ -295,11 +295,11 @@ private:
       return;
     }
 
-    GLuint middle = rows / 2;
-    GLuint intsPerRow = bytesPerRow / sizeof(GLuint);
-    GLuint remainingBytes = bytesPerRow - intsPerRow * sizeof(GLuint);
+    GLuint middle = (GLuint)rows / 2;
+    GLuint intsPerRow = (GLuint)bytesPerRow / sizeof(GLuint);
+    GLuint remainingBytes = (GLuint)bytesPerRow - intsPerRow * sizeof(GLuint);
 
-    for (GLuint rowTop = 0, rowBottom = rows - 1; rowTop < middle; ++rowTop, --rowBottom) {
+    for (GLuint rowTop = 0, rowBottom = (GLuint)rows - 1; rowTop < middle; ++rowTop, --rowBottom) {
       // Swap in packs of sizeof(GLuint) bytes
       GLuint *iTop = (GLuint *) (pixels + rowTop * bytesPerRow);
       GLuint *iBottom = (GLuint *) (pixels + rowBottom * bytesPerRow);
