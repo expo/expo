@@ -8,6 +8,7 @@
 import React, { PropTypes } from 'react';
 import {
   Animated,
+  Clipboard,
   Dimensions,
   Easing,
   Image,
@@ -111,6 +112,15 @@ export default class MenuView extends React.Component {
       inputRange: [0, 1],
       outputRange: [0, 85],
     });
+    let copyUrlButton;
+    if (this.props.task && this.props.task.manifestUrl) {
+      copyUrlButton = this._renderButton(
+        'copy',
+        'Copy Link',
+        this._copyTaskUrl,
+        require('../Assets/ios-menu-copy.png')
+      );
+    }
 
     return (
       <AnimatedBlurView
@@ -135,6 +145,7 @@ export default class MenuView extends React.Component {
                 Browser.refresh,
                 require('../Assets/ios-menu-refresh.png')
               )}
+              {copyUrlButton}
               {this._renderButton(
                 'home',
                 'Go to Expo Home',
@@ -343,6 +354,9 @@ export default class MenuView extends React.Component {
   };
   _goToHome = () => {
     ExStore.dispatch(BrowserActions.foregroundHomeAsync());
+  };
+  _copyTaskUrl = () => {
+    Clipboard.setString(this.props.task.manifestUrl);
   };
   _onPressDevMenuButton = key => {
     ExponentKernel.selectDevMenuItemWithKey(key);
