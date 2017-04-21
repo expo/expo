@@ -127,7 +127,11 @@ ABI15_0_0RCT_CUSTOM_VIEW_PROPERTY(type, NSInteger, ABI15_0_0EXBarCodeScanner)
         [self.session addInput:captureDeviceInput];
         self.videoCaptureDeviceInput = captureDeviceInput;
       } else {
-        [self.session addInput:self.videoCaptureDeviceInput];
+        if (self.videoCaptureDeviceInput) {
+          [self.session addInput:self.videoCaptureDeviceInput];
+        } else {
+          ABI15_0_0RCTLogWarn(@"%s: Can't add null video capture device, doing nothing instead.", __func__);
+        }
       }
 
       [self.session commitConfiguration];
