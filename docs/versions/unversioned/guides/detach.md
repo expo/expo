@@ -54,22 +54,26 @@ If you don't have it, run `npm install -g exp` to get our command line library.
 If you haven't used `exp` or XDE before, the first thing you'll need to do is log in
 with your Expo account using `exp login`.
 
-### 2. Detach
+### 2. Make sure you have the necessary keys in exp.json
+
+Detaching requires the same keys as building a standalone app. [Follow these instructions before continuing to the next step](building-standalone-apps.html#2-configure-expjson).
+
+### 3. Detach
 
 From your project directory, run `exp detach`. This will download the required dependencies and
 build native projects under the `ios` and `android` directories.
 
-### 3. Set up and Run your native project
+### 4. Set up and Run your native project
 
 Congrats, you now have a native project with ExpoKit! Follow the directions under [Developing with ExpoKit](expokit.html) to get things set up and running.
 
-### 4. Make native changes
+### 5. Make native changes
 
 You can do whatever you want in the Xcode and Android Studio projects.
 
 To add third-party native modules for React Native, non-Expo-specific instructions such as `react-native link` should be supported. [Read more details about changing native dependencies in your ExpoKit project](expokit.html#changing-native-dependencies).
 
-### 5. Distribute your app
+### 6. Distribute your app
 
 Publishing your JS from XDE/exp will still work. Users of your app will get the new JS on their
 devices as soon as they reload their app; you don't need to rebuild your native code if it has
