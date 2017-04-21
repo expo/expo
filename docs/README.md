@@ -52,6 +52,14 @@ Be sure you've run all unigulp-y things.
 yarn && yarn start
 ```
 
+If you get an error try:
+
+```bash
+cd gatsby
+rm -rf node_modules
+yarn
+```
+
 from this directory. The site is viewable at `http://localhost:9000`.
 
 If Docker is not available for you, run `yarn run start-no-nginx` -- the site will be available at `http://localhost:8000/versions/<version>/index.html`. However, certain redirects won't work, and you'll have to navigate directly to the documentation you want to view.
