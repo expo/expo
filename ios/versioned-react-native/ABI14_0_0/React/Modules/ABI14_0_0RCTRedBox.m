@@ -185,8 +185,9 @@ ABI14_0_0RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (NSString *)formatFrameSource:(ABI14_0_0RCTJSStackFrame *)stackFrame
 {
+  NSString *fileName = ABI14_0_0RCTNilIfNull(stackFrame.file) ? [stackFrame.file lastPathComponent] : @"<unknown file>";
   NSString *lineInfo = [NSString stringWithFormat:@"%@:%zd",
-                        [stackFrame.file lastPathComponent],
+                        fileName,
                         stackFrame.lineNumber];
 
   if (stackFrame.column != 0) {
