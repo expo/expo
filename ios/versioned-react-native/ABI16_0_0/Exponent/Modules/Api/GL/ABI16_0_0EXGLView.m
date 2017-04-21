@@ -3,6 +3,7 @@
 #include <OpenGLES/ES2/gl.h>
 #include <OpenGLES/ES2/glext.h>
 
+#import <ReactABI16_0_0/ABI16_0_0RCTUtils.h>
 #import <ReactABI16_0_0/ABI16_0_0RCTJSCExecutor.h>
 
 #import "ABI16_0_0EXUnversioned.h"
@@ -41,6 +42,8 @@ ABI16_0_0RCT_NOT_IMPLEMENTED(- (instancetype)init);
 {
   if ((self = [super init])) {
     _viewManager = viewManager;
+
+    self.contentScaleFactor = ABI16_0_0RCTScreenScale();
 
     // Initialize properties of our backing CAEAGLLayer
     CAEAGLLayer *eaglLayer = (CAEAGLLayer *) self.layer;
@@ -83,7 +86,8 @@ ABI16_0_0RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
 - (void)layoutSubviews
 {
-  [self resizeViewBuffersToWidth:self.frame.size.width height:self.frame.size.height];
+  [self resizeViewBuffersToWidth:self.contentScaleFactor * self.frame.size.width
+                          height:self.contentScaleFactor * self.frame.size.height];
 }
 
 - (void)deleteViewBuffers
