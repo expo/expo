@@ -124,7 +124,9 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
   NSDictionary *launchOptions = self.rootViewController.launchOptions;
   NSDictionary *remoteNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
   if (remoteNotification) {
+#ifndef EX_DETACHED
     [[EXRemoteNotificationManager sharedInstance] handleRemoteNotification:remoteNotification fromBackground:YES];
+#endif
   }
   
   UILocalNotification *localNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
@@ -159,6 +161,12 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
 
   // Post this even in the failure case -- up to subscribers to subsequently read the system permission state
   [[NSNotificationCenter defaultCenter] postNotificationName:EXAppDidRegisterForRemoteNotificationsNotification object:nil];
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
+{
+  BOOL isFromBackground = !(application.applicationState == UIApplicationStateActive);
+  [[EXRemoteNotificationManager sharedInstance] handleRemoteNotification:notification fromBackground:isFromBackground];
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification

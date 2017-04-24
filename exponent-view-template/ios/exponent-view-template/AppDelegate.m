@@ -50,9 +50,9 @@
     [[ExpoKit sharedInstance] application:application didFailToRegisterForRemoteNotificationsWithError:err];
 }
 
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(nonnull UILocalNotification *)notification
 {
-    [[ExpoKit sharedInstance] application:application didReceiveRemoteNotification:notification];
+    [[ExpoKit sharedInstance] application:application didReceiveLocalNotification:notification];
 }
 
 @end
