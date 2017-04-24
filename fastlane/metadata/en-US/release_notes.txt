@@ -1,1 +1,3 @@
-This version adds support for React Native 0.43.
+This version contains minor improvements.
+
+Version 1.15.0 added support for React Native 0.43.
