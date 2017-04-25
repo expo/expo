@@ -12,23 +12,23 @@ Normally, Expo apps are written in pure JS and never "drop down" to the native i
 
 However, there are some cases where advanced developers need native capabilities outside of what Expo offers out-of-the-box. The most common situation is when a project requires a specific Native Module which is not supported by React Native Core or the Expo SDK.
 
-## Should I detach?
-
-You may find yourself in a situation where your Expo project needs a native module that Expo doesn't currently support. We're always expanding the [Expo SDK](../sdk/index.html), so we hope this is never the case. But it happens, especially if your app has very specific and uncommon native demands.
-
 In this case, Expo allows you to `detach` your pure-JS project from the Expo iOS/Android clients, providing you with native projects that can be opened and built with Xcode and Android Studio. Those projects will have dependencies on ExpoKit, so everything you already built will keep working as it did before.
 
 We call this "detaching" because you still depend on the Expo SDK, but your project no longer lives inside the standard Expo client. You control the native projects, including configuring and building them yourself.
 
-**You don't need to do this if your main goal is to distribute your app in the iTunes Store or Google Play.** Expo can [build binaries for you](building-standalone-apps.html) in that case. You should only `detach` if you need to make native code changes not available in the Expo SDK.
+## Should I detach?
 
->  **Warning:** We discourage most of our developers from taking this route, as we believe almost
->  everything you need to do is better accomplished in a cross-platform way with JS.
->
->  Writing in JS enables you to best take advantage of over-the-air code deployment and benefit from
->  ongoing updates and support from Expo. You should only do this if you have a particular
->  demand from native code which Expo won't do a good job supporting, such as (for example)
->  specialized CPU-intensive video processing that must happen locally on the device.
+### You might want to detach if:
+
+- Your Expo project needs a native module that Expo doesn't currently support. We're always expanding the [Expo SDK](../sdk/index.html), so we hope this is never the case. But it happens, especially if your app has very specific and uncommon native demands.
+
+### You should not detach if:
+
+- All you need is to distribute your app in the iTunes Store or Google Play. Expo can [build binaries for you](building-standalone-apps.html) in that case. If you detach, we can't automatically build for you any more.
+- You are uncomfortable writing native code. Detached apps will require you to manage Xcode and Android Studio projects.
+- You enjoy the painless React Native upgrades that come with Expo. After your app is detached, breaking changes in React Native will affect your project differently, and you may need to figure them out for your particular situation.
+- You require Expo's push notification services. After detaching, since Expo no longer manages your push certificates, you'll need to manage this yourself.
+- You rely on asking for help in the Expo community. In your native Xcode and Android Studio projects, you may encounter questions which are no longer within the realm of Expo.
 
 ## Instructions
 
