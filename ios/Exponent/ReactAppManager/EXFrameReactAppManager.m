@@ -132,7 +132,12 @@
 
 - (NSString *)experienceId
 {
-  return (_frame && _frame.manifest) ? _frame.manifest[@"id"] : nil;
+  id experienceIdJsonValue = (_frame && _frame.manifest) ? _frame.manifest[@"id"] : nil;
+  if (experienceIdJsonValue) {
+    RCTAssert([experienceIdJsonValue isKindOfClass:[NSString class]], @"Manifest contains an id which is not a string: %@", experienceIdJsonValue);
+    return experienceIdJsonValue;
+  }
+  return nil;
 }
 
 #pragma mark - RCTBridgeDelegate
