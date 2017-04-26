@@ -22,17 +22,40 @@ export default class BarCodeScreen extends React.Component {
     },
   };
 
+  state = {
+    scannerIsVisible: Platform.OS === 'android' ? false : true,
+  };
+
+  _hasOpenedUrl: boolean;
+  _isMounted: boolean;
+
   componentWillMount() {
     this._hasOpenedUrl = false;
+
+    if (Platform.OS === 'android') {
+      setTimeout(() => {
+        this.setState({ scannerIsVisible: true });
+      }, 800);
+    }
+  }
+
+  componentDidMount() {
+    this._isMounted = true;
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   render() {
     return (
       <View style={styles.container}>
-        <BarCodeScanner
-          onBarCodeRead={this._handleBarCodeRead}
-          style={StyleSheet.absoluteFill}
-        />
+        {this.state.scannerIsVisible
+          ? <BarCodeScanner
+              onBarCodeRead={this._handleBarCodeRead}
+              style={StyleSheet.absoluteFill}
+            />
+          : null}
 
         <View style={styles.topOverlay} />
         <View style={styles.leftOverlay} />
@@ -63,19 +86,29 @@ export default class BarCodeScreen extends React.Component {
   }
 
   _handleBarCodeRead = throttle(({ data: url }) => {
+    this.setState({ scannerIsVisible: false }, () => {
+      if (this._isMounted) {
+        this._openUrl(url);
+      }
+    });
+  }, 1000);
+
+  _openUrl = (url: string) => {
     this.props.navigation.dismissModal();
 
-    // note(brentvatne): Manually reset the status bar before opening the
-    // experience so that we restore the correct status bar color when
-    // returning to home
-    Platform.OS === 'ios' && StatusBar.setBarStyle('default');
-    requestAnimationFrame(() => {
+    // note(brentvatne): Give the modal a bit of time to dismiss on Android
+    setTimeout(() => {
+      // note(brentvatne): Manually reset the status bar before opening the
+      // experience so that we restore the correct status bar color when
+      // returning to home
+      Platform.OS === 'ios' && StatusBar.setBarStyle('default');
+
       if (!this._hasOpenedUrl) {
         this._hasOpenedUrl = true;
         Linking.openURL(url);
       }
-    });
-  }, 1000);
+    }, Platform.OS === 'android' ? 500 : 16);
+  };
 
   _handlePressCancel = () => {
     this.props.navigation.dismissModal();
@@ -106,6 +139,7 @@ const cornerBaseStyle = {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#000',
   },
   topLeftCorner: {
     ...cornerBaseStyle,
