@@ -14,7 +14,7 @@
     "preset": "jest-expo"
   },
   "dependencies": {
-    "@expo/ex-navigation": "^2.10.0",
+    "@expo/ex-navigation": "^2.11.1",
     "@expo/react-native-action-sheet": "^0.3.0",
     "@expo/react-native-fade-in-image": "^1.1.1",
     "@expo/react-native-navigator": "^0.4.10",
