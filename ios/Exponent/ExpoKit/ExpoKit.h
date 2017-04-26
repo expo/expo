@@ -23,6 +23,12 @@ FOUNDATION_EXPORT NSString * const EXAppDidRegisterForRemoteNotificationsNotific
  */
 - (EXViewController *)rootViewController;
 
+/**
+ *  Keys to third-party integrations used inside ExpoKit.
+ *  TODO: document this.
+ */
+@property (nonatomic, strong) NSDictionary *applicationKeys;
+
 #pragma mark - misc AppDelegate hooks
 
 - (void)setLaunchOptions:(NSDictionary * _Nullable)launchOptions;

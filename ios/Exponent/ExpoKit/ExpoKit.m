@@ -5,7 +5,6 @@
 #import "EXFatalHandler.h"
 #import "EXKernel.h"
 #import "EXKernelUtil.h"
-#import "EXKeys.h"
 #import "EXRemoteNotificationManager.h"
 #import "EXLocalNotificationManager.h"
 #import "EXViewController.h"
@@ -104,12 +103,11 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
   if (standaloneGMSKey && standaloneGMSKey.length) {
     [GMSServices provideAPIKey:standaloneGMSKey];
   } else {
-#ifdef GOOGLE_MAPS_IOS_API_KEY
-    // we may define this as empty
-    if (GOOGLE_MAPS_IOS_API_KEY && GOOGLE_MAPS_IOS_API_KEY.length) {
-      [GMSServices provideAPIKey:GOOGLE_MAPS_IOS_API_KEY];
+    if (_applicationKeys[@"GOOGLE_MAPS_IOS_API_KEY"]) {// we may define this as empty
+      if ([_applicationKeys[@"GOOGLE_MAPS_IOS_API_KEY"] length]) {
+        [GMSServices provideAPIKey:_applicationKeys[@"GOOGLE_MAPS_IOS_API_KEY"]];
+      }
     }
-#endif
   }
 
   [EXRemoteNotificationManager sharedInstance];
