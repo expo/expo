@@ -33,7 +33,6 @@ import v12 from '../data/v12.yaml';
 import v11 from '../data/v11.yaml';
 
 const versions = [
-  // `unversioned`,
   `v16.0.0`,
   `v15.0.0`,
   `v14.0.0`,
@@ -41,6 +40,10 @@ const versions = [
   `v12.0.0`,
   `v11.0.0`,
 ];
+
+if (window.GATSBY_ENV === 'development') {
+  versions.push(`unversioned`);
+}
 
 // NOTE(brentvatne): super ugly hack because navbar depends on us adding
 // padding to the entire document which then breaks the regular anchor
@@ -77,9 +80,9 @@ class Wrapper extends React.Component {
   getRoutes = version => {
     let routes;
     switch (version) {
-      // case 'unversioned':
-      //   routes = unversioned;
-      //   break;
+      case 'unversioned':
+        routes = unversioned;
+        break;
       case 'v16.0.0':
         routes = v16;
         break;
