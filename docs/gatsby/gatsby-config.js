@@ -18,8 +18,8 @@ module.exports = {
         path: `${__dirname}/../versions`,
       },
     },
-    `gatsby-parser-remark`,
-    `gatsby-parser-sharp`,
+    `gatsby-transformer-remark`,
+    `gatsby-transformer-sharp`,
     {
       resolve: `gatsby-typegen-remark`,
       options: {

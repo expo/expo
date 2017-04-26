@@ -3,7 +3,7 @@ import { TypographyStyle } from 'react-typography';
 import Helmet from 'react-helmet';
 
 import typography from './utils/typography';
-import favicon from 'images/favicon-32x32.png';
+import favicon from './images/favicon-32x32.png';
 
 let stylesStr;
 const env = process.env.NODE_ENV;

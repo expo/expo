@@ -6,30 +6,31 @@ import React from 'react';
 import Link from 'gatsby-link';
 import { withRouter } from 'react-router';
 import Drawer from 'react-motion-drawer';
-import SidebarContent from 'components/sidebar';
-import Header from 'components/header';
-import typography from 'utils/typography';
-const rhythm = typography.rhythm;
-const scale = typography.scale;
-import 'css/prism-coy.css';
 import { ScrollContainer } from 'react-router-scroll';
 import MenuIcon from 'react-icons/lib/md/menu';
 import presets from 'glamor-media-query-presets';
 import Helmet from 'react-helmet';
 import ArrowIcon from 'react-icons/lib/md/keyboard-arrow-down';
-import logoText from 'images/logo-text.svg';
+
+import logoText from '../images/logo-text.svg';
+import SidebarContent from '../components/sidebar';
+import Header from '../components/header';
+import typography from '../utils/typography';
+const rhythm = typography.rhythm;
+const scale = typography.scale;
+import '../css/prism-coy.css';
 
 // Load our typefaces
 import 'typeface-source-sans-pro';
 import 'typeface-source-code-pro';
 
-import unversioned from 'data/unversioned.yaml';
-import v16 from 'data/v16.yaml';
-import v15 from 'data/v15.yaml';
-import v14 from 'data/v14.yaml';
-import v13 from 'data/v13.yaml';
-import v12 from 'data/v12.yaml';
-import v11 from 'data/v11.yaml';
+import unversioned from '../data/unversioned.yaml';
+import v16 from '../data/v16.yaml';
+import v15 from '../data/v15.yaml';
+import v14 from '../data/v14.yaml';
+import v13 from '../data/v13.yaml';
+import v12 from '../data/v12.yaml';
+import v11 from '../data/v11.yaml';
 
 const versions = [
   // `unversioned`,

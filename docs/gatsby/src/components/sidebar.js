@@ -1,7 +1,8 @@
 import React from 'react';
 import Link from 'gatsby-link';
-import { rhythm } from 'utils/typography';
 import presets from 'glamor-media-query-presets';
+
+import { rhythm } from '../utils/typography';
 
 class Sidebar extends React.Component {
   render() {

@@ -9,12 +9,12 @@ const sh = require(`shelljs`);
 const webpack = require(`webpack`);
 const { GraphQLString } = require(`graphql`);
 
-exports.createPages = ({ args }) => {
-  const { graphql } = args;
+exports.createPages = ({ boundActionCreators, graphql }) => {
+  const { upsertPage } = boundActionCreators;
 
   return new Promise((resolve, reject) => {
     const pages = [];
-    const docsPage = path.resolve(`pages/template-documentation-page.js`);
+    const docsPage = path.resolve(`src/pages/template-documentation-page.js`);
     graphql(
       `
       {
@@ -36,7 +36,7 @@ exports.createPages = ({ args }) => {
 
       // Create docs pages.
       _.each(result.data.allMarkdownRemark.edges, edge => {
-        pages.push({
+        upsertPage({
           path: edge.node.isIndex
             ? edge.node.fileSlug + '/index.html'
             : edge.node.fileSlug + '.html', // required
@@ -47,20 +47,17 @@ exports.createPages = ({ args }) => {
         });
       });
 
-      console.log(`num pages`, pages.length);
-      console.log(pages.slice(0, 2));
-      console.log(pages.filter(page => !page.path));
-      resolve(pages);
+      // We're done.
+      resolve();
     });
   });
 };
 
 // Add custom slug.
-exports.modifyAST = ({ args }) => {
-  console.time(`local modifyAST`);
-  const { ast } = args;
-  const files = select(ast, `File[extension="md"]`);
-  files.forEach(file => {
+exports.onNodeCreate = ({ node, boundActionCreators, getNode }) => {
+  const { updateNode } = boundActionCreators;
+  if (node.type === 'MarkdownRemark') {
+    const file = getNode(node.parent);
     const parsedFilePath = parseFilepath(file.relativePath);
     let fileSlug;
     if (parsedFilePath.name !== `index`) {
@@ -68,13 +65,13 @@ exports.modifyAST = ({ args }) => {
     } else {
       fileSlug = `/versions/${parsedFilePath.dirname}`;
       file.isIndex = true;
-      file.children[0].isIndex = true;
+      node.isIndex = true;
     }
 
-    file.children[0].fileSlug = fileSlug;
-
+    node.fileSlug = fileSlug;
     file.fileSlug = fileSlug;
-  });
-  console.timeEnd(`local modifyAST`);
-  return files;
+
+    updateNode(node);
+    updateNode(file);
+  }
 };
