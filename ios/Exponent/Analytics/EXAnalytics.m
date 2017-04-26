@@ -2,7 +2,7 @@
 
 #import "EXAnalytics.h"
 #import "EXKernel.h"
-#import "EXKeys.h"
+#import "ExpoKit.h"
 
 #import "Amplitude.h"
 
@@ -38,13 +38,13 @@ NSString * const kEXAnalyticsDisabledConfigKey = @"EXAnalyticsDisabled";
     return;
   }
   if ([EXKernel isDevKernel]) {
-#ifdef AMPLITUDE_DEV_KEY
-    [[Amplitude instance] initializeApiKey:AMPLITUDE_DEV_KEY];
-#endif
+    if ([ExpoKit sharedInstance].applicationKeys[@"AMPLITUDE_DEV_KEY"]) {
+      [[Amplitude instance] initializeApiKey:[ExpoKit sharedInstance].applicationKeys[@"AMPLITUDE_DEV_KEY"]];
+    }
   } else {
-#ifdef AMPLITUDE_KEY
-    [[Amplitude instance] initializeApiKey:AMPLITUDE_KEY];
-#endif
+    if ([ExpoKit sharedInstance].applicationKeys[@"AMPLITUDE_KEY"]) {
+      [[Amplitude instance] initializeApiKey:[ExpoKit sharedInstance].applicationKeys[@"AMPLITUDE_KEY"]];
+    }
   }
 }
 
