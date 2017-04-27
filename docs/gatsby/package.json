@@ -19,7 +19,7 @@
     "gatsby-plugin-google-analytics": "1.0.0-alpha13",
     "gatsby-plugin-offline": "1.0.0-alpha13",
     "gatsby-plugin-sharp": "1.0.0-alpha13",
-    "gatsby-source-filesystem": "1.0.0-alpha13",
+    "gatsby-source-filesystem": "1.0.0-alpha13-alpha.537d11c6",
     "gatsby-typegen-filesystem": "1.0.0-alpha13",
     "gatsby-typegen-remark": "1.0.0-alpha13",
     "gatsby-typegen-remark-autolink-headers": "1.0.0-alpha13",

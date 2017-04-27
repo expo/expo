@@ -1438,8 +1438,8 @@ caniuse-api@^1.5.2, caniuse-api@^1.5.3:
     lodash.uniq "^4.5.0"
 
 caniuse-db@^1.0.30000529, caniuse-db@^1.0.30000634, caniuse-db@^1.0.30000639:
-  version "1.0.30000660"
-  resolved caniuse-db-1.0.30000660.tgz#d2d57b309dc5a11bb5b46018f51855f7a41efee5
+  version "1.0.30000662"
+  resolved caniuse-db-1.0.30000662.tgz#616b17a525b52fec14611f88af3d5a9b5438c050
 
 capture-stack-trace@^1.0.0:
   version "1.0.0"
@@ -2156,9 +2156,15 @@ debug@2.6.1:
   dependencies:
     ms "0.7.2"
 
-debug@2.6.4, debug@^2.1.1, debug@^2.2.0, debug@^2.6.0:
+debug@2.6.4:
   version "2.6.4"
   resolved debug-2.6.4.tgz#7586a9b3c39741c0282ae33445c4e8ac74734fe0
+  dependencies:
+    ms "0.7.3"
+
+debug@^2.1.1, debug@^2.2.0, debug@^2.6.0:
+  version "2.6.5"
+  resolved debug-2.6.5.tgz#7a76247781acd4ef2a85f0fb8abf763cd1af249e
   dependencies:
     ms "0.7.3"
 
@@ -3178,9 +3184,9 @@ gatsby-plugin-sharp@1.0.0-alpha13:
     queue "^4.0.1"
     sharp "^0.17.3"
 
-gatsby-source-filesystem@1.0.0-alpha13:
-  version "1.0.0-alpha13"
-  resolved gatsby-source-filesystem-1.0.0-alpha13.tgz#0f734e43e714b1453c303972462378502e8ff0e1
+gatsby-source-filesystem@1.0.0-alpha13-alpha.537d11c6:
+  version "1.0.0-alpha13-alpha.537d11c6"
+  resolved gatsby-source-filesystem-1.0.0-alpha13-alpha.537d11c6.tgz#39caed1216457711a6517346a2c46c8539cd6e4e
   dependencies:
     async "^2.1.2"
     babel-cli "^6.18.0"
@@ -3711,8 +3717,8 @@ graphql-relay@^0.4.3, graphql-relay@^0.4.4:
   resolved graphql-relay-0.4.4.tgz#876a654445b6af4539f81cb9befd5cd7ead129dd
 
 graphql-skip-limit@^1.0.0-alpha13:
-  version "1.0.0-alpha13"
-  resolved graphql-skip-limit-1.0.0-alpha13.tgz#73b9515a99eb15e363e1ed41182fda952e5e1b1e
+  version "1.0.0-alpha13-alpha.ec011f40"
+  resolved graphql-skip-limit-1.0.0-alpha13-alpha.ec011f40.tgz#65beea772015875cbd58a93b83052ade5455a301
 
 graphql-union-input-type@^0.2.1:
   version "0.2.3"
@@ -5402,7 +5408,13 @@ minimalistic-crypto-utils@^1.0.0, minimalistic-crypto-utils@^1.0.1:
   version "1.0.1"
   resolved minimalistic-crypto-utils-1.0.1.tgz#f6c00c1c0b082246e5c4d99dfb8c7c083b2b582a
 
-"minimatch@2 || 3", minimatch@3.0.2, minimatch@^3.0.0, minimatch@^3.0.2:
+"minimatch@2 || 3", minimatch@^3.0.0, minimatch@^3.0.2:
+  version "3.0.3"
+  resolved minimatch-3.0.3.tgz#2a4e4090b96b2db06a9d7df01055a62a77c9b774
+  dependencies:
+    brace-expansion "^1.0.0"
+
+minimatch@3.0.2:
   version "3.0.2"
   resolved minimatch-3.0.2.tgz#0f398a7300ea441e9c348c83d98ab8c9dbf9c40a
   dependencies:
@@ -6616,8 +6628,8 @@ process-nextick-args@~1.0.6:
   resolved process-nextick-args-1.0.7.tgz#150e20b756590ad3f91093f25a4f2ad8bff30ba3
 
 process@^0.11.0:
-  version "0.11.9"
-  resolved process-0.11.9.tgz#7bd5ad21aa6253e7da8682264f1e11d11c0318c1
+  version "0.11.10"
+  resolved process-0.11.10.tgz#7332300e840161bda3e69a1d1d91a7d4bc16f182
 
 process@~0.5.1:
   version "0.5.2"
@@ -7085,8 +7097,8 @@ regenerate@^1.2.1:
   resolved regenerate-1.3.2.tgz#d1941c67bad437e1be76433add5b385f95b19260
 
 regenerator-runtime@^0.10.0:
-  version "0.10.3"
-  resolved regenerator-runtime-0.10.3.tgz#8c4367a904b51ea62a908ac310bf99ff90a82a3e
+  version "0.10.4"
+  resolved regenerator-runtime-0.10.4.tgz#74cb6598d3ba2eb18694e968a40e2b3b4df9cf93
 
 regenerator-transform@0.9.11:
   version "0.9.11"
@@ -7639,8 +7651,8 @@ shot@1.x.x:
     hoek "2.x.x"
 
 sift@^3.2.6:
-  version "3.3.3"
-  resolved sift-3.3.3.tgz#17a3f24aae37acfcada8b4438e8ddee1e1bddcb9
+  version "3.3.4"
+  resolved sift-3.3.4.tgz#d6c7100748f80a0ad64a776483457653beedb9cc
 
 signal-exit@^3.0.0:
   version "3.0.2"
@@ -8832,8 +8844,8 @@ webpack-dev-middleware@^1.10.2, webpack-dev-middleware@^1.8.4:
     range-parser "^1.0.3"
 
 webpack-dev-server@^1.16.1:
-  version "1.16.4"
-  resolved webpack-dev-server-1.16.4.tgz#9a5b8e86aafa2c478e8a24d29ddb282ac696ef50
+  version "1.16.5"
+  resolved webpack-dev-server-1.16.5.tgz#0cbd5f2d2ac8d4e593aacd5c9702e7bbd5e59892
   dependencies:
     compression "^1.5.2"
     connect-history-api-fallback "^1.3.0"
@@ -9020,8 +9032,8 @@ wreck@6.x.x:
     hoek "2.x.x"
 
 write-file-atomic@^1.1.2:
-  version "1.3.3"
-  resolved write-file-atomic-1.3.3.tgz#831dd22d491bdc135180bb996a0eb3f8bf587791
+  version "1.3.4"
+  resolved write-file-atomic-1.3.4.tgz#f807a4f0b1d9e913ae7a48112e6cc3af1991b45f
   dependencies:
     graceful-fs "^4.1.11"
     imurmurhash "^0.1.4"
