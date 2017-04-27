@@ -10,7 +10,7 @@ const env = process.env.NODE_ENV;
 
 if (env === `production`) {
   try {
-    stylesStr = require(`!raw-loader!./public/styles.css`);
+    stylesStr = require(`!raw-loader!../public/styles.css`);
   } catch (e) {
     console.log(e);
   }

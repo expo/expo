@@ -206,7 +206,7 @@ function orderVersions(versions) {
     ['asc']
   );
 
-  if (window.GATSBY_ENV === 'development') {
+  if (typeof window === 'object' && window.GATSBY_ENV === 'development') {
     versions.push('unversioned');
   }
 

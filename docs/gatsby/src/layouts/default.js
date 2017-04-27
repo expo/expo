@@ -41,7 +41,7 @@ const versions = [
   `v11.0.0`,
 ];
 
-if (window.GATSBY_ENV === 'development') {
+if (typeof window === 'object' && window.GATSBY_ENV === 'development') {
   versions.push(`unversioned`);
 }
 
