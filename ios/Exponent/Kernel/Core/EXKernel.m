@@ -498,46 +498,47 @@ continueUserActivity:(NSUserActivity *)userActivity
   EXKernelRoute routetype = (EXKernelRoute)type;
   [[EXAnalytics sharedInstance] logForegroundEventForRoute:routetype fromJS:YES];
   
+  NSString *urlToForeground, *urlToBackground;
   if (params) {
-    NSString *urlToForeground = params[@"url"];
-    NSString *urlToBackground = params[@"urlToBackground"];
-    EXReactAppManager *appManagerToForeground = nil;
-    EXReactAppManager *appManagerToBackground = nil;
-    
-    if (routetype == kEXKernelRouteHome) {
-      appManagerToForeground = _bridgeRegistry.kernelAppManager;
-    }
-    if (routetype == kEXKernelRouteBrowser && !urlToBackground) {
-      appManagerToBackground = _bridgeRegistry.kernelAppManager;
-    }
+    urlToForeground = RCTNilIfNull(params[@"url"]);
+    urlToBackground = RCTNilIfNull(params[@"urlToBackground"]);
+  }
 
-    for (id bridge in [_bridgeRegistry bridgeEnumerator]) {
-      EXKernelBridgeRecord *bridgeRecord = [_bridgeRegistry recordForBridge:bridge];
-      if (urlToForeground && [bridgeRecord.appManager.frame.initialUri.absoluteString isEqualToString:urlToForeground]) {
-        appManagerToForeground = bridgeRecord.appManager;
-      } else if (urlToBackground && [bridgeRecord.appManager.frame.initialUri.absoluteString isEqualToString:urlToBackground]) {
-        appManagerToBackground = bridgeRecord.appManager;
-      }
-    }
-    
-    if (appManagerToBackground) {
-      [self _postNotificationName:kEXKernelBridgeDidBackgroundNotification onAbstractBridge:appManagerToBackground.reactBridge];
-      id appStateModule = [self _nativeModuleForAppManager:appManagerToBackground named:@"AppState"];
-      if ([appStateModule respondsToSelector:@selector(setState:)]) {
-        [appStateModule setState:@"background"];
-      }
-    }
-    if (appManagerToForeground) {
-      [self _postNotificationName:kEXKernelBridgeDidForegroundNotification onAbstractBridge:appManagerToForeground.reactBridge];
-      id appStateModule = [self _nativeModuleForAppManager:appManagerToForeground named:@"AppState"];
-      if ([appStateModule respondsToSelector:@selector(setState:)]) {
-        [appStateModule setState:@"active"];
-      }
-      _bridgeRegistry.lastKnownForegroundBridge = appManagerToForeground.reactBridge;
-    } else {
-      _bridgeRegistry.lastKnownForegroundBridge = nil;
-    }
+  EXReactAppManager *appManagerToForeground = nil;
+  EXReactAppManager *appManagerToBackground = nil;
+  
+  if (routetype == kEXKernelRouteHome) {
+    appManagerToForeground = _bridgeRegistry.kernelAppManager;
+  }
+  if (routetype == kEXKernelRouteBrowser && !urlToBackground) {
+    appManagerToBackground = _bridgeRegistry.kernelAppManager;
+  }
 
+  for (id bridge in [_bridgeRegistry bridgeEnumerator]) {
+    EXKernelBridgeRecord *bridgeRecord = [_bridgeRegistry recordForBridge:bridge];
+    if (urlToForeground && [bridgeRecord.appManager.frame.initialUri.absoluteString isEqualToString:urlToForeground]) {
+      appManagerToForeground = bridgeRecord.appManager;
+    } else if (urlToBackground && [bridgeRecord.appManager.frame.initialUri.absoluteString isEqualToString:urlToBackground]) {
+      appManagerToBackground = bridgeRecord.appManager;
+    }
+  }
+  
+  if (appManagerToBackground) {
+    [self _postNotificationName:kEXKernelBridgeDidBackgroundNotification onAbstractBridge:appManagerToBackground.reactBridge];
+    id appStateModule = [self _nativeModuleForAppManager:appManagerToBackground named:@"AppState"];
+    if ([appStateModule respondsToSelector:@selector(setState:)]) {
+      [appStateModule setState:@"background"];
+    }
+  }
+  if (appManagerToForeground) {
+    [self _postNotificationName:kEXKernelBridgeDidForegroundNotification onAbstractBridge:appManagerToForeground.reactBridge];
+    id appStateModule = [self _nativeModuleForAppManager:appManagerToForeground named:@"AppState"];
+    if ([appStateModule respondsToSelector:@selector(setState:)]) {
+      [appStateModule setState:@"active"];
+    }
+    _bridgeRegistry.lastKnownForegroundBridge = appManagerToForeground.reactBridge;
+  } else {
+    _bridgeRegistry.lastKnownForegroundBridge = nil;
   }
 }
 
