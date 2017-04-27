@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXErrorRecoveryManager.h"
+#import "EXKernel.h"
 
 // if the app crashes and it has not yet been 5 seconds since it loaded, don't auto refresh.
 #define EX_AUTO_REFRESH_BUFFER_BASE_SECONDS 5.0
@@ -74,7 +75,8 @@ NSNotificationName const kEXErrorRecoverySetPropsNotification = @"EXErrorRecover
 - (void)setError:(NSError *)error forExperienceId:(NSString *)experienceId
 {
   if (!experienceId) {
-    NSAssert(experienceId, @"Cannot associate an error with a nil experience id");
+    NSString *kernelSuggestion = ([EXKernel isDevKernel]) ? @"Make sure you are serving the kernel." : @"";
+    NSAssert(experienceId, @"Cannot associate an error with a nil experience id. %@", kernelSuggestion);
   }
   EXErrorRecoveryRecord *record = [self _recordForExperienceId:experienceId];
   if (error) {
