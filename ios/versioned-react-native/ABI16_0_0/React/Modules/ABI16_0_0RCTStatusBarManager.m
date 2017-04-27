@@ -110,6 +110,7 @@ ABI16_0_0RCT_EXPORT_METHOD(setStyle:(UIStatusBarStyle)statusBarStyle
     ABI16_0_0RCTLogError(@"ABI16_0_0RCTStatusBarManager module requires that the \
                 UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
   } else {
+    NSLog(@"%s: Applying status bar style %ld", __func__, (long)statusBarStyle);
     [ABI16_0_0RCTSharedApplication() setStatusBarStyle:statusBarStyle
                                      animated:animated];
   }
@@ -122,6 +123,7 @@ ABI16_0_0RCT_EXPORT_METHOD(setHidden:(BOOL)hidden
     ABI16_0_0RCTLogError(@"ABI16_0_0RCTStatusBarManager module requires that the \
                 UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
   } else {
+    NSLog(@"%s: Applying status bar hidden %d", __func__, hidden);
     [ABI16_0_0RCTSharedApplication() setStatusBarHidden:hidden
                                  withAnimation:animation];
   }
