@@ -115,7 +115,7 @@ function ViewWithBanner(props) {
       <FacebookAds.BannerView
         placementId="YOUR_BANNER_PLACEMENT_ID"
         type="standard"
-        onClick={() => console.log('click')}
+        onPress={() => console.log('click')}
         onError={(err) => console.log('error', err)}
       />
     </View>
