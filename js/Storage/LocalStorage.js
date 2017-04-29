@@ -33,7 +33,7 @@ async function getSettingsAsync() {
   let settings;
 
   try {
-    let settings = JSON.parse(results);
+    settings = JSON.parse(results);
   } catch (e) {}
 
   return settings || {};
