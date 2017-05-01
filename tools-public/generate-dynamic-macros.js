@@ -293,13 +293,14 @@ async function copyTemplateFilesAsync(platform, args) {
 
     if (args.exponentViewPath) {
       let exponentViewPath = path.join(process.cwd(), args.exponentViewPath);
-      await renderExponentViewPodspecAsync(
+      // TODO: do we want to render this here any more?
+      /* await renderExponentViewPodspecAsync(
         path.join(templateFilesPath, platform, 'ExpoKit.podspec'),
         path.join(exponentViewPath, 'ExpoKit.podspec'),
         {
           IOS_EXPONENT_CLIENT_VERSION: infoPlist.EXClientVersion,
         }
-      );
+      ); */
       await renderPodfileAsync(
         path.join(templateFilesPath, platform, 'ExpoKit-Podfile'),
         path.join(exponentViewPath, 'exponent-view-template', 'ios', 'Podfile'),
