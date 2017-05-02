@@ -306,7 +306,7 @@ async function copyTemplateFilesAsync(platform, args) {
         path.join(exponentViewPath, 'exponent-view-template', 'ios', 'Podfile'),
         {
           TARGET_NAME: 'exponent-view-template',
-          EXPONENT_ROOT_PATH: '../..',
+          EXPOKIT_PATH: '../..',
           REACT_NATIVE_PATH: '../../../react-native-lab/react-native',
         }
       );
