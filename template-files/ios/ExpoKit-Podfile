@@ -2,8 +2,7 @@ source 'https://github.com/CocoaPods/Specs.git'
 platform :ios, '9.0'
 
 target '${TARGET_NAME}' do
-  pod 'ExpoKit', :path => '${EXPONENT_ROOT_PATH}'
-  pod 'ExponentCPP', :path => '${EXPONENT_ROOT_PATH}/cpp'
+${EXPOKIT_DEPENDENCY}
 ${PODFILE_UNVERSIONED_RN_DEPENDENCY}
 
   post_install do |installer|
