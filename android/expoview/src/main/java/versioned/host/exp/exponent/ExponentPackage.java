@@ -30,6 +30,7 @@ import versioned.host.exp.exponent.modules.api.ConstantsModule;
 import versioned.host.exp.exponent.modules.api.ContactsModule;
 import versioned.host.exp.exponent.modules.api.CryptoModule;
 import versioned.host.exp.exponent.modules.api.DocumentPickerModule;
+import versioned.host.exp.exponent.modules.api.ErrorRecoveryModule;
 import versioned.host.exp.exponent.modules.api.FabricModule;
 import versioned.host.exp.exponent.modules.api.FacebookModule;
 import versioned.host.exp.exponent.modules.api.FileSystemModule;
@@ -156,6 +157,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new DocumentPickerModule(reactContext));
         nativeModules.add(new PedometerModule(reactContext));
         nativeModules.add(new RNBranchModule(reactContext));
+        nativeModules.add(new ErrorRecoveryModule(reactContext));
       } catch (JSONException | UnsupportedEncodingException e) {
         EXL.e(TAG, e.toString());
       }
