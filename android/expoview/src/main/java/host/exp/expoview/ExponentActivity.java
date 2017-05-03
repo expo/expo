@@ -47,15 +47,7 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
   @Inject
   ExponentManifest mExponentManifest;
 
-  @Inject
-  ExponentSharedPreferences mExponentSharedPreferences;
-
   private String mIntentUri = null;
-
-  private String mManifestUrl;
-  private String mManifestId;
-  private String mSDKVersion;
-  private int mActivityId;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
