@@ -27,6 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.ABIVersion;
 import host.exp.exponent.Constants;
@@ -35,6 +37,7 @@ import host.exp.exponent.LoadingView;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.storage.ExponentSharedPreferences;
@@ -70,6 +73,11 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   protected boolean mIsCrashed = false;
   protected boolean mShouldDestroyRNInstanceOnExit = true;
 
+  protected String mManifestUrl;
+  protected String mManifestId;
+  protected String mSDKVersion;
+  protected int mActivityId;
+
   protected RNObject mReactRootView;
   private FrameLayout mLayout;
   private FrameLayout mContainer;
@@ -80,6 +88,9 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   protected String mJSBundlePath;
   protected JSONObject mManifest;
   protected boolean mIsInForeground = false;
+
+  @Inject
+  protected ExponentSharedPreferences mExponentSharedPreferences;
 
   public boolean isLoading() {
     return mIsLoading;
@@ -101,6 +112,8 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     mLoadingView = new LoadingView(this);
     mLayout.addView(mContainer);
     mLayout.addView(mLoadingView);
+
+    NativeModuleDepsProvider.getInstance().inject(ReactNativeActivity.class, this);
   }
 
   protected void setView(final View view) {

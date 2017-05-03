@@ -36,9 +36,6 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   @Inject
   Kernel mKernel;
 
-  @Inject
-  ExponentSharedPreferences mExponentSharedPreferences;
-
   public static void addError(ExponentError error) {
     sErrorQueue.add(error);
 

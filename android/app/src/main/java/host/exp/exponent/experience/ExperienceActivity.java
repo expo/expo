@@ -77,15 +77,11 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
   private static Long sLastErrorRefreshTime = null;
 
-  private String mManifestUrl;
-  private String mManifestId;
-  private String mSDKVersion;
   private RNObject mLinkingPackage = null;
   private ReactUnthemedRootView mNuxOverlayView;
   private ExponentNotification mNotification;
   private boolean mIsShellApp;
   private String mIntentUri;
-  private int mActivityId;
 
   private RemoteViews mNotificationRemoteViews;
   private Handler mNotificationAnimationHandler;
