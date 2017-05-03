@@ -314,9 +314,9 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     }
   }
 
-  public RNObject startReactInstance(final Object activity, final Exponent.StartReactInstanceDelegate delegate, final String mManifestUrl, final String mIntentUri, final String mJSBundlePath, final RNObject mLinkingPackage, final JSONObject mManifest,
-                                     final String mSDKVersion, final ExponentNotification mNotification, final boolean mIsShellApp, final ExponentSharedPreferences mExponentSharedPreferences,
-                                     final RNObject mReactRootView, final int mActivityId, final boolean mIsCrashed, final List<? extends Object> extraNativeModules) {
+  public RNObject startReactInstance(final Exponent.StartReactInstanceDelegate delegate, final String mIntentUri, final RNObject mLinkingPackage,
+                                     final String mSDKVersion, final ExponentNotification mNotification, final boolean mIsShellApp,
+                                     final List<? extends Object> extraNativeModules) {
 
     if (mIsCrashed || !delegate.isInForeground()) {
       // Can sometimes get here after an error has occurred. Return early or else we'll hit
@@ -423,7 +423,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
       devSettings.setField("exponentActivityId", mActivityId);
     }
 
-    mReactInstanceManager.onHostResume(activity, activity);
+    mReactInstanceManager.onHostResume(this, this);
     mReactRootView.call("startReactApplication",
         mReactInstanceManager.get(),
         mManifest.optString(ExponentManifest.MANIFEST_APP_KEY_KEY, KernelConstants.DEFAULT_APPLICATION_KEY),
