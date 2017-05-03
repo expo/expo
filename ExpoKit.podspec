@@ -1,4 +1,6 @@
 
+# generated from template-files/ios/ExpoKit.podspec
+
 Pod::Spec.new do |s|
   s.name = "ExpoKit"
   s.version = "1.15.2"
