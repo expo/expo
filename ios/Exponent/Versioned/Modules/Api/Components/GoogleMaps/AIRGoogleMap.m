@@ -13,8 +13,8 @@
 #import "AIRGoogleMapUrlTile.h"
 #import <GoogleMaps/GoogleMaps.h>
 #import <MapKit/MapKit.h>
-#import <React/RCTConvert+MapKit.h>
 #import <React/UIView+React.h>
+#import "RCTConvert+AirMap.h"
 
 id regionAsJSON(MKCoordinateRegion region) {
   return @{
@@ -91,6 +91,11 @@ id regionAsJSON(MKCoordinateRegion region) {
     AIRGoogleMapUrlTile *tile = (AIRGoogleMapUrlTile*)subview;
     tile.tileLayer.map = self;
     [self.tiles addObject:tile];
+  } else {
+    NSArray<id<RCTComponent>> *childSubviews = [subview reactSubviews];
+    for (int i = 0; i < childSubviews.count; i++) {
+      [self insertReactSubview:(UIView *)childSubviews[i] atIndex:atIndex];
+    }
   }
   [_reactSubviews insertObject:(UIView *)subview atIndex:(NSUInteger) atIndex];
 }
@@ -122,6 +127,11 @@ id regionAsJSON(MKCoordinateRegion region) {
     AIRGoogleMapUrlTile *tile = (AIRGoogleMapUrlTile*)subview;
     tile.tileLayer.map = nil;
     [self.tiles removeObject:tile];
+  } else {
+    NSArray<id<RCTComponent>> *childSubviews = [subview reactSubviews];
+    for (int i = 0; i < childSubviews.count; i++) {
+      [self removeReactSubview:(UIView *)childSubviews[i]];
+    }
   }
   [_reactSubviews removeObject:(UIView *)subview];
 }
@@ -158,6 +168,16 @@ id regionAsJSON(MKCoordinateRegion region) {
   // TODO: not sure why this is necessary
   [self setSelectedMarker:marker];
   return NO;
+}
+
+- (void)didTapPolygon:(GMSOverlay *)polygon {
+    AIRGMSPolygon *airPolygon = (AIRGMSPolygon *)polygon;
+
+    id event = @{@"action": @"polygon-press",
+                 @"id": airPolygon.identifier ?: @"unknown",
+                 };
+
+    if (airPolygon.onPress) airPolygon.onPress(event);
 }
 
 - (void)didTapAtCoordinate:(CLLocationCoordinate2D)coordinate {
@@ -261,6 +281,15 @@ id regionAsJSON(MKCoordinateRegion region) {
 - (BOOL)showsUserLocation {
   return self.myLocationEnabled;
 }
+
+- (void)setShowsMyLocationButton:(BOOL)showsMyLocationButton {
+  self.settings.myLocationButton = showsMyLocationButton;
+}
+
+- (BOOL)showsMyLocationButton {
+  return self.settings.myLocationButton;
+}
+
 
 + (MKCoordinateRegion) makeGMSCameraPositionFromMap:(GMSMapView *)map andGMSCameraPosition:(GMSCameraPosition *)position {
   // solution from here: http://stackoverflow.com/a/16587735/1102215

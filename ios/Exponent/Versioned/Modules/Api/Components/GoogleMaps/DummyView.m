@@ -1,14 +1,14 @@
 //
-//  AIRDummyView.m
+//  DummyView.m
 //  AirMapsExplorer
 //
 //  Created by Gil Birman on 10/4/16.
 //
 
 #import <Foundation/Foundation.h>
-#import "AIRDummyView.h"
+#import "DummyView.h"
 
-@implementation AIRDummyView
+@implementation DummyView
 - (instancetype)initWithView:(UIView*)view
 {
   if ((self = [super init])) {

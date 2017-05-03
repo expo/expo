@@ -8,8 +8,8 @@
 #import "AIRGoogleMapMarkerManager.h"
 #import "AIRGoogleMapMarker.h"
 #import <MapKit/MapKit.h>
-#import <React/RCTConvert+MapKit.h>
 #import <React/RCTUIManager.h>
+#import "RCTConvert+AirMap.h"
 
 @implementation AIRGoogleMapMarkerManager
 
@@ -36,6 +36,7 @@ RCT_EXPORT_VIEW_PROPERTY(pinColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(anchor, CGPoint)
 RCT_EXPORT_VIEW_PROPERTY(zIndex, NSInteger)
 RCT_EXPORT_VIEW_PROPERTY(draggable, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(opacity, double)
 RCT_EXPORT_VIEW_PROPERTY(onDragStart, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onDrag, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onDragEnd, RCTDirectEventBlock)

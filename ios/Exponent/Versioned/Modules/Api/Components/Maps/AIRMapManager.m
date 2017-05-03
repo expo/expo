@@ -13,7 +13,6 @@
 #import <React/RCTUIManager.h>
 #import <React/RCTConvert.h>
 #import <React/RCTConvert+CoreLocation.h>
-#import <React/RCTConvert+MapKit.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTViewManager.h>
 #import <React/UIView+React.h>
@@ -25,6 +24,7 @@
 #import "SMCalloutView.h"
 #import "AIRMapUrlTile.h"
 #import "AIRMapSnapshot.h"
+#import "RCTConvert+AirMap.h"
 
 #import <MapKit/MapKit.h>
 
@@ -65,6 +65,7 @@ RCT_EXPORT_MODULE()
 }
 
 RCT_EXPORT_VIEW_PROPERTY(showsUserLocation, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(userLocationAnnotationTitle, NSString)
 RCT_EXPORT_VIEW_PROPERTY(followsUserLocation, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showsPointsOfInterest, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showsBuildings, BOOL)
@@ -157,7 +158,9 @@ RCT_EXPORT_METHOD(fitToElements:(nonnull NSNumber *)reactTag
         } else {
             AIRMap *mapView = (AIRMap *)view;
             // TODO(lmr): we potentially want to include overlays here... and could concat the two arrays together.
-            [mapView showAnnotations:mapView.annotations animated:animated];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                [mapView showAnnotations:mapView.annotations animated:animated];
+            });
         }
     }];
 }
@@ -489,7 +492,10 @@ RCT_EXPORT_METHOD(takeSnapshot:(nonnull NSNumber *)reactTag
 {
     if ([view.annotation isKindOfClass:[AIRMapMarker class]]) {
         [(AIRMapMarker *)view.annotation showCalloutView];
+    } else if ([view.annotation isKindOfClass:[MKUserLocation class]] && mapView.userLocationAnnotationTitle != nil && view.annotation.title != mapView.userLocationAnnotationTitle) {
+        [(MKUserLocation*)view.annotation setTitle: mapView.userLocationAnnotationTitle];
     }
+
 }
 
 - (void)mapView:(AIRMap *)mapView didDeselectAnnotationView:(MKAnnotationView *)view {
@@ -501,6 +507,10 @@ RCT_EXPORT_METHOD(takeSnapshot:(nonnull NSNumber *)reactTag
 - (MKAnnotationView *)mapView:(__unused AIRMap *)mapView viewForAnnotation:(AIRMapMarker *)marker
 {
     if (![marker isKindOfClass:[AIRMapMarker class]]) {
+        if ([marker isKindOfClass:[MKUserLocation class]] && mapView.userLocationAnnotationTitle != nil) {
+            [(MKUserLocation*)marker setTitle: mapView.userLocationAnnotationTitle];
+            return nil;
+        }
         return nil;
     }
 
@@ -675,7 +685,7 @@ static int kDragCenterContext;
         mapView.region = region;
     }
 
-    // Continously observe region changes
+    // Continuously observe region changes
     [self _emitRegionChangeEvent:mapView continuous:YES];
 }
 

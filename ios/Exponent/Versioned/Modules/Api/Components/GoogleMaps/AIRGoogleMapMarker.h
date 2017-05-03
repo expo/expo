@@ -28,6 +28,7 @@
 @property (nonatomic, strong) UIColor *pinColor;
 @property (nonatomic, assign) CGPoint anchor;
 @property (nonatomic, assign) NSInteger zIndex;
+@property (nonatomic, assign) double opacity;
 @property (nonatomic, assign) BOOL draggable;
 
 - (void)showCalloutView;

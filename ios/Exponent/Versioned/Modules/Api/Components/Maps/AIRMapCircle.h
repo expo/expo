@@ -8,12 +8,12 @@
 #import <MapKit/MapKit.h>
 #import <UIKit/UIKit.h>
 
-#import <React/RCTConvert+MapKit.h>
 #import <React/RCTComponent.h>
 #import <React/RCTView.h>
 
 #import "AIRMapCoordinate.h"
 #import "AIRMap.h"
+#import "RCTConvert+AirMap.h"
 
 @interface AIRMapCircle: MKAnnotationView <MKOverlay>
 

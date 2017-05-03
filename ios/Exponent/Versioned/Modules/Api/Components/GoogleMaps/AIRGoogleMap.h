@@ -7,10 +7,10 @@
 
 #import <UIKit/UIKit.h>
 #import <React/RCTComponent.h>
-#import <React/RCTConvert+MapKit.h>
 #import <GoogleMaps/GoogleMaps.h>
 #import <MapKit/MapKit.h>
 #import "AIRGMSMarker.h"
+#import "RCTConvert+AirMap.h"
 
 @interface AIRGoogleMap : GMSMapView
 
@@ -38,8 +38,10 @@
 @property (nonatomic, assign) BOOL rotateEnabled;
 @property (nonatomic, assign) BOOL pitchEnabled;
 @property (nonatomic, assign) BOOL showsUserLocation;
+@property (nonatomic, assign) BOOL showsMyLocationButton;
 
 - (BOOL)didTapMarker:(GMSMarker *)marker;
+- (void)didTapPolygon:(GMSPolygon *)polygon;
 - (void)didTapAtCoordinate:(CLLocationCoordinate2D)coordinate;
 - (void)didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate;
 - (void)didChangeCameraPosition:(GMSCameraPosition *)position;

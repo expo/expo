@@ -11,7 +11,6 @@
 #import <React/RCTBridge.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTConvert+CoreLocation.h>
-#import <React/RCTConvert+MapKit.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTViewManager.h>
 #import <React/RCTConvert.h>
@@ -24,6 +23,7 @@
 #import "AIRMapCircle.h"
 #import "SMCalloutView.h"
 #import "AIRGoogleMapMarker.h"
+#import "RCTConvert+AirMap.h"
 
 #import <MapKit/MapKit.h>
 
@@ -56,6 +56,7 @@ RCT_EXPORT_VIEW_PROPERTY(rotateEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(scrollEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(pitchEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showsUserLocation, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(showsMyLocationButton, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(customMapStyleString, NSString)
 RCT_EXPORT_VIEW_PROPERTY(onPress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onLongPress, RCTBubblingEventBlock)
@@ -200,6 +201,11 @@ RCT_EXPORT_METHOD(takeSnapshot:(nonnull NSNumber *)reactTag
 - (BOOL)mapView:(GMSMapView *)mapView didTapMarker:(GMSMarker *)marker {
   AIRGoogleMap *googleMapView = (AIRGoogleMap *)mapView;
   return [googleMapView didTapMarker:marker];
+}
+
+- (void)mapView:(GMSMapView *)mapView didTapOverlay:(GMSPolygon *)polygon {
+  AIRGoogleMap *googleMapView = (AIRGoogleMap *)mapView;
+  [googleMapView didTapPolygon:polygon];
 }
 
 - (void)mapView:(GMSMapView *)mapView didTapAtCoordinate:(CLLocationCoordinate2D)coordinate {

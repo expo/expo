@@ -183,7 +183,7 @@ extern NSTimeInterval const kSMCalloutViewRepositionDelayForUIScrollView;
  Typically you would return @c kSMCalloutViewRepositionDelayForUIScrollView if you're repositioning by calling @c [UIScrollView @c setContentOffset:animated:].
  
  @param calloutView the @c SMCalloutView to reposition
- @param offset caluclated offset necessary to make everything visible
+ @param offset calculated offset necessary to make everything visible
  @returns @c NSTimeInterval to delay the repositioning
  */
 - (NSTimeInterval)calloutView:(SMCalloutView *)calloutView delayForRepositionWithSize:(CGSize)offset;

@@ -15,7 +15,7 @@
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTViewManager.h>
 #import <React/UIView+React.h>
-#import "RCTConvert+MoreMapKit.h"
+#import "RCTConvert+AirMap.h"
 #import "AIRMapMarker.h"
 #import "AIRMapPolygon.h"
 
