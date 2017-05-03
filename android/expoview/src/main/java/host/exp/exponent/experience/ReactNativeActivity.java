@@ -17,19 +17,34 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.facebook.react.common.MapBuilder;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import de.greenrobot.event.EventBus;
+import host.exp.exponent.ABIVersion;
+import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.LoadingView;
 import host.exp.exponent.RNObject;
+import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.kernel.KernelConstants;
+import host.exp.exponent.notifications.ExponentNotification;
+import host.exp.exponent.storage.ExponentSharedPreferences;
+import host.exp.exponent.utils.JSONBundleConverter;
 import host.exp.expoview.Exponent;
 import host.exp.expoview.R;
+
+import static host.exp.exponent.kernel.KernelConstants.INTENT_URI_KEY;
+import static host.exp.exponent.kernel.KernelConstants.LINKING_URI_KEY;
+import static host.exp.exponent.kernel.KernelConstants.MANIFEST_URL_KEY;
 
 public abstract class ReactNativeActivity extends FragmentActivity implements com.facebook.react.modules.core.DefaultHardwareBackBtnHandler {
 
@@ -284,5 +299,123 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
       mIsInForeground = true;
       startReactInstance();
     }
+  }
+
+  public RNObject startReactInstance(final Object activity, final Exponent.StartReactInstanceDelegate delegate, final String mManifestUrl, final String mIntentUri, final String mJSBundlePath, final RNObject mLinkingPackage, final JSONObject mManifest,
+                                     final String mSDKVersion, final ExponentNotification mNotification, final boolean mIsShellApp, final ExponentSharedPreferences mExponentSharedPreferences,
+                                     final RNObject mReactRootView, final int mActivityId, final boolean mIsCrashed, final List<? extends Object> extraNativeModules) {
+
+    if (mIsCrashed || !delegate.isInForeground()) {
+      // Can sometimes get here after an error has occurred. Return early or else we'll hit
+      // a null pointer at mReactRootView.startReactApplication
+      return null;
+    }
+
+    String linkingUri = Constants.SHELL_APP_SCHEME != null ? Constants.SHELL_APP_SCHEME + "://" : mManifestUrl + "/+";
+    Map<String, Object> experienceProperties = MapBuilder.<String, Object>of(
+        MANIFEST_URL_KEY, mManifestUrl,
+        LINKING_URI_KEY, linkingUri,
+        INTENT_URI_KEY, mIntentUri
+    );
+
+    Exponent.InstanceManagerBuilderProperties instanceManagerBuilderProperties = new Exponent.InstanceManagerBuilderProperties();
+    instanceManagerBuilderProperties.application = getApplication();
+    instanceManagerBuilderProperties.jsBundlePath = mJSBundlePath;
+    instanceManagerBuilderProperties.linkingPackage = mLinkingPackage;
+    instanceManagerBuilderProperties.experienceProperties = experienceProperties;
+    instanceManagerBuilderProperties.manifest = mManifest;
+
+    RNObject versionedUtils = new RNObject("host.exp.exponent.VersionedUtils").loadVersion(mSDKVersion);
+    RNObject builder = versionedUtils.callRecursive("getReactInstanceManagerBuilder", instanceManagerBuilderProperties);
+    if (extraNativeModules != null) {
+      for (Object nativeModule : extraNativeModules) {
+        builder.call("addPackage", nativeModule);
+      }
+    }
+
+    if (delegate.isDebugModeEnabled()) {
+      String debuggerHost = mManifest.optString(ExponentManifest.MANIFEST_DEBUGGER_HOST_KEY);
+      String mainModuleName = mManifest.optString(ExponentManifest.MANIFEST_MAIN_MODULE_NAME_KEY);
+      Exponent.enableDeveloperSupport(debuggerHost, mainModuleName, builder);
+    }
+
+    Bundle bundle = new Bundle();
+    JSONObject exponentProps = new JSONObject();
+    if (mNotification != null) {
+      bundle.putString("notification", mNotification.body); // Deprecated
+      try {
+        if (ABIVersion.toNumber(mSDKVersion) < ABIVersion.toNumber("10.0.0")) {
+          exponentProps.put("notification", mNotification.body);
+        } else {
+          exponentProps.put("notification", mNotification.toJSONObject("selected"));
+        }
+      } catch (JSONException e) {
+        e.printStackTrace();
+      }
+    }
+
+    try {
+      exponentProps.put("manifest", mManifest);
+      exponentProps.put("shell", mIsShellApp);
+      exponentProps.put("initialUri", mIntentUri == null ? null : mIntentUri.toString());
+    } catch (JSONException e) {
+      EXL.e(TAG, e);
+    }
+
+    String experienceId = mManifest.optString(ExponentManifest.MANIFEST_ID_KEY);
+    if (experienceId != null) {
+      JSONObject metadata = mExponentSharedPreferences.getExperienceMetadata(experienceId);
+      if (metadata != null) {
+        if (metadata.has(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS)) {
+          try {
+            exponentProps.put(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS,
+                metadata.getJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS));
+          } catch (JSONException e) {
+            e.printStackTrace();
+          }
+
+          metadata.remove(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS);
+        }
+
+        // TODO: fix this. this is the only place that EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS is sent to the experience,
+        // we need to sent them with the standard notification events so that you can get all the unread notification through an event
+        // Copy unreadNotifications into exponentProps
+        if (metadata.has(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS)) {
+          try {
+            JSONArray unreadNotifications = metadata.getJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS);
+            exponentProps.put(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS, unreadNotifications);
+
+            delegate.handleUnreadNotifications(unreadNotifications);
+          } catch (JSONException e) {
+            e.printStackTrace();
+          }
+
+          metadata.remove(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS);
+        }
+
+        mExponentSharedPreferences.updateExperienceMetadata(experienceId, metadata);
+      }
+    }
+
+    bundle.putBundle("exp", JSONBundleConverter.JSONToBundle(exponentProps));
+
+    if (!delegate.isInForeground()) {
+      return null;
+    }
+
+    Analytics.markEvent(Analytics.TimedEvent.STARTED_LOADING_REACT_NATIVE);
+    RNObject mReactInstanceManager = builder.callRecursive("build");
+    RNObject devSettings = mReactInstanceManager.callRecursive("getDevSupportManager").callRecursive("getDevSettings");
+    if (devSettings != null) {
+      devSettings.setField("exponentActivityId", mActivityId);
+    }
+
+    mReactInstanceManager.onHostResume(activity, activity);
+    mReactRootView.call("startReactApplication",
+        mReactInstanceManager.get(),
+        mManifest.optString(ExponentManifest.MANIFEST_APP_KEY_KEY, KernelConstants.DEFAULT_APPLICATION_KEY),
+        bundle);
+
+    return mReactInstanceManager;
   }
 }
