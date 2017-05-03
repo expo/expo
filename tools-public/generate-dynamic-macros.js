@@ -15,7 +15,7 @@ const {
   modifyIOSPropertyListAsync,
   cleanIOSPropertyListBackupAsync,
 } = ExponentTools;
-const { renderExponentViewPodspecAsync, renderPodfileAsync } = IosPodsTools;
+const { renderExpoKitPodspecAsync, renderPodfileAsync } = IosPodsTools;
 
 const ProjectVersions = require('./project-versions');
 
@@ -238,7 +238,9 @@ async function modifyIOSInfoPlistAsync(path, filename, templateSubstitutions) {
         ],
       };
     }
-    config.EXClientVersion = config.CFBundleVersion;
+    config.EXClientVersion = config.CFBundleVersion
+      ? config.CFBundleVersion
+      : config.CFBundleShortVersionString;
     return config;
   });
   return result;
@@ -291,19 +293,18 @@ async function copyTemplateFilesAsync(platform, args) {
       }
     );
 
-    if (args.exponentViewPath) {
-      let exponentViewPath = path.join(process.cwd(), args.exponentViewPath);
-      // TODO: do we want to render this here any more?
-      /* await renderExponentViewPodspecAsync(
+    if (args.expoKitPath) {
+      let expoKitPath = path.join(process.cwd(), args.expoKitPath);
+      await renderExpoKitPodspecAsync(
         path.join(templateFilesPath, platform, 'ExpoKit.podspec'),
-        path.join(exponentViewPath, 'ExpoKit.podspec'),
+        path.join(expoKitPath, 'ExpoKit.podspec'),
         {
           IOS_EXPONENT_CLIENT_VERSION: infoPlist.EXClientVersion,
         }
-      ); */
+      );
       await renderPodfileAsync(
         path.join(templateFilesPath, platform, 'ExpoKit-Podfile'),
-        path.join(exponentViewPath, 'exponent-view-template', 'ios', 'Podfile'),
+        path.join(expoKitPath, 'exponent-view-template', 'ios', 'Podfile'),
         {
           TARGET_NAME: 'exponent-view-template',
           EXPOKIT_PATH: '../..',
@@ -322,7 +323,7 @@ async function copyTemplateFilesAsync(platform, args) {
  *    buildConstantsPath
  *  ios-only:
  *    infoPlistPath
- *    exponentViewPath (optional - if provided, generate files for exponent-view-template)
+ *    expoKitPath (optional - if provided, generate files for ExpoKit)
  */
 exports.generateDynamicMacrosAsync = async function generateDynamicMacrosAsync(
   args
