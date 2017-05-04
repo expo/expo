@@ -67,3 +67,14 @@ Many libraries in the React Native ecosystem include instructions to run `react-
 ### Android
 
 Many libraries in the React Native ecosystem include instructions to run `react-native link`. These are supported with ExpoKit for Android.
+
+## Upgrading ExpoKit
+
+ExpoKit's release cycle follows the Expo SDK release cycle. When a new version of the Expo SDK comes out, the release notes include upgrade instructions for the normal, JS-only part of your project. Additionally, you'll need to update the native ExpoKit code.
+
+> **Note:** Please make sure you've already updated your JS dependencies before proceeding with the following instructions. Additionally, there may be version-specific breaking changes not covered here.
+
+### iOS
+
+- Open up `ios/Podfile` in your project, and update the `ExpoKit` tag to point at the [release](https://github.com/expo/expo/releases) corresponding to your SDK version. Re-run `pod install`.
+- Open `ios/your-project/Supporting/EXSDKVersions.plist` in your project and change all the values to the new SDK version.
