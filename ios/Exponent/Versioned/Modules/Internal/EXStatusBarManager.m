@@ -26,7 +26,7 @@ RCT_ENUM_CONVERTER(UIStatusBarAnimation, (@{
 
 @interface EXStatusBarManager ()
 
-@property (nonatomic, strong) NSDictionary *capturedStatusBarProperties;
+@property (nonatomic, strong) NSMutableDictionary *capturedStatusBarProperties;
 
 @end
 
@@ -45,7 +45,7 @@ RCT_ENUM_CONVERTER(UIStatusBarAnimation, (@{
 - (void)setBridge:(RCTBridge *)bridge
 {
   [super setBridge:bridge];
-  _capturedStatusBarProperties = [self _currentStatusBarProperties];
+  _capturedStatusBarProperties = [[self _currentStatusBarProperties] mutableCopy];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_bridgeDidForeground:)
                                                name:EX_UNVERSIONED(@"EXKernelBridgeDidForegroundNotification")
@@ -122,6 +122,7 @@ RCT_EXPORT_METHOD(setStyle:(UIStatusBarStyle)statusBarStyle
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [RCTSharedApplication() setStatusBarStyle:statusBarStyle
                                      animated:animated];
+    _capturedStatusBarProperties[@"style"] = @(statusBarStyle);
 #pragma clang diagnostic pop
   }
 }
@@ -138,6 +139,7 @@ RCT_EXPORT_METHOD(setHidden:(BOOL)hidden
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [RCTSharedApplication() setStatusBarHidden:hidden
                                  withAnimation:animation];
+    _capturedStatusBarProperties[@"hidden"] = @(hidden);
 #pragma clang diagnostic pop
   }
 }
@@ -145,6 +147,7 @@ RCT_EXPORT_METHOD(setHidden:(BOOL)hidden
 RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible:(BOOL)visible)
 {
   RCTSharedApplication().networkActivityIndicatorVisible = visible;
+  _capturedStatusBarProperties[@"networkActivityIndicatorVisible"] = @(visible);
 }
 
 /**
@@ -213,7 +216,7 @@ RCT_EXPORT_METHOD(_applyPropertiesAndForget:(NSDictionary *)properties)
 
 - (void)_bridgeDidBackground:(__unused NSNotification *)notif
 {
-  _capturedStatusBarProperties = [self _currentStatusBarProperties];
+  _capturedStatusBarProperties = [[self _currentStatusBarProperties] mutableCopy];
 }
 
 #endif //TARGET_OS_TV
