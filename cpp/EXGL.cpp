@@ -58,7 +58,6 @@ static EXGLContext *EXGLContextGet(EXGLContextId exglCtxId);
 // Class of the C++ object representing an EXGL rendering context.
 
 class EXGLContext {
-private:
   // --- Queue handling --------------------------------------------------------
 
   // There are two threads: the input thread (henceforth "JS thread") feeds new GL
@@ -68,6 +67,7 @@ private:
   // By not saving the JS{Global,}Context as a member variable we ensure that no
   // JS work is done on the GL thread
 
+private:
   // The smallest unit of work
   using Op = std::function<void(void)>;
 
@@ -77,18 +77,9 @@ private:
   // #2 means that it's good to use an std::vector<...> for this
   using Batch = std::vector<Op>;
 
-
   Batch nextBatch;
   std::vector<Batch> backlog;
   std::mutex backlogMutex;
-
-
-  // [JS thread] Add an Op to the 'next' batch -- the arguments are any form of
-  // constructor arguments for Op
-  template<typename... Args>
-  inline void addToNextBatch(Args &&...args) noexcept {
-    nextBatch.emplace_back(std::forward<Args>(args)...);
-  }
 
   // [JS thread] Send the current 'next' batch to GL and make a new 'next' batch
   void endNextBatch() noexcept {
@@ -98,6 +89,12 @@ private:
     backlog.back().swap(nextBatch);
   }
 
+  // [JS thread] Add an Op to the 'next' batch -- the arguments are any form of
+  // constructor arguments for Op
+  template<typename... Args>
+  inline void addToNextBatch(Args &&...args) noexcept {
+    nextBatch.emplace_back(std::forward<Args>(args)...);
+  }
 
   // [JS thread] Add a blocking operation to the 'next' batch -- waits for the
   // queued function to run before returning
@@ -133,40 +130,24 @@ private:
 #endif
   }
 
-
-  // A 'Future' is an opaque return value from a GL method call that is simply
+  // [JS thread] Enqueue a function and return an EXGL object that will get mapped
+  // to the function's return value when it is called on the GL thread.
+  //
+  // We call these 'futures': a return value from a GL method call that is simply
   // fed to other GL method calls. The value is never inspected in JS. This
   // allows us to continue queueing method calls when a method call with a
-  // Future return value is encountered: its value won't immediately matter
+  // 'future' return value is encountered: its value won't immediately matter
   // and is only needed when method calls after it ask for the value, and those
-  // are queued for even later. This works for GL object id return values such
-  // as those from `createShader()`, `createProgram()`, etc.
-
-  using Future = unsigned int;
-  std::unordered_map<Future, GLuint> futures;
-  Future nextFuture = 1; // Start at 1 so that Futures are truthy in JS
-
-  // [JS thread] Enqueue a function and return a Future that will have its
-  // result when the function is called
+  // are queued for even later.
   template<typename F>
   inline JSValueRef addFutureToNextBatch(JSContextRef jsCtx, F &&f) noexcept {
-    auto future = nextFuture++;
+    auto exglObjId = createObject();
     addToNextBatch([=] {
-      assert(futures.find(future) == futures.end());
-      futures[future] = f();
+      assert(objects.find(exglObjId) == objects.end());
+      mapObject(exglObjId, f());
     });
-    return JSValueMakeNumber(jsCtx, future);
+    return JSValueMakeNumber(jsCtx, exglObjId);
   }
-
-  // [GL thread] Get the value in a Future
-  inline GLuint peekFuture(Future future) const {
-    auto iter = futures.find(future);
-    if (iter == futures.end()) {
-      return 0;
-    }
-    return iter->second;
-  }
-
 
   // [GL thread] Do all the remaining work we can do on the GL thread
 public:
@@ -182,6 +163,37 @@ public:
         op();
       }
     }
+  }
+
+
+  // --- Object mapping --------------------------------------------------------
+
+  // We err on the side of performance and hope that a global incrementing atomic
+  // unsigned int is enough for object ids. On 'creating' an object we simply
+  // 'reserve' the id by incrementing the atomic counter. Since the mapping is only
+  // set and read on the GL thread, this prevents us from having to maintain a
+  // mutex on the mapping.
+
+private:
+  std::unordered_map<EXGLObjectId, GLuint> objects;
+  static std::atomic_uint nextObjectId;
+
+  inline GLuint lookupObject(EXGLObjectId exglObjId) noexcept {
+    auto iter = objects.find(exglObjId);
+    return iter == objects.end() ? 0 : iter->second;
+  }
+
+public:
+  inline EXGLObjectId createObject(void) noexcept {
+    return nextObjectId++;
+  }
+
+  inline void destroyObject(EXGLObjectId exglObjId) noexcept {
+    objects.erase(exglObjId);
+  }
+
+  inline void mapObject(EXGLObjectId exglObjId, GLuint glObj) noexcept {
+    objects[exglObjId] = glObj;
   }
 
 
@@ -583,13 +595,13 @@ private:
         return JSValueMakeNumber(jsCtx, glFloat);
       }
 
-        // Future
+        // EXGLObjectId
       case GL_ARRAY_BUFFER_BINDING:
       case GL_ELEMENT_ARRAY_BUFFER_BINDING:
       case GL_CURRENT_PROGRAM: {
         GLint glInt;
         addBlockingToNextBatch([&] { glGetIntegerv(pname, &glInt); });
-        for (const auto &pair : futures) {
+        for (const auto &pair : objects) {
           if (pair.second == glInt) {
             return JSValueMakeNumber(jsCtx, pair.first);
           }
@@ -668,8 +680,8 @@ private:
   // -------
 
   _WRAP_METHOD(bindBuffer, 2) {
-    EXJS_UNPACK_ARGV(GLenum target, Future fBuffer);
-    addToNextBatch([=] { glBindBuffer(target, peekFuture(fBuffer)); });
+    EXJS_UNPACK_ARGV(GLenum target, EXGLObjectId fBuffer);
+    addToNextBatch([=] { glBindBuffer(target, lookupObject(fBuffer)); });
     return nullptr;
   }
 
@@ -710,9 +722,9 @@ private:
   }
 
   _WRAP_METHOD(deleteBuffer, 1) {
-    EXJS_UNPACK_ARGV(Future fBuffer);
+    EXJS_UNPACK_ARGV(EXGLObjectId fBuffer);
     addToNextBatch([=] {
-      GLuint buffer = peekFuture(fBuffer);
+      GLuint buffer = lookupObject(fBuffer);
       glDeleteBuffers(1, &buffer);
     });
     return nullptr;
@@ -725,14 +737,14 @@ private:
     return JSValueMakeNumber(jsCtx, glResult);
   }
 
-#define _WRAP_METHOD_IS_OBJECT(type)            \
-  _WRAP_METHOD(is ## type, 1) {                 \
-    EXJS_UNPACK_ARGV(Future f);                 \
-    GLboolean glResult;                         \
-    addBlockingToNextBatch([&] {                \
-      glResult = glIs ## type(peekFuture(f));   \
-    });                                         \
-    return JSValueMakeBoolean(jsCtx, glResult); \
+#define _WRAP_METHOD_IS_OBJECT(type)              \
+  _WRAP_METHOD(is ## type, 1) {                   \
+    EXJS_UNPACK_ARGV(EXGLObjectId f);             \
+    GLboolean glResult;                           \
+    addBlockingToNextBatch([&] {                  \
+      glResult = glIs ## type(lookupObject(f));   \
+    });                                           \
+    return JSValueMakeBoolean(jsCtx, glResult);   \
   }
 
   _WRAP_METHOD_IS_OBJECT(Buffer)
@@ -746,8 +758,8 @@ private:
     if (JSValueIsNull(jsCtx, jsArgv[1])) {
       addToNextBatch([=] { glBindFramebuffer(target, defaultFramebuffer); });
     } else {
-      Future fFramebuffer = EXJSValueToNumberFast(jsCtx, jsArgv[1]);
-      addToNextBatch([=] { glBindFramebuffer(target, peekFuture(fFramebuffer)); });
+      EXGLObjectId fFramebuffer = EXJSValueToNumberFast(jsCtx, jsArgv[1]);
+      addToNextBatch([=] { glBindFramebuffer(target, lookupObject(fFramebuffer)); });
     }
     return nullptr;
   }
@@ -768,9 +780,9 @@ private:
   }
 
   _WRAP_METHOD(deleteFramebuffer, 1) {
-    EXJS_UNPACK_ARGV(Future fFramebuffer);
+    EXJS_UNPACK_ARGV(EXGLObjectId fFramebuffer);
     addToNextBatch([=] {
-      GLuint framebuffer = peekFuture(fFramebuffer);
+      GLuint framebuffer = lookupObject(fFramebuffer);
       glDeleteFramebuffers(1, &framebuffer);
     });
     return nullptr;
@@ -779,9 +791,9 @@ private:
   _WRAP_METHOD_UNIMPL(framebufferRenderbuffer)
 
   _WRAP_METHOD(framebufferTexture2D, 5) {
-    EXJS_UNPACK_ARGV(GLenum target, GLenum attachment, GLenum textarget, Future fTexture, GLint level);
+    EXJS_UNPACK_ARGV(GLenum target, GLenum attachment, GLenum textarget, EXGLObjectId fTexture, GLint level);
     addToNextBatch([=] {
-      glFramebufferTexture2D(target, attachment, textarget, peekFuture(fTexture), level);
+      glFramebufferTexture2D(target, attachment, textarget, lookupObject(fTexture), level);
     });
     return nullptr;
   }
@@ -833,8 +845,8 @@ private:
     if (JSValueIsNull(jsCtx, jsArgv[1])) {
       addToNextBatch(std::bind(glBindTexture, target, 0));
     } else {
-      Future fTexture = EXJSValueToNumberFast(jsCtx, jsArgv[1]);
-      addToNextBatch([=] { glBindTexture(target, peekFuture(fTexture)); });
+      EXGLObjectId fTexture = EXJSValueToNumberFast(jsCtx, jsArgv[1]);
+      addToNextBatch([=] { glBindTexture(target, lookupObject(fTexture)); });
     }
     return nullptr;
   }
@@ -860,9 +872,9 @@ private:
   }
 
   _WRAP_METHOD(deleteTexture, 1) {
-    EXJS_UNPACK_ARGV(Future fTexture);
+    EXJS_UNPACK_ARGV(EXGLObjectId fTexture);
     addToNextBatch([=] {
-      GLuint texture = peekFuture(fTexture);
+      GLuint texture = lookupObject(fTexture);
       glDeleteTextures(1, &texture);
     });
     return nullptr;
@@ -1000,21 +1012,21 @@ private:
   // --------------------
 
   _WRAP_METHOD(attachShader, 2) {
-    EXJS_UNPACK_ARGV(Future fProgram, Future fShader);
-    addToNextBatch([=] { glAttachShader(peekFuture(fProgram), peekFuture(fShader)); });
+    EXJS_UNPACK_ARGV(EXGLObjectId fProgram, EXGLObjectId fShader);
+    addToNextBatch([=] { glAttachShader(lookupObject(fProgram), lookupObject(fShader)); });
     return nullptr;
   }
 
   _WRAP_METHOD(bindAttribLocation, 3) {
-    EXJS_UNPACK_ARGV(Future fProgram, GLuint index);
+    EXJS_UNPACK_ARGV(EXGLObjectId fProgram, GLuint index);
     auto name = jsValueToSharedStr(jsCtx, jsArgv[2]);
-    addToNextBatch([=] { glBindAttribLocation(peekFuture(fProgram), index, name.get()); });
+    addToNextBatch([=] { glBindAttribLocation(lookupObject(fProgram), index, name.get()); });
     return nullptr;
   }
 
   _WRAP_METHOD(compileShader, 1) {
-    EXJS_UNPACK_ARGV(Future fShader);
-    addToNextBatch([=] { glCompileShader(peekFuture(fShader)); });
+    EXJS_UNPACK_ARGV(EXGLObjectId fShader);
+    addToNextBatch([=] { glCompileShader(lookupObject(fShader)); });
     return nullptr;
   }
 
@@ -1032,30 +1044,30 @@ private:
   }
 
   _WRAP_METHOD(deleteProgram, 1) {
-    EXJS_UNPACK_ARGV(Future fProgram);
-    addToNextBatch([=] { glDeleteProgram(peekFuture(fProgram)); });
+    EXJS_UNPACK_ARGV(EXGLObjectId fProgram);
+    addToNextBatch([=] { glDeleteProgram(lookupObject(fProgram)); });
     return nullptr;
   }
 
   _WRAP_METHOD(deleteShader, 1) {
-    EXJS_UNPACK_ARGV(Future fShader);
-    addToNextBatch([=] { glDeleteShader(peekFuture(fShader)); });
+    EXJS_UNPACK_ARGV(EXGLObjectId fShader);
+    addToNextBatch([=] { glDeleteShader(lookupObject(fShader)); });
     return nullptr;
   }
 
   _WRAP_METHOD(detachShader, 2) {
-    EXJS_UNPACK_ARGV(Future fProgram, Future fShader);
-    addToNextBatch([=] { glDetachShader(peekFuture(fProgram), peekFuture(fShader)); });
+    EXJS_UNPACK_ARGV(EXGLObjectId fProgram, EXGLObjectId fShader);
+    addToNextBatch([=] { glDetachShader(lookupObject(fProgram), lookupObject(fShader)); });
     return nullptr;
   }
 
   _WRAP_METHOD(getAttachedShaders, 1) {
-    EXJS_UNPACK_ARGV(Future fProgram);
+    EXJS_UNPACK_ARGV(EXGLObjectId fProgram);
 
     GLint count;
     std::vector<GLuint> glResults;
     addBlockingToNextBatch([&] {
-      GLuint program = peekFuture(fProgram);
+      GLuint program = lookupObject(fProgram);
       glGetProgramiv(program, GL_ATTACHED_SHADERS, &count);
       glResults.resize(count);
       glGetAttachedShaders(program, count, nullptr, glResults.data());
@@ -1063,25 +1075,25 @@ private:
 
     JSValueRef jsResults[count];
     for (auto i = 0; i < count; ++i) {
-      Future future = 0;
-      for (const auto &pair : futures) {
+      EXGLObjectId exglObjId = 0;
+      for (const auto &pair : objects) {
         if (pair.second == glResults[i]) {
-          future = pair.first;
+          exglObjId = pair.first;
         }
       }
-      if (future == 0) {
-        throw new std::runtime_error("EXGL: Internal error: couldn't find Future "
+      if (exglObjId == 0) {
+        throw new std::runtime_error("EXGL: Internal error: couldn't find EXGLObjectId "
                                      "associated with shader in getAttachedShaders()!");
       }
-      jsResults[i] = JSValueMakeNumber(jsCtx, future);
+      jsResults[i] = JSValueMakeNumber(jsCtx, exglObjId);
     }
     return JSObjectMakeArray(jsCtx, count, jsResults, nullptr);
   }
 
   _WRAP_METHOD(getProgramParameter, 2) {
-    EXJS_UNPACK_ARGV(Future fProgram, GLenum pname);
+    EXJS_UNPACK_ARGV(EXGLObjectId fProgram, GLenum pname);
     GLint glResult;
-    addBlockingToNextBatch([&] { glGetProgramiv(peekFuture(fProgram), pname, &glResult); });
+    addBlockingToNextBatch([&] { glGetProgramiv(lookupObject(fProgram), pname, &glResult); });
     if (pname == GL_DELETE_STATUS || pname == GL_LINK_STATUS || pname == GL_VALIDATE_STATUS) {
       return JSValueMakeBoolean(jsCtx, glResult);
     } else {
@@ -1090,9 +1102,9 @@ private:
   }
 
   _WRAP_METHOD(getShaderParameter, 2) {
-    EXJS_UNPACK_ARGV(Future fShader, GLenum pname);
+    EXJS_UNPACK_ARGV(EXGLObjectId fShader, GLenum pname);
     GLint glResult;
-    addBlockingToNextBatch([&] { glGetShaderiv(peekFuture(fShader), pname, &glResult); });
+    addBlockingToNextBatch([&] { glGetShaderiv(lookupObject(fShader), pname, &glResult); });
     if (pname == GL_DELETE_STATUS || pname == GL_COMPILE_STATUS) {
       return JSValueMakeBoolean(jsCtx, glResult);
     } else {
@@ -1121,11 +1133,11 @@ private:
   template<typename F, typename G>
   inline JSValueRef getShaderOrProgramStr(JSContextRef jsCtx, const JSValueRef jsArgv[],
                                           F &&glGetLengthParam, GLenum glLengthParam, G &&glGetStr) {
-    EXJS_UNPACK_ARGV(Future fObj);
+    EXJS_UNPACK_ARGV(EXGLObjectId fObj);
     GLint length;
     std::string str;
     addBlockingToNextBatch([&] {
-      GLuint obj = peekFuture(fObj);
+      GLuint obj = lookupObject(fObj);
       glGetLengthParam(obj, glLengthParam, &length);
       str.resize(length);
       glGetStr(obj, length, nullptr, &str[0]);
@@ -1156,17 +1168,17 @@ private:
   _WRAP_METHOD_IS_OBJECT(Shader)
 
   _WRAP_METHOD(linkProgram, 1) {
-    EXJS_UNPACK_ARGV(Future fProgram);
-    addToNextBatch([=] { glLinkProgram(peekFuture(fProgram)); });
+    EXJS_UNPACK_ARGV(EXGLObjectId fProgram);
+    addToNextBatch([=] { glLinkProgram(lookupObject(fProgram)); });
     return nullptr;
   }
 
   _WRAP_METHOD(shaderSource, 2) {
-    EXJS_UNPACK_ARGV(Future fShader);
+    EXJS_UNPACK_ARGV(EXGLObjectId fShader);
     auto str = jsValueToSharedStr(jsCtx, jsArgv[1]);
     addToNextBatch([=] {
       char *pstr = str.get();
-      glShaderSource(peekFuture(fShader), 1, (const char **) &pstr, nullptr);
+      glShaderSource(lookupObject(fShader), 1, (const char **) &pstr, nullptr);
     });
     return nullptr;
   }
@@ -1175,15 +1187,15 @@ private:
     if (JSValueIsNull(jsCtx, jsArgv[0])) {
       addToNextBatch(std::bind(glUseProgram, 0));
     } else {
-      EXJS_UNPACK_ARGV(Future fProgram);
-      addToNextBatch([=] { glUseProgram(peekFuture(fProgram)); });
+      EXJS_UNPACK_ARGV(EXGLObjectId fProgram);
+      addToNextBatch([=] { glUseProgram(lookupObject(fProgram)); });
     }
     return nullptr;
   }
 
   _WRAP_METHOD(validateProgram, 1) {
-    EXJS_UNPACK_ARGV(Future fProgram);
-    addToNextBatch([=] { glValidateProgram(peekFuture(fProgram)); });
+    EXJS_UNPACK_ARGV(EXGLObjectId fProgram);
+    addToNextBatch([=] { glValidateProgram(lookupObject(fProgram)); });
     return nullptr;
   }
 
@@ -1202,7 +1214,7 @@ private:
       return JSValueMakeNull(jsCtx);
     }
 
-    EXJS_UNPACK_ARGV(Future fProgram, GLuint index);
+    EXJS_UNPACK_ARGV(EXGLObjectId fProgram, GLuint index);
 
     GLsizei length;
     GLint size;
@@ -1210,7 +1222,7 @@ private:
     std::string name;
     GLint maxNameLength;
     addBlockingToNextBatch([&] {
-      GLuint program = peekFuture(fProgram);
+      GLuint program = lookupObject(fProgram);
       glGetProgramiv(program, lengthParam, &maxNameLength);
       name.resize(maxNameLength);
       glFunc(program, index, maxNameLength, &length, &size, &type, &name[0]);
@@ -1237,11 +1249,11 @@ private:
   }
 
   _WRAP_METHOD(getAttribLocation, 2) {
-    EXJS_UNPACK_ARGV(Future fProgram);
+    EXJS_UNPACK_ARGV(EXGLObjectId fProgram);
     auto name = jsValueToSharedStr(jsCtx, jsArgv[1]);
     GLint location;
     addBlockingToNextBatch([&] {
-      location = glGetAttribLocation(peekFuture(fProgram), name.get());
+      location = glGetAttribLocation(lookupObject(fProgram), name.get());
     });
     return JSValueMakeNumber(jsCtx, location);
   }
@@ -1249,11 +1261,11 @@ private:
   _WRAP_METHOD_UNIMPL(getUniform)
 
   _WRAP_METHOD(getUniformLocation, 2) {
-    EXJS_UNPACK_ARGV(Future fProgram);
+    EXJS_UNPACK_ARGV(EXGLObjectId fProgram);
     auto name = jsValueToSharedStr(jsCtx, jsArgv[1]);
     GLint location;
     addBlockingToNextBatch([&] {
-      location = glGetUniformLocation(peekFuture(fProgram), name.get());
+      location = glGetUniformLocation(lookupObject(fProgram), name.get());
     });
     return location == -1 ? JSValueMakeNull(jsCtx) : JSValueMakeNumber(jsCtx, location);
   }
@@ -1875,6 +1887,8 @@ private:
   }
 };
 
+std::atomic_uint EXGLContext::nextObjectId { 1 };
+
 
 // --- C interface -------------------------------------------------------------
 
@@ -1940,16 +1954,38 @@ void EXGLContextDestroy(EXGLContextId exglCtxId) {
 }
 
 void EXGLContextFlush(EXGLContextId exglCtxId) {
-  EXGLContext *exglCtx = EXGLContextGet(exglCtxId);
+  auto exglCtx = EXGLContextGet(exglCtxId);
   if (exglCtx) {
     exglCtx->flush();
   }
 }
 
 void EXGLContextSetDefaultFramebuffer(EXGLContextId exglCtxId, GLint framebuffer) {
-  EXGLContext *exglCtx = EXGLContextGet(exglCtxId);
+  auto exglCtx = EXGLContextGet(exglCtxId);
   if (exglCtx) {
     exglCtx->setDefaultFramebuffer(framebuffer);
   }
 }
 
+
+EXGLObjectId EXGLContextCreateObject(EXGLContextId exglCtxId) {
+  auto exglCtx = EXGLContextGet(exglCtxId);
+  if (exglCtx) {
+    return exglCtx->createObject();
+  }
+  return 0;
+}
+
+void EXGLContextDestroyObject(EXGLContextId exglCtxId, EXGLObjectId exglObjId) {
+  auto exglCtx = EXGLContextGet(exglCtxId);
+  if (exglCtx) {
+    exglCtx->destroyObject(exglObjId);
+  }
+}
+
+void EXGLContextMapObject(EXGLContextId exglCtxId, EXGLObjectId exglObjId, GLuint glObj) {
+  auto exglCtx = EXGLContextGet(exglCtxId);
+  if (exglCtx) {
+    exglCtx->mapObject(exglObjId, glObj);
+  }
+}
