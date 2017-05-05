@@ -36,7 +36,7 @@ If you are running on an phone with Android 5 you might have to use `./run.sh in
 
 #### iOS
 - Make sure you have latest non-beta Xcode installed.
-- Install [Cocoapods](https://cocoapods.org/): `gem install cocoapods --no-ri --no-rdoc`.
+- Install [CocoaPods](https://cocoapods.org/): `gem install cocoapods --no-ri --no-rdoc`.
 - `cd tools-public; ./generate-files-ios.sh; cd ..`.
 - `cd ios; pod install; cd ..`.
 - Run iOS project by running `ios/Exponent.xcworkspace` in Xcode.
