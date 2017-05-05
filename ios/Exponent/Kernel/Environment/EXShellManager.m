@@ -2,6 +2,8 @@
 
 #import "EXAnalytics.h"
 #import "EXShellManager.h"
+
+#import <Crashlytics/Crashlytics.h>
 #import <React/RCTUtils.h>
 
 NSString * const kEXShellBundleResourceName = @"shell-app";
@@ -95,6 +97,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
       // other shell config goes here
 
       [[EXAnalytics sharedInstance] setUserProperties:@{ @"INITIAL_URL": _shellManifestUrl }];
+      [CrashlyticsKit setObjectValue:_shellManifestUrl forKey:@"initial_url"];
     }
   }
   _allManifestUrls = allManifestUrls;
