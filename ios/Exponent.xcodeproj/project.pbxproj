@@ -119,6 +119,9 @@
 		A16EE77E1D56911100634425 /* EXVideoManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A16EE7771D56911100634425 /* EXVideoManager.m */; };
 		A16EE77F1D56911100634425 /* EXVideoPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A16EE7791D56911100634425 /* EXVideoPlayerViewController.m */; };
 		A16EE7801D56911100634425 /* UIView+FindUIViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A16EE77C1D56911100634425 /* UIView+FindUIViewController.m */; };
+		A1B36EAE1EB191BE00864996 /* EXGLObjectManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B36EAD1EB191BE00864996 /* EXGLObjectManager.m */; };
+		A1CA7DDF1EC1036500489532 /* EXGLGPUImageObject.m in Sources */ = {isa = PBXBuildFile; fileRef = A1CA7DDC1EC1036500489532 /* EXGLGPUImageObject.m */; };
+		A1CA7DE01EC1036500489532 /* EXGLObject.m in Sources */ = {isa = PBXBuildFile; fileRef = A1CA7DDE1EC1036500489532 /* EXGLObject.m */; };
 		A1CDBE8B1D30781000C2A670 /* EXLinearGradient.m in Sources */ = {isa = PBXBuildFile; fileRef = A1CDBE881D30781000C2A670 /* EXLinearGradient.m */; };
 		A1CDBE8C1D30781000C2A670 /* EXLinearGradientManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A1CDBE8A1D30781000C2A670 /* EXLinearGradientManager.m */; };
 		A1CDBE991D3851F700C2A670 /* EXFileSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = A1CDBE981D3851F700C2A670 /* EXFileSystem.m */; };
@@ -455,6 +458,12 @@
 		A16EE77A1D56911100634425 /* EXVideoPlayerViewControllerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXVideoPlayerViewControllerDelegate.h; sourceTree = "<group>"; };
 		A16EE77B1D56911100634425 /* UIView+FindUIViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+FindUIViewController.h"; sourceTree = "<group>"; };
 		A16EE77C1D56911100634425 /* UIView+FindUIViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+FindUIViewController.m"; sourceTree = "<group>"; };
+		A1B36EAC1EB191BE00864996 /* EXGLObjectManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGLObjectManager.h; sourceTree = "<group>"; };
+		A1B36EAD1EB191BE00864996 /* EXGLObjectManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGLObjectManager.m; sourceTree = "<group>"; };
+		A1CA7DDB1EC1036500489532 /* EXGLGPUImageObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGLGPUImageObject.h; sourceTree = "<group>"; };
+		A1CA7DDC1EC1036500489532 /* EXGLGPUImageObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGLGPUImageObject.m; sourceTree = "<group>"; };
+		A1CA7DDD1EC1036500489532 /* EXGLObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGLObject.h; sourceTree = "<group>"; };
+		A1CA7DDE1EC1036500489532 /* EXGLObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGLObject.m; sourceTree = "<group>"; };
 		A1CDBE871D30781000C2A670 /* EXLinearGradient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXLinearGradient.h; sourceTree = "<group>"; };
 		A1CDBE881D30781000C2A670 /* EXLinearGradient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXLinearGradient.m; sourceTree = "<group>"; };
 		A1CDBE891D30781000C2A670 /* EXLinearGradientManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXLinearGradientManager.h; sourceTree = "<group>"; };
@@ -912,6 +921,12 @@
 				A1DCE8441DC3FC63009665FD /* EXGLView.m */,
 				A1DCE8451DC3FC63009665FD /* EXGLViewManager.h */,
 				A1DCE8461DC3FC63009665FD /* EXGLViewManager.m */,
+				A1CA7DDD1EC1036500489532 /* EXGLObject.h */,
+				A1CA7DDE1EC1036500489532 /* EXGLObject.m */,
+				A1CA7DDB1EC1036500489532 /* EXGLGPUImageObject.h */,
+				A1CA7DDC1EC1036500489532 /* EXGLGPUImageObject.m */,
+				A1B36EAC1EB191BE00864996 /* EXGLObjectManager.h */,
+				A1B36EAD1EB191BE00864996 /* EXGLObjectManager.m */,
 			);
 			path = GL;
 			sourceTree = "<group>";
@@ -1822,6 +1837,9 @@
 				7847A3991EC0F1550088BF69 /* RNSVGSvgViewManager.m in Sources */,
 				7847A3971EC0F1550088BF69 /* RNSVGSolidColorBrush.m in Sources */,
 				B5AC39D21E95B01F00540AA7 /* EXDisabledDevMenu.m in Sources */,
+				B5E4DB611E566614007D43DD /* AIRGoogleMapPolygon.m in Sources */,
+				1936011D1D67ABCF007C0EE0 /* RNSVGNodeManager.m in Sources */,
+				A1CA7DDF1EC1036500489532 /* EXGLGPUImageObject.m in Sources */,
 				A1DCE8471DC3FC63009665FD /* EXGLView.m in Sources */,
 				7847A3891EC0F1550088BF69 /* RNSVGNodeManager.m in Sources */,
 				B5AC39D91E96D7A900540AA7 /* EXErrorRecovery.m in Sources */,
@@ -1830,6 +1848,9 @@
 				B5AC39D11E95B01F00540AA7 /* EXDisabledDevLoadingView.m in Sources */,
 				B5AC39A71E95A90B00540AA7 /* EXKernel.m in Sources */,
 				B5AC39AA1E95A90B00540AA7 /* EXKernelDevKeyCommands.m in Sources */,
+				A1B36EAE1EB191BE00864996 /* EXGLObjectManager.m in Sources */,
+				193601191D67ABCF007C0EE0 /* RNSVGLinearGradient.m in Sources */,
+				193601271D67ABCF007C0EE0 /* RNSVGRenderableManager.m in Sources */,
 				B5AC39BD1E95AC8E00540AA7 /* EXErrorView.m in Sources */,
 				B5AC39AE1E95A90B00540AA7 /* EXShellManager.m in Sources */,
 				A1CDBE8B1D30781000C2A670 /* EXLinearGradient.m in Sources */,
@@ -1879,6 +1900,7 @@
 				B55FDEFA1C7FE1310020AA8F /* EXRootViewController.m in Sources */,
 				B5AC39A81E95A90B00540AA7 /* EXKernelBridgeRecord.m in Sources */,
 				843175B41DDCF0440092B68B /* EXAccelerometer.m in Sources */,
+				A1CA7DE01EC1036500489532 /* EXGLObject.m in Sources */,
 				A1DCE8481DC3FC63009665FD /* EXGLViewManager.m in Sources */,
 				7847A3951EC0F1550088BF69 /* RNSVGRenderable.m in Sources */,
 				7847A37F1EC0F1550088BF69 /* RNSVGGlyphContext.m in Sources */,
