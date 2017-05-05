@@ -38,6 +38,7 @@
     Using ClojureScript: /versions/v16.0.0/guides/using-clojurescript.html
     Using Firebase: /versions/v16.0.0/guides/using-firebase.html
     Using GraphQL: /versions/v16.0.0/guides/using-graphql.html
+    Using Sentry: /versions/v16.0.0/guides/using-sentry.html
 - title: SDK API Reference
   index: /versions/v16.0.0/sdk/index.html
   links:

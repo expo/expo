@@ -7,7 +7,7 @@ title: Configuration with exp.json
 
 - `name`
 
-   **Required**. The name of your app as it appears both within Exponent and on your home screen as a standalone app.
+   **Required**. The name of your app as it appears both within Expo and on your home screen as a standalone app.
 
 - `description`
 
@@ -24,7 +24,7 @@ title: Configuration with exp.json
 
 - `sdkVersion`
 
-   **Required**. The Exponent sdkVersion to run the project on. This should line up with the version specified in your package.json.
+   **Required**. The Expo sdkVersion to run the project on. This should line up with the version specified in your package.json.
 
 - `version`
 
@@ -42,7 +42,7 @@ title: Configuration with exp.json
 
 - `icon`
 
-   Local path or remote url to an image to use for your app's icon. We recommend that you use a 512x512 png file with transparency. This icon will appear on the home screen and within the Exponent app.
+   Local path or remote url to an image to use for your app's icon. We recommend that you use a 512x512 png file with transparency. This icon will appear on the home screen and within the Expo app.
 
 - `notification`
 
@@ -76,7 +76,7 @@ title: Configuration with exp.json
 
    - `exponentIconColor`
 
-      If no icon is provided, we will show the Exponent logo. You can choose between `white` and `blue`.
+      If no icon is provided, we will show the Expo logo. You can choose between `white` and `blue`.
     white, blue
 
    - `exponentIconGrayscale`
@@ -94,11 +94,11 @@ title: Configuration with exp.json
 
    - `hideExponentText`
 
-      By default, Exponent shows some text at the bottom of the loading screen. Set this to `true` to disable.
+      By default, Expo shows some text at the bottom of the loading screen. Set this to `true` to disable.
 
 - `appKey`
 
-   By default, Exponent looks for the application registered with the AppRegistry as `main`. If you would like to change this, you can specify the name in this property.
+   By default, Expo looks for the application registered with the AppRegistry as `main`. If you would like to change this, you can specify the name in this property.
 
 - `androidStatusBarColor`
 
@@ -153,7 +153,7 @@ title: Configuration with exp.json
    - `bundleIdentifier`
 
       The bundle identifier for your iOS standalone app. You make it up, but it needs to be unique on the App Store. See [this StackOverflow question](http://stackoverflow.com/questions/11347470/what-does-bundle-identifier-mean-in-the-ios-project).
-    iOS bundle identifier notation unique name for your app. For example, host.exp.exponent, where exp.host is our domain and Exponent is our app.
+    iOS bundle identifier notation unique name for your app. For example, host.exp.exponent, where exp.host is our domain and Expo is our app.
 
    - `buildNumber`
 
@@ -188,7 +188,7 @@ title: Configuration with exp.json
 
    - `infoPlist`
 
-      Arbitrary configuration to add to your standalone app's native Info.plist. Applied prior to all other Exponent-specific configuration. No other validation is performed, so use this at your own risk of rejection from the App Store.
+      Arbitrary configuration to add to your standalone app's native Info.plist. Applied prior to all other Expo-specific configuration. No other validation is performed, so use this at your own risk of rejection from the App Store.
 
 - `android`
 
@@ -197,7 +197,7 @@ title: Configuration with exp.json
    - `package`
 
       The package name for your Android standalone app. You make it up, but it needs to be unique on the Play Store. See [this StackOverflow question](http://stackoverflow.com/questions/6273892/android-package-name-convention).
-    Reverse DNS notation unique name for your app. For example, host.exp.exponent, where exp.host is our domain and Exponent is our app.
+    Reverse DNS notation unique name for your app. For example, host.exp.exponent, where exp.host is our domain and Expo is our app.
 
    - `versionCode`
 
@@ -241,3 +241,11 @@ title: Configuration with exp.json
 - `facebookScheme`
 
    Used for Facebook native login. Starts with 'fb' and followed by a string of digits, like 'fb1234567890'. You can find your scheme at https://developers.facebook.com/docs/facebook-login/ios in the 'Configuring Your info.plist' section.
+
+- `hooks`
+
+   Configuration for scripts to run to hook into the publish process
+
+   - `postPublish`
+
+      
