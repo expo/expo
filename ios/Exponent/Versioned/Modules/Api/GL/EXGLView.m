@@ -62,8 +62,23 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 //    _displayLink.preferredFramesPerSecond = 60;
     [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
 
-    // Setup JS binding -- only possible on JavaScriptCore
+    // Will fill this in later from JS thread once `onSurfaceCreate` callback is set
     _exglCtxId = 0;
+  }
+  return self;
+}
+
+- (void)layoutSubviews
+{
+  [self resizeViewBuffersToWidth:self.contentScaleFactor * self.frame.size.width
+                          height:self.contentScaleFactor * self.frame.size.height];
+}
+
+- (void)setOnSurfaceCreate:(RCTDirectEventBlock)onSurfaceCreate
+{
+  _onSurfaceCreate = onSurfaceCreate;
+  if (_onSurfaceCreate) {
+    // Got non-empty onSurfaceCreate callback -- set up JS binding -- only possible on JavaScriptCore
     id<RCTJavaScriptExecutor> executor = [_viewManager.bridge valueForKey:@"javaScriptExecutor"];
     if ([executor isKindOfClass:NSClassFromString(@"RCTJSCExecutor")]) {
       // On JS thread, extract JavaScriptCore context, create EXGL context, call JS callback
@@ -81,13 +96,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
       RCTLog(@"EXGL: Can only run on JavaScriptCore! Do you have 'Remote Debugging' enabled in your app's Developer Menu (https://facebook.github.io/react-native/docs/debugging.html)? EXGL is not supported while using Remote Debugging, you will need to disable it to use EXGL.");
     }
   }
-  return self;
-}
-
-- (void)layoutSubviews
-{
-  [self resizeViewBuffersToWidth:self.contentScaleFactor * self.frame.size.width
-                          height:self.contentScaleFactor * self.frame.size.height];
 }
 
 - (void)deleteViewBuffers
