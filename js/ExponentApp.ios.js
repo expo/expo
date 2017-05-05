@@ -75,7 +75,7 @@ class ExponentApp extends React.Component {
     }
   }
 
-  componentDidMount() {
+  _initialize() {
     ExponentKernel.onLoaded();
 
     if (ExponentKernel.__isFake) {
@@ -111,6 +111,7 @@ class ExponentApp extends React.Component {
   async _performDataMigrationAsync() {
     await LocalStorage.maybeMigrateFromLegacyAsync();
     this.setState({ dataMigrationComplete: true });
+    this._initialize();
   }
 
   _handleUrl = event => {
