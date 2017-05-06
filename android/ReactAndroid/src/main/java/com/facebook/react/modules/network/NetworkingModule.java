@@ -52,7 +52,7 @@ import okio.ByteString;
 @ReactModule(name = NetworkingModule.NAME, supportsWebWorkers = true)
 public class NetworkingModule extends ReactContextBaseJavaModule {
 
-    final public static String NAME = "Networking";
+    public static final String NAME = "Networking";
 
     public static String CONTENT_ENCODING_HEADER_NAME = "content-encoding";
 

@@ -9,7 +9,7 @@
  * @providesModule TextInputTestModule
  */
 
-'use strict';
+"use strict";
 
 var BatchedBridge = require('BatchedBridge');
 var React = require('React');
@@ -25,9 +25,10 @@ var app;
 class TokenizedTextExample extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { text: '' };
+    this.state = {text: ''};
   }
   render() {
+
     //define delimiter
     let delimiter = /\s+/;
 
@@ -52,7 +53,7 @@ class TokenizedTextExample extends React.Component {
     parts.push(_text);
 
     //highlight hashtags
-    parts = parts.map(text => {
+    parts = parts.map((text) => {
       if (/^#/.test(text)) {
         return <Text key={text} style={styles.hashtag}>{text}</Text>;
       } else {
@@ -67,8 +68,8 @@ class TokenizedTextExample extends React.Component {
           testID="tokenizedInput"
           multiline={true}
           style={styles.multiline}
-          onChangeText={text => {
-            this.setState({ text });
+          onChangeText={(text) => {
+            this.setState({text});
           }}>
           <Text>{parts}</Text>
         </TextInput>
@@ -82,7 +83,7 @@ class TextInputTestApp extends React.Component {
     app = this;
   }
 
-  handleOnSubmitEditing = record => {
+  handleOnSubmitEditing = (record) => {
     Recording.record(record);
   };
 
@@ -93,7 +94,7 @@ class TextInputTestApp extends React.Component {
           style={styles.textInputHeight}
           autoCorrect={true}
           autoFocus={true}
-          keyboardType="numeric"
+          keyboardType='numeric'
           multiline={true}
           secureTextEntry={true}
           defaultValue="This is text"
@@ -101,13 +102,13 @@ class TextInputTestApp extends React.Component {
         />
         <TextInput
           style={styles.textInput}
-          autoCapitalize="sentences"
+          autoCapitalize='sentences'
           autoCorrect={false}
           autoFocus={false}
-          keyboardType="default"
+          keyboardType='default'
           multiline={false}
           secureTextEntry={false}
-          placeholder="1234"
+          placeholder='1234'
           testID="textInput2"
         />
         <TextInput
@@ -118,18 +119,18 @@ class TextInputTestApp extends React.Component {
         />
         <TextInput
           ref="textInput4"
-          style={[styles.textInput, { color: '#00ff00' }]}
+          style={[styles.textInput, {color: '#00ff00'}]}
           testID="textInput4"
         />
         <TextInput
           ref="textInput5"
-          style={[styles.textInput, { color: '#00ff00' }]}
+          style={[styles.textInput, {color: '#00ff00'}]}
           defaultValue=""
           testID="textInput5"
         />
         <TextInput
           ref="textInput6"
-          style={[styles.textInput, { color: '#00ff00' }]}
+          style={[styles.textInput, {color: '#00ff00'}]}
           defaultValue="Text"
           testID="textInput6"
         />

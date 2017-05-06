@@ -59,7 +59,7 @@ var styles = StyleSheet.create({
   },
   row: {
     height: 30,
-  },
+  }
 });
 
 module.exports = JSResponderTestApp;

@@ -65,8 +65,8 @@ class PickerAndroidTestApp extends React.Component {
     );
   }
 
-  onValueChange = value => {
-    this.setState({ selected: value });
+  onValueChange = (value) => {
+    this.setState({selected: value});
     RecordingModule.recordSelection(value);
   };
 }
@@ -74,13 +74,13 @@ class PickerAndroidTestApp extends React.Component {
 var PickerAndroidTestModule = {
   PickerAndroidTestApp: PickerAndroidTestApp,
   selectItem: function(value) {
-    appInstance.setState({ selected: value });
+    appInstance.setState({selected: value});
   },
   setMode: function(mode) {
-    appInstance.setState({ mode: mode });
+    appInstance.setState({mode: mode});
   },
   setPrimaryColor: function(color) {
-    appInstance.setState({ style: { color } });
+    appInstance.setState({style: {color}});
   },
 };
 
