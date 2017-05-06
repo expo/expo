@@ -13,8 +13,8 @@
 
 const BatchedBridge = require('BatchedBridge');
 
-const { assertEquals, assertTrue } = require('Asserts');
-const { TestModule } = require('NativeModules');
+const {assertEquals, assertTrue} = require('Asserts');
+const {TestModule} = require('NativeModules');
 
 var TestJavaToJSReturnValuesModule = {
   callMethod: function(methodName, expectedType, expectedJSON) {
@@ -29,7 +29,7 @@ var TestJavaToJSReturnValuesModule = {
     } catch (ex) {
       assertTrue(ex.message.indexOf('Exception triggered') !== -1);
     }
-  },
+  }
 };
 
 BatchedBridge.registerCallableModule(

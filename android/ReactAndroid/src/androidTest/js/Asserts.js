@@ -18,14 +18,8 @@ var Asserts = {
     if (expected !== actual) {
       Assert.fail(
         msg ||
-          'Expected: ' +
-            expected +
-            ', received: ' +
-            actual +
-            '\n' +
-            'at ' +
-            new Error().stack
-      );
+        'Expected: ' + expected + ', received: ' + actual + '\n' +
+        'at ' + (new Error()).stack);
     } else {
       Assert.success();
     }

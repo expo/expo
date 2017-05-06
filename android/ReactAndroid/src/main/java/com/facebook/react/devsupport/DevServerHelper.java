@@ -15,10 +15,11 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.text.TextUtils;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.UiThreadUtil;
@@ -26,7 +27,14 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.network.OkHttpCallUtil;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
+import com.facebook.react.packagerconnection.FileIoHandler;
 import com.facebook.react.packagerconnection.JSPackagerClient;
+import com.facebook.react.packagerconnection.RequestHandler;
+import com.facebook.react.packagerconnection.NotificationOnlyHandler;
+import com.facebook.react.packagerconnection.RequestOnlyHandler;
+import com.facebook.react.packagerconnection.Responder;
+import org.json.JSONException;
+import org.json.JSONObject;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.ConnectionPool;
@@ -34,6 +42,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import okio.Buffer;
+import okio.BufferedSource;
 import okio.Okio;
 import okio.Sink;
 
@@ -73,8 +83,6 @@ public class DevServerHelper {
 
     public static String WEBSOCKET_PROXY_URL_FORMAT = "ws://%s/debugger-proxy?role=client";
 
-    public static String PACKAGER_CONNECTION_URL_FORMAT = "ws://%s/message?role=android-rn-devserverhelper";
-
     public static String PACKAGER_STATUS_URL_FORMAT = "http://%s/status";
 
     public static String HEAP_CAPTURE_UPLOAD_URL_FORMAT = "http://%s/jscheapcaptureupload";
@@ -94,6 +102,8 @@ public class DevServerHelper {
 
         void onSuccess();
 
+        void onProgress(@Nullable String status, @Nullable Integer done, @Nullable Integer total);
+
         void onFailure(Exception cause);
     }
 
@@ -106,9 +116,9 @@ public class DevServerHelper {
 
         void onPackagerReloadCommand();
 
-        void onCaptureHeapCommand(@Nullable final JSPackagerClient.Responder responder);
+        void onCaptureHeapCommand(@Nullable final Responder responder);
 
-        void onPokeSamplingProfilerCommand(@Nullable final JSPackagerClient.Responder responder);
+        void onPokeSamplingProfilerCommand(@Nullable final Responder responder);
     }
 
     public final DevInternalSettings mSettings;
@@ -149,29 +159,30 @@ public class DevServerHelper {
 
             @Override
             protected Void doInBackground(Void... backgroundParams) {
-                Map<String, JSPackagerClient.RequestHandler> handlers = new HashMap<String, JSPackagerClient.RequestHandler>();
-                handlers.put("reload", new JSPackagerClient.NotificationOnlyHandler() {
+                Map<String, RequestHandler> handlers = new HashMap<String, RequestHandler>();
+                handlers.put("reload", new NotificationOnlyHandler() {
 
                     @Override
                     public void onNotification(@Nullable Object params) {
                         commandListener.onPackagerReloadCommand();
                     }
                 });
-                handlers.put("captureHeap", new JSPackagerClient.RequestOnlyHandler() {
+                handlers.put("captureHeap", new RequestOnlyHandler() {
 
                     @Override
-                    public void onRequest(@Nullable Object params, JSPackagerClient.Responder responder) {
+                    public void onRequest(@Nullable Object params, Responder responder) {
                         commandListener.onCaptureHeapCommand(responder);
                     }
                 });
-                handlers.put("pokeSamplingProfiler", new JSPackagerClient.RequestOnlyHandler() {
+                handlers.put("pokeSamplingProfiler", new RequestOnlyHandler() {
 
                     @Override
-                    public void onRequest(@Nullable Object params, JSPackagerClient.Responder responder) {
+                    public void onRequest(@Nullable Object params, Responder responder) {
                         commandListener.onPokeSamplingProfilerCommand(responder);
                     }
                 });
-                mPackagerClient = new JSPackagerClient(getPackagerConnectionURL(), handlers);
+                handlers.putAll(new FileIoHandler().handlers());
+                mPackagerClient = new JSPackagerClient("devserverhelper", mSettings.getPackagerConnectionSettings(), handlers);
                 mPackagerClient.init();
                 return null;
             }
@@ -235,19 +246,15 @@ public class DevServerHelper {
     }
 
     public String getWebsocketProxyURL() {
-        return String.format(Locale.US, WEBSOCKET_PROXY_URL_FORMAT, getDebugServerHost());
-    }
-
-    private String getPackagerConnectionURL() {
-        return String.format(Locale.US, PACKAGER_CONNECTION_URL_FORMAT, getDebugServerHost());
+        return String.format(Locale.US, WEBSOCKET_PROXY_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost());
     }
 
     public String getHeapCaptureUploadUrl() {
-        return String.format(Locale.US, HEAP_CAPTURE_UPLOAD_URL_FORMAT, getDebugServerHost());
+        return String.format(Locale.US, HEAP_CAPTURE_UPLOAD_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost());
     }
 
     public String getInspectorDeviceUrl() {
-        return String.format(Locale.US, INSPECTOR_DEVICE_URL_FORMAT, getDebugServerHost(), AndroidInfoHelpers.getFriendlyDeviceName());
+        return String.format(Locale.US, INSPECTOR_DEVICE_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost(), AndroidInfoHelpers.getFriendlyDeviceName());
     }
 
     /**
@@ -290,26 +297,6 @@ public class DevServerHelper {
         return mSettings.isHotModuleReplacementEnabled();
     }
 
-    /**
-   * @return the host to use when connecting to the bundle server.
-   */
-    /**
-   * @return the host to use when connecting to the bundle server.
-   */
-    private String getDebugServerHost() {
-        // Check debug server host setting first. If empty try to detect emulator type and use default
-        // hostname for those
-        String hostFromSettings = mSettings.getDebugServerHost();
-        if (!TextUtils.isEmpty(hostFromSettings)) {
-            return Assertions.assertNotNull(hostFromSettings);
-        }
-        String host = AndroidInfoHelpers.getServerHost();
-        if (host.equals(AndroidInfoHelpers.DEVICE_LOCALHOST)) {
-            FLog.w(ReactConstants.TAG, "You seem to be running on device. Run 'adb reverse tcp:8081 tcp:8081' " + "to forward the debug server's port to the device.");
-        }
-        return host;
-    }
-
     private String createBundleURL(String host, String jsModulePath, boolean devMode, boolean hmr, boolean jsMinify) {
         try {
             return (String) Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("getBundleUrlForActivityId", int.class, String.class, String.class, boolean.class, boolean.class, boolean.class).invoke(null, mSettings.exponentActivityId, host, jsModulePath, devMode, hmr, jsMinify);
@@ -324,11 +311,11 @@ public class DevServerHelper {
     }
 
     public String getDevServerBundleURL(final String jsModulePath) {
-        return createBundleURL(getDebugServerHost(), jsModulePath, getDevMode(), getHMR(), getJSMinifyMode());
+        return createBundleURL(mSettings.getPackagerConnectionSettings().getDebugServerHost(), jsModulePath, getDevMode(), getHMR(), getJSMinifyMode());
     }
 
     public void downloadBundleFromURL(final BundleDownloadCallback callback, final File outputFile, final String bundleURL) {
-        final Request request = new Request.Builder().url(bundleURL).build();
+        final Request request = new Request.Builder().url(bundleURL).addHeader("Accept", "multipart/mixed").build();
         mDownloadBundleFromURLCall = Assertions.assertNotNull(mClient.newCall(request));
         mDownloadBundleFromURLCall.enqueue(new Callback() {
 
@@ -344,38 +331,93 @@ public class DevServerHelper {
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(Call call, final Response response) throws IOException {
                 // ignore callback if call was cancelled
                 if (mDownloadBundleFromURLCall == null || mDownloadBundleFromURLCall.isCanceled()) {
                     mDownloadBundleFromURLCall = null;
                     return;
                 }
                 mDownloadBundleFromURLCall = null;
-                // Check for server errors. If the server error has the expected form, fail with more info.
-                if (!response.isSuccessful()) {
-                    String body = response.body().string();
-                    DebugServerException debugServerException = DebugServerException.parse(body);
-                    if (debugServerException != null) {
-                        callback.onFailure(debugServerException);
-                    } else {
-                        StringBuilder sb = new StringBuilder();
-                        sb.append("The development server returned response error code: ").append(response.code()).append("\n\n").append("URL: ").append(call.request().url().toString()).append("\n\n").append("Body:\n").append(body);
-                        callback.onFailure(new DebugServerException(sb.toString()));
+                final String url = response.request().url().toString();
+                // Make sure the result is a multipart response and parse the boundary.
+                String contentType = response.header("content-type");
+                Pattern regex = Pattern.compile("multipart/mixed;.*boundary=\"([^\"]+)\"");
+                Matcher match = regex.matcher(contentType);
+                if (match.find()) {
+                    String boundary = match.group(1);
+                    MultipartStreamReader bodyReader = new MultipartStreamReader(response.body().source(), boundary);
+                    boolean completed = bodyReader.readAllParts(new MultipartStreamReader.ChunkCallback() {
+
+                        @Override
+                        public void execute(Map<String, String> headers, Buffer body, boolean finished) throws IOException {
+                            // encoded as JSON.
+                            if (finished) {
+                                // The http status code for each separate chunk is in the X-Http-Status header.
+                                int status = response.code();
+                                if (headers.containsKey("X-Http-Status")) {
+                                    status = Integer.parseInt(headers.get("X-Http-Status"));
+                                }
+                                processBundleResult(url, status, body, outputFile, callback);
+                            } else {
+                                if (!headers.containsKey("Content-Type") || !headers.get("Content-Type").equals("application/json")) {
+                                    return;
+                                }
+                                try {
+                                    JSONObject progress = new JSONObject(body.readUtf8());
+                                    String status = null;
+                                    if (progress.has("status")) {
+                                        status = progress.getString("status");
+                                    }
+                                    Integer done = null;
+                                    if (progress.has("done")) {
+                                        done = progress.getInt("done");
+                                    }
+                                    Integer total = null;
+                                    if (progress.has("total")) {
+                                        total = progress.getInt("total");
+                                    }
+                                    callback.onProgress(status, done, total);
+                                } catch (JSONException e) {
+                                    FLog.e(ReactConstants.TAG, "Error parsing progress JSON. " + e.toString());
+                                }
+                            }
+                        }
+                    });
+                    if (!completed) {
+                        callback.onFailure(new DebugServerException("Error while reading multipart response.\n\nResponse code: " + response.code() + "\n\n" + "URL: " + call.request().url().toString() + "\n\n"));
                     }
-                    return;
-                }
-                Sink output = null;
-                try {
-                    output = Okio.sink(outputFile);
-                    Okio.buffer(response.body().source()).readAll(output);
-                    callback.onSuccess();
-                } finally {
-                    if (output != null) {
-                        output.close();
-                    }
+                } else {
+                    // In case the server doesn't support multipart/mixed responses, fallback to normal download.
+                    processBundleResult(url, response.code(), Okio.buffer(response.body().source()), outputFile, callback);
                 }
             }
         });
+    }
+
+    private void processBundleResult(String url, int statusCode, BufferedSource body, File outputFile, BundleDownloadCallback callback) throws IOException {
+        // Check for server errors. If the server error has the expected form, fail with more info.
+        if (statusCode != 200) {
+            String bodyString = body.readUtf8();
+            DebugServerException debugServerException = DebugServerException.parse(bodyString);
+            if (debugServerException != null) {
+                callback.onFailure(debugServerException);
+            } else {
+                StringBuilder sb = new StringBuilder();
+                sb.append("The development server returned response error code: ").append(statusCode).append("\n\n").append("URL: ").append(url).append("\n\n").append("Body:\n").append(bodyString);
+                callback.onFailure(new DebugServerException(sb.toString()));
+            }
+            return;
+        }
+        Sink output = null;
+        try {
+            output = Okio.sink(outputFile);
+            body.readAll(output);
+            callback.onSuccess();
+        } finally {
+            if (output != null) {
+                output.close();
+            }
+        }
     }
 
     public void cancelDownloadBundleFromURL() {
@@ -386,7 +428,7 @@ public class DevServerHelper {
     }
 
     public void isPackagerRunning(final PackagerStatusCallback callback) {
-        String statusURL = createPackagerStatusURL(getDebugServerHost());
+        String statusURL = createPackagerStatusURL(mSettings.getPackagerConnectionSettings().getDebugServerHost());
         Request request = new Request.Builder().url(statusURL).build();
         mClient.newCall(request).enqueue(new Callback() {
 
@@ -490,11 +532,11 @@ public class DevServerHelper {
     }
 
     private String createOnChangeEndpointUrl() {
-        return String.format(Locale.US, ONCHANGE_ENDPOINT_URL_FORMAT, getDebugServerHost());
+        return String.format(Locale.US, ONCHANGE_ENDPOINT_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost());
     }
 
     private String createLaunchJSDevtoolsCommandUrl() {
-        return String.format(Locale.US, LAUNCH_JS_DEVTOOLS_COMMAND_URL_FORMAT, getDebugServerHost());
+        return String.format(Locale.US, LAUNCH_JS_DEVTOOLS_COMMAND_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost());
     }
 
     public void launchJSDevtools() {
@@ -515,11 +557,11 @@ public class DevServerHelper {
     }
 
     public String getSourceMapUrl(String mainModuleName) {
-        return String.format(Locale.US, SOURCE_MAP_URL_FORMAT, getDebugServerHost(), mainModuleName, getDevMode(), getHMR(), getJSMinifyMode());
+        return String.format(Locale.US, SOURCE_MAP_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost(), mainModuleName, getDevMode(), getHMR(), getJSMinifyMode());
     }
 
     public String getSourceUrl(String mainModuleName) {
-        return String.format(Locale.US, BUNDLE_URL_FORMAT, getDebugServerHost(), mainModuleName, getDevMode(), getHMR(), getJSMinifyMode());
+        return String.format(Locale.US, BUNDLE_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost(), mainModuleName, getDevMode(), getHMR(), getJSMinifyMode());
     }
 
     public String getJSBundleURLForRemoteDebugging(String mainModuleName) {
@@ -541,7 +583,7 @@ public class DevServerHelper {
    */
     @Nullable
     public File downloadBundleResourceFromUrlSync(final String resourcePath, final File outputFile) {
-        final String resourceURL = createResourceURL(getDebugServerHost(), resourcePath);
+        final String resourceURL = createResourceURL(mSettings.getPackagerConnectionSettings().getDebugServerHost(), resourcePath);
         final Request request = new Request.Builder().url(resourceURL).build();
         try {
             Response response = mClient.newCall(request).execute();

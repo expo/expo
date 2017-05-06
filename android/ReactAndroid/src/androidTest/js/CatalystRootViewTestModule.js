@@ -21,7 +21,7 @@ class CatalystRootViewTestApp extends React.Component {
   }
 
   render() {
-    return <View collapsable={false} style={{ alignSelf: 'stretch' }} />;
+    return <View collapsable={false} style={{alignSelf: 'stretch'}} />;
   }
 }
 

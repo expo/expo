@@ -35,25 +35,16 @@ var FlexTestApp = React.createClass({
       left: 10,
       width: 50,
       height: 60,
-    },
+    }
   }),
   render: function() {
     return (
-      <View
-        style={this._styles.container}
-        testID="container"
-        collapsable={false}>
-        <View
-          style={[this._styles.child, { backgroundColor: '#ff0000' }]}
-          collapsable={false}
-        />
-        <View
-          style={[this._styles.child, { backgroundColor: '#0000ff' }]}
-          collapsable={false}
-        />
+      <View style={this._styles.container} testID="container" collapsable={false}>
+        <View style={[this._styles.child, {backgroundColor: '#ff0000'}]} collapsable={false}/>
+        <View style={[this._styles.child, {backgroundColor: '#0000ff'}]} collapsable={false}/>
       </View>
     );
-  },
+  }
 });
 
 var FlexWithText = React.createClass({
@@ -74,17 +65,14 @@ var FlexWithText = React.createClass({
   }),
   render: function() {
     return (
-      <View
-        style={this._styles.container}
-        testID="container"
-        collapsable={false}>
+      <View style={this._styles.container} testID="container" collapsable={false}>
         <View style={this._styles.row} collapsable={false}>
           <Text style={this._styles.inner}>Hello</Text>
           <Text style={this._styles.inner}>World</Text>
         </View>
       </View>
     );
-  },
+  }
 });
 
 var AbsolutePositionTestApp = React.createClass({
@@ -95,17 +83,11 @@ var AbsolutePositionTestApp = React.createClass({
       left: 10,
       width: 50,
       height: 60,
-    },
+    }
   }),
   render: function() {
-    return (
-      <View
-        style={this._styles.absolute}
-        testID="absolute"
-        collapsable={false}
-      />
-    );
-  },
+    return <View style={this._styles.absolute} testID="absolute" collapsable={false}/>;
+  }
 });
 
 var AbsolutePositionBottomRightTestApp = React.createClass({
@@ -120,18 +102,15 @@ var AbsolutePositionBottomRightTestApp = React.createClass({
       right: 10,
       width: 50,
       height: 60,
-    },
+    }
   }),
   render: function() {
     return (
-      <View
-        style={this._styles.container}
-        testID="container"
-        collapsable={false}>
-        <View style={this._styles.absolute} collapsable={false} />
+      <View style={this._styles.container} testID="container" collapsable={false}>
+        <View style={this._styles.absolute} collapsable={false}/>
       </View>
     );
-  },
+  }
 });
 
 var CenteredTextView = React.createClass({
@@ -156,7 +135,7 @@ var CenteredTextView = React.createClass({
         </View>
       </View>
     );
-  },
+  }
 });
 
 var flushUpdatePositionInList = null;
@@ -167,7 +146,7 @@ var UpdatePositionInListTestApp = React.createClass({
     },
     active: {
       height: 50,
-    },
+    }
   }),
   getInitialState: function() {
     flushUpdatePositionInList = () => this.setState({ active: true });
@@ -184,10 +163,10 @@ var UpdatePositionInListTestApp = React.createClass({
           ]}
           collapsable={false}
         />
-        <View style={this._styles.element} collapsable={false} />
+        <View style={this._styles.element} collapsable={false}/>
       </View>
     );
-  },
+  }
 });
 
 var UIManagerTestModule = {
@@ -204,14 +183,14 @@ var UIManagerTestModule = {
     renderApplication(AbsolutePositionTestApp, {}, rootTag);
   },
   renderCenteredTextViewTestApplication: function(rootTag, text) {
-    renderApplication(CenteredTextView, { text: text }, rootTag);
+    renderApplication(CenteredTextView, {text: text}, rootTag);
   },
   renderUpdatePositionInListTestApplication: function(rootTag) {
     renderApplication(UpdatePositionInListTestApp, {}, rootTag);
   },
   flushUpdatePositionInList: function() {
     flushUpdatePositionInList();
-  },
+  }
 };
 
 BatchedBridge.registerCallableModule(

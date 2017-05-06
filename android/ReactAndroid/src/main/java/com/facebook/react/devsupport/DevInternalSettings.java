@@ -14,6 +14,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
+import com.facebook.react.packagerconnection.PackagerConnectionSettings;
 
 /**
  * Helper class for accessing developers settings that should not be accessed outside of the package
@@ -34,8 +35,6 @@ public class DevInternalSettings implements DeveloperSettings, SharedPreferences
 
     public static String PREFS_JS_MINIFY_DEBUG_KEY = "js_minify_debug";
 
-    public static String PREFS_DEBUG_SERVER_HOST_KEY = "debug_http_host";
-
     public static String PREFS_ANIMATIONS_DEBUG_KEY = "animations_debug";
 
     public static String PREFS_RELOAD_ON_JS_CHANGE_KEY = "reload_on_js_change";
@@ -50,10 +49,17 @@ public class DevInternalSettings implements DeveloperSettings, SharedPreferences
 
     public final Listener mListener;
 
+    public final PackagerConnectionSettings mPackagerConnectionSettings;
+
     public DevInternalSettings(Context applicationContext, Listener listener) {
         mListener = listener;
         mPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
         mPreferences.registerOnSharedPreferenceChangeListener(this);
+        mPackagerConnectionSettings = new PackagerConnectionSettings(applicationContext);
+    }
+
+    public PackagerConnectionSettings getPackagerConnectionSettings() {
+        return mPackagerConnectionSettings;
     }
 
     @Override
@@ -78,11 +84,6 @@ public class DevInternalSettings implements DeveloperSettings, SharedPreferences
     @Override
     public boolean isJSMinifyEnabled() {
         return mPreferences.getBoolean(PREFS_JS_MINIFY_DEBUG_KEY, false);
-    }
-
-    @Nullable
-    public String getDebugServerHost() {
-        return mPreferences.getString(PREFS_DEBUG_SERVER_HOST_KEY, null);
     }
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {

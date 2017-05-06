@@ -34,7 +34,7 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
     public static String FRAGMENT_TAG = "com.facebook.catalyst.react.dialog.DialogModule";
 
     /* package */
-    final public static String NAME = "DialogManagerAndroid";
+    public static final String NAME = "DialogManagerAndroid";
 
     /* package */
     public static String ACTION_BUTTON_CLICKED = "buttonClicked";

@@ -27,30 +27,12 @@ class ClippingSample1 extends React.Component {
     var styles = sample1Styles;
     return (
       <View>
-        <ClippableView
-          clippableViewID="outer"
-          style={styles.outer}
-          removeClippedSubviews={true}>
-          <ClippableView
-            clippableViewID="inner1"
-            style={[styles.inner, styles.inner1]}
-          />
-          <ClippableView
-            clippableViewID="inner2"
-            style={[styles.inner, styles.inner2]}
-          />
-          <ClippableView
-            clippableViewID="inner3"
-            style={[styles.inner, styles.inner3]}
-          />
-          <ClippableView
-            clippableViewID="inner4"
-            style={[styles.inner, styles.inner4]}
-          />
-          <ClippableView
-            clippableViewID="inner5"
-            style={[styles.inner, styles.inner5]}
-          />
+        <ClippableView clippableViewID="outer" style={styles.outer} removeClippedSubviews={true}>
+          <ClippableView clippableViewID="inner1" style={[styles.inner, styles.inner1]}/>
+          <ClippableView clippableViewID="inner2" style={[styles.inner, styles.inner2]}/>
+          <ClippableView clippableViewID="inner3" style={[styles.inner, styles.inner3]}/>
+          <ClippableView clippableViewID="inner4" style={[styles.inner, styles.inner4]}/>
+          <ClippableView clippableViewID="inner5" style={[styles.inner, styles.inner5]}/>
         </ClippableView>
       </View>
     );
@@ -96,30 +78,15 @@ class ClippingSample2 extends React.Component {
     var styles = sample2Styles;
     return (
       <View>
-        <ClippableView
-          clippableViewID="outer"
-          style={styles.outer}
-          removeClippedSubviews={true}>
+        <ClippableView clippableViewID="outer" style={styles.outer} removeClippedSubviews={true}>
           <ClippableView
-            clippableViewID="complexInner"
-            style={styles.complexInner}
-            removeClippedSubviews={true}>
-            <ClippableView
-              clippableViewID="inner1"
-              style={[styles.inner, styles.inner1]}
-            />
-            <ClippableView
-              clippableViewID="inner2"
-              style={[styles.inner, styles.inner2]}
-            />
-            <ClippableView
-              clippableViewID="inner3"
-              style={[styles.inner, styles.inner3]}
-            />
-            <ClippableView
-              clippableViewID="inner4"
-              style={[styles.inner, styles.inner4]}
-            />
+              clippableViewID="complexInner"
+              style={styles.complexInner}
+              removeClippedSubviews={true}>
+            <ClippableView clippableViewID="inner1" style={[styles.inner, styles.inner1]}/>
+            <ClippableView clippableViewID="inner2" style={[styles.inner, styles.inner2]}/>
+            <ClippableView clippableViewID="inner3" style={[styles.inner, styles.inner3]}/>
+            <ClippableView clippableViewID="inner4" style={[styles.inner, styles.inner4]}/>
           </ClippableView>
         </ClippableView>
       </View>
@@ -168,19 +135,13 @@ var sample2Styles = StyleSheet.create({
 class UpdatingSample1 extends React.Component {
   render() {
     var styles = updating1Styles;
-    var inner1Styles = [
-      styles.inner1,
-      { height: this.props.update1 ? 200 : 100 },
-    ];
-    var inner2Styles = [styles.inner2, { top: this.props.update2 ? 200 : 50 }];
+    var inner1Styles = [styles.inner1, {height: this.props.update1 ? 200 : 100}];
+    var inner2Styles = [styles.inner2, {top: this.props.update2 ? 200 : 50}];
     return (
       <View>
-        <ClippableView
-          clippableViewID="outer"
-          style={styles.outer}
-          removeClippedSubviews={true}>
-          <ClippableView clippableViewID="inner1" style={inner1Styles} />
-          <ClippableView clippableViewID="inner2" style={inner2Styles} />
+        <ClippableView clippableViewID="outer" style={styles.outer} removeClippedSubviews={true}>
+          <ClippableView clippableViewID="inner1" style={inner1Styles}/>
+          <ClippableView clippableViewID="inner2" style={inner2Styles}/>
         </ClippableView>
       </View>
     );
@@ -208,20 +169,17 @@ var updating1Styles = StyleSheet.create({
     left: 50,
     top: 50,
     backgroundColor: 'green',
-  },
+  }
 });
 
 class UpdatingSample2 extends React.Component {
   render() {
     var styles = updating2Styles;
-    var outerStyles = [styles.outer, { height: this.props.update ? 200 : 100 }];
+    var outerStyles = [styles.outer, {height: this.props.update ? 200 : 100}];
     return (
       <View>
-        <ClippableView
-          clippableViewID="outer"
-          style={outerStyles}
-          removeClippedSubviews={true}>
-          <ClippableView clippableViewID="inner" style={styles.inner} />
+        <ClippableView clippableViewID="outer" style={outerStyles} removeClippedSubviews={true}>
+          <ClippableView clippableViewID="inner" style={styles.inner}/>
         </ClippableView>
       </View>
     );
@@ -249,28 +207,25 @@ class ScrollViewTest extends React.Component {
     var children = [];
     for (var i = 0; i < 4; i++) {
       children[i] = (
-        <ClippableView key={i} style={styles.row} clippableViewID={'' + i} />
+        <ClippableView key={i} style={styles.row} clippableViewID={'' + i}/>
       );
     }
     for (var i = 4; i < 6; i++) {
       var viewID = 'C' + (i - 4);
       children[i] = (
         <ClippableView
-          key={i}
-          style={styles.complex}
-          clippableViewID={viewID}
-          removeClippedSubviews={true}>
-          <ClippableView style={styles.inner} clippableViewID={viewID + '.1'} />
-          <ClippableView style={styles.inner} clippableViewID={viewID + '.2'} />
+            key={i}
+            style={styles.complex}
+            clippableViewID={viewID}
+            removeClippedSubviews={true}>
+          <ClippableView style={styles.inner} clippableViewID={viewID + '.1'}/>
+          <ClippableView style={styles.inner} clippableViewID={viewID + '.2'}/>
         </ClippableView>
       );
     }
 
     return (
-      <ScrollView
-        removeClippedSubviews={true}
-        style={styles.scrollView}
-        testID="scroll_view">
+      <ScrollView removeClippedSubviews={true} style={styles.scrollView} testID="scroll_view">
         {children}
       </ScrollView>
     );
@@ -306,6 +261,7 @@ var scrollTestStyles = StyleSheet.create({
   },
 });
 
+
 var appInstance = null;
 
 class SubviewsClippingTestApp extends React.Component {
@@ -315,8 +271,8 @@ class SubviewsClippingTestApp extends React.Component {
     appInstance = this;
   }
 
-  setComponent = component => {
-    this.setState({ component: component });
+  setComponent = (component) => {
+    this.setState({component: component});
   };
 
   render() {
@@ -332,21 +288,19 @@ class SubviewsClippingTestApp extends React.Component {
 var SubviewsClippingTestModule = {
   App: SubviewsClippingTestApp,
   renderClippingSample1: function() {
-    appInstance.setComponent(<ClippingSample1 />);
+    appInstance.setComponent(<ClippingSample1/>);
   },
   renderClippingSample2: function() {
-    appInstance.setComponent(<ClippingSample2 />);
+    appInstance.setComponent(<ClippingSample2/>);
   },
   renderUpdatingSample1: function(update1, update2) {
-    appInstance.setComponent(
-      <UpdatingSample1 update1={update1} update2={update2} />
-    );
+    appInstance.setComponent(<UpdatingSample1 update1={update1} update2={update2}/>);
   },
   renderUpdatingSample2: function(update) {
-    appInstance.setComponent(<UpdatingSample2 update={update} />);
+    appInstance.setComponent(<UpdatingSample2 update={update}/>);
   },
   renderScrollViewTest: function() {
-    appInstance.setComponent(<ScrollViewTest />);
+    appInstance.setComponent(<ScrollViewTest/>);
   },
 };
 
