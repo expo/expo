@@ -6,7 +6,6 @@
 'use strict';
 
 import React, { PropTypes } from 'react';
-import { StyleSheet } from 'react-native';
 
 import ExNavigator from '@expo/react-native-navigator';
 import ConsoleRouter from 'ConsoleRouter';
@@ -36,8 +35,8 @@ export default class ConsoleNavigator extends React.Component {
   }
 }
 
-let styles = StyleSheet.create({
+const styles = {
   scene: {
     paddingTop: ExLayout.statusBarHeight + NAVIGATION_BAR_HEIGHT,
   },
-});
+};

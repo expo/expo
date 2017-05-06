@@ -472,9 +472,6 @@ let styles = StyleSheet.create({
   navigator: {
     backgroundColor: '#1272b6',
   },
-  scene: {
-    backgroundColor: 'transparent',
-  },
   menuOverlay: {
     position: 'absolute',
     left: 0,
@@ -483,3 +480,7 @@ let styles = StyleSheet.create({
     right: 0,
   },
 });
+
+styles.scene = {
+  backgroundColor: 'transparent',
+};

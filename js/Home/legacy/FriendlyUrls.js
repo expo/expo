@@ -1,9 +1,8 @@
-/* @flow */
-
 /**
  * Copyright 2015-present 650 Industries. All rights reserved.
  *
  * @providesModule FriendlyUrls
+ * @flow
  */
 'use strict';
 

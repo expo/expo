@@ -223,7 +223,8 @@ var styles = StyleSheet.create({
     width: 36,
     height: 36,
   },
-  scene: {
-    backgroundColor: 'transparent',
-  },
 });
+
+styles.scene = {
+  backgroundColor: 'transparent',
+};

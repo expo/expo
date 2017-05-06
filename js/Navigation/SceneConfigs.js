@@ -5,7 +5,7 @@
  */
 'use strict';
 
-import { Navigator } from 'react-native';
+import { Navigator } from 'react-native-deprecated-custom-components';
 
 import buildStyleInterpolator from 'buildStyleInterpolator';
 
