@@ -6,6 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 #import "RNSVGUse.h"
+#import "RNSVGSymbol.h"
 #import <React/RCTLog.h>
 
 @implementation RNSVGUse
@@ -27,9 +28,22 @@
     if (template) {
         [self beginTransparencyLayer:context];
         [self clip:context];
-        [template mergeProperties:self mergeList:self.ownedPropList];
-        [template renderTo:context];
-        [template resetProperties];
+        
+        if ([template isKindOfClass:[RNSVGRenderable class]]) {
+            [(RNSVGRenderable*)template mergeProperties:self];
+        }
+
+        if ([template class] == [RNSVGSymbol class]) {
+            RNSVGSymbol *symbol = (RNSVGSymbol*)template;
+            [symbol renderSymbolTo:context width:[self relativeOnWidth:self.width] height:[self relativeOnWidth:self.height]];
+        } else {
+            [template renderTo:context];
+        }
+        
+        if ([template isKindOfClass:[RNSVGRenderable class]]) {
+            [(RNSVGRenderable*)template resetProperties];
+        }
+        
         [self endTransparencyLayer:context];
     } else if (self.href) {
         // TODO: calling yellow box here

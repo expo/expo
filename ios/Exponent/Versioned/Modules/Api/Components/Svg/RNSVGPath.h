@@ -7,11 +7,13 @@
  */
 
 #import <Foundation/Foundation.h>
-
+#import "RNSVGPathParser.h"
 #import "RNSVGRenderable.h"
 
 @interface RNSVGPath : RNSVGRenderable
 
-@property (nonatomic, assign) CGPathRef d;
+@property (nonatomic, strong) RNSVGPathParser *d;
+
+- (NSArray *)getBezierCurves;
 
 @end

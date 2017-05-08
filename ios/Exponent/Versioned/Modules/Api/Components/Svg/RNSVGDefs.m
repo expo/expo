@@ -13,8 +13,13 @@
 
 - (void)renderTo:(CGContextRef)context
 {
+    // Defs do not render
+}
+
+- (void)parseReference
+{
     [self traverseSubviews:^(RNSVGNode *node) {
-        [node saveDefinition];
+        [node parseReference];
         return YES;
     }];
 }

@@ -20,8 +20,11 @@ RCT_EXPORT_MODULE()
   return [RNSVGText new];
 }
 
-RCT_EXPORT_VIEW_PROPERTY(alignment, CTTextAlignment)
-RCT_REMAP_VIEW_PROPERTY(frame, textFrame, RNSVGTextFrame)
-RCT_EXPORT_VIEW_PROPERTY(path, RNSVGBezier)
+RCT_EXPORT_VIEW_PROPERTY(textAnchor, RNSVGTextAnchor)
+RCT_EXPORT_VIEW_PROPERTY(deltaX, NSArray<NSNumber *>)
+RCT_EXPORT_VIEW_PROPERTY(deltaY, NSArray<NSNumber *>)
+RCT_EXPORT_VIEW_PROPERTY(positionX, NSString)
+RCT_EXPORT_VIEW_PROPERTY(positionY, NSString)
+RCT_EXPORT_VIEW_PROPERTY(font, NSDictionary)
 
 @end

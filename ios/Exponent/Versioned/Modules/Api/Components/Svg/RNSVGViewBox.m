@@ -11,92 +11,26 @@
 #import "RNSVGUse.h"
 
 @implementation RNSVGViewBox
-{
-    BOOL _fromSymbol;
-}
 
-- (void)setMinX:(NSString *)minX
-{
-    if (minX == _minX) {
-        return;
-    }
-    [self invalidate];
-    _minX = minX;
-}
-
-- (void)setMinY:(NSString *)minY
-{
-    if (minY == _minY) {
-        return;
-    }
-    [self invalidate];
-    _minY = minY;
-}
-
-- (void)setVbHeight:(NSString *)vbHeight
-{
-    if (vbHeight == _vbHeight) {
-        return;
-    }
-    [self invalidate];
-    _vbHeight = vbHeight;
-}
-
-- (void)setVbWidth:(NSString *)vbWidth
-{
-    if (vbWidth == _vbWidth) {
-        return;
-    }
-    [self invalidate];
-    _vbWidth = vbWidth;
-}
-
-- (void)setAlign:(NSString *)align
-{
-    if (align == _align) {
-        return;
-    }
-    [self invalidate];
-    _align = align;
-}
-
-- (void)setMeetOrSlice:(RNSVGVBMOS)meetOrSlice
-{
-    if (meetOrSlice == _meetOrSlice) {
-        return;
-    }
-    [self invalidate];
-    _meetOrSlice = meetOrSlice;
-}
-
-- (void)renderTo:(CGContextRef)context
-{
-    [self setBoundingBox:CGContextGetClipBoundingBox(context)];
-    self.matrix = [self getTransform];
-    [super renderTo:context];
-}
-
-- (CGAffineTransform)getTransform
++ (CGAffineTransform)getTransform:(CGRect)vbRect eRect:(CGRect)eRect align:(NSString *)align meetOrSlice:(RNSVGVBMOS)meetOrSlice fromSymbol:(BOOL)fromSymbol
 {
     // based on https://svgwg.org/svg2-draft/coords.html#ComputingAViewportsTransform
     
     // Let vb-x, vb-y, vb-width, vb-height be the min-x, min-y, width and height values of the viewBox attribute respectively.
-    CGFloat vbX = [self getWidthRelatedValue:self.minX];
-    CGFloat vbY = [self getHeightRelatedValue:self.minY];
-    CGFloat vbWidth = [self getWidthRelatedValue:self.vbWidth];
-    CGFloat vbHeight = [self getHeightRelatedValue:self.vbHeight];
+    CGFloat vbX = CGRectGetMinX(vbRect);
+    CGFloat vbY = CGRectGetMinY(vbRect);
+    CGFloat vbWidth = CGRectGetWidth(vbRect);
+    CGFloat vbHeight = CGRectGetHeight(vbRect);
     
     // Let e-x, e-y, e-width, e-height be the position and size of the element respectively.
-    CGFloat eX = [self getContextX];
-    CGFloat eY = [self getContextY];
-    CGFloat eWidth = self.width ? [self getWidthRelatedValue:self.width] : [self getContextWidth];
-    CGFloat eHeight = self.height ? [self getHeightRelatedValue:self.height] : [self getContextHeight];
+    CGFloat eX = CGRectGetMinX(eRect);
+    CGFloat eY = CGRectGetMinY(eRect);
+    CGFloat eWidth = CGRectGetWidth(eRect);
+    CGFloat eHeight = CGRectGetHeight(eRect);
     
     // Let align be the align value of preserveAspectRatio, or 'xMidyMid' if preserveAspectRatio is not defined.
-    NSString *align = self.align;
     
     // Let meetOrSlice be the meetOrSlice value of preserveAspectRatio, or 'meet' if preserveAspectRatio is not defined or if meetOrSlice is missing from this value.
-    RNSVGVBMOS meetOrSlice = self.meetOrSlice;
     
     // Initialize scale-x to e-width/vb-width.
     CGFloat scaleX = eWidth / vbWidth;
@@ -157,23 +91,7 @@
     }
     
     CGAffineTransform transform = CGAffineTransformMakeScale(scaleX, scaleY);
-    return CGAffineTransformTranslate(transform, -translateX * (_fromSymbol ? scaleX : 1), -translateY * (_fromSymbol ? scaleY : 1));
-}
-
-- (void)mergeProperties:(__kindof RNSVGNode *)target mergeList:(NSArray<NSString *> *)mergeList
-{
-    if ([target isKindOfClass:[RNSVGUse class]]) {
-        RNSVGUse *use = target;
-        _fromSymbol = YES;
-        self.width = use.width;
-        self.height = use.height;
-    }
-}
-
-- (void)resetProperties
-{
-    self.width = self.height = nil;
-    _fromSymbol = NO;
+    return CGAffineTransformTranslate(transform, -translateX * (fromSymbol ? scaleX : 1), -translateY * (fromSymbol ? scaleY : 1));
 }
 
 @end

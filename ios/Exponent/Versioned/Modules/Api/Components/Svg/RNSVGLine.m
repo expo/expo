@@ -49,12 +49,11 @@
 
 - (CGPathRef)getPath:(CGContextRef)context
 {
-    [self setBoundingBox:CGContextGetClipBoundingBox(context)];
     CGMutablePathRef path = CGPathCreateMutable();
-    CGFloat x1 = [self getWidthRelatedValue:self.x1];
-    CGFloat y1 = [self getHeightRelatedValue:self.y1];
-    CGFloat x2 = [self getWidthRelatedValue:self.x2];
-    CGFloat y2 = [self getHeightRelatedValue:self.y2];
+    CGFloat x1 = [self relativeOnWidth:self.x1];
+    CGFloat y1 = [self relativeOnHeight:self.y1];
+    CGFloat x2 = [self relativeOnWidth:self.x2];
+    CGFloat y2 = [self relativeOnHeight:self.y2];
     CGPathMoveToPoint(path, nil, x1, y1);
     CGPathAddLineToPoint(path, nil, x2, y2);
     

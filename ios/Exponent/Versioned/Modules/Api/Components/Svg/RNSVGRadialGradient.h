@@ -17,5 +17,7 @@
 @property (nonatomic, strong) NSString *cx;
 @property (nonatomic, strong) NSString *cy;
 @property (nonatomic, copy) NSArray<NSNumber *> *gradient;
+@property (nonatomic, assign)RNSVGUnits gradientUnits;
+@property (nonatomic, assign)CGAffineTransform gradientTransform;
 
 @end

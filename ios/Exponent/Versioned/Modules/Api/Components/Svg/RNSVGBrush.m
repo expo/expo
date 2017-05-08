@@ -7,7 +7,6 @@
  */
 
 #import "RNSVGBrush.h"
-
 #import <React/RCTDefines.h>
 
 @implementation RNSVGBrush
@@ -29,7 +28,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return NO;
 }
 
-- (void)paint:(CGContextRef)context opacity:(CGFloat)opacity brushConverter:(RNSVGBrushConverter *)brushConverter
+- (void)paint:(CGContextRef)context opacity:(CGFloat)opacity painter:(RNSVGPainter *)painter
 {
     // abstract
 }

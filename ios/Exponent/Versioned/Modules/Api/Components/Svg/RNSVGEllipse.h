@@ -10,7 +10,7 @@
 
 #import "RNSVGPath.h"
 
-@interface RNSVGEllipse : RNSVGPath
+@interface RNSVGEllipse : RNSVGRenderable
 @property (nonatomic, strong) NSString* cx;
 @property (nonatomic, strong) NSString* cy;
 @property (nonatomic, strong) NSString* rx;

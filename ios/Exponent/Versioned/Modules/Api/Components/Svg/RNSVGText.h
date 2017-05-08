@@ -7,13 +7,27 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "RNSVGPath.h"
-#import "RNSVGTextFrame.h"
+#import "RNSVGGroup.h"
+#import "RNSVGTextAnchor.h"
+#import "RNSVGGlyphContext.h"
 
-@interface RNSVGText : RNSVGPath
+@interface RNSVGText : RNSVGGroup
 
-@property (nonatomic, assign) CTTextAlignment alignment;
-@property (nonatomic, assign) RNSVGTextFrame textFrame;
-@property (nonatomic, copy) NSArray<NSArray *> *path;
+@property (nonatomic, assign) RNSVGTextAnchor textAnchor;
+@property (nonatomic, strong) NSArray<NSNumber *> *deltaX;
+@property (nonatomic, strong) NSArray<NSNumber *> *deltaY;
+@property (nonatomic, strong) NSString *positionX;
+@property (nonatomic, strong) NSString *positionY;
+@property (nonatomic, strong) NSDictionary *font;
+
+- (RNSVGText *)getTextRoot;
+- (void)releaseCachedPath;
+- (CGPathRef)getGroupPath:(CGContextRef)context;
+
+- (RNSVGGlyphContext *)getGlyphContext;
+- (void)pushGlyphContext;
+- (void)popGlyphContext;
+- (CTFontRef)getFontFromContext;
+- (CGPoint)getGlyphPointFromContext:(CGPoint)offset glyphWidth:(CGFloat)glyphWidth;
 
 @end

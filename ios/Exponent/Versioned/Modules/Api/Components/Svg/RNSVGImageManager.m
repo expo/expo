@@ -7,7 +7,7 @@
  */
 
 #import "RNSVGImageManager.h"
-
+#import "RNSVGVBMOS.h"
 #import "RNSVGImage.h"
 #import "RCTConvert+RNSVG.h"
 

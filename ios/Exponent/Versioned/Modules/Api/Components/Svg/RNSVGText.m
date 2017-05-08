@@ -7,130 +7,159 @@
  */
 
 #import "RNSVGText.h"
-#import "RNSVGBezierPath.h"
+#import "RNSVGTextPath.h"
+#import <React/RCTFont.h>
 #import <CoreText/CoreText.h>
+#import "RNSVGGlyphContext.h"
 
 @implementation RNSVGText
-
-static void RNSVGFreeTextFrame(RNSVGTextFrame frame)
 {
-    if (frame.count) {
-        // We must release each line before freeing up this struct
-        for (int i = 0; i < frame.count; i++) {
-            CFRelease(frame.lines[i]);
-        }
-        free(frame.lines);
-        free(frame.widths);
-    }
+    RNSVGText *_textRoot;
+    RNSVGGlyphContext *_glyphContext;
 }
 
-- (void)setAlignment:(CTTextAlignment)alignment
+- (void)setTextAnchor:(RNSVGTextAnchor)textAnchor
 {
     [self invalidate];
-    _alignment = alignment;
+    _textAnchor = textAnchor;
 }
 
-- (void)setTextFrame:(RNSVGTextFrame)textFrame
+- (void)renderLayerTo:(CGContextRef)context
 {
-    RNSVGFreeTextFrame(_textFrame);
-    [self invalidate];
-    _textFrame = textFrame;
+    [self clip:context];
+    CGContextSaveGState(context);
+    [self setupGlyphContext:context];
+    
+    CGPathRef path = [self getGroupPath:context];
+    CGAffineTransform transform = [self getAlignTransform:path];
+    CGContextConcatCTM(context, transform);
+    [self renderGroupTo:context];
+    [self releaseCachedPath];
+    CGContextRestoreGState(context);
+    
+    
+    CGPathRef transformedPath = CGPathCreateCopyByTransformingPath(path, &transform);
+    [self setHitArea:transformedPath];
+    CGPathRelease(transformedPath);
 }
 
-- (void)setPath:(NSArray *)path
+- (void)setupGlyphContext:(CGContextRef)context
 {
-    if (path == _path) {
-        return;
-    }
-    [self invalidate];
-    _path = path;
+    _glyphContext = [[RNSVGGlyphContext alloc] initWithDimensions:[self getContextWidth]
+                                                  height:[self getContextHeight]];
 }
 
-- (void)dealloc
+// release the cached CGPathRef for RNSVGTSpan
+- (void)releaseCachedPath
 {
-    RNSVGFreeTextFrame(_textFrame);
+    [self traverseSubviews:^BOOL(__kindof RNSVGNode *node) {
+        RNSVGText *text = node;
+        [text releaseCachedPath];
+        return YES;
+    }];
+}
+
+- (CGPathRef)getGroupPath:(CGContextRef)context
+{
+    [self pushGlyphContext];
+    CGPathRef groupPath = [super getPath:context];
+    [self popGlyphContext];
+    
+    return groupPath;
 }
 
 - (CGPathRef)getPath:(CGContextRef)context
 {
-    CGMutablePathRef path = CGPathCreateMutable();
-    RNSVGTextFrame frame = self.textFrame;
-    for (int i = 0; i < frame.count; i++) {
-        CGFloat shift;
-        CGFloat width = frame.widths[i];
-        switch (self.alignment) {
-            case kCTTextAlignmentRight:
-                shift = width;
-                break;
-            case kCTTextAlignmentCenter:
-                shift = width / 2;
-                break;
-            default:
-                shift = 0;
-                break;
-        }
-        // We should consider snapping this shift to device pixels to improve rendering quality
-        // when a line has subpixel width.
-        CGAffineTransform offset = CGAffineTransformMakeTranslation(-shift, frame.baseLine + frame.lineHeight * i + (self.path ? -frame.lineHeight : 0));
-        
-        CGMutablePathRef line = [self setLinePath:frame.lines[i]];
-        CGPathAddPath(path, &offset, line);
-        CGPathRelease(line);
-    }
+    [self setupGlyphContext:context];
+    CGPathRef groupPath = [self getGroupPath:context];
+    CGAffineTransform transform = [self getAlignTransform:groupPath];
+    [self releaseCachedPath];
     
-    return (CGPathRef)CFAutorelease(path);
+    return (CGPathRef)CFAutorelease(CGPathCreateCopyByTransformingPath(groupPath, &transform));
 }
 
-- (CGMutablePathRef)setLinePath:(CTLineRef)line
+- (void)renderGroupTo:(CGContextRef)context
 {
-    CGAffineTransform upsideDown = CGAffineTransformMakeScale(1.0, -1.0);
-    CGMutablePathRef path = CGPathCreateMutable();
+    [self pushGlyphContext];
+    [super renderGroupTo:context];
+    [self popGlyphContext];
+}
+
+- (CGAffineTransform)getAlignTransform:(CGPathRef)path
+{
+    CGFloat width = CGRectGetWidth(CGPathGetBoundingBox(path));
+    CGFloat x = 0;
     
-    CFArrayRef glyphRuns = CTLineGetGlyphRuns(line);
-    CTRunRef run = CFArrayGetValueAtIndex(glyphRuns, 0);
-    
-    CFIndex runGlyphCount = CTRunGetGlyphCount(run);
-    CGPoint positions[runGlyphCount];
-    CGGlyph glyphs[runGlyphCount];
-    
-    // Grab the glyphs, positions, and font
-    CTRunGetPositions(run, CFRangeMake(0, 0), positions);
-    CTRunGetGlyphs(run, CFRangeMake(0, 0), glyphs);
-    CFDictionaryRef attributes = CTRunGetAttributes(run);
-    
-    CTFontRef runFont = CFDictionaryGetValue(attributes, kCTFontAttributeName);
-    
-    RNSVGBezierPath *bezierPath = [[RNSVGBezierPath alloc] initWithBezierCurves:self.path];
-    
-    for(CFIndex i = 0; i < runGlyphCount; ++i) {
-        CGPathRef letter = CTFontCreatePathForGlyph(runFont, glyphs[i], nil);
-        CGPoint point = positions[i];
-        
-        if (letter) {
-            CGAffineTransform transform;
-            
-            // draw glyphs along path
-            if (self.path) {
-                transform = [bezierPath transformAtDistance:point.x];
-                
-                // break loop if line reaches the end of the Path.
-                if (!transform.a || !transform.d) {
-                    CGPathRelease(letter);
-                    break;
-                }
-                transform = CGAffineTransformScale(transform, 1.0, -1.0);
-            } else {
-                transform = CGAffineTransformTranslate(upsideDown, point.x, point.y);
-            }
-            
-            
-            CGPathAddPath(path, &transform, letter);
-        }
-        
-        CGPathRelease(letter);
+    switch ([self getComputedTextAnchor]) {
+        case kRNSVGTextAnchorMiddle:
+            x = -width / 2;
+            break;
+        case kRNSVGTextAnchorEnd:
+            x = -width;
+            break;
+        default: ;
     }
     
-    return path;
+    return CGAffineTransformMakeTranslation(x, 0);
+}
+
+- (RNSVGTextAnchor)getComputedTextAnchor
+{
+    RNSVGTextAnchor anchor = self.textAnchor;
+    if (self.subviews.count > 0) {
+        RNSVGText *child = [self.subviews firstObject];
+        
+        while (child.subviews.count && anchor == kRNSVGTextAnchorAuto) {
+            anchor = child.textAnchor;
+            child = [child.subviews firstObject];
+        }
+    }
+    return anchor;
+}
+
+- (RNSVGText *)getTextRoot
+{
+    if (!_textRoot) {
+        _textRoot = self;
+        while (_textRoot && [_textRoot class] != [RNSVGText class]) {
+            if (![_textRoot isKindOfClass:[RNSVGText class]]) {
+                //todo: throw exception here
+                break;
+            }
+            _textRoot = (RNSVGText*)[_textRoot superview];
+        }
+    }
+    
+    return _textRoot;
+}
+
+- (RNSVGGlyphContext *)getGlyphContext
+{
+    return _glyphContext;
+}
+
+- (void)pushGlyphContext
+{
+    [[[self getTextRoot] getGlyphContext] pushContext:self.font
+                                               deltaX:self.deltaX
+                                               deltaY:self.deltaY
+                                            positionX:self.positionX
+                                            positionY:self.positionY];
+}
+
+- (void)popGlyphContext
+{
+    [[[self getTextRoot] getGlyphContext] popContext];
+}
+
+- (CTFontRef)getFontFromContext
+{
+    return [[[self getTextRoot] getGlyphContext] getGlyphFont];
+}
+
+- (CGPoint)getGlyphPointFromContext:(CGPoint)offset glyphWidth:(CGFloat)glyphWidth
+{
+    return [[[self getTextRoot] getGlyphContext] getNextGlyphPoint:(CGPoint)offset glyphWidth:glyphWidth];
 }
 
 @end

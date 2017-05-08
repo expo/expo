@@ -20,8 +20,7 @@
 @property (nonatomic, strong) NSString *name;
 @property (nonatomic, assign) CGFloat opacity;
 @property (nonatomic, assign) RNSVGCGFCRule clipRule;
-@property (nonatomic, assign) CGPathRef clipPath; // convert clipPath="M0,0 L0,10 L10,10z" into path
-@property (nonatomic, strong) NSString *clipPathRef; // use clipPath="url(#clip)" as ClipPath
+@property (nonatomic, strong) NSString *clipPath;
 @property (nonatomic, assign) BOOL responsible;
 @property (nonatomic, assign) CGAffineTransform matrix;
 @property (nonatomic, assign) BOOL active;
@@ -37,10 +36,18 @@
  */
 - (void)renderLayerTo:(CGContextRef)context;
 
-- (void)renderClip:(CGContextRef)context;
+/**
+ * get clipPath from cache
+ */
+- (CGPathRef)getClipPath;
 
 /**
- * clip node by clipPath or clipPathRef.
+ * get clipPath through context
+ */
+- (CGPathRef)getClipPath:(CGContextRef)context;
+
+/**
+ * clip node by clipPath
  */
 - (void)clip:(CGContextRef)context;
 
@@ -49,35 +56,37 @@
  */
 - (CGPathRef)getPath:(CGContextRef) context;
 
-
 /**
  * run hitTest
  */
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event withTransform:(CGAffineTransform)transfrom;
 
+/**
+ * get RNSVGSvgView which ownes current RNSVGNode
+ */
 - (RNSVGSvgView *)getSvgView;
 
-/**
- * save element`s defination into svg element.
- */
-- (void)saveDefinition;
+- (CGFloat)relativeOnWidth:(NSString *)length;
+
+- (CGFloat)relativeOnHeight:(NSString *)length;
+
+- (CGFloat)getContextWidth;
+
+- (CGFloat)getContextHeight;
+
+- (CGFloat)getContextLeft;
+
+- (CGFloat)getContextTop;
 
 /**
- * just for template node to merge target node`s properties into owned properties
+ * save element`s reference into svg element.
  */
-- (void)mergeProperties:(__kindof RNSVGNode *)target mergeList:(NSArray<NSString *> *)mergeList;
-
-- (void)mergeProperties:(__kindof RNSVGNode *)target mergeList:(NSArray<NSString *> *)mergeList inherited:(BOOL)inherited;
-
-/**
- * just for template node to reset all owned properties once after rendered.
- */
-- (void)resetProperties;
+- (void)parseReference;
 
 - (void)beginTransparencyLayer:(CGContextRef)context;
 
 - (void)endTransparencyLayer:(CGContextRef)context;
 
-- (void)traverseSubviews:(BOOL (^)(RNSVGNode *node))block;
+- (void)traverseSubviews:(BOOL (^)(__kindof RNSVGNode *node))block;
 
 @end

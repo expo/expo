@@ -10,7 +10,7 @@
 
 #import "RNSVGPath.h"
 
-@interface RNSVGRect : RNSVGPath
+@interface RNSVGRect : RNSVGRenderable
 
 @property (nonatomic, strong) NSString* x;
 @property (nonatomic, strong) NSString* y;

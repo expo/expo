@@ -25,5 +25,7 @@ RCT_EXPORT_VIEW_PROPERTY(ry, NSString)
 RCT_EXPORT_VIEW_PROPERTY(cx, NSString)
 RCT_EXPORT_VIEW_PROPERTY(cy, NSString)
 RCT_EXPORT_VIEW_PROPERTY(gradient, NSArray<NSNumber *>)
+RCT_EXPORT_VIEW_PROPERTY(gradientUnits, RNSVGUnits)
+RCT_EXPORT_VIEW_PROPERTY(gradientTransform, CGAffineTransform)
 
 @end

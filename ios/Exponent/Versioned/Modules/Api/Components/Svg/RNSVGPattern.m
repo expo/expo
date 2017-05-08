@@ -26,7 +26,7 @@
       return nil;
     }
     _image = CGImageRetain([RCTConvert CGImage:array[1]]);
-    _rect = [RCTConvert CGRect:array offset:2];
+    _rect = [RCTConvert RNSVGCGRect:array offset:2];
   }
   return self;
 }
@@ -39,7 +39,7 @@
 // Note: This could use applyFillColor with a pattern. This could be more efficient but
 // to do that, we need to calculate our own user space CTM.
 
-- (void)paint:(CGContextRef)context opacity:(CGFloat)opacity brushConverter:(RNSVGBrushConverter *)brushConverter;
+- (void)paint:(CGContextRef)context opacity:(CGFloat)opacity brushConverter:(RNSVGPainter *)brushConverter;
 {
   CGContextDrawTiledImage(context, _rect, _image);
 }

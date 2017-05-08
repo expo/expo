@@ -19,7 +19,7 @@
 - (instancetype)initWithArray:(NSArray<NSNumber *> *)array
 {
     if ((self = [super initWithArray:array])) {
-        _color = CGColorRetain([RCTConvert CGColor:array offset:1]);
+        _color = CGColorRetain([RCTConvert RNSVGCGColor:array offset:1]);
     }
     return self;
 }
@@ -31,8 +31,7 @@
 
 - (BOOL)applyFillColor:(CGContextRef)context opacity:(CGFloat)opacity
 {
-    CGFloat aplpha = CGColorGetAlpha(_color);
-    CGColorRef color = CGColorCreateCopyWithAlpha(_color, opacity * aplpha);
+    CGColorRef color = CGColorCreateCopyWithAlpha(_color, opacity * CGColorGetAlpha(_color));
     CGContextSetFillColorWithColor(context, color);
     CGColorRelease(color);
     return YES;
@@ -40,8 +39,7 @@
 
 - (BOOL)applyStrokeColor:(CGContextRef)context opacity:(CGFloat)opacity
 {
-    CGFloat aplpha = CGColorGetAlpha(_color);
-    CGColorRef color = CGColorCreateCopyWithAlpha(_color, opacity * aplpha);
+    CGColorRef color = CGColorCreateCopyWithAlpha(_color, opacity * CGColorGetAlpha(_color));
     CGContextSetStrokeColorWithColor(context, color);
     CGColorRelease(color);
     return YES;

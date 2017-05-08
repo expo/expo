@@ -13,6 +13,8 @@
 @implementation RNSVGNode
 {
     BOOL _transparent;
+    CGPathRef _cachedClipPath;
+    RNSVGSvgView *_svgView;
 }
 
 - (instancetype)init
@@ -57,13 +59,13 @@
     if (opacity == _opacity) {
         return;
     }
-
-    if (opacity < 0) {
+    
+    if (opacity <= 0) {
         opacity = 0;
     } else if (opacity > 1) {
         opacity = 1;
     }
-
+    
     [self invalidate];
     _transparent = opacity < 1;
     _opacity = opacity;
@@ -78,24 +80,15 @@
     _matrix = matrix;
 }
 
-- (void)setClipPath:(CGPathRef)clipPath
+- (void)setClipPath:(NSString *)clipPath
 {
     if (_clipPath == clipPath) {
         return;
     }
+    CGPathRelease(_cachedClipPath);
+    _cachedClipPath = nil;
+    _clipPath = clipPath;
     [self invalidate];
-    CGPathRelease(_clipPath);
-    _clipPath = CGPathRetain(clipPath);
-}
-
-- (void)setClipPathRef:(NSString *)clipPathRef
-{
-    if (_clipPathRef == clipPathRef) {
-        return;
-    }
-    [self invalidate];
-    self.clipPath = nil;
-    _clipPathRef = clipPathRef;
 }
 
 - (void)beginTransparencyLayer:(CGContextRef)context
@@ -117,17 +110,25 @@
     // abstract
 }
 
-- (void)renderClip:(CGContextRef)context
+- (CGPathRef)getClipPath
 {
-    if (self.clipPathRef) {
-        self.clipPath = [[[self getSvgView] getDefinedClipPath:self.clipPathRef] getPath:context];
+    return _cachedClipPath;
+}
+
+- (CGPathRef)getClipPath:(CGContextRef)context
+{
+    if (self.clipPath && !_cachedClipPath) {
+        CGPathRelease(_cachedClipPath);
+        _cachedClipPath = CGPathRetain([[[self getSvgView] getDefinedClipPath:self.clipPath] getPath:context]);
     }
+    
+    return [self getClipPath];
 }
 
 - (void)clip:(CGContextRef)context
 {
-    CGPathRef clipPath  = self.clipPath;
-
+    CGPathRef clipPath = [self getClipPath:context];
+    
     if (clipPath) {
         CGContextAddPath(context, clipPath);
         if (self.clipRule == kRNSVGCGFCRuleEvenodd) {
@@ -138,7 +139,7 @@
     }
 }
 
-- (CGPathRef)getPath: (CGContextRef) context
+- (CGPathRef)getPath: (CGContextRef)context
 {
     // abstract
     return nil;
@@ -165,33 +166,63 @@
 
 - (RNSVGSvgView *)getSvgView
 {
-    UIView *parent = self.superview;
-    while (parent && [parent class] != [RNSVGSvgView class]) {
-        parent = parent.superview;
+    if (_svgView) {
+        return _svgView;
     }
-
-    return (RNSVGSvgView *)parent;
+    
+    __kindof UIView *parent = self.superview;
+    
+    if ([parent class] == [RNSVGSvgView class]) {
+        _svgView = parent;
+    } else if ([parent isKindOfClass:[RNSVGNode class]]) {
+        RNSVGNode *node = parent;
+        _svgView = [node getSvgView];
+    } else {
+        RCTLogError(@"RNSVG: %@ should be descendant of a SvgViewShadow.", NSStringFromClass(self.class));
+    }
+    
+    return _svgView;
 }
 
-- (void)saveDefinition
+- (CGFloat)relativeOnWidth:(NSString *)length
+{
+    return [RNSVGPercentageConverter stringToFloat:length relative:[self getContextWidth] offset:0];
+}
+
+- (CGFloat)relativeOnHeight:(NSString *)length
+{
+    return [RNSVGPercentageConverter stringToFloat:length relative:[self getContextHeight] offset:0];
+}
+
+- (CGFloat)getContextWidth
+{
+    return CGRectGetWidth([[self getSvgView] getContextBounds]);
+}
+
+- (CGFloat)getContextHeight
+{
+    return CGRectGetHeight([[self getSvgView] getContextBounds]);
+}
+
+- (CGFloat)getContextLeft
+{
+    return CGRectGetMinX([[self getSvgView] getContextBounds]);
+}
+
+- (CGFloat)getContextTop
+{
+    return CGRectGetMinY([[self getSvgView] getContextBounds]);
+}
+
+- (void)parseReference
 {
     if (self.name) {
         RNSVGSvgView* svg = [self getSvgView];
-        [svg defineTemplate:self templateRef:self.name];
+        [svg defineTemplate:self templateName:self.name];
     }
 }
 
-- (void)mergeProperties:(__kindof RNSVGNode *)target mergeList:(NSArray<NSString *> *)mergeList
-{
-    // abstract
-}
-
-- (void)mergeProperties:(__kindof RNSVGNode *)target mergeList:(NSArray<NSString *> *)mergeList inherited:(BOOL)inherited
-{
-    // abstract
-}
-
-- (void)traverseSubviews:(BOOL (^)(RNSVGNode *node))block
+- (void)traverseSubviews:(BOOL (^)(__kindof RNSVGNode *node))block
 {
     for (RNSVGNode *node in self.subviews) {
         if ([node isKindOfClass:[RNSVGNode class]]) {
@@ -202,14 +233,9 @@
     }
 }
 
-- (void)resetProperties
-{
-    // abstract
-}
-
 - (void)dealloc
 {
-    CGPathRelease(_clipPath);
+    CGPathRelease(_cachedClipPath);
 }
 
 @end

@@ -11,18 +11,10 @@
 
 @interface RNSVGPercentageConverter : NSObject
 
-- (NSRegularExpression *) getPercentageRegularExpression;
++ (CGFloat) percentageToFloat:(NSString *)percentage relative:(CGFloat)relative offset:(CGFloat)offset;
 
-- (instancetype) initWithRelativeAndOffset:(CGFloat)relative offset:(CGFloat)offset;
++ (CGFloat) stringToFloat:(NSString *)string relative:(CGFloat)relative offset:(CGFloat)offset;
 
-- (CGFloat) percentageToFloat:(NSString *)percentage relative:(CGFloat)relative offset:(CGFloat)offset;
-
-- (CGFloat) percentageToFloat:(NSString *)percentage;
-
-- (CGFloat) stringToFloat:(NSString *)string relative:(CGFloat)relative offset:(CGFloat)offset;
-
-- (CGFloat) stringToFloat:(NSString *)string;
-
-- (BOOL) isPercentage:(NSString *) string;
++ (BOOL) isPercentage:(NSString *) string;
 
 @end

@@ -49,12 +49,11 @@
 
 - (CGPathRef)getPath:(CGContextRef)context
 {
-    [self setBoundingBox:CGContextGetClipBoundingBox(context)];
     CGMutablePathRef path = CGPathCreateMutable();
-    CGFloat cx = [self getWidthRelatedValue:self.cx];
-    CGFloat cy = [self getHeightRelatedValue:self.cy];
-    CGFloat rx = [self getWidthRelatedValue:self.rx];
-    CGFloat ry = [self getHeightRelatedValue:self.ry];
+    CGFloat cx = [self relativeOnWidth:self.cx];
+    CGFloat cy = [self relativeOnHeight:self.cy];
+    CGFloat rx = [self relativeOnWidth:self.rx];
+    CGFloat ry = [self relativeOnHeight:self.ry];
     CGPathAddEllipseInRect(path, nil, CGRectMake(cx - rx, cy - ry, rx * 2, ry * 2));
     return (CGPathRef)CFAutorelease(path);
 }

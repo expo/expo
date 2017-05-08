@@ -7,17 +7,13 @@
  */
 
 #import "RNSVGRenderable.h"
-#import "RNSVGPercentageConverter.h"
 
 @implementation RNSVGRenderable
 {
     NSMutableDictionary *_originProperties;
-    NSArray *_changedList;
-    RNSVGPercentageConverter *_widthConverter;
-    RNSVGPercentageConverter *_heightConverter;
-    CGFloat _contextWidth;
-    CGFloat _contextHeight;
-    CGRect _boundingBox;
+    NSArray<NSString *> *_lastMergedList;
+    NSArray<NSString *> *_attributeList;
+    CGPathRef _hitArea;
 }
 
 - (id)init
@@ -26,6 +22,7 @@
         _fillOpacity = 1;
         _strokeOpacity = 1;
         _strokeWidth = 1;
+        _fillRule = kRNSVGCGFCRuleNonzero;
     }
     return self;
 }
@@ -132,24 +129,13 @@
     _strokeDashoffset = strokeDashoffset;
 }
 
-- (void)setHitArea:(CGPathRef)hitArea
-{
-    if (hitArea == _hitArea) {
-        return;
-    }
-    
-    [self invalidate];
-    CGPathRelease(_hitArea);
-    _hitArea = CGPathRetain(hitArea);
-}
-
 - (void)setPropList:(NSArray<NSString *> *)propList
 {
     if (propList == _propList) {
         return;
     }
-    _propList = propList;
-    self.ownedPropList = [propList mutableCopy];
+    
+    _propList = _attributeList = propList;
     [self invalidate];
 }
 
@@ -169,131 +155,193 @@
     CGContextSetAlpha(context, self.opacity);
     
     [self beginTransparencyLayer:context];
-    [self renderClip:context];
     [self renderLayerTo:context];
     [self endTransparencyLayer:context];
-
+    
     CGContextRestoreGState(context);
+}
+
+
+- (void)renderLayerTo:(CGContextRef)context
+{
+    if (!self.fill && !self.stroke) {
+        return;
+    }
+    
+    CGPathRef path = [self getPath:context];
+    [self setHitArea:path];
+    
+    if (self.opacity == 0) {
+        return;
+    }
+    
+    CGPathDrawingMode mode = kCGPathStroke;
+    BOOL fillColor = NO;
+    [self clip:context];
+    
+    BOOL evenodd = self.fillRule == kRNSVGCGFCRuleEvenodd;
+    
+    if (self.fill) {
+        fillColor = [self.fill applyFillColor:context opacity:self.fillOpacity];
+        
+        if (fillColor) {
+            mode = evenodd ? kCGPathEOFill : kCGPathFill;
+        } else {
+            CGContextSaveGState(context);
+            CGContextAddPath(context, path);
+            CGContextClip(context);
+            [self.fill paint:context
+                     opacity:self.fillOpacity
+                     painter:[[self getSvgView] getDefinedPainter:self.fill.brushRef]
+             ];
+            CGContextRestoreGState(context);
+            
+            if (!self.stroke) {
+                return;
+            }
+        }
+    }
+    
+    if (self.stroke) {
+        CGContextSetLineWidth(context, self.strokeWidth);
+        CGContextSetLineCap(context, self.strokeLinecap);
+        CGContextSetLineJoin(context, self.strokeLinejoin);
+        RNSVGCGFloatArray dash = self.strokeDasharray;
+        
+        if (dash.count) {
+            CGContextSetLineDash(context, self.strokeDashoffset, dash.array, dash.count);
+        }
+        
+        if (!fillColor) {
+            CGContextAddPath(context, path);
+            CGContextReplacePathWithStrokedPath(context);
+            CGContextClip(context);
+        }
+        
+        BOOL strokeColor = [self.stroke applyStrokeColor:context opacity:self.strokeOpacity];
+        
+        if (strokeColor && fillColor) {
+            mode = evenodd ? kCGPathEOFillStroke : kCGPathFillStroke;
+        } else if (!strokeColor) {
+            // draw fill
+            if (fillColor) {
+                CGContextAddPath(context, path);
+                CGContextDrawPath(context, mode);
+            }
+            
+            // draw stroke
+            CGContextAddPath(context, path);
+            CGContextReplacePathWithStrokedPath(context);
+            CGContextClip(context);
+            
+            [self.stroke paint:context
+                       opacity:self.strokeOpacity
+                       painter:[[self getSvgView] getDefinedPainter:self.stroke.brushRef]
+             ];
+            return;
+        }
+    }
+    
+    CGContextAddPath(context, path);
+    CGContextDrawPath(context, mode);
+}
+
+- (void)setHitArea:(CGPathRef)path
+{
+    CGPathRelease(_hitArea);
+    if ([self getSvgView].responsible) {
+        // Add path to hitArea
+        CGMutablePathRef hitArea = CGPathCreateMutableCopy(path);
+        
+        if (self.stroke && self.strokeWidth) {
+            // Add stroke to hitArea
+            CGPathRef strokePath = CGPathCreateCopyByStrokingPath(hitArea, nil, self.strokeWidth, self.strokeLinecap, self.strokeLinejoin, self.strokeMiterlimit);
+            CGPathAddPath(hitArea, nil, strokePath);
+            CGPathRelease(strokePath);
+        }
+        
+        _hitArea = CGPathRetain(CFAutorelease(CGPathCreateCopy(hitArea)));
+        CGPathRelease(hitArea);
+    }
+
 }
 
 // hitTest delagate
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
-    return [self hitTest:point withEvent:event withTransform:CGAffineTransformMakeRotation(0)];
+    return [self hitTest:point withEvent:event withTransform:CGAffineTransformIdentity];
 }
 
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event withTransform:(CGAffineTransform)transfrom
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event withTransform:(CGAffineTransform)transform
 {
+    if (!_hitArea) {
+        return nil;
+    }
+    
     if (self.active) {
         if (!event) {
             self.active = NO;
         }
         return self;
     }
-
-    CGPathRef hitArea = CGPathCreateCopyByTransformingPath(self.hitArea, &transfrom);
-    CGPathRef clipPath = self.clipPath;
+    
+    CGAffineTransform matrix = CGAffineTransformConcat(self.matrix, transform);
+    CGPathRef hitArea = CGPathCreateCopyByTransformingPath(_hitArea, &matrix);
     BOOL contains = CGPathContainsPoint(hitArea, nil, point, NO);
     CGPathRelease(hitArea);
+    
     if (contains) {
+        CGPathRef clipPath = [self getClipPath];
+        
         if (!clipPath) {
             return self;
         } else {
-            return CGPathContainsPoint(clipPath, nil, point, NO) ? self : nil;
+            CGPathRef transformedClipPath = CGPathCreateCopyByTransformingPath(clipPath, &matrix);
+            BOOL result = CGPathContainsPoint(transformedClipPath, nil, point, self.clipRule == kRNSVGCGFCRuleEvenodd);
+            CGPathRelease(transformedClipPath);
+            return result ? self : nil;
         }
     } else {
         return nil;
     }
 }
 
-- (void)setBoundingBox:(CGRect)boundingBox
+- (NSArray<NSString *> *)getAttributeList
 {
-    _boundingBox = boundingBox;
-    _widthConverter = [[RNSVGPercentageConverter alloc] initWithRelativeAndOffset:boundingBox.size.width offset:0];
-    _heightConverter = [[RNSVGPercentageConverter alloc] initWithRelativeAndOffset:boundingBox.size.height offset:0];
+    return _attributeList;
 }
 
-- (CGFloat)getWidthRelatedValue:(NSString *)string
+- (void)mergeProperties:(__kindof RNSVGRenderable *)target
 {
-    return [_widthConverter stringToFloat:string];
-}
-
-- (CGFloat)getHeightRelatedValue:(NSString *)string
-{
-    return [_heightConverter stringToFloat:string];
-}
-
-- (CGFloat)getContextWidth
-{
-    return CGRectGetWidth(_boundingBox);
-}
-
-- (CGFloat)getContextHeight
-{
-    return CGRectGetHeight(_boundingBox);
-}
-
-- (CGFloat)getContextX
-{
-    return CGRectGetMinX(_boundingBox);
-}
-
-- (CGFloat)getContextY
-{
-    return CGRectGetMinY(_boundingBox);
-}
-
-- (void)mergeProperties:(__kindof RNSVGNode *)target mergeList:(NSArray<NSString *> *)mergeList
-{
-
-    [self mergeProperties:target mergeList:mergeList inherited:NO];
-}
-
-- (void)mergeProperties:(__kindof RNSVGNode *)target mergeList:(NSArray<NSString *> *)mergeList inherited:(BOOL)inherited
-{
-    if (mergeList.count == 0) {
+    NSArray<NSString *> *targetAttributeList = [target getAttributeList];
+    
+    if (targetAttributeList.count == 0) {
         return;
     }
     
-    self.ownedPropList = [self.propList mutableCopy];
+    NSMutableArray* attributeList = [self.propList mutableCopy];
+    _originProperties = [[NSMutableDictionary alloc] init];
     
-    if (!inherited) {
-        _originProperties = [[NSMutableDictionary alloc] init];
-        _changedList = mergeList;
-    }
-    
-    for (NSString *key in mergeList) {
-        if (inherited) {
-            [self inheritProperty:target propName:key];
-        } else {
-            [_originProperties setValue:[self valueForKey:key] forKey:key];
+    for (NSString *key in targetAttributeList) {
+        [_originProperties setValue:[self valueForKey:key] forKey:key];
+        if (![attributeList containsObject:key]) {
+            [attributeList addObject:key];
             [self setValue:[target valueForKey:key] forKey:key];
         }
     }
+    
+    _lastMergedList = targetAttributeList;
+    _attributeList = [attributeList copy];
 }
 
 - (void)resetProperties
 {
-    if (_changedList) {
-        for (NSString *key in _changedList) {
-            [self setValue:[_originProperties valueForKey:key] forKey:key];
-        }
+    for (NSString *key in _lastMergedList) {
+        [self setValue:[_originProperties valueForKey:key] forKey:key];
     }
-    _changedList = nil;
-}
-
-- (void)inheritProperty:(__kindof RNSVGNode *)parent propName:(NSString *)propName
-{
-    if (![self.ownedPropList containsObject:propName]) {
-        // add prop to props
-        [self.ownedPropList addObject:propName];
-        [self setValue:[parent valueForKey:propName] forKey:propName];
-    }
-}
-
-- (void)renderLayerTo:(CGContextRef)context
-{
-    // abstract
+    
+    _lastMergedList = nil;
+    _attributeList = _propList;
 }
 
 @end

@@ -9,12 +9,9 @@
 #import <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>
 #import "RNSVGPercentageConverter.h"
-#import "RNSVGBrushConverter.h"
+#import "RNSVGPainter.h"
 
 @interface RNSVGBrush : NSObject
-{
-    NSArray *_points;
-}
 
 @property (nonatomic, strong) NSString* brushRef;
 
@@ -38,6 +35,6 @@
  * be clipped.
  * @abstract
  */
-- (void)paint:(CGContextRef)context opacity:(CGFloat)opacity brushConverter:(RNSVGBrushConverter *)brushConverter;
+- (void)paint:(CGContextRef)context opacity:(CGFloat)opacity painter:(RNSVGPainter *)painter;
 
 @end

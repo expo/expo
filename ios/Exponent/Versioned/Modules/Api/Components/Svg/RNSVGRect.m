@@ -67,14 +67,13 @@
 
 - (CGPathRef)getPath:(CGContextRef)context
 {
-    [self setBoundingBox:CGContextGetClipBoundingBox(context)];
     CGMutablePathRef path = CGPathCreateMutable();
-    CGFloat x = [self getWidthRelatedValue:self.x];
-    CGFloat y = [self getHeightRelatedValue:self.y];
-    CGFloat width = [self getWidthRelatedValue:self.width];
-    CGFloat height = [self getHeightRelatedValue:self.height];
-    CGFloat rx = [self getWidthRelatedValue:self.rx];
-    CGFloat ry = [self getHeightRelatedValue:self.ry];
+    CGFloat x = [self relativeOnWidth:self.x];
+    CGFloat y = [self relativeOnHeight:self.y];
+    CGFloat width = [self relativeOnWidth:self.width];
+    CGFloat height = [self relativeOnHeight:self.height];
+    CGFloat rx = [self relativeOnWidth:self.rx];
+    CGFloat ry = [self relativeOnHeight:self.ry];
     
     if (rx != 0 || ry != 0) {
         if (rx == 0) {
