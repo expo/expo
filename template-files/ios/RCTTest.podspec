@@ -15,6 +15,5 @@ Pod::Spec.new do |s|
   s.header_dir = 'React'
   s.source = { :git => "https://github.com/exponent/react-native.git" }
   s.source_files = "Libraries/RCTTest/**/*.{h,m}"
-  s.preserve_paths = "Libraries/RCTTest/**/*.js"
   s.frameworks = "XCTest"
 end
