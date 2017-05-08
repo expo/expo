@@ -18,7 +18,7 @@ import {
   View,
 } from 'react-native';
 import Expo, {
-  Components
+  BlurView
 } from 'expo';
 
 class BlurViewExample extends React.Component {
@@ -30,9 +30,9 @@ class BlurViewExample extends React.Component {
         <Image style={{width: 192, height: 192}} source={{uri}} />
 
         { /* Change tintEffect here to reproduce the above image */ }
-        <Components.BlurView tint="light" style={StyleSheet.absoluteFill}>
+        <BlurView tint="light" style={StyleSheet.absoluteFill}>
           <Image style={{width: 96, height: 96}} source={{uri}} />
-        </Components.BlurView>
+        </BlurView>
       </View>
     );
   }
@@ -56,10 +56,10 @@ import {
   View,
 } from 'react-native';
 import Expo, {
-  Components,
+  BlurView,
 } from 'expo';
 
-const AnimatedBlurView = Animated.createAnimatedComponent(Components.BlurView);
+const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 class BlurViewExample extends React.Component {
   state = {
     intensity: new Animated.Value(0),
