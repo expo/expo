@@ -18,28 +18,27 @@ module.exports = {
         path: `${__dirname}/../versions`,
       },
     },
-    `gatsby-transformer-remark`,
     `gatsby-transformer-sharp`,
     {
-      resolve: `gatsby-typegen-remark`,
+      resolve: `gatsby-transformer-remark`,
       options: {
         plugins: [
           {
-            resolve: `gatsby-typegen-remark-responsive-image`,
+            resolve: `gatsby-remark-responsive-image`,
             options: {
               maxWidth: 800,
               wrapperStyle: `margin-bottom: 1.45rem;`,
             },
           },
           {
-            resolve: `gatsby-typegen-remark-responsive-iframe`,
+            resolve: `gatsby-remark-responsive-iframe`,
             options: {
               wrapperStyle: `margin-bottom: 1.45rem;`,
             },
           },
-          `gatsby-typegen-remark-copy-linked-files`,
-          `gatsby-typegen-remark-prismjs`,
-          `gatsby-typegen-remark-smartypants`,
+          `gatsby-remark-copy-linked-files`,
+          `gatsby-remark-prismjs`,
+          `gatsby-remark-smartypants`,
           `gatsby-typegen-remark-expo-embed`,
           {
             resolve: `gatsby-typegen-remark-expo-autolink`,
@@ -50,8 +49,6 @@ module.exports = {
         ],
       },
     },
-    `gatsby-typegen-filesystem`,
-    `gatsby-typegen-sharp`,
     // {
     //   resolve: `gatsby-plugin-offline`,
     //   options: {
