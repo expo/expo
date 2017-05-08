@@ -2,7 +2,7 @@
 title: Frequently Asked Questions
 ---
 
-In addition to the questions below, see the [Expo Forum](http://forums.expo.io/) or [Expo AMA on Hashnode](https://hashnode.com/ama/with-exponent-ciw1qxry118wl4353o9kxaowl#ciw43q029007fxr53pkuftwhu) for more common questions and answers.
+In addition to the questions below, see the [Expo Forum](http://forums.expo.io/) or [Expo AMA on Hashnode](https://hashnode.com/ama/with-exponent-ciw1qxry118wl4353o9kxaowl) for more common questions and answers.
 
 ## How much does Expo cost?
 
