@@ -9,7 +9,7 @@ While it's certainly not necessary to know any of this to use Expo, many enginee
 -   How Expo manages changes to its SDK
 -   Opening Expo apps offline
 
-You can also browse the source, fork, hack on and contribute to the Expo tooling on [github/@exponent](http://github.com/exponent).
+You can also browse the source, fork, hack on and contribute to the Expo tooling on [github/@expo](https://github.com/expo).
 
 ## Serving an Expo project for local development
 
