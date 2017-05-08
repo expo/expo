@@ -58,7 +58,7 @@ import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCode
 import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerViewManager;
 import versioned.host.exp.exponent.modules.api.components.lottie.LottiePackage;
 import versioned.host.exp.exponent.modules.api.components.maps.MapsPackage;
-import versioned.host.exp.exponent.modules.api.components.svg.RNSvgPackage;
+import versioned.host.exp.exponent.modules.api.components.svg.SvgPackage;
 import versioned.host.exp.exponent.modules.api.fbads.AdSettingsManager;
 import versioned.host.exp.exponent.modules.api.fbads.BannerViewManager;
 import versioned.host.exp.exponent.modules.api.fbads.InterstitialAdManager;
@@ -181,7 +181,7 @@ public class ExponentPackage implements ReactPackage {
 
     // Add view manager from 3rd party library packages.
     addViewManagersFromPackages(reactContext, viewManagers, Arrays.<ReactPackage>asList(
-      new RNSvgPackage(),
+      new SvgPackage(),
       new MapsPackage(),
       new LottiePackage()
     ));

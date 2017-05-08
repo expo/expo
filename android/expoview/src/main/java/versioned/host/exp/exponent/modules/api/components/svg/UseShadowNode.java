@@ -11,15 +11,16 @@ package versioned.host.exp.exponent.modules.api.components.svg;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Path;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
 /**
- * Shadow node for virtual RNSVGPath view
+ * Shadow node for virtual Use view
  */
-public class RNSVGUseShadowNode extends RNSVGPathShadowNode {
+public class UseShadowNode extends RenderableShadowNode {
 
     private String mHref;
     private String mWidth;
@@ -53,21 +54,36 @@ public class RNSVGUseShadowNode extends RNSVGPathShadowNode {
 
     @Override
     public void draw(Canvas canvas, Paint paint, float opacity) {
-        RNSVGVirtualNode template = getSvgShadowNode().getDefinedTemplate(mHref);
+        VirtualNode template = getSvgShadowNode().getDefinedTemplate(mHref);
 
         if (template != null) {
-            int count = saveAndSetupCanvas(canvas);
+            if (template instanceof RenderableShadowNode) {
+                ((RenderableShadowNode)template).mergeProperties(this);
+            }
 
+            int count = template.saveAndSetupCanvas(canvas);
             clip(canvas, paint);
-            template.mergeProperties(this, mOwnedPropList);
-            template.draw(canvas, paint, opacity * mOpacity);
-            template.resetProperties();
 
-            restoreCanvas(canvas, count);
-            markUpdateSeen();
+            if (template instanceof SymbolShadowNode) {
+                SymbolShadowNode symbol = (SymbolShadowNode)template;
+                symbol.drawSymbol(canvas, paint, opacity, relativeOnWidth(mWidth), relativeOnHeight(mHeight));
+            } else {
+                template.draw(canvas, paint, opacity * mOpacity);
+            }
+
+            template.restoreCanvas(canvas, count);
+            if (template instanceof RenderableShadowNode) {
+                ((RenderableShadowNode)template).resetProperties();
+            }
         } else {
             FLog.w(ReactConstants.TAG, "`Use` element expected a pre-defined svg template as `href` prop, " +
                 "template named: " + mHref + " is not defined.");
         }
+    }
+
+    @Override
+    protected Path getPath(Canvas canvas, Paint paint) {
+        // todo:
+        return new Path();
     }
 }

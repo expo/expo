@@ -17,11 +17,8 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.facebook.react.ReactRootView;
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.UIManagerModule;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.uimanager.events.TouchEvent;
 import com.facebook.react.uimanager.events.TouchEventCoalescingKeyHelper;
 import com.facebook.react.uimanager.events.TouchEventType;
@@ -30,9 +27,9 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import javax.annotation.Nullable;
 
 /**
- * Custom {@link View} implementation that draws an RNSVGSvg React view and its \children.
+ * Custom {@link View} implementation that draws an RNSVGSvg React view and its \childrn.
  */
-public class RNSVGSvgView extends View {
+public class SvgView extends View {
     public enum Events {
         EVENT_DATA_URL("onDataURL");
 
@@ -49,21 +46,22 @@ public class RNSVGSvgView extends View {
     }
 
     private @Nullable Bitmap mBitmap;
-    private RCTEventEmitter mEventEmitter;
     private EventDispatcher mEventDispatcher;
+    private long mGestureStartTime = TouchEvent.UNSET;
     private int mTargetTag;
 
     private final TouchEventCoalescingKeyHelper mTouchEventCoalescingKeyHelper =
             new TouchEventCoalescingKeyHelper();
 
-    public RNSVGSvgView(ReactContext reactContext) {
+    public SvgView(ReactContext reactContext) {
         super(reactContext);
-        mEventEmitter = reactContext.getJSModule(RCTEventEmitter.class);
         mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
     }
 
-    private RNSVGSvgViewShadowNode getShadowNode() {
-        return RNSVGSvgViewShadowNode.getShadowNodeByTag(getId());
+    @Override
+    public void setId(int id) {
+        super.setId(id);
+        SvgViewManager.setSvgView(this);
     }
 
     public void setBitmap(Bitmap bitmap) {
@@ -82,16 +80,17 @@ public class RNSVGSvgView extends View {
         }
     }
 
+    private SvgViewShadowNode getShadowNode() {
+        return SvgViewManager.getShadowNodeByTag(getId());
+    }
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        RNSVGSvgViewShadowNode svg = getShadowNode();
-        if (svg != null) {
-            mTargetTag = getShadowNode().hitTest(new Point((int) ev.getX(), (int) ev.getY()));
+        mTargetTag = getShadowNode().hitTest(new Point((int) ev.getX(), (int) ev.getY()));
 
-            if (mTargetTag != -1) {
-                handleTouchEvent(ev);
-                return true;
-            }
+        if (mTargetTag != -1) {
+            handleTouchEvent(ev);
+            return true;
         }
 
         return super.dispatchTouchEvent(ev);
@@ -126,6 +125,7 @@ public class RNSVGSvgView extends View {
                 mTargetTag,
                 type,
                 ev,
+                mGestureStartTime,
                 ev.getX(),
                 ev.getY(),
                 mTouchEventCoalescingKeyHelper));
@@ -134,6 +134,7 @@ public class RNSVGSvgView extends View {
     public void handleTouchEvent(MotionEvent ev) {
         int action = ev.getAction() & MotionEvent.ACTION_MASK;
         if (action == MotionEvent.ACTION_DOWN) {
+            mGestureStartTime = ev.getEventTime();
             dispatch(ev, TouchEventType.START);
         } else if (mTargetTag == -1) {
             // All the subsequent action types are expected to be called after ACTION_DOWN thus target
@@ -157,9 +158,11 @@ public class RNSVGSvgView extends View {
             // Exactly onw of the pointers goes up
             dispatch(ev, TouchEventType.END);
             mTargetTag = -1;
+            mGestureStartTime = TouchEvent.UNSET;
         } else if (action == MotionEvent.ACTION_CANCEL) {
             dispatchCancelEvent(ev);
             mTargetTag = -1;
+            mGestureStartTime = TouchEvent.UNSET;
         } else {
             Log.w(
                 "IGNORE",
@@ -180,11 +183,5 @@ public class RNSVGSvgView extends View {
         }
 
         dispatch(ev, TouchEventType.CANCEL);
-    }
-
-    public void onDataURL() {
-        WritableMap event = Arguments.createMap();
-        event.putString("base64", getShadowNode().getBase64());
-        mEventEmitter.receiveEvent(getId(), Events.EVENT_DATA_URL.toString(), event);
     }
 }

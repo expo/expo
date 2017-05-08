@@ -9,7 +9,7 @@
 
 package versioned.host.exp.exponent.modules.api.components.svg;
 
-import com.facebook.react.bridge.JavaOnlyArray;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -17,13 +17,14 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 /**
  * Shadow node for virtual LinearGradient definition view
  */
-public class RNSVGLinearGradientShadowNode extends RNSVGDefinitionShadowNode {
+public class LinearGradientShadowNode extends DefinitionShadowNode {
 
     private String mX1;
     private String mY1;
     private String mX2;
     private String mY2;
     private ReadableArray mGradient;
+    private Brush.BrushUnits mGradientUnits;
 
     @ReactProp(name = "x1")
     public void setX1(String x1) {
@@ -32,7 +33,7 @@ public class RNSVGLinearGradientShadowNode extends RNSVGDefinitionShadowNode {
     }
 
     @ReactProp(name = "y1")
-    public void setCx(String y1) {
+    public void setY1(String y1) {
         mY1 = y1;
         markUpdated();
     }
@@ -55,17 +56,37 @@ public class RNSVGLinearGradientShadowNode extends RNSVGDefinitionShadowNode {
         markUpdated();
     }
 
+    @ReactProp(name = "gradientUnits")
+    public void setGradientUnits(int gradientUnits) {
+        switch (gradientUnits) {
+            case 0:
+                mGradientUnits = Brush.BrushUnits.OBJECT_BOUNDING_BOX;
+                break;
+            case 1:
+                mGradientUnits = Brush.BrushUnits.USER_SPACE_ON_USE;
+                break;
+        }
+        markUpdated();
+    }
+
     @Override
     protected void saveDefinition() {
         if (mName != null) {
-            WritableArray points = new JavaOnlyArray();
+            WritableArray points = Arguments.createArray();
             points.pushString(mX1);
             points.pushString(mY1);
             points.pushString(mX2);
             points.pushString(mY2);
 
-            PropHelper.RNSVGBrush brush = new PropHelper.RNSVGBrush(PropHelper.RNSVGBrush.GradientType.LINEAR_GRADIENT, points, mGradient);
-            getSvgShadowNode().defineBrush(brush, mName);
+            Brush brush = new Brush(Brush.BrushType.LINEAR_GRADIENT, points, mGradientUnits);
+            brush.setGradientColors(mGradient);
+
+            SvgViewShadowNode svg = getSvgShadowNode();
+            if (mGradientUnits == Brush.BrushUnits.USER_SPACE_ON_USE) {
+                brush.setUserSpaceBoundingBox(svg.getCanvasBounds());
+            }
+
+            svg.defineBrush(brush, mName);
         }
     }
 }

@@ -9,17 +9,16 @@
 
 package versioned.host.exp.exponent.modules.api.components.svg;
 
+
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
-
 import com.facebook.react.uimanager.annotations.ReactProp;
 
-
 /**
- * Shadow node for virtual RNSVGPath view
+ * Shadow node for virtual Circle view
  */
-public class RNSVGCircleShadowNode extends RNSVGPathShadowNode {
+public class CircleShadowNode extends RenderableShadowNode {
 
     private String mCx;
     private String mCy;
@@ -44,22 +43,17 @@ public class RNSVGCircleShadowNode extends RNSVGPathShadowNode {
     }
 
     @Override
-    public void draw(Canvas canvas, Paint paint, float opacity) {
-        mPath = getPath(canvas, paint);
-        super.draw(canvas, paint, opacity);
-    }
-
-    @Override
     protected Path getPath(Canvas canvas, Paint paint) {
         Path path = new Path();
-        float cx = PropHelper.fromPercentageToFloat(mCx, mCanvasWidth, 0, mScale);
-        float cy = PropHelper.fromPercentageToFloat(mCy, mCanvasHeight, 0, mScale);
+
+        float cx = relativeOnWidth(mCx);
+        float cy = relativeOnHeight(mCy);
 
         float r;
         if (PropHelper.isPercentage(mR)) {
             r = PropHelper.fromPercentageToFloat(mR, 1, 0, 1);
-            float powX = (float)Math.pow((mCanvasWidth * r), 2);
-            float powY = (float)Math.pow((mCanvasHeight * r), 2);
+            float powX = (float)Math.pow((getCanvasWidth() * r), 2);
+            float powY = (float)Math.pow((getCanvasHeight() * r), 2);
             r = (float)Math.sqrt(powX + powY) / (float)Math.sqrt(2);
         } else {
             r =  Float.parseFloat(mR) * mScale;

@@ -20,7 +20,7 @@ import com.facebook.react.bridge.ReadableArray;
 /**
  * Shadow node for virtual Definition type views
  */
-public class RNSVGDefinitionShadowNode extends RNSVGVirtualNode {
+public class DefinitionShadowNode extends VirtualNode {
 
     public void draw(Canvas canvas, Paint paint, float opacity) {}
 
@@ -38,13 +38,4 @@ public class RNSVGDefinitionShadowNode extends RNSVGVirtualNode {
     public int hitTest(Point point, Matrix matrix) {
         return -1;
     }
-
-    @Override
-    public void mergeProperties(RNSVGVirtualNode target, ReadableArray mergeList, boolean inherited) {}
-
-    @Override
-    public void mergeProperties(RNSVGVirtualNode target, ReadableArray mergeList) {}
-
-    @Override
-    public void resetProperties() {}
 }

@@ -13,20 +13,20 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 
 /**
- * Shadow node for virtual RNSVGPath view
+ * Shadow node for virtual Defs view
  */
-public class RNSVGDefsShadowNode extends RNSVGDefinitionShadowNode {
+public class DefsShadowNode extends DefinitionShadowNode {
 
     @Override
     public void draw(Canvas canvas, Paint paint, float opacity) {
         traverseChildren(new NodeRunnable() {
-            public boolean run(RNSVGVirtualNode node) {
+            public boolean run(VirtualNode node) {
                 node.saveDefinition();
                 return true;
             }
         });
         NodeRunnable markUpdateSeenRecursive = new NodeRunnable() {
-            public boolean run(RNSVGVirtualNode node) {
+            public boolean run(VirtualNode node) {
                 node.markUpdateSeen();
                 node.traverseChildren(this);
                 return true;
