@@ -8,7 +8,7 @@ Luckily, the Firebase JavaScript SDK starting from version 3.1+ has almost full 
 
 See [firebase.google.com/docs/database](https://firebase.google.com/docs/database) for more general information and the [official Firebase blog post announcing React Native compatibility](https://firebase.googleblog.com/2016/07/firebase-react-native.html)
 
-> **Note:** This guide only covers Firebase Realtime Database, and not the other services under the larger Google Firebase umbrella. Firebase Cloud Storage is currently not supported, but we are [working on upstreaming a Blob implementation](https://github.com/facebook/react-native/issues/11103) to React Native that would make this possible. This will likely be available in SDK14.
+> **Note:** This guide only covers Firebase Realtime Database, and not the other services under the larger Google Firebase umbrella. Firebase Cloud Storage is currently not supported, but we are [working on upstreaming a Blob implementation](https://github.com/facebook/react-native/issues/11103) to React Native that would make this possible.
 
 ## 1. Firebase SDK Setup
 
