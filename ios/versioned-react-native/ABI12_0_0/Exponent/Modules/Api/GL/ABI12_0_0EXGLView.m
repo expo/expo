@@ -6,7 +6,7 @@
 #import "ABI12_0_0RCTJSCExecutor.h"
 
 #import "ABI12_0_0EXUnversioned.h"
-#import <EXGL.h>
+#import <UEXGL.h>
 
 
 @interface ABI12_0_0EXGLView ()

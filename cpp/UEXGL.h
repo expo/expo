@@ -1,5 +1,5 @@
-#ifndef __EXGL_H__
-#define __EXGL_H__
+#ifndef __UEXGL_H__
+#define __UEXGL_H__
 
 
 #ifdef __ANDROID__
@@ -10,6 +10,12 @@
 #endif
 
 #include <JavaScriptCore/JSBase.h>
+
+
+// NOTE: The symbols exposed by this header are named with a `UEX` prefix rather than an `EX`
+//       prefix so that they are unaffected by the automated iOS versioning script when
+//       referenced in versioned Objective-C code. The EXGL C/C++ library is not versioned
+//       and there is only one copy of its code in the binary form of the Expo application.
 
 
 #ifdef __cplusplus

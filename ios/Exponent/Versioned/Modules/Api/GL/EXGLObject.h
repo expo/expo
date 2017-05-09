@@ -1,4 +1,4 @@
-#import <EXGL.h>
+#import <UEXGL.h>
 
 // Obj-C wrapper around C `EXGLObject` (identified by `EXGLObjectId`) lifetimes that
 // dispatches to child classes (such as `EXGLGPUImageObject`) for the actual media

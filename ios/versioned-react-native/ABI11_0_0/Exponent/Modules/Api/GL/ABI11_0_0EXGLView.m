@@ -2,7 +2,7 @@
 
 #import "ABI11_0_0RCTJSCExecutor.h"
 
-#import <EXGL.h>
+#import <UEXGL.h>
 
 
 @interface ABI11_0_0EXGLView ()

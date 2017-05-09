@@ -6,7 +6,7 @@
 #import <ReactABI14_0_0/ABI14_0_0RCTJSCExecutor.h>
 
 #import "ABI14_0_0EXUnversioned.h"
-#import <EXGL.h>
+#import <UEXGL.h>
 
 
 @interface ABI14_0_0EXGLView ()

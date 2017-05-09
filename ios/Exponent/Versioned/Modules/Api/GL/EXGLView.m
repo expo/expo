@@ -7,7 +7,7 @@
 #import <React/RCTJSCExecutor.h>
 
 #import "EXUnversioned.h"
-#import <EXGL.h>
+#import <UEXGL.h>
 
 #import <GPUImage.h>
 
