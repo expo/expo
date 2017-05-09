@@ -160,7 +160,7 @@
                                @"manifest": _frame.manifest,
                                @"appOwnership": [_frame.initialProps objectForKey:@"appOwnership"] ?: @"expo",
                                },
-                           @"initialUri": _frame.initialUri,
+                           @"initialUri": [EXKernelLinkingManager uriTransformedForLinking:_frame.initialUri],
                            @"isDeveloper": @([self _doesManifestEnableDeveloperTools]),
                            };
   return [self.versionManager extraModulesWithParams:params];

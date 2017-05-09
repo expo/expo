@@ -14,7 +14,16 @@ FOUNDATION_EXPORT NSNotificationName kEXKernelOpenUrlNotification;
 
 @interface EXKernelLinkingManager : NSObject
 
-+ (NSString *)linkingUriForExperienceUri: (NSURL *)uri;
+/**
+ *  Returns the deep link prefix for a given experience uri.
+ */
++ (NSString *)linkingUriForExperienceUri:(NSURL *)uri;
+
+/**
+ *  Normalize a uri and (if needed) subtitute
+ *  standalone-app-specific deep link formatting.
+ */
++ (NSURL *)uriTransformedForLinking:(NSURL *)uri;
 
 # pragma mark - app-wide linking handlers
 
