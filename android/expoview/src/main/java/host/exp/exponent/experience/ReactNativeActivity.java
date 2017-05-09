@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.KeyEvent;
@@ -30,7 +31,7 @@ import host.exp.exponent.kernel.KernelConstants;
 import host.exp.expoview.Exponent;
 import host.exp.expoview.R;
 
-public abstract class ReactNativeActivity extends Activity implements com.facebook.react.modules.core.DefaultHardwareBackBtnHandler {
+public abstract class ReactNativeActivity extends FragmentActivity implements com.facebook.react.modules.core.DefaultHardwareBackBtnHandler {
 
   public static class ExperienceDoneLoadingEvent {
   }
