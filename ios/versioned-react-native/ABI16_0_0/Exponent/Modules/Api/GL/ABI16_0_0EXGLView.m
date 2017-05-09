@@ -23,7 +23,7 @@
 
 @property (nonatomic, strong) CADisplayLink *displayLink;
 
-@property (nonatomic, assign) EXGLContextId exglCtxId;
+@property (nonatomic, assign) UEXGLContextId exglCtxId;
 
 @property (nonatomic, assign) NSNumber *msaaSamples;
 
@@ -73,7 +73,7 @@ ABI16_0_0RCT_NOT_IMPLEMENTED(- (instancetype)init);
         __typeof__(self) self = weakSelf;
         ABI16_0_0RCTJSCExecutor *executor = weakExecutor;
         if (self && executor) {
-          _exglCtxId = EXGLContextCreate(executor.jsContext.JSGlobalContextRef);
+          _exglCtxId = UEXGLContextCreate(executor.jsContext.JSGlobalContextRef);
           _onSurfaceCreate(@{ @"exglCtxId": @(_exglCtxId) });
         }
       }];
@@ -181,7 +181,7 @@ ABI16_0_0RCT_NOT_IMPLEMENTED(- (instancetype)init);
 - (void)removeFromSuperview
 {
   // Destroy JS binding
-  EXGLContextDestroy(_exglCtxId);
+  UEXGLContextDestroy(_exglCtxId);
 
   // Destroy GL objects owned by us
   [self deleteViewBuffers];
@@ -195,7 +195,7 @@ ABI16_0_0RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
 - (void)draw
 {
-  // _exglCtxId may be unset if we get here (on the UI thread) before ABI16_0_0EXGLContextCreate(...) is
+  // _exglCtxId may be unset if we get here (on the UI thread) before UEXGLContextCreate(...) is
   // called on the JS thread to create the ABI16_0_0EXGL context and save its id (see init method). In
   // this case no GL work has been sent yet so we skip this frame.
   //
@@ -204,8 +204,8 @@ ABI16_0_0RCT_NOT_IMPLEMENTED(- (instancetype)init);
   // this frame (the GL work to run remains on the queue for next time).
   if (_exglCtxId != 0 && _viewFramebuffer != 0) {
     [EAGLContext setCurrentContext:_eaglCtx];
-    EXGLContextSetDefaultFramebuffer(_exglCtxId, _msaaFramebuffer);
-    EXGLContextFlush(_exglCtxId);
+    UEXGLContextSetDefaultFramebuffer(_exglCtxId, _msaaFramebuffer);
+    UEXGLContextFlush(_exglCtxId);
 
     // Present current state of view buffers
     // TODO(nikki): This should happen exactly at `gl.endFrameEXP()` in the queue

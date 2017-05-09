@@ -20,8 +20,8 @@
 
 @interface EXGLObject : NSObject
 
-@property (nonatomic, assign) EXGLContextId exglCtxId;
-@property (nonatomic, assign) EXGLObjectId exglObjId;
+@property (nonatomic, assign) UEXGLContextId exglCtxId;
+@property (nonatomic, assign) UEXGLObjectId exglObjId;
 
 // Create an `EXGLObject` of the correct type given `config`, returns `nil` if
 // bad `config`

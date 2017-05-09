@@ -42,9 +42,9 @@
 
 - (void)newFrameReadyFromTextureOutput:(GPUImageTextureOutput *)callbackTextureOutput
 {
-  // Remember that `EXGLContextMapObject(...)` needs to run on the GL thread
+  // Remember that `UEXGLContextMapObject(...)` needs to run on the GL thread
   dispatch_async(dispatch_get_main_queue(), ^{
-    EXGLContextMapObject(self.exglCtxId, self.exglObjId, callbackTextureOutput.texture);
+    UEXGLContextMapObject(self.exglCtxId, self.exglObjId, callbackTextureOutput.texture);
     // Some times a refCount > 0 assertion fails so just guard this
     @try {
       [callbackTextureOutput doneWithTexture];
