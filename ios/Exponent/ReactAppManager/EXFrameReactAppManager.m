@@ -5,6 +5,7 @@
 #import "EXFrame.h"
 #import "EXFrameReactAppManager.h"
 #import "EXKernel.h"
+#import "EXKernelLinkingManager.h"
 #import "EXLog.h"
 #import "EXReactAppManager+Private.h"
 #import "EXShellManager.h"
@@ -149,11 +150,12 @@
 
 - (NSArray *)extraModulesForBridge:(RCTBridge *)bridge
 {
+  // TODO: initialUri needs to be transformed for standalone apps as well.
   NSDictionary *params = @{
                            @"frame": _frame,
                            @"manifest": _frame.manifest,
                            @"constants": @{
-                               @"linkingUri": [EXKernel linkingUriForExperienceUri:_frame.initialUri],
+                               @"linkingUri": [EXKernelLinkingManager linkingUriForExperienceUri:_frame.initialUri],
                                @"deviceId": [EXKernel deviceInstallUUID],
                                @"manifest": _frame.manifest,
                                @"appOwnership": [_frame.initialProps objectForKey:@"appOwnership"] ?: @"expo",

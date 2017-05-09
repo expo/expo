@@ -4,7 +4,8 @@
 #import "EXAnalytics.h"
 #import "EXApiUtil.h"
 #import "EXFileDownloader.h"
-#import "EXKernel.h"
+#import "EXKernelLinkingManager.h"
+#import "EXKernelUtil.h"
 #import "EXShellManager.h"
 
 NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
@@ -18,7 +19,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
     resourceName = kEXShellManifestResourceName;
     NSLog(@"EXManifestResource: Standalone manifest remote url is %@ (%@)", url, originalUrl);
   } else {
-    resourceName = [EXKernel linkingUriForExperienceUri:url];
+    resourceName = [EXKernelLinkingManager linkingUriForExperienceUri:url];
   }
 
   if (self = [super initWithResourceName:resourceName resourceType:@"json" remoteUrl:url cachePath:[[self class] cachePath]]) {

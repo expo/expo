@@ -6,6 +6,7 @@
 #import "EXKernelDevMenuViewController.h"
 #import "EXExceptionHandler.h"
 #import "EXKernel.h"
+#import "EXKernelLinkingManager.h"
 #import "EXLog.h"
 #import "EXShellManager.h"
 #import "EXVersionManager.h"
@@ -224,7 +225,7 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
       [[NSUserDefaults standardUserDefaults] removeObjectForKey:kEXKernelLaunchUrlDefaultsKey];
       [[NSUserDefaults standardUserDefaults] synchronize];
     } else {
-      initialKernelUrl = [EXKernel initialUrlFromLaunchOptions:_launchOptions];
+      initialKernelUrl = [EXKernelLinkingManager initialUrlFromLaunchOptions:_launchOptions];
     }
     params[@"initialUri"] = initialKernelUrl;
     

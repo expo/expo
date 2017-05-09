@@ -24,7 +24,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 NSString *kEXKernelErrorDomain = @"EXKernelErrorDomain";
-NSNotificationName kEXKernelOpenUrlNotification = @"EXKernelOpenUrlNotification";
 NSNotificationName kEXKernelRefreshForegroundTaskNotification = @"EXKernelRefreshForegroundTaskNotification";
 NSNotificationName kEXKernelGetPushTokenNotification = @"EXKernelGetPushTokenNotification";
 NSNotificationName kEXKernelJSIsLoadedNotification = @"EXKernelJSIsLoadedNotification";
@@ -75,10 +74,6 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
     _recoveryManager = [[EXErrorRecoveryManager alloc] init];
     [EXKernelDevMotionHandler sharedInstance];
     [EXKernelDevKeyCommands sharedInstance];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(_routeUrl:)
-                                                 name:kEXKernelOpenUrlNotification
-                                               object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(_refreshForegroundTask:)
                                                  name:kEXKernelRefreshForegroundTaskNotification
@@ -179,7 +174,21 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
   }
 }
 
-#pragma mark - Linking
+#pragma mark - Misc
+
+- (void)openUrl:(NSString *)url onAppManager:(EXReactAppManager *)appManager
+{
+  // fire a Linking url event on this (possibly versioned) bridge
+  id linkingModule = [self nativeModuleForAppManager:appManager named:@"LinkingManager"];
+  if (!linkingModule) {
+    DDLogError(@"Could not find the Linking module to open URL (%@)", url);
+  } else if ([linkingModule respondsToSelector:@selector(dispatchOpenUrlEvent:)]) {
+    [linkingModule dispatchOpenUrlEvent:[NSURL URLWithString:url]];
+  } else {
+    DDLogError(@"Linking module doesn't support the API we use to open URL (%@)", url);
+  }
+  [self _moveAppManagerToForeground:appManager];
+}
 
 - (void)_refreshForegroundTask:(NSNotification *)notif
 {
@@ -197,185 +206,6 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
   }
 }
 
-/**
- *  Expected notif.userInfo keys:
- *   url - the url (NSString) to route
- *   bridge - (optional) if this event came from a bridge, a pointer to that bridge
- */
-- (void)_routeUrl: (NSNotification *)notif
-{
-  NSURL *notifUri = [NSURL URLWithString:notif.userInfo[@"url"]];
-  if (!notifUri) {
-    DDLogInfo(@"Tried to route invalid url: %@", notif.userInfo[@"url"]);
-    return;
-  }
-  NSString *urlToRoute = [[self class] _uriTransformedForRouting:notifUri].absoluteString;
-  
-  // kernel bridge is our default handler for this url
-  // because it can open a new bridge if we don't already have one.
-  EXReactAppManager *destinationAppManager = _bridgeRegistry.kernelAppManager;
-
-  for (id bridge in [_bridgeRegistry bridgeEnumerator]) {
-    EXKernelBridgeRecord *bridgeRecord = [_bridgeRegistry recordForBridge:bridge];
-    if ([urlToRoute hasPrefix:[[self class] linkingUriForExperienceUri:bridgeRecord.appManager.frame.initialUri]]) {
-      // this is a link into a bridge we already have running.
-      // use this bridge as the link's destination instead of the kernel.
-      destinationAppManager = bridgeRecord.appManager;
-      break;
-    }
-  }
-  
-  if (destinationAppManager) {
-    // fire a Linking url event on this (possibly versioned) bridge
-    id linkingModule = [self _nativeModuleForAppManager:destinationAppManager named:@"LinkingManager"];
-    if (!linkingModule) {
-      DDLogError(@"Could not find the Linking module to open URL (%@)", urlToRoute);
-    } else if ([linkingModule respondsToSelector:@selector(dispatchOpenUrlEvent:)]) {
-      [linkingModule dispatchOpenUrlEvent:[NSURL URLWithString:urlToRoute]];
-    } else {
-      DDLogError(@"Linking module doesn't support the API we use to open URL (%@)", urlToRoute);
-    }
-    [self _moveAppManagerToForeground:destinationAppManager];
-  }
-}
-
-+ (NSString *)linkingUriForExperienceUri:(NSURL *)uri
-{
-  uri = [self _uriTransformedForRouting:uri];
-  NSURLComponents *components = [NSURLComponents componentsWithURL:uri resolvingAgainstBaseURL:YES];
-
-  // if the provided uri is the shell app manifest uri,
-  // this should have been transformed into customscheme://+deep-link
-  // and then all we do here is strip off the deep-link part, leaving +.
-  if ([EXShellManager sharedInstance].isShell && [[EXShellManager sharedInstance] isShellUrlScheme:components.scheme]) {
-    return [NSString stringWithFormat:@"%@://", components.scheme];
-  }
-
-  NSMutableString* path = [NSMutableString stringWithString:components.path];
-
-  // if the uri already contains a deep link, strip everything specific to that
-  NSRange deepLinkRange = [path rangeOfString:@"+"];
-  if (deepLinkRange.length > 0) {
-    path = [[path substringToIndex:deepLinkRange.location] mutableCopy];
-  }
-
-  if (path.length == 0 || [path characterAtIndex:path.length - 1] != '/') {
-    [path appendString:@"/"];
-  }
-  [path appendString:@"+"];
-  components.path = path;
-
-  components.query = nil;
-
-  return [components string];
-}
-
-+ (NSURL *)_uriTransformedForRouting: (NSURL *)uri
-{
-  if (!uri) {
-    return nil;
-  }
-  
-  NSURL *normalizedUri = [self _uriNormalizedForRouting:uri];
-  
-  if ([EXShellManager sharedInstance].isShell && [EXShellManager sharedInstance].hasUrlScheme) {
-    // if the provided uri is the shell app manifest uri,
-    // transform this into customscheme://deep-link
-    if ([self _isShellManifestUrl:normalizedUri]) {
-      NSString *uriString = normalizedUri.absoluteString;
-      NSRange deepLinkRange = [uriString rangeOfString:@"+"];
-      NSString *deepLink = @"";
-      if (deepLinkRange.length > 0) {
-        deepLink = [uriString substringFromIndex:deepLinkRange.location + 1];
-      }
-      NSString *result = [NSString stringWithFormat:@"%@://%@", [EXShellManager sharedInstance].urlScheme, deepLink];
-      return [NSURL URLWithString:result];
-    }
-  }
-  return normalizedUri;
-}
-
-+ (NSURL *)_uriNormalizedForRouting: (NSURL *)uri
-{
-  NSURLComponents *components = [NSURLComponents componentsWithURL:uri resolvingAgainstBaseURL:YES];
-  
-  if ([EXShellManager sharedInstance].isShell && [[EXShellManager sharedInstance] isShellUrlScheme:components.scheme]) {
-    // if we're a shell and this uri had the shell scheme, leave it alone.
-  } else {
-    if ([components.scheme isEqualToString:@"https"]) {
-      components.scheme = @"exps";
-    } else {
-      components.scheme = @"exp";
-    }
-  }
-  
-  if ([components.scheme isEqualToString:@"exp"] && [components.port integerValue] == 80) {
-    components.port = nil;
-  } else if ([components.scheme isEqualToString:@"exps"] && [components.port integerValue] == 443) {
-    components.port = nil;
-  }
-  
-  return [components URL];
-}
-
-+ (BOOL)_isShellManifestUrl: (NSURL *)normalizedUri
-{
-  NSString *uriString = normalizedUri.absoluteString;
-  for (NSString *shellManifestUrl in [EXShellManager sharedInstance].allManifestUrls) {
-    NSURL *normalizedShellManifestURL = [self _uriNormalizedForRouting:[NSURL URLWithString:shellManifestUrl]];
-    if ([normalizedShellManifestURL.absoluteString isEqualToString:uriString]) {
-      return YES;
-    }
-  }
-  return NO;
-}
-
-+ (BOOL)application:(UIApplication *)application
-            openURL:(NSURL *)URL
-  sourceApplication:(NSString *)sourceApplication
-         annotation:(id)annotation
-{
-  [[NSNotificationCenter defaultCenter] postNotificationName:kEXKernelOpenUrlNotification
-                                                      object:nil
-                                                    userInfo:@{
-                                                               @"url": URL.absoluteString
-                                                               }];
-  return YES;
-}
-
-+ (BOOL)application:(UIApplication *)application
-continueUserActivity:(NSUserActivity *)userActivity
- restorationHandler:(void (^)(NSArray *))restorationHandler
-{
-  if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
-    [[NSNotificationCenter defaultCenter] postNotificationName:kEXKernelOpenUrlNotification
-                                                        object:nil
-                                                      userInfo:@{
-                                                                 @"url": userActivity.webpageURL.absoluteString
-                                                                 }];
-  }
-  return YES;
-}
-
-+ (NSURL *)initialUrlFromLaunchOptions:(NSDictionary *)launchOptions
-{
-  NSURL *initialUrl;
-
-  if (launchOptions) {
-    if (launchOptions[UIApplicationLaunchOptionsURLKey]) {
-      initialUrl = launchOptions[UIApplicationLaunchOptionsURLKey];
-    } else if (launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey]) {
-      NSDictionary *userActivityDictionary = launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
-      
-      if ([userActivityDictionary[UIApplicationLaunchOptionsUserActivityTypeKey] isEqual:NSUserActivityTypeBrowsingWeb]) {
-        initialUrl = ((NSUserActivity *)userActivityDictionary[@"UIApplicationLaunchOptionsUserActivityKey"]).webpageURL;
-      }
-    }
-  }
-
-  return initialUrl;
-}
-
 + (NSString *)deviceInstallUUID
 {
   NSString *uuid = [[NSUserDefaults standardUserDefaults] stringForKey:kEXDeviceInstallUUIDKey];
@@ -391,7 +221,7 @@ continueUserActivity:(NSUserActivity *)userActivity
 
 - (void)dispatchKernelJSEvent:(NSString *)eventName body:(NSDictionary *)eventBody onSuccess:(void (^_Nullable)(NSDictionary * _Nullable))success onFailure:(void (^_Nullable)(NSString * _Nullable))failure
 {
-  EXKernelModule *kernelModule = [self _nativeModuleForAppManager:_bridgeRegistry.kernelAppManager named:@"ExponentKernel"];
+  EXKernelModule *kernelModule = [self nativeModuleForAppManager:_bridgeRegistry.kernelAppManager named:@"ExponentKernel"];
   if (kernelModule) {
     [kernelModule dispatchJSEvent:eventName body:eventBody onSuccess:success onFailure:failure];
   }
@@ -403,7 +233,7 @@ continueUserActivity:(NSUserActivity *)userActivity
                                    args:eventBody ? @[eventName, eventBody] : @[eventName]];
 }
 
-- (id)_nativeModuleForAppManager:(EXReactAppManager *)appManager named:(NSString *)moduleName
+- (id)nativeModuleForAppManager:(EXReactAppManager *)appManager named:(NSString *)moduleName
 {
   id destinationBridge = appManager.reactBridge;
 
@@ -525,14 +355,14 @@ continueUserActivity:(NSUserActivity *)userActivity
   
   if (appManagerToBackground) {
     [self _postNotificationName:kEXKernelBridgeDidBackgroundNotification onAbstractBridge:appManagerToBackground.reactBridge];
-    id appStateModule = [self _nativeModuleForAppManager:appManagerToBackground named:@"AppState"];
+    id appStateModule = [self nativeModuleForAppManager:appManagerToBackground named:@"AppState"];
     if ([appStateModule respondsToSelector:@selector(setState:)]) {
       [appStateModule setState:@"background"];
     }
   }
   if (appManagerToForeground) {
     [self _postNotificationName:kEXKernelBridgeDidForegroundNotification onAbstractBridge:appManagerToForeground.reactBridge];
-    id appStateModule = [self _nativeModuleForAppManager:appManagerToForeground named:@"AppState"];
+    id appStateModule = [self nativeModuleForAppManager:appManagerToForeground named:@"AppState"];
     if ([appStateModule respondsToSelector:@selector(setState:)]) {
       [appStateModule setState:@"active"];
     }
@@ -598,7 +428,7 @@ continueUserActivity:(NSUserActivity *)userActivity
   
   if (_bridgeRegistry.lastKnownForegroundBridge) {
     EXReactAppManager *appManager = [_bridgeRegistry lastKnownForegroundAppManager];
-    id appStateModule = [self _nativeModuleForAppManager:appManager named:@"AppState"];
+    id appStateModule = [self nativeModuleForAppManager:appManager named:@"AppState"];
     NSString *lastKnownState;
     if ([appStateModule respondsToSelector:@selector(lastKnownState)]) {
       lastKnownState = [appStateModule lastKnownState];
