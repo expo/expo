@@ -37,7 +37,7 @@ NSNotificationName kEXKernelOpenUrlNotification = @"EXKernelOpenUrlNotification"
     DDLogInfo(@"Tried to route invalid url: %@", notif.userInfo[@"url"]);
     return;
   }
-  NSString *urlToRoute = [[self class] _uriTransformedForRouting:notifUri].absoluteString;
+  NSString *urlToRoute = [[self class] uriTransformedForLinking:notifUri].absoluteString;
   EXKernelBridgeRegistry *bridgeRegistry = [EXKernel sharedInstance].bridgeRegistry;
   
   // kernel bridge is our default handler for this url
@@ -63,7 +63,7 @@ NSNotificationName kEXKernelOpenUrlNotification = @"EXKernelOpenUrlNotification"
 
 + (NSString *)linkingUriForExperienceUri:(NSURL *)uri
 {
-  uri = [self _uriTransformedForRouting:uri];
+  uri = [self uriTransformedForLinking:uri];
   NSURLComponents *components = [NSURLComponents componentsWithURL:uri resolvingAgainstBaseURL:YES];
   
   // if the provided uri is the shell app manifest uri,
@@ -92,13 +92,13 @@ NSNotificationName kEXKernelOpenUrlNotification = @"EXKernelOpenUrlNotification"
   return [components string];
 }
 
-+ (NSURL *)_uriTransformedForRouting: (NSURL *)uri
++ (NSURL *)uriTransformedForLinking:(NSURL *)uri
 {
   if (!uri) {
     return nil;
   }
   
-  NSURL *normalizedUri = [self _uriNormalizedForRouting:uri];
+  NSURL *normalizedUri = [self _uriNormalizedForLinking:uri];
   
   if ([EXShellManager sharedInstance].isShell && [EXShellManager sharedInstance].hasUrlScheme) {
     // if the provided uri is the shell app manifest uri,
@@ -117,7 +117,7 @@ NSNotificationName kEXKernelOpenUrlNotification = @"EXKernelOpenUrlNotification"
   return normalizedUri;
 }
 
-+ (NSURL *)_uriNormalizedForRouting: (NSURL *)uri
++ (NSURL *)_uriNormalizedForLinking: (NSURL *)uri
 {
   NSURLComponents *components = [NSURLComponents componentsWithURL:uri resolvingAgainstBaseURL:YES];
   
@@ -144,7 +144,7 @@ NSNotificationName kEXKernelOpenUrlNotification = @"EXKernelOpenUrlNotification"
 {
   NSString *uriString = normalizedUri.absoluteString;
   for (NSString *shellManifestUrl in [EXShellManager sharedInstance].allManifestUrls) {
-    NSURL *normalizedShellManifestURL = [self _uriNormalizedForRouting:[NSURL URLWithString:shellManifestUrl]];
+    NSURL *normalizedShellManifestURL = [self _uriNormalizedForLinking:[NSURL URLWithString:shellManifestUrl]];
     if ([normalizedShellManifestURL.absoluteString isEqualToString:uriString]) {
       return YES;
     }
