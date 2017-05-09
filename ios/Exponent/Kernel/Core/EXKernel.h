@@ -12,7 +12,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-FOUNDATION_EXPORT NSNotificationName kEXKernelOpenUrlNotification;
 FOUNDATION_EXPORT NSNotificationName kEXKernelRefreshForegroundTaskNotification;
 FOUNDATION_EXPORT NSNotificationName kEXKernelGetPushTokenNotification;
 FOUNDATION_EXPORT NSNotificationName kEXKernelJSIsLoadedNotification;
@@ -46,20 +45,16 @@ FOUNDATION_EXPORT NSString * const kEXKernelClearJSCacheUserDefaultsKey;
 @property (nonatomic, strong, readonly) EXKernelBridgeRegistry *bridgeRegistry;
 @property (nonatomic, strong, readonly) EXErrorRecoveryManager *recoveryManager;
 
-# pragma mark - app-wide linking handlers
+/**
+ *  Find and return the (potentially versioned) native module instance belonging to the
+ *  specified app manager. Module name is the exported name such as @"AppState".
+ */
+- (id)nativeModuleForAppManager:(EXReactAppManager *)appManager named:(NSString *)moduleName;
 
-+ (BOOL)application:(UIApplication *)application
-            openURL:(NSURL *)URL
-  sourceApplication:(NSString *)sourceApplication
-         annotation:(id)annotation;
-
-+ (BOOL)application:(UIApplication *)application
-continueUserActivity:(NSUserActivity *)userActivity
- restorationHandler:(void (^)(NSArray *))restorationHandler;
-
-+ (NSURL *)initialUrlFromLaunchOptions: (NSDictionary *)launchOptions;
-
-+ (NSString *)linkingUriForExperienceUri: (NSURL *)uri;
+/**
+ *  Send the given url to this app manager (via the Linking module) and foreground it.
+ */
+- (void)openUrl:(NSString *)url onAppManager:(EXReactAppManager *)appManager;
 
 /**
  *  An id that uniquely identifies this installation of Exponent.

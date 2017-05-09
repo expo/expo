@@ -5,6 +5,7 @@
 #import "EXFatalHandler.h"
 #import "EXKernel.h"
 #import "EXKernelUtil.h"
+#import "EXKernelLinkingManager.h"
 #import "EXRemoteNotificationManager.h"
 #import "EXLocalNotificationManager.h"
 #import "EXViewController.h"
@@ -195,7 +196,7 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
     return YES;
   }
   // TODO: don't want to launch more bridges when in detached state.
-  return [EXKernel application:application openURL:url sourceApplication:sourceApplication annotation:annotation];
+  return [EXKernelLinkingManager application:application openURL:url sourceApplication:sourceApplication annotation:annotation];
 }
 
 - (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray * _Nullable))restorationHandler
@@ -205,7 +206,7 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
     NSString *path = [webpageURL path];
     if ([path hasPrefix:@"/@"]) {
       // TODO: don't want to launch more bridges when in detached state.
-      [EXKernel application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
+      [EXKernelLinkingManager application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
       return YES;
     } else {
       [[UIApplication sharedApplication] openURL:webpageURL];
