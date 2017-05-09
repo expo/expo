@@ -18,37 +18,37 @@ extern "C" {
 
 // Identifies an EXGL context. No EXGL context has the id 0, so that can be
 // used as a 'null' value.
-typedef unsigned int EXGLContextId;
+typedef unsigned int UEXGLContextId;
 
 // [JS thread] Create an EXGL context and return its id number. Saves the
 // JavaScript interface object (has a WebGLRenderingContext-style API) at
 // `global.__EXGLContexts[id]` in JavaScript.
-EXGLContextId EXGLContextCreate(JSGlobalContextRef jsCtx);
+UEXGLContextId UEXGLContextCreate(JSGlobalContextRef jsCtx);
 
 // [Any thread] Release the resources for an EXGL context. The same id is never
 // reused.
-void EXGLContextDestroy(EXGLContextId exglCtxId);
+void UEXGLContextDestroy(UEXGLContextId exglCtxId);
 
 // [GL thread] Perform one frame's worth of queued up GL work
-void EXGLContextFlush(EXGLContextId exglCtxId);
+void UEXGLContextFlush(UEXGLContextId exglCtxId);
 
 // [GL thread] Set the default framebuffer (used when binding 0). Allows using
 // platform-specific extensions on the default framebuffer, such as MSAA.
-void EXGLContextSetDefaultFramebuffer(EXGLContextId exglCtxId, GLint framebuffer);
+void UEXGLContextSetDefaultFramebuffer(UEXGLContextId exglCtxId, GLint framebuffer);
 
 
 // Identifies an EXGL object. EXGL objects represent virtual mappings to underlying OpenGL objects.
 // No EXGL object has the id 0, so that can be used as a 'null' value.
-typedef unsigned int EXGLObjectId;
+typedef unsigned int UEXGLObjectId;
 
 // [Any thread] Create an EXGL object. Initially maps to the OpenGL object zero.
-EXGLObjectId EXGLContextCreateObject(EXGLContextId exglCtxId);
+UEXGLObjectId UEXGLContextCreateObject(UEXGLContextId exglCtxId);
 
 // [GL thread] Destroy an EXGL object.
-void EXGLContextDestroyObject(EXGLContextId exglCtxId, EXGLObjectId exglObjId);
+void UEXGLContextDestroyObject(UEXGLContextId exglCtxId, UEXGLObjectId exglObjId);
 
 // [GL thread] Set the underlying OpenGL object an EXGL object maps to.
-void EXGLContextMapObject(EXGLContextId exglCtxId, EXGLObjectId exglObjId, GLuint glObj);
+void UEXGLContextMapObject(UEXGLContextId exglCtxId, UEXGLObjectId exglObjId, GLuint glObj);
 
 #ifdef __cplusplus
 }

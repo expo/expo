@@ -50,7 +50,7 @@
 // Forward declarations
 
 class EXGLContext;
-static EXGLContext *EXGLContextGet(EXGLContextId exglCtxId);
+static EXGLContext *EXGLContextGet(UEXGLContextId exglCtxId);
 
 
 // --- EXGLContext -------------------------------------------------------------
@@ -175,24 +175,24 @@ public:
   // mutex on the mapping.
 
 private:
-  std::unordered_map<EXGLObjectId, GLuint> objects;
+  std::unordered_map<UEXGLObjectId, GLuint> objects;
   static std::atomic_uint nextObjectId;
 
-  inline GLuint lookupObject(EXGLObjectId exglObjId) noexcept {
+  inline GLuint lookupObject(UEXGLObjectId exglObjId) noexcept {
     auto iter = objects.find(exglObjId);
     return iter == objects.end() ? 0 : iter->second;
   }
 
 public:
-  inline EXGLObjectId createObject(void) noexcept {
+  inline UEXGLObjectId createObject(void) noexcept {
     return nextObjectId++;
   }
 
-  inline void destroyObject(EXGLObjectId exglObjId) noexcept {
+  inline void destroyObject(UEXGLObjectId exglObjId) noexcept {
     objects.erase(exglObjId);
   }
 
-  inline void mapObject(EXGLObjectId exglObjId, GLuint glObj) noexcept {
+  inline void mapObject(UEXGLObjectId exglObjId, GLuint glObj) noexcept {
     objects[exglObjId] = glObj;
   }
 
@@ -202,7 +202,7 @@ private:
   JSObjectRef jsGl;
 
 public:
-  EXGLContext(JSGlobalContextRef jsCtx, EXGLContextId exglCtxId) {
+  EXGLContext(JSGlobalContextRef jsCtx, UEXGLContextId exglCtxId) {
     // Prepare for TypedArray usage
     prepareTypedArrayAPI(jsCtx);
 
@@ -412,7 +412,7 @@ private:
                                             const JSValueRef jsArgv[],  \
                                             JSValueRef* jsException)    \
   {                                                                     \
-    auto exglCtx = EXGLContextGet((EXGLContextId) (intptr_t)            \
+    auto exglCtx = EXGLContextGet((UEXGLContextId) (intptr_t)           \
                                   JSObjectGetPrivate(jsThis));          \
     if (!exglCtx) {                                                     \
       return nullptr;                                                   \
@@ -595,7 +595,7 @@ private:
         return JSValueMakeNumber(jsCtx, glFloat);
       }
 
-        // EXGLObjectId
+        // UEXGLObjectId
       case GL_ARRAY_BUFFER_BINDING:
       case GL_ELEMENT_ARRAY_BUFFER_BINDING:
       case GL_CURRENT_PROGRAM: {
@@ -680,7 +680,7 @@ private:
   // -------
 
   _WRAP_METHOD(bindBuffer, 2) {
-    EXJS_UNPACK_ARGV(GLenum target, EXGLObjectId fBuffer);
+    EXJS_UNPACK_ARGV(GLenum target, UEXGLObjectId fBuffer);
     addToNextBatch([=] { glBindBuffer(target, lookupObject(fBuffer)); });
     return nullptr;
   }
@@ -722,7 +722,7 @@ private:
   }
 
   _WRAP_METHOD(deleteBuffer, 1) {
-    EXJS_UNPACK_ARGV(EXGLObjectId fBuffer);
+    EXJS_UNPACK_ARGV(UEXGLObjectId fBuffer);
     addToNextBatch([=] {
       GLuint buffer = lookupObject(fBuffer);
       glDeleteBuffers(1, &buffer);
@@ -739,7 +739,7 @@ private:
 
 #define _WRAP_METHOD_IS_OBJECT(type)              \
   _WRAP_METHOD(is ## type, 1) {                   \
-    EXJS_UNPACK_ARGV(EXGLObjectId f);             \
+    EXJS_UNPACK_ARGV(UEXGLObjectId f);             \
     GLboolean glResult;                           \
     addBlockingToNextBatch([&] {                  \
       glResult = glIs ## type(lookupObject(f));   \
@@ -758,7 +758,7 @@ private:
     if (JSValueIsNull(jsCtx, jsArgv[1])) {
       addToNextBatch([=] { glBindFramebuffer(target, defaultFramebuffer); });
     } else {
-      EXGLObjectId fFramebuffer = EXJSValueToNumberFast(jsCtx, jsArgv[1]);
+      UEXGLObjectId fFramebuffer = EXJSValueToNumberFast(jsCtx, jsArgv[1]);
       addToNextBatch([=] { glBindFramebuffer(target, lookupObject(fFramebuffer)); });
     }
     return nullptr;
@@ -780,7 +780,7 @@ private:
   }
 
   _WRAP_METHOD(deleteFramebuffer, 1) {
-    EXJS_UNPACK_ARGV(EXGLObjectId fFramebuffer);
+    EXJS_UNPACK_ARGV(UEXGLObjectId fFramebuffer);
     addToNextBatch([=] {
       GLuint framebuffer = lookupObject(fFramebuffer);
       glDeleteFramebuffers(1, &framebuffer);
@@ -791,7 +791,7 @@ private:
   _WRAP_METHOD_UNIMPL(framebufferRenderbuffer)
 
   _WRAP_METHOD(framebufferTexture2D, 5) {
-    EXJS_UNPACK_ARGV(GLenum target, GLenum attachment, GLenum textarget, EXGLObjectId fTexture, GLint level);
+    EXJS_UNPACK_ARGV(GLenum target, GLenum attachment, GLenum textarget, UEXGLObjectId fTexture, GLint level);
     addToNextBatch([=] {
       glFramebufferTexture2D(target, attachment, textarget, lookupObject(fTexture), level);
     });
@@ -845,7 +845,7 @@ private:
     if (JSValueIsNull(jsCtx, jsArgv[1])) {
       addToNextBatch(std::bind(glBindTexture, target, 0));
     } else {
-      EXGLObjectId fTexture = EXJSValueToNumberFast(jsCtx, jsArgv[1]);
+      UEXGLObjectId fTexture = EXJSValueToNumberFast(jsCtx, jsArgv[1]);
       addToNextBatch([=] { glBindTexture(target, lookupObject(fTexture)); });
     }
     return nullptr;
@@ -872,7 +872,7 @@ private:
   }
 
   _WRAP_METHOD(deleteTexture, 1) {
-    EXJS_UNPACK_ARGV(EXGLObjectId fTexture);
+    EXJS_UNPACK_ARGV(UEXGLObjectId fTexture);
     addToNextBatch([=] {
       GLuint texture = lookupObject(fTexture);
       glDeleteTextures(1, &texture);
@@ -1012,20 +1012,20 @@ private:
   // --------------------
 
   _WRAP_METHOD(attachShader, 2) {
-    EXJS_UNPACK_ARGV(EXGLObjectId fProgram, EXGLObjectId fShader);
+    EXJS_UNPACK_ARGV(UEXGLObjectId fProgram, UEXGLObjectId fShader);
     addToNextBatch([=] { glAttachShader(lookupObject(fProgram), lookupObject(fShader)); });
     return nullptr;
   }
 
   _WRAP_METHOD(bindAttribLocation, 3) {
-    EXJS_UNPACK_ARGV(EXGLObjectId fProgram, GLuint index);
+    EXJS_UNPACK_ARGV(UEXGLObjectId fProgram, GLuint index);
     auto name = jsValueToSharedStr(jsCtx, jsArgv[2]);
     addToNextBatch([=] { glBindAttribLocation(lookupObject(fProgram), index, name.get()); });
     return nullptr;
   }
 
   _WRAP_METHOD(compileShader, 1) {
-    EXJS_UNPACK_ARGV(EXGLObjectId fShader);
+    EXJS_UNPACK_ARGV(UEXGLObjectId fShader);
     addToNextBatch([=] { glCompileShader(lookupObject(fShader)); });
     return nullptr;
   }
@@ -1044,25 +1044,25 @@ private:
   }
 
   _WRAP_METHOD(deleteProgram, 1) {
-    EXJS_UNPACK_ARGV(EXGLObjectId fProgram);
+    EXJS_UNPACK_ARGV(UEXGLObjectId fProgram);
     addToNextBatch([=] { glDeleteProgram(lookupObject(fProgram)); });
     return nullptr;
   }
 
   _WRAP_METHOD(deleteShader, 1) {
-    EXJS_UNPACK_ARGV(EXGLObjectId fShader);
+    EXJS_UNPACK_ARGV(UEXGLObjectId fShader);
     addToNextBatch([=] { glDeleteShader(lookupObject(fShader)); });
     return nullptr;
   }
 
   _WRAP_METHOD(detachShader, 2) {
-    EXJS_UNPACK_ARGV(EXGLObjectId fProgram, EXGLObjectId fShader);
+    EXJS_UNPACK_ARGV(UEXGLObjectId fProgram, UEXGLObjectId fShader);
     addToNextBatch([=] { glDetachShader(lookupObject(fProgram), lookupObject(fShader)); });
     return nullptr;
   }
 
   _WRAP_METHOD(getAttachedShaders, 1) {
-    EXJS_UNPACK_ARGV(EXGLObjectId fProgram);
+    EXJS_UNPACK_ARGV(UEXGLObjectId fProgram);
 
     GLint count;
     std::vector<GLuint> glResults;
@@ -1075,14 +1075,14 @@ private:
 
     JSValueRef jsResults[count];
     for (auto i = 0; i < count; ++i) {
-      EXGLObjectId exglObjId = 0;
+      UEXGLObjectId exglObjId = 0;
       for (const auto &pair : objects) {
         if (pair.second == glResults[i]) {
           exglObjId = pair.first;
         }
       }
       if (exglObjId == 0) {
-        throw new std::runtime_error("EXGL: Internal error: couldn't find EXGLObjectId "
+        throw new std::runtime_error("EXGL: Internal error: couldn't find UEXGLObjectId "
                                      "associated with shader in getAttachedShaders()!");
       }
       jsResults[i] = JSValueMakeNumber(jsCtx, exglObjId);
@@ -1091,7 +1091,7 @@ private:
   }
 
   _WRAP_METHOD(getProgramParameter, 2) {
-    EXJS_UNPACK_ARGV(EXGLObjectId fProgram, GLenum pname);
+    EXJS_UNPACK_ARGV(UEXGLObjectId fProgram, GLenum pname);
     GLint glResult;
     addBlockingToNextBatch([&] { glGetProgramiv(lookupObject(fProgram), pname, &glResult); });
     if (pname == GL_DELETE_STATUS || pname == GL_LINK_STATUS || pname == GL_VALIDATE_STATUS) {
@@ -1102,7 +1102,7 @@ private:
   }
 
   _WRAP_METHOD(getShaderParameter, 2) {
-    EXJS_UNPACK_ARGV(EXGLObjectId fShader, GLenum pname);
+    EXJS_UNPACK_ARGV(UEXGLObjectId fShader, GLenum pname);
     GLint glResult;
     addBlockingToNextBatch([&] { glGetShaderiv(lookupObject(fShader), pname, &glResult); });
     if (pname == GL_DELETE_STATUS || pname == GL_COMPILE_STATUS) {
@@ -1133,7 +1133,7 @@ private:
   template<typename F, typename G>
   inline JSValueRef getShaderOrProgramStr(JSContextRef jsCtx, const JSValueRef jsArgv[],
                                           F &&glGetLengthParam, GLenum glLengthParam, G &&glGetStr) {
-    EXJS_UNPACK_ARGV(EXGLObjectId fObj);
+    EXJS_UNPACK_ARGV(UEXGLObjectId fObj);
     GLint length;
     std::string str;
     addBlockingToNextBatch([&] {
@@ -1168,13 +1168,13 @@ private:
   _WRAP_METHOD_IS_OBJECT(Shader)
 
   _WRAP_METHOD(linkProgram, 1) {
-    EXJS_UNPACK_ARGV(EXGLObjectId fProgram);
+    EXJS_UNPACK_ARGV(UEXGLObjectId fProgram);
     addToNextBatch([=] { glLinkProgram(lookupObject(fProgram)); });
     return nullptr;
   }
 
   _WRAP_METHOD(shaderSource, 2) {
-    EXJS_UNPACK_ARGV(EXGLObjectId fShader);
+    EXJS_UNPACK_ARGV(UEXGLObjectId fShader);
     auto str = jsValueToSharedStr(jsCtx, jsArgv[1]);
     addToNextBatch([=] {
       char *pstr = str.get();
@@ -1187,14 +1187,14 @@ private:
     if (JSValueIsNull(jsCtx, jsArgv[0])) {
       addToNextBatch(std::bind(glUseProgram, 0));
     } else {
-      EXJS_UNPACK_ARGV(EXGLObjectId fProgram);
+      EXJS_UNPACK_ARGV(UEXGLObjectId fProgram);
       addToNextBatch([=] { glUseProgram(lookupObject(fProgram)); });
     }
     return nullptr;
   }
 
   _WRAP_METHOD(validateProgram, 1) {
-    EXJS_UNPACK_ARGV(EXGLObjectId fProgram);
+    EXJS_UNPACK_ARGV(UEXGLObjectId fProgram);
     addToNextBatch([=] { glValidateProgram(lookupObject(fProgram)); });
     return nullptr;
   }
@@ -1214,7 +1214,7 @@ private:
       return JSValueMakeNull(jsCtx);
     }
 
-    EXJS_UNPACK_ARGV(EXGLObjectId fProgram, GLuint index);
+    EXJS_UNPACK_ARGV(UEXGLObjectId fProgram, GLuint index);
 
     GLsizei length;
     GLint size;
@@ -1249,7 +1249,7 @@ private:
   }
 
   _WRAP_METHOD(getAttribLocation, 2) {
-    EXJS_UNPACK_ARGV(EXGLObjectId fProgram);
+    EXJS_UNPACK_ARGV(UEXGLObjectId fProgram);
     auto name = jsValueToSharedStr(jsCtx, jsArgv[1]);
     GLint location;
     addBlockingToNextBatch([&] {
@@ -1261,7 +1261,7 @@ private:
   _WRAP_METHOD_UNIMPL(getUniform)
 
   _WRAP_METHOD(getUniformLocation, 2) {
-    EXJS_UNPACK_ARGV(EXGLObjectId fProgram);
+    EXJS_UNPACK_ARGV(UEXGLObjectId fProgram);
     auto name = jsValueToSharedStr(jsCtx, jsArgv[1]);
     GLint location;
     addBlockingToNextBatch([&] {
@@ -1892,11 +1892,11 @@ std::atomic_uint EXGLContext::nextObjectId { 1 };
 
 // --- C interface -------------------------------------------------------------
 
-static std::unordered_map<EXGLContextId, EXGLContext *> EXGLContextMap;
+static std::unordered_map<UEXGLContextId, EXGLContext *> EXGLContextMap;
 static std::mutex EXGLContextMapMutex;
-static EXGLContextId EXGLContextNextId = 1;
+static UEXGLContextId EXGLContextNextId = 1;
 
-static EXGLContext *EXGLContextGet(EXGLContextId exglCtxId) {
+static EXGLContext *EXGLContextGet(UEXGLContextId exglCtxId) {
   std::lock_guard<decltype(EXGLContextMapMutex)> lock(EXGLContextMapMutex);
   auto iter = EXGLContextMap.find(exglCtxId);
   if (iter != EXGLContextMap.end()) {
@@ -1905,16 +1905,16 @@ static EXGLContext *EXGLContextGet(EXGLContextId exglCtxId) {
   return nullptr;
 }
 
-EXGLContextId EXGLContextCreate(JSGlobalContextRef jsCtx) {
+UEXGLContextId UEXGLContextCreate(JSGlobalContextRef jsCtx) {
   // Out of ids?
-  if (EXGLContextNextId >= std::numeric_limits<EXGLContextId>::max()) {
+  if (EXGLContextNextId >= std::numeric_limits<UEXGLContextId>::max()) {
     EXGLSysLog("Ran out of EXGLContext ids!");
     return 0;
   }
 
   // Create C++ object
   EXGLContext *exglCtx;
-  EXGLContextId exglCtxId;
+  UEXGLContextId exglCtxId;
   {
     std::lock_guard<decltype(EXGLContextMapMutex)> lock(EXGLContextMapMutex);
     exglCtxId = EXGLContextNextId++;
@@ -1942,7 +1942,7 @@ EXGLContextId EXGLContextCreate(JSGlobalContextRef jsCtx) {
   return exglCtxId;
 }
 
-void EXGLContextDestroy(EXGLContextId exglCtxId) {
+void UEXGLContextDestroy(UEXGLContextId exglCtxId) {
   std::lock_guard<decltype(EXGLContextMapMutex)> lock(EXGLContextMapMutex);
 
   // Destroy C++ object, JavaScript side should just know...
@@ -1953,14 +1953,14 @@ void EXGLContextDestroy(EXGLContextId exglCtxId) {
   }
 }
 
-void EXGLContextFlush(EXGLContextId exglCtxId) {
+void UEXGLContextFlush(UEXGLContextId exglCtxId) {
   auto exglCtx = EXGLContextGet(exglCtxId);
   if (exglCtx) {
     exglCtx->flush();
   }
 }
 
-void EXGLContextSetDefaultFramebuffer(EXGLContextId exglCtxId, GLint framebuffer) {
+void UEXGLContextSetDefaultFramebuffer(UEXGLContextId exglCtxId, GLint framebuffer) {
   auto exglCtx = EXGLContextGet(exglCtxId);
   if (exglCtx) {
     exglCtx->setDefaultFramebuffer(framebuffer);
@@ -1968,7 +1968,7 @@ void EXGLContextSetDefaultFramebuffer(EXGLContextId exglCtxId, GLint framebuffer
 }
 
 
-EXGLObjectId EXGLContextCreateObject(EXGLContextId exglCtxId) {
+UEXGLObjectId UEXGLContextCreateObject(UEXGLContextId exglCtxId) {
   auto exglCtx = EXGLContextGet(exglCtxId);
   if (exglCtx) {
     return exglCtx->createObject();
@@ -1976,14 +1976,14 @@ EXGLObjectId EXGLContextCreateObject(EXGLContextId exglCtxId) {
   return 0;
 }
 
-void EXGLContextDestroyObject(EXGLContextId exglCtxId, EXGLObjectId exglObjId) {
+void UEXGLContextDestroyObject(UEXGLContextId exglCtxId, UEXGLObjectId exglObjId) {
   auto exglCtx = EXGLContextGet(exglCtxId);
   if (exglCtx) {
     exglCtx->destroyObject(exglObjId);
   }
 }
 
-void EXGLContextMapObject(EXGLContextId exglCtxId, EXGLObjectId exglObjId, GLuint glObj) {
+void UEXGLContextMapObject(UEXGLContextId exglCtxId, UEXGLObjectId exglObjId, GLuint glObj) {
   auto exglCtx = EXGLContextGet(exglCtxId);
   if (exglCtx) {
     exglCtx->mapObject(exglObjId, glObj);
