@@ -21,7 +21,7 @@ LOCAL_MODULE := exponent
 
 LOCAL_C_INCLUDES += ../../../../../cpp/
 LOCAL_SRC_FILES := \
-  ../../../../../cpp/EXGL.cpp \
+  ../../../../../cpp/UEXGL.cpp \
   ../../../../../cpp/EXJSUtils.c \
   ../../../../../cpp/EXJSConvertTypedArray.c \
   EXGL.c

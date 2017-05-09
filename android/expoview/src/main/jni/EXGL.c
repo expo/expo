@@ -5,7 +5,7 @@
 #include <JavaScriptCore/JSContextRef.h>
 
 
-#include "EXGL.h"
+#include "UEXGL.h"
 
 
 JNIEXPORT jint JNICALL

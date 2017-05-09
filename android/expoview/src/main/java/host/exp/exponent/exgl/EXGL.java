@@ -2,7 +2,7 @@ package host.exp.exponent.exgl;
 
 import com.facebook.soloader.SoLoader;
 
-// Java bindings for EXGL.h interface
+// Java bindings for UEXGL.h interface
 public class EXGL {
   static {
     SoLoader.loadLibrary("exponent");
