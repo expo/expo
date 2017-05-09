@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		194804CF1E92CFB400623005 /* EXDocumentPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 194804CE1E92CFB400623005 /* EXDocumentPicker.m */; };
+		1978AD301EAC2656002A615B /* EXPedometer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1978AD2F1EAC2656002A615B /* EXPedometer.m */; };
 		1981B9F71E3C28BA00057CA9 /* EXKeepAwake.m in Sources */ = {isa = PBXBuildFile; fileRef = 1981B9F61E3C28BA00057CA9 /* EXKeepAwake.m */; };
 		19F72F571E764AE100F9A671 /* EXContactsRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 19F72F561E764AE100F9A671 /* EXContactsRequester.m */; };
 		200C29ED1855EF40345E4BA2 /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B84B3DEFB2C488FAE7279AD /* libPods-ExponentIntegrationTests.a */; };
@@ -227,6 +228,8 @@
 		0B84B3DEFB2C488FAE7279AD /* libPods-ExponentIntegrationTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ExponentIntegrationTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		194804CD1E92CFB400623005 /* EXDocumentPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EXDocumentPicker.h; path = Exponent/Versioned/Modules/Api/EXDocumentPicker.h; sourceTree = SOURCE_ROOT; };
 		194804CE1E92CFB400623005 /* EXDocumentPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EXDocumentPicker.m; path = Exponent/Versioned/Modules/Api/EXDocumentPicker.m; sourceTree = SOURCE_ROOT; };
+		1978AD2E1EAC2656002A615B /* EXPedometer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXPedometer.h; sourceTree = "<group>"; };
+		1978AD2F1EAC2656002A615B /* EXPedometer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXPedometer.m; sourceTree = "<group>"; };
 		1981B9F51E3C28BA00057CA9 /* EXKeepAwake.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKeepAwake.h; sourceTree = "<group>"; };
 		1981B9F61E3C28BA00057CA9 /* EXKeepAwake.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKeepAwake.m; sourceTree = "<group>"; };
 		19F72F551E764AE100F9A671 /* EXContactsRequester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXContactsRequester.h; sourceTree = "<group>"; };
@@ -982,6 +985,8 @@
 				B5E9FDEE1D833325006DB65C /* EXViewShot.m */,
 				B5218E781D232B8800C54B61 /* EXNotifications.h */,
 				B5218E791D232B8800C54B61 /* EXNotifications.m */,
+				1978AD2E1EAC2656002A615B /* EXPedometer.h */,
+				1978AD2F1EAC2656002A615B /* EXPedometer.m */,
 				88E089A61D6BC04800562FA1 /* EXAmplitude.h */,
 				88E089A31D6BC02200562FA1 /* EXAmplitude.m */,
 				88E089A81D6BCF4300562FA1 /* EXSegment.h */,
@@ -1885,6 +1890,8 @@
 				88E089AB1D6BCF5800562FA1 /* EXSegment.m in Sources */,
 				B575EEA11D54053500DCABBC /* EXManifestResource.m in Sources */,
 				B5218E7A1D232B8800C54B61 /* EXNotifications.m in Sources */,
+				1978AD301EAC2656002A615B /* EXPedometer.m in Sources */,
+				B5E4DB591E566614007D43DD /* AIRGoogleMap.m in Sources */,
 				B5AC39D61E95B17300540AA7 /* EXErrorRecoveryManager.m in Sources */,
 				B5844C371D482C3D0015C683 /* EXPermissions.m in Sources */,
 				7847A3761EC0F1550088BF69 /* RNSVGBrush.m in Sources */,
