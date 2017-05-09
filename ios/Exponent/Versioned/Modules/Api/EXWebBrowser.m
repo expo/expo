@@ -48,6 +48,11 @@ RCT_EXPORT_METHOD(openBrowserAsync:(NSString *)authURL
     NSURL *url = [[NSURL alloc] initWithString:authURL];
     SFSafariViewController *safariVC = [[SFSafariViewController alloc] initWithURL:url entersReaderIfAvailable:NO];
     safariVC.delegate = self;
+    
+    // By setting the modal presentation style to OverFullScreen, we disable the "Swipe to dismiss"
+    // gesture that is causing a bug where sometimes `safariViewControllerDidFinish` is not called.
+    // There are bugs filed already about it on OpenRadar.
+    [safariVC setModalPresentationStyle: UIModalPresentationOverFullScreen];
 
     // This is a hack to present the SafariViewController modally
     UINavigationController *safariHackVC = [[UINavigationController alloc] initWithRootViewController:safariVC];
@@ -65,8 +70,8 @@ RCT_EXPORT_METHOD(dismissBrowser) {
     __strong typeof(self) strongSelf = weakSelf;
     if (strongSelf) {
       strongSelf.redirectResolve(@{
-                         @"type": @"dismissed",
-                         });
+        @"type": @"dismissed",
+      });
       [strongSelf flowDidFinish];
     }
   }];
