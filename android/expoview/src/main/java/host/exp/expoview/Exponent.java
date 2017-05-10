@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.UserManager;
@@ -22,7 +21,6 @@ import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookSdk;
 import com.facebook.common.internal.ByteStreams;
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.react.common.MapBuilder;
 import com.facebook.stetho.Stetho;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -50,7 +48,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import host.exp.exponent.ABIVersion;
 import host.exp.exponent.ActivityResultListener;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
@@ -58,14 +55,11 @@ import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.generated.ExponentKeys;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.network.ExponentHttpClient;
 import host.exp.exponent.network.ExponentNetwork;
-import host.exp.exponent.storage.ExponentSharedPreferences;
-import host.exp.exponent.utils.JSONBundleConverter;
 import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -75,10 +69,6 @@ import okhttp3.Response;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import java.security.Provider;
 import java.security.Security;
-
-import static host.exp.exponent.kernel.KernelConstants.INTENT_URI_KEY;
-import static host.exp.exponent.kernel.KernelConstants.LINKING_URI_KEY;
-import static host.exp.exponent.kernel.KernelConstants.MANIFEST_URL_KEY;
 
 public class Exponent {
 

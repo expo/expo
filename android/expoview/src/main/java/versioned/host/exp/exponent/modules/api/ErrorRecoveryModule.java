@@ -7,10 +7,15 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 
-public class ErrorRecoveryModule extends ReactContextBaseJavaModule {
+import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.services.ErrorRecoveryManager;
+import versioned.host.exp.exponent.ReadableObjectUtils;
+import versioned.host.exp.exponent.modules.ExpoBaseModule;
 
-  public ErrorRecoveryModule(ReactApplicationContext reactContext) {
-    super(reactContext);
+public class ErrorRecoveryModule extends ExpoBaseModule {
+
+  public ErrorRecoveryModule(ReactApplicationContext reactContext, ExperienceId experienceId) {
+    super(reactContext, experienceId);
   }
 
   @Override
@@ -20,6 +25,6 @@ public class ErrorRecoveryModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void setRecoveryProps(final ReadableMap props) {
-
+    ErrorRecoveryManager.getInstance(experienceId).setRecoveryProps(ReadableObjectUtils.readableToJson(props));
   }
 }

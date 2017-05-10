@@ -28,11 +28,11 @@ import host.exp.exponent.ReactNativeStaticHelpers;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.experience.ReactNativeActivity;
+import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.ExpoViewKernel;
 import host.exp.exponent.kernel.KernelProvider;
 import host.exp.exponent.storage.ExponentDB;
-import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.ExperienceActivityUtils;
 
 public abstract class ExponentActivity extends ReactNativeActivity implements Exponent.StartReactInstanceDelegate {
@@ -61,6 +61,7 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
 
     // Set SDK versions
     Constants.setSdkVersions(sdkVersions());
+    Constants.INITIAL_URL = publishedUrl();
 
     // Check if opened from xdl
     if (isDebug()) {
@@ -140,7 +141,8 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
     mSDKVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
 
     try {
-      mManifestId = manifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+      mExperienceIdString = manifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+      mExperienceId = ExperienceId.create(mExperienceIdString);
     } catch (JSONException e) {
       KernelProvider.getInstance().handleError("No ID found in manifest.");
       return;
@@ -167,7 +169,7 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
 
         String id;
         try {
-          id = Exponent.getInstance().encodeExperienceId(mManifestId);
+          id = Exponent.getInstance().encodeExperienceId(mExperienceIdString);
         } catch (UnsupportedEncodingException e) {
           KernelProvider.getInstance().handleError("Can't URL encode manifest ID");
           return;

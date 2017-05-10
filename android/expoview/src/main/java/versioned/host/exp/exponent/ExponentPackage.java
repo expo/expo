@@ -22,6 +22,7 @@ import java.util.Map;
 
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.modules.api.AccelerometerModule;
@@ -123,10 +124,8 @@ public class ExponentPackage implements ReactPackage {
 
     if (isVerified) {
       try {
-        String experienceId = mManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
-        String experienceIdEncoded = URLEncoder.encode(experienceId, "UTF-8");
-
-        ScopedContext scopedContext = new ScopedContext(reactContext, experienceIdEncoded);
+        ExperienceId experienceId = ExperienceId.create(mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
+        ScopedContext scopedContext = new ScopedContext(reactContext, experienceId.getUrlEncoded());
 
         nativeModules.add(new ExponentAsyncStorageModule(reactContext, mManifest));
         nativeModules.add(new AccelerometerModule(reactContext));
@@ -157,7 +156,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new DocumentPickerModule(reactContext));
         nativeModules.add(new PedometerModule(reactContext));
         nativeModules.add(new RNBranchModule(reactContext));
-        nativeModules.add(new ErrorRecoveryModule(reactContext));
+        nativeModules.add(new ErrorRecoveryModule(reactContext, experienceId));
       } catch (JSONException | UnsupportedEncodingException e) {
         EXL.e(TAG, e.toString());
       }
