@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <AVKit/AVKit.h>
-#import "EXVideo.h"
+
 #import "EXVideoPlayerViewControllerDelegate.h"
 
 @interface EXVideoPlayerViewController : AVPlayerViewController
