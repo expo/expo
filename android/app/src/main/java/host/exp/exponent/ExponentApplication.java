@@ -98,6 +98,9 @@ public class ExponentApplication extends MultiDexApplication {
       try {
         String versionName = Constants.getVersionName(this);
         Crashlytics.setString("exp_client_version", versionName);
+        if (Constants.INITIAL_URL != null) {
+          Crashlytics.setString("initial_url", Constants.INITIAL_URL);
+        }
       } catch (Throwable e) {
         EXL.e(TAG, e.toString());
       }

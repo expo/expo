@@ -31,7 +31,6 @@ import host.exp.exponent.storage.ExponentSharedPreferences;
 public abstract class BaseExperienceActivity extends MultipleVersionReactNativeActivity {
 
   private static BaseExperienceActivity sVisibleActivity;
-  protected static Queue<ExponentError> sErrorQueue = new LinkedList<>();
 
   @Inject
   Kernel mKernel;
@@ -197,11 +196,6 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   // Override
   public boolean isDebugModeEnabled() {
     return false;
-  }
-
-  // Override
-  protected boolean shouldShowErrorScreen(ExponentErrorMessage errorMessage) {
-    return true;
   }
 
   // Override

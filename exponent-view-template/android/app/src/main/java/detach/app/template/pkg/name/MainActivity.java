@@ -1,5 +1,7 @@
 package detach.app.template.pkg.name;
 
+import android.os.Bundle;
+
 import com.facebook.react.ReactPackage;
 
 import java.util.ArrayList;
@@ -34,5 +36,11 @@ public class MainActivity extends ExponentActivity {
   @Override
   public boolean isDebug() {
     return BuildConfig.DEBUG;
+  }
+
+  @Override
+  public Bundle initialProps(Bundle expBundle) {
+    // Add extra initialProps here
+    return expBundle;
   }
 }

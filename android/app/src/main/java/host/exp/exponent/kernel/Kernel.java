@@ -712,7 +712,8 @@ public class Kernel implements KernelInterface {
     }
   }
 
-  public void reloadVisibleExperience(String manifestUrl) {
+  @Override
+  public boolean reloadVisibleExperience(String manifestUrl) {
     // Pre Lollipop we always just open a new activity.
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
       // TODO: make debug mode work here
@@ -731,7 +732,7 @@ public class Kernel implements KernelInterface {
 
           if (weakActivity.isLoading()) {
             // Already loading. Don't need to do anything.
-            return;
+            return true;
           } else {
             Exponent.getInstance().runOnUiThread(new Runnable() {
               @Override
@@ -749,6 +750,8 @@ public class Kernel implements KernelInterface {
       }
       openManifestUrl(manifestUrl, null, true);
     }
+
+    return true;
   }
 
   /*

@@ -6,15 +6,12 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
@@ -26,6 +23,7 @@ import com.amplitude.api.Amplitude;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.soloader.SoLoader;
 
+import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.notifications.ExponentNotificationManager;
 import host.exp.exponent.notifications.ReceivedNotificationEvent;
 import org.json.JSONArray;
@@ -55,7 +53,6 @@ import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.gcm.ExponentGcmListenerService;
 import host.exp.exponent.kernel.ExponentError;
-import host.exp.exponent.kernel.ExponentErrorMessage;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.storage.ExponentSharedPreferences;
@@ -72,10 +69,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   private static final String KERNEL_STARTED_RUNNING_KEY = "experienceActivityKernelDidLoad";
   private static final String NUX_REACT_MODULE_NAME = "ExperienceNuxApp";
   private static final int NOTIFICATION_ID = 10101;
-  // Shell apps only refresh on an error if it's been > 10s since the last error
-  private static final int MIN_TIME_BETWEEN_ERROR_REFRESHES = 10000;
-
-  private static Long sLastErrorRefreshTime = null;
 
   private RNObject mLinkingPackage = null;
   private ReactUnthemedRootView mNuxOverlayView;
@@ -294,7 +287,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     mManifestUrl = manifestUrl;
     mManifest = manifest;
     try {
-      mManifestId = manifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+      mExperienceIdString = manifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+      mExperienceId = ExperienceId.create(mExperienceIdString);
     } catch (JSONException e) {
       KernelProvider.getInstance().handleError("No ID found in manifest.");
       return;
@@ -361,7 +355,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
         String id;
         try {
-          id = Exponent.getInstance().encodeExperienceId(mManifestId);
+          id = Exponent.getInstance().encodeExperienceId(mExperienceIdString);
         } catch (UnsupportedEncodingException e) {
           KernelProvider.getInstance().handleError("Can't URL encode manifest ID");
           return;
@@ -407,7 +401,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       return;
     }
 
-    if (event.experienceId.equals(mManifestId)) {
+    if (event.experienceId.equals(mExperienceIdString)) {
       try {
         RNObject rctDeviceEventEmitter = new RNObject("com.facebook.react.modules.core.DeviceEventManagerModule$RCTDeviceEventEmitter");
         rctDeviceEventEmitter.loadVersion(mSDKVersion);
@@ -748,31 +742,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
    * Errors
    *
    */
-
-  @Override
-  protected boolean shouldShowErrorScreen(ExponentErrorMessage errorMessage) {
-    long currentTime = System.currentTimeMillis();
-    if (!mIsShellApp || mManifestUrl == null ||
-        (sLastErrorRefreshTime != null && currentTime - sLastErrorRefreshTime < MIN_TIME_BETWEEN_ERROR_REFRESHES)) {
-      return true;
-    } else {
-      sLastErrorRefreshTime = currentTime;
-
-      try {
-        JSONObject eventProperties = new JSONObject();
-        eventProperties.put(Analytics.USER_ERROR_MESSAGE, errorMessage.userErrorMessage());
-        eventProperties.put(Analytics.DEVELOPER_ERROR_MESSAGE, errorMessage.developerErrorMessage());
-        eventProperties.put(Analytics.MANIFEST_URL, mManifestUrl);
-        Amplitude.getInstance().logEvent(Analytics.ERROR_RELOADED, eventProperties);
-      } catch (Exception e) {
-        EXL.e(TAG, e.getMessage());
-      }
-
-      sErrorQueue.clear();
-      mKernel.reloadVisibleExperience(mManifestUrl);
-      return false;
-    }
-  }
 
   @Override
   protected void onError(final Intent intent) {

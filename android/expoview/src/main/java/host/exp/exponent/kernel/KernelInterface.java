@@ -7,6 +7,6 @@ public interface KernelInterface {
   void handleError(String errorMessage);
   void handleError(Exception exception);
   void openExperience(final KernelConstants.ExperienceOptions options);
-  void reloadVisibleExperience(String manifestUrl);
+  boolean reloadVisibleExperience(String manifestUrl);
 
 }

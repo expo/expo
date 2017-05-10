@@ -2,11 +2,9 @@
 
 package host.exp.exponent.experience;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
@@ -17,15 +15,17 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.amplitude.api.Amplitude;
 import com.facebook.react.common.MapBuilder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 import javax.inject.Inject;
 
@@ -38,7 +38,12 @@ import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
+import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExponentError;
+import host.exp.exponent.kernel.ExponentErrorMessage;
 import host.exp.exponent.kernel.KernelConstants;
+import host.exp.exponent.kernel.KernelProvider;
+import host.exp.exponent.kernel.services.ErrorRecoveryManager;
 import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.JSONBundleConverter;
@@ -52,6 +57,11 @@ import static host.exp.exponent.kernel.KernelConstants.MANIFEST_URL_KEY;
 public abstract class ReactNativeActivity extends FragmentActivity implements com.facebook.react.modules.core.DefaultHardwareBackBtnHandler {
 
   public static class ExperienceDoneLoadingEvent {
+  }
+
+  // Override
+  public Bundle initialProps(Bundle expBundle) {
+    return expBundle;
   }
 
   // Override
@@ -74,7 +84,8 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   protected boolean mShouldDestroyRNInstanceOnExit = true;
 
   protected String mManifestUrl;
-  protected String mManifestId;
+  protected String mExperienceIdString;
+  protected ExperienceId mExperienceId;
   protected String mSDKVersion;
   protected int mActivityId;
 
@@ -88,6 +99,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   protected String mJSBundlePath;
   protected JSONObject mManifest;
   protected boolean mIsInForeground = false;
+  protected static Queue<ExponentError> sErrorQueue = new LinkedList<>();
 
   @Inject
   protected ExponentSharedPreferences mExponentSharedPreferences;
@@ -155,6 +167,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     if ((int) mReactRootView.call("getChildCount") > 0) {
       fadeLoadingScreen();
       onDoneLoading();
+      ErrorRecoveryManager.getInstance(mExperienceId).markExperienceLoaded();
     } else {
       mHandler.postDelayed(new Runnable() {
         @Override
@@ -371,43 +384,41 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
       exponentProps.put("manifest", mManifest);
       exponentProps.put("shell", mIsShellApp);
       exponentProps.put("initialUri", mIntentUri == null ? null : mIntentUri.toString());
+      exponentProps.put("errorRecovery", ErrorRecoveryManager.getInstance(mExperienceId).popRecoveryProps());
     } catch (JSONException e) {
       EXL.e(TAG, e);
     }
 
-    String experienceId = mManifest.optString(ExponentManifest.MANIFEST_ID_KEY);
-    if (experienceId != null) {
-      JSONObject metadata = mExponentSharedPreferences.getExperienceMetadata(experienceId);
-      if (metadata != null) {
-        if (metadata.has(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS)) {
-          try {
-            exponentProps.put(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS,
-                metadata.getJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS));
-          } catch (JSONException e) {
-            e.printStackTrace();
-          }
-
-          metadata.remove(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS);
+    JSONObject metadata = mExponentSharedPreferences.getExperienceMetadata(mExperienceIdString);
+    if (metadata != null) {
+      if (metadata.has(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS)) {
+        try {
+          exponentProps.put(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS,
+              metadata.getJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS));
+        } catch (JSONException e) {
+          e.printStackTrace();
         }
 
-        // TODO: fix this. this is the only place that EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS is sent to the experience,
-        // we need to sent them with the standard notification events so that you can get all the unread notification through an event
-        // Copy unreadNotifications into exponentProps
-        if (metadata.has(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS)) {
-          try {
-            JSONArray unreadNotifications = metadata.getJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS);
-            exponentProps.put(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS, unreadNotifications);
-
-            delegate.handleUnreadNotifications(unreadNotifications);
-          } catch (JSONException e) {
-            e.printStackTrace();
-          }
-
-          metadata.remove(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS);
-        }
-
-        mExponentSharedPreferences.updateExperienceMetadata(experienceId, metadata);
+        metadata.remove(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS);
       }
+
+      // TODO: fix this. this is the only place that EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS is sent to the experience,
+      // we need to sent them with the standard notification events so that you can get all the unread notification through an event
+      // Copy unreadNotifications into exponentProps
+      if (metadata.has(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS)) {
+        try {
+          JSONArray unreadNotifications = metadata.getJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS);
+          exponentProps.put(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS, unreadNotifications);
+
+          delegate.handleUnreadNotifications(unreadNotifications);
+        } catch (JSONException e) {
+          e.printStackTrace();
+        }
+
+        metadata.remove(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS);
+      }
+
+      mExponentSharedPreferences.updateExperienceMetadata(mExperienceIdString, metadata);
     }
 
     bundle.putBundle("exp", JSONBundleConverter.JSONToBundle(exponentProps));
@@ -427,8 +438,36 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     mReactRootView.call("startReactApplication",
         mReactInstanceManager.get(),
         mManifest.optString(ExponentManifest.MANIFEST_APP_KEY_KEY, KernelConstants.DEFAULT_APPLICATION_KEY),
-        bundle);
+        initialProps(bundle));
 
     return mReactInstanceManager;
+  }
+
+  protected boolean shouldShowErrorScreen(ExponentErrorMessage errorMessage) {
+    ErrorRecoveryManager errorRecoveryManager = ErrorRecoveryManager.getInstance(mExperienceId);
+
+    errorRecoveryManager.markErrored();
+
+    if (errorRecoveryManager.shouldReloadOnError()) {
+      if (!KernelProvider.getInstance().reloadVisibleExperience(mManifestUrl)) {
+        // Kernel doesn't support reloading, show error screen
+        return true;
+      }
+      sErrorQueue.clear();
+
+      try {
+        JSONObject eventProperties = new JSONObject();
+        eventProperties.put(Analytics.USER_ERROR_MESSAGE, errorMessage.userErrorMessage());
+        eventProperties.put(Analytics.DEVELOPER_ERROR_MESSAGE, errorMessage.developerErrorMessage());
+        eventProperties.put(Analytics.MANIFEST_URL, mManifestUrl);
+        Amplitude.getInstance().logEvent(Analytics.ERROR_RELOADED, eventProperties);
+      } catch (Exception e) {
+        EXL.e(TAG, e.getMessage());
+      }
+
+      return false;
+    } else {
+      return true;
+    }
   }
 }
