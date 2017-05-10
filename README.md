@@ -23,22 +23,29 @@ If you want to build the Expo client apps for some reason, there are a few steps
 
 Please use Node 7 and npm 3. We recommend installing Node using [nvm](https://github.com/creationix/nvm). We support building the clients only on macOS.
 
-- `npm install` in the `js` and `tools-public` directories.
 - Install [the Gulp CLI](http://gulpjs.com/) globally: `npm i gulp-cli -g`.
+- Clone [xdl](https://github.com/expo/xdl), run `npm install` in the xdl directory and then run
+`gulp build`. Next, run `npm link` in the xdl directory.
+- Run `npm install` in the `js` and `tools-public` directories.
+- Run `npm link xdl` in the `tools-public` directory.
 - If you don't have it yet, install [exp](https://github.com/exponent/exp), the Expo cli.
-- The Expo client apps run a root Expo project in addition to native code. Serve this project by running `exp start` from the `js` directory. The native Android Studio and XCode projects have a build hook which will fail if this is not being served.
+- The Expo client apps run a root Expo project in addition to native
+code. Serve this project by running `exp start` from the `js` directory.
+The native Android Studio and XCode projects have a build hook which
+will fail if this is not being served. Keep this running and continue to
+the platform specific build steps.
 
 #### Android
 - Make sure you have Android Studio 2 and the [Android NDK](https://facebook.github.io/react-native/docs/android-building-from-source.html#download-links-for-android-ndk) version `r10e` installed.
-- Build and install Android with `cd android; ./run.sh; cd ..`.
+- Build and install Android with `cd android; ./run.sh; cd ..`
 
 If you are running on an phone with Android 5 you might have to use `./run.sh installDev19Debug`. There is a bug running multidex applications in debug mode on Android 5 devices: https://code.google.com/p/android/issues/detail?id=79826.
 
 #### iOS
 - Make sure you have latest non-beta Xcode installed.
-- Install [Cocoapods](https://cocoapods.org/): `gem install cocoapods --no-ri --no-rdoc`.
-- `cd tools-public; ./generate-files-ios.sh; cd ..`.
-- `cd ios; pod install; cd ..`.
+- Install [Cocoapods](https://cocoapods.org/): `gem install cocoapods --no-ri --no-rdoc`
+- `cd tools-public; ./generate-files-ios.sh; cd ..`
+- `cd ios; pod install; cd ..`
 - Run iOS project by running `ios/Exponent.xcworkspace` in Xcode.
 
 Once the you have the clients running you should be able to open any Expo experience in them by opening an `exp://` url on the device or navigating to a url in the app's url bar.
