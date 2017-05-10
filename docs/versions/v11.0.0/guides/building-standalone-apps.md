@@ -78,7 +78,7 @@ What is your Apple Team ID (you can find that on this page:
 https://developer.apple.com/account/#/membership)? XY1234567
 ```
 
-> **Note:** We currently don't support Apple's two-factor authentication, so you'll have to temporarily turn off 2FA on your Apple ID account to use exp build. The GitHub issue for 2FA support is [#17](https://github.com/exponent/exp/issues/17).
+> **Note:** We currently don't support Apple's two-factor authentication, so you'll have to temporarily turn off 2FA on your Apple ID account to use exp build. The GitHub issue for 2FA support is [#160](https://github.com/expo/expo/issues/160).
 
 Next we will ask you if you'd like us to handle your distribution certificate or use your own. Similar to the Android keystore, if you don't know what a distribution certificate is, just let us handle it for you.
 
