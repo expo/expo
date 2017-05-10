@@ -14,6 +14,8 @@ FOUNDATION_EXPORT NSNotificationName kEXKernelOpenUrlNotification;
 
 @interface EXKernelLinkingManager : NSObject
 
++ (instancetype)sharedInstance;
+
 /**
  *  Returns the deep link prefix for a given experience uri.
  */

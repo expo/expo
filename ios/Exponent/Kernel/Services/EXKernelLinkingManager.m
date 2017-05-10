@@ -14,6 +14,18 @@ NSNotificationName kEXKernelOpenUrlNotification = @"EXKernelOpenUrlNotification"
 
 @implementation EXKernelLinkingManager
 
++ (instancetype)sharedInstance
+{
+  static EXKernelLinkingManager *theManager;
+  static dispatch_once_t once;
+  dispatch_once(&once, ^{
+    if (!theManager) {
+      theManager = [[EXKernelLinkingManager alloc] init];
+    }
+  });
+  return theManager;
+}
+
 - (instancetype)init
 {
   if (self = [super init]) {
