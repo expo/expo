@@ -10,7 +10,7 @@ import org.json.JSONObject;
 
 import host.exp.expoview.Exponent;
 
-// EXponent Log
+// EXpo Log
 public class EXL {
 
   private static final String TAG = EXL.class.getSimpleName();
@@ -19,12 +19,18 @@ public class EXL {
     Log.d(tag, msg);
   }
 
+  public static void w(final String tag, final String msg) {
+    Log.w(tag, msg);
+  }
+
+  // TODO send string version of Throwable to Amplitude
   public static void e(final String tag, final Throwable e) {
     Log.e(tag, e.toString());
 
     Exponent.logException(e);
   }
 
+  // TODO send to Crashlytics
   public static void e(final String tag, final String msg) {
     Log.e(tag, msg);
 
