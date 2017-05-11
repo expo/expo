@@ -39,11 +39,10 @@ NSString * const EXBranchLinkOpenedNotification = @"RNBranchLinkOpenedNotificati
   return theManager;
 }
 
-- (void)registerAppManager:(EXReactAppManager *)appManager
+- (void)registerAppManager:(EXFrameReactAppManager *)appManager
 {
   // The first EXFrameReactAppManager will always be the standalone app one.
   if (_appManager == nil &&
-      [appManager isKindOfClass:[EXFrameReactAppManager class]] &&
       [EXShellManager sharedInstance].isShell) {
     _appManager = appManager;
     [self tryInitBranch];
@@ -63,12 +62,18 @@ NSString * const EXBranchLinkOpenedNotification = @"RNBranchLinkOpenedNotificati
 
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
 {
+  if (!_isInitialized) {
+    return NO;
+  }
   _url = userActivity.webpageURL;
   return [[Branch getInstance] continueUserActivity:userActivity];
 }
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(nullable NSString *)sourceApplication annotation:(id)annotation
 {
+  if (!_isInitialized) {
+    return NO;
+  }
   _url = url;
   return [[Branch getInstance] handleDeepLink:url];
 }
