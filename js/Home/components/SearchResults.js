@@ -187,6 +187,7 @@ export default class SearchResults extends React.Component {
   _renderSectionHeader = (sectionData, sectionId) => {
     return (
       <View
+        key={sectionData}
         style={[
           SharedStyles.sectionLabelContainer,
           { backgroundColor: Colors.greyBackground },

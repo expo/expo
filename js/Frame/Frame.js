@@ -12,6 +12,7 @@ import ReactNative, {
   Platform,
   StyleSheet,
   View,
+  ViewPropTypes,
   requireNativeComponent,
 } from 'react-native';
 
@@ -21,7 +22,7 @@ const { EXFrameManager, UIManager } = NativeModules;
 
 export default class Frame extends React.Component {
   static propTypes = {
-    ...View.propTypes,
+    ...ViewPropTypes,
     /**
      * The URL of the experience to load in the frame.
      */
