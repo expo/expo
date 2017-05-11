@@ -323,9 +323,22 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
   let googleAndroidApiKey = '';
   if (privateConfigFile) {
     let configJsonFile = new JsonFile(privateConfigFile);
+    let branch = await configJsonFile.getAsync('branch', null);
     let fabric = await configJsonFile.getAsync('fabric', null);
     let googleMaps = await configJsonFile.getAsync('googleMaps', null);
     let googleSignIn = await configJsonFile.getAsync('googleSignIn', null);
+
+    // Branch
+    if (branch) {
+      shell.sed(
+        '-i',
+        '<!-- ADD BRANCH CONFIG HERE -->',
+        `<meta-data
+      android:name="io.branch.sdk.BranchKey"
+      android:value="${branch.apiKey}"/>`,
+        `${shellPath}app/src/main/AndroidManifest.xml`
+      );
+    }
 
     // Fabric
     if (fabric) {

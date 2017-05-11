@@ -9,6 +9,8 @@
 #import "EXRemoteNotificationManager.h"
 #import "EXLocalNotificationManager.h"
 #import "EXViewController.h"
+#import "EXBranchManager.h"
+#import "EXShellManager.h"
 
 #import <Crashlytics/Crashlytics.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
@@ -115,6 +117,7 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
   // This is safe to call; if the app doesn't have permission to display user-facing notifications
   // then registering for a push token is a no-op
   [[EXRemoteNotificationManager sharedInstance] registerForRemoteNotifications];
+  [[EXBranchManager sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
   [self setLaunchOptions:launchOptions];
 }
 
@@ -195,13 +198,28 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
                                                   annotation:annotation]) {
     return YES;
   }
+
+  if ([[EXBranchManager sharedInstance] application:application
+                                            openURL:url
+                                  sourceApplication:sourceApplication
+                                         annotation:annotation]) {
+    return YES;
+  }
+
   // TODO: don't want to launch more bridges when in detached state.
   return [EXKernelLinkingManager application:application openURL:url sourceApplication:sourceApplication annotation:annotation];
 }
 
 - (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray * _Nullable))restorationHandler
 {
-  if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+  if ([[EXBranchManager sharedInstance] application:application
+                               continueUserActivity:userActivity
+                                 restorationHandler:restorationHandler]) {
+    return YES;
+  }
+
+  if (![EXShellManager sharedInstance].isShell &&
+      [userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
     NSURL *webpageURL = userActivity.webpageURL;
     NSString *path = [webpageURL path];
     if ([path hasPrefix:@"/@"]) {

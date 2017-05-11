@@ -24,6 +24,7 @@ import host.exp.exponent.modules.ExponentKernelModule;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.expoview.Exponent;
 import host.exp.expoview.ExpoViewBuildConfig;
+import io.branch.referral.Branch;
 import io.fabric.sdk.android.Fabric;
 import me.leolin.shortcutbadger.ShortcutBadger;
 
@@ -101,6 +102,8 @@ public class ExponentApplication extends MultiDexApplication {
         EXL.e(TAG, e.toString());
       }
     }
+
+    Branch.getAutoInstance(this);
 
     try {
       // Remove the badge count on weird launchers

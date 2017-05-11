@@ -258,6 +258,8 @@
       android:name="com.google.android.geo.API_KEY"
       android:value="${GOOGLE_MAPS_API_KEY}"/>
     <!-- END GOOGLE MAPS CONFIG -->
+
+    <!-- ADD BRANCH CONFIG HERE -->
   </application>
 
 </manifest>

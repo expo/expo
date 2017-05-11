@@ -7,6 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		192B8CA91EC464DF0045BE97 /* BranchLinkProperties+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 192B8C9A1EC464DF0045BE97 /* BranchLinkProperties+RNBranch.m */; };
+		192B8CAA1EC464DF0045BE97 /* BranchUniversalObject+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 192B8C9C1EC464DF0045BE97 /* BranchUniversalObject+RNBranch.m */; };
+		192B8CAB1EC464DF0045BE97 /* NSObject+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 192B8C9E1EC464DF0045BE97 /* NSObject+RNBranch.m */; };
+		192B8CAC1EC464DF0045BE97 /* RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 192B8CA01EC464DF0045BE97 /* RNBranch.m */; };
+		192B8CAD1EC464DF0045BE97 /* RNBranchAgingDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 192B8CA21EC464DF0045BE97 /* RNBranchAgingDictionary.m */; };
+		192B8CAE1EC464DF0045BE97 /* RNBranchAgingItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 192B8CA41EC464DF0045BE97 /* RNBranchAgingItem.m */; };
+		192B8CAF1EC464DF0045BE97 /* RNBranchEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = 192B8CA61EC464DF0045BE97 /* RNBranchEventEmitter.m */; };
+		192B8CB01EC464DF0045BE97 /* RNBranchProperty.m in Sources */ = {isa = PBXBuildFile; fileRef = 192B8CA81EC464DF0045BE97 /* RNBranchProperty.m */; };
+		19382BA91EC2EACC001ED4A1 /* EXBranchManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 19382BA81EC2EACC001ED4A1 /* EXBranchManager.m */; };
 		194804CF1E92CFB400623005 /* EXDocumentPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 194804CE1E92CFB400623005 /* EXDocumentPicker.m */; };
 		1978AD301EAC2656002A615B /* EXPedometer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1978AD2F1EAC2656002A615B /* EXPedometer.m */; };
 		1981B9F71E3C28BA00057CA9 /* EXKeepAwake.m in Sources */ = {isa = PBXBuildFile; fileRef = 1981B9F61E3C28BA00057CA9 /* EXKeepAwake.m */; };
@@ -227,6 +236,24 @@
 
 /* Begin PBXFileReference section */
 		0B84B3DEFB2C488FAE7279AD /* libPods-ExponentIntegrationTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ExponentIntegrationTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		192B8C991EC464DF0045BE97 /* BranchLinkProperties+RNBranch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "BranchLinkProperties+RNBranch.h"; sourceTree = "<group>"; };
+		192B8C9A1EC464DF0045BE97 /* BranchLinkProperties+RNBranch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "BranchLinkProperties+RNBranch.m"; sourceTree = "<group>"; };
+		192B8C9B1EC464DF0045BE97 /* BranchUniversalObject+RNBranch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "BranchUniversalObject+RNBranch.h"; sourceTree = "<group>"; };
+		192B8C9C1EC464DF0045BE97 /* BranchUniversalObject+RNBranch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "BranchUniversalObject+RNBranch.m"; sourceTree = "<group>"; };
+		192B8C9D1EC464DF0045BE97 /* NSObject+RNBranch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+RNBranch.h"; sourceTree = "<group>"; };
+		192B8C9E1EC464DF0045BE97 /* NSObject+RNBranch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+RNBranch.m"; sourceTree = "<group>"; };
+		192B8C9F1EC464DF0045BE97 /* RNBranch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNBranch.h; sourceTree = "<group>"; };
+		192B8CA01EC464DF0045BE97 /* RNBranch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNBranch.m; sourceTree = "<group>"; };
+		192B8CA11EC464DF0045BE97 /* RNBranchAgingDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNBranchAgingDictionary.h; sourceTree = "<group>"; };
+		192B8CA21EC464DF0045BE97 /* RNBranchAgingDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNBranchAgingDictionary.m; sourceTree = "<group>"; };
+		192B8CA31EC464DF0045BE97 /* RNBranchAgingItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNBranchAgingItem.h; sourceTree = "<group>"; };
+		192B8CA41EC464DF0045BE97 /* RNBranchAgingItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNBranchAgingItem.m; sourceTree = "<group>"; };
+		192B8CA51EC464DF0045BE97 /* RNBranchEventEmitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNBranchEventEmitter.h; sourceTree = "<group>"; };
+		192B8CA61EC464DF0045BE97 /* RNBranchEventEmitter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNBranchEventEmitter.m; sourceTree = "<group>"; };
+		192B8CA71EC464DF0045BE97 /* RNBranchProperty.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNBranchProperty.h; sourceTree = "<group>"; };
+		192B8CA81EC464DF0045BE97 /* RNBranchProperty.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNBranchProperty.m; sourceTree = "<group>"; };
+		19382BA71EC2EACC001ED4A1 /* EXBranchManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXBranchManager.h; sourceTree = "<group>"; };
+		19382BA81EC2EACC001ED4A1 /* EXBranchManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXBranchManager.m; sourceTree = "<group>"; };
 		194804CD1E92CFB400623005 /* EXDocumentPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EXDocumentPicker.h; path = Exponent/Versioned/Modules/Api/EXDocumentPicker.h; sourceTree = SOURCE_ROOT; };
 		194804CE1E92CFB400623005 /* EXDocumentPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EXDocumentPicker.m; path = Exponent/Versioned/Modules/Api/EXDocumentPicker.m; sourceTree = SOURCE_ROOT; };
 		1978AD2E1EAC2656002A615B /* EXPedometer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXPedometer.h; sourceTree = "<group>"; };
@@ -656,6 +683,37 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		192B8C971EC464DF0045BE97 /* Standalone */ = {
+			isa = PBXGroup;
+			children = (
+				192B8C981EC464DF0045BE97 /* Branch */,
+			);
+			path = Standalone;
+			sourceTree = "<group>";
+		};
+		192B8C981EC464DF0045BE97 /* Branch */ = {
+			isa = PBXGroup;
+			children = (
+				192B8C991EC464DF0045BE97 /* BranchLinkProperties+RNBranch.h */,
+				192B8C9A1EC464DF0045BE97 /* BranchLinkProperties+RNBranch.m */,
+				192B8C9B1EC464DF0045BE97 /* BranchUniversalObject+RNBranch.h */,
+				192B8C9C1EC464DF0045BE97 /* BranchUniversalObject+RNBranch.m */,
+				192B8C9D1EC464DF0045BE97 /* NSObject+RNBranch.h */,
+				192B8C9E1EC464DF0045BE97 /* NSObject+RNBranch.m */,
+				192B8C9F1EC464DF0045BE97 /* RNBranch.h */,
+				192B8CA01EC464DF0045BE97 /* RNBranch.m */,
+				192B8CA11EC464DF0045BE97 /* RNBranchAgingDictionary.h */,
+				192B8CA21EC464DF0045BE97 /* RNBranchAgingDictionary.m */,
+				192B8CA31EC464DF0045BE97 /* RNBranchAgingItem.h */,
+				192B8CA41EC464DF0045BE97 /* RNBranchAgingItem.m */,
+				192B8CA51EC464DF0045BE97 /* RNBranchEventEmitter.h */,
+				192B8CA61EC464DF0045BE97 /* RNBranchEventEmitter.m */,
+				192B8CA71EC464DF0045BE97 /* RNBranchProperty.h */,
+				192B8CA81EC464DF0045BE97 /* RNBranchProperty.m */,
+			);
+			path = Branch;
+			sourceTree = "<group>";
+		};
 		193600AC1D67ABCF007C0EE0 /* Svg */ = {
 			isa = PBXGroup;
 			children = (
@@ -933,6 +991,7 @@
 		A1F37F5A1CEFD6B2001E9EFC /* Api */ = {
 			isa = PBXGroup;
 			children = (
+				192B8C971EC464DF0045BE97 /* Standalone */,
 				B5C7A3B41EC3E38300DD9E1D /* AV */,
 				B5A8751F1E70E57F006DDECA /* FBAds */,
 				A1DCE8421DC3FC63009665FD /* GL */,
@@ -1203,6 +1262,8 @@
 		B5AC39A21E95A90B00540AA7 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				19382BA71EC2EACC001ED4A1 /* EXBranchManager.h */,
+				19382BA81EC2EACC001ED4A1 /* EXBranchManager.m */,
 				B5C2740A1EC24AE1003355CE /* EXKernelLinkingManager.h */,
 				B5C2740B1EC24AE1003355CE /* EXKernelLinkingManager.m */,
 				B5AC39A31E95A90B00540AA7 /* EXLocalNotificationManager.h */,
@@ -1779,8 +1840,12 @@
 				B5AC39D01E95B01F00540AA7 /* EXDevSettingsDataSource.m in Sources */,
 				B5AC39C01E95AC8E00540AA7 /* EXLog.m in Sources */,
 				7847A39B1EC0F1550088BF69 /* RNSVGSymbolManager.m in Sources */,
+				192B8CA91EC464DF0045BE97 /* BranchLinkProperties+RNBranch.m in Sources */,
 				7847A38B1EC0F1550088BF69 /* RNSVGPainterBrush.m in Sources */,
+				192B8CB01EC464DF0045BE97 /* RNBranchProperty.m in Sources */,
+				192B8CAA1EC464DF0045BE97 /* BranchUniversalObject+RNBranch.m in Sources */,
 				B5A358621C7E6C4300D1BE67 /* EXAnalytics.m in Sources */,
+				192B8CAF1EC464DF0045BE97 /* RNBranchEventEmitter.m in Sources */,
 				7847A2F61EB9B1620088BF69 /* AIRGoogleMap.m in Sources */,
 				7847A39F1EC0F1550088BF69 /* RNSVGTextPathManager.m in Sources */,
 				7847A2C41EB9AF210088BF69 /* AIRMapCoordinate.m in Sources */,
@@ -1789,6 +1854,7 @@
 				A1158D321D4C4AA400286352 /* EXAppLoadingManager.m in Sources */,
 				B56FACA21D4AB279009FC106 /* EXAppState.m in Sources */,
 				B5A875321E70E57F006DDECA /* EXNativeAdEmitter.m in Sources */,
+				192B8CAB1EC464DF0045BE97 /* NSObject+RNBranch.m in Sources */,
 				7847A3021EB9B1620088BF69 /* AIRGoogleMapUrlTile.m in Sources */,
 				7847A2FA1EB9B1620088BF69 /* AIRGoogleMapCircleManager.m in Sources */,
 				B5C7A3C61EC3E38300DD9E1D /* EXVideoView.m in Sources */,
@@ -1826,6 +1892,7 @@
 				A15DC4CC1D011248009F940D /* EXFacebook.m in Sources */,
 				B587F1E01D53DEB70071715C /* EXFileDownloader.m in Sources */,
 				7847A3751EC0F1550088BF69 /* RNSVGBezierTransformer.m in Sources */,
+				192B8CAD1EC464DF0045BE97 /* RNBranchAgingDictionary.m in Sources */,
 				A1CDBE991D3851F700C2A670 /* EXFileSystem.m in Sources */,
 				B526B5081E6A543500606CAB /* ExpoKit.m in Sources */,
 				7847A3741EC0F1550088BF69 /* RCTConvert+RNSVG.m in Sources */,
@@ -1850,6 +1917,7 @@
 				B5F12CA21DB009A40080ECA6 /* EXKernelModule.m in Sources */,
 				7847A39C1EC0F1550088BF69 /* RNSVGText.m in Sources */,
 				B5AC39AB1E95A90B00540AA7 /* EXKernelDevMenuViewController.m in Sources */,
+				192B8CAE1EC464DF0045BE97 /* RNBranchAgingItem.m in Sources */,
 				7847A3821EC0F1550088BF69 /* RNSVGImage.m in Sources */,
 				7847A38F1EC0F1550088BF69 /* RNSVGPattern.m in Sources */,
 				7847A2F91EB9B1620088BF69 /* AIRGoogleMapCircle.m in Sources */,
@@ -1884,6 +1952,7 @@
 				7847A2CC1EB9AF210088BF69 /* AIRMapUrlTile.m in Sources */,
 				7847A2C71EB9AF210088BF69 /* AIRMapMarkerManager.m in Sources */,
 				7847A2BF1EB9AF210088BF69 /* AIRMap.m in Sources */,
+				19382BA91EC2EACC001ED4A1 /* EXBranchManager.m in Sources */,
 				7847A2FB1EB9B1620088BF69 /* AIRGoogleMapManager.m in Sources */,
 				7847A2FF1EB9B1620088BF69 /* AIRGoogleMapPolygonManager.m in Sources */,
 				7847A37E1EC0F1550088BF69 /* RNSVGEllipseManager.m in Sources */,
@@ -1906,6 +1975,7 @@
 				B5218E7A1D232B8800C54B61 /* EXNotifications.m in Sources */,
 				1978AD301EAC2656002A615B /* EXPedometer.m in Sources */,
 				B5AC39D61E95B17300540AA7 /* EXErrorRecoveryManager.m in Sources */,
+				192B8CAC1EC464DF0045BE97 /* RNBranch.m in Sources */,
 				B5844C371D482C3D0015C683 /* EXPermissions.m in Sources */,
 				7847A3761EC0F1550088BF69 /* RNSVGBrush.m in Sources */,
 				7847A37A1EC0F1550088BF69 /* RNSVGClipPathManager.m in Sources */,

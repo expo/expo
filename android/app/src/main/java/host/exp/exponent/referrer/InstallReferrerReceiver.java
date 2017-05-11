@@ -4,10 +4,11 @@ package host.exp.exponent.referrer;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import com.amplitude.api.Amplitude;
 import com.google.android.gms.analytics.CampaignTrackingReceiver;
+
+import io.branch.referral.InstallListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,6 +51,9 @@ public class InstallReferrerReceiver extends CampaignTrackingReceiver {
       EXL.e(TAG, "InstallReferrerReceiver.context.getApplicationContext() not an instance of ExponentApplication");
       return;
     }
+
+    InstallListener listener = new InstallListener();
+    listener.onReceive(context, intent);
 
     NativeModuleDepsProvider.getInstance().inject(InstallReferrerReceiver.class, this);
 

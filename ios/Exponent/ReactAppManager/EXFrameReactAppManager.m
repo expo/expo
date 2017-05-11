@@ -11,6 +11,7 @@
 #import "EXShellManager.h"
 #import "EXVersions.h"
 #import "EXVersionManager.h"
+#import "EXBranchManager.h"
 
 @implementation EXFrameReactAppManager
 
@@ -20,7 +21,7 @@
     _frame = frame;
   }
   return self;
-} 
+}
 
 - (BOOL)isReadyToLoad
 {
@@ -124,11 +125,15 @@
   [[EXKernel sharedInstance].bridgeRegistry registerBridge:self.reactBridge
                                            withExperienceId:self.experienceId
                                                 appManager:self];
+
+  // TODO: Don't init branch if not key in manifest
+  [[EXBranchManager sharedInstance] registerAppManager:self];
 }
 
 - (void)unregisterBridge
 {
   [[EXKernel sharedInstance].bridgeRegistry unregisterBridge:self.reactBridge];
+  [[EXBranchManager sharedInstance] invalidate];
 }
 
 - (NSString *)experienceId

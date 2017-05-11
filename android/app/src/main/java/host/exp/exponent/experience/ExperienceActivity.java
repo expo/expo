@@ -340,6 +340,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       mLinkingPackage.loadVersion(mSDKVersion).construct(this, mIntentUri);
     }
 
+    handleBranchLink(mIntentUri);
+
     runOnUiThread(new Runnable() {
       @Override
       public void run() {
@@ -437,6 +439,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
               .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
               .call("emit", "Exponent.openUri", uri);
         }
+
+        handleBranchLink(options.uri);
       }
 
       if ((options.notification != null || options.notificationObject != null) && mSDKVersion != null) {
@@ -470,6 +474,14 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     // Emits a "url" event to the Linking event emitter
     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
     super.onNewIntent(intent);
+  }
+
+  private void handleBranchLink(String uri) {
+    if (mIsShellApp && ABIVersion.toNumber(mSDKVersion) >= ABIVersion.toNumber("17.0.0")) {
+      RNObject branchModule = new RNObject("host.exp.exponent.modules.api.standalone.branch.RNBranchModule");
+      branchModule.loadVersion(mSDKVersion);
+      branchModule.callStatic("initSession", Uri.parse(uri), this);
+    }
   }
 
   @Override
