@@ -12,5 +12,6 @@
   { "name": "Google/SignIn", "version": "~> 3.0" },
   { "name": "GoogleMaps", "version": "~> 2.2.0" },
   { "name": "lottie-ios", "version": "~> 1.5.1" },
-  { "name": "GPUImage", "version": "~> 0.1.7" }
+  { "name": "GPUImage", "version": "~> 0.1.7" },
+  { "name": "Branch", "version": "~> 0.14.12"}
 ]
