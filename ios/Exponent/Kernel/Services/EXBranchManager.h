@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)sharedInstance;
 
++ (BOOL)isBranchEnabled;
+
 - (void)registerAppManager:(EXFrameReactAppManager *)appManager;
 - (void)invalidate;
 - (void)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions;
