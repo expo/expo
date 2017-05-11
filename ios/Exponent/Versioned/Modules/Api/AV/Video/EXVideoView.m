@@ -116,7 +116,7 @@ static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
 {
   if (_data) {
     _playerViewController = [[EXVideoPlayerViewController alloc] init];
-    _playerViewController.showsPlaybackControls = NO;
+    _playerViewController.showsPlaybackControls = _useNativeControls;
     _playerViewController.rctDelegate = self;
     _playerViewController.view.frame = self.bounds;
     _playerViewController.player = _data.player;
