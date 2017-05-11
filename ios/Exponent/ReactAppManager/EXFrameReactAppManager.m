@@ -126,8 +126,10 @@
                                            withExperienceId:self.experienceId
                                                 appManager:self];
 
-  // TODO: Don't init branch if not key in manifest
-  [[EXBranchManager sharedInstance] registerAppManager:self];
+  id branchKey = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"branch_key"];
+  if (branchKey) {
+    [[EXBranchManager sharedInstance] registerAppManager:self];
+  }
 }
 
 - (void)unregisterBridge

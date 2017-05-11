@@ -4,7 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class EXReactAppManager;
+@class EXFrameReactAppManager;
 
 /**
  * Handles logic for Branch deep links and integration with the versioned
@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)sharedInstance;
 
-- (void)registerAppManager:(EXReactAppManager *)appManager;
+- (void)registerAppManager:(EXFrameReactAppManager *)appManager;
 - (void)invalidate;
 - (void)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions;
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler;
