@@ -79,7 +79,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     _statusUpdateCallback = nil;
   
     // These status props will be potentialy reset by the following call to [self setStatus:parameters ...].
-    _progressUpdateIntervalMillis = @(100);
+    _progressUpdateIntervalMillis = @(500);
     _currentPosition = kCMTimeZero;
     _shouldPlay = NO;
     _rate = @(1.0);

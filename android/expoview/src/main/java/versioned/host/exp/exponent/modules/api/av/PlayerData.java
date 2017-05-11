@@ -80,7 +80,7 @@ public class PlayerData implements AudioEventHandler,
 
   private final AVModule mAVModule;
 
-  private int mProgressUpdateIntervalMillis = 250;
+  private int mProgressUpdateIntervalMillis = 500;
   private boolean mShouldPlay = false;
   private float mRate = 1.0f;
   private boolean mShouldCorrectPitch = false;
@@ -131,6 +131,7 @@ public class PlayerData implements AudioEventHandler,
         }
       });
     } catch (final Throwable throwable) {
+      mMediaPlayer = null;
       loadCompletionListener.onLoadError("Load encountered an error: an exception was thrown with message: " + throwable.toString());
     }
   }
@@ -375,10 +376,6 @@ public class PlayerData implements AudioEventHandler,
   }
 
   private void applyNewStatus(final Double newPosition, final PlayerDataSetStatusCompletionListener listener) {
-    if (mMediaPlayer == null) {
-      return;
-    }
-
     // Pause first if necessary.
     if (!mShouldPlay || mRate == 0) {
       if (mMediaPlayerHasStartedEver) {
@@ -399,6 +396,10 @@ public class PlayerData implements AudioEventHandler,
   }
 
   private void setStatus(final ReadableMap status, final PlayerDataSetStatusCompletionListener setStatusCompletionListener) {
+    if (mMediaPlayer == null) {
+      throw new IllegalStateException();
+    }
+
     if (status.hasKey(PLAYER_DATA_STATUS_PROGRESS_UPDATE_INTERVAL_MILLIS_KEY_PATH)) {
       mProgressUpdateIntervalMillis = (int) status.getDouble(PLAYER_DATA_STATUS_PROGRESS_UPDATE_INTERVAL_MILLIS_KEY_PATH);
     }
@@ -443,13 +444,7 @@ public class PlayerData implements AudioEventHandler,
       mMediaPlayer.setLooping(status.getBoolean(PLAYER_DATA_STATUS_IS_LOOPING_KEY_PATH)); // Idempotent
     }
 
-    if (mMediaPlayer == null) {
-      if (setStatusCompletionListener != null) {
-        setStatusCompletionListener.onSetStatusComplete();
-      }
-    } else {
-      applyNewStatus(newPosition, setStatusCompletionListener);
-    }
+    applyNewStatus(newPosition, setStatusCompletionListener);
   }
 
   public void setStatus(final ReadableMap status, final Promise promise) {
