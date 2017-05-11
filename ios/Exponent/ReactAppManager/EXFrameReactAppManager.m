@@ -126,8 +126,7 @@
                                            withExperienceId:self.experienceId
                                                 appManager:self];
 
-  id branchKey = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"branch_key"];
-  if (branchKey) {
+  if ([EXBranchManager isBranchEnabled]) {
     [[EXBranchManager sharedInstance] registerAppManager:self];
   }
 }

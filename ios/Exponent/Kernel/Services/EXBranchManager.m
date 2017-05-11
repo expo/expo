@@ -39,6 +39,12 @@ NSString * const EXBranchLinkOpenedNotification = @"RNBranchLinkOpenedNotificati
   return theManager;
 }
 
++ (BOOL)isBranchEnabled
+{
+  id branchKey = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"branch_key"];
+  return (branchKey != nil);
+}
+
 - (void)registerAppManager:(EXFrameReactAppManager *)appManager
 {
   // The first EXFrameReactAppManager will always be the standalone app one.
@@ -62,7 +68,7 @@ NSString * const EXBranchLinkOpenedNotification = @"RNBranchLinkOpenedNotificati
 
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
 {
-  if (!_isInitialized) {
+  if (![[self class] isBranchEnabled]) {
     return NO;
   }
   _url = userActivity.webpageURL;
@@ -71,7 +77,7 @@ NSString * const EXBranchLinkOpenedNotification = @"RNBranchLinkOpenedNotificati
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(nullable NSString *)sourceApplication annotation:(id)annotation
 {
-  if (!_isInitialized) {
+  if (![[self class] isBranchEnabled]) {
     return NO;
   }
   _url = url;
