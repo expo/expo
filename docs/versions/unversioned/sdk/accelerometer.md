@@ -40,7 +40,7 @@ Subscribe for updates to the accelerometer.
 import React from 'react';
 import Expo, {
   Accelerometer,
-} from 'Expo';
+} from 'expo';
 import {
   StyleSheet,
   Text,
