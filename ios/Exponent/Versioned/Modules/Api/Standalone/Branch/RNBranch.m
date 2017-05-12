@@ -42,8 +42,8 @@ RCT_EXPORT_MODULE();
 - (NSDictionary<NSString *, NSString *> *)constantsToExport {
     return @{
              // RN events transmitted to JS by event emitter
-             @"INIT_SESSION_SUCCESS": kRNBranchInitSessionSuccess,
-             @"INIT_SESSION_ERROR": kRNBranchInitSessionError,
+             @"INIT_SESSION_SUCCESS": RNBranchInitSessionSuccess,
+             @"INIT_SESSION_ERROR": RNBranchInitSessionError,
 
              // constants for use with userCompletedAction
              @"ADD_TO_CART_EVENT": BNCAddToCartEvent,

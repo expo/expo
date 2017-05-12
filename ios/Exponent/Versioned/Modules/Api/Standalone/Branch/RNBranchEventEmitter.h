@@ -9,8 +9,8 @@
 #import <React/RCTEventEmitter.h>
 #import <React/RCTBridge.h>
 
-extern NSString * const kRNBranchInitSessionSuccess;
-extern NSString * const kRNBranchInitSessionError;
+extern NSString * const RNBranchInitSessionSuccess;
+extern NSString * const RNBranchInitSessionError;
 
 @interface RNBranchEventEmitter : RCTEventEmitter<RCTBridgeModule>
 
