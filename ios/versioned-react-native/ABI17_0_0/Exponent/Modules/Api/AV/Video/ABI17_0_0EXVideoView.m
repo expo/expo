@@ -106,26 +106,22 @@ static NSString *const ABI17_0_0EXVideoReadyForDisplayKeyPath = @"readyForDispla
     [_playerViewController.view removeFromSuperview];
     _playerViewController = nil;
     _data = nil;
-    // TODO : unset fullscreen ?
   }
 }
 
 #pragma mark - _playerViewController / _playerLayer management
 
-- (void)_usePlayerViewController
+- (ABI17_0_0EXVideoPlayerViewController *)_getNewPlayerViewController
 {
-  if (_data) {
-    _playerViewController = [[ABI17_0_0EXVideoPlayerViewController alloc] init];
-    _playerViewController.showsPlaybackControls = NO;
-    _playerViewController.rctDelegate = self;
-    _playerViewController.view.frame = self.bounds;
-    _playerViewController.player = _data.player;
-    _playerViewController.view.frame = self.bounds;
-    // to prevent video from being animated when resizeMode is 'cover'
-    // resize mode must be set before subview is added
-    [self setNativeResizeMode:_nativeResizeMode];
-    [self addSubview:_playerViewController.view];
+  if (_data == nil) {
+    return nil;
   }
+  ABI17_0_0EXVideoPlayerViewController *controller = [[ABI17_0_0EXVideoPlayerViewController alloc] init];
+  controller.showsPlaybackControls = _useNativeControls;
+  controller.rctDelegate = self;
+  controller.view.frame = self.bounds;
+  controller.player = _data.player;
+  return controller;
 }
 
 - (void)_usePlayerLayer
@@ -284,10 +280,17 @@ static NSString *const ABI17_0_0EXVideoReadyForDisplayKeyPath = @"readyForDispla
   
   __weak __typeof__(self) weakSelf = self;
   if (value && !_fullscreenPlayerPresented) {
-    // Ensure player view controller is not null
-    if (!_playerViewController) {
-      [self _usePlayerViewController];
+    if (_useNativeControls || _playerViewController != nil) {
+      [_playerViewController.view removeFromSuperview];
+      _playerViewController = nil;
+      [self _usePlayerLayer];
     }
+    _playerViewController = [self _getNewPlayerViewController];
+    
+    // to prevent video from being animated when resizeMode is 'cover'
+    // resize mode must be set before subview is added
+    [self setNativeResizeMode:_nativeResizeMode];
+    
     // Set presentation style to fullscreen
     [_playerViewController setModalPresentationStyle:UIModalPresentationFullScreen];
     
@@ -335,29 +338,41 @@ static NSString *const ABI17_0_0EXVideoReadyForDisplayKeyPath = @"readyForDispla
 
 - (void)setUseNativeControls:(BOOL)useNativeControls
 {
-  if (_useNativeControls != useNativeControls || (!_playerLayer && !_playerViewController)) {
-    _useNativeControls = useNativeControls;
-    dispatch_async(dispatch_get_main_queue(), ^{
-      if (_useNativeControls) {
+  _useNativeControls = useNativeControls;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    if (_useNativeControls) {
+      if (_playerLayer) {
         [self _removePlayerLayer];
-        [self _usePlayerViewController];
-      } else {
+      }
+      if (!_playerViewController && _data) {
+        _playerViewController = [self _getNewPlayerViewController];
+        // to prevent video from being animated when resizeMode is 'cover'
+        // resize mode must be set before subview is added
+        [self setNativeResizeMode:_nativeResizeMode];
+        [self addSubview:_playerViewController.view];
+      }
+    } else {
+      if (_playerViewController) {
         [_playerViewController.view removeFromSuperview];
         _playerViewController = nil;
+      }
+      if (!_playerLayer) {
         [self _usePlayerLayer];
       }
-    });
-  }
+    }
+  });
 }
 
 - (void)setNativeResizeMode:(NSString*)mode
 {
+  _nativeResizeMode = mode;
   if (_useNativeControls) {
-    _playerViewController.videoGravity = mode;
-  } else {
+    if (_playerViewController) {
+      _playerViewController.videoGravity = mode;
+    }
+  } else if (_playerLayer) {
     _playerLayer.videoGravity = mode;
   }
-  _nativeResizeMode = mode;
 }
 
 - (void)setStatus:(NSDictionary *)status
