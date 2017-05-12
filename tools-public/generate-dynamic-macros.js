@@ -29,6 +29,13 @@ try {
   isInUniverse = false;
 }
 
+let isInOssDev = true;
+try {
+  let _unused = require('../../expo-dev');
+} catch (e) {
+  isInOssDev = false;
+}
+
 const macrosFuncs = {
   async TEST_APP_URI() {
     if (process.env.UNIVERSE_BUILD_ID) {
@@ -75,6 +82,8 @@ const macrosFuncs = {
     let projectRoot;
     if (isInUniverse) {
       projectRoot = path.join(__dirname, '..', 'js', '__internal__');
+    } else if (isInOssDev) {
+      projectRoot = path.join(__dirname, '..', 'js', '__develop__');
     } else {
       projectRoot = path.join(__dirname, '..', 'js');
     }
