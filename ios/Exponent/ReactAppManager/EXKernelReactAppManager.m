@@ -214,6 +214,7 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
                                      @"supportedSdkVersions": [EXVersions sharedInstance].versions[@"sdkVersions"],
                                      @"exceptionsManagerDelegate": _exceptionHandler,
                                      @"isDeveloper": @([EXKernel isDevKernel]),
+                                     @"isStandardDevMenuAllowed": @(YES), // kernel enables traditional RN dev menu
                                      @"manifest": manifest,
                                      } mutableCopy];
 

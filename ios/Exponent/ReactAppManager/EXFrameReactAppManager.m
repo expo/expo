@@ -5,6 +5,7 @@
 #import "EXFrame.h"
 #import "EXFrameReactAppManager.h"
 #import "EXKernel.h"
+#import "EXKernelDevKeyCommands.h"
 #import "EXKernelLinkingManager.h"
 #import "EXLog.h"
 #import "EXReactAppManager+Private.h"
@@ -156,7 +157,13 @@
 
 - (NSArray *)extraModulesForBridge:(RCTBridge *)bridge
 {
-  // TODO: initialUri needs to be transformed for standalone apps as well.
+  // we allow the vanilla RN dev menu in some circumstances.
+  BOOL isDetached = NO;
+#ifdef EX_DETACHED
+  isDetached = YES;
+#endif
+  BOOL isStandardDevMenuAllowed = [EXKernelDevKeyCommands sharedInstance].isLegacyMenuBehaviorEnabled || isDetached;
+  
   NSDictionary *params = @{
                            @"frame": _frame,
                            @"manifest": _frame.manifest,
@@ -168,6 +175,7 @@
                                },
                            @"initialUri": [EXKernelLinkingManager uriTransformedForLinking:_frame.initialUri],
                            @"isDeveloper": @([self _doesManifestEnableDeveloperTools]),
+                           @"isStandardDevMenuAllowed": @(isStandardDevMenuAllowed),
                            };
   return [self.versionManager extraModulesWithParams:params];
 }
