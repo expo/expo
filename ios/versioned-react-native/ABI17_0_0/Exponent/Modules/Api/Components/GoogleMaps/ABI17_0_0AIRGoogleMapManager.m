@@ -26,6 +26,7 @@
 #import "ABI17_0_0RCTConvert+AirMap.h"
 
 #import <MapKit/MapKit.h>
+#import <QuartzCore/QuartzCore.h>
 
 static NSString *const ABI17_0_0RCTMapViewKey = @"MapView";
 
@@ -75,10 +76,31 @@ ABI17_0_0RCT_EXPORT_METHOD(animateToRegion:(nonnull NSNumber *)ReactABI17_0_0Tag
     if (![view isKindOfClass:[ABI17_0_0AIRGoogleMap class]]) {
       ABI17_0_0RCTLogError(@"Invalid view returned from registry, expecting ABI17_0_0AIRGoogleMap, got: %@", view);
     } else {
-      [ABI17_0_0AIRGoogleMap animateWithDuration:duration/1000 animations:^{
-        GMSCameraPosition* camera = [ABI17_0_0AIRGoogleMap makeGMSCameraPositionFromMap:(ABI17_0_0AIRGoogleMap *)view andMKCoordinateRegion:region];
-        [(ABI17_0_0AIRGoogleMap *)view animateToCameraPosition:camera];
-      }];
+      // Core Animation must be used to control the animation's duration
+      // See http://stackoverflow.com/a/15663039/171744
+      [CATransaction begin];
+      [CATransaction setAnimationDuration:duration/1000];
+      ABI17_0_0AIRGoogleMap *mapView = (ABI17_0_0AIRGoogleMap *)view;
+      GMSCameraPosition *camera = [ABI17_0_0AIRGoogleMap makeGMSCameraPositionFromMap:mapView andMKCoordinateRegion:region];
+      [mapView animateToCameraPosition:camera];
+      [CATransaction commit];
+    }
+  }];
+}
+
+ABI17_0_0RCT_EXPORT_METHOD(animateToCoordinate:(nonnull NSNumber *)ReactABI17_0_0Tag
+                  withRegion:(CLLocationCoordinate2D)latlng
+                  withDuration:(CGFloat)duration)
+{
+  [self.bridge.uiManager addUIBlock:^(__unused ABI17_0_0RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    id view = viewRegistry[ReactABI17_0_0Tag];
+    if (![view isKindOfClass:[ABI17_0_0AIRGoogleMap class]]) {
+      ABI17_0_0RCTLogError(@"Invalid view returned from registry, expecting ABI17_0_0AIRGoogleMap, got: %@", view);
+    } else {
+      [CATransaction begin];
+      [CATransaction setAnimationDuration:duration/1000];
+      [(ABI17_0_0AIRGoogleMap *)view animateToLocation:latlng];
+      [CATransaction commit];
     }
   }];
 }
