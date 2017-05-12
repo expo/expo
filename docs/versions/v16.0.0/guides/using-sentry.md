@@ -32,7 +32,7 @@ It notifies you of exceptions that your users run into while using your app and 
 - Add the following in your app entry file (`main.js` by default).
 
 ```javascript
-import { Sentry } from 'sentry-expo';
+import Sentry from 'sentry-expo';
 Sentry.config('your Public DSN goes here').install();
 ```
 
