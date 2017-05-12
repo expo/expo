@@ -1,0 +1,10 @@
+{
+  "name": "exponent-home",
+  "version": "1000.0",
+  "private": true,
+  "description": "The Exponent app",
+  "main": "exponent.js",
+  "dependencies": {
+    "expo": "*"
+  }
+}

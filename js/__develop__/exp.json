@@ -1,0 +1,16 @@
+{
+  "name": "test-suite",
+  "description": "Test suite for the Expo SDK",
+  "slug": "test-suite",
+  "version": "1000.0",
+  "sdkVersion": "UNVERSIONED",
+  "nodeModulesPath": "..",
+  "rnCliPath": "../../../react-native-lab/react-native/local-cli/cli.js",
+  "scheme": "exp",
+  "isKernel": true,
+  "packagerOpts": {
+    "projectRoots": "",
+    "config": "./rn-cli.config.js",
+    "assetExts": ["ttf", "mp4"]
+  }
+}
