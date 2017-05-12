@@ -11,6 +11,8 @@
     android:layout_alignParentStart="true"
     android:layout_centerVertical="true"
     android:layout_marginLeft="11dp"
+    android:layout_marginTop="11dp"
+    android:layout_marginBottom="11dp"
     android:background="@android:color/transparent"
     android:scaleType="fitCenter"
     android:src="@mipmap/ic_launcher"/>

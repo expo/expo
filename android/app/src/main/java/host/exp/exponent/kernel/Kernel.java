@@ -459,6 +459,16 @@ public class Kernel implements KernelInterface {
       openOptimisticExperienceActivity(manifestUrl);
     }
 
+    if (existingTask != null) {
+      try {
+        moveTaskToFront(existingTask.getTaskInfo().id);
+      } catch (IllegalArgumentException e) {
+        // Sometimes task can't be found.
+        existingTask = null;
+        openOptimisticExperienceActivity(manifestUrl);
+      }
+    }
+
     final ActivityManager.AppTask finalExistingTask = existingTask;
     mExponentManifest.fetchManifest(manifestUrl, new ExponentManifest.ManifestListener() {
       @Override
@@ -501,16 +511,6 @@ public class Kernel implements KernelInterface {
     boolean loadNux = shouldShowNux && !isFirstRunFinished;
     JSONObject opts = new JSONObject();
     opts.put(KernelConstants.OPTION_LOAD_NUX_KEY, loadNux);
-
-    if (existingTask != null) {
-      try {
-        moveTaskToFront(existingTask.getTaskInfo().id);
-      } catch (IllegalArgumentException e) {
-        // Sometimes task can't be found.
-        existingTask = null;
-        openOptimisticExperienceActivity(manifestUrl);
-      }
-    }
 
     if (existingTask == null) {
       populateOptimisticExperienceActivity(manifestUrl, manifest, bundleUrl, opts);
