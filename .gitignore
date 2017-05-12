@@ -101,3 +101,4 @@ ios/RCTTest.podspec
 # Open source
 ios/Podfile.lock
 ios/Pods
+.expo
