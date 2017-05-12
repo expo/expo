@@ -7,7 +7,6 @@
 #import "EXDisabledDevMenu.h"
 #import "EXDisabledRedBox.h"
 #import "EXFrameExceptionsManager.h"
-#import "EXKernelDevKeyCommands.h"
 #import "EXKernelModule.h"
 #import "EXLinkingManager.h"
 #import "EXVersionManager.h"
@@ -234,6 +233,7 @@ static NSNumber *EXVersionManagerIsFirstLoad;
  *    NSDictionary *constants
  *    NSURL *initialUri
  *    @BOOL isDeveloper
+ *    @BOOL isStandardDevMenuAllowed
  *
  * Kernel-only:
  *    EXKernel *kernel
@@ -278,14 +278,7 @@ static NSNumber *EXVersionManagerIsFirstLoad;
     [extraModules addObject:kernel];
   }
 
-  // we allow the vanilla RN dev menu in some circumstances.
-  BOOL isDetached = NO;
-#ifdef EX_DETACHED
-  isDetached = YES;
-#endif
-  BOOL isStandardDevMenuAllowed = params[@"kernel"] || [EXKernelDevKeyCommands sharedInstance].isLegacyMenuBehaviorEnabled || isDetached;
-
-  if (isStandardDevMenuAllowed && isDeveloper) {
+  if ([params[@"isStandardDevMenuAllowed"] boolValue] && isDeveloper) {
     [extraModules addObject:[[RCTDevMenu alloc] init]];
   } else {
     // non-kernel, or non-development kernel, uses expo menu instead of RCTDevMenu
