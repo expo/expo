@@ -233,6 +233,7 @@ static NSNumber *ABI17_0_0EXVersionManagerIsFirstLoad;
  *    NSDictionary *constants
  *    NSURL *initialUri
  *    @BOOL isDeveloper
+ *    @BOOL isStandardDevMenuAllowed
  *
  * Kernel-only:
  *    ABI17_0_0EXKernel *kernel
@@ -277,14 +278,7 @@ static NSNumber *ABI17_0_0EXVersionManagerIsFirstLoad;
     [extraModules addObject:kernel];
   }
 
-  // we allow the vanilla ABI17_0_0RN dev menu in some circumstances.
-  BOOL isDetached = NO;
-#ifdef ABI17_0_0EX_DETACHED
-  isDetached = YES;
-#endif
-  BOOL isStandardDevMenuAllowed = params[@"kernel"] || isDetached;
-
-  if (isStandardDevMenuAllowed && isDeveloper) {
+  if ([params[@"isStandardDevMenuAllowed"] boolValue] && isDeveloper) {
     [extraModules addObject:[[ABI17_0_0RCTDevMenu alloc] init]];
   } else {
     // non-kernel, or non-development kernel, uses expo menu instead of ABI17_0_0RCTDevMenu

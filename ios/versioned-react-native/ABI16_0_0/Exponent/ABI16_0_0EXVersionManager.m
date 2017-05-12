@@ -233,6 +233,7 @@ static NSNumber *ABI16_0_0EXVersionManagerIsFirstLoad;
  *    NSDictionary *constants
  *    NSURL *initialUri
  *    @BOOL isDeveloper
+ *    @BOOL isStandardDevMenuAllowed
  *
  * Kernel-only:
  *    ABI16_0_0EXKernel *kernel
@@ -276,8 +277,7 @@ static NSNumber *ABI16_0_0EXVersionManagerIsFirstLoad;
     kernel.delegate = params[@"kernel"];
     [extraModules addObject:kernel];
   }
-  if (params[@"kernel"] && isDeveloper) {
-    // kernel enables default ABI16_0_0RCTDevMenu
+  if ([params[@"isStandardDevMenuAllowed"] boolValue] && isDeveloper) {
     [extraModules addObject:[[ABI16_0_0RCTDevMenu alloc] init]];
   } else {
     // non-kernel, or non-development kernel, uses expo menu instead of ABI16_0_0RCTDevMenu
