@@ -28,7 +28,7 @@ module.exports = {
       new RegExp(
         `^${rootPath}\/expo\/.*\/node_modules\/(react-native|react)\/.*`
       ),
-      new RegExp(`^${expo}\/apps\/.*`),
+      new RegExp(`^${rootPath}\/apps\/.*`),
       new RegExp(
         `^${rootPath}\/dev\/.*\/node_modules\/(react-native|react)\/.*`
       ),
