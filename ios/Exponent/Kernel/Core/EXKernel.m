@@ -176,7 +176,7 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
   }
 }
 
-#pragma mark - Misc
+#pragma mark - Mis  c
 
 - (void)openUrl:(NSString *)url onAppManager:(EXReactAppManager *)appManager
 {
