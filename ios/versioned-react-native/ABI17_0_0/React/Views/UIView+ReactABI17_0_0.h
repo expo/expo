@@ -31,17 +31,6 @@
 @property (nonatomic, assign) UIUserInterfaceLayoutDirection ReactABI17_0_0LayoutDirection;
 
 /**
- * z-index, used to override sibling order in didUpdateReactABI17_0_0Subviews.
- */
-@property (nonatomic, assign) NSInteger ReactABI17_0_0ZIndex;
-
-/**
- * The ReactABI17_0_0Subviews array, sorted by zIndex. This value is cached and
- * automatically recalculated if views are added or removed.
- */
-@property (nonatomic, copy, readonly) NSArray<UIView *> *sortedReactABI17_0_0Subviews;
-
-/**
  * Updates the subviews array based on the ReactABI17_0_0Subviews. Default behavior is
  * to insert the sortedReactABI17_0_0Subviews into the UIView.
  */

@@ -108,51 +108,9 @@
   }
 }
 
-- (NSInteger)ReactABI17_0_0ZIndex
-{
-  return [objc_getAssociatedObject(self, _cmd) integerValue];
-}
-
-- (void)setReactABI17_0_0ZIndex:(NSInteger)ReactABI17_0_0ZIndex
-{
-  objc_setAssociatedObject(self, @selector(ReactABI17_0_0ZIndex), @(ReactABI17_0_0ZIndex), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (NSArray<UIView *> *)sortedReactABI17_0_0Subviews
-{
-  NSArray *subviews = objc_getAssociatedObject(self, _cmd);
-  if (!subviews) {
-    // Check if sorting is required - in most cases it won't be
-    BOOL sortingRequired = NO;
-    for (UIView *subview in self.ReactABI17_0_0Subviews) {
-      if (subview.ReactABI17_0_0ZIndex != 0) {
-        sortingRequired = YES;
-        break;
-      }
-    }
-    subviews = sortingRequired ? [self.ReactABI17_0_0Subviews sortedArrayUsingComparator:^NSComparisonResult(UIView *a, UIView *b) {
-      if (a.ReactABI17_0_0ZIndex > b.ReactABI17_0_0ZIndex) {
-        return NSOrderedDescending;
-      } else {
-        // ensure sorting is stable by treating equal zIndex as ascending so
-        // that original order is preserved
-        return NSOrderedAscending;
-      }
-    }] : self.ReactABI17_0_0Subviews;
-    objc_setAssociatedObject(self, _cmd, subviews, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-  }
-  return subviews;
-}
-
-// private method, used to reset sort
-- (void)clearSortedSubviews
-{
-  objc_setAssociatedObject(self, @selector(sortedReactABI17_0_0Subviews), nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
 - (void)didUpdateReactABI17_0_0Subviews
 {
-  for (UIView *subview in self.sortedReactABI17_0_0Subviews) {
+  for (UIView *subview in self.ReactABI17_0_0Subviews) {
     [self addSubview:subview];
   }
 }

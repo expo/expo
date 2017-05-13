@@ -255,7 +255,15 @@ ABI17_0_0RCT_VIEW_BORDER_RADIUS_PROPERTY(TopRight)
 ABI17_0_0RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomLeft)
 ABI17_0_0RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomRight)
 
-ABI17_0_0RCT_REMAP_VIEW_PROPERTY(zIndex, ReactABI17_0_0ZIndex, NSInteger)
+ABI17_0_0RCT_CUSTOM_VIEW_PROPERTY(zIndex, NSInteger, ABI17_0_0RCTView)
+{
+  if (json) {
+    NSInteger index = [ABI17_0_0RCTConvert NSInteger:json];
+    view.layer.zPosition = index;
+  } else {
+    view.layer.zPosition = 0;
+  }
+}
 
 #pragma mark - ShadowView properties
 

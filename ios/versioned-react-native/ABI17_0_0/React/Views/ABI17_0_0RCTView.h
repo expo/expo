@@ -48,13 +48,6 @@
 @property (nonatomic, assign) UIUserInterfaceLayoutDirection ReactABI17_0_0LayoutDirection;
 
 /**
- * z-index, used to override sibling order in didUpdateReactABI17_0_0Subviews. This is
- * inherited from UIView+ReactABI17_0_0, but we override it here to reduce the boxing
- * and associated object overheads.
- */
-@property (nonatomic, assign) NSInteger ReactABI17_0_0ZIndex;
-
-/**
  * This is an optimization used to improve performance
  * for large scrolling views with many subviews, such as a
  * list or table. If set to YES, any clipped subviews will
