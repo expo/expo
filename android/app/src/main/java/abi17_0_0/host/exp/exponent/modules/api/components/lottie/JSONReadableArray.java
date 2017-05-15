@@ -10,7 +10,7 @@ import org.json.JSONTokener;
 
 import java.util.Collection;
 
-import static com.facebook.react.bridge.ReadableType.Array;
+import static abi17_0_0.com.facebook.react.bridge.ReadableType.Array;
 
 /**
  * This class is a thin wrapper around React Native's `ReadableMap` and `ReadableArray` classes,
