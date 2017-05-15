@@ -105,6 +105,7 @@
 
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>
     <!-- ADD DEV SETTINGS HERE -->
+    <activity android:name="abi17_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
     <activity android:name="abi16_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
     <activity android:name="abi15_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
     <activity android:name="abi14_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>

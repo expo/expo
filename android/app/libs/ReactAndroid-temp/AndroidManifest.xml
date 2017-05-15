@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="abi16_0_0.com.facebook.react"
+    package="abi17_0_0.com.facebook.react"
     android:versionCode="1"
     android:versionName="1.0" >
 
