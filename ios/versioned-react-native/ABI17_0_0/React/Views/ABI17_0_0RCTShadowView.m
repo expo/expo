@@ -217,7 +217,6 @@ static void ABI17_0_0RCTProcessMetaPropsBorder(const ABI17_0_0YGValue metaProps[
     [self didUpdateReactABI17_0_0Subviews];
     [applierBlocks addObject:^(NSDictionary<NSNumber *, UIView *> *viewRegistry) {
       UIView *view = viewRegistry[self->_ReactABI17_0_0Tag];
-      [view clearSortedSubviews];
       [view didUpdateReactABI17_0_0Subviews];
     }];
   }

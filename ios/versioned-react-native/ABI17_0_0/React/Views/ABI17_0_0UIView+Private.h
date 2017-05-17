@@ -16,7 +16,4 @@
 - (void)ReactABI17_0_0_updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(UIView *)clipView;
 - (UIView *)ReactABI17_0_0_findClipView;
 
-// zIndex sorting
-- (void)clearSortedSubviews;
-
 @end
