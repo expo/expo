@@ -506,7 +506,7 @@ public class AVModule extends ReactContextBaseJavaModule
     }
 
     final WritableMap map = Arguments.createMap();
-    map.putString("uri", mAudioRecordingFilePath);
+    map.putString("uri", ExpFileUtils.uriFromFile(new File(mAudioRecordingFilePath)).toString());
     map.putMap("status", getAudioRecorderStatus());
     promise.resolve(map);
   }

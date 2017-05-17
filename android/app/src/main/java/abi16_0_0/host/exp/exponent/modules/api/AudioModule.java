@@ -628,7 +628,7 @@ public class AudioModule extends ReactContextBaseJavaModule implements Lifecycle
     }
 
     final WritableMap map = Arguments.createMap();
-    map.putString("uri", mRecordingFilePath);
+    map.putString("uri", ExpFileUtils.uriFromFile(new File(mRecordingFilePath)).toString());
     map.putMap("status", getRecorderStatus());
     promise.resolve(map);
   }
