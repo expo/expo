@@ -4,6 +4,8 @@ title: Video
 
 A component that displays a video inline with the other React Native UI elements in your app. The display dimensions and position of the video on screen can be set using usual React Native styling.
 
+> **Note:** We've made some breaking changes to Video in SDK 17 which are not yet reflected in these docs. We're working on new docs, but for the moment, check out [this gist](https://gist.github.com/terribleben/a74f3eac6a780e0355c6b4c4f489bc61) for details on the new API!
+
 ![sketch](B1eqoFkhx)
 <br />
 

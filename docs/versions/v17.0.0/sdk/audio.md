@@ -8,6 +8,8 @@ Note that Expo does not support backgrounding, so audio is not available to play
 
 Try the [playlist example app](http://expo.io/@Expo/playlist) (source code is [on GitHub](https://github.com/Expo/playlist)) to see an example usage of the playback API, and the [recording example app](http://expo.io/@Expo/record) (source code is [on GitHub](https://github.com/Expo/record)) to see an example usage of the recording API.
 
+> **Note:** We've made some breaking changes to Audio in SDK 17 which are not yet reflected in these docs. We're working on new docs, but for the moment, check out [this gist](https://gist.github.com/terribleben/a74f3eac6a780e0355c6b4c4f489bc61) for details on the new API!
+
 ## Enabling Audio and customizing Audio Mode
 
 ### `Expo.Audio.setIsEnabledAsync(value)`
