@@ -31,7 +31,20 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSDictionary *)options resolver:(RCTPromiseR
 
   // always include id, name, firstName, middleName, lastName, company, jobTitle
   NSMutableSet *fieldsSet = [NSMutableSet setWithArray:options[@"fields"]];
-  [fieldsSet addObjectsFromArray:@[@"id", @"name", @"firstName", @"middleName", @"lastName", @"company", @"jobTitle"]];
+  [fieldsSet addObjectsFromArray:@[
+                                   @"id",
+                                   @"contactType",
+                                   @"name",
+                                   @"firstName",
+                                   @"middleName",
+                                   @"lastName",
+                                   @"previousLastName",
+                                   @"nickname",
+                                   @"company",
+                                   @"jobTitle",
+                                   @"department",
+                                   @"imageAvailable"
+                                   ]];
 
   NSArray *keysToFetch = [self _contactKeysToFetchFromFields:fieldsSet.allObjects];
   CNContactFetchRequest *fetchRequest = [[CNContactFetchRequest alloc] initWithKeysToFetch:keysToFetch];
@@ -54,13 +67,54 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSDictionary *)options resolver:(RCTPromiseR
 
     NSMutableDictionary *contact = [NSMutableDictionary dictionary];
     contact[@"id"] = person.identifier;
+    contact[@"contactType"] = person.contactType == CNContactTypePerson ? @"person" : @"organization";
+    contact[@"name"] = [self _assembleDisplayNameForContact:person];
     contact[@"firstName"] = person.givenName;
     contact[@"lastName"] = person.familyName;
+    contact[@"previousLastName"] = person.previousFamilyName;
     contact[@"middleName"] = person.middleName;
-    contact[@"name"] = [self _assembleDisplayNameForContact:person];
+    contact[@"nickname"] = person.nickname;
     contact[@"company"] = person.organizationName;
     contact[@"jobTitle"] = person.jobTitle;
+    contact[@"department"] = person.departmentName;
+    contact[@"imageAvailable"] = [NSNumber numberWithBool:person.imageDataAvailable];
 
+    if ([keysToFetch containsObject:CNContactNamePrefixKey]) {
+      contact[@"namePrefix"] = person.namePrefix;
+    }
+    if ([keysToFetch containsObject:CNContactNameSuffixKey]) {
+      contact[@"nameSuffix"] = person.nameSuffix;
+    }
+    if ([keysToFetch containsObject:CNContactPhoneticGivenNameKey]) {
+      contact[@"phoneticFirstName"] = person.phoneticGivenName;
+    }
+    if ([keysToFetch containsObject:CNContactPhoneticMiddleNameKey]) {
+      contact[@"phoneticMiddleName"] = person.phoneticMiddleName;
+    }
+    if ([keysToFetch containsObject:CNContactPhoneticFamilyNameKey]) {
+      contact[@"phoneticLastName"] = person.phoneticFamilyName;
+    }
+    if ([keysToFetch containsObject:CNContactNoteKey]) {
+      contact[@"note"] = person.note;
+    }
+    if ([keysToFetch containsObject:CNContactImageDataKey]) {
+      contact[@"image"] = @{ @"uri": [NSString stringWithFormat:@"%@%@",
+                                      @"data:image/png;base64,",
+                                      [person.imageData base64EncodedStringWithOptions:0]
+                                      ] };
+    }
+    if ([keysToFetch containsObject:CNContactThumbnailImageDataKey]) {
+      contact[@"thumbnail"] = @{ @"uri": [NSString stringWithFormat:@"%@%@",
+                                          @"data:image/png;base64,",
+                                          [person.thumbnailImageData base64EncodedStringWithOptions:0]
+                                          ] };
+    }
+    if ([keysToFetch containsObject:CNContactBirthdayKey]) {
+      contact[@"birthday"] = [self _birthdayForContact:person.birthday];
+    }
+    if ([keysToFetch containsObject:CNContactNonGregorianBirthdayKey]) {
+      contact[@"nonGregorianBirthday"] = [self _birthdayForContact:person.nonGregorianBirthday];
+    }
     if ([keysToFetch containsObject:CNContactPostalAddressesKey]) {
       contact[@"addresses"] = [self _addressesForContact:person];
     }
@@ -69,6 +123,21 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSDictionary *)options resolver:(RCTPromiseR
     }
     if ([keysToFetch containsObject:CNContactEmailAddressesKey]) {
       contact[@"emails"] = [self _emailsForContact:person];
+    }
+    if ([keysToFetch containsObject:CNContactSocialProfilesKey]) {
+      contact[@"socialProfiles"] = [self _socialProfilesForContact:person];
+    }
+    if ([keysToFetch containsObject:CNContactInstantMessageAddressesKey]) {
+      contact[@"instantMessageAddresses"] = [self _instantMessageAddressesForContact:person];
+    }
+    if ([keysToFetch containsObject:CNContactUrlAddressesKey]) {
+      contact[@"urls"] = [self _urlsForContact:person];
+    }
+    if ([keysToFetch containsObject:CNContactDatesKey]) {
+      contact[@"dates"] = [self _datesForContact:person];
+    }
+    if ([keysToFetch containsObject:CNContactRelationsKey]) {
+      contact[@"relations"] = [self _relationsForContact:person];
     }
 
     [response addObject:contact];
@@ -103,9 +172,10 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSDictionary *)options resolver:(RCTPromiseR
       address[@"region"] = val.state;
       address[@"postcode"] = val.postalCode;
       address[@"country"] = val.country;
+      address[@"isoCountryCode"] = val.ISOCountryCode;
+      address[@"id"] = container.identifier;
       if (container.label) {
         address[@"label"] = [CNLabeledValue localizedStringForLabel:container.label];
-
       }
       [results addObject:address];
     }
@@ -120,13 +190,16 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSDictionary *)options resolver:(RCTPromiseR
     results = [NSMutableArray arrayWithCapacity:person.phoneNumbers.count];
 
     for (CNLabeledValue<CNPhoneNumber *> *container in person.phoneNumbers) {
-      NSString *phoneNumber = container.value.stringValue;
+      CNPhoneNumber *val = container.value;
+      NSMutableDictionary *phoneNumber = [NSMutableDictionary dictionary];
+      phoneNumber[@"number"] = val.stringValue;
+      phoneNumber[@"countryCode"] = [val valueForKey:@"countryCode"];
+      phoneNumber[@"digits"] = [val valueForKey:@"digits"];
+      phoneNumber[@"id"] = container.identifier;
       if (container.label) {
-        NSString *phoneLabel = [CNLabeledValue localizedStringForLabel:container.label];
-        [results addObject:@{ @"number": phoneNumber, @"label": phoneLabel }];
-      } else {
-        [results addObject:@{ @"number": phoneNumber }];
+        phoneNumber[@"label"] = [CNLabeledValue localizedStringForLabel:container.label];
       }
+      [results addObject:phoneNumber];
     }
   }
   return results;
@@ -142,10 +215,125 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSDictionary *)options resolver:(RCTPromiseR
       NSString *emailAddress = container.value;
       if (container.label) {
         NSString *emailLabel = [CNLabeledValue localizedStringForLabel:container.label];
-        [results addObject:@{ @"email": emailAddress, @"label": emailLabel }];
+        [results addObject:@{ @"email": emailAddress, @"label": emailLabel, @"id": container.identifier }];
       } else {
-        [results addObject:@{ @"email": emailAddress }];
+        [results addObject:@{ @"email": emailAddress, @"id": container.identifier }];
       }
+    }
+  }
+  return results;
+}
+
+- (NSMutableDictionary *)_birthdayForContact:(NSDateComponents * _Nonnull) birthday
+{
+  NSMutableDictionary *result = nil;
+  if (birthday) {
+    result = [NSMutableDictionary dictionary];
+    result[@"day"] = [NSNumber numberWithInteger:birthday.day];
+    result[@"month"] = [NSNumber numberWithInteger:birthday.month];
+    result[@"year"] = [NSNumber numberWithLong:birthday.year];
+  }
+  return result;
+}
+
+- (NSArray *)_socialProfilesForContact:(CNContact * _Nonnull)person
+{
+  NSMutableArray *results = nil;
+  if (person.socialProfiles) {
+    results = [NSMutableArray arrayWithCapacity:person.socialProfiles.count];
+    
+    for (CNLabeledValue<CNSocialProfile *> *container in person.socialProfiles) {
+      CNSocialProfile *val = container.value;
+      NSMutableDictionary *profile = [NSMutableDictionary dictionary];
+      profile[@"service"] = val.service;
+      profile[@"localizedService"] = [CNInstantMessageAddress localizedStringForKey:val.service];
+      profile[@"url"] = val.urlString;
+      profile[@"username"] = val.username;
+      profile[@"userId"] = val.userIdentifier;
+      profile[@"id"] = container.identifier;
+      if (container.label) {
+        profile[@"label"] = [CNLabeledValue localizedStringForLabel:container.label];
+      }
+      [results addObject:profile];
+    }
+  }
+  return results;
+}
+
+- (NSArray *)_instantMessageAddressesForContact:(CNContact * _Nonnull)person
+{
+  NSMutableArray *results = nil;
+  if (person.instantMessageAddresses) {
+    results = [NSMutableArray arrayWithCapacity:person.instantMessageAddresses.count];
+    
+    for (CNLabeledValue<CNInstantMessageAddress *> *container in person.instantMessageAddresses) {
+      CNInstantMessageAddress *val = container.value;
+      NSMutableDictionary *address = [NSMutableDictionary dictionary];
+      address[@"service"] = val.service;
+      address[@"localizedService"] = [CNInstantMessageAddress localizedStringForKey:val.service];
+      address[@"username"] = val.username;
+      address[@"id"] = container.identifier;
+      [results addObject:address];
+    }
+  }
+  return results;
+}
+
+- (NSArray *)_urlsForContact:(CNContact * _Nonnull) person
+{
+  NSMutableArray *results = nil;
+  if (person.urlAddresses) {
+    results = [NSMutableArray arrayWithCapacity:person.urlAddresses.count];
+    
+    for (CNLabeledValue<NSString *> *container in person.urlAddresses) {
+      NSString *urlAddress = container.value;
+      if (container.label) {
+        NSString *urlLabel = [CNLabeledValue localizedStringForLabel:container.label];
+        [results addObject:@{ @"url": urlAddress, @"label": urlLabel, @"id": container.identifier }];
+      } else {
+        [results addObject:@{ @"url": urlAddress, @"id": container.identifier }];
+      }    }
+  }
+  return results;
+}
+
+- (NSArray *)_datesForContact:(CNContact * _Nonnull)person
+{
+  NSMutableArray *results = nil;
+  if (person.dates) {
+    results = [NSMutableArray arrayWithCapacity:person.dates.count];
+    
+    for (CNLabeledValue<NSDateComponents *> *container in person.dates) {
+      NSDateComponents *val = container.value;
+      NSMutableDictionary *date = [NSMutableDictionary dictionary];
+      date[@"day"] = [NSNumber numberWithInteger:val.day];
+      date[@"month"] = [NSNumber numberWithInteger:val.month];
+      date[@"year"] = val.year == NSDateComponentUndefined ? nil : [NSNumber numberWithLong:val.year];
+      date[@"id"] = container.identifier;
+      if (container.label) {
+        date[@"label"] = [CNLabeledValue localizedStringForLabel:container.label];
+      }
+      [results addObject:date];
+    }
+  }
+  return results;
+}
+
+- (NSArray *)_relationsForContact:(CNContact * _Nonnull)person
+{
+  NSMutableArray *results = nil;
+  if (person.contactRelations) {
+    results = [NSMutableArray arrayWithCapacity:person.contactRelations.count];
+    
+    for (CNLabeledValue<CNContactRelation *> *container in person.contactRelations) {
+      CNContactRelation *val = container.value;
+      NSMutableDictionary *relation = [NSMutableDictionary dictionary];
+      relation[@"name"] = val.name;
+      relation[@"id"] = container.identifier;
+      if (container.label) {
+        relation[@"label"] = [CNLabeledValue localizedStringForLabel:container.label];
+      }
+      [results addObject:relation];
     }
   }
   return results;
@@ -155,14 +343,34 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSDictionary *)options resolver:(RCTPromiseR
 {
   const NSDictionary *mapping = @{
                                   @"id": CNContactIdentifierKey,
+                                  @"contactType": CNContactTypeKey,
                                   @"addresses": CNContactPostalAddressesKey,
                                   @"phoneNumbers": CNContactPhoneNumbersKey,
                                   @"emails": CNContactEmailAddressesKey,
                                   @"firstName": CNContactGivenNameKey,
                                   @"middleName": CNContactMiddleNameKey,
                                   @"lastName": CNContactFamilyNameKey,
+                                  @"namePrefix": CNContactNamePrefixKey,
+                                  @"nameSuffix": CNContactNameSuffixKey,
+                                  @"nickname": CNContactNicknameKey,
+                                  @"phoneticFirstName": CNContactPhoneticGivenNameKey,
+                                  @"phoneticMiddleName": CNContactPhoneticMiddleNameKey,
+                                  @"phoneticLastName": CNContactPhoneticFamilyNameKey,
+                                  @"previousLastName": CNContactPreviousFamilyNameKey,
+                                  @"birthday": CNContactBirthdayKey,
+                                  @"nonGregorianBirthday": CNContactNonGregorianBirthdayKey,
+                                  @"imageAvailable": CNContactImageDataAvailableKey,
+                                  @"image": CNContactImageDataKey,
+                                  @"thumbnail": CNContactThumbnailImageDataKey,
+                                  @"note": CNContactNoteKey,
                                   @"company": CNContactOrganizationNameKey,
                                   @"jobTitle": CNContactJobTitleKey,
+                                  @"department": CNContactDepartmentNameKey,
+                                  @"socialProfiles": CNContactSocialProfilesKey,
+                                  @"instantMessageAddresses": CNContactInstantMessageAddressesKey,
+                                  @"urlAddresses": CNContactUrlAddressesKey,
+                                  @"dates": CNContactDatesKey,
+                                  @"relations": CNContactRelationsKey,
                                   @"name": [CNContactFormatter descriptorForRequiredKeysForStyle:CNContactFormatterStyleFullName],
                                   };
   NSMutableArray <id<CNKeyDescriptor>> *results = [NSMutableArray arrayWithCapacity:fields.count];
