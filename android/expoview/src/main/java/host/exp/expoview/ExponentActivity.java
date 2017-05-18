@@ -76,8 +76,6 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
       }
     }
 
-    Exponent.initialize(this, getApplication());
-
     mIsInForeground = true;
     mActivityId = Exponent.getActivityId();
 

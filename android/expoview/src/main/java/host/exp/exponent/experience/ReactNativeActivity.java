@@ -125,6 +125,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     mLayout.addView(mContainer);
     mLayout.addView(mLoadingView);
 
+    Exponent.initialize(this, getApplication());
     NativeModuleDepsProvider.getInstance().inject(ReactNativeActivity.class, this);
   }
 
