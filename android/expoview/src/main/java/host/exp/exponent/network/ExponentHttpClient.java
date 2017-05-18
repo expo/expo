@@ -12,6 +12,10 @@ import org.json.JSONObject;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import host.exp.exponent.Constants;
 import host.exp.exponent.analytics.Analytics;
@@ -98,10 +102,30 @@ public class ExponentHttpClient {
     });
   }
 
+  private static String normalizeUri(final String uriString) {
+    try {
+      URL url = new URL(uriString);
+      int port = url.getPort();
+      if (port == -1) {
+        if (url.getProtocol().equals("http")) {
+          port = 80;
+        } else if (url.getProtocol().equals("https")) {
+          port = 443;
+        }
+      }
+
+      URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), port, url.getPath(), url.getQuery(), url.getRef());
+
+      return uri.toString();
+    } catch (MalformedURLException | URISyntaxException e) {
+      return uriString;
+    }
+  }
+
   private void tryHardCodedResponse(final String uri, final Call call, final SafeCallback callback, final Response initialResponse, final IOException initialException) {
     try {
       for (Constants.EmbeddedResponse embeddedResponse : Constants.EMBEDDED_RESPONSES) {
-        if (uri.equals(embeddedResponse.url)) {
+        if (normalizeUri(uri).equals(normalizeUri(embeddedResponse.url))) {
           Response response = new Response.Builder()
               .request(call.request())
               .protocol(Protocol.HTTP_1_1)
