@@ -4,100 +4,178 @@ title: Video
 
 A component that displays a video inline with the other React Native UI elements in your app. The display dimensions and position of the video on screen can be set using usual React Native styling.
 
-![sketch](B1eqoFkhx)
-<br />
-
 ## `Expo.Video`
 
 ### props
 
+The `source` and `posterSource` props customize the source of the video content.
+
 - `source`
 
-  The source of the video data to display. The following forms are supported:
+  The source of the video data to display. If this prop is `null`, or left blank, the video component will display nothing.
 
-  - A string with a network URL pointing to a video file on the web.
-  - `require('path/to/file')` for a video file asset in the source code directory.
+  Note that this can also be set on the `ref` via `loadAsync()`; see below or the [AV documentation](av.html) for further information.
+
+  The following forms for the source are supported:
+
+  -   A dictionary of the form `{ uri: 'http://path/to/file' }` with a network URL pointing to a video file on the web.
+  -   `require('path/to/file')` for a video file asset in the source code directory.
+  -   An [`Expo.Asset`](asset.html) object for a video file asset.
 
   The [iOS developer documentation](https://developer.apple.com/library/ios/documentation/Miscellaneous/Conceptual/iPhoneOSTechOverview/MediaLayer/MediaLayer.html) lists the video formats supported on iOS.
 
   The [Android developer documentation](https://developer.android.com/guide/appendix/media-formats.html#formats-table) lists the video formats supported on Android.
 
-- `fullscreen`
+- `posterSource`
 
-  Boolean specifying whether to use fullscreen display.
+  The source of an optional image to display over the video while it is loading. The following forms are supported:
+
+  -   A dictionary of the form `{ uri: 'http://path/to/file' }` with a network URL pointing to a image file on the web.
+  -   `require('path/to/file')` for an image file asset in the source code directory.
+
+The `useNativeControls`, `resizeMode`, and `usePoster` props customize the UI of the component.
+
+- `useNativeControls`
+
+  A boolean which, if set to `true`, will display native playback controls (such as play and pause) within the `Video` componet.
 
 - `resizeMode`
 
-  How the video should be scaled for display in the component view bounds. Must be one of the following values:
+  A string describing how the video should be scaled for display in the component view bounds. Must be one of the following values:
 
   - `Expo.Video.RESIZE_MODE_STRETCH` -- Stretch to fill component bounds.
   - `Expo.Video.RESIZE_MODE_CONTAIN` -- Fit within component bounds while preserving aspect ratio.
   - `Expo.Video.RESIZE_MODE_COVER` -- Fill component bounds while preserving aspect ratio.
 
-- `repeat`
+- `usePoster`
 
-  If true the video is repeated endlessly else it is played just once.
+  A boolean which, if set to `true`, will display an image (whose source is set via the prop `posterSource`) while the video is loading.
 
-- `paused`
+The `callback`, `onReadyForDisplay`, and `onIOSFullscreenUpdate` props pass information of the state of the `Video` component. The `onLoadStart`, `onLoad`, and `onError` props are also provided for backwards compatibility with `Image`.
 
-  If true the video is paused at the last point this prop switched from false to true, else the video continues playing.
+- `callback`
 
-- `volume`
+  A function to be called regularly with the `PlaybackStatus` of the video. See the [AV documentation](av.html) for further information on the callback, and the interval at which it is called.
 
-  Number between 0 and 1 specifying the volume to play the video's audio at.
+- `onReadyForDisplay`
 
-- `muted`
+  A function to be called when the video is ready for display. Note that this function gets called whenever the video's natural size changes.
 
-  Whether to mute audio playback. The value of the `volume` prop is preserved across changing this prop.
+  The function is passed a dictionary with the following key-value pairs:
 
-- `rate`
+  - `naturalSize`: a dictionary with the following key-value pairs:
+      - `width`: a number describing the width in pixels of the video data
+      - `height`: a number describing the height in pixels of the video data
+      - `orientation`: a string describing the natural orientation of the video data, either `'portrait'` or `'landscape'`
+  - `status`: the `PlaybackStatus` of the video; see the [AV documentation](av.html) for further information.
 
-  Number specifying the rate of playback of the video. A value of 0 pauses playback while a value of 1 plays the video at its normal speed. Values other than 0 or 1 can be used for slow, fast-forward or reverse playback if the parameters to the [onLoad](#video-on-load) callback prop indicate that such special playback is supported.
+- `onIOSFullscreenUpdate`
+
+  A function to be called when the state of the native iOS fullscreen view changes (controlled via the `presentIOSFullscreenPlayer()` and `dismissIOSFullscreenPlayer()` methods on the `Video`'s `ref`).
+
+  The function is passed a dictionary with the following key-value pairs:
+
+  - `fullscreenUpdate`: a number taking one of the following values:
+      - `Expo.Video.IOS_FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT`: describing that the fullscreen player is about to present
+      - `Expo.Video.IOS_FULLSCREEN_UPDATE_PLAYER_DID_PRESENT`: describing that the fullscreen player just finished presenting
+      - `Expo.Video.IOS_FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS`: describing that the fullscreen player is about to dismiss
+      - `Expo.Video.IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS`: describing that the fullscreen player just finished dismissing
+  - `status`: the `PlaybackStatus` of the video; see the [AV documentation](av.html) for further information.
 
 - `onLoadStart`
 
-  A function that will be called when the video data will start being fetched over the network. The function is called with a parameter `{ uri }` where `uri` gives the URI that the data is being fetched from.
+  A function to be called when the video begins to be loaded into memory. Called without any arguments.
 
 - `onLoad`
 
-  A function that will be called when initial video data has been fetched. The data is streamed so all of it may not have been fetched yet, just enough to render the first frame. The function is called with an object as parameter that has the following members:
-
-  -   `duration` -- The duration of the video in seconds
-  -   `currentTime` -- The current video playback position in seconds
-  -   `canPlayReverse` -- Whether normal-rate reverse playback is supported
-  -   `canPlayFastForward` -- Whether fast-forward playback is supported
-  -   `canPlaySlowForward` -- Whether slow-forward playback is supported
-  -   `canPlaySlowReverse` -- Whether slow-reverse playback is supported
-  -   `canStepBackward` -- Whether seeking backward is supported
-  -   `canStepForward` -- Whether seeking forward is supported
-  -   `naturalSize` -- An object of the form `{ width, height, orientation }` where `orientation` is `'landscape'` or `'portrait'`
+  A function to be called once the video has been loaded. The data is streamed so all of it may not have been fetched yet, just enough to render the first frame. The function is called with the `PlaybackStatus` of the video as its parameter; see the [AV documentation](av.html) for further information.
 
 - `onError`
 
-  A function that will be called on load or playback error. Receives one argument of the form `{ error: { code, domain }` on iOS and `{ error: { what, extra }` on Android.
+  A function to be called if load or playback have encountered a fatal error. The function is passed a single error message string as a parameter.
 
-- `onProgress`
+Finally, the following props are available to control the playback of the video, but we recommend that you use the methods available on the `ref` (described below and in the [AV documentation](av.html)) for finer control.
 
-  A function that will be called every time video playback progresses. It is called at most once every 250 milliseconds. Receives an argument of the form `{ currentTime, playableDuration }` where `currentTime` is the current playback position in seconds and `playableDuration` is the length of the buffered video in seconds.
+- `status`
 
-- `onSeek`
+  A dictionary setting a new `PlaybackStatusToSet` on the video. See the [AV documentation](av.html) for more information on `PlaybackStatusToSet`.
 
-  A function that will be called when the video is seeked (say through the `.seek()` function on its the component's ref). Receives an argument of the form `{ currentTime, seekTime }`, where `currentTime` gives the old playback position of the video in seconds and and `seekTime` gives the new playback position that is being seeked to.
+- `progressUpdateIntervalMillis`
 
-- `onEnd`
+  A number describing the new minimum interval in milliseconds between calls of the callback. See the [AV documentation](av.html) for more information.
 
-  A function that will be called when playback reaches the end of the video. Called without any arguments.
+- `positionMillis`
+
+  The desired position of playback in milliseconds. See the [AV documentation](av.html) for more information.
+
+- `shouldPlay`
+
+  A boolean describing if the media is supposed to play. Playback may not start immediately after setting this value for reasons such as buffering. Make sure to update your UI based on the `isPlaying` and `isBuffering` properties of the `PlaybackStatus`. See the [AV documentation](av.html) for more information.
+
+- `rate`
+
+  The desired playback rate of the media. This value must be between `0.0` and `32.0`. Only available on Android API version 23 and later and iOS. See the [AV documentation](av.html) for more information.
+
+- `shouldCorrectPitch`
+
+  A boolean describing if we should correct the pitch for a changed rate. If set to `true`, the pitch of the audio will be corrected (so a rate different than `1.0` will timestretch the audio). See the [AV documentation](av.html) for more information.
+
+- `volume`
+
+  The desired volume of the audio for this media. This value must be between `0.0` (silence) and `1.0` (maximum volume). See the [AV documentation](av.html) for more information.
+
+- `isMuted`
+
+  A boolean describing if the audio of this media should be muted. See the [AV documentation](av.html) for more information.
+
+- `isLooping`
+
+  A boolean describing if the media should play once (`false`) or loop indefinitely (`true`). See the [AV documentation](av.html) for more information.
 
 #### The following methods are available on the component's ref:
 
-- `seek`(_time_)
+- `videoRef.presentIOSFullscreenPlayer()`
 
-  Move playback to the given time in seconds. The parameters to the [onLoad](#video-on-load) callback prop indicate whether forward and/or backward seeking are supported.
+  This presents a fullscreen view of your video component on top of your app's UI.
 
-- `presentFullscreenPlayer()`
+  #### Returns
 
-  Switch to fullscreen display.
+  A `Promise` that is fulfilled with the `PlaybackStatus` of the video once the fullscreen player has finished presenting, or rejects if there was an error, or if this was called on an Android device.
 
-- `dismissFullscreenPlayer()`
+- `videoRef.dismissIOSFullscreenPlayer()`
 
-  Switch out of fullscreen display.
+  This dismisses the fullscreen video view.
+
+  #### Returns
+
+  A `Promise` that is fulfilled with the `PlaybackStatus` of the video once the fullscreen player has finished dismissing, or rejects if there was an error, or if this was called on an Android device.
+
+The rest of the API on the `Video` component ref is the same as the API for `Expo.Audio.Sound`-- see the [AV documentation](av.html) for further information:
+
+-   `videoRef.loadAsync(source, initialStatus = {}, downloadFirst = true)`
+
+-   `videoRef.unloadAsync()`
+
+-   `videoRef.getStatusAsync()`
+
+-   `videoRef.setCallback(callback)`
+
+-   `videoRef.setStatusAsync(statusToSet)`
+
+-   `videoRef.playAsync()`
+
+-   `videoRef.pauseAsync()`
+
+-   `videoRef.stopAsync()`
+
+-   `videoRef.setPositionAsync(millis)`
+
+-   `videoRef.setRateAsync(value, shouldCorrectPitch)`
+
+-   `videoRef.setVolumeAsync(value)`
+
+-   `videoRef.setIsMutedAsync(value)`
+
+-   `videoRef.setIsLoopingAsync(value)`
+
+-   `videoRef.setProgressUpdateIntervalAsync(millis)`

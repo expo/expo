@@ -49,6 +49,7 @@
     Art: /versions/unversioned/sdk/art.html
     Asset: /versions/unversioned/sdk/asset.html
     Audio: /versions/unversioned/sdk/audio.html
+    AV: /versions/unversioned/sdk/av.html
     BarCodeScanner: /versions/unversioned/sdk/bar-code-scanner.html
     BlurView: /versions/unversioned/sdk/blur-view.html
     Constants: /versions/unversioned/sdk/constants.html
