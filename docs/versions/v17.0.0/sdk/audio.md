@@ -4,17 +4,15 @@ title: Audio
 
 Provides basic sample playback and recording.
 
-Note that Expo does not support backgrounding, so audio is not available to play in the background of your experience. Audio also automatically stops if headphones / bluetooth audio devices are disconnected.
+Note that Expo does not yet support backgrounding, so audio is not available to play in the background of your experience. Audio also automatically stops if headphones / bluetooth audio devices are disconnected.
 
-Try the [playlist example app](http://expo.io/@Expo/playlist) (source code is [on GitHub](https://github.com/Expo/playlist)) to see an example usage of the playback API, and the [recording example app](http://expo.io/@Expo/record) (source code is [on GitHub](https://github.com/Expo/record)) to see an example usage of the recording API.
-
-> **Note:** We've made some breaking changes to Audio in SDK 17 which are not yet reflected in these docs. We're working on new docs, but for the moment, check out [this gist](https://gist.github.com/terribleben/a74f3eac6a780e0355c6b4c4f489bc61) for details on the new API!
+Try the [playlist example app](http://expo.io/@Expo/playlist) (source code is [on GitHub](https://github.com/Expo/playlist)) to see an example usage of the media playback API, and the [recording example app](http://expo.io/@Expo/record) (source code is [on GitHub](https://github.com/Expo/record)) to see an example usage of the recording API.
 
 ## Enabling Audio and customizing Audio Mode
 
 ### `Expo.Audio.setIsEnabledAsync(value)`
 
-Audio is disabled by default, so your app must enable it explicitly to play sounds.
+Audio is enabled by default, but if you want to write your own Audio API in a detached app, you might want to disable the Expo Audio API.
 
 #### Arguments
 
@@ -63,22 +61,6 @@ A `Promise` that will reject if the audio mode could not be enabled for the devi
 
 This class represents a sound corresponding to an Asset or URL.
 
-#### Parameters
-
--   **options (_object_)** --
-
-    A map of options:
-
-    -   **source** -- The source of the audio data to display. The following forms are supported:
-
-        -   A string with a network URL pointing to an audio file on the web.
-        -   `require('path/to/file')` for an audio file asset in the source code directory.
-        -   An [`Expo.Asset`](asset.html) object for an audio file asset.
-
-        The [iOS developer documentation](https://developer.apple.com/library/ios/documentation/Miscellaneous/Conceptual/iPhoneOSTechOverview/MediaLayer/MediaLayer.html) lists the audio formats supported on iOS.
-
-        The [Android developer documentation](https://developer.android.com/guide/appendix/media-formats.html#formats-table) lists the audio formats supported on Android.
-
 #### Returns
 
 A newly constructed instance of `Expo.Audio.Sound`.
@@ -86,165 +68,94 @@ A newly constructed instance of `Expo.Audio.Sound`.
 #### Example
 
 ```javascript
-const sound = new Expo.Audio.Sound({
-  source: require('./assets/sounds/hello.mp3'),
-});
+const soundObject = new Expo.Audio.Sound();
 try {
-  await sound.loadAsync();
-  await sound.playAsync();
+  await soundObject.loadAsync(require('./assets/sounds/hello.mp3'));
+  await soundObject.playAsync();
   // Your sound is playing!
 } catch (error) {
   // An error occurred!
 }
 ```
 
--   `soundInstance.getStatusAsync()`
+A static convenience method to construct and load a sound is also provided:
 
-    Gets the `status` of the sound.
+-   `Expo.Audio.Sound.create(source, initialStatus = {}, callback = null, downloadFirst = true)`
 
-    #### Returns
+    Creates and loads a sound from source, with optional `initialStatus`, `callback`, and `downloadFirst`.
 
-    A `Promise` that is resolved with the `status` of the sound: a dictionary with the following key-value pairs.
+    This is equivalent to the following:
 
-    If the sound is not loaded, it will only contain a single key:
-
-    -   `isLoaded` : a boolean set to `false`.
-
-    Otherwise, it contains all of the following key-value pairs:
-
-    -   `isLoaded` : a boolean set to `true`.
-    -   `isPlaying` : a boolean describing if the sound is currently playing.
-    -   `durationMillis` : the duration of the sound in milliseconds.
-    -   `positionMillis` : the current position of playback in milliseconds.
-    -   `rate` : the current rate of the sound.
-    -   `shouldCorrectPitch` : a boolean describing if we are correcting the pitch for a changed rate.
-    -   `volume` : the current volume of the sound.
-    -   `isMuted` : a boolean describing if the sound is currently muted.
-    -   `isLooping` : a boolean describing if the sound is currently looping.
-    -   `didJustFinish` : a boolean describing if the sound just played to completion at the time that this status was received. When the sound plays to completion, the function passed in `setCallback` is called exactly once with `didJustFinish` set to `true`. `didJustFinish` is never `true` in any other case.
-
--   `soundInstance.setCallback(callback)`
-
-    Sets a function to be called regularly with the `status` of the sound. See `getStatusAsync` for details on `status`.
-
-    The callback will be called when another call to the API for this sound completes (such as `playAsync`, `setRateAsync`, `getStatusAsync`, or `unloadAsync`), and will also be called at regular intervals while the sound is loaded. Call `setCallbackPollingMillis` to modify the interval with which the callback is called while loaded.
+    ```javascript
+    const soundObject = new Expo.Audio.Sound();
+    soundObject.setCallback(callback);
+    await soundObject.loadAsync(source, initialStatus, downloadFirst);
+    ```
 
     #### Parameters
 
-    -   **callback (_function_)** -- A function taking a single parameter `status` (a dictionary, described in `getStatusAsync`).
+    -   **source (_object_ / _number_ / _Asset_)** -- The source of the sound. The following forms are supported:
 
--   `soundInstance.setCallbackPollingMillis(millis)`
+        -   A dictionary of the form `{ uri: 'http://path/to/file' }` with a network URL pointing to an audio file on the web.
+        -   `require('path/to/file')` for an audio file asset in the source code directory.
+        -   An [`Expo.Asset`](asset.html) object for an audio file asset.
 
-    Sets the interval with which the status change callback is called while the sound is loaded. See `setCallback` for details on the status change callback. This value defaults to 100 milliseconds.
+    -   **initialStatus (_PlaybackStatusToSet_)** -- The initial intended `PlaybackStatusToSet` of the sound, whose values will override the default initial playback status. This value defaults to `{}` if no parameter is passed. See the [AV documentation](av.html) for details on `PlaybackStatusToSet` and the default initial playback status.
 
-    #### Parameters
+    -   **callback (_function_)** -- A function taking a single parameter `PlaybackStatus`. This value defaults to `null` if no parameter is passed. See the [AV documentation](av.html) for details on the functionality provided by the callback
 
-    -   **millis (_number_)** -- The new interval between calls of the status change callback.
-
--   `soundInstance.loadAsync()`
-
-    Loads the sound into memory and prepares it for playing. This must be called before calling `playAsync`. This method can only be called if the sound is in an unloaded state.
+    -   **downloadFirst (_boolean_)** -- If set to true, the system will attempt to download the resource to the device before loading. This value defaults to `true`. Note that at the moment, this will only work for `source`s of the form `require('path/to/file')` or `Asset` objects.
 
     #### Returns
 
-    A `Promise` that is fulfilled when the sound is loaded with the `status` of the sound (see `getStatusAsync` for details), or rejects if loading failed. The `Promise` will also reject if the sound was already loaded.
+    A `Promise` that is rejected if creation failed, or fulfilled with the following dictionary if creation succeeded:
 
--   `soundInstance.unloadAsync()`
+    -   `sound` : the newly created and loaded `Sound` object.
+    -   `status` : the `PlaybackStatus` of the `Sound` object. See the [AV documentation](av.html) for further information.
 
-    Unloads the sound. `loadAsync` must be called again in order to be able to play the sound.
+    #### Example
 
-    #### Returns
+    ```javascript
+    try {
+      const { soundObject, status } = await Expo.Audio.Sound.create(
+        require('./assets/sounds/hello.mp3'),
+        { shouldPlay: true }
+      );
+      // Your sound is playing!
+    } catch (error) {
+      // An error occurred!
+    }
+    ```
 
-    A `Promise` that is fulfilled when the sound is unloaded with the `status` of the sound (see `getStatusAsync` for details), or rejects if unloading failed.
+The rest of the API for `Expo.Audio.Sound` is the same as the imperative playback API for `Expo.Video`-- see the [AV documentation](av.html) for further information:
 
--   `soundInstance.playAsync()`
+-   `soundObject.loadAsync(source, initialStatus = {}, downloadFirst = true)`
 
-    Plays the sound. This method can only be called if the sound has been loaded.
+-   `soundObject.unloadAsync()`
 
-    #### Returns
+-   `soundObject.getStatusAsync()`
 
-    A `Promise` that is resolved, once the sound starts playing, with the `status` of the sound (see `getStatusAsync` for details).
+-   `soundObject.setCallback(callback)`
 
--   `soundInstance.pauseAsync()`
+-   `soundObject.setStatusAsync(statusToSet)`
 
-    Pauses the sound. This method can only be called if the sound has been loaded.
+-   `soundObject.playAsync()`
 
-    #### Returns
+-   `soundObject.pauseAsync()`
 
-    A `Promise` that is resolved, once playback is paused, with the `status` of the sound (see `getStatusAsync` for details).
+-   `soundObject.stopAsync()`
 
--   `soundInstance.stopAsync()`
+-   `soundObject.setPositionAsync(millis)`
 
-    Stops the sound. This method can only be called if the sound has been loaded.
+-   `soundObject.setRateAsync(value, shouldCorrectPitch)`
 
-    #### Returns
+-   `soundObject.setVolumeAsync(value)`
 
-    A `Promise` that is resolved, once playback is stopped, with the `status` of the sound (see `getStatusAsync` for details).
+-   `soundObject.setIsMutedAsync(value)`
 
--   `soundInstance.setPositionAsync(millis)`
+-   `soundObject.setIsLoopingAsync(value)`
 
-    Sets the playback position of the sound. This method can only be called if the sound has been loaded.
-
-    #### Parameters
-
-    -   **millis (_number_)** -- The position to seek the sound to.
-
-    #### Returns
-
-    A `Promise` that is resolved, once the seek occurs, with the `status` of the sound (see `getStatusAsync` for details).
-
--   `soundInstance.setRateAsync(value, shouldCorrectPitch)`
-
-    Sets the playback rate of the sound. This method can only be called if the sound has been loaded.
-
-    NOTE: This is only available on Android API version 23 and later.
-
-    #### Parameters
-
-    -   **value (_number_)** -- The desired playback rate of the sound. This value must be between `0.0` and `32.0`.
-
-    -   **shouldCorrectPitch (_boolean_)** -- If set to `true`, the pitch of the sound will be corrected (so a rate different than `1.0` will timestretch the sound).
-
-    #### Returns
-
-    A `Promise` that is resolved once the rate is changed with the `status` of the sound (see `getStatusAsync` for details). If the Android API version is less than 23, the `Promise` will reject.
-
-
--   `soundInstance.setVolumeAsync(value)`
-
-    Sets the volume of the sound. This is NOT the system volume, and will only affect this sound. This value defaults to `1.0`. This method can only be called if the sound has been loaded.
-
-    #### Parameters
-
-    -   **value (_number_)** -- A number between `0.0` (silence) and `1.0` (maximum volume).
-
-    #### Returns
-
-    A `Promise` that is resolved, once the volume is set, with the `status` of the sound (see `getStatusAsync` for details).
-
--   `soundInstance.setIsMutedAsync(value)`
-
-    Sets whether the sound is muted. This is independent of the volume of the sound set in `setVolumeAsync`. This also does not affect the system volume, and only pertains to this sound. This value defaults to `true`. This method can only be called if the sound has been loaded.
-
-    #### Parameters
-
-    -   **value (_boolean_)** -- `true` mutes the sound, and `false` unmutes it.
-
-    #### Returns
-
-    A `Promise` that is resolved, once the mute state is set, with the `status` of the sound (see `getStatusAsync` for details).
-
--   `soundInstance.setIsLoopingAsync(value)`
-
-    Sets whether playback of the sound should loop. When `true`, it will loop indefinitely. This value defaults to `false`. This method can only be called if the sound has been loaded.
-
-    #### Parameters
-
-    -   **value (_boolean_)** -- `true` sets the sound to loop indefinitely.
-
-    #### Returns
-
-    A `Promise` that is resolved, once the loop state is set, with the `status` of the sound (see `getStatusAsync` for details).
+-   `soundObject.setProgressUpdateIntervalAsync(millis)`
 
 ## Recording sounds
 
@@ -284,13 +195,13 @@ try {
     -   `canRecord` : a boolean set to `false`.
     -   `isDoneRecording` : a boolean set to `false`.
 
-    After `prepareToRecordAsync` is called, but before `stopAndUnloadAsync` is called, the `status` will be as follows:
+    After `prepareToRecordAsync()` is called, but before `stopAndUnloadAsync()` is called, the `status` will be as follows:
 
     -   `canRecord` : a boolean set to `true`.
     -   `isRecording` : a boolean describing if the `Recording` is currently recording.
     -   `durationMillis` : the current duration of the recorded audio.
 
-    After `stopAndUnloadAsync` is called, the `status` will be as follows:
+    After `stopAndUnloadAsync()` is called, the `status` will be as follows:
 
     -   `canRecord` : a boolean set to `false`.
     -   `isDoneRecording` : a boolean set to `true`.
@@ -298,17 +209,17 @@ try {
 
 -   `recordingInstance.setCallback(callback)`
 
-    Sets a function to be called regularly with the `status` of the `Recording`. See `getStatusAsync` for details on `status`.
+    Sets a function to be called regularly with the `status` of the `Recording`. See `getStatusAsync()` for details on `status`.
 
-    The callback will be called when another call to the API for this recording completes (such as `prepareToRecordAsync`, `startAsync`, `getStatusAsync`, or `stopAndUnloadAsync`), and will also be called at regular intervals while the recording can record. Call `setCallbackPollingMillis` to modify the interval with which the callback is called while the recording can record.
+    The callback will be called when another call to the API for this recording completes (such as `prepareToRecordAsync()`, `startAsync()`, `getStatusAsync()`, or `stopAndUnloadAsync()`), and will also be called at regular intervals while the recording can record. Call `setProgressUpdateInterval()` to modify the interval with which the callback is called while the recording can record.
 
     #### Parameters
 
     -   **callback (_function_)** -- A function taking a single parameter `status` (a dictionary, described in `getStatusAsync`).
 
--   `recordingInstance.setCallbackPollingMillis(millis)`
+-   `recordingInstance.setProgressUpdateInterval(millis)`
 
-    Sets the interval with which the status change callback is called while the recording can record. See `setCallback` for details on the status change callback. This value defaults to 100 milliseconds.
+    Sets the interval with which the status change callback is called while the recording can record. See `setCallback` for details on the status change callback. This value defaults to 500 milliseconds.
 
     #### Parameters
 
@@ -316,11 +227,11 @@ try {
 
 -   `recordingInstance.prepareToRecordAsync()`
 
-    Loads the recorder into memory and prepares it for recording. This must be called before calling `startAsync`. This method can only be called if the `Recording` instance has never yet been prepared.
+    Loads the recorder into memory and prepares it for recording. This must be called before calling `startAsync()`. This method can only be called if the `Recording` instance has never yet been prepared.
 
     #### Returns
 
-    A `Promise` that is fulfilled when the recorder is loaded and prepared, or rejects if this failed. If another `Recording` exists in your experience that is currently prepared to record, the `Promise` will reject. The promise is resolved with the `status` of the recording (see `getStatusAsync` for details).
+    A `Promise` that is fulfilled when the recorder is loaded and prepared, or rejects if this failed. If another `Recording` exists in your experience that is currently prepared to record, the `Promise` will reject. The promise is resolved with the `status` of the recording (see `getStatusAsync()` for details).
 
 -   `recordingInstance.isPreparedToRecord()`
 
@@ -334,7 +245,7 @@ try {
 
     #### Returns
 
-    A `Promise` that is fulfilled when recording has begun, or rejects if recording could not start. The promise is resolved with the `status` of the recording (see `getStatusAsync` for details).
+    A `Promise` that is fulfilled when recording has begun, or rejects if recording could not start. The promise is resolved with the `status` of the recording (see `getStatusAsync()` for details).
 
 -   `recordingInstance.pauseAsync()`
 
@@ -344,7 +255,7 @@ try {
 
     #### Returns
 
-    A `Promise` that is fulfilled when recording has paused, or rejects if recording could not be paused. If the Android API version is less than 24, the `Promise` will reject. The promise is resolved with the `status` of the recording (see `getStatusAsync` for details).
+    A `Promise` that is fulfilled when recording has paused, or rejects if recording could not be paused. If the Android API version is less than 24, the `Promise` will reject. The promise is resolved with the `status` of the recording (see `getStatusAsync()` for details).
 
 -   `recordingInstance.stopAndUnloadAsync()`
 
@@ -352,7 +263,7 @@ try {
 
     #### Returns
 
-    A `Promise` that is fulfilled when recording has stopped, or rejects if recording could not be stopped. The promise is resolved with the `status` of the recording (see `getStatusAsync` for details).
+    A `Promise` that is fulfilled when recording has stopped, or rejects if recording could not be stopped. The promise is resolved with the `status` of the recording (see `getStatusAsync()` for details).
 
 -   `recordingInstance.getURI()`
 
@@ -362,10 +273,19 @@ try {
 
     A `string` with the local URI of the `Recording`, or `null` if the `Recording` is not prepared to record.
 
--   `recordingInstance.getNewSound()`
+-   `recordingInstance.createNewLoadedSound()`
 
-    Gets a new `Sound` object to play back the `Recording`. Note that this will only succeed once the `Recording` is done recording (once `stopAndUnloadAsync` has been called).
+    Creates and loads a new `Sound` object to play back the `Recording`. Note that this will only succeed once the `Recording` is done recording (once `stopAndUnloadAsync()` has been called).
+
+    #### Parameters
+
+    -   **initialStatus (_PlaybackStatusToSet_)** -- The initial intended `PlaybackStatusToSet` of the sound, whose values will override the default initial playback status. This value defaults to `{}` if no parameter is passed. See the [AV documentation](av.html) for details on `PlaybackStatusToSet` and the default initial playback status.
+
+    -   **callback (_function_)** -- A function taking a single parameter `PlaybackStatus`. This value defaults to `null` if no parameter is passed. See the [AV documentation](av.html) for details on the functionality provided by the callback
 
     #### Returns
 
-    A `Sound` created with the local URI of the `Recording`, or `null` if the `Recording` is not done recording.
+    A `Promise` that is rejected if creation failed, or fulfilled with the following dictionary if creation succeeded:
+
+    -   `sound` : the newly created and loaded `Sound` object.
+    -   `status` : the `PlaybackStatus` of the `Sound` object. See the [AV documentation](av.html) for further information.
