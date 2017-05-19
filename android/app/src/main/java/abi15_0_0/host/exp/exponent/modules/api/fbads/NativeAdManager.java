@@ -4,6 +4,10 @@ import android.util.Log;
 
 import com.facebook.ads.AdError;
 import com.facebook.ads.NativeAdsManager;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import abi15_0_0.com.facebook.react.bridge.Arguments;
 import abi15_0_0.com.facebook.react.bridge.ReactApplicationContext;
 import abi15_0_0.com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -11,9 +15,6 @@ import abi15_0_0.com.facebook.react.bridge.ReactMethod;
 import abi15_0_0.com.facebook.react.bridge.UiThreadUtil;
 import abi15_0_0.com.facebook.react.bridge.WritableMap;
 import abi15_0_0.com.facebook.react.modules.core.RCTNativeAppEventEmitter;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class NativeAdManager extends ReactContextBaseJavaModule implements NativeAdsManager.Listener {
     /** @{Map} with all registered fb ads managers **/

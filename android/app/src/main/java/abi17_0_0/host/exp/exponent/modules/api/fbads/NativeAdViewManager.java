@@ -4,14 +4,14 @@ import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.facebook.ads.NativeAdsManager;
+
+import java.util.Map;
+
 import abi17_0_0.com.facebook.react.bridge.ReactApplicationContext;
-import abi17_0_0.com.facebook.react.bridge.ReactMethod;
 import abi17_0_0.com.facebook.react.common.MapBuilder;
 import abi17_0_0.com.facebook.react.uimanager.ThemedReactContext;
 import abi17_0_0.com.facebook.react.uimanager.ViewGroupManager;
 import abi17_0_0.com.facebook.react.uimanager.annotations.ReactProp;
-
-import java.util.Map;
 
 public class NativeAdViewManager extends ViewGroupManager<NativeAdView> {
     ReactApplicationContext mReactContext;

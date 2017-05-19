@@ -4,14 +4,14 @@ package abi15_0_0.host.exp.exponent.modules.api.fbads;
 import android.support.annotation.Nullable;
 
 import com.facebook.ads.AdSize;
+
+import java.util.Map;
+
 import abi15_0_0.com.facebook.react.bridge.ReactContext;
-import abi15_0_0.com.facebook.react.bridge.ReadableMap;
 import abi15_0_0.com.facebook.react.common.MapBuilder;
 import abi15_0_0.com.facebook.react.uimanager.SimpleViewManager;
 import abi15_0_0.com.facebook.react.uimanager.ThemedReactContext;
 import abi15_0_0.com.facebook.react.uimanager.annotations.ReactProp;
-
-import java.util.Map;
 
 public class BannerViewManager extends SimpleViewManager<BannerView> {
 

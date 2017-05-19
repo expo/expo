@@ -1,18 +1,18 @@
 package abi16_0_0.host.exp.exponent.modules.api.fbads;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.facebook.ads.AdSettings;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
 import abi16_0_0.com.facebook.react.bridge.LifecycleEventListener;
 import abi16_0_0.com.facebook.react.bridge.ReactApplicationContext;
 import abi16_0_0.com.facebook.react.bridge.ReactContextBaseJavaModule;
 import abi16_0_0.com.facebook.react.bridge.ReactMethod;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.HashSet;
 
 public class AdSettingsManager extends ReactContextBaseJavaModule implements LifecycleEventListener {
 
