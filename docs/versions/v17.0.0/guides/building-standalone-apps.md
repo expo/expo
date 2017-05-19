@@ -38,7 +38,7 @@ The iOS `bundleIdentifier` and Android `package` fields use reverse DNS notation
 
 You're probably not surprised that `name`, `iconUrl` and `version` are required, but if you haven't used Expo much you might be confused by `slug` and `sdkVersion`. `slug` is the url name that your app's JavaScript is published to, for example `exp.host/@notbrent/rnplay`, where `notbrent` is my username and `rnplay` is the slug. The `sdkVersion` tells Expo what Expo runtime version to use, which corresponds to a React Native version.
 
-There are other options you might want to add to `exp.json`. We have only covered what is required. See [Configuration with exp.json](configuration.html) for the full spec.
+There are other options you might want to add to `exp.json`. We have only covered what is required. For example, some people like to configure their own build number, linking scheme, and more. We highly recommend you read through [Configuration with exp.json](configuration.html) for the full spec.
 
 ## 3. Start the build
 
