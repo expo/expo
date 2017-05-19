@@ -6,7 +6,7 @@ The [`Expo.Audio.Sound`](audio.html) objects and [`Expo.Video`](video.html) comp
 
 Note that for `Expo.Video`, all of these operations are also available via props on the component, but we recommend using this imperative playback API for most applications where finer control over the state of the video playback is needed.
 
-Try the [playlist example app](http://expo.io/@Expo/playlist) (source code is [on GitHub](https://github.com/Expo/playlist)) to see an example usage of the playback API for both `Expo.Audio.Sound` and `Expo.Video`.
+Try the [playlist example app](http://expo.io/@community/playlist) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the playback API for both `Expo.Audio.Sound` and `Expo.Video`.
 
 ## Construction and obtaining a reference
 
