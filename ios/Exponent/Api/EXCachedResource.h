@@ -43,6 +43,11 @@ typedef enum EXCachedResourceBehavior {
  */
 - (NSString *)resourceLocalPathPreferringCache;
 
+/**
+ *  Returns true if `CachesDirectory` is a miss, but `NSBundle ... pathForResource` has a hit.
+ */
+- (BOOL)isLocalPathFromNSBundle;
+
 - (NSError *)_validateResponseData:(NSData *)data response:(NSURLResponse *)response;
 
 /**

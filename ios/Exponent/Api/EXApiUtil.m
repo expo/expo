@@ -33,6 +33,10 @@ static NSString* kPublicKeyTag = @"exp.host.publickey";
                                    successBlock:(EXVerifySignatureSuccessBlock)successBlock
                                      errorBlock:(EXVerifySignatureErrorBlock)errorBlock
 {
+  if (!data || !signature) {
+    errorBlock([NSError errorWithDomain:@"EXAPIUtilDomain" code:-1 userInfo:@{ NSLocalizedDescriptionKey: @"Cannot verify the manifest because it is empty or has no signature." }]);
+    return;
+  }
   EXCachedResource *publicKeyResource = [[EXCachedResource alloc] initWithResourceName:@"manifestPublicKey"
                                                                           resourceType:@"pem"
                                                                              remoteUrl:publicKeyUrl

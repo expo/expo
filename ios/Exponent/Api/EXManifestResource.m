@@ -33,7 +33,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
                       errorBlock:(EXCachedResourceErrorBlock)errorBlock
 {
   [super loadResourceWithBehavior:behavior successBlock:^(NSData * _Nonnull data) {
-    NSError *jsonError;
+    __block NSError *jsonError;
     id manifestObj = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
     if (jsonError) {
       errorBlock(jsonError);
@@ -42,35 +42,39 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
 
     NSString *innerManifestString = (NSString *)manifestObj[@"manifestString"];
     NSString *manifestSignature = (NSString *)manifestObj[@"signature"];
-
-    EXVerifySignatureSuccessBlock signatureSuccess = ^(BOOL isValid) {
-      NSError *jsonError;
-      NSMutableDictionary *manifestObj =
-        [NSJSONSerialization JSONObjectWithData:[innerManifestString dataUsingEncoding:NSUTF8StringEncoding]
+    
+    NSMutableDictionary *innerManifestObj;
+    if (!innerManifestString && [self isLocalPathFromNSBundle]) {
+      // locally bundled manifests are not signed
+      innerManifestObj = [manifestObj mutableCopy];
+    } else {
+      @try {
+        innerManifestObj = [NSJSONSerialization JSONObjectWithData:[innerManifestString dataUsingEncoding:NSUTF8StringEncoding]
                                         options:NSJSONReadingMutableContainers
                                           error:&jsonError];
+      } @catch (NSException *exception) {
+        errorBlock([NSError errorWithDomain:EXNetworkErrorDomain code:-1 userInfo:@{ NSLocalizedDescriptionKey: exception.reason }]);
+      }
       if (jsonError) {
         errorBlock(jsonError);
         return;
       }
-
-      if ([self _isManifestVerificationBypassed]) {
-        isValid = YES;
-      }
-      [manifestObj setObject:@(isValid) forKey:@"isVerified"];
-
-      successBlock([NSJSONSerialization dataWithJSONObject:manifestObj options:0 error:&jsonError]);
+    }
+    
+    EXVerifySignatureSuccessBlock signatureSuccess = ^(BOOL isValid) {
+      [innerManifestObj setObject:@(isValid) forKey:@"isVerified"];
+      successBlock([NSJSONSerialization dataWithJSONObject:innerManifestObj options:0 error:&jsonError]);
     };
-
-    if (innerManifestString && manifestSignature) {
+    
+    if ([self _isManifestVerificationBypassed]) {
+      signatureSuccess(YES);
+    } else {
       NSURL *publicKeyUrl = [NSURL URLWithString:kEXPublicKeyUrl];
       [EXApiUtil verifySignatureWithPublicKeyUrl:publicKeyUrl
                                            data:innerManifestString
                                       signature:manifestSignature
                                    successBlock:signatureSuccess
                                      errorBlock:errorBlock];
-    } else {
-      errorBlock([NSError errorWithDomain:EXNetworkErrorDomain code:-1 userInfo:@{ NSLocalizedDescriptionKey: @"Cannot verify the manifest because it has no signature." }]);
     }
   } errorBlock:errorBlock];
 }
@@ -99,9 +103,16 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
 
 - (BOOL)_isManifestVerificationBypassed
 {
-  // HACK: because `SecItemCopyMatching` doesn't work in older iOS (see EXApiUtil.m)
-  return (([UIDevice currentDevice].systemVersion.floatValue < 10) ||
-          [EXShellManager sharedInstance].isManifestVerificationBypassed);
+  return (
+          // HACK: because `SecItemCopyMatching` doesn't work in older iOS (see EXApiUtil.m)
+          ([UIDevice currentDevice].systemVersion.floatValue < 10) ||
+          
+          // the developer disabled manifest verification
+          [EXShellManager sharedInstance].isManifestVerificationBypassed ||
+          
+          // we're using a copy that came with the NSBundle and was therefore already codesigned
+          [self isLocalPathFromNSBundle]
+  );
 }
 
 - (NSError *)_validateResponseData:(NSData *)data response:(NSURLResponse *)response

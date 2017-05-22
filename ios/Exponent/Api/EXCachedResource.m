@@ -192,6 +192,17 @@ NS_ASSUME_NONNULL_BEGIN
   return localPath;
 }
 
+- (BOOL)isLocalPathFromNSBundle
+{
+  NSString *localPath = [self resourceCachePath];
+  if (![[NSFileManager defaultManager] fileExistsAtPath:localPath isDirectory:nil]) {
+    // nothing in cache, check NSBundle
+    localPath = [[NSBundle mainBundle] pathForResource:_resourceName ofType:_resourceType];
+    return (localPath != nil);
+  }
+  return NO;
+}
+
 - (BOOL)removeCache
 {
   NSString *localPath = [self resourceCachePath];
