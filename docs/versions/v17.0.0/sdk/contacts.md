@@ -51,7 +51,7 @@ async function showFirstContactAsync() {
   if (contacts.total > 0) {
     Alert.alert(
       'Your first contact is...',
-      `Name: ${contacts[0].name}\n` +
+      `Name: ${contacts.data[0].name}\n` +
       `Phone: ${JSON.stringify(contacts.data[0].phoneNumbers)}\n` +
       `Email: ${JSON.stringify(contacts.data[0].emails)}`
     );
