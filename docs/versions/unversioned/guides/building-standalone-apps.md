@@ -16,27 +16,25 @@ If you haven't used `exp` before, the first thing you'll need to do is login wit
 
 ## 2. Configure exp.json
 
-The following fields are required in your app's `exp.json`, so open it up and add any that are missing.
-
 ```javascript
  {
-   name: "Playground",
-   icon: "https://s3.amazonaws.com/exp-us-standard/rnplay/app-icon.png",
-   version: "2.0.0",
-   slug: "rnplay",
-   sdkVersion: "8.0.0",
+   name: "Your App Name",
+   icon: "./path/to/your/app-icon.png",
+   version: "1.0.0",
+   slug: "your-app-slug",
+   sdkVersion: "17.0.0",
    ios: {
-     bundleIdentifier: "org.rnplay.exp",
+     bundleIdentifier: "com.yourcompany.yourappname",
    },
    android: {
-     package: "org.rnplay.exp",
+     package: "com.yourcompany.yourappname",
    }
  }
 ```
 
-The iOS `bundleIdentifier` and Android `package` fields use reverse DNS notation, but don't have to be related to a domain. In this case I chose `org.rnplay.exp` because the app's website is rnplay.org and this is the Expo version of the app. Yours might be `com.yourcompany.appname`.
+The iOS `bundleIdentifier` and Android `package` fields use reverse DNS notation, but don't have to be related to a domain. Replace `"com.yourcompany.yourappname"` with whatever makes sense for your app.
 
-You're probably not surprised that `name`, `iconUrl` and `version` are required, but if you haven't used Expo much you might be confused by `slug` and `sdkVersion`. `slug` is the url name that your app's JavaScript is published to, for example `exp.host/@notbrent/rnplay`, where `notbrent` is my username and `rnplay` is the slug. The `sdkVersion` tells Expo what Expo runtime version to use, which corresponds to a React Native version.
+You're probably not surprised that `name`, `icon` and `version` are required, but if you haven't used Expo much you might be confused by `slug` and `sdkVersion`. `slug` is the url name that your app's JavaScript is published to, for example `exp.host/@community/native-component-list`, where `community` is my username and `native-component-list` is the slug. The `sdkVersion` tells Expo what Expo runtime version to use, which corresponds to a React Native version. Although `"17.0.0"` is listed in the example, you already have an `sdkVersion` in your exp.json and should not change it except when you want to updte to a new version of Expo.
 
 There are other options you might want to add to `exp.json`. We have only covered what is required. For example, some people like to configure their own build number, linking scheme, and more. We highly recommend you read through [Configuration with exp.json](configuration.html) for the full spec.
 
