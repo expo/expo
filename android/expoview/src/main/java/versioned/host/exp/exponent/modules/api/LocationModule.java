@@ -24,6 +24,7 @@ import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 import io.nlopez.smartlocation.location.config.LocationAccuracy;
 import io.nlopez.smartlocation.location.config.LocationParams;
+import io.nlopez.smartlocation.location.utils.LocationState;
 
 public class LocationModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
 
@@ -54,6 +55,8 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
     coords.putDouble("speed", location.getSpeed());
     map.putMap("coords", coords);
     map.putDouble("timestamp", location.getTime());
+    map.putBoolean("mocked", location.isFromMockProvider());
+
     return map;
   }
 
@@ -125,6 +128,24 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
     }
 
     SmartLocation.with(mScopedContext).location().stop();
+  }
+
+  @ReactMethod
+  public void getProviderStatus(final Promise promise) {
+    if (mScopedContext == null) {
+      promise.reject("E_CONTEXT_UNAVAILABLE", "Context is not available");
+    }
+
+    LocationState state = SmartLocation.with(mScopedContext).location().state();
+
+    WritableMap map = Arguments.createMap();
+
+    map.putBoolean("locationServicesEnabled", state.locationServicesEnabled()); // If location is off
+    map.putBoolean("gpsAvailable", state.isGpsAvailable()); // If GPS provider is enabled
+    map.putBoolean("networkAvailable", state.isNetworkAvailable()); // If network provider is enabled
+    map.putBoolean("passiveAvailable", state.isPassiveAvailable()); // If passive provider is enabled
+
+    promise.resolve(map);
   }
 
   // TODO: Stop sending watchId from JS since we ignore it.
