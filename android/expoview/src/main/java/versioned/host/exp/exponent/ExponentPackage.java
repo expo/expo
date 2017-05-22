@@ -12,7 +12,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -56,7 +55,6 @@ import versioned.host.exp.exponent.modules.api.UtilModule;
 import versioned.host.exp.exponent.modules.api.WebBrowserModule;
 import versioned.host.exp.exponent.modules.api.av.AVModule;
 import versioned.host.exp.exponent.modules.api.av.video.VideoViewManager;
-import versioned.host.exp.exponent.modules.api.standalone.branch.RNBranchModule;
 import versioned.host.exp.exponent.modules.api.components.LinearGradientManager;
 import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerModule;
 import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerViewManager;
@@ -69,6 +67,8 @@ import versioned.host.exp.exponent.modules.api.fbads.InterstitialAdManager;
 import versioned.host.exp.exponent.modules.api.fbads.NativeAdManager;
 import versioned.host.exp.exponent.modules.api.fbads.NativeAdViewManager;
 import versioned.host.exp.exponent.modules.api.gl.GLViewManager;
+import versioned.host.exp.exponent.modules.api.IntentLauncherModule;
+import versioned.host.exp.exponent.modules.api.standalone.branch.RNBranchModule;
 import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule;
 import versioned.host.exp.exponent.modules.internal.ExponentIntentModule;
 import versioned.host.exp.exponent.modules.internal.ExponentUnsignedAsyncStorageModule;
@@ -157,6 +157,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new PedometerModule(reactContext));
         nativeModules.add(new RNBranchModule(reactContext));
         nativeModules.add(new ErrorRecoveryModule(reactContext, experienceId));
+        nativeModules.add(new IntentLauncherModule(reactContext));
       } catch (JSONException | UnsupportedEncodingException e) {
         EXL.e(TAG, e.toString());
       }
