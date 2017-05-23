@@ -4,9 +4,11 @@ package versioned.host.exp.exponent.modules.api;
 
 import android.Manifest;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 
+import android.net.Uri;
 import android.os.Build;
 import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
@@ -22,19 +24,23 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
-import host.exp.expoview.Exponent;
+import host.exp.exponent.analytics.EXL;
 
 import static android.provider.ContactsContract.*;
 
 public class ContactsModule extends ReactContextBaseJavaModule {
+  private static final String TAG = ContactsModule.class.getSimpleName();
 
   private static final String[] PROJECTION = new String[]{
       CommonDataKinds.Phone.CONTACT_ID,
-      Contacts.DISPLAY_NAME,
       CommonDataKinds.Phone.NORMALIZED_NUMBER,
       CommonDataKinds.Email.DATA,
   };
@@ -72,35 +78,78 @@ public class ContactsModule extends ReactContextBaseJavaModule {
         int currentIndex = 0;
 
         final int contactIdIndex = cursor.getColumnIndex(CommonDataKinds.Phone.CONTACT_ID);
-        final int displayNameIndex = cursor.getColumnIndex(Contacts.DISPLAY_NAME);
         while (cursor.moveToNext()) {
           if (currentIndex >= pageSize) {
             break;
           }
 
+          WritableMap contact = Arguments.createMap();
           int id = (int) cursor.getLong(contactIdIndex);
-          String name = cursor.getString(displayNameIndex);
+          contact.putInt("id", id);
+
+          contact = addIdentityFromContentResolver(fieldsSet, cr, contact, id);
+          contact.putString("nickname", getNicknameFromContentResolver(cr, id));
+          if (fieldsSet.contains("note")) {
+            contact.putString("note", getNoteFromContentResolver(cr, id));
+          }
+          if (fieldsSet.contains("birthday")) {
+            contact = addDatesFromContentResolver(cr, contact, id, true);
+          }
+          if (fieldsSet.contains("dates")) {
+            contact = addDatesFromContentResolver(cr, contact, id, false);
+          }
+          if (fieldsSet.contains("instantMessageAddresses")) {
+            contact = addInstantMessageAddressesFromContentResolver(id, contact, cr);
+          }
+          if (fieldsSet.contains("urlAddresses")) {
+            contact = addUrlAddressesFromContentResolver(id, contact, cr);
+          }
+
+          Cursor imageCursor = cr.query(
+              ContactsContract.Data.CONTENT_URI,
+              null,
+              ContactsContract.Data.CONTACT_ID + "= ? AND " +
+                  ContactsContract.Data.MIMETYPE + "= ?",
+              new String[] { Integer.toString(id), ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE },
+              null
+          );
+          contact.putBoolean("imageAvailable", false);
+          if (imageCursor != null) {
+            try {
+              if (imageCursor.moveToFirst()) {
+                contact.putBoolean("imageAvailable", true);
+
+                if (fieldsSet.contains("thumbnail")) {
+                  Uri imageUri = Uri.withAppendedPath(
+                      ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, id),
+                      ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
+
+                  WritableMap thumbnail = Arguments.createMap();
+                  thumbnail.putString("uri", imageUri.toString());
+                  contact.putMap("thumbnail", thumbnail);
+                }
+              }
+            } finally {
+              imageCursor.close();
+            }
+          }
 
           String company = null;
           String jobTitle = null;
 
-          if (fieldsSet.contains("company") || fieldsSet.contains("jobTitle")) {
-            HashMap<String, String> organization = getOrganizationFromContentResolver(id, cr);
-            if (organization != null) {
-              if (fieldsSet.contains("company")) {
-                company = organization.get("company");
-              }
-              if (fieldsSet.contains("jobTitle")) {
-                jobTitle = organization.get("jobTitle");
-              }
+          HashMap<String, String> organization = getOrganizationFromContentResolver(id, cr);
+          if (organization != null) {
+            if (fieldsSet.contains("company")) {
+              company = organization.get("company");
+            }
+            if (fieldsSet.contains("jobTitle")) {
+              jobTitle = organization.get("jobTitle");
             }
           }
 
           WritableArray emails = fieldsSet.contains("emails") ? getEmailsFromContentResolver(id, cr) : null;
           WritableArray phoneNumbers = fieldsSet.contains("phoneNumbers") ? getPhoneNumbersFromContentResolver(id, cr) : null;
           WritableArray addresses = fieldsSet.contains("addresses") ? getAddressesFromContentResolver(id, cr) : null;
-
-          WritableMap contact = Arguments.createMap();
 
           if (emails != null && emails.size() > 0) {
             contact.putArray("emails", emails);
@@ -117,8 +166,6 @@ public class ContactsModule extends ReactContextBaseJavaModule {
           if (jobTitle != null && !jobTitle.isEmpty()) {
             contact.putString("jobTitle", jobTitle);
           }
-          contact.putInt("id", id);
-          contact.putString("name", name);
           contacts.pushMap(contact);
 
           currentIndex++;
@@ -129,12 +176,72 @@ public class ContactsModule extends ReactContextBaseJavaModule {
         response.putBoolean("hasPreviousPage", pageOffset > 0);
         response.putBoolean("hasNextPage", pageOffset + pageSize < total);
         response.putInt("total", total);
+      } catch (Exception e) {
+        EXL.e(TAG, e.getMessage());
+        promise.reject(e);
       } finally {
         cursor.close();
       }
     }
 
     promise.resolve(response);
+  }
+
+  private WritableMap addIdentityFromContentResolver(Set<String> fieldsSet, ContentResolver cr, WritableMap contact, int id) {
+    Cursor cursor = cr.query(
+        Data.CONTENT_URI,
+        null,
+        Data.CONTACT_ID + " = ? AND " + Data.MIMETYPE + " = ?",
+        new String[] { Integer.toString(id), CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE },
+        null
+    );
+
+    if (cursor != null) {
+      while (cursor.moveToNext()) {
+        contact.putString("firstName", cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.GIVEN_NAME)));
+        contact.putString("lastName", cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.FAMILY_NAME)));
+        contact.putString("name", cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.DISPLAY_NAME)));
+        contact.putString("middleName", cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.MIDDLE_NAME)));
+
+        if (fieldsSet.contains("phoneticFirstName")) {
+          contact.putString("phoneticFirstName", cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.PHONETIC_GIVEN_NAME)));
+        }
+        if (fieldsSet.contains("phoneticLastName")) {
+          contact.putString("phoneticLastName", cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.PHONETIC_FAMILY_NAME)));
+        }
+        if (fieldsSet.contains("phoneticMiddleName")) {
+          contact.putString("phoneticMiddleName", cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.PHONETIC_MIDDLE_NAME)));
+        }
+        if (fieldsSet.contains("namePrefix")) {
+          contact.putString("namePrefix", cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.PREFIX)));
+        }
+        if (fieldsSet.contains("nameSuffix")) {
+          contact.putString("nameSuffix", cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.SUFFIX)));
+        }
+      }
+      cursor.close();
+    }
+    return contact;
+  }
+
+  private String getNicknameFromContentResolver(ContentResolver cr, int id) {
+    Cursor cursor = cr.query(
+        Data.CONTENT_URI,
+        null,
+        Data.CONTACT_ID + " = ? AND " + Data.MIMETYPE + " = ? AND " + CommonDataKinds.Nickname.TYPE +
+        "=" + CommonDataKinds.Nickname.TYPE_DEFAULT,
+        new String[] { Integer.toString(id), CommonDataKinds.Nickname.CONTENT_ITEM_TYPE },
+        null
+    );
+    String nickNameIndex = CommonDataKinds.Nickname.NAME;
+    String nickname = null;
+    if (cursor != null) {
+      while (cursor.moveToNext()) {
+          nickname =  cursor.getString(cursor.getColumnIndex(nickNameIndex));
+      }
+      cursor.close();
+    }
+    return nickname;
   }
 
   private WritableArray getEmailsFromContentResolver(int id, ContentResolver cr) {
@@ -368,6 +475,255 @@ public class ContactsModule extends ReactContextBaseJavaModule {
       }
     }
     return null;
+  }
+
+  private String getNoteFromContentResolver(ContentResolver cr, int id) {
+    Cursor cursor = cr.query(
+        ContactsContract.Data.CONTENT_URI,
+        null,
+        ContactsContract.Data.CONTACT_ID + " = ? AND " + ContactsContract.Data.MIMETYPE + " = ?",
+        new String[]{Integer.toString(id), ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE},
+        null
+    );
+    String note = null;
+    if (cursor != null) {
+      if (cursor.moveToFirst()) {
+        note = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Note.NOTE));
+      }
+      cursor.close();
+    }
+    return note;
+  }
+
+  private WritableMap addDatesFromContentResolver(ContentResolver cr, WritableMap contact,
+                                                  int id, boolean birthday) throws ParseException {
+    WritableArray dates = Arguments.createArray();
+    String selectBirthday = birthday ?
+        " AND " + ContactsContract.CommonDataKinds.Event.TYPE + "=" +
+            ContactsContract.CommonDataKinds.Event.TYPE_BIRTHDAY : "";
+    Cursor cursor = cr.query(
+        Data.CONTENT_URI,
+        null,
+        Data.CONTACT_ID + " = ? AND " + Data.MIMETYPE + " = ?" + selectBirthday,
+        new String[] { Integer.toString(id), CommonDataKinds.Event.CONTENT_ITEM_TYPE },
+        null
+    );
+
+    String label, dateString;
+    boolean hasYear;
+    Calendar calendar = Calendar.getInstance();
+    SimpleDateFormat datePattern = new SimpleDateFormat ("yyyy-MM-dd", Locale.getDefault());
+    SimpleDateFormat noYearPattern = new SimpleDateFormat ("--MM-dd", Locale.getDefault());
+
+    if (cursor != null) {
+      try {
+        while (cursor.moveToNext()) {
+          WritableMap details = Arguments.createMap();
+
+          switch (cursor.getInt(cursor.getColumnIndex(CommonDataKinds.Event.TYPE))) {
+            case CommonDataKinds.Event.TYPE_ANNIVERSARY:
+              label = "anniversary";
+              break;
+            case CommonDataKinds.Event.TYPE_BIRTHDAY:
+              label = "birthday";
+              break;
+            case CommonDataKinds.Event.TYPE_OTHER:
+              label = "other";
+              break;
+            case CommonDataKinds.Event.TYPE_CUSTOM:
+              label = "custom";
+              break;
+            default:
+              label = "unknown";
+          }
+          dateString = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Event.START_DATE));
+          hasYear = !dateString.startsWith("--");
+
+          if (hasYear) {
+            calendar.setTime(datePattern.parse(dateString));
+          } else {
+            calendar.setTime(noYearPattern.parse(dateString));
+          }
+
+          if (hasYear) {
+            details.putInt("year", calendar.get(Calendar.YEAR));
+          }
+          details.putInt("month", calendar.get(Calendar.MONTH) + 1);
+          details.putInt("day", calendar.get(Calendar.DAY_OF_MONTH));
+          if (birthday) {
+            contact.putMap("birthday", details);
+          } else if (!label.equals("birthday")) {
+            details.putString("label", label);
+            details.putString("id", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Event._ID)));
+            dates.pushMap(details);
+          }
+        }
+
+        if (!birthday && dates.size() > 0) {
+          contact.putArray("dates", dates);
+        }
+      } finally {
+        cursor.close();
+      }
+      cursor.close();
+    }
+    return contact;
+  }
+
+
+  private WritableMap addInstantMessageAddressesFromContentResolver(int id, WritableMap contact, ContentResolver cr) {
+    WritableArray addresses = Arguments.createArray();
+    Cursor cursor = cr.query(
+        Data.CONTENT_URI,
+        null,
+        Data.CONTACT_ID + " = ? AND " + Data.MIMETYPE + " = ?",
+        new String[] { Integer.toString(id), CommonDataKinds.Im.CONTENT_ITEM_TYPE },
+        null
+    );
+
+    if (cursor != null) {
+      try {
+        while (cursor.moveToNext()) {
+          String username = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Im.DATA));
+          int type = cursor.getInt(cursor.getColumnIndex(CommonDataKinds.Im.TYPE));
+          int protocol = cursor.getInt(cursor.getColumnIndex(CommonDataKinds.Im.PROTOCOL));
+          String imId = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Im._ID));
+
+          WritableMap details = Arguments.createMap();
+
+          String label, service;
+
+          switch (type) {
+            case CommonDataKinds.Im.TYPE_HOME:
+              label = "home";
+              break;
+            case CommonDataKinds.Im.TYPE_OTHER:
+              label = "other";
+              break;
+            case CommonDataKinds.Im.TYPE_WORK:
+              label = "work";
+              break;
+            case CommonDataKinds.Im.TYPE_CUSTOM:
+              label = "custom";
+              break;
+            default:
+              label = "unknown";
+          }
+
+          switch (protocol) {
+            case CommonDataKinds.Im.PROTOCOL_AIM:
+              service = "aim";
+              break;
+            case CommonDataKinds.Im.PROTOCOL_GOOGLE_TALK:
+              service = "googleTalk";
+              break;
+            case CommonDataKinds.Im.PROTOCOL_ICQ:
+              service = "icq";
+              break;
+            case CommonDataKinds.Im.PROTOCOL_JABBER:
+              service = "jabber";
+              break;
+            case CommonDataKinds.Im.PROTOCOL_MSN:
+              service = "msn";
+              break;
+            case CommonDataKinds.Im.PROTOCOL_NETMEETING:
+              service = "netmeeting";
+              break;
+            case CommonDataKinds.Im.PROTOCOL_QQ:
+              service = "qq";
+              break;
+            case CommonDataKinds.Im.PROTOCOL_SKYPE:
+              service = "skype";
+              break;
+            case CommonDataKinds.Im.PROTOCOL_YAHOO:
+              service = "yahoo";
+              break;
+            case CommonDataKinds.Im.PROTOCOL_CUSTOM:
+              service = "custom";
+              break;
+            default:
+              service = "unknown";
+          }
+
+          details.putString("username", username);
+          details.putString("label", label);
+          details.putString("service", service);
+          details.putString("id", imId);
+
+          addresses.pushMap(details);
+        }
+      } finally {
+        cursor.close();
+      }
+    }
+
+    if (addresses.size() > 0) {
+      contact.putArray("instantMessageAddresses", addresses);
+    }
+    return contact;
+  }
+
+  private WritableMap addUrlAddressesFromContentResolver(int id, WritableMap contact, ContentResolver cr) {
+    WritableArray addresses = Arguments.createArray();
+    Cursor cursor = cr.query(
+        Data.CONTENT_URI,
+        null,
+        Data.CONTACT_ID + " = ? AND " + Data.MIMETYPE + " = ?",
+        new String[] { Integer.toString(id), CommonDataKinds.Website.CONTENT_ITEM_TYPE },
+        null
+    );
+
+    if (cursor != null) {
+      try {
+        while (cursor.moveToNext()) {
+          WritableMap details = Arguments.createMap();
+
+          details.putString("url",cursor.getString(cursor.getColumnIndex(CommonDataKinds.Website.URL)));
+          details.putString("id", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Website._ID)));
+          int type = cursor.getInt(cursor.getColumnIndex(CommonDataKinds.Website.TYPE));
+          String label;
+
+          switch (type) {
+            case CommonDataKinds.Website.TYPE_HOME:
+              label = "home";
+              break;
+            case CommonDataKinds.Website.TYPE_OTHER:
+              label = "other";
+              break;
+            case CommonDataKinds.Website.TYPE_WORK:
+              label = "work";
+              break;
+            case CommonDataKinds.Website.TYPE_BLOG:
+              label = "blog";
+              break;
+            case CommonDataKinds.Website.TYPE_HOMEPAGE:
+              label = "homepage";
+              break;
+            case CommonDataKinds.Website.TYPE_FTP:
+              label = "ftp";
+              break;
+            case CommonDataKinds.Website.TYPE_PROFILE:
+              label = "profile";
+              break;
+            case CommonDataKinds.Website.TYPE_CUSTOM:
+              label = "custom";
+              break;
+            default:
+              label = "unknown";
+          }
+
+          details.putString("label", label);
+          addresses.pushMap(details);
+        }
+      } finally {
+        cursor.close();
+      }
+    }
+
+    if (addresses.size() > 0) {
+      contact.putArray("urls", addresses);
+    }
+    return contact;
   }
 
   private Set<String> getFieldsSet(final ReadableArray fields) {
