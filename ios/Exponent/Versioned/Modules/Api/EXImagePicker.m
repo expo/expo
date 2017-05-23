@@ -42,7 +42,7 @@ RCT_EXPORT_MODULE(ExponentImagePicker);
       @"chooseFromLibraryButtonTitle": @"Choose from Library…",
       @"quality" : @0.2, // 1.0 best to 0.0 worst
       @"allowsEditing" : @NO,
-      @"noData": @YES,
+      @"base64": @NO,
     };
   }
   return self;
@@ -184,9 +184,8 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
           BOOL vertical = (image.size.width < image.size.height) ? YES : NO;
           [response setObject:@(vertical) forKey:@"isVertical"];
 
-          if (![[self.options objectForKey:@"noData"] boolValue]) {
-            NSString *dataString = [data base64EncodedStringWithOptions:0];
-            [response setObject:dataString forKey:@"data"];
+          if ([[self.options objectForKey:@"base64"] boolValue]) {
+            [response setObject:[data base64EncodedStringWithOptions:0] forKey:@"base64"];
           }
 
           NSURL *fileURL = [NSURL fileURLWithPath:path];
@@ -228,9 +227,8 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
       }
       [data writeToFile:path atomically:YES];
 
-      if (![[self.options objectForKey:@"noData"] boolValue]) {
-        NSString *dataString = [data base64EncodedStringWithOptions:0]; // base64 encoded image string
-        [response setObject:dataString forKey:@"data"];
+      if ([[self.options objectForKey:@"base64"] boolValue]) {
+        [response setObject:[data base64EncodedStringWithOptions:0] forKey:@"base64"];
       }
 
       BOOL vertical = (image.size.width < image.size.height) ? YES : NO;
