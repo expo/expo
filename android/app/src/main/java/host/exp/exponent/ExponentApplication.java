@@ -13,6 +13,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import javax.inject.Inject;
 
 import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.branch.BranchManager;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExponentKernelModuleInterface;
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
@@ -24,7 +25,6 @@ import host.exp.exponent.modules.ExponentKernelModule;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.expoview.Exponent;
 import host.exp.expoview.ExpoViewBuildConfig;
-import io.branch.referral.Branch;
 import io.fabric.sdk.android.Fabric;
 import me.leolin.shortcutbadger.ShortcutBadger;
 
@@ -106,7 +106,7 @@ public class ExponentApplication extends MultiDexApplication {
       }
     }
 
-    Branch.getAutoInstance(this);
+    BranchManager.initialize(this);
 
     try {
       // Remove the badge count on weird launchers
