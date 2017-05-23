@@ -23,6 +23,7 @@ import com.amplitude.api.Amplitude;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.soloader.SoLoader;
 
+import host.exp.exponent.branch.BranchManager;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.notifications.ExponentNotificationManager;
 import host.exp.exponent.notifications.ReceivedNotificationEvent;
@@ -330,7 +331,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       mLinkingPackage.loadVersion(mSDKVersion).construct(this, mIntentUri);
     }
 
-    handleBranchLink(mIntentUri);
+    BranchManager.handleLink(this, mIntentUri, mSDKVersion);
 
     runOnUiThread(new Runnable() {
       @Override
@@ -430,7 +431,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
               .call("emit", "Exponent.openUri", uri);
         }
 
-        handleBranchLink(options.uri);
+        BranchManager.handleLink(this, options.uri, mSDKVersion);
       }
 
       if ((options.notification != null || options.notificationObject != null) && mSDKVersion != null) {
@@ -464,14 +465,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     // Emits a "url" event to the Linking event emitter
     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
     super.onNewIntent(intent);
-  }
-
-  private void handleBranchLink(String uri) {
-    if (mIsShellApp && ABIVersion.toNumber(mSDKVersion) >= ABIVersion.toNumber("17.0.0")) {
-      RNObject branchModule = new RNObject("host.exp.exponent.modules.api.standalone.branch.RNBranchModule");
-      branchModule.loadVersion(mSDKVersion);
-      branchModule.callStatic("initSession", Uri.parse(uri), this);
-    }
   }
 
   @Override
