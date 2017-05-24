@@ -25,19 +25,33 @@ export default class RootNavigation extends React.Component {
         id="main"
         navigatorUID="main"
         initialTab={this._currentTab}>
-        <TabNavigationItem
-          id="projects"
-          renderIcon={isSelected =>
-            this._renderIcon(Entypo, 'grid', 24, 'Projects', isSelected)}>
-          <StackNavigation
-            id="projects"
-            navigatorUID="projects"
-            initialRoute="projects"
-            defaultRouteConfig={defaultRouteConfig}
-          />
-        </TabNavigationItem>
+        {this._renderTabItems()}
+      </TabNavigation>
+    );
+  }
 
+  _renderTabItems = () => {
+    let tabItems = [];
+
+    tabItems.push(
+      <TabNavigationItem
+        key="projects"
+        id="projects"
+        renderIcon={isSelected =>
+          this._renderIcon(Entypo, 'grid', 24, 'Projects', isSelected)}>
+        <StackNavigation
+          id="projects"
+          navigatorUID="projects"
+          initialRoute="projects"
+          defaultRouteConfig={defaultRouteConfig}
+        />
+      </TabNavigationItem>
+    );
+
+    if (Platform.OS === 'android') {
+      tabItems.push(
         <TabNavigationItem
+          key="explore"
           id="explore"
           renderIcon={isSelected =>
             this._renderIcon(
@@ -54,27 +68,26 @@ export default class RootNavigation extends React.Component {
             defaultRouteConfig={defaultRouteConfig}
           />
         </TabNavigationItem>
+      );
+    }
 
-        <TabNavigationItem
+    tabItems.push(
+      <TabNavigationItem
+        id="profile"
+        key="profile"
+        renderIcon={isSelected =>
+          this._renderIcon(Ionicons, 'ios-person', 26, 'Profile', isSelected)}>
+        <StackNavigation
           id="profile"
-          renderIcon={isSelected =>
-            this._renderIcon(
-              Ionicons,
-              'ios-person',
-              26,
-              'Profile',
-              isSelected
-            )}>
-          <StackNavigation
-            id="profile"
-            navigatorUID="profile"
-            initialRoute="profile"
-            defaultRouteConfig={defaultRouteConfig}
-          />
-        </TabNavigationItem>
-      </TabNavigation>
+          navigatorUID="profile"
+          initialRoute="profile"
+          defaultRouteConfig={defaultRouteConfig}
+        />
+      </TabNavigationItem>
     );
-  }
+
+    return tabItems;
+  };
 
   _handleTabPress = tabKey => {
     if (this._currentTab !== tabKey) {
