@@ -16,6 +16,10 @@ such as [this Auth0 example](https://github.com/AppAndFlow/exponent-auth0-exampl
 When you're done an authentication flow, or for some other reason you want to pass information back to your app, you will want to redirect back to your app.
 You can use React Native's [Linking.addEventListener](https://facebook.github.io/react-native/docs/linking.html) function to do this.
 
+##### Important
+
+When you are developing your Expo experience and handling redirections, to test, you need to open your application via the `exp://` URI without the port. This is a workaround needed when developing because without it, Expo will reload the experience instead of redirecting you to the existing one.
+
 #### Other uses
 
 You might just want to have a simple modal browser window to show the terms of services, privacy policy, or other information about your app. This is a great use case for it.
