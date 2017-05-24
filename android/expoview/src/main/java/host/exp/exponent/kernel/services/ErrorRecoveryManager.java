@@ -58,7 +58,8 @@ public class ErrorRecoveryManager {
 
   public boolean shouldReloadOnError() {
     long diff = System.currentTimeMillis() - mTimeLastLoaded;
-    return diff >= reloadBuffer();
+    long reloadBuffer = reloadBuffer();
+    return diff >= reloadBuffer;
   }
 
   private long reloadBuffer() {
