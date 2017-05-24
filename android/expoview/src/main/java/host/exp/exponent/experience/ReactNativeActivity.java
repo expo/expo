@@ -445,6 +445,12 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   }
 
   protected boolean shouldShowErrorScreen(ExponentErrorMessage errorMessage) {
+    if (mIsLoading) {
+      // Don't hit ErrorRecoveryManager until bridge is initialized.
+      // This is the same on iOS.
+      return true;
+    }
+
     ErrorRecoveryManager errorRecoveryManager = ErrorRecoveryManager.getInstance(mExperienceId);
 
     errorRecoveryManager.markErrored();
