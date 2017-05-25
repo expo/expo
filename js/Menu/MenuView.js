@@ -38,7 +38,6 @@ import FriendlyUrls from 'FriendlyUrls';
 
 let SCREEN_WIDTH = Dimensions.get('window').width;
 let MENU_NARROW_SCREEN = SCREEN_WIDTH < 375;
-let DEBUG_REMOTE_JS = 'dev-remote-debug';
 
 const AnimatedBlurView = Animated.createAnimatedComponent(Expo.BlurView);
 
@@ -360,9 +359,6 @@ export default class MenuView extends React.Component {
     Clipboard.setString(this.props.task.manifestUrl);
   };
   _onPressDevMenuButton = key => {
-    if (key === DEBUG_REMOTE_JS) {
-      // Enable/Disable XDELogging here.
-    }
     ExponentKernel.selectDevMenuItemWithKey(key);
     ExStore.dispatch(BrowserActions.showMenuAsync(false));
   };
