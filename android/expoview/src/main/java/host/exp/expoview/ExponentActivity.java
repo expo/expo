@@ -61,7 +61,6 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
 
     // Set SDK versions
     Constants.setSdkVersions(sdkVersions());
-    Constants.INITIAL_URL = publishedUrl();
 
     // Check if opened from xdl
     if (isDebug()) {
@@ -84,6 +83,7 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
     NativeModuleDepsProvider.getInstance().inject(ExponentActivity.class, this);
 
     String defaultUrl = isDebug() ? developmentUrl() : publishedUrl();
+    Constants.INITIAL_URL = defaultUrl;
     mManifestUrl = mIntentUri == null ? defaultUrl : mIntentUri;
     mExponentManifest.fetchManifest(mManifestUrl, new ExponentManifest.ManifestListener() {
       @Override
