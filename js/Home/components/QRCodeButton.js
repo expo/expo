@@ -54,7 +54,7 @@ export default class QRCodeButton extends React.Component {
               style={styles.subtitleText}
               ellipsizeMode="tail"
               numberOfLines={1}>
-              It's not pretty, but it beats typing
+              Open your projects without typing
             </Text>
           </View>
         </View>
