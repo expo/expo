@@ -27,9 +27,11 @@ import com.facebook.react.bridge.WritableMap;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import host.exp.exponent.analytics.EXL;
@@ -88,7 +90,10 @@ public class ContactsModule extends ReactContextBaseJavaModule {
           contact.putInt("id", id);
 
           contact = addIdentityFromContentResolver(fieldsSet, cr, contact, id);
-          contact.putString("nickname", getNicknameFromContentResolver(cr, id));
+          String nickname = getNicknameFromContentResolver(cr, id);
+          if (nickname != null) {
+            contact.putString("nickname", nickname);
+          }
           if (fieldsSet.contains("note")) {
             contact.putString("note", getNoteFromContentResolver(cr, id));
           }
@@ -98,44 +103,12 @@ public class ContactsModule extends ReactContextBaseJavaModule {
           if (fieldsSet.contains("dates")) {
             contact = addDatesFromContentResolver(cr, contact, id, false);
           }
-          if (fieldsSet.contains("instantMessageAddresses")) {
-            contact = addInstantMessageAddressesFromContentResolver(id, contact, cr);
-          }
-          if (fieldsSet.contains("urlAddresses")) {
-            contact = addUrlAddressesFromContentResolver(id, contact, cr);
-          }
 
-          Cursor imageCursor = cr.query(
-              ContactsContract.Data.CONTENT_URI,
-              null,
-              ContactsContract.Data.CONTACT_ID + "= ? AND " +
-                  ContactsContract.Data.MIMETYPE + "= ?",
-              new String[] { Integer.toString(id), ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE },
-              null
-          );
-          contact.putBoolean("imageAvailable", false);
-          if (imageCursor != null) {
-            try {
-              if (imageCursor.moveToFirst()) {
-                contact.putBoolean("imageAvailable", true);
-
-                if (fieldsSet.contains("thumbnail")) {
-                  Uri imageUri = Uri.withAppendedPath(
-                      ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, id),
-                      ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
-
-                  WritableMap thumbnail = Arguments.createMap();
-                  thumbnail.putString("uri", imageUri.toString());
-                  contact.putMap("thumbnail", thumbnail);
-                }
-              }
-            } finally {
-              imageCursor.close();
-            }
-          }
+          contact = addImageInfoFromContentResolver(fieldsSet, cr, contact, id);
 
           String company = null;
           String jobTitle = null;
+          String note = fieldsSet.contains("note") ? getNoteFromContentResolver(cr, id) : null;
 
           HashMap<String, String> organization = getOrganizationFromContentResolver(id, cr);
           if (organization != null) {
@@ -147,18 +120,29 @@ public class ContactsModule extends ReactContextBaseJavaModule {
             }
           }
 
-          WritableArray emails = fieldsSet.contains("emails") ? getEmailsFromContentResolver(id, cr) : null;
-          WritableArray phoneNumbers = fieldsSet.contains("phoneNumbers") ? getPhoneNumbersFromContentResolver(id, cr) : null;
-          WritableArray addresses = fieldsSet.contains("addresses") ? getAddressesFromContentResolver(id, cr) : null;
+          HashMap<String, WritableArray> collections = new HashMap<>();
+          collections.put("emails", fieldsSet.contains("emails") ?
+              getEmailsFromContentResolver(id, cr) : null);
+          collections.put("phoneNumbers", fieldsSet.contains("phoneNumbers") ?
+              getPhoneNumbersFromContentResolver(id, cr) : null);
+          collections.put("addresses", fieldsSet.contains("addresses") ?
+              getAddressesFromContentResolver(id, cr) : null);
+          collections.put("instantMessageAddresses", fieldsSet.contains("instantMessageAddresses") ?
+              getInstantMessageAddressesFromContentResolver(id, cr) : null);
+          collections.put("urlAddresses", fieldsSet.contains("urlAddresses") ?
+              getUrlAddressesFromContentResolver(id, cr) : null);
+          collections.put("relations", fieldsSet.contains("relations") ?
+              getRelationsFromContentResolver(id, cr) : null);
 
-          if (emails != null && emails.size() > 0) {
-            contact.putArray("emails", emails);
+          for (String fieldName : collections.keySet()) {
+            WritableArray value = collections.get(fieldName);
+            if (value != null && value.size() > 0) {
+              contact.putArray(fieldName, value);
+            }
           }
-          if (phoneNumbers != null && phoneNumbers.size() > 0) {
-            contact.putArray("phoneNumbers", phoneNumbers);
-          }
-          if (addresses != null && addresses.size() > 0) {
-            contact.putArray("addresses", addresses);
+
+          if (note != null && !note.isEmpty()) {
+            contact.putString("note", note);
           }
           if (company != null && !company.isEmpty()) {
             contact.putString("company", company);
@@ -176,6 +160,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
         response.putBoolean("hasPreviousPage", pageOffset > 0);
         response.putBoolean("hasNextPage", pageOffset + pageSize < total);
         response.putInt("total", total);
+        promise.resolve(response);
       } catch (Exception e) {
         EXL.e(TAG, e.getMessage());
         promise.reject(e);
@@ -183,8 +168,6 @@ public class ContactsModule extends ReactContextBaseJavaModule {
         cursor.close();
       }
     }
-
-    promise.resolve(response);
   }
 
   private WritableMap addIdentityFromContentResolver(Set<String> fieldsSet, ContentResolver cr, WritableMap contact, int id) {
@@ -197,26 +180,38 @@ public class ContactsModule extends ReactContextBaseJavaModule {
     );
 
     if (cursor != null) {
-      while (cursor.moveToNext()) {
-        contact.putString("firstName", cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.GIVEN_NAME)));
-        contact.putString("lastName", cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.FAMILY_NAME)));
-        contact.putString("name", cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.DISPLAY_NAME)));
-        contact.putString("middleName", cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.MIDDLE_NAME)));
+      Map<String, String> fields = Collections.unmodifiableMap(new HashMap<String, String>() {
+        {
+          put("firstName", CommonDataKinds.StructuredName.GIVEN_NAME);
+          put("lastName", CommonDataKinds.StructuredName.FAMILY_NAME);
+          put("name", CommonDataKinds.StructuredName.DISPLAY_NAME);
+          put("middleName", CommonDataKinds.StructuredName.MIDDLE_NAME);
+        }
+      });
+      Map<String, String> optional = Collections.unmodifiableMap(new HashMap<String, String>() {
+        {
+          put("phoneticFirstName", CommonDataKinds.StructuredName.PHONETIC_GIVEN_NAME);
+          put("phoneticLastName", CommonDataKinds.StructuredName.PHONETIC_FAMILY_NAME);
+          put("phoneticMiddleName", CommonDataKinds.StructuredName.PHONETIC_MIDDLE_NAME);
+          put("namePrefix", CommonDataKinds.StructuredName.PREFIX);
+          put("nameSuffix", CommonDataKinds.StructuredName.SUFFIX);
+        }
+      });
 
-        if (fieldsSet.contains("phoneticFirstName")) {
-          contact.putString("phoneticFirstName", cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.PHONETIC_GIVEN_NAME)));
+      while (cursor.moveToNext()) {
+        for (String fieldName : fields.keySet()) {
+          String value = cursor.getString(cursor.getColumnIndex(fields.get(fieldName)));
+          if (value != null) {
+            contact.putString(fieldName, value);
+          }
         }
-        if (fieldsSet.contains("phoneticLastName")) {
-          contact.putString("phoneticLastName", cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.PHONETIC_FAMILY_NAME)));
-        }
-        if (fieldsSet.contains("phoneticMiddleName")) {
-          contact.putString("phoneticMiddleName", cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.PHONETIC_MIDDLE_NAME)));
-        }
-        if (fieldsSet.contains("namePrefix")) {
-          contact.putString("namePrefix", cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.PREFIX)));
-        }
-        if (fieldsSet.contains("nameSuffix")) {
-          contact.putString("nameSuffix", cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.SUFFIX)));
+        for (String fieldName : optional.keySet()) {
+          if (fieldsSet.contains(fieldName)) {
+            String value = cursor.getString(cursor.getColumnIndex(optional.get(fieldName)));
+            if (value != null) {
+              contact.putString(fieldName, value);
+            }
+          }
         }
       }
       cursor.close();
@@ -228,8 +223,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
     Cursor cursor = cr.query(
         Data.CONTENT_URI,
         null,
-        Data.CONTACT_ID + " = ? AND " + Data.MIMETYPE + " = ? AND " + CommonDataKinds.Nickname.TYPE +
-        "=" + CommonDataKinds.Nickname.TYPE_DEFAULT,
+        Data.CONTACT_ID + " = ? AND " + Data.MIMETYPE + " = ?",
         new String[] { Integer.toString(id), CommonDataKinds.Nickname.CONTENT_ITEM_TYPE },
         null
     );
@@ -237,7 +231,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
     String nickname = null;
     if (cursor != null) {
       while (cursor.moveToNext()) {
-          nickname =  cursor.getString(cursor.getColumnIndex(nickNameIndex));
+        nickname = cursor.getString(cursor.getColumnIndex(nickNameIndex));
       }
       cursor.close();
     }
@@ -293,13 +287,13 @@ public class ContactsModule extends ReactContextBaseJavaModule {
           }
 
           details.putString("label", label);
+          details.putInt("id", (int) cursor.getLong(cursor.getColumnIndex(CommonDataKinds.Email._ID)));
 
           emails.pushMap(details);
         }
       } finally {
         cursor.close();
       }
-      cursor.close();
     }
     return emails;
   }
@@ -360,6 +354,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
           }
 
           details.putString("label", label);
+          details.putInt("id", (int) cursor.getLong(cursor.getColumnIndex(CommonDataKinds.Phone._ID)));
 
           phoneNumbers.pushMap(details);
         }
@@ -389,10 +384,10 @@ public class ContactsModule extends ReactContextBaseJavaModule {
           String region = cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredPostal.REGION));
           String neighborhood = cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredPostal.NEIGHBORHOOD));
           String postcode = cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredPostal.POSTCODE));
-          String pobox = cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredPostal.POBOX));
+          String poBox = cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredPostal.POBOX));
           int type = cursor.getInt(cursor.getColumnIndex(CommonDataKinds.StructuredPostal.TYPE));
 
-          if (street == null && city == null && country == null && region == null && neighborhood == null && postcode == null && pobox == null) {
+          if (street == null && city == null && country == null && region == null && neighborhood == null && postcode == null && poBox == null) {
             return null;
           }
 
@@ -416,8 +411,8 @@ public class ContactsModule extends ReactContextBaseJavaModule {
           if (postcode != null) {
             details.putString("postcode", postcode);
           }
-          if (pobox != null) {
-            details.putString("pobox", pobox);
+          if (poBox != null) {
+            details.putString("poBox", poBox);
           }
 
           String label;
@@ -440,6 +435,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
           }
 
           details.putString("label", label);
+          details.putInt("id", (int) cursor.getLong(cursor.getColumnIndex(CommonDataKinds.StructuredPostal._ID)));
 
           addresses.pushMap(details);
         }
@@ -475,6 +471,38 @@ public class ContactsModule extends ReactContextBaseJavaModule {
       }
     }
     return null;
+  }
+
+  private WritableMap addImageInfoFromContentResolver(Set<String> fieldsSet, ContentResolver cr, WritableMap contact, int id) {
+    Cursor imageCursor = cr.query(
+        Data.CONTENT_URI,
+        null,
+        Data.CONTACT_ID + "= ? AND " +
+            Data.MIMETYPE + "= ?",
+        new String[] { Integer.toString(id), CommonDataKinds.Photo.CONTENT_ITEM_TYPE },
+        null
+    );
+    contact.putBoolean("imageAvailable", false);
+    if (imageCursor != null) {
+      try {
+        if (imageCursor.moveToFirst()) {
+          contact.putBoolean("imageAvailable", true);
+
+          if (fieldsSet.contains("thumbnail")) {
+            Uri imageUri = Uri.withAppendedPath(
+                ContentUris.withAppendedId(Contacts.CONTENT_URI, id),
+                Contacts.Photo.CONTENT_DIRECTORY);
+
+            WritableMap thumbnail = Arguments.createMap();
+            thumbnail.putString("uri", imageUri.toString());
+            contact.putMap("thumbnail", thumbnail);
+          }
+        }
+      } finally {
+        imageCursor.close();
+      }
+    }
+    return contact;
   }
 
   private String getNoteFromContentResolver(ContentResolver cr, int id) {
@@ -554,7 +582,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
             contact.putMap("birthday", details);
           } else if (!label.equals("birthday")) {
             details.putString("label", label);
-            details.putString("id", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Event._ID)));
+            details.putInt("id", (int) cursor.getLong(cursor.getColumnIndex(CommonDataKinds.Event._ID)));
             dates.pushMap(details);
           }
         }
@@ -565,13 +593,12 @@ public class ContactsModule extends ReactContextBaseJavaModule {
       } finally {
         cursor.close();
       }
-      cursor.close();
     }
     return contact;
   }
 
 
-  private WritableMap addInstantMessageAddressesFromContentResolver(int id, WritableMap contact, ContentResolver cr) {
+  private WritableArray getInstantMessageAddressesFromContentResolver(int id, ContentResolver cr) {
     WritableArray addresses = Arguments.createArray();
     Cursor cursor = cr.query(
         Data.CONTENT_URI,
@@ -587,7 +614,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
           String username = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Im.DATA));
           int type = cursor.getInt(cursor.getColumnIndex(CommonDataKinds.Im.TYPE));
           int protocol = cursor.getInt(cursor.getColumnIndex(CommonDataKinds.Im.PROTOCOL));
-          String imId = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Im._ID));
+          int imId = (int) cursor.getLong(cursor.getColumnIndex(CommonDataKinds.Im._ID));
 
           WritableMap details = Arguments.createMap();
 
@@ -648,7 +675,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
           details.putString("username", username);
           details.putString("label", label);
           details.putString("service", service);
-          details.putString("id", imId);
+          details.putInt("id", imId);
 
           addresses.pushMap(details);
         }
@@ -656,14 +683,10 @@ public class ContactsModule extends ReactContextBaseJavaModule {
         cursor.close();
       }
     }
-
-    if (addresses.size() > 0) {
-      contact.putArray("instantMessageAddresses", addresses);
-    }
-    return contact;
+    return addresses;
   }
 
-  private WritableMap addUrlAddressesFromContentResolver(int id, WritableMap contact, ContentResolver cr) {
+  private WritableArray getUrlAddressesFromContentResolver(int id, ContentResolver cr) {
     WritableArray addresses = Arguments.createArray();
     Cursor cursor = cr.query(
         Data.CONTENT_URI,
@@ -679,7 +702,6 @@ public class ContactsModule extends ReactContextBaseJavaModule {
           WritableMap details = Arguments.createMap();
 
           details.putString("url",cursor.getString(cursor.getColumnIndex(CommonDataKinds.Website.URL)));
-          details.putString("id", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Website._ID)));
           int type = cursor.getInt(cursor.getColumnIndex(CommonDataKinds.Website.TYPE));
           String label;
 
@@ -713,17 +735,95 @@ public class ContactsModule extends ReactContextBaseJavaModule {
           }
 
           details.putString("label", label);
+          details.putInt("id", (int) cursor.getLong(cursor.getColumnIndex(CommonDataKinds.Website._ID)));
           addresses.pushMap(details);
         }
       } finally {
         cursor.close();
       }
     }
+    return addresses;
+  }
 
-    if (addresses.size() > 0) {
-      contact.putArray("urls", addresses);
+  private WritableArray getRelationsFromContentResolver(int id, ContentResolver cr) {
+    WritableArray relations = Arguments.createArray();
+    Cursor cursor = cr.query(
+        Data.CONTENT_URI,
+        null,
+        Data.CONTACT_ID + " = ? AND " + Data.MIMETYPE + " = ?",
+        new String[] { Integer.toString(id), CommonDataKinds.Relation.CONTENT_ITEM_TYPE },
+        null
+    );
+
+    if (cursor != null) {
+      try {
+        while (cursor.moveToNext()) {
+          WritableMap details = Arguments.createMap();
+
+          details.putString("name",cursor.getString(cursor.getColumnIndex(CommonDataKinds.Relation.NAME)));
+          int type = cursor.getInt(cursor.getColumnIndex(CommonDataKinds.Relation.TYPE));
+          String label;
+
+          switch (type) {
+            case CommonDataKinds.Relation.TYPE_ASSISTANT:
+              label = "assistant";
+              break;
+            case CommonDataKinds.Relation.TYPE_BROTHER:
+              label = "bother";
+              break;
+            case CommonDataKinds.Relation.TYPE_CHILD:
+              label = "child";
+              break;
+            case CommonDataKinds.Relation.TYPE_DOMESTIC_PARTNER:
+              label = "domesticPartner";
+              break;
+            case CommonDataKinds.Relation.TYPE_FATHER:
+              label = "father";
+              break;
+            case CommonDataKinds.Relation.TYPE_FRIEND:
+              label = "friend";
+              break;
+            case CommonDataKinds.Relation.TYPE_MANAGER:
+              label = "manager";
+              break;
+            case CommonDataKinds.Relation.TYPE_MOTHER:
+              label = "mother";
+              break;
+            case CommonDataKinds.Relation.TYPE_PARENT:
+              label = "parent";
+              break;
+            case CommonDataKinds.Relation.TYPE_PARTNER:
+              label = "partner";
+              break;
+            case CommonDataKinds.Relation.TYPE_REFERRED_BY:
+              label = "referredBy";
+              break;
+            case CommonDataKinds.Relation.TYPE_RELATIVE:
+              label = "relative";
+              break;
+            case CommonDataKinds.Relation.TYPE_SISTER:
+              label = "sister";
+              break;
+            case CommonDataKinds.Relation.TYPE_SPOUSE:
+              label = "spouse";
+              break;
+            case CommonDataKinds.Relation.TYPE_CUSTOM:
+              label = "custom";
+              break;
+            default:
+              label = "unknown";
+          }
+
+          details.putString("label", label);
+          details.putInt("id", (int) cursor.getLong(cursor.getColumnIndex(CommonDataKinds.Relation._ID)));
+          relations.pushMap(details);
+        }
+      } finally {
+        cursor.close();
+      }
     }
-    return contact;
+
+    return relations;
   }
 
   private Set<String> getFieldsSet(final ReadableArray fields) {

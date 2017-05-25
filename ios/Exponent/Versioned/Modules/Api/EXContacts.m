@@ -170,7 +170,7 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSDictionary *)options resolver:(RCTPromiseR
       address[@"street"] = val.street;
       address[@"city"] = val.city;
       address[@"region"] = val.state;
-      address[@"postcode"] = val.postalCode;
+      address[@"postalCode"] = val.postalCode;
       address[@"country"] = val.country;
       address[@"isoCountryCode"] = val.ISOCountryCode;
       address[@"id"] = container.identifier;
