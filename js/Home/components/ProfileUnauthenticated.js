@@ -26,7 +26,7 @@ export default class ProfileUnauthenticated extends React.Component {
         </Text>
 
         <Text style={styles.descriptionText}>
-          To access your own projects or to like projects created by others,
+          To access your own projects,
           please sign in or create an Expo account.
         </Text>
 
