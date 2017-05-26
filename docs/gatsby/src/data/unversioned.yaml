@@ -68,6 +68,7 @@
     Google: /versions/unversioned/sdk/google.html
     Gyroscope: /versions/unversioned/sdk/gyroscope.html
     ImagePicker: /versions/unversioned/sdk/imagepicker.html
+    IntentLauncherAndroid: /versions/unversioned/sdk/intent-launcher.html
     KeepAwake: /versions/unversioned/sdk/keep-awake.html
     LinearGradient: /versions/unversioned/sdk/linear-gradient.html
     Location: /versions/unversioned/sdk/location.html
