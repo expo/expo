@@ -30,7 +30,7 @@ public class IntentLauncherModule extends ReactContextBaseJavaModule implements 
   @ReactMethod
   public void startActivity(String activity, @Nullable ReadableMap data, Promise promise) {
     if (pendingPromise != null) {
-      pendingPromise.reject("E_INTERRUPTED", "A new activity was started");
+      pendingPromise.reject("ERR_INTERRUPTED", "A new activity was started");
       pendingPromise = null;
     }
 
