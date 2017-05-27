@@ -25,7 +25,7 @@
     Expo and Create React Native App: /versions/v17.0.0/guides/create-react-native-app.html
     How Expo Works: /versions/v17.0.0/guides/how-expo-works.html
     Upgrading Expo: /versions/v17.0.0/guides/upgrading-expo.html
-- title: Tutorials
+- title: Guides
   index: /versions/v17.0.0/guides/index.html
   links:
     Assets: /versions/v17.0.0/guides/assets.html
@@ -39,6 +39,10 @@
     Using Firebase: /versions/v17.0.0/guides/using-firebase.html
     Using GraphQL: /versions/v17.0.0/guides/using-graphql.html
     Using Sentry: /versions/v17.0.0/guides/using-sentry.html
+- title: Tutorials
+  index: /versions/v17.0.0/tutorials/index.html
+  links:
+    Creating A 2D Game: /versions/v17.0.0/tutorials/create-floatyplane-game.html
 - title: SDK API Reference
   index: /versions/v17.0.0/sdk/index.html
   links:
