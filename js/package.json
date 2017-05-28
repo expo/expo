@@ -36,7 +36,7 @@
     "path": "^0.12.7",
     "querystring": "^0.2.0",
     "react": "16.0.0-alpha.6",
-    "react-apollo": "^1.0.1",
+    "react-apollo": "~1.0.1",
     "react-mixin": "^3.0.4",
     "react-native": "exponent/react-native#exp-latest",
     "react-native-button": "^1.7.1",
