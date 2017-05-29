@@ -68,3 +68,16 @@ Subscribe to location updates from the device.
 Returns a subscription object, which has one field:
 
 -   **remove (_function_)** -- Call this function with no arguments to remove this subscription. The callback will no longer be called for location updates.
+
+### `Expo.Location.getProviderStatusAsync()` (Android only)
+
+Check status of location providers.
+
+#### Returns
+
+Returns an object with the following fields:
+
+-   **locationServicesEnabled (_boolean_)** -- Whether location services are enabled.
+-   **gpsAvailable (_boolean_)** -- If the GPS provider is available, if yes, location data will be from GPS.
+-   **networkAvailable (_boolean_)** -- If the network provider is available, if yes, location data will be from cellular network.
+-   **passiveAvailable (_boolean_)** -- If the passive provider is available, if yes, location data will be determined passively.
