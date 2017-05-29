@@ -59,7 +59,7 @@ If you don't know what this means, let us handle it! :)
 
 ### If you choose to build for iOS
 
-The first time you build the project You will be prompted for your Apple ID and password for your developer account, and your Apple Team ID. This is needed to manage to manage certificates and provisioning profiles, so we can build and send off push notifications.
+The first time you build the project You will be prompted for your Apple ID and password for your developer account, and your Apple Team ID. This is needed to manage certificates and provisioning profiles, so we can build and send off push notifications.
 
 ```bash
 [exp] No currently active or previous builds for this project.
