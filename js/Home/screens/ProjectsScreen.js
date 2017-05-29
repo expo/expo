@@ -16,15 +16,12 @@ import {
 import { createFocusAwareComponent } from '@expo/ex-navigation';
 import { Constants } from 'expo';
 import { connect } from 'react-redux';
-import { take, takeRight } from 'lodash';
 
 import Alerts from '../constants/Alerts';
 import BrowserActions from 'BrowserActions';
 import Colors from '../constants/Colors';
 import DevIndicator from '../components/DevIndicator';
-import EmptyProjectsNotice from '../components/EmptyProjectsNotice';
 import SharedStyles from '../constants/SharedStyles';
-import SeeAllProjectsButton from '../components/SeeAllProjectsButton';
 import SmallProjectCard from '../components/SmallProjectCard';
 import ProjectTools from '../components/ProjectTools';
 
@@ -58,6 +55,13 @@ export default class HomeScreen extends React.Component {
     return (
       <View style={styles.container}>
         <ScrollView
+          key={
+            /* note(brent): sticky headers break re-rendering scrollview */
+            /* contents on sdk17, remove this in sdk18 */
+            Platform.OS === 'ios'
+              ? this.props.allHistory.count()
+              : 'scroll-view'
+          }
           stickyHeaderIndices={Platform.OS === 'ios' ? [0, 2] : []}
           style={styles.container}
           contentContainerStyle={styles.contentContainer}>
@@ -75,8 +79,8 @@ export default class HomeScreen extends React.Component {
               <Text style={styles.clearButtonText}>CLEAR</Text>
             </TouchableOpacity>
           </View>
-          {this._renderRecentHistory()}
 
+          {this._renderRecentHistory()}
           {this._renderExpoVersion()}
         </ScrollView>
 
@@ -139,9 +143,9 @@ export default class HomeScreen extends React.Component {
 
   _renderExpoVersion = () => {
     return (
-      <View style={styles.exponentVersionContainer}>
+      <View style={styles.expoVersionContainer}>
         <Text
-          style={styles.exponentVersionText}
+          style={styles.expoVersionText}
           onPress={this._copyClientVersionToClipboard}>
           Client version: {Constants.expoVersion}
         </Text>
@@ -189,8 +193,8 @@ const styles = StyleSheet.create({
   },
   clearButton: {
     position: 'absolute',
-    right: 15,
-    top: 0,
+    right: Platform.OS === 'android' ? 15 : 0,
+    top: Platform.OS === 'android' ? 12 : 0,
   },
   clearButtonText: {
     color: Colors.greyText,
@@ -202,7 +206,7 @@ const styles = StyleSheet.create({
       },
     }),
   },
-  exponentVersionContainer: {
+  expoVersionContainer: {
     paddingHorizontal: 20,
     paddingTop: 15,
     paddingBottom: 20,
@@ -210,7 +214,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
   },
-  exponentVersionText: {
+  expoVersionText: {
     color: 'rgba(0,0,0,0.1)',
     fontSize: 11,
   },
