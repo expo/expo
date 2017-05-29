@@ -80,6 +80,7 @@ export default class ProjectCard extends React.Component {
         <LikeButtonContainer
           style={{ position: 'absolute', top: 12, right: 12 }}
           appId={id}
+          likeCount={likeCount}
           liked={isLikedByMe}
         />
       </View>
