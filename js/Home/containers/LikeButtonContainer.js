@@ -10,26 +10,22 @@ import Connectivity from '../../Api/Connectivity';
 
 const LikeProjectMutation = gql`
   mutation PerformLike($appId: ID!) {
-    app(appId: $appId) {
-      like {
-        id
-        name
-        likeCount
-        isLikedByMe
-      }
+    likeApp(appId: $appId) {
+      id
+      name
+      likeCount
+      isLikedByMe
     }
   }
 `;
 
 const UnlikeProjectMutation = gql`
   mutation UndoLike($appId: ID!) {
-    app(appId: $appId) {
-      unlike {
-        id
-        name
-        likeCount
-        isLikedByMe
-      }
+    unlikeApp(appId: $appId) {
+      id
+      name
+      likeCount
+      isLikedByMe
     }
   }
 `;
@@ -95,39 +91,12 @@ export default class LikeButtonContainer extends React.Component {
   };
 
   likeAsync = async () => {
-    return this.props.likeMutation({
-      variables: { appId: this.props.appId },
-      optimisticResponse: {
-        __typename: 'Mutation',
-        app: {
-          __typename: 'AppMutation',
-          like: {
-            __typename: 'App',
-            id: this.props.appId,
-            isLikedByMe: true,
-            likeCount: this.props.likeCount + 1,
-          },
-        },
-      },
-    });
+    return this.props.likeMutation({ variables: { appId: this.props.appId } });
   };
 
   unlikeAsync = async () => {
     return this.props.unlikeMutation({
       variables: { appId: this.props.appId },
-      optimisticResponse: {
-        __typename: 'Mutation',
-        app: {
-          __typename: 'AppMutation',
-          unlike: {
-            __typename: 'App',
-            id: this.props.appId,
-            isLikedByMe: false,
-            likeCount: this.props.likeCount - 1,
-            name: this.props.name,
-          },
-        },
-      },
     });
   };
 }
