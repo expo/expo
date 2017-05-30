@@ -137,7 +137,7 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSDictionary *)options resolver:(RCTPromiseR
       contact[@"dates"] = [self _datesForContact:person];
     }
     if ([keysToFetch containsObject:CNContactRelationsKey]) {
-      contact[@"relations"] = [self _relationsForContact:person];
+      contact[@"relationships"] = [self _relationsForContact:person];
     }
 
     [response addObject:contact];
@@ -370,7 +370,7 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSDictionary *)options resolver:(RCTPromiseR
                                   @"instantMessageAddresses": CNContactInstantMessageAddressesKey,
                                   @"urlAddresses": CNContactUrlAddressesKey,
                                   @"dates": CNContactDatesKey,
-                                  @"relations": CNContactRelationsKey,
+                                  @"relationships": CNContactRelationsKey,
                                   @"name": [CNContactFormatter descriptorForRequiredKeysForStyle:CNContactFormatterStyleFullName],
                                   };
   NSMutableArray <id<CNKeyDescriptor>> *results = [NSMutableArray arrayWithCapacity:fields.count];

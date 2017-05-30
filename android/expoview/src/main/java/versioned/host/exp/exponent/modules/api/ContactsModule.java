@@ -131,8 +131,8 @@ public class ContactsModule extends ReactContextBaseJavaModule {
               getInstantMessageAddressesFromContentResolver(id, cr) : null);
           collections.put("urlAddresses", fieldsSet.contains("urlAddresses") ?
               getUrlAddressesFromContentResolver(id, cr) : null);
-          collections.put("relations", fieldsSet.contains("relations") ?
-              getRelationsFromContentResolver(id, cr) : null);
+          collections.put("relationships", fieldsSet.contains("relationships") ?
+              getRelationshipsFromContentResolver(id, cr) : null);
 
           for (String fieldName : collections.keySet()) {
             WritableArray value = collections.get(fieldName);
@@ -747,8 +747,8 @@ public class ContactsModule extends ReactContextBaseJavaModule {
     return addresses;
   }
 
-  private WritableArray getRelationsFromContentResolver(long id, ContentResolver cr) {
-    WritableArray relations = Arguments.createArray();
+  private WritableArray getRelationshipsFromContentResolver(long id, ContentResolver cr) {
+    WritableArray relationships = Arguments.createArray();
     Cursor cursor = cr.query(
         Data.CONTENT_URI,
         null,
@@ -818,14 +818,14 @@ public class ContactsModule extends ReactContextBaseJavaModule {
 
           details.putString("label", label);
           details.putDouble("id", cursor.getLong(cursor.getColumnIndex(CommonDataKinds.Relation._ID)));
-          relations.pushMap(details);
+          relationships.pushMap(details);
         }
       } finally {
         cursor.close();
       }
     }
 
-    return relations;
+    return relationships;
   }
 
   private Set<String> getFieldsSet(final ReadableArray fields) {
