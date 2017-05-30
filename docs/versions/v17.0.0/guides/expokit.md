@@ -64,6 +64,8 @@ Your ExpoKit project manages its dependencies with [CocoaPods](https://cocoapods
 
 Many libraries in the React Native ecosystem include instructions to run `react-native link`. These are supported with ExpoKit for iOS, but because `react-native link` is not aware of CocoaPods, it may not do a complete job installing your dependency. If you encounter build issues locating the `<React/*>` headers, you may need to manually add `Pods/Headers/Public` to the **Header Search Paths** configuration for your native dependency in Xcode.
 
+If you're not familiar with Xcode, search Xcode help for "configure build settings" to get an idea of how those work. **Header Search Paths** is one such build setting. The target you care to configure is the one created by `react-native link` inside your Xcode project. You'll want to determine the relative path from your library to `Pods/Headers/Public`.
+
 ### Android
 
 Many libraries in the React Native ecosystem include instructions to run `react-native link`. These are supported with ExpoKit for Android.
