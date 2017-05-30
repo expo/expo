@@ -218,13 +218,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		787C91291B27EC6700786A57 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 787C91251B27EC6700786A57 /* EXURLHandler.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 789788DE1AF23588009CD9D5;
-			remoteInfo = EXURLHandler;
-		};
 		B51333451CE649FE00E9FC9E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 78CEE2B81ACD07D70095B124 /* Project object */;
@@ -406,7 +399,6 @@
 		7847A3711EC0F1550088BF69 /* RNSVGVBMOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSVGVBMOS.h; sourceTree = "<group>"; };
 		7847A3721EC0F1550088BF69 /* RNSVGViewBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSVGViewBox.h; sourceTree = "<group>"; };
 		7847A3731EC0F1550088BF69 /* RNSVGViewBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNSVGViewBox.m; sourceTree = "<group>"; };
-		787C91251B27EC6700786A57 /* EXURLHandler.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXURLHandler.xcodeproj; path = "../js/node_modules/react-native-url-handler/iOS/EXURLHandler.xcodeproj"; sourceTree = "<group>"; };
 		78CEE2C01ACD07D70095B124 /* Exponent.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Exponent.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		78CEE2D01ACD07D70095B124 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		78CEE2D31ACD07D70095B124 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -830,19 +822,10 @@
 			isa = PBXGroup;
 			children = (
 				F77DDB921E04AC1100624CA2 /* SafariServices.framework */,
-				787C91251B27EC6700786A57 /* EXURLHandler.xcodeproj */,
 				1B1D1884419563A8205AED29 /* libPods-Exponent.a */,
 				0B84B3DEFB2C488FAE7279AD /* libPods-ExponentIntegrationTests.a */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		787C91261B27EC6700786A57 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				787C912A1B27EC6700786A57 /* libEXURLHandler.a */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		78CEE2B71ACD07D70095B124 = {
@@ -1523,12 +1506,6 @@
 			mainGroup = 78CEE2B71ACD07D70095B124;
 			productRefGroup = 78CEE2C11ACD07D70095B124 /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 787C91261B27EC6700786A57 /* Products */;
-					ProjectRef = 787C91251B27EC6700786A57 /* EXURLHandler.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				78CEE2BF1ACD07D70095B124 /* Exponent */,
@@ -1536,16 +1513,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		787C912A1B27EC6700786A57 /* libEXURLHandler.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libEXURLHandler.a;
-			remoteRef = 787C91291B27EC6700786A57 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		78CEE2BE1ACD07D70095B124 /* Resources */ = {

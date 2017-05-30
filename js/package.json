@@ -43,7 +43,6 @@
     "react-native-deprecated-custom-components": "^0.1.0",
     "react-native-infinite-scroll-view": "^0.4.2",
     "react-native-scrollable-mixin": "1.0.1",
-    "react-native-url-handler": "^0.4.3",
     "react-native-util": "^1.0.2",
     "react-redux": "^5.0.1",
     "react-timer-mixin": "^0.13.3",
