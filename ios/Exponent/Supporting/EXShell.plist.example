@@ -6,8 +6,6 @@
 	<true/>
 	<key>isShell</key>
 	<true/>
-	<key>developmentUrl</key>
-	<string>exp://exp.host/@community/pomodoro</string>
 	<key>manifestUrl</key>
 	<string>exp://exp.host/@community/pomodoro</string>
 	<key>isManifestVerificationBypassed</key>
