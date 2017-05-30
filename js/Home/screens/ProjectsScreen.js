@@ -18,6 +18,7 @@ import { Constants } from 'expo';
 import { connect } from 'react-redux';
 
 import Alerts from '../constants/Alerts';
+import OpenProjectByURLButton from '../components/OpenProjectByURLButton';
 import BrowserActions from 'BrowserActions';
 import Colors from '../constants/Colors';
 import DevIndicator from '../components/DevIndicator';
@@ -39,6 +40,11 @@ export default class HomeScreen extends React.Component {
   static route = {
     navigationBar: {
       title: 'Projects',
+      ...Platform.select({
+        ios: {
+          renderRight: () => <OpenProjectByURLButton />,
+        },
+      }),
     },
   };
 
