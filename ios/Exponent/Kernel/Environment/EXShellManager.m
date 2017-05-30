@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXAnalytics.h"
+#import "EXKernelUtil.h"
 #import "EXShellManager.h"
 
 #import <Crashlytics/Crashlytics.h>
@@ -26,7 +27,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
 - (id)init
 {
   if (self = [super init]) {
-    [self _loadShellConfig];
+    [self _loadConfig];
   }
   return self;
 }
@@ -43,24 +44,32 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
   _allManifestUrls = @[];
 }
 
-- (void)_loadShellConfig
+- (void)_loadConfig
 {
   [self _reset];
+  
+  // load EXShell.plist
   NSString *configPath = [[NSBundle mainBundle] pathForResource:@"EXShell" ofType:@"plist"];
-  NSMutableDictionary *mutableConfig = (configPath) ? [NSMutableDictionary dictionaryWithContentsOfFile:configPath] : [NSMutableDictionary dictionary];
+  NSDictionary *shellConfig = (configPath) ? [NSDictionary dictionaryWithContentsOfFile:configPath] : [NSDictionary dictionary];
+  
+  // load EXBuildConstants.plist
+  NSString *buildConstantsPath = [[NSBundle mainBundle] pathForResource:@"EXBuildConstants" ofType:@"plist"];
+  NSDictionary *constantsConfig = (buildConstantsPath) ? [NSDictionary dictionaryWithContentsOfFile:buildConstantsPath] : [NSDictionary dictionary];
+  
   NSMutableArray *allManifestUrls = [NSMutableArray array];
 
-  if (mutableConfig) {
-    _isShell = [mutableConfig[@"isShell"] boolValue];
+  if (shellConfig) {
+    _isShell = [shellConfig[@"isShell"] boolValue];
     if (_isShell) {
-      _shellManifestUrl = mutableConfig[@"manifestUrl"];
+      _shellManifestUrl = shellConfig[@"manifestUrl"];
       if (_shellManifestUrl) {
         [allManifestUrls addObject:_shellManifestUrl];
       }
 #if DEBUG
-      if (mutableConfig[@"developmentUrl"]) {
-        _shellManifestUrl = mutableConfig[@"developmentUrl"];
-        [allManifestUrls addObject:mutableConfig[@"developmentUrl"]];
+      NSString *developmentUrl = [self _developmentUrlFromConfig:constantsConfig fallbackToShellConfig:shellConfig];
+      if (developmentUrl) {
+        _shellManifestUrl = developmentUrl;
+        [allManifestUrls addObject:developmentUrl];
         NSURLComponents *components = [NSURLComponents componentsWithURL:[NSURL URLWithString:_shellManifestUrl] resolvingAgainstBaseURL:YES];
         if ([self _isValidShellUrlScheme:components.scheme]) {
           _urlScheme = components.scheme;
@@ -90,10 +99,10 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
       }
 #endif
       RCTAssert((_shellManifestUrl), @"This app is configured to be a standalone app, but does not specify a standalone experience url.");
-      _isManifestVerificationBypassed = [[mutableConfig objectForKey:@"isManifestVerificationBypassed"] boolValue];
-      _isRemoteJSEnabled = ([mutableConfig objectForKey:@"isRemoteJSEnabled"] == nil) ?
+      _isManifestVerificationBypassed = [shellConfig[@"isManifestVerificationBypassed"] boolValue];
+      _isRemoteJSEnabled = (shellConfig[@"isRemoteJSEnabled"] == nil) ?
         YES :
-        [[mutableConfig objectForKey:@"isRemoteJSEnabled"] boolValue];
+        [shellConfig[@"isRemoteJSEnabled"] boolValue];
       // other shell config goes here
 
       [[EXAnalytics sharedInstance] setUserProperties:@{ @"INITIAL_URL": _shellManifestUrl }];
@@ -114,6 +123,18 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
 - (BOOL)hasUrlScheme
 {
   return (_urlScheme != nil);
+}
+
+- (NSString *)_developmentUrlFromConfig:(NSDictionary *)config fallbackToShellConfig:(NSDictionary *)shellConfig
+{
+  if (config && config[@"developmentUrl"]) {
+    return config[@"developmentUrl"];
+  }
+  if (shellConfig && shellConfig[@"developmentUrl"]) {
+    DDLogWarn(@"Configuring your ExpoKit `developmentUrl` in EXShell.plist is deprecated, specify this in EXBuildConstants.plist instead.");
+    return shellConfig[@"developmentUrl"];
+  }
+  return nil;
 }
 
 - (BOOL)_isValidShellUrlScheme:(NSString *)urlScheme
