@@ -24,7 +24,6 @@ import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 import io.nlopez.smartlocation.location.config.LocationAccuracy;
 import io.nlopez.smartlocation.location.config.LocationParams;
-import versioned.host.exp.exponent.ScopedReactApplicationContext;
 
 public class LocationModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
 
