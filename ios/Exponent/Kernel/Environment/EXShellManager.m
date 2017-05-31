@@ -32,6 +32,16 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
   return self;
 }
 
+- (BOOL)isShellUrlScheme:(NSString *)scheme
+{
+  return (_urlScheme && [scheme isEqualToString:_urlScheme]);
+}
+
+- (BOOL)hasUrlScheme
+{
+  return (_urlScheme != nil);
+}
+
 #pragma mark internal
 
 - (void)_reset
@@ -66,75 +76,84 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
         [allManifestUrls addObject:_shellManifestUrl];
       }
 #if DEBUG
-      NSString *developmentUrl = [self _developmentUrlFromConfig:constantsConfig fallbackToShellConfig:shellConfig];
-      if (developmentUrl) {
-        _shellManifestUrl = developmentUrl;
-        [allManifestUrls addObject:developmentUrl];
-        NSURLComponents *components = [NSURLComponents componentsWithURL:[NSURL URLWithString:_shellManifestUrl] resolvingAgainstBaseURL:YES];
-        if ([self _isValidShellUrlScheme:components.scheme]) {
-          _urlScheme = components.scheme;
-        }
-        _usesPublishedManifest = NO;
-      } else {
-        NSAssert(NO, @"No development url was configured. You must open this project with Expo before running it from XCode.");
-      }
+      // local shell development: point shell manifest url at local development url
+      [self _loadDevelopmentUrlAndSchemeFromConfig:constantsConfig fallbackToShellConfig:shellConfig];
+      [allManifestUrls addObject:_shellManifestUrl];
 #else
-      NSDictionary *iosConfig = [[NSBundle mainBundle] infoDictionary];
-      if (iosConfig[@"CFBundleURLTypes"]) {
-        // if the shell app has a custom url scheme, read that.
-        // this was configured when the shell app was built.
-        NSArray *urlTypes = iosConfig[@"CFBundleURLTypes"];
-        if (urlTypes && urlTypes.count) {
-          NSDictionary *urlType = urlTypes[0];
-          NSArray *urlSchemes = urlType[@"CFBundleURLSchemes"];
-          if (urlSchemes) {
-            for (NSString *urlScheme in urlSchemes) {
-              if ([self _isValidShellUrlScheme:urlScheme]) {
-                _urlScheme = urlScheme;
-                break;
-              }
-            }
-          }
-        }
-      }
+      // load shell app configured url scheme (prod only - in dev we expect the `exp<udid>` scheme)
+      [self _loadProductionUrlScheme];
 #endif
       RCTAssert((_shellManifestUrl), @"This app is configured to be a standalone app, but does not specify a standalone experience url.");
-      _isManifestVerificationBypassed = [shellConfig[@"isManifestVerificationBypassed"] boolValue];
-      _isRemoteJSEnabled = (shellConfig[@"isRemoteJSEnabled"] == nil) ?
-        YES :
-        [shellConfig[@"isRemoteJSEnabled"] boolValue];
-      // other shell config goes here
+      
+      // load everything else from EXShell
+      [self _loadMiscShellPropertiesWithConfig:shellConfig];
 
-      [[EXAnalytics sharedInstance] setUserProperties:@{ @"INITIAL_URL": _shellManifestUrl }];
-      [CrashlyticsKit setObjectValue:_shellManifestUrl forKey:@"initial_url"];
-#ifdef EX_DETACHED
-      [[EXAnalytics sharedInstance] setUserProperties:@{ @"IS_DETACHED": @YES }];
-#endif
+      [self _setAnalyticsProperties];
     }
   }
   _allManifestUrls = allManifestUrls;
 }
 
-- (BOOL)isShellUrlScheme:(NSString *)scheme
+- (void)_loadDevelopmentUrlAndSchemeFromConfig:(NSDictionary *)config fallbackToShellConfig:(NSDictionary *)shellConfig
 {
-  return (_urlScheme && [scheme isEqualToString:_urlScheme]);
-}
-
-- (BOOL)hasUrlScheme
-{
-  return (_urlScheme != nil);
-}
-
-- (NSString *)_developmentUrlFromConfig:(NSDictionary *)config fallbackToShellConfig:(NSDictionary *)shellConfig
-{
+  NSString *developmentUrl = nil;
   if (config && config[@"developmentUrl"]) {
-    return config[@"developmentUrl"];
-  }
-  if (shellConfig && shellConfig[@"developmentUrl"]) {
+    developmentUrl = config[@"developmentUrl"];
+  } else if (shellConfig && shellConfig[@"developmentUrl"]) {
     DDLogWarn(@"Configuring your ExpoKit `developmentUrl` in EXShell.plist is deprecated, specify this in EXBuildConstants.plist instead.");
-    return shellConfig[@"developmentUrl"];
+    developmentUrl = shellConfig[@"developmentUrl"];
   }
-  return nil;
+  
+  if (developmentUrl) {
+    _shellManifestUrl = developmentUrl;
+    NSURLComponents *components = [NSURLComponents componentsWithURL:[NSURL URLWithString:_shellManifestUrl] resolvingAgainstBaseURL:YES];
+    if ([self _isValidShellUrlScheme:components.scheme]) {
+      _urlScheme = components.scheme;
+    }
+    _usesPublishedManifest = NO;
+  } else {
+    NSAssert(NO, @"No development url was configured. You must open this project with Expo before running it from XCode.");
+  }
+}
+
+- (void)_loadProductionUrlScheme
+{
+  NSDictionary *iosConfig = [[NSBundle mainBundle] infoDictionary];
+  if (iosConfig[@"CFBundleURLTypes"]) {
+    // if the shell app has a custom url scheme, read that.
+    // this was configured when the shell app was built.
+    NSArray *urlTypes = iosConfig[@"CFBundleURLTypes"];
+    if (urlTypes && urlTypes.count) {
+      NSDictionary *urlType = urlTypes[0];
+      NSArray *urlSchemes = urlType[@"CFBundleURLSchemes"];
+      if (urlSchemes) {
+        for (NSString *urlScheme in urlSchemes) {
+          if ([self _isValidShellUrlScheme:urlScheme]) {
+            _urlScheme = urlScheme;
+            break;
+          }
+        }
+      }
+    }
+  }
+}
+
+- (void)_loadMiscShellPropertiesWithConfig:(NSDictionary *)shellConfig
+{
+  _isManifestVerificationBypassed = [shellConfig[@"isManifestVerificationBypassed"] boolValue];
+  _isRemoteJSEnabled = (shellConfig[@"isRemoteJSEnabled"] == nil)
+    ? YES
+    : [shellConfig[@"isRemoteJSEnabled"] boolValue];
+  // other shell config goes here
+}
+
+- (void)_setAnalyticsProperties
+{
+  [[EXAnalytics sharedInstance] setUserProperties:@{ @"INITIAL_URL": _shellManifestUrl }];
+  [CrashlyticsKit setObjectValue:_shellManifestUrl forKey:@"initial_url"];
+#ifdef EX_DETACHED
+  [[EXAnalytics sharedInstance] setUserProperties:@{ @"IS_DETACHED": @YES }];
+#endif
 }
 
 - (BOOL)_isValidShellUrlScheme:(NSString *)urlScheme
