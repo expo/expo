@@ -32,7 +32,7 @@ import okhttp3.Response;
 public class Crypto {
 
   public interface RSASignatureListener {
-    void onError(String errorMessage);
+    void onError(String errorMessage, boolean isNetworkError);
     void onCompleted(boolean isValid);
   }
 
@@ -61,7 +61,7 @@ public class Crypto {
     mExponentNetwork.getClient().call(request, new Callback() {
       @Override
       public void onFailure(Call call, IOException e) {
-        listener.onError(e.toString());
+        listener.onError(e.toString(), true);
       }
 
       @Override
@@ -91,7 +91,7 @@ public class Crypto {
         if (isFirstAttempt) {
           fetchPublicKeyAndVerifyPublicRSASignature(false, publicKeyUrl, plainText, cipherText, listener);
         } else {
-          listener.onError(errorMessage);
+          listener.onError(errorMessage, false);
         }
       }
     });
