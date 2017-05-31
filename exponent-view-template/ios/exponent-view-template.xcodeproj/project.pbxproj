@@ -14,6 +14,7 @@
 		B56386611DB96A5E00A0598C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B563865E1DB96A5E00A0598C /* main.m */; };
 		B56386671DB9994300A0598C /* EXSDKVersions.plist in Resources */ = {isa = PBXBuildFile; fileRef = B56386661DB9994300A0598C /* EXSDKVersions.plist */; };
 		B56AC1081E417996005C22D6 /* kernel-manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = B56AC1071E417996005C22D6 /* kernel-manifest.json */; };
+		B5CFBF4F1EDE419400B4BE24 /* EXBuildConstants.plist in Resources */ = {isa = PBXBuildFile; fileRef = B5CFBF4E1EDE419400B4BE24 /* EXBuildConstants.plist */; };
 		EBB8117C1BFA0514F79CAF74 /* libPods-exponent-view-template.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C4A88D15726AD99E8A257BC7 /* libPods-exponent-view-template.a */; };
 /* End PBXBuildFile section */
 
@@ -30,6 +31,7 @@
 		B563865E1DB96A5E00A0598C /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B56386661DB9994300A0598C /* EXSDKVersions.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = EXSDKVersions.plist; sourceTree = "<group>"; };
 		B56AC1071E417996005C22D6 /* kernel-manifest.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "kernel-manifest.json"; sourceTree = "<group>"; };
+		B5CFBF4E1EDE419400B4BE24 /* EXBuildConstants.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = EXBuildConstants.plist; sourceTree = "<group>"; };
 		C4A88D15726AD99E8A257BC7 /* libPods-exponent-view-template.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-exponent-view-template.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -94,6 +96,7 @@
 		B563865B1DB96A5E00A0598C /* Supporting */ = {
 			isa = PBXGroup;
 			children = (
+				B5CFBF4E1EDE419400B4BE24 /* EXBuildConstants.plist */,
 				B56AC1071E417996005C22D6 /* kernel-manifest.json */,
 				B501732A1DC01252003445D9 /* EXShell.plist */,
 				B56386661DB9994300A0598C /* EXSDKVersions.plist */,
@@ -169,6 +172,7 @@
 			files = (
 				B56AC1081E417996005C22D6 /* kernel-manifest.json in Resources */,
 				B501732B1DC01252003445D9 /* EXShell.plist in Resources */,
+				B5CFBF4F1EDE419400B4BE24 /* EXBuildConstants.plist in Resources */,
 				B56386601DB96A5E00A0598C /* LaunchScreen.storyboard in Resources */,
 				B56386671DB9994300A0598C /* EXSDKVersions.plist in Resources */,
 				B56386511DB9693800A0598C /* Assets.xcassets in Resources */,
