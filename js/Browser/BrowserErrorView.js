@@ -61,7 +61,7 @@ export default class BrowserErrorView extends React.Component {
     let message = this._readableMessage(error);
     let actionButtons = [];
 
-    if (error.code !== '404') {
+    if (error.code !== '404' || this.props.isShell) {
       actionButtons.push(
         <Button
           onPress={onRefresh}
@@ -76,7 +76,7 @@ export default class BrowserErrorView extends React.Component {
       actionButtons.push(
         <Button
           onPress={this._goToHome.bind(this)}
-          style={[styles.button, actionButtons.length > 0 && styles.lastButton]}
+          style={styles.button}
           key="home-button">
           Go back to Expo Home
         </Button>
