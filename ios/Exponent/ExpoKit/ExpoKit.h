@@ -29,6 +29,14 @@ FOUNDATION_EXPORT NSString * const EXAppDidRegisterForRemoteNotificationsNotific
  */
 @property (nonatomic, strong) NSDictionary *applicationKeys;
 
+#pragma mark - remote JS loading hooks
+
+/**
+ *  If specified, use this url instead of the one configured in `EXShell.plist`.
+ *  Must be set prior to loading the RN application.
+ */
+@property (nonatomic, strong, nullable) NSString *publishedManifestUrlOverride;
+
 #pragma mark - misc AppDelegate hooks
 
 - (void)setLaunchOptions:(NSDictionary * _Nullable)launchOptions;

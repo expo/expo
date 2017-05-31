@@ -2,6 +2,7 @@
 
 #import "EXAnalytics.h"
 #import "EXKernelUtil.h"
+#import "ExpoKit.h"
 #import "EXShellManager.h"
 
 #import <Crashlytics/Crashlytics.h>
@@ -71,14 +72,17 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
   if (shellConfig) {
     _isShell = [shellConfig[@"isShell"] boolValue];
     if (_isShell) {
-      _shellManifestUrl = shellConfig[@"manifestUrl"];
+      // configure published shell url
+      [self _loadProductionUrlFromConfig:shellConfig];
       if (_shellManifestUrl) {
         [allManifestUrls addObject:_shellManifestUrl];
       }
 #if DEBUG
       // local shell development: point shell manifest url at local development url
       [self _loadDevelopmentUrlAndSchemeFromConfig:constantsConfig fallbackToShellConfig:shellConfig];
-      [allManifestUrls addObject:_shellManifestUrl];
+      if (_shellManifestUrl) {
+        [allManifestUrls addObject:_shellManifestUrl];
+      }
 #else
       // load shell app configured url scheme (prod only - in dev we expect the `exp<udid>` scheme)
       [self _loadProductionUrlScheme];
@@ -92,6 +96,14 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
     }
   }
   _allManifestUrls = allManifestUrls;
+}
+
+- (void)_loadProductionUrlFromConfig:(NSDictionary *)shellConfig
+{
+  _shellManifestUrl = shellConfig[@"manifestUrl"];
+  if ([ExpoKit sharedInstance].publishedManifestUrlOverride) {
+    _shellManifestUrl = [ExpoKit sharedInstance].publishedManifestUrlOverride;
+  }
 }
 
 - (void)_loadDevelopmentUrlAndSchemeFromConfig:(NSDictionary *)config fallbackToShellConfig:(NSDictionary *)shellConfig
