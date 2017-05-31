@@ -295,7 +295,6 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
 - (BOOL)kernelModuleShouldEnableDevtools:(__unused EXKernelModule *)module
 {
   return (
-    (![EXKernelDevKeyCommands sharedInstance].isLegacyMenuBehaviorEnabled) &&
     _bridgeRegistry.lastKnownForegroundAppManager != _bridgeRegistry.kernelAppManager &&
     [_bridgeRegistry.lastKnownForegroundAppManager areDevtoolsEnabled]
   );
