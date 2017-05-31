@@ -204,10 +204,10 @@ let BrowserActions = {
 
     if (settings && settings.legacyMenuGesture) {
       try {
-        await ExponentKernel.setIsLegacyMenuBehaviorEnabledAsync(
-          useLegacyGesture
-        );
-      } catch (e) {}
+        await ExponentKernel.setIsLegacyMenuBehaviorEnabledAsync(true);
+      } catch (e) {
+        // todo: log error to backend
+      }
     }
 
     return { settings };
