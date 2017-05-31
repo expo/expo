@@ -39,7 +39,7 @@ export default class BrowserErrorView extends React.Component {
     let detailContent, detailButton;
     if (this.state.isShowingDetails) {
       detailContent = (
-        <View>
+        <View style={styles.detailsContainer}>
           <Text style={styles.originalUrl}>
             {error.originalUrl}
           </Text>
@@ -59,17 +59,26 @@ export default class BrowserErrorView extends React.Component {
     }
 
     let message = this._readableMessage(error);
-    let actionButton;
-    if (error.code === '404' && !this.props.isShell) {
-      actionButton = (
-        <Button onPress={this._goToHome.bind(this)} style={styles.button}>
-          Back to Expo Home
+    let actionButtons = [];
+
+    if (error.code !== '404') {
+      actionButtons.push(
+        <Button
+          onPress={onRefresh}
+          style={styles.button}
+          key="try-again-button">
+          Try Again
         </Button>
       );
-    } else {
-      actionButton = (
-        <Button onPress={onRefresh} style={styles.button}>
-          Try Again
+    }
+
+    if (!this.props.isShell) {
+      actionButtons.push(
+        <Button
+          onPress={this._goToHome.bind(this)}
+          style={[styles.button, actionButtons.length > 0 && styles.lastButton]}
+          key="home-button">
+          Go back to Expo Home
         </Button>
       );
     }
@@ -81,7 +90,7 @@ export default class BrowserErrorView extends React.Component {
         style={[styles.container, style]}>
         <Text style={styles.message}>{message}</Text>
         <View style={styles.buttonContainer}>
-          {actionButton}
+          {actionButtons}
           {detailButton}
         </View>
         {detailContent}
@@ -129,6 +138,9 @@ let styles = StyleSheet.create({
     marginHorizontal: 40,
     marginBottom: 8,
   },
+  detailsContainer: {
+    marginTop: 14,
+  },
   detail: {
     color: ExColors.grayText,
     marginHorizontal: 40,
@@ -139,16 +151,17 @@ let styles = StyleSheet.create({
     marginBottom: 4,
   },
   buttonContainer: {
-    marginTop: 4,
+    marginTop: 12,
     marginHorizontal: 40,
     flexDirection: 'column',
   },
   button: {
     fontSize: 14,
     fontWeight: 'normal',
-    padding: 16,
+    padding: 8,
   },
   detailButton: {
+    marginTop: 12,
     fontSize: 12,
     color: ExColors.grayText,
   },
