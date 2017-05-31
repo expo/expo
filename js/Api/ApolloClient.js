@@ -1,6 +1,6 @@
 /* @flow */
 
-import ApolloClient, { createNetworkInterface } from 'apollo-client';
+import ApolloClient from 'apollo-client';
 import createAuthAwareNetworkInterface from './createAuthAwareNetworkInterface';
 import Auth0Api from './Auth0Api';
 import AuthTokenActions from '../Flux/AuthTokenActions';
@@ -42,6 +42,14 @@ function idTokenIsValid() {
 
 async function refreshIdTokenAsync() {
   let newAuthTokens = await Auth0Api.refreshIdTokenAsync(getRefreshToken());
+  if (__DEV__) {
+    if (!newAuthTokens.id_token) {
+      alert(
+        'Failed to refresh id token! Talk to whoever is maintaining home and ' +
+          'let them know that the refresh flow is broken'
+      );
+    }
+  }
   return newAuthTokens.id_token;
 }
 

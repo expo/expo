@@ -1,30 +1,56 @@
 /* @flow */
 
-import { createNetworkInterface } from 'apollo-client';
 import ConnectivityAwareHTTPNetworkInterface
   from './ConnectivityAwareHTTPNetworkInterface';
 
 type AuthAwareNetworkInterfaceOptions = {
+  uri: string,
   getIdToken: () => string,
   setIdToken: (idToken: string) => void,
   getRefreshToken: () => string,
   idTokenIsValid: () => boolean,
-  refreshIdTokenAsync: () => string,
+  refreshIdTokenAsync: () => Promise<string>,
 };
+
+// note(brentvatne): in dev we will always try to refresh our id token when we
+// load the app, in order to surface any problems with our refresh token flow
+let DEBUG_INVALIDATE_ID_TOKEN_ON_LOAD = __DEV__;
 
 class AuthAwareNetworkInterface {
   _requestQueue = [];
+  _setIdToken: (token: string) => void;
+  _getIdToken: () => ?string;
+  _getRefreshToken: () => ?string;
+  _refreshIdTokenAsync: () => Promise<string>;
+  _idTokenIsValid: () => boolean;
+  _networkInterface: ConnectivityAwareHTTPNetworkInterface;
 
-  constructor(uri: string, options: AuthAwareNetworkInterfaceOptions = {}) {
+  __debug_hasCompletedRefresh: any;
+
+  constructor(options: AuthAwareNetworkInterfaceOptions) {
+    let {
+      uri,
+      getIdToken,
+      setIdToken,
+      getRefreshToken,
+      idTokenIsValid,
+      refreshIdTokenAsync,
+      ...connectivityInterfaceOptions
+    } = options;
+
+    if (DEBUG_INVALIDATE_ID_TOKEN_ON_LOAD) {
+      this.__debug_hasCompletedRefresh = false;
+    }
+
     this._networkInterface = new ConnectivityAwareHTTPNetworkInterface(
       uri,
-      options
+      connectivityInterfaceOptions
     );
-    this._getIdToken = options.getIdToken;
-    this._setIdToken = options.setIdToken;
-    this._getRefreshToken = options.getRefreshToken;
-    this._idTokenIsValid = options.idTokenIsValid;
-    this._refreshIdTokenAsync = options.refreshIdTokenAsync;
+    this._getIdToken = getIdToken;
+    this._setIdToken = setIdToken;
+    this._getRefreshToken = getRefreshToken;
+    this._idTokenIsValid = idTokenIsValid;
+    this._refreshIdTokenAsync = refreshIdTokenAsync;
 
     this._applyAuthorizationHeaderMiddleware();
   }
@@ -48,8 +74,11 @@ class AuthAwareNetworkInterface {
     ]);
   };
 
-  query(request) {
-    if (this._idTokenIsValid() || !this._getIdToken()) {
+  query(request: any) {
+    if (
+      this.__debug_shouldForceRefreshToken() &&
+      (this._idTokenIsValid() || !this._getIdToken())
+    ) {
       return this._networkInterface.query(request);
     } else {
       // Throw it into the queue
@@ -62,28 +91,45 @@ class AuthAwareNetworkInterface {
         if (this._requestQueue.length === 1) {
           let newIdToken = await this._refreshIdTokenAsync();
           this._setIdToken(newIdToken);
+          this.__debug_doneForceRefreshToken();
           this._flushRequestQueue();
         }
       });
     }
   }
 
+  __debug_shouldForceRefreshToken = () => {
+    if (!DEBUG_INVALIDATE_ID_TOKEN_ON_LOAD) {
+      return true;
+    }
+
+    return this.__debug_hasCompletedRefresh;
+  };
+
+  __debug_doneForceRefreshToken = () => {
+    if (!DEBUG_INVALIDATE_ID_TOKEN_ON_LOAD) {
+      return;
+    }
+
+    this.__debug_hasCompletedRefresh = true;
+  };
+
   _flushRequestQueue() {
     this._requestQueue.forEach(queuedRequest => queuedRequest());
     this._requestQueue = [];
   }
 
-  use(middleware) {
+  use(middleware: any) {
     return this._networkInterface.use(middleware);
   }
 
-  useAfter(afterware) {
+  useAfter(afterware: any) {
     return this._networkInterface.useAfter(afterware);
   }
 }
 
-export default function createAuthAwareNetworkInterface(options = {}) {
-  let { uri, ...otherOptions } = options;
-
-  return new AuthAwareNetworkInterface(uri, otherOptions);
+export default function createAuthAwareNetworkInterface(
+  options: AuthAwareNetworkInterfaceOptions
+) {
+  return new AuthAwareNetworkInterface(options);
 }

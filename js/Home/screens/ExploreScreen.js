@@ -1,21 +1,8 @@
 /* @flow */
 
 import React from 'react';
-import {
-  Animated,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
-import {
-  SlidingTabNavigation,
-  SlidingTabNavigationItem,
-  NavigationBar,
-  withNavigation,
-} from '@expo/ex-navigation';
+import { Platform, StyleSheet, Text, View } from 'react-native';
+import { SlidingTabNavigationItem, withNavigation } from '@expo/ex-navigation';
 import { Ionicons } from '@expo/vector-icons';
 import TouchableNativeFeedback
   from '@expo/react-native-touchable-native-feedback-safe';
@@ -162,7 +149,7 @@ export default class ExploreScreen extends React.Component {
     }
   }
 
-  _handlePressUsername = username => {
+  _handlePressUsername = (username: string) => {
     this.props.navigator.push('profile', { username });
   };
 }

@@ -19,7 +19,6 @@ import LocalStorage from '../Storage/LocalStorage';
 import GlobalLoadingOverlay from './containers/GlobalLoadingOverlay';
 import ExStore from '../Flux/ExStore';
 
-import Router from './navigation/Router';
 import customNavigationContext from './navigation/customNavigationContext';
 
 console.ignoredYellowBox = ['Possible Unhandled Promise Rejection'];
