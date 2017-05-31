@@ -183,7 +183,12 @@ static NSNumber *EXVersionManagerIsFirstLoad;
 - (void)showDevMenuForBridge:(id)bridge
 {
   RCTAssertMainThread();
-  [((RCTDevMenu *)[self _moduleInstanceForBridge:bridge named:@"DevMenu"]) show];
+  id devMenu = [self _moduleInstanceForBridge:bridge named:@"DevMenu"];
+  // respondsToSelector: check is required because it's possible this bridge
+  // was instantiated with a `disabledDevMenu` instance and the gesture preference was recently updated.
+  if ([devMenu respondsToSelector:@selector(show)]) {
+    [((RCTDevMenu *)devMenu) show];
+  }
 }
 
 - (void)disableRemoteDebuggingForBridge:(id)bridge
