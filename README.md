@@ -37,7 +37,7 @@ the platform specific build steps.
 
 #### Android
 - Make sure you have Android Studio 2 and the [Android NDK](https://facebook.github.io/react-native/docs/android-building-from-source.html#download-links-for-android-ndk) version `r10e` installed.
-- Build and install Android with `cd android; ./run.sh; cd ..`
+- Build and install Android with `cd android; ./run.sh; cd ..`. It might fail the first time. If so just run `./run.sh` again.
 
 If you are running on an phone with Android 5 you might have to use `./run.sh installDev19Debug`. There is a bug running multidex applications in debug mode on Android 5 devices: https://code.google.com/p/android/issues/detail?id=79826.
 
