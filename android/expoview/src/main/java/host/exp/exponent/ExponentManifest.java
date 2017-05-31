@@ -247,6 +247,8 @@ public class ExponentManifest {
     if (manifest.has("manifestString") && manifest.has("signature")) {
       final JSONObject innerManifest = new JSONObject(manifest.getString("manifestString"));
 
+      final boolean isOffline = !ExponentNetwork.isNetworkAvailable(mContext);
+
       if (isAnonymousExperience(innerManifest)) {
         // Automatically verified.
         fetchManifestStep3(innerManifest, true, listener);
@@ -254,9 +256,15 @@ public class ExponentManifest {
         mCrypto.verifyPublicRSASignature(Constants.API_HOST + "/--/manifest-public-key",
             manifest.getString("manifestString"), manifest.getString("signature"), new Crypto.RSASignatureListener() {
               @Override
-              public void onError(String errorMessage) {
-                Log.w(TAG, errorMessage);
-                fetchManifestStep3(innerManifest, false, listener);
+              public void onError(String errorMessage, boolean isNetworkError) {
+                if (isOffline && isNetworkError) {
+                  // automatically validate if offline and don't have public key
+                  // TODO: we need to evict manifest from the cache if it doesn't pass validation when online
+                  fetchManifestStep3(innerManifest, true, listener);
+                } else {
+                  Log.w(TAG, errorMessage);
+                  fetchManifestStep3(innerManifest, false, listener);
+                }
               }
 
               @Override
