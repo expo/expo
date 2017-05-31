@@ -6,21 +6,23 @@ import { graphql } from 'react-apollo';
 import ProjectList from '../components/ProjectList';
 
 const UsersAppsQuery = gql`
-  query UsersApps($username: String!, $limit: Int!, $offset: Int!) {
-    usersApps: userByUsername(username: $username) {
-      id
-      appCount
-      apps(limit: $limit, offset: $offset) {
+  query Home_UsersApps($username: String!, $limit: Int!, $offset: Int!) {
+    user {
+      byUsername(username: $username) {
         id
-        fullName
-        name
-        iconUrl
-        packageName
-        packageUsername
-        description
-        lastPublishedTime
-        isLikedByMe
-        likeCount
+        appCount
+        apps(limit: $limit, offset: $offset) {
+          id
+          fullName
+          name
+          iconUrl
+          packageName
+          packageUsername
+          description
+          lastPublishedTime
+          isLikedByMe
+          likeCount
+        }
       }
     }
   }
@@ -30,9 +32,9 @@ export default graphql(UsersAppsQuery, {
   props: props => {
     let { data } = props;
     let apps, appCount;
-    if (data.usersApps) {
-      apps = data.usersApps.apps;
-      appCount = data.usersApps.appCount;
+    if (data.user && data.user.byUsername) {
+      apps = data.user.byUsername.apps;
+      appCount = data.user.byUsername.appCount;
     }
 
     return {
@@ -48,16 +50,16 @@ export default graphql(UsersAppsQuery, {
             offset: apps.length,
           },
           updateQuery: (previousData, { fetchMoreResult }) => {
-            if (!fetchMoreResult.usersApps) {
+            if (!fetchMoreResult.user || !fetchMoreResult.user.byUsername) {
               return previousData;
             }
 
             return Object.assign({}, previousData, {
               usersApps: {
-                ...fetchMoreResult.usersApps,
+                ...fetchMoreResult.user.byUsername,
                 apps: [
-                  ...previousData.usersApps.apps,
-                  ...fetchMoreResult.usersApps.apps,
+                  ...previousData.user.byUsername.apps,
+                  ...fetchMoreResult.user.byUsername.apps,
                 ],
               },
             });

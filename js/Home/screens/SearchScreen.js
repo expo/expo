@@ -14,8 +14,8 @@ import SearchResults from '../components/SearchResults';
 
 const ResultsLimit = 10;
 const SearchQuery = gql`
-  query Search($offset: Int!, $limit: Int!, $query: String!) {
-    searchUsersAndApps(type: ALL, query: $query, offset: $offset, limit: $limit) {
+  query Home_Search($offset: Int!, $limit: Int!, $query: String!) {
+    search(type: ALL, query: $query, offset: $offset, limit: $limit) {
       __typename
       ... on BaseSearchResult {
         id
@@ -51,7 +51,7 @@ const SearchQuery = gql`
   props: props => {
     let { data } = props;
 
-    let results = groupBy(data.searchUsersAndApps, result => result.__typename);
+    let results = groupBy(data.search, result => result.__typename);
 
     return {
       ...props,
@@ -64,7 +64,7 @@ const SearchQuery = gql`
   options: props => ({
     variables: {
       offset: 0,
-      limit: props.limit,
+      limit: props.limit || ResultsLimit,
       query: props.query || '',
     },
     fetchPolicy: 'cache-and-network',
@@ -105,7 +105,6 @@ export default class SearchScreen extends React.Component {
   _handleChangeQuery = (text: string) => {
     this.props.navigator.updateCurrentRouteParams({
       query: text,
-      limit: text.length > 0 ? ResultsLimit : 0,
     });
   };
 

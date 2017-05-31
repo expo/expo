@@ -9,23 +9,27 @@ import onlyIfAuthenticated from '../utils/onlyIfAuthenticated';
 import Connectivity from '../../Api/Connectivity';
 
 const LikeProjectMutation = gql`
-  mutation PerformLike($appId: ID!) {
-    likeApp(appId: $appId) {
-      id
-      name
-      likeCount
-      isLikedByMe
+  mutation Home_PerformLike($appId: ID!) {
+    app(appId: $appId) {
+      like {
+        id
+        name
+        likeCount
+        isLikedByMe
+      }
     }
   }
 `;
 
 const UnlikeProjectMutation = gql`
-  mutation UndoLike($appId: ID!) {
-    unlikeApp(appId: $appId) {
-      id
-      name
-      likeCount
-      isLikedByMe
+  mutation Home_UndoLike($appId: ID!) {
+    app(appId: $appId) {
+      unlike {
+        id
+        name
+        likeCount
+        isLikedByMe
+      }
     }
   }
 `;
@@ -91,12 +95,39 @@ export default class LikeButtonContainer extends React.Component {
   };
 
   likeAsync = async () => {
-    return this.props.likeMutation({ variables: { appId: this.props.appId } });
+    return this.props.likeMutation({
+      variables: { appId: this.props.appId },
+      optimisticResponse: {
+        __typename: 'Mutation',
+        app: {
+          __typename: 'AppMutation',
+          like: {
+            __typename: 'App',
+            id: this.props.appId,
+            isLikedByMe: true,
+            likeCount: this.props.likeCount + 1,
+          },
+        },
+      },
+    });
   };
 
   unlikeAsync = async () => {
     return this.props.unlikeMutation({
       variables: { appId: this.props.appId },
+      optimisticResponse: {
+        __typename: 'Mutation',
+        app: {
+          __typename: 'AppMutation',
+          unlike: {
+            __typename: 'App',
+            id: this.props.appId,
+            isLikedByMe: false,
+            likeCount: this.props.likeCount - 1,
+            name: this.props.name,
+          },
+        },
+      },
     });
   };
 }
