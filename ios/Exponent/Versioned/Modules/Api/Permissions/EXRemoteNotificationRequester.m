@@ -30,14 +30,19 @@
 {
   _resolve = resolve;
   _reject = reject;
-
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(_handleDidRegisterForRemoteNotifications:)
-                                               name:EX_UNVERSIONED(@"EXAppDidRegisterForRemoteNotificationsNotification")
-                                             object:nil];
-  UIUserNotificationType types = UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
-  [RCTSharedApplication() registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:types categories:nil]];
-  [RCTSharedApplication() registerForRemoteNotifications];
+  
+  if (RCTSharedApplication().isRegisteredForRemoteNotifications) {
+    // resolve immediately if already registered
+    [self _consumeResolverWithCurrentPermissions];
+  } else {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(_handleDidRegisterForRemoteNotifications:)
+                                                 name:EX_UNVERSIONED(@"EXAppDidRegisterForRemoteNotificationsNotification")
+                                               object:nil];
+    UIUserNotificationType types = UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
+    [RCTSharedApplication() registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:types categories:nil]];
+    [RCTSharedApplication() registerForRemoteNotifications];
+  }
 }
 
 - (void)setDelegate:(id<EXPermissionRequesterDelegate>)delegate
@@ -48,13 +53,18 @@
 - (void)_handleDidRegisterForRemoteNotifications:(__unused NSNotification *)notif
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [self _consumeResolverWithCurrentPermissions];
+  if (_delegate) {
+    [_delegate permissionRequesterDidFinish:self];
+  }
+}
+
+- (void)_consumeResolverWithCurrentPermissions
+{
   if (_resolve) {
     _resolve([[self class] permissions]);
     _resolve = nil;
     _reject = nil;
-  }
-  if (_delegate) {
-    [_delegate permissionRequesterDidFinish:self];
   }
 }
 
