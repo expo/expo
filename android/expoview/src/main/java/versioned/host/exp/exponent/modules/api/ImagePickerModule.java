@@ -234,6 +234,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
             try {
               bmp = ImageLoader.getInstance().loadImageSync(afterDecode,
                   new DisplayImageOptions.Builder()
+                      .cacheOnDisk(true)
                       .considerExifParams(true)
                       .build());
             } catch (Throwable e) {}
@@ -241,6 +242,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
               try {
                 bmp = ImageLoader.getInstance().loadImageSync(beforeDecode,
                     new DisplayImageOptions.Builder()
+                        .cacheOnDisk(true)
                         .considerExifParams(true)
                         .build());
               } catch (Throwable e) {}
