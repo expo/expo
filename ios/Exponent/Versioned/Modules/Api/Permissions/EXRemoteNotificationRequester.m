@@ -54,9 +54,6 @@
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [self _consumeResolverWithCurrentPermissions];
-  if (_delegate) {
-    [_delegate permissionRequesterDidFinish:self];
-  }
 }
 
 - (void)_consumeResolverWithCurrentPermissions
@@ -65,6 +62,9 @@
     _resolve([[self class] permissions]);
     _resolve = nil;
     _reject = nil;
+  }
+  if (_delegate) {
+    [_delegate permissionRequesterDidFinish:self];
   }
 }
 
