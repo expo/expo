@@ -8,10 +8,14 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Base64;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.UUID;
 
 import com.facebook.react.bridge.Arguments;
@@ -25,6 +29,7 @@ import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.utils.IoUtils;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import host.exp.exponent.ActivityResultListener;
@@ -44,10 +49,12 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
   final String OPTION_QUALITY = "quality";
   final String OPTION_ALLOWS_EDITING = "allowsEditing";
   final String OPTION_ASPECT = "aspect";
+  final String OPTION_BASE64 = "base64";
 
   private int quality = 100;
   private Boolean allowsEditing = false;
   private ReadableArray forceAspect = null;
+  private Boolean base64 = false;
 
   private ScopedContext mScopedContext;
 
@@ -76,6 +83,9 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
         promise.reject(new IllegalArgumentException("'aspect option must be of form [Number, Number]"));
         return false;
       }
+    }
+    if (options.hasKey(OPTION_BASE64)) {
+      base64 = options.getBoolean(OPTION_BASE64);
     }
     return true;
   }
@@ -185,6 +195,18 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
           response.putInt("width", result.getCropRect().height());
           response.putInt("height", result.getCropRect().width());
         }
+        if (base64) {
+          ByteArrayOutputStream out = new ByteArrayOutputStream();
+          try {
+            // `CropImage` nullifies the `result.getBitmap()` after it writes out to a file, so
+            // we have to read back...
+            InputStream in = new FileInputStream(result.getUri().getPath());
+            IoUtils.copyStream(in, out, null);
+            response.putString("base64", Base64.encodeToString(out.toByteArray(), Base64.DEFAULT));
+          } catch(IOException e) {
+            promise.reject(e);
+          }
+        }
         response.putBoolean("cancelled", false);
         promise.resolve(response);
       }
@@ -228,6 +250,11 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
                 .setOutputUri(ExpFileUtils.uriFromFile(new File(generateOutputPath())))
                 .start(Exponent.getInstance().getCurrentActivity());
           } else {
+            // On some devices this has worked without decoding the URI and on some it has worked
+            // with decoding, so we try both...
+            // The `.cacheOnDisk(true)` and `.considerExifParams(true)` is to reflect EXIF rotation
+            // metadata.
+            // See https://github.com/nostra13/Android-Universal-Image-Loader/issues/630#issuecomment-204338289
             String beforeDecode = uri.toString();
             String afterDecode = Uri.decode(beforeDecode);
             Bitmap bmp = null;
@@ -255,6 +282,11 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
 
             WritableMap response = Arguments.createMap();
             response.putString("uri", ExpFileUtils.uriFromFile(new File(path)).toString());
+            if (base64) {
+              ByteArrayOutputStream out = new ByteArrayOutputStream();
+              bmp.compress(Bitmap.CompressFormat.JPEG, quality, out);
+              response.putString("base64", Base64.encodeToString(out.toByteArray(), Base64.DEFAULT));
+            }
             response.putInt("width", bmp.getWidth());
             response.putInt("height", bmp.getHeight());
             response.putBoolean("cancelled", false);
