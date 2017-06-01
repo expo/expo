@@ -117,7 +117,6 @@ RCT_EXPORT_METHOD(setStyle:(UIStatusBarStyle)statusBarStyle
     RCTLogError(@"RCTStatusBarManager module requires that the \
                 UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
   } else {
-    NSLog(@"%s: Applying status bar style %ld", __func__, (long)statusBarStyle);
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [RCTSharedApplication() setStatusBarStyle:statusBarStyle
@@ -134,7 +133,6 @@ RCT_EXPORT_METHOD(setHidden:(BOOL)hidden
     RCTLogError(@"RCTStatusBarManager module requires that the \
                 UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
   } else {
-    NSLog(@"%s: Applying status bar hidden %d", __func__, hidden);
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [RCTSharedApplication() setStatusBarHidden:hidden
@@ -198,8 +196,6 @@ RCT_EXPORT_METHOD(_applyPropertiesAndForget:(NSDictionary *)properties)
 {
   UIApplication *currentApplication = RCTSharedApplication();
   if (![[self class] _viewControllerBasedStatusBarAppearance]) {
-    NSLog(@"%s: Applying status bar style %ld", __func__, (long)[properties[@"style"] integerValue]);
-    NSLog(@"%s: Applying status bar hidden %d", __func__, [properties[@"hidden"] boolValue]);
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [currentApplication setStatusBarStyle:(UIStatusBarStyle)[properties[@"style"] integerValue] animated:NO];
