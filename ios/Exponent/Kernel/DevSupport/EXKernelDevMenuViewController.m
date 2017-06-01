@@ -20,6 +20,7 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
 @property (nonatomic, strong) UILabel *lblKernelInfo;
 @property (nonatomic, strong) UILabel *lblCacheHeading;
 @property (nonatomic, strong) UILabel *lblCacheInfo;
+@property (nonatomic, strong) UILabel *lblIsDevKernel;
 @property (nonatomic, strong) UILabel *lblUseCache;
 @property (nonatomic, strong) UISwitch *vUseCache;
 
@@ -63,6 +64,10 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
   self.lblKernelInfo = [[UILabel alloc] init];
   [self.view addSubview:_lblKernelInfo];
   
+  // dev kernel label
+  self.lblIsDevKernel = [[UILabel alloc] init];
+  [self.view addSubview:_lblIsDevKernel];
+  
   // cache info heading
   self.lblCacheHeading = [[UILabel alloc] init];
   _lblCacheHeading.text = @"Kernel JS Cache Source";
@@ -74,7 +79,7 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
   
   // use cache label
   self.lblUseCache = [[UILabel alloc] init];
-  _lblUseCache.text = @"Use kernel cache?";
+  _lblUseCache.text = @"Use kernel cache for prod kernel?";
   [self.view addSubview:_lblUseCache];
   
   // use cache switch
@@ -87,7 +92,7 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
     btn.backgroundColor = [UIColor colorWithWhite:0.9f alpha:1.0f];
   }
   
-  for (UILabel *lbl in @[ _lblKernelHeading, _lblCacheHeading, _lblUseCache ]) {
+  for (UILabel *lbl in @[ _lblKernelHeading, _lblIsDevKernel, _lblCacheHeading, _lblUseCache ]) {
     lbl.font = [UIFont boldSystemFontOfSize:10.0f];
     lbl.textColor = [UIColor blackColor];
   }
@@ -106,21 +111,23 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
   _lblKernelHeading.frame = CGRectMake(16.0f, CGRectGetMaxY(_vTitleBar.frame) + 16.0f, self.view.bounds.size.width - 32.0f, 18.0f);
   _lblKernelInfo.frame = CGRectMake(0, 0, _lblKernelHeading.bounds.size.width, CGFLOAT_MAX);
   [_lblKernelInfo sizeToFit];
-  _lblKernelInfo.frame = CGRectMake(_lblKernelHeading.frame.origin.x, CGRectGetMaxY(_lblKernelHeading.frame) + 12.0f, _lblKernelInfo.bounds.size.width, _lblKernelInfo.bounds.size.height);
+  _lblKernelInfo.frame = CGRectMake(_lblKernelHeading.frame.origin.x, CGRectGetMaxY(_lblKernelHeading.frame) + 6.0f, _lblKernelInfo.bounds.size.width, _lblKernelInfo.bounds.size.height);
+  
+  _lblIsDevKernel.frame = CGRectMake(_lblKernelHeading.frame.origin.x, CGRectGetMaxY(_lblKernelInfo.frame) + 16.0f, _lblKernelHeading.bounds.size.width, _lblKernelHeading.bounds.size.height);
 
-  _lblCacheHeading.frame = CGRectMake(_lblKernelHeading.frame.origin.x, CGRectGetMaxY(_lblKernelInfo.frame) + 16.0f, _lblKernelHeading.bounds.size.width, _lblKernelHeading.bounds.size.height);
+  _lblCacheHeading.frame = CGRectMake(_lblKernelHeading.frame.origin.x, CGRectGetMaxY(_lblIsDevKernel.frame) + 8.0f, _lblKernelHeading.bounds.size.width, _lblKernelHeading.bounds.size.height);
   _lblCacheInfo.frame = CGRectMake(0, 0, _lblCacheHeading.bounds.size.width, CGFLOAT_MAX);
   [_lblCacheInfo sizeToFit];
-  _lblCacheInfo.frame = CGRectMake(_lblCacheHeading.frame.origin.x, CGRectGetMaxY(_lblCacheHeading.frame) + 12.0f, _lblCacheInfo.bounds.size.width, _lblCacheInfo.bounds.size.height);
+  _lblCacheInfo.frame = CGRectMake(_lblCacheHeading.frame.origin.x, CGRectGetMaxY(_lblCacheHeading.frame) + 6.0f, _lblCacheInfo.bounds.size.width, _lblCacheInfo.bounds.size.height);
   
   _vUseCache.center = CGPointMake(_lblCacheInfo.frame.origin.x + _vUseCache.bounds.size.width * 0.5f, CGRectGetMaxY(_lblCacheInfo.frame) + _vUseCache.bounds.size.height * 0.5f + 8.0f);
   _lblUseCache.frame = CGRectMake(CGRectGetMaxX(_vUseCache.frame) + 4.0f, _vUseCache.frame.origin.y, self.view.bounds.size.width, _vUseCache.frame.size.height);
   
-  _btnDevMenu.frame = CGRectMake(0, 0, _lblKernelHeading.bounds.size.width, 42.0f);
+  _btnDevMenu.frame = CGRectMake(0, 0, _lblKernelHeading.bounds.size.width, 36.0f);
   _btnDevMenu.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMaxY(_vUseCache.frame) + 42.0f);
 
   _btnResetNux.frame = CGRectMake(0, 0, _btnDevMenu.bounds.size.width, _btnDevMenu.bounds.size.height);
-  _btnResetNux.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMaxY(_btnDevMenu.frame) + 36.0f);
+  _btnResetNux.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMaxY(_btnDevMenu.frame) + 30.0f);
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -170,6 +177,7 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
 {
   EXAssertMainThread();
   [self _populateKernelInfoLabel];
+  [self _populateDevKernelLabel];
   [self _populateCacheInfoLabel];
   BOOL skipCache = [[NSUserDefaults standardUserDefaults] boolForKey:kEXSkipCacheUserDefaultsKey];
   _vUseCache.on = !skipCache;
@@ -189,40 +197,50 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
   [self.view setNeedsLayout];
 }
 
+- (void)_populateDevKernelLabel
+{
+  BOOL isDevKernel = [EXKernel isDevKernel];
+  _lblIsDevKernel.text = [NSString stringWithFormat:@"Development kernel? %@", (isDevKernel) ? @"Yes" : @"No"];
+}
+
 - (void)_populateCacheInfoLabel
 {
   // the actual logic for downloading the kernel JS lives in EXKernelReactAppManager and EXJavaScriptLoader;
   // we just provide diagnostics on it here
-
-  NSURL *dummyUrl = [NSURL URLWithString:@""]; // we're just making this for diagnostic purposes and won't download anything here
-  EXJavaScriptResource *dummyResource = [[EXJavaScriptResource alloc] initWithBundleName:kEXKernelBundleResourceName remoteUrl:dummyUrl];
-  NSString *localBundlePath = [dummyResource resourceLocalPathPreferringCache];
-  NSDate *dtmBundleModified;
   
-  if (localBundlePath) {
-    if ([[NSFileManager defaultManager] fileExistsAtPath:localBundlePath isDirectory:nil]) {
-      NSURL *fileUrl = [NSURL fileURLWithPath:localBundlePath];
-      NSError *err;
-      [fileUrl getResourceValue:&dtmBundleModified forKey:NSURLContentModificationDateKey error:&err];
-      if (err) {
-        dtmBundleModified = nil;
+  if ([EXKernel isDevKernel]) {
+    _lblCacheInfo.text = @"No cache is used when developing the kernel, though one may exist.";
+  } else {
+    NSURL *dummyUrl = [NSURL URLWithString:@""]; // we're just making this for diagnostic purposes and won't download anything here
+    EXJavaScriptResource *dummyResource = [[EXJavaScriptResource alloc] initWithBundleName:kEXKernelBundleResourceName remoteUrl:dummyUrl];
+    NSString *localBundlePath = [dummyResource resourceLocalPathPreferringCache];
+    NSDate *dtmBundleModified;
+    
+    if (localBundlePath) {
+      if ([[NSFileManager defaultManager] fileExistsAtPath:localBundlePath isDirectory:nil]) {
+        NSURL *fileUrl = [NSURL fileURLWithPath:localBundlePath];
+        NSError *err;
+        [fileUrl getResourceValue:&dtmBundleModified forKey:NSURLContentModificationDateKey error:&err];
+        if (err) {
+          dtmBundleModified = nil;
+        }
+      } else {
+        localBundlePath = nil;
+      }
+    }
+    
+    if (localBundlePath) {
+      _lblCacheInfo.text = localBundlePath;
+      if (dtmBundleModified) {
+        NSString *dateString = [NSString stringWithFormat:@"\n\nCache modified: %@",
+                                [NSDateFormatter localizedStringFromDate:dtmBundleModified
+                                                               dateStyle:NSDateFormatterShortStyle
+                                                               timeStyle:NSDateFormatterFullStyle]];
+        _lblCacheInfo.text = [_lblCacheInfo.text stringByAppendingString:dateString];
       }
     } else {
-      localBundlePath = nil;
+      _lblCacheInfo.text = @"No local cache exists";
     }
-  }
-  
-  if (localBundlePath) {
-    _lblCacheInfo.text = localBundlePath;
-    if (dtmBundleModified) {
-      NSString *dateString = [NSString stringWithFormat:@"\n\nCache modified: %@",
-                              [NSDateFormatter localizedStringFromDate:dtmBundleModified
-                                                             dateStyle:NSDateFormatterShortStyle
-                                                             timeStyle:NSDateFormatterFullStyle]];
-      _lblCacheInfo.text = [_lblCacheInfo.text stringByAppendingString:dateString];
-    }
-  } else {
-    _lblCacheInfo.text = @"No local cache exists";
   }
   [self.view setNeedsLayout];
 }
