@@ -128,7 +128,7 @@ dependencies {
   compile 'commons-io:commons-io:1.3.2'
   compile 'me.leolin:ShortcutBadger:1.1.4@aar'
   compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
-  compile 'com.theartofdev.edmodo:android-image-cropper:2.3.+'
+  compile 'com.theartofdev.edmodo:android-image-cropper:2.4.+'
   compile 'com.yqritc:android-scalablevideoview:1.0.1'
   compile 'commons-codec:commons-codec:1.10'
   compile 'com.segment.analytics.android:analytics:4.+'
