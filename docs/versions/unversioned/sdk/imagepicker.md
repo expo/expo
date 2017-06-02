@@ -16,7 +16,7 @@ Display the system UI for choosing an image from the phone's photo library.
 
     -   **allowsEditing (_boolean_)** -- Whether to show a UI to edit the image after it is picked. On Android the user can crop and rotate the image and on iOS simply crop it. Defaults to `false`.
     -   **aspect (_array_)** -- An array with two entries `[x, y]` specifying the aspect ratio to maintain if the user is allowed to edit the image (by passing `allowsEditing: true`). This is only applicable on Android, since on iOS the crop rectangle is always a square.
-    -   **quality (_number_)** -- Specify the quality of the image saved.
+    -   **quality (_number_)** -- Specify the quality of compression, from 0 to 1. 0 means compress for small size, 1 means compress for maximum quality.
     -   **base64 (_boolean_)** -- Whether to also include the image data in Base64 format.
 
 #### Returns
@@ -37,7 +37,7 @@ Display the system UI for taking a photo with the camera.
 
     -   **allowsEditing (_boolean_)** -- Whether to show a UI to edit the image after it is picked. On Android the user can crop and rotate the image and on iOS simply crop it. Defaults to `false`.
     -   **aspect (_array_)** -- An array with two entries `[x, y]` specifying the aspect ratio to maintain if the user is allowed to edit the image (by passing `allowsEditing: true`). This is only applicable on Android, since on iOS the crop rectangle is always a square.
-    -   **quality (_number_)** -- Specify the quality of the image saved.
+    -   **quality (_number_)** -- Specify the quality of compression, from 0 to 1. 0 means compress for small size, 1 means compress for maximum quality.
     -   **base64 (_boolean_)** -- Whether to also include the image data in Base64 format.
 
 #### Returns
