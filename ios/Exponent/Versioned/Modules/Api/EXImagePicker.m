@@ -8,6 +8,7 @@
 #import "EXFileSystem.h"
 
 @import MobileCoreServices;
+@import Photos;
 
 @interface EXImagePicker ()
 
@@ -119,123 +120,66 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
     NSString *mediaType = [info objectForKey:UIImagePickerControllerMediaType];
     RCTAssert([mediaType isEqualToString:(NSString *)kUTTypeImage], @"Expected image response from `UIImagePickerController`");
 
-    NSString *fileName;
-    NSString *tempFileName = [[NSUUID UUID] UUIDString];
-    if (imageURL && [[imageURL absoluteString] rangeOfString:@"ext=GIF"].location != NSNotFound) {
-      fileName = [tempFileName stringByAppendingString:@".gif"];
-    } else if ([[[self.options objectForKey:@"imageFileType"] stringValue] isEqualToString:@"png"]) {
-      fileName = [tempFileName stringByAppendingString:@".png"];
-    } else {
-      fileName = [tempFileName stringByAppendingString:@".jpg"];
-    }
-
-    [EXFileSystem ensureDirExistsWithPath:[self.bridge.experienceScope scopedPathWithPath:@"ImagePicker"
-                                                                              withOptions:@{@"cache": @YES}]];
-    NSString *path = [self.bridge.experienceScope scopedPathWithPath:[@"ImagePicker" stringByAppendingPathComponent:fileName]
-                                                         withOptions:@{@"cache": @YES}];
-
-    // Create the response object
-    NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
-
     UIImage *image;
     if ([[self.options objectForKey:@"allowsEditing"] boolValue]) {
       image = [info objectForKey:UIImagePickerControllerEditedImage];
     } else {
       image = [info objectForKey:UIImagePickerControllerOriginalImage];
     }
+    image = [self fixOrientation:image];
 
-    // GIFs break when resized, so we handle them differently
-    if (imageURL && [[imageURL absoluteString] rangeOfString:@"ext=GIF"].location != NSNotFound) {
-      ALAssetsLibrary* assetsLibrary = [[ALAssetsLibrary alloc] init];
-      [assetsLibrary assetForURL:imageURL resultBlock:^(ALAsset *asset) {
-        ALAssetRepresentation *rep = [asset defaultRepresentation];
-        Byte *buffer = (Byte*)malloc((unsigned long)rep.size);
-        NSUInteger buffered = [rep getBytes:buffer fromOffset:0.0 length:(unsigned long)rep.size error:nil];
-        NSData *data = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
-        [data writeToFile:path atomically:YES];
+    NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
 
-        NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
-        [response setObject:@(image.size.width) forKey:@"width"];
-        [response setObject:@(image.size.height) forKey:@"height"];
-
-        BOOL vertical = (image.size.width < image.size.height) ? YES : NO;
-        [response setObject:@(vertical) forKey:@"isVertical"];
-
-        if ([[self.options objectForKey:@"base64"] boolValue]) {
-          [response setObject:[data base64EncodedStringWithOptions:0] forKey:@"base64"];
-        }
-
-        NSURL *fileURL = [NSURL fileURLWithPath:path];
-        [response setObject:[fileURL absoluteString] forKey:@"uri"];
-
-        NSNumber *fileSizeValue = nil;
-        NSError *fileSizeError = nil;
-        [fileURL getResourceValue:&fileSizeValue forKey:NSURLFileSizeKey error:&fileSizeError];
-        if (fileSizeValue){
-          [response setObject:fileSizeValue forKey:@"fileSize"];
-        }
-
-        [response setObject:@NO forKey:@"cancelled"];
-        self.resolve(response);
-      } failureBlock:^(NSError *error) {
-        self.reject(RCTErrorUnspecified, error.localizedFailureReason, error);
-      }];
-      return;
-    }
-
-    image = [self fixOrientation:image];  // Rotate the image for upload to web
-
-    // If needed, downscale image
-    float maxWidth = image.size.width;
-    float maxHeight = image.size.height;
-    if ([self.options valueForKey:@"maxWidth"]) {
-      maxWidth = [[self.options valueForKey:@"maxWidth"] floatValue];
-    }
-    if ([self.options valueForKey:@"maxHeight"]) {
-      maxHeight = [[self.options valueForKey:@"maxHeight"] floatValue];
-    }
-    image = [self downscaleImageIfNecessary:image maxWidth:maxWidth maxHeight:maxHeight];
-
-    NSData *data;
-    if ([[[self.options objectForKey:@"imageFileType"] stringValue] isEqualToString:@"png"]) {
-      data = UIImagePNGRepresentation(image);
-    } else {
-      data = UIImageJPEGRepresentation(image, [[self.options valueForKey:@"quality"] floatValue]);
-    }
+    // Write to a temporary file in the Expo File System
+    NSData *data = UIImageJPEGRepresentation(image, [[self.options valueForKey:@"quality"] floatValue]);
+    NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:@".jpg"];
+    [EXFileSystem ensureDirExistsWithPath:[self.bridge.experienceScope scopedPathWithPath:@"ImagePicker"
+                                                                              withOptions:@{@"cache": @YES}]];
+    NSString *path = [self.bridge.experienceScope scopedPathWithPath:[@"ImagePicker" stringByAppendingPathComponent:fileName]
+                                                         withOptions:@{@"cache": @YES}];
     [data writeToFile:path atomically:YES];
+    NSURL *fileURL = [NSURL fileURLWithPath:path];
+    NSString *filePath = [fileURL absoluteString];
+    [response setObject:filePath forKey:@"uri"];
+
+    [response setObject:@(image.size.width) forKey:@"width"];
+    [response setObject:@(image.size.height) forKey:@"height"];
 
     if ([[self.options objectForKey:@"base64"] boolValue]) {
       [response setObject:[data base64EncodedStringWithOptions:0] forKey:@"base64"];
     }
 
-    BOOL vertical = (image.size.width < image.size.height) ? YES : NO;
-    [response setObject:@(vertical) forKey:@"isVertical"];
-    NSURL *fileURL = [NSURL fileURLWithPath:path];
-    NSString *filePath = [fileURL absoluteString];
-    [response setObject:filePath forKey:@"uri"];
-
-    // add ref to the original image
-    NSString *origURL = [imageURL absoluteString];
-    if (origURL) {
-      [response setObject:origURL forKey:@"origURL"];
-    }
-
-    NSNumber *fileSizeValue = nil;
-    NSError *fileSizeError = nil;
-    [fileURL getResourceValue:&fileSizeValue forKey:NSURLFileSizeKey error:&fileSizeError];
-    if (fileSizeValue){
-      [response setObject:fileSizeValue forKey:@"fileSize"];
-    }
-
-    [response setObject:@(image.size.width) forKey:@"width"];
-    [response setObject:@(image.size.height) forKey:@"height"];
-
     [response setObject:@NO forKey:@"cancelled"];
-    self.resolve(response);
+
+    if ([[self.options objectForKey:@"exif"] boolValue]) {
+      // Can easily get metadata only if from camera, else go through `PHAsset`
+      NSDictionary *metadata = [info objectForKey:UIImagePickerControllerMediaMetadata];
+      if (metadata) {
+        [self updateResponse:response withMetadata:metadata];
+        self.resolve(response);
+      } else {
+        PHAsset *asset = [PHAsset fetchAssetsWithALAssetURLs:@[imageURL] options:nil].firstObject;
+        PHContentEditingInputRequestOptions *options = [[PHContentEditingInputRequestOptions alloc] init];
+        options.networkAccessAllowed = YES; // Download from iCloud if needed
+        [asset requestContentEditingInputWithOptions:options completionHandler:^(PHContentEditingInput *input, NSDictionary *info) {
+          NSDictionary *metadata = [CIImage imageWithContentsOfURL:input.fullSizeImageURL].properties;
+          [self updateResponse:response withMetadata:metadata];
+          self.resolve(response);
+        }];
+      }
+    } else {
+      self.resolve(response);
+    }
   };
   dispatch_async(dispatch_get_main_queue(), ^{
     [picker dismissViewControllerAnimated:YES completion:dismissCompletionBlock];
   });
+}
+
+- (void)updateResponse:(NSMutableDictionary *)response withMetadata:(NSDictionary *)metadata
+{
+  NSDictionary *exif = metadata[(NSString *)kCGImagePropertyExifDictionary];
+  [response setObject:exif forKey:@"exif"];
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
@@ -245,38 +189,6 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
       self.resolve(@{@"cancelled": @YES});
     }];
   });
-}
-
-- (UIImage*)downscaleImageIfNecessary:(UIImage*)image maxWidth:(float)maxWidth maxHeight:(float)maxHeight
-{
-  UIImage* newImage = image;
-
-  // Nothing to do here
-  if (image.size.width <= maxWidth && image.size.height <= maxHeight) {
-    return newImage;
-  }
-
-  CGSize scaledSize = CGSizeMake(image.size.width, image.size.height);
-  if (maxWidth < scaledSize.width) {
-    scaledSize = CGSizeMake(maxWidth, (maxWidth / scaledSize.width) * scaledSize.height);
-  }
-  if (maxHeight < scaledSize.height) {
-    scaledSize = CGSizeMake((maxHeight / scaledSize.height) * scaledSize.width, maxHeight);
-  }
-
-  // If the pixels are floats, it causes a white line in iOS8 and probably other versions too
-  scaledSize.width = (int)scaledSize.width;
-  scaledSize.height = (int)scaledSize.height;
-
-  UIGraphicsBeginImageContext(scaledSize); // this will resize
-  [image drawInRect:CGRectMake(0, 0, scaledSize.width, scaledSize.height)];
-  newImage = UIGraphicsGetImageFromCurrentImageContext();
-  if (newImage == nil) {
-    NSLog(@"could not scale image");
-  }
-  UIGraphicsEndImageContext();
-
-  return newImage;
 }
 
 - (UIImage *)fixOrientation:(UIImage *)srcImg {
