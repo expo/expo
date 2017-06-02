@@ -36,7 +36,7 @@ Opens the url with the system's web browser.
 
 #### Returns
 
-If the user closed the web browser, the promise resolves with `{ type: cancelled }`.
+If the user closed the web browser, the promise resolves with `{ type: cancel }`.
 If the browser is closed using `Expo.WebBrowser.dismissBrowser()`, the promise resolves with `{ type: dismissed }`.
 
 ### `Expo.WebBrowser.dismissBrowser()`
