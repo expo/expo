@@ -139,6 +139,7 @@ dependencies {
   compile('io.nlopez.smartlocation:library:3.2.11') {
     transitive = false
   }
+  compile 'com.android.support:exifinterface:25.3.1'
 
   // Testing
   androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
