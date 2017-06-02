@@ -30,7 +30,7 @@ so don't worry if you have code changes or such elsewhere.
 
 ### As a random person
 
-Thanks for helping! :D make your changes on a fork of this repository or
+Thanks for helping! :D Make your changes on a fork of this repository or
 whatever works for you and submit a pull request. We'll take a look and
 incorporate them!
 
