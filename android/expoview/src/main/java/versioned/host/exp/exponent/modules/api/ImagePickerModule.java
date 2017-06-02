@@ -248,6 +248,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
             }
             cropImage
                 .setOutputUri(ExpFileUtils.uriFromFile(new File(generateOutputPath())))
+                .setOutputCompressQuality(quality)
                 .start(Exponent.getInstance().getCurrentActivity());
           } else {
             // On some devices this has worked without decoding the URI and on some it has worked
