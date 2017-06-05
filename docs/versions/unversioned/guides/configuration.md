@@ -183,7 +183,7 @@ title: Configuration with exp.json
 
     -   `versionCode`
 
-        Version number required by Google Play. Increment by one for each release. <https://developer.android.com/studio/publish/versioning.html>.
+        Version number (integer) required by Google Play. Increment by one for each release. <https://developer.android.com/studio/publish/versioning.html>.
 
     -   `config`
 
