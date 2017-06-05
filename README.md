@@ -17,18 +17,18 @@ If you need to make native code changes to your Expo project, such as adding cus
 If you want to build the Expo client apps for some reason, there are a few steps to getting this working:
 - Join us on Slack at https://slack.expo.io/. The code base and build process is complicated so please ask us if you get stuck.
 - Get the iOS and Android clients building on your machine using the [Set Up](#set-up) section below.
-- Make your native changes and test. You can still use [XDE](https://github.com/exponent/xde) or [exp](https://github.com/exponent/exp) and the rest of Expo's infrastructure.
+- Make your native changes and test. You can still use [XDE](https://github.com/expo/xde) or [exp](https://github.com/expo/exp) and the rest of Expo's infrastructure.
 
 ## Set Up
 
-Please use Node 7 and npm 3. We recommend installing Node using [nvm](https://github.com/creationix/nvm). We support building the clients only on macOS.
+Please use Node 7 and npm 4. We recommend installing Node using [nvm](https://github.com/creationix/nvm). We support building the clients only on macOS.
 
 - Install [the Gulp CLI](http://gulpjs.com/) globally: `npm i gulp-cli -g`.
 - Clone [xdl](https://github.com/expo/xdl), run `npm install` in the xdl directory and then run
 `gulp build`. Next, run `npm link` in the xdl directory.
 - Run `npm install` in the `js` and `tools-public` directories.
 - Run `npm link xdl` in the `tools-public` directory.
-- If you don't have it yet, install [exp](https://github.com/exponent/exp), the Expo cli.
+- If you don't have it yet, install [exp](https://github.com/expo/exp), the Expo cli.
 - The Expo client apps run a root Expo project in addition to native
 code. Serve this project by running `exp start` from the `js` directory.
 The native Android Studio and XCode projects have a build hook which
