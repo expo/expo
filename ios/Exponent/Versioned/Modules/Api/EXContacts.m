@@ -47,9 +47,17 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSDictionary *)options resolver:(RCTPromiseR
                                    ]];
 
   NSArray *keysToFetch = [self _contactKeysToFetchFromFields:fieldsSet.allObjects];
+  NSString *id = options[@"id"];
+  BOOL fetchSingleContact = id != nil;
+  
   CNContactFetchRequest *fetchRequest = [[CNContactFetchRequest alloc] initWithKeysToFetch:keysToFetch];
   fetchRequest.unifyResults = YES;
-  fetchRequest.predicate = nil;
+  if (fetchSingleContact) {
+    fetchRequest.predicate = [CNContact predicateForContactsWithIdentifiers:@[id]];
+  } else {
+    fetchRequest.predicate = nil;
+  }
+  
 
   NSUInteger pageOffset = [options[@"pageOffset"] unsignedIntegerValue];
   NSUInteger pageSize = [options[@"pageSize"] unsignedIntegerValue];
@@ -147,12 +155,16 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSDictionary *)options resolver:(RCTPromiseR
   NSUInteger total = currentIndex;
 
   if (success && !err) {
-    resolve(@{
-      @"data": response,
-      @"hasNextPage": @(pageOffset + pageSize < total),
-      @"hasPreviousPage": @(pageOffset > 0),
-      @"total": @(total),
-    });
+    if (fetchSingleContact) {
+      resolve(total > 0 ? response[0] : nil);
+    } else {
+      resolve(@{
+                @"data": response,
+                @"hasNextPage": @(pageOffset + pageSize < total),
+                @"hasPreviousPage": @(pageOffset > 0),
+                @"total": @(total),
+                });
+    }
   } else {
     reject(0, @"Error while fetching contacts", err);
   }

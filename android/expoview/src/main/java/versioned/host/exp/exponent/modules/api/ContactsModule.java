@@ -24,6 +24,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 
+import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -69,11 +70,18 @@ public class ContactsModule extends ReactContextBaseJavaModule {
     int pageOffset = options.getInt("pageOffset");
     int pageSize = options.getInt("pageSize");
     Set<String> fieldsSet = getFieldsSet(options.getArray("fields"));
+    boolean fetchSingleContact = options.hasKey("id");
     WritableArray contacts = Arguments.createArray();
     WritableMap response = Arguments.createMap();
 
     ContentResolver cr = getReactApplicationContext().getContentResolver();
-    Cursor cursor = cr.query(CommonDataKinds.Phone.CONTENT_URI, PROJECTION, null, null, null);
+    Cursor cursor = cr.query(
+        CommonDataKinds.Phone.CONTENT_URI,
+        PROJECTION,
+        fetchSingleContact ? Data.CONTACT_ID + " = ?" : null,
+        fetchSingleContact ? new String[] { options.getDynamic("id").asString() } : null,
+        null
+    );
     if (cursor != null) {
       try {
         cursor.move(pageOffset);
@@ -150,17 +158,23 @@ public class ContactsModule extends ReactContextBaseJavaModule {
           if (jobTitle != null && !jobTitle.isEmpty()) {
             contact.putString("jobTitle", jobTitle);
           }
-          contacts.pushMap(contact);
 
-          currentIndex++;
+          if (fetchSingleContact) {
+            promise.resolve(contact);
+          } else {
+            contacts.pushMap(contact);
+            currentIndex++;
+          }
         }
 
         int total = cursor.getCount();
-        response.putArray("data", contacts);
-        response.putBoolean("hasPreviousPage", pageOffset > 0);
-        response.putBoolean("hasNextPage", pageOffset + pageSize < total);
-        response.putInt("total", total);
-        promise.resolve(response);
+        if (!fetchSingleContact) {
+          response.putArray("data", contacts);
+          response.putBoolean("hasPreviousPage", pageOffset > 0);
+          response.putBoolean("hasNextPage", pageOffset + pageSize < total);
+          response.putInt("total", total);
+          promise.resolve(response);
+        }
       } catch (Exception e) {
         EXL.e(TAG, e.getMessage());
         promise.reject(e);
@@ -484,19 +498,26 @@ public class ContactsModule extends ReactContextBaseJavaModule {
         new String[] { Long.toString(id), CommonDataKinds.Photo.CONTENT_ITEM_TYPE },
         null
     );
-    contact.putBoolean("imageAvailable", false);
+    boolean imageAvailable = false;
     if (imageCursor != null) {
       try {
         if (imageCursor.moveToFirst()) {
-          contact.putBoolean("imageAvailable", true);
-
-          if (fieldsSet.contains("thumbnail")) {
             Uri imageUri = Uri.withAppendedPath(
                 ContentUris.withAppendedId(Contacts.CONTENT_URI, id),
                 Contacts.Photo.CONTENT_DIRECTORY);
 
+            try {
+              InputStream is = cr.openInputStream(imageUri);
+              is.close();
+              imageAvailable = true;
+            } catch (Exception e) {
+              EXL.e(TAG, e.getMessage());
+            }
+            contact.putBoolean("imageAvailable", imageAvailable);
+
+          if (fieldsSet.contains("thumbnail")) {
             WritableMap thumbnail = Arguments.createMap();
-            thumbnail.putString("uri", imageUri.toString());
+            thumbnail.putString("uri", imageAvailable ? imageUri.toString() : null);
             contact.putMap("thumbnail", thumbnail);
           }
         }
