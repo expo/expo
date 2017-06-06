@@ -54,6 +54,13 @@ RCT_EXPORT_METHOD(trackWithProperties:(NSString *)event withProperties:(NSDictio
   }
 }
 
+RCT_EXPORT_METHOD(reset)
+{
+  if (_instance) {
+    [_instance reset];
+  }
+}
+
 RCT_EXPORT_METHOD(flush)
 {
   if (_instance) {
