@@ -18,8 +18,6 @@ import { withNavigation } from '@expo/ex-navigation';
 
 import AuthTokenActions from '../../Flux/AuthTokenActions';
 
-import Colors from '../constants/Colors';
-import Profile from '../components/Profile';
 import ProfileUnauthenticated from '../components/ProfileUnauthenticated';
 import MyProfileContainer from '../containers/MyProfileContainer';
 import OtherProfileContainer from '../containers/OtherProfileContainer';
@@ -199,7 +197,8 @@ class SignOutButtonIOS extends React.Component {
   };
 }
 
-@connectActionSheet class OptionsButtonIOS extends React.Component {
+@connectActionSheet
+class OptionsButtonIOS extends React.Component {
   render() {
     return (
       <TouchableOpacity

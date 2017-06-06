@@ -56,19 +56,6 @@ async function signUpAsync(data) {
   return result;
 }
 
-async function fetchUserProfileAsync(token) {
-  let response = await fetch(ProfileEndpoint, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
-
-  let result = await response.json();
-  return result;
-}
-
 function tokenIsExpired(idToken) {
   const { exp } = jwtDecode(idToken, { complete: true });
 
@@ -98,7 +85,6 @@ async function refreshIdTokenAsync(refreshToken) {
 export default {
   signInAsync,
   signUpAsync,
-  fetchUserProfileAsync,
   refreshIdTokenAsync,
   tokenIsExpired,
 };

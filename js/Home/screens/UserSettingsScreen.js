@@ -17,6 +17,7 @@ import AuthTokenActions from '../../Flux/AuthTokenActions';
 import BrowserActions from '../../Flux/BrowserActions';
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
+import Analytics from '../../Api/Analytics';
 
 const forceTouchAvailable =
   (NativeModules.PlatformConstants &&
@@ -78,6 +79,10 @@ export default class UserSettingsScreen extends React.Component {
   };
 
   _setLegacyMenuGestureAsync = (useLegacyGesture: boolean) => {
+    Analytics.track(Analytics.events.USER_UPDATED_SETTINGS, {
+      useLegacyGesture,
+    });
+
     this.props.dispatch(
       BrowserActions.setLegacyMenuGestureAsync(useLegacyGesture)
     );
@@ -85,7 +90,9 @@ export default class UserSettingsScreen extends React.Component {
 
   _renderMenuGestureOptions() {
     const { legacyMenuGesture } = this.props;
-    const twoFingerGestureDescription = `Two-finger ${forceTouchAvailable ? 'force touch' : 'long-press'}`;
+    const twoFingerGestureDescription = `Two-finger ${forceTouchAvailable
+      ? 'force touch'
+      : 'long-press'}`;
 
     return (
       <View>

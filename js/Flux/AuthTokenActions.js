@@ -1,13 +1,15 @@
 /**
  * Copyright 2015-present 650 Industries. All rights reserved.
  *
+ * @flow
  * @providesModule AuthTokenActions
  */
-'use strict';
 
-import { action } from 'Flux';
+import Analytics from '../Api/Analytics';
 import LocalStorage from '../Storage/LocalStorage';
 import ApolloClient from '../Api/ApolloClient';
+
+import { action } from 'Flux';
 
 let AuthTokenActions = {
   signIn(tokens) {
@@ -28,6 +30,9 @@ let AuthTokenActions = {
   @action signOut() {
     LocalStorage.removeAuthTokensAsync();
     LocalStorage.clearHistoryAsync();
+
+    // TODO(brent): add username or email to log out action
+    Analytics.track(Analytics.events.USER_LOGGED_OUT);
     ApolloClient.resetStore();
     return null;
   },

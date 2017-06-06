@@ -5,15 +5,14 @@ import {
   Keyboard,
   ScrollView,
   StyleSheet,
-  Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import { connect } from 'react-redux';
 
 import AuthTokenActions from '../../Flux/AuthTokenActions';
 
+import Analytics from '../../Api/Analytics';
 import Alerts from '../constants/Alerts';
 import Auth0Api from '../../Api/Auth0Api';
 import Colors from '../constants/Colors';
@@ -239,6 +238,8 @@ export default class SignUpScreen extends React.Component {
         this._isMounted && this._handleError(signUpResult);
         return;
       }
+
+      Analytics.track(Analytics.events.USER_CREATED_ACCOUNT, { github: false });
 
       let signInResult = await Auth0Api.signInAsync(
         this.state.email,

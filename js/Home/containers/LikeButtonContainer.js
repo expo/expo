@@ -7,6 +7,7 @@ import gql from 'graphql-tag';
 import LikeButton from '../components/LikeButton';
 import onlyIfAuthenticated from '../utils/onlyIfAuthenticated';
 import Connectivity from '../../Api/Connectivity';
+import Analytics from '../../Api/Analytics';
 
 const LikeProjectMutation = gql`
   mutation Home_PerformLike($appId: ID!) {
@@ -70,6 +71,11 @@ export default class LikeButtonContainer extends React.Component {
       } else {
         result = await this.likeAsync();
       }
+
+      Analytics.track(Analytics.events.USER_UPDATED_LIKE, {
+        appId: this.props.appId,
+        like: !liked,
+      });
 
       console.log({ result, appId: this.props.appId });
     } catch (e) {

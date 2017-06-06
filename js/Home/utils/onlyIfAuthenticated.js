@@ -4,7 +4,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import isUserAuthenticated from './isUserAuthenticated';
 
-@connect(data => Authenticated.getDataProps)
+@connect(data => Authenticated.getDataProps(data))
 class Authenticated extends React.Component {
   static getDataProps(data) {
     return {

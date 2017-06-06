@@ -1,10 +1,11 @@
 /* @flow */
 
 import React from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ScrollView, StyleSheet, TextInput } from 'react-native';
 import { connect } from 'react-redux';
 
 import Alerts from '../constants/Alerts';
+import Analytics from '../../Api/Analytics';
 import AuthTokenActions from '../../Flux/AuthTokenActions';
 import Colors from '../constants/Colors';
 import Form from '../components/Form';
@@ -131,6 +132,14 @@ export default class SignInScreen extends React.Component {
           this._handleError(result);
         } else {
           this.props.navigator.hideLocalAlert();
+
+          let trackingOpts = {
+            id: result.id,
+            emailOrUsername: email,
+          };
+          Analytics.identify(result.id, trackingOpts);
+          Analytics.track(Analytics.events.USER_LOGGED_IN, trackingOpts);
+
           this.props.dispatch(
             AuthTokenActions.signIn({
               refreshToken: result.refresh_token,

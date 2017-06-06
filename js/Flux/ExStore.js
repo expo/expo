@@ -3,10 +3,8 @@
  *
  * @providesModule ExStore
  */
-'use strict';
 
 import AuthTokenReducer from 'AuthTokenReducer';
-import BrowserActions from 'BrowserActions';
 import BrowserReducer from 'BrowserReducer';
 import ConsoleReducer from 'ConsoleReducer';
 import ExButtonReducer from 'ExButtonReducer';
@@ -22,5 +20,4 @@ let reducers = {
 };
 
 let store = Flux.createStore(reducers);
-
 export default store;
