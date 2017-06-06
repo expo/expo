@@ -39,7 +39,7 @@
     "react": "16.0.0-alpha.6",
     "react-apollo": "~1.0.1",
     "react-mixin": "^3.0.4",
-    "react-native": "exponent/react-native#exp-latest",
+    "react-native": "expo/react-native#sdk-18",
     "react-native-button": "^1.7.1",
     "react-native-deprecated-custom-components": "^0.1.0",
     "react-native-infinite-scroll-view": "^0.4.2",
