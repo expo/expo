@@ -4,6 +4,8 @@ title: Video
 
 A component that displays a video inline with the other React Native UI elements in your app. The display dimensions and position of the video on screen can be set using usual React Native styling.
 
+See the [Audio documentation](audio.html) for information on how to customize the audio experience of your video (such as audio mode).
+
 ## `Expo.Video`
 
 ### props
