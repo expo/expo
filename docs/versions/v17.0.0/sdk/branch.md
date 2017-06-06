@@ -23,4 +23,4 @@ If you want to enable [Associated Domains](https://dev.branch.io/getting-started
 
 ## Using the Branch API
 
-We use [react-native-branch](https://github.com/BranchMetrics/react-native-branch-deep-linking#usage), so the documentation there is the best resource to follow.
+We pull in the API from [react-native-branch](https://github.com/BranchMetrics/react-native-branch-deep-linking#usage), so the documentation there is the best resource to follow. Make sure you import Branch using the above instructions (from `Expo.DangerZone.Branch`).
