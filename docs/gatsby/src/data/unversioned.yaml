@@ -56,6 +56,7 @@
     AV: /versions/unversioned/sdk/av.html
     BarCodeScanner: /versions/unversioned/sdk/bar-code-scanner.html
     BlurView: /versions/unversioned/sdk/blur-view.html
+    Branch: /versions/unversioned/sdk/branch.html
     Constants: /versions/unversioned/sdk/constants.html
     Contacts: /versions/unversioned/sdk/contacts.html
     DocumentPicker: /versions/unversioned/sdk/document-picker.html
