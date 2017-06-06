@@ -31,8 +31,8 @@ let AuthTokenActions = {
     LocalStorage.removeAuthTokensAsync();
     LocalStorage.clearHistoryAsync();
 
-    // TODO(brent): add username or email to log out action
     Analytics.track(Analytics.events.USER_LOGGED_OUT);
+    Analytics.identify(null);
     ApolloClient.resetStore();
     return null;
   },

@@ -40,7 +40,7 @@ const maybeInitialize = () => {
   }
 };
 
-const identify = (id: string, options?: ?Object = null) => {
+const identify = (id: ?string, options?: ?Object = null) => {
   maybeInitialize();
   options = normalizeTrackingOptions(options);
 
