@@ -284,9 +284,9 @@ const styles = StyleSheet.create({
     position:'absolute',
     top: 40,
     width: 75,
+    left: 0,
     textAlign: 'center',
     zIndex: 100,
-    display:'block',
     backgroundColor: 'transparent',
     color: 'white',
     fontSize: 30,
@@ -297,9 +297,9 @@ const styles = StyleSheet.create({
 We then add this component to our render. We only want to display the score when the game is started.
 
 ```
-// Add right after the View component
+// Add at the end of the THREEView component
 /*
-<View style={{flex: 1}}>
+</THREEView>
 */
 
 { this.state.started ? <Score score={this.state.scoreCount}/> : null }
