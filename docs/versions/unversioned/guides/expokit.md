@@ -53,8 +53,9 @@ or `exp`. You can develop your project normally from here.
 
 ## Continuing with development
 
-Every time you want to develop, ensure your project's JS is being served by XDE (step 2), then run
-the native code from Xcode or Android Studio respectively.
+Every time you want to develop, ensure your project's JS is being served by XDE (step 2), then run the native code from Xcode or Android Studio respectively.
+
+Your ExpoKit project is configured to load your app's published url when you build it for release. So when you want to release it, don't forget to publish, like with any normal (non-ExpoKit) project.
 
 ## Changing Native Dependencies
 
