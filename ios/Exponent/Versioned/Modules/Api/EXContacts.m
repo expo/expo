@@ -29,7 +29,7 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSDictionary *)options resolver:(RCTPromiseR
     return;
   }
 
-  // always include id, name, firstName, middleName, lastName, company, jobTitle
+  // always include id, contactType, name, firstName, middleName, lastName, previousLastName, nickname, company, jobTitle, department, imageAvailable
   NSMutableSet *fieldsSet = [NSMutableSet setWithArray:options[@"fields"]];
   [fieldsSet addObjectsFromArray:@[
                                    @"id",
@@ -47,13 +47,13 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSDictionary *)options resolver:(RCTPromiseR
                                    ]];
 
   NSArray *keysToFetch = [self _contactKeysToFetchFromFields:fieldsSet.allObjects];
-  NSString *id = options[@"id"];
-  BOOL fetchSingleContact = id != nil;
+  NSString *contactId = options[@"id"];
+  BOOL fetchSingleContact = contactId != nil;
   
   CNContactFetchRequest *fetchRequest = [[CNContactFetchRequest alloc] initWithKeysToFetch:keysToFetch];
   fetchRequest.unifyResults = YES;
   if (fetchSingleContact) {
-    fetchRequest.predicate = [CNContact predicateForContactsWithIdentifiers:@[id]];
+    fetchRequest.predicate = [CNContact predicateForContactsWithIdentifiers:@[contactId]];
   } else {
     fetchRequest.predicate = nil;
   }
@@ -85,7 +85,7 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSDictionary *)options resolver:(RCTPromiseR
     contact[@"company"] = person.organizationName;
     contact[@"jobTitle"] = person.jobTitle;
     contact[@"department"] = person.departmentName;
-    contact[@"imageAvailable"] = [NSNumber numberWithBool:person.imageDataAvailable];
+    contact[@"imageAvailable"] = @(person.imageDataAvailable);
 
     if ([keysToFetch containsObject:CNContactNamePrefixKey]) {
       contact[@"namePrefix"] = person.namePrefix;
@@ -106,16 +106,18 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSDictionary *)options resolver:(RCTPromiseR
       contact[@"note"] = person.note;
     }
     if ([keysToFetch containsObject:CNContactImageDataKey]) {
-      contact[@"image"] = @{ @"uri": [NSString stringWithFormat:@"%@%@",
-                                      @"data:image/png;base64,",
-                                      [person.imageData base64EncodedStringWithOptions:0]
-                                      ] };
+      NSString *uri = person.imageDataAvailable ?
+       [NSString stringWithFormat:@"%@%@", @"data:image/png;base64,",
+       [person.imageData base64EncodedStringWithOptions:0] ]
+       : (NSString *)[NSNull null];
+      contact[@"image"] = @{ @"uri": uri };
     }
     if ([keysToFetch containsObject:CNContactThumbnailImageDataKey]) {
-      contact[@"thumbnail"] = @{ @"uri": [NSString stringWithFormat:@"%@%@",
-                                          @"data:image/png;base64,",
-                                          [person.thumbnailImageData base64EncodedStringWithOptions:0]
-                                          ] };
+      NSString *uri = person.imageDataAvailable ?
+       [NSString stringWithFormat:@"%@%@", @"data:image/png;base64,",
+       [person.thumbnailImageData base64EncodedStringWithOptions:0] ]
+       : (NSString *)[NSNull null];
+      contact[@"thumbnail"] = @{ @"uri": uri };
     }
     if ([keysToFetch containsObject:CNContactBirthdayKey]) {
       contact[@"birthday"] = [self _birthdayForContact:person.birthday];
@@ -236,16 +238,16 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSDictionary *)options resolver:(RCTPromiseR
   return results;
 }
 
-- (NSMutableDictionary *)_birthdayForContact:(NSDateComponents * _Nonnull) birthday
+- (NSDictionary *)_birthdayForContact:(NSDateComponents *) birthday
 {
-  NSMutableDictionary *result = nil;
   if (birthday) {
-    result = [NSMutableDictionary dictionary];
-    result[@"day"] = [NSNumber numberWithInteger:birthday.day];
-    result[@"month"] = [NSNumber numberWithInteger:birthday.month];
-    result[@"year"] = [NSNumber numberWithLong:birthday.year];
+    return @{
+             @"day": @(birthday.day),
+             @"month": @(birthday.month),
+             @"year": @(birthday.year)
+             };
   }
-  return result;
+  return nil;
 }
 
 - (NSArray *)_socialProfilesForContact:(CNContact * _Nonnull)person
@@ -318,9 +320,9 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSDictionary *)options resolver:(RCTPromiseR
     for (CNLabeledValue<NSDateComponents *> *container in person.dates) {
       NSDateComponents *val = container.value;
       NSMutableDictionary *date = [NSMutableDictionary dictionary];
-      date[@"day"] = [NSNumber numberWithInteger:val.day];
-      date[@"month"] = [NSNumber numberWithInteger:val.month];
-      date[@"year"] = val.year == NSDateComponentUndefined ? nil : [NSNumber numberWithLong:val.year];
+      date[@"day"] = @(val.day);
+      date[@"month"] = @(val.month);
+      date[@"year"] = val.year == NSDateComponentUndefined ? nil : @(val.year);
       date[@"id"] = container.identifier;
       if (container.label) {
         date[@"label"] = [CNLabeledValue localizedStringForLabel:container.label];

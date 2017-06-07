@@ -44,7 +44,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
 
   private static final String[] PROJECTION = new String[]{
       CommonDataKinds.Phone.CONTACT_ID,
-      CommonDataKinds.Phone.NORMALIZED_NUMBER,
+      CommonDataKinds.Phone.NUMBER,
       CommonDataKinds.Email.DATA,
   };
 
@@ -333,7 +333,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
     if (cursor != null) {
       try {
         while (cursor.moveToNext()) {
-          String number = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Phone.NORMALIZED_NUMBER));
+          String number = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Phone.NUMBER));
           int isPrimary = cursor.getInt(cursor.getColumnIndex(CommonDataKinds.Phone.IS_PRIMARY));
           int type = cursor.getInt(cursor.getColumnIndex(CommonDataKinds.Phone.TYPE));
 
