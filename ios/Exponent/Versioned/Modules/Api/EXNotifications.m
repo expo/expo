@@ -5,6 +5,7 @@
 #import "EXScope.h"
 #import <React/RCTUtils.h>
 #import <React/RCTConvert.h>
+#import "EXRemoteNotificationManager.h"
 
 @implementation RCTConvert (NSCalendarUnit)
 
@@ -38,6 +39,18 @@ RCT_EXPORT_MODULE(ExponentNotifications);
 {
   _bridge = bridge;
   _experienceId = _bridge.experienceScope.experienceId;
+}
+
+
+RCT_REMAP_METHOD(getDevicePushTokenAsync,
+                 getDevicePushTokenAsyncWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+  NSData *token = [[NSUserDefaults standardUserDefaults] apnsToken];
+  if (!token) {
+    return reject(0, @"APNS token has not been set", nil);
+  }
+  return resolve([token apnsTokenString]);
 }
 
 RCT_REMAP_METHOD(getExponentPushTokenAsync,

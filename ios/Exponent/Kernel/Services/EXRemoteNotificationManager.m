@@ -9,6 +9,14 @@
 
 NSString * const kEXCurrentAPNSTokenDefaultsKey = @"EXCurrentAPNSTokenDefaultsKey";
 
+@implementation NSUserDefaults (EXRemoteNotification)
+
+- (NSData *)apnsToken {
+  return [self objectForKey:kEXCurrentAPNSTokenDefaultsKey];
+}
+
+@end
+
 @implementation NSData (EXRemoteNotification)
 
 - (NSString *)apnsTokenString
@@ -109,7 +117,7 @@ NSString * const kEXCurrentAPNSTokenDefaultsKey = @"EXCurrentAPNSTokenDefaultsKe
 - (void)_maybePostAPNSToken
 {
   if (!_isLatestTokenPosted && _isKernelJSLoaded) {
-    NSData *token = [[NSUserDefaults standardUserDefaults] objectForKey:kEXCurrentAPNSTokenDefaultsKey];
+    NSData *token = [[NSUserDefaults standardUserDefaults] apnsToken];
     if (token && !_isPostingToken) {
       _isPostingToken = YES;
       NSDictionary *eventParams = @{

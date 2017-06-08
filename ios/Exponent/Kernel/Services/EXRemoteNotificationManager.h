@@ -2,6 +2,18 @@
 
 #import <Foundation/Foundation.h>
 
+@interface NSUserDefaults (EXRemoteNotification)
+
+- (NSData *)apnsToken;
+
+@end
+
+@interface NSData (EXRemoteNotification)
+
+- (NSString *)apnsTokenString;
+
+@end
+
 @interface EXRemoteNotificationManager : NSObject
 
 + (instancetype)sharedInstance;
