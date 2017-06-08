@@ -14,7 +14,7 @@ const { ExponentKernel } = NativeModules;
 
 type RequestOptions = {
   httpMethod: 'get' | 'post',
-  queryParameters?: QueryParameters,
+  queryParameters?: ?QueryParameters,
   body?: ?Object,
 };
 
@@ -41,7 +41,7 @@ export default class ApiV2HttpClient {
       url += '?' + querystring.stringify(options.queryParameters);
     }
 
-    let fetchOptions = {
+    let fetchOptions: any = {
       method: options.httpMethod,
       headers: {
         'Exponent-SDK-Version': ExponentKernel.sdkVersions,
@@ -60,13 +60,17 @@ export default class ApiV2HttpClient {
     try {
       result = JSON.parse(resultText);
     } catch (e) {
-      let error = new Error(`There was a problem understanding the server.`);
+      let error: any = new Error(
+        `There was a problem understanding the server.`
+      );
       error.responseBody = resultText;
       throw error;
     }
 
     if (!result || typeof result !== 'object') {
-      let error = new Error(`There was a problem understanding the server.`);
+      let error: any = new Error(
+        `There was a problem understanding the server.`
+      );
       error.responseBody = result;
       throw error;
     }

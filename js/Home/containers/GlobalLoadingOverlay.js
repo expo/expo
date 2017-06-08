@@ -1,17 +1,15 @@
 /* @flow */
 
-import Expo from 'expo';
+import { BlurView } from 'expo';
 import React from 'react';
 import {
   ActivityIndicator,
   StyleSheet,
   Text,
   TouchableOpacity,
-  StatusBar,
   View,
 } from 'react-native';
 import { connect } from 'react-redux';
-import { Ionicons } from '@expo/vector-icons';
 import Colors from '../constants/Colors';
 
 import BrowserActions from 'BrowserActions';
@@ -30,13 +28,16 @@ export default class GlobalLoadingOverlay extends React.Component {
     loadingIsSlow: false,
   };
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps: Object) {
     if (nextProps.isLoading && !this.props.isLoading) {
       this._initializeWarningTimer();
     } else if (this.props.isLoading && !nextProps.isLoading) {
       this._clearWarningTimer();
     }
   }
+
+  _loadingStartDate: ?Date;
+  _warningTimer: ?number;
 
   _initializeWarningTimer = () => {
     this._loadingStartDate = new Date();
@@ -57,7 +58,7 @@ export default class GlobalLoadingOverlay extends React.Component {
     }
 
     return (
-      <Expo.BlurView tint="default" intensity={100} style={styles.container}>
+      <BlurView tint="default" intensity={100} style={styles.container}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator color={Colors.blackText} size="small" />
           <Text style={[styles.loadingText, { color: Colors.blackText }]}>
@@ -74,7 +75,7 @@ export default class GlobalLoadingOverlay extends React.Component {
           onPress={this._cancelLoadingExperienceAsync}>
           <Text style={styles.cancelText}>Cancel</Text>
         </TouchableOpacity>
-      </Expo.BlurView>
+      </BlurView>
     );
   }
 
@@ -86,7 +87,8 @@ export default class GlobalLoadingOverlay extends React.Component {
     return (
       <View style={styles.warningContainer}>
         <Text style={styles.warningText}>
-          This is taking much longer than it should. You might want to cancel and check your internet connectivity.
+          This is taking much longer than it should. You might want to cancel
+          and check your internet connectivity.
         </Text>
       </View>
     );

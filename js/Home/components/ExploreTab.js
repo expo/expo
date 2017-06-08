@@ -4,7 +4,6 @@ import React from 'react';
 import {
   ActivityIndicator,
   ListView,
-  ScrollView,
   Platform,
   TouchableOpacity,
   StyleSheet,
@@ -39,7 +38,7 @@ export default class ExploreTab extends React.Component {
     isRefetching: false,
   };
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps: any) {
     if (!nextProps.data) {
       return;
     }
@@ -140,7 +139,7 @@ export default class ExploreTab extends React.Component {
     }
   };
 
-  _renderRow = (app, i) => {
+  _renderRow = (app: Object, i: number) => {
     return (
       <ProjectCard
         key={i}

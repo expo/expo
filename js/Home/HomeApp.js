@@ -21,6 +21,7 @@ import ExStore from '../Flux/ExStore';
 
 import customNavigationContext from './navigation/customNavigationContext';
 
+// $FlowIgnore
 console.ignoredYellowBox = ['Possible Unhandled Promise Rejection'];
 
 function cacheImages(images) {

@@ -5,7 +5,8 @@
  * @flow
  */
 
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import {
   ActivityIndicator,
   DeviceEventEmitter,
@@ -48,7 +49,7 @@ class ExponentApp extends React.Component {
     return <KernelNavigator />;
   }
 
-  constructor(props, context) {
+  constructor(props: any, context: any) {
     super(props, context);
     if (props.shell) {
       ExStore.dispatch(
@@ -64,7 +65,7 @@ class ExponentApp extends React.Component {
     this._performDataMigrationAsync();
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps: any) {
     if (nextProps.shell !== this.props.shell) {
       ExStore.dispatch(
         BrowserActions.setShellPropertiesAsync(
@@ -75,7 +76,7 @@ class ExponentApp extends React.Component {
     }
   }
 
-  _initialize() {
+  _initialize = async () => {
     ExponentKernel.onLoaded();
 
     if (ExponentKernel.__isFake) {
@@ -88,8 +89,9 @@ class ExponentApp extends React.Component {
       this._handleNotification
     );
     DeviceEventEmitter.addListener('ExponentKernel.refresh', Browser.refresh);
-    requestAnimationFrame(async () => {
-      let initialUrl = await Linking.getInitialURL();
+
+    let initialUrl = await Linking.getInitialURL();
+    requestAnimationFrame(() => {
       if (this.props.shell) {
         if (initialUrl) {
           ExStore.dispatch(BrowserActions.setInitialShellUrl(initialUrl));
@@ -102,7 +104,7 @@ class ExponentApp extends React.Component {
         }
       }
     });
-  }
+  };
 
   componentWillUnmount() {
     Linking.removeEventListener('url', this._handleUrl);
@@ -114,7 +116,7 @@ class ExponentApp extends React.Component {
     this._initialize();
   }
 
-  _handleUrl = event => {
+  _handleUrl = (event: { url: string }) => {
     let targetUrl = event.url;
 
     // don't compare to old url and refresh, because the manifest at this url may have changed
@@ -122,7 +124,7 @@ class ExponentApp extends React.Component {
     ExStore.dispatch(BrowserActions.navigateToUrlAsync(targetUrl));
   };
 
-  _handleNotification = event => {
+  _handleNotification = (event: { body: any, experienceId: string }) => {
     let { body, experienceId } = event;
     ExStore.dispatch(BrowserActions.setKernelLoadingState(true));
     ExStore.dispatch(

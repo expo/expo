@@ -21,7 +21,6 @@ import Alerts from '../constants/Alerts';
 import OpenProjectByURLButton from '../components/OpenProjectByURLButton';
 import BrowserActions from 'BrowserActions';
 import Colors from '../constants/Colors';
-import DevIndicator from '../components/DevIndicator';
 import SharedStyles from '../constants/SharedStyles';
 import SmallProjectCard from '../components/SmallProjectCard';
 import ProjectTools from '../components/ProjectTools';
@@ -114,7 +113,7 @@ export default class HomeScreen extends React.Component {
       <View style={SharedStyles.genericCardContainer} key="empty-history">
         <View style={SharedStyles.genericCardBody}>
           <Text style={[SharedStyles.faintText, { textAlign: 'center' }]}>
-            You haven't opened any projects recently.
+            You haven&39;t opened any projects recently.
           </Text>
         </View>
       </View>
@@ -131,7 +130,7 @@ export default class HomeScreen extends React.Component {
       }
     };
 
-    return this.props.recentHistory.map((project, i) => (
+    return this.props.recentHistory.map((project, i) =>
       <SmallProjectCard
         key={project.manifestUrl}
         iconUrl={project.manifest.iconUrl}
@@ -144,7 +143,7 @@ export default class HomeScreen extends React.Component {
         projectUrl={project.manifestUrl}
         fullWidthBorder={i === this.props.recentHistory.count() - 1}
       />
-    ));
+    );
   };
 
   _renderExpoVersion = () => {
@@ -171,7 +170,7 @@ export default class HomeScreen extends React.Component {
     // Nothing here for now
     return null;
 
-    return (
+    /*return (
       <View style={{ marginBottom: 10 }}>
         <View style={SharedStyles.sectionLabelContainer}>
           <DevIndicator style={{ marginRight: 7 }} />
@@ -185,7 +184,7 @@ export default class HomeScreen extends React.Component {
           fullWidthBorder
         />
       </View>
-    );
+    );*/
   };
 }
 

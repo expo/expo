@@ -70,6 +70,8 @@ class KernelNavigator extends React.Component {
     };
   }
 
+  state: Object;
+
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -83,6 +85,13 @@ class KernelNavigator extends React.Component {
       }
     });
   }
+
+  _homeRoute: any;
+  _browserRoutes: Object;
+  _refreshSubscription: any;
+  _navigator: any;
+  _hasTouch: any;
+  _hasDoubleTouch: any;
 
   componentWillMount() {
     this._homeRoute = ExRouter.getHomeRoute();
@@ -238,7 +247,7 @@ class KernelNavigator extends React.Component {
     this._handleTouch(event);
   }
 
-  @autobind _onContainerResponderRelease(event) {
+  @autobind _onContainerResponderRelease() {
     this._hasTouch = false;
     this._hasDoubleTouch = false;
     this._interruptMenuTransition();
@@ -255,6 +264,7 @@ class KernelNavigator extends React.Component {
         if (touches.length === 2 && !this._hasDoubleTouch) {
           this._hasDoubleTouch = true;
           // quickly start fading in the menu to respond to double touch
+          // $FlowIgnore
           this.setTimeout(() => {
             if (this._hasDoubleTouch) {
               this._transitionMenu(
@@ -263,6 +273,8 @@ class KernelNavigator extends React.Component {
               );
             }
           }, MENU_FADE_IN_BEGIN_MS);
+
+          // $FlowIgnore
           this.setTimeout(() => {
             if (this._hasDoubleTouch) {
               this._switchTasks();
@@ -301,7 +313,7 @@ class KernelNavigator extends React.Component {
     });
   }
 
-  _handleSwitchTasksEvent = _ => {
+  _handleSwitchTasksEvent = () => {
     if (this.props.settings.legacyMenuGesture) {
       // this behavior is not available if the old button/gesture are being used instead
       return;

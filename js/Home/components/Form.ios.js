@@ -9,7 +9,9 @@ export class FormInput extends React.Component {
     labelWidth: null,
   };
 
-  shouldComponentUpdate(nextProps, nextState) {
+  _input: TextInput;
+
+  shouldComponentUpdate(nextProps: any) {
     if (
       nextProps.value === this.props.value &&
       nextProps.labelWidth === this.props.labelWidth
@@ -21,7 +23,7 @@ export class FormInput extends React.Component {
   }
 
   componentDidMount() {
-    if (this.props.autofocus) {
+    if (this.props.autoFocus) {
       requestAnimationFrame(() => {
         this._input.focus();
       });
@@ -36,7 +38,7 @@ export class FormInput extends React.Component {
     this._input.blur();
   }
 
-  _handleLayoutLabel = e => {
+  _handleLayoutLabel = (e: any) => {
     let width = e.nativeEvent.layout.width;
     this.setState({ labelWidth: width });
   };
@@ -60,7 +62,7 @@ export class FormInput extends React.Component {
   };
 
   render() {
-    let { label, autofocus, hideBottomBorder, style, ...props } = this.props;
+    let { label, hideBottomBorder, style, ...props } = this.props;
 
     return (
       <View

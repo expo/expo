@@ -49,7 +49,7 @@ export default class LikeButtonContainer extends React.Component {
     );
   }
 
-  _alertNoInternetConnection = (message = '') => {
+  _alertNoInternetConnection = (message: string = '') => {
     Alert.alert(
       'No internet connection available',
       message || "Please try again when you're back online"

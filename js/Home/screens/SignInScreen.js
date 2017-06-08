@@ -40,6 +40,8 @@ export default class SignInScreen extends React.Component {
         isLoading: false,
       };
 
+  _isMounted: boolean;
+
   componentDidMount() {
     this._isMounted = true;
   }
@@ -48,7 +50,7 @@ export default class SignInScreen extends React.Component {
     this._isMounted = false;
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps: Object) {
     if (nextProps.authTokens.idToken && !this.props.authTokens.idToken) {
       TextInput.State.blurTextInput(TextInput.State.currentlyFocusedField());
       this.props.navigation.dismissModal();
@@ -66,7 +68,7 @@ export default class SignInScreen extends React.Component {
           <Form.Input
             autoCapitalize="none"
             autoCorrect={false}
-            autoFocus
+            autoFocus={true}
             blurOnSubmit={false}
             keyboardType="email-address"
             label="E-mail or username"
@@ -99,6 +101,8 @@ export default class SignInScreen extends React.Component {
     );
   }
 
+  _passwordInput: TextInput;
+
   _handleSubmitEmail = () => {
     this._passwordInput.focus();
   };
@@ -107,11 +111,11 @@ export default class SignInScreen extends React.Component {
     this._handleSubmit();
   };
 
-  _handleChangeEmail = email => {
+  _handleChangeEmail = (email: string) => {
     this.setState({ email });
   };
 
-  _handleChangePassword = password => {
+  _handleChangePassword = (password: string) => {
     this.setState({ password });
   };
 
@@ -156,7 +160,7 @@ export default class SignInScreen extends React.Component {
     }
   };
 
-  _handleError = error => {
+  _handleError = (error: Error) => {
     console.log({ error });
     let message =
       error.error_description ||

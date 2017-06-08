@@ -18,7 +18,7 @@ export default {
       development: boolean,
     }
   ): Promise<*> {
-    let args = {
+    let args: any = {
       appId: appInfo.appId,
       deviceId: appInfo.deviceId,
       deviceToken,

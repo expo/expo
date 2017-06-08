@@ -4,19 +4,17 @@ import React from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import { SlidingTabNavigationItem, withNavigation } from '@expo/ex-navigation';
 import { Ionicons } from '@expo/vector-icons';
-import TouchableNativeFeedback
-  from '@expo/react-native-touchable-native-feedback-safe';
+import TouchableNativeFeedback from '@expo/react-native-touchable-native-feedback-safe';
 import { connect } from 'react-redux';
 
 import Colors from '../constants/Colors';
 import SearchBar from '../components/SearchBar';
-import StyledSlidingTabNavigation
-  from '../navigation/StyledSlidingTabNavigation';
+import StyledSlidingTabNavigation from '../navigation/StyledSlidingTabNavigation';
 import ExploreTabContainer from '../containers/ExploreTabContainer';
 import FeatureFlags from '../../FeatureFlags';
 import isUserAuthenticated from '../utils/isUserAuthenticated';
 
-let TabTitles = {
+let TabTitles: Object = {
   new: 'New projects',
   featured: 'Featured',
 };
@@ -25,7 +23,8 @@ if (FeatureFlags.DISPLAY_EXPERIMENTAL_EXPLORE_TABS) {
   TabTitles.top = 'Top projects';
 }
 
-@withNavigation class SearchButton extends React.Component {
+@withNavigation
+class SearchButton extends React.Component {
   render() {
     return (
       <TouchableNativeFeedback

@@ -4,19 +4,16 @@
  * @providesModule Frame
  * @flow weak
  */
-'use strict';
 
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import ReactNative, {
   NativeModules,
   Platform,
   StyleSheet,
-  View,
   ViewPropTypes,
   requireNativeComponent,
 } from 'react-native';
-
-import ExponentKernel from 'ExponentKernel';
 
 const { EXFrameManager, UIManager } = NativeModules;
 
@@ -78,6 +75,8 @@ export default class Frame extends React.Component {
      */
     onError: PropTypes.func,
   };
+
+  _frame: any;
 
   reload() {
     if (Platform.OS === 'android') {

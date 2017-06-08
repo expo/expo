@@ -7,11 +7,9 @@ import { SlidingTabNavigation } from '@expo/ex-navigation';
 
 import { capitalize } from 'lodash';
 
-import FeatureFlags from '../../FeatureFlags';
-
 export default class StyledSlidingTabNavigation extends React.Component {
   render() {
-    let { keyToTitle, children, ...props } = this.props;
+    let { children, ...props } = this.props;
 
     return (
       <SlidingTabNavigation
@@ -35,7 +33,7 @@ export default class StyledSlidingTabNavigation extends React.Component {
     );
   }
 
-  _getRenderLabel = props => scene => {
+  _getRenderLabel = (props: Object) => (scene: Object) => {
     const { route, index } = scene;
 
     let title;

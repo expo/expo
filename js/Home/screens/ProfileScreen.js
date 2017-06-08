@@ -85,6 +85,8 @@ export default class ProfileScreen extends React.Component {
 @onlyIfAuthenticated
 @connect()
 class SignOutButtonAndroid extends React.Component {
+  _anchor: View;
+
   render() {
     return (
       <View style={{ flex: 1 }}>
@@ -109,7 +111,7 @@ class SignOutButtonAndroid extends React.Component {
     NativeModules.UIManager.showPopupMenu(
       handle,
       ['Sign out'],
-      err => {},
+      () => {},
       (action, selectedIndex) => {
         if (selectedIndex === 0) {
           this.props.dispatch(AuthTokenActions.signOut());
@@ -120,6 +122,8 @@ class SignOutButtonAndroid extends React.Component {
 }
 
 class OptionsButtonAndroid extends React.Component {
+  _anchor: View;
+
   render() {
     return (
       <View style={{ flex: 1 }}>
@@ -144,7 +148,7 @@ class OptionsButtonAndroid extends React.Component {
     NativeModules.UIManager.showPopupMenu(
       handle,
       ['Report this user'],
-      err => {},
+      () => {},
       (action, selectedIndex) => {
         if (selectedIndex === 0) {
           Alert.alert(
@@ -177,7 +181,7 @@ class UserSettingsButtonIOS extends React.Component {
   };
 }
 
-@onlyIfAuthenticated
+/*@onlyIfAuthenticated
 @connect()
 class SignOutButtonIOS extends React.Component {
   render() {
@@ -195,7 +199,7 @@ class SignOutButtonIOS extends React.Component {
   _handlePress = () => {
     this.props.dispatch(AuthTokenActions.signOut());
   };
-}
+}*/
 
 @connectActionSheet
 class OptionsButtonIOS extends React.Component {

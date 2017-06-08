@@ -3,7 +3,6 @@
  *
  * @providesModule BrowserActions
  */
-'use strict';
 
 import { action } from 'Flux';
 import ExManifests from 'ExManifests';

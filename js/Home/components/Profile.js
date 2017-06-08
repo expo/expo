@@ -1,11 +1,9 @@
 /* @flow */
 
 import React from 'react';
-import { Asset } from 'expo';
 import {
   ActivityIndicator,
   Image,
-  Platform,
   ScrollView,
   StyleSheet,
   RefreshControl,
@@ -14,7 +12,6 @@ import {
   View,
 } from 'react-native';
 import FadeIn from '@expo/react-native-fade-in-image';
-import { SlidingTabNavigationItem } from '@expo/ex-navigation';
 
 import { take, takeRight } from 'lodash';
 import dedent from 'dedent';
@@ -26,11 +23,9 @@ import EmptyProfileProjectsNotice from './EmptyProfileProjectsNotice';
 import SeeAllProjectsButton from './SeeAllProjectsButton';
 import SharedStyles from '../constants/SharedStyles';
 import SmallProjectCard from './SmallProjectCard';
-import StyledSlidingTabNavigation
-  from '../navigation/StyledSlidingTabNavigation';
 
 const MAX_APPS_TO_DISPLAY = 3;
-const MAX_LIKES_TO_DISPLAY = 3;
+// const MAX_LIKES_TO_DISPLAY = 3;
 
 const NETWORK_ERROR_TEXT = dedent`
   Your connection appears to be offline.
@@ -47,6 +42,8 @@ export default class Profile extends React.Component {
     isRefetching: false,
   };
 
+  _isMounted: boolean;
+
   componentWillMount() {
     this._isMounted = true;
   }
@@ -55,7 +52,7 @@ export default class Profile extends React.Component {
     this._isMounted = false;
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps: any) {
     const SkipConnectionNotification = true;
     if (
       !SkipConnectionNotification &&
@@ -225,7 +222,7 @@ export default class Profile extends React.Component {
         <EmptyProfileProjectsNotice isOwnProfile={this.props.isOwnProfile} />
       );
     } else {
-      let appsToDisplay = take(apps, MAX_APPS_TO_DISPLAY);
+      // let appsToDisplay = take(apps, MAX_APPS_TO_DISPLAY);
       let otherApps = takeRight(
         apps,
         Math.max(0, apps.length - MAX_APPS_TO_DISPLAY)
@@ -256,7 +253,7 @@ export default class Profile extends React.Component {
     });
   };
 
-  _renderApp = (app, i) => {
+  _renderApp = (app: any, i: number) => {
     return (
       <SmallProjectCard
         key={i}

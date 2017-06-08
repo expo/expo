@@ -38,7 +38,7 @@ export default graphql(PublicAppsQuery, {
           variables: {
             ...(props.filter ? { filter: props.filter } : {}),
             limit: 10,
-            offset: apps.length,
+            offset: data.apps.length,
           },
           updateQuery: (previousData, { fetchMoreResult }) => {
             const previousApps = previousData.app && previousData.app.all;

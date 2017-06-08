@@ -4,9 +4,9 @@
  * @providesModule ExButton
  * @flow
  */
-'use strict';
 
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import {
   Animated,
   Dimensions,
@@ -14,7 +14,6 @@ import {
   PanResponder,
   Platform,
   StyleSheet,
-  View,
 } from 'react-native';
 import TimerMixin from 'react-timer-mixin';
 import ResponsiveImage from '@expo/react-native-responsive-image';
@@ -102,6 +101,10 @@ class ExButton extends React.Component {
      * mounting the button.
      */
     msUntilInactiveOnMount: PropTypes.number,
+
+    isVisible: PropTypes.bool,
+    style: PropTypes.any,
+    onPress: PropTypes.func,
   };
 
   static defaultProps = {
@@ -115,6 +118,8 @@ class ExButton extends React.Component {
     msUntilInactiveOnMount: 4000,
     msUntilInactiveOnInteraction: 1000,
   };
+
+  state: Object;
 
   constructor(props, context) {
     super(props, context);
@@ -147,6 +152,7 @@ class ExButton extends React.Component {
   }
 
   componentDidMount() {
+    // $FlowIgnore
     this.setTimeout(() => {
       this._becomeInactiveSoon();
     }, this.props.msUntilInactiveOnMount);
@@ -203,6 +209,19 @@ class ExButton extends React.Component {
       shadowOpacity,
     };
 
+    const buttonImageSources = {
+      // $FlowIgnore: keys need to be strings
+      2: {
+        uri:
+          'https://s3.amazonaws.com/exp-us-standard/ios-home-btn-logo@2x.png',
+      },
+      // $FlowIgnore: keys need to be strings
+      3: {
+        uri:
+          'https://s3.amazonaws.com/exp-us-standard/ios-home-btn-logo@3x.png',
+      },
+    };
+
     return (
       <Animated.View
         {...panResponder.panHandlers}
@@ -212,14 +231,7 @@ class ExButton extends React.Component {
         style={[styles.container, animatedContainerStyle, this.props.style]}>
         <Animated.View style={[styles.bubble, animatedBubbleStyle]}>
           <AnimatedResponsiveImage
-            sources={{
-              2: {
-                uri: 'https://s3.amazonaws.com/exp-us-standard/ios-home-btn-logo@2x.png',
-              },
-              3: {
-                uri: 'https://s3.amazonaws.com/exp-us-standard/ios-home-btn-logo@3x.png',
-              },
-            }}
+            sources={buttonImageSources}
             style={[styles.icon, { tintColor }]}
           />
         </Animated.View>
@@ -228,6 +240,7 @@ class ExButton extends React.Component {
   }
 
   _interactionHasStarted() {
+    // $FlowIgnore
     this.clearTimeout(this._inactiveWait);
 
     Animated.timing(this.state.active, {
@@ -237,9 +250,13 @@ class ExButton extends React.Component {
     }).start();
   }
 
+  _inactiveWait: ?number;
+
   _becomeInactiveSoon() {
+    // $FlowIgnore
     this.clearTimeout(this._inactiveWait);
 
+    // $FlowIgnore
     this._inactiveWait = this.setTimeout(() => {
       Animated.timing(this.state.active, {
         easing: Easing.out(Easing.quad),
@@ -249,7 +266,7 @@ class ExButton extends React.Component {
     }, this.props.msUntilInactiveOnInteraction);
   }
 
-  @autobind _handlePanResponderGrant(event, gestureState) {
+  @autobind _handlePanResponderGrant() {
     var { position } = this.state;
 
     // Re-set the offset to the current value, otherwise when we set the value
@@ -265,7 +282,7 @@ class ExButton extends React.Component {
     Animated.spring(this.state.scale, { toValue: 0.9 }).start();
   }
 
-  @autobind _handlePanResponderMove(event, { dx, dy }) {}
+  @autobind _handlePanResponderMove() {}
 
   @autobind _handlePanResponderRelease(event, gestureState) {
     let { dx, dy, vx, vy } = gestureState;

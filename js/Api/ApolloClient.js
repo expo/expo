@@ -40,8 +40,20 @@ function idTokenIsValid() {
   }
 }
 
-async function refreshIdTokenAsync() {
-  let newAuthTokens = await Auth0Api.refreshIdTokenAsync(getRefreshToken());
+async function refreshIdTokenAsync(): Promise<string> {
+  let refreshToken = getRefreshToken();
+  if (!refreshToken) {
+    if (__DEV__) {
+      alert('Tried to refresh id token but no refresh token is available!');
+    }
+
+    return '';
+  }
+
+  let newAuthTokens: { id_token: string } = await Auth0Api.refreshIdTokenAsync(
+    refreshToken
+  );
+
   if (__DEV__) {
     if (!newAuthTokens.id_token) {
       alert(
@@ -50,6 +62,7 @@ async function refreshIdTokenAsync() {
       );
     }
   }
+
   return newAuthTokens.id_token;
 }
 

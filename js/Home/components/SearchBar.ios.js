@@ -3,7 +3,6 @@
 import React from 'react';
 import {
   LayoutAnimation,
-  Linking,
   NativeModules,
   StyleSheet,
   Text,
@@ -23,13 +22,13 @@ const SearchContainerHorizontalMargin = 10;
 const SearchContainerWidth =
   Layout.window.width - SearchContainerHorizontalMargin * 2;
 
-const SearchIcon = () => (
+const SearchIcon = () =>
   <View style={styles.searchIconContainer}>
     <Ionicons name="ios-search" size={18} color="#ccc" />
-  </View>
-);
+  </View>;
 
-@withNavigation class PlaceholderButtonSearchBar extends React.Component {
+@withNavigation
+class PlaceholderButtonSearchBar extends React.Component {
   render() {
     return (
       <View style={styles.container}>
@@ -66,13 +65,15 @@ export default class SearchBar extends React.Component {
     inputWidth: Layout.window.width,
   };
 
+  _textInput: TextInput;
+
   componentDidMount() {
     requestAnimationFrame(() => {
       this._textInput.focus();
     });
   }
 
-  _handleLayoutCancelButton = e => {
+  _handleLayoutCancelButton = (e: Object) => {
     if (this.state.showCancelButton) {
       return;
     }
@@ -149,7 +150,7 @@ export default class SearchBar extends React.Component {
     );
   }
 
-  _handleChangeText = text => {
+  _handleChangeText = (text: string) => {
     this.setState({ text });
     this.props.emitter && this.props.emitter.emit('change', text);
   };

@@ -15,7 +15,7 @@ let ExponentKernel;
 if (NativeModules.ExponentKernel) {
   ExponentKernel = NativeModules.ExponentKernel;
 } else {
-  const log = (msg, ...rest) => {
+  const log = (msg, ...rest: Array<any>) => {
     console.log(`ExponentKernel: ${msg}, Arguments: ${JSON.stringify(rest)}`);
   };
 

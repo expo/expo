@@ -1,20 +1,20 @@
 /* @flow */
 
-import { NavigationContext, NavigationStyles } from '@expo/ex-navigation';
+import { NavigationContext } from '@expo/ex-navigation';
 
 import Router from './Router';
 
 class CustomNavigationContext extends NavigationContext {
   showModal(initialRouteName, initialRouteParams = {}) {
     const initialRoute = Router.getRoute(initialRouteName, initialRouteParams);
-    const rootNavigator = this.getNavigator('root');
+    const rootNavigator: any = this.getNavigator('root');
     const route = Router.getRoute('modal', { initialRoute });
 
     rootNavigator.push(route);
   }
 
   dismissModal() {
-    const rootNavigator = this.getNavigator('root');
+    const rootNavigator: any = this.getNavigator('root');
     rootNavigator.pop();
   }
 }

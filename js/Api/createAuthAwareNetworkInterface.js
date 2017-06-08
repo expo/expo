@@ -1,13 +1,12 @@
 /* @flow */
 
-import ConnectivityAwareHTTPNetworkInterface
-  from './ConnectivityAwareHTTPNetworkInterface';
+import ConnectivityAwareHTTPNetworkInterface from './ConnectivityAwareHTTPNetworkInterface';
 
 type AuthAwareNetworkInterfaceOptions = {
   uri: string,
-  getIdToken: () => string,
+  getIdToken: () => ?string,
   setIdToken: (idToken: string) => void,
-  getRefreshToken: () => string,
+  getRefreshToken: () => ?string,
   idTokenIsValid: () => boolean,
   refreshIdTokenAsync: () => Promise<string>,
 };

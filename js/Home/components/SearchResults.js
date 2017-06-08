@@ -14,12 +14,10 @@ import {
   TouchableHighlight,
   View,
 } from 'react-native';
-import TouchableNativeFeedbackSafe
-  from '@expo/react-native-touchable-native-feedback-safe';
+import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 
 import Colors from '../constants/Colors';
 import ExUrls from 'ExUrls';
-import Layout from '../constants/Layout';
 import ProfileCard from '../components/ProfileCard';
 import ProjectCard from '../components/ProjectCard';
 import SharedStyles from '../constants/SharedStyles';
@@ -27,18 +25,6 @@ import SharedStyles from '../constants/SharedStyles';
 let { ExponentKernel } = NativeModules;
 
 const SectionIds = ['UserSearchResult', 'AppSearchResult'];
-
-function resultsAreEmpty(results) {
-  if (!results) {
-    return true;
-  }
-
-  if (!results.UserSearchResult && !results.AppSearchResult) {
-    return true;
-  }
-
-  return false;
-}
 
 export default class SearchResults extends React.Component {
   state = {
@@ -53,7 +39,7 @@ export default class SearchResults extends React.Component {
     this._maybeUpdateDataSource(this.props);
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps: Object) {
     this._maybeUpdateDataSource(nextProps);
   }
 
@@ -66,7 +52,7 @@ export default class SearchResults extends React.Component {
     );
   }
 
-  _maybeUpdateDataSource = newProps => {
+  _maybeUpdateDataSource = (newProps: Object) => {
     if (!newProps.data) {
       return;
     }
@@ -184,7 +170,7 @@ export default class SearchResults extends React.Component {
     }
   };
 
-  _renderSectionHeader = (sectionData, sectionId) => {
+  _renderSectionHeader = (sectionData: Object, sectionId: string) => {
     return (
       <View
         key={sectionData}
@@ -199,7 +185,7 @@ export default class SearchResults extends React.Component {
     );
   };
 
-  _isLastAppSearchResult = index => {
+  _isLastAppSearchResult = (index: number) => {
     let appSectionIdx = SectionIds.indexOf('AppSearchResult');
     let appSectionLength = this.state.dataSource.getSectionLengths()[
       appSectionIdx
@@ -207,7 +193,7 @@ export default class SearchResults extends React.Component {
     return parseInt(index, 0) + 1 === appSectionLength;
   };
 
-  _isLastUserSearchResult = index => {
+  _isLastUserSearchResult = (index: number) => {
     let userSectionIdx = SectionIds.indexOf('UserSearchResult');
     let userSectionLength = this.state.dataSource.getSectionLengths()[
       userSectionIdx
@@ -215,7 +201,7 @@ export default class SearchResults extends React.Component {
     return parseInt(index, 0) + 1 === userSectionLength;
   };
 
-  _renderRow = (rowData, sectionId, rowId) => {
+  _renderRow = (rowData: Object, sectionId: string, rowId: number) => {
     if (sectionId === 'AppSearchResult') {
       let { app } = rowData;
 

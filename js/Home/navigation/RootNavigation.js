@@ -89,7 +89,7 @@ export default class RootNavigation extends React.Component {
     return tabItems;
   };
 
-  _handleTabPress = tabKey => {
+  _handleTabPress = (tabKey: string) => {
     if (this._currentTab !== tabKey) {
       this._currentTab = tabKey;
       return;
@@ -102,7 +102,13 @@ export default class RootNavigation extends React.Component {
     }
   };
 
-  _renderIcon(IconComponent, iconName, iconSize, title, isSelected) {
+  _renderIcon(
+    IconComponent: any,
+    iconName: string,
+    iconSize: number,
+    title: string,
+    isSelected: boolean
+  ) {
     let color = isSelected ? Colors.tabIconSelected : Colors.tabIconDefault;
 
     return (

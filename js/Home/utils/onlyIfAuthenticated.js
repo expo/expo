@@ -21,7 +21,7 @@ class Authenticated extends React.Component {
   }
 }
 
-export default function onlyIfAuthenticated(TargetComponent) {
+export default function onlyIfAuthenticated(TargetComponent: any) {
   class OnlyIfAuthenticated extends React.Component {
     render() {
       return (

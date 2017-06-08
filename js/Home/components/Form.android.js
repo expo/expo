@@ -29,7 +29,7 @@ export class FormInput extends React.Component {
   componentDidMount() {
     this._updateLabel(this.props.value);
 
-    if (this.props.autofocus) {
+    if (this.props.autoFocus) {
       requestAnimationFrame(() => {
         this._input.focus();
       });
@@ -37,7 +37,7 @@ export class FormInput extends React.Component {
   }
 
   render() {
-    let { label, autofocus, hideBottomBorder, style, ...props } = this.props;
+    let { style, ...props } = this.props;
 
     return (
       <View style={styles.inputContainer}>

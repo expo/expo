@@ -4,17 +4,13 @@
  * @providesModule ExperienceCollection
  * @flow
  */
-'use strict';
 
-import React, { PropTypes } from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
-import TouchableNativeFeedbackSafe
-  from '@expo/react-native-touchable-native-feedback-safe';
-
-import take from 'lodash/take';
+import React from 'react';
+import PropTypes from 'prop-types';
+import { StyleSheet, View, Text, Image } from 'react-native';
+import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 
 const ICON_LIST_SIZE = 55;
-const EXPERIENCE_MAX_TITLE_LENGTH = 16;
 const EXPERIENCE_MAX_TITLE_LENGTH_FULL_WIDTH = 32;
 
 export default class ExperienceCollection extends React.Component {
@@ -27,6 +23,7 @@ export default class ExperienceCollection extends React.Component {
     onPressHeading: PropTypes.func,
     onPressItem: PropTypes.func,
     firstExperienceRef: PropTypes.func,
+    headingStyle: PropTypes.any,
   };
 
   render() {
@@ -58,7 +55,7 @@ export default class ExperienceCollection extends React.Component {
     );
   }
 
-  _renderExperiences(experiences) {
+  _renderExperiences(experiences: Array<any>) {
     return experiences.map((experience, index) => {
       let isFirst = index === 0;
       let ref = isFirst && this.props.firstExperienceRef
@@ -66,7 +63,10 @@ export default class ExperienceCollection extends React.Component {
         : null;
       let truncatedName = experience.manifest.name;
       if (truncatedName.length > EXPERIENCE_MAX_TITLE_LENGTH_FULL_WIDTH) {
-        truncatedName = `${truncatedName.substring(0, EXPERIENCE_MAX_TITLE_LENGTH_FULL_WIDTH - 3)}...`;
+        truncatedName = `${truncatedName.substring(
+          0,
+          EXPERIENCE_MAX_TITLE_LENGTH_FULL_WIDTH - 3
+        )}...`;
       }
 
       if (this.props.headingLabel === 'Featured') {
@@ -87,7 +87,12 @@ export default class ExperienceCollection extends React.Component {
     });
   }
 
-  _renderRecentExperience(experience, ref, title, isFirst) {
+  _renderRecentExperience(
+    experience: Object,
+    ref: any,
+    title: string,
+    isFirst: boolean
+  ) {
     let url = experience.url || '';
     url = url.replace(/^\w+:\/\//, '');
 
@@ -120,7 +125,12 @@ export default class ExperienceCollection extends React.Component {
     );
   }
 
-  _renderFeaturedExperience(experience, ref, title, isFirst) {
+  _renderFeaturedExperience(
+    experience: Object,
+    ref: any,
+    title: string,
+    isFirst: boolean
+  ) {
     return (
       <TouchableNativeFeedbackSafe
         key={experience.url}
@@ -158,7 +168,7 @@ export default class ExperienceCollection extends React.Component {
     }
   };
 
-  _onPressItem = experience => {
+  _onPressItem = (experience: Object) => {
     if (this.props.onPressItem) {
       this.props.onPressItem(experience);
     }

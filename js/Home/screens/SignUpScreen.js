@@ -57,7 +57,11 @@ export default class SignUpScreen extends React.Component {
         isLoading: false,
       };
 
-  componentWillReceiveProps(nextProps) {
+  _isMounted: boolean;
+  _keyboardDidShowSubscription: { remove: Function };
+  _keyboardDidHideSubscription: { remove: Function };
+
+  componentWillReceiveProps(nextProps: Object) {
     if (nextProps.authTokens.idToken && !this.props.authTokens.isToken) {
       TextInput.State.blurTextInput(TextInput.State.currentlyFocusedField());
       this.props.navigation.dismissModal();
@@ -101,7 +105,7 @@ export default class SignUpScreen extends React.Component {
             onChangeText={this._updateValue.bind(this, 'firstName')}
             onSubmitEditing={() => this._handleSubmitEditing('firstName')}
             value={this.state.firstName}
-            autofocus
+            autoFocus={true}
             autoCorrect={false}
             autoCapitalize="words"
             blurOnSubmit={false}
@@ -146,8 +150,6 @@ export default class SignUpScreen extends React.Component {
             autoCorrect={false}
             autoCapitalize="none"
             value={this.state.email}
-            autoCapitalize="none"
-            autoCorrect={false}
             blurOnSubmit={false}
             keyboardType="email-address"
             label="E-mail address"
@@ -195,7 +197,13 @@ export default class SignUpScreen extends React.Component {
     );
   }
 
-  _handleSubmitEditing = field => {
+  _lastNameInput: any;
+  _usernameInput: any;
+  _emailInput: any;
+  _passwordInput: any;
+  _passwordConfirmationInput: any;
+
+  _handleSubmitEditing = (field: string) => {
     switch (field) {
       case 'firstName':
         this._lastNameInput.focus();
@@ -218,7 +226,7 @@ export default class SignUpScreen extends React.Component {
     }
   };
 
-  _updateValue = (key, value) => {
+  _updateValue = (key: string, value: string) => {
     this.setState({ [key]: value });
   };
 
@@ -267,7 +275,7 @@ export default class SignUpScreen extends React.Component {
     }
   };
 
-  _handleError = result => {
+  _handleError = (result: any) => {
     // Our signup endpoint has this format for result object if there is an error:
     // {
     //  "errors":[

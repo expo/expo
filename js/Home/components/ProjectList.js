@@ -1,13 +1,7 @@
 /* @flow */
 
 import React from 'react';
-import {
-  ActivityIndicator,
-  ListView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, ListView, StyleSheet, View } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 import { withNavigation } from '@expo/ex-navigation';
 
@@ -25,6 +19,8 @@ export default class ProjectList extends React.Component {
     isLoadingMore: false,
   };
 
+  _isMounted: boolean;
+
   componentDidMount() {
     this._isMounted = true;
   }
@@ -33,7 +29,7 @@ export default class ProjectList extends React.Component {
     this._isMounted = false;
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps: any) {
     if (!nextProps.data) {
       return;
     }
@@ -102,7 +98,7 @@ export default class ProjectList extends React.Component {
     return this.props.data.apps.length < this.props.data.appCount;
   };
 
-  _renderRow = (app, i) => {
+  _renderRow = (app: any, i: number) => {
     if (this.props.belongsToCurrentUser) {
       return (
         <SmallProjectCard
@@ -135,7 +131,7 @@ export default class ProjectList extends React.Component {
     }
   };
 
-  _handlePressUsername = username => {
+  _handlePressUsername = (username: string) => {
     this.props.navigator.push('profile', { username });
   };
 }

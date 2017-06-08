@@ -32,18 +32,18 @@ class Connectivity {
     return this._isAvailable;
   };
 
-  _handleConnectivityChange = isAvailable => {
+  _handleConnectivityChange = (isAvailable: boolean) => {
     this._isAvailable = isAvailable;
     Object.values(this._listeners).forEach(listener => {
-      listener(this._isAvailable);
+      typeof listener === 'function' && listener(this._isAvailable);
     });
   };
 
-  addListener = listener => {
+  addListener = (listener: any) => {
     this._listeners[listener] = listener;
   };
 
-  removeListener = listener => {
+  removeListener = (listener: any) => {
     delete this._listeners[listener];
   };
 }

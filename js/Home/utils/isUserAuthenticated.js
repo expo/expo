@@ -1,5 +1,5 @@
 /* @flow */
 
-export default function isUserAuthenticated(authTokens) {
+export default function isUserAuthenticated(authTokens: ?{ idToken: ?string }) {
   return !!(authTokens && authTokens.idToken);
 }

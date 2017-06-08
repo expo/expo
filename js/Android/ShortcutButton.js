@@ -6,7 +6,8 @@
  */
 'use strict';
 
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import {
   NativeModules,
   StyleSheet,
@@ -14,16 +15,19 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import autobind from 'autobind-decorator';
-
 import ExColors from 'ExColors';
-
 const { ExponentKernel } = NativeModules;
 
 export default class ShortcutButton extends React.Component {
   static propTypes = {
     url: PropTypes.string.isRequired,
     manifest: PropTypes.object.isRequired,
+    style: PropTypes.any,
+  };
+
+  _onPress = () => {
+    let { url, manifest } = this.props;
+    ExponentKernel.createShortcutAsync(url, manifest);
   };
 
   render() {
@@ -36,11 +40,6 @@ export default class ShortcutButton extends React.Component {
         </Text>
       </TouchableOpacity>
     );
-  }
-
-  @autobind onPress() {
-    let { url, manifest } = this.props;
-    ExponentKernel.createShortcutAsync(url, manifest);
   }
 }
 

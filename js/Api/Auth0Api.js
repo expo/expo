@@ -5,12 +5,11 @@ import { Constants } from 'expo';
 
 const AuthScope = 'openid offline_access nickname username';
 const AuthEndpoint = 'https://exponent.auth0.com/oauth/ro';
-const ProfileEndpoint = 'https://exponent.auth0.com/userinfo';
 const DelegationEndpoint = 'https://exponent.auth0.com/delegation';
 const SignUpEndpoint = 'https://exp.host/--/api/v2/auth/createOrUpdateUser';
 const ClientId = 'qIdMWQxxXqD8PbCA90mZh0r2djqJylzg';
 
-async function signInAsync(username, password) {
+async function signInAsync(username: string, password: string) {
   let response = await fetch(AuthEndpoint, {
     method: 'POST',
     headers: {
@@ -30,7 +29,15 @@ async function signInAsync(username, password) {
   return result;
 }
 
-async function signUpAsync(data) {
+type SignUpData = {
+  firstName: string,
+  lastName: string,
+  email: string,
+  username: string,
+  password: string,
+};
+
+async function signUpAsync(data: SignUpData) {
   let response = await fetch(SignUpEndpoint, {
     method: 'POST',
     headers: {
@@ -56,13 +63,13 @@ async function signUpAsync(data) {
   return result;
 }
 
-function tokenIsExpired(idToken) {
+function tokenIsExpired(idToken: string) {
   const { exp } = jwtDecode(idToken, { complete: true });
 
   return exp - new Date().getTime() / 1000 <= 60 * 60;
 }
 
-async function refreshIdTokenAsync(refreshToken) {
+async function refreshIdTokenAsync(refreshToken: string) {
   let response = await fetch(DelegationEndpoint, {
     method: 'POST',
     headers: {
