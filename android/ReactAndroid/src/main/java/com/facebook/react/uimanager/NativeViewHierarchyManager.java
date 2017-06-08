@@ -117,7 +117,7 @@ public class NativeViewHierarchyManager {
         mRootViewManager = manager;
     }
 
-    public final View resolveView(int tag) {
+    public final synchronized View resolveView(int tag) {
         View view = mTagsToViews.get(tag);
         if (view == null) {
             throw new IllegalViewOperationException("Trying to resolve view with tag " + tag + " which doesn't exist");
@@ -125,7 +125,7 @@ public class NativeViewHierarchyManager {
         return view;
     }
 
-    public final ViewManager resolveViewManager(int tag) {
+    public final synchronized ViewManager resolveViewManager(int tag) {
         ViewManager viewManager = mTagsToViewManagers.get(tag);
         if (viewManager == null) {
             throw new IllegalViewOperationException("ViewManager for tag " + tag + " could not be found");
@@ -141,7 +141,7 @@ public class NativeViewHierarchyManager {
         mLayoutAnimationEnabled = enabled;
     }
 
-    public void updateProperties(int tag, ReactStylesDiffMap props) {
+    public synchronized void updateProperties(int tag, ReactStylesDiffMap props) {
         try {
             {
                 UiThreadUtil.assertOnUiThread();
@@ -157,14 +157,14 @@ public class NativeViewHierarchyManager {
         }
     }
 
-    public void updateViewExtraData(int tag, Object extraData) {
+    public synchronized void updateViewExtraData(int tag, Object extraData) {
         UiThreadUtil.assertOnUiThread();
         ViewManager viewManager = resolveViewManager(tag);
         View viewToUpdate = resolveView(tag);
         viewManager.updateExtraData(viewToUpdate, extraData);
     }
 
-    public void updateLayout(int parentTag, int tag, int x, int y, int width, int height) {
+    public synchronized void updateLayout(int parentTag, int tag, int x, int y, int width, int height) {
         UiThreadUtil.assertOnUiThread();
         SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_VIEW, "NativeViewHierarchyManager_updateLayout").arg("parentTag", parentTag).arg("tag", tag).flush();
         try {
@@ -208,7 +208,7 @@ public class NativeViewHierarchyManager {
         }
     }
 
-    public void createView(ThemedReactContext themedContext, int tag, String className, @Nullable ReactStylesDiffMap initialProps) {
+    public synchronized void createView(ThemedReactContext themedContext, int tag, String className, @Nullable ReactStylesDiffMap initialProps) {
         UiThreadUtil.assertOnUiThread();
         SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_VIEW, "NativeViewHierarchyManager_createView").arg("tag", tag).arg("className", className).flush();
         try {
@@ -288,7 +288,8 @@ public class NativeViewHierarchyManager {
    * a view which should be added at the specified index
    * @param tagsToDelete list of tags corresponding to views that should be removed
    */
-    public void manageChildren(int tag, @Nullable int[] indicesToRemove, @Nullable ViewAtIndex[] viewsToAdd, @Nullable int[] tagsToDelete) {
+    public synchronized void manageChildren(int tag, @Nullable int[] indicesToRemove, @Nullable ViewAtIndex[] viewsToAdd, @Nullable int[] tagsToDelete) {
+        UiThreadUtil.assertOnUiThread();
         final ViewGroup viewToManage = (ViewGroup) mTagsToViews.get(tag);
         final ViewGroupManager viewManager = (ViewGroupManager) resolveViewManager(tag);
         if (viewToManage == null) {
@@ -384,7 +385,8 @@ public class NativeViewHierarchyManager {
     /**
    * Simplified version of manageChildren that only deals with adding children views
    */
-    public void setChildren(int tag, ReadableArray childrenTags) {
+    public synchronized void setChildren(int tag, ReadableArray childrenTags) {
+        UiThreadUtil.assertOnUiThread();
         ViewGroup viewToManage = (ViewGroup) mTagsToViews.get(tag);
         ViewGroupManager viewManager = (ViewGroupManager) resolveViewManager(tag);
         for (int i = 0; i < childrenTags.size(); i++) {
@@ -398,20 +400,15 @@ public class NativeViewHierarchyManager {
 
     /**
    * See {@link UIManagerModule#addMeasuredRootView}.
-   *
-   * Must be called from the UI thread.
    */
     /**
    * See {@link UIManagerModule#addMeasuredRootView}.
-   *
-   * Must be called from the UI thread.
    */
-    public void addRootView(int tag, SizeMonitoringFrameLayout view, ThemedReactContext themedContext) {
+    public synchronized void addRootView(int tag, SizeMonitoringFrameLayout view, ThemedReactContext themedContext) {
         addRootViewGroup(tag, view, themedContext);
     }
 
-    protected final void addRootViewGroup(int tag, ViewGroup view, ThemedReactContext themedContext) {
-        UiThreadUtil.assertOnUiThread();
+    protected final synchronized void addRootViewGroup(int tag, ViewGroup view, ThemedReactContext themedContext) {
         if (view.getId() != View.NO_ID) {
             throw new IllegalViewOperationException("Trying to add a root view with an explicit id already set. React Native uses " + "the id field to track react tags and will overwrite this field. If that is fine, " + "explicitly overwrite the id field to View.NO_ID before calling addMeasuredRootView.");
         }
@@ -427,7 +424,7 @@ public class NativeViewHierarchyManager {
     /**
    * Releases all references to given native View.
    */
-    protected void dropView(View view) {
+    protected synchronized void dropView(View view) {
         UiThreadUtil.assertOnUiThread();
         if (!mRootTags.get(view.getId())) {
             // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
@@ -449,7 +446,7 @@ public class NativeViewHierarchyManager {
         mTagsToViewManagers.remove(view.getId());
     }
 
-    public void removeRootView(int rootViewTag) {
+    public synchronized void removeRootView(int rootViewTag) {
         UiThreadUtil.assertOnUiThread();
         if (!mRootTags.get(rootViewTag)) {
             SoftAssertions.assertUnreachable("View with tag " + rootViewTag + " is not registered as a root view");
@@ -467,7 +464,7 @@ public class NativeViewHierarchyManager {
    * Returns true on success, false on failure. If successful, after calling, output buffer will be
    * {x, y, width, height}.
    */
-    public void measure(int tag, int[] outputBuffer) {
+    public synchronized void measure(int tag, int[] outputBuffer) {
         UiThreadUtil.assertOnUiThread();
         View v = mTagsToViews.get(tag);
         if (v == null) {
@@ -504,7 +501,7 @@ public class NativeViewHierarchyManager {
    * @param outputBuffer - output buffer that contains [x,y,width,height] of the view in coordinates
    *  relative to the device window
    */
-    public void measureInWindow(int tag, int[] outputBuffer) {
+    public synchronized void measureInWindow(int tag, int[] outputBuffer) {
         UiThreadUtil.assertOnUiThread();
         View v = mTagsToViews.get(tag);
         if (v == null) {
@@ -524,7 +521,8 @@ public class NativeViewHierarchyManager {
         outputBuffer[3] = v.getHeight();
     }
 
-    public int findTargetTagForTouch(int reactTag, float touchX, float touchY) {
+    public synchronized int findTargetTagForTouch(int reactTag, float touchX, float touchY) {
+        UiThreadUtil.assertOnUiThread();
         View view = mTagsToViews.get(reactTag);
         if (view == null) {
             throw new JSApplicationIllegalArgumentException("Could not find view with tag " + reactTag);
@@ -532,7 +530,7 @@ public class NativeViewHierarchyManager {
         return TouchTargetHelper.findTargetTagForTouch(touchX, touchY, (ViewGroup) view);
     }
 
-    public void setJSResponder(int reactTag, int initialReactTag, boolean blockNativeResponder) {
+    public synchronized void setJSResponder(int reactTag, int initialReactTag, boolean blockNativeResponder) {
         if (!blockNativeResponder) {
             mJSResponderHandler.setJSResponder(initialReactTag, null);
             return;
@@ -563,7 +561,7 @@ public class NativeViewHierarchyManager {
     }
 
     /* package */
-    void startAnimationForNativeView(int reactTag, Animation animation, @Nullable final Callback animationCallback) {
+    synchronized void startAnimationForNativeView(int reactTag, Animation animation, @Nullable final Callback animationCallback) {
         UiThreadUtil.assertOnUiThread();
         View view = mTagsToViews.get(reactTag);
         final int animationId = animation.getAnimationID();
@@ -598,7 +596,7 @@ public class NativeViewHierarchyManager {
         }
     }
 
-    public void dispatchCommand(int reactTag, int commandId, @Nullable ReadableArray args) {
+    public synchronized void dispatchCommand(int reactTag, int commandId, @Nullable ReadableArray args) {
         UiThreadUtil.assertOnUiThread();
         View view = mTagsToViews.get(reactTag);
         if (view == null) {
@@ -626,7 +624,7 @@ public class NativeViewHierarchyManager {
    * @param success will be called with the position of the selected item as the first argument, or
    *        no arguments if the menu is dismissed
    */
-    public void showPopupMenu(int reactTag, ReadableArray items, Callback success) {
+    public synchronized void showPopupMenu(int reactTag, ReadableArray items, Callback success) {
         UiThreadUtil.assertOnUiThread();
         View anchor = mTagsToViews.get(reactTag);
         if (anchor == null) {

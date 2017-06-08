@@ -5,6 +5,7 @@ package com.facebook.react.bridge;
 import javax.annotation.Nullable;
 
 import com.facebook.proguard.annotations.DoNotStrip;
+
 /**
  * Static class that allows markers to be placed in React code and responded to in a
  * configurable way
@@ -18,11 +19,15 @@ public class ReactMarker {
 
   private static @Nullable MarkerListener sMarkerListener = null;
 
-  public static void setMarkerListener(MarkerListener listener) {
-    SoftAssertions.assertCondition(
-      sMarkerListener == null,
-      "MarkerListener is being overwritten.");
-    sMarkerListener = listener;
+  public static void initialize(MarkerListener listener) {
+    if (sMarkerListener == null) {
+      sMarkerListener = listener;
+    }
+  }
+
+  @DoNotStrip
+  public static void clearMarkerListener() {
+    sMarkerListener = null;
   }
 
   @DoNotStrip
