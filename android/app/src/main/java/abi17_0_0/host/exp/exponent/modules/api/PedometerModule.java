@@ -53,7 +53,17 @@ public class PedometerModule extends ReactContextBaseJavaModule {
     return "ExponentPedometer";
   }
 
-  public void assertApiClient() {
+  @Override
+  public void onCatalystInstanceDestroy() {
+    super.onCatalystInstanceDestroy();
+
+    FragmentActivity activity = (FragmentActivity) getCurrentActivity();
+    if (mClient != null && activity != null) {
+      mClient.stopAutoManage(activity);
+    }
+  }
+
+  private void assertApiClient() {
     if (mClient == null) {
       final FragmentActivity activity = (FragmentActivity) getCurrentActivity();
       mClient = new GoogleApiClient.Builder(getReactApplicationContext())
