@@ -31,12 +31,12 @@ RCT_REMAP_METHOD(logInWithReadPermissionsAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  NSArray *permissions = config[@"permissions"];
+  NSArray *permissions = [config objectForKey:@"permissions"];
   if (!permissions) {
     permissions = @[@"public_profile", @"email", @"user_friends"];
   }
 
-  NSString *behavior = config[@"behavior"];
+  NSString *behavior = [config objectForKey:@"behavior"];
 
   // FB SDK requires login to run on main thread
   // Needs to not race with other mutations of this global FB state
