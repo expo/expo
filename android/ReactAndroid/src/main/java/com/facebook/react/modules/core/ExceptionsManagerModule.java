@@ -24,7 +24,7 @@ import com.facebook.react.module.annotations.ReactModule;
 @ReactModule(name = ExceptionsManagerModule.NAME)
 public class ExceptionsManagerModule extends BaseJavaModule {
 
-    public static final String NAME = "ExceptionsManager";
+    final public static String NAME = "ExceptionsManager";
 
     public static Pattern mJsModuleIdPattern = Pattern.compile("(?:^|[/\\\\])(\\d+\\.js)$");
 

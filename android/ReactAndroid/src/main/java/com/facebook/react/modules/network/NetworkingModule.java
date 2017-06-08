@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import android.util.Base64;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ExecutorToken;
 import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -31,6 +30,7 @@ import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.CookieJar;
 import okhttp3.Headers;
 import okhttp3.Interceptor;
 import okhttp3.JavaNetCookieJar;
@@ -49,10 +49,10 @@ import okio.ByteString;
 /**
  * Implements the XMLHttpRequest JavaScript interface.
  */
-@ReactModule(name = NetworkingModule.NAME, supportsWebWorkers = true)
+@ReactModule(name = NetworkingModule.NAME)
 public class NetworkingModule extends ReactContextBaseJavaModule {
 
-    public static final String NAME = "Networking";
+    final public static String NAME = "Networking";
 
     public static String CONTENT_ENCODING_HEADER_NAME = "content-encoding";
 
@@ -170,13 +170,16 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
     public /**
    * @param timeout value of 0 results in no timeout
    */
-    void sendRequest(final ExecutorToken executorToken, String method, String url, final int requestId, ReadableArray headers, ReadableMap data, final String responseType, final boolean useIncrementalUpdates, int timeout) {
+    void sendRequest(String method, String url, final int requestId, ReadableArray headers, ReadableMap data, final String responseType, final boolean useIncrementalUpdates, int timeout, boolean withCredentials) {
         Request.Builder requestBuilder = new Request.Builder().url(url);
         if (requestId != 0) {
             requestBuilder.tag(requestId);
         }
-        final RCTDeviceEventEmitter eventEmitter = getEventEmitter(executorToken);
+        final RCTDeviceEventEmitter eventEmitter = getEventEmitter();
         OkHttpClient.Builder clientBuilder = mClient.newBuilder();
+        if (!withCredentials) {
+            clientBuilder.cookieJar(CookieJar.NO_COOKIES);
+        }
         // response and counts bytes received.
         if (useIncrementalUpdates) {
             clientBuilder.addNetworkInterceptor(new Interceptor() {
@@ -263,7 +266,7 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
                 contentType = "multipart/form-data";
             }
             ReadableArray parts = data.getArray(REQUEST_BODY_KEY_FORMDATA);
-            MultipartBody.Builder multipartBuilder = constructMultipartBody(executorToken, parts, contentType, requestId);
+            MultipartBody.Builder multipartBuilder = constructMultipartBody(parts, contentType, requestId);
             if (multipartBuilder == null) {
                 return;
             }
@@ -293,7 +296,8 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
                     return;
                 }
                 removeRequest(requestId);
-                ResponseUtil.onRequestError(eventEmitter, requestId, e.getMessage(), e);
+                String errorMessage = e.getMessage() != null ? e.getMessage() : "Error while executing request: " + e.getClass().getSimpleName();
+                ResponseUtil.onRequestError(eventEmitter, requestId, errorMessage, e);
             }
 
             @Override
@@ -383,7 +387,7 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void abortRequest(ExecutorToken executorToken, final int requestId) {
+    public void abortRequest(final int requestId) {
         cancelRequest(requestId);
         removeRequest(requestId);
     }
@@ -401,18 +405,13 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void clearCookies(ExecutorToken executorToken, com.facebook.react.bridge.Callback callback) {
+    public void clearCookies(com.facebook.react.bridge.Callback callback) {
         mCookieHandler.clearCookies(callback);
     }
 
-    @Override
-    public boolean supportsWebWorkers() {
-        return true;
-    }
-
     @Nullable
-    private MultipartBody.Builder constructMultipartBody(ExecutorToken ExecutorToken, ReadableArray body, String contentType, int requestId) {
-        RCTDeviceEventEmitter eventEmitter = getEventEmitter(ExecutorToken);
+    private MultipartBody.Builder constructMultipartBody(ReadableArray body, String contentType, int requestId) {
+        RCTDeviceEventEmitter eventEmitter = getEventEmitter();
         MultipartBody.Builder multipartBuilder = new MultipartBody.Builder();
         multipartBuilder.setType(MediaType.parse(contentType));
         for (int i = 0, size = body.size(); i < size; i++) {
@@ -489,7 +488,7 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
         return headersBuilder.build();
     }
 
-    private RCTDeviceEventEmitter getEventEmitter(ExecutorToken ExecutorToken) {
-        return getReactApplicationContext().getJSModule(ExecutorToken, RCTDeviceEventEmitter.class);
+    private RCTDeviceEventEmitter getEventEmitter() {
+        return getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class);
     }
 }
