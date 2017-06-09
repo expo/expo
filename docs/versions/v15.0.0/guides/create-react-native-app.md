@@ -59,7 +59,7 @@ exp and it will work as expected.
 ### What does using ExpoKit mean for a CRNA user?
 
 If you want to add custom native code to your Expo app, you will need to
-[use ExpoKit](exponentkit.html). With CRNA, you have two options: you
+[use ExpoKit](expokit.html). With CRNA, you have two options: you
 can either eject to a normal React Native project, without any
 dependencies on Expo, or you can eject to use ExpoKit, which will allow
 you to continue using the Expo APIs. [Read more about ejecting with CRNA
