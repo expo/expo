@@ -119,4 +119,11 @@ public class SegmentModule extends ReactContextBaseJavaModule {
       mClient.flush();
     }
   }
+
+  @ReactMethod
+  public void reset() {
+    if (mClient != null) {
+      mClient.reset();
+    }
+  }
 }
