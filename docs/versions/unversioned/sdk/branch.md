@@ -15,12 +15,14 @@ import { DangerZone } from 'expo';
 let { Branch } = DangerZone;
 ```
 
-## Configuration
+## Configuration (standalone apps only)
 
 - Add the **Branch Key** to your `exp.json` in the section `android.config.branch.apiKey` and `ios.config.branch.apiKey`. You can find your key on [this page](https://dashboard.branch.io/account-settings/app) of the Branch Dashboard.
 - Add a **linking scheme** to your `exp.json` in the `scheme` section if you don't already have one.
 
-### Enable universal links (iOS only)
+### Enable Branch support for universal links (iOS only)
+
+Branch can track universal links from domains you associate with your app. **Note:** Expo won't forward these to your JS via the normal Linking API.
 
 - Enable associated domains on [Apple's Developer Portal](https://developer.apple.com/account/ios/identifier/bundle) for your app id. To do so go in the `App IDs` section and click on your app id. Select `Edit`, check the `Associated Domains` checkbox and click `Done`.
 
