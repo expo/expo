@@ -60,7 +60,7 @@ class App extends React.Component {
 }
 ```
 
-This loads Font Awesome and associates it with the name `'open-sans-bold'` in Expo's font map. Now we just have to refer to this font in our `Text` component.
+This loads Font Open Sans Bold and associates it with the name `'open-sans-bold'` in Expo's font map. Now we just have to refer to this font in our `Text` component.
 
 > **Note:** Fonts loaded through Expo don't currently support the `fontWeight` or `fontStyle` properties -- you will need to load those variations of the font and specify them by name, as we have done here with bold.
 
