@@ -14,13 +14,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSInteger debuggerPort;
 @property (nonatomic, strong, nullable) NSDictionary *manifest;
 @property (nonatomic, strong, nullable) NSDictionary *initialProps;
+@property (nonatomic, assign) UIInterfaceOrientationMask supportedInterfaceOrientations;
 
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
 
 - (void)reload;
-
-- (UIInterfaceOrientationMask)supportedInterfaceOrientations;
 
 @end
 

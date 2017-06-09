@@ -19,6 +19,7 @@
 		194804CF1E92CFB400623005 /* EXDocumentPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 194804CE1E92CFB400623005 /* EXDocumentPicker.m */; };
 		1978AD301EAC2656002A615B /* EXPedometer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1978AD2F1EAC2656002A615B /* EXPedometer.m */; };
 		1981B9F71E3C28BA00057CA9 /* EXKeepAwake.m in Sources */ = {isa = PBXBuildFile; fileRef = 1981B9F61E3C28BA00057CA9 /* EXKeepAwake.m */; };
+		19B96C351EE7D9F20006A7DB /* EXScreenOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 19B96C341EE7D9F20006A7DB /* EXScreenOrientation.m */; };
 		19F72F571E764AE100F9A671 /* EXContactsRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 19F72F561E764AE100F9A671 /* EXContactsRequester.m */; };
 		200C29ED1855EF40345E4BA2 /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B84B3DEFB2C488FAE7279AD /* libPods-ExponentIntegrationTests.a */; };
 		3778B7EB1E70831F000A1742 /* EXAudioRecordingPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 3778B7E91E70831F000A1742 /* EXAudioRecordingPermissionRequester.m */; };
@@ -254,6 +255,8 @@
 		1978AD2F1EAC2656002A615B /* EXPedometer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXPedometer.m; sourceTree = "<group>"; };
 		1981B9F51E3C28BA00057CA9 /* EXKeepAwake.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKeepAwake.h; sourceTree = "<group>"; };
 		1981B9F61E3C28BA00057CA9 /* EXKeepAwake.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKeepAwake.m; sourceTree = "<group>"; };
+		19B96C331EE7D9F20006A7DB /* EXScreenOrientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScreenOrientation.h; sourceTree = "<group>"; };
+		19B96C341EE7D9F20006A7DB /* EXScreenOrientation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScreenOrientation.m; sourceTree = "<group>"; };
 		19F72F551E764AE100F9A671 /* EXContactsRequester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXContactsRequester.h; sourceTree = "<group>"; };
 		19F72F561E764AE100F9A671 /* EXContactsRequester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXContactsRequester.m; sourceTree = "<group>"; };
 		1B1D1884419563A8205AED29 /* libPods-Exponent.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Exponent.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1019,6 +1022,8 @@
 				1978AD2F1EAC2656002A615B /* EXPedometer.m */,
 				88E089A61D6BC04800562FA1 /* EXAmplitude.h */,
 				88E089A31D6BC02200562FA1 /* EXAmplitude.m */,
+				19B96C331EE7D9F20006A7DB /* EXScreenOrientation.h */,
+				19B96C341EE7D9F20006A7DB /* EXScreenOrientation.m */,
 				88E089A81D6BCF4300562FA1 /* EXSegment.h */,
 				88E089AA1D6BCF5800562FA1 /* EXSegment.m */,
 				F77DDB891E04774000624CA2 /* EXWebBrowser.h */,
@@ -1903,6 +1908,7 @@
 				A1CA7DDF1EC1036500489532 /* EXGLGPUImageObject.m in Sources */,
 				A1DCE8471DC3FC63009665FD /* EXGLView.m in Sources */,
 				B56D073C1EC53333009E6A89 /* AIRGoogleMapCircleManager.m in Sources */,
+				19B96C351EE7D9F20006A7DB /* EXScreenOrientation.m in Sources */,
 				7847A3891EC0F1550088BF69 /* RNSVGNodeManager.m in Sources */,
 				B5AC39D91E96D7A900540AA7 /* EXErrorRecovery.m in Sources */,
 				B5678C5F1DB6D65B00380A6E /* EXFrame.m in Sources */,

@@ -47,6 +47,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXFrame
 
+@synthesize supportedInterfaceOrientations = _supportedInterfaceOrientations;
+
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 
 - (instancetype)init
@@ -57,6 +59,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 
     _appManager = [[unversionedAppManagerClass alloc] initWithEXFrame:self];
     [_appManager setDelegate:self];
+    _supportedInterfaceOrientations = 0;
   }
   return self;
 }
@@ -189,6 +192,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
+  if (_supportedInterfaceOrientations != 0) {
+    return _supportedInterfaceOrientations;
+  }
   if (_manifest) {
     NSString *orientationConfig = _manifest[@"orientation"];
     if ([orientationConfig isEqualToString:@"portrait"]) {
@@ -203,6 +209,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
   return UIInterfaceOrientationMaskAllButUpsideDown;
 }
 
+- (void)setSupportedInterfaceOrientations:(UIInterfaceOrientationMask)orientation
+{
+  _supportedInterfaceOrientations = orientation;
+  [self enforceDesiredDeviceOrientation];
+}
+
 /**
  *  If a developer has locked their experience to a particular orientation,
  *  but some other experience has allowed the device to rotate to something unsupported,
@@ -213,10 +225,37 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
   RCTAssertMainThread();
   UIInterfaceOrientationMask mask = [self supportedInterfaceOrientations];
   UIDeviceOrientation currentOrientation = [[UIDevice currentDevice] orientation];
-  if (mask == UIInterfaceOrientationMaskLandscape && (currentOrientation == UIDeviceOrientationPortrait)) {
-    [[UIDevice currentDevice] setValue:@(UIInterfaceOrientationLandscapeLeft) forKey:@"orientation"];
-  } else if (mask == UIInterfaceOrientationMaskPortrait && (currentOrientation != UIDeviceOrientationPortrait)) {
-    [[UIDevice currentDevice] setValue:@(UIDeviceOrientationPortrait) forKey:@"orientation"];
+  UIInterfaceOrientation newOrientation = UIInterfaceOrientationUnknown;
+  switch (mask) {
+    case UIInterfaceOrientationMaskPortrait:
+      if (!UIDeviceOrientationIsPortrait(currentOrientation)) {
+        newOrientation = UIInterfaceOrientationPortrait;
+      }
+      break;
+    case UIInterfaceOrientationMaskPortraitUpsideDown:
+        newOrientation = UIInterfaceOrientationPortraitUpsideDown;
+      break;
+    case UIInterfaceOrientationMaskLandscape:
+      if (!UIDeviceOrientationIsLandscape(currentOrientation)) {
+        newOrientation = UIInterfaceOrientationLandscapeLeft;
+      }
+      break;
+    case UIInterfaceOrientationMaskLandscapeLeft:
+      newOrientation = UIInterfaceOrientationLandscapeLeft;
+      break;
+    case UIInterfaceOrientationMaskLandscapeRight:
+      newOrientation = UIInterfaceOrientationLandscapeRight;
+      break;
+    case UIInterfaceOrientationMaskAllButUpsideDown:
+      if (currentOrientation == UIDeviceOrientationFaceDown) {
+        newOrientation = UIInterfaceOrientationPortrait;
+      }
+      break;
+    default:
+      break;
+  }
+  if (newOrientation != UIInterfaceOrientationUnknown) {
+    [[UIDevice currentDevice] setValue:@(newOrientation) forKey:@"orientation"];
   }
   [UIViewController attemptRotationToDeviceOrientation];
 }

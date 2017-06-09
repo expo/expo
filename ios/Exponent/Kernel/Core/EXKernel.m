@@ -32,6 +32,7 @@ NSString *kEXKernelShouldForegroundTaskEvent = @"foregroundTask";
 NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
 NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUserDefaultsKey";
 NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey";
+NSString * const kEXChangeForegroundTaskSupportedOrientationsNotification = @"EXChangeForegroundTaskSupportedOrientations";
 
 @interface EXKernel ()
 
@@ -79,6 +80,10 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(_refreshForegroundTask:)
                                                  name:kEXKernelRefreshForegroundTaskNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(_changeSupportedOrientations:)
+                                                 name:kEXChangeForegroundTaskSupportedOrientationsNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_onKernelJSLoaded) name:kEXKernelJSIsLoadedNotification object:nil];
     for (NSString *name in @[UIApplicationDidBecomeActiveNotification,
@@ -158,7 +163,7 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
     if (_bridgeRegistry.lastKnownForegroundBridge != _bridgeRegistry.kernelAppManager.reactBridge) {
       EXKernelBridgeRecord *foregroundBridgeRecord = [_bridgeRegistry recordForBridge:_bridgeRegistry.lastKnownForegroundBridge];
       if (foregroundBridgeRecord.appManager.frame) {
-        return [foregroundBridgeRecord.appManager.frame supportedInterfaceOrientations];
+        return foregroundBridgeRecord.appManager.frame.supportedInterfaceOrientations;
       }
     }
   }
@@ -442,6 +447,19 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
         [self _postNotificationName:kEXKernelBridgeDidForegroundNotification onAbstractBridge:_bridgeRegistry.lastKnownForegroundBridge];
       } else if ([newState isEqualToString:@"background"]) {
         [self _postNotificationName:kEXKernelBridgeDidBackgroundNotification onAbstractBridge:_bridgeRegistry.lastKnownForegroundBridge];
+      }
+    }
+  }
+}
+
+- (void)_changeSupportedOrientations:(NSNotification *)notification
+{
+  NSNumber *orientationNumber = notification.userInfo[@"orientation"];
+  if (_bridgeRegistry.lastKnownForegroundBridge) {
+    if (_bridgeRegistry.lastKnownForegroundBridge != _bridgeRegistry.kernelAppManager.reactBridge) {
+      EXKernelBridgeRecord *foregroundBridgeRecord = [_bridgeRegistry recordForBridge:_bridgeRegistry.lastKnownForegroundBridge];
+      if (foregroundBridgeRecord.appManager.frame) {
+        foregroundBridgeRecord.appManager.frame.supportedInterfaceOrientations = [orientationNumber unsignedIntegerValue];
       }
     }
   }
