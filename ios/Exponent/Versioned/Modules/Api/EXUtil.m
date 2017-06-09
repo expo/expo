@@ -50,8 +50,8 @@ RCT_REMAP_METHOD(getCurrentDeviceCountryAsync,
   }
 }
 
-RCT_REMAP_METHOD(getCurrentDeviceTimeZoneAsync,
-                 getCurrentDeviceTimeZoneWithResolver:(RCTPromiseResolveBlock)resolve
+RCT_REMAP_METHOD(getCurrentTimeZoneAsync,
+                 getCurrentTimeZoneWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
   NSTimeZone *currentTimeZone = [NSTimeZone localTimeZone];
