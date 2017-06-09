@@ -10,6 +10,7 @@
 #import <React/UIView+React.h>
 
 #define EX_FRAME_RELOAD_DEBOUNCE_SEC 0.05
+#define EX_FRAME_ORIENTATION_USE_MANIFEST 0
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -59,7 +60,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 
     _appManager = [[unversionedAppManagerClass alloc] initWithEXFrame:self];
     [_appManager setDelegate:self];
-    _supportedInterfaceOrientations = 0;
+    _supportedInterfaceOrientations = EX_FRAME_ORIENTATION_USE_MANIFEST;
   }
   return self;
 }
@@ -192,7 +193,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-  if (_supportedInterfaceOrientations != 0) {
+  if (_supportedInterfaceOrientations != EX_FRAME_ORIENTATION_USE_MANIFEST) {
     return _supportedInterfaceOrientations;
   }
   if (_manifest) {
