@@ -131,7 +131,7 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
   }
 
   @ReactMethod
-  public void getProviderStatus(final Promise promise) {
+  public void getProviderStatusAsync(final Promise promise) {
     if (mScopedContext == null) {
       promise.reject("E_CONTEXT_UNAVAILABLE", "Context is not available");
     }

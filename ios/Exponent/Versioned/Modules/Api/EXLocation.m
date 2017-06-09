@@ -85,6 +85,16 @@ RCT_EXPORT_MODULE(ExponentLocation)
 }
 
 
+RCT_REMAP_METHOD(getProviderStatusAsync,
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+  resolve(@{
+    @"locationServicesEnabled": @([CLLocationManager locationServicesEnabled]),
+  });
+}
+
+
 RCT_REMAP_METHOD(getCurrentPositionAsync,
                  options:(NSDictionary *)options
                  resolver:(RCTPromiseResolveBlock)resolve
@@ -107,14 +117,14 @@ RCT_REMAP_METHOD(watchPositionImplAsync,
     reject(@"E_LOCATION_UNAUTHORIZED", @"Not authorized to use location services", nil);
     return;
   }
-  
+
   __weak typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
     CLLocationManager *locMgr = [[CLLocationManager alloc] init];
-    
+
     locMgr.distanceFilter = options[@"distanceInterval"] ? [RCTConvert double:options[@"distanceInterval"]] ?: kCLDistanceFilterNone : kCLLocationAccuracyHundredMeters;
     locMgr.desiredAccuracy = [RCTConvert BOOL:options[@"enableHighAccuracy"]] ? kCLLocationAccuracyBest : kCLLocationAccuracyHundredMeters;
-    
+
     EXLocationDelegate *delegate = [[EXLocationDelegate alloc] initWithId:watchId withLocMgr:locMgr onUpdateLocations:^(NSArray<CLLocation *> *locations) {
       if (locations.lastObject) {
         CLLocation *loc = locations.lastObject;
