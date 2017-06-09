@@ -4,6 +4,7 @@
 
 #include <sys/types.h>
 #include <sys/sysctl.h>
+#import <UIKit/UIWebView.h>
 
 @import UIKit.UIApplication;
 
@@ -47,6 +48,7 @@
                                               @"systemVersion": [self _iosVersion],
                                               },
                                           },
+                                      @"webViewUserAgent": [self _getWebViewUserAgent],
                                       } mutableCopy];
   if (_bridgeProps) {
     [constants addEntriesFromDictionary:_bridgeProps];
@@ -66,6 +68,12 @@
 }
 
 #pragma mark - Internal
+
+- (NSString *)_getWebViewUserAgent
+{
+  UIWebView *webView = [[UIWebView alloc] init];
+  return [webView stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"];
+}
 
 - (CGFloat)_getStatusBarHeight
 {
