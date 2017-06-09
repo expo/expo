@@ -166,13 +166,13 @@ android {
 }
 
 task generateDynamicMacros(type: Exec) {
-  def command = 'gulp generate-dynamic-macros --buildConstantsPath ../android/expoview/src/main/java/host/exp/exponent/generated/ExponentBuildConstants.java --platform android'
-  // This gets run from the 'app' directory
-  workingDir '../../tools-public'
   if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+    // This gets run from the 'app' directory
+    workingDir '../../tools-public'
+    def command = 'gulp generate-dynamic-macros --buildConstantsPath ../android/expoview/src/main/java/host/exp/exponent/generated/ExponentBuildConstants.java --platform android'
     commandLine 'cmd.exe', '/c', command
   } else {
-    commandLine 'sh', '-c', command
+    commandLine '../../tools-public/generate-dynamic-macros-android.sh'
   }
 }
 preBuild.dependsOn generateDynamicMacros
