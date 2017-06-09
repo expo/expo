@@ -44,6 +44,10 @@ The [device year class](https://github.com/facebook/device-year-class) of this d
 
     The user interface idiom of this device, i.e. whether the app is running on an iPhone or an iPad. Current supported values are `handset` and `tablet`. Apple TV and CarPlay will show up as `unsupported`.
 
+  -  `systemVersion`
+
+    The version of iOS running on this device, e.g. `10.3`.
+
 ### `Expo.Constants.sessionId`
 
 A string that is unique to the current session of your app. It is different across apps and across multiple launches of the same app.
@@ -55,6 +59,10 @@ The default status bar height for the device. Does not factor in changes when lo
 ### `Expo.Constants.systemFonts`
 
 A list of the system font names available on the current device.
+
+### `Expo.Constants.webViewUserAgent`
+
+The user agent string which would be included in requests sent by a web view running on this device. This is probably not the same user agent you might be providing in your JS `fetch` requests.
 
 ### `Expo.Constants.manifest`
 

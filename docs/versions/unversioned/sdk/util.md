@@ -4,9 +4,17 @@ title: Util
 
 Helpful utility functions that don't fit anywhere else.
 
+### `Expo.Util.getCurrentDeviceCountryAsync()`
+
+Returns the current device country code.
+
 ### `Expo.Util.getCurrentLocaleAsync()`
 
 Returns the current device locale as a string.
+
+### `Expo.Util.getCurrentTimeZoneAsync()`
+
+Returns the current device time zone name.
 
 ### `Expo.Util.reload()`
 
