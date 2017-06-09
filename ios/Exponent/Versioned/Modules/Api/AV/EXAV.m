@@ -18,7 +18,7 @@
 @property (nonatomic, assign) BOOL isBackgrounded;
 
 @property (nonatomic, assign) EXAudioInterruptionMode audioInterruptionMode;
-@property (nonatomic, assign) BOOL playsInSilentLockedMode;
+@property (nonatomic, assign) BOOL playsInSilentMode;
 @property (nonatomic, assign) BOOL allowsAudioRecording;
 
 @property (nonatomic, assign) int soundDictionaryKeyCount;
@@ -43,7 +43,7 @@
     _isBackgrounded = NO;
     
     _audioInterruptionMode = EXAudioInterruptionModeMixWithOthers;
-    _playsInSilentLockedMode = false;
+    _playsInSilentMode = false;
     _allowsAudioRecording = false;
     
     _soundDictionaryKeyCount = 0;
@@ -129,14 +129,14 @@
 // This method is placed here so that it is easily referrable from _setAudioSessionCategoryForAudioMode.
 - (NSError *)_setAudioMode:(NSDictionary *)mode
 {
-  BOOL playsInSilentLockedMode = ((NSNumber *)mode[@"playsInSilentLockedModeIOS"]).boolValue;
+  BOOL playsInSilentMode = ((NSNumber *)mode[@"playsInSilentModeIOS"]).boolValue;
   EXAudioInterruptionMode interruptionMode = ((NSNumber *)mode[@"interruptionModeIOS"]).intValue;
   BOOL allowsRecording = ((NSNumber *)mode[@"allowsRecordingIOS"]).boolValue;
   
-  if (!playsInSilentLockedMode && interruptionMode == EXAudioInterruptionModeDuckOthers) {
-    return RCTErrorWithMessage(@"Impossible audio mode: playsInSilentLockedMode and duckOthers cannot both be set on iOS.");
-  } else if (!playsInSilentLockedMode && allowsRecording) {
-    return RCTErrorWithMessage(@"Impossible audio mode: playsInSilentLockedMode and allowsRecording cannot both be set on iOS.");
+  if (!playsInSilentMode && interruptionMode == EXAudioInterruptionModeDuckOthers) {
+    return RCTErrorWithMessage(@"Impossible audio mode: playsInSilentMode and duckOthers cannot both be set on iOS.");
+  } else if (!playsInSilentMode && allowsRecording) {
+    return RCTErrorWithMessage(@"Impossible audio mode: playsInSilentMode and allowsRecording cannot both be set on iOS.");
   } else {
     if (!allowsRecording) {
       if (_audioRecorder && [_audioRecorder isRecording]) {
@@ -144,7 +144,7 @@
       }
     }
     
-    _playsInSilentLockedMode = playsInSilentLockedMode;
+    _playsInSilentMode = playsInSilentMode;
     _audioInterruptionMode = interruptionMode;
     _allowsAudioRecording = allowsRecording;
     
@@ -161,7 +161,7 @@
 {
   AVAudioSession *session = [AVAudioSession sharedInstance];
   
-  if (!_playsInSilentLockedMode) {
+  if (!_playsInSilentMode) {
     // _allowsRecording is guaranteed to be false, and _interruptionMode is guaranteed to not be EXAudioInterruptionModeDuckOthers (see above)
     if (_audioInterruptionMode == EXAudioInterruptionModeDoNotMix) {
       [session setCategory:AVAudioSessionCategorySoloAmbient error:error];
