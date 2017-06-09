@@ -37,4 +37,30 @@ RCT_REMAP_METHOD(getCurrentLocaleAsync,
   }
 }
 
+RCT_REMAP_METHOD(getCurrentDeviceCountryAsync,
+                 getCurrentDeviceCountryWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+  NSString *countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
+  if (countryCode) {
+    resolve(countryCode);
+  } else {
+    NSString *errMsg = @"This device does not indicate its country";
+    reject(@"E_NO_DEVICE_COUNTRY", errMsg, RCTErrorWithMessage(errMsg));
+  }
+}
+
+RCT_REMAP_METHOD(getCurrentDeviceTimeZoneAsync,
+                 getCurrentDeviceTimeZoneWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+  NSTimeZone *currentTimeZone = [NSTimeZone localTimeZone];
+  if (currentTimeZone) {
+    resolve(currentTimeZone.name);
+  } else {
+    NSString *errMsg = @"Unable to determine the device's time zone";
+    reject(@"E_NO_DEVICE_TIMEZONE", errMsg, RCTErrorWithMessage(errMsg));
+  }
+}
+
 @end

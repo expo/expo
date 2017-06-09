@@ -26,12 +26,6 @@
   return self;
 }
 
-- (CGFloat)_getStatusBarHeight
-{
-  CGSize statusBarSize = [UIApplication sharedApplication].statusBarFrame.size;
-  return MIN(statusBarSize.width, statusBarSize.height);
-}
-
 - (NSDictionary *)constantsToExport
 {
   if (!_sessionId) {
@@ -50,6 +44,7 @@
                                               @"platform": [self _devicePlatform],
                                               @"model": [self _deviceModel],
                                               @"userInterfaceIdiom": [self _userInterfaceIdiom],
+                                              @"systemVersion": [self _iosVersion],
                                               },
                                           },
                                       } mutableCopy];
@@ -71,6 +66,17 @@
 }
 
 #pragma mark - Internal
+
+- (CGFloat)_getStatusBarHeight
+{
+  CGSize statusBarSize = [UIApplication sharedApplication].statusBarFrame.size;
+  return MIN(statusBarSize.width, statusBarSize.height);
+}
+
+- (NSString *)_iosVersion
+{
+  return [UIDevice currentDevice].systemVersion;
+}
 
 - (NSString *)_userInterfaceIdiom
 {
