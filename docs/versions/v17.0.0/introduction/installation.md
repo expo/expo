@@ -26,7 +26,7 @@ You don't need to manually install the Expo client on your emulator/simulator, b
 
 ### iOS simulator
 
-Install [Xcode through the Apple App Store](https://itunes.apple.com/app/xcode/id497799835). It'll take a while, go have a nap. Next, open up Xcode, go to preferences and click the Components tab, install a simulator from the list [(screenshot).](/_static/img/xcode-simulator.png)
+Install [Xcode through the Apple App Store](https://itunes.apple.com/app/xcode/id497799835). It'll take a while, go have a nap. Next, open up Xcode, go to preferences and click the Components tab, install a simulator from the list.
 
 Once the simulator is open and you have a project open in XDE, you can press _Open on iOS simulator_ in XDE and it will install the Expo client to the emulator and open up your app inside of it.
 
