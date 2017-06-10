@@ -12,6 +12,7 @@
 
 @property (nonatomic, strong) NSDictionary *bridgeProps;
 @property (nonatomic, strong) NSString *sessionId;
+@property (nonatomic, strong) NSString *webViewUserAgent;
 
 @end
 
@@ -48,7 +49,6 @@
                                               @"systemVersion": [self _iosVersion],
                                               },
                                           },
-                                      @"webViewUserAgent": [self _getWebViewUserAgent],
                                       } mutableCopy];
   if (_bridgeProps) {
     [constants addEntriesFromDictionary:_bridgeProps];
@@ -67,13 +67,18 @@
   }
 }
 
-#pragma mark - Internal
-
-- (NSString *)_getWebViewUserAgent
+RCT_REMAP_METHOD(getWebViewUserAgentAsync,
+                 getWebViewUserAgentWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(__unused RCTPromiseRejectBlock)reject)
 {
-  UIWebView *webView = [[UIWebView alloc] init];
-  return [webView stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"];
+  if (!_webViewUserAgent) {
+    UIWebView *webView = [[UIWebView alloc] init];
+    _webViewUserAgent = [webView stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"];
+  }
+  resolve(_webViewUserAgent);
 }
+
+#pragma mark - Internal
 
 - (CGFloat)_getStatusBarHeight
 {
