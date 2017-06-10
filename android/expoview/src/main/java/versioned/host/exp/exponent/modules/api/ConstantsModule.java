@@ -15,8 +15,10 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.facebook.device.yearclass.YearClass;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
 
 import org.json.JSONObject;
 
@@ -90,6 +92,7 @@ public class ConstantsModule extends ReactContextBaseJavaModule {
       constants.put("appOwnership", getAppOwnership(mExperienceProperties));
       constants.putAll(mExperienceProperties);
     }
+    constants.put("systemVersion", Build.VERSION.RELEASE);
     return constants;
   }
 
@@ -131,5 +134,11 @@ public class ConstantsModule extends ReactContextBaseJavaModule {
     result.add("Roboto");
     result.add("monospace");
     return result;
+  }
+
+  @ReactMethod
+  public void getWebViewUserAgentAsync(Promise promise) {
+    String userAgent = System.getProperty("http.agent");
+    promise.resolve(userAgent);
   }
 }

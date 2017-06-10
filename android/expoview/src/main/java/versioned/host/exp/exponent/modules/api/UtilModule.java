@@ -10,7 +10,9 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.inject.Inject;
 
@@ -55,5 +57,21 @@ public class UtilModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void getCurrentLocaleAsync(final Promise promise) {
     promise.resolve(getReactApplicationContext().getResources().getConfiguration().locale.toString());
+  }
+
+  @ReactMethod
+  public void getCurrentDeviceCountryAsync(final Promise promise) {
+    Locale current = getReactApplicationContext().getResources().getConfiguration().locale;
+    String country = current.getCountry();
+    if (country == null || country.length() == 0) {
+      promise.reject("E_NO_DEVICE_COUNTRY", "This device does not indicate its country");
+    } else {
+      promise.resolve(country);
+    }
+  }
+
+  @ReactMethod
+  public void getCurrentDeviceTimeZoneAsync(final Promise promise) {
+    promise.resolve(TimeZone.getDefault().getID());
   }
 }
