@@ -71,7 +71,7 @@ public class UtilModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void getCurrentDeviceTimeZoneAsync(final Promise promise) {
+  public void getCurrentTimeZoneAsync(final Promise promise) {
     promise.resolve(TimeZone.getDefault().getID());
   }
 }
