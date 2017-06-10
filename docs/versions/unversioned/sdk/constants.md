@@ -24,6 +24,10 @@ A human-readable name for the device type.
 
 The [device year class](https://github.com/facebook/device-year-class) of this device.
 
+### `Expo.Constants.getWebViewUserAgentAsync()`
+
+Gets the user agent string which would be included in requests sent by a web view running on this device. This is probably not the same user agent you might be providing in your JS `fetch` requests.
+
 ### `Expo.Constants.isDevice`
 
 `true` if the app is running on a device, `false` if running in a simulator or emulator.
@@ -59,10 +63,6 @@ The default status bar height for the device. Does not factor in changes when lo
 ### `Expo.Constants.systemFonts`
 
 A list of the system font names available on the current device.
-
-### `Expo.Constants.webViewUserAgent`
-
-The user agent string which would be included in requests sent by a web view running on this device. This is probably not the same user agent you might be providing in your JS `fetch` requests.
 
 ### `Expo.Constants.manifest`
 
