@@ -113,7 +113,7 @@ export default class HomeScreen extends React.Component {
       <View style={SharedStyles.genericCardContainer} key="empty-history">
         <View style={SharedStyles.genericCardBody}>
           <Text style={[SharedStyles.faintText, { textAlign: 'center' }]}>
-            You haven&39;t opened any projects recently.
+            You haven't opened any projects recently.
           </Text>
         </View>
       </View>
