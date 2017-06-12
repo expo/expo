@@ -31,12 +31,17 @@ This component loads the Ionicons font if it hasn't been loaded already, and ren
 
 ## Existing Projects
 
-`@expo/vector-icons` uses .ttf fonts as assets. When you add this library to an existing Experience, you'll need to make sure the following package option appears in your exp.json:
+`@expo/vector-icons` uses .ttf fonts as assets. When you add this library to an existing Experience, you'll need to make sure the following package option appears in your app.json:
 
 ```javascript
-// exp.json
-"packagerOpts": {
-  "assetExts": ["ttf"]
+// app.json
+{
+  "expo": {
+
+    "packagerOpts": {
+      "assetExts": ["ttf"]
+    }
+  }
 }
 ```
 

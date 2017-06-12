@@ -25,7 +25,7 @@ This server is the endpoint that you hit first when you type the URL into the Ex
 
 #### `Expo Manifest`
 
-The following is an example of a manifest being served through XDE. The first thing that you should notice is there are a lot of identical fields to `exp.json` (see the [Configuration with exp.json](configuration.html#exp) section if you haven't read it yet). These fields are taken directly from that file -- this is how the Expo app accesses your configuration.
+The following is an example of a manifest being served through XDE. The first thing that you should notice is there are a lot of identical fields to `app.json` (see the [Configuration with app.json](configuration.html#exp) section if you haven't read it yet). These fields are taken directly from that file -- this is how the Expo app accesses your configuration.
 
 ```javascript
 {
@@ -65,7 +65,7 @@ The following is an example of a manifest being served through XDE. The first th
 }
 ```
 
-Every field in the manifest is some configuration option that tells Expo what it needs to know to run your app. The app fetches the manifest first and uses it to show your app's loading icon that you specified in `exp.json`, then proceeds to fetch your app's JavaScript at the given `bundleUrl` -- this URL points to the React Native Packager Server.
+Every field in the manifest is some configuration option that tells Expo what it needs to know to run your app. The app fetches the manifest first and uses it to show your app's loading icon that you specified in `app.json`, then proceeds to fetch your app's JavaScript at the given `bundleUrl` -- this URL points to the React Native Packager Server.
 
 In order to stream logs to XDE, the Expo SDK intercepts calls to `console.log`, `console.warn`, etc. and posts them to the `logUrl` specified in the manifest. This endpoint is on the Expo Development Server.
 
@@ -79,13 +79,13 @@ The second purpose is to serve assets. When you include an image in your app, yo
 
 ## Publishing/Deploying an Expo app in Production
 
-When you Publish an Expo app, we compile it into a JavaScript bundle with production flags enabled (minify, disable runtime development checks) and upload that bundle, along with any assets that it requires (see [Assets](assets.html#all-about-assets)) to CloudFront. We also upload your [Manifest](#expo-manifest) (including most of your `exp.json` configuration) to our server.
+When you Publish an Expo app, we compile it into a JavaScript bundle with production flags enabled (minify, disable runtime development checks) and upload that bundle, along with any assets that it requires (see [Assets](assets.html#all-about-assets)) to CloudFront. We also upload your [Manifest](#expo-manifest) (including most of your `app.json` configuration) to our server.
 
 When publishing is complete, we'll give you a URL to your app which you can send to anybody who has the Expo client.
 
-> **Note:** By default, all Expo projects are `unlisted`, which means that publishing does not make it publicly searchable or discoverable anywhere. It is up to you to share the link. You can change this setting in [exp.json](configuration.html).
+> **Note:** By default, all Expo projects are `unlisted`, which means that publishing does not make it publicly searchable or discoverable anywhere. It is up to you to share the link. You can change this setting in [app.json](configuration.html).
 
-As soon as the publish is complete, the new version of your code is available to all your existing users. They'll get the updated version next time they open the app or refresh it, provided that they have a version of the Expo client that supports the `sdkVersion` specified in your `exp.json`.
+As soon as the publish is complete, the new version of your code is available to all your existing users. They'll get the updated version next time they open the app or refresh it, provided that they have a version of the Expo client that supports the `sdkVersion` specified in your `app.json`.
 
 > **Note:** To package your app for deployment on the Apple App Store or Google Play Store, see [Building Standalone Apps](building-standalone-apps.html#building-standalone-apps). Each time you update the SDK version you will need to rebuild your binary.
 

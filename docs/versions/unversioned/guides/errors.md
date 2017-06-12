@@ -22,7 +22,7 @@ We recommend using [Sentry](https://sentry.io/for/javascript/) to track JS error
 
 Since Expo's native code never changes with regard to your project, the native symbols aren't especially meaningful (they would show you a trace into the React Native core or into Expo's native SDK). In the vast majority of circumstances *, the JS error is what you care about.
 
-Nonetheless, if you really want native crash logs and are deploying your app as a [standalone app](building-standalone-apps.html), you can configure custom Fabric keys for Android. See [Configuration with exp.json](configuration.html).
+Nonetheless, if you really want native crash logs and are deploying your app as a [standalone app](building-standalone-apps.html), you can configure custom Fabric keys for Android. See [Configuration with app.json](configuration.html).
 
 For iOS, right now we don't expose a way for you to see native crash logs from your Expo app. This is because we don't build iOS native code on demand, which would be a requirement for uploading your debug symbols to Fabric (or a similar service).
 

@@ -53,9 +53,9 @@ If you don't have it, run `npm install -g exp` to get our command line library.
 If you haven't used `exp` or XDE before, the first thing you'll need to do is log in
 with your Expo account using `exp login`.
 
-### 2. Make sure you have the necessary keys in exp.json
+### 2. Make sure you have the necessary keys in app.json
 
-Detaching requires the same keys as building a standalone app. [Follow these instructions before continuing to the next step](building-standalone-apps.html#2-configure-expjson).
+Detaching requires the same keys as building a standalone app. [Follow these instructions before continuing to the next step](building-standalone-apps.html#2-configure-appjson).
 
 ### 3. Detach
 

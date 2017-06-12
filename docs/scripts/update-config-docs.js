@@ -29,7 +29,8 @@ try {
 let rawPath;
 let filePath;
 if (!process.argv[2]) {
-  rawPath = `versions/v${sdkVersion}/guides/configuration.md`;
+  let dirName = sdkVersion === 'UNVERSIONED' ? 'unversioned' : `v${sdkVersion}`;
+  rawPath = `versions/${dirName}/guides/configuration.md`;
   filePath = path.resolve(rawPath);
   console.log('Using default target file path: ' + filePath.toString());
 } else {
@@ -39,10 +40,36 @@ if (!process.argv[2]) {
 
 const stream = fs.createWriteStream(filePath);
 
-const preamble = `
+let preamble;
+if (
+  sdkVersion === 'UNVERSIONED' ||
+  parseInt(sdkVersion.split('.')[0], 10) > 17
+) {
+  preamble = `
+\`app.json\` is your go-to place for configuring parts of your app that don't belong in code. It is located at the root of your project next to your \`package.json\`. It looks something like this:
+
+\`\`\`
+{
+  "expo": {
+    "name": "My app",
+    "slug": "my-app",
+    "sdkVersion": "17.0.0",
+    "privacy": "public"
+  }
+}
+\`\`\`
+
+\`app.json\` was previous referred to as \`exp.json\`, but for consistency with [Create React Native App](https://github.com/react-community/create-react-native-app) it has been consolidated under one file. If you are converting your app from using \`exp.json\` to \`app.json\`, all you need to do is add an \`"expo"\` key at the root of \`app.json\`, as the parent of all other keys.
+
+The following is a list of properties that are available for you under the \`"expo"\` key in \`app.json\`:
+\n
+`;
+} else {
+  preamble = `
 \`exp.json\` is your go-to place for configuring parts of your app that don't belong in code. It is located at the root of your project next to your \`package.json\`.  The following is a full list of properties available to you.\
 \n
 `;
+}
 
 // Open and write!
 stream.once('open', function(fd) {
@@ -56,7 +83,7 @@ stream.once('open', function(fd) {
   });
 
   stream.write('---\n');
-  stream.write('title: Configuration with exp.json\n');
+  stream.write('title: Configuration with app.json\n');
   stream.write('---\n');
 
   stream.write(preamble);

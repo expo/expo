@@ -1,224 +1,287 @@
 ---
-title: Configuration with exp.json
+title: Configuration with app.json
 ---
 
-`exp.json` is your go-to place for configuring parts of your app that don't belong in code. It is located at the root of your project next to your `package.json`.  The following is a full list of properties available to you.
+`app.json` is your go-to place for configuring parts of your app that don't belong in code. It is located at the root of your project next to your `package.json`. It looks something like this:
 
--   `name`
+```
+{
+  "expo": {
+    "name": "My app",
+    "slug": "my-app",
+    "sdkVersion": "17.0.0",
+    "privacy": "public"
+  }
+}
+```
 
-    **Required**. The name of your app as it appears both within Expo and on your home screen as a standalone app.
+`app.json` was previous referred to as `exp.json`, but for consistency with [Create React Native App](https://github.com/react-community/create-react-native-app) it has been consolidated under one file. If you are converting your app from using `exp.json` to `app.json`, all you need to do is add an `"expo"` key at the root of `app.json`, as the parent of all other keys.
 
--   `description`
+The following is a list of properties that are available for you under the `"expo"` key in `app.json`:
 
-    A short description of what your app is and why it is great.
 
--   `slug`
 
-    **Required**. The friendly url name for publishing. eg: `exp.host/@your-username/slug`.
+- `name`
 
--   `privacy`
+   **Required**. The name of your app as it appears both within Expo and on your home screen as a standalone app.
 
-    Either `public` or `unlisted`. If not provided, defaults to `unlisted`. In the future `private` will be supported. `unlisted` hides the experience from search results.
-    public, unlisted
+- `description`
 
--   `sdkVersion`
+   A short description of what your app is and why it is great.
 
-    **Required**. The Expo sdkVersion to run the project on. This should line up with the version specified in your package.json.
+- `slug`
 
--   `version`
+   **Required**. The friendly url name for publishing. eg: `expo.o/@your-username/slug`.
 
-    Your app version, use whatever versioning scheme that you like.
+- `privacy`
 
--   `orientation`
+   Either `public` or `unlisted`. If not provided, defaults to `unlisted`. In the future `private` will be supported. `unlisted` hides the experience from search results.
+ public, unlisted
 
-    Lock your app to a specific orientation with `portrait` or `landscape`. Defaults to no lock.
-    default, portrait, landscape
+- `sdkVersion`
 
--   `primaryColor`
+   **Required**. The Expo sdkVersion to run the project on. This should line up with the version specified in your package.json.
 
-    On Android, this will determine the color of your app in the multitasker. Currently this is not used on iOS, but it may be used for other purposes in the future.
+- `version`
+
+   Your app version, use whatever versioning scheme that you like.
+
+- `orientation`
+
+   Lock your app to a specific orientation with `portrait` or `landscape`. Defaults to no lock.
+ default, portrait, landscape
+
+- `primaryColor`
+
+   On Android, this will determine the color of your app in the multitasker. Currently this is not used on iOS, but it may be used for other purposes in the future.
+ 6 character long hex color string, eg: `'#000000'`
+
+- `icon`
+
+   Local path or remote url to an image to use for your app's icon. We recommend that you use a 512x512 png file with transparency. This icon will appear on the home screen and within the Expo app.
+
+- `notification`
+
+   Configuration for remote (push) notifications.
+
+   - `icon`
+
+      Local path or remote url to an image to use as the icon for push notifications. 48x48 png grayscale with transparency.
+
+   - `color`
+
+      Tint color for the push notification image when it appears in the notification tray.
     6 character long hex color string, eg: `'#000000'`
 
--   `icon`
+   - `androidMode`
 
-    Local path or remote url to an image to use for your app's icon. We recommend that you use a 512x512 png file with transparency. This icon will appear on the home screen and within the Expo app.
+      Show each push notification individually (`default`) or collapse into one (`collapse`).
+    default, collapse
 
--   `notification`
+   - `androidCollapsedTitle`
 
-    Configuration for remote (push) notifications.
+      If `androidMode` is set to `collapse`, this title is used for the collapsed notification message. eg: `'#{unread_notifications} new interactions'`.
 
-    -   `icon`
+- `loading`
 
-        Local path or remote url to an image to use as the icon for push notifications. 48x48 png grayscale with transparency.
+   Configuration for the loading screen that users see when opening your app, while fetching & caching bundle and assets.
 
-    -   `color`
+   - `icon`
 
-        Tint color for the push notification image when it appears in the notification tray.
-        6 character long hex color string, eg: `'#000000'`
+      Local path or remote url to an image to display while starting up the app. Image size and aspect ratio are up to you. Must be a .png.
 
-    -   `androidMode`
+   - `exponentIconColor`
 
-        Show each push notification individually (`default`) or collapse into one (`collapse`).
-        default, collapse
+      If no icon is provided, we will show the Expo logo. You can choose between `white` and `blue`.
+    white, blue
 
-    -   `androidCollapsedTitle`
+   - `exponentIconGrayscale`
 
-        If `androidMode` is set to `collapse`, this title is used for the collapsed notification message. eg: `'#{unread_notifications} new interactions'`.
+      Similar to `exponentIconColor` but instead indicate if it should be grayscale (`1`) or not (`0`).
 
--   `loading`
+   - `backgroundImage`
 
-    Configuration for the loading screen that users see when opening your app, while fetching & caching bundle and assets.
+      Local path or remote url to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
 
-    -   `icon`
+   - `backgroundColor`
 
-        Local path or remote url to an image to display while starting up the app. Image size and aspect ratio are up to you. Must be a .png.
+      Color to fill the loading screen background
+    6 character long hex color string, eg: `'#000000'`
 
-    -   `exponentIconColor`
+   - `hideExponentText`
 
-        If no icon is provided, we will show the Expo logo. You can choose between `white` and `blue`.
-        white, blue
+      By default, Expo shows some text at the bottom of the loading screen. Set this to `true` to disable.
 
-    -   `exponentIconGrayscale`
+- `appKey`
 
-        Similar to `exponentIconColor` but instead indicate if it should be grayscale (`1`) or not (`0`).
+   By default, Expo looks for the application registered with the AppRegistry as `main`. If you would like to change this, you can specify the name in this property.
 
-    -   `backgroundImage`
-
-        Local path or remote url to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
-
-    -   `backgroundColor`
-
-        Color to fill the loading screen background
-        6 character long hex color string, eg: `'#000000'`
-
-    -   `hideExponentText`
-
-        By default, Expo shows some text at the bottom of the loading screen. Set this to `true` to disable.
-
--   `appKey`
-
-    By default, Expo looks for the application registered with the AppRegistry as `main`. If you would like to change this, you can specify the name in this property.
-
--   `androidStatusBarColor`
+- `androidStatusBarColor`
 
     6 character long hex color string, eg: `'#000000'`
 
--   `androidStatusBar`
+- `androidStatusBar`
 
-    Configuration for android statusbar.
+   Configuration for android statusbar.
 
-    -   `barStyle`
+   - `barStyle`
 
-        Configure the statusbar icons to have light or dark color.
-        light-content, dark-content
+      Configure the statusbar icons to have light or dark color.
+    light-content, dark-content
 
-    -   `backgroundColor`
+   - `backgroundColor`
 
-        Configuration for android statusbar.
-        6 character long hex color string, eg: `'#000000'`
+      Configuration for android statusbar.
+    6 character long hex color string, eg: `'#000000'`
 
--   `androidHideExponentNotificationInShellApp`
+- `androidShowExponentNotificationInShellApp`
 
-    By default, Expo adds a notification to your app with refresh button and debug info. Set this to `true` to disable.
+   Adds a notification to your standalone app with refresh button and debug info.
 
--   `scheme`
+- `scheme`
 
-    **Standalone Apps Only**. Url scheme to link into your app. For example, if we set this to `'rnplay'`, then rnplay:// urls would open your app when tapped.
+   **Standalone Apps Only**. Url scheme to link into your app. For example, if we set this to `'rnplay'`, then rnplay:// urls would open your app when tapped.
 
--   `extra`
+- `entryPoint`
 
-    Any extra fields you want to pass to your experience.
+   The relative path to your main JavaScript file.
 
--   `rnCliPath`
+- `extra`
 
--   `packagerOpts`
+   Any extra fields you want to pass to your experience.
 
--   `ignoreNodeModulesValidation`
+- `rnCliPath`
 
--   `nodeModulesPath`
+   
+- `packagerOpts`
 
--   `ios`
+   
+- `ignoreNodeModulesValidation`
 
-    **Standalone Apps Only**. iOS standalone app specific configuration
+   
+- `nodeModulesPath`
 
-    -   `bundleIdentifier`
+   
+- `ios`
 
-        The bundle identifier for your iOS standalone app. You make it up, but it needs to be unique on the App Store. See [this StackOverflow question](http://stackoverflow.com/questions/11347470/what-does-bundle-identifier-mean-in-the-ios-project).
-        iOS bundle identifier notation unique name for your app. For example, host.exp.expo, where exp.host is our domain and Expo is our app.
+   **Standalone Apps Only**. iOS standalone app specific configuration
 
-    -   `buildNumber`
+   - `bundleIdentifier`
 
-        Build number for your iOS standalone app
+      The bundle identifier for your iOS standalone app. You make it up, but it needs to be unique on the App Store. See [this StackOverflow question](http://stackoverflow.com/questions/11347470/what-does-bundle-identifier-mean-in-the-ios-project).
+    iOS bundle identifier notation unique name for your app. For example, host.exp.exponent, where exp.host is our domain and Expo is our app.
 
-    -   `config`
+   - `buildNumber`
 
-        -   `usesNonExemptEncryption`
+      Build number for your iOS standalone app
 
-            Sets `ITSAppUsesNonExemptEncryption` in the standalone ipa's Info.plist to the given boolean value.
+   - `config`
 
-        -   `googleSignIn`
+      
+       - `branch`
 
-            [Google Sign-In iOS SDK](https://developers.google.com/identity/sign-in/ios/start-integrating) keys for your standalone app.
+          [Branch](https://branch.io/) key to hook up Branch linking services.
 
-            -   `reservedClientId`
+           - `apiKey`
 
-                The reserved client id url scheme. Can be found in `GoogeService-Info.plist`.
+              Your Branch API key
 
-    -   `supportsTablet`
+       - `usesNonExemptEncryption`
 
-        Whether your standalone iOS app supports tablet screen sizes.
+          Sets `ITSAppUsesNonExemptEncryption` in the standalone ipa's Info.plist to the given boolean value.
 
-    -   `infoPlist`
+       - `googleMapsApiKey`
 
-        Arbitrary configuration to add to your standalone app's native Info.plist. Applied prior to all other Expo-specific configuration. No other validation is performed, so use this at your own risk of rejection from the App Store.
+          [Google Maps iOS SDK](https://developers.google.com/maps/documentation/ios-sdk/start) key for your standalone app.
 
--   `android`
+       - `googleSignIn`
 
-    **Standalone Apps Only**. Android standalone app specific configuration
+          [Google Sign-In iOS SDK](https://developers.google.com/identity/sign-in/ios/start-integrating) keys for your standalone app.
 
-    -   `package`
+           - `reservedClientId`
 
-        The package name for your Android standalone app. You make it up, but it needs to be unique on the Play Store. See [this StackOverflow question](http://stackoverflow.com/questions/6273892/android-package-name-convention).
-        Reverse DNS notation unique name for your app. For example, host.exp.expo, where exp.host is our domain and Expo is our app.
+              The reserved client id url scheme. Can be found in `GoogeService-Info.plist`.
 
-    -   `versionCode`
+   - `isRemoteJSEnabled`
 
-        Version number (integer) required by Google Play. Increment by one for each release. <https://developer.android.com/studio/publish/versioning.html>.
+      If set to false, your standalone app will never download any code, and will only use code bundled locally on the device. In that case, all updates to your app must be submitted through Apple review. Defaults to true.
 
-    -   `config`
+   - `supportsTablet`
 
-        -   `fabric`
+      Whether your standalone iOS app supports tablet screen sizes.
 
-            [Twitter Fabric](https://get.fabric.io/) keys to hook up Crashlytics and other services.
+   - `infoPlist`
 
-            -   `apiKey`
+      Arbitrary configuration to add to your standalone app's native Info.plist. Applied prior to all other Expo-specific configuration. No other validation is performed, so use this at your own risk of rejection from the App Store.
 
-                Your Fabric API key
+   - `associatedDomains`
 
-            -   `buildSecret`
+      Associated Domains for the standalone app.
 
-                Your Fabric build secret
+- `android`
 
-        -   `googleMaps`
+   **Standalone Apps Only**. Android standalone app specific configuration
 
-            [Google Maps Android SDK](https://developers.google.com/maps/documentation/android-api/signup) key for your standalone app.
+   - `package`
 
-            -   `apiKey`
+      The package name for your Android standalone app. You make it up, but it needs to be unique on the Play Store. See [this StackOverflow question](http://stackoverflow.com/questions/6273892/android-package-name-convention).
+    Reverse DNS notation unique name for your app. For example, host.exp.exponent, where exp.host is our domain and Expo is our app.
 
-                Your Google Maps Android SDK API key
+   - `versionCode`
 
-        -   `googleSignIn`
+      Version number required by Google Play. Increment by one for each release. https://developer.android.com/studio/publish/versioning.html.
 
-            [Google Sign-In Android SDK](https://developers.google.com/identity/sign-in/android/start-integrating) keys for your standalone app.
+   - `config`
 
-            -   `apiKey`
+      
+       - `branch`
 
-                The Android API key. Can be found in the credentials section of the developer console or in `google-services.json`.
+          [Branch](https://branch.io/) key to hook up Branch linking services.
 
-            -   `certificateHash`
+           - `apiKey`
 
-                The SHA-1 hash of the signing certificate used to build the apk without any separator `:`. Can be found in `google-services.json`. <https://developers.google.com/android/guides/client-auth>
+              Your Branch API key
 
--   `facebookScheme`
+       - `fabric`
 
-    Used for Facebook native login. Starts with 'fb' and followed by a string of digits, like 'fb1234567890'. You can find your scheme at <https://developers.facebook.com/docs/facebook-login/ios> in the 'Configuring Your info.plist' section.
+          [Twitter Fabric](https://get.fabric.io/) keys to hook up Crashlytics and other services.
+
+           - `apiKey`
+
+              Your Fabric API key
+
+           - `buildSecret`
+
+              Your Fabric build secret
+
+       - `googleMaps`
+
+          [Google Maps Android SDK](https://developers.google.com/maps/documentation/android-api/signup) key for your standalone app.
+
+           - `apiKey`
+
+              Your Google Maps Android SDK API key
+
+       - `googleSignIn`
+
+          [Google Sign-In Android SDK](https://developers.google.com/identity/sign-in/android/start-integrating) keys for your standalone app.
+
+           - `apiKey`
+
+              The Android API key. Can be found in the credentials section of the developer console or in `google-services.json`.
+
+           - `certificateHash`
+
+              The SHA-1 hash of the signing certificate used to build the apk without any separator `:`. Can be found in `google-services.json`. https://developers.google.com/android/guides/client-auth
+
+- `facebookScheme`
+
+   Used for Facebook native login. Starts with 'fb' and followed by a string of digits, like 'fb1234567890'. You can find your scheme at https://developers.facebook.com/docs/facebook-login/ios in the 'Configuring Your info.plist' section.
+
+- `hooks`
+
+   Configuration for scripts to run to hook into the publish process
+
+   - `postPublish`
+
+      

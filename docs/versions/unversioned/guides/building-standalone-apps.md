@@ -14,29 +14,31 @@ XDE currently doesn't include an option for building a standalone app, so we'll 
 
 If you haven't used `exp` before, the first thing you'll need to do is login with your Expo account using `exp login`.
 
-## 2. Configure exp.json
+## 2. Configure app.json
 
 ```javascript
  {
-   name: "Your App Name",
-   icon: "./path/to/your/app-icon.png",
-   version: "1.0.0",
-   slug: "your-app-slug",
-   sdkVersion: "17.0.0",
-   ios: {
-     bundleIdentifier: "com.yourcompany.yourappname",
-   },
-   android: {
-     package: "com.yourcompany.yourappname",
+   "expo": {
+    "name": "Your App Name",
+    "icon": "./path/to/your/app-icon.png",
+    "version": "1.0.0",
+    "slug": "your-app-slug",
+    "sdkVersion": "17.0.0",
+    "ios": {
+      "bundleIdentifier": "com.yourcompany.yourappname"
+    },
+    "android": {
+      "package": "com.yourcompany.yourappname"
+    }
    }
  }
 ```
 
 The iOS `bundleIdentifier` and Android `package` fields use reverse DNS notation, but don't have to be related to a domain. Replace `"com.yourcompany.yourappname"` with whatever makes sense for your app.
 
-You're probably not surprised that `name`, `icon` and `version` are required, but if you haven't used Expo much you might be confused by `slug` and `sdkVersion`. `slug` is the url name that your app's JavaScript is published to, for example `exp.host/@community/native-component-list`, where `community` is my username and `native-component-list` is the slug. The `sdkVersion` tells Expo what Expo runtime version to use, which corresponds to a React Native version. Although `"17.0.0"` is listed in the example, you already have an `sdkVersion` in your exp.json and should not change it except when you want to updte to a new version of Expo.
+You're probably not surprised that `name`, `icon` and `version` are required, but if you haven't used Expo much you might be confused by `slug` and `sdkVersion`. `slug` is the url name that your app's JavaScript is published to, for example `exp.host/@community/native-component-list`, where `community` is my username and `native-component-list` is the slug. The `sdkVersion` tells Expo what Expo runtime version to use, which corresponds to a React Native version. Although `"17.0.0"` is listed in the example, you already have an `sdkVersion` in your app.json and should not change it except when you want to updte to a new version of Expo.
 
-There are other options you might want to add to `exp.json`. We have only covered what is required. For example, some people like to configure their own build number, linking scheme, and more. We highly recommend you read through [Configuration with exp.json](configuration.html) for the full spec.
+There are other options you might want to add to `app.json`. We have only covered what is required. For example, some people like to configure their own build number, linking scheme, and more. We highly recommend you read through [Configuration with app.json](configuration.html) for the full spec.
 
 ## 3. Start the build
 
@@ -103,10 +105,10 @@ If you plan to submit to the Apple App Store, your app will be subject to normal
 
 ## 7. Update your app
 
-When you want to update your app you can simply publish through XDE or `exp`! As long as you don't change the `sdkVersion` version in `exp.json` your standalone app will get the new code next time users open the app. If you want to change the icon or the app name you'll need to resubmit your app to each store.
+When you want to update your app you can simply publish through XDE or `exp`! As long as you don't change the `sdkVersion` version in `app.json` your standalone app will get the new code next time users open the app. If you want to change the icon or the app name you'll need to resubmit your app to each store.
 
 If you run into problems during this process, we're more than happy to help out! Join our Slack and let us know if you have any questions.
 
 > **Note:** Are you curious how this works? We embed the Expo runtime into a new app and make it always point to the published URL of your app.
 >
-> We mentioned a few of the required properties here, but you're free to configure everything from the push notification icon to the deep-linking url scheme (see the guide on exp.json for more information), and we take care of building it for you so you never have to open Xcode or Android Studio.
+> We mentioned a few of the required properties here, but you're free to configure everything from the push notification icon to the deep-linking url scheme (see [the guide on app.json](configuration.html) for more information), and we take care of building it for you so you never have to open Xcode or Android Studio.

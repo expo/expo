@@ -37,29 +37,31 @@ import Sentry from 'sentry-expo';
 Sentry.config('your Public DSN goes here').install();
 ```
 
-- Open `exp.json` and add a `postPublish hook`:
+- Open `app.json` and add a `postPublish hook`:
 
 ```json
 {
-  // ... your existing exp.json configuration is here
+  "expo": {
+    // ... your existing configuration
 
-  "hooks": {
-    "postPublish": [
-      {
-        "file": "sentry-expo/upload-sourcemaps",
-        "config": {
-          "organization": "your team short name here",
-          "project": "your project short name here",
-          "authToken": "your auth token here"
+    "hooks": {
+      "postPublish": [
+        {
+          "file": "sentry-expo/upload-sourcemaps",
+          "config": {
+            "organization": "your team short name here",
+            "project": "your project short name here",
+            "authToken": "your auth token here"
+          }
         }
-      }
-    ]
+      ]
+    }
   }
 ```
 
 ### Publish your app with sourcemaps
 
-With the `postPublish` hook in place, now all you need to do is hit publish and the sourcemaps will be uploaded automatically. We automatically assign a unique release version for Sentry each time you hit publish, based on the version you specify in `exp.json` and a release id on our backend -- this means that if you forget to update the version but hit publish, you will still get a unique Sentry release. If you're not familiar with publishing on Expo, you can [read more about it here](https://blog.expo.io/publishing-on-exponent-790493660d24).
+With the `postPublish` hook in place, now all you need to do is hit publish and the sourcemaps will be uploaded automatically. We automatically assign a unique release version for Sentry each time you hit publish, based on the version you specify in `app.json` and a release id on our backend -- this means that if you forget to update the version but hit publish, you will still get a unique Sentry release. If you're not familiar with publishing on Expo, you can [read more about it here](https://blog.expo.io/publishing-on-exponent-790493660d24).
 
 ## Error reporting semantics
 

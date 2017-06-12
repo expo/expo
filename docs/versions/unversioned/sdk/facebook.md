@@ -17,7 +17,7 @@ Follow [Facebook's developer documentation](https://developers.facebook.com/docs
 -   **iOS standalone app**
 
     -   Add your app's Bundle ID as a _Bundle ID_ in app's settings page pictured above.
-    -   In your [exp.json](../guides/configuration.html#exp), add a field `facebookScheme` with your Facebook login redirect URL scheme found [here](https://developers.facebook.com/docs/facebook-login/ios) under _4. Configure Your info.plist_. It should look like `"fb123456"`.
+    -   In your [app.json](../guides/configuration.html), add a field `facebookScheme` with your Facebook login redirect URL scheme found [here](https://developers.facebook.com/docs/facebook-login/ios) under _4. Configure Your info.plist_. It should look like `"fb123456"`.
 
 -   **Android standalone app**
 

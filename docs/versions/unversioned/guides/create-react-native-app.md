@@ -14,43 +14,6 @@ You can run `create-react-native-app YourAppName` and off you go. So what does n
 Expo](https://blog.expo.io/publishing-on-exponent-790493660d24#.bhtxw53ts) for more information.
 - [Build binaries for app / play store distribution](building-standalone-apps.html). To do this with CRNA without using Expo, you would need to run [eject](https://github.com/react-community/create-react-native-app#npm-run-eject).
 
-### Expo uses exp.json for app configuration such as your icon and loading screen, CRNA uses app.json
-
-How are `exp.json` and `app.json` different? `app.json` is the client
-agnostic version of `exp.json`. Anything that you put in `exp.json` would live under the
-`expo` key namespace in `app.json`. For example:
-
-In `app.json`:
-
-```
-{
-  "expo": {
-    "loading": {
-      "backgroundColor": "red"
-    }
-  }
-}
-```
-
-In `exp.json`:
-
-```
-{
-  "loading": {
-    "backgroundColor": "red"
-  }
-}
-```
-
-The reason for this is that CRNA is agnostic with respect to the client
-that you use with it. Expo is currently the only client that exists
-([learn more about what the Expo client is
-here](https://blog.expo.io/what-is-the-exponent-client-b4c7b3a6d7f#.bbh0wjwav)), but
-anybody can build a client that is compatible and include their
-configuration under a key namespace of their choice.
-
-Expo supports both `app.json` and `exp.json`.
-
 ### Can you use XDE/exp on a CRNA project?
 
 Yes! Open the project as you would any other Expo project using XDE and

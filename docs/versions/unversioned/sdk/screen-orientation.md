@@ -2,7 +2,7 @@
 title: ScreenOrientation
 ---
 
-Allows changing supported screen orientations at runtime. This will take priority over the `orientation` key in `exp.json`.
+Allows changing supported screen orientations at runtime. This will take priority over the `orientation` key in `app.json`.
 
 ### `Expo.ScreenOrientation.allow(orientation)`
 

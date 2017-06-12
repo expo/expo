@@ -17,8 +17,8 @@ let { Branch } = DangerZone;
 
 ## Configuration (standalone apps only)
 
-- Add the **Branch Key** to your `exp.json` in the section `android.config.branch.apiKey` and `ios.config.branch.apiKey`. You can find your key on [this page](https://dashboard.branch.io/account-settings/app) of the Branch Dashboard.
-- Add a **linking scheme** to your `exp.json` in the `scheme` section if you don't already have one.
+- Add the **Branch Key** to your `app.json` in the section `android.config.branch.apiKey` and `ios.config.branch.apiKey`. You can find your key on [this page](https://dashboard.branch.io/account-settings/app) of the Branch Dashboard.
+- Add a **linking scheme** to your `app.json` in the `scheme` section if you don't already have one.
 
 ### Enable Branch support for universal links (iOS only)
 
@@ -28,7 +28,7 @@ Branch can track universal links from domains you associate with your app. **Not
 
 - Enable Universal Links in the [Link Settings](https://dashboard.branch.io/link-settings) section of the Branch Dashboard and fill in your Bundle Identifier and Apple App Prefix.
 
-- Add an associated domain to support universal links to your `exp.json` in the `ios.associatedDomains` section. This should be in the form of `applinks:<link-domain>` where `link-domain` can be found in the Link Domain section of the [Link Settings](https://dashboard.branch.io/link-settings) page on the Branch Dashboard.
+- Add an associated domain to support universal links to your `app.json` in the `ios.associatedDomains` section. This should be in the form of `applinks:<link-domain>` where `link-domain` can be found in the Link Domain section of the [Link Settings](https://dashboard.branch.io/link-settings) page on the Branch Dashboard.
 
 ## Using the Branch API
 
