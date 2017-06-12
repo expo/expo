@@ -1,5 +1,6 @@
 package versioned.host.exp.exponent.modules.api.components.maps;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
@@ -21,6 +22,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.facebook.react.bridge.LifecycleEventListener;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
@@ -41,6 +43,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.VisibleRegion;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,18 +82,52 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
     private final ScaleGestureDetector scaleDetector;
     private final GestureDetectorCompat gestureDetector;
     private final AirMapManager manager;
+    private LifecycleEventListener lifecycleListener;
     private boolean paused = false;
+    private boolean destroyed = false;
     private final ThemedReactContext context;
     private final EventDispatcher eventDispatcher;
 
-    public AirMapView(ThemedReactContext reactContext, Context appContext, AirMapManager manager,
-            GoogleMapOptions googleMapOptions) {
-        super(appContext, googleMapOptions);
+    private static boolean contextHasBug(Context context) {
+        return context == null ||
+            context.getResources() == null ||
+            context.getResources().getConfiguration() == null;
+    }
+
+    // We do this to fix this bug:
+    // https://github.com/airbnb/react-native-maps/issues/271
+    //
+    // which conflicts with another bug regarding the passed in context:
+    // https://github.com/airbnb/react-native-maps/issues/1147
+    //
+    // Doing this allows us to avoid both bugs.
+    private static Context getNonBuggyContext(ThemedReactContext reactContext,
+                                              ReactApplicationContext appContext) {
+        Context superContext = reactContext;
+        if (!contextHasBug(appContext.getCurrentActivity())) {
+            superContext = appContext.getCurrentActivity();
+        } else if (contextHasBug(superContext)) {
+            // we have the bug! let's try to find a better context to use
+            if (!contextHasBug(reactContext.getCurrentActivity())) {
+                superContext = reactContext.getCurrentActivity();
+            } else if (!contextHasBug(reactContext.getApplicationContext())) {
+                superContext = reactContext.getApplicationContext();
+            } else {
+                // ¯\_(ツ)_/¯
+            }
+        }
+        return superContext;
+    }
+
+    public AirMapView(ThemedReactContext reactContext, ReactApplicationContext appContext, AirMapManager manager,
+                      GoogleMapOptions googleMapOptions) {
+        super(getNonBuggyContext(reactContext, appContext), googleMapOptions);
 
         this.manager = manager;
         this.context = reactContext;
 
         super.onCreate(null);
+        // TODO(lmr): what about onStart????
         super.onResume();
         super.getMapAsync(this);
 
@@ -137,11 +174,14 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
 
     @Override
     public void onMapReady(final GoogleMap map) {
+        if (destroyed) {
+            return;
+        }
         this.map = map;
         this.map.setInfoWindowAdapter(this);
         this.map.setOnMarkerDragListener(this);
 
-        manager.pushEvent(this, "onMapReady", new WritableNativeMap());
+        manager.pushEvent(context, this, "onMapReady", new WritableNativeMap());
 
         final AirMapView view = this;
 
@@ -149,14 +189,17 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
             @Override
             public boolean onMarkerClick(Marker marker) {
                 WritableMap event;
+                AirMapMarker airMapMarker = markerMap.get(marker);
 
                 event = makeClickEventData(marker.getPosition());
                 event.putString("action", "marker-press");
-                manager.pushEvent(view, "onMarkerPress", event);
+                event.putString("id", airMapMarker.getIdentifier());
+                manager.pushEvent(context, view, "onMarkerPress", event);
 
                 event = makeClickEventData(marker.getPosition());
                 event.putString("action", "marker-press");
-                manager.pushEvent(markerMap.get(marker), "onPress", event);
+                event.putString("id", airMapMarker.getIdentifier());
+                manager.pushEvent(context, markerMap.get(marker), "onPress", event);
 
                 // Return false to open the callout info window and center on the marker
                 // https://developers.google.com/android/reference/com/google/android/gms/maps/GoogleMap.OnMarkerClickListener
@@ -174,7 +217,7 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
             public void onPolygonClick(Polygon polygon) {
                 WritableMap event = makeClickEventData(polygon.getPoints().get(0));
                 event.putString("action", "polygon-press");
-                manager.pushEvent(polygonMap.get(polygon), "onPress", event);
+                manager.pushEvent(context, polygonMap.get(polygon), "onPress", event);
             }
         });
 
@@ -183,7 +226,7 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
             public void onPolylineClick(Polyline polyline) {
                 WritableMap event = makeClickEventData(polyline.getPoints().get(0));
                 event.putString("action", "polyline-press");
-                manager.pushEvent(polylineMap.get(polyline), "onPress", event);
+                manager.pushEvent(context, polylineMap.get(polyline), "onPress", event);
             }
         });
 
@@ -194,17 +237,17 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
 
                 event = makeClickEventData(marker.getPosition());
                 event.putString("action", "callout-press");
-                manager.pushEvent(view, "onCalloutPress", event);
+                manager.pushEvent(context, view, "onCalloutPress", event);
 
                 event = makeClickEventData(marker.getPosition());
                 event.putString("action", "callout-press");
                 AirMapMarker markerView = markerMap.get(marker);
-                manager.pushEvent(markerView, "onCalloutPress", event);
+                manager.pushEvent(context, markerView, "onCalloutPress", event);
 
                 event = makeClickEventData(marker.getPosition());
                 event.putString("action", "callout-press");
                 AirMapCallout infoWindow = markerView.getCalloutView();
-                if (infoWindow != null) manager.pushEvent(infoWindow, "onPress", event);
+                if (infoWindow != null) manager.pushEvent(context, infoWindow, "onPress", event);
             }
         });
 
@@ -213,7 +256,7 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
             public void onMapClick(LatLng point) {
                 WritableMap event = makeClickEventData(point);
                 event.putString("action", "press");
-                manager.pushEvent(view, "onPress", event);
+                manager.pushEvent(context, view, "onPress", event);
             }
         });
 
@@ -222,7 +265,7 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
             public void onMapLongClick(LatLng point) {
                 WritableMap event = makeClickEventData(point);
                 event.putString("action", "long-press");
-                manager.pushEvent(view, "onLongPress", makeClickEventData(point));
+                manager.pushEvent(context, view, "onLongPress", makeClickEventData(point));
             }
         });
 
@@ -251,7 +294,7 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
         // updating location constantly, killing the battery, even though some other location-mgmt
         // module may
         // desire to shut-down location-services.
-      LifecycleEventListener lifecycleListener = new LifecycleEventListener() {
+    lifecycleListener = new LifecycleEventListener() {
         @Override
         public void onHostResume() {
           if (hasPermissions()) {
@@ -270,11 +313,15 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
             //noinspection MissingPermission
             map.setMyLocationEnabled(false);
           }
-          paused = true;
+            synchronized (AirMapView.this) {
+                AirMapView.this.onPause();
+                paused = true;
+            }
         }
 
         @Override
         public void onHostDestroy() {
+            AirMapView.this.doDestroy();
         }
       };
 
@@ -284,6 +331,28 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
     private boolean hasPermissions() {
         return checkSelfPermission(getContext(), PERMISSIONS[0]) == PackageManager.PERMISSION_GRANTED ||
                 checkSelfPermission(getContext(), PERMISSIONS[1]) == PackageManager.PERMISSION_GRANTED;
+    }
+
+
+
+    /*
+    onDestroy is final method so I can't override it.
+     */
+    public synchronized  void doDestroy() {
+        if (destroyed) {
+            return;
+        }
+        destroyed = true;
+
+        if (lifecycleListener != null && context != null) {
+            context.removeLifecycleEventListener(lifecycleListener);
+            lifecycleListener = null;
+        }
+        if (!paused) {
+            onPause();
+            paused = true;
+        }
+        onDestroy();
     }
 
     public void setRegion(ReadableMap region) {
@@ -420,7 +489,10 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
             urlTileView.addToMap(map);
             features.add(index, urlTileView);
         } else {
-            // TODO(lmr): throw? User shouldn't be adding non-feature children.
+            ViewGroup children = (ViewGroup) child;
+            for (int i = 0; i < children.getChildCount(); i++) {
+              addFeature(children.getChildAt(i), index);
+            }
         }
     }
 
@@ -479,13 +551,17 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
     }
 
     public void animateToRegion(LatLngBounds bounds, int duration) {
-        startMonitoringRegion();
-        map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0), duration, null);
+        if (map != null) {
+            startMonitoringRegion();
+            map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0), duration, null);
+        }
     }
 
     public void animateToCoordinate(LatLng coordinate, int duration) {
-        startMonitoringRegion();
-        map.animateCamera(CameraUpdateFactory.newLatLng(coordinate), duration, null);
+        if (map != null) {
+            startMonitoringRegion();
+            map.animateCamera(CameraUpdateFactory.newLatLng(coordinate), duration, null);
+        }
     }
 
     public void fitToElements(boolean animated) {
@@ -636,9 +712,12 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
         @Override
         public void run() {
 
-            LatLngBounds bounds = map.getProjection().getVisibleRegion().latLngBounds;
-            if (lastBoundsEmitted == null ||
-                    LatLngBoundsUtils.BoundsAreDifferent(bounds, lastBoundsEmitted)) {
+            Projection projection = map.getProjection();
+            VisibleRegion region = (projection != null) ? projection.getVisibleRegion() : null;
+            LatLngBounds bounds = (region != null) ? region.latLngBounds : null;
+
+            if ((bounds != null) &&
+                (lastBoundsEmitted == null || LatLngBoundsUtils.BoundsAreDifferent(bounds, lastBoundsEmitted))) {
                 LatLng center = map.getCameraPosition().target;
                 lastBoundsEmitted = bounds;
                 eventDispatcher.dispatchEvent(new RegionChangeEvent(getId(), bounds, center, true));
@@ -651,31 +730,31 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
     @Override
     public void onMarkerDragStart(Marker marker) {
         WritableMap event = makeClickEventData(marker.getPosition());
-        manager.pushEvent(this, "onMarkerDragStart", event);
+        manager.pushEvent(context, this, "onMarkerDragStart", event);
 
         AirMapMarker markerView = markerMap.get(marker);
         event = makeClickEventData(marker.getPosition());
-        manager.pushEvent(markerView, "onDragStart", event);
+        manager.pushEvent(context, markerView, "onDragStart", event);
     }
 
     @Override
     public void onMarkerDrag(Marker marker) {
         WritableMap event = makeClickEventData(marker.getPosition());
-        manager.pushEvent(this, "onMarkerDrag", event);
+        manager.pushEvent(context, this, "onMarkerDrag", event);
 
         AirMapMarker markerView = markerMap.get(marker);
         event = makeClickEventData(marker.getPosition());
-        manager.pushEvent(markerView, "onDrag", event);
+        manager.pushEvent(context, markerView, "onDrag", event);
     }
 
     @Override
     public void onMarkerDragEnd(Marker marker) {
         WritableMap event = makeClickEventData(marker.getPosition());
-        manager.pushEvent(this, "onMarkerDragEnd", event);
+        manager.pushEvent(context, this, "onMarkerDragEnd", event);
 
         AirMapMarker markerView = markerMap.get(marker);
         event = makeClickEventData(marker.getPosition());
-        manager.pushEvent(markerView, "onDragEnd", event);
+        manager.pushEvent(context, markerView, "onDragEnd", event);
     }
 
     private ProgressBar getMapLoadingProgressBar() {
@@ -768,6 +847,6 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
         Point point = new Point((int) ev.getX(), (int) ev.getY());
         LatLng coords = this.map.getProjection().fromScreenLocation(point);
         WritableMap event = makeClickEventData(coords);
-        manager.pushEvent(this, "onPanDrag", event);
+        manager.pushEvent(context, this, "onPanDrag", event);
     }
 }
