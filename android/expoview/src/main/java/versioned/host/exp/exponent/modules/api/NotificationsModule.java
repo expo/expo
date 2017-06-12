@@ -13,6 +13,7 @@ import com.facebook.react.bridge.ReadableNativeMap;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 
+import host.exp.exponent.Constants;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.notifications.NotificationHelper;
 import host.exp.exponent.notifications.ExponentNotificationManager;
@@ -33,6 +34,8 @@ import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.expoview.Exponent;
 
 public class NotificationsModule extends ReactContextBaseJavaModule {
+
+  private static final String TAG = NotificationsModule.class.getSimpleName();
 
   @Inject
   ExponentSharedPreferences mExponentSharedPreferences;
@@ -56,6 +59,9 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void getDevicePushTokenAsync(final Promise promise) {
+    if (!Constants.isShellApp()) {
+      promise.reject("getDevicePushTokenAsync is only accessible within standalone applications");
+    }
     try {
       InstanceID instanceID = InstanceID.getInstance(this.getReactApplicationContext());
       String gcmSenderId = Exponent.getInstance().getGCMSenderId();
@@ -66,10 +72,13 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
       if (token == null) {
         promise.reject("GCM token has not been set");
       } else {
-        promise.resolve(token);
+        com.facebook.react.bridge.WritableMap params = com.facebook.react.bridge.Arguments.createMap();
+        params.putString("type", "gcm");
+        params.putString("data", token);
+        promise.resolve(params);
       }
     } catch (Exception e) {
-      EXL.e(getClass().getSimpleName(), e.getMessage());
+      EXL.e(TAG, e.getMessage());
       promise.reject(e.getMessage());
     }
   }
