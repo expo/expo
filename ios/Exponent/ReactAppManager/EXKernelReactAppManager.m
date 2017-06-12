@@ -46,6 +46,7 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
 + (NSDictionary * _Nullable)kernelManifest
 {
   NSString *manifestJson = nil;
+  BOOL usesNSBundleManifest = NO;
 #ifdef BUILD_MACHINE_KERNEL_MANIFEST
   // if developing, use development manifest from generateDynamicMacros.js
   if ([EXKernel isDevKernel]) {
@@ -57,6 +58,7 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
     NSString *manifestPath = [[NSBundle mainBundle] pathForResource:kEXKernelManifestResourceName ofType:@"json"];
     if (manifestPath) {
       NSError *error;
+      usesNSBundleManifest = YES;
       manifestJson = [NSString stringWithContentsOfFile:manifestPath encoding:NSUTF8StringEncoding error:&error];
       if (error) {
         manifestJson = nil;
@@ -67,6 +69,9 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
   if (manifestJson) {
     id manifest = RCTJSONParse(manifestJson, nil);
     if ([manifest isKindOfClass:[NSDictionary class]]) {
+      if (usesNSBundleManifest && ![manifest[@"id"] isEqualToString:@"@exponent/home"]) {
+        DDLogError(@"Bundled kernel manifest was published with an id other than @exponent/home");
+      }
       return manifest;
     }
   }
