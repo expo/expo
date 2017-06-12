@@ -10,12 +10,16 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.android.gms.iid.InstanceID;
 
+import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.notifications.NotificationHelper;
 import host.exp.exponent.notifications.ExponentNotificationManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -26,6 +30,7 @@ import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 import host.exp.exponent.storage.ExponentSharedPreferences;
+import host.exp.expoview.Exponent;
 
 public class NotificationsModule extends ReactContextBaseJavaModule {
 
@@ -47,6 +52,26 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   @Override
   public String getName() {
     return "ExponentNotifications";
+  }
+
+  @ReactMethod
+  public void getDevicePushTokenAsync(final Promise promise) {
+    try {
+      InstanceID instanceID = InstanceID.getInstance(this.getReactApplicationContext());
+      String gcmSenderId = Exponent.getInstance().getGCMSenderId();
+      if (gcmSenderId == null || gcmSenderId.length() == 0) {
+        throw new InvalidParameterException("GCM Sender ID is null/empty");
+      }
+      final String token = instanceID.getToken(gcmSenderId, GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
+      if (token == null) {
+        promise.reject("GCM token has not been set");
+      } else {
+        promise.resolve(token);
+      }
+    } catch (Exception e) {
+      EXL.e(getClass().getSimpleName(), e.getMessage());
+      promise.reject(e.getMessage());
+    }
   }
 
   @ReactMethod
