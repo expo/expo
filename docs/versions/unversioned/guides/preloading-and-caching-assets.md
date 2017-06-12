@@ -6,7 +6,7 @@ In order to keep the loading screen visible while we cache our assets, we render
 
 For images that we have saved to our local filesytem, we can use `Expo.Asset.fromModule(image).downloadAsync()` to download and cache the image. For web images, we can use `Image.prefetch(image)`.
 
-Fonts are preloaded using `Expo.Font.loadAsync(font)`. The `font` argument in this case is an object such as the following: `{OpenSans: require('./assets/fonts/OpenSans.ttf}`. `@exponent/vector-icons` provides a helpful shortcut for this object, which you see below as `FontAwesome.font`.
+Fonts are preloaded using `Expo.Font.loadAsync(font)`. The `font` argument in this case is an object such as the following: `{OpenSans: require('./assets/fonts/OpenSans.ttf')}`. `@exponent/vector-icons` provides a helpful shortcut for this object, which you see below as `FontAwesome.font`.
 
 ```javascript
 import Expo from 'expo';
