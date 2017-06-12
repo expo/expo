@@ -33,7 +33,7 @@ Requires `Permissions.CAMERA`.
 ```javascript
 import React from 'react';
 import { Text, View } from 'react-native';
-import Expo, { Permissions } from 'expo';
+import { Permissions } from 'expo';
 
 export default class BarcodeScannerExample extends React.Component {
   state = {
@@ -67,8 +67,6 @@ export default class BarcodeScannerExample extends React.Component {
     alert(JSON.stringify(data));
   }
 }
-
-Expo.registerRootComponent(BarcodeScannerExample);
 ```
 
 ### props

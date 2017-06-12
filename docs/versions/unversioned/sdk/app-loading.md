@@ -15,12 +15,12 @@ import {
   Text,
   View,
 } from 'react-native';
-import Expo, {
+import {
   Asset,
   AppLoading,
 } from 'expo';
 
-class App extends React.Component {
+export default class App extends React.Component {
   state = {
     isReady: false,
   };
@@ -55,6 +55,4 @@ class App extends React.Component {
     this.setState({isReady: true});
   }
 }
-
-Expo.registerRootComponent(App);
 ```

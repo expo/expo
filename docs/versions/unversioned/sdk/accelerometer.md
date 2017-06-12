@@ -38,7 +38,7 @@ Subscribe for updates to the accelerometer.
 
 ```javascript
 import React from 'react';
-import Expo, {
+import {
   Accelerometer,
 } from 'expo';
 import {
@@ -48,7 +48,7 @@ import {
   View
 } from 'react-native';
 
-class AccelerometerSensor extends React.Component {
+export default class AccelerometerSensor extends React.Component {
   state = {
     accelerometerData: {},
   }
@@ -146,6 +146,4 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
 });
-
-Expo.registerRootComponent(AccelerometerSensor);
 ```

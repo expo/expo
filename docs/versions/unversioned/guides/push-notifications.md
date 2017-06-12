@@ -115,7 +115,7 @@ Thankfully, handling push notifications is straightforward with Expo, all you ne
 
 ```javascript
 import React from 'react';
-import Expo, {
+import {
   Notifications,
 } from 'expo';
 import {
@@ -125,7 +125,7 @@ import {
 
 import registerForPushNotificationsAsync from 'registerForPushNotificationsAsync';
 
-class AppContainer extends React.Component {
+export default class AppContainer extends React.Component {
   state = {
     notification: {},
   };
@@ -154,8 +154,6 @@ class AppContainer extends React.Component {
     );
   }
 }
-
-Expo.registerRootComponent(AppContainer);
 ```
 
 ### Notification handling timing

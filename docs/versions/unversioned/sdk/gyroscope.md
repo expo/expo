@@ -32,7 +32,7 @@ Subscribe for updates to the gyroscope.
 
 ```javascript
 import React from 'react';
-import Expo, {
+import {
   Gyroscope,
 } from 'expo';
 import {
@@ -42,7 +42,7 @@ import {
   View
 } from 'react-native';
 
-class GyroscopeSensor extends React.Component {
+export default class GyroscopeSensor extends React.Component {
   state = {
     gyroscopeData: {},
   }
@@ -140,6 +140,4 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
 });
-
-Expo.registerRootComponent(GyroscopeSensor);
 ```
