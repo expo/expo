@@ -7,7 +7,7 @@ App](https://facebook.github.io/react-native/blog/2017/03/13/introducing-create-
 
 ### CRNA does not require you to have an Expo account
 
-You can run `create-react-native-app YourAppName` and off you go. So what does not having an account mean, and what would signing up and using XDE/exp get you -- why do we require it with Expo? Having an account Expo account allows you to do the following.
+You can run `create-react-native-app YourAppName` and off you go. So what does not having an account mean, and what would signing up and using XDE/exp get you -- why do we require it with Expo? Having an Expo account allows you to do the following:
 
 - Publish your project to a permanent URL, eg:
   https://expo.io/@community/reactconf2017. See [Publishing on
