@@ -13,15 +13,13 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import Expo, {
-  Components
-} from 'expo';
+import Expo, { KeepAwake } from 'expo';
 
 class KeepAwakeExample extends React.Component {
   render() {
     return (
       <View>
-        <Components.KeepAwake />
+        <KeepAwake />
         <Text>This screen will never sleep!</Text>
       </View>
     );
@@ -40,18 +38,16 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import Expo, {
-  Components,
-} from 'expo';
+import Expo, { KeepAwake } from 'expo';
 
 class KeepAwakeExample extends React.Component {
 
   _activate = () => {
-    Components.KeepAwake.activate();
+    KeepAwake.activate();
   }
 
   _deactivate = () => {
-    Components.KeepAwake.deactivate();
+    KeepAwake.deactivate();
   }
 
   render() {

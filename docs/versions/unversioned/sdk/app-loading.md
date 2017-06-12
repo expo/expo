@@ -17,7 +17,7 @@ import {
 } from 'react-native';
 import Expo, {
   Asset,
-  Components,
+  AppLoading,
 } from 'expo';
 
 class App extends React.Component {
@@ -31,7 +31,7 @@ class App extends React.Component {
 
   render() {
     if (!this.state.isReady) {
-      return <Components.AppLoading />;
+      return <AppLoading />;
     }
 
     return (
