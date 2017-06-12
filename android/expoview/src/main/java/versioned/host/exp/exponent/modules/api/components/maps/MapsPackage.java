@@ -14,7 +14,7 @@ import java.util.List;
 
 public class MapsPackage implements ReactPackage {
     public MapsPackage(Activity activity) {
-    } // backwards compatability
+    } // backwards compatibility
 
     public MapsPackage() {
     }
