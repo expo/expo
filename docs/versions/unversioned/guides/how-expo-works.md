@@ -32,7 +32,7 @@ The following is an example of a manifest being served through XDE. The first th
   "name":"My New Project",
   "description":"A starter template",
   "slug":"my-new-project",
-  "sdkVersion":"8.0.0",
+  "sdkVersion":"18.0.0",
   "version":"1.0.0",
   "orientation":"portrait",
   "primaryColor":"#cccccc",
@@ -44,7 +44,7 @@ The following is an example of a manifest being served through XDE. The first th
   "loading":{
     "icon":"https://s3.amazonaws.com/exp-brand-assets/ExponentEmptyManifest_192.png"
   },
-  "entryPoint": "main.js",
+  "entryPoint": "node_modules/expo/AppEntry.js",
   "packagerOpts":{
     "hostType":"tunnel",
     "dev":false,

@@ -30,7 +30,7 @@ It notifies you of exceptions that your users run into while using your app and 
 - Make sure you're using a new version of Node which supports async/await (Node 7.6+)
 - Install the Sentry CLI globally: `npm i sentry-cli-binary --global`
 - In your project, install the Expo integration: `npm i sentry-expo --save`
-- Add the following in your app entry file (`main.js` by default).
+- Add the following in your app's main file (`App.js` by default).
 
 ```javascript
 import Sentry from 'sentry-expo';

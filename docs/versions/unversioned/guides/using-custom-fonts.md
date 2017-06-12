@@ -6,18 +6,16 @@ Both iOS and Android come with their own set of platform fonts but if you want t
 
 ## Starting code
 
-First let's start with a basic "Hello world!" app. Create a new project in XDE/exp and change `main.js` to the following:
+First let's start with a basic "Hello world!" app. Create a new project in XDE/exp and change `App.js` to the following:
 
 ```javascript
+import React from 'react';
 import {
   Text,
   View,
 } from 'react-native';
 
-import React from 'react';
-import Expo from 'expo';
-
-class App extends React.Component {
+export default class App extends React.Component {
   render() {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -28,8 +26,6 @@ class App extends React.Component {
     );
   }
 }
-
-Expo.registerRootComponent(App);
 ```
 
 Try getting this basic app running before playing with Open Sans, so you can get any basic setup issues out of the way.
@@ -49,7 +45,7 @@ import { Font } from 'expo';
 The `expo` library provides an API to access native functionality of the device from your JavaScript code. `Font` is the module that deals with font-related tasks. First, we must load the font from our assets directory using [`Expo.Font.loadAsync()`](../sdk/font.html#exponentfontloadasync "Expo.Font.loadAsync"). We can do this in the [componentDidMount()](https://facebook.github.io/react/docs/component-specs.html#mounting-componentdidmount) lifecycle method of the `App` component. Add the following method in `App`: Now that we have the font files saved to disk and the Font SDK imported, let's add this code:
 
 ```javascript
-class App extends React.Component {
+export default class App extends React.Component {
   componentDidMount() {
     Font.loadAsync({
       'open-sans-bold': require('./assets/fonts/OpenSans-Bold.ttf'),
@@ -124,6 +120,6 @@ Finally, we want to only render the `Text` component if `fontLoaded` is `true`. 
 
 A `null` child element is simply ignored by React Native, so this skips rendering the `Text` component when `fontLoaded` is `false`. Now on refreshing the app you will see that `open-sans-bold` is used.
 
-This technique is built into the Tabs template for convenience, as you can see [here](https://github.com/exponent/new-project-template/blob/2fdf49b77090124c317e4eb73684f6bae782a4fd/main.js#L30-L50).
+This technique is built into the Tabs template for convenience, as you can see [here](https://github.com/expo/new-project-template/blob/d6a440b01801fbeb323265e39a155d969ab6827f/App.js#L19-L37).
 
 > **Note:** Typically you will want to load your apps primary fonts before the app is displayed to avoid text flashing in after the font loads. The recommended approach is to move the `Font.loadAsync` call to your top-level component.

@@ -17,10 +17,9 @@ The best way to become familiar with what ExNavigation is capable of is to try o
 
 ## An introduction: the most bare-bones navigation configuration
 
-You can follow along by copying all of the following code into `main.js` on a brand new blank Expo project, and running `npm install @expo/ex-navigation --save`.
+You can follow along by copying all of the following code into `App.js` on a brand new blank Expo project, and running `npm install @expo/ex-navigation --save`.
 
 ```javascript
-import Expo from 'expo';
 import React from 'react';
 import {
   Text,
@@ -37,7 +36,7 @@ const Router = createRouter(() => ({
   home: () => HomeScreen,
 }));
 
-class HomeScreen extends React.Component {
+export default class HomeScreen extends React.Component {
   static route = {
     navigationBar: {
       title: 'Home',
@@ -63,7 +62,7 @@ First we create a router, where we map keys to screens. `HomeScreen` is our firs
 We initialize ExNavigation in our app by putting a `NavigationProvider` at the root of the app. We then render a `StackNavigation` child, and set its `initialRoute` to the `home` route that we defined in `createRouter`.
 
 ```javascript
-class App extends React.Component {
+export default class App extends React.Component {
   render() {
     return (
       <NavigationProvider router={Router}>
@@ -72,8 +71,6 @@ class App extends React.Component {
     );
   }
 }
-
-Expo.registerRootComponent(App);
 ```
 
 ## Reviewing the tab template
@@ -83,7 +80,7 @@ You probably don't want to start all of your projects completely from scratch, a
 Let's look at the project structure of the tab template as it relates to navigation. This is not a pattern that you absolutely must follow, but we find it works quite well for us.
 
 ```javascript
-├── main.js
+├── App.js
 ├── navigation
 │   ├── RootNavigation.js
 │   └── Router.js
@@ -93,7 +90,7 @@ Let's look at the project structure of the tab template as it relates to navigat
 │   └── SettingsScreen.js
 ```
 
-### main.js
+### App.js
 
 In Expo apps, this file is typically where you will register the root component of your app. At the root, you typically include any higher order `Provider` components, such as the `react-redux` `Provider`, and the ExNavigation `NavigationProvider`. As you can see in the above example, we usually also render our root `StackNavigation` component at the root. Most apps are composed of many nested stacks, which we will see here.
 
@@ -103,7 +100,7 @@ I've organized all of the route components that represent screens in our app int
 
 ### navigation/Router.js
 
-In the simple example above, we in-lined our Router in `main.js` -- this can be fine to do for a while, but eventually it can grow long enough that it becomes cleaner to pull out into its own file. There may also be cases where you will want to import the router directly.
+In the simple example above, we in-lined our Router in `App.js` -- this can be fine to do for a while, but eventually it can grow long enough that it becomes cleaner to pull out into its own file. There may also be cases where you will want to import the router directly.
 
 ### navigation/RootNavigation.js
 
