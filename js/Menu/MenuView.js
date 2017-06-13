@@ -8,6 +8,7 @@
 import React, { PropTypes } from 'react';
 import {
   Animated,
+  Alert,
   Clipboard,
   Dimensions,
   Easing,
@@ -298,7 +299,7 @@ export default class MenuView extends React.Component {
   }
 
   _renderDevMenuItem(key, item) {
-    let { label, isEnabled } = item;
+    let { label, isEnabled, detail } = item;
     if (isEnabled) {
       return this._renderButton(
         key,
@@ -310,15 +311,29 @@ export default class MenuView extends React.Component {
         true
       );
     } else {
+      const detailButton = (detail) ? this._renderDevMenuDetailButton(detail) : nil;
       return (
         <View style={[styles.button, styles.buttonWithSeparator]} key={key}>
           <View style={styles.buttonIcon} />
           <Text style={[styles.buttonText, { color: '#9ca0a6' }]}>
             {label}
           </Text>
+          {detailButton}
         </View>
       );
     }
+  }
+
+  _renderDevMenuDetailButton(detail) {
+    return (
+      <TouchableOpacity onPress={() => { Alert.alert(detail); }}>
+        <Ionicons
+          name="ios-information-circle"
+          size={20}
+          style={{color:'#595c68', marginVertical: 11}}
+          />
+      </TouchableOpacity>
+    );
   }
 
   _renderButton(key, text, onPress, iconSource, withSeparator) {

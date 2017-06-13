@@ -124,7 +124,11 @@ static NSNumber *ABI17_0_0EXVersionManagerIsFirstLoad;
       @"isEnabled": @YES,
     };
   } else {
-    items[@"dev-live-reload"] =  @{ @"label": @"Live Reload Unavailable", @"isEnabled": @NO };
+    NSMutableDictionary *liveReloadItem = [@{ @"label": @"Live Reload Unavailable", @"isEnabled": @NO } mutableCopy];
+    if (devSettings.isHotLoadingEnabled) {
+      liveReloadItem[@"detail"] = @"You can't use Live Reload and Hot Reloading at the same time. Disable Hot Reloading to use Live Reload.";
+    }
+    items[@"dev-live-reload"] =  liveReloadItem;
   }
   if (devSettings.isHotLoadingAvailable && !devSettings.isLiveReloadEnabled) {
     items[@"dev-hmr"] = @{
@@ -132,7 +136,11 @@ static NSNumber *ABI17_0_0EXVersionManagerIsFirstLoad;
       @"isEnabled": @YES,
     };
   } else {
-    items[@"dev-hmr"] =  @{ @"label": @"Hot Reloading Unavailable", @"isEnabled": @NO };
+    NSMutableDictionary *hmrItem = [@{ @"label": @"Hot Reloading Unavailable", @"isEnabled": @NO } mutableCopy];
+    if (devSettings.isLiveReloadEnabled) {
+      hmrItem[@"detail"] = @"You can't use Live Reload and Hot Reloading at the same time. Disable Live Reload to use Hot Reloading.";
+    }
+    items[@"dev-hmr"] =  hmrItem;
   }
   if (devSettings.isJSCSamplingProfilerAvailable) {
     items[@"dev-jsc-profiler"] = @{ @"label": @"Start / Stop JS Sampling Profiler", @"isEnabled": @YES };
@@ -223,7 +231,7 @@ static NSNumber *ABI17_0_0EXVersionManagerIsFirstLoad;
                         logThreshold:(NSInteger)threshold
 {
   if (ABI17_0_0EXVersionManagerIsFirstLoad == nil) {
-    // first time initializing this ABI17_0_0RN version at runtime
+    // first time initializing this RN version at runtime
     _isFirstLoad = YES;
   }
   ABI17_0_0EXVersionManagerIsFirstLoad = @(NO);
