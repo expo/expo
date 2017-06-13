@@ -8,8 +8,6 @@ Writing to the logs in an Expo app works just like in the browser: use `console.
 
 When you open an app that is being served from XDE or exp, the app will send logs over to the server and make them conveniently available to you. This means that you don't need to even have your device connected to your computer to see the logs -- in fact, if someone opens the app from the other side of the world you can still see your app's logs from their device.
 
-> **Note:** Are the logs not showing up for you? Be sure that you're using Expo sdkVersion 7.0.0 or higher, and that you have the `expo` npm package installed and imported (eg: `import * as Expo from 'expo'` at the top of your main JS file).
-
 ### XDE logging pane
 
 When you open a project in XDE, the log window is split in two. Your app logs show up on the right, and the packager logs show up on the left.![XDE window with logs](./xde-logs.png)

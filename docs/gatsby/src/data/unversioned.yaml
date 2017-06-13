@@ -76,6 +76,7 @@
     Notifications: /versions/unversioned/sdk/notifications.html
     Pedometer: /versions/unversioned/sdk/pedometer.html
     Permissions: /versions/unversioned/sdk/permissions.html
+    registerRootComponent: /versions/unversioned/sdk/register-root-component.html
     ScreenOrientation: /versions/unversioned/sdk/screen-orientation.html
     Segment: /versions/unversioned/sdk/segment.html
     SQLite: /versions/unversioned/sdk/sqlite.html
