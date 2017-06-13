@@ -77,7 +77,48 @@ Check status of location providers.
 
 Returns an object with the following fields:
 
--   **locationServicesEnabled (_boolean_)** -- Whether location services are enabled.
+-   **locationServicesEnabled (_boolean_)** (android only) -- Whether location services are enabled.
 -   **gpsAvailable (_boolean_)** (android only) -- If the GPS provider is available, if yes, location data will be from GPS.
 -   **networkAvailable (_boolean_)** (android only) -- If the network provider is available, if yes, location data will be from cellular network.
 -   **passiveAvailable (_boolean_)** (android only) -- If the passive provider is available, if yes, location data will be determined passively.
+
+### `Expo.Location.getHeadingAsync()`
+
+Gets the current heading information from the device
+
+#### Arguments
+
+None
+
+#### Returns
+
+Object with:
+
+- **magHeading (_number_)** — measure of magnetic north in degrees 
+- **trueHeading (_number_)** — measure of true north in degrees (needs location permissions, will return -1 if not given)
+- **accuracy (_number_)** — level of callibration of compass. 
+  - 3: high accuracy, 2: medium accuracy, 1: low accuracy, 0: none
+  - Reference for iOS: 3: < 20 degrees uncertainty, 2: < 35 degrees, 1: < 50 degrees, 0: > 50 degrees
+
+
+### `Expo.Location.watchHeadingAsync()`
+
+Suscribe to compass updates from the device
+
+#### Arguments
+
+- **callback (_function_)** --
+
+    This function is called on each compass update. It is passed exactly one parameter: an object with the following fields:
+    
+    - **magHeading (_number_)** — measure of magnetic north in degrees 
+    - **trueHeading (_number_)** — measure of true north in degrees (needs location permissions, will return -1 if not given)
+    - **accuracy (_number_)** — level of callibration of compass. 
+    	- 3: high accuracy, 2: medium accuracy, 1: low accuracy, 0: none
+    	- Reference for iOS: 3: < 20 degrees uncertainty, 2: < 35 degrees, 1: < 50 degrees, 0: > 50 degrees
+
+#### Returns
+
+Returns a subscription object, which has one field:
+
+- **remove (function)** — Call this function with no arguments to remove this subscription. The callback will no longer be called for location updates.
