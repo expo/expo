@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.MediaRecorder;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
@@ -50,6 +51,12 @@ public class AVModule extends ReactContextBaseJavaModule
   private enum AudioInterruptionMode {
     DO_NOT_MIX,
     DUCK_OTHERS,
+  }
+
+  class AudioFocusNotAcquiredException extends Exception {
+    AudioFocusNotAcquiredException(final String message) {
+      super(message);
+    }
   }
 
   final ScopedContext mScopedContext; // used by PlayerData
@@ -185,13 +192,21 @@ public class AVModule extends ReactContextBaseJavaModule
     }
   }
 
-  boolean tryAcquireAudioFocus() {
-    if (!mEnabled || mAppIsPaused) {
-      return false;
+  boolean hasAudioFocus() {
+    return mAcquiredAudioFocus;
+  }
+
+  void acquireAudioFocus() throws AudioFocusNotAcquiredException {
+    if (!mEnabled) {
+      throw new AudioFocusNotAcquiredException("Expo Audio is disabled, so audio focus could not be acquired.");
+    }
+
+    if (mAppIsPaused) {
+      throw new AudioFocusNotAcquiredException("This experience is currently in the background, so audio focus could not be acquired.");
     }
 
     if (mAcquiredAudioFocus) {
-      return true;
+      return;
     }
 
     final int audioFocusRequest = mAudioInterruptionMode == AudioInterruptionMode.DO_NOT_MIX
@@ -199,12 +214,16 @@ public class AVModule extends ReactContextBaseJavaModule
 
     int result = mAudioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, audioFocusRequest);
     mAcquiredAudioFocus = result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
-    return mAcquiredAudioFocus;
+    if (!mAcquiredAudioFocus) {
+      throw new AudioFocusNotAcquiredException("Audio focus could not be acquired from the OS at this time.");
+    }
   }
 
   private void abandonAudioFocus() {
     for (final AudioEventHandler handler : getAllRegisteredAudioEventHandlers()) {
-      handler.pauseImmediately();
+      if (handler.requiresAudioFocus()) {
+        handler.pauseImmediately();
+      }
     }
     mAcquiredAudioFocus = false;
     mAudioManager.abandonAudioFocus(this);
@@ -212,7 +231,7 @@ public class AVModule extends ReactContextBaseJavaModule
 
   void abandonAudioFocusIfUnused() { // used by PlayerData
     for (final AudioEventHandler handler : getAllRegisteredAudioEventHandlers()) {
-      if (handler.isUsingAudioFocus()) {
+      if (handler.requiresAudioFocus()) {
         return;
       }
     }
@@ -275,7 +294,15 @@ public class AVModule extends ReactContextBaseJavaModule
   @ReactMethod
   public void loadForSound(final String uriString, final ReadableMap status, final Callback loadSuccess, final Callback loadError) {
     final int key = mSoundMapKeyCount++;
-    final PlayerData data = new PlayerData(this, Uri.parse(uriString), status, new PlayerData.PlayerDataLoadCompletionListener() {
+    final PlayerData data = new PlayerData(this, Uri.parse(uriString));
+    data.setErrorListener(new PlayerData.PlayerDataErrorListener() {
+      @Override
+      public void onError(final String error) {
+        removeSoundForKey(key);
+      }
+    });
+    mSoundMap.put(key, data);
+    data.load(status, new PlayerData.PlayerDataLoadCompletionListener() {
       @Override
       public void onLoadSuccess(final WritableMap status) {
         loadSuccess.invoke(key, status);
@@ -287,13 +314,6 @@ public class AVModule extends ReactContextBaseJavaModule
         loadError.invoke();
       }
     });
-    data.setErrorListener(new PlayerData.PlayerDataErrorListener() {
-      @Override
-      public void onError(final String error) {
-        removeSoundForKey(key);
-      }
-    });
-    mSoundMap.put(key, data);
   }
 
   @ReactMethod

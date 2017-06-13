@@ -258,10 +258,10 @@ typedef NS_OPTIONS(NSUInteger, ABI16_0_0EXAudioInterruptionMode)
   }
   NSError *error;
   AVAudioSession *session = [AVAudioSession sharedInstance];
-  [session setActive:YES error:&error];
+  [self _setAudioSessionCategoryForAudioMode:&error];
   if (!error) {
-    _audioSessionActive = YES;
-    [self _setAudioSessionCategoryForAudioMode:&error];
+    [session setActive:YES error:&error];
+    _audioSessionActive = !error;
   }
   return error;
 }
@@ -280,9 +280,9 @@ typedef NS_OPTIONS(NSUInteger, ABI16_0_0EXAudioInterruptionMode)
   }
   NSError *error;
   AVAudioSession *session = [AVAudioSession sharedInstance];
+  [session setActive:NO error:&error];
   // Restore the AVAudioSession to the system default for proper sandboxing.
   [session setCategory:AVAudioSessionCategorySoloAmbient error:&error];
-  [session setActive:NO error:&error];
   if (!error) {
     _audioSessionActive = NO;
   }

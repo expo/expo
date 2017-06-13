@@ -4,8 +4,7 @@ import android.annotation.SuppressLint;
 import android.graphics.Matrix;
 import android.graphics.SurfaceTexture;
 import android.net.Uri;
-import android.os.Handler;
-import android.os.Looper;
+import android.os.AsyncTask;
 import android.util.Pair;
 import android.view.Surface;
 import android.view.TextureView;
@@ -189,34 +188,7 @@ public class VideoView extends TextureView implements
     statusToInitiallySet.merge(mStatusToSet);
     mStatusToSet = Arguments.createMap();
 
-    mPlayerData = new PlayerData(mAVModule, uri, statusToInitiallySet, new PlayerData.PlayerDataLoadCompletionListener() {
-      @Override
-      public void onLoadSuccess(final WritableMap status) {
-        scaleVideoSize(mPlayerData.getVideoWidthHeight());
-        updateMediaControllerIfNecessary();
-
-        if (mIsAttachedToWindow) {
-          mPlayerData.updateVideoSurface(mSurface);
-        }
-
-        if (promise != null) {
-          final WritableMap statusCopy = Arguments.createMap();
-          statusCopy.merge(status);
-          promise.resolve(statusCopy);
-        }
-        mEventEmitter.receiveEvent(getId(), Events.EVENT_LOAD.toString(), status);
-      }
-
-      @Override
-      public void onLoadError(final String error) {
-        unloadPlayer();
-        if (promise != null) {
-          promise.reject("E_VIDEO_NOTCREATED", error);
-        }
-        callOnError(error);
-      }
-    });
-
+    mPlayerData = new PlayerData(mAVModule, uri);
     mPlayerData.setErrorListener(new PlayerData.PlayerDataErrorListener() {
       @Override
       public void onError(final String error) {
@@ -231,7 +203,37 @@ public class VideoView extends TextureView implements
         callOnReadyForDisplay(videoWidthHeight);
       }
     });
-    mPlayerData.setStatusUpdateListener(mStatusUpdateListener);
+
+    mPlayerData.load(statusToInitiallySet, new PlayerData.PlayerDataLoadCompletionListener() {
+      @Override
+      public void onLoadSuccess(final WritableMap status) {
+        scaleVideoSize(mPlayerData.getVideoWidthHeight());
+        updateMediaControllerIfNecessary();
+
+        if (mIsAttachedToWindow) {
+          mPlayerData.updateVideoSurface(mSurface);
+        }
+
+        if (promise != null) {
+          final WritableMap statusCopy = Arguments.createMap();
+          statusCopy.merge(status);
+          promise.resolve(statusCopy);
+        }
+
+        mPlayerData.setStatusUpdateListener(mStatusUpdateListener);
+
+        mEventEmitter.receiveEvent(getId(), Events.EVENT_LOAD.toString(), status);
+      }
+
+      @Override
+      public void onLoadError(final String error) {
+        unloadPlayer();
+        if (promise != null) {
+          promise.reject("E_VIDEO_NOTCREATED", error);
+        }
+        callOnError(error);
+      }
+    });
   }
 
   void setResizeMode(final ScalableType resizeMode) {
@@ -383,8 +385,8 @@ public class VideoView extends TextureView implements
   }
 
   @Override
-  public boolean isUsingAudioFocus() {
-    return mPlayerData != null && mPlayerData.isUsingAudioFocus();
+  public boolean requiresAudioFocus() {
+    return mPlayerData != null && mPlayerData.requiresAudioFocus();
   }
 
   @Override

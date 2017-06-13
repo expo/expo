@@ -138,12 +138,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     weakSelf.player.muted = weakSelf.isMuted;
     weakSelf.player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
     
-    if (weakSelf.shouldPlay) {
-      NSError *error = [weakSelf.exAV activateAudioSessionIfNecessary];
-      if (error == nil) {
-        weakSelf.player.rate = [weakSelf.rate floatValue];
-      }
-    }
+    [weakSelf _tryPlayPlayerWithRateAndMuteIfNecessary];
     
     weakSelf.isLoaded = YES;
     [weakSelf _addObserversForNewPlayer];
@@ -157,11 +152,17 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 
 #pragma mark - setStatus
 
-- (NSError *)_playPlayerWithRate
+- (BOOL)_shouldPlayerPlay
 {
-  if (_player) {
-    NSError *error = [_exAV activateAudioSessionIfNecessary];
+  return _shouldPlay && ![_rate isEqualToNumber:@(0)];
+}
+
+- (NSError *)_tryPlayPlayerWithRateAndMuteIfNecessary
+{
+  if (_player && [self _shouldPlayerPlay]) {
+    NSError *error = [_exAV promoteAudioSessionIfNecessary];
     if (!error) {
+      _player.muted = _isMuted;
       _player.rate = [_rate floatValue];
     }
     return error;
@@ -175,7 +176,6 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 {
   BOOL mustUpdateTimeObserver = NO;
   BOOL mustSeek = NO;
-  BOOL mustResetPlayerRate = NO;
   
   if ([parameters objectForKey:EXAVPlayerDataStatusProgressUpdateIntervalMillisKeyPath] != nil) {
     NSNumber *progressUpdateIntervalMillis = parameters[EXAVPlayerDataStatusProgressUpdateIntervalMillisKeyPath];
@@ -198,15 +198,11 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   
   if ([parameters objectForKey:EXAVPlayerDataStatusShouldPlayKeyPath] != nil) {
     NSNumber *shouldPlay = parameters[EXAVPlayerDataStatusShouldPlayKeyPath];
-    mustResetPlayerRate = shouldPlay.boolValue != _shouldPlay;
     _shouldPlay = shouldPlay.boolValue;
   }
   
   if ([parameters objectForKey:EXAVPlayerDataStatusRateKeyPath] != nil) {
     NSNumber *rate = parameters[EXAVPlayerDataStatusRateKeyPath];
-    if (_shouldPlay && ![rate isEqualToNumber:_rate]) {
-      mustResetPlayerRate = YES;
-    }
     _rate = rate;
   }
   if ([parameters objectForKey:EXAVPlayerDataStatusShouldCorrectPitchKeyPath] != nil) {
@@ -227,11 +223,14 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   }
   
   if (_player && _isLoaded) {
-    // Pause first if necessary.
-    if (!_shouldPlay && mustResetPlayerRate) {
+    // Pause / mute first if necessary.
+    if (![self _shouldPlayerPlay]) {
       [_player pause];
-      [_exAV deactivateAudioSessionIfUnused];
     }
+    if (_isMuted || ![self _isPlayerPlaying]) {
+      _player.muted = _isMuted;
+    }
+    [_exAV demoteAudioSessionIfPossible];
     
     // Apply idempotent parameters.
     if (_shouldCorrectPitch) {
@@ -240,34 +239,28 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
       _player.currentItem.audioTimePitchAlgorithm = AVAudioTimePitchAlgorithmVarispeed;
     }
     _player.volume = _volume.floatValue;
-    _player.muted = _isMuted;
     
     // Apply parameters necessary after seek.
     __weak __typeof__(self) weakSelf = self;
-    void (^applyPostSeekParameters)(BOOL) = ^(BOOL success) {
+    void (^applyPostSeekParameters)(BOOL) = ^(BOOL seekSucceeded) {
       weakSelf.currentPosition = weakSelf.player.currentTime;
       
       if (mustUpdateTimeObserver) {
         [weakSelf _updateTimeObserver];
       }
       
-      if (weakSelf.shouldPlay && mustResetPlayerRate) {
-        NSError *error = [weakSelf _playPlayerWithRate];
-        if (error) {
-          if (reject) {
-            reject(@"E_AV_PLAY", @"Play encountered an error: audio session not activated.", error);
-          } else {
-            [self _callStatusUpdateCallback];
-          }
-          return;
+      NSError *audioSessionError = [weakSelf _tryPlayPlayerWithRateAndMuteIfNecessary];
+      
+      if (audioSessionError) {
+        if (reject) {
+          reject(@"E_AV_PLAY", @"Play encountered an error: audio session not activated.", audioSessionError);
         }
-      }
-      if (success) {
-        if (resolve) {
-          resolve([weakSelf getStatus]);
+      } else if (!seekSucceeded) {
+        if (reject) {
+          reject(@"E_AV_SEEKING", nil, RCTErrorWithMessage(@"Seeking interrupted."));
         }
-      } else if (reject) {
-        reject(@"E_AV_SEEKING", nil, RCTErrorWithMessage(@"Seeking interrupted."));
+      } else if (resolve) {
+        resolve([weakSelf getStatus]);
       }
       
       if (!resolve || !reject) {
@@ -482,7 +475,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
         [strongSelf.player seekToTime:kCMTimeZero];
         strongSelf.player.rate = strongSelf.rate.floatValue;
       } else {
-        [strongSelf.exAV deactivateAudioSessionIfUnused];
+        [strongSelf.exAV demoteAudioSessionIfPossible];
       }
     }
   };
@@ -587,16 +580,17 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   }
 }
 
-- (BOOL)isUsingAudioSession
+- (EXAVAudioSessionMode)getAudioSessionModeRequired
 {
-  return [self _isPlayerPlaying] || _shouldPlay;
+  if (_player && ([self _isPlayerPlaying] || [self _shouldPlayerPlay])) {
+    return _isMuted ? EXAVAudioSessionModeActiveMuted : EXAVAudioSessionModeActive;
+  }
+  return EXAVAudioSessionModeInactive;
 }
 
 - (void)bridgeDidForeground:(NSNotification *)notification
 {
-  if (_shouldPlay) {
-    [self _playPlayerWithRate];
-  }
+  [self _tryPlayPlayerWithRateAndMuteIfNecessary];
 }
 
 - (void)bridgeDidBackground:(NSNotification *)notification
@@ -613,9 +607,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
       [self _callStatusUpdateCallback];
       break;
     case AVAudioSessionInterruptionTypeEnded:
-      if (_shouldPlay) {
-        [self _playPlayerWithRate];
-      }
+      [self _tryPlayPlayerWithRateAndMuteIfNecessary];
       [self _callStatusUpdateCallback];
       break;
     default:

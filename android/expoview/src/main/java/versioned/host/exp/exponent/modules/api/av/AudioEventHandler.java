@@ -4,7 +4,7 @@ public interface AudioEventHandler {
 
   void pauseImmediately();
 
-  boolean isUsingAudioFocus();
+  boolean requiresAudioFocus();
 
   void updateVolumeMuteAndDuck();
 

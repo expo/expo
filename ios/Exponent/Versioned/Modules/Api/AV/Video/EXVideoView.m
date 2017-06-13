@@ -101,7 +101,7 @@ static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
   if (_data) {
     [_data pauseImmediately];
     _data.statusUpdateCallback = nil;
-    [_exAV deactivateAudioSessionIfUnused];
+    [_exAV demoteAudioSessionIfPossible];
     [self _removePlayerLayer];
     [_playerViewController.view removeFromSuperview];
     _playerViewController = nil;
@@ -474,9 +474,9 @@ static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
   }
 }
 
-- (BOOL)isUsingAudioSession
+- (EXAVAudioSessionMode)getAudioSessionModeRequired
 {
-  return _data == nil ? NO : [_data isUsingAudioSession];
+  return _data == nil ? EXAVAudioSessionModeInactive : [_data getAudioSessionModeRequired];
 }
 
 - (void)bridgeDidForeground:(NSNotification *)notification
@@ -527,7 +527,7 @@ static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
   [_exAV unregisterVideoForAudioLifecycle:self];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [_data pauseImmediately];
-  [_exAV deactivateAudioSessionIfUnused];
+  [_exAV demoteAudioSessionIfPossible];
 }
 
 @end

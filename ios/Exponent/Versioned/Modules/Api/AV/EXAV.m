@@ -14,7 +14,7 @@
 @interface EXAV ()
 
 @property (nonatomic, assign) BOOL audioIsEnabled;
-@property (nonatomic, assign) BOOL audioSessionActive;
+@property (nonatomic, assign) EXAVAudioSessionMode currentAudioSessionMode;
 @property (nonatomic, assign) BOOL isBackgrounded;
 
 @property (nonatomic, assign) EXAudioInterruptionMode audioInterruptionMode;
@@ -39,7 +39,7 @@
 {
   if ((self = [super init])) {
     _audioIsEnabled = YES;
-    _audioSessionActive = NO;
+    _currentAudioSessionMode = EXAVAudioSessionModeInactive;
     _isBackgrounded = NO;
     
     _audioInterruptionMode = EXAudioInterruptionModeMixWithOthers;
@@ -148,44 +148,64 @@
     _audioInterruptionMode = interruptionMode;
     _allowsAudioRecording = allowsRecording;
     
-    NSError *error;
-    if (_audioSessionActive) {
-      [self _setAudioSessionCategoryForAudioMode:&error];
+    if (_currentAudioSessionMode != EXAVAudioSessionModeInactive) {
+      return [self _updateAudioSessionCategory:[AVAudioSession sharedInstance] forAudioSessionMode:[self _getAudioSessionModeRequired]];
     }
-    
-    return error;
+    return nil;
   }
 }
 
-- (void)_setAudioSessionCategoryForAudioMode:(NSError **)error
+- (NSError *)_updateAudioSessionCategory:(AVAudioSession *)audioSession forAudioSessionMode:(EXAVAudioSessionMode)audioSessionMode
 {
-  AVAudioSession *session = [AVAudioSession sharedInstance];
+  NSError *error;
+  EXAudioInterruptionMode activeInterruptionMode = audioSessionMode == EXAVAudioSessionModeActiveMuted
+    ? EXAudioInterruptionModeMixWithOthers : _audioInterruptionMode;
   
   if (!_playsInSilentMode) {
     // _allowsRecording is guaranteed to be false, and _interruptionMode is guaranteed to not be EXAudioInterruptionModeDuckOthers (see above)
     if (_audioInterruptionMode == EXAudioInterruptionModeDoNotMix) {
       [session setCategory:AVAudioSessionCategorySoloAmbient error:error];
     } else {
-      [session setCategory:AVAudioSessionCategoryAmbient error:error];
+      [audioSession setCategory:AVAudioSessionCategoryAmbient error:&error];
     }
   } else {
     NSString *category = _allowsAudioRecording ? AVAudioSessionCategoryPlayAndRecord : AVAudioSessionCategoryPlayback;
-    switch (_audioInterruptionMode) {
+    switch (activeInterruptionMode) {
       case EXAudioInterruptionModeDoNotMix:
-        [session setCategory:category error:error];
+        [audioSession setCategory:category error:&error];
         break;
       case EXAudioInterruptionModeDuckOthers:
-        [session setCategory:category withOptions:AVAudioSessionCategoryOptionDuckOthers error:error];
+        [audioSession setCategory:category withOptions:AVAudioSessionCategoryOptionDuckOthers error:&error];
         break;
       case EXAudioInterruptionModeMixWithOthers:
       default:
-        [session setCategory:category withOptions:AVAudioSessionCategoryOptionMixWithOthers error:error];
+        [audioSession setCategory:category withOptions:AVAudioSessionCategoryOptionMixWithOthers error:&error];
         break;
     }
   }
+  return error;
 }
 
-- (NSError *)activateAudioSessionIfNecessary
+- (EXAVAudioSessionMode)_getAudioSessionModeRequired
+{
+  __block EXAVAudioSessionMode audioSessionModeRequired = EXAVAudioSessionModeInactive;
+  
+  [self _runBlockForAllAVObjects:^(NSObject<EXAVObject> *exAVObject) {
+    EXAVAudioSessionMode audioSessionModeRequiredByThisObject = [exAVObject getAudioSessionModeRequired];
+    if (audioSessionModeRequiredByThisObject > audioSessionModeRequired) {
+      audioSessionModeRequired = audioSessionModeRequiredByThisObject;
+    }
+  }];
+  
+  if (audioSessionModeRequired == EXAVAudioSessionModeInactive
+      &&_audioRecorder && ([_audioRecorder isRecording] || _audioRecorderIsPreparing)) {
+    audioSessionModeRequired = EXAVAudioSessionModeActiveMuted;
+  }
+  
+  return audioSessionModeRequired;
+}
+
+- (NSError *)promoteAudioSessionIfNecessary
 {
   if (!_audioIsEnabled) {
     return RCTErrorWithMessage(@"Expo Audio is disabled, so the audio session could not be activated.");
@@ -194,23 +214,33 @@
     return RCTErrorWithMessage(@"This experience is currently in the background, so the audio session could not be activated.");
   }
   
-  if (_audioSessionActive) {
+  EXAVAudioSessionMode audioSessionModeRequired = [self _getAudioSessionModeRequired];
+  
+  if (_currentAudioSessionMode >= audioSessionModeRequired) {
     return nil;
   }
   
-  NSError *error;
   AVAudioSession *session = [AVAudioSession sharedInstance];
-  [session setActive:YES error:&error];
-  if (!error) {
-    _audioSessionActive = YES;
-    [self _setAudioSessionCategoryForAudioMode:&error];
+  
+  NSError *error = [self _updateAudioSessionCategory:session forAudioSessionMode:audioSessionModeRequired];
+  if (error) {
+    return error;
   }
-  return error;
+  
+  if (_currentAudioSessionMode == EXAVAudioSessionModeInactive) {
+    [session setActive:YES error:&error];
+    if (error) {
+      return error;
+    }
+  }
+  
+  _currentAudioSessionMode = audioSessionModeRequired;
+  return nil;
 }
 
 - (NSError *)_deactivateAudioSession
 {
-  if (!_audioSessionActive) {
+  if (_currentAudioSessionMode == EXAVAudioSessionModeInactive) {
     return nil;
   }
   
@@ -224,37 +254,38 @@
   
   NSError *error;
   AVAudioSession *session = [AVAudioSession sharedInstance];
+  [session setActive:NO error:&error];
   // Restore the AVAudioSession to the system default for proper sandboxing.
   [session setCategory:AVAudioSessionCategorySoloAmbient error:&error];
-  [session setActive:NO error:&error];
   if (!error) {
-    _audioSessionActive = NO;
+    _currentAudioSessionMode = EXAVAudioSessionModeInactive;
   }
   return error;
 }
 
-- (NSError *)deactivateAudioSessionIfUnused
+- (NSError *)demoteAudioSessionIfPossible
 {
-  __block BOOL audioSessionIsInUse = NO;
+  EXAVAudioSessionMode audioSessionModeRequired = [self _getAudioSessionModeRequired];
   
-  [self _runBlockForAllAVObjects:^(NSObject<EXAVObject> *exAVObject) {
-    if ([exAVObject isUsingAudioSession]) {
-      audioSessionIsInUse = YES;
-    }
-  }];
-  
-  if (_audioRecorder && ([_audioRecorder isRecording] || _audioRecorderIsPreparing)) {
-    audioSessionIsInUse = YES;
+  if (_currentAudioSessionMode <= audioSessionModeRequired) {
+    return nil;
   }
   
-  return audioSessionIsInUse ? nil : [self _deactivateAudioSession];
+  if (audioSessionModeRequired == EXAVAudioSessionModeActiveMuted) {
+    NSError *error = [self _updateAudioSessionCategory:[AVAudioSession sharedInstance] forAudioSessionMode:audioSessionModeRequired];
+    if (!error) {
+      _currentAudioSessionMode = EXAVAudioSessionModeActiveMuted;
+    }
+    return error;
+  }
+  return [self _deactivateAudioSession];
 }
 
 - (void)_handleAudioSessionInterruption:(NSNotification*)notification
 {
   NSNumber *interruptionType = [[notification userInfo] objectForKey:AVAudioSessionInterruptionTypeKey];
   if (interruptionType.unsignedIntegerValue == AVAudioSessionInterruptionTypeBegan) {
-    _audioSessionActive = NO;
+    _currentAudioSessionMode = EXAVAudioSessionModeInactive;
   }
   
   [self _runBlockForAllAVObjects:^(NSObject<EXAVObject> *exAVObject) {
@@ -267,7 +298,7 @@
   // See here: https://developer.apple.com/library/content/qa/qa1749/_index.html
   // (this is an unlikely notification to receive, but best practices suggests that we catch it just in case)
   
-  _audioSessionActive = NO;
+  _currentAudioSessionMode = EXAVAudioSessionModeInactive;
   
   [self _runBlockForAllAVObjects:^(NSObject<EXAVObject> *exAVObject) {
     [exAVObject handleMediaServicesReset:nil];
@@ -298,7 +329,7 @@
   EXAVPlayerData *data = _soundDictionary[key];
   if (data) {
     [data pauseImmediately];
-    [self deactivateAudioSessionIfUnused];
+    [self demoteAudioSessionIfPossible];
   }
   _soundDictionary[key] = nil;
 }
@@ -380,7 +411,7 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
 {
   if (_audioRecorder) {
     [_audioRecorder stop];
-    [self deactivateAudioSessionIfUnused];
+    [self demoteAudioSessionIfPossible];
     _audioRecorder = nil;
   }
 }
@@ -562,7 +593,7 @@ RCT_EXPORT_METHOD(prepareAudioRecorder:(RCTPromiseResolveBlock)resolve
   
   if (_audioRecorder) {
     _audioRecorderIsPreparing = true;
-    NSError *error = [self activateAudioSessionIfNecessary];
+    NSError *error = [self promoteAudioSessionIfNecessary];
     if (error) {
       reject(@"E_AUDIO_RECORDERNOTCREATED", @"Prepare encountered an error: audio session not activated!", error);
     } else if ([_audioRecorder prepareToRecord]) {
@@ -572,7 +603,7 @@ RCT_EXPORT_METHOD(prepareAudioRecorder:(RCTPromiseResolveBlock)resolve
       reject(@"E_AUDIO_RECORDERNOTCREATED", nil, RCTErrorWithMessage(@"Prepare encountered an error: recorder not prepared."));
     }
     _audioRecorderIsPreparing = false;
-    [self deactivateAudioSessionIfUnused];
+    [self demoteAudioSessionIfPossible];
   } else {
     reject(@"E_AUDIO_RECORDERNOTCREATED", nil, RCTErrorWithMessage(@"Prepare encountered an error: recorder not created."));
   }
@@ -585,7 +616,7 @@ RCT_EXPORT_METHOD(startAudioRecording:(RCTPromiseResolveBlock)resolve
     if (!_allowsAudioRecording) {
       reject(@"E_AUDIO_AUDIOMODE", nil, RCTErrorWithMessage(@"Recording not allowed on iOS."));
     } else if (!_audioRecorder.recording) {
-      NSError *error = [self activateAudioSessionIfNecessary];
+      NSError *error = [self promoteAudioSessionIfNecessary];
       if (!error) {
         if ([_audioRecorder record]) {
           resolve([self _getAudioRecorderStatus]);
@@ -605,7 +636,7 @@ RCT_EXPORT_METHOD(pauseAudioRecording:(RCTPromiseResolveBlock)resolve
   if ([self _checkAudioRecorderExistsOrReject:reject]) {
     if (_audioRecorder.recording) {
       [_audioRecorder pause];
-      [self deactivateAudioSessionIfUnused];
+      [self demoteAudioSessionIfPossible];
     }
     resolve([self _getAudioRecorderStatus]);
   }
@@ -618,7 +649,7 @@ RCT_EXPORT_METHOD(stopAudioRecording:(RCTPromiseResolveBlock)resolve
     if (_audioRecorder.recording) {
       _audioRecorderDurationMillis = [self _getDurationMillisOfRecordingAudioRecorder];
       [_audioRecorder stop];
-      [self deactivateAudioSessionIfUnused];
+      [self demoteAudioSessionIfPossible];
     }
     resolve([self _getAudioRecorderStatus]);
   }

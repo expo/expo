@@ -13,9 +13,9 @@ typedef NS_OPTIONS(NSUInteger, EXAudioInterruptionMode)
 
 @interface EXAV : NSObject <RCTBridgeModule>
 
-- (NSError *)activateAudioSessionIfNecessary;
+- (NSError *)promoteAudioSessionIfNecessary;
 
-- (NSError *)deactivateAudioSessionIfUnused;
+- (NSError *)demoteAudioSessionIfPossible;
 
 - (void)registerVideoForAudioLifecycle:(NSObject<EXAVObject> *)video;
 

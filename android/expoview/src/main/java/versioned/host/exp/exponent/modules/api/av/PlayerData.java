@@ -6,6 +6,7 @@ import android.media.PlaybackParams;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.util.Pair;
 import android.view.Surface;
@@ -72,6 +73,7 @@ public class PlayerData implements AudioEventHandler,
 
   private interface PlayerDataSetStatusCompletionListener {
     void onSetStatusComplete();
+    void onSetStatusError(final String error);
   }
 
   private MediaPlayer mMediaPlayer = null;
@@ -95,25 +97,23 @@ public class PlayerData implements AudioEventHandler,
   private PlayerDataVideoSizeUpdateListener mVideoSizeUpdateListener = null;
   private Timer mTimer = null;
 
-  public PlayerData(final AVModule AVModule,
-                    final Uri uri,
-                    final ReadableMap status,
-                    final PlayerDataLoadCompletionListener loadCompletionListener) {
+  public PlayerData(final AVModule AVModule, final Uri uri) {
     mAVModule = AVModule;
     mUri = uri;
-    try {
-      mMediaPlayer = MediaPlayer.create(AVModule.mScopedContext, uri);
+  }
 
-      if (mMediaPlayer == null) {
-        new Handler().post(new Runnable() {
-          @Override
-          public void run() {
-            loadCompletionListener.onLoadError("Load encountered an error: MediaPlayer.create() returned null.");
-          }
-        });
-        return;
-      }
+  public void load(final ReadableMap status,
+                   final PlayerDataLoadCompletionListener loadCompletionListener) {
+    if (mMediaPlayer != null) {
+      loadCompletionListener.onLoadError("Load encountered an error: PlayerData cannot be loaded twice.");
+      return;
+    }
 
+    mMediaPlayer = MediaPlayer.create(mAVModule.mScopedContext, mUri);
+
+    if (mMediaPlayer == null) {
+      loadCompletionListener.onLoadError("Load encountered an error: MediaPlayer.create() returned null.");
+    } else try {
       mMediaPlayer.setOnBufferingUpdateListener(this);
       mMediaPlayer.setOnCompletionListener(this);
       mMediaPlayer.setOnErrorListener(this);
@@ -122,12 +122,12 @@ public class PlayerData implements AudioEventHandler,
       setStatus(status, new PlayerDataSetStatusCompletionListener() {
         @Override
         public void onSetStatusComplete() {
-          new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-              loadCompletionListener.onLoadSuccess(getStatus());
-            }
-          });
+          loadCompletionListener.onLoadSuccess(getStatus());
+        }
+
+        @Override
+        public void onSetStatusError(final String error) {
+          loadCompletionListener.onLoadSuccess(getStatus());
         }
       });
     } catch (final Throwable throwable) {
@@ -201,14 +201,14 @@ public class PlayerData implements AudioEventHandler,
   }
 
   @Override
-  public boolean isUsingAudioFocus() {
-    return mShouldPlay || (mMediaPlayer != null && mMediaPlayer.isPlaying());
+  public boolean requiresAudioFocus() {
+    return mMediaPlayer != null && (mMediaPlayer.isPlaying() || shouldPlayerPlay()) && !mIsMuted;
   }
 
   @Override
   public void updateVolumeMuteAndDuck() {
     if (mMediaPlayer != null) {
-      final float value = mIsMuted ? 0f : mAVModule.mIsDuckingAudio ? mVolume / 2f : mVolume;
+      final float value = (!mAVModule.hasAudioFocus() || mIsMuted) ? 0f : mAVModule.mIsDuckingAudio ? mVolume / 2f : mVolume;
       mMediaPlayer.setVolume(value, value);
     }
   }
@@ -217,12 +217,18 @@ public class PlayerData implements AudioEventHandler,
   // TODO ([onPause / handleAudioFocusInterruptionBegan => pauseImmediately] and [handleAudioFocusGained + onResume])
   @Override
   public void handleAudioFocusInterruptionBegan() {
-    pauseImmediately();
+    if (!mIsMuted) {
+      pauseImmediately();
+    }
   }
 
   @Override
   public void handleAudioFocusGained() {
-    playPlayerIfNecessaryAndPossible();
+    try {
+      playPlayerWithRateAndMuteIfNecessary();
+    } catch (final AVModule.AudioFocusNotAcquiredException e) {
+      // This is ok -- we might be paused or audio might have been disabled.
+    }
   }
 
   @Override
@@ -232,7 +238,12 @@ public class PlayerData implements AudioEventHandler,
 
   @Override
   public void onResume() {
-    playPlayerIfNecessaryAndPossible();
+    try {
+      playPlayerWithRateAndMuteIfNecessary();
+    } catch (final AVModule.AudioFocusNotAcquiredException e) {
+      // Do nothing -- another app has audio focus for now, and handleAudioFocusGained() will be
+      // called when it abandons it.
+    }
   }
 
   // Lifecycle
@@ -329,6 +340,10 @@ public class PlayerData implements AudioEventHandler,
 
   // Set status
 
+  private boolean shouldPlayerPlay() {
+    return mShouldPlay && mRate > 0.0;
+  }
+
   @RequiresApi(api = Build.VERSION_CODES.M)
   private void playMediaPlayerWithRateMAndHigher(final float rate) {
     final PlaybackParams params = mMediaPlayer.getPlaybackParams();
@@ -339,14 +354,22 @@ public class PlayerData implements AudioEventHandler,
     mMediaPlayer.start();
   }
 
-  private void playPlayerIfNecessaryAndPossible() {
-    if (mMediaPlayer == null || !mShouldPlay || !mAVModule.tryAcquireAudioFocus()) {
+  private void playPlayerWithRateAndMuteIfNecessary() throws AVModule.AudioFocusNotAcquiredException {
+    if (mMediaPlayer == null || !shouldPlayerPlay()) {
       return;
     }
 
+    if (!mIsMuted) {
+      mAVModule.acquireAudioFocus();
+    }
+
+    updateVolumeMuteAndDuck();
+
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      mMediaPlayer.start();
-      mMediaPlayerHasStartedEver = true;
+      if (!mMediaPlayer.isPlaying()) {
+        mMediaPlayer.start();
+        mMediaPlayerHasStartedEver = true;
+      }
     } else {
       boolean rateAndPitchAreSetCorrectly;
       try {
@@ -373,26 +396,6 @@ public class PlayerData implements AudioEventHandler,
       }
     }
     beginUpdatingProgressIfNecessary();
-  }
-
-  private void applyNewStatus(final Double newPosition, final PlayerDataSetStatusCompletionListener listener) {
-    // Pause first if necessary.
-    if (!mShouldPlay || mRate == 0) {
-      if (mMediaPlayerHasStartedEver) {
-        mMediaPlayer.pause();
-      }
-      mAVModule.abandonAudioFocusIfUnused();
-      stopUpdatingProgressIfNecessary();
-    }
-
-    updateVolumeMuteAndDuck(); // Idempotent
-
-    // Seek
-    if (newPosition != null) {
-      mMediaPlayer.seekTo(newPosition.intValue());
-    }
-    playPlayerIfNecessaryAndPossible();
-    listener.onSetStatusComplete();
   }
 
   private void setStatus(final ReadableMap status, final PlayerDataSetStatusCompletionListener setStatusCompletionListener) {
@@ -444,7 +447,33 @@ public class PlayerData implements AudioEventHandler,
       mMediaPlayer.setLooping(status.getBoolean(PLAYER_DATA_STATUS_IS_LOOPING_KEY_PATH)); // Idempotent
     }
 
-    applyNewStatus(newPosition, setStatusCompletionListener);
+    // Pause first if necessary.
+    if (!shouldPlayerPlay()) {
+      if (mMediaPlayerHasStartedEver) {
+        mMediaPlayer.pause();
+      }
+      stopUpdatingProgressIfNecessary();
+    }
+
+    // Mute / update volume if it doesn't require a request of the audio focus.
+    updateVolumeMuteAndDuck();
+
+    // Seek
+    if (newPosition != null) {
+      mMediaPlayer.seekTo(newPosition.intValue());
+    }
+
+    // Play / unmute
+    try {
+      playPlayerWithRateAndMuteIfNecessary();
+    } catch (final AVModule.AudioFocusNotAcquiredException e) {
+      mAVModule.abandonAudioFocusIfUnused();
+      setStatusCompletionListener.onSetStatusError(e.getMessage());
+      return;
+    }
+
+    mAVModule.abandonAudioFocusIfUnused();
+    setStatusCompletionListener.onSetStatusComplete();
   }
 
   public void setStatus(final ReadableMap status, final Promise promise) {
@@ -463,6 +492,15 @@ public class PlayerData implements AudioEventHandler,
             callStatusUpdateListener();
           } else {
             promise.resolve(getStatus());
+          }
+        }
+
+        @Override
+        public void onSetStatusError(final String error) {
+          if (promise == null) {
+            callStatusUpdateListener();
+          } else {
+            promise.reject("E_AV_SETSTATUS", error);
           }
         }
       });
