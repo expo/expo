@@ -4,6 +4,7 @@
 
 #import <CoreLocation/CLLocationManager.h>
 #import <CoreLocation/CLLocationManagerDelegate.h>
+#import <CoreLocation/CLHeading.h>
 
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcher.h>
@@ -12,12 +13,14 @@
 NS_ASSUME_NONNULL_BEGIN
 
 NSString * const EXLocationChangedEventName = @"Exponent.locationChanged";
+NSString * const EXHeadingChangedEventName = @"Exponent.headingChanged";
 
 @interface EXLocationDelegate : NSObject <CLLocationManagerDelegate>
 
 @property (nonatomic, strong) NSNumber *watchId;
 @property (nonatomic, strong) CLLocationManager *locMgr;
 @property (nonatomic, strong) void (^onUpdateLocations)(NSArray<CLLocation *> *locations);
+@property (nonatomic, strong) void (^onUpdateHeadings)(CLHeading *newHeading);
 @property (nonatomic, strong) void (^onError)(NSError *error);
 
 @end
@@ -26,13 +29,15 @@ NSString * const EXLocationChangedEventName = @"Exponent.locationChanged";
 
 - (instancetype)initWithId:(NSNumber *)watchId
                 withLocMgr:(CLLocationManager *)locMgr
-         onUpdateLocations:(nonnull void (^)(NSArray<CLLocation *> *locations))onUpdateLocations
+         onUpdateLocations:(void (^)(NSArray<CLLocation *> *locations))onUpdateLocations
+          onUpdateHeadings:(void (^)(CLHeading *newHeading))onUpdateHeadings
                    onError:(nonnull void (^)(NSError *error))onError;
 {
   if ((self = [super init])) {
     _watchId = watchId;
     _locMgr = locMgr;
     _onUpdateLocations = onUpdateLocations;
+    _onUpdateHeadings = onUpdateHeadings;
     _onError = onError;
   }
   return self;
@@ -43,6 +48,13 @@ NSString * const EXLocationChangedEventName = @"Exponent.locationChanged";
 {
   if (_onUpdateLocations) {
     _onUpdateLocations(locations);
+  }
+}
+
+- (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading
+{
+  if (_onUpdateHeadings) {
+    _onUpdateHeadings(newHeading);
   }
 }
 
@@ -81,18 +93,16 @@ RCT_EXPORT_MODULE(ExponentLocation)
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[EXLocationChangedEventName];
+  return @[EXLocationChangedEventName, EXHeadingChangedEventName];
 }
 
-
-RCT_REMAP_METHOD(getProviderStatusAsync,
+  RCT_REMAP_METHOD(getProviderStatusAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
   resolve(@{
     @"locationServicesEnabled": @([CLLocationManager locationServicesEnabled]),
   });
-}
 
 
 RCT_REMAP_METHOD(getCurrentPositionAsync,
@@ -117,14 +127,14 @@ RCT_REMAP_METHOD(watchPositionImplAsync,
     reject(@"E_LOCATION_UNAUTHORIZED", @"Not authorized to use location services", nil);
     return;
   }
-
+  
   __weak typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
     CLLocationManager *locMgr = [[CLLocationManager alloc] init];
-
+    
     locMgr.distanceFilter = options[@"distanceInterval"] ? [RCTConvert double:options[@"distanceInterval"]] ?: kCLDistanceFilterNone : kCLLocationAccuracyHundredMeters;
     locMgr.desiredAccuracy = [RCTConvert BOOL:options[@"enableHighAccuracy"]] ? kCLLocationAccuracyBest : kCLLocationAccuracyHundredMeters;
-
+    
     EXLocationDelegate *delegate = [[EXLocationDelegate alloc] initWithId:watchId withLocMgr:locMgr onUpdateLocations:^(NSArray<CLLocation *> *locations) {
       if (locations.lastObject) {
         CLLocation *loc = locations.lastObject;
@@ -145,7 +155,7 @@ RCT_REMAP_METHOD(watchPositionImplAsync,
                                };
         [weakSelf sendEventWithName:EXLocationChangedEventName body:body];
       }
-    } onError:^(NSError *error) {
+    } onUpdateHeadings: nil onError:^(NSError *error) {
       // TODO: report errors
       // (ben) error could be (among other things):
       //   - kCLErrorDenied - we should use the same UNAUTHORIZED behavior as elsewhere
@@ -159,6 +169,50 @@ RCT_REMAP_METHOD(watchPositionImplAsync,
   });
 }
 
+// Watch method for getting compass updates
+RCT_REMAP_METHOD(watchDeviceHeading,
+                 watchId:(nonnull NSNumber *)watchId
+                 watchDeviceHeading_resolver:(RCTPromiseResolveBlock)resolve
+                 watchDeviceHeading_rejecter:(RCTPromiseRejectBlock)reject) {
+  __weak typeof(self) weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    CLLocationManager *locMgr = [[CLLocationManager alloc] init];
+    locMgr.distanceFilter = kCLDistanceFilterNone;
+    locMgr.desiredAccuracy = kCLLocationAccuracyBest;
+    EXLocationDelegate *delegate = [[EXLocationDelegate alloc] initWithId:watchId withLocMgr:locMgr onUpdateLocations: nil onUpdateHeadings:^(CLHeading *newHeading) {
+      if (newHeading) {
+        NSNumber *accuracy;
+        
+        // Convert iOS heading accuracy to Android system
+        // 3: high accuracy, 2: medium, 1: low, 0: none
+        if (newHeading.headingAccuracy > 50 || newHeading.headingAccuracy < 0) {
+          accuracy = @(0);
+        } else if (newHeading.headingAccuracy > 35) {
+          accuracy = @(1);
+        } else if (newHeading.headingAccuracy > 20) {
+          accuracy = @(2);
+        } else {
+          accuracy = @(3);
+        }
+        NSDictionary *body = @{@"watchId": watchId,
+                               @"heading": @{
+                                   @"trueHeading": @(newHeading.trueHeading),
+                                   @"magHeading": @(newHeading.magneticHeading),
+                                   @"accuracy": accuracy,
+                                   },
+                               };
+        [weakSelf sendEventWithName:EXHeadingChangedEventName body:body];
+      }
+    } onError:^(NSError *error) {
+      // Error getting updates
+    }];
+    weakSelf.delegates[delegate.watchId] = delegate;
+    locMgr.delegate = delegate;
+    [locMgr startUpdatingHeading];
+    resolve(nil);
+  });
+}
+
 RCT_REMAP_METHOD(removeWatchAsync,
                  watchId:(nonnull NSNumber *)watchId
                  resolver:(RCTPromiseResolveBlock)resolve
@@ -168,7 +222,10 @@ RCT_REMAP_METHOD(removeWatchAsync,
   if (delegate) {
     __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
+      
+      // Unsuscribe from both location and heading updates
       [delegate.locMgr stopUpdatingLocation];
+      [delegate.locMgr stopUpdatingHeading];
       delegate.locMgr.delegate = nil;
       __strong typeof(self) strongSelf = weakSelf;
       if (strongSelf) {
