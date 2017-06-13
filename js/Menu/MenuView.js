@@ -32,7 +32,6 @@ import ResponsiveImage from '@expo/react-native-responsive-image';
 
 import Browser from 'Browser';
 import BrowserActions from 'BrowserActions';
-import Colors from '../Home/constants/Colors';
 import DevIndicator from '../Home/components/DevIndicator';
 import ExStore from 'ExStore';
 import FriendlyUrls from 'FriendlyUrls';
@@ -188,10 +187,12 @@ export default class MenuView extends React.Component {
           <ResponsiveImage
             sources={{
               2: {
-                uri: 'https://s3.amazonaws.com/exp-us-standard/exponent-icon@2x.png',
+                uri:
+                  'https://s3.amazonaws.com/exp-us-standard/exponent-icon@2x.png',
               },
               3: {
-                uri: 'https://s3.amazonaws.com/exp-us-standard/exponent-icon@3x.png',
+                uri:
+                  'https://s3.amazonaws.com/exp-us-standard/exponent-icon@3x.png',
               },
             }}
             style={styles.nuxLogo}
@@ -234,10 +235,12 @@ export default class MenuView extends React.Component {
           resizeMode="contain"
           sources={{
             2: {
-              uri: 'https://s3.amazonaws.com/exp-us-standard/exponent-icon@2x.png',
+              uri:
+                'https://s3.amazonaws.com/exp-us-standard/exponent-icon@2x.png',
             },
             3: {
-              uri: 'https://s3.amazonaws.com/exp-us-standard/exponent-icon@3x.png',
+              uri:
+                'https://s3.amazonaws.com/exp-us-standard/exponent-icon@3x.png',
             },
           }}
           style={styles.taskIcon}
@@ -288,7 +291,7 @@ export default class MenuView extends React.Component {
         <View>
           <View style={styles.separator} />
           <View style={styles.buttonContainer}>
-            {Object.keys(this.state.devMenuItems).map((key, idx) => {
+            {Object.keys(this.state.devMenuItems).map(key => {
               return this._renderDevMenuItem(key, this.state.devMenuItems[key]);
             })}
           </View>
@@ -311,7 +314,9 @@ export default class MenuView extends React.Component {
         true
       );
     } else {
-      const detailButton = (detail) ? this._renderDevMenuDetailButton(label, detail) : nil;
+      const detailButton = detail
+        ? this._renderDevMenuDetailButton(label, detail)
+        : nil;
       return (
         <View style={[styles.button, styles.buttonWithSeparator]} key={key}>
           <View style={styles.buttonIcon} />
@@ -326,12 +331,15 @@ export default class MenuView extends React.Component {
 
   _renderDevMenuDetailButton(title, detail) {
     return (
-      <TouchableOpacity onPress={() => { Alert.alert(title, detail); }}>
+      <TouchableOpacity
+        onPress={() => {
+          Alert.alert(title, detail);
+        }}>
         <Ionicons
           name="ios-information-circle"
           size={20}
-          style={{color:'#9ca0a6', marginVertical: 10}}
-          />
+          style={{ color: '#9ca0a6', marginVertical: 10 }}
+        />
       </TouchableOpacity>
     );
   }
