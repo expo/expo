@@ -79,7 +79,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
         CommonDataKinds.Phone.CONTENT_URI,
         PROJECTION,
         fetchSingleContact ? Data.CONTACT_ID + " = ?" : null,
-        fetchSingleContact ? new String[] { options.getDynamic("id").asString() } : null,
+        fetchSingleContact ? new String[] { Integer.toString(options.getInt("id")) } : null,
         null
     );
     if (cursor != null) {
