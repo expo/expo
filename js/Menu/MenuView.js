@@ -311,7 +311,7 @@ export default class MenuView extends React.Component {
         true
       );
     } else {
-      const detailButton = (detail) ? this._renderDevMenuDetailButton(detail) : nil;
+      const detailButton = (detail) ? this._renderDevMenuDetailButton(label, detail) : nil;
       return (
         <View style={[styles.button, styles.buttonWithSeparator]} key={key}>
           <View style={styles.buttonIcon} />
@@ -324,13 +324,13 @@ export default class MenuView extends React.Component {
     }
   }
 
-  _renderDevMenuDetailButton(detail) {
+  _renderDevMenuDetailButton(title, detail) {
     return (
-      <TouchableOpacity onPress={() => { Alert.alert(detail); }}>
+      <TouchableOpacity onPress={() => { Alert.alert(title, detail); }}>
         <Ionicons
           name="ios-information-circle"
           size={20}
-          style={{color:'#595c68', marginVertical: 11}}
+          style={{color:'#9ca0a6', marginVertical: 10}}
           />
       </TouchableOpacity>
     );
