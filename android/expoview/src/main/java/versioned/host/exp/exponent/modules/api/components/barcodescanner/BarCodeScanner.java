@@ -4,8 +4,9 @@ import android.hardware.Camera;
 import android.util.Log;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 public class BarCodeScanner {
   private static BarCodeScanner ourInstance;
@@ -13,7 +14,9 @@ public class BarCodeScanner {
   private final HashMap<Integer, CameraInfoWrapper> mCameraInfos;
   private final HashMap<Integer, Integer> mCameraTypeToIndex;
   private List<String> mBarCodeTypes = null;
-  private final Map<Number, Camera> mCameras;
+  private int torchMode;
+  private final Set<Number> mCameras;
+  private Camera mCamera = null;
   private int mActualDeviceOrientation = 0;
   private int mAdjustedDeviceOrientation = 0;
 
@@ -27,22 +30,22 @@ public class BarCodeScanner {
 
 
   public Camera acquireCameraInstance(int type) {
-    if (null == mCameras.get(type) && null != mCameraTypeToIndex.get(type)) {
+    if (mCamera == null && mCameras.contains(type) && null != mCameraTypeToIndex.get(type)) {
       try {
-        Camera camera = Camera.open(mCameraTypeToIndex.get(type));
-        mCameras.put(type, camera);
+        mCamera = Camera.open(mCameraTypeToIndex.get(type));
+        setCameraTorchMode();
         adjustPreviewLayout(type);
       } catch (Exception e) {
         Log.e("BarCodeScanner", "acquireCameraInstance failed", e);
       }
     }
-    return mCameras.get(type);
+    return mCamera;
   }
 
-  public void releaseCameraInstance(int type) {
-    if (null != mCameras.get(type)) {
-      mCameras.get(type).release();
-      mCameras.remove(type);
+  public void releaseCameraInstance() {
+    if (null != mCamera) {
+      mCamera.release();
+      mCamera = null;
     }
   }
 
@@ -130,13 +133,15 @@ public class BarCodeScanner {
     adjustPreviewLayout(BarCodeScannerModule.RCT_CAMERA_TYPE_BACK);
   }
 
-  public void setTorchMode(int cameraType, int torchMode) {
-    Camera camera = mCameras.get(cameraType);
-    if (null == camera) {
-      return;
+  public void setTorchMode(int torchMode) {
+    this.torchMode = torchMode;
+    if (null != mCamera) {
+      setCameraTorchMode();
     }
+  }
 
-    Camera.Parameters parameters = camera.getParameters();
+  private void setCameraTorchMode() {
+    Camera.Parameters parameters = mCamera.getParameters();
     String value = parameters.getFlashMode();
     switch (torchMode) {
       case BarCodeScannerModule.RCT_CAMERA_TORCH_MODE_ON:
@@ -150,17 +155,16 @@ public class BarCodeScanner {
     List<String> flashModes = parameters.getSupportedFlashModes();
     if (flashModes != null && flashModes.contains(value)) {
       parameters.setFlashMode(value);
-      camera.setParameters(parameters);
+      mCamera.setParameters(parameters);
     }
   }
 
-  public void setFlashMode(int cameraType, int flashMode) {
-    Camera camera = mCameras.get(cameraType);
-    if (null == camera) {
+  public void setFlashMode(int flashMode) {
+    if (null == mCamera) {
       return;
     }
 
-    Camera.Parameters parameters = camera.getParameters();
+    Camera.Parameters parameters = mCamera.getParameters();
     String value = parameters.getFlashMode();
     switch (flashMode) {
       case BarCodeScannerModule.RCT_CAMERA_FLASH_MODE_AUTO:
@@ -176,13 +180,12 @@ public class BarCodeScanner {
     List<String> flashModes = parameters.getSupportedFlashModes();
     if (flashModes != null && flashModes.contains(value)) {
       parameters.setFlashMode(value);
-      camera.setParameters(parameters);
+      mCamera.setParameters(parameters);
     }
   }
 
   public void adjustCameraRotationToDeviceOrientation(int type, int deviceOrientation) {
-    Camera camera = mCameras.get(type);
-    if (null == camera) {
+    if (null == mCamera) {
       return;
     }
 
@@ -195,19 +198,18 @@ public class BarCodeScanner {
       rotation = (orientation - deviceOrientation * 90 + 360) % 360;
     }
     cameraInfo.rotation = rotation;
-    Camera.Parameters parameters = camera.getParameters();
+    Camera.Parameters parameters = mCamera.getParameters();
     parameters.setRotation(cameraInfo.rotation);
 
     try {
-      camera.setParameters(parameters);
+      mCamera.setParameters(parameters);
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
 
   public void adjustPreviewLayout(int type) {
-    Camera camera = mCameras.get(type);
-    if (null == camera) {
+    if (null == mCamera) {
       return;
     }
 
@@ -225,9 +227,9 @@ public class BarCodeScanner {
     cameraInfo.rotation = rotation;
 
     setAdjustedDeviceOrientation(rotation);
-    camera.setDisplayOrientation(displayRotation);
+    mCamera.setDisplayOrientation(displayRotation);
 
-    Camera.Parameters parameters = camera.getParameters();
+    Camera.Parameters parameters = mCamera.getParameters();
     parameters.setRotation(cameraInfo.rotation);
 
     // set preview size
@@ -238,7 +240,7 @@ public class BarCodeScanner {
 
     parameters.setPreviewSize(width, height);
     try {
-      camera.setParameters(parameters);
+      mCamera.setParameters(parameters);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -253,7 +255,7 @@ public class BarCodeScanner {
   }
 
   private BarCodeScanner(int deviceOrientation) {
-    mCameras = new HashMap<>();
+    mCameras = new HashSet<>();
     mCameraInfos = new HashMap<>();
     mCameraTypeToIndex = new HashMap<>();
 
@@ -266,13 +268,11 @@ public class BarCodeScanner {
       if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT && mCameraInfos.get(BarCodeScannerModule.RCT_CAMERA_TYPE_FRONT) == null) {
         mCameraInfos.put(BarCodeScannerModule.RCT_CAMERA_TYPE_FRONT, new CameraInfoWrapper(info));
         mCameraTypeToIndex.put(BarCodeScannerModule.RCT_CAMERA_TYPE_FRONT, i);
-        acquireCameraInstance(BarCodeScannerModule.RCT_CAMERA_TYPE_FRONT);
-        releaseCameraInstance(BarCodeScannerModule.RCT_CAMERA_TYPE_FRONT);
+        mCameras.add(BarCodeScannerModule.RCT_CAMERA_TYPE_FRONT);
       } else if (info.facing == Camera.CameraInfo.CAMERA_FACING_BACK && mCameraInfos.get(BarCodeScannerModule.RCT_CAMERA_TYPE_BACK) == null) {
         mCameraInfos.put(BarCodeScannerModule.RCT_CAMERA_TYPE_BACK, new CameraInfoWrapper(info));
         mCameraTypeToIndex.put(BarCodeScannerModule.RCT_CAMERA_TYPE_BACK, i);
-        acquireCameraInstance(BarCodeScannerModule.RCT_CAMERA_TYPE_BACK);
-        releaseCameraInstance(BarCodeScannerModule.RCT_CAMERA_TYPE_BACK);
+        mCameras.add(BarCodeScannerModule.RCT_CAMERA_TYPE_BACK);
       }
     }
   }

@@ -28,6 +28,7 @@ class BarCodeScannerViewFinder extends TextureView implements TextureView.Surfac
   private SurfaceTexture mSurfaceTexture;
   private boolean mIsStarting;
   private boolean mIsStopping;
+  private boolean mIsChanging;
   private BarCodeScannerView mBarCodeScannerView;
   private Camera mCamera;
 
@@ -80,15 +81,17 @@ class BarCodeScannerViewFinder extends TextureView implements TextureView.Surfac
     new Thread(new Runnable() {
       @Override
       public void run() {
+        mIsChanging = true;
         stopPreview();
         mCameraType = type;
         startPreview();
+        mIsChanging = false;
       }
     }).start();
   }
 
   public void setTorchMode(int torchMode) {
-    BarCodeScanner.getInstance().setTorchMode(mCameraType, torchMode);
+    BarCodeScanner.getInstance().setTorchMode(torchMode);
   }
 
   private void startPreview() {
@@ -147,10 +150,9 @@ class BarCodeScannerViewFinder extends TextureView implements TextureView.Surfac
           mCamera.stopPreview();
           // stop sending previews to `onPreviewFrame`
           mCamera.setPreviewCallback(null);
-          BarCodeScanner.getInstance().releaseCameraInstance(mCameraType);
+          BarCodeScanner.getInstance().releaseCameraInstance();
           mCamera = null;
         }
-
       } catch (Exception e) {
         e.printStackTrace();
       } finally {
@@ -160,53 +162,9 @@ class BarCodeScannerViewFinder extends TextureView implements TextureView.Surfac
   }
 
   /**
-   * Parse barcodes as BarcodeFormat constants.
-   * Supports all iOS codes except [code138, code39mod43, itf14]
-   * Additionally supports [codabar, code128, maxicode, rss14, rssexpanded, upca, upceanextension]
-   */
-  private BarcodeFormat parseBarCodeString(String c) {
-    if ("aztec".equals(c)) {
-      return BarcodeFormat.AZTEC;
-    } else if ("ean13".equals(c)) {
-      return BarcodeFormat.EAN_13;
-    } else if ("ean8".equals(c)) {
-      return BarcodeFormat.EAN_8;
-    } else if ("qr".equals(c)) {
-      return BarcodeFormat.QR_CODE;
-    } else if ("pdf417".equals(c)) {
-      return BarcodeFormat.PDF_417;
-    } else if ("upce".equals(c)) {
-      return BarcodeFormat.UPC_E;
-    } else if ("datamatrix".equals(c)) {
-      return BarcodeFormat.DATA_MATRIX;
-    } else if ("code39".equals(c)) {
-      return BarcodeFormat.CODE_39;
-    } else if ("code93".equals(c)) {
-      return BarcodeFormat.CODE_93;
-    } else if ("interleaved2of5".equals(c)) {
-      return BarcodeFormat.ITF;
-    } else if ("codabar".equals(c)) {
-      return BarcodeFormat.CODABAR;
-    } else if ("code128".equals(c)) {
-      return BarcodeFormat.CODE_128;
-    } else if ("maxicode".equals(c)) {
-      return BarcodeFormat.MAXICODE;
-    } else if ("rss14".equals(c)) {
-      return BarcodeFormat.RSS_14;
-    } else if ("rssexpanded".equals(c)) {
-      return BarcodeFormat.RSS_EXPANDED;
-    } else if ("upca".equals(c)) {
-      return BarcodeFormat.UPC_A;
-    } else if ("upceanextension".equals(c)) {
-      return BarcodeFormat.UPC_EAN_EXTENSION;
-    } else {
-      android.util.Log.v("BarCodeScanner", "Unsupported code.. [" + c + "]");
-      return null;
-    }
-  }
-
-  /**
    * Initialize the barcode decoder.
+   * Supports all iOS codes except [code138, code39mod43, itf14]
+   * Additionally supports [codabar, code128, maxicode, rss14, rssexpanded, upc_a, upc_ean]
    */
   private void initBarcodeReader(List<String> barCodeTypes) {
     EnumMap<DecodeHintType, Object> hints = new EnumMap<>(DecodeHintType.class);
@@ -214,9 +172,9 @@ class BarCodeScannerViewFinder extends TextureView implements TextureView.Surfac
 
     if (barCodeTypes != null) {
       for (String code : barCodeTypes) {
-        BarcodeFormat format = parseBarCodeString(code);
-        if (format != null) {
-          decodeFormats.add(format);
+        String formatString = (String) BarCodeScannerModule.VALID_BARCODE_TYPES.get(code);
+        if (formatString != null) {
+          decodeFormats.add(BarcodeFormat.valueOf(code));
         }
       }
     }
@@ -248,43 +206,53 @@ class BarCodeScannerViewFinder extends TextureView implements TextureView.Surfac
         return null;
       }
 
-      Camera.Size size = mCamera.getParameters().getPreviewSize();
+      // setting PreviewCallback does not really have an effect - this method is called anyway so we
+      // need to check if camera changing is in progress or not
+      if (!mIsChanging) {
+        Camera.Size size = mCamera.getParameters().getPreviewSize();
 
-      int width = size.width;
-      int height = size.height;
+        int width = size.width;
+        int height = size.height;
 
-      // rotate for zxing if orientation is portrait
-      if (BarCodeScanner.getInstance().getActualDeviceOrientation() == 0) {
-        byte[] rotated = new byte[mImageData.length];
-        for (int y = 0; y < height; y++) {
-          for (int x = 0; x < width; x++) {
-            rotated[x * height + height - y - 1] = mImageData[x + y * width];
+        // rotate for zxing if orientation is portrait
+        if (BarCodeScanner.getInstance().getActualDeviceOrientation() == 0) {
+          byte[] rotated = new byte[mImageData.length];
+          for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+              rotated[x * height + height - y - 1] = mImageData[x + y * width];
+            }
           }
+          width = size.height;
+          height = size.width;
+          mImageData = rotated;
         }
-        width = size.height;
-        height = size.width;
-        mImageData = rotated;
-      }
 
-      try {
-        PlanarYUVLuminanceSource source = new PlanarYUVLuminanceSource(mImageData, width, height, 0, 0, width, height, false);
-        BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
-        final Result result = mMultiFormatReader.decodeWithState(bitmap);
+        try {
+          PlanarYUVLuminanceSource source = new PlanarYUVLuminanceSource(mImageData, width, height, 0, 0, width, height, false);
+          BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
+          final Result result = mMultiFormatReader.decodeWithState(bitmap);
 
+          new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+              String type = result.getBarcodeFormat().toString();
+              if (BarCodeScanner.getInstance().getBarCodeTypes().contains(type)) {
+                WritableMap event = Arguments.createMap();
+                event.putString("data", result.getText());
+                event.putString("type", type);
+                mBarCodeScannerView.onBarCodeRead(event);
+              }
+            }
+          });
 
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-          @Override
-          public void run() {
-            WritableMap event = Arguments.createMap();
-            event.putString("data", result.getText());
-            event.putString("type", result.getBarcodeFormat().toString());
-            mBarCodeScannerView.onBarCodeRead(event);
-          }
-        });
-
-      } catch (Throwable t) {
-        // Unhandled error, unsure what would cause this
-      } finally {
+        } catch (Throwable t) {
+          // Unhandled error, unsure what would cause this
+        } finally {
+          mMultiFormatReader.reset();
+          BarCodeScannerViewFinder.barCodeScannerTaskLock = false;
+          return null;
+        }
+      } else {
         mMultiFormatReader.reset();
         BarCodeScannerViewFinder.barCodeScannerTaskLock = false;
         return null;

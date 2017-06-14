@@ -11,6 +11,8 @@
 
 @interface EXBarCodeScannerManager ()
 
+@property (assign, nonatomic) NSInteger torchMode;
+
 @end
 
 @implementation EXBarCodeScannerManager
@@ -66,7 +68,7 @@ RCT_EXPORT_VIEW_PROPERTY(onBarCodeRead, RCTDirectEventBlock);
 + (NSDictionary *)validBarCodeTypes
 {
   return @{
-     @"upce" : AVMetadataObjectTypeUPCECode,
+     @"upc_e" : AVMetadataObjectTypeUPCECode,
      @"code39" : AVMetadataObjectTypeCode39Code,
      @"code39mod43" : AVMetadataObjectTypeCode39Mod43Code,
      @"ean13" : AVMetadataObjectTypeEAN13Code,
@@ -126,6 +128,7 @@ RCT_CUSTOM_VIEW_PROPERTY(type, NSInteger, EXBarCodeScanner)
       if ([self.session canAddInput:captureDeviceInput]) {
         [self.session addInput:captureDeviceInput];
         self.videoCaptureDeviceInput = captureDeviceInput;
+        [self setTorchMode];
       } else {
         if (self.videoCaptureDeviceInput) {
           [self.session addInput:self.videoCaptureDeviceInput];
@@ -137,25 +140,39 @@ RCT_CUSTOM_VIEW_PROPERTY(type, NSInteger, EXBarCodeScanner)
       [self.session commitConfiguration];
     });
   }
+  [self initializeCaptureSessionInput:AVMediaTypeVideo];
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(torchMode, NSInteger, EXBarCodeScanner)
 {
+  self.torchMode = [RCTConvert NSInteger:json];
+  [self setTorchMode];
+}
+
+- (void)setTorchMode {
   dispatch_async(self.sessionQueue, ^{
-    NSInteger torchMode = [RCTConvert NSInteger:json];
     AVCaptureDevice *device = [self.videoCaptureDeviceInput device];
     NSError *error = nil;
-
-    if (![device hasTorch])
+    
+    if (![device hasFlash])
       return;
     if (![device lockForConfiguration:&error]) {
       NSLog(@"%@", error);
       return;
     }
-    [device setTorchMode:torchMode];
+    if (device.hasTorch && [device isFlashModeSupported:self.torchMode])
+    {
+      NSError *error = nil;
+      if ([device lockForConfiguration:&error]) {
+        [device setTorchMode:self.torchMode];
+        [device unlockForConfiguration];
+      } else {
+        NSLog(@"%@", error);
+      }
+    }
     [device unlockForConfiguration];
   });
-}
+  }
 
 RCT_CUSTOM_VIEW_PROPERTY(barCodeTypes, NSArray, EXBarCodeScanner)
 {
@@ -272,6 +289,9 @@ RCT_CUSTOM_VIEW_PROPERTY(barCodeTypes, NSArray, EXBarCodeScanner)
 
     if ([self.session canAddInput:captureDeviceInput]) {
       [self.session addInput:captureDeviceInput];
+      
+      self.videoCaptureDeviceInput = captureDeviceInput;
+      [self setTorchMode];
 
       [self.metadataOutput
           setMetadataObjectTypes:self.metadataOutput

@@ -4,6 +4,7 @@ import android.view.Surface;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.google.zxing.BarcodeFormat;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,6 +23,28 @@ public class BarCodeScannerModule extends ReactContextBaseJavaModule {
   public static final int RCT_CAMERA_TORCH_MODE_OFF = 0;
   public static final int RCT_CAMERA_TORCH_MODE_ON = 1;
   public static final int RCT_CAMERA_TORCH_MODE_AUTO = 2;
+  public static final Map<String, Object> VALID_BARCODE_TYPES =
+      Collections.unmodifiableMap(new HashMap<String, Object>() {
+    {
+      put("aztec", BarcodeFormat.AZTEC.toString());
+      put("ean13", BarcodeFormat.EAN_13.toString());
+      put("ean8", BarcodeFormat.EAN_8.toString());
+      put("qr", BarcodeFormat.QR_CODE.toString());
+      put("pdf417", BarcodeFormat.PDF_417.toString());
+      put("upc_e", BarcodeFormat.UPC_E.toString());
+      put("datamatrix", BarcodeFormat.DATA_MATRIX.toString());
+      put("code39", BarcodeFormat.CODE_39.toString());
+      put("code93", BarcodeFormat.CODE_93.toString());
+      put("interleaved2of5", BarcodeFormat.ITF.toString());
+      put("codabar", BarcodeFormat.CODABAR.toString());
+      put("code128", BarcodeFormat.CODE_128.toString());
+      put("maxicode", BarcodeFormat.MAXICODE.toString());
+      put("rss14", BarcodeFormat.RSS_14.toString());
+      put("rssexpanded", BarcodeFormat.RSS_EXPANDED.toString());
+      put("upc_a", BarcodeFormat.UPC_A.toString());
+      put("upc_ean", BarcodeFormat.UPC_EAN_EXTENSION.toString());
+    }
+  });
 
   private static ReactApplicationContext mReactContext;
 
@@ -50,27 +73,7 @@ public class BarCodeScannerModule extends ReactContextBaseJavaModule {
       }
 
       private Map<String, Object> getBarCodeConstants() {
-        return Collections.unmodifiableMap(new HashMap<String, Object>() {
-          {
-            put("aztec", "aztec");
-            put("ean13", "ean13");
-            put("ean8","ean8");
-            put("qr","qr");
-            put("pdf417","pdf417");
-            put("upce","upce");
-            put("datamatrix","datamatrix");
-            put("code39","code39");
-            put("code93","code93");
-            put("interleaved2of5","interleaved2of5");
-            put("codabar","codabar");
-            put("code128","code128");
-            put("maxicode","maxicode");
-            put("rss14","rss14");
-            put("rssexpanded","rssexpanded");
-            put("upca","upca");
-            put("upceanextension","upceanextension");
-          }
-        });
+        return VALID_BARCODE_TYPES;
       }
 
       private Map<String, Object> getTypeConstants() {
