@@ -164,7 +164,7 @@
   if (!_playsInSilentMode) {
     // _allowsRecording is guaranteed to be false, and _interruptionMode is guaranteed to not be EXAudioInterruptionModeDuckOthers (see above)
     if (_audioInterruptionMode == EXAudioInterruptionModeDoNotMix) {
-      [session setCategory:AVAudioSessionCategorySoloAmbient error:error];
+      [audioSession setCategory:AVAudioSessionCategorySoloAmbient error:&error];
     } else {
       [audioSession setCategory:AVAudioSessionCategoryAmbient error:&error];
     }
