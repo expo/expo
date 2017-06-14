@@ -13,19 +13,22 @@ Requires `Permissions.CAMERA`.
 | aztec           | Yes | Yes     |
 | codabar         | No  | Yes     |
 | code39          | Yes | Yes     |
-| code93          | No  | Yes     |
-| code128         | Yes | Yes     |
-| code39mod43     | Yes | No      |
 | code93          | Yes | Yes     |
+| code128         | No  | Yes     |
+| code138         | Yes | No      |
+| code39mod43     | Yes | No      |
 | datamatrix      | Yes | Yes     |
 | ean13           | Yes | Yes     |
 | ean8            | Yes | Yes     |
 | interleaved2of5 | Yes | Yes     |
-| itf14           | Yes | Yes     |
+| itf14           | Yes | No      |
+| maxicode        | No  | Yes     |
 | pdf417          | Yes | Yes     |
-| upc-a           | Yes | Yes     |
-| upc-e           | Yes | Yes     |
-| upc-ean         | No  | Yes     |
+| rss14           | No  | Yes     |
+| rssexpanded     | No  | Yes     |
+| upc_a           | No  | Yes     |
+| upc_e           | Yes | Yes     |
+| upc_ean         | No  | Yes     |
 | qr              | Yes | Yes     |
 
 ### Example
@@ -81,4 +84,4 @@ When `'on'`, the flash on your device will turn on, when `'off'`, it will be off
 
 - `barCodeTypes`
 
-An array of bar code types, see `BarCodeScanner.BarCodeType` for supported types on the platform and device. Default: all supported bar code types.
+An array of bar code types. Usage: `BarCodeScanner.Constants.BarCodeType.<codeType>` where `codeType` is one of the listed above. Default: all supported bar code types.
