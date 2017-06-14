@@ -43,9 +43,8 @@ class DocsPage extends React.Component {
             textAlign: `center`,
             marginBottom: rhythm(1 / 2),
           }}>
-          © Copyright{' '}
-          {new Date().getFullYear()}
-          , Expo.
+          Still have questions?
+          {' '}<a href="https://forums.expo.io/">Ask on our forums!</a>
         </p>
       </div>
     );
