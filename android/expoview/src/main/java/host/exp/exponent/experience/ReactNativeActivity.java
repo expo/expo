@@ -16,7 +16,10 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.amplitude.api.Amplitude;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
+import com.facebook.react.devsupport.interfaces.DevSupportManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -95,6 +98,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   private LoadingView mLoadingView;
   private Handler mHandler = new Handler();
   private Handler mLoadingHandler = new Handler();
+  private DoubleTapReloadRecognizer mDoubleTapReloadRecognizer;
   protected boolean mIsLoading = true;
   protected String mJSBundlePath;
   protected JSONObject mManifest;
@@ -125,6 +129,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     mLayout.addView(mContainer);
     mLayout.addView(mLoadingView);
 
+    mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
     Exponent.initialize(this, getApplication());
     NativeModuleDepsProvider.getInstance().inject(ReactNativeActivity.class, this);
   }
@@ -222,6 +227,12 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   public boolean onKeyUp(int keyCode, KeyEvent event) {
     if (keyCode == KeyEvent.KEYCODE_MENU && mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
       mReactInstanceManager.call("showDevOptionsDialog");
+      return true;
+    }
+    boolean didDoubleTapR = Assertions.assertNotNull(mDoubleTapReloadRecognizer)
+        .didDoubleTapR(keyCode, getCurrentFocus());
+    if (didDoubleTapR) {
+      ((DevSupportManager) mReactInstanceManager.call("getDevSupportManager")).handleReloadJS();
       return true;
     }
     return super.onKeyUp(keyCode, event);
