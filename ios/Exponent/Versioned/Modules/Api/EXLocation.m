@@ -96,13 +96,14 @@ RCT_EXPORT_MODULE(ExponentLocation)
   return @[EXLocationChangedEventName, EXHeadingChangedEventName];
 }
 
-  RCT_REMAP_METHOD(getProviderStatusAsync,
+RCT_REMAP_METHOD(getProviderStatusAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
   resolve(@{
     @"locationServicesEnabled": @([CLLocationManager locationServicesEnabled]),
   });
+}
 
 
 RCT_REMAP_METHOD(getCurrentPositionAsync,
