@@ -77,7 +77,7 @@ Check status of location providers.
 
 Returns an object with the following fields:
 
--   **locationServicesEnabled (_boolean_)** (android only) -- Whether location services are enabled.
+-   **locationServicesEnabled (_boolean_)** -- Whether location services are enabled.
 -   **gpsAvailable (_boolean_)** (android only) -- If the GPS provider is available, if yes, location data will be from GPS.
 -   **networkAvailable (_boolean_)** (android only) -- If the network provider is available, if yes, location data will be from cellular network.
 -   **passiveAvailable (_boolean_)** (android only) -- If the passive provider is available, if yes, location data will be determined passively.
