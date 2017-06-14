@@ -83,7 +83,14 @@ stream.once('open', function(fd) {
   });
 
   stream.write('---\n');
-  stream.write('title: Configuration with app.json\n');
+  if (
+    sdkVersion === 'UNVERSIONED' ||
+    parseInt(sdkVersion.split('.')[0], 10) > 17
+  ) {
+    stream.write('title: Configuration with app.json\n');
+  } else {
+    stream.write('title: Configuration with exp.json\n');
+  }
   stream.write('---\n');
 
   stream.write(preamble);
