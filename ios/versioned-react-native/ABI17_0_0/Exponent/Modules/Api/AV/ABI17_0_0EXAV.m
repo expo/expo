@@ -435,7 +435,11 @@ ABI17_0_0RCT_EXPORT_METHOD(loadForSound:(nonnull NSString *)uriString
                                            }
                                          }];
   data.errorCallback = ^(NSString *error) {
-    [self _removeSoundForKey:key];
+    __strong __typeof__(self) strongSelf = weakSelf;
+    
+    if (strongSelf) {
+      [strongSelf _removeSoundForKey:key];
+    }
   };
   _soundDictionary[key] = data;
 }
@@ -493,10 +497,13 @@ ABI17_0_0RCT_EXPORT_METHOD(setErrorCallbackForSound:(nonnull NSNumber *)key
   ABI17_0_0EXAVPlayerData *data = _soundDictionary[key];
   if (data) {
     __block BOOL used = NO; // ABI17_0_0RCTResponseSenderBlock can only be used once
+    __weak __typeof__(self) weakSelf = self;
     data.errorCallback = ^(NSString *error) {
-      if (!used) {
+      __strong __typeof__(self) strongSelf = weakSelf;
+      
+      if (strongSelf && !used) {
         used = YES;
-        [self _removeSoundForKey:key];
+        [strongSelf _removeSoundForKey:key];
         callback(@[error]);
       }
     };
