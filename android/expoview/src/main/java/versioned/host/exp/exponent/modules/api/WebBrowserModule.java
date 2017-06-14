@@ -77,6 +77,8 @@ public class WebBrowserModule extends ReactContextBaseJavaModule {
       return;
     }
 
+    EventBus.getDefault().unregister(this);
+
     WritableMap result = Arguments.createMap();
     result.putString("type", "dismiss");
     mOpenBrowserPromise.resolve(result);
