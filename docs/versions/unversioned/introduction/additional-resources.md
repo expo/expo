@@ -14,6 +14,7 @@ The following resources are useful for learning Expo and some of the projects th
 - [RMOTR - React Native & Expo for Mobile Development](https://rmotr.com/introduction-to-react-native-and-expo)
 - [Udemy - React Native: Advanced Concepts by Stephen Grider](https://www.udemy.com/react-native-advanced/)
 - [Pluralsight - Build Cross Platform React Native Apps with Expo and Redux](https://www.pluralsight.com/courses/build-react-native-exponent-redux-apps) (old)
+- [React Europe - Introduction to React Native Workshop videos on YouTube](https://www.youtube.com/playlist?list=PLCC436JpVnK2RFms3NG9ubPToWCNbMLbT)
 
 ## React Native
 
@@ -22,6 +23,7 @@ The following resources are useful for learning Expo and some of the projects th
 - [React Native Fundamentals](https://egghead.io/courses/react-native-fundamentals) (video course on Egghead.io)
 - [Animating React Native UI Elements](https://egghead.io/courses/animate-react-native-ui-elements) (video course on Egghead.io)
 - [Learning React Native](http://shop.oreilly.com/product/0636920041511.do) (book)
+- [Chat Tutorial by Jani Eväkallio](https://github.com/jevakallio/react-native-chat-tutorial)
 
 ## Talks
 
@@ -30,6 +32,7 @@ The following resources are useful for learning Expo and some of the projects th
 - [Apollo Day - GraphQL at Expo](https://www.youtube.com/watch?v=E398q4HGRBA)
 - [Reactive - From React web to native mobile](https://www.youtube.com/watch?v=-XxSCi8TKuk)
 - [React Conf - Create React Native App](https://www.youtube.com/watch?v=9baaVjGdBqs)
+- [React Europe - Expo Snack](https://www.youtube.com/watch?v=U0vnAW4UNXE)
 
 ## React
 
