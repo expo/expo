@@ -31,7 +31,6 @@
     <item name="android:padding">0dp</item>
     <item name="android:textColorHint">#c8c8c8</item>
     <item name="android:textColor">#000000</item>
-    <item name="android:textCursorDrawable">@null</item>
   </style>
 
   <style name="DevAppTheme">
