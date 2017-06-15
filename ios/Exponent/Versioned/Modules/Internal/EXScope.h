@@ -10,10 +10,13 @@
 
 @interface EXScope : NSObject <RCTBridgeModule>
 
+// TODO: audit this interface once we formalize kernelspace module logic.
 @property (nonatomic, readonly) NSURL *initialUri;
 @property (nonatomic, readonly) NSString *experienceId;
 @property (nonatomic, readonly) NSString *documentDirectory;
 @property (nonatomic, readonly) NSString *cachesDirectory;
+@property (nonatomic, readonly) NSString *apnsToken;
+@property (nonatomic, readonly) NSString *appOwnership;
 
 - (instancetype)initWithParams:(NSDictionary *)params;
 

@@ -3,6 +3,8 @@
 #import "EXScope.h"
 #import "EXVersionManager.h"
 #import "EXFileSystem.h"
+#import "EXUnversioned.h"
+
 #import <React/RCTAssert.h>
 
 @implementation EXScope
@@ -25,6 +27,9 @@
                         stringByAppendingPathComponent:subdir];
 
     _initialUri = params[@"initialUri"];
+    if (params[@"constants"] && params[@"constants"][@"appOwnership"]) {
+      _appOwnership = params[@"constants"][@"appOwnership"];
+    }
   }
   return self;
 }
@@ -46,6 +51,18 @@
   } else {
     return nil;
   }
+}
+
+- (NSString *)apnsToken
+{
+  // TODO: this is a hack until we formalize kernelspace modules and provide real access to this.
+  // at the moment it duplicates logic inside EXRemoteNotificationManager.
+  NSData *apnsData = [[NSUserDefaults standardUserDefaults] objectForKey:EX_UNVERSIONED(@"EXCurrentAPNSTokenDefaultsKey")];
+  if (apnsData) {
+    NSCharacterSet *brackets = [NSCharacterSet characterSetWithCharactersInString:@"<>"];
+    return [[[apnsData description] stringByTrimmingCharactersInSet:brackets] stringByReplacingOccurrencesOfString:@" " withString:@""];
+  }
+  return nil;
 }
 
 @end

@@ -3,10 +3,9 @@
 #import "EXNotifications.h"
 #import "EXUnversioned.h"
 #import "EXScope.h"
+
 #import <React/RCTUtils.h>
 #import <React/RCTConvert.h>
-#import "EXRemoteNotificationManager.h"
-#import "EXShellManager.h"
 
 @implementation RCTConvert (NSCalendarUnit)
 
@@ -47,15 +46,15 @@ RCT_REMAP_METHOD(getDevicePushTokenAsync,
                  getDevicePushTokenAsyncWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  if (![EXShellManager sharedInstance].isShell) {
+  if (![_bridge.experienceScope.appOwnership isEqualToString:@"standalone"]) {
     return reject(0, @"getDevicePushTokenAsync is only accessible within standalone applications", nil);
   }
   
-  NSData *token = [[NSUserDefaults standardUserDefaults] apnsToken];
+  NSString *token = _bridge.experienceScope.apnsToken;
   if (!token) {
     return reject(0, @"APNS token has not been set", nil);
   }
-  return resolve(@{ @"type": @"apns", @"data": [token apnsTokenString] });
+  return resolve(@{ @"type": @"apns", @"data": token });
 }
 
 RCT_REMAP_METHOD(getExponentPushTokenAsync,
