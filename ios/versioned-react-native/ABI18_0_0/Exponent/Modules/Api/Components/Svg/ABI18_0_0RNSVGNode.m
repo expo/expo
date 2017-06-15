@@ -59,13 +59,13 @@
     if (opacity == _opacity) {
         return;
     }
-    
+
     if (opacity <= 0) {
         opacity = 0;
     } else if (opacity > 1) {
         opacity = 1;
     }
-    
+
     [self invalidate];
     _transparent = opacity < 1;
     _opacity = opacity;
@@ -117,18 +117,18 @@
 
 - (CGPathRef)getClipPath:(CGContextRef)context
 {
-    if (self.clipPath && !_cachedClipPath) {
+    if (self.clipPath) {
         CGPathRelease(_cachedClipPath);
         _cachedClipPath = CGPathRetain([[[self getSvgView] getDefinedClipPath:self.clipPath] getPath:context]);
     }
-    
+
     return [self getClipPath];
 }
 
 - (void)clip:(CGContextRef)context
 {
     CGPathRef clipPath = [self getClipPath:context];
-    
+
     if (clipPath) {
         CGContextAddPath(context, clipPath);
         if (self.clipRule == kRNSVGCGFCRuleEvenodd) {
@@ -153,7 +153,7 @@
 // hitTest delagate
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
-    
+
     // abstract
     return nil;
 }
@@ -169,9 +169,9 @@
     if (_svgView) {
         return _svgView;
     }
-    
+
     __kindof UIView *parent = self.superview;
-    
+
     if ([parent class] == [ABI18_0_0RNSVGSvgView class]) {
         _svgView = parent;
     } else if ([parent isKindOfClass:[ABI18_0_0RNSVGNode class]]) {
@@ -180,7 +180,7 @@
     } else {
         ABI18_0_0RCTLogError(@"ABI18_0_0RNSVG: %@ should be descendant of a SvgViewShadow.", NSStringFromClass(self.class));
     }
-    
+
     return _svgView;
 }
 
