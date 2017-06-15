@@ -34,6 +34,7 @@
 @implementation EXAV
 
 @synthesize bridge = _bridge;
+@synthesize methodQueue = _methodQueue;
 
 - (instancetype)init
 {
@@ -340,6 +341,7 @@
 withEXVideoViewForTag:(nonnull NSNumber *)reactTag
      withRejecter:(RCTPromiseRejectBlock)reject
 {
+  // TODO check that the bridge is still valid after the dispatch
   dispatch_async(dispatch_get_main_queue(), ^{
     UIView *view = [_bridge.uiManager viewForReactTag:reactTag];
     if ([view isKindOfClass:[EXVideoView class]]) {

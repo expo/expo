@@ -127,26 +127,31 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   // Set up player with parameters
   __weak __typeof__(self) weakSelf = self;
   [_player seekToTime:_currentPosition completionHandler:^(BOOL finished) {
-    weakSelf.currentPosition = weakSelf.player.currentTime;
-    
-    if (weakSelf.shouldCorrectPitch) {
-      weakSelf.player.currentItem.audioTimePitchAlgorithm = AVAudioTimePitchAlgorithmLowQualityZeroLatency;
-    } else {
-      weakSelf.player.currentItem.audioTimePitchAlgorithm = AVAudioTimePitchAlgorithmVarispeed;
-    }
-    weakSelf.player.volume = weakSelf.volume.floatValue;
-    weakSelf.player.muted = weakSelf.isMuted;
-    weakSelf.player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
-    
-    [weakSelf _tryPlayPlayerWithRateAndMuteIfNecessary];
-    
-    weakSelf.isLoaded = YES;
-    [weakSelf _addObserversForNewPlayer];
-    
-    if (weakSelf.loadFinishBlock) {
-      weakSelf.loadFinishBlock(YES, [weakSelf getStatus], nil);
-      weakSelf.loadFinishBlock = nil;
-    }
+    dispatch_async(_exAV.methodQueue, ^{
+      weakSelf.currentPosition = weakSelf.player.currentTime;
+      
+      if (weakSelf.shouldCorrectPitch) {
+        weakSelf.player.currentItem.audioTimePitchAlgorithm = AVAudioTimePitchAlgorithmLowQualityZeroLatency;
+      } else {
+        weakSelf.player.currentItem.audioTimePitchAlgorithm = AVAudioTimePitchAlgorithmVarispeed;
+      }
+      weakSelf.player.volume = weakSelf.volume.floatValue;
+      weakSelf.player.muted = weakSelf.isMuted;
+      weakSelf.player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
+      
+      [weakSelf _tryPlayPlayerWithRateAndMuteIfNecessary];
+      
+      weakSelf.isLoaded = YES;
+      
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [weakSelf _addObserversForNewPlayer];
+        
+        if (weakSelf.loadFinishBlock) {
+          weakSelf.loadFinishBlock(YES, [weakSelf getStatus], nil);
+          weakSelf.loadFinishBlock = nil;
+        }
+      });
+    });
   }];
 }
 
@@ -240,6 +245,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     }
     _player.volume = _volume.floatValue;
     
+    
     // Apply parameters necessary after seek.
     __weak __typeof__(self) weakSelf = self;
     void (^applyPostSeekParameters)(BOOL) = ^(BOOL seekSucceeded) {
@@ -270,7 +276,11 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     
     // Apply seek if necessary.
     if (mustSeek) {
-      [_player seekToTime:newPosition completionHandler:applyPostSeekParameters];
+      [_player seekToTime:newPosition completionHandler:^(BOOL seekSucceeded) {
+        dispatch_async(_exAV.methodQueue, ^{
+          applyPostSeekParameters(seekSucceeded);
+        });
+      }];
     } else {
       applyPostSeekParameters(YES);
     }
@@ -444,11 +454,17 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   CMTime interval = CMTimeMakeWithSeconds(_progressUpdateIntervalMillis.floatValue / 1000.0, NSEC_PER_SEC);
   
   void (^timeObserverBlock)(CMTime time) = ^(CMTime time) {
-    __strong __typeof__(self) strongSelf = weakSelf;
+    __strong EXAV *strongEXAV = _exAV;
     
-    if (strongSelf && strongSelf.player.status == AVPlayerStatusReadyToPlay) {
-      strongSelf.currentPosition = time; // We keep track of _currentPosition to reset the AVPlayer in handleMediaServicesReset.
-      [strongSelf _callStatusUpdateCallback];
+    if (strongEXAV) {
+      dispatch_async(strongEXAV.methodQueue, ^{
+        __strong __typeof__(self) strongSelf = weakSelf;
+        
+        if (strongSelf && strongSelf.player.status == AVPlayerStatusReadyToPlay) {
+          strongSelf.currentPosition = time; // We keep track of _currentPosition to reset the AVPlayer in handleMediaServicesReset.
+          [strongSelf _callStatusUpdateCallback];
+        }
+      });
     }
   };
   
@@ -493,7 +509,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
                                                  object:[_player currentItem]
                                                   queue:nil
                                              usingBlock:playbackStalledObserverBlock];
-  
+
   [_player addObserver:self forKeyPath:EXAVPlayerDataObserverRateKeyPath options:0 context:nil];
   [_player addObserver:self forKeyPath:EXAVPlayerDataObserverTimeControlStatusPath options:0 context:nil]; // Only available after iOS 10
   [_player.currentItem addObserver:self forKeyPath:EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath options:0 context:nil];
@@ -511,64 +527,71 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     return;
   }
   
-  if (object == _player) {
-    if ([keyPath isEqualToString:EXAVPlayerDataObserverStatusKeyPath]) {
-      switch (_player.status) {
-        case AVPlayerStatusUnknown:
-          break;
-        case AVPlayerStatusReadyToPlay:
-          if (!_isLoaded && _player.currentItem.status == AVPlayerItemStatusReadyToPlay) {
-            [self _finishLoadingNewPlayer];
-          }
-          break;
-        case AVPlayerStatusFailed: {
-          _isLoaded = NO;
-          NSString *errorMessage = [NSString stringWithFormat:@"The AVPlayer instance has failed with the error code %li and domain \"%@\".", _player.error.code, _player.error.domain];
-          if (_loadFinishBlock) {
-            _loadFinishBlock(NO, nil, errorMessage);
-            _loadFinishBlock = nil;
-          } else if (_errorCallback) {
-            _errorCallback(errorMessage);
-          }
-          break;
-        }
-      }
-    } else if ([keyPath isEqualToString:EXAVPlayerDataObserverRateKeyPath]) {
-      if (_player.rate != 0) {
-        _rate = @(_player.rate);
-      }
-      [self _callStatusUpdateCallback];
-    } else if ([keyPath isEqualToString:EXAVPlayerDataObserverTimeControlStatusPath]
-               || [keyPath isEqualToString:EXAVPlayerDataObserverStatusKeyPath]) {
-      [self _callStatusUpdateCallback];
-    }
-  } else if (object == _player.currentItem) {
-    if ([keyPath isEqualToString:EXAVPlayerDataObserverStatusKeyPath]) {
-      switch (_player.currentItem.status) {
-        case AVPlayerItemStatusUnknown:
-          break;
-        case AVPlayerItemStatusReadyToPlay:
-          if (!_isLoaded && _player.status == AVPlayerItemStatusReadyToPlay) {
-            [self _finishLoadingNewPlayer];
-          }
-          break;
-        case AVPlayerItemStatusFailed: {
-          NSString *errorMessage = [NSString stringWithFormat:@"The AVPlayerItem instance has failed with the error code %li and domain \"%@\".", _player.currentItem.error.code, _player.currentItem.error.domain];
-          if (_loadFinishBlock) {
-            _loadFinishBlock(NO, nil, errorMessage);
-            _loadFinishBlock = nil;
-          } else if (_errorCallback) {
-            _errorCallback(errorMessage);
-          }
-          _isLoaded = NO;
-          break;
-        }
-      }
-    } else if ([keyPath isEqualToString:EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath]
-               || [keyPath isEqualToString:EXAVPlayerDataObserverStatusKeyPath]) {
-      [self _callStatusUpdateCallback];
-    }
+  __strong EXAV *strongEXAV = _exAV;
+  if (strongEXAV == nil) {
+    return;
   }
+  
+  dispatch_async(strongEXAV.methodQueue, ^{
+    if (object == _player) {
+      if ([keyPath isEqualToString:EXAVPlayerDataObserverStatusKeyPath]) {
+        switch (_player.status) {
+          case AVPlayerStatusUnknown:
+            break;
+          case AVPlayerStatusReadyToPlay:
+            if (!_isLoaded && _player.currentItem.status == AVPlayerItemStatusReadyToPlay) {
+              [self _finishLoadingNewPlayer];
+            }
+            break;
+          case AVPlayerStatusFailed: {
+            _isLoaded = NO;
+            NSString *errorMessage = [NSString stringWithFormat:@"The AVPlayer instance has failed with the error code %li and domain \"%@\".", _player.error.code, _player.error.domain];
+            if (_loadFinishBlock) {
+              _loadFinishBlock(NO, nil, errorMessage);
+              _loadFinishBlock = nil;
+            } else if (_errorCallback) {
+              _errorCallback(errorMessage);
+            }
+            break;
+          }
+        }
+      } else if ([keyPath isEqualToString:EXAVPlayerDataObserverRateKeyPath]) {
+        if (_player.rate != 0) {
+          _rate = @(_player.rate);
+        }
+        [self _callStatusUpdateCallback];
+      } else if ([keyPath isEqualToString:EXAVPlayerDataObserverTimeControlStatusPath]
+                 || [keyPath isEqualToString:EXAVPlayerDataObserverStatusKeyPath]) {
+        [self _callStatusUpdateCallback];
+      }
+    } else if (object == _player.currentItem) {
+      if ([keyPath isEqualToString:EXAVPlayerDataObserverStatusKeyPath]) {
+        switch (_player.currentItem.status) {
+          case AVPlayerItemStatusUnknown:
+            break;
+          case AVPlayerItemStatusReadyToPlay:
+            if (!_isLoaded && _player.status == AVPlayerItemStatusReadyToPlay) {
+              [self _finishLoadingNewPlayer];
+            }
+            break;
+          case AVPlayerItemStatusFailed: {
+            NSString *errorMessage = [NSString stringWithFormat:@"The AVPlayerItem instance has failed with the error code %li and domain \"%@\".", _player.currentItem.error.code, _player.currentItem.error.domain];
+            if (_loadFinishBlock) {
+              _loadFinishBlock(NO, nil, errorMessage);
+              _loadFinishBlock = nil;
+            } else if (_errorCallback) {
+              _errorCallback(errorMessage);
+            }
+            _isLoaded = NO;
+            break;
+          }
+        }
+      } else if ([keyPath isEqualToString:EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath]
+                 || [keyPath isEqualToString:EXAVPlayerDataObserverStatusKeyPath]) {
+        [self _callStatusUpdateCallback];
+      }
+    }
+  });
 }
 
 #pragma mark - EXAVObject
