@@ -42,6 +42,10 @@ Associates the current user with a user ID and some metadata. Call this after ca
 
 A map of custom properties.
 
+### `Expo.Segment.reset()`
+
+Clears the current user. See <https://segment.com/docs/sources/mobile/ios/#reset>.
+
 ### `Expo.Segment.track(event)`
 
 Log an event to Segment. See <https://segment.com/docs/spec/track/>.
