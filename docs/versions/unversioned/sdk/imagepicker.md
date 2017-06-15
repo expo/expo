@@ -40,7 +40,7 @@ Display the system UI for taking a photo with the camera.
     -   **aspect (_array_)** -- An array with two entries `[x, y]` specifying the aspect ratio to maintain if the user is allowed to edit the image (by passing `allowsEditing: true`). This is only applicable on Android, since on iOS the crop rectangle is always a square.
     -   **quality (_number_)** -- Specify the quality of compression, from 0 to 1. 0 means compress for small size, 1 means compress for maximum quality.
     -   **base64 (_boolean_)** -- Whether to also include the image data in Base64 format.
-    -   **exif (_boolean_)** -- Whether to also include the EXIF data for the image.
+    -   **exif (_boolean_)** -- Whether to also include the EXIF data for the image. On iOS the EXIF data does not include GPS tags in the camera case.
 
 #### Returns
 
