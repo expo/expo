@@ -353,6 +353,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
     if (Build.VERSION.SDK_INT < 21) {
       return null;
     }
+
     ExifInterface exifInterface = new ExifInterface(in);
     WritableMap exifMap = Arguments.createMap();
     for (String[] tagInfo : exifTags) {
@@ -372,9 +373,20 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
         }
       }
     }
+
+    // Explicitly get latitude, longitude, altitude with their specific accessor functions.
+    double[] latLong = exifInterface.getLatLong();
+    if (latLong != null) {
+      exifMap.putDouble(ExifInterface.TAG_GPS_LATITUDE, latLong[0]);
+      exifMap.putDouble(ExifInterface.TAG_GPS_LONGITUDE, latLong[1]);
+      exifMap.putDouble(ExifInterface.TAG_GPS_ALTITUDE, exifInterface.getAltitude(0));
+    }
+
     return exifMap;
   }
 
+  // We need to explicitly get latitude, longitude, altitude with their specific accessor functions
+  // separately so we skip them in this list.
   static final String[][] exifTags = new String[][]{
       {"string", ExifInterface.TAG_ARTIST},
       {"int", ExifInterface.TAG_BITS_PER_SAMPLE},
@@ -464,7 +476,6 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
       {"int", ExifInterface.TAG_SUBJECT_LOCATION},
       {"string", ExifInterface.TAG_USER_COMMENT},
       {"int", ExifInterface.TAG_WHITE_BALANCE},
-      {"double", ExifInterface.TAG_GPS_ALTITUDE},
       {"int", ExifInterface.TAG_GPS_ALTITUDE_REF},
       {"string", ExifInterface.TAG_GPS_AREA_INFORMATION},
       {"double", ExifInterface.TAG_GPS_DOP},
@@ -480,9 +491,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
       {"int", ExifInterface.TAG_GPS_DIFFERENTIAL},
       {"double", ExifInterface.TAG_GPS_IMG_DIRECTION},
       {"string", ExifInterface.TAG_GPS_IMG_DIRECTION_REF},
-      {"double", ExifInterface.TAG_GPS_LATITUDE},
       {"string", ExifInterface.TAG_GPS_LATITUDE_REF},
-      {"double", ExifInterface.TAG_GPS_LONGITUDE},
       {"string", ExifInterface.TAG_GPS_LONGITUDE_REF},
       {"string", ExifInterface.TAG_GPS_MAP_DATUM},
       {"string", ExifInterface.TAG_GPS_MEASURE_MODE},

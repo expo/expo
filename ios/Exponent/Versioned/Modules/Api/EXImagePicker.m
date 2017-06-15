@@ -178,7 +178,16 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
 
 - (void)updateResponse:(NSMutableDictionary *)response withMetadata:(NSDictionary *)metadata
 {
-  NSDictionary *exif = metadata[(NSString *)kCGImagePropertyExifDictionary];
+  NSMutableDictionary *exif = [NSMutableDictionary dictionaryWithDictionary:metadata[(NSString *)kCGImagePropertyExifDictionary]];
+
+  // Copy `["{GPS}"]["<tag>"]` to `["GPS<tag>"]`
+  NSDictionary *gps = metadata[(NSString *)kCGImagePropertyGPSDictionary];
+  if (gps) {
+    for (NSString *gpsKey in gps) {
+      exif[[@"GPS" stringByAppendingString:gpsKey]] = gps[gpsKey];
+    }
+  }
+
   [response setObject:exif forKey:@"exif"];
 }
 
