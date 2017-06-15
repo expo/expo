@@ -7,7 +7,7 @@ next___FILE: ./icons.md
 
 In order to keep the loading screen visible while we cache our assets, we render [Exponent.Components.AppLoading](../sdk/app-loading.html#app-loading) and only that component until everything is ready.
 
-For images that we have saved to our local filesytem, we can use `Expo.Asset.fromModule(image).downloadAsync()` to download and cache the image. For web images, we can use `Image.prefetch(image)`. Continue referencing the image normally, eg. with `<Image source={require('path/to/image.png')} />`.
+For images that we have saved to our local filesytem, we can use `Exponent.Asset.fromModule(image).downloadAsync()` to download and cache the image. For web images, we can use `Image.prefetch(image)`. Continue referencing the image normally, eg. with `<Image source={require('path/to/image.png')} />`.
 
 Fonts are preloaded using `Exponent.Font.loadAsync(font)`. The `font` argument in this case is an object such as the following: `{OpenSans: require('./assets/fonts/OpenSans.ttf}`. `@exponent/vector-icons` provides a helpful shortcut for this object, which you see below as `FontAwesome.font`.
 
