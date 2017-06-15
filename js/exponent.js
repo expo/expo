@@ -1,14 +1,16 @@
 /**
  * Copyright 2015-present 650 Industries. All rights reserved.
  *
- * The entry point for Exponent
+ * The entry point for Expo
  */
-'use strict';
 
 import Expo from 'expo';
 import React from 'react';
 import { AppRegistry, DeviceEventEmitter, NativeModules } from 'react-native';
 import { ApolloProvider } from 'react-apollo';
+
+// TODO(brent): patch libraries we depend on that are giving us warnings
+console.disableYellowBox = true;
 
 // This has to be first.
 import ExStore from 'ExStore';
