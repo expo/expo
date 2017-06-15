@@ -81,7 +81,7 @@ Next we will ask you if you'd like us to handle your distribution certificate or
 
 ## 4. Wait for it to finish building
 
-This will take a few minutes, you can check up on it by running `exp build:status`. When it's done, you'll see the url of a `.apk` (Android) or `.ipa` (iOS) file -- this is your app. Copy and paste it into your browser address bar to download -- it won't work with `curl` or `wget` unless you happen to know the correct incantation to download a gzipped file from S3. We will fix this.
+This will take a few minutes, you can check up on it by running `exp build:status`. When it's done, you'll see the url of a `.apk` (Android) or `.ipa` (iOS) file -- this is your app. 
 
 > **Note:** We enable bitcode for iOS, so the `.ipa` files for iOS are much larger than the eventual App Store download available to your users. For more information, see [App Thinning](https://developer.apple.com/library/content/documentation/IDEs/Conceptual/AppDistributionGuide/AppThinning/AppThinning.html).
 
