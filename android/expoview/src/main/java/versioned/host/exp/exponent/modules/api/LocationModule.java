@@ -91,7 +91,7 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
 
     // Check for permissions
     if (isMissingPermissions()) {
-      promise.reject("E_MISSING_PERMISSION", "Missing location permissions.");
+      promise.reject("E_LOCATION_UNAUTHORIZED", "Not authorized to use location services");
       return;
     }
 
@@ -99,6 +99,10 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
     // LocationControl has an internal map from Context -> LocationProvider, so each experience
     // will only have one instance of a LocationProvider.
     SmartLocation.LocationControl locationControl = SmartLocation.with(mScopedContext).location().oneFix().config(locationParams);
+
+    if (!locationControl.state().isAnyProviderAvailable()) {
+      promise.reject("E_LOCATION_SERVICES_DISABLED", "Location services are disabled");
+    }
 
     // Have location cached already?
     if (options.hasKey("maximumAge")) {
@@ -111,13 +115,13 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
     }
 
     final TimeoutObject timeoutObject = new TimeoutObject(timeout);
-
     timeoutObject.onTimeout(new TimeoutObject.TimeoutListener() {
       @Override
       public void onTimeout() {
-        promise.reject("E_TIMEOUT", "Location request timed out.");
+        promise.reject("E_LOCATION_TIMEOUT", "Location request timed out.");
       }
     });
+    timeoutObject.start();
 
     locationControl.start(new OnLocationUpdatedListener() {
       @Override
@@ -129,14 +133,19 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
     });
   }
 
-  private void startWatching() {
+  private boolean startWatching() {
     if (mScopedContext == null || mLocationParams == null || mOnLocationUpdatedListener == null) {
-      return;
+      return false;
     }
 
     // LocationControl has an internal map from Context -> LocationProvider, so each experience
     // will only have one instance of a LocationProvider.
-    SmartLocation.with(mScopedContext).location().config(mLocationParams).start(mOnLocationUpdatedListener);
+    SmartLocation.LocationControl locationControl = SmartLocation.with(mScopedContext).location().config(mLocationParams);
+    if (!locationControl.state().isAnyProviderAvailable()) {
+      return false;
+    }
+    locationControl.start(mOnLocationUpdatedListener);
+    return true;
   }
 
   private void stopWatching() {
@@ -308,8 +317,11 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
       }
     };
 
-    startWatching();
-    promise.resolve(null);
+    if (startWatching()) {
+      promise.resolve(null);
+    } else {
+      promise.reject("E_LOCATION_SERVICES_DISABLED", "Location services are disabled");
+    }
   }
 
   // TODO: Stop sending watchId from JS since we ignore it.
