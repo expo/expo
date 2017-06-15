@@ -118,3 +118,7 @@ If you really want your published app to be 'unpublished', right now the best co
 ## What is Exponent and how is it different from Expo?
 
 Exponent is the original name of the Expo project. You might occasionally run across some old references to it in blog posts or code or documentation. They are the same thing; we just shortened the name.
+
+## What version of Android and iOS are supported by Expo apps?
+
+Expo supports Android 4.4+ and iOS 9+.
