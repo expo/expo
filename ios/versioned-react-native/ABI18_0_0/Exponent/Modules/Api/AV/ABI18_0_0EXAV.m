@@ -27,6 +27,7 @@
 
 @property (nonatomic, strong) AVAudioRecorder *audioRecorder;
 @property (nonatomic, assign) BOOL audioRecorderIsPreparing;
+@property (nonatomic, assign) BOOL audioRecorderShouldBeginRecording;
 @property (nonatomic, assign) int audioRecorderDurationMillis;
 
 @end
@@ -34,6 +35,7 @@
 @implementation ABI18_0_0EXAV
 
 @synthesize bridge = _bridge;
+@synthesize methodQueue = _methodQueue;
 
 - (instancetype)init
 {
@@ -52,6 +54,7 @@
     
     _audioRecorder = nil;
     _audioRecorderIsPreparing = false;
+    _audioRecorderShouldBeginRecording = false;
     _audioRecorderDurationMillis = 0;
     
     // These only need to be set once:
@@ -197,9 +200,12 @@
     }
   }];
   
-  if (audioSessionModeRequired == ABI18_0_0EXAVAudioSessionModeInactive
-      &&_audioRecorder && ([_audioRecorder isRecording] || _audioRecorderIsPreparing)) {
-    audioSessionModeRequired = ABI18_0_0EXAVAudioSessionModeActiveMuted;
+  if (_audioRecorder) {
+    if (_audioRecorderShouldBeginRecording || [_audioRecorder isRecording]) {
+      audioSessionModeRequired = ABI18_0_0EXAVAudioSessionModeActive;
+    } else if (_audioRecorderIsPreparing && audioSessionModeRequired == ABI18_0_0EXAVAudioSessionModeInactive) {
+      audioSessionModeRequired = ABI18_0_0EXAVAudioSessionModeActiveMuted;
+    }
   }
   
   return audioSessionModeRequired;
@@ -340,6 +346,7 @@
 withEXVideoViewForTag:(nonnull NSNumber *)ReactABI18_0_0Tag
      withRejecter:(ABI18_0_0RCTPromiseRejectBlock)reject
 {
+  // TODO check that the bridge is still valid after the dispatch
   dispatch_async(dispatch_get_main_queue(), ^{
     UIView *view = [_bridge.uiManager viewForReactABI18_0_0Tag:ReactABI18_0_0Tag];
     if ([view isKindOfClass:[ABI18_0_0EXVideoView class]]) {
@@ -616,6 +623,7 @@ ABI18_0_0RCT_EXPORT_METHOD(startAudioRecording:(ABI18_0_0RCTPromiseResolveBlock)
     if (!_allowsAudioRecording) {
       reject(@"E_AUDIO_AUDIOMODE", nil, ABI18_0_0RCTErrorWithMessage(@"Recording not allowed on iOS."));
     } else if (!_audioRecorder.recording) {
+      _audioRecorderShouldBeginRecording = true;
       NSError *error = [self promoteAudioSessionIfNecessary];
       if (!error) {
         if ([_audioRecorder record]) {
@@ -626,8 +634,11 @@ ABI18_0_0RCT_EXPORT_METHOD(startAudioRecording:(ABI18_0_0RCTPromiseResolveBlock)
       } else {
         reject(@"E_AUDIO_RECORDING", @"Start encountered an error: audio session not activated.", error);
       }
+    } else {
+      resolve([self _getAudioRecorderStatus]);
     }
   }
+  _audioRecorderShouldBeginRecording = false;
 }
 
 ABI18_0_0RCT_EXPORT_METHOD(pauseAudioRecording:(ABI18_0_0RCTPromiseResolveBlock)resolve
