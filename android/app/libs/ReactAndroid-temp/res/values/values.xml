@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:ns1="http://schemas.android.com/tools">
     <color name="catalyst_redbox_background">#eecc0000</color>
+    <item name="react_test_id" type="id"/>
+    <item name="view_tag_native_id" type="id"/>
     <string name="catalyst_copy_button" project="catalyst" translatable="false">Copy</string>
     <string name="catalyst_debugjs" project="catalyst" translatable="false">Debug JS Remotely</string>
     <string name="catalyst_debugjs_off" project="catalyst" translatable="false">Stop Remote JS Debugging</string>
@@ -60,7 +62,8 @@
     <item name="android:windowNoTitle">true</item>
     <item name="android:windowIsFloating">false</item>
     <item name="android:windowBackground">@android:color/transparent</item>
-    <item name="android:windowTranslucentStatus">true</item>
+    <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+    <item name="android:statusBarColor">@android:color/transparent</item>
   </style>
     <style name="Theme.FullScreenDialogAnimatedFade" parent="Theme.FullScreenDialog">
     <item name="android:windowAnimationStyle">@style/DialogAnimationFade</item>

@@ -14,7 +14,7 @@ if THIS_IS_FBANDROID:
 
   jni_instrumentation_test_lib(
     name = 'tests',
-    class_under_test = 'abi17_0_0/com/facebook/react/XplatBridgeTest',
+    class_under_test = 'abi18_0_0/com/facebook/react/XplatBridgeTest',
     soname = 'libxplat-bridge.so',
     srcs = TEST_SRCS,
     compiler_flags = [
