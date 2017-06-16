@@ -70,7 +70,9 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
   }
 
   let name = manifest.name;
-  let iconUrl = manifest.iconUrl;
+  let iconUrl = manifest.android && manifest.android.iconUrl
+    ? manifest.android.iconUrl
+    : manifest.iconUrl;
   let scheme = manifest.scheme;
   let bundleUrl = manifest.bundleUrl;
   let notificationIconUrl = manifest.notification
