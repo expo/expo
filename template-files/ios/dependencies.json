@@ -9,7 +9,7 @@
   { "name": "FBSDKLoginKit", "version": "~> 4.15" },
   { "name": "FBSDKShareKit", "version": "~> 4.15" },
   { "name": "Fabric", "version": "~> 1.6" },
-  { "name": "Google/SignIn", "version": "~> 3.0" },
+  { "name": "GoogleSignIn", "version": "~> 3.0" },
   { "name": "GoogleMaps", "version": "~> 2.2.0" },
   { "name": "lottie-ios", "version": "~> 1.5.1" },
   { "name": "GPUImage", "version": "~> 0.1.7" },
