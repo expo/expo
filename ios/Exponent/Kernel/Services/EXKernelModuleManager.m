@@ -102,7 +102,7 @@
 
 - (void)kernelModule:(__unused EXKernelModule *)module didOpenUrl:(NSString *)url
 {
-  [[EXKernel sharedInstance].serviceRegistry.linkingManager openUrl:url];
+  [[EXKernel sharedInstance].serviceRegistry.linkingManager openUrl:url isUniversalLink:NO];
 }
 
 @end
