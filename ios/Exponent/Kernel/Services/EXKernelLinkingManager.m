@@ -82,7 +82,7 @@ NSNotificationName kEXKernelOpenUrlNotification = @"EXKernelOpenUrlNotification"
   // this should have been transformed into customscheme://+deep-link
   // and then all we do here is strip off the deep-link part, leaving +.
   if ([EXShellManager sharedInstance].isShell && [[EXShellManager sharedInstance] isShellUrlScheme:components.scheme]) {
-    return [NSString stringWithFormat:@"%@://", components.scheme];
+    return [NSString stringWithFormat:@"%@://+", components.scheme];
   }
   
   NSMutableString* path = [NSMutableString stringWithString:components.path];
@@ -114,13 +114,13 @@ NSNotificationName kEXKernelOpenUrlNotification = @"EXKernelOpenUrlNotification"
   
   if ([EXShellManager sharedInstance].isShell && [EXShellManager sharedInstance].hasUrlScheme) {
     // if the provided uri is the shell app manifest uri,
-    // transform this into customscheme://deep-link
+    // transform this into customscheme://+deep-link
     if ([self _isShellManifestUrl:normalizedUri]) {
       NSString *uriString = normalizedUri.absoluteString;
       NSRange deepLinkRange = [uriString rangeOfString:@"+"];
       NSString *deepLink = @"";
       if (deepLinkRange.length > 0) {
-        deepLink = [uriString substringFromIndex:deepLinkRange.location + 1];
+        deepLink = [uriString substringFromIndex:deepLinkRange.location];
       }
       NSString *result = [NSString stringWithFormat:@"%@://%@", [EXShellManager sharedInstance].urlScheme, deepLink];
       return [NSURL URLWithString:result];
