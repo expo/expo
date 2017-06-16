@@ -6,6 +6,7 @@
 #import "BranchUniversalObject+RNBranch.h"
 #import "RNBranchAgingDictionary.h"
 #import "RNBranchEventEmitter.h"
+#import "EXScope.h"
 
 NSString * const RNBranchLinkOpenedNotification = @"RNBranchLinkOpenedNotification";
 NSString * const RNBranchLinkOpenedNotificationErrorKey = @"error";
@@ -105,7 +106,7 @@ RCT_EXPORT_MODULE();
 - (instancetype)init {
     self = [super init];
 
-    if (self) {
+    if (self && [self.bridge.experienceScope.appOwnership isEqualToString:@"standalone"]) {
         // Added to work on Expo, should try to upstream.
         if (!branchInstance) {
             branchInstance = [Branch getInstance];
