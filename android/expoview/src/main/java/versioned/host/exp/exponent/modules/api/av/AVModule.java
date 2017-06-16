@@ -466,8 +466,11 @@ public class AVModule extends ReactContextBaseJavaModule
 
   private WritableMap getAudioRecorderStatus() {
     final WritableMap map = Arguments.createMap();
-    map.putBoolean("isRecording", mAudioRecorderIsRecording);
-    map.putInt("durationMillis", (int) getAudioRecorderDurationMillis());
+    if (mAudioRecorder != null) {
+      map.putBoolean("canRecord", true);
+      map.putBoolean("isRecording", mAudioRecorderIsRecording);
+      map.putInt("durationMillis", (int) getAudioRecorderDurationMillis());
+    }
     return map;
   }
 
