@@ -135,6 +135,7 @@ class BrowserScreen extends React.Component {
       this.props.task.bundleUrl
     );
 
+    const initialProps = this._getInitialProps(this.state.initialPropsJS);
     return (
       <Frame
         key="frame"
@@ -143,8 +144,8 @@ class BrowserScreen extends React.Component {
         applicationKey={appKey}
         debuggerHostname={debuggerHostname}
         debuggerPort={debuggerPort}
-        initialProps={this._getInitialProps(this.state.initialPropsJS)}
-        initialUri={this.props.url}
+        initialProps={initialProps}
+        initialUri={initialProps.initialUri}
         manifest={this.state.manifestJS}
         style={styles.frame}
         onLoadingStart={this._handleFrameLoadingStart}

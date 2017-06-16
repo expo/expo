@@ -205,29 +205,33 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
        restorationHandler:restorationHandler]) {
     return YES;
   }
-
-  if (![EXShellManager sharedInstance].isShell &&
-      [userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+  
+  if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
     NSURL *webpageURL = userActivity.webpageURL;
-    NSString *path = [webpageURL path];
-
-    // Filter out URLs that don't match experience URLs since the AASA pattern's grammar is not as
-    // expressive as we'd like and matches profile URLs too
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^/@[a-z0-9_-]+/.+$"
-                                                                           options:NSRegularExpressionCaseInsensitive
-                                                                             error:nil];
-    NSUInteger matchCount = [regex numberOfMatchesInString:path options:0 range:NSMakeRange(0, path.length)];
-
-    if (matchCount > 0) {
-      // TODO: don't want to launch more bridges when in detached state.
+    if ([EXShellManager sharedInstance].isShell) {
       return [EXKernelLinkingManager application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
     } else {
-      [application openURL:webpageURL];
-      return YES;
+      NSString *path = [webpageURL path];
+      
+      // Filter out URLs that don't match experience URLs since the AASA pattern's grammar is not as
+      // expressive as we'd like and matches profile URLs too
+      NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^/@[a-z0-9_-]+/.+$"
+                                                                             options:NSRegularExpressionCaseInsensitive
+                                                                               error:nil];
+      NSUInteger matchCount = [regex numberOfMatchesInString:path options:0 range:NSMakeRange(0, path.length)];
+      
+      if (matchCount > 0) {
+        // TODO: don't want to launch more bridges when in detached state.
+        [EXKernelLinkingManager application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
+        return YES;
+      } else {
+        [application openURL:webpageURL];
+        return YES;
+      }
     }
-  } else {
-    return NO;
   }
+  
+  return NO;
 }
 
 @end

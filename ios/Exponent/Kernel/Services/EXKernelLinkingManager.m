@@ -43,30 +43,46 @@ NSNotificationName kEXKernelRefreshForegroundTaskNotification = @"EXKernelRefres
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)openUrl:(NSString *)urlString
+- (void)openUrl:(NSString *)urlString isUniversalLink:(BOOL)isUniversalLink
 {
   NSURL *url = [NSURL URLWithString:urlString];
   if (!url) {
     DDLogInfo(@"Tried to route invalid url: %@", urlString);
     return;
   }
-  NSString *urlToRoute = [[self class] uriTransformedForLinking:url].absoluteString;
   EXKernelBridgeRegistry *bridgeRegistry = [EXKernel sharedInstance].bridgeRegistry;
-  
+
   // kernel bridge is our default handler for this url
   // because it can open a new bridge if we don't already have one.
-  EXReactAppManager *destinationAppManager = bridgeRegistry.kernelAppManager;
-  
-  for (id bridge in [bridgeRegistry bridgeEnumerator]) {
-    EXKernelBridgeRecord *bridgeRecord = [bridgeRegistry recordForBridge:bridge];
-    if ([urlToRoute hasPrefix:[[self class] linkingUriForExperienceUri:bridgeRecord.appManager.frame.initialUri]]) {
-      // this is a link into a bridge we already have running.
-      // use this bridge as the link's destination instead of the kernel.
-      destinationAppManager = bridgeRecord.appManager;
-      break;
+  EXReactAppManager *destinationAppManager;
+  NSString *urlToRoute;
+
+  if (isUniversalLink && [EXShellManager sharedInstance].isShell) {
+    // Find the app manager for the shell app.
+    urlToRoute = url.absoluteString;
+    for (id bridge in [bridgeRegistry bridgeEnumerator]) {
+      EXKernelBridgeRecord *bridgeRecord = [bridgeRegistry recordForBridge:bridge];
+      if ([bridgeRecord.appManager.frame.initialProps[@"shell"] boolValue]) {
+        destinationAppManager = bridgeRecord.appManager;
+        break;
+      }
     }
+  } else {
+    urlToRoute = [[self class] uriTransformedForLinking:url].absoluteString;
+    destinationAppManager = bridgeRegistry.kernelAppManager;
+
+    for (id bridge in [bridgeRegistry bridgeEnumerator]) {
+      EXKernelBridgeRecord *bridgeRecord = [bridgeRegistry recordForBridge:bridge];
+      if ([urlToRoute hasPrefix:[[self class] linkingUriForExperienceUri:bridgeRecord.appManager.frame.initialUri]]) {
+        // this is a link into a bridge we already have running.
+        // use this bridge as the link's destination instead of the kernel.
+        destinationAppManager = bridgeRecord.appManager;
+        break;
+      }
+    }
+
   }
-  
+
   if (destinationAppManager) {
     [[EXKernel sharedInstance] openUrl:urlToRoute onAppManager:destinationAppManager];
   }
@@ -97,7 +113,7 @@ NSNotificationName kEXKernelRefreshForegroundTaskNotification = @"EXKernelRefres
 
 - (void)linkingModule:(__unused id)linkingModule didOpenUrl:(NSString *)url
 {
-  [self openUrl:url];
+  [self openUrl:url isUniversalLink:NO];
 }
 
 - (BOOL)linkingModule:(__unused id)linkingModule shouldOpenExpoUrl:(NSURL *)url
@@ -135,7 +151,7 @@ NSNotificationName kEXKernelRefreshForegroundTaskNotification = @"EXKernelRefres
 
 - (void)_onKernelOpenUrl: (NSNotification *)notif
 {
-  [self openUrl:notif.userInfo[@"url"]];
+  [self openUrl:notif.userInfo[@"url"] isUniversalLink:NO];
 }
 
 - (void)_refreshForegroundTaskAndValidateBridge:(id)bridge
@@ -159,30 +175,30 @@ NSNotificationName kEXKernelRefreshForegroundTaskNotification = @"EXKernelRefres
 {
   uri = [self uriTransformedForLinking:uri];
   NSURLComponents *components = [NSURLComponents componentsWithURL:uri resolvingAgainstBaseURL:YES];
-  
+
   // if the provided uri is the shell app manifest uri,
   // this should have been transformed into customscheme://+deep-link
   // and then all we do here is strip off the deep-link part, leaving +.
   if ([EXShellManager sharedInstance].isShell && [[EXShellManager sharedInstance] isShellUrlScheme:components.scheme]) {
     return [NSString stringWithFormat:@"%@://+", components.scheme];
   }
-  
+
   NSMutableString* path = [NSMutableString stringWithString:components.path];
-  
+
   // if the uri already contains a deep link, strip everything specific to that
   NSRange deepLinkRange = [path rangeOfString:@"+"];
   if (deepLinkRange.length > 0) {
     path = [[path substringToIndex:deepLinkRange.location] mutableCopy];
   }
-  
+
   if (path.length == 0 || [path characterAtIndex:path.length - 1] != '/') {
     [path appendString:@"/"];
   }
   [path appendString:@"+"];
   components.path = path;
-  
+
   components.query = nil;
-  
+
   return [components string];
 }
 
@@ -192,8 +208,13 @@ NSNotificationName kEXKernelRefreshForegroundTaskNotification = @"EXKernelRefres
     return nil;
   }
   
+  // If the initial uri is an universal link (https scheme) in a shell app don't touch it.
+  if ([EXShellManager sharedInstance].isShell && [uri.scheme isEqualToString:@"https"]) {
+    return uri;
+  }
+
   NSURL *normalizedUri = [self _uriNormalizedForLinking:uri];
-  
+
   if ([EXShellManager sharedInstance].isShell && [EXShellManager sharedInstance].hasUrlScheme) {
     // if the provided uri is the shell app manifest uri,
     // transform this into customscheme://+deep-link
@@ -214,7 +235,7 @@ NSNotificationName kEXKernelRefreshForegroundTaskNotification = @"EXKernelRefres
 + (NSURL *)_uriNormalizedForLinking: (NSURL *)uri
 {
   NSURLComponents *components = [NSURLComponents componentsWithURL:uri resolvingAgainstBaseURL:YES];
-  
+
   if ([EXShellManager sharedInstance].isShell && [[EXShellManager sharedInstance] isShellUrlScheme:components.scheme]) {
     // if we're a shell and this uri had the shell scheme, leave it alone.
   } else {
@@ -224,13 +245,13 @@ NSNotificationName kEXKernelRefreshForegroundTaskNotification = @"EXKernelRefres
       components.scheme = @"exp";
     }
   }
-  
+
   if ([components.scheme isEqualToString:@"exp"] && [components.port integerValue] == 80) {
     components.port = nil;
   } else if ([components.scheme isEqualToString:@"exps"] && [components.port integerValue] == 443) {
     components.port = nil;
   }
-  
+
   return [components URL];
 }
 
@@ -253,7 +274,7 @@ NSNotificationName kEXKernelRefreshForegroundTaskNotification = @"EXKernelRefres
   sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation
 {
-  [[EXKernel sharedInstance].serviceRegistry.linkingManager openUrl:URL.absoluteString];
+  [[EXKernel sharedInstance].serviceRegistry.linkingManager openUrl:URL.absoluteString isUniversalLink:NO];
   return YES;
 }
 
@@ -262,7 +283,8 @@ continueUserActivity:(NSUserActivity *)userActivity
  restorationHandler:(void (^)(NSArray *))restorationHandler
 {
   if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
-    [[EXKernel sharedInstance].serviceRegistry.linkingManager openUrl:userActivity.webpageURL.absoluteString];
+    [[EXKernel sharedInstance].serviceRegistry.linkingManager openUrl:userActivity.webpageURL.absoluteString isUniversalLink:YES];
+
   }
   return YES;
 }
@@ -270,19 +292,19 @@ continueUserActivity:(NSUserActivity *)userActivity
 + (NSURL *)initialUrlFromLaunchOptions:(NSDictionary *)launchOptions
 {
   NSURL *initialUrl;
-  
+
   if (launchOptions) {
     if (launchOptions[UIApplicationLaunchOptionsURLKey]) {
       initialUrl = launchOptions[UIApplicationLaunchOptionsURLKey];
     } else if (launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey]) {
       NSDictionary *userActivityDictionary = launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
-      
+
       if ([userActivityDictionary[UIApplicationLaunchOptionsUserActivityTypeKey] isEqual:NSUserActivityTypeBrowsingWeb]) {
         initialUrl = ((NSUserActivity *)userActivityDictionary[@"UIApplicationLaunchOptionsUserActivityKey"]).webpageURL;
       }
     }
   }
-  
+
   return initialUrl;
 }
 

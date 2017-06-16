@@ -22,7 +22,7 @@ FOUNDATION_EXPORT NSNotificationName kEXKernelOpenUrlNotification DEPRECATED_MSG
  *  Either opens the url on an existing bridge, or sends it to the kernel
  *  for opening on a new bridge.
  */
-- (void)openUrl:(NSString *)url;
+- (void)openUrl:(NSString *)urlString isUniversalLink:(BOOL)isUniversalLink;
 
 /**
  *  Called by Util.reload() to rerequest the foreground tasks's manifest
