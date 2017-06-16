@@ -175,6 +175,10 @@ The following is a list of properties that are available for you under the `"exp
 
       Build number for your iOS standalone app
 
+   - `icon`
+
+      Local path or remote url to an image to use for your app's icon on iOS. We recommend that you use a 512x512 png file with transparency. This icon will appear on the home screen and within the Expo app.
+
    - `config`
 
       
@@ -230,6 +234,10 @@ The following is a list of properties that are available for you under the `"exp
    - `versionCode`
 
       Version number required by Google Play. Increment by one for each release. https://developer.android.com/studio/publish/versioning.html.
+
+   - `icon`
+
+      Local path or remote url to an image to use for your app's icon on Android. We recommend that you use a 512x512 png file with transparency. This icon will appear on the home screen and within the Expo app.
 
    - `config`
 
