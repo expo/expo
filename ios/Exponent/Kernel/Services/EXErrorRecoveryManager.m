@@ -58,7 +58,9 @@ NSNotificationName const kEXErrorRecoverySetPropsNotification = @"EXErrorRecover
   EXErrorRecoveryRecord *record = [self _recordForExperienceId:experienceId];
   if (!record) {
     record = [[EXErrorRecoveryRecord alloc] init];
-    _experienceInfo[experienceId] = record;
+    @synchronized (_experienceInfo) {
+      _experienceInfo[experienceId] = record;
+    }
   }
   record.developerInfo = developerInfo;
 }
@@ -82,7 +84,9 @@ NSNotificationName const kEXErrorRecoverySetPropsNotification = @"EXErrorRecover
   if (error) {
     if (!record) {
       record = [[EXErrorRecoveryRecord alloc] init];
-      _experienceInfo[experienceId] = record;
+      @synchronized (_experienceInfo) {
+        _experienceInfo[experienceId] = record;
+      }
     }
     // mark this experience id as having loading problems, so future attempts will bust the cache.
     // this flag never gets unset until the record is removed, even if the error is nullified.
@@ -98,7 +102,11 @@ NSNotificationName const kEXErrorRecoverySetPropsNotification = @"EXErrorRecover
   if (!error) {
     return NO;
   }
-  for (NSString *experienceId in _experienceInfo.allKeys) {
+  NSArray<NSString *> *experienceIds;
+  @synchronized (_experienceInfo) {
+    experienceIds = _experienceInfo.allKeys;
+  }
+  for (NSString *experienceId in experienceIds) {
     EXErrorRecoveryRecord *record = [self _recordForExperienceId:experienceId];
     if ([record.error isEqual:error]) {
       return YES;
@@ -109,7 +117,9 @@ NSNotificationName const kEXErrorRecoverySetPropsNotification = @"EXErrorRecover
 
 - (void)experienceRestartedWithId:(NSString *)experienceId
 {
-  [_experienceInfo removeObjectForKey:experienceId];
+  @synchronized (_experienceInfo) {
+    [_experienceInfo removeObjectForKey:experienceId];
+  }
 }
 
 - (void)experienceFinishedLoadingWithId:(NSString *)experienceId
@@ -117,7 +127,9 @@ NSNotificationName const kEXErrorRecoverySetPropsNotification = @"EXErrorRecover
   EXErrorRecoveryRecord *record = [self _recordForExperienceId:experienceId];
   if (!record) {
     record = [[EXErrorRecoveryRecord alloc] init];
-    _experienceInfo[experienceId] = record;
+    @synchronized (_experienceInfo) {
+      _experienceInfo[experienceId] = record;
+    }
   }
   record.dtmLastLoaded = [NSDate date];
 
@@ -153,10 +165,13 @@ NSNotificationName const kEXErrorRecoverySetPropsNotification = @"EXErrorRecover
 
 - (EXErrorRecoveryRecord *)_recordForExperienceId: (NSString *)experienceId;
 {
+  EXErrorRecoveryRecord *result = nil;
   if (experienceId) {
-    return _experienceInfo[experienceId];
+    @synchronized (_experienceInfo) {
+      result = _experienceInfo[experienceId];
+    }
   }
-  return nil;
+  return result;
 }
 
 - (void)_handleRecoveryPropsNotification:(NSNotification *)notif
