@@ -112,10 +112,6 @@
     <activity android:name="abi13_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
     <activity android:name="abi12_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
     <activity android:name="abi11_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
-    <activity android:name="abi10_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
-    <activity android:name="abi9_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
-    <activity android:name="abi8_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
-    <activity android:name="abi7_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
 
     <activity
       android:name=".ExponentDevActivity"
