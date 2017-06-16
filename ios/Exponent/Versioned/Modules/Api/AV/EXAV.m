@@ -27,6 +27,7 @@
 
 @property (nonatomic, strong) AVAudioRecorder *audioRecorder;
 @property (nonatomic, assign) BOOL audioRecorderIsPreparing;
+@property (nonatomic, assign) BOOL audioRecorderShouldBeginRecording;
 @property (nonatomic, assign) int audioRecorderDurationMillis;
 
 @end
@@ -53,6 +54,7 @@
     
     _audioRecorder = nil;
     _audioRecorderIsPreparing = false;
+    _audioRecorderShouldBeginRecording = false;
     _audioRecorderDurationMillis = 0;
     
     // These only need to be set once:
@@ -198,9 +200,12 @@
     }
   }];
   
-  if (audioSessionModeRequired == EXAVAudioSessionModeInactive
-      &&_audioRecorder && ([_audioRecorder isRecording] || _audioRecorderIsPreparing)) {
-    audioSessionModeRequired = EXAVAudioSessionModeActiveMuted;
+  if (_audioRecorder) {
+    if (_audioRecorderShouldBeginRecording || [_audioRecorder isRecording]) {
+      audioSessionModeRequired = EXAVAudioSessionModeActive;
+    } else if (_audioRecorderIsPreparing && audioSessionModeRequired == EXAVAudioSessionModeInactive) {
+      audioSessionModeRequired = EXAVAudioSessionModeActiveMuted;
+    }
   }
   
   return audioSessionModeRequired;
@@ -618,6 +623,7 @@ RCT_EXPORT_METHOD(startAudioRecording:(RCTPromiseResolveBlock)resolve
     if (!_allowsAudioRecording) {
       reject(@"E_AUDIO_AUDIOMODE", nil, RCTErrorWithMessage(@"Recording not allowed on iOS."));
     } else if (!_audioRecorder.recording) {
+      _audioRecorderShouldBeginRecording = true;
       NSError *error = [self promoteAudioSessionIfNecessary];
       if (!error) {
         if ([_audioRecorder record]) {
@@ -628,8 +634,11 @@ RCT_EXPORT_METHOD(startAudioRecording:(RCTPromiseResolveBlock)resolve
       } else {
         reject(@"E_AUDIO_RECORDING", @"Start encountered an error: audio session not activated.", error);
       }
+    } else {
+      resolve([self _getAudioRecorderStatus]);
     }
   }
+  _audioRecorderShouldBeginRecording = false;
 }
 
 RCT_EXPORT_METHOD(pauseAudioRecording:(RCTPromiseResolveBlock)resolve
