@@ -3,8 +3,8 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := jschelpers_abi18_0_0
-LOCAL_SRC_FILES := \
 
+LOCAL_SRC_FILES := \
   JSCHelpers.cpp \
   Unicode.cpp \
   Value.cpp \
