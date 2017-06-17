@@ -2,6 +2,8 @@ import React from 'react';
 import Link from 'gatsby-link';
 import presets from 'glamor-media-query-presets';
 
+import Button from './button';
+
 import { rhythm } from '../utils/typography';
 
 class Sidebar extends React.Component {
@@ -13,10 +15,11 @@ class Sidebar extends React.Component {
       activeVersion,
       versions,
       setVersion,
+      close,
       ...otherProps
     } = this.props;
 
-    const Header = ({ i, link, children }) => (
+    const Header = ({ i, link, children }) =>
       <h3
         css={{
           color: `rgb(136, 136, 136)`,
@@ -35,10 +38,9 @@ class Sidebar extends React.Component {
           to={link}>
           {children}
         </Link>
-      </h3>
-    );
+      </h3>;
 
-    const List = ({ children }) => (
+    const List = ({ children }) =>
       <ul
         css={{
           listStyle: `none`,
@@ -46,10 +48,9 @@ class Sidebar extends React.Component {
           marginLeft: 0,
         }}>
         {children}
-      </ul>
-    );
+      </ul>;
 
-    const SidebarLink = props => (
+    const SidebarLink = props =>
       <Link
         {...props}
         activeClassName="current"
@@ -59,8 +60,8 @@ class Sidebar extends React.Component {
         css={{
           color: `inherit`,
         }}
-      />
-    );
+        onClick={e => this.props.close()}
+      />;
 
     return (
       <div {...otherProps}>
@@ -68,49 +69,57 @@ class Sidebar extends React.Component {
           id={id}
           css={{
             background: `white`,
-            padding: rhythm(1),
-            paddingRight: `calc(${rhythm(1)} - 1px)`,
             [presets.Tablet]: {
               paddingTop: rhythm(1),
               paddingBottom: rhythm(1),
-              paddingLeft: 0, // For desktop, let main wrapper take care
-              // of padding on left.
+              paddingLeft: 0, // For desktop, let main wrapper take care of padding on left.
             },
           }}>
-          {/* Show the version switcher on mobile */}
-          <select
-            value={this.props.activeVersion}
-            onChange={e => this.props.setVersion(e.target.value)}
+
+          <div
             css={{
-              border: `none`,
-              background: `none`,
-              borderRadius: 0,
-              cursor: `pointer`,
-              outline: `none`,
-              fontSize: `100%`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              height: `calc(${rhythm(2)} - 1px)`,
+              borderBottom: `1px solid #ccc`,
               marginBottom: rhythm(1),
-              marginLeft: 0,
+              padding: '20px',
               [presets.Tablet]: {
                 display: `none`,
               },
             }}>
-            {this.props.versions.map(version => {
-              return (
-                <option key={version} value={version}>
-                  SDK Version {version}
-                </option>
-              );
-            })}
-          </select>
+            {/* Show the version switcher on mobile */}
+            <select
+              value={this.props.activeVersion}
+              onChange={e => this.props.setVersion(e.target.value)}
+              css={{
+                background: `none`,
+                cursor: `pointer`,
+                fontSize: `100%`,
+                marginLeft: 0,
+              }}>
+              {this.props.versions.map(version => {
+                return (
+                  <option key={version} value={version}>
+                    SDK Version {version}
+                  </option>
+                );
+              })}
+            </select>
+            <Button value="Close" onClick={e => this.props.close()} />
+          </div>
 
           {activeRoutes.map((section, i) => {
             return (
-              <div key={section.title}>
+              <div
+                key={section.title}
+                css={{ padding: `0em ${rhythm(3 / 4)}` }}>
                 <Header i={i} link={section.index}>
                   {section.title}
                 </Header>
                 <List>
-                  {Object.keys(section.links).map(title => (
+                  {Object.keys(section.links).map(title =>
                     <li key={title} css={{ marginBottom: 7 }}>
                       <SidebarLink to={section.links[title]}>
                         {/* Needed for search */}
@@ -118,7 +127,7 @@ class Sidebar extends React.Component {
                         {title}
                       </SidebarLink>
                     </li>
-                  ))}
+                  )}
                 </List>
               </div>
             );

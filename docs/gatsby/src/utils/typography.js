@@ -43,7 +43,6 @@ const typography = new Typography({
     },
     'tt,code': {
       fontFamily: `"Source Code Pro",Consolas,"Roboto Mono","Droid Sans Mono","Liberation Mono",Menlo,Courier,monospace`,
-      fontSize: `inherit`,
       paddingTop: `0.05em`,
       paddingBottom: `0.05em`,
       fontSize: '14px',

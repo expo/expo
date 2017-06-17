@@ -5,7 +5,6 @@
 import React from 'react';
 import Link from 'gatsby-link';
 import { withRouter } from 'react-router';
-import Drawer from 'react-motion-drawer';
 import { ScrollContainer } from 'react-router-scroll';
 import MenuIcon from 'react-icons/lib/md/menu';
 import presets from 'glamor-media-query-presets';
@@ -15,6 +14,7 @@ import ArrowIcon from 'react-icons/lib/md/keyboard-arrow-down';
 import logoText from '../images/logo-text.svg';
 import SidebarContent from '../components/sidebar';
 import Header from '../components/header';
+import Button from '../components/button';
 import typography from '../utils/typography';
 const rhythm = typography.rhythm;
 const scale = typography.scale;
@@ -134,6 +134,23 @@ class Wrapper extends React.Component {
       }
     }
 
+    const Overlay = props =>
+      <div
+        {...props}
+        css={{
+          position: 'absolute',
+          width: '100%',
+          height: 'calc(100% + 200px)', // Add a 200px off-screen white padding so momentum scrolling doesn't show underlying page
+          top: '-200px',
+          paddingTop: '200px',
+          background: 'white',
+          zIndex: '10000',
+          overflowY: 'scroll',
+          WebkitOverflowScrolling: 'touch',
+          display: props.open ? 'block' : 'none',
+        }}
+      />;
+
     return (
       <div>
         <Helmet
@@ -141,19 +158,18 @@ class Wrapper extends React.Component {
           titleTemplate={`%s | Expo ${this.state.activeVersion} documentation`}
         />
 
-        <Drawer
+        <Overlay
           open={this.state.sidebarOpen}
           onChange={open => this.setState({ sidebarOpen: open })}>
-          <div onClick={() => this.setState({ sidebarOpen: false })}>
-            <SidebarContent
-              id="mobile-sidebar"
-              activeRoutes={this.state.activeRoutes}
-              activeVersion={this.state.activeVersion}
-              versions={versions}
-              setVersion={this.setVersion}
-            />
-          </div>
-        </Drawer>
+          <SidebarContent
+            id="mobile-sidebar"
+            activeRoutes={this.state.activeRoutes}
+            activeVersion={this.state.activeVersion}
+            versions={versions}
+            setVersion={this.setVersion}
+            close={() => this.setState({ sidebarOpen: false })}
+          />
+        </Overlay>
 
         <Header
           activeVersion={this.state.activeVersion}
@@ -170,6 +186,7 @@ class Wrapper extends React.Component {
               margin: `0 auto`,
               maxWidth: 1280,
               padding: rhythm(3 / 4),
+              display: this.state.sidebarOpen ? 'none' : 'block',
               paddingTop: rhythm(2), // extra padding for top navbar on mobile
               [presets.Tablet]: {
                 padding: rhythm(1),
@@ -210,37 +227,27 @@ class Wrapper extends React.Component {
             </div>
           </div>
         </ScrollContainer>
+
         <nav
           css={{
-            display: `block`,
+            display: `flex`,
+            justifyContent: 'space-between',
+            alignItems: 'center',
             background: `white`,
             position: 'fixed',
+            padding: '20px',
             right: 0,
             top: 0,
             left: 0,
             zIndex: 1001,
+            overflow: 'scroll',
             height: `calc(${rhythm(2)} - 1px)`,
             borderBottom: `1px solid #ccc`,
             [presets.Tablet]: {
               display: `none`,
             },
           }}>
-          <div
-            onClick={() =>
-              this.setState({ sidebarOpen: !this.state.sidebarOpen })}
-            css={{
-              float: `left`,
-              paddingLeft: rhythm(1 / 3),
-              paddingRight: 12,
-              paddingTop: 8,
-            }}>
-            <MenuIcon
-              css={{
-                fontSize: rhythm(5 / 3),
-                height: rhythm(1.25),
-              }}
-            />
-          </div>
+
           <Link to={`/versions/${this.state.activeVersion}/index.html`}>
             <img
               src={logoText}
@@ -252,6 +259,12 @@ class Wrapper extends React.Component {
               }}
             />
           </Link>
+
+          <Button
+            onClick={() => this.setState({ sidebarOpen: true })}
+            value="Menu"
+          />
+
         </nav>
       </div>
     );
