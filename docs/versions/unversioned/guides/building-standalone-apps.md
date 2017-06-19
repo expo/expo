@@ -77,11 +77,11 @@ https://developer.apple.com/account/#/membership)? XY1234567
 
 > **Note:** We currently don't support Apple's two-factor authentication, so you'll have to temporarily turn off 2FA on your Apple ID account to use exp build. The GitHub issue for 2FA support is [#160](https://github.com/expo/expo/issues/160).
 
-Next we will ask you if you'd like us to handle your distribution certificate or use your own. Similar to the Android keystore, if you don't know what a distribution certificate is, just let us handle it for you.
+Next we will ask you if you'd like us to handle your distribution certificate or use your own. Similar to the Android keystore, if you don't know what a distribution certificate is, just let us handle it for you. If you do need to upload your own certificates, we recommend following [this excellent guide on making a p12 file](https://calvium.com/how-to-make-a-p12-file/).
 
 ## 4. Wait for it to finish building
 
-This will take a few minutes, you can check up on it by running `exp build:status`. When it's done, you'll see the url of a `.apk` (Android) or `.ipa` (iOS) file -- this is your app. 
+This will take a few minutes, you can check up on it by running `exp build:status`. When it's done, you'll see the url of a `.apk` (Android) or `.ipa` (iOS) file -- this is your app.
 
 > **Note:** We enable bitcode for iOS, so the `.ipa` files for iOS are much larger than the eventual App Store download available to your users. For more information, see [App Thinning](https://developer.apple.com/library/content/documentation/IDEs/Conceptual/AppDistributionGuide/AppThinning/AppThinning.html).
 
