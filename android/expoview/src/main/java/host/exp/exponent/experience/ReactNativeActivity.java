@@ -225,15 +225,20 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
 
   @Override
   public boolean onKeyUp(int keyCode, KeyEvent event) {
-    if (keyCode == KeyEvent.KEYCODE_MENU && mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
-      mReactInstanceManager.call("showDevOptionsDialog");
-      return true;
-    }
-    boolean didDoubleTapR = Assertions.assertNotNull(mDoubleTapReloadRecognizer)
-        .didDoubleTapR(keyCode, getCurrentFocus());
-    if (didDoubleTapR) {
-      ((DevSupportManager) mReactInstanceManager.call("getDevSupportManager")).handleReloadJS();
-      return true;
+    if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
+      if (keyCode == KeyEvent.KEYCODE_MENU) {
+        mReactInstanceManager.call("showDevOptionsDialog");
+        return true;
+      }
+      DevSupportManager devSupportManager = (DevSupportManager) mReactInstanceManager.call("getDevSupportManager");
+      if (devSupportManager != null && devSupportManager.getDevSupportEnabled()) {
+        boolean didDoubleTapR = Assertions.assertNotNull(mDoubleTapReloadRecognizer)
+            .didDoubleTapR(keyCode, getCurrentFocus());
+        if (didDoubleTapR) {
+          devSupportManager.handleReloadJS();
+          return true;
+        }
+      }
     }
     return super.onKeyUp(keyCode, event);
   }
