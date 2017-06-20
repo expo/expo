@@ -34,9 +34,9 @@ following these steps:
 
 On iOS, add the key `EXAnalyticsDisabled` to your app's main `Info.plist` with the value `YES`.
 
-## Enabling iCloud entitlement
+## Using DocumentPicker
 
-The DocumentPicker module requires the iCloud entitlement to work properly. If your app doesn't have it already, you can add it by opening the project in Xcode and following these steps:
+In iOS Expokit projects, the DocumentPicker module requires the iCloud entitlement to work properly. If your app doesn't have it already, you can add it by opening the project in Xcode and following these steps:
 
 - In the project go to the `Capabilities` tab.
 - Set the iCloud switch to on.
