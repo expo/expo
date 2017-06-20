@@ -263,6 +263,7 @@ async function getTemplateSubstitutions() {
     ).readAsync();
   } catch (e) {
     // Don't have __internal__, use public keys
+    console.log('generate-dynamic-macros is falling back to `template-files/keys.json`');
     return await new JsonFile(
       path.join(EXPONENT_DIR, 'template-files', 'keys.json')
     ).readAsync();
