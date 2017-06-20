@@ -105,10 +105,11 @@ If you plan to submit to the Apple App Store, your app will be subject to normal
 
 ## 7. Update your app
 
-When you want to update your app you can simply publish through XDE or `exp`! As long as you don't change the `sdkVersion` version in `app.json` your standalone app will get the new code next time users open the app. If you want to change the icon or the app name you'll need to resubmit your app to each store.
+For the most part, when you want to update your app, just Publish again from exp or XDE. Your users will get the new JS the next time they open the app. There are only a couple reasons why you might want to rebuild and resubmit the native binaries:
+
+- If you want to change native metadata like the app's name or icon
+- If you upgrade to a newer `sdkVersion` of your app (which requires new native code)
+
+To keep track of this, you can also update the binary's [versionCode](configuration.html#versioncode) and [buildNumber](configuration.html#buildnumber). It is a good idea to glance through the [app.json documentation](configuration.html) to get an idea of all the properties you can change, e.g. the icons, deep linking url scheme, handset/tablet support, and a lot more.
 
 If you run into problems during this process, we're more than happy to help out! Join our Slack and let us know if you have any questions.
-
-> **Note:** Are you curious how this works? We embed the Expo runtime into a new app and make it always point to the published URL of your app.
->
-> We mentioned a few of the required properties here, but you're free to configure everything from the push notification icon to the deep-linking url scheme (see [the guide on app.json](configuration.html) for more information), and we take care of building it for you so you never have to open Xcode or Android Studio.
