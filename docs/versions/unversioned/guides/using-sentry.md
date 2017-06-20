@@ -23,7 +23,7 @@ It notifies you of exceptions that your users run into while using your app and 
 - Once you have signed up, you will be prompted to create a project. Enter the name of your project and continue.
 - You will now be prompted to configure your application, click the link "Get your DSN" and copy your "Public DSN", you will need it shortly.
 - Go to the [Sentry API](https://sentry.io/api/) section and create an auth token. You can use the default configuration, this token will never be made available to users of your app. Copy your auth token and save it for later.
-- Go to your project dashboard by going to [sentry.io](https://sentry.io) and clicking "Select a project" from the top of the screen, then choosing your project. This is where you will see exceptions reported later. For now, click "Project Settings" in the top right, and copy your project "Short name" as well as your team short name. The team short name is the name in parentheses, eg: "brents-sentry-example" in "Brent's Sentry Example (brents-sentry-example)".
+- Go to your project dashboard by going to [sentry.io](https://sentry.io) and clicking "Select a project" from the top of the screen, then choosing your project. This is where you will see exceptions reported later. For now, click "Project Settings" in the top right, and copy your project "Short name". Then click on the top left corner icon to expose the organizations in your account. Click on settings gear icon and copy the organization short name. You will need this info for your `app.json` settings.
 
 ### Install and configure Sentry
 
@@ -49,7 +49,7 @@ Sentry.config('your Public DSN goes here').install();
         {
           "file": "sentry-expo/upload-sourcemaps",
           "config": {
-            "organization": "your team short name here",
+            "organization": "your organization's short name here",
             "project": "your project short name here",
             "authToken": "your auth token here"
           }
