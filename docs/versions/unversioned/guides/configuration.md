@@ -220,7 +220,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `infoPlist`
 
-      Arbitrary configuration to add to your standalone app's native Info.plist. Applied prior to all other Expo-specific configuration. No other validation is performed, so use this at your own risk of rejection from the App Store.
+      Dictionary of arbitrary configuration to add to your standalone app's native Info.plist. Applied prior to all other Expo-specific configuration. No other validation is performed, so use this at your own risk of rejection from the App Store.
 
    - `associatedDomains`
 
