@@ -34,6 +34,12 @@ following these steps:
 
 On iOS, add the key `EXAnalyticsDisabled` to your app's main `Info.plist` with the value `YES`.
 
+## Configuring the JS URL
+
+In development, your ExpoKit project will request your local build from XDE/exp. You can see this configuration in `EXBuildConstants.plist` (iOS) or `ExponentBuildConstants` (Android). You shouldn't need to edit it, because it's written automatically when you serve the project.
+
+In production, your ExpoKit project will request your published JS bundle. This is configured in `EXShell.plist` (iOS) and `MainActivity.java` (Android). If you want to specify custom behavior in iOS, you can also set the `[ExpoKit sharedInstance].publishedManifestUrlOverride` property.
+
 ## Using DocumentPicker
 
 In iOS Expokit projects, the DocumentPicker module requires the iCloud entitlement to work properly. If your app doesn't have it already, you can add it by opening the project in Xcode and following these steps:

@@ -82,7 +82,6 @@ If you do make native changes, people who don't have your native code may encoun
 they try to use features that depend on those changes.
 
 If you decide to distribute your app as an `ipa` or `apk`, it will automatically hit
-your app's published URL instead of your development XDE url. You can examine this configuration
-in the contents of `EXShell.plist` (iOS) or `MainActivity.java` (Android).
+your app's published URL instead of your development XDE url. Read [advanced details about your app's JS url](advanced-expokit-topics.html#configuring-the-js-url).
 
-Before taking your app all the way to production, it's a good idea to glance over the [Advanced ExpoKit Topics](advanced-expokit-topics.html) guide.
+In general, before taking your app all the way to production, it's a good idea to glance over the [Advanced ExpoKit Topics](advanced-expokit-topics.html) guide.
