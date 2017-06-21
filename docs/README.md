@@ -66,3 +66,5 @@ In my case (Brent), I need to go to `http://0.0.0.0:8000/versions/unversioned/in
 to work.
 
 If Docker is not available for you, run `yarn run start-no-nginx` -- the site will be available at `http://localhost:8000/versions/<version>/index.html`. However, certain redirects won't work, and you'll have to navigate directly to the documentation you want to view.
+
+To add new documentation files, edit the `yaml` files under `gatsby/src/data`.
