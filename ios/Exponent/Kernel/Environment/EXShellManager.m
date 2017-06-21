@@ -119,7 +119,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
   if (developmentUrl) {
     _shellManifestUrl = developmentUrl;
     NSURLComponents *components = [NSURLComponents componentsWithURL:[NSURL URLWithString:_shellManifestUrl] resolvingAgainstBaseURL:YES];
-    if ([self _isValidShellUrlScheme:components.scheme]) {
+    if ([self _isValidShellUrlScheme:components.scheme forDevelopment:YES]) {
       _urlScheme = components.scheme;
     }
     _usesPublishedManifest = NO;
@@ -140,7 +140,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
       NSArray *urlSchemes = urlType[@"CFBundleURLSchemes"];
       if (urlSchemes) {
         for (NSString *urlScheme in urlSchemes) {
-          if ([self _isValidShellUrlScheme:urlScheme]) {
+          if ([self _isValidShellUrlScheme:urlScheme forDevelopment:NO]) {
             _urlScheme = urlScheme;
             break;
           }
@@ -168,10 +168,21 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
 #endif
 }
 
-- (BOOL)_isValidShellUrlScheme:(NSString *)urlScheme
+/**
+ *  Is this a valid url scheme for a standalone app?
+ */
+- (BOOL)_isValidShellUrlScheme:(NSString *)urlScheme forDevelopment:(BOOL)isForDevelopment
 {
   // don't allow shell apps to intercept exp links
-  return (urlScheme && urlScheme.length && ![urlScheme hasPrefix:@"exp"]);
+  if (urlScheme && urlScheme.length) {
+    if (isForDevelopment) {
+      return YES;
+    } else {
+      // prod shell apps must have some non-exp url scheme
+      return (![urlScheme hasPrefix:@"exp"]);
+    }
+  }
+  return NO;
 }
 
 @end
