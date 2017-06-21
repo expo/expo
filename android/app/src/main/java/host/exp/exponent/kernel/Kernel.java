@@ -714,6 +714,10 @@ public class Kernel implements KernelInterface {
 
   @Override
   public boolean reloadVisibleExperience(String manifestUrl) {
+    if (manifestUrl == null) {
+      return false;
+    }
+
     // Pre Lollipop we always just open a new activity.
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
       // TODO: make debug mode work here

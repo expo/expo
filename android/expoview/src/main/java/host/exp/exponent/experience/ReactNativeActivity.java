@@ -457,7 +457,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
 
     if (errorRecoveryManager.shouldReloadOnError()) {
       if (!KernelProvider.getInstance().reloadVisibleExperience(mManifestUrl)) {
-        // Kernel doesn't support reloading, show error screen
+        // Kernel couldn't reload, show error screen
         return true;
       }
       sErrorQueue.clear();
