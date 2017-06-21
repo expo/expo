@@ -96,11 +96,15 @@ public class ExperienceActivityUtils {
         public void onLoadBitmap(Bitmap bitmap) {
           // This if statement is only needed so the compiler doesn't show an error.
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            activity.setTaskDescription(new ActivityManager.TaskDescription(
-                manifest.optString(ExponentManifest.MANIFEST_NAME_KEY),
-                bitmap,
-                color
-            ));
+            try {
+              activity.setTaskDescription(new ActivityManager.TaskDescription(
+                  manifest.optString(ExponentManifest.MANIFEST_NAME_KEY),
+                  bitmap,
+                  color
+              ));
+            } catch (Throwable e) {
+              EXL.e(TAG, e);
+            }
           }
         }
       });
