@@ -309,14 +309,9 @@ public class Exponent {
     }
   }
 
-
   public Application getApplication() {
     return mApplication;
   }
-
-
-
-
 
   public static void logException(Throwable throwable) {
     if (!ExpoViewBuildConfig.DEBUG) {
@@ -327,10 +322,6 @@ public class Exponent {
       }
     }
   }
-
-
-
-
 
   private static Provider sBouncyCastleProvider;
 
