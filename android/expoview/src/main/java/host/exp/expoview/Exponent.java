@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.StrictMode;
 import android.os.UserManager;
 import android.provider.Settings;
 import android.support.v4.content.ContextCompat;
@@ -164,6 +165,14 @@ public class Exponent {
     }
 
     ImageLoader.getInstance().init(new ImageLoaderConfiguration.Builder(context).build());
+
+    if (!ExpoViewBuildConfig.DEBUG) {
+      // There are a few places in RN code that throw NetworkOnMainThreadException.
+      // WebsocketJavaScriptExecutor.connectInternal closes a websocket on the main thread.
+      // Shouldn't actually block the ui since it's fire and forget so not high priority to fix the root cause.
+      StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+      StrictMode.setThreadPolicy(policy);
+    }
   }
 
   public void setCurrentActivity(Activity activity) {
