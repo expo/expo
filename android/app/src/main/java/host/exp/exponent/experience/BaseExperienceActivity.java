@@ -87,7 +87,7 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
 
   @Override
   public void onBackPressed() {
-    if (mReactInstanceManager.isNotNull() && !mIsCrashed) {
+    if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
       mReactInstanceManager.call("onBackPressed");
     } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       moveTaskToBack(true);
