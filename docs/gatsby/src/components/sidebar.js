@@ -68,7 +68,6 @@ class Sidebar extends React.Component {
         <div
           id={id}
           css={{
-            background: `white`,
             [presets.Tablet]: {
               paddingTop: rhythm(1),
               paddingBottom: rhythm(1),
@@ -114,7 +113,11 @@ class Sidebar extends React.Component {
             return (
               <div
                 key={section.title}
-                css={{ padding: `0em ${rhythm(3 / 4)}` }}>
+                css={{
+                  '@media (max-width: 750px)': {
+                    padding: `0em ${rhythm(3 / 4)}`,
+                  },
+                }}>
                 <Header i={i} link={section.index}>
                   {section.title}
                 </Header>
