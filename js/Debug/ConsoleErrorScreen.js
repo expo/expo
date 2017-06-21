@@ -139,12 +139,10 @@ var styles = StyleSheet.create({
   },
   methodName: {
     color: '#000',
-    fontFamily: 'Menlo',
     fontSize: 14,
   },
   sourcePosition: {
     color: '#000',
-    fontFamily: 'Menlo',
     fontSize: 12,
   },
 });
