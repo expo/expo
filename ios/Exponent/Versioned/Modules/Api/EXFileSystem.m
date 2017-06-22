@@ -103,6 +103,30 @@ RCT_REMAP_METHOD(deleteAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
+  NSString *scopedPath = [self.bridge.experienceScope scopedPathWithPath:filePath withOptions:options];
+  if (!scopedPath) {
+    reject(@"E_INVALID_PATH",
+           [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", filePath],
+           nil);
+  }
+  if ([[NSFileManager defaultManager] fileExistsAtPath:scopedPath]) {
+    NSError *error;
+    if ([[NSFileManager defaultManager] removeItemAtPath:scopedPath error:&error]) {
+      resolve(nil);
+    } else {
+      reject(@"E_FILE_NOT_DELETED",
+             [NSString stringWithFormat:@"File '%@' could not be deleted.", filePath],
+             error);
+    }
+  } else {
+    if (options[@"idempotent"]) {
+      resolve(nil);
+    } else {
+      reject(@"E_FILE_NOT_FOUND",
+             [NSString stringWithFormat:@"File '%@' could not be deleted because it could not be found.", filePath],
+             nil);
+    }
+  }
 }
 
 + (BOOL)ensureDirExistsWithPath:(NSString *)path
