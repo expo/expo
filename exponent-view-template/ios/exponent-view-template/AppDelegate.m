@@ -40,16 +40,6 @@
 
 #pragma mark - Notifications
 
-- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)token
-{
-    [[ExpoKit sharedInstance] application:application didRegisterForRemoteNotificationsWithDeviceToken:token];
-}
-
-- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)err
-{
-    [[ExpoKit sharedInstance] application:application didFailToRegisterForRemoteNotificationsWithError:err];
-}
-
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(nonnull UILocalNotification *)notification
 {
     [[ExpoKit sharedInstance] application:application didReceiveLocalNotification:notification];
