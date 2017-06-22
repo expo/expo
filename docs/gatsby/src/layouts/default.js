@@ -25,6 +25,7 @@ import 'typeface-source-sans-pro';
 import 'typeface-source-code-pro';
 
 import unversioned from '../data/unversioned.yaml';
+import v18 from '../data/v18.yaml';
 import v17 from '../data/v17.yaml';
 import v16 from '../data/v16.yaml';
 import v15 from '../data/v15.yaml';
@@ -34,6 +35,7 @@ import v12 from '../data/v12.yaml';
 import v11 from '../data/v11.yaml';
 
 const versions = [
+  `v18.0.0`,
   `v17.0.0`,
   `v16.0.0`,
   `v15.0.0`,
@@ -84,6 +86,9 @@ class Wrapper extends React.Component {
     switch (version) {
       case 'unversioned':
         routes = unversioned;
+        break;
+      case 'v18.0.0':
+        routes = v18;
         break;
       case 'v17.0.0':
         routes = v17;
