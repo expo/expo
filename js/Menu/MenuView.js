@@ -67,6 +67,7 @@ export default class MenuView extends React.Component {
             easing: Easing.inOut(Easing.quad),
             toValue: 1,
             duration: 100,
+            useNativeDriver: true,
           }).start();
       });
     }
@@ -128,12 +129,12 @@ export default class MenuView extends React.Component {
         tint="light"
         intensity={intensity}>
         <StatusBar barStyle="default" />
-        <Animated.View
-          style={[
-            styles.overlay,
-            { opacity: this.state.transitionIn, transform: [{ scale }] },
-          ]}>
-          <ScrollView>
+        <ScrollView style={styles.overlay}>
+          <Animated.View
+            style={{
+              opacity: this.state.transitionIn,
+              transform: [{ scale }],
+            }}>
             {this.props.isNuxFinished
               ? this._renderTaskInfoRow()
               : this._renderNUXRow()}
@@ -165,8 +166,8 @@ export default class MenuView extends React.Component {
                 style={styles.closeButtonIcon}
               />
             </TouchableHighlight>
-          </ScrollView>
-        </Animated.View>
+          </Animated.View>
+        </ScrollView>
       </AnimatedBlurView>
     );
   }
