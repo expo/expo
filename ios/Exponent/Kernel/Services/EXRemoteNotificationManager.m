@@ -66,6 +66,13 @@ NSString * const kEXCurrentAPNSTokenDefaultsKey = @"EXCurrentAPNSTokenDefaultsKe
 
 - (void)registerForRemoteNotifications
 {
+#ifdef EX_DETACHED
+  DDLogWarn(@"Expo Remote Notification services won't work in an ExpoKit app because Expo can not manage your APNS certificates.");
+  
+  // don't register, because the detached app may not be built with APNS entitlements,
+  // and in that case this method would actually be bad to call. (not just a no-op.)
+  return;
+#endif
   [RCTSharedApplication() registerForRemoteNotifications];
 }
 
