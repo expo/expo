@@ -230,12 +230,12 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
         mReactInstanceManager.call("showDevOptionsDialog");
         return true;
       }
-      DevSupportManager devSupportManager = (DevSupportManager) mReactInstanceManager.call("getDevSupportManager");
-      if (devSupportManager != null && devSupportManager.getDevSupportEnabled()) {
+      RNObject devSupportManager = mReactInstanceManager.callRecursive("getDevSupportManager");
+      if (devSupportManager != null && (boolean) devSupportManager.call("getDevSupportEnabled")) {
         boolean didDoubleTapR = Assertions.assertNotNull(mDoubleTapReloadRecognizer)
             .didDoubleTapR(keyCode, getCurrentFocus());
         if (didDoubleTapR) {
-          devSupportManager.handleReloadJS();
+          devSupportManager.call("handleReloadJS");
           return true;
         }
       }
