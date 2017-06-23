@@ -174,12 +174,12 @@ typedef NS_OPTIONS(NSUInteger, ABI16_0_0EXAudioInterruptionMode)
   
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_bridgeDidForeground:)
-                                               name:@"ABI16_0_0EXKernelBridgeDidForegroundNotification"
+                                               name:@"EXKernelBridgeDidForegroundNotification"
                                              object:_bridge];
   
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_bridgeDidBackground:)
-                                               name:@"ABI16_0_0EXKernelBridgeDidBackgroundNotification"
+                                               name:@"EXKernelBridgeDidBackgroundNotification"
                                              object:_bridge];
 }
 

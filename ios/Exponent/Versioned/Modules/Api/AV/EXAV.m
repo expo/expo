@@ -10,6 +10,7 @@
 #import "EXFileSystem.h"
 #import "EXScope.h"
 #import "EXVideoView.h"
+#import "EXUnversioned.h"
 
 @interface EXAV ()
 
@@ -80,11 +81,11 @@
   
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_bridgeDidForeground:)
-                                               name:@"EXKernelBridgeDidForegroundNotification"
+                                               name:EX_UNVERSIONED(@"EXKernelBridgeDidForegroundNotification")
                                              object:_bridge];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_bridgeDidBackground:)
-                                               name:@"EXKernelBridgeDidBackgroundNotification"
+                                               name:EX_UNVERSIONED(@"EXKernelBridgeDidBackgroundNotification")
                                              object:_bridge];
 }
 
