@@ -94,14 +94,14 @@ None
 
 Object with:
 
-- **magHeading (_number_)** — measure of magnetic north in degrees 
+- **magHeading (_number_)** — measure of magnetic north in degrees
 - **trueHeading (_number_)** — measure of true north in degrees (needs location permissions, will return -1 if not given)
-- **accuracy (_number_)** — level of callibration of compass. 
+- **accuracy (_number_)** — level of callibration of compass.
   - 3: high accuracy, 2: medium accuracy, 1: low accuracy, 0: none
   - Reference for iOS: 3: < 20 degrees uncertainty, 2: < 35 degrees, 1: < 50 degrees, 0: > 50 degrees
 
 
-### `Expo.Location.watchHeadingAsync()`
+### `Expo.Location.watchHeadingAsync(callback)`
 
 Suscribe to compass updates from the device
 
@@ -110,10 +110,10 @@ Suscribe to compass updates from the device
 - **callback (_function_)** --
 
     This function is called on each compass update. It is passed exactly one parameter: an object with the following fields:
-    
-    - **magHeading (_number_)** — measure of magnetic north in degrees 
+
+    - **magHeading (_number_)** — measure of magnetic north in degrees
     - **trueHeading (_number_)** — measure of true north in degrees (needs location permissions, will return -1 if not given)
-    - **accuracy (_number_)** — level of callibration of compass. 
+    - **accuracy (_number_)** — level of callibration of compass.
     	- 3: high accuracy, 2: medium accuracy, 1: low accuracy, 0: none
     	- Reference for iOS: 3: < 20 degrees uncertainty, 2: < 35 degrees, 1: < 50 degrees, 0: > 50 degrees
 
