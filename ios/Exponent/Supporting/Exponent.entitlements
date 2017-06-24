@@ -6,8 +6,9 @@
 	<string>development</string>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>webcredentials:exp.host</string>
 		<string>applinks:exp.host</string>
+		<string>applinks:expo.io</string>
+		<string>webcredentials:expo.io</string>
 	</array>
 	<key>com.apple.developer.icloud-container-identifiers</key>
 	<array>
