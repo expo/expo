@@ -38,40 +38,37 @@ const MyAppsQuery = gql`
 export default graphql(MyAppsQuery, {
   props: props => {
     let { data } = props;
-    let apps, appCount;
-    if (data.me) {
-      apps = data.me.apps;
-      appCount = data.me.appCount;
-    }
 
     return {
       ...props,
       data: {
         ...data,
-        appCount,
-        apps,
+        appCount: data.me.appCount,
+        apps: data.me.apps,
       },
       loadMoreAsync() {
         return data.fetchMore({
           variables: {
-            offset: apps.length,
+            offset: (data.me && data.me.apps && data.me.apps.length) || 0,
           },
           updateQuery: (previousData, { fetchMoreResult }) => {
             if (!fetchMoreResult || !fetchMoreResult.me) {
               return previousData;
             }
 
-            let result = {
-              viewer: {
-                me: {
-                  ...previousData.me,
-                  ...fetchMoreResult.me,
-                  apps: [...previousData.me.apps, ...fetchMoreResult.me.apps],
-                },
+            let combinedData = {
+              me: {
+                ...previousData.me,
+                ...fetchMoreResult.me,
+                apps: [...previousData.me.apps, ...fetchMoreResult.me.apps],
               },
             };
 
-            return result;
+            return {
+              ...combinedData,
+              appCount: combinedData.me.appCount,
+              apps: combinedData.me.apps,
+            };
           },
         });
       },
