@@ -317,7 +317,7 @@ export default class MenuView extends React.Component {
     } else {
       const detailButton = detail
         ? this._renderDevMenuDetailButton(label, detail)
-        : nil;
+        : null;
       return (
         <View style={[styles.button, styles.buttonWithSeparator]} key={key}>
           <View style={styles.buttonIcon} />
