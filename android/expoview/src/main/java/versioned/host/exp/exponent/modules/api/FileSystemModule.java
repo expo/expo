@@ -72,11 +72,17 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
   public void deleteAsync(String filepath, ReadableMap options, Promise promise) {
     try {
       File file = new File(mScopedContext.toScopedPath(filepath, ReadableObjectUtils.readableToJson(options)));
-      if (!file.exists()) {
-        throw new IOException("File '" + filepath + "' does not exist");
+      if (file.exists()) {
+        FileUtils.forceDelete(file);
+        promise.resolve(null);
+      } else {
+        if (options.hasKey("idempotent") && options.getBoolean("idempotent")) {
+          promise.resolve(null);
+        } else {
+          promise.reject("E_FILE_NOT_FOUND",
+              "File '" + filepath + "' could not be deleted because it could not be found");
+        }
       }
-      FileUtils.forceDelete(file);
-      promise.resolve(filepath);
     } catch (Exception e) {
       EXL.e(TAG, e.getMessage());
       promise.reject(e);
