@@ -2,9 +2,11 @@
 
 package versioned.host.exp.exponent.modules.api;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 
@@ -62,6 +64,17 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
         result.putBoolean("isDirectory", false);
         promise.resolve(result);
       }
+    } catch (Exception e) {
+      EXL.e(TAG, e.getMessage());
+      promise.reject(e);
+    }
+  }
+
+  @ReactMethod
+  public void readAsStringAsync(String filepath, ReadableMap options, Promise promise) {
+    try {
+      promise.resolve(IOUtils.toString(new FileInputStream(
+          mScopedContext.toScopedPath(filepath, ReadableObjectUtils.readableToJson(options)))));
     } catch (Exception e) {
       EXL.e(TAG, e.getMessage());
       promise.reject(e);

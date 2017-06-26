@@ -46,7 +46,7 @@ RCT_REMAP_METHOD(downloadAsync,
            [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", filePath],
            nil);
   }
-  
+
   NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
   sessionConfiguration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
   sessionConfiguration.URLCache = nil;
@@ -69,8 +69,8 @@ RCT_REMAP_METHOD(downloadAsync,
   [task resume];
 }
 
-RCT_REMAP_METHOD(getInfoAsync,
-                 getInfoAsyncWithFilePath:(NSString *)filePath
+RCT_REMAP_METHOD(readAsStringAsync,
+                 readAsStringAsyncWithFilePath:(NSString *)filePath
                  withOptions:(NSDictionary *)options
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
@@ -82,18 +82,14 @@ RCT_REMAP_METHOD(getInfoAsync,
            nil);
   }
 
-  BOOL isDirectory;
-  if ([[NSFileManager defaultManager] fileExistsAtPath:scopedPath isDirectory:&isDirectory]) {
-    NSMutableDictionary *result = [NSMutableDictionary dictionary];
-    result[@"exists"] = @(true);
-    result[@"isDirectory"] = @(isDirectory);
-    result[@"uri"] = [NSURL fileURLWithPath:scopedPath].absoluteString;
-    if (options[@"md5"]) {
-      result[@"md5"] = [[NSData dataWithContentsOfFile:scopedPath] md5String];
-    }
-    resolve(result);
+  NSError *error;
+  NSString *string = [NSString stringWithContentsOfFile:scopedPath encoding:NSUTF8StringEncoding error:&error];
+  if (string) {
+    resolve(string);
   } else {
-    resolve(@{@"exists": @(false), @"isDirectory": @(false)});
+    reject(@"E_FILE_NOT_READ",
+           [NSString stringWithFormat:@"File '%@' could not be read.", filePath],
+           error);
   }
 }
 
@@ -126,6 +122,34 @@ RCT_REMAP_METHOD(deleteAsync,
              [NSString stringWithFormat:@"File '%@' could not be deleted because it could not be found.", filePath],
              nil);
     }
+  }
+}
+
+RCT_REMAP_METHOD(getInfoAsync,
+                 getInfoAsyncWithFilePath:(NSString *)filePath
+                 withOptions:(NSDictionary *)options
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+  NSString *scopedPath = [self.bridge.experienceScope scopedPathWithPath:filePath withOptions:options];
+  if (!scopedPath) {
+    reject(@"E_INVALID_PATH",
+           [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", filePath],
+           nil);
+  }
+
+  BOOL isDirectory;
+  if ([[NSFileManager defaultManager] fileExistsAtPath:scopedPath isDirectory:&isDirectory]) {
+    NSMutableDictionary *result = [NSMutableDictionary dictionary];
+    result[@"exists"] = @(true);
+    result[@"isDirectory"] = @(isDirectory);
+    result[@"uri"] = [NSURL fileURLWithPath:scopedPath].absoluteString;
+    if (options[@"md5"]) {
+      result[@"md5"] = [[NSData dataWithContentsOfFile:scopedPath] md5String];
+    }
+    resolve(result);
+  } else {
+    resolve(@{@"exists": @(false), @"isDirectory": @(false)});
   }
 }
 
