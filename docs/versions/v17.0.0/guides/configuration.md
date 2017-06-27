@@ -136,16 +136,16 @@ title: Configuration with exp.json
 
 - `rnCliPath`
 
-   
+
 - `packagerOpts`
 
-   
+
 - `ignoreNodeModulesValidation`
 
-   
+
 - `nodeModulesPath`
 
-   
+
 - `ios`
 
    **Standalone Apps Only**. iOS standalone app specific configuration
@@ -161,7 +161,7 @@ title: Configuration with exp.json
 
    - `config`
 
-      
+
        - `branch`
 
           [Branch](https://branch.io/) key to hook up Branch linking services.
@@ -200,7 +200,7 @@ title: Configuration with exp.json
 
    - `associatedDomains`
 
-      Associated Domains for the standalone app.
+      An array that contains Associated Domains for the standalone app.
 
 - `android`
 
@@ -217,7 +217,7 @@ title: Configuration with exp.json
 
    - `config`
 
-      
+
        - `branch`
 
           [Branch](https://branch.io/) key to hook up Branch linking services.
@@ -267,5 +267,3 @@ title: Configuration with exp.json
    Configuration for scripts to run to hook into the publish process
 
    - `postPublish`
-
-      
