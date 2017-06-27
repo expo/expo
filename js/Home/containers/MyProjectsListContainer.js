@@ -39,17 +39,24 @@ export default graphql(MyAppsQuery, {
   props: props => {
     let { data } = props;
 
+    let apps;
+    let appCount;
+    if (data.me) {
+      apps = data.me.apps;
+      appCount = data.me.appCount;
+    }
+
     return {
       ...props,
       data: {
         ...data,
-        appCount: data.me.appCount,
-        apps: data.me.apps,
+        apps,
+        appCount,
       },
       loadMoreAsync() {
         return data.fetchMore({
           variables: {
-            offset: (data.me && data.me.apps && data.me.apps.length) || 0,
+            offset: (apps && apps.length) || 0,
           },
           updateQuery: (previousData, { fetchMoreResult }) => {
             if (!fetchMoreResult || !fetchMoreResult.me) {
