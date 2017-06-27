@@ -1,7 +1,7 @@
 {
-  "name": "test-suite",
-  "description": "Test suite for the Expo SDK",
-  "slug": "test-suite",
+  "name": "expo-home-dev",
+  "description": "The home screen of the Expo app and its system kernel",
+  "slug": "home",
   "version": "1000.0",
   "sdkVersion": "UNVERSIONED",
   "nodeModulesPath": "..",
@@ -10,7 +10,7 @@
   "isKernel": true,
   "packagerOpts": {
     "projectRoots": "",
-    "config": "./rn-cli.config.js",
-    "assetExts": ["ttf", "mp4"]
+    "config": "rn-cli.config.js",
+    "assetExts": ["ttf"]
   }
 }

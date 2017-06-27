@@ -1,8 +1,8 @@
 {
-  "name": "exponent-home-dev",
+  "name": "expo-home-dev",
   "version": "1000.0",
   "private": true,
-  "description": "The Exponent app",
+  "description": "The home screen of the Expo app and its system kernel",
   "main": "exponent.js",
   "dependencies": {
     "expo": "*"
