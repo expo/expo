@@ -58,7 +58,11 @@ static NSNotificationName EXShakeGestureNotification = @"EXShakeGestureNotificat
 
 - (void)_handleShakeGesture
 {
-  if ([EXKernelDevKeyCommands sharedInstance].isLegacyMenuBehaviorEnabled) {
+  BOOL detached = NO;
+#ifdef EX_DETACHED
+  detached = YES;
+#endif
+  if (detached || [EXKernelDevKeyCommands sharedInstance].isLegacyMenuBehaviorEnabled) {
     [[EXKernel sharedInstance].bridgeRegistry.lastKnownForegroundAppManager showDevMenu];
   } else {
     [[EXKernel sharedInstance] dispatchKernelJSEvent:@"switchTasks" body:@{} onSuccess:nil onFailure:nil];
