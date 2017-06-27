@@ -3,12 +3,14 @@
 package versioned.host.exp.exponent.modules.api;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
+import java.io.OutputStreamWriter;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -75,6 +77,22 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
     try {
       promise.resolve(IOUtils.toString(new FileInputStream(
           mScopedContext.toScopedPath(filepath, ReadableObjectUtils.readableToJson(options)))));
+    } catch (Exception e) {
+      EXL.e(TAG, e.getMessage());
+      promise.reject(e);
+    }
+  }
+
+  @ReactMethod
+  public void writeAsStringAsync(String filepath, String string, ReadableMap options, Promise promise) {
+    try {
+      FileOutputStream out = new FileOutputStream(
+          mScopedContext.toScopedPath(filepath, ReadableObjectUtils.readableToJson(options)));
+      OutputStreamWriter writer = new OutputStreamWriter(out);
+      writer.write(string);
+      writer.close();
+      out.close();
+      promise.resolve(null);
     } catch (Exception e) {
       EXL.e(TAG, e.getMessage());
       promise.reject(e);

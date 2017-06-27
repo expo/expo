@@ -93,6 +93,30 @@ RCT_REMAP_METHOD(readAsStringAsync,
   }
 }
 
+RCT_REMAP_METHOD(writeAsStringAsync,
+                 writeAsStringAsyncWithFilePath:(NSString *)filePath
+                 withString:(NSString *)string
+                 withOptions:(NSDictionary *)options
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+  NSString *scopedPath = [self.bridge.experienceScope scopedPathWithPath:filePath withOptions:options];
+  if (!scopedPath) {
+    reject(@"E_INVALID_PATH",
+           [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", filePath],
+           nil);
+  }
+
+  NSError *error;
+  if ([string writeToFile:scopedPath atomically:YES encoding:NSUTF8StringEncoding error:&error]) {
+    resolve(nil);
+  } else {
+    reject(@"E_FILE_NOT_WRITTEN",
+           [NSString stringWithFormat:@"File '%@' could not be written.", filePath],
+           error);
+  }
+}
+
 RCT_REMAP_METHOD(deleteAsync,
                  deleteAsyncWithFilePath:(NSString *)filePath
                  withOptions:(NSDictionary *)options
