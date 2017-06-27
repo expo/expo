@@ -141,6 +141,56 @@ RCT_REMAP_METHOD(deleteAsync,
   }
 }
 
+RCT_REMAP_METHOD(moveAsync,
+                 moveAsyncWithOptions:(NSDictionary *)options
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+  if (!options[@"from"]) {
+    reject(@"E_MISSING_PARAMETER", @"`FileSystem.moveAsync` needs a `from` path.", nil);
+    return;
+  }
+  if (!options[@"to"]) {
+    reject(@"E_MISSING_PARAMETER", @"`FileSystem.moveAsync` needs a `to` path.", nil);
+    return;
+  }
+
+  NSString *from = [self.bridge.experienceScope scopedPathWithPath:options[@"from"] withOptions:options];
+  if (!from) {
+    reject(@"E_INVALID_PATH",
+           [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", from],
+           nil);
+    return;
+  }
+
+  NSString *to = [self.bridge.experienceScope scopedPathWithPath:options[@"to"] withOptions:options];
+  if (!to) {
+    reject(@"E_INVALID_PATH",
+           [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", to],
+           nil);
+    return;
+  }
+
+  // NOTE: The destination-delete and the move should happen atomically, but we hope for the best for now
+  NSError *error;
+  if ([[NSFileManager defaultManager] fileExistsAtPath:to]) {
+    if (![[NSFileManager defaultManager] removeItemAtPath:to error:&error]) {
+      reject(@"E_FILE_NOT_MOVED",
+             [NSString stringWithFormat:@"File '%@' could not be moved to '%@' because a file already exists at "
+              "the destination and could not be deleted.", from, to],
+             error);
+      return;
+    }
+  }
+  if ([[NSFileManager defaultManager] moveItemAtPath:from toPath:to error:&error]) {
+    resolve(nil);
+  } else {
+    reject(@"E_FILE_NOT_MOVED",
+           [NSString stringWithFormat:@"File '%@' could not be moved to '%@'.", from, to],
+           error);
+  }
+}
+
 RCT_REMAP_METHOD(downloadAsync,
                  downloadAsyncWithUrl:(NSURL *)url
                  withFilePath:(NSString *)filePath
