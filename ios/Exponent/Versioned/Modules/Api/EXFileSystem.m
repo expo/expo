@@ -33,9 +33,8 @@ RCT_EXPORT_MODULE(ExponentFileSystem);
   _bridge = bridge;
 }
 
-RCT_REMAP_METHOD(downloadAsync,
-                 downloadAsyncWithUrl:(NSURL *)url
-                 withFilePath:(NSString *)filePath
+RCT_REMAP_METHOD(getInfoAsync,
+                 getInfoAsyncWithFilePath:(NSString *)filePath
                  withOptions:(NSDictionary *)options
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
@@ -47,26 +46,19 @@ RCT_REMAP_METHOD(downloadAsync,
            nil);
   }
 
-  NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
-  sessionConfiguration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
-  sessionConfiguration.URLCache = nil;
-  NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfiguration];
-  NSURLSessionDataTask *task = [session dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-    if (error) {
-      reject(@"E_DOWNLOAD_FAILED",
-             [NSString stringWithFormat:@"Could not download from '%@'", url],
-             error);
-    }
-    [data writeToFile:scopedPath atomically:YES];
-
+  BOOL isDirectory;
+  if ([[NSFileManager defaultManager] fileExistsAtPath:scopedPath isDirectory:&isDirectory]) {
     NSMutableDictionary *result = [NSMutableDictionary dictionary];
+    result[@"exists"] = @(true);
+    result[@"isDirectory"] = @(isDirectory);
     result[@"uri"] = [NSURL fileURLWithPath:scopedPath].absoluteString;
     if (options[@"md5"]) {
-      result[@"md5"] = [data md5String];
+      result[@"md5"] = [[NSData dataWithContentsOfFile:scopedPath] md5String];
     }
     resolve(result);
-  }];
-  [task resume];
+  } else {
+    resolve(@{@"exists": @(false), @"isDirectory": @(false)});
+  }
 }
 
 RCT_REMAP_METHOD(readAsStringAsync,
@@ -149,8 +141,9 @@ RCT_REMAP_METHOD(deleteAsync,
   }
 }
 
-RCT_REMAP_METHOD(getInfoAsync,
-                 getInfoAsyncWithFilePath:(NSString *)filePath
+RCT_REMAP_METHOD(downloadAsync,
+                 downloadAsyncWithUrl:(NSURL *)url
+                 withFilePath:(NSString *)filePath
                  withOptions:(NSDictionary *)options
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
@@ -162,19 +155,26 @@ RCT_REMAP_METHOD(getInfoAsync,
            nil);
   }
 
-  BOOL isDirectory;
-  if ([[NSFileManager defaultManager] fileExistsAtPath:scopedPath isDirectory:&isDirectory]) {
+  NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
+  sessionConfiguration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
+  sessionConfiguration.URLCache = nil;
+  NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfiguration];
+  NSURLSessionDataTask *task = [session dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    if (error) {
+      reject(@"E_DOWNLOAD_FAILED",
+             [NSString stringWithFormat:@"Could not download from '%@'", url],
+             error);
+    }
+    [data writeToFile:scopedPath atomically:YES];
+
     NSMutableDictionary *result = [NSMutableDictionary dictionary];
-    result[@"exists"] = @(true);
-    result[@"isDirectory"] = @(isDirectory);
     result[@"uri"] = [NSURL fileURLWithPath:scopedPath].absoluteString;
     if (options[@"md5"]) {
-      result[@"md5"] = [[NSData dataWithContentsOfFile:scopedPath] md5String];
+      result[@"md5"] = [data md5String];
     }
     resolve(result);
-  } else {
-    resolve(@{@"exists": @(false), @"isDirectory": @(false)});
-  }
+  }];
+  [task resume];
 }
 
 + (BOOL)ensureDirExistsWithPath:(NSString *)path
