@@ -245,6 +245,33 @@ RCT_REMAP_METHOD(copyAsync,
   }
 }
 
+RCT_REMAP_METHOD(makeDirectoryAsync,
+                 makeDirectoryAsyncWithPath:(NSString *)path
+                 withOptions:(NSDictionary *)options
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+  NSString *scopedPath = [self.bridge.experienceScope scopedPathWithPath:path withOptions:options];
+  if (!scopedPath) {
+    reject(@"E_INVALID_PATH",
+           [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", path],
+           nil);
+    return;
+  }
+
+  NSError *error;
+  if ([[NSFileManager defaultManager] createDirectoryAtPath:scopedPath
+                                withIntermediateDirectories:options[@"intermediates"]
+                                                 attributes:nil
+                                                      error:&error]) {
+    resolve(nil);
+  } else {
+    reject(@"E_DIRECTORY_NOT_CREATED",
+           [NSString stringWithFormat:@"Directory '%@' could not be created.", path],
+           error);
+  }
+}
+
 RCT_REMAP_METHOD(downloadAsync,
                  downloadAsyncWithUrl:(NSURL *)url
                  withFilePath:(NSString *)filePath
