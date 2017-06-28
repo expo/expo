@@ -26,6 +26,15 @@ async function sedInPlaceAsync(...args) {
   }
 }
 
+function escapeForXml(original) {
+  return original
+    .replace('>', '&gt;')
+    .replace('<', '&lt;')
+    .replace("'", '&apos;')
+    .replace('"', '&quot;')
+    .replace('&', '&amp;');
+}
+
 exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
   args
 ) {
@@ -217,7 +226,7 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
   shell.sed(
     '-i',
     '"app_name">Expo',
-    `"app_name">${name}`,
+    `"app_name">${escapeForXml(name)}`,
     `${shellPath}app/src/main/res/values/strings.xml`
   );
 
