@@ -4,6 +4,7 @@ package versioned.host.exp.exponent.modules.api;
 
 import android.content.pm.PackageManager;
 import android.hardware.GeomagneticField;
+import android.location.Address;
 import android.location.Location;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
@@ -19,14 +20,20 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
+import java.util.List;
+
 import host.exp.exponent.utils.ScopedContext;
 import host.exp.exponent.utils.TimeoutObject;
+import io.nlopez.smartlocation.OnGeocodingListener;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
+import io.nlopez.smartlocation.OnReverseGeocodingListener;
 import io.nlopez.smartlocation.SmartLocation;
+import io.nlopez.smartlocation.geocoding.utils.LocationAddress;
 import io.nlopez.smartlocation.location.config.LocationAccuracy;
 import io.nlopez.smartlocation.location.config.LocationParams;
 import io.nlopez.smartlocation.location.utils.LocationState;
@@ -73,6 +80,18 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
     map.putMap("coords", coords);
     map.putDouble("timestamp", location.getTime());
     map.putBoolean("mocked", location.isFromMockProvider());
+
+    return map;
+  }
+
+  private static WritableMap addressToMap(Address address) {
+    WritableMap map = Arguments.createMap();
+    map.putString("city", address.getLocality());
+    map.putString("street", address.getThoroughfare());
+    map.putString("region", address.getAdminArea());
+    map.putString("country", address.getCountryName());
+    map.putString("postalCode", address.getPostalCode());
+    map.putString("name", address.getFeatureName());
 
     return map;
   }
@@ -154,6 +173,7 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
     }
 
     SmartLocation.with(mScopedContext).location().stop();
+    SmartLocation.with(mScopedContext).geocoding().stop();
   }
 
   @ReactMethod
@@ -342,6 +362,62 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
     }
 
     promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void geocodeAsync(final String address, final Promise promise) {
+    if (isMissingPermissions()) {
+      promise.reject("E_LOCATION_UNAUTHORIZED", "Not authorized to use location services");
+      return;
+    }
+
+    SmartLocation.with(mScopedContext).geocoding()
+      .direct(address, new OnGeocodingListener() {
+        @Override
+        public void onLocationResolved(String s, List<LocationAddress> list) {
+          WritableArray results = Arguments.createArray();
+
+          for (LocationAddress locationAddress : list) {
+            WritableMap coords = Arguments.createMap();
+            Location location = locationAddress.getLocation();
+            coords.putDouble("latitude", location.getLatitude());
+            coords.putDouble("longitude", location.getLongitude());
+            coords.putDouble("altitude", location.getAltitude());
+            coords.putDouble("accuracy", location.getAccuracy());
+            results.pushMap(coords);
+          }
+
+          SmartLocation.with(mScopedContext).geocoding().stop();
+          promise.resolve(results);
+        }
+      });
+  }
+
+  @ReactMethod
+  public void reverseGeocodeAsync(final ReadableMap locationMap, final Promise promise) {
+    if (isMissingPermissions()) {
+      promise.reject("E_LOCATION_UNAUTHORIZED", "Not authorized to use location services");
+      return;
+    }
+
+    Location location = new Location("");
+    location.setLatitude(locationMap.getDouble("latitude"));
+    location.setLongitude(locationMap.getDouble("longitude"));
+
+    SmartLocation.with(mScopedContext).geocoding()
+      .reverse(location, new OnReverseGeocodingListener() {
+        @Override
+        public void onAddressResolved(Location original, List<Address> addresses) {
+          WritableArray results = Arguments.createArray();
+
+          for (Address address : addresses) {
+            results.pushMap(addressToMap(address));
+          }
+
+          SmartLocation.with(mScopedContext).geocoding().stop();
+          promise.resolve(results);
+        }
+      });
   }
 
   @Override

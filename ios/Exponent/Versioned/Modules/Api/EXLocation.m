@@ -5,6 +5,8 @@
 #import <CoreLocation/CLLocationManager.h>
 #import <CoreLocation/CLLocationManagerDelegate.h>
 #import <CoreLocation/CLHeading.h>
+#import <CoreLocation/CLGeocoder.h>
+#import <CoreLocation/CLPlacemark.h>
 
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcher.h>
@@ -72,6 +74,7 @@ NSString * const EXHeadingChangedEventName = @"Exponent.headingChanged";
 @interface EXLocation ()
 
 @property (nonatomic, strong) NSMutableDictionary<NSNumber *, EXLocationDelegate*> *delegates;
+@property (nonatomic, strong) CLGeocoder *geocoder;
 
 @end
 
@@ -234,6 +237,67 @@ RCT_REMAP_METHOD(removeWatchAsync,
       }
     });
   }
+}
+
+RCT_REMAP_METHOD(geocodeAsync,
+                 address: (nonnull NSString *)address
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+  if (!_geocoder) {
+    _geocoder = [[CLGeocoder alloc] init];
+  }
+
+  [_geocoder geocodeAddressString:address completionHandler:^(NSArray* placemarks, NSError* error){
+    if (!error) {
+      NSMutableArray *results = [NSMutableArray arrayWithCapacity:placemarks.count];
+      for (CLPlacemark* placemark in placemarks)
+      {
+        CLLocation *location = placemark.location;
+        [results addObject:@{
+                             @"latitude": @(location.coordinate.latitude),
+                             @"longitude": @(location.coordinate.longitude),
+                             @"altitude": @(location.altitude),
+                             @"accuracy": @(location.horizontalAccuracy),
+                             }];
+      }
+      resolve(results);
+    } else {
+      reject(@"E_GEOCODING_FAILED", @"Error while geocoding an address", error);
+    }
+  }];
+}
+
+RCT_REMAP_METHOD(reverseGeocodeAsync,
+                 locationMap: (nonnull NSDictionary *)locationMap
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+  if (!_geocoder) {
+    _geocoder = [[CLGeocoder alloc] init];
+  }
+
+  CLLocation *location = [[CLLocation alloc] initWithLatitude:[locationMap[@"latitude"] floatValue] longitude:[locationMap[@"longitude"] floatValue]];
+
+  [_geocoder reverseGeocodeLocation:location completionHandler:^(NSArray* placemarks, NSError* error){
+    if (!error) {
+      NSMutableArray *results = [NSMutableArray arrayWithCapacity:placemarks.count];
+      for (CLPlacemark* placemark in placemarks)
+      {
+        NSMutableDictionary *address = [NSMutableDictionary dictionary];
+        address[@"city"] = placemark.locality;
+        address[@"street"] = placemark.thoroughfare;
+        address[@"region"] = placemark.administrativeArea;
+        address[@"country"] = placemark.country;
+        address[@"postalCode"] = placemark.postalCode;
+        address[@"name"] = placemark.name;
+        [results addObject:address];
+      }
+      resolve(results);
+    } else {
+      reject(@"E_REVGEOCODING_FAILED", @"Error while reverse-geocoding a location", error);
+    }
+   }];
 }
 
 @end
