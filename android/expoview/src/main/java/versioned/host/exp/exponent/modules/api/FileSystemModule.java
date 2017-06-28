@@ -179,6 +179,25 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void makeDirectoryAsync(String filepath, ReadableMap options, Promise promise) {
+    try {
+      File file = new File(mScopedContext.toScopedPath(filepath, ReadableObjectUtils.readableToJson(options)));
+      boolean success = options.hasKey("intermediates") && options.getBoolean("intermediates") ?
+          file.mkdirs() :
+          file.mkdir();
+      if (success) {
+        promise.resolve(null);
+      } else {
+        promise.reject("E_DIRECTORY_NOT_CREATED",
+            "Directory '" + filepath + "' could not be created.");
+      }
+    } catch (Exception e) {
+      EXL.e(TAG, e.getMessage());
+      promise.reject(e);
+    }
+  }
+
+  @ReactMethod
   public void downloadAsync(String url, final String filepath, final ReadableMap options, final Promise promise) {
     OkHttpClient client = OkHttpClientProvider.getOkHttpClient();
     Request request = new Request.Builder().url(url).build();
