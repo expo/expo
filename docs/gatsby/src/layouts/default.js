@@ -19,6 +19,7 @@ import typography from '../utils/typography';
 const rhythm = typography.rhythm;
 const scale = typography.scale;
 import '../css/prism-coy.css';
+import '../css/algolia.css';
 
 // Load our typefaces
 import 'typeface-source-sans-pro';
@@ -170,6 +171,7 @@ class Wrapper extends React.Component {
             id="mobile-sidebar"
             activeRoutes={this.state.activeRoutes}
             activeVersion={this.state.activeVersion}
+            router={this.props.router}
             versions={versions}
             setVersion={this.setVersion}
             close={() => this.setState({ sidebarOpen: false })}
@@ -203,6 +205,7 @@ class Wrapper extends React.Component {
               id="sidebar"
               activeRoutes={this.state.activeRoutes}
               activeVersion={this.state.activeVersion}
+              router={this.props.router}
               versions={versions}
               setVersion={this.setVersion}
               css={{

@@ -1,0 +1,36 @@
+
+/* Add mobile-responsiveness to Algolia search dropdown as suggested by 
+   LukyVj who works at Algolia: https://github.com/algolia/docsearch/issues/181 */
+
+@media (max-width: 768px) {
+
+    /* Abi added this */
+    .searchbox {
+        width: 100%;
+        margin-bottom: 0px;
+    }
+
+    .algolia-autocomplete .ds-dropdown-menu {
+        max-width: calc(100vw - 32px) !important;
+        min-width: calc(100vw - 32px) !important;
+        width: calc(100vw - 32px) !important;
+        
+        /* Abi removed this */
+        /*margin-left: 16px !important;*/        
+    }
+    .algolia-autocomplete .algolia-docsearch-suggestion--content {
+        width: 100% !important;
+        padding-left: 0 !important;
+    }
+    .algolia-autocomplete .algolia-docsearch-suggestion--content:before {
+        display: none !important;
+    }
+    .algolia-autocomplete .algolia-docsearch-suggestion--subcategory-column {
+        display: none !important;
+    }
+
+    /* Abi added this; neccessary to prevent mobile Safari from zooming in */
+    .algolia-autocomplete .searchbox__input {
+        font-size: 16px;
+    }
+}

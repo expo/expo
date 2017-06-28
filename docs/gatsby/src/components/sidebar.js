@@ -3,6 +3,7 @@ import Link from 'gatsby-link';
 import presets from 'glamor-media-query-presets';
 
 import Button from './button';
+import AlgoliaSearch from './algoliaSearch';
 
 import { rhythm } from '../utils/typography';
 
@@ -77,36 +78,51 @@ class Sidebar extends React.Component {
 
           <div
             css={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              height: `calc(${rhythm(2)} - 1px)`,
               borderBottom: `1px solid #ccc`,
               marginBottom: rhythm(1),
               padding: '20px',
+              paddingTop: '5px',
+              paddingBottom: '10px',
               [presets.Tablet]: {
                 display: `none`,
               },
             }}>
-            {/* Show the version switcher on mobile */}
-            <select
-              value={this.props.activeVersion}
-              onChange={e => this.props.setVersion(e.target.value)}
+
+            <div
               css={{
-                background: `none`,
-                cursor: `pointer`,
-                fontSize: `100%`,
-                marginLeft: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
               }}>
-              {this.props.versions.map(version => {
-                return (
-                  <option key={version} value={version}>
-                    SDK Version {version}
-                  </option>
-                );
-              })}
-            </select>
-            <Button value="Close" onClick={e => this.props.close()} />
+              {/* Show the version switcher on mobile */}
+              <select
+                value={this.props.activeVersion}
+                onChange={e => this.props.setVersion(e.target.value)}
+                css={{
+                  background: `none`,
+                  cursor: `pointer`,
+                  fontSize: `100%`,
+                  padding: `5px`,
+                  marginLeft: 0,
+                }}>
+                {this.props.versions.map(version => {
+                  return (
+                    <option key={version} value={version}>
+                      SDK Version {version}
+                    </option>
+                  );
+                })}
+              </select>
+              <Button value="Close" onClick={e => this.props.close()} />
+            </div>
+
+            <AlgoliaSearch
+              float="none"
+              id="algolia"
+              router={this.props.router}
+              activeVersion={this.props.activeVersion}
+              closeSidebar={e => this.props.close()}
+            />
           </div>
 
           {activeRoutes.map((section, i) => {
