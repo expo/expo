@@ -150,6 +150,35 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void copyAsync(ReadableMap options, Promise promise) {
+    try {
+      if (!options.hasKey("from")) {
+        promise.reject("E_MISSING_PARAMETER", "`FileSystem.copyAsync` needs a `from` path.");
+        return;
+      }
+      if (!options.hasKey("to")) {
+        promise.reject("E_MISSING_PARAMETER", "`FileSystem.copyAsync` needs a `to` path.");
+        return;
+      }
+
+      File from = new File(mScopedContext.toScopedPath(options.getString("from"),
+          ReadableObjectUtils.readableToJson(options)));
+      File to = new File(mScopedContext.toScopedPath(options.getString("to"),
+          ReadableObjectUtils.readableToJson(options)));
+      if (from.isDirectory()) {
+        FileUtils.copyDirectory(from, to);
+        promise.resolve(null);
+      } else {
+        FileUtils.copyFile(from, to);
+        promise.resolve(null);
+      }
+    } catch (Exception e) {
+      EXL.e(TAG, e.getMessage());
+      promise.reject(e);
+    }
+  }
+
+  @ReactMethod
   public void downloadAsync(String url, final String filepath, final ReadableMap options, final Promise promise) {
     OkHttpClient client = OkHttpClientProvider.getOkHttpClient();
     Request request = new Request.Builder().url(url).build();
