@@ -136,12 +136,13 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
           ReadableObjectUtils.readableToJson(options)));
       File to = new File(mScopedContext.toScopedPath(options.getString("to"),
           ReadableObjectUtils.readableToJson(options)));
-      if (!from.renameTo(to)) {
+      if (from.renameTo(to)) {
+        promise.resolve(null);
+      } else {
         promise.reject("E_FILE_NOT_MOVED",
             "File '" + options.getString("from") + "' could not be moved to '" +
                 options.getString("to") + "'");
       }
-      promise.resolve(null);
     } catch (Exception e) {
       EXL.e(TAG, e.getMessage());
       promise.reject(e);
