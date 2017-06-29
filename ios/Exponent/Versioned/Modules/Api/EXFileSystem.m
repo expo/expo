@@ -33,7 +33,7 @@ EX_DEFINE_SCOPED_MODULE(EXFileSystem, fileSystem)
 
 @implementation EXFileSystem
 
-RCT_EXPORT_MODULE(ExponentFileSystem);
++ (NSString *)moduleName { return @"ExponentFileSystem"; }
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId kernelModule:(id)unversionedKernelModule params:(NSDictionary *)params
 {
