@@ -8,7 +8,6 @@
 #import "EXAV.h"
 #import "EXAVPlayerData.h"
 #import "EXFileSystem.h"
-#import "EXScope.h"
 #import "EXVideoView.h"
 #import "EXUnversioned.h"
 

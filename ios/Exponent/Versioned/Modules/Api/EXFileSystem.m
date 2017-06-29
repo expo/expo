@@ -5,7 +5,6 @@
 #import <CommonCrypto/CommonDigest.h>
 
 #import "EXVersionManager.h"
-#import "EXScope.h"
 
 EX_DEFINE_SCOPED_MODULE(EXFileSystem, fileSystem)
 

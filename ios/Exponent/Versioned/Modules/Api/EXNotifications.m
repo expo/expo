@@ -1,8 +1,8 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import "EXNotifications.h"
+#import "EXConstants.h"
 #import "EXUnversioned.h"
-#import "EXScope.h"
 
 #import <React/RCTUtils.h>
 #import <React/RCTConvert.h>
@@ -59,7 +59,7 @@ RCT_REMAP_METHOD(getDevicePushTokenAsync,
                  getDevicePushTokenAsyncWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  if (![_bridge.scopedModules.scope.appOwnership isEqualToString:@"standalone"]) {
+  if (![_bridge.scopedModules.constants.appOwnership isEqualToString:@"standalone"]) {
     return reject(0, @"getDevicePushTokenAsync is only accessible within standalone applications", nil);
   }
   

@@ -174,7 +174,6 @@
 		B5A875321E70E57F006DDECA /* EXNativeAdEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A875291E70E57F006DDECA /* EXNativeAdEmitter.m */; };
 		B5A875331E70E57F006DDECA /* EXNativeAdManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A8752B1E70E57F006DDECA /* EXNativeAdManager.m */; };
 		B5A875341E70E57F006DDECA /* EXNativeAdView.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A8752D1E70E57F006DDECA /* EXNativeAdView.m */; };
-		B5A875391E70E8F0006DDECA /* EXScope.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A875381E70E8F0006DDECA /* EXScope.m */; };
 		B5AC398A1E95A7EC00540AA7 /* EXApiUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC39891E95A7EC00540AA7 /* EXApiUtil.m */; };
 		B5AC39A71E95A90B00540AA7 /* EXKernel.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC398E1E95A90B00540AA7 /* EXKernel.m */; };
 		B5AC39A81E95A90B00540AA7 /* EXKernelBridgeRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC39901E95A90B00540AA7 /* EXKernelBridgeRecord.m */; };
@@ -573,8 +572,6 @@
 		B5A8752B1E70E57F006DDECA /* EXNativeAdManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXNativeAdManager.m; sourceTree = "<group>"; };
 		B5A8752C1E70E57F006DDECA /* EXNativeAdView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXNativeAdView.h; sourceTree = "<group>"; };
 		B5A8752D1E70E57F006DDECA /* EXNativeAdView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXNativeAdView.m; sourceTree = "<group>"; };
-		B5A875371E70E8F0006DDECA /* EXScope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScope.h; sourceTree = "<group>"; };
-		B5A875381E70E8F0006DDECA /* EXScope.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScope.m; sourceTree = "<group>"; };
 		B5AC39881E95A7EC00540AA7 /* EXApiUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXApiUtil.h; sourceTree = "<group>"; };
 		B5AC39891E95A7EC00540AA7 /* EXApiUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXApiUtil.m; sourceTree = "<group>"; };
 		B5AC398D1E95A90B00540AA7 /* EXKernel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernel.h; sourceTree = "<group>"; };
@@ -999,6 +996,8 @@
 				B5844C341D482C3D0015C683 /* Permissions */,
 				843175B21DDCF0440092B68B /* EXAccelerometer.h */,
 				843175B31DDCF0440092B68B /* EXAccelerometer.m */,
+				88E089A61D6BC04800562FA1 /* EXAmplitude.h */,
+				88E089A31D6BC02200562FA1 /* EXAmplitude.m */,
 				A1F37F5B1CEFD6B2001E9EFC /* EXConstants.h */,
 				A1F37F5C1CEFD6B2001E9EFC /* EXConstants.m */,
 				A1F37F5D1CEFD6B2001E9EFC /* EXContacts.h */,
@@ -1031,8 +1030,6 @@
 				B5218E791D232B8800C54B61 /* EXNotifications.m */,
 				1978AD2E1EAC2656002A615B /* EXPedometer.h */,
 				1978AD2F1EAC2656002A615B /* EXPedometer.m */,
-				88E089A61D6BC04800562FA1 /* EXAmplitude.h */,
-				88E089A31D6BC02200562FA1 /* EXAmplitude.m */,
 				19B96C331EE7D9F20006A7DB /* EXScreenOrientation.h */,
 				19B96C341EE7D9F20006A7DB /* EXScreenOrientation.m */,
 				88E089A81D6BCF4300562FA1 /* EXSegment.h */,
@@ -1062,8 +1059,6 @@
 				B5F12CA11DB009A40080ECA6 /* EXKernelModule.m */,
 				B55089801D06455D009FBBC5 /* EXLinkingManager.h */,
 				B55089811D06455D009FBBC5 /* EXLinkingManager.m */,
-				B5A875371E70E8F0006DDECA /* EXScope.h */,
-				B5A875381E70E8F0006DDECA /* EXScope.m */,
 				B592FFED1E9D489100437664 /* EXStatusBarManager.h */,
 				B592FFEE1E9D489100437664 /* EXStatusBarManager.m */,
 				B57929921F047B1400588628 /* EXScopedModuleRegistry.h */,
@@ -1870,7 +1865,6 @@
 				7847A2CD1EB9AF210088BF69 /* AIRMapUrlTileManager.m in Sources */,
 				7847A2C21EB9AF210088BF69 /* AIRMapCircle.m in Sources */,
 				88E089A41D6BC02200562FA1 /* EXAmplitude.m in Sources */,
-				B5A875391E70E8F0006DDECA /* EXScope.m in Sources */,
 				7847A3791EC0F1550088BF69 /* RNSVGClipPath.m in Sources */,
 				7847A38E1EC0F1550088BF69 /* RNSVGPathParser.m in Sources */,
 				7847A2C81EB9AF210088BF69 /* AIRMapPolygon.m in Sources */,

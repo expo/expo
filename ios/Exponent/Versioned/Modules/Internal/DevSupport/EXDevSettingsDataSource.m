@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXDevSettingsDataSource.h"
-#import "EXScope.h"
 
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>

@@ -2,9 +2,10 @@
 
 #import "EXAmplitude.h"
 
-#import <Amplitude.h>
+#import "EXConstants.h"
 #import "EXVersionManager.h"
-#import "EXScope.h"
+
+#import <Amplitude.h>
 
 @interface EXAmplitude ()
 
@@ -21,7 +22,7 @@ RCT_EXPORT_MODULE(ExponentAmplitude);
 - (void)setBridge:(RCTBridge *)bridge
 {
   _bridge = bridge;
-  _escapedExperienceId = [EXVersionManager escapedResourceName:_bridge.scopedModules.scope.experienceId];
+  _escapedExperienceId = [EXVersionManager escapedResourceName:_bridge.scopedModules.constants.experienceId];
 }
 
 RCT_EXPORT_METHOD(initialize:(NSString *)apiKey)
