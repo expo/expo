@@ -5,6 +5,7 @@ package versioned.host.exp.exponent.modules.api;
 import android.content.pm.PackageManager;
 import android.hardware.GeomagneticField;
 import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
@@ -371,6 +372,7 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
       return;
     }
 
+    if (Geocoder.isPresent()) {
     SmartLocation.with(mScopedContext).geocoding()
       .direct(address, new OnGeocodingListener() {
         @Override
@@ -391,6 +393,9 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
           promise.resolve(results);
         }
       });
+    } else {
+      promise.reject("E_NO_GEOCODER", "Geocoder service is not available for this device");
+    }
   }
 
   @ReactMethod
@@ -404,20 +409,24 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
     location.setLatitude(locationMap.getDouble("latitude"));
     location.setLongitude(locationMap.getDouble("longitude"));
 
-    SmartLocation.with(mScopedContext).geocoding()
-      .reverse(location, new OnReverseGeocodingListener() {
-        @Override
-        public void onAddressResolved(Location original, List<Address> addresses) {
-          WritableArray results = Arguments.createArray();
+    if (Geocoder.isPresent()) {
+      SmartLocation.with(mScopedContext).geocoding()
+          .reverse(location, new OnReverseGeocodingListener() {
+            @Override
+            public void onAddressResolved(Location original, List<Address> addresses) {
+              WritableArray results = Arguments.createArray();
 
-          for (Address address : addresses) {
-            results.pushMap(addressToMap(address));
-          }
+              for (Address address : addresses) {
+                results.pushMap(addressToMap(address));
+              }
 
-          SmartLocation.with(mScopedContext).geocoding().stop();
-          promise.resolve(results);
-        }
-      });
+              SmartLocation.with(mScopedContext).geocoding().stop();
+              promise.resolve(results);
+            }
+          });
+    } else {
+      promise.reject("E_NO_GEOCODER", "Geocoder service is not available for this device");
+    }
   }
 
   @Override
