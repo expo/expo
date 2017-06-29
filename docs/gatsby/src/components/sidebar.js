@@ -61,7 +61,7 @@ class Sidebar extends React.Component {
         css={{
           color: `inherit`,
         }}
-        onClick={e => this.props.close()}
+        onClick={() => this.props.close && this.props.close()}
       />;
 
     return (
