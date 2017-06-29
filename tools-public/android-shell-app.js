@@ -28,11 +28,11 @@ async function sedInPlaceAsync(...args) {
 
 function escapeForXml(original) {
   return original
+    .replace('&', '&amp;')
     .replace('>', '&gt;')
     .replace('<', '&lt;')
     .replace("'", '&apos;')
-    .replace('"', '&quot;')
-    .replace('&', '&amp;');
+    .replace('"', '&quot;');
 }
 
 exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
