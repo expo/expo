@@ -4,13 +4,15 @@ title: Pedometer
 
 Use Core Motion (iOS) or Google Fit (Android) to get the user's step count.
 
+![sketch](S1gdfOb4Z)
+
 ### `Expo.Pedometer.isAvailableAsync()`
 
 Determine whether the pedometer is available.
 
 #### Returns
 
-- A boolean indicating whether the pedometer is available on this device.
+- Returns a promise that resolves to a `Boolean`, indicating whether the pedometer is available on this device.
 
 ### `Expo.Pedometer.getStepCountAsync(start, end)`
 
@@ -23,7 +25,7 @@ Get the step count between two dates.
 
 #### Returns
 
-- A number indicating the number of steps taken between the given dates.
+- Returns a promise that resolves to an `Object` with a `steps` key, which is a `Number` indicating the number of steps taken between the given dates.
 
 ### `Expo.Pedometer.watchStepCount(callback)`
 
