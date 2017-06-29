@@ -36,8 +36,8 @@ RCT_EXPORT_MODULE(ExponentSQLite)
 {
   NSValue *cachedDB = [cachedDatabases objectForKey:dbName];
   if (cachedDB == nil) {
-    [EXFileSystem ensureDirExistsWithPath:[self.bridge.experienceScope scopedPathWithPath:@"SQLite" withOptions:@{}]];
-    NSString *path = [self.bridge.experienceScope scopedPathWithPath:[@"SQLite" stringByAppendingPathComponent:dbName]
+    [EXFileSystem ensureDirExistsWithPath:[self.bridge.scopedModules.scope scopedPathWithPath:@"SQLite" withOptions:@{}]];
+    NSString *path = [self.bridge.scopedModules.scope scopedPathWithPath:[@"SQLite" stringByAppendingPathComponent:dbName]
                                                                withOptions:@{}];
     sqlite3 *db;
     if (sqlite3_open([path UTF8String], &db) != SQLITE_OK) {

@@ -38,7 +38,7 @@ RCT_EXPORT_MODULE(ExponentNotifications);
 - (void)setBridge:(RCTBridge *)bridge
 {
   _bridge = bridge;
-  _experienceId = _bridge.experienceScope.experienceId;
+  _experienceId = _bridge.scopedModules.scope.experienceId;
 }
 
 
@@ -46,11 +46,11 @@ RCT_REMAP_METHOD(getDevicePushTokenAsync,
                  getDevicePushTokenAsyncWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  if (![_bridge.experienceScope.appOwnership isEqualToString:@"standalone"]) {
+  if (![_bridge.scopedModules.scope.appOwnership isEqualToString:@"standalone"]) {
     return reject(0, @"getDevicePushTokenAsync is only accessible within standalone applications", nil);
   }
   
-  NSString *token = _bridge.experienceScope.apnsToken;
+  NSString *token = _bridge.scopedModules.scope.apnsToken;
   if (!token) {
     return reject(0, @"APNS token has not been set", nil);
   }

@@ -236,7 +236,7 @@ RCT_EXPORT_METHOD(getAllKeys:(RCTResponseSenderBlock)callback)
 
 - (NSString *)migrationDoneKey
 {
-  return [_bridge.experienceScope.experienceId stringByAppendingString:@".migrationDone"];
+  return [_bridge.scopedModules.scope.experienceId stringByAppendingString:@".migrationDone"];
 }
 
 RCT_REMAP_METHOD(isMigrationDone,

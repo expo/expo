@@ -1,31 +1,26 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <React/RCTBridge.h>
-#import <React/RCTBridgeModule.h>
+#import "EXScopedBridgeModule.h"
+#import "EXScopedModuleRegistry.h"
 
 /**
- * Provides a place to put variables scoped per-experience that are
- * easily accessible from all native modules through `self.bridge.exScope`
+ *  Catchall module for scoped utility methods
  */
 
-@interface EXScope : NSObject <RCTBridgeModule>
+@interface EXScope : EXScopedBridgeModule
 
-// TODO: audit this interface once we formalize kernelspace module logic.
 @property (nonatomic, readonly) NSURL *initialUri;
-@property (nonatomic, readonly) NSString *experienceId;
 @property (nonatomic, readonly) NSString *documentDirectory;
 @property (nonatomic, readonly) NSString *cachesDirectory;
 @property (nonatomic, readonly) NSString *apnsToken;
 @property (nonatomic, readonly) NSString *appOwnership;
 
+// support this legacy constructor until we switch versioned code over to the kernel module structure.
+// TODO: remove this.
 - (instancetype)initWithParams:(NSDictionary *)params;
 
 - (NSString *)scopedPathWithPath:(NSString *)path withOptions:(NSDictionary *)options;
 
 @end
 
-@interface RCTBridge (EXScope)
-
-@property (nonatomic, readonly) EXScope *experienceScope;
-
-@end
+EX_DECLARE_SCOPED_MODULE(EXScope, scope)

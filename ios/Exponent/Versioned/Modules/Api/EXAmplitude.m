@@ -21,7 +21,7 @@ RCT_EXPORT_MODULE(ExponentAmplitude);
 - (void)setBridge:(RCTBridge *)bridge
 {
   _bridge = bridge;
-  _escapedExperienceId = [EXVersionManager escapedResourceName:_bridge.experienceScope.experienceId];
+  _escapedExperienceId = [EXVersionManager escapedResourceName:_bridge.scopedModules.scope.experienceId];
 }
 
 RCT_EXPORT_METHOD(initialize:(NSString *)apiKey)

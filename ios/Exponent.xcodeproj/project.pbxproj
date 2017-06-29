@@ -159,6 +159,8 @@
 		B575EEA11D54053500DCABBC /* EXManifestResource.m in Sources */ = {isa = PBXBuildFile; fileRef = B575EEA01D54053500DCABBC /* EXManifestResource.m */; };
 		B575EEA41D54175B00DCABBC /* shell-app-manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = B575EEA21D54175A00DCABBC /* shell-app-manifest.json */; };
 		B575EEA51D54175B00DCABBC /* shell-app.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B575EEA31D54175B00DCABBC /* shell-app.bundle */; };
+		B57929911F04662400588628 /* EXScopedBridgeModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B57929901F04662400588628 /* EXScopedBridgeModule.m */; };
+		B57929941F047B1400588628 /* EXScopedModuleRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = B57929931F047B1400588628 /* EXScopedModuleRegistry.m */; };
 		B5844C371D482C3D0015C683 /* EXPermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = B5844C361D482C3D0015C683 /* EXPermissions.m */; };
 		B5844C3B1D482D710015C683 /* EXRemoteNotificationRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = B5844C3A1D482D710015C683 /* EXRemoteNotificationRequester.m */; };
 		B5844C3F1D482EA40015C683 /* EXLocationRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = B5844C3E1D482EA40015C683 /* EXLocationRequester.m */; };
@@ -540,6 +542,10 @@
 		B575EEA01D54053500DCABBC /* EXManifestResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXManifestResource.m; sourceTree = "<group>"; };
 		B575EEA21D54175A00DCABBC /* shell-app-manifest.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "shell-app-manifest.json"; sourceTree = "<group>"; };
 		B575EEA31D54175B00DCABBC /* shell-app.bundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "shell-app.bundle"; sourceTree = "<group>"; };
+		B579298F1F04662400588628 /* EXScopedBridgeModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedBridgeModule.h; sourceTree = "<group>"; };
+		B57929901F04662400588628 /* EXScopedBridgeModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedBridgeModule.m; sourceTree = "<group>"; };
+		B57929921F047B1400588628 /* EXScopedModuleRegistry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedModuleRegistry.h; sourceTree = "<group>"; };
+		B57929931F047B1400588628 /* EXScopedModuleRegistry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedModuleRegistry.m; sourceTree = "<group>"; };
 		B5844C351D482C3D0015C683 /* EXPermissions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXPermissions.h; sourceTree = "<group>"; };
 		B5844C361D482C3D0015C683 /* EXPermissions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXPermissions.m; sourceTree = "<group>"; };
 		B5844C391D482D710015C683 /* EXRemoteNotificationRequester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXRemoteNotificationRequester.h; sourceTree = "<group>"; };
@@ -972,6 +978,8 @@
 			children = (
 				A1F37F5A1CEFD6B2001E9EFC /* Api */,
 				A1F37F631CEFD6B2001E9EFC /* Internal */,
+				B579298F1F04662400588628 /* EXScopedBridgeModule.h */,
+				B57929901F04662400588628 /* EXScopedBridgeModule.m */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -1055,6 +1063,8 @@
 				B5A875381E70E8F0006DDECA /* EXScope.m */,
 				B592FFED1E9D489100437664 /* EXStatusBarManager.h */,
 				B592FFEE1E9D489100437664 /* EXStatusBarManager.m */,
+				B57929921F047B1400588628 /* EXScopedModuleRegistry.h */,
+				B57929931F047B1400588628 /* EXScopedModuleRegistry.m */,
 			);
 			path = Internal;
 			sourceTree = "<group>";
@@ -1825,6 +1835,7 @@
 				7847A39F1EC0F1550088BF69 /* RNSVGTextPathManager.m in Sources */,
 				7847A2C41EB9AF210088BF69 /* AIRMapCoordinate.m in Sources */,
 				B592FFEF1E9D489100437664 /* EXStatusBarManager.m in Sources */,
+				B57929911F04662400588628 /* EXScopedBridgeModule.m in Sources */,
 				78CEE2ED1ACD22D90095B124 /* EXAppDelegate.m in Sources */,
 				A1158D321D4C4AA400286352 /* EXAppLoadingManager.m in Sources */,
 				B56FACA21D4AB279009FC106 /* EXAppState.m in Sources */,
@@ -1926,6 +1937,7 @@
 				7847A2CF1EB9AF210088BF69 /* SMCalloutView.m in Sources */,
 				B5AC39CF1E95B01F00540AA7 /* EXDevSettings.m in Sources */,
 				B56D073F1EC53333009E6A89 /* AIRGoogleMapMarkerManager.m in Sources */,
+				B57929941F047B1400588628 /* EXScopedModuleRegistry.m in Sources */,
 				B55089821D06455D009FBBC5 /* EXLinkingManager.m in Sources */,
 				A12CC94C1D11E80E0023A57B /* EXLocation.m in Sources */,
 				7847A3941EC0F1550088BF69 /* RNSVGRectManager.m in Sources */,

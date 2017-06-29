@@ -19,7 +19,7 @@ RCT_EXPORT_MODULE(ExponentErrorRecovery);
 RCT_EXPORT_METHOD(setRecoveryProps:(NSDictionary *)props)
 {
   NSDictionary *params = @{
-    @"experienceId": _bridge.experienceScope.experienceId,
+    @"experienceId": _bridge.scopedModules.scope.experienceId,
     @"props": props,
   };
   [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXErrorRecoverySetPropsNotification") object:nil userInfo:params];
