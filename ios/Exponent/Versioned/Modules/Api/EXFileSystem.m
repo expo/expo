@@ -288,6 +288,31 @@ RCT_REMAP_METHOD(makeDirectoryAsync,
   }
 }
 
+RCT_REMAP_METHOD(readDirectoryAsync,
+                 readDirectoryAsync:(NSString *)path
+                 withOptions:(NSDictionary *)options
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+  NSString *scopedPath = [self scopedPathWithPath:path withOptions:options];
+  if (!scopedPath) {
+    reject(@"E_INVALID_PATH",
+           [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", path],
+           nil);
+    return;
+  }
+
+  NSError *error;
+  NSArray<NSString *> *children = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:scopedPath error:&error];
+  if (children) {
+    resolve(children);
+  } else {
+    reject(@"E_DIRECTORY_NOT_READ",
+           [NSString stringWithFormat:@"Directory '%@' could not be read.", path],
+           error);
+  }
+}
+
 RCT_REMAP_METHOD(downloadAsync,
                  downloadAsyncWithUrl:(NSURL *)url
                  withFilePath:(NSString *)filePath
