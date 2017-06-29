@@ -106,7 +106,7 @@ RCT_EXPORT_MODULE();
 - (instancetype)init {
     self = [super init];
 
-    if (self && [self.bridge.experienceScope.appOwnership isEqualToString:@"standalone"]) {
+    if (self && [self.bridge.scopedModules.scope.appOwnership isEqualToString:@"standalone"]) {
         // Added to work on Expo, should try to upstream.
         if (!branchInstance) {
             branchInstance = [Branch getInstance];

@@ -39,7 +39,7 @@ RCT_REMAP_METHOD(getInfoAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  NSString *scopedPath = [self.bridge.experienceScope scopedPathWithPath:filePath withOptions:options];
+  NSString *scopedPath = [self.bridge.scopedModules.scope scopedPathWithPath:filePath withOptions:options];
   if (!scopedPath) {
     reject(@"E_INVALID_PATH",
            [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", filePath],
@@ -68,7 +68,7 @@ RCT_REMAP_METHOD(readAsStringAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  NSString *scopedPath = [self.bridge.experienceScope scopedPathWithPath:filePath withOptions:options];
+  NSString *scopedPath = [self.bridge.scopedModules.scope scopedPathWithPath:filePath withOptions:options];
   if (!scopedPath) {
     reject(@"E_INVALID_PATH",
            [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", filePath],
@@ -94,7 +94,7 @@ RCT_REMAP_METHOD(writeAsStringAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  NSString *scopedPath = [self.bridge.experienceScope scopedPathWithPath:filePath withOptions:options];
+  NSString *scopedPath = [self.bridge.scopedModules.scope scopedPathWithPath:filePath withOptions:options];
   if (!scopedPath) {
     reject(@"E_INVALID_PATH",
            [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", filePath],
@@ -118,7 +118,7 @@ RCT_REMAP_METHOD(deleteAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  NSString *scopedPath = [self.bridge.experienceScope scopedPathWithPath:filePath withOptions:options];
+  NSString *scopedPath = [self.bridge.scopedModules.scope scopedPathWithPath:filePath withOptions:options];
   if (!scopedPath) {
     reject(@"E_INVALID_PATH",
            [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", filePath],
@@ -159,7 +159,7 @@ RCT_REMAP_METHOD(moveAsync,
     return;
   }
 
-  NSString *from = [self.bridge.experienceScope scopedPathWithPath:options[@"from"] withOptions:options];
+  NSString *from = [self.bridge.scopedModules.scope scopedPathWithPath:options[@"from"] withOptions:options];
   if (!from) {
     reject(@"E_INVALID_PATH",
            [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", from],
@@ -167,7 +167,7 @@ RCT_REMAP_METHOD(moveAsync,
     return;
   }
 
-  NSString *to = [self.bridge.experienceScope scopedPathWithPath:options[@"to"] withOptions:options];
+  NSString *to = [self.bridge.scopedModules.scope scopedPathWithPath:options[@"to"] withOptions:options];
   if (!to) {
     reject(@"E_INVALID_PATH",
            [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", to],
@@ -209,7 +209,7 @@ RCT_REMAP_METHOD(copyAsync,
     return;
   }
 
-  NSString *from = [self.bridge.experienceScope scopedPathWithPath:options[@"from"] withOptions:options];
+  NSString *from = [self.bridge.scopedModules.scope scopedPathWithPath:options[@"from"] withOptions:options];
   if (!from) {
     reject(@"E_INVALID_PATH",
            [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", from],
@@ -217,7 +217,7 @@ RCT_REMAP_METHOD(copyAsync,
     return;
   }
 
-  NSString *to = [self.bridge.experienceScope scopedPathWithPath:options[@"to"] withOptions:options];
+  NSString *to = [self.bridge.scopedModules.scope scopedPathWithPath:options[@"to"] withOptions:options];
   if (!to) {
     reject(@"E_INVALID_PATH",
            [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", to],
@@ -279,7 +279,7 @@ RCT_REMAP_METHOD(downloadAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  NSString *scopedPath = [self.bridge.experienceScope scopedPathWithPath:filePath withOptions:options];
+  NSString *scopedPath = [self.bridge.scopedModules.scope scopedPathWithPath:filePath withOptions:options];
   if (!scopedPath) {
     reject(@"E_INVALID_PATH",
            [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", filePath],
