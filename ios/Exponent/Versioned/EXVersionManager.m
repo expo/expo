@@ -10,6 +10,7 @@
 #import "EXFrameExceptionsManager.h"
 #import "EXKernelModule.h"
 #import "EXLinkingManager.h"
+#import "EXNotifications.h"
 #import "EXVersionManager.h"
 #import "EXScope.h"
 #import "EXStatusBarManager.h"
@@ -248,6 +249,7 @@ static NSNumber *EXVersionManagerIsFirstLoad;
  *    NSURL *initialUri
  *    @BOOL isDeveloper
  *    @BOOL isStandardDevMenuAllowed
+ *    NSDictionary *kernelModules
  *
  * Kernel-only:
  *    EXKernel *kernel
@@ -263,10 +265,14 @@ static NSNumber *EXVersionManagerIsFirstLoad;
   BOOL isDeveloper = [params[@"isDeveloper"] boolValue];
   NSDictionary *manifest = params[@"manifest"];
   NSString *experienceId = manifest[@"id"];
+  NSDictionary *kernelModules = params[@"kernelModules"];
 
   // TODO: switch to newer scope constrructor
   EXScope *experienceScope = [[EXScope alloc] initWithParams:params];
   EXFileSystem *fileSystem = [[EXFileSystem alloc] initWithExperienceId:experienceId kernelModule:nil params:params];
+  EXNotifications *notifications = [[EXNotifications alloc] initWithExperienceId:experienceId
+                                                                    kernelModule:kernelModules[@"remoteNotificationManager"]
+                                                                          params:params];
                               
   NSMutableArray *extraModules = [NSMutableArray arrayWithArray:
                                   @[
@@ -277,6 +283,7 @@ static NSNumber *EXVersionManagerIsFirstLoad;
                                     [[EXDisabledDevLoadingView alloc] init],
                                     fileSystem,
                                     [[EXLinkingManager alloc] initWithInitialUrl:initialUri],
+                                    notifications,
                                     [[EXStatusBarManager alloc] init],
                                     [[RCTAsyncLocalStorage alloc] initWithStorageDirectory:[fileSystem scopedPathWithPath:EX_UNVERSIONED(@"RCTAsyncLocalStorage") withOptions:@{}]],
                                     ]];

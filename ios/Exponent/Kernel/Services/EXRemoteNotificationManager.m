@@ -9,14 +9,6 @@
 
 NSString * const kEXCurrentAPNSTokenDefaultsKey = @"EXCurrentAPNSTokenDefaultsKey";
 
-@implementation NSUserDefaults (EXRemoteNotification)
-
-- (NSData *)apnsToken {
-  return [self objectForKey:kEXCurrentAPNSTokenDefaultsKey];
-}
-
-@end
-
 @implementation NSData (EXRemoteNotification)
 
 - (NSString *)apnsTokenString
@@ -112,7 +104,21 @@ NSString * const kEXCurrentAPNSTokenDefaultsKey = @"EXCurrentAPNSTokenDefaultsKe
   }
 }
 
+- (NSString *)apnsTokenString
+{
+  NSData *maybeToken = [self _apnsTokenFromUserDefaults];
+  if (maybeToken) {
+    return [maybeToken apnsTokenString];
+  }
+  return nil;
+}
+
 #pragma mark - Internal
+
+- (NSData *)_apnsTokenFromUserDefaults
+{
+  return [[NSUserDefaults standardUserDefaults] objectForKey:kEXCurrentAPNSTokenDefaultsKey];
+}
 
 - (void)_onKernelJSLoaded
 {
@@ -124,7 +130,7 @@ NSString * const kEXCurrentAPNSTokenDefaultsKey = @"EXCurrentAPNSTokenDefaultsKe
 - (void)_maybePostAPNSToken
 {
   if (!_isLatestTokenPosted && _isKernelJSLoaded) {
-    NSData *token = [[NSUserDefaults standardUserDefaults] apnsToken];
+    NSData *token = [self _apnsTokenFromUserDefaults];
     if (token && !_isPostingToken) {
       _isPostingToken = YES;
       NSDictionary *eventParams = @{

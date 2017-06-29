@@ -10,7 +10,6 @@
 @interface EXScope : EXScopedBridgeModule
 
 @property (nonatomic, readonly) NSURL *initialUri;
-@property (nonatomic, readonly) NSString *apnsToken;
 @property (nonatomic, readonly) NSString *appOwnership;
 
 // support this legacy constructor until we switch versioned code over to the kernel module structure.

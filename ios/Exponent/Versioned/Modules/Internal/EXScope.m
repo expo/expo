@@ -32,17 +32,5 @@ EX_DEFINE_SCOPED_MODULE(EXScope, scope)
   return self;
 }
 
-- (NSString *)apnsToken
-{
-  // TODO: this is a hack until we formalize kernelspace modules and provide real access to this.
-  // at the moment it duplicates logic inside EXRemoteNotificationManager.
-  NSData *apnsData = [[NSUserDefaults standardUserDefaults] objectForKey:EX_UNVERSIONED(@"EXCurrentAPNSTokenDefaultsKey")];
-  if (apnsData) {
-    NSCharacterSet *brackets = [NSCharacterSet characterSetWithCharactersInString:@"<>"];
-    return [[[apnsData description] stringByTrimmingCharactersInSet:brackets] stringByReplacingOccurrencesOfString:@" " withString:@""];
-  }
-  return nil;
-}
-
 @end
 

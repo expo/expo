@@ -9,6 +9,7 @@
 #import "EXKernelLinkingManager.h"
 #import "EXLog.h"
 #import "EXReactAppManager+Private.h"
+#import "EXRemoteNotificationManager.h"
 #import "EXShellManager.h"
 #import "EXVersions.h"
 #import "EXVersionManager.h"
@@ -176,6 +177,9 @@
                            @"initialUri": [EXKernelLinkingManager uriTransformedForLinking:_frame.initialUri],
                            @"isDeveloper": @([self _doesManifestEnableDeveloperTools]),
                            @"isStandardDevMenuAllowed": @(isStandardDevMenuAllowed),
+                           @"kernelModules": @{
+                               @"remoteNotificationManager": [EXRemoteNotificationManager sharedInstance],
+                             },
                            };
   return [self.versionManager extraModulesWithParams:params];
 }
