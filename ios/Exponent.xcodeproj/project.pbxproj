@@ -199,6 +199,7 @@
 		B5AC39D31E95B01F00540AA7 /* EXDisabledRedBox.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC39CE1E95B01F00540AA7 /* EXDisabledRedBox.m */; };
 		B5AC39D61E95B17300540AA7 /* EXErrorRecoveryManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC39D51E95B17300540AA7 /* EXErrorRecoveryManager.m */; };
 		B5AC39D91E96D7A900540AA7 /* EXErrorRecovery.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC39D81E96D7A900540AA7 /* EXErrorRecovery.m */; };
+		B5B1AD7C1F05B8860054BD01 /* EXKernelServiceRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = B5B1AD7B1F05B8860054BD01 /* EXKernelServiceRegistry.m */; };
 		B5C2740C1EC24AE1003355CE /* EXKernelLinkingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5C2740B1EC24AE1003355CE /* EXKernelLinkingManager.m */; };
 		B5C7A3C21EC3E38300DD9E1D /* EXAV.m in Sources */ = {isa = PBXBuildFile; fileRef = B5C7A3B61EC3E38300DD9E1D /* EXAV.m */; };
 		B5C7A3C31EC3E38300DD9E1D /* EXAVPlayerData.m in Sources */ = {isa = PBXBuildFile; fileRef = B5C7A3B91EC3E38300DD9E1D /* EXAVPlayerData.m */; };
@@ -623,6 +624,8 @@
 		B5AC39D51E95B17300540AA7 /* EXErrorRecoveryManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXErrorRecoveryManager.m; sourceTree = "<group>"; };
 		B5AC39D71E96D7A900540AA7 /* EXErrorRecovery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXErrorRecovery.h; sourceTree = "<group>"; };
 		B5AC39D81E96D7A900540AA7 /* EXErrorRecovery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXErrorRecovery.m; sourceTree = "<group>"; };
+		B5B1AD7A1F05B8860054BD01 /* EXKernelServiceRegistry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelServiceRegistry.h; sourceTree = "<group>"; };
+		B5B1AD7B1F05B8860054BD01 /* EXKernelServiceRegistry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelServiceRegistry.m; sourceTree = "<group>"; };
 		B5C2740A1EC24AE1003355CE /* EXKernelLinkingManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelLinkingManager.h; sourceTree = "<group>"; };
 		B5C2740B1EC24AE1003355CE /* EXKernelLinkingManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelLinkingManager.m; sourceTree = "<group>"; };
 		B5C7A3B51EC3E38300DD9E1D /* EXAV.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAV.h; sourceTree = "<group>"; };
@@ -1305,6 +1308,8 @@
 		B5AC39A21E95A90B00540AA7 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				B5B1AD7A1F05B8860054BD01 /* EXKernelServiceRegistry.h */,
+				B5B1AD7B1F05B8860054BD01 /* EXKernelServiceRegistry.m */,
 				19382BA71EC2EACC001ED4A1 /* EXBranchManager.h */,
 				19382BA81EC2EACC001ED4A1 /* EXBranchManager.m */,
 				B5C2740A1EC24AE1003355CE /* EXKernelLinkingManager.h */,
@@ -1976,6 +1981,7 @@
 				B5AC39BE1E95AC8E00540AA7 /* EXExceptionHandler.m in Sources */,
 				7847A2CE1EB9AF210088BF69 /* RCTConvert+AirMap.m in Sources */,
 				7847A3841EC0F1550088BF69 /* RNSVGLine.m in Sources */,
+				B5B1AD7C1F05B8860054BD01 /* EXKernelServiceRegistry.m in Sources */,
 				B55FDEFA1C7FE1310020AA8F /* EXRootViewController.m in Sources */,
 				B5AC39A81E95A90B00540AA7 /* EXKernelBridgeRecord.m in Sources */,
 				843175B41DDCF0440092B68B /* EXAccelerometer.m in Sources */,

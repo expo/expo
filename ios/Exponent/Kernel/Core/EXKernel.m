@@ -73,6 +73,7 @@ NSString * const kEXChangeForegroundTaskSupportedOrientationsNotification = @"EX
 {
   if (self = [super init]) {
     _bridgeRegistry = [[EXKernelBridgeRegistry alloc] init];
+    _serviceRegistry = [[EXKernelServiceRegistry alloc] init];
     _recoveryManager = [[EXErrorRecoveryManager alloc] init];
     [EXKernelDevMotionHandler sharedInstance];
     [EXKernelDevKeyCommands sharedInstance];

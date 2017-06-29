@@ -13,17 +13,9 @@ EX_DEFINE_SCOPED_MODULE(EXScope, scope)
 
 + (NSString *)moduleName { return @"ExponentScope"; }
 
-- (instancetype)initWithParams:(NSDictionary *)params
+- (instancetype)initWithExperienceId:(NSString *)experienceId kernelService:(id)kernelServiceInstance params:(NSDictionary *)params
 {
-  NSDictionary *manifest = params[@"manifest"];
-  RCTAssert(manifest, @"Need manifest to get experience id.");
-  NSString *experienceId = manifest[@"id"];
-  return [self initWithExperienceId:experienceId kernelModule:nil params:params];
-}
-
-- (instancetype)initWithExperienceId:(NSString *)experienceId kernelModule:(id)unversionedKernelModule params:(NSDictionary *)params
-{
-  if (self = [super initWithExperienceId:experienceId kernelModule:unversionedKernelModule params:params]) {
+  if (self = [super initWithExperienceId:experienceId kernelService:kernelServiceInstance params:params]) {
     _initialUri = params[@"initialUri"];
     if (params[@"constants"] && params[@"constants"][@"appOwnership"]) {
       _appOwnership = params[@"constants"][@"appOwnership"];

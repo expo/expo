@@ -32,7 +32,7 @@ RCT_ENUM_CONVERTER(NSCalendarUnit,
 @interface EXNotifications ()
 
 // unversioned EXRemoteNotificationManager instance
-@property (nonatomic, weak) id kernelNotificationsModule;
+@property (nonatomic, weak) id kernelNotificationsService;
 
 @end
 
@@ -47,10 +47,10 @@ RCT_ENUM_CONVERTER(NSCalendarUnit,
   _bridge = bridge;
 }
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId kernelModule:(id)unversionedKernelModule params:(NSDictionary *)params
+- (instancetype)initWithExperienceId:(NSString *)experienceId kernelService:(id)kernelServiceInstance params:(NSDictionary *)params
 {
-  if (self = [super initWithExperienceId:experienceId kernelModule:unversionedKernelModule params:params]) {
-    _kernelNotificationsModule = unversionedKernelModule;
+  if (self = [super initWithExperienceId:experienceId kernelService:kernelServiceInstance params:params]) {
+    _kernelNotificationsService = kernelServiceInstance;
   }
   return self;
 }
@@ -63,7 +63,7 @@ RCT_REMAP_METHOD(getDevicePushTokenAsync,
     return reject(0, @"getDevicePushTokenAsync is only accessible within standalone applications", nil);
   }
   
-  NSString *token = [_kernelNotificationsModule apnsTokenString];
+  NSString *token = [_kernelNotificationsService apnsTokenString];
   if (!token) {
     return reject(0, @"APNS token has not been set", nil);
   }

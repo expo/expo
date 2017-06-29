@@ -10,7 +10,7 @@
   return @"ExponentScopedBridgeModule";
 }
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId kernelModule:(id)unversionedKernelModule params:(NSDictionary *)params
+- (instancetype)initWithExperienceId:(NSString *)experienceId kernelService:(id)kernelServiceInstance params:(NSDictionary *)params
 {
   if (self = [super init]) {
     _experienceId = experienceId;
