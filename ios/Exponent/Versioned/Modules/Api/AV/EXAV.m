@@ -368,10 +368,10 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
   [self _removeAudioRecorder];
   
   NSString *filename = [NSString stringWithFormat:@"recording-%@.caf", [[NSUUID UUID] UUIDString]];
-  [EXFileSystem ensureDirExistsWithPath:[self.bridge.scopedModules.scope scopedPathWithPath:@"AV"
-                                                                            withOptions:@{@"cache": @YES}]];
-  NSString *soundFilePath = [self.bridge.scopedModules.scope scopedPathWithPath:[@"AV" stringByAppendingPathComponent:filename]
-                                                                withOptions:@{@"cache": @(YES)}];
+  [EXFileSystem ensureDirExistsWithPath:[self.bridge.scopedModules.fileSystem scopedPathWithPath:@"AV"
+                                                                                     withOptions:@{@"cache": @YES}]];
+  NSString *soundFilePath = [self.bridge.scopedModules.fileSystem scopedPathWithPath:[@"AV" stringByAppendingPathComponent:filename]
+                                                                         withOptions:@{@"cache": @(YES)}];
   NSURL *soundFileURL = [NSURL fileURLWithPath:soundFilePath];
   
   NSDictionary *recordSettings = @{AVEncoderAudioQualityKey: @(AVAudioQualityMedium),
