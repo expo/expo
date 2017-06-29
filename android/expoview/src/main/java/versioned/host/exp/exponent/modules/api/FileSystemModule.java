@@ -17,6 +17,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.modules.network.OkHttpClientProvider;
@@ -190,6 +191,27 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
       } else {
         promise.reject("E_DIRECTORY_NOT_CREATED",
             "Directory '" + filepath + "' could not be created.");
+      }
+    } catch (Exception e) {
+      EXL.e(TAG, e.getMessage());
+      promise.reject(e);
+    }
+  }
+
+  @ReactMethod
+  public void readDirectoryAsync(String filepath, ReadableMap options, Promise promise) {
+    try {
+      File file = new File(mScopedContext.toScopedPath(filepath, ReadableObjectUtils.readableToJson(options)));
+      File[] children = file.listFiles();
+      if (children != null) {
+        WritableArray result = Arguments.createArray();
+        for (File child : children) {
+          result.pushString(child.getName());
+        }
+        promise.resolve(result);
+      } else {
+        promise.reject("E_DIRECTORY_NOT_READ",
+            "Directory '" + filepath + "' could not be read.");
       }
     } catch (Exception e) {
       EXL.e(TAG, e.getMessage());
