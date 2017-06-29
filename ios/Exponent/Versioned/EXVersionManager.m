@@ -6,6 +6,7 @@
 #import "EXDisabledDevLoadingView.h"
 #import "EXDisabledDevMenu.h"
 #import "EXDisabledRedBox.h"
+#import "EXFileSystem.h"
 #import "EXFrameExceptionsManager.h"
 #import "EXKernelModule.h"
 #import "EXLinkingManager.h"
@@ -260,8 +261,13 @@ static NSNumber *EXVersionManagerIsFirstLoad;
 {
   NSURL *initialUri = params[@"initialUri"];
   BOOL isDeveloper = [params[@"isDeveloper"] boolValue];
-  EXScope *experienceScope = [[EXScope alloc] initWithParams:params];
+  NSDictionary *manifest = params[@"manifest"];
+  NSString *experienceId = manifest[@"id"];
 
+  // TODO: switch to newer scope constrructor
+  EXScope *experienceScope = [[EXScope alloc] initWithParams:params];
+  EXFileSystem *fileSystem = [[EXFileSystem alloc] initWithExperienceId:experienceId kernelModule:nil params:params];
+                              
   NSMutableArray *extraModules = [NSMutableArray arrayWithArray:
                                   @[
                                     experienceScope,
@@ -269,9 +275,10 @@ static NSNumber *EXVersionManagerIsFirstLoad;
                                     [[EXConstants alloc] initWithProperties:params[@"constants"]],
                                     [[EXDevSettings alloc] initWithExperienceId:experienceScope.experienceId isDevelopment:isDeveloper],
                                     [[EXDisabledDevLoadingView alloc] init],
+                                    fileSystem,
                                     [[EXLinkingManager alloc] initWithInitialUrl:initialUri],
                                     [[EXStatusBarManager alloc] init],
-                                    [[RCTAsyncLocalStorage alloc] initWithStorageDirectory:[experienceScope scopedPathWithPath:EX_UNVERSIONED(@"RCTAsyncLocalStorage") withOptions:@{}]],
+                                    [[RCTAsyncLocalStorage alloc] initWithStorageDirectory:[fileSystem scopedPathWithPath:EX_UNVERSIONED(@"RCTAsyncLocalStorage") withOptions:@{}]],
                                     ]];
   if (params[@"frame"]) {
     [extraModules addObject:[[EXFrameExceptionsManager alloc] initWithDelegate:params[@"frame"]]];

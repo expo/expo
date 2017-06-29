@@ -24,39 +24,12 @@ EX_DEFINE_SCOPED_MODULE(EXScope, scope)
 - (instancetype)initWithExperienceId:(NSString *)experienceId kernelModule:(id)unversionedKernelModule params:(NSDictionary *)params
 {
   if (self = [super initWithExperienceId:experienceId kernelModule:unversionedKernelModule params:params]) {
-    NSString *subdir = [EXVersionManager escapedResourceName:self.experienceId];
-    _documentDirectory = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject
-                           stringByAppendingPathComponent:@"ExponentExperienceData"]
-                          stringByAppendingPathComponent:subdir];
-    _cachesDirectory = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject
-                         stringByAppendingPathComponent:@"ExponentExperienceData"]
-                        stringByAppendingPathComponent:subdir];
-
     _initialUri = params[@"initialUri"];
     if (params[@"constants"] && params[@"constants"][@"appOwnership"]) {
       _appOwnership = params[@"constants"][@"appOwnership"];
     }
   }
   return self;
-}
-
-- (NSString *)scopedPathWithPath:(NSString *)path withOptions:(NSDictionary *)options
-{
-  NSString *prefix = _documentDirectory;
-  if ([options objectForKey:@"cache"] && [[options objectForKey:@"cache"] boolValue]) {
-    prefix = _cachesDirectory;
-  }
-
-  if (![EXFileSystem ensureDirExistsWithPath:prefix]) {
-    return nil;
-  }
-
-  NSString *scopedPath = [[NSString stringWithFormat:@"%@/%@", prefix, path] stringByStandardizingPath];
-  if ([scopedPath hasPrefix:[prefix stringByStandardizingPath]]) {
-    return scopedPath;
-  } else {
-    return nil;
-  }
 }
 
 - (NSString *)apnsToken
