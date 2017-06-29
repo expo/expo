@@ -7,6 +7,12 @@
 #import <React/RCTUtils.h>
 #import <React/RCTConvert.h>
 
+@interface EXRemoteNotificationManagerNoWarnings
+
+- (NSString *)apnsTokenString;
+
+@end
+
 @implementation RCTConvert (NSCalendarUnit)
 
 RCT_ENUM_CONVERTER(NSCalendarUnit,
@@ -25,22 +31,29 @@ RCT_ENUM_CONVERTER(NSCalendarUnit,
 
 @interface EXNotifications ()
 
-@property (nonatomic, strong) NSString *experienceId;
+// unversioned EXRemoteNotificationManager instance
+@property (nonatomic, weak) id kernelNotificationsModule;
 
 @end
 
 @implementation EXNotifications
 
-RCT_EXPORT_MODULE(ExponentNotifications);
++ (NSString *)moduleName { return @"ExponentNotifications"; }
 
 @synthesize bridge = _bridge;
 
 - (void)setBridge:(RCTBridge *)bridge
 {
   _bridge = bridge;
-  _experienceId = _bridge.scopedModules.scope.experienceId;
 }
 
+- (instancetype)initWithExperienceId:(NSString *)experienceId kernelModule:(id)unversionedKernelModule params:(NSDictionary *)params
+{
+  if (self = [super initWithExperienceId:experienceId kernelModule:unversionedKernelModule params:params]) {
+    _kernelNotificationsModule = unversionedKernelModule;
+  }
+  return self;
+}
 
 RCT_REMAP_METHOD(getDevicePushTokenAsync,
                  getDevicePushTokenAsyncWithResolver:(RCTPromiseResolveBlock)resolve
@@ -50,7 +63,7 @@ RCT_REMAP_METHOD(getDevicePushTokenAsync,
     return reject(0, @"getDevicePushTokenAsync is only accessible within standalone applications", nil);
   }
   
-  NSString *token = _bridge.scopedModules.scope.apnsToken;
+  NSString *token = [_kernelNotificationsModule apnsTokenString];
   if (!token) {
     return reject(0, @"APNS token has not been set", nil);
   }
@@ -61,7 +74,7 @@ RCT_REMAP_METHOD(getExponentPushTokenAsync,
                  getExponentPushTokenAsyncWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  if (!_experienceId) {
+  if (!self.experienceId) {
     reject(0, @"Requires experience Id", nil);
     return;
   }
@@ -75,7 +88,7 @@ RCT_REMAP_METHOD(getExponentPushTokenAsync,
   [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXKernelGetPushTokenNotification")
                                                       object:nil
                                                     userInfo:@{
-                                                               @"experienceId": _experienceId,
+                                                               @"experienceId": self.experienceId,
                                                                @"onSuccess": success,
                                                                @"onFailure": failure,
                                                                }];
@@ -120,7 +133,7 @@ RCT_EXPORT_METHOD(cancelScheduledNotification:(NSString *)uniqueId)
 RCT_EXPORT_METHOD(cancelAllScheduledNotifications)
 {
   for (UILocalNotification *notification in [RCTSharedApplication() scheduledLocalNotifications]) {
-    if ([notification.userInfo[@"experienceId"] isEqualToString:_experienceId]) {
+    if ([notification.userInfo[@"experienceId"] isEqualToString:self.experienceId]) {
       [RCTSharedApplication() cancelLocalNotification:notification];
     }
   }
@@ -165,7 +178,7 @@ RCT_EXPORT_METHOD(setBadgeNumberAsync:(nonnull NSNumber *)number
 
   localNotification.userInfo = @{
                                  @"body": payload[@"data"],
-                                 @"experienceId": _experienceId,
+                                 @"experienceId": self.experienceId,
                                  @"id": uniqueId,
                                  };
 

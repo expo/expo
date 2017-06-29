@@ -8,6 +8,7 @@
 #import "EXKernel.h"
 #import "EXKernelLinkingManager.h"
 #import "EXLog.h"
+#import "EXRemoteNotificationManager.h"
 #import "EXShellManager.h"
 #import "EXVersionManager.h"
 #import "EXVersions.h"
@@ -221,6 +222,9 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
                                      @"isDeveloper": @([EXKernel isDevKernel]),
                                      @"isStandardDevMenuAllowed": @(YES), // kernel enables traditional RN dev menu
                                      @"manifest": manifest,
+                                     @"kernelModules": @{
+                                         @"remoteNotificationManager": [EXRemoteNotificationManager sharedInstance],
+                                       },
                                      } mutableCopy];
 
     // used by appetize - override the kernel initial url if there's something in NSUserDefaults
