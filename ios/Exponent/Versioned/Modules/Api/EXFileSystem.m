@@ -35,9 +35,9 @@ EX_DEFINE_SCOPED_MODULE(EXFileSystem, fileSystem)
 
 + (NSString *)moduleName { return @"ExponentFileSystem"; }
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId kernelModule:(id)unversionedKernelModule params:(NSDictionary *)params
+- (instancetype)initWithExperienceId:(NSString *)experienceId kernelService:(id)kernelServiceInstance params:(NSDictionary *)params
 {
-  if (self = [super initWithExperienceId:experienceId kernelModule:unversionedKernelModule params:params]) {
+  if (self = [super initWithExperienceId:experienceId kernelService:kernelServiceInstance params:params]) {
     NSString *subdir = [EXVersionManager escapedResourceName:self.experienceId];
     _documentDirectory = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject
                            stringByAppendingPathComponent:@"ExponentExperienceData"]

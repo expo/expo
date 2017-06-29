@@ -249,7 +249,7 @@ static NSNumber *EXVersionManagerIsFirstLoad;
  *    NSURL *initialUri
  *    @BOOL isDeveloper
  *    @BOOL isStandardDevMenuAllowed
- *    NSDictionary *kernelModules
+ *    NSDictionary *services
  *
  * Kernel-only:
  *    EXKernel *kernel
@@ -265,13 +265,13 @@ static NSNumber *EXVersionManagerIsFirstLoad;
   BOOL isDeveloper = [params[@"isDeveloper"] boolValue];
   NSDictionary *manifest = params[@"manifest"];
   NSString *experienceId = manifest[@"id"];
-  NSDictionary *kernelModules = params[@"kernelModules"];
+  NSDictionary *services = params[@"services"];
 
-  // TODO: switch to newer scope constrructor
-  EXScope *experienceScope = [[EXScope alloc] initWithParams:params];
-  EXFileSystem *fileSystem = [[EXFileSystem alloc] initWithExperienceId:experienceId kernelModule:nil params:params];
+  // TODO: formalize the mapping between scoped modules and kernel services
+  EXScope *experienceScope = [[EXScope alloc] initWithExperienceId:experienceId kernelService:nil params:params];
+  EXFileSystem *fileSystem = [[EXFileSystem alloc] initWithExperienceId:experienceId kernelService:nil params:params];
   EXNotifications *notifications = [[EXNotifications alloc] initWithExperienceId:experienceId
-                                                                    kernelModule:kernelModules[@"remoteNotificationManager"]
+                                                                   kernelService:services[@"remoteNotificationManager"]
                                                                           params:params];
                               
   NSMutableArray *extraModules = [NSMutableArray arrayWithArray:
