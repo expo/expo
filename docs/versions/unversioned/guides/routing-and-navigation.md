@@ -9,15 +9,15 @@ A "single page app" on the web is not an app with a single screen, that would in
 
 This same concept applies to with native mobile apps. When you navigate to a new screen, rather than refreshing the entire app and starting fresh from that screen, the screen is pushed onto a navigation stack and animated into view according to its configuration.
 
-The library that we recommend to use for routing & navigation in Expo is [ExNavigation](https://github.com/exponent/ex-navigation). You can see the [full documentation for ExNavigation on Github.](https://github.com/exponent/ex-navigation).
+The library that we recommend to use for routing & navigation in Expo is [React Navigation](https://github.com/react-community/react-navigation). You can see the [full documentation for React Nativation on the React Navigation website](https://www.reactnavigation.org/).
 
 ## Try it out
 
-The best way to become familiar with what ExNavigation is capable of is to try out the [ExNavigation example Expo app](https://expo.io/@community/ex-navigation-example). Once you've had a chance to try that, come back here and read on!
+The best way to become familiar with what React Navigation is capable of is to try out the [React Navigation example Expo app](https://expo.io/@react-navigation/NavigationPlayground). Once you've had a chance to try that, come back here and read on!
 
 ## An introduction: the most bare-bones navigation configuration
 
-You can follow along by copying all of the following code into `App.js` on a brand new blank Expo project, and running `npm install @expo/ex-navigation --save`.
+You can follow along by copying all of the following code into `App.js` on a brand new blank Expo project, and running `npm install react-navigation --save`.
 
 ```javascript
 import React from 'react';
@@ -27,21 +27,13 @@ import {
 } from 'react-native';
 
 import {
-  createRouter,
-  NavigationProvider,
-  StackNavigation,
-} from '@expo/ex-navigation';
+  StackNavigator,
+} from 'react-navigation';
 
-const Router = createRouter(() => ({
-  home: () => HomeScreen,
-}));
-
-export default class HomeScreen extends React.Component {
-  static route = {
-    navigationBar: {
-      title: 'Home',
-    }
-  }
+class HomeScreen extends React.Component {
+  static navigationOptions = {
+    title: 'Home'
+  };
 
   render() {
     return (
@@ -52,30 +44,29 @@ export default class HomeScreen extends React.Component {
   }
 
   _handlePress = () => {
-    this.props.navigator.push('home');
+    this.props.navigation.navigate('Home');
   }
 }
+
+export default StackNavigator({
+  Home: {
+    screen: HomeScreen,
+  },
+});
 ```
 
-First we create a router, where we map keys to screens. `HomeScreen` is our first **route component**, which we make clear by setting a `static route` object property on it. From here, we can configure various aspects of the route, such as the transtion style and what buttons to render in the navigation bar. Components that are registered as routes will have a special prop `navigator` passed in, which allows you to perform navigation actions like `push` and `pop`. In this case, we would be pushing home screens on top of home screens. But for this to work, we need to first put the `home` route inside of a `StackNavigation` so that we have a navigation stack to push to and pop from.
+React Navigation is made up of "routers", "navigators", and "screens". In this example, we export a new `StackNavigator` as the default component for our app. A `StackNavigator` provides a way for our app to transition between screens where each new screen is placed on the top of the stack. `StackNavigator`'s provide your app with a platform-native look and feel; on iOS new screens slide in from the right, while also animating the navigation bar appropriately, and on Android new screens fade in from the bottom.
 
-We initialize ExNavigation in our app by putting a `NavigationProvider` at the root of the app. We then render a `StackNavigation` child, and set its `initialRoute` to the `home` route that we defined in `createRouter`.
+Navigator's take a `RouteConfig` as their first option, which is a map of route names to screens.
 
-```javascript
-export default class App extends React.Component {
-  render() {
-    return (
-      <NavigationProvider router={Router}>
-        <StackNavigation initialRoute="home" />
-      </NavigationProvider>
-    );
-  }
-}
-```
+For the most part, a screen is a normal React componenent, with two special features:
+
+1. We can define options for each screen by defining a `navigationOptions` static property on each screen component. In this static property, we can set various options, such as the title, a custom left header view, or whether or not navigation gestures are enabled when that screen is visible.
+2. A special `navigation` prop is passed into the component. The `navigation` prop provides helper functions for reading the current navigation state as well as navigating to other screens in your app. In our sample app, in the `_handlePress` method, we call `this.props.navigation.navigate` to navigate to the `Home` route and push it onto our stack.
 
 ## Reviewing the tab template
 
-You probably don't want to start all of your projects completely from scratch, and the tab template is one of many to come from Expo that will hopefully give you a headstart on building your app. It comes with `@expo/ex-navigation` pre-installed, and tab navigation set up for you.
+You probably don't want to start all of your projects completely from scratch, and the tab template is one of many to come from Expo that will hopefully give you a headstart on building your app. It comes with `react-navigation` pre-installed, and tab-based navigation set up for you.
 
 Let's look at the project structure of the tab template as it relates to navigation. This is not a pattern that you absolutely must follow, but we find it works quite well for us.
 
@@ -83,7 +74,7 @@ Let's look at the project structure of the tab template as it relates to navigat
 ├── App.js
 ├── navigation
 │   ├── RootNavigation.js
-│   └── Router.js
+│   └── MainTabNavigator.js
 ├── screens
 │   ├── HomeScreen.js
 │   ├── LinksScreen.js
@@ -92,22 +83,22 @@ Let's look at the project structure of the tab template as it relates to navigat
 
 ### App.js
 
-In Expo apps, this file is typically where you will register the root component of your app. At the root, you typically include any higher order `Provider` components, such as the `react-redux` `Provider`, and the ExNavigation `NavigationProvider`. As you can see in the above example, we usually also render our root `StackNavigation` component at the root. Most apps are composed of many nested stacks, which we will see here.
-
-### screens/[\*](#id1)Screen.js
-
-I've organized all of the route components that represent screens in our app into a `Screens` directory (a screen is not strictly defined anywhere, it is up to you to decide what you think fits -- for me this is usually anything that I would `push` or `pop` from a stack).
-
-### navigation/Router.js
-
-In the simple example above, we in-lined our Router in `App.js` -- this can be fine to do for a while, but eventually it can grow long enough that it becomes cleaner to pull out into its own file. There may also be cases where you will want to import the router directly.
+In Expo apps, this file contains the root component of your app. In the tab template, this is where we render our `RootNavigation` component.
 
 ### navigation/RootNavigation.js
 
-This component is responsible for rendering our root navigation layout -- in this project, we use tabs. You might use a drawer layout here on Android, alternatively, or some other kind of layout. In the template, the `StackNavigation` that we render in `main.js` will only ever point to the `RootNavigation` screen, and each of the tabs renders their own `StackNavigation` component.
+This component is responsible for rendering our root navigation layout. Though we use a tab-based layout in this example, you might use a drawer layout here on Android, alternatively, or some other kind of layout. In the template, the `RootNavigation` that we render in `App.js` will only ever point to the `Main` screen, and each of the tabs in that screen renders their own `StackNavigator` component.
 
 Another responsibility that we have given to this component is to subscribe to push notifications, so that when one is received or selected, we can respond by navigating to a new route.
 
+### navigation/MainTabNavigator.js
+
+In this file, we export a new `TabNavigator` with three routes, "Home", "Links", and "Settings". In addition, we configure various options on the TabNavigator, such as a function to define the default `tabBarIcon` navigation option, disable animation, set the tab bar to be at the bottom part of the screen, etc.
+
+### screens/[\*](#id1)Screen.js
+
+All of the components that represent screens in our app are organized into a `Screens` directory (a screen is not strictly defined anywhere, it is up to you to decide what you think fits -- generally this is usually anything that would be `pushed` or `popped` from a stack).
+
 ## Learning more about routing & navigation
 
-`ExNavigation` is not the only routing library, but it is our recommended approach and we might not be able to answer your questions about other libraries. You can learn more about it [on the Github repository](https://github.com/exponent/ex-navigation), and by reading the code of other applications built with `ExNavigation`, such as [Growler Prowler](https://github.com/brentvatne/growler-prowler), [React Native Playground](https://github.com/exponent/rnplay), and the [ExNavigation example app](https://github.com/exponent/ex-navigation/tree/master/example).
+`react-navigation` is not the only React Native routing library, but it is our recommended approach and we might not be able to answer your questions about other libraries. You can learn more about it [on the Github repository](https://github.com/react-community/react-navigation) and at [reactnavigation.org](https://reactnavigation.org/).
