@@ -15,8 +15,8 @@
  */
 
 #import "EXLegacyAsyncLocalStorage.h"
+#import "EXConstants.h"
 #import "EXUnversioned.h"
-#import "EXScope.h"
 
 #import "RCTConvert.h"
 #import "RCTLog.h"
@@ -236,7 +236,7 @@ RCT_EXPORT_METHOD(getAllKeys:(RCTResponseSenderBlock)callback)
 
 - (NSString *)migrationDoneKey
 {
-  return [_bridge.scopedModules.scope.experienceId stringByAppendingString:@".migrationDone"];
+  return [_bridge.scopedModules.constants.experienceId stringByAppendingString:@".migrationDone"];
 }
 
 RCT_REMAP_METHOD(isMigrationDone,

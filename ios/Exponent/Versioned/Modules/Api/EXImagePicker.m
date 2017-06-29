@@ -4,7 +4,6 @@
 #import <React/RCTUtils.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 
-#import "EXScope.h"
 #import "EXFileSystem.h"
 
 @import MobileCoreServices;

@@ -12,7 +12,6 @@
 #import "EXLinkingManager.h"
 #import "EXNotifications.h"
 #import "EXVersionManager.h"
-#import "EXScope.h"
 #import "EXStatusBarManager.h"
 #import "EXUnversioned.h"
 
@@ -268,18 +267,17 @@ static NSNumber *EXVersionManagerIsFirstLoad;
   NSDictionary *services = params[@"services"];
 
   // TODO: formalize the mapping between scoped modules and kernel services
-  EXScope *experienceScope = [[EXScope alloc] initWithExperienceId:experienceId kernelService:nil params:params];
+  EXConstants *constants = [[EXConstants alloc] initWithExperienceId:experienceId kernelService:nil params:params];
   EXFileSystem *fileSystem = [[EXFileSystem alloc] initWithExperienceId:experienceId kernelService:nil params:params];
   EXNotifications *notifications = [[EXNotifications alloc] initWithExperienceId:experienceId
                                                                    kernelService:services[@"remoteNotificationManager"]
                                                                           params:params];
-                              
+
   NSMutableArray *extraModules = [NSMutableArray arrayWithArray:
                                   @[
-                                    experienceScope,
                                     [[EXAppState alloc] init],
-                                    [[EXConstants alloc] initWithProperties:params[@"constants"]],
-                                    [[EXDevSettings alloc] initWithExperienceId:experienceScope.experienceId isDevelopment:isDeveloper],
+                                    constants,
+                                    [[EXDevSettings alloc] initWithExperienceId:experienceId isDevelopment:isDeveloper],
                                     [[EXDisabledDevLoadingView alloc] init],
                                     fileSystem,
                                     [[EXLinkingManager alloc] initWithInitialUrl:initialUri],

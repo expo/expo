@@ -2,7 +2,6 @@
 
 #import "EXSQLite.h"
 
-#import "EXScope.h"
 #import "EXFileSystem.h"
 
 #import <sqlite3.h>

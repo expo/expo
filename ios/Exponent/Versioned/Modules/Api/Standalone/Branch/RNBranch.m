@@ -1,12 +1,15 @@
-#import "RNBranch.h"
+
 #import <React/RCTBridge.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTLog.h>
+
+#import "RNBranch.h"
 #import "BranchLinkProperties+RNBranch.h"
 #import "BranchUniversalObject+RNBranch.h"
 #import "RNBranchAgingDictionary.h"
 #import "RNBranchEventEmitter.h"
-#import "EXScope.h"
+
+#import "EXConstants.h"
 
 NSString * const RNBranchLinkOpenedNotification = @"RNBranchLinkOpenedNotification";
 NSString * const RNBranchLinkOpenedNotificationErrorKey = @"error";
@@ -106,7 +109,7 @@ RCT_EXPORT_MODULE();
 - (instancetype)init {
     self = [super init];
 
-    if (self && [self.bridge.scopedModules.scope.appOwnership isEqualToString:@"standalone"]) {
+    if (self && [self.bridge.scopedModules.constants.appOwnership isEqualToString:@"standalone"]) {
         // Added to work on Expo, should try to upstream.
         if (!branchInstance) {
             branchInstance = [Branch getInstance];

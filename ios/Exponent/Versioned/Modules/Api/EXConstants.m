@@ -6,11 +6,13 @@
 #include <sys/sysctl.h>
 #import <UIKit/UIWebView.h>
 
+EX_DEFINE_SCOPED_MODULE(EXConstants, constants)
+
 @import UIKit.UIApplication;
 
 @interface EXConstants ()
 
-@property (nonatomic, strong) NSDictionary *bridgeProps;
+@property (nonatomic, strong) NSDictionary *unversionedConstants;
 @property (nonatomic, strong) NSString *sessionId;
 @property (nonatomic, strong) NSString *webViewUserAgent;
 
@@ -20,10 +22,13 @@
 
 + (NSString *)moduleName { return @"ExponentConstants"; }
 
-- (instancetype)initWithProperties:(NSDictionary *)props
+- (instancetype)initWithExperienceId:(NSString *)experienceId kernelService:(id)kernelServiceInstance params:(NSDictionary *)params
 {
-  if (self = [super init]) {
-    _bridgeProps = props;
+  if (self = [super initWithExperienceId:experienceId kernelService:kernelServiceInstance params:params]) {
+    _unversionedConstants = params[@"constants"];
+    if (_unversionedConstants && _unversionedConstants[@"appOwnership"]) {
+      _appOwnership = _unversionedConstants[@"appOwnership"];
+    }
   }
   return self;
 }
@@ -55,8 +60,8 @@
                                               },
                                           },
                                       } mutableCopy];
-  if (_bridgeProps) {
-    [constants addEntriesFromDictionary:_bridgeProps];
+  if (_unversionedConstants) {
+    [constants addEntriesFromDictionary:_unversionedConstants];
   }
   return constants;
 }
