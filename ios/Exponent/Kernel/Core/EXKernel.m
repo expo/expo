@@ -56,7 +56,6 @@ NSString * const kEXChangeForegroundTaskSupportedOrientationsNotification = @"EX
 
 + (BOOL)isDevKernel
 {
-  return NO;
   // if we're in detached state (i.e. ExponentView) then never expect local kernel
   BOOL isDetachedKernel = ([[EXVersions sharedInstance].versions objectForKey:@"detachedNativeVersions"] != nil);
   if (isDetachedKernel) {
