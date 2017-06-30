@@ -117,6 +117,7 @@ RCT_REMAP_METHOD(writeAsStringAsync,
     reject(@"E_INVALID_PATH",
            [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", filePath],
            nil);
+    return;
   }
 
   NSError *error;
@@ -126,7 +127,6 @@ RCT_REMAP_METHOD(writeAsStringAsync,
     reject(@"E_FILE_NOT_WRITTEN",
            [NSString stringWithFormat:@"File '%@' could not be written.", filePath],
            error);
-    return;
   }
 }
 
@@ -327,6 +327,7 @@ RCT_REMAP_METHOD(downloadAsync,
     reject(@"E_INVALID_PATH",
            [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", filePath],
            nil);
+    return;
   }
 
   NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
@@ -338,6 +339,7 @@ RCT_REMAP_METHOD(downloadAsync,
       reject(@"E_DOWNLOAD_FAILED",
              [NSString stringWithFormat:@"Could not download from '%@'", url],
              error);
+      return;
     }
     [data writeToFile:scopedPath atomically:YES];
 
