@@ -169,12 +169,14 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
   }
 
   private void stopWatching() {
-    if (mScopedContext == null || mLocationParams == null || mOnLocationUpdatedListener == null) {
+    if (mScopedContext == null) {
       return;
     }
-
-    SmartLocation.with(mScopedContext).location().stop();
     SmartLocation.with(mScopedContext).geocoding().stop();
+
+    if (mLocationParams == null || mOnLocationUpdatedListener == null) {
+      SmartLocation.with(mScopedContext).location().stop();
+    }
   }
 
   @ReactMethod
@@ -373,10 +375,10 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
     }
 
     if (Geocoder.isPresent()) {
-    SmartLocation.with(mScopedContext).geocoding()
-      .direct(address, new OnGeocodingListener() {
-        @Override
-        public void onLocationResolved(String s, List<LocationAddress> list) {
+      SmartLocation.with(mScopedContext).geocoding()
+        .direct(address, new OnGeocodingListener() {
+          @Override
+          public void onLocationResolved(String s, List<LocationAddress> list) {
           WritableArray results = Arguments.createArray();
 
           for (LocationAddress locationAddress : list) {
@@ -391,8 +393,8 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
 
           SmartLocation.with(mScopedContext).geocoding().stop();
           promise.resolve(results);
-        }
-      });
+          }
+        });
     } else {
       promise.reject("E_NO_GEOCODER", "Geocoder service is not available for this device");
     }
@@ -411,19 +413,19 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
 
     if (Geocoder.isPresent()) {
       SmartLocation.with(mScopedContext).geocoding()
-          .reverse(location, new OnReverseGeocodingListener() {
-            @Override
-            public void onAddressResolved(Location original, List<Address> addresses) {
-              WritableArray results = Arguments.createArray();
+        .reverse(location, new OnReverseGeocodingListener() {
+          @Override
+          public void onAddressResolved(Location original, List<Address> addresses) {
+            WritableArray results = Arguments.createArray();
 
-              for (Address address : addresses) {
-                results.pushMap(addressToMap(address));
-              }
-
-              SmartLocation.with(mScopedContext).geocoding().stop();
-              promise.resolve(results);
+            for (Address address : addresses) {
+              results.pushMap(addressToMap(address));
             }
-          });
+
+            SmartLocation.with(mScopedContext).geocoding().stop();
+            promise.resolve(results);
+          }
+        });
     } else {
       promise.reject("E_NO_GEOCODER", "Geocoder service is not available for this device");
     }
