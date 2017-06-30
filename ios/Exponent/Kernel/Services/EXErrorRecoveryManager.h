@@ -6,7 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
-FOUNDATION_EXPORT NSNotificationName const kEXErrorRecoverySetPropsNotification;
+FOUNDATION_EXPORT NSNotificationName const kEXErrorRecoverySetPropsNotification DEPRECATED_ATTRIBUTE;
 
 @interface EXErrorRecoveryManager : NSObject
 

@@ -1,7 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <Foundation/Foundation.h>
+#import "EXScopedBridgeModule.h"
+#import "EXScopedModuleRegistry.h"
 
-@interface EXErrorRecovery : NSObject
+@interface EXErrorRecovery : EXScopedBridgeModule
 
 @end

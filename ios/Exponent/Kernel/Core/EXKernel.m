@@ -56,6 +56,7 @@ NSString * const kEXChangeForegroundTaskSupportedOrientationsNotification = @"EX
 
 + (BOOL)isDevKernel
 {
+  return NO;
   // if we're in detached state (i.e. ExponentView) then never expect local kernel
   BOOL isDetachedKernel = ([[EXVersions sharedInstance].versions objectForKey:@"detachedNativeVersions"] != nil);
   if (isDetachedKernel) {
@@ -74,7 +75,6 @@ NSString * const kEXChangeForegroundTaskSupportedOrientationsNotification = @"EX
   if (self = [super init]) {
     _bridgeRegistry = [[EXKernelBridgeRegistry alloc] init];
     _serviceRegistry = [[EXKernelServiceRegistry alloc] init];
-    _recoveryManager = [[EXErrorRecoveryManager alloc] init];
     [EXKernelDevMotionHandler sharedInstance];
     [EXKernelDevKeyCommands sharedInstance];
     [EXKernelLinkingManager sharedInstance];
@@ -327,7 +327,7 @@ NSString * const kEXChangeForegroundTaskSupportedOrientationsNotification = @"EX
 - (BOOL)kernelModuleShouldAutoReloadCurrentTask:(EXKernelModule *)module
 {
   NSString *foregroundTaskExperienceId = _bridgeRegistry.lastKnownForegroundAppManager.experienceId;
-  return [_recoveryManager experienceIdShouldReloadOnError:foregroundTaskExperienceId];
+  return [_serviceRegistry.errorRecoveryManager experienceIdShouldReloadOnError:foregroundTaskExperienceId];
 }
 
 - (void)kernelModule:(__unused EXKernelModule *)module taskDidForegroundWithType:(NSInteger)type params:(NSDictionary *)params
