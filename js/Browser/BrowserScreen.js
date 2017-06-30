@@ -358,7 +358,8 @@ class BrowserScreen extends React.Component {
         }
       }
       if (
-        !this.props.task || task.initialProps !== this.props.task.initialProps
+        !this.props.task ||
+        task.initialProps !== this.props.task.initialProps
       ) {
         if (task.initialProps) {
           this.setState({ initialPropsJS: task.initialProps.toJS() });
