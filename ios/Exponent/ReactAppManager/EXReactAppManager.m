@@ -141,7 +141,7 @@ NSTimeInterval const kEXJavaScriptResourceLongerTimeout = 120;
 - (void)loadSourceForBridge:(RCTBridge *)bridge withBlock:(RCTSourceLoadBlock)loadCallback
 {
   // clear any potentially old loading state
-  [[EXKernel sharedInstance].recoveryManager setError:nil forExperienceId:self.experienceId];
+  [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:nil forExperienceId:self.experienceId];
 
   _jsResource = [[EXJavaScriptResource alloc] initWithBundleName:[self bundleNameForJSResource] remoteUrl:bridge.bundleURL];
   _jsResource.abiVersion = _validatedVersion;
@@ -164,7 +164,7 @@ NSTimeInterval const kEXJavaScriptResourceLongerTimeout = 120;
 
       // RN is going to call RCTFatal() on this error, so keep a reference to it for later
       // so we can distinguish this non-fatal error from actual fatal cases.
-      [[EXKernel sharedInstance].recoveryManager setError:error forExperienceId:strongSelf.experienceId];
+      [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:error forExperienceId:strongSelf.experienceId];
       
       // react won't post this for us
       [[NSNotificationCenter defaultCenter] postNotificationName:[strongSelf _versionedString:RCTJavaScriptDidFailToLoadNotification] object:error];
@@ -230,7 +230,7 @@ NSTimeInterval const kEXJavaScriptResourceLongerTimeout = 120;
     dispatch_async(dispatch_get_main_queue(), ^{
       __strong typeof(self) strongSelf = weakSelf;
       if (strongSelf) {
-        [[EXKernel sharedInstance].recoveryManager experienceFinishedLoadingWithId:strongSelf.experienceId];
+        [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceFinishedLoadingWithId:strongSelf.experienceId];
         [strongSelf.delegate reactAppManagerFinishedLoadingJavaScript:strongSelf];
       }
     });

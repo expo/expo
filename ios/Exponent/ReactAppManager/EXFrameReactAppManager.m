@@ -52,7 +52,7 @@
 
 - (EXCachedResourceBehavior)cacheBehaviorForJSResource
 {
-  if ([[EXKernel sharedInstance].recoveryManager experienceIdIsRecoveringFromError:self.experienceId]) {
+  if ([[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:self.experienceId]) {
     // if this experience id encountered a loading error before, discard any cache we might have
     return kEXCachedResourceNoCache;
   }
@@ -75,10 +75,10 @@
   if (_frame && _frame.initialProps) {
     [expProps addEntriesFromDictionary:_frame.initialProps];
   }
-  NSDictionary *errorRecoveryProps = [[EXKernel sharedInstance].recoveryManager developerInfoForExperienceId:self.experienceId];
-  if (errorRecoveryProps && [[EXKernel sharedInstance].recoveryManager experienceIdIsRecoveringFromError:self.experienceId]) {
+  NSDictionary *errorRecoveryProps = [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager developerInfoForExperienceId:self.experienceId];
+  if (errorRecoveryProps && [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:self.experienceId]) {
     expProps[@"errorRecovery"] = errorRecoveryProps;
-    [[EXKernel sharedInstance].recoveryManager increaseAutoReloadBuffer];
+    [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager increaseAutoReloadBuffer];
   }
   
   props[@"exp"] = expProps;
@@ -210,7 +210,7 @@
 
 - (void)registerErrorForBridge:(NSError *)error
 {
-  [[EXKernel sharedInstance].recoveryManager setError:error forExperienceId:self.experienceId];
+  [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:error forExperienceId:self.experienceId];
 }
 
 - (id)appLoadingManagerInstance

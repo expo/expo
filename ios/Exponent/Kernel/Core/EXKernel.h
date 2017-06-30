@@ -45,7 +45,6 @@ FOUNDATION_EXPORT NSString * const kEXKernelClearJSCacheUserDefaultsKey;
 
 @property (nonatomic, strong, readonly) EXKernelBridgeRegistry *bridgeRegistry;
 @property (nonatomic, strong, readonly) EXKernelServiceRegistry *serviceRegistry;
-@property (nonatomic, strong, readonly) EXErrorRecoveryManager *recoveryManager;
 
 /**
  *  Find and return the (potentially versioned) native module instance belonging to the
