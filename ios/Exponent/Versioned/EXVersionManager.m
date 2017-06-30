@@ -261,7 +261,6 @@ static NSNumber *EXVersionManagerIsFirstLoad;
  */
 - (NSArray *)extraModulesWithParams:(NSDictionary *)params
 {
-  NSURL *initialUri = params[@"initialUri"];
   BOOL isDeveloper = [params[@"isDeveloper"] boolValue];
   NSDictionary *manifest = params[@"manifest"];
   NSString *experienceId = manifest[@"id"];
@@ -273,6 +272,9 @@ static NSNumber *EXVersionManagerIsFirstLoad;
                                                                    kernelService:services[@"errorRecoveryManager"]
                                                                           params:params];
   EXFileSystem *fileSystem = [[EXFileSystem alloc] initWithExperienceId:experienceId kernelService:nil params:params];
+  EXLinkingManager *linkingManager = [[EXLinkingManager alloc] initWithExperienceId:experienceId
+                                                                      kernelService:services[@"linkingManager"]
+                                                                             params:params];
   EXNotifications *notifications = [[EXNotifications alloc] initWithExperienceId:experienceId
                                                                    kernelService:services[@"remoteNotificationManager"]
                                                                           params:params];
@@ -285,7 +287,7 @@ static NSNumber *EXVersionManagerIsFirstLoad;
                                     [[EXDisabledDevLoadingView alloc] init],
                                     errorRecovery,
                                     fileSystem,
-                                    [[EXLinkingManager alloc] initWithInitialUrl:initialUri],
+                                    linkingManager,
                                     notifications,
                                     [[EXStatusBarManager alloc] init],
                                     [[RCTAsyncLocalStorage alloc] initWithStorageDirectory:[fileSystem scopedPathWithPath:EX_UNVERSIONED(@"RCTAsyncLocalStorage") withOptions:@{}]],

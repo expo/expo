@@ -2,6 +2,7 @@
 
 #import "EXKernelServiceRegistry.h"
 #import "EXErrorRecoveryManager.h"
+#import "EXKernelLinkingManager.h"
 #import "EXRemoteNotificationManager.h"
 
 @interface EXKernelServiceRegistry ()
@@ -18,6 +19,7 @@
     // TODO: init these in some clean way
     [self errorRecoveryManager];
     [self remoteNotificationManager];
+    [self linkingManager];
   }
   return self;
 }
@@ -37,10 +39,16 @@
   return _errorRecoveryManager;
 }
 
+- (EXKernelLinkingManager *)linkingManager
+{
+  return [EXKernelLinkingManager sharedInstance];
+}
+
 - (NSDictionary *)allServices
 {
   return @{
     @"errorRecoveryManager": self.errorRecoveryManager,
+    @"linkingManager": self.linkingManager,
     @"remoteNotificationManager": self.remoteNotificationManager,
   };
 }
