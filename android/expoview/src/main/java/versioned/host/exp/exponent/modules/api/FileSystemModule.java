@@ -61,6 +61,8 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
         if (options.hasKey("md5") && options.getBoolean("md5")) {
           result.putString("md5", ExpFileUtils.md5(file));
         }
+        result.putDouble("size", file.length());
+        result.putDouble("modificationTime", 0.001 * file.lastModified());
         promise.resolve(result);
       } else {
         result.putBoolean("exists", false);

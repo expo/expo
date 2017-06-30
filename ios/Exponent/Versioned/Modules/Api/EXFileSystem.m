@@ -64,6 +64,7 @@ RCT_REMAP_METHOD(getInfoAsync,
 
   BOOL isDirectory;
   if ([[NSFileManager defaultManager] fileExistsAtPath:scopedPath isDirectory:&isDirectory]) {
+    NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:scopedPath error:nil];
     NSMutableDictionary *result = [NSMutableDictionary dictionary];
     result[@"exists"] = @(true);
     result[@"isDirectory"] = @(isDirectory);
@@ -71,6 +72,8 @@ RCT_REMAP_METHOD(getInfoAsync,
     if (options[@"md5"]) {
       result[@"md5"] = [[NSData dataWithContentsOfFile:scopedPath] md5String];
     }
+    result[@"size"] = attributes[NSFileSize];
+    result[@"modificationTime"] = @(attributes.fileModificationDate.timeIntervalSince1970);
     resolve(result);
   } else {
     resolve(@{@"exists": @(false), @"isDirectory": @(false)});
