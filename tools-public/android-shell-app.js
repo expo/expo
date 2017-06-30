@@ -9,7 +9,7 @@ const shell = require('shelljs');
 const { ExponentTools } = require('xdl');
 const crayon = require('@ccheever/crayon');
 const JsonFile = require('@exponent/json-file');
-const xmlEscape = require('xml-escape');
+const replaceString = require('replace-string');
 
 const {
   getManifestAsync,
@@ -25,6 +25,14 @@ async function sedInPlaceAsync(...args) {
   } else {
     await spawnAsync(`sed`, ['-i', ...args]);
   }
+}
+
+function xmlWeirdAndroidEscape(original) {
+  let noAmps = replaceString(original, '&', '&amp;');
+  let noLt = replaceString(noAmps, '<', '&lt;');
+  let noGt = replaceString(noLt, '>', '&gt;');
+  let noApos = replaceString(noGt, '"', '\\"');
+  return replaceString(noApos, "'", "\\'");
 }
 
 exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
@@ -218,7 +226,7 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
   shell.sed(
     '-i',
     '"app_name">Expo',
-    `"app_name">${xmlEscape(name)}`,
+    `"app_name">${xmlWeirdAndroidEscape(name)}`,
     `${shellPath}app/src/main/res/values/strings.xml`
   );
 
