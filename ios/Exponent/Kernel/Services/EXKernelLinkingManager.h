@@ -8,13 +8,18 @@
  * Post this notification with to indicate that you want the kernel
  * to try and open that link. Parameters in the notification may include:
  *   url - the url to try and open.
- *   bridge - (optional) if this event came from a bridge, a pointer to that bridge.
  */
-FOUNDATION_EXPORT NSNotificationName kEXKernelOpenUrlNotification;
+FOUNDATION_EXPORT NSNotificationName kEXKernelOpenUrlNotification DEPRECATED_MSG_ATTRIBUTE("Use [EXKernelLinkingManager openUrl]");
 
 @interface EXKernelLinkingManager : NSObject
 
 + (instancetype)sharedInstance;
+
+/**
+ *  Either opens the url on an existing bridge, or sends it to the kernel
+ *  for opening on a new bridge.
+ */
+- (void)openUrl:(NSString *)url;
 
 /**
  *  Returns the deep link prefix for a given experience uri.

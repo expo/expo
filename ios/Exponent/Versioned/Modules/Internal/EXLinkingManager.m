@@ -9,8 +9,15 @@
 
 NSString * const EXLinkingEventOpenUrl = @"url";
 
+@interface EXKernelLinkingManagerNoWarnings
+
+- (void)openUrl:(NSString *)url;
+
+@end
+
 @interface EXLinkingManager ()
 
+@property (nonatomic, weak) id kernelLinkingManager;
 @property (nonatomic, strong) NSURL *initialUrl;
 @property (nonatomic) BOOL hasListeners;
 
@@ -20,10 +27,11 @@ NSString * const EXLinkingEventOpenUrl = @"url";
 
 + (NSString *)moduleName { return @"RCTLinkingManager"; }
 
-- (instancetype)initWithInitialUrl:(NSURL *)initialUrl
+- (instancetype)initWithExperienceId:(NSString *)experienceId kernelService:(id)kernelServiceInstance params:(NSDictionary *)params
 {
-  if (self = [super init]) {
-    _initialUrl = initialUrl;
+  if (self = [super initWithExperienceId:experienceId kernelService:kernelServiceInstance params:params]) {
+    _kernelLinkingManager = kernelServiceInstance;
+    _initialUrl = params[@"initialUri"];
   }
   return self;
 }
@@ -63,13 +71,7 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL
                   reject:(RCTPromiseRejectBlock)reject)
 {
   if ([self _isExponentUrl:URL]) {
-    // notify the kernel so it can route this url
-    [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXKernelOpenUrlNotification")
-                                                        object:nil
-                                                      userInfo:@{
-                                                                 @"bridge": self.bridge,
-                                                                 @"url": URL.absoluteString,
-                                                                 }];
+    [_kernelLinkingManager openUrl:URL.absoluteString];
     resolve(@YES);
   } else {
     BOOL opened = [RCTSharedApplication() openURL:URL];
