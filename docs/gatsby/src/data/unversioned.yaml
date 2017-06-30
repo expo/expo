@@ -66,6 +66,7 @@
     ErrorRecovery: /versions/unversioned/sdk/error-recovery.html
     Facebook: /versions/unversioned/sdk/facebook.html
     FacebookAds: /versions/unversioned/sdk/facebook-ads.html
+    FileSystem: /versions/unversioned/sdk/filesystem.html
     Fingerprint: /versions/unversioned/sdk/fingerprint.html
     Font: /versions/unversioned/sdk/font.html
     GLView: /versions/unversioned/sdk/gl-view.html
