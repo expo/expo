@@ -14,6 +14,7 @@ import {
   Easing,
   Image,
   NativeModules,
+  Platform,
   PixelRatio,
   ScrollView,
   StatusBar,
@@ -35,6 +36,7 @@ import BrowserActions from 'BrowserActions';
 import DevIndicator from '../Home/components/DevIndicator';
 import ExStore from 'ExStore';
 import FriendlyUrls from 'FriendlyUrls';
+import requestCameraPermissionsAsync from '../Home/utils/requestCameraPermissionsAsync';
 
 let SCREEN_WIDTH = Dimensions.get('window').width;
 let MENU_NARROW_SCREEN = SCREEN_WIDTH < 375;
@@ -115,12 +117,12 @@ export default class MenuView extends React.Component {
     });
     let copyUrlButton;
     if (this.props.task && this.props.task.manifestUrl) {
-      copyUrlButton = this._renderButton(
-        'copy',
-        'Copy Link',
-        this._copyTaskUrl,
-        require('../Assets/ios-menu-copy.png')
-      );
+      copyUrlButton = this._renderButton({
+        key: 'copy',
+        text: 'Copy Link',
+        onPress: this._copyTaskUrl,
+        iconSource: require('../Assets/ios-menu-copy.png'),
+      });
     }
 
     return (
@@ -140,19 +142,27 @@ export default class MenuView extends React.Component {
               : this._renderNUXRow()}
             <View style={styles.separator} />
             <View style={styles.buttonContainer}>
-              {this._renderButton(
-                'refresh',
-                'Refresh',
-                Browser.refresh,
-                require('../Assets/ios-menu-refresh.png')
-              )}
+              {this._renderButton({
+                key: 'refresh',
+                text: 'Refresh',
+                onPress: Browser.refresh,
+                iconSource: require('../Assets/ios-menu-refresh.png'),
+              })}
               {copyUrlButton}
-              {this._renderButton(
-                'home',
-                'Go to Expo Home',
-                this._goToHome,
-                require('../Assets/ios-menu-home.png')
-              )}
+              {this._renderButton({
+                key: 'home',
+                text: 'Go to Expo Home',
+                onPress: this._goToHome,
+                iconSource: require('../Assets/ios-menu-home.png'),
+              })}
+              {this._renderButton({
+                key: 'qrcode',
+                text: 'Scan QR code',
+                onPress: this._onOpenQRCode,
+                svgName: Platform.OS === 'ios'
+                  ? 'ios-qr-scanner'
+                  : 'md-qr-scanner',
+              })}
             </View>
             {this._maybeRenderDevMenuTools()}
             <TouchableHighlight
@@ -305,15 +315,15 @@ export default class MenuView extends React.Component {
   _renderDevMenuItem(key, item) {
     let { label, isEnabled, detail } = item;
     if (isEnabled) {
-      return this._renderButton(
+      return this._renderButton({
         key,
-        label,
-        () => {
+        text: label,
+        onPress: () => {
           this._onPressDevMenuButton(key);
         },
-        null,
-        true
-      );
+        iconSource: null,
+        withSeperator: true,
+      });
     } else {
       const detailButton = detail
         ? this._renderDevMenuDetailButton(label, detail)
@@ -345,43 +355,74 @@ export default class MenuView extends React.Component {
     );
   }
 
-  _renderButton(key, text, onPress, iconSource, withSeparator) {
-    let icon, buttonStyles;
+  _renderButton(options) {
+    const { key, text, onPress, iconSource, svgName, withSeparator } = options;
+
+    let icon;
     if (iconSource) {
       icon = <Image style={styles.buttonIcon} source={iconSource} />;
+    } else if (svgName) {
+      icon = (
+        <Ionicons
+          style={styles.buttonSvgIcon}
+          size={20}
+          name={svgName}
+          color="#4e9bde"
+        />
+      );
     } else {
       icon = <View style={styles.buttonIcon} />;
     }
-    if (withSeparator) {
-      buttonStyles = [styles.button, styles.buttonWithSeparator];
-    } else {
-      buttonStyles = styles.button;
-    }
+
+    const buttonTextStyles = svgName ? styles.buttonSvgText : styles.buttonText;
+
+    const buttonStyles = withSeparator
+      ? [styles.button, styles.buttonWithSeparator]
+      : styles.button;
+
     return (
       <TouchableOpacity key={key} style={buttonStyles} onPress={onPress}>
         {icon}
-        <Text style={styles.buttonText}>
+        <Text style={buttonTextStyles}>
           {text}
         </Text>
       </TouchableOpacity>
     );
   }
 
+  _onOpenQRCode = async () => {
+    if (await requestCameraPermissionsAsync()) {
+      ExStore.dispatch(
+        BrowserActions.foregroundHomeAsync({
+          immediatelyLoadingModalName: 'qrCode',
+        })
+      );
+    } else {
+      alert(
+        'In order to use the QR Code scanner you need to provide camera permissions'
+      );
+    }
+  };
+
   _onPressFinishNux = () => {
     ExStore.dispatch(BrowserActions.setIsNuxFinishedAsync(true));
     ExStore.dispatch(BrowserActions.showMenuAsync(false));
   };
+
   _onPressClose = () => {
     if (this.props.isNuxFinished) {
       ExStore.dispatch(BrowserActions.showMenuAsync(false));
     }
   };
+
   _goToHome = () => {
     ExStore.dispatch(BrowserActions.foregroundHomeAsync());
   };
+
   _copyTaskUrl = () => {
     Clipboard.setString(this.props.task.manifestUrl);
   };
+
   _onPressDevMenuButton = key => {
     ExponentKernel.selectDevMenuItemWithKey(key);
     ExStore.dispatch(BrowserActions.showMenuAsync(false));
@@ -484,6 +525,13 @@ let styles = StyleSheet.create({
     marginLeft: 20,
     alignSelf: 'flex-start',
   },
+  buttonSvgIcon: {
+    width: 20,
+    height: 20,
+    marginVertical: 10,
+    marginLeft: 20,
+    alignSelf: 'flex-start',
+  },
   buttonText: {
     color: '#595c68',
     fontSize: 14,
@@ -491,6 +539,16 @@ let styles = StyleSheet.create({
     marginVertical: 12,
     marginRight: 5,
     paddingHorizontal: 12,
+    fontWeight: '700',
+  },
+  buttonSvgText: {
+    color: '#595c68',
+    fontSize: 14,
+    textAlign: 'left',
+    marginVertical: 12,
+    marginRight: 5,
+    paddingLeft: 9,
+    paddingRight: 12,
     fontWeight: '700',
   },
   nuxRow: {

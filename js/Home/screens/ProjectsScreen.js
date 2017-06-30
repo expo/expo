@@ -13,7 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { createFocusAwareComponent } from '@expo/ex-navigation';
+import { createFocusAwareComponent, withNavigation } from '@expo/ex-navigation';
 import { Constants } from 'expo';
 import { connect } from 'react-redux';
 
@@ -24,11 +24,15 @@ import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
 import SmallProjectCard from '../components/SmallProjectCard';
 import ProjectTools from '../components/ProjectTools';
+import ExStore from 'ExStore';
 
 @createFocusAwareComponent
+@withNavigation
 @connect(data => HomeScreen.getDataProps(data))
 export default class HomeScreen extends React.Component {
   props: {
+    navigation: any,
+    immediatelyLoadingModalName?: string,
     isFocused: boolean,
     dispatch: () => void,
     recentHistory: any,
@@ -48,12 +52,23 @@ export default class HomeScreen extends React.Component {
   };
 
   static getDataProps(data) {
-    let { history } = data.browser;
+    let { history, immediatelyLoadingModalName } = data.browser;
 
     return {
       recentHistory: history.take(6),
       allHistory: history,
+      immediatelyLoadingModalName,
     };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (
+      !this.props.immediatelyLoadingModalName &&
+      nextProps.immediatelyLoadingModalName
+    ) {
+      this.props.navigation.showModal(nextProps.immediatelyLoadingModalName);
+      ExStore.dispatch(BrowserActions.clearImmediatelyLoadingModalName());
+    }
   }
 
   render() {
