@@ -9,7 +9,6 @@
 #import "EXKernelBridgeRecord.h"
 #import "EXKernelDevMotionHandler.h"
 #import "EXKernelDevKeyCommands.h"
-#import "EXKernelLinkingManager.h"
 #import "EXKernelModule.h"
 #import "EXLinkingManager.h"
 #import "EXManifestResource.h"
@@ -76,7 +75,6 @@ NSString * const kEXChangeForegroundTaskSupportedOrientationsNotification = @"EX
     _serviceRegistry = [[EXKernelServiceRegistry alloc] init];
     [EXKernelDevMotionHandler sharedInstance];
     [EXKernelDevKeyCommands sharedInstance];
-    [EXKernelLinkingManager sharedInstance];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(_refreshForegroundTask:)
                                                  name:kEXKernelRefreshForegroundTaskNotification

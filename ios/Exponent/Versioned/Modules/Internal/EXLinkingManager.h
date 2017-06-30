@@ -2,12 +2,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import <React/RCTBridgeModule.h>
-#import <React/RCTEventEmitter.h>
+#import "EXScopedEventEmitter.h"
 
-@interface EXLinkingManager : RCTEventEmitter
+@interface EXLinkingManager : EXScopedEventEmitter
 
-- (instancetype)initWithInitialUrl: (NSURL *)initialUrl;
 - (void)dispatchOpenUrlEvent: (NSURL *)url;
 
 @end

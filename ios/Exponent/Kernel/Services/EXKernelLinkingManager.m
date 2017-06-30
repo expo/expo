@@ -42,14 +42,14 @@ NSNotificationName kEXKernelOpenUrlNotification = @"EXKernelOpenUrlNotification"
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)_onKernelOpenUrl: (NSNotification *)notif
+- (void)openUrl:(NSString *)urlString
 {
-  NSURL *notifUri = [NSURL URLWithString:notif.userInfo[@"url"]];
-  if (!notifUri) {
-    DDLogInfo(@"Tried to route invalid url: %@", notif.userInfo[@"url"]);
+  NSURL *url = [NSURL URLWithString:urlString];
+  if (!url) {
+    DDLogInfo(@"Tried to route invalid url: %@", urlString);
     return;
   }
-  NSString *urlToRoute = [[self class] uriTransformedForLinking:notifUri].absoluteString;
+  NSString *urlToRoute = [[self class] uriTransformedForLinking:url].absoluteString;
   EXKernelBridgeRegistry *bridgeRegistry = [EXKernel sharedInstance].bridgeRegistry;
   
   // kernel bridge is our default handler for this url
@@ -69,6 +69,13 @@ NSNotificationName kEXKernelOpenUrlNotification = @"EXKernelOpenUrlNotification"
   if (destinationAppManager) {
     [[EXKernel sharedInstance] openUrl:urlToRoute onAppManager:destinationAppManager];
   }
+}
+
+#pragma mark - internal
+
+- (void)_onKernelOpenUrl: (NSNotification *)notif
+{
+  [self openUrl:notif.userInfo[@"url"]];
 }
 
 #pragma mark - static link transforming logic
@@ -171,11 +178,7 @@ NSNotificationName kEXKernelOpenUrlNotification = @"EXKernelOpenUrlNotification"
   sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation
 {
-  [[NSNotificationCenter defaultCenter] postNotificationName:kEXKernelOpenUrlNotification
-                                                      object:nil
-                                                    userInfo:@{
-                                                               @"url": URL.absoluteString
-                                                               }];
+  [[EXKernel sharedInstance].serviceRegistry.linkingManager openUrl:URL.absoluteString];
   return YES;
 }
 
@@ -184,11 +187,7 @@ continueUserActivity:(NSUserActivity *)userActivity
  restorationHandler:(void (^)(NSArray *))restorationHandler
 {
   if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
-    [[NSNotificationCenter defaultCenter] postNotificationName:kEXKernelOpenUrlNotification
-                                                        object:nil
-                                                      userInfo:@{
-                                                                 @"url": userActivity.webpageURL.absoluteString
-                                                                 }];
+    [[EXKernel sharedInstance].serviceRegistry.linkingManager openUrl:@"userActivity.webpageURL.absoluteString"];
   }
   return YES;
 }
