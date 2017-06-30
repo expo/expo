@@ -6,6 +6,7 @@
 #import "EXDisabledDevLoadingView.h"
 #import "EXDisabledDevMenu.h"
 #import "EXDisabledRedBox.h"
+#import "EXErrorRecovery.h"
 #import "EXFileSystem.h"
 #import "EXFrameExceptionsManager.h"
 #import "EXKernelModule.h"
@@ -268,6 +269,9 @@ static NSNumber *EXVersionManagerIsFirstLoad;
 
   // TODO: formalize the mapping between scoped modules and kernel services
   EXConstants *constants = [[EXConstants alloc] initWithExperienceId:experienceId kernelService:nil params:params];
+  EXErrorRecovery *errorRecovery = [[EXErrorRecovery alloc] initWithExperienceId:experienceId
+                                                                   kernelService:services[@"errorRecoveryManager"]
+                                                                          params:params];
   EXFileSystem *fileSystem = [[EXFileSystem alloc] initWithExperienceId:experienceId kernelService:nil params:params];
   EXNotifications *notifications = [[EXNotifications alloc] initWithExperienceId:experienceId
                                                                    kernelService:services[@"remoteNotificationManager"]
@@ -279,6 +283,7 @@ static NSNumber *EXVersionManagerIsFirstLoad;
                                     constants,
                                     [[EXDevSettings alloc] initWithExperienceId:experienceId isDevelopment:isDeveloper],
                                     [[EXDisabledDevLoadingView alloc] init],
+                                    errorRecovery,
                                     fileSystem,
                                     [[EXLinkingManager alloc] initWithInitialUrl:initialUri],
                                     notifications,
