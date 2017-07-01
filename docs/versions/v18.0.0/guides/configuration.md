@@ -49,7 +49,9 @@ The following is a list of properties that are available for you under the `"exp
 - `orientation`
 
    Lock your app to a specific orientation with `portrait` or `landscape`. Defaults to no lock.
- default, portrait, landscape
+ default, portrait, landscape. 
+ 
+    N.B. There is a currently a [bug](https://github.com/expo/expo/issues/323) in SDK 18 that causes orientation to always default to portrait mode no matter what the value of this key is. Use the runtime orientation control module [ScreenControl](https://docs.expo.io/versions/v18.0.0/sdk/screen-orientation.html) as a workaround in the meantime. 
 
 - `primaryColor`
 
