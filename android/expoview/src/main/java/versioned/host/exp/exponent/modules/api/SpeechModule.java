@@ -25,6 +25,7 @@ public class SpeechModule extends ReactContextBaseJavaModule implements Lifecycl
   public SpeechModule(ReactApplicationContext reactContext) {
     super(reactContext);
 
+    reactContext.addLifecycleEventListener(this);
     mTextToSpeech = new TextToSpeech(getReactApplicationContext(), new TextToSpeech.OnInitListener() {
       @Override
       public void onInit(int status) {

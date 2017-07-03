@@ -3,6 +3,7 @@
 #import "EXSpeech.h"
 #import <React/RCTEventEmitter.h>
 #import <React/RCTEventDispatcher.h>
+#import <AVFoundation/AVFoundation.h>
 
 @interface EXSpeechUtteranceWithId : AVSpeechUtterance
 
@@ -25,7 +26,7 @@
 
 @end
 
-@interface EXSpeech ()
+@interface EXSpeech () <AVSpeechSynthesizerDelegate>
 
 @property (nonatomic, strong) AVSpeechSynthesizer *synthesizer;
 
@@ -60,9 +61,9 @@ RCT_EXPORT_MODULE(ExponentSpeech)
 
 
   RCT_EXPORT_METHOD(speak:(nonnull NSString *)utteranceId text:(nonnull NSString *)text options:(NSDictionary *)options) {
-    if (self.synthesizer == nil) {
-      self.synthesizer = [[AVSpeechSynthesizer alloc] init];
-      self.synthesizer.delegate = self;
+    if (_synthesizer == nil) {
+      _synthesizer = [[AVSpeechSynthesizer alloc] init];
+      _synthesizer.delegate = self;
     }
     
     AVSpeechUtterance *utterance = [[EXSpeechUtteranceWithId alloc] initWithString:text utteranceId:utteranceId];
@@ -81,15 +82,15 @@ RCT_EXPORT_MODULE(ExponentSpeech)
       utterance.rate = [rate floatValue];
     }
     
-    [self.synthesizer speakUtterance:utterance];
+    [_synthesizer speakUtterance:utterance];
   }
   
   RCT_EXPORT_METHOD(stop) {
-    [self.synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
+    [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
   }
   
   RCT_REMAP_METHOD(isSpeaking, resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-    resolve([NSNumber numberWithBool:[self.synthesizer isSpeaking]]);
+    resolve(@([_synthesizer isSpeaking]));
   }
   
   @end
