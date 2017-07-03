@@ -38,7 +38,7 @@ Get a single contact from system contacts associated to specified `id`.
 
 A map of options:
 
--   **id (_string/number_)** - ID of the contact to fetch. Mind that this is a _string_ on iOS and an _int_ on Android. 
+-   **id (_string_)** - ID of the contact to fetch.
 
 -   **fields (_array_)** -- An array describing fields to retrieve. Each element must be one of constants listed in the table below.
 
