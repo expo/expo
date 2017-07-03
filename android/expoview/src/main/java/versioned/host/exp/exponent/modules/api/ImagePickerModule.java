@@ -319,11 +319,9 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
   }
 
   private String generateOutputPath() throws IOException {
-    String filename = UUID.randomUUID().toString();
-    WritableMap options = Arguments.createMap();
-    options.putBoolean("cache", true);
-    File directory = new File(mScopedContext.toScopedPath("ImagePicker", ReadableObjectUtils.readableToJson(options)));
+    File directory = new File(mScopedContext.getCacheDir() + File.separator + "ImagePicker");
     ExpFileUtils.ensureDirExists(directory);
+    String filename = UUID.randomUUID().toString();
     return directory + File.separator + filename + ".jpg";
   }
 

@@ -170,9 +170,9 @@ public class SQLiteModule extends ReactContextBaseJavaModule {
       if (":memory:".equals(name)) {
         database = SQLiteDatabase.openOrCreateDatabase(name, null);
       } else {
-        ExpFileUtils.ensureDirExists(new File(mScopedContext.toScopedPath("SQLite")));
-        File file = new File(mScopedContext.toScopedPath("SQLite/" + name));
-        database = SQLiteDatabase.openOrCreateDatabase(file, null);
+        File directory = new File(mScopedContext.getFilesDir() + File.separator + "SQLite");
+        ExpFileUtils.ensureDirExists(directory);
+        database = SQLiteDatabase.openOrCreateDatabase(directory + File.separator + name, null);
       }
       DATABASES.put(name, database);
     }
