@@ -45,7 +45,7 @@ EX_DEFINE_SCOPED_MODULE(EXFileSystem, fileSystem)
 {
   return @{
     @"documentDirectory": [NSURL fileURLWithPath:_documentDirectory].absoluteString,
-    @"cachesDirectory": [NSURL fileURLWithPath:_cachesDirectory].absoluteString,
+    @"cacheDirectory": [NSURL fileURLWithPath:_cachesDirectory].absoluteString,
   };
 }
 
