@@ -62,10 +62,12 @@ public class ScopedContext extends Context {
     mCacheDir = new File(mContext.getCacheDir() + "/ExperienceData/" + scope);
   }
 
+  @Deprecated
   public String toScopedPath(String path) throws IOException {
     return toScopedPath(path, new JSONObject());
   }
 
+  @Deprecated
   public String toScopedPath(String path, JSONObject options) throws IOException {
     File root = options.optBoolean("cache", false) ? getCacheDir() : getFilesDir();
     ExpFileUtils.ensureDirExists(root);
