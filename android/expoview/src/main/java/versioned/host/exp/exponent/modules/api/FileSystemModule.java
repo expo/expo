@@ -2,6 +2,8 @@
 
 package versioned.host.exp.exponent.modules.api;
 
+import android.net.Uri;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -11,6 +13,8 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.OutputStreamWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -49,10 +53,28 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
     return "ExponentFileSystem";
   }
 
+  @Override
+  public Map<String, Object> getConstants() {
+    Map<String, Object> constants = new HashMap<>();
+    constants.put("documentDirectory", Uri.fromFile(mScopedContext.getFilesDir()).toString() + "/");
+    constants.put("cacheDirectory", Uri.fromFile(mScopedContext.getCacheDir()).toString() + "/");
+    return constants;
+  }
+
+  private File uriToFile(String uri) throws IOException {
+    File file = new File(Uri.parse(uri).getPath());
+    String fileCanonicalPath = file.getCanonicalPath();
+    if (fileCanonicalPath.startsWith(mScopedContext.getFilesDir().getCanonicalPath() + "/") ||
+        fileCanonicalPath.startsWith(mScopedContext.getCacheDir().getCanonicalPath() + "/")) {
+      return file;
+    }
+    throw new IOException("Invalid Filesystem URI '" + uri + "', make sure it's in the app's scope.");
+  }
+
   @ReactMethod
-  public void getInfoAsync(String filepath, ReadableMap options, Promise promise) {
+  public void getInfoAsync(String uri, ReadableMap options, Promise promise) {
     try {
-      File file = new File(mScopedContext.toScopedPath(filepath, ReadableObjectUtils.readableToJson(options)));
+      File file = uriToFile(uri);
       WritableMap result = Arguments.createMap();
       if (file.exists()) {
         result.putBoolean("exists", true);
@@ -76,10 +98,9 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void readAsStringAsync(String filepath, ReadableMap options, Promise promise) {
+  public void readAsStringAsync(String uri, ReadableMap options, Promise promise) {
     try {
-      promise.resolve(IOUtils.toString(new FileInputStream(
-          mScopedContext.toScopedPath(filepath, ReadableObjectUtils.readableToJson(options)))));
+      promise.resolve(IOUtils.toString(new FileInputStream(uriToFile(uri))));
     } catch (Exception e) {
       EXL.e(TAG, e.getMessage());
       promise.reject(e);
@@ -87,10 +108,9 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void writeAsStringAsync(String filepath, String string, ReadableMap options, Promise promise) {
+  public void writeAsStringAsync(String uri, String string, ReadableMap options, Promise promise) {
     try {
-      FileOutputStream out = new FileOutputStream(
-          mScopedContext.toScopedPath(filepath, ReadableObjectUtils.readableToJson(options)));
+      FileOutputStream out = new FileOutputStream(uriToFile(uri));
       OutputStreamWriter writer = new OutputStreamWriter(out);
       writer.write(string);
       writer.close();
@@ -103,9 +123,9 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void deleteAsync(String filepath, ReadableMap options, Promise promise) {
+  public void deleteAsync(String uri, ReadableMap options, Promise promise) {
     try {
-      File file = new File(mScopedContext.toScopedPath(filepath, ReadableObjectUtils.readableToJson(options)));
+      File file = uriToFile(uri);
       if (file.exists()) {
         FileUtils.forceDelete(file);
         promise.resolve(null);
@@ -114,7 +134,7 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
           promise.resolve(null);
         } else {
           promise.reject("E_FILE_NOT_FOUND",
-              "File '" + filepath + "' could not be deleted because it could not be found");
+              "File '" + uri + "' could not be deleted because it could not be found");
         }
       }
     } catch (Exception e) {
@@ -135,10 +155,8 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
         return;
       }
 
-      File from = new File(mScopedContext.toScopedPath(options.getString("from"),
-          ReadableObjectUtils.readableToJson(options)));
-      File to = new File(mScopedContext.toScopedPath(options.getString("to"),
-          ReadableObjectUtils.readableToJson(options)));
+      File from = uriToFile(options.getString("from"));
+      File to = uriToFile(options.getString("to"));
       if (from.renameTo(to)) {
         promise.resolve(null);
       } else {
@@ -164,10 +182,8 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
         return;
       }
 
-      File from = new File(mScopedContext.toScopedPath(options.getString("from"),
-          ReadableObjectUtils.readableToJson(options)));
-      File to = new File(mScopedContext.toScopedPath(options.getString("to"),
-          ReadableObjectUtils.readableToJson(options)));
+      File from = uriToFile(options.getString("from"));
+      File to = uriToFile(options.getString("to"));
       if (from.isDirectory()) {
         FileUtils.copyDirectory(from, to);
         promise.resolve(null);
@@ -182,9 +198,9 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void makeDirectoryAsync(String filepath, ReadableMap options, Promise promise) {
+  public void makeDirectoryAsync(String uri, ReadableMap options, Promise promise) {
     try {
-      File file = new File(mScopedContext.toScopedPath(filepath, ReadableObjectUtils.readableToJson(options)));
+      File file = uriToFile(uri);
       boolean success = options.hasKey("intermediates") && options.getBoolean("intermediates") ?
           file.mkdirs() :
           file.mkdir();
@@ -192,7 +208,7 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
         promise.resolve(null);
       } else {
         promise.reject("E_DIRECTORY_NOT_CREATED",
-            "Directory '" + filepath + "' could not be created.");
+            "Directory '" + uri + "' could not be created.");
       }
     } catch (Exception e) {
       EXL.e(TAG, e.getMessage());
@@ -201,9 +217,9 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void readDirectoryAsync(String filepath, ReadableMap options, Promise promise) {
+  public void readDirectoryAsync(String uri, ReadableMap options, Promise promise) {
     try {
-      File file = new File(mScopedContext.toScopedPath(filepath, ReadableObjectUtils.readableToJson(options)));
+      File file = uriToFile(uri);
       File[] children = file.listFiles();
       if (children != null) {
         WritableArray result = Arguments.createArray();
@@ -213,7 +229,7 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
         promise.resolve(result);
       } else {
         promise.reject("E_DIRECTORY_NOT_READ",
-            "Directory '" + filepath + "' could not be read.");
+            "Directory '" + uri + "' could not be read.");
       }
     } catch (Exception e) {
       EXL.e(TAG, e.getMessage());
@@ -222,7 +238,7 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void downloadAsync(String url, final String filepath, final ReadableMap options, final Promise promise) {
+  public void downloadAsync(String url, final String uri, final ReadableMap options, final Promise promise) {
     OkHttpClient client = OkHttpClientProvider.getOkHttpClient();
     Request request = new Request.Builder().url(url).build();
     client.newCall(request).enqueue(new Callback() {
@@ -235,7 +251,7 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
       @Override
       public void onResponse(Call call, Response response) throws IOException {
         try {
-          File file = new File(mScopedContext.toScopedPath(filepath, ReadableObjectUtils.readableToJson(options)));
+          File file = uriToFile(uri);
           file.delete();
           BufferedSink sink = Okio.buffer(Okio.sink(file));
           sink.writeAll(response.body().source());

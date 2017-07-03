@@ -503,10 +503,8 @@ public class AVModule extends ReactContextBaseJavaModule
     removeAudioRecorder();
 
     final String filename = "recording-" + UUID.randomUUID().toString() + ".3gp";
-    final WritableMap pathOptions = Arguments.createMap();
-    pathOptions.putBoolean("cache", true);
     try {
-      final File directory = new File(mScopedContext.toScopedPath("Audio", ReadableObjectUtils.readableToJson(pathOptions)));
+      final File directory = new File(mScopedContext.getCacheDir() + File.separator + "Audio");
       ExpFileUtils.ensureDirExists(directory);
       mAudioRecordingFilePath = directory + File.separator + filename;
     } catch (final IOException e) {
