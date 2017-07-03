@@ -23,13 +23,6 @@ EX_DEFINE_SCOPED_MODULE(EXFileSystem, fileSystem)
 
 @end
 
-@interface EXFileSystem ()
-
-@property (nonatomic, readonly) NSString *documentDirectory;
-@property (nonatomic, readonly) NSString *cachesDirectory;
-
-@end
-
 @implementation EXFileSystem
 
 + (NSString *)moduleName { return @"ExponentFileSystem"; }
@@ -48,16 +41,24 @@ EX_DEFINE_SCOPED_MODULE(EXFileSystem, fileSystem)
   return self;
 }
 
+- (NSDictionary *)constantsToExport
+{
+  return @{
+    @"documentDirectory": [NSURL fileURLWithPath:_documentDirectory].absoluteString,
+    @"cachesDirectory": [NSURL fileURLWithPath:_cachesDirectory].absoluteString,
+  };
+}
+
 RCT_REMAP_METHOD(getInfoAsync,
-                 getInfoAsyncWithFilePath:(NSString *)filePath
+                 getInfoAsyncWithURI:(NSString *)uri
                  withOptions:(NSDictionary *)options
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  NSString *scopedPath = [self scopedPathWithPath:filePath withOptions:options];
+  NSString *scopedPath = [self scopedPathFromURI:uri];
   if (!scopedPath) {
-    reject(@"E_INVALID_PATH",
-           [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", filePath],
+    reject(@"E_INVALID_FILESYSTEM_URI",
+           [NSString stringWithFormat:@"Invalid FileSystem URI '%@', make sure it's in the app's scope.", uri],
            nil);
     return;
   }
@@ -81,15 +82,15 @@ RCT_REMAP_METHOD(getInfoAsync,
 }
 
 RCT_REMAP_METHOD(readAsStringAsync,
-                 readAsStringAsyncWithFilePath:(NSString *)filePath
+                 readAsStringAsyncWithURI:(NSString *)uri
                  withOptions:(NSDictionary *)options
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  NSString *scopedPath = [self scopedPathWithPath:filePath withOptions:options];
+  NSString *scopedPath = [self scopedPathFromURI:uri];
   if (!scopedPath) {
-    reject(@"E_INVALID_PATH",
-           [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", filePath],
+    reject(@"E_INVALID_FILESYSTEM_URI",
+           [NSString stringWithFormat:@"Invalid FileSystem URI '%@', make sure it's in the app's scope.", uri],
            nil);
     return;
   }
@@ -100,22 +101,22 @@ RCT_REMAP_METHOD(readAsStringAsync,
     resolve(string);
   } else {
     reject(@"E_FILE_NOT_READ",
-           [NSString stringWithFormat:@"File '%@' could not be read.", filePath],
+           [NSString stringWithFormat:@"File '%@' could not be read.", uri],
            error);
   }
 }
 
 RCT_REMAP_METHOD(writeAsStringAsync,
-                 writeAsStringAsyncWithFilePath:(NSString *)filePath
+                 writeAsStringAsyncWithURI:(NSString *)uri
                  withString:(NSString *)string
                  withOptions:(NSDictionary *)options
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  NSString *scopedPath = [self scopedPathWithPath:filePath withOptions:options];
+  NSString *scopedPath = [self scopedPathFromURI:uri];
   if (!scopedPath) {
-    reject(@"E_INVALID_PATH",
-           [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", filePath],
+    reject(@"E_INVALID_FILESYSTEM_URI",
+           [NSString stringWithFormat:@"Invalid FileSystem URI '%@', make sure it's in the app's scope.", uri],
            nil);
     return;
   }
@@ -125,31 +126,32 @@ RCT_REMAP_METHOD(writeAsStringAsync,
     resolve(nil);
   } else {
     reject(@"E_FILE_NOT_WRITTEN",
-           [NSString stringWithFormat:@"File '%@' could not be written.", filePath],
+           [NSString stringWithFormat:@"File '%@' could not be written.", uri],
            error);
   }
 }
 
 RCT_REMAP_METHOD(deleteAsync,
-                 deleteAsyncWithFilePath:(NSString *)filePath
+                 deleteAsyncWithURI:(NSString *)uri
                  withOptions:(NSDictionary *)options
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  NSString *scopedPath = [self scopedPathWithPath:filePath withOptions:options];
+  NSString *scopedPath = [self scopedPathFromURI:uri];
   if (!scopedPath) {
-    reject(@"E_INVALID_PATH",
-           [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", filePath],
+    reject(@"E_INVALID_FILESYSTEM_URI",
+           [NSString stringWithFormat:@"Invalid FileSystem URI '%@', make sure it's in the app's scope.", uri],
            nil);
     return;
   }
+
   if ([[NSFileManager defaultManager] fileExistsAtPath:scopedPath]) {
     NSError *error;
     if ([[NSFileManager defaultManager] removeItemAtPath:scopedPath error:&error]) {
       resolve(nil);
     } else {
       reject(@"E_FILE_NOT_DELETED",
-             [NSString stringWithFormat:@"File '%@' could not be deleted.", filePath],
+             [NSString stringWithFormat:@"File '%@' could not be deleted.", uri],
              error);
     }
   } else {
@@ -157,7 +159,7 @@ RCT_REMAP_METHOD(deleteAsync,
       resolve(nil);
     } else {
       reject(@"E_FILE_NOT_FOUND",
-             [NSString stringWithFormat:@"File '%@' could not be deleted because it could not be found.", filePath],
+             [NSString stringWithFormat:@"File '%@' could not be deleted because it could not be found.", uri],
              nil);
     }
   }
@@ -177,18 +179,18 @@ RCT_REMAP_METHOD(moveAsync,
     return;
   }
 
-  NSString *from = [self scopedPathWithPath:options[@"from"] withOptions:options];
+  NSString *from = [self scopedPathFromURI:options[@"from"]];
   if (!from) {
-    reject(@"E_INVALID_PATH",
-           [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", from],
+    reject(@"E_INVALID_FILESYSTEM_URI",
+           [NSString stringWithFormat:@"Invalid FileSystem URI '%@', make sure it's in the app's scope.", from],
            nil);
     return;
   }
 
-  NSString *to = [self scopedPathWithPath:options[@"to"] withOptions:options];
+  NSString *to = [self scopedPathFromURI:options[@"to"]];
   if (!to) {
-    reject(@"E_INVALID_PATH",
-           [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", to],
+    reject(@"E_INVALID_FILESYSTEM_URI",
+           [NSString stringWithFormat:@"Invalid FileSystem URI '%@', make sure it's in the app's scope.", to],
            nil);
     return;
   }
@@ -227,18 +229,18 @@ RCT_REMAP_METHOD(copyAsync,
     return;
   }
 
-  NSString *from = [self scopedPathWithPath:options[@"from"] withOptions:options];
+  NSString *from = [self scopedPathFromURI:options[@"from"]];
   if (!from) {
-    reject(@"E_INVALID_PATH",
-           [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", from],
+    reject(@"E_INVALID_FILESYSTEM_URI",
+           [NSString stringWithFormat:@"Invalid FileSystem URI '%@', make sure it's in the app's scope.", from],
            nil);
     return;
   }
 
-  NSString *to = [self scopedPathWithPath:options[@"to"] withOptions:options];
+  NSString *to = [self scopedPathFromURI:options[@"to"]];
   if (!to) {
-    reject(@"E_INVALID_PATH",
-           [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", to],
+    reject(@"E_INVALID_FILESYSTEM_URI",
+           [NSString stringWithFormat:@"Invalid FileSystem URI '%@', make sure it's in the app's scope.", to],
            nil);
     return;
   }
@@ -264,15 +266,15 @@ RCT_REMAP_METHOD(copyAsync,
 }
 
 RCT_REMAP_METHOD(makeDirectoryAsync,
-                 makeDirectoryAsyncWithPath:(NSString *)path
+                 makeDirectoryAsyncWithURI:(NSString *)uri
                  withOptions:(NSDictionary *)options
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  NSString *scopedPath = [self scopedPathWithPath:path withOptions:options];
+  NSString *scopedPath = [self scopedPathFromURI:uri];
   if (!scopedPath) {
-    reject(@"E_INVALID_PATH",
-           [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", path],
+    reject(@"E_INVALID_FILESYSTEM_URI",
+           [NSString stringWithFormat:@"Invalid FileSystem URI '%@', make sure it's in the app's scope.", uri],
            nil);
     return;
   }
@@ -285,21 +287,21 @@ RCT_REMAP_METHOD(makeDirectoryAsync,
     resolve(nil);
   } else {
     reject(@"E_DIRECTORY_NOT_CREATED",
-           [NSString stringWithFormat:@"Directory '%@' could not be created.", path],
+           [NSString stringWithFormat:@"Directory '%@' could not be created.", uri],
            error);
   }
 }
 
 RCT_REMAP_METHOD(readDirectoryAsync,
-                 readDirectoryAsync:(NSString *)path
+                 readDirectoryAsyncWithURI:(NSString *)uri
                  withOptions:(NSDictionary *)options
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  NSString *scopedPath = [self scopedPathWithPath:path withOptions:options];
+  NSString *scopedPath = [self scopedPathFromURI:uri];
   if (!scopedPath) {
-    reject(@"E_INVALID_PATH",
-           [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", path],
+    reject(@"E_INVALID_FILESYSTEM_URI",
+           [NSString stringWithFormat:@"Invalid FileSystem URI '%@', make sure it's in the app's scope.", uri],
            nil);
     return;
   }
@@ -310,22 +312,22 @@ RCT_REMAP_METHOD(readDirectoryAsync,
     resolve(children);
   } else {
     reject(@"E_DIRECTORY_NOT_READ",
-           [NSString stringWithFormat:@"Directory '%@' could not be read.", path],
+           [NSString stringWithFormat:@"Directory '%@' could not be read.", uri],
            error);
   }
 }
 
 RCT_REMAP_METHOD(downloadAsync,
                  downloadAsyncWithUrl:(NSURL *)url
-                 withFilePath:(NSString *)filePath
+                 withLocalURI:(NSString *)localUri
                  withOptions:(NSDictionary *)options
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  NSString *scopedPath = [self scopedPathWithPath:filePath withOptions:options];
+  NSString *scopedPath = [self scopedPathFromURI:localUri];
   if (!scopedPath) {
-    reject(@"E_INVALID_PATH",
-           [NSString stringWithFormat:@"Invalid path '%@', make sure it doesn't doesn't lead outside root.", filePath],
+    reject(@"E_INVALID_FILESYSTEM_URI",
+           [NSString stringWithFormat:@"Invalid FileSystem URI '%@', make sure it's in the app's scope.", localUri],
            nil);
     return;
   }
@@ -353,23 +355,17 @@ RCT_REMAP_METHOD(downloadAsync,
   [task resume];
 }
 
-- (NSString *)scopedPathWithPath:(NSString *)path withOptions:(NSDictionary *)options
+- (NSString *)scopedPathFromURI:(NSString *)uri
 {
-  NSString *prefix = _documentDirectory;
-  if ([options objectForKey:@"cache"] && [[options objectForKey:@"cache"] boolValue]) {
-    prefix = _cachesDirectory;
-  }
-  
-  if (![EXFileSystem ensureDirExistsWithPath:prefix]) {
+  NSString *path = [[NSURL URLWithString:uri].path stringByStandardizingPath];
+  if (!path) {
     return nil;
   }
-  
-  NSString *scopedPath = [[NSString stringWithFormat:@"%@/%@", prefix, path] stringByStandardizingPath];
-  if ([scopedPath hasPrefix:[prefix stringByStandardizingPath]]) {
-    return scopedPath;
-  } else {
-    return nil;
+  if ([path hasPrefix:[_documentDirectory stringByStandardizingPath]] ||
+      [path hasPrefix:[_cachesDirectory stringByStandardizingPath]]) {
+    return path;
   }
+  return nil;
 }
 
 + (BOOL)ensureDirExistsWithPath:(NSString *)path

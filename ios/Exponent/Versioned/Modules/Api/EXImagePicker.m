@@ -132,10 +132,9 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
     // Write to a temporary file in the Expo File System
     NSData *data = UIImageJPEGRepresentation(image, [[self.options valueForKey:@"quality"] floatValue]);
     NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:@".jpg"];
-    [EXFileSystem ensureDirExistsWithPath:[self.bridge.scopedModules.fileSystem scopedPathWithPath:@"ImagePicker"
-                                                                                       withOptions:@{@"cache": @YES}]];
-    NSString *path = [self.bridge.scopedModules.fileSystem scopedPathWithPath:[@"ImagePicker" stringByAppendingPathComponent:fileName]
-                                                                  withOptions:@{@"cache": @YES}];
+    NSString *directory = [self.bridge.scopedModules.fileSystem.cachesDirectory stringByAppendingPathComponent:@"ImagePicker"];
+    [EXFileSystem ensureDirExistsWithPath:directory];
+    NSString *path = [directory stringByAppendingPathComponent:fileName];
     [data writeToFile:path atomically:YES];
     NSURL *fileURL = [NSURL fileURLWithPath:path];
     NSString *filePath = [fileURL absoluteString];
