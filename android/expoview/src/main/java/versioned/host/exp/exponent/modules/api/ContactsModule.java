@@ -79,7 +79,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
         CommonDataKinds.Phone.CONTENT_URI,
         PROJECTION,
         fetchSingleContact ? Data.CONTACT_ID + " = ?" : null,
-        fetchSingleContact ? new String[] { Integer.toString(options.getInt("id")) } : null,
+        fetchSingleContact ? new String[] { options.getString("id") } : null,
         null
     );
     if (cursor != null) {
@@ -95,7 +95,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
 
           WritableMap contact = Arguments.createMap();
           long id = cursor.getLong(contactIdIndex);
-          contact.putDouble("id", id);
+          contact.putString("id", String.valueOf(id));
 
           contact = addIdentityFromContentResolver(fieldsSet, cr, contact, id);
           String nickname = getNicknameFromContentResolver(cr, id);
@@ -303,7 +303,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
           }
 
           details.putString("label", label);
-          details.putDouble("id", cursor.getLong(cursor.getColumnIndex(CommonDataKinds.Email._ID)));
+          details.putString("id", String.valueOf(cursor.getLong(cursor.getColumnIndex(CommonDataKinds.Email._ID))));
 
           emails.pushMap(details);
         }
@@ -370,7 +370,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
           }
 
           details.putString("label", label);
-          details.putDouble("id", cursor.getLong(cursor.getColumnIndex(CommonDataKinds.Phone._ID)));
+          details.putString("id", String.valueOf(cursor.getLong(cursor.getColumnIndex(CommonDataKinds.Phone._ID))));
 
           phoneNumbers.pushMap(details);
         }
@@ -451,7 +451,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
           }
 
           details.putString("label", label);
-          details.putDouble("id", cursor.getLong(cursor.getColumnIndex(CommonDataKinds.StructuredPostal._ID)));
+          details.putString("id", String.valueOf(cursor.getLong(cursor.getColumnIndex(CommonDataKinds.StructuredPostal._ID))));
 
           addresses.pushMap(details);
         }
@@ -605,7 +605,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
             contact.putMap("birthday", details);
           } else if (!label.equals("birthday")) {
             details.putString("label", label);
-            details.putDouble("id", cursor.getLong(cursor.getColumnIndex(CommonDataKinds.Event._ID)));
+            details.putString("id", String.valueOf(cursor.getLong(cursor.getColumnIndex(CommonDataKinds.Event._ID))));
             dates.pushMap(details);
           }
         }
@@ -698,7 +698,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
           details.putString("username", username);
           details.putString("label", label);
           details.putString("service", service);
-          details.putDouble("id", imId);
+          details.putString("id", String.valueOf(imId));
 
           addresses.pushMap(details);
         }
@@ -758,7 +758,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
           }
 
           details.putString("label", label);
-          details.putDouble("id", cursor.getLong(cursor.getColumnIndex(CommonDataKinds.Website._ID)));
+          details.putString("id", String.valueOf(cursor.getLong(cursor.getColumnIndex(CommonDataKinds.Website._ID))));
           addresses.pushMap(details);
         }
       } finally {
@@ -838,7 +838,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
           }
 
           details.putString("label", label);
-          details.putDouble("id", cursor.getLong(cursor.getColumnIndex(CommonDataKinds.Relation._ID)));
+          details.putString("id", String.valueOf(cursor.getLong(cursor.getColumnIndex(CommonDataKinds.Relation._ID))));
           relationships.pushMap(details);
         }
       } finally {
