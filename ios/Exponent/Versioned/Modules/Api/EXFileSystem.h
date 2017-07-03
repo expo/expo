@@ -5,8 +5,10 @@
 
 @interface EXFileSystem : EXScopedBridgeModule
 
+@property (nonatomic, readonly) NSString *documentDirectory;
+@property (nonatomic, readonly) NSString *cachesDirectory;
+
 + (BOOL)ensureDirExistsWithPath:(NSString *)path;
-- (NSString *)scopedPathWithPath:(NSString *)path withOptions:(NSDictionary *)options;
 
 @end
 

@@ -290,7 +290,7 @@ static NSNumber *EXVersionManagerIsFirstLoad;
                                     linkingManager,
                                     notifications,
                                     [[EXStatusBarManager alloc] init],
-                                    [[RCTAsyncLocalStorage alloc] initWithStorageDirectory:[fileSystem scopedPathWithPath:EX_UNVERSIONED(@"RCTAsyncLocalStorage") withOptions:@{}]],
+                                    [[RCTAsyncLocalStorage alloc] initWithStorageDirectory:[fileSystem.documentDirectory stringByAppendingPathComponent:EX_UNVERSIONED(@"RCTAsyncLocalStorage")]],
                                     ]];
   if (params[@"frame"]) {
     [extraModules addObject:[[EXFrameExceptionsManager alloc] initWithDelegate:params[@"frame"]]];
