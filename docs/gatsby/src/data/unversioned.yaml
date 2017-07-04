@@ -77,6 +77,7 @@
     KeepAwake: /versions/unversioned/sdk/keep-awake.html
     LinearGradient: /versions/unversioned/sdk/linear-gradient.html
     Location: /versions/unversioned/sdk/location.html
+    Lottie: /versions/unversioned/sdk/lottie.html
     MapView: /versions/unversioned/sdk/map-view.html
     Notifications: /versions/unversioned/sdk/notifications.html
     Pedometer: /versions/unversioned/sdk/pedometer.html

@@ -4351,14 +4351,14 @@ js-tokens@^3.0.0:
   version "3.0.1"
   resolved js-tokens-3.0.1.tgz#08e9f132484a2c45a30907e9dc4d5567b7f114d7
 
-js-yaml@3.7.0, js-yaml@~3.7.0:
+js-yaml@3.7.0, js-yaml@^3.4.6, js-yaml@~3.7.0:
   version "3.7.0"
   resolved js-yaml-3.7.0.tgz#5c967ddd837a9bfdca5f2de84253abe8a1c03b80
   dependencies:
     argparse "^1.0.7"
     esprima "^2.6.0"
 
-js-yaml@^3.4.6, js-yaml@^3.5.2, js-yaml@^3.8.1:
+js-yaml@^3.5.2, js-yaml@^3.8.1:
   version "3.8.4"
   resolved js-yaml-3.8.4.tgz#520b4564f86573ba96662af85a8cafa7b4b5a6f6
   dependencies:

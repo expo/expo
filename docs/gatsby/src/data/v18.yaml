@@ -76,6 +76,7 @@
     KeepAwake: /versions/v18.0.0/sdk/keep-awake.html
     LinearGradient: /versions/v18.0.0/sdk/linear-gradient.html
     Location: /versions/v18.0.0/sdk/location.html
+    Lottie: /versions/v18.0.0/sdk/lottie.html
     MapView: /versions/v18.0.0/sdk/map-view.html
     Notifications: /versions/v18.0.0/sdk/notifications.html
     Pedometer: /versions/v18.0.0/sdk/pedometer.html
