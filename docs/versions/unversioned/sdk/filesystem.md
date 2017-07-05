@@ -2,17 +2,28 @@
 title: FileSystem
 ---
 
-Provides access to a file system stored locally on the device. Changes to the file system are persisted across restarts of your app. Each Expo app has a separate file system root and has no access to the file system of other Expo apps. The path `'/'` refers to the root of the app's file system.
+Provides access to a file system stored locally on the device. Each Expo app has a separate file systems and has no access to the file system of other Expo apps. The API takes `file://` URIs pointing to local files on the device to identify files. Each app only has read and write access to locations under the following directories:
 
-### `Expo.FileSystem.getInfoAsync(path, options)`
+-   **`Expo.FileSystem.documentDirectory`**
+
+  `file://` URI pointing to the directory where user documents for this app will be stored. Files stored here will remain until explicitly deleted by the app. Ends with a trailing `/`. Example uses are for files the user saves that they expect to see again.
+
+-   **`Expo.FileSystem.cacheDirectory`**
+
+  `file://` URI pointing to the directory where temporary files used by this app will be stored. Files stored here may be automatically deleted by the system when low on storage. Example uses are for downloaded or generated files that the app just needs for one-time usage.
+
+So, for example, the URI to a file named `'myFile'` under `'myDirectory'` in the app's user documents directory would be `Expo.FileSystem.documentDirectory + 'myFile/myDirectory'`.
+
+
+### `Expo.FileSystem.getInfoAsync(fileUri, options)`
 
 Get metadata information about a file or directory.
 
 #### Arguments
 
--   **path (_string_)** --
+-   **fileUri (_string_)** --
 
-  The path to the file or directory.
+  `file://` URI to the file or directory.
 
 -   **options (_object_)** --
 
@@ -22,11 +33,11 @@ Get metadata information about a file or directory.
 
 #### Returns
 
-If no item exists at this path, returns `{ exists: false, isDirectory: false }`. Else returns an object with the following fields:
+If no item exists at this URI, returns `{ exists: false, isDirectory: false }`. Else returns an object with the following fields:
 
 -   **exists (_boolean_)** -- `true`.
 
--   **uri (_string_)** -- A `file://` URI pointing to the file. Can be used by any API call that takes a URI.
+-   **uri (_string_)** -- A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
 
 -   **size (_number_)** -- The size of the file in bytes.
 
@@ -35,49 +46,49 @@ If no item exists at this path, returns `{ exists: false, isDirectory: false }`.
 -   **md5 (_string_)** -- Present if the `md5` option was truthy. Contains the MD5 hash of the file.
 
 
-### `Expo.FileSystem.readAsStringAsync(path, options)`
+### `Expo.FileSystem.readAsStringAsync(fileUri, options)`
 
 Read the entire contents of a file as a string.
 
 #### Arguments
 
--   **path (_string_)** --
+-   **fileUri (_string_)** --
 
-  The path to the file or directory.
+  `file://` URI to the file or directory.
 
 #### Returns
 
 A string containing the entire contents of the file.
 
-### `Expo.FileSystem.writeAsStringAsync(path, options)`
+### `Expo.FileSystem.writeAsStringAsync(fileUri, options)`
 
 Write the entire contents of a file as a string.
 
 #### Arguments
 
--   **path (_string_)** --
+-   **fileUri (_string_)** --
 
-  The path to the file or directory.
+  `file://` URI to the file or directory.
 
 -   **contents (_string_)** --
 
   The string to replace the contents of the file with.
 
-### `Expo.FileSystem.deleteAsync(path, options)`
+### `Expo.FileSystem.deleteAsync(fileUri, options)`
 
-Delete a file or directory. If the path points to a directory, the directory and all its contents are recursively deleted.
+Delete a file or directory. If the URI points to a directory, the directory and all its contents are recursively deleted.
 
 #### Arguments
 
--   **path (_string_)** --
+-   **fileUri (_string_)** --
 
-  The path to the file or directory.
+  `file://` URI to the file or directory.
 
 -   **options (_object_)** --
 
   A map of options:
 
-    -   **idempotent (_boolean_)** -- If `true`, don't throw an error if there is no file or directory at this path. `false` by default.
+    -   **idempotent (_boolean_)** -- If `true`, don't throw an error if there is no file or directory at this URI. `false` by default.
 
 ### `Expo.FileSystem.moveAsync(options)`
 
@@ -89,9 +100,9 @@ Move a file or directory to a new location.
 
   A map of options:
 
-    -   **from (_string_)** -- The path to the file or directory at its original location.
+    -   **from (_string_)** -- `file://` URI to the file or directory at its original location.
 
-    -   **to (_string_)** -- The path to the new intended location of the file or directory, including its name.
+    -   **to (_string_)** -- `file://` URI to the file or directory at what should be its new location.
 
 ### `Expo.FileSystem.copyAsync(options)`
 
@@ -103,41 +114,41 @@ Create a copy of a file or directory. Directories are recursively copied with al
 
   A map of options:
 
-    -   **from (_string_)** -- The path to the file or directory to copy.
+    -   **from (_string_)** -- `file://` URI to the file or directory to copy.
 
-    -   **to (_string_)** -- The path of the new copy to create, including its name.
+    -   **to (_string_)** -- The `file://` URI to the new copy to create.
 
-### `Expo.FileSystem.makeDirectoryAsync(path, options)`
+### `Expo.FileSystem.makeDirectoryAsync(fileUri, options)`
 
 Create a new empty directory.
 
 #### Arguments
 
--   **path (_string_)** --
+-   **fileUri (_string_)** --
 
-  The path to the new directory to create.
+  `file://` URI to the new directory to create.
 
 -   **options (_object_)** --
 
   A map of options:
 
-    -   **intermediates (_boolean_)** -- If `true`, create any non-existent parent directories when creating the directory at `path`. If `false`, raises an error if any of the intermediate parent directories does not exist. `false` by default.
+    -   **intermediates (_boolean_)** -- If `true`, create any non-existent parent directories when creating the directory at `fileUri`. If `false`, raises an error if any of the intermediate parent directories does not exist. `false` by default.
 
-### `Expo.FileSystem.readDirectoryAsync(path, options)`
+### `Expo.FileSystem.readDirectoryAsync(fileUri, options)`
 
 Enumerate the contents of a directory.
 
 #### Arguments
 
--   **path (_string_)** --
+-   **fileUri (_string_)** --
 
-  The path to the directory.
+  `file://` URI to the directory.
 
 #### Returns
 
-An array of strings, each containing the name of a file or directory contained in the directory at `path`.
+An array of strings, each containing the name of a file or directory contained in the directory at `fileUri`.
 
-### `Expo.FileSystem.downloadAsync(uri, path, options)`
+### `Expo.FileSystem.downloadAsync(uri, fileUri, options)`
 
 Download the contents at a remote URI to a file in the app's file system.
 
@@ -147,9 +158,9 @@ Download the contents at a remote URI to a file in the app's file system.
 
   The remote URI to download from.
 
--   **path (_string_)** --
+-   **fileUri (_string_)** --
 
-  The local path of the file to download to. If there is no file at this path, a new one is created. If there is a file at this path, its contents are replaced.
+  The local URI of the file to download to. If there is no file at this URI, a new one is created. If there is a file at this URI, its contents are replaced.
 
 -   **options (_object_)** --
 
@@ -161,6 +172,6 @@ Download the contents at a remote URI to a file in the app's file system.
 
 Returns an object with the following fields:
 
--   **uri (_string_)** -- A `file://` URI pointing to the file. Can be used by any API call that takes a URI.
+-   **uri (_string_)** -- A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
 
 -   **md5 (_string_)** -- Present if the `md5` option was truthy. Contains the MD5 hash of the file.
