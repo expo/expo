@@ -74,6 +74,11 @@ NSNotificationName const kEXErrorRecoverySetPropsNotification = @"EXErrorRecover
   return nil;
 }
 
+- (void)setDeveloperInfo:(NSDictionary *)developerInfo forScopedModule:(id)scopedModule
+{
+  [self setDeveloperInfo:developerInfo forExperienceid:((EXScopedBridgeModule *)scopedModule).experienceId];
+}
+
 - (void)setError:(NSError *)error forExperienceId:(NSString *)experienceId
 {
   if (!experienceId) {

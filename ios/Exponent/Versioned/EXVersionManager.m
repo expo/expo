@@ -267,16 +267,16 @@ static NSNumber *EXVersionManagerIsFirstLoad;
   NSDictionary *services = params[@"services"];
 
   // TODO: formalize the mapping between scoped modules and kernel services
-  EXConstants *constants = [[EXConstants alloc] initWithExperienceId:experienceId kernelService:nil params:params];
+  EXConstants *constants = [[EXConstants alloc] initWithExperienceId:experienceId kernelServiceDelegate:nil params:params];
   EXErrorRecovery *errorRecovery = [[EXErrorRecovery alloc] initWithExperienceId:experienceId
-                                                                   kernelService:services[@"errorRecoveryManager"]
+                                                           kernelServiceDelegate:services[@"errorRecoveryManager"]
                                                                           params:params];
-  EXFileSystem *fileSystem = [[EXFileSystem alloc] initWithExperienceId:experienceId kernelService:nil params:params];
+  EXFileSystem *fileSystem = [[EXFileSystem alloc] initWithExperienceId:experienceId kernelServiceDelegate:nil params:params];
   EXLinkingManager *linkingManager = [[EXLinkingManager alloc] initWithExperienceId:experienceId
-                                                                      kernelService:services[@"linkingManager"]
+                                                              kernelServiceDelegate:services[@"linkingManager"]
                                                                              params:params];
   EXNotifications *notifications = [[EXNotifications alloc] initWithExperienceId:experienceId
-                                                                   kernelService:services[@"remoteNotificationManager"]
+                                                           kernelServiceDelegate:services[@"remoteNotificationManager"]
                                                                           params:params];
 
   NSMutableArray *extraModules = [NSMutableArray arrayWithArray:
@@ -306,7 +306,7 @@ static NSNumber *EXVersionManagerIsFirstLoad;
   
   if (params[@"kernel"]) {
     EXKernelModule *kernel = [[EXKernelModule alloc] initWithExperienceId:experienceId
-                                                            kernelService:services[@"linkingManager"]
+                                                    kernelServiceDelegate:services[@"linkingManager"]
                                                                    params:params];
     kernel.delegate = params[@"kernel"];
     [extraModules addObject:kernel];
