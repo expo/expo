@@ -3,6 +3,12 @@
 #import "EXScopedBridgeModule.h"
 #import "EXScopedModuleRegistry.h"
 
+@protocol EXNotificationsScopedModuleDelegate
+
+- (NSString *)apnsTokenStringForScopedModule:(id)scopedModule;
+
+@end
+
 @interface EXNotifications : EXScopedBridgeModule
 
 @end

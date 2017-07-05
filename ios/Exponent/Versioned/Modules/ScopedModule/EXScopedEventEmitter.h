@@ -7,7 +7,7 @@
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId
-                       kernelService:(id)kernelServiceInstance
+               kernelServiceDelegate:(id)kernelServiceInstance
                               params:(NSDictionary *)params NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly) NSString *experienceId;

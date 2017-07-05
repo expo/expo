@@ -5,16 +5,9 @@
 
 #import <React/RCTBridgeModule.h>
 
-@interface EXErrorRecoveryNoWarnings
-
-- (void)setDeveloperInfo: (NSDictionary *)developerInfo forExperienceid: (NSString *)experienceId;
-
-@end
-
 @interface EXErrorRecovery ()
 
-// unversioned ErrorRecoveryManager instance
-@property (nonatomic, weak) id errorRecoveryManager;
+@property (nonatomic, weak) id <EXErrorRecoveryScopedModuleDelegate> errorRecoveryDelegate;
 
 @end
 
@@ -24,17 +17,17 @@
 
 RCT_EXPORT_MODULE(ExponentErrorRecovery);
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId kernelService:(id)kernelServiceInstance params:(NSDictionary *)params
+- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
 {
-  if (self = [super initWithExperienceId:experienceId kernelService:kernelServiceInstance params:params]) {
-    _errorRecoveryManager = kernelServiceInstance;
+  if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
+    _errorRecoveryDelegate = kernelServiceInstance;
   }
   return self;
 }
 
 RCT_EXPORT_METHOD(setRecoveryProps:(NSDictionary *)props)
 {
-  [_errorRecoveryManager setDeveloperInfo:props forExperienceid:self.experienceId];
+  [_errorRecoveryDelegate setDeveloperInfo:props forScopedModule:self];
 }
 
 @end

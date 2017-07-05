@@ -71,6 +71,13 @@ NSNotificationName kEXKernelOpenUrlNotification = @"EXKernelOpenUrlNotification"
   }
 }
 
+#pragma mark - scoped module delegate
+
+- (void)linkingModule:(__unused id)linkingModule didOpenUrl:(NSString *)url
+{
+  [self openUrl:url];
+}
+
 #pragma mark - internal
 
 - (void)_onKernelOpenUrl: (NSNotification *)notif

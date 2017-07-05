@@ -4,6 +4,12 @@
 
 #import "EXScopedEventEmitter.h"
 
+@protocol EXLinkingManagerScopedModuleDelegate
+
+- (void)linkingModule:(id)linkingModule didOpenUrl:(NSString *)url;
+
+@end
+
 @interface EXLinkingManager : EXScopedEventEmitter
 
 - (void)dispatchOpenUrlEvent: (NSURL *)url;
