@@ -34,14 +34,29 @@ public class RegistrationIntentService extends IntentService {
     super(TAG);
   }
 
+  private void initialize() {
+    if (mExponentSharedPreferences != null) {
+      return;
+    }
+
+    try {
+      NativeModuleDepsProvider.getInstance().inject(RegistrationIntentService.class, this);
+    } catch (Throwable e) {}
+  }
+
   @Override
   public void onCreate() {
     super.onCreate();
-    NativeModuleDepsProvider.getInstance().inject(RegistrationIntentService.class, this);
+    initialize();
   }
 
   @Override
   protected void onHandleIntent(Intent intent) {
+    initialize();
+    if (mExponentSharedPreferences == null) {
+      return;
+    }
+
     try {
       InstanceID instanceID = InstanceID.getInstance(this);
       final String token = instanceID.getToken(Exponent.getInstance().getGCMSenderId(),
