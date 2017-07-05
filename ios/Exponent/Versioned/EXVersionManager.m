@@ -305,7 +305,9 @@ static NSNumber *EXVersionManagerIsFirstLoad;
   }
   
   if (params[@"kernel"]) {
-    EXKernelModule *kernel = [[EXKernelModule alloc] initWithVersions:params[@"supportedSdkVersions"]];
+    EXKernelModule *kernel = [[EXKernelModule alloc] initWithExperienceId:experienceId
+                                                            kernelService:services[@"linkingManager"]
+                                                                   params:params];
     kernel.delegate = params[@"kernel"];
     [extraModules addObject:kernel];
   }

@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <React/RCTEventEmitter.h>
+#import "EXScopedEventEmitter.h"
 
 @class EXKernelModule;
 
@@ -41,11 +41,10 @@ didRequestManifestWithUrl:(NSURL *)url
 
 @end
 
-@interface EXKernelModule : RCTEventEmitter
+@interface EXKernelModule : EXScopedEventEmitter
 
 @property (nonatomic, assign) id<EXKernelModuleDelegate> delegate;
 
-- (instancetype)initWithVersions: (NSArray *)supportedSdkVersions;
 - (void)dispatchJSEvent: (NSString *)eventName
                    body: (NSDictionary *)eventBody
               onSuccess: (void (^)(NSDictionary *))success
