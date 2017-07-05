@@ -5,12 +5,19 @@
 
 #import <React/RCTEventDispatcher.h>
 
+@interface EXKernelLinkingManagerNoWarnings
+
+- (void)openUrl:(NSString *)url;
+
+@end
+
 @interface EXKernelModule ()
 
 @property (nonatomic, assign) BOOL hasListeners;
 @property (nonatomic, strong) NSMutableDictionary *eventSuccessBlocks;
 @property (nonatomic, strong) NSMutableDictionary *eventFailureBlocks;
 @property (nonatomic, strong) NSArray * _Nonnull sdkVersions;
+@property (nonatomic, weak) id kernelLinkingManager;
 
 @end
 
@@ -18,12 +25,13 @@
 
 + (NSString *)moduleName { return @"ExponentKernel"; }
 
-- (instancetype)initWithVersions:(NSArray *)supportedSdkVersions
+- (instancetype)initWithExperienceId:(NSString *)experienceId kernelService:(id)kernelServiceInstance params:(NSDictionary *)params
 {
-  if (self = [super init]) {
+  if (self = [super initWithExperienceId:experienceId kernelService:kernelServiceInstance params:params]) {
     _eventSuccessBlocks = [NSMutableDictionary dictionary];
     _eventFailureBlocks = [NSMutableDictionary dictionary];
-    _sdkVersions = supportedSdkVersions;
+    _sdkVersions = params[@"supportedSdkVersions"];
+    _kernelLinkingManager = kernelServiceInstance;
   }
   return self;
 }
@@ -77,12 +85,7 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL
                   reject:(__unused RCTPromiseRejectBlock)reject)
 {
   if (URL) {
-    [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXKernelOpenUrlNotification")
-                                                        object:nil
-                                                      userInfo:@{
-                                                                 @"bridge": self.bridge,
-                                                                 @"url": URL.absoluteString,
-                                                                 }];
+    [_kernelLinkingManager openUrl:URL.absoluteString];
     resolve(@YES);
   } else {
     NSError *err = [NSError errorWithDomain:EX_UNVERSIONED(@"EXKernelErrorDomain") code:-1 userInfo:@{ NSLocalizedDescriptionKey: @"Cannot open a nil url" }];
