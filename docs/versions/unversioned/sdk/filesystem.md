@@ -46,7 +46,7 @@ If no item exists at this URI, returns `{ exists: false, isDirectory: false }`. 
 -   **md5 (_string_)** -- Present if the `md5` option was truthy. Contains the MD5 hash of the file.
 
 
-### `Expo.FileSystem.readAsStringAsync(fileUri, options)`
+### `Expo.FileSystem.readAsStringAsync(fileUri)`
 
 Read the entire contents of a file as a string.
 
@@ -60,7 +60,7 @@ Read the entire contents of a file as a string.
 
 A string containing the entire contents of the file.
 
-### `Expo.FileSystem.writeAsStringAsync(fileUri, options)`
+### `Expo.FileSystem.writeAsStringAsync(fileUri, contents)`
 
 Write the entire contents of a file as a string.
 
@@ -134,7 +134,7 @@ Create a new empty directory.
 
     -   **intermediates (_boolean_)** -- If `true`, create any non-existent parent directories when creating the directory at `fileUri`. If `false`, raises an error if any of the intermediate parent directories does not exist. `false` by default.
 
-### `Expo.FileSystem.readDirectoryAsync(fileUri, options)`
+### `Expo.FileSystem.readDirectoryAsync(fileUri)`
 
 Enumerate the contents of a directory.
 
