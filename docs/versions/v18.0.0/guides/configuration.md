@@ -49,9 +49,7 @@ The following is a list of properties that are available for you under the `"exp
 - `orientation`
 
    Lock your app to a specific orientation with `portrait` or `landscape`. Defaults to no lock.
- default, portrait, landscape. 
- 
-    N.B. There is a currently a [bug](https://github.com/expo/expo/issues/323) in SDK 18 that causes orientation to always default to portrait mode no matter what the value of this key is. Use the runtime orientation control module [ScreenControl](https://docs.expo.io/versions/v18.0.0/sdk/screen-orientation.html) as a workaround in the meantime. 
+ default, portrait, landscape
 
 - `primaryColor`
 
@@ -154,16 +152,16 @@ The following is a list of properties that are available for you under the `"exp
 
 - `rnCliPath`
 
-
+   
 - `packagerOpts`
 
-
+   
 - `ignoreNodeModulesValidation`
 
-
+   
 - `nodeModulesPath`
 
-
+   
 - `ios`
 
    **Standalone Apps Only**. iOS standalone app specific configuration
@@ -183,7 +181,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `config`
 
-
+      
        - `branch`
 
           [Branch](https://branch.io/) key to hook up Branch linking services.
@@ -247,7 +245,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `config`
 
-
+      
        - `branch`
 
           [Branch](https://branch.io/) key to hook up Branch linking services.
@@ -297,3 +295,5 @@ The following is a list of properties that are available for you under the `"exp
    Configuration for scripts to run to hook into the publish process
 
    - `postPublish`
+
+      
