@@ -5,6 +5,7 @@
 
 #import <React/RCTEventDispatcher.h>
 
+// TODO: move to delegate
 @interface EXKernelLinkingManagerNoWarnings
 
 - (void)openUrl:(NSString *)url;
@@ -25,9 +26,9 @@
 
 + (NSString *)moduleName { return @"ExponentKernel"; }
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId kernelService:(id)kernelServiceInstance params:(NSDictionary *)params
+- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
 {
-  if (self = [super initWithExperienceId:experienceId kernelService:kernelServiceInstance params:params]) {
+  if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
     _eventSuccessBlocks = [NSMutableDictionary dictionary];
     _eventFailureBlocks = [NSMutableDictionary dictionary];
     _sdkVersions = params[@"supportedSdkVersions"];

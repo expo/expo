@@ -113,6 +113,11 @@ NSString * const kEXCurrentAPNSTokenDefaultsKey = @"EXCurrentAPNSTokenDefaultsKe
   return nil;
 }
 
+- (NSString *)apnsTokenStringForScopedModule:(__unused id)scopedModule
+{
+  return [self apnsTokenString];
+}
+
 #pragma mark - Internal
 
 - (NSData *)_apnsTokenFromUserDefaults

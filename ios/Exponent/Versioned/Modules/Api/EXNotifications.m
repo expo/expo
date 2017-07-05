@@ -7,12 +7,6 @@
 #import <React/RCTUtils.h>
 #import <React/RCTConvert.h>
 
-@interface EXRemoteNotificationManagerNoWarnings
-
-- (NSString *)apnsTokenString;
-
-@end
-
 @implementation RCTConvert (NSCalendarUnit)
 
 RCT_ENUM_CONVERTER(NSCalendarUnit,
@@ -32,7 +26,7 @@ RCT_ENUM_CONVERTER(NSCalendarUnit,
 @interface EXNotifications ()
 
 // unversioned EXRemoteNotificationManager instance
-@property (nonatomic, weak) id kernelNotificationsService;
+@property (nonatomic, weak) id <EXNotificationsScopedModuleDelegate> kernelNotificationsDelegate;
 
 @end
 
@@ -47,10 +41,10 @@ RCT_ENUM_CONVERTER(NSCalendarUnit,
   _bridge = bridge;
 }
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId kernelService:(id)kernelServiceInstance params:(NSDictionary *)params
+- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
 {
-  if (self = [super initWithExperienceId:experienceId kernelService:kernelServiceInstance params:params]) {
-    _kernelNotificationsService = kernelServiceInstance;
+  if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
+    _kernelNotificationsDelegate = kernelServiceInstance;
   }
   return self;
 }
@@ -63,7 +57,7 @@ RCT_REMAP_METHOD(getDevicePushTokenAsync,
     return reject(0, @"getDevicePushTokenAsync is only accessible within standalone applications", nil);
   }
   
-  NSString *token = [_kernelNotificationsService apnsTokenString];
+  NSString *token = [_kernelNotificationsDelegate apnsTokenStringForScopedModule:self];
   if (!token) {
     return reject(0, @"APNS token has not been set", nil);
   }

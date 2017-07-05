@@ -2,7 +2,7 @@
 //
 // Contains logic for figuring out how to take care of deep links.
 
-#import <UIKit/UIKit.h>
+#import "EXLinkingManager.h"
 
 /**
  * Post this notification with to indicate that you want the kernel
@@ -11,7 +11,7 @@
  */
 FOUNDATION_EXPORT NSNotificationName kEXKernelOpenUrlNotification DEPRECATED_MSG_ATTRIBUTE("Use [EXKernelLinkingManager openUrl]");
 
-@interface EXKernelLinkingManager : NSObject
+@interface EXKernelLinkingManager : NSObject <EXLinkingManagerScopedModuleDelegate>
 
 + (instancetype)sharedInstance;
 

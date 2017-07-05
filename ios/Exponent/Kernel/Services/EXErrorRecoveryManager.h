@@ -4,11 +4,11 @@
 //  pass error recovery info to an experience which just reloaded.
 //
 
-#import <Foundation/Foundation.h>
+#import "EXErrorRecovery.h"
 
 FOUNDATION_EXPORT NSNotificationName const kEXErrorRecoverySetPropsNotification DEPRECATED_ATTRIBUTE;
 
-@interface EXErrorRecoveryManager : NSObject
+@interface EXErrorRecoveryManager : NSObject <EXErrorRecoveryScopedModuleDelegate>
 
 /**
  *  Associate arbitrary developer info with this experience id. If the experience recovers from an

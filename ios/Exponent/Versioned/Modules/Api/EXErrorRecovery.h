@@ -3,6 +3,13 @@
 #import "EXScopedBridgeModule.h"
 #import "EXScopedModuleRegistry.h"
 
+
+@protocol EXErrorRecoveryScopedModuleDelegate
+
+- (void)setDeveloperInfo:(NSDictionary *)developerInfo forScopedModule:(id)scopedModule;
+
+@end
+
 @interface EXErrorRecovery : EXScopedBridgeModule
 
 @end
