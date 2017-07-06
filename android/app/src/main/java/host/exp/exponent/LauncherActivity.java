@@ -108,6 +108,12 @@ public class LauncherActivity extends Activity {
   }
 
   private void handleIntent(Intent intent) {
+    try {
+      if (intent.getBooleanExtra("EXKernelDisableNuxDefaultsKey", false)) {
+        Constants.DISABLE_NUX = true;
+      }
+    } catch (Throwable e) {}
+
     Bundle bundle = intent.getExtras();
     mKernel.setActivityContext(this);
 

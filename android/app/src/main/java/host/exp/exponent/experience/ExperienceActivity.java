@@ -647,7 +647,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   private void handleExperienceOptions(JSONObject options) {
     if (options != null) {
       try {
-        if (options.getBoolean(KernelConstants.OPTION_LOAD_NUX_KEY)) {
+        if (options.getBoolean(KernelConstants.OPTION_LOAD_NUX_KEY) && !Constants.DISABLE_NUX) {
           addNuxView();
         }
       } catch (JSONException e) {
