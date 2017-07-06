@@ -194,7 +194,7 @@ continueUserActivity:(NSUserActivity *)userActivity
  restorationHandler:(void (^)(NSArray *))restorationHandler
 {
   if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
-    [[EXKernel sharedInstance].serviceRegistry.linkingManager openUrl:@"userActivity.webpageURL.absoluteString"];
+    [[EXKernel sharedInstance].serviceRegistry.linkingManager openUrl:userActivity.webpageURL.absoluteString];
   }
   return YES;
 }
