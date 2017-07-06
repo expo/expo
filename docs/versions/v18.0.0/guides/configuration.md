@@ -208,7 +208,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `isRemoteJSEnabled`
 
-      If set to false, your standalone app will never download any code, and will only use code bundled locally on the device. In that case, all updates to your app must be submitted through Apple review. Defaults to true.
+      If set to false, your standalone app will never download any code, and will only use code bundled locally on the device. In that case, all updates to your app must be submitted through Apple review. Defaults to true. (Note that this will not work out of the box with ExpoKit projects)
 
    - `supportsTablet`
 
