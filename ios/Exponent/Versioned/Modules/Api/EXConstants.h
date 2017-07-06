@@ -7,7 +7,6 @@
 
 + (NSString *)getExpoClientVersion;
 
-@property (nonatomic, readonly) NSString *experienceId;
 @property (nonatomic, readonly) NSString *appOwnership;
 
 @end
