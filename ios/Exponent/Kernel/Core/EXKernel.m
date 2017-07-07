@@ -12,7 +12,6 @@
 #import "EXKernelModule.h"
 #import "EXLinkingManager.h"
 #import "EXManifestResource.h"
-#import "EXScreenOrientationManager.h"
 #import "EXShellManager.h"
 #import "EXVersions.h"
 #import "EXViewController.h"
