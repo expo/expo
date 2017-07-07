@@ -151,8 +151,11 @@ let BrowserActions = {
   },
 
   @action foregroundHomeAsync(options = {}) {
-    const { clearTasks = false, immediatelyLoadingModalName } = options;
-    return { clearTasks, immediatelyLoadingModalName };
+    const {
+      clearTasks = false,
+      projectScreenImmediatelyNavigatesToModalNamed,
+    } = options;
+    return { clearTasks, projectScreenImmediatelyNavigatesToModalNamed };
   },
 
   @action showMenuAsync(isVisible) {
@@ -214,7 +217,7 @@ let BrowserActions = {
   },
 
   @action async clearImmediatelyLoadingModalName() {
-    return { immediatelyLoadingModalName: null };
+    return { projectScreenImmediatelyNavigatesToModalNamed: null };
   },
 
   @action async setLegacyMenuGestureAsync(useLegacyGesture) {
