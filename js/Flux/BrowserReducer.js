@@ -18,7 +18,7 @@ const BrowserState = Record({
   isShell: false,
   shellManifestUrl: null,
   shellInitialUrl: null,
-  immediatelyLoadingModalName: null,
+  projectScreenImmediatelyNavigatesToModalNamed: null,
   isHomeVisible: true,
   isMenuVisible: false,
   isNuxFinished: false,
@@ -68,7 +68,6 @@ export default Flux.createReducer(new BrowserState(), {
         state.merge({
           isHomeVisible: false,
           isMenuVisible: false,
-          immediatelyLoadingModalName: null,
           foregroundTaskUrl: url,
           tasks: state.tasks.set(url, task),
           history,
@@ -96,7 +95,6 @@ export default Flux.createReducer(new BrowserState(), {
       return state.merge({
         isHomeVisible: false,
         isMenuVisible: false,
-        immediatelyLoadingModalName: null,
         foregroundTaskUrl: url,
       });
     }
@@ -111,11 +109,14 @@ export default Flux.createReducer(new BrowserState(), {
       console.error(`Tried to foreground Exponent home while in a shell`);
       return state;
     }
-    let { clearTasks, immediatelyLoadingModalName } = action.payload;
+    let {
+      clearTasks,
+      projectScreenImmediatelyNavigatesToModalNamed,
+    } = action.payload;
     return state.merge({
       isHomeVisible: true,
       isMenuVisible: false,
-      immediatelyLoadingModalName,
+      projectScreenImmediatelyNavigatesToModalNamed,
       tasks: clearTasks ? Map() : state.tasks,
     });
   },
@@ -179,7 +180,6 @@ export default Flux.createReducer(new BrowserState(), {
       isHomeVisible: false,
       isMenuVisible: false,
       isNuxFinished,
-      immediatelyLoadingModalName: null,
       shellManifestUrl,
     });
   },
@@ -228,10 +228,10 @@ export default Flux.createReducer(new BrowserState(), {
 
   [BrowserActionTypes.clearImmediatelyLoadingModalName]: {
     then(state, action) {
-      let { immediatelyLoadingModalName } = action;
+      let { projectScreenImmediatelyNavigatesToModalNamed } = action;
 
       return state.merge({
-        immediatelyLoadingModalName,
+        projectScreenImmediatelyNavigatesToModalNamed,
       });
     },
   },
@@ -277,7 +277,6 @@ export default Flux.createReducer(new BrowserState(), {
       state.merge({
         isHomeVisible: false,
         isMenuVisible: false,
-        immediatelyLoadingModalName: null,
         foregroundTaskUrl: originalUrl,
         isKernelLoading: isAnythingLoading,
         tasks: updatedTasks,
@@ -291,7 +290,6 @@ export default Flux.createReducer(new BrowserState(), {
       return state.merge({
         isHomeVisible: true,
         isMenuVisible: false,
-        immediatelyLoadingModalName: null,
         foregroundTaskUrl: null,
         tasks: state.tasks.remove(action.payload.url),
       });

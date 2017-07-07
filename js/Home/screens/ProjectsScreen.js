@@ -52,12 +52,15 @@ export default class HomeScreen extends React.Component {
   };
 
   static getDataProps(data) {
-    let { history, immediatelyLoadingModalName } = data.browser;
+    let {
+      history,
+      projectScreenImmediatelyNavigatesToModalNamed,
+    } = data.browser;
 
     return {
       recentHistory: history.take(6),
       allHistory: history,
-      immediatelyLoadingModalName,
+      immediatelyLoadingModalName: projectScreenImmediatelyNavigatesToModalNamed,
     };
   }
 

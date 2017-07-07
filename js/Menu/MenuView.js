@@ -394,7 +394,7 @@ export default class MenuView extends React.Component {
     if (await requestCameraPermissionsAsync()) {
       ExStore.dispatch(
         BrowserActions.foregroundHomeAsync({
-          immediatelyLoadingModalName: 'qrCode',
+          projectScreenImmediatelyNavigatesToModalNamed: 'qrCode',
         })
       );
     } else {
