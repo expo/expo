@@ -1,7 +1,14 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <React/RCTBridgeModule.h>
+#import "EXScopedBridgeModule.h"
 
-@interface EXScreenOrientation : NSObject <RCTBridgeModule>
+@protocol EXScreenOrientationScopedModuleDelegate
+
+- (void)screenOrientationModule:(id)scopedOrientationModule
+didChangeSupportedInterfaceOrientations:(UIInterfaceOrientationMask)supportedInterfaceOrientations;
+
+@end
+
+@interface EXScreenOrientation : EXScopedBridgeModule
 
 @end

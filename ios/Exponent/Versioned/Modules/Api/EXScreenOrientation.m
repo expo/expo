@@ -3,32 +3,35 @@
 #import "EXScreenOrientation.h"
 
 #import <UIKit/UIKit.h>
-#import "EXUnversioned.h"
+
+@interface EXScreenOrientation ()
+
+@property (nonatomic, weak) id kernelOrientationServiceDelegate;
+
+@end
 
 @implementation EXScreenOrientation
 
-RCT_EXPORT_MODULE(ExponentScreenOrientation);
++ (NSString *)moduleName { return @"ExponentScreenOrientation"; }
 
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
 }
 
-@synthesize bridge = _bridge;
-
-- (void)setBridge:(RCTBridge *)bridge
+- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
 {
-  _bridge = bridge;
+  if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
+    _kernelOrientationServiceDelegate = kernelServiceInstance;
+  }
+  return self;
 }
 
 RCT_EXPORT_METHOD(allow:(NSString *)orientation)
 {
   UIInterfaceOrientationMask orientationMask = [self orientationMaskFromOrientation:orientation];
-
-  [[NSNotificationCenter defaultCenter]
-      postNotificationName:EX_UNVERSIONED(@"EXChangeForegroundTaskSupportedOrientations")
-                    object:self
-                  userInfo:@{@"orientation": @(orientationMask)}];
+  [_kernelOrientationServiceDelegate screenOrientationModule:self
+                     didChangeSupportedInterfaceOrientations:orientationMask];
 }
 
 - (UIInterfaceOrientationMask)orientationMaskFromOrientation:(NSString *)orientation

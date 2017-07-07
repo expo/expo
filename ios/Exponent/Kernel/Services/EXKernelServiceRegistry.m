@@ -4,10 +4,12 @@
 #import "EXErrorRecoveryManager.h"
 #import "EXKernelLinkingManager.h"
 #import "EXRemoteNotificationManager.h"
+#import "EXScreenOrientationManager.h"
 
 @interface EXKernelServiceRegistry ()
 
 @property (nonatomic, strong) EXErrorRecoveryManager *errorRecoveryManager;
+@property (nonatomic, strong) EXScreenOrientationManager *screenOrientationManager;
 
 @end
 
@@ -20,6 +22,7 @@
     [self errorRecoveryManager];
     [self remoteNotificationManager];
     [self linkingManager];
+    [self screenOrientationManager];
   }
   return self;
 }
@@ -44,12 +47,21 @@
   return [EXKernelLinkingManager sharedInstance];
 }
 
+- (EXScreenOrientationManager *)screenOrientationManager
+{
+  if (!_screenOrientationManager) {
+    _screenOrientationManager = [[EXScreenOrientationManager alloc] init];
+  }
+  return _screenOrientationManager;
+}
+
 - (NSDictionary *)allServices
 {
   return @{
     @"errorRecoveryManager": self.errorRecoveryManager,
     @"linkingManager": self.linkingManager,
     @"remoteNotificationManager": self.remoteNotificationManager,
+    @"screenOrientationManager": self.screenOrientationManager,
   };
 }
 

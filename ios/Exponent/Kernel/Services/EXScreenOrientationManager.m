@@ -1,0 +1,42 @@
+// Copyright 2015-present 650 Industries. All rights reserved.
+
+#import "EXKernel.h"
+#import "EXFrame.h"
+#import "EXFrameReactAppManager.h"
+#import "EXKernelReactAppManager.h"
+#import "EXScreenOrientationManager.h"
+
+NSNotificationName kEXChangeForegroundTaskSupportedOrientationsNotification = @"EXChangeForegroundTaskSupportedOrientations";
+
+@implementation EXScreenOrientationManager
+
+- (void)setSupportInterfaceOrientations:(UIInterfaceOrientationMask)supportedInterfaceOrientations forExperienceId:(NSString *)experienceId
+{
+  EXKernelBridgeRegistry *bridgeRegistry = [EXKernel sharedInstance].bridgeRegistry;
+  for (id bridge in bridgeRegistry.bridgeEnumerator) {
+    EXKernelBridgeRecord *bridgeRecord = [bridgeRegistry recordForBridge:bridge];
+    if ([bridgeRecord.experienceId isEqualToString:experienceId] && bridgeRecord.appManager.frame) {
+      bridgeRecord.appManager.frame.supportedInterfaceOrientations = supportedInterfaceOrientations;
+      break;
+    }
+  }
+}
+
+- (void)setSupportedInterfaceOrientationsForForegroundExperience:(UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+  EXKernelBridgeRegistry *bridgeRegistry = [EXKernel sharedInstance].bridgeRegistry;
+  EXReactAppManager *foregroundAppManager = bridgeRegistry.lastKnownForegroundAppManager;
+  if ([foregroundAppManager isKindOfClass:[EXFrameReactAppManager class]]) {
+    ((EXFrameReactAppManager *)foregroundAppManager).frame.supportedInterfaceOrientations = supportedInterfaceOrientations;
+  }
+}
+
+#pragma mark - scoped module delegate
+
+- (void)screenOrientationModule:(id)scopedOrientationModule
+didChangeSupportedInterfaceOrientations:(UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+  [self setSupportInterfaceOrientations:supportedInterfaceOrientations forExperienceId:((EXScopedBridgeModule *)scopedOrientationModule).experienceId];
+}
+
+@end
