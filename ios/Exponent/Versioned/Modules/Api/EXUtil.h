@@ -10,4 +10,6 @@
 
 @interface EXUtil : EXScopedBridgeModule
 
++ (NSString *)escapedResourceName:(NSString *)name;
+
 @end

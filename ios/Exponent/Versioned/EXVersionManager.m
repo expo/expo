@@ -356,11 +356,4 @@ void EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceClassName)
   return result;
 }
 
-+ (NSString *)escapedResourceName:(NSString *)name
-{
-  NSString *charactersToEscape = @"!*'();:@&=+$,/?%#[]";
-  NSCharacterSet *allowedCharacters = [[NSCharacterSet characterSetWithCharactersInString:charactersToEscape] invertedSet];
-  return [name stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
-}
-
 @end

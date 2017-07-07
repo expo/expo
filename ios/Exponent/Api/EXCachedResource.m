@@ -2,9 +2,9 @@
 
 #import "EXCachedResource.h"
 #import "EXFileDownloader.h"
-#import "EXVersionManager.h"
-#import "EXVersions.h"
 #import "EXKernelUtil.h"
+#import "EXUtil.h"
+#import "EXVersions.h"
 
 #import <React/RCTUtils.h>
 
@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   if (self = [super init]) {
     _shouldVersionCache = YES;
-    _resourceName = [EXVersionManager escapedResourceName:resourceName];
+    _resourceName = [EXUtil escapedResourceName:resourceName];
     _resourceType = resourceType;
     _remoteUrl = url;
     _cachePath = (cachePath) ? cachePath : [self _defaultCachePath];
