@@ -10,6 +10,22 @@ NSNotificationName kEXChangeForegroundTaskSupportedOrientationsNotification = @"
 
 @implementation EXScreenOrientationManager
 
+- (instancetype)init
+{
+  if (self = [super init]) {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(_changeSupportedOrientations:)
+                                                 name:kEXChangeForegroundTaskSupportedOrientationsNotification
+                                               object:nil];
+  }
+  return self;
+}
+
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)setSupportInterfaceOrientations:(UIInterfaceOrientationMask)supportedInterfaceOrientations forExperienceId:(NSString *)experienceId
 {
   EXKernelBridgeRegistry *bridgeRegistry = [EXKernel sharedInstance].bridgeRegistry;
@@ -27,8 +43,25 @@ NSNotificationName kEXChangeForegroundTaskSupportedOrientationsNotification = @"
   EXKernelBridgeRegistry *bridgeRegistry = [EXKernel sharedInstance].bridgeRegistry;
   EXReactAppManager *foregroundAppManager = bridgeRegistry.lastKnownForegroundAppManager;
   if ([foregroundAppManager isKindOfClass:[EXFrameReactAppManager class]]) {
-    ((EXFrameReactAppManager *)foregroundAppManager).frame.supportedInterfaceOrientations = supportedInterfaceOrientations;
+    EXFrame *frame = ((EXFrameReactAppManager *)foregroundAppManager).frame;
+    if (frame) {
+      frame.supportedInterfaceOrientations = supportedInterfaceOrientations;
+    }
   }
+}
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientationsForForegroundExperience
+{
+  EXKernelBridgeRegistry *bridgeRegistry = [EXKernel sharedInstance].bridgeRegistry;
+  EXReactAppManager *foregroundAppManager = bridgeRegistry.lastKnownForegroundAppManager;
+  if ([foregroundAppManager isKindOfClass:[EXFrameReactAppManager class]]) {
+    EXFrame *frame = ((EXFrameReactAppManager *)foregroundAppManager).frame;
+    if (frame) {
+      return frame.supportedInterfaceOrientations;
+    }
+  }
+  // kernel or unknown bridge: lock to portrait
+  return UIInterfaceOrientationMaskPortrait;
 }
 
 #pragma mark - scoped module delegate
@@ -37,6 +70,12 @@ NSNotificationName kEXChangeForegroundTaskSupportedOrientationsNotification = @"
 didChangeSupportedInterfaceOrientations:(UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
   [self setSupportInterfaceOrientations:supportedInterfaceOrientations forExperienceId:((EXScopedBridgeModule *)scopedOrientationModule).experienceId];
+}
+
+- (void)_changeSupportedOrientations:(NSNotification *)notification
+{
+  NSNumber *orientationNumber = notification.userInfo[@"orientation"];
+  [self setSupportedInterfaceOrientationsForForegroundExperience:(UIInterfaceOrientationMask)orientationNumber];
 }
 
 @end

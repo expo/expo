@@ -7,6 +7,7 @@
 #import "EXFileDownloader.h"
 #import "EXKernel.h"
 #import "EXKernelUtil.h"
+#import "EXScreenOrientationManager.h"
 
 #import <React/RCTDevLoadingView.h>
 #import <React/RCTRootView.h>
@@ -48,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-  return [[EXKernel sharedInstance] supportedInterfaceOrientationsForForegroundTask];
+  return [[EXKernel sharedInstance].serviceRegistry.screenOrientationManager supportedInterfaceOrientationsForForegroundExperience];
 }
 
 #pragma mark - Public
