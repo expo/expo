@@ -9,6 +9,8 @@
 @property (nonatomic, readonly) NSString *cachesDirectory;
 
 + (BOOL)ensureDirExistsWithPath:(NSString *)path;
++ (NSString *)documentDirectoryForExperienceId:(NSString *)experienceId;
++ (NSString *)cachesDirectoryForExperienceId:(NSString *)experienceId;
 
 @end
 

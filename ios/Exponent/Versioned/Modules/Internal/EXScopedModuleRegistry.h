@@ -22,6 +22,11 @@
 - (className *)getter { return [self.bridge moduleForClass:[className class]]; } \
 @end\
 
+#define EX_EXPORT_SCOPED_MODULE(js_name, kernel_service_class) \
+RCT_EXTERN void EXRegisterScopedModule(Class, NSString *); \
++ (NSString *)moduleName { return @#js_name; } \
++ (void)load { EXRegisterScopedModule(self, @#kernel_service_class); }
+
 @interface EXScopedModuleRegistry : NSObject <RCTBridgeModule>
 
 @end
