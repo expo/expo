@@ -12,12 +12,10 @@ FOUNDATION_EXPORT NSNotificationName kEXKernelRefreshForegroundTaskNotification 
  * to try and open that link. Parameters in the notification may include:
  *   url - the url to try and open.
  */
-FOUNDATION_EXPORT NSNotificationName kEXKernelOpenUrlNotification DEPRECATED_MSG_ATTRIBUTE("Use [EXKernelLinkingManager openUrl]");
+FOUNDATION_EXPORT NSNotificationName kEXKernelOpenUrlNotification DEPRECATED_MSG_ATTRIBUTE("Use `openUrl`");
 
 @interface EXKernelLinkingManager : NSObject
   <EXLinkingManagerScopedModuleDelegate, EXUtilScopedModuleDelegate>
-
-+ (instancetype)sharedInstance;
 
 /**
  *  Either opens the url on an existing bridge, or sends it to the kernel

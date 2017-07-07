@@ -31,18 +31,6 @@ NSString * const kEXCurrentAPNSTokenDefaultsKey = @"EXCurrentAPNSTokenDefaultsKe
 
 @implementation EXRemoteNotificationManager
 
-+ (instancetype)sharedInstance
-{
-  static EXRemoteNotificationManager *theManager;
-  static dispatch_once_t once;
-  dispatch_once(&once, ^{
-    if (!theManager) {
-      theManager = [[EXRemoteNotificationManager alloc] init];
-    }
-  });
-  return theManager;
-}
-
 - (instancetype)init
 {
   if (self = [super init]) {
