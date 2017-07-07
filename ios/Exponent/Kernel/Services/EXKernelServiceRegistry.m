@@ -11,6 +11,8 @@
 
 @property (nonatomic, strong) EXGoogleAuthManager *googleAuthManager;
 @property (nonatomic, strong) EXErrorRecoveryManager *errorRecoveryManager;
+@property (nonatomic, strong) EXKernelLinkingManager *linkingManager;
+@property (nonatomic, strong) EXRemoteNotificationManager *remoteNotificationManager;
 @property (nonatomic, strong) EXScreenOrientationManager *screenOrientationManager;
 @property (nonatomic, strong) NSDictionary *allServices;
 
@@ -33,9 +35,10 @@
 
 - (EXRemoteNotificationManager *)remoteNotificationManager
 {
-  // TODO: allow this class to register itself
-  // instead of hard-coding this.
-  return [EXRemoteNotificationManager sharedInstance];
+  if (!_remoteNotificationManager) {
+    _remoteNotificationManager = [[EXRemoteNotificationManager alloc] init];
+  }
+  return _remoteNotificationManager;
 }
 
 - (EXErrorRecoveryManager *)errorRecoveryManager
@@ -56,7 +59,10 @@
 
 - (EXKernelLinkingManager *)linkingManager
 {
-  return [EXKernelLinkingManager sharedInstance];
+  if (!_linkingManager) {
+    _linkingManager = [[EXKernelLinkingManager alloc] init];
+  }
+  return _linkingManager;
 }
 
 - (EXScreenOrientationManager *)screenOrientationManager

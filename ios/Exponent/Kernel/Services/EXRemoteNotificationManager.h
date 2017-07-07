@@ -12,8 +12,6 @@ FOUNDATION_EXPORT NSNotificationName kEXKernelGetPushTokenNotification DEPRECATE
 
 @interface EXRemoteNotificationManager : NSObject <EXNotificationsScopedModuleDelegate>
 
-+ (instancetype)sharedInstance;
-
 - (void)registerForRemoteNotifications;
 - (void)registerAPNSToken: (NSData *)token;
 - (void)handleRemoteNotification: (NSDictionary *)notification fromBackground:(BOOL)isFromBackground;
@@ -21,7 +19,6 @@ FOUNDATION_EXPORT NSNotificationName kEXKernelGetPushTokenNotification DEPRECATE
 /**
  *  Returns the APNS token string persisted to disk on the device, if any.
  */
-// TODO: formalize as kernelspace module utility
 - (NSString *)apnsTokenString;
 
 @end

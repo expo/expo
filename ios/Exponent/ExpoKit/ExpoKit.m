@@ -106,10 +106,9 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
     }
   }
 
-  [EXRemoteNotificationManager sharedInstance];
   // This is safe to call; if the app doesn't have permission to display user-facing notifications
   // then registering for a push token is a no-op
-  [[EXRemoteNotificationManager sharedInstance] registerForRemoteNotifications];
+  [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager registerForRemoteNotifications];
   [[EXBranchManager sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
   [self setLaunchOptions:launchOptions];
 }
@@ -120,7 +119,7 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
   NSDictionary *remoteNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
   if (remoteNotification) {
 #ifndef EX_DETACHED
-    [[EXRemoteNotificationManager sharedInstance] handleRemoteNotification:remoteNotification fromBackground:YES];
+    [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager handleRemoteNotification:remoteNotification fromBackground:YES];
 #endif
   }
   
@@ -145,14 +144,14 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)token
 {
-  [[EXRemoteNotificationManager sharedInstance] registerAPNSToken:token];
+  [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager registerAPNSToken:token];
   [[NSNotificationCenter defaultCenter] postNotificationName:EXAppDidRegisterForRemoteNotificationsNotification object:nil];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)err
 {
   DDLogWarn(@"Failed to register for remote notifs: %@", err);
-  [[EXRemoteNotificationManager sharedInstance] registerAPNSToken:nil];
+  [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager registerAPNSToken:nil];
 
   // Post this even in the failure case -- up to subscribers to subsequently read the system permission state
   [[NSNotificationCenter defaultCenter] postNotificationName:EXAppDidRegisterForRemoteNotificationsNotification object:nil];
@@ -161,7 +160,7 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
 {
   BOOL isFromBackground = !(application.applicationState == UIApplicationStateActive);
-  [[EXRemoteNotificationManager sharedInstance] handleRemoteNotification:notification fromBackground:isFromBackground];
+  [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager handleRemoteNotification:notification fromBackground:isFromBackground];
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
