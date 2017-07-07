@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXScreenOrientation.h"
+#import "EXScopedModuleRegistry.h"
 
 #import <UIKit/UIKit.h>
 
@@ -12,7 +13,7 @@
 
 @implementation EXScreenOrientation
 
-+ (NSString *)moduleName { return @"ExponentScreenOrientation"; }
+EX_EXPORT_SCOPED_MODULE(ExponentScreenOrientation, ScreenOrientationManager);
 
 - (dispatch_queue_t)methodQueue
 {

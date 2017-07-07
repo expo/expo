@@ -34,6 +34,9 @@
 
 static NSNumber *EXVersionManagerIsFirstLoad;
 
+// used for initializing scoped modules which don't tie in to any kernel service.
+#define EX_KERNEL_SERVICE_NONE @"EXKernelServiceNone"
+
 // this is needed because RCTPerfMonitor does not declare a public interface
 // anywhere that we can import.
 @interface RCTPerfMonitorDevSettingsHack <NSObject>
@@ -42,6 +45,27 @@ static NSNumber *EXVersionManagerIsFirstLoad;
 - (void)show;
 
 @end
+
+static NSMutableDictionary<NSString *, NSString *> *EXScopedModuleClasses;
+void EXRegisterScopedModule(Class, NSString *);
+void EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceClassName)
+{
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    EXScopedModuleClasses = [NSMutableDictionary dictionary];
+  });
+  
+  NSString *unversionedKernelServiceClassName;
+  if ([kernelServiceClassName isEqualToString:@"nil"]) {
+    unversionedKernelServiceClassName = EX_KERNEL_SERVICE_NONE;
+  } else {
+    unversionedKernelServiceClassName = [EX_UNVERSIONED(@"EX") stringByAppendingString:kernelServiceClassName];
+  }
+  NSString *moduleClassName = NSStringFromClass(moduleClass);
+  if (moduleClassName) {
+    EXScopedModuleClasses[moduleClassName] = unversionedKernelServiceClassName;
+  }
+}
 
 @interface EXVersionManager ()
 
@@ -268,45 +292,20 @@ static NSNumber *EXVersionManagerIsFirstLoad;
   NSDictionary *manifest = params[@"manifest"];
   NSString *experienceId = manifest[@"id"];
   NSDictionary *services = params[@"services"];
-
-  // TODO: formalize the mapping between scoped modules and kernel services
-  EXConstants *constants = [[EXConstants alloc] initWithExperienceId:experienceId kernelServiceDelegate:nil params:params];
-  EXErrorRecovery *errorRecovery = [[EXErrorRecovery alloc] initWithExperienceId:experienceId
-                                                           kernelServiceDelegate:services[@"errorRecoveryManager"]
-                                                                          params:params];
-  EXFileSystem *fileSystem = [[EXFileSystem alloc] initWithExperienceId:experienceId kernelServiceDelegate:nil params:params];
-  EXGoogle *google = [[EXGoogle alloc] initWithExperienceId:experienceId
-                                      kernelServiceDelegate:services[@"googleAuthManager"]
-                                                     params:params];
-  EXLinkingManager *linkingManager = [[EXLinkingManager alloc] initWithExperienceId:experienceId
-                                                              kernelServiceDelegate:services[@"linkingManager"]
-                                                                             params:params];
-  EXNotifications *notifications = [[EXNotifications alloc] initWithExperienceId:experienceId
-                                                           kernelServiceDelegate:services[@"remoteNotificationManager"]
-                                                                          params:params];
-  EXScreenOrientation *screenOrientation = [[EXScreenOrientation alloc] initWithExperienceId:experienceId
-                                                                       kernelServiceDelegate:services[@"screenOrientationManager"]
-                                                                                      params:params];
-  EXUtil *util = [[EXUtil alloc] initWithExperienceId:experienceId
-                                kernelServiceDelegate:services[@"linkingManager"]
-                                               params:params];
+  NSString *localStorageDirectory = [[EXFileSystem documentDirectoryForExperienceId:experienceId] stringByAppendingPathComponent:EX_UNVERSIONED(@"RCTAsyncLocalStorage")];
 
   NSMutableArray *extraModules = [NSMutableArray arrayWithArray:
                                   @[
                                     [[EXAppState alloc] init],
-                                    constants,
                                     [[EXDevSettings alloc] initWithExperienceId:experienceId isDevelopment:isDeveloper],
                                     [[EXDisabledDevLoadingView alloc] init],
-                                    errorRecovery,
-                                    fileSystem,
-                                    google,
-                                    linkingManager,
-                                    notifications,
-                                    screenOrientation,
                                     [[EXStatusBarManager alloc] init],
-                                    [[RCTAsyncLocalStorage alloc] initWithStorageDirectory:[fileSystem.documentDirectory stringByAppendingPathComponent:EX_UNVERSIONED(@"RCTAsyncLocalStorage")]],
-                                    util,
+                                    [[RCTAsyncLocalStorage alloc] initWithStorageDirectory:localStorageDirectory],
                                     ]];
+  
+  // add scoped modules
+  [extraModules addObjectsFromArray:[self _newScopedModulesWithExperienceId:experienceId services:services params:params]];
+  
   if (params[@"frame"]) {
     [extraModules addObject:[[EXFrameExceptionsManager alloc] initWithDelegate:params[@"frame"]]];
   } else {
@@ -339,6 +338,22 @@ static NSNumber *EXVersionManagerIsFirstLoad;
     [extraModules addObject:[[EXDisabledRedBox alloc] init]];
   }
   return extraModules;
+}
+
+- (NSArray *)_newScopedModulesWithExperienceId: (NSString *)experienceId services:(NSDictionary *)services params:(NSDictionary *)params
+{
+  NSMutableArray *result = [NSMutableArray array];
+  if (EXScopedModuleClasses) {
+    [EXScopedModuleClasses enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull scopedModuleClassName, NSString * _Nonnull kernelServiceClassName, BOOL * _Nonnull stop) {
+      id service = ([kernelServiceClassName isEqualToString:EX_KERNEL_SERVICE_NONE]) ? nil : services[kernelServiceClassName];
+      Class scopedModuleClass = NSClassFromString(scopedModuleClassName);
+      id scopedModule = [[scopedModuleClass alloc] initWithExperienceId:experienceId kernelServiceDelegate:service params:params];
+      if (scopedModule) {
+        [result addObject:scopedModule];
+      }
+    }];
+  }
+  return result;
 }
 
 + (NSString *)escapedResourceName:(NSString *)name

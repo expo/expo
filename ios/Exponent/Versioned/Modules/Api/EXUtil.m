@@ -1,7 +1,7 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import "EXUtil.h"
-#import "EXUnversioned.h"
+#import "EXScopedModuleRegistry.h"
 #import <React/RCTUIManager.h>
 #import <React/RCTBridge.h>
 #import <React/RCTUtils.h>
@@ -16,7 +16,9 @@
 
 @synthesize bridge = _bridge;
 
-+ (NSString *)moduleName { return @"ExponentUtil"; }
+// delegate to kernel linking manager because our only kernel work (right now)
+// is refreshing the foreground task.
+EX_EXPORT_SCOPED_MODULE(ExponentUtil, KernelLinkingManager);
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
 {

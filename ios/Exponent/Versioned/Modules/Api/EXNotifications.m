@@ -32,7 +32,7 @@ RCT_ENUM_CONVERTER(NSCalendarUnit,
 
 @implementation EXNotifications
 
-+ (NSString *)moduleName { return @"ExponentNotifications"; }
+EX_EXPORT_SCOPED_MODULE(ExponentNotifications, RemoteNotificationManager);
 
 @synthesize bridge = _bridge;
 

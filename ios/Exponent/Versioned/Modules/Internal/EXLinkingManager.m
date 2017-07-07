@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXLinkingManager.h"
-#import "EXUnversioned.h"
+#import "EXScopedModuleRegistry.h"
 
 #import <React/RCTBridge.h>
 #import <React/RCTEventDispatcher.h>
@@ -19,7 +19,7 @@ NSString * const EXLinkingEventOpenUrl = @"url";
 
 @implementation EXLinkingManager
 
-+ (NSString *)moduleName { return @"RCTLinkingManager"; }
+EX_EXPORT_SCOPED_MODULE(RCTLinkingManager, KernelLinkingManager);
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
 {

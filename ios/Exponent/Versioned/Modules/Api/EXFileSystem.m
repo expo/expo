@@ -25,18 +25,13 @@ EX_DEFINE_SCOPED_MODULE(EXFileSystem, fileSystem)
 
 @implementation EXFileSystem
 
-+ (NSString *)moduleName { return @"ExponentFileSystem"; }
+EX_EXPORT_SCOPED_MODULE(ExponentFileSystem, nil);
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
 {
   if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
-    NSString *subdir = [EXVersionManager escapedResourceName:self.experienceId];
-    _documentDirectory = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject
-                           stringByAppendingPathComponent:@"ExponentExperienceData"]
-                          stringByAppendingPathComponent:subdir];
-    _cachesDirectory = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject
-                         stringByAppendingPathComponent:@"ExponentExperienceData"]
-                        stringByAppendingPathComponent:subdir];
+    _documentDirectory = [[self class] documentDirectoryForExperienceId:self.experienceId];
+    _cachesDirectory = [[self class] cachesDirectoryForExperienceId:self.experienceId];
   }
   return self;
 }
@@ -380,6 +375,22 @@ RCT_REMAP_METHOD(downloadAsync,
     }
   }
   return YES;
+}
+
++ (NSString *)documentDirectoryForExperienceId:(NSString *)experienceId
+{
+  NSString *subdir = [EXVersionManager escapedResourceName:experienceId];
+  return [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject
+           stringByAppendingPathComponent:@"ExponentExperienceData"]
+          stringByAppendingPathComponent:subdir];
+}
+
++ (NSString *)cachesDirectoryForExperienceId:(NSString *)experienceId
+{
+  NSString *subdir = [EXVersionManager escapedResourceName:experienceId];
+  return [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject
+           stringByAppendingPathComponent:@"ExponentExperienceData"]
+          stringByAppendingPathComponent:subdir];
 }
 
 @end

@@ -2,6 +2,7 @@
 
 #import "EXGoogle.h"
 #import "EXOAuthViewController.h"
+#import "EXScopedModuleRegistry.h"
 
 #import <GoogleSignIn/GoogleSignIn.h>
 #import <AppAuth.h>
@@ -21,7 +22,7 @@ NSString *EXGoogleErrorCode = @"GOOGLE_ERROR";
   RCTPromiseRejectBlock _logInReject;
 }
 
-+ (NSString *)moduleName { return @"ExponentGoogle"; }
+EX_EXPORT_SCOPED_MODULE(ExponentGoogle, GoogleAuthManager);
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
 {

@@ -15,7 +15,7 @@
 
 @synthesize bridge = _bridge;
 
-RCT_EXPORT_MODULE(ExponentErrorRecovery);
+EX_EXPORT_SCOPED_MODULE(ExponentErrorRecovery, ErrorRecoveryManager);
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
 {

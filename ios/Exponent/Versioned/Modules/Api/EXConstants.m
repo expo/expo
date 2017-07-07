@@ -20,7 +20,7 @@ EX_DEFINE_SCOPED_MODULE(EXConstants, constants)
 
 @implementation EXConstants
 
-+ (NSString *)moduleName { return @"ExponentConstants"; }
+EX_EXPORT_SCOPED_MODULE(ExponentConstants, nil)
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
 {
