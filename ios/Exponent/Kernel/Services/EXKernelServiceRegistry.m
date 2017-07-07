@@ -12,6 +12,7 @@
 @property (nonatomic, strong) EXGoogleAuthManager *googleAuthManager;
 @property (nonatomic, strong) EXErrorRecoveryManager *errorRecoveryManager;
 @property (nonatomic, strong) EXScreenOrientationManager *screenOrientationManager;
+@property (nonatomic, strong) NSDictionary *allServices;
 
 @end
 
@@ -68,13 +69,15 @@
 
 - (NSDictionary *)allServices
 {
-  return @{
-    @"errorRecoveryManager": self.errorRecoveryManager,
-    @"googleAuthManager": self.googleAuthManager,
-    @"linkingManager": self.linkingManager,
-    @"remoteNotificationManager": self.remoteNotificationManager,
-    @"screenOrientationManager": self.screenOrientationManager,
-  };
+  if (!_allServices) {
+    NSMutableDictionary *result = [NSMutableDictionary dictionary];
+    for (id service in @[ self.errorRecoveryManager, self.googleAuthManager, self.linkingManager, self.remoteNotificationManager, self.screenOrientationManager ]) {
+      NSString *className = NSStringFromClass([service class]);
+      result[className] = service;
+    }
+    _allServices = result;
+  }
+  return _allServices;
 }
 
 @end
