@@ -2,12 +2,14 @@
 
 #import "EXKernelServiceRegistry.h"
 #import "EXErrorRecoveryManager.h"
+#import "EXGoogleAuthManager.h"
 #import "EXKernelLinkingManager.h"
 #import "EXRemoteNotificationManager.h"
 #import "EXScreenOrientationManager.h"
 
 @interface EXKernelServiceRegistry ()
 
+@property (nonatomic, strong) EXGoogleAuthManager *googleAuthManager;
 @property (nonatomic, strong) EXErrorRecoveryManager *errorRecoveryManager;
 @property (nonatomic, strong) EXScreenOrientationManager *screenOrientationManager;
 
@@ -23,6 +25,7 @@
     [self remoteNotificationManager];
     [self linkingManager];
     [self screenOrientationManager];
+    [self googleAuthManager];
   }
   return self;
 }
@@ -42,6 +45,14 @@
   return _errorRecoveryManager;
 }
 
+- (EXGoogleAuthManager *)googleAuthManager
+{
+  if (!_googleAuthManager) {
+    _googleAuthManager = [[EXGoogleAuthManager alloc] init];
+  }
+  return _googleAuthManager;
+}
+
 - (EXKernelLinkingManager *)linkingManager
 {
   return [EXKernelLinkingManager sharedInstance];
@@ -59,6 +70,7 @@
 {
   return @{
     @"errorRecoveryManager": self.errorRecoveryManager,
+    @"googleAuthManager": self.googleAuthManager,
     @"linkingManager": self.linkingManager,
     @"remoteNotificationManager": self.remoteNotificationManager,
     @"screenOrientationManager": self.screenOrientationManager,

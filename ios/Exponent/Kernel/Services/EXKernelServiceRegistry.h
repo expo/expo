@@ -3,6 +3,7 @@
 #import <Foundation/Foundation.h>
 
 @class EXErrorRecoveryManager;
+@class EXGoogleAuthManager;
 @class EXKernelLinkingManager;
 @class EXRemoteNotificationManager;
 @class EXScreenOrientationManager;
@@ -10,6 +11,7 @@
 @interface EXKernelServiceRegistry : NSObject
 
 @property (nonatomic, readonly) EXErrorRecoveryManager *errorRecoveryManager;
+@property (nonatomic, readonly) EXGoogleAuthManager *googleAuthManager;
 @property (nonatomic, readonly) EXRemoteNotificationManager *remoteNotificationManager;
 @property (nonatomic, readonly) EXKernelLinkingManager *linkingManager;
 @property (nonatomic, readonly) EXScreenOrientationManager *screenOrientationManager;
