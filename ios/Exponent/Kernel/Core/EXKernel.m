@@ -12,6 +12,7 @@
 #import "EXKernelModule.h"
 #import "EXLinkingManager.h"
 #import "EXManifestResource.h"
+#import "EXScreenOrientationManager.h"
 #import "EXShellManager.h"
 #import "EXVersions.h"
 #import "EXViewController.h"
@@ -30,7 +31,6 @@ NSString *kEXKernelShouldForegroundTaskEvent = @"foregroundTask";
 NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
 NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUserDefaultsKey";
 NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey";
-NSString * const kEXChangeForegroundTaskSupportedOrientationsNotification = @"EXChangeForegroundTaskSupportedOrientations";
 
 @interface EXKernel ()
 
@@ -452,14 +452,7 @@ NSString * const kEXChangeForegroundTaskSupportedOrientationsNotification = @"EX
 - (void)_changeSupportedOrientations:(NSNotification *)notification
 {
   NSNumber *orientationNumber = notification.userInfo[@"orientation"];
-  if (_bridgeRegistry.lastKnownForegroundBridge) {
-    if (_bridgeRegistry.lastKnownForegroundBridge != _bridgeRegistry.kernelAppManager.reactBridge) {
-      EXKernelBridgeRecord *foregroundBridgeRecord = [_bridgeRegistry recordForBridge:_bridgeRegistry.lastKnownForegroundBridge];
-      if (foregroundBridgeRecord.appManager.frame) {
-        foregroundBridgeRecord.appManager.frame.supportedInterfaceOrientations = [orientationNumber unsignedIntegerValue];
-      }
-    }
-  }
+  [_serviceRegistry.screenOrientationManager setSupportedInterfaceOrientationsForForegroundExperience:(UIInterfaceOrientationMask)orientationNumber];
 }
 
 @end
