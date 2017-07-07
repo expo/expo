@@ -8,6 +8,11 @@ FOUNDATION_EXPORT NSNotificationName kEXChangeForegroundTaskSupportedOrientation
 
 - (void)setSupportInterfaceOrientations:(UIInterfaceOrientationMask)supportedInterfaceOrientations
                          forExperienceId:(NSString *)experienceId;
-- (void)setSupportedInterfaceOrientationsForForegroundExperience:(UIInterfaceOrientationMask)supportedInterfaceOrientations;
+
+/**
+ *  Similar to UIViewController::supportedInterfaceOrientations, but the value can vary depending on
+ *  which JS task is visible.
+ */
+@property (nonatomic, assign) UIInterfaceOrientationMask supportedInterfaceOrientationsForForegroundExperience;
 
 @end

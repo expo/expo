@@ -73,10 +73,6 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
     _serviceRegistry = [[EXKernelServiceRegistry alloc] init];
     [EXKernelDevMotionHandler sharedInstance];
     [EXKernelDevKeyCommands sharedInstance];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(_changeSupportedOrientations:)
-                                                 name:kEXChangeForegroundTaskSupportedOrientationsNotification
-                                               object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_onKernelJSLoaded) name:kEXKernelJSIsLoadedNotification object:nil];
     for (NSString *name in @[UIApplicationDidBecomeActiveNotification,
                              UIApplicationDidEnterBackgroundNotification,
@@ -147,20 +143,6 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
 - (EXViewController *)rootViewController
 {
   return _vcExponentRoot;
-}
-
-- (UIInterfaceOrientationMask)supportedInterfaceOrientationsForForegroundTask
-{
-  if (_bridgeRegistry.lastKnownForegroundBridge) {
-    if (_bridgeRegistry.lastKnownForegroundBridge != _bridgeRegistry.kernelAppManager.reactBridge) {
-      EXKernelBridgeRecord *foregroundBridgeRecord = [_bridgeRegistry recordForBridge:_bridgeRegistry.lastKnownForegroundBridge];
-      if (foregroundBridgeRecord.appManager.frame) {
-        return foregroundBridgeRecord.appManager.frame.supportedInterfaceOrientations;
-      }
-    }
-  }
-  // kernel or unknown bridge: lock to portrait
-  return UIInterfaceOrientationMaskPortrait;
 }
 
 - (void)_onKernelJSLoaded
@@ -426,12 +408,6 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
       }
     }
   }
-}
-
-- (void)_changeSupportedOrientations:(NSNotification *)notification
-{
-  NSNumber *orientationNumber = notification.userInfo[@"orientation"];
-  [_serviceRegistry.screenOrientationManager setSupportedInterfaceOrientationsForForegroundExperience:(UIInterfaceOrientationMask)orientationNumber];
 }
 
 @end
