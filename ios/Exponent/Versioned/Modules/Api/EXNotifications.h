@@ -6,6 +6,9 @@
 @protocol EXNotificationsScopedModuleDelegate
 
 - (NSString *)apnsTokenStringForScopedModule:(id)scopedModule;
+- (void)getExpoPushTokenForScopedModule:(id)scopedModule
+                                success:(void (^)(NSDictionary *))success
+                                failure:(void (^)(NSString *))failure;
 
 @end
 
