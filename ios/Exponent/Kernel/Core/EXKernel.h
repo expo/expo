@@ -14,7 +14,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 FOUNDATION_EXPORT NSNotificationName kEXKernelRefreshForegroundTaskNotification;
-FOUNDATION_EXPORT NSNotificationName kEXKernelGetPushTokenNotification;
 FOUNDATION_EXPORT NSNotificationName kEXKernelJSIsLoadedNotification;
 FOUNDATION_EXPORT NSString *kEXKernelErrorDomain;
 

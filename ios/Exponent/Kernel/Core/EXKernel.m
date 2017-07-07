@@ -25,7 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *kEXKernelErrorDomain = @"EXKernelErrorDomain";
 NSNotificationName kEXKernelRefreshForegroundTaskNotification = @"EXKernelRefreshForegroundTaskNotification";
-NSNotificationName kEXKernelGetPushTokenNotification = @"EXKernelGetPushTokenNotification";
 NSNotificationName kEXKernelJSIsLoadedNotification = @"EXKernelJSIsLoadedNotification";
 NSString *kEXKernelShouldForegroundTaskEvent = @"foregroundTask";
 NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
