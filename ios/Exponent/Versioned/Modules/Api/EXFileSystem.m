@@ -6,7 +6,7 @@
 
 #import "EXVersionManager.h"
 
-EX_DEFINE_SCOPED_MODULE(EXFileSystem, fileSystem)
+EX_DEFINE_SCOPED_MODULE_GETTER(EXFileSystem, fileSystem)
 
 @implementation NSData (EXFileSystem)
 

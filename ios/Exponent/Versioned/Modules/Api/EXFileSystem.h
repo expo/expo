@@ -14,4 +14,4 @@
 
 @end
 
-EX_DECLARE_SCOPED_MODULE(EXFileSystem, fileSystem)
+EX_DECLARE_SCOPED_MODULE_GETTER(EXFileSystem, fileSystem)

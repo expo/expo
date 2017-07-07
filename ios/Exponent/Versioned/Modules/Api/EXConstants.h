@@ -11,4 +11,4 @@
 
 @end
 
-EX_DECLARE_SCOPED_MODULE(EXConstants, constants)
+EX_DECLARE_SCOPED_MODULE_GETTER(EXConstants, constants)

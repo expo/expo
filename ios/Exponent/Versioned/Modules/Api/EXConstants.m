@@ -6,7 +6,7 @@
 #include <sys/sysctl.h>
 #import <UIKit/UIWebView.h>
 
-EX_DEFINE_SCOPED_MODULE(EXConstants, constants)
+EX_DEFINE_SCOPED_MODULE_GETTER(EXConstants, constants)
 
 @import UIKit.UIApplication;
 
