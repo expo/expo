@@ -3,6 +3,9 @@
 // Contains logic for figuring out how to take care of deep links.
 
 #import "EXLinkingManager.h"
+#import "EXUtil.h"
+
+FOUNDATION_EXPORT NSNotificationName kEXKernelRefreshForegroundTaskNotification DEPRECATED_ATTRIBUTE;
 
 /**
  * Post this notification with to indicate that you want the kernel
@@ -11,7 +14,8 @@
  */
 FOUNDATION_EXPORT NSNotificationName kEXKernelOpenUrlNotification DEPRECATED_MSG_ATTRIBUTE("Use [EXKernelLinkingManager openUrl]");
 
-@interface EXKernelLinkingManager : NSObject <EXLinkingManagerScopedModuleDelegate>
+@interface EXKernelLinkingManager : NSObject
+  <EXLinkingManagerScopedModuleDelegate, EXUtilScopedModuleDelegate>
 
 + (instancetype)sharedInstance;
 
@@ -20,6 +24,12 @@ FOUNDATION_EXPORT NSNotificationName kEXKernelOpenUrlNotification DEPRECATED_MSG
  *  for opening on a new bridge.
  */
 - (void)openUrl:(NSString *)url;
+
+/**
+ *  Called by Util.reload() to rerequest the foreground tasks's manifest
+ *  and reload the bundle url it contains.
+ */
+- (void)refreshForegroundTask;
 
 /**
  *  Returns the deep link prefix for a given experience uri.

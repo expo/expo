@@ -1,5 +1,13 @@
-#import <React/RCTBridgeModule.h>
+// Copyright 2016-present 650 Industries. All rights reserved.
 
-@interface EXUtil : NSObject <RCTBridgeModule>
+#import "EXScopedBridgeModule.h"
+
+@protocol EXUtilScopedModuleDelegate
+
+- (void)utilModuleDidSelectReload:(id)scopedUtilModule;
+
+@end
+
+@interface EXUtil : EXScopedBridgeModule
 
 @end

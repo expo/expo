@@ -1,14 +1,30 @@
+// Copyright 2016-present 650 Industries. All rights reserved.
+
 #import "EXUtil.h"
 #import "EXUnversioned.h"
 #import <React/RCTUIManager.h>
 #import <React/RCTBridge.h>
 #import <React/RCTUtils.h>
 
+@interface EXUtil ()
+
+@property (nonatomic, weak) id kernelUtilServiceDelegate;
+
+@end
+
 @implementation EXUtil
 
-RCT_EXPORT_MODULE(ExponentUtil);
-
 @synthesize bridge = _bridge;
+
++ (NSString *)moduleName { return @"ExponentUtil"; }
+
+- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
+{
+  if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
+    _kernelUtilServiceDelegate = kernelServiceInstance;
+  }
+  return self;
+}
 
 - (dispatch_queue_t)methodQueue
 {
@@ -17,11 +33,7 @@ RCT_EXPORT_MODULE(ExponentUtil);
 
 RCT_EXPORT_METHOD(reload)
 {
-  [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXKernelRefreshForegroundTaskNotification")
-                                                      object:nil
-                                                    userInfo:@{
-                                                               @"bridge": self.bridge
-                                                               }];
+  [_kernelUtilServiceDelegate utilModuleDidSelectReload:self];
 }
 
 RCT_REMAP_METHOD(getCurrentLocaleAsync,
