@@ -7,6 +7,8 @@
 
 #import <React/RCTUtils.h>
 
+NSNotificationName kEXKernelGetPushTokenNotification = @"EXKernelGetPushTokenNotification";
+
 NSString * const kEXCurrentAPNSTokenDefaultsKey = @"EXCurrentAPNSTokenDefaultsKey";
 
 @implementation NSData (EXRemoteNotification)
@@ -113,9 +115,16 @@ NSString * const kEXCurrentAPNSTokenDefaultsKey = @"EXCurrentAPNSTokenDefaultsKe
   return nil;
 }
 
+#pragma mark - scoped module delegate
+
 - (NSString *)apnsTokenStringForScopedModule:(__unused id)scopedModule
 {
   return [self apnsTokenString];
+}
+
+- (void)getExpoPushTokenForScopedModule:(id)scopedModule success:(void (^)(NSDictionary *))success failure:(void (^)(NSString *))failure
+{
+  [self _getExpoPushTokenForExperienceId:((EXScopedBridgeModule *)scopedModule).experienceId success:success failure:failure];
 }
 
 #pragma mark - Internal
@@ -161,12 +170,19 @@ NSString * const kEXCurrentAPNSTokenDefaultsKey = @"EXCurrentAPNSTokenDefaultsKe
   if (notif && notif.userInfo) {
     void (^success)(NSDictionary *) = [notif.userInfo objectForKey:@"onSuccess"];
     void (^failure)(NSString *) = [notif.userInfo objectForKey:@"onFailure"];
-    NSDictionary *eventParams = @{
-                                  @"experienceId": [notif.userInfo objectForKey:@"experienceId"],
-                                  @"deviceId": [EXKernel deviceInstallUUID],
-                                  };
-    [[EXKernel sharedInstance] dispatchKernelJSEvent:@"getExponentPushToken" body:eventParams onSuccess:success onFailure:failure];
+    [self _getExpoPushTokenForExperienceId:[notif.userInfo objectForKey:@"experienceId"]
+                                   success:success
+                                   failure:failure];
   }
+}
+
+- (void)_getExpoPushTokenForExperienceId:(NSString *)experienceId success:(void (^)(NSDictionary *))success failure:(void (^)(NSString *))failure
+{
+  NSDictionary *eventParams = @{
+                                @"experienceId": experienceId,
+                                  @"deviceId": [EXKernel deviceInstallUUID],
+                                };
+  [[EXKernel sharedInstance] dispatchKernelJSEvent:@"getExponentPushToken" body:eventParams onSuccess:success onFailure:failure];
 }
 
 @end

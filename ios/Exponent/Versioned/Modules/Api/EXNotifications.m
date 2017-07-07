@@ -72,20 +72,15 @@ RCT_REMAP_METHOD(getExponentPushTokenAsync,
     reject(0, @"Requires experience Id", nil);
     return;
   }
-
   void (^success)(NSDictionary *) = ^(NSDictionary *result) {
     resolve([result objectForKey:@"exponentPushToken"]);
   };
   void (^failure)(NSString *) = ^(NSString *message) {
     reject(0, message, nil);
   };
-  [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXKernelGetPushTokenNotification")
-                                                      object:nil
-                                                    userInfo:@{
-                                                               @"experienceId": self.experienceId,
-                                                               @"onSuccess": success,
-                                                               @"onFailure": failure,
-                                                               }];
+  [_kernelNotificationsDelegate getExpoPushTokenForScopedModule:self
+                                                        success:success
+                                                        failure:failure];
 }
 
 RCT_EXPORT_METHOD(presentLocalNotification:(NSDictionary *)payload
