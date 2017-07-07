@@ -23,8 +23,6 @@
 - (NSDictionary<NSString *, NSString *> *)devMenuItemsForBridge:(id)bridge;
 - (void)selectDevMenuItemWithKey:(NSString *)key onBridge:(id)bridge;
 
-+ (NSString *)escapedResourceName:(NSString *)name;
-
 /**
  *  Provides the extra native modules required to set up a bridge with this version.
  *  Uses a params dict since the internal workings may change over time, but we want to keep the interface the same.
