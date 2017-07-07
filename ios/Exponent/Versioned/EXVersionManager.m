@@ -16,6 +16,7 @@
 #import "EXScreenOrientation.h"
 #import "EXStatusBarManager.h"
 #import "EXUnversioned.h"
+#import "EXUtil.h"
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridge.h>
@@ -282,6 +283,9 @@ static NSNumber *EXVersionManagerIsFirstLoad;
   EXScreenOrientation *screenOrientation = [[EXScreenOrientation alloc] initWithExperienceId:experienceId
                                                                        kernelServiceDelegate:services[@"screenOrientationManager"]
                                                                                       params:params];
+  EXUtil *util = [[EXUtil alloc] initWithExperienceId:experienceId
+                                kernelServiceDelegate:services[@"linkingManager"]
+                                               params:params];
 
   NSMutableArray *extraModules = [NSMutableArray arrayWithArray:
                                   @[
@@ -296,6 +300,7 @@ static NSNumber *EXVersionManagerIsFirstLoad;
                                     screenOrientation,
                                     [[EXStatusBarManager alloc] init],
                                     [[RCTAsyncLocalStorage alloc] initWithStorageDirectory:[fileSystem.documentDirectory stringByAppendingPathComponent:EX_UNVERSIONED(@"RCTAsyncLocalStorage")]],
+                                    util,
                                     ]];
   if (params[@"frame"]) {
     [extraModules addObject:[[EXFrameExceptionsManager alloc] initWithDelegate:params[@"frame"]]];

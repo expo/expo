@@ -25,7 +25,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 NSString *kEXKernelErrorDomain = @"EXKernelErrorDomain";
-NSNotificationName kEXKernelRefreshForegroundTaskNotification = @"EXKernelRefreshForegroundTaskNotification";
 NSNotificationName kEXKernelJSIsLoadedNotification = @"EXKernelJSIsLoadedNotification";
 NSString *kEXKernelShouldForegroundTaskEvent = @"foregroundTask";
 NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
@@ -74,10 +73,6 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
     _serviceRegistry = [[EXKernelServiceRegistry alloc] init];
     [EXKernelDevMotionHandler sharedInstance];
     [EXKernelDevKeyCommands sharedInstance];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(_refreshForegroundTask:)
-                                                 name:kEXKernelRefreshForegroundTaskNotification
-                                               object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(_changeSupportedOrientations:)
                                                  name:kEXChangeForegroundTaskSupportedOrientationsNotification
@@ -178,7 +173,7 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
   }
 }
 
-#pragma mark - Mis  c
+#pragma mark - Misc
 
 - (void)openUrl:(NSString *)url onAppManager:(EXReactAppManager *)appManager
 {
@@ -192,22 +187,6 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
     DDLogError(@"Linking module doesn't support the API we use to open URL (%@)", url);
   }
   [self _moveAppManagerToForeground:appManager];
-}
-
-- (void)_refreshForegroundTask:(NSNotification *)notif
-{
-  id notifBridge = notif.userInfo[@"bridge"];
-  if ([notifBridge respondsToSelector:@selector(parentBridge)]) {
-    notifBridge = [notifBridge parentBridge];
-  }
-  if (notifBridge == _bridgeRegistry.kernelAppManager.reactBridge) {
-    DDLogError(@"Can't use ExponentUtil.reload() on the kernel bridge. Use RN dev tools to reload the bundle.");
-    return;
-  }
-  if (notifBridge == _bridgeRegistry.lastKnownForegroundBridge) {
-    // only the foreground task is allowed to force a reload
-    [self dispatchKernelJSEvent:@"refresh" body:@{} onSuccess:nil onFailure:nil];
-  }
 }
 
 + (NSString *)deviceInstallUUID
