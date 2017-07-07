@@ -1,10 +1,9 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import "EXFileSystem.h"
+#import "EXUtil.h"
 
 #import <CommonCrypto/CommonDigest.h>
-
-#import "EXVersionManager.h"
 
 EX_DEFINE_SCOPED_MODULE_GETTER(EXFileSystem, fileSystem)
 
@@ -379,7 +378,7 @@ RCT_REMAP_METHOD(downloadAsync,
 
 + (NSString *)documentDirectoryForExperienceId:(NSString *)experienceId
 {
-  NSString *subdir = [EXVersionManager escapedResourceName:experienceId];
+  NSString *subdir = [EXUtil escapedResourceName:experienceId];
   return [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject
            stringByAppendingPathComponent:@"ExponentExperienceData"]
           stringByAppendingPathComponent:subdir];
@@ -387,7 +386,7 @@ RCT_REMAP_METHOD(downloadAsync,
 
 + (NSString *)cachesDirectoryForExperienceId:(NSString *)experienceId
 {
-  NSString *subdir = [EXVersionManager escapedResourceName:experienceId];
+  NSString *subdir = [EXUtil escapedResourceName:experienceId];
   return [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject
            stringByAppendingPathComponent:@"ExponentExperienceData"]
           stringByAppendingPathComponent:subdir];

@@ -77,4 +77,11 @@ RCT_REMAP_METHOD(getCurrentTimeZoneAsync,
   }
 }
 
++ (NSString *)escapedResourceName:(NSString *)name
+{
+  NSString *charactersToEscape = @"!*'();:@&=+$,/?%#[]";
+  NSCharacterSet *allowedCharacters = [[NSCharacterSet characterSetWithCharactersInString:charactersToEscape] invertedSet];
+  return [name stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
+}
+
 @end
