@@ -9,6 +9,7 @@
 #import "EXErrorRecovery.h"
 #import "EXFileSystem.h"
 #import "EXFrameExceptionsManager.h"
+#import "EXGoogle.h"
 #import "EXKernelModule.h"
 #import "EXLinkingManager.h"
 #import "EXNotifications.h"
@@ -274,6 +275,9 @@ static NSNumber *EXVersionManagerIsFirstLoad;
                                                            kernelServiceDelegate:services[@"errorRecoveryManager"]
                                                                           params:params];
   EXFileSystem *fileSystem = [[EXFileSystem alloc] initWithExperienceId:experienceId kernelServiceDelegate:nil params:params];
+  EXGoogle *google = [[EXGoogle alloc] initWithExperienceId:experienceId
+                                      kernelServiceDelegate:services[@"googleAuthManager"]
+                                                     params:params];
   EXLinkingManager *linkingManager = [[EXLinkingManager alloc] initWithExperienceId:experienceId
                                                               kernelServiceDelegate:services[@"linkingManager"]
                                                                              params:params];
@@ -295,6 +299,7 @@ static NSNumber *EXVersionManagerIsFirstLoad;
                                     [[EXDisabledDevLoadingView alloc] init],
                                     errorRecovery,
                                     fileSystem,
+                                    google,
                                     linkingManager,
                                     notifications,
                                     screenOrientation,

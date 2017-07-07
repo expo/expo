@@ -3,6 +3,7 @@
 #import "ExpoKit.h"
 #import "EXAnalytics.h"
 #import "EXFatalHandler.h"
+#import "EXGoogleAuthManager.h"
 #import "EXKernel.h"
 #import "EXKernelUtil.h"
 #import "EXKernelLinkingManager.h"
@@ -14,9 +15,7 @@
 
 #import <Crashlytics/Crashlytics.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
-#import <GoogleSignIn/GoogleSignIn.h>
 #import <GoogleMaps/GoogleMaps.h>
-#import <AppAuth.h>
 
 NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDidRegisterForRemoteNotificationsNotification";
 
@@ -26,7 +25,6 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
 }
 
 @property (nonatomic, nullable, strong) EXViewController *rootViewController;
-@property (nonatomic, nullable, strong) id<OIDAuthorizationFlowSession> currentAuthorizationFlow;
 
 @end
 
@@ -48,11 +46,6 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
 {
   if (self = [super init]) {
     _rootViewControllerClass = [EXViewController class];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(didBeginOAuthFlow:)
-                                                 name:@"EXDidBeginOAuthFlow"
-                                               object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(_onKernelJSLoaded)
@@ -181,14 +174,8 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(nullable NSString *)sourceApplication annotation:(id)annotation
 {
-  if ([_currentAuthorizationFlow resumeAuthorizationFlowWithURL:url]) {
-    _currentAuthorizationFlow = nil;
-    return YES;
-  }
-
-  if ([[GIDSignIn sharedInstance] handleURL:url
-                          sourceApplication:sourceApplication
-                                 annotation:annotation]) {
+  if ([[EXKernel sharedInstance].serviceRegistry.googleAuthManager
+       application:application openURL:url sourceApplication:sourceApplication annotation:annotation]) {
     return YES;
   }
 
@@ -233,11 +220,6 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
   } else {
     return NO;
   }
-}
-
-- (void)didBeginOAuthFlow:(NSNotification *)notification
-{
-  _currentAuthorizationFlow = notification.userInfo[@"authorizationFlow"];
 }
 
 @end
