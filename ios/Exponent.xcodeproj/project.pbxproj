@@ -157,6 +157,7 @@
 		B56D07461EC53333009E6A89 /* RCTConvert+GMSMapViewType.m in Sources */ = {isa = PBXBuildFile; fileRef = B56D07341EC53333009E6A89 /* RCTConvert+GMSMapViewType.m */; };
 		B56FACA21D4AB279009FC106 /* EXAppState.m in Sources */ = {isa = PBXBuildFile; fileRef = B56FACA11D4AB279009FC106 /* EXAppState.m */; };
 		B56FACAD1D4C0266009FC106 /* EXFingerprint.m in Sources */ = {isa = PBXBuildFile; fileRef = B56FACAC1D4C0266009FC106 /* EXFingerprint.m */; };
+		B57181001F0FF41600315A66 /* EXScreenOrientationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B57180FF1F0FF41600315A66 /* EXScreenOrientationManager.m */; };
 		B575EE9A1D53E0AB00DCABBC /* EXCachedResource.m in Sources */ = {isa = PBXBuildFile; fileRef = B575EE991D53E0AB00DCABBC /* EXCachedResource.m */; };
 		B575EE9E1D53EEC300DCABBC /* EXJavaScriptResource.m in Sources */ = {isa = PBXBuildFile; fileRef = B575EE9D1D53EEC300DCABBC /* EXJavaScriptResource.m */; };
 		B575EEA11D54053500DCABBC /* EXManifestResource.m in Sources */ = {isa = PBXBuildFile; fileRef = B575EEA01D54053500DCABBC /* EXManifestResource.m */; };
@@ -541,6 +542,8 @@
 		B56FACA11D4AB279009FC106 /* EXAppState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppState.m; sourceTree = "<group>"; };
 		B56FACAB1D4C0266009FC106 /* EXFingerprint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFingerprint.h; sourceTree = "<group>"; };
 		B56FACAC1D4C0266009FC106 /* EXFingerprint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFingerprint.m; sourceTree = "<group>"; };
+		B57180FE1F0FF41600315A66 /* EXScreenOrientationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScreenOrientationManager.h; sourceTree = "<group>"; };
+		B57180FF1F0FF41600315A66 /* EXScreenOrientationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScreenOrientationManager.m; sourceTree = "<group>"; };
 		B5722ACA1DFB36440084848F /* EXKeys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKeys.h; sourceTree = "<group>"; };
 		B575EE981D53E0AB00DCABBC /* EXCachedResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXCachedResource.h; sourceTree = "<group>"; };
 		B575EE991D53E0AB00DCABBC /* EXCachedResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXCachedResource.m; sourceTree = "<group>"; };
@@ -1007,10 +1010,10 @@
 				A1F37F5C1CEFD6B2001E9EFC /* EXConstants.m */,
 				A1F37F5D1CEFD6B2001E9EFC /* EXContacts.h */,
 				A1F37F5E1CEFD6B2001E9EFC /* EXContacts.m */,
-				B5AC39D71E96D7A900540AA7 /* EXErrorRecovery.h */,
-				B5AC39D81E96D7A900540AA7 /* EXErrorRecovery.m */,
 				194804CD1E92CFB400623005 /* EXDocumentPicker.h */,
 				194804CE1E92CFB400623005 /* EXDocumentPicker.m */,
+				B5AC39D71E96D7A900540AA7 /* EXErrorRecovery.h */,
+				B5AC39D81E96D7A900540AA7 /* EXErrorRecovery.m */,
 				A15DC4CB1D011248009F940D /* EXFacebook.h */,
 				A15DC4CA1D011248009F940D /* EXFacebook.m */,
 				A1CDBE971D3851F700C2A670 /* EXFileSystem.h */,
@@ -1027,10 +1030,10 @@
 				A15DC4BA1CFF99FE009F940D /* EXImagePicker.m */,
 				1981B9F51E3C28BA00057CA9 /* EXKeepAwake.h */,
 				1981B9F61E3C28BA00057CA9 /* EXKeepAwake.m */,
+				A149D68E1E8F31DC00B71E3D /* EXLegacyAsyncLocalStorage.h */,
+				A149D68F1E8F31DC00B71E3D /* EXLegacyAsyncLocalStorage.m */,
 				A12CC94A1D11E80E0023A57B /* EXLocation.h */,
 				A12CC94B1D11E80E0023A57B /* EXLocation.m */,
-				B5E9FDED1D833325006DB65C /* EXViewShot.h */,
-				B5E9FDEE1D833325006DB65C /* EXViewShot.m */,
 				B5218E781D232B8800C54B61 /* EXNotifications.h */,
 				B5218E791D232B8800C54B61 /* EXNotifications.m */,
 				1978AD2E1EAC2656002A615B /* EXPedometer.h */,
@@ -1039,16 +1042,16 @@
 				19B96C341EE7D9F20006A7DB /* EXScreenOrientation.m */,
 				88E089A81D6BCF4300562FA1 /* EXSegment.h */,
 				88E089AA1D6BCF5800562FA1 /* EXSegment.m */,
-				F77DDB891E04774000624CA2 /* EXWebBrowser.h */,
-				F77DDB8A1E04774000624CA2 /* EXWebBrowser.m */,
-				A12B68231E8392560079896C /* EXSQLite.h */,
-				A12B68241E8392560079896C /* EXSQLite.m */,
-				A149D68E1E8F31DC00B71E3D /* EXLegacyAsyncLocalStorage.h */,
-				A149D68F1E8F31DC00B71E3D /* EXLegacyAsyncLocalStorage.m */,
-				840D8EE01D8CB91E00CD88DE /* EXUtil.h */,
-				840D8EE11D8CB91E00CD88DE /* EXUtil.m */,
 				3CA241931F029B9A00C3332E /* EXSpeech.h */,
 				3CA241941F029BB700C3332E /* EXSpeech.m */,
+				A12B68231E8392560079896C /* EXSQLite.h */,
+				A12B68241E8392560079896C /* EXSQLite.m */,
+				840D8EE01D8CB91E00CD88DE /* EXUtil.h */,
+				840D8EE11D8CB91E00CD88DE /* EXUtil.m */,
+				B5E9FDED1D833325006DB65C /* EXViewShot.h */,
+				B5E9FDEE1D833325006DB65C /* EXViewShot.m */,
+				F77DDB891E04774000624CA2 /* EXWebBrowser.h */,
+				F77DDB8A1E04774000624CA2 /* EXWebBrowser.m */,
 			);
 			path = Api;
 			sourceTree = "<group>";
@@ -1325,14 +1328,16 @@
 				B5B1AD7B1F05B8860054BD01 /* EXKernelServiceRegistry.m */,
 				19382BA71EC2EACC001ED4A1 /* EXBranchManager.h */,
 				19382BA81EC2EACC001ED4A1 /* EXBranchManager.m */,
+				B5AC39D41E95B17300540AA7 /* EXErrorRecoveryManager.h */,
+				B5AC39D51E95B17300540AA7 /* EXErrorRecoveryManager.m */,
 				B5C2740A1EC24AE1003355CE /* EXKernelLinkingManager.h */,
 				B5C2740B1EC24AE1003355CE /* EXKernelLinkingManager.m */,
 				B5AC39A31E95A90B00540AA7 /* EXLocalNotificationManager.h */,
 				B5AC39A41E95A90B00540AA7 /* EXLocalNotificationManager.m */,
 				B5AC39A51E95A90B00540AA7 /* EXRemoteNotificationManager.h */,
 				B5AC39A61E95A90B00540AA7 /* EXRemoteNotificationManager.m */,
-				B5AC39D41E95B17300540AA7 /* EXErrorRecoveryManager.h */,
-				B5AC39D51E95B17300540AA7 /* EXErrorRecoveryManager.m */,
+				B57180FE1F0FF41600315A66 /* EXScreenOrientationManager.h */,
+				B57180FF1F0FF41600315A66 /* EXScreenOrientationManager.m */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -2001,6 +2006,7 @@
 				843175B41DDCF0440092B68B /* EXAccelerometer.m in Sources */,
 				A1CA7DE01EC1036500489532 /* EXGLObject.m in Sources */,
 				B5C7A3C31EC3E38300DD9E1D /* EXAVPlayerData.m in Sources */,
+				B57181001F0FF41600315A66 /* EXScreenOrientationManager.m in Sources */,
 				A1DCE8481DC3FC63009665FD /* EXGLViewManager.m in Sources */,
 				7847A3951EC0F1550088BF69 /* RNSVGRenderable.m in Sources */,
 				7847A37F1EC0F1550088BF69 /* RNSVGGlyphContext.m in Sources */,

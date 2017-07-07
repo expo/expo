@@ -13,6 +13,7 @@
 #import "EXLinkingManager.h"
 #import "EXNotifications.h"
 #import "EXVersionManager.h"
+#import "EXScreenOrientation.h"
 #import "EXStatusBarManager.h"
 #import "EXUnversioned.h"
 
@@ -278,6 +279,9 @@ static NSNumber *EXVersionManagerIsFirstLoad;
   EXNotifications *notifications = [[EXNotifications alloc] initWithExperienceId:experienceId
                                                            kernelServiceDelegate:services[@"remoteNotificationManager"]
                                                                           params:params];
+  EXScreenOrientation *screenOrientation = [[EXScreenOrientation alloc] initWithExperienceId:experienceId
+                                                                       kernelServiceDelegate:services[@"screenOrientationManager"]
+                                                                                      params:params];
 
   NSMutableArray *extraModules = [NSMutableArray arrayWithArray:
                                   @[
@@ -289,6 +293,7 @@ static NSNumber *EXVersionManagerIsFirstLoad;
                                     fileSystem,
                                     linkingManager,
                                     notifications,
+                                    screenOrientation,
                                     [[EXStatusBarManager alloc] init],
                                     [[RCTAsyncLocalStorage alloc] initWithStorageDirectory:[fileSystem.documentDirectory stringByAppendingPathComponent:EX_UNVERSIONED(@"RCTAsyncLocalStorage")]],
                                     ]];

@@ -5,12 +5,14 @@
 @class EXErrorRecoveryManager;
 @class EXKernelLinkingManager;
 @class EXRemoteNotificationManager;
+@class EXScreenOrientationManager;
 
 @interface EXKernelServiceRegistry : NSObject
 
 @property (nonatomic, readonly) EXErrorRecoveryManager *errorRecoveryManager;
 @property (nonatomic, readonly) EXRemoteNotificationManager *remoteNotificationManager;
 @property (nonatomic, readonly) EXKernelLinkingManager *linkingManager;
+@property (nonatomic, readonly) EXScreenOrientationManager *screenOrientationManager;
 
 @property (nonatomic, readonly) NSDictionary *allServices;
 
