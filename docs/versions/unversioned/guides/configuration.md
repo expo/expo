@@ -256,7 +256,7 @@ The following is a list of properties that are available for you under the `"exp
 
        - `fabric`
 
-          [Twitter Fabric](https://get.fabric.io/) keys to hook up Crashlytics and other services.
+          [Google Developers Fabric](https://get.fabric.io/) keys to hook up Crashlytics and other services.
 
            - `apiKey`
 
