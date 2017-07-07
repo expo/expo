@@ -35,12 +35,6 @@ FOUNDATION_EXPORT NSString * const kEXKernelClearJSCacheUserDefaultsKey;
 - (void)registerRootExponentViewController: (EXViewController *)exponentViewController;
 - (EXViewController *)rootViewController;
 
-/**
- *  Similar to UIViewController::supportedInterfaceOrientations, but the value can vary depending on
- *  which JS task is visible.
- */
-- (UIInterfaceOrientationMask)supportedInterfaceOrientationsForForegroundTask;
-
 @property (nonatomic, strong, readonly) EXKernelBridgeRegistry *bridgeRegistry;
 @property (nonatomic, strong, readonly) EXKernelServiceRegistry *serviceRegistry;
 
