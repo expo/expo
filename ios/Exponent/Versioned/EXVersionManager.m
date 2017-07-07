@@ -1,23 +1,16 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXAppState.h"
-#import "EXConstants.h"
 #import "EXDevSettings.h"
 #import "EXDisabledDevLoadingView.h"
 #import "EXDisabledDevMenu.h"
 #import "EXDisabledRedBox.h"
-#import "EXErrorRecovery.h"
 #import "EXFileSystem.h"
 #import "EXFrameExceptionsManager.h"
-#import "EXGoogle.h"
 #import "EXKernelModule.h"
-#import "EXLinkingManager.h"
-#import "EXNotifications.h"
 #import "EXVersionManager.h"
-#import "EXScreenOrientation.h"
 #import "EXStatusBarManager.h"
 #import "EXUnversioned.h"
-#import "EXUtil.h"
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridge.h>
@@ -320,7 +313,7 @@ void EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceClassName)
   
   if (params[@"kernel"]) {
     EXKernelModule *kernel = [[EXKernelModule alloc] initWithExperienceId:experienceId
-                                                    kernelServiceDelegate:services[@"linkingManager"]
+                                                    kernelServiceDelegate:services[EX_UNVERSIONED(@"EXKernelLinkingManager")]
                                                                    params:params];
     kernel.delegate = params[@"kernel"];
     [extraModules addObject:kernel];
