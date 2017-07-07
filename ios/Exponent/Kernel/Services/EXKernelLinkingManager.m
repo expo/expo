@@ -9,8 +9,10 @@
 #import "EXShellManager.h"
 
 #import <CocoaLumberjack/CocoaLumberjack.h>
+#import <React/RCTBridge+Private.h>
 
 NSNotificationName kEXKernelOpenUrlNotification = @"EXKernelOpenUrlNotification";
+NSNotificationName kEXKernelRefreshForegroundTaskNotification = @"EXKernelRefreshForegroundTaskNotification";
 
 @implementation EXKernelLinkingManager
 
@@ -32,6 +34,10 @@ NSNotificationName kEXKernelOpenUrlNotification = @"EXKernelOpenUrlNotification"
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(_onKernelOpenUrl:)
                                                  name:kEXKernelOpenUrlNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(_onRefreshForegroundTaskNotif:)
+                                                 name:kEXKernelRefreshForegroundTaskNotification
                                                object:nil];
   }
   return self;
@@ -71,6 +77,11 @@ NSNotificationName kEXKernelOpenUrlNotification = @"EXKernelOpenUrlNotification"
   }
 }
 
+- (void)refreshForegroundTask
+{
+  [[EXKernel sharedInstance] dispatchKernelJSEvent:@"refresh" body:@{} onSuccess:nil onFailure:nil];
+}
+
 #pragma mark - scoped module delegate
 
 - (void)linkingModule:(__unused id)linkingModule didOpenUrl:(NSString *)url
@@ -78,11 +89,36 @@ NSNotificationName kEXKernelOpenUrlNotification = @"EXKernelOpenUrlNotification"
   [self openUrl:url];
 }
 
+- (void)utilModuleDidSelectReload:(id)scopedUtilModule
+{
+  [self _refreshForegroundTaskAndValidateBridge:((EXScopedBridgeModule *)scopedUtilModule).bridge];
+}
+
 #pragma mark - internal
+
+- (void)_onRefreshForegroundTaskNotif: (NSNotification *)notif
+{
+  [self _refreshForegroundTaskAndValidateBridge:notif.userInfo[@"bridge"]];
+}
 
 - (void)_onKernelOpenUrl: (NSNotification *)notif
 {
   [self openUrl:notif.userInfo[@"url"]];
+}
+
+- (void)_refreshForegroundTaskAndValidateBridge:(id)bridge
+{
+  if ([bridge respondsToSelector:@selector(parentBridge)]) {
+    bridge = [bridge parentBridge];
+  }
+  if (bridge == [EXKernel sharedInstance].bridgeRegistry.kernelAppManager.reactBridge) {
+    DDLogError(@"Can't use ExponentUtil.reload() on the kernel bridge. Use RN dev tools to reload the bundle.");
+    return;
+  }
+  if (bridge == [EXKernel sharedInstance].bridgeRegistry.lastKnownForegroundBridge) {
+    // only the foreground task is allowed to force a reload
+    [self refreshForegroundTask];
+  }
 }
 
 #pragma mark - static link transforming logic
