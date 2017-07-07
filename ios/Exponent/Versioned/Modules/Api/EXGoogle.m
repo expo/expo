@@ -1,17 +1,17 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import "EXGoogle.h"
+#import "EXOAuthViewController.h"
 
 #import <GoogleSignIn/GoogleSignIn.h>
 #import <AppAuth.h>
-
 #import <React/RCTUtils.h>
-#import "EXOAuthViewController.h"
-#import "EXUnversioned.h"
 
 NSString *EXGoogleErrorCode = @"GOOGLE_ERROR";
 
 @interface EXGoogle () <GIDSignInDelegate, GIDSignInUIDelegate>
+
+@property (nonatomic, weak) id kernelGoogleAuthServiceDelegate;
 
 @end
 
@@ -21,7 +21,15 @@ NSString *EXGoogleErrorCode = @"GOOGLE_ERROR";
   RCTPromiseRejectBlock _logInReject;
 }
 
-RCT_EXPORT_MODULE(ExponentGoogle)
++ (NSString *)moduleName { return @"ExponentGoogle"; }
+
+- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
+{
+  if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
+    _kernelGoogleAuthServiceDelegate = kernelServiceInstance;
+  }
+  return self;
+}
 
 - (dispatch_queue_t)methodQueue
 {
@@ -121,10 +129,7 @@ RCT_REMAP_METHOD(logInAsync,
     [OIDAuthState authStateByPresentingAuthorizationRequest:request
                                    presentingViewController:RCTPresentedViewController()
                                                    callback:callback];
-
-  [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXDidBeginOAuthFlow")
-                                                      object:self
-                                                    userInfo:@{@"authorizationFlow": currentAuthorizationFlow}];
+  [_kernelGoogleAuthServiceDelegate googleModule:self didBeginOAuthFlow:currentAuthorizationFlow];
 }
 
 -(void)signIn:(GIDSignIn *)signIn didSignInForUser:(GIDGoogleUser *)user withError:(NSError *)error

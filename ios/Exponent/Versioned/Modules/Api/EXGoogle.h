@@ -1,7 +1,13 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <React/RCTBridgeModule.h>
+#import "EXScopedBridgeModule.h"
 
-@interface EXGoogle : NSObject <RCTBridgeModule>
+@protocol EXGoogleScopedModuleDelegate
+
+- (void)googleModule:(id)scopedGoogleModule didBeginOAuthFlow:(id)authorizationFlowSession;
+
+@end
+
+@interface EXGoogle : EXScopedBridgeModule
 
 @end
