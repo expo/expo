@@ -337,6 +337,7 @@ RCT_REMAP_METHOD(downloadAsync,
              error);
       return;
     }
+    [EXFileSystem ensureDirExistsWithPath:[scopedPath stringByDeletingLastPathComponent]];
     [data writeToFile:scopedPath atomically:YES];
 
     NSMutableDictionary *result = [NSMutableDictionary dictionary];
