@@ -208,12 +208,19 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
       [userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
     NSURL *webpageURL = userActivity.webpageURL;
     NSString *path = [webpageURL path];
-    if ([path hasPrefix:@"/@"]) {
+
+    // Filter out URLs that don't match experience URLs since the AASA pattern's grammar is not as
+    // expressive as we'd like and matches profile URLs too
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^/@[a-z0-9_-]+/.+$"
+                                                                           options:NSRegularExpressionCaseInsensitive
+                                                                             error:nil];
+    NSUInteger matchCount = [regex numberOfMatchesInString:path options:0 range:NSMakeRange(0, path.length)];
+
+    if (matchCount > 0) {
       // TODO: don't want to launch more bridges when in detached state.
-      [EXKernelLinkingManager application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
-      return YES;
+      return [EXKernelLinkingManager application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
     } else {
-      [[UIApplication sharedApplication] openURL:webpageURL];
+      [application openURL:webpageURL];
       return YES;
     }
   } else {
