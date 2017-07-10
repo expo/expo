@@ -29,6 +29,7 @@
     "fbemitter": "^2.0.2",
     "graphql-tag": "^1.2.1",
     "immutable": "^3.8.1",
+    "jsc-android": "^216113.0.0",
     "jwt-decode": "^2.1.0",
     "lodash": "^4.17.4",
     "mirror-creator": "^1.1.0",
