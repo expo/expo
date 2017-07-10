@@ -36,7 +36,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okio.BufferedSink;
 import okio.Okio;
-import versioned.host.exp.exponent.ReadableObjectUtils;
 
 public class FileSystemModule extends ReactContextBaseJavaModule {
   private static final String TAG = FileSystemModule.class.getSimpleName();
@@ -46,6 +45,12 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
   public FileSystemModule(ReactApplicationContext reactContext, ScopedContext scopedContext) {
     super(reactContext);
     mScopedContext = scopedContext;
+    try {
+      ExpFileUtils.ensureDirExists(mScopedContext.getFilesDir());
+      ExpFileUtils.ensureDirExists(mScopedContext.getCacheDir());
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   @Override
