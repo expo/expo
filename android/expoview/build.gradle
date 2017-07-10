@@ -177,6 +177,12 @@ task generateDynamicMacros(type: Exec) {
 }
 preBuild.dependsOn generateDynamicMacros
 
+configurations.all {
+  resolutionStrategy {
+    force 'org.webkit:android-jsc:r216113'
+  }
+}
+
 dependencies {
   compile fileTree(dir: 'libs', include: ['*.jar'])
   compile 'com.android.support:multidex:1.0.1'
