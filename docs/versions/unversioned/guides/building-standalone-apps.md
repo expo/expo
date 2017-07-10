@@ -49,7 +49,7 @@ There are other options you might want to add to `app.json`. We have only covere
 
 The first time you build the project you will be asked whether you'd like to upload a keystore or have us handle it for you. If you don't know what a keystore is, just leave it to us. Otherwise, feel free to upload your own.
 
-```javascript
+```bash
 [exp] No currently active or previous builds for this project.
 
 Would you like to upload a keystore or have us generate one for you?
@@ -58,6 +58,8 @@ If you don't know what this means, let us handle it! :)
   1) Let Expo handle the process!
   2) I want to upload my own keystore!
 ```
+
+> **Note:** If you choose the first option and later decide to upload your own keystore, we currently offer an option to clear your current Android keystore from our build servers by running `exp build:android --clear-credentials.` **This is irreversible, so only run this command if you know what you are doing!** You can download a backup copy of the keystore by running `exp fetch:android:keystore`. If you do not have a local copy of your keystore , you will be unable to publish new versions of your app to the Play Store. Your only option would be to generate a new keystore and re-upload your application as a new application. You can learn more about how code signing and keystores work [in the Android documentation](https://developer.android.com/studio/publish/app-signing.html).
 
 ### If you choose to build for iOS
 
