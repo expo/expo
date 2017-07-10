@@ -31,6 +31,8 @@ EX_EXPORT_SCOPED_MODULE(ExponentFileSystem, nil);
   if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
     _documentDirectory = [[self class] documentDirectoryForExperienceId:self.experienceId];
     _cachesDirectory = [[self class] cachesDirectoryForExperienceId:self.experienceId];
+    [EXFileSystem ensureDirExistsWithPath:_documentDirectory];
+    [EXFileSystem ensureDirExistsWithPath:_cachesDirectory];
   }
   return self;
 }
@@ -337,7 +339,6 @@ RCT_REMAP_METHOD(downloadAsync,
              error);
       return;
     }
-    [EXFileSystem ensureDirExistsWithPath:[scopedPath stringByDeletingLastPathComponent]];
     [data writeToFile:scopedPath atomically:YES];
 
     NSMutableDictionary *result = [NSMutableDictionary dictionary];
