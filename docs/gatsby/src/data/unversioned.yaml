@@ -7,6 +7,7 @@
     Project Lifecycle: /versions/unversioned/introduction/project-lifecycle.html
     Community: /versions/unversioned/introduction/community.html
     Additional Resources: /versions/unversioned/introduction/additional-resources.html
+    Troubleshooting Proxies: /versions/unversioned/introduction/troubleshooting-proxies.html
     Frequently Asked Questions: /versions/unversioned/introduction/faq.html
 - title: Working with Expo
   index: /versions/unversioned/workflow/index.html
@@ -91,4 +92,3 @@
     Util: /versions/unversioned/sdk/util.html
     Video: /versions/unversioned/sdk/video.html
     WebBrowser: /versions/unversioned/sdk/webbrowser.html
-
