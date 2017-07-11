@@ -2,17 +2,12 @@
 
 #import "EXAnalytics.h"
 #import "EXAppState.h"
-#import "EXKernelDevMenuViewController.h"
 #import "EXFrame.h"
 #import "EXFrameReactAppManager.h"
 #import "EXKernel.h"
 #import "EXKernelBridgeRecord.h"
-#import "EXKernelDevMotionHandler.h"
-#import "EXKernelDevKeyCommands.h"
 #import "EXKernelModule.h"
 #import "EXLinkingManager.h"
-#import "EXManifestResource.h"
-#import "EXShellManager.h"
 #import "EXVersions.h"
 #import "EXViewController.h"
 
@@ -75,8 +70,6 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
     // init service registry: classes which manage shared resources among all bridges
     _serviceRegistry = [[EXKernelServiceRegistry alloc] init];
 
-    [EXKernelDevMotionHandler sharedInstance];
-    [EXKernelDevKeyCommands sharedInstance];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_onKernelJSLoaded) name:kEXKernelJSIsLoadedNotification object:nil];
     for (NSString *name in @[UIApplicationDidBecomeActiveNotification,
                              UIApplicationDidEnterBackgroundNotification,
@@ -97,46 +90,6 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
 - (void)dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)sendNotification:(NSDictionary *)notifBody
-      toExperienceWithId:(NSString *)destinationExperienceId
-          fromBackground:(BOOL)isFromBackground
-                isRemote:(BOOL)isRemote
-{
-  EXReactAppManager *destinationAppManager = _bridgeRegistry.kernelAppManager;
-  for (id bridge in [_bridgeRegistry bridgeEnumerator]) {
-    EXKernelBridgeRecord *bridgeRecord = [_bridgeRegistry recordForBridge:bridge];
-    if (bridgeRecord.experienceId && [bridgeRecord.experienceId isEqualToString:destinationExperienceId]) {
-      destinationAppManager = bridgeRecord.appManager;
-      break;
-    }
-  }
-  // if the notification came from the background, in most but not all cases, this means the user acted on an iOS notification
-  // and caused the app to launch.
-  // From SO:
-  // > Note that "App opened from Notification" will be a false positive if the notification is sent while the user is on a different
-  // > screen (for example, if they pull down the status bar and then receive a notification from your app).
-  NSDictionary *bodyWithOrigin = @{
-                                   @"origin": (isFromBackground) ? @"selected" : @"received",
-                                   @"remote": @(isRemote),
-                                   @"data": notifBody,
-                                   };
-  if (destinationAppManager) {
-    if (destinationAppManager == _bridgeRegistry.kernelAppManager) {
-      // send both the body and the experience id, so we can open a new experience from the kernel
-      [self _dispatchJSEvent:@"Exponent.notification"
-                        body:@{
-                               @"body": bodyWithOrigin,
-                               @"experienceId": destinationExperienceId,
-                               }
-                onAppManager:_bridgeRegistry.kernelAppManager];
-    } else {
-      // send the body to the already-open experience
-      [self _dispatchJSEvent:@"Exponent.notification" body:bodyWithOrigin onAppManager:destinationAppManager];
-      [self _moveAppManagerToForeground:destinationAppManager];
-    }
-  }
 }
 
 - (void)registerRootExponentViewController:(EXViewController *)exponentViewController
@@ -200,7 +153,7 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
   [_serviceRegistry bridgeRegistry:registry willUnregisterBridgeRecord:bridgeRecord];
 }
 
-#pragma mark - Bridge stuff
+#pragma mark - interfacing with app managers
 
 - (void)dispatchKernelJSEvent:(NSString *)eventName body:(NSDictionary *)eventBody onSuccess:(void (^_Nullable)(NSDictionary * _Nullable))success onFailure:(void (^_Nullable)(NSString * _Nullable))failure
 {
@@ -238,16 +191,6 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
   return nil;
 }
 
-- (void)_moveAppManagerToForeground: (EXReactAppManager *)appManager
-{
-  if (appManager != _bridgeRegistry.kernelAppManager) {
-    EXFrameReactAppManager *frameAppManager = (EXFrameReactAppManager *)appManager;
-    // kernel JS needs to bring the relevant frame/bridge to visibility.
-    NSURL *frameUrlToForeground = frameAppManager.frame.initialUri;
-    [self dispatchKernelJSEvent:kEXKernelShouldForegroundTaskEvent body:@{ @"taskUrl":frameUrlToForeground.absoluteString } onSuccess:nil onFailure:nil];
-  }
-}
-
 /**
  *  If the bridge has a batchedBridge or parentBridge selector, posts the notification on that object as well.
  */
@@ -261,51 +204,49 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
   }
 }
 
-#pragma mark - EXKernelModuleDelegate
-
-- (BOOL)kernelModuleShouldEnableLegacyMenuBehavior:(EXKernelModule *)module
+- (void)sendNotification:(NSDictionary *)notifBody
+      toExperienceWithId:(NSString *)destinationExperienceId
+          fromBackground:(BOOL)isFromBackground
+                isRemote:(BOOL)isRemote
 {
-  return [EXKernelDevKeyCommands sharedInstance].isLegacyMenuBehaviorEnabled;
-}
-
-- (void)kernelModule:(EXKernelModule *)module didSelectEnableLegacyMenuBehavior:(BOOL)isEnabled
-{
-  [EXKernelDevKeyCommands sharedInstance].isLegacyMenuBehaviorEnabled = isEnabled;
-}
-
-- (BOOL)kernelModuleShouldEnableDevtools:(__unused EXKernelModule *)module
-{
-  return (
-    _bridgeRegistry.lastKnownForegroundAppManager != _bridgeRegistry.kernelAppManager &&
-    [_bridgeRegistry.lastKnownForegroundAppManager areDevtoolsEnabled]
-  );
-}
-
-- (NSDictionary<NSString *, NSString *> *)devMenuItemsForKernelModule:(EXKernelModule *)module
-{
-  return [_bridgeRegistry.lastKnownForegroundAppManager devMenuItems];
-}
-
-- (void)kernelModule:(EXKernelModule *)module didSelectDevMenuItemWithKey:(NSString *)key
-{
-  [_bridgeRegistry.lastKnownForegroundAppManager selectDevMenuItemWithKey:key];
-}
-
-- (void)kernelModuleDidSelectKernelDevMenu:(__unused EXKernelModule *)module
-{
-  EXKernelDevMenuViewController *vcDevMenu = [[EXKernelDevMenuViewController alloc] init];
-  if (_vcExponentRoot) {
-    [_vcExponentRoot presentViewController:vcDevMenu animated:YES completion:nil];
+  EXReactAppManager *destinationAppManager = _bridgeRegistry.kernelAppManager;
+  for (id bridge in [_bridgeRegistry bridgeEnumerator]) {
+    EXKernelBridgeRecord *bridgeRecord = [_bridgeRegistry recordForBridge:bridge];
+    if (bridgeRecord.experienceId && [bridgeRecord.experienceId isEqualToString:destinationExperienceId]) {
+      destinationAppManager = bridgeRecord.appManager;
+      break;
+    }
+  }
+  // if the notification came from the background, in most but not all cases, this means the user acted on an iOS notification
+  // and caused the app to launch.
+  // From SO:
+  // > Note that "App opened from Notification" will be a false positive if the notification is sent while the user is on a different
+  // > screen (for example, if they pull down the status bar and then receive a notification from your app).
+  NSDictionary *bodyWithOrigin = @{
+                                   @"origin": (isFromBackground) ? @"selected" : @"received",
+                                   @"remote": @(isRemote),
+                                   @"data": notifBody,
+                                   };
+  if (destinationAppManager) {
+    if (destinationAppManager == _bridgeRegistry.kernelAppManager) {
+      // send both the body and the experience id, so we can open a new experience from the kernel
+      [self _dispatchJSEvent:@"Exponent.notification"
+                        body:@{
+                               @"body": bodyWithOrigin,
+                               @"experienceId": destinationExperienceId,
+                               }
+                onAppManager:_bridgeRegistry.kernelAppManager];
+    } else {
+      // send the body to the already-open experience
+      [self _dispatchJSEvent:@"Exponent.notification" body:bodyWithOrigin onAppManager:destinationAppManager];
+      [self _moveAppManagerToForeground:destinationAppManager];
+    }
   }
 }
 
-- (BOOL)kernelModuleShouldAutoReloadCurrentTask:(EXKernelModule *)module
-{
-  NSString *foregroundTaskExperienceId = _bridgeRegistry.lastKnownForegroundAppManager.experienceId;
-  return [_serviceRegistry.errorRecoveryManager experienceIdShouldReloadOnError:foregroundTaskExperienceId];
-}
+#pragma mark - App State
 
-- (void)kernelModule:(__unused EXKernelModule *)module taskDidForegroundWithType:(NSInteger)type params:(NSDictionary *)params
+- (void)handleJSTaskDidForegroundWithType:(NSInteger)type params:(NSDictionary *)params
 {
   EXKernelRoute routetype = (EXKernelRoute)type;
   [[EXAnalytics sharedInstance] logForegroundEventForRoute:routetype fromJS:YES];
@@ -315,7 +256,7 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
     urlToForeground = RCTNilIfNull(params[@"url"]);
     urlToBackground = RCTNilIfNull(params[@"urlToBackground"]);
   }
-
+  
   EXReactAppManager *appManagerToForeground = nil;
   EXReactAppManager *appManagerToBackground = nil;
   
@@ -325,7 +266,7 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
   if (routetype == kEXKernelRouteBrowser && !urlToBackground) {
     appManagerToBackground = _bridgeRegistry.kernelAppManager;
   }
-
+  
   for (id bridge in [_bridgeRegistry bridgeEnumerator]) {
     EXKernelBridgeRecord *bridgeRecord = [_bridgeRegistry recordForBridge:bridge];
     if (urlToForeground && [bridgeRecord.appManager.frame.initialUri.absoluteString isEqualToString:urlToForeground]) {
@@ -353,36 +294,6 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
     _bridgeRegistry.lastKnownForegroundBridge = nil;
   }
 }
-
-- (void)kernelModule:(EXKernelModule *)module didRequestManifestWithUrl:(NSURL *)url originalUrl:(NSURL *)originalUrl success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
-{
-  if (!([url.scheme isEqualToString:@"http"] || [url.scheme isEqualToString:@"https"])) {
-    NSURLComponents *components = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO];
-    components.scheme = @"http";
-    url = [components URL];
-  }
-  EXCachedResourceBehavior cacheBehavior = kEXCachedResourceFallBackToCache;
-  if ([url.host isEqualToString:@"localhost"]) {
-    // we can't pre-detect if this person is using a developer tool, but using localhost is a pretty solid indicator.
-    cacheBehavior = kEXCachedResourceNoCache;
-  }
-  EXManifestResource *manifestResource = [[EXManifestResource alloc] initWithManifestUrl:url originalUrl:originalUrl];
-  [manifestResource loadResourceWithBehavior:cacheBehavior successBlock:^(NSData * _Nonnull data) {
-    NSString *manifestString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    success(manifestString);
-  } errorBlock:^(NSError * _Nonnull error) {
-#if DEBUG
-    if ([EXShellManager sharedInstance].isShell && error && error.code == 404) {
-      NSString *message = error.localizedDescription;
-      message = [NSString stringWithFormat:@"Make sure you are serving your project from XDE or exp (%@)", message];
-      error = [NSError errorWithDomain:error.domain code:error.code userInfo:@{ NSLocalizedDescriptionKey: message }];
-    }
-#endif
-    failure(error);
-  }];
-}
-
-#pragma mark - App State
 
 - (void)_handleAppStateDidChange:(NSNotification *)notification
 {
@@ -425,6 +336,16 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
         [self _postNotificationName:kEXKernelBridgeDidBackgroundNotification onAbstractBridge:_bridgeRegistry.lastKnownForegroundBridge];
       }
     }
+  }
+}
+
+- (void)_moveAppManagerToForeground: (EXReactAppManager *)appManager
+{
+  if (appManager != _bridgeRegistry.kernelAppManager) {
+    EXFrameReactAppManager *frameAppManager = (EXFrameReactAppManager *)appManager;
+    // kernel JS needs to bring the relevant frame/bridge to visibility.
+    NSURL *frameUrlToForeground = frameAppManager.frame.initialUri;
+    [self dispatchKernelJSEvent:kEXKernelShouldForegroundTaskEvent body:@{ @"taskUrl":frameUrlToForeground.absoluteString } onSuccess:nil onFailure:nil];
   }
 }
 

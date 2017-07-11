@@ -1,5 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+#import "EXErrorRecoveryManager.h"
 #import "EXFatalHandler.h"
 #import "EXKernel.h"
 #import "EXViewController.h"
