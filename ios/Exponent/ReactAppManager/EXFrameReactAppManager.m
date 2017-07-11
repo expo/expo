@@ -2,6 +2,7 @@
 
 #import "EXAnalytics.h"
 #import "EXCachedResource.h"
+#import "EXErrorRecoveryManager.h"
 #import "EXFrame.h"
 #import "EXFrameReactAppManager.h"
 #import "EXKernel.h"

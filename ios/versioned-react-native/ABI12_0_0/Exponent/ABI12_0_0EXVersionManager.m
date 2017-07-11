@@ -268,7 +268,7 @@ ABI12_0_0EXClassPointerMap *ABI12_0_0EXGetVersionedOnceTokens(void)
                                [[ABI12_0_0EXConstants alloc] initWithProperties:constants],
                                ]];
   ABI12_0_0EXKernelModule *kernel = [[ABI12_0_0EXKernelModule alloc] initWithVersions:params[@"supportedSdkVersions"]];
-  kernel.delegate = params[@"kernel"];
+  kernel.delegate = params[@"services"][@"EXKernelModuleManager"];
   [modules addObject:kernel];
   
   id exceptionsManagerDelegate = params[@"exceptionsManagerDelegate"];

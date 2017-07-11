@@ -5,20 +5,14 @@
 
 #import <React/RCTEventDispatcher.h>
 
-// TODO: move to delegate
-@interface EXKernelLinkingManagerNoWarnings
-
-- (void)openUrl:(NSString *)url;
-
-@end
-
 @interface EXKernelModule ()
 
 @property (nonatomic, assign) BOOL hasListeners;
 @property (nonatomic, strong) NSMutableDictionary *eventSuccessBlocks;
 @property (nonatomic, strong) NSMutableDictionary *eventFailureBlocks;
 @property (nonatomic, strong) NSArray * _Nonnull sdkVersions;
-@property (nonatomic, weak) id kernelLinkingManager;
+@property (nonatomic, weak) id<EXKernelModuleDelegate> delegate;
+
 
 @end
 
@@ -32,7 +26,7 @@
     _eventSuccessBlocks = [NSMutableDictionary dictionary];
     _eventFailureBlocks = [NSMutableDictionary dictionary];
     _sdkVersions = params[@"supportedSdkVersions"];
-    _kernelLinkingManager = kernelServiceInstance;
+    _delegate = kernelServiceInstance;
   }
   return self;
 }
@@ -86,7 +80,7 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL
                   reject:(__unused RCTPromiseRejectBlock)reject)
 {
   if (URL) {
-    [_kernelLinkingManager openUrl:URL.absoluteString];
+    [_delegate kernelModule:self didOpenUrl:URL.absoluteString];
     resolve(@YES);
   } else {
     NSError *err = [NSError errorWithDomain:EX_UNVERSIONED(@"EXKernelErrorDomain") code:-1 userInfo:@{ NSLocalizedDescriptionKey: @"Cannot open a nil url" }];

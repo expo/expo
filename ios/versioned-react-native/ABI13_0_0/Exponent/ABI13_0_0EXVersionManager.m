@@ -202,9 +202,9 @@ static NSNumber *ABI13_0_0EXVersionManagerIsFirstLoad;
     }
   }
   
-  if (params[@"kernel"]) {
+  if (params[@"kernel"] && params[@"services"]) {
     ABI13_0_0EXKernelModule *kernel = [[ABI13_0_0EXKernelModule alloc] initWithVersions:params[@"supportedSdkVersions"]];
-    kernel.delegate = params[@"kernel"];
+    kernel.delegate = params[@"services"][@"EXKernelModuleManager"];
     [extraModules addObject:kernel];
   }
   
