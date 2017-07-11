@@ -109,7 +109,7 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
   // This is safe to call; if the app doesn't have permission to display user-facing notifications
   // then registering for a push token is a no-op
   [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager registerForRemoteNotifications];
-  [[EXBranchManager sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
+  [[EXKernel sharedInstance].serviceRegistry.branchManager application:application didFinishLaunchingWithOptions:launchOptions];
   [self setLaunchOptions:launchOptions];
 }
 
@@ -185,10 +185,11 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
     return YES;
   }
 
-  if ([[EXBranchManager sharedInstance] application:application
-                                            openURL:url
-                                  sourceApplication:sourceApplication
-                                         annotation:annotation]) {
+  if ([[EXKernel sharedInstance].serviceRegistry.branchManager
+       application:application
+       openURL:url
+       sourceApplication:sourceApplication
+       annotation:annotation]) {
     return YES;
   }
 
@@ -198,9 +199,10 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
 
 - (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray * _Nullable))restorationHandler
 {
-  if ([[EXBranchManager sharedInstance] application:application
-                               continueUserActivity:userActivity
-                                 restorationHandler:restorationHandler]) {
+  if ([[EXKernel sharedInstance].serviceRegistry.branchManager
+       application:application
+       continueUserActivity:userActivity
+       restorationHandler:restorationHandler]) {
     return YES;
   }
 

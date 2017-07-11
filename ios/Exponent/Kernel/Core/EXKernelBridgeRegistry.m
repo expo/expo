@@ -5,6 +5,7 @@
 #import "EXFrame.h"
 #import "EXFrameReactAppManager.h"
 #import "EXKernelReactAppManager.h"
+#import "EXBranchManager.h"
 
 #import <React/RCTBridge.h>
 
@@ -39,6 +40,8 @@
 
   // if this experience had a loading error previously, consider it recovered now
   [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceRestartedWithId:experienceId];
+  
+  [[EXKernel sharedInstance].serviceRegistry.branchManager registerAppManager:appManager];
 
   if (_lastKnownForegroundBridge == nil) {
     // TODO: this assumes we always load bridges in the foreground (true at time of writing)
@@ -51,6 +54,7 @@
   EXKernelBridgeRecord *record = [_bridgeRegistry objectForKey:bridge];
   if (record) {
     [_bridgeRegistry removeObjectForKey:bridge];
+    [[EXKernel sharedInstance].serviceRegistry.branchManager invalidate];
   }
 }
 
