@@ -7,6 +7,7 @@
 #import "EXKernel.h"
 #import "EXKernelBridgeRecord.h"
 #import "EXKernelModule.h"
+#import "EXKernelLinkingManager.h"
 #import "EXLinkingManager.h"
 #import "EXVersions.h"
 #import "EXViewController.h"
@@ -276,22 +277,29 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
     }
   }
   
-  if (appManagerToBackground) {
-    [self _postNotificationName:kEXKernelBridgeDidBackgroundNotification onAbstractBridge:appManagerToBackground.reactBridge];
-    id appStateModule = [self nativeModuleForAppManager:appManagerToBackground named:@"AppState"];
-    if ([appStateModule respondsToSelector:@selector(setState:)]) {
-      [appStateModule setState:@"background"];
-    }
-  }
-  if (appManagerToForeground) {
-    [self _postNotificationName:kEXKernelBridgeDidForegroundNotification onAbstractBridge:appManagerToForeground.reactBridge];
-    id appStateModule = [self nativeModuleForAppManager:appManagerToForeground named:@"AppState"];
-    if ([appStateModule respondsToSelector:@selector(setState:)]) {
-      [appStateModule setState:@"active"];
-    }
-    _bridgeRegistry.lastKnownForegroundBridge = appManagerToForeground.reactBridge;
+  if ([_serviceRegistry.linkingManager isRefreshExpectedForAppManager:appManagerToForeground]) {
+    // shell app foregrounded the same bridge as before.
+    // this would be a no-op, so we force a reload on the existing frame.
+    // this is usually triggered by calling Util.reload() when no new JS bundle is available.
+    [((EXFrameReactAppManager *)_bridgeRegistry.lastKnownForegroundAppManager).frame reload];
   } else {
-    _bridgeRegistry.lastKnownForegroundBridge = nil;
+    if (appManagerToBackground) {
+      [self _postNotificationName:kEXKernelBridgeDidBackgroundNotification onAbstractBridge:appManagerToBackground.reactBridge];
+      id appStateModule = [self nativeModuleForAppManager:appManagerToBackground named:@"AppState"];
+      if ([appStateModule respondsToSelector:@selector(setState:)]) {
+        [appStateModule setState:@"background"];
+      }
+    }
+    if (appManagerToForeground) {
+      [self _postNotificationName:kEXKernelBridgeDidForegroundNotification onAbstractBridge:appManagerToForeground.reactBridge];
+      id appStateModule = [self nativeModuleForAppManager:appManagerToForeground named:@"AppState"];
+      if ([appStateModule respondsToSelector:@selector(setState:)]) {
+        [appStateModule setState:@"active"];
+      }
+      _bridgeRegistry.lastKnownForegroundBridge = appManagerToForeground.reactBridge;
+    } else {
+      _bridgeRegistry.lastKnownForegroundBridge = nil;
+    }
   }
 }
 
