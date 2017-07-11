@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <Foundation/Foundation.h>
+#import "EXKernelBridgeRegistry.h"
 
 @class EXBranchManager;
 @class EXErrorRecoveryManager;
@@ -9,7 +9,7 @@
 @class EXRemoteNotificationManager;
 @class EXScreenOrientationManager;
 
-@interface EXKernelServiceRegistry : NSObject
+@interface EXKernelServiceRegistry : NSObject <EXKernelBridgeRegistryDelegate>
 
 @property (nonatomic, readonly) EXBranchManager *branchManager;
 @property (nonatomic, readonly) EXErrorRecoveryManager *errorRecoveryManager;
@@ -18,6 +18,6 @@
 @property (nonatomic, readonly) EXKernelLinkingManager *linkingManager;
 @property (nonatomic, readonly) EXScreenOrientationManager *screenOrientationManager;
 
-@property (nonatomic, readonly) NSDictionary *allServices;
+@property (nonatomic, readonly) NSDictionary<NSString *, id> *allServices;
 
 @end

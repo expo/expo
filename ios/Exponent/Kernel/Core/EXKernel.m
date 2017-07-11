@@ -30,7 +30,7 @@ NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
 NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUserDefaultsKey";
 NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey";
 
-@interface EXKernel ()
+@interface EXKernel () <EXKernelBridgeRegistryDelegate>
 
 @property (nonatomic, weak) EXViewController *vcExponentRoot;
 
@@ -68,8 +68,13 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
 - (instancetype)init
 {
   if (self = [super init]) {
+    // init bridge registry: keep track of RN bridges we are running
     _bridgeRegistry = [[EXKernelBridgeRegistry alloc] init];
+    _bridgeRegistry.delegate = self;
+
+    // init service registry: classes which manage shared resources among all bridges
     _serviceRegistry = [[EXKernelServiceRegistry alloc] init];
+
     [EXKernelDevMotionHandler sharedInstance];
     [EXKernelDevKeyCommands sharedInstance];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_onKernelJSLoaded) name:kEXKernelJSIsLoadedNotification object:nil];
@@ -179,6 +184,20 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
     [[NSUserDefaults standardUserDefaults] synchronize];
   }
   return uuid;
+}
+
+#pragma mark - bridge registry delegate
+
+- (void)bridgeRegistry:(EXKernelBridgeRegistry *)registry didRegisterBridgeRecord:(EXKernelBridgeRecord *)bridgeRecord
+{
+  // forward to service registry
+  [_serviceRegistry bridgeRegistry:registry didRegisterBridgeRecord:bridgeRecord];
+}
+
+- (void)bridgeRegistry:(EXKernelBridgeRegistry *)registry willUnregisterBridgeRecord:(EXKernelBridgeRecord *)bridgeRecord
+{
+  // forward to service registry
+  [_serviceRegistry bridgeRegistry:registry willUnregisterBridgeRecord:bridgeRecord];
 }
 
 #pragma mark - Bridge stuff

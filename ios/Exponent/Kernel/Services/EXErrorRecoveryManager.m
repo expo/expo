@@ -120,13 +120,6 @@ NSNotificationName const kEXErrorRecoverySetPropsNotification = @"EXErrorRecover
   return NO;
 }
 
-- (void)experienceRestartedWithId:(NSString *)experienceId
-{
-  @synchronized (_experienceInfo) {
-    [_experienceInfo removeObjectForKey:experienceId];
-  }
-}
-
 - (void)experienceFinishedLoadingWithId:(NSString *)experienceId
 {
   EXErrorRecoveryRecord *record = [self _recordForExperienceId:experienceId];
@@ -164,6 +157,16 @@ NSNotificationName const kEXErrorRecoverySetPropsNotification = @"EXErrorRecover
 - (void)increaseAutoReloadBuffer
 {
   _reloadBufferDepth++;
+}
+
+#pragma mark - kernel service
+
+- (void)kernelDidRegisterBridgeWithRecord:(EXKernelBridgeRecord *)record
+{
+  @synchronized (_experienceInfo) {
+    // if this experience had a loading error previously, consider it recovered now
+    [_experienceInfo removeObjectForKey:record.experienceId];
+  }
 }
 
 #pragma mark - internal

@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <UIKit/UIKit.h>
+#import "EXKernelService.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -11,12 +12,9 @@ NS_ASSUME_NONNULL_BEGIN
  * RN bindings. Based loosely on RNBranch.h but handles versionning and limit
  * usage to standalone apps.
  */
-@interface EXBranchManager : NSObject
+@interface EXBranchManager : NSObject <EXKernelService>
 
 + (BOOL)isBranchEnabled;
-
-- (void)registerAppManager:(EXFrameReactAppManager *)appManager;
-- (void)invalidate;
 
 - (void)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions;
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler;
