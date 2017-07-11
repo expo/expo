@@ -100,14 +100,13 @@ Substitute `./pathToYourBabelRelayPlugin` with the path to your Relay plugin.
 
 ## How do I get my existing React Native project running with Expo?
 
-We provide a conversion tool for this:
+Right now, the easiest way to do this is to use XDE or exp to make a new project, and then copy over all your JavaScript source code from your existing project, and then `yarn add`ing the library dependencies you have.
 
--   Make sure you have the Expo command line utility: `npm install -g exp`
--   From your project directory, run `exp convert`
+If you have similar native module dependencies to what is exposed through the Expo SDK, this process shouldn't take more than a few minutes (not including `npm install` time). Please feel free to ask us questions if you run into any issues.
 
-We will do anything that we can do to convert your project automatically, and we'll provide followup instructions for steps you will have to perform manually.
+If you are using native libraries that aren't supported by Expo, you will either have to rewrite some parts of your application to use similar APIs that are part of Expo, or you just might not be able to get all parts of your app to work. Many things do though! 
 
-Note that the results of this tool might vary widely depending on what your project contains. If you have similar native module dependencies to what is exposed through the Expo SDK, this process shouldn't take more than a few minutes (not including `npm install` time). Please feel free to ask us questions if you run into any issues.
+_N.B. We used to maintain a tool `exp convert` but it is not currently working or maintained so the above method is the best way to get an existing React Native project working on Expo_
 
 ## How do I remove an Expo project that I published?
 
