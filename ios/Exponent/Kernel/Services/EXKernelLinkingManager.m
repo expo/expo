@@ -15,6 +15,12 @@
 NSNotificationName kEXKernelOpenUrlNotification = @"EXKernelOpenUrlNotification";
 NSNotificationName kEXKernelRefreshForegroundTaskNotification = @"EXKernelRefreshForegroundTaskNotification";
 
+@interface EXKernelLinkingManager ()
+
+@property (nonatomic, weak) EXReactAppManager *appManagerToRefresh;
+
+@end
+
 @implementation EXKernelLinkingManager
 
 - (instancetype)init
@@ -68,7 +74,23 @@ NSNotificationName kEXKernelRefreshForegroundTaskNotification = @"EXKernelRefres
 
 - (void)refreshForegroundTask
 {
+  _appManagerToRefresh = [EXKernel sharedInstance].bridgeRegistry.lastKnownForegroundAppManager;
   [[EXKernel sharedInstance] dispatchKernelJSEvent:@"refresh" body:@{} onSuccess:nil onFailure:nil];
+}
+
+- (BOOL)isRefreshExpectedForAppManager:(id)manager
+{
+  EXKernelBridgeRegistry *bridgeRegistry = [EXKernel sharedInstance].bridgeRegistry;
+  
+  // consume this reference, don't reuse
+  EXReactAppManager *appManagerToRefresh = _appManagerToRefresh;
+  _appManagerToRefresh = nil;
+
+  return ([EXShellManager sharedInstance].isShell
+          && manager
+          && manager == appManagerToRefresh
+          && manager != bridgeRegistry.kernelAppManager
+          && manager == bridgeRegistry.lastKnownForegroundAppManager);
 }
 
 #pragma mark - scoped module delegate
