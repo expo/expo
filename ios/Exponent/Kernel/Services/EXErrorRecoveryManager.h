@@ -5,10 +5,12 @@
 //
 
 #import "EXErrorRecovery.h"
+#import "EXKernelService.h"
 
 FOUNDATION_EXPORT NSNotificationName const kEXErrorRecoverySetPropsNotification DEPRECATED_ATTRIBUTE;
 
-@interface EXErrorRecoveryManager : NSObject <EXErrorRecoveryScopedModuleDelegate>
+@interface EXErrorRecoveryManager : NSObject
+  <EXKernelService, EXErrorRecoveryScopedModuleDelegate>
 
 /**
  *  Associate arbitrary developer info with this experience id. If the experience recovers from an
@@ -22,12 +24,6 @@ FOUNDATION_EXPORT NSNotificationName const kEXErrorRecoverySetPropsNotification 
  *  call to `experienceFinishedLoadingWithId:`.
  */
 - (void)setError: (NSError *)error forExperienceId: (NSString *)experienceId;
-
-/**
- *  Indicate that a new bridge has been constructed for this experience id.
- *  Clears all recovery info from previous runs of this experience id.
- */
-- (void)experienceRestartedWithId:(NSString *)experienceId;
 
 /**
  *  Indicate that a JS bundle has successfully loaded for this experience id.

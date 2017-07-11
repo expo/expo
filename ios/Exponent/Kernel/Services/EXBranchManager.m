@@ -45,20 +45,26 @@ NSString * const EXBranchLinkOpenedNotification = @"RNBranchLinkOpenedNotificati
   return (branchKey != nil);
 }
 
-- (void)registerAppManager:(EXFrameReactAppManager *)appManager
+#pragma mark - kernel service
+
+- (void)kernelDidRegisterBridgeWithRecord:(EXKernelBridgeRecord *)record
 {
   // The first EXFrameReactAppManager will always be the standalone app one.
   if (_appManager == nil &&
       [EXShellManager sharedInstance].isShell) {
-    _appManager = appManager;
+    _appManager = record.appManager;
     [self tryInitBranch];
   }
 }
 
-- (void)invalidate
+- (void)kernelWillUnregisterBridgeWithRecord:(EXKernelBridgeRecord *)record
 {
-  _appManager = nil;
+  if (record.appManager == _appManager) {
+    _appManager = nil;
+  }
 }
+
+#pragma mark - linking hooks
 
 - (void)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {

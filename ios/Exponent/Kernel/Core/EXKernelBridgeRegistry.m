@@ -5,7 +5,6 @@
 #import "EXFrame.h"
 #import "EXFrameReactAppManager.h"
 #import "EXKernelReactAppManager.h"
-#import "EXBranchManager.h"
 
 #import <React/RCTBridge.h>
 
@@ -36,16 +35,16 @@
       NSAssert(NO, @"Cannot register a bridge with a non-unique experience id");
     }
   }
-  [_bridgeRegistry setObject:[EXKernelBridgeRecord recordWithExperienceId:experienceId appManager:appManager] forKey:bridge];
-
-  // if this experience had a loading error previously, consider it recovered now
-  [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceRestartedWithId:experienceId];
-  
-  [[EXKernel sharedInstance].serviceRegistry.branchManager registerAppManager:appManager];
+  EXKernelBridgeRecord *newRecord = [EXKernelBridgeRecord recordWithExperienceId:experienceId appManager:appManager];
+  [_bridgeRegistry setObject:newRecord forKey:bridge];
 
   if (_lastKnownForegroundBridge == nil) {
     // TODO: this assumes we always load bridges in the foreground (true at time of writing)
     _lastKnownForegroundBridge = bridge;
+  }
+  
+  if (_delegate) {
+    [_delegate bridgeRegistry:self didRegisterBridgeRecord:newRecord];
   }
 }
 
@@ -53,8 +52,10 @@
 {
   EXKernelBridgeRecord *record = [_bridgeRegistry objectForKey:bridge];
   if (record) {
+    if (_delegate) {
+      [_delegate bridgeRegistry:self willUnregisterBridgeRecord:record];
+    }
     [_bridgeRegistry removeObjectForKey:bridge];
-    [[EXKernel sharedInstance].serviceRegistry.branchManager invalidate];
   }
 }
 

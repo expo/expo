@@ -5,6 +5,7 @@
 #import "EXErrorRecoveryManager.h"
 #import "EXGoogleAuthManager.h"
 #import "EXKernelLinkingManager.h"
+#import "EXKernelService.h"
 #import "EXRemoteNotificationManager.h"
 #import "EXScreenOrientationManager.h"
 
@@ -16,7 +17,7 @@
 @property (nonatomic, strong) EXKernelLinkingManager *linkingManager;
 @property (nonatomic, strong) EXRemoteNotificationManager *remoteNotificationManager;
 @property (nonatomic, strong) EXScreenOrientationManager *screenOrientationManager;
-@property (nonatomic, strong) NSDictionary *allServices;
+@property (nonatomic, strong) NSDictionary<NSString *, id> *allServices;
 
 @end
 
@@ -95,6 +96,26 @@
     _allServices = result;
   }
   return _allServices;
+}
+
+#pragma mark - bridge registry delegate
+
+- (void)bridgeRegistry:(EXKernelBridgeRegistry *)registry didRegisterBridgeRecord:(EXKernelBridgeRecord *)bridgeRecord
+{
+  [self.allServices enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull className, id  _Nonnull service, BOOL * _Nonnull stop) {
+    if ([service respondsToSelector:@selector(kernelDidRegisterBridgeWithRecord:)]) {
+      [service kernelDidRegisterBridgeWithRecord:bridgeRecord];
+    }
+  }];
+}
+
+- (void)bridgeRegistry:(EXKernelBridgeRegistry *)registry willUnregisterBridgeRecord:(EXKernelBridgeRecord *)bridgeRecord
+{
+  [self.allServices enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull className, id  _Nonnull service, BOOL * _Nonnull stop) {
+    if ([service respondsToSelector:@selector(kernelWillUnregisterBridgeWithRecord:)]) {
+      [service kernelWillUnregisterBridgeWithRecord:bridgeRecord];
+    }
+  }];
 }
 
 @end
