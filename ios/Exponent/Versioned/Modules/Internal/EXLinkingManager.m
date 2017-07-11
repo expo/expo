@@ -64,7 +64,7 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-  if ([self _isExponentUrl:URL]) {
+  if ([_kernelLinkingDelegate linkingModule:self shouldOpenExpoUrl:URL]) {
     [_kernelLinkingDelegate linkingModule:self didOpenUrl:URL.absoluteString];
     resolve(@YES);
   } else {
@@ -81,7 +81,7 @@ RCT_EXPORT_METHOD(canOpenURL:(NSURL *)URL
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(__unused RCTPromiseRejectBlock)reject)
 {
-  BOOL canOpen = [self _isExponentUrl:URL];
+  BOOL canOpen = [_kernelLinkingDelegate linkingModule:self shouldOpenExpoUrl:URL];
   if (!canOpen) {
     canOpen = [RCTSharedApplication() canOpenURL:URL];
   }
@@ -92,31 +92,6 @@ RCT_EXPORT_METHOD(getInitialURL:(RCTPromiseResolveBlock)resolve
                   reject:(__unused RCTPromiseRejectBlock)reject)
 {
   resolve(RCTNullIfNil(_initialUrl.absoluteString));
-}
-
-# pragma mark - internal
-
-- (BOOL)_isExponentUrl: (NSURL *)url
-{
-  // do not attempt to route internal exponent links at all if we're in a detached exponent app.
-  NSString *versionsPath = [[NSBundle mainBundle] pathForResource:@"EXSDKVersions" ofType:@"plist"];
-  NSDictionary *versionsConfig = (versionsPath) ? [NSDictionary dictionaryWithContentsOfFile:versionsPath] : [NSDictionary dictionary];
-  if (versionsConfig && versionsConfig[@"detachedNativeVersions"]) {
-    return NO;
-  }
-  
-  // we don't need to explicitly include a shell app custom URL scheme here
-  // because the default iOS linking behavior will still hand those links back to Exponent.
-
-  NSURLComponents *components = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:YES];
-  if (components) {
-    return ([components.scheme isEqualToString:@"exp"] ||
-            [components.scheme isEqualToString:@"exps"] ||
-            [components.host isEqualToString:@"exp.host"] ||
-            [components.host hasSuffix:@".exp.host"]
-            );
-  }
-  return NO;
 }
 
 @end
