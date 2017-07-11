@@ -171,6 +171,7 @@
 		B587F1E01D53DEB70071715C /* EXFileDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = B587F1DF1D53DEB70071715C /* EXFileDownloader.m */; };
 		B58FFAAC1F1016B700A51363 /* EXGoogleAuthManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B58FFAAB1F1016B700A51363 /* EXGoogleAuthManager.m */; };
 		B592FFEF1E9D489100437664 /* EXStatusBarManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B592FFEE1E9D489100437664 /* EXStatusBarManager.m */; };
+		B59981C11F153DCD00F6FF81 /* EXKernelModuleManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B59981C01F153DCD00F6FF81 /* EXKernelModuleManager.m */; };
 		B5A358621C7E6C4300D1BE67 /* EXAnalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A358611C7E6C4300D1BE67 /* EXAnalytics.m */; };
 		B5A8752E1E70E57F006DDECA /* EXAdSettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A875211E70E57F006DDECA /* EXAdSettingsManager.m */; };
 		B5A8752F1E70E57F006DDECA /* EXBannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A875231E70E57F006DDECA /* EXBannerView.m */; };
@@ -571,6 +572,8 @@
 		B58FFAAB1F1016B700A51363 /* EXGoogleAuthManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGoogleAuthManager.m; sourceTree = "<group>"; };
 		B592FFED1E9D489100437664 /* EXStatusBarManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXStatusBarManager.h; sourceTree = "<group>"; };
 		B592FFEE1E9D489100437664 /* EXStatusBarManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXStatusBarManager.m; sourceTree = "<group>"; };
+		B59981BF1F153DCD00F6FF81 /* EXKernelModuleManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelModuleManager.h; sourceTree = "<group>"; };
+		B59981C01F153DCD00F6FF81 /* EXKernelModuleManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelModuleManager.m; sourceTree = "<group>"; };
 		B5A358601C7E6C4300D1BE67 /* EXAnalytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAnalytics.h; sourceTree = "<group>"; };
 		B5A358611C7E6C4300D1BE67 /* EXAnalytics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAnalytics.m; sourceTree = "<group>"; };
 		B5A875201E70E57F006DDECA /* EXAdSettingsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAdSettingsManager.h; sourceTree = "<group>"; };
@@ -1339,6 +1342,8 @@
 				B58FFAAB1F1016B700A51363 /* EXGoogleAuthManager.m */,
 				B5C2740A1EC24AE1003355CE /* EXKernelLinkingManager.h */,
 				B5C2740B1EC24AE1003355CE /* EXKernelLinkingManager.m */,
+				B59981BF1F153DCD00F6FF81 /* EXKernelModuleManager.h */,
+				B59981C01F153DCD00F6FF81 /* EXKernelModuleManager.m */,
 				B5AC39A31E95A90B00540AA7 /* EXLocalNotificationManager.h */,
 				B5AC39A41E95A90B00540AA7 /* EXLocalNotificationManager.m */,
 				B5AC39A51E95A90B00540AA7 /* EXRemoteNotificationManager.h */,
@@ -2005,6 +2010,7 @@
 				B52336AF1DAD6A3A001C0B5E /* EXCameraPermissionRequester.m in Sources */,
 				B5AC39AF1E95A90B00540AA7 /* EXVersions.m in Sources */,
 				B5844C3B1D482D710015C683 /* EXRemoteNotificationRequester.m in Sources */,
+				B59981C11F153DCD00F6FF81 /* EXKernelModuleManager.m in Sources */,
 				7847A39D1EC0F1550088BF69 /* RNSVGTextManager.m in Sources */,
 				B5AC39BE1E95AC8E00540AA7 /* EXExceptionHandler.m in Sources */,
 				7847A2CE1EB9AF210088BF69 /* RCTConvert+AirMap.m in Sources */,

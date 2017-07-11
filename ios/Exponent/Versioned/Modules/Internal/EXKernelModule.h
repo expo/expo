@@ -39,11 +39,11 @@ didRequestManifestWithUrl:(NSURL *)url
 // TODO: kill this as an RCTDevSettings followup
 - (void)kernelModuleDidSelectKernelDevMenu: (EXKernelModule *)module DEPRECATED_ATTRIBUTE;
 
+- (void)kernelModule:(EXKernelModule *)module didOpenUrl:(NSString *)url;
+
 @end
 
 @interface EXKernelModule : EXScopedEventEmitter
-
-@property (nonatomic, assign) id<EXKernelModuleDelegate> delegate;
 
 - (void)dispatchJSEvent: (NSString *)eventName
                    body: (NSDictionary *)eventBody

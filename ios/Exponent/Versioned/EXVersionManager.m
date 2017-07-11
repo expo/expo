@@ -313,9 +313,8 @@ void EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceClassName)
   
   if (params[@"kernel"]) {
     EXKernelModule *kernel = [[EXKernelModule alloc] initWithExperienceId:experienceId
-                                                    kernelServiceDelegate:services[EX_UNVERSIONED(@"EXKernelLinkingManager")]
+                                                    kernelServiceDelegate:services[EX_UNVERSIONED(@"EXKernelModuleManager")]
                                                                    params:params];
-    kernel.delegate = params[@"kernel"];
     [extraModules addObject:kernel];
   }
 
