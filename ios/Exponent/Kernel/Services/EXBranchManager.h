@@ -13,12 +13,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface EXBranchManager : NSObject
 
-+ (instancetype)sharedInstance;
-
 + (BOOL)isBranchEnabled;
 
 - (void)registerAppManager:(EXFrameReactAppManager *)appManager;
 - (void)invalidate;
+
 - (void)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions;
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler;
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(nullable NSString *)sourceApplication annotation:(id)annotation;

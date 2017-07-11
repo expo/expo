@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXKernelServiceRegistry.h"
+#import "EXBranchManager.h"
 #import "EXErrorRecoveryManager.h"
 #import "EXGoogleAuthManager.h"
 #import "EXKernelLinkingManager.h"
@@ -9,6 +10,7 @@
 
 @interface EXKernelServiceRegistry ()
 
+@property (nonatomic, strong) EXBranchManager *branchManager;
 @property (nonatomic, strong) EXGoogleAuthManager *googleAuthManager;
 @property (nonatomic, strong) EXErrorRecoveryManager *errorRecoveryManager;
 @property (nonatomic, strong) EXKernelLinkingManager *linkingManager;
@@ -24,6 +26,7 @@
 {
   if (self = [super init]) {
     // TODO: init these in some clean way
+    [self branchManager];
     [self errorRecoveryManager];
     [self remoteNotificationManager];
     [self linkingManager];
@@ -31,6 +34,14 @@
     [self googleAuthManager];
   }
   return self;
+}
+
+- (EXBranchManager *)branchManager
+{
+  if (!_branchManager) {
+    _branchManager = [[EXBranchManager alloc] init];
+  }
+  return _branchManager;
 }
 
 - (EXRemoteNotificationManager *)remoteNotificationManager
@@ -77,7 +88,7 @@
 {
   if (!_allServices) {
     NSMutableDictionary *result = [NSMutableDictionary dictionary];
-    for (id service in @[ self.errorRecoveryManager, self.googleAuthManager, self.linkingManager, self.remoteNotificationManager, self.screenOrientationManager ]) {
+    for (id service in @[ self.branchManager, self.errorRecoveryManager, self.googleAuthManager, self.linkingManager, self.remoteNotificationManager, self.screenOrientationManager ]) {
       NSString *className = NSStringFromClass([service class]);
       result[className] = service;
     }
