@@ -7,6 +7,7 @@
 #import "EXKernelReactAppManager.h"
 #import "EXReactAppManager.h"
 #import "EXShellManager.h"
+#import "EXVersions.h"
 
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <React/RCTBridge+Private.h>
@@ -75,6 +76,27 @@ NSNotificationName kEXKernelRefreshForegroundTaskNotification = @"EXKernelRefres
 - (void)linkingModule:(__unused id)linkingModule didOpenUrl:(NSString *)url
 {
   [self openUrl:url];
+}
+
+- (BOOL)linkingModule:(__unused id)linkingModule shouldOpenExpoUrl:(NSURL *)url
+{
+  // do not attempt to route internal exponent links at all if we're in a detached exponent app.
+  NSDictionary *versionsConfig = [EXVersions sharedInstance].versions;
+  if (versionsConfig && versionsConfig[@"detachedNativeVersions"]) {
+    return NO;
+  }
+  
+  // we don't need to explicitly include a shell app custom URL scheme here
+  // because the default iOS linking behavior will still hand those links back to Exponent.
+  NSURLComponents *components = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:YES];
+  if (components) {
+    return ([components.scheme isEqualToString:@"exp"] ||
+            [components.scheme isEqualToString:@"exps"] ||
+            [components.host isEqualToString:@"exp.host"] ||
+            [components.host hasSuffix:@".exp.host"]
+            );
+  }
+  return NO;
 }
 
 - (void)utilModuleDidSelectReload:(id)scopedUtilModule

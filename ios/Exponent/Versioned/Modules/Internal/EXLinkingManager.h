@@ -8,6 +8,12 @@
 
 - (void)linkingModule:(id)linkingModule didOpenUrl:(NSString *)url;
 
+/**
+ *  @return whether the url should be routed internally as an expo url,
+ *          vs. fall back to the iOS system handler.
+ */
+- (BOOL)linkingModule:(id)linkingModule shouldOpenExpoUrl:(NSURL *)url;
+
 @end
 
 @interface EXLinkingManager : EXScopedEventEmitter
