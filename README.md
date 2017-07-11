@@ -44,11 +44,10 @@ If you are running on an phone with Android 5 you might have to use `./run.sh in
 #### iOS
 - Make sure you have latest non-beta Xcode installed.
 - Install [Cocoapods](https://cocoapods.org/): `gem install cocoapods --no-ri --no-rdoc`
+- Make sure you have a JS packager for the root Expo project already running
 - `cd tools-public; ./generate-files-ios.sh; cd ..`
-- `cd ios; pod install; cd ..`
-- Run iOS project by running `ios/Exponent.xcworkspace` in Xcode.
-
-Once the you have the clients running you should be able to open any Expo experience in them by opening an `exp://` url on the device or navigating to a url in the app's url bar.
+- `cd ios; pod install; cd ..` (skip this step if you are using Expo's internal monorepo)
+- Run `ios/Exponent.xcworkspace` in Xcode.
 
 Note: If you have the Expo client app from the Play Store or the App Store you will have to uninstall those before installing this client.
 
