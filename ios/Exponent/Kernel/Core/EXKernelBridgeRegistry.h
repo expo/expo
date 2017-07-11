@@ -5,7 +5,15 @@
 @class RCTBridge;
 @class EXReactAppManager;
 @class EXFrameReactAppManager;
+@class EXKernelBridgeRegistry;
 @class EXKernelReactAppManager;
+
+@protocol EXKernelBridgeRegistryDelegate <NSObject>
+
+- (void)bridgeRegistry:(EXKernelBridgeRegistry *)registry didRegisterBridgeRecord:(EXKernelBridgeRecord *)bridgeRecord;
+- (void)bridgeRegistry:(EXKernelBridgeRegistry *)registry willUnregisterBridgeRecord:(EXKernelBridgeRecord *)bridgeRecord;
+
+@end
 
 @interface EXKernelBridgeRegistry : NSObject
 
@@ -25,6 +33,8 @@
  *  Helper method, computed from `self.lastKnownForegroundBridge`.
  */
 @property (nonatomic, readonly) EXReactAppManager *lastKnownForegroundAppManager;
+
+@property (nonatomic, weak) id<EXKernelBridgeRegistryDelegate> delegate;
 
 - (EXKernelBridgeRecord *)recordForBridge: (id)bridge;
 - (EXKernelReactAppManager *)kernelAppManager;
