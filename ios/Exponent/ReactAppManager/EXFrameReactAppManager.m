@@ -12,7 +12,6 @@
 #import "EXShellManager.h"
 #import "EXVersions.h"
 #import "EXVersionManager.h"
-#import "EXBranchManager.h"
 
 @implementation EXFrameReactAppManager
 
@@ -126,16 +125,11 @@
   [[EXKernel sharedInstance].bridgeRegistry registerBridge:self.reactBridge
                                            withExperienceId:self.experienceId
                                                 appManager:self];
-
-  if ([EXBranchManager isBranchEnabled]) {
-    [[EXBranchManager sharedInstance] registerAppManager:self];
-  }
 }
 
 - (void)unregisterBridge
 {
   [[EXKernel sharedInstance].bridgeRegistry unregisterBridge:self.reactBridge];
-  [[EXBranchManager sharedInstance] invalidate];
 }
 
 - (NSString *)experienceId
