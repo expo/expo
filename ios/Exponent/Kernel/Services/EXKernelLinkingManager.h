@@ -3,6 +3,7 @@
 // Contains logic for figuring out how to take care of deep links.
 
 #import "EXLinkingManager.h"
+#import "EXReactAppManager.h"
 #import "EXUtil.h"
 
 FOUNDATION_EXPORT NSNotificationName kEXKernelRefreshForegroundTaskNotification DEPRECATED_ATTRIBUTE;
@@ -28,6 +29,12 @@ FOUNDATION_EXPORT NSNotificationName kEXKernelOpenUrlNotification DEPRECATED_MSG
  *  and reload the bundle url it contains.
  */
 - (void)refreshForegroundTask;
+
+/**
+ *  Flagged when `refreshForegroundTask` is called. After the manifest round trip is complete,
+ *  the kernel may need to disambiguate loading a new app from refreshing the existing app.
+ */
+- (BOOL)isRefreshExpectedForAppManager:(EXReactAppManager *)manager;
 
 /**
  *  Returns the deep link prefix for a given experience uri.
