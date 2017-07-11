@@ -125,7 +125,7 @@ class Wrapper extends React.Component {
     });
 
     const newRoute = `/versions/${version}/index.html`;
-    this.props.router.push(newRoute);
+    this.props.history.push(newRoute);
   };
 
   render() {
@@ -171,7 +171,7 @@ class Wrapper extends React.Component {
             id="mobile-sidebar"
             activeRoutes={this.state.activeRoutes}
             activeVersion={this.state.activeVersion}
-            router={this.props.router}
+            router={this.props.history}
             versions={versions}
             setVersion={this.setVersion}
             close={() => this.setState({ sidebarOpen: false })}
@@ -181,7 +181,7 @@ class Wrapper extends React.Component {
         <Header
           activeVersion={this.state.activeVersion}
           versions={versions}
-          router={this.props.router}
+          router={this.props.history}
           setVersion={this.setVersion}
         />
 
@@ -205,7 +205,7 @@ class Wrapper extends React.Component {
               id="sidebar"
               activeRoutes={this.state.activeRoutes}
               activeVersion={this.state.activeVersion}
-              router={this.props.router}
+              router={this.props.history}
               versions={versions}
               setVersion={this.setVersion}
               css={{
@@ -231,7 +231,7 @@ class Wrapper extends React.Component {
                   paddingLeft: rhythm(11.7),
                 },
               }}>
-              {this.props.children}
+              {this.props.children()}
             </div>
           </div>
         </ScrollContainer>

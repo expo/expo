@@ -54,8 +54,8 @@ class DocsPage extends React.Component {
 export default DocsPage;
 
 export const pageQuery = graphql`
-  query TemplatePage($fileSlug: String!) {
-    markdownRemark(fileSlug: { eq: $fileSlug }) {
+  query TemplatePage ($fileSlug: String!) {
+    markdownRemark(fields: { fileSlug: {eq: $fileSlug} }) {
       html
       excerpt
       frontmatter {

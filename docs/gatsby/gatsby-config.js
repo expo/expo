@@ -1,3 +1,5 @@
+const path = require(`path`);
+
 module.exports = {
   siteMetadata: {
     title: `Expo`,
@@ -15,7 +17,7 @@ module.exports = {
       resolve: `gatsby-source-filesystem`,
       options: {
         name: `docs`,
-        path: `${__dirname}/../versions`,
+        path: path.join(__dirname, `..`, `/versions`),
       },
     },
     `gatsby-transformer-sharp`,
@@ -24,7 +26,7 @@ module.exports = {
       options: {
         plugins: [
           {
-            resolve: `gatsby-remark-responsive-image`,
+            resolve: `gatsby-remark-images`,
             options: {
               maxWidth: 800,
               wrapperStyle: `margin-bottom: 1.45rem;`,
@@ -36,8 +38,8 @@ module.exports = {
               wrapperStyle: `margin-bottom: 1.45rem;`,
             },
           },
-          `gatsby-remark-copy-linked-files`,
           `gatsby-remark-prismjs`,
+          `gatsby-remark-copy-linked-files`,
           `gatsby-remark-smartypants`,
           `gatsby-typegen-remark-expo-embed`,
           {

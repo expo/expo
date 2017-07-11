@@ -1,62 +1,64 @@
 const _ = require('lodash');
 const Promise = require('bluebird');
 const path = require('path');
-const select = require(`unist-util-select`);
 const parseFilepath = require('parse-filepath');
-const fs = require(`fs`);
-const slug = require(`slug`);
-const sh = require(`shelljs`);
-const webpack = require(`webpack`);
-const { GraphQLString } = require(`graphql`);
 
 exports.createPages = ({ boundActionCreators, graphql }) => {
-  const { upsertPage } = boundActionCreators;
+  const { createPage } = boundActionCreators;
 
   return new Promise((resolve, reject) => {
-    const pages = [];
     const docsPage = path.resolve(`src/pages/template-documentation-page.js`);
-    graphql(
-      `
-      {
-        allMarkdownRemark(limit: 10000) {
-          edges {
-            node {
-              isIndex
-              fileSlug
+
+    // NOTE (Abi): Add to query below for faster local debugging
+    // Useful for debugging a smaller set of pages:
+    // , filter: { fields: { isIndex: { eq: "true" }}}
+    // Useful for debugging a page with images:
+    // , filter: { fields: { fileSlug: { eq: "/versions/v13.0.0/introduction/xde-tour" }}}
+
+    resolve(
+      graphql(
+        `
+        {
+          allMarkdownRemark(limit: 10000) {
+            edges {
+              node {
+                fields {
+                  isIndex
+                  fileSlug
+                }
+              }
             }
           }
+        }`
+      ).then(result => {
+        if (result.errors) {
+          reject(new Error(result.errors));
         }
-      }
-    `
-    ).then(result => {
-      if (result.errors) {
-        console.log(result.errors);
-        reject(result.errors);
-      }
 
-      // Create docs pages.
-      _.each(result.data.allMarkdownRemark.edges, edge => {
-        upsertPage({
-          path: edge.node.isIndex
-            ? edge.node.fileSlug + '/index.html'
-            : edge.node.fileSlug + '.html', // required
-          component: docsPage,
-          context: {
-            fileSlug: edge.node.fileSlug,
-          },
+        // Create docs pages.
+        _.each(result.data.allMarkdownRemark.edges, edge => {
+          createPage({
+            path: edge.node.fields.isIndex
+              ? edge.node.fields.fileSlug + '/index.html'
+              : edge.node.fields.fileSlug + '.html',
+            component: docsPage,
+            context: {
+              fileSlug: edge.node.fields.fileSlug,
+            },
+          });
         });
-      });
 
-      // We're done.
-      resolve();
-    });
+        return;
+      })
+    );
   });
 };
 
 // Add custom slug.
-exports.onNodeCreate = ({ node, boundActionCreators, getNode }) => {
-  const { updateNode } = boundActionCreators;
-  if (node.type === 'MarkdownRemark') {
+exports.onCreateNode = ({ node, boundActionCreators, getNode }) => {
+  const { createNode, createNodeField } = boundActionCreators;
+
+  if (node.internal.type === 'MarkdownRemark') {
     const file = getNode(node.parent);
     const parsedFilePath = parseFilepath(file.relativePath);
     let fileSlug;
@@ -64,14 +66,19 @@ exports.onNodeCreate = ({ node, boundActionCreators, getNode }) => {
       fileSlug = `/versions/${parsedFilePath.dirname}/${parsedFilePath.name}`;
     } else {
       fileSlug = `/versions/${parsedFilePath.dirname}`;
-      file.isIndex = true;
-      node.isIndex = true;
+      createNodeField({ node: file, name: 'isIndex', value: 'true' });
+      createNodeField({ node: node, name: 'isIndex', value: 'true' });
     }
 
-    node.fileSlug = fileSlug;
-    file.fileSlug = fileSlug;
-
-    updateNode(node);
-    updateNode(file);
+    createNodeField({
+      node: file,
+      name: 'fileSlug',
+      value: fileSlug,
+    });
+    createNodeField({
+      node: node,
+      name: 'fileSlug',
+      value: fileSlug,
+    });
   }
 };

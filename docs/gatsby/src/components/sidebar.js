@@ -31,11 +31,11 @@ class Sidebar extends React.Component {
           marginTop: i === 0 ? 0 : rhythm(1.25), // Except for the first header
         }}>
         <Link
-          activeClassName="current"
-          css={{ color: 'inherit' }}
           activeStyle={{
             color: `rgba(0,0,0,0.40)`,
           }}
+          activeClassName="current"
+          css={{ color: 'inherit' }}
           to={link}>
           {children}
         </Link>
@@ -128,10 +128,11 @@ class Sidebar extends React.Component {
           {activeRoutes.map((section, i) => {
             return (
               <div
-                key={section.title}
+                key={section.index}
                 css={{
-                  '@media (max-width: 750px)': {
-                    padding: `0em ${rhythm(3 / 4)}`,
+                  padding: `0em ${rhythm(3 / 4)}`,
+                  [presets.Tablet]: {
+                    padding: 0,
                   },
                 }}>
                 <Header i={i} link={section.index}>

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { TypographyStyle } from 'react-typography';
 import Helmet from 'react-helmet';
+import * as PropTypes from 'prop-types';
 
 import typography from './utils/typography';
 import favicon from './images/favicon-32x32.png';
@@ -16,7 +17,13 @@ if (env === `production`) {
   }
 }
 
-module.exports = React.createClass({
+const propTypes = {
+  headComponents: PropTypes.node.isRequired,
+  body: PropTypes.node.isRequired,
+  postBodyComponents: PropTypes.node.isRequired,
+};
+
+class Html extends Component {
   render() {
     const head = Helmet.rewind();
     let css;
@@ -61,12 +68,16 @@ module.exports = React.createClass({
         </head>
         <body>
           <div
-            id="react-mount"
+            id="___gatsby"
             dangerouslySetInnerHTML={{ __html: this.props.body }}
           />
           {this.props.postBodyComponents}
         </body>
       </html>
     );
-  },
-});
+  }
+}
+
+Html.propTypes = propTypes;
+
+module.exports = Html;
