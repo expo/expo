@@ -11,6 +11,14 @@ typedef NS_OPTIONS(NSUInteger, EXAudioInterruptionMode)
   EXAudioInterruptionModeDuckOthers    = 2
 };
 
+typedef NS_OPTIONS(NSUInteger, EXAudioRecordingOptionBitRateStrategy)
+{
+  EXAudioRecordingOptionBitRateStrategyConstant            = 0,
+  EXAudioRecordingOptionBitRateStrategyLongTermAverage     = 1,
+  EXAudioRecordingOptionBitRateStrategyVariableConstrained = 2,
+  EXAudioRecordingOptionBitRateStrategyVariable            = 3
+};
+
 @interface EXAV : NSObject <RCTBridgeModule>
 
 - (NSError *)promoteAudioSessionIfNecessary;

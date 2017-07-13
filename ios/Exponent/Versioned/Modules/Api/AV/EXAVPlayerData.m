@@ -78,7 +78,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     _playbackStalledObserver = nil;
     _statusUpdateCallback = nil;
   
-    // These status props will be potentialy reset by the following call to [self setStatus:parameters ...].
+    // These status props will be potentially reset by the following call to [self setStatus:parameters ...].
     _progressUpdateIntervalMillis = @(500);
     _currentPosition = kCMTimeZero;
     _shouldPlay = NO;
@@ -308,12 +308,14 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 
 - (NSNumber *)_getRoundedMillisFromCMTime:(CMTime)time
 {
-  return @((long) (CMTimeGetSeconds(time) * 1000));
+  return CMTIME_IS_INVALID(time) || CMTIME_IS_INDEFINITE(time) ? nil : @((long) (CMTimeGetSeconds(time) * 1000));
 }
 
-- (NSNumber *)_getClippedValueForValue:value withMin:(NSNumber *)min withMax:(NSNumber *)max
+- (NSNumber *)_getClippedValueForValue:(NSNumber *)value withMin:(NSNumber *)min withMax:(NSNumber *)max
 {
-  return [value compare:min] == NSOrderedAscending ? min : [value compare:max] == NSOrderedDescending ? max : value;
+  return (min != nil && [value doubleValue] < [min doubleValue]) ? min
+       : (max != nil && [value doubleValue] > [max doubleValue]) ? max
+       : value;
 }
 
 - (NSDictionary *)getStatus
@@ -328,16 +330,16 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   }
   
   // Get duration and position:
-  
   NSNumber *durationMillis = [self _getRoundedMillisFromCMTime:currentItem.duration];
-  durationMillis = [durationMillis compare:@(0)] == NSOrderedAscending ? 0 : durationMillis;
+  if (durationMillis) {
+    durationMillis = [durationMillis doubleValue] < 0 ? 0 : durationMillis;
+  }
   
   NSNumber *positionMillis = [self _getRoundedMillisFromCMTime:[_player currentTime]];
   positionMillis = [self _getClippedValueForValue:positionMillis withMin:@(0) withMax:durationMillis];
   
-  // Calculate playable + seekable durations:
-  
-  NSNumber *playableDurationMillis = @(0);
+  // Calculate playable duration:
+  NSNumber *playableDurationMillis;
   if (_player.status == AVPlayerStatusReadyToPlay) {
     __block CMTimeRange effectiveTimeRange;
     [currentItem.loadedTimeRanges enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -348,11 +350,12 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
       }
     }];
     playableDurationMillis = [self _getRoundedMillisFromCMTime:CMTimeRangeGetEnd(effectiveTimeRange)];
-    playableDurationMillis = [self _getClippedValueForValue:playableDurationMillis withMin:@(0) withMax:durationMillis];
+    if (playableDurationMillis) {
+      playableDurationMillis = [self _getClippedValueForValue:playableDurationMillis withMin:@(0) withMax:durationMillis];
+    }
   }
   
   // Calculate if the player is buffering
-  
   BOOL isPlaying = [self _isPlayerPlaying];
   BOOL isBuffering;
   if (isPlaying) {
@@ -366,25 +369,31 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   
   // TODO : react-native-video includes the iOS-only keys seekableDuration and canReverse (etc) flags.
   //        Consider adding these.
-  return @{EXAVPlayerDataStatusIsLoadedKeyPath: @(YES),
-           EXAVPlayerDataStatusURIKeyPath: [_url absoluteString],
-           
-           EXAVPlayerDataStatusProgressUpdateIntervalMillisKeyPath: _progressUpdateIntervalMillis,
-           EXAVPlayerDataStatusDurationMillisKeyPath: durationMillis,
-           EXAVPlayerDataStatusPositionMillisKeyPath: positionMillis,
-           EXAVPlayerDataStatusPlayableDurationMillisKeyPath: playableDurationMillis,
-           
-           EXAVPlayerDataStatusShouldPlayKeyPath: @(_shouldPlay),
-           EXAVPlayerDataStatusIsPlayingKeyPath: @(isPlaying),
-           EXAVPlayerDataStatusIsBufferingKeyPath: @(isBuffering),
-           
-           EXAVPlayerDataStatusRateKeyPath: _rate,
-           EXAVPlayerDataStatusShouldCorrectPitchKeyPath: @(_shouldCorrectPitch),
-           EXAVPlayerDataStatusVolumeKeyPath: @(_player.volume),
-           EXAVPlayerDataStatusIsMutedKeyPath: @(_player.muted),
-           EXAVPlayerDataStatusIsLoopingKeyPath: @(_isLooping),
-           
-           EXAVPlayerDataStatusDidJustFinishKeyPath: @(NO),};
+  NSMutableDictionary *mutableStatus = [@{EXAVPlayerDataStatusIsLoadedKeyPath: @(YES),
+                                          
+                                          EXAVPlayerDataStatusURIKeyPath: [_url absoluteString],
+                                          
+                                          EXAVPlayerDataStatusProgressUpdateIntervalMillisKeyPath: _progressUpdateIntervalMillis,
+                                          EXAVPlayerDataStatusPositionMillisKeyPath: positionMillis,
+                                          // playableDurationMillis, and durationMillis may be nil and are added after this definition.
+                                          
+                                          EXAVPlayerDataStatusShouldPlayKeyPath: @(_shouldPlay),
+                                          EXAVPlayerDataStatusIsPlayingKeyPath: @(isPlaying),
+                                          EXAVPlayerDataStatusIsBufferingKeyPath: @(isBuffering),
+                                          
+                                          EXAVPlayerDataStatusRateKeyPath: _rate,
+                                          EXAVPlayerDataStatusShouldCorrectPitchKeyPath: @(_shouldCorrectPitch),
+                                          EXAVPlayerDataStatusVolumeKeyPath: @(_player.volume),
+                                          EXAVPlayerDataStatusIsMutedKeyPath: @(_player.muted),
+                                          EXAVPlayerDataStatusIsLoopingKeyPath: @(_isLooping),
+                                          
+                                          EXAVPlayerDataStatusDidJustFinishKeyPath: @(NO),
+                                          } mutableCopy];
+  
+  mutableStatus[EXAVPlayerDataStatusPlayableDurationMillisKeyPath] = playableDurationMillis;
+  mutableStatus[EXAVPlayerDataStatusDurationMillisKeyPath] = durationMillis;
+  
+  return mutableStatus;
 }
 
 - (void)_callStatusUpdateCallbackWithExtraFields:(NSDictionary *)extraFields

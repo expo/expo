@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
+import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -47,6 +48,15 @@ public class AVModule extends ReactContextBaseJavaModule
     implements LifecycleEventListener, AudioManager.OnAudioFocusChangeListener {
   private static final String AUDIO_MODE_SHOULD_DUCK_KEY = "shouldDuckAndroid";
   private static final String AUDIO_MODE_INTERRUPTION_MODE_KEY = "interruptionModeAndroid";
+
+  private static final String RECORDING_OPTIONS_KEY = "android";
+  private static final String RECORDING_OPTION_EXTENSION_KEY = "extension";
+  private static final String RECORDING_OPTION_OUTPUT_FORMAT_KEY = "outputFormat";
+  private static final String RECORDING_OPTION_AUDIO_ENCODER_KEY = "audioEncoder";
+  private static final String RECORDING_OPTION_SAMPLE_RATE_KEY = "sampleRate";
+  private static final String RECORDING_OPTION_NUMBER_OF_CHANNELS_KEY = "numberOfChannels";
+  private static final String RECORDING_OPTION_BIT_RATE_KEY = "bitRate";
+  private static final String RECORDING_OPTION_MAX_FILE_SIZE_KEY = "maxFileSize";
 
   private enum AudioInterruptionMode {
     DO_NOT_MIX,
@@ -494,7 +504,7 @@ public class AVModule extends ReactContextBaseJavaModule
   }
 
   @ReactMethod
-  public void prepareAudioRecorder(final Promise promise) {
+  public void prepareAudioRecorder(final ReadableMap options, final Promise promise) {
     if (isMissingAudioRecordingPermissions()) {
       promise.reject("E_MISSING_PERMISSION", "Missing audio recording permissions.");
       return;
@@ -502,7 +512,10 @@ public class AVModule extends ReactContextBaseJavaModule
 
     removeAudioRecorder();
 
-    final String filename = "recording-" + UUID.randomUUID().toString() + ".3gp";
+    final ReadableMap androidOptions = options.getMap(RECORDING_OPTIONS_KEY);
+
+    final String filename = "recording-" + UUID.randomUUID().toString()
+        + androidOptions.getString(RECORDING_OPTION_EXTENSION_KEY);
     try {
       final File directory = new File(mScopedContext.getCacheDir() + File.separator + "Audio");
       ExpFileUtils.ensureDirExists(directory);
@@ -513,10 +526,25 @@ public class AVModule extends ReactContextBaseJavaModule
     }
 
     mAudioRecorder = new MediaRecorder();
-    mAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-    mAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+    mAudioRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
+
+    mAudioRecorder.setOutputFormat(androidOptions.getInt(RECORDING_OPTION_OUTPUT_FORMAT_KEY));
+    mAudioRecorder.setAudioEncoder(androidOptions.getInt(RECORDING_OPTION_AUDIO_ENCODER_KEY));
+    if (androidOptions.hasKey(RECORDING_OPTION_SAMPLE_RATE_KEY)) {
+      mAudioRecorder.setAudioSamplingRate(androidOptions.getInt(RECORDING_OPTION_SAMPLE_RATE_KEY));
+    }
+    if (androidOptions.hasKey(RECORDING_OPTION_NUMBER_OF_CHANNELS_KEY)) {
+      mAudioRecorder.setAudioChannels(androidOptions.getInt(RECORDING_OPTION_NUMBER_OF_CHANNELS_KEY));
+    }
+    if (androidOptions.hasKey(RECORDING_OPTION_BIT_RATE_KEY)) {
+      mAudioRecorder.setAudioEncodingBitRate(androidOptions.getInt(RECORDING_OPTION_BIT_RATE_KEY));
+    }
+
     mAudioRecorder.setOutputFile(mAudioRecordingFilePath);
-    mAudioRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+
+    if (androidOptions.hasKey(RECORDING_OPTION_MAX_FILE_SIZE_KEY)) {
+      mAudioRecorder.setMaxFileSize(androidOptions.getInt(RECORDING_OPTION_MAX_FILE_SIZE_KEY));
+    }
 
     try {
       mAudioRecorder.prepare();
