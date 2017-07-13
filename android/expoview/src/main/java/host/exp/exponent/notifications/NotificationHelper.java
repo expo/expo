@@ -282,6 +282,8 @@ public class NotificationHelper {
           listener.onFailure(new Exception("Invalid repeat interval specified"));
           return;
       }
+    } else if (options.containsKey("intervalMs")) {
+      interval = (Long) options.get("intervalMs");
     }
 
     try {
