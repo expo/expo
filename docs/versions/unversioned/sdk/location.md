@@ -122,3 +122,51 @@ Suscribe to compass updates from the device
 Returns a subscription object, which has one field:
 
 - **remove (function)** — Call this function with no arguments to remove this subscription. The callback will no longer be called for location updates.
+
+### `Expo.Location.geocodeAsync(address)`
+
+Geocode an address string to latitiude-longitude location. _Notice_: Geocoding is resource consuming and has to be used reasonably. Creating too many requests at a time can result in an error so they have to be managed properly.
+
+#### Arguments
+
+- **address (_string_)** -- A string representing address, eg. "Baker Street London"
+
+#### Returns
+
+Returns an array (in most cases its size is 1) of geocoded location objects with the following fields:
+
+-   **latitude (_number_)** -- The latitude in degrees.
+-   **longitude (_number_)** -- The longitude in degrees.
+-   **altitude (_number_)** -- The altitude in meters above the WGS 84 reference ellipsoid.
+-   **accuracy (_number_)** -- The radius of uncertainty for the location, measured in meters.
+    
+### `Expo.Location.reverseGeocodeAsync(location)`
+
+Reverse geocode a location to postal address. _Notice_: Geocoding is resource consuming and has to be used reasonably. Creating too many requests at a time can result in an error so they have to be managed properly.
+
+#### Arguments
+
+-   **location (_object_)** -- An object representing a location:
+
+    -   **latitude (_number_)** -- The latitude of location to reverse geocode, in degrees.
+    -   **longitude (_number_)** -- The longitude of location to reverse geocode, in degrees.
+
+
+#### Returns
+
+Returns an array (in most cases its size is 1) of address objects with following fields:
+
+-   **city (_string_)** -- City name of the address.
+-   **street (_string_)** -- Street name of the address.
+-   **region (_string_)** -- Region/area name of the address.
+-   **postalCode (_string_)** -- Postal code of the address.
+-   **country (_string_)** -- Localized country name of the address.
+-   **name (_string_)** -- Place name of the address, for example, "Tower Bridge".
+
+### `Expo.Location.setApiKey(apiKey)`
+
+Sets a Google API Key for using Geocoding API. This method can be useful for Android devices that do not have Google Play Services, hence no Geocoder Service. After setting the key using Google's API will be possible.
+
+#### Arguments
+
+-   **apiKey (_string_)** -- API key collected from Google Developer site.
