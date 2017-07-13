@@ -6,19 +6,19 @@ import get from 'lodash/get';
 import { rhythm } from '../utils/typography';
 
 function initializeEmbeds() {
-  if (window.ExpoSketch) {
-    window.ExpoSketch.initialize();
+  if (window.ExpoSnack) {
+    window.ExpoSnack.initialize();
   } else {
     let scriptEl = document.createElement('script');
     scriptEl.async = true;
     scriptEl.type = 'text/javascript';
-    scriptEl.src = `https://sketch.expo.io/embed.js`;
+    scriptEl.src = `https://snack.expo.io/embed.js`;
     document.body.appendChild(scriptEl);
   }
 }
 
 class DocsPage extends React.Component {
-  componentDidMount() {
+  componentDidUpdate() {
     initializeEmbeds();
   }
 
