@@ -18,6 +18,10 @@ function initializeEmbeds() {
 }
 
 class DocsPage extends React.Component {
+  componentDidMount() {
+    initializeEmbeds();
+  }
+
   componentDidUpdate() {
     initializeEmbeds();
   }
