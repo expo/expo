@@ -11,6 +11,19 @@
 #import "EXVideoView.h"
 #import "EXUnversioned.h"
 
+NSString *const EXAudioRecordingOptionsKey = @"ios";
+NSString *const EXAudioRecordingOptionExtensionKey = @"extension";
+NSString *const EXAudioRecordingOptionOutputFormatKey = @"outputFormat";
+NSString *const EXAudioRecordingOptionAudioQualityKey = @"audioQuality";
+NSString *const EXAudioRecordingOptionSampleRateKey = @"sampleRate";
+NSString *const EXAudioRecordingOptionNumberOfChannelsKey = @"numberOfChannels";
+NSString *const EXAudioRecordingOptionBitRateKey = @"bitRate";
+NSString *const EXAudioRecordingOptionBitRateStrategyKey = @"bitRateStrategy";
+NSString *const EXAudioRecordingOptionBitDepthHintKey = @"bitDepthHint";
+NSString *const EXAudioRecordingOptionLinearPCMBitDepthKey = @"linearPCMBitDepth";
+NSString *const EXAudioRecordingOptionLinearPCMIsBigEndianKey = @"linearPCMIsBigEndian";
+NSString *const EXAudioRecordingOptionLinearPCMIsFloatKey = @"linearPCMIsFloat";
+
 @interface EXAV ()
 
 @property (nonatomic, assign) BOOL audioIsEnabled;
@@ -25,6 +38,8 @@
 @property (nonatomic, strong) NSMutableDictionary <NSNumber *, EXAVPlayerData *> *soundDictionary;
 @property (nonatomic, strong) NSMutableSet <NSObject<EXAVObject> *> *videoSet;
 
+@property (nonatomic, strong) NSString *audioRecorderFilename;
+@property (nonatomic, strong) NSDictionary *audioRecorderSettings;
 @property (nonatomic, strong) AVAudioRecorder *audioRecorder;
 @property (nonatomic, assign) BOOL audioRecorderIsPreparing;
 @property (nonatomic, assign) BOOL audioRecorderShouldBeginRecording;
@@ -52,6 +67,8 @@
     _soundDictionary = [NSMutableDictionary new];
     _videoSet = [NSMutableSet new];
     
+    _audioRecorderFilename = nil;
+    _audioRecorderSettings = nil;
     _audioRecorder = nil;
     _audioRecorderIsPreparing = false;
     _audioRecorderShouldBeginRecording = false;
@@ -311,7 +328,8 @@
   }];
   
   if (_audioRecorder) {
-    [self _createNewAudioRecorder]; // TODO What should we do with old data here?
+    [self _removeAudioRecorder:NO];
+    [self _createNewAudioRecorder];
     [_audioRecorder prepareToRecord];
   }
 }
@@ -362,28 +380,81 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
 
 #pragma mark - Internal audio recording helper methods
 
-- (void)_createNewAudioRecorder
+- (NSString *)_getBitRateStrategyFromEnum:(NSNumber *)bitRateEnumSelected
 {
-  [self _removeAudioRecorder];
+  if (bitRateEnumSelected) {
+    switch ([bitRateEnumSelected integerValue]) {
+      case EXAudioRecordingOptionBitRateStrategyConstant:
+        return AVAudioBitRateStrategy_Constant;
+      case EXAudioRecordingOptionBitRateStrategyLongTermAverage:
+        return AVAudioBitRateStrategy_LongTermAverage;
+      case EXAudioRecordingOptionBitRateStrategyVariableConstrained:
+        return AVAudioBitRateStrategy_VariableConstrained;
+        break;
+      case EXAudioRecordingOptionBitRateStrategyVariable:
+        return AVAudioBitRateStrategy_Variable;
+      default:
+        return nil;
+    }
+  }
+  return nil;
+}
+
+- (NSDictionary<NSString *, NSString *> *)_getAVKeysForRecordingOptionsKeys:(NSString *)bitRateStrategy
+{
+  return @{EXAudioRecordingOptionOutputFormatKey: AVFormatIDKey,
+           EXAudioRecordingOptionAudioQualityKey:
+             bitRateStrategy == AVAudioBitRateStrategy_Variable
+           ? AVEncoderAudioQualityForVBRKey : AVEncoderAudioQualityKey,
+           EXAudioRecordingOptionSampleRateKey: AVSampleRateKey,
+           EXAudioRecordingOptionNumberOfChannelsKey: AVNumberOfChannelsKey,
+           EXAudioRecordingOptionBitRateKey: AVEncoderBitRateKey,
+           EXAudioRecordingOptionBitDepthHintKey: AVEncoderBitDepthHintKey,
+           EXAudioRecordingOptionLinearPCMBitDepthKey: AVLinearPCMBitDepthKey,
+           EXAudioRecordingOptionLinearPCMIsBigEndianKey: AVLinearPCMIsBigEndianKey,
+           EXAudioRecordingOptionLinearPCMIsFloatKey: AVLinearPCMIsFloatKey};
+}
+
+- (void)_setNewAudioRecorderFilenameAndSettings:(NSDictionary *)optionsFromJS
+{
+  NSDictionary *iosOptionsFromJS = optionsFromJS[EXAudioRecordingOptionsKey];
   
-  NSString *filename = [NSString stringWithFormat:@"recording-%@.caf", [[NSUUID UUID] UUIDString]];
+  NSString *extension = iosOptionsFromJS[EXAudioRecordingOptionExtensionKey];
+  _audioRecorderFilename = [NSString stringWithFormat:@"recording-%@%@", [[NSUUID UUID] UUIDString], extension];
+  
+  NSString *bitRateStrategy = [self _getBitRateStrategyFromEnum:iosOptionsFromJS[EXAudioRecordingOptionBitRateStrategyKey]];
+  NSDictionary<NSString *, NSString *> *avKeysForRecordingOptionsKeys = [self _getAVKeysForRecordingOptionsKeys:bitRateStrategy];
+  
+  NSMutableDictionary *recorderSettings = [NSMutableDictionary new];
+  for (NSString *recordingOptionsKey in avKeysForRecordingOptionsKeys) {
+    if (iosOptionsFromJS[recordingOptionsKey]) {
+      recorderSettings[avKeysForRecordingOptionsKeys[recordingOptionsKey]] = iosOptionsFromJS[recordingOptionsKey];
+    }
+  }
+  recorderSettings[AVEncoderBitRateStrategyKey] = bitRateStrategy;
+  
+  _audioRecorderSettings = recorderSettings;
+}
+
+- (NSError *)_createNewAudioRecorder
+{
+  if (_audioRecorder) {
+    return RCTErrorWithMessage(@"Recorder already exists.");
+  }
+  
   NSString *directory = [self.bridge.scopedModules.fileSystem.cachesDirectory stringByAppendingPathComponent:@"AV"];
   [EXFileSystem ensureDirExistsWithPath:directory];
-  NSString *soundFilePath = [directory stringByAppendingPathComponent:filename];
+  NSString *soundFilePath = [directory stringByAppendingPathComponent:_audioRecorderFilename];
   NSURL *soundFileURL = [NSURL fileURLWithPath:soundFilePath];
-  
-  NSDictionary *recordSettings = @{AVEncoderAudioQualityKey: @(AVAudioQualityMedium),
-                                   AVEncoderBitRateKey: @(128000),
-                                   AVNumberOfChannelsKey: @(2),
-                                   AVSampleRateKey: @(44100.0)};
   
   NSError *error;
   AVAudioRecorder *recorder = [[AVAudioRecorder alloc] initWithURL:soundFileURL
-                                                          settings:recordSettings
+                                                          settings:_audioRecorderSettings
                                                              error:&error];
   if (error == nil) {
     _audioRecorder = recorder;
   }
+  return error;
 }
 
 - (int)_getDurationMillisOfRecordingAudioRecorder
@@ -413,12 +484,16 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
   return _audioRecorder != nil;
 }
 
-- (void)_removeAudioRecorder
+- (void)_removeAudioRecorder:(BOOL)removeFilenameAndSettings
 {
   if (_audioRecorder) {
     [_audioRecorder stop];
     [self demoteAudioSessionIfPossible];
     _audioRecorder = nil;
+  }
+  if (removeFilenameAndSettings) {
+    _audioRecorderFilename = nil;
+    _audioRecorderSettings = nil;
   }
 }
 
@@ -592,14 +667,16 @@ RCT_EXPORT_METHOD(getStatusForVideo:(nonnull NSNumber *)reactTag
 
 #pragma mark - Audio API: Recording
 
-RCT_EXPORT_METHOD(prepareAudioRecorder:(RCTPromiseResolveBlock)resolve
+RCT_EXPORT_METHOD(prepareAudioRecorder:(nonnull NSDictionary *)options
+                              resolver:(RCTPromiseResolveBlock)resolve
                               rejecter:(RCTPromiseRejectBlock)reject)
 {
-  [self _createNewAudioRecorder];
+  [self _setNewAudioRecorderFilenameAndSettings:options];
+  NSError *error = [self _createNewAudioRecorder];
   
-  if (_audioRecorder) {
+  if (_audioRecorder && !error) {
     _audioRecorderIsPreparing = true;
-    NSError *error = [self promoteAudioSessionIfNecessary];
+    error = [self promoteAudioSessionIfNecessary];
     if (error) {
       reject(@"E_AUDIO_RECORDERNOTCREATED", @"Prepare encountered an error: audio session not activated!", error);
     } else if ([_audioRecorder prepareToRecord]) {
@@ -611,7 +688,7 @@ RCT_EXPORT_METHOD(prepareAudioRecorder:(RCTPromiseResolveBlock)resolve
     _audioRecorderIsPreparing = false;
     [self demoteAudioSessionIfPossible];
   } else {
-    reject(@"E_AUDIO_RECORDERNOTCREATED", nil, RCTErrorWithMessage(@"Prepare encountered an error: recorder not created."));
+    reject(@"E_AUDIO_RECORDERNOTCREATED", @"Prepare encountered an error: recorder not created.", error);
   }
 }
 
@@ -677,7 +754,7 @@ RCT_EXPORT_METHOD(unloadAudioRecorder:(RCTPromiseResolveBlock)resolve
                              rejecter:(RCTPromiseRejectBlock)reject)
 {
   if ([self _checkAudioRecorderExistsOrReject:reject]) {
-    [self _removeAudioRecorder];
+    [self _removeAudioRecorder:YES];
     resolve(nil);
   }
 }
@@ -694,7 +771,7 @@ RCT_EXPORT_METHOD(unloadAudioRecorder:(RCTPromiseResolveBlock)resolve
     [video pauseImmediately];
     [_videoSet removeObject:video];
   }
-  [self _removeAudioRecorder];
+  [self _removeAudioRecorder:YES];
   for (NSNumber *key in [_soundDictionary allKeys]) {
     [self _removeSoundForKey:key];
   }

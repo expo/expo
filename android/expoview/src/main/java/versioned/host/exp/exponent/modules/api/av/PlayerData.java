@@ -5,8 +5,6 @@ import android.media.MediaPlayer;
 import android.media.PlaybackParams;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Handler;
-import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.util.Pair;
 import android.view.Surface;
@@ -62,6 +60,7 @@ public class PlayerData implements AudioEventHandler,
 
   public interface PlayerDataLoadCompletionListener {
     void onLoadSuccess(final WritableMap status);
+
     void onLoadError(final String error);
   }
 
@@ -73,6 +72,7 @@ public class PlayerData implements AudioEventHandler,
 
   private interface PlayerDataSetStatusCompletionListener {
     void onSetStatusComplete();
+
     void onSetStatusError(final String error);
   }
 
@@ -89,7 +89,7 @@ public class PlayerData implements AudioEventHandler,
   private float mVolume = 1.0f;
   private boolean mIsMuted = false;
 
-  private int mPlayableDurationMillis = 0;
+  private Integer mPlayableDurationMillis = null;
   private boolean mIsBuffering = false;
 
   private PlayerDataErrorListener mErrorListener = null;
@@ -109,30 +109,50 @@ public class PlayerData implements AudioEventHandler,
       return;
     }
 
-    mMediaPlayer = MediaPlayer.create(mAVModule.mScopedContext, mUri);
+    final MediaPlayer unpreparedPlayer = new MediaPlayer();
 
-    if (mMediaPlayer == null) {
-      loadCompletionListener.onLoadError("Load encountered an error: MediaPlayer.create() returned null.");
-    } else try {
-      mMediaPlayer.setOnBufferingUpdateListener(this);
-      mMediaPlayer.setOnCompletionListener(this);
-      mMediaPlayer.setOnErrorListener(this);
-      mMediaPlayer.setOnInfoListener(this);
-
-      setStatus(status, new PlayerDataSetStatusCompletionListener() {
-        @Override
-        public void onSetStatusComplete() {
-          loadCompletionListener.onLoadSuccess(getStatus());
-        }
-
-        @Override
-        public void onSetStatusError(final String error) {
-          loadCompletionListener.onLoadSuccess(getStatus());
-        }
-      });
+    try {
+      unpreparedPlayer.setDataSource(mAVModule.mScopedContext, mUri);
     } catch (final Throwable throwable) {
-      mMediaPlayer = null;
-      loadCompletionListener.onLoadError("Load encountered an error: an exception was thrown with message: " + throwable.toString());
+      loadCompletionListener.onLoadError("Load encountered an error: setDataSource() threw an exception was thrown with message: " + throwable.toString());
+      return;
+    }
+
+    unpreparedPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+      @Override
+      public boolean onError(final MediaPlayer mp, final int what, final int extra) {
+        loadCompletionListener.onLoadError("Load encountered an error: the OnErrorListener was called with 'what' code " + what + " and 'extra' code " + extra + ".");
+        return true;
+      }
+    });
+
+    unpreparedPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+      @Override
+      public void onPrepared(final MediaPlayer mp) {
+        mMediaPlayer = mp;
+        mMediaPlayer.setOnBufferingUpdateListener(PlayerData.this);
+        mMediaPlayer.setOnCompletionListener(PlayerData.this);
+        mMediaPlayer.setOnErrorListener(PlayerData.this);
+        mMediaPlayer.setOnInfoListener(PlayerData.this);
+
+        setStatus(status, new PlayerDataSetStatusCompletionListener() {
+          @Override
+          public void onSetStatusComplete() {
+            loadCompletionListener.onLoadSuccess(getStatus());
+          }
+
+          @Override
+          public void onSetStatusError(final String error) {
+            loadCompletionListener.onLoadSuccess(getStatus());
+          }
+        });
+      }
+    });
+
+    try {
+      unpreparedPlayer.prepareAsync();
+    } catch (final Throwable throwable) {
+      loadCompletionListener.onLoadError("Load encountered an error: an exception was thrown from prepareAsync() with message: " + throwable.toString());
     }
   }
 
@@ -265,7 +285,11 @@ public class PlayerData implements AudioEventHandler,
 
   @Override
   public void onBufferingUpdate(final MediaPlayer mp, final int percent) {
-    mPlayableDurationMillis = (int) (mp.getDuration() * (((double) percent) / 100.0));
+    if (mp.getDuration() >= 0) {
+      mPlayableDurationMillis = (int) (mp.getDuration() * (((double) percent) / 100.0));
+    } else {
+      mPlayableDurationMillis = null;
+    }
     callStatusUpdateListener();
   }
 
@@ -513,8 +537,8 @@ public class PlayerData implements AudioEventHandler,
 
   // Get status
 
-  private int getClippedIntForValue(final int value, final int min, final int max) {
-    return value < min ? min : value > max ? max : value;
+  private int getClippedIntegerForValue(final Integer value, final Integer min, final Integer max) {
+    return (min != null && value < min) ? min : (max != null && value > max) ? max : value;
   }
 
   public WritableMap getStatus() {
@@ -522,8 +546,8 @@ public class PlayerData implements AudioEventHandler,
       return getUnloadedStatus();
     }
 
-    int duration = mMediaPlayer.getDuration();
-    duration = duration < 0 ? 0 : duration;
+    Integer duration = mMediaPlayer.getDuration();
+    duration = duration < 0 ? null : duration;
 
     final WritableMap map = Arguments.createMap();
 
@@ -531,9 +555,13 @@ public class PlayerData implements AudioEventHandler,
     map.putString(PLAYER_DATA_STATUS_URI_KEY_PATH, mUri.getPath());
 
     map.putInt(PLAYER_DATA_STATUS_PROGRESS_UPDATE_INTERVAL_MILLIS_KEY_PATH, mProgressUpdateIntervalMillis);
-    map.putInt(PLAYER_DATA_STATUS_DURATION_MILLIS_KEY_PATH, duration);
-    map.putInt(PLAYER_DATA_STATUS_POSITION_MILLIS_KEY_PATH, getClippedIntForValue(mMediaPlayer.getCurrentPosition(), 0, duration));
-    map.putInt(PLAYER_DATA_STATUS_PLAYABLE_DURATION_MILLIS_KEY_PATH, getClippedIntForValue(mPlayableDurationMillis, 0, duration));
+    if (duration != null) {
+      map.putInt(PLAYER_DATA_STATUS_DURATION_MILLIS_KEY_PATH, duration);
+    }
+    map.putInt(PLAYER_DATA_STATUS_POSITION_MILLIS_KEY_PATH, getClippedIntegerForValue(mMediaPlayer.getCurrentPosition(), 0, duration));
+    if (mPlayableDurationMillis != null) {
+      map.putInt(PLAYER_DATA_STATUS_PLAYABLE_DURATION_MILLIS_KEY_PATH, getClippedIntegerForValue(mPlayableDurationMillis, 0, duration));
+    }
 
     map.putBoolean(PLAYER_DATA_STATUS_SHOULD_PLAY_KEY_PATH, mShouldPlay);
     map.putBoolean(PLAYER_DATA_STATUS_IS_PLAYING_KEY_PATH, mMediaPlayer.isPlaying());
@@ -561,8 +589,14 @@ public class PlayerData implements AudioEventHandler,
   }
 
   public void updateVideoSurface(final Surface surface) {
-    mMediaPlayer.setScreenOnWhilePlaying(surface != null);
     mMediaPlayer.setSurface(surface);
+    if (!mMediaPlayerHasStartedEver && !mShouldPlay) {
+      // For some reason, the media player does not render to the screen until start() has been
+      // called in some cases.
+      mMediaPlayer.start();
+      mMediaPlayer.pause();
+      mMediaPlayerHasStartedEver = true;
+    }
   }
 
   public int getAudioSessionId() {
