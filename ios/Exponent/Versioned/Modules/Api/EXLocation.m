@@ -1,12 +1,14 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import "EXLocation.h"
+#import "EXUnversioned.h"
 
 #import <CoreLocation/CLLocationManager.h>
 #import <CoreLocation/CLLocationManagerDelegate.h>
 #import <CoreLocation/CLHeading.h>
 #import <CoreLocation/CLGeocoder.h>
 #import <CoreLocation/CLPlacemark.h>
+#import <CoreLocation/CLError.h>
 
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcher.h>
@@ -75,6 +77,7 @@ NSString * const EXHeadingChangedEventName = @"Exponent.headingChanged";
 
 @property (nonatomic, strong) NSMutableDictionary<NSNumber *, EXLocationDelegate*> *delegates;
 @property (nonatomic, strong) CLGeocoder *geocoder;
+@property (nonatomic, assign, getter=isPaused) BOOL paused;
 
 @end
 
@@ -87,6 +90,22 @@ RCT_EXPORT_MODULE(ExponentLocation)
     _delegates = [NSMutableDictionary dictionary];
   }
   return self;
+}
+
+- (void)setBridge:(RCTBridge *)bridge
+{
+  [super setBridge:bridge];
+  _paused = NO;
+  
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(bridgeDidForeground:)
+                                               name:EX_UNVERSIONED(@"EXKernelBridgeDidForegroundNotification")
+                                             object:self.bridge];
+  
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(bridgeDidBackground:)
+                                               name:EX_UNVERSIONED(@"EXKernelBridgeDidBackgroundNotification")
+                                             object:self.bridge];
 }
 
 - (dispatch_queue_t)methodQueue
@@ -244,6 +263,10 @@ RCT_REMAP_METHOD(geocodeAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
+  if ([self isPaused]) {
+    return;
+  }
+  
   if (!_geocoder) {
     _geocoder = [[CLGeocoder alloc] init];
   }
@@ -262,6 +285,8 @@ RCT_REMAP_METHOD(geocodeAsync,
                              }];
       }
       resolve(results);
+    } else if (error.code == kCLErrorNetwork) {
+      reject(@"E_RATE_EXCEEDED", @"Rate limit exceeded - too many requests", error);
     } else {
       reject(@"E_GEOCODING_FAILED", @"Error while geocoding an address", error);
     }
@@ -273,6 +298,10 @@ RCT_REMAP_METHOD(reverseGeocodeAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
+  if ([self isPaused]) {
+    return;
+  }
+  
   if (!_geocoder) {
     _geocoder = [[CLGeocoder alloc] init];
   }
@@ -294,10 +323,26 @@ RCT_REMAP_METHOD(reverseGeocodeAsync,
         [results addObject:address];
       }
       resolve(results);
+    } else if (error.code == kCLErrorNetwork) {
+      reject(@"E_RATE_EXCEEDED", @"Rate limit exceeded - too many requests", error);
     } else {
       reject(@"E_REVGEOCODING_FAILED", @"Error while reverse-geocoding a location", error);
     }
    }];
+}
+
+- (void)bridgeDidForeground:(NSNotification *)notification
+{
+  if ([self isPaused]) {
+    [self setPaused:NO];
+  }
+}
+
+- (void)bridgeDidBackground:(NSNotification *)notification
+{
+  if (_geocoder) {
+    [self setPaused:YES];
+  }
 }
 
 @end

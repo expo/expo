@@ -53,6 +53,7 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
   private float mLastAzimut = 0;
   private int mAccuracy = 0;
   private long mLastUpdate = 0;
+  private boolean mGeocoderPaused = false;
 
   private static final double DEGREE_DELTA = 0.0355; // in radians, about 2 degrees
   private static final float TIME_DELTA = 50; // in milliseconds
@@ -157,6 +158,7 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
     if (mScopedContext == null || mLocationParams == null || mOnLocationUpdatedListener == null) {
       return false;
     }
+    mGeocoderPaused = false;
 
     // LocationControl has an internal map from Context -> LocationProvider, so each experience
     // will only have one instance of a LocationProvider.
@@ -173,6 +175,7 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
       return;
     }
     SmartLocation.with(mScopedContext).geocoding().stop();
+    mGeocoderPaused = true;
 
     if (mLocationParams == null || mOnLocationUpdatedListener == null) {
       SmartLocation.with(mScopedContext).location().stop();
@@ -369,6 +372,10 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
 
   @ReactMethod
   public void geocodeAsync(final String address, final Promise promise) {
+    if (mGeocoderPaused) {
+      return;
+    }
+
     if (isMissingPermissions()) {
       promise.reject("E_LOCATION_UNAUTHORIZED", "Not authorized to use location services");
       return;
@@ -402,6 +409,10 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
 
   @ReactMethod
   public void reverseGeocodeAsync(final ReadableMap locationMap, final Promise promise) {
+    if (mGeocoderPaused) {
+      return;
+    }
+
     if (isMissingPermissions()) {
       promise.reject("E_LOCATION_UNAUTHORIZED", "Not authorized to use location services");
       return;
