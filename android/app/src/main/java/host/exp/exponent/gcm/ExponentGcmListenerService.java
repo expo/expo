@@ -79,12 +79,14 @@ public class ExponentGcmListenerService extends GcmListenerService {
       return;
     }
 
+    final String title = bundle.getString("title");
+
     ExponentDB.experienceIdToExperience(experienceId, new ExponentDB.ExperienceResultListener() {
       @Override
       public void onSuccess(ExperienceDBObject experience) {
         try {
           JSONObject manifest = new JSONObject(experience.manifest);
-          sendNotification(message, experienceId, experience.manifestUrl, manifest, body);
+          sendNotification(message, experienceId, experience.manifestUrl, manifest, body, title);
         } catch (JSONException e) {
           EXL.e(TAG, "Couldn't deserialize JSON for experience id " + experienceId);
         }
@@ -98,7 +100,7 @@ public class ExponentGcmListenerService extends GcmListenerService {
   }
 
   private void sendNotification(final String message, final String experienceId, final String manifestUrl,
-                                final JSONObject manifest, final String body) {
+                                final JSONObject manifest, final String body, final String title) {
     final String name = manifest.optString(ExponentManifest.MANIFEST_NAME_KEY);
     if (name == null) {
       EXL.e(TAG, "No name found for experience id " + experienceId);
@@ -181,9 +183,16 @@ public class ExponentGcmListenerService extends GcmListenerService {
               .setContentIntent(pendingIntent)
               .setStyle(style);
         } else {
+          String contentTitle;
+          if (title == null) {
+            contentTitle = name;
+          } else {
+            contentTitle = Constants.isShellApp() ? title : name + " - " + title;
+          }
+
           notificationBuilder = new NotificationCompat.Builder(ExponentGcmListenerService.this)
               .setSmallIcon(R.drawable.notification_icon)
-              .setContentTitle(name)
+              .setContentTitle(contentTitle)
               .setColor(color)
               .setContentText(message)
               .setStyle(new NotificationCompat.BigTextStyle()
