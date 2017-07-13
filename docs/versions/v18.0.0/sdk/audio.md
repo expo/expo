@@ -33,7 +33,7 @@ We provide this API to customize the audio experience on iOS and Android.
     A dictionary with the following key-value pairs:
 
     -   `playsInSilentModeIOS` : a boolean selecting if your experience's audio should play in silent mode on iOS. This value defaults to `false`.
-    -   `allowsRecordingIOS` : a boolean selecting if recording is enabled on iOS. This value defaults to `false`.
+    -   `allowsRecordingIOS` : a boolean selecting if recording is enabled on iOS. This value defaults to `false`. NOTE: when this flag is set to `true`, playback may be routed to the phone receiver instead of to the speaker.
     -   `interruptionModeIOS` : an enum selecting how your experience's audio should interact with the audio from other apps on iOS:
         - `INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS` : This is the default option. If this option is set, your experience's audio is mixed with audio playing in background apps.
         - `INTERRUPTION_MODE_IOS_DO_NOT_MIX` : If this option is set, your experience's audio interrupts audio from other apps.

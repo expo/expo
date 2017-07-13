@@ -210,9 +210,9 @@ Most of the preceding API calls revolve around passing or returning the _status_
     -   `isLoaded` : a boolean set to `true`.
     -   `uri` : the location of the media source.
     -   `progressUpdateIntervalMillis` : the minimum interval in milliseconds between calls of the callback. See `setCallback()` for details.
-    -   `durationMillis` : the duration of the media in milliseconds.
+    -   `durationMillis` : the duration of the media in milliseconds. This is only present if the media has a duration (note that in some cases, a media file's duration is readable on Android, but not on iOS).
     -   `positionMillis` : the current position of playback in milliseconds.
-    -   `playableDurationMillis` : the position until which the media has been buffered into memory.
+    -   `playableDurationMillis` : the position until which the media has been buffered into memory. Like `durationMillis`, this is only present in some cases.
     -   `shouldPlay` : a boolean describing if the media is supposed to play.
     -   `isPlaying` : a boolean describing if the media is currently playing.
     -   `isBuffering` : a boolean describing if the media is currently buffering.
