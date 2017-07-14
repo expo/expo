@@ -196,6 +196,7 @@ dependencies {
   // React native dependencies
   // We use a different version of appcompat
   compile 'com.android.support:recyclerview-v7:25.+'
+  compile 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.0.0'
   compile 'com.facebook.fresco:fresco:1.0.1'
   compile 'com.facebook.fresco:animated-gif:1.0.1'
   compile 'com.facebook.fresco:animated-webp:1.0.1'
@@ -204,11 +205,13 @@ dependencies {
   compile 'com.facebook.fresco:imagepipeline-okhttp:1.0.1'
   compile 'com.facebook.stetho:stetho:1.3.1'
   compile 'com.facebook.stetho:stetho-okhttp3:1.3.1'
+  compile 'com.facebook.soloader:soloader:0.1.0'
   compile 'com.fasterxml.jackson.core:jackson-core:2.2.3'
   compile 'com.google.code.findbugs:jsr305:3.0.0'
-  compile 'com.squareup.okhttp3:okhttp:3.4.1'
-  compile 'com.squareup.okhttp3:okhttp-ws:3.4.1'
-  compile 'com.squareup.okio:okio:1.9.0'
+  compile 'com.squareup.okhttp3:okhttp:3.6.0'
+  compile 'com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
+  compile 'com.squareup.okhttp3:okhttp-ws:3.4.2'
+  compile 'com.squareup.okio:okio:1.13.0'
   compile 'org.webkit:android-jsc:r174650'
 
   // Our dependencies
