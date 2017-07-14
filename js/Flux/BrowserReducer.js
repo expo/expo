@@ -106,7 +106,7 @@ export default Flux.createReducer(new BrowserState(), {
 
   [BrowserActionTypes.foregroundHomeAsync](state, action) {
     if (state.isShell) {
-      console.error(`Tried to foreground Exponent home while in a shell`);
+      console.error(`Tried to foreground Expo home while in a shell`);
       return state;
     }
     let {
