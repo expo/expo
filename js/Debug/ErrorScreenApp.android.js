@@ -115,7 +115,7 @@ export default class ErrorScreenApp extends React.Component {
     } else if (this.props.isShellApp) {
       return 'Sorry about that. Press the reload button to try again.';
     } else {
-      return 'Sorry about that. You can go back to Exponent home or try to reload the Experience.';
+      return 'Sorry about that. You can go back to Expo home or try to reload the Experience.';
     }
   }
 
