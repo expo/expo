@@ -243,6 +243,39 @@ The following is a list of properties that are available for you under the `"exp
 
       Local path or remote url to an image to use for your app's icon on Android. We recommend that you use a 512x512 png file with transparency. This icon will appear on the home screen and within the Expo app.
 
+   - `permissions`
+
+      List of permissions used by the standalone app. Remove the field to use the default list of permissions.
+
+      Example: `[ "CAMERA", "ACCESS_FINE_LOCATION" ]`
+
+      You can specify the following permissions depending on what you need:
+
+      `ACCESS_COARSE_LOCATION`
+      `ACCESS_FINE_LOCATION`
+      `CAMERA`
+      `MANAGE_DOCUMENTS`
+      `READ_CONTACTS`
+      `READ_EXTERNAL_STORAGE`
+      `READ_INTERNAL_STORAGE`
+      `READ_PHONE_STATE`
+      `RECORD_AUDIO`
+      `USE_FINGERPRINT`
+      `VIBRATE`
+      `WAKE_LOCK`
+      `WRITE_EXTERNAL_STORAGE`
+      `com.anddoes.launcher.permission.UPDATE_COUNT`
+      `com.android.launcher.permission.INSTALL_SHORTCUT`
+      `com.google.android.c2dm.permission.RECEIVE`
+      `com.google.android.gms.permission.ACTIVITY_RECOGNITION`
+      `com.google.android.providers.gsf.permission.READ_GSERVICES`
+      `com.htc.launcher.permission.READ_SETTINGS`
+      `com.htc.launcher.permission.UPDATE_SHORTCUT`
+      `com.majeur.launcher.permission.UPDATE_BADGE`
+      `com.sec.android.provider.badge.permission.READ`
+      `com.sec.android.provider.badge.permission.WRITE`
+      `com.sonyericsson.home.permission.BROADCAST_BADGE`
+
    - `config`
 
 
@@ -295,3 +328,4 @@ The following is a list of properties that are available for you under the `"exp
    Configuration for scripts to run to hook into the publish process
 
    - `postPublish`
+   
