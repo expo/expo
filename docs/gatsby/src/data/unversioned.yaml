@@ -86,6 +86,7 @@
     registerRootComponent: /versions/unversioned/sdk/register-root-component.html
     ScreenOrientation: /versions/unversioned/sdk/screen-orientation.html
     Segment: /versions/unversioned/sdk/segment.html
+    Speech: /versions/unversioned/sdk/speech.html
     SQLite: /versions/unversioned/sdk/sqlite.html
     Svg: /versions/unversioned/sdk/svg.html
     takeSnapshotAsync: /versions/unversioned/sdk/take-snapshot-async.html
