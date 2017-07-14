@@ -19,7 +19,6 @@ import android.util.Log;
 
 import com.amplitude.api.Amplitude;
 import com.crashlytics.android.Crashlytics;
-import com.facebook.FacebookSdk;
 import com.facebook.common.internal.ByteStreams;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.stetho.Stetho;
@@ -156,8 +155,6 @@ public class Exponent {
 
     // TODO: profile this
     FlowManager.init(context);
-
-    FacebookSdk.sdkInitialize(context);
 
 
     if (ExpoViewBuildConfig.DEBUG) {
