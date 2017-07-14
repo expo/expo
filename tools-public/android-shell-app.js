@@ -254,6 +254,85 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
     );
   }
 
+  // Add permissions
+  if (manifest.android && manifest.android.permissions) {
+    const content = await fs.promise.readFile(
+      `${shellPath}app/src/main/AndroidManifest.xml`,
+      'utf-8'
+    );
+
+    // Get the list of optional permissions form manifest
+    const permissions = content
+      .replace(
+        /(([\s\S]*<!-- BEGIN OPTIONAL PERMISSIONS -->)|(<!-- END OPTIONAL PERMISSIONS -->[\s\S]*))/g,
+        ''
+      )
+      .match(/android:name=".+"/g)
+      .map(p => p.replace(/(android:name=|")/g, ''));
+
+    const whitelist = [];
+
+    manifest.android.permissions.forEach(s => {
+      if (s.includes('.')) {
+        whitelist.push(s);
+      } else {
+        permissions.forEach(identifier => {
+          if (identifier.split('.').pop() === s) {
+            whitelist.push(identifier);
+          }
+        });
+      }
+    });
+
+    // Permissions we need to remove from the generated manifest
+    const blacklist = [
+      'android.permission.ACCESS_COARSE_LOCATION',
+      'android.permission.ACCESS_FINE_LOCATION',
+      'android.permission.CAMERA',
+      'android.permission.MANAGE_DOCUMENTS',
+      'android.permission.READ_CONTACTS',
+      'android.permission.READ_EXTERNAL_STORAGE',
+      'android.permission.READ_INTERNAL_STORAGE',
+      'android.permission.READ_PHONE_STATE',
+      'android.permission.RECORD_AUDIO',
+      'android.permission.USE_FINGERPRINT',
+      'android.permission.VIBRATE',
+      'android.permission.WAKE_LOCK',
+      'android.permission.WRITE_EXTERNAL_STORAGE',
+      'com.anddoes.launcher.permission.UPDATE_COUNT',
+      'com.android.launcher.permission.INSTALL_SHORTCUT',
+      'com.google.android.c2dm.permission.RECEIVE',
+      'com.google.android.gms.permission.ACTIVITY_RECOGNITION',
+      'com.google.android.providers.gsf.permission.READ_GSERVICES',
+      'com.htc.launcher.permission.READ_SETTINGS',
+      'com.htc.launcher.permission.UPDATE_SHORTCUT',
+      'com.majeur.launcher.permission.UPDATE_BADGE',
+      'com.sec.android.provider.badge.permission.READ',
+      'com.sec.android.provider.badge.permission.WRITE',
+      'com.sonyericsson.home.permission.BROADCAST_BADGE',
+    ].filter(p => !whitelist.includes(p));
+
+    await sedInPlaceAsync(
+      '-e',
+      `/BEGIN\ OPTIONAL\ PERMISSIONS/,/END\ OPTIONAL\ PERMISSIONS/d`,
+      `${shellPath}app/src/main/AndroidManifest.xml`
+    );
+
+    shell.sed(
+      '-i',
+      '<!-- ADD PERMISSIONS HERE -->',
+      `
+      ${whitelist
+        .map(p => `<uses-permission android:name="${p}" />`)
+        .join('\n')}
+      ${blacklist
+        .map(p => `<uses-permission android:name="${p}" tools:node="remove" />`)
+        .join('\n')}
+      `,
+      `${shellPath}app/src/main/AndroidManifest.xml`
+    );
+  }
+
   // OAuth redirect scheme
   shell.sed(
     '-i',
