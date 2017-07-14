@@ -217,10 +217,10 @@ dependencies {
   compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
     transitive = true;
   }
-  compile ('com.facebook.android:facebook-android-sdk:4.7.0') {
+  compile ('com.facebook.android:facebook-android-sdk:4.+') {
     exclude module: 'bolts-android'
   }
-  compile('com.facebook.android:audience-network-sdk:4.22.1') {
+  compile('com.facebook.android:audience-network-sdk:4.+') {
     exclude module: 'play-services-ads'
   }
   provided 'org.glassfish:javax.annotation:3.1.1'
