@@ -18,6 +18,7 @@ import Button from '../components/button';
 import typography from '../utils/typography';
 const rhythm = typography.rhythm;
 const scale = typography.scale;
+import '../css/layout.css';
 import '../css/prism-coy.css';
 import '../css/algolia.css';
 

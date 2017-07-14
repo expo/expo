@@ -1,0 +1,12 @@
+.vertical-divider {
+  margin: 16px 0;
+  padding: 0;
+}
+
+.centered-text-cell {
+  display: inline-block;
+  padding-bottom: 16px;
+  padding-top: 16px;
+  text-align: center;
+  width: 100%;
+}
