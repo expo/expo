@@ -168,7 +168,8 @@
       android:name="com.facebook.FacebookActivity"
       android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
       android:label="@string/app_name"
-      android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+      android:theme="@android:style/Theme.Translucent.NoTitleBar"
+      tools:replace="android:theme" />
 
     <activity
       android:name="com.facebook.ads.InterstitialAdActivity"
@@ -262,6 +263,9 @@
     <!-- END GOOGLE MAPS CONFIG -->
 
     <!-- ADD BRANCH CONFIG HERE -->
+
+    <!-- The Facebook SDK runs FacebookInitProvider on startup and crashes if there isn't an ID here -->
+    <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="fb0"/>
   </application>
 
 </manifest>
