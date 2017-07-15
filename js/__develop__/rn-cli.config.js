@@ -5,60 +5,21 @@
  */
 'use strict';
 
-const blacklist = require('../../../react-native-lab/react-native/packager/blacklist');
 const path = require('path');
-const rootPath = escapeRegExp(path.join(__dirname, '..', '..', '..'));
-const projectPath = escapeRegExp(__dirname);
+
+const { expoBlacklist } = require('../../../react-native-lab/blacklist');
+const LabConfig = require('../../../react-native-lab/LabConfig');
 
 module.exports = {
   getProjectRoots() {
-    return this._getRoots();
-  },
-
-  getAssetRoots() {
-    return this._getRoots();
+    return [path.join(__dirname, '..'), LabConfig.getUniverseRoot()];
   },
 
   getBlacklistRE() {
-    let blackListREs = [
-      new RegExp(`^${rootPath}\/dev\/.*$`),
-      new RegExp(
-        `^${rootPath}\/expo\/(android|ios|tools|versioned-react-native|android-shell-app|exponent-view-template)\/.*`
-      ),
-      new RegExp(
-        `^${rootPath}\/expo\/.*\/node_modules\/(react-native|react)\/.*`
-      ),
-      new RegExp(`^${rootPath}\/apps\/.*`),
-      new RegExp(
-        `^${rootPath}\/dev\/.*\/node_modules\/(react-native|react)\/.*`
-      ),
-      new RegExp(
-        `^${rootPath}\/libraries\/.*\/node_modules\/(react-native|react)\/.*`
-      ),
-    ];
-
-    return blacklist(blackListREs);
-  },
-
-  _getRoots() {
-    return [path.join(__dirname, '..'), path.join(__dirname, '..', '..', '..')];
+    return expoBlacklist([]);
   },
 
   getTransformModulePath() {
-    return path.resolve('../../../react-native-lab/transformer.js');
-  },
-
-  getTransformOptions() {
-    return {
-      reactNativePath: path.resolve('../../../react-native-lab/react-native'),
-      reactPath: path.resolve(
-        '../../../react-native-lab/react-native/node_modules/react'
-      ),
-      expoPath: path.resolve('../../../libraries/expo-sdk'),
-    };
+    return LabConfig.getLabTransformerPath();
   },
 };
-
-function escapeRegExp(s) {
-  return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-}
