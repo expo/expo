@@ -39,7 +39,7 @@ The `useNativeControls`, `resizeMode`, and `usePoster` props customize the UI of
 
 - `useNativeControls`
 
-  A boolean which, if set to `true`, will display native playback controls (such as play and pause) within the `Video` componet.
+  A boolean which, if set to `true`, will display native playback controls (such as play and pause) within the `Video` component.
 
 - `resizeMode`
 
