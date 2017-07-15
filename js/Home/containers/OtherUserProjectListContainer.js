@@ -54,15 +54,26 @@ export default graphql(UsersAppsQuery, {
               return previousData;
             }
 
-            return Object.assign({}, previousData, {
-              usersApps: {
-                ...fetchMoreResult.user.byUsername,
-                apps: [
-                  ...previousData.user.byUsername.apps,
-                  ...fetchMoreResult.user.byUsername.apps,
-                ],
+            let combinedData = {
+              user: {
+                ...previousData.user,
+                ...fetchMoreResult.user,
+                byUsername: {
+                  ...previousData.user.byUsername,
+                  ...fetchMoreResult.user.byUsername,
+                  apps: [
+                    ...previousData.user.byUsername.apps,
+                    ...fetchMoreResult.user.byUsername.apps,
+                  ],
+                },
               },
-            });
+            };
+
+            return {
+              ...combinedData,
+              appCount: combinedData.user.byUsername.appCount,
+              apps: combinedData.user.byUsername.apps,
+            };
           },
         });
       },
