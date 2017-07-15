@@ -53,13 +53,15 @@ if (
   "expo": {
     "name": "My app",
     "slug": "my-app",
-    "sdkVersion": "17.0.0",
+    "sdkVersion": "${sdkVersion}",
     "privacy": "public"
   }
 }
 \`\`\`
 
 \`app.json\` was previous referred to as \`exp.json\`, but for consistency with [Create React Native App](https://github.com/react-community/create-react-native-app) it has been consolidated under one file. If you are converting your app from using \`exp.json\` to \`app.json\`, all you need to do is add an \`"expo"\` key at the root of \`app.json\`, as the parent of all other keys.
+
+Most configuration from \`app.json\` is accessible at runtime from your JavaScript code via [\`Expo.Constants.manifest\`](../sdk/constants.html#expoconstantsmanifest). Sensitive information such as secret keys are removed. See the \`"extra"\` key below for information about how to pass arbitrary configuration data to your app.
 
 The following is a list of properties that are available for you under the \`"expo"\` key in \`app.json\`:
 \n
