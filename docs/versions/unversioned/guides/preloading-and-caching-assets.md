@@ -38,7 +38,7 @@ class AppContainer extends React.Component {
 
   render() {
     if (!this.state.appIsReady) {
-      return <Components.AppLoading />;
+      return <Expo.AppLoading />;
     }
 
     return <MyApp />;
@@ -64,4 +64,4 @@ class AppContainer extends React.Component {
 }
 ```
 
-See a full working example in [github/exponent/new-project-template](https://github.com/exponent/new-project-template/blob/9c5f99efa9afcbefdadefe752ea350cc378c0f0d/main.js).
+See a full working example in [github/expo/new-project-template](https://github.com/expo/new-project-template/blob/master/App.js).
