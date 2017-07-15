@@ -158,8 +158,7 @@ mutation ($idToken: String!, $name: String!) {
 #### Social OAuth Authentication providers
 
 Learn how to integrate with Auth0 social providers in the
-[expo-auth0-example](https://github.com/graphcool-examples/expo-auth0-instagram-example) repository.
-
+[expo-auth0-example](https://github.com/graphcool-examples/react-native-graphql/tree/master/authentication-with-expo-and-auth0) repository.
 
 ### Permissions
 
