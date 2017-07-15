@@ -5,7 +5,7 @@
  */
 'use strict';
 
-const blacklist = require('react-native/packager/blacklist');
+const blacklist = require('../../../react-native-lab/react-native/packager/blacklist');
 const path = require('path');
 const rootPath = escapeRegExp(path.join(__dirname, '..', '..', '..'));
 const projectPath = escapeRegExp(__dirname);
