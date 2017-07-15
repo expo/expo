@@ -35,9 +35,8 @@ Requires `Permissions.CAMERA`.
 
 ```javascript
 import React from 'react';
-import { Text, View, StyleSheet } from 'react-native';
-import { Permissions } from 'expo';
-import { BarCodeScanner } from 'expo';
+import { StyleSheet, Text, View } from 'react-native';
+import { BarCodeScanner, Permissions } from 'expo';
 
 export default class BarcodeScannerExample extends React.Component {
   state = {
