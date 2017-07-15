@@ -588,7 +588,10 @@ public class PlayerData implements AudioEventHandler,
     return mMediaPlayer == null ? new Pair<>(0, 0) : new Pair<>(mMediaPlayer.getVideoWidth(), mMediaPlayer.getVideoHeight());
   }
 
-  public void updateVideoSurface(final Surface surface) {
+  public void tryUpdateVideoSurface(final Surface surface) {
+    if (mMediaPlayer == null) {
+      return;
+    }
     mMediaPlayer.setSurface(surface);
     if (!mMediaPlayerHasStartedEver && !mShouldPlay) {
       // For some reason, the media player does not render to the screen until start() has been

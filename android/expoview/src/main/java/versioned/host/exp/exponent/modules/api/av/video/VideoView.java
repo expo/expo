@@ -211,7 +211,7 @@ public class VideoView extends TextureView implements
         updateMediaControllerIfNecessary();
 
         if (mIsAttachedToWindow) {
-          mPlayerData.updateVideoSurface(mSurface);
+          mPlayerData.tryUpdateVideoSurface(mSurface);
         }
 
         if (promise != null) {
@@ -337,7 +337,7 @@ public class VideoView extends TextureView implements
   public void onSurfaceTextureAvailable(final SurfaceTexture surfaceTexture, final int width, final int height) {
     mSurface = new Surface(surfaceTexture);
     if (mPlayerData != null) {
-      mPlayerData.updateVideoSurface(mSurface);
+      mPlayerData.tryUpdateVideoSurface(mSurface);
     }
   }
 
@@ -350,7 +350,7 @@ public class VideoView extends TextureView implements
   public boolean onSurfaceTextureDestroyed(final SurfaceTexture surfaceTexture) {
     mSurface = null;
     if (mPlayerData != null) {
-      mPlayerData.updateVideoSurface(null);
+      mPlayerData.tryUpdateVideoSurface(null);
     }
     return true;
   }
@@ -371,7 +371,7 @@ public class VideoView extends TextureView implements
     super.onAttachedToWindow();
     mIsAttachedToWindow = true;
     if (mPlayerData != null) {
-      mPlayerData.updateVideoSurface(mSurface);
+      mPlayerData.tryUpdateVideoSurface(mSurface);
     }
   }
 
