@@ -150,18 +150,18 @@ export default class MenuView extends React.Component {
               })}
               {copyUrlButton}
               {this._renderButton({
-                key: 'home',
-                text: 'Go to Expo Home',
-                onPress: this._goToHome,
-                iconSource: require('../Assets/ios-menu-home.png'),
-              })}
-              {this._renderButton({
                 key: 'qrcode',
                 text: 'Scan QR code',
                 onPress: this._onOpenQRCode,
                 svgName: Platform.OS === 'ios'
                   ? 'ios-qr-scanner'
                   : 'md-qr-scanner',
+              })}
+              {this._renderButton({
+                key: 'home',
+                text: 'Go to Expo Home',
+                onPress: this._goToHome,
+                iconSource: require('../Assets/ios-menu-home.png'),
               })}
             </View>
             {this._maybeRenderDevMenuTools()}
