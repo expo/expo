@@ -16,11 +16,11 @@ A function that will be called when the OpenGL ES context is created. The functi
 
 ## Examples
 
-Here are a couple examples of the use of `GLView` on Sketch:
+Here are a couple examples of the use of `GLView` on Snack:
 
--   [Basic plain WebGL example](https://sketch.expo.io/SJaCWirsg)
--   [Rotating red box with THREE.js](https://sketch.expo.io/rkpPMg8ie)
--   [Game of Life with REGL](https://sketch.expo.io/HkjUrfIje)
+-   [Basic plain WebGL example](https://snack.expo.io/SJaCWirsg)
+-   [Rotating red box with THREE.js](https://snack.expo.io/rkpPMg8ie)
+-   [Game of Life with REGL](https://snack.expo.io/HkjUrfIje)
 
 The [@community/gl-test](https://expo.io/@community/gl-test) Expo app demonstrates a number of example scenes. The image below is a low-quality capture, try the app on Expo for the best-quality experience. The source code for these scenes is available [here](https://github.com/exponent/gl-test/tree/master/Scenes)
 
