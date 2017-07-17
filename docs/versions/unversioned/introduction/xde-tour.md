@@ -4,11 +4,11 @@ title: XDE Tour
 
 ## Sign in screen
 
-When you open XDE for the first time you'll be greeted by this sign in screen. If you have an account already, go ahead and sign in. If you don't, fill out your desired username and password and sign in. If the username is available, we'll create the account for you.![XDE sign in screen](./xde-signin.png)
+When you open XDE for the first time you'll be greeted by this sign in screen. If you have an account already, go ahead and sign in. If you don't, either sign in with Github or register an account.![XDE sign in screen](./xde-signin.png)
 
 ## Home screen
 
-Success, you're logged in! From this screen you may want to create a new project or open an existing one. We list some of your most recently opened projects for convenience.![XDE home](./xde-signin-success.png)
+Success, you signed in! From this screen you may want to create a new project or open an existing one. We list some of your most recently opened projects for convenience.![XDE home](./xde-signin-success.png)
 
 ## Project dialog
 
@@ -40,6 +40,7 @@ In addition to the options provided from the home screen, with a project opened 
 
 ## Publish
 
-While you work on your project, it is given a temporary URL which is served from your computer. When you're ready to share the project with others, you can **Publish** the project to get a permanent URL (something like `exp.host/@your-username/your-app-slug`) that anybody can open with the Expo Client.
+While you work on your project, it is given a temporary URL which is served from your computer. When you're ready to share the project with others, you can **Publish** the project to get a permanent URL (something like `expo.io/@your-username/your-app-slug`) that anybody can open with the Expo Client.
 
-When you click the **Publish** button in XDE, you'll be asked to confirm that you want your project to be available to the public. XDE takes some time to generate your minified JS bundle and upload your Assets to our servers, and once it's done, prints out your app's published URL. You can read more details about how publishing work in [How Expo Works](../guides/how-expo-works.html#how-expo-works) and in [this blog post](https://blog.expo.io/publishing-on-exponent-790493660d24).![XDE publish](./xde-publish.png)
+When you click the **Publish** button in XDE, you'll be asked to confirm that you want your project to be available to the public. XDE takes some time to generate your minified JS bundle and upload your Assets to our servers, and once it's done, prints out your app's published URL. You can read more details about how publishing works in [How Expo Works](../guides/how-expo-works.html#how-expo-works) and the [Publishing guide](../guides/publishing.html).![XDE publish](./xde-publish.png)
+
