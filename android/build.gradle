@@ -17,7 +17,7 @@ allprojects {
     mavenLocal()
     jcenter()
     maven {
-      url "$rootDir/../js/node_modules/jsc-android/android"
+      url "$rootDir/maven"
     }
     flatDir {
       dirs 'libs'
