@@ -40,7 +40,7 @@
     "react": "16.0.0-alpha.12",
     "react-apollo": "~1.0.1",
     "react-mixin": "^3.0.4",
-    "react-native": "expo/react-native#sdk-19",
+    "react-native": "expo/react-native#exp-latest",
     "react-native-button": "^1.7.1",
     "react-native-deprecated-custom-components": "^0.1.0",
     "react-native-infinite-scroll-view": "^0.4.2",
@@ -54,7 +54,7 @@
     "url": "^0.11.0"
   },
   "devDependencies": {
-    "jest": "^19.0.2",
-    "jest-expo": "^0.4.0-alpha.0"
+    "jest": "^20.0.4",
+    "jest-expo": "^18.0.0"
   }
 }
