@@ -5,6 +5,7 @@
 #import "EXKernel.h"
 #import "EXKernelBridgeRegistry.h"
 #import "EXKernelReactAppManager.h"
+#import "EXShellManager.h"
 
 #import "RCTDefines.h"
 #import "RCTUtils.h"
@@ -168,11 +169,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)_handleMenuCommand
 {
-  BOOL detached = NO;
-#ifdef EX_DETACHED
-  detached = YES;
-#endif
-  if (detached || _isLegacyMenuBehaviorEnabled) {
+  if ([EXShellManager sharedInstance].isDetached || _isLegacyMenuBehaviorEnabled) {
     [[EXKernel sharedInstance].bridgeRegistry.lastKnownForegroundAppManager showDevMenu];
   } else {
     [[EXKernel sharedInstance] dispatchKernelJSEvent:@"switchTasks" body:@{} onSuccess:nil onFailure:nil];
