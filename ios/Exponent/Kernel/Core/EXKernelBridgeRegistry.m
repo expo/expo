@@ -38,10 +38,8 @@
   EXKernelBridgeRecord *newRecord = [EXKernelBridgeRecord recordWithExperienceId:experienceId appManager:appManager];
   [_bridgeRegistry setObject:newRecord forKey:bridge];
 
-  if (_lastKnownForegroundBridge == nil) {
-    // TODO: this assumes we always load bridges in the foreground (true at time of writing)
-    _lastKnownForegroundBridge = bridge;
-  }
+  // TODO: this assumes we always load bridges in the foreground (true at time of writing)
+  _lastKnownForegroundBridge = bridge;
   
   if (_delegate) {
     [_delegate bridgeRegistry:self didRegisterBridgeRecord:newRecord];
