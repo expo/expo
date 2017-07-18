@@ -1,6 +1,6 @@
 
     # Generated dependency: ReactABI14_0_0
-    pod 'ReactABI14_0_0', :path => 'versioned-react-native/ABI14_0_0', :subspecs => [
+    pod 'ReactABI14_0_0', :inhibit_warnings => true, :path => 'versioned-react-native/ABI14_0_0', :subspecs => [
       'Core',
       'ART',
       'Exponent',
