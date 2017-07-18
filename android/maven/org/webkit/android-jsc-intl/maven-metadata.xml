@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>org.webkit</groupId>
+  <artifactId>android-jsc-intl</artifactId>
+  <versioning>
+    <release>r216113</release>
+    <versions>
+      <version>r216113</version>
+    </versions>
+    <lastUpdated>20170712083652</lastUpdated>
+  </versioning>
+</metadata>
