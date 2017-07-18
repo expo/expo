@@ -174,7 +174,7 @@ A newly constructed instance of `Expo.Audio.Recording`.
 ```javascript
 const recording = new Expo.Audio.Recording();
 try {
-  await recording.prepareToRecordAsync();
+  await recording.prepareToRecordAsync(Expo.Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
   await recording.startAsync();
   // You are now recording!
 } catch (error) {
@@ -225,13 +225,17 @@ try {
 
     -   **millis (_number_)** -- The new interval between calls of the status change callback.
 
--   `recordingInstance.prepareToRecordAsync()`
+-   `recordingInstance.prepareToRecordAsync(options)`
 
     Loads the recorder into memory and prepares it for recording. This must be called before calling `startAsync()`. This method can only be called if the `Recording` instance has never yet been prepared.
 
+    #### Parameters
+
+    -   **options (_RecordingOptions_)** -- Options for the recording, including sample rate, bitrate, channels, format, encoder, and extension. If no options are passed to `prepareToRecordAsync()`, the recorder will be created with options `Expo.Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY`. See below for details on `RecordingOptions`.
+
     #### Returns
 
-    A `Promise` that is fulfilled when the recorder is loaded and prepared, or rejects if this failed. If another `Recording` exists in your experience that is currently prepared to record, the `Promise` will reject. The promise is resolved with the `status` of the recording (see `getStatusAsync()` for details).
+    A `Promise` that is fulfilled when the recorder is loaded and prepared, or rejects if this failed. If another `Recording` exists in your experience that is currently prepared to record, the `Promise` will reject. If the `RecordingOptions` provided are invalid, the `Promise` will also reject. The promise is resolved with the `status` of the recording (see `getStatusAsync()` for details).
 
 -   `recordingInstance.isPreparedToRecord()`
 
@@ -289,3 +293,245 @@ try {
 
     -   `sound` : the newly created and loaded `Sound` object.
     -   `status` : the `PlaybackStatus` of the `Sound` object. See the [AV documentation](av.html) for further information.
+
+### `RecordingOptions`
+
+The recording extension, sample rate, bitrate, channels, format, encoder, etc can be customized by passing a dictionary of options to `prepareToRecordAsync()`.
+
+We provide the following preset options for convenience, as used in the example above. See below for the definitions of these presets.
+
+-   `Expo.Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY`
+
+-   `Expo.Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY`
+
+ We also provide the ability to define your own custom recording options, but **we recommend you use the presets, as not all combinations of options will allow you to successfully `prepareToRecordAsync()`.** You will have to test your custom options on iOS and Android to make sure it's working. In the future, we will enumerate all possible valid combinations, but at this time, our goal is to make the basic use-case easy (with presets) and the advanced use-case possible (by exposing all the functionality available in native). As always, feel free to ping us on the forums or Slack with any questions.
+
+ In order to define your own custom recording options, you must provide a dictionary of the following key value pairs.
+
+-   `android` : a dictionary of key-value pairs for the Android platform. This key is required.
+
+    -   `extension` : the desired file extension. This key is required. Example valid values are `.3gp` and `.m4a`. For more information, see the [Android docs for supported output formats](https://developer.android.com/guide/topics/media/media-formats.html).
+
+    -   `outputFormat` : the desired file format. This key is required. See the next section for an enumeration of all valid values of `outputFormat`.
+
+    -   `audioEncoder` : the desired audio encoder. This key is required. See the next section for an enumeration of all valid values of `audioEncoder`.
+
+    -   `sampleRate` : the desired sample rate. This key is optional. An example valid value is `44100`.
+
+        Note that the sampling rate depends on the format for the audio recording, as well as the capabilities of the platform. For instance, the sampling rate supported by AAC audio coding standard ranges from 8 to 96 kHz, the sampling rate supported by AMRNB is 8kHz, and the sampling rate supported by AMRWB is 16kHz. Please consult with the related audio coding standard for the supported audio sampling rate.
+
+    -   `numberOfChannels` : the desired number of channels. This key is optional. Example valid values are `1` and `2`.
+
+        Note that `prepareToRecordAsync()` may perform additional checks on the parameter to make sure whether the specified number of audio channels are applicable.
+
+    -   `bitRate` : the desired bit rate. This key is optional. An example valid value is `128000`.
+
+        Note that `prepareToRecordAsync()` may perform additional checks on the parameter to make sure whether the specified bit rate is applicable, and sometimes the passed bitRate will be clipped internally to ensure the audio recording can proceed smoothly based on the capabilities of the platform.
+
+    -   `maxFileSize` : the desired maximum file size in bytes, after which the recording will stop (but `stopAndUnloadAsync()` must still be called after this point). This key is optional. An example valid value is `65536`.
+
+-   `ios` : a dictionary of key-value pairs for the iOS platform
+
+    -   `extension` : the desired file extension. This key is required. An example valid value is `.caf`.
+
+    -   `outputFormat` : the desired file format. This key is optional. See the next section for an enumeration of all valid values of `outputFormat`.
+
+    -   `audioQuality` : the desired audio quality. This key is required. See the next section for an enumeration of all valid values of `audioQuality`.
+
+    -   `sampleRate` : the desired sample rate. This key is required. An example valid value is `44100`.
+
+    -   `numberOfChannels` : the desired number of channels. This key is required. Example valid values are `1` and `2`.
+
+    -   `bitRate` : the desired bit rate. This key is required. An example valid value is `128000`.
+
+    -   `bitRateStrategy` : the desired bit rate strategy. This key is optional. See the next section for an enumeration of all valid values of `bitRateStrategy`.
+
+    -   `bitDepthHint` : the desired bit depth hint. This key is optional. An example valid value is `16`.
+
+    -   `linearPCMBitDepth` : the desired PCM bit depth. This key is optional. An example valid value is `16`.
+
+    -   `linearPCMIsBigEndian` : a boolean describing if the PCM data should be formatted in big endian. This key is optional.
+
+    -   `linearPCMIsFloat` : a boolean describing if the PCM data should be encoded in floating point or integral values. This key is optional.
+
+Following is an enumeration of all of the valid values for certain `RecordingOptions` keys:
+
+-   `android` :
+
+    -   `outputFormat` :
+
+        - `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_DEFAULT`
+
+        - `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_THREE_GPP`
+
+        - `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4`
+
+        - `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_AMR_NB`
+
+        - `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_AMR_WB`
+
+        - `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_AAC_ADIF`
+
+        - `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_AAC_ADTS`
+
+        - `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_RTP_AVP`
+
+        - `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG2TS`
+
+        - `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_WEBM`
+
+    -   `audioEncoder` :
+
+        - `Expo.Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_DEFAULT`
+
+        - `Expo.Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AMR_NB`
+
+        - `Expo.Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AMR_WB`
+
+        - `Expo.Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC`
+
+        - `Expo.Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_HE_AAC`
+
+        - `Expo.Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC_ELD`
+
+        - `Expo.Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_VORBIS`
+
+-   `ios` :
+
+    -   `outputFormat` :
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_LINEARPCM`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_AC3`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_60958AC3`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_APPLEIMA4`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4CELP`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4HVXC`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4TWINVQ`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MACE3`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MACE6`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_ULAW`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_ALAW`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_QDESIGN`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_QDESIGN2`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_QUALCOMM`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEGLAYER1`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEGLAYER2`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEGLAYER3`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_APPLELOSSLESS`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_HE`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_LD`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_ELD`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_ELD_SBR`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_ELD_V2`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_HE_V2`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_SPATIAL`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_AMR`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_AMR_WB`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_AUDIBLE`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_ILBC`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_DVIINTELIMA`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MICROSOFTGSM`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_AES3`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_ENHANCEDAC3`
+
+    -   `audioQuality` :
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_MIN`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_LOW`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_MEDIUM`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_HIGH`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_MAX`
+
+    -   `bitRateStrategy` :
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_CONSTANT`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_LONG_TERM_AVERAGE`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_VARIABLE_CONSTRAINED`
+
+        - `Expo.Audio.RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_VARIABLE`
+
+For reference, following are the definitions of the two preset examples of `RecordingOptions`, as implemented in the Audio SDK:
+
+```javascript
+export const RECORDING_OPTIONS_PRESET_HIGH_QUALITY: RecordingOptions = {
+  android: {
+    extension: '.m4a',
+    outputFormat: RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4,
+    audioEncoder: RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC,
+    sampleRate: 44100,
+    numberOfChannels: 2,
+    bitRate: 128000,
+  },
+  ios: {
+    extension: '.caf',
+    audioQuality: RECORDING_OPTION_IOS_AUDIO_QUALITY_MAX,
+    sampleRate: 44100,
+    numberOfChannels: 2,
+    bitRate: 128000,
+    linearPCMBitDepth: 16,
+    linearPCMIsBigEndian: false,
+    linearPCMIsFloat: false,
+  },
+};
+
+export const RECORDING_OPTIONS_PRESET_LOW_QUALITY: RecordingOptions = {
+  android: {
+    extension: '.3gp',
+    outputFormat: RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_THREE_GPP,
+    audioEncoder: RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AMR_NB,
+    sampleRate: 44100,
+    numberOfChannels: 2,
+    bitRate: 128000,
+  },
+  ios: {
+    extension: '.caf',
+    audioQuality: RECORDING_OPTION_IOS_AUDIO_QUALITY_MIN,
+    sampleRate: 44100,
+    numberOfChannels: 2,
+    bitRate: 128000,
+    linearPCMBitDepth: 16,
+    linearPCMIsBigEndian: false,
+    linearPCMIsFloat: false,
+  },
+};
+```
