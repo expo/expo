@@ -117,10 +117,8 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
 {
   NSDictionary *launchOptions = self.rootViewController.launchOptions;
   NSDictionary *remoteNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
-  if (remoteNotification) {
-#ifndef EX_DETACHED
+  if (remoteNotification && ![EXShellManager sharedInstance].isDetached) {
     [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager handleRemoteNotification:remoteNotification fromBackground:YES];
-#endif
   }
   
   UILocalNotification *localNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];

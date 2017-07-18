@@ -153,10 +153,7 @@
 - (NSArray *)extraModulesForBridge:(RCTBridge *)bridge
 {
   // we allow the vanilla RN dev menu in some circumstances.
-  BOOL isDetached = NO;
-#ifdef EX_DETACHED
-  isDetached = YES;
-#endif
+  BOOL isDetached = [EXShellManager sharedInstance].isDetached;
   BOOL isStandardDevMenuAllowed = [EXKernelDevKeyCommands sharedInstance].isLegacyMenuBehaviorEnabled || isDetached;
   
   NSDictionary *params = @{
