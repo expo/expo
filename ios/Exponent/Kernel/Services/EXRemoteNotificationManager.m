@@ -4,6 +4,7 @@
 #import "EXKernelModule.h"
 #import "EXProvisioningProfile.h"
 #import "EXRemoteNotificationManager.h"
+#import "EXShellManager.h"
 
 #import <React/RCTUtils.h>
 
@@ -50,12 +51,11 @@ NSString * const kEXCurrentAPNSTokenDefaultsKey = @"EXCurrentAPNSTokenDefaultsKe
 {
 #ifdef EX_DETACHED
   DDLogWarn(@"Expo Remote Notification services won't work in an ExpoKit app because Expo can not manage your APNS certificates.");
-  
+#else
   // don't register, because the detached app may not be built with APNS entitlements,
   // and in that case this method would actually be bad to call. (not just a no-op.)
-  return;
-#endif
   [RCTSharedApplication() registerForRemoteNotifications];
+#endif
 }
 
 - (void)registerAPNSToken:(NSData *)token
@@ -75,9 +75,9 @@ NSString * const kEXCurrentAPNSTokenDefaultsKey = @"EXCurrentAPNSTokenDefaultsKe
 
 - (void)handleRemoteNotification:(NSDictionary *)notification fromBackground:(BOOL)isFromBackground
 {
-#ifdef EX_DETACHED
-  DDLogWarn(@"Expo Remote Notification services won't work in an ExpoKit app because Expo can not manage your APNS certificates.");
-#endif
+  if ([EXShellManager sharedInstance].isDetached) {
+    DDLogWarn(@"Expo Remote Notification services won't work in an ExpoKit app because Expo can not manage your APNS certificates.");
+  }
   if (notification) {
     NSDictionary *body = [notification objectForKey:@"body"];
     NSString *experienceId = [notification objectForKey:@"experienceId"];
