@@ -75,7 +75,7 @@ didChangeSupportedInterfaceOrientations:(UIInterfaceOrientationMask)supportedInt
 - (void)_changeSupportedOrientations:(NSNotification *)notification
 {
   NSNumber *orientationNumber = notification.userInfo[@"orientation"];
-  [self setSupportedInterfaceOrientationsForForegroundExperience:(UIInterfaceOrientationMask)orientationNumber];
+  [self setSupportedInterfaceOrientationsForForegroundExperience:(UIInterfaceOrientationMask)[orientationNumber longValue]];
 }
 
 @end
