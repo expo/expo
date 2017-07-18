@@ -210,7 +210,6 @@ dependencies {
   compile 'com.google.code.findbugs:jsr305:3.0.0'
   compile 'com.squareup.okhttp3:okhttp:3.6.0'
   compile 'com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
-  compile 'com.squareup.okhttp3:okhttp-ws:3.4.2'
   compile 'com.squareup.okio:okio:1.13.0'
   compile 'org.webkit:android-jsc:r174650'
 
