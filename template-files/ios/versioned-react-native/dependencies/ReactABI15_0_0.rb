@@ -1,6 +1,6 @@
 
     # Generated dependency: ReactABI15_0_0
-    pod 'ReactABI15_0_0', :path => 'versioned-react-native/ABI15_0_0', :subspecs => [
+    pod 'ReactABI15_0_0', :inhibit_warnings => true, :path => 'versioned-react-native/ABI15_0_0', :subspecs => [
       'Core',
       'ART',
       'Exponent',
@@ -14,5 +14,5 @@
       'RCTVibration',
       'RCTWebSocket',
     ]
-    pod 'YogaABI15_0_0', :path => 'versioned-react-native/ABI15_0_0/ReactCommon/ABI15_0_0yoga'
+    pod 'YogaABI15_0_0', :inhibit_warnings => true, :path => 'versioned-react-native/ABI15_0_0/ReactCommon/ABI15_0_0yoga'
     # End generated dependency
