@@ -33,8 +33,8 @@ NSString * const EXHeadingChangedEventName = @"Exponent.headingChanged";
 
 - (instancetype)initWithId:(NSNumber *)watchId
                 withLocMgr:(CLLocationManager *)locMgr
-         onUpdateLocations:(void (^)(NSArray<CLLocation *> *locations))onUpdateLocations
-          onUpdateHeadings:(void (^)(CLHeading *newHeading))onUpdateHeadings
+         onUpdateLocations:(nullable void (^)(NSArray<CLLocation *> *locations))onUpdateLocations
+          onUpdateHeadings:(nullable void (^)(CLHeading *newHeading))onUpdateHeadings
                    onError:(nonnull void (^)(NSError *error))onError;
 {
   if ((self = [super init])) {
@@ -178,7 +178,7 @@ RCT_REMAP_METHOD(watchPositionImplAsync,
                                };
         [weakSelf sendEventWithName:EXLocationChangedEventName body:body];
       }
-    } onUpdateHeadings: nil onError:^(NSError *error) {
+    } onUpdateHeadings:nil onError:^(NSError *error) {
       // TODO: report errors
       // (ben) error could be (among other things):
       //   - kCLErrorDenied - we should use the same UNAUTHORIZED behavior as elsewhere

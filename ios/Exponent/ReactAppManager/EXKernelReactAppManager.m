@@ -171,7 +171,7 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
 
 - (RCTLogLevel)logLevel
 {
-  return RCTLogLevelInfo;
+  return RCTLogLevelWarning;
 }
 
 - (void)registerBridge

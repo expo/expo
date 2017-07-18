@@ -78,7 +78,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
                                         // ignore network errors in manifest validation,
                                         // otherwise we can break offline loading for standalone apps when they have a valid manifest cache but no key.
                                         if (error.domain == NSURLErrorDomain) {
-                                          NSLog(@"EXManifestResource: Ignoring network error when validating manifest");
+                                          DDLogWarn(@"EXManifestResource: Ignoring network error when validating manifest");
                                           signatureSuccess(YES);
                                         } else {
                                           errorBlock(error);
