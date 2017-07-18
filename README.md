@@ -21,6 +21,8 @@ If you want to build the Expo client apps for some reason, there are a few steps
 
 ## Set Up
 
+**These instructions are different if you are using Expo's internal monorepo.** In that case, read the `__internal__` instructions instead.
+
 Please use Node 7 and npm 4. We recommend installing Node using [nvm](https://github.com/creationix/nvm). We support building the clients only on macOS.
 
 - Install [the Gulp CLI](http://gulpjs.com/) globally: `npm i gulp-cli -g`.
@@ -46,7 +48,7 @@ If you are running on an phone with Android 5 you might have to use `./run.sh in
 - Install [Cocoapods](https://cocoapods.org/): `gem install cocoapods --no-ri --no-rdoc`
 - Make sure you have a JS packager for the root Expo project already running
 - `cd tools-public; ./generate-files-ios.sh; cd ..`
-- `cd ios; pod install; cd ..` (skip this step if you are using Expo's internal monorepo)
+- `cd ios; pod install; cd ..`
 - Run `ios/Exponent.xcworkspace` in Xcode.
 
 Note: If you have the Expo client app from the Play Store or the App Store you will have to uninstall those before installing this client.
