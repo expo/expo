@@ -117,7 +117,7 @@ RCT_CUSTOM_VIEW_PROPERTY(type, NSInteger, EXBarCodeScanner)
                                                 error:&error];
 
       if (error || captureDeviceInput == nil) {
-        NSLog(@"%@", error);
+        RCTLogError(@"%s: %@", __func__, error);
         return;
       }
 
@@ -157,7 +157,7 @@ RCT_CUSTOM_VIEW_PROPERTY(torchMode, NSInteger, EXBarCodeScanner)
     if (![device hasFlash])
       return;
     if (![device lockForConfiguration:&error]) {
-      NSLog(@"%@", error);
+      RCTLogError(@"%s: %@", __func__, error);
       return;
     }
     if (device.hasTorch && [device isFlashModeSupported:self.torchMode])
@@ -167,7 +167,7 @@ RCT_CUSTOM_VIEW_PROPERTY(torchMode, NSInteger, EXBarCodeScanner)
         [device setTorchMode:self.torchMode];
         [device unlockForConfiguration];
       } else {
-        NSLog(@"%@", error);
+        RCTLogError(@"%s: %@", __func__, error);
       }
     }
     [device unlockForConfiguration];
@@ -283,7 +283,7 @@ RCT_CUSTOM_VIEW_PROPERTY(barCodeTypes, NSArray, EXBarCodeScanner)
         [AVCaptureDeviceInput deviceInputWithDevice:captureDevice error:&error];
 
     if (error || captureDeviceInput == nil) {
-      NSLog(@"%@", error);
+      RCTLogError(@"%s: %@", __func__, error);
       return;
     }
 

@@ -43,7 +43,7 @@
     CGMutablePathRef path = CGPathCreateMutable();
     NSArray<NSTextCheckingResult *>* results = [_pathRegularExpression matchesInString:_d options:0 range:NSMakeRange(0, [_d length])];
     _bezierCurves = [[NSMutableArray alloc] init];
-    int count = [results count];
+    NSUInteger count = [results count];
 
     if (count) {
         NSUInteger i = 0;
