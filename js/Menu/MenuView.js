@@ -169,7 +169,7 @@ export default class MenuView extends React.Component {
               style={styles.closeButton}
               onPress={this._onPressClose}
               underlayColor="#eee"
-              hitSlop={{ top: 4, bottom: 8, left: 8, right: 4 }}>
+              hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}>
               <Ionicons
                 name="md-close"
                 size={20}
