@@ -4,11 +4,11 @@ title: LinearGradient
 
 A React component that renders a gradient view.
 
-![sketch](SJ3r_Ky3g)
+![sketch](BJbef43HW)
 
 <br />
 
-![sketch](rJ6uKYk3l)
+![sketch](r1pvMV3HW)
 
 ## `Expo.LinearGradient`
 
