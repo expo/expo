@@ -27,10 +27,10 @@ Speak out loud the `text` given `options`. Calling this when another text is bei
 
 Interrupts current speech and deletes all in queue.
 
-### `Expo.Speech.isSpeaking()`
+### `Expo.Speech.isSpeakingAsync()`
 
-Check status of location providers.
+Determine whether the Text-to-speech utility is currently speaking.
 
 #### Returns
 
-Returns a boolean value telling if a speech is in progress.
+Returns a Promise that resolves to a boolean, `true` if speaking, `false` if not.
