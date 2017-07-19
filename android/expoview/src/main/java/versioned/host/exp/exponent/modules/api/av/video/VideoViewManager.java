@@ -4,14 +4,14 @@ import android.net.Uri;
 
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.yqritc.scalablevideoview.ScalableType;
 
-import javax.annotation.Nullable;
-
 import java.util.Map;
+
+import javax.annotation.Nullable;
 
 public class VideoViewManager extends SimpleViewManager<VideoView> {
   public static final String REACT_CLASS = "ExponentVideo";

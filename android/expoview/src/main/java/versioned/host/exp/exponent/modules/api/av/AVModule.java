@@ -9,10 +9,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
-import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
@@ -41,7 +39,7 @@ import java.util.UUID;
 
 import host.exp.exponent.utils.ExpFileUtils;
 import host.exp.exponent.utils.ScopedContext;
-import versioned.host.exp.exponent.ReadableObjectUtils;
+import versioned.host.exp.exponent.modules.api.av.player.PlayerData;
 import versioned.host.exp.exponent.modules.api.av.video.VideoView;
 
 public class AVModule extends ReactContextBaseJavaModule
@@ -63,13 +61,13 @@ public class AVModule extends ReactContextBaseJavaModule
     DUCK_OTHERS,
   }
 
-  class AudioFocusNotAcquiredException extends Exception {
+  public class AudioFocusNotAcquiredException extends Exception {
     AudioFocusNotAcquiredException(final String message) {
       super(message);
     }
   }
 
-  final ScopedContext mScopedContext; // used by PlayerData
+  public final ScopedContext mScopedContext; // used by PlayerData
   private final ReactApplicationContext mReactApplicationContext;
 
   private boolean mEnabled = true;
@@ -82,7 +80,7 @@ public class AVModule extends ReactContextBaseJavaModule
 
   private AudioInterruptionMode mAudioInterruptionMode = AudioInterruptionMode.DUCK_OTHERS;
   private boolean mShouldDuckAudio = true;
-  boolean mIsDuckingAudio = false; // used by PlayerData
+  private boolean mIsDuckingAudio = false;
 
   private int mSoundMapKeyCount = 0;
   // There will never be many PlayerData objects in the map, so HashMap is most efficient.
@@ -202,11 +200,7 @@ public class AVModule extends ReactContextBaseJavaModule
     }
   }
 
-  boolean hasAudioFocus() {
-    return mAcquiredAudioFocus;
-  }
-
-  void acquireAudioFocus() throws AudioFocusNotAcquiredException {
+  public void acquireAudioFocus() throws AudioFocusNotAcquiredException {
     if (!mEnabled) {
       throw new AudioFocusNotAcquiredException("Expo Audio is disabled, so audio focus could not be acquired.");
     }
@@ -239,13 +233,17 @@ public class AVModule extends ReactContextBaseJavaModule
     mAudioManager.abandonAudioFocus(this);
   }
 
-  void abandonAudioFocusIfUnused() { // used by PlayerData
+  public void abandonAudioFocusIfUnused() { // used by PlayerData
     for (final AudioEventHandler handler : getAllRegisteredAudioEventHandlers()) {
       if (handler.requiresAudioFocus()) {
         return;
       }
     }
     abandonAudioFocus();
+  }
+
+  public float getVolumeForDuckAndFocus(final boolean isMuted, final float volume) {
+    return (!mAcquiredAudioFocus || isMuted) ? 0f : mIsDuckingAudio ? volume / 2f : volume;
   }
 
   private void updateDuckStatusForAllPlayersPlaying() {
@@ -304,15 +302,15 @@ public class AVModule extends ReactContextBaseJavaModule
   @ReactMethod
   public void loadForSound(final String uriString, final ReadableMap status, final Callback loadSuccess, final Callback loadError) {
     final int key = mSoundMapKeyCount++;
-    final PlayerData data = new PlayerData(this, Uri.parse(uriString));
-    data.setErrorListener(new PlayerData.PlayerDataErrorListener() {
+    final PlayerData data = PlayerData.createUnloadedPlayerData(this, Uri.parse(uriString), status);
+    data.setErrorListener(new PlayerData.ErrorListener() {
       @Override
       public void onError(final String error) {
         removeSoundForKey(key);
       }
     });
     mSoundMap.put(key, data);
-    data.load(status, new PlayerData.PlayerDataLoadCompletionListener() {
+    data.load(status, new PlayerData.LoadCompletionListener() {
       @Override
       public void onLoadSuccess(final WritableMap status) {
         loadSuccess.invoke(key, status);
@@ -354,7 +352,7 @@ public class AVModule extends ReactContextBaseJavaModule
   public void setStatusUpdateCallbackForSound(final Integer key, final Callback callback) {
     final PlayerData data = tryGetSoundForKey(key, null);
     if (data != null) {
-      data.setStatusUpdateListener(new PlayerData.PlayerDataStatusUpdateListener() {
+      data.setStatusUpdateListener(new PlayerData.StatusUpdateListener() {
         @Override
         public void onStatusUpdate(final WritableMap status) {
           data.setStatusUpdateListener(null); // Can only use callback once.
@@ -368,7 +366,7 @@ public class AVModule extends ReactContextBaseJavaModule
   public void setErrorCallbackForSound(final Integer key, final Callback callback) {
     final PlayerData data = tryGetSoundForKey(key, null);
     if (data != null) {
-      data.setErrorListener(new PlayerData.PlayerDataErrorListener() {
+      data.setErrorListener(new PlayerData.ErrorListener() {
         @Override
         public void onError(final String error) {
           data.setErrorListener(null); // Can only use callback once.
