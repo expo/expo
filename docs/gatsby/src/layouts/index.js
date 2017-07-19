@@ -27,24 +27,22 @@ import 'typeface-source-sans-pro';
 import 'typeface-source-code-pro';
 
 import unversioned from '../data/unversioned.yaml';
+import v19 from '../data/v19.yaml';
 import v18 from '../data/v18.yaml';
 import v17 from '../data/v17.yaml';
 import v16 from '../data/v16.yaml';
 import v15 from '../data/v15.yaml';
 import v14 from '../data/v14.yaml';
 import v13 from '../data/v13.yaml';
-import v12 from '../data/v12.yaml';
-import v11 from '../data/v11.yaml';
 
 const versions = [
+  `v19.0.0`,
   `v18.0.0`,
   `v17.0.0`,
   `v16.0.0`,
   `v15.0.0`,
   `v14.0.0`,
   `v13.0.0`,
-  `v12.0.0`,
-  `v11.0.0`,
 ];
 
 if (typeof window === 'object' && window.GATSBY_ENV === 'development') {
@@ -89,6 +87,9 @@ class Wrapper extends React.Component {
       case 'unversioned':
         routes = unversioned;
         break;
+      case 'v19.0.0':
+        routes = v18;
+        break;
       case 'v18.0.0':
         routes = v18;
         break;
@@ -107,14 +108,8 @@ class Wrapper extends React.Component {
       case 'v13.0.0':
         routes = v13;
         break;
-      case 'v12.0.0':
-        routes = v12;
-        break;
-      case 'v11.0.0':
-        routes = v11;
-        break;
       default:
-        routes = v17;
+        routes = v19;
     }
     return routes;
   };
