@@ -88,7 +88,7 @@ class Wrapper extends React.Component {
         routes = unversioned;
         break;
       case 'v19.0.0':
-        routes = v18;
+        routes = v19;
         break;
       case 'v18.0.0':
         routes = v18;
