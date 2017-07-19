@@ -127,7 +127,22 @@ function propertyDescription(prop, depthSpacing) {
   }
 
   if (prop.description) {
-    result += `${prop.description}\n`;
+    let lines = prop.description.split('\n');
+    let description = lines
+      .map((line, i) => {
+        if (i === 0) {
+          return `${line}\n`;
+        } else {
+          if (line.match(/^-/)) {
+            return `${depthSpacing}   ${line}\n`;
+          } else {
+            return `${depthSpacing} ${line}\n`;
+          }
+        }
+      })
+      .join('');
+    console.log({ description });
+    result += description;
   }
 
   if (prop.validOptions) {
