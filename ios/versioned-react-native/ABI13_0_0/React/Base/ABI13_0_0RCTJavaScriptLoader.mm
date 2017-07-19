@@ -29,7 +29,7 @@ NSString *const ABI13_0_0RCTJavaScriptLoaderErrorDomain = @"ABI13_0_0RCTJavaScri
   NSMutableString *desc = [NSMutableString new];
   [desc appendString:_status ?: @"Loading"];
 
-  if (_total > 0) {
+  if ([_total intValue] > 0) {
     [desc appendFormat:@" %ld%% (%@/%@)", (long)(100 * [_done integerValue] / [_total integerValue]), _done, _total];
   }
   [desc appendString:@"\u2026"];
