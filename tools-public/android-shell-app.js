@@ -129,6 +129,11 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
   await spawnAsync(`/bin/cp`, ['../android/gradlew', `${shellPath}/`]);
   await spawnAsync(`/bin/cp`, ['../android/local.properties', `${shellPath}/`]);
   await spawnAsync(`/bin/cp`, ['../android/settings.gradle', `${shellPath}/`]);
+  await spawnAsync(`/bin/cp`, [
+    '-r',
+    '../android/maven',
+    `${shellPath}/maven`,
+  ]);
 
   // Clean build directories
   await spawnAsync(`/bin/rm`, ['-rf', `${shellPath}app/build/`]);
