@@ -22,8 +22,8 @@ LOCAL_EXPORT_CPPFLAGS := $(CXX11_FLAGS)
 
 LOCAL_SHARED_LIBRARIES := libfolly_json_abi19_0_0 libjsc libglog_abi19_0_0
 
-
 include $(BUILD_STATIC_LIBRARY)
+
 $(call import-module,folly)
 $(call import-module,jsc)
 $(call import-module,glog)
