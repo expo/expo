@@ -60,6 +60,12 @@ The permission type for push notifications.
 
 > **Note:** On iOS, this does not disambiguate `undetermined` from `denied` and so will only ever return `granted` or `undetermined`. This is due to the way the underlying native API is implemented.
 
+### `Expo.Permissions.NOTIFICATIONS` (iOS only)
+
+The permission type for local notifications. It is only necessary to request this permission on iOS.
+
+> **Note:** This does not disambiguate `undetermined` from `denied` and so will only ever return `granted` or `undetermined`. This is due to the way the underlying native API is implemented.
+
 ### `Expo.Permissions.LOCATION`
 
 The permission type for location access.
