@@ -2,7 +2,7 @@
 title: Util
 ---
 
-Helpful utility functions that don't fit anywhere else.
+Helpful utility functions that don't fit anywhere else, including some localization / i18n methods.
 
 ### `Expo.Util.getCurrentLocaleAsync()`
 
