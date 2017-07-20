@@ -21,7 +21,7 @@ Returns a `Promise` that is resolved with the information about the permission, 
 ```javascript
 async function alertIfRemoteNotificationsDisabledAsync() {
   const { Permissions } = Expo;
-  const { status } = await Permissions.getAsync(Permissions.REMOTE_NOTIFICATIONS);
+  const { status } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
   if (status !== 'granted') {
     alert('Hey! You might want to enable notifications for my app, they are good.');
   }
@@ -54,17 +54,11 @@ async function getLocationAsync() {
 }
 ```
 
-### `Expo.Permissions.REMOTE_NOTIFICATIONS`
+### `Expo.Permissions.NOTIFICATIONS`
 
-The permission type for push notifications.
+The permission type for local and push notifications.
 
 > **Note:** On iOS, this does not disambiguate `undetermined` from `denied` and so will only ever return `granted` or `undetermined`. This is due to the way the underlying native API is implemented.
-
-### `Expo.Permissions.NOTIFICATIONS` (iOS only)
-
-The permission type for local notifications. It is only necessary to request this permission on iOS.
-
-> **Note:** This does not disambiguate `undetermined` from `denied` and so will only ever return `granted` or `undetermined`. This is due to the way the underlying native API is implemented.
 
 ### `Expo.Permissions.LOCATION`
 
