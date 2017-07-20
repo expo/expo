@@ -174,7 +174,7 @@ public class ExponentGcmListenerService extends GcmListenerService {
           }
 
           notificationBuilder = new NotificationCompat.Builder(ExponentGcmListenerService.this)
-              .setSmallIcon(R.drawable.notification_icon)
+              .setSmallIcon(Constants.isShellApp() ? R.drawable.shell_notification_icon : R.drawable.notification_icon)
               .setContentTitle(collapsedTitle)
               .setColor(color)
               .setContentText(name)
@@ -191,7 +191,7 @@ public class ExponentGcmListenerService extends GcmListenerService {
           }
 
           notificationBuilder = new NotificationCompat.Builder(ExponentGcmListenerService.this)
-              .setSmallIcon(R.drawable.notification_icon)
+              .setSmallIcon(Constants.isShellApp() ? R.drawable.shell_notification_icon : R.drawable.notification_icon)
               .setContentTitle(contentTitle)
               .setColor(color)
               .setContentText(message)
@@ -208,7 +208,7 @@ public class ExponentGcmListenerService extends GcmListenerService {
           notification = notificationBuilder.setLargeIcon(bitmap).build();
         } else {
           // TODO: don't actually need to load bitmap in this case
-          notification = notificationBuilder.setSmallIcon(R.drawable.shell_notification_icon).build();
+          notification = notificationBuilder.build();
         }
 
         // Display
