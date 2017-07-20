@@ -33,7 +33,7 @@ An object that is passed into each event listener when a notification is receive
 
 ## Remote (Push) Notifications
 
-### `Expo.Notifications.getExponentPushTokenAsync()`
+### `Expo.Notifications.getExpoPushTokenAsync()`
 
 #### Returns
 
