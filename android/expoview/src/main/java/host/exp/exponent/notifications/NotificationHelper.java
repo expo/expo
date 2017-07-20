@@ -12,6 +12,7 @@ import android.support.v4.app.NotificationCompat;
 
 import android.text.format.DateUtils;
 import de.greenrobot.event.EventBus;
+import host.exp.exponent.Constants;
 import host.exp.exponent.utils.JSONUtils;
 
 import org.json.JSONException;
@@ -88,7 +89,7 @@ public class NotificationHelper {
       final Listener listener) {
     final NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
 
-    builder.setSmallIcon(R.drawable.shell_notification_icon);
+    builder.setSmallIcon(Constants.isShellApp() ? R.drawable.shell_notification_icon : R.drawable.notification_icon);
     builder.setAutoCancel(true);
 
     final String experienceId = (String) details.get("experienceId");
@@ -193,7 +194,9 @@ public class NotificationHelper {
               new ExponentManifest.BitmapListener() {
                 @Override
                 public void onLoadBitmap(Bitmap bitmap) {
-                  builder.setLargeIcon(bitmap);
+                  if (data.containsKey("icon")) {
+                    builder.setLargeIcon(bitmap);
+                  }
                   ExponentNotificationManager manager = new ExponentNotificationManager(context);
                   manager.notify(experienceId, id, builder.build());
                   EventBus.getDefault().post(notificationEvent);
