@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expoview" revision="19.0.0" status="integration" publication="20170714161433">
+  <info organisation="host.exp.exponent" module="expoview" revision="19.0.0" status="integration" publication="20170719172608">
     <description/>
   </info>
   <configurations>
@@ -75,7 +75,6 @@
     <dependency org="com.google.code.findbugs" name="jsr305" rev="3.0.0" conf="compile-&gt;default"/>
     <dependency org="com.squareup.okhttp3" name="okhttp" rev="3.6.0" conf="compile-&gt;default"/>
     <dependency org="com.squareup.okhttp3" name="okhttp-urlconnection" rev="3.6.0" conf="compile-&gt;default"/>
-    <dependency org="com.squareup.okhttp3" name="okhttp-ws" rev="3.4.2" conf="compile-&gt;default"/>
     <dependency org="com.squareup.okio" name="okio" rev="1.13.0" conf="compile-&gt;default"/>
     <dependency org="org.webkit" name="android-jsc" rev="r174650" conf="compile-&gt;default"/>
     <dependency org="com.android.support" name="appcompat-v7" rev="25.3.1" conf="compile-&gt;default"/>
