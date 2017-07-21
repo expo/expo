@@ -2,9 +2,9 @@
 title: Speech
 ---
 
-This module allows using Text-to-speech utility. 
+This module allows using Text-to-speech utility.
 
-### `Expo.Speech.speak(id, speak, options)`
+### `Expo.Speech.speak(text, options)`
 
 Speak out loud the `text` given `options`. Calling this when another text is being spoken adds an utterance to queue.
 
