@@ -1,5 +1,5 @@
 ---
-title: Fingerprint 
+title: Fingerprint
 ---
 
 Use TouchID (iOS) or the Fingerprint API (Android) to authenticate the user with a fingerprint scan.
@@ -23,7 +23,7 @@ Determine whether the device has saved fingerprints to use for authentication.
 ### `Expo.Fingerprint.authenticateAsync()`
 
 Attempts to authenticate via Fingerprint.
-**_Android_** - When using the fingerprint module on Android, you need to provide a UI component to prompt the user to scan his fingerprint, as the OS has no default alert for it. 
+**_Android_** - When using the fingerprint module on Android, you need to provide a UI component to prompt the user to scan their fingerprint, as the OS has no default alert for it.
 
 #### Arguments
 
