@@ -31,6 +31,7 @@ import host.exp.exponent.utils.ExpFileUtils;
 import host.exp.exponent.utils.ScopedContext;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -266,6 +267,8 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
           result.putString("uri", ExpFileUtils.uriFromFile(file).toString());
           if (options.hasKey("md5") && options.getBoolean("md5")) {
             result.putString("md5", ExpFileUtils.md5(file));
+            result.putInt("status", response.code());
+            result.putMap("headers", translateHeaders(response.headers()));
           }
           promise.resolve(result);
         } catch (Exception e) {
@@ -274,5 +277,22 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
         }
       }
     });
+  }
+
+  // Copied out of React Native's `NetworkingModule.java`
+  private static WritableMap translateHeaders(Headers headers) {
+    WritableMap responseHeaders = Arguments.createMap();
+    for (int i = 0; i < headers.size(); i++) {
+      String headerName = headers.name(i);
+      // multiple values for the same header
+      if (responseHeaders.hasKey(headerName)) {
+        responseHeaders.putString(
+            headerName,
+            responseHeaders.getString(headerName) + ", " + headers.value(i));
+      } else {
+        responseHeaders.putString(headerName, headers.value(i));
+      }
+    }
+    return responseHeaders;
   }
 }

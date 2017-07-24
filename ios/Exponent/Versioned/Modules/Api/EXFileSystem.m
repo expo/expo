@@ -341,10 +341,14 @@ RCT_REMAP_METHOD(downloadAsync,
     }
     [data writeToFile:scopedPath atomically:YES];
 
+    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+
     NSMutableDictionary *result = [NSMutableDictionary dictionary];
     result[@"uri"] = [NSURL fileURLWithPath:scopedPath].absoluteString;
     if (options[@"md5"]) {
       result[@"md5"] = [data md5String];
+      result[@"status"] = @([httpResponse statusCode]);
+      result[@"headers"] = [httpResponse allHeaderFields];
     }
     resolve(result);
   }];
