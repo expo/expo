@@ -174,4 +174,8 @@ Returns an object with the following fields:
 
 -   **uri (_string_)** -- A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
 
+-   **status (_number_)** -- The HTTP status code for the download network request.
+
+-   **headers (_object_)** -- An object containing all the HTTP header fields and their values for the download network request. The keys and values of the object are the header names and values respectively.
+
 -   **md5 (_string_)** -- Present if the `md5` option was truthy. Contains the MD5 hash of the file.
