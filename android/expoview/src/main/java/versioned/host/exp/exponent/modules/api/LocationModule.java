@@ -174,7 +174,9 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
     if (mScopedContext == null) {
       return;
     }
-    SmartLocation.with(mScopedContext).geocoding().stop();
+    if (Geocoder.isPresent()) {
+      SmartLocation.with(mScopedContext).geocoding().stop();
+    }
     mGeocoderPaused = true;
 
     if (mLocationParams == null || mOnLocationUpdatedListener == null) {
