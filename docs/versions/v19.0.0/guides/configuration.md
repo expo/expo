@@ -245,7 +245,7 @@ The following is a list of properties that are available for you under the `"exp
 
       Local path or remote url to an image to use for your app's icon. We recommend that you use a 512x512 png file with transparency. This icon will appear on the home screen and within the Expo app.
 
-   - `permission`
+   - `permissions`
 
       List of permissions used by the standalone app. Remove the field to use the default list of permissions.
     
