@@ -63,6 +63,21 @@ Log an event to Segment with custom properties. See <https://segment.com/docs/sp
 -   **event (_string_)** -- The event name.
 -   **properties (_object_)** -- A map of custom properties.
 
+### `Expo.Segment.screen(screenName)`
+
+Record that a user has seen a screen to Segment. See <https://segment.com/docs/spec/screen/>.
+
+#### Arguments
+
+-   **screenName (_string_)** -- Name of the screen.
+
+### `Expo.Segment.screenWithProperties(event, properties)`
+
+Record that a user has seen a screen to Segment with custom properties. See <https://segment.com/docs/spec/screen/>.
+
+-   **screenName (_string_)** -- Name of the screen.
+-   **properties (_object_)** -- A map of custom properties.
+
 ### `Expo.Segment.flush()`
 
 Manually flush the event queue. You shouldn't need to call this in most cases.
