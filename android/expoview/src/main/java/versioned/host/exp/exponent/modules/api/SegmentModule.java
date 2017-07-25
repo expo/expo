@@ -100,9 +100,9 @@ public class SegmentModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void track(final String event) {
+  public void track(final String eventName) {
     if (mClient != null) {
-      mClient.track(event);
+      mClient.track(eventName);
     }
   }
 
@@ -110,6 +110,22 @@ public class SegmentModule extends ReactContextBaseJavaModule {
   public void trackWithProperties(final String eventName, final ReadableMap properties) {
     if (mClient != null) {
       mClient.track(eventName, readableMapToProperties(properties));
+    }
+  }
+
+  @ReactMethod
+  public void screen(final String screenName) {
+    if (mClient != null) {
+      // First parameter is category. We want to fill name to be in line with iOS
+      mClient.screen(null, screenName);
+    }
+  }
+
+  @ReactMethod
+  public void screenWithProperties(final String screenName, final ReadableMap properties) {
+    if (mClient != null) {
+      // First parameter is category. We want to fill name to be in line with iOS
+      mClient.screen(null, screenName, readableMapToProperties(properties));
     }
   }
 
