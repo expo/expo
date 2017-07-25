@@ -97,10 +97,6 @@ NSString *const ABI19_0_0RCTContentDidAppearNotification = @"ABI19_0_0RCTContent
 #endif
 
     [self showLoadingView];
-
-    // Immediately schedule the application to be started.
-    // (Sometimes actual `_bridge` is already batched bridge here.)
-    [self bundleFinishedLoading:([_bridge batchedBridge] ?: _bridge)];
   }
 
   ABI19_0_0RCT_PROFILE_END_EVENT(ABI19_0_0RCTProfileTagAlways, @"");
