@@ -54,6 +54,20 @@ RCT_EXPORT_METHOD(trackWithProperties:(NSString *)event withProperties:(NSDictio
   }
 }
 
+RCT_EXPORT_METHOD(screen:(NSString *)screenName)
+{
+  if (_instance) {
+    [_instance screen:screenName];
+  }
+}
+
+RCT_EXPORT_METHOD(screenWithProperties:(NSString *)screenName withProperties:(NSDictionary *) properties)
+{
+  if (_instance) {
+    [_instance screen:screenName properties:properties];
+  }
+}
+
 RCT_EXPORT_METHOD(reset)
 {
   if (_instance) {
