@@ -57,7 +57,7 @@ Note: If you have the Expo client app from the Play Store or the App Store you w
 
 If you don't need custom native code outside of the Expo SDK, head over to [our documentation on building standalone apps without needing Android Studio and Xcode](https://docs.expo.io/versions/latest/guides/building-standalone-apps.html).
 
-If you're still here, make sure to follow the [Configure exp.json](https://docs.expo.io/versions/latest/guides/building-standalone-apps.html#configure-exp-json) section of the docs before continuing. You'll need to add the appropriate fields to your `exp.json` before the standalone app scripts can run. Once that's done, continue on to the platform-specific instructions.
+If you're still here, make sure to follow the [Configure app.json](https://docs.expo.io/versions/latest/guides/building-standalone-apps.html#2-configure-appjson) section of the docs before continuing. You'll need to add the appropriate fields to your `app.json` before the standalone app scripts can run. Once that's done, continue on to the platform-specific instructions.
 
 #### Android
 The Android standalone app script creates a new directory `android-shell-app` with the modified Android project in it. It then compiles that new directory giving you a signed or unsigned `.apk` depending on whether you provide a keystore and the necessary passwords. If there are issues with the app you can open the `android-shell-app` project in Android Studio to debug.
