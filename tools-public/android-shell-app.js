@@ -306,7 +306,6 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
       'android.permission.WRITE_EXTERNAL_STORAGE',
       'com.anddoes.launcher.permission.UPDATE_COUNT',
       'com.android.launcher.permission.INSTALL_SHORTCUT',
-      'com.google.android.c2dm.permission.RECEIVE',
       'com.google.android.gms.permission.ACTIVITY_RECOGNITION',
       'com.google.android.providers.gsf.permission.READ_GSERVICES',
       'com.htc.launcher.permission.READ_SETTINGS',
