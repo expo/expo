@@ -6,7 +6,7 @@ Expo and React Native provide APIs and configuration options for Android to conf
 
 ## Configuration (Android)
 
-The configuration for Android status bar lives under the `androidStatusBar` key in `exp.json`. It exposes the following options:
+The configuration for Android status bar lives under the `androidStatusBar` key in `app.json`. It exposes the following options:
 
 ### `barStyle`
 
