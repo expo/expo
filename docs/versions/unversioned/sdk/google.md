@@ -4,7 +4,7 @@ title: Google
 
 Provides Google authentication integration for Expo apps, using either the native Google Sign In SDK (only in standalone apps) or a system web browser (not WebView, so credentials saved on the device can be re-used!).
 
-Once you have the token, if you would like to make further calls to the Google API, you can use Google's [REST APIs](https://developers.google.com/apis-explorer/) directly through HTTP (using [fetch](https://facebook.github.io/react-native/docs/network.html#fetch), for example).
+You'll get an access token after a succesful login. Once you have the token, if you would like to make further calls to the Google API, you can use Google's [REST APIs](https://developers.google.com/apis-explorer/) directly through HTTP (using [fetch](https://facebook.github.io/react-native/docs/network.html#fetch), for example).
 
 ```javascript
 // Example of using the Google REST API
@@ -34,10 +34,11 @@ Prompts the user to log into Google and grants your app permission to access som
 -   **androidStandaloneAppClientId** (_string_) -- The Android client id registered with Google for use in a standalone app.
 -   **iosStandaloneAppClientId** (_string_) -- The iOS client id registered with Google for use in a standalone app.
 
-    returns  
-    If the user or Google cancelled the login, returns `{ type: 'cancel' }`.
+#### Returns
 
-    Otherwise, returns `{ type: 'success', accessToken, idToken, refreshToken, {...profileInformation} }`, `accessToken` is a string giving the access token to use with Google HTTP API requests.
+If the user or Google cancelled the login, returns `{ type: 'cancel' }`.
+
+Otherwise, returns `{ type: 'success', accessToken, idToken, refreshToken, {...profileInformation} }`, `accessToken` is a string giving the access token to use with Google HTTP API requests.
 
 ## Using it inside of the Expo app
 
@@ -49,11 +50,11 @@ To use Google Sign In, you will need to create a project on the Google Developer
 
     -   Go to the [Credentials Page](https://console.developers.google.com/apis/credentials)
     -   Create an app for your project if you haven't already.
-    -   Once that is complete, click "Create Credentials" and then "OAuth client ID." You will be prompted to set the product name on the consent screen, go ahead and do that.
+    -   Once that's done, click "Create Credentials" and then "OAuth client ID." You will be prompted to set the product name on the consent screen, go ahead and do that.
 
 -   **Create an iOS OAuth Client ID**
 
-    -   Select "iOS Application" as the Application Type. Give it a name if you want (maybe "iOS Development").
+    -   Select "iOS Application" as the Application Type. Give it a name if you want (e.g. "iOS Development").
     -   Use `host.exp.exponent` as the bundle identifier.
     -   Click "Create"
     -   You will now see a modal with the client ID.

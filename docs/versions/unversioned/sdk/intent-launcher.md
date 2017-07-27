@@ -8,7 +8,7 @@ Provides a way to launch android intents. e.g. - opening a specific settings scr
 
 ### `Expo.IntentLauncherAndroid.startActivityAsync(activity, data)`
 
-Starts the specified activity. The optional `data` parameter can be specified to pass additional data to the activity. The method will return a promise which resolves when the user returns to the app.
+Starts the specified activity. The optional `data` parameter can be specified to pass additional data object to the activity. The method will return a promise which resolves when the user returns to the app.
 
 There are a few pre-defined constants you can use for the `activity` parameter. You can find them at [expo/expo-sdk/src/IntentLauncherAndroid.js](https://github.com/expo/expo-sdk/blob/master/src/IntentLauncherAndroid.js).
 

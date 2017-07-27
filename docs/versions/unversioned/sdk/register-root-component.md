@@ -4,9 +4,9 @@ title: registerRootComponent
 
 ### `Expo.registerRootComponent(component)`
 
-Sets the main component for Expo to use for your app.  Prior to SDK 18,
-it was necessary to use `registerRootComponent` directly, but for
-projects created as of SDK 18 or later, this is handled automatically in the Expo SDK.
+Sets the main component for Expo to use for your app.
+
+> **Note: ** Prior to SDK 18, it was necessary to use `registerRootComponent` directly, but for projects created as of SDK 18 or later, this is handled automatically in the Expo SDK.
 
 
 #### Arguments

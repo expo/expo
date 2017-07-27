@@ -6,11 +6,11 @@ Allows changing supported screen orientations at runtime. This will take priorit
 
 ### `Expo.ScreenOrientation.allow(orientation)`
 
-Change allowed screen orientations
+Allow a screen orientation. You can call this function multiple times with multiple orientations to allow multiple orientations.
 
 #### Arguments
 
--   **orientation (_string_)** -- The allowed orientations. See the Orientation enum for possible values.
+-   **orientation (_string_)** -- The allowed orientation. See the Orientation enum for possible values.
 
 #### Example
 

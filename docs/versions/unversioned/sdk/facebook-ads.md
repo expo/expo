@@ -8,6 +8,18 @@ title: Facebook Ads
 
 You need to create a placement ID to display ads. Follow steps 1 and 3 from the [Getting Started Guide for Facebook Audience](https://developers.facebook.com/docs/audience-network/getting-started) to create the placement ID.
 
+## Development vs Production
+
+When using Facebook Ads in development, you'll need to register your device to be able to show ads. You can add the following at the top of your file to register your device:
+
+```js
+AdSettings.addTestDevice(AdSettings.currentDeviceHash);
+```
+
+You should see fake ads after you add this snippet.
+
+To use Facebook Ads in production with real ads, you need to publish your app on Play Store or App Store and add your app in the Facebook console. Refer the [Submit Your App for Review section in the Getting Started Guide](https://developers.facebook.com/docs/audience-network/getting-started#onboarding) for more details.
+
 ## Usage
 
 ### Interstitial Ads

@@ -31,7 +31,52 @@ Expo makes the status bar translucent by default on Android which is consistent 
 
 If you need to use such a library, there are a few options:
 
-- Set the `backgroundColor` of the status bar to an opaque color to disable the translucency. This is a good option if your status bar color never needs to change.
-- Use the [`StatusBar` component from React Native](https://facebook.github.io/react-native/docs/statusbar.html) to control the appearance dynamically.
-- Place an empty `View` on top of your screen with a background color to act as a status bar, or set a top padding. You can get the height of the status bar with `Expo.Constants.statusBarHeight`.
+### Set the `backgroundColor` of the status bar to an opaque color
 
+This will disable the translucency of the status bar. This is a good option if your status bar color never needs to change.
+
+Example:
+
+```json
+{
+  "expo": {
+    "androidStatusBar": {
+      "backgroundColor": "#C2185B"
+    }
+  }
+}
+```
+
+### Use the [`StatusBar` API from React Native](https://facebook.github.io/react-native/docs/statusbar.html)
+
+The `StatusBar` API allows you to dynamically control the appearance of the status bar. You can use it as component, or as an API. Check the documentation on the React Native website for examples.
+
+## Place an empty `View` on top of your screen
+
+You can place an empty `View` on top of your screen with a background color to act as a status bar, or set a top padding. You can get the height of the status bar with `Expo.Constants.statusBarHeight`. Though this should be your last resort since this doesn't work very well when status bar's height changes.
+
+Example:
+
+```js
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+import { Constants } from 'expo';
+
+const styles = StyleSheet.create({
+  statusBar: {
+    backgroundColor: "#C2185B",
+    height: Constants.statusBarHeight,
+  },
+
+  // rest of the styles
+});
+
+const MyComponent = () => {
+  <View>
+    <View style={styles.statusBar} />
+    {/* rest of the content */}
+  </View>
+}
+```
+
+If you don't need to set the background color, you can just set a top padding on the wrapping `View` instead.
