@@ -25,6 +25,7 @@ module.exports = {
       resolve: `gatsby-transformer-remark`,
       options: {
         plugins: [
+          `gatsby-typegen-remark-expo-embed`,
           {
             resolve: `gatsby-remark-images`,
             options: {
@@ -41,7 +42,6 @@ module.exports = {
           `gatsby-remark-prismjs`,
           `gatsby-remark-copy-linked-files`,
           `gatsby-remark-smartypants`,
-          `gatsby-typegen-remark-expo-embed`,
           {
             resolve: `gatsby-typegen-remark-expo-autolink`,
             options: {

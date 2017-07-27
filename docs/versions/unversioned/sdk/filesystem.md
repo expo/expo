@@ -152,6 +152,21 @@ An array of strings, each containing the name of a file or directory contained i
 
 Download the contents at a remote URI to a file in the app's file system.
 
+#### Example
+
+```javascript
+FileSystem.downloadAsync(
+  'http://techslides.com/demos/sample-videos/small.mp4',
+  FileSystem.documentDirectory + 'small.mp4'
+)
+  .then(({ uri }) => {
+    console.log('Finished downloading to ', uri);
+  })
+  .catch(error => {
+    console.error(error);
+  });
+```
+
 #### Arguments
 
 -   **url (_string_)** --

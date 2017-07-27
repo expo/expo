@@ -13,9 +13,9 @@ exports.createPages = ({ boundActionCreators, graphql }) => {
     // Useful for debugging a smaller set of pages:
     // , filter: { fields: { isIndex: { eq: "true" }}}
     // Useful for debugging a page with images:
-    // , filter: { fields: { fileSlug: { eq: "/versions/v18.0.0/sdk/map-view" }}}
+    // , filter: { fields: { fileSlug: { eq: "/versions/v19.0.0/sdk/map-view" }}}
     // Useful for debugging a smaller set of diverse pages:
-    // , filter: { fields: { fileSlug: { regex: "/versions/v18.0.0/sdk/" }}}
+    // , filter: { fields: { fileSlug: { regex: "/versions/v19.0.0/sdk/" }}}
 
     resolve(
       graphql(
