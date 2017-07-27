@@ -141,7 +141,6 @@ function propertyDescription(prop, depthSpacing) {
         }
       })
       .join('');
-    console.log({ description });
     result += description;
   }
 
