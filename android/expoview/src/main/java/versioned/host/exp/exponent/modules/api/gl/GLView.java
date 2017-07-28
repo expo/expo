@@ -1,9 +1,13 @@
 package versioned.host.exp.exponent.modules.api.gl;
 
 import android.content.Context;
+
+import static android.opengl.GLES11Ext.GL_TEXTURE_EXTERNAL_OES;
 import static android.opengl.GLES20.*;
 
 import android.graphics.PixelFormat;
+import android.graphics.SurfaceTexture;
+import android.hardware.Camera;
 import android.opengl.EGL14;
 import android.opengl.GLSurfaceView;
 
@@ -12,14 +16,17 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import host.exp.exponent.analytics.EXL;
+
 import static host.exp.exponent.exgl.EXGL.*;
 
-public class GLView extends GLSurfaceView implements GLSurfaceView.Renderer {
+public class GLView extends GLSurfaceView implements GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvailableListener {
   private boolean onSurfaceCreateCalled = false;
   private int exglCtxId = -1;
 
@@ -31,6 +38,11 @@ public class GLView extends GLSurfaceView implements GLSurfaceView.Renderer {
     getHolder().setFormat(PixelFormat.TRANSLUCENT);
     setRenderer(this);
   }
+
+  private int mCameraGLTexture;
+  private Camera mCamera;
+  private SurfaceTexture mCameraSurfaceTexture;
+  private boolean mCameraTextureUpdated;
 
   public void onSurfaceCreated(GL10 unused, EGLConfig config) {
     EGL14.eglSurfaceAttrib(EGL14.eglGetCurrentDisplay(), EGL14.eglGetCurrentSurface(EGL14.EGL_DRAW),
@@ -50,20 +62,41 @@ public class GLView extends GLSurfaceView implements GLSurfaceView.Renderer {
       });
       onSurfaceCreateCalled = true;
 
-      glActiveTexture(GL_TEXTURE0);
       int[] textures = new int[1];
       glGenTextures(1, textures, 0);
-      int texture = textures[0];
-      glBindTexture(GL_TEXTURE_2D, texture);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-      ByteBuffer textureDataBuffer = ByteBuffer.wrap(new byte[] { (byte) 255, 0, 0, (byte) 255 });
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureDataBuffer);
-      glBindTexture(GL_TEXTURE_2D, texture);
+      mCameraGLTexture = textures[0];
+      glBindTexture(GL_TEXTURE_EXTERNAL_OES, mCameraGLTexture);
+      glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+      mCameraSurfaceTexture = new SurfaceTexture(mCameraGLTexture);
+      mCameraSurfaceTexture.setOnFrameAvailableListener(this);
+
+      mCamera = Camera.open();
+      try {
+        mCamera.setPreviewTexture(mCameraSurfaceTexture);
+      } catch (IOException e) {
+        EXL.e("EXGL", "Couldn't set preview texture for camera.");
+      }
+      mCamera.startPreview();
     }
   }
 
+  @Override
+  public void onFrameAvailable(SurfaceTexture surfaceTexture) {
+    mCameraTextureUpdated = true;
+  }
+
   public void onDrawFrame(GL10 unused) {
+    if (mCameraTextureUpdated) {
+      mCameraTextureUpdated = false;
+      mCameraSurfaceTexture.updateTexImage();
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(GL_TEXTURE_2D, mCameraGLTexture);
+    }
+
     // exglCtxId may be unset if we get here (on the GL thread) before EXGLContextCreate(...) is
     // called on the JS thread to create the EXGL context and save its id (see above in
     // the implementation of `onSurfaceCreated(...)`)
