@@ -10,6 +10,7 @@ import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.opengl.EGL14;
 import android.opengl.GLSurfaceView;
+import android.util.SparseArray;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
@@ -17,7 +18,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.util.ArrayList;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -42,12 +43,15 @@ public class GLView extends GLSurfaceView implements GLSurfaceView.Renderer, Sur
   private int mCameraGLTexture;
   private Camera mCamera;
   private SurfaceTexture mCameraSurfaceTexture;
-  private boolean mCameraTextureUpdated;
+
+  private static SparseArray<GLView> mGLViewMap = new SparseArray<>();
+  private ArrayList<Runnable> mEventQueue = new ArrayList<>();
 
   public void onSurfaceCreated(GL10 unused, EGLConfig config) {
     EGL14.eglSurfaceAttrib(EGL14.eglGetCurrentDisplay(), EGL14.eglGetCurrentSurface(EGL14.EGL_DRAW),
             EGL14.EGL_SWAP_BEHAVIOR, EGL14.EGL_BUFFER_PRESERVED);
 
+    final GLView glView = this;
     if (!onSurfaceCreateCalled) {
       // On JS thread, get JavaScriptCore context, create EXGL context, call JS callback
       final ReactContext reactContext = (ReactContext) getContext();
@@ -55,6 +59,7 @@ public class GLView extends GLSurfaceView implements GLSurfaceView.Renderer, Sur
         @Override
         public void run() {
           exglCtxId = EXGLContextCreate(reactContext.getJavaScriptContext());
+          mGLViewMap.put(exglCtxId, glView);
           WritableMap arg = Arguments.createMap();
           arg.putInt("exglCtxId", exglCtxId);
           reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(getId(), "surfaceCreate", arg);
@@ -86,16 +91,22 @@ public class GLView extends GLSurfaceView implements GLSurfaceView.Renderer, Sur
 
   @Override
   public void onFrameAvailable(SurfaceTexture surfaceTexture) {
-    mCameraTextureUpdated = true;
+    runOnGLThread(exglCtxId, new Runnable() {
+      @Override
+      public void run() {
+        mCameraSurfaceTexture.updateTexImage();
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, mCameraGLTexture);
+      }
+    });
   }
 
   public void onDrawFrame(GL10 unused) {
-    if (mCameraTextureUpdated) {
-      mCameraTextureUpdated = false;
-      mCameraSurfaceTexture.updateTexImage();
-      glActiveTexture(GL_TEXTURE0);
-      glBindTexture(GL_TEXTURE_2D, mCameraGLTexture);
+    // Flush any queued events
+    for (Runnable r : mEventQueue) {
+      r.run();
     }
+    mEventQueue.clear();
 
     // exglCtxId may be unset if we get here (on the GL thread) before EXGLContextCreate(...) is
     // called on the JS thread to create the EXGL context and save its id (see above in
@@ -109,7 +120,19 @@ public class GLView extends GLSurfaceView implements GLSurfaceView.Renderer, Sur
   }
 
   public void onDetachedFromWindow() {
+    mGLViewMap.remove(exglCtxId);
     EXGLContextDestroy(exglCtxId);
     super.onDetachedFromWindow();
+  }
+
+  public synchronized void runOnGLThread(Runnable r) {
+    mEventQueue.add(r);
+  }
+
+  public static synchronized void runOnGLThread(int exglCtxId, Runnable r) {
+    GLView glView = mGLViewMap.get(exglCtxId);
+    if (glView != null) {
+      glView.runOnGLThread(r);
+    }
   }
 }
