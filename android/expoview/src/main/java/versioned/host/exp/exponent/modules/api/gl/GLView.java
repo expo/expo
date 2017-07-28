@@ -12,6 +12,8 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
+import java.nio.ByteBuffer;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -47,6 +49,17 @@ public class GLView extends GLSurfaceView implements GLSurfaceView.Renderer {
         }
       });
       onSurfaceCreateCalled = true;
+
+      glActiveTexture(GL_TEXTURE0);
+      int[] textures = new int[1];
+      glGenTextures(1, textures, 0);
+      int texture = textures[0];
+      glBindTexture(GL_TEXTURE_2D, texture);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+      ByteBuffer textureDataBuffer = ByteBuffer.wrap(new byte[] { (byte) 255, 0, 0, (byte) 255 });
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureDataBuffer);
+      glBindTexture(GL_TEXTURE_2D, texture);
     }
   }
 
