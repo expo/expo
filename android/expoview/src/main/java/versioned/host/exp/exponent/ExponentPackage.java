@@ -68,6 +68,7 @@ import versioned.host.exp.exponent.modules.api.fbads.BannerViewManager;
 import versioned.host.exp.exponent.modules.api.fbads.InterstitialAdManager;
 import versioned.host.exp.exponent.modules.api.fbads.NativeAdManager;
 import versioned.host.exp.exponent.modules.api.fbads.NativeAdViewManager;
+import versioned.host.exp.exponent.modules.api.gl.GLObjectManagerModule;
 import versioned.host.exp.exponent.modules.api.gl.GLViewManager;
 import versioned.host.exp.exponent.modules.api.IntentLauncherModule;
 import versioned.host.exp.exponent.modules.api.SecureStoreModule;
@@ -168,6 +169,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new ScreenOrientationModule(reactContext));
         nativeModules.add(new SpeechModule(reactContext));
         nativeModules.add(new SecureStoreModule(reactContext, scopedContext, experienceId));
+        nativeModules.add(new GLObjectManagerModule(reactContext));
       } catch (JSONException | UnsupportedEncodingException e) {
         EXL.e(TAG, e.toString());
       }
