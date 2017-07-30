@@ -28,6 +28,18 @@ class DocsPage extends React.Component {
 
   render() {
     const post = this.props.data.markdownRemark;
+
+    var link = [];
+
+    try {
+      var slugArr = post.fields.fileSlug.split('/');
+      slugArr[2] = 'latest';
+      const canonicalUrl = 'https://docs.expo.io' + slugArr.join('/') + '.html';
+      link.push({ rel: 'canonical', href: canonicalUrl });
+    } catch (e) {
+      // It's okay - just don't set a canonical URL
+    }
+
     return (
       <div>
         <Helmet
@@ -38,6 +50,7 @@ class DocsPage extends React.Component {
               content: post.excerpt,
             },
           ]}
+          link={link}
         />
         <h1>{post.frontmatter.title}</h1>
         <div dangerouslySetInnerHTML={{ __html: post.html }} />
@@ -64,6 +77,9 @@ export const pageQuery = graphql`
       excerpt
       frontmatter {
         title
+      }
+      fields {
+        fileSlug
       }
     }
   }
