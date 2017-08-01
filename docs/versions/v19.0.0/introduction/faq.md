@@ -85,7 +85,7 @@ You can! Update your `.babelrc` you get on a new Expo project to the following:
 ```javascript
 {
   "presets": [
-    "react-native-stage-0/decorator-support",
+    "babel-preset-expo",
     {"plugins": ["./pathToYourBabelRelayPlugin/babelRelayPlugin"]}
   ],
   "env": {
@@ -97,6 +97,10 @@ You can! Update your `.babelrc` you get on a new Expo project to the following:
 ```
 
 Substitute `./pathToYourBabelRelayPlugin` with the path to your Relay plugin.
+
+## Why does Expo use a fork of React Native?
+
+Each Expo SDK Version corresponds to a React Native release. For example, SDK 19 corresponds to React Native 0.46.1. Often there is no difference between the fork for a given a SDK version and its corresponding React Native version, but occasionally we will find issues or want to include some code that hasn't yet been merged into the release and we will put it in our fork. Using a fork also makes it easier for people to verify that they are using the correct version of React Native for the Expo SDK version -- you know that if your SDK Version is set to 19.0.0 then you should use `https://github.com/expo/react-native/archive/sdk-19.0.0.tar.gz`.
 
 ## How do I get my existing React Native project running with Expo?
 
