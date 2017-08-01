@@ -1,11 +1,11 @@
-import { orderBy, pullAt } from 'lodash';
+import { orderBy } from 'lodash';
 import React from 'react';
 import Link from 'gatsby-link';
 import presets from 'glamor-media-query-presets';
 
 import AlgoliaSearch from './algoliaSearch';
 import logoText from '../images/logo-text.svg';
-import { rhythm, scale } from '../utils/typography';
+import { rhythm } from '../utils/typography';
 
 class Header extends React.Component {
   render() {

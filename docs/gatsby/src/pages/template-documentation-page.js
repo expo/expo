@@ -62,6 +62,20 @@ class DocsPage extends React.Component {
           }}>
           Still have questions?
           {' '}<a href="https://forums.expo.io/">Ask on our forums!</a>
+          <p>
+            <a
+              css={{
+                fontSize: '12px',
+              }}
+              href={
+                'https://github.com/expo/expo-docs/blob/master' +
+                post.fields.fileSlug +
+                '.md'
+              }>
+              You can edit the content above on GitHub and send us a pull
+              request!
+            </a>
+          </p>
         </p>
       </div>
     );
