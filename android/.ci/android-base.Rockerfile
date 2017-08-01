@@ -16,10 +16,10 @@ RUN mkdir -p /src/exponent
 
 WORKDIR /src/exponent
 ADD ./tools /src/exponent/tools
-RUN cd ./tools && npm install
+RUN cd ./tools && yarn --pure-lockfile
 
 ADD ./tools-public /src/exponent/tools-public
-RUN cd ./tools-public && yarn --pure-lockfile && npm install --save /src/xdl/xdl-packaged.tgz && rm -rf /src/xdl
+RUN cd ./tools-public && yarn --pure-lockfile && yarn add /src/xdl/xdl-packaged.tgz && rm -rf /src/xdl
 
 # Copy relevant files
 ADD ./__internal__ /src/exponent/__internal__

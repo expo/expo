@@ -40,7 +40,7 @@ RUN set -ex \
   done
 
 ENV NPM_CONFIG_LOGLEVEL warn
-ENV NODE_VERSION 7.8.0
+ENV NODE_VERSION 8.2.1
 
 RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz" \
   && curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc" \
@@ -97,12 +97,7 @@ RUN echo 'deb http://http.debian.net/debian wheezy-backports main' >> /etc/apt/s
     rm -rf /var/lib/apt/lists/*
 
 # Install Yarn
-ADD ../tools/yarn/ /root/yarn
-RUN cd /root/yarn && \
-  npm install && \
-  npm run build && \
-  npm install -g ./ && \
-  rm -rf /root/yarn
+COPY ../tools/bin/yarn /usr/local/bin/yarn
 
 # Tag/Push images
 PUSH {{ .ImageName }}:{{ .ImageTag }}
