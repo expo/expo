@@ -12,7 +12,7 @@ Provides access to a file system stored locally on the device. Each Expo app has
 
   `file://` URI pointing to the directory where temporary files used by this app will be stored. Files stored here may be automatically deleted by the system when low on storage. Example uses are for downloaded or generated files that the app just needs for one-time usage.
 
-So, for example, the URI to a file named `'myFile'` under `'myDirectory'` in the app's user documents directory would be `Expo.FileSystem.documentDirectory + 'myFile/myDirectory'`.
+So, for example, the URI to a file named `'myFile'` under `'myDirectory'` in the app's user documents directory would be `Expo.FileSystem.documentDirectory + 'myDirectory/myFile'`.
 
 
 ### `Expo.FileSystem.getInfoAsync(fileUri, options)`
