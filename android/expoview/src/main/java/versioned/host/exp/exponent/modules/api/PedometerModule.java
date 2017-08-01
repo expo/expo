@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
@@ -20,7 +21,9 @@ import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.fitness.Fitness;
+import com.google.android.gms.fitness.FitnessStatusCodes;
 import com.google.android.gms.fitness.data.Bucket;
 import com.google.android.gms.fitness.data.DataPoint;
 import com.google.android.gms.fitness.data.DataSet;
@@ -59,6 +62,7 @@ public class PedometerModule extends ReactContextBaseJavaModule {
       mClient = new GoogleApiClient.Builder(getReactApplicationContext())
           .addApi(Fitness.HISTORY_API)
           .addApi(Fitness.SENSORS_API)
+          .addApi(Fitness.RECORDING_API)
           .addScope(new Scope(Scopes.FITNESS_ACTIVITY_READ))
           .addConnectionCallbacks(
               new GoogleApiClient.ConnectionCallbacks() {
@@ -79,6 +83,14 @@ public class PedometerModule extends ReactContextBaseJavaModule {
             }
           })
           .build();
+
+      Fitness.RecordingApi.subscribe(mClient, DataType.TYPE_STEP_COUNT_DELTA)
+          .setResultCallback(new ResultCallback<Status>() {
+            @Override
+            public void onResult(@NonNull Status status) {
+              // TODO: Figure out how to handle these errors.
+            }
+          });
     }
   }
 
