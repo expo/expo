@@ -110,12 +110,6 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
     final Long timeout = options.hasKey("timeout") ? (long) options.getDouble("timeout") : null;
     boolean highAccuracy = options.hasKey("enableHighAccuracy") && options.getBoolean("enableHighAccuracy");
 
-    // Check for permissions
-    if (isMissingPermissions()) {
-      promise.reject("E_LOCATION_UNAUTHORIZED", "Not authorized to use location services");
-      return;
-    }
-
     final LocationParams locationParams = highAccuracy ? LocationParams.NAVIGATION : LocationParams.BEST_EFFORT;
     // LocationControl has an internal map from Context -> LocationProvider, so each experience
     // will only have one instance of a LocationProvider.
@@ -123,6 +117,13 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
 
     if (!locationControl.state().isAnyProviderAvailable()) {
       promise.reject("E_LOCATION_SERVICES_DISABLED", "Location services are disabled");
+      return;
+    }
+
+    // Check for permissions
+    if (isMissingPermissions()) {
+      promise.reject("E_LOCATION_UNAUTHORIZED", "Not authorized to use location services");
+      return;
     }
 
     // Have location cached already?
