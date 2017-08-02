@@ -15,10 +15,6 @@ public class LottiePackage implements ReactPackage {
     return Collections.emptyList();
   }
 
-  @Override public List<Class<? extends JavaScriptModule>> createJSModules() {
-    return Collections.emptyList();
-  }
-
   @SuppressWarnings("rawtypes") @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
     return Collections.<ViewManager>singletonList(new LottieAnimationViewManager());
