@@ -6,7 +6,7 @@
 //
 
 #import <GoogleMaps/GoogleMaps.h>
-#import "UIView+React.h"
+#import <React/UIView+React.h>
 
 @class AIRGoogleMapPolygon;
 

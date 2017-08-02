@@ -3,8 +3,8 @@
 #include <OpenGLES/ES2/gl.h>
 #include <OpenGLES/ES2/glext.h>
 
-#import "RCTBridgeModule.h"
-#import "RCTUtils.h"
+#import <React/RCTBridgeModule.h>
+#import <React/RCTUtils.h>
 
 #import "EXUnversioned.h"
 #import <UEXGL.h>
@@ -102,13 +102,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
         if (!self || !bridge || !bridge.valid) {
           return;
         }
-        
+
         JSGlobalContextRef jsContextRef = [bridge jsContextRef];
         if (!jsContextRef) {
           RCTLogError(@"EXGL: The React Native bridge unexpectedly does not have a JavaScriptCore context.");
           return;
         }
-        
+
         _exglCtxId = UEXGLContextCreate(jsContextRef);
         _onSurfaceCreate(@{ @"exglCtxId": @(_exglCtxId) });
       } queue:RCTJSThread];
