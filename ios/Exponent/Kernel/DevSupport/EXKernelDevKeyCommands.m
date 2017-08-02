@@ -7,8 +7,8 @@
 #import "EXKernelReactAppManager.h"
 #import "EXShellManager.h"
 
-#import "RCTDefines.h"
-#import "RCTUtils.h"
+#import <React/RCTDefines.h>
+#import <React/RCTUtils.h>
 
 #import <UIKit/UIKit.h>
 
