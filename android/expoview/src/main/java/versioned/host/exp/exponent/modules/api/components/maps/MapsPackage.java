@@ -25,11 +25,6 @@ public class MapsPackage implements ReactPackage {
     }
 
     @Override
-    public List<Class<? extends JavaScriptModule>> createJSModules() {
-        return Collections.emptyList();
-    }
-
-    @Override
     public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
         AirMapCalloutManager calloutManager = new AirMapCalloutManager();
         AirMapMarkerManager annotationManager = new AirMapMarkerManager();
