@@ -7,20 +7,12 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.react.common;
+package com.facebook.react.devsupport.interfaces;
 
-import java.util.HashSet;
+import javax.annotation.Nullable;
 
-/**
- * Utility class for creating sets
- */
-public class SetBuilder {
-
-  /**
-   * Creates an instance of {@code HashSet}
-   */
-  public static <E> HashSet<E> newHashSet() {
-    return new HashSet<E>();
-  }
-
+public interface DevBundleDownloadListener {
+  void onSuccess();
+  void onProgress(@Nullable String status, @Nullable Integer done, @Nullable Integer total);
+  void onFailure(Exception cause);
 }
