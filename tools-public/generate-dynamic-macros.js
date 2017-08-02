@@ -24,7 +24,7 @@ const EXPONENT_DIR = path.join(__dirname, '..');
 
 let isInUniverse = true;
 try {
-  let _unused = require('../../react-native-lab/blacklist').exponentBlacklist;
+  let _unused = require('../../react-native-lab/blacklist');
 } catch (e) {
   isInUniverse = false;
 }
