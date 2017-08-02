@@ -3,8 +3,8 @@
 #include <OpenGLES/ES2/gl.h>
 #include <OpenGLES/ES2/glext.h>
 
-#import <React/RCTUtils.h>
-#import <React/RCTJSCExecutor.h>
+#import "RCTBridgeModule.h"
+#import "RCTUtils.h"
 
 #import "EXUnversioned.h"
 #import <UEXGL.h>
@@ -30,6 +30,15 @@
 @property (nonatomic, assign) NSNumber *msaaSamples;
 
 @end
+
+
+@interface RCTBridge ()
+
+- (JSGlobalContextRef)jsContextRef;
+- (void)dispatchBlock:(dispatch_block_t)block queue:(dispatch_queue_t)queue;
+
+@end
+
 
 @implementation EXGLView
 
@@ -82,19 +91,27 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   _onSurfaceCreate = onSurfaceCreate;
   if (_onSurfaceCreate) {
     // Got non-empty onSurfaceCreate callback -- set up JS binding -- only possible on JavaScriptCore
-    id<RCTJavaScriptExecutor> executor = [_viewManager.bridge valueForKey:@"javaScriptExecutor"];
-    if ([executor isKindOfClass:NSClassFromString(@"RCTJSCExecutor")]) {
+    RCTBridge *bridge = _viewManager.bridge;
+    if (!bridge.executorClass) {
       // On JS thread, extract JavaScriptCore context, create EXGL context, call JS callback
       __weak __typeof__(self) weakSelf = self;
-      __weak __typeof__(executor) weakExecutor = executor;
-      [executor executeBlockOnJavaScriptQueue:^{
+      __weak __typeof__(bridge) weakBridge = bridge;
+      [bridge dispatchBlock:^{
         __typeof__(self) self = weakSelf;
-        RCTJSCExecutor *executor = weakExecutor;
-        if (self && executor) {
-          _exglCtxId = UEXGLContextCreate(executor.jsContext.JSGlobalContextRef);
-          _onSurfaceCreate(@{ @"exglCtxId": @(_exglCtxId) });
+        __typeof__(bridge) bridge = weakBridge;
+        if (!self || !bridge || !bridge.valid) {
+          return;
         }
-      }];
+        
+        JSGlobalContextRef jsContextRef = [bridge jsContextRef];
+        if (!jsContextRef) {
+          RCTLogError(@"EXGL: The React Native bridge unexpectedly does not have a JavaScriptCore context.");
+          return;
+        }
+        
+        _exglCtxId = UEXGLContextCreate(jsContextRef);
+        _onSurfaceCreate(@{ @"exglCtxId": @(_exglCtxId) });
+      } queue:RCTJSThread];
     } else {
       RCTLog(@"EXGL: Can only run on JavaScriptCore! Do you have 'Remote Debugging' enabled in your app's Developer Menu (https://facebook.github.io/react-native/docs/debugging.html)? EXGL is not supported while using Remote Debugging, you will need to disable it to use EXGL.");
     }
