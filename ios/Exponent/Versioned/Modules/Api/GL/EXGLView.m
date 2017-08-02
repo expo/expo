@@ -92,7 +92,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   if (_onSurfaceCreate) {
     // Got non-empty onSurfaceCreate callback -- set up JS binding -- only possible on JavaScriptCore
     RCTBridge *bridge = _viewManager.bridge;
-    if (!bridge.executorClass) {
+    if (!bridge.executorClass || [NSStringFromClass(bridge.executorClass) isEqualToString:@"RCTJSCExecutor"]) {
       // On JS thread, extract JavaScriptCore context, create EXGL context, call JS callback
       __weak __typeof__(self) weakSelf = self;
       __weak __typeof__(bridge) weakBridge = bridge;
