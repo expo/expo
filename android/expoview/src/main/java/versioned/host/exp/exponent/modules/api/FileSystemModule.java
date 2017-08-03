@@ -267,9 +267,9 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
           result.putString("uri", ExpFileUtils.uriFromFile(file).toString());
           if (options.hasKey("md5") && options.getBoolean("md5")) {
             result.putString("md5", ExpFileUtils.md5(file));
-            result.putInt("status", response.code());
-            result.putMap("headers", translateHeaders(response.headers()));
           }
+          result.putInt("status", response.code());
+          result.putMap("headers", translateHeaders(response.headers()));
           promise.resolve(result);
         } catch (Exception e) {
           EXL.e(TAG, e.getMessage());

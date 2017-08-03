@@ -347,9 +347,9 @@ RCT_REMAP_METHOD(downloadAsync,
     result[@"uri"] = [NSURL fileURLWithPath:scopedPath].absoluteString;
     if (options[@"md5"]) {
       result[@"md5"] = [data md5String];
-      result[@"status"] = @([httpResponse statusCode]);
-      result[@"headers"] = [httpResponse allHeaderFields];
     }
+    result[@"status"] = @([httpResponse statusCode]);
+    result[@"headers"] = [httpResponse allHeaderFields];
     resolve(result);
   }];
   [task resume];
