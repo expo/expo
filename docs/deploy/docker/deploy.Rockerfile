@@ -16,6 +16,7 @@ RUN yarn
 MOUNT ./gatsby/public:/root/docs/gatsby/public
 ADD ./gatsby /root/docs/gatsby
 ADD ./versions /root/docs/versions
+ADD ./package.json /root/docs/package.json
 
 RUN yarn run build
 

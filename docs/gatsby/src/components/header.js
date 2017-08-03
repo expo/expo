@@ -6,6 +6,7 @@ import presets from 'glamor-media-query-presets';
 import AlgoliaSearch from './algoliaSearch';
 import logoText from '../images/logo-text.svg';
 import { rhythm } from '../utils/typography';
+import { LATEST_VERSION } from '../utils/url';
 
 class Header extends React.Component {
   render() {
@@ -90,7 +91,9 @@ class Header extends React.Component {
                   .map(version => {
                     return (
                       <option key={version} value={version}>
-                        {version}
+                        {version === 'latest'
+                          ? 'latest (' + LATEST_VERSION + ')'
+                          : version}
                       </option>
                     );
                   })
@@ -117,6 +120,10 @@ function orderVersions(versions) {
     versions.splice(versions.indexOf('unversioned'), 1);
   }
 
+  if (versions.indexOf('latest') >= 0) {
+    versions.splice(versions.indexOf('latest'), 1);
+  }
+
   versions = orderBy(
     versions,
     v => {
@@ -125,6 +132,8 @@ function orderVersions(versions) {
     },
     ['asc']
   );
+
+  versions.push('latest');
 
   if (typeof window === 'object' && window.GATSBY_ENV === 'development') {
     versions.push('unversioned');

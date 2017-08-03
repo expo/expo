@@ -55,14 +55,14 @@ class DocsPage extends React.Component {
         <h1>{post.frontmatter.title}</h1>
         <div dangerouslySetInnerHTML={{ __html: post.html }} />
         <hr />
-        <p
+        <div
           css={{
             textAlign: `center`,
             marginBottom: rhythm(1 / 2),
           }}>
           Still have questions?
           {' '}<a href="https://forums.expo.io/">Ask on our forums!</a>
-          <p>
+          <div>
             <a
               css={{
                 fontSize: '12px',
@@ -75,8 +75,8 @@ class DocsPage extends React.Component {
               You can edit the content above on GitHub and send us a pull
               request!
             </a>
-          </p>
-        </p>
+          </div>
+        </div>
       </div>
     );
   }

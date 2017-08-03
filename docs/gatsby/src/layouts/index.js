@@ -16,6 +16,7 @@ import SidebarContent from '../components/sidebar';
 import Header from '../components/header';
 import Button from '../components/button';
 import typography from '../utils/typography';
+import { replaceVersionInUrl, LATEST_VERSION } from '../utils/url';
 const rhythm = typography.rhythm;
 const scale = typography.scale;
 import '../css/layout.css';
@@ -36,6 +37,7 @@ import v14 from '../data/v14.yaml';
 import v13 from '../data/v13.yaml';
 
 const versions = [
+  `latest`,
   `v19.0.0`,
   `v18.0.0`,
   `v17.0.0`,
@@ -83,7 +85,8 @@ class Wrapper extends React.Component {
 
   getRoutes = version => {
     let routes;
-    switch (version) {
+    let version_ = version === 'latest' ? LATEST_VERSION : version;
+    switch (version_) {
       case 'unversioned':
         routes = unversioned;
         break;
@@ -111,6 +114,27 @@ class Wrapper extends React.Component {
       default:
         routes = v19;
     }
+
+    if (version === 'latest') {
+      let newRoutes = [];
+      routes.forEach(section => {
+        var newSection = {
+          index: replaceVersionInUrl(section.index, 'latest'),
+          title: section.title,
+          links: {},
+        };
+        Object.keys(section.links).forEach(
+          title =>
+            (newSection.links[title] = replaceVersionInUrl(
+              section.links[title],
+              'latest'
+            ))
+        );
+        newRoutes.push(newSection);
+      });
+      routes = newRoutes;
+    }
+
     return routes;
   };
 

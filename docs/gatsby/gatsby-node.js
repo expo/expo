@@ -2,6 +2,11 @@ const _ = require('lodash');
 const Promise = require('bluebird');
 const path = require('path');
 const parseFilepath = require('parse-filepath');
+const {
+  replaceVersionInUrl,
+  getVersionFromUrl,
+  LATEST_VERSION,
+} = require('./src/utils/url');
 
 exports.createPages = ({ boundActionCreators, graphql }) => {
   const { createPage } = boundActionCreators;
@@ -48,6 +53,19 @@ exports.createPages = ({ boundActionCreators, graphql }) => {
               fileSlug: edge.node.fields.fileSlug,
             },
           });
+          if (getVersionFromUrl(edge.node.fields.fileSlug) === LATEST_VERSION) {
+            createPage({
+              path: edge.node.fields.isIndex
+                ? replaceVersionInUrl(edge.node.fields.fileSlug, 'latest') +
+                    '/index.html'
+                : replaceVersionInUrl(edge.node.fields.fileSlug, 'latest') +
+                    '.html',
+              component: docsPage,
+              context: {
+                fileSlug: edge.node.fields.fileSlug,
+              },
+            });
+          }
         });
 
         return;
@@ -58,7 +76,7 @@ exports.createPages = ({ boundActionCreators, graphql }) => {
 
 // Add custom slug.
 exports.onCreateNode = ({ node, boundActionCreators, getNode }) => {
-  const { createNode, createNodeField } = boundActionCreators;
+  const { createNodeField } = boundActionCreators;
 
   if (node.internal.type === 'MarkdownRemark') {
     const file = getNode(node.parent);

@@ -1,6 +1,6 @@
 {
   "name": "docs-expo",
-  "version": "15.0.0",
+  "version": "19.0.0",
   "description": "Expo documentation site",
   "scripts": {
     "build": "gatsby build",

@@ -2,6 +2,7 @@ import React from 'react';
 import presets from 'glamor-media-query-presets';
 
 import { rhythm, scale } from '../utils/typography';
+import { LATEST_VERSION, replaceVersionInUrl } from '../utils/url';
 
 class AlgoliaSearch extends React.Component {
   componentWillReceiveProps(nextProps) {
@@ -11,7 +12,11 @@ class AlgoliaSearch extends React.Component {
     ) {
       this.docsearch.algoliaOptions = {
         ...this.docsearch.algoliaOptions,
-        facetFilters: [`tags:${nextProps.activeVersion}`],
+        facetFilters: [
+          `tags:${nextProps.activeVersion === 'latest'
+            ? LATEST_VERSION
+            : nextProps.activeVersion}`,
+        ],
       };
     }
   }
@@ -25,14 +30,21 @@ class AlgoliaSearch extends React.Component {
       indexName: 'exponent-docs-v2',
       inputSelector: '#algolia-search-box',
       algoliaOptions: {
-        facetFilters: [`tags:${this.props.activeVersion}`],
+        facetFilters: [
+          `tags:${this.props.activeVersion === 'latest'
+            ? LATEST_VERSION
+            : this.props.activeVersion}`,
+        ],
         hitsPerPage: 10,
       },
       enhancedSearchInput: true,
       handleSelected: (input, event, suggestion) => {
         input.setVal('');
         const url = suggestion.url;
-        const route = url.match(/https?:\/\/(.*)(\/versions\/.*)/)[2];
+        let route = url.match(/https?:\/\/(.*)(\/versions\/.*)/)[2];
+        if (this.props.activeVersion === 'latest') {
+          route = replaceVersionInUrl(route, 'latest');
+        }
         this.props.router.push(route);
         document.getElementById('docsearch').blur();
         const searchbox = document.querySelector('input#docsearch');
@@ -56,8 +68,6 @@ class AlgoliaSearch extends React.Component {
       ],
     });
   }
-
-  componentWillUnmount() {}
 
   render() {
     return (
