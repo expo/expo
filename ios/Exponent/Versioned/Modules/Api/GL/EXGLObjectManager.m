@@ -37,7 +37,7 @@ RCT_EXPORT_METHOD(createObjectAsync:(NSDictionary *)config
   resolve(@{ @"exglObjId": @(exglObj.exglObjId) });
 }
 
-RCT_EXPORT_METHOD(destroyObjectAsync:(NSNumber *)exglObjId)
+RCT_EXPORT_METHOD(destroyObjectAsync:(nonnull NSNumber *)exglObjId)
 {
   _objects[exglObjId] = nil;
 }
