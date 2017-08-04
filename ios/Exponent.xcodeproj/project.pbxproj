@@ -24,6 +24,7 @@
 		200C29ED1855EF40345E4BA2 /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B84B3DEFB2C488FAE7279AD /* libPods-ExponentIntegrationTests.a */; };
 		3778B7EB1E70831F000A1742 /* EXAudioRecordingPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 3778B7E91E70831F000A1742 /* EXAudioRecordingPermissionRequester.m */; };
 		3CA241951F029BB700C3332E /* EXSpeech.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CA241941F029BB700C3332E /* EXSpeech.m */; };
+		4C9F38C21F1946FC00F926DA /* EXSecureStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C9F38C11F1946FC00F926DA /* EXSecureStore.m */; };
 		7847A2BF1EB9AF210088BF69 /* AIRMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 7847A29D1EB9AF210088BF69 /* AIRMap.m */; };
 		7847A2C01EB9AF210088BF69 /* AIRMapCallout.m in Sources */ = {isa = PBXBuildFile; fileRef = 7847A29F1EB9AF210088BF69 /* AIRMapCallout.m */; };
 		7847A2C11EB9AF210088BF69 /* AIRMapCalloutManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 7847A2A11EB9AF210088BF69 /* AIRMapCalloutManager.m */; };
@@ -274,6 +275,8 @@
 		3778B7EA1E70831F000A1742 /* EXAudioRecordingPermissionRequester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAudioRecordingPermissionRequester.h; sourceTree = "<group>"; };
 		3CA241931F029B9A00C3332E /* EXSpeech.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXSpeech.h; sourceTree = "<group>"; };
 		3CA241941F029BB700C3332E /* EXSpeech.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXSpeech.m; sourceTree = "<group>"; };
+		4C9F38C01F1946FC00F926DA /* EXSecureStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXSecureStore.h; sourceTree = "<group>"; };
+		4C9F38C11F1946FC00F926DA /* EXSecureStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXSecureStore.m; sourceTree = "<group>"; };
 		7847A29C1EB9AF210088BF69 /* AIRMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AIRMap.h; sourceTree = "<group>"; };
 		7847A29D1EB9AF210088BF69 /* AIRMap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIRMap.m; sourceTree = "<group>"; };
 		7847A29E1EB9AF210088BF69 /* AIRMapCallout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AIRMapCallout.h; sourceTree = "<group>"; };
@@ -1052,6 +1055,8 @@
 				1978AD2F1EAC2656002A615B /* EXPedometer.m */,
 				19B96C331EE7D9F20006A7DB /* EXScreenOrientation.h */,
 				19B96C341EE7D9F20006A7DB /* EXScreenOrientation.m */,
+				4C9F38C01F1946FC00F926DA /* EXSecureStore.h */,
+				4C9F38C11F1946FC00F926DA /* EXSecureStore.m */,
 				88E089A81D6BCF4300562FA1 /* EXSegment.h */,
 				88E089AA1D6BCF5800562FA1 /* EXSegment.m */,
 				3CA241931F029B9A00C3332E /* EXSpeech.h */,
@@ -2039,6 +2044,7 @@
 				B5218E7A1D232B8800C54B61 /* EXNotifications.m in Sources */,
 				1978AD301EAC2656002A615B /* EXPedometer.m in Sources */,
 				B5AC39D61E95B17300540AA7 /* EXErrorRecoveryManager.m in Sources */,
+				4C9F38C21F1946FC00F926DA /* EXSecureStore.m in Sources */,
 				192B8CAC1EC464DF0045BE97 /* RNBranch.m in Sources */,
 				B5844C371D482C3D0015C683 /* EXPermissions.m in Sources */,
 				7847A3761EC0F1550088BF69 /* RNSVGBrush.m in Sources */,
@@ -2228,6 +2234,7 @@
 				CODE_SIGN_ENTITLEMENTS = Exponent/Supporting/Exponent.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = C8D8QTF339;
 				EX_BUNDLE_NAME = Expo;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Exponent/Supporting/Exponent-Prefix.pch";
@@ -2297,6 +2304,7 @@
 				CODE_SIGN_ENTITLEMENTS = Exponent/Supporting/Exponent.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = C8D8QTF339;
 				EX_BUNDLE_NAME = Expo;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Exponent/Supporting/Exponent-Prefix.pch";
