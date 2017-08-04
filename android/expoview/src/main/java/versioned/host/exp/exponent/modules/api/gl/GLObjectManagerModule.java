@@ -39,29 +39,41 @@ class GLObject implements SurfaceTexture.OnFrameAvailableListener {
     exglCtxId = config.getInt("exglCtxId");
     exglObjId = EXGLContextCreateObject(exglCtxId);
 
-    // Camera texture specific
+    // Texture
 
-    int[] textures = new int[1];
-    glGenTextures(1, textures, 0);
-    mGLId = textures[0];
-    EXGLContextMapObject(exglCtxId, exglObjId, mGLId);
+    if (config.hasKey("texture")) {
+      ReadableMap textureConfig = config.getMap("texture");
 
-    glBindTexture(GL_TEXTURE_EXTERNAL_OES, mGLId);
-    glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      // Camera
 
-    mCameraSurfaceTexture = new SurfaceTexture(mGLId);
-    mCameraSurfaceTexture.setOnFrameAvailableListener(this);
+      if (textureConfig.hasKey("camera")) {
+        ReadableMap cameraConfig = textureConfig.getMap("camera");
+        String position = cameraConfig.hasKey("position") ? cameraConfig.getString("position") : "back";
 
-    mCamera = Camera.open();
-    try {
-      mCamera.setPreviewTexture(mCameraSurfaceTexture);
-    } catch (IOException e) {
-      EXL.e("EXGL", "Couldn't set preview texture for camera.");
+        int[] textures = new int[1];
+        glGenTextures(1, textures, 0);
+        mGLId = textures[0];
+        EXGLContextMapObject(exglCtxId, exglObjId, mGLId);
+
+        glBindTexture(GL_TEXTURE_EXTERNAL_OES, mGLId);
+        glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+        mCameraSurfaceTexture = new SurfaceTexture(mGLId);
+        mCameraSurfaceTexture.setOnFrameAvailableListener(this);
+
+        mCamera = Camera.open();
+        try {
+          mCamera.setPreviewTexture(mCameraSurfaceTexture);
+        } catch (IOException e) {
+          EXL.e("EXGL", "Couldn't set preview texture for camera.");
+        }
+
+        mCamera.startPreview();
+      }
     }
-    mCamera.startPreview();
   }
 
   @Override
@@ -81,13 +93,17 @@ class GLObject implements SurfaceTexture.OnFrameAvailableListener {
   }
 
   void destroy() {
-    // Camera texture specific
+    // Camera texture
 
-    mCameraSurfaceTexture.release();
-    mCameraSurfaceTexture = null;
+    if (mCameraSurfaceTexture != null) {
+      mCameraSurfaceTexture.release();
+      mCameraSurfaceTexture = null;
+    }
 
-    mCamera.stopPreview();
-    mCamera.release();
+    if (mCamera != null) {
+      mCamera.stopPreview();
+      mCamera.release();
+    }
 
     // Generic
 
