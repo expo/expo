@@ -70,6 +70,7 @@ class DocsPage extends React.Component {
               href={
                 'https://github.com/expo/expo-docs/blob/master' +
                 post.fields.fileSlug +
+                (post.fields.isIndex ? '/index' : '') +
                 '.md'
               }>
               You can edit the content above on GitHub and send us a pull
@@ -94,6 +95,7 @@ export const pageQuery = graphql`
       }
       fields {
         fileSlug
+        isIndex
       }
     }
   }

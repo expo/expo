@@ -4,8 +4,8 @@ import presets from 'glamor-media-query-presets';
 
 import Button from './button';
 import AlgoliaSearch from './algoliaSearch';
-
 import { rhythm } from '../utils/typography';
+import { LATEST_VERSION } from '../utils/url';
 
 class Sidebar extends React.Component {
   render() {
@@ -108,7 +108,10 @@ class Sidebar extends React.Component {
                 {this.props.versions.map(version => {
                   return (
                     <option key={version} value={version}>
-                      SDK Version {version}
+                      SDK &nbsp;
+                      {version === 'latest'
+                        ? 'latest (' + LATEST_VERSION + ')'
+                        : version}
                     </option>
                   );
                 })}
