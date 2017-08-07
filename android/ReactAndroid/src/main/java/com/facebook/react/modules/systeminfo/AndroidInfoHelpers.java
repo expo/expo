@@ -52,11 +52,6 @@ public class AndroidInfoHelpers {
         } else {
             ipAddress = DEVICE_LOCALHOST;
         }
-        // NOTE(ide): We need to change how we modify this class in
-        // Exponent.java. We currently override the IP address fields with
-        // IP:port but the port gets added here. Also this method should be
-        // named getServerHost... whatever
-        return ipAddress;
-        //return String.format(Locale.US, "%s:%d", ipAddress, port);
+        return String.format(Locale.US, "%s:%d", ipAddress, port);
     }
 }
