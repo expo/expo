@@ -79,7 +79,7 @@ RCT_EXPORT_MODULE(ExponentSpeech)
       utterance.pitchMultiplier = [pitch floatValue];
     }
     if (rate != nil) {
-      utterance.rate = [rate floatValue];
+      utterance.rate = [rate floatValue] * AVSpeechUtteranceDefaultSpeechRate;
     }
     
     [_synthesizer speakUtterance:utterance];
