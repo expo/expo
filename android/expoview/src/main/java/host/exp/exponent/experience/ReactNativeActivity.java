@@ -379,7 +379,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     if (delegate.isDebugModeEnabled()) {
       String debuggerHost = mManifest.optString(ExponentManifest.MANIFEST_DEBUGGER_HOST_KEY);
       String mainModuleName = mManifest.optString(ExponentManifest.MANIFEST_MAIN_MODULE_NAME_KEY);
-      Exponent.enableDeveloperSupport(debuggerHost, mainModuleName, builder);
+      Exponent.enableDeveloperSupport(mSDKVersion, debuggerHost, mainModuleName, builder);
     }
 
     Bundle bundle = new Bundle();
