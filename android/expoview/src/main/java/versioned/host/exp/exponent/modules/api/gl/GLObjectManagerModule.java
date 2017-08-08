@@ -28,7 +28,6 @@ class GLObject implements SurfaceTexture.OnFrameAvailableListener {
   private int exglCtxId;
   private int exglObjId;
 
-  private int mGLId;
   private SurfaceTexture mCameraSurfaceTexture;
   private Camera mCamera;
 
@@ -48,23 +47,41 @@ class GLObject implements SurfaceTexture.OnFrameAvailableListener {
 
       if (textureConfig.hasKey("camera")) {
         ReadableMap cameraConfig = textureConfig.getMap("camera");
-        String position = cameraConfig.hasKey("position") ? cameraConfig.getString("position") : "back";
+        int facing = cameraConfig.hasKey("position") && cameraConfig.getString("position").equals("front") ?
+            Camera.CameraInfo.CAMERA_FACING_FRONT : Camera.CameraInfo.CAMERA_FACING_BACK;
 
         int[] textures = new int[1];
         glGenTextures(1, textures, 0);
-        mGLId = textures[0];
-        EXGLContextMapObject(exglCtxId, exglObjId, mGLId);
+        EXGLContextMapObject(exglCtxId, exglObjId, textures[0]);
 
-        glBindTexture(GL_TEXTURE_EXTERNAL_OES, mGLId);
+        glBindTexture(GL_TEXTURE_EXTERNAL_OES, textures[0]);
         glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-        mCameraSurfaceTexture = new SurfaceTexture(mGLId);
+        mCameraSurfaceTexture = new SurfaceTexture(textures[0]);
         mCameraSurfaceTexture.setOnFrameAvailableListener(this);
 
-        mCamera = Camera.open();
+        int cameraCount = 0;
+        Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
+        cameraCount = Camera.getNumberOfCameras();
+        for (int i = 0; i < cameraCount; i++) {
+          Camera.getCameraInfo(i, cameraInfo);
+          if (cameraInfo.facing == facing) {
+            try {
+              mCamera = Camera.open(i);
+              break;
+            } catch (RuntimeException ignored) {
+            }
+          }
+        }
+
+        if (mCamera == null) {
+          EXL.e("EXGL", "Couldn't open suitable camera.");
+          return;
+        }
+
         try {
           mCamera.setPreviewTexture(mCameraSurfaceTexture);
         } catch (IOException e) {
