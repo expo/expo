@@ -1,9 +1,9 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import "EXScopedBridgeModule.h"
+#import "EXScopedEventEmitter.h"
 #import "EXScopedModuleRegistry.h"
 
-@interface EXFileSystem : EXScopedBridgeModule
+@interface EXFileSystem : EXScopedEventEmitter
 
 @property (nonatomic, readonly) NSString *documentDirectory;
 @property (nonatomic, readonly) NSString *cachesDirectory;

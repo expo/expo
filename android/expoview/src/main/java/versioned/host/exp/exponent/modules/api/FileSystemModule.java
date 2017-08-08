@@ -3,6 +3,7 @@
 package versioned.host.exp.exponent.modules.api;
 
 import android.net.Uri;
+import android.os.AsyncTask;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -11,11 +12,14 @@ import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -23,7 +27,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.Arguments;
+import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 import com.facebook.react.modules.network.OkHttpClientProvider;
 
 import host.exp.exponent.analytics.EXL;
@@ -32,16 +36,26 @@ import host.exp.exponent.utils.ScopedContext;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Headers;
+import okhttp3.Interceptor;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
+import okio.Buffer;
 import okio.BufferedSink;
+import okio.BufferedSource;
+import okio.ForwardingSource;
 import okio.Okio;
+import okio.Source;
 
 public class FileSystemModule extends ReactContextBaseJavaModule {
   private static final String TAG = FileSystemModule.class.getSimpleName();
+  private static final String EXDownloadProgressEventName = "Exponent.downloadProgress";
 
   private ScopedContext mScopedContext;
+
+  private final Map<String, DownloadResumable> mDownloadResumableMap = new HashMap<>();
 
   public FileSystemModule(ReactApplicationContext reactContext, ScopedContext scopedContext) {
     super(reactContext);
@@ -279,6 +293,143 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
     });
   }
 
+  @ReactMethod
+  public void downloadResumableStartAsync(String url, final String fileUri, final String uuid, final ReadableMap options, final String resumeData, final Promise promise) {
+    final boolean isResume = resumeData != null;
+        
+    final ProgressListener progressListener = new ProgressListener() {
+      @Override public void update(long bytesRead, long contentLength, boolean done) {
+        WritableMap downloadProgress = Arguments.createMap();
+        WritableMap downloadProgressData = Arguments.createMap();
+        long totalBytesWritten = isResume ? bytesRead + Long.parseLong(resumeData):bytesRead;
+        long totalBytesExpectedToWrite = isResume ? contentLength + Long.parseLong(resumeData):contentLength;
+        downloadProgressData.putDouble("totalBytesWritten", totalBytesWritten);
+        downloadProgressData.putDouble("totalBytesExpectedToWrite", totalBytesExpectedToWrite);
+        downloadProgress.putString("uuid", uuid);
+        downloadProgress.putMap("data", downloadProgressData);
+        getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class)
+            .emit(EXDownloadProgressEventName, downloadProgress);
+      }
+    };
+
+    OkHttpClient client = new OkHttpClient.Builder()
+      .addNetworkInterceptor(new Interceptor() {
+        @Override public Response intercept(Chain chain) throws IOException {
+            Response originalResponse = chain.proceed(chain.request());
+            return originalResponse.newBuilder()
+              .body(new ProgressResponseBody(originalResponse.body(), progressListener))
+              .build();
+          }
+        })
+      .build();
+    
+    Request.Builder requestBuilder = new Request.Builder();
+    if (isResume) {
+      requestBuilder.addHeader("Range", "bytes=" + resumeData + "-");
+    }
+    
+    Request request = requestBuilder.url(url).build();
+    Call call = client.newCall(request);
+    DownloadResumable downloadResumable = new DownloadResumable(uuid, url, fileUri, call);
+    this.mDownloadResumableMap.put(uuid, downloadResumable);
+    
+    try {
+      File file = uriToFile(fileUri);
+      DownloadResumableTaskParams params = new DownloadResumableTaskParams(options, call, file, isResume, promise);
+      DownloadResumableTask task = new DownloadResumableTask();
+      task.execute(params);
+    } catch (Exception e) {
+      EXL.e(TAG, e.getMessage());
+      promise.reject(e);
+    }
+  }
+
+  @ReactMethod
+  public void downloadResumablePauseAsync(final String uuid, final Promise promise) {
+    DownloadResumable downloadResumable = this.mDownloadResumableMap.get(uuid);
+    if (downloadResumable != null) {
+      downloadResumable.call.cancel();
+      this.mDownloadResumableMap.remove(downloadResumable.uuid);
+      try {
+        File file = uriToFile(downloadResumable.fileUri);
+        WritableMap result = Arguments.createMap();
+        result.putString("resumeData", String.valueOf(file.length()));
+        promise.resolve(result);
+      } catch (Exception e) {
+        EXL.e(TAG, e.getMessage());
+        promise.reject(e);
+      }
+    } else {
+      Exception e = new IOException("No download object available");
+      EXL.e(TAG, e.getMessage());
+      promise.reject(e);
+    }
+  }
+
+  private static class DownloadResumableTaskParams {
+    ReadableMap options;
+    Call call;
+    File file;
+    boolean isResume;
+    Promise promise;
+
+    DownloadResumableTaskParams(ReadableMap options, Call call, File file, boolean isResume, Promise promise) {
+      this.options = options;
+      this.call = call;
+      this.file = file;
+      this.isResume = isResume;
+      this.promise = promise;
+    }
+  }
+
+  private class DownloadResumableTask extends AsyncTask<DownloadResumableTaskParams, Void, Void> {
+    @Override
+    protected Void doInBackground(DownloadResumableTaskParams... params) {
+      Call call = params[0].call;
+      Promise promise = params[0].promise;
+      File file = params[0].file;
+      boolean isResume = params[0].isResume;
+      ReadableMap options = params[0].options;
+
+      try {
+        Response response = call.execute();
+        ResponseBody responseBody = response.body();
+        BufferedInputStream input = new BufferedInputStream(responseBody.byteStream());
+        OutputStream output;
+
+        if (isResume) {
+          output = new FileOutputStream(file, true);
+        } else {
+          output = new FileOutputStream(file, false);    
+        }
+
+        long currentDownloadedSize = 0;
+        long currentTotalByteSize = responseBody.contentLength();
+        byte[] data = new byte[1024];
+        int count = 0;
+        while ((count = input.read(data)) != -1) {
+          currentDownloadedSize += count;
+          output.write(data, 0, count);   
+        }
+
+        WritableMap result = Arguments.createMap();
+        result.putString("uri", ExpFileUtils.uriFromFile(file).toString());
+        if (options.hasKey("md5") && options.getBoolean("md5")) {
+          result.putString("md5", ExpFileUtils.md5(file));
+        }
+        result.putInt("status", response.code());
+        result.putMap("headers", translateHeaders(response.headers()));
+        
+        promise.resolve(result);
+        return null;
+      } catch (Exception e) {
+        EXL.e(TAG, e.getMessage());
+        promise.reject(e);
+        return null;
+      }
+    }
+  }
+
   // Copied out of React Native's `NetworkingModule.java`
   private static WritableMap translateHeaders(Headers headers) {
     WritableMap responseHeaders = Arguments.createMap();
@@ -294,5 +445,65 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
       }
     }
     return responseHeaders;
+  }
+
+  private static class DownloadResumable {
+    public final String uuid;
+    public final String url;
+    public final String fileUri;
+    public final Call call;
+
+    public DownloadResumable(String uuid, String url, String fileUri, Call call) {
+      this.uuid = uuid;
+      this.url = url;
+      this.fileUri = fileUri;
+      this.call = call;
+    }
+  }
+
+  // https://github.com/square/okhttp/blob/master/samples/guide/src/main/java/okhttp3/recipes/Progress.java
+  private static class ProgressResponseBody extends ResponseBody {
+
+    private final ResponseBody responseBody;
+    private final ProgressListener progressListener;
+    private BufferedSource bufferedSource;
+
+    ProgressResponseBody(ResponseBody responseBody, ProgressListener progressListener) {
+      this.responseBody = responseBody;
+      this.progressListener = progressListener;
+    }
+
+    @Override public MediaType contentType() {
+      return responseBody.contentType();
+    }
+
+    @Override public long contentLength() {
+      return responseBody.contentLength();
+    }
+
+    @Override public BufferedSource source() {
+      if (bufferedSource == null) {
+        bufferedSource = Okio.buffer(source(responseBody.source()));
+      }
+      return bufferedSource;
+    }
+
+    private Source source(Source source) {
+      return new ForwardingSource(source) {
+        long totalBytesRead = 0L;
+
+        @Override public long read(Buffer sink, long byteCount) throws IOException {
+          long bytesRead = super.read(sink, byteCount);
+          // read() returns the number of bytes read, or -1 if this source is exhausted.
+          totalBytesRead += bytesRead != -1 ? bytesRead : 0;
+          progressListener.update(totalBytesRead, responseBody.contentLength(), bytesRead == -1);
+          return bytesRead;
+        }
+      };
+    }
+  }
+
+  interface ProgressListener {
+    void update(long bytesRead, long contentLength, boolean done);
   }
 }
