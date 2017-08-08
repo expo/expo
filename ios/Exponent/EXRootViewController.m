@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXRootViewController ()
 
 @property (nonatomic, strong) UIActivityIndicatorView *loadingIndicator;
+@property (nonatomic, strong) UIView *loadingView;
 
 @end
 
@@ -25,14 +26,15 @@ NS_ASSUME_NONNULL_BEGIN
   // Display the launch screen behind the React view so that the React view appears to seamlessly load
   NSString *loadingNib = ([EXShellManager sharedInstance].isShell) ? @"LaunchScreenShell" : @"LaunchScreen";
   NSArray *views = [[NSBundle mainBundle] loadNibNamed:loadingNib owner:self options:nil];
-  UIView *placeholder = views.firstObject;
-  placeholder.frame = self.view.bounds;
-  placeholder.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-  [self.view addSubview:placeholder];
+  self.loadingView = views.firstObject;
+  self.loadingView.layer.zPosition = 1000;
+  self.loadingView.frame = self.view.bounds;
+  self.loadingView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  [self.view addSubview:self.loadingView];
   
   // The launch screen contains a loading indicator
   // use this instead of the superclass loading indicator
-  _loadingIndicator = (UIActivityIndicatorView *)[placeholder viewWithTag:1];
+  _loadingIndicator = (UIActivityIndicatorView *)[self.loadingView viewWithTag:1];
 }
 
 #pragma mark - Public
@@ -51,8 +53,10 @@ NS_ASSUME_NONNULL_BEGIN
   // don't call super
 
   if (isLoading) {
+    self.loadingView.hidden = NO;
     [_loadingIndicator startAnimating];
   } else {
+    self.loadingView.hidden = YES;
     [_loadingIndicator stopAnimating];
   }
 }
