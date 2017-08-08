@@ -194,3 +194,150 @@ Returns an object with the following fields:
 -   **headers (_object_)** -- An object containing all the HTTP header fields and their values for the download network request. The keys and values of the object are the header names and values respectively.
 
 -   **md5 (_string_)** -- Present if the `md5` option was truthy. Contains the MD5 hash of the file.
+
+### `Expo.FileSystem.createDownloadResumable(uri, fileUri, options, callback, resumeData)`
+
+Create a `DownloadResumable` object which can start, pause, and resume a download of contents at a remote URI to a file in the app's file system.  Please note:  You need to call `downloadAsync()`, on a `DownloadResumable` instance to initiate the download.  The `DownloadResumable` object has a callback that provides download progress updates.  Downloads can be resumed across app restarts by using `AsyncStorage` to store the `DownloadResumable.savable()` object for later retrieval.  The `savable` object contains the arguments required to initialize a new `DownloadResumable` object to resume the download after an app restart.
+
+#### Arguments
+
+-   **url (_string_)** --
+
+  The remote URI to download from.
+
+-   **fileUri (_string_)** --
+
+  The local URI of the file to download to. If there is no file at this URI, a new one is created. If there is a file at this URI, its contents are replaced.
+
+-   **options (_object_)** --
+
+  A map of options:
+
+    -   **md5 (_boolean_)** -- If `true`, include the MD5 hash of the file in the returned object. `false` by default. Provided for convenience since it is common to check the integrity of a file immediately after downloading.
+
+-   **callback (_function_)** --
+    This function is called on each data write to update the download progress.  An object with the following fields are passed:
+    - **totalBytesWritten (_number_)** -- The total bytes written by the download operation.
+    - **totalBytesExpectedToWrite (_number)** -- The total bytes expected to be written by the download operation.
+
+-   **resumeData (_string_)** --
+
+  The string which allows the api to resume a paused download.  This is set on the `DownloadResumable` object automatically when a download is paused.  When initializing a new `DownloadResumable` this should be `null`.
+
+### `Expo.FileSystem.DownloadResumable.downloadAsync()`
+
+Download the contents at a remote URI to a file in the app's file system.
+
+#### Returns
+
+Returns an object with the following fields:
+
+-   **uri (_string_)** -- A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
+
+-   **status (_number_)** -- The HTTP status code for the download network request.
+
+-   **headers (_object_)** -- An object containing all the HTTP header fields and their values for the download network request. The keys and values of the object are the header names and values respectively.
+
+-   **md5 (_string_)** -- Present if the `md5` option was truthy. Contains the MD5 hash of the file.
+
+### `Expo.FileSystem.DownloadResumable.pauseAsync()`
+
+Pause the current download operation.  `resumeData` is added to the `DownloadResumable` object after a successful pause operation.
+
+#### Returns 
+
+Returns an object with the following fields:
+
+-   **resumeData (_string_)** -- A string the api uses to resume a paused download.
+
+### `Expo.FileSystem.DownloadResumable.resumeAsync()`
+
+Resume a paused download operation.
+
+#### Returns
+
+Returns an object with the following fields:
+
+-   **uri (_string_)** -- A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
+
+-   **status (_number_)** -- The HTTP status code for the download network request.
+
+-   **headers (_object_)** -- An object containing all the HTTP header fields and their values for the download network request. The keys and values of the object are the header names and values respectively.
+
+-   **md5 (_string_)** -- Present if the `md5` option was truthy. Contains the MD5 hash of the file.
+
+### `Expo.FileSystem.DownloadResumable.savable()`
+
+Returns an object which can be saved with `AsyncStorage` for future retrieval.
+
+#### Returns
+
+Returns an object with the following fields:
+
+-   **url (_string_)** --
+
+  The remote URI to download from.
+
+-   **fileUri (_string_)** --
+
+  The local URI of the file to download to. If there is no file at this URI, a new one is created. If there is a file at this URI, its contents are replaced.
+
+-   **options (_object_)** --
+
+  A map of options:
+
+    -   **md5 (_boolean_)** -- If `true`, include the MD5 hash of the file in the returned object. `false` by default. Provided for convenience since it is common to check the integrity of a file immediately after downloading.
+
+-   **resumeData (_string_)** --
+
+  The string which allows the api to resume a paused download.
+
+#### Example
+
+```javascript
+const callback = downloadProgress => {
+  const progress = downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite;
+  this.setState({
+    downloadProgress: progress,
+  });
+};
+
+const downloadResumable = FileSystem.downloadResumable(
+  'http://techslides.com/demos/sample-videos/small.mp4',
+  FileSystem.documentDirectory + 'small.mp4',
+  {},
+  callback
+);
+
+downloadResumable.downloadAsync()
+  .then(({ uri }) => {
+    console.log('Finished downloading to ', uri);
+  })
+  .catch(error => {
+    console.error(error);
+  });
+
+downloadResumable.pauseAsync()
+  .then( () => {
+    console.log('Paused download operation, saving for future retrieval');
+    AsyncStorage.setItem(
+      'pausedDownload',
+      JSON.stringify(downloadResumable.savable())
+    );
+  })
+  .catch(error => {
+    console.error(error);
+  });
+
+downloadResumable.resumeAsync()
+  .then(({ uri }) => {
+    console.log('Finished downloading to ', uri);
+  })
+  .catch(error => {
+    console.error(error);
+  });
+```
+
+
+
+
