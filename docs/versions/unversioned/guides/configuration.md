@@ -112,6 +112,31 @@ The following is a list of properties that are available for you under the `"exp
 
       By default, Expo shows some text at the bottom of the loading screen. Set this to `true` to disable.
 
+   - `splash`
+
+       **Standalone Apps Only**. This is an experimental feature.
+
+      Configuration for loading and splash screen for standalone apps.
+
+      - `backgroundColor`
+
+        Color to fill the loading screen background.
+        6 character long hex color string, eg: `'#000000'`
+
+      - `ios`
+
+        iOS specific properties for customizing the splash and loading screen for standalone apps.
+
+        - `backgroundImage`
+
+          Local path or remote url to an image to fill the background of the loading screen. Image size and
+          aspect ratio are up to you. Must be a .png.
+
+          This image will be inserted into your standalone app's bundle, and cannot be changed without resubmitting.
+          It will be inserted into the UILaunchStoryboardName's xib screen win contentMode `aspectFill`. This is
+          used both for normal iOS application startup as well as during the loading of the JS bundle.
+
+
 - `appKey`
 
    By default, Expo looks for the application registered with the AppRegistry as `main`. If you would like to change this, you can specify the name in this property.
@@ -327,4 +352,3 @@ The following is a list of properties that are available for you under the `"exp
    Configuration for scripts to run to hook into the publish process
 
    - `postPublish`
-   
