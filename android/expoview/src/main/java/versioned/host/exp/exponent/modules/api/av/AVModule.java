@@ -42,8 +42,10 @@ import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.modules.api.av.player.PlayerData;
 import versioned.host.exp.exponent.modules.api.av.video.VideoView;
 
+import static android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED;
+
 public class AVModule extends ReactContextBaseJavaModule
-    implements LifecycleEventListener, AudioManager.OnAudioFocusChangeListener {
+    implements LifecycleEventListener, AudioManager.OnAudioFocusChangeListener, MediaRecorder.OnInfoListener {
   private static final String AUDIO_MODE_SHOULD_DUCK_KEY = "shouldDuckAndroid";
   private static final String AUDIO_MODE_INTERRUPTION_MODE_KEY = "interruptionModeAndroid";
 
@@ -93,6 +95,7 @@ public class AVModule extends ReactContextBaseJavaModule
   private long mAudioRecorderDurationAlreadyRecorded = 0L;
   private boolean mAudioRecorderIsRecording = false;
   private boolean mAudioRecorderIsPaused = false;
+  private Callback mAudioRecorderUnloadedCallback = null;
 
 
   @Override
@@ -501,6 +504,29 @@ public class AVModule extends ReactContextBaseJavaModule
     mAudioRecorderUptimeOfLastStartResume = 0L;
   }
 
+  @Override
+  public void onInfo(final MediaRecorder mr, final int what, final int extra) {
+    switch (what) {
+      case MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED:
+        final WritableMap finalStatus = getAudioRecorderStatus();
+        removeAudioRecorder();
+        if (mAudioRecorderUnloadedCallback != null) {
+          final Callback callback = mAudioRecorderUnloadedCallback;
+          mAudioRecorderUnloadedCallback = null;
+          callback.invoke(finalStatus);
+        }
+      default:
+        // Do nothing
+    }
+  }
+
+  @ReactMethod
+  public void setUnloadedCallbackForAndroidRecording(final Callback callback) {
+    // In JS, this is called before prepareAudioRecorder to make sure it is
+    // available immediately upon recording. So, we don't check mAudioRecorder != null.
+    mAudioRecorderUnloadedCallback = callback;
+  }
+
   @ReactMethod
   public void prepareAudioRecorder(final ReadableMap options, final Promise promise) {
     if (isMissingAudioRecordingPermissions()) {
@@ -542,6 +568,7 @@ public class AVModule extends ReactContextBaseJavaModule
 
     if (androidOptions.hasKey(RECORDING_OPTION_MAX_FILE_SIZE_KEY)) {
       mAudioRecorder.setMaxFileSize(androidOptions.getInt(RECORDING_OPTION_MAX_FILE_SIZE_KEY));
+      mAudioRecorder.setOnInfoListener(this);
     }
 
     try {
