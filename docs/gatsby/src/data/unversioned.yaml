@@ -83,6 +83,7 @@
     Magnetometer: /versions/unversioned/sdk/magnetometer.html
     MapView: /versions/unversioned/sdk/map-view.html
     Notifications: /versions/unversioned/sdk/notifications.html
+    Payments: /versions/unversioned/sdk/payments.html
     Pedometer: /versions/unversioned/sdk/pedometer.html
     Permissions: /versions/unversioned/sdk/permissions.html
     registerRootComponent: /versions/unversioned/sdk/register-root-component.html
