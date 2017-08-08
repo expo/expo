@@ -127,7 +127,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   // Set up player with parameters
   __weak __typeof__(self) weakSelf = self;
   [_player seekToTime:_currentPosition completionHandler:^(BOOL finished) {
-    dispatch_async(_exAV.methodQueue, ^{
+    dispatch_async(weakSelf.exAV.methodQueue, ^{
       weakSelf.currentPosition = weakSelf.player.currentTime;
       
       if (weakSelf.shouldCorrectPitch) {
@@ -398,15 +398,15 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 
 - (void)_callStatusUpdateCallbackWithExtraFields:(NSDictionary *)extraFields
 {
+  NSDictionary *status;
+  if (extraFields) {
+    NSMutableDictionary *mutableStatus = [[self getStatus] mutableCopy];
+    [mutableStatus addEntriesFromDictionary:extraFields];
+    status = mutableStatus;
+  } else {
+    status = [self getStatus];
+  }
   if (_statusUpdateCallback) {
-    NSDictionary *status;
-    if (extraFields) {
-      NSMutableDictionary *mutableStatus = [[self getStatus] mutableCopy];
-      [mutableStatus addEntriesFromDictionary:extraFields];
-      status = mutableStatus;
-    } else {
-      status = [self getStatus];
-    }
     _statusUpdateCallback(status);
   }
 }
@@ -436,9 +436,11 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   
   if (_finishObserver) {
     [center removeObserver:_finishObserver];
+    _finishObserver = nil;
   }
   if (_playbackStalledObserver) {
     [center removeObserver:_playbackStalledObserver];
+    _playbackStalledObserver = nil;
   }
   
   [self _tryRemoveObserver:_player forKeyPath:EXAVPlayerDataObserverRateKeyPath];
@@ -463,15 +465,16 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   CMTime interval = CMTimeMakeWithSeconds(_progressUpdateIntervalMillis.floatValue / 1000.0, NSEC_PER_SEC);
   
   void (^timeObserverBlock)(CMTime time) = ^(CMTime time) {
-    __strong EXAV *strongEXAV = _exAV;
+    __strong __typeof__(self) strongSelfOuter = weakSelf;
+    __strong EXAV *strongEXAV = strongSelfOuter ? strongSelfOuter.exAV : nil;
     
     if (strongEXAV) {
       dispatch_async(strongEXAV.methodQueue, ^{
-        __strong __typeof__(self) strongSelf = weakSelf;
+        __strong __typeof__(self) strongSelfInner = weakSelf;
         
-        if (strongSelf && strongSelf.player.status == AVPlayerStatusReadyToPlay) {
-          strongSelf.currentPosition = time; // We keep track of _currentPosition to reset the AVPlayer in handleMediaServicesReset.
-          [strongSelf _callStatusUpdateCallback];
+        if (strongSelfInner && strongSelfInner.player.status == AVPlayerStatusReadyToPlay) {
+          strongSelfInner.currentPosition = time; // We keep track of _currentPosition to reset the AVPlayer in handleMediaServicesReset.
+          [strongSelfInner _callStatusUpdateCallback];
         }
       });
     }
@@ -663,8 +666,8 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     if (finishCallback != nil) {
       finishCallback();
     }
-    if (_statusUpdateCallback == nil) {
-      _statusUpdateCallback = callback;
+    if (weakSelf.statusUpdateCallback == nil) {
+      weakSelf.statusUpdateCallback = callback;
     }
     [weakSelf _callStatusUpdateCallback];
     if (!success && weakSelf.errorCallback) {

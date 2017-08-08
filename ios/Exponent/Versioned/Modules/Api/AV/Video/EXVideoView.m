@@ -299,9 +299,9 @@ static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
     [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerWillPresent];
     
     dispatch_async(dispatch_get_main_queue(), ^{
-      [_presentingViewController presentViewController:_playerViewController animated:YES completion:^{
-        _playerViewController.showsPlaybackControls = YES;
-        _fullscreenPlayerPresented = YES;
+      [weakSelf.presentingViewController presentViewController:weakSelf.playerViewController animated:YES completion:^{
+        weakSelf.playerViewController.showsPlaybackControls = YES;
+        weakSelf.fullscreenPlayerPresented = YES;
         [weakSelf _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerDidPresent];
         if (resolve) {
           resolve([weakSelf getStatus]);
@@ -312,8 +312,8 @@ static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
     [self videoPlayerViewControllerWillDismiss:_playerViewController];
     
     dispatch_async(dispatch_get_main_queue(), ^{
-      [_presentingViewController dismissViewControllerAnimated:YES completion:^{
-        [weakSelf videoPlayerViewControllerDidDismiss:_playerViewController]; // TODO does this fire twice?
+      [weakSelf.presentingViewController dismissViewControllerAnimated:YES completion:^{
+        [weakSelf videoPlayerViewControllerDidDismiss:weakSelf.playerViewController]; // TODO does this fire twice?
         if (resolve) {
           resolve([weakSelf getStatus]);
         }
@@ -339,6 +339,10 @@ static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
 - (void)setUseNativeControls:(BOOL)useNativeControls
 {
   _useNativeControls = useNativeControls;
+  if (_data == nil) {
+    return;
+  }
+  
   dispatch_async(dispatch_get_main_queue(), ^{
     if (_useNativeControls) {
       if (_playerLayer) {
@@ -399,7 +403,7 @@ static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
     [self setUseNativeControls:YES];
   }
   
-  if (_useNativeControls) {
+  if (_useNativeControls && _playerViewController) {
     [super insertReactSubview:view atIndex:atIndex];
     view.frame = self.bounds;
     [_playerViewController.contentOverlayView insertSubview:view atIndex:atIndex];
@@ -423,14 +427,14 @@ static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
 - (void)layoutSubviews
 {
   [super layoutSubviews];
-  if (_useNativeControls) {
+  if (_useNativeControls && _playerViewController) {
     _playerViewController.view.frame = self.bounds;
     
     // also adjust all subviews of contentOverlayView
     for (UIView* subview in _playerViewController.contentOverlayView.subviews) {
       subview.frame = self.bounds;
     }
-  } else {
+  } else if (!_useNativeControls && _playerLayer) {
     [CATransaction begin];
     [CATransaction setAnimationDuration:0];
     _playerLayer.frame = self.bounds;
