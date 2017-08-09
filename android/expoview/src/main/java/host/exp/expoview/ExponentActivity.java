@@ -212,7 +212,7 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
       @Override
       public void onSuccess() {
         // TODO: annoying that we need to use RNObject.UNVERSIONED here
-        mReactInstanceManager = startReactInstance(ExponentActivity.this, null, null, RNObject.UNVERSIONED, null, true, reactPackages());
+        mReactInstanceManager = startReactInstance(ExponentActivity.this, null, null, RNObject.UNVERSIONED, null, true, reactPackages(), null);
       }
 
       @Override

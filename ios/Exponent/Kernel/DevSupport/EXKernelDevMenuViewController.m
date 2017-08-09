@@ -212,7 +212,9 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
     _lblCacheInfo.text = @"No cache is used when developing the kernel, though one may exist.";
   } else {
     NSURL *dummyUrl = [NSURL URLWithString:@""]; // we're just making this for diagnostic purposes and won't download anything here
-    EXJavaScriptResource *dummyResource = [[EXJavaScriptResource alloc] initWithBundleName:kEXKernelBundleResourceName remoteUrl:dummyUrl];
+    EXJavaScriptResource *dummyResource = [[EXJavaScriptResource alloc] initWithBundleName:kEXKernelBundleResourceName
+                                                                                 remoteUrl:dummyUrl
+                                                                           devToolsEnabled:NO];
     NSString *localBundlePath = [dummyResource resourceLocalPathPreferringCache];
     NSDate *dtmBundleModified;
     
