@@ -19,9 +19,9 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
-import okhttp3.ConnectionSpec;
-import okhttp3.OkHttpClient;
-import okhttp3.TlsVersion;
+import expolib_v1.okhttp3.ConnectionSpec;
+import expolib_v1.okhttp3.OkHttpClient;
+import expolib_v1.okhttp3.TlsVersion;
 
 /**
  * Helper class that provides the same OkHttpClient instance that will be used for all networking

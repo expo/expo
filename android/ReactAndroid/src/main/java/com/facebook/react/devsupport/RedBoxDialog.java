@@ -39,10 +39,10 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.devsupport.RedBoxHandler.ReportCompletedListener;
 
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
+import expolib_v1.okhttp3.MediaType;
+import expolib_v1.okhttp3.OkHttpClient;
+import expolib_v1.okhttp3.Request;
+import expolib_v1.okhttp3.RequestBody;
 import org.json.JSONObject;
 
 /**

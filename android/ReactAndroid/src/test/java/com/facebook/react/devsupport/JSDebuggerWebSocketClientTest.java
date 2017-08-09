@@ -22,7 +22,7 @@ import org.robolectric.RobolectricTestRunner;
 
 import java.util.HashMap;
 
-import okio.ByteString;
+import expolib_v1.okio.ByteString;
 
 import static org.mockito.Mockito.*;
 

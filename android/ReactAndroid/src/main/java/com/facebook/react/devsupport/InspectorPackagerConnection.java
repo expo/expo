@@ -17,11 +17,11 @@ import android.os.Looper;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Inspector;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.WebSocket;
-import okhttp3.WebSocketListener;
+import expolib_v1.okhttp3.OkHttpClient;
+import expolib_v1.okhttp3.Request;
+import expolib_v1.okhttp3.Response;
+import expolib_v1.okhttp3.WebSocket;
+import expolib_v1.okhttp3.WebSocketListener;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

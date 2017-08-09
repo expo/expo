@@ -62,11 +62,11 @@ import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.network.ExponentHttpClient;
 import host.exp.exponent.network.ExponentNetwork;
-import okhttp3.CacheControl;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Request;
-import okhttp3.Response;
+import expolib_v1.okhttp3.CacheControl;
+import expolib_v1.okhttp3.Call;
+import expolib_v1.okhttp3.Callback;
+import expolib_v1.okhttp3.Request;
+import expolib_v1.okhttp3.Response;
 
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import java.security.Provider;

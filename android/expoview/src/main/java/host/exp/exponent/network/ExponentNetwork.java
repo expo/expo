@@ -16,11 +16,11 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import host.exp.expoview.ExpoViewBuildConfig;
-import okhttp3.Cache;
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import expolib_v1.okhttp3.Cache;
+import expolib_v1.okhttp3.Interceptor;
+import expolib_v1.okhttp3.OkHttpClient;
+import expolib_v1.okhttp3.Request;
+import expolib_v1.okhttp3.Response;
 
 @Singleton
 public class ExponentNetwork {
@@ -65,7 +65,8 @@ public class ExponentNetwork {
     OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
         .cache(mCache);
     if (ExpoViewBuildConfig.DEBUG) {
-      clientBuilder.addNetworkInterceptor(new StethoInterceptor());
+      // FIXME: 8/9/17
+      // clientBuilder.addNetworkInterceptor(new StethoInterceptor());
     }
     addOfflineInterceptors(clientBuilder);
 

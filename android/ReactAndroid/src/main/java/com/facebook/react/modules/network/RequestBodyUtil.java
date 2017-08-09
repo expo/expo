@@ -23,13 +23,13 @@ import android.net.Uri;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.common.ReactConstants;
 
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
-import okhttp3.internal.Util;
-import okio.BufferedSink;
-import okio.ByteString;
-import okio.Okio;
-import okio.Source;
+import expolib_v1.okhttp3.MediaType;
+import expolib_v1.okhttp3.RequestBody;
+import expolib_v1.okhttp3.internal.Util;
+import expolib_v1.okio.BufferedSink;
+import expolib_v1.okio.ByteString;
+import expolib_v1.okio.Okio;
+import expolib_v1.okio.Source;
 
 /**
  * Helper class that provides the necessary methods for creating the RequestBody from a file

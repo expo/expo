@@ -26,11 +26,11 @@ import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.ColorParser;
 import host.exp.expoview.R;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Headers;
-import okhttp3.Request;
-import okhttp3.Response;
+import expolib_v1.okhttp3.Call;
+import expolib_v1.okhttp3.Callback;
+import expolib_v1.okhttp3.Headers;
+import expolib_v1.okhttp3.Request;
+import expolib_v1.okhttp3.Response;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;

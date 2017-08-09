@@ -26,15 +26,15 @@ import com.facebook.react.common.DebugServerException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okio.Buffer;
-import okio.BufferedSource;
-import okio.Okio;
-import okio.Sink;
+import expolib_v1.okhttp3.Call;
+import expolib_v1.okhttp3.Callback;
+import expolib_v1.okhttp3.OkHttpClient;
+import expolib_v1.okhttp3.Request;
+import expolib_v1.okhttp3.Response;
+import expolib_v1.okio.Buffer;
+import expolib_v1.okio.BufferedSource;
+import expolib_v1.okio.Okio;
+import expolib_v1.okio.Sink;
 
 public class BundleDownloader {
   private final OkHttpClient mClient;
