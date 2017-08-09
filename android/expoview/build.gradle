@@ -255,6 +255,7 @@ dependencies {
     transitive = false
   }
   compile 'com.android.support:exifinterface:25.3.1'
+  compile 'com.google.android:cameraview:1.0.0'
 
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
 }
