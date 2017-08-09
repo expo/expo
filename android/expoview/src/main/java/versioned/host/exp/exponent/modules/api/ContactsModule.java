@@ -163,8 +163,9 @@ public class ContactsModule extends ReactContextBaseJavaModule {
             promise.resolve(contact);
           } else {
             contacts.pushMap(contact);
-            currentIndex++;
           }
+
+          currentIndex++;
         }
 
         int total = cursor.getCount();
