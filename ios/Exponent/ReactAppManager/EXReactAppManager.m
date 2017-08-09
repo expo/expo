@@ -144,7 +144,9 @@ NSTimeInterval const kEXJavaScriptResourceLongerTimeout = 120;
   // clear any potentially old loading state
   [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:nil forExperienceId:self.experienceId];
 
-  _jsResource = [[EXJavaScriptResource alloc] initWithBundleName:[self bundleNameForJSResource] remoteUrl:bridge.bundleURL];
+  _jsResource = [[EXJavaScriptResource alloc] initWithBundleName:[self bundleNameForJSResource]
+                                                       remoteUrl:bridge.bundleURL
+                                                 devToolsEnabled:[self areDevtoolsEnabled]];
   _jsResource.abiVersion = _validatedVersion;
   
   __weak typeof(self) weakSelf = self;
@@ -156,7 +158,9 @@ NSTimeInterval const kEXJavaScriptResourceLongerTimeout = 120;
   if ([self shouldInvalidateJSResourceCache]) {
     [_jsResource removeCache];
   }
-  [_jsResource loadResourceWithBehavior:cacheBehavior successBlock:^(NSData * _Nonnull sourceData) {
+  [_jsResource loadResourceWithBehavior:cacheBehavior progressBlock:^(EXLoadingProgress * _Nonnull progress) {
+    [weakSelf.delegate reactAppManager:weakSelf loadedJavaScriptWithProgress:progress];
+  } successBlock:^(NSData * _Nonnull sourceData) {
     loadCallback(nil, sourceData, sourceData.length);
   } errorBlock:^(NSError * _Nonnull error) {
     __strong typeof(self) strongSelf = weakSelf;

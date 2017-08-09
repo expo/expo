@@ -32,19 +32,27 @@
     android:src="@drawable/big_logo_dark_filled"
     android:visibility="gone"/>
 
-  <FrameLayout
-    android:id="@+id/made_for_exponent"
+  <LinearLayout
+    android:id="@+id/status_bar"
+    android:visibility="gone"
     android:layout_width="match_parent"
-    android:layout_height="30dp"
-    android:layout_alignParentBottom="true"
-    android:visibility="gone">
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    android:background="@drawable/loading_status_bar_background"
+    android:layout_alignParentBottom="true">
+    <TextView
+      android:id="@+id/status_text_view"
+      android:textSize="12sp"
+      android:textColor="#a7a7a7"
+      android:layout_weight="1"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"/>
 
     <TextView
+      android:id="@+id/percentage_text_view"
+      android:textSize="12sp"
+      android:textColor="#a7a7a7"
       android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="center"
-      android:text="Made with Exponent"
-      android:textColor="#cccccc"
-      android:textSize="14sp"/>
-  </FrameLayout>
+      android:layout_height="wrap_content"/>
+  </LinearLayout>
 </RelativeLayout>

@@ -12,7 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
                            cachePath:(NSString * _Nullable)cachePath NS_UNAVAILABLE;
 
 - (instancetype)initWithBundleName:(NSString *)bundleName
-                         remoteUrl:(NSURL *)url NS_DESIGNATED_INITIALIZER;
+                         remoteUrl:(NSURL *)url
+                   devToolsEnabled:(BOOL)devToolsEnabled NS_DESIGNATED_INITIALIZER;
 
 @end
 

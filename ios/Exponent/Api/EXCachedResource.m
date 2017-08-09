@@ -10,11 +10,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@implementation EXLoadingProgress
+
+@end
+
 @interface EXCachedResource ()
 
 @property (nonatomic, strong) NSString *resourceName;
 @property (nonatomic, strong) NSString *resourceType;
-@property (nonatomic, strong) NSURL *remoteUrl;
 @property (nonatomic, strong) NSString *cachePath;
 
 @end
@@ -34,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)loadResourceWithBehavior:(EXCachedResourceBehavior)behavior
+                   progressBlock:(__nullable EXCachedResourceProgressBlock)progressBlock
                     successBlock:(EXCachedResourceSuccessBlock)success
                       errorBlock:(EXCachedResourceErrorBlock)error
 {

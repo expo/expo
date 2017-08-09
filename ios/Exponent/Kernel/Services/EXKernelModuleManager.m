@@ -85,7 +85,7 @@
     cacheBehavior = kEXCachedResourceNoCache;
   }
   EXManifestResource *manifestResource = [[EXManifestResource alloc] initWithManifestUrl:url originalUrl:originalUrl];
-  [manifestResource loadResourceWithBehavior:cacheBehavior successBlock:^(NSData * _Nonnull data) {
+  [manifestResource loadResourceWithBehavior:cacheBehavior progressBlock:nil successBlock:^(NSData * _Nonnull data) {
     NSString *manifestString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     success(manifestString);
   } errorBlock:^(NSError * _Nonnull error) {

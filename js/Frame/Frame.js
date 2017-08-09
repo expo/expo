@@ -56,6 +56,14 @@ export default class Frame extends React.Component {
      */
     onLoadingStart: PropTypes.func,
     /**
+     * Event handler that is invoked when the frame bundle is being loaded. Called
+     * with an object with the following properties.
+     * - `status` The packager status (always null at the moment).
+     * - `done` The number of modules that have been processed.
+     * - `total` The total number of modules to process.
+     */
+    onLoadingProgress: PropTypes.func,
+    /**
      * Event handler that is invoked when the frame successfully completes
      * loading its source code. If the source code has an error, this event still
      * fires.

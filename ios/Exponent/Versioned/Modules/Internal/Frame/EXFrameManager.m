@@ -24,6 +24,7 @@ RCT_EXPORT_VIEW_PROPERTY(debuggerPort, NSInteger)
 RCT_EXPORT_VIEW_PROPERTY(manifest, NSDictionary);
 RCT_EXPORT_VIEW_PROPERTY(initialProps, NSDictionary);
 RCT_EXPORT_VIEW_PROPERTY(onLoadingStart, RCTDirectEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onLoadingProgress, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onLoadingFinish, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onLoadingError, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onError, RCTDirectEventBlock);

@@ -2,6 +2,8 @@
 
 #import <React/RCTBridge.h>
 
+#import "EXCachedResource.h"
+
 @import UIKit;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -15,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)reactAppManager:(EXReactAppManager *)appManager failedToDownloadBundleWithError:(NSError *)error;
 - (void)reactAppManagerStartedLoadingJavaScript:(EXReactAppManager *)appManager;
+- (void)reactAppManager:(EXReactAppManager *)appManager loadedJavaScriptWithProgress:(EXLoadingProgress *)progress;
 - (void)reactAppManagerFinishedLoadingJavaScript:(EXReactAppManager *)appManager;
 - (void)reactAppManager:(EXReactAppManager *)appManager failedToLoadJavaScriptWithError:(NSError *)error;
 

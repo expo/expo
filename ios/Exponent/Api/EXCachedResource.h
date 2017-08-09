@@ -4,8 +4,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface EXLoadingProgress : NSObject
+
+@property (nonatomic, copy) NSString *status;
+@property (nonatomic, strong) NSNumber *done;
+@property (nonatomic, strong) NSNumber *total;
+
+@end
+
 typedef void (^EXCachedResourceSuccessBlock)(NSData *data);
 typedef void (^EXCachedResourceErrorBlock)(NSError *error);
+typedef void (^EXCachedResourceProgressBlock)(EXLoadingProgress *progress);
 
 typedef enum EXCachedResourceBehavior {
   // load the resource without using any cache.
@@ -20,6 +29,7 @@ typedef enum EXCachedResourceBehavior {
 
 @interface EXCachedResource : NSObject
 
+@property (nonatomic, strong) NSURL *remoteUrl;
 @property (nonatomic, assign) BOOL shouldVersionCache;
 @property (nonatomic, strong, nullable) NSString *abiVersion;
 @property (nonatomic, strong) NSURLCache *urlCache;
@@ -31,6 +41,7 @@ typedef enum EXCachedResourceBehavior {
                            cachePath:(NSString * _Nullable)cachePath;
 
 - (void)loadResourceWithBehavior:(EXCachedResourceBehavior)behavior
+                   progressBlock:(__nullable EXCachedResourceProgressBlock)progressBlock
                     successBlock:(EXCachedResourceSuccessBlock)successBlock
                       errorBlock:(EXCachedResourceErrorBlock)errorBlock;
 

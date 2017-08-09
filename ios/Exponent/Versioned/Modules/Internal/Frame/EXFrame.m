@@ -34,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL needsReload;
 
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingStart;
+@property (nonatomic, copy) RCTDirectEventBlock onLoadingProgress;
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingFinish;
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingError;
 @property (nonatomic, copy) RCTDirectEventBlock onError;
@@ -282,6 +283,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 {
   if (_onLoadingStart) {
     _onLoadingStart(nil);
+  }
+}
+
+- (void)reactAppManager:(id)appManager loadedJavaScriptWithProgress:(RCTLoadingProgress *)progress;
+{
+  if (_onLoadingProgress) {
+    _onLoadingProgress(@{
+      @"status": RCTNullIfNil(progress.status),
+      @"done": RCTNullIfNil(progress.done),
+      @"total": RCTNullIfNil(progress.total),
+    });
   }
 }
 

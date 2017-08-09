@@ -9,14 +9,12 @@ import React, { PropTypes } from 'react';
 import {
   ActivityIndicator,
   Image,
-  NativeModules,
   StatusBar,
   StyleSheet,
   Text,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import Expo from 'expo';
 import FadeIn from '@expo/react-native-fade-in-image';
 
 import autobind from 'autobind-decorator';
@@ -68,7 +66,7 @@ class BrowserScreen extends React.Component {
     super(props, context);
 
     this.state = {
-      loading: false,
+      loadingStatus: null,
 
       // we pass manifest as a mutable JS object down native code via Frame,
       // but within JS we take advantage of immutable equals on props.manifest
@@ -149,6 +147,7 @@ class BrowserScreen extends React.Component {
         manifest={this.state.manifestJS}
         style={styles.frame}
         onLoadingStart={this._handleFrameLoadingStart}
+        onLoadingProgress={this._handleLoadingProgress}
         onLoadingFinish={this._handleFrameLoadingFinish}
         onLoadingError={this._handleFrameLoadingError}
         onError={this._handleUncaughtError}
@@ -228,13 +227,11 @@ class BrowserScreen extends React.Component {
   }
 
   _renderLoadingIndicator() {
-    let { task } = this.props;
-    let { manifest } = task;
-
     let loadingBackgroundColor = this._getLoadingBackgroundColor();
     let loadingIndicatorStyle = this._getLoadingIndicatorStyle();
     let loadingIcon = this._renderManifestLoadingIcon();
     let loadingBackgroundImage = this._renderManifestLoadingBackgroundImage();
+    let { loadingStatus } = this.state;
 
     return (
       <View
@@ -252,6 +249,16 @@ class BrowserScreen extends React.Component {
             style={styles.loadingIndicator}
           />
         </View>
+        {loadingStatus !== null &&
+          <View style={styles.loadingStatusBar}>
+            <Text style={styles.loadingStatusText}>
+              {loadingStatus.status}
+            </Text>
+            {loadingStatus.total > 0 &&
+              <Text style={styles.loadingPercentageText}>
+                {(loadingStatus.done / loadingStatus.total * 100).toFixed(2)}%
+              </Text>}
+          </View>}
       </View>
     );
   }
@@ -384,6 +391,10 @@ class BrowserScreen extends React.Component {
     this.props.dispatch(BrowserActions.setLoadingState(this.props.url, true));
   }
 
+  @autobind _handleLoadingProgress(event) {
+    this.setState({ loadingStatus: event.nativeEvent });
+  }
+
   @autobind _handleFrameLoadingFinish(event) {
     this.props.dispatch(BrowserActions.setLoadingState(this.props.url, false));
     if (
@@ -397,6 +408,8 @@ class BrowserScreen extends React.Component {
     } else if (this.props.isMenuVisible) {
       this.props.dispatch(BrowserActions.showMenuAsync(false));
     }
+
+    this.setState({ loadingStatus: null });
   }
 
   @autobind _handleFrameLoadingError(event) {
@@ -411,6 +424,8 @@ class BrowserScreen extends React.Component {
         this.props.task.manifest
       )
     );
+
+    this.setState({ loadingStatus: null });
   }
 
   @autobind _handleUncaughtError(event) {
@@ -517,6 +532,27 @@ let styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     right: 0,
+  },
+  loadingStatusBar: {
+    position: 'absolute',
+    left: 0,
+    bottom: 0,
+    right: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: '#fafafa',
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: '#f3f3f3',
+  },
+  loadingStatusText: {
+    color: '#a7a7a7',
+    fontSize: 12,
+    flex: 1,
+  },
+  loadingPercentageText: {
+    color: '#a7a7a7',
+    fontSize: 12,
   },
   errorView: {
     position: 'absolute',

@@ -7,6 +7,7 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -15,11 +16,14 @@ import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
+
+import java.util.Locale;
 
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.utils.AsyncCondition;
@@ -36,7 +40,9 @@ public class LoadingView extends RelativeLayout {
   ProgressBar mProgressBar;
   ImageView mImageView;
   ImageView mBackgroundImageView;
-  View mMadeForExponent;
+  View mStatusBarView;
+  TextView mStatusTextView;
+  TextView mPercentageTextView;
 
   private Handler mProgressBarHandler = new Handler();
   private boolean mShowIcon = false;
@@ -63,7 +69,9 @@ public class LoadingView extends RelativeLayout {
     mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
     mImageView = (ImageView) findViewById(R.id.image_view);
     mBackgroundImageView = (ImageView) findViewById(R.id.background_image_view);
-    mMadeForExponent = findViewById(R.id.made_for_exponent);
+    mStatusBarView = findViewById(R.id.status_bar);
+    mStatusTextView = (TextView) findViewById(R.id.status_text_view);
+    mPercentageTextView = (TextView) findViewById(R.id.percentage_text_view);
     setBackgroundColor(Color.WHITE);
     showProgressBar();
   }
@@ -120,18 +128,12 @@ public class LoadingView extends RelativeLayout {
     mIsLoadingImageView = false;
 
     if (manifest == null) {
-      revealView(mMadeForExponent);
       return;
     }
 
     JSONObject loadingInfo = manifest.optJSONObject(ExponentManifest.MANIFEST_LOADING_INFO_KEY);
     if (loadingInfo == null) {
-      revealView(mMadeForExponent);
       return;
-    }
-
-    if (!loadingInfo.optBoolean(ExponentManifest.MANIFEST_LOADING_HIDE_EXPONENT_TEXT_KEY)) {
-      revealView(mMadeForExponent);
     }
 
     if (loadingInfo.has(ExponentManifest.MANIFEST_LOADING_ICON_URL)) {
@@ -224,34 +226,27 @@ public class LoadingView extends RelativeLayout {
     });
   }
 
+  public void updateProgress(@Nullable String status, @Nullable Integer done, @Nullable Integer total) {
+    mStatusBarView.setVisibility(VISIBLE);
+    mStatusTextView.setText(status != null ? status : "Building JavaScript bundle...");
+    if (done != null && total != null && total > 0) {
+      float percent = ((float)done / (float)total * 100.f);
+      mPercentageTextView.setText(String.format(Locale.getDefault(), "%.2f%%", percent));
+    }
+  }
+
   private void showIcon() {
     if (!mShowIcon || !mIsLoading) {
       return;
     }
 
     mImageView.clearAnimation();
+    mImageView.setVisibility(View.VISIBLE);
 
     AlphaAnimation animation = new AlphaAnimation(0.0f, 1.0f);
-    animation.setStartOffset(50);
-    animation.setDuration(700);
+    animation.setDuration(300);
     animation.setInterpolator(new AccelerateDecelerateInterpolator());
     animation.setFillAfter(true);
-    animation.setAnimationListener(new Animation.AnimationListener() {
-      @Override
-      public void onAnimationStart(Animation animation) {
-        mImageView.setVisibility(View.VISIBLE);
-      }
-
-      @Override
-      public void onAnimationEnd(Animation animation) {
-        hideIcon();
-      }
-
-      @Override
-      public void onAnimationRepeat(Animation animation) {
-
-      }
-    });
     mImageView.startAnimation(animation);
   }
 
@@ -259,7 +254,7 @@ public class LoadingView extends RelativeLayout {
     mImageView.clearAnimation();
 
     AlphaAnimation animation = new AlphaAnimation(1.0f, 0.0f);
-    animation.setDuration(700);
+    animation.setDuration(300);
     animation.setInterpolator(new AccelerateDecelerateInterpolator());
     animation.setFillAfter(true);
     animation.setAnimationListener(new Animation.AnimationListener() {
@@ -270,7 +265,7 @@ public class LoadingView extends RelativeLayout {
 
       @Override
       public void onAnimationEnd(Animation animation) {
-        showIcon();
+        mImageView.setVisibility(GONE);
       }
 
       @Override

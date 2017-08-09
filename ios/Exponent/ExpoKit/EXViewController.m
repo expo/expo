@@ -136,6 +136,10 @@ NS_ASSUME_NONNULL_BEGIN
   self.isLoading = YES;
 }
 
+- (void)reactAppManager:(EXReactAppManager *)appManager loadedJavaScriptWithProgress:(RCTLoadingProgress *)progress
+{
+}
+
 - (void)reactAppManagerFinishedLoadingJavaScript:(EXReactAppManager *)appManager
 {
   EXAssertMainThread();

@@ -19,7 +19,6 @@ import com.amplitude.api.Amplitude;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
-import com.facebook.react.devsupport.interfaces.DevSupportManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -158,6 +157,10 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     mLoadingView.setDoneLoading();
     mIsLoading = false;
     mLoadingHandler.removeCallbacksAndMessages(null);
+  }
+
+  protected void updateLoadingProgress(String status, Integer done, Integer total) {
+    mLoadingView.updateProgress(status, done, total);
   }
 
   protected void removeViews() {
@@ -346,7 +349,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
 
   public RNObject startReactInstance(final Exponent.StartReactInstanceDelegate delegate, final String mIntentUri, final RNObject mLinkingPackage,
                                      final String mSDKVersion, final ExponentNotification mNotification, final boolean mIsShellApp,
-                                     final List<? extends Object> extraNativeModules) {
+                                     final List<? extends Object> extraNativeModules, DevBundleDownloadProgressListener progressListener) {
 
     if (mIsCrashed || !delegate.isInForeground()) {
       // Can sometimes get here after an error has occurred. Return early or else we'll hit
@@ -380,6 +383,16 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
       String debuggerHost = mManifest.optString(ExponentManifest.MANIFEST_DEBUGGER_HOST_KEY);
       String mainModuleName = mManifest.optString(ExponentManifest.MANIFEST_MAIN_MODULE_NAME_KEY);
       Exponent.enableDeveloperSupport(mSDKVersion, debuggerHost, mainModuleName, builder);
+
+      if (ABIVersion.toNumber(mSDKVersion) >= ABIVersion.toNumber("20.0.0")) {
+        RNObject devLoadingView = new RNObject("com.facebook.react.devsupport.DevLoadingViewController").loadVersion(mSDKVersion);
+        devLoadingView.callRecursive("setDevLoadingEnabled", false);
+
+        RNObject devBundleDownloadListener = new RNObject("host.exp.exponent.ExponentDevBundleDownloadListener")
+            .loadVersion(mSDKVersion)
+            .construct(progressListener);
+        builder.callRecursive("setDevBundleDownloadListener", devBundleDownloadListener.get());
+      }
     }
 
     Bundle bundle = new Bundle();

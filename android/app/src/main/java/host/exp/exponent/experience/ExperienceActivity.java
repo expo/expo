@@ -21,6 +21,7 @@ import android.widget.RemoteViews;
 
 import com.amplitude.api.Amplitude;
 import com.facebook.react.ReactInstanceManager;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.soloader.SoLoader;
 
 import host.exp.exponent.branch.BranchManager;
@@ -34,6 +35,7 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
@@ -85,6 +87,18 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
   @Inject
   ExponentManifest mExponentManifest;
+
+  private DevBundleDownloadProgressListener mDevBundleDownloadProgressListener = new DevBundleDownloadProgressListener() {
+    @Override
+    public void onProgress(final @Nullable String status, final @Nullable Integer done, final @Nullable Integer total) {
+      UiThreadUtil.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          updateLoadingProgress(status, done, total);
+        }
+      });
+    }
+  };
 
   /*
    *
@@ -477,7 +491,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     Exponent.getInstance().testPackagerStatus(isDebugModeEnabled(), mManifest, new Exponent.PackagerStatusCallback() {
       @Override
       public void onSuccess() {
-        mReactInstanceManager = startReactInstance(ExperienceActivity.this, mIntentUri, mLinkingPackage, mSDKVersion, mNotification, mIsShellApp, null);
+        mReactInstanceManager = startReactInstance(ExperienceActivity.this, mIntentUri, mLinkingPackage, mSDKVersion, mNotification, mIsShellApp, null, mDevBundleDownloadProgressListener);
       }
 
       @Override

@@ -29,10 +29,11 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
 }
 
 - (void)loadResourceWithBehavior:(EXCachedResourceBehavior)behavior
+                   progressBlock:(EXCachedResourceProgressBlock)progressBlock
                     successBlock:(EXCachedResourceSuccessBlock)successBlock
                       errorBlock:(EXCachedResourceErrorBlock)errorBlock
 {
-  [super loadResourceWithBehavior:behavior successBlock:^(NSData * _Nonnull data) {
+  [super loadResourceWithBehavior:behavior progressBlock:progressBlock successBlock:^(NSData * _Nonnull data) {
     __block NSError *jsonError;
     id manifestObj = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
     if (jsonError) {
