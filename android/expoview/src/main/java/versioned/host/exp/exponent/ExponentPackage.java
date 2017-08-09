@@ -60,6 +60,8 @@ import versioned.host.exp.exponent.modules.api.av.video.VideoViewManager;
 import versioned.host.exp.exponent.modules.api.components.LinearGradientManager;
 import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerModule;
 import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerViewManager;
+import versioned.host.exp.exponent.modules.api.components.camera.CameraModule;
+import versioned.host.exp.exponent.modules.api.components.camera.CameraViewManager;
 import versioned.host.exp.exponent.modules.api.components.lottie.LottiePackage;
 import versioned.host.exp.exponent.modules.api.components.maps.MapsPackage;
 import versioned.host.exp.exponent.modules.api.components.svg.SvgPackage;
@@ -152,6 +154,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new AmplitudeModule(reactContext, scopedContext));
         nativeModules.add(new SegmentModule(reactContext, scopedContext));
         nativeModules.add(new BarCodeScannerModule(reactContext));
+        nativeModules.add(new CameraModule(reactContext, scopedContext));
         nativeModules.add(new RNViewShotModule(reactContext));
         nativeModules.add(new KeepAwakeModule(reactContext));
         nativeModules.add(new ExponentTestNativeModule(reactContext));
@@ -187,6 +190,7 @@ public class ExponentPackage implements ReactPackage {
         new LinearGradientManager(),
         new VideoViewManager(),
         new BarCodeScannerViewManager(),
+        new CameraViewManager(),
         new GLViewManager(),
         new NativeAdViewManager(reactContext),
         new BannerViewManager(reactContext)
