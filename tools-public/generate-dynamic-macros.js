@@ -36,6 +36,10 @@ try {
   isInOssDev = false;
 }
 
+if (isInOssDev) {
+  isInUniverse = false;
+}
+
 const macrosFuncs = {
   async TEST_APP_URI() {
     if (process.env.UNIVERSE_BUILD_ID) {
