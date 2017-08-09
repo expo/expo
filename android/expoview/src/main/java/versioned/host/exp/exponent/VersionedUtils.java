@@ -14,12 +14,16 @@ public class VersionedUtils {
   public static ReactInstanceManagerBuilder getReactInstanceManagerBuilder(Exponent.InstanceManagerBuilderProperties instanceManagerBuilderProperties) {
     ReactInstanceManagerBuilder builder = ReactInstanceManager.builder()
         .setApplication(instanceManagerBuilderProperties.application)
-        .setJSBundleFile(instanceManagerBuilderProperties.jsBundlePath)
         .addPackage(new MainReactPackage())
         .addPackage(new ExponentPackage(
                 instanceManagerBuilderProperties.experienceProperties,
                 instanceManagerBuilderProperties.manifest))
         .setInitialLifecycleState(LifecycleState.RESUMED);
+
+    if (instanceManagerBuilderProperties.jsBundlePath != null && instanceManagerBuilderProperties.jsBundlePath.length() > 0) {
+      builder = builder.setJSBundleFile(instanceManagerBuilderProperties.jsBundlePath);
+    }
+
     return builder;
   }
 
