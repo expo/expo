@@ -20,18 +20,18 @@ import java.net.URL;
 import host.exp.exponent.Constants;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
-import okhttp3.CacheControl;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Protocol;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
-import okio.BufferedSource;
-import okio.Okio;
-import okio.Source;
+import expolib_v1.okhttp3.CacheControl;
+import expolib_v1.okhttp3.Call;
+import expolib_v1.okhttp3.Callback;
+import expolib_v1.okhttp3.MediaType;
+import expolib_v1.okhttp3.OkHttpClient;
+import expolib_v1.okhttp3.Protocol;
+import expolib_v1.okhttp3.Request;
+import expolib_v1.okhttp3.Response;
+import expolib_v1.okhttp3.ResponseBody;
+import expolib_v1.okio.BufferedSource;
+import expolib_v1.okio.Okio;
+import expolib_v1.okio.Source;
 
 public class ExponentHttpClient {
 

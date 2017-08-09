@@ -13,9 +13,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import okio.Buffer;
-import okio.BufferedSource;
-import okio.ByteString;
+import expolib_v1.okio.Buffer;
+import expolib_v1.okio.BufferedSource;
+import expolib_v1.okio.ByteString;
 
 /**
  * Utility class to parse the body of a response of type multipart/mixed.

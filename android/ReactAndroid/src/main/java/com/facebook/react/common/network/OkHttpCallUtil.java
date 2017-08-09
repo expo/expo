@@ -9,8 +9,8 @@
 
 package com.facebook.react.common.network;
 
-import okhttp3.Call;
-import okhttp3.OkHttpClient;
+import expolib_v1.okhttp3.Call;
+import expolib_v1.okhttp3.OkHttpClient;
 
 /**
  * Helper class that provides the necessary methods for canceling queued and running OkHttp calls

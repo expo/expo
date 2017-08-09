@@ -37,17 +37,17 @@ import com.facebook.react.packagerconnection.Responder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.ConnectionPool;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
-import okio.Okio;
-import okio.Sink;
+import expolib_v1.okhttp3.Call;
+import expolib_v1.okhttp3.Callback;
+import expolib_v1.okhttp3.ConnectionPool;
+import expolib_v1.okhttp3.MediaType;
+import expolib_v1.okhttp3.OkHttpClient;
+import expolib_v1.okhttp3.Request;
+import expolib_v1.okhttp3.RequestBody;
+import expolib_v1.okhttp3.Response;
+import expolib_v1.okhttp3.ResponseBody;
+import expolib_v1.okio.Okio;
+import expolib_v1.okio.Sink;
 
 /**
  * Helper class for all things about the debug server running in the engineer's host machine.

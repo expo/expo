@@ -17,7 +17,7 @@ import android.support.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.common.soloader.SoLoaderShim;
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory;
+import expolib_v1.com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.imagepipeline.listener.RequestListener;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -32,8 +32,8 @@ import com.facebook.react.modules.network.ForwardingCookieHandler;
 import com.facebook.react.modules.network.OkHttpClientProvider;
 import com.facebook.soloader.SoLoader;
 
-import okhttp3.JavaNetCookieJar;
-import okhttp3.OkHttpClient;
+import expolib_v1.okhttp3.JavaNetCookieJar;
+import expolib_v1.okhttp3.OkHttpClient;
 
 /**
  * Module to initialize the Fresco library.

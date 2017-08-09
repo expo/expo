@@ -36,10 +36,10 @@ import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Request;
-import okhttp3.Response;
+import expolib_v1.okhttp3.Call;
+import expolib_v1.okhttp3.Callback;
+import expolib_v1.okhttp3.Request;
+import expolib_v1.okhttp3.Response;
 
 public class ExponentKernelModule extends ReactContextBaseJavaModule implements ExponentKernelModuleInterface {
 

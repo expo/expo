@@ -15,7 +15,7 @@ import android.net.Uri;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 
-import okio.ByteString;
+import expolib_v1.okio.ByteString;
 
 import org.json.JSONObject;
 

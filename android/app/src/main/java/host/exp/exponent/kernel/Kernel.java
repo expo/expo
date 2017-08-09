@@ -61,7 +61,7 @@ import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.AsyncCondition;
 import host.exp.exponent.utils.JSONBundleConverter;
-import okhttp3.OkHttpClient;
+import expolib_v1.okhttp3.OkHttpClient;
 import versioned.host.exp.exponent.ExponentPackage;
 import versioned.host.exp.exponent.ReactUnthemedRootView;
 import versioned.host.exp.exponent.ReadableObjectUtils;
@@ -143,7 +143,9 @@ public class Kernel implements KernelInterface {
     OkHttpClient.Builder clientBuilder = OkHttpClientProvider.getOkHttpClient().newBuilder()
         .cache(mExponentNetwork.getCache());
     if (BuildConfig.DEBUG) {
-      clientBuilder.addNetworkInterceptor(new StethoInterceptor());
+      // FIXME: 8/9/17
+      // broke with lib versioning
+      // clientBuilder.addNetworkInterceptor(new StethoInterceptor());
     }
     mExponentNetwork.addOfflineInterceptors(clientBuilder);
     OkHttpClientProvider.replaceOkHttpClient(clientBuilder.build());

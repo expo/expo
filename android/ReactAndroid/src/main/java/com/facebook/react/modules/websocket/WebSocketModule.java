@@ -35,12 +35,12 @@ import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.network.ForwardingCookieHandler;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.WebSocket;
-import okhttp3.WebSocketListener;
-import okio.ByteString;
+import expolib_v1.okhttp3.OkHttpClient;
+import expolib_v1.okhttp3.Request;
+import expolib_v1.okhttp3.Response;
+import expolib_v1.okhttp3.WebSocket;
+import expolib_v1.okhttp3.WebSocketListener;
+import expolib_v1.okio.ByteString;
 
 @ReactModule(name = "WebSocketModule", hasConstants = false)
 public class WebSocketModule extends ReactContextBaseJavaModule {

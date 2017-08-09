@@ -5,13 +5,13 @@ package com.facebook.react.modules.network;
 import java.io.IOException;
 import javax.annotation.Nullable;
 
-import okhttp3.MediaType;
-import okhttp3.ResponseBody;
-import okio.Buffer;
-import okio.BufferedSource;
-import okio.ForwardingSource;
-import okio.Okio;
-import okio.Source;
+import expolib_v1.okhttp3.MediaType;
+import expolib_v1.okhttp3.ResponseBody;
+import expolib_v1.okio.Buffer;
+import expolib_v1.okio.BufferedSource;
+import expolib_v1.okio.ForwardingSource;
+import expolib_v1.okio.Okio;
+import expolib_v1.okio.Source;
 
 public class ProgressResponseBody extends ResponseBody {
 
