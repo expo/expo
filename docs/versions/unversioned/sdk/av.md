@@ -94,15 +94,15 @@ On the `playbackObject` reference, the following API is provided:
 
     A `Promise` that is fulfilled with the `PlaybackStatus` of the `playbackObject`. See below for details on `PlaybackStatus`.
 
--   `playbackObject.setCallback(callback)`
+-   `playbackObject.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate)`
 
     Sets a function to be called regularly with the `PlaybackStatus` of the `playbackObject`. See below for details on `PlaybackStatus` and an example use case of this function.
 
-    The callback will be called whenever a call to the API for this `playbackObject` completes (such as `setStatusAsync()`, `getStatusAsync()`, or `unloadAsync()`), and will also be called at regular intervals while the media is in the loaded state. Set `progressUpdateIntervalMillis` via `setStatusAsync()` or `setProgressUpdateIntervalAsync()` to modify the interval with which the callback is called while loaded.
+    `onPlaybackStatusUpdate` will be called whenever a call to the API for this `playbackObject` completes (such as `setStatusAsync()`, `getStatusAsync()`, or `unloadAsync()`), and will also be called at regular intervals while the media is in the loaded state. Set `progressUpdateIntervalMillis` via `setStatusAsync()` or `setProgressUpdateIntervalAsync()` to modify the interval with which `onPlaybackStatusUpdate` is called while loaded.
 
     #### Parameters
 
-    -   **callback (_function_)** -- A function taking a single parameter `PlaybackStatus` (a dictionary, described below).
+    -   **onPlaybackStatusUpdate (_function_)** -- A function taking a single parameter `PlaybackStatus` (a dictionary, described below).
 
 -   `playbackObject.setStatusAsync(statusToSet)`
 
@@ -190,7 +190,7 @@ The following convenience methods built on top of `setStatusAsync()` are also pr
 
     #### Parameters
 
-    -   **millis (_number_)** -- The new minimum interval in milliseconds between calls of the callback. See `setCallback()` for details.
+    -   **millis (_number_)** -- The new minimum interval in milliseconds between calls of `onPlaybackStatusUpdate`. See `setOnPlaybackStatusUpdate()` for details.
 
 ## Playback Status
 
@@ -209,7 +209,7 @@ Most of the preceding API calls revolve around passing or returning the _status_
 
     -   `isLoaded` : a boolean set to `true`.
     -   `uri` : the location of the media source.
-    -   `progressUpdateIntervalMillis` : the minimum interval in milliseconds between calls of the callback. See `setCallback()` for details.
+    -   `progressUpdateIntervalMillis` : the minimum interval in milliseconds between calls of `onPlaybackStatusUpdate`. See `setOnPlaybackStatusUpdate()` for details.
     -   `durationMillis` : the duration of the media in milliseconds. This is only present if the media has a duration (note that in some cases, a media file's duration is readable on Android, but not on iOS).
     -   `positionMillis` : the current position of playback in milliseconds.
     -   `playableDurationMillis` : the position until which the media has been buffered into memory. Like `durationMillis`, this is only present in some cases.
@@ -221,13 +221,13 @@ Most of the preceding API calls revolve around passing or returning the _status_
     -   `volume` : the current volume of the audio for this media.
     -   `isMuted` : a boolean describing if the audio of this media is currently muted.
     -   `isLooping` : a boolean describing if the media is currently looping.
-    -   `didJustFinish` : a boolean describing if the media just played to completion at the time that this status was received. When the media plays to completion, the function passed in `setCallback()` is called exactly once with `didJustFinish` set to `true`. `didJustFinish` is never `true` in any other case.
+    -   `didJustFinish` : a boolean describing if the media just played to completion at the time that this status was received. When the media plays to completion, the function passed in `setOnPlaybackStatusUpdate()` is called exactly once with `didJustFinish` set to `true`. `didJustFinish` is never `true` in any other case.
 
 -   `PlaybackStatusToSet`
 
     This is the structure passed to `setStatusAsync()` to modify the state of the `playbackObject`. It is a dictionary with the following key-value pairs, all of which are optional.
 
-    -   `progressUpdateIntervalMillis` : the new minimum interval in milliseconds between calls of the callback. See `setCallback()` for details.
+    -   `progressUpdateIntervalMillis` : the new minimum interval in milliseconds between calls of `onPlaybackStatusUpdate`. See `setOnPlaybackStatusUpdate()` for details.
     -   `positionMillis` : the desired position of playback in milliseconds.
     -   `shouldPlay` : a boolean describing if the media is supposed to play. Playback may not start immediately after setting this value for reasons such as buffering. Make sure to update your UI based on the `isPlaying` and `isBuffering` properties of the `PlaybackStatus`.
     -   `rate` : the desired playback rate of the media. This value must be between `0.0` and `32.0`. Only available on Android API version 23 and later and iOS.
@@ -261,10 +261,10 @@ This default initial status can be overwritten by setting the optional `initialS
 
 ## Example usage
 
-#### Example: `setCallback()`
+#### Example: `setOnPlaybackStatusUpdate()`
 
 ```javascript
-_callback = playbackStatus => {
+_onPlaybackStatusUpdate = playbackStatus => {
   if (!playbackStatus.isLoaded) {
     // Update your UI for the unloaded state
     if (playbackStatus.error) {
@@ -293,7 +293,7 @@ _callback = playbackStatus => {
 };
 
 ... // Load the playbackObject and obtain the reference.
-playbackObject.setCallback(this._callback);
+playbackObject.setOnPlaybackStatusUpdate(this._onPlaybackStatusUpdate);
 ...
 ```
 
@@ -303,7 +303,7 @@ playbackObject.setCallback(this._callback);
 const N = 20;
 ...
 
-_callback = (playbackStatus) => {
+_onPlaybackStatusUpdate = (playbackStatus) => {
   if (playbackStatus.didJustFinish) {
     if (this.state.numberOfLoops == N - 1) {
       playbackObject.setIsLooping(false);
@@ -315,7 +315,7 @@ _callback = (playbackStatus) => {
 ...
 this.setState({ numberOfLoops: 0 });
 ... // Load the playbackObject and obtain the reference.
-playbackObject.setCallback(this._callback);
+playbackObject.setOnPlaybackStatusUpdate(this._onPlaybackStatusUpdate);
 playbackObject.setIsLooping(true);
 ...
 ```

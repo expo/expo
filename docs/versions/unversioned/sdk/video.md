@@ -68,11 +68,11 @@ The `useNativeControls`, `resizeMode`, and `usePoster` props customize the UI of
 
   A boolean which, if set to `true`, will display an image (whose source is set via the prop `posterSource`) while the video is loading.
 
-The `callback`, `onReadyForDisplay`, and `onIOSFullscreenUpdate` props pass information of the state of the `Video` component. The `onLoadStart`, `onLoad`, and `onError` props are also provided for backwards compatibility with `Image`.
+The `onPlaybackStatusUpdate`, `onReadyForDisplay`, and `onIOSFullscreenUpdate` props pass information of the state of the `Video` component. The `onLoadStart`, `onLoad`, and `onError` props are also provided for backwards compatibility with `Image`.
 
-- `callback`
+- `onPlaybackStatusUpdate`
 
-  A function to be called regularly with the `PlaybackStatus` of the video. See the [AV documentation](av.html) for further information on the callback, and the interval at which it is called.
+  A function to be called regularly with the `PlaybackStatus` of the video. See the [AV documentation](av.html) for further information on `onPlaybackStatusUpdate`, and the interval at which it is called.
 
 - `onReadyForDisplay`
 
@@ -119,7 +119,7 @@ Finally, the following props are available to control the playback of the video,
 
 - `progressUpdateIntervalMillis`
 
-  A number describing the new minimum interval in milliseconds between calls of the callback. See the [AV documentation](av.html) for more information.
+  A number describing the new minimum interval in milliseconds between calls of `onPlaybackStatusUpdate`. See the [AV documentation](av.html) for more information.
 
 - `positionMillis`
 
@@ -175,7 +175,7 @@ The rest of the API on the `Video` component ref is the same as the API for `Exp
 
 -   `videoRef.getStatusAsync()`
 
--   `videoRef.setCallback(callback)`
+-   `videoRef.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate)`
 
 -   `videoRef.setStatusAsync(statusToSet)`
 

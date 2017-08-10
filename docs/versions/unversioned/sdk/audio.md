@@ -80,15 +80,15 @@ try {
 
 A static convenience method to construct and load a sound is also provided:
 
--   `Expo.Audio.Sound.create(source, initialStatus = {}, callback = null, downloadFirst = true)`
+-   `Expo.Audio.Sound.create(source, initialStatus = {}, onPlaybackStatusUpdate = null, downloadFirst = true)`
 
-    Creates and loads a sound from source, with optional `initialStatus`, `callback`, and `downloadFirst`.
+    Creates and loads a sound from source, with optional `initialStatus`, `onPlaybackStatusUpdate`, and `downloadFirst`.
 
     This is equivalent to the following:
 
     ```javascript
     const soundObject = new Expo.Audio.Sound();
-    soundObject.setCallback(callback);
+    soundObject.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
     await soundObject.loadAsync(source, initialStatus, downloadFirst);
     ```
 
@@ -102,7 +102,7 @@ A static convenience method to construct and load a sound is also provided:
 
     -   **initialStatus (_PlaybackStatusToSet_)** -- The initial intended `PlaybackStatusToSet` of the sound, whose values will override the default initial playback status. This value defaults to `{}` if no parameter is passed. See the [AV documentation](av.html) for details on `PlaybackStatusToSet` and the default initial playback status.
 
-    -   **callback (_function_)** -- A function taking a single parameter `PlaybackStatus`. This value defaults to `null` if no parameter is passed. See the [AV documentation](av.html) for details on the functionality provided by the callback
+    -   **onPlaybackStatusUpdate (_function_)** -- A function taking a single parameter `PlaybackStatus`. This value defaults to `null` if no parameter is passed. See the [AV documentation](av.html) for details on the functionality provided by `onPlaybackStatusUpdate`
 
     -   **downloadFirst (_boolean_)** -- If set to true, the system will attempt to download the resource to the device before loading. This value defaults to `true`. Note that at the moment, this will only work for `source`s of the form `require('path/to/file')` or `Asset` objects.
 
@@ -135,7 +135,7 @@ The rest of the API for `Expo.Audio.Sound` is the same as the imperative playbac
 
 -   `soundObject.getStatusAsync()`
 
--   `soundObject.setCallback(callback)`
+-   `soundObject.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate)`
 
 -   `soundObject.setStatusAsync(statusToSet)`
 
@@ -207,23 +207,23 @@ try {
     -   `isDoneRecording` : a boolean set to `true`.
     -   `durationMillis` : the final duration of the recorded audio.
 
--   `recordingInstance.setCallback(callback)`
+-   `recordingInstance.setOnRecordingStatusUpdate(onRecordingStatusUpdate)`
 
     Sets a function to be called regularly with the `status` of the `Recording`. See `getStatusAsync()` for details on `status`.
 
-    The callback will be called when another call to the API for this recording completes (such as `prepareToRecordAsync()`, `startAsync()`, `getStatusAsync()`, or `stopAndUnloadAsync()`), and will also be called at regular intervals while the recording can record. Call `setProgressUpdateInterval()` to modify the interval with which the callback is called while the recording can record.
+    `onRecordingStatusUpdate` will be called when another call to the API for this recording completes (such as `prepareToRecordAsync()`, `startAsync()`, `getStatusAsync()`, or `stopAndUnloadAsync()`), and will also be called at regular intervals while the recording can record. Call `setProgressUpdateInterval()` to modify the interval with which `onRecordingStatusUpdate` is called while the recording can record.
 
     #### Parameters
 
-    -   **callback (_function_)** -- A function taking a single parameter `status` (a dictionary, described in `getStatusAsync`).
+    -   **onRecordingStatusUpdate (_function_)** -- A function taking a single parameter `status` (a dictionary, described in `getStatusAsync`).
 
 -   `recordingInstance.setProgressUpdateInterval(millis)`
 
-    Sets the interval with which the status change callback is called while the recording can record. See `setCallback` for details on the status change callback. This value defaults to 500 milliseconds.
+    Sets the interval with which `onRecordingStatusUpdate` is called while the recording can record. See `setOnRecordingStatusUpdate` for details. This value defaults to 500 milliseconds.
 
     #### Parameters
 
-    -   **millis (_number_)** -- The new interval between calls of the status change callback.
+    -   **millis (_number_)** -- The new interval between calls of `onRecordingStatusUpdate`.
 
 -   `recordingInstance.prepareToRecordAsync(options)`
 
@@ -285,7 +285,7 @@ try {
 
     -   **initialStatus (_PlaybackStatusToSet_)** -- The initial intended `PlaybackStatusToSet` of the sound, whose values will override the default initial playback status. This value defaults to `{}` if no parameter is passed. See the [AV documentation](av.html) for details on `PlaybackStatusToSet` and the default initial playback status.
 
-    -   **callback (_function_)** -- A function taking a single parameter `PlaybackStatus`. This value defaults to `null` if no parameter is passed. See the [AV documentation](av.html) for details on the functionality provided by the callback
+    -   **onPlaybackStatusUpdate (_function_)** -- A function taking a single parameter `PlaybackStatus`. This value defaults to `null` if no parameter is passed. See the [AV documentation](av.html) for details on the functionality provided by `onPlaybackStatusUpdate`
 
     #### Returns
 
