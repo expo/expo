@@ -163,7 +163,7 @@ RCT_ENUM_CONVERTER(EXSecureStoreAccessible, (@{
   }
 }
 
--(NSString *)_scopedKey:(NSString *)key {
+- (NSString *)_scopedKey:(NSString *)key {
   NSString *trimmedKey = [key stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
   if (!key || trimmedKey.length == 0) {
     return nil;
@@ -172,7 +172,7 @@ RCT_ENUM_CONVERTER(EXSecureStoreAccessible, (@{
   return [NSString stringWithFormat:@"%@-%@", self.experienceId, key];
 }
 
-NSString *_messageForError(NSError *error)
++ (NSString *) _messageForError:(NSError *)error
 {
   switch (error.code) {
     case errSecUnimplemented:
@@ -254,7 +254,7 @@ RCT_EXPORT_METHOD(setValueWithKeyAsync:(NSString *)value
     if (setValue) {
       resolve(nil);
     } else {
-      reject(@"E_SECURESTORE_SETVALUEFAIL", nil, RCTErrorWithMessage(_messageForError(error)));
+      reject(@"E_SECURESTORE_SETVALUEFAIL", nil, RCTErrorWithMessage([[self class] _messageForError:error]));
     }
   }
 }
@@ -275,7 +275,7 @@ RCT_EXPORT_METHOD(getValueWithKeyAsync:(NSString *)key
     if (value) {
       resolve(value);
     } else {
-      reject(@"E_SECURESTORE_GETVALUEFAIL", nil, RCTErrorWithMessage(_messageForError(error)));
+      reject(@"E_SECURESTORE_GETVALUEFAIL", nil, RCTErrorWithMessage([[self class] _messageForError:error]));
     }
   }
 }
