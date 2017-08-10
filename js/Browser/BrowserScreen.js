@@ -599,6 +599,7 @@ let styles = StyleSheet.create({
   loadingPercentageText: {
     color: '#a7a7a7',
     fontSize: 12,
+    fontVariant: ['tabular-nums'],
   },
   errorView: {
     position: 'absolute',
