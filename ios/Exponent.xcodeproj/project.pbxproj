@@ -231,6 +231,10 @@
 		B5F12C991DAEDF960080ECA6 /* EXKernelReactAppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5F12C981DAEDF960080ECA6 /* EXKernelReactAppManager.m */; };
 		B5F12C9D1DAEE1240080ECA6 /* EXFrameReactAppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5F12C9C1DAEE1240080ECA6 /* EXFrameReactAppManager.m */; };
 		B5F12CA21DB009A40080ECA6 /* EXKernelModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B5F12CA11DB009A40080ECA6 /* EXKernelModule.m */; };
+		BB22D9561F3CDE6C00A35CC6 /* RNGestureHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = BB22D94E1F3CDE6C00A35CC6 /* RNGestureHandler.m */; };
+		BB22D9571F3CDE6C00A35CC6 /* RNGestureHandlerEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = BB22D9501F3CDE6C00A35CC6 /* RNGestureHandlerEvents.m */; };
+		BB22D9581F3CDE6C00A35CC6 /* RNGestureHandlerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BB22D9521F3CDE6C00A35CC6 /* RNGestureHandlerManager.m */; };
+		BB22D9591F3CDE6C00A35CC6 /* RNGestureHandlerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = BB22D9541F3CDE6C00A35CC6 /* RNGestureHandlerModule.m */; };
 		C8D8F1421F28F9420022EDE7 /* launch_background_image.png in Resources */ = {isa = PBXBuildFile; fileRef = C8D8F1401F28F9420022EDE7 /* launch_background_image.png */; };
 		C8D8F1431F28F9420022EDE7 /* launch_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = C8D8F1411F28F9420022EDE7 /* launch_icon.png */; };
 		F77DDB8B1E04774000624CA2 /* EXWebBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = F77DDB8A1E04774000624CA2 /* EXWebBrowser.m */; };
@@ -702,6 +706,15 @@
 		B5F12C9C1DAEE1240080ECA6 /* EXFrameReactAppManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFrameReactAppManager.m; sourceTree = "<group>"; };
 		B5F12CA01DB009A40080ECA6 /* EXKernelModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelModule.h; sourceTree = "<group>"; };
 		B5F12CA11DB009A40080ECA6 /* EXKernelModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelModule.m; sourceTree = "<group>"; };
+		BB22D94D1F3CDE6C00A35CC6 /* RNGestureHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNGestureHandler.h; sourceTree = "<group>"; };
+		BB22D94E1F3CDE6C00A35CC6 /* RNGestureHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNGestureHandler.m; sourceTree = "<group>"; };
+		BB22D94F1F3CDE6C00A35CC6 /* RNGestureHandlerEvents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNGestureHandlerEvents.h; sourceTree = "<group>"; };
+		BB22D9501F3CDE6C00A35CC6 /* RNGestureHandlerEvents.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNGestureHandlerEvents.m; sourceTree = "<group>"; };
+		BB22D9511F3CDE6C00A35CC6 /* RNGestureHandlerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNGestureHandlerManager.h; sourceTree = "<group>"; };
+		BB22D9521F3CDE6C00A35CC6 /* RNGestureHandlerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNGestureHandlerManager.m; sourceTree = "<group>"; };
+		BB22D9531F3CDE6C00A35CC6 /* RNGestureHandlerModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNGestureHandlerModule.h; sourceTree = "<group>"; };
+		BB22D9541F3CDE6C00A35CC6 /* RNGestureHandlerModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNGestureHandlerModule.m; sourceTree = "<group>"; };
+		BB22D9551F3CDE6C00A35CC6 /* RNGestureHandlerState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNGestureHandlerState.h; sourceTree = "<group>"; };
 		BD69154E1D289060B003BB86 /* Pods-Exponent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Exponent.release.xcconfig"; path = "Pods/Target Support Files/Pods-Exponent/Pods-Exponent.release.xcconfig"; sourceTree = "<group>"; };
 		C8D8F1401F28F9420022EDE7 /* launch_background_image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = launch_background_image.png; sourceTree = "<group>"; };
 		C8D8F1411F28F9420022EDE7 /* launch_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = launch_icon.png; sourceTree = "<group>"; };
@@ -1010,6 +1023,7 @@
 		A1CDBE861D30781000C2A670 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				BB22D93F1F3CDE0900A35CC6 /* GestureHandler */,
 				2FEB27171F217E6E000C8DF5 /* tipsi */,
 				B56D07101EC53333009E6A89 /* GoogleMaps */,
 				B50625FA1E4B9E6100AC2748 /* Lottie */,
@@ -1511,6 +1525,22 @@
 			path = ReactAppManager;
 			sourceTree = "<group>";
 		};
+		BB22D93F1F3CDE0900A35CC6 /* GestureHandler */ = {
+			isa = PBXGroup;
+			children = (
+				BB22D94D1F3CDE6C00A35CC6 /* RNGestureHandler.h */,
+				BB22D94E1F3CDE6C00A35CC6 /* RNGestureHandler.m */,
+				BB22D94F1F3CDE6C00A35CC6 /* RNGestureHandlerEvents.h */,
+				BB22D9501F3CDE6C00A35CC6 /* RNGestureHandlerEvents.m */,
+				BB22D9511F3CDE6C00A35CC6 /* RNGestureHandlerManager.h */,
+				BB22D9521F3CDE6C00A35CC6 /* RNGestureHandlerManager.m */,
+				BB22D9531F3CDE6C00A35CC6 /* RNGestureHandlerModule.h */,
+				BB22D9541F3CDE6C00A35CC6 /* RNGestureHandlerModule.m */,
+				BB22D9551F3CDE6C00A35CC6 /* RNGestureHandlerState.h */,
+			);
+			path = GestureHandler;
+			sourceTree = "<group>";
+		};
 		C8D8F13F1F28F8AD0022EDE7 /* Launch Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -1998,9 +2028,11 @@
 				2FEB271E1F217E6E000C8DF5 /* TPSCardField.m in Sources */,
 				7847A2CA1EB9AF210088BF69 /* AIRMapPolyline.m in Sources */,
 				B5DB047C1F39057900E91581 /* EXMagnetometer.m in Sources */,
+				BB22D9561F3CDE6C00A35CC6 /* RNGestureHandler.m in Sources */,
 				B5A8752F1E70E57F006DDECA /* EXBannerView.m in Sources */,
 				B5AC398A1E95A7EC00540AA7 /* EXApiUtil.m in Sources */,
 				A12B68251E8392560079896C /* EXSQLite.m in Sources */,
+				BB22D9581F3CDE6C00A35CC6 /* RNGestureHandlerManager.m in Sources */,
 				7847A2CD1EB9AF210088BF69 /* AIRMapUrlTileManager.m in Sources */,
 				7847A2C21EB9AF210088BF69 /* AIRMapCircle.m in Sources */,
 				88E089A41D6BC02200562FA1 /* EXAmplitude.m in Sources */,
@@ -2036,6 +2068,7 @@
 				B56D07451EC53333009E6A89 /* AIRGoogleMapURLTileManager.m in Sources */,
 				194804CF1E92CFB400623005 /* EXDocumentPicker.m in Sources */,
 				A15DC4BC1CFF99FE009F940D /* EXImagePicker.m in Sources */,
+				BB22D9591F3CDE6C00A35CC6 /* RNGestureHandlerModule.m in Sources */,
 				7847A2C61EB9AF210088BF69 /* AIRMapMarker.m in Sources */,
 				B56D07351EC53333009E6A89 /* AIRDummyView.m in Sources */,
 				7847A3811EC0F1550088BF69 /* RNSVGGroupManager.m in Sources */,
@@ -2131,6 +2164,7 @@
 				B5C7A3C31EC3E38300DD9E1D /* EXAVPlayerData.m in Sources */,
 				B57181001F0FF41600315A66 /* EXScreenOrientationManager.m in Sources */,
 				A1DCE8481DC3FC63009665FD /* EXGLViewManager.m in Sources */,
+				BB22D9571F3CDE6C00A35CC6 /* RNGestureHandlerEvents.m in Sources */,
 				7847A3951EC0F1550088BF69 /* RNSVGRenderable.m in Sources */,
 				7847A37F1EC0F1550088BF69 /* RNSVGGlyphContext.m in Sources */,
 				7847A3881EC0F1550088BF69 /* RNSVGNode.m in Sources */,
