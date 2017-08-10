@@ -14,6 +14,7 @@ import {
   Text,
   TouchableWithoutFeedback,
   View,
+  Platform,
 } from 'react-native';
 import FadeIn from '@expo/react-native-fade-in-image';
 
@@ -70,12 +71,12 @@ class BrowserScreen extends React.Component {
 
       // we pass manifest as a mutable JS object down native code via Frame,
       // but within JS we take advantage of immutable equals on props.manifest
-      manifestJS: props.task && props.task.manifest
-        ? props.task.manifest.toJS()
-        : null,
-      initialPropsJS: props.task && props.task.initialProps
-        ? props.task.initialProps.toJS()
-        : null,
+      manifestJS:
+        props.task && props.task.manifest ? props.task.manifest.toJS() : null,
+      initialPropsJS:
+        props.task && props.task.initialProps
+          ? props.task.initialProps.toJS()
+          : null,
     };
   }
 
@@ -172,7 +173,9 @@ class BrowserScreen extends React.Component {
         <View style={styles.letterboxTopBar}>
           <TouchableWithoutFeedback onPress={this._onPressLetterbox}>
             <View>
-              <Text style={styles.letterboxText}>{backButtonText}</Text>
+              <Text style={styles.letterboxText}>
+                {backButtonText}
+              </Text>
             </View>
           </TouchableWithoutFeedback>
         </View>
@@ -268,6 +271,14 @@ class BrowserScreen extends React.Component {
     if (task) {
       let { manifest } = task;
       if (manifest) {
+        // Don't use loading icon if new manifest.loading.splash.image.ios.backgroundImageUrl is set
+        if (this._isNewSplashScreenStyle(manifest)) {
+          return (
+            // This view is empty, but positions the loading indicator corrextly
+            <View style={{ width: 200, height: 200, marginVertical: 16 }} />
+          );
+        }
+
         let iconUrl = manifest.getIn(['loading', 'iconUrl']);
         let loadingBackgroundColor = this._getLoadingBackgroundColor();
         let backgroundImageUrl = manifest.getIn([
@@ -303,12 +314,27 @@ class BrowserScreen extends React.Component {
     let { task } = this.props;
     if (task) {
       let { manifest } = task;
-      let iconUrl = manifest.getIn(['loading', 'backgroundImageUrl']);
-      if (manifest && iconUrl) {
+      var backgroundImageUrl;
+      if (this._isNewSplashScreenStyle(manifest)) {
+        backgroundImageUrl = manifest.getIn([
+          'loading',
+          'splash',
+          'image',
+          'ios',
+          'backgroundImageUrl',
+        ]);
+      }
+      let resizeMode = this._isNewSplashScreenStyle(manifest)
+        ? Image.resizeMode.cover
+        : Image.resizeMode.contain;
+      if (!backgroundImageUrl) {
+        backgroundImageUrl = manifest.getIn(['loading', 'backgroundImageUrl']);
+      }
+      if (manifest && backgroundImageUrl) {
         return (
           <Image
-            source={{ uri: iconUrl }}
-            resizeMode="contain"
+            source={{ uri: backgroundImageUrl }}
+            resizeMode={resizeMode}
             style={styles.loadingBackgroundImage}
           />
         );
@@ -383,19 +409,39 @@ class BrowserScreen extends React.Component {
     }
   }
 
-  @autobind _setFrame(frame) {
+  _isNewSplashScreenStyle(manifest) {
+    if (Platform.OS !== 'ios') {
+      return false;
+    }
+
+    if (
+      manifest.getIn([
+        'loading',
+        'splash',
+        'image',
+        'ios',
+        'backgroundImageUrl',
+      ])
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  _setFrame = frame => {
     this._frame = frame;
-  }
+  };
 
-  @autobind _handleFrameLoadingStart(event) {
+  _handleFrameLoadingStart = event => {
     this.props.dispatch(BrowserActions.setLoadingState(this.props.url, true));
-  }
+  };
 
-  @autobind _handleLoadingProgress(event) {
+  _handleLoadingProgress = event => {
     this.setState({ loadingStatus: event.nativeEvent });
-  }
+  };
 
-  @autobind _handleFrameLoadingFinish(event) {
+  _handleFrameLoadingFinish = event => {
     this.props.dispatch(BrowserActions.setLoadingState(this.props.url, false));
     if (
       !this.props.isNuxFinished &&
@@ -410,9 +456,9 @@ class BrowserScreen extends React.Component {
     }
 
     this.setState({ loadingStatus: null });
-  }
+  };
 
-  @autobind _handleFrameLoadingError(event) {
+  _handleFrameLoadingError = event => {
     this.props.dispatch(BrowserActions.setLoadingState(this.props.url, false));
     let { nativeEvent } = event;
 
@@ -426,9 +472,9 @@ class BrowserScreen extends React.Component {
     );
 
     this.setState({ loadingStatus: null });
-  }
+  };
 
-  @autobind _handleUncaughtError(event) {
+  _handleUncaughtError = event => {
     let { id, message, stack, fatal } = event.nativeEvent;
     if (fatal) {
       let isDeveloper = false;
@@ -440,7 +486,7 @@ class BrowserScreen extends React.Component {
         this._maybeRecoverFromErrorAsync(event);
       }
     }
-  }
+  };
 
   _maybeRecoverFromErrorAsync = async event => {
     let { id, message, stack, fatal } = event.nativeEvent;
@@ -462,7 +508,7 @@ class BrowserScreen extends React.Component {
     }
   };
 
-  @autobind _refresh() {
+  _refresh = () => {
     if (this.props.task.loadingError) {
       let urlToRefresh = this.props.task.loadingError.originalUrl;
       this.props.dispatch(BrowserActions.clearTaskWithError(urlToRefresh));
@@ -482,15 +528,15 @@ class BrowserScreen extends React.Component {
       }
       this._frame.reload();
     });
-  }
+  };
 
-  @autobind _onPressLetterbox() {
+  _onPressLetterbox = () => {
     if (this.props.shellManifestUrl) {
       this.props.dispatch(
         BrowserActions.foregroundUrlAsync(this.props.shellManifestUrl)
       );
     }
-  }
+  };
 }
 
 export default connect((data, props) =>
