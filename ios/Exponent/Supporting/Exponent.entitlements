@@ -19,9 +19,7 @@
 		<string>CloudDocuments</string>
 	</array>
 	<key>com.apple.developer.in-app-payments</key>
-	<array>
-		<string>merchant.io.expo.merchantId</string>
-	</array>
+	<array/>
 	<key>com.apple.developer.ubiquity-container-identifiers</key>
 	<array>
 		<string>iCloud.$(CFBundleIdentifier)</string>
