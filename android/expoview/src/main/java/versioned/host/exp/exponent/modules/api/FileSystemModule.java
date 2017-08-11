@@ -52,6 +52,7 @@ import expolib_v1.okio.Source;
 public class FileSystemModule extends ReactContextBaseJavaModule {
   private static final String TAG = FileSystemModule.class.getSimpleName();
   private static final String EXDownloadProgressEventName = "Exponent.downloadProgress";
+  private static final long MIN_EVENT_DT_MS = 100;
 
   private ScopedContext mScopedContext;
 
@@ -296,19 +297,28 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void downloadResumableStartAsync(String url, final String fileUri, final String uuid, final ReadableMap options, final String resumeData, final Promise promise) {
     final boolean isResume = resumeData != null;
-        
+
     final ProgressListener progressListener = new ProgressListener() {
+      long mLastUpdate = -1;
+
       @Override public void update(long bytesRead, long contentLength, boolean done) {
         WritableMap downloadProgress = Arguments.createMap();
         WritableMap downloadProgressData = Arguments.createMap();
         long totalBytesWritten = isResume ? bytesRead + Long.parseLong(resumeData):bytesRead;
         long totalBytesExpectedToWrite = isResume ? contentLength + Long.parseLong(resumeData):contentLength;
-        downloadProgressData.putDouble("totalBytesWritten", totalBytesWritten);
-        downloadProgressData.putDouble("totalBytesExpectedToWrite", totalBytesExpectedToWrite);
-        downloadProgress.putString("uuid", uuid);
-        downloadProgress.putMap("data", downloadProgressData);
-        getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class)
-            .emit(EXDownloadProgressEventName, downloadProgress);
+        long currentTime = System.currentTimeMillis();
+
+        // Throttle events. Sending too many events will block the JS event loop.
+        // Make sure to send the last event when we're at 100%.
+        if (currentTime > mLastUpdate + MIN_EVENT_DT_MS || totalBytesWritten == totalBytesExpectedToWrite) {
+          mLastUpdate = currentTime;
+          downloadProgressData.putDouble("totalBytesWritten", totalBytesWritten);
+          downloadProgressData.putDouble("totalBytesExpectedToWrite", totalBytesExpectedToWrite);
+          downloadProgress.putString("uuid", uuid);
+          downloadProgress.putMap("data", downloadProgressData);
+          getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class)
+              .emit(EXDownloadProgressEventName, downloadProgress);
+        }
       }
     };
 
@@ -403,12 +413,9 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
           output = new FileOutputStream(file, false);    
         }
 
-        long currentDownloadedSize = 0;
-        long currentTotalByteSize = responseBody.contentLength();
         byte[] data = new byte[1024];
         int count = 0;
         while ((count = input.read(data)) != -1) {
-          currentDownloadedSize += count;
           output.write(data, 0, count);   
         }
 
