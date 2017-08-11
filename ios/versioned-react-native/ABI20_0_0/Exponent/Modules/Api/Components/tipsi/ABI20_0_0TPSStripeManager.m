@@ -104,7 +104,11 @@ ABI20_0_0RCT_EXPORT_MODULE();
 
 ABI20_0_0RCT_EXPORT_METHOD(initialize:(NSDictionary *)options) {
     publishableKey = options[@"publishableKey"];
-    merchantId = options[@"merchantId"];
+    if (options[@"merchantId"] != NULL) {
+      merchantId = options[@"merchantId"];
+    } else {
+      merchantId = @"merchant.client";
+    }
     [Stripe setDefaultPublishableKey:publishableKey];
 }
 
