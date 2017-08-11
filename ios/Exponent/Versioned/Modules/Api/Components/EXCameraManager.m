@@ -263,6 +263,10 @@ RCT_CUSTOM_VIEW_PROPERTY(focusDepth, NSNumber, EXCamera)
     return;
   }
   
+  if (![device isLockingFocusWithCustomLensPositionSupported]) {
+    RCTLogWarn(@"%s: Setting focusDepth isn't supported for this camera device", __func__);
+  }
+  
   if (![device lockForConfiguration:&error]) {
     if (error) {
       RCTLogError(@"%s: %@", __func__, error);
