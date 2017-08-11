@@ -26,7 +26,7 @@ class Header extends React.Component {
         <div
           css={{
             display: `none`,
-            maxWidth: 1280,
+            maxWidth: 1440,
             '@media (min-width: 750px)': {
               //[presets.Tablet]: { https://github.com/threepointone/glamor/pull/160
               display: `block`,

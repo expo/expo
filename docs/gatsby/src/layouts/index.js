@@ -211,7 +211,7 @@ class Wrapper extends React.Component {
               height: `100%`,
               overflow: `auto`,
               margin: `0 auto`,
-              maxWidth: 1280,
+              maxWidth: 1440,
               padding: rhythm(3 / 4),
               display: this.state.sidebarOpen ? 'none' : 'block',
               paddingTop: rhythm(2), // extra padding for top navbar on mobile
