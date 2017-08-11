@@ -276,6 +276,14 @@ android {
     }
 }
 
+repositories {
+    mavenLocal()
+    jcenter()
+    maven {
+        url "$rootDir/../maven"
+    }
+}
+
 dependencies {
     compile fileTree(dir: 'src/main/third-party/java/infer-annotations/', include: ['*.jar'])
     compile 'javax.inject:javax.inject:1'
