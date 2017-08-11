@@ -17,26 +17,7 @@ const { Payments } = DangerZone;
 
 ## Setup
 
-If you haven't done payments through Stripe and/or Apple merchant before, there are a couple steps to go through to get everything set up. If you already have a Stripe account / Apple merchant ID, skip ahead to making [Tokens with Stripe](#the-token-object).
-
-First, create an account with [Stripe](https://dashboard.stripe.com/register). After getting the account set up, navigate to the [Stripe API dashboard](https://dashboard.stripe.com/account/apikeys). Here, you'll need to make a note of the Publishable key and Secret key listed.
-
-If you want to use Apple Pay for payments also, you'll need an Apple merchant ID. Navigate to the [merchant ID section of the Apple developer portal](https://developer.apple.com/account/ios/identifier/merchant). Here, click the '+' on the top right to create a new merchant ID. Keep note of the identifier you choose to use here. Add the merchant ID to the iOS section of your app.json file, as shown below (make sure the merchant ID here matches the one you created in your Apple dev portal!):
-
-```javascript
-{
-"expo": {
-"name": "my-payments-project",
-"description": "A project that uses payments in Expo.",
-"slug": "my-payments-project",
-"ios": {
-"supportsTablet": true,
-"bundleIdentifier": "com.my.bundleIdentifier",
-"merchantId": "merchant.my.merchant.id"
-}
-}
-}
-```
+If you haven't done payments with Stripe before, create an account with [Stripe](https://dashboard.stripe.com/register). After getting the account set up, navigate to the [Stripe API dashboard](https://dashboard.stripe.com/account/apikeys). Here, you'll need to make a note of the Publishable key and Secret key listed.
 
 ## Using the Payments SDK
 
@@ -44,8 +25,7 @@ First, initialize the Payments module with your credentials:
 
 ```javascript
 payments.initialize({
-publishableKey: 'PUBLISHABLE_KEY',
-merchantId: 'MERCHANT_ID', // Only need to include if you want to use Apple Pay
+  publishableKey: 'PUBLISHABLE_KEY' // Your Stripe publishable key
 })
 ```
 
@@ -92,25 +72,25 @@ An object with the following keys:
 
 ```js
 {
-tokenId: 'tok_19GCAQI5NuVQgnjeKNE32K0p',
-created: 1479236426,
-livemode: 0,
-card: {
-cardId: 'card_19GCAQI5NuVQgnjeRZizG4U3',
-brand: 'Visa',
-funding: 'credit',
-last4: '4242',
-expMonth: 4,
-expYear: 2024,
-country: 'US',
-name: 'Eugene Grissom',
-addressLine1: 'Green Street',
-addressLine2: '3380',
-addressCity: 'Nashville',
-addressState: 'Tennessee',
-addressCountry: 'US',
-addressZip: '37211',
-},
+  tokenId: 'tok_19GCAQI5NuVQgnjeKNE32K0p',
+  created: 1479236426,
+  livemode: 0,
+  card: {
+  cardId: 'card_19GCAQI5NuVQgnjeRZizG4U3',
+    brand: 'Visa',
+    funding: 'credit',
+    last4: '4242',
+    expMonth: 4,
+    expYear: 2024,
+    country: 'US',
+    name: 'Eugene Grissom',
+    addressLine1: 'Green Street',
+    addressLine2: '3380',
+    addressCity: 'Nashville',
+    addressState: 'Tennessee',
+    addressCountry: 'US',
+    addressZip: '37211',
+  },
 }
 ```
 
@@ -194,24 +174,24 @@ An object with the following keys:
 
 ```js
 const items = [{
-label: 'T-Shirt',
-amount: '50.00',
+  label: 'T-Shirt',
+  amount: '50.00',
 }, {
-label: 'Expo, Inc',
-amount: '50.00',
+  label: 'Expo, Inc',
+  amount: '50.00',
 }]
 
 const shippingMethods = [{
-id: 'fedex',
-label: 'FedEX',
-detail: 'Test @ 10',
-amount: '10.00',
+  id: 'fedex',
+  label: 'FedEX',
+  detail: 'Test @ 10',
+  amount: '10.00',
 }]
 
 const options = {
-requiredBillingAddressFields: 'all',
-requiredShippingAddressFields: 'all',
-shippingMethods,
+  requiredBillingAddressFields: 'all',
+  requiredShippingAddressFields: 'all',
+  shippingMethods,
 }
 
 const token = await payments.paymentRequestWithApplePayAsync(items, options)
@@ -258,20 +238,20 @@ An object with the following keys:
 
 ```js
 const params = {
-// mandatory
-number: '4242424242424242',
-expMonth: 11,
-expYear: 17,
-cvc: '223',
-// optional
-name: 'Test User',
-currency: 'usd',
-addressLine1: '123 Test Street',
-addressLine2: 'Apt. 5',
-addressCity: 'Test City',
-addressState: 'Test State',
-addressCountry: 'Test Country',
-addressZip: '55555',
+  // mandatory
+  number: '4242424242424242',
+  expMonth: 11,
+  expYear: 17,
+  cvc: '223',
+  // optional
+  name: 'Test User',
+  currency: 'usd',
+  addressLine1: '123 Test Street',
+  addressLine2: 'Apt. 5',
+  addressCity: 'Test City',
+  addressState: 'Test State',
+  addressCountry: 'Test Country',
+  addressZip: '55555',
 }
 
 const token = await stripe.createTokenWithCardAsync(params)
@@ -282,12 +262,32 @@ const token = await stripe.createTokenWithCardAsync(params)
 
 Need more help? The Payments module is largely based off [tipsi-stripe](https://github.com/tipsi/tipsi-stripe). The documentation and questions there may prove helpful.
 
-## Testing
+## Enabling Apple Pay in Standalone Applications
 
-Testing Payments is a little bit tricky because of the way Apple Pay verifies merchant IDs.
+If you want to use Apple Pay for payments in standalone Expo applications, you'll need an Apple merchant ID. Navigate to the [merchant ID section of the Apple developer portal](https://developer.apple.com/account/ios/identifier/merchant). Here, click the '+' on the top right to create a new merchant ID. Keep note of the identifier you choose to use here. Add the merchant ID to the iOS section of your app.json file, as shown below (make sure the merchant ID here matches the one you created in your Apple dev portal!):
 
-If you want to test the Apple Pay dialog, we recommend using an iOS simulator. This bypasses the merchant ID check and you can test the end-to-end token generation.
+```javascript
+{
+  "expo": {
+    "name": "my-payments-project",
+    "description": "A project that uses payments in Expo.",
+    "slug": "my-payments-project",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.my.bundleIdentifier",
+      "merchantId": "merchant.my.merchant.id"
+    }
+  }
+}
+```
 
-If you want to test on an real device, you'll need to [build a standalone application using Expo](../guides/building-standalone-apps.html). This way, Expo gets a chance to embed your merchant ID into the application. If you try to open the Apple Pay dialog in the Expo application, it'll kick you out as the merchant ID needs to match the one embedded in the application. (However, calling `deviceSupportsApplePay()` works if you simply want to test if Apple Pay is working, i.e. if the Apple Pay form will appear after building to a standalone application.)
+Finally, you'll want to include your merchant ID in the JavaScript code before publishing your standalone application. Adding a merchant ID here will disable Apple Pay in the Expo client application (Apple Pay will only work with your Apple Merchant ID in a standalone application). To allow your application to work in both the client and a standalone application, we recommend adding the code here when building the standalone application, but then removing it when publishing the application to Expo.
 
-Testing of Stripe token generation with a custom card form will work on both a real iOS device and the simulator.
+```javascript
+payments.initialize({
+  publishableKey: 'PUBLISHABLE_KEY', // Your Stripe publishable key
+  merchantId: 'MERCHANT_ID' // Your Apple Pay merchant ID
+})
+```
+
+Note: Apple Pay can be used only for real world items (ex. appeal, car sharing, food) and not virtual goods. For more information about proper usage of Apple Pay, visit Apple's [Apple Pay guidelines](https://developer.apple.com/app-store/review/guidelines/#apple-pay) and [Acceptable Use](https://developer.apple.com/apple-pay/acceptable-use-guidelines-for-websites/).
