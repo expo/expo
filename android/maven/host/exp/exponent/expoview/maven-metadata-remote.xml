@@ -3,10 +3,10 @@
   <groupId>host.exp.exponent</groupId>
   <artifactId>expoview</artifactId>
   <versioning>
-    <release>19.0.0</release>
+    <release>20.0.0</release>
     <versions>
-      <version>19.0.0</version>
+      <version>20.0.0</version>
     </versions>
-    <lastUpdated>20170726235207</lastUpdated>
+    <lastUpdated>20170811230705</lastUpdated>
   </versioning>
 </metadata>
