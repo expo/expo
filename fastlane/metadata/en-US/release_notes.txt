@@ -1,3 +1,1 @@
-This version contains minor improvements.
-
-Version 1.18.0 added support for React Native 0.46.
+This version adds support for React Native 0.47.
