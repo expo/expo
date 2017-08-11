@@ -203,9 +203,26 @@ class BrowserScreen extends React.Component {
     let { task } = this.props;
     let { manifest } = task;
 
-    let loadingBackgroundColor = 'white';
-    if (manifest && manifest.getIn(['loading', 'backgroundColor'])) {
-      loadingBackgroundColor = manifest.getIn(['loading', 'backgroundColor']);
+    let loadingBackgroundColor;
+    if (this._isNewSplashScreenStyle(manifest)) {
+      // Use new manifest location for background color
+      if (
+        manifest &&
+        manifest.getIn(['loading', 'splash', 'backgroundColor'])
+      ) {
+        loadingBackgroundColor = manifest.getIn([
+          'loading',
+          'splash',
+          'backgroundColor',
+        ]);
+      }
+    }
+
+    if (!loadingBackgroundColor) {
+      loadingBackgroundColor = 'white';
+      if (manifest && manifest.getIn(['loading', 'backgroundColor'])) {
+        loadingBackgroundColor = manifest.getIn(['loading', 'backgroundColor']);
+      }
     }
 
     return loadingBackgroundColor;
@@ -414,15 +431,7 @@ class BrowserScreen extends React.Component {
       return false;
     }
 
-    if (
-      manifest.getIn([
-        'loading',
-        'splash',
-        'image',
-        'ios',
-        'backgroundImageUrl',
-      ])
-    ) {
+    if (manifest.getIn(['loading', 'splash'])) {
       return true;
     }
 
