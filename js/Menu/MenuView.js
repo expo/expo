@@ -412,9 +412,7 @@ export default class MenuView extends React.Component {
   };
 
   _onPressClose = () => {
-    if (this.props.isNuxFinished) {
-      ExStore.dispatch(BrowserActions.showMenuAsync(false));
-    }
+    ExStore.dispatch(BrowserActions.showMenuAsync(false));
   };
 
   _goToHome = () => {
