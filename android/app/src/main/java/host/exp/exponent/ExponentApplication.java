@@ -2,16 +2,21 @@
 
 package host.exp.exponent;
 
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Debug;
 import android.support.multidex.MultiDexApplication;
+import android.support.v4.content.ContextCompat;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
 import com.crashlytics.android.core.CrashlyticsListener;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.soloader.SoLoader;
 
 import javax.inject.Inject;
 
+import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.branch.BranchManager;
 import host.exp.exponent.di.NativeModuleDepsProvider;
@@ -115,5 +120,17 @@ public class ExponentApplication extends MultiDexApplication {
     } catch (Throwable e) {
       EXL.e(TAG, e);
     }
+
+    if (Constants.DEBUG_COLD_START_METHOD_TRACING) {
+      Debug.startMethodTracing("coldStart");
+    }
+
+    Analytics.markEvent(Analytics.TimedEvent.LAUNCHER_ACTIVITY_STARTED);
+
+    SoLoader.init(getApplicationContext(), false);
+
+
+    // Add exception handler. This is used by the entire process, so only need to add it here.
+    Thread.setDefaultUncaughtExceptionHandler(new ExponentUncaughtExceptionHandler(getApplicationContext()));
   }
 }
