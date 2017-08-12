@@ -43,11 +43,13 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
+import host.exp.exponent.ExponentDevActivity;
 import host.exp.exponent.LauncherActivity;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.experience.BaseExperienceActivity;
 import host.exp.exponent.experience.ExperienceActivity;
 import host.exp.exponent.experience.HomeActivity;
+import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.expoview.BuildConfig;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
@@ -403,6 +405,80 @@ public class Kernel implements KernelInterface {
    * Manifests
    *
    */
+
+  public void handleIntent(Activity activity, Intent intent) {
+    try {
+      if (intent.getBooleanExtra("EXKernelDisableNuxDefaultsKey", false)) {
+        Constants.DISABLE_NUX = true;
+      }
+    } catch (Throwable e) {}
+
+    Bundle bundle = intent.getExtras();
+    setActivityContext(activity);
+
+    Uri uri = intent.getData();
+    String intentUri = uri == null ? null : uri.toString();
+
+    if (bundle != null) {
+      if (bundle.getBoolean(KernelConstants.DEV_FLAG)) {
+        openDevActivity(activity);
+        return;
+      }
+
+      // Notification
+      String notification = bundle.getString(KernelConstants.NOTIFICATION_KEY); // deprecated
+      String notificationObject = bundle.getString(KernelConstants.NOTIFICATION_OBJECT_KEY);
+      String notificationManifestUrl = bundle.getString(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY);
+      if (notificationManifestUrl != null) {
+        openExperience(new KernelConstants.ExperienceOptions(notificationManifestUrl, intentUri == null ? notificationManifestUrl : intentUri, notification, ExponentNotification.fromJSONObjectString(notificationObject)));
+        return;
+      }
+
+      // Shortcut
+      String shortcutManifestUrl = bundle.getString(KernelConstants.SHORTCUT_MANIFEST_URL_KEY);
+      if (shortcutManifestUrl != null) {
+        openExperience(new KernelConstants.ExperienceOptions(shortcutManifestUrl, intentUri, null));
+        return;
+      }
+    }
+
+    if (uri != null) {
+      if (Constants.INITIAL_URL == null) {
+        // We got an "exp://" link
+        openExperience(new KernelConstants.ExperienceOptions(intentUri, intentUri, null));
+        return;
+      } else {
+        // We got a custom scheme link
+        // TODO: we still might want to parse this if we're running a different experience inside a
+        // shell app. For example, we are running Brighten in the List shell and go to Twitter login.
+        // We might want to set the return uri to thelistapp://exp.host/@brighten/brighten+deeplink
+        // But we also can't break thelistapp:// deep links that look like thelistapp://l/listid
+        openExperience(new KernelConstants.ExperienceOptions(Constants.INITIAL_URL, intentUri, null));
+        return;
+      }
+    }
+
+    String defaultUrl = Constants.INITIAL_URL == null ? KernelConstants.HOME_MANIFEST_URL : Constants.INITIAL_URL;
+    openExperience(new KernelConstants.ExperienceOptions(defaultUrl, defaultUrl, null));
+  }
+
+  private void openDevActivity(Activity activity) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      ActivityManager manager = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
+      for (ActivityManager.AppTask task : manager.getAppTasks()) {
+        Intent baseIntent = task.getTaskInfo().baseIntent;
+
+        if (ExponentDevActivity.class.getName().equals(baseIntent.getComponent().getClassName())) {
+          task.moveToFront();
+          return;
+        }
+      }
+    }
+
+    Intent intent = new Intent(activity, ExponentDevActivity.class);
+    Kernel.addIntentDocumentFlags(intent);
+    activity.startActivity(intent);
+  }
 
   public void openExperience(final KernelConstants.ExperienceOptions options) {
     openManifestUrl(getManifestUrlFromFullUri(options.manifestUri), options, true);
