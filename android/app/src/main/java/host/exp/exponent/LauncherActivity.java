@@ -36,7 +36,7 @@ public class LauncherActivity extends Activity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    if (BuildConfig.DEBUG) {
+    if (host.exp.expoview.BuildConfig.DEBUG) {
       // Need WRITE_EXTERNAL_STORAGE for method tracing
       if (Constants.DEBUG_METHOD_TRACING) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -47,20 +47,9 @@ public class LauncherActivity extends Activity {
       }
     }
 
-    if (Constants.DEBUG_COLD_START_METHOD_TRACING) {
-      Debug.startMethodTracing("coldStart");
-    }
-
-    Analytics.markEvent(Analytics.TimedEvent.LAUNCHER_ACTIVITY_STARTED);
-
-    SoLoader.init(getApplicationContext(), false);
-
     NativeModuleDepsProvider.getInstance().inject(LauncherActivity.class, this);
 
     mKernel.setActivityContext(this);
-
-    // Add exception handler. This is used by the entire process, so only need to add it here.
-    Thread.setDefaultUncaughtExceptionHandler(new ExponentUncaughtExceptionHandler(getApplicationContext()));
 
     mKernel.handleIntent(this, getIntent());
 
