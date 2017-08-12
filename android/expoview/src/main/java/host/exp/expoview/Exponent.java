@@ -513,7 +513,11 @@ public class Exponent {
 
 
 
-  public static int getPort(final String url) {
+  public static int getPort(String url) {
+    if (!url.contains("://")) {
+      url = "http://" + url;
+    }
+
     Uri uri = Uri.parse(url);
     int port = uri.getPort();
     if (port == -1) {
@@ -523,7 +527,11 @@ public class Exponent {
     }
   }
 
-  public static String getHostname(final String url) {
+  public static String getHostname(String url) {
+    if (!url.contains("://")) {
+      url = "http://" + url;
+    }
+
     Uri uri = Uri.parse(url);
     return uri.getHost();
   }
