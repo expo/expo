@@ -140,6 +140,10 @@ dependencies {
     transitive = false
   }
   compile 'com.android.support:exifinterface:25.3.1'
+  compile 'com.squareup.okhttp3:okhttp:3.4.1'
+  compile 'com.squareup.okhttp3:okhttp-urlconnection:3.4.1'
+  compile 'com.squareup.okhttp3:okhttp-ws:3.4.1'
+  compile 'com.squareup.okio:okio:1.9.0'
 
   // Testing
   androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
