@@ -62,7 +62,7 @@ public class LauncherActivity extends Activity {
     // Add exception handler. This is used by the entire process, so only need to add it here.
     Thread.setDefaultUncaughtExceptionHandler(new ExponentUncaughtExceptionHandler(getApplicationContext()));
 
-    handleIntent(getIntent());
+    mKernel.handleIntent(this, getIntent());
 
     // Start a service to keep our process awake. This isn't necessary most of the time, but
     // if the user has "Don't keep activities" on it's possible for the process to exit in between
@@ -104,81 +104,6 @@ public class LauncherActivity extends Activity {
 
     // We shouldn't ever get here, since we call finish() in onCreate. Just want to be safe
     // since this Activity is singleTask and there might be some edge case where this is called.
-    handleIntent(intent);
-  }
-
-  private void handleIntent(Intent intent) {
-    try {
-      if (intent.getBooleanExtra("EXKernelDisableNuxDefaultsKey", false)) {
-        Constants.DISABLE_NUX = true;
-      }
-    } catch (Throwable e) {}
-
-    Bundle bundle = intent.getExtras();
-    mKernel.setActivityContext(this);
-
-    Uri uri = intent.getData();
-    String intentUri = uri == null ? null : uri.toString();
-
-    if (bundle != null) {
-      if (bundle.getBoolean(KernelConstants.DEV_FLAG)) {
-        openDevActivity();
-        return;
-      }
-
-      // Notification
-      String notification = bundle.getString(KernelConstants.NOTIFICATION_KEY); // deprecated
-      String notificationObject = bundle.getString(KernelConstants.NOTIFICATION_OBJECT_KEY);
-      String notificationManifestUrl = bundle.getString(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY);
-      if (notificationManifestUrl != null) {
-        mKernel.openExperience(new KernelConstants.ExperienceOptions(notificationManifestUrl, intentUri == null ? notificationManifestUrl : intentUri, notification, ExponentNotification.fromJSONObjectString(notificationObject)));
-        return;
-      }
-
-      // Shortcut
-      String shortcutManifestUrl = bundle.getString(KernelConstants.SHORTCUT_MANIFEST_URL_KEY);
-      if (shortcutManifestUrl != null) {
-        mKernel.openExperience(new KernelConstants.ExperienceOptions(shortcutManifestUrl, intentUri, null));
-        return;
-      }
-    }
-
-    if (uri != null) {
-      if (Constants.INITIAL_URL == null) {
-        // We got an "exp://" link
-        mKernel.openExperience(new KernelConstants.ExperienceOptions(intentUri, intentUri, null));
-        return;
-      } else {
-        // We got a custom scheme link
-        // TODO: we still might want to parse this if we're running a different experience inside a
-        // shell app. For example, we are running Brighten in the List shell and go to Twitter login.
-        // We might want to set the return uri to thelistapp://exp.host/@brighten/brighten+deeplink
-        // But we also can't break thelistapp:// deep links that look like thelistapp://l/listid
-        mKernel.openExperience(new KernelConstants.ExperienceOptions(Constants.INITIAL_URL, intentUri, null));
-        return;
-      }
-    }
-
-    String defaultUrl = Constants.INITIAL_URL == null ? KernelConstants.HOME_MANIFEST_URL : Constants.INITIAL_URL;
-    mKernel.openExperience(new KernelConstants.ExperienceOptions(defaultUrl, defaultUrl, null));
-  }
-
-  // Handle this here since we want the dev activity to be as separate from the kernel as possible.
-  private void openDevActivity() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-      for (ActivityManager.AppTask task : manager.getAppTasks()) {
-        Intent baseIntent = task.getTaskInfo().baseIntent;
-
-        if (ExponentDevActivity.class.getName().equals(baseIntent.getComponent().getClassName())) {
-          task.moveToFront();
-          return;
-        }
-      }
-    }
-
-    Intent intent = new Intent(this, ExponentDevActivity.class);
-    Kernel.addIntentDocumentFlags(intent);
-    startActivity(intent);
+    mKernel.handleIntent(this, intent);
   }
 }
