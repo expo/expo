@@ -14,17 +14,11 @@ Store a key/value pair.
 
 #### Arguments
 
--   **value (_string_)** --
+-   **value (_string_)** -- The value to store.
 
-  The value to store.
+- **key (_string_)** -- The key to associate with the stored value (Keys can contain alphanumeric characters `.`, `-`, and `_`.)
 
-- **key (_string_)** --
-
-  The key to associate with the stored value (Keys can contain alphanumeric characters `.`, `-`, and `_`.)
-
--   **options (_object_)** (optional) --
-
-  A map of options:
+-   **options (_object_)** (optional) -- A map of options:
 
     -   **keychainService (_string_)** -- 
       iOS: The item's service, equivalent to `kSecAttrService`.
@@ -50,13 +44,9 @@ Fetch the stored value associated with the provided key.
 
 #### Arguments
 
--   **key (_string_)** --
+-   **key (_string_)** -- The key that was used to store the associated value.
 
-  The key that was used to store the associated value.
-
--   **options (_object_)** (optional) --
-
-  A map of options:
+-   **options (_object_)** (optional) -- A map of options:
   
     -   **keychainService (_string_)** -- 
       iOS: The item's service, equivalent to `kSecAttrService`.
@@ -73,13 +63,9 @@ Delete the value associated with the provided key.
 
 #### Arguments
 
--   **key (_string_)** --
+-   **key (_string_)** -- The key that was used to store the associated value.
 
-  The key that was used to store the associated value.
-
--   **options (_object_)** (optional) --
-
-  A map of options:
+-   **options (_object_)** (optional) -- A map of options:
   
   -   **keychainService (_string_)** -- iOS: The item's service, equivalent to `kSecAttrService`.  Android: Equivalent of the public/private key pair `Alias`.  If the item is set with a keychainService, it will be required to later fetch the value.
 

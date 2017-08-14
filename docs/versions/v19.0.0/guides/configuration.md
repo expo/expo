@@ -19,6 +19,8 @@ title: Configuration with app.json
 
 Most configuration from `app.json` is accessible at runtime from your JavaScript code via [`Expo.Constants.manifest`](../sdk/constants.html#expoconstantsmanifest). Sensitive information such as secret keys are removed. See the `"extra"` key below for information about how to pass arbitrary configuration data to your app.
 
+Most configuration from `app.json` is accessible at runtime from your JavaScript code via [`Expo.Constants.manifest`](../sdk/constants.html#expoconstantsmanifest). Sensitive information such as secret keys are removed. See the `"extra"` key below for information about how to pass arbitrary configuration data to your app.
+
 The following is a list of properties that are available for you under the `"expo"` key in `app.json`:
 
 

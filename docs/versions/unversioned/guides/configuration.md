@@ -9,13 +9,15 @@ title: Configuration with app.json
   "expo": {
     "name": "My app",
     "slug": "my-app",
-    "sdkVersion": "17.0.0",
+    "sdkVersion": "UNVERSIONED",
     "privacy": "public"
   }
 }
 ```
 
 `app.json` was previous referred to as `exp.json`, but for consistency with [Create React Native App](https://github.com/react-community/create-react-native-app) it has been consolidated under one file. If you are converting your app from using `exp.json` to `app.json`, all you need to do is add an `"expo"` key at the root of `app.json`, as the parent of all other keys.
+
+Most configuration from `app.json` is accessible at runtime from your JavaScript code via [`Expo.Constants.manifest`](../sdk/constants.html#expoconstantsmanifest). Sensitive information such as secret keys are removed. See the `"extra"` key below for information about how to pass arbitrary configuration data to your app.
 
 The following is a list of properties that are available for you under the `"expo"` key in `app.json`:
 
@@ -114,28 +116,24 @@ The following is a list of properties that are available for you under the `"exp
 
    - `splash`
 
-       **Standalone Apps Only**. This is an experimental feature.
-
       Configuration for loading and splash screen for standalone apps.
 
-      - `backgroundColor`
+       - `backgroundColor`
 
-        Color to fill the loading screen background.
+          Color to fill the loading screen background
         6 character long hex color string, eg: `'#000000'`
 
-      - `ios`
+       - `image`
 
-        iOS specific properties for customizing the splash and loading screen for standalone apps.
+          Properties for customizing the images on the splash and loading screen for standalone apps.
 
-        - `backgroundImage`
+           - `ios`
 
-          Local path or remote url to an image to fill the background of the loading screen. Image size and
-          aspect ratio are up to you. Must be a .png.
+              Image specific properties for the loading experience on iOS standalone apps.
 
-          This image will be inserted into your standalone app's bundle, and cannot be changed without resubmitting.
-          It will be inserted into the UILaunchStoryboardName's xib screen win contentMode `aspectFill`. This is
-          used both for normal iOS application startup as well as during the loading of the JS bundle.
+               - `backgroundImage`
 
+                  Local path or remote url to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png. Will be inserted into the loading screen's background image view with contentMode `aspectFill`.
 
 - `appKey`
 
@@ -173,20 +171,20 @@ The following is a list of properties that are available for you under the `"exp
 
 - `extra`
 
-   Any extra fields you want to pass to your experience.
+   Any extra fields you want to pass to your experience. Values are accessible via `Expo.Constants.manifest.extra` ([read more](../sdk/constants.html#expoconstantsmanifest))
 
 - `rnCliPath`
 
-
+   
 - `packagerOpts`
 
-
+   
 - `ignoreNodeModulesValidation`
 
-
+   
 - `nodeModulesPath`
 
-
+   
 - `ios`
 
    **Standalone Apps Only**. iOS standalone app specific configuration
@@ -204,9 +202,13 @@ The following is a list of properties that are available for you under the `"exp
 
       Local path or remote url to an image to use for your app's icon on iOS. If specified, this overrides the top-level `icon` key. iOS icons should be square png files with no transparent pixels. This icon will appear on the home screen and within the Expo app.
 
+   - `merchantId`
+
+      Merchant ID for use with Apple Pay in your standalone app.
+
    - `config`
 
-
+      
        - `branch`
 
           [Branch](https://branch.io/) key to hook up Branch linking services.
@@ -266,43 +268,44 @@ The following is a list of properties that are available for you under the `"exp
 
    - `icon`
 
-      Local path or remote url to an image to use for your app's icon on Android. We recommend that you use a 512x512 png file with transparency. This icon will appear on the home screen and within the Expo app.
+      Local path or remote url to an image to use for your app's icon. We recommend that you use a 512x512 png file with transparency. This icon will appear on the home screen and within the Expo app.
 
    - `permissions`
 
       List of permissions used by the standalone app. Remove the field to use the default list of permissions.
-
-      Example: `[ "CAMERA", "ACCESS_FINE_LOCATION" ]`
-
-      You can specify the following permissions depending on what you need:
-
-      `ACCESS_COARSE_LOCATION`
-      `ACCESS_FINE_LOCATION`
-      `CAMERA`
-      `MANAGE_DOCUMENTS`
-      `READ_CONTACTS`
-      `READ_EXTERNAL_STORAGE`
-      `READ_INTERNAL_STORAGE`
-      `READ_PHONE_STATE`
-      `RECORD_AUDIO`
-      `USE_FINGERPRINT`
-      `VIBRATE`
-      `WAKE_LOCK`
-      `WRITE_EXTERNAL_STORAGE`
-      `com.anddoes.launcher.permission.UPDATE_COUNT`
-      `com.android.launcher.permission.INSTALL_SHORTCUT`
-      `com.google.android.gms.permission.ACTIVITY_RECOGNITION`
-      `com.google.android.providers.gsf.permission.READ_GSERVICES`
-      `com.htc.launcher.permission.READ_SETTINGS`
-      `com.htc.launcher.permission.UPDATE_SHORTCUT`
-      `com.majeur.launcher.permission.UPDATE_BADGE`
-      `com.sec.android.provider.badge.permission.READ`
-      `com.sec.android.provider.badge.permission.WRITE`
-      `com.sonyericsson.home.permission.BROADCAST_BADGE`
+    
+    Example: `[ "CAMERA", "ACCESS_FINE_LOCATION" ]`.
+    
+    You can specify the following permissions depending on what you need:
+    
+      - `ACCESS_COARSE_LOCATION`
+      - `ACCESS_FINE_LOCATION`
+      - `CAMERA`
+      - `MANAGE_DOCUMENTS`
+      - `READ_CONTACTS`
+      - `READ_EXTERNAL_STORAGE`
+      - `READ_INTERNAL_STORAGE`
+      - `READ_PHONE_STATE`
+      - `RECORD_AUDIO`
+      - `USE_FINGERPRINT`
+      - `VIBRATE`
+      - `WAKE_LOCK`
+      - `WRITE_EXTERNAL_STORAGE`
+      - `com.anddoes.launcher.permission.UPDATE_COUNT`
+      - `com.android.launcher.permission.INSTALL_SHORTCUT`
+      - `com.google.android.c2dm.permission.RECEIVE`
+      - `com.google.android.gms.permission.ACTIVITY_RECOGNITION`
+      - `com.google.android.providers.gsf.permission.READ_GSERVICES`
+      - `com.htc.launcher.permission.READ_SETTINGS`
+      - `com.htc.launcher.permission.UPDATE_SHORTCUT`
+      - `com.majeur.launcher.permission.UPDATE_BADGE`
+      - `com.sec.android.provider.badge.permission.READ`
+      - `com.sec.android.provider.badge.permission.WRITE`
+      - `com.sonyericsson.home.permission.BROADCAST_BADGE`
 
    - `config`
 
-
+      
        - `branch`
 
           [Branch](https://branch.io/) key to hook up Branch linking services.
@@ -352,3 +355,5 @@ The following is a list of properties that are available for you under the `"exp
    Configuration for scripts to run to hook into the publish process
 
    - `postPublish`
+
+      
