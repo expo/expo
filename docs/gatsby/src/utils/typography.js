@@ -125,7 +125,12 @@ const typography = new Typography({
     'h2 code': {
       fontSize: '20px',
     },
+    h3: {
+      marginTop: '30px',
+      marginBottom: '10px',
+    },
     'h3 code': {
+      backgroundColor: 'hsla(216, 94%, 48%, 0.1)',
       lineHeight: 1.5,
       fontSize: '1rem',
       fontWeight: 500,
