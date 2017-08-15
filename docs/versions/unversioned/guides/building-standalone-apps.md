@@ -94,7 +94,7 @@ This will take a few minutes, you can check up on it by running `exp build:statu
 
 -   You can drag and drop the `.apk` into your Android emulator. This is the easiest way to test out that the build was successful. But it's not the most satisfying.
 -   **To run it on your Android device**, make sure you have the Android platform tools installed along with `adb`, then just run `adb install app-filename.apk` with your device plugged in.
--   **To run it on your iOS device**, you will need to put in a bit more work :( We are working on producing simulator builds to make it easier to test, but for now you will need to use Apple TestFlight. Go to iTunes connect and create a new app and pick your bundle identifier. After that, we recommend using [pilot](https://github.com/fastlane/fastlane/tree/master/pilot) to upload the build and add testers.
+-   **To run it on your iOS device**, first build your expo project with the simulator flag by running `exp build:ios -t simulator`, then unpack the tar.gz build artifact by running `tar -xvzf your-app.tar.gz`. Then you can run this on iPhone Simulator using `xcrun simctl install booted <app path>` and `xcrun simctl launch booted <app identifier>`. Another alternative which some people prefer is to install the [ios-sim](https://github.com/phonegap/ios-sim) tool and then use `ios-sim launch <app path>`.
 
 ## 6. Submit it to the appropriate store
 
