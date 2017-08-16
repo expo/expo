@@ -40,6 +40,9 @@ You're probably not surprised that `name`, `icon` and `version` are required, bu
 
 There are other options you might want to add to `app.json`. We have only covered what is required. For example, some people like to configure their own build number, linking scheme, and more. We highly recommend you read through [Configuration with app.json](configuration.html) for the full spec.
 
+> **Note**: iOS standalone apps [default](https://developer.apple.com/documentation/uikit/uibarstyle/uibarstyledefault) the status bar text color to white. But when developing within the Expo app, the default is black since the Expo app itself has a black status bar. Users are often surprised that their standalone apps suddenly have white status bars. In order to keep it black, you'll need to use a `<StatusBar barStyle="dark-content" />` component. See [StatusBar docs](https://facebook.github.io/react-native/docs/statusbar.html) for more information.
+
+
 ## 3. Start the build
 
 -   Run `exp start` in your app directory to boot up the Expo packager. This is necessary because during the build process your app will be republished to ensure it is the latest version.

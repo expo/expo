@@ -174,6 +174,18 @@ Send a POST request to `https://exp.host/--/api/v2/push/send` with the following
     accept-encoding: gzip, deflate
     content-type: application/json
 
+This API does not require any authentication.
+
+Here's an hello world request done with curl:
+
+```bash
+curl -H "Content-Type: application/json" -X POST https://exp.host/--/api/v2/push/send -d '{
+  "to": "ExponentPushToken[Xrl3FBKaZnbpv9ajMJEDUY]",
+  "title":"hello",
+  "body": "world"
+}'
+```
+
 The HTTP request body must be JSON. It may either be a single message object or an array of up to 100 messages. **We recommend using an array when you want to send multiple messages to efficiently minimize the number of requests you need to make to Expo servers.** This is an example request body that sends two messages:
 
 ```json

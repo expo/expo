@@ -4,6 +4,7 @@ import Link from 'gatsby-link';
 import get from 'lodash/get';
 
 import { rhythm } from '../utils/typography';
+import { getVersionFromUrl } from '../utils/url';
 
 function initializeEmbeds() {
   if (window.ExpoSnack) {
@@ -49,6 +50,10 @@ class DocsPage extends React.Component {
               name: `description`,
               content: post.excerpt,
             },
+            // Tell spiders to not index unversioned
+            getVersionFromUrl(post.fields.fileSlug) === 'unversioned'
+              ? { name: 'robots', content: 'noindex' }
+              : {},
           ]}
           link={link}
         />

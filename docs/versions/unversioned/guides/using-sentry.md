@@ -33,6 +33,10 @@ It notifies you of exceptions that your users run into while using your app and 
 
 ```javascript
 import Sentry from 'sentry-expo';
+
+// Remove this once Sentry is correctly setup.
+Sentry.enableInExpoDevelopment = true;
+
 Sentry.config('your Public DSN goes here').install();
 ```
 
@@ -65,6 +69,10 @@ With the `postPublish` hook in place, now all you need to do is hit publish and 
 ## Error reporting semantics
 
 In order to ensure that errors are reported reliably, Sentry defers reporting the data to their backend until the next time you load the app after a fatal error rather than trying to report it upon catching the exception. It saves the stacktrace and other metadata to `AsyncStorage` and sends it immediately when the app starts.
+
+## Disabled by default in dev
+
+Unless `Sentry.enableInExpoDevelopment = true` is set before calling `Sentry.config({...}).install()`, all your dev/local errors will be ignored and only app releases will report errors to Sentry. You can call methods like `Sentry.reportException` but these methods will be no-op.
 
 ## Learn more about Sentry
 

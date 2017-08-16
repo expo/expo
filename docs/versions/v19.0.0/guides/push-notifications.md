@@ -36,7 +36,7 @@ async function registerForPushNotificationsAsync() {
   }
 
   // Get the token that uniquely identifies this device
-  let token = await Notifications.getExponentPushTokenAsync();
+  let token = await Notifications.getExpoPushTokenAsync();
 
   // POST the token to our backend so we can use it to send pushes from there
   return fetch(PUSH_ENDPOINT, {
@@ -173,6 +173,18 @@ Send a POST request to `https://exp.host/--/api/v2/push/send` with the following
     accept: application/json
     accept-encoding: gzip, deflate
     content-type: application/json
+
+This API does not require any authentication.
+
+Here's an hello world request done with curl:
+
+```bash
+curl -H "Content-Type: application/json" -X POST https://exp.host/--/api/v2/push/send -d '{
+  "to": "ExponentPushToken[Xrl3FBKaZnbpv9ajMJEDUY]",
+  "title":"hello",
+  "body": "world"
+}'
+```
 
 The HTTP request body must be JSON. It may either be a single message object or an array of up to 100 messages. **We recommend using an array when you want to send multiple messages to efficiently minimize the number of requests you need to make to Expo servers.** This is an example request body that sends two messages:
 
