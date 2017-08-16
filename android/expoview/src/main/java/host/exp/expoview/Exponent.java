@@ -394,7 +394,7 @@ public class Exponent {
       }
       Request request = requestBuilder.build();
       // Use OkHttpClient with long read timeout for dev bundles
-      mExponentNetwork.getLongTimeoutClient().callSafe(request, new ExponentHttpClient.SafeCallback() {
+      mExponentNetwork.getLongTimeoutClient().callDefaultCache(request, new ExponentHttpClient.SafeCallback() {
         @Override
         public void onFailure(Call call, IOException e) {
           bundleListener.onError(e);
@@ -470,8 +470,8 @@ public class Exponent {
         }
 
         @Override
-        public void onErrorCacheResponse(Call call, Response response) {
-          EXL.d(TAG, "Initial HTTP request failed. Using cached or embedded response.");
+        public void onCachedResponse(Call call, Response response) {
+          EXL.d(TAG, "Using cached or embedded response.");
           onResponse(call, response);
         }
       });

@@ -205,7 +205,7 @@ public class ExponentManifest {
         }
       });
     } else {
-      mExponentNetwork.getClient().callSafe(requestBuilder.build(), new ExponentHttpClient.SafeCallback() {
+      mExponentNetwork.getClient().callDefaultCache(requestBuilder.build(), new ExponentHttpClient.SafeCallback() {
         @Override
         public void onFailure(Call call, IOException e) {
           listener.onError(new ManifestException(e, manifestUrl));
@@ -229,8 +229,8 @@ public class ExponentManifest {
         }
 
         @Override
-        public void onErrorCacheResponse(Call call, Response response) {
-          EXL.d(TAG, "Initial HTTP request failed. Using cached or embedded response.");
+        public void onCachedResponse(Call call, Response response) {
+          EXL.d(TAG, "Using cached or embedded response.");
           onResponse(call, response);
         }
       });

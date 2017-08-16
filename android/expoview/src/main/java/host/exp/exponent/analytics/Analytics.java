@@ -26,8 +26,8 @@ public class Analytics {
   public static final String SAVE_EXPERIENCE_OPTION_NO = "SAVE_EXPERIENCE_OPTION_NO";
   public static final String ERROR_SCREEN = "ERROR_SCREEN";
   public static final String ERROR_RELOADED = "ERROR_RELOADED";
-  public static final String HTTP_ERROR_USED_CACHE_RESPONSE = "HTTP_ERROR_USED_CACHE_RESPONSE";
-  public static final String HTTP_ERROR_USED_EMBEDDED_RESPONSE = "HTTP_ERROR_USED_EMBEDDED_RESPONSE";
+  public static final String HTTP_USED_CACHE_RESPONSE = "HTTP_USED_CACHE_RESPONSE";
+  public static final String HTTP_USED_EMBEDDED_RESPONSE = "HTTP_USED_EMBEDDED_RESPONSE";
   public static final String LOAD_DEVELOPER_MANIFEST = "LOAD_DEVELOPER_MANIFEST";
 
   public static final String MANIFEST_URL = "MANIFEST_URL";
