@@ -3,6 +3,7 @@
 package host.exp.exponent.network;
 
 import android.content.Context;
+import android.os.AsyncTask;
 
 import com.amplitude.api.Amplitude;
 
@@ -40,29 +41,29 @@ public class ExponentHttpClient {
   public interface SafeCallback {
     void onFailure(Call call, IOException e);
     void onResponse(Call call, Response response);
-    void onErrorCacheResponse(Call call, Response response);
+    void onCachedResponse(Call call, Response response);
   }
 
   private Context mContext;
-  private OkHttpClient mOkHttpClient;
+  private ExponentNetwork.OkHttpClientFactory mOkHttpClientFactory;
 
-  protected ExponentHttpClient(final Context context, final OkHttpClient httpClient) {
+  protected ExponentHttpClient(final Context context, final ExponentNetwork.OkHttpClientFactory httpClientFactory) {
     mContext = context;
-    mOkHttpClient = httpClient;
+    mOkHttpClientFactory = httpClientFactory;
   }
 
   protected OkHttpClient getOkHttpClient() {
-    return mOkHttpClient;
+    return mOkHttpClientFactory.getNewClient();
   }
 
   public void call(final Request request, final Callback callback) {
-    mOkHttpClient.newCall(request).enqueue(callback);
+    mOkHttpClientFactory.getNewClient().newCall(request).enqueue(callback);
   }
 
   public void callSafe(final Request request, final SafeCallback callback) {
     final String uri = request.url().toString();
 
-    mOkHttpClient.newCall(request).enqueue(new Callback() {
+    mOkHttpClientFactory.getNewClient().newCall(request).enqueue(new Callback() {
       @Override
       public void onFailure(Call call, IOException e) {
         tryForcedCachedResponse(uri, request, callback, null, e);
@@ -79,12 +80,62 @@ public class ExponentHttpClient {
     });
   }
 
+  public void callDefaultCache(final Request request, final SafeCallback callback) {
+    final String uri = request.url().toString();
+
+    tryForcedCachedResponse(uri, request, new SafeCallback() {
+
+      @Override
+      public void onFailure(Call call, IOException e) {
+        call(request, new Callback() {
+          @Override
+          public void onFailure(Call call, IOException e) {
+            callback.onFailure(call, e);
+          }
+
+          @Override
+          public void onResponse(Call call, Response response) throws IOException {
+            callback.onResponse(call, response);
+          }
+        });
+      }
+
+      @Override
+      public void onResponse(Call call, Response response) {
+        callback.onResponse(call, response);
+      }
+
+      @Override
+      public void onCachedResponse(Call call, Response response) {
+        callback.onResponse(call, response);
+
+        AsyncTask.execute(new Runnable() {
+          @Override
+          public void run() {
+            call(request.newBuilder().cacheControl(CacheControl.FORCE_NETWORK).build(), new Callback() {
+              @Override
+              public void onFailure(Call call, IOException e) {
+                EXL.e(TAG, "Failed to update cache for " + uri);
+              }
+
+              @Override
+              public void onResponse(Call call, Response response) throws IOException {
+                // Updated the cache successfully
+                EXL.e(TAG, "Updated cache for " + uri);
+              }
+            });
+          }
+        });
+      }
+    }, null, null);
+  }
+
   private void tryForcedCachedResponse(final String uri, final Request request, final SafeCallback callback, final Response initialResponse, final IOException initialException) {
     Request newRequest = request.newBuilder()
         .cacheControl(CacheControl.FORCE_CACHE)
         .header(ExponentNetwork.IGNORE_INTERCEPTORS_HEADER, "blah")
         .build();
-    mOkHttpClient.newCall(newRequest).enqueue(new Callback() {
+    mOkHttpClientFactory.getNewClient().newCall(newRequest).enqueue(new Callback() {
       @Override
       public void onFailure(Call call, IOException e) {
         tryHardCodedResponse(uri, call, callback, initialResponse, initialException);
@@ -93,8 +144,8 @@ public class ExponentHttpClient {
       @Override
       public void onResponse(Call call, Response response) throws IOException {
         if (response.isSuccessful()) {
-          callback.onErrorCacheResponse(call, response);
-          logEventWithUri(Analytics.HTTP_ERROR_USED_CACHE_RESPONSE, uri);
+          callback.onCachedResponse(call, response);
+          logEventWithUri(Analytics.HTTP_USED_CACHE_RESPONSE, uri);
         } else {
           tryHardCodedResponse(uri, call, callback, initialResponse, initialException);
         }
@@ -133,8 +184,8 @@ public class ExponentHttpClient {
               .message("OK")
               .body(responseBodyForFile(embeddedResponse.responseFilePath, MediaType.parse(embeddedResponse.mediaType)))
               .build();
-          callback.onErrorCacheResponse(call, response);
-          logEventWithUri(Analytics.HTTP_ERROR_USED_EMBEDDED_RESPONSE, uri);
+          callback.onCachedResponse(call, response);
+          logEventWithUri(Analytics.HTTP_USED_EMBEDDED_RESPONSE, uri);
           return;
         }
       }
@@ -147,8 +198,7 @@ public class ExponentHttpClient {
     } else if (initialException != null) {
       callback.onFailure(call, initialException);
     } else {
-      // How did we get here??
-      throw new RuntimeException("Didn't have initialResponse or initialException in ExponentHttpClient.tryHardCodedResponse");
+      callback.onFailure(call, new IOException("No hard coded response found"));
     }
   }
 

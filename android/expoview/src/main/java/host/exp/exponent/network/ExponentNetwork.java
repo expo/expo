@@ -34,36 +34,43 @@ public class ExponentNetwork {
   private ExponentHttpClient mClient;
   private ExponentHttpClient mLongTimeoutClient;
   private OkHttpClient mNoCacheClient;
-  private Cache mCache;
 
   // This fixes OkHttp bug where if you don't read a response, it'll never cache that request in the future
   public static void flushResponse(Response response) throws IOException {
     response.body().bytes();
   }
 
+  public interface OkHttpClientFactory {
+    OkHttpClient getNewClient();
+  }
+
   @Inject
   public ExponentNetwork(Context context) {
     mContext = context.getApplicationContext();
 
-    int cacheSize = 40 * 1024 * 1024; // 40 MiB
+    mClient = new ExponentHttpClient(mContext, new OkHttpClientFactory() {
+      @Override
+      public OkHttpClient getNewClient() {
+        return createHttpClientBuilder().build();
+      }
+    });
 
-    // Use getFilesDir() because it gives us much more space than getCacheDir()
-    final File directory = new File(context.getFilesDir(), CACHE_DIR);
-    mCache = new Cache(directory, cacheSize);
-
-    mClient = new ExponentHttpClient(mContext, createHttpClientBuilder().build());
-
-    OkHttpClient longTimeoutHttpClient = createHttpClientBuilder()
-        .readTimeout(2, TimeUnit.MINUTES)
-        .build();
-    mLongTimeoutClient = new ExponentHttpClient(mContext, longTimeoutHttpClient);
+    mLongTimeoutClient = new ExponentHttpClient(mContext, new OkHttpClientFactory() {
+      @Override
+      public OkHttpClient getNewClient() {
+        OkHttpClient longTimeoutHttpClient = createHttpClientBuilder()
+            .readTimeout(2, TimeUnit.MINUTES)
+            .build();
+        return longTimeoutHttpClient;
+      }
+    });
 
     mNoCacheClient = new OkHttpClient.Builder().build();
   }
 
   private OkHttpClient.Builder createHttpClientBuilder() {
     OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
-        .cache(mCache);
+        .cache(getCache());
     if (ExpoViewBuildConfig.DEBUG) {
       // FIXME: 8/9/17
       // clientBuilder.addNetworkInterceptor(new StethoInterceptor());
@@ -86,7 +93,11 @@ public class ExponentNetwork {
   }
 
   public Cache getCache() {
-    return mCache;
+    int cacheSize = 40 * 1024 * 1024; // 40 MiB
+
+    // Use getFilesDir() because it gives us much more space than getCacheDir()
+    final File directory = new File(mContext.getFilesDir(), CACHE_DIR);
+    return new Cache(directory, cacheSize);
   }
 
   public boolean isNetworkAvailable() {
