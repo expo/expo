@@ -107,25 +107,9 @@ public class ExponentHttpClient {
 
       @Override
       public void onCachedResponse(Call call, Response response) {
-        callback.onResponse(call, response);
+        callback.onCachedResponse(call, response);
 
-        AsyncTask.execute(new Runnable() {
-          @Override
-          public void run() {
-            call(request.newBuilder().cacheControl(CacheControl.FORCE_NETWORK).build(), new Callback() {
-              @Override
-              public void onFailure(Call call, IOException e) {
-                EXL.e(TAG, "Failed to update cache for " + uri);
-              }
-
-              @Override
-              public void onResponse(Call call, Response response) throws IOException {
-                // Updated the cache successfully
-                EXL.e(TAG, "Updated cache for " + uri);
-              }
-            });
-          }
-        });
+        // You are responsible for updating the cache!
       }
     }, null, null);
   }

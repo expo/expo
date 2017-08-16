@@ -310,10 +310,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     }
     mIsCrashed = false;
 
-    // Update manifest on disk
-    mExponentSharedPreferences.updateManifest(manifestUrl, manifest, bundleUrl);
-    ExponentDB.saveExperience(manifestUrl, manifest, bundleUrl);
-
     Analytics.logEventWithManifestUrlSdkVersion(Analytics.LOAD_EXPERIENCE, mManifestUrl, mSDKVersion);
 
     ExperienceActivityUtils.updateOrientation(mManifest, this);

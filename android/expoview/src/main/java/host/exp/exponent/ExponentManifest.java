@@ -23,8 +23,10 @@ import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.KernelProvider;
 import host.exp.exponent.network.ExponentHttpClient;
 import host.exp.exponent.network.ExponentNetwork;
+import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.ColorParser;
+import host.exp.expoview.Exponent;
 import host.exp.expoview.R;
 import expolib_v1.okhttp3.Call;
 import expolib_v1.okhttp3.Callback;
@@ -131,6 +133,10 @@ public class ExponentManifest {
   }
 
   public void fetchManifest(final String manifestUrl, final ManifestListener listener) {
+    fetchManifest(manifestUrl, listener, true);
+  }
+
+  public void fetchManifest(final String manifestUrl, final ManifestListener listener, final boolean useCache) {
     Analytics.markEvent(Analytics.TimedEvent.STARTED_FETCHING_MANIFEST);
 
     String realManifestUrl = manifestUrl;
@@ -178,7 +184,7 @@ public class ExponentManifest {
       isDevelopment = true;
     }
 
-    if (isDevelopment) {
+    if (isDevelopment || !useCache) {
       // If we're sure this is a development url, don't cache. Note that LAN development urls
       // might still be cached
       mExponentNetwork.getNoCacheClient().newCall(requestBuilder.build()).enqueue(new Callback() {
@@ -196,7 +202,7 @@ public class ExponentManifest {
 
           try {
             String manifestString = response.body().string();
-            fetchManifestStep2(manifestString, response.headers(), listener);
+            fetchManifestStep2(manifestUrl, manifestString, response.headers(), listener);
           } catch (JSONException e) {
             listener.onError(e);
           } catch (IOException e) {
@@ -220,7 +226,7 @@ public class ExponentManifest {
 
           try {
             String manifestString = response.body().string();
-            fetchManifestStep2(manifestString, response.headers(), listener);
+            fetchManifestStep2(manifestUrl, manifestString, response.headers(), listener);
           } catch (JSONException e) {
             listener.onError(e);
           } catch (IOException e) {
@@ -232,12 +238,19 @@ public class ExponentManifest {
         public void onCachedResponse(Call call, Response response) {
           EXL.d(TAG, "Using cached or embedded response.");
           onResponse(call, response);
+
+          AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+              Exponent.getInstance().preloadManifestAndBundle(manifestUrl);
+            }
+          });
         }
       });
     }
   }
 
-  private void fetchManifestStep2(final String manifestString, final Headers headers, final ManifestListener listener) throws JSONException {
+  private void fetchManifestStep2(final String manifestUrl, final String manifestString, final Headers headers, final ManifestListener listener) throws JSONException {
     if (Constants.DEBUG_MANIFEST_METHOD_TRACING) {
       Debug.stopMethodTracing();
     }
@@ -251,7 +264,7 @@ public class ExponentManifest {
 
       if (isAnonymousExperience(innerManifest)) {
         // Automatically verified.
-        fetchManifestStep3(innerManifest, true, listener);
+        fetchManifestStep3(manifestUrl, innerManifest, true, listener);
       } else {
         mCrypto.verifyPublicRSASignature(Constants.API_HOST + "/--/manifest-public-key",
             manifest.getString("manifestString"), manifest.getString("signature"), new Crypto.RSASignatureListener() {
@@ -260,21 +273,21 @@ public class ExponentManifest {
                 if (isOffline && isNetworkError) {
                   // automatically validate if offline and don't have public key
                   // TODO: we need to evict manifest from the cache if it doesn't pass validation when online
-                  fetchManifestStep3(innerManifest, true, listener);
+                  fetchManifestStep3(manifestUrl, innerManifest, true, listener);
                 } else {
                   Log.w(TAG, errorMessage);
-                  fetchManifestStep3(innerManifest, false, listener);
+                  fetchManifestStep3(manifestUrl, innerManifest, false, listener);
                 }
               }
 
               @Override
               public void onCompleted(boolean isValid) {
-                fetchManifestStep3(innerManifest, isValid, listener);
+                fetchManifestStep3(manifestUrl, innerManifest, isValid, listener);
               }
             });
       }
     } else {
-      fetchManifestStep3(manifest, false, listener);
+      fetchManifestStep3(manifestUrl, manifest, false, listener);
     }
 
     final String exponentServerHeader = headers.get(EXPONENT_SERVER_HEADER);
@@ -288,19 +301,28 @@ public class ExponentManifest {
     }
   }
 
-  private void fetchManifestStep3(final JSONObject manifest, final boolean isVerified, final ManifestListener listener) {
-    try {
-      manifest.put(MANIFEST_IS_VERIFIED_KEY, isVerified);
-    } catch (JSONException e) {
-      listener.onError(e);
-    }
+  private void fetchManifestStep3(final String manifestUrl, final JSONObject manifest, final boolean isVerified, final ManifestListener listener) {
+    String bundleUrl;
 
     if (!manifest.has("bundleUrl")) {
       listener.onError("No bundleUrl in manifest");
+      return;
+    }
+
+    try {
+      manifest.put(MANIFEST_IS_VERIFIED_KEY, isVerified);
+      bundleUrl = ExponentUrls.toHttp(manifest.getString("bundleUrl"));
+    } catch (JSONException e) {
+      listener.onError(e);
+      return;
     }
 
     EXL.d(TAG, "Done fetching manifest");
     Analytics.markEvent(Analytics.TimedEvent.FINISHED_FETCHING_MANIFEST);
+
+    mExponentSharedPreferences.updateManifest(manifestUrl, manifest, bundleUrl);
+    ExponentDB.saveExperience(manifestUrl, manifest, bundleUrl);
+
     listener.onCompleted(manifest);
   }
 
