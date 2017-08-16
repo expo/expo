@@ -86,6 +86,9 @@ public class Exponent {
   @Inject
   ExponentNetwork mExponentNetwork;
 
+  @Inject
+  ExponentManifest mExponentManifest;
+
   public static void initialize(Context context, Application application) {
     if (sInstance == null) {
       new Exponent(context, application);
@@ -394,7 +397,7 @@ public class Exponent {
       }
       Request request = requestBuilder.build();
       // Use OkHttpClient with long read timeout for dev bundles
-      mExponentNetwork.getLongTimeoutClient().callDefaultCache(request, new ExponentHttpClient.SafeCallback() {
+      ExponentHttpClient.SafeCallback callback = new ExponentHttpClient.SafeCallback() {
         @Override
         public void onFailure(Call call, IOException e) {
           bundleListener.onError(e);
@@ -474,7 +477,13 @@ public class Exponent {
           EXL.d(TAG, "Using cached or embedded response.");
           onResponse(call, response);
         }
-      });
+      };
+
+      if (shouldForceNetwork) {
+        mExponentNetwork.getLongTimeoutClient().callSafe(request, callback);
+      } else {
+        mExponentNetwork.getLongTimeoutClient().callDefaultCache(request, callback);
+      }
     } catch (Exception e) {
       bundleListener.onError(e);
     }
@@ -661,5 +670,59 @@ public class Exponent {
 
   public boolean shouldRequestDrawOverOtherAppsPermission() {
     return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(mContext));
+  }
+
+  public void preloadManifestAndBundle(final String manifestUrl) {
+    try {
+      mExponentManifest.fetchManifest(manifestUrl, new ExponentManifest.ManifestListener() {
+        @Override
+        public void onCompleted(JSONObject manifest) {
+          try {
+            String bundleUrl = manifest.getString(ExponentManifest.MANIFEST_BUNDLE_URL_KEY);
+
+            preloadBundle(
+                manifestUrl,
+                bundleUrl,
+                manifest.getString(ExponentManifest.MANIFEST_ID_KEY),
+                manifest.getString(ExponentManifest.MANIFEST_SDK_VERSION_KEY));
+          } catch (JSONException e) {
+            EXL.e(TAG, e);
+          } catch (Exception e) {
+            // Don't let any errors through
+            EXL.e(TAG, "Couldn't preload bundle: " + e.toString());
+          }
+        }
+
+        @Override
+        public void onError(Exception e) {
+          EXL.e(TAG, "Couldn't preload manifest: " + e.toString());
+        }
+
+        @Override
+        public void onError(String e) {
+          EXL.e(TAG, "Couldn't preload manifest: " + e);
+        }
+      }, false);
+    } catch (Throwable e) {
+      EXL.e(TAG, "Couldn't preload manifest: " + e.toString());
+    }
+  }
+
+  private void preloadBundle(final String manifestUrl, final String bundleUrl, final String id, final String sdkVersion) {
+    try {
+      Exponent.getInstance().loadJSBundle(bundleUrl, Exponent.getInstance().encodeExperienceId(id), sdkVersion, new Exponent.BundleListener() {
+        @Override
+        public void onError(Exception e) {
+          EXL.e(TAG, "Couldn't preload bundle: " + e.toString());
+        }
+
+        @Override
+        public void onBundleLoaded(String localBundlePath) {
+          EXL.d(TAG, "Successfully preloaded manifest and bundle for " + manifestUrl + " " + bundleUrl);
+        }
+      }, true);
+    } catch (UnsupportedEncodingException e) {
+      EXL.e(TAG, "Couldn't encode preloaded bundle id: " + e.toString());
+    }
   }
 }
