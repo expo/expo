@@ -133,10 +133,10 @@ public class ExponentManifest {
   }
 
   public void fetchManifest(final String manifestUrl, final ManifestListener listener) {
-    fetchManifest(manifestUrl, listener, true);
+    fetchManifest(manifestUrl, listener, false);
   }
 
-  public void fetchManifest(final String manifestUrl, final ManifestListener listener, final boolean useCache) {
+  public void fetchManifest(final String manifestUrl, final ManifestListener listener, final boolean forceNetwork) {
     Analytics.markEvent(Analytics.TimedEvent.STARTED_FETCHING_MANIFEST);
 
     String realManifestUrl = manifestUrl;
@@ -184,7 +184,7 @@ public class ExponentManifest {
       isDevelopment = true;
     }
 
-    if (isDevelopment || !useCache) {
+    if (isDevelopment || forceNetwork) {
       // If we're sure this is a development url, don't cache. Note that LAN development urls
       // might still be cached
       mExponentNetwork.getNoCacheClient().newCall(requestBuilder.build()).enqueue(new Callback() {
