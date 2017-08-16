@@ -719,7 +719,7 @@ public class Exponent {
         public void onError(String e) {
           EXL.e(TAG, "Couldn't preload manifest: " + e);
         }
-      }, false);
+      }, true);
     } catch (Throwable e) {
       EXL.e(TAG, "Couldn't preload manifest: " + e.toString());
     }
