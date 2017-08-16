@@ -29,7 +29,6 @@ import com.facebook.react.common.LifecycleState;
 import com.facebook.react.modules.network.OkHttpClientProvider;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
-import com.facebook.stetho.okhttp3.StethoInterceptor;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,6 +44,7 @@ import javax.inject.Inject;
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.ExponentDevActivity;
 import host.exp.exponent.LauncherActivity;
+import host.exp.exponent.experience.ShellAppActivity;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.experience.BaseExperienceActivity;
 import host.exp.exponent.experience.ExperienceActivity;
@@ -374,7 +374,7 @@ public class Kernel implements KernelInterface {
     }
   }
 
-  public void openHomeActivity() {
+  private void openHomeActivity() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       ActivityManager manager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
       for (ActivityManager.AppTask task : manager.getAppTasks()) {
@@ -388,6 +388,32 @@ public class Kernel implements KernelInterface {
     }
 
     Intent intent = new Intent(mActivityContext, HomeActivity.class);
+    Kernel.addIntentDocumentFlags(intent);
+
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+      // Don't want to end up in state where we have
+      // ExperienceActivity - HomeActivity - ExperienceActivity
+      // Want HomeActivity to be the root activity if it exists
+      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    }
+
+    mActivityContext.startActivity(intent);
+  }
+
+  private void openShellAppActivity() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      ActivityManager manager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
+      for (ActivityManager.AppTask task : manager.getAppTasks()) {
+        Intent baseIntent = task.getTaskInfo().baseIntent;
+
+        if (ShellAppActivity.class.getName().equals(baseIntent.getComponent().getClassName())) {
+          moveTaskToFront(task.getTaskInfo().id);
+          return;
+        }
+      }
+    }
+
+    Intent intent = new Intent(mActivityContext, ShellAppActivity.class);
     Kernel.addIntentDocumentFlags(intent);
 
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
@@ -515,6 +541,11 @@ public class Kernel implements KernelInterface {
 
     if (manifestUrl == null || manifestUrl.equals(KernelConstants.HOME_MANIFEST_URL)) {
       openHomeActivity();
+      return;
+    }
+
+    if (manifestUrl.equals(Constants.INITIAL_URL)) {
+      openShellAppActivity();
       return;
     }
 

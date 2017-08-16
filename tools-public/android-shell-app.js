@@ -235,10 +235,29 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
     `${shellPath}app/src/main/res/values/strings.xml`
   );
 
-  // Remove exp:// scheme
+  // Remove exp:// scheme from LauncherActivity
   await sedInPlaceAsync(
     '-e',
-    `/DELETE\ AFTER/,/DELETE\ BEFORE/d`,
+    `/START\ LAUNCHER\ INTENT\ FILTERS/,/END\ LAUNCHER\ INTENT\ FILTERS/d`,
+    `${shellPath}app/src/main/AndroidManifest.xml`
+  );
+
+  // Remove LAUNCHER category from HomeActivity
+  await sedInPlaceAsync(
+    '-e',
+    `/START\ HOME\ INTENT\ FILTERS/,/END\ HOME\ INTENT\ FILTERS/d`,
+    `${shellPath}app/src/main/AndroidManifest.xml`
+  );
+
+  // Add LAUNCHER category to ShellAppActivity
+  shell.sed(
+    '-i',
+    '<!-- ADD SHELL INTENT FILTERS HERE -->',
+    `<intent-filter>
+      <action android:name="android.intent.action.MAIN"/>
+
+      <category android:name="android.intent.category.LAUNCHER"/>
+    </intent-filter>`,
     `${shellPath}app/src/main/AndroidManifest.xml`
   );
 
