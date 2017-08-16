@@ -28,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -131,6 +132,8 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
     Exponent.initialize(this, getApplication());
     NativeModuleDepsProvider.getInstance().inject(ReactNativeActivity.class, this);
+
+    EventBus.getDefault().registerSticky(this);
   }
 
   protected void setView(final View view) {
@@ -177,6 +180,8 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
       fadeLoadingScreen();
       onDoneLoading();
       ErrorRecoveryManager.getInstance(mExperienceId).markExperienceLoaded();
+
+      pollForEventsToSendToRN();
     } else {
       mHandler.postDelayed(new Runnable() {
         @Override
@@ -289,6 +294,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
 
     mHandler.removeCallbacksAndMessages(null);
     mLoadingHandler.removeCallbacksAndMessages(null);
+    EventBus.getDefault().unregister(this);
   }
 
   @Override
@@ -504,6 +510,33 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
       return false;
     } else {
       return true;
+    }
+  }
+
+  public void onEventMainThread(KernelConstants.AddedExperienceEventEvent event) {
+    if (mManifestUrl != null && mManifestUrl.equals(event.manifestUrl)) {
+      pollForEventsToSendToRN();
+    }
+  }
+
+  private void pollForEventsToSendToRN() {
+    if (mManifestUrl == null) {
+      return;
+    }
+
+    try {
+      Set<KernelConstants.ExperienceEvent> events = KernelProvider.getInstance().consumeExperienceEvents(mManifestUrl);
+
+      for (KernelConstants.ExperienceEvent event : events) {
+        RNObject rctDeviceEventEmitter = new RNObject("com.facebook.react.modules.core.DeviceEventManagerModule$RCTDeviceEventEmitter");
+        rctDeviceEventEmitter.loadVersion(mSDKVersion);
+
+        mReactInstanceManager.callRecursive("getCurrentReactContext")
+            .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
+            .call("emit", event.eventName, event.eventPayload);
+      }
+    } catch (Throwable e) {
+      EXL.e(TAG, e);
     }
   }
 }

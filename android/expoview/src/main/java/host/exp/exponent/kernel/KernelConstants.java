@@ -53,4 +53,22 @@ public class KernelConstants {
       this.notificationObject = notificationObject;
     }
   }
+
+  public static class ExperienceEvent {
+    public final String eventName;
+    public final String eventPayload;
+
+    public ExperienceEvent(String eventName, String eventPayload) {
+      this.eventName = eventName;
+      this.eventPayload = eventPayload;
+    }
+  }
+
+  public static class AddedExperienceEventEvent {
+    public final String manifestUrl;
+
+    public AddedExperienceEventEvent(String manifestUrl) {
+      this.manifestUrl = manifestUrl;
+    }
+  }
 }

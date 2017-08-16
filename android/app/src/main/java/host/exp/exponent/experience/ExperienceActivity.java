@@ -111,7 +111,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     super.onCreate(savedInstanceState);
 
     NativeModuleDepsProvider.getInstance().inject(ExperienceActivity.class, this);
-    EventBus.getDefault().registerSticky(this);
 
     mActivityId = Exponent.getActivityId();
 
@@ -210,13 +209,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
     removeNotification();
     Analytics.clearTimedEvents();
-  }
-
-  @Override
-  public void onDestroy() {
-    super.onDestroy();
-
-    EventBus.getDefault().unregister(this);
   }
 
   @Override

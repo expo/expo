@@ -55,17 +55,9 @@ public class InfoActivity extends MultipleVersionReactNativeActivity {
       }
     }
 
-    EventBus.getDefault().registerSticky(this);
-
     if (!mKernel.isStarted()) {
       mKernel.startJSKernel();
     }
-  }
-
-  @Override
-  protected void onDestroy() {
-    super.onDestroy();
-    EventBus.getDefault().unregister(this);
   }
 
   public void onEventMainThread(Kernel.KernelStartedRunningEvent event) {

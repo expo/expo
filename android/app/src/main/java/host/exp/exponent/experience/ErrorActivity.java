@@ -126,7 +126,6 @@ public class ErrorActivity extends MultipleVersionReactNativeActivity {
       }
     }
 
-    EventBus.getDefault().registerSticky(this);
     EXL.e(TAG, "ErrorActivity message: " + mDefaultErrorMessage);
 
     if (!mKernel.isStarted()) {
@@ -152,12 +151,6 @@ public class ErrorActivity extends MultipleVersionReactNativeActivity {
     if (sVisibleActivity == this) {
       sVisibleActivity = null;
     }
-  }
-
-  @Override
-  protected void onDestroy() {
-    super.onDestroy();
-    EventBus.getDefault().unregister(this);
   }
 
   public void onEventMainThread(Kernel.KernelStartedRunningEvent event) {

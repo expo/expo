@@ -28,7 +28,6 @@ public class HomeActivity extends BaseExperienceActivity {
     super.onCreate(savedInstanceState);
     mShouldDestroyRNInstanceOnExit = false;
 
-    EventBus.getDefault().registerSticky(this);
     mKernel.startJSKernel();
     showLoadingScreen(null);
 
@@ -66,12 +65,6 @@ public class HomeActivity extends BaseExperienceActivity {
     Amplitude.getInstance().logEvent("HOME_APPEARED");
 
     registerForNotifications();
-  }
-
-  @Override
-  public void onDestroy() {
-    super.onDestroy();
-    EventBus.getDefault().unregister(this);
   }
 
   public void onEventMainThread(Kernel.KernelStartedRunningEvent event) {

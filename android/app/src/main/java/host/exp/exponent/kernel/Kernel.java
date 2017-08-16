@@ -36,8 +36,10 @@ import org.json.JSONObject;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -70,7 +72,7 @@ import versioned.host.exp.exponent.ReadableObjectUtils;
 
 // TOOD: need to figure out when we should reload the kernel js. Do we do it every time you visit
 // the home screen? only when the app gets kicked out of memory?
-public class Kernel implements KernelInterface {
+public class Kernel extends KernelInterface {
 
   private static final String TAG = Kernel.class.getSimpleName();
 

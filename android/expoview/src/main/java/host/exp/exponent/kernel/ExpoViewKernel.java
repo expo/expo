@@ -13,7 +13,7 @@ import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.expoview.ExpoViewBuildConfig;
 
-public class ExpoViewKernel implements KernelInterface {
+public class ExpoViewKernel extends KernelInterface {
 
   public static class ExpoViewErrorEvent {
 
