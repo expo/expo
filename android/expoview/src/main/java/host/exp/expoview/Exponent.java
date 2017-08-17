@@ -478,7 +478,7 @@ public class Exponent {
         }
 
         @Override
-        public void onCachedResponse(Call call, Response response) {
+        public void onCachedResponse(Call call, Response response, boolean isEmbedded) {
           EXL.d(TAG, "Using cached or embedded response.");
           onResponse(call, response);
         }
