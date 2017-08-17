@@ -14,6 +14,7 @@ import android.util.LruCache;
 
 import com.amplitude.api.Amplitude;
 
+import expolib_v1.okhttp3.CacheControl;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.exceptions.ManifestException;
@@ -185,16 +186,18 @@ public class ExponentManifest {
     }
 
     if (isDevelopment || forceNetwork) {
+      requestBuilder.cacheControl(CacheControl.FORCE_NETWORK);
       // If we're sure this is a development url, don't cache. Note that LAN development urls
       // might still be cached
-      mExponentNetwork.getNoCacheClient().newCall(requestBuilder.build()).enqueue(new Callback() {
+      mExponentNetwork.getClient().callSafe(requestBuilder.build(), new ExponentHttpClient.SafeCallback() {
         @Override
         public void onFailure(Call call, IOException e) {
+
           listener.onError(new ManifestException(e, manifestUrl));
         }
 
         @Override
-        public void onResponse(Call call, Response response) throws IOException {
+        public void onResponse(Call call, Response response) {
           if (!response.isSuccessful()) {
             listener.onError(new ManifestException(null, manifestUrl));
             return;
@@ -208,6 +211,11 @@ public class ExponentManifest {
           } catch (IOException e) {
             listener.onError(e);
           }
+        }
+
+        @Override
+        public void onCachedResponse(Call call, Response response, boolean isEmbedded) {
+          onResponse(call, response);
         }
       });
     } else {

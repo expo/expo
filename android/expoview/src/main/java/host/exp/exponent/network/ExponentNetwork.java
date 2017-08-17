@@ -89,6 +89,7 @@ public class ExponentNetwork {
     return mLongTimeoutClient;
   }
 
+  // Warning: this doesn't WRITE to the cache either. Don't use this to populate the cache in the background.
   public OkHttpClient getNoCacheClient() {
     return mNoCacheClient;
   }
