@@ -3,7 +3,6 @@
 package host.exp.exponent.network;
 
 import android.content.Context;
-import android.os.AsyncTask;
 
 import com.amplitude.api.Amplitude;
 
@@ -25,7 +24,6 @@ import expolib_v1.okhttp3.CacheControl;
 import expolib_v1.okhttp3.Call;
 import expolib_v1.okhttp3.Callback;
 import expolib_v1.okhttp3.MediaType;
-import expolib_v1.okhttp3.OkHttpClient;
 import expolib_v1.okhttp3.Protocol;
 import expolib_v1.okhttp3.Request;
 import expolib_v1.okhttp3.Response;
@@ -33,8 +31,13 @@ import expolib_v1.okhttp3.ResponseBody;
 import expolib_v1.okio.BufferedSource;
 import expolib_v1.okio.Okio;
 import expolib_v1.okio.Source;
+import host.exp.exponent.storage.ExponentSharedPreferences;
 
 public class ExponentHttpClient {
+
+  private static final String USED_EMBEDDED_RESPONSE_KEY = "USED_EMBEDDED_RESPONSE_";
+
+  ExponentSharedPreferences mExponentSharedPreferences;
 
   private static final String TAG = ExponentHttpClient.class.getSimpleName();
 
@@ -47,13 +50,10 @@ public class ExponentHttpClient {
   private Context mContext;
   private ExponentNetwork.OkHttpClientFactory mOkHttpClientFactory;
 
-  protected ExponentHttpClient(final Context context, final ExponentNetwork.OkHttpClientFactory httpClientFactory) {
+  protected ExponentHttpClient(final Context context, final ExponentSharedPreferences exponentSharedPreferences, final ExponentNetwork.OkHttpClientFactory httpClientFactory) {
     mContext = context;
     mOkHttpClientFactory = httpClientFactory;
-  }
-
-  protected OkHttpClient getOkHttpClient() {
-    return mOkHttpClientFactory.getNewClient();
+    mExponentSharedPreferences = exponentSharedPreferences;
   }
 
   public void call(final Request request, final Callback callback) {
@@ -160,7 +160,15 @@ public class ExponentHttpClient {
   private void tryHardCodedResponse(final String uri, final Call call, final SafeCallback callback, final Response initialResponse, final IOException initialException) {
     try {
       for (Constants.EmbeddedResponse embeddedResponse : Constants.EMBEDDED_RESPONSES) {
-        if (normalizeUri(uri).equals(normalizeUri(embeddedResponse.url))) {
+        String normalizedUri = normalizeUri(uri);
+        // We only want to use embedded responses once. After they are used they will be added
+        // to the OkHttp cache and we should use the version from that cache. We don't want a situation
+        // where we have version 1 of a manifest saved as the embedded response, get version 2 saved
+        // to the OkHttp cache, cache gets evicted, and we regress to version 1. Want to only use
+        // monotonically increasing manifest versions.
+        String sharedPrefKey = USED_EMBEDDED_RESPONSE_KEY + normalizedUri;
+
+        if (normalizedUri.equals(normalizeUri(embeddedResponse.url)) && !mExponentSharedPreferences.getBoolean(sharedPrefKey, false)) {
           Response response = new Response.Builder()
               .request(call.request())
               .protocol(Protocol.HTTP_1_1)
@@ -170,6 +178,8 @@ public class ExponentHttpClient {
               .build();
           callback.onCachedResponse(call, response);
           logEventWithUri(Analytics.HTTP_USED_EMBEDDED_RESPONSE, uri);
+          mExponentSharedPreferences.setBoolean(sharedPrefKey, true);
+
           return;
         }
       }

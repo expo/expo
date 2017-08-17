@@ -55,6 +55,8 @@ public class InfoActivity extends MultipleVersionReactNativeActivity {
       }
     }
 
+    EventBus.getDefault().registerSticky(this);
+
     if (!mKernel.isStarted()) {
       mKernel.startJSKernel();
     }

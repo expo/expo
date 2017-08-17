@@ -55,6 +55,8 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
 
     mReactRootView = new RNObject("host.exp.exponent.ReactUnthemedRootView");
 
+    EventBus.getDefault().registerSticky(this);
+
     ExpoViewBuildConfig.DEBUG = isDebug();
 
     // Set SDK versions

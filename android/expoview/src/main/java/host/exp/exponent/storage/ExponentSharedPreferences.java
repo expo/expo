@@ -77,6 +77,10 @@ public class ExponentSharedPreferences {
     return mSharedPreferences.getBoolean(key, DEFAULT_VALUES.get(key));
   }
 
+  public boolean getBoolean(String key, boolean defaultValue) {
+    return mSharedPreferences.getBoolean(key, defaultValue);
+  }
+
   public void setBoolean(String key, boolean value) {
     mSharedPreferences.edit().putBoolean(key, value).apply();
   }

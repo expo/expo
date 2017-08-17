@@ -111,6 +111,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     super.onCreate(savedInstanceState);
 
     NativeModuleDepsProvider.getInstance().inject(ExperienceActivity.class, this);
+    EventBus.getDefault().registerSticky(this);
 
     mActivityId = Exponent.getActivityId();
 

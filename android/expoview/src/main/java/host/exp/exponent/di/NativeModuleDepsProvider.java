@@ -45,7 +45,7 @@ public class NativeModuleDepsProvider {
     mContext = application;
     mApplicationContext = application;
     mExponentSharedPreferences = new ExponentSharedPreferences(mContext);
-    mExponentNetwork = new ExponentNetwork(mContext);
+    mExponentNetwork = new ExponentNetwork(mContext, mExponentSharedPreferences);
     mCrypto = new Crypto(mExponentNetwork);
     mExponentManifest = new ExponentManifest(mContext, mExponentNetwork, mCrypto, mExponentSharedPreferences);
 

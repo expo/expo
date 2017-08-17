@@ -133,7 +133,9 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     Exponent.initialize(this, getApplication());
     NativeModuleDepsProvider.getInstance().inject(ReactNativeActivity.class, this);
 
-    EventBus.getDefault().registerSticky(this);
+    // Can't call this here because subclasses need to do other initialization
+    // before their listener methods are called.
+    // EventBus.getDefault().registerSticky(this);
   }
 
   protected void setView(final View view) {

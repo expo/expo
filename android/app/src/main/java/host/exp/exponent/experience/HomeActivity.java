@@ -28,6 +28,7 @@ public class HomeActivity extends BaseExperienceActivity {
     super.onCreate(savedInstanceState);
     mShouldDestroyRNInstanceOnExit = false;
 
+    EventBus.getDefault().registerSticky(this);
     mKernel.startJSKernel();
     showLoadingScreen(null);
 

@@ -126,6 +126,7 @@ public class ErrorActivity extends MultipleVersionReactNativeActivity {
       }
     }
 
+    EventBus.getDefault().registerSticky(this);
     EXL.e(TAG, "ErrorActivity message: " + mDefaultErrorMessage);
 
     if (!mKernel.isStarted()) {
