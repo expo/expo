@@ -168,7 +168,7 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
           waitForDrawOverOtherAppPermission("");
         } else {
           // TODO: make sure sdk version usage is safe here
-          hasCachedBundle = Exponent.getInstance().loadJSBundle(bundleUrl, id, mSDKVersion,
+          hasCachedBundle = Exponent.getInstance().loadJSBundle(mManifest, bundleUrl, id, mSDKVersion,
               new Exponent.BundleListener() {
                 @Override
                 public void onBundleLoaded(String localBundlePath) {

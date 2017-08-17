@@ -372,7 +372,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
           mNotification = finalNotificationObject;
           waitForDrawOverOtherAppPermission("");
         } else {
-          hasCachedBundle = Exponent.getInstance().loadJSBundle(bundleUrl, id, mSDKVersion,
+          hasCachedBundle = Exponent.getInstance().loadJSBundle(manifest, bundleUrl, id, mSDKVersion,
               new Exponent.BundleListener() {
                 @Override
                 public void onBundleLoaded(String localBundlePath) {

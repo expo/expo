@@ -198,7 +198,7 @@ public class Kernel extends KernelInterface {
       new Handler().postDelayed(new Runnable() {
         @Override
         public void run() {
-          Exponent.getInstance().loadJSBundle(bundleUrl, KernelConstants.KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, new Exponent.BundleListener() {
+          Exponent.getInstance().loadJSBundle(null, bundleUrl, KernelConstants.KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, new Exponent.BundleListener() {
             @Override
             public void onBundleLoaded(String localBundlePath) {
               EXL.d(TAG, "Successfully preloaded kernel bundle");
@@ -213,14 +213,14 @@ public class Kernel extends KernelInterface {
       }, KernelConstants.DELAY_TO_PRELOAD_KERNEL_JS);
     } else {
       boolean shouldNotUseKernelCache = mExponentSharedPreferences.getBoolean(ExponentSharedPreferences.SHOULD_NOT_USE_KERNEL_CACHE);
-      Exponent.getInstance().loadJSBundle(bundleUrl, KernelConstants.KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, kernelBundleListener(), shouldNotUseKernelCache);
+      Exponent.getInstance().loadJSBundle(null, bundleUrl, KernelConstants.KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, kernelBundleListener(), shouldNotUseKernelCache);
     }
   }
 
   public void reloadJSBundle() {
     String bundleUrl = getBundleUrl();
     mHasError = false;
-    Exponent.getInstance().loadJSBundle(bundleUrl, KernelConstants.KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, kernelBundleListener());
+    Exponent.getInstance().loadJSBundle(null, bundleUrl, KernelConstants.KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, kernelBundleListener());
   }
 
   public static void addIntentDocumentFlags(Intent intent) {
