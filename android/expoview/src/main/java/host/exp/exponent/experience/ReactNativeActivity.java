@@ -11,6 +11,7 @@ import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -195,22 +196,6 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   }
 
   public void showLoadingScreen(JSONObject manifest) {
-    // Start of by not showing the icon since it hopefully won't take long.
-    // If it takes more than 3 seconds start flashing the icon so it doesn't look like it's frozen.
-    mLoadingView.setManifest(manifest);
-    mLoadingView.setShowIcon(false);
-    mLoadingHandler.postDelayed(new Runnable() {
-      @Override
-      public void run() {
-        mLoadingView.setShowIcon(true);
-      }
-    }, 3000);
-    mLoadingView.clearAnimation();
-    mLoadingView.setAlpha(1.0f);
-    mIsLoading = true;
-  }
-
-  public void showLongLoadingScreen(JSONObject manifest) {
     mLoadingView.setManifest(manifest);
     mLoadingView.setShowIcon(true);
     mLoadingView.clearAnimation();

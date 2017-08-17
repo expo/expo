@@ -856,7 +856,7 @@ public class Kernel extends KernelInterface {
             Exponent.getInstance().runOnUiThread(new Runnable() {
               @Override
               public void run() {
-                weakActivity.showLongLoadingScreen(null);
+                weakActivity.showLoadingScreen(null);
               }
             });
             break;

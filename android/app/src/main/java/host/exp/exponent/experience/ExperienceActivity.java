@@ -389,11 +389,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
         ExperienceActivityUtils.setWindowTransparency(mSDKVersion, manifest, ExperienceActivity.this);
 
-        if (hasCachedBundle) {
-          showLoadingScreen(manifest);
-        } else {
-          showLongLoadingScreen(manifest);
-        }
+        showLoadingScreen(manifest);
 
         ExperienceActivityUtils.setTaskDescription(mExponentManifest, manifest, ExperienceActivity.this);
         handleExperienceOptions(kernelOptions);
