@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.expoview.ExpoViewBuildConfig;
 import expolib_v1.okhttp3.Cache;
 import expolib_v1.okhttp3.Interceptor;
@@ -45,17 +46,17 @@ public class ExponentNetwork {
   }
 
   @Inject
-  public ExponentNetwork(Context context) {
+  public ExponentNetwork(Context context, ExponentSharedPreferences exponentSharedPreferences) {
     mContext = context.getApplicationContext();
 
-    mClient = new ExponentHttpClient(mContext, new OkHttpClientFactory() {
+    mClient = new ExponentHttpClient(mContext, exponentSharedPreferences, new OkHttpClientFactory() {
       @Override
       public OkHttpClient getNewClient() {
         return createHttpClientBuilder().build();
       }
     });
 
-    mLongTimeoutClient = new ExponentHttpClient(mContext, new OkHttpClientFactory() {
+    mLongTimeoutClient = new ExponentHttpClient(mContext, exponentSharedPreferences, new OkHttpClientFactory() {
       @Override
       public OkHttpClient getNewClient() {
         OkHttpClient longTimeoutHttpClient = createHttpClientBuilder()
