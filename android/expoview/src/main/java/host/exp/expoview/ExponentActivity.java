@@ -184,11 +184,7 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
 
         ExperienceActivityUtils.setWindowTransparency(mSDKVersion, finalManifest, ExponentActivity.this);
 
-        if (hasCachedBundle) {
-          showLoadingScreen(finalManifest);
-        } else {
-          showLongLoadingScreen(finalManifest);
-        }
+        showLoadingScreen(finalManifest);
 
         ExperienceActivityUtils.setTaskDescription(mExponentManifest, finalManifest, ExponentActivity.this);
       }
