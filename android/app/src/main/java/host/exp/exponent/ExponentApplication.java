@@ -2,11 +2,8 @@
 
 package host.exp.exponent;
 
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Debug;
 import android.support.multidex.MultiDexApplication;
-import android.support.v4.content.ContextCompat;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
