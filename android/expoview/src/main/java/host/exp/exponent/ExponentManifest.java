@@ -202,7 +202,7 @@ public class ExponentManifest {
 
           try {
             String manifestString = response.body().string();
-            fetchManifestStep2(manifestUrl, manifestString, response.headers(), listener);
+            fetchManifestStep2(manifestUrl, manifestString, response.headers(), listener, false);
           } catch (JSONException e) {
             listener.onError(e);
           } catch (IOException e) {
@@ -212,13 +212,8 @@ public class ExponentManifest {
       });
     } else {
       mExponentNetwork.getClient().callDefaultCache(requestBuilder.build(), new ExponentHttpClient.SafeCallback() {
-        @Override
-        public void onFailure(Call call, IOException e) {
-          listener.onError(new ManifestException(e, manifestUrl));
-        }
 
-        @Override
-        public void onResponse(Call call, Response response) {
+        private void handleResponse(Response response, boolean isEmbedded) {
           if (!response.isSuccessful()) {
             listener.onError(new ManifestException(null, manifestUrl));
             return;
@@ -226,7 +221,7 @@ public class ExponentManifest {
 
           try {
             String manifestString = response.body().string();
-            fetchManifestStep2(manifestUrl, manifestString, response.headers(), listener);
+            fetchManifestStep2(manifestUrl, manifestString, response.headers(), listener, isEmbedded);
           } catch (JSONException e) {
             listener.onError(e);
           } catch (IOException e) {
@@ -235,9 +230,19 @@ public class ExponentManifest {
         }
 
         @Override
-        public void onCachedResponse(Call call, Response response) {
+        public void onFailure(Call call, IOException e) {
+          listener.onError(new ManifestException(e, manifestUrl));
+        }
+
+        @Override
+        public void onResponse(Call call, Response response) {
+          handleResponse(response, false);
+        }
+
+        @Override
+        public void onCachedResponse(Call call, Response response, boolean isEmbedded) {
           EXL.d(TAG, "Using cached or embedded response.");
-          onResponse(call, response);
+          handleResponse(response, isEmbedded);
 
           AsyncTask.execute(new Runnable() {
             @Override
@@ -250,7 +255,7 @@ public class ExponentManifest {
     }
   }
 
-  private void fetchManifestStep2(final String manifestUrl, final String manifestString, final Headers headers, final ManifestListener listener) throws JSONException {
+  private void fetchManifestStep2(final String manifestUrl, final String manifestString, final Headers headers, final ManifestListener listener, final boolean isEmbedded) throws JSONException {
     if (Constants.DEBUG_MANIFEST_METHOD_TRACING) {
       Debug.stopMethodTracing();
     }
@@ -287,7 +292,11 @@ public class ExponentManifest {
             });
       }
     } else {
-      fetchManifestStep3(manifestUrl, manifest, false, listener);
+      if (isEmbedded) {
+        fetchManifestStep3(manifestUrl, manifest, true, listener);
+      } else {
+        fetchManifestStep3(manifestUrl, manifest, false, listener);
+      }
     }
 
     final String exponentServerHeader = headers.get(EXPONENT_SERVER_HEADER);

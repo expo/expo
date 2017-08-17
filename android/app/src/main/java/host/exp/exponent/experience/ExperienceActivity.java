@@ -259,6 +259,9 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       return;
     }
 
+    mManifestUrl = manifestUrl;
+    mManifest = manifest;
+
     Kernel.ExperienceActivityTask task = mKernel.getExperienceActivityTask(mManifestUrl);
     task.taskId = getTaskId();
     task.experienceActivity = new WeakReference<>(this);
@@ -292,8 +295,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
     soloaderInit();
 
-    mManifestUrl = manifestUrl;
-    mManifest = manifest;
     try {
       mExperienceIdString = manifest.getString(ExponentManifest.MANIFEST_ID_KEY);
       mExperienceId = ExperienceId.create(mExperienceIdString);

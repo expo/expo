@@ -44,7 +44,7 @@ public class ExponentHttpClient {
   public interface SafeCallback {
     void onFailure(Call call, IOException e);
     void onResponse(Call call, Response response);
-    void onCachedResponse(Call call, Response response);
+    void onCachedResponse(Call call, Response response, boolean isEmbedded);
   }
 
   private Context mContext;
@@ -106,8 +106,8 @@ public class ExponentHttpClient {
       }
 
       @Override
-      public void onCachedResponse(Call call, Response response) {
-        callback.onCachedResponse(call, response);
+      public void onCachedResponse(Call call, Response response, boolean isEmbedded) {
+        callback.onCachedResponse(call, response, isEmbedded);
 
         // You are responsible for updating the cache!
       }
@@ -128,7 +128,7 @@ public class ExponentHttpClient {
       @Override
       public void onResponse(Call call, Response response) throws IOException {
         if (response.isSuccessful()) {
-          callback.onCachedResponse(call, response);
+          callback.onCachedResponse(call, response, false);
           logEventWithUri(Analytics.HTTP_USED_CACHE_RESPONSE, uri);
         } else {
           tryHardCodedResponse(uri, call, callback, initialResponse, initialException);
@@ -176,7 +176,7 @@ public class ExponentHttpClient {
               .message("OK")
               .body(responseBodyForFile(embeddedResponse.responseFilePath, MediaType.parse(embeddedResponse.mediaType)))
               .build();
-          callback.onCachedResponse(call, response);
+          callback.onCachedResponse(call, response, true);
           logEventWithUri(Analytics.HTTP_USED_EMBEDDED_RESPONSE, uri);
           mExponentSharedPreferences.setBoolean(sharedPrefKey, true);
 
