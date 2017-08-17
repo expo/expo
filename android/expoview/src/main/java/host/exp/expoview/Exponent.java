@@ -372,13 +372,23 @@ public class Exponent {
   }
 
   // `id` must be URL encoded. Returns true if found cached bundle.
-  public boolean loadJSBundle(final String urlString, final String id, String abiVersion, final BundleListener bundleListener) {
-    return loadJSBundle(urlString, id, abiVersion, bundleListener, false);
+  public boolean loadJSBundle(final JSONObject manifest, final String urlString, final String id, String abiVersion, final BundleListener bundleListener) {
+    return loadJSBundle(manifest, urlString, id, abiVersion, bundleListener, false);
   }
 
-  public boolean loadJSBundle(final String urlString, final String id, String abiVersion, final BundleListener bundleListener, final boolean shouldForceNetwork) {
+  public boolean loadJSBundle(JSONObject manifest, final String urlString, final String id, String abiVersion, final BundleListener bundleListener, boolean shouldForceNetwork) {
     if (!id.equals(KernelConstants.KERNEL_BUNDLE_ID)) {
       Analytics.markEvent(Analytics.TimedEvent.STARTED_FETCHING_BUNDLE);
+    }
+
+    if (manifest == null) {
+      manifest = new JSONObject();
+    }
+
+    boolean isDeveloping = manifest.has("developer");
+    if (isDeveloping) {
+      // This is important for running locally with no-dev
+      shouldForceNetwork = true;
     }
 
     // The bundle is cached in two places:
@@ -389,7 +399,7 @@ public class Exponent {
     // getCacheDir() doesn't work here! Some phones clean the file up in between when we check
     // file.exists() and when we feed it into React Native!
     // TODO: clean up files here!
-    final String fileName = KernelConstants.BUNDLE_FILE_PREFIX + id;
+    final String fileName = KernelConstants.BUNDLE_FILE_PREFIX + id + Integer.toString(urlString.hashCode());
     final File directory = new File(mContext.getFilesDir(), abiVersion);
     if (!directory.exists()) {
       directory.mkdir();
@@ -727,7 +737,7 @@ public class Exponent {
 
   private void preloadBundle(final boolean shouldNotifyUpdated, final JSONObject manifest, final String manifestUrl, final String bundleUrl, final String id, final String sdkVersion) {
     try {
-      Exponent.getInstance().loadJSBundle(bundleUrl, Exponent.getInstance().encodeExperienceId(id), sdkVersion, new Exponent.BundleListener() {
+      Exponent.getInstance().loadJSBundle(manifest, bundleUrl, Exponent.getInstance().encodeExperienceId(id), sdkVersion, new Exponent.BundleListener() {
         @Override
         public void onError(Exception e) {
           EXL.e(TAG, "Couldn't preload bundle: " + e.toString());
