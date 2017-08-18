@@ -85,7 +85,14 @@ When publishing is complete, we'll give you a URL to your app which you can send
 
 > **Note:** By default, all Expo projects are `unlisted`, which means that publishing does not make it publicly searchable or discoverable anywhere. It is up to you to share the link. You can change this setting in [app.json](configuration.html).
 
-As soon as the publish is complete, the new version of your code is available to all your existing users. They'll get the updated version next time they open the app or refresh it, provided that they have a version of the Expo client that supports the `sdkVersion` specified in your `app.json`.
+As soon as the publish is complete, the new version of your code is available to all your existing users. They'll download the updated version next time they open the app or refresh it, provided that they have a version of the Expo client that supports the `sdkVersion` specified in your `app.json`.
+
+Updates are handled differently on iOS and Android. On Android, updates
+are downloaded in the background. This means that the first time a user opens
+your app after an update they will get the old version while the new version
+is downloaded in the background. The second time they open the app they'll get
+the new version. On iOS, updates are downloaded synchronously, so users will
+get the new version the first time they open your app after an update.
 
 > **Note:** To package your app for deployment on the Apple App Store or Google Play Store, see [Building Standalone Apps](building-standalone-apps.html#building-standalone-apps). Each time you update the SDK version you will need to rebuild your binary.
 

@@ -56,10 +56,17 @@ after submitting the binary.
 
 The standalone app knows to look for updates at your app's published
 url, and if you publish an update then the next time a user opens your
-app they will automatically download and run the new version. These are
+app they will automatically download the new version. These are
 commonly referred to as "Over the Air" (OTA) updates, the functionality
 is similar to [CodePush](https://microsoft.github.io/code-push/), but it
 is built into Expo so you don't need to install anything.
+
+Updates are handled differently on iOS and Android. On Android, updates
+are downloaded in the background. This means that the first time a user opens
+your app after an update they will get the old version while the new version
+is downloaded in the background. The second time they open the app they'll get
+the new version. On iOS, updates are downloaded synchronously, so users will
+get the new version the first time they open your app after an update.
 
 ## Limitations
 

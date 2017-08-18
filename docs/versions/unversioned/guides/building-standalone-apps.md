@@ -110,7 +110,7 @@ If you plan to submit to the Apple App Store, your app will be subject to normal
 
 ## 7. Update your app
 
-For the most part, when you want to update your app, just Publish again from exp or XDE. Your users will get the new JS the next time they open the app. There are only a couple reasons why you might want to rebuild and resubmit the native binaries:
+For the most part, when you want to update your app, just Publish again from exp or XDE. Your users will download the new JS the next time they open the app. There are only a couple reasons why you might want to rebuild and resubmit the native binaries:
 
 - If you want to change native metadata like the app's name or icon
 - If you upgrade to a newer `sdkVersion` of your app (which requires new native code)
@@ -118,3 +118,10 @@ For the most part, when you want to update your app, just Publish again from exp
 To keep track of this, you can also update the binary's [versionCode](configuration.html#versioncode) and [buildNumber](configuration.html#buildnumber). It is a good idea to glance through the [app.json documentation](configuration.html) to get an idea of all the properties you can change, e.g. the icons, deep linking url scheme, handset/tablet support, and a lot more.
 
 If you run into problems during this process, we're more than happy to help out! Join our Slack and let us know if you have any questions.
+
+> **Note:** Updates are handled differently on iOS and Android. On Android, updates
+are downloaded in the background. This means that the first time a user opens
+your app after an update they will get the old version while the new version
+is downloaded in the background. The second time they open the app they'll get
+the new version. On iOS, updates are downloaded synchronously, so users will
+get the new version the first time they open your app after an update.
