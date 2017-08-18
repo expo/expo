@@ -1,6 +1,6 @@
 {
   "name": "docs",
-  "version": "19.0.0",
+  "version": "20.0.0",
   "private": true,
   "scripts": {
     "start": "concurrently 'yarn run update-config-docs' 'yarn run gatsby-develop' 'yarn run nginx-dev'",
