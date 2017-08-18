@@ -35,6 +35,65 @@ function xmlWeirdAndroidEscape(original) {
   return replaceString(noApos, "'", "\\'");
 }
 
+exports.updateAndroidShellAppAsync = async function updateAndroidShellAppAsync(
+  args
+) {
+  let {
+    url,
+    sdkVersion,
+    androidPackage,
+    privateConfigFile,
+    keystore,
+    alias,
+    keystorePassword,
+    keyPassword,
+    outputFile,
+  } = args;
+
+  let manifest = await getManifestAsync(url, {
+    'Exponent-SDK-Version': sdkVersion,
+    'Exponent-Platform': 'android',
+  });
+
+  let fullManifestUrl = `${url.replace('exp://', 'https://')}/index.exp`;
+  let bundleUrl = manifest.bundleUrl;
+
+  let shellPath = '../android-shell-app/';
+
+  await spawnAsync(`/bin/rm`, [
+    `${shellPath}app/src/main/assets/shell-app-manifest.json`,
+  ]);
+  await fs.promise.writeFile(
+    `${shellPath}app/src/main/assets/shell-app-manifest.json`,
+    JSON.stringify(manifest)
+  );
+  await spawnAsync(`/bin/rm`, [
+    `${shellPath}app/src/main/assets/shell-app.bundle`,
+  ]);
+  await saveUrlToPathAsync(
+    bundleUrl,
+    `${shellPath}app/src/main/assets/shell-app.bundle`
+  );
+
+  await sedInPlaceAsync(
+    '-e',
+    `/START\ EMBEDDED\ RESPONSES/,/END\ EMBEDDED\ RESPONSES/d`,
+    `${shellPath}expoview/src/main/java/host/exp/exponent/Constants.java`
+  );
+
+  shell.sed(
+    '-i',
+    '// ADD EMBEDDED RESPONSES HERE',
+    `
+    // ADD EMBEDDED RESPONSES HERE
+    // START EMBEDDED RESPONSES
+    embeddedResponses.add(new EmbeddedResponse("${fullManifestUrl}", "assets://shell-app-manifest.json", "application/json"));
+    embeddedResponses.add(new EmbeddedResponse("${bundleUrl}", "assets://shell-app.bundle", "application/javascript"));
+    // END EMBEDDED RESPONSES`,
+    `${shellPath}expoview/src/main/java/host/exp/exponent/Constants.java`
+  );
+}
+
 exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
   args
 ) {
@@ -376,8 +435,9 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
 
   shell.sed(
     '-i',
-    '// ADD EMBEDDED RESPONSES HERE',
+    '// START EMBEDDED RESPONSES',
     `
+    // START EMBEDDED RESPONSES
     embeddedResponses.add(new EmbeddedResponse("${fullManifestUrl}", "assets://shell-app-manifest.json", "application/json"));
     embeddedResponses.add(new EmbeddedResponse("${bundleUrl}", "assets://shell-app.bundle", "application/javascript"));`,
     `${shellPath}expoview/src/main/java/host/exp/exponent/Constants.java`

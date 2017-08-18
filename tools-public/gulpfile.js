@@ -10,7 +10,7 @@ const path = require('path');
 const username = require('username');
 const { IosShellApp } = require('xdl');
 
-const { createAndroidShellAppAsync } = require('./android-shell-app');
+const { createAndroidShellAppAsync, updateAndroidShellAppAsync } = require('./android-shell-app');
 const { startReactNativeServer } = require('./react-native-tasks');
 const {
   generateDynamicMacrosAsync,
@@ -85,6 +85,18 @@ function createAndroidShellAppWithArguments() {
   return createAndroidShellAppAsync(argv);
 }
 
+function updateAndroidShellAppWithArguments() {
+  if (!argv.url) {
+    throw new Error('Must run with `--url MANIFEST_URL`');
+  }
+
+  if (!argv.sdkVersion) {
+    throw new Error('Must run with `--sdkVersion SDK_VERSION`');
+  }
+
+  return updateAndroidShellAppAsync(argv);
+}
+
 function createIOSShellAppWithArguments() {
   return createIOSShellAppAsync(argv);
 }
@@ -111,6 +123,7 @@ gulp.task('watch:stop', function(done) {
 
 // Shell app (android)
 gulp.task('android-shell-app', createAndroidShellAppWithArguments);
+gulp.task('update-android-shell-app', updateAndroidShellAppWithArguments);
 
 // iOS
 gulp.task('ios-shell-app', createIOSShellAppWithArguments);

@@ -46,6 +46,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Singleton
 public class ExponentManifest {
@@ -76,6 +80,7 @@ public class ExponentManifest {
   public static final String MANIFEST_BUNDLE_URL_KEY = "bundleUrl";
   public static final String MANIFEST_SHOW_EXPONENT_NOTIFICATION_KEY = "androidShowExponentNotificationInShellApp";
   public static final String MANIFEST_REVISION_ID_KEY = "revisionId";
+  public static final String MANIFEST_PUBLISHED_TIME_KEY = "publishedTime";
 
   // Statusbar
   public static final String MANIFEST_STATUS_BAR_KEY = "androidStatusBar";
@@ -220,9 +225,11 @@ public class ExponentManifest {
         }
       });
     } else {
-      mExponentNetwork.getClient().callDefaultCache(requestBuilder.build(), new ExponentHttpClient.SafeCallback() {
+      final Request request = requestBuilder.build();
+      final String finalUri = request.url().toString();
+      mExponentNetwork.getClient().callDefaultCache(request, new ExponentHttpClient.SafeCallback() {
 
-        private void handleResponse(Response response, boolean isEmbedded) {
+        private void handleResponse(ManifestListener listener, Response response, boolean isEmbedded) {
           if (!response.isSuccessful()) {
             listener.onError(new ManifestException(null, manifestUrl));
             return;
@@ -245,20 +252,78 @@ public class ExponentManifest {
 
         @Override
         public void onResponse(Call call, Response response) {
-          handleResponse(response, false);
+          handleResponse(listener, response, false);
         }
 
         @Override
         public void onCachedResponse(Call call, Response response, boolean isEmbedded) {
           EXL.d(TAG, "Using cached or embedded response.");
-          handleResponse(response, isEmbedded);
 
-          AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-              Exponent.getInstance().preloadManifestAndBundle(manifestUrl);
+          ManifestListener newListener = listener;
+
+          if (!isEmbedded) {
+            final String embeddedResponse = mExponentNetwork.getClient().getHardCodedResponse(finalUri);
+            if (embeddedResponse != null) {
+              // use newer of two responses
+              newListener = new ManifestListener() {
+                @Override
+                public void onCompleted(JSONObject manifest) {
+                  try {
+                    JSONObject embeddedManifest = new JSONObject(embeddedResponse);
+
+                    String cachedManifestTimestamp = manifest.getString(MANIFEST_PUBLISHED_TIME_KEY);
+                    String embeddedManifestTimestamp = embeddedManifest.getString(MANIFEST_PUBLISHED_TIME_KEY);
+
+                    DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+                    Date cachedManifestDate = formatter.parse(cachedManifestTimestamp);
+                    Date embeddedManifestDate = formatter.parse(embeddedManifestTimestamp);
+
+                    if (embeddedManifestDate.after(cachedManifestDate)) {
+                      fetchManifestStep3(manifestUrl, embeddedManifest, true, listener);
+                    } else {
+                      listener.onCompleted(manifest);
+                    }
+                  } catch (Throwable e) {
+                    listener.onCompleted(manifest);
+                  }
+                }
+
+                @Override
+                public void onError(Exception e) {
+                  listener.onError(e);
+                }
+
+                @Override
+                public void onError(String e) {
+                  listener.onError(e);
+                }
+              };
             }
-          });
+          }
+
+          final ManifestListener finalManifestListener = newListener;
+          handleResponse(new ManifestListener() {
+            @Override
+            public void onCompleted(JSONObject manifest) {
+              finalManifestListener.onCompleted(manifest);
+              AsyncTask.execute(new Runnable() {
+                @Override
+                public void run() {
+                  Exponent.getInstance().preloadManifestAndBundle(manifestUrl);
+                }
+              });
+            }
+
+            @Override
+            public void onError(Exception e) {
+              finalManifestListener.onError(e);
+            }
+
+            @Override
+            public void onError(String e) {
+              finalManifestListener.onError(e);
+            }
+          }, response, isEmbedded);
         }
       });
     }
