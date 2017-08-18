@@ -191,7 +191,6 @@ public class Kernel extends KernelInterface {
     final String bundleUrl = getBundleUrl();
     if (mExponentSharedPreferences.shouldUseInternetKernel() &&
         mExponentSharedPreferences.getBoolean(ExponentSharedPreferences.IS_FIRST_KERNEL_RUN_KEY)) {
-      mExponentSharedPreferences.setBoolean(ExponentSharedPreferences.IS_FIRST_KERNEL_RUN_KEY, false);
       kernelBundleListener().onBundleLoaded(Constants.EMBEDDED_KERNEL_PATH);
 
       // Now preload bundle for next run
@@ -201,6 +200,7 @@ public class Kernel extends KernelInterface {
           Exponent.getInstance().loadJSBundle(null, bundleUrl, KernelConstants.KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, new Exponent.BundleListener() {
             @Override
             public void onBundleLoaded(String localBundlePath) {
+              mExponentSharedPreferences.setBoolean(ExponentSharedPreferences.IS_FIRST_KERNEL_RUN_KEY, false);
               EXL.d(TAG, "Successfully preloaded kernel bundle");
             }
 
@@ -213,6 +213,11 @@ public class Kernel extends KernelInterface {
       }, KernelConstants.DELAY_TO_PRELOAD_KERNEL_JS);
     } else {
       boolean shouldNotUseKernelCache = mExponentSharedPreferences.getBoolean(ExponentSharedPreferences.SHOULD_NOT_USE_KERNEL_CACHE);
+      String oldKernelRevisionId = mExponentSharedPreferences.getString(ExponentSharedPreferences.KERNEL_REVISION_ID, "");
+
+      if (!oldKernelRevisionId.equals(getKernelRevisionId())) {
+        shouldNotUseKernelCache = true;
+      }
       Exponent.getInstance().loadJSBundle(null, bundleUrl, KernelConstants.KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, kernelBundleListener(), shouldNotUseKernelCache);
     }
   }
@@ -220,7 +225,7 @@ public class Kernel extends KernelInterface {
   public void reloadJSBundle() {
     String bundleUrl = getBundleUrl();
     mHasError = false;
-    Exponent.getInstance().loadJSBundle(null, bundleUrl, KernelConstants.KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, kernelBundleListener());
+    Exponent.getInstance().loadJSBundle(null, bundleUrl, KernelConstants.KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, kernelBundleListener(), true);
   }
 
   public static void addIntentDocumentFlags(Intent intent) {
@@ -238,6 +243,8 @@ public class Kernel extends KernelInterface {
     return new Exponent.BundleListener() {
       @Override
       public void onBundleLoaded(final String localBundlePath) {
+        mExponentSharedPreferences.setString(ExponentSharedPreferences.KERNEL_REVISION_ID, getKernelRevisionId());
+
         Exponent.getInstance().runOnUiThread(new Runnable() {
           @Override
           public void run() {
@@ -293,7 +300,8 @@ public class Kernel extends KernelInterface {
         if (ExpoViewBuildConfig.DEBUG) {
           handleError("Can't load kernel. Are you sure your packager is running and your phone is on the same wifi? " + e.getMessage());
         } else {
-          handleError("Exponent requires an internet connection.");
+          handleError("Expo requires an internet connection.");
+          EXL.d(TAG, "Expo requires an internet connection." + e.getMessage());
         }
       }
     };
@@ -301,6 +309,10 @@ public class Kernel extends KernelInterface {
 
   private String getBundleUrl() {
     return mExponentManifest.getKernelManifestField(ExponentManifest.MANIFEST_BUNDLE_URL_KEY);
+  }
+
+  private String getKernelRevisionId() {
+    return mExponentManifest.getKernelManifestField(ExponentManifest.MANIFEST_REVISION_ID_KEY);
   }
 
   public Boolean isRunning() {

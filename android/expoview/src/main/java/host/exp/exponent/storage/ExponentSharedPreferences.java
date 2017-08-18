@@ -48,6 +48,7 @@ public class ExponentSharedPreferences {
   public static final String REFERRER_KEY = "referrer";
   public static final String NUX_HAS_FINISHED_FIRST_RUN_KEY = "nux_has_finished_first_run";
   public static final String SHOULD_NOT_USE_KERNEL_CACHE = "should_not_use_kernel_cache";
+  public static final String KERNEL_REVISION_ID = "kernel_revision_id";
 
   // Metadata
   public static final String EXPERIENCE_METADATA_PREFIX = "experience_metadata_";
