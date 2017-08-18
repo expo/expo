@@ -28,6 +28,7 @@ import 'typeface-source-sans-pro';
 import 'typeface-source-code-pro';
 
 import unversioned from '../data/unversioned.yaml';
+import v20 from '../data/v20.yaml';
 import v19 from '../data/v19.yaml';
 import v18 from '../data/v18.yaml';
 import v17 from '../data/v17.yaml';
@@ -38,6 +39,7 @@ import v13 from '../data/v13.yaml';
 
 const versions = [
   `latest`,
+  `v20.0.0`,
   `v19.0.0`,
   `v18.0.0`,
   `v17.0.0`,
@@ -90,6 +92,9 @@ class Wrapper extends React.Component {
       case 'unversioned':
         routes = unversioned;
         break;
+      case 'v20.0.0':
+        routes = v20;
+        break;
       case 'v19.0.0':
         routes = v19;
         break;
@@ -112,7 +117,7 @@ class Wrapper extends React.Component {
         routes = v13;
         break;
       default:
-        routes = v19;
+        routes = v20;
     }
 
     if (version === 'latest') {

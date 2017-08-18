@@ -1,0 +1,100 @@
+- title: Introduction
+  index: /versions/v20.0.0/introduction/index.html
+  links:
+    Quick Start: /versions/v20.0.0/index.html
+    Installation: /versions/v20.0.0/introduction/installation.html
+    XDE Tour: /versions/v20.0.0/introduction/xde-tour.html
+    Project Lifecycle: /versions/v20.0.0/introduction/project-lifecycle.html
+    Community: /versions/v20.0.0/introduction/community.html
+    Additional Resources: /versions/v20.0.0/introduction/additional-resources.html
+    Troubleshooting Proxies: /versions/v20.0.0/introduction/troubleshooting-proxies.html
+    Frequently Asked Questions: /versions/v20.0.0/introduction/faq.html
+- title: Working with Expo
+  index: /versions/v20.0.0/workflow/index.html
+  links:
+    Up and Running: /versions/v20.0.0/guides/up-and-running.html
+    Configuration with app.json: /versions/v20.0.0/guides/configuration.html
+    Development Mode: /versions/v20.0.0/guides/development-mode.html
+    exp Command-Line Interface: /versions/v20.0.0/guides/exp-cli.html
+    Viewing Logs: /versions/v20.0.0/guides/logging.html
+    Debugging: /versions/v20.0.0/guides/debugging.html
+    Genymotion: /versions/v20.0.0/guides/genymotion.html
+    Building Standalone Apps: /versions/v20.0.0/guides/building-standalone-apps.html
+    Publishing: /versions/v20.0.0/guides/publishing.html
+    Linking: /versions/v20.0.0/guides/linking.html
+    Detaching to ExpoKit: /versions/v20.0.0/guides/detach.html
+    Developing with ExpoKit: /versions/v20.0.0/guides/expokit.html
+    Advanced ExpoKit Topics: /versions/v20.0.0/guides/advanced-expokit-topics.html
+    Expo and Create React Native App: /versions/v20.0.0/guides/create-react-native-app.html
+    How Expo Works: /versions/v20.0.0/guides/how-expo-works.html
+    Upgrading Expo: /versions/v20.0.0/guides/upgrading-expo.html
+- title: Guides
+  index: /versions/v20.0.0/guides/index.html
+  links:
+    Assets: /versions/v20.0.0/guides/assets.html
+    Error Handling: /versions/v20.0.0/guides/errors.html
+    Preloading & Caching Assets: /versions/v20.0.0/guides/preloading-and-caching-assets.html
+    Icons: /versions/v20.0.0/guides/icons.html
+    Using Custom Fonts: /versions/v20.0.0/guides/using-custom-fonts.html
+    Configuring Status Bar: /versions/v20.0.0/guides/configuring-statusbar.html
+    Routing & Navigation: /versions/v20.0.0/guides/routing-and-navigation.html
+    Push Notifications: /versions/v20.0.0/guides/push-notifications.html
+    Using Modern JavaScript: /versions/v20.0.0/guides/using-modern-javascript.html
+    Using ClojureScript: /versions/v20.0.0/guides/using-clojurescript.html
+    Using Firebase: /versions/v20.0.0/guides/using-firebase.html
+    Using GraphQL: /versions/v20.0.0/guides/using-graphql.html
+    Using Sentry: /versions/v20.0.0/guides/using-sentry.html
+- title: Tutorials
+  index: /versions/v20.0.0/tutorials/index.html
+  links:
+    Creating A 2D Game: /versions/v20.0.0/tutorials/create-floatyplane-game.html
+- title: SDK API Reference
+  index: /versions/v20.0.0/sdk/index.html
+  links:
+    Introduction: /versions/v20.0.0/sdk/index.html
+    Accelerometer: /versions/v20.0.0/sdk/accelerometer.html
+    Amplitude: /versions/v20.0.0/sdk/amplitude.html
+    AppLoading: /versions/v20.0.0/sdk/app-loading.html
+    Art: /versions/v20.0.0/sdk/art.html
+    Asset: /versions/v20.0.0/sdk/asset.html
+    Audio: /versions/v20.0.0/sdk/audio.html
+    AV: /versions/v20.0.0/sdk/av.html
+    BarCodeScanner: /versions/v20.0.0/sdk/bar-code-scanner.html
+    BlurView: /versions/v20.0.0/sdk/blur-view.html
+    Branch: /versions/v20.0.0/sdk/branch.html
+    Camera: /versions/v20.0.0/sdk/camera.html
+    Constants: /versions/v20.0.0/sdk/constants.html
+    Contacts: /versions/v20.0.0/sdk/contacts.html
+    DocumentPicker: /versions/v20.0.0/sdk/document-picker.html
+    ErrorRecovery: /versions/v20.0.0/sdk/error-recovery.html
+    Facebook: /versions/v20.0.0/sdk/facebook.html
+    FacebookAds: /versions/v20.0.0/sdk/facebook-ads.html
+    FileSystem: /versions/v20.0.0/sdk/filesystem.html
+    Fingerprint: /versions/v20.0.0/sdk/fingerprint.html
+    Font: /versions/v20.0.0/sdk/font.html
+    GLView: /versions/v20.0.0/sdk/gl-view.html
+    Google: /versions/v20.0.0/sdk/google.html
+    Gyroscope: /versions/v20.0.0/sdk/gyroscope.html
+    ImagePicker: /versions/v20.0.0/sdk/imagepicker.html
+    IntentLauncherAndroid: /versions/v20.0.0/sdk/intent-launcher.html
+    KeepAwake: /versions/v20.0.0/sdk/keep-awake.html
+    LinearGradient: /versions/v20.0.0/sdk/linear-gradient.html
+    Location: /versions/v20.0.0/sdk/location.html
+    Lottie: /versions/v20.0.0/sdk/lottie.html
+    Magnetometer: /versions/v20.0.0/sdk/magnetometer.html
+    MapView: /versions/v20.0.0/sdk/map-view.html
+    Notifications: /versions/v20.0.0/sdk/notifications.html
+    Payments: /versions/v20.0.0/sdk/payments.html
+    Pedometer: /versions/v20.0.0/sdk/pedometer.html
+    Permissions: /versions/v20.0.0/sdk/permissions.html
+    registerRootComponent: /versions/v20.0.0/sdk/register-root-component.html
+    ScreenOrientation: /versions/v20.0.0/sdk/screen-orientation.html
+    SecureStore: /versions/v20.0.0/sdk/securestore.html
+    Segment: /versions/v20.0.0/sdk/segment.html
+    Speech: /versions/v20.0.0/sdk/speech.html
+    SQLite: /versions/v20.0.0/sdk/sqlite.html
+    Svg: /versions/v20.0.0/sdk/svg.html
+    takeSnapshotAsync: /versions/v20.0.0/sdk/take-snapshot-async.html
+    Util: /versions/v20.0.0/sdk/util.html
+    Video: /versions/v20.0.0/sdk/video.html
+    WebBrowser: /versions/v20.0.0/sdk/webbrowser.html
