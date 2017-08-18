@@ -6,9 +6,7 @@ Access the device magnetometer sensor(s) to respond to measure the changes
 in the magnetic field. You can access the calibrated values with `Expo.Magnetometer.`
 and uncalibrated raw values with `Expo.MagnetometerUncalibrated`.
 
-
-
-### `addListener(listener)`
+### `Expo.Magnetometer.addListener(listener)`
 
 Subscribe for updates to the Magnetometer.
 
@@ -24,11 +22,11 @@ Subscribe for updates to the Magnetometer.
 -   An EventSubscription object that you can call remove() on when you
     would like to unsubscribe the listener.
 
-### `removeAllListeners()`
+### `Expo.Magnetometer.removeAllListeners()`
 
 Remove all listeners.
 
-### `setUpdateInterval(intervalMs)`
+### `Expo.Magnetometer.setUpdateInterval(intervalMs)`
 
 Subscribe for updates to the Magnetometer.
 
