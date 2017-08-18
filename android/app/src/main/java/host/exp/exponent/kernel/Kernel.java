@@ -188,7 +188,7 @@ public class Kernel extends KernelInterface {
     }
 
     // On first run use the embedded kernel js but fire off a request for the new js in the background.
-    final String bundleUrl = getBundleUrl();
+    final String bundleUrl = getBundleUrl() + "?versionName=" + ExpoViewKernel.getInstance().getVersionName();
     if (mExponentSharedPreferences.shouldUseInternetKernel() &&
         mExponentSharedPreferences.getBoolean(ExponentSharedPreferences.IS_FIRST_KERNEL_RUN_KEY)) {
       kernelBundleListener().onBundleLoaded(Constants.EMBEDDED_KERNEL_PATH);

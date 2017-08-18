@@ -421,14 +421,6 @@ public class Exponent {
 
         @Override
         public void onResponse(Call call, Response response) {
-          if (id.equals(KernelConstants.KERNEL_BUNDLE_ID) && finalShouldForceNetwork && response.networkResponse() == null) {
-            // Can't use cache here. Otherwise we might run an old kernel version if you ran an
-            // older version of Expo on an old sdk, upgraded, and then ran the app in airplane mode
-            // immediately after updating.
-            bundleListener.onError(new Exception("Got a cached response when asking for a network response."));
-            return;
-          }
-
           if (!response.isSuccessful()) {
             String body = "(could not render body)";
             try {
