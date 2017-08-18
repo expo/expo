@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expoview" revision="20.0.0" status="integration" publication="20170811160705">
+  <info organisation="host.exp.exponent" module="expoview" revision="20.0.0" status="integration" publication="20170817172548">
     <description/>
   </info>
   <configurations>
