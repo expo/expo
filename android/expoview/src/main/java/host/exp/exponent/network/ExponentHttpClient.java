@@ -6,6 +6,7 @@ import android.content.Context;
 
 import com.amplitude.api.Amplitude;
 
+import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -16,6 +17,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.Charset;
 
 import host.exp.exponent.Constants;
 import host.exp.exponent.analytics.Analytics;
@@ -155,6 +157,29 @@ public class ExponentHttpClient {
     } catch (MalformedURLException | URISyntaxException e) {
       return uriString;
     }
+  }
+
+  public String getHardCodedResponse(final String uri) {
+    try {
+      for (Constants.EmbeddedResponse embeddedResponse : Constants.EMBEDDED_RESPONSES) {
+        String normalizedUri = normalizeUri(uri);
+
+        if (normalizedUri.equals(normalizeUri(embeddedResponse.url))) {
+
+          String strippedAssetsPath = embeddedResponse.responseFilePath;
+          if (strippedAssetsPath.startsWith("assets://")) {
+            strippedAssetsPath = strippedAssetsPath.substring("assets://".length());
+          }
+
+          InputStream stream = mContext.getAssets().open(strippedAssetsPath);
+          return IOUtils.toString(stream, "UTF-8");
+        }
+      }
+    } catch (Throwable e) {
+      EXL.e(TAG, e);
+    }
+
+    return null;
   }
 
   private void tryHardCodedResponse(final String uri, final Call call, final SafeCallback callback, final Response initialResponse, final IOException initialException) {

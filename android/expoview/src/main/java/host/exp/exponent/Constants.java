@@ -58,6 +58,8 @@ public class Constants {
     List<EmbeddedResponse> embeddedResponses = new ArrayList<>();
     embeddedResponses.add(new EmbeddedResponse("https://exp.host/@exponent/home/bundle", EMBEDDED_KERNEL_PATH, "application/javascript"));
     // ADD EMBEDDED RESPONSES HERE
+    // START EMBEDDED RESPONSES
+    // END EMBEDDED RESPONSES
     EMBEDDED_RESPONSES = embeddedResponses;
   }
 
