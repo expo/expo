@@ -399,7 +399,7 @@ public class Exponent {
     // getCacheDir() doesn't work here! Some phones clean the file up in between when we check
     // file.exists() and when we feed it into React Native!
     // TODO: clean up files here!
-    final String fileName = KernelConstants.BUNDLE_FILE_PREFIX + id + Integer.toString(urlString.hashCode());
+    final String fileName = KernelConstants.BUNDLE_FILE_PREFIX + id + Integer.toString(urlString.hashCode()) + '-' + abiVersion;
     final File directory = new File(mContext.getFilesDir(), abiVersion);
     if (!directory.exists()) {
       directory.mkdir();
@@ -412,6 +412,7 @@ public class Exponent {
       }
       Request request = requestBuilder.build();
       // Use OkHttpClient with long read timeout for dev bundles
+      final boolean finalShouldForceNetwork = shouldForceNetwork;
       ExponentHttpClient.SafeCallback callback = new ExponentHttpClient.SafeCallback() {
         @Override
         public void onFailure(Call call, IOException e) {
@@ -420,6 +421,14 @@ public class Exponent {
 
         @Override
         public void onResponse(Call call, Response response) {
+          if (id.equals(KernelConstants.KERNEL_BUNDLE_ID) && finalShouldForceNetwork && response.networkResponse() == null) {
+            // Can't use cache here. Otherwise we might run an old kernel version if you ran an
+            // older version of Expo on an old sdk, upgraded, and then ran the app in airplane mode
+            // immediately after updating.
+            bundleListener.onError(new Exception("Got a cached response when asking for a network response."));
+            return;
+          }
+
           if (!response.isSuccessful()) {
             String body = "(could not render body)";
             try {
