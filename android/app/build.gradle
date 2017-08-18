@@ -24,7 +24,7 @@ android {
     targetSdkVersion 25
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 66
+    versionCode 68
     versionName '1.19.0'
     // END VERSIONS
     ndk {
