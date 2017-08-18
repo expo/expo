@@ -35,7 +35,7 @@
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
   <!-- END OPTIONAL PERMISSIONS -->
 
-  <uses-feature android:glEsVersion="0x00020000" android:required="true" />
+  <uses-feature android:glEsVersion="0x00020000" android:required="false" />
 
   <application
     android:name=".ExponentApplication"
