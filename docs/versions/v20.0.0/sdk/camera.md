@@ -10,7 +10,7 @@ Requires `Permissions.CAMERA`.
 
 ```javascript
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Camera, Permissions } from 'expo';
 
 export default class CameraExample extends React.Component {
