@@ -189,7 +189,8 @@ public class Kernel extends KernelInterface {
     }
 
     // On first run use the embedded kernel js but fire off a request for the new js in the background.
-    final String bundleUrl = getBundleUrl() + "?versionName=" + ExpoViewKernel.getInstance().getVersionName();
+    final String bundleUrl = getBundleUrl() + (ExpoViewBuildConfig.DEBUG ? "" : "?versionName=" + ExpoViewKernel.getInstance().getVersionName());
+
     if (mExponentSharedPreferences.shouldUseInternetKernel() &&
         mExponentSharedPreferences.getBoolean(ExponentSharedPreferences.IS_FIRST_KERNEL_RUN_KEY)) {
       kernelBundleListener().onBundleLoaded(Constants.EMBEDDED_KERNEL_PATH);
@@ -215,7 +216,7 @@ public class Kernel extends KernelInterface {
     } else {
       boolean shouldNotUseKernelCache = mExponentSharedPreferences.getBoolean(ExponentSharedPreferences.SHOULD_NOT_USE_KERNEL_CACHE);
 
-      if (!BuildConfig.DEBUG) {
+      if (!ExpoViewBuildConfig.DEBUG) {
         String oldKernelRevisionId = mExponentSharedPreferences.getString(ExponentSharedPreferences.KERNEL_REVISION_ID, "");
 
         if (!oldKernelRevisionId.equals(getKernelRevisionId())) {
@@ -248,7 +249,7 @@ public class Kernel extends KernelInterface {
     return new Exponent.BundleListener() {
       @Override
       public void onBundleLoaded(final String localBundlePath) {
-        if (!BuildConfig.DEBUG) {
+        if (!ExpoViewBuildConfig.DEBUG) {
           mExponentSharedPreferences.setString(ExponentSharedPreferences.KERNEL_REVISION_ID, getKernelRevisionId());
         }
 
