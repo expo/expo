@@ -58,12 +58,12 @@ RCT_REMAP_METHOD(logInAsync,
   }
 }
 
--(void)systemLogInWithClientId:(NSString *)clientId scopes:(NSArray<NSString *> *)scopes
+-(void)systemLogInWithClientId:(NSString *)clientId scopes:(NSArray<NSString *> *)scopes serverClientID:(NSString *)serverClientID
 {
   [GIDSignIn sharedInstance].delegate = self;
   [GIDSignIn sharedInstance].uiDelegate = self;
   [GIDSignIn sharedInstance].clientID = clientId;
-  [GIDSignIn sharedInstance].serverClientID = clientId;
+  [GIDSignIn sharedInstance].serverClientID = serverClientID;
   [GIDSignIn sharedInstance].scopes = scopes;
   [GIDSignIn sharedInstance].shouldFetchBasicProfile = YES;
   [[GIDSignIn sharedInstance] signIn];
