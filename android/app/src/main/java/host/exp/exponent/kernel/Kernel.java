@@ -69,6 +69,7 @@ import expolib_v1.okhttp3.OkHttpClient;
 import versioned.host.exp.exponent.ExponentPackage;
 import versioned.host.exp.exponent.ReactUnthemedRootView;
 import versioned.host.exp.exponent.ReadableObjectUtils;
+import versioned.host.exp.exponent.modules.api.components.svg.Brush;
 
 // TOOD: need to figure out when we should reload the kernel js. Do we do it every time you visit
 // the home screen? only when the app gets kicked out of memory?
@@ -213,11 +214,15 @@ public class Kernel extends KernelInterface {
       }, KernelConstants.DELAY_TO_PRELOAD_KERNEL_JS);
     } else {
       boolean shouldNotUseKernelCache = mExponentSharedPreferences.getBoolean(ExponentSharedPreferences.SHOULD_NOT_USE_KERNEL_CACHE);
-      String oldKernelRevisionId = mExponentSharedPreferences.getString(ExponentSharedPreferences.KERNEL_REVISION_ID, "");
 
-      if (!oldKernelRevisionId.equals(getKernelRevisionId())) {
-        shouldNotUseKernelCache = true;
+      if (!BuildConfig.DEBUG) {
+        String oldKernelRevisionId = mExponentSharedPreferences.getString(ExponentSharedPreferences.KERNEL_REVISION_ID, "");
+
+        if (!oldKernelRevisionId.equals(getKernelRevisionId())) {
+          shouldNotUseKernelCache = true;
+        }
       }
+
       Exponent.getInstance().loadJSBundle(null, bundleUrl, KernelConstants.KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, kernelBundleListener(), shouldNotUseKernelCache);
     }
   }
@@ -243,7 +248,9 @@ public class Kernel extends KernelInterface {
     return new Exponent.BundleListener() {
       @Override
       public void onBundleLoaded(final String localBundlePath) {
-        mExponentSharedPreferences.setString(ExponentSharedPreferences.KERNEL_REVISION_ID, getKernelRevisionId());
+        if (!BuildConfig.DEBUG) {
+          mExponentSharedPreferences.setString(ExponentSharedPreferences.KERNEL_REVISION_ID, getKernelRevisionId());
+        }
 
         Exponent.getInstance().runOnUiThread(new Runnable() {
           @Override
