@@ -2,6 +2,8 @@ package abi20_0_0.host.exp.exponent.modules.api.components.camera;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.support.media.ExifInterface;
 import android.view.View;
 
 import abi20_0_0.com.facebook.react.bridge.Arguments;
@@ -11,6 +13,7 @@ import abi20_0_0.com.facebook.react.uimanager.ThemedReactContext;
 import abi20_0_0.com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.google.android.cameraview.CameraView;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -44,9 +47,32 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
         AsyncTask.execute(new Runnable() {
           @Override
           public void run() {
+            Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+            try {
+              ExifInterface exifInterface = new ExifInterface(new ByteArrayInputStream(data));
+              int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+
+              if (orientation != ExifInterface.ORIENTATION_UNDEFINED) {
+                int rotationDegrees = 0;
+                switch (orientation) {
+                  case ExifInterface.ORIENTATION_ROTATE_90:
+                    rotationDegrees = 90;
+                    break;
+                  case ExifInterface.ORIENTATION_ROTATE_180:
+                    rotationDegrees = 180;
+                    break;
+                  case ExifInterface.ORIENTATION_ROTATE_270:
+                    rotationDegrees = 270;
+                    break;
+                }
+                bitmap = rotateBitmap(bitmap, rotationDegrees);
+              }
+            } catch (IOException e) {
+              e.printStackTrace();
+            }
             promise.resolve(
               ExpFileUtils.uriFromFile(
-                new File(writeImage(BitmapFactory.decodeByteArray(data, 0, data.length)))
+                new File(writeImage(bitmap))
               ).toString()
             );
           }
@@ -127,5 +153,11 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
   @Override
   public void onHostDestroy() {
     stop();
+  }
+
+  private Bitmap rotateBitmap(Bitmap source, int angle) {
+    Matrix matrix = new Matrix();
+    matrix.postRotate(angle);
+    return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
   }
 }
