@@ -42,8 +42,8 @@ if (isInOssDev) {
 
 const macrosFuncs = {
   async TEST_APP_URI() {
-    if (process.env.UNIVERSE_BUILD_ID) {
-      return `exp://exp.host/@exponent_ci_bot/test-suite-${process.env.UNIVERSE_BUILD_ID}`;
+    if (process.env.TEST_SUITE_URI) {
+      return process.env.TEST_SUITE_URI;
     } else if (isInUniverse) {
       try {
         let testSuitePath = path.join(
