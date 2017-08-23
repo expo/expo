@@ -14,7 +14,7 @@ For instance, with a GraphQL query you are guaranteed to only ever get the exact
 
 ## How to get started with GraphQL?
 
-GraphQL has only been released as a _specification_, that means that you can go and implement a GraphQL **server** yourself in any server-side language of your choice!
+GraphQL has only been released as a [_specification_](https://facebook.github.io/graphql/), that means that you can go and implement a GraphQL **server** yourself in any server-side language of your choice!
 
 In order to use GraphQL from an application, you will also need a **client** that is responsible for the interaction with the GraphQL server.
 
@@ -42,12 +42,12 @@ Using Apollo Client, you can benefit from _caching_, _optimistic UI_, _subscript
 ### Learn more
 
 In the following, we'll explain how to set up a GraphQL project using
-these two technologies. For an in-depth tutorial on how to use Graphcool
-with Apollo Client, visit the [Learn Apollo Guide](https://www.learnapollo.com/tutorial-react-native/react-native-01/).
+these two technologies. For an in-depth tutorial on GraphQL,
+visit [How to GraphQL](https://www.howtographql.com/).
 
-We also prepared a full **Instagram example that uses Graphcool, Apollo
+We also prepared a simple **Instagram example that uses Graphcool, Apollo
 and Auth0** - you can check it out
-[here](https://github.com/graphcool-examples/expo-auth0-instagram-example).
+[here](https://github.com/graphcool-examples/react-native-graphql/blob/master/authentication-with-expo-and-auth0/).
 
 
 ## Setting up a Graphcool backend
@@ -75,7 +75,7 @@ type Post {
 }
 ```
 
-> Note: The syntax to define your data model is called [GraphQL Interface Definition Language](https://www.graph.cool/docs/faq/graphql-idl-schema-definition-language-kr84dktnp0/) (IDL).
+> Note: The syntax to define your data model is called [GraphQL Schema Definition Language](https://www.graph.cool/docs/faq/graphql-idl-schema-definition-language-kr84dktnp0/) (SDL).
 
 If you want to use Apollo, you will need the endpoint for Graphcool's [**Simple API**](https://www.graph.cool/docs/reference/simple-api/overview-heshoov3ai). We will tell you how to set up Apollo Client in a bit.
 

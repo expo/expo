@@ -4,9 +4,11 @@ title: Video
 
 A component that displays a video inline with the other React Native UI elements in your app. The display dimensions and position of the video on screen can be set using usual React Native styling.
 
-See the [Audio documentation](audio.html) for information on how to customize the audio experience of your video (such as audio mode).
+Much of Video and Audio have common APIs that are documented in [AV documentation](av.html). This page covers video-specific props and APIs. We encourage you to skim through this document to get basic video working, and then move on to [AV documentation](av.html) for more advanced functionality. The audio experience of video (such as whether to interrupt music already playing in another app, or whether to play sound while the phone is on silent mode) can be customized using the [Audio API](audio.html).
 
 ## Example
+
+Here's a simple example of a video that autoplays and loops.
 
 ```javascript
 <Video
@@ -20,6 +22,8 @@ See the [Audio documentation](audio.html) for information on how to customize th
   style={{ width: 300, height: 300 }}
 />
 ```
+
+For more advanced examples, check out the [Playlist example](https://github.com/expo/playlist-example/blob/master/App.js), and the [custom videoplayer controls component](https://github.com/expo/videoplayer/blob/master/index.js) that wraps `<Video>`, adds custom controls and use the `<Video>` API extensively. The videoplayer controls is used in [this app](https://github.com/expo/harvard-cs50-app).
 
 ## `Expo.Video`
 
@@ -54,7 +58,7 @@ The `useNativeControls`, `resizeMode`, and `usePoster` props customize the UI of
 
 - `useNativeControls`
 
-  A boolean which, if set to `true`, will display native playback controls (such as play and pause) within the `Video` component.
+  A boolean which, if set to `true`, will display native playback controls (such as play and pause) within the `Video` component. If you'd prefer to use custom controls, you can write them yourself, and/or check out the [Videoplayer component](https://github.com/expo/videoplayer).
 
 - `resizeMode`
 
@@ -68,11 +72,11 @@ The `useNativeControls`, `resizeMode`, and `usePoster` props customize the UI of
 
   A boolean which, if set to `true`, will display an image (whose source is set via the prop `posterSource`) while the video is loading.
 
-The `callback`, `onReadyForDisplay`, and `onIOSFullscreenUpdate` props pass information of the state of the `Video` component. The `onLoadStart`, `onLoad`, and `onError` props are also provided for backwards compatibility with `Image`.
+The `onPlaybackStatusUpdate`, `onReadyForDisplay`, and `onIOSFullscreenUpdate` props pass information of the state of the `Video` component. The `onLoadStart`, `onLoad`, and `onError` props are also provided for backwards compatibility with `Image` (but they are redundant with `onPlaybackStatusUpdate`).
 
-- `callback`
+- `onPlaybackStatusUpdate`
 
-  A function to be called regularly with the `PlaybackStatus` of the video. See the [AV documentation](av.html) for further information on the callback, and the interval at which it is called.
+  A function to be called regularly with the `PlaybackStatus` of the video. You will likely be using this a lot. See the [AV documentation](av.html) for further information on `onPlaybackStatusUpdate`, and the interval at which it is called.
 
 - `onReadyForDisplay`
 
@@ -109,7 +113,7 @@ The `callback`, `onReadyForDisplay`, and `onIOSFullscreenUpdate` props pass info
 
 - `onError`
 
-  A function to be called if load or playback have encountered a fatal error. The function is passed a single error message string as a parameter.
+  A function to be called if load or playback have encountered a fatal error. The function is passed a single error message string as a parameter. Errors sent here are also set on `playbackStatus.error` that are passed into the `onPlaybackStatusUpdate` callback.
 
 Finally, the following props are available to control the playback of the video, but we recommend that you use the methods available on the `ref` (described below and in the [AV documentation](av.html)) for finer control.
 
@@ -119,7 +123,7 @@ Finally, the following props are available to control the playback of the video,
 
 - `progressUpdateIntervalMillis`
 
-  A number describing the new minimum interval in milliseconds between calls of the callback. See the [AV documentation](av.html) for more information.
+  A number describing the new minimum interval in milliseconds between calls of `onPlaybackStatusUpdate`. See the [AV documentation](av.html) for more information.
 
 - `positionMillis`
 
@@ -153,7 +157,7 @@ Finally, the following props are available to control the playback of the video,
 
 - `videoRef.presentIOSFullscreenPlayer()`
 
-  This presents a fullscreen view of your video component on top of your app's UI.
+  (iOS only) This presents a fullscreen view of your video component on top of your app's UI. Note that even if `useNativeControls` is set to `false`, native controls will be visible in fullscreen mode. Implementing a custom fullscreen mode is necessary if you want fullscreen on Android and/or with custom controls overlayed.
 
   #### Returns
 
@@ -161,7 +165,7 @@ Finally, the following props are available to control the playback of the video,
 
 - `videoRef.dismissIOSFullscreenPlayer()`
 
-  This dismisses the fullscreen video view.
+ (iOS only) This dismisses the fullscreen video view.
 
   #### Returns
 
@@ -175,7 +179,7 @@ The rest of the API on the `Video` component ref is the same as the API for `Exp
 
 -   `videoRef.getStatusAsync()`
 
--   `videoRef.setCallback(callback)`
+-   `videoRef.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate)`
 
 -   `videoRef.setStatusAsync(statusToSet)`
 
