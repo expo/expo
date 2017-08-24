@@ -3,6 +3,8 @@ package versioned.host.exp.exponent.modules.api;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.support.media.ExifInterface;
 import android.net.Uri;
@@ -18,6 +20,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.UUID;
 
 import com.facebook.react.bridge.Arguments;
@@ -138,6 +141,20 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
       return;
     }
     mCameraCaptureURI = ExpFileUtils.uriFromFile(imageFile);
+
+    // fix for Permission Denial in Android < 21
+    List<ResolveInfo> resolvedIntentActivities = Exponent.getInstance().getApplication()
+      .getPackageManager().queryIntentActivities(cameraIntent, PackageManager.MATCH_DEFAULT_ONLY);
+
+    for (ResolveInfo resolvedIntentInfo : resolvedIntentActivities) {
+      String packageName = resolvedIntentInfo.activityInfo.packageName;
+      Exponent.getInstance().getApplication().grantUriPermission(
+        packageName,
+        mCameraCaptureURI,
+        Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION
+      );
+    }
+
     cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCameraCaptureURI);
     mPromise = promise;
     Exponent.getInstance().getCurrentActivity().startActivityForResult(cameraIntent, REQUEST_LAUNCH_CAMERA);
@@ -238,6 +255,9 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
     if (resultCode != Activity.RESULT_OK) {
       WritableMap response = Arguments.createMap();
       response.putBoolean("cancelled", true);
+      if (requestCode == REQUEST_LAUNCH_CAMERA) {
+        revokeUriPermissionForCamera();
+      }
       promise.resolve(response);
       return;
     }
@@ -292,6 +312,9 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
             }
             if (bmp == null) {
               promise.reject(new IllegalStateException("Image decoding failed."));
+              if (requestCode == REQUEST_LAUNCH_CAMERA) {
+                revokeUriPermissionForCamera();
+              }
               return;
             }
             String path = writeImage(bmp);
@@ -309,6 +332,9 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
               response.putMap("exif", exifData);
             }
             response.putBoolean("cancelled", false);
+            if (requestCode == REQUEST_LAUNCH_CAMERA) {
+              revokeUriPermissionForCamera();
+            }
             promise.resolve(response);
           }
         } catch (Exception e) {
@@ -381,6 +407,14 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
     }
 
     return exifMap;
+  }
+
+  private void revokeUriPermissionForCamera() {
+    Exponent.getInstance().getApplication()
+      .revokeUriPermission(
+        mCameraCaptureURI,
+        Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION
+      );
   }
 
   // We need to explicitly get latitude, longitude, altitude with their specific accessor functions
