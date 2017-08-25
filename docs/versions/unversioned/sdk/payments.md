@@ -4,6 +4,8 @@ title: Payments
 
 Expo includes support for payments through [Stripe](https://stripe.com/) and [Apple Pay](https://www.apple.com/apple-pay/) on iOS.
 
+Need more help than what's on the page? The Payments module is largely based off [tipsi-stripe](https://github.com/tipsi/tipsi-stripe). The documentation and questions there may prove helpful.
+
 ## Importing Payments
 
 The Payments SDK is currently in active development and currently exists on iOS. If you want to use payments with Stripe on Android, we recommend using the [Expo Stripe module](https://github.com/expo/stripe-expo).
@@ -259,8 +261,6 @@ const token = await stripe.createTokenWithCardAsync(params)
 // Client specific code
 // api.sendTokenToBackend(token)
 ```
-
-Need more help? The Payments module is largely based off [tipsi-stripe](https://github.com/tipsi/tipsi-stripe). The documentation and questions there may prove helpful.
 
 ## Enabling Apple Pay in Standalone Applications
 
