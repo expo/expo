@@ -7,31 +7,23 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
-import android.support.test.espresso.IdlingPolicies;
-import android.support.test.espresso.IdlingResource;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
-import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.Until;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
-import java.util.concurrent.TimeUnit;
-
 import host.exp.exponent.generated.ExponentBuildConstants;
-import host.exp.exponent.kernel.KernelConfig;
 import host.exp.exponent.utils.ElapsedTimeIdlingResource;
 import host.exp.exponent.utils.JSTestRunnerIdlingResource;
 import host.exp.exponent.utils.LoadingScreenIdlingResource;
-import host.exp.exponent.utils.TestNativeModuleServer;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
@@ -40,30 +32,7 @@ import static host.exp.exponent.utils.ExponentMatchers.withTestId;
 
 @RunWith(AndroidJUnit4.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class EspressoTest {
-
-  private static final int LAUNCH_TIMEOUT = 5000;
-
-  private static UiDevice sUiDevice;
-
-  private IdlingResource mLoadingScreenIdlingResource;
-  private ElapsedTimeIdlingResource mElapsedTimeIdlingResource;
-  private JSTestRunnerIdlingResource mJSTestRunnerIdlingResource;
-
-  @BeforeClass
-  public static void enableDrawOverOtherApps() {
-    KernelConfig.IS_TEST = true;
-    KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE = true;
-    KernelConfig.FORCE_UNVERSIONED_PUBLISHED_EXPERIENCES = true;
-    KernelConfig.HIDE_NUX = true;
-
-    sUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-    TestNativeModuleServer.getInstance().setUiDevice(sUiDevice);
-
-    // Increase Espresso timeout
-    IdlingPolicies.setMasterPolicyTimeout(3, TimeUnit.MINUTES);
-    IdlingPolicies.setIdlingResourceTimeout(3, TimeUnit.MINUTES);
-  }
+public class TestSuiteTests extends BaseTestClass {
 
   @Before
   public void before() {

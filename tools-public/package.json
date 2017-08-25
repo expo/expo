@@ -12,6 +12,7 @@
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-shell": "^0.5.2",
     "instapromise": "^2.0.7",
+    "ip": "^1.1.5",
     "lodash": "^4.13.1",
     "minimist": "^1.2.0",
     "promise-props": "^1.0.0",

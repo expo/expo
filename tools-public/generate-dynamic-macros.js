@@ -11,6 +11,8 @@ const { mkdir } = require('shelljs');
 const { ExponentTools, IosPodsTools, UrlUtils } = require('xdl');
 const JsonFile = require('@exponent/json-file');
 const spawnAsync = require('@exponent/spawn-async');
+const request = require('request');
+const ip = require('ip');
 
 const {
   createBlankIOSPropertyListAsync,
@@ -68,6 +70,23 @@ const macrosFuncs = {
     } else {
       return '';
     }
+  },
+
+  async TEST_SERVER_URL() {
+    let url = 'TODO';
+
+    if (isInUniverse) {
+      try {
+        let lanAddress = ip.address();
+        let localServerUrl = `http://${lanAddress}:3013`
+        let result = await request.promise.get(`${localServerUrl}/expo-test-server-status`);
+        if (result.body === 'running!') {
+          url = localServerUrl;
+        }
+      } catch (e) {}
+    }
+
+    return url;
   },
 
   async BUILD_MACHINE_LOCAL_HOSTNAME() {
@@ -196,7 +215,7 @@ async function generateIOSBuildConstantsFromMacrosAsync(
  */
 function validateIOSBuildConstants(config, buildConfiguration) {
   config.USE_GENERATED_DEFAULTS = true;
-  
+
   let IS_DEV_KERNEL, DEV_KERNEL_SOURCE = '';
   if (buildConfiguration === 'Debug') {
     IS_DEV_KERNEL = true;
@@ -216,7 +235,7 @@ function validateIOSBuildConstants(config, buildConfiguration) {
     ) {
       throw new Error(`Error generating local kernel manifest.\nMake sure a local kernel is being served, or switch DEV_KERNEL_SOURCE to use PUBLISHED instead.`);
     }
-    
+
     if (
       DEV_KERNEL_SOURCE === 'PUBLISHED'
       && !config.DEV_PUBLISHED_KERNEL_MANIFEST
@@ -246,7 +265,7 @@ async function generateAndroidBuildConstantsFromMacrosAsync(macros) {
     console.log('\n\nUsing Expo Home from __internal__\n\n');
   }
   delete macros['DEV_PUBLISHED_KERNEL_MANIFEST'];
-  
+
   let definitions = _.map(
     macros,
     (value, name) =>
@@ -427,9 +446,9 @@ async function copyTemplateFilesAsync(platform, args, templateSubstitutions) {
 async function generateBuildConfigAsync(platform, args) {
   const filepath = path.resolve(args.buildConstantsPath);
   const { configuration } = args;
-  
+
   mkdir('-p', path.dirname(filepath));
-  
+
   let macros = await generateMacrosAsync(platform, configuration);
   if (platform === 'android') {
     let result = await Promise.all([
@@ -438,7 +457,7 @@ async function generateBuildConfigAsync(platform, args) {
     ]);
     let source = result[0];
     let existingSource = result[1];
-    
+
     if (source !== existingSource) {
       await fs.promise.writeFile(filepath, source, 'utf8');
     }

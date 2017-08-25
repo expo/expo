@@ -29,7 +29,7 @@ public class SpeechModule extends ReactContextBaseJavaModule implements Lifecycl
     mTextToSpeech = new TextToSpeech(getReactApplicationContext(), new TextToSpeech.OnInitListener() {
       @Override
       public void onInit(int status) {
-        if (status == TextToSpeech.SUCCESS) {
+        if (status == TextToSpeech.SUCCESS && mTextToSpeech != null) {
           mTtsReady = true;
 
           mTextToSpeech.setOnUtteranceProgressListener(new UtteranceProgressListener() {
