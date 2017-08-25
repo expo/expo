@@ -1,23 +1,10 @@
 /* @flow */
 
 import React from 'react';
-import {
-  LayoutAnimation,
-  Linking,
-  NativeModules,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { NavigationBar, withNavigation } from '@expo/ex-navigation';
+import { NativeModules, StyleSheet, TextInput, View } from 'react-native';
+import { withNavigation } from '@expo/ex-navigation';
 
 import Colors from '../constants/Colors';
-import ExUrls from 'ExUrls';
-import Layout from '../constants/Layout';
 
 const { ExponentKernel } = NativeModules;
 

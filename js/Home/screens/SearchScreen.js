@@ -1,8 +1,8 @@
 /* @flow */
 
-import Expo from 'expo';
+import { Constants } from 'expo';
 import React from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { NavigationStyles } from '@expo/ex-navigation';
 
 import gql from 'graphql-tag';
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
   },
   iosSearchBarContainer: {
     height: 70,
-    paddingTop: Expo.Constants.statusBarHeight,
+    paddingTop: Constants.statusBarHeight,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: 'rgba(46, 59, 76, 0.10)',
   },
