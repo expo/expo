@@ -9,7 +9,7 @@ try {
   exponentBlacklist = require('../../react-native-lab/blacklist').exponentBlacklist;
 } catch (e) {
   isInUniverse = false;
-  blacklist = require(`./node_modules/react-native/packager/blacklist`);
+  blacklist = require('./node_modules/metro-bundler/src/blacklist');
 }
 
 const path = require('path');
