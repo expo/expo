@@ -347,7 +347,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     if (mIsCrashed || !delegate.isInForeground()) {
       // Can sometimes get here after an error has occurred. Return early or else we'll hit
       // a null pointer at mReactRootView.startReactApplication
-      return null;
+      return new RNObject("com.facebook.react.ReactInstanceManager");
     }
 
     String linkingUri = Constants.SHELL_APP_SCHEME != null ? Constants.SHELL_APP_SCHEME + "://" : mManifestUrl + "/+";
@@ -447,7 +447,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     bundle.putBundle("exp", JSONBundleConverter.JSONToBundle(exponentProps));
 
     if (!delegate.isInForeground()) {
-      return null;
+      return new RNObject("com.facebook.react.ReactInstanceManager");
     }
 
     Analytics.markEvent(Analytics.TimedEvent.STARTED_LOADING_REACT_NATIVE);
