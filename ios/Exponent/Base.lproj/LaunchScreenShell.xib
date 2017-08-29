@@ -26,7 +26,7 @@
                         <constraint firstAttribute="width" constant="128" id="gAL-Wy-loA"/>
                     </constraints>
                 </imageView>
-                <activityIndicatorView opaque="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="Q79-ka-fUb">
+                <activityIndicatorView hidden="YES" opaque="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="Q79-ka-fUb">
                     <rect key="frame" x="169" y="407.5" width="37" height="37"/>
                 </activityIndicatorView>
             </subviews>

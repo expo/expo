@@ -4,6 +4,8 @@
 
 #import "EXRootViewController.h"
 #import "EXShellManager.h"
+#import "EXKernel.h"
+
 #import <React/RCTRootView.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -35,6 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
   // The launch screen contains a loading indicator
   // use this instead of the superclass loading indicator
   _loadingIndicator = (UIActivityIndicatorView *)[self.loadingView viewWithTag:1];
+
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(splashLoadingDidDisplay:) name:kEXKernelSplashLoadingDidDisplay object:nil];
 }
 
 #pragma mark - Public
@@ -50,15 +54,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setIsLoading:(BOOL)isLoading
 {
-  // don't call super
-
   if (isLoading) {
     self.loadingView.hidden = NO;
     [_loadingIndicator startAnimating];
   } else {
-    self.loadingView.hidden = YES;
+    if (![EXShellManager sharedInstance].isShell) {
+      // If this is Home, hide the loading here, otherwise wait for BrowserScreen to do so in `splashLoadingDidDisplay`.
+      self.loadingView.hidden = YES;
+    }
     [_loadingIndicator stopAnimating];
   }
+}
+
+- (void)splashLoadingDidDisplay:(NSNotification *)note {
+  self.loadingView.hidden = YES;
 }
 
 @end
