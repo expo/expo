@@ -28,7 +28,14 @@ You don't need to manually install the Expo client on your emulator/simulator, b
 
 Install [Xcode through the Apple App Store](https://itunes.apple.com/app/xcode/id497799835). It'll take a while, go have a nap. Next, open up Xcode, go to preferences and click the Components tab, install a simulator from the list.
 
-Once the simulator is open and you have a project open in XDE, you can press _Open on iOS simulator_ in XDE and it will install the Expo client to the emulator and open up your app inside of it.
+Once the simulator is open and you have a project open in XDE, you can press _Open on iOS simulator_ in XDE and it will install the Expo Client to the emulator and open up your app inside of it.
+
+> **Not working?** Occasionally XDE will have trouble installing the Expo Client automatically, usually due to annoying small differences in your environment or Xcode toolchain. If you need to install the Expo Client on your simulator manually, you can follow these steps:
+> 
+> - Download the [latest simulator build](http://expo.io/--/api/v2/versions/download-ios-simulator-build).
+> - Extract the contents of the archive. You should get a directory like `Exponent-X.XX.X`.
+> - Make sure Simulator is running.
+> - At a terminal, run `xcrun simctl install booted [path to extracted directory]`.
 
 ### Android emulator
 
