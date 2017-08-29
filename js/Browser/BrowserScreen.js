@@ -123,6 +123,10 @@ class BrowserScreen extends React.Component {
     );
   }
 
+  componentDidMount() {
+    ExponentKernel.splashLoadingDidDisplay();
+  }
+
   _renderFrame() {
     let {
       source,
@@ -248,9 +252,9 @@ class BrowserScreen extends React.Component {
 
   _renderLoadingIndicator() {
     let loadingBackgroundColor = this._getLoadingBackgroundColor();
-    let loadingIndicatorStyle = this._getLoadingIndicatorStyle();
     let loadingIcon = this._renderManifestLoadingIcon();
     let loadingBackgroundImage = this._renderManifestLoadingBackgroundImage();
+    let activityIndicator = this._renderLoadingActivityIndicator();
     let { loadingStatus } = this.state;
 
     return (
@@ -263,11 +267,7 @@ class BrowserScreen extends React.Component {
         {loadingBackgroundImage}
         <View>
           {loadingIcon}
-          <ActivityIndicator
-            size="large"
-            color={loadingIndicatorStyle === 'light' ? '#ffffff' : '#333333'}
-            style={styles.loadingIndicator}
-          />
+          {activityIndicator}
         </View>
         {loadingStatus !== null &&
           <View style={styles.loadingStatusBar}>
@@ -280,6 +280,27 @@ class BrowserScreen extends React.Component {
               </Text>}
           </View>}
       </View>
+    );
+  }
+
+  _renderLoadingActivityIndicator() {
+    let { task } = this.props;
+    if (task) {
+      let { manifest } = task;
+      if (manifest) {
+        if (this._isNewSplashScreenStyle(manifest)) {
+          return null;
+        }
+      }
+    }
+
+    let loadingIndicatorStyle = this._getLoadingIndicatorStyle();
+    return (
+      <ActivityIndicator
+        size="large"
+        color={loadingIndicatorStyle === 'light' ? '#ffffff' : '#333333'}
+        style={styles.loadingIndicator}
+      />
     );
   }
 
