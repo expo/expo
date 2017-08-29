@@ -85,7 +85,7 @@ A ReactAppManager keeps track of the lifecycle of a React Native app. Though it 
 
 This directory contains the native code powering the Expo kernel. Here's roughly how the kernel is structured:
 
-![image](https://user-images.githubusercontent.com/1316332/29835987-93d5bbe4-8ca8-11e7-8a71-08dfd485e79a.png)
+![image](https://user-images.githubusercontent.com/1316332/29846489-f362b0c6-8ccb-11e7-8d69-a4bebaf19c70.png)
 
 The Bridge Registry keeps track of all the React Native bridges running at a given time, including where they are in their loading/error lifecycle, which one is visible to the user, which one (if any) is being developed from a packager, etc.
 
