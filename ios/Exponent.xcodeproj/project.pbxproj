@@ -227,6 +227,8 @@
 		B5E49B751D134F0700AA6436 /* kernel.ios.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B5E49B741D134F0700AA6436 /* kernel.ios.bundle */; };
 		B5E628FE1E32F05A00629A55 /* kernel-manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = B5E628FD1E32F05A00629A55 /* kernel-manifest.json */; };
 		B5E9FDEF1D833325006DB65C /* EXViewShot.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E9FDEE1D833325006DB65C /* EXViewShot.m */; };
+		B5EF826E1F55B8F100FC7424 /* launch_background_image.png in Resources */ = {isa = PBXBuildFile; fileRef = B5EF826C1F55B8F100FC7424 /* launch_background_image.png */; };
+		B5EF826F1F55B8F100FC7424 /* launch_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = B5EF826D1F55B8F100FC7424 /* launch_icon.png */; };
 		B5F12C951DAEDC980080ECA6 /* EXReactAppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5F12C921DAEDC980080ECA6 /* EXReactAppManager.m */; };
 		B5F12C991DAEDF960080ECA6 /* EXKernelReactAppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5F12C981DAEDF960080ECA6 /* EXKernelReactAppManager.m */; };
 		B5F12C9D1DAEE1240080ECA6 /* EXFrameReactAppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5F12C9C1DAEE1240080ECA6 /* EXFrameReactAppManager.m */; };
@@ -235,8 +237,6 @@
 		BB22D9571F3CDE6C00A35CC6 /* RNGestureHandlerEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = BB22D9501F3CDE6C00A35CC6 /* RNGestureHandlerEvents.m */; };
 		BB22D9581F3CDE6C00A35CC6 /* RNGestureHandlerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BB22D9521F3CDE6C00A35CC6 /* RNGestureHandlerManager.m */; };
 		BB22D9591F3CDE6C00A35CC6 /* RNGestureHandlerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = BB22D9541F3CDE6C00A35CC6 /* RNGestureHandlerModule.m */; };
-		C8D8F1421F28F9420022EDE7 /* launch_background_image.png in Resources */ = {isa = PBXBuildFile; fileRef = C8D8F1401F28F9420022EDE7 /* launch_background_image.png */; };
-		C8D8F1431F28F9420022EDE7 /* launch_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = C8D8F1411F28F9420022EDE7 /* launch_icon.png */; };
 		F77DDB8B1E04774000624CA2 /* EXWebBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = F77DDB8A1E04774000624CA2 /* EXWebBrowser.m */; };
 		F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F77DDB921E04AC1100624CA2 /* SafariServices.framework */; };
 /* End PBXBuildFile section */
@@ -697,6 +697,8 @@
 		B5E628FD1E32F05A00629A55 /* kernel-manifest.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "kernel-manifest.json"; sourceTree = "<group>"; };
 		B5E9FDED1D833325006DB65C /* EXViewShot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXViewShot.h; sourceTree = "<group>"; };
 		B5E9FDEE1D833325006DB65C /* EXViewShot.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXViewShot.m; sourceTree = "<group>"; };
+		B5EF826C1F55B8F100FC7424 /* launch_background_image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = launch_background_image.png; sourceTree = "<group>"; };
+		B5EF826D1F55B8F100FC7424 /* launch_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = launch_icon.png; sourceTree = "<group>"; };
 		B5F12C911DAEDC980080ECA6 /* EXReactAppManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXReactAppManager.h; sourceTree = "<group>"; };
 		B5F12C921DAEDC980080ECA6 /* EXReactAppManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXReactAppManager.m; sourceTree = "<group>"; };
 		B5F12C971DAEDF960080ECA6 /* EXKernelReactAppManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelReactAppManager.h; sourceTree = "<group>"; };
@@ -716,8 +718,6 @@
 		BB22D9541F3CDE6C00A35CC6 /* RNGestureHandlerModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNGestureHandlerModule.m; sourceTree = "<group>"; };
 		BB22D9551F3CDE6C00A35CC6 /* RNGestureHandlerState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNGestureHandlerState.h; sourceTree = "<group>"; };
 		BD69154E1D289060B003BB86 /* Pods-Exponent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Exponent.release.xcconfig"; path = "Pods/Target Support Files/Pods-Exponent/Pods-Exponent.release.xcconfig"; sourceTree = "<group>"; };
-		C8D8F1401F28F9420022EDE7 /* launch_background_image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = launch_background_image.png; sourceTree = "<group>"; };
-		C8D8F1411F28F9420022EDE7 /* launch_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = launch_icon.png; sourceTree = "<group>"; };
 		D045154CF3903164C70A59B6 /* Pods-ExponentIntegrationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.debug.xcconfig"; sourceTree = "<group>"; };
 		F77DDB891E04774000624CA2 /* EXWebBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXWebBrowser.h; sourceTree = "<group>"; };
 		F77DDB8A1E04774000624CA2 /* EXWebBrowser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXWebBrowser.m; sourceTree = "<group>"; };
@@ -951,7 +951,6 @@
 		78CEE2C21ACD07D70095B124 /* Exponent */ = {
 			isa = PBXGroup;
 			children = (
-				C8D8F13F1F28F8AD0022EDE7 /* Launch Resources */,
 				B53BB2851C7E6C1E00D52FBD /* Analytics */,
 				B587F1DB1D53DE600071715C /* Api */,
 				B526B5031E6A543500606CAB /* ExpoKit */,
@@ -1496,6 +1495,8 @@
 		B5E49B521D1346FA00AA6436 /* Supporting */ = {
 			isa = PBXGroup;
 			children = (
+				B5EF826C1F55B8F100FC7424 /* launch_background_image.png */,
+				B5EF826D1F55B8F100FC7424 /* launch_icon.png */,
 				B5CFBF4C1EDE398D00B4BE24 /* EXBuildConstants.plist */,
 				B5E49B541D1346FA00AA6436 /* Exponent-Prefix.pch */,
 				B5E49B551D1346FA00AA6436 /* Exponent.entitlements */,
@@ -1539,15 +1540,6 @@
 				BB22D9551F3CDE6C00A35CC6 /* RNGestureHandlerState.h */,
 			);
 			path = GestureHandler;
-			sourceTree = "<group>";
-		};
-		C8D8F13F1F28F8AD0022EDE7 /* Launch Resources */ = {
-			isa = PBXGroup;
-			children = (
-				C8D8F1401F28F9420022EDE7 /* launch_background_image.png */,
-				C8D8F1411F28F9420022EDE7 /* launch_icon.png */,
-			);
-			name = "Launch Resources";
 			sourceTree = "<group>";
 		};
 		FBBF25BCC6E70D733A60A01D /* Pods */ = {
@@ -1684,14 +1676,14 @@
 				B5E49B631D1347B800AA6436 /* EXSDKVersions.plist in Resources */,
 				B5E49B691D1348E800AA6436 /* EXShell.plist in Resources */,
 				78CEE2D11ACD07D70095B124 /* Images.xcassets in Resources */,
-				C8D8F1431F28F9420022EDE7 /* launch_icon.png in Resources */,
+				B5EF826F1F55B8F100FC7424 /* launch_icon.png in Resources */,
 				B5CFBF4D1EDE398D00B4BE24 /* EXBuildConstants.plist in Resources */,
 				B5E49B751D134F0700AA6436 /* kernel.ios.bundle in Resources */,
 				B5E628FE1E32F05A00629A55 /* kernel-manifest.json in Resources */,
 				78CEE2D41ACD07D70095B124 /* LaunchScreen.xib in Resources */,
 				B5657E521CFE1309006EF8E1 /* LaunchScreenShell.xib in Resources */,
 				B575EEA41D54175B00DCABBC /* shell-app-manifest.json in Resources */,
-				C8D8F1421F28F9420022EDE7 /* launch_background_image.png in Resources */,
+				B5EF826E1F55B8F100FC7424 /* launch_background_image.png in Resources */,
 				B575EEA51D54175B00DCABBC /* shell-app.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1847,7 +1839,7 @@
 				"${PODS_ROOT}/GoogleAuthUtilities/Frameworks/frameworks/GoogleAuthUtilities.framework/Resources/GTMOAuth2ViewTouch.xib",
 				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Versions/A/Resources/GoogleMaps.bundle",
 				"${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle",
-				"$PODS_CONFIGURATION_BUILD_DIR/Stripe/Stripe.bundle",
+				$PODS_CONFIGURATION_BUILD_DIR/Stripe/Stripe.bundle,
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
