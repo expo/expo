@@ -94,6 +94,7 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
     map.putString("country", address.getCountryName());
     map.putString("postalCode", address.getPostalCode());
     map.putString("name", address.getFeatureName());
+    map.putString("isoCountryCode", address.getCountryCode());
 
     return map;
   }
