@@ -106,7 +106,11 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
         // load standalone url scheme
         [self _loadProductionUrlScheme];
       }
-      RCTAssert((_shellManifestUrl), @"This app is configured to be a standalone app, but does not specify a standalone experience url.");
+      if (!_shellManifestUrl) {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                       reason:@"This app is configured to be a standalone app, but does not specify a standalone experience url."
+                                     userInfo:nil];
+      }
       
       // load everything else from EXShell
       [self _loadMiscShellPropertiesWithConfig:shellConfig];
@@ -142,7 +146,10 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
       _urlScheme = components.scheme;
     }
   } else {
-    NSAssert(NO, @"No development url was configured. You must open this project with Expo before running it from XCode.");
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:@"You are running a detached app from Xcode, but it hasn't been configured for local development yet. "
+                                           "You must run a packager for this Expo project before running it from XCode."
+                                 userInfo:nil];
   }
 }
 
