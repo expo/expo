@@ -29,6 +29,7 @@ ENV DOCS_VERSION {{ .DocsVersion }}
 
 RUN rm -rf /usr/share/nginx/html && mkdir -p /usr/share/nginx/html
 IMPORT public_html/ /usr/share/nginx/html
+RUN chown -R nginx:nginx /usr/share/nginx && chmod -R +x /usr/share/nginx
 COPY ./deploy/nginx/default.conf /etc/nginx/conf.d/default.conf.template
 
 RUN envsubst '$DOCS_VERSION' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf &&\
