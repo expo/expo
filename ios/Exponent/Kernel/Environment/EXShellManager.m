@@ -52,7 +52,17 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
 #endif
 }
 
+
 #pragma mark internal
+
+- (BOOL)_isLocalDetach
+{
+#if DEBUG
+  return self.isDetached;
+#else
+  return NO;
+#endif
+}
 
 - (void)_reset
 {
@@ -85,16 +95,17 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
       if (_shellManifestUrl) {
         [allManifestUrls addObject:_shellManifestUrl];
       }
-#if DEBUG
-      // local shell development: point shell manifest url at local development url
-      [self _loadDevelopmentUrlAndSchemeFromConfig:constantsConfig fallbackToShellConfig:shellConfig];
-      if (_shellManifestUrl) {
-        [allManifestUrls addObject:_shellManifestUrl];
+      if (self._isLocalDetach) {
+        // local detach development: point shell manifest url at local development url,
+        // and use exp<udid> scheme.
+        [self _loadDetachedDevelopmentUrlAndSchemeFromConfig:constantsConfig fallbackToShellConfig:shellConfig];
+        if (_shellManifestUrl) {
+          [allManifestUrls addObject:_shellManifestUrl];
+        }
+      } else {
+        // load standalone url scheme
+        [self _loadProductionUrlScheme];
       }
-#else
-      // load shell app configured url scheme (prod only - in dev we expect the `exp<udid>` scheme)
-      [self _loadProductionUrlScheme];
-#endif
       RCTAssert((_shellManifestUrl), @"This app is configured to be a standalone app, but does not specify a standalone experience url.");
       
       // load everything else from EXShell
@@ -114,7 +125,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
   }
 }
 
-- (void)_loadDevelopmentUrlAndSchemeFromConfig:(NSDictionary *)config fallbackToShellConfig:(NSDictionary *)shellConfig
+- (void)_loadDetachedDevelopmentUrlAndSchemeFromConfig:(NSDictionary *)config fallbackToShellConfig:(NSDictionary *)shellConfig
 {
   NSString *developmentUrl = nil;
   if (config && config[@"developmentUrl"]) {
