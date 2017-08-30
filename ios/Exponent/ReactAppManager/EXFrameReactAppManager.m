@@ -165,7 +165,7 @@
                                @"manifest": _frame.manifest,
                                @"appOwnership": [_frame.initialProps objectForKey:@"appOwnership"] ?: @"expo",
                                },
-                           @"initialUri": [EXKernelLinkingManager uriTransformedForLinking:_frame.initialUri],
+                           @"initialUri": [EXKernelLinkingManager uriTransformedForLinking:_frame.initialUri isUniversalLink:NO],
                            @"isDeveloper": @([self _doesManifestEnableDeveloperTools]),
                            @"isStandardDevMenuAllowed": @(isStandardDevMenuAllowed),
                            @"services": [EXKernel sharedInstance].serviceRegistry.allServices,
