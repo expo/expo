@@ -68,7 +68,7 @@ NSNotificationName kEXKernelRefreshForegroundTaskNotification = @"EXKernelRefres
       }
     }
   } else {
-    urlToRoute = [[self class] uriTransformedForLinking:url].absoluteString;
+    urlToRoute = [[self class] uriTransformedForLinking:url isUniversalLink:isUniversalLink].absoluteString;
     destinationAppManager = bridgeRegistry.kernelAppManager;
 
     for (id bridge in [bridgeRegistry bridgeEnumerator]) {
@@ -173,7 +173,7 @@ NSNotificationName kEXKernelRefreshForegroundTaskNotification = @"EXKernelRefres
 
 + (NSString *)linkingUriForExperienceUri:(NSURL *)uri
 {
-  uri = [self uriTransformedForLinking:uri];
+  uri = [self uriTransformedForLinking:uri isUniversalLink:NO];
   NSURLComponents *components = [NSURLComponents componentsWithURL:uri resolvingAgainstBaseURL:YES];
 
   // if the provided uri is the shell app manifest uri,
@@ -202,14 +202,14 @@ NSNotificationName kEXKernelRefreshForegroundTaskNotification = @"EXKernelRefres
   return [components string];
 }
 
-+ (NSURL *)uriTransformedForLinking:(NSURL *)uri
++ (NSURL *)uriTransformedForLinking:(NSURL *)uri isUniversalLink:(BOOL)isUniversalLink
 {
   if (!uri) {
     return nil;
   }
   
-  // If the initial uri is an universal link (https scheme) in a shell app don't touch it.
-  if ([EXShellManager sharedInstance].isShell && [uri.scheme isEqualToString:@"https"]) {
+  // If the initial uri is a universal link in a shell app don't touch it.
+  if ([EXShellManager sharedInstance].isShell && isUniversalLink) {
     return uri;
   }
 

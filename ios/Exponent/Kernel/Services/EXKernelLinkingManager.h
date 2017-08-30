@@ -45,7 +45,7 @@ FOUNDATION_EXPORT NSNotificationName kEXKernelOpenUrlNotification DEPRECATED_MSG
  *  Normalize a uri and (if needed) subtitute
  *  standalone-app-specific deep link formatting.
  */
-+ (NSURL *)uriTransformedForLinking:(NSURL *)uri;
++ (NSURL *)uriTransformedForLinking:(NSURL *)uri isUniversalLink:(BOOL)isUniversalLink;
 
 # pragma mark - app-wide linking handlers
 
