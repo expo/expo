@@ -58,7 +58,6 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
 {
   _isShell = NO;
   _shellManifestUrl = nil;
-  _usesPublishedManifest = YES;
   _urlScheme = nil;
   _isRemoteJSEnabled = YES;
   _allManifestUrls = @[];
@@ -131,7 +130,6 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
     if ([self _isValidShellUrlScheme:components.scheme forDevelopment:YES]) {
       _urlScheme = components.scheme;
     }
-    _usesPublishedManifest = NO;
   } else {
     NSAssert(NO, @"No development url was configured. You must open this project with Expo before running it from XCode.");
   }

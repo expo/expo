@@ -14,7 +14,6 @@ FOUNDATION_EXPORT NSString * const kEXShellManifestResourceName;
 
 @property (nonatomic, readonly) NSString *shellManifestUrl;
 @property (nonatomic, readonly) NSString *urlScheme;
-@property (nonatomic, readonly) BOOL usesPublishedManifest;
 @property (nonatomic, readonly) NSArray *allManifestUrls;
 @property (nonatomic, readonly) BOOL isManifestVerificationBypassed;
 @property (nonatomic, readonly) BOOL isRemoteJSEnabled;
