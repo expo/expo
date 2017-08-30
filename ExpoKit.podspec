@@ -34,7 +34,6 @@ Pod::Spec.new do |s|
     ss.dependency 'lottie-ios', '~> 1.5.1'
     ss.dependency 'GPUImage', '~> 0.1.7'
     ss.dependency 'Branch', '~> 0.14.12'
-    ss.dependency 'Stripe', '~> 10.1.0'
   end
 
   s.subspec "CPP" do |ss|
