@@ -1,51 +1,41 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "RCTTestRunner.h"
-#import "RCTAssert.h"
+#import "ExpoKit.h"
+#import "EXRootViewController.h"
+
+#import <React/RCTTestRunner.h>
+#import <React/RCTAssert.h>
+#import <React/RCTUtils.h>
 
 #import <XCTest/XCTest.h>
 
 @interface ExponentIntegrationTests : XCTestCase
 
+@property (nonatomic, strong) EXRootViewController *rootViewController;
+
 @end
 
 @implementation ExponentIntegrationTests
-{
-  RCTTestRunner *_runner;
-}
 
 - (void)setUp
 {
   [super setUp];
-
-#if __LP64__
-  RCTAssert(NO, @"Tests should be run on 32-bit device simulators (e.g. iPhone 5)");
-#endif
-  
-  NSOperatingSystemVersion version = [NSProcessInfo processInfo].operatingSystemVersion;
-  RCTAssert((version.majorVersion == 8 && version.minorVersion >= 3) || version.majorVersion >= 9, @"Tests should be run on iOS 8.3+, found %zd.%zd.%zd", version.majorVersion, version.minorVersion, version.patchVersion);
-  
-  NSArray<id<RCTBridgeModule>> *(^testModuleProvider)(void) = ^NSArray<id<RCTBridgeModule>> *(void) {
-    // TODO: get the contents of EXVersionManager::versionedModulesForKernel in here
-    return @[];
-  };
-  _runner = RCTInitRunnerForApp(@"ExponentTestsApp", testModuleProvider);
+  _rootViewController = (EXRootViewController *)[ExpoKit sharedInstance].rootViewController;
 }
 
-- (void)testFrameLoadCuriousPeople
+- (void)testDoesTestSuiteAppPassAllJSTests
 {
-  [_runner runTest:_cmd
-            module:@"FrameTests"
-      initialProps:@{@"manifestUrl": @"exp://exp.host/@exponent/react-native-for-curious-people"}
-configurationBlock:nil];
-}
-
-- (void)testFrameLoadFeaturedExperience
-{
-  [_runner runTest:_cmd
-            module:@"FrameTests"
-      initialProps:@{@"loadFeaturedExperience": @YES}
-configurationBlock:nil];
+  [_rootViewController applicationWillEnterForeground];
+  
+  // see _runner runTest
+  // spin on a run loop while status is pending, listen for completed event
+  // assert on contents of result
+  NSDate *date = [NSDate dateWithTimeIntervalSinceNow:10];
+  while (date.timeIntervalSinceNow > 0) {
+    [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+    [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+  }
+  XCTAssert(YES, @"Dummy test didn't finish");
 }
 
 @end
