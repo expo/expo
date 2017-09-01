@@ -11,6 +11,7 @@
 #import "EXVersionManager.h"
 #import "EXStatusBarManager.h"
 #import "EXUnversioned.h"
+#import "EXTest.h"
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridge.h>
@@ -269,6 +270,7 @@ void EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceClassName)
  *    NSURL *initialUri
  *    @BOOL isDeveloper
  *    @BOOL isStandardDevMenuAllowed
+ *    @BOOL isTestEnvironment
  *    NSDictionary *services
  *
  * Kernel-only:
@@ -309,6 +311,11 @@ void EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceClassName)
     } else {
       RCTLogWarn(@"No exceptions manager provided when building extra modules for bridge.");
     }
+  }
+  
+  if (params[@"isTestEnvironment"]) {
+    EXTest *testModule = [[EXTest alloc] init];
+    [extraModules addObject:testModule];
   }
   
   if (params[@"kernel"]) {
