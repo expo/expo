@@ -25,13 +25,15 @@ export default class App extends React.Component {
     isReady: false,
   };
 
-  componentWillMount() {
-    this._cacheResourcesAsync();
-  }
-
   render() {
     if (!this.state.isReady) {
-      return <AppLoading />;
+      return (
+        <AppLoading
+          startAsync={this._cacheResourcesAsync}
+          onError={console.warn}
+          onFinish={() => this.setState({ isReady: true })}
+        />
+      );
     }
 
     return (
@@ -51,8 +53,22 @@ export default class App extends React.Component {
     for (let image of images) {
       await Asset.fromModule(image).downloadAsync();
     }
-
-    this.setState({isReady: true});
   }
 }
 ```
+
+### props
+
+The following props are recommended, but optional for the sake of backwards compatibility (they were introduced in SDK21). If you do not provide any props, you are responsible for coordinating loading assets, handling errors, and updating state to unmount the `AppLoading` component.
+
+- **startAsync**
+
+A `function` that returns a `Promise`, and the `Promise` should resolve when the app is done loading required data and assets.
+
+- **onError**
+
+If `startAsync` throws an error, it is caught and passed into the function provided to `onError`.
+
+- **onFinish**
+
+**(Required if you provide `startAsync`)**. Called when `startAsync` resolves or rejects. This should be used to set state and unmount the `AppLoading` component.
