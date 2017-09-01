@@ -168,12 +168,21 @@
                            @"initialUri": [EXKernelLinkingManager uriTransformedForLinking:_frame.initialUri isUniversalLink:NO],
                            @"isDeveloper": @([self _doesManifestEnableDeveloperTools]),
                            @"isStandardDevMenuAllowed": @(isStandardDevMenuAllowed),
+                           @"isTestEnvironment": @([self _isTestEnvironment]),
                            @"services": [EXKernel sharedInstance].serviceRegistry.allServices,
                            };
   return [self.versionManager extraModulesWithParams:params];
 }
 
 #pragma mark - internal
+
+- (BOOL)_isTestEnvironment
+{
+#ifdef TEST_ENVIRONMENT
+  return YES;
+#endif
+  return NO;
+}
 
 - (BOOL)_doesManifestEnableDeveloperTools
 {

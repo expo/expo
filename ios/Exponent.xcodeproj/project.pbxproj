@@ -226,6 +226,7 @@
 		B5E9FDEF1D833325006DB65C /* EXViewShot.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E9FDEE1D833325006DB65C /* EXViewShot.m */; };
 		B5EF826E1F55B8F100FC7424 /* launch_background_image.png in Resources */ = {isa = PBXBuildFile; fileRef = B5EF826C1F55B8F100FC7424 /* launch_background_image.png */; };
 		B5EF826F1F55B8F100FC7424 /* launch_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = B5EF826D1F55B8F100FC7424 /* launch_icon.png */; };
+		B5EF82771F5A1B7900FC7424 /* EXTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B5EF82761F5A1B7900FC7424 /* EXTest.m */; };
 		B5F12C951DAEDC980080ECA6 /* EXReactAppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5F12C921DAEDC980080ECA6 /* EXReactAppManager.m */; };
 		B5F12C991DAEDF960080ECA6 /* EXKernelReactAppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5F12C981DAEDF960080ECA6 /* EXKernelReactAppManager.m */; };
 		B5F12C9D1DAEE1240080ECA6 /* EXFrameReactAppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5F12C9C1DAEE1240080ECA6 /* EXFrameReactAppManager.m */; };
@@ -690,6 +691,8 @@
 		B5E9FDEE1D833325006DB65C /* EXViewShot.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXViewShot.m; sourceTree = "<group>"; };
 		B5EF826C1F55B8F100FC7424 /* launch_background_image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = launch_background_image.png; sourceTree = "<group>"; };
 		B5EF826D1F55B8F100FC7424 /* launch_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = launch_icon.png; sourceTree = "<group>"; };
+		B5EF82751F5A1B7900FC7424 /* EXTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTest.h; sourceTree = "<group>"; };
+		B5EF82761F5A1B7900FC7424 /* EXTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTest.m; sourceTree = "<group>"; };
 		B5F12C911DAEDC980080ECA6 /* EXReactAppManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXReactAppManager.h; sourceTree = "<group>"; };
 		B5F12C921DAEDC980080ECA6 /* EXReactAppManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXReactAppManager.m; sourceTree = "<group>"; };
 		B5F12C971DAEDF960080ECA6 /* EXKernelReactAppManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelReactAppManager.h; sourceTree = "<group>"; };
@@ -1124,6 +1127,7 @@
 			children = (
 				B5AC39C41E95B01F00540AA7 /* DevSupport */,
 				B5678C5A1DB6D65B00380A6E /* Frame */,
+				B5EF82741F5A1B7900FC7424 /* Test */,
 				A1158D311D4C4AA400286352 /* EXAppLoadingManager.h */,
 				A1158D301D4C4AA400286352 /* EXAppLoadingManager.m */,
 				B56FACA01D4AB279009FC106 /* EXAppState.h */,
@@ -1489,6 +1493,15 @@
 			path = Supporting;
 			sourceTree = "<group>";
 		};
+		B5EF82741F5A1B7900FC7424 /* Test */ = {
+			isa = PBXGroup;
+			children = (
+				B5EF82751F5A1B7900FC7424 /* EXTest.h */,
+				B5EF82761F5A1B7900FC7424 /* EXTest.m */,
+			);
+			path = Test;
+			sourceTree = "<group>";
+		};
 		B5F12C901DAEDC980080ECA6 /* ReactAppManager */ = {
 			isa = PBXGroup;
 			children = (
@@ -1816,7 +1829,7 @@
 				"${PODS_ROOT}/GoogleAuthUtilities/Frameworks/frameworks/GoogleAuthUtilities.framework/Resources/GTMOAuth2ViewTouch.xib",
 				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Versions/A/Resources/GoogleMaps.bundle",
 				"${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle",
-				"$PODS_CONFIGURATION_BUILD_DIR/Stripe/Stripe.bundle",
+				$PODS_CONFIGURATION_BUILD_DIR/Stripe/Stripe.bundle,
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
@@ -2077,6 +2090,7 @@
 				7847A2C01EB9AF210088BF69 /* AIRMapCallout.m in Sources */,
 				7847A3A41EC0F1550088BF69 /* RNSVGViewBox.m in Sources */,
 				7847A2CF1EB9AF210088BF69 /* SMCalloutView.m in Sources */,
+				B5EF82771F5A1B7900FC7424 /* EXTest.m in Sources */,
 				B5DB047D1F39057900E91581 /* EXMagnetometerUncalibrated.m in Sources */,
 				B5AC39CF1E95B01F00540AA7 /* EXDevSettings.m in Sources */,
 				B52217D61F146658002241BA /* EXKernelServiceRegistry.m in Sources */,

@@ -3,11 +3,12 @@
 #import "ExpoKit.h"
 #import "EXRootViewController.h"
 
-#import <React/RCTTestRunner.h>
 #import <React/RCTAssert.h>
 #import <React/RCTUtils.h>
 
 #import <XCTest/XCTest.h>
+
+#define TEST_ENVIRONMENT 1
 
 @interface ExponentIntegrationTests : XCTestCase
 
@@ -30,7 +31,7 @@
   // see _runner runTest
   // spin on a run loop while status is pending, listen for completed event
   // assert on contents of result
-  NSDate *date = [NSDate dateWithTimeIntervalSinceNow:10];
+  NSDate *date = [NSDate dateWithTimeIntervalSinceNow:60];
   while (date.timeIntervalSinceNow > 0) {
     [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
     [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
