@@ -2,6 +2,7 @@
 
 #import "ExpoKit.h"
 #import "EXRootViewController.h"
+#import "EXTest.h"
 
 #import <React/RCTAssert.h>
 #import <React/RCTUtils.h>
@@ -13,6 +14,7 @@
 @interface ExponentIntegrationTests : XCTestCase
 
 @property (nonatomic, strong) EXRootViewController *rootViewController;
+@property (nonatomic, strong) NSDictionary *jsTestSuiteResult;
 
 @end
 
@@ -21,22 +23,31 @@
 - (void)setUp
 {
   [super setUp];
+
+  _jsTestSuiteResult = nil;
   _rootViewController = (EXRootViewController *)[ExpoKit sharedInstance].rootViewController;
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_onTestSuiteCompleted:) name:EXTestSuiteCompletedNotification object:nil];
 }
 
 - (void)testDoesTestSuiteAppPassAllJSTests
 {
   [_rootViewController applicationWillEnterForeground];
-  
-  // see _runner runTest
-  // spin on a run loop while status is pending, listen for completed event
-  // assert on contents of result
-  NSDate *date = [NSDate dateWithTimeIntervalSinceNow:60];
-  while (date.timeIntervalSinceNow > 0) {
+
+  // wait for JS
+  NSDate *dateToTimeOut = [NSDate dateWithTimeIntervalSinceNow:60];
+  while (dateToTimeOut.timeIntervalSinceNow > 0 && _jsTestSuiteResult == nil) {
     [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
     [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
   }
-  XCTAssert(YES, @"Dummy test didn't finish");
+  XCTAssert((_jsTestSuiteResult), @"Test suite timed out");
+  XCTAssert(([_jsTestSuiteResult[@"failed"] integerValue] == 0), @"Test suite failed: %@", _jsTestSuiteResult);
+}
+
+#pragma mark - internal
+
+- (void)_onTestSuiteCompleted:(NSNotification *)notif
+{
+  _jsTestSuiteResult = notif.userInfo;
 }
 
 @end

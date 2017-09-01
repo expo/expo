@@ -2,6 +2,8 @@
 
 #import <React/RCTBridgeModule.h>
 
+FOUNDATION_EXPORT NSNotificationName EXTestSuiteCompletedNotification;
+
 @interface EXTest : NSObject <RCTBridgeModule>
 
 @end
