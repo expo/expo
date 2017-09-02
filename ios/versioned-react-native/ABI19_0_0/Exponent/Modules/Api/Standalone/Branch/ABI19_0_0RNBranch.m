@@ -107,20 +107,23 @@ ABI19_0_0RCT_EXPORT_MODULE();
 #pragma mark - Object lifecycle
 
 - (instancetype)init {
-    self = [super init];
+    return [super init];
+}
 
-    if (self && [self.bridge.scopedModules.constants.appOwnership isEqualToString:@"standalone"]) {
-        // Added to work on Expo, should try to upstream.
-        if (!branchInstance) {
-            branchInstance = [Branch getInstance];
-        }
+- (void)setBridge:(ABI19_0_0RCTBridge *)bridge
+{
+  _bridge = bridge;
 
-        _universalObjectMap = [ABI19_0_0RNBranchAgingDictionary dictionaryWithTtl:3600.0];
+  if ([self.bridge.scopedModules.constants.appOwnership isEqualToString:@"standalone"]) {
+      // Added to work on Expo, should try to upstream.
+      if (!branchInstance) {
+          branchInstance = [Branch getInstance];
+      }
 
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onInitSessionFinished:) name:ABI19_0_0RNBranchLinkOpenedNotification object:nil];
-    }
+      _universalObjectMap = [ABI19_0_0RNBranchAgingDictionary dictionaryWithTtl:3600.0];
 
-    return self;
+      [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onInitSessionFinished:) name:ABI19_0_0RNBranchLinkOpenedNotification object:nil];
+  }
 }
 
 - (void) dealloc {
@@ -180,10 +183,10 @@ ABI19_0_0RCT_EXPORT_MODULE();
                                          userInfo:@{IdentFieldName : ident,
                                                     NSLocalizedDescriptionKey: errorMessage
                                                     }];
-        
+
         reject(@"ABI19_0_0RNBranch::Error::BUONotFound", errorMessage, error);
     }
-    
+
     return universalObject;
 }
 
