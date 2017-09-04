@@ -99,7 +99,7 @@ Distance to plane of sharpest focus. A value between 0 and 1: 0 - infinity focus
 
 - **ratio** (_string_)
 
-Android only. A string representing aspect ratio of the preview, eg. `4:3`, `16:9`, `1:1`. To check if a ratio is supported by the device use `getSupportedRatios`. Default: `4:3`.
+Android only. A string representing aspect ratio of the preview, eg. `4:3`, `16:9`, `1:1`. To check if a ratio is supported by the device use `getSupportedRatiosAsync`. Default: `4:3`.
 
 - **onCameraReady** (_function_)
 
