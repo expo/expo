@@ -68,7 +68,7 @@ public class SecureStoreModule extends ReactContextBaseJavaModule {
   }
 
   private String scopedKey(final String key) {
-    return key.trim().length() > 0 ? mExperienceId + key:null;
+    return key.trim().length() > 0 ? mExperienceId + key : null;
   }
 
   private void set(final String key, final String value, final ReadableMap options) {
