@@ -181,7 +181,7 @@ void EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceClassName)
 
 - (void)selectDevMenuItemWithKey:(NSString *)key onBridge:(id)bridge
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
   RCTDevSettings *devSettings = [self _moduleInstanceForBridge:bridge named:@"DevSettings"];
   if ([key isEqualToString:@"dev-reload"]) {
     [bridge reload];
@@ -213,7 +213,7 @@ void EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceClassName)
 
 - (void)showDevMenuForBridge:(id)bridge
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
   id devMenu = [self _moduleInstanceForBridge:bridge named:@"DevMenu"];
   // respondsToSelector: check is required because it's possible this bridge
   // was instantiated with a `disabledDevMenu` instance and the gesture preference was recently updated.
