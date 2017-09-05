@@ -169,7 +169,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 
 - (void)_checkForReload
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
   if (_needsReload) {
     _sourceSet = NO;
     _needsReload = NO;
@@ -224,7 +224,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
  */
 - (void)enforceDesiredDeviceOrientation
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
   UIInterfaceOrientationMask mask = [self supportedInterfaceOrientations];
   UIDeviceOrientation currentOrientation = [[UIDevice currentDevice] orientation];
   UIInterfaceOrientation newOrientation = UIInterfaceOrientationUnknown;
