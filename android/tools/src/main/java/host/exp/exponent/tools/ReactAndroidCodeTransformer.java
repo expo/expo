@@ -1,29 +1,27 @@
 package host.exp.exponent.tools;
 
-import com.github.javaparser.ASTHelper;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.ModifierSet;
 import com.github.javaparser.ast.body.Parameter;
-import com.github.javaparser.ast.body.VariableDeclaratorId;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.CatchClause;
 import com.github.javaparser.ast.stmt.EmptyStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.stmt.TryStmt;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.ReferenceType;
-import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.UnionType;
-import com.github.javaparser.ast.visitor.ModifierVisitorAdapter;
+import com.github.javaparser.ast.visitor.ModifierVisitor;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
@@ -32,12 +30,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Modifier;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 public class ReactAndroidCodeTransformer {
 
@@ -64,8 +64,8 @@ public class ReactAndroidCodeTransformer {
     return "{\n" +
         "  try {\n" +
         "    " + returnValue + "Class.forName(\"" + className + "\").getMethod(" + methodNameAndTypes + ").invoke(" + targetAndValues + ");\n" +
-        "  } catch (Exception exponentHandleErrorException) {\n" +
-        "    exponentHandleErrorException.printStackTrace();\n" + defaultReturnValue +
+        "  } catch (Exception expoHandleErrorException) {\n" +
+        "    expoHandleErrorException.printStackTrace();\n" + defaultReturnValue +
         "  }\n" +
         "}";
   }
@@ -75,53 +75,44 @@ public class ReactAndroidCodeTransformer {
   }
 
   private static BlockStmt getHandleErrorBlock(String throwable, String title, String details, String exceptionId, String isFatal) {
-    try {
-      return JavaParser.parseBlock(getHandleErrorBlockString(throwable, title, details, exceptionId, isFatal));
-    } catch (ParseException e) {
-      e.printStackTrace();
-      return null;
-    }
+    return JavaParser.parseBlock(getHandleErrorBlockString(throwable, title, details, exceptionId, isFatal));
   }
 
   private static CatchClause getCatchClause(String title, String details, String exceptionId, String isFatal) {
-    Type t = new ClassOrInterfaceType("RuntimeException");
-    VariableDeclaratorId v = new VariableDeclaratorId("exponentException");
-    BlockStmt catchBlock = getHandleErrorBlock("exponentException", title, details, exceptionId, isFatal);
+    ReferenceType t = JavaParser.parseClassOrInterfaceType("RuntimeException");
+    SimpleName v = new SimpleName("expoException");
+    BlockStmt catchBlock = getHandleErrorBlock("expoException", title, details, exceptionId, isFatal);
     return getCatchClause(Arrays.asList(t), v, catchBlock);
   }
 
   private static CatchClause getCatchClause() {
-    Type t = new ClassOrInterfaceType("Throwable");
-    VariableDeclaratorId v = new VariableDeclaratorId("exponentException");
+    ReferenceType t = JavaParser.parseClassOrInterfaceType("Throwable");
+    SimpleName v = new SimpleName("expoException");
     return getCatchClause(Arrays.asList(t), v, new BlockStmt());
   }
 
   private static CatchClause getCatchClause(
-      List<Type> exceptionTypes,
-      VariableDeclaratorId exceptionId,
+      List<ReferenceType> exceptionTypes,
+      SimpleName exceptionId,
       BlockStmt catchBlock) {
-    List<ReferenceType> referenceTypes = new ArrayList<ReferenceType>();
-    for (Type type : exceptionTypes) {
-      referenceTypes.add(new ReferenceType(type));
-    }
-    UnionType type = new UnionType(referenceTypes);
+    UnionType type = new UnionType(NodeList.nodeList(exceptionTypes));
     Parameter exceptionParam = new Parameter(type, exceptionId);
     return new CatchClause(exceptionParam, catchBlock);
   }
 
   private static TryStmt getTryCatch(Statement statement, String title, String details, String exceptionId, String isFatal) {
     TryStmt tryStatement = new TryStmt();
-    BlockStmt tryBlockStatement = new BlockStmt(Arrays.asList(statement));
+    BlockStmt tryBlockStatement = new BlockStmt(NodeList.nodeList(statement));
     tryStatement.setTryBlock(tryBlockStatement);
-    tryStatement.setCatchs(Arrays.asList(getCatchClause(title, details, exceptionId, isFatal)));
+    tryStatement.setCatchClauses(NodeList.nodeList(getCatchClause(title, details, exceptionId, isFatal)));
     return tryStatement;
   }
 
   private static TryStmt getTryCatch(Statement statement) {
     TryStmt tryStatement = new TryStmt();
-    BlockStmt tryBlockStatement = new BlockStmt(Arrays.asList(statement));
+    BlockStmt tryBlockStatement = new BlockStmt(NodeList.nodeList(statement));
     tryStatement.setTryBlock(tryBlockStatement);
-    tryStatement.setCatchs(Arrays.asList(getCatchClause()));
+    tryStatement.setCatchClauses(NodeList.nodeList(getCatchClause()));
     return tryStatement;
   }
 
@@ -137,15 +128,15 @@ public class ReactAndroidCodeTransformer {
       public Node visit(String methodName, MethodDeclaration n) {
         switch (methodName) {
           case "createBundleURL":
-            try {
-              BlockStmt stmt = JavaParser.parseBlock(getCallMethodReflectionBlock("host.exp.exponent.ReactNativeStaticHelpers", "\"getBundleUrlForActivityId\", int.class, String.class, String.class, boolean.class, boolean.class, boolean.class", "null, mSettings.exponentActivityId, host, jsModulePath, devMode, hmr, jsMinify", "return (String) ", "return null;"));
-              n.setBody(stmt);
-              n.setModifiers(n.getModifiers() & ~Modifier.STATIC);
-              return n;
-            } catch (ParseException e) {
-              e.printStackTrace();
-              return null;
-            }
+            BlockStmt stmt = JavaParser.parseBlock(getCallMethodReflectionBlock(
+                "host.exp.exponent.ReactNativeStaticHelpers",
+                "\"getBundleUrlForActivityId\", int.class, String.class, String.class, boolean.class, boolean.class, boolean.class",
+                "null, mSettings.exponentActivityId, host, jsModulePath, devMode, hmr, jsMinify",
+                "return (String) ",
+                "return null;"));
+            n.setBody(stmt);
+            n.getModifiers().remove(Modifier.STATIC);
+            return n;
         }
 
         return n;
@@ -176,7 +167,7 @@ public class ReactAndroidCodeTransformer {
 
       @Override
       public Node visit(String methodName, MethodDeclaration n) {
-        // In dev mode call the original methods. Otherwise open Exponent error screen
+        // In dev mode call the original methods. Otherwise open Expo error screen
         switch (methodName) {
           case "reportFatalException":
             return exceptionsManagerModuleHandleException(n, "true");
@@ -236,14 +227,9 @@ public class ReactAndroidCodeTransformer {
       public Node visit(String methodName, MethodDeclaration n) {
         switch (methodName) {
           case "isReloadOnJSChangeEnabled":
-            try {
-              BlockStmt blockStmt = JavaParser.parseBlock("{return mPreferences.getBoolean(PREFS_RELOAD_ON_JS_CHANGE_KEY, true);}");
-              n.setBody(blockStmt);
-              return n;
-            } catch (ParseException e) {
-              e.printStackTrace();
-              return null;
-            }
+            BlockStmt blockStmt = JavaParser.parseBlock("{return mPreferences.getBoolean(PREFS_RELOAD_ON_JS_CHANGE_KEY, true);}");
+            n.setBody(blockStmt);
+            return n;
         }
 
         return n;
@@ -261,10 +247,10 @@ public class ReactAndroidCodeTransformer {
     String projectRoot = new File(executionPath + "../../../../../").getCanonicalPath() + '/';
 
     // Get current SDK version
-    File exponentPackageJsonFile = new File(projectRoot + "package.json");
-    String exponentPackageJsonString = FileUtils.readFileToString(exponentPackageJsonFile, "UTF-8");
-    JSONObject exponentPackageJson = new JSONObject(exponentPackageJsonString);
-    String sdkVersion = exponentPackageJson.getJSONObject("exp").getString("sdkVersion");
+    File expoPackageJsonFile = new File(projectRoot + "package.json");
+    String expoPackageJsonString = FileUtils.readFileToString(expoPackageJsonFile, "UTF-8");
+    JSONObject expoPackageJson = new JSONObject(expoPackageJsonString);
+    String sdkVersion = expoPackageJson.getJSONObject("exp").getString("sdkVersion");
 
     // Don't want to mess up our original copy of ReactCommon and ReactAndroid if something goes wrong.
     File reactCommonDestRoot = new File(projectRoot + REACT_COMMON_DEST_ROOT);
@@ -326,16 +312,16 @@ public class ReactAndroidCodeTransformer {
 
     new ChangerVisitor(methodVisitor).visit(cu, null);
 
-    FileOutputStream out = new FileOutputStream(path);
-    if (methodVisitor != null) {
-      out.write(methodVisitor.modifySource(cu.toString()).getBytes());
-    } else {
-      out.write(cu.toString().getBytes());
+    try (OutputStream out = new FileOutputStream(path)) {
+      if (methodVisitor != null) {
+        out.write(methodVisitor.modifySource(cu.toString()).getBytes());
+      } else {
+        out.write(cu.toString().getBytes());
+      }
     }
-    out.close();
   }
 
-  private static class ChangerVisitor extends ModifierVisitorAdapter<Void> {
+  private static class ChangerVisitor extends ModifierVisitor<Void> {
 
     MethodVisitor mMethodVisitor;
 
@@ -348,9 +334,9 @@ public class ReactAndroidCodeTransformer {
       super.visit(n, arg);
 
       // Remove all final modifiers
-      n.setModifiers(n.getModifiers() & ~Modifier.FINAL);
+      n.getModifiers().remove(Modifier.FINAL);
 
-      String className = n.getName();
+      String className = n.getName().toString();
       switch (className) {
         case "ReactDatabaseSupplier":
           return ReactDatabaseSupplier(n);
@@ -366,7 +352,7 @@ public class ReactAndroidCodeTransformer {
         return null;
       }
 
-      String name = n.getName();
+      String name = n.getName().toString();
       switch (name) {
         case "NetworkingModule":
           return networkingModuleConstructor(n);
@@ -380,16 +366,20 @@ public class ReactAndroidCodeTransformer {
       super.visit(n, arg);
 
       // Remove all final modifiers from static fields
-      if ((n.getModifiers() & Modifier.STATIC) != 0) {
-        n.setModifiers(n.getModifiers() & ~Modifier.FINAL);
+      EnumSet<Modifier> modifiers = n.getModifiers();
+      if (modifiers.contains(Modifier.STATIC) && !n.toString().contains("String NAME")) {
+        modifiers.remove(Modifier.FINAL);
       }
 
-      n.setModifiers(n.getModifiers() & ~Modifier.PRIVATE & ~Modifier.PROTECTED | Modifier.PUBLIC);
+      modifiers.remove(Modifier.PRIVATE);
+      modifiers.remove(Modifier.PROTECTED);
+      modifiers.add(Modifier.PUBLIC);
 
       if (n.toString().contains("public static String DATABASE_NAME")) {
-        n.setModifiers(n.getModifiers() & ~Modifier.STATIC);
+        modifiers.remove(Modifier.STATIC);
       }
 
+      n.setModifiers(modifiers);
       return n;
     }
 
@@ -397,7 +387,7 @@ public class ReactAndroidCodeTransformer {
     public Node visit(final MethodDeclaration n, final Void arg) {
       super.visit(n, arg);
 
-      String methodName = n.getName();
+      String methodName = n.getName().toString();
       if (mMethodVisitor != null) {
         return mMethodVisitor.visit(methodName, n);
       }
@@ -413,9 +403,9 @@ public class ReactAndroidCodeTransformer {
   private static Node mapNode(final Node node, final StatementMapper mapper) {
     if (node instanceof BlockStmt) {
       return mapBlockStatement((BlockStmt) node, mapper);
-    } else if (node.getChildrenNodes().size() > 0) {
-      List<Node> childrenNodes = new ArrayList<>(node.getChildrenNodes());
-      for (Node child : childrenNodes) {
+    } else if (node.getChildNodes().size() > 0) {
+      List<Node> childNodes = new ArrayList<>(node.getChildNodes());
+      for (Node child : childNodes) {
         child.setParentNode(null);
         mapNode(child, mapper).setParentNode(node);
       }
@@ -433,26 +423,27 @@ public class ReactAndroidCodeTransformer {
   }
 
   private static BlockStmt mapBlockStatement(final BlockStmt body, final StatementMapper mapper) {
-    List<Statement> newStatements = new ArrayList<>();
-    for (Statement statement : body.getStmts()) {
+    NodeList<Statement> newStatements = new NodeList<>();
+    for (Statement statement : body.getStatements()) {
       newStatements.add((Statement) mapNode(statement, mapper));
     }
-    body.setStmts(newStatements);
+    body.setStatements(newStatements);
     return body;
   }
 
   private static Node mapBlockStatement(final MethodDeclaration n, final StatementMapper mapper) {
-    BlockStmt body = n.getBody();
-    body = mapBlockStatement(body, mapper);
-    n.setBody(body);
+    n.getBody().ifPresent(body -> {
+      body = mapBlockStatement(body, mapper);
+      n.setBody(body);
+    });
 
     return n;
   }
 
   private static Node mapBlockStatement(final ConstructorDeclaration n, final StatementMapper mapper) {
-    BlockStmt body = n.getBlock();
+    BlockStmt body = n.getBody();
     body = mapBlockStatement(body, mapper);
-    n.setBlock(body);
+    n.setBody(body);
 
     return n;
   }
@@ -465,7 +456,7 @@ public class ReactAndroidCodeTransformer {
           return statement;
         }
 
-        return getTryCatch(statement, "\"Must allow Exponent to draw over other apps in dev mode.\"", "null", "-1", "true");
+        return getTryCatch(statement, "\"Must allow Expo to draw over other apps in dev mode.\"", "null", "-1", "true");
       }
     });
   }
@@ -478,37 +469,30 @@ public class ReactAndroidCodeTransformer {
           return statement;
         }
 
-        return getTryCatch(statement, "exponentException.getMessage()", "null", "-1", "true");
+        return getTryCatch(statement, "expoException.getMessage()", "null", "-1", "true");
       }
     });
   }
 
   private static Node exceptionsManagerModuleHandleException(final MethodDeclaration n, final String isFatal) {
-    String source = "{\nif (mDevSupportManager.getDevSupportEnabled()) {\n" +
-        n.getBody().toString() + "\n" +
-        "} else {\n" +
-        getHandleErrorBlockString("null", "title", "details", "exceptionId", isFatal) + "\n" +
-        "}\n}\n";
+    String source =
+        "{\n" +
+            "if (mDevSupportManager.getDevSupportEnabled()) {\n" +
+                n.getBody().get().toString() + "\n" +
+            "} else {\n" +
+                getHandleErrorBlockString("null", "title", "details", "exceptionId", isFatal) + "\n" +
+            "}\n" +
+        "}\n";
 
-    try {
-      BlockStmt blockStmt = JavaParser.parseBlock(source);
-      n.setBody(blockStmt);
-      return n;
-    } catch (ParseException e) {
-      e.printStackTrace();
-      return null;
-    }
+    BlockStmt blockStmt = JavaParser.parseBlock(source);
+    n.setBody(blockStmt);
+    return n;
   }
 
   private static Node hasUpToDateJSBundleInCache(final MethodDeclaration n) {
-    try {
-      BlockStmt blockStmt = JavaParser.parseBlock("{\nreturn false;\n}");
-      n.setBody(blockStmt);
-      return n;
-    } catch (ParseException e) {
-      e.printStackTrace();
-      return null;
-    }
+    BlockStmt blockStmt = JavaParser.parseBlock("{\nreturn false;\n}");
+    n.setBody(blockStmt);
+    return n;
   }
 
 
@@ -526,60 +510,57 @@ public class ReactAndroidCodeTransformer {
   }
 
   private static Node ReactDatabaseSupplier(final ClassOrInterfaceDeclaration n) {
-    try {
-      // ReactDatabaseSupplier(Context context)
-      {
-        ConstructorDeclaration c = new ConstructorDeclaration(ModifierSet.PUBLIC, "ReactDatabaseSupplier");
+    // ReactDatabaseSupplier(Context context)
+    {
+      ConstructorDeclaration c = new ConstructorDeclaration(EnumSet.of(Modifier.PUBLIC), "ReactDatabaseSupplier");
 
-        List<Parameter> parameters = new ArrayList<>();
-        parameters.add(ASTHelper.createParameter(ASTHelper.createReferenceType("Context", 0), "context"));
-        c.setParameters(parameters);
+      NodeList<Parameter> parameters = NodeList.nodeList(
+          new Parameter(JavaParser.parseClassOrInterfaceType("Context"), "context"));
+      c.setParameters(parameters);
 
-        BlockStmt block = new BlockStmt();
-        List<Expression> superArgs = new ArrayList<>();
-        superArgs.add(JavaParser.parseExpression("context"));
-        superArgs.add(JavaParser.parseExpression("\"RKStorage\""));
-        superArgs.add(JavaParser.parseExpression("null"));
-        superArgs.add(JavaParser.parseExpression("DATABASE_VERSION"));
+      BlockStmt block = new BlockStmt();
+      NodeList<Expression> superArgs = NodeList.nodeList(
+          JavaParser.parseExpression("context"),
+          JavaParser.parseExpression("\"RKStorage\""),
+          JavaParser.parseExpression("null"),
+          JavaParser.parseExpression("DATABASE_VERSION"));
 
-        MethodCallExpr call = new MethodCallExpr(null, "super", superArgs);
-        ASTHelper.addStmt(block, call);
-        ASTHelper.addStmt(block, JavaParser.parseExpression("mContext = context;"));
-        ASTHelper.addStmt(block, JavaParser.parseExpression("DATABASE_NAME = \"RKStorage\";"));
+      MethodCallExpr call = new MethodCallExpr(null, "super", superArgs);
+      block.addStatement(call);
+      block.addStatement(JavaParser.parseStatement("mContext = context;"));
+      block.addStatement(JavaParser.parseStatement("DATABASE_NAME = \"RKStorage\";"));
 
-        c.setBlock(block);
+      c.setBody(block);
 
-        ASTHelper.addMember(n, c);
-      }
-
-      // ReactDatabaseSupplier(Context context, String databaseName)
-      {
-        ConstructorDeclaration c = new ConstructorDeclaration(ModifierSet.PUBLIC, "ReactDatabaseSupplier");
-
-        List<Parameter> parameters = new ArrayList<>();
-        parameters.add(ASTHelper.createParameter(ASTHelper.createReferenceType("Context", 0), "context"));
-        parameters.add(ASTHelper.createParameter(ASTHelper.createReferenceType("String", 0), "databaseName"));
-        c.setParameters(parameters);
-
-        BlockStmt block = new BlockStmt();
-        List<Expression> superArgs = new ArrayList<>();
-        superArgs.add(JavaParser.parseExpression("context"));
-        superArgs.add(JavaParser.parseExpression("databaseName"));
-        superArgs.add(JavaParser.parseExpression("null"));
-        superArgs.add(JavaParser.parseExpression("DATABASE_VERSION"));
-
-        MethodCallExpr call = new MethodCallExpr(null, "super", superArgs);
-        ASTHelper.addStmt(block, call);
-        ASTHelper.addStmt(block, JavaParser.parseExpression("mContext = context;"));
-        ASTHelper.addStmt(block, JavaParser.parseExpression("DATABASE_NAME = databaseName;"));
-
-        c.setBlock(block);
-
-        ASTHelper.addMember(n, c);
-      }
-    } catch (ParseException e) {
-      e.printStackTrace();
+      n.addMember(c);
     }
+
+    // ReactDatabaseSupplier(Context context, String databaseName)
+    {
+      ConstructorDeclaration c = new ConstructorDeclaration(EnumSet.of(Modifier.PUBLIC), "ReactDatabaseSupplier");
+
+      NodeList<Parameter> parameters = NodeList.nodeList(
+          new Parameter(JavaParser.parseClassOrInterfaceType("Context"), "context"),
+          new Parameter(JavaParser.parseClassOrInterfaceType("String"), "databaseName"));
+      c.setParameters(parameters);
+
+      BlockStmt block = new BlockStmt();
+      NodeList<Expression> superArgs = NodeList.nodeList(
+          JavaParser.parseExpression("context"),
+          JavaParser.parseExpression("databaseName"),
+          JavaParser.parseExpression("null"),
+          JavaParser.parseExpression("DATABASE_VERSION"));
+
+      MethodCallExpr call = new MethodCallExpr(null, "super", superArgs);
+      block.addStatement(call);
+      block.addStatement(JavaParser.parseStatement("mContext = context;"));
+      block.addStatement(JavaParser.parseStatement("DATABASE_NAME = databaseName;"));
+
+      c.setBody(block);
+
+      n.addMember(c);
+    }
+
     return n;
   }
 
@@ -599,25 +580,23 @@ public class ReactAndroidCodeTransformer {
   }
 
   private static Node wrapInTryCatch(final MethodDeclaration n) {
-    BlockStmt body = n.getBody();
-    Statement tryCatch = getTryCatch(body);
-    body = new BlockStmt();
-    List<Statement> statements = new ArrayList<>();
-    statements.add(tryCatch);
-    body.setStmts(statements);
-    n.setBody(body);
+    n.getBody().ifPresent(body -> {
+      Statement tryCatch = getTryCatch(body);
+      NodeList<Statement> statements = NodeList.nodeList(tryCatch);
+      body = new BlockStmt(statements);
+      n.setBody(body);
+    });
 
     return n;
   }
 
   private static Node wrapInTryCatchAndHandleError(final MethodDeclaration n) {
-    BlockStmt body = n.getBody();
-    Statement tryCatch = getTryCatch(body, "exponentException.getMessage()", "null", "-1", "true");
-    body = new BlockStmt();
-    List<Statement> statements = new ArrayList<>();
-    statements.add(tryCatch);
-    body.setStmts(statements);
-    n.setBody(body);
+    n.getBody().ifPresent(body -> {
+      Statement tryCatch = getTryCatch(body, "expoException.getMessage()", "null", "-1", "true");
+      NodeList<Statement> statements = NodeList.nodeList(tryCatch);
+      body = new BlockStmt(statements);
+      n.setBody(body);
+    });
 
     return n;
   }
