@@ -31,7 +31,7 @@ Pod::Spec.new do |s|
     ss.dependency 'Fabric', '~> 1.6'
     ss.dependency 'GoogleSignIn', '~> 3.0'
     ss.dependency 'GoogleMaps', '~> 2.2.0'
-    ss.dependency 'lottie-ios', '~> 1.5.1'
+    ss.dependency 'lottie-ios', '~> 2.1.3'
     ss.dependency 'GPUImage', '~> 0.1.7'
     ss.dependency 'Branch', '~> 0.14.12'
   end
