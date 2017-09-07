@@ -87,32 +87,6 @@ import expolib_v1.okhttp3.RequestBody;
  * {@code <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>}
  * {@code <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>}
  */
-/**
- * Interface for accessing and interacting with development features. Following features
- * are supported through this manager class:
- * 1) Displaying JS errors (aka RedBox)
- * 2) Displaying developers menu (Reload JS, Debug JS)
- * 3) Communication with developer server in order to download updated JS bundle
- * 4) Starting/stopping broadcast receiver for js reload signals
- * 5) Starting/stopping motion sensor listener that recognize shake gestures which in turn may
- *    trigger developers menu.
- * 6) Launching developers settings view
- *
- * This class automatically monitors the state of registered views and activities to which they are
- * bound to make sure that we don't display overlay or that we we don't listen for sensor events
- * when app is backgrounded.
- *
- * {@link ReactInstanceDevCommandsHandler} implementation is responsible for instantiating this
- * instance and for populating with an instance of {@link CatalystInstance} whenever instance
- * manager recreates it (through {@link #onNewCatalystContextCreated}). Also, instance manager is
- * responsible for enabling/disabling dev support in case when app is backgrounded or when all the
- * views has been detached from the instance (through {@link #setDevSupportEnabled} method).
- *
- * IMPORTANT: In order for developer support to work correctly it is required that the
- * manifest of your application contain the following entries:
- * {@code <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>}
- * {@code <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>}
- */
 public class DevSupportManagerImpl implements DevSupportManager, PackagerCommandListener, DevInternalSettings.Listener {
 
     public static int JAVA_ERROR_COOKIE = -1;
@@ -224,7 +198,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
         mApplicationContext = applicationContext;
         mJSAppBundleName = packagerPathForJSBundleName;
         mDevSettings = new DevInternalSettings(applicationContext, this);
-        mDevServerHelper = new DevServerHelper(mDevSettings);
+        mDevServerHelper = new DevServerHelper(mDevSettings, mApplicationContext.getPackageName());
         mBundleDownloadListener = devBundleDownloadListener;
         // Prepare shake gesture detector (will be started/stopped from #reload)
         mShakeDetector = new ShakeDetector(new ShakeDetector.ShakeListener() {
@@ -284,11 +258,11 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
             } else {
                 mDefaultNativeModuleCallExceptionHandler.handleException(e);
             }
-        } catch (RuntimeException exponentException) {
+        } catch (RuntimeException expoException) {
             try {
-                Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("handleReactNativeError", Throwable.class, String.class, Object.class, Integer.class, Boolean.class).invoke(null, exponentException, exponentException.getMessage(), null, -1, true);
-            } catch (Exception exponentHandleErrorException) {
-                exponentHandleErrorException.printStackTrace();
+                Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("handleReactNativeError", Throwable.class, String.class, Object.class, Integer.class, Boolean.class).invoke(null, expoException, expoException.getMessage(), null, -1, true);
+            } catch (Exception expoHandleErrorException) {
+                expoHandleErrorException.printStackTrace();
             }
         }
     }
@@ -299,11 +273,6 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
         showNewError(message, StackTraceHelper.convertJavaStackTrace(e), JAVA_ERROR_COOKIE, ErrorType.NATIVE);
     }
 
-    /**
-   * Add option item to dev settings dialog displayed by this manager. In the case user select given
-   * option from that dialog, the appropriate handler passed as {@param optionHandler} will be
-   * called.
-   */
     /**
    * Add option item to dev settings dialog displayed by this manager. In the case user select given
    * option from that dialog, the appropriate handler passed as {@param optionHandler} will be
@@ -477,11 +446,6 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
    * enabling/disabling dev support when a React view is attached/detached
    * or when application state changes (e.g. the application is backgrounded).
    */
-    /**
-   * {@link ReactInstanceDevCommandsHandler} is responsible for
-   * enabling/disabling dev support when a React view is attached/detached
-   * or when application state changes (e.g. the application is backgrounded).
-   */
     @Override
     public void setDevSupportEnabled(boolean isDevSupportEnabled) {
         mIsDevSupportEnabled = isDevSupportEnabled;
@@ -543,21 +507,11 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
    * instead of using JS file from assets. This may happen when app has not been updated since
    * the last time we fetched the bundle.
    */
-    /**
-   * @return {@code true} if {@link com.facebook.react.ReactInstanceManager} should use downloaded JS bundle file
-   * instead of using JS file from assets. This may happen when app has not been updated since
-   * the last time we fetched the bundle.
-   */
     @Override
     public boolean hasUpToDateJSBundleInCache() {
         return false;
     }
 
-    /**
-   * @return {@code true} if JS bundle {@param bundleAssetName} exists, in that case
-   * {@link ReactInstanceManager} should use that file from assets instead of downloading bundle
-   * from dev server
-   */
     /**
    * @return {@code true} if JS bundle {@param bundleAssetName} exists, in that case
    * {@link ReactInstanceManager} should use that file from assets instead of downloading bundle
@@ -572,6 +526,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
                 }
             }
         } catch (IOException e) {
+            // Ignore this error and just fallback to downloading JS from devserver
             FLog.e(ReactConstants.TAG, "Error while loading assets list");
         }
         return false;
@@ -703,6 +658,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
                     RequestHandler handler = (RequestHandler) clazz.getConstructor(long.class).newInstance(jsContext);
                     handler.onRequest(null, responder);
                 } catch (Exception e) {
+                // Module not present
                 }
             }
         });

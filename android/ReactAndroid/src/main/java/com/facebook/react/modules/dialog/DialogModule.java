@@ -34,7 +34,7 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
     public static String FRAGMENT_TAG = "com.facebook.catalyst.react.dialog.DialogModule";
 
     /* package */
-    final public static String NAME = "DialogManagerAndroid";
+    public static final String NAME = "DialogManagerAndroid";
 
     /* package */
     public static String ACTION_BUTTON_CLICKED = "buttonClicked";
@@ -77,12 +77,6 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
         return NAME;
     }
 
-    /**
-   * Helper to allow this module to work with both the standard FragmentManager
-   * and the Support FragmentManager (for apps that need to use it for legacy reasons).
-   * Since the two APIs don't share a common interface there's unfortunately some
-   * code duplication.
-   */
     /**
    * Helper to allow this module to work with both the standard FragmentManager
    * and the Support FragmentManager (for apps that need to use it for legacy reasons).
@@ -233,7 +227,7 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
                     FLog.w(DialogModule.class, "onHostResume called but no FragmentManager found");
                 }
             }
-        } catch (Throwable exponentException) {
+        } catch (Throwable expoException) {
         }
     }
 
@@ -274,13 +268,6 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
         fragmentManagerHelper.showNewAlert(mIsInForeground, args, actionCallback);
     }
 
-    /**
-   * Creates a new helper to work with either the FragmentManager or the legacy support
-   * FragmentManager transparently. Returns null if we're not attached to an Activity.
-   *
-   * DO NOT HOLD LONG-LIVED REFERENCES TO THE OBJECT RETURNED BY THIS METHOD, AS THIS WILL CAUSE
-   * MEMORY LEAKS.
-   */
     /**
    * Creates a new helper to work with either the FragmentManager or the legacy support
    * FragmentManager transparently. Returns null if we're not attached to an Activity.

@@ -31,7 +31,7 @@ import static com.facebook.react.modules.storage.ReactDatabaseSupplier.VALUE_COL
 @ReactModule(name = AsyncStorageModule.NAME)
 public class AsyncStorageModule extends ReactContextBaseJavaModule implements ModuleDataCleaner.Cleanable {
 
-    final public static String NAME = "AsyncSQLiteDBStorage";
+    public static final String NAME = "AsyncSQLiteDBStorage";
 
     // SQL variable number limit, defined by SQLITE_LIMIT_VARIABLE_NUMBER:
     // https://raw.githubusercontent.com/android/platform_external_sqlite/master/dist/sqlite3.c
@@ -70,10 +70,6 @@ public class AsyncStorageModule extends ReactContextBaseJavaModule implements Mo
         mReactDatabaseSupplier.clearAndCloseDatabase();
     }
 
-    /**
-   * Given an array of keys, this returns a map of (key, value) pairs for the keys found, and
-   * (key, null) for the keys that haven't been found.
-   */
     /**
    * Given an array of keys, this returns a map of (key, value) pairs for the keys found, and
    * (key, null) for the keys that haven't been found.
@@ -135,11 +131,6 @@ public class AsyncStorageModule extends ReactContextBaseJavaModule implements Mo
         }.execute();
     }
 
-    /**
-   * Inserts multiple (key, value) pairs. If one or more of the pairs cannot be inserted, this will
-   * return AsyncLocalStorageFailure, but all other pairs will have been inserted.
-   * The insertion will replace conflicting (key, value) pairs.
-   */
     /**
    * Inserts multiple (key, value) pairs. If one or more of the pairs cannot be inserted, this will
    * return AsyncLocalStorageFailure, but all other pairs will have been inserted.
@@ -208,9 +199,6 @@ public class AsyncStorageModule extends ReactContextBaseJavaModule implements Mo
     /**
    * Removes all rows of the keys given.
    */
-    /**
-   * Removes all rows of the keys given.
-   */
     @ReactMethod
     public void multiRemove(final ReadableArray keys, final Callback callback) {
         if (keys.size() == 0) {
@@ -255,10 +243,6 @@ public class AsyncStorageModule extends ReactContextBaseJavaModule implements Mo
         }.execute();
     }
 
-    /**
-   * Given an array of (key, value) pairs, this will merge the given values with the stored values
-   * of the given keys, if they exist.
-   */
     /**
    * Given an array of (key, value) pairs, this will merge the given values with the stored values
    * of the given keys, if they exist.
@@ -320,9 +304,6 @@ public class AsyncStorageModule extends ReactContextBaseJavaModule implements Mo
     /**
    * Clears the database.
    */
-    /**
-   * Clears the database.
-   */
     @ReactMethod
     public void clear(final Callback callback) {
         new GuardedAsyncTask<Void, Void>(getReactApplicationContext()) {
@@ -344,9 +325,6 @@ public class AsyncStorageModule extends ReactContextBaseJavaModule implements Mo
         }.execute();
     }
 
-    /**
-   * Returns an array with all keys from the database.
-   */
     /**
    * Returns an array with all keys from the database.
    */
@@ -381,9 +359,6 @@ public class AsyncStorageModule extends ReactContextBaseJavaModule implements Mo
         }.execute();
     }
 
-    /**
-   * Verify the database is open for reads and writes.
-   */
     /**
    * Verify the database is open for reads and writes.
    */

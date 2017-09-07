@@ -46,13 +46,10 @@ import expolib_v1.okio.ByteString;
 /**
  * Implements the XMLHttpRequest JavaScript interface.
  */
-/**
- * Implements the XMLHttpRequest JavaScript interface.
- */
 @ReactModule(name = NetworkingModule.NAME)
 public class NetworkingModule extends ReactContextBaseJavaModule {
 
-    final public static String NAME = "Networking";
+    public static final String NAME = "Networking";
 
     public static String CONTENT_ENCODING_HEADER_NAME = "content-encoding";
 
@@ -113,9 +110,6 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
     /**
    * @param context the ReactContext of the application
    */
-    /**
-   * @param context the ReactContext of the application
-   */
     public NetworkingModule(final ReactApplicationContext context) {
         this(context, null, OkHttpClientProvider.createClient(), null);
     }
@@ -125,20 +119,10 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
    * @param networkInterceptorCreators list of {@link NetworkInterceptorCreator}'s whose create()
    * methods would be called to attach the interceptors to the client.
    */
-    /**
-   * @param context the ReactContext of the application
-   * @param networkInterceptorCreators list of {@link NetworkInterceptorCreator}'s whose create()
-   * methods would be called to attach the interceptors to the client.
-   */
     public NetworkingModule(ReactApplicationContext context, List<NetworkInterceptorCreator> networkInterceptorCreators) {
         this(context, null, OkHttpClientProvider.createClient(), networkInterceptorCreators);
     }
 
-    /**
-   * @param context the ReactContext of the application
-   * @param defaultUserAgent the User-Agent header that will be set for all requests where the
-   * caller does not provide one explicitly
-   */
     /**
    * @param context the ReactContext of the application
    * @param defaultUserAgent the User-Agent header that will be set for all requests where the
@@ -319,7 +303,19 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
                     // Otherwise send the data in one big chunk, in the format that JS requested.
                     String responseString = "";
                     if (responseType.equals("text")) {
-                        responseString = responseBody.string();
+                        try {
+                            responseString = responseBody.string();
+                        } catch (IOException e) {
+                            if (response.request().method().equalsIgnoreCase("HEAD")) {
+                            // The request is an `HEAD` and the body is empty,
+                            // the OkHttp will produce an exception.
+                            // Ignore the exception to not invalidate the request in the
+                            // Javascript layer.
+                            // Introduced to fix issue #7463.
+                            } else {
+                                ResponseUtil.onRequestError(eventEmitter, requestId, e.getMessage(), e);
+                            }
+                        }
                     } else if (responseType.equals("base64")) {
                         responseString = Base64.encodeToString(responseBody.bytes(), Base64.NO_WRAP);
                     }
@@ -340,6 +336,7 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
             totalBytesRead = progressResponseBody.totalBytesRead();
             contentLength = progressResponseBody.contentLength();
         } catch (ClassCastException e) {
+        // Ignore
         }
         Reader reader = responseBody.charStream();
         try {
@@ -453,9 +450,6 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
         return multipartBuilder;
     }
 
-    /**
-   * Extracts the headers from the Array. If the format is invalid, this method will return null.
-   */
     /**
    * Extracts the headers from the Array. If the format is invalid, this method will return null.
    */

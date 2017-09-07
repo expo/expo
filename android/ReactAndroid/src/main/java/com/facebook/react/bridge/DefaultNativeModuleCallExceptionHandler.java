@@ -11,9 +11,6 @@ package com.facebook.react.bridge;
 /**
  * Crashy crashy exception handler.
  */
-/**
- * Crashy crashy exception handler.
- */
 public class DefaultNativeModuleCallExceptionHandler implements NativeModuleCallExceptionHandler {
 
     @Override
@@ -27,11 +24,11 @@ public class DefaultNativeModuleCallExceptionHandler implements NativeModuleCall
                     throw new RuntimeException(e);
                 }
             }
-        } catch (RuntimeException exponentException) {
+        } catch (RuntimeException expoException) {
             try {
-                Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("handleReactNativeError", Throwable.class, String.class, Object.class, Integer.class, Boolean.class).invoke(null, exponentException, exponentException.getMessage(), null, -1, true);
-            } catch (Exception exponentHandleErrorException) {
-                exponentHandleErrorException.printStackTrace();
+                Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("handleReactNativeError", Throwable.class, String.class, Object.class, Integer.class, Boolean.class).invoke(null, expoException, expoException.getMessage(), null, -1, true);
+            } catch (Exception expoHandleErrorException) {
+                expoHandleErrorException.printStackTrace();
             }
         }
     }

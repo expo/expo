@@ -21,11 +21,6 @@ import com.facebook.react.packagerconnection.PackagerConnectionSettings;
  * {@link com.facebook.react.devsupport}. For accessing some of the settings by external modules
  * this class implements an external interface {@link DeveloperSettings}.
  */
-/**
- * Helper class for accessing developers settings that should not be accessed outside of the package
- * {@link com.facebook.react.devsupport}. For accessing some of the settings by external modules
- * this class implements an external interface {@link DeveloperSettings}.
- */
 @VisibleForTesting
 public class DevInternalSettings implements DeveloperSettings, SharedPreferences.OnSharedPreferenceChangeListener {
 
