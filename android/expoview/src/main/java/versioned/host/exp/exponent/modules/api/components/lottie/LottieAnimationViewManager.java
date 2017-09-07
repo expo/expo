@@ -102,4 +102,9 @@ class LottieAnimationViewManager extends SimpleViewManager<LottieAnimationView> 
   public void setLoop(LottieAnimationView view, boolean loop) {
     view.loop(loop);
   }
+
+  @ReactProp(name = "imageAssetsFolder")
+  public void setImageAssetsFolder(LottieAnimationView view, String imageAssetsFolder) {
+    view.setImageAssetsFolder(imageAssetsFolder);
+  }
 }

@@ -148,11 +148,7 @@ class JSONReadableArray extends JSONArray {
         case Boolean:
           return getBoolean(index);
         case Number:
-          try {
-            return getInt(index);
-          } catch (Exception e) {
             return getDouble(index);
-          }
         case String:
           return getString(index);
         case Null:

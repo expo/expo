@@ -250,7 +250,7 @@ dependencies {
   compile 'com.segment.analytics.android:analytics:4.+'
   compile 'com.google.zxing:core:3.2.1'
   compile 'net.openid:appauth:0.4.1'
-  compile 'com.airbnb.android:lottie:2.0.0-beta3'
+  compile 'com.airbnb.android:lottie:2.2.0'
   compile 'io.branch.sdk.android:library:2.6.1'
   compile('io.nlopez.smartlocation:library:3.2.11') {
     transitive = false

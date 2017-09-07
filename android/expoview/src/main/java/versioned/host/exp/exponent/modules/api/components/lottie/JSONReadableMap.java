@@ -128,11 +128,7 @@ class JSONReadableMap extends JSONObject {
       case Boolean:
         return map.getBoolean(name);
       case Number:
-        try {
-          return map.getInt(name);
-        } catch (Exception e) {
           return map.getDouble(name);
-        }
       case String:
         return map.getString(name);
       case Null:
