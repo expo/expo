@@ -109,6 +109,9 @@ public class ExponentManifest {
   public static final String MANIFEST_LOADING_BACKGROUND_COLOR = "backgroundColor";
   public static final String MANIFEST_LOADING_HIDE_EXPONENT_TEXT_KEY = "hideExponentText";
 
+  // New Splash Screen
+  public static final String MANIFEST_LOADING_SPLASH_KEY = "splash";
+
   private static final int MAX_BITMAP_SIZE = 192;
   private static final String REDIRECT_SNIPPET = "exp.host/--/to-exp/";
   private static final String ANONYMOUS_EXPERIENCE_PREFIX = "@anonymous/";
