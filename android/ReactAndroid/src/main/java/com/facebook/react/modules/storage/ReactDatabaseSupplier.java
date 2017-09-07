@@ -20,10 +20,6 @@ import com.facebook.react.common.ReactConstants;
  * Database supplier of the database used by react native. This creates, opens and deletes the
  * database as necessary.
  */
-/**
- * Database supplier of the database used by react native. This creates, opens and deletes the
- * database as necessary.
- */
 public class ReactDatabaseSupplier extends SQLiteOpenHelper {
 
     // VisibleForTesting
@@ -113,9 +109,6 @@ public class ReactDatabaseSupplier extends SQLiteOpenHelper {
     /**
    * Create and/or open the database.
    */
-    /**
-   * Create and/or open the database.
-   */
     public synchronized SQLiteDatabase get() {
         ensureDatabase();
         return mDb;
@@ -127,10 +120,12 @@ public class ReactDatabaseSupplier extends SQLiteOpenHelper {
             closeDatabase();
             FLog.d(ReactConstants.TAG, "Cleaned " + DATABASE_NAME);
         } catch (Exception e) {
+            // Clearing the database has failed, delete it instead.
             if (deleteDatabase()) {
                 FLog.d(ReactConstants.TAG, "Deleted Local Database " + DATABASE_NAME);
                 return;
             }
+            // Everything failed, throw
             throw new RuntimeException("Clearing and deleting database " + DATABASE_NAME + " failed");
         }
     }
@@ -140,10 +135,6 @@ public class ReactDatabaseSupplier extends SQLiteOpenHelper {
         get().delete(TABLE_CATALYST, null, null);
     }
 
-    /**
-   * Sets the maximum size the database will grow to. The maximum size cannot
-   * be set below the current size.
-   */
     /**
    * Sets the maximum size the database will grow to. The maximum size cannot
    * be set below the current size.

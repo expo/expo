@@ -14,7 +14,7 @@ public class AndroidInfoHelpers {
 
     public static int DEBUG_SERVER_HOST_PORT = 8081;
 
-    public static int INSPECTOR_PROXY_PORT = 8081;
+    public static int INSPECTOR_PROXY_PORT = 8082;
 
     private static boolean isRunningOnGenymotion() {
         return Build.FINGERPRINT.contains("vbox");

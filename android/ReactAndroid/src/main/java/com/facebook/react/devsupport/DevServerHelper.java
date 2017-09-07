@@ -58,15 +58,6 @@ import expolib_v1.okio.Sink;
  *  - Android stock emulator with standard non-configurable local loopback alias: 10.0.2.2,
  *  - Genymotion emulator with default settings: 10.0.3.2
  */
-/**
- * Helper class for all things about the debug server running in the engineer's host machine.
- *
- * One can use 'debug_http_host' shared preferences key to provide a host name for the debug server.
- * If the setting is empty we support and detect two basic configuration that works well for android
- * emulators connectiong to debug server running on emulator's host:
- *  - Android stock emulator with standard non-configurable local loopback alias: 10.0.2.2,
- *  - Genymotion emulator with default settings: 10.0.3.2
- */
 public class DevServerHelper {
 
     public static String RELOAD_APP_EXTRA_JS_PROXY = "jsproxy";
@@ -89,7 +80,7 @@ public class DevServerHelper {
 
     public static String HEAP_CAPTURE_UPLOAD_URL_FORMAT = "http://%s/jscheapcaptureupload";
 
-    public static String INSPECTOR_DEVICE_URL_FORMAT = "http://%s/inspector/device?name=%s";
+    public static String INSPECTOR_DEVICE_URL_FORMAT = "http://%s/inspector/device?name=%s&app=%s";
 
     public static String SYMBOLICATE_URL_FORMAT = "http://%s/symbolicate";
 
@@ -133,6 +124,8 @@ public class DevServerHelper {
 
     public final BundleDownloader mBundleDownloader;
 
+    public final String mPackageName;
+
     public boolean mOnChangePollingEnabled;
 
     @Nullable
@@ -147,11 +140,12 @@ public class DevServerHelper {
     @Nullable
     public OnServerContentChangeListener mOnServerContentChangeListener;
 
-    public DevServerHelper(DevInternalSettings settings) {
+    public DevServerHelper(DevInternalSettings settings, String packageName) {
         mSettings = settings;
         mClient = new OkHttpClient.Builder().connectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS).readTimeout(0, TimeUnit.MILLISECONDS).writeTimeout(0, TimeUnit.MILLISECONDS).build();
         mBundleDownloader = new BundleDownloader(mClient);
         mRestartOnChangePollingHandler = new Handler();
+        mPackageName = packageName;
     }
 
     public void openPackagerConnection(final String clientId, final PackagerCommandListener commandListener) {
@@ -223,7 +217,7 @@ public class DevServerHelper {
 
             @Override
             protected Void doInBackground(Void... params) {
-                mInspectorPackagerConnection = new InspectorPackagerConnection(getInspectorDeviceUrl());
+                mInspectorPackagerConnection = new InspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
                 mInspectorPackagerConnection.connect();
                 return null;
             }
@@ -300,7 +294,6 @@ public class DevServerHelper {
     }
 
     /** Intent action for reloading the JS */
-    /** Intent action for reloading the JS */
     public static String getReloadAppAction(Context context) {
         return context.getPackageName() + RELOAD_APP_ACTION_SUFFIX;
     }
@@ -314,16 +307,13 @@ public class DevServerHelper {
     }
 
     public String getInspectorDeviceUrl() {
-        return String.format(Locale.US, INSPECTOR_DEVICE_URL_FORMAT, mSettings.getPackagerConnectionSettings().getInspectorServerHost(), AndroidInfoHelpers.getFriendlyDeviceName());
+        return String.format(Locale.US, INSPECTOR_DEVICE_URL_FORMAT, mSettings.getPackagerConnectionSettings().getInspectorServerHost(), AndroidInfoHelpers.getFriendlyDeviceName(), mPackageName);
     }
 
     public BundleDownloader getBundleDownloader() {
         return mBundleDownloader;
     }
 
-    /**
-   * @return the host to use when connecting to the bundle server from the host itself.
-   */
     /**
    * @return the host to use when connecting to the bundle server from the host itself.
    */
@@ -341,16 +331,10 @@ public class DevServerHelper {
     /**
    * @return whether we should enable dev mode when requesting JS bundles.
    */
-    /**
-   * @return whether we should enable dev mode when requesting JS bundles.
-   */
     private boolean getDevMode() {
         return mSettings.isJSDevModeEnabled();
     }
 
-    /**
-   * @return whether we should request minified JS bundles.
-   */
     /**
    * @return whether we should request minified JS bundles.
    */
@@ -361,9 +345,6 @@ public class DevServerHelper {
     /**
    * @return whether we should enabled HMR when requesting JS bundles.
    */
-    /**
-   * @return whether we should enabled HMR when requesting JS bundles.
-   */
     private boolean getHMR() {
         return mSettings.isHotModuleReplacementEnabled();
     }
@@ -371,8 +352,8 @@ public class DevServerHelper {
     private String createBundleURL(String host, String jsModulePath, boolean devMode, boolean hmr, boolean jsMinify) {
         try {
             return (String) Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("getBundleUrlForActivityId", int.class, String.class, String.class, boolean.class, boolean.class, boolean.class).invoke(null, mSettings.exponentActivityId, host, jsModulePath, devMode, hmr, jsMinify);
-        } catch (Exception exponentHandleErrorException) {
-            exponentHandleErrorException.printStackTrace();
+        } catch (Exception expoHandleErrorException) {
+            expoHandleErrorException.printStackTrace();
             return null;
         }
     }
@@ -535,12 +516,6 @@ public class DevServerHelper {
         return createBundleURL(getHostForJSProxy(), mainModuleName, getDevMode(), getHMR(), getJSMinifyMode());
     }
 
-    /**
-   * This is a debug-only utility to allow fetching a file via packager.
-   * It's made synchronous for simplicity, but should only be used if it's absolutely
-   * necessary.
-   * @return the file with the fetched content, or null if there's any failure.
-   */
     /**
    * This is a debug-only utility to allow fetching a file via packager.
    * It's made synchronous for simplicity, but should only be used if it's absolutely

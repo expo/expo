@@ -21,7 +21,7 @@ import com.facebook.react.util.JSStackTrace;
 @ReactModule(name = ExceptionsManagerModule.NAME)
 public class ExceptionsManagerModule extends BaseJavaModule {
 
-    final public static String NAME = "ExceptionsManager";
+    public static final String NAME = "ExceptionsManager";
 
     public final DevSupportManager mDevSupportManager;
 
@@ -44,8 +44,8 @@ public class ExceptionsManagerModule extends BaseJavaModule {
             {
                 try {
                     Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("handleReactNativeError", Throwable.class, String.class, Object.class, Integer.class, Boolean.class).invoke(null, null, title, details, exceptionId, true);
-                } catch (Exception exponentHandleErrorException) {
-                    exponentHandleErrorException.printStackTrace();
+                } catch (Exception expoHandleErrorException) {
+                    expoHandleErrorException.printStackTrace();
                 }
             }
         }
@@ -65,8 +65,8 @@ public class ExceptionsManagerModule extends BaseJavaModule {
             {
                 try {
                     Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("handleReactNativeError", Throwable.class, String.class, Object.class, Integer.class, Boolean.class).invoke(null, null, title, details, exceptionId, false);
-                } catch (Exception exponentHandleErrorException) {
-                    exponentHandleErrorException.printStackTrace();
+                } catch (Exception expoHandleErrorException) {
+                    expoHandleErrorException.printStackTrace();
                 }
             }
         }
@@ -92,8 +92,8 @@ public class ExceptionsManagerModule extends BaseJavaModule {
             {
                 try {
                     Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("handleReactNativeError", Throwable.class, String.class, Object.class, Integer.class, Boolean.class).invoke(null, null, title, details, exceptionId, false);
-                } catch (Exception exponentHandleErrorException) {
-                    exponentHandleErrorException.printStackTrace();
+                } catch (Exception expoHandleErrorException) {
+                    expoHandleErrorException.printStackTrace();
                 }
             }
         }

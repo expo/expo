@@ -59,28 +59,6 @@ import com.facebook.systrace.SystraceMessage;
  *
  * TODO(5483031): Only dispatch updates when shadow views have changed
  */
-/**
- * Delegate of {@link UIManagerModule} that owns the native view hierarchy and mapping between
- * native view names used in JS and corresponding instances of {@link ViewManager}. The
- * {@link UIManagerModule} communicates with this class by it's public interface methods:
- *  - {@link #updateProperties}
- *  - {@link #updateLayout}
- *  - {@link #createView}
- *  - {@link #manageChildren}
- * executing all the scheduled UI operations at the end of JS batch.
- *
- * NB: All native view management methods listed above must be called from the UI thread.
- *
- * The {@link ReactContext} instance that is passed to views that this manager creates differs
- * from the one that we pass as a constructor. Instead we wrap the provided instance of
- * {@link ReactContext} in an instance of {@link ThemedReactContext} that additionally provide
- * a correct theme based on the root view for a view tree that we attach newly created view to.
- * Therefore this view manager will create a copy of {@link ThemedReactContext} that wraps
- * the instance of {@link ReactContext} for each root view added to the manager (see
- * {@link #addRootView}).
- *
- * TODO(5483031): Only dispatch updates when shadow views have changed
- */
 @NotThreadSafe
 public class NativeViewHierarchyManager {
 
@@ -153,7 +131,7 @@ public class NativeViewHierarchyManager {
                     Log.e(TAG, "Unable to update properties for view tag " + tag, e);
                 }
             }
-        } catch (Throwable exponentException) {
+        } catch (Throwable expoException) {
         }
     }
 
@@ -281,13 +259,6 @@ public class NativeViewHierarchyManager {
    * a view which should be added at the specified index
    * @param tagsToDelete list of tags corresponding to views that should be removed
    */
-    /**
-   * @param tag react tag of the node we want to manage
-   * @param indicesToRemove ordered (asc) list of indicies at which view should be removed
-   * @param viewsToAdd ordered (asc based on mIndex property) list of tag-index pairs that represent
-   * a view which should be added at the specified index
-   * @param tagsToDelete list of tags corresponding to views that should be removed
-   */
     public synchronized void manageChildren(int tag, @Nullable int[] indicesToRemove, @Nullable ViewAtIndex[] viewsToAdd, @Nullable int[] tagsToDelete) {
         UiThreadUtil.assertOnUiThread();
         final ViewGroup viewToManage = (ViewGroup) mTagsToViews.get(tag);
@@ -367,10 +338,6 @@ public class NativeViewHierarchyManager {
    * Simplified version of constructManageChildrenErrorMessage that only deals with adding children
    * views
    */
-    /**
-   * Simplified version of constructManageChildrenErrorMessage that only deals with adding children
-   * views
-   */
     private static String constructSetChildrenErrorMessage(ViewGroup viewToManage, ViewGroupManager viewManager, ReadableArray childrenTags) {
         ViewAtIndex[] viewsToAdd = new ViewAtIndex[childrenTags.size()];
         for (int i = 0; i < childrenTags.size(); i++) {
@@ -379,9 +346,6 @@ public class NativeViewHierarchyManager {
         return constructManageChildrenErrorMessage(viewToManage, viewManager, null, viewsToAdd, null);
     }
 
-    /**
-   * Simplified version of manageChildren that only deals with adding children views
-   */
     /**
    * Simplified version of manageChildren that only deals with adding children views
    */
@@ -401,9 +365,6 @@ public class NativeViewHierarchyManager {
     /**
    * See {@link UIManagerModule#addRootView}.
    */
-    /**
-   * See {@link UIManagerModule#addRootView}.
-   */
     public synchronized void addRootView(int tag, SizeMonitoringFrameLayout view, ThemedReactContext themedContext) {
         addRootViewGroup(tag, view, themedContext);
     }
@@ -418,9 +379,6 @@ public class NativeViewHierarchyManager {
         view.setId(tag);
     }
 
-    /**
-   * Releases all references to given native View.
-   */
     /**
    * Releases all references to given native View.
    */
@@ -460,10 +418,6 @@ public class NativeViewHierarchyManager {
    * Returns true on success, false on failure. If successful, after calling, output buffer will be
    * {x, y, width, height}.
    */
-    /**
-   * Returns true on success, false on failure. If successful, after calling, output buffer will be
-   * {x, y, width, height}.
-   */
     public synchronized void measure(int tag, int[] outputBuffer) {
         UiThreadUtil.assertOnUiThread();
         View v = mTagsToViews.get(tag);
@@ -485,14 +439,6 @@ public class NativeViewHierarchyManager {
         outputBuffer[3] = v.getHeight();
     }
 
-    /**
-   * Returns the coordinates of a view relative to the window (not just the RootView
-   * which is what measure will return)
-   *
-   * @param tag - the tag for the view
-   * @param outputBuffer - output buffer that contains [x,y,width,height] of the view in coordinates
-   *  relative to the device window
-   */
     /**
    * Returns the coordinates of a view relative to the window (not just the RootView
    * which is what measure will return)
@@ -615,15 +561,6 @@ public class NativeViewHierarchyManager {
    * @param success will be called with the position of the selected item as the first argument, or
    *        no arguments if the menu is dismissed
    */
-    /**
-   * Show a {@link PopupMenu}.
-   *
-   * @param reactTag the tag of the anchor view (the PopupMenu is displayed next to this view); this
-   *        needs to be the tag of a native view (shadow views can not be anchors)
-   * @param items the menu items as an array of strings
-   * @param success will be called with the position of the selected item as the first argument, or
-   *        no arguments if the menu is dismissed
-   */
     public synchronized void showPopupMenu(int reactTag, ReadableArray items, Callback success) {
         UiThreadUtil.assertOnUiThread();
         View anchor = mTagsToViews.get(reactTag);
@@ -670,10 +607,6 @@ public class NativeViewHierarchyManager {
         }
     }
 
-    /**
-   * @return Themed React context for view with a given {@param reactTag} -  it gets the
-   * context directly from the view using {@link View#getContext}.
-   */
     /**
    * @return Themed React context for view with a given {@param reactTag} -  it gets the
    * context directly from the view using {@link View#getContext}.
