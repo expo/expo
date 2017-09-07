@@ -3,45 +3,44 @@
 'use strict';
 
 let isInUniverse = true;
-let exponentBlacklist;
+let expoBlacklist;
 let blacklist;
 try {
-  exponentBlacklist = require('../../react-native-lab/blacklist').exponentBlacklist;
+  expoBlacklist = require('../../react-native-lab/blacklist').expoBlacklist;
 } catch (e) {
   isInUniverse = false;
-  blacklist = require(`./node_modules/react-native/packager/blacklist`);
+  blacklist = require('./node_modules/metro-bundler/src/blacklist');
 }
 
 const path = require('path');
 
 module.exports = {
   getProjectRoots() {
-    return this._getRoots();
-  },
-
-  getAssetRoots() {
-    return [
-      path.join(__dirname, '..', 'ios', 'Exponent', 'Images.xcassets'),
-    ];
-  },
-
-  getBlacklistRE(platform) {
-    if (exponentBlacklist) {
-      return exponentBlacklist(platform, []);
-    } else {
-      return blacklist(platform, []);
-    }
-  },
-
-  _getRoots() {
-    let roots = [
-      path.join(__dirname),
-    ];
+    let roots = [path.join(__dirname)];
 
     if (isInUniverse) {
       roots.push(path.join(__dirname, '..', '..'));
     }
 
     return roots;
+  },
+
+  getBlacklistRE() {
+    if (expoBlacklist) {
+      return expoBlacklist([]);
+    } else {
+      return blacklist([]);
+    }
+  },
+
+  getTransformModulePath() {
+    if (isInUniverse) {
+      const LabConfig = require('../../react-native-lab/LabConfig');
+      return LabConfig.getLabTransformerPath();
+    } else {
+      return path.resolve(
+        './node_modules/react-native/packager/transformer.js'
+      );
+    }
   },
 };
