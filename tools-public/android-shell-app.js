@@ -141,6 +141,13 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
   let iconUrl = manifest.android && manifest.android.iconUrl
     ? manifest.android.iconUrl
     : manifest.iconUrl;
+  let backgroundImageUrl = manifest.loading
+                      && manifest.loading.splash
+                      && manifest.loading.splash.image
+                      && manifest.loading.splash.image.android
+                      && manifest.loading.splash.image.android.backgroundImageUrl
+                      ? manifest.loading.splash.image.android.backgroundImageUrl
+                      : null ;
   let scheme = manifest.scheme;
   let bundleUrl = manifest.bundleUrl;
   let notificationIconUrl = manifest.notification
@@ -489,6 +496,20 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
     await saveUrlToPathAsync(
       notificationIconUrl,
       `${shellPath}expoview/src/main/res/drawable-hdpi/shell_notification_icon.png`
+    );
+  }
+
+  // Splash Background
+  if (backgroundImageUrl) {
+    await spawnAsync(`find`, [
+      `${shellPath}app/src/main/res`,
+      '-iname',
+      'shell_launch_background_image.png',
+      '-delete',
+    ]);
+    await saveUrlToPathAsync(
+      backgroundImageUrl,
+      `${shellPath}expoview/src/main/res/drawable-xxxhdpi/shell_launch_background_image.png`
     );
   }
 

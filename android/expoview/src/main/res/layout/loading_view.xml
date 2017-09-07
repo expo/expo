@@ -14,10 +14,14 @@
 
   <ImageView
     android:id="@+id/background_image_view"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:src="@drawable/shell_launch_background_image"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_centerInParent="true"
+    android:adjustViewBounds="true"
     android:scaleType="centerCrop"
-    android:visibility="gone"/>
+    android:visibility="gone"
+   />
 
   <ImageView
     android:id="@+id/image_view"

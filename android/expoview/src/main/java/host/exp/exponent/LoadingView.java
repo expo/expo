@@ -136,7 +136,10 @@ public class LoadingView extends RelativeLayout {
       return;
     }
 
-    if (loadingInfo.has(ExponentManifest.MANIFEST_LOADING_ICON_URL)) {
+    if (this.isUsingNewSplashScreenStyle(loadingInfo)) {
+      // If using new splash style, don't show the icon at all
+      mImageView.setAlpha(0.0f);
+    } else if (loadingInfo.has(ExponentManifest.MANIFEST_LOADING_ICON_URL)) {
       mImageView.setVisibility(View.GONE);
       final String iconUrl = loadingInfo.optString(ExponentManifest.MANIFEST_LOADING_ICON_URL);
       mIsLoadingImageView = true;
@@ -175,8 +178,18 @@ public class LoadingView extends RelativeLayout {
       }
     }
 
-    // Should be 1080x1920
-    final String backgroundImageUrl = loadingInfo.optString(ExponentManifest.MANIFEST_LOADING_BACKGROUND_IMAGE_URL, null);
+    this.setBackgroundImage(loadingInfo);
+    this.setBackgroundColor(loadingInfo);
+  }
+
+  private void setBackgroundImage(final JSONObject loadingInfo) {
+    if (Constants.isShellApp() && this.isUsingNewSplashScreenStyle(loadingInfo)) {
+      // The src is already set to "@drawable/shell_launch_background_image" in `loading_view.xml`
+      revealView(mBackgroundImageView);
+      return;
+    }
+
+    final String backgroundImageUrl = this.backgroundImageURL(loadingInfo);
     if (backgroundImageUrl != null) {
       Picasso.with(getContext()).load(backgroundImageUrl).into(mBackgroundImageView, new Callback() {
         @Override
@@ -190,8 +203,27 @@ public class LoadingView extends RelativeLayout {
         }
       });
     }
+  }
 
-    String backgroundColor = loadingInfo.optString(ExponentManifest.MANIFEST_LOADING_BACKGROUND_COLOR, null);
+  private void setBackgroundColor(final JSONObject loadingInfo) {
+    String backgroundColor = null;
+    if (this.isUsingNewSplashScreenStyle(loadingInfo)) {
+      // Get the background color from `loading.splash.backgroundColor` if this fails, fall back to old way
+      if (loadingInfo.has("splash")) {
+        final JSONObject splash = loadingInfo.optJSONObject("splash");
+        if (splash != null && splash.has("backgroundColor")) {
+          final String backgroundColorSplash = splash.optString("backgroundColor", null);
+          if (backgroundColor != null) {
+              backgroundColor = backgroundColorSplash;
+          }
+        }
+      }
+    }
+
+    if (backgroundColor != null) {
+      backgroundColor = loadingInfo.optString(ExponentManifest.MANIFEST_LOADING_BACKGROUND_COLOR, null);
+    }
+
     if (backgroundColor != null && ColorParser.isValid(backgroundColor)) {
       ObjectAnimator colorFade = ObjectAnimator.ofObject(this, "backgroundColor", new ArgbEvaluator(), Color.argb(255, 255, 255, 255), Color.parseColor(backgroundColor));
       colorFade.setDuration(300);
@@ -199,6 +231,37 @@ public class LoadingView extends RelativeLayout {
     }
 
     mImageView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+  }
+
+  private String backgroundImageURL(final JSONObject loadingInfo) {
+
+    if (loadingInfo.has("splash")) {
+      final JSONObject splash = loadingInfo.optJSONObject("splash");
+      if (splash != null && splash.has("image")) {
+        final JSONObject image = splash.optJSONObject("image");
+        if (image != null && image.has("android")) {
+          final JSONObject android = image.optJSONObject("android");
+          if (android != null && android.has("backgroundImageUrl")) {
+            final String backgroundImageURL = android.optString("backgroundImageUrl");
+            // If we have the new splash.image.android.backgroundImageUrl, return it. Otherwise default to old splash image scheme.
+            if (backgroundImageURL != null) {
+              return backgroundImageURL;
+            }
+          }
+        }
+      }
+    }
+
+    // For non new splash style, return the "loading.backgroundImageURL" value
+    return loadingInfo.optString(ExponentManifest.MANIFEST_LOADING_BACKGROUND_IMAGE_URL, null);
+  }
+
+  private Boolean isUsingNewSplashScreenStyle(final JSONObject loadingInfo) {
+    if (loadingInfo.has("splash")) {
+      final JSONObject splash = loadingInfo.optJSONObject("splash");
+      return splash != null;
+    }
+    return false;
   }
 
   public void setShowIcon(final boolean showIcon) {
