@@ -79,6 +79,9 @@ android {
   lintOptions {
     abortOnError false
   }
+  packagingOptions {
+    pickFirst "**"
+  }
 }
 
 // Don't use modern jsc-android since it still has some critical bugs that
