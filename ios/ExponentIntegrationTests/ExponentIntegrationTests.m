@@ -9,8 +9,6 @@
 
 #import <XCTest/XCTest.h>
 
-#define TEST_ENVIRONMENT 1
-
 @interface ExponentIntegrationTests : XCTestCase
 
 @property (nonatomic, strong) EXRootViewController *rootViewController;

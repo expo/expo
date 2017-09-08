@@ -181,6 +181,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
   _isRemoteJSEnabled = (shellConfig[@"isRemoteJSEnabled"] == nil)
     ? YES
     : [shellConfig[@"isRemoteJSEnabled"] boolValue];
+  _testEnvironment = [EXTest testEnvironmentFromString:shellConfig[@"testEnvironment"]];
   // other shell config goes here
 }
 

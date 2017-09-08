@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
+#import "EXTest.h"
 
 FOUNDATION_EXPORT NSString * const kEXShellBundleResourceName;
 FOUNDATION_EXPORT NSString * const kEXShellManifestResourceName;
@@ -17,6 +18,7 @@ FOUNDATION_EXPORT NSString * const kEXShellManifestResourceName;
 @property (nonatomic, readonly) NSArray *allManifestUrls;
 @property (nonatomic, readonly) BOOL isManifestVerificationBypassed;
 @property (nonatomic, readonly) BOOL isRemoteJSEnabled;
+@property (nonatomic, readonly) EXTestEnvironment testEnvironment;
 
 /**
  *  True if the given string is not null and equals self.urlScheme
