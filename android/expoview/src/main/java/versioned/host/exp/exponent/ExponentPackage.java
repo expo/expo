@@ -24,6 +24,7 @@ import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 import host.exp.exponent.utils.ScopedContext;
+import versioned.host.exp.exponent.modules.api.BrightnessModule;
 import versioned.host.exp.exponent.modules.api.sensors.AccelerometerModule;
 import versioned.host.exp.exponent.modules.api.AmplitudeModule;
 import versioned.host.exp.exponent.modules.api.ConstantsModule;
@@ -173,6 +174,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new SpeechModule(reactContext));
         nativeModules.add(new SecureStoreModule(reactContext, scopedContext, experienceId));
         nativeModules.add(new GLObjectManagerModule(reactContext));
+        nativeModules.add(new BrightnessModule(reactContext));
       } catch (JSONException | UnsupportedEncodingException e) {
         EXL.e(TAG, e.toString());
       }
