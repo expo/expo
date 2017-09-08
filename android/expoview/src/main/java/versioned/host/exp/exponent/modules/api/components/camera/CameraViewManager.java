@@ -1,5 +1,10 @@
 package versioned.host.exp.exponent.modules.api.components.camera;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.os.Build;
 import android.support.annotation.Nullable;
 
 import com.facebook.react.bridge.Promise;
@@ -9,8 +14,14 @@ import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.google.android.cameraview.AspectRatio;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
+import host.exp.exponent.utils.ExpFileUtils;
 
 public class CameraViewManager extends ViewGroupManager<ExpoCameraView> {
 
@@ -98,10 +109,16 @@ public class CameraViewManager extends ViewGroupManager<ExpoCameraView> {
   }
 
   public void takePicture(Promise promise) {
-    if (mCameraView.isCameraOpened()) {
-      mCameraView.takePicture(promise);
+    if (!Build.FINGERPRINT.contains("generic")) {
+      if (mCameraView.isCameraOpened()) {
+        mCameraView.takePicture(promise);
+      } else {
+        promise.reject("E_CAMERA_UNAVAILABLE", "Camera is not running");
+      }
     } else {
-      promise.reject("E_CAMERA_UNAVAILABLE", "Camera is not running");
+      promise.resolve(ExpFileUtils.uriFromFile(
+        new File(mCameraView.writeImage(generateSimulatorPhoto()))
+      ).toString());
     }
   }
 
@@ -110,5 +127,22 @@ public class CameraViewManager extends ViewGroupManager<ExpoCameraView> {
       return mCameraView.getSupportedAspectRatios();
     }
     return null;
+  }
+
+  private Bitmap generateSimulatorPhoto() {
+    int width = mCameraView.getWidth();
+    int height = mCameraView.getHeight();
+    Bitmap fakePhoto = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+    Canvas canvas = new Canvas(fakePhoto);
+    Paint background = new Paint();
+    background.setColor(Color.BLACK);
+    canvas.drawRect(0, 0, width, height, background);
+    Paint textPaint = new Paint();
+    textPaint.setColor(Color.YELLOW);
+    textPaint.setTextSize(35);
+    Calendar calendar = Calendar.getInstance();
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.YY HH:mm:ss", Locale.getDefault());
+    canvas.drawText(simpleDateFormat.format(calendar.getTime()), width * 0.1f, height * 0.9f, textPaint);
+    return fakePhoto;
   }
 }

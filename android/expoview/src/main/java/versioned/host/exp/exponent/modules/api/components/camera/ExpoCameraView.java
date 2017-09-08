@@ -2,7 +2,9 @@ package versioned.host.exp.exponent.modules.api.components.camera;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
+import android.os.Build;
 import android.support.media.ExifInterface;
 import android.view.View;
 
@@ -87,6 +89,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
     if (null == preview) {
       return;
     }
+    this.setBackgroundColor(Color.BLACK);
     preview.layout(
         0,
         0,
@@ -114,7 +117,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
     return directory + File.separator + filename;
   }
 
-  private String writeImage(Bitmap image) {
+  public String writeImage(Bitmap image) {
     FileOutputStream out = null;
     String path = null;
     try {
@@ -142,7 +145,9 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
 
   @Override
   public void onHostResume() {
-    start();
+    if (!Build.FINGERPRINT.contains("generic")) {
+      start();
+    }
   }
 
   @Override

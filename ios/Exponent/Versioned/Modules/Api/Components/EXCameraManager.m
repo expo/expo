@@ -348,6 +348,10 @@ RCT_CUSTOM_VIEW_PROPERTY(whiteBalance, NSInteger, EXCamera)
 RCT_REMAP_METHOD(takePicture,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject) {
+  
+#if TARGET_IPHONE_SIMULATOR
+  resolve([self writeImage:[self generatePhoto]]);
+#else
   AVCaptureConnection *connection = [self.stillImageOutput connectionWithMediaType:AVMediaTypeVideo];
   [connection setVideoOrientation:(AVCaptureVideoOrientation) [self convertToAVCaptureVideoOrientation:[[UIApplication sharedApplication] statusBarOrientation]]];
   [self.stillImageOutput captureStillImageAsynchronouslyFromConnection:connection completionHandler: ^(CMSampleBufferRef imageSampleBuffer, NSError *error) {
@@ -366,18 +370,12 @@ RCT_REMAP_METHOD(takePicture,
       takenImage = [UIImage imageWithCGImage:cropCGImage scale:1 orientation:takenImage.imageOrientation];
       CGImageRelease(cropCGImage);
 
-      NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:@".jpg"];
-      NSString *directory = [self.bridge.scopedModules.fileSystem.cachesDirectory stringByAppendingPathComponent:@"Camera"];
-      [EXFileSystem ensureDirExistsWithPath:directory];
-      NSString *path = [directory stringByAppendingPathComponent:fileName];
-      [UIImageJPEGRepresentation(takenImage, 100) writeToFile:path atomically:YES];
-      NSURL *fileURL = [NSURL fileURLWithPath:path];
-      NSString *filePath = [fileURL absoluteString];
-      resolve(filePath);
+      resolve([self writeImage:takenImage]);
     } else {
       reject(@"E_IMAGE_CAPTURE_FAILED", @"Image could not be captured", error);
     }
   }];
+#endif
 }
 
 - (void)startSession
@@ -423,6 +421,7 @@ RCT_REMAP_METHOD(takePicture,
 - (void)stopSession
 {
 #if TARGET_IPHONE_SIMULATOR
+  self.camera = nil;
   return;
 #endif
   dispatch_async(self.sessionQueue, ^{
@@ -455,7 +454,7 @@ RCT_REMAP_METHOD(takePicture,
     [AVCaptureDeviceInput deviceInputWithDevice:captureDevice error:&error];
     
     if (error || captureDeviceInput == nil) {
-      RCTLogError(@"%s: %@", __func__, error);
+      RCTLog(@"%s: %@", __func__, error);
       return;
     }
     
@@ -512,6 +511,38 @@ RCT_REMAP_METHOD(takePicture,
   }
   
   return captureDevice;
+}
+
+- (NSString *)writeImage:(UIImage *)image
+{
+  NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:@".jpg"];
+  NSString *directory = [self.bridge.scopedModules.fileSystem.cachesDirectory stringByAppendingPathComponent:@"Camera"];
+  [EXFileSystem ensureDirExistsWithPath:directory];
+  NSString *path = [directory stringByAppendingPathComponent:fileName];
+  [UIImageJPEGRepresentation(image, 100) writeToFile:path atomically:YES];
+  NSURL *fileURL = [NSURL fileURLWithPath:path];
+  return [fileURL absoluteString];
+}
+
+- (UIImage *)generatePhoto
+{
+  CGRect outputRect = self.camera.bounds;
+  CGSize outputSize = outputRect.size;
+  UIImage *image;
+  UIGraphicsBeginImageContextWithOptions(outputSize, YES, 0);
+    UIColor *color = [UIColor blackColor];
+    [color setFill];
+    UIRectFill(outputRect);
+    NSDate *currentDate = [NSDate date];
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"dd.MM.YY HH:mm:ss"];
+    NSString *text = [dateFormatter stringFromDate:currentDate];
+    NSDictionary *attributes = [NSDictionary dictionaryWithObjects: @[[UIFont systemFontOfSize:18.0], [UIColor orangeColor]]
+                                                         forKeys: @[NSFontAttributeName, NSForegroundColorAttributeName]];
+    [text drawAtPoint:CGPointMake(outputSize.width * 0.1, outputSize.height * 0.9) withAttributes:attributes];
+    image = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+  return image;
 }
 
 - (AVCaptureVideoOrientation)convertToAVCaptureVideoOrientation:(UIInterfaceOrientation)orientation
