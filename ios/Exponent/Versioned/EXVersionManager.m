@@ -270,7 +270,7 @@ void EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceClassName)
  *    NSURL *initialUri
  *    @BOOL isDeveloper
  *    @BOOL isStandardDevMenuAllowed
- *    @BOOL isTestEnvironment
+ *    @EXTestEnvironment testEnvironment
  *    NSDictionary *services
  *
  * Kernel-only:
@@ -313,9 +313,12 @@ void EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceClassName)
     }
   }
   
-  if (params[@"isTestEnvironment"]) {
-    EXTest *testModule = [[EXTest alloc] init];
-    [extraModules addObject:testModule];
+  if (params[@"testEnvironment"]) {
+    EXTestEnvironment testEnvironment = (EXTestEnvironment)[params[@"testEnvironment"] unsignedIntegerValue];
+    if (testEnvironment != EXTestEnvironmentNone) {
+      EXTest *testModule = [[EXTest alloc] initWithEnvironment:testEnvironment];
+      [extraModules addObject:testModule];
+    }
   }
   
   if (params[@"kernel"]) {

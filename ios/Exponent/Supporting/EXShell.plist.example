@@ -10,5 +10,7 @@
 	<string>exp://exp.host/@community/pomodoro</string>
 	<key>isManifestVerificationBypassed</key>
 	<false/>
+        <key>testEnvironment</key>
+	<string>none</string>
 </dict>
 </plist>

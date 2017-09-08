@@ -5,9 +5,23 @@
 
 NSNotificationName EXTestSuiteCompletedNotification = @"EXTestSuiteCompletedNotification";
 
+@interface EXTest ()
+
+@property (nonatomic, assign) EXTestEnvironment environment;
+
+@end
+
 @implementation EXTest
 
 + (NSString *)moduleName { return @"ExponentTest"; }
+
+- (instancetype)initWithEnvironment:(EXTestEnvironment)environment
+{
+  if (self = [super init]) {
+    _environment = environment;
+  }
+  return self;
+}
 
 RCT_EXPORT_METHOD(completed: (NSString *)jsonStringifiedResult)
 {
@@ -25,10 +39,32 @@ RCT_EXPORT_METHOD(completed: (NSString *)jsonStringifiedResult)
                                                     userInfo:resultObj];
 }
 
-RCT_EXPORT_METHOD(action: (NSDictionary *)params)
+RCT_REMAP_METHOD(action,
+                 actionWithParams:(NSDictionary *)params
+                 withResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(__unused RCTPromiseRejectBlock)reject)
 {
-  // TODO
-  NSLog(@"action native");
+  // stub on iOS
+  resolve(@{});
+}
+
+RCT_REMAP_METHOD(shouldSkipTestsRequiringPermissionsAsync,
+                 shouldSkipTestsRequiringPermissionsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(__unused RCTPromiseRejectBlock)reject)
+{
+  resolve(@(_environment == EXTestEnvironmentCI));
+}
+
+#pragma mark - util
+
++ (EXTestEnvironment)testEnvironmentFromString:(NSString *)testEnvironmentString
+{
+  if ([testEnvironmentString isEqualToString:@"local"]) {
+    return EXTestEnvironmentLocal;
+  } else if ([testEnvironmentString isEqualToString:@"ci"]) {
+    return EXTestEnvironmentCI;
+  }
+  return EXTestEnvironmentNone;
 }
 
 @end
