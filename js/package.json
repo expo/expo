@@ -5,8 +5,7 @@
   "description": "The Expo app",
   "main": "exponent.js",
   "scripts": {
-    "test": "jest",
-    "postinstall": "find node_modules -type f -not -regex \".*react-native\\/.*\" -name \".babelrc\" -exec rm -rf {} \\;"
+    "test": "jest"
   },
   "author": "650 Industries",
   "license": "Copyright 650 Industries, Inc. All rights reserved.",
