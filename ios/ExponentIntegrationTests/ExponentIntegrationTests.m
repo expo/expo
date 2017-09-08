@@ -1,7 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "ExpoKit.h"
+#import "EXKernel.h"
+#import "EXKernelLinkingManager.h"
 #import "EXRootViewController.h"
+#import "EXShellManager.h"
 #import "EXTest.h"
 
 #import <React/RCTAssert.h>
@@ -24,7 +27,13 @@
 
   _jsTestSuiteResult = nil;
   _rootViewController = (EXRootViewController *)[ExpoKit sharedInstance].rootViewController;
-  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_onTestSuiteCompleted:) name:EXTestSuiteCompletedNotification object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(_onKernelJSLoaded)
+                                               name:kEXKernelJSIsLoadedNotification
+                                             object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(_onTestSuiteCompleted:)
+                                               name:EXTestSuiteCompletedNotification object:nil];
 }
 
 - (void)testDoesTestSuiteAppPassAllJSTests
@@ -42,6 +51,16 @@
 }
 
 #pragma mark - internal
+
+- (void)_onKernelJSLoaded
+{
+  // if test environment isn't configured for a shell app, override here
+  // since clearly we're running tests
+  if ([EXShellManager sharedInstance].testEnvironment == EXTestEnvironmentNone) {
+    [EXShellManager sharedInstance].testEnvironment = EXTestEnvironmentLocal;
+  }
+  [[EXKernel sharedInstance].serviceRegistry.linkingManager openUrl:@"exp://localhost:19002" isUniversalLink:NO];
+}
 
 - (void)_onTestSuiteCompleted:(NSNotification *)notif
 {
