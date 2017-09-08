@@ -47,6 +47,8 @@ RCT_REMAP_METHOD(getAsync,
     resolve([EXContactsRequester permissions]);
   } else if ([type isEqualToString:@"audioRecording"]) {
     resolve([EXAudioRecordingPermissionRequester permissions]);
+  } else if ([type isEqualToString:@"systemBrightness"]) {
+    resolve([EXPermissions alwaysGrantedPermissions]); // permission is implicit
   } else {
     reject(@"E_PERMISSION_UNKNOWN", [NSString stringWithFormat:@"Unrecognized permission: %@", type], nil);
   }

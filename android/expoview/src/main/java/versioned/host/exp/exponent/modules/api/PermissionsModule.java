@@ -3,8 +3,11 @@
 package versioned.host.exp.exponent.modules.api;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
+import android.provider.Settings;
 import android.support.v4.content.ContextCompat;
 
 import com.facebook.react.bridge.Arguments;
@@ -69,6 +72,10 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
           askForSimplePermission(Manifest.permission.RECORD_AUDIO, promise);
           break;
         }
+        case "systemBrightness": {
+          askForWriteSettingsPermission(promise);
+          break;
+        }
         default:
           promise.reject("E_PERMISSION_UNSUPPORTED", String.format("Cannot request permission: %s", type));
       }
@@ -92,6 +99,9 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
       }
       case "audioRecording": {
         return getSimplePermission(Manifest.permission.RECORD_AUDIO);
+      }
+      case "systemBrightness": {
+        return getWriteSettingsPermission();
       }
       default:
         return null;
@@ -135,10 +145,46 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
     return response;
   }
 
+  // checkSelfPermission does not return accurate status of WRITE_SETTINGS
+  private WritableMap getWriteSettingsPermission() {
+    WritableMap response = Arguments.createMap();
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      if (Settings.System.canWrite(getReactApplicationContext())) {
+        response.putString("status", "granted");
+      } else {
+        response.putString("status", "denied");
+      }
+    } else {
+      response.putString("status", "granted");
+    }
+    response.putString("expires", PERMISSION_EXPIRES_NEVER);
+
+    return response;
+  }
+
+  private void askForWriteSettingsPermission(final Promise promise) {
+    try {
+      // Launch systems dialog for write settings
+      Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS);
+      intent.setData(Uri.parse("package:" + getReactApplicationContext().getPackageName()));
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      getReactApplicationContext().startActivity(intent);
+
+      // Action returns nothing so we return unknown status
+      // https://stackoverflow.com/questions/44389632/proper-way-to-handle-action-manage-write-settings-activity
+      WritableMap response = Arguments.createMap();
+      response.putString("status", "unknown");
+      promise.resolve(response);
+    } catch (Exception e){
+      promise.reject("Error launching write settings activity:", e.getMessage());
+    }
+  }
+
   private WritableMap getSimplePermission(String permission) {
     WritableMap response = Arguments.createMap();
 
-    if (Build.VERSION.SDK_INT >= 23) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       int result = ContextCompat.checkSelfPermission(getReactApplicationContext(), permission);
       if (result == PackageManager.PERMISSION_GRANTED) {
         response.putString("status", "granted");
