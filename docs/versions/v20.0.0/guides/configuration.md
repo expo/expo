@@ -95,6 +95,7 @@ The following is a list of properties that are available for you under the `"exp
    - `exponentIconColor`
 
       If no icon is provided, we will show the Expo logo. You can choose between `white` and `blue`.
+    white, blue
 
    - `exponentIconGrayscale`
 
@@ -355,3 +356,4 @@ The following is a list of properties that are available for you under the `"exp
 
    - `postPublish`
 
+      

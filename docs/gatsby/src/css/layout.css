@@ -14,14 +14,39 @@
 .code-annotation {
   font-weight: 600;
   filter: saturate(150%);
+
+}
+
+.gatsby-highlight:hover .code-annotation {
+  animation: pulse 1.5s 1;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1.0;
+    transform: scale(1.0);
+  }
+  50% {
+    opacity: 0.2;
+    transform: scale(1.5);
+  }
+  100% {
+    opacity: 1.0;
+    transform: scale(1.0);
+  }
 }
 
 .code-annotation:hover {
   cursor: pointer;
   opacity: 0.6;
+  animation: none;
 }
 
 .code-annotation-contents {
   font-weight: normal;
   display: none;
+}
+
+.tippy-tooltip-content {
+  padding: 8px 8px 10px 8px;
 }

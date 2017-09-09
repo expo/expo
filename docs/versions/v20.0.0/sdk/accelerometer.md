@@ -38,15 +38,8 @@ Subscribe for updates to the accelerometer.
 
 ```javascript
 import React from 'react';
-import {
-  Accelerometer,
-} from 'expo';
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Accelerometer } from 'expo';
 
 export default class AccelerometerSensor extends React.Component {
   state = {
@@ -70,26 +63,31 @@ export default class AccelerometerSensor extends React.Component {
   }
 
   _slow = () => {
-    Accelerometer.setUpdateInterval(1000);
+    /* @info Request updates every 1000ms */Accelerometer.setUpdateInterval(1000); /* @end */
+
   }
 
   _fast = () => {
-    Accelerometer.setUpdateInterval(16);
+    /* @info Request updates every 16ms, which is approximately equal to every frame at 60 frames per second */Accelerometer.setUpdateInterval(16);/* @end */
+
   }
 
   _subscribe = () => {
-    this._subscription = Accelerometer.addListener((result) => {
-      this.setState({accelerometerData: result});
-    });
+    /* @info Subscribe to events and update the component state with the new data from the Accelerometer. We save the subscription object away so that we can remove it when the component is unmounted*/this._subscription = Accelerometer.addListener(accelerometerData => {
+      this.setState({ accelerometerData });
+    });/* @end */
+
   }
 
   _unsubscribe = () => {
-    this._subscription && this._subscription.remove();
+    /* @info Be sure to unsubscribe from events when the component is unmounted */this._subscription && this._subscription.remove();/* @end */
+
     this._subscription = null;
   }
 
   render() {
-    let { x, y, z } = this.state.accelerometerData;
+    /* @info A data point is provided for each of the x, y, and z axes */let { x, y, z } = this.state.accelerometerData;/* @end */
+
 
     return (
       <View style={styles.sensor}>
