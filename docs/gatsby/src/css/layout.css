@@ -18,7 +18,7 @@
 }
 
 .gatsby-highlight:hover .code-annotation {
-  animation: pulse 1.5s 1;
+  /* animation: pulse 1.5s 1; */
 }
 
 @keyframes pulse {

@@ -11,37 +11,25 @@ argument in this case is an object such as the following: `{OpenSans:
 require('./assets/fonts/OpenSans.ttf')}`. `@expo/vector-icons` provides a helpful shortcut for this object, which you see below as `FontAwesome.font`.
 
 ```javascript
-import Expo from 'expo';
+import { AppLoading, Asset, Font } from 'expo';
 
 function cacheImages(images) {
   return images.map(image => {
     if (typeof image === 'string') {
       return Image.prefetch(image);
     } else {
-      return Expo.Asset.fromModule(image).downloadAsync();
+      return Asset.fromModule(image).downloadAsync();
     }
   });
 }
 
 function cacheFonts(fonts) {
-  return fonts.map(font => Expo.Font.loadAsync(font));
+  return fonts.map(font => Font.loadAsync(font));
 }
 
 class AppContainer extends React.Component {
   state = {
-    appIsReady: false,
-  }
-
-  componentWillMount() {
-    this._loadAssetsAsync();
-  }
-
-  render() {
-    if (!this.state.appIsReady) {
-      return <Expo.AppLoading />;
-    }
-
-    return <MyApp />;
+    isReady: false,
   }
 
   async _loadAssetsAsync() {
@@ -58,10 +46,20 @@ class AppContainer extends React.Component {
       ...imageAssets,
       ...fontAssets,
     ]);
+  }
 
-    this.setState({appIsReady: true});
+  render() {
+    if (!this.state.appIsReady) {
+      return (
+        <AppLoading
+          startAsync={this._loadAssetsAsync}
+          onFinish={() => this.setState({ isReady: true })}
+          onError={console.warn}
+        />
+      );
+    }
+
+    return <MyApp />;
   }
 }
 ```
-
-See a full working example in [github/expo/new-project-template](https://github.com/expo/new-project-template/blob/master/App.js).
