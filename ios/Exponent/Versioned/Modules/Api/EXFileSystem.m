@@ -461,7 +461,7 @@ RCT_REMAP_METHOD(downloadResumablePauseAsync,
                                                                         onWrite:^(NSURLSessionDownloadTask *task, int64_t bytesWritten, int64_t totalBytesWritten, int64_t totalBytesExpectedToWrite) {
     if(bytesWritten > 0)
       [weakSelf sendEventWithName:EXDownloadProgressEventName
-                             body:@{@"UUID":uuid,
+                             body:@{@"uuid":uuid,
                                     @"data":@{
                                         @"totalBytesWritten": @(totalBytesWritten),
                                         @"totalBytesExpectedToWrite": @(totalBytesExpectedToWrite),
@@ -469,30 +469,27 @@ RCT_REMAP_METHOD(downloadResumablePauseAsync,
                                     }];
   } onDownload:^(NSURLSessionDownloadTask *task, NSURL *location) {
     NSURL *scopedLocation = [NSURL fileURLWithPath:scopedPath];
-    NSError *error;
-    [[NSFileManager defaultManager] moveItemAtURL:location
-                                            toURL:scopedLocation
-                                            error:&error];
-    if (error != nil) {
-        reject(@"E_UNABLE_TO_SAVE",
-               @"Unable to save file to local uri",
-               error);
-    } else {
-      NSData *data = [NSData dataWithContentsOfURL:scopedLocation];
-      NSMutableDictionary *result = [NSMutableDictionary dictionary];
-      result[@"uri"] = scopedLocation.absoluteString;
-      result[@"complete"] = @(YES);
-            if (options[@"md5"]) {
-        result[@"md5"] = [data md5String];
-      }
-      NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
-      result[@"status"] = @([httpResponse statusCode]);
-      result[@"headers"] = [httpResponse allHeaderFields];
-      
-      [self.downloadObjects removeObjectForKey:uuid];
-      
-      resolve(result);
+    NSData *locationData = [NSData dataWithContentsOfURL:location];
+    [locationData writeToFile:scopedLocation.absoluteString atomically:YES];
+    NSData *data = [NSData dataWithContentsOfURL:scopedLocation];
+    if (!data) {
+      reject(@"E_UNABLE_TO_SAVE",
+             nil,
+             RCTErrorWithMessage(@"Unable to save file to local URI"));
     }
+    NSMutableDictionary *result = [NSMutableDictionary dictionary];
+    result[@"uri"] = scopedLocation.absoluteString;
+    result[@"complete"] = @(YES);
+          if (options[@"md5"]) {
+      result[@"md5"] = [data md5String];
+    }
+    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
+    result[@"status"] = @([httpResponse statusCode]);
+    result[@"headers"] = [httpResponse allHeaderFields];
+    
+    [self.downloadObjects removeObjectForKey:uuid];
+      
+    resolve(result);
   } onError:^(NSError *error) {
     //"cancelled" description when paused.  Don't throw.
     if ([error.localizedDescription isEqualToString:@"cancelled"]) {
