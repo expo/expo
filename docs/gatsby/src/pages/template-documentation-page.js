@@ -22,7 +22,6 @@ function initializeEmbeds() {
 function initializeTooltips() {
   tippy('.code-annotation', {
     theme: 'light',
-    // followCursor: true,
     arrow: true,
     interactive: true,
   });

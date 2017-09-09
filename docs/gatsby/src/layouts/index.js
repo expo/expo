@@ -10,7 +10,6 @@ import MenuIcon from 'react-icons/lib/md/menu';
 import presets from 'glamor-media-query-presets';
 import Helmet from 'react-helmet';
 import ArrowIcon from 'react-icons/lib/md/keyboard-arrow-down';
-import tippy from 'tippy.js';
 
 import logoText from '../images/logo-text.svg';
 import SidebarContent from '../components/sidebar';
@@ -281,7 +280,6 @@ class Wrapper extends React.Component {
               display: `none`,
             },
           }}>
-
           <Link to={`/versions/${this.state.activeVersion}/index.html`}>
             <img
               src={logoText}
@@ -298,7 +296,6 @@ class Wrapper extends React.Component {
             onClick={() => this.setState({ sidebarOpen: true })}
             value="Menu"
           />
-
         </nav>
       </div>
     );

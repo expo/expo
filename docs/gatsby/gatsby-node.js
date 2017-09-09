@@ -57,9 +57,9 @@ exports.createPages = ({ boundActionCreators, graphql }) => {
             createPage({
               path: edge.node.fields.isIndex
                 ? replaceVersionInUrl(edge.node.fields.fileSlug, 'latest') +
-                    '/index.html'
+                  '/index.html'
                 : replaceVersionInUrl(edge.node.fields.fileSlug, 'latest') +
-                    '.html',
+                  '.html',
               component: docsPage,
               context: {
                 fileSlug: edge.node.fields.fileSlug,
@@ -99,6 +99,15 @@ exports.onCreateNode = ({ node, boundActionCreators, getNode }) => {
       node: node,
       name: 'fileSlug',
       value: fileSlug,
+    });
+  }
+};
+
+exports.modifyWebpackConfig = ({ config, stage }) => {
+  if (stage === 'build-html') {
+    config.loader('null', {
+      test: /tippy\.js/,
+      loader: 'null-loader',
     });
   }
 };
