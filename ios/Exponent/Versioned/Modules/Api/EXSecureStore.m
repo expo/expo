@@ -272,10 +272,14 @@ RCT_EXPORT_METHOD(getValueWithKeyAsync:(NSString *)key
     NSString *value = [self _getValueWithKey:scopedKey
                                  withOptions:options
                                        error:&error];
-    if (value) {
-      resolve(value);
+    if (error) {
+      if (error.code == errSecItemNotFound) {
+        resolve(nil);
+      } else {
+        reject(@"E_SECURESTORE_GETVALUEFAIL", nil, RCTErrorWithMessage([[self class] _messageForError:error]));
+      }
     } else {
-      reject(@"E_SECURESTORE_GETVALUEFAIL", nil, RCTErrorWithMessage([[self class] _messageForError:error]));
+      resolve(value);
     }
   }
 }
