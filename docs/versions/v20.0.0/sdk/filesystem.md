@@ -173,7 +173,7 @@ Create a `DownloadResumable` object which can start, pause, and resume a downloa
 
 -   **url (_string_)** -- The remote URI to download from.
 
--   **fileUri (_string_)** -- The local URI of the file to download to. If there is no file at this URI, a new one is created. If there is a file at this URI, its contents are replaced.
+-   **fileUri (_string_)** -- The local URI of the file to download to. If there is no file at this URI, a new one is created. If there is a file at this URI, you will need to manually delete the file first.
 
 -   **options (_object_)** -- A map of options:
 
@@ -283,6 +283,24 @@ downloadResumable.pauseAsync()
     console.error(error);
   });
 
+downloadResumable.resumeAsync()
+  .then(({ uri }) => {
+    console.log('Finished downloading to ', uri);
+  })
+  .catch(error => {
+    console.error(error);
+  });
+
+//To resume a download across app restarts, assuming the the DownloadResumable.savable() object was stored:
+const downloadSnapshotJson = await AsyncStorage.getItem('pausedDownload');
+const downloadSnapshot = JSON.parse(downloadJson);
+const downloadResumable = new FileSystem.DownloadResumable(
+  downloadSnapshot.url,
+  downloadSnapshot.fileUri,
+  downloadSnapshot.options, 
+  callback,
+  downloadSnapshot.resumeData
+);
 downloadResumable.resumeAsync()
   .then(({ uri }) => {
     console.log('Finished downloading to ', uri);

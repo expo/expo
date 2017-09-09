@@ -204,13 +204,21 @@ Returns an object with the following fields:
 
 ### `Expo.FileSystem.DownloadResumable.pauseAsync()`
 
-Pause the current download operation.  `resumeData` is added to the `DownloadResumable` object after a successful pause operation.
+Pause the current download operation.  `resumeData` is added to the `DownloadResumable` object after a successful pause operation.  Returns an object that can be saved with `AsyncStorage` for future retrieval (the same object that is returned from calling `Expo.FileSystem.DownloadResumable.savable()`.  Please see the example below.
 
 #### Returns 
 
 Returns an object with the following fields:
 
--   **resumeData (_string_)** -- A string the api uses to resume a paused download.
+-   **url (_string_)** -- The remote URI to download from.
+
+-   **fileUri (_string_)** -- The local URI of the file to download to. If there is no file at this URI, a new one is created. If there is a file at this URI, its contents are replaced.
+
+-   **options (_object_)** -- A map of options:
+
+    -   **md5 (_boolean_)** -- If `true`, include the MD5 hash of the file in the returned object. `false` by default. Provided for convenience since it is common to check the integrity of a file immediately after downloading.
+
+-   **resumeData (_string_)** -- The string which allows the API to resume a paused download.
 
 ### `Expo.FileSystem.DownloadResumable.resumeAsync()`
 
@@ -272,17 +280,35 @@ downloadResumable.downloadAsync()
   });
 
 downloadResumable.pauseAsync()
-  .then( () => {
+  .then( (downloadSnapshot) => {
     console.log('Paused download operation, saving for future retrieval');
     AsyncStorage.setItem(
       'pausedDownload',
-      JSON.stringify(downloadResumable.savable())
+      JSON.stringify(downloadSnaphot)
     );
   })
   .catch(error => {
     console.error(error);
   });
 
+downloadResumable.resumeAsync()
+  .then(({ uri }) => {
+    console.log('Finished downloading to ', uri);
+  })
+  .catch(error => {
+    console.error(error);
+  });
+
+//To resume a download across app restarts, assuming the the DownloadResumable.savable() object was stored:
+const downloadSnapshotJson = await AsyncStorage.getItem('pausedDownload');
+const downloadSnapshot = JSON.parse(downloadJson);
+const downloadResumable = new FileSystem.DownloadResumable(
+  downloadSnapshot.url,
+  downloadSnapshot.fileUri,
+  downloadSnapshot.options, 
+  callback,
+  downloadSnapshot.resumeData
+);
 downloadResumable.resumeAsync()
   .then(({ uri }) => {
     console.log('Finished downloading to ', uri);
