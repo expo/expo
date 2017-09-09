@@ -16,6 +16,7 @@
 
 @property (nonatomic, strong) EXRootViewController *rootViewController;
 @property (nonatomic, strong) NSDictionary *jsTestSuiteResult;
+@property (nonatomic, strong) NSString *testSuiteUrl;
 
 @end
 
@@ -24,6 +25,7 @@
 - (void)setUp
 {
   [super setUp];
+  [self _loadConfig];
 
   _jsTestSuiteResult = nil;
   _rootViewController = (EXRootViewController *)[ExpoKit sharedInstance].rootViewController;
@@ -38,6 +40,7 @@
 
 - (void)testDoesTestSuiteAppPassAllJSTests
 {
+  XCTAssert((_testSuiteUrl), @"No url configured for JS test-suite. Make sure EXTestEnvironment.plist exists and contains a url to test-suite.");
   [_rootViewController applicationWillEnterForeground];
 
   // wait for JS
@@ -52,6 +55,15 @@
 
 #pragma mark - internal
 
+- (void)_loadConfig
+{
+  NSString *configPath = [[NSBundle bundleForClass:[self class]] pathForResource:@"EXTestEnvironment" ofType:@"plist"];
+  NSDictionary *testConfig = (configPath) ? [NSDictionary dictionaryWithContentsOfFile:configPath] : [NSDictionary dictionary];
+  if (testConfig) {
+    _testSuiteUrl = testConfig[@"testSuiteUrl"];
+  }
+}
+
 - (void)_onKernelJSLoaded
 {
   // if test environment isn't configured for a shell app, override here
@@ -59,7 +71,7 @@
   if ([EXShellManager sharedInstance].testEnvironment == EXTestEnvironmentNone) {
     [EXShellManager sharedInstance].testEnvironment = EXTestEnvironmentLocal;
   }
-  [[EXKernel sharedInstance].serviceRegistry.linkingManager openUrl:@"exp://localhost:19002" isUniversalLink:NO];
+  [[EXKernel sharedInstance].serviceRegistry.linkingManager openUrl:_testSuiteUrl isUniversalLink:NO];
 }
 
 - (void)_onTestSuiteCompleted:(NSNotification *)notif
