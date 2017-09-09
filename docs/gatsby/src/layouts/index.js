@@ -10,6 +10,7 @@ import MenuIcon from 'react-icons/lib/md/menu';
 import presets from 'glamor-media-query-presets';
 import Helmet from 'react-helmet';
 import ArrowIcon from 'react-icons/lib/md/keyboard-arrow-down';
+import tippy from 'tippy.js';
 
 import logoText from '../images/logo-text.svg';
 import SidebarContent from '../components/sidebar';

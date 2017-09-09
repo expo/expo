@@ -10,3 +10,18 @@
   text-align: center;
   width: 100%;
 }
+
+.code-annotation {
+  font-weight: 600;
+  filter: saturate(150%);
+}
+
+.code-annotation:hover {
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.code-annotation-contents {
+  font-weight: normal;
+  display: none;
+}

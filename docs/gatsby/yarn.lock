@@ -3222,6 +3222,19 @@ gatsby-plugin-sharp@1.6.1, gatsby-plugin-sharp@^1.6.1:
     progress "^1.1.8"
     sharp "^0.17.3"
 
+gatsby-remark-annotate-codeblock@1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/gatsby-remark-annotate-codeblock/-/gatsby-remark-annotate-codeblock-1.7.0.tgz#8ed0bd167bc3c66061f8d4785212d0b22d831509"
+  dependencies:
+    babel-plugin-lodash "^3.2.11"
+    babel-plugin-transform-flow-strip-types "^6.22.0"
+    babel-preset-es2015 "^6.22.0"
+    babel-preset-react "^6.23.0"
+    babel-preset-react-hmre "^1.1.1"
+    babel-preset-stage-0 "^6.22.0"
+    react "^15.4.2"
+    unist-util-visit "^1.1.1"
+
 gatsby-remark-autolink-headers@1.4.3:
   version "1.4.3"
   resolved "https://registry.yarnpkg.com/gatsby-remark-autolink-headers/-/gatsby-remark-autolink-headers-1.4.3.tgz#a90e0283db55450bad122544033ff819ce4434d0"
@@ -6111,6 +6124,10 @@ pngquant-bin@^3.0.0:
     bin-wrapper "^3.0.0"
     logalot "^2.0.0"
 
+popper.js@^1.11.1:
+  version "1.12.5"
+  resolved "https://registry.yarnpkg.com/popper.js/-/popper.js-1.12.5.tgz#229e4dea01629e1f1a1e26991ffade5024220fa6"
+
 postcss-apply@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/postcss-apply/-/postcss-apply-0.3.0.tgz#a2f37c5bdfa881e4c15f4f245ec0cd96dd2e70d5"
@@ -8300,6 +8317,12 @@ tiny-emitter@^2.0.0:
 tinytim@0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/tinytim/-/tinytim-0.1.1.tgz#c968a1e5559ad9553224ef7627bab34e3caef8a8"
+
+tippy.js@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/tippy.js/-/tippy.js-1.2.0.tgz#af0bbf6c4746c7e2a2688ea02826b5517f860f11"
+  dependencies:
+    popper.js "^1.11.1"
 
 tmp@^0.0.31:
   version "0.0.31"

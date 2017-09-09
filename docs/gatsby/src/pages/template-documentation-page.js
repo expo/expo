@@ -2,6 +2,7 @@ import React from 'react';
 import Helmet from 'react-helmet';
 import Link from 'gatsby-link';
 import get from 'lodash/get';
+import tippy from 'tippy.js';
 
 import { rhythm } from '../utils/typography';
 import { getVersionFromUrl } from '../utils/url';
@@ -18,13 +19,24 @@ function initializeEmbeds() {
   }
 }
 
+function initializeTooltips() {
+  tippy('.code-annotation', {
+    theme: 'light',
+    // followCursor: true,
+    arrow: true,
+    interactive: true,
+  });
+}
+
 class DocsPage extends React.Component {
   componentDidMount() {
     initializeEmbeds();
+    initializeTooltips();
   }
 
   componentDidUpdate() {
     initializeEmbeds();
+    initializeTooltips();
   }
 
   render() {
@@ -57,7 +69,9 @@ class DocsPage extends React.Component {
           ]}
           link={link}
         />
-        <h1>{post.frontmatter.title}</h1>
+        <h1>
+          {post.frontmatter.title}
+        </h1>
         <div dangerouslySetInnerHTML={{ __html: post.html }} />
         <hr />
         <div
@@ -65,8 +79,8 @@ class DocsPage extends React.Component {
             textAlign: `center`,
             marginBottom: rhythm(1 / 2),
           }}>
-          Still have questions?
-          {' '}<a href="https://forums.expo.io/">Ask on our forums!</a>
+          Still have questions?{' '}
+          <a href="https://forums.expo.io/">Ask on our forums!</a>
           <div>
             <a
               css={{
@@ -91,8 +105,8 @@ class DocsPage extends React.Component {
 export default DocsPage;
 
 export const pageQuery = graphql`
-  query TemplatePage ($fileSlug: String!) {
-    markdownRemark(fields: { fileSlug: {eq: $fileSlug} }) {
+  query TemplatePage($fileSlug: String!) {
+    markdownRemark(fields: { fileSlug: { eq: $fileSlug } }) {
       html
       excerpt
       frontmatter {

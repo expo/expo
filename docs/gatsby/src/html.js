@@ -58,6 +58,11 @@ class Html extends Component {
           />
           <link rel="icon" type="image/png" href={favicon} sizes="32x32" />
 
+          <link
+            rel="stylesheet"
+            href="https://unpkg.com/tippy.js@1.2.0/dist/tippy.css"
+          />
+
           {this.props.headComponents}
           <TypographyStyle typography={typography} />
           {css}
