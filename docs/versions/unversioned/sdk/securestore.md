@@ -26,13 +26,13 @@ Store a key/value pair.
       **NOTE** If the item is set with the `keychainService` option, it will be required to later fetch the value.
 
     -   **keychainAccessible (_enum_)** -- iOS ONLY: The access level of the stored value, equivalent to `kSecAttrAccessible`.  The available options are:
-        - `AFTER_FIRST_UNLOCK` : The data in the keychain item cannot be accessed after a restart until the device has been unlocked once by the user.
-        - `AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY` : The data in the keychain item cannot be accessed after a restart until the device has been unlocked once by the user.
-        - `ALWAYS` : The data in the keychain item can always be accessed regardless of whether the device is locked.
-        - `ALWAYS_THIS_DEVICE_ONLY` : The data in the keychain item can always be accessed regardless of whether the device is locked.
-        - `WHEN_PASSCODE_SET_THIS_DEVICE_ONLY` : The data in the keychain can only be accessed when the device is unlocked. Only available if a passcode is set on the device.
-        - `WHEN_UNLOCKED` : The data in the keychain item can be accessed only while the device is unlocked by the user.
-        - `WHEN_UNLOCKED_THIS_DEVICE_ONLY` : The data in the keychain item can be accessed only while the device is unlocked by the user.
+        - `Expo.SecureStore.AFTER_FIRST_UNLOCK` : The data in the keychain item cannot be accessed after a restart until the device has been unlocked once by the user.
+        - `Expo.SecureStore.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY` : The data in the keychain item cannot be accessed after a restart until the device has been unlocked once by the user.
+        - `Expo.SecureStore.ALWAYS` : The data in the keychain item can always be accessed regardless of whether the device is locked.
+        - `Expo.SecureStore.ALWAYS_THIS_DEVICE_ONLY` : The data in the keychain item can always be accessed regardless of whether the device is locked.
+        - `Expo.SecureStore.WHEN_PASSCODE_SET_THIS_DEVICE_ONLY` : The data in the keychain can only be accessed when the device is unlocked. Only available if a passcode is set on the device.
+        - `Expo.SecureStore.WHEN_UNLOCKED` : The data in the keychain item can be accessed only while the device is unlocked by the user.
+        - `Expo.SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY` : The data in the keychain item can be accessed only while the device is unlocked by the user.
 
 #### Returns
 
