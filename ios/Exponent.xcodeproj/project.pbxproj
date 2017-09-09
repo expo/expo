@@ -176,6 +176,7 @@
 		B58FFAAC1F1016B700A51363 /* EXGoogleAuthManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B58FFAAB1F1016B700A51363 /* EXGoogleAuthManager.m */; };
 		B592FFEF1E9D489100437664 /* EXStatusBarManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B592FFEE1E9D489100437664 /* EXStatusBarManager.m */; };
 		B59981C11F153DCD00F6FF81 /* EXKernelModuleManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B59981C01F153DCD00F6FF81 /* EXKernelModuleManager.m */; };
+		B59B59491F6369480083850D /* EXTestEnvironment.plist in Resources */ = {isa = PBXBuildFile; fileRef = B59B59481F6369480083850D /* EXTestEnvironment.plist */; };
 		B5A358621C7E6C4300D1BE67 /* EXAnalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A358611C7E6C4300D1BE67 /* EXAnalytics.m */; };
 		B5A8752E1E70E57F006DDECA /* EXAdSettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A875211E70E57F006DDECA /* EXAdSettingsManager.m */; };
 		B5A8752F1E70E57F006DDECA /* EXBannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A875231E70E57F006DDECA /* EXBannerView.m */; };
@@ -595,6 +596,7 @@
 		B592FFEE1E9D489100437664 /* EXStatusBarManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXStatusBarManager.m; sourceTree = "<group>"; };
 		B59981BF1F153DCD00F6FF81 /* EXKernelModuleManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelModuleManager.h; sourceTree = "<group>"; };
 		B59981C01F153DCD00F6FF81 /* EXKernelModuleManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelModuleManager.m; sourceTree = "<group>"; };
+		B59B59481F6369480083850D /* EXTestEnvironment.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = EXTestEnvironment.plist; sourceTree = "<group>"; };
 		B5A358601C7E6C4300D1BE67 /* EXAnalytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAnalytics.h; sourceTree = "<group>"; };
 		B5A358611C7E6C4300D1BE67 /* EXAnalytics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAnalytics.m; sourceTree = "<group>"; };
 		B5A875201E70E57F006DDECA /* EXAdSettingsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAdSettingsManager.h; sourceTree = "<group>"; };
@@ -1159,6 +1161,7 @@
 			isa = PBXGroup;
 			children = (
 				B51333421CE649FE00E9FC9E /* ExponentIntegrationTests.m */,
+				B59B59481F6369480083850D /* EXTestEnvironment.plist */,
 				B51333441CE649FE00E9FC9E /* Info.plist */,
 			);
 			path = ExponentIntegrationTests;
@@ -1682,6 +1685,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B59B59491F6369480083850D /* EXTestEnvironment.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
