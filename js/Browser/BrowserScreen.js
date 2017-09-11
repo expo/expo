@@ -230,10 +230,8 @@ class BrowserScreen extends React.Component {
     }
 
     // If no background color found in new `splash` style, fall back to `loading.backgroundColor`
-    if (!loadingBackgroundColor) {
-      if (manifest && manifest.getIn(['loading', 'backgroundColor'])) {
-        return manifest.getIn(['loading', 'backgroundColor']);
-      }
+    if (manifest && manifest.getIn(['loading', 'backgroundColor'])) {
+      return manifest.getIn(['loading', 'backgroundColor']);
     }
 
     return 'white';
