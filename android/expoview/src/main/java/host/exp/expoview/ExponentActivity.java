@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.facebook.react.ReactPackage;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.soloader.SoLoader;
 
 import org.json.JSONArray;
@@ -18,6 +19,7 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
@@ -27,6 +29,7 @@ import host.exp.exponent.RNObject;
 import host.exp.exponent.ReactNativeStaticHelpers;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.di.NativeModuleDepsProvider;
+import host.exp.exponent.experience.DevBundleDownloadProgressListener;
 import host.exp.exponent.experience.ReactNativeActivity;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.ExponentUrls;
@@ -48,6 +51,18 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
   ExponentManifest mExponentManifest;
 
   private String mIntentUri = null;
+
+  private DevBundleDownloadProgressListener mDevBundleDownloadProgressListener = new DevBundleDownloadProgressListener() {
+    @Override
+    public void onProgress(final @Nullable String status, final @Nullable Integer done, final @Nullable Integer total) {
+      UiThreadUtil.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          updateLoadingProgress(status, done, total);
+        }
+      });
+    }
+  };
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -197,7 +212,7 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
       @Override
       public void onSuccess() {
         // TODO: annoying that we need to use RNObject.UNVERSIONED here
-        mReactInstanceManager = startReactInstance(ExponentActivity.this, null, null, RNObject.UNVERSIONED, null, true, reactPackages(), null);
+        mReactInstanceManager = startReactInstance(ExponentActivity.this, null, null, RNObject.UNVERSIONED, null, true, reactPackages(), mDevBundleDownloadProgressListener);
       }
 
       @Override
