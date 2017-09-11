@@ -19,7 +19,6 @@ To get the Expo Client running (on either platform), follow the README in the pa
 - Target `master` most of the time. If there's a SDK candidate branch (a few days near the end of the cycle), target that instead.
 - We don't maintain an explicit style guide, so for now it's best to just observe what the rest of the codebase does and mimic that.
 - Make sure your xcode file tree reflects the directory structure on disk.
-- Testing guidelines forthcoming...
 
 ## Contexts in which this project may run
 
@@ -37,6 +36,13 @@ We use CocoaPods to manage dependencies. Rather than committing `Podfile`, we us
 
 - Add it to `dependencies.json`
 - Run `tools-public/generate-files-ios.sh`. This will write `Podfile` (for the Expo Client) and `ExpoKit.podspec` (for ExpoKit, which uses almost all of the same code as Expo Client, and therefore has the same dependencies).
+
+## Testing
+
+You can run our API tests from `apps/test-suite` against a native XCTest target called `ExponentIntegrationTests`.
+
+1. Make sure `ExponentIntegrationTests/EXTestEnvironment.plist` contains a url to the `test-suite` project. If you are running from our monorepo, you can run `powertools configure-ios-test-suite-url` to do this automatically.
+2. Open the workspace in Xcode and `Test` it. (Cmd+U)
 
 ## Versioning
 
