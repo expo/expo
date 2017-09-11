@@ -10,6 +10,7 @@ const { ExponentTools } = require('xdl');
 const crayon = require('@ccheever/crayon');
 const JsonFile = require('@exponent/json-file');
 const replaceString = require('replace-string');
+const _ = require('lodash');
 
 const {
   getManifestAsync,
@@ -94,6 +95,34 @@ exports.updateAndroidShellAppAsync = async function updateAndroidShellAppAsync(
   );
 }
 
+function backgroundImagesForApp(shellPath, manifest) {
+    // returns an array like:
+    // [
+    //   {url: 'urlToDownload', path: 'pathToSaveTo'},
+    //   {url: 'anotherURlToDownload', path: 'anotherPathToSaveTo'},
+    // ]
+    const imageKeys = ['ldpi', 'mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'];
+    let basePath = `${shellPath}expoview/src/main/res`;
+    if (_.get(manifest, 'android.splash')) {
+      var splash = _.get(manifest, 'android.splash');
+      return _.reduce(imageKeys, function (acc, imageKey) {
+        let url = _.get(splash, `${imageKey}Url`);
+        if (url) {
+          acc.push({url: url, path: `${basePath}/drawable-${imageKey}/shell_launch_background_image.png`});
+        }
+
+        return acc;
+      }, []);
+    }
+
+    if (_.get(manifest, 'splash.imageUrl')) {
+      let url = _.get(manifest, 'splash.imageUrl');
+      return [{url: url, path: `${basePath}/drawable-xxxhdpi/shell_launch_background_image.png`}]
+    }
+
+    return [];
+}
+
 exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
   args
 ) {
@@ -141,13 +170,6 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
   let iconUrl = manifest.android && manifest.android.iconUrl
     ? manifest.android.iconUrl
     : manifest.iconUrl;
-  let backgroundImageUrl = manifest.loading
-                      && manifest.loading.splash
-                      && manifest.loading.splash.image
-                      && manifest.loading.splash.image.android
-                      && manifest.loading.splash.image.android.backgroundImageUrl
-                      ? manifest.loading.splash.image.android.backgroundImageUrl
-                      : null ;
   let scheme = manifest.scheme;
   let bundleUrl = manifest.bundleUrl;
   let notificationIconUrl = manifest.notification
@@ -155,6 +177,7 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
     : null;
   let version = manifest.version ? manifest.version : '0.0.0';
   let shellPath = '../android-shell-app/';
+  let backgroundImages = backgroundImagesForApp(shellPath, manifest);
   await spawnAsync(`/bin/rm`, ['-rf', shellPath]);
   await spawnAsync(`/bin/mkdir`, [shellPath]);
   await spawnAsync(
@@ -500,17 +523,21 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
   }
 
   // Splash Background
-  if (backgroundImageUrl) {
+  if (backgroundImages && backgroundImages.length > 0) {
+    // Delete the placeholder images
     await spawnAsync(`find`, [
-      `${shellPath}app/src/main/res`,
+      `${shellPath}expoview/src/main/res`,
       '-iname',
       'shell_launch_background_image.png',
       '-delete',
     ]);
-    await saveUrlToPathAsync(
-      backgroundImageUrl,
-      `${shellPath}expoview/src/main/res/drawable-xxxhdpi/shell_launch_background_image.png`
-    );
+
+    _.forEach(backgroundImages, async (image) => {
+      await saveUrlToPathAsync(
+        image.url,
+        image.path
+      );
+    });
   }
 
   let certificateHash = '';

@@ -27,6 +27,7 @@ import ExManifests from 'ExManifests';
 import ExponentKernel from 'ExponentKernel';
 import Frame from 'Frame';
 import { connect } from 'react-redux';
+import { Constants } from 'expo';
 
 class BrowserScreen extends React.Component {
   static propTypes = {
@@ -207,29 +208,35 @@ class BrowserScreen extends React.Component {
     let { task } = this.props;
     let { manifest } = task;
 
-    let loadingBackgroundColor;
-    if (this._isNewSplashScreenStyle(manifest)) {
-      // Use new manifest location for background color
+    if (manifest && this._isNewSplashScreenStyle(manifest)) {
+      // Try to load the platform specific background color, otherwise fall back to `splash.backgroundColor`
       if (
-        manifest &&
-        manifest.getIn(['loading', 'splash', 'backgroundColor'])
+        Platform.OS === 'ios' &&
+        manifest.getIn(['ios', 'splash', 'backgroundColor'])
       ) {
-        loadingBackgroundColor = manifest.getIn([
-          'loading',
-          'splash',
-          'backgroundColor',
-        ]);
+        return manifest.getIn(['ios', 'splash', 'backgroundColor']);
+      }
+
+      if (
+        Platform.OS === 'android' &&
+        manifest.getIn(['android', 'splash', 'backgroundColor'])
+      ) {
+        return manifest.getIn(['android', 'splash', 'backgroundColor']);
+      }
+
+      if (manifest.getIn(['splash', 'backgroundColor'])) {
+        return manifest.getIn(['splash', 'backgroundColor']);
       }
     }
 
+    // If no background color found in new `splash` style, fall back to `loading.backgroundColor`
     if (!loadingBackgroundColor) {
-      loadingBackgroundColor = 'white';
       if (manifest && manifest.getIn(['loading', 'backgroundColor'])) {
-        loadingBackgroundColor = manifest.getIn(['loading', 'backgroundColor']);
+        return manifest.getIn(['loading', 'backgroundColor']);
       }
     }
 
-    return loadingBackgroundColor;
+    return 'white';
   }
 
   _getLoadingIndicatorStyle() {
@@ -354,17 +361,9 @@ class BrowserScreen extends React.Component {
       let { manifest } = task;
       var backgroundImageUrl;
       if (this._isNewSplashScreenStyle(manifest)) {
-        backgroundImageUrl = manifest.getIn([
-          'loading',
-          'splash',
-          'image',
-          'ios',
-          'backgroundImageUrl',
-        ]);
+        backgroundImageUrl = this._getNewSplashBackgroungImage(manifest);
       }
-      let resizeMode = this._isNewSplashScreenStyle(manifest)
-        ? Image.resizeMode.cover
-        : Image.resizeMode.contain;
+      let resizeMode = this._getBackgroundImageResizeMode(resizeMode);
       if (!backgroundImageUrl) {
         backgroundImageUrl = manifest.getIn(['loading', 'backgroundImageUrl']);
       }
@@ -379,6 +378,52 @@ class BrowserScreen extends React.Component {
       }
     }
     return null;
+  }
+
+  _getNewSplashBackgroungImage(manifest) {
+    if (Platform.OS === 'ios') {
+      if (
+        Constants.platform.ios.userInterfaceIdiom === 'tablet' &&
+        manifest.getIn(['ios', 'splash', 'imageUrl'])
+      ) {
+        return manifest.getIn(['ios', 'splash', 'tabletImageUrl']);
+      }
+
+      if (manifest.getIn(['ios', 'splash', 'imageUrl'])) {
+        return manifest.getIn(['ios', 'splash', 'imageUrl']);
+      }
+    }
+
+    if (Platform.OS === 'android') {
+      return manifest.getIn(['android', 'splash', 'backgroundImageUrl']);
+    }
+
+    // If platform-specific keys were not available, return the default
+    return manifest.getIn(['splash', 'imageUrl']);
+  }
+
+  _getBackgroundImageResizeMode(manifest) {
+    if (!this._isNewSplashScreenStyle(manifest)) {
+      return Image.resizeMode.contain;
+    }
+
+    let mode;
+    if (
+      Platform.OS === 'ios' &&
+      manifest.getIn(['ios', 'splash', 'resizeMode'])
+    ) {
+      mode = manifest.getIn(['ios', 'splash', 'resizeMode']);
+    } else if (
+      Platform.OS === 'android' &&
+      manifest.getIn(['android', 'splash', 'resizeMode'])
+    ) {
+      mode = manifest.getIn(['android', 'splash', 'resizeMode']);
+    } else if (manifest.getIn(['splash', 'resizeMode'])) {
+      mode = manifest.getIn(['splash', 'resizeMode']);
+    }
+
+    // If anything other than `cover` (including an invalid value, or `undefined`), return `contain` which is the default
+    return mode === 'cover' ? Image.resizeMode.cover : Image.resizeMode.contain;
   }
 
   componentWillReceiveProps(nextProps) {
@@ -448,11 +493,13 @@ class BrowserScreen extends React.Component {
   }
 
   _isNewSplashScreenStyle(manifest) {
-    if (Platform.OS !== 'ios') {
-      return false;
+    if (manifest.getIn(['splash'])) {
+      return true;
     }
-
-    if (manifest.getIn(['loading', 'splash'])) {
+    if (Platform.OS === 'ios' && manifest.getIn(['ios', 'splash'])) {
+      return true;
+    }
+    if (Platform.OS === 'android' && manifest.getIn(['android', 'splash'])) {
       return true;
     }
 

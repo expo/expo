@@ -132,14 +132,11 @@ public class LoadingView extends RelativeLayout {
     }
 
     JSONObject loadingInfo = manifest.optJSONObject(ExponentManifest.MANIFEST_LOADING_INFO_KEY);
-    if (loadingInfo == null) {
-      return;
-    }
 
-    if (this.isUsingNewSplashScreenStyle(loadingInfo)) {
+    if (isUsingNewSplashScreenStyle(manifest)) {
       // If using new splash style, don't show the icon at all
       mImageView.setAlpha(0.0f);
-    } else if (loadingInfo.has(ExponentManifest.MANIFEST_LOADING_ICON_URL)) {
+    } else if (loadingInfo != null && loadingInfo.has(ExponentManifest.MANIFEST_LOADING_ICON_URL)) {
       mImageView.setVisibility(View.GONE);
       final String iconUrl = loadingInfo.optString(ExponentManifest.MANIFEST_LOADING_ICON_URL);
       mIsLoadingImageView = true;
@@ -156,7 +153,7 @@ public class LoadingView extends RelativeLayout {
           EXL.e(TAG, "Couldn't load image at url " + iconUrl);
         }
       });
-    } else if (loadingInfo.has(ExponentManifest.MANIFEST_LOADING_EXPONENT_ICON_GRAYSCALE)) {
+    } else if (loadingInfo != null && loadingInfo.has(ExponentManifest.MANIFEST_LOADING_EXPONENT_ICON_GRAYSCALE)) {
       mImageView.setImageResource(R.drawable.big_logo_dark);
 
       int grayscale = (int) (255 * loadingInfo.optDouble(ExponentManifest.MANIFEST_LOADING_EXPONENT_ICON_GRAYSCALE, 1.0));
@@ -166,7 +163,7 @@ public class LoadingView extends RelativeLayout {
         grayscale = 255;
       }
       mImageView.setColorFilter(Color.argb(255, grayscale, grayscale, grayscale));
-    } else {
+    } else if (loadingInfo != null) {
       // Only look at icon color if grayscale field doesn't exist.
       String exponentLogoColor = loadingInfo.optString(ExponentManifest.MANIFEST_LOADING_EXPONENT_ICON_COLOR, null);
       if (exponentLogoColor != null) {
@@ -178,18 +175,22 @@ public class LoadingView extends RelativeLayout {
       }
     }
 
-    this.setBackgroundImage(loadingInfo);
-    this.setBackgroundColor(loadingInfo);
+    setBackgroundImage(manifest);
+    setBackgroundColor(manifest);
   }
 
-  private void setBackgroundImage(final JSONObject loadingInfo) {
-    if (Constants.isShellApp() && this.isUsingNewSplashScreenStyle(loadingInfo)) {
+  private void setBackgroundImage(final JSONObject manifest) {
+    if (Constants.isShellApp() && isUsingNewSplashScreenStyle(manifest)) {
       // The src is already set to "@drawable/shell_launch_background_image" in `loading_view.xml`
       revealView(mBackgroundImageView);
+      ImageView.ScaleType scaleType = scaleType(manifest);
+      if (mBackgroundImageView.getScaleType() != scaleType) {
+        mBackgroundImageView.setScaleType(scaleType);
+      }
       return;
     }
 
-    final String backgroundImageUrl = this.backgroundImageURL(loadingInfo);
+    final String backgroundImageUrl = backgroundImageURL(manifest);
     if (backgroundImageUrl != null) {
       Picasso.with(getContext()).load(backgroundImageUrl).into(mBackgroundImageView, new Callback() {
         @Override
@@ -205,23 +206,65 @@ public class LoadingView extends RelativeLayout {
     }
   }
 
-  private void setBackgroundColor(final JSONObject loadingInfo) {
-    String backgroundColor = null;
-    if (this.isUsingNewSplashScreenStyle(loadingInfo)) {
-      // Get the background color from `loading.splash.backgroundColor` if this fails, fall back to old way
-      if (loadingInfo.has("splash")) {
-        final JSONObject splash = loadingInfo.optJSONObject("splash");
-        if (splash != null && splash.has("backgroundColor")) {
-          final String backgroundColorSplash = splash.optString("backgroundColor", null);
-          if (backgroundColor != null) {
-              backgroundColor = backgroundColorSplash;
-          }
+  private ImageView.ScaleType scaleType(final JSONObject manifest) {
+    String resizeMode = null;
+
+    if (manifest.has("android")) {
+      final JSONObject android = manifest.optJSONObject("android");
+      if (android != null && android.has("splash")) {
+        final JSONObject splash = android.optJSONObject("splash");
+        if (splash != null && splash.has("resizeMode")) {
+          resizeMode = splash.optString("resizeMode", "contain");
         }
       }
     }
 
-    if (backgroundColor != null) {
-      backgroundColor = loadingInfo.optString(ExponentManifest.MANIFEST_LOADING_BACKGROUND_COLOR, null);
+    if (resizeMode == null) {
+      if (manifest.has("splash")) {
+        final JSONObject splash = manifest.optJSONObject("splash");
+        if (splash != null && splash.has("ressizeMode")) {
+          resizeMode = splash.optString("resizeMode", "contain");
+        }
+      }
+    }
+
+    if (resizeMode == null) {
+      resizeMode = "contain";
+    }
+
+    if (resizeMode == "cover") {
+      return ImageView.ScaleType.CENTER_CROP;
+    } else {
+      return ImageView.ScaleType.FIT_CENTER;
+    }
+  }
+
+  private void setBackgroundColor(final JSONObject manifest) {
+    String backgroundColor = null;
+    if (isUsingNewSplashScreenStyle(manifest)) {
+      JSONObject splash = null;
+
+      if (manifest.has("android")) {
+        final JSONObject android = manifest.optJSONObject("android");
+        splash = android.optJSONObject("splash");
+      }
+      if (splash == null && manifest.has("splash")) {
+        splash = manifest.optJSONObject("splash");
+      }
+
+      if (splash != null) {
+        backgroundColor = splash.optString("backgroundColor");
+      }
+    }
+
+
+    if (backgroundColor == null) {
+      if (manifest.has("loading")) {
+        final JSONObject loadingInfo = manifest.optJSONObject("loading");
+        if (loadingInfo != null) {
+          backgroundColor = loadingInfo.optString(ExponentManifest.MANIFEST_LOADING_BACKGROUND_IMAGE_URL, null);
+        }
+      }
     }
 
     if (backgroundColor != null && ColorParser.isValid(backgroundColor)) {
@@ -233,32 +276,51 @@ public class LoadingView extends RelativeLayout {
     mImageView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
   }
 
-  private String backgroundImageURL(final JSONObject loadingInfo) {
+  private String backgroundImageURL(final JSONObject manifest) {
+    if (isUsingNewSplashScreenStyle(manifest)) {
+      JSONObject splash = null;
 
-    if (loadingInfo.has("splash")) {
-      final JSONObject splash = loadingInfo.optJSONObject("splash");
-      if (splash != null && splash.has("image")) {
-        final JSONObject image = splash.optJSONObject("image");
-        if (image != null && image.has("android")) {
-          final JSONObject android = image.optJSONObject("android");
-          if (android != null && android.has("backgroundImageUrl")) {
-            final String backgroundImageURL = android.optString("backgroundImageUrl");
-            // If we have the new splash.image.android.backgroundImageUrl, return it. Otherwise default to old splash image scheme.
-            if (backgroundImageURL != null) {
-              return backgroundImageURL;
-            }
+      if (manifest.has("android")) {
+        final JSONObject android = manifest.optJSONObject("android");
+        splash = android.optJSONObject("splash");
+      }
+      if (splash == null && manifest.has("splash")) {
+        splash = manifest.optJSONObject("splash");
+      }
+
+      if (splash != null) {
+        // Use the largest available image in the `android.splash` object, or `backgroundImageUrl`.
+        final String[] keys = {"xxxhdpiUrl", "xxhdpiUrl", "xhdpiUrl", "hdpiUrl", "mdpiUrl", "ldpiUrl", "backgroundImageUrl"};
+
+        for (String key : keys) {
+          if (splash.has(key) && splash.optString(key) != null) {
+            return splash.optString(key);
           }
+        }
+      }
+    } else {
+      // For non new splash style, return the "loading.backgroundImageURL" value
+      if (manifest.has("loading")) {
+        final JSONObject loadingInfo = manifest.optJSONObject("loading");
+        if (loadingInfo != null) {
+          return loadingInfo.optString(ExponentManifest.MANIFEST_LOADING_BACKGROUND_IMAGE_URL, null);
         }
       }
     }
 
-    // For non new splash style, return the "loading.backgroundImageURL" value
-    return loadingInfo.optString(ExponentManifest.MANIFEST_LOADING_BACKGROUND_IMAGE_URL, null);
+    return null;
   }
 
-  private Boolean isUsingNewSplashScreenStyle(final JSONObject loadingInfo) {
-    if (loadingInfo.has("splash")) {
-      final JSONObject splash = loadingInfo.optJSONObject("splash");
+  private Boolean isUsingNewSplashScreenStyle(final JSONObject manifest) {
+    if (manifest.has("android")) {
+      final JSONObject android = manifest.optJSONObject("android");
+      if (android.optJSONObject("splash") != null) {
+        return true;
+      }
+    }
+
+    if (manifest.has("splash")) {
+      final JSONObject splash = manifest.optJSONObject("splash");
       return splash != null;
     }
     return false;
