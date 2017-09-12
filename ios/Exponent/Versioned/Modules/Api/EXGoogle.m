@@ -50,7 +50,7 @@ RCT_REMAP_METHOD(logInAsync,
   _logInReject = reject;
   NSString *behavior = config[@"behavior"];
   if ([behavior isEqualToString:@"system"]) {
-    [self systemLogInWithClientId:config[@"iosClientId"] scopes:config[@"scopes"]];
+  [self systemLogInWithClientId:config[@"iosClientId"] scopes:config[@"scopes"] serverClientId:config[@"scopes"]];
   } else if ([behavior isEqualToString:@"web"]) {
     [self webLogInWithClientId:config[@"iosClientId"] scopes:config[@"scopes"]];
   } else {
@@ -58,12 +58,12 @@ RCT_REMAP_METHOD(logInAsync,
   }
 }
 
--(void)systemLogInWithClientId:(NSString *)clientId scopes:(NSArray<NSString *> *)scopes
+-(void)systemLogInWithClientId:(NSString *)clientId scopes:(NSArray<NSString *> *)scopes serverClientId:(NSString *)serverClientId
 {
   [GIDSignIn sharedInstance].delegate = self;
   [GIDSignIn sharedInstance].uiDelegate = self;
   [GIDSignIn sharedInstance].clientID = clientId;
-  [GIDSignIn sharedInstance].serverClientID = clientId;
+  [GIDSignIn sharedInstance].serverClientID = serverClientId;
   [GIDSignIn sharedInstance].scopes = scopes;
   [GIDSignIn sharedInstance].shouldFetchBasicProfile = YES;
   [[GIDSignIn sharedInstance] signIn];
