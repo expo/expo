@@ -53,6 +53,7 @@
   links:
     Introduction: /versions/unversioned/sdk/index.html
     Accelerometer: /versions/unversioned/sdk/accelerometer.html
+    AdMob: /versions/unversioned/sdk/admob.html
     Amplitude: /versions/unversioned/sdk/amplitude.html
     AppLoading: /versions/unversioned/sdk/app-loading.html
     Art: /versions/unversioned/sdk/art.html
