@@ -124,9 +124,21 @@ snap() {
 
 Takes a picture and saves it to app's cache directory. Photos are rotated to match device's orientation and scaled to match the preview. Anyway on Android it is essential to set `ratio` prop to get a picture with correct dimensions.
 
+#### Arguments
+
+-   **options (_object_)** --
+
+      A map of options:
+
+    -   **quality (_number_)** -- Specify the quality of compression, from 0 to 1. 0 means compress for small size, 1 means compress for maximum quality.
+    -   **base64 (_boolean_)** -- Whether to also include the image data in Base64 format.
+    -   **exif (_boolean_)** -- Whether to also include the EXIF data for the image.
+
 #### Returns
 
-Returns a Promise that resolves to a string containing an uri to image file.
+Returns a Promise that resolves to an object: `{ uri, width, height, exif, base64 }` where `uri` is a URI to the local image file (useable as the source for an `Image` element) and `width, height` specify the dimensions of the image. `base64` is included if the `base64` option was truthy, and is a string containing the JPEG data of the image in Base64--prepend that with `'data:image/jpg;base64,'` to get a data URI, which you can use as the source for an `Image` element for example. `exif` is included if the `exif` option was truthy, and is an object containing EXIF data for the image--the names of its properties are EXIF tags and their values are the values for those tags.
+
+The local image URI is temporary. Use `Expo.FileSystem.copyAsync` to make a permanent copy of the image.
 
 ### `getSupportedRatiosAsync`
 
