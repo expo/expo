@@ -285,6 +285,8 @@ RCT_REMAP_METHOD(geocodeAsync,
                              }];
       }
       resolve(results);
+    } else if (error.code == kCLErrorGeocodeFoundNoResult || error.code == kCLErrorGeocodeFoundPartialResult) {
+      resolve(@[]);
     } else if (error.code == kCLErrorNetwork) {
       reject(@"E_RATE_EXCEEDED", @"Rate limit exceeded - too many requests", error);
     } else {
@@ -323,6 +325,8 @@ RCT_REMAP_METHOD(reverseGeocodeAsync,
         [results addObject:address];
       }
       resolve(results);
+    } else if (error.code == kCLErrorGeocodeFoundNoResult || error.code == kCLErrorGeocodeFoundPartialResult) {
+      resolve(@[]);
     } else if (error.code == kCLErrorNetwork) {
       reject(@"E_RATE_EXCEEDED", @"Rate limit exceeded - too many requests", error);
     } else {

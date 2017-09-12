@@ -406,7 +406,7 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
           }
         });
     } else {
-      promise.reject("E_NO_GEOCODER", "Geocoder service is not available for this device");
+      promise.reject("E_NO_GEOCODER", "Geocoder service is not available for this device.");
     }
   }
 
@@ -441,7 +441,7 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
           }
         });
     } else {
-      promise.reject("E_NO_GEOCODER", "Geocoder service is not available for this device");
+      promise.reject("E_NO_GEOCODER", "Geocoder service is not available for this device.");
     }
   }
 
