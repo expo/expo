@@ -33,6 +33,7 @@ Prompts the user to log into Google and grants your app permission to access som
 -   **iosClientId** (_string_) -- The iOS client id registered with Google for use in the Expo client app.
 -   **androidStandaloneAppClientId** (_string_) -- The Android client id registered with Google for use in a standalone app.
 -   **iosStandaloneAppClientId** (_string_) -- The iOS client id registered with Google for use in a standalone app.
+-   **webClientId** (_string_) -- The web client id registered with Google to generate server tokens.
 
 #### Returns
 
@@ -135,3 +136,11 @@ If you want to use native sign in for a standalone app, you can follow these ste
 5.  Add the given **iOS URL scheme** to your `app.json` under `ios.config.googleSignIn.reservedClientId`.
 6.  Wherever you use `Expo.Google.logInAsync`, provide the **OAuth client ID** as the `iosStandaloneAppClientId` option.
 7.  Rebuild your standalone app.
+
+## Server side APIs
+
+If you need to access Google APIs using the user's authorization you need to pass an additional web client id. This will add accessToken, idToken, refreshToken and serverAuthCode to the response object that you can use on your server with the client id secret.
+
+1.  Open your browser to [Google Developer Credentials](https://console.developers.google.com/apis/credentials)
+2.  Click **Create credentials** and then **OAuth client ID**, then choose **web** and press **Create**.
+3.  Wherever you use `Expo.Google.logInAsync`, provide the **OAuth client ID** as the `webClientId` option.
