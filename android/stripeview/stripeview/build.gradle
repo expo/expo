@@ -1,0 +1,42 @@
+apply plugin: 'com.android.library'
+apply plugin: 'maven'
+
+group = 'com.gettipsi'
+version = '1.0.0'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.3"
+
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.facebook.react:react-native:0.20.1'
+    compile 'com.google.android.gms:play-services-wallet:9.8.0'
+    compile 'com.stripe:stripe-android:2.1.+'
+    compile 'com.github.thefuntasty:CreditCardEntry:1.4.8.6'
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: "file://$rootDir/../maven")
+        }
+    }
+}

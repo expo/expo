@@ -1,0 +1,14 @@
+<resources>
+
+  <string name="cardNumber">Card Number</string>
+  <string name="save">Save</string>
+  <string name="cvc">CVC</string>
+  <string name="android_pay_unavaliable">Android Pay unavailable on your device.</string>
+  <string name="user_cancel_dialog">User cancel dialog. No card added!</string>
+
+  <string-array name="currency_array">
+    <item>Currency (optional)</item>
+    <item>Unspecified</item>
+    <item>USD</item>
+  </string-array>
+</resources>
