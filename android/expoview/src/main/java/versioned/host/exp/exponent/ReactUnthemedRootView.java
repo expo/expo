@@ -5,10 +5,10 @@ package versioned.host.exp.exponent;
 import android.content.Context;
 import android.view.ContextThemeWrapper;
 
-import com.facebook.react.ReactRootView;
+import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerEnabledRootView;
 import host.exp.expoview.R;
 
-public class ReactUnthemedRootView extends ReactRootView {
+public class ReactUnthemedRootView extends RNGestureHandlerEnabledRootView {
   public ReactUnthemedRootView(Context context) {
     super(new ContextThemeWrapper(
         context,

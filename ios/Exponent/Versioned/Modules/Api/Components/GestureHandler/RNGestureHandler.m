@@ -366,9 +366,11 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         return;
     }
     if (_hasCustomActivationCriteria && self.state == UIGestureRecognizerStatePossible && [self shouldActivateUnderCustomCriteria]) {
-        self.state = UIGestureRecognizerStateBegan;
         super.minimumNumberOfTouches = _realMinimumNumberOfTouches;
-        [self setTranslation:CGPointMake(0, 0) inView:self.view];
+        if ([self numberOfTouches] >= _realMinimumNumberOfTouches) {
+            self.state = UIGestureRecognizerStateBegan;
+            [self setTranslation:CGPointMake(0, 0) inView:self.view];
+        }
     }
 }
 
@@ -837,6 +839,14 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 - (BOOL)canPreventGestureRecognizer:(UIGestureRecognizer *)preventedGestureRecognizer
 {
     return ![preventedGestureRecognizer isKindOfClass:[RCTTouchHandler class]];
+}
+
+- (BOOL)canBePreventedByGestureRecognizer:(UIGestureRecognizer *)preventingGestureRecognizer
+{
+    // When this method is called it means that one of handlers has activated, in this case we want
+    // to send an info to JS so that it cancells all JS responders
+    [self.delegate gestureHandlerDidActivateInRootView:self.view];
+    return [super canBePreventedByGestureRecognizer:preventingGestureRecognizer];
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event

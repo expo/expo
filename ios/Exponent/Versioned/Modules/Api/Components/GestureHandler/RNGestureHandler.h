@@ -13,6 +13,12 @@
 
 @end
 
+@protocol RNRootViewGestureRecognizerDelegate <UIGestureRecognizerDelegate>
+
+- (void)gestureHandlerDidActivateInRootView:(UIView *)rootView;
+
+@end
+
 
 @interface RNGestureHandler : NSObject {
 
@@ -65,6 +71,8 @@
 @end
 
 @interface RNRootViewGestureRecognizer : UIGestureRecognizer
+
+@property (nullable, nonatomic, weak) id<RNRootViewGestureRecognizerDelegate> delegate;
 
 - (void)blockOtherRecognizers;
 

@@ -57,6 +57,12 @@ typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
 
 RCT_EXPORT_MODULE()
 
+- (void)invalidate
+{
+    _manager = nil;
+    [self.bridge.uiManager.observerCoordinator removeObserver:self];
+}
+
 - (dispatch_queue_t)methodQueue
 {
     // This module needs to be on the same queue as the UIManager to avoid

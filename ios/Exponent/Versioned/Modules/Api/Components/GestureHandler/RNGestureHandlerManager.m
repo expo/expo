@@ -4,11 +4,12 @@
 #import <React/RCTViewManager.h>
 #import <React/RCTComponent.h>
 #import <React/RCTRootView.h>
+#import <React/RCTTouchHandler.h>
 
 #import "RNGestureHandlerState.h"
 #import "RNGestureHandler.h"
 
-@interface RNGestureHandlerManager () <RNGestureHandlerEventEmitter>
+@interface RNGestureHandlerManager () <RNGestureHandlerEventEmitter, RNRootViewGestureRecognizerDelegate>
 
 @end
 
@@ -16,7 +17,7 @@
 {
     RNGestureHandlerRegistry *_registry;
     RCTUIManager *_uiManager;
-    NSMutableSet<RCTRootView*> *_rootViews;
+    NSMutableSet<UIView*> *_rootViews;
     RCTEventDispatcher *_eventDispatcher;
 }
 
@@ -115,12 +116,40 @@
     while (parent != nil && ![parent isKindOfClass:[RCTRootView class]]) parent = parent.superview;
     
     RCTRootView *rootView = (RCTRootView *)parent;
-    if (rootView != nil && ![_rootViews containsObject:rootView]) {
-        [_rootViews addObject:rootView];
+    UIView *rootContentView = rootView.contentView;
+    if (rootContentView != nil && ![_rootViews containsObject:rootContentView]) {
+        RCTLogInfo(@"[GESTURE HANDLER] Initialize gesture handler for root view %@", rootContentView);
+        [_rootViews addObject:rootContentView];
         RNRootViewGestureRecognizer *recognizer = [RNRootViewGestureRecognizer new];
-        rootView.userInteractionEnabled = YES;
-        [rootView addGestureRecognizer:recognizer];
+        recognizer.delegate = self;
+        rootContentView.userInteractionEnabled = YES;
+        [rootContentView addGestureRecognizer:recognizer];
     }
+}
+
+- (void)gestureHandlerDidActivateInRootView:(UIView*)rootView
+{
+    // Dispatch touch cancel to JS in order to cancel all in-js recognizers
+    RCTTouchHandler *touchHandler;
+    // Find touch handlers - should be installed as the content view's recognizer
+    for (UIGestureRecognizer *recognizer in rootView.gestureRecognizers) {
+        if ([recognizer isKindOfClass:[RCTTouchHandler class]]) {
+            touchHandler = (RCTTouchHandler *)recognizer;
+            break;
+        }
+    }
+
+    // We change touch handler to disabled and back to enabled, this will trigger cancel event
+    // to be delivered to JS
+    touchHandler.enabled = NO;
+    touchHandler.enabled = YES;
+}
+
+- (void)dealloc
+{
+  if ([_rootViews count] > 0) {
+    RCTLogInfo(@"[GESTURE HANDLER] Tearing down gesture handler registered for views %@", _rootViews);
+  }
 }
 
 #pragma mark Events

@@ -65,6 +65,8 @@ import versioned.host.exp.exponent.modules.api.components.camera.CameraModule;
 import versioned.host.exp.exponent.modules.api.components.camera.CameraViewManager;
 import versioned.host.exp.exponent.modules.api.components.lottie.LottiePackage;
 import versioned.host.exp.exponent.modules.api.components.payments.StripeModule;
+import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerPackage;
+import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerModule;
 import versioned.host.exp.exponent.modules.api.components.maps.MapsPackage;
 import versioned.host.exp.exponent.modules.api.components.svg.SvgPackage;
 import versioned.host.exp.exponent.modules.api.fbads.AdSettingsManager;
@@ -177,6 +179,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new GLObjectManagerModule(reactContext));
         nativeModules.add(new StripeModule(reactContext));
         nativeModules.add(new BrightnessModule(reactContext));
+        nativeModules.add(new RNGestureHandlerModule(reactContext));
       } catch (JSONException | UnsupportedEncodingException e) {
         EXL.e(TAG, e.toString());
       }
@@ -204,7 +207,8 @@ public class ExponentPackage implements ReactPackage {
     addViewManagersFromPackages(reactContext, viewManagers, Arrays.<ReactPackage>asList(
       new SvgPackage(),
       new MapsPackage(),
-      new LottiePackage()
+      new LottiePackage(),
+      new RNGestureHandlerPackage()
     ));
 
     return viewManagers;
