@@ -13,5 +13,6 @@
   { "name": "GoogleMaps", "version": "~> 2.2.0" },
   { "name": "lottie-ios", "version": "~> 2.1.3" },
   { "name": "GPUImage", "version": "~> 0.1.7" },
-  { "name": "Branch", "version": "~> 0.14.12"}
+  { "name": "Branch", "version": "~> 0.14.12" },
+  { "name": "Google-Mobile-Ads-SDK", "version": "~> 7.22.0" }
 ]
