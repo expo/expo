@@ -125,7 +125,11 @@ Returns a subscription object, which has one field:
 
 ### `Expo.Location.geocodeAsync(address)`
 
-Geocode an address string to latitiude-longitude location. _Notice_: Geocoding is resource consuming and has to be used reasonably. Creating too many requests at a time can result in an error so they have to be managed properly.
+Geocode an address string to latitiude-longitude location.
+
+> **Note**: Geocoding is resource consuming and has to be used reasonably. Creating too many requests at a time can result in an error so they have to be managed properly.
+>
+> On Android, you must request a location permission (`Expo.Permissions.LOCATION`) from the user before geocoding can be used.
 
 #### Arguments
 
@@ -139,10 +143,14 @@ Returns an array (in most cases its size is 1) of geocoded location objects with
 -   **longitude (_number_)** -- The longitude in degrees.
 -   **altitude (_number_)** -- The altitude in meters above the WGS 84 reference ellipsoid.
 -   **accuracy (_number_)** -- The radius of uncertainty for the location, measured in meters.
-    
+
 ### `Expo.Location.reverseGeocodeAsync(location)`
 
-Reverse geocode a location to postal address. _Notice_: Geocoding is resource consuming and has to be used reasonably. Creating too many requests at a time can result in an error so they have to be managed properly.
+Reverse geocode a location to postal address.
+
+> **Note**: Geocoding is resource consuming and has to be used reasonably. Creating too many requests at a time can result in an error so they have to be managed properly.
+
+> On Android, you must request a location permission (`Expo.Permissions.LOCATION`) from the user before geocoding can be used.
 
 #### Arguments
 
