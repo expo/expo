@@ -64,6 +64,7 @@ import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCode
 import versioned.host.exp.exponent.modules.api.components.camera.CameraModule;
 import versioned.host.exp.exponent.modules.api.components.camera.CameraViewManager;
 import versioned.host.exp.exponent.modules.api.components.lottie.LottiePackage;
+import versioned.host.exp.exponent.modules.api.components.payments.StripeModule;
 import versioned.host.exp.exponent.modules.api.components.maps.MapsPackage;
 import versioned.host.exp.exponent.modules.api.components.svg.SvgPackage;
 import versioned.host.exp.exponent.modules.api.fbads.AdSettingsManager;
@@ -174,6 +175,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new SpeechModule(reactContext));
         nativeModules.add(new SecureStoreModule(reactContext, scopedContext, experienceId));
         nativeModules.add(new GLObjectManagerModule(reactContext));
+        nativeModules.add(new StripeModule(reactContext));
         nativeModules.add(new BrightnessModule(reactContext));
       } catch (JSONException | UnsupportedEncodingException e) {
         EXL.e(TAG, e.toString());

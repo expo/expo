@@ -36,7 +36,7 @@ uploadArchives {
 buildscript {
   repositories {
     maven { url 'https://maven.fabric.io/public' }
-
+      maven { url "https://jitpack.io" }
     flatDir {
       dirs 'libs'
     }
@@ -49,6 +49,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 repositories {
   maven { url 'https://maven.fabric.io/public' }
+    maven { url "https://jitpack.io" }
   flatDir {
     dirs 'libs'
   }
@@ -232,6 +233,10 @@ dependencies {
   compile 'com.google.android.gms:play-services-location:9.8.0'
   compile 'com.google.android.gms:play-services-ads:9.8.0'
   compile 'com.google.android.gms:play-services-fitness:9.8.0'
+    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.google.android.gms:play-services-wallet:9.8.0' //may need 10.+
+    compile 'com.stripe:stripe-android:2.1.+'
+    compile 'com.github.thefuntasty:CreditCardEntry:1.4.8.4'
   apt 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
   compile "com.raizlabs.android:DBFlow-Core:2.2.1"
   compile "com.raizlabs.android:DBFlow:2.2.1"
@@ -257,6 +262,8 @@ dependencies {
   }
   compile 'com.android.support:exifinterface:25.3.1'
   compile 'com.google.android:cameraview:1.0.0'
-
+  compile('com.gettipsi:stripeview:1.0.0') {
+    exclude group: 'com.facebook.react'
+  }
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
 }
