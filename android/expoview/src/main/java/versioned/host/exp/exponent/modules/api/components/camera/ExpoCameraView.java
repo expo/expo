@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.media.CamcorderProfile;
 import android.os.Build;
 import android.support.media.ExifInterface;
 import android.util.Base64;
@@ -36,8 +37,9 @@ import versioned.host.exp.exponent.modules.api.ImagePickerModule;
 public class ExpoCameraView extends CameraView implements LifecycleEventListener {
 
   private RCTEventEmitter mEventEmitter;
-  private Queue<Promise> pictureTakenPromises = new ConcurrentLinkedQueue<>();
-  private Map<Promise, ReadableMap> pictureTakenOptions = new ConcurrentHashMap<>();
+  private Queue<Promise> mPictureTakenPromises = new ConcurrentLinkedQueue<>();
+  private Map<Promise, ReadableMap> mPictureTakenOptions = new ConcurrentHashMap<>();
+  private Promise mVideoRecordedPromise;
 
   public ExpoCameraView(ThemedReactContext themedReactContext) {
     super(themedReactContext);
@@ -53,8 +55,8 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
 
       @Override
       public void onPictureTaken(CameraView cameraView, final byte[] data) {
-        final Promise promise = pictureTakenPromises.poll();
-        final ReadableMap options = pictureTakenOptions.remove(promise);
+        final Promise promise = mPictureTakenPromises.poll();
+        final ReadableMap options = mPictureTakenOptions.remove(promise);
         final int quality = (int) (options.getDouble("quality") * 100);
         AsyncTask.execute(new Runnable() {
           @Override
@@ -91,6 +93,20 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
             promise.resolve(response);
           }
         });
+      }
+
+      @Override
+      public void onVideoRecorded(CameraView cameraView, String path) {
+        if (mVideoRecordedPromise != null) {
+          if (path != null) {
+            WritableMap result = Arguments.createMap();
+            result.putString("uri", ExpFileUtils.uriFromFile(new File(path)).toString());
+            mVideoRecordedPromise.resolve(result);
+          } else {
+            mVideoRecordedPromise.reject("E_RECORDING", "Couldn't stop recording - there is none in progress");
+          }
+          mVideoRecordedPromise = null;
+        }
       }
     });
   }
@@ -151,9 +167,46 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
   }
 
   public void takePicture(ReadableMap options, final Promise promise) {
-    pictureTakenPromises.add(promise);
-    pictureTakenOptions.put(promise, options);
+    mPictureTakenPromises.add(promise);
+    mPictureTakenOptions.put(promise, options);
     super.takePicture();
+  }
+
+  public void record(ReadableMap options, final Promise promise) {
+    try {
+      String path = getCacheFilename() + ".mp4";
+
+      int maxDuration, maxFilesSize;
+      if (options.hasKey("maxDuration")) {
+        maxDuration = options.getInt("maxDuration");
+      } else {
+        maxDuration = -1;
+      }
+      if (options.hasKey("maxFileSize")) {
+        maxFilesSize = options.getInt("maxFileSize");
+      } else {
+        maxFilesSize = -1;
+      }
+
+      CamcorderProfile profile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
+      if (options.hasKey("quality")) {
+        profile = getCamcorderProfile(options.getInt("quality"));
+      }
+
+      boolean recordAudio = !options.hasKey("mute");
+
+      if (super.record(path, maxDuration * 1000, maxFilesSize, recordAudio, profile)) {
+        mVideoRecordedPromise = promise;
+      } else {
+        promise.reject("E_RECORDING_FAILED", "Starting video recording failed. Another recording might be in progress.");
+      }
+    } catch (IOException e) {
+      promise.reject("E_RECORDING_FAILED", "Starting video recording failed - could not create video file.");
+    }
+  }
+
+  public void stopRecording() {
+    super.stopRecording();
   }
 
   @Override
@@ -177,6 +230,31 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
     Matrix matrix = new Matrix();
     matrix.postRotate(angle);
     return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+  }
+
+  private CamcorderProfile getCamcorderProfile(int quality) {
+    CamcorderProfile profile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
+    switch (quality) {
+      case CameraModule.VIDEO_2160P:
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+          profile = CamcorderProfile.get(CamcorderProfile.QUALITY_2160P);
+        }
+        break;
+      case CameraModule.VIDEO_1080P:
+        profile = CamcorderProfile.get(CamcorderProfile.QUALITY_1080P);
+        break;
+      case CameraModule.VIDEO_720P:
+        profile = CamcorderProfile.get(CamcorderProfile.QUALITY_720P);
+        break;
+      case CameraModule.VIDEO_480P:
+        profile = CamcorderProfile.get(CamcorderProfile.QUALITY_480P);
+        break;
+      case CameraModule.VIDEO_4x3:
+        profile = CamcorderProfile.get(CamcorderProfile.QUALITY_480P);
+        profile.videoFrameWidth = 640;
+        break;
+    }
+    return profile;
   }
 
   private int getImageRotation(int orientation) {

@@ -136,6 +136,20 @@ public class CameraViewManager extends ViewGroupManager<ExpoCameraView> {
     }
   }
 
+  public void record(ReadableMap options, Promise promise) {
+    if (mCameraView.isCameraOpened()) {
+      mCameraView.record(options, promise);
+    } else {
+      promise.reject("E_CAMERA_UNAVAILABLE", "Camera is not running");
+    }
+  }
+
+  public void stopRecording() {
+    if (mCameraView.isCameraOpened()) {
+      mCameraView.stopRecording();
+    }
+  }
+
   public Set<AspectRatio> getSupportedRatios() {
     if (mCameraView.isCameraOpened()) {
       return mCameraView.getSupportedAspectRatios();

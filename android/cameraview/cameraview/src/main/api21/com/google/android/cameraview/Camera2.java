@@ -29,13 +29,17 @@ import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.media.CamcorderProfile;
 import android.media.Image;
 import android.media.ImageReader;
+import android.media.MediaRecorder;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.Surface;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Set;
@@ -43,7 +47,7 @@ import java.util.SortedSet;
 
 @SuppressWarnings("MissingPermission")
 @TargetApi(21)
-class Camera2 extends CameraViewImpl {
+class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, MediaRecorder.OnErrorListener {
 
     private static final String TAG = "Camera2";
 
@@ -186,6 +190,12 @@ class Camera2 extends CameraViewImpl {
 
     private ImageReader mImageReader;
 
+    private MediaRecorder mMediaRecorder;
+
+    private String mVideoPath;
+
+    private boolean mIsRecording;
+
     private final SizeMap mPreviewSizes = new SizeMap();
 
     private final SizeMap mPictureSizes = new SizeMap();
@@ -208,7 +218,7 @@ class Camera2 extends CameraViewImpl {
 
     private int mWhiteBalance;
 
-  Camera2(Callback callback, PreviewImpl preview, Context context) {
+    Camera2(Callback callback, PreviewImpl preview, Context context) {
         super(callback, preview);
         mCameraManager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
         mPreview.setCallback(new PreviewImpl.Callback() {
@@ -251,6 +261,17 @@ class Camera2 extends CameraViewImpl {
         if (mImageReader != null) {
             mImageReader.close();
             mImageReader = null;
+        }
+        if (mMediaRecorder != null) {
+            mMediaRecorder.stop();
+            mMediaRecorder.reset();
+            mMediaRecorder.release();
+            mMediaRecorder = null;
+
+            if (mIsRecording) {
+                mCallback.onVideoRecorded(mVideoPath);
+                mIsRecording = false;
+            }
         }
     }
 
@@ -362,6 +383,52 @@ class Camera2 extends CameraViewImpl {
             lockFocus();
         } else {
             captureStillPicture();
+        }
+    }
+
+    @Override
+    boolean record(String path, int maxDuration, int maxFileSize, boolean recordAudio, CamcorderProfile profile) {
+        if (!mIsRecording) {
+            setUpMediaRecorder(path, maxDuration, maxFileSize, recordAudio, profile);
+            try {
+                mMediaRecorder.prepare();
+
+                if (mCaptureSession != null) {
+                    mCaptureSession.close();
+                    mCaptureSession = null;
+                }
+
+                Size size = chooseOptimalSize();
+                mPreview.setBufferSize(size.getWidth(), size.getHeight());
+                Surface surface = mPreview.getSurface();
+                Surface mMediaRecorderSurface = mMediaRecorder.getSurface();
+
+                mPreviewRequestBuilder = mCamera.createCaptureRequest(CameraDevice.TEMPLATE_RECORD);
+                mPreviewRequestBuilder.addTarget(surface);
+                mPreviewRequestBuilder.addTarget(mMediaRecorderSurface);
+                mCamera.createCaptureSession(Arrays.asList(surface, mMediaRecorderSurface),
+                    mSessionCallback, null);
+                mMediaRecorder.start();
+                mIsRecording = true;
+                return true;
+            } catch (CameraAccessException | IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    void stopRecording() {
+        if (mIsRecording) {
+            stopMediaRecorder();
+
+            if (mCaptureSession != null) {
+                mCaptureSession.close();
+                mCaptureSession = null;
+            }
+            startCaptureSession();
         }
     }
 
@@ -791,14 +858,7 @@ class Camera2 extends CameraViewImpl {
                             CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
                     break;
             }
-            // Calculate JPEG orientation.
-            @SuppressWarnings("ConstantConditions")
-            int sensorOrientation = mCameraCharacteristics.get(
-                    CameraCharacteristics.SENSOR_ORIENTATION);
-            captureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION,
-                    (sensorOrientation +
-                            mDisplayOrientation * (mFacing == Constants.FACING_FRONT ? 1 : -1) +
-                            360) % 360);
+            captureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, getOutputRotation());
             // Stop preview and capture a still picture.
             mCaptureSession.stopRepeating();
             mCaptureSession.capture(captureRequestBuilder.build(),
@@ -813,6 +873,79 @@ class Camera2 extends CameraViewImpl {
         } catch (CameraAccessException e) {
             Log.e(TAG, "Cannot capture a still picture.", e);
         }
+    }
+
+    private int getOutputRotation() {
+        @SuppressWarnings("ConstantConditions")
+        int sensorOrientation = mCameraCharacteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+        return (sensorOrientation +
+                mDisplayOrientation * (mFacing == Constants.FACING_FRONT ? 1 : -1) +
+                360) % 360;
+    }
+
+    private void setUpMediaRecorder(String path, int maxDuration, int maxFileSize, boolean recordAudio, CamcorderProfile profile) {
+        mMediaRecorder = new MediaRecorder();
+
+        mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
+        if (recordAudio) {
+            mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        }
+
+        mMediaRecorder.setOutputFile(path);
+        mVideoPath = path;
+
+        if (CamcorderProfile.hasProfile(Integer.parseInt(mCameraId), profile.quality)) {
+            setCamcorderProfile(profile, recordAudio);
+        } else {
+            setCamcorderProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH), recordAudio);
+        }
+
+        mMediaRecorder.setOrientationHint(getOutputRotation());
+
+        if (maxDuration != -1) {
+            mMediaRecorder.setMaxDuration(maxDuration);
+        }
+        if (maxFileSize != -1) {
+            mMediaRecorder.setMaxFileSize(maxFileSize);
+        }
+
+        mMediaRecorder.setOnInfoListener(this);
+        mMediaRecorder.setOnErrorListener(this);
+    }
+
+    private void setCamcorderProfile(CamcorderProfile profile, boolean recordAudio) {
+        mMediaRecorder.setOutputFormat(profile.fileFormat);
+        mMediaRecorder.setVideoFrameRate(profile.videoFrameRate);
+        mMediaRecorder.setVideoSize(profile.videoFrameWidth, profile.videoFrameHeight);
+        mMediaRecorder.setVideoEncodingBitRate(profile.videoBitRate);
+        mMediaRecorder.setVideoEncoder(profile.videoCodec);
+        if (recordAudio) {
+            mMediaRecorder.setAudioEncodingBitRate(profile.audioBitRate);
+            mMediaRecorder.setAudioChannels(profile.audioChannels);
+            mMediaRecorder.setAudioSamplingRate(profile.audioSampleRate);
+            mMediaRecorder.setAudioEncoder(profile.audioCodec);
+        }
+    }
+
+    private void stopMediaRecorder() {
+        mIsRecording = false;
+        try {
+            mCaptureSession.stopRepeating();
+            mCaptureSession.abortCaptures();
+            mMediaRecorder.stop();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        mMediaRecorder.reset();
+        mMediaRecorder.release();
+        mMediaRecorder = null;
+
+        if (mVideoPath == null || !new File(mVideoPath).exists()) {
+            mCallback.onVideoRecorded(null);
+            return;
+        }
+        mCallback.onVideoRecorded(mVideoPath);
+        mVideoPath = null;
     }
 
     /**
@@ -834,6 +967,23 @@ class Camera2 extends CameraViewImpl {
         } catch (CameraAccessException e) {
             Log.e(TAG, "Failed to restart camera preview.", e);
         }
+    }
+
+    /**
+     * Called when an something occurs while recording.
+     */
+    public void onInfo(MediaRecorder mr, int what, int extra) {
+        if ( what == MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED ||
+            what == MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED) {
+            stopRecording();
+        }
+    }
+
+    /**
+     * Called when an error occurs while recording.
+     */
+    public void onError(MediaRecorder mr, int what, int extra) {
+        stopRecording();
     }
 
     /**

@@ -25,6 +25,12 @@ public class CameraModule extends ReactContextBaseJavaModule {
   private static ReactApplicationContext mReactContext;
   private static ScopedContext mScopedContext;
 
+  static final int VIDEO_2160P = 0;
+  static final int VIDEO_1080P = 1;
+  static final int VIDEO_720P = 2;
+  static final int VIDEO_480P = 3;
+  static final int VIDEO_4x3 = 4;
+
   public CameraModule(ReactApplicationContext reactContext, ScopedContext scopedContext) {
     super(reactContext);
     mReactContext = reactContext;
@@ -53,6 +59,7 @@ public class CameraModule extends ReactContextBaseJavaModule {
         put("FlashMode", getFlashModeConstants());
         put("AutoFocus", getAutoFocusConstants());
         put("WhiteBalance", getWhiteBalanceConstants());
+        put("VideoQuality", getVideoQualityConstants());
       }
 
       private Map<String, Object> getTypeConstants() {
@@ -96,12 +103,34 @@ public class CameraModule extends ReactContextBaseJavaModule {
           }
         });
       }
+
+      private Map<String, Object> getVideoQualityConstants() {
+        return Collections.unmodifiableMap(new HashMap<String, Object>() {
+          {
+            put("2160p", VIDEO_2160P);
+            put("1080p", VIDEO_1080P);
+            put("720p", VIDEO_720P);
+            put("480p", VIDEO_480P);
+            put("4:3", VIDEO_4x3);
+          }
+        });
+      }
     });
   }
 
   @ReactMethod
   public void takePicture(ReadableMap options, final Promise promise) {
     CameraViewManager.getInstance().takePicture(options, promise);
+  }
+
+  @ReactMethod
+  public void record(ReadableMap options, final Promise promise) {
+    CameraViewManager.getInstance().record(options, promise);
+  }
+
+  @ReactMethod
+  public void stopRecording() {
+    CameraViewManager.getInstance().stopRecording();
   }
 
   @ReactMethod

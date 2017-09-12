@@ -19,6 +19,8 @@
 @property (assign, nonatomic) float focusDepth;
 @property (assign, nonatomic) NSInteger whiteBalance;
 @property (nonatomic, assign, getter=isSessionPaused) BOOL paused;
+@property (nonatomic, strong) RCTPromiseResolveBlock videoRecordedResolve;
+@property (nonatomic, strong) RCTPromiseRejectBlock videoRecordedReject;
 
 @end
 
@@ -96,6 +98,13 @@ RCT_EXPORT_VIEW_PROPERTY(onCameraReady, RCTDirectEventBlock);
                @"incandescent" : @(EXCameraWhiteBalanceIncandescent),
                @"fluorescent" : @(EXCameraWhiteBalanceFluorescent)
                },
+           @"VideoQuality": @{
+               @"2160p": @(EXCameraVideo2160p),
+               @"1080p": @(EXCameraVideo1080p),
+               @"720p": @(EXCameraVideo720p),
+               @"480p": @(EXCameraVideo4x3),
+               @"4:3": @(EXCameraVideo4x3),
+               }
            };
 }
 
@@ -364,7 +373,7 @@ RCT_REMAP_METHOD(takePicture,
   resolve(response);
 #else
   AVCaptureConnection *connection = [self.stillImageOutput connectionWithMediaType:AVMediaTypeVideo];
-  [connection setVideoOrientation:(AVCaptureVideoOrientation) [self convertToAVCaptureVideoOrientation:[[UIApplication sharedApplication] statusBarOrientation]]];
+  [connection setVideoOrientation:[self convertToAVCaptureVideoOrientation:[[UIApplication sharedApplication] statusBarOrientation]]];
   [self.stillImageOutput captureStillImageAsynchronouslyFromConnection:connection completionHandler: ^(CMSampleBufferRef imageSampleBuffer, NSError *error) {
     if (imageSampleBuffer && !error) {
       NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageSampleBuffer];
@@ -374,23 +383,80 @@ RCT_REMAP_METHOD(takePicture,
 
       NSData *takenImageData = UIImageJPEGRepresentation(takenImage, quality * 100);
       response[@"uri"] = [self writeImage:takenImageData];
-      
+
       response[@"width"] = @(takenImage.size.width);
       response[@"height"] = @(takenImage.size.height);
-      
+
       if ([options[@"base64"] boolValue]) {
         response[@"base64"] = [takenImageData base64EncodedStringWithOptions:0];
       }
-      
+
       if ([options[@"exif"] boolValue]) {
         [self updatePhotoMetadata:imageSampleBuffer response:response];
       }
-      
+
       resolve(response);
     } else {
       reject(@"E_IMAGE_CAPTURE_FAILED", @"Image could not be captured", error);
     }
   }];
+#endif
+}
+
+RCT_REMAP_METHOD(record,
+                 withOptions:(NSDictionary *)options
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject) {
+#if TARGET_IPHONE_SIMULATOR
+  reject(@"E_RECORDING_FAILED", @"Video recording is not supported on a simulator.", nil);
+  return;
+#endif
+  if (self.movieFileOutput != nil && !self.movieFileOutput.isRecording) {
+    if (options[@"maxDuration"]) {
+      Float64 maxDuration = [options[@"maxDuration"] floatValue];
+      self.movieFileOutput.maxRecordedDuration = CMTimeMakeWithSeconds(maxDuration, 30);
+    }
+
+    if (options[@"maxFileSize"]) {
+      self.movieFileOutput.maxRecordedFileSize = [options[@"maxFileSize"] integerValue];
+    }
+
+    if (options[@"quality"]) {
+      [self updateSessionPreset:[[self class] captureSessionPresetForVideoResolution:(EXCameraVideoResolution)options[@"quality"]]];
+    }
+    
+    [self updateSessionAudio:!!options[@"mute"]];
+
+    AVCaptureConnection *connection = [self.movieFileOutput connectionWithMediaType:AVMediaTypeVideo];
+    [connection setVideoOrientation:[self convertToAVCaptureVideoOrientation:[[UIApplication sharedApplication] statusBarOrientation]]];
+
+    dispatch_async(self.sessionQueue, ^{
+      NSURL *outputURL = [[NSURL alloc] initFileURLWithPath:[self generateFileName:@".mov"]];
+      [self.movieFileOutput startRecordingToOutputFileURL:outputURL recordingDelegate:self];
+      self.videoRecordedResolve = resolve;
+      self.videoRecordedReject = reject;
+    });
+  } else {
+    reject(@"E_RECORDING_FAILED", @"Starting video recording failed. Another recording might be in progress.", nil);
+  }
+}
+
+RCT_EXPORT_METHOD(stopRecording) {
+  [self.movieFileOutput stopRecording];
+}
+
+- (void)updateSessionPreset:(NSString *)preset
+{
+#if !(TARGET_IPHONE_SIMULATOR)
+  if (preset) {
+    dispatch_async(self.sessionQueue, ^{
+      [self.session beginConfiguration];
+      if ([self.session canSetSessionPreset:preset]) {
+        self.session.sessionPreset = preset;
+      }
+      [self.session commitConfiguration];
+    });
+  }
 #endif
 }
 
@@ -412,6 +478,13 @@ RCT_REMAP_METHOD(takePicture,
       self.stillImageOutput = stillImageOutput;
     }
     
+    AVCaptureMovieFileOutput *movieFileOutput = [[AVCaptureMovieFileOutput alloc] init];
+
+    if ([self.session canAddOutput:movieFileOutput]) {
+      [self.session addOutput:movieFileOutput];
+      self.movieFileOutput = movieFileOutput;
+    }
+
     __weak EXCameraManager *weakSelf = self;
     [self setRuntimeErrorHandlingObserver:
      [NSNotificationCenter.defaultCenter
@@ -462,12 +535,8 @@ RCT_REMAP_METHOD(takePicture,
     [self.session beginConfiguration];
     
     NSError *error = nil;
-    AVCaptureDevice *captureDevice =
-    [self deviceWithMediaType:AVMediaTypeVideo
-           preferringPosition:self.presetCamera];
-    
-    AVCaptureDeviceInput *captureDeviceInput =
-    [AVCaptureDeviceInput deviceInputWithDevice:captureDevice error:&error];
+    AVCaptureDevice *captureDevice = [self deviceWithMediaType:AVMediaTypeVideo preferringPosition:self.presetCamera];
+    AVCaptureDeviceInput *captureDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:captureDevice error:&error];
     
     if (error || captureDeviceInput == nil) {
       RCTLog(@"%s: %@", __func__, error);
@@ -485,11 +554,72 @@ RCT_REMAP_METHOD(takePicture,
       [self updateFocusDepth];
       [self updateWhiteBalance];
       self.previewLayer.connection.videoOrientation = [self convertToAVCaptureVideoOrientation:[[UIApplication sharedApplication] statusBarOrientation]];
-
     }
     
     [self.session commitConfiguration];
   });
+}
+
+- (void)updateSessionAudio:(BOOL)isMuted
+{
+  dispatch_async(self.sessionQueue, ^{
+    [self.session beginConfiguration];
+
+    for (AVCaptureDeviceInput* input in [self.session inputs]) {
+      if ([input.device hasMediaType:AVMediaTypeAudio]) {
+        if (isMuted) {
+          [self.session removeInput:input];
+        }
+        return;
+      }
+    }
+
+    if (!isMuted) {
+      NSError *error = nil;
+
+      AVCaptureDevice *audioCaptureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeAudio];
+      AVCaptureDeviceInput *audioDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:audioCaptureDevice error:&error];
+
+      if (error || audioDeviceInput == nil) {
+        RCTLogWarn(@"%s: %@", __func__, error);
+        return;
+      }
+
+      if ([self.session canAddInput:audioDeviceInput]) {
+        [self.session addInput:audioDeviceInput];
+      }
+    }
+
+    [self.session commitConfiguration];
+  });
+}
+
+- (void)captureOutput:(AVCaptureFileOutput *)captureOutput
+didFinishRecordingToOutputFileAtURL:(NSURL *)outputFileURL
+      fromConnections:(NSArray *)connections
+                error:(NSError *)error
+{
+  BOOL success = YES;
+  if ([error code] != noErr) {
+    id value = [[error userInfo] objectForKey:AVErrorRecordingSuccessfullyFinishedKey];
+    if (value) {
+      success = [value boolValue];
+    }
+  }
+  if (success && self.videoRecordedResolve != nil) {
+    self.videoRecordedResolve(@{ @"uri": outputFileURL.absoluteString });
+  } else if (self.videoRecordedReject != nil) {
+    self.videoRecordedReject(@"E_RECORDING_FAILED", @"An error occurred while recording a video.", error);
+  }
+  self.videoRecordedResolve = nil;
+  self.videoRecordedReject = nil;
+  // reset recording settings
+  self.movieFileOutput.maxRecordedDuration = kCMTimeInvalid;
+  self.movieFileOutput.maxRecordedFileSize = 0;
+
+  if (self.session.sessionPreset != AVCaptureSessionPresetHigh) {
+    [self updateSessionPreset:AVCaptureSessionPresetHigh];
+  }
 }
 
 - (void)bridgeDidForeground:(NSNotification *)notification
@@ -529,12 +659,17 @@ RCT_REMAP_METHOD(takePicture,
   return captureDevice;
 }
 
-- (NSString *)writeImage:(NSData *)image
+- (NSString *)generateFileName:(NSString *)extension
 {
-  NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:@".jpg"];
+  NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:extension];
   NSString *directory = [self.bridge.scopedModules.fileSystem.cachesDirectory stringByAppendingPathComponent:@"Camera"];
   [EXFileSystem ensureDirExistsWithPath:directory];
-  NSString *path = [directory stringByAppendingPathComponent:fileName];
+  return [directory stringByAppendingPathComponent:fileName];
+}
+
+- (NSString *)writeImage:(NSData *)image
+{
+  NSString *path = [self generateFileName:@".jpg"];
   [image writeToFile:path atomically:YES];
   NSURL *fileURL = [NSURL fileURLWithPath:path];
   return [fileURL absoluteString];
@@ -547,7 +682,7 @@ RCT_REMAP_METHOD(takePicture,
   size_t width = CGImageGetWidth(takenCGImage);
   size_t height = CGImageGetHeight(takenCGImage);
   CGRect cropRect = CGRectMake(outputRect.origin.x * width, outputRect.origin.y * height, outputRect.size.width * width, outputRect.size.height * height);
-  
+
   CGImageRef cropCGImage = CGImageCreateWithImageInRect(takenCGImage, cropRect);
   image = [UIImage imageWithCGImage:cropCGImage scale:image.scale orientation:image.imageOrientation];
   CGImageRelease(cropCGImage);
@@ -566,7 +701,7 @@ RCT_REMAP_METHOD(takePicture,
       metadata[[@"GPS" stringByAppendingString:gpsKey]] = gps[gpsKey];
     }
   }
-  
+
   response[@"exif"] = metadata;
 }
 
@@ -616,6 +751,22 @@ RCT_REMAP_METHOD(takePicture,
            @(EXCameraWhiteBalanceIncandescent): @3000,
            @(EXCameraWhiteBalanceFluorescent): @4200,
            };
+}
+
++ (NSString *)captureSessionPresetForVideoResolution:(EXCameraVideoResolution)resolution
+{
+  switch (resolution) {
+    case EXCameraVideo2160p:
+      return AVCaptureSessionPreset3840x2160;
+    case EXCameraVideo1080p:
+      return AVCaptureSessionPreset1920x1080;
+    case EXCameraVideo720p:
+      return AVCaptureSessionPreset1280x720;
+    case EXCameraVideo4x3:
+      return AVCaptureSessionPreset640x480;
+    default:
+      return AVCaptureSessionPresetHigh;
+  }
 }
 
 @end

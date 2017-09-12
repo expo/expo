@@ -39,13 +39,21 @@ typedef NS_ENUM(NSInteger, EXCameraExposureMode) {
   EXCameraExposureCustom = AVCaptureExposureModeCustom,
 };
 
+typedef NS_ENUM(NSInteger, EXCameraVideoResolution) {
+  EXCameraVideo2160p = 0,
+  EXCameraVideo1080p = 1,
+  EXCameraVideo720p = 2,
+  EXCameraVideo4x3 = 3,
+};
+
 @interface EXCameraManager
-: RCTViewManager <RCTBridgeModule, AVCaptureMetadataOutputObjectsDelegate>
+: RCTViewManager <RCTBridgeModule, AVCaptureMetadataOutputObjectsDelegate, AVCaptureFileOutputRecordingDelegate>
 
 @property(nonatomic, strong) dispatch_queue_t sessionQueue;
 @property(nonatomic, strong) AVCaptureSession *session;
 @property(nonatomic, strong) AVCaptureDeviceInput *videoCaptureDeviceInput;
 @property(nonatomic, strong) AVCaptureStillImageOutput *stillImageOutput;
+@property(nonatomic, strong) AVCaptureMovieFileOutput *movieFileOutput;
 @property(nonatomic, strong) id runtimeErrorHandlingObserver;
 @property(nonatomic, assign) NSInteger presetCamera;
 @property(nonatomic, strong) AVCaptureVideoPreviewLayer *previewLayer;

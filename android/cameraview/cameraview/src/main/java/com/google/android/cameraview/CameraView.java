@@ -18,7 +18,7 @@ package com.google.android.cameraview;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.TypedArray;
+import android.media.CamcorderProfile;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -435,6 +435,23 @@ public class CameraView extends FrameLayout {
         mImpl.takePicture();
     }
 
+    /**
+     * Record a video and save it to file. The result will be returned to
+     * {@link Callback#onVideoRecorded(CameraView, String)}.
+     * @param path Path to file that video will be saved to.
+     * @param maxDuration Maximum duration of the recording, in seconds.
+     * @param maxFileSize Maximum recording file size, in bytes.
+     * @param profile Quality profile of the recording.
+     */
+    public boolean record(String path, int maxDuration, int maxFileSize,
+                          boolean recordAudio, CamcorderProfile profile) {
+        return mImpl.record(path, maxDuration, maxFileSize, recordAudio, profile);
+    }
+
+    public void stopRecording() {
+        mImpl.stopRecording();
+    }
+
     private class CallbackBridge implements CameraViewImpl.Callback {
 
         private final ArrayList<Callback> mCallbacks = new ArrayList<>();
@@ -475,6 +492,13 @@ public class CameraView extends FrameLayout {
             for (Callback callback : mCallbacks) {
                 callback.onPictureTaken(CameraView.this, data);
             }
+        }
+
+        @Override
+        public void onVideoRecorded(String path) {
+          for (Callback callback : mCallbacks) {
+            callback.onVideoRecorded(CameraView.this, path);
+          }
         }
 
         public void reserveRequestLayoutOnOpen() {
@@ -574,6 +598,15 @@ public class CameraView extends FrameLayout {
          * @param data       JPEG data.
          */
         public void onPictureTaken(CameraView cameraView, byte[] data) {
+        }
+
+        /**
+         * Called when a video is recorded.
+         *
+         * @param cameraView The associated {@link CameraView}.
+         * @param path       Path to recoredd video file.
+         */
+        public void onVideoRecorded(CameraView cameraView, String path) {
         }
     }
 

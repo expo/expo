@@ -16,6 +16,7 @@
 
 package com.google.android.cameraview;
 
+import android.media.CamcorderProfile;
 import android.view.View;
 
 import java.util.Set;
@@ -67,6 +68,11 @@ abstract class CameraViewImpl {
 
     abstract void takePicture();
 
+    abstract boolean record(String path, int maxDuration, int maxFileSize,
+                            boolean recordAudio, CamcorderProfile profile);
+
+    abstract void stopRecording();
+
     abstract void setDisplayOrientation(int displayOrientation);
 
     abstract void setFocusDepth(float value);
@@ -88,6 +94,8 @@ abstract class CameraViewImpl {
         void onCameraClosed();
 
         void onPictureTaken(byte[] data);
+
+        void onVideoRecorded(String path);
 
     }
 
