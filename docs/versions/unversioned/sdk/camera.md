@@ -2,9 +2,9 @@
 title: Camera
 ---
 
-A React component that renders a preview for the device's either front or back camera. Camera's parameters like zoom, auto focus, white balance and flash mode are adjustable. With use of `Camera` one can also take photos that are saved to the app's cache. Only one Camera preview is supported by Expo right now.
+A React component that renders a preview for the device's either front or back camera. Camera's parameters like zoom, auto focus, white balance and flash mode are adjustable. With use of `Camera` one can also take photos and record videos that are saved to the app's cache. Only one Camera preview is supported by Expo right now.
 
-Requires `Permissions.CAMERA`.
+Requires `Permissions.CAMERA`. Video recording requires `Permissions.AUDIO_RECORDING`.
 
 ### Basic Example
 
@@ -139,6 +139,29 @@ Takes a picture and saves it to app's cache directory. Photos are rotated to mat
 Returns a Promise that resolves to an object: `{ uri, width, height, exif, base64 }` where `uri` is a URI to the local image file (useable as the source for an `Image` element) and `width, height` specify the dimensions of the image. `base64` is included if the `base64` option was truthy, and is a string containing the JPEG data of the image in Base64--prepend that with `'data:image/jpg;base64,'` to get a data URI, which you can use as the source for an `Image` element for example. `exif` is included if the `exif` option was truthy, and is an object containing EXIF data for the image--the names of its properties are EXIF tags and their values are the values for those tags.
 
 The local image URI is temporary. Use `Expo.FileSystem.copyAsync` to make a permanent copy of the image.
+
+### `recordAsync`
+
+Starts recording a video that will be saved to cache directory. Videos are rotated to match device's orientation. Flipping camera during a recording results in stopping it.
+
+#### Arguments
+
+-   **options (_object_)** --
+
+      A map of options:
+
+    -   **quality (_VideoQuality_)** -- Specify the quality of recorded video. Usage: `Camera.Constants.VideoQuality['<value>']`, possible values: for 16:9 resolution `2160p`, `1080p`, `720p`, `480p` (_Android only_) and for 4:3 `4:3` (the size is 640x480). If the chosen quality is not available for a device, the highest available is chosen.
+    -   **maxDuration (_number_)** -- Maximum video duration in seconds.
+    -   **maxFileSize (_number_)** -- Maximum video file size in bytes.
+    -   **mute (_boolean_)** -- If present, video will be recorded with no sound.
+
+#### Returns
+
+Returns a Promise that resolves to an object containing video file `uri` property. The Promise is returned if `stopRecording` was invoked, one of `maxDuration` and `maxFileSize` is reached or camera preview is stopped.
+
+### `stopRecording`
+
+Stops recording if any is in progress.
 
 ### `getSupportedRatiosAsync`
 
