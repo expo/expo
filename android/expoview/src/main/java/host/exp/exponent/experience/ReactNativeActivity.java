@@ -117,6 +117,14 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     return mIsInForeground;
   }
 
+  public View getRootView() {
+    if (mReactRootView == null) {
+      return null;
+    } else {
+      return (View) mReactRootView.get();
+    }
+  }
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
