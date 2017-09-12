@@ -419,7 +419,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
 
   // We need to explicitly get latitude, longitude, altitude with their specific accessor functions
   // separately so we skip them in this list.
-  static final String[][] exifTags = new String[][]{
+  public static final String[][] exifTags = new String[][]{
       {"string", ExifInterface.TAG_ARTIST},
       {"int", ExifInterface.TAG_BITS_PER_SAMPLE},
       {"int", ExifInterface.TAG_COMPRESSION},

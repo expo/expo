@@ -5,6 +5,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.google.android.cameraview.AspectRatio;
 import com.google.android.cameraview.Constants;
@@ -99,8 +100,8 @@ public class CameraModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void takePicture(final Promise promise) {
-    CameraViewManager.getInstance().takePicture(promise);
+  public void takePicture(ReadableMap options, final Promise promise) {
+    CameraViewManager.getInstance().takePicture(options, promise);
   }
 
   @ReactMethod

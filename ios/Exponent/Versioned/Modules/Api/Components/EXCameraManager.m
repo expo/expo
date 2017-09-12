@@ -346,11 +346,22 @@ RCT_CUSTOM_VIEW_PROPERTY(whiteBalance, NSInteger, EXCamera)
 }
 
 RCT_REMAP_METHOD(takePicture,
+                 options:(NSDictionary *)options
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject) {
   
+  NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
+  float quality = [options[@"quality"] floatValue];
 #if TARGET_IPHONE_SIMULATOR
-  resolve([self writeImage:[self generatePhoto]]);
+  UIImage *generatedPhoto = [self generatePhoto];
+  NSData *photoData = UIImageJPEGRepresentation(generatedPhoto, quality * 100);
+  response[@"uri"] = [self writeImage:photoData];
+  response[@"width"] = @(generatedPhoto.size.width);
+  response[@"height"] = @(generatedPhoto.size.height);
+  if ([options[@"base64"] boolValue]) {
+    response[@"base64"] = [photoData base64EncodedStringWithOptions:0];
+  }
+  resolve(response);
 #else
   AVCaptureConnection *connection = [self.stillImageOutput connectionWithMediaType:AVMediaTypeVideo];
   [connection setVideoOrientation:(AVCaptureVideoOrientation) [self convertToAVCaptureVideoOrientation:[[UIApplication sharedApplication] statusBarOrientation]]];
@@ -358,19 +369,24 @@ RCT_REMAP_METHOD(takePicture,
     if (imageSampleBuffer && !error) {
       NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageSampleBuffer];
 
-      // crop image to preview size
       UIImage *takenImage = [UIImage imageWithData:imageData];
-      CGRect outputRect = [_previewLayer metadataOutputRectOfInterestForRect:_previewLayer.bounds];
-      CGImageRef takenCGImage = takenImage.CGImage;
-      size_t width = CGImageGetWidth(takenCGImage);
-      size_t height = CGImageGetHeight(takenCGImage);
-      CGRect cropRect = CGRectMake(outputRect.origin.x * width, outputRect.origin.y * height, outputRect.size.width * width, outputRect.size.height * height);
+      takenImage = [self cropImage:takenImage];
 
-      CGImageRef cropCGImage = CGImageCreateWithImageInRect(takenCGImage, cropRect);
-      takenImage = [UIImage imageWithCGImage:cropCGImage scale:1 orientation:takenImage.imageOrientation];
-      CGImageRelease(cropCGImage);
-
-      resolve([self writeImage:takenImage]);
+      NSData *takenImageData = UIImageJPEGRepresentation(takenImage, quality * 100);
+      response[@"uri"] = [self writeImage:takenImageData];
+      
+      response[@"width"] = @(takenImage.size.width);
+      response[@"height"] = @(takenImage.size.height);
+      
+      if ([options[@"base64"] boolValue]) {
+        response[@"base64"] = [takenImageData base64EncodedStringWithOptions:0];
+      }
+      
+      if ([options[@"exif"] boolValue]) {
+        [self updatePhotoMetadata:imageSampleBuffer response:response];
+      }
+      
+      resolve(response);
     } else {
       reject(@"E_IMAGE_CAPTURE_FAILED", @"Image could not be captured", error);
     }
@@ -513,15 +529,45 @@ RCT_REMAP_METHOD(takePicture,
   return captureDevice;
 }
 
-- (NSString *)writeImage:(UIImage *)image
+- (NSString *)writeImage:(NSData *)image
 {
   NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:@".jpg"];
   NSString *directory = [self.bridge.scopedModules.fileSystem.cachesDirectory stringByAppendingPathComponent:@"Camera"];
   [EXFileSystem ensureDirExistsWithPath:directory];
   NSString *path = [directory stringByAppendingPathComponent:fileName];
-  [UIImageJPEGRepresentation(image, 100) writeToFile:path atomically:YES];
+  [image writeToFile:path atomically:YES];
   NSURL *fileURL = [NSURL fileURLWithPath:path];
   return [fileURL absoluteString];
+}
+
+- (UIImage *)cropImage:(UIImage *)image
+{
+  CGRect outputRect = [_previewLayer metadataOutputRectOfInterestForRect:self.camera.frame];
+  CGImageRef takenCGImage = image.CGImage;
+  size_t width = CGImageGetWidth(takenCGImage);
+  size_t height = CGImageGetHeight(takenCGImage);
+  CGRect cropRect = CGRectMake(outputRect.origin.x * width, outputRect.origin.y * height, outputRect.size.width * width, outputRect.size.height * height);
+  
+  CGImageRef cropCGImage = CGImageCreateWithImageInRect(takenCGImage, cropRect);
+  image = [UIImage imageWithCGImage:cropCGImage scale:image.scale orientation:image.imageOrientation];
+  CGImageRelease(cropCGImage);
+  return image;
+}
+
+- (void)updatePhotoMetadata:(CMSampleBufferRef)imageSampleBuffer response:(NSMutableDictionary *)response
+{
+  CFDictionaryRef exifAttachments = CMGetAttachment(imageSampleBuffer, kCGImagePropertyExifDictionary, NULL);
+  NSMutableDictionary *metadata = (__bridge NSMutableDictionary*)exifAttachments;
+  metadata[(NSString *)kCGImagePropertyExifPixelYDimension] = response[@"width"];
+  metadata[(NSString *)kCGImagePropertyExifPixelXDimension] = response[@"height"];
+  NSDictionary *gps = metadata[(NSString *)kCGImagePropertyGPSDictionary];
+  if (gps) {
+    for (NSString *gpsKey in gps) {
+      metadata[[@"GPS" stringByAppendingString:gpsKey]] = gps[gpsKey];
+    }
+  }
+  
+  response[@"exif"] = metadata;
 }
 
 - (UIImage *)generatePhoto

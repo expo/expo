@@ -6,14 +6,19 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Build;
 import android.support.annotation.Nullable;
+import android.util.Base64;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.google.android.cameraview.AspectRatio;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -108,17 +113,26 @@ public class CameraViewManager extends ViewGroupManager<ExpoCameraView> {
     view.setWhiteBalance(whiteBalance);
   }
 
-  public void takePicture(Promise promise) {
+  public void takePicture(ReadableMap options, Promise promise) {
     if (!Build.FINGERPRINT.contains("generic")) {
       if (mCameraView.isCameraOpened()) {
-        mCameraView.takePicture(promise);
+        mCameraView.takePicture(options, promise);
       } else {
         promise.reject("E_CAMERA_UNAVAILABLE", "Camera is not running");
       }
     } else {
-      promise.resolve(ExpFileUtils.uriFromFile(
-        new File(mCameraView.writeImage(generateSimulatorPhoto()))
-      ).toString());
+      int quality = (int) (options.getDouble("quality") * 100);
+      WritableMap response = Arguments.createMap();
+      Bitmap image = generateSimulatorPhoto();
+      response.putInt("width", image.getWidth());
+      response.putInt("height", image.getHeight());
+      if (options.hasKey("base64")) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.JPEG, quality, out);
+        response.putString("base64", Base64.encodeToString(out.toByteArray(), Base64.DEFAULT));
+      }
+      response.putString("uri", ExpFileUtils.uriFromFile(new File(mCameraView.writeImage(image, quality))).toString());
+      promise.resolve(response);
     }
   }
 
