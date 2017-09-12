@@ -355,13 +355,13 @@ class BrowserScreen extends React.Component {
 
   _renderManifestLoadingBackgroundImage() {
     let { task } = this.props;
-    if (task) {
-      let { manifest } = task;
+    let { manifest } = task;
+    if (manifest) {
       var backgroundImageUrl;
       if (this._isNewSplashScreenStyle(manifest)) {
         backgroundImageUrl = this._getNewSplashBackgroungImage(manifest);
       }
-      let resizeMode = this._getBackgroundImageResizeMode(resizeMode);
+      let resizeMode = this._getBackgroundImageResizeMode(manifest);
       if (!backgroundImageUrl) {
         backgroundImageUrl = manifest.getIn(['loading', 'backgroundImageUrl']);
       }
