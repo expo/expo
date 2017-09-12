@@ -87,7 +87,15 @@ public class SecureStoreModule extends ReactContextBaseJavaModule {
 
   private String ivKey(final String key) {
     return IV_PREFIX + key;
-  } 
+  }
+
+  private String rsaAlias(final ReadableMap options) {
+    return options.hasKey(ALIAS_KEY) ? options.getString(ALIAS_KEY) : ALIAS;
+  }
+
+  private String aesAlias(final ReadableMap options) {
+    return options.hasKey(ALIAS_KEY) ? (AES_CIPHER + ":" + options.getString(ALIAS_KEY)) : (AES_CIPHER + ":" + ALIAS);
+  }
 
   private void set(final String key, final String value, final ReadableMap options) {
     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mScopedContext);
@@ -172,24 +180,22 @@ public class SecureStoreModule extends ReactContextBaseJavaModule {
                                                                                 UnrecoverableEntryException,
                                                                                 NoSuchProviderException,
                                                                                 Exception {
-    final KeyStore.Entry entry = getKeyEntry(options);
-    if (entry != null) {
-      //If the entry exists, and is an instance of `KeyStore.PrivateKeyEntry`, check if the key was ever encrypted with AES.
-      if (entry instanceof KeyStore.PrivateKeyEntry) {
-        //If an entry in SharedPreferences exists for the IVKey, the value has been encrypted with AES and needs to be decrypted with decryptAES(...)
-        //If there's no entry in SharedPreferences for the IVKey, the value needs to be decrypted with decryptRSA(...).
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mScopedContext);
-        final String ivString = prefs.getString(ivKey(key), null);
-        if (TextUtils.isEmpty(ivString)) {
-          return decryptRSA(key, options);
-        } else {
-          return decryptAES(key, options);
-        }
-      } else {
-        return decryptAES(key, options);
-      }
-    }  else {
-      throw new KeyStoreException("SecureStore could not locate or create a key entry.");
+    KeyStore ks = KeyStore.getInstance(KEYSTORE);
+    ks.load(null);
+    final String aesAlias = aesAlias(options);
+    final String rsaAlias = rsaAlias(options);
+    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mScopedContext);
+    final String ivString = prefs.getString(ivKey(key), null);
+
+    // If an IV Key exists in SharedPrefs, the value has been encrypted with AES and should be decrypted with decryptAES(...).
+    // IF an IV Key doesn't exist in SharedPrefs, check for existence of a PrivateKeyEntry in the Keystore.
+    // A PrivateKeyEntry without a corresponding IV Key indicates the value was never re-encrypted with AES and should be decrypted with decryptRSA(...)
+    if (!TextUtils.isEmpty(ivString) && ks.containsAlias(aesAlias) && ks.entryInstanceOf(aesAlias, SecretKeyEntry.class)) {
+      return decryptAES(key, options);
+    } else if (ks.containsAlias(rsaAlias) && ks.entryInstanceOf(rsaAlias, PrivateKeyEntry.class)) {
+      return decryptRSA(key, options);
+    } else {
+      return null;
     }
   }
 
@@ -246,60 +252,27 @@ public class SecureStoreModule extends ReactContextBaseJavaModule {
     if (TextUtils.isEmpty(encrypted)) {
       return null;
     }
-    KeyStore.PrivateKeyEntry privateKeyEntry = (KeyStore.PrivateKeyEntry) getKeyEntry(options);
-    if (privateKeyEntry != null) {
-      final PrivateKey privateKey = privateKeyEntry.getPrivateKey();
-      Cipher c = Cipher.getInstance(RSA_CIPHER);
-      c.init(Cipher.DECRYPT_MODE, privateKey);
-      byte[] decodedValue = Base64.decode(encrypted.getBytes(), Base64.NO_WRAP);
-      byte[] decodedBytes = c.doFinal(decodedValue);
-      return new String(decodedBytes, 0, decodedBytes.length, ENCODING);
-    } else {
-      throw new KeyStoreException("SecureStore could not locate or create a key entry.");
-    }
+    KeyStore.PrivateKeyEntry privateKeyEntry = (KeyStore.PrivateKeyEntry) getPrivateKeyEntry(options);
+    final PrivateKey privateKey = privateKeyEntry.getPrivateKey();
+    Cipher c = Cipher.getInstance(RSA_CIPHER);
+    c.init(Cipher.DECRYPT_MODE, privateKey);
+    byte[] decodedValue = Base64.decode(encrypted.getBytes(), Base64.DEFAULT);
+    byte[] decodedBytes = c.doFinal(decodedValue);
+    return new String(decodedBytes, 0, decodedBytes.length, ENCODING);
   }
 
-  private KeyStore.Entry getKeyEntry(final ReadableMap options) throws KeyStoreException,
+  private KeyStore.PrivateKeyEntry getPrivateKeyEntry(final ReadableMap options) throws KeyStoreException,
                                                                        CertificateException,
                                                                        NoSuchAlgorithmException,
                                                                        IOException,
                                                                        UnrecoverableEntryException,
                                                                        NoSuchProviderException,
                                                                        InvalidAlgorithmParameterException,
-                                                                       Exception {
+                                                                       Exception {                                                               
     KeyStore ks = KeyStore.getInstance(KEYSTORE);
     ks.load(null);
-    final String alias = options.hasKey(ALIAS_KEY) ? options.getString(ALIAS_KEY) : ALIAS;
-    KeyStore.Entry entry = ks.getEntry(alias, null);
-
-    if (entry == null) {
-      Log.w(TAG, "No key found under alias: " + alias);
-      Log.w(TAG, "Generating new key...");
-      
-      try {
-        createSecretKey(options);
-        ks = KeyStore.getInstance(KEYSTORE);
-        ks.load(null);
-        entry = ks.getEntry(alias, null);
-
-        if (entry == null) {
-          Log.w(TAG, "Generating new key failed...");
-          return null;
-        }
-      } catch (InvalidAlgorithmParameterException e) {
-        Log.w(TAG, "Generating new key failed...");
-        e.printStackTrace();
-        throw e;
-      }
-    }
-    
-    if (!(entry instanceof KeyStore.Entry)) {
-      Log.w(TAG, "Not an instance of a KeyStore.Entry");
-      Log.w(TAG, "Exiting signData()...");
-      return null;
-    }
-
-    return entry;
+    final String alias = rsaAlias(options);
+    return (KeyStore.PrivateKeyEntry) ks.getEntry(alias, null);
   }
 
   private KeyStore.SecretKeyEntry getSecretKeyEntry(final ReadableMap options) throws KeyStoreException,
@@ -312,7 +285,7 @@ public class SecureStoreModule extends ReactContextBaseJavaModule {
                                                                                       Exception {
     KeyStore ks = KeyStore.getInstance(KEYSTORE);
     ks.load(null);
-    final String alias = options.hasKey(ALIAS_KEY) ? (AES_CIPHER + options.getString(ALIAS_KEY)) : (AES_CIPHER + ALIAS);
+    final String alias = aesAlias(options);
     KeyStore.Entry entry = ks.getEntry(alias, null);
 
     if (entry == null) {
@@ -349,7 +322,7 @@ public class SecureStoreModule extends ReactContextBaseJavaModule {
                                                                       NoSuchAlgorithmException,
                                                                       NoSuchProviderException,
                                                                       InvalidAlgorithmParameterException {
-    final String alias = options.hasKey(ALIAS_KEY) ? (AES_CIPHER + options.getString(ALIAS_KEY)) : (AES_CIPHER + ALIAS);
+    final String alias = aesAlias(options);
     KeyGenerator keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, KEYSTORE);
     keyGenerator.init(
       new KeyGenParameterSpec.Builder(alias, KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
