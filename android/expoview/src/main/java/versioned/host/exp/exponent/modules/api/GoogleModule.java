@@ -77,13 +77,14 @@ public class GoogleModule extends ReactContextBaseJavaModule implements Activity
 
         String behavior = config.getString("behavior");
         String androidClientId = config.getString("androidClientId");
+        String webClientId = config.hasKey("webClientId") ? config.getString("webClientId") : null;
         ReadableArray scopesConfig = config.getArray("scopes");
         if ("system".equals(behavior)) {
           Scope[] scopes = new Scope[scopesConfig.size()];
           for (int i = 0; i < scopesConfig.size(); i++) {
             scopes[i] = new Scope(scopesConfig.getString(i));
           }
-          systemLogIn(scopes, androidClientId);
+          systemLogIn(scopes, webClientId);
         } else if ("web".equals(behavior)) {
           String[] scopes = new String[scopesConfig.size()];
           for (int i = 0; i < scopesConfig.size(); i++) {
@@ -105,7 +106,7 @@ public class GoogleModule extends ReactContextBaseJavaModule implements Activity
     }
   }
 
-  private void systemLogIn(Scope[] scopes, String clientId) {
+  private void systemLogIn(Scope[] scopes, @Nullable String webClientId) {
     Activity activity = getCurrentActivity();
     if (activity == null) {
       reject("No activity", null);
@@ -122,8 +123,11 @@ public class GoogleModule extends ReactContextBaseJavaModule implements Activity
     }
 
     GoogleSignInOptions.Builder builder = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN);
-    builder.requestIdToken(clientId);
-    builder.requestServerAuthCode(clientId);
+    if (webClientId != null) {
+      builder.requestIdToken(webClientId);
+      builder.requestServerAuthCode(webClientId);
+    }
+
     for (Scope scope : scopes) {
       builder.requestScopes(scope);
     }

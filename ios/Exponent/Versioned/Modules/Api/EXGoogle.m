@@ -50,7 +50,9 @@ RCT_REMAP_METHOD(logInAsync,
   _logInReject = reject;
   NSString *behavior = config[@"behavior"];
   if ([behavior isEqualToString:@"system"]) {
-    [self systemLogInWithClientId:config[@"iosClientId"] scopes:config[@"scopes"]];
+    [self systemLogInWithIosClientId:config[@"iosClientId"]
+                         webClientId:config[@"webClientId"]
+                              scopes:config[@"scopes"]];
   } else if ([behavior isEqualToString:@"web"]) {
     [self webLogInWithClientId:config[@"iosClientId"] scopes:config[@"scopes"]];
   } else {
@@ -58,12 +60,16 @@ RCT_REMAP_METHOD(logInAsync,
   }
 }
 
--(void)systemLogInWithClientId:(NSString *)clientId scopes:(NSArray<NSString *> *)scopes
+-(void)systemLogInWithIosClientId:(NSString *)clientId
+                      webClientId:(NSString *)webClientId
+                           scopes:(NSArray<NSString *> *)scopes
 {
   [GIDSignIn sharedInstance].delegate = self;
   [GIDSignIn sharedInstance].uiDelegate = self;
   [GIDSignIn sharedInstance].clientID = clientId;
-  [GIDSignIn sharedInstance].serverClientID = clientId;
+  if (webClientId != nil) {
+    [GIDSignIn sharedInstance].serverClientID = webClientId;
+  }
   [GIDSignIn sharedInstance].scopes = scopes;
   [GIDSignIn sharedInstance].shouldFetchBasicProfile = YES;
   [[GIDSignIn sharedInstance] signIn];
@@ -110,10 +116,10 @@ RCT_REMAP_METHOD(logInAsync,
       if (authState.isAuthorized) {
         _logInResolve(@{
           @"type": @"success",
-          @"accessToken": authState.lastTokenResponse.accessToken,
-          @"idToken": authState.lastTokenResponse.idToken ? authState.lastTokenResponse.idToken : [NSNull null],
-          @"refreshToken": authState.lastTokenResponse.refreshToken,
-          @"serverAuthCode": authState.lastAuthorizationResponse.authorizationCode,
+          @"accessToken": RCTNullIfNil(authState.lastTokenResponse.accessToken),
+          @"idToken": RCTNullIfNil(authState.lastTokenResponse.idToken),
+          @"refreshToken": RCTNullIfNil(authState.lastTokenResponse.refreshToken),
+          @"serverAuthCode": RCTNullIfNil(authState.lastAuthorizationResponse.authorizationCode),
         });
       } else {
         _logInResolve(@{@"type": @"cancel"});
@@ -136,20 +142,24 @@ RCT_REMAP_METHOD(logInAsync,
 -(void)signIn:(GIDSignIn *)signIn didSignInForUser:(GIDGoogleUser *)user withError:(NSError *)error
 {
   if (error != nil) {
-    _logInReject(EXGoogleErrorCode, @"Google sign in error", error);
+    if (error.code == kGIDSignInErrorCodeCanceled) {
+      _logInResolve(@{@"type": @"cancel"});
+    } else {
+      _logInReject(EXGoogleErrorCode, @"Google sign in error", error);
+    }
   } else {
     _logInResolve(@{
       @"type": @"success",
-      @"accessToken": user.authentication.accessToken,
-      @"serverAuthCode": user.serverAuthCode,
-      @"idToken": user.authentication.idToken ? user.authentication.idToken : [NSNull null],
-      @"refreshToken": user.authentication.refreshToken,
+      @"accessToken": RCTNullIfNil(user.authentication.accessToken),
+      @"serverAuthCode": RCTNullIfNil(user.serverAuthCode),
+      @"idToken": RCTNullIfNil(user.authentication.idToken),
+      @"refreshToken": RCTNullIfNil(user.authentication.refreshToken),
       @"user": @{
-        @"id": user.userID,
-        @"name": user.profile.name,
-        @"familyName": user.profile.familyName,
-        @"givenName": user.profile.givenName,
-        @"email": user.profile.email ? user.profile.email : [NSNull null],
+        @"id": RCTNullIfNil(user.userID),
+        @"name": RCTNullIfNil(user.profile.name),
+        @"familyName": RCTNullIfNil(user.profile.familyName),
+        @"givenName": RCTNullIfNil(user.profile.givenName),
+        @"email": RCTNullIfNil(user.profile.email),
         @"photoUrl": user.profile.hasImage ?
           [[user.profile imageURLWithDimension:96] absoluteString] :
           [NSNull null],
