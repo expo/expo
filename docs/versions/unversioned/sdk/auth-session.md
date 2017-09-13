@@ -31,7 +31,7 @@ How does this work? When you open an authentication session with `AuthSession`, 
 
 If you are authenticating with a popular social provider, when you are ready to ship to production you should be sure that you do not directly request the access token for the user. Instead, most providers give an option to request a one-time code that can be combined with a secret key to request an access token. For an example of this flow, [see the *Confirming Identity* section in the Facebook Login documentation](https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/#confirm).
 
-**Never put any secret keys inside of your app, there is no secure way to do this!** Instead, you should store the key on a server and expose an endpoint to verify that the authentication was successful, and then provide the user data and an authentication token that is generated and useful for only your application. For an example of (link to facebook for example)
+**Never put any secret keys inside of your app, there is no secure way to do this!** Instead, you should store your secret key(s) on a server and expose an endpoint that makes API calls for your client and passes the data back.
 
 
 ## Example
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
 
 ### `AuthSession.startAsync(options)`
 
-Initiate an authentication session with the given options.
+Initiate an authentication session with the given options. Only one `AuthSession` can be active at any given time in your application; if you attempt to open a second session while one is still in progress, the second session will return a value to indicate that `AuthSession` is locked.
 
 #### Arguments
 
@@ -107,10 +107,11 @@ Initiate an authentication session with the given options.
 
 Returns a Promise that resolves to a result object of the following form:
 
-- If the user cancelled the authentication session, the result is `{ type: 'cancel' }`.
+- If the user cancelled the authentication session by closing the browser, the result is `{ type: 'cancel' }`.
 - If the authentication is dismissed manually with `AuthSession.dismiss()`, the result is `{ type: 'dismissed' }`.
-- If the authentication flow is successful, the result is `{type: 'success', params: Object, event: string }`
-- If the authentication flow is returns an error, the result is `{type: 'error', params: Object, errorCode: string, event: string }`
+- If the authentication flow is successful, the result is `{type: 'success', params: Object, event: Object }`
+- If the authentication flow is returns an error, the result is `{type: 'error', params: Object, errorCode: string, event: Object }`
+- If you call `AuthSession.startAsync` more than once before the first call has returned, the result is `{type: 'locked'}`, because only one `AuthSession` can be in progress at any time.
 
 ### `AuthSession.dismiss()`
 
