@@ -142,10 +142,12 @@ void EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceClassName)
       @"label": (devSettings.isLiveReloadEnabled) ? @"Disable Live Reload" : @"Enable Live Reload",
       @"isEnabled": @YES,
     };
+#ifdef EX_ENABLE_UNSAFE_SYSTRACE
     items[@"dev-profiler"] = @{
       @"label": (devSettings.isProfilingEnabled) ? @"Stop Systrace" : @"Start Systrace",
       @"isEnabled": @YES,
     };
+#endif
   } else {
     NSMutableDictionary *liveReloadItem = [@{ @"label": @"Live Reload Unavailable", @"isEnabled": @NO } mutableCopy];
     if (devSettings.isHotLoadingEnabled) {
