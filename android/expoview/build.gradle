@@ -262,9 +262,9 @@ dependencies {
   }
   compile 'com.android.support:exifinterface:25.3.1'
   compile 'com.google.android:cameraview:1.0.0'
-  compile('com.gettipsi:stripeview:1.0.0') {
-    transitive = false
-    exclude group: 'com.facebook.react'
-  }
+  /*compile('com.gettipsi:stripeview:1.0.0') {
+      transitive = false
+      exclude group: 'com.facebook.react', module: 'react-native'
+  }*/
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
 }
