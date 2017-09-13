@@ -53,7 +53,6 @@
     "url": "^0.11.0"
   },
   "devDependencies": {
-    "jest": "^20.0.4",
     "jest-expo": "^18.0.0"
   }
 }
