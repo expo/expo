@@ -125,3 +125,7 @@ Exponent is the original name of the Expo project. You might occasionally run ac
 ## What version of Android and iOS are supported by Expo apps?
 
 Expo supports Android 4.4+ and iOS 9+.
+
+## Can I use Node.js packages with Expo?
+
+If the package depends on [Node standard library APIs](https://nodejs.org/api/index.html), you will not be able to use it with Expo. The Node standard library is a set of functionality implemented largely in C++ that exposes functions to JavaScript that aren't part of the JavaScript language specification, such as the ability to read and write to your filesystem. React Native, and by extension Expo, do not include the Node standard library, just like Chrome and Firefox do not include it. JavaScript is a language that is used in many contexts, from mobile apps (in our case), to servers, and of course on websites. These contexts all include their own runtime environments that expose different APIs  to JavaScript, depending on what makes sense in the context.
