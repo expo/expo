@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
   s.subspec "Core" do |ss|
     ss.source_files = "ios/Exponent/**/*.{h,m}"
     ss.preserve_paths = "ios/Exponent/**/*.{h,m}"
-    ss.exclude_files = "ios/Exponent/EXAppDelegate.*", "ios/Exponent/EXRootViewController.*", "ios/Exponent/Supporting/**"
+    ss.exclude_files = "ios/Exponent/EXAppDelegate.*", "ios/Exponent/EXRootViewController.*", "ios/Exponent/Supporting/**", "ios/UnversionedModules/Payments/**"
 
 ${IOS_EXPOKIT_DEPS}
   end
@@ -25,5 +25,11 @@ ${IOS_EXPOKIT_DEPS}
   s.subspec "CPP" do |ss|
     ss.dependency "ExpoKit/Core"
     ss.source_files = 'cpp/*.{h,c,cpp,m,mm}', 'cpp/**/*.{h,c,cpp,m,mm}'
+  end
+
+  s.subspec "Payments" do |ss|
+    ss.dependency "ExpoKit/Core"
+    ss.dependency 'Stripe', '~> 10.1.0'
+    ss.source_files = 'ios/UnversionedModules/Payments/*.{h.m}'
   end
 end

@@ -2,7 +2,7 @@
   { "name": "Amplitude-iOS", "version": "~> 3.8" },
   { "name": "Analytics", "version": "~> 3.5" },
   { "name": "AppAuth", "version": "~> 0.4" },
-  { "name": "CocoaLumberjack", "version": "~> 3.0" },
+  { "name": "CocoaLumberjack", "version": "~> 3.2.1" },
   { "name": "Crashlytics", "version": "~> 3.8" },
   { "name": "FBAudienceNetwork", "version": "~> 4.24" },
   { "name": "FBSDKCoreKit", "version": "~> 4.15" },

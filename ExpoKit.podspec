@@ -17,12 +17,12 @@ Pod::Spec.new do |s|
   s.subspec "Core" do |ss|
     ss.source_files = "ios/Exponent/**/*.{h,m}"
     ss.preserve_paths = "ios/Exponent/**/*.{h,m}"
-    ss.exclude_files = "ios/Exponent/EXAppDelegate.*", "ios/Exponent/EXRootViewController.*", "ios/Exponent/Supporting/**”, "ios/UnversionedModules/Payments/**"
+    ss.exclude_files = "ios/Exponent/EXAppDelegate.*", "ios/Exponent/EXRootViewController.*", "ios/Exponent/Supporting/**", "ios/UnversionedModules/Payments/**"
 
     ss.dependency 'Amplitude-iOS', '~> 3.8'
     ss.dependency 'Analytics', '~> 3.5'
     ss.dependency 'AppAuth', '~> 0.4'
-    ss.dependency 'CocoaLumberjack', '~> 3.0'
+    ss.dependency 'CocoaLumberjack', '~> 3.2.1'
     ss.dependency 'Crashlytics', '~> 3.8'
     ss.dependency 'FBAudienceNetwork', '~> 4.24'
     ss.dependency 'FBSDKCoreKit', '~> 4.15'
