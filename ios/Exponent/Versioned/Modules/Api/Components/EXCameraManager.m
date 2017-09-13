@@ -373,7 +373,7 @@ RCT_REMAP_METHOD(takePicture,
   resolve(response);
 #else
   AVCaptureConnection *connection = [self.stillImageOutput connectionWithMediaType:AVMediaTypeVideo];
-  [connection setVideoOrientation:[self convertToAVCaptureVideoOrientation:[[UIApplication sharedApplication] statusBarOrientation]]];
+  [connection setVideoOrientation:[[self class] videoOrientationForInterfaceOrientation:[[UIApplication sharedApplication] statusBarOrientation]]];
   [self.stillImageOutput captureStillImageAsynchronouslyFromConnection:connection completionHandler: ^(CMSampleBufferRef imageSampleBuffer, NSError *error) {
     if (imageSampleBuffer && !error) {
       NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageSampleBuffer];
