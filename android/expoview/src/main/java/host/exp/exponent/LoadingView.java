@@ -182,11 +182,11 @@ public class LoadingView extends RelativeLayout {
   private void setBackgroundImage(final JSONObject manifest) {
     if (Constants.isShellApp() && isUsingNewSplashScreenStyle(manifest)) {
       // The src is already set to "@drawable/shell_launch_background_image" in `loading_view.xml`
-      revealView(mBackgroundImageView);
       ImageView.ScaleType scaleType = scaleType(manifest);
-      if (mBackgroundImageView.getScaleType() != scaleType) {
+      if (scaleType != ImageView.ScaleType.CENTER_CROP) {
         mBackgroundImageView.setScaleType(scaleType);
       }
+      revealView(mBackgroundImageView);
       return;
     }
 
@@ -262,7 +262,7 @@ public class LoadingView extends RelativeLayout {
       if (manifest.has("loading")) {
         final JSONObject loadingInfo = manifest.optJSONObject("loading");
         if (loadingInfo != null) {
-          backgroundColor = loadingInfo.optString(ExponentManifest.MANIFEST_LOADING_BACKGROUND_IMAGE_URL, null);
+          backgroundColor = loadingInfo.optString(ExponentManifest.MANIFEST_LOADING_BACKGROUND_COLOR, "#FFFFFF");
         }
       }
     }
