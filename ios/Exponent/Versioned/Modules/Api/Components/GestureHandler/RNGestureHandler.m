@@ -23,6 +23,24 @@
 #define APPLY_INT_PROP(prop) do { APPLY_PROP(recognizer, config, NSInteger, prop, @#prop); } while(0)
 #define APPLY_NAMED_INT_PROP(prop, propName) do { APPLY_PROP(recognizer, config, NSInteger, prop, propName); } while(0)
 
+@interface UIGestureRecognizer (GestureHandler)
+@property (nonatomic, readonly) RNGestureHandler *gestureHandler;
+@end
+
+@implementation UIGestureRecognizer (GestureHandler)
+
+- (RNGestureHandler *)gestureHandler
+{
+    id delegate = self.delegate;
+    if ([delegate isKindOfClass:[RNGestureHandler class]]) {
+        return (RNGestureHandler *)delegate;
+    }
+    return nil;
+}
+
+@end
+
+
 @interface RNDummyGestureRecognizer : UIGestureRecognizer
 @end
 
@@ -47,58 +65,45 @@
 @interface RNGestureHandler () <UIGestureRecognizerDelegate>
 
 @property(nonatomic) BOOL shouldCancelWhenOutside;
-@property(nonatomic, weak) RNGestureHandlerRegistry *registry;
 
 @end
 
 
 @implementation RNGestureHandlerRegistry {
-    NSMutableDictionary<NSNumber *, NSMutableArray<RNGestureHandler *>* > *_gestureHandlers;
+    NSMutableDictionary<NSNumber *, RNGestureHandler *> *_handlers;
 }
 
 - (instancetype)init
 {
     if ((self = [super init])) {
-        _gestureHandlers = [NSMutableDictionary new];
+        _handlers = [NSMutableDictionary new];
     }
     return self;
 }
 
-- (void)registerGestureHandler:(RNGestureHandler *)gestureHandler forViewWithTag:(NSNumber *)viewTag
+- (RNGestureHandler *)handlerWithTag:(NSNumber *)handlerTag
 {
-    NSMutableArray *handlersArray = _gestureHandlers[viewTag];
-    if (handlersArray == nil) {
-        handlersArray = [NSMutableArray new];
-        _gestureHandlers[viewTag] = handlersArray;
-    }
-    [handlersArray addObject:gestureHandler];
-    gestureHandler.registry = self;
+    return _handlers[handlerTag];
 }
 
-- (void)dropGestureHandlersForViewWithTag:(NSNumber *)viewTag
+- (void)registerGestureHandler:(RNGestureHandler *)gestureHandler
 {
-    NSMutableArray *handlersArray = _gestureHandlers[viewTag];
-    for (RNGestureHandler *handler in handlersArray) {
-        [handler unbindFromView];
-    }
-    [_gestureHandlers removeObjectForKey:viewTag];
+    _handlers[gestureHandler.tag] = gestureHandler;
 }
 
-- (NSArray<RNGestureHandler *> *)gestureHandlersForViewWithTag:(NSNumber *)viewTag andTag:(NSNumber *)handlerTag
+- (void)attachHandlerWithTag:(NSNumber *)handlerTag toView:(UIView *)view
 {
-    return [[_gestureHandlers objectForKey:viewTag] copy];
+    RNGestureHandler *handler = _handlers[handlerTag];
+    RCTAssert(handler != nil, @"Handler for tag %@ does not exists", handlerTag);
+    [handler unbindFromView];
+    [handler bindToView:view];
 }
 
-- (RNGestureHandler *)findGestureHandlerByRecognizer:(UIGestureRecognizer *)recognizer
+- (void)dropHandlerWithTag:(NSNumber *)handlerTag
 {
-    NSNumber *viewTag = recognizer.view.reactTag;
-    NSArray *handlers = _gestureHandlers[viewTag];
-    for (RNGestureHandler *handler in handlers) {
-        if (handler.recognizer == recognizer) {
-            return handler;
-        }
-    }
-    return nil;
+    RNGestureHandler *handler = _handlers[handlerTag];
+    [handler unbindFromView];
+    [_handlers removeObjectForKey:handlerTag];
 }
 
 @end
@@ -209,7 +214,7 @@
 
 - (RNGestureHandler *)findGestureHandlerByRecognizer:(UIGestureRecognizer *)recognizer
 {
-    RNGestureHandler *handler = [_registry findGestureHandlerByRecognizer:recognizer];
+    RNGestureHandler *handler = recognizer.gestureHandler;
     if (handler != nil) {
         return handler;
     }
@@ -223,7 +228,7 @@
 
     for (UIGestureRecognizer *recognizer in reactView.gestureRecognizers) {
         if ([recognizer isKindOfClass:[RNDummyGestureRecognizer class]]) {
-            return [_registry findGestureHandlerByRecognizer:recognizer];
+            return recognizer.gestureHandler;
         }
     }
 

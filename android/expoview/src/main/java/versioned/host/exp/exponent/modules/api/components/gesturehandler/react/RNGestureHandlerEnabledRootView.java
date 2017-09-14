@@ -103,7 +103,9 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
    * behaviour.
    */
   /*package*/ void initialize(RNGestureHandlerRegistry registry) {
-    Log.i(ReactConstants.TAG, "[GESTURE HANDLER] Initialize gesture handler for root view " + this);
+    Log.i(
+      ReactConstants.TAG,
+      "[GESTURE HANDLER] Initialize gesture handler for root view " + this);
     mOrchestrator = new GestureHandlerOrchestrator(this, registry);
     mOrchestrator.setMinimumAlphaForTraversal(MIN_ALPHA_FOR_TOUCH);
     int rootViewTag = getRootViewTag();
@@ -112,12 +114,15 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
     }
     mJSGestureHandler = new RootViewGestureHandler();
     mJSGestureHandler.setTag(-rootViewTag);
-    registry.registerHandlerForViewWithTag(rootViewTag, mJSGestureHandler);
+    registry.registerHandler(mJSGestureHandler);
+    registry.attachHandlerToView(mJSGestureHandler.getTag(), rootViewTag);
   }
 
   public void reset() {
     if (mOrchestrator != null) {
-      Log.i(ReactConstants.TAG, "[GESTURE HANDLER] Tearing down gesture handler registered for view " + this);
+      Log.i(
+        ReactConstants.TAG,
+        "[GESTURE HANDLER] Tearing down gesture handler registered for view " + this);
     }
     mOrchestrator = null;
     mJSGestureHandler = null;
@@ -125,8 +130,10 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
   }
 
   @Override
-  public void startReactApplication(ReactInstanceManager reactInstanceManager, String moduleName,
-      @Nullable Bundle initialProperties) {
+  public void startReactApplication(
+          ReactInstanceManager reactInstanceManager,
+          String moduleName,
+          @Nullable Bundle initialProperties) {
     super.startReactApplication(reactInstanceManager, moduleName, initialProperties);
     mReactInstanceManager = reactInstanceManager;
   }
@@ -154,7 +161,9 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
     if (mReactInstanceManager == null) {
       return null;
     }
-    return mReactInstanceManager.getCurrentReactContext().getNativeModule(RNGestureHandlerModule.class);
+    return mReactInstanceManager
+            .getCurrentReactContext()
+            .getNativeModule(RNGestureHandlerModule.class);
   }
 
   /*package*/ void handleSetJSResponder(final int viewTag, final boolean blockNativeResponder) {

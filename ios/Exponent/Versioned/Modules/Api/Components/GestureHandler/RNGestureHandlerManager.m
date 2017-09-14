@@ -9,6 +9,10 @@
 #import "RNGestureHandlerState.h"
 #import "RNGestureHandler.h"
 
+// We use the method below instead of RCTLog because we log out messages after the bridge gets
+// turned down in some cases. Which normally with RCTLog would cause a crash in DEBUG mode
+#define RCTLifecycleLog(...) RCTDefaultLogFunction(RCTLogLevelInfo, RCTLogSourceNative, @(__FILE__), @(__LINE__), [NSString stringWithFormat:__VA_ARGS__])
+
 @interface RNGestureHandlerManager () <RNGestureHandlerEventEmitter, RNRootViewGestureRecognizerDelegate>
 
 @end
@@ -33,8 +37,7 @@
     return self;
 }
 
-- (void)createGestureHandler:(NSNumber *)viewTag
-                    withName:(NSString *)handlerName
+- (void)createGestureHandler:(NSString *)handlerName
                          tag:(NSNumber *)handlerTag
                       config:(NSDictionary *)config
 {
@@ -59,35 +62,33 @@
     
     RNGestureHandler *gestureHandler = [[nodeClass alloc] initWithTag:handlerTag];
     [gestureHandler configure:config];
-    [_registry registerGestureHandler:gestureHandler forViewWithTag:viewTag];
+    [_registry registerGestureHandler:gestureHandler];
     
     __weak id<RNGestureHandlerEventEmitter> emitter = self;
     gestureHandler.emitter = emitter;
-        
+}
+
+
+- (void)attachGestureHandler:(nonnull NSNumber *)handlerTag
+               toViewWithTag:(nonnull NSNumber *)viewTag
+{
     UIView *view = [_uiManager viewForReactTag:viewTag];
-    [gestureHandler bindToView:view];
-    
+
+    [_registry attachHandlerWithTag:handlerTag toView:view];
+
     // register root view if not already there
     [self registerRootViewIfNeeded:view];
 }
 
-- (void)updateGestureHandler:(NSNumber *)viewTag
-                         tag:(NSNumber *)handlerTag
-                      config:(NSDictionary *)config
+- (void)updateGestureHandler:(NSNumber *)handlerTag config:(NSDictionary *)config
 {
-    NSArray<RNGestureHandler*> *handlers = [_registry
-                                            gestureHandlersForViewWithTag:viewTag
-                                            andTag:handlerTag];
-    for (RNGestureHandler *handler in handlers) {
-        if ([handler.tag isEqual:handlerTag]) {
-            [handler configure:config];
-        }
-    }
+    RNGestureHandler *handler = [_registry handlerWithTag:handlerTag];
+    [handler configure:config];
 }
 
-- (void)dropGestureHandlersForView:(NSNumber *)viewTag
+- (void)dropGestureHandler:(NSNumber *)handlerTag
 {
-    [_registry dropGestureHandlersForViewWithTag:viewTag];
+    [_registry dropHandlerWithTag:handlerTag];
 }
 
 - (void)handleSetJSResponder:(NSNumber *)viewTag blockNativeResponder:(NSNumber *)blockNativeResponder
@@ -118,7 +119,7 @@
     RCTRootView *rootView = (RCTRootView *)parent;
     UIView *rootContentView = rootView.contentView;
     if (rootContentView != nil && ![_rootViews containsObject:rootContentView]) {
-        RCTLogInfo(@"[GESTURE HANDLER] Initialize gesture handler for root view %@", rootContentView);
+        RCTLifecycleLog(@"[GESTURE HANDLER] Initialize gesture handler for root view %@", rootContentView);
         [_rootViews addObject:rootContentView];
         RNRootViewGestureRecognizer *recognizer = [RNRootViewGestureRecognizer new];
         recognizer.delegate = self;
@@ -147,9 +148,9 @@
 
 - (void)dealloc
 {
-  if ([_rootViews count] > 0) {
-    RCTLogInfo(@"[GESTURE HANDLER] Tearing down gesture handler registered for views %@", _rootViews);
-  }
+    if ([_rootViews count] > 0) {
+        RCTLifecycleLog(@"[GESTURE HANDLER] Tearing down gesture handler registered for views %@", _rootViews);
+    }
 }
 
 #pragma mark Events

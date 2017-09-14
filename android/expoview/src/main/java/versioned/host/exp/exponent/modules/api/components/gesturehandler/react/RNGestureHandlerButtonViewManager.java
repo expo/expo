@@ -15,8 +15,8 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
-public class RNGestureHandlerButtonViewManager
-    extends ViewGroupManager<RNGestureHandlerButtonViewManager.ButtonViewGroup> {
+public class RNGestureHandlerButtonViewManager extends
+        ViewGroupManager<RNGestureHandlerButtonViewManager.ButtonViewGroup> {
 
   static class ButtonViewGroup extends ViewGroup {
 
@@ -27,6 +27,7 @@ public class RNGestureHandlerButtonViewManager
     boolean mUseForeground = false;
     boolean mUseBorderless = false;
     boolean mNeedBackgroundUpdate = false;
+
 
     public ButtonViewGroup(Context context) {
       super(context);
@@ -79,7 +80,8 @@ public class RNGestureHandlerButtonViewManager
         setBackground(createSelectableDrawable());
       } else {
         ColorDrawable colorDrawable = new ColorDrawable(mBackgroundColor);
-        LayerDrawable layerDrawable = new LayerDrawable(new Drawable[] { colorDrawable, createSelectableDrawable() });
+        LayerDrawable layerDrawable = new LayerDrawable(
+                new Drawable[] { colorDrawable, createSelectableDrawable() });
         setBackground(layerDrawable);
       }
     }
@@ -94,7 +96,8 @@ public class RNGestureHandlerButtonViewManager
     }
 
     private Drawable createSelectableDrawable() {
-      String identifier = mUseBorderless ? "selectableItemBackgroundBorderless" : "selectableItemBackground";
+      String identifier = mUseBorderless ? "selectableItemBackgroundBorderless"
+              : "selectableItemBackground";
       int attrID = getResources().getIdentifier(identifier, "attr", "android");
       Drawable drawable;
       getContext().getTheme().resolveAttribute(attrID, sResolveOutValue, true);

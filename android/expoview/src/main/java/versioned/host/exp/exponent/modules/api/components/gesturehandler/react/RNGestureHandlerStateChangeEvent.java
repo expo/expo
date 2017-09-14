@@ -10,17 +10,20 @@ import versioned.host.exp.exponent.modules.api.components.gesturehandler.Gesture
 
 import javax.annotation.Nullable;
 
-public class RNGestureHandlerStateChangeEvent extends Event<RNGestureHandlerStateChangeEvent> {
+public class RNGestureHandlerStateChangeEvent extends Event<RNGestureHandlerStateChangeEvent>{
 
   public static final String EVENT_NAME = "onGestureHandlerStateChange";
 
   private static final int TOUCH_EVENTS_POOL_SIZE = 7; // magic
 
-  private static final Pools.SynchronizedPool<RNGestureHandlerStateChangeEvent> EVENTS_POOL = new Pools.SynchronizedPool<>(
-      TOUCH_EVENTS_POOL_SIZE);
+  private static final Pools.SynchronizedPool<RNGestureHandlerStateChangeEvent> EVENTS_POOL =
+          new Pools.SynchronizedPool<>(TOUCH_EVENTS_POOL_SIZE);
 
-  public static RNGestureHandlerStateChangeEvent obtain(GestureHandler handler, int newState, int oldState,
-      @Nullable RNGestureHandlerEventDataExtractor dataExtractor) {
+  public static RNGestureHandlerStateChangeEvent obtain(
+          GestureHandler handler,
+          int newState,
+          int oldState,
+          @Nullable RNGestureHandlerEventDataExtractor dataExtractor) {
     RNGestureHandlerStateChangeEvent event = EVENTS_POOL.acquire();
     if (event == null) {
       event = new RNGestureHandlerStateChangeEvent();
@@ -34,8 +37,11 @@ public class RNGestureHandlerStateChangeEvent extends Event<RNGestureHandlerStat
   private RNGestureHandlerStateChangeEvent() {
   }
 
-  private void init(GestureHandler handler, int newState, int oldState,
-      @Nullable RNGestureHandlerEventDataExtractor dataExtractor) {
+  private void init(
+          GestureHandler handler,
+          int newState,
+          int oldState,
+          @Nullable RNGestureHandlerEventDataExtractor dataExtractor) {
     super.init(handler.getView().getId());
     mExtraData = Arguments.createMap();
     if (dataExtractor != null) {

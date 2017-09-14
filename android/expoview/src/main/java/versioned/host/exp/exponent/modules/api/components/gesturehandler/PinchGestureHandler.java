@@ -40,7 +40,8 @@ public class PinchGestureHandler extends GestureHandler<PinchGestureHandler> {
 
     @Override
     public void onScaleEnd(ScaleGestureDetector detector) {
-      end();
+      // ScaleGestureDetector thinks that when fingers are 27mm away that's a sufficiently good
+      // reason to trigger this method giving us no other choice but to ignore it completely.
     }
   };
 
@@ -50,8 +51,7 @@ public class PinchGestureHandler extends GestureHandler<PinchGestureHandler> {
 
   @Override
   protected void onHandle(MotionEvent event) {
-    int state = getState();
-    if (state == STATE_UNDETERMINED) {
+    if (getState() == STATE_UNDETERMINED) {
       Context context = getView().getContext();
       mLastVelocity = 0f;
       mLastScaleFactor = 1f;
@@ -66,12 +66,15 @@ public class PinchGestureHandler extends GestureHandler<PinchGestureHandler> {
       mScaleGestureDetector.onTouchEvent(event);
     }
 
-    if (event.getActionMasked() == MotionEvent.ACTION_UP) {
-      if (state == STATE_ACTIVE) {
-        end();
-      } else {
-        fail();
-      }
+    int activePointers = event.getPointerCount();
+    if (event.getActionMasked() == MotionEvent.ACTION_POINTER_UP) {
+      activePointers -= 1;
+    }
+
+    if (getState() == STATE_ACTIVE && activePointers < 2) {
+      end();
+    } else if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+      fail();
     }
   }
 

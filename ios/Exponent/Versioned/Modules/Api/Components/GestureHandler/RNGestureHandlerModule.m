@@ -85,24 +85,31 @@ RCT_EXPORT_MODULE()
     [bridge.uiManager.observerCoordinator addObserver:self];
 }
 
-RCT_EXPORT_METHOD(createGestureHandler:(nonnull NSNumber *)viewTag withName:(nonnull NSString *)handlerName tag:(nonnull NSNumber *)handlerTag config:(NSDictionary *)config)
+RCT_EXPORT_METHOD(createGestureHandler:(nonnull NSString *)handlerName tag:(nonnull NSNumber *)handlerTag config:(NSDictionary *)config)
 {
     [self addOperationBlock:^(RNGestureHandlerManager *manager) {
-        [manager createGestureHandler:viewTag withName:handlerName tag:handlerTag config:config];
+        [manager createGestureHandler:handlerName tag:handlerTag config:config];
     }];
 }
 
-RCT_EXPORT_METHOD(updateGestureHandler:(nonnull NSNumber *)viewTag tag:(nonnull NSNumber *)handlerTag config:(NSDictionary *)config)
+RCT_EXPORT_METHOD(attachGestureHandler:(nonnull NSNumber *)handlerTag toViewWithTag:(nonnull NSNumber *)viewTag)
 {
     [self addOperationBlock:^(RNGestureHandlerManager *manager) {
-        [manager updateGestureHandler:viewTag tag:handlerTag config:config];
+        [manager attachGestureHandler:handlerTag toViewWithTag:viewTag];
     }];
 }
 
-RCT_EXPORT_METHOD(dropGestureHandlersForView:(nonnull NSNumber *)viewTag)
+RCT_EXPORT_METHOD(updateGestureHandler:(nonnull NSNumber *)handlerTag config:(NSDictionary *)config)
 {
     [self addOperationBlock:^(RNGestureHandlerManager *manager) {
-        [manager dropGestureHandlersForView:viewTag];
+        [manager updateGestureHandler:handlerTag config:config];
+    }];
+}
+
+RCT_EXPORT_METHOD(dropGestureHandler:(nonnull NSNumber *)handlerTag)
+{
+    [self addOperationBlock:^(RNGestureHandlerManager *manager) {
+        [manager dropGestureHandler:handlerTag];
     }];
 }
 

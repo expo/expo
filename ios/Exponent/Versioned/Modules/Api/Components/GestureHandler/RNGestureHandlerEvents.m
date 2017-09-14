@@ -1,4 +1,6 @@
- #import "RNGestureHandlerEvents.h"
+#import "RNGestureHandlerEvents.h"
+
+#define SAFE_VELOCITY(velocity) @(isnan(velocity) ? 0 : velocity)
 
 @implementation RNGestureHandlerEventExtraData
 
@@ -24,20 +26,20 @@
                            @"y": @(position.y),
                            @"translationX": @(translation.x),
                            @"translationY": @(translation.y),
-                           @"velocityX": @(velocity.x),
-                           @"velocityY": @(velocity.y)}];
+                           @"velocityX": SAFE_VELOCITY(velocity.x),
+                           @"velocityY": SAFE_VELOCITY(velocity.y)}];
 }
 
 + (RNGestureHandlerEventExtraData *)forPinch:(CGFloat)scale withVelocity:(CGFloat)velocity
 {
     return [[RNGestureHandlerEventExtraData alloc]
-            initWithData:@{@"scale": @(scale), @"velocity": @(velocity)}];
+            initWithData:@{@"scale": @(scale), @"velocity": SAFE_VELOCITY(velocity)}];
 }
 
 + (RNGestureHandlerEventExtraData *)forRotation:(CGFloat)rotation withVelocity:(CGFloat)velocity
 {
     return [[RNGestureHandlerEventExtraData alloc]
-            initWithData:@{@"rotation": @(rotation), @"velocity": @(velocity)}];
+            initWithData:@{@"rotation": @(rotation), @"velocity": SAFE_VELOCITY(velocity)}];
 }
 
 + (RNGestureHandlerEventExtraData *)forPointerInside:(BOOL)pointerInside;
