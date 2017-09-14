@@ -16,11 +16,12 @@ public class RNGestureHandlerEvent extends Event<RNGestureHandlerEvent> {
 
   private static final int TOUCH_EVENTS_POOL_SIZE = 7; // magic
 
-  private static final Pools.SynchronizedPool<RNGestureHandlerEvent> EVENTS_POOL = new Pools.SynchronizedPool<>(
-      TOUCH_EVENTS_POOL_SIZE);
+  private static final Pools.SynchronizedPool<RNGestureHandlerEvent> EVENTS_POOL =
+          new Pools.SynchronizedPool<>(TOUCH_EVENTS_POOL_SIZE);
 
-  public static RNGestureHandlerEvent obtain(GestureHandler handler,
-      @Nullable RNGestureHandlerEventDataExtractor dataExtractor) {
+  public static RNGestureHandlerEvent obtain(
+          GestureHandler handler,
+          @Nullable RNGestureHandlerEventDataExtractor dataExtractor) {
     RNGestureHandlerEvent event = EVENTS_POOL.acquire();
     if (event == null) {
       event = new RNGestureHandlerEvent();
@@ -34,7 +35,9 @@ public class RNGestureHandlerEvent extends Event<RNGestureHandlerEvent> {
   private RNGestureHandlerEvent() {
   }
 
-  private void init(GestureHandler handler, @Nullable RNGestureHandlerEventDataExtractor dataExtractor) {
+  private void init(
+          GestureHandler handler,
+          @Nullable RNGestureHandlerEventDataExtractor dataExtractor) {
     super.init(handler.getView().getId());
     mExtraData = Arguments.createMap();
     if (dataExtractor != null) {

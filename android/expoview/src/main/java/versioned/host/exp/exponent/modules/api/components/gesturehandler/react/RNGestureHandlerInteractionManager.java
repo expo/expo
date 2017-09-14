@@ -1,23 +1,21 @@
 package versioned.host.exp.exponent.modules.api.components.gesturehandler.react;
 
+import android.util.SparseArray;
+
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.GestureHandler;
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.GestureHandlerInteractionController;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class RNGestureHandlerInteractionManager implements GestureHandlerInteractionController {
 
   private static final String KEY_WAIT_FOR = "waitFor";
   private static final String KEY_SIMULTANEOUS_HANDLERS = "simultaneousHandlers";
 
-  private Map<Integer, int[]> mWaitForRelations = new HashMap<>();
-  private Map<Integer, int[]> mSimultaneousRelations = new HashMap<>();
+  private SparseArray<int[]> mWaitForRelations = new SparseArray<>();
+  private SparseArray<int[]> mSimultaneousRelations = new SparseArray<>();
 
-  public void dropRelationsForHandler(GestureHandler handler) {
-    int handlerTag = handler.getTag();
+  public void dropRelationsForHandlerWithTag(int handlerTag) {
     mWaitForRelations.remove(handlerTag);
     mSimultaneousRelations.remove(handlerTag);
   }
@@ -57,7 +55,8 @@ public class RNGestureHandlerInteractionManager implements GestureHandlerInterac
   }
 
   @Override
-  public boolean shouldRequireHandlerToWaitForFailure(GestureHandler handler, GestureHandler otherHandler) {
+  public boolean shouldRequireHandlerToWaitForFailure(GestureHandler handler,
+                                                      GestureHandler otherHandler) {
     return false;
   }
 
@@ -67,7 +66,8 @@ public class RNGestureHandlerInteractionManager implements GestureHandlerInterac
   }
 
   @Override
-  public boolean shouldRecognizeSimultaneously(GestureHandler handler, GestureHandler otherHandler) {
+  public boolean shouldRecognizeSimultaneously(GestureHandler handler,
+                                               GestureHandler otherHandler) {
     int[] simultHandlerTags = mSimultaneousRelations.get(handler.getTag());
     if (simultHandlerTags != null) {
       for (int i = 0; i < simultHandlerTags.length; i++) {
@@ -77,5 +77,10 @@ public class RNGestureHandlerInteractionManager implements GestureHandlerInterac
       }
     }
     return false;
+  }
+
+  public void reset() {
+    mWaitForRelations.clear();
+    mSimultaneousRelations.clear();
   }
 }

@@ -49,10 +49,11 @@ public class RNGestureHandlerPackage implements ReactPackage {
 
     @Override
     public @Nullable Map getExportedCustomDirectEventTypeConstants() {
-      return MapBuilder.of(RNGestureHandlerEvent.EVENT_NAME,
-          MapBuilder.of("registrationName", RNGestureHandlerEvent.EVENT_NAME),
-          RNGestureHandlerStateChangeEvent.EVENT_NAME,
-          MapBuilder.of("registrationName", RNGestureHandlerStateChangeEvent.EVENT_NAME));
+      return MapBuilder.of(
+              RNGestureHandlerEvent.EVENT_NAME,
+              MapBuilder.of("registrationName", RNGestureHandlerEvent.EVENT_NAME),
+              RNGestureHandlerStateChangeEvent.EVENT_NAME,
+              MapBuilder.of("registrationName", RNGestureHandlerStateChangeEvent.EVENT_NAME));
     }
   }
 
@@ -63,6 +64,8 @@ public class RNGestureHandlerPackage implements ReactPackage {
 
   @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-    return Arrays.<ViewManager>asList(new RNGestureHandlerButtonViewManager(), new DummyViewManager());
+    return Arrays.<ViewManager>asList(
+            new RNGestureHandlerButtonViewManager(),
+            new DummyViewManager());
   }
 }

@@ -1,14 +1,15 @@
 package versioned.host.exp.exponent.modules.api.components.gesturehandler;
 
+import android.content.Context;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
+import android.view.ViewConfiguration;
 
 public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
 
   private static float MIN_VALUE_IGNORE = Float.MAX_VALUE;
   private static float MAX_VALUE_IGNORE = Float.MIN_VALUE;
 
-  private static float DEFAULT_MIN_DISTANCE = 10.0f;
   private static int DEFAULT_MIN_POINTERS = 1;
   private static int DEFAULT_MAX_POINTERS = 10;
 
@@ -18,7 +19,7 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
   private float mMinDeltaY = MIN_VALUE_IGNORE;
   private float mMaxDeltaX = MAX_VALUE_IGNORE;
   private float mMaxDeltaY = MAX_VALUE_IGNORE;
-  private float mMinDistSq = DEFAULT_MIN_DISTANCE * DEFAULT_MIN_DISTANCE;
+  private float mMinDistSq = MAX_VALUE_IGNORE;
   private float mMinVelocityX = MIN_VALUE_IGNORE;
   private float mMinVelocityY = MIN_VALUE_IGNORE;
   private float mMinVelocitySq = MIN_VALUE_IGNORE;
@@ -91,6 +92,13 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
       }
       return event.getY(lastPointerIdx) + offset;
     }
+  }
+
+
+  public PanGestureHandler(Context context) {
+    ViewConfiguration vc = ViewConfiguration.get(context);
+    int touchSlop = vc.getScaledTouchSlop();
+    mMinDistSq = touchSlop * touchSlop;
   }
 
   public PanGestureHandler setMinDx(float deltaX) {

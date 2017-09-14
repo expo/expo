@@ -1,5 +1,7 @@
 package versioned.host.exp.exponent.modules.api.components.gesturehandler.react;
 
+import android.content.Context;
+import android.util.SparseArray;
 import android.view.MotionEvent;
 
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -61,13 +63,13 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static final String KEY_PAN_AVG_TOUCHES = "avgTouches";
 
   private abstract static class HandlerFactory<T extends GestureHandler>
-      implements RNGestureHandlerEventDataExtractor<T> {
+          implements RNGestureHandlerEventDataExtractor<T> {
 
     public abstract Class<T> getType();
 
     public abstract String getName();
 
-    public abstract T create();
+    public abstract T create(Context context);
 
     public void configure(T handler, ReadableMap config) {
       if (config.hasKey(KEY_SHOULD_CANCEL_WHEN_OUTSIDE)) {
@@ -84,7 +86,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     }
   }
 
-  private static class NativeViewGestureHandlerFactory extends HandlerFactory<NativeViewGestureHandler> {
+  private static class NativeViewGestureHandlerFactory extends
+          HandlerFactory<NativeViewGestureHandler> {
     @Override
     public Class<NativeViewGestureHandler> getType() {
       return NativeViewGestureHandler.class;
@@ -96,7 +99,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     }
 
     @Override
-    public NativeViewGestureHandler create() {
+    public NativeViewGestureHandler create(Context context) {
       return new NativeViewGestureHandler();
     }
 
@@ -104,7 +107,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     public void configure(NativeViewGestureHandler handler, ReadableMap config) {
       super.configure(handler, config);
       if (config.hasKey(KEY_NATIVE_VIEW_SHOULD_ACTIVATE_ON_START)) {
-        handler.setShouldActivateOnStart(config.getBoolean(KEY_NATIVE_VIEW_SHOULD_ACTIVATE_ON_START));
+        handler.setShouldActivateOnStart(
+                config.getBoolean(KEY_NATIVE_VIEW_SHOULD_ACTIVATE_ON_START));
       }
       if (config.hasKey(KEY_NATIVE_VIEW_DISALLOW_INTERRUPTION)) {
         handler.setDisallowInterruption(config.getBoolean(KEY_NATIVE_VIEW_DISALLOW_INTERRUPTION));
@@ -129,7 +133,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     }
 
     @Override
-    public TapGestureHandler create() {
+    public TapGestureHandler create(Context context) {
       return new TapGestureHandler();
     }
 
@@ -148,7 +152,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     }
   }
 
-  private static class LongPressGestureHandlerFactory extends HandlerFactory<LongPressGestureHandler> {
+  private static class LongPressGestureHandlerFactory extends
+          HandlerFactory<LongPressGestureHandler> {
     @Override
     public Class<LongPressGestureHandler> getType() {
       return LongPressGestureHandler.class;
@@ -160,7 +165,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     }
 
     @Override
-    public LongPressGestureHandler create() {
+    public LongPressGestureHandler create(Context context) {
       return new LongPressGestureHandler();
     }
 
@@ -185,8 +190,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     }
 
     @Override
-    public PanGestureHandler create() {
-      return new PanGestureHandler();
+    public PanGestureHandler create(Context context) {
+      return new PanGestureHandler(context);
     }
 
     @Override
@@ -271,7 +276,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     }
 
     @Override
-    public PinchGestureHandler create() {
+    public PinchGestureHandler create(Context context) {
       return new PinchGestureHandler();
     }
 
@@ -294,7 +299,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     }
 
     @Override
-    public RotationGestureHandler create() {
+    public RotationGestureHandler create(Context context) {
       return new RotationGestureHandler();
     }
 
@@ -317,11 +322,18 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     }
   };
 
-  private HandlerFactory[] mHandlerFactories = new HandlerFactory[] { new NativeViewGestureHandlerFactory(),
-      new TapGestureHandlerFactory(), new LongPressGestureHandlerFactory(), new PanGestureHandlerFactory(),
-      new PinchGestureHandlerFactory(), new RotationGestureHandlerFactory() };
+  private HandlerFactory[] mHandlerFactories = new HandlerFactory[] {
+          new NativeViewGestureHandlerFactory(),
+          new TapGestureHandlerFactory(),
+          new LongPressGestureHandlerFactory(),
+          new PanGestureHandlerFactory(),
+          new PinchGestureHandlerFactory(),
+          new RotationGestureHandlerFactory()
+  };
   private RNGestureHandlerRegistry mRegistry;
-  private RNGestureHandlerInteractionManager mInteractionManager = new RNGestureHandlerInteractionManager();
+
+  private RNGestureHandlerInteractionManager mInteractionManager =
+          new RNGestureHandlerInteractionManager();
   private List<RNGestureHandlerEnabledRootView> mRootViews = new ArrayList<>();
 
   public RNGestureHandlerModule(ReactApplicationContext reactContext) {
@@ -334,16 +346,19 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void createGestureHandler(int viewTag, String handlerName, int handlerTag, ReadableMap config) {
+  public void createGestureHandler(
+          String handlerName,
+          int handlerTag,
+          ReadableMap config) {
     for (int i = 0; i < mHandlerFactories.length; i++) {
       HandlerFactory handlerFactory = mHandlerFactories[i];
       if (handlerFactory.getName().equals(handlerName)) {
-        GestureHandler handler = handlerFactory.create();
+        GestureHandler handler = handlerFactory.create(getReactApplicationContext());
         handler.setTag(handlerTag);
+        handler.setOnTouchEventListener(mEventListener);
+        getOrCreateRegistry().registerHandler(handler);
         mInteractionManager.configureInteractions(handler, config);
         handlerFactory.configure(handler, config);
-        getOrCreateRegistry().registerHandlerForViewWithTag(viewTag, handler);
-        handler.setOnTouchEventListener(mEventListener);
         return;
       }
     }
@@ -351,31 +366,32 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void updateGestureHandler(int viewTag, int handlerTag, ReadableMap config) {
-    ArrayList<GestureHandler> handlers = getOrCreateRegistry().getHandlersForViewWithTag(viewTag);
-    if (handlers != null) {
-      for (int i = 0; i < handlers.size(); i++) {
-        GestureHandler handler = handlers.get(i);
-        if (handler != null && handler.getTag() == handlerTag) {
-          HandlerFactory factory = findFactoryForHandler(handler);
-          if (factory != null) {
-            factory.configure(handler, config);
-          }
-        }
+  public void attachGestureHandler(int handlerTag, int viewTag) {
+    if (!getOrCreateRegistry().attachHandlerToView(handlerTag, viewTag)) {
+      throw new JSApplicationIllegalArgumentException(
+              "Handler with tag " + handlerTag + " does not exists");
+    }
+  }
+
+  @ReactMethod
+  public void updateGestureHandler(
+          int handlerTag,
+          ReadableMap config) {
+    GestureHandler handler = getOrCreateRegistry().getHandler(handlerTag);
+    if (handler != null) {
+      HandlerFactory factory = findFactoryForHandler(handler);
+      if (factory != null) {
+        mInteractionManager.dropRelationsForHandlerWithTag(handlerTag);
+        mInteractionManager.configureInteractions(handler, config);
+        factory.configure(handler, config);
       }
     }
   }
 
   @ReactMethod
-  public void dropGestureHandlersForView(int viewTag) {
-    ArrayList<GestureHandler> handlers = getOrCreateRegistry().getHandlersForViewWithTag(viewTag);
-    if (handlers != null) {
-      for (int i = 0; i < handlers.size(); i++) {
-        GestureHandler handler = handlers.get(i);
-        mInteractionManager.dropRelationsForHandler(handler);
-      }
-    }
-    getOrCreateRegistry().dropHandlersForViewWithTag(viewTag);
+  public void dropGestureHandler(int handlerTag) {
+    mInteractionManager.dropRelationsForHandlerWithTag(handlerTag);
+    getOrCreateRegistry().dropHandler(handlerTag);
   }
 
   @ReactMethod
@@ -394,10 +410,14 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
   @Override
   public @Nullable Map getConstants() {
-    return MapBuilder.of("State",
-        MapBuilder.of("UNDETERMINED", GestureHandler.STATE_UNDETERMINED, "BEGAN", GestureHandler.STATE_BEGAN, "ACTIVE",
-            GestureHandler.STATE_ACTIVE, "CANCELLED", GestureHandler.STATE_CANCELLED, "FAILED",
-            GestureHandler.STATE_FAILED, "END", GestureHandler.STATE_END));
+    return MapBuilder.of("State", MapBuilder.of(
+            "UNDETERMINED", GestureHandler.STATE_UNDETERMINED,
+            "BEGAN", GestureHandler.STATE_BEGAN,
+            "ACTIVE", GestureHandler.STATE_ACTIVE,
+            "CANCELLED", GestureHandler.STATE_CANCELLED,
+            "FAILED", GestureHandler.STATE_FAILED,
+            "END", GestureHandler.STATE_END
+    ));
   }
 
   private RNGestureHandlerRegistry getOrCreateRegistry() {
@@ -430,6 +450,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     if (mRegistry != null) {
       mRegistry.dropAllHandlers();
       mRegistry = null;
+      mInteractionManager.reset();
       for (RNGestureHandlerEnabledRootView rootView : mRootViews) {
         rootView.reset();
       }
@@ -470,8 +491,9 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     }
     if (handler.getState() == GestureHandler.STATE_ACTIVE) {
       HandlerFactory handlerFactory = findFactoryForHandler(handler);
-      EventDispatcher eventDispatcher = getReactApplicationContext().getNativeModule(UIManagerModule.class)
-          .getEventDispatcher();
+      EventDispatcher eventDispatcher = getReactApplicationContext()
+              .getNativeModule(UIManagerModule.class)
+              .getEventDispatcher();
       RNGestureHandlerEvent event = RNGestureHandlerEvent.obtain(handler, handlerFactory);
       eventDispatcher.dispatchEvent(event);
     }
@@ -483,10 +505,14 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       return;
     }
     HandlerFactory handlerFactory = findFactoryForHandler(handler);
-    EventDispatcher eventDispatcher = getReactApplicationContext().getNativeModule(UIManagerModule.class)
-        .getEventDispatcher();
-    RNGestureHandlerStateChangeEvent event = RNGestureHandlerStateChangeEvent.obtain(handler, newState, oldState,
-        handlerFactory);
+    EventDispatcher eventDispatcher = getReactApplicationContext()
+            .getNativeModule(UIManagerModule.class)
+            .getEventDispatcher();
+    RNGestureHandlerStateChangeEvent event = RNGestureHandlerStateChangeEvent.obtain(
+            handler,
+            newState,
+            oldState,
+            handlerFactory);
     eventDispatcher.dispatchEvent(event);
   }
 
@@ -506,7 +532,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
         top = bottom = verticalPad;
       }
       if (hitSlop.hasKey(KEY_HIT_SLOP_LEFT)) {
-        left = PixelUtil.toPixelFromDIP(hitSlop.getDouble(KEY_HIT_SLOP_LEFT));
+        left  = PixelUtil.toPixelFromDIP(hitSlop.getDouble(KEY_HIT_SLOP_LEFT));
       }
       if (hitSlop.hasKey(KEY_HIT_SLOP_TOP)) {
         top = PixelUtil.toPixelFromDIP(hitSlop.getDouble(KEY_HIT_SLOP_TOP));
