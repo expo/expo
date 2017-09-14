@@ -263,7 +263,7 @@ ABI20_0_0RCT_CUSTOM_VIEW_PROPERTY(focusDepth, NSNumber, ABI20_0_0EXCamera)
     return;
   }
   
-  if (![device isLockingFocusWithCustomLensPositionSupported]) {
+  if (![device respondsToSelector:@selector(isLockingFocusWithCustomLensPositionSupported)] || ![device isLockingFocusWithCustomLensPositionSupported]) {
     ABI20_0_0RCTLogWarn(@"%s: Setting focusDepth isn't supported for this camera device", __func__);
     return;
   }
