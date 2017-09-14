@@ -44,7 +44,10 @@ ABI15_0_0RCT_EXPORT_MODULE()
   // form of an, NSURL which is what assets-library uses.
   NSString *assetID = @"";
   PHFetchResult *results;
-  if ([imageURL.scheme caseInsensitiveCompare:@"assets-library"] == NSOrderedSame) {
+  if (!imageURL) {
+    completionHandler(ABI15_0_0RCTErrorWithMessage(@"Cannot load a photo library asset with no URL"), nil);
+    return ^{};
+  } else if ([imageURL.scheme caseInsensitiveCompare:@"assets-library"] == NSOrderedSame) {
     assetID = [imageURL absoluteString];
     results = [PHAsset fetchAssetsWithALAssetURLs:@[imageURL] options:nil];
   } else {
