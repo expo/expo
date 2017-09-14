@@ -322,6 +322,7 @@ RCT_REMAP_METHOD(reverseGeocodeAsync,
         address[@"country"] = placemark.country;
         address[@"postalCode"] = placemark.postalCode;
         address[@"name"] = placemark.name;
+        address[@"isoCountryCode"] = placemark.ISOcountryCode;
         [results addObject:address];
       }
       resolve(results);
