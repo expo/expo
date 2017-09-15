@@ -1654,7 +1654,7 @@
 						DevelopmentTeam = C8D8QTF339;
 						SystemCapabilities = {
 							com.apple.ApplePay = {
-								enabled = 1;
+								enabled = 0;
 							};
 							com.apple.ApplicationGroups.iOS = {
 								enabled = 0;
