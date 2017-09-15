@@ -18,10 +18,6 @@
 	<array>
 		<string>CloudDocuments</string>
 	</array>
-	<key>com.apple.developer.in-app-payments</key>
-	<array>
-		<string>merchant.client</string>
-	</array>
 	<key>com.apple.developer.ubiquity-container-identifiers</key>
 	<array>
 		<string>iCloud.$(CFBundleIdentifier)</string>
