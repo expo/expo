@@ -5,8 +5,8 @@ group = 'com.gettipsi'
 version = '1.0.0'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.3"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.1"
 
     defaultConfig {
         minSdkVersion 19
@@ -27,7 +27,6 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.facebook.react:react-native:0.20.1'
     compile 'com.google.android.gms:play-services-wallet:9.8.0'
     compile 'com.stripe:stripe-android:2.1.+'
     compile 'com.github.thefuntasty:CreditCardEntry:1.4.8.6'
