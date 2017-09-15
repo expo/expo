@@ -88,7 +88,10 @@ import versioned.host.exp.exponent.modules.api.standalone.branch.RNBranchModule;
 import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule;
 import versioned.host.exp.exponent.modules.internal.ExponentIntentModule;
 import versioned.host.exp.exponent.modules.internal.ExponentUnsignedAsyncStorageModule;
+import versioned.host.exp.exponent.modules.api.components.payments.StripeModule;
 import versioned.host.exp.exponent.modules.test.ExponentTestNativeModule;
+
+import static android.R.attr.version;
 
 public class ExponentPackage implements ReactPackage {
 
@@ -187,6 +190,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new RNAdMobInterstitialAdModule(reactContext));
         nativeModules.add(new RNAdMobBannerViewManager());
         nativeModules.add(new RNPublisherBannerViewManager());
+        nativeModules.add(new StripeModule(reactContext));
       } catch (JSONException | UnsupportedEncodingException e) {
         EXL.e(TAG, e.toString());
       }
