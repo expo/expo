@@ -142,8 +142,10 @@
 
     // We change touch handler to disabled and back to enabled, this will trigger cancel event
     // to be delivered to JS
-    touchHandler.enabled = NO;
-    touchHandler.enabled = YES;
+
+    // NOTE(brentvatne): this is temporarily disabled due to a bug with react-native touch cancel events!
+    // touchHandler.enabled = NO;
+    // touchHandler.enabled = YES;
 }
 
 - (void)dealloc
