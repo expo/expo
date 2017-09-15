@@ -545,9 +545,9 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
           Intent.createChooser(shareIntent, "Share a link to " + name), PendingIntent.FLAG_UPDATE_CURRENT));
 
       // Save
-      remoteViews.setOnClickPendingIntent(R.id.save_button, PendingIntent.getService(this, 0,
+      /*remoteViews.setOnClickPendingIntent(R.id.save_button, PendingIntent.getService(this, 0,
           ExponentIntentService.getActionSaveExperience(this, mManifestUrl),
-          PendingIntent.FLAG_UPDATE_CURRENT));
+          PendingIntent.FLAG_UPDATE_CURRENT));*/
     }
 
     // Reload
@@ -555,17 +555,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
         ExponentIntentService.getActionReloadExperience(this, mManifestUrl), PendingIntent.FLAG_UPDATE_CURRENT));
 
     mNotificationRemoteViews = remoteViews;
-
-    boolean isAnimated = false;
-    if (options != null) {
-      try {
-        if (options.getBoolean(KernelConstants.OPTION_LOAD_NUX_KEY)) {
-          isAnimated = true;
-        }
-      } catch (JSONException e) {
-        EXL.e(TAG, e.getMessage());
-      }
-    }
 
     // Build the actual notification
     final NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -581,64 +570,9 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       mNotificationBuilder.setColor(ContextCompat.getColor(this, R.color.colorPrimary));
     }
     notificationManager.notify(NOTIFICATION_ID, mNotificationBuilder.build());
-
-    // Animate the notification
-    setIsNotificationAnimated(isAnimated);
-  }
-
-  private void setIsNotificationAnimated(boolean isAnimated) {
-    try {
-      if (isAnimated) {
-        if (mNotificationRemoteViews != null && mNotificationBuilder != null) {
-          mNotificationBuilder.setOngoing(true);
-          mNotificationAnimationFrame = 0;
-          mNotificationAnimationHandler = new Handler();
-          mNotificationAnimator = new Runnable() {
-            @Override
-            public void run() {
-              if (mNotificationAnimator == null) {
-                return;
-              }
-              animateNotificationToFrame(mNotificationAnimationFrame);
-
-              mNotificationAnimationFrame++;
-              mNotificationAnimationFrame %= 2;
-
-              mNotificationAnimationHandler.postDelayed(mNotificationAnimator, 500);
-            }
-          };
-          mNotificationAnimator.run();
-        }
-      } else {
-        // reset to initial state
-        animateNotificationToFrame(0);
-
-        if (mNotificationAnimationHandler != null) {
-          mNotificationAnimationHandler.removeCallbacks(mNotificationAnimator);
-          mNotificationAnimator = null;
-          mNotificationAnimationHandler = null;
-        }
-        if (mNotificationBuilder != null) {
-          mNotificationBuilder.setOngoing(false);
-        }
-      }
-    } catch (Throwable e) {
-      EXL.e(TAG, e);
-    }
-  }
-
-  private void animateNotificationToFrame(int frame) {
-    if (mNotificationRemoteViews == null || mNotificationBuilder == null) {
-      return;
-    }
-
-    int resId = (frame == 0) ? R.drawable.pin_white : R.drawable.pin_white_fade;
-    mNotificationRemoteViews.setImageViewResource(R.id.save_button, resId);
-    ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(NOTIFICATION_ID, mNotificationBuilder.build());
   }
 
   private void removeNotification() {
-    setIsNotificationAnimated(false);
     mNotificationRemoteViews = null;
     mNotificationBuilder = null;
     removeNotification(this);
@@ -648,7 +582,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     if (options != null) {
       try {
         if (options.getBoolean(KernelConstants.OPTION_LOAD_NUX_KEY) && !Constants.DISABLE_NUX) {
-          addNuxView();
+          //addNuxView();
         }
       } catch (JSONException e) {
         EXL.e(TAG, e.getMessage());
@@ -693,8 +627,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
    *                           action in the notification view.
    */
   public void dismissNuxViewIfVisible(final boolean isFromNotification) {
-    setIsNotificationAnimated(false);
-
     if (mNuxOverlayView != null) {
       runOnUiThread(new Runnable() {
         @Override
