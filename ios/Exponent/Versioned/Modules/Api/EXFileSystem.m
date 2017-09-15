@@ -476,6 +476,7 @@ RCT_REMAP_METHOD(downloadResumablePauseAsync,
       reject(@"E_UNABLE_TO_SAVE",
              nil,
              RCTErrorWithMessage(@"Unable to save file to local URI"));
+      return;
     }
     NSMutableDictionary *result = [NSMutableDictionary dictionary];
     result[@"uri"] = scopedLocation.absoluteString;

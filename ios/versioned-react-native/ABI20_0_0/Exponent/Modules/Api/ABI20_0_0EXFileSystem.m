@@ -477,6 +477,7 @@ ABI20_0_0RCT_REMAP_METHOD(downloadResumablePauseAsync,
         reject(@"E_UNABLE_TO_SAVE",
                @"Unable to save file to local uri",
                error);
+      return;
     } else {
       NSData *data = [NSData dataWithContentsOfURL:scopedLocation];
       NSMutableDictionary *result = [NSMutableDictionary dictionary];
