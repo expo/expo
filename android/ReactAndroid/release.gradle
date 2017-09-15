@@ -12,15 +12,15 @@ def isReleaseBuild() {
 }
 
 def getRepositoryUrl() {
-    return findProperty('repositoryUrl') != null ? property('repositoryUrl') : 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+    return hasProperty('repositoryUrl') ? property('repositoryUrl') : "file:${System.env.HOME}/.m2/repository/"
 }
 
 def getRepositoryUsername() {
-    return findProperty('repositoryUsername') !=null ? property('repositoryUsername') : ''
+    return hasProperty('repositoryUsername') ? property('repositoryUsername') : ''
 }
 
 def getRepositoryPassword() {
-    return findProperty('repositoryPassword') != null ? property('repositoryPassword') : ''
+    return hasProperty('repositoryPassword') ? property('repositoryPassword') : ''
 }
 
 def configureReactNativePom(def pom) {
