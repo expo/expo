@@ -34,8 +34,6 @@ import v18 from '../data/v18.yaml';
 import v17 from '../data/v17.yaml';
 import v16 from '../data/v16.yaml';
 import v15 from '../data/v15.yaml';
-import v14 from '../data/v14.yaml';
-import v13 from '../data/v13.yaml';
 
 const versions = [
   `latest`,
@@ -45,8 +43,6 @@ const versions = [
   `v17.0.0`,
   `v16.0.0`,
   `v15.0.0`,
-  `v14.0.0`,
-  `v13.0.0`,
 ];
 
 if (typeof window === 'object' && window.GATSBY_ENV === 'development') {
@@ -109,12 +105,6 @@ class Wrapper extends React.Component {
         break;
       case 'v15.0.0':
         routes = v15;
-        break;
-      case 'v14.0.0':
-        routes = v14;
-        break;
-      case 'v13.0.0':
-        routes = v13;
         break;
       default:
         routes = v20;
