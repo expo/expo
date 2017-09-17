@@ -3,7 +3,7 @@ apply plugin: 'maven'
 
 //maven repository info
 group = 'host.exp.exponent'
-version = '20.0.0'
+version = '21.0.0'
 
 //Upload android library to maven with javadoc and android sources
 configurations {
@@ -185,10 +185,10 @@ dependencies {
   compile 'com.android.support:multidex:1.0.1'
 
   // Current react native
-  compile project(':ReactAndroid')
-  /* UNCOMMENT WHEN DISTRIBUTING
-  compile 'com.facebook.react:react-native:20.0.0'
-  END UNCOMMENT WHEN DISTRIBUTING */
+  
+  
+  compile 'com.facebook.react:react-native:21.0.0'
+  
 
   // React native dependencies
   // We use a different version of appcompat

@@ -55,7 +55,7 @@ dependencies {
   compile 'com.android.support:multidex:1.0.1'
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  compile('host.exp.exponent:expoview:20.0.0@aar') {
+  compile('host.exp.exponent:expoview:21.0.0@aar') {
     exclude group: 'com.facebook.android', module: 'facebook-android-sdk'
     exclude group: 'com.facebook.android', module: 'audience-network-sdk'
     exclude group: 'io.nlopez.smartlocation', module: 'library'
