@@ -7,6 +7,7 @@ import abi21_0_0.com.facebook.react.ReactInstanceManagerBuilder;
 import abi21_0_0.com.facebook.react.common.LifecycleState;
 import abi21_0_0.com.facebook.react.shell.MainReactPackage;
 
+import abi21_0_0.host.exp.exponent.modules.api.components.admob.RNAdMobPackage;
 import host.exp.expoview.Exponent;
 
 public class VersionedUtils {
@@ -15,6 +16,7 @@ public class VersionedUtils {
     ReactInstanceManagerBuilder builder = ReactInstanceManager.builder()
         .setApplication(instanceManagerBuilderProperties.application)
         .addPackage(new MainReactPackage())
+        .addPackage(new RNAdMobPackage())
         .addPackage(new ExponentPackage(
                 instanceManagerBuilderProperties.experienceProperties,
                 instanceManagerBuilderProperties.manifest))
