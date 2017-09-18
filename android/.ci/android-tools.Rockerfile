@@ -61,14 +61,12 @@ ENV PATH ${ANDROID_HOME}/tools:/usr/local/android-sdk-linux/build-tools/24.0.3/:
 
 # Install Android SDK components
 # License Id: android-sdk-license-ed0d0a5b
-ENV ANDROID_COMPONENTS platform-tools,build-tools-23.0.1,build-tools-23.0.2,build-tools-23.0.3,build-tools-24.0.1,build-tools-24.0.3,build-tools-25.0.2,android-23,android-24,android-25
+ENV ANDROID_COMPONENTS platform-tools,build-tools-23.0.1,build-tools-23.0.2,build-tools-23.0.3,build-tools-24.0.1,build-tools-24.0.3,build-tools-25.0.0,build-tools-25.0.2,android-23,android-24,android-25
 # License Id: android-sdk-license-5be876d5
 ENV GOOGLE_COMPONENTS extra-android-m2repository,extra-google-m2repository
 
 RUN echo y | android update sdk --no-ui --all --filter "${ANDROID_COMPONENTS}" ; \
     echo y | android update sdk --no-ui --all --filter "${GOOGLE_COMPONENTS}"
-
-RUN echo y | ${ANDROID_HOME}/tools/bin/sdkmanager --licenses
 
 # Install Android NDK
 ENV ANDROID_NDK_URL http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin
