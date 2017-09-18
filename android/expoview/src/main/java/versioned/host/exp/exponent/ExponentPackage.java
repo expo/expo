@@ -3,7 +3,6 @@
 package versioned.host.exp.exponent;
 
 import com.facebook.react.ReactPackage;
-import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
@@ -14,7 +13,6 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +23,6 @@ import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.modules.api.BrightnessModule;
-import versioned.host.exp.exponent.modules.api.components.admob.RNPublisherBannerViewManager;
 import versioned.host.exp.exponent.modules.api.sensors.AccelerometerModule;
 import versioned.host.exp.exponent.modules.api.AmplitudeModule;
 import versioned.host.exp.exponent.modules.api.ConstantsModule;
@@ -69,10 +66,6 @@ import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.R
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerModule;
 import versioned.host.exp.exponent.modules.api.components.maps.MapsPackage;
 import versioned.host.exp.exponent.modules.api.components.svg.SvgPackage;
-import versioned.host.exp.exponent.modules.api.components.admob.RNAdMobRewardedVideoAdModule;
-import versioned.host.exp.exponent.modules.api.components.admob.RNAdMobBannerViewManager;
-import versioned.host.exp.exponent.modules.api.components.admob.RNAdMobInterstitialAdModule;
-import versioned.host.exp.exponent.modules.api.components.admob.RNAdMobBannerViewManager;
 import versioned.host.exp.exponent.modules.api.fbads.AdSettingsManager;
 import versioned.host.exp.exponent.modules.api.fbads.BannerViewManager;
 import versioned.host.exp.exponent.modules.api.fbads.InterstitialAdManager;
@@ -186,10 +179,6 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new GLObjectManagerModule(reactContext));
         nativeModules.add(new BrightnessModule(reactContext));
         nativeModules.add(new RNGestureHandlerModule(reactContext));
-        nativeModules.add(new RNAdMobRewardedVideoAdModule(reactContext));
-        nativeModules.add(new RNAdMobInterstitialAdModule(reactContext));
-        nativeModules.add(new RNAdMobBannerViewManager());
-        nativeModules.add(new RNPublisherBannerViewManager());
         nativeModules.add(new StripeModule(reactContext));
       } catch (JSONException | UnsupportedEncodingException e) {
         EXL.e(TAG, e.toString());
