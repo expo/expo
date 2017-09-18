@@ -68,6 +68,8 @@ ENV GOOGLE_COMPONENTS extra-android-m2repository,extra-google-m2repository
 RUN echo y | android update sdk --no-ui --all --filter "${ANDROID_COMPONENTS}" ; \
     echo y | android update sdk --no-ui --all --filter "${GOOGLE_COMPONENTS}"
 
+RUN echo y | ${ANDROID_HOME}/tools/bin/sdkmanager --licenses
+
 # Install Android NDK
 ENV ANDROID_NDK_URL http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin
 RUN wget $ANDROID_NDK_URL
