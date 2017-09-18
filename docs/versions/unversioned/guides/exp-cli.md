@@ -38,6 +38,8 @@ Commands:
   fetch:ios:certs [project-dir]                   Fetch this project's iOS certificates. Writes to PROJECT_DIR/PROJECT_NAME_(dist|push).p12 and prints passwords to stdout.
   fetch:android:keystore [project-dir]            Fetch this project's Android keystore. Writes keystore to PROJECT_DIR/PROJECT_NAME.jks and prints passwords to stdout.
   init|i [options] [project-dir]                  Initializes a directory with an example project. Run it without any options and you will be prompted for the name and type.
+  install:ios                                     Install the latest version of Expo Client for iOS on the simulator
+  install:android                                 Install the latest version of Expo Client for Android on a connected device or emulator
   ios [options] [project-dir]                     Opens your app in Expo in an iOS simulator on your computer
   login|signin [options]                          Login to Expo
   logout                                          Logout from exp.host
@@ -49,12 +51,6 @@ Commands:
   start|r [options] [project-dir]                 Starts or restarts a local server for your app and gives you a URL to it
   url|u [options] [project-dir]                   Displays the URL you can use to view your project in Expo
   whoami|w                                        Checks with the server and then says who you are logged in as
-
-  Options:
-
-    -h, --help             output usage information
-    -V, --version          output the version number
-    -o, --output [format]  Output format. pretty (default), raw
 ```
 
 View additional information about a specific command by passing the `--help` flag. For example, `exp start --help` outputs:
@@ -64,9 +60,9 @@ Usage: start|r [options] [project-dir]
 
 Starts or restarts a local server for your app and gives you a URL to it
 
+
 Options:
 
-  -h, --help             output usage information
   -s, --send-to [dest]   A phone number or e-mail address to send a link to
   -c, --clear            Clear the React Native packager cache
   -a, --android          Opens your app in Expo on a connected Android device
@@ -85,7 +81,9 @@ Options:
   --exp                  Same as --protocol exp
   --http                 Same as --protocol http
   --redirect             Same as --protocol redirect
+  --non-interactive      Fails if an interactive prompt would be required to continue.
   --offline              Allows this command to run while offline
+  -h, --help             output usage information
 ```
 
 Additionally, you can run in offline mode by passing the `--offline` flag to the `android`, `ios`, or `start` commands.
