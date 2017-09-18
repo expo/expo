@@ -118,6 +118,8 @@ public class ExponentManifest {
   private static final String EMBEDDED_KERNEL_MANIFEST_ASSET = "kernel-manifest.json";
   private static final String EXPONENT_SERVER_HEADER = "Exponent-Server";
 
+  private static boolean hasShownKernelManifestLog = false;
+
   Context mContext;
   ExponentNetwork mExponentNetwork;
   Crypto mCrypto;
@@ -534,11 +536,22 @@ public class ExponentManifest {
   }
 
   public JSONObject getKernelManifest() {
+    JSONObject manifest;
+    String log;
     if (mExponentSharedPreferences.shouldUseInternetKernel()) {
-      return getRemoteKernelManifest();
+      log = "Using remote Expo kernel manifest";
+      manifest = getRemoteKernelManifest();
     } else {
-      return getLocalKernelManifest();
+      log = "Using local Expo kernel manifest";
+      manifest = getLocalKernelManifest();
     }
+
+    if (!hasShownKernelManifestLog) {
+      hasShownKernelManifestLog = true;
+      EXL.d(TAG, log + ": " + manifest.toString());
+    }
+
+    return manifest;
   }
 
   public String getKernelManifestField(final String fieldName) {
