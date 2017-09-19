@@ -27,6 +27,9 @@
         <category android:name="android.intent.category.BROWSABLE"/>
       </intent-filter>
     </activity>
+
+    <!-- The Facebook SDK runs FacebookInitProvider on startup and crashes if there isn't an ID here -->
+    <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="fb0"/>
   </application>
 
 </manifest>
