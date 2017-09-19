@@ -233,10 +233,9 @@ dependencies {
   compile 'com.google.android.gms:play-services-location:9.8.0'
   compile 'com.google.android.gms:play-services-ads:9.8.0'
   compile 'com.google.android.gms:play-services-fitness:9.8.0'
-    compile 'com.android.support:appcompat-v7:25.0.1'
-    compile 'com.google.android.gms:play-services-wallet:9.8.0' //may need 10.+
-    compile 'com.stripe:stripe-android:2.1.+'
-    compile 'com.github.thefuntasty:CreditCardEntry:1.4.8.4'
+  compile 'com.google.android.gms:play-services-wallet:9.8.0' //may need 10.+
+  compile 'com.stripe:stripe-android:2.1.+'
+  compile 'com.github.thefuntasty:CreditCardEntry:1.4.8.4'
   apt 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
   compile "com.raizlabs.android:DBFlow-Core:2.2.1"
   compile "com.raizlabs.android:DBFlow:2.2.1"
