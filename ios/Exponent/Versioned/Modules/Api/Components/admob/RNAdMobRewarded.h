@@ -1,7 +1,7 @@
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTBridgeModule.h>
 
-@import GoogleMobileAds;
+#import <GoogleMobileAds/GoogleMobileAds.h>
 
 @interface RNAdMobRewarded : NSObject <RCTBridgeModule, GADRewardBasedVideoAdDelegate>
 @end

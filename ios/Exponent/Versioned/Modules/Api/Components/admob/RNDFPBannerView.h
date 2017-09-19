@@ -1,6 +1,6 @@
 #import <React/RCTComponent.h>
 
-@import GoogleMobileAds;
+#import <GoogleMobileAds/GoogleMobileAds.h>
 
 @class RCTEventDispatcher;
 
