@@ -176,17 +176,19 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
     boolean isFatal = false;
     ExponentErrorMessage errorMessage = ExponentErrorMessage.developerErrorMessage("");
 
-    while (!sErrorQueue.isEmpty()) {
-      ExponentError error = sErrorQueue.remove();
-      ExponentKernelModule.addError(error);
-      if (sVisibleActivity != null) {
-        sVisibleActivity.onError(error);
-      }
+    synchronized (sErrorQueue) {
+      while (!sErrorQueue.isEmpty()) {
+        ExponentError error = sErrorQueue.remove();
+        ExponentKernelModule.addError(error);
+        if (sVisibleActivity != null) {
+          sVisibleActivity.onError(error);
+        }
 
-      // Just use the last error message for now, is there a better way to do this?
-      errorMessage = error.errorMessage;
-      if (error.isFatal) {
-        isFatal = true;
+        // Just use the last error message for now, is there a better way to do this?
+        errorMessage = error.errorMessage;
+        if (error.isFatal) {
+          isFatal = true;
+        }
       }
     }
 

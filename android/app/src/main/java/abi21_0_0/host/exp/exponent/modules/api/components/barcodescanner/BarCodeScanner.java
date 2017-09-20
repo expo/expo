@@ -214,6 +214,10 @@ public class BarCodeScanner {
     }
 
     CameraInfoWrapper cameraInfo = mCameraInfos.get(type);
+    if (cameraInfo == null) {
+      return;
+    }
+
     int displayRotation;
     int rotation;
     int orientation = cameraInfo.info.orientation;

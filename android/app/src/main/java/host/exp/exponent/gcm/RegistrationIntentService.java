@@ -93,6 +93,8 @@ public class RegistrationIntentService extends IntentService {
       Log.i(TAG, "GCM Registration Token: " + token);
     } catch (IOException e) {
       EXL.e(TAG, e.getMessage());
+    } catch (SecurityException e) {
+      EXL.e(TAG, "Are you running in Genymotion? Follow this guide https://inthecheesefactory.com/blog/how-to-install-google-services-on-genymotion/en to install Google Play Services");
     }
   }
 }
