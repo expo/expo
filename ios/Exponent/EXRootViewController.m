@@ -66,8 +66,15 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-- (void)splashLoadingDidDisplay:(NSNotification *)note {
-  self.loadingView.hidden = YES;
+- (void)splashLoadingDidDisplay:(NSNotification *)note
+{
+  __weak typeof(self) weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    __strong typeof(self) strongSelf = weakSelf;
+    if (strongSelf) {
+      strongSelf.loadingView.hidden = YES;
+    }
+  });
 }
 
 @end
