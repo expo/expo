@@ -43,7 +43,7 @@ EX_EXPORT_SCOPED_MODULE(ExponentMagnetometerUncalibrated, SensorManager);
   return @[@"magnetometerUncalibratedDidUpdate"];
 }
 
-RCT_EXPORT_METHOD(startObserving) {
+- (void)startObserving {
   [self setWatching:YES];
   __weak typeof(self) weakSelf = self;
   [_kernelSensorServiceDelegate sensorModuleDidSubscribeForMagnetometerUncalibratedUpdates:self withHandler:^(NSDictionary *event) {
@@ -51,7 +51,7 @@ RCT_EXPORT_METHOD(startObserving) {
   }];
 }
 
-RCT_EXPORT_METHOD(stopObserving) {
+- (void)stopObserving {
   [self setWatching:NO];
   [_kernelSensorServiceDelegate sensorModuleDidUnsubscribeForMagnetometerUncalibratedUpdates:self];
 }
