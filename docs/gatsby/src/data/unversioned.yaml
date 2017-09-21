@@ -69,6 +69,7 @@
     Camera: /versions/unversioned/sdk/camera.html
     Constants: /versions/unversioned/sdk/constants.html
     Contacts: /versions/unversioned/sdk/contacts.html
+    DeviceMotion: /versions/unversioned/sdk/devicemotion.html
     DocumentPicker: /versions/unversioned/sdk/document-picker.html
     ErrorRecovery: /versions/unversioned/sdk/error-recovery.html
     Facebook: /versions/unversioned/sdk/facebook.html
