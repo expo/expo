@@ -276,7 +276,8 @@ export default class SignUpScreen extends React.Component {
   };
 
   _handleError = (result: any) => {
-    // Our signup endpoint has this format for result object if there is an error:
+    // Our signup endpoint has this format for result object if there
+    // is an error:
     // {
     //  "errors":[
     //    {
@@ -291,18 +292,33 @@ export default class SignUpScreen extends React.Component {
     //    }
     //  ]
     // }
+    //
+    // NOTE(jim): On September 20th 2017, ben helped me discover that
+    // some messages were not returning 'details', but just a message.
+    // therefore I performed a hotfix for the following shape.
+    //
+    // { errors:
+    //  [
+    //    {
+    //      code: 'API_ERROR',
+    //      message: 'Please provide us with a username.'
+    //    }
+    //  ]
+    // }
+    //
+    // TODO(jim) Since I am inheriting the maintenance of these
+    // endpoints, It would be reasonable to take some spare time to
+    // make sure the shape of all errors are consistent for all clients.
 
-    let message = 'Sorry, something went wrong.';
+    let errorMessage = 'Sorry, something went wrong.';
     if (result.errors) {
-      let { details } = result.errors[0];
-      message = details.message;
+      const { details, message } = result.errors[0];
+      errorMessage = details ? details.message : message;
     } else if (result.error_description || result.message) {
-      message = result.error_description || result.message;
-    } else {
-      message = 'Sorry, something went wrong.';
+      errorMessage = result.error_description || result.message;
     }
 
-    this.props.navigator.showLocalAlert(message, Alerts.error);
+    this.props.navigator.showLocalAlert(errorMessage, Alerts.error);
   };
 }
 
