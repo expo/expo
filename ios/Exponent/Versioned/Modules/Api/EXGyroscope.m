@@ -1,25 +1,31 @@
-#import <CoreMotion/CoreMotion.h>
-
 #import "EXGyroscope.h"
 #import "EXUnversioned.h"
-#import <React/RCTEventEmitter.h>
-#import <React/RCTEventDispatcher.h>
+#import "EXSensorManager.h"
+#import "EXScopedModuleRegistry.h"
 
 @interface EXGyroscope ()
 
-@property (nonatomic, strong) CMMotionManager *manager;
-@property (nonatomic, assign, getter=isPaused) BOOL paused;
+@property (nonatomic, weak) id kernelSensorServiceDelegate;
+@property (nonatomic, assign, getter=isWatching) BOOL watching;
 
 @end
 
 @implementation EXGyroscope
 
-RCT_EXPORT_MODULE(ExponentGyroscope);
+EX_EXPORT_SCOPED_MODULE(ExponentGyroscope, SensorManager);
+
+- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
+{
+  if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
+    _kernelSensorServiceDelegate = kernelServiceInstance;
+  }
+  return self;
+}
 
 - (void)setBridge:(RCTBridge *)bridge
 {
   [super setBridge:bridge];
-  _paused = NO;
+  _watching = NO;
   
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(bridgeDidForeground:)
@@ -32,72 +38,40 @@ RCT_EXPORT_MODULE(ExponentGyroscope);
                                              object:self.bridge];
 }
 
-- (CMMotionManager *)manager
-{
-  // TODO (brent): singleton
-  if (!_manager) {
-    _manager = [[CMMotionManager alloc] init];
-    
-    if ([_manager isGyroAvailable]) {
-      [_manager setGyroUpdateInterval:0.1f];
-    }
-  }
-  return _manager;
-}
-
 - (NSArray<NSString *> *)supportedEvents
 {
   return @[@"gyroscopeDidUpdate"];
 }
 
+RCT_EXPORT_METHOD(startObserving) {
+  [self setWatching:YES];
+  __weak typeof(self) weakSelf = self;
+  [_kernelSensorServiceDelegate sensorModuleDidSubscribeForGyroscopeUpdates:self withHandler:^(NSDictionary *event) {
+    [weakSelf sendEventWithName:@"gyroscopeDidUpdate" body:event];
+  }];
+}
+
+RCT_EXPORT_METHOD(stopObserving) {
+  [self setWatching:NO];
+  [_kernelSensorServiceDelegate sensorModuleDidUnsubscribeForGyroscopeUpdates:self];
+}
+
 RCT_EXPORT_METHOD(setUpdateInterval:(nonnull NSNumber *)intervalMs) {
-  double intervalAsFractionOfSecond = [intervalMs doubleValue] / 1000;
-  [self.manager setGyroUpdateInterval:intervalAsFractionOfSecond];
+  [_kernelSensorServiceDelegate setGyroUpdateInterval:[intervalMs doubleValue] / 1000];
 }
 
 - (void)bridgeDidForeground:(NSNotification *)notification
 {
-  if ([self isPaused]) {
-    [self setPaused:NO];
+  if ([self isWatching]) {
     [self startObserving];
   }
 }
 
 - (void)bridgeDidBackground:(NSNotification *)notification
 {
-  if ([self.manager isGyroActive]) {
-    [self setPaused:YES];
+  if ([self isWatching]) {
+    [_kernelSensorServiceDelegate sensorModuleDidUnsubscribeForGyroscopeUpdates:self];
   }
-
-  [self stopObserving];
-}
-
-- (void)startObserving
-{
-  if (![self.manager isGyroActive] && [self.manager isGyroAvailable]) {
-    __weak typeof(self) weakSelf = self;
-    [self.manager startGyroUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMGyroData *data, NSError *error) {
-      [weakSelf sendEventWithName:@"gyroscopeDidUpdate" body:@{
-                                                           @"x": [NSNumber numberWithDouble:data.rotationRate.x],
-                                                           @"y": [NSNumber numberWithDouble:data.rotationRate.y],
-                                                           @"z": [NSNumber numberWithDouble:data.rotationRate.z]
-                                                           }];
-    }];
-  }
-}
-
-- (void)stopObserving
-{
-  if ([self.manager isGyroActive]) {
-    [self.manager stopGyroUpdates];
-  }
-}
-
-
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [self stopObserving];
 }
 
 @end

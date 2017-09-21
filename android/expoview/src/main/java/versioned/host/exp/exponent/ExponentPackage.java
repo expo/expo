@@ -36,6 +36,7 @@ import versioned.host.exp.exponent.modules.api.FileSystemModule;
 import versioned.host.exp.exponent.modules.api.FingerprintModule;
 import versioned.host.exp.exponent.modules.api.FontLoaderModule;
 import versioned.host.exp.exponent.modules.api.GoogleModule;
+import versioned.host.exp.exponent.modules.api.sensors.DeviceMotionModule;
 import versioned.host.exp.exponent.modules.api.sensors.GyroscopeModule;
 import versioned.host.exp.exponent.modules.api.ImageCropperModule;
 import versioned.host.exp.exponent.modules.api.ImagePickerModule;
@@ -143,6 +144,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new AccelerometerModule(reactContext));
         nativeModules.add(new GyroscopeModule(reactContext));
         nativeModules.add(new MagnetometerModule(reactContext));
+        nativeModules.add(new DeviceMotionModule(reactContext));
         nativeModules.add(new MagnetometerUncalibratedModule(reactContext));
         nativeModules.add(new NotificationsModule(reactContext, mManifest, mExperienceProperties));
         nativeModules.add(new ContactsModule(reactContext));

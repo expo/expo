@@ -1,6 +1,14 @@
-#import <React/RCTEventEmitter.h>
 #import <React/RCTBridge.h>
+#import "EXScopedEventEmitter.h"
 
-@interface EXMagnetometer : RCTEventEmitter
+@protocol EXMagnetometerScopedModuleDelegate
+
+- (void)sensorModuleDidSubscribeForMagnetometerUpdates:(id)scopedSensorModule withHandler:(void (^)(NSDictionary *event))handlerBlock;
+- (void)sensorModuleDidUnsubscribeForMagnetometerUpdates:(id)scopedSensorModule;
+- (void)setMagnetometerUpdateInterval:(NSTimeInterval)intervalMs;
+
+@end
+
+@interface EXMagnetometer : EXScopedEventEmitter
 
 @end

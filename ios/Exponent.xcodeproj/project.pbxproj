@@ -32,6 +32,8 @@
 		3C2A25821F2752E9000566ED /* EXCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C2A257F1F2752E9000566ED /* EXCamera.m */; };
 		3C2A25831F2752E9000566ED /* EXCameraManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C2A25811F2752E9000566ED /* EXCameraManager.m */; };
 		3CA241951F029BB700C3332E /* EXSpeech.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CA241941F029BB700C3332E /* EXSpeech.m */; };
+		3CABE7151F66C500008745F2 /* EXDeviceMotion.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CABE7141F66C500008745F2 /* EXDeviceMotion.m */; };
+		3CE707941F6A725100255742 /* EXSensorManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CE707931F6A725100255742 /* EXSensorManager.m */; };
 		4C9F38C21F1946FC00F926DA /* EXSecureStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C9F38C11F1946FC00F926DA /* EXSecureStore.m */; };
 		4CDF6D4F1F394EB500AA9D65 /* EXDownloadDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CDF6D4E1F394EB400AA9D65 /* EXDownloadDelegate.m */; };
 		7847A2BF1EB9AF210088BF69 /* AIRMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 7847A29D1EB9AF210088BF69 /* AIRMap.m */; };
@@ -308,6 +310,10 @@
 		3C2A25811F2752E9000566ED /* EXCameraManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXCameraManager.m; sourceTree = "<group>"; };
 		3CA241931F029B9A00C3332E /* EXSpeech.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXSpeech.h; sourceTree = "<group>"; };
 		3CA241941F029BB700C3332E /* EXSpeech.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXSpeech.m; sourceTree = "<group>"; };
+		3CABE7141F66C500008745F2 /* EXDeviceMotion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXDeviceMotion.m; sourceTree = "<group>"; };
+		3CABE7161F66C584008745F2 /* EXDeviceMotion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXDeviceMotion.h; sourceTree = "<group>"; };
+		3CE707931F6A725100255742 /* EXSensorManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXSensorManager.m; sourceTree = "<group>"; };
+		3CE707951F6A74AB00255742 /* EXSensorManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSensorManager.h; sourceTree = "<group>"; };
 		4C9F38C01F1946FC00F926DA /* EXSecureStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXSecureStore.h; sourceTree = "<group>"; };
 		4C9F38C11F1946FC00F926DA /* EXSecureStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXSecureStore.m; sourceTree = "<group>"; };
 		4CDF6D4D1F394EB400AA9D65 /* EXDownloadDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXDownloadDelegate.h; sourceTree = "<group>"; };
@@ -937,8 +943,14 @@
 			children = (
 				843175B21DDCF0440092B68B /* EXAccelerometer.h */,
 				843175B31DDCF0440092B68B /* EXAccelerometer.m */,
+				3CABE7161F66C584008745F2 /* EXDeviceMotion.h */,
+				3CABE7141F66C500008745F2 /* EXDeviceMotion.m */,
 				844341F51DDBA1B600AC3795 /* EXGyroscope.h */,
 				844341F61DDBA1B600AC3795 /* EXGyroscope.m */,
+				B5DB04781F39057900E91581 /* EXMagnetometer.h */,
+				B5DB04791F39057900E91581 /* EXMagnetometer.m */,
+				B5DB047A1F39057900E91581 /* EXMagnetometerUncalibrated.h */,
+				B5DB047B1F39057900E91581 /* EXMagnetometerUncalibrated.m */,
 				1978AD2E1EAC2656002A615B /* EXPedometer.h */,
 				1978AD2F1EAC2656002A615B /* EXPedometer.m */,
 			);
@@ -1134,10 +1146,6 @@
 				1981B9F61E3C28BA00057CA9 /* EXKeepAwake.m */,
 				A149D68E1E8F31DC00B71E3D /* EXLegacyAsyncLocalStorage.h */,
 				A149D68F1E8F31DC00B71E3D /* EXLegacyAsyncLocalStorage.m */,
-				B5DB04781F39057900E91581 /* EXMagnetometer.h */,
-				B5DB04791F39057900E91581 /* EXMagnetometer.m */,
-				B5DB047A1F39057900E91581 /* EXMagnetometerUncalibrated.h */,
-				B5DB047B1F39057900E91581 /* EXMagnetometerUncalibrated.m */,
 				A12CC94A1D11E80E0023A57B /* EXLocation.h */,
 				A12CC94B1D11E80E0023A57B /* EXLocation.m */,
 				B5218E781D232B8800C54B61 /* EXNotifications.h */,
@@ -1451,6 +1459,8 @@
 				B5AC39A61E95A90B00540AA7 /* EXRemoteNotificationManager.m */,
 				B57180FE1F0FF41600315A66 /* EXScreenOrientationManager.h */,
 				B57180FF1F0FF41600315A66 /* EXScreenOrientationManager.m */,
+				3CE707951F6A74AB00255742 /* EXSensorManager.h */,
+				3CE707931F6A725100255742 /* EXSensorManager.m */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -2144,6 +2154,7 @@
 				B55089821D06455D009FBBC5 /* EXLinkingManager.m in Sources */,
 				A12CC94C1D11E80E0023A57B /* EXLocation.m in Sources */,
 				7847A3941EC0F1550088BF69 /* RNSVGRectManager.m in Sources */,
+				3CABE7151F66C500008745F2 /* EXDeviceMotion.m in Sources */,
 				7847A2CC1EB9AF210088BF69 /* AIRMapUrlTile.m in Sources */,
 				7847A2C71EB9AF210088BF69 /* AIRMapMarkerManager.m in Sources */,
 				7847A2BF1EB9AF210088BF69 /* AIRMap.m in Sources */,
@@ -2227,6 +2238,7 @@
 				7847A3781EC0F1550088BF69 /* RNSVGCircleManager.m in Sources */,
 				7847A2CB1EB9AF210088BF69 /* AIRMapPolylineManager.m in Sources */,
 				7847A38D1EC0F1550088BF69 /* RNSVGPathManager.m in Sources */,
+				3CE707941F6A725100255742 /* EXSensorManager.m in Sources */,
 				B56D07431EC53333009E6A89 /* AIRGoogleMapPolylineManager.m in Sources */,
 				7847A39A1EC0F1550088BF69 /* RNSVGSymbol.m in Sources */,
 			);

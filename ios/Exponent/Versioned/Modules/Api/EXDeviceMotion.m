@@ -1,18 +1,20 @@
-#import "EXMagnetometerUncalibrated.h"
+// Copyright 2015-present 650 Industries. All rights reserved.
+
+#import "EXDeviceMotion.h"
 #import "EXUnversioned.h"
 #import "EXSensorManager.h"
 #import "EXScopedModuleRegistry.h"
 
-@interface EXMagnetometerUncalibrated ()
+@interface EXDeviceMotion ()
 
 @property (nonatomic, weak) id kernelSensorServiceDelegate;
 @property (nonatomic, assign, getter=isWatching) BOOL watching;
 
 @end
 
-@implementation EXMagnetometerUncalibrated
+@implementation EXDeviceMotion
 
-EX_EXPORT_SCOPED_MODULE(ExponentMagnetometerUncalibrated, SensorManager);
+EX_EXPORT_SCOPED_MODULE(ExponentDeviceMotion, SensorManager);
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
 {
@@ -38,26 +40,31 @@ EX_EXPORT_SCOPED_MODULE(ExponentMagnetometerUncalibrated, SensorManager);
                                              object:self.bridge];
 }
 
+- (NSDictionary *)constantsToExport
+{
+  return @{ @"Gravity" : @(EXGravity) };
+}
+
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[@"magnetometerUncalibratedDidUpdate"];
+  return @[@"deviceMotionDidUpdate"];
 }
 
 RCT_EXPORT_METHOD(startObserving) {
   [self setWatching:YES];
   __weak typeof(self) weakSelf = self;
-  [_kernelSensorServiceDelegate sensorModuleDidSubscribeForMagnetometerUncalibratedUpdates:self withHandler:^(NSDictionary *event) {
-    [weakSelf sendEventWithName:@"magnetometerUncalibratedDidUpdate" body:event];
+  [_kernelSensorServiceDelegate sensorModuleDidSubscribeForDeviceMotionUpdates:self withHandler:^(NSDictionary *event) {
+    [weakSelf sendEventWithName:@"deviceMotionDidUpdate" body:event];
   }];
 }
 
 RCT_EXPORT_METHOD(stopObserving) {
   [self setWatching:NO];
-  [_kernelSensorServiceDelegate sensorModuleDidUnsubscribeForMagnetometerUncalibratedUpdates:self];
+  [_kernelSensorServiceDelegate sensorModuleDidUnsubscribeForDeviceMotionUpdates:self];
 }
 
 RCT_EXPORT_METHOD(setUpdateInterval:(nonnull NSNumber *)intervalMs) {
-  [_kernelSensorServiceDelegate setMagnetometerUncalibratedUpdateInterval:[intervalMs doubleValue] / 1000];
+  [_kernelSensorServiceDelegate setDeviceMotionUpdateInterval:[intervalMs doubleValue] / 1000];
 }
 
 - (void)bridgeDidForeground:(NSNotification *)notification
@@ -70,7 +77,7 @@ RCT_EXPORT_METHOD(setUpdateInterval:(nonnull NSNumber *)intervalMs) {
 - (void)bridgeDidBackground:(NSNotification *)notification
 {
   if ([self isWatching]) {
-    [_kernelSensorServiceDelegate sensorModuleDidUnsubscribeForMagnetometerUncalibratedUpdates:self];
+    [_kernelSensorServiceDelegate sensorModuleDidUnsubscribeForDeviceMotionUpdates:self];
   }
 }
 
