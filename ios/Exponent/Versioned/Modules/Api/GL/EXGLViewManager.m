@@ -50,8 +50,12 @@ RCT_REMAP_METHOD(startARSession,
     _arSessions[@(sessionId)] = exglView;
 
     NSMutableDictionary *response = [[exglView startARSession] mutableCopy];
-    response[@"sessionId"] = @(sessionId);
-    resolve(response);
+    if (response[@"error"]) {
+      reject(@"ERR_ARKIT_FAILED_TO_INIT", response[@"error"], RCTErrorWithMessage(response[@"error"]));
+    } else {
+      response[@"sessionId"] = @(sessionId);
+      resolve(response);
+    }
   }];
 }
 

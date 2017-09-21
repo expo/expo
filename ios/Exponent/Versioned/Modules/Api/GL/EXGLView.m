@@ -302,6 +302,11 @@ static GLfloat arCamVerts[] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
 
   _arSession = [[ARSession alloc] init];
   ARWorldTrackingConfiguration *arConfig = [[ARWorldTrackingConfiguration alloc] init];
+  if (!arConfig) {
+    return @{
+      @"error": @"ARKit is not available on this device.",
+    };
+  }
   [_arSession runWithConfiguration:arConfig];
 
   CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, _eaglCtx, NULL, &_arCamCache);
