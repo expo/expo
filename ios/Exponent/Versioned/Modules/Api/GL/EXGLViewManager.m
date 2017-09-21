@@ -34,8 +34,8 @@ RCT_EXPORT_MODULE(ExponentGLViewManager);
 RCT_EXPORT_VIEW_PROPERTY(onSurfaceCreate, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(msaaSamples, NSNumber);
 
-RCT_REMAP_METHOD(startARSession,
-                 startARSessionWithReactTag:(nonnull NSNumber *)tag
+RCT_REMAP_METHOD(startARSessionAsync,
+                 startARSessionAsyncWithReactTag:(nonnull NSNumber *)tag
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
@@ -59,8 +59,8 @@ RCT_REMAP_METHOD(startARSession,
   }];
 }
 
-RCT_REMAP_METHOD(stopARSession,
-                 stopARSessionWithId:(nonnull NSNumber *)sessionId
+RCT_REMAP_METHOD(stopARSessionAsync,
+                 stopARSessionAsyncWithId:(nonnull NSNumber *)sessionId
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
