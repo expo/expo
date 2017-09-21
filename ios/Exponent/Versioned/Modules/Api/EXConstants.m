@@ -92,7 +92,14 @@ RCT_REMAP_METHOD(getWebViewUserAgentAsync,
 
 - (CGFloat)_getStatusBarHeight
 {
-  CGSize statusBarSize = [UIApplication sharedApplication].statusBarFrame.size;
+  __block CGSize statusBarSize;
+  if ([NSThread isMainThread]) {
+    statusBarSize = [UIApplication sharedApplication].statusBarFrame.size;
+  } else {
+    dispatch_sync(dispatch_get_main_queue(), ^{
+      statusBarSize = [UIApplication sharedApplication].statusBarFrame.size;
+    });
+  }
   return MIN(statusBarSize.width, statusBarSize.height);
 }
 
