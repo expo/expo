@@ -37,25 +37,44 @@ RCT_EXPORT_MODULE(ExponentKeepAwake);
 RCT_EXPORT_METHOD(activate)
 {
   _active = YES;
-  [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+  [self _performSynchronouslyOnMainThread:^{
+    [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+  }];
 }
 
 RCT_EXPORT_METHOD(deactivate)
 {
   _active = NO;
-  [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+  [self _performSynchronouslyOnMainThread:^{
+    [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+  }];
 }
 
 - (void)bridgeDidForeground:(NSNotification *)notification
 {
   if (_active) {
-    [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+    [self _performSynchronouslyOnMainThread:^{
+      [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+    }];
   }
 }
 
 - (void)bridgeDidBackground:(NSNotification *)notification
 {
-  [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+  [self _performSynchronouslyOnMainThread:^{
+    [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+  }];
+}
+
+#pragma mark - internal
+
+- (void)_performSynchronouslyOnMainThread:(void (^)(void))block
+{
+  if ([NSThread isMainThread]) {
+    block();
+  } else {
+    dispatch_sync(dispatch_get_main_queue(), block);
+  }
 }
 
 @end
