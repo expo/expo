@@ -76,6 +76,7 @@
     FileSystem: /versions/unversioned/sdk/filesystem.html
     Fingerprint: /versions/unversioned/sdk/fingerprint.html
     Font: /versions/unversioned/sdk/font.html
+    GestureHandler: /versions/unversioned/sdk/gesture-handler.html
     GLView: /versions/unversioned/sdk/gl-view.html
     Google: /versions/unversioned/sdk/google.html
     Gyroscope: /versions/unversioned/sdk/gyroscope.html
