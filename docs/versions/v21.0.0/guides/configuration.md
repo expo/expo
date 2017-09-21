@@ -9,7 +9,7 @@ title: Configuration with app.json
   "expo": {
     "name": "My app",
     "slug": "my-app",
-    "sdkVersion": "UNVERSIONED",
+    "sdkVersion": "21.0.0",
     "privacy": "public"
   }
 }
@@ -95,6 +95,7 @@ The following is a list of properties that are available for you under the `"exp
    - `exponentIconColor`
 
       If no icon is provided, we will show the Expo logo. You can choose between `white` and `blue`.
+    white, blue
 
    - `exponentIconGrayscale`
 
@@ -112,27 +113,6 @@ The following is a list of properties that are available for you under the `"exp
    - `hideExponentText`
 
       By default, Expo shows some text at the bottom of the loading screen. Set this to `true` to disable.
-
-   - `splash`
-
-      Configuration for loading and splash screen for standalone apps.
-
-       - `backgroundColor`
-
-          Color to fill the loading screen background
-        6 character long hex color string, eg: `'#000000'`
-
-       - `image`
-
-          Properties for customizing the images on the splash and loading screen for standalone apps.
-
-           - `ios`
-
-              Image specific properties for the loading experience on iOS standalone apps.
-
-               - `backgroundImage`
-
-                  Local path or remote url to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png. Will be inserted into the loading screen's background image view with contentMode `aspectFill`.
 
 - `appKey`
 
@@ -174,16 +154,16 @@ The following is a list of properties that are available for you under the `"exp
 
 - `rnCliPath`
 
-   
+
 - `packagerOpts`
 
-   
+
 - `ignoreNodeModulesValidation`
 
-   
+
 - `nodeModulesPath`
 
-   
+
 - `ios`
 
    **Standalone Apps Only**. iOS standalone app specific configuration
@@ -207,7 +187,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `config`
 
-      
+
        - `branch`
 
           [Branch](https://branch.io/) key to hook up Branch linking services.
@@ -252,6 +232,28 @@ The following is a list of properties that are available for you under the `"exp
 
       An array that contains Associated Domains for the standalone app.
 
+   - `splash` *Experimental*
+
+      Configuration for loading and splash screen for standalone iOS apps.
+
+       - `backgroundColor`
+
+          Color to fill the loading screen background
+        6 character long hex color string, eg: `'#000000'`
+
+       - `resizeMode`
+
+          Determines how the `image` will be displayed in the splash loading screen. Must be one of `cover` or `contain`, defaults to `contain`.
+        cover, contain
+
+       - `image`
+
+          Local path or remote url to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
+
+       - `tabletImage`
+
+          Local path or remote url to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
+
 - `android`
 
    **Standalone Apps Only**. Android standalone app specific configuration
@@ -272,11 +274,11 @@ The following is a list of properties that are available for you under the `"exp
    - `permissions`
 
       List of permissions used by the standalone app. Remove the field to use the default list of permissions.
-    
+
     Example: `[ "CAMERA", "ACCESS_FINE_LOCATION" ]`.
-    
+
     You can specify the following permissions depending on what you need:
-    
+
       - `ACCESS_COARSE_LOCATION`
       - `ACCESS_FINE_LOCATION`
       - `CAMERA`
@@ -304,7 +306,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `config`
 
-      
+
        - `branch`
 
           [Branch](https://branch.io/) key to hook up Branch linking services.
@@ -345,9 +347,65 @@ The following is a list of properties that are available for you under the `"exp
 
               The SHA-1 hash of the signing certificate used to build the apk without any separator `:`. Can be found in `google-services.json`. https://developers.google.com/android/guides/client-auth
 
+   - `splash`
+
+      Configuration for loading and splash screen for standalone iOS apps.
+
+       - `backgroundColor`
+
+          Color to fill the loading screen background
+        6 character long hex color string, eg: `'#000000'`
+
+       - `resizeMode`
+
+          Determines how the `image` will be displayed in the splash loading screen. Must be one of `cover` or `contain`, defaults to `contain`.
+        cover, contain
+
+       - `ldpi`
+
+          Local path or remote url to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
+
+       - `mdpi`
+
+          Local path or remote url to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
+
+       - `hdpi`
+
+          Local path or remote url to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
+
+       - `xhdpi`
+
+          Local path or remote url to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
+
+       - `xxhdpi`
+
+          Local path or remote url to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
+
+       - `xxxhdpi`
+
+          Local path or remote url to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
+
 - `facebookScheme`
 
    Used for Facebook native login. Starts with 'fb' and followed by a string of digits, like 'fb1234567890'. You can find your scheme at https://developers.facebook.com/docs/facebook-login/ios in the 'Configuring Your info.plist' section.
+
+- `splash`
+
+   Configuration for loading and splash screen for standalone apps.
+
+   - `backgroundColor`
+
+      Color to fill the loading screen background
+    6 character long hex color string, eg: `'#000000'`
+
+   - `resizeMode`
+
+      Determines how the `image` will be displayed in the splash loading screen. Must be one of `cover` or `contain`, defaults to `contain`.
+    cover, contain
+
+   - `image`
+
+      Local path or remote url to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
 
 - `hooks`
 
@@ -355,4 +413,3 @@ The following is a list of properties that are available for you under the `"exp
 
    - `postPublish`
 
-      
