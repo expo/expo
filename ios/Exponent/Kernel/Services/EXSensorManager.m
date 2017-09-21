@@ -57,7 +57,7 @@
   if (![self.manager isAccelerometerActive]) {
     [self.manager setAccelerometerUpdateInterval:0.1f];
     [self.manager startAccelerometerUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMAccelerometerData *data, NSError *error) {
-      for (void (^handler)() in self.accelerometerHandlers.allValues) {
+      for (void (^handler)(NSDictionary *) in self.accelerometerHandlers.allValues) {
         handler(@{
                   @"x": [NSNumber numberWithDouble:data.acceleration.x],
                   @"y": [NSNumber numberWithDouble:data.acceleration.y],
@@ -114,7 +114,7 @@
   if (![self.manager isGyroActive]) {
     [self.manager setGyroUpdateInterval:0.1f];
     [self.manager startGyroUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMGyroData *data, NSError *error) {
-      for (void (^handler)() in self.gyroscopeHandlers.allValues) {
+      for (void (^handler)(NSDictionary *) in self.gyroscopeHandlers.allValues) {
         handler(@{
                   @"x": [NSNumber numberWithDouble:data.rotationRate.x],
                   @"y": [NSNumber numberWithDouble:data.rotationRate.y],
@@ -171,7 +171,7 @@
   if (![self.manager isMagnetometerActive]) {
     [self.manager setMagnetometerUpdateInterval:0.1f];
     [self.manager startMagnetometerUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMMagnetometerData *data, NSError *error) {
-      for (void (^handler)() in self.magnetometerUncalibratedHandlers.allValues) {
+      for (void (^handler)(NSDictionary *) in self.magnetometerUncalibratedHandlers.allValues) {
         handler(@{
                   @"x": [NSNumber numberWithDouble:data.magneticField.x],
                   @"y": [NSNumber numberWithDouble:data.magneticField.y],
@@ -247,11 +247,11 @@
                               };
      
      // DeviceMotionUpdates handle DeviceMotion data as well as magnetic field
-     for (void (^handler)() in self.deviceMotionHandlers.allValues) {
+     for (void (^handler)(NSDictionary *) in self.deviceMotionHandlers.allValues) {
        handler(result);
      }
      
-     for (void (^handler)() in self.magnetometerHandlers.allValues) {
+     for (void (^handler)(NSDictionary *) in self.magnetometerHandlers.allValues) {
        handler(@{
                  @"x": [NSNumber numberWithDouble:data.magneticField.field.x],
                  @"y": [NSNumber numberWithDouble:data.magneticField.field.y],
