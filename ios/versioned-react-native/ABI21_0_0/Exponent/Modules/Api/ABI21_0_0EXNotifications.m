@@ -89,7 +89,9 @@ ABI21_0_0RCT_EXPORT_METHOD(presentLocalNotification:(NSDictionary *)payload
 {
   UILocalNotification *notification = [self _localNotificationFromPayload:payload];
 
-  [ABI21_0_0RCTSharedApplication() presentLocalNotificationNow:notification];
+  [self _performSynchronouslyOnMainThread:^{
+    [ABI21_0_0RCTSharedApplication() presentLocalNotificationNow:notification];
+  }];
 
   resolve(notification.userInfo[@"id"]);
 }
@@ -104,26 +106,32 @@ ABI21_0_0RCT_EXPORT_METHOD(scheduleLocalNotification:(NSDictionary *)payload
   notification.fireDate = [ABI21_0_0RCTConvert NSDate:options[@"time"]] ?: [NSDate new];
   notification.repeatInterval = [ABI21_0_0RCTConvert NSCalendarUnit:options[@"repeat"]] ?: 0;
 
-  [ABI21_0_0RCTSharedApplication() scheduleLocalNotification:notification];
+  [self _performSynchronouslyOnMainThread:^{
+    [ABI21_0_0RCTSharedApplication() scheduleLocalNotification:notification];
+  }];
 
   resolve(notification.userInfo[@"id"]);
 }
 
 ABI21_0_0RCT_EXPORT_METHOD(cancelScheduledNotification:(NSString *)uniqueId)
 {
-  for (UILocalNotification *notification in [ABI21_0_0RCTSharedApplication() scheduledLocalNotifications]) {
-    if ([notification.userInfo[@"id"] isEqualToString:uniqueId]) {
-      [ABI21_0_0RCTSharedApplication() cancelLocalNotification:notification];
-      break;
+  [self _performSynchronouslyOnMainThread:^{
+    for (UILocalNotification *notification in [ABI21_0_0RCTSharedApplication() scheduledLocalNotifications]) {
+      if ([notification.userInfo[@"id"] isEqualToString:uniqueId]) {
+        [ABI21_0_0RCTSharedApplication() cancelLocalNotification:notification];
+        break;
+      }
     }
-  }
+  }];
 }
 
 ABI21_0_0RCT_EXPORT_METHOD(cancelAllScheduledNotifications)
 {
   for (UILocalNotification *notification in [ABI21_0_0RCTSharedApplication() scheduledLocalNotifications]) {
     if ([notification.userInfo[@"experienceId"] isEqualToString:self.experienceId]) {
-      [ABI21_0_0RCTSharedApplication() cancelLocalNotification:notification];
+      [self _performSynchronouslyOnMainThread:^{
+        [ABI21_0_0RCTSharedApplication() cancelLocalNotification:notification];
+      }];
     }
   }
 }
@@ -136,18 +144,33 @@ ABI21_0_0RCT_REMAP_METHOD(getBadgeNumberAsync,
                  getBadgeNumberAsyncWithResolver:(ABI21_0_0RCTPromiseResolveBlock)resolve
                  rejecter:(__unused ABI21_0_0RCTPromiseRejectBlock)reject)
 {
-  resolve(@(ABI21_0_0RCTSharedApplication().applicationIconBadgeNumber));
+  __block NSInteger badgeNumber;
+  [self _performSynchronouslyOnMainThread:^{
+    badgeNumber = ABI21_0_0RCTSharedApplication().applicationIconBadgeNumber;
+  }];
+  resolve(@(badgeNumber));
 }
 
 ABI21_0_0RCT_EXPORT_METHOD(setBadgeNumberAsync:(nonnull NSNumber *)number
                   resolver:(ABI21_0_0RCTPromiseResolveBlock)resolve
                   rejecter:(__unused ABI21_0_0RCTPromiseRejectBlock)reject)
 {
-  ABI21_0_0RCTSharedApplication().applicationIconBadgeNumber = number.integerValue;
+  [self _performSynchronouslyOnMainThread:^{
+    ABI21_0_0RCTSharedApplication().applicationIconBadgeNumber = number.integerValue;
+  }];
   resolve(nil);
 }
 
 #pragma mark - internal
+
+- (void)_performSynchronouslyOnMainThread:(void (^)(void))block
+{
+  if ([NSThread isMainThread]) {
+    block();
+  } else {
+    dispatch_sync(dispatch_get_main_queue(), block);
+  }
+}
 
 - (UILocalNotification *)_localNotificationFromPayload:(NSDictionary *)payload
 {
