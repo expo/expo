@@ -89,7 +89,9 @@ RCT_EXPORT_METHOD(presentLocalNotification:(NSDictionary *)payload
 {
   UILocalNotification *notification = [self _localNotificationFromPayload:payload];
 
-  [RCTSharedApplication() presentLocalNotificationNow:notification];
+  [self _performSynchronouslyOnMainThread:^{
+    [RCTSharedApplication() presentLocalNotificationNow:notification];
+  }];
 
   resolve(notification.userInfo[@"id"]);
 }
@@ -104,26 +106,32 @@ RCT_EXPORT_METHOD(scheduleLocalNotification:(NSDictionary *)payload
   notification.fireDate = [RCTConvert NSDate:options[@"time"]] ?: [NSDate new];
   notification.repeatInterval = [RCTConvert NSCalendarUnit:options[@"repeat"]] ?: 0;
 
-  [RCTSharedApplication() scheduleLocalNotification:notification];
+  [self _performSynchronouslyOnMainThread:^{
+    [RCTSharedApplication() scheduleLocalNotification:notification];
+  }];
 
   resolve(notification.userInfo[@"id"]);
 }
 
 RCT_EXPORT_METHOD(cancelScheduledNotification:(NSString *)uniqueId)
 {
-  for (UILocalNotification *notification in [RCTSharedApplication() scheduledLocalNotifications]) {
-    if ([notification.userInfo[@"id"] isEqualToString:uniqueId]) {
-      [RCTSharedApplication() cancelLocalNotification:notification];
-      break;
+  [self _performSynchronouslyOnMainThread:^{
+    for (UILocalNotification *notification in [RCTSharedApplication() scheduledLocalNotifications]) {
+      if ([notification.userInfo[@"id"] isEqualToString:uniqueId]) {
+        [RCTSharedApplication() cancelLocalNotification:notification];
+        break;
+      }
     }
-  }
+  }];
 }
 
 RCT_EXPORT_METHOD(cancelAllScheduledNotifications)
 {
   for (UILocalNotification *notification in [RCTSharedApplication() scheduledLocalNotifications]) {
     if ([notification.userInfo[@"experienceId"] isEqualToString:self.experienceId]) {
-      [RCTSharedApplication() cancelLocalNotification:notification];
+      [self _performSynchronouslyOnMainThread:^{
+        [RCTSharedApplication() cancelLocalNotification:notification];
+      }];
     }
   }
 }
@@ -136,18 +144,33 @@ RCT_REMAP_METHOD(getBadgeNumberAsync,
                  getBadgeNumberAsyncWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(__unused RCTPromiseRejectBlock)reject)
 {
-  resolve(@(RCTSharedApplication().applicationIconBadgeNumber));
+  __block NSInteger badgeNumber;
+  [self _performSynchronouslyOnMainThread:^{
+    badgeNumber = RCTSharedApplication().applicationIconBadgeNumber;
+  }];
+  resolve(@(badgeNumber));
 }
 
 RCT_EXPORT_METHOD(setBadgeNumberAsync:(nonnull NSNumber *)number
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(__unused RCTPromiseRejectBlock)reject)
 {
-  RCTSharedApplication().applicationIconBadgeNumber = number.integerValue;
+  [self _performSynchronouslyOnMainThread:^{
+    RCTSharedApplication().applicationIconBadgeNumber = number.integerValue;
+  }];
   resolve(nil);
 }
 
 #pragma mark - internal
+
+- (void)_performSynchronouslyOnMainThread:(void (^)(void))block
+{
+  if ([NSThread isMainThread]) {
+    block();
+  } else {
+    dispatch_sync(dispatch_get_main_queue(), block);
+  }
+}
 
 - (UILocalNotification *)_localNotificationFromPayload:(NSDictionary *)payload
 {
