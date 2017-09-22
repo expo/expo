@@ -1,7 +1,7 @@
 # Customise this file, documentation can be found here:
 # https://github.com/KrauseFx/fastlane/tree/master/docs
-require 'fileutils'
-require 'shellwords'
+fastlane_require 'fileutils'
+fastlane_require 'shellwords'
 
 fastlane_version "1.30.0"
 default_platform :ios
@@ -102,19 +102,6 @@ platform :ios do
       message: "Deployed a new enterprise build to Dropbox.",
       success: true,
       default_payloads: [:lane, :git_branch]
-    )
-  end
-
-  lane :screenshots do
-    snapshot
-    frameit(
-      white: true,
-      path: "fastlane/screenshots",
-    )
-    deliver(
-      skip_screenshots: false,
-      skip_metadata: true,
-      submit_for_review: false,
     )
   end
 

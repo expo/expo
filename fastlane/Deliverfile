@@ -4,4 +4,3 @@
 
 app_identifier "host.exp.Exponent"
 
-screenshots_path "./fastlane/screenshots"
