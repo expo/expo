@@ -1,1 +1,3 @@
-This version adds support for React Native 0.48.
+This version adds support for iOS 11 and contains minor improvements.
+
+Version 1.20.0 added support for React Native 0.48.
