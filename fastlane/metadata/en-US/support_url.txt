@@ -1,1 +1,1 @@
-https://expo.io/help
+https://docs.expo.io
