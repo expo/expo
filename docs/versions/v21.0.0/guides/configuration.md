@@ -154,16 +154,16 @@ The following is a list of properties that are available for you under the `"exp
 
 - `rnCliPath`
 
-
+   
 - `packagerOpts`
 
-
+   
 - `ignoreNodeModulesValidation`
 
-
+   
 - `nodeModulesPath`
 
-
+   
 - `ios`
 
    **Standalone Apps Only**. iOS standalone app specific configuration
@@ -187,7 +187,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `config`
 
-
+      
        - `branch`
 
           [Branch](https://branch.io/) key to hook up Branch linking services.
@@ -232,9 +232,9 @@ The following is a list of properties that are available for you under the `"exp
 
       An array that contains Associated Domains for the standalone app.
 
-   - `splash` *Experimental*
+   - `splash`
 
-      Configuration for loading and splash screen for standalone iOS apps.
+      *Experimental*: Configuration for loading and splash screen for standalone iOS apps.
 
        - `backgroundColor`
 
@@ -274,11 +274,11 @@ The following is a list of properties that are available for you under the `"exp
    - `permissions`
 
       List of permissions used by the standalone app. Remove the field to use the default list of permissions.
-
+    
     Example: `[ "CAMERA", "ACCESS_FINE_LOCATION" ]`.
-
+    
     You can specify the following permissions depending on what you need:
-
+    
       - `ACCESS_COARSE_LOCATION`
       - `ACCESS_FINE_LOCATION`
       - `CAMERA`
@@ -306,7 +306,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `config`
 
-
+      
        - `branch`
 
           [Branch](https://branch.io/) key to hook up Branch linking services.
@@ -349,7 +349,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `splash`
 
-      Configuration for loading and splash screen for standalone iOS apps.
+      *Experimental*: Configuration for loading and splash screen for standalone iOS apps.
 
        - `backgroundColor`
 
@@ -391,7 +391,7 @@ The following is a list of properties that are available for you under the `"exp
 
 - `splash`
 
-   Configuration for loading and splash screen for standalone apps.
+   *Experimental*: Configuration for loading and splash screen for standalone apps.
 
    - `backgroundColor`
 
@@ -413,3 +413,4 @@ The following is a list of properties that are available for you under the `"exp
 
    - `postPublish`
 
+      
