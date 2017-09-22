@@ -1,5 +1,6 @@
 app_identifier "host.exp.Exponent"
 team_id "C8D8QTF339"
+itc_team_id "17102800"
 if ENV.has_key? "FASTLANE_USERNAME"
   apple_id ENV["FASTLANE_USERNAME"]
 end
