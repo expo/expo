@@ -341,12 +341,14 @@ public class ExponentManifest {
     Analytics.markEvent(Analytics.TimedEvent.FINISHED_MANIFEST_NETWORK_REQUEST);
 
     final JSONObject manifest = new JSONObject(manifestString);
+    final boolean isMainShellAppExperience = manifestUrl.equals(Constants.INITIAL_URL);
+
     if (manifest.has("manifestString") && manifest.has("signature")) {
       final JSONObject innerManifest = new JSONObject(manifest.getString("manifestString"));
 
       final boolean isOffline = !ExponentNetwork.isNetworkAvailable(mContext);
 
-      if (isAnonymousExperience(innerManifest)) {
+      if (isAnonymousExperience(innerManifest) || isMainShellAppExperience) {
         // Automatically verified.
         fetchManifestStep3(manifestUrl, innerManifest, true, listener);
       } else {
@@ -371,7 +373,7 @@ public class ExponentManifest {
             });
       }
     } else {
-      if (isEmbedded) {
+      if (isEmbedded || isMainShellAppExperience) {
         fetchManifestStep3(manifestUrl, manifest, true, listener);
       } else {
         fetchManifestStep3(manifestUrl, manifest, false, listener);
