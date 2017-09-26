@@ -109,7 +109,7 @@ const macrosFuncs = {
     } catch (e) {
       if (configuration === 'Debug') {
         // hard exit if there's an issue creating this during Debug.
-        throw new Error(`Error generating kernel manifest.: ${e}`);
+        throw new Error(`Error generating kernel manifest: ${e}\nMake sure a local kernel is being served from ${projectRoot}.`);
       } else {
         console.error(e);
         return '';
