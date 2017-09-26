@@ -2,6 +2,7 @@
 
 #import "EXAnalytics.h"
 #import "EXAppState.h"
+#import "EXBuildConfig.h"
 #import "EXFrame.h"
 #import "EXFrameReactAppManager.h"
 #import "EXKernel.h"
@@ -56,8 +57,9 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
   }
   
   // otherwise, expect local kernel when we are attached to xcode
+  // TODO: push this logic into the build hook.
 #if DEBUG
-  return YES;
+  return [EXBuildConfig sharedInstance].isDevKernel;
 #endif
   return NO;
 }
