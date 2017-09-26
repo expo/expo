@@ -41,6 +41,13 @@ if (isInOssDev) {
   isInUniverse = false;
 }
 
+async function getSavedDevHomeUrlAsync(platform) {
+  let devHomeConfig = await new JsonFile(
+    path.join(EXPONENT_DIR, 'dev-home-config.json')
+  ).readAsync();
+  return devHomeConfig.url;
+}
+
 const macrosFuncs = {
   async TEST_APP_URI() {
     if (process.env.TEST_SUITE_URI) {
@@ -93,29 +100,39 @@ const macrosFuncs = {
       projectRoot = path.join(__dirname, '..', 'js');
     }
 
+    let manifest;
     try {
       let url = await UrlUtils.constructManifestUrlAsync(projectRoot);
       console.log(`Project root: ${projectRoot}. Url: ${url}.`);
-      let manifest = await ExponentTools.getManifestAsync(url, {
+      manifest = await ExponentTools.getManifestAsync(url, {
         'Exponent-Platform': platform,
       });
-      if (!manifest.id) {
-        // TODO: let xdl handle this
-        // hack for now because unsigned manifest won't have an id
-        manifest.id = '@exponent/home';
-      }
-      manifest.sdkVersion = 'UNVERSIONED';
-      let manifestJson = JSON.stringify(manifest);
-      return manifestJson;
+
+      console.log('\n\nUsing Expo Home from __internal__\n\n');
     } catch (e) {
       if (configuration === 'Debug') {
         // hard exit if there's an issue creating this during Debug.
         throw new Error(`Error generating kernel manifest: ${e}\nMake sure a local kernel is being served from ${projectRoot}.`);
       } else {
-        console.error(e);
-        return '';
+        let savedDevHomeUrl = await getSavedDevHomeUrlAsync();
+        let sdkVersion = await macrosFuncs.TEMPORARY_SDK_VERSION();
+        manifest = await ExponentTools.getManifestAsync(savedDevHomeUrl, {
+          'Exponent-Platform': platform,
+          'Exponent-SDK-Version': sdkVersion,
+        });
+
+        console.log('\n\nUsing published dev version of Expo Home\n\n');
       }
     }
+
+    if (!manifest.id) {
+      // TODO: let xdl handle this
+      // hack for now because unsigned manifest won't have an id
+      manifest.id = '@exponent/home';
+    }
+    manifest.sdkVersion = 'UNVERSIONED';
+    let manifestJson = JSON.stringify(manifest);
+    return manifestJson;
   },
 
   async TEMPORARY_SDK_VERSION() {
