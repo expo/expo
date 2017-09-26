@@ -108,7 +108,6 @@ export default class SignUpScreen extends React.Component {
             autoFocus={true}
             autoCorrect={false}
             autoCapitalize="words"
-            blurOnSubmit={false}
             keyboardType="default"
             label="First name"
             returnKeyType="next"
@@ -122,7 +121,6 @@ export default class SignUpScreen extends React.Component {
             value={this.state.lastName}
             autoCorrect={false}
             autoCapitalize="words"
-            blurOnSubmit={false}
             keyboardType="default"
             label="Last name"
             returnKeyType="next"
@@ -136,7 +134,6 @@ export default class SignUpScreen extends React.Component {
             value={this.state.username}
             autoCorrect={false}
             autoCapitalize="none"
-            blurOnSubmit={false}
             keyboardType="default"
             label="Username"
             returnKeyType="next"
@@ -150,7 +147,6 @@ export default class SignUpScreen extends React.Component {
             autoCorrect={false}
             autoCapitalize="none"
             value={this.state.email}
-            blurOnSubmit={false}
             keyboardType="email-address"
             label="E-mail address"
             returnKeyType="next"
