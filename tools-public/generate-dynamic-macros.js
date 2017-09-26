@@ -78,7 +78,7 @@ const macrosFuncs = {
     }
   },
 
-  async BUILD_MACHINE_KERNEL_MANIFEST(platform) {
+  async BUILD_MACHINE_KERNEL_MANIFEST(platform, configuration) {
     if (process.env.SHELL_APP_BUILDER) {
       return '';
     }
@@ -107,10 +107,13 @@ const macrosFuncs = {
       let manifestJson = JSON.stringify(manifest);
       return manifestJson;
     } catch (e) {
-      if (e.code !== 'ENOENT') {
-        console.error(e.stack);
+      if (configuration === 'Debug') {
+        // hard exit if there's an issue creating this during Debug.
+        throw new Error(`Error generating kernel manifest.: ${e}`);
+      } else {
+        console.error(e);
+        return '';
       }
-      return '';
     }
   },
 
@@ -124,8 +127,8 @@ const macrosFuncs = {
   },
 };
 
-async function generateSourceAsync(filename, platform) {
-  let macros = await generateMacrosAsync(platform);
+async function generateSourceAsync(filename, platform, configuration) {
+  let macros = await generateMacrosAsync(platform, configuration);
   let source;
   if (platform === 'ios') {
     source = _.map(
@@ -193,12 +196,12 @@ function formatJavaLiteral(value) {
   throw new Error(`Unsupported literal value: ${value}`);
 }
 
-async function generateMacrosAsync(platform) {
+async function generateMacrosAsync(platform, configuration) {
   let names = [];
   let promises = [];
   _.forEach(macrosFuncs, (func, name) => {
     names.push(name);
-    promises.push(func(platform));
+    promises.push(func(platform, configuration));
   });
   let values = await Promise.all(promises);
 
@@ -335,6 +338,7 @@ async function copyTemplateFilesAsync(platform, args) {
 /**
  *  args:
  *    platform (ios|android)
+ *    configuration - optional but we behave differently if this is Debug
  *    buildConstantsPath
  *  ios-only:
  *    infoPlistPath
@@ -347,11 +351,12 @@ exports.generateDynamicMacrosAsync = async function generateDynamicMacrosAsync(
     let filepath = path.resolve(args.buildConstantsPath);
     let filename = path.basename(filepath);
     let platform = args.platform;
+    let configuration = args.configuration;
 
     mkdir('-p', path.dirname(filepath));
 
     let result = await Promise.all([
-      generateSourceAsync(filename, platform),
+      generateSourceAsync(filename, platform, configuration),
       readExistingSourceAsync(filepath),
     ]);
     let source = result[0];
@@ -363,7 +368,7 @@ exports.generateDynamicMacrosAsync = async function generateDynamicMacrosAsync(
 
     await copyTemplateFilesAsync(platform, args);
   } catch (error) {
-    console.error(`Uncaught ${error.stack}`);
+    console.error(`There was an error while generating Expo template files, which could lead to unexpected behavior at runtime:\n${error.stack}`);
     process.exit(1);
   }
 };
@@ -378,7 +383,7 @@ exports.cleanupDynamicMacrosAsync = async function cleanupDynamicMacrosAsync(
       await cleanIOSPropertyListBackupAsync(infoPlistPath, 'Info', true);
     }
   } catch (error) {
-    console.error(`Uncaught ${error.stack}`);
+    console.error(`There was an error cleaning up Expo template files:\n${error.stack}`);
     process.exit(1);
   }
 };

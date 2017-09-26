@@ -1832,7 +1832,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "set -eo pipefail\n\nif [ -z \"$EXPONENT_TOOLS_DIR\" ]; then\n    EXPONENT_TOOLS_DIR=\"${SRCROOT}/../tools-public\"\nfi\n\nmkdir -p \"${SRCROOT}/Exponent/Generated/\"\npushd ${EXPONENT_TOOLS_DIR}\nsource source-login-scripts.sh\ngulp generate-dynamic-macros --buildConstantsPath \"${SRCROOT}/Exponent/Generated/EXDynamicMacros.h\" --infoPlistPath \"${SRCROOT}/Exponent/Supporting\" --platform ios\npopd\n";
+			shellScript = "set -eo pipefail\n\nif [ -z \"$EXPONENT_TOOLS_DIR\" ]; then\n    EXPONENT_TOOLS_DIR=\"${SRCROOT}/../tools-public\"\nfi\n\nmkdir -p \"${SRCROOT}/Exponent/Generated/\"\npushd ${EXPONENT_TOOLS_DIR}\nsource source-login-scripts.sh\ngulp generate-dynamic-macros --buildConstantsPath \"${SRCROOT}/Exponent/Generated/EXDynamicMacros.h\" --infoPlistPath \"${SRCROOT}/Exponent/Supporting\" --platform ios --configuration ${CONFIGURATION}\npopd\n";
 		};
 		78F81D401B70746F000E5595 /* Fabric */ = {
 			isa = PBXShellScriptBuildPhase;
