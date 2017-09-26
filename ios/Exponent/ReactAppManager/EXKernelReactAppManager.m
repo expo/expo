@@ -1,5 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+#import "EXBuildConfig.h"
 #import "EXCachedResource.h"
 #import "EXKernelReactAppManager.h"
 #import "EXReactAppManager+Private.h"
@@ -47,12 +48,12 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
 {
   NSString *manifestJson = nil;
   BOOL usesNSBundleManifest = NO;
-#ifdef BUILD_MACHINE_KERNEL_MANIFEST
-  // if developing, use development manifest from generateDynamicMacros.js
+
+  // if developing, use development manifest from EXBuildConfig
   if ([EXKernel isDevKernel]) {
-    manifestJson = BUILD_MACHINE_KERNEL_MANIFEST;
+    manifestJson = [EXBuildConfig sharedInstance].kernelManifestJsonString;
   }
-#endif
+
   // otherwise use published manifest
   if (!manifestJson) {
     NSString *manifestPath = [[NSBundle mainBundle] pathForResource:kEXKernelManifestResourceName ofType:@"json"];
