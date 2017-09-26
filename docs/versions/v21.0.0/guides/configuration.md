@@ -234,7 +234,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `splash`
 
-      *Experimental*: Configuration for loading and splash screen for standalone iOS apps.
+      **Experimental**: Configuration for loading and splash screen for standalone iOS apps.
 
        - `backgroundColor`
 
@@ -349,7 +349,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `splash`
 
-      *Experimental*: Configuration for loading and splash screen for standalone iOS apps.
+      **Experimental**: Configuration for loading and splash screen for standalone iOS apps.
 
        - `backgroundColor`
 
@@ -391,7 +391,7 @@ The following is a list of properties that are available for you under the `"exp
 
 - `splash`
 
-   *Experimental*: Configuration for loading and splash screen for standalone apps.
+   **Experimental**: Configuration for loading and splash screen for standalone apps.
 
    - `backgroundColor`
 
