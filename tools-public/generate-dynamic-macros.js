@@ -13,6 +13,7 @@ const JsonFile = require('@exponent/json-file');
 const spawnAsync = require('@exponent/spawn-async');
 
 const {
+  createBlankIOSPropertyListAsync,
   modifyIOSPropertyListAsync,
   cleanIOSPropertyListBackupAsync,
 } = ExponentTools;
@@ -127,29 +128,48 @@ const macrosFuncs = {
   },
 };
 
-async function generateSourceAsync(filename, platform, configuration) {
-  let macros = await generateMacrosAsync(platform, configuration);
+async function generateIOSBuildConfigFromMacrosAsync(buildConfigPlistPath, macros) {
+  const plistPath = path.dirname(buildConfigPlistPath);
+  const plistName = path.basename(buildConfigPlistPath);
+  if (!fs.existsSync(buildConfigPlistPath)) {
+    await createBlankIOSPropertyListAsync(plistPath, plistName);
+  }
+  const result = await modifyIOSPropertyListAsync(plistPath, plistName, config => {
+    if (config.USE_GENERATED_DEFAULTS === false) {
+      // this flag means don't generate anything, let the user override.
+      return config;
+    } else {
+      _.map(
+        macros,
+        (value, name) => {
+          if (value == null) { // null == undefined
+            value = '';
+          }
+          config[name] = value;
+        }
+      );
+      config.IS_DEV_KERNEL = true;
+      config.USE_GENERATED_DEFAULTS = true;
+      return config;
+    }
+  });
+
+  return result;
+}
+
+async function generateAndroidBuildConstantsFromMacrosAsync(macros) {
   let source;
-  if (platform === 'ios') {
-    source = _.map(
-      macros,
-      (value, name) => `#define ${name} ${formatObjCLiteral(value)}`
-    ).join('\n');
-  } else if (platform === 'android') {
-    let definitions = _.map(
-      macros,
-      (value, name) =>
-        `  public static final ${formatJavaType(value)} ${name} = ${formatJavaLiteral(value)};`
-    );
-    source = `
+  let definitions = _.map(
+    macros,
+    (value, name) =>
+      `  public static final ${formatJavaType(value)} ${name} = ${formatJavaLiteral(value)};`
+  );
+  source = `
 package host.exp.exponent.generated;
 
 public class ExponentBuildConstants {
 ${definitions.join('\n')}
 }`;
-  } else {
-    throw new Error(`Cannot generate source for unknown platform ${platform}`);
-  }
 
   return (
     `
@@ -159,18 +179,6 @@ ${definitions.join('\n')}
 ${source.trim()}
 `.trim() + '\n'
   );
-}
-
-function formatObjCLiteral(value) {
-  if (value == null) {
-    return 'nil';
-  } else if (typeof value === 'string') {
-    value = value.replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0');
-    return `@"${value}"`;
-  } else if (typeof value === 'number') {
-    return value;
-  }
-  throw new Error(`Unsupported literal value: ${value}`);
 }
 
 function formatJavaType(value) {
@@ -277,6 +285,43 @@ async function getTemplateSubstitutions() {
   }
 }
 
+async function writeIOSTemplatesAsync(platform, args, templateFilesPath, templateSubstitutions) {
+  let infoPlistPath = args.infoPlistPath;
+  let infoPlist = await modifyIOSInfoPlistAsync(
+    infoPlistPath,
+    'Info',
+    templateSubstitutions
+  );
+  await renderPodfileAsync(
+    path.join(templateFilesPath, platform, 'Podfile'),
+    path.join(EXPONENT_DIR, 'ios', 'Podfile'),
+    {
+      TARGET_NAME: 'Exponent',
+      REACT_NATIVE_PATH: templateSubstitutions.REACT_NATIVE_PATH,
+    }
+  );
+
+  if (args.expoKitPath) {
+    let expoKitPath = path.join(process.cwd(), args.expoKitPath);
+    await renderExpoKitPodspecAsync(
+      path.join(templateFilesPath, platform, 'ExpoKit.podspec'),
+      path.join(expoKitPath, 'ExpoKit.podspec'),
+      {
+        IOS_EXPONENT_CLIENT_VERSION: infoPlist.EXClientVersion,
+      }
+    );
+    await renderPodfileAsync(
+      path.join(templateFilesPath, platform, 'ExpoKit-Podfile'),
+      path.join(expoKitPath, 'exponent-view-template', 'ios', 'Podfile'),
+      {
+        TARGET_NAME: 'exponent-view-template',
+        EXPOKIT_PATH: '../..',
+        REACT_NATIVE_PATH: '../../../react-native-lab/react-native',
+      }
+    );
+  }
+}
+
 async function copyTemplateFilesAsync(platform, args) {
   let templateFilesPath = path.join(EXPONENT_DIR, 'template-files');
   let templatePaths = await new JsonFile(
@@ -296,43 +341,33 @@ async function copyTemplateFilesAsync(platform, args) {
   });
 
   if (platform === 'ios') {
-    let infoPlistPath = args.infoPlistPath;
-    let infoPlist = await modifyIOSInfoPlistAsync(
-      infoPlistPath,
-      'Info',
-      templateSubstitutions
-    );
-    await renderPodfileAsync(
-      path.join(templateFilesPath, platform, 'Podfile'),
-      path.join(EXPONENT_DIR, 'ios', 'Podfile'),
-      {
-        TARGET_NAME: 'Exponent',
-        REACT_NATIVE_PATH: templateSubstitutions.REACT_NATIVE_PATH,
-      }
-    );
-
-    if (args.expoKitPath) {
-      let expoKitPath = path.join(process.cwd(), args.expoKitPath);
-      await renderExpoKitPodspecAsync(
-        path.join(templateFilesPath, platform, 'ExpoKit.podspec'),
-        path.join(expoKitPath, 'ExpoKit.podspec'),
-        {
-          IOS_EXPONENT_CLIENT_VERSION: infoPlist.EXClientVersion,
-        }
-      );
-      await renderPodfileAsync(
-        path.join(templateFilesPath, platform, 'ExpoKit-Podfile'),
-        path.join(expoKitPath, 'exponent-view-template', 'ios', 'Podfile'),
-        {
-          TARGET_NAME: 'exponent-view-template',
-          EXPOKIT_PATH: '../..',
-          REACT_NATIVE_PATH: '../../../react-native-lab/react-native',
-        }
-      );
-    }
+    await writeIOSTemplatesAsync(platform, args, templateFilesPath, templateSubstitutions);
   }
 
   await Promise.all(promises);
+}
+
+async function generateBuildConfigAsync(platform, args) {
+  const filepath = path.resolve(args.buildConstantsPath);
+  const { configuration } = args;
+  
+  mkdir('-p', path.dirname(filepath));
+  
+  let macros = await generateMacrosAsync(platform, configuration);
+  if (platform === 'android') {
+    let result = await Promise.all([
+      generateAndroidBuildConstantsFromMacrosAsync(macros),
+      readExistingSourceAsync(filepath),
+    ]);
+    let source = result[0];
+    let existingSource = result[1];
+    
+    if (source !== existingSource) {
+      await fs.promise.writeFile(filepath, source, 'utf8');
+    }
+  } else {
+    await generateIOSBuildConfigFromMacrosAsync(filepath, macros);
+  }
 }
 
 /**
@@ -348,24 +383,8 @@ exports.generateDynamicMacrosAsync = async function generateDynamicMacrosAsync(
   args
 ) {
   try {
-    let filepath = path.resolve(args.buildConstantsPath);
-    let filename = path.basename(filepath);
-    let platform = args.platform;
-    let configuration = args.configuration;
-
-    mkdir('-p', path.dirname(filepath));
-
-    let result = await Promise.all([
-      generateSourceAsync(filename, platform, configuration),
-      readExistingSourceAsync(filepath),
-    ]);
-    let source = result[0];
-    let existingSource = result[1];
-
-    if (source !== existingSource) {
-      await fs.promise.writeFile(filepath, source, 'utf8');
-    }
-
+    const { platform } = args;
+    await generateBuildConfigAsync(platform, args);
     await copyTemplateFilesAsync(platform, args);
   } catch (error) {
     console.error(`There was an error while generating Expo template files, which could lead to unexpected behavior at runtime:\n${error.stack}`);
