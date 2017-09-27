@@ -56,12 +56,7 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
     return NO;
   }
   
-  // otherwise, expect local kernel when we are attached to xcode
-  // TODO: push this logic into the build hook.
-#if DEBUG
   return [EXBuildConfig sharedInstance].isDevKernel;
-#endif
-  return NO;
 }
 
 - (instancetype)init

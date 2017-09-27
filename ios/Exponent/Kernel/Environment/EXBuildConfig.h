@@ -2,11 +2,18 @@
 
 #import <Foundation/Foundation.h>
 
+typedef enum EXKernelDevManifestSource {
+  kEXKernelDevManifestSourceNone,
+  kEXKernelDevManifestSourceLocal,
+  kEXKernelDevManifestSourcePublished,
+} EXKernelDevManifestSource;
+
 @interface EXBuildConfig : NSObject
 
 + (instancetype)sharedInstance;
 
 @property (nonatomic, readonly) BOOL isDevKernel;
+@property (nonatomic, readonly) EXKernelDevManifestSource kernelDevManifestSource;
 @property (nonatomic, readonly) NSString *kernelManifestJsonString;
 @property (nonatomic, strong) NSString *temporarySdkVersion;
 
