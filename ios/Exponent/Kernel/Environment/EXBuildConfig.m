@@ -31,8 +31,25 @@
   NSString *plistPath = [[NSBundle mainBundle] pathForResource:@"EXBuildConfig" ofType:@"plist"];
   NSDictionary *config = (plistPath) ? [NSDictionary dictionaryWithContentsOfFile:plistPath] : [NSDictionary dictionary];
   _isDevKernel = [config[@"IS_DEV_KERNEL"] boolValue];
-  _kernelManifestJsonString = config[@"BUILD_MACHINE_KERNEL_MANIFEST"];
+  _kernelDevManifestSource = [[self class] _kernelManifestSourceFromString:config[@"DEV_KERNEL_SOURCE"]];
+  if (_kernelDevManifestSource == kEXKernelDevManifestSourceLocal) {
+    // local kernel. use manifest from local server.
+    _kernelManifestJsonString = config[@"BUILD_MACHINE_KERNEL_MANIFEST"];
+  } else if (_kernelDevManifestSource == kEXKernelDevManifestSourcePublished) {
+    // dev published kernel. use published manifest.
+    _kernelManifestJsonString = config[@"DEV_PUBLISHED_KERNEL_MANIFEST"];
+  }
   _temporarySdkVersion = config[@"TEMPORARY_SDK_VERSION"];
+}
+
++ (EXKernelDevManifestSource)_kernelManifestSourceFromString:(NSString *)sourceString
+{
+  if ([sourceString isEqualToString:@"LOCAL"]) {
+    return kEXKernelDevManifestSourceLocal;
+  } else if ([sourceString isEqualToString:@"PUBLISHED"]) {
+    return kEXKernelDevManifestSourcePublished;
+  }
+  return kEXKernelDevManifestSourceNone;
 }
 
 @end
