@@ -86,7 +86,25 @@ const macrosFuncs = {
     }
   },
 
-  async BUILD_MACHINE_KERNEL_MANIFEST(platform, configuration) {
+  async DEV_PUBLISHED_KERNEL_MANIFEST(platform) {
+    let manifest, savedDevHomeUrl;
+    try {
+      console.log('Downloading DEV published kernel manifest...');
+      savedDevHomeUrl = await getSavedDevHomeUrlAsync();
+      let sdkVersion = await macrosFuncs.TEMPORARY_SDK_VERSION();
+      manifest = await ExponentTools.getManifestAsync(savedDevHomeUrl, {
+        'Exponent-Platform': platform,
+        'Exponent-SDK-Version': sdkVersion,
+      });
+    } catch (e) {
+      console.error(`Unable to download manifest from ${savedDevHomeUrl}: ${e.message}`);
+      return '';
+    }
+
+    return kernelManifestObjectToJson(manifest);
+  },
+
+  async BUILD_MACHINE_KERNEL_MANIFEST(platform) {
     if (process.env.SHELL_APP_BUILDER) {
       return '';
     }
@@ -103,36 +121,16 @@ const macrosFuncs = {
     let manifest;
     try {
       let url = await UrlUtils.constructManifestUrlAsync(projectRoot);
-      console.log(`Project root: ${projectRoot}. Url: ${url}.`);
+      console.log(`Generating local kernel manifest from project root ${projectRoot} and url ${url}...`);
       manifest = await ExponentTools.getManifestAsync(url, {
         'Exponent-Platform': platform,
       });
-
-      console.log('\n\nUsing Expo Home from __internal__\n\n');
     } catch (e) {
-      if (configuration === 'Debug') {
-        // hard exit if there's an issue creating this during Debug.
-        throw new Error(`Error generating kernel manifest: ${e}\nMake sure a local kernel is being served from ${projectRoot}.`);
-      } else {
-        let savedDevHomeUrl = await getSavedDevHomeUrlAsync();
-        let sdkVersion = await macrosFuncs.TEMPORARY_SDK_VERSION();
-        manifest = await ExponentTools.getManifestAsync(savedDevHomeUrl, {
-          'Exponent-Platform': platform,
-          'Exponent-SDK-Version': sdkVersion,
-        });
-
-        console.log('\n\nUsing published dev version of Expo Home\n\n');
-      }
+      console.error(`Unable to generate manifest from ${projectRoot}: ${e.message}`);
+      return '';
     }
 
-    if (!manifest.id) {
-      // TODO: let xdl handle this
-      // hack for now because unsigned manifest won't have an id
-      manifest.id = '@exponent/home';
-    }
-    manifest.sdkVersion = 'UNVERSIONED';
-    let manifestJson = JSON.stringify(manifest);
-    return manifestJson;
+    return kernelManifestObjectToJson(manifest);
   },
 
   async TEMPORARY_SDK_VERSION() {
@@ -145,12 +143,28 @@ const macrosFuncs = {
   },
 };
 
-async function generateIOSBuildConfigFromMacrosAsync(buildConfigPlistPath, macros) {
+function kernelManifestObjectToJson(manifest) {
+  if (!manifest.id) {
+    // TODO: let xdl handle this
+    // hack for now because unsigned manifest won't have an id
+    manifest.id = '@exponent/home';
+  }
+  manifest.sdkVersion = 'UNVERSIONED';
+  let manifestJson = JSON.stringify(manifest);
+  return manifestJson;
+}
+
+async function generateIOSBuildConfigFromMacrosAsync(
+  buildConfigPlistPath,
+  macros,
+  buildConfiguration
+) {
   const plistPath = path.dirname(buildConfigPlistPath);
   const plistName = path.basename(buildConfigPlistPath);
   if (!fs.existsSync(buildConfigPlistPath)) {
     await createBlankIOSPropertyListAsync(plistPath, plistName);
   }
+
   const result = await modifyIOSPropertyListAsync(plistPath, plistName, config => {
     if (config.USE_GENERATED_DEFAULTS === false) {
       // this flag means don't generate anything, let the user override.
@@ -165,17 +179,70 @@ async function generateIOSBuildConfigFromMacrosAsync(buildConfigPlistPath, macro
           config[name] = value;
         }
       );
-      config.IS_DEV_KERNEL = true;
-      config.USE_GENERATED_DEFAULTS = true;
-      return config;
+      return validateIOSBuildConfig(config, buildConfiguration);
     }
   });
 
   return result;
 }
 
+/**
+ *  Adds IS_DEV_KERNEL (bool) and DEV_KERNEL_SOURCE (PUBLISHED, LOCAL)
+ *  and errors if there's a problem with the chosen environment.
+ */
+function validateIOSBuildConfig(config, buildConfiguration) {
+  config.USE_GENERATED_DEFAULTS = true;
+  
+  let IS_DEV_KERNEL, DEV_KERNEL_SOURCE = '';
+  if (buildConfiguration === 'Debug') {
+    IS_DEV_KERNEL = true;
+    DEV_KERNEL_SOURCE = config.DEV_KERNEL_SOURCE;
+    if (!DEV_KERNEL_SOURCE) {
+      // default to dev published build if nothing specified
+      DEV_KERNEL_SOURCE = 'PUBLISHED';
+    }
+  } else {
+    IS_DEV_KERNEL = false;
+  }
+
+  if (IS_DEV_KERNEL) {
+    if (
+      DEV_KERNEL_SOURCE === 'LOCAL'
+      && !config.BUILD_MACHINE_KERNEL_MANIFEST
+    ) {
+      throw new Error(`Error generating local kernel manifest.\nMake sure a local kernel is being served, or switch DEV_KERNEL_SOURCE to use PUBLISHED instead.`);
+    }
+    
+    if (
+      DEV_KERNEL_SOURCE === 'PUBLISHED'
+      && !config.DEV_PUBLISHED_KERNEL_MANIFEST
+    ) {
+      throw new Error(`Error downloading DEV published kernel manifest.\n`);
+    }
+  }
+
+  config.IS_DEV_KERNEL = IS_DEV_KERNEL;
+  config.DEV_KERNEL_SOURCE = DEV_KERNEL_SOURCE;
+  return config;
+}
+
 async function generateAndroidBuildConstantsFromMacrosAsync(macros) {
   let source;
+
+  // android falls back to published dev home if local dev home
+  // doesn't exist or had an error.
+  const isLocalManifestEmpty = (
+    !macros.BUILD_MACHINE_KERNEL_MANIFEST
+    || macros.BUILD_MACHINE_KERNEL_MANIFEST === ''
+  );
+  if (isLocalManifestEmpty) {
+    macros.BUILD_MACHINE_KERNEL_MANIFEST = macros.DEV_PUBLISHED_KERNEL_MANIFEST;
+    console.log('\n\nUsing published dev version of Expo Home\n\n');
+  } else {
+    console.log('\n\nUsing Expo Home from __internal__\n\n');
+  }
+  delete macros['DEV_PUBLISHED_KERNEL_MANIFEST'];
+  
   let definitions = _.map(
     macros,
     (value, name) =>
@@ -383,7 +450,7 @@ async function generateBuildConfigAsync(platform, args) {
       await fs.promise.writeFile(filepath, source, 'utf8');
     }
   } else {
-    await generateIOSBuildConfigFromMacrosAsync(filepath, macros);
+    await generateIOSBuildConfigFromMacrosAsync(filepath, macros, configuration);
   }
 }
 
