@@ -113,11 +113,11 @@ To use methods that Camera exposes one has to create a components `ref` and invo
 // ...
 <Camera ref={ref => { this.camera = ref; }} />
 // ...
-snap() {
+snap = async () => {
   if (this.camera) {
-    this.camera.takePictureAsync().then( /* ... */ )
+    let photo = await this.camera.takePictureAsync();
   }
-}
+};
 ```
 
 ### `takePictureAsync`
