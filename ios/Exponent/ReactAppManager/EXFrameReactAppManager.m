@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXAnalytics.h"
+#import "EXBuildConstants.h"
 #import "EXCachedResource.h"
 #import "EXErrorRecoveryManager.h"
 #import "EXFrame.h"
@@ -162,6 +163,7 @@
                            @"constants": @{
                                @"linkingUri": [EXKernelLinkingManager linkingUriForExperienceUri:_frame.initialUri],
                                @"deviceId": [EXKernel deviceInstallUUID],
+                               @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,
                                @"manifest": _frame.manifest,
                                @"appOwnership": [_frame.initialProps objectForKey:@"appOwnership"] ?: @"expo",
                                },

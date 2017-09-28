@@ -81,7 +81,7 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
                                                    name:name
                                                  object:nil];
     }
-    NSLog(@"Expo iOS Client Version %@", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"EXClientVersion"]);
+    NSLog(@"Expo iOS Runtime Version %@", [EXBuildConstants sharedInstance].expoRuntimeVersion);
   }
   return self;
 }

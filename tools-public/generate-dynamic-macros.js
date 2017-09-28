@@ -157,7 +157,8 @@ function kernelManifestObjectToJson(manifest) {
 async function generateIOSBuildConstantsFromMacrosAsync(
   buildConfigPlistPath,
   macros,
-  buildConfiguration
+  buildConfiguration,
+  infoPlistContents
 ) {
   const plistPath = path.dirname(buildConfigPlistPath);
   const plistName = path.basename(buildConfigPlistPath);
@@ -179,6 +180,9 @@ async function generateIOSBuildConstantsFromMacrosAsync(
           config[name] = value;
         }
       );
+      config.EXPO_RUNTIME_VERSION = infoPlistContents.CFBundleVersion
+        ? infoPlistContents.CFBundleVersion
+        : infoPlistContents.CFBundleShortVersionString;
       return validateIOSBuildConstants(config, buildConfiguration);
     }
   });
@@ -347,9 +351,6 @@ async function modifyIOSInfoPlistAsync(path, filename, templateSubstitutions) {
         ],
       };
     }
-    config.EXClientVersion = config.CFBundleVersion
-      ? config.CFBundleVersion
-      : config.CFBundleShortVersionString;
     return config;
   });
   return result;
@@ -369,13 +370,7 @@ async function getTemplateSubstitutions() {
   }
 }
 
-async function writeIOSTemplatesAsync(platform, args, templateFilesPath, templateSubstitutions) {
-  let infoPlistPath = args.infoPlistPath;
-  let infoPlist = await modifyIOSInfoPlistAsync(
-    infoPlistPath,
-    'Info',
-    templateSubstitutions
-  );
+async function writeIOSTemplatesAsync(platform, args, templateFilesPath, templateSubstitutions, iOSInfoPlistContents) {
   await renderPodfileAsync(
     path.join(templateFilesPath, platform, 'Podfile'),
     path.join(EXPONENT_DIR, 'ios', 'Podfile'),
@@ -391,7 +386,7 @@ async function writeIOSTemplatesAsync(platform, args, templateFilesPath, templat
       path.join(templateFilesPath, platform, 'ExpoKit.podspec'),
       path.join(expoKitPath, 'ExpoKit.podspec'),
       {
-        IOS_EXPONENT_CLIENT_VERSION: infoPlist.EXClientVersion,
+        IOS_EXPONENT_CLIENT_VERSION: iOSInfoPlistContents.CFBundleShortVersionString,
       }
     );
     await renderPodfileAsync(
@@ -406,12 +401,11 @@ async function writeIOSTemplatesAsync(platform, args, templateFilesPath, templat
   }
 }
 
-async function copyTemplateFilesAsync(platform, args) {
+async function copyTemplateFilesAsync(platform, args, templateSubstitutions) {
   let templateFilesPath = path.join(EXPONENT_DIR, 'template-files');
   let templatePaths = await new JsonFile(
     path.join(templateFilesPath, `${platform}-paths.json`)
   ).readAsync();
-  let templateSubstitutions = await getTemplateSubstitutions();
 
   let promises = [];
   _.forEach(templatePaths, (dest, source) => {
@@ -424,11 +418,10 @@ async function copyTemplateFilesAsync(platform, args) {
     );
   });
 
-  if (platform === 'ios') {
-    await writeIOSTemplatesAsync(platform, args, templateFilesPath, templateSubstitutions);
-  }
-
   await Promise.all(promises);
+  if (platform === 'ios') {
+    await writeIOSTemplatesAsync(platform, args, templateFilesPath, templateSubstitutions, args.infoPlist);
+  }
 }
 
 async function generateBuildConfigAsync(platform, args) {
@@ -450,7 +443,7 @@ async function generateBuildConfigAsync(platform, args) {
       await fs.promise.writeFile(filepath, source, 'utf8');
     }
   } else {
-    await generateIOSBuildConstantsFromMacrosAsync(filepath, macros, configuration);
+    await generateIOSBuildConstantsFromMacrosAsync(filepath, macros, configuration, args.infoPlist);
   }
 }
 
@@ -468,8 +461,18 @@ exports.generateDynamicMacrosAsync = async function generateDynamicMacrosAsync(
 ) {
   try {
     const { platform } = args;
+    const templateSubstitutions = await getTemplateSubstitutions();
+    if (platform === 'ios') {
+      const infoPlistPath = args.infoPlistPath;
+      args.infoPlist = await modifyIOSInfoPlistAsync(
+        infoPlistPath,
+        'Info',
+        templateSubstitutions
+      );
+    }
+    
     await generateBuildConfigAsync(platform, args);
-    await copyTemplateFilesAsync(platform, args);
+    await copyTemplateFilesAsync(platform, args, templateSubstitutions);
   } catch (error) {
     console.error(`There was an error while generating Expo template files, which could lead to unexpected behavior at runtime:\n${error.stack}`);
     process.exit(1);

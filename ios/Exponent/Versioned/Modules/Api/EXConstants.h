@@ -5,8 +5,6 @@
 
 @interface EXConstants : EXScopedBridgeModule
 
-+ (NSString *)getExpoClientVersion;
-
 @property (nonatomic, readonly) NSString *appOwnership;
 
 @end

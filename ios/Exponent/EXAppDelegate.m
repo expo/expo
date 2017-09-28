@@ -2,6 +2,7 @@
 
 @import ObjectiveC;
 
+#import "EXBuildConstants.h"
 #import "EXAppDelegate.h"
 
 #import <Crashlytics/Crashlytics.h>
@@ -24,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   CrashlyticsKit.delegate = [ExpoKit sharedInstance]; // this must be set prior to init'ing fabric.
   [Fabric with:@[CrashlyticsKit]];
-  [CrashlyticsKit setObjectValue:[EXConstants getExpoClientVersion] forKey:@"exp_client_version"];
+  [CrashlyticsKit setObjectValue:[EXBuildConstants sharedInstance].expoRuntimeVersion forKey:@"exp_client_version"];
 
   [[ExpoKit sharedInstance] registerRootViewControllerClass:[EXRootViewController class]];
   [[ExpoKit sharedInstance] setApplicationKeys:self._applicationKeys];

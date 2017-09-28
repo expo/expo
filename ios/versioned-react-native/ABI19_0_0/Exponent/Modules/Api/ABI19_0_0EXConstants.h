@@ -5,8 +5,6 @@
 
 @interface ABI19_0_0EXConstants : ABI19_0_0EXScopedBridgeModule
 
-+ (NSString *)getExpoClientVersion;
-
 @property (nonatomic, readonly) NSString *appOwnership;
 
 @end

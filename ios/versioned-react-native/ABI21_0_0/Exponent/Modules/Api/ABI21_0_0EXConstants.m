@@ -45,7 +45,7 @@ ABI21_0_0EX_EXPORT_SCOPED_MODULE(ExponentConstants, nil)
   }
   NSMutableDictionary *constants = [@{
                                       @"sessionId": _sessionId,
-                                      @"expoVersion": [[self class] getExpoClientVersion],
+                                      @"expoVersion": [self _getExpoClientVersion],
                                       @"statusBarHeight": @([self _getStatusBarHeight]),
                                       @"deviceYearClass": [self _deviceYear],
                                       @"deviceName": [self _deviceName],
@@ -66,9 +66,9 @@ ABI21_0_0EX_EXPORT_SCOPED_MODULE(ExponentConstants, nil)
   return constants;
 }
 
-+ (NSString *)getExpoClientVersion
+- (NSString *)_getExpoClientVersion
 {
-  NSString *expoClientVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"ABI21_0_0EXClientVersion"];
+  NSString *expoClientVersion = _unversionedConstants[@"expoRuntimeVersion"];
   if (expoClientVersion) {
     return expoClientVersion;
   } else {

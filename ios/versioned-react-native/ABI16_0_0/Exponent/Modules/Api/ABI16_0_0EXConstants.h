@@ -6,6 +6,4 @@
 
 - (instancetype)initWithProperties: (NSDictionary *)props;
 
-+ (NSString *)getExpoClientVersion;
-
 @end

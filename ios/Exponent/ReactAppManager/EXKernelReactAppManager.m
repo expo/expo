@@ -212,6 +212,7 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
     NSMutableDictionary *params = [@{
                                      @"constants": @{
                                          @"deviceId": [EXKernel deviceInstallUUID],
+                                         @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,
                                          @"linkingUri": @"exp://",
                                          @"manifest": manifest,
                                          @"appOwnership": @"expo",

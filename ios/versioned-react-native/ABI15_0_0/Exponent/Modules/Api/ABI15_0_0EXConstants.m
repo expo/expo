@@ -39,7 +39,7 @@
   }
   NSMutableDictionary *constants = [@{
                                       @"sessionId": _sessionId,
-                                      @"expoVersion": [[self class] getExpoClientVersion],
+                                      @"expoVersion": [self _getExpoClientVersion],
                                       @"statusBarHeight": @([self _getStatusBarHeight]),
                                       @"deviceYearClass": [self _deviceYear],
                                       @"deviceName": [self _deviceName],
@@ -59,9 +59,9 @@
   return constants;
 }
 
-+ (NSString *)getExpoClientVersion
+- (NSString *)_getExpoClientVersion
 {
-  NSString *expoClientVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"ABI15_0_0EXClientVersion"];
+  NSString *expoClientVersion = _bridgeProps[@"expoRuntimeVersion"];
   if (expoClientVersion) {
     return expoClientVersion;
   } else {

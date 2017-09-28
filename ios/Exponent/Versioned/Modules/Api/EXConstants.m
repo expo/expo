@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXConstants.h"
+#import "EXUnversioned.h"
 
 #include <sys/types.h>
 #include <sys/sysctl.h>
@@ -45,7 +46,7 @@ EX_EXPORT_SCOPED_MODULE(ExponentConstants, nil)
   }
   NSMutableDictionary *constants = [@{
                                       @"sessionId": _sessionId,
-                                      @"expoVersion": [[self class] getExpoClientVersion],
+                                      @"expoVersion": [self _getExpoClientVersion],
                                       @"statusBarHeight": @([self _getStatusBarHeight]),
                                       @"deviceYearClass": [self _deviceYear],
                                       @"deviceName": [self _deviceName],
@@ -66,9 +67,9 @@ EX_EXPORT_SCOPED_MODULE(ExponentConstants, nil)
   return constants;
 }
 
-+ (NSString *)getExpoClientVersion
+- (NSString *)_getExpoClientVersion
 {
-  NSString *expoClientVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"EXClientVersion"];
+  NSString *expoClientVersion = _unversionedConstants[EX_UNVERSIONED(@"expoRuntimeVersion")];
   if (expoClientVersion) {
     return expoClientVersion;
   } else {
