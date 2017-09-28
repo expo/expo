@@ -8,7 +8,7 @@ typedef enum EXKernelDevManifestSource {
   kEXKernelDevManifestSourcePublished,
 } EXKernelDevManifestSource;
 
-@interface EXBuildConfig : NSObject
+@interface EXBuildConstants : NSObject
 
 + (instancetype)sharedInstance;
 
@@ -16,5 +16,6 @@ typedef enum EXKernelDevManifestSource {
 @property (nonatomic, readonly) EXKernelDevManifestSource kernelDevManifestSource;
 @property (nonatomic, readonly) NSString *kernelManifestJsonString;
 @property (nonatomic, strong) NSString *temporarySdkVersion;
+@property (nonatomic, strong) NSString *expoKitDevelopmentUrl;
 
 @end

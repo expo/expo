@@ -2,7 +2,7 @@
 
 #import "EXAnalytics.h"
 #import "EXAppState.h"
-#import "EXBuildConfig.h"
+#import "EXBuildConstants.h"
 #import "EXFrame.h"
 #import "EXFrameReactAppManager.h"
 #import "EXKernel.h"
@@ -56,7 +56,7 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
     return NO;
   }
   
-  return [EXBuildConfig sharedInstance].isDevKernel;
+  return [EXBuildConstants sharedInstance].isDevKernel;
 }
 
 - (instancetype)init
