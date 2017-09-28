@@ -1,19 +1,19 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXBuildConfig.h"
+#import "EXBuildConstants.h"
 
-@implementation EXBuildConfig
+@implementation EXBuildConstants
 
 + (instancetype)sharedInstance
 {
-  static EXBuildConfig *theBuildConfig;
+  static EXBuildConstants *theBuildConstants;
   static dispatch_once_t once;
   dispatch_once(&once, ^{
-    if (!theBuildConfig) {
-      theBuildConfig = [[EXBuildConfig alloc] init];
+    if (!theBuildConstants) {
+      theBuildConstants = [[EXBuildConstants alloc] init];
     }
   });
-  return theBuildConfig;
+  return theBuildConstants;
 }
 
 - (instancetype)init
@@ -28,7 +28,7 @@
 
 - (void)_loadConfig
 {
-  NSString *plistPath = [[NSBundle mainBundle] pathForResource:@"EXBuildConfig" ofType:@"plist"];
+  NSString *plistPath = [[NSBundle mainBundle] pathForResource:@"EXBuildConstants" ofType:@"plist"];
   NSDictionary *config = (plistPath) ? [NSDictionary dictionaryWithContentsOfFile:plistPath] : [NSDictionary dictionary];
   _isDevKernel = [config[@"IS_DEV_KERNEL"] boolValue];
   _kernelDevManifestSource = [[self class] _kernelManifestSourceFromString:config[@"DEV_KERNEL_SOURCE"]];
@@ -40,6 +40,7 @@
     _kernelManifestJsonString = config[@"DEV_PUBLISHED_KERNEL_MANIFEST"];
   }
   _temporarySdkVersion = config[@"TEMPORARY_SDK_VERSION"];
+  _expoKitDevelopmentUrl = config[@"developmentUrl"]; // TODO: make legacy name consistent with the rest of this file
 }
 
 + (EXKernelDevManifestSource)_kernelManifestSourceFromString:(NSString *)sourceString

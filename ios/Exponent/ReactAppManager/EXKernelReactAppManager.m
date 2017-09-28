@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXBuildConfig.h"
+#import "EXBuildConstants.h"
 #import "EXCachedResource.h"
 #import "EXKernelReactAppManager.h"
 #import "EXReactAppManager+Private.h"
@@ -49,9 +49,9 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
   NSString *manifestJson = nil;
   BOOL usesNSBundleManifest = NO;
 
-  // if developing, use development manifest from EXBuildConfig
+  // if developing, use development manifest from EXBuildConstants
   if ([EXKernel isDevKernel]) {
-    manifestJson = [EXBuildConfig sharedInstance].kernelManifestJsonString;
+    manifestJson = [EXBuildConstants sharedInstance].kernelManifestJsonString;
   }
 
   // otherwise use published manifest

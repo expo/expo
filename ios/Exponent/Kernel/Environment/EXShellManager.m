@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXAnalytics.h"
+#import "EXBuildConstants.h"
 #import "EXKernelUtil.h"
 #import "ExpoKit.h"
 #import "EXShellManager.h"
@@ -81,10 +82,9 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
   NSString *configPath = [[NSBundle mainBundle] pathForResource:@"EXShell" ofType:@"plist"];
   NSDictionary *shellConfig = (configPath) ? [NSDictionary dictionaryWithContentsOfFile:configPath] : [NSDictionary dictionary];
   
-  // load EXBuildConstants.plist
-  NSString *buildConstantsPath = [[NSBundle mainBundle] pathForResource:@"EXBuildConstants" ofType:@"plist"];
-  NSDictionary *constantsConfig = (buildConstantsPath) ? [NSDictionary dictionaryWithContentsOfFile:buildConstantsPath] : [NSDictionary dictionary];
-  
+  // load EXBuildConstants
+  NSString *expoKitDevelopmentUrl = [EXBuildConstants sharedInstance].expoKitDevelopmentUrl;
+
   NSMutableArray *allManifestUrls = [NSMutableArray array];
 
   if (shellConfig) {
@@ -98,7 +98,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
       if (self._isLocalDetach) {
         // local detach development: point shell manifest url at local development url,
         // and use exp<udid> scheme.
-        [self _loadDetachedDevelopmentUrlAndSchemeFromConfig:constantsConfig fallbackToShellConfig:shellConfig];
+        [self _loadDetachedDevelopmentUrlAndScheme:expoKitDevelopmentUrl fallbackToShellConfig:shellConfig];
         if (_shellManifestUrl) {
           [allManifestUrls addObject:_shellManifestUrl];
         }
@@ -129,11 +129,11 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
   }
 }
 
-- (void)_loadDetachedDevelopmentUrlAndSchemeFromConfig:(NSDictionary *)config fallbackToShellConfig:(NSDictionary *)shellConfig
+- (void)_loadDetachedDevelopmentUrlAndScheme:(NSString *)expoKitDevelopmentUrl fallbackToShellConfig:(NSDictionary *)shellConfig
 {
   NSString *developmentUrl = nil;
-  if (config && config[@"developmentUrl"]) {
-    developmentUrl = config[@"developmentUrl"];
+  if (expoKitDevelopmentUrl) {
+    developmentUrl = expoKitDevelopmentUrl;
   } else if (shellConfig && shellConfig[@"developmentUrl"]) {
     DDLogWarn(@"Configuring your ExpoKit `developmentUrl` in EXShell.plist is deprecated, specify this in EXBuildConstants.plist instead.");
     developmentUrl = shellConfig[@"developmentUrl"];

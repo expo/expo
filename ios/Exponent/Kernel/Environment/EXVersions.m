@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXBuildConfig.h"
+#import "EXBuildConstants.h"
 #import "EXVersions.h"
 #import "EXKernelUtil.h"
 
@@ -117,7 +117,7 @@
     NSDictionary *detachedNativeVersions = mutableVersions[@"detachedNativeVersions"];
     _temporarySdkVersion = detachedNativeVersions[@"shell"];
   } else {
-    _temporarySdkVersion = [EXBuildConfig sharedInstance].temporarySdkVersion;
+    _temporarySdkVersion = [EXBuildConstants sharedInstance].temporarySdkVersion;
   }
   if (_temporarySdkVersion) {
     if (mutableVersions[@"sdkVersions"]) {

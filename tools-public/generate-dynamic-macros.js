@@ -154,7 +154,7 @@ function kernelManifestObjectToJson(manifest) {
   return manifestJson;
 }
 
-async function generateIOSBuildConfigFromMacrosAsync(
+async function generateIOSBuildConstantsFromMacrosAsync(
   buildConfigPlistPath,
   macros,
   buildConfiguration
@@ -179,7 +179,7 @@ async function generateIOSBuildConfigFromMacrosAsync(
           config[name] = value;
         }
       );
-      return validateIOSBuildConfig(config, buildConfiguration);
+      return validateIOSBuildConstants(config, buildConfiguration);
     }
   });
 
@@ -190,7 +190,7 @@ async function generateIOSBuildConfigFromMacrosAsync(
  *  Adds IS_DEV_KERNEL (bool) and DEV_KERNEL_SOURCE (PUBLISHED, LOCAL)
  *  and errors if there's a problem with the chosen environment.
  */
-function validateIOSBuildConfig(config, buildConfiguration) {
+function validateIOSBuildConstants(config, buildConfiguration) {
   config.USE_GENERATED_DEFAULTS = true;
   
   let IS_DEV_KERNEL, DEV_KERNEL_SOURCE = '';
@@ -450,7 +450,7 @@ async function generateBuildConfigAsync(platform, args) {
       await fs.promise.writeFile(filepath, source, 'utf8');
     }
   } else {
-    await generateIOSBuildConfigFromMacrosAsync(filepath, macros, configuration);
+    await generateIOSBuildConstantsFromMacrosAsync(filepath, macros, configuration);
   }
 }
 
