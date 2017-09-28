@@ -6,7 +6,7 @@ Not everybody wants to tell their customers or friends to download Expo to use t
 
 An Apple Developer account is needed to build the iOS standalone app, but a Google Play Developer account is not needed to build the Android standalone app. If you'd like to submit to either app store, you will of course need a developer account on that store.
 
-> **Warning:** Standalone apps are currently in beta! While the Android version has been heavily tested with [li.st](https://li.st/), the iOS version and our automated build pipeline for both are brand new so you may run into some issues. Be sure to reach out to us on Slack or Twitter if you do and we'll put them on our roadmap, much appreciated!
+> **Warning:** Standalone apps are currently in beta! While the Android version has been heavily tested, the iOS version and our automated build pipeline for both are still baking so you may run into some issues. Be sure to reach out to us on the forums if you do and we'll put them on our roadmap, much appreciated!
 
 ## 1. Install exp
 

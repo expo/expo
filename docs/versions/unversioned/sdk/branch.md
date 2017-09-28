@@ -82,11 +82,3 @@ class ArticleScreen extends Component {
   };
 }
 ```
-
-## Errors during Apple submission?
-
-We've had reports of some users seeing this message (or similar) during Apple submission after enabling Branch and associated domains:
-
-> ERROR ITMS-90046: "Invalid Code Signing Entitlements. Your application bundle's signature contains code signing entitlements that are not supported on iOS. Specifically, value '*' for key 'com.apple.developer.associated-domains' in 'Payload/Exponent.app/Exponent' is not supported."
-
-We're currently working on a fix. In the meantime, if you hit this, [here's a workaround](https://gist.github.com/wli/ec2999046a5b0483e9598e40e1616b74).
