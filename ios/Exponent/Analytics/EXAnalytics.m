@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXAnalytics.h"
-#import "EXKernel.h"
+#import "EXBuildConstants.h"
 #import "ExpoKit.h"
 
 #import "Amplitude.h"
@@ -37,7 +37,7 @@ NSString * const kEXAnalyticsDisabledConfigKey = @"EXAnalyticsDisabled";
   if ([self _isAnalyticsDisabled]) {
     return;
   }
-  if ([EXKernel isDevKernel]) {
+  if ([EXBuildConstants sharedInstance].isDevKernel) {
     if ([ExpoKit sharedInstance].applicationKeys[@"AMPLITUDE_DEV_KEY"]) {
       [[Amplitude instance] initializeApiKey:[ExpoKit sharedInstance].applicationKeys[@"AMPLITUDE_DEV_KEY"]];
     }

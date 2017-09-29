@@ -50,7 +50,7 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
   BOOL usesNSBundleManifest = NO;
 
   // if developing, use development manifest from EXBuildConstants
-  if ([EXKernel isDevKernel]) {
+  if ([EXBuildConstants sharedInstance].isDevKernel) {
     manifestJson = [EXBuildConstants sharedInstance].kernelManifestJsonString;
   }
 
@@ -98,7 +98,7 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
 
 - (BOOL)areDevtoolsEnabled
 {
-  return [EXKernel isDevKernel];
+  return [EXBuildConstants sharedInstance].isDevKernel;
 }
 
 - (void)computeVersionSymbolPrefix
@@ -119,7 +119,7 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
 
 - (EXCachedResourceBehavior)cacheBehaviorForJSResource
 {
-  if ([EXKernel isDevKernel]) {
+  if ([EXBuildConstants sharedInstance].isDevKernel) {
     // to prevent running dev native code against prod js.
     return kEXCachedResourceNoCache;
   } else {
@@ -220,7 +220,7 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
                                      @"kernel": [EXKernel sharedInstance],
                                      @"supportedSdkVersions": [EXVersions sharedInstance].versions[@"sdkVersions"],
                                      @"exceptionsManagerDelegate": _exceptionHandler,
-                                     @"isDeveloper": @([EXKernel isDevKernel]),
+                                     @"isDeveloper": @([EXBuildConstants sharedInstance].isDevKernel),
                                      @"isStandardDevMenuAllowed": @(YES), // kernel enables traditional RN dev menu
                                      @"manifest": manifest,
                                      @"services": [EXKernel sharedInstance].serviceRegistry.allServices,

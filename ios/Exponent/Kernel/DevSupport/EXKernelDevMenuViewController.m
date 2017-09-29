@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXKernelDevMenuViewController.h"
+#import "EXBuildConstants.h"
 #import "EXFileDownloader.h"
 #import "EXJavaScriptResource.h"
 #import "EXKernel.h"
@@ -199,7 +200,7 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
 
 - (void)_populateDevKernelLabel
 {
-  BOOL isDevKernel = [EXKernel isDevKernel];
+  BOOL isDevKernel = [EXBuildConstants sharedInstance].isDevKernel;
   _lblIsDevKernel.text = [NSString stringWithFormat:@"Development kernel? %@", (isDevKernel) ? @"Yes" : @"No"];
 }
 
@@ -208,7 +209,7 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
   // the actual logic for downloading the kernel JS lives in EXKernelReactAppManager and EXJavaScriptLoader;
   // we just provide diagnostics on it here
   
-  if ([EXKernel isDevKernel]) {
+  if ([EXBuildConstants sharedInstance].isDevKernel) {
     _lblCacheInfo.text = @"No cache is used when developing the kernel, though one may exist.";
   } else {
     NSURL *dummyUrl = [NSURL URLWithString:@""]; // we're just making this for diagnostic purposes and won't download anything here

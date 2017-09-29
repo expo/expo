@@ -26,8 +26,15 @@
 
 #pragma mark - internal
 
+- (void)_reset
+{
+  _expoRuntimeVersion = @"";
+}
+
 - (void)_loadConfig
 {
+  [self _reset];
+
   NSString *plistPath = [[NSBundle mainBundle] pathForResource:@"EXBuildConstants" ofType:@"plist"];
   NSDictionary *config = (plistPath) ? [NSDictionary dictionaryWithContentsOfFile:plistPath] : [NSDictionary dictionary];
   _isDevKernel = [config[@"IS_DEV_KERNEL"] boolValue];
@@ -40,7 +47,9 @@
     _kernelManifestJsonString = config[@"DEV_PUBLISHED_KERNEL_MANIFEST"];
   }
   _temporarySdkVersion = config[@"TEMPORARY_SDK_VERSION"];
-  _expoRuntimeVersion = config[@"EXPO_RUNTIME_VERSION"];
+  if (config[@"EXPO_RUNTIME_VERSION"]) {
+    _expoRuntimeVersion = config[@"EXPO_RUNTIME_VERSION"];
+  }
   _expoKitDevelopmentUrl = config[@"developmentUrl"]; // TODO: make legacy name consistent with the rest of this file
 }
 

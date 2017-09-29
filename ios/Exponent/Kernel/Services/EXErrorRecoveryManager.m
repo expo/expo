@@ -1,5 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+#import "EXBuildConstants.h"
 #import "EXErrorRecoveryManager.h"
 #import "EXKernel.h"
 
@@ -82,7 +83,7 @@ NSNotificationName const kEXErrorRecoverySetPropsNotification = @"EXErrorRecover
 - (void)setError:(NSError *)error forExperienceId:(NSString *)experienceId
 {
   if (!experienceId) {
-    NSString *kernelSuggestion = ([EXKernel isDevKernel]) ? @"Make sure you are serving the kernel." : @"";
+    NSString *kernelSuggestion = ([EXBuildConstants sharedInstance].isDevKernel) ? @"Make sure EXBuildConstants is configured to load a valid development Kernel JS bundle." : @"";
     NSAssert(experienceId, @"Cannot associate an error with a nil experience id. %@", kernelSuggestion);
   }
   EXErrorRecoveryRecord *record = [self _recordForExperienceId:experienceId];

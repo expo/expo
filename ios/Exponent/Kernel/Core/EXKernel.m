@@ -48,17 +48,6 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
   return theKernel;
 }
 
-+ (BOOL)isDevKernel
-{
-  // if we're in detached state (i.e. ExponentView) then never expect local kernel
-  BOOL isDetachedKernel = ([[EXVersions sharedInstance].versions objectForKey:@"detachedNativeVersions"] != nil);
-  if (isDetachedKernel) {
-    return NO;
-  }
-  
-  return [EXBuildConstants sharedInstance].isDevKernel;
-}
-
 - (instancetype)init
 {
   if (self = [super init]) {
