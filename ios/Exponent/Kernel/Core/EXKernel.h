@@ -65,11 +65,6 @@ FOUNDATION_EXPORT NSString * const kEXKernelClearJSCacheUserDefaultsKey;
  */
 + (NSString *)deviceInstallUUID;
 
-/**
- *  Whether to run a locally-served kernel vs. a production kernel.
- */
-+ (BOOL)isDevKernel;
-
 @end
 
 NS_ASSUME_NONNULL_END
