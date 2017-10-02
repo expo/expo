@@ -243,8 +243,6 @@ The following is a list of properties that are available for you under the `"exp
        - `resizeMode`
 
           Determines how the `image` will be displayed in the splash loading screen. Must be one of `cover` or `contain`, defaults to `contain`.
-        cover, contain
-
        - `image`
 
           Local path or remote url to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
@@ -348,7 +346,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `splash`
 
-      **Experimental**: Configuration for loading and splash screen for standalone iOS apps.
+      **Experimental**: Configuration for loading and splash screen for standalone Android apps.
 
        - `backgroundColor`
 
@@ -394,13 +392,11 @@ The following is a list of properties that are available for you under the `"exp
 
    - `backgroundColor`
 
-      Color to fill the loading screen background
-    6 character long hex color string, eg: `'#000000'`
+      Color to fill the loading screen background, 6 character long hex color string, eg: `'#000000'`
 
    - `resizeMode`
 
       Determines how the `image` will be displayed in the splash loading screen. Must be one of `cover` or `contain`, defaults to `contain`.
-    cover, contain
 
    - `image`
 
