@@ -51,7 +51,7 @@ The following is a list of properties that are available for you under the `"exp
 - `orientation`
 
    Lock your app to a specific orientation with `portrait` or `landscape`. Defaults to no lock.
- default, portrait, landscape
+
 
 - `primaryColor`
 
@@ -413,4 +413,3 @@ The following is a list of properties that are available for you under the `"exp
 
    - `postPublish`
 
-      
