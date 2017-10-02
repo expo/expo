@@ -117,7 +117,7 @@ For the most part, when you want to update your app, just Publish again from exp
 
 To keep track of this, you can also update the binary's [versionCode](configuration.html#versioncode) and [buildNumber](configuration.html#buildnumber). It is a good idea to glance through the [app.json documentation](configuration.html) to get an idea of all the properties you can change, e.g. the icons, deep linking url scheme, handset/tablet support, and a lot more.
 
-If you run into problems during this process, we're more than happy to help out! Join our Slack and let us know if you have any questions.
+If you run into problems during this process, we're more than happy to help out! [Join our Slack](https://slack.expo.io/) and let us know if you have any questions.
 
 > **Note:** Updates are handled differently on iOS and Android. On Android, updates
 are downloaded in the background. This means that the first time a user opens
