@@ -217,7 +217,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `supportsTablet`
 
-      Whether your standalone iOS app supports tablet screen sizes.
+      Whether your standalone iOS app supports tablet screen sizes. Defaults to `false`.
 
    - `isTabletOnly`
 
