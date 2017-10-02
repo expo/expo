@@ -194,7 +194,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `buildNumber`
 
-      Build number for your iOS standalone app
+      Build number for your iOS standalone app. Must be a string containing a number.
 
    - `icon`
 
@@ -262,7 +262,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `versionCode`
 
-      Version number required by Google Play. Increment by one for each release. https://developer.android.com/studio/publish/versioning.html.
+      Version number required by Google Play. Increment by one for each release. Must be an integer. https://developer.android.com/studio/publish/versioning.html.
 
    - `icon`
 
