@@ -18,7 +18,7 @@ import { Permissions, Notifications } from 'expo';
 const PUSH_ENDPOINT = 'https://your-server.com/users/push-token';
 
 async function registerForPushNotificationsAsync() {
-  const { existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+  const { status:existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
   let finalStatus = existingStatus;
 
   // only ask if permissions have not already been determined, because
