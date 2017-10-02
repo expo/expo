@@ -2,7 +2,7 @@
 title: Using GraphQL
 ---
 
-[GraphQL](www.graphql.org) is an API design paradigm that was introduced by Facebook in 2015 and is an efficient alternative to today's de-facto standard REST.
+[GraphQL](http://www.graphql.org) is an API design paradigm that was introduced by Facebook in 2015 and is an efficient alternative to today's de-facto standard REST.
 
 
 ## Why GraphQL?
@@ -23,7 +23,7 @@ In order to use GraphQL from an application, you will also need a **client** tha
 
 Building your own **GraphQL server** from scratch however is not trivial and potentially gets really complicated once you want to implement more advanced features like proper _permissions_, _filtering_ or _subscriptions_ (which are a GraphQL feature that allow your app to get realtime updates from the database).
 
-If you don't want to build the backend yourself, you can use [**Graphcool**](www.graph.cool), a powerful and flexible backend platform that combines GraphQL with AWS Lambda to provide you with the means of setting up a fully-fledged GraphQL server in only a few minutes.
+If you don't want to build the backend yourself, you can use [**Graphcool**](https://www.graph.cool), a powerful and flexible backend platform that combines GraphQL with AWS Lambda to provide you with the means of setting up a fully-fledged GraphQL server in only a few minutes.
 
 
 ### GraphQL Client
@@ -36,7 +36,7 @@ that integrates easily with React Native as well as with any other
 frontend technology of your choice. This means that you could reuse the
 code from your Expo app in your web app regardless of the framework. Apollo also integrates cleanly into popular development tools like Redux, and may be easily extended to fit your apps specific needs. Most important though is that Apollo Client is community driven with all development happening in the open.
 
-Using Apollo Client, you can benefit from _caching_, _optimistic UI_, _subscriptions_ and a lot more. To learn more, visit [dev.apollodata.com/react](dev.apollodata.com/react.).
+Using Apollo Client, you can benefit from _caching_, _optimistic UI_, _subscriptions_ and a lot more. To learn more, visit [dev.apollodata.com/react](http://dev.apollodata.com/react/).
 
 
 ### Learn more
