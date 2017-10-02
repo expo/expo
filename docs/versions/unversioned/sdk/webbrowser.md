@@ -13,7 +13,7 @@ You can use `WebBrowser` to build OAuth flows, such as [this Auth0 example](http
 
 #### Handling redirects
 
-When you're done an authentication flow, or for some other reason you want to pass information back to your app, you will want to redirect back to your app.
+When you've done an authentication flow, or for some other reason you want to pass information back to your app, you will want to redirect back to your app.
 You can use React Native's [Linking.addEventListener](https://facebook.github.io/react-native/docs/linking.html) function to do this.
 
 ##### Important
