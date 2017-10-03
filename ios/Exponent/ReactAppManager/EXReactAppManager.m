@@ -13,6 +13,7 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTDevLoadingView.h>
+#import <React/RCTJavaScriptLoader.h>
 #import <React/RCTRootView.h>
 
 NSString * const kEXDevToolShowDevMenuKey = @"devmenu";
@@ -23,6 +24,31 @@ NSTimeInterval const kEXJavaScriptResourceLongerTimeout = 120;
 @property (nonnull, strong) EXJavaScriptResource *jsResource;
 
 @end
+
+
+@interface RCTSource (EXReactAppManager)
+
+- (instancetype)initWithURL:(nonnull NSURL *)url data:(nonnull NSData *)data;
+
+@end
+
+@implementation RCTSource (EXReactAppManager)
+
+- (instancetype)initWithURL:(nonnull NSURL *)url data:(nonnull NSData *)data
+{
+  if (self = [super init]) {
+    // Use KVO since RN publicly declares these properties as readonly and privately defines the
+    // ivars
+    [self setValue:url forKey:@"url"];
+    [self setValue:data forKey:@"data"];
+    [self setValue:@(data.length) forKey:@"length"];
+    [self setValue:@(RCTSourceFilesChangedCountNotBuiltByBundler) forKey:@"filesChangedCount"];
+  }
+  return self;
+}
+
+@end
+
 
 @implementation EXReactAppManager
 
@@ -144,8 +170,9 @@ NSTimeInterval const kEXJavaScriptResourceLongerTimeout = 120;
   // clear any potentially old loading state
   [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:nil forExperienceId:self.experienceId];
 
+  NSURL *bundleUrl = bridge.bundleURL;
   _jsResource = [[EXJavaScriptResource alloc] initWithBundleName:[self bundleNameForJSResource]
-                                                       remoteUrl:bridge.bundleURL
+                                                       remoteUrl:bundleUrl
                                                  devToolsEnabled:[self areDevtoolsEnabled]];
   _jsResource.abiVersion = _validatedVersion;
   
@@ -161,7 +188,7 @@ NSTimeInterval const kEXJavaScriptResourceLongerTimeout = 120;
   [_jsResource loadResourceWithBehavior:cacheBehavior progressBlock:^(EXLoadingProgress * _Nonnull progress) {
     [weakSelf.delegate reactAppManager:weakSelf loadedJavaScriptWithProgress:progress];
   } successBlock:^(NSData * _Nonnull sourceData) {
-    loadCallback(nil, sourceData, sourceData.length);
+    loadCallback(nil, [[RCTSource alloc] initWithURL:bundleUrl data:sourceData]);
   } errorBlock:^(NSError * _Nonnull error) {
     __strong typeof(self) strongSelf = weakSelf;
     if (strongSelf) {
@@ -174,7 +201,7 @@ NSTimeInterval const kEXJavaScriptResourceLongerTimeout = 120;
       // react won't post this for us
       [[NSNotificationCenter defaultCenter] postNotificationName:[strongSelf _versionedString:RCTJavaScriptDidFailToLoadNotification] object:error];
     }
-    loadCallback(error, nil, 0);
+    loadCallback(error, nil);
   }];
 }
 

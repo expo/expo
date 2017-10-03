@@ -82,7 +82,7 @@
       progress.done = progressData.done;
       progress.status = progressData.status ?: @"Building JavaScript bundle...";
       progressBlock(progress);
-    } onComplete:^(NSError *error, NSData *source, int64_t sourceLength) {
+    } onComplete:^(NSError *error, RCTSource *source) {
       if (error != nil) {
         // In case we received something else than JS add more info to the error specific to expo for
         // things like tunnel errors.
@@ -98,7 +98,7 @@
         }
         errorBlock(error);
       } else {
-        successBlock(source);
+        successBlock(source.data);
       }
     }];
   } else {
