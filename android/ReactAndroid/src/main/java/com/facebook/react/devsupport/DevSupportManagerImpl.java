@@ -8,6 +8,8 @@
  */
 package com.facebook.react.devsupport;
 
+import com.facebook.react.bridge.ReactMarker;
+import com.facebook.react.bridge.ReactMarkerConstants;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
@@ -31,14 +33,12 @@ import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.view.WindowManager;
 import android.widget.Toast;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
-import com.facebook.react.bridge.Inspector;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -326,7 +326,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
             public void run() {
                 if (mRedBoxDialog == null) {
                     mRedBoxDialog = new RedBoxDialog(mApplicationContext, DevSupportManagerImpl.this, mRedBoxHandler);
-                    mRedBoxDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+                    mRedBoxDialog.getWindow().setType(WindowOverlayCompat.TYPE_SYSTEM_ALERT);
                 }
                 if (mRedBoxDialog.isShowing()) {
                     // show the first and most actionable one.
@@ -368,19 +368,6 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
                 handleReloadJS();
             }
         });
-        if (Inspector.isSupported()) {
-            options.put("Debug JS on-device (experimental)", new DevOptionHandler() {
-
-                @Override
-                public void onOptionSelected() {
-                    List<Inspector.Page> pages = Inspector.getPages();
-                    if (pages.size() > 0) {
-                        // TODO: We should get the actual page id instead of the first one.
-                        mDevServerHelper.openInspector(String.valueOf(pages.get(0).getId()));
-                    }
-                }
-            });
-        }
         options.put(mDevSettings.isReloadOnJSChangeEnabled() ? mApplicationContext.getString(R.string.catalyst_live_reload_off) : mApplicationContext.getString(R.string.catalyst_live_reload), new DevOptionHandler() {
 
             @Override
@@ -437,7 +424,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
                 mDevOptionsDialog = null;
             }
         }).create();
-        mDevOptionsDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+        mDevOptionsDialog.getWindow().setType(WindowOverlayCompat.TYPE_SYSTEM_ALERT);
         mDevOptionsDialog.show();
     }
 
@@ -572,6 +559,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
     @Override
     public void handleReloadJS() {
         UiThreadUtil.assertOnUiThread();
+        ReactMarker.logMarker(ReactMarkerConstants.RELOAD);
         // dismiss redbox if exists
         if (mRedBoxDialog != null) {
             mRedBoxDialog.dismiss();
@@ -611,6 +599,8 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
 
     @Override
     public void onPackagerReloadCommand() {
+        // Disable debugger to resume the JsVM & avoid thread locks while reloading
+        mDevServerHelper.disableDebugger();
         UiThreadUtil.runOnUiThread(new Runnable() {
 
             @Override
@@ -748,8 +738,10 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
     }
 
     public void reloadJSFromServer(final String bundleURL) {
+        ReactMarker.logMarker(ReactMarkerConstants.DOWNLOAD_START);
         mDevLoadingViewController.showForUrl(bundleURL);
         mDevLoadingViewVisible = true;
+        final BundleDownloader.BundleInfo bundleInfo = new BundleDownloader.BundleInfo();
         mDevServerHelper.getBundleDownloader().downloadBundleFromURL(new DevBundleDownloadListener() {
 
             @Override
@@ -763,6 +755,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
 
                     @Override
                     public void run() {
+                        ReactMarker.logMarker(ReactMarkerConstants.DOWNLOAD_END, bundleInfo.toJSONString());
                         mReactInstanceCommandsHandler.onJSBundleLoadedFromServer();
                     }
                 });
@@ -797,7 +790,19 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
                     }
                 });
             }
-        }, mJSBundleTempFile, bundleURL);
+        }, mJSBundleTempFile, bundleURL, bundleInfo);
+    }
+
+    @Override
+    public void startInspector() {
+        if (mIsDevSupportEnabled) {
+            mDevServerHelper.openInspectorConnection();
+        }
+    }
+
+    @Override
+    public void stopInspector() {
+        mDevServerHelper.closeInspectorConnection();
     }
 
     private void reload() {
@@ -824,7 +829,6 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
                 mDevLoadingViewController.show();
             }
             mDevServerHelper.openPackagerConnection(this.getClass().getSimpleName(), this);
-            mDevServerHelper.openInspectorConnection();
             if (mDevSettings.isReloadOnJSChangeEnabled()) {
                 mDevServerHelper.startPollingOnChangeEndpoint(new DevServerHelper.OnServerContentChangeListener() {
 
@@ -862,7 +866,6 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
             // hide loading view
             mDevLoadingViewController.hide();
             mDevServerHelper.closePackagerConnection();
-            mDevServerHelper.closeInspectorConnection();
             mDevServerHelper.stopPollingOnChangeEndpoint();
         }
     }
