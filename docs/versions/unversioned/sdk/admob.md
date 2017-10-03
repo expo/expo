@@ -2,7 +2,7 @@
 title: Google AdMob
 ---
 
-Expo includes support for the [Google AdMob SDK](https://www.google.com/admob/) for mobile advertising. This module is largely based of the [react-native-admob](https://github.com/sbugert/react-native-admob) module, as the documentation and questions surrounding that module may prove helpful.
+Expo includes support for the [Google AdMob SDK](https://www.google.com/admob/) for mobile advertising. This module is largely based of the [react-native-admob](https://github.com/sbugert/react-native-admob) module, as the documentation and questions surrounding that module may prove helpful. A simple example implementing Admob SDK can be found [here](https://github.com/deadcoder0904/expo-google-admob).
 
 ## Usage
 
@@ -20,6 +20,14 @@ import {
   adUnitID="your-admob-unit-id"
   testDeviceID="EMULATOR"
   didFailToReceiveAdWithError={this.bannerError} />
+
+// Display a DFP Publisher banner
+<PublisherBanner
+  bannerSize="fullBanner"
+  adUnitID="your-admob-unit-id"
+  testDeviceID="EMULATOR"
+  didFailToReceiveAdWithError={this.bannerError}
+  admobDispatchAppEvent={this.adMobEvent} />
 
 // Display an interstitial
 AdMobInterstitial.setAdUnitID('your-admob-unit-id');
