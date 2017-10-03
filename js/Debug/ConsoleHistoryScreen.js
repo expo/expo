@@ -17,7 +17,7 @@ import {
 } from 'react-native';
 
 import autobind from 'autobind-decorator';
-import moment from 'moment';
+import dateFns from 'date-fns';
 import util from 'react-native-util';
 import { connect } from 'react-redux';
 
@@ -80,17 +80,17 @@ class ConsoleHistoryScreen extends React.Component {
       return (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>
-            Something went wrong while showing this experience. To continue, refresh or load a different experience.
+            Something went wrong while showing this experience. To continue,
+            refresh or load a different experience.
           </Text>
           <TouchableOpacity onPress={this._onDismissOverlay}>
-            <Text style={styles.showDetailsButton}>
-              Show Details
-            </Text>
+            <Text style={styles.showDetailsButton}>Show Details</Text>
           </TouchableOpacity>
         </View>
       );
     } else if (
-      this.props.consoleHistory && this.props.consoleHistory.size > 0
+      this.props.consoleHistory &&
+      this.props.consoleHistory.size > 0
     ) {
       // show the normal console
       return (
@@ -110,16 +110,18 @@ class ConsoleHistoryScreen extends React.Component {
       return (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>
-            The console is empty. Developer information about the current experience, such as uncaught issues, will appear here.
+            The console is empty. Developer information about the current
+            experience, such as uncaught issues, will appear here.
           </Text>
         </View>
       );
     }
   }
 
-  @autobind _renderRow(rowData, sectionId, rowId, highlightRow) {
+  @autobind
+  _renderRow(rowData, sectionId, rowId, highlightRow) {
     let message = util.format(...rowData.message);
-    let timestamp = moment(rowData.time).format('h:mm:ss');
+    let timestamp = dateFns.format(rowData.time, 'h:mm:ss');
 
     let stack = rowData.stack;
     if (stack.size) {
@@ -132,17 +134,14 @@ class ConsoleHistoryScreen extends React.Component {
       }
       var stackTracePreview = (
         <Text>
-          {frame.methodName}{fileName}:{frame.lineNumber}
+          {frame.methodName}
+          {fileName}:{frame.lineNumber}
         </Text>
       );
     }
 
     if (rowData.fatal) {
-      var fatalNotice = (
-        <Text>
-          {' '}Fatal Error
-        </Text>
-      );
+      var fatalNotice = <Text> Fatal Error</Text>;
     }
 
     return (
@@ -169,14 +168,16 @@ class ConsoleHistoryScreen extends React.Component {
     );
   }
 
-  @autobind _renderSeparator(sectionId, rowId, adjacentRowSelected) {
+  @autobind
+  _renderSeparator(sectionId, rowId, adjacentRowSelected) {
     let style = adjacentRowSelected
       ? [styles.separator, styles.selectedSeparator]
       : styles.separator;
     return <View key={`sep-${sectionId}-${rowId}`} style={style} />;
   }
 
-  @autobind _onDismissOverlay() {
+  @autobind
+  _onDismissOverlay() {
     this.setState({ hasDismissedOverlay: true });
   }
 

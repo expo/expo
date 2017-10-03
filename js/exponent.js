@@ -3,6 +3,7 @@
  *
  * The entry point for Expo
  */
+import 'LegacyReact';
 
 import Expo from 'expo';
 import React from 'react';
