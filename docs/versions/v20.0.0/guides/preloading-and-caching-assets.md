@@ -11,55 +11,53 @@ argument in this case is an object such as the following: `{OpenSans:
 require('./assets/fonts/OpenSans.ttf')}`. `@expo/vector-icons` provides a helpful shortcut for this object, which you see below as `FontAwesome.font`.
 
 ```javascript
-import Expo from 'expo';
+import React from 'react';
+import { AppLoading, Asset, Font } from 'expo';
+import { View, Text, Image } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 
 function cacheImages(images) {
   return images.map(image => {
     if (typeof image === 'string') {
       return Image.prefetch(image);
     } else {
-      return Expo.Asset.fromModule(image).downloadAsync();
+      return Asset.fromModule(image).downloadAsync();
     }
   });
 }
 
 function cacheFonts(fonts) {
-  return fonts.map(font => Expo.Font.loadAsync(font));
+  return fonts.map(font => Font.loadAsync(font));
 }
 
-class AppContainer extends React.Component {
+export default class AppContainer extends React.Component {
   state = {
-    appIsReady: false,
-  }
-
-  componentWillMount() {
-    this._loadAssetsAsync();
-  }
-
-  render() {
-    if (!this.state.appIsReady) {
-      return <Expo.AppLoading />;
-    }
-
-    return <MyApp />;
-  }
+    isReady: false,
+  };
 
   async _loadAssetsAsync() {
     const imageAssets = cacheImages([
-      require('./assets/images/exponent-wordmark.png'),
-      'http://www.google.com/logo.png',
+      'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png',
+      require('./assets/images/circle.jpg'),
     ]);
 
-    const fontAssets = cacheFonts([
-      FontAwesome.font,
-    ]);
+    const fontAssets = cacheFonts([FontAwesome.font]);
 
-    await Promise.all([
-      ...imageAssets,
-      ...fontAssets,
-    ]);
+    await Promise.all([...imageAssets, ...fontAssets]);
+  }
 
-    this.setState({appIsReady: true});
+  render() {
+    if (!this.state.isReady) {
+      return (
+        <AppLoading
+          startAsync={this._loadAssetsAsync}
+          onFinish={() => this.setState({ isReady: true })}
+          onError={console.warn}
+        />
+      );
+    }
+
+    return <View><Text>Hello world, this is my app.</Text></View>;
   }
 }
 ```
