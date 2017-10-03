@@ -114,27 +114,6 @@ The following is a list of properties that are available for you under the `"exp
 
       By default, Expo shows some text at the bottom of the loading screen. Set this to `true` to disable.
 
-   - `splash`
-
-      Configuration for loading and splash screen for standalone apps.
-
-       - `backgroundColor`
-
-          Color to fill the loading screen background
-        6 character long hex color string, eg: `'#000000'`
-
-       - `image`
-
-          Properties for customizing the images on the splash and loading screen for standalone apps.
-
-           - `ios`
-
-              Image specific properties for the loading experience on iOS standalone apps.
-
-               - `backgroundImage`
-
-                  Local path or remote url to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png. Will be inserted into the loading screen's background image view with contentMode `aspectFill`.
-
 - `appKey`
 
    By default, Expo looks for the application registered with the AppRegistry as `main`. If you would like to change this, you can specify the name in this property.
@@ -252,6 +231,28 @@ The following is a list of properties that are available for you under the `"exp
    - `associatedDomains`
 
       An array that contains Associated Domains for the standalone app.
+
+   - `splash`
+
+      Configuration for loading and splash screen for standalone iOS apps.
+
+       - `backgroundColor`
+
+          Color to fill the loading screen background
+        6 character long hex color string, eg: `'#000000'`
+
+       - `resizeMode`
+
+          Determines how the `image` will be displayed in the splash loading screen. Must be one of `cover` or `contain`, defaults to `contain`.
+        Valid values: 'cover', 'contain'
+
+       - `image`
+
+          Local path or remote url to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
+
+       - `tabletImage`
+
+          Local path or remote url to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
 
 - `android`
 
@@ -387,6 +388,24 @@ The following is a list of properties that are available for you under the `"exp
 - `facebookScheme`
 
    Used for Facebook native login. Starts with 'fb' and followed by a string of digits, like 'fb1234567890'. You can find your scheme at https://developers.facebook.com/docs/facebook-login/ios in the 'Configuring Your info.plist' section.
+
+- `splash`
+
+   Configuration for loading and splash screen for standalone apps.
+
+   - `backgroundColor`
+
+      Color to fill the loading screen background
+    6 character long hex color string, eg: `'#000000'`
+
+   - `resizeMode`
+
+      Determines how the `image` will be displayed in the splash loading screen. Must be one of `cover` or `contain`, defaults to `contain`.
+    Valid values: 'cover', 'contain'
+
+   - `image`
+
+      Local path or remote url to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
 
 - `hooks`
 
