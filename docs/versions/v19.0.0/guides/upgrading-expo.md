@@ -11,6 +11,15 @@ That said, each version is better than the last, so you might want to stay up to
 
 **Upgrade guides vary depending on the sdkVersion, so follow the guide in the release notes**
 
-We post our release notes to [Exposition](https://blog.expo.io/), for example the [v16.0.0 release notes](https://blog.expo.io/expo-sdk-v16-0-0-is-now-available-2151d555a580). If you're upgrading by more than one major version, we recommend following the upgrade guide for each major version between your current version and your target.
+We post our release notes to [Exposition](https://blog.expo.io/), for example the [v19.0.0 release notes](https://blog.expo.io/expo-sdk-v19-0-0-is-now-available-821a62b58d3d). If you're upgrading by more than one major version, we recommend following the upgrade guide for each major version between your current version and your target.
 
 If you are running ExpoKit inside a native project, upgrading will require extra steps. ExpoKit is currently an alpha feature and upgrading difficulty will vary between versions, but there is some information [here](expokit.html#upgrading-expokit).
+
+## Past Release Notes
+
+- [19.0.0](https://blog.expo.io/expo-sdk-v19-0-0-is-now-available-821a62b58d3d)
+- [18.0.0](https://blog.expo.io/expo-sdk-v18-0-0-is-now-available-38e62305283)
+- [17.0.0](https://blog.expo.io/expo-sdk-v17-0-0-is-now-available-2c4f13362816)
+- [16.0.0](https://blog.expo.io/expo-sdk-v16-0-0-is-now-available-2151d555a580)
+- [15.0.0](https://blog.expo.io/expo-sdk-v15-0-0-is-now-available-2132538fd4fb)
+- [14.0.0](https://blog.expo.io/exponent-sdk-v14-0-0-is-now-available-114def29f796)
