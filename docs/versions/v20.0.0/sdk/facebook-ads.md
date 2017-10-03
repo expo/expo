@@ -13,7 +13,9 @@ You need to create a placement ID to display ads. Follow steps 1 and 3 from the 
 When using Facebook Ads in development, you'll need to register your device to be able to show ads. You can add the following at the top of your file to register your device:
 
 ```js
-AdSettings.addTestDevice(AdSettings.currentDeviceHash);
+import { FacebookAds } from 'expo';
+
+FacebookAds.AdSettings.addTestDevice(AdSettings.currentDeviceHash);
 ```
 
 You should see fake ads after you add this snippet.
@@ -194,7 +196,7 @@ to receive test ads in development mode on a standalone phone.
 All devices should be specified before any other action takes place, like [`AdsManager`](#nativeadsmanager) gets created.
 
 ```js
-AdSettings.addTestDevice('hash');
+FacebookAds.AdSettings.addTestDevice('hash');
 ```
 
 #### clearTestDevices
@@ -203,7 +205,7 @@ Clears all previously set test devices. If you want your ads to respect newly se
 an instance of AdsManager once again.
 
 ```js
-AdSettings.clearTestDevices();
+FacebookAds.AdSettings.clearTestDevices();
 ```
 
 #### setLogLevel (iOS)
@@ -211,7 +213,7 @@ AdSettings.clearTestDevices();
 Sets current SDK log level.
 
 ```js
-AdSettings.setLogLevel('none' | 'debug' | 'verbose' | 'warning' | 'error' | 'notification');
+FacebookAds.AdSettings.setLogLevel('none' | 'debug' | 'verbose' | 'warning' | 'error' | 'notification');
 ```
 
 **Note:** This method is a noop on Android.
@@ -221,7 +223,7 @@ AdSettings.setLogLevel('none' | 'debug' | 'verbose' | 'warning' | 'error' | 'not
 Configures the ad control for treatment as child-directed.
 
 ```js
-AdSettings.setIsChildDirected(true | false);
+FacebookAds.AdSettings.setIsChildDirected(true | false);
 ```
 
 #### setMediationService
@@ -229,7 +231,7 @@ AdSettings.setIsChildDirected(true | false);
 If an ad provided service is mediating Audience Network in their sdk, it is required to set the name of the mediation service
 
 ```js
-AdSettings.setMediationService('foobar');
+FacebookAds.AdSettings.setMediationService('foobar');
 ```
 
 #### setUrlPrefix
@@ -237,7 +239,7 @@ AdSettings.setMediationService('foobar');
 Sets the url prefix to use when making ad requests.
 
 ```js
-AdSettings.setUrlPrefix('...');
+FacebookAds.AdSettings.setUrlPrefix('...');
 ```
 
 **Note:** This method should never be used in production
