@@ -38,7 +38,7 @@ The following is a list of properties that are available for you under the `"exp
 - `privacy`
 
    Either `public` or `unlisted`. If not provided, defaults to `unlisted`. In the future `private` will be supported. `unlisted` hides the experience from search results.
- public, unlisted
+ Valid values: 'public', 'unlisted'
 
 - `sdkVersion`
 
@@ -51,6 +51,7 @@ The following is a list of properties that are available for you under the `"exp
 - `orientation`
 
    Lock your app to a specific orientation with `portrait` or `landscape`. Defaults to no lock.
+ Valid values: 'default', 'portrait', 'landscape'
 
 - `primaryColor`
 
@@ -77,7 +78,7 @@ The following is a list of properties that are available for you under the `"exp
    - `androidMode`
 
       Show each push notification individually (`default`) or collapse into one (`collapse`).
-    default, collapse
+    Valid values: 'default', 'collapse'
 
    - `androidCollapsedTitle`
 
@@ -94,6 +95,7 @@ The following is a list of properties that are available for you under the `"exp
    - `exponentIconColor`
 
       If no icon is provided, we will show the Expo logo. You can choose between `white` and `blue`.
+    Valid values: 'white', 'blue'
 
    - `exponentIconGrayscale`
 
@@ -148,7 +150,7 @@ The following is a list of properties that are available for you under the `"exp
    - `barStyle`
 
       Configure the statusbar icons to have light or dark color.
-    light-content, dark-content
+    Valid values: 'light-content', 'dark-content'
 
    - `backgroundColor`
 
@@ -262,7 +264,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `versionCode`
 
-      Version number required by Google Play. Increment by one for each release. Must be an integer. https://developer.android.com/studio/publish/versioning.html.
+      Version number required by Google Play. Increment by one for each release. Must be an integer. https://developer.android.com/studio/publish/versioning.html
 
    - `icon`
 
@@ -343,6 +345,44 @@ The following is a list of properties that are available for you under the `"exp
            - `certificateHash`
 
               The SHA-1 hash of the signing certificate used to build the apk without any separator `:`. Can be found in `google-services.json`. https://developers.google.com/android/guides/client-auth
+
+   - `splash`
+
+      Configuration for loading and splash screen for standalone Android apps.
+
+       - `backgroundColor`
+
+          Color to fill the loading screen background
+        6 character long hex color string, eg: `'#000000'`
+
+       - `resizeMode`
+
+          Determines how the `image` will be displayed in the splash loading screen. Must be one of `cover` or `contain`, defaults to `contain`.
+        Valid values: 'cover', 'contain'
+
+       - `ldpi`
+
+          Local path or remote url to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
+
+       - `mdpi`
+
+          Local path or remote url to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
+
+       - `hdpi`
+
+          Local path or remote url to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
+
+       - `xhdpi`
+
+          Local path or remote url to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
+
+       - `xxhdpi`
+
+          Local path or remote url to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
+
+       - `xxxhdpi`
+
+          Local path or remote url to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
 
 - `facebookScheme`
 
