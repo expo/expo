@@ -161,7 +161,7 @@ function shouldDisplayProperty(property) {
 
 function extractValidOptions(property) {
   if (property.enum && property.enum.length) {
-    return property.enum.join(', ');
+    return "Valid values: '" + property.enum.join("', '") + "'";
   } else if (property.meta && property.meta.regexHuman) {
     return property.meta.regexHuman;
   }
