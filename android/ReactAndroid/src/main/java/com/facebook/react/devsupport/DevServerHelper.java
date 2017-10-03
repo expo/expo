@@ -8,14 +8,6 @@
  */
 package com.facebook.react.devsupport;
 
-import javax.annotation.Nullable;
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -24,19 +16,23 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.network.OkHttpCallUtil;
-import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 import com.facebook.react.packagerconnection.FileIoHandler;
 import com.facebook.react.packagerconnection.JSPackagerClient;
-import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.packagerconnection.NotificationOnlyHandler;
+import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.packagerconnection.RequestOnlyHandler;
 import com.facebook.react.packagerconnection.Responder;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import javax.annotation.Nullable;
 import expolib_v1.okhttp3.Call;
 import expolib_v1.okhttp3.Callback;
 import expolib_v1.okhttp3.ConnectionPool;
@@ -48,6 +44,9 @@ import expolib_v1.okhttp3.Response;
 import expolib_v1.okhttp3.ResponseBody;
 import expolib_v1.okio.Okio;
 import expolib_v1.okio.Sink;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Helper class for all things about the debug server running in the engineer's host machine.
@@ -64,7 +63,7 @@ public class DevServerHelper {
 
     public static String RELOAD_APP_ACTION_SUFFIX = ".RELOAD_APP_ACTION";
 
-    public static String BUNDLE_URL_FORMAT = "http://%s/%s.bundle?platform=android&dev=%s&hot=%s&minify=%s";
+    public static String BUNDLE_URL_FORMAT = "http://%s/%s.bundle?platform=android&dev=%s&minify=%s";
 
     public static String RESOURCE_URL_FORMAT = "http://%s/%s";
 
@@ -94,6 +93,8 @@ public class DevServerHelper {
     public static int LONG_POLL_FAILURE_DELAY_MS = 5000;
 
     public static int HTTP_CONNECT_TIMEOUT_MS = 5000;
+
+    public static String DEBUGGER_MSG_DISABLE = "{ \"id\":1,\"method\":\"Debugger.disable\" }";
 
     public interface OnServerContentChangeListener {
 
@@ -224,9 +225,15 @@ public class DevServerHelper {
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    public void openInspector(String id) {
+    public void sendEventToAllConnections(String event) {
         if (mInspectorPackagerConnection != null) {
-            mInspectorPackagerConnection.sendOpenEvent(id);
+            mInspectorPackagerConnection.sendEventToAllConnections(event);
+        }
+    }
+
+    public void disableDebugger() {
+        if (mInspectorPackagerConnection != null) {
+            mInspectorPackagerConnection.sendEventToAllConnections(DEBUGGER_MSG_DISABLE);
         }
     }
 
@@ -342,14 +349,7 @@ public class DevServerHelper {
         return mSettings.isJSMinifyEnabled();
     }
 
-    /**
-   * @return whether we should enabled HMR when requesting JS bundles.
-   */
-    private boolean getHMR() {
-        return mSettings.isHotModuleReplacementEnabled();
-    }
-
-    private String createBundleURL(String host, String jsModulePath, boolean devMode, boolean hmr, boolean jsMinify) {
+    private String createBundleURL(String host, String jsModulePath, boolean devMode, boolean jsMinify) {
         try {
             return (String) Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("getBundleUrlForActivityId", int.class, String.class, String.class, boolean.class, boolean.class, boolean.class).invoke(null, mSettings.exponentActivityId, host, jsModulePath, devMode, hmr, jsMinify);
         } catch (Exception expoHandleErrorException) {
@@ -371,7 +371,7 @@ public class DevServerHelper {
     }
 
     public String getDevServerBundleURL(final String jsModulePath) {
-        return createBundleURL(mSettings.getPackagerConnectionSettings().getDebugServerHost(), jsModulePath, getDevMode(), getHMR(), getJSMinifyMode());
+        return createBundleURL(mSettings.getPackagerConnectionSettings().getDebugServerHost(), jsModulePath, getDevMode(), getJSMinifyMode());
     }
 
     public void isPackagerRunning(final PackagerStatusCallback callback) {
@@ -504,16 +504,16 @@ public class DevServerHelper {
     }
 
     public String getSourceMapUrl(String mainModuleName) {
-        return String.format(Locale.US, SOURCE_MAP_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost(), mainModuleName, getDevMode(), getHMR(), getJSMinifyMode());
+        return String.format(Locale.US, SOURCE_MAP_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost(), mainModuleName, getDevMode(), getJSMinifyMode());
     }
 
     public String getSourceUrl(String mainModuleName) {
-        return String.format(Locale.US, BUNDLE_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost(), mainModuleName, getDevMode(), getHMR(), getJSMinifyMode());
+        return String.format(Locale.US, BUNDLE_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost(), mainModuleName, getDevMode(), getJSMinifyMode());
     }
 
     public String getJSBundleURLForRemoteDebugging(String mainModuleName) {
         // host itself.
-        return createBundleURL(getHostForJSProxy(), mainModuleName, getDevMode(), getHMR(), getJSMinifyMode());
+        return createBundleURL(getHostForJSProxy(), mainModuleName, getDevMode(), getJSMinifyMode());
     }
 
     /**
