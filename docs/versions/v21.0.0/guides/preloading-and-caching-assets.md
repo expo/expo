@@ -61,3 +61,5 @@ export default class AppContainer extends React.Component {
   }
 }
 ```
+
+See a full working example in [github/expo/new-project-template](https://github.com/expo/new-project-template/blob/master/App.js).
