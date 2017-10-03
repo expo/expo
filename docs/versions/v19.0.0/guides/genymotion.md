@@ -25,6 +25,8 @@ Choose one of these two options:
 
 -   If you are on macOS or Linux, add the Android SDK location to you PATH using ~/.bash_profile or ~/.bash_rc.
 
+-   On macOS, you will also need to add `platform-tools` to your ~/.bash_profile. e.g. `export PATH="/Users/myuser/Library/Android/sdk/platform-tools":$PATH`
+
 -   Make sure that you can run `adb` from your terminal.
 
 -   Open Genymotion and navigate to Settings -> ADB. Select "Use custom Android SDK tools" and update with your Android SDK location:
