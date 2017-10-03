@@ -264,40 +264,37 @@ const callback = downloadProgress => {
   });
 };
 
-const downloadResumable = FileSystem.downloadResumable(
+const downloadResumable = FileSystem.createDownloadResumable(
   'http://techslides.com/demos/sample-videos/small.mp4',
   FileSystem.documentDirectory + 'small.mp4',
   {},
   callback
 );
 
-downloadResumable.downloadAsync()
-  .then(({ uri }) => {
-    console.log('Finished downloading to ', uri);
-  })
-  .catch(error => {
-    console.error(error);
-  });
+try {
+  const {uri}  = await downloadResumable.downloadAsync();
+  console.log('Finished downloading to ', uri);
+} catch (e) {
+  console.error(e);
+}
 
-downloadResumable.pauseAsync()
-  .then( (downloadSnapshot) => {
-    console.log('Paused download operation, saving for future retrieval');
-    AsyncStorage.setItem(
-      'pausedDownload',
-      JSON.stringify(downloadSnaphot)
-    );
-  })
-  .catch(error => {
-    console.error(error);
-  });
+try {
+  await downloadResumable.pauseAsync();
+  console.log('Paused download operation, saving for future retrieval');
+  AsyncStorage.setItem(
+    'pausedDownload',
+    JSON.stringify(downloadResumable.savable())
+  );
+} catch (e) {
+  console.error(e);
+}
 
-downloadResumable.resumeAsync()
-  .then(({ uri }) => {
-    console.log('Finished downloading to ', uri);
-  })
-  .catch(error => {
-    console.error(error);
-  });
+try {
+  const {uri}  = await downloadResumable.resumeAsync();
+  console.log('Finished downloading to ', uri);
+} catch (e) {
+  console.error(e);
+}
 
 //To resume a download across app restarts, assuming the the DownloadResumable.savable() object was stored:
 const downloadSnapshotJson = await AsyncStorage.getItem('pausedDownload');
@@ -309,11 +306,10 @@ const downloadResumable = new FileSystem.DownloadResumable(
   callback,
   downloadSnapshot.resumeData
 );
-downloadResumable.resumeAsync()
-  .then(({ uri }) => {
-    console.log('Finished downloading to ', uri);
-  })
-  .catch(error => {
-    console.error(error);
-  });
+try {
+  const {uri}  = await downloadResumable.resumeAsync();
+  console.log('Finished downloading to ', uri);
+} catch (e) {
+  console.error(e);
+}
 ```
