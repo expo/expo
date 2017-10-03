@@ -175,9 +175,9 @@ RCT_EXPORT_METHOD(onLoaded)
   [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXKernelJSIsLoadedNotification") object:self];
 }
 
-RCT_EXPORT_METHOD(splashLoadingDidDisplay)
+RCT_EXPORT_METHOD(appDidDisplay)
 {
-  [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXKernelSplashLoadingDidDisplay") object:self];
+  [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXKernelAppDidDisplay") object:self];
 }
 
 RCT_REMAP_METHOD(getManifestAsync,

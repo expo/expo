@@ -12,7 +12,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 FOUNDATION_EXPORT NSNotificationName kEXKernelJSIsLoadedNotification;
-FOUNDATION_EXPORT NSNotificationName kEXKernelSplashLoadingDidDisplay;
+FOUNDATION_EXPORT NSNotificationName kEXKernelAppDidDisplay;
 FOUNDATION_EXPORT NSString *kEXKernelErrorDomain;
 
 // this key is set to YES when crashlytics sends a crash report.

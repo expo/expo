@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
   // use this instead of the superclass loading indicator
   _loadingIndicator = (UIActivityIndicatorView *)[self.loadingView viewWithTag:1];
 
-  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(splashLoadingDidDisplay:) name:kEXKernelSplashLoadingDidDisplay object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appDidDisplay:) name:kEXKernelAppDidDisplay object:nil];
 }
 
 #pragma mark - Public
@@ -59,14 +59,14 @@ NS_ASSUME_NONNULL_BEGIN
     [_loadingIndicator startAnimating];
   } else {
     if (![EXShellManager sharedInstance].isShell) {
-      // If this is Home, hide the loading here, otherwise wait for BrowserScreen to do so in `splashLoadingDidDisplay`.
+      // If this is Home, hide the loading here, otherwise wait for BrowserScreen to do so in `appDidDisplay`.
       self.loadingView.hidden = YES;
     }
     [_loadingIndicator stopAnimating];
   }
 }
 
-- (void)splashLoadingDidDisplay:(NSNotification *)note
+- (void)appDidDisplay:(NSNotification *)note
 {
   __weak typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{

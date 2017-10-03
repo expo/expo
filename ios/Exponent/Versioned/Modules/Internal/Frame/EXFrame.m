@@ -2,6 +2,7 @@
 
 #import "EXAppLoadingManager.h"
 #import "EXFrame.h"
+#import "EXKernel.h"
 #import "EXUnversioned.h"
 
 #import <React/RCTBridge.h>
@@ -349,6 +350,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
       [_appManager reactRootView].subviews.firstObject.subviews.count > 0) {
     EXAppLoadingManager *appLoading = [_appManager appLoadingManagerInstance];
     if (!appLoading || !appLoading.started || appLoading.finished) {
+      [[NSNotificationCenter defaultCenter] postNotificationName:kEXKernelAppDidDisplay object:self];
       if (_onLoadingFinish) {
         _onLoadingFinish(nil);
       }

@@ -124,10 +124,6 @@ class BrowserScreen extends React.Component {
     );
   }
 
-  componentDidMount() {
-    ExponentKernel.splashLoadingDidDisplay();
-  }
-
   _renderFrame() {
     let {
       source,
