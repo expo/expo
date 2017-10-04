@@ -6,41 +6,33 @@ Provides access to <https://segment.com/> mobile analytics. Wraps Segment's [iOS
 
 > **Note:** Session tracking may not work correctly when running Experiences in the main Expo app. It will work correctly if you create a standalone app.
 
-### `Expo.Segment.initializeIOS(writeKey)`
+### `Expo.Segment.initialize({ androidWriteKey, iosWriteKey })`
 
-Segment requires separate write keys for iOS and Android. Call this with the write key for your iOS source in Segment.
-
-#### Arguments
-
--   **writeKey (_string_)** -- Write key for iOS source.
-
-### `Expo.Segment.initializeAndroid(writeKey)`
-
-Segment requires separate write keys for iOS and Android. Call this with the write key for your Android source in Segment.
+Segment requires separate write keys for iOS and Android. You will need to log in to Segment to recieve these <https://segment.com/docs/guides/setup/how-do-i-find-my-write-key/>
 
 #### Arguments
 
--   **writeKey (_string_)** -- Write key for Android source.
+Accepts an object with the following keys:
+
+-   **androidWriteKey (_string_)** -- Write key for Android source.
+-   **iosWriteKey (_string_)** -- Write key for iOS source.
 
 ### `Expo.Segment.identify(userId)`
 
-Associates the current user with a user ID. Call this after calling [`Expo.Segment.initializeIOS()`](#exposegmentinitializeios "Expo.Segment.initializeIOS") and [`Expo.Segment.initializeAndroid()`](#exposegmentinitializeandroid "Expo.Segment.initializeAndroid") but before other segment calls. See <https://segment.com/docs/spec/identify/>.
+Associates the current user with a user ID. Call this after calling [`Expo.Segment.initialize()`](#exposegmentinitialize "Expo.Segment.initialize") but before other segment calls. See <https://segment.com/docs/spec/identify/>.
 
 #### Arguments
 
--   **writeKey (_string_)** -- User ID for the current user.
+-   **userId (_string_)** -- User ID for the current user.
 
 ### `Expo.Segment.identifyWithTraits(userId, traits)`
 
-Associates the current user with a user ID and some metadata. Call this after calling [`Expo.Segment.initializeIOS()`](#exposegmentinitializeios "Expo.Segment.initializeIOS") and [`Expo.Segment.initializeAndroid()`](#exposegmentinitializeandroid "Expo.Segment.initializeAndroid") but before other segment calls. See <https://segment.com/docs/spec/identify/>.
+Associates the current user with a user ID and some metadata. Call this after calling [`Expo.Segment.initialize()`](#exposegmentinitialize "Expo.Segment.initialize") but before other segment calls. See <https://segment.com/docs/spec/identify/>.
 
 #### Arguments
 
--   **writeKey (_string_)** -- User ID for the current user.
-
-#### :param object traits
-
-A map of custom properties.
+-   **userId (_string_)** -- User ID for the current user.
+-   **traits (_object_)** -- A map of custom properties.
 
 ### `Expo.Segment.reset()`
 
@@ -71,7 +63,7 @@ Record that a user has seen a screen to Segment. See <https://segment.com/docs/s
 
 -   **screenName (_string_)** -- Name of the screen.
 
-### `Expo.Segment.screenWithProperties(event, properties)`
+### `Expo.Segment.screenWithProperties(screenName, properties)`
 
 Record that a user has seen a screen to Segment with custom properties. See <https://segment.com/docs/spec/screen/>.
 
