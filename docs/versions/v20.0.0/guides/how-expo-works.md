@@ -79,7 +79,7 @@ The second purpose is to serve assets. When you include an image in your app, yo
 
 ## Publishing/Deploying an Expo app in Production
 
-When you Publish an Expo app, we compile it into a JavaScript bundle with production flags enabled (minify, disable runtime development checks) and upload that bundle, along with any assets that it requires (see [Assets](assets.html#all-about-assets)) to CloudFront. We also upload your [Manifest](#expo-manifest) (including most of your `app.json` configuration) to our server.
+When you Publish an Expo app, we compile it into a JavaScript bundle with production flags enabled (i.e. we minify the source, and we tell the React Native packager to build in production mode, which in turn sets [`__DEV__`](https://facebook.github.io/react-native/docs/javascript-environment.html#polyfills) to `false` amongst other things) and upload that bundle, along with any assets that it requires (see [Assets](assets.html#all-about-assets)) to CloudFront. We also upload your [Manifest](#expo-manifest) (including most of your `app.json` configuration) to our server.
 
 When publishing is complete, we'll give you a URL to your app which you can send to anybody who has the Expo client.
 
