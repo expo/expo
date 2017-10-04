@@ -29,7 +29,6 @@ public class BaseTestClass {
   public static void enableDrawOverOtherApps() {
     KernelConfig.IS_TEST = true;
     KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE = true;
-    KernelConfig.FORCE_UNVERSIONED_PUBLISHED_EXPERIENCES = true;
     KernelConfig.HIDE_NUX = true;
 
     sUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());

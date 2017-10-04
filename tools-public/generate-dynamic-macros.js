@@ -8,11 +8,12 @@ const os = require('os');
 const path = require('path');
 const process = require('process');
 const { mkdir } = require('shelljs');
-const { IosPlist, IosPodsTools, ExponentTools, UrlUtils } = require('xdl');
+const { IosPlist, IosPodsTools, ExponentTools, UrlUtils, Project } = require('xdl');
 const JsonFile = require('@exponent/json-file');
 const spawnAsync = require('@exponent/spawn-async');
 const request = require('request');
 const ip = require('ip');
+const uuidv4 = require('uuid/v4');
 
 const { renderExpoKitPodspecAsync, renderPodfileAsync } = IosPodsTools;
 
@@ -21,13 +22,13 @@ const ProjectVersions = require('./project-versions');
 const EXPONENT_DIR = path.join(__dirname, '..');
 
 let isInUniverse = true;
-try {		
-  let universePkgJson = require('../../package.json');		
+try {
+  let universePkgJson = require('../../package.json');
   if (universePkgJson.name !== 'universe') {
     isInUniverse = false;
   }
-} catch (e) {		
-  isInUniverse = false;		
+} catch (e) {
+  isInUniverse = false;
 }
 
 let useLegacyWorkflow = false;
@@ -58,7 +59,12 @@ const macrosFuncs = {
           'apps',
           'test-suite'
         );
-        return await UrlUtils.constructManifestUrlAsync(testSuitePath);
+        let status = await Project.currentStatus(testSuitePath);
+        if (status === 'running') {
+          return await UrlUtils.constructManifestUrlAsync(testSuitePath);
+        } else {
+          return '';
+        }
       } catch (e) {
         return '';
       }
@@ -82,6 +88,10 @@ const macrosFuncs = {
     }
 
     return url;
+  },
+
+  async TEST_RUN_ID() {
+    return process.env.UNIVERSE_BUILD_ID || uuidv4();
   },
 
   async BUILD_MACHINE_LOCAL_HOSTNAME() {
@@ -482,7 +492,7 @@ exports.generateDynamicMacrosAsync = async function generateDynamicMacrosAsync(
         templateSubstitutions
       );
     }
-    
+
     await generateBuildConfigAsync(platform, args);
     await copyTemplateFilesAsync(platform, args, templateSubstitutions);
   } catch (error) {
