@@ -258,7 +258,9 @@ Returns an object with the following fields:
 
 ```javascript
 const callback = downloadProgress => {
-  const progress = downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite;
+  const progress =
+    downloadProgress.totalBytesWritten /
+    downloadProgress.totalBytesExpectedToWrite;
   this.setState({
     downloadProgress: progress,
   });
@@ -272,7 +274,7 @@ const downloadResumable = FileSystem.createDownloadResumable(
 );
 
 try {
-  const {uri}  = await downloadResumable.downloadAsync();
+  const { uri } = await downloadResumable.downloadAsync();
   console.log('Finished downloading to ', uri);
 } catch (e) {
   console.error(e);
@@ -290,7 +292,7 @@ try {
 }
 
 try {
-  const {uri}  = await downloadResumable.resumeAsync();
+  const { uri } = await downloadResumable.resumeAsync();
   console.log('Finished downloading to ', uri);
 } catch (e) {
   console.error(e);
@@ -302,12 +304,12 @@ const downloadSnapshot = JSON.parse(downloadJson);
 const downloadResumable = new FileSystem.DownloadResumable(
   downloadSnapshot.url,
   downloadSnapshot.fileUri,
-  downloadSnapshot.options, 
+  downloadSnapshot.options,
   callback,
   downloadSnapshot.resumeData
 );
 try {
-  const {uri}  = await downloadResumable.resumeAsync();
+  const { uri } = await downloadResumable.resumeAsync();
   console.log('Finished downloading to ', uri);
 } catch (e) {
   console.error(e);
