@@ -28,7 +28,7 @@ Associates the current user with a user ID. Call this after calling [`Expo.Segme
 
 #### Arguments
 
--   **userId (_string_)** -- User ID for the current user.
+-   **writeKey (_string_)** -- User ID for the current user.
 
 ### `Expo.Segment.identifyWithTraits(userId, traits)`
 
@@ -36,7 +36,7 @@ Associates the current user with a user ID and some metadata. Call this after ca
 
 #### Arguments
 
--   **userId (_string_)** -- User ID for the current user.
+-   **writeKey (_string_)** -- User ID for the current user.
 
 #### :param object traits
 
@@ -71,7 +71,7 @@ Record that a user has seen a screen to Segment. See <https://segment.com/docs/s
 
 -   **screenName (_string_)** -- Name of the screen.
 
-### `Expo.Segment.screenWithProperties(screenName, properties)`
+### `Expo.Segment.screenWithProperties(event, properties)`
 
 Record that a user has seen a screen to Segment with custom properties. See <https://segment.com/docs/spec/screen/>.
 
