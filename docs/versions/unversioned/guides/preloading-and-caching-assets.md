@@ -57,7 +57,11 @@ export default class AppContainer extends React.Component {
       );
     }
 
-    return <View><Text>Hello world, this is my app.</Text></View>;
+    return (
+      <View>
+        <Text>Hello world, this is my app.</Text>
+      </View>
+    );
   }
 }
 ```
