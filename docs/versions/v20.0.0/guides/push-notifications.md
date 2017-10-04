@@ -18,7 +18,9 @@ import { Permissions, Notifications } from 'expo';
 const PUSH_ENDPOINT = 'https://your-server.com/users/push-token';
 
 async function registerForPushNotificationsAsync() {
-  const { status:existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+  const { status: existingStatus } = await Permissions.getAsync(
+    Permissions.NOTIFICATIONS
+  );
   let finalStatus = existingStatus;
 
   // only ask if permissions have not already been determined, because
@@ -42,16 +44,16 @@ async function registerForPushNotificationsAsync() {
   return fetch(PUSH_ENDPOINT, {
     method: 'POST',
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
       token: {
         value: token,
-       },
-       user: {
+      },
+      user: {
         username: 'Brent',
-       },
+      },
     }),
   });
 }
