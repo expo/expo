@@ -3,6 +3,7 @@ package host.exp.exponent.utils;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.UiDevice;
@@ -16,9 +17,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import expolib_v1.okhttp3.MediaType;
+import expolib_v1.okhttp3.MultipartBody;
 import expolib_v1.okhttp3.OkHttpClient;
 import expolib_v1.okhttp3.Request;
+import expolib_v1.okhttp3.RequestBody;
 import expolib_v1.okhttp3.Response;
+import expolib_v1.okio.BufferedSink;
 import host.exp.exponent.generated.ExponentBuildConstants;
 import host.exp.exponent.kernel.ExponentUrls;
 
@@ -30,6 +35,7 @@ import static host.exp.exponent.utils.ExponentMatchers.withTestId;
 public class TestServerUtils {
 
   private static final int LAUNCH_TIMEOUT = 5000;
+  private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
   public static boolean isTestServerAvailable() {
     return !ExponentBuildConstants.TEST_SERVER_URL.equals("TODO");
@@ -127,6 +133,26 @@ public class TestServerUtils {
     }
 
     return null;
+  }
+
+  public static void reportTestResult(final boolean success, final String testName, final String logs) throws Exception {
+    if (!isTestServerAvailable()) {
+      return;
+    }
+
+    JSONObject jsonBody = new JSONObject();
+    jsonBody.put("testRunId", ExponentBuildConstants.TEST_RUN_ID);
+    jsonBody.put("testName", testName);
+    jsonBody.put("success", success);
+    jsonBody.put("logs", logs);
+    jsonBody.put("deviceName", Build.MODEL);
+    jsonBody.put("systemVersion", Build.VERSION.RELEASE);
+
+    Request request = new Request.Builder()
+        .url(ExponentBuildConstants.TEST_SERVER_URL + "/report-test-result")
+        .post(RequestBody.create(JSON, jsonBody.toString()))
+        .build();
+    httpRequest(request);
   }
 
 }

@@ -8,11 +8,13 @@ import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
 import host.exp.exponent.utils.LoadingScreenIdlingResource;
 import host.exp.exponent.utils.RetryTestRule;
+import host.exp.exponent.utils.TestReporterRule;
 import host.exp.exponent.utils.TestServerUtils;
 
 @RunWith(AndroidJUnit4.class)
@@ -32,7 +34,7 @@ public class DevModeTests extends BaseTestClass {
   }
 
   @Rule
-  public RetryTestRule retry = new RetryTestRule(3);
+  public RuleChain chain = RuleChain.outerRule(new TestReporterRule()).around(new RetryTestRule(3));
 
   @Test
   public void sdk18LiveReload() throws Exception {
