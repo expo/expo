@@ -392,7 +392,21 @@ RCT_REMAP_METHOD(takePicture,
       }
 
       if ([options[@"exif"] boolValue]) {
-        [self updatePhotoMetadata:imageSampleBuffer response:response];
+        int imageRotation;
+        switch (takenImage.imageOrientation) {
+          case UIImageOrientationLeft:
+            imageRotation = 90;
+            break;
+          case UIImageOrientationRight:
+            imageRotation = -90;
+            break;
+          case UIImageOrientationDown:
+            imageRotation = 180;
+            break;
+          default:
+            imageRotation = 0;
+        }
+        [self updatePhotoMetadata:imageSampleBuffer withAdditionalData:@{ @"Orientation": @(imageRotation) } response:response];
       }
 
       resolve(response);
@@ -663,12 +677,17 @@ RCT_EXPORT_METHOD(stopRecording) {
   return image;
 }
 
-- (void)updatePhotoMetadata:(CMSampleBufferRef)imageSampleBuffer response:(NSMutableDictionary *)response
+- (void)updatePhotoMetadata:(CMSampleBufferRef)imageSampleBuffer withAdditionalData:(NSDictionary *)additionalData response:(NSMutableDictionary *)response
 {
   CFDictionaryRef exifAttachments = CMGetAttachment(imageSampleBuffer, kCGImagePropertyExifDictionary, NULL);
   NSMutableDictionary *metadata = (__bridge NSMutableDictionary*)exifAttachments;
   metadata[(NSString *)kCGImagePropertyExifPixelYDimension] = response[@"width"];
   metadata[(NSString *)kCGImagePropertyExifPixelXDimension] = response[@"height"];
+  
+  for (id key in additionalData) {
+    metadata[key] = additionalData[key];
+  }
+  
   NSDictionary *gps = metadata[(NSString *)kCGImagePropertyGPSDictionary];
   if (gps) {
     for (NSString *gpsKey in gps) {
