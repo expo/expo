@@ -31,11 +31,6 @@ Please use Node 7 and npm 4. We recommend installing Node using [nvm](https://gi
 - Run `npm install` in the `js` and `tools-public` directories.
 - Run `npm link xdl` in the `tools-public` directory.
 - If you don't have it yet, install [exp](https://github.com/expo/exp), the Expo cli.
-- The Expo client apps run a root Expo project in addition to native
-code. Serve this project by running `exp start` from the `js` directory.
-The native Android Studio and XCode projects have a build hook which
-will fail if this is not being served. Keep this running and continue to
-the platform specific build steps.
 
 #### Android
 - Make sure you have Android Studio 2 and the [Android NDK](https://facebook.github.io/react-native/docs/android-building-from-source.html#download-links-for-android-ndk) version `r10e` installed.
@@ -83,6 +78,16 @@ Here are the steps to build a standalone iOS app:
 - This bundle is not signed and cannot be submitted to iTunes Connect as-is; you'll need to manually sign it if you'd like to submit it to Apple. [Fastlane](https://fastlane.tools/) is a good option for this. Also, [Expo will do this for you](https://docs.expo.io/versions/latest/guides/building-standalone-apps.html) if you don't need to build this project from source.
 - If you created a simulator build in the first step, unpack the tar.gz using `tar -xvzf your-app.tar.gz`. Then you can run this on iPhone Simulator using `xcrun simctl install booted <app path>` and `xcrun simctl launch booted <app identifier>`. Another alternative which some people prefer is to install the [ios-sim](https://github.com/phonegap/ios-sim) tool and then use `ios-sim launch <app path>`.
 - There are a few more optional flags you can pass to this script. They are all documented in the block comment for `createIOSShellAppAsync()` inside `ios-shell-app.js`.
+
+## Modifying JS Code
+The Expo client apps run a root Expo project in addition to native
+code. By default this will use a published version of the project, so any changes
+made in the `js` directory will not show up without some extra work.
+
+Serve this project locally by running `exp start` from the `js` directory.
+The native Android Studio and XCode projects have a build hook which
+will find this if `exp start` is running. Keep this running and rebuild the
+app on each platform.
 
 ## Project Layout
 
