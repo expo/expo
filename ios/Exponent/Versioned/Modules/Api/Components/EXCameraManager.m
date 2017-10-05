@@ -363,7 +363,7 @@ RCT_REMAP_METHOD(takePicture,
   float quality = [options[@"quality"] floatValue];
 #if TARGET_IPHONE_SIMULATOR
   UIImage *generatedPhoto = [self generatePhoto];
-  NSData *photoData = UIImageJPEGRepresentation(generatedPhoto, quality * 100);
+  NSData *photoData = UIImageJPEGRepresentation(generatedPhoto, quality);
   response[@"uri"] = [self writeImage:photoData];
   response[@"width"] = @(generatedPhoto.size.width);
   response[@"height"] = @(generatedPhoto.size.height);
@@ -381,7 +381,7 @@ RCT_REMAP_METHOD(takePicture,
       UIImage *takenImage = [UIImage imageWithData:imageData];
       takenImage = [self cropImage:takenImage];
 
-      NSData *takenImageData = UIImageJPEGRepresentation(takenImage, quality * 100);
+      NSData *takenImageData = UIImageJPEGRepresentation(takenImage, quality);
       response[@"uri"] = [self writeImage:takenImageData];
 
       response[@"width"] = @(takenImage.size.width);
