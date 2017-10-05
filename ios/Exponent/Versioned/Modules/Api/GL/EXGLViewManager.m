@@ -39,11 +39,11 @@ RCT_REMAP_METHOD(startARSessionAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  unsigned int sessionId = _nextARSessionId++;
+  NSUInteger sessionId = _nextARSessionId++;
   [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     UIView *view = viewRegistry[tag];
     if (![view isKindOfClass:[EXGLView class]]) {
-      reject(@"E_GLVIEW_MANAGER_BAD_VIEW_TAG", nil, RCTErrorWithMessage(@"Expected an EXGLView"));
+      reject(@"E_GLVIEW_MANAGER_BAD_VIEW_TAG", nil, RCTErrorWithMessage(@"ExponentGLViewManager.startARSessionAsync: Expected an EXGLView"));
       return;
     }
     EXGLView *exglView = (EXGLView *)view;
@@ -68,6 +68,7 @@ RCT_REMAP_METHOD(stopARSessionAsync,
     EXGLView *exglView = _arSessions[sessionId];
     if (exglView) {
       [exglView stopARSession];
+      [_arSessions removeObjectForKey:sessionId];
     }
     resolve(nil);
   }];

@@ -30,7 +30,7 @@
 
 @property (nonatomic, assign) NSNumber *msaaSamples;
 
-@property (nonatomic, strong) ARSession *arSession;
+@property (atomic, strong) ARSession *arSession;
 @property (nonatomic, assign) GLuint arCamProgram;
 @property (nonatomic, assign) int arCamPositionAttrib;
 @property (nonatomic, assign) GLuint arCamBuffer;
@@ -385,7 +385,7 @@ static GLfloat arCamVerts[] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
   glBindFramebuffer(GL_FRAMEBUFFER, _arCamOutputFramebuffer);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _arCamOutputTexture, 0);
 
-  // Create camera texture outpout EXGLObject
+  // Create camera texture output EXGLObject
   _arCamOutputEXGLObj = UEXGLContextCreateObject(_exglCtxId);
   UEXGLContextMapObject(_exglCtxId, _arCamOutputEXGLObj, _arCamOutputTexture);
 
@@ -477,14 +477,14 @@ static GLfloat arCamVerts[] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
     glBindTexture(CVOpenGLESTextureGetTarget(_arCamYTex), CVOpenGLESTextureGetName(_arCamYTex));
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glBindTexture(CVOpenGLESTextureGetTarget(_arCamYTex), 0);
     glBindTexture(CVOpenGLESTextureGetTarget(_arCamCbCrTex), CVOpenGLESTextureGetName(_arCamCbCrTex));
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glBindTexture(CVOpenGLESTextureGetTarget(_arCamCbCrTex), 0);
 
     glActiveTexture(GL_TEXTURE0);
