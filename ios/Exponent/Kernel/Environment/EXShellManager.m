@@ -182,6 +182,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
     ? YES
     : [shellConfig[@"isRemoteJSEnabled"] boolValue];
   _testEnvironment = [EXTest testEnvironmentFromString:shellConfig[@"testEnvironment"]];
+  _isSplashScreenDisabled = ([shellConfig[@"isSplashScreenDisabled"] boolValue]); // we can remove this when the old loading api is dead.
   // other shell config goes here
 }
 

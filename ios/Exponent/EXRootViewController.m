@@ -58,8 +58,9 @@ NS_ASSUME_NONNULL_BEGIN
     self.loadingView.hidden = NO;
     [_loadingIndicator startAnimating];
   } else {
-    if (![EXShellManager sharedInstance].isShell) {
-      // If this is Home, hide the loading here, otherwise wait for BrowserScreen to do so in `appDidDisplay`.
+    if (![self _usesStandaloneSplashScreen]) {
+      // If this is Home, or no splash screen is used, hide the loading here.
+      // otherwise wait for BrowserScreen to do so in `appDidDisplay`.
       self.loadingView.hidden = YES;
     }
     [_loadingIndicator stopAnimating];
@@ -75,6 +76,11 @@ NS_ASSUME_NONNULL_BEGIN
       strongSelf.loadingView.hidden = YES;
     }
   });
+}
+
+- (BOOL)_usesStandaloneSplashScreen
+{
+  return [EXShellManager sharedInstance].isShell && !([EXShellManager sharedInstance].isSplashScreenDisabled);
 }
 
 @end
