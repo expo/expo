@@ -11,6 +11,7 @@ package com.facebook.react.devsupport;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
+
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.UiThreadUtil;
@@ -25,6 +26,11 @@ import com.facebook.react.packagerconnection.NotificationOnlyHandler;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.packagerconnection.RequestOnlyHandler;
 import com.facebook.react.packagerconnection.Responder;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -32,7 +38,9 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
 import javax.annotation.Nullable;
+
 import expolib_v1.okhttp3.Call;
 import expolib_v1.okhttp3.Callback;
 import expolib_v1.okhttp3.ConnectionPool;
@@ -44,9 +52,6 @@ import expolib_v1.okhttp3.Response;
 import expolib_v1.okhttp3.ResponseBody;
 import expolib_v1.okio.Okio;
 import expolib_v1.okio.Sink;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Helper class for all things about the debug server running in the engineer's host machine.
@@ -351,7 +356,9 @@ public class DevServerHelper {
 
     private String createBundleURL(String host, String jsModulePath, boolean devMode, boolean jsMinify) {
         try {
-            return (String) Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("getBundleUrlForActivityId", int.class, String.class, String.class, boolean.class, boolean.class, boolean.class).invoke(null, mSettings.exponentActivityId, host, jsModulePath, devMode, hmr, jsMinify);
+            return (String) Class.forName("host.exp.exponent.ReactNativeStaticHelpers")
+                .getMethod("getBundleUrlForActivityId", int.class, String.class, String.class, boolean.class, boolean.class)
+                .invoke(null, mSettings.exponentActivityId, host, jsModulePath, devMode, jsMinify);
         } catch (Exception expoHandleErrorException) {
             expoHandleErrorException.printStackTrace();
             return null;
