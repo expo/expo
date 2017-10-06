@@ -674,9 +674,9 @@ public class Kernel extends KernelInterface {
     killOrphanedLauncherActivities();
   }
 
-  // Called from DevServerHelper
+  // Called from DevServerHelper via ReactNativeStaticHelpers
   @DoNotStrip
-  public static String getBundleUrlForActivityId(final int activityId, String host, String jsModulePath, boolean devMode, boolean hmr, boolean jsMinify) {
+  public static String getBundleUrlForActivityId(final int activityId, String host, String jsModulePath, boolean devMode, boolean jsMinify) {
     if (activityId == -1) {
       // This is the kernel
       return sInstance.getBundleUrl();
@@ -684,20 +684,7 @@ public class Kernel extends KernelInterface {
 
     for (ExperienceActivityTask task : sManifestUrlToExperienceActivityTask.values()) {
       if (task.activityId == activityId) {
-        String url = task.bundleUrl;
-        if (url == null) {
-          return null;
-        }
-
-        if (hmr) {
-          if (url.contains("hot=false")) {
-            url = url.replace("hot=false", "hot=true");
-          } else {
-            url = url + "&hot=true";
-          }
-        }
-
-        return url;
+        return task.bundleUrl;
       }
     }
 
