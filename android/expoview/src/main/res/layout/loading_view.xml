@@ -19,7 +19,7 @@
     android:layout_height="fill_parent"
     android:layout_centerInParent="true"
     android:adjustViewBounds="true"
-    android:scaleType="centerCrop"
+    android:scaleType="fitCenter"
     android:visibility="gone"
    />
 
