@@ -223,9 +223,12 @@ class BrowserScreen extends React.Component {
       if (manifest.getIn(['splash', 'backgroundColor'])) {
         return manifest.getIn(['splash', 'backgroundColor']);
       }
+
+      // Choose white if using `splash` but no color is specified
+      return 'white';
     }
 
-    // If no background color found in new `splash` style, fall back to `loading.backgroundColor`
+    // If there is no `splash`, choose `loading.backgroundColor`
     if (manifest && manifest.getIn(['loading', 'backgroundColor'])) {
       return manifest.getIn(['loading', 'backgroundColor']);
     }
@@ -310,12 +313,9 @@ class BrowserScreen extends React.Component {
     if (task) {
       let { manifest } = task;
       if (manifest) {
-        // Don't use loading icon if new manifest.loading.splash.image.ios.backgroundImageUrl is set
+        // Don't use loading icon if `splash` is set
         if (this._isNewSplashScreenStyle(manifest)) {
-          return (
-            // This view is empty, but positions the loading indicator corrextly
-            <View style={{ width: 200, height: 200, marginVertical: 16 }} />
-          );
+          return null;
         }
 
         let iconUrl = manifest.getIn(['loading', 'iconUrl']);
@@ -350,18 +350,17 @@ class BrowserScreen extends React.Component {
   }
 
   _renderManifestLoadingBackgroundImage() {
-    let { task } = this.props;
-    let { manifest } = task;
+    const { task } = this.props;
+    const { manifest } = task;
     if (manifest) {
-      var backgroundImageUrl;
+      let backgroundImageUrl;
       if (this._isNewSplashScreenStyle(manifest)) {
         backgroundImageUrl = this._getNewSplashBackgroungImage(manifest);
-      }
-      let resizeMode = this._getBackgroundImageResizeMode(manifest);
-      if (!backgroundImageUrl) {
+      } else {
         backgroundImageUrl = manifest.getIn(['loading', 'backgroundImageUrl']);
       }
-      if (manifest && backgroundImageUrl) {
+      if (backgroundImageUrl) {
+        const resizeMode = this._getBackgroundImageResizeMode(manifest);
         return (
           <Image
             source={{ uri: backgroundImageUrl }}
@@ -378,7 +377,7 @@ class BrowserScreen extends React.Component {
     if (Platform.OS === 'ios') {
       if (
         Constants.platform.ios.userInterfaceIdiom === 'tablet' &&
-        manifest.getIn(['ios', 'splash', 'imageUrl'])
+        manifest.getIn(['ios', 'splash', 'tabletImageUrl'])
       ) {
         return manifest.getIn(['ios', 'splash', 'tabletImageUrl']);
       }
@@ -388,8 +387,22 @@ class BrowserScreen extends React.Component {
       }
     }
 
-    if (Platform.OS === 'android') {
-      return manifest.getIn(['android', 'splash', 'backgroundImageUrl']);
+    if (Platform.OS === 'android' && manifest.getIn(['android', 'splash'])) {
+      const resolutions = [
+        'xxxhdpi',
+        'xxhdpi',
+        'xhdpi',
+        'hdpi',
+        'mdpi',
+        'ldpi',
+      ];
+      const splash = manifest.getIn(['android', 'splash']);
+      // get the biggest available image
+      resolutions.forEach(resolution => {
+        if (splash.get(resolution)) {
+          return splash.get(resolution);
+        }
+      });
     }
 
     // If platform-specific keys were not available, return the default

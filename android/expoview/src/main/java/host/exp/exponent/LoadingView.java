@@ -208,31 +208,30 @@ public class LoadingView extends RelativeLayout {
 
   private ImageView.ScaleType scaleType(final JSONObject manifest) {
     String resizeMode = null;
+    JSONObject splash = null;
 
     if (manifest.has("android")) {
       final JSONObject android = manifest.optJSONObject("android");
-      if (android != null && android.has("splash")) {
-        final JSONObject splash = android.optJSONObject("splash");
-        if (splash != null && splash.has("resizeMode")) {
-          resizeMode = splash.optString("resizeMode", "contain");
-        }
+      if (android.has(ExponentManifest.MANIFEST_SPLASH_INFO_KEY)) {
+        splash = android.optJSONObject(ExponentManifest.MANIFEST_SPLASH_INFO_KEY);
       }
     }
 
-    if (resizeMode == null) {
-      if (manifest.has("splash")) {
-        final JSONObject splash = manifest.optJSONObject("splash");
-        if (splash != null && splash.has("ressizeMode")) {
-          resizeMode = splash.optString("resizeMode", "contain");
-        }
+    if (splash == null) {
+      if (manifest.has(ExponentManifest.MANIFEST_SPLASH_INFO_KEY)) {
+        splash = manifest.optJSONObject(ExponentManifest.MANIFEST_SPLASH_INFO_KEY);
       }
     }
 
-    if (resizeMode == null) {
-      resizeMode = "contain";
+    if (splash != null && splash.has(ExponentManifest.MANIFEST_SPLASH_RESIZE_MODE)) {
+      resizeMode = splash.optString(ExponentManifest.MANIFEST_SPLASH_RESIZE_MODE, "contain");
     }
 
-    if (resizeMode == "cover") {
+    if (resizeMode == null) {
+      return ImageView.ScaleType.FIT_CENTER;
+    }
+
+    if (resizeMode.equals("cover")) {
       return ImageView.ScaleType.CENTER_CROP;
     } else {
       return ImageView.ScaleType.FIT_CENTER;
@@ -246,62 +245,61 @@ public class LoadingView extends RelativeLayout {
 
       if (manifest.has("android")) {
         final JSONObject android = manifest.optJSONObject("android");
-        splash = android.optJSONObject("splash");
+        splash = android.optJSONObject(ExponentManifest.MANIFEST_SPLASH_INFO_KEY);
       }
-      if (splash == null && manifest.has("splash")) {
-        splash = manifest.optJSONObject("splash");
+      if (splash == null && manifest.has(ExponentManifest.MANIFEST_SPLASH_INFO_KEY)) {
+        splash = manifest.optJSONObject(ExponentManifest.MANIFEST_SPLASH_INFO_KEY);
       }
 
       if (splash != null) {
-        backgroundColor = splash.optString("backgroundColor");
+        backgroundColor = splash.optString(ExponentManifest.MANIFEST_SPLASH_BACKGROUND_COLOR);
+      }
+    } else if (manifest.has(ExponentManifest.MANIFEST_LOADING_INFO_KEY)) {
+      final JSONObject loadingInfo = manifest.optJSONObject(ExponentManifest.MANIFEST_LOADING_INFO_KEY);
+      if (loadingInfo != null) {
+        backgroundColor = loadingInfo.optString(ExponentManifest.MANIFEST_LOADING_BACKGROUND_COLOR);
       }
     }
 
-
-    if (backgroundColor == null) {
-      if (manifest.has("loading")) {
-        final JSONObject loadingInfo = manifest.optJSONObject("loading");
-        if (loadingInfo != null) {
-          backgroundColor = loadingInfo.optString(ExponentManifest.MANIFEST_LOADING_BACKGROUND_COLOR, "#FFFFFF");
-        }
-      }
+    if (backgroundColor == null || !ColorParser.isValid(backgroundColor)) {
+      backgroundColor = "#FFFFFF";
     }
 
-    if (backgroundColor != null && ColorParser.isValid(backgroundColor)) {
-      ObjectAnimator colorFade = ObjectAnimator.ofObject(this, "backgroundColor", new ArgbEvaluator(), Color.argb(255, 255, 255, 255), Color.parseColor(backgroundColor));
-      colorFade.setDuration(300);
-      colorFade.start();
-    }
+    ObjectAnimator colorFade = ObjectAnimator.ofObject(this, "backgroundColor", new ArgbEvaluator(), Color.argb(255, 255, 255, 255), Color.parseColor(backgroundColor));
+    colorFade.setDuration(300);
+    colorFade.start();
 
     mImageView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
   }
 
   private String backgroundImageURL(final JSONObject manifest) {
     if (isUsingNewSplashScreenStyle(manifest)) {
-      JSONObject splash = null;
+      JSONObject splash;
 
       if (manifest.has("android")) {
         final JSONObject android = manifest.optJSONObject("android");
-        splash = android.optJSONObject("splash");
-      }
-      if (splash == null && manifest.has("splash")) {
-        splash = manifest.optJSONObject("splash");
-      }
+        if (android.has(ExponentManifest.MANIFEST_SPLASH_INFO_KEY)) {
+          splash = android.optJSONObject(ExponentManifest.MANIFEST_SPLASH_INFO_KEY);
 
-      if (splash != null) {
-        // Use the largest available image in the `android.splash` object, or `backgroundImageUrl`.
-        final String[] keys = {"xxxhdpiUrl", "xxhdpiUrl", "xhdpiUrl", "hdpiUrl", "mdpiUrl", "ldpiUrl", "backgroundImageUrl"};
+          // Use the largest available image in the `android.splash` object, or `splash.imageUrl` if none is available .
+          final String[] keys = {"xxxhdpiUrl", "xxhdpiUrl", "xhdpiUrl", "hdpiUrl", "mdpiUrl", "ldpiUrl"};
 
-        for (String key : keys) {
-          if (splash.has(key) && splash.optString(key) != null) {
-            return splash.optString(key);
+          for (String key : keys) {
+            if (splash.has(key) && splash.optString(key) != null) {
+              return splash.optString(key);
+            }
           }
         }
       }
+      if (manifest.has(ExponentManifest.MANIFEST_SPLASH_INFO_KEY)) {
+        splash = manifest.optJSONObject(ExponentManifest.MANIFEST_SPLASH_INFO_KEY);
+        if (splash.has(ExponentManifest.MANIFEST_SPLASH_IMAGE_URL)) {
+          return splash.optString(ExponentManifest.MANIFEST_SPLASH_IMAGE_URL);
+        }
+      }
     } else {
-      // For non new splash style, return the "loading.backgroundImageURL" value
-      if (manifest.has("loading")) {
-        final JSONObject loadingInfo = manifest.optJSONObject("loading");
+      if (manifest.has(ExponentManifest.MANIFEST_LOADING_INFO_KEY)) {
+        final JSONObject loadingInfo = manifest.optJSONObject(ExponentManifest.MANIFEST_LOADING_INFO_KEY);
         if (loadingInfo != null) {
           return loadingInfo.optString(ExponentManifest.MANIFEST_LOADING_BACKGROUND_IMAGE_URL, null);
         }
@@ -312,17 +310,17 @@ public class LoadingView extends RelativeLayout {
   }
 
   private Boolean isUsingNewSplashScreenStyle(final JSONObject manifest) {
-    if (manifest.has("android")) {
-      final JSONObject android = manifest.optJSONObject("android");
-      if (android.optJSONObject("splash") != null) {
+    if (manifest.has(ExponentManifest.MANIFEST_SPLASH_INFO_KEY)) {
+      if (manifest.optJSONObject(ExponentManifest.MANIFEST_SPLASH_INFO_KEY) != null) {
         return true;
       }
     }
 
-    if (manifest.has("splash")) {
-      final JSONObject splash = manifest.optJSONObject("splash");
-      return splash != null;
+    if (manifest.has("android")) {
+      final JSONObject android = manifest.optJSONObject("android");
+      return android.optJSONObject(ExponentManifest.MANIFEST_SPLASH_INFO_KEY) != null;
     }
+
     return false;
   }
 
