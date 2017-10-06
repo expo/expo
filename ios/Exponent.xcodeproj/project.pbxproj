@@ -17,22 +17,14 @@
 		192B8CB01EC464DF0045BE97 /* RNBranchProperty.m in Sources */ = {isa = PBXBuildFile; fileRef = 192B8CA81EC464DF0045BE97 /* RNBranchProperty.m */; };
 		19382BA91EC2EACC001ED4A1 /* EXBranchManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 19382BA81EC2EACC001ED4A1 /* EXBranchManager.m */; };
 		194804CF1E92CFB400623005 /* EXDocumentPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 194804CE1E92CFB400623005 /* EXDocumentPicker.m */; };
-		1978AD301EAC2656002A615B /* EXPedometer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1978AD2F1EAC2656002A615B /* EXPedometer.m */; };
 		1981B9F71E3C28BA00057CA9 /* EXKeepAwake.m in Sources */ = {isa = PBXBuildFile; fileRef = 1981B9F61E3C28BA00057CA9 /* EXKeepAwake.m */; };
 		19B96C351EE7D9F20006A7DB /* EXScreenOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 19B96C341EE7D9F20006A7DB /* EXScreenOrientation.m */; };
 		19F72F571E764AE100F9A671 /* EXContactsRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 19F72F561E764AE100F9A671 /* EXContactsRequester.m */; };
 		200C29ED1855EF40345E4BA2 /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B84B3DEFB2C488FAE7279AD /* libPods-ExponentIntegrationTests.a */; };
-		2FD6AEE41F6B381B00038C31 /* RNAdMobDFPManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FD6AED91F6B381B00038C31 /* RNAdMobDFPManager.m */; };
-		2FD6AEE51F6B381B00038C31 /* RNAdMobInterstitial.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FD6AEDB1F6B381B00038C31 /* RNAdMobInterstitial.m */; };
-		2FD6AEE61F6B381B00038C31 /* RNAdMobManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FD6AEDD1F6B381B00038C31 /* RNAdMobManager.m */; };
-		2FD6AEE71F6B381B00038C31 /* RNAdMobRewarded.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FD6AEDF1F6B381B00038C31 /* RNAdMobRewarded.m */; };
-		2FD6AEE81F6B381B00038C31 /* RNBannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FD6AEE11F6B381B00038C31 /* RNBannerView.m */; };
-		2FD6AEE91F6B381B00038C31 /* RNDFPBannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FD6AEE31F6B381B00038C31 /* RNDFPBannerView.m */; };
 		3778B7EB1E70831F000A1742 /* EXAudioRecordingPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 3778B7E91E70831F000A1742 /* EXAudioRecordingPermissionRequester.m */; };
 		3C2A25821F2752E9000566ED /* EXCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C2A257F1F2752E9000566ED /* EXCamera.m */; };
 		3C2A25831F2752E9000566ED /* EXCameraManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C2A25811F2752E9000566ED /* EXCameraManager.m */; };
 		3CA241951F029BB700C3332E /* EXSpeech.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CA241941F029BB700C3332E /* EXSpeech.m */; };
-		3CABE7151F66C500008745F2 /* EXDeviceMotion.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CABE7141F66C500008745F2 /* EXDeviceMotion.m */; };
 		3CE707941F6A725100255742 /* EXSensorManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CE707931F6A725100255742 /* EXSensorManager.m */; };
 		4C9F38C21F1946FC00F926DA /* EXSecureStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C9F38C11F1946FC00F926DA /* EXSecureStore.m */; };
 		4CDF6D4F1F394EB500AA9D65 /* EXDownloadDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CDF6D4E1F394EB400AA9D65 /* EXDownloadDelegate.m */; };
@@ -109,8 +101,6 @@
 		840D8EE21D8CB91E00CD88DE /* EXUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 840D8EE11D8CB91E00CD88DE /* EXUtil.m */; };
 		841AB1161DA6F56D008C0720 /* EXBarCodeScanner.m in Sources */ = {isa = PBXBuildFile; fileRef = 841AB1131DA6F56D008C0720 /* EXBarCodeScanner.m */; };
 		841AB1171DA6F56D008C0720 /* EXBarCodeScannerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 841AB1151DA6F56D008C0720 /* EXBarCodeScannerManager.m */; };
-		843175B41DDCF0440092B68B /* EXAccelerometer.m in Sources */ = {isa = PBXBuildFile; fileRef = 843175B31DDCF0440092B68B /* EXAccelerometer.m */; };
-		844341F71DDBA1B600AC3795 /* EXGyroscope.m in Sources */ = {isa = PBXBuildFile; fileRef = 844341F61DDBA1B600AC3795 /* EXGyroscope.m */; };
 		8454E6DA1D4E95B800B9E8EF /* EXBlurView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8454E6D91D4E95B800B9E8EF /* EXBlurView.m */; };
 		8454E6DC1D4E960F00B9E8EF /* EXBlurViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8454E6DB1D4E960F00B9E8EF /* EXBlurViewManager.m */; };
 		88E089A41D6BC02200562FA1 /* EXAmplitude.m in Sources */ = {isa = PBXBuildFile; fileRef = 88E089A31D6BC02200562FA1 /* EXAmplitude.m */; };
@@ -222,14 +212,25 @@
 		B5AC39D91E96D7A900540AA7 /* EXErrorRecovery.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC39D81E96D7A900540AA7 /* EXErrorRecovery.m */; };
 		B5ADEE951F7DB4E000C88D2F /* EXBuildConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = B5ADEE941F7DB4E000C88D2F /* EXBuildConstants.m */; };
 		B5C2740C1EC24AE1003355CE /* EXKernelLinkingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5C2740B1EC24AE1003355CE /* EXKernelLinkingManager.m */; };
+		B5C6BC601F87E724001E2D00 /* EXAccelerometer.m in Sources */ = {isa = PBXBuildFile; fileRef = B5C6BC551F87E724001E2D00 /* EXAccelerometer.m */; };
+		B5C6BC611F87E724001E2D00 /* EXDeviceMotion.m in Sources */ = {isa = PBXBuildFile; fileRef = B5C6BC571F87E724001E2D00 /* EXDeviceMotion.m */; };
+		B5C6BC621F87E724001E2D00 /* EXGyroscope.m in Sources */ = {isa = PBXBuildFile; fileRef = B5C6BC591F87E724001E2D00 /* EXGyroscope.m */; };
+		B5C6BC631F87E724001E2D00 /* EXMagnetometer.m in Sources */ = {isa = PBXBuildFile; fileRef = B5C6BC5B1F87E724001E2D00 /* EXMagnetometer.m */; };
+		B5C6BC641F87E724001E2D00 /* EXMagnetometerUncalibrated.m in Sources */ = {isa = PBXBuildFile; fileRef = B5C6BC5D1F87E724001E2D00 /* EXMagnetometerUncalibrated.m */; };
+		B5C6BC651F87E724001E2D00 /* EXPedometer.m in Sources */ = {isa = PBXBuildFile; fileRef = B5C6BC5F1F87E724001E2D00 /* EXPedometer.m */; };
+		B5C6BC681F87E756001E2D00 /* EXBrightness.m in Sources */ = {isa = PBXBuildFile; fileRef = B5C6BC671F87E756001E2D00 /* EXBrightness.m */; };
+		B5C6BC761F87E7A8001E2D00 /* RNAdMobDFPManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5C6BC6B1F87E7A8001E2D00 /* RNAdMobDFPManager.m */; };
+		B5C6BC771F87E7A8001E2D00 /* RNAdMobInterstitial.m in Sources */ = {isa = PBXBuildFile; fileRef = B5C6BC6D1F87E7A8001E2D00 /* RNAdMobInterstitial.m */; };
+		B5C6BC781F87E7A8001E2D00 /* RNAdMobManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5C6BC6F1F87E7A8001E2D00 /* RNAdMobManager.m */; };
+		B5C6BC791F87E7A8001E2D00 /* RNAdMobRewarded.m in Sources */ = {isa = PBXBuildFile; fileRef = B5C6BC711F87E7A8001E2D00 /* RNAdMobRewarded.m */; };
+		B5C6BC7A1F87E7A8001E2D00 /* RNBannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = B5C6BC731F87E7A8001E2D00 /* RNBannerView.m */; };
+		B5C6BC7B1F87E7A8001E2D00 /* RNDFPBannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = B5C6BC751F87E7A8001E2D00 /* RNDFPBannerView.m */; };
 		B5C7A3C21EC3E38300DD9E1D /* EXAV.m in Sources */ = {isa = PBXBuildFile; fileRef = B5C7A3B61EC3E38300DD9E1D /* EXAV.m */; };
 		B5C7A3C31EC3E38300DD9E1D /* EXAVPlayerData.m in Sources */ = {isa = PBXBuildFile; fileRef = B5C7A3B91EC3E38300DD9E1D /* EXAVPlayerData.m */; };
 		B5C7A3C41EC3E38300DD9E1D /* EXVideoManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5C7A3BC1EC3E38300DD9E1D /* EXVideoManager.m */; };
 		B5C7A3C51EC3E38300DD9E1D /* EXVideoPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5C7A3BE1EC3E38300DD9E1D /* EXVideoPlayerViewController.m */; };
 		B5C7A3C61EC3E38300DD9E1D /* EXVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = B5C7A3C11EC3E38300DD9E1D /* EXVideoView.m */; };
 		B5CFBF4D1EDE398D00B4BE24 /* EXBuildConstants.plist in Resources */ = {isa = PBXBuildFile; fileRef = B5CFBF4C1EDE398D00B4BE24 /* EXBuildConstants.plist */; };
-		B5DB047C1F39057900E91581 /* EXMagnetometer.m in Sources */ = {isa = PBXBuildFile; fileRef = B5DB04791F39057900E91581 /* EXMagnetometer.m */; };
-		B5DB047D1F39057900E91581 /* EXMagnetometerUncalibrated.m in Sources */ = {isa = PBXBuildFile; fileRef = B5DB047B1F39057900E91581 /* EXMagnetometerUncalibrated.m */; };
 		B5E49B571D1346FA00AA6436 /* Exponent.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = B5E49B551D1346FA00AA6436 /* Exponent.entitlements */; };
 		B5E49B631D1347B800AA6436 /* EXSDKVersions.plist in Resources */ = {isa = PBXBuildFile; fileRef = B5E49B621D1347B800AA6436 /* EXSDKVersions.plist */; };
 		B5E49B691D1348E800AA6436 /* EXShell.plist in Resources */ = {isa = PBXBuildFile; fileRef = B5E49B671D1348E800AA6436 /* EXShell.plist */; };
@@ -284,8 +285,6 @@
 		19382BA81EC2EACC001ED4A1 /* EXBranchManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXBranchManager.m; sourceTree = "<group>"; };
 		194804CD1E92CFB400623005 /* EXDocumentPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EXDocumentPicker.h; path = Exponent/Versioned/Modules/Api/EXDocumentPicker.h; sourceTree = SOURCE_ROOT; };
 		194804CE1E92CFB400623005 /* EXDocumentPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EXDocumentPicker.m; path = Exponent/Versioned/Modules/Api/EXDocumentPicker.m; sourceTree = SOURCE_ROOT; };
-		1978AD2E1EAC2656002A615B /* EXPedometer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXPedometer.h; sourceTree = "<group>"; };
-		1978AD2F1EAC2656002A615B /* EXPedometer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXPedometer.m; sourceTree = "<group>"; };
 		1981B9F51E3C28BA00057CA9 /* EXKeepAwake.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKeepAwake.h; sourceTree = "<group>"; };
 		1981B9F61E3C28BA00057CA9 /* EXKeepAwake.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKeepAwake.m; sourceTree = "<group>"; };
 		19B96C331EE7D9F20006A7DB /* EXScreenOrientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScreenOrientation.h; sourceTree = "<group>"; };
@@ -293,18 +292,6 @@
 		19F72F551E764AE100F9A671 /* EXContactsRequester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXContactsRequester.h; sourceTree = "<group>"; };
 		19F72F561E764AE100F9A671 /* EXContactsRequester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXContactsRequester.m; sourceTree = "<group>"; };
 		1B1D1884419563A8205AED29 /* libPods-Exponent.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Exponent.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		2FD6AED81F6B381B00038C31 /* RNAdMobDFPManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNAdMobDFPManager.h; sourceTree = "<group>"; };
-		2FD6AED91F6B381B00038C31 /* RNAdMobDFPManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNAdMobDFPManager.m; sourceTree = "<group>"; };
-		2FD6AEDA1F6B381B00038C31 /* RNAdMobInterstitial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNAdMobInterstitial.h; sourceTree = "<group>"; };
-		2FD6AEDB1F6B381B00038C31 /* RNAdMobInterstitial.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNAdMobInterstitial.m; sourceTree = "<group>"; };
-		2FD6AEDC1F6B381B00038C31 /* RNAdMobManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNAdMobManager.h; sourceTree = "<group>"; };
-		2FD6AEDD1F6B381B00038C31 /* RNAdMobManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNAdMobManager.m; sourceTree = "<group>"; };
-		2FD6AEDE1F6B381B00038C31 /* RNAdMobRewarded.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNAdMobRewarded.h; sourceTree = "<group>"; };
-		2FD6AEDF1F6B381B00038C31 /* RNAdMobRewarded.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNAdMobRewarded.m; sourceTree = "<group>"; };
-		2FD6AEE01F6B381B00038C31 /* RNBannerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNBannerView.h; sourceTree = "<group>"; };
-		2FD6AEE11F6B381B00038C31 /* RNBannerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNBannerView.m; sourceTree = "<group>"; };
-		2FD6AEE21F6B381B00038C31 /* RNDFPBannerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNDFPBannerView.h; sourceTree = "<group>"; };
-		2FD6AEE31F6B381B00038C31 /* RNDFPBannerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNDFPBannerView.m; sourceTree = "<group>"; };
 		34B965207078EF139F54C545 /* Pods-ExponentIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
 		3778B7E91E70831F000A1742 /* EXAudioRecordingPermissionRequester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAudioRecordingPermissionRequester.m; sourceTree = "<group>"; };
 		3778B7EA1E70831F000A1742 /* EXAudioRecordingPermissionRequester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAudioRecordingPermissionRequester.h; sourceTree = "<group>"; };
@@ -314,8 +301,6 @@
 		3C2A25811F2752E9000566ED /* EXCameraManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXCameraManager.m; sourceTree = "<group>"; };
 		3CA241931F029B9A00C3332E /* EXSpeech.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXSpeech.h; sourceTree = "<group>"; };
 		3CA241941F029BB700C3332E /* EXSpeech.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXSpeech.m; sourceTree = "<group>"; };
-		3CABE7141F66C500008745F2 /* EXDeviceMotion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXDeviceMotion.m; sourceTree = "<group>"; };
-		3CABE7161F66C584008745F2 /* EXDeviceMotion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXDeviceMotion.h; sourceTree = "<group>"; };
 		3CE707931F6A725100255742 /* EXSensorManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXSensorManager.m; sourceTree = "<group>"; };
 		3CE707951F6A74AB00255742 /* EXSensorManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSensorManager.h; sourceTree = "<group>"; };
 		4C9F38C01F1946FC00F926DA /* EXSecureStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXSecureStore.h; sourceTree = "<group>"; };
@@ -475,10 +460,6 @@
 		841AB1131DA6F56D008C0720 /* EXBarCodeScanner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXBarCodeScanner.m; sourceTree = "<group>"; };
 		841AB1141DA6F56D008C0720 /* EXBarCodeScannerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXBarCodeScannerManager.h; sourceTree = "<group>"; };
 		841AB1151DA6F56D008C0720 /* EXBarCodeScannerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXBarCodeScannerManager.m; sourceTree = "<group>"; };
-		843175B21DDCF0440092B68B /* EXAccelerometer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EXAccelerometer.h; path = Exponent/Versioned/Modules/Api/EXAccelerometer.h; sourceTree = SOURCE_ROOT; };
-		843175B31DDCF0440092B68B /* EXAccelerometer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EXAccelerometer.m; path = Exponent/Versioned/Modules/Api/EXAccelerometer.m; sourceTree = SOURCE_ROOT; };
-		844341F51DDBA1B600AC3795 /* EXGyroscope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGyroscope.h; sourceTree = "<group>"; };
-		844341F61DDBA1B600AC3795 /* EXGyroscope.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGyroscope.m; sourceTree = "<group>"; };
 		8454E6D81D4E95A300B9E8EF /* EXBlurView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXBlurView.h; sourceTree = "<group>"; };
 		8454E6D91D4E95B800B9E8EF /* EXBlurView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXBlurView.m; sourceTree = "<group>"; };
 		8454E6DB1D4E960F00B9E8EF /* EXBlurViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXBlurViewManager.m; sourceTree = "<group>"; };
@@ -700,6 +681,32 @@
 		B5ADEE941F7DB4E000C88D2F /* EXBuildConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXBuildConstants.m; sourceTree = "<group>"; };
 		B5C2740A1EC24AE1003355CE /* EXKernelLinkingManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelLinkingManager.h; sourceTree = "<group>"; };
 		B5C2740B1EC24AE1003355CE /* EXKernelLinkingManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelLinkingManager.m; sourceTree = "<group>"; };
+		B5C6BC541F87E724001E2D00 /* EXAccelerometer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAccelerometer.h; sourceTree = "<group>"; };
+		B5C6BC551F87E724001E2D00 /* EXAccelerometer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAccelerometer.m; sourceTree = "<group>"; };
+		B5C6BC561F87E724001E2D00 /* EXDeviceMotion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXDeviceMotion.h; sourceTree = "<group>"; };
+		B5C6BC571F87E724001E2D00 /* EXDeviceMotion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXDeviceMotion.m; sourceTree = "<group>"; };
+		B5C6BC581F87E724001E2D00 /* EXGyroscope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGyroscope.h; sourceTree = "<group>"; };
+		B5C6BC591F87E724001E2D00 /* EXGyroscope.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGyroscope.m; sourceTree = "<group>"; };
+		B5C6BC5A1F87E724001E2D00 /* EXMagnetometer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXMagnetometer.h; sourceTree = "<group>"; };
+		B5C6BC5B1F87E724001E2D00 /* EXMagnetometer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXMagnetometer.m; sourceTree = "<group>"; };
+		B5C6BC5C1F87E724001E2D00 /* EXMagnetometerUncalibrated.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXMagnetometerUncalibrated.h; sourceTree = "<group>"; };
+		B5C6BC5D1F87E724001E2D00 /* EXMagnetometerUncalibrated.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXMagnetometerUncalibrated.m; sourceTree = "<group>"; };
+		B5C6BC5E1F87E724001E2D00 /* EXPedometer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXPedometer.h; sourceTree = "<group>"; };
+		B5C6BC5F1F87E724001E2D00 /* EXPedometer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXPedometer.m; sourceTree = "<group>"; };
+		B5C6BC661F87E756001E2D00 /* EXBrightness.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXBrightness.h; sourceTree = "<group>"; };
+		B5C6BC671F87E756001E2D00 /* EXBrightness.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXBrightness.m; sourceTree = "<group>"; };
+		B5C6BC6A1F87E7A8001E2D00 /* RNAdMobDFPManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNAdMobDFPManager.h; sourceTree = "<group>"; };
+		B5C6BC6B1F87E7A8001E2D00 /* RNAdMobDFPManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNAdMobDFPManager.m; sourceTree = "<group>"; };
+		B5C6BC6C1F87E7A8001E2D00 /* RNAdMobInterstitial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNAdMobInterstitial.h; sourceTree = "<group>"; };
+		B5C6BC6D1F87E7A8001E2D00 /* RNAdMobInterstitial.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNAdMobInterstitial.m; sourceTree = "<group>"; };
+		B5C6BC6E1F87E7A8001E2D00 /* RNAdMobManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNAdMobManager.h; sourceTree = "<group>"; };
+		B5C6BC6F1F87E7A8001E2D00 /* RNAdMobManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNAdMobManager.m; sourceTree = "<group>"; };
+		B5C6BC701F87E7A8001E2D00 /* RNAdMobRewarded.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNAdMobRewarded.h; sourceTree = "<group>"; };
+		B5C6BC711F87E7A8001E2D00 /* RNAdMobRewarded.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNAdMobRewarded.m; sourceTree = "<group>"; };
+		B5C6BC721F87E7A8001E2D00 /* RNBannerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNBannerView.h; sourceTree = "<group>"; };
+		B5C6BC731F87E7A8001E2D00 /* RNBannerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNBannerView.m; sourceTree = "<group>"; };
+		B5C6BC741F87E7A8001E2D00 /* RNDFPBannerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNDFPBannerView.h; sourceTree = "<group>"; };
+		B5C6BC751F87E7A8001E2D00 /* RNDFPBannerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNDFPBannerView.m; sourceTree = "<group>"; };
 		B5C7A3B51EC3E38300DD9E1D /* EXAV.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAV.h; sourceTree = "<group>"; };
 		B5C7A3B61EC3E38300DD9E1D /* EXAV.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAV.m; sourceTree = "<group>"; };
 		B5C7A3B71EC3E38300DD9E1D /* EXAVObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAVObject.h; sourceTree = "<group>"; };
@@ -713,10 +720,6 @@
 		B5C7A3C01EC3E38300DD9E1D /* EXVideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXVideoView.h; sourceTree = "<group>"; };
 		B5C7A3C11EC3E38300DD9E1D /* EXVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXVideoView.m; sourceTree = "<group>"; };
 		B5CFBF4C1EDE398D00B4BE24 /* EXBuildConstants.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = EXBuildConstants.plist; sourceTree = "<group>"; };
-		B5DB04781F39057900E91581 /* EXMagnetometer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXMagnetometer.h; sourceTree = "<group>"; };
-		B5DB04791F39057900E91581 /* EXMagnetometer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXMagnetometer.m; sourceTree = "<group>"; };
-		B5DB047A1F39057900E91581 /* EXMagnetometerUncalibrated.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXMagnetometerUncalibrated.h; sourceTree = "<group>"; };
-		B5DB047B1F39057900E91581 /* EXMagnetometerUncalibrated.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXMagnetometerUncalibrated.m; sourceTree = "<group>"; };
 		B5E49B541D1346FA00AA6436 /* Exponent-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Exponent-Prefix.pch"; sourceTree = "<group>"; };
 		B5E49B551D1346FA00AA6436 /* Exponent.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Exponent.entitlements; sourceTree = "<group>"; };
 		B5E49B561D1346FA00AA6436 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -921,25 +924,6 @@
 			path = Svg;
 			sourceTree = "<group>";
 		};
-		2FD6AED71F6B381B00038C31 /* admob */ = {
-			isa = PBXGroup;
-			children = (
-				2FD6AED81F6B381B00038C31 /* RNAdMobDFPManager.h */,
-				2FD6AED91F6B381B00038C31 /* RNAdMobDFPManager.m */,
-				2FD6AEDA1F6B381B00038C31 /* RNAdMobInterstitial.h */,
-				2FD6AEDB1F6B381B00038C31 /* RNAdMobInterstitial.m */,
-				2FD6AEDC1F6B381B00038C31 /* RNAdMobManager.h */,
-				2FD6AEDD1F6B381B00038C31 /* RNAdMobManager.m */,
-				2FD6AEDE1F6B381B00038C31 /* RNAdMobRewarded.h */,
-				2FD6AEDF1F6B381B00038C31 /* RNAdMobRewarded.m */,
-				2FD6AEE01F6B381B00038C31 /* RNBannerView.h */,
-				2FD6AEE11F6B381B00038C31 /* RNBannerView.m */,
-				2FD6AEE21F6B381B00038C31 /* RNDFPBannerView.h */,
-				2FD6AEE31F6B381B00038C31 /* RNDFPBannerView.m */,
-			);
-			path = admob;
-			sourceTree = "<group>";
-		};
 		3050F5A98E56E9379C36ABD2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -948,25 +932,6 @@
 				0B84B3DEFB2C488FAE7279AD /* libPods-ExponentIntegrationTests.a */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		52AF73C61F2B464200813C64 /* Sensors */ = {
-			isa = PBXGroup;
-			children = (
-				843175B21DDCF0440092B68B /* EXAccelerometer.h */,
-				843175B31DDCF0440092B68B /* EXAccelerometer.m */,
-				3CABE7161F66C584008745F2 /* EXDeviceMotion.h */,
-				3CABE7141F66C500008745F2 /* EXDeviceMotion.m */,
-				844341F51DDBA1B600AC3795 /* EXGyroscope.h */,
-				844341F61DDBA1B600AC3795 /* EXGyroscope.m */,
-				B5DB04781F39057900E91581 /* EXMagnetometer.h */,
-				B5DB04791F39057900E91581 /* EXMagnetometer.m */,
-				B5DB047A1F39057900E91581 /* EXMagnetometerUncalibrated.h */,
-				B5DB047B1F39057900E91581 /* EXMagnetometerUncalibrated.m */,
-				1978AD2E1EAC2656002A615B /* EXPedometer.h */,
-				1978AD2F1EAC2656002A615B /* EXPedometer.m */,
-			);
-			name = Sensors;
 			sourceTree = "<group>";
 		};
 		78CEE2B71ACD07D70095B124 = {
@@ -1066,7 +1031,6 @@
 		A1CDBE861D30781000C2A670 /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				2FD6AED71F6B381B00038C31 /* admob */,
 				BB22D93F1F3CDE0900A35CC6 /* GestureHandler */,
 				B56D07101EC53333009E6A89 /* GoogleMaps */,
 				B50625FA1E4B9E6100AC2748 /* Lottie */,
@@ -1126,16 +1090,19 @@
 		A1F37F5A1CEFD6B2001E9EFC /* Api */ = {
 			isa = PBXGroup;
 			children = (
-				192B8C971EC464DF0045BE97 /* Standalone */,
+				B5C6BC691F87E7A8001E2D00 /* AdMob */,
 				B5C7A3B41EC3E38300DD9E1D /* AV */,
 				B5A8751F1E70E57F006DDECA /* FBAds */,
 				A1DCE8421DC3FC63009665FD /* GL */,
 				A1CDBE861D30781000C2A670 /* Components */,
 				B51C2AFF1DC7BB3200120834 /* OAuthViewController */,
 				B5844C341D482C3D0015C683 /* Permissions */,
-				52AF73C61F2B464200813C64 /* Sensors */,
+				B5C6BC531F87E724001E2D00 /* Sensors */,
+				192B8C971EC464DF0045BE97 /* Standalone */,
 				88E089A61D6BC04800562FA1 /* EXAmplitude.h */,
 				88E089A31D6BC02200562FA1 /* EXAmplitude.m */,
+				B5C6BC661F87E756001E2D00 /* EXBrightness.h */,
+				B5C6BC671F87E756001E2D00 /* EXBrightness.m */,
 				A1F37F5B1CEFD6B2001E9EFC /* EXConstants.h */,
 				A1F37F5C1CEFD6B2001E9EFC /* EXConstants.m */,
 				A1F37F5D1CEFD6B2001E9EFC /* EXContacts.h */,
@@ -1515,6 +1482,44 @@
 				B5AC39CE1E95B01F00540AA7 /* EXDisabledRedBox.m */,
 			);
 			path = DevSupport;
+			sourceTree = "<group>";
+		};
+		B5C6BC531F87E724001E2D00 /* Sensors */ = {
+			isa = PBXGroup;
+			children = (
+				B5C6BC541F87E724001E2D00 /* EXAccelerometer.h */,
+				B5C6BC551F87E724001E2D00 /* EXAccelerometer.m */,
+				B5C6BC561F87E724001E2D00 /* EXDeviceMotion.h */,
+				B5C6BC571F87E724001E2D00 /* EXDeviceMotion.m */,
+				B5C6BC581F87E724001E2D00 /* EXGyroscope.h */,
+				B5C6BC591F87E724001E2D00 /* EXGyroscope.m */,
+				B5C6BC5A1F87E724001E2D00 /* EXMagnetometer.h */,
+				B5C6BC5B1F87E724001E2D00 /* EXMagnetometer.m */,
+				B5C6BC5C1F87E724001E2D00 /* EXMagnetometerUncalibrated.h */,
+				B5C6BC5D1F87E724001E2D00 /* EXMagnetometerUncalibrated.m */,
+				B5C6BC5E1F87E724001E2D00 /* EXPedometer.h */,
+				B5C6BC5F1F87E724001E2D00 /* EXPedometer.m */,
+			);
+			path = Sensors;
+			sourceTree = "<group>";
+		};
+		B5C6BC691F87E7A8001E2D00 /* AdMob */ = {
+			isa = PBXGroup;
+			children = (
+				B5C6BC6A1F87E7A8001E2D00 /* RNAdMobDFPManager.h */,
+				B5C6BC6B1F87E7A8001E2D00 /* RNAdMobDFPManager.m */,
+				B5C6BC6C1F87E7A8001E2D00 /* RNAdMobInterstitial.h */,
+				B5C6BC6D1F87E7A8001E2D00 /* RNAdMobInterstitial.m */,
+				B5C6BC6E1F87E7A8001E2D00 /* RNAdMobManager.h */,
+				B5C6BC6F1F87E7A8001E2D00 /* RNAdMobManager.m */,
+				B5C6BC701F87E7A8001E2D00 /* RNAdMobRewarded.h */,
+				B5C6BC711F87E7A8001E2D00 /* RNAdMobRewarded.m */,
+				B5C6BC721F87E7A8001E2D00 /* RNBannerView.h */,
+				B5C6BC731F87E7A8001E2D00 /* RNBannerView.m */,
+				B5C6BC741F87E7A8001E2D00 /* RNDFPBannerView.h */,
+				B5C6BC751F87E7A8001E2D00 /* RNDFPBannerView.m */,
+			);
+			path = AdMob;
 			sourceTree = "<group>";
 		};
 		B5C7A3B41EC3E38300DD9E1D /* AV */ = {
@@ -2040,7 +2045,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				844341F71DDBA1B600AC3795 /* EXGyroscope.m in Sources */,
 				B5AC39AD1E95A90B00540AA7 /* EXProvisioningProfile.m in Sources */,
 				B5AC39D01E95B01F00540AA7 /* EXDevSettingsDataSource.m in Sources */,
 				B5AC39C01E95AC8E00540AA7 /* EXLog.m in Sources */,
@@ -2051,10 +2055,13 @@
 				B56D07441EC53333009E6A89 /* AIRGoogleMapUrlTile.m in Sources */,
 				192B8CAA1EC464DF0045BE97 /* BranchUniversalObject+RNBranch.m in Sources */,
 				B5A358621C7E6C4300D1BE67 /* EXAnalytics.m in Sources */,
+				B5C6BC641F87E724001E2D00 /* EXMagnetometerUncalibrated.m in Sources */,
 				192B8CAF1EC464DF0045BE97 /* RNBranchEventEmitter.m in Sources */,
+				B5C6BC631F87E724001E2D00 /* EXMagnetometer.m in Sources */,
 				7847A39F1EC0F1550088BF69 /* RNSVGTextPathManager.m in Sources */,
 				7847A2C41EB9AF210088BF69 /* AIRMapCoordinate.m in Sources */,
 				B592FFEF1E9D489100437664 /* EXStatusBarManager.m in Sources */,
+				B5C6BC621F87E724001E2D00 /* EXGyroscope.m in Sources */,
 				78CEE2ED1ACD22D90095B124 /* EXAppDelegate.m in Sources */,
 				A1158D321D4C4AA400286352 /* EXAppLoadingManager.m in Sources */,
 				B56FACA21D4AB279009FC106 /* EXAppState.m in Sources */,
@@ -2070,6 +2077,7 @@
 				A1F37F711CEFD6B2001E9EFC /* EXConstants.m in Sources */,
 				A1F37F721CEFD6B2001E9EFC /* EXContacts.m in Sources */,
 				B5AC39D31E95B01F00540AA7 /* EXDisabledRedBox.m in Sources */,
+				B5C6BC651F87E724001E2D00 /* EXPedometer.m in Sources */,
 				B51C2B021DC7BB3200120834 /* EXOAuthViewController.m in Sources */,
 				B58FFAAC1F1016B700A51363 /* EXGoogleAuthManager.m in Sources */,
 				B56D073D1EC53333009E6A89 /* AIRGoogleMapManager.m in Sources */,
@@ -2080,7 +2088,6 @@
 				7847A3A11EC0F1550088BF69 /* RNSVGTSpanManager.m in Sources */,
 				7847A3901EC0F1550088BF69 /* RNSVGPercentageConverter.m in Sources */,
 				7847A2CA1EB9AF210088BF69 /* AIRMapPolyline.m in Sources */,
-				B5DB047C1F39057900E91581 /* EXMagnetometer.m in Sources */,
 				BB22D9561F3CDE6C00A35CC6 /* RNGestureHandler.m in Sources */,
 				B5A8752F1E70E57F006DDECA /* EXBannerView.m in Sources */,
 				B5AC398A1E95A7EC00540AA7 /* EXApiUtil.m in Sources */,
@@ -2089,9 +2096,7 @@
 				7847A2CD1EB9AF210088BF69 /* AIRMapUrlTileManager.m in Sources */,
 				7847A2C21EB9AF210088BF69 /* AIRMapCircle.m in Sources */,
 				88E089A41D6BC02200562FA1 /* EXAmplitude.m in Sources */,
-				2FD6AEE61F6B381B00038C31 /* RNAdMobManager.m in Sources */,
 				7847A3791EC0F1550088BF69 /* RNSVGClipPath.m in Sources */,
-				2FD6AEE71F6B381B00038C31 /* RNAdMobRewarded.m in Sources */,
 				7847A38E1EC0F1550088BF69 /* RNSVGPathParser.m in Sources */,
 				7847A2C81EB9AF210088BF69 /* AIRMapPolygon.m in Sources */,
 				3C2A25831F2752E9000566ED /* EXCameraManager.m in Sources */,
@@ -2104,6 +2109,7 @@
 				B5A8752E1E70E57F006DDECA /* EXAdSettingsManager.m in Sources */,
 				B53BB7A51F06F78C00D2BCDC /* EXScopedEventEmitter.m in Sources */,
 				A15DC4CC1D011248009F940D /* EXFacebook.m in Sources */,
+				B5C6BC611F87E724001E2D00 /* EXDeviceMotion.m in Sources */,
 				B587F1E01D53DEB70071715C /* EXFileDownloader.m in Sources */,
 				7847A3751EC0F1550088BF69 /* RNSVGBezierTransformer.m in Sources */,
 				192B8CAD1EC464DF0045BE97 /* RNBranchAgingDictionary.m in Sources */,
@@ -2122,6 +2128,8 @@
 				B56D07451EC53333009E6A89 /* AIRGoogleMapURLTileManager.m in Sources */,
 				194804CF1E92CFB400623005 /* EXDocumentPicker.m in Sources */,
 				A15DC4BC1CFF99FE009F940D /* EXImagePicker.m in Sources */,
+				B5C6BC7B1F87E7A8001E2D00 /* RNDFPBannerView.m in Sources */,
+				B5C6BC601F87E724001E2D00 /* EXAccelerometer.m in Sources */,
 				BB22D9591F3CDE6C00A35CC6 /* RNGestureHandlerModule.m in Sources */,
 				7847A2C61EB9AF210088BF69 /* AIRMapMarker.m in Sources */,
 				B56D07351EC53333009E6A89 /* AIRDummyView.m in Sources */,
@@ -2130,6 +2138,8 @@
 				B56D073E1EC53333009E6A89 /* AIRGoogleMapMarker.m in Sources */,
 				B56D07401EC53333009E6A89 /* AIRGoogleMapPolygon.m in Sources */,
 				B56D07461EC53333009E6A89 /* RCTConvert+GMSMapViewType.m in Sources */,
+				B5C6BC781F87E7A8001E2D00 /* RNAdMobManager.m in Sources */,
+				B5C6BC791F87E7A8001E2D00 /* RNAdMobRewarded.m in Sources */,
 				7847A3961EC0F1550088BF69 /* RNSVGRenderableManager.m in Sources */,
 				7847A38C1EC0F1550088BF69 /* RNSVGPath.m in Sources */,
 				B5F12CA21DB009A40080ECA6 /* EXKernelModule.m in Sources */,
@@ -2141,16 +2151,18 @@
 				7847A38F1EC0F1550088BF69 /* RNSVGPattern.m in Sources */,
 				7847A2C51EB9AF210088BF69 /* AIRMapManager.m in Sources */,
 				B5A875341E70E57F006DDECA /* EXNativeAdView.m in Sources */,
+				B5C6BC681F87E756001E2D00 /* EXBrightness.m in Sources */,
 				B575EE9E1D53EEC300DCABBC /* EXJavaScriptResource.m in Sources */,
 				7847A3991EC0F1550088BF69 /* RNSVGSvgViewManager.m in Sources */,
+				B5C6BC761F87E7A8001E2D00 /* RNAdMobDFPManager.m in Sources */,
 				7847A3971EC0F1550088BF69 /* RNSVGSolidColorBrush.m in Sources */,
 				B5AC39D21E95B01F00540AA7 /* EXDisabledDevMenu.m in Sources */,
+				B5C6BC7A1F87E7A8001E2D00 /* RNBannerView.m in Sources */,
 				A1CA7DDF1EC1036500489532 /* EXGLGPUImageObject.m in Sources */,
 				A1DCE8471DC3FC63009665FD /* EXGLView.m in Sources */,
 				B56D073C1EC53333009E6A89 /* AIRGoogleMapCircleManager.m in Sources */,
 				19B96C351EE7D9F20006A7DB /* EXScreenOrientation.m in Sources */,
 				7847A3891EC0F1550088BF69 /* RNSVGNodeManager.m in Sources */,
-				2FD6AEE51F6B381B00038C31 /* RNAdMobInterstitial.m in Sources */,
 				B5AC39D91E96D7A900540AA7 /* EXErrorRecovery.m in Sources */,
 				B5678C5F1DB6D65B00380A6E /* EXFrame.m in Sources */,
 				B5AC39B01E95A90B00540AA7 /* EXLocalNotificationManager.m in Sources */,
@@ -2165,9 +2177,7 @@
 				7847A2C01EB9AF210088BF69 /* AIRMapCallout.m in Sources */,
 				7847A3A41EC0F1550088BF69 /* RNSVGViewBox.m in Sources */,
 				7847A2CF1EB9AF210088BF69 /* SMCalloutView.m in Sources */,
-				2FD6AEE81F6B381B00038C31 /* RNBannerView.m in Sources */,
 				B5EF82771F5A1B7900FC7424 /* EXTest.m in Sources */,
-				B5DB047D1F39057900E91581 /* EXMagnetometerUncalibrated.m in Sources */,
 				B5AC39CF1E95B01F00540AA7 /* EXDevSettings.m in Sources */,
 				B52217D61F146658002241BA /* EXKernelServiceRegistry.m in Sources */,
 				B56D073F1EC53333009E6A89 /* AIRGoogleMapMarkerManager.m in Sources */,
@@ -2175,7 +2185,6 @@
 				B55089821D06455D009FBBC5 /* EXLinkingManager.m in Sources */,
 				A12CC94C1D11E80E0023A57B /* EXLocation.m in Sources */,
 				7847A3941EC0F1550088BF69 /* RNSVGRectManager.m in Sources */,
-				3CABE7151F66C500008745F2 /* EXDeviceMotion.m in Sources */,
 				7847A2CC1EB9AF210088BF69 /* AIRMapUrlTile.m in Sources */,
 				7847A2C71EB9AF210088BF69 /* AIRMapMarkerManager.m in Sources */,
 				7847A2BF1EB9AF210088BF69 /* AIRMap.m in Sources */,
@@ -2201,13 +2210,11 @@
 				88E089AB1D6BCF5800562FA1 /* EXSegment.m in Sources */,
 				B575EEA11D54053500DCABBC /* EXManifestResource.m in Sources */,
 				B5218E7A1D232B8800C54B61 /* EXNotifications.m in Sources */,
-				1978AD301EAC2656002A615B /* EXPedometer.m in Sources */,
 				B5AC39D61E95B17300540AA7 /* EXErrorRecoveryManager.m in Sources */,
 				4C9F38C21F1946FC00F926DA /* EXSecureStore.m in Sources */,
 				192B8CAC1EC464DF0045BE97 /* RNBranch.m in Sources */,
 				B5844C371D482C3D0015C683 /* EXPermissions.m in Sources */,
 				7847A3761EC0F1550088BF69 /* RNSVGBrush.m in Sources */,
-				2FD6AEE91F6B381B00038C31 /* RNDFPBannerView.m in Sources */,
 				7847A37A1EC0F1550088BF69 /* RNSVGClipPathManager.m in Sources */,
 				B5E9FDEF1D833325006DB65C /* EXViewShot.m in Sources */,
 				B52336AF1DAD6A3A001C0B5E /* EXCameraPermissionRequester.m in Sources */,
@@ -2220,7 +2227,6 @@
 				7847A3841EC0F1550088BF69 /* RNSVGLine.m in Sources */,
 				B55FDEFA1C7FE1310020AA8F /* EXRootViewController.m in Sources */,
 				B5AC39A81E95A90B00540AA7 /* EXKernelBridgeRecord.m in Sources */,
-				843175B41DDCF0440092B68B /* EXAccelerometer.m in Sources */,
 				A1CA7DE01EC1036500489532 /* EXGLObject.m in Sources */,
 				4CDF6D4F1F394EB500AA9D65 /* EXDownloadDelegate.m in Sources */,
 				780D4ACE1F737ADC00E70C7F /* EXNativeModuleIntrospection.m in Sources */,
@@ -2232,6 +2238,7 @@
 				7847A37F1EC0F1550088BF69 /* RNSVGGlyphContext.m in Sources */,
 				7847A3881EC0F1550088BF69 /* RNSVGNode.m in Sources */,
 				B5AC39BF1E95AC8E00540AA7 /* EXFatalHandler.m in Sources */,
+				B5C6BC771F87E7A8001E2D00 /* RNAdMobInterstitial.m in Sources */,
 				B56D07391EC53333009E6A89 /* AIRGoogleMapCallout.m in Sources */,
 				7847A3931EC0F1550088BF69 /* RNSVGRect.m in Sources */,
 				A1F37F7A1CEFD6B2001E9EFC /* EXVersionManager.m in Sources */,
@@ -2248,7 +2255,6 @@
 				19F72F571E764AE100F9A671 /* EXContactsRequester.m in Sources */,
 				B5AC39B11E95A90B00540AA7 /* EXRemoteNotificationManager.m in Sources */,
 				B5C7A3C21EC3E38300DD9E1D /* EXAV.m in Sources */,
-				2FD6AEE41F6B381B00038C31 /* RNAdMobDFPManager.m in Sources */,
 				7847A3851EC0F1550088BF69 /* RNSVGLinearGradient.m in Sources */,
 				B526B5091E6A543500606CAB /* EXViewController.m in Sources */,
 				B56D07421EC53333009E6A89 /* AIRGoogleMapPolyline.m in Sources */,
