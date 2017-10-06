@@ -130,8 +130,8 @@ public class ReactAndroidCodeTransformer {
           case "createBundleURL":
             BlockStmt stmt = JavaParser.parseBlock(getCallMethodReflectionBlock(
                 "host.exp.exponent.ReactNativeStaticHelpers",
-                "\"getBundleUrlForActivityId\", int.class, String.class, String.class, boolean.class, boolean.class, boolean.class",
-                "null, mSettings.exponentActivityId, host, jsModulePath, devMode, hmr, jsMinify",
+                "\"getBundleUrlForActivityId\", int.class, String.class, String.class, boolean.class, boolean.class",
+                "null, mSettings.exponentActivityId, host, jsModulePath, devMode, jsMinify",
                 "return (String) ",
                 "return null;"));
             n.setBody(stmt);
