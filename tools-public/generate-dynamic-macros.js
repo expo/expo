@@ -26,21 +26,21 @@ const ProjectVersions = require('./project-versions');
 const EXPONENT_DIR = path.join(__dirname, '..');
 
 let isInUniverse = true;
-try {
-  let _unused = require('../../react-native-lab/blacklist');
-} catch (e) {
-  isInUniverse = false;
+try {		
+  let universePkgJson = require('../../package.json');		
+  if (universePkgJson.name !== 'universe') {
+    isInUniverse = false;
+  }
+} catch (e) {		
+  isInUniverse = false;		
 }
 
-let isInOssDev = true;
-try {
-  let _unused = require('../../expo-dev');
-} catch (e) {
-  isInOssDev = false;
-}
-
-if (isInOssDev) {
-  isInUniverse = false;
+let useLegacyWorkflow = false;
+if (isInUniverse) {
+  // determine workflow
+  if (!fs.existsSync('../../.pt-state')) {
+    useLegacyWorkflow = true;
+  }
 }
 
 async function getSavedDevHomeUrlAsync(platform) {
@@ -129,10 +129,8 @@ const macrosFuncs = {
     }
 
     let projectRoot;
-    if (isInUniverse) {
+    if (isInUniverse && useLegacyWorkflow) {
       projectRoot = path.join(__dirname, '..', 'js', '__internal__');
-    } else if (isInOssDev) {
-      projectRoot = path.join(__dirname, '..', 'js', '__develop__');
     } else {
       projectRoot = path.join(__dirname, '..', 'js');
     }

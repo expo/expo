@@ -17,13 +17,10 @@
       "icon": "https://s3.amazonaws.com/exp-brand-assets/ExponentEmptyManifest_192.png",
       "hideExponentText": false
     },
-    "nodeModulesPath": ".",
     "packagerOpts": {
-      "projectRoots": "",
       "assetExts": [
         "ttf"
       ],
-      "config": "./rn-cli.config.js"
     },
     "ios": {
       "supportsTablet": true,

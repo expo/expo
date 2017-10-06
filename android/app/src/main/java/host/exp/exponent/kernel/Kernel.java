@@ -180,7 +180,7 @@ public class Kernel extends KernelInterface {
           public void run() {
             // Hack to make this show up for a while. Can't use an Alert because LauncherActivity has a transparent theme. This should only be seen by internal developers.
             for (int i = 0; i < 3; i++) {
-              Toast.makeText(mActivityContext, "Kernel manifest invalid. Make sure `exp start` is running inside of exponent/js/__internal__ and rebuild the app.", Toast.LENGTH_LONG).show();
+              Toast.makeText(mActivityContext, "Kernel manifest invalid. Make sure `expu start` is running inside of exponent/js and rebuild the app.", Toast.LENGTH_LONG).show();
             }
           }
         });
