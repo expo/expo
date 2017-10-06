@@ -10,7 +10,15 @@
 package com.facebook.react.devsupport;
 
 import android.util.Log;
-import javax.annotation.Nullable;
+
+import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.common.DebugServerException;
+import com.facebook.react.common.ReactConstants;
+import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,14 +26,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.facebook.common.logging.FLog;
-import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.common.ReactConstants;
-import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
-import com.facebook.react.common.DebugServerException;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import javax.annotation.Nullable;
 
 import expolib_v1.okhttp3.Call;
 import expolib_v1.okhttp3.Callback;
@@ -153,7 +154,7 @@ public class BundleDownloader {
                 if (headers.containsKey("X-Http-Status")) {
                   status = Integer.parseInt(headers.get("X-Http-Status"));
                 }
-                processBundleResult(url, status, okhttp3.Headers.of(headers), body, outputFile, bundleInfo, callback);
+                processBundleResult(url, status, expolib_v1.okhttp3.Headers.of(headers), body, outputFile, bundleInfo, callback);
               } else {
                 if (!headers.containsKey("Content-Type") || !headers.get("Content-Type").equals("application/json")) {
                   return;
@@ -202,7 +203,7 @@ public class BundleDownloader {
   private static void processBundleResult(
       String url,
       int statusCode,
-      okhttp3.Headers headers,
+      expolib_v1.okhttp3.Headers headers,
       BufferedSource body,
       File outputFile,
       BundleInfo bundleInfo,
@@ -246,7 +247,7 @@ public class BundleDownloader {
     }
   }
 
-  private static void populateBundleInfo(String url, okhttp3.Headers headers, BundleInfo bundleInfo) {
+  private static void populateBundleInfo(String url, expolib_v1.okhttp3.Headers headers, BundleInfo bundleInfo) {
     bundleInfo.mUrl = url;
 
     String filesChangedCountStr = headers.get("X-Metro-Files-Changed-Count");
