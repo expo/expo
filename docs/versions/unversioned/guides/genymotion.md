@@ -23,7 +23,7 @@ Choose one of these two options:
 
 [![Android SDK location](./genymotion-android-sdk-location.png)](/_images/genymotion-android-sdk-location.png)
 
--   If you are on macOS or Linux, add the Android SDK location to you PATH using `~/.bash_profile` or `~/.bash_rc`.
+-   If you are on macOS or Linux, add the Android SDK location to your PATH using `~/.bash_profile` or `~/.bash_rc`.
 
 -   On macOS, you will also need to add `platform-tools` to your `~/.bash_profile` or `~/.bash_rc.`, by adding a line like `export PATH=/Users/myuser/Library/Android/sdk/platform-tools:$PATH`
 
