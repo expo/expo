@@ -30,6 +30,7 @@ import com.raizlabs.android.dbflow.config.FlowManager;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.spongycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -43,12 +44,19 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URLEncoder;
+import java.security.Provider;
+import java.security.Security;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
+import expolib_v1.okhttp3.CacheControl;
+import expolib_v1.okhttp3.Call;
+import expolib_v1.okhttp3.Callback;
+import expolib_v1.okhttp3.Request;
+import expolib_v1.okhttp3.Response;
 import host.exp.exponent.ABIVersion;
 import host.exp.exponent.ActivityResultListener;
 import host.exp.exponent.Constants;
@@ -63,16 +71,7 @@ import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.kernel.KernelProvider;
 import host.exp.exponent.network.ExponentHttpClient;
 import host.exp.exponent.network.ExponentNetwork;
-import expolib_v1.okhttp3.CacheControl;
-import expolib_v1.okhttp3.Call;
-import expolib_v1.okhttp3.Callback;
-import expolib_v1.okhttp3.Request;
-import expolib_v1.okhttp3.Response;
 import host.exp.exponent.storage.ExponentSharedPreferences;
-
-import org.spongycastle.jce.provider.BouncyCastleProvider;
-import java.security.Provider;
-import java.security.Security;
 
 public class Exponent {
 
@@ -615,8 +614,12 @@ public class Exponent {
           inspectorProxyPortField.setAccessible(true);
           inspectorProxyPortField.set(null, debuggerHostPort);
 
-          builder.callRecursive("setUseDeveloperSupport", true)
-              .callRecursive("setJSMainModuleName", mainModuleName);
+          builder.callRecursive("setUseDeveloperSupport", true);
+          if (ABIVersion.toNumber(sdkVersion) < 22) {
+            builder.callRecursive("setJSMainModuleName", mainModuleName);
+          } else {
+            builder.callRecursive("setJSMainModulePath", mainModuleName);
+          }
         }
       } catch (IllegalAccessException e) {
         e.printStackTrace();
