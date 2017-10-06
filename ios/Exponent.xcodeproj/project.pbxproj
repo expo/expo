@@ -175,9 +175,9 @@
 		B58FFAAC1F1016B700A51363 /* EXGoogleAuthManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B58FFAAB1F1016B700A51363 /* EXGoogleAuthManager.m */; };
 		B592FFEF1E9D489100437664 /* EXStatusBarManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B592FFEE1E9D489100437664 /* EXStatusBarManager.m */; };
 		B5951D471F86FDC7009A55E8 /* EXGLARSessionManagerStub.m in Sources */ = {isa = PBXBuildFile; fileRef = B5951D461F86FDC7009A55E8 /* EXGLARSessionManagerStub.m */; };
-		B5951D4A1F870192009A55E8 /* EXGLARSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5951D491F870192009A55E8 /* EXGLARSessionManager.m */; };
 		B59981C11F153DCD00F6FF81 /* EXKernelModuleManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B59981C01F153DCD00F6FF81 /* EXKernelModuleManager.m */; };
 		B59B59491F6369480083850D /* EXTestEnvironment.plist in Resources */ = {isa = PBXBuildFile; fileRef = B59B59481F6369480083850D /* EXTestEnvironment.plist */; };
+		B59C25D71F881F7100F8AA4B /* EXGLARSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B59C25D61F881F7000F8AA4B /* EXGLARSessionManager.m */; };
 		B5A358621C7E6C4300D1BE67 /* EXAnalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A358611C7E6C4300D1BE67 /* EXAnalytics.m */; };
 		B5A8752E1E70E57F006DDECA /* EXAdSettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A875211E70E57F006DDECA /* EXAdSettingsManager.m */; };
 		B5A8752F1E70E57F006DDECA /* EXBannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A875231E70E57F006DDECA /* EXBannerView.m */; };
@@ -607,11 +607,11 @@
 		B592FFEE1E9D489100437664 /* EXStatusBarManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXStatusBarManager.m; sourceTree = "<group>"; };
 		B5951D451F86FDC7009A55E8 /* EXGLARSessionManagerStub.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXGLARSessionManagerStub.h; sourceTree = "<group>"; };
 		B5951D461F86FDC7009A55E8 /* EXGLARSessionManagerStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXGLARSessionManagerStub.m; sourceTree = "<group>"; };
-		B5951D481F870192009A55E8 /* EXGLARSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGLARSessionManager.h; sourceTree = "<group>"; };
-		B5951D491F870192009A55E8 /* EXGLARSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGLARSessionManager.m; sourceTree = "<group>"; };
 		B59981BF1F153DCD00F6FF81 /* EXKernelModuleManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelModuleManager.h; sourceTree = "<group>"; };
 		B59981C01F153DCD00F6FF81 /* EXKernelModuleManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelModuleManager.m; sourceTree = "<group>"; };
 		B59B59481F6369480083850D /* EXTestEnvironment.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = EXTestEnvironment.plist; sourceTree = "<group>"; };
+		B59C25D51F881F7000F8AA4B /* EXGLARSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGLARSessionManager.h; sourceTree = "<group>"; };
+		B59C25D61F881F7000F8AA4B /* EXGLARSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGLARSessionManager.m; sourceTree = "<group>"; };
 		B5A358601C7E6C4300D1BE67 /* EXAnalytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAnalytics.h; sourceTree = "<group>"; };
 		B5A358611C7E6C4300D1BE67 /* EXAnalytics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAnalytics.m; sourceTree = "<group>"; };
 		B5A875201E70E57F006DDECA /* EXAdSettingsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAdSettingsManager.h; sourceTree = "<group>"; };
@@ -1059,10 +1059,9 @@
 		A1DCE8421DC3FC63009665FD /* GL */ = {
 			isa = PBXGroup;
 			children = (
+				B59C25D41F881F7000F8AA4B /* ARKit */,
 				A1DCE8431DC3FC63009665FD /* EXGLView.h */,
 				A1DCE8441DC3FC63009665FD /* EXGLView.m */,
-				B5951D481F870192009A55E8 /* EXGLARSessionManager.h */,
-				B5951D491F870192009A55E8 /* EXGLARSessionManager.m */,
 				B5951D451F86FDC7009A55E8 /* EXGLARSessionManagerStub.h */,
 				B5951D461F86FDC7009A55E8 /* EXGLARSessionManagerStub.m */,
 				A1DCE8451DC3FC63009665FD /* EXGLViewManager.h */,
@@ -1347,6 +1346,15 @@
 				B575EEA01D54053500DCABBC /* EXManifestResource.m */,
 			);
 			path = Api;
+			sourceTree = "<group>";
+		};
+		B59C25D41F881F7000F8AA4B /* ARKit */ = {
+			isa = PBXGroup;
+			children = (
+				B59C25D51F881F7000F8AA4B /* EXGLARSessionManager.h */,
+				B59C25D61F881F7000F8AA4B /* EXGLARSessionManager.m */,
+			);
+			path = ARKit;
 			sourceTree = "<group>";
 		};
 		B5A8751F1E70E57F006DDECA /* FBAds */ = {
@@ -2084,6 +2092,7 @@
 				7847A3911EC0F1550088BF69 /* RNSVGRadialGradient.m in Sources */,
 				B5AC39A91E95A90B00540AA7 /* EXKernelBridgeRegistry.m in Sources */,
 				3CA241951F029BB700C3332E /* EXSpeech.m in Sources */,
+				B59C25D71F881F7100F8AA4B /* EXGLARSessionManager.m in Sources */,
 				7847A2C31EB9AF210088BF69 /* AIRMapCircleManager.m in Sources */,
 				7847A3A11EC0F1550088BF69 /* RNSVGTSpanManager.m in Sources */,
 				7847A3901EC0F1550088BF69 /* RNSVGPercentageConverter.m in Sources */,
@@ -2133,7 +2142,6 @@
 				BB22D9591F3CDE6C00A35CC6 /* RNGestureHandlerModule.m in Sources */,
 				7847A2C61EB9AF210088BF69 /* AIRMapMarker.m in Sources */,
 				B56D07351EC53333009E6A89 /* AIRDummyView.m in Sources */,
-				B5951D4A1F870192009A55E8 /* EXGLARSessionManager.m in Sources */,
 				7847A3811EC0F1550088BF69 /* RNSVGGroupManager.m in Sources */,
 				B56D073E1EC53333009E6A89 /* AIRGoogleMapMarker.m in Sources */,
 				B56D07401EC53333009E6A89 /* AIRGoogleMapPolygon.m in Sources */,
