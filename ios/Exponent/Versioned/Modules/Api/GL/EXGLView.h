@@ -1,4 +1,6 @@
+
 #import <React/RCTBridge.h>
+#import <UEXGL.h>
 
 #import "EXGLViewManager.h"
 
@@ -8,10 +10,12 @@
 
 @property (nonatomic, copy) RCTDirectEventBlock onSurfaceCreate;
 
-- (NSDictionary *)startARSession;
-
-- (void)stopARSession;
-
+- (NSDictionary *)maybeStartARSession;
+- (void)maybeStopARSession;
 - (NSDictionary *)arMatricesForViewportSize:(CGSize)viewportSize zNear:(CGFloat)zNear zFar:(CGFloat)zFar;
+
+// "protected"
+@property (nonatomic, strong) EAGLContext *eaglCtx;
+@property (nonatomic, assign) UEXGLContextId exglCtxId;
 
 @end

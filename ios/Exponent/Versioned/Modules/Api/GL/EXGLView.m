@@ -2,22 +2,23 @@
 
 #include <OpenGLES/ES2/gl.h>
 #include <OpenGLES/ES2/glext.h>
-#import <ARKit/ARKit.h>
 
 #import <React/RCTBridgeModule.h>
 #import <React/RCTUtils.h>
 
 #import "EXUnversioned.h"
-#import <UEXGL.h>
 
 #import <GPUImage.h>
 
+#if __has_include("EXGLARSessionManager.h")
+#import "EXGLARSessionManager.h"
+#else
+#import "EXGLARSessionManagerStub.h"
+#endif
 
 @interface EXGLView ()
 
 @property (nonatomic, weak) EXGLViewManager *viewManager;
-
-@property (nonatomic, strong) EAGLContext *eaglCtx;
 @property (nonatomic, assign) GLuint viewFramebuffer;
 @property (nonatomic, assign) GLuint viewColorbuffer;
 @property (nonatomic, assign) GLuint viewDepthStencilbuffer;
@@ -26,20 +27,9 @@
 
 @property (nonatomic, strong) CADisplayLink *displayLink;
 
-@property (nonatomic, assign) UEXGLContextId exglCtxId;
-
 @property (nonatomic, assign) NSNumber *msaaSamples;
 
-@property (atomic, strong) ARSession *arSession;
-@property (nonatomic, assign) GLuint arCamProgram;
-@property (nonatomic, assign) int arCamPositionAttrib;
-@property (nonatomic, assign) GLuint arCamBuffer;
-@property (nonatomic, assign) CVOpenGLESTextureRef arCamYTex;
-@property (nonatomic, assign) CVOpenGLESTextureRef arCamCbCrTex;
-@property (nonatomic, assign) CVOpenGLESTextureCacheRef arCamCache;
-@property (nonatomic, assign) GLuint arCamOutputTexture;
-@property (nonatomic, assign) GLuint arCamOutputFramebuffer;
-@property (nonatomic, assign) UEXGLObjectId arCamOutputEXGLObj;
+@property (nonatomic, strong) id arSessionManager;
 
 @end
 
@@ -65,7 +55,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 {
   if ((self = [super init])) {
     _viewManager = viewManager;
-    _arSession = nil;
 
     self.contentScaleFactor = RCTScreenScale();
 
@@ -222,9 +211,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 - (void)removeFromSuperview
 {
   // Stop AR session if running
-  if (_arSession) {
-    [self stopARSession];
-  }
+  [self maybeStopARSession];
 
   // Destroy JS binding
   UEXGLContextDestroy(_exglCtxId);
@@ -252,8 +239,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     [EAGLContext setCurrentContext:_eaglCtx];
 
     // Update AR stuff if we have an AR session running
-    if (_arSession) {
-      [self updateARCamTexture];
+    if (_arSessionManager) {
+      [_arSessionManager updateARCamTexture];
     }
 
     UEXGLContextSetDefaultFramebuffer(_exglCtxId, _msaaFramebuffer);
@@ -288,227 +275,33 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   }
 }
 
-static GLfloat arCamVerts[] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
+#pragma mark - maybe AR
 
-- (NSDictionary *)startARSession
+- (NSDictionary *)maybeStartARSession
 {
-  // Save previous GL state
-  GLint prevBuffer, prevActiveTexture, prevTextureBinding, prevFramebuffer, prevProgram;
-  glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &prevBuffer);
-  glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFramebuffer);
-  glGetIntegerv(GL_ACTIVE_TEXTURE, &prevActiveTexture);
-  glGetIntegerv(GL_TEXTURE_BINDING_2D, &prevTextureBinding);
-  glGetIntegerv(GL_CURRENT_PROGRAM, &prevProgram);
-
-  _arSession = [[ARSession alloc] init];
-  ARWorldTrackingConfiguration *arConfig = [[ARWorldTrackingConfiguration alloc] init];
-  if (!arConfig) {
-    return @{
-      @"error": @"ARKit is not available on this device.",
-    };
+  Class sessionManagerClass = NSClassFromString(@"EXGLARSessionManager");
+  if (sessionManagerClass) {
+    _arSessionManager = [[sessionManagerClass alloc] init];
+  } else {
+    return @{ @"error": @"AR capabilities were not included with this build." };
   }
-  [_arSession runWithConfiguration:arConfig];
-
-  CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, _eaglCtx, NULL, &_arCamCache);
-  if (err) {
-    NSLog(@"Error from CVOpenGLESTextureCacheCreate(...): %d", err);
-  }
-  _arCamYTex = NULL;
-  _arCamCbCrTex = NULL;
-
-  // Compile camera texture vertex and fragment shader
-  GLuint camVert = glCreateShader(GL_VERTEX_SHADER);
-  const char *camVertSrc = STRINGIZE
-  (
-   attribute vec2 position;
-   varying vec2 vUv;
-   void main() {
-     vUv = position;
-     gl_Position = vec4(1.0 - 2.0 * position, 0, 1);
-   }
-  );
-  glShaderSource(camVert, 1, &camVertSrc, NULL);
-  glCompileShader(camVert);
-  GLuint camFrag = glCreateShader(GL_FRAGMENT_SHADER);
-  const char *camFragSrc = STRINGIZE
-  (
-   precision highp float;
-   uniform sampler2D yMap;
-   uniform sampler2D uvMap;
-   varying vec2 vUv;
-   void main() {
-     vec2 textureCoordinate = vec2(vUv.t, vUv.s);
-     // Using BT.709 which is the standard for HDTV
-     mat3 colorConversionMatrix = mat3(1.164,  1.164, 1.164,
-                                       0.0, -0.213, 2.112,
-                                       1.793, -0.533, 0.0);
-     mediump vec3 yuv;
-     lowp vec3 rgb;
-     yuv.x = texture2D(yMap, textureCoordinate).r - (16.0/255.0);
-     yuv.yz = texture2D(uvMap, textureCoordinate).ra - vec2(0.5, 0.5);
-     rgb = colorConversionMatrix * yuv;
-     gl_FragColor = vec4(rgb, 1.);
-   }
-   );
-  glShaderSource(camFrag, 1, &camFragSrc, NULL);
-  glCompileShader(camFrag);
-
-  // Link, use camera texture program, save and enable attributes
-  _arCamProgram = glCreateProgram();
-  glAttachShader(_arCamProgram, camVert);
-  glAttachShader(_arCamProgram, camFrag);
-  glLinkProgram(_arCamProgram);
-  glUseProgram(_arCamProgram);
-  glDeleteShader(camVert);
-  glDeleteShader(camFrag);
-  _arCamPositionAttrib = glGetAttribLocation(_arCamProgram, "position");
-  glEnableVertexAttribArray(_arCamPositionAttrib);
-
-  // Create camera texture buffer
-  glGenBuffers(1, &_arCamBuffer);
-  glBindBuffer(GL_ARRAY_BUFFER, _arCamBuffer);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(arCamVerts), arCamVerts, GL_STATIC_DRAW);
-
-  // Bind camera texture 'position' attribute
-  glVertexAttribPointer(_arCamPositionAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
-
-  // Create camera texture output framebuffer
-  glActiveTexture(GL_TEXTURE0);
-  glGenTextures(1, &_arCamOutputTexture);
-  glBindTexture(GL_TEXTURE_2D, _arCamOutputTexture);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1280, 720, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-  glGenFramebuffers(1, &_arCamOutputFramebuffer);
-  glBindFramebuffer(GL_FRAMEBUFFER, _arCamOutputFramebuffer);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _arCamOutputTexture, 0);
-
-  // Create camera texture output EXGLObject
-  _arCamOutputEXGLObj = UEXGLContextCreateObject(_exglCtxId);
-  UEXGLContextMapObject(_exglCtxId, _arCamOutputEXGLObj, _arCamOutputTexture);
-
-  // Restore previous GL state
-  glBindBuffer(GL_ARRAY_BUFFER, prevBuffer);
-  glBindFramebuffer(GL_FRAMEBUFFER, prevFramebuffer);
-  glActiveTexture(prevActiveTexture);
-  glBindTexture(GL_TEXTURE_2D, prevTextureBinding);
-  glUseProgram(prevProgram);
-
-  return @{
-    @"capturedImageTexture": @(_arCamOutputEXGLObj),
-  };
+  return [_arSessionManager startARSessionWithGLView:self];
 }
 
-- (void)stopARSession
+- (void)maybeStopARSession
 {
-  _arSession = nil;
-  glDeleteProgram(_arCamProgram);
-  glDeleteBuffers(1, &_arCamBuffer);
-  glDeleteTextures(1, &_arCamOutputTexture);
-  glDeleteFramebuffers(1, &_arCamOutputFramebuffer);
-  UEXGLContextDestroyObject(_exglCtxId, _arCamOutputTexture);
-}
-
-+ (NSArray *)nsArrayForMatrix:(matrix_float4x4)mat
-{
-  const float *v = (const float *)&mat;
-  return @[@(v[0]), @(v[1]), @(v[2]), @(v[3]),
-           @(v[4]), @(v[5]), @(v[6]), @(v[7]),
-           @(v[8]), @(v[9]), @(v[10]), @(v[11]),
-           @(v[12]), @(v[13]), @(v[14]), @(v[15])];
+  if (_arSessionManager) {
+    [_arSessionManager stopARSession];
+    _arSessionManager = nil;
+  }
 }
 
 - (NSDictionary *)arMatricesForViewportSize:(CGSize)viewportSize zNear:(CGFloat)zNear zFar:(CGFloat)zFar
 {
-  if (!_arSession) {
-    return nil;
+  if (_arSessionManager) {
+    return [_arSessionManager arMatricesForViewportSize:viewportSize zNear:zNear zFar:zFar];
   }
-
-  matrix_float4x4 viewMat = [_arSession.currentFrame.camera viewMatrixForOrientation:UIInterfaceOrientationPortrait];
-  matrix_float4x4 projMat = [_arSession.currentFrame.camera projectionMatrixForOrientation:UIInterfaceOrientationPortrait viewportSize:viewportSize zNear:zNear zFar:zFar];
-  matrix_float4x4 transform = [_arSession.currentFrame.camera transform];
-  return @{
-    @"transform": [EXGLView nsArrayForMatrix:transform],
-    @"viewMatrix": [EXGLView nsArrayForMatrix:viewMat],
-    @"projectionMatrix": [EXGLView nsArrayForMatrix:projMat],
-  };
-}
-
-- (void)updateARCamTexture
-{
-  // Save previous GL state
-  GLint prevBuffer, prevActiveTexture, prevTextureBinding, prevFramebuffer, prevProgram;
-  GLint prevViewport[4];
-  glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &prevBuffer);
-  glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFramebuffer);
-  glGetIntegerv(GL_ACTIVE_TEXTURE, &prevActiveTexture);
-  glGetIntegerv(GL_TEXTURE_BINDING_2D, &prevTextureBinding);
-  glGetIntegerv(GL_CURRENT_PROGRAM, &prevProgram);
-  glGetIntegerv(GL_VIEWPORT, prevViewport);
-
-  glBindFramebuffer(GL_FRAMEBUFFER, _arCamOutputFramebuffer);
-  glViewport(0, 0, 1280, 720);
-
-  glUseProgram(_arCamProgram);
-  glEnableVertexAttribArray(_arCamPositionAttrib);
-  glBindBuffer(GL_ARRAY_BUFFER, _arCamBuffer);
-  glVertexAttribPointer(_arCamPositionAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
-
-  CVPixelBufferRef camPixelBuffer = _arSession.currentFrame.capturedImage;
-  if (CVPixelBufferGetPlaneCount(camPixelBuffer) >= 2) {
-    CFRetain(camPixelBuffer);
-    CVPixelBufferLockBaseAddress(camPixelBuffer, 0);
-
-    CVBufferRelease(_arCamYTex);
-    CVBufferRelease(_arCamCbCrTex);
-
-    int width = (int) CVPixelBufferGetWidth(camPixelBuffer);
-    int height = (int) CVPixelBufferGetHeight(camPixelBuffer);
-
-    CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, _arCamCache, camPixelBuffer, NULL,
-                                                 GL_TEXTURE_2D, GL_LUMINANCE, width, height,
-                                                 GL_LUMINANCE, GL_UNSIGNED_BYTE, 0, &_arCamYTex);
-    CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, _arCamCache, camPixelBuffer, NULL,
-                                                 GL_TEXTURE_2D, GL_LUMINANCE_ALPHA, width / 2, height / 2,
-                                                 GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, 1, &_arCamCbCrTex);
-
-    glBindTexture(CVOpenGLESTextureGetTarget(_arCamYTex), CVOpenGLESTextureGetName(_arCamYTex));
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glBindTexture(CVOpenGLESTextureGetTarget(_arCamYTex), 0);
-    glBindTexture(CVOpenGLESTextureGetTarget(_arCamCbCrTex), CVOpenGLESTextureGetName(_arCamCbCrTex));
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glBindTexture(CVOpenGLESTextureGetTarget(_arCamCbCrTex), 0);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(CVOpenGLESTextureGetTarget(_arCamYTex), CVOpenGLESTextureGetName(_arCamYTex));
-    glUniform1i(glGetUniformLocation(_arCamProgram, "yMap"), 0);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(CVOpenGLESTextureGetTarget(_arCamCbCrTex), CVOpenGLESTextureGetName(_arCamCbCrTex));
-    glUniform1i(glGetUniformLocation(_arCamProgram, "uvMap"), 1);
-
-    CVPixelBufferUnlockBaseAddress(camPixelBuffer, 0);
-    CFRelease(camPixelBuffer);
-  }
-
-  glDrawArrays(GL_TRIANGLES, 0, 3);
-
-  CVOpenGLESTextureCacheFlush(_arCamCache, 0);
-
-  // Restore previous GL state
-  glBindBuffer(GL_ARRAY_BUFFER, prevBuffer);
-  glBindFramebuffer(GL_FRAMEBUFFER, prevFramebuffer);
-  glActiveTexture(prevActiveTexture);
-  glBindTexture(GL_TEXTURE_2D, prevTextureBinding);
-  glUseProgram(prevProgram);
-  glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
+  return @{};
 }
 
 @end

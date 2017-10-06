@@ -49,7 +49,7 @@ RCT_REMAP_METHOD(startARSessionAsync,
     EXGLView *exglView = (EXGLView *)view;
     _arSessions[@(sessionId)] = exglView;
 
-    NSMutableDictionary *response = [[exglView startARSession] mutableCopy];
+    NSMutableDictionary *response = [[exglView maybeStartARSession] mutableCopy];
     if (response[@"error"]) {
       reject(@"ERR_ARKIT_FAILED_TO_INIT", response[@"error"], RCTErrorWithMessage(response[@"error"]));
     } else {
@@ -67,7 +67,7 @@ RCT_REMAP_METHOD(stopARSessionAsync,
   [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     EXGLView *exglView = _arSessions[sessionId];
     if (exglView) {
-      [exglView stopARSession];
+      [exglView maybeStopARSession];
       [_arSessions removeObjectForKey:sessionId];
     }
     resolve(nil);
