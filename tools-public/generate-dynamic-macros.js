@@ -8,17 +8,12 @@ const os = require('os');
 const path = require('path');
 const process = require('process');
 const { mkdir } = require('shelljs');
-const { ExponentTools, IosPodsTools, UrlUtils } = require('xdl');
+const { IosPlist, IosPodsTools, ExponentTools, UrlUtils } = require('xdl');
 const JsonFile = require('@exponent/json-file');
 const spawnAsync = require('@exponent/spawn-async');
 const request = require('request');
 const ip = require('ip');
 
-const {
-  createBlankIOSPropertyListAsync,
-  modifyIOSPropertyListAsync,
-  cleanIOSPropertyListBackupAsync,
-} = ExponentTools;
 const { renderExpoKitPodspecAsync, renderPodfileAsync } = IosPodsTools;
 
 const ProjectVersions = require('./project-versions');
@@ -180,10 +175,10 @@ async function generateIOSBuildConstantsFromMacrosAsync(
   const plistPath = path.dirname(buildConfigPlistPath);
   const plistName = path.basename(buildConfigPlistPath);
   if (!fs.existsSync(buildConfigPlistPath)) {
-    await createBlankIOSPropertyListAsync(plistPath, plistName);
+    await IosPlist.createAsync(plistPath, plistName);
   }
 
-  const result = await modifyIOSPropertyListAsync(plistPath, plistName, config => {
+  const result = await IosPlist.modifyAsync(plistPath, plistName, config => {
     if (config.USE_GENERATED_DEFAULTS === false) {
       // this flag means don't generate anything, let the user override.
       return config;
@@ -356,7 +351,7 @@ async function copyTemplateFileAsync(source, dest, templateSubstitutions) {
 }
 
 async function modifyIOSInfoPlistAsync(path, filename, templateSubstitutions) {
-  let result = await modifyIOSPropertyListAsync(path, filename, config => {
+  let result = await IosPlist.modifyAsync(path, filename, config => {
     if (templateSubstitutions.FABRIC_API_KEY) {
       config.Fabric = {
         APIKey: templateSubstitutions.FABRIC_API_KEY,
@@ -503,7 +498,7 @@ exports.cleanupDynamicMacrosAsync = async function cleanupDynamicMacrosAsync(
     let platform = args.platform;
     if (platform === 'ios') {
       let infoPlistPath = args.infoPlistPath;
-      await cleanIOSPropertyListBackupAsync(infoPlistPath, 'Info', true);
+      await IosPlist.cleanBackupAsync(infoPlistPath, 'Info', true);
     }
   } catch (error) {
     console.error(`There was an error cleaning up Expo template files:\n${error.stack}`);
