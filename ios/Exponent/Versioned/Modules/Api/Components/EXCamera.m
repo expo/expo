@@ -24,8 +24,6 @@
   if (self = [super init]) {
     self.manager = manager;
     self.bridge = bridge;
-    [self.manager initializeCaptureSessionInput:AVMediaTypeVideo];
-    [self.manager startSession];
     [self changePreviewOrientation:[UIApplication sharedApplication]
      .statusBarOrientation];
     [[NSNotificationCenter defaultCenter]

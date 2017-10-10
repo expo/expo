@@ -55,12 +55,6 @@ RCT_EXPORT_VIEW_PROPERTY(onCameraReady, RCTDirectEventBlock);
   return self;
 }
 
-- (UIView *)viewWithProps:(__unused NSDictionary *)props
-{
-  self.presetCamera = ((NSNumber *)props[@"type"]).integerValue;
-  return [self view];
-}
-
 - (UIView *)view
 {
   self.session = [AVCaptureSession new];
@@ -116,8 +110,8 @@ RCT_EXPORT_VIEW_PROPERTY(onCameraReady, RCTDirectEventBlock);
 RCT_CUSTOM_VIEW_PROPERTY(type, NSInteger, EXCamera)
 {
   NSInteger type = [RCTConvert NSInteger:json];
-  
   self.presetCamera = type;
+  
   if (self.session.isRunning) {
     dispatch_async(self.sessionQueue, ^{
       AVCaptureDevicePosition position = (AVCaptureDevicePosition)type;
@@ -159,8 +153,11 @@ RCT_CUSTOM_VIEW_PROPERTY(type, NSInteger, EXCamera)
       
       [self.session commitConfiguration];
     });
+    [self initializeCaptureSessionInput:AVMediaTypeVideo];
+  } else {
+    [self initializeCaptureSessionInput:AVMediaTypeVideo];
+    [self startSession];
   }
-  [self initializeCaptureSessionInput:AVMediaTypeVideo];
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(flashMode, NSInteger, EXCamera)
@@ -482,7 +479,7 @@ RCT_EXPORT_METHOD(stopRecording) {
 #endif
   dispatch_async(self.sessionQueue, ^{
     if (self.presetCamera == AVCaptureDevicePositionUnspecified) {
-      self.presetCamera = AVCaptureDevicePositionBack;
+      return;
     }
     
     AVCaptureStillImageOutput *stillImageOutput = [[AVCaptureStillImageOutput alloc] init];
