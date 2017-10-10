@@ -4,12 +4,14 @@ package versioned.host.exp.exponent.modules.api;
 
 import android.support.v4.app.NotificationManagerCompat;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
+import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 
@@ -92,7 +94,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
       return;
     }
 
-    com.facebook.react.bridge.WritableMap params = com.facebook.react.bridge.Arguments.createMap();
+    WritableMap params = Arguments.createMap();
     params.putString("deviceId", uuid);
     try {
       params.putString("experienceId", mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
