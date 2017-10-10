@@ -20,6 +20,7 @@ allprojects {
       // Point to local maven repository
       url "$rootDir/../.expo-source/android/maven"
     }
+    maven { url "https://jitpack.io" }
   }
 }
 
