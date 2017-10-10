@@ -433,7 +433,7 @@ RCT_REMAP_METHOD(record,
     }
 
     if (options[@"quality"]) {
-      [self updateSessionPreset:[[self class] captureSessionPresetForVideoResolution:(EXCameraVideoResolution)options[@"quality"]]];
+      [self updateSessionPreset:[[self class] captureSessionPresetForVideoResolution:(EXCameraVideoResolution)[options[@"quality"] integerValue]]];
     }
     
     [self updateSessionAudioIsMuted:!!options[@"mute"]];
