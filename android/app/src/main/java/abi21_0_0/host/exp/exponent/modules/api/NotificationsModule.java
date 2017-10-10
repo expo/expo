@@ -4,6 +4,7 @@ package abi21_0_0.host.exp.exponent.modules.api;
 
 import android.support.v4.app.NotificationManagerCompat;
 
+import abi21_0_0.com.facebook.react.bridge.Arguments;
 import abi21_0_0.com.facebook.react.bridge.Promise;
 import abi21_0_0.com.facebook.react.bridge.ReactApplicationContext;
 import abi21_0_0.com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -13,6 +14,7 @@ import abi21_0_0.com.facebook.react.bridge.ReadableNativeMap;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 
+import abi21_0_0.com.facebook.react.bridge.WritableMap;
 import host.exp.exponent.Constants;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.notifications.NotificationHelper;
@@ -72,7 +74,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
       if (token == null) {
         promise.reject("GCM token has not been set");
       } else {
-        com.facebook.react.bridge.WritableMap params = com.facebook.react.bridge.Arguments.createMap();
+        WritableMap params = Arguments.createMap();
         params.putString("type", "gcm");
         params.putString("data", token);
         promise.resolve(params);
