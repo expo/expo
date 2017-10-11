@@ -50,7 +50,9 @@ RCT_EXPORT_METHOD(
   
   _interstitialAd = [[FBInterstitialAd alloc] initWithPlacementID:placementId];
   _interstitialAd.delegate = self;
-  [_interstitialAd loadAd];
+  [self _performSynchronouslyOnMainThread:^{
+    [_interstitialAd loadAd];
+  }];
 }
 
 #pragma mark - FBInterstitialAdDelegate
@@ -106,6 +108,17 @@ RCT_EXPORT_METHOD(
   _interstitialAd = nil;
   _adViewController = nil;
   _didClick = false;
+}
+
+#pragma mark - internal
+
+- (void)_performSynchronouslyOnMainThread:(void (^)(void))block
+{
+  if ([NSThread isMainThread]) {
+    block();
+  } else {
+    dispatch_sync(dispatch_get_main_queue(), block);
+  }
 }
 
 @end
