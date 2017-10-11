@@ -175,7 +175,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `buildNumber`
 
-      Build number for your iOS standalone app. Must be a string containing a number.
+      Build number for your iOS standalone app. Must be a string that matches Apple's [format for CFBundleVersion](https://developer.apple.com/library/content/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/20001431-102364).
 
    - `icon`
 
