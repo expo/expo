@@ -470,7 +470,7 @@ RCT_REMAP_METHOD(downloadResumablePauseAsync,
   } onDownload:^(NSURLSessionDownloadTask *task, NSURL *location) {
     NSURL *scopedLocation = [NSURL fileURLWithPath:scopedPath];
     NSData *locationData = [NSData dataWithContentsOfURL:location];
-    [locationData writeToFile:scopedLocation.absoluteString atomically:YES];
+    [locationData writeToFile:scopedPath atomically:YES];
     NSData *data = [NSData dataWithContentsOfURL:scopedLocation];
     if (!data) {
       reject(@"E_UNABLE_TO_SAVE",
