@@ -2,33 +2,20 @@
 title: WebBrowser
 ---
 
-Provides access to the system's web browser and supports handling redirects. On iOS, it uses `SFSafariViewController` to provide a secure Safari browser modal that shares cookies with the Safari app, and on Android it uses `ChromeCustomTabs` for the same reason.
+Provides access to the system's web browser and supports handling redirects. On iOS, it uses `SFSafariViewController` or `SFAuthenticationSession`, depending on the method you call, and on Android it uses `ChromeCustomTabs`. As of iOS 11, `SFSafariViewController` no longer shares cookies with the Safari, so if you are using `WebBrowser` for authentication you will want to use `WebBrowser.openAuthSessionAsync`, and if you just want to open a webpage (such as your app privacy policy), then use `WebBrowser.openBrowserAsync`.
 
 ![sketch](r116LYJne)
 <br />
 
-#### Authentication
+#### Handling deep links from the WebBrowser
 
-You can use `WebBrowser` to build OAuth flows, such as [this Auth0 example](https://github.com/AppAndFlow/exponent-auth0-example) and [this Twitter example](https://github.com/AppAndFlow/exponent-twitter-login-example).
-
-#### Handling redirects
-
-When you've done an authentication flow, or for some other reason you want to pass information back to your app, you will want to redirect back to your app.
-You can use React Native's [Linking.addEventListener](https://facebook.github.io/react-native/docs/linking.html) function to do this.
-
-##### Important
-
-When you are developing your Expo experience and handling redirections, to test, you need to open your application via the `exp://` URI without the port. This is a workaround needed when developing, because without it, Expo will reload the experience instead of redirecting you to the existing one.
-
-#### Other uses
-
-You might just want to have a simple modal browser window to show the terms of services, privacy policy, or other information about your app. This is a great use case for it.
+If you are using the `WebBrowser` window for authentication or another use case where you would like to pass information back into your app through a deep link, be sure to add a handler with `Linking.addEventListener` before opening the browser. When the listener fires, you should call `WebBrowser.dismissBrowser()` -- it will not automatically dismiss when a deep link is handled. Aside from that, redirects from `WebBrowser` work the same as other deep links. [Read more about it in the Linking guide](https://docs.expo.io/versions/latest/guides/linking.html#handling-links-into-your-app).
 
 ## `Expo.WebBrowser`
 
 ### `Expo.WebBrowser.openBrowserAsync(url)`
 
-Opens the url with the system's web browser.
+Opens the url with Safari in a modal on iOS using `SFSafariViewController`, and Chrome in a new [custom tab](https://developer.chrome.com/multidevice/android/customtabs) on Android. On iOS, the modal Safari will not share cookies with the system Safari. If you need this, use `WebBrowser.openAuthSessionAsync`.
 
 #### Arguments
 
@@ -36,8 +23,26 @@ Opens the url with the system's web browser.
 
 #### Returns
 
-If the user closed the web browser, the promise resolves with `{ type: 'cancel' }`.
-If the browser is closed using `Expo.WebBrowser.dismissBrowser()`, the promise resolves with `{ type: 'dismissed' }`.
+Returns a Promise:
+
+- If the user closed the web browser, the Promise resolves with `{ type: 'cancel' }`.
+- If the browser is closed using `Expo.WebBrowser.dismissBrowser()`, the Promise resolves with `{ type: 'dismissed' }`.
+
+### `Expo.WebBrowser.openAuthSessionAsync(url, redirectUrl)`
+
+Opens the url with Safari in a modal on iOS using `SFAuthenticationSession`, and Chrome in a new [custom tab](https://developer.chrome.com/multidevice/android/customtabs) on Android. On iOS, the user will be asked whether to allow the app to authenticate using
+the given url. (****** what happens if they reject? ********)
+
+#### Arguments
+
+- **url (_string_)** -- The url to open in the web browser. This should be a login page.
+- **redirectUrl (_string_)** -- **Optional**: the url to deep link back into your app. By default, this will be [Expo.Constants.linkingUrl](constants.html#expoconstantslinkinguri)
+
+Returns a Promise:
+
+- If the user does not permit the application to authenticate with the given url, the Promise resolved with `{ type: 'cancel' }`.
+- If the user closed the web browser, the Promise resolves with `{ type: 'cancel' }`.
+- If the browser is closed using `Expo.WebBrowser.dismissBrowser()`, the Promise resolves with `{ type: 'dismissed' }`.
 
 ### `Expo.WebBrowser.dismissBrowser()`
 
