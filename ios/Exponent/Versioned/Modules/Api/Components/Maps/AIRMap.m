@@ -21,6 +21,7 @@
 const CLLocationDegrees AIRMapDefaultSpan = 0.005;
 const NSTimeInterval AIRMapRegionChangeObserveInterval = 0.1;
 const CGFloat AIRMapZoomBoundBuffer = 0.01;
+const NSInteger AIRMapMaxZoomLevel = 20;
 
 
 @interface MKMapView (UIGestureRecognizer)
@@ -79,6 +80,9 @@ const CGFloat AIRMapZoomBoundBuffer = 0.01;
         // be identical to the built-in callout view (which has a private API)
         self.calloutView = [SMCalloutView platformCalloutView];
         self.calloutView.delegate = self;
+
+        self.minZoomLevel = 0;
+        self.maxZoomLevel = AIRMapMaxZoomLevel;
     }
     return self;
 }

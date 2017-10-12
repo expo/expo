@@ -128,24 +128,26 @@
     }
 }
 
-- (void)gestureHandlerDidActivateInRootView:(UIView*)rootView
+- (void)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
+    didActivateInRootView:(UIView *)rootContentView
 {
-    // Dispatch touch cancel to JS in order to cancel all in-js recognizers
-    RCTTouchHandler *touchHandler;
-    // Find touch handlers - should be installed as the content view's recognizer
-    for (UIGestureRecognizer *recognizer in rootView.gestureRecognizers) {
-        if ([recognizer isKindOfClass:[RCTTouchHandler class]]) {
-            touchHandler = (RCTTouchHandler *)recognizer;
-            break;
-        }
+    // Cancel touches in RN's root view in order to cancel all in-js recognizers
+
+    // As scroll events are special-cased in RN responder implementation and sending them would
+    // trigger JS responder change, we don't cancel touches if the handler that got activated is
+    // a scroll recognizer. This way root view will keep sending touchMove and touchEnd events
+    // and therefore allow JS responder to properly release the responder at the end of the touch
+    // stream.
+    // NOTE: this is not a proper fix and solving this problem requires upstream fixes to RN. In
+    // particular if we have one PanHandler and ScrollView that can work simultaniously then when
+    // the Pan handler activates it would still tigger cancel events.
+    // Once the upstream fix lands the line below along with this comment can be removed
+    if ([gestureRecognizer.view isKindOfClass:[UIScrollView class]]) return;
+
+    UIView *parent = rootContentView.superview;
+    if ([parent isKindOfClass:[RCTRootView class]]) {
+        [(RCTRootView*)parent cancelTouches];
     }
-
-    // We change touch handler to disabled and back to enabled, this will trigger cancel event
-    // to be delivered to JS
-
-    // NOTE(brentvatne): this is temporarily disabled due to a bug with react-native touch cancel events!
-    // touchHandler.enabled = NO;
-    // touchHandler.enabled = YES;
 }
 
 - (void)dealloc

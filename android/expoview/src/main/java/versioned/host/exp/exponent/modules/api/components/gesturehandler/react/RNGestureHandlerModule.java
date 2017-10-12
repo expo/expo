@@ -35,6 +35,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   public static final String MODULE_NAME = "RNGestureHandlerModule";
 
   private static final String KEY_SHOULD_CANCEL_WHEN_OUTSIDE = "shouldCancelWhenOutside";
+  private static final String KEY_ENABLED = "enabled";
   private static final String KEY_HIT_SLOP = "hitSlop";
   private static final String KEY_HIT_SLOP_LEFT = "left";
   private static final String KEY_HIT_SLOP_TOP = "left";
@@ -74,6 +75,9 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     public void configure(T handler, ReadableMap config) {
       if (config.hasKey(KEY_SHOULD_CANCEL_WHEN_OUTSIDE)) {
         handler.setShouldCancelWhenOutside(config.getBoolean(KEY_SHOULD_CANCEL_WHEN_OUTSIDE));
+      }
+      if (config.hasKey(KEY_ENABLED)) {
+        handler.setEnabled(config.getBoolean(KEY_ENABLED));
       }
       if (config.hasKey(KEY_HIT_SLOP)) {
         handleHitSlopProperty(handler, config);
@@ -149,6 +153,14 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       if (config.hasKey(KEY_TAP_MAX_DELAY_MS)) {
         handler.setMaxDelayMs(config.getInt(KEY_TAP_MAX_DELAY_MS));
       }
+    }
+
+    @Override
+    public void extractEventData(TapGestureHandler handler, WritableMap eventData) {
+      eventData.putDouble("x", PixelUtil.toDIPFromPixel(handler.getLastRelativePositionX()));
+      eventData.putDouble("y", PixelUtil.toDIPFromPixel(handler.getLastRelativePositionY()));
+      eventData.putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.getLastAbsolutePositionX()));
+      eventData.putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.getLastAbsolutePositionY()));
     }
   }
 
@@ -257,6 +269,10 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
     @Override
     public void extractEventData(PanGestureHandler handler, WritableMap eventData) {
+      eventData.putDouble("x", PixelUtil.toDIPFromPixel(handler.getLastRelativePositionX()));
+      eventData.putDouble("y", PixelUtil.toDIPFromPixel(handler.getLastRelativePositionY()));
+      eventData.putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.getLastAbsolutePositionX()));
+      eventData.putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.getLastAbsolutePositionY()));
       eventData.putDouble("translationX", PixelUtil.toDIPFromPixel(handler.getTranslationX()));
       eventData.putDouble("translationY", PixelUtil.toDIPFromPixel(handler.getTranslationY()));
       eventData.putDouble("velocityX", PixelUtil.toDIPFromPixel(handler.getVelocityX()));
@@ -283,6 +299,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     @Override
     public void extractEventData(PinchGestureHandler handler, WritableMap eventData) {
       eventData.putDouble("scale", handler.getScale());
+      eventData.putDouble("focalX", PixelUtil.toDIPFromPixel(handler.getFocalPointX()));
+      eventData.putDouble("focalY", PixelUtil.toDIPFromPixel(handler.getFocalPointY()));
       eventData.putDouble("velocity", handler.getVelocity());
     }
   }
@@ -306,6 +324,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     @Override
     public void extractEventData(RotationGestureHandler handler, WritableMap eventData) {
       eventData.putDouble("rotation", handler.getRotation());
+      eventData.putDouble("anchorX", PixelUtil.toDIPFromPixel(handler.getAnchorX()));
+      eventData.putDouble("anchorY", PixelUtil.toDIPFromPixel(handler.getAnchorY()));
       eventData.putDouble("velocity", handler.getVelocity());
     }
   }

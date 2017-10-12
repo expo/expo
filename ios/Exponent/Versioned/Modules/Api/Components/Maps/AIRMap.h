@@ -17,6 +17,7 @@
 extern const CLLocationDegrees AIRMapDefaultSpan;
 extern const NSTimeInterval AIRMapRegionChangeObserveInterval;
 extern const CGFloat AIRMapZoomBoundBuffer;
+extern const NSInteger AIRMapMaxZoomLevel;
 
 @interface AIRMap: MKMapView<SMCalloutViewDelegate>
 
@@ -37,6 +38,8 @@ extern const CGFloat AIRMapZoomBoundBuffer;
 @property (nonatomic, assign) UIEdgeInsets legalLabelInsets;
 @property (nonatomic, strong) NSTimer *regionChangeObserveTimer;
 @property (nonatomic, assign) MKCoordinateRegion initialRegion;
+@property (nonatomic, assign) CGFloat minZoomLevel;
+@property (nonatomic, assign) CGFloat maxZoomLevel;
 
 @property (nonatomic, assign) CLLocationCoordinate2D pendingCenter;
 @property (nonatomic, assign) MKCoordinateSpan pendingSpan;
@@ -44,6 +47,7 @@ extern const CGFloat AIRMapZoomBoundBuffer;
 
 @property (nonatomic, assign) BOOL ignoreRegionChanges;
 
+@property (nonatomic, copy) RCTBubblingEventBlock onMapReady;
 @property (nonatomic, copy) RCTBubblingEventBlock onChange;
 @property (nonatomic, copy) RCTBubblingEventBlock onPress;
 @property (nonatomic, copy) RCTBubblingEventBlock onPanDrag;

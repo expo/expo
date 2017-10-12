@@ -79,4 +79,18 @@ public class RotationGestureHandler extends GestureHandler<RotationGestureHandle
   public double getVelocity() {
     return mLastVelocity;
   }
+
+  public float getAnchorX() {
+    if (mRotationGestureDetector == null) {
+      return Float.NaN;
+    }
+    return mRotationGestureDetector.getAnchorX();
+  }
+
+  public float getAnchorY() {
+    if (mRotationGestureDetector == null) {
+      return Float.NaN;
+    }
+    return mRotationGestureDetector.getAnchorY();
+  }
 }

@@ -106,7 +106,7 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
     Log.i(
       ReactConstants.TAG,
       "[GESTURE HANDLER] Initialize gesture handler for root view " + this);
-    mOrchestrator = new GestureHandlerOrchestrator(this, registry);
+    mOrchestrator = new GestureHandlerOrchestrator(this, registry, new RNViewConfigurationHelper());
     mOrchestrator.setMinimumAlphaForTraversal(MIN_ALPHA_FOR_TOUCH);
     int rootViewTag = getRootViewTag();
     if (rootViewTag < 1) {

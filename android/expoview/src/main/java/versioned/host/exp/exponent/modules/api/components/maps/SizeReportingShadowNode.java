@@ -18,14 +18,14 @@ import java.util.Map;
 // which sends the width/height of the view after layout occurs.
 public class SizeReportingShadowNode extends LayoutShadowNode {
 
-    @Override
-    public void onCollectExtraUpdates(UIViewOperationQueue uiViewOperationQueue) {
-        super.onCollectExtraUpdates(uiViewOperationQueue);
+  @Override
+  public void onCollectExtraUpdates(UIViewOperationQueue uiViewOperationQueue) {
+    super.onCollectExtraUpdates(uiViewOperationQueue);
 
-        Map<String, Float> data = new HashMap<>();
-        data.put("width", getLayoutWidth());
-        data.put("height", getLayoutHeight());
+    Map<String, Float> data = new HashMap<>();
+    data.put("width", getLayoutWidth());
+    data.put("height", getLayoutHeight());
 
-        uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), data);
-    }
+    uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), data);
+  }
 }

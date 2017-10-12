@@ -1,6 +1,7 @@
 package versioned.host.exp.exponent.modules.api.components.gesturehandler;
 
 import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.ArrayList;
 

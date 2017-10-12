@@ -13,6 +13,9 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
   private long mMaxDelayMs = DEFAULT_MAX_DELAY_MS;
   private int mNumberOfTaps = DEFAULT_NUMBER_OF_TAPS;
 
+  private float mLastX, mLastY;
+  private float mLastEventOffsetX, mLastEventOffsetY;
+
   private Handler mHandler;
   private int mTapsSoFar;
 
@@ -68,6 +71,12 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
   @Override
   protected void onHandle(MotionEvent event) {
     int state = getState();
+
+    mLastEventOffsetX = event.getRawX() - event.getX();
+    mLastEventOffsetY = event.getRawY() - event.getY();
+    mLastX = event.getRawX();
+    mLastY = event.getRawY();
+
     if (state == STATE_UNDETERMINED) {
       begin();
       mTapsSoFar = 0;
@@ -96,5 +105,21 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
     if (mHandler != null) {
       mHandler.removeCallbacksAndMessages(null);
     }
+  }
+
+  public float getLastAbsolutePositionX() {
+    return mLastX;
+  }
+
+  public float getLastAbsolutePositionY() {
+    return mLastY;
+  }
+
+  public float getLastRelativePositionX() {
+    return mLastX - mLastEventOffsetX;
+  }
+
+  public float getLastRelativePositionY() {
+    return mLastY - mLastEventOffsetY;
   }
 }

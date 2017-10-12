@@ -6,15 +6,17 @@
 
 @protocol RNGestureHandlerEventEmitter
 
-- (void)sendTouchEvent:(RNGestureHandlerEvent *)event;
+- (void)sendTouchEvent:(nonnull RNGestureHandlerEvent *)event;
 
-- (void)sendStateChangeEvent:(RNGestureHandlerStateChange *)event;
+- (void)sendStateChangeEvent:(nonnull RNGestureHandlerStateChange *)event;
 
 @end
 
+
 @protocol RNRootViewGestureRecognizerDelegate <UIGestureRecognizerDelegate>
 
-- (void)gestureHandlerDidActivateInRootView:(UIView *)rootView;
+- (void)gestureRecognizer:(nullable UIGestureRecognizer *)gestureRecognizer
+    didActivateInRootView:(nullable UIView *)rootView;
 
 @end
 
@@ -26,27 +28,30 @@
 
 }
 
-- (instancetype)initWithTag:(NSNumber *)tag;
++ (nullable RNGestureHandler *)findGestureHandlerByRecognizer:(nonnull UIGestureRecognizer *)recognizer;
 
-@property (nonatomic, readonly) NSNumber *tag;
-@property (nonatomic, weak) id<RNGestureHandlerEventEmitter> emitter;
-@property (nonatomic, readonly) UIGestureRecognizer *recognizer;
+- (nonnull instancetype)initWithTag:(nonnull NSNumber *)tag;
 
-- (void)bindToView:(UIView *)view;
+@property (nonatomic, readonly, nonnull) NSNumber *tag;
+@property (nonatomic, weak, nullable) id<RNGestureHandlerEventEmitter> emitter;
+@property (nonatomic, readonly, nullable) UIGestureRecognizer *recognizer;
+@property (nonatomic) BOOL enabled;
+
+- (void)bindToView:(nonnull UIView *)view;
 - (void)unbindFromView;
-- (void)configure:(NSDictionary *)config NS_REQUIRES_SUPER;
-- (void)handleGesture:(id)recognizer;
+- (void)configure:(nullable NSDictionary *)config NS_REQUIRES_SUPER;
+- (void)handleGesture:(nonnull id)recognizer;
 - (RNGestureHandlerState)state;
-- (RNGestureHandlerEventExtraData *)eventExtraData:(id)recognizer;
+- (nullable RNGestureHandlerEventExtraData *)eventExtraData:(nonnull id)recognizer;
 
 @end
 
 @interface RNGestureHandlerRegistry : NSObject
 
-- (RNGestureHandler *)handlerWithTag:(NSNumber *)handlerTag;
-- (void)registerGestureHandler:(RNGestureHandler *)gestureHandler;
-- (void)attachHandlerWithTag:(NSNumber *)handlerTag toView:(UIView *)view;
-- (void)dropHandlerWithTag:(NSNumber *)handlerTag;
+- (nullable RNGestureHandler *)handlerWithTag:(nonnull NSNumber *)handlerTag;
+- (void)registerGestureHandler:(nonnull RNGestureHandler *)gestureHandler;
+- (void)attachHandlerWithTag:(nonnull NSNumber *)handlerTag toView:(nonnull UIView *)view;
+- (void)dropHandlerWithTag:(nonnull NSNumber *)handlerTag;
 
 @end
 

@@ -1,7 +1,6 @@
 package versioned.host.exp.exponent.modules.api.components.gesturehandler;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
@@ -14,19 +13,19 @@ public class GestureHandlerViewWrapper extends FrameLayout {
   public GestureHandlerViewWrapper(Context context) {
     super(context);
     mRegistry = new GestureHandlerRegistryImpl();
-    mOrchestrator = new GestureHandlerOrchestrator(this, mRegistry);
+    mOrchestrator = new GestureHandlerOrchestrator(this, mRegistry, new ViewConfigurationHelperImpl());
   }
 
   public GestureHandlerViewWrapper(Context context, AttributeSet attrs) {
     super(context, attrs);
     mRegistry = new GestureHandlerRegistryImpl();
-    mOrchestrator = new GestureHandlerOrchestrator(this, mRegistry);
+    mOrchestrator = new GestureHandlerOrchestrator(this, mRegistry, new ViewConfigurationHelperImpl());
   }
 
   public GestureHandlerViewWrapper(Context context, AttributeSet attrs, int defStyleAttr) {
     super(context, attrs, defStyleAttr);
     mRegistry = new GestureHandlerRegistryImpl();
-    mOrchestrator = new GestureHandlerOrchestrator(this, mRegistry);
+    mOrchestrator = new GestureHandlerOrchestrator(this, mRegistry, new ViewConfigurationHelperImpl());
   }
 
   public GestureHandlerRegistryImpl getRegistry() {

@@ -2,9 +2,13 @@ package versioned.host.exp.exponent.modules.api.components.gesturehandler.react;
 
 import android.util.SparseArray;
 import android.view.View;
+import android.view.ViewGroup;
 
+import com.facebook.react.uimanager.ReactPointerEventsView;
+import com.facebook.react.views.view.ReactViewGroup;
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.GestureHandler;
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.GestureHandlerRegistry;
+import versioned.host.exp.exponent.modules.api.components.gesturehandler.PointerEvents;
 
 import java.util.ArrayList;
 
