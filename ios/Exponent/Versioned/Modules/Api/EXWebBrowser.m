@@ -10,6 +10,11 @@
 @property (nonatomic, copy) RCTPromiseResolveBlock redirectResolve;
 @property (nonatomic, copy) RCTPromiseRejectBlock redirectReject;
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpartial-availability"
+@property (nonatomic, strong) SFAuthenticationSession *authSession;
+#pragma clang diagnostic pop
+
 @end
 
 NSString *EXWebBrowserErrorCode = @"EXWebBrowser";
@@ -18,11 +23,6 @@ NSString *EXWebBrowserErrorCode = @"EXWebBrowser";
 @implementation EXWebBrowser
 {
   UIStatusBarStyle _initialStatusBarStyle;
-  
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wpartial-availability"
-  SFAuthenticationSession *_authSession;
-#pragma clang diagnostic pop
 }
 
 RCT_EXPORT_MODULE(ExponentWebBrowser)
@@ -95,16 +95,19 @@ RCT_EXPORT_METHOD(openBrowserAsync:(NSString *)authURL
  [RCTPresentedViewController() presentViewController:safariHackVC animated:true completion:nil];
 }
 
-- (void)_dismissBrowser {
+- (void)_dismissBrowser
+{
   __weak typeof(self) weakSelf = self;
-  [RCTPresentedViewController() dismissViewControllerAnimated:YES completion:^{
-    __strong typeof(self) strongSelf = weakSelf;
-    if (strongSelf) {
-      strongSelf.redirectResolve(@{
-        @"type": @"dismissed",
-      });
-      [strongSelf flowDidFinish];
-    }
+  [self _performSynchronouslyOnMainThread:^{
+    [RCTPresentedViewController() dismissViewControllerAnimated:YES completion:^{
+      __strong typeof(self) strongSelf = weakSelf;
+      if (strongSelf) {
+        strongSelf.redirectResolve(@{
+                                     @"type": @"dismissed",
+                                     });
+        [strongSelf flowDidFinish];
+      }
+    }];
   }];
 }
 
@@ -167,6 +170,15 @@ RCT_EXPORT_METHOD(dismissAuthSession) {
 #pragma clang diagnostic pop
   _redirectResolve = nil;
   _redirectReject = nil;
+}
+
+- (void)_performSynchronouslyOnMainThread:(void (^)(void))block
+{
+  if ([NSThread isMainThread]) {
+    block();
+  } else {
+    dispatch_sync(dispatch_get_main_queue(), block);
+  }
 }
 
 @end
