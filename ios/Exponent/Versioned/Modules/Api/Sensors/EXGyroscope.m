@@ -57,7 +57,7 @@ EX_EXPORT_SCOPED_MODULE(ExponentGyroscope, SensorManager);
 }
 
 RCT_EXPORT_METHOD(setUpdateInterval:(nonnull NSNumber *)intervalMs) {
-  [_kernelSensorServiceDelegate setGyroUpdateInterval:[intervalMs doubleValue] / 1000];
+  [_kernelSensorServiceDelegate setGyroscopeUpdateInterval:[intervalMs doubleValue] / 1000];
 }
 
 - (void)bridgeDidForeground:(NSNotification *)notification
