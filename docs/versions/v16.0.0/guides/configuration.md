@@ -189,6 +189,10 @@ title: Configuration with exp.json
    - `infoPlist`
 
       Arbitrary configuration to add to your standalone app's native Info.plist. Applied prior to all other Expo-specific configuration. No other validation is performed, so use this at your own risk of rejection from the App Store.
+      
+   - `usesIcloudStorage`
+      
+      A boolean indicating if the app uses iCloud Storage for DocumentPicker.
 
 - `android`
 

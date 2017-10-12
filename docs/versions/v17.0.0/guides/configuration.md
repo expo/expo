@@ -201,6 +201,10 @@ title: Configuration with exp.json
    - `associatedDomains`
 
       An array that contains Associated Domains for the standalone app.
+      
+   - `usesIcloudStorage`
+      
+      A boolean indicating if the app uses iCloud Storage for DocumentPicker.
 
 - `android`
 

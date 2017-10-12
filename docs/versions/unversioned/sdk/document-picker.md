@@ -4,6 +4,8 @@ title: DocumentPicker
 
 Provides access to the system's UI for selecting documents from the available providers on the user's device.
 
+###### *For Standalone Applications on iOS, you need to add the `usesIcloudStorage:true` key value pair to your `app.json` file as specified [here](../guides/configuration.html#ios).
+
 ### `Expo.DocumentPicker.getDocumentAsync(options)`
 
 Display the system UI for choosing a document.
