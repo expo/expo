@@ -53,6 +53,7 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
   private static final String TAG = FileSystemModule.class.getSimpleName();
   private static final String EXDownloadProgressEventName = "Exponent.downloadProgress";
   private static final long MIN_EVENT_DT_MS = 100;
+  private static final String HEADER_KEY = "headers";
 
   private ScopedContext mScopedContext;
 
@@ -337,7 +338,14 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
     if (isResume) {
       requestBuilder.addHeader("Range", "bytes=" + resumeData + "-");
     }
-    
+
+    if (options.hasKey(HEADER_KEY)) {
+      final HashMap<String, Object> headers = options.getMap(HEADER_KEY).toHashMap();
+      for (String key: headers.keySet()) {
+        requestBuilder.addHeader(key, headers.get(key).toString());
+      }
+    }
+
     Request request = requestBuilder.url(url).build();
     Call call = client.newCall(request);
     DownloadResumable downloadResumable = new DownloadResumable(uuid, url, fileUri, call);

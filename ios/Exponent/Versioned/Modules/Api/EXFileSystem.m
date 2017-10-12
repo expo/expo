@@ -516,7 +516,15 @@ RCT_REMAP_METHOD(downloadResumablePauseAsync,
   if (resumeData) {
     downloadTask = [session downloadTaskWithResumeData:resumeData];
   } else {
-    downloadTask = [session downloadTaskWithURL:url];
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
+    if (options[@"headers"]) {
+      NSDictionary *headerDict = (NSDictionary *) [options objectForKey:@"headers"];
+      for (NSString *key in headerDict) {
+        NSString *value = (NSString *) [headerDict objectForKey:key];
+        [request addValue:value forHTTPHeaderField:key];
+      }
+    }
+    downloadTask = [session downloadTaskWithRequest:request];
   }
   [downloadTask resume];
 }
