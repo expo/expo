@@ -179,6 +179,8 @@ Create a `DownloadResumable` object which can start, pause, and resume a downloa
 
     -   **md5 (_boolean_)** -- If `true`, include the MD5 hash of the file in the returned object. `false` by default. Provided for convenience since it is common to check the integrity of a file immediately after downloading.
 
+    -   **headers (_object_)** -- An object containing any additional HTTP header fields required for the request.  The keys and values of the object are the header names and values respectively.
+
 -   **callback (_function_)** --
     This function is called on each data write to update the download progress.  An object with the following fields are passed:
     - **totalBytesWritten (_number_)** -- The total bytes written by the download operation.
