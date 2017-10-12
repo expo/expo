@@ -7,8 +7,6 @@
 
 import React, { PropTypes } from 'react';
 import {
-  ActivityIndicator,
-  Image,
   StatusBar,
   StyleSheet,
   Text,
@@ -16,12 +14,12 @@ import {
   View,
   Platform,
 } from 'react-native';
-import FadeIn from '@expo/react-native-fade-in-image';
 
 import autobind from 'autobind-decorator';
 import Browser from 'Browser';
 import BrowserActions from 'BrowserActions';
 import BrowserErrorView from 'BrowserErrorView';
+import BrowserScreenLoading from 'BrowserScreenLoading';
 import ExColors from 'ExColors';
 import ExManifests from 'ExManifests';
 import ExponentKernel from 'ExponentKernel';
@@ -82,7 +80,7 @@ class BrowserScreen extends React.Component {
   }
 
   render() {
-    let content, loadingIndicator, errorView;
+    let content, loadingView, errorView;
     let { task } = this.props;
     if (task) {
       if (task.loadingError) {
@@ -99,7 +97,12 @@ class BrowserScreen extends React.Component {
       if (task.bundleUrl) {
         content = this._renderFrame();
         if (task.isLoading) {
-          loadingIndicator = this._renderLoadingIndicator();
+          loadingView = (
+            <BrowserScreenLoading
+              loadingStatus={this.state.loadingStatus}
+              manifest={task.manifest}
+            />
+          );
         }
       }
     }
@@ -111,7 +114,7 @@ class BrowserScreen extends React.Component {
     let everything = (
       <View style={{ flex: 1 }}>
         {content}
-        {loadingIndicator}
+        {loadingView}
         {errorView}
       </View>
     );
@@ -188,8 +191,7 @@ class BrowserScreen extends React.Component {
   _renderPlaceholder() {
     let content;
     if (this.props.isShell) {
-      // possibly null
-      content = this._renderManifestLoadingIcon();
+      content = null;
     } else {
       content = <Text style={styles.placeholderText}>EXPO</Text>;
     }
@@ -198,239 +200,6 @@ class BrowserScreen extends React.Component {
         {content}
       </View>
     );
-  }
-
-  _getLoadingBackgroundColor() {
-    let { task } = this.props;
-    let { manifest } = task;
-
-    if (manifest && this._isNewSplashScreenStyle(manifest)) {
-      // Try to load the platform specific background color, otherwise fall back to `splash.backgroundColor`
-      if (
-        Platform.OS === 'ios' &&
-        manifest.getIn(['ios', 'splash', 'backgroundColor'])
-      ) {
-        return manifest.getIn(['ios', 'splash', 'backgroundColor']);
-      }
-
-      if (
-        Platform.OS === 'android' &&
-        manifest.getIn(['android', 'splash', 'backgroundColor'])
-      ) {
-        return manifest.getIn(['android', 'splash', 'backgroundColor']);
-      }
-
-      if (manifest.getIn(['splash', 'backgroundColor'])) {
-        return manifest.getIn(['splash', 'backgroundColor']);
-      }
-
-      // Choose white if using `splash` but no color is specified
-      return 'white';
-    }
-
-    // If there is no `splash`, choose `loading.backgroundColor`
-    if (manifest && manifest.getIn(['loading', 'backgroundColor'])) {
-      return manifest.getIn(['loading', 'backgroundColor']);
-    }
-
-    return 'white';
-  }
-
-  _getLoadingIndicatorStyle() {
-    let { task } = this.props;
-    let { manifest } = task;
-
-    let loadingIndicatorStyle = 'default';
-    if (
-      manifest &&
-      manifest.getIn(['loading', 'loadingIndicatorStyleExperimental'])
-    ) {
-      loadingIndicatorStyle = manifest.getIn([
-        'loading',
-        'loadingIndicatorStyleExperimental',
-      ]);
-    }
-
-    return loadingIndicatorStyle;
-  }
-
-  _renderLoadingIndicator() {
-    let loadingBackgroundColor = this._getLoadingBackgroundColor();
-    let loadingIcon = this._renderManifestLoadingIcon();
-    let loadingBackgroundImage = this._renderManifestLoadingBackgroundImage();
-    let activityIndicator = this._renderLoadingActivityIndicator();
-    let { loadingStatus } = this.state;
-
-    return (
-      <View
-        pointerEvents="none"
-        style={[
-          styles.loadingIndicatorContainer,
-          { backgroundColor: loadingBackgroundColor },
-        ]}>
-        {loadingBackgroundImage}
-        <View>
-          {loadingIcon}
-          {activityIndicator}
-        </View>
-        {loadingStatus !== null &&
-          <View style={styles.loadingStatusBar}>
-            <Text style={styles.loadingStatusText}>
-              {loadingStatus.status}
-            </Text>
-            {loadingStatus.total > 0 &&
-              <Text style={styles.loadingPercentageText}>
-                {(loadingStatus.done / loadingStatus.total * 100).toFixed(2)}%
-              </Text>}
-          </View>}
-      </View>
-    );
-  }
-
-  _renderLoadingActivityIndicator() {
-    let { task } = this.props;
-    if (task) {
-      let { manifest } = task;
-      if (manifest) {
-        if (this._isNewSplashScreenStyle(manifest)) {
-          return null;
-        }
-      }
-    }
-
-    let loadingIndicatorStyle = this._getLoadingIndicatorStyle();
-    return (
-      <ActivityIndicator
-        size="large"
-        color={loadingIndicatorStyle === 'light' ? '#ffffff' : '#333333'}
-        style={styles.loadingIndicator}
-      />
-    );
-  }
-
-  _renderManifestLoadingIcon() {
-    let { task } = this.props;
-    if (task) {
-      let { manifest } = task;
-      if (manifest) {
-        // Don't use loading icon if `splash` is set
-        if (this._isNewSplashScreenStyle(manifest)) {
-          return null;
-        }
-
-        let iconUrl = manifest.getIn(['loading', 'iconUrl']);
-        let loadingBackgroundColor = this._getLoadingBackgroundColor();
-        let backgroundImageUrl = manifest.getIn([
-          'loading',
-          'backgroundImageUrl',
-        ]);
-
-        let placeholderBackgroundColor = loadingBackgroundColor;
-        if (backgroundImageUrl) {
-          placeholderBackgroundColor = 'transparent';
-        }
-
-        if (iconUrl) {
-          return (
-            <FadeIn
-              placeholderStyle={{
-                backgroundColor: placeholderBackgroundColor,
-              }}>
-              <Image
-                source={{ uri: iconUrl }}
-                resizeMode="center"
-                style={{ width: 200, height: 200, marginVertical: 16 }}
-              />
-            </FadeIn>
-          );
-        }
-      }
-    }
-    return null;
-  }
-
-  _renderManifestLoadingBackgroundImage() {
-    const { task } = this.props;
-    const { manifest } = task;
-    if (manifest) {
-      let backgroundImageUrl;
-      if (this._isNewSplashScreenStyle(manifest)) {
-        backgroundImageUrl = this._getNewSplashBackgroungImage(manifest);
-      } else {
-        backgroundImageUrl = manifest.getIn(['loading', 'backgroundImageUrl']);
-      }
-      if (backgroundImageUrl) {
-        const resizeMode = this._getBackgroundImageResizeMode(manifest);
-        return (
-          <Image
-            source={{ uri: backgroundImageUrl }}
-            resizeMode={resizeMode}
-            style={styles.loadingBackgroundImage}
-          />
-        );
-      }
-    }
-    return null;
-  }
-
-  _getNewSplashBackgroungImage(manifest) {
-    if (Platform.OS === 'ios') {
-      if (
-        Constants.platform.ios.userInterfaceIdiom === 'tablet' &&
-        manifest.getIn(['ios', 'splash', 'tabletImageUrl'])
-      ) {
-        return manifest.getIn(['ios', 'splash', 'tabletImageUrl']);
-      }
-
-      if (manifest.getIn(['ios', 'splash', 'imageUrl'])) {
-        return manifest.getIn(['ios', 'splash', 'imageUrl']);
-      }
-    }
-
-    if (Platform.OS === 'android' && manifest.getIn(['android', 'splash'])) {
-      const resolutions = [
-        'xxxhdpi',
-        'xxhdpi',
-        'xhdpi',
-        'hdpi',
-        'mdpi',
-        'ldpi',
-      ];
-      const splash = manifest.getIn(['android', 'splash']);
-      // get the biggest available image
-      resolutions.forEach(resolution => {
-        if (splash.get(resolution)) {
-          return splash.get(resolution);
-        }
-      });
-    }
-
-    // If platform-specific keys were not available, return the default
-    return manifest.getIn(['splash', 'imageUrl']);
-  }
-
-  _getBackgroundImageResizeMode(manifest) {
-    if (!this._isNewSplashScreenStyle(manifest)) {
-      return Image.resizeMode.contain;
-    }
-
-    let mode;
-    if (
-      Platform.OS === 'ios' &&
-      manifest.getIn(['ios', 'splash', 'resizeMode'])
-    ) {
-      mode = manifest.getIn(['ios', 'splash', 'resizeMode']);
-    } else if (
-      Platform.OS === 'android' &&
-      manifest.getIn(['android', 'splash', 'resizeMode'])
-    ) {
-      mode = manifest.getIn(['android', 'splash', 'resizeMode']);
-    } else if (manifest.getIn(['splash', 'resizeMode'])) {
-      mode = manifest.getIn(['splash', 'resizeMode']);
-    }
-
-    // If anything other than `cover` (including an invalid value, or `undefined`), return `contain` which is the default
-    return mode === 'cover' ? Image.resizeMode.cover : Image.resizeMode.contain;
   }
 
   componentWillReceiveProps(nextProps) {
@@ -497,20 +266,6 @@ class BrowserScreen extends React.Component {
         initialPropsJS: null,
       });
     }
-  }
-
-  _isNewSplashScreenStyle(manifest) {
-    if (manifest.getIn(['splash'])) {
-      return true;
-    }
-    if (Platform.OS === 'ios' && manifest.getIn(['ios', 'splash'])) {
-      return true;
-    }
-    if (Platform.OS === 'android' && manifest.getIn(['android', 'splash'])) {
-      return true;
-    }
-
-    return false;
   }
 
   _setFrame = frame => {
@@ -646,44 +401,6 @@ let styles = StyleSheet.create({
   letterboxText: {
     color: 'white',
     paddingTop: 20,
-  },
-  loadingIndicatorContainer: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingBackgroundImage: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
-    right: 0,
-  },
-  loadingStatusBar: {
-    position: 'absolute',
-    left: 0,
-    bottom: 0,
-    right: 0,
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 10,
-    backgroundColor: '#fafafa',
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#f3f3f3',
-  },
-  loadingStatusText: {
-    color: '#a7a7a7',
-    fontSize: 12,
-    flex: 1,
-  },
-  loadingPercentageText: {
-    color: '#a7a7a7',
-    fontSize: 12,
-    fontVariant: ['tabular-nums'],
   },
   errorView: {
     position: 'absolute',
