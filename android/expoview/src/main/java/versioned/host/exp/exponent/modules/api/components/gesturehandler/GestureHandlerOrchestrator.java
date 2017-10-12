@@ -1,5 +1,6 @@
 package versioned.host.exp.exponent.modules.api.components.gesturehandler;
 
+import android.content.Context;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.view.MotionEvent;
@@ -46,6 +47,7 @@ public class GestureHandlerOrchestrator {
 
   private final ViewGroup mWrapperView;
   private final GestureHandlerRegistry mHandlerRegistry;
+  private final ViewConfigurationHelper mViewConfigHelper;
 
   private final GestureHandler[] mGestureHandlers
           = new GestureHandler[SIMULTANEOUS_GESTURE_HANDLER_LIMIT];
@@ -66,12 +68,16 @@ public class GestureHandlerOrchestrator {
   private float mMinAlphaForTraversal = DEFAULT_MIN_ALPHA_FOR_TRAVERSAL;
 
   public GestureHandlerOrchestrator(ViewGroup wrapperView) {
-    this(wrapperView, new GestureHandlerRegistryImpl());
+    this(wrapperView, new GestureHandlerRegistryImpl(), new ViewConfigurationHelperImpl());
   }
 
-  public GestureHandlerOrchestrator(ViewGroup wrapperView, GestureHandlerRegistry registry) {
+  public GestureHandlerOrchestrator(
+          ViewGroup wrapperView,
+          GestureHandlerRegistry registry,
+          ViewConfigurationHelper viewConfigurationHelper) {
     mWrapperView = wrapperView;
     mHandlerRegistry = registry;
+    mViewConfigHelper = viewConfigurationHelper;
   }
 
   /**
@@ -350,13 +356,19 @@ public class GestureHandlerOrchestrator {
     handler.prepare(view, this);
   }
 
-  private void recordHandlerIfNotPresent(View view, float[] coords) {
+  private boolean recordHandlerIfNotPresent(View view, float[] coords) {
     ArrayList<GestureHandler> handlers = mHandlerRegistry.getHandlersForView(view);
+    boolean found = false;
     if (handlers != null) {
       for (int i = 0, size = handlers.size(); i < size; i++) {
-        recordGestureHandler(handlers.get(i), view);
+        GestureHandler handler = handlers.get(i);
+        if (handler.isWithinBounds(view, coords[0], coords[1])) {
+          recordGestureHandler(handlers.get(i), view);
+          found = true;
+        }
       }
     }
+    return found;
   }
 
   private void extractGestureHandlers(MotionEvent event) {
@@ -369,7 +381,7 @@ public class GestureHandlerOrchestrator {
   private boolean extractGestureHandlers(ViewGroup viewGroup, float[] coords) {
     int childrenCount = viewGroup.getChildCount();
     for (int i = childrenCount - 1; i >= 0; i--) {
-      View child = viewGroup.getChildAt(i);
+      View child = mViewConfigHelper.getChildInDrawingOrderAtIndex(viewGroup, i);
       PointF childPoint = sTempPoint;
       if (canReceiveEvents(child)
               && isTransformedTouchPointInView(coords[0], coords[1], viewGroup, child, childPoint)) {
@@ -377,37 +389,48 @@ public class GestureHandlerOrchestrator {
         float restoreY = coords[1];
         coords[0] = childPoint.x;
         coords[1] = childPoint.y;
-        traverseWithPointerEvents(child, coords);
+        boolean found = traverseWithPointerEvents(child, coords);
         coords[0] = restoreX;
         coords[1] = restoreY;
-        return true;
+        if (found) {
+          return true;
+        }
       }
     }
     return false;
   }
 
-  private void traverseWithPointerEvents(View view, float coords[]) {
-    PointerEvents pointerEvents = PointerEvents.AUTO;
+  private static boolean shouldHandlerlessViewBecomeTouchTarget(View view, float coords[]) {
+    // The following code is to match the iOS behavior where transparent parts of the views can
+    // pass touch events through them allowing sibling nodes to handle them.
+
+    // TODO: this is not an ideal solution as we only consider ViewGroups that has no background set
+    // TODO: ideally we should determine the pixel color under the given coordinates and return
+    // false if the color is transparent
+    return !(view instanceof ViewGroup) || view.getBackground() != null;
+  }
+
+  private boolean traverseWithPointerEvents(View view, float coords[]) {
+    PointerEvents pointerEvents = mViewConfigHelper.getPointerEventsConfigForView(view);
     if (pointerEvents == PointerEvents.NONE) {
       // This view and its children can't be the target
-      return;
+      return false;
     } else if (pointerEvents == PointerEvents.BOX_ONLY) {
       // This view is the target, its children don't matter
-      recordHandlerIfNotPresent(view, coords);
-      return;
+      return recordHandlerIfNotPresent(view, coords) || shouldHandlerlessViewBecomeTouchTarget(view, coords);
     } else if (pointerEvents == PointerEvents.BOX_NONE) {
       // This view can't be the target, but its children might
       if (view instanceof ViewGroup) {
-        extractGestureHandlers((ViewGroup) view, coords);
+        return extractGestureHandlers((ViewGroup) view, coords);
       }
-      return;
+      return false;
     } else if (pointerEvents == PointerEvents.AUTO) {
       // Either this view or one of its children is the target
+      boolean found = false;
       if (view instanceof ViewGroup) {
-        extractGestureHandlers((ViewGroup) view, coords);
+        found = extractGestureHandlers((ViewGroup) view, coords);
       }
-      recordHandlerIfNotPresent(view, coords);
-      return;
+      return recordHandlerIfNotPresent(view, coords) || found || shouldHandlerlessViewBecomeTouchTarget(view, coords);
     } else {
       throw new IllegalArgumentException(
               "Unknown pointer event type: " + pointerEvents.toString());

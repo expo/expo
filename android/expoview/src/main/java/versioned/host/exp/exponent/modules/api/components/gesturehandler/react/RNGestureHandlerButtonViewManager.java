@@ -99,7 +99,6 @@ public class RNGestureHandlerButtonViewManager extends
       String identifier = mUseBorderless ? "selectableItemBackgroundBorderless"
               : "selectableItemBackground";
       int attrID = getResources().getIdentifier(identifier, "attr", "android");
-      Drawable drawable;
       getContext().getTheme().resolveAttribute(attrID, sResolveOutValue, true);
       final int version = Build.VERSION.SDK_INT;
       if (version >= 21) {
@@ -162,6 +161,11 @@ public class RNGestureHandlerButtonViewManager extends
   @ReactProp(name = "borderless")
   public void setBorderless(ButtonViewGroup view, boolean useBorderlessDrawable) {
     view.setUseBorderlessDrawable(useBorderlessDrawable);
+  }
+
+  @ReactProp(name = "enabled")
+  public void setEnabled(ButtonViewGroup view, boolean enabled) {
+    view.setEnabled(enabled);
   }
 
   @Override

@@ -22,6 +22,7 @@ public class GestureHandler<T extends GestureHandler> {
   private int mState = STATE_UNDETERMINED;
   private float mX, mY;
   private boolean mWithinBounds;
+  private boolean mEnabled = true;
   private float mHitSlop[];
 
   private boolean mShouldCancelWhenOutside;
@@ -48,6 +49,15 @@ public class GestureHandler<T extends GestureHandler> {
   public T setShouldCancelWhenOutside(boolean shouldCancelWhenOutside) {
     mShouldCancelWhenOutside = shouldCancelWhenOutside;
     return (T) this;
+  }
+
+  public T setEnabled(boolean enabled) {
+    mEnabled = enabled;
+    return (T) this;
+  }
+
+  public boolean isEnabled() {
+    return mEnabled;
   }
 
   public T setHitSlop(float leftPad, float topPad, float rightPad, float bottomPad) {
@@ -105,7 +115,7 @@ public class GestureHandler<T extends GestureHandler> {
   }
 
   public final void handle(MotionEvent event) {
-    if (mState == STATE_CANCELLED || mState == STATE_FAILED || mState == STATE_END) {
+    if (!mEnabled || mState == STATE_CANCELLED || mState == STATE_FAILED || mState == STATE_END) {
       return;
     }
     mX = event.getX();

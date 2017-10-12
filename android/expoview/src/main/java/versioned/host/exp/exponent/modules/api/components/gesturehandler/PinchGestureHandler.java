@@ -92,4 +92,18 @@ public class PinchGestureHandler extends GestureHandler<PinchGestureHandler> {
   public double getVelocity() {
     return mLastVelocity;
   }
+
+  public float getFocalPointX() {
+    if (mScaleGestureDetector == null) {
+      return Float.NaN;
+    }
+    return mScaleGestureDetector.getFocusX();
+  }
+
+  public float getFocalPointY() {
+    if (mScaleGestureDetector == null) {
+      return Float.NaN;
+    }
+    return mScaleGestureDetector.getFocusY();
+  }
 }

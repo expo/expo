@@ -12,89 +12,90 @@ import java.net.URL;
 
 public class AirMapUrlTile extends AirMapFeature {
 
-    class AIRMapUrlTileProvider extends UrlTileProvider
-    {
-        private String urlTemplate;
-        public AIRMapUrlTileProvider(int width, int height, String urlTemplate) {
-            super(width, height);
-            this.urlTemplate = urlTemplate;
-        }
-        @Override
-        public synchronized URL getTileUrl(int x, int y, int zoom) {
+  class AIRMapUrlTileProvider extends UrlTileProvider {
+    private String urlTemplate;
 
-            String s = this.urlTemplate
-              .replace("{x}", Integer.toString(x))
-              .replace("{y}", Integer.toString(y))
-              .replace("{z}", Integer.toString(zoom));
-            URL url = null;
-            try {
-                url = new URL(s);
-            } catch (MalformedURLException e) {
-                throw new AssertionError(e);
-            }
-            return url;
-        }
-
-        public void setUrlTemplate(String urlTemplate) {
-            this.urlTemplate = urlTemplate;
-        }
+    public AIRMapUrlTileProvider(int width, int height, String urlTemplate) {
+      super(width, height);
+      this.urlTemplate = urlTemplate;
     }
 
-    private TileOverlayOptions tileOverlayOptions;
-    private TileOverlay tileOverlay;
-    private AIRMapUrlTileProvider tileProvider;
+    @Override
+    public synchronized URL getTileUrl(int x, int y, int zoom) {
 
-    private String urlTemplate;
-    private float zIndex;
-
-    public AirMapUrlTile(Context context) {
-        super(context);
+      String s = this.urlTemplate
+          .replace("{x}", Integer.toString(x))
+          .replace("{y}", Integer.toString(y))
+          .replace("{z}", Integer.toString(zoom));
+      URL url = null;
+      try {
+        url = new URL(s);
+      } catch (MalformedURLException e) {
+        throw new AssertionError(e);
+      }
+      return url;
     }
 
     public void setUrlTemplate(String urlTemplate) {
-        this.urlTemplate = urlTemplate;
-        if (tileProvider != null) {
-            tileProvider.setUrlTemplate(urlTemplate);
-        }
-        if (tileOverlay != null) {
-            tileOverlay.clearTileCache();
-        }
+      this.urlTemplate = urlTemplate;
     }
+  }
 
-    public void setZIndex(float zIndex) {
-        this.zIndex = zIndex;
-        if (tileOverlay != null) {
-            tileOverlay.setZIndex(zIndex);
-        }
-    }
+  private TileOverlayOptions tileOverlayOptions;
+  private TileOverlay tileOverlay;
+  private AIRMapUrlTileProvider tileProvider;
 
-    public TileOverlayOptions getTileOverlayOptions() {
-        if (tileOverlayOptions == null) {
-            tileOverlayOptions = createTileOverlayOptions();
-        }
-        return tileOverlayOptions;
-    }
+  private String urlTemplate;
+  private float zIndex;
 
-    private TileOverlayOptions createTileOverlayOptions() {
-        TileOverlayOptions options = new TileOverlayOptions();
-        options.zIndex(zIndex);
-        this.tileProvider = new AIRMapUrlTileProvider(256, 256, this.urlTemplate);
-        options.tileProvider(this.tileProvider);
-        return options;
-    }
+  public AirMapUrlTile(Context context) {
+    super(context);
+  }
 
-    @Override
-    public Object getFeature() {
-        return tileOverlay;
+  public void setUrlTemplate(String urlTemplate) {
+    this.urlTemplate = urlTemplate;
+    if (tileProvider != null) {
+      tileProvider.setUrlTemplate(urlTemplate);
     }
+    if (tileOverlay != null) {
+      tileOverlay.clearTileCache();
+    }
+  }
 
-    @Override
-    public void addToMap(GoogleMap map) {
-        this.tileOverlay = map.addTileOverlay(getTileOverlayOptions());
+  public void setZIndex(float zIndex) {
+    this.zIndex = zIndex;
+    if (tileOverlay != null) {
+      tileOverlay.setZIndex(zIndex);
     }
+  }
 
-    @Override
-    public void removeFromMap(GoogleMap map) {
-        tileOverlay.remove();
+  public TileOverlayOptions getTileOverlayOptions() {
+    if (tileOverlayOptions == null) {
+      tileOverlayOptions = createTileOverlayOptions();
     }
+    return tileOverlayOptions;
+  }
+
+  private TileOverlayOptions createTileOverlayOptions() {
+    TileOverlayOptions options = new TileOverlayOptions();
+    options.zIndex(zIndex);
+    this.tileProvider = new AIRMapUrlTileProvider(256, 256, this.urlTemplate);
+    options.tileProvider(this.tileProvider);
+    return options;
+  }
+
+  @Override
+  public Object getFeature() {
+    return tileOverlay;
+  }
+
+  @Override
+  public void addToMap(GoogleMap map) {
+    this.tileOverlay = map.addTileOverlay(getTileOverlayOptions());
+  }
+
+  @Override
+  public void removeFromMap(GoogleMap map) {
+    tileOverlay.remove();
+  }
 }

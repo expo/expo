@@ -17,6 +17,8 @@ public class RotationGestureDetector {
   private long mPrevTime;
   private double mPrevAngle;
   private double mAngleDiff;
+  private float mAnchorX;
+  private float mAnchorY;
 
   private boolean mInProgress;
 
@@ -28,16 +30,6 @@ public class RotationGestureDetector {
     mListener = listener;
   }
 
-  private float getRawX(MotionEvent event, int index) {
-    float offset = event.getRawX() - event.getX();
-    return event.getX(mPointerIds[index]) + offset;
-  }
-
-  private float getRawY(MotionEvent event, int index) {
-    float offset = event.getRawY() - event.getY();
-    return event.getY(mPointerIds[index]) + offset;
-  }
-
   private void updateCurrent(MotionEvent event) {
     mPrevTime = mCurrTime;
     mCurrTime = event.getEventTime();
@@ -45,8 +37,16 @@ public class RotationGestureDetector {
     int firstPointerIndex = event.findPointerIndex(mPointerIds[0]);
     int secondPointerIndex = event.findPointerIndex(mPointerIds[1]);
 
-    float vectorX = getRawX(event, secondPointerIndex) - getRawX(event, firstPointerIndex);
-    float vectorY = getRawY(event, secondPointerIndex) - getRawY(event, firstPointerIndex);
+    float firstPtX = event.getX(mPointerIds[firstPointerIndex]);
+    float firstPtY = event.getY(mPointerIds[firstPointerIndex]);
+    float secondPtX = event.getX(mPointerIds[secondPointerIndex]);
+    float secondPtY = event.getY(mPointerIds[secondPointerIndex]);
+
+    float vectorX = secondPtX - firstPtX;
+    float vectorY = secondPtY - firstPtY;
+
+    mAnchorX = (firstPtX + secondPtX) * 0.5f;
+    mAnchorY = (firstPtY + secondPtY) * 0.5f;
 
     // Angle diff should be positive when rotating in clockwise direction
     double angle = -Math.atan2(vectorY, vectorX);
@@ -145,5 +145,25 @@ public class RotationGestureDetector {
    */
   public long getTimeDelta() {
     return mCurrTime - mPrevTime;
+  }
+
+  /**
+   * Returns X coordinate of the rotation anchor point relative to the view that the provided motion
+   * event coordinates (usually relative to the view event was sent to).
+   *
+   * @return X coordinate of the rotation anchor point
+   */
+  public float getAnchorX() {
+    return mAnchorX;
+  }
+
+  /**
+   * Returns Y coordinate of the rotation anchor point relative to the view that the provided motion
+   * event coordinates (usually relative to the view event was sent to).
+   *
+   * @return Y coordinate of the rotation anchor point
+   */
+  public float getAnchorY() {
+    return mAnchorY;
   }
 }
