@@ -33,11 +33,13 @@ If no item exists at this URI, returns `{ exists: false, isDirectory: false }`. 
 
 -   **exists (_boolean_)** -- `true`.
 
--   **uri (_string_)** -- A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
+-   **isDirectory (_boolean_)** -- `true` if this is a directory, `false` if it is a file
+
+-   **modificationTime (_number_)** -- The last modification time of the file expressed in seconds since epoch.
 
 -   **size (_number_)** -- The size of the file in bytes.
 
--   **modificationTime (_number_)** -- The last modification time of the file expressed in seconds since epoch.
+-   **uri (_string_)** -- A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
 
 -   **md5 (_string_)** -- Present if the `md5` option was truthy. Contains the MD5 hash of the file.
 
@@ -308,6 +310,7 @@ const downloadResumable = new FileSystem.DownloadResumable(
   callback,
   downloadSnapshot.resumeData
 );
+
 try {
   const { uri } = await downloadResumable.resumeAsync();
   console.log('Finished downloading to ', uri);
