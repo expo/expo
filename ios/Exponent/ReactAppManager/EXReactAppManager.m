@@ -19,6 +19,8 @@
 NSString * const kEXDevToolShowDevMenuKey = @"devmenu";
 NSTimeInterval const kEXJavaScriptResourceLongerTimeout = 120;
 
+typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t sourceLength);
+
 @interface EXReactAppManager ()
 
 @property (nonnull, strong) EXJavaScriptResource *jsResource;
@@ -188,7 +190,12 @@ NSTimeInterval const kEXJavaScriptResourceLongerTimeout = 120;
   [_jsResource loadResourceWithBehavior:cacheBehavior progressBlock:^(EXLoadingProgress * _Nonnull progress) {
     [weakSelf.delegate reactAppManager:weakSelf loadedJavaScriptWithProgress:progress];
   } successBlock:^(NSData * _Nonnull sourceData) {
-    loadCallback(nil, [[RCTSource alloc] initWithURL:bundleUrl data:sourceData]);
+    if ([self _compareVersionTo:22] == NSOrderedAscending) {
+      SDK21RCTSourceLoadBlock legacyLoadCallback = (SDK21RCTSourceLoadBlock)loadCallback;
+      legacyLoadCallback(nil, sourceData, sourceData.length);
+    } else {
+      loadCallback(nil, [[RCTSource alloc] initWithURL:bundleUrl data:sourceData]);
+    }
   } errorBlock:^(NSError * _Nonnull error) {
     __strong typeof(self) strongSelf = weakSelf;
     if (strongSelf) {
@@ -201,7 +208,13 @@ NSTimeInterval const kEXJavaScriptResourceLongerTimeout = 120;
       // react won't post this for us
       [[NSNotificationCenter defaultCenter] postNotificationName:[strongSelf _versionedString:RCTJavaScriptDidFailToLoadNotification] object:error];
     }
-    loadCallback(error, nil);
+    
+    if ([self _compareVersionTo:22] == NSOrderedAscending) {
+      SDK21RCTSourceLoadBlock legacyLoadCallback = (SDK21RCTSourceLoadBlock)loadCallback;
+      legacyLoadCallback(error, nil, 0);
+    } else {
+      loadCallback(error, nil);
+    }
   }];
 }
 
@@ -309,6 +322,20 @@ NSTimeInterval const kEXJavaScriptResourceLongerTimeout = 120;
 - (NSString *)_versionedString: (NSString *)string
 {
   return [EXVersions versionedString:string withPrefix:_versionSymbolPrefix];
+}
+
+- (NSComparisonResult)_compareVersionTo:(NSUInteger)version
+{
+  // Unversioned projects are always considered to be on the latest version
+  if (!_validatedVersion) {
+    return NSOrderedDescending;
+  }
+  
+  NSUInteger projectVersionNumber = _validatedVersion.integerValue;
+  if (projectVersionNumber == version) {
+    return NSOrderedSame;
+  }
+  return (projectVersionNumber < version) ? NSOrderedAscending : NSOrderedDescending;
 }
 
 #pragma mark - abstract stubs
