@@ -9,7 +9,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#define REACT_NATIVE_VERSION @{ \
+#define ABI22_0_0RCT_REACT_NATIVE_VERSION @{ \
   @"major": @(0), \
   @"minor": @(49), \
   @"patch": @(3), \

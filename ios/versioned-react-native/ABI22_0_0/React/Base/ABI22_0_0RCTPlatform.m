@@ -47,7 +47,7 @@ ABI22_0_0RCT_EXPORT_MODULE(PlatformConstants)
     @"systemName": [device systemName],
     @"interfaceIdiom": interfaceIdiom([device userInterfaceIdiom]),
     @"isTesting": @(ABI22_0_0RCTRunningInTestEnvironment()),
-    @"ReactABI22_0_0NativeVersion": REACT_NATIVE_VERSION,
+    @"reactNativeVersion": ABI22_0_0RCT_REACT_NATIVE_VERSION,
   };
 }
 
