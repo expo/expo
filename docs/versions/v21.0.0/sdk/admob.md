@@ -17,26 +17,27 @@ import {
 // Display a banner
 <AdMobBanner
   bannerSize="fullBanner"
-  adUnitID="your-admob-unit-id"
+  adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
   testDeviceID="EMULATOR"
   didFailToReceiveAdWithError={this.bannerError} />
 
 // Display a DFP Publisher banner
 <PublisherBanner
   bannerSize="fullBanner"
-  adUnitID="your-admob-unit-id"
+  adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
   testDeviceID="EMULATOR"
   didFailToReceiveAdWithError={this.bannerError}
   admobDispatchAppEvent={this.adMobEvent} />
 
 // Display an interstitial
-AdMobInterstitial.setAdUnitID('your-admob-unit-id');
+AdMobInterstitial.setAdUnitID('ca-app-pub-3940256099942544/1033173712'); // Test ID, Replace with your-admob-unit-id
 AdMobInterstitial.setTestDeviceID('EMULATOR');
-AdMobInterstitial.requestAd(AdMobInterstitial.showAd);
+AdMobInterstitial.requestAd(() => AdMobInterstitial.showAd())
 
 // Display a rewarded ad
-AdMobRewarded.setAdUnitID('your-admob-unit-id');
-AdMobRewarded.requestAd(AdMobRewarded.showAd);
+AdMobRewarded.setAdUnitID('ca-app-pub-3940256099942544/1033173712'); // Test ID, Replace with your-admob-unit-id
+AdMobRewarded.setTestDeviceID('EMULATOR');
+AdMobRewarded.requestAd(() => AdMobRewarded.showAd());
 ```
 
 ## Components
