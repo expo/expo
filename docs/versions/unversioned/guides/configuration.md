@@ -33,7 +33,7 @@ The following is a list of properties that are available for you under the `"exp
 
 - `slug`
 
-   **Required**. The friendly url name for publishing. eg: `expo.o/@your-username/slug`.
+   **Required**. The friendly url name for publishing. eg: `expo.io/@your-username/slug`.
 
 - `privacy`
 
@@ -232,10 +232,6 @@ The following is a list of properties that are available for you under the `"exp
    - `associatedDomains`
 
       An array that contains Associated Domains for the standalone app.
-      
-   - `usesIcloudStorage`
-      
-      A boolean indicating if the app uses iCloud Storage for DocumentPicker.
 
    - `splash`
 
@@ -418,4 +414,3 @@ The following is a list of properties that are available for you under the `"exp
 
    - `postPublish`
 
-      

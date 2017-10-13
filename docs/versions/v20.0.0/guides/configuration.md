@@ -33,7 +33,7 @@ The following is a list of properties that are available for you under the `"exp
 
 - `slug`
 
-   **Required**. The friendly url name for publishing. eg: `expo.o/@your-username/slug`.
+   **Required**. The friendly url name for publishing. eg: `expo.io/@your-username/slug`.
 
 - `privacy`
 
@@ -196,7 +196,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `buildNumber`
 
-      Build number for your iOS standalone app
+      Build number for your iOS standalone app. Must be a string that matches Apple's [format for CFBundleVersion](https://developer.apple.com/library/content/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/20001431-102364).
 
    - `icon`
 
@@ -252,10 +252,6 @@ The following is a list of properties that are available for you under the `"exp
    - `associatedDomains`
 
       An array that contains Associated Domains for the standalone app.
-      
-   - `usesIcloudStorage`
-      
-      A boolean indicating if the app uses iCloud Storage for DocumentPicker.
 
 - `android`
 
@@ -360,4 +356,3 @@ The following is a list of properties that are available for you under the `"exp
 
    - `postPublish`
 
-      
