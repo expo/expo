@@ -1,7 +1,7 @@
 package = JSON.parse(File.read(File.expand_path('../../package.json', __dir__)))
 version = package['version']
 
-source = { :git => ENV['INSTALL_YOGA_FROM_LOCATION'] || 'https://github.abi21_0_0/com/facebook/react-native.git' }
+source = { :git => ENV['INSTALL_YOGA_FROM_LOCATION'] || 'https://github.abi22_0_0/com/facebook/react-native.git' }
 if version == '1000.0.0'
   # This is an unpublished version, use the latest commit hash of the react-native repo, which we’re presumably in.
   source[:commit] = `git rev-parse HEAD`.strip
@@ -10,7 +10,7 @@ else
 end
 
 Pod::Spec.new do |spec|
-  spec.name = 'Yoga'
+  spec.name = 'yoga'
   spec.version = "#{version}.React"
   spec.license =  { :type => 'BSD' }
   spec.homepage = 'https://facebook.github.io/yoga/'
