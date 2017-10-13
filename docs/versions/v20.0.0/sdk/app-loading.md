@@ -48,9 +48,11 @@ export default class App extends React.Component {
       require('./assets/images/slack-icon.png'),
     ];
 
-    for (let image of images) {
-      await Asset.fromModule(image).downloadAsync();
-    }
+    const cacheImages = images.map((image) => {
+      return Asset.fromModule(image).downloadAsync();
+    });
+
+    await Promise.all(cacheImages);
 
     this.setState({isReady: true});
   }

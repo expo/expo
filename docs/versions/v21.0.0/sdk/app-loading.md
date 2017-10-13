@@ -46,9 +46,11 @@ export default class App extends React.Component {
     ];
 
     /* @info Read more about <a href='../guides/preloading-and-caching-assets.html'>Preloading and Caching Assets</a> */
-    for (let image of images) {
-      await Asset.fromModule(image).downloadAsync();
-    }/* @end */
+    const cacheImages = images.map((image) => {
+      return Asset.fromModule(image).downloadAsync();
+    });/* @end */
+
+    return Promise.all(cacheImages)
 
   }
 }
