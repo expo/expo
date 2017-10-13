@@ -1,6 +1,5 @@
 #import "EXMagnetometer.h"
 #import "EXUnversioned.h"
-#import "EXSensorManager.h"
 #import "EXScopedModuleRegistry.h"
 
 @interface EXMagnetometer ()

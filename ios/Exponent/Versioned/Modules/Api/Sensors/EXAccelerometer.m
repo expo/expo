@@ -1,6 +1,5 @@
 #import "EXAccelerometer.h"
 #import "EXUnversioned.h"
-#import "EXSensorManager.h"
 #import "EXScopedModuleRegistry.h"
 
 @interface EXAccelerometer ()

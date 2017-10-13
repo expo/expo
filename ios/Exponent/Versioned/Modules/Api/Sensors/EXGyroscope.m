@@ -1,6 +1,5 @@
 #import "EXGyroscope.h"
 #import "EXUnversioned.h"
-#import "EXSensorManager.h"
 #import "EXScopedModuleRegistry.h"
 
 @interface EXGyroscope ()
