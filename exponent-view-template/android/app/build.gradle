@@ -27,6 +27,9 @@ android {
   dexOptions {
     javaMaxHeapSize "8g"
   }
+  lintOptions {
+    abortOnError false
+  }
 }
 /* UNCOMMENT WHEN DISTRIBUTING
 task exponentPrebuildStep(type: Exec) {
