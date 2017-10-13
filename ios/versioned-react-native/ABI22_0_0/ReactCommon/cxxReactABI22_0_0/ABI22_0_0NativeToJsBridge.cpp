@@ -10,7 +10,7 @@
 #include "ABI22_0_0JSBigString.h"
 #include "ABI22_0_0SystraceSection.h"
 #include "ABI22_0_0MethodCall.h"
-#include "JSModulesUnbundle.h"
+#include "ABI22_0_0JSModulesUnbundle.h"
 #include "ABI22_0_0MessageQueueThread.h"
 
 #ifdef WITH_FBSYSTRACE

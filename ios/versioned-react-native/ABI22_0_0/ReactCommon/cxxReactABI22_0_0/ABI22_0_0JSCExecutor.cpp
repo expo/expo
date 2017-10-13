@@ -29,7 +29,7 @@
 #include "ABI22_0_0JSCSamplingProfiler.h"
 #include "ABI22_0_0JSCTracing.h"
 #include "ABI22_0_0JSCUtils.h"
-#include "JSModulesUnbundle.h"
+#include "ABI22_0_0JSModulesUnbundle.h"
 #include "ABI22_0_0ModuleRegistry.h"
 #include "ABI22_0_0Platform.h"
 #include "ABI22_0_0RecoverableError.h"
