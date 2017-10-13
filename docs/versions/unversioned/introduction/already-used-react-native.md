@@ -1,9 +1,8 @@
 ---
-title: Coming From React Native
-old_permalink: /versions/v11.0.0/guides/coming-from-react-native.html
+title: Already used React Native?
 ---
 
-# Coming from React Native
+This guide is intended to give developers who have already used React Native a quick outline on some of the key concepts, resources, and differences they will encounter when using Expo.
 
 ## What is Expo?
 
@@ -41,6 +40,7 @@ Apps are served from our exp/XDE through a tunnel service by default (we current
 - Expo streams your device logs to `exp` and XDE so you don't need to run `adb logcat` or the iOS equivalent -- the `console.log / warn /error` messages from any device that is connected to your app will show up automatically in your exp/XDE logs window.
 
 ## What Expo Can't Do
+
 - Sometimes Expo doesn't provide access to a native module or API you might need. In this case, you can [detach](https://docs.expo.io/versions/latest/guides/detach.html) and use `ExpoKit` instead.  This allows you to continue using Expo's foundation but allowing you to create and use any custom native modules.
 - [Read more about `detach` here](https://docs.expo.io/versions/latest/guides/detach.html)
 
@@ -51,6 +51,7 @@ When you're ready, you can run `exp build:ios` or `exp build:android` and Expo w
 If you prefer to build your app on your own machine, you can [follow these steps](https://github.com/expo/expo#standalone-apps).
 
 ## Helpful Tools & Resources
+
 - [Expo Snack](https://snack.expo.io)
   - The best way to test and share Expo features directly from your browser. Point your phone at the QR code and you have a sandbox environment you can build in the browser and test directly on your device.
 - [Expo Docs](https://docs.expo.io/versions/latest/index.html)
@@ -62,6 +63,7 @@ If you prefer to build your app on your own machine, you can [follow these steps
 - [Expo Slack](https://slack.expo.io)
 
 ## Useful Commands
+
 When developing in Expo, you have the option to use command line tools instead. Here are some of our friends' favorite commands and workflows:
 - `exp start -c --localhost --ios`
   - start expo server, clear cache, load only on localhost and open on iOS simulator
