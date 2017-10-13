@@ -327,7 +327,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 - (NSComparisonResult)_compareVersionTo:(NSUInteger)version
 {
   // Unversioned projects are always considered to be on the latest version
-  if (!_validatedVersion) {
+  if (!_validatedVersion || _validatedVersion.length == 0) {
     return NSOrderedDescending;
   }
   
