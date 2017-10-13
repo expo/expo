@@ -24,8 +24,8 @@ android {
     targetSdkVersion 25
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 70
-    versionName '1.20.0'
+    versionCode 71
+    versionName '2.0.0'
     // END VERSIONS
     ndk {
       abiFilters 'armeabi-v7a', 'x86'
@@ -94,6 +94,7 @@ dependencies {
 
   // Versioned react native
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+  compile(name: 'ReactAndroid-release-abi22_0_0', ext: 'aar')
   compile(name: 'ReactAndroid-release-abi21_0_0', ext: 'aar')
   compile(name: 'ReactAndroid-release-abi20_0_0', ext: 'aar')
   compile(name: 'ReactAndroid-release-abi19_0_0', ext: 'aar')

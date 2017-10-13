@@ -11,8 +11,8 @@ LOCAL_SRC_FILES := \
   JSBundleType.cpp \
   JSCExecutor.cpp \
   JSCLegacyTracing.cpp \
-  JSCMemory.cpp \
   JSCNativeModules.cpp \
+  JSCMemory.cpp \
   JSCPerfStats.cpp \
   JSCSamplingProfiler.cpp \
   JSCTracing.cpp \
@@ -34,8 +34,8 @@ CXX11_FLAGS := -std=c++11
 LOCAL_CFLAGS += $(CXX11_FLAGS)
 LOCAL_EXPORT_CPPFLAGS := $(CXX11_FLAGS)
 
-LOCAL_STATIC_LIBRARIES := jschelpers_abi21_0_0
-LOCAL_SHARED_LIBRARIES := libfb_abi21_0_0 libfolly_json_abi21_0_0 libjsc libglog_abi21_0_0
+LOCAL_STATIC_LIBRARIES := jschelpers_abi22_0_0
+LOCAL_SHARED_LIBRARIES := libfb_abi22_0_0 libfolly_json_abi22_0_0 libjsc libglog_abi22_0_0
 
 include $(BUILD_STATIC_LIBRARY)
 

@@ -74,7 +74,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
       if (token == null) {
         promise.reject("GCM token has not been set");
       } else {
-        com.facebook.react.bridge.WritableMap params = com.facebook.react.bridge.Arguments.createMap();
+        WritableMap params = Arguments.createMap();
         params.putString("type", "gcm");
         params.putString("data", token);
         promise.resolve(params);
@@ -94,7 +94,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
       return;
     }
 
-    WritableMap params = Arguments.createMap();
+    com.facebook.react.bridge.WritableMap params = com.facebook.react.bridge.Arguments.createMap();
     params.putString("deviceId", uuid);
     try {
       params.putString("experienceId", mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));

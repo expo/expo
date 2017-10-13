@@ -13,7 +13,7 @@ if THIS_IS_FBANDROID:
   include_defs('//ReactAndroid/TEST_DEFS')
   jni_instrumentation_test_lib(
     name = 'tests',
-    class_under_test = 'abi21_0_0/com/facebook/react/XplatBridgeTest',
+    class_under_test = 'abi22_0_0/com/facebook/react/XplatBridgeTest',
     soname = 'libxplat-bridge.so',
     srcs = TEST_SRCS,
     compiler_flags = [
@@ -38,7 +38,7 @@ if THIS_IS_FBOBJC:
       '-frtti',
     ],
     deps = [
-      '//xplat/folly:molly',
+      'xplat//folly:molly',
       'xplat//third-party/gmock:gtest',
       react_native_xplat_target('cxxreact:bridge'),
       react_native_xplat_target('jschelpers:jschelpers'),
