@@ -19,6 +19,10 @@ allprojects {
     maven {
       url "$rootDir/maven"
     }
+    maven {
+      // Local Maven repo containing AARs with JSC built for Android
+      url "$rootDir/../js/node_modules/jsc-android/android"
+    }
     flatDir {
       dirs 'libs'
     }
