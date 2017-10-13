@@ -41,6 +41,8 @@ If the user or Google cancelled the login, returns `{ type: 'cancel' }`.
 
 Otherwise, returns `{ type: 'success', accessToken, idToken, refreshToken, {...profileInformation} }`, `accessToken` is a string giving the access token to use with Google HTTP API requests.
 
+_Please note that to have access to `accessToken`, `idToken` and `refreshToken` you need to pass `webClientId` for standalone apps._
+
 ## Using it inside of the Expo app
 
 In the Expo client app, you can only use browser-based login (this works very well actually because it re-uses credentials saved in your system browser). If you build a standalone app, you can use the native login for the platform.
