@@ -72,7 +72,7 @@ In order to ensure that errors are reported reliably, Sentry defers reporting th
 
 ## Disabled by default in dev
 
-Unless `Sentry.enableInExpoDevelopment = true` is set before calling `Sentry.config({...}).install()`, all your dev/local errors will be ignored and only app releases will report errors to Sentry. You can call methods like `Sentry.reportException` but these methods will be no-op.
+Unless `Sentry.enableInExpoDevelopment = true` is set before calling `Sentry.config({...}).install()`, all your dev/local errors will be ignored and only app releases will report errors to Sentry. You can call methods like `Sentry.captureException(new Error('Oops!'))` but these methods will be no-op.
 
 ## Learn more about Sentry
 
