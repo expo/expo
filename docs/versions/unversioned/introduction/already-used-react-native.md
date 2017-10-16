@@ -46,7 +46,7 @@ Apps are served from our exp/XDE through a tunnel service by default (we current
 
 ## Deploying to the App / Play Store
 
-When you're ready, you can run `exp build:ios` or `exp build:android` and Expo will build your app and output a link to the binary required for you to submit. Then you can use something like Application Loader for iOS, or directly upload an APK for Android. (@brent see this awesome PR https://github.com/expo/expo-docs/pull/123/files)
+When you're ready, you can run `exp build:ios` or `exp build:android` and Expo will build your app and output a link to the binary required for you to submit. Then you can use something like Application Loader for iOS, or directly upload an APK for Android.
 
 If you prefer to build your app on your own machine, you can [follow these steps](https://github.com/expo/expo#standalone-apps).
 
