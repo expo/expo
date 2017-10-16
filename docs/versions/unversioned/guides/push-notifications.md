@@ -236,8 +236,9 @@ type PushMessage = {
   data?: Object,
 
   /**
-   * The title to display in the notification. On iOS this is displayed only
-   * on Apple Watch.
+   * The title to display in the notification. Devices often display this in
+   * bold above the notification body. Only the title might be displayed on
+   * devices with smaller screens like Apple Watch.
    */
   title?: string,
 
