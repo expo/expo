@@ -54,6 +54,7 @@ const typography = new Typography({
       marginBottom: rhythm(3 / 4),
       marginTop: rhythm(1),
       paddingBottom: `calc(${rhythm(1 / 4)} - 1px)`,
+      fontWeight: '300',
     },
     'body h1': {
       marginTop: rhythm(0.7),
