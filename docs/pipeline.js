@@ -75,9 +75,13 @@ const build = (branch, tag, pr) => ({
 });
 
 const deploy = (branch, tag, pr) => ({
-  name: `:rocket: Deploy to ${tag && !pr ? 'Production' : pr ? 'Dev' : 'Staging'}`,
+  name: `:rocket: Deploy to ${tag && !pr
+    ? 'Production'
+    : pr ? 'Dev' : 'Staging'}`,
   concurrency: 1,
-  concurrency_group: `docs/${tag && !pr ? 'prod' : pr ? `pr-${pr}` : 'staging'}/deploy`,
+  concurrency_group: `docs/${tag && !pr
+    ? 'prod'
+    : pr ? `pr-${pr}` : 'staging'}/deploy`,
   async command() {
     if (!pr && branch !== 'master' && !tag) {
       return;
@@ -162,7 +166,9 @@ const tagRelease = {
     await git(`tag ${tag}`);
     Log.collapsed(':github: Pushing Release...');
     await git(`push origin ${tag}`); // upload more steps
-    global.currentPipeline.upload(global.currentPipeline.steps(tag, tag, null));
+    await global.currentPipeline.upload(
+      await global.currentPipeline.steps(tag, tag, null)
+    );
   },
 };
 
@@ -175,5 +181,7 @@ async function makeVersionName() {
     `rev-parse --short=12 ${process.env.BUILDKITE_COMMIT}`
   )).trim();
   const today = new Date();
-  return `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}-${hash}`;
+  return `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(
+    today.getDate()
+  )}-${hash}`;
 }
