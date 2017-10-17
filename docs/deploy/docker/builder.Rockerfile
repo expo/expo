@@ -107,5 +107,6 @@ RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-
 
 ## Install Yarn
 COPY ../tools/bin/yarn /usr/local/bin/yarn
+COPY ../tools/bin/yarn.js /usr/local/bin/yarn.js
 
 PUSH gcr.io/exponentjs/docs-builder:v2
