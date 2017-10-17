@@ -104,9 +104,3 @@ COPY ../tools/bin/yarn.js /usr/local/bin/yarn.js
 
 # Tag/Push images
 PUSH {{ .ImageName }}:{{ .ImageTag }}
-
-{{ $shouldTagStableLatest := (or .ShouldTagStableLatest "0") }}
-
-{{ if eq $shouldTagStableLatest "1" }}
-PUSH {{ .ImageName }}:{{ .StableOrLatest }}
-{{ end }}
