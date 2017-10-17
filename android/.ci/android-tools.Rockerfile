@@ -100,6 +100,7 @@ RUN echo 'deb http://http.debian.net/debian wheezy-backports main' >> /etc/apt/s
 
 # Install Yarn
 COPY ../tools/bin/yarn /usr/local/bin/yarn
+COPY ../tools/bin/yarn.js /usr/local/bin/yarn.js
 
 # Tag/Push images
 PUSH {{ .ImageName }}:{{ .ImageTag }}
