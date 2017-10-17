@@ -11,8 +11,8 @@ LOCAL_SRC_FILES := \
   JSBundleType.cpp \
   JSCExecutor.cpp \
   JSCLegacyTracing.cpp \
-  JSCNativeModules.cpp \
   JSCMemory.cpp \
+  JSCNativeModules.cpp \
   JSCPerfStats.cpp \
   JSCSamplingProfiler.cpp \
   JSCTracing.cpp \
