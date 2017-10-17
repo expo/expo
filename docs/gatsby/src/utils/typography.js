@@ -5,8 +5,29 @@ const typography = new Typography({
   title: 'Expo',
   scaleRatio: 2.5,
   baseLineHeight: 1.45,
-  headerFontFamily: ['Source Sans Pro', 'sans-serif'],
-  bodyFontFamily: ['Source Sans Pro', 'sans-serif'],
+
+  headerFontFamily: [
+    '-apple-system',
+    'system-ui',
+    'Roboto',
+    'Ubuntu',
+    'Cantarell',
+    'Fira Sans',
+    'Droid Sans',
+    'Helvetica Neue',
+    'sans-serif',
+  ],
+  bodyFontFamily: [
+    '-apple-system',
+    'system-ui',
+    'Roboto',
+    'Ubuntu',
+    'Cantarell',
+    'Fira Sans',
+    'Droid Sans',
+    'Helvetica Neue',
+    'sans-serif',
+  ],
   headerColor: 'hsla(0,0%,0%,0.85)',
   bodyColor: 'hsla(0,0%,0%,0.7)',
   headerWeight: '400',
@@ -21,9 +42,6 @@ const typography = new Typography({
       borderRadius: '4px',
       height: '483px',
       width: '100%',
-    },
-    'h1,h2,h3,h4,h5.h6': {
-      lineHeight: 1.2,
     },
     hr: {
       background: '#eee',
@@ -40,6 +58,12 @@ const typography = new Typography({
     'body h1': {
       marginTop: rhythm(0.7),
       lineHeight: 1.1,
+    },
+    p: {
+      fontSize: '15px',
+    },
+    li: {
+      fontSize: '15px',
     },
     'tt,code': {
       fontFamily: `"Source Code Pro",Consolas,"Roboto Mono","Droid Sans Mono","Liberation Mono",Menlo,Courier,monospace`,
