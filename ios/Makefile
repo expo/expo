@@ -2,7 +2,7 @@ ROOT = ../
 
 build-archive:
 	gtar -C ${ROOT} \
-		-zcf ${OUTPUT} \
+		-zcfh ${OUTPUT} \
 		package.json \
 		template-files \
 		shellAppBase-builds \
