@@ -25,7 +25,6 @@ import ExManifests from 'ExManifests';
 import ExponentKernel from 'ExponentKernel';
 import Frame from 'Frame';
 import { connect } from 'react-redux';
-import { Constants } from 'expo';
 
 class BrowserScreen extends React.Component {
   static propTypes = {

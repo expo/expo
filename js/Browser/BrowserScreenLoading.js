@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 
 import FadeIn from '@expo/react-native-fade-in-image';
+import { Constants } from 'expo';
 
 export default class BrowserScreenLoading extends React.Component {
   render() {
