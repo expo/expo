@@ -38,7 +38,7 @@ The following is a list of properties that are available for you under the `"exp
 - `privacy`
 
    Either `public` or `unlisted`. If not provided, defaults to `unlisted`. In the future `private` will be supported. `unlisted` hides the experience from search results.
- public, unlisted
+ Valid values: 'public', 'unlisted'
 
 - `sdkVersion`
 
@@ -51,7 +51,7 @@ The following is a list of properties that are available for you under the `"exp
 - `orientation`
 
    Lock your app to a specific orientation with `portrait` or `landscape`. Defaults to no lock.
- default, portrait, landscape
+ Valid values: 'default', 'portrait', 'landscape'
 
 - `primaryColor`
 
@@ -78,7 +78,7 @@ The following is a list of properties that are available for you under the `"exp
    - `androidMode`
 
       Show each push notification individually (`default`) or collapse into one (`collapse`).
-    default, collapse
+    Valid values: 'default', 'collapse'
 
    - `androidCollapsedTitle`
 
@@ -95,7 +95,7 @@ The following is a list of properties that are available for you under the `"exp
    - `exponentIconColor`
 
       If no icon is provided, we will show the Expo logo. You can choose between `white` and `blue`.
-    white, blue
+    Valid values: 'white', 'blue'
 
    - `exponentIconGrayscale`
 
@@ -129,7 +129,7 @@ The following is a list of properties that are available for you under the `"exp
    - `barStyle`
 
       Configure the statusbar icons to have light or dark color.
-    light-content, dark-content
+    Valid values: 'light-content', 'dark-content'
 
    - `backgroundColor`
 
@@ -175,7 +175,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `buildNumber`
 
-      Build number for your iOS standalone app
+      Build number for your iOS standalone app. Must be a string that matches Apple's [format for CFBundleVersion](https://developer.apple.com/library/content/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/20001431-102364).
 
    - `icon`
 
@@ -227,10 +227,10 @@ The following is a list of properties that are available for you under the `"exp
    - `associatedDomains`
 
       An array that contains Associated Domains for the standalone app.
-      
+
    - `usesIcloudStorage`
-      
-      A boolean indicating if the app uses iCloud Storage for DocumentPicker.
+
+      A boolean indicating if the app uses iCloud Storage for DocumentPicker. See DocumentPicker docs for details.
 
 - `android`
 
@@ -302,4 +302,3 @@ The following is a list of properties that are available for you under the `"exp
 
    - `postPublish`
 
-      

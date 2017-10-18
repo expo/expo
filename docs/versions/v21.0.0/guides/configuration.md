@@ -232,6 +232,10 @@ The following is a list of properties that are available for you under the `"exp
 
       An array that contains Associated Domains for the standalone app.
 
+   - `usesIcloudStorage`
+
+      A boolean indicating if the app uses iCloud Storage for DocumentPicker.
+
    - `splash`
 
       **Experimental**: Configuration for loading and splash screen for standalone iOS apps.

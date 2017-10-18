@@ -253,6 +253,10 @@ The following is a list of properties that are available for you under the `"exp
 
       An array that contains Associated Domains for the standalone app.
 
+   - `usesIcloudStorage`
+
+      A boolean indicating if the app uses iCloud Storage for DocumentPicker.
+
 - `android`
 
    **Standalone Apps Only**. Android standalone app specific configuration
