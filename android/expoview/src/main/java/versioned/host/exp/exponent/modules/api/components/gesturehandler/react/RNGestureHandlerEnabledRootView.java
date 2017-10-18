@@ -8,6 +8,7 @@ import android.view.MotionEvent;
 
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactRootView;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.GestureHandler;
@@ -161,9 +162,12 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
     if (mReactInstanceManager == null) {
       return null;
     }
-    return mReactInstanceManager
-            .getCurrentReactContext()
-            .getNativeModule(RNGestureHandlerModule.class);
+    ReactContext reactContext = mReactInstanceManager
+            .getCurrentReactContext();
+    if (reactContext == null) {
+      return null;
+    }
+    return reactContext.getNativeModule(RNGestureHandlerModule.class);
   }
 
   /*package*/ void handleSetJSResponder(final int viewTag, final boolean blockNativeResponder) {
