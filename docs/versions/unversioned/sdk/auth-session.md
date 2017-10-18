@@ -33,6 +33,9 @@ If you are authenticating with a popular social provider, when you are ready to 
 
 **Never put any secret keys inside of your app, there is no secure way to do this!** Instead, you should store your secret key(s) on a server and expose an endpoint that makes API calls for your client and passes the data back.
 
+### Usage in standalone apps
+
+In order to be able to deep link back into your app, you will need to set a `scheme` in your project `app.json`, and then build your standalone app (it can't be updated with an OTA update). If you do not include a scheme, the authentication flow will complete but it will be unable to pass the information back into your application and the user will have to manually exit the authentication modal.
 
 ## Example
 
