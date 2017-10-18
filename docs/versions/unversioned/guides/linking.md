@@ -110,6 +110,8 @@ To save you the trouble of inserting a bunch of conditionals based on the enviro
 
 You will notice that at the end of each URL there is a `/+` -- anything after the `/+` is to be used by your app to receive data, which we will talk about in the next section.
 
+**Note**: There is currently a [known issue](https://github.com/expo/expo/issues/765) where the `+` does not appear in Android standalone builds. We expect to resolve this in a release soon!
+
 ### Handling links into your app
 
 There are two ways to handle URLs that open your app.
