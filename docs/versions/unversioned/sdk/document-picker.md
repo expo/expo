@@ -4,7 +4,9 @@ title: DocumentPicker
 
 Provides access to the system's UI for selecting documents from the available providers on the user's device.
 
-###### *For Standalone Applications on iOS, you need to add the `usesIcloudStorage:true` key value pair to your `app.json` file as specified [here](../guides/configuration.html#ios).
+On iOS, for [standalone apps](../guides/building-standalone-apps.html) and [ExpoKit](../guides/expokit.html) projects, the DocumentPicker module requires the iCloud entitlement to work properly. You need to set the `usesIcloudStorage` key to `true` in your `app.json` file as specified [here](../guides/configuration.html#ios).
+
+In addition, for ExpoKit apps, you need to open the project in Xcode and follow the [Using DocumentPicker instructions](../guides/advanced-expokit-topics.html#using-documentpicker) in the Advanced ExpoKit Topics guide.
 
 ### `Expo.DocumentPicker.getDocumentAsync(options)`
 
