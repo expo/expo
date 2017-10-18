@@ -37,7 +37,7 @@ Returns an object with the following fields:
 
 ### `Expo.Location.watchPositionAsync(options, callback)`
 
-Subscribe to location updates from the device.
+Subscribe to location updates from the device. Please note that updates will only occur while the application is in the foreground. Background location tracking is [planned](https://expo.canny.io/feature-requests/p/background-location-tracking), but not yet implemented.
 
 #### Arguments
 
