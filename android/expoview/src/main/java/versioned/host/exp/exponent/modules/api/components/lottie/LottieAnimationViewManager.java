@@ -13,6 +13,8 @@ import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
+import org.json.JSONObject;
+
 import java.util.Map;
 
 class LottieAnimationViewManager extends SimpleViewManager<LottieAnimationView> {
@@ -81,7 +83,7 @@ class LottieAnimationViewManager extends SimpleViewManager<LottieAnimationView> 
   @ReactProp(name = "sourceJson")
   public void setSourceJson(LottieAnimationView view, ReadableMap json) {
     try {
-        view.setAnimation(new JSONReadableMap(json));
+        view.setAnimation(new JSONObject(json.toHashMap()));
     } catch (Exception e) {
       // TODO: expose this to the user better. maybe an `onError` event?
       Log.e(TAG,"setSourceJsonError", e);
