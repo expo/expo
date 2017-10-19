@@ -22,6 +22,10 @@
     <item name="android:windowBackground">@color/colorPrimary</item>
   </style>
 
+  <style name="Theme.Exponent.Splash" parent="Theme.Exponent.Light">
+      <item name="android:windowBackground">@drawable/splash_background</item>
+  </style>
+
   <!-- Theme passed to RN. -->
   <style name="Theme.Exponent.None" parent="Theme.AppCompat.Light.NoActionBar">
     <item name="android:textColor">#000000</item>

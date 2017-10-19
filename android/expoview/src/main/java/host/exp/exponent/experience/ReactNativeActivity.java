@@ -11,7 +11,6 @@ import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -133,10 +132,12 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     setContentView(mLayout);
 
     mContainer = new FrameLayout(this);
-    mContainer.setBackgroundColor(ContextCompat.getColor(this, R.color.white));
-    mLoadingView = new LoadingView(this);
     mLayout.addView(mContainer);
-    mLayout.addView(mLoadingView);
+    mLoadingView = new LoadingView(this);
+    if (!Constants.isShellApp()) {
+      mContainer.setBackgroundColor(ContextCompat.getColor(this, R.color.white));
+      mLayout.addView(mLoadingView);
+    }
 
     mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
     Exponent.initialize(this, getApplication());

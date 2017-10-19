@@ -100,7 +100,7 @@
     <activity
       android:name=".experience.ShellAppActivity"
       android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-      android:theme="@style/Theme.Exponent.Light"
+      android:theme="@style/Theme.Exponent.Splash"
       android:windowSoftInputMode="adjustResize">
       <!-- ADD SHELL INTENT FILTERS HERE -->
     </activity>

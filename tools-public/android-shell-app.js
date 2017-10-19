@@ -103,34 +103,65 @@ exports.updateAndroidShellAppAsync = async function updateAndroidShellAppAsync(
     `RELEASE_CHANNEL = "${releaseChannel}"`,
     `${shellPath}expoview/src/main/java/host/exp/exponent/Constants.java`
   );
-}
+};
 
 function backgroundImagesForApp(shellPath, manifest) {
-    // returns an array like:
-    // [
-    //   {url: 'urlToDownload', path: 'pathToSaveTo'},
-    //   {url: 'anotherURlToDownload', path: 'anotherPathToSaveTo'},
-    // ]
-    const imageKeys = ['ldpi', 'mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'];
-    let basePath = `${shellPath}expoview/src/main/res`;
-    if (_.get(manifest, 'android.splash')) {
-      var splash = _.get(manifest, 'android.splash');
-      return _.reduce(imageKeys, function (acc, imageKey) {
+  // returns an array like:
+  // [
+  //   {url: 'urlToDownload', path: 'pathToSaveTo'},
+  //   {url: 'anotherURlToDownload', path: 'anotherPathToSaveTo'},
+  // ]
+  const imageKeys = ['ldpi', 'mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'];
+  let basePath = `${shellPath}expoview/src/main/res`;
+  if (_.get(manifest, 'android.splash')) {
+    var splash = _.get(manifest, 'android.splash');
+    return _.reduce(
+      imageKeys,
+      function(acc, imageKey) {
         let url = _.get(splash, `${imageKey}Url`);
         if (url) {
-          acc.push({url: url, path: `${basePath}/drawable-${imageKey}/shell_launch_background_image.png`});
+          acc.push({
+            url: url,
+            path: `${basePath}/drawable-${imageKey}/shell_launch_background_image.png`,
+          });
         }
 
         return acc;
-      }, []);
-    }
+      },
+      []
+    );
+  }
 
-    if (_.get(manifest, 'splash.imageUrl')) {
-      let url = _.get(manifest, 'splash.imageUrl');
-      return [{url: url, path: `${basePath}/drawable-xxxhdpi/shell_launch_background_image.png`}]
-    }
+  if (_.get(manifest, 'splash.imageUrl')) {
+    let url = _.get(manifest, 'splash.imageUrl');
+    return [
+      {
+        url: url,
+        path: `${basePath}/drawable-xxxhdpi/shell_launch_background_image.png`,
+      },
+    ];
+  }
 
-    return [];
+  return [];
+}
+
+function getSplashScreenBackgroundColor(manifest) {
+  let backgroundColor;
+  if (
+    manifest.android &&
+    manifest.android.splash &&
+    manifest.android.splash.backgroundColor
+  ) {
+    backgroundColor = manifest.android.splash.backgroundColor;
+  } else if (manifest.splash && manifest.splash.backgroundColor) {
+    backgroundColor = manifest.splash.backgroundColor;
+  }
+
+  // Default to white
+  if (!backgroundColor) {
+    backgroundColor = '#FFFFFF';
+  }
+  return backgroundColor;
 }
 
 exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
@@ -180,9 +211,10 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
   }
 
   let name = manifest.name;
-  let iconUrl = manifest.android && manifest.android.iconUrl
-    ? manifest.android.iconUrl
-    : manifest.iconUrl;
+  let iconUrl =
+    manifest.android && manifest.android.iconUrl
+      ? manifest.android.iconUrl
+      : manifest.iconUrl;
   let scheme = manifest.scheme;
   let bundleUrl = manifest.bundleUrl;
   let notificationIconUrl = manifest.notification
@@ -191,6 +223,7 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
   let version = manifest.version ? manifest.version : '0.0.0';
   let shellPath = '../android-shell-app/';
   let backgroundImages = backgroundImagesForApp(shellPath, manifest);
+  let splashBackgroundColor = getSplashScreenBackgroundColor(manifest);
   await spawnAsync(`/bin/rm`, ['-rf', shellPath]);
   await spawnAsync(`/bin/mkdir`, [shellPath]);
   await spawnAsync(
@@ -231,11 +264,7 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
   await spawnAsync(`/bin/cp`, ['../android/gradlew', `${shellPath}/`]);
   await spawnAsync(`/bin/cp`, ['../android/local.properties', `${shellPath}/`]);
   await spawnAsync(`/bin/cp`, ['../android/settings.gradle', `${shellPath}/`]);
-  await spawnAsync(`/bin/cp`, [
-    '-r',
-    '../android/maven',
-    `${shellPath}/maven`,
-  ]);
+  await spawnAsync(`/bin/cp`, ['-r', '../android/maven', `${shellPath}/maven`]);
 
   // Clean build directories
   await spawnAsync(`/bin/rm`, ['-rf', `${shellPath}app/build/`]);
@@ -335,6 +364,14 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
     '"app_name">Expo',
     `"app_name">${xmlWeirdAndroidEscape(name)}`,
     `${shellPath}app/src/main/res/values/strings.xml`
+  );
+
+  // Splash Screen background color
+  shell.sed(
+    '-i',
+    '"splashBackground">#FFFFFF',
+    `"splashBackground">${splashBackgroundColor}`,
+    `${shellPath}app/src/main/res/values/colors.xml`
   );
 
   // Remove exp:// scheme from LauncherActivity
@@ -552,11 +589,8 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
       '-delete',
     ]);
 
-    _.forEach(backgroundImages, async (image) => {
-      await saveUrlToPathAsync(
-        image.url,
-        image.path
-      );
+    _.forEach(backgroundImages, async image => {
+      await saveUrlToPathAsync(image.url, image.path);
     });
   }
 
