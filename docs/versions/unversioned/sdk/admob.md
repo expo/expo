@@ -84,8 +84,7 @@ AdMobRewarded.requestAd(() => AdMobRewarded.showAd());
 |`showAd(callback)`         | shows an interstitial if it is ready and calls callback when `interstitialDidOpen` event fires                  |
 |`isReady(callback)`        | calls callback with boolean whether interstitial is ready to be shown                                           |
 
-*For simulators/emulators you can use `'EMULATOR'` for the test device ID.*  
-*Note: `tryShowNewInterstitial()` is deprecated as of v1.1.0 and can be replaced by calling `requestAd` with `showAd` as callback.*
+*For simulators/emulators you can use `'EMULATOR'` for the test device ID.*
 
 #### Events
 Unfortunately, events are not consistent across iOS and Android. To have one unified API, new event names are introduced for pairs that are roughly equivalent.
