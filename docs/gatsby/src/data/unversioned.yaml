@@ -37,9 +37,10 @@
     Error Handling: /versions/unversioned/guides/errors.html
     Preloading & Caching Assets: /versions/unversioned/guides/preloading-and-caching-assets.html
     Icons: /versions/unversioned/guides/icons.html
-    Using Custom Fonts: /versions/unversioned/guides/using-custom-fonts.html
-    Configuring Status Bar: /versions/unversioned/guides/configuring-statusbar.html
+    Custom Fonts: /versions/unversioned/guides/using-custom-fonts.html
+    Splash Screens: /versions/unversioned/guides/splash-screens.html
     Routing & Navigation: /versions/unversioned/guides/routing-and-navigation.html
+    Configuring Status Bar: /versions/unversioned/guides/configuring-statusbar.html
     Push Notifications: /versions/unversioned/guides/push-notifications.html
     Using Modern JavaScript: /versions/unversioned/guides/using-modern-javascript.html
     Using ClojureScript: /versions/unversioned/guides/using-clojurescript.html

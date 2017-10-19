@@ -75,3 +75,16 @@
   margin-bottom: 30px;
   padding-left: 15px;
 }
+
+/* note(brentvatne): I tried to use an html img tag directly in markdown and
+ * something is happening in gatsby to prevent this so I could not. sucks to
+ * have to refer to an image in css by src, please clean up after me,
+ * anonymous person reading this! */
+img[src="https://media.giphy.com/media/l378l98EI0VQdwRzy/giphy.gif"] {
+  width: 100%;
+  max-width: 800px;
+}
+
+pre {
+  max-width: 900px;
+}
