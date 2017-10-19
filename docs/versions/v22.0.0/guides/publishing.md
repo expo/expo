@@ -75,6 +75,7 @@ re-build the binaries for your app for the change to take effect:
 
 - Increment the Expo SDK Version
 - Change anything under the `ios` or `android` keys
+- Change your app `splash`
 - Change your app `icon`
 - Change your app `name`
 - Change your app `scheme`

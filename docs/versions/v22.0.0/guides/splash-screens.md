@@ -33,6 +33,8 @@ Open your `app.json` and add the following inside of the `"expo"` field:
 
 Now re-open the Expo client and open your app, and you should see your beautiful splash screen. There may be a delay before it shows up, see ["Differences between environments" below](#differences-between-environments) for more information on that.
 
+> **Note**: It's required to close and re-open the Expo client app on iOS in order to see changes to the splash screen in the manifest. This is a known issue that we are working to resolve. On Android, you need to press the refresh button from the notification drawer.
+
 ### `splash.backgroundColor`
 
 If you set a background color other than white for your splash image, you may see white border around it. This is due to the `splash.resizeMode` property (which we will discuss shortly) and the default background color, which is `#ffffff` (white). Let's resolve this by setting the `splash.backgroundColor` to be the same as our splash image background color.
@@ -89,7 +91,7 @@ Your app can be opened from the Expo client or in a standalone app, and it can b
 
 ### Detached ExpoKit apps
 
-For people who run `exp detach` without the splash API, we add `isSplashScreenDisabled: YES` in your EXShell plist (iOS) to preserve old behavior. If you later decide to enable the splash API in your detached project, delete this key.
+For people who run `exp detach` without the splash API, we add `isSplashScreenDisabled: YES` in your EXShell plist (iOS) to preserve the behavior that you see in the Expo client, using the `loading` API. If you later decide to enable the splash API in your detached project, delete this key.
 
 ### Known issues
 
@@ -97,6 +99,8 @@ The following exists are known to us and will be resolved shortly.
 
 - iOS splash screen status bar is white in standalone apps but dark in Expo client. It should be dark in standalone apps by default too, and also it should be customizable. 
 - Android standalone app has a brief white screen before showing the splash screen.
+- `"resizeMode": "cover"` is not currently working on Android.
+- It is necessary on iOS to close and re-open the Expo client to see changes to the splash screen.
 
 ### Migrating from the `loading` API
 
