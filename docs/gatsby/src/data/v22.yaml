@@ -15,6 +15,7 @@
   index: /versions/v22.0.0/workflow/index.html
   links:
     Up and Running: /versions/v22.0.0/guides/up-and-running.html
+    Glossary of terms: /versions/v22.0.0/guides/glossary-of-terms.html
     Configuration with app.json: /versions/v22.0.0/guides/configuration.html
     Development Mode: /versions/v22.0.0/guides/development-mode.html
     exp Command-Line Interface: /versions/v22.0.0/guides/exp-cli.html

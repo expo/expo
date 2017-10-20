@@ -15,6 +15,7 @@
   index: /versions/unversioned/workflow/index.html
   links:
     Up and Running: /versions/unversioned/guides/up-and-running.html
+    Glossary of terms: /versions/unversioned/guides/glossary-of-terms.html
     Configuration with app.json: /versions/unversioned/guides/configuration.html
     Development Mode: /versions/unversioned/guides/development-mode.html
     exp Command-Line Interface: /versions/unversioned/guides/exp-cli.html
