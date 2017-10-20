@@ -164,6 +164,19 @@ function getSplashScreenBackgroundColor(manifest) {
   return backgroundColor;
 }
 
+// if resizeMode is 'cover' we should show LoadingView
+function shouldShowLoadingView(manifest) {
+  return (
+    (manifest.android &&
+      manifest.android.splash &&
+      manifest.android.splash.resizeMode &&
+      manifest.android.splash.resizeMode === 'cover') ||
+    (manifest.splash &&
+      manifest.splash.resizeMode &&
+      manifest.splash.resizeMode === 'cover')
+  );
+}
+
 exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
   args
 ) {
@@ -342,7 +355,7 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
     `${shellPath}expoview/src/main/AndroidManifest.xml`
   );
 
-  // Set INITIAL_URL and SHELL_APP_SCHEME
+  // Set INITIAL_URL, SHELL_APP_SCHEME and SHOW_LOADING_VIEW
   shell.sed(
     '-i',
     'INITIAL_URL = null',
@@ -354,6 +367,14 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
       '-i',
       'SHELL_APP_SCHEME = null',
       `SHELL_APP_SCHEME = "${scheme}"`,
+      `${shellPath}expoview/src/main/java/host/exp/exponent/Constants.java`
+    );
+  }
+  if (shouldShowLoadingView(manifest)) {
+    shell.sed(
+      '-i',
+      'SHOW_LOADING_VIEW = false',
+      'SHOW_LOADING_VIEW = true',
       `${shellPath}expoview/src/main/java/host/exp/exponent/Constants.java`
     );
   }
@@ -373,6 +394,16 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
     `"splashBackground">${splashBackgroundColor}`,
     `${shellPath}app/src/main/res/values/colors.xml`
   );
+
+  // show only background color if LoadingView will appear
+  if (shouldShowLoadingView(manifest)) {
+    shell.sed(
+      '-i',
+      /<item>.*<\/item>/,
+      '',
+      `${shellPath}app/src/main/res/drawable/splash_background.xml`
+    );
+  }
 
   // Remove exp:// scheme from LauncherActivity
   await sedInPlaceAsync(
