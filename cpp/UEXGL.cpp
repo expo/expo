@@ -788,7 +788,14 @@ private:
     return nullptr;
   }
 
-  _WRAP_METHOD_UNIMPL(framebufferRenderbuffer)
+  _WRAP_METHOD(framebufferRenderbuffer, 4) {
+    EXJS_UNPACK_ARGV(GLenum target, GLenum attachment, GLenum renderbuffertarget, UEXGLObjectId fRenderbuffer);
+    addToNextBatch([=] {
+      GLuint renderbuffer = lookupObject(fRenderbuffer);
+      glFramebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer);
+    });
+    return nullptr;
+  }
 
   _WRAP_METHOD(framebufferTexture2D, 5) {
     EXJS_UNPACK_ARGV(GLenum target, GLenum attachment, GLenum textarget, UEXGLObjectId fTexture, GLint level);
@@ -823,18 +830,44 @@ private:
 
   // Renderbuffers
   // -------------
+  
+  _WRAP_METHOD(bindRenderbuffer, 2) {
+    EXJS_UNPACK_ARGV(GLenum target, UEXGLObjectId fRenderbuffer);
+    addToNextBatch([=] {
+      GLuint renderbuffer = lookupObject(fRenderbuffer);
+      glBindRenderbuffer(target, renderbuffer);
+    });
+    return nullptr;
+  }
 
-  _WRAP_METHOD_UNIMPL(bindRenderbuffer)
-
-  _WRAP_METHOD_UNIMPL(createRenderbuffer)
-
-  _WRAP_METHOD_UNIMPL(deleteRenderbuffer)
+  _WRAP_METHOD(createRenderbuffer, 0) {
+    return addFutureToNextBatch(jsCtx, [] {
+      GLuint renderbuffer;
+      glGenRenderbuffers(1, &renderbuffer);
+      return renderbuffer;
+    });
+  }
+  
+  _WRAP_METHOD(deleteRenderbuffer, 1) {
+    EXJS_UNPACK_ARGV(UEXGLObjectId fRenderbuffer);
+    addToNextBatch([=] {
+      GLuint renderbuffer = lookupObject(fRenderbuffer);
+      glDeleteRenderbuffers(1, &renderbuffer);
+    });
+    return nullptr;
+  }
 
   _WRAP_METHOD_UNIMPL(getRenderbufferParameter)
 
   _WRAP_METHOD_IS_OBJECT(Renderbuffer)
 
-  _WRAP_METHOD_UNIMPL(renderbufferStorage)
+  _WRAP_METHOD(renderbufferStorage, 4) {
+    EXJS_UNPACK_ARGV(GLenum target, GLint internalformat, GLsizei width, GLsizei height);
+    addToNextBatch([=] {
+      glRenderbufferStorage(target, internalformat, width, height);
+    });
+    return nullptr;
+  }
 
 
   // Textures
