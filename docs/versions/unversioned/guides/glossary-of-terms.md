@@ -8,15 +8,15 @@ title: Glossary of terms
 
 ### create-react-native-app
 
-The React Native equivalent of [create-react-app](https://github.com/facebookincubator/create-react-app). Gets you set up and creating a React Native app to with no build configuration required, and it uses Expo to accomplish this. [Read more in "Expo & Create React Native App"](create-react-native-app.html).
+The React Native equivalent of [create-react-app](https://github.com/facebookincubator/create-react-app). Gets you set up and creating a React Native app with no build configuration required, and it uses Expo to accomplish this. [Read more in "Expo & Create React Native App"](create-react-native-app.html).
 
 ### detach
 
-The term "detach" is used in Expo to describe leaving the cozy comfort of the standard Expo development environment, where you do not have to deal with build configuration or native code. When you "detach" from Expo, you get the native projects along with [ExpoKit](#ExpoKit), so you can continue building your project using the Expo APIs but your workflow now is the same as if you were building a React Native application without Expo. [Read more in "Detaching to ExpoKit"](https://docs.expo.io/versions/latest/guides/detach.html).
+The term "detach" is used in Expo to describe leaving the cozy comfort of the standard Expo development environment, where you do not have to deal with build configuration or native code. When you "detach" from Expo, you get the native projects along with [ExpoKit](#expokit), so you can continue building your project using the Expo APIs but your workflow now is the same as if you were building a React Native application without Expo. [Read more in "Detaching to ExpoKit"](https://docs.expo.io/versions/latest/guides/detach.html).
 
 ### eject
 
-The termn "eject" was popularized by [create-react-app](https://github.com/facebookincubator/create-react-app), and it is used for [create-react-native-app](https://github.com/react-community/create-react-native-app). When you "eject" your project, you take a more extreme step than just [detach](#detach) -- you lose access to Expo APIs and completely leave the Expo environment. [Read more about ejecting](https://github.com/react-community/create-react-native-app/blob/master/EJECTING.md).
+The term "eject" was popularized by [create-react-app](https://github.com/facebookincubator/create-react-app), and it is used for [create-react-native-app](https://github.com/react-community/create-react-native-app). When you "eject" your project, you take a more extreme step than just [detach](#detach) -- you lose access to Expo APIs and completely leave the Expo environment. [Read more about ejecting](https://github.com/react-community/create-react-native-app/blob/master/EJECTING.md).
 
 ### Emulator
 
@@ -48,7 +48,7 @@ The operating system used on iPhone, iPad, and Apple TV. Expo currently runs on 
 
 ### Linking
 
-Linking can mean [deep linking into apps similar how you link to websites on the web](linking.html) or [linking native libraries into your detached ExpoKit app](expokit.html#changing-native-dependencies).
+Linking can mean [deep linking into apps similar to how you link to websites on the web](linking.html) or [linking native libraries into your detached ExpoKit app](expokit.html#changing-native-dependencies).
 
 ### Manifest
 
@@ -84,15 +84,15 @@ Another term we occasionally use for [Standalone app](#standalone-app).
 
 ### Simulator
 
-An emulator for iOS devices that you can run on macOS (or in [Snack](#snack)) to work on your app without having to have a physical device handy. 
+An emulator for iOS devices that you can run on macOS (or in [Snack](#snack)) to work on your app without having to have a physical device handy.
 
 ### Slug
 
-We use the word "slug" in [app.json](#app-json) to refer to the name to use for your app in its url. For example, the [Native Component List](https://expo.io/@community/native-component-list) app lives at https://expo.io/@community/native-component-list and the slug is native-component-list.
+We use the word "slug" in [app.json](#appjson) to refer to the name to use for your app in its url. For example, the [Native Component List](https://expo.io/@community/native-component-list) app lives at https://expo.io/@community/native-component-list and the slug is native-component-list.
 
 ### Snack
 
-[Snack](https://snack.expo.io/) is an in-browser development environment where you can build an Expo [experiences](#experience) without installing any tools on your phone or computer.
+[Snack](https://snack.expo.io/) is an in-browser development environment where you can build Expo [experiences](#experience) without installing any tools on your phone or computer.
 
 ### Standalone app
 
@@ -100,7 +100,7 @@ An application binary that can be submitted to the iOS App Store or Android Play
 
 ### XDE
 
-A desktop tool with a graphical user interface (GUI) for working with Expo projects. It mostly the same functionality as the [exp CLI tool](#cli) but is intended for people who are more comfortable with a GUI.
+A desktop tool with a graphical user interface (GUI) for working with Expo projects. It mostly the same functionality as the [exp CLI tool](#exp) but is intended for people who are more comfortable with a GUI.
 
 ### yarn
 
