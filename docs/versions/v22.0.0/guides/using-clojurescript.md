@@ -10,9 +10,9 @@ next___FILE: ./using-firebase.md
 If you're already convinced about ClojureScript and Expo and know what to do once you have figwheel running, you can just read this section. Otherwise, we encourage you to read the entire guide.
 
 ```javascript
-lein new exponent your-project
+lein new expo your-project
 
-cd your-project && npm install
+cd your-project && yarn install
 
 lein figwheel
 
@@ -44,12 +44,12 @@ It all begins with a [Simple Made Easy](https://www.infoq.com/presentations/Simp
 
 ```javascript
 # Default to use Reagent / Re-frame
-lein new exponent your-project
+lein new expo your-project
 
 # Or Om Next
-lein new exponent your-project +om
+lein new expo your-project +om
 
-cd your-project && npm install
+cd your-project && yarn install
 ```
 
 ## 2. Connect to a REPL
