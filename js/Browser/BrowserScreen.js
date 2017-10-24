@@ -26,6 +26,9 @@ import ExponentKernel from 'ExponentKernel';
 import Frame from 'Frame';
 import { connect } from 'react-redux';
 
+import isIPhoneX from '../Util/isIPhoneX';
+const IPHONE_X_TOP_OFFSET = isIPhoneX ? 20 : 0;
+
 class BrowserScreen extends React.Component {
   static propTypes = {
     url: PropTypes.string.isRequired,
@@ -394,12 +397,12 @@ let styles = StyleSheet.create({
     backgroundColor: 'black',
   },
   letterboxTopBar: {
-    height: 42,
+    height: 42 + IPHONE_X_TOP_OFFSET,
     alignItems: 'center',
   },
   letterboxText: {
     color: 'white',
-    paddingTop: 20,
+    paddingTop: 20 + IPHONE_X_TOP_OFFSET,
   },
   errorView: {
     position: 'absolute',
