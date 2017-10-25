@@ -9,6 +9,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.google.android.cameraview.AspectRatio;
 import com.google.android.cameraview.Constants;
+import com.google.zxing.BarcodeFormat;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,13 +24,37 @@ public class CameraModule extends ReactContextBaseJavaModule {
   private static final String TAG = "CameraModule";
 
   private static ReactApplicationContext mReactContext;
-  private static ScopedContext mScopedContext;
 
+  private static ScopedContext mScopedContext;
   static final int VIDEO_2160P = 0;
+
   static final int VIDEO_1080P = 1;
   static final int VIDEO_720P = 2;
   static final int VIDEO_480P = 3;
   static final int VIDEO_4x3 = 4;
+
+  public static final Map<String, Object> VALID_BARCODE_TYPES =
+      Collections.unmodifiableMap(new HashMap<String, Object>() {
+        {
+          put("aztec", BarcodeFormat.AZTEC.toString());
+          put("ean13", BarcodeFormat.EAN_13.toString());
+          put("ean8", BarcodeFormat.EAN_8.toString());
+          put("qr", BarcodeFormat.QR_CODE.toString());
+          put("pdf417", BarcodeFormat.PDF_417.toString());
+          put("upc_e", BarcodeFormat.UPC_E.toString());
+          put("datamatrix", BarcodeFormat.DATA_MATRIX.toString());
+          put("code39", BarcodeFormat.CODE_39.toString());
+          put("code93", BarcodeFormat.CODE_93.toString());
+          put("interleaved2of5", BarcodeFormat.ITF.toString());
+          put("codabar", BarcodeFormat.CODABAR.toString());
+          put("code128", BarcodeFormat.CODE_128.toString());
+          put("maxicode", BarcodeFormat.MAXICODE.toString());
+          put("rss14", BarcodeFormat.RSS_14.toString());
+          put("rssexpanded", BarcodeFormat.RSS_EXPANDED.toString());
+          put("upc_a", BarcodeFormat.UPC_A.toString());
+          put("upc_ean", BarcodeFormat.UPC_EAN_EXTENSION.toString());
+        }
+      });
 
   public CameraModule(ReactApplicationContext reactContext, ScopedContext scopedContext) {
     super(reactContext);
@@ -60,6 +85,7 @@ public class CameraModule extends ReactContextBaseJavaModule {
         put("AutoFocus", getAutoFocusConstants());
         put("WhiteBalance", getWhiteBalanceConstants());
         put("VideoQuality", getVideoQualityConstants());
+        put("BarCodeType", getBarCodeConstants());
       }
 
       private Map<String, Object> getTypeConstants() {
@@ -114,6 +140,10 @@ public class CameraModule extends ReactContextBaseJavaModule {
             put("4:3", VIDEO_4x3);
           }
         });
+      }
+
+      private Map<String, Object> getBarCodeConstants() {
+        return VALID_BARCODE_TYPES;
       }
     });
   }

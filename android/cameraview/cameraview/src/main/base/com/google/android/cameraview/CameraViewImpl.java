@@ -83,9 +83,13 @@ abstract class CameraViewImpl {
 
     abstract float getZoom();
 
-    public abstract void setWhiteBalance(int whiteBalance);
+    abstract void setWhiteBalance(int whiteBalance);
 
-    public abstract int getWhiteBalance();
+    abstract int getWhiteBalance();
+
+    abstract void setScanning(boolean isScanning);
+
+    abstract boolean getScanning();
 
     interface Callback {
 
@@ -96,6 +100,8 @@ abstract class CameraViewImpl {
         void onPictureTaken(byte[] data);
 
         void onVideoRecorded(String path);
+
+        void onFramePreview(byte[] data, int width, int height, int orientation);
 
     }
 

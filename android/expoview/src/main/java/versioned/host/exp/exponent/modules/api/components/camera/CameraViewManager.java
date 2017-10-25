@@ -10,6 +10,7 @@ import android.util.Base64;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
@@ -21,7 +22,9 @@ import com.google.android.cameraview.AspectRatio;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -31,7 +34,8 @@ import host.exp.exponent.utils.ExpFileUtils;
 public class CameraViewManager extends ViewGroupManager<ExpoCameraView> {
 
   public enum Events {
-    EVENT_CAMERA_READY("onCameraReady");
+    EVENT_CAMERA_READY("onCameraReady"),
+    EVENT_ON_BAR_CODE_READ("onBarCodeRead");
 
     private final String mName;
 
@@ -111,6 +115,23 @@ public class CameraViewManager extends ViewGroupManager<ExpoCameraView> {
   @ReactProp(name = "whiteBalance")
   public void setWhiteBalance(ExpoCameraView view, int whiteBalance) {
     view.setWhiteBalance(whiteBalance);
+  }
+
+  @ReactProp(name = "barCodeTypes")
+  public void setBarCodeTypes(ExpoCameraView view, ReadableArray barCodeTypes) {
+    if (barCodeTypes == null) {
+      return;
+    }
+    List<String> result = new ArrayList<>(barCodeTypes.size());
+    for (int i = 0; i < barCodeTypes.size(); i++) {
+      result.add(barCodeTypes.getString(i));
+    }
+    view.setBarCodeTypes(result);
+  }
+
+  @ReactProp(name = "barCodeScannerEnabled")
+  public void setScanning(ExpoCameraView view, boolean barCodeScannerEnabled) {
+    view.setScanning(barCodeScannerEnabled);
   }
 
   public void takePicture(ReadableMap options, Promise promise) {

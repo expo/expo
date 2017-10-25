@@ -6,6 +6,8 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.media.CamcorderProfile;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.media.ExifInterface;
 import android.util.Base64;
 import android.view.View;
@@ -18,12 +20,22 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.google.android.cameraview.CameraView;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.DecodeHintType;
+import com.google.zxing.MultiFormatReader;
+import com.google.zxing.PlanarYUVLuminanceSource;
+import com.google.zxing.Result;
+import com.google.zxing.common.HybridBinarizer;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.UUID;
@@ -40,12 +52,20 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
   private Queue<Promise> mPictureTakenPromises = new ConcurrentLinkedQueue<>();
   private Map<Promise, ReadableMap> mPictureTakenOptions = new ConcurrentHashMap<>();
   private Promise mVideoRecordedPromise;
+  private List<String> mBarCodeTypes = null;
+
+  // Concurrency lock for barcode scanner to avoid flooding the runtime
+  public static volatile boolean barCodeScannerTaskLock = false;
+
+  // Reader instance for the barcode scanner
+  private final MultiFormatReader mMultiFormatReader = new MultiFormatReader();
 
   public ExpoCameraView(ThemedReactContext themedReactContext) {
     super(themedReactContext);
 
     themedReactContext.addLifecycleEventListener(this);
     mEventEmitter = themedReactContext.getJSModule(RCTEventEmitter.class);
+    initBarcodeReader();
 
     addCallback(new Callback() {
       @Override
@@ -108,6 +128,14 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
           mVideoRecordedPromise = null;
         }
       }
+
+      @Override
+      public void onFramePreview(CameraView cameraView, byte[] data, int width, int height, int orientation) {
+        if (!ExpoCameraView.barCodeScannerTaskLock) {
+          ExpoCameraView.barCodeScannerTaskLock = true;
+          new ReaderAsyncTask(data, width, height, orientation).execute();
+        }
+      }
     });
   }
 
@@ -136,6 +164,10 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
     // @TODO figure out why there was a z order issue in the first place and fix accordingly.
     this.removeView(this.getView());
     this.addView(this.getView(), 0);
+  }
+
+  public void setBarCodeTypes(List<String> barCodeTypes) {
+    mBarCodeTypes = barCodeTypes;
   }
 
   private String getCacheFilename() throws IOException {
@@ -207,23 +239,6 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
 
   public void stopRecording() {
     super.stopRecording();
-  }
-
-  @Override
-  public void onHostResume() {
-    if (!Build.FINGERPRINT.contains("generic")) {
-      start();
-    }
-  }
-
-  @Override
-  public void onHostPause() {
-    stop();
-  }
-
-  @Override
-  public void onHostDestroy() {
-    stop();
   }
 
   private Bitmap rotateBitmap(Bitmap source, int angle) {
@@ -301,5 +316,112 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
     }
 
     return exifMap;
+  }
+
+  /**
+   * Initialize the barcode decoder.
+   * Supports all iOS codes except [code138, code39mod43, itf14]
+   * Additionally supports [codabar, code128, maxicode, rss14, rssexpanded, upc_a, upc_ean]
+   */
+  private void initBarcodeReader() {
+    EnumMap<DecodeHintType, Object> hints = new EnumMap<>(DecodeHintType.class);
+    EnumSet<BarcodeFormat> decodeFormats = EnumSet.noneOf(BarcodeFormat.class);
+
+    if (mBarCodeTypes != null) {
+      for (String code : mBarCodeTypes) {
+        String formatString = (String) CameraModule.VALID_BARCODE_TYPES.get(code);
+        if (formatString != null) {
+          decodeFormats.add(BarcodeFormat.valueOf(code));
+        }
+      }
+    }
+
+    hints.put(DecodeHintType.POSSIBLE_FORMATS, decodeFormats);
+    mMultiFormatReader.setHints(hints);
+  }
+
+  private void onBarCodeRead(WritableMap event) {
+    mEventEmitter.receiveEvent(
+        getId(),
+        CameraViewManager.Events.EVENT_ON_BAR_CODE_READ.toString(),
+        event
+    );
+  }
+
+  private class ReaderAsyncTask extends android.os.AsyncTask<Void, Void, Void> {
+    private byte[] mImageData;
+    private int mWidth;
+    private int mHeight;
+    private int mOrientation;
+
+    ReaderAsyncTask(byte[] imageData, int width, int height, int orientation) {
+      mImageData = imageData;
+      mWidth = width;
+      mHeight = height;
+      mOrientation = orientation;
+    }
+
+    @Override
+    protected Void doInBackground(Void... ignored) {
+      if (isCancelled()) {
+        return null;
+      }
+      // rotate for zxing if orientation is portrait
+      if (mOrientation == 0) {
+        byte[] rotated = new byte[mImageData.length];
+        for (int y = 0; y < mHeight; y++) {
+          for (int x = 0; x < mWidth; x++) {
+            rotated[x * mHeight + mHeight - y - 1] = mImageData[x + y * mWidth];
+          }
+        }
+        mWidth += mHeight;
+        mHeight = mWidth - mHeight;
+        mWidth -= mHeight;
+        mImageData = rotated;
+      }
+
+      try {
+        PlanarYUVLuminanceSource source = new PlanarYUVLuminanceSource(mImageData, mWidth, mHeight, 0, 0, mWidth, mHeight, false);
+        BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
+        final Result result = mMultiFormatReader.decodeWithState(bitmap);
+
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+          @Override
+          public void run() {
+            String type = result.getBarcodeFormat().toString();
+            if (mBarCodeTypes.contains(type)) {
+              WritableMap event = Arguments.createMap();
+              event.putString("data", result.getText());
+              event.putString("type", type);
+
+              ExpoCameraView.this.onBarCodeRead(event);
+            }
+          }
+        });
+      } catch (Throwable t) {
+        // Unhandled error, unsure what would cause this
+      } finally {
+        mMultiFormatReader.reset();
+        ExpoCameraView.barCodeScannerTaskLock = false;
+        return null;
+      }
+    }
+  }
+
+  @Override
+  public void onHostResume() {
+    if (!Build.FINGERPRINT.contains("generic")) {
+      start();
+    }
+  }
+
+  @Override
+  public void onHostPause() {
+    stop();
+  }
+
+  @Override
+  public void onHostDestroy() {
+    stop();
   }
 }

@@ -34,7 +34,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 
 @SuppressWarnings("deprecation")
-class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener, MediaRecorder.OnErrorListener {
+class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
+                                                MediaRecorder.OnErrorListener, Camera.PreviewCallback {
 
     private static final int INVALID_CAMERA_ID = -1;
 
@@ -95,6 +96,8 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
 
     private int mWhiteBalance;
 
+    private boolean mIsScanning;
+
     Camera1(Callback callback, PreviewImpl preview) {
         super(callback, preview);
         preview.setCallback(new PreviewImpl.Callback() {
@@ -119,7 +122,7 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
             setUpPreview();
         }
         mShowingPreview = true;
-        mCamera.startPreview();
+        startCameraPreview();
         return true;
     }
 
@@ -129,6 +132,7 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
             mCamera.stopPreview();
         }
         mShowingPreview = false;
+        mCamera.setPreviewCallback(null);
         if (mMediaRecorder != null) {
             mMediaRecorder.stop();
             mMediaRecorder.release();
@@ -153,13 +157,20 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
                 }
                 mCamera.setPreviewDisplay(mPreview.getSurfaceHolder());
                 if (needsToStopPreview) {
-                    mCamera.startPreview();
+                    startCameraPreview();
                 }
             } else {
                 mCamera.setPreviewTexture((SurfaceTexture) mPreview.getSurfaceTexture());
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void startCameraPreview() {
+        mCamera.startPreview();
+        if (mIsScanning) {
+            mCamera.setPreviewCallback(this);
         }
     }
 
@@ -291,7 +302,20 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
 
     @Override
     public int getWhiteBalance() {
-      return mWhiteBalance;
+        return mWhiteBalance;
+    }
+
+    @Override
+    void setScanning(boolean isScanning) {
+        if (isScanning == mIsScanning) {
+            return;
+        }
+        setScanningInternal(isScanning);
+    }
+
+    @Override
+    boolean getScanning() {
+        return mIsScanning;
     }
 
     @Override
@@ -321,6 +345,9 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
                     isPictureCaptureInProgress.set(false);
                     camera.cancelAutoFocus();
                     camera.startPreview();
+                    if (mIsScanning) {
+                        camera.setPreviewCallback(Camera1.this);
+                    }
                     mCallback.onPictureTaken(data);
                 }
             });
@@ -369,7 +396,7 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
             }
             mCamera.setDisplayOrientation(calcDisplayOrientation(displayOrientation));
             if (needsToStopPreview) {
-                mCamera.startPreview();
+                startCameraPreview();
             }
         }
     }
@@ -446,9 +473,10 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
         setAspectRatio(mAspectRatio);
         setZoomInternal(mZoom);
         setWhiteBalanceInternal(mWhiteBalance);
+        setScanningInternal(mIsScanning);
         mCamera.setParameters(mCameraParameters);
         if (mShowingPreview) {
-            mCamera.startPreview();
+            startCameraPreview();
         }
     }
 
@@ -624,6 +652,23 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
         }
     }
 
+    private void setScanningInternal(boolean isScanning) {
+        mIsScanning = isScanning;
+        if (isCameraOpened()) {
+            if (mIsScanning) {
+                mCamera.setPreviewCallback(this);
+            } else {
+                mCamera.setPreviewCallback(null);
+            }
+        }
+    }
+
+    @Override
+    public void onPreviewFrame(byte[] data, Camera camera) {
+        Camera.Size previewSize = mCameraParameters.getPreviewSize();
+        mCallback.onFramePreview(data, previewSize.width, previewSize.height, mDisplayOrientation);
+    }
+
     private void setUpMediaRecorder(String path, int maxDuration, int maxFileSize, boolean recordAudio, CamcorderProfile profile) {
         mMediaRecorder = new MediaRecorder();
         mCamera.unlock();
@@ -696,7 +741,7 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
     @Override
     public void onInfo(MediaRecorder mr, int what, int extra) {
         if ( what == MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED ||
-                what == MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED) {
+              what == MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED) {
             stopRecording();
         }
     }

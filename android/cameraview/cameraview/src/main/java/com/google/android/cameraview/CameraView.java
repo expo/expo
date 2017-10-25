@@ -214,6 +214,7 @@ public class CameraView extends FrameLayout {
         state.focusDepth = getFocusDepth();
         state.zoom = getZoom();
         state.whiteBalance = getWhiteBalance();
+        state.scanning = getScanning();
         return state;
     }
 
@@ -232,6 +233,7 @@ public class CameraView extends FrameLayout {
         setFocusDepth(ss.focusDepth);
         setZoom(ss.zoom);
         setWhiteBalance(ss.whiteBalance);
+        setScanning(ss.scanning);
     }
 
     /**
@@ -427,6 +429,10 @@ public class CameraView extends FrameLayout {
       return mImpl.getWhiteBalance();
     }
 
+    public void setScanning(boolean isScanning) { mImpl.setScanning(isScanning);}
+
+    public boolean getScanning() { return mImpl.getScanning(); }
+
     /**
      * Take a picture. The result will be returned to
      * {@link Callback#onPictureTaken(CameraView, byte[])}.
@@ -496,9 +502,16 @@ public class CameraView extends FrameLayout {
 
         @Override
         public void onVideoRecorded(String path) {
-          for (Callback callback : mCallbacks) {
-            callback.onVideoRecorded(CameraView.this, path);
-          }
+            for (Callback callback : mCallbacks) {
+                callback.onVideoRecorded(CameraView.this, path);
+            }
+        }
+
+        @Override
+        public void onFramePreview(byte[] data, int width, int height, int orientation) {
+            for (Callback callback : mCallbacks) {
+                callback.onFramePreview(CameraView.this, data, width, height, orientation);
+            }
         }
 
         public void reserveRequestLayoutOnOpen() {
@@ -524,6 +537,8 @@ public class CameraView extends FrameLayout {
 
         int whiteBalance;
 
+        boolean scanning;
+
         @SuppressWarnings("WrongConstant")
         public SavedState(Parcel source, ClassLoader loader) {
             super(source);
@@ -534,6 +549,7 @@ public class CameraView extends FrameLayout {
             focusDepth = source.readFloat();
             zoom = source.readFloat();
             whiteBalance = source.readInt();
+            scanning = source.readByte() != 0;
         }
 
         public SavedState(Parcelable superState) {
@@ -550,6 +566,7 @@ public class CameraView extends FrameLayout {
             out.writeFloat(focusDepth);
             out.writeFloat(zoom);
             out.writeInt(whiteBalance);
+            out.writeByte((byte) (scanning ? 1 : 0));
         }
 
         public static final Creator<SavedState> CREATOR
@@ -607,6 +624,9 @@ public class CameraView extends FrameLayout {
          * @param path       Path to recoredd video file.
          */
         public void onVideoRecorded(CameraView cameraView, String path) {
+        }
+
+        public void onFramePreview(CameraView cameraView, byte[] data, int width, int height, int orientation) {
         }
     }
 

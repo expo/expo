@@ -54,9 +54,11 @@ typedef NS_ENUM(NSInteger, EXCameraVideoResolution) {
 @property(nonatomic, strong) AVCaptureDeviceInput *videoCaptureDeviceInput;
 @property(nonatomic, strong) AVCaptureStillImageOutput *stillImageOutput;
 @property(nonatomic, strong) AVCaptureMovieFileOutput *movieFileOutput;
+@property(nonatomic, strong) AVCaptureMetadataOutput *metadataOutput;
 @property(nonatomic, strong) id runtimeErrorHandlingObserver;
 @property(nonatomic, assign) NSInteger presetCamera;
 @property(nonatomic, strong) AVCaptureVideoPreviewLayer *previewLayer;
+@property(nonatomic, strong) NSArray *barCodeTypes;
 @property(nonatomic, strong) EXCamera *camera;
 
 - (AVCaptureDevice *)deviceWithMediaType:(NSString *)mediaType
