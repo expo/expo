@@ -109,6 +109,10 @@ public class Exponent {
     mContext = context;
     mApplication = application;
 
+    // Ensure Spongy Castle installed so the security providers don't change
+    // non-deterministically during the process's lifetime
+    Exponent.getBouncyCastleProvider();
+
     NativeModuleDepsProvider.initialize(application);
     NativeModuleDepsProvider.getInstance().inject(Exponent.class, this);
 
