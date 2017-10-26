@@ -6,7 +6,7 @@ As trendy as it is these days, not every app has to use emoji for all icons 😳
 
 ## @expo/vector-icons
 
-This library is installed by default on the template project that you create through XDE. (If you're adding it to an existing project, you'll need to follow the special instructions in [Existing Projects](#for-existing-projects) below). It includes eight icon sets, you can browse all of the icons using the [@expo/vector-icons directory](https://exponent.github.io/vector-icons/).
+This library is installed by default on the template project that you create through XDE. (If you're adding it to an existing project, you'll need to follow the special instructions in [Existing Projects](#for-existing-projects) below). It includes eight icon sets, you can browse all of the icons using the [@expo/vector-icons directory](https://expo.github.io/vector-icons/).
 
 ![](./vector-icons-directory.png)
 
@@ -28,22 +28,6 @@ This component loads the Ionicons font if it hasn't been loaded already, and ren
 `import { Ionicons } from '@expo/vector-icons';` instead of.. `import Ionicons from 'react-native-vector-icons/Ionicons';`.
 
 > **Note:** As with [any custom font](using-custom-fonts.html#using-custom-fonts) in Expo, you may want to preload icon fonts before rendering your app. The font object is available as a static property on the font component, so in the case above it is `Ionicons.font`, which evaluates to `{ionicons: require('path/to/ionicons.ttf')}`. [Read more about preloading assets](assets.html#all-about-assets).
-
-## Existing Projects
-
-`@expo/vector-icons` uses .ttf fonts as assets. When you add this library to an existing Experience, you'll need to make sure the following package option appears in your app.json:
-
-```javascript
-// app.json
-{
-  "expo": {
-
-    "packagerOpts": {
-      "assetExts": ["ttf"]
-    }
-  }
-}
-```
 
 ## Custom Icon Fonts
 
