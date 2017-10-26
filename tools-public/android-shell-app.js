@@ -164,7 +164,11 @@ function getSplashScreenBackgroundColor(manifest) {
   return backgroundColor;
 }
 
-// if resizeMode is 'cover' we should show LoadingView
+/*
+  if resizeMode is 'cover' we should show LoadingView:
+  using an ImageView, unlike having a BitmapDrawable
+  provides a fullscreen image without distortions
+*/
 function shouldShowLoadingView(manifest) {
   return (
     (manifest.android &&
@@ -373,8 +377,8 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
   if (shouldShowLoadingView(manifest)) {
     shell.sed(
       '-i',
-      'SHOW_LOADING_VIEW = false',
-      'SHOW_LOADING_VIEW = true',
+      'SHOW_LOADING_VIEW_IN_SHELL_APP = false',
+      'SHOW_LOADING_VIEW_IN_SHELL_APP = true',
       `${shellPath}expoview/src/main/java/host/exp/exponent/Constants.java`
     );
   }
