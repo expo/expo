@@ -91,9 +91,7 @@ class Header extends React.Component {
                   .map(version => {
                     return (
                       <option key={version} value={version}>
-                        {version === 'latest'
-                          ? 'latest (' + LATEST_VERSION + ')'
-                          : version}
+                        {version === 'latest' ? 'latest (' + LATEST_VERSION + ')' : version}
                       </option>
                     );
                   })

@@ -28,9 +28,7 @@ function updateAllLinks(filePaths) {
     const md = fs.readFileSync(path, 'utf-8');
     const ast = remarkParser.parse(md);
     visit(ast, 'link', node => {
-      let url = node.url
-        .replace('https://docs.getexponent.com', '')
-        .replace('.html', '');
+      let url = node.url.replace('https://docs.getexponent.com', '').replace('.html', '');
 
       if (linkMap[url]) {
         console.log(`Changing ${url} to ${linkMap[url]}`);

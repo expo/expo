@@ -6,16 +6,11 @@ import { LATEST_VERSION, replaceVersionInUrl } from '../utils/url';
 
 class AlgoliaSearch extends React.Component {
   componentWillReceiveProps(nextProps) {
-    if (
-      this.props.activeVersion &&
-      this.props.activeVersion !== nextProps.activeVersion
-    ) {
+    if (this.props.activeVersion && this.props.activeVersion !== nextProps.activeVersion) {
       this.docsearch.algoliaOptions = {
         ...this.docsearch.algoliaOptions,
         facetFilters: [
-          `tags:${nextProps.activeVersion === 'latest'
-            ? LATEST_VERSION
-            : nextProps.activeVersion}`,
+          `tags:${nextProps.activeVersion === 'latest' ? LATEST_VERSION : nextProps.activeVersion}`,
         ],
       };
     }
@@ -62,8 +57,7 @@ class AlgoliaSearch extends React.Component {
       combos: [
         {
           keyCodes: [16, 191], // shift + / (otherwise known as '?')
-          callback: () =>
-            setTimeout(() => document.getElementById('docsearch').focus(), 16),
+          callback: () => setTimeout(() => document.getElementById('docsearch').focus(), 16),
         },
       ],
     });

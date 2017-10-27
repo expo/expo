@@ -15,11 +15,7 @@ export default {
   steps: (branch, tag, pr) => {
     if (tag) {
       // all we need to do when there's a tag is deploy
-      return [
-        deploy(branch, tag, pr),
-        CI.waitStep(),
-        updateSearchIndex(branch, tag, pr),
-      ];
+      return [deploy(branch, tag, pr), CI.waitStep(), updateSearchIndex(branch, tag, pr)];
     }
     let steps = [build(branch, tag, pr)];
     if (!pr) {
@@ -75,13 +71,9 @@ const build = (branch, tag, pr) => ({
 });
 
 const deploy = (branch, tag, pr) => ({
-  name: `:rocket: Deploy to ${tag && !pr
-    ? 'Production'
-    : pr ? 'Dev' : 'Staging'}`,
+  name: `:rocket: Deploy to ${tag && !pr ? 'Production' : pr ? 'Dev' : 'Staging'}`,
   concurrency: 1,
-  concurrency_group: `docs/${tag && !pr
-    ? 'prod'
-    : pr ? `pr-${pr}` : 'staging'}/deploy`,
+  concurrency_group: `docs/${tag && !pr ? 'prod' : pr ? `pr-${pr}` : 'staging'}/deploy`,
   async command() {
     if (!pr && branch !== 'master' && !tag) {
       return;
@@ -148,13 +140,9 @@ const updateSearchIndex = (branch, tag, pr) => ({
 
     Log.collapsed(':open_mouth: Updating search index...');
 
-    await spawnAsync(
-      'yarn',
-      ['run', 'update-search-index', '--', 'docs.expo.io'],
-      {
-        stdio: 'inherit',
-      }
-    );
+    await spawnAsync('yarn', ['run', 'update-search-index', '--', 'docs.expo.io'], {
+      stdio: 'inherit',
+    });
   },
 });
 
@@ -166,9 +154,7 @@ const tagRelease = {
     await git(`tag ${tag}`);
     Log.collapsed(':github: Pushing Release...');
     await git(`push origin ${tag}`); // upload more steps
-    await global.currentPipeline.upload(
-      await global.currentPipeline.steps(tag, tag, null)
-    );
+    await global.currentPipeline.upload(await global.currentPipeline.steps(tag, tag, null));
   },
 };
 
@@ -177,11 +163,7 @@ function pad(n) {
 }
 
 async function makeVersionName() {
-  const hash = (await git(
-    `rev-parse --short=12 ${process.env.BUILDKITE_COMMIT}`
-  )).trim();
+  const hash = (await git(`rev-parse --short=12 ${process.env.BUILDKITE_COMMIT}`)).trim();
   const today = new Date();
-  return `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(
-    today.getDate()
-  )}-${hash}`;
+  return `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}-${hash}`;
 }

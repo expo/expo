@@ -124,11 +124,7 @@ class Wrapper extends React.Component {
           links: {},
         };
         Object.keys(section.links).forEach(
-          title =>
-            (newSection.links[title] = replaceVersionInUrl(
-              section.links[title],
-              'latest'
-            ))
+          title => (newSection.links[title] = replaceVersionInUrl(section.links[title], 'latest'))
         );
         newRoutes.push(newSection);
       });
@@ -160,7 +156,7 @@ class Wrapper extends React.Component {
       }
     }
 
-    const Overlay = props =>
+    const Overlay = props => (
       <div
         {...props}
         css={{
@@ -175,7 +171,8 @@ class Wrapper extends React.Component {
           WebkitOverflowScrolling: 'touch',
           display: props.open ? 'block' : 'none',
         }}
-      />;
+      />
+    );
 
     return (
       <div>
@@ -287,10 +284,7 @@ class Wrapper extends React.Component {
             />
           </Link>
 
-          <Button
-            onClick={() => this.setState({ sidebarOpen: true })}
-            value="Menu"
-          />
+          <Button onClick={() => this.setState({ sidebarOpen: true })} value="Menu" />
         </nav>
       </div>
     );

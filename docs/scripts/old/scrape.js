@@ -148,11 +148,7 @@ const processPage = (document, callback) => {
     }
 
     // Replace
-    if (
-      node.type === `link` &&
-      node.children[0] &&
-      node.children[0].type === `image`
-    ) {
+    if (node.type === `link` && node.children[0] && node.children[0].type === `image`) {
       //console.log(`replacing this node`, node)
       //node = node.children[0]
       //delete node.position
@@ -166,9 +162,7 @@ const processPage = (document, callback) => {
     replaceNode(node, ast);
   });
 
-  if (
-    document.old_permalink === `/versions/v12.0.0/guides/development-mode.html`
-  ) {
+  if (document.old_permalink === `/versions/v12.0.0/guides/development-mode.html`) {
     const links = select(ast, `link`);
     const images = select(ast, `image`);
     console.log(JSON.stringify(links, null, 4));

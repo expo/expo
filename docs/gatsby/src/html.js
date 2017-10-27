@@ -28,12 +28,7 @@ class Html extends Component {
     const head = Helmet.rewind();
     let css;
     if (env === `production`) {
-      css = (
-        <style
-          id="gatsby-inlined-css"
-          dangerouslySetInnerHTML={{ __html: stylesStr }}
-        />
-      );
+      css = <style id="gatsby-inlined-css" dangerouslySetInnerHTML={{ __html: stylesStr }} />;
     }
 
     let gatsbyEnv = (
@@ -48,20 +43,11 @@ class Html extends Component {
         <head>
           <meta charSet="utf-8" />
           <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-          <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0"
-          />
-          <link
-            rel="stylesheet"
-            href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css"
-          />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
           <link rel="icon" type="image/png" href={favicon} sizes="32x32" />
 
-          <link
-            rel="stylesheet"
-            href="https://unpkg.com/tippy.js@1.2.0/dist/tippy.css"
-          />
+          <link rel="stylesheet" href="https://unpkg.com/tippy.js@1.2.0/dist/tippy.css" />
 
           {this.props.headComponents}
           <TypographyStyle typography={typography} />
@@ -72,10 +58,7 @@ class Html extends Component {
           {head.link.toComponent()}
         </head>
         <body>
-          <div
-            id="___gatsby"
-            dangerouslySetInnerHTML={{ __html: this.props.body }}
-          />
+          <div id="___gatsby" dangerouslySetInnerHTML={{ __html: this.props.body }} />
           {this.props.postBodyComponents}
         </body>
       </html>

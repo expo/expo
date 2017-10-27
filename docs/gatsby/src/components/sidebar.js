@@ -20,7 +20,7 @@ class Sidebar extends React.Component {
       ...otherProps
     } = this.props;
 
-    const Header = ({ i, link, children }) =>
+    const Header = ({ i, link, children }) => (
       <h3
         css={{
           color: `rgb(136, 136, 136)`,
@@ -39,9 +39,10 @@ class Sidebar extends React.Component {
           to={link}>
           {children}
         </Link>
-      </h3>;
+      </h3>
+    );
 
-    const List = ({ children }) =>
+    const List = ({ children }) => (
       <ul
         css={{
           listStyle: `none`,
@@ -49,9 +50,10 @@ class Sidebar extends React.Component {
           marginLeft: 0,
         }}>
         {children}
-      </ul>;
+      </ul>
+    );
 
-    const SidebarLink = props =>
+    const SidebarLink = props => (
       <Link
         {...props}
         activeClassName="current"
@@ -62,7 +64,8 @@ class Sidebar extends React.Component {
           color: `inherit`,
         }}
         onClick={() => this.props.close && this.props.close()}
-      />;
+      />
+    );
 
     return (
       <div {...otherProps}>
@@ -75,7 +78,6 @@ class Sidebar extends React.Component {
               paddingLeft: 0, // For desktop, let main wrapper take care of padding on left.
             },
           }}>
-
           <div
             css={{
               borderBottom: `1px solid #ccc`,
@@ -87,7 +89,6 @@ class Sidebar extends React.Component {
                 display: `none`,
               },
             }}>
-
             <div
               css={{
                 display: 'flex',
@@ -109,9 +110,7 @@ class Sidebar extends React.Component {
                   return (
                     <option key={version} value={version}>
                       SDK &nbsp;
-                      {version === 'latest'
-                        ? 'latest (' + LATEST_VERSION + ')'
-                        : version}
+                      {version === 'latest' ? 'latest (' + LATEST_VERSION + ')' : version}
                     </option>
                   );
                 })}
@@ -142,7 +141,7 @@ class Sidebar extends React.Component {
                   {section.title}
                 </Header>
                 <List>
-                  {Object.keys(section.links).map(title =>
+                  {Object.keys(section.links).map(title => (
                     <li key={title} css={{ marginBottom: 7 }}>
                       <SidebarLink to={section.links[title]}>
                         {/* Needed for search */}
@@ -150,7 +149,7 @@ class Sidebar extends React.Component {
                         {title}
                       </SidebarLink>
                     </li>
-                  )}
+                  ))}
                 </List>
               </div>
             );

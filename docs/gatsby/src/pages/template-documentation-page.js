@@ -68,9 +68,7 @@ class DocsPage extends React.Component {
           ]}
           link={link}
         />
-        <h1>
-          {post.frontmatter.title}
-        </h1>
+        <h1>{post.frontmatter.title}</h1>
         <div dangerouslySetInnerHTML={{ __html: post.html }} />
         <hr />
         <div
@@ -78,8 +76,7 @@ class DocsPage extends React.Component {
             textAlign: `center`,
             marginBottom: rhythm(1 / 2),
           }}>
-          Still have questions?{' '}
-          <a href="https://forums.expo.io/">Ask on our forums!</a>
+          Still have questions? <a href="https://forums.expo.io/">Ask on our forums!</a>
           <div>
             <a
               css={{
@@ -91,8 +88,7 @@ class DocsPage extends React.Component {
                 (post.fields.isIndex ? '/index' : '') +
                 '.md'
               }>
-              You can edit the content above on GitHub and send us a pull
-              request!
+              You can edit the content above on GitHub and send us a pull request!
             </a>
           </div>
         </div>

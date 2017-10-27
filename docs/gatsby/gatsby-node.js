@@ -2,11 +2,7 @@ const _ = require('lodash');
 const Promise = require('bluebird');
 const path = require('path');
 const parseFilepath = require('parse-filepath');
-const {
-  replaceVersionInUrl,
-  getVersionFromUrl,
-  LATEST_VERSION,
-} = require('./src/utils/url');
+const { replaceVersionInUrl, getVersionFromUrl, LATEST_VERSION } = require('./src/utils/url');
 
 exports.createPages = ({ boundActionCreators, graphql }) => {
   const { createPage } = boundActionCreators;
@@ -25,18 +21,19 @@ exports.createPages = ({ boundActionCreators, graphql }) => {
     resolve(
       graphql(
         `
-        {
-          allMarkdownRemark(limit: 10000) {
-            edges {
-              node {
-                fields {
-                  isIndex
-                  fileSlug
+          {
+            allMarkdownRemark(limit: 10000) {
+              edges {
+                node {
+                  fields {
+                    isIndex
+                    fileSlug
+                  }
                 }
               }
             }
           }
-        }`
+        `
       ).then(result => {
         if (result.errors) {
           reject(new Error(result.errors));
@@ -56,10 +53,8 @@ exports.createPages = ({ boundActionCreators, graphql }) => {
           if (getVersionFromUrl(edge.node.fields.fileSlug) === LATEST_VERSION) {
             createPage({
               path: edge.node.fields.isIndex
-                ? replaceVersionInUrl(edge.node.fields.fileSlug, 'latest') +
-                  '/index.html'
-                : replaceVersionInUrl(edge.node.fields.fileSlug, 'latest') +
-                  '.html',
+                ? replaceVersionInUrl(edge.node.fields.fileSlug, 'latest') + '/index.html'
+                : replaceVersionInUrl(edge.node.fields.fileSlug, 'latest') + '.html',
               component: docsPage,
               context: {
                 fileSlug: edge.node.fields.fileSlug,

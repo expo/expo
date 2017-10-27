@@ -50,8 +50,7 @@ const features = [
     links: [
       {
         title: 'MDN',
-        url:
-          'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals',
+        url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals',
       },
       {
         title: '2ality',
@@ -90,13 +89,11 @@ const features = [
     links: [
       {
         title: 'MDN',
-        url:
-          'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Trailing_commas',
+        url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Trailing_commas',
       },
       {
         title: 'Exploring ES2017',
-        url:
-          'http://exploringjs.com/es2016-es2017/ch_trailing-comma-parameters.html',
+        url: 'http://exploringjs.com/es2016-es2017/ch_trailing-comma-parameters.html',
       },
     ],
     specification: 'ES2017',
@@ -104,10 +101,7 @@ const features = [
   {
     name: 'Shared memory (SharedArrayBuffer, Atomics)',
     support: {
-      expo: [
-        '⚠️',
-        `(Android and iOS 10.3+, iOS 10.3 doesn't implement byteLength)`,
-      ],
+      expo: ['⚠️', `(Android and iOS 10.3+, iOS 10.3 doesn't implement byteLength)`],
       jsc: ['Android', 'iOS 10.3+'],
     },
     links: [
@@ -131,10 +125,7 @@ const features = [
   {
     name: 'Object static methods (entries, values, getOwnPropertyDescriptors)',
     support: {
-      expo: [
-        '⚠️',
-        '(Android and iOS 10+, and only Object.entries and Object.values on iOS 9)',
-      ],
+      expo: ['⚠️', '(Android and iOS 10+, and only Object.entries and Object.values on iOS 9)'],
       jsc: ['Android', 'iOS 10.3+'],
       polyfill: 'Polyfills for Object.entries and Object.values',
     },
@@ -146,13 +137,11 @@ const features = [
       },
       {
         title: 'Exploring ES2017 (entries, values)',
-        url:
-          'http://exploringjs.com/es2016-es2017/ch_object-entries-object-values.html',
+        url: 'http://exploringjs.com/es2016-es2017/ch_object-entries-object-values.html',
       },
       {
         title: 'Exploring ES2017 (getOwnPropertyDescriptors)',
-        url:
-          'http://exploringjs.com/es2016-es2017/ch_object-getownpropertydescriptors.html',
+        url: 'http://exploringjs.com/es2016-es2017/ch_object-getownpropertydescriptors.html',
       },
     ],
     specification: 'ES2017',
@@ -206,8 +195,7 @@ const features = [
       },
       {
         title: 'Exploring ES2017',
-        url:
-          'http://exploringjs.com/es2016-es2017/ch_exponentiation-operator.html',
+        url: 'http://exploringjs.com/es2016-es2017/ch_exponentiation-operator.html',
       },
     ],
     specification: 'ES2016',
@@ -243,8 +231,7 @@ const features = [
       },
       {
         title: 'Exploring ES2016',
-        url:
-          'http://exploringjs.com/es2016-es2017/ch_array-prototype-includes.html',
+        url: 'http://exploringjs.com/es2016-es2017/ch_array-prototype-includes.html',
       },
     ],
     specification: 'ES2016',
@@ -270,8 +257,7 @@ const features = [
     specification: 'ES2015',
   },
   {
-    name:
-      'Array instance methods (entries, keys, values, find, findIndex, copyWithin, fill)',
+    name: 'Array instance methods (entries, keys, values, find, findIndex, copyWithin, fill)',
     support: {
       expo: true,
       jsc: ['Android', 'iOS 9+'],
@@ -285,8 +271,7 @@ const features = [
       },
       {
         title: 'Exploring ES6',
-        url:
-          'http://exploringjs.com/es6/ch_arrays.html#sec_new-array-prototype-methods',
+        url: 'http://exploringjs.com/es6/ch_arrays.html#sec_new-array-prototype-methods',
       },
     ],
     specification: 'ES2015',
@@ -301,8 +286,7 @@ const features = [
     links: [
       {
         title: 'Exploring ES6',
-        url:
-          'http://exploringjs.com/es6/ch_numbers.html#sec_new-integer-literals',
+        url: 'http://exploringjs.com/es6/ch_numbers.html#sec_new-integer-literals',
       },
     ],
     specification: 'ES2015',
@@ -323,8 +307,7 @@ const features = [
       },
       {
         title: 'Exploring ES6',
-        url:
-          'http://exploringjs.com/es6/ch_numbers.html#sec_new-static-number-props',
+        url: 'http://exploringjs.com/es6/ch_numbers.html#sec_new-static-number-props',
       },
     ],
     specification: 'ES2015',
@@ -433,8 +416,7 @@ const features = [
     links: [
       {
         title: 'MDN',
-        url:
-          'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals',
+        url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals',
       },
       {
         title: 'Exploring ES6',
@@ -453,18 +435,15 @@ const features = [
     links: [
       {
         title: 'MDN',
-        url:
-          'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/block',
+        url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/block',
       },
       {
         title: 'MDN (let)',
-        url:
-          'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let',
+        url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let',
       },
       {
         title: 'MDN (const)',
-        url:
-          'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const',
+        url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const',
       },
       {
         title: '2ality',
@@ -512,8 +491,7 @@ const features = [
       },
       {
         title: 'Exploring ES6',
-        url:
-          'http://exploringjs.com/es6/ch_parameter-handling.html#sec_parameter-default-values',
+        url: 'http://exploringjs.com/es6/ch_parameter-handling.html#sec_parameter-default-values',
       },
     ],
     specification: 'ES2015',
@@ -533,8 +511,7 @@ const features = [
       },
       {
         title: 'Exploring ES6',
-        url:
-          'http://exploringjs.com/es6/ch_parameter-handling.html#sec_rest-parameters',
+        url: 'http://exploringjs.com/es6/ch_parameter-handling.html#sec_rest-parameters',
       },
     ],
     specification: 'ES2015',
@@ -554,8 +531,7 @@ const features = [
       },
       {
         title: 'Exploring ES6',
-        url:
-          'http://exploringjs.com/es6/ch_parameter-handling.html#sec_spread-operator',
+        url: 'http://exploringjs.com/es6/ch_parameter-handling.html#sec_spread-operator',
       },
     ],
     specification: 'ES2015',
@@ -621,13 +597,11 @@ const features = [
     specification: 'ES2015',
   },
   {
-    name:
-      'Object static methods (assign, is, setPrototypeOf, getOwnPropertySymbols)',
+    name: 'Object static methods (assign, is, setPrototypeOf, getOwnPropertySymbols)',
     support: {
       expo: true,
       jsc: ['Android', 'iOS 9+'],
-      polyfill:
-        'Polyfill for Object.assign (overrides native implementation with stricter one)',
+      polyfill: 'Polyfill for Object.assign (overrides native implementation with stricter one)',
     },
     links: [
       {
@@ -637,8 +611,7 @@ const features = [
       },
       {
         title: 'Exploring ES6',
-        url:
-          'http://exploringjs.com/es6/ch_oop-besides-classes.html#sec_new-methods-object',
+        url: 'http://exploringjs.com/es6/ch_oop-besides-classes.html#sec_new-methods-object',
       },
     ],
     specification: 'ES2015',
@@ -679,8 +652,7 @@ const features = [
       },
       {
         title: 'Exploring ES6',
-        url:
-          'http://exploringjs.com/es6/ch_oop-besides-classes.html#_property-value-shorthands-1',
+        url: 'http://exploringjs.com/es6/ch_oop-besides-classes.html#_property-value-shorthands-1',
       },
     ],
     specification: 'ES2015',
@@ -700,13 +672,11 @@ const features = [
       },
       {
         title: 'Exploring ES6 (properties)',
-        url:
-          'http://exploringjs.com/es6/ch_oop-besides-classes.html#_computed-property-keys-1',
+        url: 'http://exploringjs.com/es6/ch_oop-besides-classes.html#_computed-property-keys-1',
       },
       {
         title: 'Exploring ES6 (methods)',
-        url:
-          'http://exploringjs.com/es6/ch_classes.html#_computed-method-names',
+        url: 'http://exploringjs.com/es6/ch_classes.html#_computed-method-names',
       },
     ],
     specification: 'ES2015',
@@ -721,8 +691,7 @@ const features = [
     links: [
       {
         title: 'MDN',
-        url:
-          'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes',
+        url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes',
       },
       {
         title: 'Exploring ES6',
@@ -741,13 +710,11 @@ const features = [
     links: [
       {
         title: 'MDN (import)',
-        url:
-          'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import',
+        url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import',
       },
       {
         title: 'MDN (export)',
-        url:
-          'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export',
+        url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export',
       },
       {
         title: 'Exploring ES6',
@@ -766,8 +733,7 @@ const features = [
     links: [
       {
         title: 'MDN',
-        url:
-          'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map',
+        url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map',
       },
       {
         title: 'Exploring ES6',
@@ -786,8 +752,7 @@ const features = [
     links: [
       {
         title: 'MDN',
-        url:
-          'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set',
+        url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set',
       },
       {
         title: 'Exploring ES6',
@@ -844,8 +809,7 @@ const features = [
     links: [
       {
         title: 'MDN',
-        url:
-          'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays',
+        url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays',
       },
       {
         title: 'Exploring ES6',
@@ -911,8 +875,7 @@ const features = [
       },
       {
         title: 'Exploring ES6',
-        url:
-          'http://exploringjs.com/es6/ch_regexp.html#sec_regexp-data-property-flags',
+        url: 'http://exploringjs.com/es6/ch_regexp.html#sec_regexp-data-property-flags',
       },
     ],
     specification: 'ES2015',
@@ -996,17 +959,9 @@ const features = [
 ];
 
 function renderMarkdownTable() {
-  let headers = [
-    'Feature',
-    'Works with Expo',
-    'Links',
-    'Spec',
-    'Implementation',
-  ];
+  let headers = ['Feature', 'Works with Expo', 'Links', 'Spec', 'Implementation'];
   let headerRow = `|${headers.join('|')}|`;
-  let separatorRow = `|${headers
-    .map(header => '-'.repeat(header.length))
-    .join('|')}|`;
+  let separatorRow = `|${headers.map(header => '-'.repeat(header.length)).join('|')}|`;
   let rows = features.map(feature => `|${renderRowCells(feature).join('|')}|`);
   return [headerRow, separatorRow, ...rows].join('\n');
 }
@@ -1018,9 +973,7 @@ function renderRowCells(feature) {
   cells.push(renderWorksWithExpo(support.expo));
 
   if (Array.isArray(feature.links)) {
-    let markdownLinks = feature.links.map(
-      link => `[${link.title}](${link.url})`
-    );
+    let markdownLinks = feature.links.map(link => `[${link.title}](${link.url})`);
     cells.push(markdownLinks.join('<br />'));
   } else {
     assert(!feature.links, `Unknown links value: ${feature.links}`);
@@ -1071,9 +1024,7 @@ function renderWorksWithExpo(expoSupport) {
     return item ? '✅' : '❌';
   });
 
-  return (
-    '<span class="centered-text-cell">' + expoSupport.join('<br />') + '</span>'
-  );
+  return '<span class="centered-text-cell">' + expoSupport.join('<br />') + '</span>';
 }
 
 if (require.main === module) {

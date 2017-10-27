@@ -5,8 +5,7 @@ class NotFoundPage extends React.Component {
     return (
       <div>
         <h1>Page Not Found</h1>
-        <a href="mailto:support@expo.io">Holler</a> at us if you think this is a
-        bug.
+        <a href="mailto:support@expo.io">Holler</a> at us if you think this is a bug.
       </div>
     );
   }
