@@ -20,8 +20,7 @@ try {
 
 let ExpSchema;
 try {
-  ExpSchema = require(`../../server/www/xdl-schemas/${sdkVersion}-schema.json`)
-    .schema;
+  ExpSchema = require(`../../server/www/xdl-schemas/${sdkVersion}-schema.json`).schema;
 } catch (e) {
   console.error(e.toString());
 }
@@ -41,10 +40,7 @@ if (!process.argv[2]) {
 const stream = fs.createWriteStream(filePath);
 
 let preamble;
-if (
-  sdkVersion === 'UNVERSIONED' ||
-  parseInt(sdkVersion.split('.')[0], 10) > 17
-) {
+if (sdkVersion === 'UNVERSIONED' || parseInt(sdkVersion.split('.')[0], 10) > 17) {
   preamble = `
 \`app.json\` is your go-to place for configuring parts of your app that don't belong in code. It is located at the root of your project next to your \`package.json\`. It looks something like this:
 
@@ -78,17 +74,12 @@ stream.once('open', function(fd) {
   const readableSchema = [];
   Object.keys(ExpSchema.properties).forEach(key => {
     if (shouldDisplayProperty(ExpSchema.properties[key])) {
-      readableSchema.push(
-        extractData(key, ExpSchema.properties[key], ExpSchema)
-      );
+      readableSchema.push(extractData(key, ExpSchema.properties[key], ExpSchema));
     }
   });
 
   stream.write('---\n');
-  if (
-    sdkVersion === 'UNVERSIONED' ||
-    parseInt(sdkVersion.split('.')[0], 10) > 17
-  ) {
+  if (sdkVersion === 'UNVERSIONED' || parseInt(sdkVersion.split('.')[0], 10) > 17) {
     stream.write('title: Configuration with app.json\n');
   } else {
     stream.write('title: Configuration with exp.json\n');
@@ -104,9 +95,7 @@ function writePropertiesToStream(stream, schema, depth = 0) {
   schema.forEach(prop => {
     let depthSpacing = new Array(depth).join(' ');
     stream.write(`\n${depthSpacing}- \`${prop.key}\`\n`);
-    stream.write(
-      `\n${depthSpacing}   ${propertyDescription(prop, depthSpacing)}`
-    );
+    stream.write(`\n${depthSpacing}   ${propertyDescription(prop, depthSpacing)}`);
     if (prop.children) {
       writePropertiesToStream(stream, prop.children, depth + 4);
     }
