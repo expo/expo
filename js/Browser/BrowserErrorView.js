@@ -24,9 +24,7 @@ export default class BrowserErrorView extends React.Component {
     let isShowingDetails = false;
     if (props.error && props.error.manifest) {
       // if we have a manifest and it has dev=true, go ahead and show details immediately.
-      isShowingDetails =
-        props.error.manifest.packagerOpts &&
-        props.error.manifest.packagerOpts.dev;
+      isShowingDetails = props.error.manifest.packagerOpts && props.error.manifest.packagerOpts.dev;
     }
     this.state = {
       isShowingDetails,
@@ -40,12 +38,8 @@ export default class BrowserErrorView extends React.Component {
     if (this.state.isShowingDetails) {
       detailContent = (
         <View style={styles.detailsContainer}>
-          <Text style={styles.originalUrl}>
-            {error.originalUrl}
-          </Text>
-          <Text style={styles.detail}>
-            {`"${error.message}" (code ${error.code})`}
-          </Text>
+          <Text style={styles.originalUrl}>{error.originalUrl}</Text>
+          <Text style={styles.detail}>{`"${error.message}" (code ${error.code})`}</Text>
         </View>
       );
     } else {
@@ -63,10 +57,7 @@ export default class BrowserErrorView extends React.Component {
 
     if (error.code !== '404' || this.props.isShell) {
       actionButtons.push(
-        <Button
-          onPress={onRefresh}
-          style={styles.button}
-          key="try-again-button">
+        <Button onPress={onRefresh} style={styles.button} key="try-again-button">
           Try Again
         </Button>
       );
@@ -74,20 +65,14 @@ export default class BrowserErrorView extends React.Component {
 
     if (!this.props.isShell) {
       actionButtons.push(
-        <Button
-          onPress={this._goToHome.bind(this)}
-          style={styles.button}
-          key="home-button">
+        <Button onPress={this._goToHome.bind(this)} style={styles.button} key="home-button">
           Go back to Expo Home
         </Button>
       );
     }
 
     return (
-      <ScrollView
-        alwaysBounceVertical={false}
-        {...props}
-        style={[styles.container, style]}>
+      <ScrollView alwaysBounceVertical={false} {...props} style={[styles.container, style]}>
         <Text style={styles.message}>{message}</Text>
         <View style={styles.buttonContainer}>
           {actionButtons}

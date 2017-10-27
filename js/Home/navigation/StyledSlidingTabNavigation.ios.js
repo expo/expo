@@ -56,11 +56,7 @@ export default class StyledSlidingTabNavigation extends React.Component {
       outputRange,
     });
 
-    return (
-      <Animated.Text style={{ color, fontSize: 14 }}>
-        {title}
-      </Animated.Text>
-    );
+    return <Animated.Text style={{ color, fontSize: 14 }}>{title}</Animated.Text>;
   };
 }
 

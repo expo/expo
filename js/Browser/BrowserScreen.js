@@ -46,9 +46,7 @@ class BrowserScreen extends React.Component {
       isNuxFinished,
     } = data.browser;
     let isForegrounded = url === foregroundTaskUrl && !isHomeVisible;
-    let shellTask = shellManifestUrl
-      ? data.browser.tasks.get(shellManifestUrl)
-      : null;
+    let shellTask = shellManifestUrl ? data.browser.tasks.get(shellManifestUrl) : null;
 
     return {
       url,
@@ -72,12 +70,8 @@ class BrowserScreen extends React.Component {
 
       // we pass manifest as a mutable JS object down native code via Frame,
       // but within JS we take advantage of immutable equals on props.manifest
-      manifestJS:
-        props.task && props.task.manifest ? props.task.manifest.toJS() : null,
-      initialPropsJS:
-        props.task && props.task.initialProps
-          ? props.task.initialProps.toJS()
-          : null,
+      manifestJS: props.task && props.task.manifest ? props.task.manifest.toJS() : null,
+      initialPropsJS: props.task && props.task.initialProps ? props.task.initialProps.toJS() : null,
     };
   }
 
@@ -122,20 +116,13 @@ class BrowserScreen extends React.Component {
     );
     return (
       <View style={styles.container}>
-        {this.props.isLetterboxed
-          ? this._renderLetterboxWithContent(everything)
-          : everything}
+        {this.props.isLetterboxed ? this._renderLetterboxWithContent(everything) : everything}
       </View>
     );
   }
 
   _renderFrame() {
-    let {
-      source,
-      appKey,
-      debuggerHostname,
-      debuggerPort,
-    } = ExManifests.getFramePropsFromManifest(
+    let { source, appKey, debuggerHostname, debuggerPort } = ExManifests.getFramePropsFromManifest(
       this.state.manifestJS,
       this.props.task.bundleUrl
     );
@@ -179,9 +166,7 @@ class BrowserScreen extends React.Component {
         <View style={styles.letterboxTopBar}>
           <TouchableWithoutFeedback onPress={this._onPressLetterbox}>
             <View>
-              <Text style={styles.letterboxText}>
-                {backButtonText}
-              </Text>
+              <Text style={styles.letterboxText}>{backButtonText}</Text>
             </View>
           </TouchableWithoutFeedback>
         </View>
@@ -197,11 +182,7 @@ class BrowserScreen extends React.Component {
     } else {
       content = <Text style={styles.placeholderText}>EXPO</Text>;
     }
-    return (
-      <View style={styles.placeholder}>
-        {content}
-      </View>
-    );
+    return <View style={styles.placeholder}>{content}</View>;
   }
 
   componentWillReceiveProps(nextProps) {
@@ -252,10 +233,7 @@ class BrowserScreen extends React.Component {
           this.setState({ manifestJS: null });
         }
       }
-      if (
-        !this.props.task ||
-        task.initialProps !== this.props.task.initialProps
-      ) {
+      if (!this.props.task || task.initialProps !== this.props.task.initialProps) {
         if (task.initialProps) {
           this.setState({ initialPropsJS: task.initialProps.toJS() });
         } else {
@@ -284,11 +262,7 @@ class BrowserScreen extends React.Component {
 
   _handleFrameLoadingFinish = event => {
     this.props.dispatch(BrowserActions.setLoadingState(this.props.url, false));
-    if (
-      !this.props.isNuxFinished &&
-      !this.props.isLetterboxed &&
-      !this.props.isShell
-    ) {
+    if (!this.props.isNuxFinished && !this.props.isLetterboxed && !this.props.isShell) {
       setTimeout(() => {
         this.props.dispatch(BrowserActions.showMenuAsync(true));
       }, 200);
@@ -339,12 +313,7 @@ class BrowserScreen extends React.Component {
     } else {
       // show error screen with manual reload button
       this.props.dispatch(
-        BrowserActions.showLoadingError(
-          id,
-          message,
-          this.props.url,
-          this.props.task.manifest
-        )
+        BrowserActions.showLoadingError(id, message, this.props.url, this.props.task.manifest)
       );
     }
   };
@@ -354,9 +323,7 @@ class BrowserScreen extends React.Component {
       let urlToRefresh = this.props.task.loadingError.originalUrl;
       this.props.dispatch(BrowserActions.clearTaskWithError(urlToRefresh));
       if (this.props.isShell) {
-        this.props.dispatch(
-          BrowserActions.navigateToUrlAsync(this.props.shellManifestUrl)
-        );
+        this.props.dispatch(BrowserActions.navigateToUrlAsync(this.props.shellManifestUrl));
       } else {
         ExponentKernel.openURL(urlToRefresh);
       }
@@ -373,16 +340,12 @@ class BrowserScreen extends React.Component {
 
   _onPressLetterbox = () => {
     if (this.props.shellManifestUrl) {
-      this.props.dispatch(
-        BrowserActions.foregroundUrlAsync(this.props.shellManifestUrl)
-      );
+      this.props.dispatch(BrowserActions.foregroundUrlAsync(this.props.shellManifestUrl));
     }
   };
 }
 
-export default connect((data, props) =>
-  BrowserScreen.getDataProps(data, props)
-)(BrowserScreen);
+export default connect((data, props) => BrowserScreen.getDataProps(data, props))(BrowserScreen);
 
 let styles = StyleSheet.create({
   container: {

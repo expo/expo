@@ -55,9 +55,7 @@ it(`supports POST requests`, async () => {
   expect(global.fetch.mock.calls.length).toBe(1);
   expect(global.fetch.mock.calls[0][0]).toMatchSnapshot();
   expect(global.fetch.mock.calls[0][1].method).toBe('post');
-  expect(global.fetch.mock.calls[0][1].headers['Content-Type']).toBe(
-    'application/json'
-  );
+  expect(global.fetch.mock.calls[0][1].headers['Content-Type']).toBe('application/json');
   expect(global.fetch.mock.calls[0][1].body).toMatchSnapshot();
 });
 
@@ -80,9 +78,7 @@ it(`sets custom Exponent headers`, async () => {
 });
 
 it(`handles API errors`, async () => {
-  _setFakeHttpResponse(
-    '{"errors": [{"message":"Intentional","code":"TEST_CODE"}]}'
-  );
+  _setFakeHttpResponse('{"errors": [{"message":"Intentional","code":"TEST_CODE"}]}');
 
   let client = new ApiV2HttpClient();
   try {

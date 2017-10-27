@@ -87,13 +87,9 @@ export default class LikeButtonContainer extends React.Component {
         alert('Oops, something went wrong! Sorry about that.');
       } else {
         if (liked) {
-          this._alertNoInternetConnection(
-            'Unable to like the project, try again later.'
-          );
+          this._alertNoInternetConnection('Unable to like the project, try again later.');
         } else {
-          this._alertNoInternetConnection(
-            'Unable to unlike the project, try again later.'
-          );
+          this._alertNoInternetConnection('Unable to unlike the project, try again later.');
         }
       }
       console.log({ e });

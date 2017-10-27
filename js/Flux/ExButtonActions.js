@@ -8,11 +8,13 @@
 import { action } from 'Flux';
 
 export default {
-  @action showExponentButton() {
+  @action
+  showExponentButton() {
     return null;
   },
 
-  @action hideExponentButton() {
+  @action
+  hideExponentButton() {
     return null;
   },
 };

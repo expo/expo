@@ -16,17 +16,20 @@ let AuthTokenActions = {
     return AuthTokenActions.setAuthTokens(tokens);
   },
 
-  @action setAuthTokens(tokens) {
+  @action
+  setAuthTokens(tokens) {
     LocalStorage.saveAuthTokensAsync(tokens);
     return tokens;
   },
 
-  @action updateIdToken(idToken) {
+  @action
+  updateIdToken(idToken) {
     LocalStorage.updateIdTokenAsync(idToken);
     return { idToken };
   },
 
-  @action signOut() {
+  @action
+  signOut() {
     LocalStorage.removeAuthTokensAsync();
     LocalStorage.clearHistoryAsync();
 

@@ -101,9 +101,7 @@ export default class MenuView extends React.Component {
       NativeModules.StatusBarManager._applyPropertiesAndForget &&
       this._statusBarValuesToRestore
     ) {
-      NativeModules.StatusBarManager._applyPropertiesAndForget(
-        this._statusBarValuesToRestore
-      );
+      NativeModules.StatusBarManager._applyPropertiesAndForget(this._statusBarValuesToRestore);
     }
   };
   render() {
@@ -126,10 +124,7 @@ export default class MenuView extends React.Component {
     }
 
     return (
-      <AnimatedBlurView
-        style={styles.container}
-        tint="light"
-        intensity={intensity}>
+      <AnimatedBlurView style={styles.container} tint="light" intensity={intensity}>
         <StatusBar barStyle="default" />
         <ScrollView style={styles.overlay}>
           <Animated.View
@@ -137,9 +132,7 @@ export default class MenuView extends React.Component {
               opacity: this.state.transitionIn,
               transform: [{ scale }],
             }}>
-            {this.props.isNuxFinished
-              ? this._renderTaskInfoRow()
-              : this._renderNUXRow()}
+            {this.props.isNuxFinished ? this._renderTaskInfoRow() : this._renderNUXRow()}
             <View style={styles.separator} />
             <View style={styles.buttonContainer}>
               {this._renderButton({
@@ -154,9 +147,7 @@ export default class MenuView extends React.Component {
                     key: 'qrcode',
                     text: 'Scan QR code',
                     onPress: this._onOpenQRCode,
-                    svgName: Platform.OS === 'ios'
-                      ? 'ios-qr-scanner'
-                      : 'md-qr-scanner',
+                    svgName: Platform.OS === 'ios' ? 'ios-qr-scanner' : 'md-qr-scanner',
                   })
                 : undefined}
               {this._renderButton({
@@ -172,11 +163,7 @@ export default class MenuView extends React.Component {
               onPress={this._onPressClose}
               underlayColor="#eee"
               hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}>
-              <Ionicons
-                name="md-close"
-                size={20}
-                style={styles.closeButtonIcon}
-              />
+              <Ionicons name="md-close" size={20} style={styles.closeButtonIcon} />
             </TouchableHighlight>
           </Animated.View>
         </ScrollView>
@@ -200,29 +187,19 @@ export default class MenuView extends React.Component {
           <ResponsiveImage
             sources={{
               2: {
-                uri:
-                  'https://s3.amazonaws.com/exp-us-standard/exponent-icon@2x.png',
+                uri: 'https://s3.amazonaws.com/exp-us-standard/exponent-icon@2x.png',
               },
               3: {
-                uri:
-                  'https://s3.amazonaws.com/exp-us-standard/exponent-icon@3x.png',
+                uri: 'https://s3.amazonaws.com/exp-us-standard/exponent-icon@3x.png',
               },
             }}
             style={styles.nuxLogo}
           />
-          <Text style={headingStyles}>
-            Welcome to Expo!
-          </Text>
+          <Text style={headingStyles}>Welcome to Expo!</Text>
         </View>
-        <Text style={styles.nuxTooltip}>
-          {tooltipMessage}
-        </Text>
-        <TouchableOpacity
-          style={styles.nuxButton}
-          onPress={this._onPressFinishNux}>
-          <Text style={styles.nuxButtonLabel}>
-            Got it
-          </Text>
+        <Text style={styles.nuxTooltip}>{tooltipMessage}</Text>
+        <TouchableOpacity style={styles.nuxButton} onPress={this._onPressFinishNux}>
+          <Text style={styles.nuxButtonLabel}>Got it</Text>
         </TouchableOpacity>
       </View>
     );
@@ -234,38 +211,32 @@ export default class MenuView extends React.Component {
     if (task.loadingError) {
       taskUrl = task.loadingError.originalUrl;
     } else {
-      taskUrl = task.manifestUrl
-        ? FriendlyUrls.toFriendlyString(task.manifestUrl)
-        : '';
+      taskUrl = task.manifestUrl ? FriendlyUrls.toFriendlyString(task.manifestUrl) : '';
     }
 
     let iconUrl = task.manifest && task.manifest.get('iconUrl');
     let taskName = task.manifest && task.manifest.get('name');
 
-    let icon = iconUrl
-      ? <Image source={{ uri: iconUrl }} style={styles.taskIcon} />
-      : <ResponsiveImage
-          resizeMode="contain"
-          sources={{
-            2: {
-              uri:
-                'https://s3.amazonaws.com/exp-us-standard/exponent-icon@2x.png',
-            },
-            3: {
-              uri:
-                'https://s3.amazonaws.com/exp-us-standard/exponent-icon@3x.png',
-            },
-          }}
-          style={styles.taskIcon}
-        />;
-    let taskNameStyles = taskName
-      ? styles.taskName
-      : [styles.taskName, { color: '#c5c6c7' }];
+    let icon = iconUrl ? (
+      <Image source={{ uri: iconUrl }} style={styles.taskIcon} />
+    ) : (
+      <ResponsiveImage
+        resizeMode="contain"
+        sources={{
+          2: {
+            uri: 'https://s3.amazonaws.com/exp-us-standard/exponent-icon@2x.png',
+          },
+          3: {
+            uri: 'https://s3.amazonaws.com/exp-us-standard/exponent-icon@3x.png',
+          },
+        }}
+        style={styles.taskIcon}
+      />
+    );
+    let taskNameStyles = taskName ? styles.taskName : [styles.taskName, { color: '#c5c6c7' }];
     return (
       <View style={styles.taskMetaRow}>
-        <View style={styles.taskIconColumn}>
-          {icon}
-        </View>
+        <View style={styles.taskIconColumn}>{icon}</View>
         <View style={styles.taskInfoColumn}>
           <Text style={taskNameStyles} numberOfLines={1}>
             {taskName ? taskName : 'Untitled Experience'}
@@ -281,8 +252,7 @@ export default class MenuView extends React.Component {
 
   _maybeRenderDevServerName() {
     let { task } = this.props;
-    let devServerName =
-      task.manifest && task.manifest.getIn(['developer', 'tool']);
+    let devServerName = task.manifest && task.manifest.getIn(['developer', 'tool']);
     if (devServerName) {
       // XDE is upper
       if (devServerName === 'xde') {
@@ -327,15 +297,11 @@ export default class MenuView extends React.Component {
         withSeperator: true,
       });
     } else {
-      const detailButton = detail
-        ? this._renderDevMenuDetailButton(label, detail)
-        : null;
+      const detailButton = detail ? this._renderDevMenuDetailButton(label, detail) : null;
       return (
         <View style={[styles.button, styles.buttonWithSeparator]} key={key}>
           <View style={styles.buttonIcon} />
-          <Text style={[styles.buttonText, { color: '#9ca0a6' }]}>
-            {label}
-          </Text>
+          <Text style={[styles.buttonText, { color: '#9ca0a6' }]}>{label}</Text>
           {detailButton}
         </View>
       );
@@ -364,14 +330,7 @@ export default class MenuView extends React.Component {
     if (iconSource) {
       icon = <Image style={styles.buttonIcon} source={iconSource} />;
     } else if (svgName) {
-      icon = (
-        <Ionicons
-          style={styles.buttonSvgIcon}
-          size={20}
-          name={svgName}
-          color="#4e9bde"
-        />
-      );
+      icon = <Ionicons style={styles.buttonSvgIcon} size={20} name={svgName} color="#4e9bde" />;
     } else {
       icon = <View style={styles.buttonIcon} />;
     }
@@ -385,9 +344,7 @@ export default class MenuView extends React.Component {
     return (
       <TouchableOpacity key={key} style={buttonStyles} onPress={onPress}>
         {icon}
-        <Text style={buttonTextStyles}>
-          {text}
-        </Text>
+        <Text style={buttonTextStyles}>{text}</Text>
       </TouchableOpacity>
     );
   }
@@ -400,9 +357,7 @@ export default class MenuView extends React.Component {
         })
       );
     } else {
-      alert(
-        'In order to use the QR Code scanner you need to provide camera permissions'
-      );
+      alert('In order to use the QR Code scanner you need to provide camera permissions');
     }
   };
 

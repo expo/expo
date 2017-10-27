@@ -14,10 +14,9 @@ import ApolloClient from '../Api/ApolloClient';
 
 export default class Flux {
   static createStore(reducers) {
-    let createExponentStore = applyMiddleware(
-      promiseMiddleware,
-      ApolloClient.middleware()
-    )(createStore);
+    let createExponentStore = applyMiddleware(promiseMiddleware, ApolloClient.middleware())(
+      createStore
+    );
     return createExponentStore(combineReducers(reducers));
   }
 

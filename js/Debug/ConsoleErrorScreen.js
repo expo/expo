@@ -72,13 +72,12 @@ class ConsoleErrorScreen extends React.Component {
     );
   }
 
-  @autobind _renderHeader() {
+  @autobind
+  _renderHeader() {
     return (
       <View>
         {this._renderErrorMessage()}
-        <Text style={styles.stackTraceHeading}>
-          Stack Trace:
-        </Text>
+        <Text style={styles.stackTraceHeading}>Stack Trace:</Text>
       </View>
     );
   }
@@ -88,20 +87,17 @@ class ConsoleErrorScreen extends React.Component {
     return (
       <Text style={styles.errorHeading}>
         There was an unhandled error:{' '}
-        <Text style={styles.errorMessage}>
-          {consoleError.message[0]}
-        </Text>
+        <Text style={styles.errorMessage}>{consoleError.message[0]}</Text>
       </Text>
     );
   }
 
-  @autobind _renderStackFrame(frame, rowId, sectionId, highlightRow) {
+  @autobind
+  _renderStackFrame(frame, rowId, sectionId, highlightRow) {
     let fileName = /[\\/]?([^\\/]*)$/.exec(frame.file)[1];
     return (
       <View key={`frame-${rowId}`} style={styles.stackFrame}>
-        <Text style={styles.methodName}>
-          {frame.methodName}
-        </Text>
+        <Text style={styles.methodName}>{frame.methodName}</Text>
         <Text style={styles.sourcePosition}>
           {fileName}:{frame.lineNumber}
         </Text>
@@ -110,9 +106,9 @@ class ConsoleErrorScreen extends React.Component {
   }
 }
 
-export default connect((data, props) =>
-  ConsoleErrorScreen.getDataProps(data, props)
-)(ConsoleErrorScreen);
+export default connect((data, props) => ConsoleErrorScreen.getDataProps(data, props))(
+  ConsoleErrorScreen
+);
 
 var styles = StyleSheet.create({
   container: {

@@ -72,10 +72,7 @@ export default class SearchResults extends React.Component {
         populatedSectionIds = populatedSectionIds.concat('AppSearchResult');
       }
 
-      let newDataSource = dataSource.cloneWithRowsAndSections(
-        results,
-        populatedSectionIds
-      );
+      let newDataSource = dataSource.cloneWithRowsAndSections(results, populatedSectionIds);
 
       this.setState({ dataSource: newDataSource });
     }
@@ -120,9 +117,7 @@ export default class SearchResults extends React.Component {
               SharedStyles.sectionLabelContainer,
               { backgroundColor: Colors.greyBackground, marginTop: 7 },
             ]}>
-            <Text style={SharedStyles.sectionLabelText}>
-              NO RESULTS FOUND
-            </Text>
+            <Text style={SharedStyles.sectionLabelText}>NO RESULTS FOUND</Text>
           </View>
 
           <TouchableNativeFeedbackSafe
@@ -130,12 +125,8 @@ export default class SearchResults extends React.Component {
             fallback={TouchableHighlight}
             underlayColor="#b7b7b7"
             style={styles.cardContainer}>
-            <Text style={styles.cardTitleText}>
-              Tap to attempt to open project at
-            </Text>
-            <Text style={styles.urlText}>
-              {this.props.query}
-            </Text>
+            <Text style={styles.cardTitleText}>Tap to attempt to open project at</Text>
+            <Text style={styles.urlText}>{this.props.query}</Text>
           </TouchableNativeFeedbackSafe>
         </ScrollView>
       );
@@ -174,10 +165,7 @@ export default class SearchResults extends React.Component {
     return (
       <View
         key={sectionData}
-        style={[
-          SharedStyles.sectionLabelContainer,
-          { backgroundColor: Colors.greyBackground },
-        ]}>
+        style={[SharedStyles.sectionLabelContainer, { backgroundColor: Colors.greyBackground }]}>
         <Text style={SharedStyles.sectionLabelText}>
           {sectionId === 'AppSearchResult' ? 'PROJECTS' : 'PEOPLE'}
         </Text>
@@ -187,17 +175,13 @@ export default class SearchResults extends React.Component {
 
   _isLastAppSearchResult = (index: number) => {
     let appSectionIdx = SectionIds.indexOf('AppSearchResult');
-    let appSectionLength = this.state.dataSource.getSectionLengths()[
-      appSectionIdx
-    ];
+    let appSectionLength = this.state.dataSource.getSectionLengths()[appSectionIdx];
     return parseInt(index, 0) + 1 === appSectionLength;
   };
 
   _isLastUserSearchResult = (index: number) => {
     let userSectionIdx = SectionIds.indexOf('UserSearchResult');
-    let userSectionLength = this.state.dataSource.getSectionLengths()[
-      userSectionIdx
-    ];
+    let userSectionLength = this.state.dataSource.getSectionLengths()[userSectionIdx];
     return parseInt(index, 0) + 1 === userSectionLength;
   };
 

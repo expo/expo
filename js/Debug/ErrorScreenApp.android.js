@@ -34,10 +34,7 @@ export default class ErrorScreenApp extends React.Component {
 
   componentDidMount() {
     if (Platform.OS === 'android') {
-      BackAndroid.addEventListener(
-        'hardwareBackPress',
-        this._handleBackButtonPress
-      );
+      BackAndroid.addEventListener('hardwareBackPress', this._handleBackButtonPress);
     }
   }
 
@@ -58,7 +55,8 @@ export default class ErrorScreenApp extends React.Component {
     );
   }
 
-  @autobind _handleBackButtonPress() {
+  @autobind
+  _handleBackButtonPress() {
     if (
       this._consoleNavigator &&
       this._consoleNavigator.getCurrentRoutes() &&
@@ -78,11 +76,13 @@ export default class ErrorScreenApp extends React.Component {
     }
   }
 
-  @autobind _navigateToConsoleHistory() {
+  @autobind
+  _navigateToConsoleHistory() {
     this._navigator.push(this._getConsoleHistoryRoute());
   }
 
-  @autobind _getErrorScreenRoute() {
+  @autobind
+  _getErrorScreenRoute() {
     let self = this;
     return {
       renderScene() {
@@ -91,9 +91,7 @@ export default class ErrorScreenApp extends React.Component {
             <View style={styles.topContainer}>
               <View style={styles.errorTextContainer}>
                 <Text style={styles.bigText}>Something went wrong.</Text>
-                <Text style={styles.smallText}>
-                  {self._errorText()}
-                </Text>
+                <Text style={styles.smallText}>{self._errorText()}</Text>
               </View>
               {self._renderButtons()}
             </View>
@@ -109,7 +107,8 @@ export default class ErrorScreenApp extends React.Component {
     };
   }
 
-  @autobind _errorText() {
+  @autobind
+  _errorText() {
     if (this.props.userErrorMessage && this.props.userErrorMessage.length > 0) {
       return this.props.userErrorMessage;
     } else if (this.props.isShellApp) {
@@ -119,7 +118,8 @@ export default class ErrorScreenApp extends React.Component {
     }
   }
 
-  @autobind _getConsoleHistoryRoute() {
+  @autobind
+  _getConsoleHistoryRoute() {
     let self = this;
     return {
       renderScene() {
@@ -146,24 +146,17 @@ export default class ErrorScreenApp extends React.Component {
     };
   }
 
-  @autobind _renderButtons() {
+  @autobind
+  _renderButtons() {
     return (
       <View style={styles.navBar}>
-        {this.props.isShellApp
-          ? null
-          : <TouchableOpacity
-              onPress={() => ExponentKernel.goToHomeFromErrorScreen()}>
-              <Image
-                source={{ uri: 'ic_home_white_36dp' }}
-                style={styles.icon}
-              />
-            </TouchableOpacity>}
-        <TouchableOpacity
-          onPress={() => ExponentKernel.reloadFromErrorScreen()}>
-          <Image
-            source={{ uri: 'ic_refresh_white_36dp' }}
-            style={styles.icon}
-          />
+        {this.props.isShellApp ? null : (
+          <TouchableOpacity onPress={() => ExponentKernel.goToHomeFromErrorScreen()}>
+            <Image source={{ uri: 'ic_home_white_36dp' }} style={styles.icon} />
+          </TouchableOpacity>
+        )}
+        <TouchableOpacity onPress={() => ExponentKernel.reloadFromErrorScreen()}>
+          <Image source={{ uri: 'ic_refresh_white_36dp' }} style={styles.icon} />
         </TouchableOpacity>
       </View>
     );

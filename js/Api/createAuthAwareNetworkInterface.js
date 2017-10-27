@@ -74,16 +74,16 @@ class AuthAwareNetworkInterface {
   };
 
   query(request: any) {
-    if (
-      this.__debug_shouldForceRefreshToken() &&
-      (this._idTokenIsValid() || !this._getIdToken())
-    ) {
+    if (this.__debug_shouldForceRefreshToken() && (this._idTokenIsValid() || !this._getIdToken())) {
       return this._networkInterface.query(request);
     } else {
       // Throw it into the queue
       return new Promise(async (resolve, reject) => {
         this._requestQueue.push(() => {
-          this._networkInterface.query(request).then(resolve).catch(reject);
+          this._networkInterface
+            .query(request)
+            .then(resolve)
+            .catch(reject);
         });
 
         // If it's the first one thrown into the queue, refresh token
@@ -127,8 +127,6 @@ class AuthAwareNetworkInterface {
   }
 }
 
-export default function createAuthAwareNetworkInterface(
-  options: AuthAwareNetworkInterfaceOptions
-) {
+export default function createAuthAwareNetworkInterface(options: AuthAwareNetworkInterfaceOptions) {
   return new AuthAwareNetworkInterface(options);
 }

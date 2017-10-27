@@ -54,21 +54,12 @@ export default class Profile extends React.Component {
 
   componentWillReceiveProps(nextProps: any) {
     const SkipConnectionNotification = true;
-    if (
-      !SkipConnectionNotification &&
-      !this.props.data.error &&
-      nextProps.data.error
-    ) {
+    if (!SkipConnectionNotification && !this.props.data.error && nextProps.data.error) {
       // NOTE(brentvatne): sorry for this
-      let isConnectionError = nextProps.data.error.message.includes(
-        'No connection available'
-      );
+      let isConnectionError = nextProps.data.error.message.includes('No connection available');
 
       if (isConnectionError) {
-        this.props.navigator.showLocalAlert(
-          'No connection available',
-          Alerts.error
-        );
+        this.props.navigator.showLocalAlert('No connection available', Alerts.error);
       }
     }
   }
@@ -125,9 +116,7 @@ export default class Profile extends React.Component {
 
   _renderError = () => {
     // NOTE(brentvatne): sorry for this
-    let isConnectionError = this.props.data.error.message.includes(
-      'No connection available'
-    );
+    let isConnectionError = this.props.data.error.message.includes('No connection available');
 
     return (
       <View style={{ flex: 1, alignItems: 'center', paddingTop: 30 }}>
@@ -135,17 +124,15 @@ export default class Profile extends React.Component {
           {isConnectionError ? NETWORK_ERROR_TEXT : SERVER_ERROR_TEXT}
         </Text>
 
-        <PrimaryButton
-          plain
-          onPress={this._handleRefreshAsync}
-          fallback={TouchableOpacity}>
+        <PrimaryButton plain onPress={this._handleRefreshAsync} fallback={TouchableOpacity}>
           Try again
         </PrimaryButton>
 
-        {this.state.isRefetching &&
+        {this.state.isRefetching && (
           <View style={{ marginTop: 20 }}>
             <ActivityIndicator />
-          </View>}
+          </View>
+        )}
       </View>
     );
   };
@@ -180,9 +167,7 @@ export default class Profile extends React.Component {
           {firstName} {lastName}
         </Text>
         <View style={styles.headerAccountsList}>
-          <Text style={styles.headerAccountText}>
-            @{username}
-          </Text>
+          <Text style={styles.headerAccountText}>@{username}</Text>
           {this._maybeRenderGithubAccount()}
         </View>
       </View>
@@ -195,16 +180,10 @@ export default class Profile extends React.Component {
     return (
       <View style={styles.header}>
         <View
-          style={[
-            styles.headerAvatar,
-            styles.headerAvatarContainer,
-            styles.legacyHeaderAvatar,
-          ]}
+          style={[styles.headerAvatar, styles.headerAvatarContainer, styles.legacyHeaderAvatar]}
         />
         <View style={styles.headerAccountsList}>
-          <Text style={styles.headerAccountText}>
-            @{username}
-          </Text>
+          <Text style={styles.headerAccountText}>@{username}</Text>
         </View>
       </View>
     );
@@ -218,15 +197,10 @@ export default class Profile extends React.Component {
     let { apps, appCount } = this.props.data.user;
 
     if (!apps || !apps.length) {
-      return (
-        <EmptyProfileProjectsNotice isOwnProfile={this.props.isOwnProfile} />
-      );
+      return <EmptyProfileProjectsNotice isOwnProfile={this.props.isOwnProfile} />;
     } else {
       // let appsToDisplay = take(apps, MAX_APPS_TO_DISPLAY);
-      let otherApps = takeRight(
-        apps,
-        Math.max(0, apps.length - MAX_APPS_TO_DISPLAY)
-      );
+      let otherApps = takeRight(apps, Math.max(0, apps.length - MAX_APPS_TO_DISPLAY));
 
       return (
         <View>

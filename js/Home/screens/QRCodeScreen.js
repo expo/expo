@@ -50,12 +50,9 @@ export default class BarCodeScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        {this.state.scannerIsVisible
-          ? <BarCodeScanner
-              onBarCodeRead={this._handleBarCodeRead}
-              style={StyleSheet.absoluteFill}
-            />
-          : null}
+        {this.state.scannerIsVisible ? (
+          <BarCodeScanner onBarCodeRead={this._handleBarCodeRead} style={StyleSheet.absoluteFill} />
+        ) : null}
 
         <View style={styles.topOverlay} />
         <View style={styles.leftOverlay} />
@@ -67,9 +64,7 @@ export default class BarCodeScreen extends React.Component {
         <View style={styles.bottomRightCorner} />
 
         <View style={styles.header}>
-          <Text style={styles.headerText}>
-            Scan QR Code
-          </Text>
+          <Text style={styles.headerText}>Scan QR Code</Text>
         </View>
 
         <View style={styles.footer}>

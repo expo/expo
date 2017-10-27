@@ -72,22 +72,14 @@ DeviceEventEmitter.addListener('ExponentKernel.addError', async event => {
 
   errorMessage = errorMessage || 'Unknown error occurred';
   stack = stack || [];
-  let action = ConsoleActions.logUncaughtError(
-    exceptionId,
-    errorMessage,
-    stack,
-    isFatal
-  );
+  let action = ConsoleActions.logUncaughtError(exceptionId, errorMessage, stack, isFatal);
   ExStore.dispatch(action);
 });
 
 Expo.registerRootComponent(App);
 AppRegistry.registerComponent('ErrorScreenApp', () => ErrorScreenAppWithStore);
 AppRegistry.registerComponent('InfoScreenApp', () => InfoScreenApp);
-AppRegistry.registerComponent(
-  'ExperienceNuxApp',
-  () => ExperienceNuxAppWithStore
-);
+AppRegistry.registerComponent('ExperienceNuxApp', () => ExperienceNuxAppWithStore);
 if (JSCExecutor) {
   JSCExecutor.setContextName('Exponent');
 }

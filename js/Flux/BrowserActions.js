@@ -39,9 +39,7 @@ function _cleanupNavigationRequest(navigationRequestId) {
 let BrowserActions = {
   cancelLoadingMostRecentManifestRequest() {
     if (!_isFetchingManifest[_navigationRequestId]) {
-      throw new Error(
-        'Already finished fetching manifest, cancellation is not possible'
-      );
+      throw new Error('Already finished fetching manifest, cancellation is not possible');
     }
 
     _isLoadingCancelled[_navigationRequestId] = true;
@@ -77,10 +75,7 @@ let BrowserActions = {
     }
   },
 
-  async navigateToExperienceIdWithNotificationAsync(
-    experienceId,
-    notificationBody
-  ) {
+  async navigateToExperienceIdWithNotificationAsync(experienceId, notificationBody) {
     let history = await LocalStorage.getHistoryAsync();
     history = history.sort((item1, item2) => {
       // date descending -- we want to pick the most recent experience with this id,
@@ -90,9 +85,7 @@ let BrowserActions = {
       let item1time = item1.time ? item1.time : 0;
       return item2time - item1time;
     });
-    let historyItem = history.find(
-      item => item.manifest && item.manifest.id === experienceId
-    );
+    let historyItem = history.find(item => item.manifest && item.manifest.id === experienceId);
     if (historyItem) {
       // don't use the cached manifest, start over
       return BrowserActions.navigateToUrlAsync(historyItem.url, {
@@ -106,12 +99,7 @@ let BrowserActions = {
     }
   },
 
-  async navigateToBundleUrlAsync(
-    manifestUrl,
-    manifest,
-    bundleUrl,
-    initialProps = null
-  ) {
+  async navigateToBundleUrlAsync(manifestUrl, manifest, bundleUrl, initialProps = null) {
     let originalUrl = manifestUrl;
     // originalUrl was a package, not a manifest.
     if (bundleUrl === manifestUrl) {
@@ -146,19 +134,19 @@ let BrowserActions = {
     };
   },
 
-  @action foregroundUrlAsync(url) {
+  @action
+  foregroundUrlAsync(url) {
     return { url };
   },
 
-  @action foregroundHomeAsync(options = {}) {
-    const {
-      clearTasks = false,
-      projectScreenImmediatelyNavigatesToModalNamed,
-    } = options;
+  @action
+  foregroundHomeAsync(options = {}) {
+    const { clearTasks = false, projectScreenImmediatelyNavigatesToModalNamed } = options;
     return { clearTasks, projectScreenImmediatelyNavigatesToModalNamed };
   },
 
-  @action showMenuAsync(isVisible) {
+  @action
+  showMenuAsync(isVisible) {
     return { isVisible };
   },
 
@@ -173,36 +161,44 @@ let BrowserActions = {
     };
   },
 
-  @action showLoadingError(code, message, originalUrl, manifest = null) {
+  @action
+  showLoadingError(code, message, originalUrl, manifest = null) {
     return { code, message, originalUrl, manifest };
   },
 
-  @action clearTaskWithError(browserTaskUrl) {
+  @action
+  clearTaskWithError(browserTaskUrl) {
     return { url: browserTaskUrl };
   },
 
-  @action setKernelLoadingState(isLoading) {
+  @action
+  setKernelLoadingState(isLoading) {
     return { isLoading };
   },
 
-  @action setLoadingState(browserTaskUrl, isLoading) {
+  @action
+  setLoadingState(browserTaskUrl, isLoading) {
     return { url: browserTaskUrl, isLoading };
   },
 
-  @action setShellPropertiesAsync(isShell, shellManifestUrl) {
+  @action
+  setShellPropertiesAsync(isShell, shellManifestUrl) {
     return { isShell, shellManifestUrl };
   },
 
-  @action setInitialShellUrl(url) {
+  @action
+  setInitialShellUrl(url) {
     return { url };
   },
 
-  @action async loadHistoryAsync() {
+  @action
+  async loadHistoryAsync() {
     let history = await LocalStorage.getHistoryAsync();
     return { history };
   },
 
-  @action async loadSettingsAsync() {
+  @action
+  async loadSettingsAsync() {
     let settings = await LocalStorage.getSettingsAsync();
 
     if (settings && settings.legacyMenuGesture) {
@@ -216,11 +212,13 @@ let BrowserActions = {
     return { settings };
   },
 
-  @action async clearImmediatelyLoadingModalName() {
+  @action
+  async clearImmediatelyLoadingModalName() {
     return { projectScreenImmediatelyNavigatesToModalNamed: null };
   },
 
-  @action async setLegacyMenuGestureAsync(useLegacyGesture) {
+  @action
+  async setLegacyMenuGestureAsync(useLegacyGesture) {
     try {
       await Promise.all([
         ExponentKernel.setIsLegacyMenuBehaviorEnabledAsync(useLegacyGesture),
@@ -229,16 +227,15 @@ let BrowserActions = {
         }),
       ]);
     } catch (e) {
-      alert(
-        'Oops, something went wrong and we were unable to change the gesture type!'
-      );
+      alert('Oops, something went wrong and we were unable to change the gesture type!');
       return { legacyMenuGesture: !useLegacyGesture };
     }
 
     return { legacyMenuGesture: useLegacyGesture };
   },
 
-  @action async clearHistoryAsync() {
+  @action
+  async clearHistoryAsync() {
     await LocalStorage.clearHistoryAsync();
   },
 };

@@ -8,10 +8,7 @@ function extractUsername(idToken) {
   return username;
 }
 
-export default function isCurrentUser(
-  authTokens: { idToken: ?string },
-  username: string
-) {
+export default function isCurrentUser(authTokens: { idToken: ?string }, username: string) {
   if (!authTokens.idToken) {
     return false;
   }

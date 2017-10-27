@@ -52,10 +52,7 @@ export default class HomeScreen extends React.Component {
   };
 
   static getDataProps(data) {
-    let {
-      history,
-      projectScreenImmediatelyNavigatesToModalNamed,
-    } = data.browser;
+    let { history, projectScreenImmediatelyNavigatesToModalNamed } = data.browser;
 
     return {
       recentHistory: history.take(6),
@@ -65,10 +62,7 @@ export default class HomeScreen extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (
-      !this.props.immediatelyLoadingModalName &&
-      nextProps.immediatelyLoadingModalName
-    ) {
+    if (!this.props.immediatelyLoadingModalName && nextProps.immediatelyLoadingModalName) {
       this.props.navigation.showModal(nextProps.immediatelyLoadingModalName);
       ExStore.dispatch(BrowserActions.clearImmediatelyLoadingModalName());
     }
@@ -81,14 +75,11 @@ export default class HomeScreen extends React.Component {
           key={
             /* note(brent): sticky headers break re-rendering scrollview */
             /* contents on sdk17, remove this in sdk18 */
-            Platform.OS === 'ios'
-              ? this.props.allHistory.count()
-              : 'scroll-view'
+            Platform.OS === 'ios' ? this.props.allHistory.count() : 'scroll-view'
           }
           stickyHeaderIndices={Platform.OS === 'ios' ? [0, 2] : []}
           style={styles.container}
           contentContainerStyle={styles.contentContainer}>
-
           <View style={SharedStyles.sectionLabelContainer}>
             <Text style={SharedStyles.sectionLabelText}>TOOLS</Text>
           </View>
@@ -96,9 +87,7 @@ export default class HomeScreen extends React.Component {
 
           <View style={SharedStyles.sectionLabelContainer}>
             <Text style={SharedStyles.sectionLabelText}>RECENTLY VISITED</Text>
-            <TouchableOpacity
-              onPress={this._handlePressClearHistory}
-              style={styles.clearButton}>
+            <TouchableOpacity onPress={this._handlePressClearHistory} style={styles.clearButton}>
               <Text style={styles.clearButtonText}>CLEAR</Text>
             </TouchableOpacity>
           </View>
@@ -148,7 +137,7 @@ export default class HomeScreen extends React.Component {
       }
     };
 
-    return this.props.recentHistory.map((project, i) =>
+    return this.props.recentHistory.map((project, i) => (
       <SmallProjectCard
         key={project.manifestUrl}
         iconUrl={project.manifest.iconUrl}
@@ -161,15 +150,13 @@ export default class HomeScreen extends React.Component {
         projectUrl={project.manifestUrl}
         fullWidthBorder={i === this.props.recentHistory.count() - 1}
       />
-    );
+    ));
   };
 
   _renderExpoVersion = () => {
     return (
       <View style={styles.expoVersionContainer}>
-        <Text
-          style={styles.expoVersionText}
-          onPress={this._copyClientVersionToClipboard}>
+        <Text style={styles.expoVersionText} onPress={this._copyClientVersionToClipboard}>
           Client version: {Constants.expoVersion}
         </Text>
       </View>

@@ -12,10 +12,7 @@ export class FormInput extends React.Component {
   _input: TextInput;
 
   shouldComponentUpdate(nextProps: any) {
-    if (
-      nextProps.value === this.props.value &&
-      nextProps.labelWidth === this.props.labelWidth
-    ) {
+    if (nextProps.value === this.props.value && nextProps.labelWidth === this.props.labelWidth) {
       return false;
     }
 
@@ -70,12 +67,8 @@ export class FormInput extends React.Component {
           styles.inputContainer,
           hideBottomBorder && styles.inputContainerWithoutBorderBottom,
         ]}>
-        <View
-          style={styles.inputLabelContainer}
-          onLayout={this._handleLayoutLabel}>
-          <Text style={styles.inputLabelText}>
-            {label}
-          </Text>
+        <View style={styles.inputLabelContainer} onLayout={this._handleLayoutLabel}>
+          <Text style={styles.inputLabelText}>{label}</Text>
         </View>
 
         <TextInput

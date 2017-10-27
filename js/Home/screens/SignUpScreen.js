@@ -1,13 +1,7 @@
 /* @flow */
 
 import React from 'react';
-import {
-  Keyboard,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  View,
-} from 'react-native';
+import { Keyboard, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { connect } from 'react-redux';
 
 import AuthTokenActions from '../../Flux/AuthTokenActions';
@@ -79,12 +73,9 @@ export default class SignUpScreen extends React.Component {
       }
     );
 
-    this._keyboardDidHideSubscription = Keyboard.addListener(
-      'keyboardDidHide',
-      () => {
-        this.setState({ keyboardHeight: 0 });
-      }
-    );
+    this._keyboardDidHideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+      this.setState({ keyboardHeight: 0 });
+    });
   }
 
   componentWillUnmount() {
@@ -168,8 +159,7 @@ export default class SignUpScreen extends React.Component {
             ref={view => {
               this._passwordConfirmationInput = view;
             }}
-            onSubmitEditing={() =>
-              this._handleSubmitEditing('passwordConfirmation')}
+            onSubmitEditing={() => this._handleSubmitEditing('passwordConfirmation')}
             onChangeText={this._updateValue.bind(this, 'passwordConfirmation')}
             value={this.state.passwordConfirmation}
             hideBottomBorder
@@ -245,10 +235,7 @@ export default class SignUpScreen extends React.Component {
 
       Analytics.track(Analytics.events.USER_CREATED_ACCOUNT, { github: false });
 
-      let signInResult = await Auth0Api.signInAsync(
-        this.state.email,
-        this.state.password
-      );
+      let signInResult = await Auth0Api.signInAsync(this.state.email, this.state.password);
 
       if (this._isMounted) {
         if (signInResult.error) {

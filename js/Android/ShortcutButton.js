@@ -8,12 +8,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-  NativeModules,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
+import { NativeModules, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 import ExColors from 'ExColors';
 const { ExponentKernel } = NativeModules;
@@ -32,12 +27,8 @@ export default class ShortcutButton extends React.Component {
 
   render() {
     return (
-      <TouchableOpacity
-        onPress={this._onPress}
-        style={[styles.container, this.props.style]}>
-        <Text style={styles.text}>
-          Add Shortcut
-        </Text>
+      <TouchableOpacity onPress={this._onPress} style={[styles.container, this.props.style]}>
+        <Text style={styles.text}>Add Shortcut</Text>
       </TouchableOpacity>
     );
   }

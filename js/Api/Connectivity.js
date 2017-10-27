@@ -7,10 +7,7 @@ class Connectivity {
   _listeners = {};
 
   constructor() {
-    NetInfo.isConnected.addEventListener(
-      'change',
-      this._handleConnectivityChange
-    );
+    NetInfo.isConnected.addEventListener('change', this._handleConnectivityChange);
     this.isAvailableAsync();
   }
 

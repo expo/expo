@@ -20,9 +20,7 @@ import SharedStyles from '../constants/SharedStyles';
 import Analytics from '../../Api/Analytics';
 
 const forceTouchAvailable =
-  (NativeModules.PlatformConstants &&
-    NativeModules.PlatformConstants.forceTouchAvailable) ||
-  false;
+  (NativeModules.PlatformConstants && NativeModules.PlatformConstants.forceTouchAvailable) || false;
 
 @connect(data => UserSettingsScreen.getDataProps(data))
 export default class UserSettingsScreen extends React.Component {
@@ -54,15 +52,9 @@ export default class UserSettingsScreen extends React.Component {
             onPress={this._handlePressSignOut}
             underlayColor={Colors.greyUnderlayColor}
             style={styles.button}>
-            <View
-              style={[
-                SharedStyles.genericCardContainer,
-                { backgroundColor: 'transparent' },
-              ]}>
+            <View style={[SharedStyles.genericCardContainer, { backgroundColor: 'transparent' }]}>
               <View style={styles.cardBody}>
-                <Text style={SharedStyles.genericCardTitle}>
-                  Sign Out
-                </Text>
+                <Text style={SharedStyles.genericCardTitle}>Sign Out</Text>
               </View>
             </View>
           </TouchableHighlight>
@@ -83,9 +75,7 @@ export default class UserSettingsScreen extends React.Component {
       useLegacyGesture,
     });
 
-    this.props.dispatch(
-      BrowserActions.setLegacyMenuGestureAsync(useLegacyGesture)
-    );
+    this.props.dispatch(BrowserActions.setLegacyMenuGestureAsync(useLegacyGesture));
   };
 
   _renderMenuGestureOptions() {
@@ -103,11 +93,7 @@ export default class UserSettingsScreen extends React.Component {
           onPress={() => this._setLegacyMenuGestureAsync(false)}
           underlayColor={Colors.greyUnderlayColor}
           style={styles.button}>
-          <View
-            style={[
-              SharedStyles.genericCardContainer,
-              { backgroundColor: 'transparent' },
-            ]}>
+          <View style={[SharedStyles.genericCardContainer, { backgroundColor: 'transparent' }]}>
             <View style={styles.cardBody}>
               <Text style={SharedStyles.genericCardTitle}>
                 {Constants.isDevice ? 'Shake device' : '\u2318D'}
@@ -121,16 +107,10 @@ export default class UserSettingsScreen extends React.Component {
           onPress={() => this._setLegacyMenuGestureAsync(true)}
           underlayColor={Colors.greyUnderlayColor}
           style={styles.button}>
-          <View
-            style={[
-              SharedStyles.genericCardContainer,
-              { backgroundColor: 'transparent' },
-            ]}>
+          <View style={[SharedStyles.genericCardContainer, { backgroundColor: 'transparent' }]}>
             <View style={styles.cardBody}>
               <Text style={SharedStyles.genericCardTitle}>
-                {Constants.isDevice
-                  ? twoFingerGestureDescription
-                  : 'Expo Button'}
+                {Constants.isDevice ? twoFingerGestureDescription : 'Expo Button'}
               </Text>
             </View>
             {legacyMenuGesture && this._renderCheckmark()}
@@ -139,9 +119,8 @@ export default class UserSettingsScreen extends React.Component {
 
         <View style={SharedStyles.genericCardDescriptionContainer}>
           <Text style={SharedStyles.genericCardDescriptionText}>
-            This gesture will toggle the Expo Menu while inside an
-            experience. The menu allows you to reload or return to home
-            in a published experience, and exposes developer tools in
+            This gesture will toggle the Expo Menu while inside an experience. The menu allows you
+            to reload or return to home in a published experience, and exposes developer tools in
             development mode.
           </Text>
         </View>

@@ -6,14 +6,7 @@
 'use strict';
 
 import React from 'react';
-import {
-  ActivityIndicator,
-  Image,
-  Platform,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Image, Platform, StyleSheet, Text, View } from 'react-native';
 
 import FadeIn from '@expo/react-native-fade-in-image';
 import { Constants } from 'expo';
@@ -23,18 +16,13 @@ export default class BrowserScreenLoading extends React.Component {
     const { manifest, loadingStatus } = this.props;
     let loadingBackgroundColor = this._getLoadingBackgroundColor(manifest);
     let loadingIcon = this._renderManifestLoadingIcon(manifest);
-    let loadingBackgroundImage = this._renderManifestLoadingBackgroundImage(
-      manifest
-    );
+    let loadingBackgroundImage = this._renderManifestLoadingBackgroundImage(manifest);
     let activityIndicator = this._renderLoadingActivityIndicator(manifest);
 
     return (
       <View
         pointerEvents="none"
-        style={[
-          styles.loadingIndicatorContainer,
-          { backgroundColor: loadingBackgroundColor },
-        ]}>
+        style={[styles.loadingIndicatorContainer, { backgroundColor: loadingBackgroundColor }]}>
         {loadingBackgroundImage}
         <View>
           {loadingIcon}
@@ -49,13 +37,12 @@ export default class BrowserScreenLoading extends React.Component {
     if (loadingStatus) {
       return (
         <View style={styles.loadingStatusBar}>
-          <Text style={styles.loadingStatusText}>
-            {loadingStatus.status}
-          </Text>
-          {loadingStatus.total > 0 &&
+          <Text style={styles.loadingStatusText}>{loadingStatus.status}</Text>
+          {loadingStatus.total > 0 && (
             <Text style={styles.loadingPercentageText}>
               {(loadingStatus.done / loadingStatus.total * 100).toFixed(2)}%
-            </Text>}
+            </Text>
+          )}
         </View>
       );
     } else {
@@ -94,10 +81,7 @@ export default class BrowserScreenLoading extends React.Component {
 
       let iconUrl = manifest.getIn(['loading', 'iconUrl']);
       let loadingBackgroundColor = this._getLoadingBackgroundColor(manifest);
-      let backgroundImageUrl = manifest.getIn([
-        'loading',
-        'backgroundImageUrl',
-      ]);
+      let backgroundImageUrl = manifest.getIn(['loading', 'backgroundImageUrl']);
 
       let placeholderBackgroundColor = loadingBackgroundColor;
       if (backgroundImageUrl) {
@@ -141,14 +125,8 @@ export default class BrowserScreenLoading extends React.Component {
 
   _getLoadingIndicatorStyle = manifest => {
     let loadingIndicatorStyle = 'default';
-    if (
-      manifest &&
-      manifest.getIn(['loading', 'loadingIndicatorStyleExperimental'])
-    ) {
-      loadingIndicatorStyle = manifest.getIn([
-        'loading',
-        'loadingIndicatorStyleExperimental',
-      ]);
+    if (manifest && manifest.getIn(['loading', 'loadingIndicatorStyleExperimental'])) {
+      loadingIndicatorStyle = manifest.getIn(['loading', 'loadingIndicatorStyleExperimental']);
     }
 
     return loadingIndicatorStyle;
@@ -169,17 +147,11 @@ export default class BrowserScreenLoading extends React.Component {
 
   _getSplashLoadingBackgroundColor = manifest => {
     // Try to load the platform specific background color, otherwise fall back to `splash.backgroundColor`
-    if (
-      Platform.OS === 'ios' &&
-      manifest.getIn(['ios', 'splash', 'backgroundColor'])
-    ) {
+    if (Platform.OS === 'ios' && manifest.getIn(['ios', 'splash', 'backgroundColor'])) {
       return manifest.getIn(['ios', 'splash', 'backgroundColor']);
     }
 
-    if (
-      Platform.OS === 'android' &&
-      manifest.getIn(['android', 'splash', 'backgroundColor'])
-    ) {
+    if (Platform.OS === 'android' && manifest.getIn(['android', 'splash', 'backgroundColor'])) {
       return manifest.getIn(['android', 'splash', 'backgroundColor']);
     }
 
@@ -197,15 +169,9 @@ export default class BrowserScreenLoading extends React.Component {
     }
 
     let mode;
-    if (
-      Platform.OS === 'ios' &&
-      manifest.getIn(['ios', 'splash', 'resizeMode'])
-    ) {
+    if (Platform.OS === 'ios' && manifest.getIn(['ios', 'splash', 'resizeMode'])) {
       mode = manifest.getIn(['ios', 'splash', 'resizeMode']);
-    } else if (
-      Platform.OS === 'android' &&
-      manifest.getIn(['android', 'splash', 'resizeMode'])
-    ) {
+    } else if (Platform.OS === 'android' && manifest.getIn(['android', 'splash', 'resizeMode'])) {
       mode = manifest.getIn(['android', 'splash', 'resizeMode']);
     } else if (manifest.getIn(['splash', 'resizeMode'])) {
       mode = manifest.getIn(['splash', 'resizeMode']);
@@ -230,14 +196,7 @@ export default class BrowserScreenLoading extends React.Component {
     }
 
     if (Platform.OS === 'android' && manifest.getIn(['android', 'splash'])) {
-      const resolutions = [
-        'xxxhdpi',
-        'xxhdpi',
-        'xhdpi',
-        'hdpi',
-        'mdpi',
-        'ldpi',
-      ];
+      const resolutions = ['xxxhdpi', 'xxhdpi', 'xhdpi', 'hdpi', 'mdpi', 'ldpi'];
       const splash = manifest.getIn(['android', 'splash']);
       // get the biggest available image
       resolutions.forEach(resolution => {

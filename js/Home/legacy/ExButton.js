@@ -7,14 +7,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-  Animated,
-  Dimensions,
-  Easing,
-  PanResponder,
-  Platform,
-  StyleSheet,
-} from 'react-native';
+import { Animated, Dimensions, Easing, PanResponder, Platform, StyleSheet } from 'react-native';
 import TimerMixin from 'react-timer-mixin';
 import ResponsiveImage from '@expo/react-native-responsive-image';
 
@@ -133,12 +126,9 @@ class ExButton extends React.Component {
     let panResponder = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onPanResponderGrant: this._handlePanResponderGrant,
-      onPanResponderMove: Animated.event(
-        [null, { dx: position.x, dy: position.y }],
-        {
-          listener: this._handlePanResponderMove,
-        }
-      ),
+      onPanResponderMove: Animated.event([null, { dx: position.x, dy: position.y }], {
+        listener: this._handlePanResponderMove,
+      }),
       onPanResponderRelease: this._handlePanResponderRelease,
       onPanResponderTerminate: this._handlePanResponderRelease,
     });
@@ -212,13 +202,11 @@ class ExButton extends React.Component {
     const buttonImageSources = {
       // $FlowIgnore: keys need to be strings
       2: {
-        uri:
-          'https://s3.amazonaws.com/exp-us-standard/ios-home-btn-logo@2x.png',
+        uri: 'https://s3.amazonaws.com/exp-us-standard/ios-home-btn-logo@2x.png',
       },
       // $FlowIgnore: keys need to be strings
       3: {
-        uri:
-          'https://s3.amazonaws.com/exp-us-standard/ios-home-btn-logo@3x.png',
+        uri: 'https://s3.amazonaws.com/exp-us-standard/ios-home-btn-logo@3x.png',
       },
     };
 
@@ -266,7 +254,8 @@ class ExButton extends React.Component {
     }, this.props.msUntilInactiveOnInteraction);
   }
 
-  @autobind _handlePanResponderGrant() {
+  @autobind
+  _handlePanResponderGrant() {
     var { position } = this.state;
 
     // Re-set the offset to the current value, otherwise when we set the value
@@ -282,9 +271,11 @@ class ExButton extends React.Component {
     Animated.spring(this.state.scale, { toValue: 0.9 }).start();
   }
 
-  @autobind _handlePanResponderMove() {}
+  @autobind
+  _handlePanResponderMove() {}
 
-  @autobind _handlePanResponderRelease(event, gestureState) {
+  @autobind
+  _handlePanResponderRelease(event, gestureState) {
     let { dx, dy, vx, vy } = gestureState;
     let { position } = this.state;
     const {
@@ -312,10 +303,7 @@ class ExButton extends React.Component {
     /* Calculate the X position */
     let currentX = position.x.__getValue();
     let targetX;
-    if (
-      (currentX >= ScreenCenter && vx > -velocityThreshold) ||
-      vx >= velocityThreshold
-    ) {
+    if ((currentX >= ScreenCenter && vx > -velocityThreshold) || vx >= velocityThreshold) {
       targetX = RightDock;
     } else {
       targetX = LeftDock;

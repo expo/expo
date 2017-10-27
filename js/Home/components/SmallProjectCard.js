@@ -19,8 +19,7 @@ import Colors from '../constants/Colors';
 import Layout from '../constants/Layout';
 import ExUrls from 'ExUrls';
 import FadeIn from '@expo/react-native-fade-in-image';
-import TouchableNativeFeedbackSafe
-  from '@expo/react-native-touchable-native-feedback-safe';
+import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 
 @withNavigation
 export default class SmallProjectCard extends React.Component {
@@ -45,23 +44,11 @@ export default class SmallProjectCard extends React.Component {
         onPress={this._handlePressProject}
         fallback={TouchableHighlight}
         underlayColor="#b7b7b7"
-        style={[
-          styles.container,
-          this.props.fullWidthBorder && styles.bottomBorder,
-        ]}>
-        <View style={styles.iconContainer}>
-          {this._maybeRenderIcon()}
-        </View>
+        style={[styles.container, this.props.fullWidthBorder && styles.bottomBorder]}>
+        <View style={styles.iconContainer}>{this._maybeRenderIcon()}</View>
 
-        <View
-          style={[
-            styles.infoContainer,
-            !this.props.fullWidthBorder && styles.bottomBorder,
-          ]}>
-          <Text
-            style={styles.projectNameText}
-            ellipsizeMode="tail"
-            numberOfLines={1}>
+        <View style={[styles.infoContainer, !this.props.fullWidthBorder && styles.bottomBorder]}>
+          <Text style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
             {projectName}
           </Text>
 
@@ -77,36 +64,27 @@ export default class SmallProjectCard extends React.Component {
               {hideUsername ? slug : username || projectUrl}
             </Text>
 
-            {isUnlisted &&
+            {isUnlisted && (
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <View style={styles.bullet} />
                 <View style={styles.unlistedIconContainer}>
-                  <Ionicons
-                    name="ios-eye-off"
-                    size={15}
-                    color="rgba(36, 44, 58, 0.3)"
-                  />
+                  <Ionicons name="ios-eye-off" size={15} color="rgba(36, 44, 58, 0.3)" />
                 </View>
 
-                <Text style={styles.unlistedText}>
-                  Unlisted
-                </Text>
-              </View>}
+                <Text style={styles.unlistedText}>Unlisted</Text>
+              </View>
+            )}
 
-            {renderLikes &&
+            {renderLikes && (
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <View style={styles.bullet} />
-                <Text
-                  onPress={() => {}}
-                  numberOfLines={1}
-                  style={styles.projectExtraInfoText}>
+                <Text onPress={() => {}} numberOfLines={1} style={styles.projectExtraInfoText}>
                   {likeCount} {likeCount === 1 ? 'like' : 'likes'}
                 </Text>
-              </View>}
-
+              </View>
+            )}
           </View>
         </View>
-
       </TouchableNativeFeedbackSafe>
     );
   }
@@ -215,11 +193,7 @@ const styles = StyleSheet.create({
   projectExtraInfoContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: Layout.window.width -
-      IconPaddingRight -
-      IconPaddingLeft -
-      IconWidth -
-      10,
+    width: Layout.window.width - IconPaddingRight - IconPaddingLeft - IconWidth - 10,
   },
   projectExtraInfoText: {
     color: Colors.greyText,

@@ -31,7 +31,8 @@ export default class NuxContextualMenuOverlay extends React.Component {
     );
   }
 
-  @autobind _onPressAction() {
+  @autobind
+  _onPressAction() {
     ExponentKernel.dismissNuxAsync();
   }
 }

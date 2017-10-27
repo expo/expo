@@ -60,17 +60,13 @@ export default class ApiV2HttpClient {
     try {
       result = JSON.parse(resultText);
     } catch (e) {
-      let error: any = new Error(
-        `There was a problem understanding the server.`
-      );
+      let error: any = new Error(`There was a problem understanding the server.`);
       error.responseBody = resultText;
       throw error;
     }
 
     if (!result || typeof result !== 'object') {
-      let error: any = new Error(
-        `There was a problem understanding the server.`
-      );
+      let error: any = new Error(`There was a problem understanding the server.`);
       error.responseBody = result;
       throw error;
     }

@@ -87,7 +87,8 @@ export default class ExTooltip extends React.Component {
     );
   }
 
-  @autobind _renderTooltip() {
+  @autobind
+  _renderTooltip() {
     let containerY = this.props.tooltipPoint.y;
     let arrowLeft = this.props.tooltipPoint.x - ARROW_WIDTH * 0.5;
 
@@ -129,16 +130,16 @@ export default class ExTooltip extends React.Component {
     );
   }
 
-  @autobind _renderDescription() {
+  @autobind
+  _renderDescription() {
     if (!this.props.tooltipDescription) {
       return null;
     }
-    return (
-      <Text style={styles.description}>{this.props.tooltipDescription}</Text>
-    );
+    return <Text style={styles.description}>{this.props.tooltipDescription}</Text>;
   }
 
-  @autobind _renderAction() {
+  @autobind
+  _renderAction() {
     if (!this.props.tooltipAction) {
       return null;
     }
@@ -146,18 +147,14 @@ export default class ExTooltip extends React.Component {
     let buttonStyle = this.props.tooltipActionIsSmall
       ? styles.actionButtonSmall
       : styles.actionButton;
-    let labelStyle = this.props.tooltipActionIsSmall
-      ? styles.actionLabelSmall
-      : styles.actionLabel;
+    let labelStyle = this.props.tooltipActionIsSmall ? styles.actionLabelSmall : styles.actionLabel;
 
     return (
       <TouchableOpacity
         testID={this.props.tooltipActionTestID}
         style={buttonStyle}
         onPress={this.props.onPressAction}>
-        <Text style={labelStyle}>
-          {this.props.tooltipAction}
-        </Text>
+        <Text style={labelStyle}>{this.props.tooltipAction}</Text>
       </TouchableOpacity>
     );
   }

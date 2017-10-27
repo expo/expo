@@ -39,14 +39,10 @@ export default class InfoScreenApp extends React.Component {
   }
 
   render() {
-    if (
-      !this.props.exp || !this.props.exp.manifest || !this.props.exp.manifestUrl
-    ) {
+    if (!this.props.exp || !this.props.exp.manifest || !this.props.exp.manifestUrl) {
       return (
         <View style={styles.container}>
-          <Text style={styles.bigText}>
-            No infomation found for this experience.
-          </Text>
+          <Text style={styles.bigText}>No infomation found for this experience.</Text>
         </View>
       );
     }
@@ -55,37 +51,21 @@ export default class InfoScreenApp extends React.Component {
     return (
       <View style={styles.container}>
         {this._renderNav()}
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.contentContainer}>
-
+        <ScrollView style={styles.scrollView} contentContainerStyle={styles.contentContainer}>
           <View
             style={{
               flexDirection: 'row',
               alignItems: 'center',
               paddingBottom: 20,
             }}>
-            <Image
-              source={{ uri: manifest.iconUrl }}
-              style={styles.experienceIcon}
-            />
-            <Text style={[styles.bigText, { paddingLeft: 20 }]}>
-              {manifest.name}
-            </Text>
+            <Image source={{ uri: manifest.iconUrl }} style={styles.experienceIcon} />
+            <Text style={[styles.bigText, { paddingLeft: 20 }]}>{manifest.name}</Text>
           </View>
 
-          <Text style={styles.mediumText}>
-            SDK Version: {manifest.sdkVersion}
-          </Text>
-          <Text style={styles.mediumText}>
-            ID: {manifest.id}
-          </Text>
-          <Text style={styles.mediumText}>
-            Published Time: {manifest.publishedTime}
-          </Text>
-          <Text style={styles.mediumText}>
-            Is Verified: {manifest.isVerified.toString()}
-          </Text>
+          <Text style={styles.mediumText}>SDK Version: {manifest.sdkVersion}</Text>
+          <Text style={styles.mediumText}>ID: {manifest.id}</Text>
+          <Text style={styles.mediumText}>Published Time: {manifest.publishedTime}</Text>
+          <Text style={styles.mediumText}>Is Verified: {manifest.isVerified.toString()}</Text>
 
           <View style={{ marginVertical: 30, flexDirection: 'row' }}>
             {this._renderButton('Clear Data', this._clearData)}
@@ -95,16 +75,14 @@ export default class InfoScreenApp extends React.Component {
             )}
           </View>
 
-          {this.state.isManifestVisible
-            ? <View>
-                <Text style={[styles.mediumText, { marginTop: 0 }]}>
-                  Manifest:
-                </Text>
-                <Text style={styles.smallText}>
-                  {JSON.stringify(manifest)}
-                </Text>
-              </View>
-            : <View />}
+          {this.state.isManifestVisible ? (
+            <View>
+              <Text style={[styles.mediumText, { marginTop: 0 }]}>Manifest:</Text>
+              <Text style={styles.smallText}>{JSON.stringify(manifest)}</Text>
+            </View>
+          ) : (
+            <View />
+          )}
         </ScrollView>
       </View>
     );
@@ -114,14 +92,9 @@ export default class InfoScreenApp extends React.Component {
     return (
       <View style={styles.navBar}>
         <TouchableOpacity onPress={() => BackAndroid.exitApp()}>
-          <Image
-            source={{ uri: 'ic_arrow_back_white_36dp' }}
-            style={styles.icon}
-          />
+          <Image source={{ uri: 'ic_arrow_back_white_36dp' }} style={styles.icon} />
         </TouchableOpacity>
-        <Text style={{ marginLeft: 14, color: 'white', fontSize: 20 }}>
-          Info
-        </Text>
+        <Text style={{ marginLeft: 14, color: 'white', fontSize: 20 }}>Info</Text>
       </View>
     );
   }
@@ -153,14 +126,13 @@ export default class InfoScreenApp extends React.Component {
     );
   }
 
-  @autobind _clearData() {
-    ExponentKernel.clearExperienceData(
-      this.props.exp.manifest.id,
-      this.props.exp.manifestUrl
-    );
+  @autobind
+  _clearData() {
+    ExponentKernel.clearExperienceData(this.props.exp.manifest.id, this.props.exp.manifestUrl);
   }
 
-  @autobind _viewManifest() {
+  @autobind
+  _viewManifest() {
     this.setState(state => {
       return {
         isManifestVisible: !state.isManifestVisible,

@@ -37,9 +37,7 @@ addListenerWithJavaCallback('ExponentKernel.openManifestUrl', async event => {
   let { manifestUrl, manifestString, bundleUrl } = event;
 
   let manifest = JSON.parse(manifestString);
-  ExStore.dispatch(
-    BrowserActions.navigateToBundleUrlAsync(manifestUrl, manifest, bundleUrl)
-  );
+  ExStore.dispatch(BrowserActions.navigateToBundleUrlAsync(manifestUrl, manifest, bundleUrl));
 
   return {};
 });
@@ -54,13 +52,10 @@ addListenerWithJavaCallback('ExponentKernel.updateDeviceToken', async event => {
   });
 });
 
-addListenerWithJavaCallback(
-  'ExponentKernel.getExponentPushToken',
-  async event => {
-    let { deviceId, experienceId } = event;
-    return ApiV2Client.getExponentPushTokenAsync(deviceId, experienceId);
-  }
-);
+addListenerWithJavaCallback('ExponentKernel.getExponentPushToken', async event => {
+  let { deviceId, experienceId } = event;
+  return ApiV2Client.getExponentPushTokenAsync(deviceId, experienceId);
+});
 
 // Tell Java that it can send us DeviceEventEmitter events now.
 ExponentKernel.onLoaded();

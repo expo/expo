@@ -59,10 +59,7 @@ export default class ProjectTools extends React.Component {
   componentWillUnmount() {
     this._stopPollingClipboard();
 
-    AppState.removeEventListener(
-      'change',
-      this._maybeResumePollingFromAppState
-    );
+    AppState.removeEventListener('change', this._maybeResumePollingFromAppState);
   }
 
   render() {
@@ -71,11 +68,9 @@ export default class ProjectTools extends React.Component {
     return (
       <View style={{ marginBottom: 15 }}>
         <QRCodeButton fullWidthBorder={!displayOpenClipboardButton} />
-        {displayOpenClipboardButton &&
-          <OpenFromClipboardButton
-            clipboardContents={clipboardContents}
-            fullWidthBorder
-          />}
+        {displayOpenClipboardButton && (
+          <OpenFromClipboardButton clipboardContents={clipboardContents} fullWidthBorder />
+        )}
       </View>
     );
   }
@@ -87,9 +82,7 @@ export default class ProjectTools extends React.Component {
       requestIdleCallback(() => {
         this.setState({
           clipboardContents,
-          displayOpenClipboardButton: clipboardMightBeOpenable(
-            clipboardContents
-          ),
+          displayOpenClipboardButton: clipboardMightBeOpenable(clipboardContents),
         });
       });
     }

@@ -1,14 +1,7 @@
 /* @flow */
 
 import React from 'react';
-import {
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { withNavigation } from '@expo/ex-navigation';
 
 import Colors from '../constants/Colors';
@@ -19,22 +12,15 @@ import SharedStyles from '../constants/SharedStyles';
 export default class EmptyProjectsNotice extends React.Component {
   render() {
     return (
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}>
-        <Text style={SharedStyles.noticeTitleText}>
-          Nothing to see here, yet
-        </Text>
+      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+        <Text style={SharedStyles.noticeTitleText}>Nothing to see here, yet</Text>
 
         <Text style={SharedStyles.noticeDescriptionText}>
-          This screen is where you’ll be able to open any project you have
-          running in your Expo XDE. You’ll also find your recently opened
-          projects here.
+          This screen is where you’ll be able to open any project you have running in your Expo XDE.
+          You’ll also find your recently opened projects here.
         </Text>
 
-        <PrimaryButton
-          onPress={this._handleExplorePress}
-          fallback={TouchableOpacity}>
+        <PrimaryButton onPress={this._handleExplorePress} fallback={TouchableOpacity}>
           Explore Expo projects
         </PrimaryButton>
       </ScrollView>

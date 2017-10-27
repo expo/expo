@@ -7,12 +7,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-  ActivityIndicator,
-  DeviceEventEmitter,
-  Linking,
-  View,
-} from 'react-native';
+import { ActivityIndicator, DeviceEventEmitter, Linking, View } from 'react-native';
 
 import Browser from 'Browser';
 import BrowserActions from 'BrowserActions';
@@ -52,12 +47,7 @@ class ExponentApp extends React.Component {
   constructor(props: any, context: any) {
     super(props, context);
     if (props.shell) {
-      ExStore.dispatch(
-        BrowserActions.setShellPropertiesAsync(
-          props.shell,
-          props.shellManifestUrl
-        )
-      );
+      ExStore.dispatch(BrowserActions.setShellPropertiesAsync(props.shell, props.shellManifestUrl));
     }
   }
 
@@ -68,10 +58,7 @@ class ExponentApp extends React.Component {
   componentWillReceiveProps(nextProps: any) {
     if (nextProps.shell !== this.props.shell) {
       ExStore.dispatch(
-        BrowserActions.setShellPropertiesAsync(
-          nextProps.shell,
-          nextProps.shellManifestUrl
-        )
+        BrowserActions.setShellPropertiesAsync(nextProps.shell, nextProps.shellManifestUrl)
       );
     }
   }
@@ -84,10 +71,7 @@ class ExponentApp extends React.Component {
     }
 
     Linking.addEventListener('url', this._handleUrl);
-    DeviceEventEmitter.addListener(
-      'Exponent.notification',
-      this._handleNotification
-    );
+    DeviceEventEmitter.addListener('Exponent.notification', this._handleNotification);
     DeviceEventEmitter.addListener('ExponentKernel.refresh', Browser.refresh);
 
     let initialUrl = await Linking.getInitialURL();
@@ -128,10 +112,7 @@ class ExponentApp extends React.Component {
     let { body, experienceId } = event;
     ExStore.dispatch(BrowserActions.setKernelLoadingState(true));
     ExStore.dispatch(
-      BrowserActions.navigateToExperienceIdWithNotificationAsync(
-        experienceId,
-        body
-      )
+      BrowserActions.navigateToExperienceIdWithNotificationAsync(experienceId, body)
     );
   };
 }

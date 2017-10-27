@@ -31,7 +31,9 @@ function wait_for_loading_indicator_to_be_finished() {
 }
 
 function isTablet() {
-  return !UIATarget.localTarget().model().match(/iPhone/);
+  return !UIATarget.localTarget()
+    .model()
+    .match(/iPhone/);
 }
 
 function captureLocalizedScreenshot(name) {
@@ -42,9 +44,8 @@ function captureLocalizedScreenshot(name) {
   var rect = target.rect();
   var deviceOrientation = target.deviceOrientation();
 
-  var theSize = rect.size.width > rect.size.height
-    ? rect.size.width.toFixed()
-    : rect.size.height.toFixed();
+  var theSize =
+    rect.size.width > rect.size.height ? rect.size.width.toFixed() : rect.size.height.toFixed();
 
   if (model.match(/iPhone/)) {
     if (theSize > 667) {
@@ -71,11 +72,7 @@ function captureLocalizedScreenshot(name) {
 
   var result = target
     .host()
-    .performTaskWithPathArgumentsTimeout(
-      '/usr/bin/printenv',
-      ['SNAPSHOT_LANGUAGE'],
-      5
-    );
+    .performTaskWithPathArgumentsTimeout('/usr/bin/printenv', ['SNAPSHOT_LANGUAGE'], 5);
   var language = result.stdout.substring(0, result.stdout.length - 1);
 
   var parts = [language, model, name, orientation];

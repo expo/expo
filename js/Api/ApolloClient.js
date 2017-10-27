@@ -50,9 +50,7 @@ async function refreshIdTokenAsync(): Promise<string> {
     return '';
   }
 
-  let newAuthTokens: { id_token: string } = await Auth0Api.refreshIdTokenAsync(
-    refreshToken
-  );
+  let newAuthTokens: { id_token: string } = await Auth0Api.refreshIdTokenAsync(refreshToken);
 
   if (__DEV__) {
     if (!newAuthTokens.id_token) {

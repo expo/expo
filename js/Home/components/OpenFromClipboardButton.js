@@ -13,14 +13,12 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { withNavigation } from '@expo/ex-navigation';
-import TouchableNativeFeedbackSafe
-  from '@expo/react-native-touchable-native-feedback-safe';
+import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 
 import Colors from '../constants/Colors';
 import ExUrls from 'ExUrls';
 import Layout from '../constants/Layout';
-import requestCameraPermissionsAsync
-  from '../utils/requestCameraPermissionsAsync';
+import requestCameraPermissionsAsync from '../utils/requestCameraPermissionsAsync';
 
 @withNavigation
 export default class OpenFromClipboardButton extends React.Component {
@@ -41,19 +39,12 @@ export default class OpenFromClipboardButton extends React.Component {
           />
         </View>
 
-        <View
-          style={[
-            styles.infoContainer,
-            !fullWidthBorder && styles.bottomBorder,
-          ]}>
+        <View style={[styles.infoContainer, !fullWidthBorder && styles.bottomBorder]}>
           <Text style={styles.titleText} ellipsizeMode="tail" numberOfLines={1}>
             Open from Clipboard
           </Text>
 
-          <Text
-            style={styles.subtitleText}
-            ellipsizeMode="tail"
-            numberOfLines={1}>
+          <Text style={styles.subtitleText} ellipsizeMode="tail" numberOfLines={1}>
             {clipboardContents}
           </Text>
         </View>

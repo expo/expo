@@ -11,13 +11,7 @@ export default function createSelectableComponent(
 ) {
   class SelectableComponent extends React.Component {
     render() {
-      const {
-        onLongPress,
-        onPress,
-        onPressIn,
-        onPressOut,
-        ...childProps
-      } = this.props;
+      const { onLongPress, onPress, onPressIn, onPressOut, ...childProps } = this.props;
 
       return (
         <Selectable

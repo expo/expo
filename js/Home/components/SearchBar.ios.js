@@ -19,13 +19,13 @@ import Layout from '../constants/Layout';
 const { ExponentKernel } = NativeModules;
 
 const SearchContainerHorizontalMargin = 10;
-const SearchContainerWidth =
-  Layout.window.width - SearchContainerHorizontalMargin * 2;
+const SearchContainerWidth = Layout.window.width - SearchContainerHorizontalMargin * 2;
 
-const SearchIcon = () =>
+const SearchIcon = () => (
   <View style={styles.searchIconContainer}>
     <Ionicons name="ios-search" size={18} color="#ccc" />
-  </View>;
+  </View>
+);
 
 @withNavigation
 class PlaceholderButtonSearchBar extends React.Component {
@@ -127,23 +127,14 @@ export default class SearchBar extends React.Component {
         </View>
 
         <View
-          key={
-            showCancelButton
-              ? 'visible-cancel-button'
-              : 'layout-only-cancel-button'
-          }
-          style={[
-            styles.buttonContainer,
-            { opacity: showCancelButton ? 1 : 0 },
-          ]}>
+          key={showCancelButton ? 'visible-cancel-button' : 'layout-only-cancel-button'}
+          style={[styles.buttonContainer, { opacity: showCancelButton ? 1 : 0 }]}>
           <TouchableOpacity
             style={styles.button}
             hitSlop={{ top: 15, bottom: 15, left: 15, right: 20 }}
             onLayout={this._handleLayoutCancelButton}
             onPress={this._handlePressCancelButton}>
-            <Text style={{ fontSize: 16, color: '#4E9BDE' }}>
-              Cancel
-            </Text>
+            <Text style={{ fontSize: 16, color: '#4E9BDE' }}>Cancel</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -157,10 +148,7 @@ export default class SearchBar extends React.Component {
 
   _handleSubmit = () => {
     let { text } = this.state;
-    if (
-      ExponentKernel &&
-      (text.toLowerCase() === '^dev menu' || text.toLowerCase() === '^dm')
-    ) {
+    if (ExponentKernel && (text.toLowerCase() === '^dev menu' || text.toLowerCase() === '^dm')) {
       ExponentKernel.addDevMenu();
     } else {
       this._textInput.blur();

@@ -61,9 +61,7 @@ export default Flux.createReducer(new BrowserState(), {
       // remove any existing history item with the same url from the middle of the stack
       // and prepend a new history item.
       let historyItem = new HistoryItem(action.meta.historyItem);
-      let history = state.history
-        .filter(item => item.url !== historyItem.url)
-        .unshift(historyItem);
+      let history = state.history.filter(item => item.url !== historyItem.url).unshift(historyItem);
       return validateBrowserState(
         state.merge({
           isHomeVisible: false,
@@ -98,9 +96,7 @@ export default Flux.createReducer(new BrowserState(), {
         foregroundTaskUrl: url,
       });
     }
-    console.error(
-      `Tried to foreground a url not already present in the browser: ${url}`
-    );
+    console.error(`Tried to foreground a url not already present in the browser: ${url}`);
     return state;
   },
 
@@ -109,10 +105,7 @@ export default Flux.createReducer(new BrowserState(), {
       console.error(`Tried to foreground Expo home while in a shell`);
       return state;
     }
-    let {
-      clearTasks,
-      projectScreenImmediatelyNavigatesToModalNamed,
-    } = action.payload;
+    let { clearTasks, projectScreenImmediatelyNavigatesToModalNamed } = action.payload;
     return state.merge({
       isHomeVisible: true,
       isMenuVisible: false,
@@ -301,10 +294,7 @@ export default Flux.createReducer(new BrowserState(), {
     let task = state.tasks.get(action.payload.url, null);
     if (task) {
       return state.merge({
-        tasks: state.tasks.set(
-          action.payload.url,
-          task.set('isLoading', false)
-        ),
+        tasks: state.tasks.set(action.payload.url, task.set('isLoading', false)),
       });
     }
     return state;
@@ -338,9 +328,7 @@ function validateBrowserState(state) {
   let foregroundTaskUrl = state.foregroundTaskUrl;
   if (foregroundTaskUrl) {
     let newTasks = state.tasks.filter(
-      (task, url) =>
-        url === foregroundTaskUrl ||
-        (state.isShell && url === state.shellManifestUrl)
+      (task, url) => url === foregroundTaskUrl || (state.isShell && url === state.shellManifestUrl)
     );
     return state.merge({
       tasks: newTasks,

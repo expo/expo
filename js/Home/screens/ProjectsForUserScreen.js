@@ -3,8 +3,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import MyProjectsListContainer from '../containers/MyProjectsListContainer';
-import OtherUserProjectListContainer
-  from '../containers/OtherUserProjectListContainer';
+import OtherUserProjectListContainer from '../containers/OtherUserProjectListContainer';
 
 export default class ProjectsForUserScreen extends React.Component {
   static route = {

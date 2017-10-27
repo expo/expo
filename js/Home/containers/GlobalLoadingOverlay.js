@@ -2,13 +2,7 @@
 
 import { BlurView } from 'expo';
 import React from 'react';
-import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { connect } from 'react-redux';
 import Colors from '../constants/Colors';
 
@@ -61,9 +55,7 @@ export default class GlobalLoadingOverlay extends React.Component {
       <BlurView tint="default" intensity={100} style={styles.container}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator color={Colors.blackText} size="small" />
-          <Text style={[styles.loadingText, { color: Colors.blackText }]}>
-            Opening project...
-          </Text>
+          <Text style={[styles.loadingText, { color: Colors.blackText }]}>Opening project...</Text>
         </View>
 
         {this._maybeRenderWarning()}
@@ -87,8 +79,8 @@ export default class GlobalLoadingOverlay extends React.Component {
     return (
       <View style={styles.warningContainer}>
         <Text style={styles.warningText}>
-          This is taking much longer than it should. You might want to cancel
-          and check your internet connectivity.
+          This is taking much longer than it should. You might want to cancel and check your
+          internet connectivity.
         </Text>
       </View>
     );
@@ -96,9 +88,7 @@ export default class GlobalLoadingOverlay extends React.Component {
 
   _cancelLoadingExperienceAsync = async () => {
     try {
-      this.props.dispatch(
-        BrowserActions.cancelLoadingMostRecentManifestRequest()
-      );
+      this.props.dispatch(BrowserActions.cancelLoadingMostRecentManifestRequest());
     } catch (e) {
       console.log(`Unable to cancel: ${e.message}`);
     }

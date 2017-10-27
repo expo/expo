@@ -3,8 +3,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import TouchableNativeFeedbackSafe
-  from '@expo/react-native-touchable-native-feedback-safe';
+import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 
 export default class LikeButton extends React.Component {
   render() {
@@ -20,9 +19,7 @@ export default class LikeButton extends React.Component {
             name={liked ? 'md-heart' : 'md-heart-outline'}
             size={14}
           />
-          <Text style={[styles.text, liked && styles.textLiked]}>
-            {liked ? 'Liked' : 'Like'}
-          </Text>
+          <Text style={[styles.text, liked && styles.textLiked]}>{liked ? 'Liked' : 'Like'}</Text>
         </TouchableNativeFeedbackSafe>
       </View>
     );

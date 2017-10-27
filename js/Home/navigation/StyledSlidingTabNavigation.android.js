@@ -51,8 +51,7 @@ export default class StyledSlidingTabNavigation extends React.Component {
     });
 
     return (
-      <Animated.Text
-        style={{ color, fontWeight: '500', fontSize: 13, letterSpacing: 0.46 }}>
+      <Animated.Text style={{ color, fontWeight: '500', fontSize: 13, letterSpacing: 0.46 }}>
         {title.toUpperCase()}
       </Animated.Text>
     );

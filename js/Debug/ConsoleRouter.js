@@ -19,25 +19,16 @@ let ConsoleRouter = {
 
       renderScene(navigator) {
         let ConsoleHistoryScreen = require('ConsoleHistoryScreen').default;
-        return (
-          <ConsoleHistoryScreen
-            navigator={navigator}
-            isUserFacing={isUserFacing}
-          />
-        );
+        return <ConsoleHistoryScreen navigator={navigator} isUserFacing={isUserFacing} />;
       },
 
       renderLeftButton(navigator) {
         return (
           <TouchableOpacity
             onPress={() => navigator.parentNavigator.pop()}
-            touchRetentionOffset={
-              ExNavigator.Styles.barButtonTouchRetentionOffset
-            }
+            touchRetentionOffset={ExNavigator.Styles.barButtonTouchRetentionOffset}
             style={ExNavigator.Styles.barLeftButton}>
-            <Text style={ExNavigator.Styles.barLeftButtonText}>
-              Dismiss
-            </Text>
+            <Text style={ExNavigator.Styles.barLeftButtonText}>Dismiss</Text>
           </TouchableOpacity>
         );
       },
@@ -49,13 +40,9 @@ let ConsoleRouter = {
               navigator.parentNavigator.pop();
               onPressReload(event);
             }}
-            touchRetentionOffset={
-              ExNavigator.Styles.barButtonTouchRetentionOffset
-            }
+            touchRetentionOffset={ExNavigator.Styles.barButtonTouchRetentionOffset}
             style={ExNavigator.Styles.barRightButton}>
-            <Text style={ExNavigator.Styles.barRightButtonText}>
-              Refresh
-            </Text>
+            <Text style={ExNavigator.Styles.barRightButtonText}>Refresh</Text>
           </TouchableOpacity>
         );
       },

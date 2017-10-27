@@ -115,15 +115,13 @@ export default class SearchScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        {Platform.OS === 'ios' &&
+        {Platform.OS === 'ios' && (
           <View style={styles.iosSearchBarContainer}>
             <SearchBar emitter={this.props.route.getEventEmitter()} />
-          </View>}
+          </View>
+        )}
 
-        <SearchResults
-          query={this.props.data.variables.query}
-          data={this.props.data}
-        />
+        <SearchResults query={this.props.data.variables.query} data={this.props.data} />
       </View>
     );
   }

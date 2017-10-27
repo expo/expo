@@ -2,13 +2,7 @@
 
 import { Asset, Font } from 'expo';
 import React from 'react';
-import {
-  ActivityIndicator,
-  Platform,
-  StatusBar,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { NavigationProvider, StackNavigation } from '@expo/ex-navigation';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
@@ -50,15 +44,9 @@ export default class AppContainer extends React.Component {
           require('../Assets/ios-menu-home.png'),
         ];
 
-        await Promise.all([
-          ...cacheImages(imageAssets),
-          Font.loadAsync(Ionicons.font),
-        ]);
+        await Promise.all([...cacheImages(imageAssets), Font.loadAsync(Ionicons.font)]);
       } else {
-        await Promise.all([
-          Font.loadAsync(Ionicons.font),
-          Font.loadAsync(MaterialIcons.font),
-        ]);
+        await Promise.all([Font.loadAsync(Ionicons.font), Font.loadAsync(MaterialIcons.font)]);
       }
     } catch (e) {
       // ..
@@ -86,8 +74,7 @@ export default class AppContainer extends React.Component {
       <View style={styles.container}>
         <ActionSheetProvider>
           <NavigationProvider context={customNavigationContext}>
-            {this.state.isReady &&
-              <StackNavigation id="root" initialRoute="rootNavigation" />}
+            {this.state.isReady && <StackNavigation id="root" initialRoute="rootNavigation" />}
           </NavigationProvider>
         </ActionSheetProvider>
 

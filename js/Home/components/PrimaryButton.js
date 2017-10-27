@@ -9,8 +9,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import TouchableNativeFeedback
-  from '@expo/react-native-touchable-native-feedback-safe';
+import TouchableNativeFeedback from '@expo/react-native-touchable-native-feedback-safe';
 
 import Colors from '../constants/Colors';
 
@@ -24,9 +23,7 @@ export default class PrimaryButton extends React.Component {
         {...props}
         activeOpacity={isLoading ? 1 : 0.5}
         style={[plain ? styles.plainButton : styles.button, style]}>
-        <Text style={plain ? styles.plainButtonText : styles.buttonText}>
-          {children}
-        </Text>
+        <Text style={plain ? styles.plainButtonText : styles.buttonText}>{children}</Text>
         {isLoading && this._renderLoading()}
       </TouchableNativeFeedback>
     );

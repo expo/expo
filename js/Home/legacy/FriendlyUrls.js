@@ -18,9 +18,7 @@ let FriendlyUrls = {
     if (components.hostname === 'exp.host') {
       components.slashes = false;
       components.protocol = '';
-      components.pathname = components.pathname
-        ? components.pathname.substr(1)
-        : '';
+      components.pathname = components.pathname ? components.pathname.substr(1) : '';
       if (removeHomeHost) {
         components.host = '';
         components.hostname = '';

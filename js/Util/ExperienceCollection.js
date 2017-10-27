@@ -30,11 +30,7 @@ export default class ExperienceCollection extends React.Component {
     let actionLabel;
 
     if (this.props.actionLabel) {
-      actionLabel = (
-        <Text style={styles.headingDisclosure}>
-          {this.props.actionLabel}
-        </Text>
-      );
+      actionLabel = <Text style={styles.headingDisclosure}>{this.props.actionLabel}</Text>;
     }
 
     return (
@@ -42,9 +38,7 @@ export default class ExperienceCollection extends React.Component {
         <TouchableNativeFeedbackSafe
           onPress={this._onPressHeading}
           style={[styles.heading, this.props.headingStyle]}>
-          <Text style={styles.headingText}>
-            {this.props.headingLabel}
-          </Text>
+          <Text style={styles.headingText}>{this.props.headingLabel}</Text>
           {actionLabel}
         </TouchableNativeFeedbackSafe>
 
@@ -58,9 +52,7 @@ export default class ExperienceCollection extends React.Component {
   _renderExperiences(experiences: Array<any>) {
     return experiences.map((experience, index) => {
       let isFirst = index === 0;
-      let ref = isFirst && this.props.firstExperienceRef
-        ? this.props.firstExperienceRef
-        : null;
+      let ref = isFirst && this.props.firstExperienceRef ? this.props.firstExperienceRef : null;
       let truncatedName = experience.manifest.name;
       if (truncatedName.length > EXPERIENCE_MAX_TITLE_LENGTH_FULL_WIDTH) {
         truncatedName = `${truncatedName.substring(
@@ -70,29 +62,14 @@ export default class ExperienceCollection extends React.Component {
       }
 
       if (this.props.headingLabel === 'Featured') {
-        return this._renderFeaturedExperience(
-          experience,
-          ref,
-          truncatedName,
-          isFirst
-        );
+        return this._renderFeaturedExperience(experience, ref, truncatedName, isFirst);
       } else {
-        return this._renderRecentExperience(
-          experience,
-          ref,
-          truncatedName,
-          isFirst
-        );
+        return this._renderRecentExperience(experience, ref, truncatedName, isFirst);
       }
     });
   }
 
-  _renderRecentExperience(
-    experience: Object,
-    ref: any,
-    title: string,
-    isFirst: boolean
-  ) {
+  _renderRecentExperience(experience: Object, ref: any, title: string, isFirst: boolean) {
     let url = experience.url || '';
     url = url.replace(/^\w+:\/\//, '');
 
@@ -101,15 +78,8 @@ export default class ExperienceCollection extends React.Component {
         key={experience.url}
         background={TouchableNativeFeedbackSafe.Ripple('#e3e3e3', false)}
         onPress={() => this._onPressItem(experience)}
-        style={[
-          styles.experienceFullWidthContainer,
-          isFirst ? { paddingTop: 15 } : {},
-        ]}>
-        <View
-          style={[
-            styles.experienceIconContainer,
-            styles.fullWidthIconContainer,
-          ]}>
+        style={[styles.experienceFullWidthContainer, isFirst ? { paddingTop: 15 } : {}]}>
+        <View style={[styles.experienceIconContainer, styles.fullWidthIconContainer]}>
           <Image
             ref={ref}
             source={{ uri: experience.manifest.iconUrl }}
@@ -125,26 +95,14 @@ export default class ExperienceCollection extends React.Component {
     );
   }
 
-  _renderFeaturedExperience(
-    experience: Object,
-    ref: any,
-    title: string,
-    isFirst: boolean
-  ) {
+  _renderFeaturedExperience(experience: Object, ref: any, title: string, isFirst: boolean) {
     return (
       <TouchableNativeFeedbackSafe
         key={experience.url}
         background={TouchableNativeFeedbackSafe.Ripple('#e3e3e3', false)}
         onPress={() => this._onPressItem(experience)}
-        style={[
-          styles.experienceFullWidthContainer,
-          isFirst ? { paddingTop: 15 } : {},
-        ]}>
-        <View
-          style={[
-            styles.experienceIconContainer,
-            styles.fullWidthIconContainer,
-          ]}>
+        style={[styles.experienceFullWidthContainer, isFirst ? { paddingTop: 15 } : {}]}>
+        <View style={[styles.experienceIconContainer, styles.fullWidthIconContainer]}>
           <Image
             ref={ref}
             source={{ uri: experience.manifest.iconUrl }}
@@ -154,9 +112,7 @@ export default class ExperienceCollection extends React.Component {
 
         <View style={styles.fullWidthMeta}>
           <Text style={styles.fullWidthTitle}>{title}</Text>
-          <Text style={styles.fullWidthDescription}>
-            {experience.manifest.desc}
-          </Text>
+          <Text style={styles.fullWidthDescription}>{experience.manifest.desc}</Text>
         </View>
       </TouchableNativeFeedbackSafe>
     );

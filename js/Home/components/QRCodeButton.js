@@ -38,20 +38,13 @@ export default class QRCodeButton extends React.Component {
           />
         </View>
 
-        <View
-          style={[
-            styles.infoContainer,
-            !fullWidthBorder && styles.bottomBorder,
-          ]}>
+        <View style={[styles.infoContainer, !fullWidthBorder && styles.bottomBorder]}>
           <Text style={styles.titleText} ellipsizeMode="tail" numberOfLines={1}>
             Scan QR Code
           </Text>
 
           <View style={styles.subtitleContainer}>
-            <Text
-              style={styles.subtitleText}
-              ellipsizeMode="tail"
-              numberOfLines={1}>
+            <Text style={styles.subtitleText} ellipsizeMode="tail" numberOfLines={1}>
               Open your projects without typing
             </Text>
           </View>
@@ -67,9 +60,7 @@ export default class QRCodeButton extends React.Component {
     if (await requestCameraPermissionsAsync()) {
       this.props.navigation.showModal('qrCode');
     } else {
-      alert(
-        'In order to use the QR Code scanner you need to provide camera permissions'
-      );
+      alert('In order to use the QR Code scanner you need to provide camera permissions');
     }
   };
 }

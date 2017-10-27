@@ -70,7 +70,10 @@ class ConsoleHistoryScreen extends React.Component {
 
   _cloneDataSourceWithProps(dataSource, props) {
     let history = props.consoleHistory;
-    let historyIds = history.keySeq().reverse().toArray();
+    let historyIds = history
+      .keySeq()
+      .reverse()
+      .toArray();
     return dataSource.cloneWithRows(history, historyIds);
   }
 
@@ -80,18 +83,15 @@ class ConsoleHistoryScreen extends React.Component {
       return (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>
-            Something went wrong while showing this experience. To continue,
-            refresh or load a different experience.
+            Something went wrong while showing this experience. To continue, refresh or load a
+            different experience.
           </Text>
           <TouchableOpacity onPress={this._onDismissOverlay}>
             <Text style={styles.showDetailsButton}>Show Details</Text>
           </TouchableOpacity>
         </View>
       );
-    } else if (
-      this.props.consoleHistory &&
-      this.props.consoleHistory.size > 0
-    ) {
+    } else if (this.props.consoleHistory && this.props.consoleHistory.size > 0) {
       // show the normal console
       return (
         <ListView
@@ -110,8 +110,8 @@ class ConsoleHistoryScreen extends React.Component {
       return (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>
-            The console is empty. Developer information about the current
-            experience, such as uncaught issues, will appear here.
+            The console is empty. Developer information about the current experience, such as
+            uncaught issues, will appear here.
           </Text>
         </View>
       );
@@ -153,14 +153,10 @@ class ConsoleHistoryScreen extends React.Component {
         onPressOut={() => highlightRow(null)}
         onPress={() => this._presentError(rowId)}>
         <View style={styles.row}>
-          <Text style={styles.errorMessage}>
-            Uncaught Error: {message}
-          </Text>
+          <Text style={styles.errorMessage}>Uncaught Error: {message}</Text>
           {stackTracePreview}
           <Text style={styles.metadata}>
-            <Text style={styles.timestamp}>
-              Time: {timestamp}
-            </Text>
+            <Text style={styles.timestamp}>Time: {timestamp}</Text>
             {fatalNotice}
           </Text>
         </View>
@@ -187,9 +183,7 @@ class ConsoleHistoryScreen extends React.Component {
   }
 }
 
-export default connect(data => ConsoleHistoryScreen.getDataProps(data))(
-  ConsoleHistoryScreen
-);
+export default connect(data => ConsoleHistoryScreen.getDataProps(data))(ConsoleHistoryScreen);
 
 let styles = StyleSheet.create({
   container: {},

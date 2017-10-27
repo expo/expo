@@ -12,8 +12,7 @@ import {
   TouchableHighlight,
   View,
 } from 'react-native';
-import TouchableNativeFeedbackSafe
-  from '@expo/react-native-touchable-native-feedback-safe';
+import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 import FadeIn from '@expo/react-native-fade-in-image';
 import { withNavigation } from '@expo/ex-navigation';
 
@@ -24,15 +23,7 @@ import LikeButtonContainer from '../containers/LikeButtonContainer';
 @withNavigation
 export default class ProjectCard extends React.Component {
   render() {
-    let {
-      id,
-      description,
-      projectName,
-      projectUrl,
-      username,
-      isLikedByMe,
-      likeCount,
-    } = this.props;
+    let { id, description, projectName, projectUrl, username, isLikedByMe, likeCount } = this.props;
 
     return (
       <View style={[styles.spacerContainer, this.props.style]}>
@@ -44,14 +35,9 @@ export default class ProjectCard extends React.Component {
           style={[styles.container, styles.bottomBorder]}>
           <View>
             <View style={styles.header}>
-              <View style={styles.iconContainer}>
-                {this._maybeRenderIcon()}
-              </View>
+              <View style={styles.iconContainer}>{this._maybeRenderIcon()}</View>
               <View style={styles.infoContainer}>
-                <Text
-                  style={styles.projectNameText}
-                  ellipsizeMode="tail"
-                  numberOfLines={1}>
+                <Text style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
                   {projectName}
                 </Text>
                 <View style={styles.projectExtraInfoContainer}>
@@ -70,9 +56,7 @@ export default class ProjectCard extends React.Component {
               </View>
             </View>
             <View style={styles.body}>
-              <Text style={styles.descriptionText}>
-                {description}
-              </Text>
+              <Text style={styles.descriptionText}>{description}</Text>
             </View>
           </View>
         </TouchableNativeFeedbackSafe>

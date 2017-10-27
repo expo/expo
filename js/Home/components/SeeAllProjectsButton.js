@@ -1,18 +1,10 @@
 /* @flow */
 
 import React from 'react';
-import {
-  Image,
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  View,
-} from 'react-native';
+import { Image, Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import FadeIn from '@expo/react-native-fade-in-image';
-import TouchableNativeFeedback
-  from '@expo/react-native-touchable-native-feedback-safe';
+import TouchableNativeFeedback from '@expo/react-native-touchable-native-feedback-safe';
 import { take } from 'lodash';
 
 import Colors from '../constants/Colors';
@@ -50,12 +42,11 @@ export default class SeeAllProjectsButton extends React.Component {
             </FadeIn>
           ))}
 
-          {otherAppCount > 0 &&
+          {otherAppCount > 0 && (
             <View style={styles.projectsNumberContainer}>
-              <Text style={styles.projectsNumberText}>
-                +{otherAppCount}
-              </Text>
-            </View>}
+              <Text style={styles.projectsNumberText}>+{otherAppCount}</Text>
+            </View>
+          )}
 
           <Ionicons
             name="ios-arrow-forward"

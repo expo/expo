@@ -97,26 +97,17 @@ export default class ExploreScreen extends React.Component {
   _renderTabs() {
     let tabs = [
       <SlidingTabNavigationItem id="featured" key="featured">
-        <ExploreTabContainer
-          filter="FEATURED"
-          onPressUsername={this._handlePressUsername}
-        />
+        <ExploreTabContainer filter="FEATURED" onPressUsername={this._handlePressUsername} />
       </SlidingTabNavigationItem>,
       <SlidingTabNavigationItem id="new" key="new">
-        <ExploreTabContainer
-          filter="NEW"
-          onPressUsername={this._handlePressUsername}
-        />
+        <ExploreTabContainer filter="NEW" onPressUsername={this._handlePressUsername} />
       </SlidingTabNavigationItem>,
     ];
 
     if (FeatureFlags.DISPLAY_EXPERIMENTAL_EXPLORE_TABS) {
       tabs.push(
         <SlidingTabNavigationItem id="top" key="top">
-          <ExploreTabContainer
-            filter="TOP"
-            onPressUsername={this._handlePressUsername}
-          />
+          <ExploreTabContainer filter="TOP" onPressUsername={this._handlePressUsername} />
         </SlidingTabNavigationItem>
       );
     }

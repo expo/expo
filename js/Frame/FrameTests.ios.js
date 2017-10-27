@@ -43,12 +43,10 @@ class FrameLoadBundleTest extends React.Component {
       );
     }
 
-    let {
-      source,
-      appKey,
-      debuggerHostname,
-      debuggerPort,
-    } = ExManifests.getFramePropsFromManifest(manifest, bundleUrl);
+    let { source, appKey, debuggerHostname, debuggerPort } = ExManifests.getFramePropsFromManifest(
+      manifest,
+      bundleUrl
+    );
 
     return (
       <Frame
@@ -67,7 +65,8 @@ class FrameLoadBundleTest extends React.Component {
     );
   }
 
-  @autobind async _runTestAsync() {
+  @autobind
+  async _runTestAsync() {
     let manifestUrlToLoad;
     if (this.props.manifestUrl) {
       manifestUrlToLoad = this.props.manifestUrl;
@@ -78,10 +77,7 @@ class FrameLoadBundleTest extends React.Component {
       throw new Error('Cannot load frame: No manifest url provided');
     }
 
-    let {
-      bundleUrl,
-      manifest,
-    } = await ExManifests.manifestUrlToBundleUrlAndManifestAsync(
+    let { bundleUrl, manifest } = await ExManifests.manifestUrlToBundleUrlAndManifestAsync(
       manifestUrlToLoad
     );
     this.setState({
@@ -90,20 +86,22 @@ class FrameLoadBundleTest extends React.Component {
     });
   }
 
-  @autobind _handleFrameLoadingStart(event) {}
+  @autobind
+  _handleFrameLoadingStart(event) {}
 
-  @autobind _handleFrameLoadingFinish(event) {
+  @autobind
+  _handleFrameLoadingFinish(event) {
     TestModule.markTestCompleted();
   }
 
-  @autobind _handleFrameLoadingError(event) {
+  @autobind
+  _handleFrameLoadingError(event) {
     let { nativeEvent } = event;
-    throw new Error(
-      `frameLoadingError ${nativeEvent.code}: ${nativeEvent.description}`
-    );
+    throw new Error(`frameLoadingError ${nativeEvent.code}: ${nativeEvent.description}`);
   }
 
-  @autobind _handleUncaughtError(event) {
+  @autobind
+  _handleUncaughtError(event) {
     let { id, message } = event.nativeEvent;
     throw new Error(`frameUncaughtError ${id}: ${message}`);
   }

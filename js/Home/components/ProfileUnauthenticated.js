@@ -1,14 +1,7 @@
 /* @flow */
 
 import React from 'react';
-import {
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { withNavigation } from '@expo/ex-navigation';
 
 import Colors from '../constants/Colors';
@@ -18,16 +11,11 @@ import PrimaryButton from './PrimaryButton';
 export default class ProfileUnauthenticated extends React.Component {
   render() {
     return (
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}>
-        <Text style={styles.titleText}>
-          Your Profile
-        </Text>
+      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+        <Text style={styles.titleText}>Your Profile</Text>
 
         <Text style={styles.descriptionText}>
-          To access your own projects,
-          please sign in or create an Expo account.
+          To access your own projects, please sign in or create an Expo account.
         </Text>
 
         {this._renderSignInButton()}
@@ -39,9 +27,7 @@ export default class ProfileUnauthenticated extends React.Component {
 
   _renderSignInButton() {
     return (
-      <PrimaryButton
-        onPress={this._handleSignInPress}
-        fallback={TouchableOpacity}>
+      <PrimaryButton onPress={this._handleSignInPress} fallback={TouchableOpacity}>
         Sign in to your account
       </PrimaryButton>
     );
@@ -49,10 +35,7 @@ export default class ProfileUnauthenticated extends React.Component {
 
   _renderSignUpButton() {
     return (
-      <PrimaryButton
-        plain
-        onPress={this._handleSignUpPress}
-        fallback={TouchableOpacity}>
+      <PrimaryButton plain onPress={this._handleSignUpPress} fallback={TouchableOpacity}>
         Sign up for Expo
       </PrimaryButton>
     );

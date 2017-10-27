@@ -11,8 +11,7 @@ import {
   TouchableHighlight,
   View,
 } from 'react-native';
-import TouchableNativeFeedbackSafe
-  from '@expo/react-native-touchable-native-feedback-safe';
+import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 import FadeIn from '@expo/react-native-fade-in-image';
 import { withNavigation } from '@expo/ex-navigation';
 
@@ -33,24 +32,20 @@ export default class ProfileCard extends React.Component {
           style={[styles.container, styles.bottomBorder]}>
           <View>
             <View style={styles.header}>
-              <View style={styles.iconContainer}>
-                {this._maybeRenderPhoto()}
-              </View>
+              <View style={styles.iconContainer}>{this._maybeRenderPhoto()}</View>
               <View style={styles.infoContainer}>
-                <Text
-                  style={styles.profileNameText}
-                  ellipsizeMode="tail"
-                  numberOfLines={1}>
+                <Text style={styles.profileNameText} ellipsizeMode="tail" numberOfLines={1}>
                   {isLegacy ? username : fullName}
                 </Text>
                 <View style={styles.profileExtraInfoContainer}>
-                  {!isLegacy &&
+                  {!isLegacy && (
                     <Text
                       style={styles.profileExtraInfoText}
                       ellipsizeMode="tail"
                       numberOfLines={1}>
                       @{username}
-                    </Text>}
+                    </Text>
+                  )}
                   {!isLegacy && <View style={styles.bullet} />}
                   <Text
                     onPress={appCount > 0 ? this._handlePressProjects : null}

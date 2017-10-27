@@ -67,10 +67,7 @@ export default class ProjectList extends React.Component {
       <ListView
         dataSource={this.state.dataSource}
         renderRow={this._renderRow}
-        style={[
-          { flex: 1 },
-          !this.props.belongsToCurrentUser && styles.largeProjectCardList,
-        ]}
+        style={[{ flex: 1 }, !this.props.belongsToCurrentUser && styles.largeProjectCardList]}
         renderScrollComponent={props => <InfiniteScrollView {...props} />}
         canLoadMore={this._canLoadMore()}
         onLoadMoreAsync={this._handleLoadMoreAsync}
