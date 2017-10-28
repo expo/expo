@@ -7,7 +7,7 @@
     "develop": "gatsby develop",
     "serve": "gatsby serve",
     "clean": "rm -rf node_modules .cache public",
-    "format": "prettier --write --jsx-bracket-same-line --single-quote --trailing-comma es5 '*.js' 'src/**/*.js'"
+    "format": "prettier --write --print-width 100 --jsx-bracket-same-line --single-quote --trailing-comma es5 '*.js' 'src/**/*.js'"
   },
   "dependencies": {
     "bluebird": "^3.4.7",
