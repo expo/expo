@@ -50,7 +50,7 @@ EX_EXPORT_SCOPED_MODULE(ExponentNotifications, RemoteNotificationManager);
 }
 
 RCT_REMAP_METHOD(getDevicePushTokenAsync,
-                 unusedSenderIdArgument:(NSString *)senderId
+                 config:(NSDictionary *)config
                  getDevicePushTokenAsyncWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
