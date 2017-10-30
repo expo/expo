@@ -21,6 +21,10 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   } else {
     resourceName = [EXKernelLinkingManager linkingUriForExperienceUri:url];
   }
+  
+  if ([EXShellManager sharedInstance].releaseChannel){
+    self.releaseChannel = [EXShellManager sharedInstance].releaseChannel;
+  }
 
   if (self = [super initWithResourceName:resourceName resourceType:@"json" remoteUrl:url cachePath:[[self class] cachePath]]) {
     self.shouldVersionCache = NO;

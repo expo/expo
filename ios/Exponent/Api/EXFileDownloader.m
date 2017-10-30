@@ -79,6 +79,13 @@ NSTimeInterval const EXFileDownloaderDefaultTimeoutInterval = 60;
       requestAbiVersion = [EXVersions sharedInstance].temporarySdkVersion;
     }
   }
+  NSString *releaseChannel;
+  if (_releaseChannel) {
+    releaseChannel = _releaseChannel;
+  } else {
+    releaseChannel = @"default";
+  }
+  [request setValue:releaseChannel forHTTPHeaderField:@"Expo-Release-Channel"];
   [request setValue:requestAbiVersion forHTTPHeaderField:@"Exponent-SDK-Version"];
   [request setValue:@"ios" forHTTPHeaderField:@"Exponent-Platform"];
   [request setValue:@"true" forHTTPHeaderField:@"Exponent-Accept-Signature"];

@@ -48,12 +48,15 @@ exports.updateAndroidShellAppAsync = async function updateAndroidShellAppAsync(
     alias,
     keystorePassword,
     keyPassword,
+    releaseChannel,
     outputFile,
   } = args;
 
+  releaseChannel = releaseChannel ? releaseChannel : 'default';
   let manifest = await getManifestAsync(url, {
     'Exponent-SDK-Version': sdkVersion,
     'Exponent-Platform': 'android',
+    'Expo-Release-Channel': releaseChannel,
   });
 
   let fullManifestUrl = `${url.replace('exp://', 'https://')}/index.exp`;
@@ -91,6 +94,13 @@ exports.updateAndroidShellAppAsync = async function updateAndroidShellAppAsync(
     embeddedResponses.add(new EmbeddedResponse("${fullManifestUrl}", "assets://shell-app-manifest.json", "application/json"));
     embeddedResponses.add(new EmbeddedResponse("${bundleUrl}", "assets://shell-app.bundle", "application/javascript"));
     // END EMBEDDED RESPONSES`,
+    `${shellPath}expoview/src/main/java/host/exp/exponent/Constants.java`
+  );
+
+  shell.sed(
+    '-i',
+    'RELEASE_CHANNEL = "default"',
+    `RELEASE_CHANNEL = "${releaseChannel}"`,
     `${shellPath}expoview/src/main/java/host/exp/exponent/Constants.java`
   );
 }
@@ -136,11 +146,14 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
     keystorePassword,
     keyPassword,
     outputFile,
+    releaseChannel,
   } = args;
 
+  releaseChannel = releaseChannel ? releaseChannel : 'default';
   let manifest = await getManifestAsync(url, {
     'Exponent-SDK-Version': sdkVersion,
     'Exponent-Platform': 'android',
+    'Expo-Release-Channel': releaseChannel,
   });
 
   if (!privateConfigFile) {
@@ -470,6 +483,13 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
     // START EMBEDDED RESPONSES
     embeddedResponses.add(new EmbeddedResponse("${fullManifestUrl}", "assets://shell-app-manifest.json", "application/json"));
     embeddedResponses.add(new EmbeddedResponse("${bundleUrl}", "assets://shell-app.bundle", "application/javascript"));`,
+    `${shellPath}expoview/src/main/java/host/exp/exponent/Constants.java`
+  );
+
+  shell.sed(
+    '-i',
+    'RELEASE_CHANNEL = "default"',
+    `RELEASE_CHANNEL = "${releaseChannel}"`,
     `${shellPath}expoview/src/main/java/host/exp/exponent/Constants.java`
   );
 

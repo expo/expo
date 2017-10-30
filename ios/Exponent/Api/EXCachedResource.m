@@ -76,6 +76,9 @@ NS_ASSUME_NONNULL_BEGIN
   if (_abiVersion) {
     downloader.abiVersion = _abiVersion;
   }
+  if (_releaseChannel){
+    downloader.releaseChannel = _releaseChannel;
+  }
   if (_urlCache || ignoreCache) {
     NSURLSessionConfiguration *customConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
     if (_urlCache) {

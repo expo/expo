@@ -15,6 +15,7 @@ typedef void (^EXFileDownloaderErrorBlock)(NSError *error, NSURLResponse *respon
 @property (nonatomic, strong, nullable) NSString *abiVersion;
 @property (nonatomic, strong) NSURLSessionConfiguration *urlSessionConfiguration; // default is `defaultSessionConfiguration`
 @property (nonatomic, assign) NSTimeInterval timeoutInterval; // default is NSURLRequest's default of 60 seconds.
+@property (nonatomic, strong, nullable) NSString *releaseChannel;
 
 - (void)downloadFileFromURL:(NSURL *)url
                successBlock:(EXFileDownloaderSuccessBlock)successBlock
