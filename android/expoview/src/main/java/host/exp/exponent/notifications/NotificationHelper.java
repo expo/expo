@@ -11,7 +11,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
 import android.text.format.DateUtils;
-import android.util.Log;
 
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.Constants;
