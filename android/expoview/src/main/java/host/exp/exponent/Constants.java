@@ -28,6 +28,7 @@ public class Constants {
   public static final String EMBEDDED_KERNEL_PATH = "assets://kernel.android.bundle";
   public static final List<EmbeddedResponse> EMBEDDED_RESPONSES;
   public static boolean DISABLE_NUX = false;
+  public static final String RELEASE_CHANNEL = "default";
 
   public static void setSdkVersions(List<String> sdkVersions) {
     ABI_VERSIONS = TextUtils.join(",", sdkVersions);
