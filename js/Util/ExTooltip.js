@@ -10,7 +10,6 @@ import {
   Animated,
   Dimensions,
   Easing,
-  Image,
   StyleSheet,
   View,
   Text,

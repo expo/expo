@@ -17,8 +17,8 @@ async function signInAsync(username: string, password: string) {
     },
     body: JSON.stringify({
       client_id: ClientId,
-      username: username,
-      password: password,
+      username,
+      password,
       device: Constants.deviceId,
       connection: 'Username-Password-Authentication',
       scope: AuthScope,

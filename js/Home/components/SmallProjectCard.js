@@ -24,16 +24,7 @@ import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-fee
 @withNavigation
 export default class SmallProjectCard extends React.Component {
   render() {
-    let {
-      hideUsername,
-      likeCount,
-      projectName,
-      projectUrl,
-      username,
-      privacy,
-      slug,
-      iconUrl,
-    } = this.props;
+    let { hideUsername, likeCount, projectName, projectUrl, username, privacy, slug } = this.props;
 
     const isUnlisted = privacy === 'unlisted';
     const renderLikes = typeof likeCount === 'number' && !isUnlisted;

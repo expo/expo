@@ -5,7 +5,7 @@
  */
 'use strict';
 
-import { NativeModules, Platform } from 'react-native';
+import { Platform } from 'react-native';
 
 import ExUrls from 'ExUrls';
 import ExponentKernel from 'ExponentKernel';

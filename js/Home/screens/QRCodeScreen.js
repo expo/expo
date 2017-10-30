@@ -23,7 +23,7 @@ export default class BarCodeScreen extends React.Component {
   };
 
   state = {
-    scannerIsVisible: Platform.OS === 'android' ? false : true,
+    scannerIsVisible: Platform.OS !== 'android',
   };
 
   _hasOpenedUrl: boolean;

@@ -8,7 +8,6 @@ import TouchableNativeFeedback from '@expo/react-native-touchable-native-feedbac
 import { take } from 'lodash';
 
 import Colors from '../constants/Colors';
-import SmallProjectCard from '../components/SmallProjectCard';
 
 const MAX_ICON_COUNT = 4;
 
@@ -20,7 +19,7 @@ export default class SeeAllProjectsButton extends React.Component {
   };
 
   render() {
-    let { apps, appCount, label, maxIconCount } = this.props;
+    let { apps, appCount, maxIconCount } = this.props;
 
     if (!apps || !apps.length) {
       return <View />;

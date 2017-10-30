@@ -23,7 +23,7 @@ import LikeButtonContainer from '../containers/LikeButtonContainer';
 @withNavigation
 export default class ProjectCard extends React.Component {
   render() {
-    let { id, description, projectName, projectUrl, username, isLikedByMe, likeCount } = this.props;
+    let { id, description, projectName, username, isLikedByMe, likeCount } = this.props;
 
     return (
       <View style={[styles.spacerContainer, this.props.style]}>

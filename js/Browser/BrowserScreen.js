@@ -6,17 +6,8 @@
 'use strict';
 
 import React, { PropTypes } from 'react';
-import {
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableWithoutFeedback,
-  View,
-  Platform,
-} from 'react-native';
+import { StatusBar, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 
-import autobind from 'autobind-decorator';
-import Browser from 'Browser';
 import BrowserActions from 'BrowserActions';
 import BrowserErrorView from 'BrowserErrorView';
 import BrowserScreenLoading from 'BrowserScreenLoading';
@@ -290,7 +281,7 @@ class BrowserScreen extends React.Component {
   };
 
   _handleUncaughtError = event => {
-    let { id, message, stack, fatal } = event.nativeEvent;
+    let { fatal } = event.nativeEvent;
     if (fatal) {
       let isDeveloper = false;
       if (this.props.task && this.props.task.manifest) {
@@ -304,7 +295,7 @@ class BrowserScreen extends React.Component {
   };
 
   _maybeRecoverFromErrorAsync = async event => {
-    let { id, message, stack, fatal } = event.nativeEvent;
+    let { id, message } = event.nativeEvent;
     let shouldReload = await ExponentKernel.shouldCurrentTaskAutoReload();
     if (shouldReload) {
       // call this._refresh rather than Browser.refresh because it works

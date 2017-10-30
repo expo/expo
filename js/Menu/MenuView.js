@@ -25,8 +25,6 @@ import {
   View,
 } from 'react-native';
 
-let { ExponentKernel } = NativeModules;
-
 import Expo, { Constants } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
 import ResponsiveImage from '@expo/react-native-responsive-image';
@@ -37,6 +35,8 @@ import DevIndicator from '../Home/components/DevIndicator';
 import ExStore from 'ExStore';
 import FriendlyUrls from 'FriendlyUrls';
 import requestCameraPermissionsAsync from '../Home/utils/requestCameraPermissionsAsync';
+
+const { ExponentKernel } = NativeModules;
 
 let SCREEN_WIDTH = Dimensions.get('window').width;
 let MENU_NARROW_SCREEN = SCREEN_WIDTH < 375;
@@ -77,6 +77,7 @@ export default class MenuView extends React.Component {
     let enableDevMenuTools = await ExponentKernel.doesCurrentTaskEnableDevtools();
     let devMenuItems = await ExponentKernel.getDevMenuItemsToShow();
     if (this._mounted) {
+      // eslint-disable-next-line react/no-did-mount-set-state
       this.setState({ enableDevMenuTools, devMenuItems });
     }
   }

@@ -65,7 +65,7 @@ export default class BrowserErrorView extends React.Component {
 
     if (!this.props.isShell) {
       actionButtons.push(
-        <Button onPress={this._goToHome.bind(this)} style={styles.button} key="home-button">
+        <Button onPress={this._goToHome} style={styles.button} key="home-button">
           Go back to Expo Home
         </Button>
       );
@@ -104,9 +104,9 @@ export default class BrowserErrorView extends React.Component {
     return 'There was a problem loading the experience.';
   }
 
-  _goToHome() {
+  _goToHome = () => {
     ExStore.dispatch(BrowserActions.foregroundHomeAsync());
-  }
+  };
 }
 
 let styles = StyleSheet.create({

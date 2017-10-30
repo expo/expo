@@ -8,12 +8,12 @@
 import React from 'react';
 import { NativeModules } from 'react-native';
 
-const { ExponentConstants } = NativeModules;
-
 import autobind from 'autobind-decorator';
 
 import ExTooltip from 'ExTooltip';
 import ExponentKernel from 'ExponentKernel';
+
+const { ExponentConstants } = NativeModules;
 
 export default class NuxContextualMenuOverlay extends React.Component {
   render() {

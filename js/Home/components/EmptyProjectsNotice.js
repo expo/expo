@@ -1,7 +1,7 @@
 /* @flow */
 
 import React from 'react';
-import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { withNavigation } from '@expo/ex-navigation';
 
 import Colors from '../constants/Colors';

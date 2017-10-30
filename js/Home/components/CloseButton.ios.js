@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { withNavigation } from '@expo/ex-navigation';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import Colors from '../constants/Colors';

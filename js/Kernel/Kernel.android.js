@@ -5,7 +5,7 @@
  */
 'use strict';
 
-import { DeviceEventEmitter, NativeModules } from 'react-native';
+import { DeviceEventEmitter } from 'react-native';
 
 import ApiV2Client from 'ApiV2Client';
 import BrowserActions from 'BrowserActions';

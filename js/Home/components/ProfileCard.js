@@ -4,7 +4,6 @@ import React from 'react';
 import {
   Image,
   Keyboard,
-  Linking,
   Platform,
   StyleSheet,
   Text,
@@ -16,12 +15,11 @@ import FadeIn from '@expo/react-native-fade-in-image';
 import { withNavigation } from '@expo/ex-navigation';
 
 import Colors from '../constants/Colors';
-import ExUrls from 'ExUrls';
 
 @withNavigation
 export default class ProfileCard extends React.Component {
   render() {
-    let { fullName, username, appCount, profilePhoto, isLegacy } = this.props;
+    let { fullName, username, appCount, isLegacy } = this.props;
 
     return (
       <View style={this.props.style}>

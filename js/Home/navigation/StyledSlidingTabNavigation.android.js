@@ -7,10 +7,9 @@ import { SlidingTabNavigation } from '@expo/ex-navigation';
 
 import { capitalize } from 'lodash';
 
-import FeatureFlags from '../../FeatureFlags';
-
 export default class StyledSlidingTabNavigation extends React.Component {
   render() {
+    // eslint-disable-next-line no-unused-vars
     let { keyToTitle, children, ...props } = this.props;
 
     return (

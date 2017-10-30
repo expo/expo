@@ -1,22 +1,12 @@
 /* @flow */
 
 import React from 'react';
-import {
-  Image,
-  Keyboard,
-  Linking,
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  View,
-} from 'react-native';
+import { Keyboard, Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { withNavigation } from '@expo/ex-navigation';
 import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 
 import Colors from '../constants/Colors';
-import Layout from '../constants/Layout';
 import requestCameraPermissionsAsync from '../utils/requestCameraPermissionsAsync';
 
 @withNavigation

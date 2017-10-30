@@ -2,7 +2,6 @@
 
 import React from 'react';
 import {
-  Image,
   Keyboard,
   Linking,
   Platform,
@@ -17,8 +16,6 @@ import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-fee
 
 import Colors from '../constants/Colors';
 import ExUrls from 'ExUrls';
-import Layout from '../constants/Layout';
-import requestCameraPermissionsAsync from '../utils/requestCameraPermissionsAsync';
 
 @withNavigation
 export default class OpenFromClipboardButton extends React.Component {

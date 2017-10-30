@@ -11,10 +11,9 @@ import {
 } from 'react-native';
 import TouchableNativeFeedback from '@expo/react-native-touchable-native-feedback-safe';
 
-import Colors from '../constants/Colors';
-
 export default class PrimaryButton extends React.Component {
   render() {
+    // eslint-disable-next-line no-unused-vars
     let { children, isLoading, plain, style, textStyle, ...props } = this.props;
 
     return (

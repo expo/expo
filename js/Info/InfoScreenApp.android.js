@@ -5,6 +5,7 @@
  */
 'use strict';
 
+import autobind from 'autobind-decorator';
 import React, { PropTypes } from 'react';
 import {
   BackAndroid,
@@ -17,11 +18,9 @@ import {
   View,
 } from 'react-native';
 
-let { ExponentConstants, ExponentKernel } = NativeModules;
-
-import autobind from 'autobind-decorator';
-
 import ExColors from 'ExColors';
+
+const { ExponentConstants, ExponentKernel } = NativeModules;
 
 const ICON_SIZE = 36;
 

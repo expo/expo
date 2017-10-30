@@ -96,7 +96,7 @@ export default class SignUpScreen extends React.Component {
             onChangeText={this._updateValue.bind(this, 'firstName')}
             onSubmitEditing={() => this._handleSubmitEditing('firstName')}
             value={this.state.firstName}
-            autoFocus={true}
+            autoFocus
             autoCorrect={false}
             autoCapitalize="words"
             keyboardType="default"

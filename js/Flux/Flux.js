@@ -6,7 +6,7 @@
 'use strict';
 
 import mapValues from 'lodash/mapValues';
-import { applyMiddleware, combineReducers, createStore, compose } from 'redux';
+import { applyMiddleware, combineReducers, createStore } from 'redux';
 import { createAction } from 'redux-actions';
 import promiseMiddleware from 'redux-promise';
 
