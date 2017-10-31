@@ -14,11 +14,10 @@ buildscript {
 
 allprojects {
   repositories {
-    mavenLocal()
-    jcenter()
     maven {
       url "$rootDir/maven"
     }
+    jcenter()
     maven {
       // Local Maven repo containing AARs with JSC built for Android
       url "$rootDir/../js/node_modules/jsc-android/android"
@@ -27,6 +26,9 @@ allprojects {
       dirs 'libs'
     }
     maven { url "https://jitpack.io" }
+
+    // Want this last so that we never end up with a stale cache
+    mavenLocal()
   }
 }
 
