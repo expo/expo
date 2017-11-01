@@ -1,8 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 'use strict';
 
-require('instapromise');
-
 const fs = require('fs');
 const path = require('path');
 const shell = require('shelljs');
@@ -67,7 +65,7 @@ exports.updateAndroidShellAppAsync = async function updateAndroidShellAppAsync(
   await spawnAsync(`/bin/rm`, [
     `${shellPath}app/src/main/assets/shell-app-manifest.json`,
   ]);
-  await fs.promise.writeFile(
+  await fs.writeFileSync(
     `${shellPath}app/src/main/assets/shell-app-manifest.json`,
     JSON.stringify(manifest)
   );
@@ -195,6 +193,7 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
     keyPassword,
     outputFile,
     releaseChannel,
+    skipBuild,
   } = args;
 
   releaseChannel = releaseChannel ? releaseChannel : 'default';
@@ -300,7 +299,7 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
   );
 
   // Versions
-  let buildGradleFile = await fs.promise.readFile(
+  let buildGradleFile = await fs.readFileSync(
     `${shellPath}app/build.gradle`,
     'utf8'
   );
@@ -454,7 +453,7 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
 
   // Add permissions
   if (manifest.android && manifest.android.permissions) {
-    const content = await fs.promise.readFile(
+    const content = await fs.readFileSync(
       `${shellPath}app/src/main/AndroidManifest.xml`,
       'utf-8'
     );
@@ -539,7 +538,7 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
   );
 
   // Embed manifest and bundle
-  await fs.promise.writeFile(
+  await fs.writeFileSync(
     `${shellPath}app/src/main/assets/shell-app-manifest.json`,
     JSON.stringify(manifest)
   );
@@ -652,8 +651,8 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
 
     // Fabric
     if (fabric) {
-      await fs.promise.unlink(`${shellPath}app/fabric.properties`);
-      await fs.promise.writeFile(
+      await fs.unlinkSync(`${shellPath}app/fabric.properties`);
+      await fs.writeFileSync(
         `${shellPath}app/fabric.properties`,
         `apiSecret=${fabric.buildSecret}\n`
       );
@@ -710,6 +709,10 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
     `"certificate_hash": "${certificateHash}"`,
     `${shellPath}app/google-services.json`
   );
+
+  if (skipBuild) {
+    return;
+  }
 
   if (keystore && alias && keystorePassword && keyPassword) {
     await spawnAsync(`/bin/rm`, [`shell-unaligned.apk`]);

@@ -4,6 +4,9 @@
   "private": true,
   "author": "650 Industries",
   "license": "Copyright 2013-present 650 Industries",
+  "scripts": {
+    "test": "jest"
+  },
   "powertools": {
     "group": "client"
   },
@@ -24,5 +27,8 @@
     "shelljs": "^0.7.0",
     "username": "^2.2.2",
     "xdl": "^43.0.1"
+  },
+  "devDependencies": {
+    "jest": "^21.2.1"
   }
 }
