@@ -46,7 +46,7 @@ deploy script will respect this value).
 
 Make sure your machine has [Docker installed](https://docs.docker.com/engine/installation/#platform-support-matrix).
 
-Be sure you've run all unigulp-y things.
+Make sure you've run `bootstrap docs/` from the root of Universe.
 
 ```bash
 yarn && yarn start
