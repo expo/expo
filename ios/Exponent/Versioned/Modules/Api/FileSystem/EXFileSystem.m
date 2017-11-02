@@ -7,18 +7,27 @@
 #import <CommonCrypto/CommonDigest.h>
 #import <React/RCTConvert.h>
 
+#import "EXFileSystemLocalFileHandler.h"
+#import "EXFileSystemAssetLibraryHandler.h"
+
+typedef NS_OPTIONS(unsigned int, EXFileSystemPermissionFlags) {
+  EXFileSystemPermissionNone = 0,
+  EXFileSystemPermissionRead = 1 << 1,
+  EXFileSystemPermissionWrite = 1 << 2,
+};
+
 NSString * const EXDownloadProgressEventName = @"Exponent.downloadProgress";
 
 @interface EXDownloadResumable : NSObject
-  
+
 @property (nonatomic, strong) NSString *uuid;
 @property (nonatomic, strong) NSURLSession *session;
 @property (nonatomic, strong) EXDownloadDelegate *delegate;
-  
+
 @end
 
 @implementation EXDownloadResumable
-  
+
 - (instancetype)initWithId:(NSString *)uuid
                withSession:(NSURLSession *)session
               withDelegate:(EXDownloadDelegate *)delegate;
@@ -30,7 +39,7 @@ NSString * const EXDownloadProgressEventName = @"Exponent.downloadProgress";
     }
     return self;
   }
-  
+
 @end
 
 @interface EXFileSystem ()
@@ -79,125 +88,133 @@ EX_EXPORT_SCOPED_MODULE(ExponentFileSystem, nil);
     @"cacheDirectory": [NSURL fileURLWithPath:_cachesDirectory].absoluteString,
   };
 }
-  
+
 - (NSArray<NSString *> *)supportedEvents
 {
   return @[EXDownloadProgressEventName];
 }
 
 RCT_REMAP_METHOD(getInfoAsync,
-                 getInfoAsyncWithURI:(NSString *)uri
+                 getInfoAsyncWithURI:(NSURL *)uri
                  withOptions:(NSDictionary *)options
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  NSString *scopedPath = [self _scopedPathFromURI:uri];
-  if (!scopedPath) {
-    reject(@"E_INVALID_FILESYSTEM_URI",
-           [NSString stringWithFormat:@"Invalid FileSystem URI '%@', make sure it's in the app's scope.", uri],
+  if (!([self _permissionsForURI:uri] & EXFileSystemPermissionRead)) {
+    reject(@"E_FILESYSTEM_PERMISSIONS",
+           [NSString stringWithFormat:@"File '%@' isn't readable.", uri],
            nil);
     return;
   }
 
-  BOOL isDirectory;
-  if ([[NSFileManager defaultManager] fileExistsAtPath:scopedPath isDirectory:&isDirectory]) {
-    NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:scopedPath error:nil];
-    NSMutableDictionary *result = [NSMutableDictionary dictionary];
-    result[@"exists"] = @(true);
-    result[@"isDirectory"] = @(isDirectory);
-    result[@"uri"] = [NSURL fileURLWithPath:scopedPath].absoluteString;
-    if (options[@"md5"]) {
-      result[@"md5"] = [[NSData dataWithContentsOfFile:scopedPath] md5String];
-    }
-    result[@"size"] = attributes[NSFileSize];
-    result[@"modificationTime"] = @(attributes.fileModificationDate.timeIntervalSince1970);
-    resolve(result);
+  if ([uri.scheme isEqualToString:@"file"]) {
+    [EXFileSystemLocalFileHandler getInfoForFile:uri withOptions:options resolver:resolve rejecter:reject];
+  } else if ([uri.scheme isEqualToString:@"assets-library"]) {
+    [EXFileSystemAssetLibraryHandler getInfoForFile:uri withOptions:options resolver:resolve rejecter:reject];
   } else {
-    resolve(@{@"exists": @(false), @"isDirectory": @(false)});
+    reject(@"E_FILESYSTEM_INVALID_URI",
+           [NSString stringWithFormat:@"Unsupported URI scheme for '%@'", uri],
+           nil);
   }
 }
 
 RCT_REMAP_METHOD(readAsStringAsync,
-                 readAsStringAsyncWithURI:(NSString *)uri
+                 readAsStringAsyncWithURI:(NSURL *)uri
                  withOptions:(NSDictionary *)options
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  NSString *scopedPath = [self _scopedPathFromURI:uri];
-  if (!scopedPath) {
-    reject(@"E_INVALID_FILESYSTEM_URI",
-           [NSString stringWithFormat:@"Invalid FileSystem URI '%@', make sure it's in the app's scope.", uri],
+  if (!([self _permissionsForURI:uri] & EXFileSystemPermissionRead)) {
+    reject(@"E_FILESYSTEM_PERMISSIONS",
+           [NSString stringWithFormat:@"File '%@' isn't readable.", uri],
            nil);
     return;
   }
 
-  NSError *error;
-  NSString *string = [NSString stringWithContentsOfFile:scopedPath encoding:NSUTF8StringEncoding error:&error];
-  if (string) {
-    resolve(string);
+  if ([uri.scheme isEqualToString:@"file"]) {
+    NSError *error;
+    NSString *string = [NSString stringWithContentsOfFile:uri.path encoding:NSUTF8StringEncoding error:&error];
+    if (string) {
+      resolve(string);
+    } else {
+      reject(@"E_FILE_NOT_READ",
+             [NSString stringWithFormat:@"File '%@' could not be read.", uri],
+             error);
+    }
   } else {
-    reject(@"E_FILE_NOT_READ",
-           [NSString stringWithFormat:@"File '%@' could not be read.", uri],
-           error);
+    reject(@"E_FILESYSTEM_INVALID_URI",
+           [NSString stringWithFormat:@"Unsupported URI scheme for '%@'", uri],
+           nil);
   }
 }
 
 RCT_REMAP_METHOD(writeAsStringAsync,
-                 writeAsStringAsyncWithURI:(NSString *)uri
+                 writeAsStringAsyncWithURI:(NSURL *)uri
                  withString:(NSString *)string
                  withOptions:(NSDictionary *)options
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  NSString *scopedPath = [self _scopedPathFromURI:uri];
-  if (!scopedPath) {
-    reject(@"E_INVALID_FILESYSTEM_URI",
-           [NSString stringWithFormat:@"Invalid FileSystem URI '%@', make sure it's in the app's scope.", uri],
+  if (!([self _permissionsForURI:uri] & EXFileSystemPermissionWrite)) {
+    reject(@"E_FILESYSTEM_PERMISSIONS",
+           [NSString stringWithFormat:@"File '%@' isn't writable.", uri],
            nil);
     return;
   }
 
-  NSError *error;
-  if ([string writeToFile:scopedPath atomically:YES encoding:NSUTF8StringEncoding error:&error]) {
-    resolve(nil);
+  if ([uri.scheme isEqualToString:@"file"]) {
+    NSError *error;
+    if ([string writeToFile:uri.path atomically:YES encoding:NSUTF8StringEncoding error:&error]) {
+      resolve(nil);
+    } else {
+      reject(@"E_FILE_NOT_WRITTEN",
+             [NSString stringWithFormat:@"File '%@' could not be written.", uri],
+             error);
+    }
   } else {
-    reject(@"E_FILE_NOT_WRITTEN",
-           [NSString stringWithFormat:@"File '%@' could not be written.", uri],
-           error);
+    reject(@"E_FILESYSTEM_INVALID_URI",
+           [NSString stringWithFormat:@"Unsupported URI scheme for '%@'", uri],
+           nil);
   }
 }
 
 RCT_REMAP_METHOD(deleteAsync,
-                 deleteAsyncWithURI:(NSString *)uri
+                 deleteAsyncWithURI:(NSURL *)uri
                  withOptions:(NSDictionary *)options
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  NSString *scopedPath = [self _scopedPathFromURI:uri];
-  if (!scopedPath) {
-    reject(@"E_INVALID_FILESYSTEM_URI",
-           [NSString stringWithFormat:@"Invalid FileSystem URI '%@', make sure it's in the app's scope.", uri],
+  if (!([self _permissionsForURI:[uri URLByAppendingPathComponent:@".."]] & EXFileSystemPermissionWrite)) {
+    reject(@"E_FILESYSTEM_PERMISSIONS",
+           [NSString stringWithFormat:@"Location '%@' isn't deletable.", uri],
            nil);
     return;
   }
 
-  if ([[NSFileManager defaultManager] fileExistsAtPath:scopedPath]) {
-    NSError *error;
-    if ([[NSFileManager defaultManager] removeItemAtPath:scopedPath error:&error]) {
-      resolve(nil);
+  if ([uri.scheme isEqualToString:@"file"]) {
+    NSString *path = uri.path;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
+      NSError *error;
+      if ([[NSFileManager defaultManager] removeItemAtPath:path error:&error]) {
+        resolve(nil);
+      } else {
+        reject(@"E_FILE_NOT_DELETED",
+               [NSString stringWithFormat:@"File '%@' could not be deleted.", uri],
+               error);
+      }
     } else {
-      reject(@"E_FILE_NOT_DELETED",
-             [NSString stringWithFormat:@"File '%@' could not be deleted.", uri],
-             error);
+      if (options[@"idempotent"]) {
+        resolve(nil);
+      } else {
+        reject(@"E_FILE_NOT_FOUND",
+               [NSString stringWithFormat:@"File '%@' could not be deleted because it could not be found.", uri],
+               nil);
+      }
     }
   } else {
-    if (options[@"idempotent"]) {
-      resolve(nil);
-    } else {
-      reject(@"E_FILE_NOT_FOUND",
-             [NSString stringWithFormat:@"File '%@' could not be deleted because it could not be found.", uri],
-             nil);
-    }
+    reject(@"E_FILESYSTEM_INVALID_URI",
+           [NSString stringWithFormat:@"Unsupported URI scheme for '%@'", uri],
+           nil);
   }
 }
 
@@ -206,48 +223,54 @@ RCT_REMAP_METHOD(moveAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  if (!options[@"from"]) {
-    reject(@"E_MISSING_PARAMETER", @"`FileSystem.moveAsync` needs a `from` path.", nil);
-    return;
-  }
-  if (!options[@"to"]) {
-    reject(@"E_MISSING_PARAMETER", @"`FileSystem.moveAsync` needs a `to` path.", nil);
-    return;
-  }
-
-  NSString *from = [self _scopedPathFromURI:options[@"from"]];
+  NSURL *from = [NSURL URLWithString:options[@"from"]];
   if (!from) {
-    reject(@"E_INVALID_FILESYSTEM_URI",
-           [NSString stringWithFormat:@"Invalid FileSystem URI '%@', make sure it's in the app's scope.", from],
+    reject(@"E_MISSING_PARAMETER", @"Need a `from` location.", nil);
+    return;
+  }
+  if (!([self _permissionsForURI:[from URLByAppendingPathComponent:@".."]] & EXFileSystemPermissionWrite)) {
+    reject(@"E_FILESYSTEM_PERMISSIONS",
+           [NSString stringWithFormat:@"Location '%@' isn't movable.", from],
            nil);
     return;
   }
-
-  NSString *to = [self _scopedPathFromURI:options[@"to"]];
+  NSURL *to = [NSURL URLWithString:options[@"to"]];
   if (!to) {
-    reject(@"E_INVALID_FILESYSTEM_URI",
-           [NSString stringWithFormat:@"Invalid FileSystem URI '%@', make sure it's in the app's scope.", to],
+    reject(@"E_MISSING_PARAMETER", @"Need a `to` location.", nil);
+    return;
+  }
+  if (!([self _permissionsForURI:to] & EXFileSystemPermissionWrite)) {
+    reject(@"E_FILESYSTEM_PERMISSIONS",
+           [NSString stringWithFormat:@"File '%@' isn't writable.", to],
            nil);
     return;
   }
 
   // NOTE: The destination-delete and the move should happen atomically, but we hope for the best for now
-  NSError *error;
-  if ([[NSFileManager defaultManager] fileExistsAtPath:to]) {
-    if (![[NSFileManager defaultManager] removeItemAtPath:to error:&error]) {
-      reject(@"E_FILE_NOT_MOVED",
-             [NSString stringWithFormat:@"File '%@' could not be moved to '%@' because a file already exists at "
-              "the destination and could not be deleted.", from, to],
-             error);
-      return;
+  if ([from.scheme isEqualToString:@"file"]) {
+    NSString *fromPath = [from.path stringByStandardizingPath];
+    NSString *toPath = [to.path stringByStandardizingPath];
+    NSError *error;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:toPath]) {
+      if (![[NSFileManager defaultManager] removeItemAtPath:toPath error:&error]) {
+        reject(@"E_FILE_NOT_MOVED",
+               [NSString stringWithFormat:@"File '%@' could not be moved to '%@' because a file already exists at "
+                "the destination and could not be deleted.", from, to],
+               error);
+        return;
+      }
     }
-  }
-  if ([[NSFileManager defaultManager] moveItemAtPath:from toPath:to error:&error]) {
-    resolve(nil);
+    if ([[NSFileManager defaultManager] moveItemAtPath:fromPath toPath:toPath error:&error]) {
+      resolve(nil);
+    } else {
+      reject(@"E_FILE_NOT_MOVED",
+             [NSString stringWithFormat:@"File '%@' could not be moved to '%@'.", from, to],
+             error);
+    }
   } else {
-    reject(@"E_FILE_NOT_MOVED",
-           [NSString stringWithFormat:@"File '%@' could not be moved to '%@'.", from, to],
-           error);
+    reject(@"E_FILESYSTEM_INVALID_URI",
+           [NSString stringWithFormat:@"Unsupported URI scheme for '%@'", from],
+           nil);
   }
 }
 
@@ -256,117 +279,116 @@ RCT_REMAP_METHOD(copyAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  if (!options[@"from"]) {
-    reject(@"E_MISSING_PARAMETER", @"`FileSystem.copyAsync` needs a `from` path.", nil);
-    return;
-  }
-  if (!options[@"to"]) {
-    reject(@"E_MISSING_PARAMETER", @"`FileSystem.copyAsync` needs a `to` path.", nil);
-    return;
-  }
-
-  NSString *from = [self _scopedPathFromURI:options[@"from"]];
+  NSURL *from = [NSURL URLWithString:options[@"from"]];
   if (!from) {
-    reject(@"E_INVALID_FILESYSTEM_URI",
-           [NSString stringWithFormat:@"Invalid FileSystem URI '%@', make sure it's in the app's scope.", from],
+    reject(@"E_MISSING_PARAMETER", @"Need a `from` location.", nil);
+    return;
+  }
+  if (!([self _permissionsForURI:from] & EXFileSystemPermissionRead)) {
+    reject(@"E_FILESYSTEM_PERMISSIONS",
+           [NSString stringWithFormat:@"File '%@' isn't readable.", from],
            nil);
     return;
   }
-
-  NSString *to = [self _scopedPathFromURI:options[@"to"]];
+  NSURL *to = [NSURL URLWithString:options[@"to"]];
   if (!to) {
-    reject(@"E_INVALID_FILESYSTEM_URI",
-           [NSString stringWithFormat:@"Invalid FileSystem URI '%@', make sure it's in the app's scope.", to],
+    reject(@"E_MISSING_PARAMETER", @"Need a `to` location.", nil);
+    return;
+  }
+  if (!([self _permissionsForURI:to] & EXFileSystemPermissionWrite)) {
+    reject(@"E_FILESYSTEM_PERMISSIONS",
+           [NSString stringWithFormat:@"File '%@' isn't writable.", to],
            nil);
     return;
   }
 
-  // NOTE: The destination-delete and the copy should happen atomically, but we hope for the best for now
-  NSError *error;
-  if ([[NSFileManager defaultManager] fileExistsAtPath:to]) {
-    if (![[NSFileManager defaultManager] removeItemAtPath:to error:&error]) {
-      reject(@"E_FILE_NOT_MOVED",
-             [NSString stringWithFormat:@"File '%@' could not be copied to '%@' because a file already exists at "
-              "the destination and could not be deleted.", from, to],
-             error);
-      return;
-    }
-  }
-  if ([[NSFileManager defaultManager] copyItemAtPath:from toPath:to error:&error]) {
-    resolve(nil);
+  if ([from.scheme isEqualToString:@"file"]) {
+    [EXFileSystemLocalFileHandler copyFrom:from to:to resolver:resolve rejecter:reject];
+  } else if ([from.scheme isEqualToString:@"assets-library"]) {
+    [EXFileSystemAssetLibraryHandler copyFrom:from to:to resolver:resolve rejecter:reject];
   } else {
-    reject(@"E_FILE_NOT_MOVED",
-           [NSString stringWithFormat:@"File '%@' could not be copied to '%@'.", from, to],
-           error);
+    reject(@"E_FILESYSTEM_INVALID_URI",
+           [NSString stringWithFormat:@"Unsupported URI scheme for '%@'", from],
+           nil);
   }
 }
 
 RCT_REMAP_METHOD(makeDirectoryAsync,
-                 makeDirectoryAsyncWithURI:(NSString *)uri
+                 makeDirectoryAsyncWithURI:(NSURL *)uri
                  withOptions:(NSDictionary *)options
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  NSString *scopedPath = [self _scopedPathFromURI:uri];
-  if (!scopedPath) {
-    reject(@"E_INVALID_FILESYSTEM_URI",
-           [NSString stringWithFormat:@"Invalid FileSystem URI '%@', make sure it's in the app's scope.", uri],
+  if (!([self _permissionsForURI:uri] & EXFileSystemPermissionWrite)) {
+    reject(@"E_FILESYSTEM_PERMISSIONS",
+           [NSString stringWithFormat:@"Directory '%@' could not be created because the location isn't writable.", uri],
            nil);
     return;
   }
 
-  NSError *error;
-  if ([[NSFileManager defaultManager] createDirectoryAtPath:scopedPath
-                                withIntermediateDirectories:options[@"intermediates"]
-                                                 attributes:nil
-                                                      error:&error]) {
-    resolve(nil);
+  if ([uri.scheme isEqualToString:@"file"]) {
+    NSError *error;
+    if ([[NSFileManager defaultManager] createDirectoryAtPath:uri.path
+                                  withIntermediateDirectories:options[@"intermediates"]
+                                                   attributes:nil
+                                                        error:&error]) {
+      resolve(nil);
+    } else {
+      reject(@"E_DIRECTORY_NOT_CREATED",
+             [NSString stringWithFormat:@"Directory '%@' could not be created.", uri],
+             error);
+    }
   } else {
-    reject(@"E_DIRECTORY_NOT_CREATED",
-           [NSString stringWithFormat:@"Directory '%@' could not be created.", uri],
-           error);
+    reject(@"E_FILESYSTEM_INVALID_URI",
+           [NSString stringWithFormat:@"Unsupported URI scheme for '%@'", uri],
+           nil);
   }
 }
 
 RCT_REMAP_METHOD(readDirectoryAsync,
-                 readDirectoryAsyncWithURI:(NSString *)uri
+                 readDirectoryAsyncWithURI:(NSURL *)uri
                  withOptions:(NSDictionary *)options
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  NSString *scopedPath = [self _scopedPathFromURI:uri];
-  if (!scopedPath) {
-    reject(@"E_INVALID_FILESYSTEM_URI",
-           [NSString stringWithFormat:@"Invalid FileSystem URI '%@', make sure it's in the app's scope.", uri],
+  if (!([self _permissionsForURI:uri] & EXFileSystemPermissionRead)) {
+    reject(@"E_FILESYSTEM_PERMISSIONS",
+           [NSString stringWithFormat:@"Location '%@' isn't readable.", uri],
            nil);
     return;
   }
 
-  NSError *error;
-  NSArray<NSString *> *children = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:scopedPath error:&error];
-  if (children) {
-    resolve(children);
+  if ([uri.scheme isEqualToString:@"file"]) {
+    NSError *error;
+    NSArray<NSString *> *children = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:uri.path error:&error];
+    if (children) {
+      resolve(children);
+    } else {
+      reject(@"E_DIRECTORY_NOT_READ",
+             [NSString stringWithFormat:@"Directory '%@' could not be read.", uri],
+             error);
+    }
   } else {
-    reject(@"E_DIRECTORY_NOT_READ",
-           [NSString stringWithFormat:@"Directory '%@' could not be read.", uri],
-           error);
+    reject(@"E_FILESYSTEM_INVALID_URI",
+           [NSString stringWithFormat:@"Unsupported URI scheme for '%@'", uri],
+           nil);
   }
 }
 
 RCT_REMAP_METHOD(downloadAsync,
                  downloadAsyncWithUrl:(NSURL *)url
-                 withLocalURI:(NSString *)localUri
+                 withLocalURI:(NSURL *)localUri
                  withOptions:(NSDictionary *)options
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  NSString *scopedPath = [self _scopedPathFromURI:localUri];
-  if (!scopedPath) {
-    reject(@"E_INVALID_FILESYSTEM_URI",
-           [NSString stringWithFormat:@"Invalid FileSystem URI '%@', make sure it's in the app's scope.", localUri],
+  if (!([self _permissionsForURI:localUri] & EXFileSystemPermissionWrite)) {
+    reject(@"E_FILESYSTEM_PERMISSIONS",
+           [NSString stringWithFormat:@"File '%@' isn't writable.", localUri],
            nil);
     return;
   }
+  NSString *path = localUri.path;
 
   NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
   sessionConfiguration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
@@ -379,11 +401,11 @@ RCT_REMAP_METHOD(downloadAsync,
              error);
       return;
     }
-    [data writeToFile:scopedPath atomically:YES];
+    [data writeToFile:path atomically:YES];
 
     NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
     NSMutableDictionary *result = [NSMutableDictionary dictionary];
-    result[@"uri"] = [NSURL fileURLWithPath:scopedPath].absoluteString;
+    result[@"uri"] = [NSURL fileURLWithPath:path].absoluteString;
     if (options[@"md5"]) {
       result[@"md5"] = [data md5String];
     }
@@ -403,17 +425,25 @@ RCT_REMAP_METHOD(downloadResumableStartAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  NSString *scopedPath = [self _scopedPathFromURI:fileUri];
-  if (!scopedPath) {
-    reject(@"E_INVALID_FILESYSTEM_URI",
-           [NSString stringWithFormat:@"Invalid FileSystem URI '%@', make sure it's in the app's scope.", fileUri],
+  NSURL *localUrl = [NSURL URLWithString:fileUri];
+  if (![localUrl.scheme isEqualToString:@"file"]) {
+    reject(@"E_FILESYSTEM_PERMISSIONS",
+           [NSString stringWithFormat:@"Cannot download to '%@': only 'file://' URI destinations are supported.", fileUri],
            nil);
     return;
   }
-  
+
+  NSString *path = localUrl.path;
+  if (!([self _permissionsForPath:path] & EXFileSystemPermissionWrite)) {
+    reject(@"E_FILESYSTEM_PERMISSIONS",
+           [NSString stringWithFormat:@"File '%@' isn't writable.", fileUri],
+           nil);
+    return;
+  }
+
   NSData *resumeData = data ? [RCTConvert NSData:data]:nil;
   [self _downloadResumableCreateSessionWithUrl:url
-                               withScopedPath:scopedPath
+                               withScopedPath:path
                                      withUUID:uuid
                                   withOptions:options
                                withResumeData:resumeData
@@ -447,7 +477,7 @@ RCT_REMAP_METHOD(downloadResumablePauseAsync,
     }];
   }
 }
-  
+
 #pragma mark - Internal methods
 
 - (void)_downloadResumableCreateSessionWithUrl:(NSURL *)url withScopedPath:(NSString *)scopedPath withUUID:(NSString *)uuid withOptions:(NSDictionary *)options withResumeData:(NSData * _Nullable)resumeData withResolver:(RCTPromiseResolveBlock)resolve withRejecter:(RCTPromiseRejectBlock)reject
@@ -455,7 +485,7 @@ RCT_REMAP_METHOD(downloadResumablePauseAsync,
   NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
   sessionConfiguration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
   sessionConfiguration.URLCache = nil;
-  
+
   __weak typeof(self) weakSelf = self;
   EXDownloadDelegate *downloadDelegate = [[EXDownloadDelegate alloc] initWithId:uuid
                                                                         onWrite:^(NSURLSessionDownloadTask *task, int64_t bytesWritten, int64_t totalBytesWritten, int64_t totalBytesExpectedToWrite) {
@@ -487,9 +517,9 @@ RCT_REMAP_METHOD(downloadResumablePauseAsync,
     NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
     result[@"status"] = @([httpResponse statusCode]);
     result[@"headers"] = [httpResponse allHeaderFields];
-    
+
     [self.downloadObjects removeObjectForKey:uuid];
-      
+
     resolve(result);
   } onError:^(NSError *error) {
     //"cancelled" description when paused.  Don't throw.
@@ -502,16 +532,16 @@ RCT_REMAP_METHOD(downloadResumablePauseAsync,
              error);
     }
   }];
-  
+
   NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfiguration
                                                         delegate:downloadDelegate
                                                    delegateQueue:[NSOperationQueue mainQueue]];
-  
+
   EXDownloadResumable *downloadResumable = [[EXDownloadResumable alloc] initWithId:uuid
                                                                        withSession:session
                                                                       withDelegate:downloadDelegate];
   self.downloadObjects[downloadResumable.uuid] = downloadResumable;
-  
+
   NSURLSessionDownloadTask *downloadTask;
   if (resumeData) {
     downloadTask = [session downloadTaskWithResumeData:resumeData];
@@ -529,19 +559,35 @@ RCT_REMAP_METHOD(downloadResumablePauseAsync,
   [downloadTask resume];
 }
 
-- (NSString *)_scopedPathFromURI:(NSString *)uri
+- (EXFileSystemPermissionFlags)_permissionsForURI:(NSURL *)uri
 {
-  NSString *path = [[NSURL URLWithString:uri].path stringByStandardizingPath];
-  if (!path) {
-    return nil;
+  if ([uri.scheme isEqualToString:@"assets-library"]) {
+    return EXFileSystemPermissionRead;
   }
-  if ([path hasPrefix:[_documentDirectory stringByStandardizingPath]] ||
-      [path hasPrefix:[_cachesDirectory stringByStandardizingPath]]) {
-    return path;
+  if ([uri.scheme isEqualToString:@"file"]) {
+    return [self _permissionsForPath:uri.path];
   }
-  return nil;
+  return EXFileSystemPermissionNone;
 }
-  
+
+- (EXFileSystemPermissionFlags)_permissionsForPath:(NSString *)path
+{
+  path = [path stringByStandardizingPath];
+  if ([path hasPrefix:[_documentDirectory stringByAppendingString:@"/"]]) {
+    return EXFileSystemPermissionRead | EXFileSystemPermissionWrite;
+  }
+  if ([path isEqualToString:_documentDirectory])  {
+    return EXFileSystemPermissionRead | EXFileSystemPermissionWrite;
+  }
+  if ([path hasPrefix:[_cachesDirectory stringByAppendingString:@"/"]]) {
+    return EXFileSystemPermissionRead | EXFileSystemPermissionWrite;
+  }
+  if ([path isEqualToString:_cachesDirectory])  {
+    return EXFileSystemPermissionRead | EXFileSystemPermissionWrite;
+  }
+  return EXFileSystemPermissionNone;
+}
+
 #pragma mark - Class methods
 
 + (BOOL)ensureDirExistsWithPath:(NSString *)path
@@ -561,17 +607,17 @@ RCT_REMAP_METHOD(downloadResumablePauseAsync,
 + (NSString *)documentDirectoryForExperienceId:(NSString *)experienceId
 {
   NSString *subdir = [EXUtil escapedResourceName:experienceId];
-  return [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject
-           stringByAppendingPathComponent:@"ExponentExperienceData"]
-          stringByAppendingPathComponent:subdir];
+  return [[[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject
+            stringByAppendingPathComponent:@"ExponentExperienceData"]
+           stringByAppendingPathComponent:subdir] stringByStandardizingPath];
 }
 
 + (NSString *)cachesDirectoryForExperienceId:(NSString *)experienceId
 {
   NSString *subdir = [EXUtil escapedResourceName:experienceId];
-  return [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject
-           stringByAppendingPathComponent:@"ExponentExperienceData"]
-          stringByAppendingPathComponent:subdir];
+  return [[[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject
+            stringByAppendingPathComponent:@"ExponentExperienceData"]
+           stringByAppendingPathComponent:subdir] stringByStandardizingPath];
 }
 
 @end
