@@ -8,6 +8,7 @@
 #import "EXKernel.h"
 #import "EXKernelUtil.h"
 #import "EXScreenOrientationManager.h"
+#import "EXShellManager.h"
 
 #import <React/RCTDevLoadingView.h>
 #import <React/RCTRootView.h>
@@ -17,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXViewController () <EXErrorViewDelegate>
 
 @property (nonatomic, strong) UIActivityIndicatorView *loadingIndicator;
+@property (nonatomic, strong) UIView *loadingView;
 @property (nonatomic, strong) EXErrorView *errorView;
 
 @end
@@ -38,8 +40,24 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)viewDidLoad
 {
   [super viewDidLoad];
-  _loadingIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+  // Display the launch screen behind the React view so that the React view appears to seamlessly load
+  NSArray *views = [[NSBundle mainBundle] loadNibNamed:@"LaunchScreen" owner:self options:nil];
+  if (views) {
+    self.loadingView = views.firstObject;
+    self.loadingView.layer.zPosition = 1000;
+    self.loadingView.frame = self.view.bounds;
+    self.loadingView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self.view addSubview:self.loadingView];
+    
+    // The launch screen contains a loading indicator
+    // use this instead of the superclass loading indicator
+    _loadingIndicator = (UIActivityIndicatorView *)[self.loadingView viewWithTag:1];
+  } else {
+    _loadingIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+  }
   _loadingIndicator.hidesWhenStopped = YES;
+  
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appDidDisplay:) name:kEXKernelAppDidDisplay object:nil];
 }
 
 - (BOOL)shouldAutorotate
@@ -82,9 +100,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setIsLoading:(BOOL)isLoading
 {
   _isLoading = isLoading;
-  if (_isLoading) {
+  if (isLoading) {
+    self.loadingView.hidden = NO;
     [_loadingIndicator startAnimating];
   } else {
+    if (![self _usesStandaloneSplashScreen]) {
+      // If this is Home, or no splash screen is used, hide the loading here.
+      // otherwise wait for BrowserScreen to do so in `appDidDisplay`.
+      self.loadingView.hidden = YES;
+    }
     [_loadingIndicator stopAnimating];
   }
 }
@@ -184,6 +208,22 @@ NS_ASSUME_NONNULL_BEGIN
     [[UIDevice currentDevice] setValue:@(UIDeviceOrientationPortrait) forKey:@"orientation"];
   }
   [UIViewController attemptRotationToDeviceOrientation];
+}
+
+- (void)appDidDisplay:(NSNotification *)note
+{
+  __weak typeof(self) weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    __strong typeof(self) strongSelf = weakSelf;
+    if (strongSelf) {
+      strongSelf.loadingView.hidden = YES;
+    }
+  });
+}
+
+- (BOOL)_usesStandaloneSplashScreen
+{
+  return [EXShellManager sharedInstance].isShell && !([EXShellManager sharedInstance].isSplashScreenDisabled);
 }
 
 @end
