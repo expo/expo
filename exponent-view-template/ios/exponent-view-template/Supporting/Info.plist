@@ -25,7 +25,7 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
-        <key>NSCameraUsageDescription</key>
+	<key>NSCameraUsageDescription</key>
 	<string>Allow Expo experiences to use your camera</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Allow Expo experiences to access your contacts</string>

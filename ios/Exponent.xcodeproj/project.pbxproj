@@ -136,7 +136,6 @@
 		B53BB7A51F06F78C00D2BCDC /* EXScopedEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B53BB7A41F06F78C00D2BCDC /* EXScopedEventEmitter.m */; };
 		B55089821D06455D009FBBC5 /* EXLinkingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B55089811D06455D009FBBC5 /* EXLinkingManager.m */; };
 		B55FDEFA1C7FE1310020AA8F /* EXRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B55FDEF91C7FE1310020AA8F /* EXRootViewController.m */; };
-		B5657E521CFE1309006EF8E1 /* LaunchScreenShell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B5657E501CFE1309006EF8E1 /* LaunchScreenShell.xib */; };
 		B5678C5F1DB6D65B00380A6E /* EXFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = B5678C5C1DB6D65B00380A6E /* EXFrame.m */; };
 		B5678C601DB6D65B00380A6E /* EXFrameManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5678C5E1DB6D65B00380A6E /* EXFrameManager.m */; };
 		B56D07351EC53333009E6A89 /* AIRDummyView.m in Sources */ = {isa = PBXBuildFile; fileRef = B56D07121EC53333009E6A89 /* AIRDummyView.m */; };
@@ -529,7 +528,6 @@
 		B55FDEF81C7FE1310020AA8F /* EXRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXRootViewController.h; sourceTree = "<group>"; };
 		B55FDEF91C7FE1310020AA8F /* EXRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXRootViewController.m; sourceTree = "<group>"; };
 		B56386651DB98BAA00A0598C /* EXUnversioned.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXUnversioned.h; sourceTree = "<group>"; };
-		B5657E511CFE1309006EF8E1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreenShell.xib; sourceTree = "<group>"; };
 		B5678C5B1DB6D65B00380A6E /* EXFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFrame.h; sourceTree = "<group>"; };
 		B5678C5C1DB6D65B00380A6E /* EXFrame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFrame.m; sourceTree = "<group>"; };
 		B5678C5D1DB6D65B00380A6E /* EXFrameManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFrameManager.h; sourceTree = "<group>"; };
@@ -968,7 +966,6 @@
 				B55FDEF91C7FE1310020AA8F /* EXRootViewController.m */,
 				78CEE2D01ACD07D70095B124 /* Images.xcassets */,
 				78CEE2D21ACD07D70095B124 /* LaunchScreen.xib */,
-				B5657E501CFE1309006EF8E1 /* LaunchScreenShell.xib */,
 			);
 			path = Exponent;
 			sourceTree = "<group>";
@@ -1745,7 +1742,6 @@
 				B5E49B751D134F0700AA6436 /* kernel.ios.bundle in Resources */,
 				B5E628FE1E32F05A00629A55 /* kernel-manifest.json in Resources */,
 				78CEE2D41ACD07D70095B124 /* LaunchScreen.xib in Resources */,
-				B5657E521CFE1309006EF8E1 /* LaunchScreenShell.xib in Resources */,
 				B575EEA41D54175B00DCABBC /* shell-app-manifest.json in Resources */,
 				B5EF826E1F55B8F100FC7424 /* launch_background_image.png in Resources */,
 				B575EEA51D54175B00DCABBC /* shell-app.bundle in Resources */,
@@ -2295,14 +2291,6 @@
 				78CEE2D31ACD07D70095B124 /* Base */,
 			);
 			name = LaunchScreen.xib;
-			sourceTree = "<group>";
-		};
-		B5657E501CFE1309006EF8E1 /* LaunchScreenShell.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				B5657E511CFE1309006EF8E1 /* Base */,
-			);
-			name = LaunchScreenShell.xib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
