@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 'use strict';
 
-const fs = require('fs');
+const fs = require('fs-extra');
 const path = require('path');
 const shell = require('shelljs');
 const { ExponentTools } = require('xdl');
@@ -9,6 +9,7 @@ const crayon = require('@ccheever/crayon');
 const JsonFile = require('@exponent/json-file');
 const replaceString = require('replace-string');
 const _ = require('lodash');
+const globby = require('globby');
 
 const {
   getManifestAsync,
@@ -24,6 +25,35 @@ async function sedInPlaceAsync(...args) {
   } else {
     await spawnAsync(`sed`, ['-i', ...args]);
   }
+}
+
+async function regexFileAsync(regex, replace, filename) {
+  let file = await fs.promise.readFile(filename);
+  let fileString = file.toString();
+  await fs.promise.writeFile(filename, fileString.replace(regex, replace));
+}
+
+// Matches sed /d behavior
+async function deleteLinesInFileAsync(startRegex, endRegex, filename) {
+  let file = await fs.promise.readFile(filename);
+  let fileString = file.toString();
+  let lines = fileString.split(/\r?\n/);
+  let filteredLines = [];
+  let inDeleteRange = false;
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].match(startRegex)) {
+      inDeleteRange = true;
+    }
+
+    if (!inDeleteRange) {
+      filteredLines.push(lines[i]);
+    }
+
+    if (inDeleteRange && lines[i].match(endRegex)) {
+      inDeleteRange = false;
+    }
+  }
+  await fs.promise.writeFile(filename, filteredLines.join('\n'));
 }
 
 function xmlWeirdAndroidEscape(original) {
@@ -60,31 +90,26 @@ exports.updateAndroidShellAppAsync = async function updateAndroidShellAppAsync(
   let fullManifestUrl = `${url.replace('exp://', 'https://')}/index.exp`;
   let bundleUrl = manifest.bundleUrl;
 
-  let shellPath = '../android-shell-app/';
+  let shellPath = path.join('..', 'android-shell-app');
 
-  await spawnAsync(`/bin/rm`, [
-    `${shellPath}app/src/main/assets/shell-app-manifest.json`,
-  ]);
+  await fs.remove(path.join(shellPath, 'app', 'src', 'main', 'assets', 'shell-app-manifest.json'));
   await fs.writeFileSync(
-    `${shellPath}app/src/main/assets/shell-app-manifest.json`,
+    path.join(shellPath, 'app', 'src', 'main', 'assets', 'shell-app-manifest.json'),
     JSON.stringify(manifest)
   );
-  await spawnAsync(`/bin/rm`, [
-    `${shellPath}app/src/main/assets/shell-app.bundle`,
-  ]);
+  await fs.remove(path.join(shellPath, 'app', 'src', 'main', 'assets', 'shell-app.bundle'));
   await saveUrlToPathAsync(
     bundleUrl,
-    `${shellPath}app/src/main/assets/shell-app.bundle`
+    path.join(shellPath, 'app', 'src', 'main', 'assets', 'shell-app.bundle')
   );
 
-  await sedInPlaceAsync(
-    '-e',
-    `/START\ EMBEDDED\ RESPONSES/,/END\ EMBEDDED\ RESPONSES/d`,
-    `${shellPath}expoview/src/main/java/host/exp/exponent/Constants.java`
+  await deleteLinesInFileAsync(
+    `START\ EMBEDDED\ RESPONSES`,
+    `END\ EMBEDDED\ RESPONSES`,
+    path.join(shellPath, 'expoview', 'src', 'main', 'java', 'host', 'exp', 'exponent', 'Constants.java')
   );
 
-  shell.sed(
-    '-i',
+  await regexFileAsync(
     '// ADD EMBEDDED RESPONSES HERE',
     `
     // ADD EMBEDDED RESPONSES HERE
@@ -92,14 +117,13 @@ exports.updateAndroidShellAppAsync = async function updateAndroidShellAppAsync(
     embeddedResponses.add(new EmbeddedResponse("${fullManifestUrl}", "assets://shell-app-manifest.json", "application/json"));
     embeddedResponses.add(new EmbeddedResponse("${bundleUrl}", "assets://shell-app.bundle", "application/javascript"));
     // END EMBEDDED RESPONSES`,
-    `${shellPath}expoview/src/main/java/host/exp/exponent/Constants.java`
+    path.join(shellPath, 'expoview', 'src', 'main', 'java', 'host', 'exp', 'exponent', 'Constants.java')
   );
 
-  shell.sed(
-    '-i',
+  await regexFileAsync(
     'RELEASE_CHANNEL = "default"',
     `RELEASE_CHANNEL = "${releaseChannel}"`,
-    `${shellPath}expoview/src/main/java/host/exp/exponent/Constants.java`
+    path.join(shellPath, 'expoview', 'src', 'main', 'java', 'host', 'exp', 'exponent', 'Constants.java')
   );
 };
 
@@ -110,7 +134,7 @@ function backgroundImagesForApp(shellPath, manifest) {
   //   {url: 'anotherURlToDownload', path: 'anotherPathToSaveTo'},
   // ]
   const imageKeys = ['ldpi', 'mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'];
-  let basePath = `${shellPath}expoview/src/main/res`;
+  let basePath = path.join(shellPath, 'expoview', 'src', 'main', 'res');
   if (_.get(manifest, 'android.splash')) {
     var splash = _.get(manifest, 'android.splash');
     return _.reduce(
@@ -120,7 +144,7 @@ function backgroundImagesForApp(shellPath, manifest) {
         if (url) {
           acc.push({
             url: url,
-            path: `${basePath}/drawable-${imageKey}/shell_launch_background_image.png`,
+            path: path.join(basePath, `drawable-${imageKey}`, 'shell_launch_background_image.png'),
           });
         }
 
@@ -135,7 +159,7 @@ function backgroundImagesForApp(shellPath, manifest) {
     return [
       {
         url: url,
-        path: `${basePath}/drawable-xxxhdpi/shell_launch_background_image.png`,
+        path: path.join(basePath, 'drawable-xxxhdpi', 'shell_launch_background_image.png'),
       },
     ];
   }
@@ -237,11 +261,14 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
     ? manifest.notification.iconUrl
     : null;
   let version = manifest.version ? manifest.version : '0.0.0';
-  let shellPath = '../android-shell-app/';
+  let shellPath = path.join('..', 'android-shell-app');
+  let androidSrcPath = path.join('..', 'android');
   let backgroundImages = backgroundImagesForApp(shellPath, manifest);
   let splashBackgroundColor = getSplashScreenBackgroundColor(manifest);
-  await spawnAsync(`/bin/rm`, ['-rf', shellPath]);
-  await spawnAsync(`/bin/mkdir`, [shellPath]);
+  await fs.remove(shellPath);
+  await fs.ensureDir(shellPath);
+
+  // TODO: make this xplat
   await spawnAsync(
     `../../tools-public/generate-dynamic-macros-android.sh`,
     [],
@@ -250,194 +277,167 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
       cwd: path.join(__dirname, '..', 'android', 'app'),
     }
   ); // populate android template files now since we take out the prebuild step later on
-  await spawnAsync(`/bin/cp`, [
-    '-r',
-    '../android/expoview',
-    `${shellPath}/expoview`,
-  ]);
-  await spawnAsync(`/bin/cp`, [
-    '-r',
-    '../android/ReactCommon',
-    `${shellPath}/ReactCommon`,
-  ]);
-  await spawnAsync(`/bin/cp`, [
-    '-r',
-    '../android/ReactAndroid',
-    `${shellPath}/ReactAndroid`,
-  ]);
-  await spawnAsync(`/bin/cp`, ['../android/android.iml', `${shellPath}/`]);
-  await spawnAsync(`/bin/cp`, ['-r', '../android/app', `${shellPath}/app`]);
-  await spawnAsync(`/bin/cp`, ['../android/build.gradle', `${shellPath}/`]);
-  await spawnAsync(`/bin/cp`, [
-    '-r',
-    '../android/gradle',
-    `${shellPath}/gradle`,
-  ]);
-  await spawnAsync(`/bin/cp`, [
-    '../android/gradle.properties',
-    `${shellPath}/`,
-  ]);
-  await spawnAsync(`/bin/cp`, ['../android/gradlew', `${shellPath}/`]);
-  await spawnAsync(`/bin/cp`, ['../android/local.properties', `${shellPath}/`]);
-  await spawnAsync(`/bin/cp`, ['../android/settings.gradle', `${shellPath}/`]);
-  await spawnAsync(`/bin/cp`, ['-r', '../android/maven', `${shellPath}/maven`]);
+
+  let copyToShellApp = async (fileName) => {
+    await fs.copy(path.join(androidSrcPath, fileName), path.join(shellPath, fileName));
+  };
+
+  await copyToShellApp('expoview');
+  await copyToShellApp('ReactCommon');
+  await copyToShellApp('ReactAndroid');
+  await copyToShellApp('android.iml');
+  await copyToShellApp('app');
+  await copyToShellApp('build.gradle');
+  await copyToShellApp('gradle');
+  await copyToShellApp('gradle.properties');
+  await copyToShellApp('gradlew');
+  await copyToShellApp('local.properties');
+  await copyToShellApp('settings.gradle');
+  await copyToShellApp('maven');
 
   // Clean build directories
-  await spawnAsync(`/bin/rm`, ['-rf', `${shellPath}app/build/`]);
+  await fs.remove(path.join(shellPath, 'app', 'build'));
 
   // Package
-  shell.sed(
-    '-i',
+  await regexFileAsync(
     `applicationId 'host.exp.exponent'`,
     `applicationId '${javaPackage}'`,
-    `${shellPath}app/build.gradle`
+    path.join(shellPath, 'app', 'build.gradle')
   );
-  await sedInPlaceAsync(
-    '-e',
-    `s/android:name="host.exp.exponent"/android:name="${javaPackage}"/g`,
-    `${shellPath}app/src/main/AndroidManifest.xml`
+  await regexFileAsync(
+    `android:name="host.exp.exponent"`,
+    `android:name="${javaPackage}"`,
+    path.join(shellPath, 'app', 'src', 'main', 'AndroidManifest.xml')
   );
 
   // Versions
   let buildGradleFile = await fs.readFileSync(
-    `${shellPath}app/build.gradle`,
+    path.join(shellPath, 'app', 'build.gradle'),
     'utf8'
   );
   let androidVersion = buildGradleFile.match(/versionName '(\S+)'/)[1];
-  shell.sed(
-    '-i',
+  await regexFileAsync(
     'VERSION_NAME = null',
     `VERSION_NAME = "${androidVersion}"`,
-    `${shellPath}expoview/src/main/java/host/exp/exponent/Constants.java`
+    path.join(shellPath, 'expoview', 'src', 'main', 'java', 'host', 'exp', 'exponent', 'Constants.java')
   );
-  await sedInPlaceAsync(
-    '-e',
-    `/BEGIN\ VERSIONS/,/END\ VERSIONS/d`,
-    `${shellPath}app/build.gradle`
+  await deleteLinesInFileAsync(
+    `BEGIN\ VERSIONS`,
+    `END\ VERSIONS`,
+    path.join(shellPath, 'app', 'build.gradle')
   );
-  shell.sed(
-    '-i',
+  await regexFileAsync(
     '// ADD VERSIONS HERE',
     `versionCode ${versionCode}
     versionName '${version}'`,
-    `${shellPath}app/build.gradle`
+    path.join(shellPath, 'app', 'build.gradle')
   );
 
   // Remove Exponent build script
-  shell.sed(
-    '-i',
+  await regexFileAsync(
     `preBuild.dependsOn generateDynamicMacros`,
     ``,
-    `${shellPath}expoview/build.gradle`
+    path.join(shellPath, 'expoview', 'build.gradle')
   );
 
   // change javaMaxHeapSize
-  shell.sed(
-    '-i',
+  await regexFileAsync(
     `javaMaxHeapSize "8g"`,
     `javaMaxHeapSize "6g"`,
-    `${shellPath}app/build.gradle`
+    path.join(shellPath, 'app', 'build.gradle')
   );
 
   // Push notifications
-  shell.sed(
-    '-i',
+  await regexFileAsync(
     '"package_name": "host.exp.exponent"',
     `"package_name": "${javaPackage}"`,
-    `${shellPath}app/google-services.json`
+    path.join(shellPath, 'app', 'google-services.json')
   ); // TODO: actually use the correct file
+
   // TODO: probably don't need this in both places
-  await sedInPlaceAsync(
-    '-e',
-    `s/host.exp.exponent.permission.C2D_MESSAGE/${javaPackage}.permission.C2D_MESSAGE/g`,
-    `${shellPath}app/src/main/AndroidManifest.xml`
+  await regexFileAsync(
+    /host\.exp\.exponent\.permission\.C2D_MESSAGE/g,
+    `${javaPackage}.permission.C2D_MESSAGE`,
+    path.join(shellPath, 'app', 'src', 'main', 'AndroidManifest.xml')
   );
-  await sedInPlaceAsync(
-    '-e',
-    `s/host.exp.exponent.permission.C2D_MESSAGE/${javaPackage}.permission.C2D_MESSAGE/g`,
-    `${shellPath}expoview/src/main/AndroidManifest.xml`
+  await regexFileAsync(
+    /host\.exp\.exponent\.permission\.C2D_MESSAGE/g,
+    `${javaPackage}.permission.C2D_MESSAGE`,
+    path.join(shellPath, 'expoview', 'src', 'main', 'AndroidManifest.xml')
   );
 
   // Set INITIAL_URL, SHELL_APP_SCHEME and SHOW_LOADING_VIEW
-  shell.sed(
-    '-i',
+  await regexFileAsync(
     'INITIAL_URL = null',
     `INITIAL_URL = "${url}"`,
-    `${shellPath}expoview/src/main/java/host/exp/exponent/Constants.java`
+    path.join(shellPath, 'expoview', 'src', 'main', 'java', 'host', 'exp', 'exponent', 'Constants.java')
   );
   if (scheme) {
-    shell.sed(
-      '-i',
+    await regexFileAsync(
       'SHELL_APP_SCHEME = null',
       `SHELL_APP_SCHEME = "${scheme}"`,
-      `${shellPath}expoview/src/main/java/host/exp/exponent/Constants.java`
+      path.join(shellPath, 'expoview', 'src', 'main', 'java', 'host', 'exp', 'exponent', 'Constants.java')
     );
   }
   if (shouldShowLoadingView(manifest)) {
-    shell.sed(
-      '-i',
+    await regexFileAsync(
       'SHOW_LOADING_VIEW_IN_SHELL_APP = false',
       'SHOW_LOADING_VIEW_IN_SHELL_APP = true',
-      `${shellPath}expoview/src/main/java/host/exp/exponent/Constants.java`
+      path.join(shellPath, 'expoview', 'src', 'main', 'java', 'host', 'exp', 'exponent', 'Constants.java')
     );
   }
 
   // App name
-  shell.sed(
-    '-i',
+  await regexFileAsync(
     '"app_name">Expo',
     `"app_name">${xmlWeirdAndroidEscape(name)}`,
-    `${shellPath}app/src/main/res/values/strings.xml`
+    path.join(shellPath, 'app', 'src', 'main', 'res', 'values', 'strings.xml')
   );
 
   // Splash Screen background color
-  shell.sed(
-    '-i',
+  await regexFileAsync(
     '"splashBackground">#FFFFFF',
     `"splashBackground">${splashBackgroundColor}`,
-    `${shellPath}app/src/main/res/values/colors.xml`
+    path.join(shellPath, 'app', 'src', 'main', 'res', 'values', 'colors.xml')
   );
 
   // show only background color if LoadingView will appear
   if (shouldShowLoadingView(manifest)) {
-    shell.sed(
-      '-i',
+    await regexFileAsync(
       /<item>.*<\/item>/,
       '',
-      `${shellPath}app/src/main/res/drawable/splash_background.xml`
+      path.join(shellPath, 'app', 'src', 'main', 'res', 'drawable', 'splash_background.xml')
     );
   }
 
   // Remove exp:// scheme from LauncherActivity
-  await sedInPlaceAsync(
-    '-e',
-    `/START\ LAUNCHER\ INTENT\ FILTERS/,/END\ LAUNCHER\ INTENT\ FILTERS/d`,
-    `${shellPath}app/src/main/AndroidManifest.xml`
+  await deleteLinesInFileAsync(
+    `START\ LAUNCHER\ INTENT\ FILTERS`,
+    `END\ LAUNCHER\ INTENT\ FILTERS`,
+    path.join(shellPath, 'app', 'src', 'main', 'AndroidManifest.xml')
   );
 
   // Remove LAUNCHER category from HomeActivity
-  await sedInPlaceAsync(
-    '-e',
-    `/START\ HOME\ INTENT\ FILTERS/,/END\ HOME\ INTENT\ FILTERS/d`,
-    `${shellPath}app/src/main/AndroidManifest.xml`
+  await deleteLinesInFileAsync(
+    `START\ HOME\ INTENT\ FILTERS`,
+    `END\ HOME\ INTENT\ FILTERS`,
+    path.join(shellPath, 'app', 'src', 'main', 'AndroidManifest.xml')
   );
 
   // Add LAUNCHER category to ShellAppActivity
-  shell.sed(
-    '-i',
+  await regexFileAsync(
     '<!-- ADD SHELL INTENT FILTERS HERE -->',
     `<intent-filter>
       <action android:name="android.intent.action.MAIN"/>
 
       <category android:name="android.intent.category.LAUNCHER"/>
     </intent-filter>`,
-    `${shellPath}app/src/main/AndroidManifest.xml`
+    path.join(shellPath, 'app', 'src', 'main', 'AndroidManifest.xml')
   );
 
   // Add shell app scheme
   if (scheme) {
-    shell.sed(
-      '-i',
+    await regexFileAsync(
       '<!-- ADD SHELL SCHEME HERE -->',
       `<intent-filter>
         <data android:scheme="${scheme}"/>
@@ -447,14 +447,14 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
       </intent-filter>`,
-      `${shellPath}app/src/main/AndroidManifest.xml`
+      path.join(shellPath, 'app', 'src', 'main', 'AndroidManifest.xml')
     );
   }
 
   // Add permissions
   if (manifest.android && manifest.android.permissions) {
     const content = await fs.readFileSync(
-      `${shellPath}app/src/main/AndroidManifest.xml`,
+      path.join(shellPath, 'app', 'src', 'main', 'AndroidManifest.xml'),
       'utf-8'
     );
 
@@ -508,14 +508,13 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
       'com.sonyericsson.home.permission.BROADCAST_BADGE',
     ].filter(p => !whitelist.includes(p));
 
-    await sedInPlaceAsync(
-      '-e',
-      `/BEGIN\ OPTIONAL\ PERMISSIONS/,/END\ OPTIONAL\ PERMISSIONS/d`,
-      `${shellPath}app/src/main/AndroidManifest.xml`
+    await deleteLinesInFileAsync(
+      `BEGIN\ OPTIONAL\ PERMISSIONS`,
+      `END\ OPTIONAL\ PERMISSIONS`,
+      path.join(shellPath, 'app', 'src', 'main', 'AndroidManifest.xml')
     );
 
-    shell.sed(
-      '-i',
+    await regexFileAsync(
       '<!-- ADD PERMISSIONS HERE -->',
       `
       ${whitelist
@@ -525,103 +524,102 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
         .map(p => `<uses-permission android:name="${p}" tools:node="remove" />`)
         .join('\n')}
       `,
-      `${shellPath}app/src/main/AndroidManifest.xml`
+      path.join(shellPath, 'app', 'src', 'main', 'AndroidManifest.xml')
     );
   }
 
   // OAuth redirect scheme
-  shell.sed(
-    '-i',
+  await regexFileAsync(
     '<data android:scheme="host.exp.exponent" android:path="oauthredirect"/>',
     `<data android:scheme="${javaPackage}" android:path="oauthredirect"/>`,
-    `${shellPath}app/src/main/AndroidManifest.xml`
+    path.join(shellPath, 'app', 'src', 'main', 'AndroidManifest.xml')
   );
 
   // Embed manifest and bundle
   await fs.writeFileSync(
-    `${shellPath}app/src/main/assets/shell-app-manifest.json`,
+    path.join(shellPath, 'app', 'src', 'main', 'assets', 'shell-app-manifest.json'),
     JSON.stringify(manifest)
   );
   await saveUrlToPathAsync(
     bundleUrl,
-    `${shellPath}app/src/main/assets/shell-app.bundle`
+    path.join(shellPath, 'app', 'src', 'main', 'assets', 'shell-app.bundle')
   );
 
-  shell.sed(
-    '-i',
+  await regexFileAsync(
     '// START EMBEDDED RESPONSES',
     `
     // START EMBEDDED RESPONSES
     embeddedResponses.add(new EmbeddedResponse("${fullManifestUrl}", "assets://shell-app-manifest.json", "application/json"));
     embeddedResponses.add(new EmbeddedResponse("${bundleUrl}", "assets://shell-app.bundle", "application/javascript"));`,
-    `${shellPath}expoview/src/main/java/host/exp/exponent/Constants.java`
+    path.join(shellPath, 'expoview', 'src', 'main', 'java', 'host', 'exp', 'exponent', 'Constants.java')
   );
 
-  shell.sed(
-    '-i',
+  await regexFileAsync(
     'RELEASE_CHANNEL = "default"',
     `RELEASE_CHANNEL = "${releaseChannel}"`,
-    `${shellPath}expoview/src/main/java/host/exp/exponent/Constants.java`
+    path.join(shellPath, 'expoview', 'src', 'main', 'java', 'host', 'exp', 'exponent', 'Constants.java')
   );
 
   // Icon
   if (iconUrl) {
-    await spawnAsync(`find`, [
-      `${shellPath}app/src/main/res`,
-      '-iname',
-      'ic_launcher.png',
-      '-delete',
-    ]);
+    (await globby(['**/ic_launcher.png'], {
+      cwd: path.join(shellPath, 'app', 'src', 'main', 'res'),
+      absolute: true,
+    })).forEach(filePath => {
+      fs.removeSync(filePath);
+    });
+
     await saveUrlToPathAsync(
       iconUrl,
-      `${shellPath}app/src/main/res/mipmap-hdpi/ic_launcher.png`
+      path.join(shellPath, 'app', 'src', 'main', 'res', 'mipmap-hdpi', 'ic_launcher.png')
     );
 
-    await spawnAsync(`find`, [
-      `${shellPath}expoview/src/main/res`,
-      '-iname',
-      'ic_launcher.png',
-      '-delete',
-    ]);
+    (await globby(['**/ic_launcher.png'], {
+      cwd: path.join(shellPath, 'expoview', 'src', 'main', 'res'),
+      absolute: true,
+    })).forEach(filePath => {
+      fs.removeSync(filePath);
+    });
     await saveUrlToPathAsync(
       iconUrl,
-      `${shellPath}expoview/src/main/res/mipmap-hdpi/ic_launcher.png`
+      path.join(shellPath, 'expoview', 'src', 'main', 'res', 'mipmap-hdpi', 'ic_launcher.png')
     );
   }
 
   if (notificationIconUrl) {
-    await spawnAsync(`find`, [
-      `${shellPath}app/src/main/res`,
-      '-iname',
-      'shell_notification_icon.png',
-      '-delete',
-    ]);
+    (await globby(['**/shell_notification_icon.png'], {
+      cwd: path.join(shellPath, 'app', 'src', 'main', 'res'),
+      absolute: true,
+    })).forEach(filePath => {
+      fs.removeSync(filePath);
+    });
+
     await saveUrlToPathAsync(
       notificationIconUrl,
-      `${shellPath}app/src/main/res/drawable-hdpi/shell_notification_icon.png`
+      path.join(shellPath, 'app', 'src', 'main', 'res', 'drawable-hdpi', 'shell_notification_icon.png')
     );
 
-    await spawnAsync(`find`, [
-      `${shellPath}expoview/src/main/res`,
-      '-iname',
-      'shell_notification_icon.png',
-      '-delete',
-    ]);
+    (await globby(['**/shell_notification_icon.png'], {
+      cwd: path.join(shellPath, 'expoview', 'src', 'main', 'res'),
+      absolute: true,
+    })).forEach(filePath => {
+      fs.removeSync(filePath);
+    });
     await saveUrlToPathAsync(
       notificationIconUrl,
-      `${shellPath}expoview/src/main/res/drawable-hdpi/shell_notification_icon.png`
+      path.join(shellPath, 'expoview', 'src', 'main', 'res', 'drawable-hdpi', 'shell_notification_icon.png')
     );
   }
 
   // Splash Background
   if (backgroundImages && backgroundImages.length > 0) {
     // Delete the placeholder images
-    await spawnAsync(`find`, [
-      `${shellPath}expoview/src/main/res`,
-      '-iname',
-      'shell_launch_background_image.png',
-      '-delete',
-    ]);
+    (await globby(['**/shell_launch_background_image.png'], {
+      cwd: path.join(shellPath, 'expoview', 'src', 'main', 'res'),
+      absolute: true,
+    })).forEach(filePath => {
+      fs.removeSync(filePath);
+    });
 
     _.forEach(backgroundImages, async image => {
       await saveUrlToPathAsync(image.url, image.path);
@@ -639,53 +637,50 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
 
     // Branch
     if (branch) {
-      shell.sed(
-        '-i',
+      await regexFileAsync(
         '<!-- ADD BRANCH CONFIG HERE -->',
         `<meta-data
       android:name="io.branch.sdk.BranchKey"
       android:value="${branch.apiKey}"/>`,
-        `${shellPath}app/src/main/AndroidManifest.xml`
+        path.join(shellPath, 'app', 'src', 'main', 'AndroidManifest.xml')
       );
     }
 
     // Fabric
     if (fabric) {
-      await fs.unlinkSync(`${shellPath}app/fabric.properties`);
+      await fs.remove(path.join(shellPath, 'app', 'fabric.properties'));
       await fs.writeFileSync(
-        `${shellPath}app/fabric.properties`,
+        path.join(shellPath, 'app', 'fabric.properties'),
         `apiSecret=${fabric.buildSecret}\n`
       );
 
-      await sedInPlaceAsync(
-        '-e',
-        `/BEGIN\ FABRIC\ CONFIG/,/END\ FABRIC\ CONFIG/d`,
-        `${shellPath}app/src/main/AndroidManifest.xml`
+      await deleteLinesInFileAsync(
+        `BEGIN\ FABRIC\ CONFIG`,
+        `END\ FABRIC\ CONFIG`,
+        path.join(shellPath, 'app', 'src', 'main', 'AndroidManifest.xml')
       );
-      shell.sed(
-        '-i',
+      await regexFileAsync(
         '<!-- ADD FABRIC CONFIG HERE -->',
         `<meta-data
       android:name="io.fabric.ApiKey"
       android:value="${fabric.apiKey}"/>`,
-        `${shellPath}app/src/main/AndroidManifest.xml`
+        path.join(shellPath, 'app', 'src', 'main', 'AndroidManifest.xml')
       );
     }
 
     // Google Maps
     if (googleMaps) {
-      await sedInPlaceAsync(
-        '-e',
-        `/BEGIN\ GOOGLE\ MAPS\ CONFIG/,/END\ GOOGLE\ MAPS\ CONFIG/d`,
-        `${shellPath}app/src/main/AndroidManifest.xml`
+      await deleteLinesInFileAsync(
+        `BEGIN\ GOOGLE\ MAPS\ CONFIG`,
+        `END\ GOOGLE\ MAPS\ CONFIG`,
+        path.join(shellPath, 'app', 'src', 'main', 'AndroidManifest.xml')
       );
-      shell.sed(
-        '-i',
+      await regexFileAsync(
         '<!-- ADD GOOGLE MAPS CONFIG HERE -->',
         `<meta-data
       android:name="com.google.android.geo.API_KEY"
       android:value="${googleMaps.apiKey}"/>`,
-        `${shellPath}app/src/main/AndroidManifest.xml`
+        path.join(shellPath, 'app', 'src', 'main', 'AndroidManifest.xml')
       );
     }
 
@@ -697,17 +692,15 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
   }
 
   // Google sign in
-  shell.sed(
-    '-i',
+  await regexFileAsync(
     /"current_key": "(.*?)"/,
     `"current_key": "${googleAndroidApiKey}"`,
-    `${shellPath}app/google-services.json`
+    path.join(shellPath, 'app', 'google-services.json')
   );
-  shell.sed(
-    '-i',
+  await regexFileAsync(
     /"certificate_hash": "(.*?)"/,
     `"certificate_hash": "${certificateHash}"`,
-    `${shellPath}app/google-services.json`
+    path.join(shellPath, 'app', 'google-services.json')
   );
 
   if (skipBuild) {
@@ -715,16 +708,18 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
   }
 
   if (keystore && alias && keystorePassword && keyPassword) {
-    await spawnAsync(`/bin/rm`, [`shell-unaligned.apk`]);
-    await spawnAsync(`/bin/rm`, [`shell.apk`]);
+    try {
+      await fs.remove(`shell-unaligned.apk`);
+      await fs.remove(`shell.apk`);
+    } catch (e) {}
     await spawnAsyncThrowError(`./gradlew`, [`assembleProdRelease`], {
       stdio: 'inherit',
       cwd: shellPath,
     });
-    await spawnAsync(`/bin/cp`, [
-      `${shellPath}app/build/outputs/apk/app-prod-release-unsigned.apk`,
-      `shell-unaligned.apk`,
-    ]);
+    await fs.copy(
+      path.join(shellPath, 'app', 'build', 'outputs', 'apk', 'app-prod-release-unsigned.apk'),
+      `shell-unaligned.apk`
+    );
     await spawnAsync(`jarsigner`, [
       '-verbose',
       '-sigalg',
@@ -746,7 +741,9 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
       'shell-unaligned.apk',
       'shell.apk',
     ]);
-    await spawnAsync(`/bin/rm`, ['shell-unaligned.apk']);
+    try {
+      await fs.remove('shell-unaligned.apk');
+    } catch (e) {}
     await spawnAsync(`jarsigner`, [
       '-verify',
       '-verbose',
@@ -755,20 +752,22 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
       keystore,
       'shell.apk',
     ]);
-    await spawnAsyncThrowError(`/bin/cp`, [
+    await fs.copy(
       'shell.apk',
-      outputFile || '/tmp/shell-signed.apk',
-    ]);
+      outputFile || '/tmp/shell-signed.apk'
+    );
   } else {
-    await spawnAsync(`/bin/cp`, ['../android/debug.keystore', `${shellPath}/`]);
-    await spawnAsync(`/bin/rm`, ['shell-debug.apk']);
+    await fs.copy(path.join(androidSrcPath, 'debug.keystore'), path.join(shellPath, 'debug.keystore'));
+    try {
+      await fs.remove('shell-debug.apk');
+    } catch (e) {}
     await spawnAsyncThrowError(`./gradlew`, ['assembleDevRemoteKernelDebug'], {
       stdio: 'inherit',
       cwd: shellPath,
     });
-    await spawnAsyncThrowError(`/bin/cp`, [
-      `${shellPath}app/build/outputs/apk/app-devRemoteKernel-debug.apk`,
-      `/tmp/shell-debug.apk`,
-    ]);
+    await fs.copy(
+      path.join(shellPath, 'app', 'build', 'outputs', 'apk', 'app-devRemoteKernel-debug.apk'),
+      `/tmp/shell-debug.apk`
+    );
   }
 };

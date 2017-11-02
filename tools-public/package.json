@@ -15,6 +15,8 @@
     "@expo/mux": "^1.0.6",
     "@exponent/json-file": "^5.2.0",
     "@exponent/spawn-async": "^1.2.4",
+    "fs-extra": "^4.0.2",
+    "globby": "^6.1.0",
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-shell": "^0.5.2",
     "instapromise": "^2.0.7",
@@ -24,6 +26,7 @@
     "promise-props": "^1.0.0",
     "replace-string": "^1.1.0",
     "request": "^2.72.0",
+    "rimraf": "^2.6.2",
     "shelljs": "^0.7.0",
     "username": "^2.2.2",
     "xdl": "^43.0.1"
