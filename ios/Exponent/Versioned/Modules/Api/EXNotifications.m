@@ -50,8 +50,8 @@ EX_EXPORT_SCOPED_MODULE(ExponentNotifications, RemoteNotificationManager);
 }
 
 RCT_REMAP_METHOD(getDevicePushTokenAsync,
-                 config:(NSDictionary *)config
-                 getDevicePushTokenAsyncWithResolver:(RCTPromiseResolveBlock)resolve
+                 getDevicePushTokenWithConfig: (__unused NSDictionary *)config
+                 resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
   if (![_bridge.scopedModules.constants.appOwnership isEqualToString:@"standalone"]) {
