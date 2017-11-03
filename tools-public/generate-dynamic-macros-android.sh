@@ -3,12 +3,15 @@
 # This is used by android-shell-app.js
 set -eo pipefail
 
-if [ -f /etc/profile ]; then
-  source /etc/profile >/dev/null
-fi
+# Initialize the shell if we aren't already running in a terminal (initialize just once)
+if [[ -z "$TERM" ]] || [[ $TERM == "dumb" ]]; then
+  if [ -f /etc/profile ]; then
+    source /etc/profile >/dev/null
+  fi
 
-if [ -f ~/.bash_profile ]; then
-  source ~/.bash_profile >/dev/null
+  if [ -f ~/.bash_profile ]; then
+    source ~/.bash_profile >/dev/null
+  fi
 fi
 
 pushd ../../tools-public/
