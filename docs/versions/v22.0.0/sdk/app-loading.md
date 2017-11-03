@@ -39,7 +39,7 @@ export default class App extends React.Component {
     );
   }
 
-  async _cacheResourcesAsync() {
+  _cacheResourcesAsync() {
     const images = [
       require('./assets/images/expo-icon.png'),
       require('./assets/images/slack-icon.png'),
