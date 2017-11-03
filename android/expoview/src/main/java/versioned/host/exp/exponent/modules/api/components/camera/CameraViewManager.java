@@ -1,5 +1,6 @@
 package versioned.host.exp.exponent.modules.api.components.camera;
 
+import android.Manifest;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -30,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 
 import host.exp.exponent.utils.ExpFileUtils;
+import host.exp.expoview.Exponent;
 
 public class CameraViewManager extends ViewGroupManager<ExpoCameraView> {
 
@@ -158,12 +160,23 @@ public class CameraViewManager extends ViewGroupManager<ExpoCameraView> {
     }
   }
 
-  public void record(ReadableMap options, Promise promise) {
-    if (mCameraView.isCameraOpened()) {
-      mCameraView.record(options, promise);
-    } else {
-      promise.reject("E_CAMERA_UNAVAILABLE", "Camera is not running");
-    }
+  public void record(final ReadableMap options, final Promise promise) {
+    Exponent.getInstance().getPermissions(new Exponent.PermissionsListener() {
+      @Override
+      public void permissionsGranted() {
+        if (mCameraView.isCameraOpened()) {
+          mCameraView.record(options, promise);
+        } else {
+          promise.reject("E_CAMERA_UNAVAILABLE", "Camera is not running");
+        }
+      }
+
+      @Override
+      public void permissionsDenied() {
+        promise.reject(new SecurityException("User rejected audio permissions"));
+      }
+    }, new String[]{Manifest.permission.RECORD_AUDIO});
+
   }
 
   public void stopRecording() {
