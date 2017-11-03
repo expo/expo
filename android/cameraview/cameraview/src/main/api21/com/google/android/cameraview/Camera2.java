@@ -42,6 +42,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -193,6 +194,8 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
 
     CaptureRequest.Builder mPreviewRequestBuilder;
 
+    Set<String> mAvailableCameras = new HashSet<>();
+
     private ImageReader mStillImageReader;
 
     private ImageReader mScanImageReader;
@@ -232,6 +235,19 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
     Camera2(Callback callback, PreviewImpl preview, Context context) {
         super(callback, preview);
         mCameraManager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
+        mCameraManager.registerAvailabilityCallback(new CameraManager.AvailabilityCallback() {
+            @Override
+            public void onCameraAvailable(@NonNull String cameraId) {
+                super.onCameraAvailable(cameraId);
+                mAvailableCameras.add(cameraId);
+            }
+
+            @Override
+            public void onCameraUnavailable(@NonNull String cameraId) {
+                super.onCameraUnavailable(cameraId);
+                mAvailableCameras.remove(cameraId);
+            }
+        }, null);
         mImageFormat = mIsScanning ? ImageFormat.YUV_420_888 : ImageFormat.JPEG;
         mPreview.setCallback(new PreviewImpl.Callback() {
             @Override
@@ -672,7 +688,11 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
      */
     private void startOpeningCamera() {
         try {
-            mCameraManager.openCamera(mCameraId, mCameraDeviceCallback, null);
+            if (mAvailableCameras.contains(String.valueOf(mCameraId))) {
+                mCameraManager.openCamera(mCameraId, mCameraDeviceCallback, null);
+            } else {
+                mCallback.onMountError();
+            }
         } catch (CameraAccessException e) {
             throw new RuntimeException("Failed to open camera: " + mCameraId, e);
         }

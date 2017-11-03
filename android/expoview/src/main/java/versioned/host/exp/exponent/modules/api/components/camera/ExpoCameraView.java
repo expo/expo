@@ -74,6 +74,11 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
       }
 
       @Override
+      public void onMountError(CameraView cameraView) {
+        mEventEmitter.receiveEvent(getId(), CameraViewManager.Events.EVENT_ON_MOUNT_ERROR.toString(), Arguments.createMap());
+      }
+
+      @Override
       public void onPictureTaken(CameraView cameraView, final byte[] data) {
         final Promise promise = mPictureTakenPromises.poll();
         final ReadableMap options = mPictureTakenOptions.remove(promise);

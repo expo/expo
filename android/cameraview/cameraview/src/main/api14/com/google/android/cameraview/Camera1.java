@@ -110,14 +110,20 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
             }
 
             @Override
-            public void onSurfaceDestroyed() { }
+            public void onSurfaceDestroyed() {
+              stop();
+            }
         });
     }
 
     @Override
     boolean start() {
         chooseCamera();
-        openCamera();
+        if (!openCamera()) {
+            mCallback.onMountError();
+            // returning false will result in invoking this method again
+            return true;
+        }
         if (mPreview.isReady()) {
             setUpPreview();
         }
@@ -130,9 +136,9 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
     void stop() {
         if (mCamera != null) {
             mCamera.stopPreview();
+            mCamera.setPreviewCallback(null);
         }
         mShowingPreview = false;
-        mCamera.setPreviewCallback(null);
         if (mMediaRecorder != null) {
             mMediaRecorder.stop();
             mMediaRecorder.release();
@@ -415,29 +421,34 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
         mCameraId = INVALID_CAMERA_ID;
     }
 
-    private void openCamera() {
+    private boolean openCamera() {
         if (mCamera != null) {
             releaseCamera();
         }
-        mCamera = Camera.open(mCameraId);
-        mCameraParameters = mCamera.getParameters();
-        // Supported preview sizes
-        mPreviewSizes.clear();
-        for (Camera.Size size : mCameraParameters.getSupportedPreviewSizes()) {
-            mPreviewSizes.add(new Size(size.width, size.height));
+        try {
+            mCamera = Camera.open(mCameraId);
+            mCameraParameters = mCamera.getParameters();
+            // Supported preview sizes
+            mPreviewSizes.clear();
+            for (Camera.Size size : mCameraParameters.getSupportedPreviewSizes()) {
+                mPreviewSizes.add(new Size(size.width, size.height));
+            }
+            // Supported picture sizes;
+            mPictureSizes.clear();
+            for (Camera.Size size : mCameraParameters.getSupportedPictureSizes()) {
+                mPictureSizes.add(new Size(size.width, size.height));
+            }
+            // AspectRatio
+            if (mAspectRatio == null) {
+                mAspectRatio = Constants.DEFAULT_ASPECT_RATIO;
+            }
+            adjustCameraParameters();
+            mCamera.setDisplayOrientation(calcDisplayOrientation(mDisplayOrientation));
+            mCallback.onCameraOpened();
+            return true;
+        } catch (RuntimeException e) {
+            return false;
         }
-        // Supported picture sizes;
-        mPictureSizes.clear();
-        for (Camera.Size size : mCameraParameters.getSupportedPictureSizes()) {
-            mPictureSizes.add(new Size(size.width, size.height));
-        }
-        // AspectRatio
-        if (mAspectRatio == null) {
-            mAspectRatio = Constants.DEFAULT_ASPECT_RATIO;
-        }
-        adjustCameraParameters();
-        mCamera.setDisplayOrientation(calcDisplayOrientation(mDisplayOrientation));
-        mCallback.onCameraOpened();
     }
 
     private AspectRatio chooseAspectRatio() {

@@ -35,6 +35,7 @@ public class CameraViewManager extends ViewGroupManager<ExpoCameraView> {
 
   public enum Events {
     EVENT_CAMERA_READY("onCameraReady"),
+    EVENT_ON_MOUNT_ERROR("onMountError"),
     EVENT_ON_BAR_CODE_READ("onBarCodeRead");
 
     private final String mName;
