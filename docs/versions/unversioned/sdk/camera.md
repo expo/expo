@@ -2,7 +2,9 @@
 title: Camera
 ---
 
-A React component that renders a preview for the device's either front or back camera. Camera's parameters like zoom, auto focus, white balance and flash mode are adjustable. With use of `Camera` one can also take photos and record videos that are saved to the app's cache. Only one Camera preview is supported by Expo right now.
+A React component that renders a preview for the device's either front or back camera. Camera's parameters like zoom, auto focus, white balance and flash mode are adjustable. With use of `Camera` one can also take photos and record videos that are saved to the app's cache. Morever, the component is also capable of detecting faces and bar codes appearing on the preview.
+
+> **Note**: Only one Camera preview is supported by Expo right now. When using navigation, the best practice is to unmount previously rendered `Camera` component so next screens can use camera without issues.
 
 Requires `Permissions.CAMERA`. Video recording requires `Permissions.AUDIO_RECORDING`.
 
@@ -105,6 +107,18 @@ Android only. A string representing aspect ratio of the preview, eg. `4:3`, `16:
 
 Callback invoked when camera preview has been set.
 
+- **onMountError** (_function_)
+
+Callback invoked when camera preview could not been started.
+
+- **onBarCodeRead (_function_)**
+
+Callback that is invoked when a bar code has been successfully read. The callback is provided with an Object of the shape `{ type: string, data: string }`, where the type refers to the bar code type that was scanned and the data is the information encoded in the bar code (in this case of QR codes, this is often a URL)
+
+- **barCodeTypes (_Array<string>_)**
+
+An array of bar code types. Usage: `Camera.Constants.BarCodeType.<codeType>` where `codeType` is one of the listed above. Default: all supported bar code types. For example: `barCodeTypes={[Camera.Constants.BarCodeType.qr]}
+
 ## Methods
 
 To use methods that Camera exposes one has to create a components `ref` and invoke them using it.
@@ -170,3 +184,28 @@ Android only. Get aspect ratios that are supported by the device and can be pass
 #### Returns
 
 Returns a Promise that resolves to an array of strings representing ratios, eg. `['4:3', '1:1']`.
+
+# Supported bar code formats
+
+| Bar code format | iOS | Android |
+| --------------- | --- | ------- |
+| aztec           | Yes | Yes     |
+| codabar         | No  | Yes     |
+| code39          | Yes | Yes     |
+| code93          | Yes | Yes     |
+| code128         | Yes | Yes     |
+| code138         | Yes | No      |
+| code39mod43     | Yes | No      |
+| datamatrix      | Yes | Yes     |
+| ean13           | Yes | Yes     |
+| ean8            | Yes | Yes     |
+| interleaved2of5 | Yes | Yes     |
+| itf14           | Yes | No      |
+| maxicode        | No  | Yes     |
+| pdf417          | Yes | Yes     |
+| rss14           | No  | Yes     |
+| rssexpanded     | No  | Yes     |
+| upc_a           | No  | Yes     |
+| upc_e           | Yes | Yes     |
+| upc_ean         | No  | Yes     |
+| qr              | Yes | Yes     |
