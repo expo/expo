@@ -11,12 +11,13 @@ That said, each version is better than the last, so you might want to stay up to
 
 **Upgrade guides vary depending on the sdkVersion, so follow the guide in the release notes**
 
-We post our release notes to [Exposition](https://blog.expo.io/), for example the [v21.0.0 release notes](https://blog.expo.io/expo-sdk-21-0-0-is-now-available-be33b79921b7). If you're upgrading by more than one major version, we recommend following the upgrade guide for each major version between your current version and your target.
+We post our release notes to [Exposition](https://blog.expo.io/), for example the [v22.0.0 release notes](https://blog.expo.io/expo-sdk-v22-0-0-is-now-available-7745bfe97fc6). If you're upgrading by more than one major version, we recommend following the upgrade guide for each major version between your current version and your target.
 
 If you are running ExpoKit inside a native project, upgrading will require extra steps. ExpoKit is currently an alpha feature and upgrading difficulty will vary between versions, but there is some information [here](expokit.html#upgrading-expokit).
 
 ## Past Release Notes
 
+- [22.0.0](https://blog.expo.io/expo-sdk-v22-0-0-is-now-available-7745bfe97fc6)
 - [21.0.0](https://blog.expo.io/expo-sdk-21-0-0-is-now-available-be33b79921b7)
 - [20.0.0](https://blog.expo.io/expo-sdk-v20-0-0-is-now-available-79f84232a9d1)
 - [19.0.0](https://blog.expo.io/expo-sdk-v19-0-0-is-now-available-821a62b58d3d)
