@@ -2,20 +2,27 @@
 
 package versioned.host.exp.exponent.modules.api;
 
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.provider.OpenableColumns;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -83,35 +90,114 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
     return constants;
   }
 
-  private File uriToFile(String uri) throws IOException {
-    File file = new File(Uri.parse(uri).getPath());
-    String fileCanonicalPath = file.getCanonicalPath();
-    if (fileCanonicalPath.startsWith(mScopedContext.getFilesDir().getCanonicalPath() + "/") ||
-        fileCanonicalPath.startsWith(mScopedContext.getCacheDir().getCanonicalPath() + "/")) {
-      return file;
+  private enum Permission {
+    READ, WRITE,
+  }
+
+  private File uriToFile(Uri uri) throws IOException {
+    return new File(uri.getPath());
+  }
+
+  private EnumSet<Permission> permissionsForPath(String path) {
+    try {
+      path = new File(path).getCanonicalPath();
+      String filesDir = mScopedContext.getFilesDir().getCanonicalPath();
+      if (path.startsWith(filesDir + "/")) {
+        return EnumSet.of(Permission.READ, Permission.WRITE);
+      }
+      if (filesDir.equals(path)) {
+        return EnumSet.of(Permission.READ, Permission.WRITE);
+      }
+      String cacheDir = mScopedContext.getCacheDir().getCanonicalPath();
+      if (path.startsWith(cacheDir + "/")) {
+        return EnumSet.of(Permission.READ, Permission.WRITE);
+      }
+      if (cacheDir.equals(path)) {
+        return EnumSet.of(Permission.READ, Permission.WRITE);
+      }
+    } catch (IOException e) {
+      return EnumSet.noneOf(Permission.class);
     }
-    throw new IOException("Invalid Filesystem URI '" + uri + "', make sure it's in the app's scope.");
+    return EnumSet.noneOf(Permission.class);
+  }
+
+  private EnumSet<Permission> permissionsForUri(Uri uri) {
+    if ("content".equals(uri.getScheme())) {
+      return EnumSet.of(Permission.READ);
+    }
+    if ("file".equals(uri.getScheme())) {
+      return permissionsForPath(uri.getPath());
+    }
+    return EnumSet.noneOf(Permission.class);
+  }
+
+  // For now we only need to ensure one permission at a time, this allows easier error message strings,
+  // we can generalize this when needed later
+
+  private void ensurePermission(Uri uri, Permission permission, String errorMsg) throws IOException {
+    if (!permissionsForUri(uri).contains(permission)) {
+      throw new IOException(errorMsg);
+    }
+  }
+
+  private void ensurePermission(Uri uri, Permission permission) throws IOException {
+    if (permission.equals(Permission.READ)) {
+      ensurePermission(uri, permission, "Location '" + uri + "' isn't readable.");
+    }
+    if (permission.equals(Permission.WRITE)) {
+      ensurePermission(uri, permission, "Location '" + uri + "' isn't writable.");
+    }
+    ensurePermission(uri, permission, "Location '" + uri + "' doesn't have permission '" + permission.name() + "'.");
   }
 
   @ReactMethod
-  public void getInfoAsync(String uri, ReadableMap options, Promise promise) {
+  public void getInfoAsync(String uriStr, ReadableMap options, Promise promise) {
     try {
-      File file = uriToFile(uri);
-      WritableMap result = Arguments.createMap();
-      if (file.exists()) {
-        result.putBoolean("exists", true);
-        result.putBoolean("isDirectory", file.isDirectory());
-        result.putString("uri", ExpFileUtils.uriFromFile(file).toString());
-        if (options.hasKey("md5") && options.getBoolean("md5")) {
-          result.putString("md5", ExpFileUtils.md5(file));
+      Uri uri = Uri.parse(uriStr);
+      ensurePermission(uri, Permission.READ);
+      if ("file".equals(uri.getScheme())) {
+        File file = uriToFile(uri);
+        WritableMap result = Arguments.createMap();
+        if (file.exists()) {
+          result.putBoolean("exists", true);
+          result.putBoolean("isDirectory", file.isDirectory());
+          result.putString("uri", ExpFileUtils.uriFromFile(file).toString());
+          if (options.hasKey("md5") && options.getBoolean("md5")) {
+            result.putString("md5", ExpFileUtils.md5(file));
+          }
+          result.putDouble("size", file.length());
+          result.putDouble("modificationTime", 0.001 * file.lastModified());
+          promise.resolve(result);
+        } else {
+          result.putBoolean("exists", false);
+          result.putBoolean("isDirectory", false);
+          promise.resolve(result);
         }
-        result.putDouble("size", file.length());
-        result.putDouble("modificationTime", 0.001 * file.lastModified());
-        promise.resolve(result);
+      } else if ("content".equals(uri.getScheme())) {
+        WritableMap result = Arguments.createMap();
+        try {
+          InputStream is = mScopedContext.getContentResolver().openInputStream(uri);
+          if (is == null) {
+            throw new FileNotFoundException();
+          }
+          result.putBoolean("exists", true);
+          result.putBoolean("isDirectory", false);
+          result.putString("uri", uri.toString());
+          // NOTE: `.available()` is supposedly not a reliable source of size info, but it's been
+          //       more reliable than querying `OpenableColumns.SIZE` in practice in tests ¯\_(ツ)_/¯
+          result.putDouble("size", is.available());
+          if (options.hasKey("md5") && options.getBoolean("md5")) {
+            byte[] md5bytes = DigestUtils.md5(is);
+            result.putString("md5", String.valueOf(Hex.encodeHex(md5bytes)));
+          }
+          promise.resolve(result);
+        } catch (FileNotFoundException e)  {
+          result.putBoolean("exists", false);
+          result.putBoolean("isDirectory", false);
+          promise.resolve(result);
+        }
       } else {
-        result.putBoolean("exists", false);
-        result.putBoolean("isDirectory", false);
-        promise.resolve(result);
+        throw new IOException("Unsupported scheme for location '" + uri +  "'.");
       }
     } catch (Exception e) {
       EXL.e(TAG, e.getMessage());
@@ -120,9 +206,15 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void readAsStringAsync(String uri, ReadableMap options, Promise promise) {
+  public void readAsStringAsync(String uriStr, ReadableMap options, Promise promise) {
     try {
-      promise.resolve(IOUtils.toString(new FileInputStream(uriToFile(uri))));
+      Uri uri = Uri.parse(uriStr);
+      ensurePermission(uri, Permission.READ);
+      if ("file".equals(uri.getScheme())) {
+        promise.resolve(IOUtils.toString(new FileInputStream(uriToFile(uri))));
+      } else {
+        throw new IOException("Unsupported scheme for location '" + uri +  "'.");
+      }
     } catch (Exception e) {
       EXL.e(TAG, e.getMessage());
       promise.reject(e);
@@ -130,34 +222,47 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void writeAsStringAsync(String uri, String string, ReadableMap options, Promise promise) {
+  public void writeAsStringAsync(String uriStr, String string, ReadableMap options, Promise promise) {
     try {
-      FileOutputStream out = new FileOutputStream(uriToFile(uri));
-      OutputStreamWriter writer = new OutputStreamWriter(out);
-      writer.write(string);
-      writer.close();
-      out.close();
-      promise.resolve(null);
-    } catch (Exception e) {
-      EXL.e(TAG, e.getMessage());
-      promise.reject(e);
-    }
-  }
-
-  @ReactMethod
-  public void deleteAsync(String uri, ReadableMap options, Promise promise) {
-    try {
-      File file = uriToFile(uri);
-      if (file.exists()) {
-        FileUtils.forceDelete(file);
+      Uri uri = Uri.parse(uriStr);
+      ensurePermission(uri, Permission.WRITE);
+      if ("file".equals(uri.getScheme())) {
+        FileOutputStream out = new FileOutputStream(uriToFile(uri));
+        OutputStreamWriter writer = new OutputStreamWriter(out);
+        writer.write(string);
+        writer.close();
+        out.close();
         promise.resolve(null);
       } else {
-        if (options.hasKey("idempotent") && options.getBoolean("idempotent")) {
+        throw new IOException("Unsupported scheme for location '" + uri +  "'.");
+      }
+    } catch (Exception e) {
+      EXL.e(TAG, e.getMessage());
+      promise.reject(e);
+    }
+  }
+
+  @ReactMethod
+  public void deleteAsync(String uriStr, ReadableMap options, Promise promise) {
+    try {
+      Uri uri = Uri.parse(uriStr);
+      Uri appendedUri = Uri.withAppendedPath(uri, "..");
+      ensurePermission(appendedUri, Permission.WRITE, "Location '" + uri + "' isn't deletable.");
+      if ("file".equals(uri.getScheme())) {
+        File file = uriToFile(uri);
+        if (file.exists()) {
+          FileUtils.forceDelete(file);
           promise.resolve(null);
         } else {
-          promise.reject("E_FILE_NOT_FOUND",
-              "File '" + uri + "' could not be deleted because it could not be found");
+          if (options.hasKey("idempotent") && options.getBoolean("idempotent")) {
+            promise.resolve(null);
+          } else {
+            promise.reject("E_FILE_NOT_FOUND",
+                "File '" + uri + "' could not be deleted because it could not be found");
+          }
         }
+      } else {
+        throw new IOException("Unsupported scheme for location '" + uri +  "'.");
       }
     } catch (Exception e) {
       EXL.e(TAG, e.getMessage());
@@ -172,19 +277,26 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
         promise.reject("E_MISSING_PARAMETER", "`FileSystem.moveAsync` needs a `from` path.");
         return;
       }
+      Uri fromUri = Uri.parse(options.getString("from"));
+      ensurePermission(Uri.withAppendedPath(fromUri, ".."), Permission.WRITE, "Location '" + fromUri + "' isn't movable.");
       if (!options.hasKey("to")) {
         promise.reject("E_MISSING_PARAMETER", "`FileSystem.moveAsync` needs a `to` path.");
         return;
       }
+      Uri toUri = Uri.parse(options.getString("to"));
+      ensurePermission(toUri, Permission.WRITE);
 
-      File from = uriToFile(options.getString("from"));
-      File to = uriToFile(options.getString("to"));
-      if (from.renameTo(to)) {
-        promise.resolve(null);
+      if ("file".equals(fromUri.getScheme())) {
+        File from = uriToFile(fromUri);
+        File to = uriToFile(toUri);
+        if (from.renameTo(to)) {
+          promise.resolve(null);
+        } else {
+          promise.reject("E_FILE_NOT_MOVED",
+              "File '" + fromUri + "' could not be moved to '" + toUri + "'");
+        }
       } else {
-        promise.reject("E_FILE_NOT_MOVED",
-            "File '" + options.getString("from") + "' could not be moved to '" +
-                options.getString("to") + "'");
+        throw new IOException("Unsupported scheme for location '" + fromUri +  "'.");
       }
     } catch (Exception e) {
       EXL.e(TAG, e.getMessage());
@@ -196,62 +308,35 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
   public void copyAsync(ReadableMap options, Promise promise) {
     try {
       if (!options.hasKey("from")) {
-        promise.reject("E_MISSING_PARAMETER", "`FileSystem.copyAsync` needs a `from` path.");
+        promise.reject("E_MISSING_PARAMETER", "`FileSystem.moveAsync` needs a `from` path.");
         return;
       }
+      Uri fromUri = Uri.parse(options.getString("from"));
+      ensurePermission(fromUri, Permission.READ);
       if (!options.hasKey("to")) {
-        promise.reject("E_MISSING_PARAMETER", "`FileSystem.copyAsync` needs a `to` path.");
+        promise.reject("E_MISSING_PARAMETER", "`FileSystem.moveAsync` needs a `to` path.");
         return;
       }
+      Uri toUri = Uri.parse(options.getString("to"));
+      ensurePermission(toUri, Permission.WRITE);
 
-      File from = uriToFile(options.getString("from"));
-      File to = uriToFile(options.getString("to"));
-      if (from.isDirectory()) {
-        FileUtils.copyDirectory(from, to);
-        promise.resolve(null);
-      } else {
-        FileUtils.copyFile(from, to);
-        promise.resolve(null);
-      }
-    } catch (Exception e) {
-      EXL.e(TAG, e.getMessage());
-      promise.reject(e);
-    }
-  }
-
-  @ReactMethod
-  public void makeDirectoryAsync(String uri, ReadableMap options, Promise promise) {
-    try {
-      File file = uriToFile(uri);
-      boolean success = options.hasKey("intermediates") && options.getBoolean("intermediates") ?
-          file.mkdirs() :
-          file.mkdir();
-      if (success) {
-        promise.resolve(null);
-      } else {
-        promise.reject("E_DIRECTORY_NOT_CREATED",
-            "Directory '" + uri + "' could not be created.");
-      }
-    } catch (Exception e) {
-      EXL.e(TAG, e.getMessage());
-      promise.reject(e);
-    }
-  }
-
-  @ReactMethod
-  public void readDirectoryAsync(String uri, ReadableMap options, Promise promise) {
-    try {
-      File file = uriToFile(uri);
-      File[] children = file.listFiles();
-      if (children != null) {
-        WritableArray result = Arguments.createArray();
-        for (File child : children) {
-          result.pushString(child.getName());
+      if ("file".equals(fromUri.getScheme())) {
+        File from = uriToFile(fromUri);
+        File to = uriToFile(toUri);
+        if (from.isDirectory()) {
+          FileUtils.copyDirectory(from, to);
+          promise.resolve(null);
+        } else {
+          FileUtils.copyFile(from, to);
+          promise.resolve(null);
         }
-        promise.resolve(result);
+      } else if ("content".equals(fromUri.getScheme())) {
+        InputStream in = mScopedContext.getContentResolver().openInputStream(fromUri);
+        OutputStream out = new FileOutputStream(uriToFile(toUri));
+        IOUtils.copy(in, out);
+        promise.resolve(null);
       } else {
-        promise.reject("E_DIRECTORY_NOT_READ",
-            "Directory '" + uri + "' could not be read.");
+        throw new IOException("Unsupported scheme for location '" + fromUri +  "'.");
       }
     } catch (Exception e) {
       EXL.e(TAG, e.getMessage());
@@ -260,98 +345,161 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void downloadAsync(String url, final String uri, final ReadableMap options, final Promise promise) {
-    OkHttpClient client = OkHttpClientProvider.getOkHttpClient();
-    Request request = new Request.Builder().url(url).build();
-    client.newCall(request).enqueue(new Callback() {
-      @Override
-      public void onFailure(Call call, IOException e) {
-        EXL.e(TAG, e.getMessage());
-        promise.reject(e);
+  public void makeDirectoryAsync(String uriStr, ReadableMap options, Promise promise) {
+    try {
+      Uri uri = Uri.parse(uriStr);
+      ensurePermission(uri, Permission.WRITE);
+      if ("file".equals(uri.getScheme())) {
+        File file = uriToFile(uri);
+        boolean success = options.hasKey("intermediates") && options.getBoolean("intermediates") ?
+            file.mkdirs() :
+            file.mkdir();
+        if (success) {
+          promise.resolve(null);
+        } else {
+          promise.reject("E_DIRECTORY_NOT_CREATED",
+              "Directory '" + uri + "' could not be created.");
+        }
+      } else {
+        throw new IOException("Unsupported scheme for location '" + uri +  "'.");
       }
+    } catch (Exception e) {
+      EXL.e(TAG, e.getMessage());
+      promise.reject(e);
+    }
+  }
 
-      @Override
-      public void onResponse(Call call, Response response) throws IOException {
-        try {
-          File file = uriToFile(uri);
-          file.delete();
-          BufferedSink sink = Okio.buffer(Okio.sink(file));
-          sink.writeAll(response.body().source());
-          sink.close();
-
-          WritableMap result = Arguments.createMap();
-          result.putString("uri", ExpFileUtils.uriFromFile(file).toString());
-          if (options.hasKey("md5") && options.getBoolean("md5")) {
-            result.putString("md5", ExpFileUtils.md5(file));
+  @ReactMethod
+  public void readDirectoryAsync(String uriStr, ReadableMap options, Promise promise) {
+    try {
+      Uri uri = Uri.parse(uriStr);
+      ensurePermission(uri, Permission.READ);
+      if ("file".equals(uri.getScheme())) {
+        File file = uriToFile(uri);
+        File[] children = file.listFiles();
+        if (children != null) {
+          WritableArray result = Arguments.createArray();
+          for (File child : children) {
+            result.pushString(child.getName());
           }
-          result.putInt("status", response.code());
-          result.putMap("headers", translateHeaders(response.headers()));
           promise.resolve(result);
-        } catch (Exception e) {
-          EXL.e(TAG, e.getMessage());
-          promise.reject(e);
+        } else {
+          promise.reject("E_DIRECTORY_NOT_READ",
+              "Directory '" + uri + "' could not be read.");
         }
+      } else {
+        throw new IOException("Unsupported scheme for location '" + uri +  "'.");
       }
-    });
+    } catch (Exception e) {
+      EXL.e(TAG, e.getMessage());
+      promise.reject(e);
+    }
   }
 
   @ReactMethod
-  public void downloadResumableStartAsync(String url, final String fileUri, final String uuid, final ReadableMap options, final String resumeData, final Promise promise) {
-    final boolean isResume = resumeData != null;
+  public void downloadAsync(String url, final String uriStr, final ReadableMap options, final Promise promise) {
+    try {
+      final Uri uri = Uri.parse(uriStr);
+      ensurePermission(uri, Permission.WRITE);
+      if ("file".equals(uri.getScheme())) {
+        OkHttpClient client = OkHttpClientProvider.getOkHttpClient();
+        Request request = new Request.Builder().url(url).build();
+        client.newCall(request).enqueue(new Callback() {
+          @Override
+          public void onFailure(Call call, IOException e) {
+            EXL.e(TAG, e.getMessage());
+            promise.reject(e);
+          }
 
-    final ProgressListener progressListener = new ProgressListener() {
-      long mLastUpdate = -1;
+          @Override
+          public void onResponse(Call call, Response response) throws IOException {
+            File file = uriToFile(uri);
+            file.delete();
+            BufferedSink sink = Okio.buffer(Okio.sink(file));
+            sink.writeAll(response.body().source());
+            sink.close();
 
-      @Override public void update(long bytesRead, long contentLength, boolean done) {
-        WritableMap downloadProgress = Arguments.createMap();
-        WritableMap downloadProgressData = Arguments.createMap();
-        long totalBytesWritten = isResume ? bytesRead + Long.parseLong(resumeData):bytesRead;
-        long totalBytesExpectedToWrite = isResume ? contentLength + Long.parseLong(resumeData):contentLength;
-        long currentTime = System.currentTimeMillis();
+            WritableMap result = Arguments.createMap();
+            result.putString("uri", ExpFileUtils.uriFromFile(file).toString());
+            if (options.hasKey("md5") && options.getBoolean("md5")) {
+              result.putString("md5", ExpFileUtils.md5(file));
+            }
+            result.putInt("status", response.code());
+            result.putMap("headers", translateHeaders(response.headers()));
+            promise.resolve(result);
+          }
+        });
+      } else {
+        throw new IOException("Unsupported scheme for location '" + uri +  "'.");
+      }
+    } catch (Exception e) {
+      EXL.e(TAG, e.getMessage());
+      promise.reject(e);
+    }
+  }
 
-        // Throttle events. Sending too many events will block the JS event loop.
-        // Make sure to send the last event when we're at 100%.
-        if (currentTime > mLastUpdate + MIN_EVENT_DT_MS || totalBytesWritten == totalBytesExpectedToWrite) {
-          mLastUpdate = currentTime;
-          downloadProgressData.putDouble("totalBytesWritten", totalBytesWritten);
-          downloadProgressData.putDouble("totalBytesExpectedToWrite", totalBytesExpectedToWrite);
-          downloadProgress.putString("uuid", uuid);
-          downloadProgress.putMap("data", downloadProgressData);
-          getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class)
-              .emit(EXDownloadProgressEventName, downloadProgress);
+  @ReactMethod
+  public void downloadResumableStartAsync(String url, final String fileUriStr, final String uuid, final ReadableMap options, final String resumeData, final Promise promise) {
+    try {
+      final Uri fileUri = Uri.parse(fileUriStr);
+      if (!("file".equals(fileUri.getScheme()))) {
+        throw new IOException("Unsupported scheme for location '" + fileUri +  "'.");
+      }
+
+      final boolean isResume = resumeData != null;
+
+      final ProgressListener progressListener = new ProgressListener() {
+        long mLastUpdate = -1;
+
+        @Override public void update(long bytesRead, long contentLength, boolean done) {
+          WritableMap downloadProgress = Arguments.createMap();
+          WritableMap downloadProgressData = Arguments.createMap();
+          long totalBytesWritten = isResume ? bytesRead + Long.parseLong(resumeData):bytesRead;
+          long totalBytesExpectedToWrite = isResume ? contentLength + Long.parseLong(resumeData):contentLength;
+          long currentTime = System.currentTimeMillis();
+
+          // Throttle events. Sending too many events will block the JS event loop.
+          // Make sure to send the last event when we're at 100%.
+          if (currentTime > mLastUpdate + MIN_EVENT_DT_MS || totalBytesWritten == totalBytesExpectedToWrite) {
+            mLastUpdate = currentTime;
+            downloadProgressData.putDouble("totalBytesWritten", totalBytesWritten);
+            downloadProgressData.putDouble("totalBytesExpectedToWrite", totalBytesExpectedToWrite);
+            downloadProgress.putString("uuid", uuid);
+            downloadProgress.putMap("data", downloadProgressData);
+            getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class)
+                .emit(EXDownloadProgressEventName, downloadProgress);
+          }
+        }
+      };
+
+      OkHttpClient client = new OkHttpClient.Builder()
+          .addNetworkInterceptor(new Interceptor() {
+            @Override public Response intercept(Chain chain) throws IOException {
+              Response originalResponse = chain.proceed(chain.request());
+              return originalResponse.newBuilder()
+                  .body(new ProgressResponseBody(originalResponse.body(), progressListener))
+                  .build();
+            }
+          })
+          .build();
+
+      Request.Builder requestBuilder = new Request.Builder();
+      if (isResume) {
+        requestBuilder.addHeader("Range", "bytes=" + resumeData + "-");
+      }
+
+      if (options.hasKey(HEADER_KEY)) {
+        final HashMap<String, Object> headers = options.getMap(HEADER_KEY).toHashMap();
+        for (String key: headers.keySet()) {
+          requestBuilder.addHeader(key, headers.get(key).toString());
         }
       }
-    };
 
-    OkHttpClient client = new OkHttpClient.Builder()
-      .addNetworkInterceptor(new Interceptor() {
-        @Override public Response intercept(Chain chain) throws IOException {
-            Response originalResponse = chain.proceed(chain.request());
-            return originalResponse.newBuilder()
-              .body(new ProgressResponseBody(originalResponse.body(), progressListener))
-              .build();
-          }
-        })
-      .build();
-    
-    Request.Builder requestBuilder = new Request.Builder();
-    if (isResume) {
-      requestBuilder.addHeader("Range", "bytes=" + resumeData + "-");
-    }
+      Request request = requestBuilder.url(url).build();
+      Call call = client.newCall(request);
+      DownloadResumable downloadResumable = new DownloadResumable(uuid, url, fileUri, call);
+      this.mDownloadResumableMap.put(uuid, downloadResumable);
 
-    if (options.hasKey(HEADER_KEY)) {
-      final HashMap<String, Object> headers = options.getMap(HEADER_KEY).toHashMap();
-      for (String key: headers.keySet()) {
-        requestBuilder.addHeader(key, headers.get(key).toString());
-      }
-    }
-
-    Request request = requestBuilder.url(url).build();
-    Call call = client.newCall(request);
-    DownloadResumable downloadResumable = new DownloadResumable(uuid, url, fileUri, call);
-    this.mDownloadResumableMap.put(uuid, downloadResumable);
-    
-    try {
       File file = uriToFile(fileUri);
       DownloadResumableTaskParams params = new DownloadResumableTaskParams(options, call, file, isResume, promise);
       DownloadResumableTask task = new DownloadResumableTask();
@@ -465,10 +613,10 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
   private static class DownloadResumable {
     public final String uuid;
     public final String url;
-    public final String fileUri;
+    public final Uri fileUri;
     public final Call call;
 
-    public DownloadResumable(String uuid, String url, String fileUri, Call call) {
+    public DownloadResumable(String uuid, String url, Uri fileUri, Call call) {
       this.uuid = uuid;
       this.url = url;
       this.fileUri = fileUri;
