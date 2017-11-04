@@ -91,7 +91,9 @@ Your app can be opened from the Expo client or in a standalone app, and it can b
 
 ### Detached ExpoKit apps
 
-For people who run `exp detach` without the splash API, we add `isSplashScreenDisabled: YES` in your EXShell plist (iOS) to preserve the behavior that you see in the Expo client, using the `loading` API. If you later decide to enable the splash API in your detached project, delete this key.
+If you run `exp detach` on iOS and your app already uses the splash API, the resulting ExpoKit project will contain an Interface Builder launch screen file configured correctly for your app. After this, if you want to make changes to your app's splash screen, just edit the Interface Builder file directly.
+
+For people who run `exp detach` without the splash API, we add `isSplashScreenDisabled: YES` in your EXShell plist (iOS). If you later decide to use a splash screen in your detached iOS project, add an Interface Builder file called `LaunchScreen` to your Xcode project, and delete this key from the plist.
 
 ### Known issues
 
