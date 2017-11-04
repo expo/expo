@@ -1,8 +1,5 @@
 ---
 title: Upgrading Expo
-old_permalink: /versions/v12.0.0/guides/upgrading-expo.html
-previous___FILE: ./how-expo-works.md
-next___FILE: ./using-clojurescript.md
 ---
 
 It isn't strictly necessary to update your app when a new version of Expo is released. New versions of the Expo client are backwards compatible with apps published for previous versions. This means that you can download a new version of the Expo client and open apps that were published for previous versions and they will work perfectly.
