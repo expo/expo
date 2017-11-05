@@ -994,7 +994,7 @@ private:
                                " gl.texImage2D()!");
     } else if (jsArgc == 6) {
       // 6-argument version (no width, height, border)
-      throw std::runtime_error("EXGL: gl.texImage2D() does't support 6-argument"
+      throw std::runtime_error("EXGL: gl.texImage2D() doesn't support 6-argument"
                                " version yet!");
     } else {
       throw std::runtime_error("EXGL: Invalid number of arguments to gl.texImage2D()!");
