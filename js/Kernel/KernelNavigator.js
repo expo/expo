@@ -115,7 +115,7 @@ class KernelNavigator extends React.Component {
         this.props.dispatch(BrowserActions.navigateToUrlAsync(this.props.shellManifestUrl));
       } else if (this.props.foregroundTaskUrl) {
         let urlToRefresh = this.props.foregroundTaskUrl;
-        await this.props.dispatch(BrowserActions.foregroundHomeAsync(true));
+        await this.props.dispatch(BrowserActions.foregroundHomeAsync({ clearTasks: true }));
         this._cleanUnusedBrowserRoutes();
         ExponentKernel.openURL(urlToRefresh);
       }
