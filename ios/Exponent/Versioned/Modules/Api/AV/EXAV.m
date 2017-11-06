@@ -3,6 +3,7 @@
 #import <AVFoundation/AVFoundation.h>
 
 #import <React/RCTUIManager.h>
+#import <React/RCTUIManagerUtils.h>
 #import <React/RCTUtils.h>
 
 #import "EXAV.h"

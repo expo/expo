@@ -5,6 +5,7 @@
 #import <React/RCTComponent.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTUIManagerObserverCoordinator.h>
+#import <React/RCTUIManagerUtils.h>
 
 #import "RNGestureHandlerState.h"
 #import "RNGestureHandler.h"
