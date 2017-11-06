@@ -81,11 +81,14 @@ android {
   }
 }
 
-configurations.all {
-  resolutionStrategy {
-    force 'org.webkit:android-jsc:r216113'
-  }
-}
+// Don't use modern jsc-android since it still has some critical bugs that
+// crash applications when the string for the JS bundle is loaded and when
+// locale-specific date functions are called.
+// configurations.all {
+//   resolutionStrategy {
+//     force 'org.webkit:android-jsc:r216113'
+//   }
+// }
 
 dependencies {
   compile fileTree(dir: 'libs', include: ['*.jar'])
