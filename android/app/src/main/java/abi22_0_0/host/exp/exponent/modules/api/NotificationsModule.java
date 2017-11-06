@@ -60,13 +60,13 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void getDevicePushTokenAsync(final Promise promise) {
+  public void getDevicePushTokenAsync(final ReadableMap config, final Promise promise) {
     if (!Constants.isShellApp()) {
       promise.reject("getDevicePushTokenAsync is only accessible within standalone applications");
     }
     try {
       InstanceID instanceID = InstanceID.getInstance(this.getReactApplicationContext());
-      String gcmSenderId = Exponent.getInstance().getGCMSenderId();
+      String gcmSenderId = config.getString("gcmSenderId");
       if (gcmSenderId == null || gcmSenderId.length() == 0) {
         throw new InvalidParameterException("GCM Sender ID is null/empty");
       }
