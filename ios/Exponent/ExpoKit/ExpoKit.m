@@ -22,6 +22,7 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
 @interface ExpoKit () <CrashlyticsDelegate>
 {
   Class _rootViewControllerClass;
+  BOOL _hasConsumedLaunchNotification;
 }
 
 @property (nonatomic, nullable, strong) EXViewController *rootViewController;
@@ -46,10 +47,15 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
 {
   if (self = [super init]) {
     _rootViewControllerClass = [EXViewController class];
+    _hasConsumedLaunchNotification = NO;
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(_onKernelJSLoaded)
                                                  name:kEXKernelJSIsLoadedNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(_onKernelAppDidDisplay)
+                                                 name:kEXKernelAppDidDisplay
                                                object:nil];
   }
   return self;
@@ -113,17 +119,39 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
   [self setLaunchOptions:launchOptions];
 }
 
+#pragma mark - handling JS loads
+
 - (void)_onKernelJSLoaded
 {
-  NSDictionary *launchOptions = self.rootViewController.launchOptions;
-  NSDictionary *remoteNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
-  if (remoteNotification && ![EXShellManager sharedInstance].isDetached) {
-    [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager handleRemoteNotification:remoteNotification fromBackground:YES];
+  if (![EXShellManager sharedInstance].isShell) {
+    // see complementary call in _onKernelAppDidDisplay.
+    [self _sendRemoteOrLocalNotificationFromLaunch];
   }
-  
-  UILocalNotification *localNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
-  if (localNotification) {
-    [[EXLocalNotificationManager sharedInstance] handleLocalNotification:localNotification fromBackground:YES];
+}
+
+- (void)_onKernelAppDidDisplay
+{
+  if ([EXShellManager sharedInstance].isShell) {
+    // see complementary call in _onKernelJSLoaded.
+    [self _sendRemoteOrLocalNotificationFromLaunch];
+  }
+}
+
+- (void)_sendRemoteOrLocalNotificationFromLaunch
+{
+  if (!_hasConsumedLaunchNotification) {
+    _hasConsumedLaunchNotification = YES;
+    NSDictionary *launchOptions = self.rootViewController.launchOptions;
+    NSDictionary *remoteNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+    
+    if (remoteNotification && ![EXShellManager sharedInstance].isDetached) {
+      [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager handleRemoteNotification:remoteNotification fromBackground:YES];
+    }
+    
+    UILocalNotification *localNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
+    if (localNotification) {
+      [[EXLocalNotificationManager sharedInstance] handleLocalNotification:localNotification fromBackground:YES];
+    }
   }
 }
 
