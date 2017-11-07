@@ -39,33 +39,6 @@ An object that is passed into each event listener when a notification is receive
 
 Returns a Promise that resolves to a token string. This token can be provided to the Expo notifications backend to send a push notification to this device. [Read more in the Push Notifications guide](../guides/push-notifications.html#push-notifications).
 
-## Local Notifications
-
-If your app doesn't need push notifications, Expo allows you to also send local notifications. To display notifications, we need to do the following on iOS:
-
- 1. Create the notification and scheduling objects
- 2. Setup permissions for iOS notifications
- 3. Setup a listener so iOS users can get the notification.
-
- On Android, we only need to do step 1. Here's an example of local notifications on Android.
-
- ![sketch](S1gdfOb4Z)
-
-To make this example work on iOS, we need to first request permissions from the user.
-
-```javascript
-async function getiOSNotificationPermission() {
-  const { status } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
-  if (status !== 'granted') {
-    await Permissions.askAsync(Permissions.NOTIFICATIONS);
-  }
-}
-```
-
-And then, we just need to subscribe for notifications with `Expo.Notifications.addListener` and display an [`Alert`](https://facebook.github.io/react-native/docs/alert.html). Here's the Android example expanded to work on iOS. Note: when testing out this example, make sure that you exit out of the app before time is up. The notification won't display on iOS if the app is being viewed. Also, make sure you don't have "Do Not Disturb" turned on.
-
-![sketch](rk7VdlH6b)
-
 ### `Expo.Notifications.presentLocalNotificationAsync(localNotification)`
 
 Trigger a local notification immediately.
@@ -154,3 +127,4 @@ Returns a promise that resolves to the number that is displayed in a badge on th
 ### `Expo.Notifications.setBadgeNumberAsync(number)`
 
 Sets the number displayed in the app icon's badge to the given number. Setting the number to zero will both clear the badge and the list of notifications in the device's notification center on iOS. On Android this method does nothing.
+
