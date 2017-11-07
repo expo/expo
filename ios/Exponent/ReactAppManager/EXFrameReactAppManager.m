@@ -57,7 +57,12 @@
     // if this experience id encountered a loading error before, discard any cache we might have
     return kEXCachedResourceNoCache;
   }
-  return ([self _doesManifestEnableDeveloperTools]) ? kEXCachedResourceNoCache : kEXCachedResourceFallBackToCache;
+  EXCachedResourceBehavior devBehavior = kEXCachedResourceNoCache;
+  EXCachedResourceBehavior prodBehavior = kEXCachedResourceFallBackToCache;
+  if ([EXShellManager sharedInstance].loadJSInBackgroundExperimental) {
+    prodBehavior = kEXCachedResourceUseCacheImmediately;
+  }
+  return ([self _doesManifestEnableDeveloperTools]) ? devBehavior : prodBehavior;
 }
 
 - (BOOL)shouldInvalidateJSResourceCache
