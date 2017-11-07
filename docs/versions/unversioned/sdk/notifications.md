@@ -31,7 +31,7 @@ An object that is passed into each event listener when a notification is receive
 -   **data (_object_)** -- Any data that has been attached with the notification.
 -   **remote (_boolean_)** -- `true` if the notification is a push notification, `false` if it is a local notification.
 
-## Remote (Push) Notifications
+## Notifications
 
 ### `Expo.Notifications.getExpoPushTokenAsync()`
 
