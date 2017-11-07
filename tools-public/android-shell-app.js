@@ -712,7 +712,11 @@ exports.createAndroidShellAppAsync = async function createAndroidShellAppAsync(
       await fs.remove(`shell-unaligned.apk`);
       await fs.remove(`shell.apk`);
     } catch (e) {}
-    await spawnAsyncThrowError(`./gradlew`, [`assembleProdRelease`], {
+    const gradleArgs = [`assembleProdRelease`];
+    if (!!process.env.GRADLE_DAEMON_DISABLED) {
+      gradleArgs.unshift('--no-daemon');
+    }
+    await spawnAsyncThrowError(`./gradlew`, gradleArgs, {
       stdio: 'inherit',
       cwd: shellPath,
     });
