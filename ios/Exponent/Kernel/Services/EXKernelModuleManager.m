@@ -84,6 +84,9 @@
     // we can't pre-detect if this person is using a developer tool, but using localhost is a pretty solid indicator.
     cacheBehavior = kEXCachedResourceNoCache;
   }
+  if ([EXShellManager sharedInstance].loadJSInBackgroundExperimental) {
+    cacheBehavior = kEXCachedResourceUseCacheImmediately;
+  }
   EXManifestResource *manifestResource = [[EXManifestResource alloc] initWithManifestUrl:url originalUrl:originalUrl];
   [manifestResource loadResourceWithBehavior:cacheBehavior progressBlock:nil successBlock:^(NSData * _Nonnull data) {
     NSString *manifestString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
