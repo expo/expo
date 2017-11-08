@@ -14,6 +14,7 @@
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+  <uses-permission android:name="android.permission.WAKE_LOCK" />
 
   <!-- ADD PERMISSIONS HERE -->
   <!-- BEGIN OPTIONAL PERMISSIONS -->
@@ -22,7 +23,6 @@
   <uses-permission android:name="android.permission.READ_PHONE_STATE" />
   <uses-permission android:name="android.permission.USE_FINGERPRINT" />
   <uses-permission android:name="android.permission.VIBRATE" />
-  <uses-permission android:name="android.permission.WAKE_LOCK" />
   <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
 
   <!-- These require runtime permissions on M -->
