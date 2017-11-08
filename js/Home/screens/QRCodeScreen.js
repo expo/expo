@@ -2,6 +2,7 @@
 
 import React from 'react';
 import {
+  Dimensions,
   Linking,
   Platform,
   StatusBar,
@@ -10,7 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { BarCodeScanner } from 'expo';
+import { Camera } from 'expo';
 import { throttle } from 'lodash';
 
 import Layout from '../constants/Layout';
@@ -24,6 +25,8 @@ export default class BarCodeScreen extends React.Component {
 
   state = {
     scannerIsVisible: Platform.OS !== 'android',
+    ratio: '4:3',
+    ratioSet: false,
   };
 
   _hasOpenedUrl: boolean;
@@ -48,10 +51,20 @@ export default class BarCodeScreen extends React.Component {
   }
 
   render() {
+    const cameraStyle =
+      Platform.OS === 'android' && !this.state.ratioSet ? { width: 0 } : StyleSheet.absoluteFill;
     return (
       <View style={styles.container}>
         {this.state.scannerIsVisible ? (
-          <BarCodeScanner onBarCodeRead={this._handleBarCodeRead} style={StyleSheet.absoluteFill} />
+          <Camera
+            ref={ref => {
+              this._scanner = ref;
+            }}
+            onBarCodeRead={this._handleBarCodeRead}
+            style={cameraStyle}
+            ratio={this.state.ratio}
+            onCameraReady={this._setAspectRatio.bind(this)}
+          />
         ) : null}
 
         <View style={styles.topOverlay} />
@@ -107,6 +120,29 @@ export default class BarCodeScreen extends React.Component {
 
   _handlePressCancel = () => {
     this.props.navigation.dismissModal();
+  };
+
+  _setAspectRatio = async () => {
+    if (this._scanner) {
+      const ratios = await this._scanner.getSupportedRatiosAsync();
+      const { width, height } = Dimensions.get('window');
+      const screenRatio = height / width * 1.0;
+      const cameraRatio = { ratio: '16:9', value: 10 };
+      ratios.forEach(ratio => {
+        const splitted = ratio.split(':');
+        const h = splitted[0];
+        const w = splitted[1];
+        const ratioValue = h / w * 1.0;
+        if (Math.abs(screenRatio - ratioValue) < Math.abs(screenRatio - cameraRatio.value)) {
+          cameraRatio.ratio = ratio;
+          cameraRatio.value = ratioValue;
+        }
+      });
+      this.setState({
+        ratio: cameraRatio.ratio,
+        ratioSet: true,
+      });
+    }
   };
 }
 
