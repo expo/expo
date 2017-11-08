@@ -27,6 +27,9 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.raizlabs.android.dbflow.config.FlowManager;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.commons.io.output.TeeOutputStream;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,6 +50,7 @@ import java.net.URLEncoder;
 import java.security.Provider;
 import java.security.Security;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -83,6 +87,19 @@ public class Exponent {
   private Context mContext;
   private Application mApplication;
   private Activity mActivity;
+  private Map<String, String> mBundleStrings = new HashMap<>();
+
+  public String getBundleSource(final String path) {
+    synchronized (mBundleStrings) {
+      if (mBundleStrings.containsKey(path)) {
+        final String result = mBundleStrings.get(path);
+        mBundleStrings.remove(path);
+        return result;
+      } else {
+        return null;
+      }
+    }
+  }
 
   @Inject
   ExponentNetwork mExponentNetwork;
@@ -457,19 +474,34 @@ public class Exponent {
             }
 
             if (!hasCachedSourceFile) {
-              EXL.d(TAG, "Do not have cached source file for " + urlString);
-              InputStream inputStream = response.body().byteStream();
+              InputStream inputStream = null;
+              FileOutputStream fileOutputStream = null;
+              ByteArrayOutputStream byteArrayOutputStream = null;
+              TeeOutputStream teeOutputStream = null;
 
-              FileOutputStream fileOutputStream = new FileOutputStream(sourceFile);
-              BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
-              // TODO: close the streams using the try () syntax
-              ByteStreams.copy(inputStream, bufferedOutputStream);
-              bufferedOutputStream.flush();
-              fileOutputStream.flush();
-              fileOutputStream.getFD().sync();
-              bufferedOutputStream.close();
-              fileOutputStream.close();
-              inputStream.close();
+              try {
+                EXL.d(TAG, "Do not have cached source file for " + urlString);
+                inputStream = response.body().byteStream();
+
+                fileOutputStream = new FileOutputStream(sourceFile);
+                byteArrayOutputStream = new ByteArrayOutputStream();
+
+                // Multiplex the stream. Write both to file and string.
+                teeOutputStream = new TeeOutputStream(fileOutputStream, byteArrayOutputStream);
+
+                ByteStreams.copy(inputStream, teeOutputStream);
+                teeOutputStream.flush();
+
+                mBundleStrings.put(sourceFile.getAbsolutePath(), byteArrayOutputStream.toString());
+
+                fileOutputStream.flush();
+                fileOutputStream.getFD().sync();
+              } finally {
+                IOUtils.closeQuietly(teeOutputStream);
+                IOUtils.closeQuietly(fileOutputStream);
+                IOUtils.closeQuietly(byteArrayOutputStream);
+                IOUtils.closeQuietly(inputStream);
+              }
             }
 
             if (!id.equals(KernelConstants.KERNEL_BUNDLE_ID)) {
