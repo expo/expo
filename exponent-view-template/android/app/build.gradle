@@ -65,9 +65,7 @@ dependencies {
     transitive = true;
   }
 
-  compile ('com.facebook.android:facebook-android-sdk:4.+') {
-    exclude module: 'bolts-android'
-  }
+  compile 'com.facebook.android:facebook-android-sdk:4.+'
   compile('com.facebook.android:audience-network-sdk:4.+') {
     exclude module: 'play-services-ads'
   }
