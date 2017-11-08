@@ -95,7 +95,7 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
     self.picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
   }
 
-  self.picker.mediaTypes = @[(NSString *)kUTTypeImage];
+  self.picker.mediaTypes = @[(NSString *)kUTTypeImage, (NSString*) kUTTypeMovie];
 
   if ([[self.options objectForKey:@"allowsEditing"] boolValue]) {
     self.picker.allowsEditing = true;
@@ -115,63 +115,114 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
   dispatch_block_t dismissCompletionBlock = ^{
-    NSURL *imageURL = [info valueForKey:UIImagePickerControllerReferenceURL];
     NSString *mediaType = [info objectForKey:UIImagePickerControllerMediaType];
-    RCTAssert([mediaType isEqualToString:(NSString *)kUTTypeImage], @"Expected image response from `UIImagePickerController`");
-
-    UIImage *image;
-    if ([[self.options objectForKey:@"allowsEditing"] boolValue]) {
-      image = [info objectForKey:UIImagePickerControllerEditedImage];
-    } else {
-      image = [info objectForKey:UIImagePickerControllerOriginalImage];
-    }
-    image = [self fixOrientation:image];
-
     NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
-
-    // Write to a temporary file in the Expo File System
-    NSData *data = UIImageJPEGRepresentation(image, [[self.options valueForKey:@"quality"] floatValue]);
-    NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:@".jpg"];
+    response[@"cancelled"] = @NO;
     NSString *directory = [self.bridge.scopedModules.fileSystem.cachesDirectory stringByAppendingPathComponent:@"ImagePicker"];
     [EXFileSystem ensureDirExistsWithPath:directory];
-    NSString *path = [directory stringByAppendingPathComponent:fileName];
-    [data writeToFile:path atomically:YES];
-    NSURL *fileURL = [NSURL fileURLWithPath:path];
-    NSString *filePath = [fileURL absoluteString];
-    [response setObject:filePath forKey:@"uri"];
-
-    [response setObject:@(image.size.width) forKey:@"width"];
-    [response setObject:@(image.size.height) forKey:@"height"];
-
-    if ([[self.options objectForKey:@"base64"] boolValue]) {
-      [response setObject:[data base64EncodedStringWithOptions:0] forKey:@"base64"];
-    }
-
-    [response setObject:@NO forKey:@"cancelled"];
-
-    if ([[self.options objectForKey:@"exif"] boolValue]) {
-      // Can easily get metadata only if from camera, else go through `PHAsset`
-      NSDictionary *metadata = [info objectForKey:UIImagePickerControllerMediaMetadata];
-      if (metadata) {
-        [self updateResponse:response withMetadata:metadata];
+    if ([mediaType isEqualToString:(NSString *)kUTTypeImage]) {
+      [self handleImageWithInfo:info saveAt:directory updateResponse:response completionHandler:^{
         self.resolve(response);
-      } else {
-        PHAsset *asset = [PHAsset fetchAssetsWithALAssetURLs:@[imageURL] options:nil].firstObject;
+      }];
+    } else if ([mediaType isEqualToString:(NSString *)kUTTypeMovie]) {
+      [self handleVideoWithInfo:info saveAt:directory updateResponse:response];
+      self.resolve(response);
+    }
+    
+  };
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [picker dismissViewControllerAnimated:YES completion:dismissCompletionBlock];
+  });
+}
+
+- (void)handleImageWithInfo:(NSDictionary * _Nonnull)info
+                     saveAt:(NSString *)directory
+             updateResponse:(NSMutableDictionary *)response
+          completionHandler:(void (^)(void))completionHandler
+{
+  NSURL *imageURL = [info valueForKey:UIImagePickerControllerReferenceURL];
+  UIImage *image;
+  if ([[self.options objectForKey:@"allowsEditing"] boolValue]) {
+    image = [info objectForKey:UIImagePickerControllerEditedImage];
+  } else {
+    image = [info objectForKey:UIImagePickerControllerOriginalImage];
+  }
+  image = [self fixOrientation:image];
+  response[@"type"] = @"image";
+  response[@"width"] = @(image.size.width);
+  response[@"height"] = @(image.size.height);
+  NSData *data = UIImageJPEGRepresentation(image, [[self.options valueForKey:@"quality"] floatValue]);
+  NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:@".jpg"];
+  NSString *path = [directory stringByAppendingPathComponent:fileName];
+  [data writeToFile:path atomically:YES];
+  NSURL *fileURL = [NSURL fileURLWithPath:path];
+  NSString *filePath = [fileURL absoluteString];
+  response[@"uri"] = filePath;
+  
+  if ([[self.options objectForKey:@"base64"] boolValue]) {
+    response[@"base64"] = [data base64EncodedStringWithOptions:0];
+  }
+  if ([[self.options objectForKey:@"exif"] boolValue]) {
+    // Can easily get metadata only if from camera, else go through `PHAsset`
+    NSDictionary *metadata = [info objectForKey:UIImagePickerControllerMediaMetadata];
+    if (metadata) {
+      [self updateResponse:response withMetadata:metadata];
+      completionHandler();
+    } else {
+      PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithALAssetURLs:@[imageURL] options:nil];
+      if (assets.count > 0) {
+        PHAsset *asset = assets.firstObject;
         PHContentEditingInputRequestOptions *options = [[PHContentEditingInputRequestOptions alloc] init];
         options.networkAccessAllowed = YES; // Download from iCloud if needed
         [asset requestContentEditingInputWithOptions:options completionHandler:^(PHContentEditingInput *input, NSDictionary *info) {
           NSDictionary *metadata = [CIImage imageWithContentsOfURL:input.fullSizeImageURL].properties;
           [self updateResponse:response withMetadata:metadata];
-          self.resolve(response);
+          completionHandler();
         }];
+      } else {
+        RCTLogInfo(@"Could not fetch metadata for image %@", [imageURL absoluteString]);
+        completionHandler();
       }
-    } else {
-      self.resolve(response);
     }
-  };
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [picker dismissViewControllerAnimated:YES completion:dismissCompletionBlock];
-  });
+  } else {
+    completionHandler();
+  }
+}
+
+- (void)handleVideoWithInfo:(NSDictionary * _Nonnull)info saveAt:(NSString *)directory updateResponse:(NSMutableDictionary *)response
+{
+  NSURL *videoURL = info[UIImagePickerControllerMediaURL];
+  PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithALAssetURLs:@[[info valueForKey:UIImagePickerControllerReferenceURL]] options:nil];
+  if (assets.count > 0) {
+    PHAsset *videoAsset = assets.firstObject;
+    response[@"width"] = @(videoAsset.pixelWidth);
+    response[@"height"] = @(videoAsset.pixelHeight);
+    response[@"duration"] = @(videoAsset.duration * 1000);
+  } else {
+    RCTLogInfo(@"Could not fetch metadata for video %@", [videoURL absoluteString]);
+  }
+  
+  if (([[self.options objectForKey:@"allowsEditing"] boolValue])) {
+    AVURLAsset *editedAsset = [AVURLAsset assetWithURL:videoURL];
+    CMTime duration = [editedAsset duration];
+    response[@"duration"] = @((float) duration.value / duration.timescale * 1000);
+  }
+  
+  response[@"type"] = @"video";
+  NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:@".mov"];
+  NSError *error = nil;
+  NSString *path = [directory stringByAppendingPathComponent:fileName];
+  [[NSFileManager defaultManager] moveItemAtURL:videoURL
+                                          toURL:[NSURL fileURLWithPath:path]
+                                          error:&error];
+  if (error != nil) {
+    self.reject(@"E_CANNOT_PICK_VIDEO", @"Video could not be picked", error);
+    return;
+  }
+  
+  NSURL *fileURL = [NSURL fileURLWithPath:path];
+  NSString *filePath = [fileURL absoluteString];
+  response[@"uri"] = filePath;
 }
 
 - (void)updateResponse:(NSMutableDictionary *)response withMetadata:(NSDictionary *)metadata
