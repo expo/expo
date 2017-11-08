@@ -92,7 +92,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
                 bitmap = rotateBitmap(bitmap, getImageRotation(orientation));
               }
 
-              if (options.hasKey("exif")) {
+              if (options.hasKey("exif") && options.getBoolean("exif")) {
                 WritableMap exifData = getExifData(exifInterface);
                 if (exifData != null) {
                   response.putMap("exif", exifData);
@@ -103,7 +103,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
             }
 
             response.putString("uri", ExpFileUtils.uriFromFile(new File(writeImage(bitmap, quality))).toString());
-            if (options.hasKey("base64")) {
+            if (options.hasKey("base64") && options.getBoolean("base64")) {
               ByteArrayOutputStream out = new ByteArrayOutputStream();
               bitmap.compress(Bitmap.CompressFormat.JPEG, quality, out);
               response.putString("base64", Base64.encodeToString(out.toByteArray(), Base64.DEFAULT));

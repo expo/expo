@@ -415,6 +415,13 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
            EXAudioRecordingOptionLinearPCMIsFloatKey: AVLinearPCMIsFloatKey};
 }
 
+- (UInt32)_getFormatIDFromString:(NSString *)typeString
+{
+  const char *s = typeString.UTF8String;
+  UInt32 typeCode = s[3] | (s[2] << 8) | (s[1] << 16) | (s[0] << 24);
+  return typeCode;
+}
+
 - (void)_setNewAudioRecorderFilenameAndSettings:(NSDictionary *)optionsFromJS
 {
   NSDictionary *iosOptionsFromJS = optionsFromJS[EXAudioRecordingOptionsKey];
@@ -432,6 +439,14 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
     }
   }
   recorderSettings[AVEncoderBitRateStrategyKey] = bitRateStrategy;
+
+  if (
+      iosOptionsFromJS[EXAudioRecordingOptionOutputFormatKey] &&
+      [iosOptionsFromJS[EXAudioRecordingOptionOutputFormatKey] isKindOfClass:[NSString class]]
+      ) {
+    recorderSettings[AVFormatIDKey] =
+      @([self _getFormatIDFromString:iosOptionsFromJS[EXAudioRecordingOptionOutputFormatKey]]);
+  }
   
   _audioRecorderSettings = recorderSettings;
 }
