@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
 import android.text.format.DateUtils;
+
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.Constants;
 import host.exp.exponent.utils.JSONUtils;
@@ -107,6 +108,8 @@ public class NotificationHelper {
 
     if (data.containsKey("body")) {
       builder.setContentText((String) data.get("body"));
+      builder.setStyle(new NotificationCompat.BigTextStyle().
+          bigText((String)data.get("body")));
     }
 
     if (data.containsKey("count")) {
