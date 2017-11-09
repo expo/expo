@@ -7,7 +7,7 @@
 
 import { Navigator } from 'react-native-deprecated-custom-components';
 
-import buildStyleInterpolator from 'buildStyleInterpolator';
+import buildStyleInterpolator from 'react-native/Libraries/Utilities/buildStyleInterpolator.js';
 
 let FromTheFront = {
   opacity: {
