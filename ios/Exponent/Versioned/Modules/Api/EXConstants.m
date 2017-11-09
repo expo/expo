@@ -165,10 +165,19 @@ RCT_REMAP_METHOD(getWebViewUserAgentAsync,
   if ([platform isEqualToString:@"AppleTV3,1"])   return @"Apple TV 3G";
   if ([platform isEqualToString:@"AppleTV3,2"])   return @"Apple TV 3G";
   if ([platform isEqualToString:@"AppleTV5,3"])   return @"Apple TV 4G";
+  if ([platform isEqualToString:@"AppleTV6,2"])   return @"Apple TV 4k";
 
   // Apple Watch
   if ([platform isEqualToString:@"Watch1,1"])     return @"Apple Watch";
   if ([platform isEqualToString:@"Watch1,2"])     return @"Apple Watch";
+  if ([platform isEqualToString:@"Watch2,6"])     return @"Apple Watch Series 1";
+  if ([platform isEqualToString:@"Watch2,7"])     return @"Apple Watch Series 1";
+  if ([platform isEqualToString:@"Watch2,3"])     return @"Apple Watch Series 2";
+  if ([platform isEqualToString:@"Watch2,4"])     return @"Apple Watch Series 2";
+  if ([platform isEqualToString:@"Watch3,1"])     return @"Apple Watch Series 3";
+  if ([platform isEqualToString:@"Watch3,2"])     return @"Apple Watch Series 3";
+  if ([platform isEqualToString:@"Watch3,3"])     return @"Apple Watch Series 3";
+  if ([platform isEqualToString:@"Watch3,4"])     return @"Apple Watch Series 3";
 
   // iPhone
   if ([platform isEqualToString:@"iPhone1,1"])    return @"iPhone";
@@ -193,6 +202,13 @@ RCT_REMAP_METHOD(getWebViewUserAgentAsync,
   if ([platform isEqualToString:@"iPhone9,3"])    return @"iPhone 7";
   if ([platform isEqualToString:@"iPhone9,2"])    return @"iPhone 7 Plus";
   if ([platform isEqualToString:@"iPhone9,4"])    return @"iPhone 7 Plus";
+  
+  if ([platform isEqualToString:@"iPhone10,1"])    return @"iPhone 8";
+  if ([platform isEqualToString:@"iPhone10,4"])    return @"iPhone 8";
+  if ([platform isEqualToString:@"iPhone10,2"])    return @"iPhone 8 Plus";
+  if ([platform isEqualToString:@"iPhone10,5"])    return @"iPhone 8 Plus";
+  if ([platform isEqualToString:@"iPhone10,3"])    return @"iPhone X";
+  if ([platform isEqualToString:@"iPhone10,6"])    return @"iPhone X";
 
   // iPod
   if ([platform isEqualToString:@"iPod1,1"])      return @"iPod Touch";
@@ -223,6 +239,12 @@ RCT_REMAP_METHOD(getWebViewUserAgentAsync,
   if ([platform isEqualToString:@"iPad6,4"])      return @"iPad Pro 9.7 inch (Cellular)";
   if ([platform isEqualToString:@"iPad6,7"])      return @"iPad Pro (WiFi)";
   if ([platform isEqualToString:@"iPad6,8"])      return @"iPad Pro (Cellular)";
+  if ([platform isEqualToString:@"iPad6,11"])     return @"iPad 5th Generation (WiFi)";
+  if ([platform isEqualToString:@"iPad6,12"])     return @"iPad 5th Generation (Cellular)";
+  if ([platform isEqualToString:@"iPad7,1"])      return @"iPad Pro 12.9 inch (WiFi)";
+  if ([platform isEqualToString:@"iPad7,2"])      return @"iPad Pro 12.9 inch (Cellular)";
+  if ([platform isEqualToString:@"iPad7,3"])      return @"iPad Pro 10.5 inch (WiFi)";
+  if ([platform isEqualToString:@"iPad7,4"])      return @"iPad Pro 10.5 inch (Cellular)";
 
   // iPad Mini
   if ([platform isEqualToString:@"iPad2,5"])      return @"iPad Mini (WiFi)";
@@ -293,6 +315,14 @@ RCT_REMAP_METHOD(getWebViewUserAgentAsync,
   if ([platform isEqualToString:@"iPhone9,3"])    return @2016;
   if ([platform isEqualToString:@"iPhone9,2"])    return @2016;
   if ([platform isEqualToString:@"iPhone9,4"])    return @2016;
+  
+  // iPhone 8, 8 Plus, X
+  if ([platform isEqualToString:@"iPhone10,1"])    return @2017;
+  if ([platform isEqualToString:@"iPhone10,2"])    return @2017;
+  if ([platform isEqualToString:@"iPhone10,3"])    return @2017;
+  if ([platform isEqualToString:@"iPhone10,4"])    return @2017;
+  if ([platform isEqualToString:@"iPhone10,5"])    return @2017;
+  if ([platform isEqualToString:@"iPhone10,6"])    return @2017;
 
 
   // iPod
@@ -324,6 +354,12 @@ RCT_REMAP_METHOD(getWebViewUserAgentAsync,
   if ([platform isEqualToString:@"iPad6,8"])      return @2015;
   if ([platform isEqualToString:@"iPad6,3"])      return @2016;
   if ([platform isEqualToString:@"iPad6,4"])      return @2016;
+  if ([platform isEqualToString:@"iPad6,11"])     return @2017;
+  if ([platform isEqualToString:@"iPad6,12"])     return @2017;
+  if ([platform isEqualToString:@"iPad7,1"])      return @2017;
+  if ([platform isEqualToString:@"iPad7,2"])      return @2017;
+  if ([platform isEqualToString:@"iPad7,3"])      return @2017;
+  if ([platform isEqualToString:@"iPad7,4"])      return @2017;
 
   // iPad Mini
   if ([platform isEqualToString:@"iPad2,5"])      return @2012;
