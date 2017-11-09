@@ -83,6 +83,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   private Runnable mNotificationAnimator;
   private int mNotificationAnimationFrame;
   private Notification.Builder mNotificationBuilder;
+  private boolean mIsLoadExperienceAllowedToRun = false;
 
   @Inject
   ExponentManifest mExponentManifest;
@@ -108,6 +109,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
+    mIsLoadExperienceAllowedToRun = true;
 
     NativeModuleDepsProvider.getInstance().inject(ExperienceActivity.class, this);
     EventBus.getDefault().registerSticky(this);
@@ -257,6 +260,14 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     if (!isInForeground()) {
       return;
     }
+
+    if (!mIsLoadExperienceAllowedToRun) {
+      return;
+    }
+    // Only want to run once per onCreate. There are some instances with ShellAppActivity where this would be called
+    // twice otherwise. Turn on "Don't keep activites", trigger a notification, background the app, and then
+    // press on the notification in a shell app to see this happen.
+    mIsLoadExperienceAllowedToRun = false;
 
     mManifestUrl = manifestUrl;
     mManifest = manifest;
