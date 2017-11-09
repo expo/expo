@@ -125,11 +125,12 @@ void ABI22_0_0EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceC
 - (NSDictionary<NSString *, NSString *> *)devMenuItemsForBridge:(id)bridge
 {
   ABI22_0_0RCTDevSettings *devSettings = [self _moduleInstanceForBridge:bridge named:@"DevSettings"];
+  BOOL isDevModeEnabled = [self _isDevModeEnabledForBridge:bridge];
   NSMutableDictionary *items = [@{
     @"dev-reload": @{ @"label": @"Reload", @"isEnabled": @YES },
     @"dev-inspector": @{ @"label": @"Toggle Element Inspector", @"isEnabled": @YES },
   } mutableCopy];
-  if (devSettings.isRemoteDebuggingAvailable) {
+  if (devSettings.isRemoteDebuggingAvailable && isDevModeEnabled) {
     items[@"dev-remote-debug"] = @{
       @"label": (devSettings.isDebuggingRemotely) ? @"Stop Remote Debugging" : @"Debug Remote JS",
       @"isEnabled": @YES
@@ -137,7 +138,7 @@ void ABI22_0_0EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceC
   } else {
     items[@"dev-remote-debug"] =  @{ @"label": @"Remote Debugger Unavailable", @"isEnabled": @NO };
   }
-  if (devSettings.isLiveReloadAvailable && !devSettings.isHotLoadingEnabled) {
+  if (devSettings.isLiveReloadAvailable && !devSettings.isHotLoadingEnabled && isDevModeEnabled) {
     items[@"dev-live-reload"] = @{
       @"label": (devSettings.isLiveReloadEnabled) ? @"Disable Live Reload" : @"Enable Live Reload",
       @"isEnabled": @YES,
@@ -155,7 +156,7 @@ void ABI22_0_0EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceC
     }
     items[@"dev-live-reload"] =  liveReloadItem;
   }
-  if (devSettings.isHotLoadingAvailable && !devSettings.isLiveReloadEnabled) {
+  if (devSettings.isHotLoadingAvailable && !devSettings.isLiveReloadEnabled && isDevModeEnabled) {
     items[@"dev-hmr"] = @{
       @"label": (devSettings.isHotLoadingEnabled) ? @"Disable Hot Reloading" : @"Enable Hot Reloading",
       @"isEnabled": @YES,
@@ -167,7 +168,7 @@ void ABI22_0_0EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceC
     }
     items[@"dev-hmr"] =  hmrItem;
   }
-  if (devSettings.isJSCSamplingProfilerAvailable) {
+  if (devSettings.isJSCSamplingProfilerAvailable && isDevModeEnabled) {
     items[@"dev-jsc-profiler"] = @{ @"label": @"Start / Stop JS Sampling Profiler", @"isEnabled": @YES };
   }
   id perfMonitor = [self _moduleInstanceForBridge:bridge named:@"PerfMonitor"];
@@ -238,6 +239,11 @@ void ABI22_0_0EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceC
 
 
 #pragma mark - internal
+
+- (BOOL)_isDevModeEnabledForBridge:(id)bridge
+{
+  return ([ABI22_0_0RCTGetURLQueryParam([bridge bundleURL], @"dev") boolValue]);
+}
 
 - (id<ABI22_0_0RCTBridgeModule>)_moduleInstanceForBridge:(id)bridge named:(NSString *)name
 {
