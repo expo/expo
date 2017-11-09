@@ -665,6 +665,7 @@ RCT_EXPORT_METHOD(stopRecording) {
         if (isMuted) {
           [self.session removeInput:input];
         }
+        [self.session commitConfiguration];
         return;
       }
     }
