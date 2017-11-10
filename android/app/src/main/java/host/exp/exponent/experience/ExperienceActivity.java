@@ -555,9 +555,9 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
           Intent.createChooser(shareIntent, "Share a link to " + name), PendingIntent.FLAG_UPDATE_CURRENT));
 
       // Save
-      /*remoteViews.setOnClickPendingIntent(R.id.save_button, PendingIntent.getService(this, 0,
+      remoteViews.setOnClickPendingIntent(R.id.save_button, PendingIntent.getService(this, 0,
           ExponentIntentService.getActionSaveExperience(this, mManifestUrl),
-          PendingIntent.FLAG_UPDATE_CURRENT));*/
+          PendingIntent.FLAG_UPDATE_CURRENT));
     }
 
     // Reload
