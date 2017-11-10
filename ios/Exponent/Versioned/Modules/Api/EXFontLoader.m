@@ -93,15 +93,38 @@ static const char *EXFontAssocKey = "EXFont";
 @end
 
 
+@implementation UIFont (EXFontLoader)
+
+- (UIFont *)ex_fontWithSize:(CGFloat)fontSize
+{
+  EXFont *exFont = objc_getAssociatedObject(self, EXFontAssocKey);
+  if (exFont) {
+    return [exFont UIFontWithSize:fontSize];
+  } else {
+    return [self ex_fontWithSize:fontSize];
+  }
+}
+
+@end
+
+
 @implementation EXFontLoader
 
 RCT_EXPORT_MODULE(ExponentFontLoader);
 
 + (void)initialize {
-  SEL a = @selector(ex_updateFont:withFamily:size:weight:style:variant:scaleMultiplier:);
-  SEL b = @selector(updateFont:withFamily:size:weight:style:variant:scaleMultiplier:);
-  method_exchangeImplementations(class_getClassMethod([RCTFont class], a),
-                                 class_getClassMethod([RCTFont class], b));
+  {
+    SEL a = @selector(ex_updateFont:withFamily:size:weight:style:variant:scaleMultiplier:);
+    SEL b = @selector(updateFont:withFamily:size:weight:style:variant:scaleMultiplier:);
+    method_exchangeImplementations(class_getClassMethod([RCTFont class], a),
+                                   class_getClassMethod([RCTFont class], b));
+  }
+  {
+    SEL a = @selector(ex_fontWithSize:);
+    SEL b = @selector(fontWithSize:);
+    method_exchangeImplementations(class_getInstanceMethod([UIFont class], a),
+                                   class_getInstanceMethod([UIFont class], b));
+  }
 }
 
 RCT_REMAP_METHOD(loadAsync,
