@@ -31,7 +31,7 @@ Returns a Promise:
 ### `Expo.WebBrowser.openAuthSessionAsync(url, redirectUrl)`
 
 Opens the url with Safari in a modal on iOS using `SFAuthenticationSession`, and Chrome in a new [custom tab](https://developer.chrome.com/multidevice/android/customtabs) on Android. On iOS, the user will be asked whether to allow the app to authenticate using
-the given url. (****** what happens if they reject? ********)
+the given url.
 
 #### Arguments
 
