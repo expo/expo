@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-  compileSdkVersion 25
-  buildToolsVersion '25.0.2'
+  compileSdkVersion 26
+  buildToolsVersion '26.0.1'
 
   defaultConfig {
     applicationId "detach.app.template.pkg.name"
@@ -54,7 +54,7 @@ repositories{
 dependencies {
   compile fileTree(dir: 'libs', include: ['*.jar'])
   testCompile 'junit:junit:4.12'
-  compile 'com.android.support:appcompat-v7:25.3.1'
+  compile 'com.android.support:appcompat-v7:26.0.1'
   compile 'com.android.support:multidex:1.0.1'
 
   /* UNCOMMENT WHEN DISTRIBUTING
