@@ -16,6 +16,8 @@ import { throttle } from 'lodash';
 
 import Layout from '../constants/Layout';
 
+const DEFAULT_RATIO = '16:9';
+
 export default class BarCodeScreen extends React.Component {
   static route = {
     navigationBar: {
@@ -124,23 +126,32 @@ export default class BarCodeScreen extends React.Component {
   };
 
   _setAspectRatio = async () => {
-    if (this._scanner) {
+    if (this._scanner && Platform.OS === 'android') {
       const ratios = await this._scanner.getSupportedRatiosAsync();
-      const { width, height } = Dimensions.get('window');
-      const screenRatio = height / width;
-      const cameraRatio = { ratio: undefined, value: 10 };
-      ratios.forEach(ratio => {
-        const splitted = ratio.split(':');
-        const [h, w] = splitted;
-        const ratioValue = h / w;
-        if (Math.abs(screenRatio - ratioValue) < Math.abs(screenRatio - cameraRatio.value)) {
-          cameraRatio.ratio = ratio;
-          cameraRatio.value = ratioValue;
-        }
-      });
-      this.setState({
-        ratio: cameraRatio.ratio,
-      });
+      if (ratios.length === 0) {
+        console.warn(
+          'getSupportedRatiosAsync returned an empty array - preview might be stretched or not visible at all.'
+        );
+        this.setState({
+          ratio: DEFAULT_RATIO,
+        });
+      } else {
+        const { width, height } = Dimensions.get('window');
+        const screenRatio = height / width;
+        const cameraRatio = { ratio: '16:9', value: 10 };
+        ratios.forEach(ratio => {
+          const splitted = ratio.split(':');
+          const [h, w] = splitted;
+          const ratioValue = h / w;
+          if (Math.abs(screenRatio - ratioValue) < Math.abs(screenRatio - cameraRatio.value)) {
+            cameraRatio.ratio = ratio;
+            cameraRatio.value = ratioValue;
+          }
+        });
+        this.setState({
+          ratio: cameraRatio.ratio,
+        });
+      }
     }
   };
 }
