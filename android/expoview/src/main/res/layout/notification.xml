@@ -28,7 +28,7 @@
     android:layout_toEndOf="@+id/home_image_button"
     android:layout_marginRight="12dp"
     android:background="@android:color/transparent"
-    android:text="Exponent"
+    android:text="Expo"
     android:textAppearance="?android:attr/textAppearanceMedium"
     android:textColor="@color/white"/>
 
@@ -52,5 +52,14 @@
     android:background="@android:color/transparent"
     android:src="@drawable/ic_share_white_36dp"/>
 
+  <ImageButton
+    android:id="@+id/save_button"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerVertical="true"
+    android:layout_marginRight="12dp"
+    android:layout_toLeftOf="@+id/share_button"
+    android:background="@android:color/transparent"
+    android:src="@drawable/pin_white"/>
 
 </RelativeLayout>
