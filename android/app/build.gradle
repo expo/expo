@@ -103,9 +103,6 @@ dependencies {
   compile(name: 'ReactAndroid-release-abi19_0_0', ext: 'aar')
   compile(name: 'ReactAndroid-release-abi18_0_0', ext: 'aar')
   compile(name: 'ReactAndroid-release-abi17_0_0', ext: 'aar')
-  compile(name: 'ReactAndroid-release-abi16_0_0', ext: 'aar')
-  compile(name: 'ReactAndroid-release-abi15_0_0', ext: 'aar')
-  compile(name: 'ReactAndroid-release-abi14_0_0', ext: 'aar')
 
   // Our dependencies
   compile 'com.android.support:appcompat-v7:26.0.1'
