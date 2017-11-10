@@ -16,8 +16,8 @@ repositories {
 }
 
 android {
-  compileSdkVersion 25
-  buildToolsVersion '25.0.2'
+  compileSdkVersion 26
+  buildToolsVersion '26.0.1'
 
   defaultConfig {
     applicationId 'host.exp.exponent'
@@ -108,11 +108,11 @@ dependencies {
   compile(name: 'ReactAndroid-release-abi14_0_0', ext: 'aar')
 
   // Our dependencies
-  compile 'com.android.support:appcompat-v7:25.3.1'
+  compile 'com.android.support:appcompat-v7:26.0.1'
 
   // Our dependencies from ExpoView
   // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.
-  compile 'com.android.support:appcompat-v7:25.3.1'
+  compile 'com.android.support:appcompat-v7:26.0.1'
   compile 'com.facebook.android:facebook-android-sdk:4.7.0'
   compile('com.facebook.android:audience-network-sdk:4.22.1') {
     exclude module: 'play-services-ads'
@@ -151,7 +151,7 @@ dependencies {
   compile('io.nlopez.smartlocation:library:3.2.11') {
     transitive = false
   }
-  compile 'com.android.support:exifinterface:25.3.1'
+  compile 'com.android.support:exifinterface:26.0.1'
   compile 'com.squareup.okhttp3:okhttp:3.4.1'
   compile 'com.squareup.okhttp3:okhttp-urlconnection:3.4.1'
   compile 'com.squareup.okhttp3:okhttp-ws:3.4.1'
@@ -160,7 +160,7 @@ dependencies {
   // Testing
   androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
   androidTestCompile 'com.android.support.test:runner:0.5'
-  androidTestCompile 'com.android.support:support-annotations:25.3.1'
+  androidTestCompile 'com.android.support:support-annotations:26.0.1'
   androidTestCompile 'com.google.code.findbugs:jsr305:3.0.0'
   androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
   androidTestCompile 'com.azimolabs.conditionwatcher:conditionwatcher:0.2'

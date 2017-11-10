@@ -137,8 +137,8 @@ task packageExponentNdkLibs(dependsOn: buildExponentNdkLib, type: Copy) {
 
 
 android {
-  compileSdkVersion 25
-  buildToolsVersion "25.0.2"
+  compileSdkVersion 26
+  buildToolsVersion "26.0.1"
 
   defaultConfig {
     minSdkVersion 19
@@ -192,7 +192,7 @@ dependencies {
 
   // React native dependencies
   // We use a different version of appcompat
-  compile 'com.android.support:recyclerview-v7:25.+'
+  compile 'com.android.support:recyclerview-v7:26.0.1'
   compile 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.0.0'
   compile 'com.facebook.fresco:fresco:1.0.1'
   compile 'com.facebook.fresco:animated-gif:1.0.1'
@@ -211,8 +211,9 @@ dependencies {
   compile 'org.webkit:android-jsc:r174650'
 
   // Our dependencies
-  compile 'com.android.support:appcompat-v7:25.3.1'
-  compile 'com.android.support:customtabs:25.3.1'
+  compile 'com.android.support:appcompat-v7:26.0.1'
+  compile 'com.android.support:customtabs:26.0.1'
+  compile 'com.android.support:cardview-v7:26.0.1'
   compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
     transitive = true;
   }
@@ -257,7 +258,7 @@ dependencies {
   compile('io.nlopez.smartlocation:library:3.2.11') {
     transitive = false
   }
-  compile 'com.android.support:exifinterface:25.3.1'
+  compile 'com.android.support:exifinterface:26.0.1'
   compile 'com.google.android:cameraview:1.0.0'
   /*compile('com.gettipsi:stripeview:1.0.0') {
       transitive = false

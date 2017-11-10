@@ -26,6 +26,9 @@ allprojects {
       dirs 'libs'
     }
     maven { url "https://jitpack.io" }
+    maven {
+      url 'https://maven.google.com'
+    }
 
     // Want this last so that we never end up with a stale cache
     mavenLocal()

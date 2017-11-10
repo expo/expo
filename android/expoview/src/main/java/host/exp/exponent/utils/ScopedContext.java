@@ -434,10 +434,20 @@ public class ScopedContext extends Context {
     return mContext.registerReceiver(receiver, filter);
   }
 
+  @Override
+  public Intent registerReceiver(BroadcastReceiver broadcastReceiver, IntentFilter intentFilter, int i) {
+    return mContext.registerReceiver(broadcastReceiver, intentFilter, i);
+  }
+
   @Nullable
   @Override
   public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter, String broadcastPermission, Handler scheduler) {
     return mContext.registerReceiver(receiver, filter, broadcastPermission, scheduler);
+  }
+
+  @Override
+  public Intent registerReceiver(BroadcastReceiver broadcastReceiver, IntentFilter intentFilter, String s, Handler handler, int i) {
+    return mContext.registerReceiver(broadcastReceiver, intentFilter, s, handler, i);
   }
 
   @Override
@@ -449,6 +459,11 @@ public class ScopedContext extends Context {
   @Override
   public ComponentName startService(Intent service) {
     return mContext.startService(service);
+  }
+
+  @Override
+  public ComponentName startForegroundService(Intent intent) {
+    return mContext.startForegroundService(intent);
   }
 
   @Override
@@ -527,6 +542,11 @@ public class ScopedContext extends Context {
   }
 
   @Override
+  public void revokeUriPermission(String s, Uri uri, int i) {
+    mContext.revokeUriPermission(s, uri, i);
+  }
+
+  @Override
   public int checkUriPermission(Uri uri, int pid, int uid, int modeFlags) {
     return mContext.checkUriPermission(uri, pid, uid, modeFlags);
   }
@@ -569,6 +589,11 @@ public class ScopedContext extends Context {
   @Override
   public Context createPackageContext(String packageName, int flags) throws PackageManager.NameNotFoundException {
     return mContext.createPackageContext(packageName, flags);
+  }
+
+  @Override
+  public Context createContextForSplit(String s) throws PackageManager.NameNotFoundException {
+    return mContext.createContextForSplit(s);
   }
 
   @Override
