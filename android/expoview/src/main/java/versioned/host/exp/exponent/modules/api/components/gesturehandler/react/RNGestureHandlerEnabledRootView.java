@@ -162,8 +162,7 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
     if (mReactInstanceManager == null) {
       return null;
     }
-    ReactContext reactContext = mReactInstanceManager
-            .getCurrentReactContext();
+    ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
     if (reactContext == null) {
       return null;
     }

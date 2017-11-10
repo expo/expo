@@ -8,6 +8,15 @@
 
 #import "RNGestureHandlerState.h"
 #import "RNGestureHandler.h"
+#import "RNGestureHandlerRegistry.h"
+#import "RNRootViewGestureRecognizer.h"
+
+#import "Handlers/RNPanHandler.h"
+#import "Handlers/RNTapHandler.h"
+#import "Handlers/RNLongPressHandler.h"
+#import "Handlers/RNNativeViewHandler.h"
+#import "Handlers/RNPinchHandler.h"
+#import "Handlers/RNRotationHandler.h"
 
 // We use the method below instead of RCTLog because we log out messages after the bridge gets
 // turned down in some cases. Which normally with RCTLog would cause a crash in DEBUG mode
