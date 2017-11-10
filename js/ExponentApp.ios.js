@@ -22,25 +22,7 @@ class ExponentApp extends React.Component {
     shellManifestUrl: PropTypes.string,
   };
 
-  state = {
-    dataMigrationComplete: false,
-  };
-
   render() {
-    if (!this.state.dataMigrationComplete) {
-      return (
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: 'white',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-          <ActivityIndicator />
-        </View>
-      );
-    }
-
     return <KernelNavigator />;
   }
 
@@ -52,7 +34,7 @@ class ExponentApp extends React.Component {
   }
 
   componentWillMount() {
-    this._performDataMigrationAsync();
+    this._initializeAsync().done();
   }
 
   componentWillReceiveProps(nextProps: any) {
@@ -63,7 +45,7 @@ class ExponentApp extends React.Component {
     }
   }
 
-  _initialize = async () => {
+  _initializeAsync = async () => {
     ExponentKernel.onLoaded();
 
     if (ExponentKernel.__isFake) {
@@ -92,12 +74,6 @@ class ExponentApp extends React.Component {
 
   componentWillUnmount() {
     Linking.removeEventListener('url', this._handleUrl);
-  }
-
-  async _performDataMigrationAsync() {
-    await LocalStorage.maybeMigrateFromLegacyAsync();
-    this.setState({ dataMigrationComplete: true });
-    this._initialize();
   }
 
   _handleUrl = (event: { url: string }) => {

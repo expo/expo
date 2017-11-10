@@ -4,10 +4,10 @@ import { NetInfo } from 'react-native';
 
 class Connectivity {
   _isAvailable = true;
-  _listeners = {};
+  _listeners = new Set();
 
   constructor() {
-    NetInfo.isConnected.addEventListener('change', this._handleConnectivityChange);
+    NetInfo.isConnected.addEventListener('connectionChange', this._handleConnectivityChange);
     this.isAvailableAsync();
   }
 
@@ -31,17 +31,17 @@ class Connectivity {
 
   _handleConnectivityChange = (isAvailable: boolean) => {
     this._isAvailable = isAvailable;
-    Object.values(this._listeners).forEach(listener => {
+    this._listeners.forEach(listener => {
       typeof listener === 'function' && listener(this._isAvailable);
     });
   };
 
   addListener = (listener: any) => {
-    this._listeners[listener] = listener;
+    this._listeners.add(listener);
   };
 
   removeListener = (listener: any) => {
-    delete this._listeners[listener];
+    this._listeners.delete(listener);
   };
 }
 

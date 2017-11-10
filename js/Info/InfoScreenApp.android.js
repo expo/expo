@@ -8,7 +8,7 @@
 import autobind from 'autobind-decorator';
 import React, { PropTypes } from 'react';
 import {
-  BackAndroid,
+  BackHandler,
   Image,
   NativeModules,
   ScrollView,
@@ -90,7 +90,7 @@ export default class InfoScreenApp extends React.Component {
   _renderNav() {
     return (
       <View style={styles.navBar}>
-        <TouchableOpacity onPress={() => BackAndroid.exitApp()}>
+        <TouchableOpacity onPress={() => BackHandler.exitApp()}>
           <Image source={{ uri: 'ic_arrow_back_white_36dp' }} style={styles.icon} />
         </TouchableOpacity>
         <Text style={{ marginLeft: 14, color: 'white', fontSize: 20 }}>Info</Text>
