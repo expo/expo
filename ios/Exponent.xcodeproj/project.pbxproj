@@ -125,6 +125,7 @@
 		A149D6901E8F31DC00B71E3D /* EXLegacyAsyncLocalStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = A149D68F1E8F31DC00B71E3D /* EXLegacyAsyncLocalStorage.m */; };
 		A15DC4BC1CFF99FE009F940D /* EXImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = A15DC4BA1CFF99FE009F940D /* EXImagePicker.m */; };
 		A15DC4CC1D011248009F940D /* EXFacebook.m in Sources */ = {isa = PBXBuildFile; fileRef = A15DC4CA1D011248009F940D /* EXFacebook.m */; };
+		A17E583A1FBA6114007F4B37 /* EXCameraRollRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = A17E58381FBA6113007F4B37 /* EXCameraRollRequester.m */; };
 		A1B36EAE1EB191BE00864996 /* EXGLObjectManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B36EAD1EB191BE00864996 /* EXGLObjectManager.m */; };
 		A1CA7DDF1EC1036500489532 /* EXGLGPUImageObject.m in Sources */ = {isa = PBXBuildFile; fileRef = A1CA7DDC1EC1036500489532 /* EXGLGPUImageObject.m */; };
 		A1CA7DE01EC1036500489532 /* EXGLObject.m in Sources */ = {isa = PBXBuildFile; fileRef = A1CA7DDE1EC1036500489532 /* EXGLObject.m */; };
@@ -517,6 +518,8 @@
 		A15DC4BB1CFF99FE009F940D /* EXImagePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXImagePicker.h; sourceTree = "<group>"; };
 		A15DC4CA1D011248009F940D /* EXFacebook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFacebook.m; sourceTree = "<group>"; };
 		A15DC4CB1D011248009F940D /* EXFacebook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFacebook.h; sourceTree = "<group>"; };
+		A17E58381FBA6113007F4B37 /* EXCameraRollRequester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXCameraRollRequester.m; sourceTree = "<group>"; };
+		A17E58391FBA6114007F4B37 /* EXCameraRollRequester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXCameraRollRequester.h; sourceTree = "<group>"; };
 		A1B36EAC1EB191BE00864996 /* EXGLObjectManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGLObjectManager.h; sourceTree = "<group>"; };
 		A1B36EAD1EB191BE00864996 /* EXGLObjectManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGLObjectManager.m; sourceTree = "<group>"; };
 		A1CA7DDB1EC1036500489532 /* EXGLGPUImageObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGLGPUImageObject.h; sourceTree = "<group>"; };
@@ -1389,6 +1392,8 @@
 		B5844C341D482C3D0015C683 /* Permissions */ = {
 			isa = PBXGroup;
 			children = (
+				A17E58391FBA6114007F4B37 /* EXCameraRollRequester.h */,
+				A17E58381FBA6113007F4B37 /* EXCameraRollRequester.m */,
 				B5844C3D1D482EA40015C683 /* EXLocationRequester.h */,
 				B5844C3E1D482EA40015C683 /* EXLocationRequester.m */,
 				B5844C351D482C3D0015C683 /* EXPermissions.h */,
@@ -2303,6 +2308,7 @@
 				B5AC39A81E95A90B00540AA7 /* EXKernelBridgeRecord.m in Sources */,
 				A1CA7DE01EC1036500489532 /* EXGLObject.m in Sources */,
 				4CDF6D4F1F394EB500AA9D65 /* EXDownloadDelegate.m in Sources */,
+				A17E583A1FBA6114007F4B37 /* EXCameraRollRequester.m in Sources */,
 				780D4ACE1F737ADC00E70C7F /* EXNativeModuleIntrospection.m in Sources */,
 				B5C7A3C31EC3E38300DD9E1D /* EXAVPlayerData.m in Sources */,
 				B57181001F0FF41600315A66 /* EXScreenOrientationManager.m in Sources */,

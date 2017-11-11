@@ -6,6 +6,7 @@
 #import "EXLocationRequester.h"
 #import "EXPermissions.h"
 #import "EXRemoteNotificationRequester.h"
+#import "EXCameraRollRequester.h"
 
 NSString * const EXPermissionExpiresNever = @"never";
 
@@ -49,6 +50,8 @@ RCT_REMAP_METHOD(getAsync,
     resolve([EXAudioRecordingPermissionRequester permissions]);
   } else if ([type isEqualToString:@"systemBrightness"]) {
     resolve([EXPermissions alwaysGrantedPermissions]); // permission is implicit
+  } else if ([type isEqualToString:@"cameraRoll"]) {
+    resolve([EXCameraRollRequester permissions]);
   } else {
     reject(@"E_PERMISSION_UNKNOWN", [NSString stringWithFormat:@"Unrecognized permission: %@", type], nil);
   }
@@ -75,6 +78,8 @@ RCT_REMAP_METHOD(askAsync,
         requester = [[EXContactsRequester alloc] init];
       } else if ([type isEqualToString:@"audioRecording"]) {
         requester = [[EXAudioRecordingPermissionRequester alloc] init];
+      } else if ([type isEqualToString:@"cameraRoll"]) {
+        requester = [[EXCameraRollRequester alloc] init];
       } else {
         // TODO: other types of permission requesters, e.g. facebook
         reject(@"E_PERMISSION_UNSUPPORTED", [NSString stringWithFormat:@"Cannot request permission: %@", type], nil);
