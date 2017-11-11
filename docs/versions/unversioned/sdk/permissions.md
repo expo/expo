@@ -75,3 +75,7 @@ The permission type for audio recording.
 ### `Expo.Permissions.CONTACTS`
 
 The permission type for reading contacts.
+
+### `Expo.Permissions.CAMERA_ROLL`
+
+The permission type for reading or writing to the camera roll.
