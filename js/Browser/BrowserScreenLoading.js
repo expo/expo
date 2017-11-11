@@ -9,6 +9,7 @@ import React from 'react';
 import { ActivityIndicator, Image, Platform, StyleSheet, Text, View } from 'react-native';
 
 import FadeIn from '@expo/react-native-fade-in-image';
+import isIPhoneX from '../Util/isIPhoneX';
 import { Constants } from 'expo';
 
 export default class BrowserScreenLoading extends React.Component {
@@ -249,7 +250,9 @@ const styles = StyleSheet.create({
     right: 0,
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 10,
+    paddingHorizontal: 10,
+    paddingTop: 10,
+    paddingBottom: isIPhoneX ? 30 : 10,
     backgroundColor: '#fafafa',
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: '#f3f3f3',

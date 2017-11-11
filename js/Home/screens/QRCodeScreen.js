@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { Camera } from 'expo';
 import { throttle } from 'lodash';
+import isIPhoneX from '../../Util/isIPhoneX';
 
 import Layout from '../constants/Layout';
 
@@ -86,7 +87,7 @@ export default class BarCodeScreen extends React.Component {
         <View style={styles.footer}>
           <TouchableOpacity
             onPress={this._handlePressCancel}
-            hitSlop={{ top: 40, bottom: 40, right: 40, left: 40 }}>
+            hitSlop={{ top: 80, bottom: 80, right: 80, left: 80 }}>
             <Text style={styles.cancelText}>Cancel</Text>
           </TouchableOpacity>
         </View>
@@ -240,7 +241,7 @@ const styles = StyleSheet.create({
   },
   header: {
     position: 'absolute',
-    top: 40,
+    top: isIPhoneX ? 50 : 40,
     left: 0,
     right: 0,
     ...Platform.select({
@@ -271,7 +272,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     position: 'absolute',
-    bottom: 30,
+    bottom: isIPhoneX ? 50 : 30,
     left: 0,
     right: 0,
     alignItems: 'center',
