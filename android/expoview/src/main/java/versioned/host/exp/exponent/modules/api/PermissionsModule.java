@@ -76,6 +76,10 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
           askForWriteSettingsPermission(promise);
           break;
         }
+        case "cameraRoll":{
+          askForCameraRollPermissions(promise);
+          break;
+        }
         default:
           promise.reject("E_PERMISSION_UNSUPPORTED", String.format("Cannot request permission: %s", type));
       }
@@ -102,6 +106,9 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
       }
       case "systemBrightness": {
         return getWriteSettingsPermission();
+      }
+      case "cameraRoll": {
+        return getCameraRollPermissions();
       }
       default:
         return null;
@@ -236,5 +243,47 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
     if (!gotPermissions) {
       promise.reject("E_ACTIVITY_DOES_NOT_EXIST", "No visible activity. Must request location when visible.");
     }
+  }
+
+  private void askForCameraRollPermissions(final Promise promise) {
+    final String[] permissions = new String[]{
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+    boolean gotPermissions = Exponent.getInstance().getPermissions(new Exponent.PermissionsListener() {
+      @Override
+      public void permissionsGranted() {
+        promise.resolve(getLocationPermissions());
+      }
+      @Override
+      public void permissionsDenied() {
+        promise.resolve(getLocationPermissions());
+      }
+    }, permissions);
+
+    if (!gotPermissions) {
+      promise.reject("E_ACTIVITY_DOES_NOT_EXIST", "No visible activity. Must request camera roll permission when visible.");
+    }
+  }
+
+  private WritableMap getCameraRollPermissions() {
+    WritableMap response = Arguments.createMap();
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      int read = ContextCompat.checkSelfPermission(getReactApplicationContext(),
+          Manifest.permission.READ_EXTERNAL_STORAGE);
+      int write = ContextCompat.checkSelfPermission(getReactApplicationContext(),
+          Manifest.permission.WRITE_EXTERNAL_STORAGE);
+      if (read == PackageManager.PERMISSION_GRANTED && write == PackageManager.PERMISSION_GRANTED) {
+        response.putString("status", "granted");
+      } else {
+        response.putString("status", "denied");
+      }
+    } else {
+      response.putString("status", "granted");
+    }
+    response.putString("expires", PERMISSION_EXPIRES_NEVER);
+
+    return response;
   }
 }
