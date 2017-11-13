@@ -114,6 +114,20 @@ public class SegmentModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void group(final String userId, final String groupId) {
+    if (mClient != null) {
+      mClient.group(userId, groupId);
+    }
+  }
+
+  @ReactMethod
+  public void groupWithTraits(final String userId, final String groupId, final ReadableMap properties) {
+    if (mClient != null) {
+      mClient.group(userId, groupId, readableMapToTraits(properties), new Options());
+    }
+  }
+
+  @ReactMethod
   public void screen(final String screenName) {
     if (mClient != null) {
       // First parameter is category. We want to fill name to be in line with iOS
