@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXFontLoader.h"
+#import "EXUnversioned.h"
 
 @import CoreGraphics;
 @import CoreText;
@@ -107,8 +108,16 @@ static const char *EXFontAssocKey = "EXFont";
 
 @end
 
+@interface EXFontLoader ()
+{
+  BOOL _isInForeground;
+}
+
+@end
 
 @implementation EXFontLoader
+
+@synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE(ExponentFontLoader);
 
@@ -119,12 +128,30 @@ RCT_EXPORT_MODULE(ExponentFontLoader);
     method_exchangeImplementations(class_getClassMethod([RCTFont class], a),
                                    class_getClassMethod([RCTFont class], b));
   }
-  {
-    SEL a = @selector(ex_fontWithSize:);
-    SEL b = @selector(fontWithSize:);
-    method_exchangeImplementations(class_getInstanceMethod([UIFont class], a),
-                                   class_getInstanceMethod([UIFont class], b));
+}
+
+- (void)setBridge:(RCTBridge *)bridge
+{
+  _bridge = bridge;
+  if (_bridge) {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(_bridgeDidForeground:)
+                                                 name:EX_UNVERSIONED(@"EXKernelBridgeDidForegroundNotification")
+                                               object:_bridge];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(_bridgeDidBackground:)
+                                                 name:EX_UNVERSIONED(@"EXKernelBridgeDidBackgroundNotification")
+                                               object:_bridge];
+    [self _bridgeDidForeground:nil];
+  } else {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
   }
+}
+
+- (void)dealloc
+{
+  [self _bridgeDidBackground:nil];
 }
 
 RCT_REMAP_METHOD(loadAsync,
@@ -175,6 +202,32 @@ RCT_REMAP_METHOD(loadAsync,
     queue = dispatch_queue_create("host.exp.Exponent.FontLoader", DISPATCH_QUEUE_SERIAL);
   });
   return queue;
+}
+
+#pragma mark - internal
+
+- (void)_swizzleUIFont
+{
+  SEL a = @selector(ex_fontWithSize:);
+  SEL b = @selector(fontWithSize:);
+  method_exchangeImplementations(class_getInstanceMethod([UIFont class], a),
+                                 class_getInstanceMethod([UIFont class], b));
+}
+
+- (void)_bridgeDidForeground:(__unused NSNotification *)notif
+{
+  if (!_isInForeground) {
+    [self _swizzleUIFont];
+    _isInForeground = YES;
+  }
+}
+
+- (void)_bridgeDidBackground:(__unused NSNotification *)notif
+{
+  if (_isInForeground) {
+    _isInForeground = NO;
+    [self _swizzleUIFont];
+  }
 }
 
 @end

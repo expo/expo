@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "ABI23_0_0EXFontLoader.h"
+#import "ABI23_0_0EXUnversioned.h"
 
 @import CoreGraphics;
 @import CoreText;
@@ -107,8 +108,16 @@ static const char *ABI23_0_0EXFontAssocKey = "ABI23_0_0EXFont";
 
 @end
 
+@interface ABI23_0_0EXFontLoader ()
+{
+  BOOL _isInForeground;
+}
+
+@end
 
 @implementation ABI23_0_0EXFontLoader
+
+@synthesize bridge = _bridge;
 
 ABI23_0_0RCT_EXPORT_MODULE(ExponentFontLoader);
 
@@ -119,12 +128,30 @@ ABI23_0_0RCT_EXPORT_MODULE(ExponentFontLoader);
     method_exchangeImplementations(class_getClassMethod([ABI23_0_0RCTFont class], a),
                                    class_getClassMethod([ABI23_0_0RCTFont class], b));
   }
-  {
-    SEL a = @selector(ex_fontWithSize:);
-    SEL b = @selector(fontWithSize:);
-    method_exchangeImplementations(class_getInstanceMethod([UIFont class], a),
-                                   class_getInstanceMethod([UIFont class], b));
+}
+
+- (void)setBridge:(ABI23_0_0RCTBridge *)bridge
+{
+  _bridge = bridge;
+  if (_bridge) {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(_bridgeDidForeground:)
+                                                 name:@"EXKernelBridgeDidForegroundNotification"
+                                               object:_bridge];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(_bridgeDidBackground:)
+                                                 name:@"EXKernelBridgeDidBackgroundNotification"
+                                               object:_bridge];
+    [self _bridgeDidForeground:nil];
+  } else {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
   }
+}
+
+- (void)dealloc
+{
+  [self _bridgeDidBackground:nil];
 }
 
 ABI23_0_0RCT_REMAP_METHOD(loadAsync,
@@ -175,6 +202,32 @@ ABI23_0_0RCT_REMAP_METHOD(loadAsync,
     queue = dispatch_queue_create("host.exp.Exponent.FontLoader", DISPATCH_QUEUE_SERIAL);
   });
   return queue;
+}
+
+#pragma mark - internal
+
+- (void)_swizzleUIFont
+{
+  SEL a = @selector(ex_fontWithSize:);
+  SEL b = @selector(fontWithSize:);
+  method_exchangeImplementations(class_getInstanceMethod([UIFont class], a),
+                                 class_getInstanceMethod([UIFont class], b));
+}
+
+- (void)_bridgeDidForeground:(__unused NSNotification *)notif
+{
+  if (!_isInForeground) {
+    [self _swizzleUIFont];
+    _isInForeground = YES;
+  }
+}
+
+- (void)_bridgeDidBackground:(__unused NSNotification *)notif
+{
+  if (_isInForeground) {
+    _isInForeground = NO;
+    [self _swizzleUIFont];
+  }
 }
 
 @end
