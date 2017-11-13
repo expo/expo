@@ -8,8 +8,6 @@
  */
 package com.facebook.react.uimanager;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
 import android.content.res.Resources;
 import android.util.Log;
 import android.util.SparseArray;
@@ -36,6 +34,8 @@ import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationListener;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.NotThreadSafe;
 
 /**
  * Delegate of {@link UIManagerModule} that owns the native view hierarchy and mapping between
@@ -158,6 +158,18 @@ public class NativeViewHierarchyManager {
             // operations should also follow the native view hierarchy and go top to bottom for consistency
             // with standard layout passes (some views may depend on this).
             viewToUpdate.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY));
+            // We update the layout of the ReactRootView when there is a change in the layout of its child.
+            // This is required to re-measure the size of the native View container (usually a
+            // FrameLayout) that is configured with layout_height = WRAP_CONTENT or layout_width =
+            // WRAP_CONTENT
+            //
+            // This code is going to be executed ONLY when there is a change in the size of the Root
+            // View defined in the js side. Changes in the layout of inner views will not trigger an update
+            // on the layour of the Root View.
+            ViewParent parent = viewToUpdate.getParent();
+            if (parent instanceof RootView) {
+                parent.requestLayout();
+            }
             // Check if the parent of the view has to layout the view, or the child has to lay itself out.
             if (!mRootTags.get(parentTag)) {
                 ViewManager parentViewManager = mTagsToViewManagers.get(parentTag);

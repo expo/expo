@@ -7,7 +7,7 @@
 
 import React, { PropTypes } from 'react';
 import {
-  BackAndroid,
+  BackHandler,
   Image,
   NativeModules,
   Platform,
@@ -34,7 +34,7 @@ export default class ErrorScreenApp extends React.Component {
 
   componentDidMount() {
     if (Platform.OS === 'android') {
-      BackAndroid.addEventListener('hardwareBackPress', this._handleBackButtonPress);
+      BackHandler.addEventListener('hardwareBackPress', this._handleBackButtonPress);
     }
   }
 

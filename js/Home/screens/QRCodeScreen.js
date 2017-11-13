@@ -2,6 +2,7 @@
 
 import React from 'react';
 import {
+  Dimensions,
   Linking,
   Platform,
   StatusBar,
@@ -10,10 +11,13 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { BarCodeScanner } from 'expo';
+import { Camera } from 'expo';
 import { throttle } from 'lodash';
+import isIPhoneX from '../../Util/isIPhoneX';
 
 import Layout from '../constants/Layout';
+
+const DEFAULT_RATIO = '16:9';
 
 export default class BarCodeScreen extends React.Component {
   static route = {
@@ -24,6 +28,7 @@ export default class BarCodeScreen extends React.Component {
 
   state = {
     scannerIsVisible: Platform.OS !== 'android',
+    ratio: undefined,
   };
 
   _hasOpenedUrl: boolean;
@@ -48,10 +53,22 @@ export default class BarCodeScreen extends React.Component {
   }
 
   render() {
+    const cameraStyle =
+      Platform.OS === 'android' && this.state.ratio === undefined
+        ? { width: 0 }
+        : StyleSheet.absoluteFill;
     return (
       <View style={styles.container}>
         {this.state.scannerIsVisible ? (
-          <BarCodeScanner onBarCodeRead={this._handleBarCodeRead} style={StyleSheet.absoluteFill} />
+          <Camera
+            ref={ref => {
+              this._scanner = ref;
+            }}
+            onBarCodeRead={this._handleBarCodeRead}
+            style={cameraStyle}
+            ratio={this.state.ratio}
+            onCameraReady={this._setAspectRatio}
+          />
         ) : null}
 
         <View style={styles.topOverlay} />
@@ -70,7 +87,7 @@ export default class BarCodeScreen extends React.Component {
         <View style={styles.footer}>
           <TouchableOpacity
             onPress={this._handlePressCancel}
-            hitSlop={{ top: 40, bottom: 40, right: 40, left: 40 }}>
+            hitSlop={{ top: 80, bottom: 80, right: 80, left: 80 }}>
             <Text style={styles.cancelText}>Cancel</Text>
           </TouchableOpacity>
         </View>
@@ -107,6 +124,36 @@ export default class BarCodeScreen extends React.Component {
 
   _handlePressCancel = () => {
     this.props.navigation.dismissModal();
+  };
+
+  _setAspectRatio = async () => {
+    if (this._scanner && Platform.OS === 'android') {
+      const ratios = await this._scanner.getSupportedRatiosAsync();
+      if (ratios.length === 0) {
+        console.warn(
+          'getSupportedRatiosAsync returned an empty array - preview might be stretched or not visible at all.'
+        );
+        this.setState({
+          ratio: DEFAULT_RATIO,
+        });
+      } else {
+        const { width, height } = Dimensions.get('window');
+        const screenRatio = height / width;
+        const cameraRatio = { ratio: '16:9', value: 10 };
+        ratios.forEach(ratio => {
+          const splitted = ratio.split(':');
+          const [h, w] = splitted;
+          const ratioValue = h / w;
+          if (Math.abs(screenRatio - ratioValue) < Math.abs(screenRatio - cameraRatio.value)) {
+            cameraRatio.ratio = ratio;
+            cameraRatio.value = ratioValue;
+          }
+        });
+        this.setState({
+          ratio: cameraRatio.ratio,
+        });
+      }
+    }
   };
 }
 
@@ -194,7 +241,7 @@ const styles = StyleSheet.create({
   },
   header: {
     position: 'absolute',
-    top: 40,
+    top: isIPhoneX ? 50 : 40,
     left: 0,
     right: 0,
     ...Platform.select({
@@ -225,7 +272,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     position: 'absolute',
-    bottom: 30,
+    bottom: isIPhoneX ? 50 : 30,
     left: 0,
     right: 0,
     alignItems: 'center',

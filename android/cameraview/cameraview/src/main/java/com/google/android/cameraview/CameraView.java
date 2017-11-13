@@ -514,6 +514,13 @@ public class CameraView extends FrameLayout {
             }
         }
 
+        @Override
+        public void onMountError() {
+            for (Callback callback : mCallbacks) {
+                callback.onMountError(CameraView.this);
+            }
+        }
+
         public void reserveRequestLayoutOnOpen() {
             mRequestLayoutOnOpen = true;
         }
@@ -628,6 +635,8 @@ public class CameraView extends FrameLayout {
 
         public void onFramePreview(CameraView cameraView, byte[] data, int width, int height, int orientation) {
         }
+
+        public void onMountError(CameraView cameraView) {}
     }
 
 }

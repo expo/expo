@@ -167,7 +167,7 @@ public class RNObject {
     } catch (NoSuchMethodError e) {
       EXL.e(TAG, e);
     } catch (Throwable e) {
-      EXL.e(TAG, "Runtime exception in RNObject: " + e.toString());
+      EXL.e(TAG, "Runtime exception in RNObject when calling method " + name + ": " + e.toString());
     }
 
     return null;
@@ -183,7 +183,7 @@ public class RNObject {
     } catch (NoSuchMethodError e) {
       EXL.e(TAG, e);
     } catch (Throwable e) {
-      EXL.e(TAG, "Runtime exception in RNObject: " + e.toString());
+      EXL.e(TAG, "Runtime exception in RNObject when setting field " + name + ": " + e.toString());
     }
   }
 

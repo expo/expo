@@ -5,6 +5,8 @@ package host.exp.exponent;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.common.JavascriptException;
 
+import host.exp.expoview.Exponent;
+
 @DoNotStrip
 public class ReactNativeStaticHelpers {
 
@@ -54,6 +56,15 @@ public class ReactNativeStaticHelpers {
       Class.forName("host.exp.exponent.kernel.Kernel").getMethod("handleReactNativeError", Throwable.class, String.class, Object.class, Integer.class, Boolean.class).invoke(null, throwable, errorMessage, detailsUnversioned, exceptionId, isFatal);
     } catch (Exception e) {
       throw new JavascriptException(errorMessage);
+    }
+  }
+
+  @DoNotStrip
+  public static String getBundleSourceForPath(final String path) {
+    try {
+      return Exponent.getInstance().getBundleSource(path);
+    } catch (Exception e) {
+      return null;
     }
   }
 }

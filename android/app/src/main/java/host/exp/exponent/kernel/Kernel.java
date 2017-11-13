@@ -14,6 +14,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.support.v4.content.pm.ShortcutInfoCompat;
+import android.support.v4.content.pm.ShortcutManagerCompat;
+import android.support.v4.graphics.drawable.IconCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.widget.Toast;
@@ -1023,15 +1026,14 @@ public class Kernel extends KernelInterface {
         shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         shortcutIntent.putExtra(KernelConstants.SHORTCUT_MANIFEST_URL_KEY, manifestUrl);
 
-        Intent addIntent = new Intent();
-        addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-        addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, manifestJson.optString(ExponentManifest.MANIFEST_NAME_KEY));
-        addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON, bitmap);
+        ShortcutInfoCompat pinShortcutInfo =
+          new ShortcutInfoCompat.Builder(mContext, manifestUrl)
+                 .setIcon(IconCompat.createWithBitmap(bitmap))
+              .setShortLabel(manifestJson.optString(ExponentManifest.MANIFEST_NAME_KEY))
+              .setIntent(shortcutIntent)
+              .build();
 
-        addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
-        mContext.sendBroadcast(addIntent);
-
-        goToHome();
+        ShortcutManagerCompat.requestPinShortcut(mContext, pinShortcutInfo, null);
       }
     });
   }
@@ -1042,16 +1044,14 @@ public class Kernel extends KernelInterface {
     shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
     shortcutIntent.putExtra(KernelConstants.DEV_FLAG, true);
 
-    Intent addIntent = new Intent();
-    addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-    addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, "Dev Tools");
-    addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE,
-        Intent.ShortcutIconResource.fromContext(mContext, R.mipmap.dev_icon));
+    ShortcutInfoCompat pinShortcutInfo =
+      new ShortcutInfoCompat.Builder(mContext, "devtools_shortcut")
+              .setIcon(IconCompat.createWithResource(mContext, R.mipmap.dev_icon))
+          .setShortLabel("Dev Tools")
+          .setIntent(shortcutIntent)
+          .build();
 
-    addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
-    mContext.sendBroadcast(addIntent);
-
-    goToHome();
+    ShortcutManagerCompat.requestPinShortcut(mContext, pinShortcutInfo, null);
   }
 
   private void goToHome() {

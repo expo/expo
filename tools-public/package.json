@@ -32,6 +32,6 @@
     "xdl": "^43.0.1"
   },
   "devDependencies": {
-    "jest": "^21.2.1"
+    "jest": "21.2.0"
   }
 }

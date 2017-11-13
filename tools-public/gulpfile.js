@@ -8,9 +8,8 @@ const shell = require('gulp-shell');
 const minimist = require('minimist');
 const path = require('path');
 const username = require('username');
-const { IosShellApp } = require('xdl');
+const { IosShellApp, AndroidShellApp } = require('xdl');
 
-const { createAndroidShellAppAsync, updateAndroidShellAppAsync } = require('./android-shell-app');
 const { startReactNativeServer } = require('./react-native-tasks');
 const {
   generateDynamicMacrosAsync,
@@ -82,7 +81,7 @@ function createAndroidShellAppWithArguments() {
     throw new Error('Must run with `--sdkVersion SDK_VERSION`');
   }
 
-  return createAndroidShellAppAsync(argv);
+  return AndroidShellApp.createAndroidShellAppAsync(argv);
 }
 
 function updateAndroidShellAppWithArguments() {
@@ -94,7 +93,7 @@ function updateAndroidShellAppWithArguments() {
     throw new Error('Must run with `--sdkVersion SDK_VERSION`');
   }
 
-  return updateAndroidShellAppAsync(argv);
+  return AndroidShellApp.updateAndroidShellAppAsync(argv);
 }
 
 function createIOSShellAppWithArguments() {

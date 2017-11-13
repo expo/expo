@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
 import android.support.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -20,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,10 +40,10 @@ import com.nostra13.universalimageloader.utils.IoUtils;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import host.exp.exponent.ActivityResultListener;
+import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.utils.ExpFileUtils;
 import host.exp.exponent.utils.ScopedContext;
 import host.exp.expoview.Exponent;
-import versioned.host.exp.exponent.ReadableObjectUtils;
 
 public class ImagePickerModule extends ReactContextBaseJavaModule implements ActivityResultListener {
   static final int REQUEST_LAUNCH_CAMERA = 1;
@@ -182,7 +184,9 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
 
   private void launchImageLibraryWithPermissionsGranted(Promise promise) {
     Intent libraryIntent = new Intent();
-    libraryIntent.setType("image/*");
+    libraryIntent.setType("*/*");
+    String[] mimetypes = {"image/*", "video/*"};
+    libraryIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
     libraryIntent.setAction(Intent.ACTION_GET_CONTENT);
     mPromise = promise;
     Exponent.getInstance().getCurrentActivity().startActivityForResult(libraryIntent, REQUEST_LAUNCH_IMAGE_LIBRARY);
@@ -208,37 +212,32 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
         }
 
         CropImage.ActivityResult result = CropImage.getActivityResult(intent);
-
-        WritableMap response = Arguments.createMap();
-        response.putString("uri", result.getUri().toString());
+        int width, height;
         int rot = result.getRotation() % 360;
         if (rot < 0) {
           rot += 360;
         }
         if (rot == 0 || rot == 180) { // Rotation is right-angled only
-          response.putInt("width", result.getCropRect().width());
-          response.putInt("height", result.getCropRect().height());
+          width = result.getCropRect().width();
+          height = result.getCropRect().height();
         } else {
-          response.putInt("width", result.getCropRect().height());
-          response.putInt("height", result.getCropRect().width());
+          width = result.getCropRect().height();
+          height = result.getCropRect().width();
         }
+        ByteArrayOutputStream out = null;
         if (base64) {
-          ByteArrayOutputStream out = new ByteArrayOutputStream();
+          out = new ByteArrayOutputStream();
           try {
             // `CropImage` nullifies the `result.getBitmap()` after it writes out to a file, so
             // we have to read back...
             InputStream in = new FileInputStream(result.getUri().getPath());
             IoUtils.copyStream(in, out, null);
-            response.putString("base64", Base64.encodeToString(out.toByteArray(), Base64.DEFAULT));
           } catch(IOException e) {
             promise.reject(e);
+            return;
           }
         }
-        if (exifData != null) {
-          response.putMap("exif", exifData);
-        }
-        response.putBoolean("cancelled", false);
-        promise.resolve(response);
+        returnImageResult(exifData, result.getUri().toString(), width, height, out, promise);
       }
       return;
     }
@@ -268,72 +267,82 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
         try {
           Uri uri = requestCode == REQUEST_LAUNCH_CAMERA ? mCameraCaptureURI : intent.getData();
           WritableMap exifData = exif ? readExif(uri) : null;
+          boolean isImage = getReactApplicationContext().getContentResolver().getType(uri).contains("image");
 
-          if (allowsEditing) {
-            mLaunchedCropper = true;
-            mPromise = promise; // Need promise again later
-            mExifData = exifData; // Need EXIF data later
+          if (isImage) {
+            if (allowsEditing) {
+              mLaunchedCropper = true;
+              mPromise = promise; // Need promise again later
+              mExifData = exifData; // Need EXIF data later
 
-            CropImage.ActivityBuilder cropImage = CropImage.activity(uri);
-            if (forceAspect != null) {
+              CropImage.ActivityBuilder cropImage = CropImage.activity(uri);
+              if (forceAspect != null) {
+                cropImage
+                    .setAspectRatio(forceAspect.getInt(0), forceAspect.getInt(1))
+                    .setFixAspectRatio(true)
+                    .setInitialCropWindowPaddingRatio(0);
+              }
               cropImage
-                  .setAspectRatio(forceAspect.getInt(0), forceAspect.getInt(1))
-                  .setFixAspectRatio(true)
-                  .setInitialCropWindowPaddingRatio(0);
-            }
-            cropImage
-                .setOutputUri(ExpFileUtils.uriFromFile(new File(generateOutputPath())))
-                .setOutputCompressQuality(quality)
-                .start(Exponent.getInstance().getCurrentActivity());
-          } else {
-            // On some devices this has worked without decoding the URI and on some it has worked
-            // with decoding, so we try both...
-            // The `.cacheOnDisk(true)` and `.considerExifParams(true)` is to reflect EXIF rotation
-            // metadata.
-            // See https://github.com/nostra13/Android-Universal-Image-Loader/issues/630#issuecomment-204338289
-            String beforeDecode = uri.toString();
-            String afterDecode = Uri.decode(beforeDecode);
-            Bitmap bmp = null;
-            try {
-              bmp = ImageLoader.getInstance().loadImageSync(afterDecode,
-                  new DisplayImageOptions.Builder()
-                      .cacheOnDisk(true)
-                      .considerExifParams(true)
-                      .build());
-            } catch (Throwable e) {}
-            if (bmp == null) {
+                  .setOutputUri(ExpFileUtils.uriFromFile(new File(generateOutputPath(".jpg"))))
+                  .setOutputCompressQuality(quality)
+                  .start(Exponent.getInstance().getCurrentActivity());
+            } else {
+              // On some devices this has worked without decoding the URI and on some it has worked
+              // with decoding, so we try both...
+              // The `.cacheOnDisk(true)` and `.considerExifParams(true)` is to reflect EXIF rotation
+              // metadata.
+              // See https://github.com/nostra13/Android-Universal-Image-Loader/issues/630#issuecomment-204338289
+              String beforeDecode = uri.toString();
+              String afterDecode = Uri.decode(beforeDecode);
+              Bitmap bmp = null;
               try {
-                bmp = ImageLoader.getInstance().loadImageSync(beforeDecode,
+                bmp = ImageLoader.getInstance().loadImageSync(afterDecode,
                     new DisplayImageOptions.Builder()
                         .cacheOnDisk(true)
                         .considerExifParams(true)
                         .build());
               } catch (Throwable e) {}
-            }
-            if (bmp == null) {
-              promise.reject(new IllegalStateException("Image decoding failed."));
-              if (requestCode == REQUEST_LAUNCH_CAMERA) {
-                revokeUriPermissionForCamera();
+              if (bmp == null) {
+                try {
+                  bmp = ImageLoader.getInstance().loadImageSync(beforeDecode,
+                      new DisplayImageOptions.Builder()
+                          .cacheOnDisk(true)
+                          .considerExifParams(true)
+                          .build());
+                } catch (Throwable e) {}
               }
-              return;
-            }
-            String path = writeImage(bmp);
+              if (bmp == null) {
+                promise.reject(new IllegalStateException("Image decoding failed."));
+                if (requestCode == REQUEST_LAUNCH_CAMERA) {
+                  revokeUriPermissionForCamera();
+                }
+                return;
+              }
+              String path = writeImage(bmp);
 
+              ByteArrayOutputStream out = null;
+              if (base64) {
+                out = new ByteArrayOutputStream();
+                bmp.compress(Bitmap.CompressFormat.JPEG, quality, out);
+              }
+
+              returnImageResult(exifData, path, bmp.getWidth(), bmp.getHeight(), out, promise);
+            }
+          } else {
             WritableMap response = Arguments.createMap();
-            response.putString("uri", ExpFileUtils.uriFromFile(new File(path)).toString());
-            if (base64) {
-              ByteArrayOutputStream out = new ByteArrayOutputStream();
-              bmp.compress(Bitmap.CompressFormat.JPEG, quality, out);
-              response.putString("base64", Base64.encodeToString(out.toByteArray(), Base64.DEFAULT));
-            }
-            response.putInt("width", bmp.getWidth());
-            response.putInt("height", bmp.getHeight());
-            if (exifData != null) {
-              response.putMap("exif", exifData);
-            }
+            response.putString("uri", ExpFileUtils.uriFromFile(new File(writeVideo(uri))).toString());
             response.putBoolean("cancelled", false);
-            if (requestCode == REQUEST_LAUNCH_CAMERA) {
-              revokeUriPermissionForCamera();
+            response.putString("type", "video");
+
+            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+            try {
+              retriever.setDataSource(mScopedContext, uri);
+              response.putInt("width", Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)));
+              response.putInt("height", Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)));
+              response.putInt("rotation", Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)));
+              response.putInt("duration", Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)));
+            } catch (IllegalArgumentException | SecurityException e){
+              EXL.d(ImagePickerModule.class.getSimpleName(), "Could not read metadata from video: " + uri);
             }
             promise.resolve(response);
           }
@@ -344,21 +353,66 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
     });
   }
 
-  private String generateOutputPath() throws IOException {
+  private void returnImageResult(WritableMap exifData, String path, int width, int height,
+                                 ByteArrayOutputStream base64OutputStream, Promise promise) {
+    WritableMap response = Arguments.createMap();
+    response.putString("uri", ExpFileUtils.uriFromFile(new File(path)).toString());
+    if (base64) {
+      response.putString("base64", Base64.encodeToString(base64OutputStream.toByteArray(), Base64.DEFAULT));
+    }
+    response.putInt("width", width);
+    response.putInt("height", height);
+    if (exifData != null) {
+      response.putMap("exif", exifData);
+    }
+    response.putBoolean("cancelled", false);
+    response.putString("type", "image");
+    promise.resolve(response);
+  }
+
+  private String generateOutputPath(String extension) throws IOException {
     File directory = new File(mScopedContext.getCacheDir() + File.separator + "ImagePicker");
     ExpFileUtils.ensureDirExists(directory);
     String filename = UUID.randomUUID().toString();
-    return directory + File.separator + filename + ".jpg";
+    return directory + File.separator + filename + extension;
   }
 
   private String writeImage(Bitmap image) {
     FileOutputStream out = null;
     String path = null;
     try {
-      path = generateOutputPath();
+      path = generateOutputPath(".jpg");
       out = new FileOutputStream(path);
       image.compress(Bitmap.CompressFormat.JPEG, quality, out);
     } catch (Exception e) {
+      e.printStackTrace();
+    } finally {
+      try {
+        if (out != null) {
+          out.close();
+        }
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+    return path;
+  }
+
+  private String writeVideo(Uri uri) {
+    InputStream in;
+    OutputStream out = null;
+    String path = null;
+    try {
+      in = getReactApplicationContext().getContentResolver().openInputStream(uri);
+      if (in != null) {
+        byte[] buffer = new byte[in.available()];
+        in.read(buffer);
+
+        path = generateOutputPath(".mp4");
+        out = new FileOutputStream(path);
+        out.write(buffer);
+      }
+    } catch (IOException e) {
       e.printStackTrace();
     } finally {
       try {

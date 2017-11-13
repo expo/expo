@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This is used by android-shell-app.js
+# This is used by AndroidShellApp.js
 set -eo pipefail
 
 # Initialize the shell if we aren't already running in a terminal (initialize just once)

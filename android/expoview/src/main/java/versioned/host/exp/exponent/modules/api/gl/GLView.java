@@ -1,13 +1,13 @@
 package versioned.host.exp.exponent.modules.api.gl;
 
 import android.content.Context;
-
 import android.graphics.PixelFormat;
 import android.opengl.EGL14;
 import android.opengl.GLSurfaceView;
 import android.util.SparseArray;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
@@ -17,7 +17,9 @@ import java.util.ArrayList;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import static host.exp.exponent.exgl.EXGL.*;
+import static host.exp.exponent.exgl.EXGL.EXGLContextCreate;
+import static host.exp.exponent.exgl.EXGL.EXGLContextDestroy;
+import static host.exp.exponent.exgl.EXGL.EXGLContextFlush;
 
 public class GLView extends GLSurfaceView implements GLSurfaceView.Renderer {
   private boolean onSurfaceCreateCalled = false;
@@ -46,7 +48,10 @@ public class GLView extends GLSurfaceView implements GLSurfaceView.Renderer {
       reactContext.runOnJSQueueThread(new Runnable() {
         @Override
         public void run() {
-          exglCtxId = EXGLContextCreate(reactContext.getJavaScriptContext());
+          JavaScriptContextHolder jsContext = reactContext.getJavaScriptContextHolder();
+          synchronized (jsContext) {
+            exglCtxId = EXGLContextCreate(jsContext.get());
+          }
           mGLViewMap.put(exglCtxId, glView);
           WritableMap arg = Arguments.createMap();
           arg.putInt("exglCtxId", exglCtxId);

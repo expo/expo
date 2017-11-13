@@ -11,9 +11,6 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
-import java.util.LinkedList;
-import java.util.Queue;
-
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
@@ -26,7 +23,6 @@ import host.exp.exponent.kernel.ExponentError;
 import host.exp.exponent.kernel.ExponentErrorMessage;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.modules.ExponentKernelModule;
-import host.exp.exponent.storage.ExponentSharedPreferences;
 
 public abstract class BaseExperienceActivity extends MultipleVersionReactNativeActivity {
 
@@ -34,6 +30,8 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
 
   @Inject
   Kernel mKernel;
+
+  private long mOnResumeTime;
 
   public static void addError(ExponentError error) {
     sErrorQueue.add(error);
@@ -73,15 +71,28 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
     // Consume any errors that happened before onResume
     consumeErrorQueue();
     mIsInForeground = true;
+
+    mOnResumeTime = System.currentTimeMillis();
   }
 
   @Override
   protected void onPause() {
     super.onPause();
 
-    mIsInForeground = false;
-    if (sVisibleActivity == this) {
-      sVisibleActivity = null;
+    // For some reason onPause sometimes gets called soon after onResume.
+    // One symptom of this is that ReactNativeActivity.startReactInstance will
+    // see isInForeground == false and not start the app.
+    // 500ms should be very safe. The average time between onResume and
+    // onPause when the bug happens is around 10ms.
+    // This seems to happen when foregrounding the app after pressing on a notification.
+    // Unclear if this is because of something we're doing during the initialization process
+    // or just an OS quirk.
+    long timeSinceOnResume = System.currentTimeMillis() - mOnResumeTime;
+    if (timeSinceOnResume > 500) {
+      mIsInForeground = false;
+      if (sVisibleActivity == this) {
+        sVisibleActivity = null;
+      }
     }
   }
 
