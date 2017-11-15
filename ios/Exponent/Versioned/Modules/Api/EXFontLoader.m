@@ -60,13 +60,13 @@ static const char *EXFontAssocKey = "EXFont";
 @implementation RCTFont (EXFontLoader)
 
 // Will swap this with +[RCTFont updateFont: ...]
-+ (UIFont *)ex_updateFont:(UIFont *)uiFont
-               withFamily:(NSString *)family
-                     size:(NSNumber *)size
-                   weight:(NSString *)weight
-                    style:(NSString *)style
-                  variant:(NSArray<NSDictionary *> *)variant
-          scaleMultiplier:(CGFloat)scaleMultiplier
++ (UIFont *)EXUpdateFont:(UIFont *)uiFont
+              withFamily:(NSString *)family
+                    size:(NSNumber *)size
+                  weight:(NSString *)weight
+                   style:(NSString *)style
+                 variant:(NSArray<NSDictionary *> *)variant
+         scaleMultiplier:(CGFloat)scaleMultiplier
 {
   NSString *const exponentPrefix = @"ExponentFont-";
   const CGFloat defaultFontSize = 14;
@@ -87,7 +87,7 @@ static const char *EXFontAssocKey = "EXFont";
   if (exFont) {
     return [exFont UIFontWithSize:[RCTConvert CGFloat:size] ?: uiFont.pointSize ?: defaultFontSize];
   } else {
-    return [self ex_updateFont:uiFont withFamily:family size:size weight:weight style:style variant:variant scaleMultiplier:scaleMultiplier];
+    return [self EXUpdateFont:uiFont withFamily:family size:size weight:weight style:style variant:variant scaleMultiplier:scaleMultiplier];
   }
 }
 
@@ -96,13 +96,13 @@ static const char *EXFontAssocKey = "EXFont";
 
 @implementation UIFont (EXFontLoader)
 
-- (UIFont *)ex_fontWithSize:(CGFloat)fontSize
+- (UIFont *)EXFontWithSize:(CGFloat)fontSize
 {
   EXFont *exFont = objc_getAssociatedObject(self, EXFontAssocKey);
   if (exFont) {
     return [exFont UIFontWithSize:fontSize];
   } else {
-    return [self ex_fontWithSize:fontSize];
+    return [self EXFontWithSize:fontSize];
   }
 }
 
@@ -123,7 +123,7 @@ RCT_EXPORT_MODULE(ExponentFontLoader);
 
 + (void)initialize {
   {
-    SEL a = @selector(ex_updateFont:withFamily:size:weight:style:variant:scaleMultiplier:);
+    SEL a = @selector(EXUpdateFont:withFamily:size:weight:style:variant:scaleMultiplier:);
     SEL b = @selector(updateFont:withFamily:size:weight:style:variant:scaleMultiplier:);
     method_exchangeImplementations(class_getClassMethod([RCTFont class], a),
                                    class_getClassMethod([RCTFont class], b));
@@ -138,7 +138,7 @@ RCT_EXPORT_MODULE(ExponentFontLoader);
                                              selector:@selector(_bridgeDidForeground:)
                                                  name:EX_UNVERSIONED(@"EXKernelBridgeDidForegroundNotification")
                                                object:_bridge];
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(_bridgeDidBackground:)
                                                  name:EX_UNVERSIONED(@"EXKernelBridgeDidBackgroundNotification")
@@ -208,7 +208,7 @@ RCT_REMAP_METHOD(loadAsync,
 
 - (void)_swizzleUIFont
 {
-  SEL a = @selector(ex_fontWithSize:);
+  SEL a = @selector(EXFontWithSize:);
   SEL b = @selector(fontWithSize:);
   method_exchangeImplementations(class_getInstanceMethod([UIFont class], a),
                                  class_getInstanceMethod([UIFont class], b));

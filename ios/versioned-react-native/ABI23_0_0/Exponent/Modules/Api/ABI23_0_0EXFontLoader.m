@@ -60,13 +60,13 @@ static const char *ABI23_0_0EXFontAssocKey = "ABI23_0_0EXFont";
 @implementation ABI23_0_0RCTFont (ABI23_0_0EXFontLoader)
 
 // Will swap this with +[ABI23_0_0RCTFont updateFont: ...]
-+ (UIFont *)ex_updateFont:(UIFont *)uiFont
-               withFamily:(NSString *)family
-                     size:(NSNumber *)size
-                   weight:(NSString *)weight
-                    style:(NSString *)style
-                  variant:(NSArray<NSDictionary *> *)variant
-          scaleMultiplier:(CGFloat)scaleMultiplier
++ (UIFont *)ABI23_0_0EXUpdateFont:(UIFont *)uiFont
+              withFamily:(NSString *)family
+                    size:(NSNumber *)size
+                  weight:(NSString *)weight
+                   style:(NSString *)style
+                 variant:(NSArray<NSDictionary *> *)variant
+         scaleMultiplier:(CGFloat)scaleMultiplier
 {
   NSString *const exponentPrefix = @"ExponentFont-";
   const CGFloat defaultFontSize = 14;
@@ -87,7 +87,7 @@ static const char *ABI23_0_0EXFontAssocKey = "ABI23_0_0EXFont";
   if (exFont) {
     return [exFont UIFontWithSize:[ABI23_0_0RCTConvert CGFloat:size] ?: uiFont.pointSize ?: defaultFontSize];
   } else {
-    return [self ex_updateFont:uiFont withFamily:family size:size weight:weight style:style variant:variant scaleMultiplier:scaleMultiplier];
+    return [self ABI23_0_0EXUpdateFont:uiFont withFamily:family size:size weight:weight style:style variant:variant scaleMultiplier:scaleMultiplier];
   }
 }
 
@@ -96,13 +96,13 @@ static const char *ABI23_0_0EXFontAssocKey = "ABI23_0_0EXFont";
 
 @implementation UIFont (ABI23_0_0EXFontLoader)
 
-- (UIFont *)ex_fontWithSize:(CGFloat)fontSize
+- (UIFont *)ABI23_0_0EXFontWithSize:(CGFloat)fontSize
 {
   ABI23_0_0EXFont *exFont = objc_getAssociatedObject(self, ABI23_0_0EXFontAssocKey);
   if (exFont) {
     return [exFont UIFontWithSize:fontSize];
   } else {
-    return [self ex_fontWithSize:fontSize];
+    return [self ABI23_0_0EXFontWithSize:fontSize];
   }
 }
 
@@ -123,7 +123,7 @@ ABI23_0_0RCT_EXPORT_MODULE(ExponentFontLoader);
 
 + (void)initialize {
   {
-    SEL a = @selector(ex_updateFont:withFamily:size:weight:style:variant:scaleMultiplier:);
+    SEL a = @selector(ABI23_0_0EXUpdateFont:withFamily:size:weight:style:variant:scaleMultiplier:);
     SEL b = @selector(updateFont:withFamily:size:weight:style:variant:scaleMultiplier:);
     method_exchangeImplementations(class_getClassMethod([ABI23_0_0RCTFont class], a),
                                    class_getClassMethod([ABI23_0_0RCTFont class], b));
@@ -138,7 +138,7 @@ ABI23_0_0RCT_EXPORT_MODULE(ExponentFontLoader);
                                              selector:@selector(_bridgeDidForeground:)
                                                  name:@"EXKernelBridgeDidForegroundNotification"
                                                object:_bridge];
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(_bridgeDidBackground:)
                                                  name:@"EXKernelBridgeDidBackgroundNotification"
@@ -208,7 +208,7 @@ ABI23_0_0RCT_REMAP_METHOD(loadAsync,
 
 - (void)_swizzleUIFont
 {
-  SEL a = @selector(ex_fontWithSize:);
+  SEL a = @selector(ABI23_0_0EXFontWithSize:);
   SEL b = @selector(fontWithSize:);
   method_exchangeImplementations(class_getInstanceMethod([UIFont class], a),
                                  class_getInstanceMethod([UIFont class], b));
