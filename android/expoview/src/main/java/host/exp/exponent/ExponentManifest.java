@@ -188,6 +188,7 @@ public class ExponentManifest {
     // Fetch manifest
     Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToUrl(httpManifestUrl, manifestUrl.equals(Constants.INITIAL_URL));
     requestBuilder.header("Exponent-Accept-Signature", "true");
+    requestBuilder.header("Expo-JSON-Error", "true");
 
     Analytics.markEvent(Analytics.TimedEvent.STARTED_MANIFEST_NETWORK_REQUEST);
     if (Constants.DEBUG_MANIFEST_METHOD_TRACING) {
@@ -213,7 +214,14 @@ public class ExponentManifest {
         @Override
         public void onResponse(Call call, Response response) {
           if (!response.isSuccessful()) {
-            listener.onError(new ManifestException(null, manifestUrl));
+            ManifestException exception;
+            try {
+              final JSONObject errorJSON = new JSONObject(response.body().string());
+              exception = new ManifestException(null, manifestUrl, errorJSON);
+            } catch (JSONException | IOException e) {
+              exception = new ManifestException(null, manifestUrl);
+            }
+            listener.onError(exception);
             return;
           }
 
