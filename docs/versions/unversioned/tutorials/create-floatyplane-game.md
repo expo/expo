@@ -2,33 +2,29 @@
 title: Getting started with Expo + Three.js
 ---
 
+> **Notice**
+> This tutorial is written for [Expo v22](https://docs.expo.io/versions/v22.0.0/index.html)
+
 ### Goal
-In this tutorial we want to show you how easy it is to create a 2D mobile game with React Native, Expo, and Three.js. We'll be recreating a version of the popular (and addictive) game Flappy Bird called Floaty Plane.
+In this tutorial we want to show you how easy it is to create a 2D cross-platform mobile game with React Native, Expo, and Three.js. We'll be recreating a version of the popular (and addictive) game Flappy Bird!
 
-Demo (scan in Expo app): <a href="https://expo.io/@lele0108/floatyplane-gl">https://expo.io/@lele0108/floatyplane-gl</a>
+**Because this game uses Three.js you will only be able to run it on a physical device! No Simulators** 😐
 
-<img src="http://i.imgur.com/F1Xkzu1.png" width="100px">
+Demo: https://snack.expo.io/@community/flappy-bird
 
+![sketch](@community/flappy-bird)
 
 ### Prerequisites
 * NodeJS 6+ (LTS)
 * Git
 * Expo XDE + iOS/Android App
 
-### Starter Code
-The starter code sets up the basics of creating a React Native app with Expo and Three.js. It also has some skeletons of our game. Run this in terminal:
+### Getting Started
+The starter code sets up the basics of creating an Expo app with [Three.js](threejs.org/). It also has some a psuedo-lib called GameKit which emulates some of the core features from [phaser.js](https://phaser.io/).
+To get started open this snack: https://snack.expo.io/@community/flappy-bird-starter
 
-```
-git clone https://github.com/expo/floatyplane-starter.git
-cd floatyplane-starter
-npm install
-```
 
-Open the Expo XDE and click Project-->Open Project and navigate to the floatyplane-starer folder. Expo will load the project and you will be able to beam the code to your phone using the Expo native app.
-
-**Checkpoint: If you see a solid blue screen on your phone, everything is working!**
-
-<img src="http://i.imgur.com/y8FYDUP.png" width="200px"/>
+After scanning you should see a beautiful blank canvas!
 
 ### Three.js Basics
 Three is a Javascript library that makes it easy to create WebGL 3D graphics. There are three things needed to display graphics:
@@ -39,296 +35,817 @@ Three is a Javascript library that makes it easy to create WebGL 3D graphics. Th
 
 You can add meshes (objects e.g. a ball) to the scene. Meshes comprise of a `geometry` (shape + size) and `texture` (e.g. color or image).
 
-### Graphics
-In order to add the objects (plane and pillars) in our game, we need to create a mesh representation with Three. Remeber that a `mesh` consists of a `geometry` and a `material`.
+## Assets
 
-The file we will be working with is `utilities/scene.js`. Let's start by making functions that will create plane and pillar meshes that we can insert into our scene.
+Before we get started we should import all of our assets into `Files.js`.
+This will help us preload our sprites and audio.
 
-#### Creating Materials
-First let's create a function that loads images and turns them into materials. For simplicity, we have already loaded all the images into Expo Assets in `Assets/index.js`.
-
-This code loads a image texture and creates a material from it. We'll put this in `utilities/scene.js`.
-
+```js
+export default {
+  sprites: {
+    bg: require('./assets/sprites/bg.png'),
+    bird: require('./assets/sprites/bird.png'),
+    ground: require('./assets/sprites/ground.png'),
+    pipe_bottom: require('./assets/sprites/pipe_bottom.png'),
+    pipe_top: require('./assets/sprites/pipe_top.png'),
+  },
+  audio: {
+    hit: require('./assets/audio/hit.mp3'),
+    point: require('./assets/audio/point.mp3'),
+    wing: require('./assets/audio/wing.mp3'),
+  },
+};
 ```
-const loadImageMaterial = (assetName, THREEView) => {
-  const texture = THREEView.textureFromAsset(Assets[assetName]);
-  texture.minFilter = texture.magFilter = THREE.NearestFilter;
-  texture.needsUpdate = true;
-  const material = new THREE.MeshBasicMaterial({
-	map: texture,
-	transparent: true, // Use the image's alpha channel for alpha.
+
+### Preloading
+
+We want to load all of our assets before we start the game.
+All of the code necessary to do this is already included in the 2D Game template as it is commonly used across projects.
+
+## Building our game
+
+
+The first thing we want to do in our game is define some global constant settings that can be edited to manipulate the look and feel of the experience.
+A good place for this would be right outside the `Game` class
+
+```js
+const SPEED = 1.6;
+const GRAVITY = 1100;
+const FLAP = 320;
+const SPAWN_RATE = 2600;
+const OPENING = 120;
+const GROUND_HEIGHT = 64;
+
+export default class Game extends React.Component {
+    ...
+}
+```
+1. **SPEED:** Speed of the pipes and ground
+2. **GRAVITY:** The force with which the player falls at
+3. **FLAP:** Upward velocity that is applied to the player on tap
+4. **SPAWN_RATE:** Time in milliseconds between each pipe spawn
+5. **OPENING:** Space between two pipes
+6. **GROUND_HEIGHT:** Amount of ground that we will see at the bottom of the screen
+
+Feel free to play with these values to create a unique experience!
+
+---
+
+Now that we have some of the laborious stuff out of the way, let's add something to our scene!
+
+The first thing we should add is an awesome background!
+The background should be a static sprite that fills in the entire screen.
+To do this, open `Game.js` in the root directory, add a function called `setupBackground`, then call this function in the `onSetup` function.
+
+```js
+onSetup = async ({ scene }) => {
+  // Give us global reference to the scene
+  this.scene = scene;
+  await this.setupBackground();
+};
+
+setupBackground = async () => {
+  // We will be doing some async stuff in here :}
+};
+```
+
+---
+
+Because we will be building a lot of static nodes we should create a helper function for that.
+
+> **Tip**
+> Sprites are used for images and animations
+> We use nodes for positioning and managing state
+
+
+```js
+setupStaticNode = async ({ image, size, name }) => {
+  // 1
+  const sprite = new Sprite();
+
+  await sprite.setup({
+    image,
+    size,
   });
-  return material;
+
+  // 2
+  const node = new Node({
+    sprite,
+  });
+  node.name = name;
+
+  return node;
+};
+```
+
+1. Create a new `Sprite` from our GameKit and give it a image, and a size.
+2. Now we create a `Node` with our `Sprite` and we give it a name for reference!
+
+Now that we have our shnazzy new helper function we can start doing the fun stuff!
+Go into your `setupBackground` function and add the following code:
+
+```js
+setupBackground = async () => {
+  // 1
+  const { scene } = this;
+  const { size } = scene;
+  // 2
+  const bg = await this.setupStaticNode({
+    image: Files.sprites.bg,
+    size,
+    name: 'bg',
+  });
+  // 3
+  scene.add(bg);
+};
+```
+1. Pull in a reference to the scene and get the scene's size
+2. Call our helper function `setupStaticNode` and pass it our background image, the size of the scene, and a cool name for referencing!
+3. Finally add the background node to our scene
+
+---
+
+Now when you run the snack you should see this dope background!
+
+<img src="./flappy_00.jpg" width="270px" height="480px"/>
+
+
+So the app is a little boring now, no drama or tension.
+We should add a player to the game to spice things up!
+
+```js
+onSetup = async ({ scene }) => {
+    ...
+    await this.setupPlayer();
 }
+
+
+setupPlayer = async () => {
+    // 1
+    const size = {
+        width: 36,
+        height: 26
+    };
+
+    // 2
+    const sprite = new Sprite();
+    await sprite.setup({
+        image: Files.sprites.bird,
+        tilesHoriz: 3,
+        tilesVert: 1,
+        numTiles: 3,
+        tileDispDuration: 75,
+        size
+    });
+
+    // 3
+    this.player = new Node({
+        sprite
+    });
+    this.scene.add(this.player);
+};
 ```
 
-#### Creating Meshes
-Now that we have a function that returns materials, we can use that to create a airplane mesh. Remember: `mesh = geometry + material`. We'll put this in `utilities/scene.js`.
+1. Lets create the players display size. If you look at our player sprite in `assets/sprites/bird.png` you will notice that there are three birds on it! When we make an animation in a video game we load in a sprite sheet, which is an optimal image containing all of the frames of an animation. Our display size is the image size but the width is divided by the number of birds, so  108 / 3 = 36 :)
+2. Make a `Sprite` just like before but this time we will add a few more properties for animating.
+* tilesHoriz: (Tiles Horizontal) is how many tiles we have across (in our case 3).
+* tilesVert: (Tiles Vertical) is how many tiles we have... vertically ;) (in our case 1).
+* numTiles: The number of tiles in total
+* tilesDispDuration: How long each tile is on screen for before it goes to the next one, this is measured in milliseconds.
+* size: this is the size we defined earlier.
+3. Finally make a `Node`, give it our animated `Sprite`, and add it to the scene!
 
-```
-export const createPlane = (THREEView) => {
-  const planeGeo = new THREE.PlaneBufferGeometry(0.75, 0.75);
-  const material = loadImageMaterial("player-sprite", THREEView);
-  const planeMesh = new THREE.Mesh(planeGeo, material);
-  return planeMesh;
-}
-```
-We have similar code to create meshes for pillars and the start screen.
+If we were to run the app right now we would see the bird in the middle of the screen.
+But Wait! It's not animating, this is because we need to update it each frame.
+To do this we need to add some code to our `updateGame` function.
 
-```
-export const createPillar = (THREEView) => {
-  const geometry = new THREE.PlaneBufferGeometry(1,5);
-  const material = loadImageMaterial("pipe-top", THREEView);
-  const mesh = new THREE.Mesh(geometry, material);
-  mesh.position.x = 2.5;
-  return mesh;
-}
-```
+```js
+gameStarted = false;
 
-```
-export const createStart = (THREEView) => {
-  const startGeo = new THREE.PlaneBufferGeometry(4, 1.5);
-  const material = loadImageMaterial("start-screen", THREEView);
-  const startMesh = new THREE.Mesh(startGeo, material);
-  startMesh.position.y = 2;
-  return startMesh;
-}
-```
-
-And that's all the meshes we need for our game! Full code of `scene.js` <a href="https://github.com/expo/floatyplane/blob/master/utilities/index.js">here</a> for reference.
-
-Now we're going to write code that adds these meshes to the scene. Let's move our attention to our main file `Game/index.js`. First we'll create a function that will add the plane and start screen graphics to the scene. 
-
-We'll add this to the `createGameScene` function (in `Game/index.js`):
-
-```
-this.setState({started: false, scoreCount: 0});
-this.animatingIds = []; // we'll use this later to animate pillers
-this.velocity = -1; // initial y velocity of the plane
-this.planeMesh = Meshes.createPlane(THREEView);
-this.startScreen = Meshes.createStart(THREEView);
-this.scene.add(this.startScreen); // adds meshes to the scene
-this.scene.add(this.planeMesh);
-```
-
-**Checkpoint: Now you should see this on your screen.**
-
-<img src="http://i.imgur.com/BIcWSdy.png" width="200px"/>
-
-### Moving The Airplane
-
-Now that we have a airplane in our scene, let's make it move. `tick` is a function we pass to `Three` that is called every frame refresh. We can update our mesh locations here. `dt` is the elapsed time in seconds since the last call to `tick`.
-
-Add the following to `tick` in `Game/index.js`:
-
-```
-if (this.state.started) {
-  if (this.planeMesh.position.y < (this.height / 2) * -1 || this.planeMesh.position.y > (this.height / 2)) {
-    alert("You Lost!"); // if plane hits top or bottom of screen
-    this.resetScene(); // resets the scene to the original state
-  } else { 
-    this.velocity -= 7 * dt; // simulate gravity in plane
-    this.planeMesh.translateY(this.velocity*dt); // move plane down
+updateGame = delta => {
+  if (this.gameStarted) {
+    // We will do stuff here later :)
+  } else {
+    this.player.update(delta);
+    this.player.y = 8 * Math.cos(Date.now() / 200);
+    this.player.angle = 0;
   }
-}
-``` 
-In our `PanResponder` (React's gesture detector), we call `touch` when a tap is detected. Let's make it so we increase the velocity of the plane to a positive number (making the place go up). 
-
-Add the following to `touch` in `Game/index.js`:
-
-```
-if (this.state.started) { // Increase velocity to make plane go up
-  this.velocity = 4;
-} else {
-  this.startGame();
-}
-```
-
-Now let's make it possible to start the game and move the plane!
-
-```
-startGame = () => {
-  this.setState({started: true});
-  this.scene.remove(this.startScreen);
 };
 ```
 
-**Checkpoint: You're game should now be responsive to touch.**
+Now we should see the bird flapping and bobbing!
+Congrats on making an animated sprite BTW :} 🤓💙
 
-<img src="https://media.giphy.com/media/554szyzCGtZT2/giphy.gif" width="200px"/>
+<img src="./flappy_01.gif" width="200px"/>
 
-### Creating Pillars and Animations
 
-But wait, where are the pillars? Don't fret, let's add them to the scene.
+### Pipes
 
-We want a function that will return two pillars, one on the top and one on the bottom, and add them to the scene. We also want them to be random length.
+Right now our bird lives in a perfect bird world. So lets go ahead and change that right away.
+Nothing upsets birds more than pipes, so we'll add non-stop pipes!
 
-Let's define `createSetOfPillars` to do this (in `Game/index.js`):
+Add some code to your project:
+```js
+pipes = new Group();
+deadPipeTops = [];
+deadPipeBottoms = [];
 
-```
-createSetOfPillars = () => {
-    const pillarTop = Meshes.createPillar(THREEView); // creating meshes from methods we wrote before
-    const pillarBottom = Meshes.createPillar(THREEView);
-    const rand = 4 - Math.random() * 2;
-    pillarTop.position.y = rand;
-    pillarBottom.position.y = rand - 7.3;
-    pillarTop.name = "top"; // keeping track of which one is top and bottom
-    pillarBottom.name = "bottom";
-    pillarTop.passed = false; //we will use this later to increment score
-    pillarBottom.passed = false;
-    this.scene.add(pillarTop); // add the mesh to the scene
-    this.scene.add(pillarBottom);
-    this.animatingIds.push(pillarTop.id); // save mesh id so we can animate later
-    this.animatingIds.push(pillarBottom.id);
-};
-```
+setupPipe = async ({ key, y }) => {
+}
+spawnPipe = async (openPos, flipped) => {
+}
+spawnPipes = () => {
+}
 
-Now that we can create pillars, we also want to move them.
-
-Let's create `animatePillar` in `Game/index.js` that will move the pillar left on the screen. We'll call this later in `tick`. This function will do these things:
-
-* Get pillar mesh object from mesh ID
-* Check if plane collides with pillar. If so, stop the game
-* Check if pillar is off the screen. If so, destroy that pillar set.
-* Move the pillar left
-
-```
-animatePillar = (id, dt) => {
-    const object = this.scene.getObjectById(id);
-    if (!object) {
-      return;
-    }
-
-    // Checks for collision of pillar and plane
-    if (this.intersects(object, this.planeMesh)) {
-      alert("You Lost!");
-      this.resetScene();
-    } else if (object.position.x < -2.5) { // If pillar is off the screen, remove from scene
-      this.animatingIds.splice(this.animatingIds.indexOf(id), 1);
-      this.scene.remove(object);
-    } else { // Move pillar to the left
-      object.position.x -= 0.02;
-    }
-};
-```
-
-Remember in flappy bird, new pillars keep on coming. We want to be able to create new pillars every 3 seconds. We'll set an interval that keeps on calling `createSetOfPillars`.
-
-Add to `startGame` (in `Game/index.js`):
-
-```
-this.createSetOfPillars();
-this.pillarInterval = setInterval(() => {
-  this.createSetOfPillars();
-}, 3000);
-```
-
-Lastly, we want to move all the pillars on the screen a little every frame. Remember we store all the pillar mesh ID's in the array `animatingIds[]`.
-
-We'll call the `animatePillar` function in `tick` after moving the plane:
-
-```
-// After this line
-/*
-this.planeMesh.translateY(this.velocity*dt);
-*/
-
-this.animatingIds.forEach( id => {
- this.animatePillar(id, dt);
-});
-```
-
-**Checkpoint: Game should generate pillars and detect collisions**
-
-<img src="https://media.giphy.com/media/kuJLpNfGs9QUE/giphy.gif" width="200px"/>
-
-### Pulling It Together
-
-Almost done! We need to be able to keep track of score and also be able to reset the game when the player loses.
-
-Since the plane is always located at `x = 0`, we want to check when the pillar passes over this point. Since `tick` is called every frame, `pillar.position.x` can have a lot of unnecessary precesion. We'll round this off to make our lives easier. Also, since there are two pillars per set, we only want to increment the score once. We'll only increase score for the top pillar.
-
-Add to `animatePillar`:
-
-```
-//Add Ater Nullity Check 
-/*
-	if (!object) {
-     return;
-    }
-*/
-
-// Checks if plane passes pillar to increment score
-    if (Math.round(object.position.x, -5) == 0 && !object.passed && object.name  == "top") {
-      this.setState({scoreCount: this.state.scoreCount + 1}); // update the score in the state
-      object.passed = true; // mark pillar as passed
+//Add the pipes node to the scene
+onSetup = async ({ scene }) => {
+    this.scene = scene;
+    this.scene.add(this.pipes);
+    ...
 }
 ```
+* **pipes:**  This is a group of nodes that will be the parent to all of the pipe nodes
+* **deadPipeTops/deadPipeBottoms:**  These will hold all of the pipes that have moved off screen. We save reference to these so we can recycle them and save memory :)
+*  **setupPipe:** This function will determine if we should build a pipe or if we have one that we can recycle
+*  **spawnPipes:** This function will choose the random position for the pipes and spawn them right off screen
 
-We need a way to display the score on the screen. We create a new `Score` component where we pass in the score in `props`.
+---
+Now that we've added the scaffold for our pipe logic we should implement the `spawnPipes` function
 
+```js
+spawnPipes = () => {
+  this.pipes.forEachAlive(pipe => {
+    // 1
+    if (pipe.size && pipe.x + pipe.size.width < this.scene.bounds.left) {
+      if (pipe.name === 'top') {
+        this.deadPipeTops.push(pipe.kill());
+      }
+      if (pipe.name === 'bottom') {
+        this.deadPipeBottoms.push(pipe.kill());
+      }
+    }
+  });
+
+  // 2
+  const pipeY =
+    this.scene.size.height / 2 +
+    (Math.random() - 0.5) * this.scene.size.height * 0.2;
+  // 3
+  this.spawnPipe(pipeY);
+  this.spawnPipe(pipeY, true);
+};
 ```
-// Add at the end of the file
-class Score extends React.Component {
-  render() {
+1. If any pipes are off screen then we want to flag them as "dead" so we can recycle them!
+2. Get a random spot for the center of the two pipes.
+3. Spawn both pipes around this point.
+
+Great! Now we need our `spawnPipe` method to spawn the top and bottom of the pipe collection.
+
+```js
+spawnPipe = async (openPos, flipped) => {
+  // 1
+  let pipeY;
+  if (flipped) {
+    pipeY = Math.floor(openPos - OPENING / 2 - 320);
+  } else {
+    pipeY = Math.floor(openPos + OPENING / 2);
+  }
+  // 2
+  let pipeKey = flipped ? 'bottom' : 'top';
+  let pipe;
+
+  // 3
+  const end = this.scene.bounds.right + 26;
+  // 4
+  if (this.deadPipeTops.length > 0 && pipeKey === 'top') {
+    pipe = this.deadPipeTops.pop().revive();
+    pipe.reset(end, pipeY);
+  } else if (this.deadPipeBottoms.length > 0 && pipeKey === 'bottom') {
+    pipe = this.deadPipeBottoms.pop().revive();
+    pipe.reset(end, pipeY);
+  } else {
+    // 5
+    pipe = await this.setupPipe({
+      y: pipeY,
+      key: pipeKey,
+    });
+    pipe.x = end;
+    this.pipes.add(pipe);
+  }
+  // Set the pipes velocity so it knows how fast to go
+  pipe.velocity = -SPEED;
+  return pipe;
+};
+```
+1. First we want to get a random position for our pipes
+2. Next we define if it's a top or bottom pipe
+3. Here we set the initial x position for the pipe - this is just offscreen to the right
+4. Now we check if there are any offscreen pipes that we can just reposition
+5. If there aren't any pipes to recycle then we will create some and add them to the pipes group
+
+OK the last part of spawning the pipes is building the static `Node`; you should be pretty good at this by now!
+
+```js
+setupPipe = async ({ key, y }) => {
+  const size = {
+    width: 52,
+    height: 320,
+  };
+
+  // 1
+  const tbs = {
+    top: Files.sprites.pipe_top,
+    bottom: Files.sprites.pipe_bottom,
+  };
+  const pipe = await this.setupStaticNode({
+    image: tbs[key],
+    size,
+    name: key,
+  });
+  // 2
+  pipe.size = size;
+  pipe.y = y;
+
+  return pipe;
+};
+```
+
+1. Define a dictionary for our images
+2. Give the pipe a reference to it's size
+
+---
+Now our pipes can spawn in!! 😻
+The only thing we need now is a timer to spawn them every so often.
+
+```js
+tap = () => {
+    // 1
+    if (!this.gameStarted) {
+        this.gameStarted = true;
+        // 2
+        this.pillarInterval = setInterval(this.spawnPipes, SPAWN_RATE);
+    }
+}
+
+render() {
+    // 3
     return (
-      <Text style={styles.scoreText}>
-        {this.props.score}
-      </Text>
+        <View style={StyleSheet.absoluteFill}>
+            <SpriteView
+            touchDown={({ x, y }) => this.tap()}
+            update={this.updateGame}
+            onSetup={this.onSetup}
+            />
+        </View>
     );
-  }
 }
+```
+1. On the first tap we start the game
+2. Here we build a timer to spawn the pipes
+3. Call our `tap` function from the `SpriteView`
 
-const styles = StyleSheet.create({
-  scoreText: {
-    position:'absolute',
-    top: 40,
-    width: 75,
-    textAlign: 'center',
-    zIndex: 100,
-    backgroundColor: 'transparent',
-    color: 'white',
-    fontSize: 30,
-  }
-});
+---
+Every few seconds (`SPAWN_RATE`) the pipes will spawn!
+However if you run the app you still won't see the pipes on screen 😱😭
+This is because we aren't moving them yet!
+Let's move them all to the left and when they move past the player we should increment the score!
+
+```js
+addScore = () => {
+
+}
+gameOver = false;
+updateGame = delta => {
+    ...
+    if (this.gameStarted) {
+
+        if (!this.gameOver) {
+        // 1
+            this.pipes.forEachAlive(pipe => {
+                pipe.x += pipe.velocity;
+
+                // 2
+                if (
+                    pipe.name === "bottom" &&
+                    !pipe.passed &&
+                    pipe.x < this.player.x
+                    ) {
+                    pipe.passed = true;
+                    this.addScore();
+                }
+            });
+        }
+    }
+    ...
+}
 ```
 
-We then add this component to our render. We only want to display the score when the game is started.
+1. Here we iterate over all of the active pipes and move them to the left.
+2. We check to see if a user has passed a pipe, if so then we update the score!
+
+---
+
+YAY! 😛 Now we have pipes working! Our game is starting to come together pretty nicely.
+Now we need someway to control the bird and flap it right into a pipe!! 🙃
+
+<img src="./flappy_02.gif" width="200px"/>
+
+### Physics
+
+Let's go back into our `tap` function and add the rest of our tapping logic
+```js
+reset = () => {
+}
+velocity = 0;
+tap = () => {
+    ...
+    if (!this.gameOver) {
+        // 1
+        this.velocity = FLAP;
+    } else {
+        // 2
+        this.reset();
+    }
+}
+```
+1. If the game hasn't ended yet then we should set our players velocity to a constant velocity we defined earlier
+2. If the game has ended then we should reset it
+
+---
+
+Now we have a way to make the bird go up, all we need now is some gravity! ⬇️
 
 ```
-// Add right after the THREEView component
-/*
-<THREEView/>
-*/
-
-{ this.state.started ? <Score score={this.state.scoreCount}/> : null }
+updateGame = delta => {
+    ...
+    if (this.gameStarted) {
+        // 1
+        this.velocity -= GRAVITY * delta;
+        if (!this.gameOver) {
+            ...
+        }
+        // 2
+        this.player.angle = Math.min(
+            Math.PI / 4,
+            Math.max(-Math.PI / 2, (FLAP + this.velocity) / FLAP)
+        );
+        // 3
+        this.player.update(delta);
+        // 4
+        this.player.y += this.velocity * delta;
+        ...
+    }
+}
 ```
+1. If the game has started then we want to add gravity * delta to our velocity
+2. Here we set the birds rotation (in radians). Notice how we clamp it with min/max. This way when the bird has upwards velocity it spins to point up, and the opposite happens when it's falling down
+3. Let's add another instance of updating the bird's flapping animation when we are playing the game
+4. Apply velocity to our bird's position
 
-Finally when a player loses, we need a way to reset the game to the original state (the start screen). This stops the create pillar interval and clears all the meshes from the scene.
+And that's all we need to give our user a way to control the bird, pretty easy! 😁
 
-```
-// Replace old resetScene
-resetScene = () => {
-  clearInterval(this.pillarInterval);
-  while (this.scene.children.length > 0) {
-    this.scene.remove(this.scene.children[0]);
-  }
-  this.createGameScene();
+<img src="./flappy_03.gif" width="200px"/>
+
+### Collisions
+
+Right now our bird doesn't have much conflict in it's life. It just flaps away with no consequences, that is until now of course!
+We need a way to end the game when our bird hits a pipe or get's tired and falls on the ground we haven't built ;)
+
+First let's build that ground so we have something to fall onto.
+
+```js
+onSetup = async ({ scene }) => {
+    ...
+    await this.setupBackground();
+    // 1
+    await this.setupGround();
+    await this.setupPlayer();
+};
+setupGround = async () => {
+    const { scene } = this;
+    const size = {
+        width: scene.size.width,
+        height: scene.size.width * 0.333333333
+    };
+    this.groundNode = new Group();
+
+    // 2
+    const node = await this.setupStaticNode({
+        image: Files.sprites.ground,
+        size,
+        name: "ground"
+    });
+
+    const nodeB = await this.setupStaticNode({
+        image: Files.sprites.ground,
+        size,
+        name: "ground"
+    });
+    nodeB.x = size.width;
+
+    this.groundNode.add(node);
+    this.groundNode.add(nodeB);
+
+    // 3
+    this.groundNode.position.y =
+    (scene.size.height + (size.height - GROUND_HEIGHT)) * -0.5;
+
+    // 4
+    this.groundNode.top = this.groundNode.position.y + size.height / 2;
+
+    this.groundNode.position.z = 0.01;
+    scene.add(this.groundNode);
 };
 ```
 
-And we're done!
+1. Add this function before we add the pipes to the scene.
+2. Notice that we build two copies of the ground. Once one floor goes off screen we place it to the back and that creates our floor loop!
+3. Set the groundNode group's position to be at the bottom of the scene
+4. Save a reference to the top of the ground for collision purposes. Then move the ground slightly forward on the z-axis so that it appears in front of the pipes.
 
-<img src="https://media.giphy.com/media/ltkOM6tpRPNPa/giphy.gif" width="200px"/>
+---
+Ok so now we have a ground showing up but it doesn't move with the player 😵😨
+Because the ground moves infinitely we need a function that not only moves the ground but also checks if it's off-screen so that it can reset it.
 
-### Conclusion
+```js
+updateGame = delta => {
+    ...
+    // 1
+    // Add this at the end of the updateGame function
+    if (!this.gameOver) {
+        this.groundNode.children.map((node, index) => {
+            // 2
+            node.x -= SPEED;
+            // 3
+            if (node.x < this.scene.size.width * -1) {
+                let nextIndex = index + 1;
+                if (nextIndex === this.groundNode.children.length) {
+                    nextIndex = 0;
+                }
+                const nextNode = this.groundNode.children[nextIndex];
+                // 4
+                node.x = nextNode.x + this.scene.size.width - 1.55;
+            }
+        });
+    }
+};
+```
+1. Only move the floor while the player is alive.
+2. Move the floor at the same speed as the rest of the world
+3. If the child ground node is off screen then get the next child ground node on the screen.
+4. Get the position of the last node and move the current node behind it.
 
-Using Expo, React Native, and Three makes it really easy to write mobile games.
+<img src="./flappy_04.gif" width="200px"/>
 
-Final code for the project here:
+---
+Alright, play time is over for this bird.
+We need the world to be at least 80% more hostile to make it a fun game! 😵
+To do this we will add a basic box check against all of the pipes and our bird.
+```js
+setGameOver = () => {
+
+}
+
+updateGame = delta => {
+    if (this.gameStarted) {
+        ...
+        const target = this.groundNode.top;
+        if (!this.gameOver) {
+        // 1
+        const playerBox = new THREE.Box3().setFromObject(this.player);
+
+        this.pipes.forEachAlive(pipe => {
+            ...
+            // 2
+            const pipeBox = new THREE.Box3().setFromObject(pipe);
+
+            // 3
+            if (pipeBox.intersectsBox(playerBox)) {
+                this.setGameOver();
+            }
+            ...
+        });
+
+        ...
+
+        // 4
+        if (this.player.y <= target) {
+            this.setGameOver();
+        }
+        ...
+        }
+
+        // 5
+        if (this.player.y <= target) {
+            this.player.angle = -Math.PI / 2;
+            this.player.y = target;
+            this.velocity = 0;
+        } else {
+        ...
+        }
+    } else {
+    ...
+    }
+};
 
 ```
-git clone https://github.com/expo/floatyplane.git
+> **Tip**
+> Box collisions only work if both elements are on the same z-position
+
+1. Get the collision box for our bird
+2. Define the collision box for a pipe
+3. We check if the user collided with any of the pipes. If so then we end the game
+4. Check to see if the user's y position is lower than the floor, if so then we end the game.
+5. If the game is over than let the player continue to fall until they hit the floor.
+
+<img src="./flappy_05.gif" width="200px"/>
+
+### Game Over
+
+Alrighty so let's recap: we have a player, we have obstacles for them to overcome, now we need to handle when they inevitable fail!! 😈
+
+```js
+setGameOver = () => {
+    // 1
+    this.gameOver = true;
+    clearInterval(this.pillarInterval);
+};
+
+// 2
+reset = () => {
+this.gameStarted = false;
+this.gameOver = false;
+this.setState({ score: 0 });
+
+this.player.reset(this.scene.size.width * -0.3, 0);
+this.player.angle = 0;
+this.pipes.removeAll();
+};
+onSetup = async ({ scene }) => {
+    ...
+    // 3
+    this.reset();
+};
 ```
 
-Thanks for reading!
+1. Toggle the `gameOver` flag to true, then stop the pipes from continuing to spawn
+2. This method has all of the necessary resets to revert the game to the initial state.
+* We set the flags to false
+* Set the score to 0
+* Reset the player position / angle
+* Remove all of the pipe nodes
+3. We call reset after we finish setting up the scene, this allows us to keep a consistent state.
+
+
+### Keeping Score
+```js
+// Don't forget to import the Text component!
+import {Text} from 'react-native';
+
+// 1
+state = {
+    score: 0
+};
+
+// 2
+addScore = () => {
+    this.setState({ score: this.state.score + 1 });
+};
+
+// 3
+renderScore = () => (
+    <Text
+        style={{
+            textAlign: "center",
+            fontSize: 64,
+            position: "absolute",
+            left: 0,
+            right: 0,
+            color: "white",
+            top: 64,
+            backgroundColor: "transparent"
+        }}>
+    {this.state.score}
+    </Text>
+);
+
+render() {
+    // 4
+    return (
+        <View style={StyleSheet.absoluteFill}>
+            <SpriteView
+            touchDown={({ x, y }) => this.tap()}
+            touchMoved={({ x, y }) => {}}
+            touchUp={({ x, y }) => {}}
+            update={this.updateGame}
+            onSetup={this.onSetup}
+            />
+            {this.renderScore()}
+        </View>
+    );
+}
+
+```
+1. define the components state and give it a property `score` then assign `score` to `0`
+2. Let's build a helpful function to increment the score by 1 whenever it's called
+3. Here we will define what the score label will look like. We use a native Text component to do this! 🤤
+4. Now we will add our score component to the main render method 😬
+
+<img src="./flappy_06.gif" width="200px"/>
+
+### Loading Sounds
+
+Nothing makes a game for more real than good sound effects.
+Lucky for us everyone at Expo is a huge audiophile and as a result of this we have a dope [audio API](https://docs.expo.io/versions/v22.0.0/sdk/audio.html)
+Let's add sounds whenever a key moment occurs:
+* Getting a point 😎
+* Flapping 🤔
+* Dying 😅
+
+```js
+// 1
+componentWillMount() {
+    this.setupAudio();
+}
+
+setupAudio = async () => {
+    // 2
+    Expo.Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+        interruptionModeIOS: Expo.Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
+        playsInSilentModeIOS: true,
+        shouldDuckAndroid: true,
+        interruptionModeAndroid: Expo.Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX
+    });
+
+
+    // 3
+    this.audio = {};
+    Object.keys(Files.audio).map(async key => {
+        const res = Files.audio[key];
+        const { sound } = await Expo.Audio.Sound.create(res);
+        await sound.setStatusAsync({
+            volume: 1
+        });
+        this.audio[key] = async () => {
+            // 4
+            try {
+                await sound.setPositionAsync(0);
+                await sound.playAsync();
+            } catch (error) {
+                console.warn("sound error", { error });
+                // An error occurred!
+            }
+        };
+    });
+};
+```
+
+1. Because loading audio isn't dependent on a GL View, we can load it asap 😮
+2. Here we define how audio is used in our app. You can learn more about these settings here: https://docs.expo.io/versions/v22.0.0/sdk/audio.html
+3. Now we parse the preloaded audio assets and create a helper object for playing sounds.
+4. This function will restart the sound and play it for us
+
+
+### Playing Sounds!
+
+Inside of our `tap` function, let's play our first sound! 🎉
+Every time the user taps the screen while the game is going, they should hear a flapping noise! 🐦
+
+```js
+tap = () => {
+    ...
+
+    if (!this.gameOver) {
+        ...
+        this.audio.wing();
+    } else {
+        ...
+    }
+}
+```
+Let's play a nice dinging noise whenever we score a point 🔔
+```js
+addScore = () => {
+    ...
+    this.audio.point();
+};
+```
+Finally when the player inevitably fails we will play the almighty slapping noise! 👏
+```js
+setGameOver = () => {
+    ...
+    this.audio.hit();
+};
+```
+
+
+### Congratulations!
+
+You made Flappy Bird!!
+You should go call your parents and tell them about your new accomplishment! 🔥😁💙
+
+Using Expo, React Native, and Three makes it really easy (and extremely fun) to write production ready mobile games!
+The final project can be found here: https://snack.expo.io/@community/flappy-bird
+
+Thanks for reading! 😍
