@@ -98,8 +98,8 @@ NS_ASSUME_NONNULL_BEGIN
       successBlock(data);
     }
   } errorBlock:^(NSError *error, NSURLResponse *response) {
-    NSError *networkError = [NSError errorWithDomain:EXNetworkErrorDomain code:error.code userInfo:error.userInfo];
-    errorBlock(networkError);
+    NSError *err = [self _validateErrorData:error response:response];
+    errorBlock(err);
   }];
 }
 
@@ -225,6 +225,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
   // always valid
   return nil;
+}
+
+- (NSError *)_validateErrorData:(NSError *)error response:(NSURLResponse *)response
+{
+  NSError *networkError = [NSError errorWithDomain:EXNetworkErrorDomain code:error.code userInfo:error.userInfo];
+  return networkError;
 }
 
 - (NSString *)_defaultCachePath

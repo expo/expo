@@ -61,6 +61,7 @@ typedef enum EXCachedResourceBehavior {
 - (BOOL)isLocalPathFromNSBundle;
 
 - (NSError *)_validateResponseData:(NSData *)data response:(NSURLResponse *)response;
+- (NSError *)_validateErrorData:(NSError *)error response:(NSURLResponse *)response;
 
 /**
  *  Returns whether a cache was removed.

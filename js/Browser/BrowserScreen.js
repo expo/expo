@@ -273,7 +273,8 @@ class BrowserScreen extends React.Component {
         nativeEvent.code,
         nativeEvent.description,
         this.props.url,
-        this.props.task.manifest
+        this.props.task.manifest,
+        nativeEvent.userInfo
       )
     );
 
@@ -295,7 +296,7 @@ class BrowserScreen extends React.Component {
   };
 
   _maybeRecoverFromErrorAsync = async event => {
-    let { id, message } = event.nativeEvent;
+    let { id, message, userInfo } = event.nativeEvent;
     let shouldReload = await ExponentKernel.shouldCurrentTaskAutoReload();
     if (shouldReload) {
       // call this._refresh rather than Browser.refresh because it works
@@ -304,7 +305,13 @@ class BrowserScreen extends React.Component {
     } else {
       // show error screen with manual reload button
       this.props.dispatch(
-        BrowserActions.showLoadingError(id, message, this.props.url, this.props.task.manifest)
+        BrowserActions.showLoadingError(
+          id,
+          message,
+          this.props.url,
+          this.props.task.manifest,
+          userInfo
+        )
       );
     }
   };

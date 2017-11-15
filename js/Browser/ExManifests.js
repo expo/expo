@@ -42,7 +42,6 @@ let ExManifests = {
     try {
       manifestString = await ExponentKernel.getManifestAsync(httpManifestUrl, manifestUrl);
     } catch (e) {
-      e.message = `Error while loading: ${e.message}.`;
       throw e;
     }
 

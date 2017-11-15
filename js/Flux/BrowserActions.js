@@ -71,7 +71,7 @@ let BrowserActions = {
         initialProps
       );
     } catch (e) {
-      return BrowserActions.showLoadingError(e.code, e.message, manifestUrl);
+      return BrowserActions.showLoadingError(e.code, e.message, manifestUrl, null, e.userInfo);
     }
   },
 
@@ -162,8 +162,8 @@ let BrowserActions = {
   },
 
   @action
-  showLoadingError(code, message, originalUrl, manifest = null) {
-    return { code, message, originalUrl, manifest };
+  showLoadingError(code, message, originalUrl, manifest = null, userInfo = null) {
+    return { code, message, originalUrl, manifest, userInfo };
   },
 
   @action

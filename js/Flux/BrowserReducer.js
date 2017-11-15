@@ -33,6 +33,7 @@ const LoadingError = Record({
   message: null,
   originalUrl: null,
   manifest: null,
+  userInfo: null,
 });
 const HistoryItem = Record({
   url: null,

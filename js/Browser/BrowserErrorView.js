@@ -7,11 +7,14 @@
 
 import React, { PropTypes } from 'react';
 import { StyleSheet, ScrollView, Text, View } from 'react-native';
+import { Constants } from 'expo';
 
 import BrowserActions from 'BrowserActions';
 import Button from 'react-native-button';
 import ExColors from 'ExColors';
 import ExStore from 'ExStore';
+
+const IS_SIMULATOR = !Constants.isDevice;
 
 export default class BrowserErrorView extends React.Component {
   static propTypes = {
@@ -21,7 +24,7 @@ export default class BrowserErrorView extends React.Component {
 
   constructor(props, context) {
     super(props, context);
-    let isShowingDetails = false;
+    let isShowingDetails = IS_SIMULATOR; // If we're in the simulator, we're developing, so show details by default
     if (props.error && props.error.manifest) {
       // if we have a manifest and it has dev=true, go ahead and show details immediately.
       isShowingDetails = props.error.manifest.packagerOpts && props.error.manifest.packagerOpts.dev;
@@ -33,13 +36,23 @@ export default class BrowserErrorView extends React.Component {
 
   render() {
     let { error, style, onRefresh, ...props } = this.props;
+    let { details, message } = this._getErrorDetails(error);
 
     let detailContent, detailButton;
     if (this.state.isShowingDetails) {
       detailContent = (
         <View style={styles.detailsContainer}>
           <Text style={styles.originalUrl}>{error.originalUrl}</Text>
-          <Text style={styles.detail}>{`"${error.message}" (code ${error.code})`}</Text>
+          {/* If the error is a client loading error (probably from an error starting the JS) */}
+          {/* we should show the error message. */}
+          {details.errorCode === 'CLIENT_LOADING_ERROR' ? (
+            <Text style={styles.detail}>{`Error: ${error.message}`}</Text>
+          ) : null}
+          <Text style={styles.detail}>{`Error Code: ${details.errorCode}`}</Text>
+          {/* If the error is a network error, just show the raw code -- else, show the HTTP status code */}
+          <Text style={styles.detail}>{`${details.errorCode === 'NETWORK_ERROR'
+            ? 'Code'
+            : 'Status Code'}: ${error.code}`}</Text>
         </View>
       );
     } else {
@@ -52,10 +65,11 @@ export default class BrowserErrorView extends React.Component {
       );
     }
 
-    let message = this._readableMessage(error);
     let actionButtons = [];
 
-    if (error.code !== '404' || this.props.isShell) {
+    if (error.code !== '404' || error.code !== '400' || this.props.isShell) {
+      // If it's not a 404 or 400 error or it's a shell app, let the user
+      // try again as the failure may be intermittent.
       actionButtons.push(
         <Button onPress={onRefresh} style={styles.button} key="try-again-button">
           Try Again
@@ -83,25 +97,48 @@ export default class BrowserErrorView extends React.Component {
     );
   }
 
-  _readableMessage(error) {
-    if (error.code === '404') {
-      if (this.props.isShell) {
-        return `There was a problem loading the app.`;
-      } else {
-        return `No experience found at ${error.originalUrl}.`;
+  _getErrorDetails(error) {
+    // Handle both types of loading errors:
+    // - A manifest loading error, from EXManifestResource. This will have userInfo and errorCode attached to it.
+    // - Some type of client loading error, such as:
+    //    - Problem parsing manifest (even if server returned 200...this could be some server issue)
+    //    - Problem downloading the bundle
+    //    - Problem loading the JS into JSC
+    let errorCode = error.userInfo ? error.userInfo.errorCode : 'CLIENT_LOADING_ERROR';
+
+    let message;
+    if (errorCode === 'CLIENT_LOADING_ERROR') {
+      message = `There was a problem loading this experience.`;
+    } else {
+      // some type of network error
+      message = error.message; // by default use the raw error message -- it's probably nice
+
+      // If we get a 404 and we're loading a shell app, put a nicer error
+      if (error.code === 404 && this.props.isShell) {
+        message = `There was a problem loading the app.`;
       }
-      // TODO: identify this case in the server response
-      /* if (error.message.indexOf('compatible with this version') !== -1) {
-        return `Looks like your copy of Exponent can't run this experience. Try updating Exponent.`;
-      } */
+
+      // Check to see if the user is loading a local URL -- if so, we can provide a nicer message.
+      const url = error.originalUrl;
+      if (
+        (url && url.indexOf('.local') !== -1) ||
+        url.indexOf('192.') !== -1 ||
+        url.indexOf('10.') !== -1 ||
+        url.indexOf('172.') !== -1
+      ) {
+        message =
+          `There was a problem loading the experience. It looks like you may be using a ` +
+          `LAN url. Make sure your device is on the same network as the server or try using a tunnel.`;
+      }
     }
-    if (
-      (error.originalUrl && error.originalUrl.indexOf('.local') !== -1) ||
-      error.originalUrl.indexOf('192.') !== -1
-    ) {
-      return `There was a problem loading the experience. It looks like you may be using a LAN url. Make sure your device is on the same network as the server or try using a tunnel.`;
-    }
-    return 'There was a problem loading the experience.';
+
+    return {
+      message,
+      details: {
+        errorCode,
+        metadata: error.userInfo ? error.userInfo.metadata : null,
+      },
+    };
   }
 
   _goToHome = () => {

@@ -86,6 +86,7 @@ NSTimeInterval const EXFileDownloaderDefaultTimeoutInterval = 60;
     releaseChannel = @"default";
   }
   [request setValue:releaseChannel forHTTPHeaderField:@"Expo-Release-Channel"];
+  [request setValue:@"true" forHTTPHeaderField:@"Expo-JSON-Error"];
   [request setValue:requestAbiVersion forHTTPHeaderField:@"Exponent-SDK-Version"];
   [request setValue:@"ios" forHTTPHeaderField:@"Exponent-Platform"];
   [request setValue:@"true" forHTTPHeaderField:@"Exponent-Accept-Signature"];
@@ -150,8 +151,13 @@ NSTimeInterval const EXFileDownloaderDefaultTimeoutInterval = 60;
 
 - (NSDictionary *)_formattedErrorInfo:(NSDictionary *)errorInfo
 {
-  NSString *message = errorInfo[@"message"] ?: errorInfo[@"error"] ?: @"There was a server error";
-  NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:@{ NSLocalizedDescriptionKey: message }];
+  NSString *message = errorInfo[@"message"] ?: errorInfo[@"message"] ?: @"There was a server error";
+  NSString *errorCode = errorInfo[@"errorCode"] ?: @"UNEXPECTED_ERROR";
+  NSString *errorMetadata = errorInfo[@"metadata"] ?: @{};
+  NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:@{ NSLocalizedDescriptionKey: message,
+                                                                                   @"errorCode": errorCode,
+                                                                                   @"metadata": errorMetadata,
+                                                                                   }];
   
   if ([errorInfo[@"errors"] isKindOfClass:[NSArray class]]) {
     NSMutableArray *formattedErrorItems = [NSMutableArray array];
