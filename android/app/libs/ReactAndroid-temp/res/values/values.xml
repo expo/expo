@@ -35,19 +35,31 @@
     <style name="CalendarDatePickerStyle" parent="android:Widget.Material.Light.DatePicker" ns1:targetApi="lollipop">
         <item name="android:datePickerMode">calendar</item>
     </style>
+    <style name="ClockTimePickerDialog" parent="Theme.AppCompat.Light.Dialog" ns1:targetApi="lollipop">
+      <item name="android:timePickerStyle">@style/ClockTimePickerStyle</item>
+    </style>
+    <style name="ClockTimePickerStyle" parent="android:Widget.Material.Light.TimePicker" ns1:targetApi="lollipop">
+      <item name="android:timePickerMode">clock</item>
+    </style>
     <style name="DialogAnimationFade">
-    <item name="android:windowEnterAnimation">@anim/fade_in</item>
-    <item name="android:windowExitAnimation">@anim/fade_out</item>
+    <item name="android:windowEnterAnimation">@anim/catalyst_fade_in</item>
+    <item name="android:windowExitAnimation">@anim/catalyst_fade_out</item>
   </style>
     <style name="DialogAnimationSlide">
-    <item name="android:windowEnterAnimation">@anim/slide_up</item>
-    <item name="android:windowExitAnimation">@anim/slide_down</item>
+    <item name="android:windowEnterAnimation">@anim/catalyst_slide_up</item>
+    <item name="android:windowExitAnimation">@anim/catalyst_slide_down</item>
   </style>
     <style name="SpinnerDatePickerDialog" parent="Theme.AppCompat.Light.Dialog" ns1:targetApi="lollipop">
         <item name="android:datePickerStyle">@style/SpinnerDatePickerStyle</item>
     </style>
     <style name="SpinnerDatePickerStyle" parent="android:Widget.Material.Light.DatePicker" ns1:targetApi="lollipop">
         <item name="android:datePickerMode">spinner</item>
+    </style>
+    <style name="SpinnerTimePickerDialog" parent="Theme.AppCompat.Light.Dialog" ns1:targetApi="lollipop">
+      <item name="android:timePickerStyle">@style/SpinnerTimePickerStyle</item>
+    </style>
+    <style name="SpinnerTimePickerStyle" parent="android:Widget.Material.Light.TimePicker" ns1:targetApi="lollipop">
+      <item name="android:timePickerMode">spinner</item>
     </style>
     <style name="Theme"/>
     <style name="Theme.Catalyst"/>

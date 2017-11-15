@@ -25,7 +25,7 @@ public class MainActivity extends ExponentActivity {
 
   @Override
   public List<String> sdkVersions() {
-    return new ArrayList<>(Arrays.asList("22.0.0"));
+    return new ArrayList<>(Arrays.asList("23.0.0"));
   }
 
   @Override

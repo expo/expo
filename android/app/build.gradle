@@ -97,6 +97,7 @@ dependencies {
 
   // Versioned react native
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+  compile(name: 'ReactAndroid-release-abi23_0_0', ext: 'aar')
   compile(name: 'ReactAndroid-release-abi22_0_0', ext: 'aar')
   compile(name: 'ReactAndroid-release-abi21_0_0', ext: 'aar')
   compile(name: 'ReactAndroid-release-abi20_0_0', ext: 'aar')
