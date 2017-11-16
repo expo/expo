@@ -362,6 +362,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 - (void)_sendLoadingError: (NSError *)error
 {
   [_appManager registerErrorForBridge:error];
+  [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXKernelAppDidDisplay") object:self];
   if (_onLoadingError) {
     NSMutableDictionary *event = [@{
                                     @"domain": error.domain,
