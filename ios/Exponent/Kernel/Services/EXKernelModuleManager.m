@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXErrorRecoveryManager.h"
+#import "EXFileDownloader.h"
 #import "EXKernel.h"
 #import "EXKernelDevKeyCommands.h"
 #import "EXKernelDevMenuViewController.h"
@@ -93,10 +94,12 @@
     success(manifestString);
   } errorBlock:^(NSError * _Nonnull error) {
 #if DEBUG
-    if ([EXShellManager sharedInstance].isShell && error && error.code == 404) {
+    if ([EXShellManager sharedInstance].isShell && error &&
+        (error.code == 404 || error.domain == EXNetworkErrorDomain)) {
       NSString *message = error.localizedDescription;
       message = [NSString stringWithFormat:@"Make sure you are serving your project from XDE or exp (%@)", message];
       error = [NSError errorWithDomain:error.domain code:error.code userInfo:@{ NSLocalizedDescriptionKey: message }];
+      [[NSNotificationCenter defaultCenter] postNotificationName:kEXKernelAppDidDisplay object:self];
     }
 #endif
     failure(error);
