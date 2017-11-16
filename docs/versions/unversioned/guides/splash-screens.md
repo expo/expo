@@ -100,8 +100,6 @@ For people who run `exp detach` without the splash API, we add `isSplashScreenDi
 The following exists are known to us and will be resolved shortly.
 
 - iOS splash screen status bar is white in standalone apps but dark in Expo client. It should be dark in standalone apps by default too, and also it should be customizable. 
-- Android standalone app has a brief white screen before showing the splash screen.
-- `"resizeMode": "cover"` is not currently working on Android.
 - It is necessary on iOS to close and re-open the Expo client to see changes to the splash screen.
 
 ### Migrating from the `loading` API
