@@ -46,6 +46,10 @@ class ExponentApp extends React.Component {
   }
 
   _initializeAsync = async () => {
+    DeviceEventEmitter.addListener('ExponentKernel.resetNuxState', event => {
+      let { isNuxCompleted } = event;
+      ExStore.dispatch(BrowserActions.setIsNuxFinishedAsync(!!isNuxCompleted));
+    });
     ExponentKernel.onLoaded();
 
     if (ExponentKernel.__isFake) {
