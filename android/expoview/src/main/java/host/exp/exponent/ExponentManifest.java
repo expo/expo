@@ -186,7 +186,7 @@ public class ExponentManifest {
     httpManifestUrl = uri.buildUpon().encodedPath(newPath).build().toString();
 
     // Fetch manifest
-    Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToUrl(httpManifestUrl);
+    Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToUrl(httpManifestUrl, manifestUrl.equals(Constants.INITIAL_URL));
     requestBuilder.header("Exponent-Accept-Signature", "true");
 
     Analytics.markEvent(Analytics.TimedEvent.STARTED_MANIFEST_NETWORK_REQUEST);
