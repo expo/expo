@@ -220,7 +220,7 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
 
   @ReactMethod
   public void preloadBundleUrlAsync(final String url, final Promise promise) {
-    preloadRequestAsync(ExponentUrls.addExponentHeadersToUrl(url).build(), promise);
+    preloadRequestAsync(ExponentUrls.addExponentHeadersToUrl(url, false).build(), promise);
   }
 
   private void preloadRequestAsync(final Request request, final Promise promise) {

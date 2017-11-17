@@ -426,7 +426,7 @@ public class Exponent {
     }
 
     try {
-      Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToUrl(urlString);
+      Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToUrl(urlString, false);
       if (shouldForceNetwork) {
         requestBuilder.cacheControl(CacheControl.FORCE_NETWORK);
       }

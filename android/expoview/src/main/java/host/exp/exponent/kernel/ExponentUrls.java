@@ -38,7 +38,7 @@ public class ExponentUrls {
     return uri.buildUpon().scheme(useHttps ? "https" : "http").build().toString();
   }
 
-  public static Request.Builder addExponentHeadersToUrl(String urlString) {
+  public static Request.Builder addExponentHeadersToUrl(String urlString, boolean isShellAppManifest) {
     // TODO: set user agent
     String sdkVersions = Constants.SDK_VERSIONS;
     if (KernelConfig.FORCE_UNVERSIONED_PUBLISHED_EXPERIENCES) {
@@ -47,8 +47,11 @@ public class ExponentUrls {
     Request.Builder builder = new Request.Builder()
         .url(urlString)
         .header("Exponent-SDK-Version", sdkVersions)
-        .header("Exponent-Platform", "android")
-        .header("Expo-Release-Channel", Constants.RELEASE_CHANNEL);
+        .header("Exponent-Platform", "android");
+
+    if (isShellAppManifest) {
+      builder.header("Expo-Release-Channel", Constants.RELEASE_CHANNEL);
+    }
 
     if (ExpoViewKernel.getInstance().getVersionName() != null) {
       builder = builder.header("Exponent-Version", ExpoViewKernel.getInstance().getVersionName());
