@@ -22,7 +22,6 @@
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 
-static NSString *const RCTStorageDirectory = EX_UNVERSIONED(@"RCTAsyncLocalStorage_V1");
 static NSString *const RCTManifestFileName = @"manifest.json";
 
 #pragma mark - Static helper functions
@@ -64,7 +63,14 @@ static NSString *RCTGetStorageDirectory()
 #else
     storageDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
 #endif
-    storageDirectory = [storageDirectory stringByAppendingPathComponent:RCTStorageDirectory];
+    // Check if we are in UNVERSIONED code since the UNVERSIONED legacy `AsyncStorage` location and the versioned
+    // one are different (even though it's the same one for all versioned ones)
+    if ([EX_UNVERSIONED(@"EXBlah")
+         isEqualToString:@"EXBlah"]) {
+      storageDirectory = [storageDirectory stringByAppendingPathComponent:EX_UNVERSIONED(@"RCTAsyncLocalStorage_V1")];
+    } else {
+      storageDirectory = [storageDirectory stringByAppendingPathComponent:EX_UNVERSIONED(@"ABI15_0_0RCTAsyncLocalStorage_V1")];
+    }
   });
   return storageDirectory;
 }
