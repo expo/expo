@@ -39,7 +39,7 @@ module.exports = {
       return LabConfig.getLabTransformerPath();
     } else {
       return path.resolve(
-        './node_modules/react-native/packager/transformer.js'
+        './node_modules/metro-bundler/src/transformer.js'
       );
     }
   },
