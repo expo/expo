@@ -56,6 +56,10 @@
 			</dict>
 		</array>
 	</dict>
+	<key>FacebookAppID</key>
+	<string>1201211719949057</string>
+	<key>FacebookDisplayName</key>
+	<string>Expo</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>waze</string>

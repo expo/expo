@@ -3,6 +3,7 @@
 #import "EXFacebook.h"
 
 #import <React/RCTUtils.h>
+#import "EXConstants.h"
 #import "FBSDKCoreKit/FBSDKCoreKit.h"
 #import "FBSDKLoginKit/FBSDKLoginKit.h"
 #import "../Private/FBSDKCoreKit/FBSDKInternalUtility.h"
@@ -61,6 +62,20 @@ RCT_REMAP_METHOD(logInWithReadPermissionsAsync,
         loginMgr.loginBehavior = FBSDKLoginBehaviorWeb;
       }
     }
+    
+    if (![[self class] facebookAppIdFromNSBundle] && loginMgr.loginBehavior != FBSDKLoginBehaviorWeb) {
+      NSString *message;
+      if ([self.bridge.scopedModules.constants.appOwnership isEqualToString:@"expo"]) {
+        message = @"Only `web` behavior is supported in Expo Client.";
+      } else {
+        message = [NSString stringWithFormat:
+                   @"Tried to perform Facebook login with behavior `%@`, but "
+                   "no Facebook app id was provided. Specify Facebook app id in app.json "
+                   "or switch to `web` behavior.", behavior];
+      }
+      reject(@"E_BEHAVIOR_NOT_SUPPORTED", message, RCTErrorWithMessage(message));
+      return;
+    }
 
     [loginMgr logInWithReadPermissions:permissions fromViewController:nil handler:^(FBSDKLoginManagerLoginResult *result, NSError *error) {
       if (error) {
@@ -82,6 +97,11 @@ RCT_REMAP_METHOD(logInWithReadPermissionsAsync,
       resolve(@{ @"type": @"success", @"token": result.token.tokenString, @"expires": @(expiration) });
     }];
   });
+}
+
++ (id)facebookAppIdFromNSBundle
+{
+  return [[NSBundle mainBundle].infoDictionary objectForKey:@"FacebookAppID"];
 }
 
 @end

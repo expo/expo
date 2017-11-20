@@ -4,4 +4,6 @@
 
 @interface EXFacebook : NSObject <RCTBridgeModule>
 
++ (id)facebookAppIdFromNSBundle;
+
 @end

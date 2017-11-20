@@ -2,6 +2,7 @@
 
 #import "ExpoKit.h"
 #import "EXAnalytics.h"
+#import "EXFacebook.h"
 #import "EXFatalHandler.h"
 #import "EXGoogleAuthManager.h"
 #import "EXKernel.h"
@@ -95,8 +96,10 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
 
   RCTSetFatalHandler(handleFatalReactError);
 
-  [[FBSDKApplicationDelegate sharedInstance] application:application
-                           didFinishLaunchingWithOptions:launchOptions];
+  if ([EXFacebook facebookAppIdFromNSBundle]) {
+    [[FBSDKApplicationDelegate sharedInstance] application:application
+                             didFinishLaunchingWithOptions:launchOptions];
+  }
 
   // init analytics
   [EXAnalytics sharedInstance];
@@ -160,7 +163,7 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
 - (void)crashlyticsDidDetectReportForLastExecution:(CLSReport *)report
 {
   // set a persistent flag because we may not get a chance to take any action until a future execution of the app.
-  [[NSUserDefaults standardUserDefaults] setBool:@(YES) forKey:kEXKernelClearJSCacheUserDefaultsKey];
+  [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kEXKernelClearJSCacheUserDefaultsKey];
 
   // block to ensure we save this key (in case the app crashes again)
   [[NSUserDefaults standardUserDefaults] synchronize];
@@ -204,11 +207,13 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
     return YES;
   }
 
-  if ([[FBSDKApplicationDelegate sharedInstance] application:application
-                                                     openURL:url
-                                           sourceApplication:sourceApplication
-                                                  annotation:annotation]) {
-    return YES;
+  if ([EXFacebook facebookAppIdFromNSBundle]) {
+    if ([[FBSDKApplicationDelegate sharedInstance] application:application
+                                                       openURL:url
+                                             sourceApplication:sourceApplication
+                                                    annotation:annotation]) {
+      return YES;
+    }
   }
 
   if ([[EXKernel sharedInstance].serviceRegistry.branchManager

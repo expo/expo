@@ -1,5 +1,6 @@
 #import "EXBannerViewManager.h"
 #import "EXBannerView.h"
+#import "EXFacebook.h"
 
 @implementation EXBannerViewManager
 
@@ -9,6 +10,9 @@ RCT_EXPORT_MODULE(CTKBannerViewManager)
 
 - (UIView *)view
 {
+  if (![EXFacebook facebookAppIdFromNSBundle]) {
+    RCTLogWarn(@"No Facebook app id is specified. Facebook ads may have undefined behavior.");
+  }
   return [EXBannerView new];
 }
 
