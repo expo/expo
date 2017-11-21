@@ -54,6 +54,20 @@ RCT_EXPORT_METHOD(trackWithProperties:(NSString *)event withProperties:(NSDictio
   }
 }
 
+RCT_EXPORT_METHOD(group:(NSString *)groupId)
+{
+  if (_instance) {
+    [_instance group:groupId];
+  }
+}
+
+RCT_EXPORT_METHOD(groupWithTraits:(NSString *)groupId withTraits:(NSDictionary *)traits)
+{
+  if (_instance) {
+    [_instance group:groupId traits:traits];
+  }
+}
+
 RCT_EXPORT_METHOD(screen:(NSString *)screenName)
 {
   if (_instance) {
