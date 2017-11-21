@@ -8,7 +8,7 @@ const shell = require('gulp-shell');
 const minimist = require('minimist');
 const path = require('path');
 const username = require('username');
-const { IosShellApp, AndroidShellApp } = require('xdl');
+const { IosIcons, IosShellApp, AndroidShellApp } = require('xdl');
 
 const { startReactNativeServer } = require('./react-native-tasks');
 const {
@@ -40,9 +40,7 @@ function pathsFromProjectsFile(projectsFile) {
 
 function generateDynamicMacrosWithArguments() {
   if (!argv.buildConstantsPath) {
-    throw new Error(
-      'Must run with `--buildConstantsPath BUILD_CONSTANTS_PATH`'
-    );
+    throw new Error('Must run with `--buildConstantsPath BUILD_CONSTANTS_PATH`');
   }
 
   if (!argv.platform) {
@@ -97,6 +95,10 @@ function updateAndroidShellAppWithArguments() {
 }
 
 function createIOSShellAppWithArguments() {
+  const { resizeIconWithSharpAsync, getImageDimensionsWithSharpAsync } = require('./image-helpers');
+  console.log('IosIcons: setting image functions to alternative sharp implementations');
+  IosIcons.setResizeImageFunction(resizeIconWithSharpAsync);
+  IosIcons.setGetImageDimensionsFunction(getImageDimensionsWithSharpAsync);
   return createIOSShellAppAsync(argv);
 }
 

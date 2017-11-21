@@ -27,6 +27,7 @@
     "replace-string": "^1.1.0",
     "request": "^2.72.0",
     "rimraf": "^2.6.2",
+    "sharp": "^0.18.4",
     "shelljs": "^0.7.0",
     "username": "^2.2.2",
     "xdl": "^43.0.1"
