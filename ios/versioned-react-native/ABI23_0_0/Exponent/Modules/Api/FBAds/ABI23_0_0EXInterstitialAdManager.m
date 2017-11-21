@@ -1,8 +1,10 @@
+#import "ABI23_0_0EXFacebook.h"
 #import "ABI23_0_0EXInterstitialAdManager.h"
 #import "ABI23_0_0EXUnversioned.h"
 
 #import <FBAudienceNetwork/FBAudienceNetwork.h>
 #import <ReactABI23_0_0/ABI23_0_0RCTUtils.h>
+#import <ReactABI23_0_0/ABI23_0_0RCTLog.h>
 
 @interface ABI23_0_0EXInterstitialAdManager () <FBInterstitialAdDelegate>
 
@@ -44,6 +46,9 @@ ABI23_0_0RCT_EXPORT_METHOD(
 {
   ABI23_0_0RCTAssert(_resolve == nil && _reject == nil, @"Only one `showAd` can be called at once");
   ABI23_0_0RCTAssert(_isBackground == false, @"`showAd` can be called only when experience is running in foreground");
+  if (![ABI23_0_0EXFacebook facebookAppIdFromNSBundle]) {
+    ABI23_0_0RCTLogWarn(@"No Facebook app id is specified. Facebook ads may have undefined behavior.");
+  }
   
   _resolve = resolve;
   _reject = reject;

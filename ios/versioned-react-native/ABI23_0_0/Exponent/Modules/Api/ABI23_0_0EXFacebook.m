@@ -3,6 +3,7 @@
 #import "ABI23_0_0EXFacebook.h"
 
 #import <ReactABI23_0_0/ABI23_0_0RCTUtils.h>
+#import "ABI23_0_0EXConstants.h"
 #import "FBSDKCoreKit/FBSDKCoreKit.h"
 #import "FBSDKLoginKit/FBSDKLoginKit.h"
 #import "../Private/FBSDKCoreKit/FBSDKInternalUtility.h"
@@ -22,6 +23,8 @@
 @end
 
 @implementation ABI23_0_0EXFacebook
+
+@synthesize bridge = _bridge;
 
 ABI23_0_0RCT_EXPORT_MODULE(ExponentFacebook)
 
@@ -61,6 +64,25 @@ ABI23_0_0RCT_REMAP_METHOD(logInWithReadPermissionsAsync,
         loginMgr.loginBehavior = FBSDKLoginBehaviorWeb;
       }
     }
+    
+    if (loginMgr.loginBehavior != FBSDKLoginBehaviorWeb) {
+      if ([_bridge.scopedModules.constants.appOwnership isEqualToString:@"expo"]) {
+        // expo client: only web
+        NSString *message = @"Only `web` behavior is supported in Expo Client.";
+        reject(@"E_BEHAVIOR_NOT_PERMITTED", message, ABI23_0_0RCTErrorWithMessage(message));
+        return;
+      } else {
+        if (![[self class] facebookAppIdFromNSBundle]) {
+          // standalone: non-web requires native config
+          NSString *message = [NSString stringWithFormat:
+                               @"Tried to perform Facebook login with behavior `%@`, but "
+                               "no Facebook app id was provided. Specify Facebook app id in app.json "
+                               "or switch to `web` behavior.", behavior];
+          reject(@"E_BEHAVIOR_NOT_SUPPORTED", message, ABI23_0_0RCTErrorWithMessage(message));
+          return;
+        }
+      }
+    }
 
     [loginMgr logInWithReadPermissions:permissions fromViewController:nil handler:^(FBSDKLoginManagerLoginResult *result, NSError *error) {
       if (error) {
@@ -82,6 +104,11 @@ ABI23_0_0RCT_REMAP_METHOD(logInWithReadPermissionsAsync,
       resolve(@{ @"type": @"success", @"token": result.token.tokenString, @"expires": @(expiration) });
     }];
   });
+}
+
++ (id)facebookAppIdFromNSBundle
+{
+  return [[NSBundle mainBundle].infoDictionary objectForKey:@"FacebookAppID"];
 }
 
 @end
