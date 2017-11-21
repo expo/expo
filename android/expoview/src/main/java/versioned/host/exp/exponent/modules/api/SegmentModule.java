@@ -114,16 +114,16 @@ public class SegmentModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void group(final String userId, final String groupId) {
+  public void group(final String groupId) {
     if (mClient != null) {
-      mClient.group(userId, groupId);
+      mClient.group(groupId);
     }
   }
 
   @ReactMethod
-  public void groupWithTraits(final String userId, final String groupId, final ReadableMap properties) {
+  public void groupWithTraits(final String groupId, final ReadableMap properties) {
     if (mClient != null) {
-      mClient.group(userId, groupId, readableMapToTraits(properties), new Options());
+      mClient.group(groupId, readableMapToTraits(properties), new Options());
     }
   }
 
