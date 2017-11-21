@@ -24,6 +24,8 @@
 
 @implementation EXFacebook
 
+@synthesize bridge = _bridge;
+
 RCT_EXPORT_MODULE(ExponentFacebook)
 
 RCT_REMAP_METHOD(logInWithReadPermissionsAsync,
@@ -63,18 +65,23 @@ RCT_REMAP_METHOD(logInWithReadPermissionsAsync,
       }
     }
     
-    if (![[self class] facebookAppIdFromNSBundle] && loginMgr.loginBehavior != FBSDKLoginBehaviorWeb) {
-      NSString *message;
-      if ([self.bridge.scopedModules.constants.appOwnership isEqualToString:@"expo"]) {
-        message = @"Only `web` behavior is supported in Expo Client.";
+    if (loginMgr.loginBehavior != FBSDKLoginBehaviorWeb) {
+      if ([_bridge.scopedModules.constants.appOwnership isEqualToString:@"expo"]) {
+        // expo client: only web
+        NSString *message = @"Only `web` behavior is supported in Expo Client.";
+        reject(@"E_BEHAVIOR_NOT_PERMITTED", message, RCTErrorWithMessage(message));
+        return;
       } else {
-        message = [NSString stringWithFormat:
-                   @"Tried to perform Facebook login with behavior `%@`, but "
-                   "no Facebook app id was provided. Specify Facebook app id in app.json "
-                   "or switch to `web` behavior.", behavior];
+        if (![[self class] facebookAppIdFromNSBundle]) {
+          // standalone: non-web requires native config
+          NSString *message = [NSString stringWithFormat:
+                               @"Tried to perform Facebook login with behavior `%@`, but "
+                               "no Facebook app id was provided. Specify Facebook app id in app.json "
+                               "or switch to `web` behavior.", behavior];
+          reject(@"E_BEHAVIOR_NOT_SUPPORTED", message, RCTErrorWithMessage(message));
+          return;
+        }
       }
-      reject(@"E_BEHAVIOR_NOT_SUPPORTED", message, RCTErrorWithMessage(message));
-      return;
     }
 
     [loginMgr logInWithReadPermissions:permissions fromViewController:nil handler:^(FBSDKLoginManagerLoginResult *result, NSError *error) {
