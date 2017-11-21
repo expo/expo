@@ -1,4 +1,5 @@
 
+#import "ABI19_0_0EXFacebook.h"
 #import "ABI19_0_0EXNativeAdManager.h"
 #import "ABI19_0_0EXNativeAdView.h"
 #import "ABI19_0_0EXNativeAdEmitter.h"
@@ -43,6 +44,9 @@ ABI19_0_0RCT_EXPORT_MODULE(CTKNativeAdManager)
 
 ABI19_0_0RCT_EXPORT_METHOD(init:(NSString *)placementId withAdsToRequest:(nonnull NSNumber *)adsToRequest)
 {
+  if (![ABI19_0_0EXFacebook facebookAppIdFromNSBundle]) {
+    ABI19_0_0RCTLogWarn(@"No Facebook app id is specified. Facebook ads may have undefined behavior.");
+  }
   FBNativeAdsManager *adsManager = [[FBNativeAdsManager alloc] initWithPlacementID:placementId
                                                                 forNumAdsRequested:[adsToRequest intValue]];
 

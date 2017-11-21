@@ -67,12 +67,18 @@
 
 - (void)adViewDidClick:(FBAdView *)adView
 {
-  _onAdPress(nil);
+  if (_onAdPress) {
+    _onAdPress(nil);
+  }
 }
 
 - (void)adView:(FBAdView *)adView didFailWithError:(NSError *)error
 {
-  _onAdError(ABI20_0_0RCTJSErrorFromNSError(error));
+  if (_onAdError) {
+    _onAdError(ABI20_0_0RCTJSErrorFromNSError(error));
+  } else {
+    ABI20_0_0RCTMakeAndLogError(error.localizedDescription, nil, error.userInfo);
+  }
 }
 
 - (void)adViewDidFinishHandlingClick:(FBAdView *)adView {}

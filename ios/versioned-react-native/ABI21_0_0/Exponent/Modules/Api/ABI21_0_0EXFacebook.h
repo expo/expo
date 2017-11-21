@@ -4,4 +4,6 @@
 
 @interface ABI21_0_0EXFacebook : NSObject <ABI21_0_0RCTBridgeModule>
 
++ (id)facebookAppIdFromNSBundle;
+
 @end

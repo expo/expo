@@ -1,8 +1,10 @@
+#import "ABI19_0_0EXFacebook.h"
 #import "ABI19_0_0EXInterstitialAdManager.h"
 #import "ABI19_0_0EXUnversioned.h"
 
 #import <FBAudienceNetwork/FBAudienceNetwork.h>
 #import <ReactABI19_0_0/ABI19_0_0RCTUtils.h>
+#import <ReactABI19_0_0/ABI19_0_0RCTLog.h>
 
 @interface ABI19_0_0EXInterstitialAdManager () <FBInterstitialAdDelegate>
 
@@ -44,13 +46,18 @@ ABI19_0_0RCT_EXPORT_METHOD(
 {
   ABI19_0_0RCTAssert(_resolve == nil && _reject == nil, @"Only one `showAd` can be called at once");
   ABI19_0_0RCTAssert(_isBackground == false, @"`showAd` can be called only when experience is running in foreground");
+  if (![ABI19_0_0EXFacebook facebookAppIdFromNSBundle]) {
+    ABI19_0_0RCTLogWarn(@"No Facebook app id is specified. Facebook ads may have undefined behavior.");
+  }
   
   _resolve = resolve;
   _reject = reject;
   
   _interstitialAd = [[FBInterstitialAd alloc] initWithPlacementID:placementId];
   _interstitialAd.delegate = self;
-  [_interstitialAd loadAd];
+  [self _performSynchronouslyOnMainThread:^{
+    [_interstitialAd loadAd];
+  }];
 }
 
 #pragma mark - FBInterstitialAdDelegate
@@ -106,6 +113,17 @@ ABI19_0_0RCT_EXPORT_METHOD(
   _interstitialAd = nil;
   _adViewController = nil;
   _didClick = false;
+}
+
+#pragma mark - internal
+
+- (void)_performSynchronouslyOnMainThread:(void (^)(void))block
+{
+  if ([NSThread isMainThread]) {
+    block();
+  } else {
+    dispatch_sync(dispatch_get_main_queue(), block);
+  }
 }
 
 @end
