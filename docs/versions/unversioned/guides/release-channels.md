@@ -36,6 +36,6 @@ On the staging stack, run `exp publish --release-channel staging`. Your test use
 
 On the production stack, release v1 of your app by running `exp publish --release-channel prod-v1`. You can build this version of your app into a standalone ipa by running `exp build:ios --release-channel prod-v1`. You can push updates to your app by publishing to the `prod-v1` channel. The standalone app will update with the most recent compatible version of your app on the `prod-v1` channel.
 
-If you have a new version that you dont want v1 users getting, release v2 of your app by running `exp publish -channel prod-v2` and building it with `exp build:ios --channel prod-v2`. Users with the `prod-v2` ipa will only be pulling releases from that channel.
+If you have a new version that you dont want v1 users getting, release v2 of your app by running `exp publish --release-channel prod-v2` and building it with `exp build:ios --release-channel prod-v2`. Users with the `prod-v2` ipa will only be pulling releases from that channel.
 
 You can continue updating v1 of your app with `exp publish --release-channel prod-v1`, and users who havent updated to the latest `prod-v2` ipa in the Apple App Store will continue receiving the latest `prod-v1` releases.
