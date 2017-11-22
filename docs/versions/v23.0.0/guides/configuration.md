@@ -60,7 +60,7 @@ The following is a list of properties that are available for you under the `"exp
 
 - `icon`
 
-   Local path or remote url to an image to use for your app's icon. We recommend that you use a 512x512 png file with transparency. This icon will appear on the home screen and within the Expo app.
+   Local path or remote url to an image to use for your app's icon. We recommend that you use a 1024x1024 png file. This icon will appear on the home screen and within the Expo app.
 
 - `notification`
 
@@ -180,7 +180,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `icon`
 
-      Local path or remote URL to an image to use for your app's icon on iOS. If specified, this overrides the top-level `icon` key. iOS icons should be square png files with no transparent pixels. This icon will appear on the home screen and within the Expo app.
+      Local path or remote URL to an image to use for your app's icon on iOS. If specified, this overrides the top-level `icon` key. Use a 1024x1024 icon which follows Apple's interface guidelines for icons, including color profile and transparency. Expo will generate the other required sizes. This icon will appear on the home screen and within the Expo app.
 
    - `merchantId`
 
@@ -278,7 +278,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `icon`
 
-      Local path or remote url to an image to use for your app's icon. We recommend that you use a 512x512 png file with (can't be transparent nor contain an alpha channel for Apple App Store, transparency is recommended for the Google Play Store). This icon will appear on the home screen and within the Expo app.
+      Local path or remote url to an image to use for your app's icon. If specified, this overrides the top-level `icon` key. We recommend that you use a 1024x1024 png file (transparency is recommended for the Google Play Store). This icon will appear on the home screen and within the Expo app.
 
    - `permissions`
 
@@ -393,6 +393,14 @@ The following is a list of properties that are available for you under the `"exp
        - `xxxhdpi`
 
           Local path or remote url to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
+
+- `facebookAppId`
+
+   Used for all Facebook libraries. Set up your Facebook App ID at https://developers.facebook.com.
+
+- `facebookDisplayName`
+
+   Used for native Facebook login.
 
 - `facebookScheme`
 
