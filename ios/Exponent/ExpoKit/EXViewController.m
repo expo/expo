@@ -41,7 +41,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
   [super viewDidLoad];
   // Display the launch screen behind the React view so that the React view appears to seamlessly load
-  NSArray *views = [[NSBundle mainBundle] loadNibNamed:@"LaunchScreen" owner:self options:nil];
+  NSArray *views;
+  @try {
+    views = [[NSBundle mainBundle] loadNibNamed:@"LaunchScreen" owner:self options:nil];
+  } @catch (NSException *_) {
+    DDLogWarn(@"Expo LaunchScreen.xib is missing. Unexpected loading behavior may occur.");
+  }
   if (views) {
     self.loadingView = views.firstObject;
     self.loadingView.layer.zPosition = 1000;
@@ -53,6 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
     // use this instead of the superclass loading indicator
     _loadingIndicator = (UIActivityIndicatorView *)[self.loadingView viewWithTag:1];
   } else {
+    _loadingView = [[UIView alloc] init];
     _loadingIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
   }
   _loadingIndicator.hidesWhenStopped = YES;
