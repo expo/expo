@@ -176,11 +176,16 @@ public class LoadingView extends RelativeLayout {
     }
 
     setBackgroundImage(manifest);
-    mImageView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+    setBackgroundColor(manifest);
   }
 
   private void setBackgroundImage(final JSONObject manifest) {
-    if (Constants.isShellApp() && isUsingNewSplashScreenStyle(manifest)) {
+    if (isUsingNewSplashScreenStyle(manifest)) {
+      ImageView.ScaleType scaleType = scaleType(manifest);
+      mBackgroundImageView.setScaleType(scaleType);
+    }
+
+    if (Constants.isShellApp()) {
       revealView(mBackgroundImageView);
       return;
     }
@@ -199,6 +204,72 @@ public class LoadingView extends RelativeLayout {
         }
       });
     }
+  }
+
+  private ImageView.ScaleType scaleType(final JSONObject manifest) {
+    String resizeMode = null;
+    JSONObject splash = null;
+
+    if (manifest.has("android")) {
+      final JSONObject android = manifest.optJSONObject("android");
+      if (android.has(ExponentManifest.MANIFEST_SPLASH_INFO_KEY)) {
+        splash = android.optJSONObject(ExponentManifest.MANIFEST_SPLASH_INFO_KEY);
+      }
+    }
+
+    if (splash == null) {
+      if (manifest.has(ExponentManifest.MANIFEST_SPLASH_INFO_KEY)) {
+        splash = manifest.optJSONObject(ExponentManifest.MANIFEST_SPLASH_INFO_KEY);
+      }
+    }
+
+    if (splash != null && splash.has(ExponentManifest.MANIFEST_SPLASH_RESIZE_MODE)) {
+      resizeMode = splash.optString(ExponentManifest.MANIFEST_SPLASH_RESIZE_MODE, "contain");
+    }
+
+    if (resizeMode == null) {
+      return ImageView.ScaleType.FIT_CENTER;
+    }
+
+    if (resizeMode.equals("cover")) {
+      return ImageView.ScaleType.CENTER_CROP;
+    } else {
+      return ImageView.ScaleType.FIT_CENTER;
+    }
+  }
+
+  private void setBackgroundColor(final JSONObject manifest) {
+    String backgroundColor = null;
+    if (isUsingNewSplashScreenStyle(manifest)) {
+      JSONObject splash = null;
+
+      if (manifest.has("android")) {
+        final JSONObject android = manifest.optJSONObject("android");
+        splash = android.optJSONObject(ExponentManifest.MANIFEST_SPLASH_INFO_KEY);
+      }
+      if (splash == null && manifest.has(ExponentManifest.MANIFEST_SPLASH_INFO_KEY)) {
+        splash = manifest.optJSONObject(ExponentManifest.MANIFEST_SPLASH_INFO_KEY);
+      }
+
+      if (splash != null) {
+        backgroundColor = splash.optString(ExponentManifest.MANIFEST_SPLASH_BACKGROUND_COLOR);
+      }
+    } else if (manifest.has(ExponentManifest.MANIFEST_LOADING_INFO_KEY)) {
+      final JSONObject loadingInfo = manifest.optJSONObject(ExponentManifest.MANIFEST_LOADING_INFO_KEY);
+      if (loadingInfo != null) {
+        backgroundColor = loadingInfo.optString(ExponentManifest.MANIFEST_LOADING_BACKGROUND_COLOR);
+      }
+    }
+
+    if (backgroundColor == null || !ColorParser.isValid(backgroundColor)) {
+      backgroundColor = "#FFFFFF";
+    }
+
+    ObjectAnimator colorFade = ObjectAnimator.ofObject(this, "backgroundColor", new ArgbEvaluator(), Color.argb(255, 255, 255, 255), Color.parseColor(backgroundColor));
+    colorFade.setDuration(300);
+    colorFade.start();
+
+    mImageView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
   }
 
   private String backgroundImageURL(final JSONObject manifest) {
