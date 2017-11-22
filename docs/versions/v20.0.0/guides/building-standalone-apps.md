@@ -84,6 +84,8 @@ https://developer.apple.com/account/#/membership)? XY1234567
 
 Next we will ask you if you'd like us to handle your distribution certificate or use your own. Similar to the Android keystore, if you don't know what a distribution certificate is, just let us handle it for you. If you do need to upload your own certificates, we recommend following [this excellent guide on making a p12 file](https://calvium.com/how-to-make-a-p12-file/).
 
+> **Note:** The Expo build service supports both normal App Store distribution as well as enterprise distribution. To use the latter, you must be a member of the ["Apple Developer Enterprise Program"](https://developer.apple.com/programs/enterprise/). Only normal Apple developer accounts can build apps that can be submitted to the Apple App Store, and only enterprise developer accounts can build apps that can be distributed using enterprise distribution methods. During the build process, the Expo build service will detect the account type and select or create the correct type of distribution certificate and provisioning profile. At this time, the standalone app builder does not support "ad hoc" distribution certificates or provisioning profiles.
+
 ## 4. Wait for it to finish building
 
 This will take a few minutes, you can check up on it by running `exp build:status`. When it's done, you'll see the url of a `.apk` (Android) or `.ipa` (iOS) file -- this is your app.
