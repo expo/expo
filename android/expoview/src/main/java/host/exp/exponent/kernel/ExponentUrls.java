@@ -38,10 +38,11 @@ public class ExponentUrls {
     return uri.buildUpon().scheme(useHttps ? "https" : "http").build().toString();
   }
 
-  public static Request.Builder addExponentHeadersToUrl(String urlString, boolean isShellAppManifest) {
+  public static Request.Builder addExponentHeadersToUrl(String urlString, boolean isShellAppManifest, boolean isKernel) {
     // TODO: set user agent
     String sdkVersions = Constants.SDK_VERSIONS;
-    if (KernelConfig.FORCE_UNVERSIONED_PUBLISHED_EXPERIENCES) {
+    // !isKernel is important for when FORCE_UNVERSIONED_PUBLISHED_EXPERIENCES is set to true
+    if (KernelConfig.FORCE_UNVERSIONED_PUBLISHED_EXPERIENCES && !isKernel) {
       sdkVersions = "UNVERSIONED";
     }
     Request.Builder builder = new Request.Builder()
