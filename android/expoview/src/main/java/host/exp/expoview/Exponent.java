@@ -426,7 +426,7 @@ public class Exponent {
     }
 
     try {
-      Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToUrl(urlString, false);
+      Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToUrl(urlString, false, KernelConstants.KERNEL_BUNDLE_ID.equals(id));
       if (shouldForceNetwork) {
         requestBuilder.cacheControl(CacheControl.FORCE_NETWORK);
       }
