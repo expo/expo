@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import abi23_0_0.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerModule;
+import abi23_0_0.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerViewManager;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.kernel.ExperienceId;
@@ -179,6 +181,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new BrightnessModule(reactContext));
         nativeModules.add(new RNGestureHandlerModule(reactContext));
         nativeModules.add(new StripeModule(reactContext));
+        nativeModules.add(new BarCodeScannerModule(reactContext));
       } catch (JSONException | UnsupportedEncodingException e) {
         EXL.e(TAG, e.toString());
       }
@@ -198,6 +201,7 @@ public class ExponentPackage implements ReactPackage {
         new CameraViewManager(),
         new GLViewManager(),
         new NativeAdViewManager(reactContext),
+        new BarCodeScannerViewManager(),
         new BannerViewManager(reactContext)
     ));
 
