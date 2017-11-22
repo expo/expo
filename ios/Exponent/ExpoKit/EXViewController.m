@@ -108,7 +108,9 @@ NS_ASSUME_NONNULL_BEGIN
   _isLoading = isLoading;
   if (isLoading) {
     self.loadingView.hidden = NO;
-    [_loadingIndicator startAnimating];
+    if (![self _usesStandaloneSplashScreen]) {
+      [_loadingIndicator startAnimating];
+    }
   } else {
     if (![self _usesStandaloneSplashScreen]) {
       // If this is Home, or no splash screen is used, hide the loading here.
