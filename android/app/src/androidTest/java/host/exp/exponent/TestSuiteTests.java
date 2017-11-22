@@ -120,12 +120,12 @@ public class TestSuiteTests extends BaseTestClass {
     KernelConfig.FORCE_UNVERSIONED_PUBLISHED_EXPERIENCES = true;
     runTestSuiteTest(ExponentBuildConstants.TEST_APP_URI);
   }
-
+/*
   @Test
   public void sdk22TestSuite() {
     runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-22-0-0");
   }
-
+*/
   @Test
   public void sdk21TestSuite() {
     runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-21-0-0");
