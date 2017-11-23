@@ -2,11 +2,11 @@
 title: Building Standalone Apps
 ---
 
-Not everybody wants to tell their customers or friends to download Expo to use their app; You want to be able to have the app on its own from the App Store and Play Store. We call these "shell apps" or "standalone apps". The purpose of this guide is to walk you through creating a standalone version of your Expo app for iOS and Android.
+The purpose of this guide is to help you create standalone binaries of your Expo app for iOS and Android which can be submitted to the Apple App Store and Google Play Store.
 
-An Apple Developer account is needed to build the iOS standalone app, but a Google Play Developer account is not needed to build the Android standalone app. If you'd like to submit to either app store, you will of course need a developer account on that store.
+An Apple Developer account is needed to build an iOS standalone app, but a Google Play Developer account is not needed to build the Android standalone app. If you'd like to submit to either app store, you will need a developer account on that store.
 
-> **Warning:** Standalone apps are currently in beta! While the Android version has been heavily tested, the iOS version and our automated build pipeline for both are still baking so you may run into some issues. Be sure to reach out to us on the forums if you do and we'll put them on our roadmap, much appreciated!
+> **Warning:** Standalone apps are currently in beta!
 
 ## 1. Install exp
 
@@ -23,7 +23,7 @@ If you haven't used `exp` before, the first thing you'll need to do is login wit
     "icon": "./path/to/your/app-icon.png",
     "version": "1.0.0",
     "slug": "your-app-slug",
-    "sdkVersion": "17.0.0",
+    "sdkVersion": "XX.0.0",
     "ios": {
       "bundleIdentifier": "com.yourcompany.yourappname"
     },
@@ -36,7 +36,7 @@ If you haven't used `exp` before, the first thing you'll need to do is login wit
 
 The iOS `bundleIdentifier` and Android `package` fields use reverse DNS notation, but don't have to be related to a domain. Replace `"com.yourcompany.yourappname"` with whatever makes sense for your app.
 
-You're probably not surprised that `name`, `icon` and `version` are required, but if you haven't used Expo much you might be confused by `slug` and `sdkVersion`. `slug` is the url name that your app's JavaScript is published to, for example `exp.host/@community/native-component-list`, where `community` is my username and `native-component-list` is the slug. The `sdkVersion` tells Expo what Expo runtime version to use, which corresponds to a React Native version. Although `"17.0.0"` is listed in the example, you already have an `sdkVersion` in your app.json and should not change it except when you want to update to a new version of Expo.
+You're probably not surprised that `name`, `icon` and `version` are required, but if you haven't used Expo much you might be confused by `slug` and `sdkVersion`. `slug` is the url name that your app's JavaScript is published to, for example `exp.host/@community/native-component-list`, where `community` is my username and `native-component-list` is the slug. The `sdkVersion` tells Expo what Expo runtime version to use, which corresponds to a React Native version. Although `"XX.0.0"` is listed in the example, you already have an `sdkVersion` in your app.json and should not change it except when you want to update to a new version of Expo.
 
 There are other options you might want to add to `app.json`. We have only covered what is required. For example, some people like to configure their own build number, linking scheme, and more. We highly recommend you read through [Configuration with app.json](configuration.html) for the full spec.
 
@@ -97,10 +97,7 @@ This will take a few minutes, you can check up on it by running `exp build:statu
 -   You can drag and drop the `.apk` into your Android emulator. This is the easiest way to test out that the build was successful. But it's not the most satisfying.
 -   **To run it on your Android device**, make sure you have the Android platform tools installed along with `adb`, then just run `adb install app-filename.apk` with your device plugged in.
 -   **To run it on your iOS Simulator**, first build your expo project with the simulator flag by running `exp build:ios -t simulator`, then download the tarball with the link given upon completion when running `exp build:status`. Unpack the tar.gz by running `tar -xvzf your-app.tar.gz`. Then you can run it by starting an iOS Simulator instance, then running `xcrun simctl install booted <app path>` and `xcrun simctl launch booted <app identifier>`. Another alternative which some people prefer is to install the [ios-sim](https://github.com/phonegap/ios-sim) tool and then use `ios-sim launch <app path>`.
-
-## 5.5 - Uploading your iOS IPA to TestFlight
-
-- Once your IPA is ready and you've downloaded the file locally, you are ready to upload your app to TestFlight. Within TestFlight, click the plus icon and create a New App. Make sure your `bundleIdentifier` matches what you've placed in `exp.json`.
+- **To test a device build with Apple TestFlight**, download the .ipa file to your local machine. You are ready to upload your app to TestFlight. Within TestFlight, click the plus icon and create a New App. Make sure your `bundleIdentifier` matches what you've placed in `exp.json`.
 
 > **Note:** You will not see your build here just yet! You will need to use Xcode or Application Loader to upload your IPA first. Once you do that, you can check the status of your build under `Activity`. Processing an app can take 10-15 minutes before it shows up under available builds.
 
@@ -111,7 +108,7 @@ We don't automate this step (yet), but at this point you should be able to follo
 If you plan to submit to the Apple App Store, your app will be subject to normal Apple review guidelines. A plain Expo build will have no issues with this, but your app's particular behavior, content, and metadata are all under your control. Some of these resources are worth reading:
 
 -   [App Store Review Guidelines](https://developer.apple.com/app-store/review/guidelines/)
--   [App Icon Guidelines](https://developer.apple.com/ios/human-interface-guidelines/graphics/app-icon/)
+-   Expo's guide to [App Icons](app-icons.html)
 -   [Common App Rejections](https://developer.apple.com/app-store/review/rejections/)
 
 > **Note:** When submitting to the iTunes Store, you'll be asked whether your app uses the advertising identifier (IDFA). Because Expo depends on Segment Analytics, the answer is yes, and you'll need to check a couple boxes on the Apple submission form. See [Segment's Guide](https://segment.com/docs/sources/mobile/ios/quickstart/#step-5-submitting-to-the-app-store) for which specific boxes to fill in.
@@ -127,9 +124,4 @@ To keep track of this, you can also update the binary's [versionCode](configurat
 
 If you run into problems during this process, we're more than happy to help out! [Join our Slack](https://slack.expo.io/) and let us know if you have any questions.
 
-> **Note:** Updates are handled differently on iOS and Android. On Android, updates
-are downloaded in the background. This means that the first time a user opens
-your app after an update they will get the old version while the new version
-is downloaded in the background. The second time they open the app they'll get
-the new version. On iOS, updates are downloaded synchronously, so users will
-get the new version the first time they open your app after an update.
+> **Note:** Updates are handled differently on iOS and Android. On Android, updates are downloaded in the background. This means that the first time a user opens your app after an update they will get the old version while the new version is downloaded in the background. The second time they open the app they'll get the new version. On iOS, updates are downloaded synchronously, so users will get the new version the first time they open your app after an update. If you want to mimic the Android behavior, add the `ios.loadJSInBackgroundExperimental` key to `app.json`.

@@ -29,7 +29,7 @@ You can continue making changes locally without disrupting your users. Any time 
 We frequently release updates to the [Expo SDK](../sdk/index.html). Each update includes instructions for how to upgrade your project. If you decide to update to a newer version of our SDK, copies of the older version will continue to work fine. Users will download the newest copy that their client supports.
 
 ## Deploying to the Apple App Store and Google Play
-When you're ready to list your app officially on the Apple App Store and Google Play Store, Expo can generate deployment-ready `.ipa` and `.apk` archives which are ready to submit to Apple and Google. We generate them on our servers, so you still don't need any Apple or Google software. See [Building Standalone Apps](../guides/building-standalone-apps.html).
+When you're ready to list your app officially on the Apple App Store and Google Play Store, Expo can generate deployment-ready `.ipa` and `.apk` archives which are ready to submit to Apple and Google. We generate them on our servers, so you still don't need any Apple or Google software. See [Building Standalone Apps](../guides/building-standalone-apps.html) or read other documentation on [Distributing Apps](../distribution/index.html).
 
 ## Changing Native Code
 You can take your app all the way to the App Store and Play Store while writing only JS. However, if you run into special advanced needs which aren't covered by Expo, we provide the ability to [detach to ExpoKit](../guides/detach.html), which is a native Xcode and Android Studio representation of your Expo project.
