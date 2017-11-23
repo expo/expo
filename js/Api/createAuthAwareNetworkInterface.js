@@ -1,7 +1,5 @@
 /* @flow */
 
-import { Platform } from 'react-native';
-
 import ConnectivityAwareHTTPNetworkInterface from './ConnectivityAwareHTTPNetworkInterface';
 
 type AuthAwareNetworkInterfaceOptions = {
@@ -54,9 +52,6 @@ class AuthAwareNetworkInterface {
     this._refreshIdTokenAsync = refreshIdTokenAsync;
 
     this._applyAuthorizationHeaderMiddleware();
-    if (Platform.OS === 'android') {
-      this._applyDisableGzipOnAndroidThanksgivingMiddleware();
-    }
   }
 
   _applyAuthorizationHeaderMiddleware = () => {
@@ -71,23 +66,6 @@ class AuthAwareNetworkInterface {
           if (idToken) {
             req.options.headers['Authorization'] = `Bearer ${idToken}`;
           }
-
-          next();
-        },
-      },
-    ]);
-  };
-
-  // NOTE(2017-11-22): Remove this once we resolve encoding issues with www
-  _applyDisableGzipOnAndroidThanksgivingMiddleware = () => {
-    this._networkInterface.use([
-      {
-        applyMiddleware: (req, next) => {
-          if (!req.options.headers) {
-            req.options.headers = {};
-          }
-
-          req.options.headers['Accept-Encoding'] = `identity`;
 
           next();
         },
