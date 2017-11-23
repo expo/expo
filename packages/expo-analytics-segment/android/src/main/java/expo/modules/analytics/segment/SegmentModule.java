@@ -164,4 +164,11 @@ public class SegmentModule extends ExportedModule {
     }
     promise.resolve(null);
   }
+
+  @ExpoMethod
+  public void optOut(final boolean optOut) {
+    if (mClient != null) {
+      mClient.optOut(optOut);
+    }
+  }
 }

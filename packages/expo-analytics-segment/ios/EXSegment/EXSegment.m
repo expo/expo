@@ -146,4 +146,20 @@ EX_EXPORT_METHOD_AS(flush,
   resolve(nil);
 }
 
+EX_EXPORT_METHOD_AS(optOut,
+                    optOut:(BOOL)optOut
+                    withResolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
+{
+  if (_instance) {
+    if (optOut) {
+      [_instance disable];
+    }
+    else {
+      [_instance enable];
+    }
+  }
+  resolve(nil);
+}
+
 @end
