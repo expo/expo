@@ -39,3 +39,7 @@ On the production stack, release v1 of your app by running `exp publish --releas
 If you have a new version that you dont want v1 users getting, release v2 of your app by running `exp publish --release-channel prod-v2` and building it with `exp build:ios --release-channel prod-v2`. Users with the `prod-v2` ipa will only be pulling releases from that channel.
 
 You can continue updating v1 of your app with `exp publish --release-channel prod-v1`, and users who havent updated to the latest `prod-v2` ipa in the Apple App Store will continue receiving the latest `prod-v1` releases.
+
+## Using Release Channels with ExpoKit
+
+Since `exp build` does not apply to ExpoKit projects, you can edit the native project's release channel manually by modifying the `releaseChannel` key in `EXShell.plist` (iOS) or `Constants.java` (Android).

@@ -48,15 +48,18 @@
   links:
     App Icons: /versions/unversioned/guides/app-icons.html
     Building Standalone Apps: /versions/unversioned/guides/building-standalone-apps.html
-    Detaching to ExpoKit: /versions/unversioned/guides/detach.html
-    Developing with ExpoKit: /versions/unversioned/guides/expokit.html
-    Advanced ExpoKit Topics: /versions/unversioned/guides/advanced-expokit-topics.html
     Release Channels: /versions/unversioned/guides/release-channels.html
     Splash Screens: /versions/unversioned/guides/splash-screens.html
 - title: Tutorials
   index: /versions/unversioned/tutorials/index.html
   links:
     Creating A 2D Game: /versions/unversioned/tutorials/create-floatyplane-game.html
+- title: ExpoKit
+  index: /versions/unversioned/expokit/index.html
+  links:
+    Detaching to ExpoKit: /versions/unversioned/guides/detach.html
+    Developing with ExpoKit: /versions/unversioned/guides/expokit.html
+    Advanced ExpoKit Topics: /versions/unversioned/guides/advanced-expokit-topics.html
 - title: SDK API Reference
   index: /versions/unversioned/sdk/index.html
   links:
