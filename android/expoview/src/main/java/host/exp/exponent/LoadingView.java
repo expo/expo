@@ -2,8 +2,6 @@
 
 package host.exp.exponent;
 
-import android.animation.ArgbEvaluator;
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
@@ -265,9 +263,7 @@ public class LoadingView extends RelativeLayout {
       backgroundColor = "#FFFFFF";
     }
 
-    ObjectAnimator colorFade = ObjectAnimator.ofObject(this, "backgroundColor", new ArgbEvaluator(), Color.argb(255, 255, 255, 255), Color.parseColor(backgroundColor));
-    colorFade.setDuration(300);
-    colorFade.start();
+    this.setBackgroundColor(Color.parseColor(backgroundColor));
 
     mImageView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
   }
