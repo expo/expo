@@ -55,6 +55,21 @@ Log an event to Segment with custom properties. See <https://segment.com/docs/sp
 -   **event (_string_)** -- The event name.
 -   **properties (_object_)** -- A map of custom properties.
 
+### `Expo.Segment.group(groupId)`
+
+Associate an individual user with a group in Segment. See <https://segment.com/docs/spec/group/>.
+
+#### Arguments
+
+-   **groupId (_string_)** -- A unique identifier for the group in your database.
+
+### `Expo.Segment.groupWithTraits(groupId, properties)`
+
+Associate an individual user with a group in Segment with custom properties. See <https://segment.com/docs/spec/group/>.
+
+-   **groupId (_string_)** -- A unique identifier for the group in your database.
+-   **properties (_object_)** -- A map of custom properties.
+
 ### `Expo.Segment.screen(screenName)`
 
 Record that a user has seen a screen to Segment. See <https://segment.com/docs/spec/screen/>.
