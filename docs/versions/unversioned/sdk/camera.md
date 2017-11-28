@@ -109,7 +109,7 @@ Callback invoked when camera preview has been set.
 
 - **onMountError** (_function_)
 
-Callback invoked when camera preview could not been started.
+Callback invoked when camera preview could not been started. It is provided with an error object that contains a `message`.
 
 - **onBarCodeRead (_function_)**
 
