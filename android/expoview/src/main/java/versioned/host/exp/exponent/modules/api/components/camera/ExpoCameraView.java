@@ -1,5 +1,7 @@
 package versioned.host.exp.exponent.modules.api.components.camera;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -9,6 +11,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.media.ExifInterface;
+import android.support.v4.content.ContextCompat;
 import android.util.Base64;
 import android.view.View;
 
@@ -48,6 +51,7 @@ import versioned.host.exp.exponent.modules.api.ImagePickerModule;
 
 public class ExpoCameraView extends CameraView implements LifecycleEventListener {
 
+  private ThemedReactContext mThemedReactContext;
   private RCTEventEmitter mEventEmitter;
   private Queue<Promise> mPictureTakenPromises = new ConcurrentLinkedQueue<>();
   private Map<Promise, ReadableMap> mPictureTakenOptions = new ConcurrentHashMap<>();
@@ -63,7 +67,8 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
   public ExpoCameraView(ThemedReactContext themedReactContext) {
     super(themedReactContext);
 
-    themedReactContext.addLifecycleEventListener(this);
+    mThemedReactContext = themedReactContext;
+    mThemedReactContext.addLifecycleEventListener(this);
     mEventEmitter = themedReactContext.getJSModule(RCTEventEmitter.class);
     initBarcodeReader();
 
@@ -75,7 +80,9 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
 
       @Override
       public void onMountError(CameraView cameraView) {
-        mEventEmitter.receiveEvent(getId(), CameraViewManager.Events.EVENT_ON_MOUNT_ERROR.toString(), Arguments.createMap());
+        WritableMap error = Arguments.createMap();
+        error.putString("message", "Camera component could not be rendered - is there any other instance running?");
+        mEventEmitter.receiveEvent(getId(), CameraViewManager.Events.EVENT_ON_MOUNT_ERROR.toString(), error);
       }
 
       @Override
@@ -415,8 +422,14 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
 
   @Override
   public void onHostResume() {
-    if (!Build.FINGERPRINT.contains("generic")) {
-      start();
+    if (hasCameraPermissions()) {
+      if (!Build.FINGERPRINT.contains("generic")) {
+        start();
+      }
+    } else {
+      WritableMap error = Arguments.createMap();
+      error.putString("message", "Camera permissions not granted - component could not be rendered.");
+      mEventEmitter.receiveEvent(getId(), CameraViewManager.Events.EVENT_ON_MOUNT_ERROR.toString(), error);
     }
   }
 
@@ -428,5 +441,14 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
   @Override
   public void onHostDestroy() {
     stop();
+  }
+
+  private boolean hasCameraPermissions() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      int result = ContextCompat.checkSelfPermission(mThemedReactContext, Manifest.permission.CAMERA);
+      return result == PackageManager.PERMISSION_GRANTED;
+    } else {
+      return true;
+    }
   }
 }

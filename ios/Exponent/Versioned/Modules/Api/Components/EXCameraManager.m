@@ -2,6 +2,7 @@
 #import "EXCamera.h"
 #import "EXCameraManager.h"
 #import "EXFileSystem.h"
+#import "EXCameraPermissionRequester.h"
 #import "EXUnversioned.h"
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTLog.h>
@@ -29,6 +30,7 @@
 
 RCT_EXPORT_MODULE(ExponentCameraManager);
 RCT_EXPORT_VIEW_PROPERTY(onCameraReady, RCTDirectEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onMountError, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onBarCodeRead, RCTDirectEventBlock);
 
 @synthesize bridge = _bridge;
@@ -107,7 +109,7 @@ RCT_EXPORT_VIEW_PROPERTY(onBarCodeRead, RCTDirectEventBlock);
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[@"onCameraReady", @"onBarCodeRead"];
+  return @[@"onCameraReady", @"onMountError", @"onBarCodeRead"];
 }
 
 + (NSDictionary *)validBarCodeTypes
@@ -523,6 +525,11 @@ RCT_EXPORT_METHOD(stopRecording) {
 #if TARGET_IPHONE_SIMULATOR
   return;
 #endif
+  NSDictionary *cameraPermissions = [EXCameraPermissionRequester permissions];
+  if (![cameraPermissions[@"status"] isEqualToString:@"granted"]) {
+    [self.camera onMountingError:@{@"message": @"Camera permissions not granted - component could not be rendered."}];
+    return;
+  }
   dispatch_async(self.sessionQueue, ^{
     if (self.presetCamera == AVCaptureDevicePositionUnspecified) {
       return;

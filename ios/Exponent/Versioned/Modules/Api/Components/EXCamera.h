@@ -7,6 +7,7 @@
 
 - (id)initWithManager:(EXCameraManager *)manager bridge:(RCTBridge *)bridge;
 - (void)onReady:(NSDictionary *)event;
+- (void)onMountingError:(NSDictionary *)event;
 - (void)onCodeRead:(NSDictionary *)event;
 
 @end

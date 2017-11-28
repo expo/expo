@@ -14,6 +14,7 @@
 @property (nonatomic, weak) EXCameraManager *manager;
 @property (nonatomic, weak) RCTBridge *bridge;
 @property (nonatomic, copy) RCTDirectEventBlock onCameraReady;
+@property (nonatomic, copy) RCTDirectEventBlock onMountError;
 @property (nonatomic, copy) RCTDirectEventBlock onBarCodeRead;
 
 @end
@@ -40,6 +41,13 @@
 {
   if (_onCameraReady) {
     _onCameraReady(nil);
+  }
+}
+
+- (void)onMountingError:(NSDictionary *)event
+{
+  if (_onMountError) {
+    _onMountError(event);
   }
 }
 
