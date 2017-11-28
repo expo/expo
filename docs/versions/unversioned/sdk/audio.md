@@ -141,6 +141,8 @@ The rest of the API for `Expo.Audio.Sound` is the same as the imperative playbac
 
 -   `soundObject.playAsync()`
 
+-   `soundObject.replayAsync()`
+
 -   `soundObject.pauseAsync()`
 
 -   `soundObject.stopAsync()`

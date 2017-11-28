@@ -104,6 +104,18 @@ On the `playbackObject` reference, the following API is provided:
 
     -   **onPlaybackStatusUpdate (_function_)** -- A function taking a single parameter `PlaybackStatus` (a dictionary, described below).
 
+-   `playbackObject.replayAsync(statusToSet)`
+
+    Replays the item. When using `playFromPositionAsync(0)` the item is seeked to the position at `0 ms`. On iOS this method uses internal implementation of the player and is able to play the item from the beginning immediately.
+
+    #### Parameters
+
+     -   **statusToSet (_PlaybackStatusToSet_)** -- The new `PlaybackStatusToSet` of the `playbackObject`, whose values will override the current playback status. See below for details on `PlaybackStatusToSet`. `positionMillis` and `shouldPlay` properties will be overriden with respectively `0` and `true`.
+
+    #### Returns
+
+    A `Promise` that is fulfilled with the `PlaybackStatus` of the `playbackObject` once the new status has been set successfully, or rejects if setting the new status failed. See below for details on `PlaybackStatus`.
+
 -   `playbackObject.setStatusAsync(statusToSet)`
 
     Sets a new `PlaybackStatusToSet` on the `playbackObject`. This method can only be called if the media has been loaded.
