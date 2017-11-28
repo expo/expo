@@ -28,6 +28,10 @@ Build your standalone app by running
 
 with the `exp` cli. The binary produced will only pull releases published under the specified channel. If you do not specify a channel, your binary will pull releases from the `default` channel.
 
+## Get Channels
+ 
+ You can access the channel your release is published under with the `releaseChannel` field in the [manifest object] (https://docs.expo.io/versions/latest/sdk/constants.html#expoconstantsmanifest).
+ 
 ## Example Workflow
 
 Consider a situation where you have a Staging stack for testing on Expo Client, and a Production stack for pushing through TestFlight, then promoting to the AppStore.
