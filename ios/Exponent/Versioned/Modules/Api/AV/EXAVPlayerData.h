@@ -6,7 +6,7 @@
 
 @interface EXAVPlayerData : NSObject <EXAVObject>
 
-@property (nonatomic, strong) AVPlayer *player;
+@property (nonatomic, strong) AVQueuePlayer *player;
 @property (nonatomic, strong) NSURL *url;
 @property (nonatomic, strong) void (^statusUpdateCallback)(NSDictionary *);
 @property (nonatomic, strong) void (^errorCallback)(NSString *);
@@ -23,5 +23,9 @@
          rejecter:(RCTPromiseRejectBlock)reject;
 
 - (NSDictionary *)getStatus;
+
+- (void)replayWithStatus:(NSDictionary *)status
+                resolver:(RCTPromiseResolveBlock)resolve
+                rejecter:(RCTPromiseRejectBlock)reject;
 
 @end

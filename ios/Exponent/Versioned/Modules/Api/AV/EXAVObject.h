@@ -22,6 +22,6 @@ typedef NS_OPTIONS(NSUInteger, EXAVAudioSessionMode)
 
 - (void)handleAudioSessionInterruption:(NSNotification*)notification;
 
-- (void)handleMediaServicesReset:(void (^)())finishCallback;
+- (void)handleMediaServicesReset:(void (^)(void))finishCallback;
 
 @end

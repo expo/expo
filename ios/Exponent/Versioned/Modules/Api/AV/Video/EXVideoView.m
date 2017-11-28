@@ -263,6 +263,19 @@ static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
   [self _tryUpdateDataStatus:resolve rejecter:reject];
 }
 
+- (void)replayWithStatus:(NSDictionary *)status
+                resolver:(RCTPromiseResolveBlock)resolve
+                rejecter:(RCTPromiseRejectBlock)reject
+{
+  if (status != nil) {
+    [_statusToSet addEntriesFromDictionary:status];
+  }
+  
+  NSMutableDictionary *newStatus = [NSMutableDictionary dictionaryWithDictionary:_statusToSet];
+  [_statusToSet removeAllObjects];
+  
+  [_data replayWithStatus:newStatus resolver:resolve rejecter:reject];
+}
 
 - (void)setFullscreen:(BOOL)value
              resolver:(RCTPromiseResolveBlock)resolve
@@ -504,7 +517,7 @@ static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
   }
 }
 
-- (void)handleMediaServicesReset:(void (^)())finishCallback
+- (void)handleMediaServicesReset:(void (^)(void))finishCallback
 {
   if (_data) {
     if (_onLoadStart) {

@@ -25,6 +25,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.SystemClock;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.UIBlock;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -123,6 +124,12 @@ public class AVModule extends ReactContextBaseJavaModule
     mReactApplicationContext.registerReceiver(mNoisyAudioStreamReceiver,
         new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
     mReactApplicationContext.addLifecycleEventListener(this);
+  }
+
+  private void sendEvent(String eventName, WritableMap params) {
+    mReactApplicationContext
+        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+        .emit(eventName, params);
   }
 
   // LifecycleEventListener
@@ -325,6 +332,16 @@ public class AVModule extends ReactContextBaseJavaModule
         loadError.invoke();
       }
     });
+
+    data.setStatusUpdateListener(new PlayerData.StatusUpdateListener() {
+      @Override
+      public void onStatusUpdate(final WritableMap status) {
+        WritableMap payload = Arguments.createMap();
+        payload.putInt("key", key);
+        payload.putMap("status", status);
+        sendEvent("didUpdatePlaybackStatus", payload);
+      }
+    });
   }
 
   @ReactMethod
@@ -344,25 +361,19 @@ public class AVModule extends ReactContextBaseJavaModule
   }
 
   @ReactMethod
+  public void replaySound(final Integer key, final ReadableMap status, final Promise promise) {
+    final PlayerData data = tryGetSoundForKey(key, promise);
+    if (data != null) {
+      data.setStatus(status, promise);
+    } // Otherwise, tryGetSoundForKey has already rejected the promise.
+  }
+
+  @ReactMethod
   public void getStatusForSound(final Integer key, final Promise promise) {
     final PlayerData data = tryGetSoundForKey(key, promise);
     if (data != null) {
       promise.resolve(data.getStatus());
     } // Otherwise, tryGetSoundForKey has already rejected the promise.
-  }
-
-  @ReactMethod
-  public void setStatusUpdateCallbackForSound(final Integer key, final Callback callback) {
-    final PlayerData data = tryGetSoundForKey(key, null);
-    if (data != null) {
-      data.setStatusUpdateListener(new PlayerData.StatusUpdateListener() {
-        @Override
-        public void onStatusUpdate(final WritableMap status) {
-          data.setStatusUpdateListener(null); // Can only use callback once.
-          callback.invoke(status);
-        }
-      });
-    }
   }
 
   @ReactMethod
@@ -429,6 +440,16 @@ public class AVModule extends ReactContextBaseJavaModule
 
   @ReactMethod
   public void setStatusForVideo(final Integer tag, final ReadableMap status, final Promise promise) {
+    tryRunWithVideoView(tag, new VideoViewCallback() {
+      @Override
+      public void runWithVideoView(final VideoView videoView) {
+        videoView.setStatus(status, promise);
+      }
+    }, promise); // Otherwise, tryRunWithVideoView has already rejected the promise.
+  }
+
+  @ReactMethod
+  public void replayVideo(final Integer tag, final ReadableMap status, final Promise promise) {
     tryRunWithVideoView(tag, new VideoViewCallback() {
       @Override
       public void runWithVideoView(final VideoView videoView) {

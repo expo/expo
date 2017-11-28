@@ -1,6 +1,7 @@
 // Copyright 2017-present 650 Industries. All rights reserved.
 
 #import <React/RCTBridgeModule.h>
+#import <React/RCTEventEmitter.h>
 
 #import "EXAVObject.h"
 
@@ -19,7 +20,7 @@ typedef NS_OPTIONS(NSUInteger, EXAudioRecordingOptionBitRateStrategy)
   EXAudioRecordingOptionBitRateStrategyVariable            = 3
 };
 
-@interface EXAV : NSObject <RCTBridgeModule>
+@interface EXAV : RCTEventEmitter <RCTBridgeModule>
 
 - (NSError *)promoteAudioSessionIfNecessary;
 

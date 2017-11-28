@@ -25,6 +25,8 @@ NSString *const EXAudioRecordingOptionLinearPCMBitDepthKey = @"linearPCMBitDepth
 NSString *const EXAudioRecordingOptionLinearPCMIsBigEndianKey = @"linearPCMIsBigEndian";
 NSString *const EXAudioRecordingOptionLinearPCMIsFloatKey = @"linearPCMIsFloat";
 
+NSString *const EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybackStatus";
+
 @interface EXAV ()
 
 @property (nonatomic, assign) BOOL audioIsEnabled;
@@ -37,6 +39,7 @@ NSString *const EXAudioRecordingOptionLinearPCMIsFloatKey = @"linearPCMIsFloat";
 
 @property (nonatomic, assign) int soundDictionaryKeyCount;
 @property (nonatomic, strong) NSMutableDictionary <NSNumber *, EXAVPlayerData *> *soundDictionary;
+@property (nonatomic, assign) BOOL isBeingObserved;
 @property (nonatomic, strong) NSMutableSet <NSObject<EXAVObject> *> *videoSet;
 
 @property (nonatomic, strong) NSString *audioRecorderFilename;
@@ -50,7 +53,6 @@ NSString *const EXAudioRecordingOptionLinearPCMIsFloatKey = @"linearPCMIsFloat";
 
 @implementation EXAV
 
-@synthesize bridge = _bridge;
 @synthesize methodQueue = _methodQueue;
 
 - (instancetype)init
@@ -66,6 +68,7 @@ NSString *const EXAudioRecordingOptionLinearPCMIsFloatKey = @"linearPCMIsFloat";
     
     _soundDictionaryKeyCount = 0;
     _soundDictionary = [NSMutableDictionary new];
+    _isBeingObserved = NO;
     _videoSet = [NSMutableSet new];
     
     _audioRecorderFilename = nil;
@@ -94,16 +97,16 @@ NSString *const EXAudioRecordingOptionLinearPCMIsFloatKey = @"linearPCMIsFloat";
 
 - (void)setBridge:(RCTBridge *)bridge
 {
-  _bridge = bridge;
+  [super setBridge:bridge];
   
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_bridgeDidForeground:)
                                                name:EX_UNVERSIONED(@"EXKernelBridgeDidForegroundNotification")
-                                             object:_bridge];
+                                             object:self.bridge];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_bridgeDidBackground:)
                                                name:EX_UNVERSIONED(@"EXKernelBridgeDidBackgroundNotification")
-                                             object:_bridge];
+                                             object:self.bridge];
 }
 
 - (void)_bridgeDidForeground:(NSNotification *)notification
@@ -123,6 +126,18 @@ NSString *const EXAudioRecordingOptionLinearPCMIsFloatKey = @"linearPCMIsFloat";
   [self _runBlockForAllAVObjects:^(NSObject<EXAVObject> *exAVObject) {
     [exAVObject bridgeDidBackground:notification];
   }];
+}
+
+#pragma mark - RCTEventEmitter
+
+- (void)startObserving
+{
+  _isBeingObserved = YES;
+}
+
+- (void)stopObserving
+{
+  _isBeingObserved = NO;
 }
 
 #pragma mark - Global audio state control API
@@ -367,7 +382,7 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
 {
   // TODO check that the bridge is still valid after the dispatch
   dispatch_async(dispatch_get_main_queue(), ^{
-    UIView *view = [_bridge.uiManager viewForReactTag:reactTag];
+    UIView *view = [self.bridge.uiManager viewForReactTag:reactTag];
     if ([view isKindOfClass:[EXVideoView class]]) {
       dispatch_async(RCTGetUIManagerQueue(), ^{
         block((EXVideoView *)view);
@@ -515,6 +530,11 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
 
 RCT_EXPORT_MODULE(ExponentAV);
 
+- (NSArray<NSString *> *)supportedEvents
+{
+  return @[EXDidUpdatePlaybackStatusEventName];
+}
+
 #pragma mark - Audio API: Global settings
 
 RCT_EXPORT_METHOD(setAudioIsEnabled:(BOOL)value
@@ -569,6 +589,15 @@ RCT_EXPORT_METHOD(loadForSound:(nonnull NSString *)uriString
       [strongSelf _removeSoundForKey:key];
     }
   };
+  
+  data.statusUpdateCallback = ^(NSDictionary *status) {
+    __strong __typeof__(self) strongSelf = weakSelf;
+    if (strongSelf && strongSelf.isBeingObserved) {
+      NSDictionary<NSString *, id> *response = @{@"key": key, @"status": status};
+      [strongSelf sendEventWithName:EXDidUpdatePlaybackStatusEventName body:response];
+    }
+  };
+  
   _soundDictionary[key] = data;
 }
 
@@ -604,19 +633,16 @@ RCT_EXPORT_METHOD(getStatusForSound:(nonnull NSNumber *)key
   } withSoundForKey:key withRejecter:reject];
 }
 
-RCT_EXPORT_METHOD(setStatusUpdateCallbackForSound:(nonnull NSNumber *)key
-                                     withCallback:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(replaySound:(nonnull NSNumber *)key
+                   withStatus:(nonnull NSDictionary *)status
+                     resolver:(RCTPromiseResolveBlock)resolve
+                     rejecter:(RCTPromiseRejectBlock)reject)
 {
-  EXAVPlayerData *data = _soundDictionary[key];
-  if (data) {
-    __block BOOL used = NO; // RCTResponseSenderBlock can only be used once
-    data.statusUpdateCallback = ^(NSDictionary *status) {
-      if (!used) {
-        used = YES;
-        callback(@[status]);
-      }
-    };
-  }
+  [self _runBlock:^(EXAVPlayerData *data) {
+    [data replayWithStatus:status
+                  resolver:resolve
+                  rejecter:reject];
+  } withSoundForKey:key withRejecter:reject];
 }
 
 RCT_EXPORT_METHOD(setErrorCallbackForSound:(nonnull NSNumber *)key
@@ -667,6 +693,16 @@ RCT_EXPORT_METHOD(setStatusForVideo:(nonnull NSNumber *)reactTag
 {
   [self _runBlock:^(EXVideoView *view) {
     [view setStatus:status resolver:resolve rejecter:reject];
+  } withEXVideoViewForTag:reactTag withRejecter:reject];
+}
+
+RCT_EXPORT_METHOD(replayVideo:(nonnull NSNumber *)reactTag
+                   withStatus:(nonnull NSDictionary *)status
+                     resolver:(RCTPromiseResolveBlock)resolve
+                     rejecter:(RCTPromiseRejectBlock)reject)
+{
+  [self _runBlock:^(EXVideoView *view) {
+    [view replayWithStatus:status resolver:resolve rejecter:reject];
   } withEXVideoViewForTag:reactTag withRejecter:reject];
 }
 

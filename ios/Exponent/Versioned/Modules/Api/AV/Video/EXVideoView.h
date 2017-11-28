@@ -34,6 +34,10 @@ typedef NS_OPTIONS(NSUInteger, EXVideoFullscreenUpdate)
          resolver:(RCTPromiseResolveBlock)resolve
          rejecter:(RCTPromiseRejectBlock)reject;
 
+- (void)replayWithStatus:(NSDictionary *)status
+                resolver:(RCTPromiseResolveBlock)resolve
+                rejecter:(RCTPromiseRejectBlock)reject;
+
 - (void)setUri:(NSString *)uri
     withStatus:(NSDictionary *)initialStatus
       resolver:(RCTPromiseResolveBlock)resolve
