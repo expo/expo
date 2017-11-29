@@ -1,9 +1,12 @@
 package versioned.host.exp.exponent.modules.api.components.camera;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.media.CamcorderProfile;
 import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.util.SparseArray;
 import android.view.View;
 
@@ -286,7 +289,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
     } else {
       WritableMap error = Arguments.createMap();
       error.putString("message", "Camera permissions not granted - component could not be rendered.");
-      mEventEmitter.receiveEvent(getId(), CameraViewManager.Events.EVENT_ON_MOUNT_ERROR.toString(), error);
+      ExpoCameraViewHelper.emitMountErrorEvent(this);
     }
   }
 
@@ -303,7 +306,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
 
   private boolean hasCameraPermissions() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      int result = ContextCompat.checkSelfPermission(mThemedReactContext, Manifest.permission.CAMERA);
+      int result = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA);
       return result == PackageManager.PERMISSION_GRANTED;
     } else {
       return true;
