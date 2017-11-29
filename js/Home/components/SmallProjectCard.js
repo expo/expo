@@ -24,7 +24,16 @@ import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-fee
 @withNavigation
 export default class SmallProjectCard extends React.Component {
   render() {
-    let { hideUsername, likeCount, projectName, projectUrl, username, privacy, slug } = this.props;
+    let {
+      hideUsername,
+      likeCount,
+      projectName,
+      projectUrl,
+      username,
+      privacy,
+      slug,
+      releaseChannel,
+    } = this.props;
 
     const isUnlisted = privacy === 'unlisted';
     const renderLikes = typeof likeCount === 'number' && !isUnlisted;
@@ -39,9 +48,22 @@ export default class SmallProjectCard extends React.Component {
         <View style={styles.iconContainer}>{this._maybeRenderIcon()}</View>
 
         <View style={[styles.infoContainer, !this.props.fullWidthBorder && styles.bottomBorder]}>
-          <Text style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
-            {projectName}
-          </Text>
+          <View style={styles.projectNameContainer}>
+            <View style={{ flex: 1, flexGrow: 4 }}>
+              <Text style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
+                {projectName}
+              </Text>
+            </View>
+            {releaseChannel && releaseChannel !== 'default' ? (
+              <View style={{ flex: 1, flexGrow: 2 }}>
+                <View style={styles.releaseChannelContainer}>
+                  <Text style={styles.releaseChannelText} numberOfLines={1} ellipsizeMode="tail">
+                    {releaseChannel}
+                  </Text>
+                </View>
+              </View>
+            ) : null}
+          </View>
 
           <View style={styles.projectExtraInfoContainer}>
             <Text
@@ -166,11 +188,14 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     paddingBottom: 10,
   },
+  projectNameContainer: {
+    flexDirection: 'row',
+    marginRight: 10,
+    marginBottom: 2,
+  },
   projectNameText: {
     color: Colors.blackText,
     fontSize: 15,
-    marginRight: 70,
-    marginBottom: 2,
     ...Platform.select({
       ios: {
         fontWeight: '500',
@@ -180,6 +205,22 @@ const styles = StyleSheet.create({
         marginTop: 1,
       },
     }),
+  },
+  releaseChannelContainer: {
+    alignSelf: 'flex-end',
+    marginTop: -1,
+    marginLeft: 5,
+    paddingRight: 5,
+    backgroundColor: 'rgba(0,0,0,0.025)',
+    borderRadius: 4,
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  releaseChannelText: {
+    color: '#888',
+    fontSize: 11,
   },
   projectExtraInfoContainer: {
     flexDirection: 'row',

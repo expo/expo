@@ -26,6 +26,8 @@ import SmallProjectCard from '../components/SmallProjectCard';
 import ProjectTools from '../components/ProjectTools';
 import ExStore from 'ExStore';
 
+import extractReleaseChannel from '../../Util/extractReleaseChannel';
+
 @createFocusAwareComponent
 @withNavigation
 @connect(data => HomeScreen.getDataProps(data))
@@ -141,6 +143,11 @@ export default class HomeScreen extends React.Component {
       <SmallProjectCard
         key={project.manifestUrl}
         iconUrl={project.manifest.iconUrl}
+        releaseChannel={
+          /* 28/11/17(brentvatne) - we can remove extractReleaseChannel in a couple of months
+          when project history is unlikely to include any projects with release channels */
+          project.manifest.releaseChannel || extractReleaseChannel(project.manifestUrl)
+        }
         projectName={project.manifest.name}
         username={
           project.manifestUrl.includes('exp://exp.host')
