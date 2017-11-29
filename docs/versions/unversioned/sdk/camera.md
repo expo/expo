@@ -107,6 +107,49 @@ Android only. A string representing aspect ratio of the preview, eg. `4:3`, `16:
 
 Callback invoked when camera preview has been set.
 
+- **onFacesDetected** (_function_)
+
+Callback invoked with results of face detection on the preview. It will receive an object containing:
+
+- **faces** (_array_) - array of faces objects:
+  - **faceID (_number_)** -- a face identifier (used for tracking, if the same face appears on consecutive frames it will have the same `faceID`).
+  - **bounds (_object_)** -- an object containing:
+    - **origin (_{ x: number, y: number }_)** -- position of the top left corner of a square containing the face in view coordinates,
+    - **size (_{ width: number, height: number }_)** -- size of the square containing the face in view coordinates,
+  - **rollAngle (_number_)** -- roll angle of the face (bank),
+  - **yawAngle (_number_)** -- yaw angle of the face (heading, turning head left or right),
+  - **smilingProbability (_number_)** -- probability that the face is smiling,
+  - **leftEarPosition (_{ x: number, y: number}_)** -- position of the left ear in view coordinates,
+  - **rightEarPosition (_{ x: number, y: number}_)** -- position of the right ear in view coordinates,
+  - **leftEyePosition (_{ x: number, y: number}_)** -- position of the left eye in view coordinates,
+  - **leftEyeOpenProbability (_number_)** -- probability that the left eye is open,
+  - **rightEyePosition (_{ x: number, y: number}_)** -- position of the right eye in view coordinates,
+  - **rightEyeOpenProbability (_number_)** -- probability that the right eye is open,
+  - **leftCheekPosition (_{ x: number, y: number}_)** -- position of the left cheek in view coordinates,
+  - **rightCheekPosition (_{ x: number, y: number}_)** -- position of the right cheek in view coordinates,
+  - **mouthPosition (_{ x: number, y: number}_)** -- position of the center of the mouth in view coordinates,
+  - **leftMouthPosition (_{ x: number, y: number}_)** -- position of the left edge of the mouth in view coordinates,
+  - **rightMouthPosition (_{ x: number, y: number}_)** -- position of the right edge of the mouth in view coordinates,
+  - **noseBasePosition (_{ x: number, y: number}_)** -- position of the nose base in view coordinates.
+
+`smilingProbability`, `leftEyeOpenProbability` and `rightEyeOpenProbability` are returned only if `faceDetectionClassifications` property is set to `.all`.
+
+Positions of face landmarks are returned only if `faceDetectionLandmarks` property is set to `.all`.
+
+See also `FaceDetector` component.
+
+- **faceDetectionMode** (_Camera.Constants.FaceDetection.Mode_)
+
+Mode of the face detection. Use one of `Camera.Constants.FaceDetection.Mode.{fast, accurate}`.
+
+- **faceDetectionLandmarks** (_Camera.Constants.FaceDetection.Landmarks_)
+
+Whether to detect landmarks on the faces. Use one of `Camera.Constants.FaceDetection.Landmarks.{all, none}`. See FaceDetector documentation for details.
+
+- **faceDetectionClassifications** (_Camera.Constants.FaceDetection.Classifications_)
+
+Whether to run additional classifications on the faces. Use one of `Camera.Constants.FaceDetection.Classifications.{all, none}`. See FaceDetector documentation for details.
+
 - **onMountError** (_function_)
 
 Callback invoked when camera preview could not been started. It is provided with an error object that contains a `message`.
