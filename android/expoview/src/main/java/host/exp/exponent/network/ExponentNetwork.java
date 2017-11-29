@@ -3,25 +3,31 @@
 package host.exp.exponent.network;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import com.facebook.stetho.okhttp3.StethoInterceptor;
-
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLConnection;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import host.exp.exponent.storage.ExponentSharedPreferences;
-import host.exp.expoview.ExpoViewBuildConfig;
 import expolib_v1.okhttp3.Cache;
 import expolib_v1.okhttp3.Interceptor;
 import expolib_v1.okhttp3.OkHttpClient;
+import expolib_v1.okhttp3.Protocol;
 import expolib_v1.okhttp3.Request;
 import expolib_v1.okhttp3.Response;
+import expolib_v1.okhttp3.ResponseBody;
+import expolib_v1.okio.BufferedSource;
+import expolib_v1.okio.Okio;
+import host.exp.exponent.storage.ExponentSharedPreferences;
+import host.exp.expoview.ExpoViewBuildConfig;
 
 @Singleton
 public class ExponentNetwork {
@@ -76,7 +82,7 @@ public class ExponentNetwork {
       // FIXME: 8/9/17
       // clientBuilder.addNetworkInterceptor(new StethoInterceptor());
     }
-    addOfflineInterceptors(clientBuilder);
+    addInterceptors(clientBuilder);
 
     return clientBuilder;
   }
@@ -101,7 +107,6 @@ public class ExponentNetwork {
     final File directory = new File(mContext.getFilesDir(), CACHE_DIR);
     return new Cache(directory, cacheSize);
   }
-
   public boolean isNetworkAvailable() {
     return isNetworkAvailable(mContext);
   }
@@ -112,12 +117,41 @@ public class ExponentNetwork {
     return activeNetworkInfo != null && activeNetworkInfo.isConnected();
   }
 
-  public void addOfflineInterceptors(OkHttpClient.Builder clientBuilder) {
-    Interceptor interceptor = new Interceptor() {
+  public void addInterceptors(OkHttpClient.Builder clientBuilder) {
+    Interceptor bundledAssetsInterceptor = new Interceptor() {
+      @Override
+      public Response intercept(Chain chain) throws IOException {
+        Request originalRequest = chain.request();
+        String urlString = originalRequest.url().toString();
+
+        if (urlString.startsWith("https://d1wp6m56sqw74a.cloudfront.net/~assets/")) {
+          List<String> path = originalRequest.url().pathSegments();
+          String assetName = "asset_" + path.get(path.size() - 1);
+          Resources resources = mContext.getResources();
+          int id = resources.getIdentifier(assetName, "drawable", mContext.getPackageName());
+          if (id > 0) {
+            InputStream inputStream = resources.openRawResource(id);
+            String type = URLConnection.guessContentTypeFromStream(inputStream);
+            BufferedSource buffer = Okio.buffer(Okio.source(inputStream));
+            ResponseBody body = ResponseBody.create(null, -1, buffer);
+            return new Response.Builder()
+                .request(originalRequest)
+                .protocol(Protocol.HTTP_1_1)
+                // Don't cache local assets to save disk space.
+                .addHeader("Cache-Control", "no-cache")
+                .body(body)
+                .code(200)
+                .build();
+          }
+        }
+        return chain.proceed(originalRequest);
+      }
+    };
+
+    Interceptor offlineInterceptor = new Interceptor() {
       @Override
       public Response intercept(Chain chain) throws IOException {
         boolean isNetworkAvailable = isNetworkAvailable();
-
         // Request
         Request originalRequest = chain.request();
         if (originalRequest.header(IGNORE_INTERCEPTORS_HEADER) != null) {
@@ -164,8 +198,10 @@ public class ExponentNetwork {
       }
     };
 
-    clientBuilder.addInterceptor(interceptor);
-    clientBuilder.addNetworkInterceptor(interceptor);
+
+    clientBuilder.addInterceptor(bundledAssetsInterceptor);
+    clientBuilder.addInterceptor(offlineInterceptor);
+    clientBuilder.addNetworkInterceptor(offlineInterceptor);
   }
 
   private static Response noopInterceptor(Interceptor.Chain chain, Request originalRequest) throws IOException {

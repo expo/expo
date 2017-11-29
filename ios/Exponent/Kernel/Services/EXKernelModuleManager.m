@@ -80,10 +80,10 @@
     components.scheme = @"http";
     url = [components URL];
   }
-  EXCachedResourceBehavior cacheBehavior = kEXCachedResourceFallBackToCache;
+  EXCachedResourceBehavior cacheBehavior = EXCachedResourceFallBackToCache;
   if ([url.host isEqualToString:@"localhost"]) {
     // we can't pre-detect if this person is using a developer tool, but using localhost is a pretty solid indicator.
-    cacheBehavior = kEXCachedResourceNoCache;
+    cacheBehavior = EXCachedResourceNoCache;
   }
   if ([EXShellManager sharedInstance].loadJSInBackgroundExperimental) {
     cacheBehavior = kEXCachedResourceUseCacheImmediately;

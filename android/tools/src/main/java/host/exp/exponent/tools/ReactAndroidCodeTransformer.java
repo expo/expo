@@ -142,6 +142,25 @@ public class ReactAndroidCodeTransformer {
         return n;
       }
     });
+    FILES_TO_MODIFY.put("modules/network/OkHttpClientProvider.java", new MethodVisitor() {
+
+      @Override
+      public Node visit(String methodName, MethodDeclaration n) {
+        switch (methodName) {
+          case "createClient":
+            BlockStmt stmt = JavaParser.parseBlock(getCallMethodReflectionBlock(
+                "host.exp.exponent.ReactNativeStaticHelpers",
+                "\"getOkHttpClient\"",
+                "null",
+                "return (OkHttpClient) ",
+                "return null;"));
+            n.setBody(stmt);
+            return n;
+        }
+
+        return n;
+      }
+    });
     FILES_TO_MODIFY.put("devsupport/DevSupportManagerImpl.java", new MethodVisitor() {
 
       @Override
