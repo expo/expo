@@ -1,10 +1,10 @@
 package host.exp.exponent;
 
 import android.support.test.espresso.Espresso;
-import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
@@ -12,12 +12,15 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
+import host.exp.exponent.annotations.ExpoAlwaysPassThroughFilter;
+import host.exp.exponent.annotations.ExpoDevModeTest;
+import host.exp.exponent.utils.ExpoTestRunner;
 import host.exp.exponent.utils.LoadingScreenIdlingResource;
 import host.exp.exponent.utils.RetryTestRule;
 import host.exp.exponent.utils.TestReporterRule;
 import host.exp.exponent.utils.TestServerUtils;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(ExpoTestRunner.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class DevModeTests extends BaseTestClass {
 
@@ -37,22 +40,32 @@ public class DevModeTests extends BaseTestClass {
   public RuleChain chain = RuleChain.outerRule(new TestReporterRule()).around(new RetryTestRule(3));
 
   @Test
+  @ExpoDevModeTest
   public void sdk18LiveReload() throws Exception {
     TestServerUtils.runFixtureTest(sUiDevice, "android-sdk18-live-reload");
   }
 
   @Test
+  @ExpoDevModeTest
   public void sdk19LiveReload() throws Exception {
     TestServerUtils.runFixtureTest(sUiDevice, "android-sdk19-live-reload");
   }
 
   @Test
+  @ExpoDevModeTest
   public void sdk20LiveReload() throws Exception {
     TestServerUtils.runFixtureTest(sUiDevice, "android-sdk20-live-reload");
   }
 
   @Test
+  @ExpoDevModeTest
   public void sdk21LiveReload() throws Exception {
     TestServerUtils.runFixtureTest(sUiDevice, "android-sdk21-live-reload");
+  }
+
+  @Test
+  @ExpoAlwaysPassThroughFilter
+  public void junitIsSillyAndWillFailIfThereIsntOneTestRunPerFile() {
+
   }
 }

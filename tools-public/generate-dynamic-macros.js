@@ -73,6 +73,14 @@ const macrosFuncs = {
     }
   },
 
+  async TEST_CONFIG() {
+    if (process.env.TEST_CONFIG) {
+      return process.env.TEST_CONFIG;
+    } else {
+      return '';
+    }
+  },
+
   async TEST_SERVER_URL() {
     let url = 'TODO';
 

@@ -156,8 +156,9 @@ dependencies {
   compile 'com.squareup.okio:okio:1.9.0'
 
   // Testing
-  androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
-  androidTestCompile 'com.android.support.test:runner:0.5'
+  androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.1'
+  // We use a modified build of com.android.support.test:runner:1.0.1. Explanation in maven-test/README
+  androidTestCompile 'com.android.support.test:runner:1.0.1'
   androidTestCompile 'com.android.support:support-annotations:26.0.1'
   androidTestCompile 'com.google.code.findbugs:jsr305:3.0.0'
   androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
