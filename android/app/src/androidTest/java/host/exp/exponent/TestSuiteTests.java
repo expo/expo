@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
-import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.Until;
 
@@ -15,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,12 +22,18 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
+import host.exp.exponent.annotations.ExpoAlwaysPassThroughFilter;
+import host.exp.exponent.annotations.ExpoDevModeTest;
+import host.exp.exponent.annotations.ExpoSdkVersionTest;
+import host.exp.exponent.annotations.ExpoTestSuiteTest;
 import host.exp.exponent.generated.ExponentBuildConstants;
 import host.exp.exponent.kernel.KernelConfig;
 import host.exp.exponent.utils.ElapsedTimeIdlingResource;
+import host.exp.exponent.utils.ExpoTestRunner;
 import host.exp.exponent.utils.JSTestRunnerIdlingResource;
 import host.exp.exponent.utils.LoadingScreenIdlingResource;
 import host.exp.exponent.utils.RetryTestRule;
+import host.exp.exponent.utils.TestConfig;
 import host.exp.exponent.utils.TestReporterRule;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -35,18 +41,12 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static host.exp.exponent.utils.ExponentMatchers.withTestId;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(ExpoTestRunner.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestSuiteTests extends BaseTestClass {
 
-  @Before
-  public void before() {
-    // Setup Espresso
-    mLoadingScreenIdlingResource = new LoadingScreenIdlingResource();
-    mElapsedTimeIdlingResource = new ElapsedTimeIdlingResource();
-    mJSTestRunnerIdlingResource = new JSTestRunnerIdlingResource();
-    Espresso.registerIdlingResources(mLoadingScreenIdlingResource, mElapsedTimeIdlingResource, mJSTestRunnerIdlingResource);
-
+  @BeforeClass
+  public static void beforeClass() {
     try {
       // Add contacts
       Context context = InstrumentationRegistry.getContext();
@@ -63,6 +63,15 @@ public class TestSuiteTests extends BaseTestClass {
     sUiDevice.pressHome();
     final String launcherPackage = sUiDevice.getLauncherPackageName();
     sUiDevice.wait(Until.hasObject(By.pkg(launcherPackage).depth(0)), LAUNCH_TIMEOUT);
+  }
+
+  @Before
+  public void before() {
+    // Setup Espresso
+    mLoadingScreenIdlingResource = new LoadingScreenIdlingResource();
+    mElapsedTimeIdlingResource = new ElapsedTimeIdlingResource();
+    mJSTestRunnerIdlingResource = new JSTestRunnerIdlingResource();
+    Espresso.registerIdlingResources(mLoadingScreenIdlingResource, mElapsedTimeIdlingResource, mJSTestRunnerIdlingResource);
 
     KernelConfig.FORCE_UNVERSIONED_PUBLISHED_EXPERIENCES = false;
   }
@@ -78,7 +87,10 @@ public class TestSuiteTests extends BaseTestClass {
     return !ExponentBuildConstants.TEST_APP_URI.equals("");
   }
 
-  private void runTestSuiteTest(final String testSuiteUri) {
+  private void runTestSuiteTest(String testSuiteUri) {
+    String deepLink = TestConfig.get().toString();
+    testSuiteUri = testSuiteUri + "+" + deepLink;
+
     // Launch the app
     Context context = InstrumentationRegistry.getContext();
     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(testSuiteUri));
@@ -112,6 +124,8 @@ public class TestSuiteTests extends BaseTestClass {
   public RuleChain chain = RuleChain.outerRule(testReporterRule).around(new RetryTestRule(2));
 
   @Test
+  @ExpoTestSuiteTest
+  @ExpoSdkVersionTest("UNVERSIONED")
   public void sdkUnversionedTestSuite() {
     if (!isCurrentTestSuiteAvailable()) {
       return;
@@ -120,29 +134,43 @@ public class TestSuiteTests extends BaseTestClass {
     KernelConfig.FORCE_UNVERSIONED_PUBLISHED_EXPERIENCES = true;
     runTestSuiteTest(ExponentBuildConstants.TEST_APP_URI);
   }
-/*
+
   @Test
+  @ExpoTestSuiteTest
+  @ExpoSdkVersionTest("22.0.0")
   public void sdk22TestSuite() {
     runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-22-0-0");
   }
-*/
+
   @Test
+  @ExpoTestSuiteTest
+  @ExpoSdkVersionTest("21.0.0")
   public void sdk21TestSuite() {
     runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-21-0-0");
   }
 
   @Test
+  @ExpoTestSuiteTest
+  @ExpoSdkVersionTest("20.0.0")
   public void sdk20TestSuite() {
     runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-20-0-0");
   }
 
   @Test
+  @ExpoTestSuiteTest
+  @ExpoSdkVersionTest("19.0.0")
   public void sdk19TestSuite() {
     runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-19-0-0");
   }
 
   @Test
+  @ExpoTestSuiteTest
+  @ExpoSdkVersionTest("18.0.0")
   public void sdk18TestSuite() {
     runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-18-0-0");
   }
+
+  @Test
+  @ExpoAlwaysPassThroughFilter
+  public void junitIsSillyAndWillFailIfThereIsntOneTestRunPerFile() {}
 }
