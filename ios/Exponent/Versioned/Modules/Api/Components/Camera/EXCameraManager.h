@@ -2,6 +2,12 @@
 #import <React/RCTBridgeModule.h>
 #import <AVFoundation/AVFoundation.h>
 
+#if __has_include("EXFaceDetectorManager.h")
+#import "EXFaceDetectorManager.h"
+#else
+#import "EXFaceDetectorManagerStub.h"
+#endif
+
 @class EXCamera;
 
 static const int EXFlashModeTorch = 3;
@@ -46,8 +52,7 @@ typedef NS_ENUM(NSInteger, EXCameraVideoResolution) {
   EXCameraVideo4x3 = 3,
 };
 
-@interface EXCameraManager
-: RCTViewManager <RCTBridgeModule, AVCaptureMetadataOutputObjectsDelegate, AVCaptureFileOutputRecordingDelegate>
+@interface EXCameraManager : RCTViewManager <RCTBridgeModule, AVCaptureMetadataOutputObjectsDelegate, AVCaptureFileOutputRecordingDelegate, EXFaceDetectorDelegate>
 
 @property(nonatomic, strong) dispatch_queue_t sessionQueue;
 @property(nonatomic, strong) AVCaptureSession *session;
@@ -61,10 +66,10 @@ typedef NS_ENUM(NSInteger, EXCameraVideoResolution) {
 @property(nonatomic, strong) NSArray *barCodeTypes;
 @property(nonatomic, strong) EXCamera *camera;
 
-- (AVCaptureDevice *)deviceWithMediaType:(NSString *)mediaType
-                      preferringPosition:(AVCaptureDevicePosition)position;
 - (void)initializeCaptureSessionInput:(NSString *)type;
 - (void)startSession;
 - (void)stopSession;
+
+- (void)onFacesDetected:(NSArray<NSDictionary *> *)faces;
 
 @end

@@ -1,5 +1,5 @@
-#import <React/RCTBridge.h>
 #import "EXCamera.h"
+#import "EXCameraUtils.h"
 #import "EXCameraManager.h"
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTLog.h>
@@ -16,6 +16,7 @@
 @property (nonatomic, copy) RCTDirectEventBlock onCameraReady;
 @property (nonatomic, copy) RCTDirectEventBlock onMountError;
 @property (nonatomic, copy) RCTDirectEventBlock onBarCodeRead;
+@property (nonatomic, copy) RCTDirectEventBlock onFacesDetected;
 
 @end
 
@@ -26,13 +27,8 @@
   if (self = [super init]) {
     self.manager = manager;
     self.bridge = bridge;
-    [self changePreviewOrientation:[UIApplication sharedApplication]
-     .statusBarOrientation];
-    [[NSNotificationCenter defaultCenter]
-     addObserver:self
-     selector:@selector(orientationChanged:)
-     name:UIDeviceOrientationDidChangeNotification
-     object:nil];
+    [self changePreviewOrientation:[UIApplication sharedApplication].statusBarOrientation];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationChanged:) name:UIDeviceOrientationDidChangeNotification object:nil];
   }
   return self;
 }
@@ -55,6 +51,13 @@
 {
   if (_onBarCodeRead) {
     _onBarCodeRead(event);
+  }
+}
+
+- (void)onFacesDetected:(NSDictionary *)event
+{
+  if (_onFacesDetected) {
+    _onFacesDetected(event);
   }
 }
 
@@ -84,26 +87,23 @@
 {
   [self.manager stopSession];
   [super removeFromSuperview];
-  [[NSNotificationCenter defaultCenter]
-   removeObserver:self
-   name:UIDeviceOrientationDidChangeNotification
-   object:nil];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
 }
 
 - (void)orientationChanged:(NSNotification *)notification
 {
-  UIInterfaceOrientation orientation =
-  [[UIApplication sharedApplication] statusBarOrientation];
+  UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
   [self changePreviewOrientation:orientation];
 }
 
-- (void)changePreviewOrientation:(NSInteger)orientation
+- (void)changePreviewOrientation:(UIInterfaceOrientation)orientation
 {
   __weak typeof(self) weakSelf = self;
+  AVCaptureVideoOrientation videoOrientation = [EXCameraUtils videoOrientationForInterfaceOrientation:orientation];
   dispatch_async(dispatch_get_main_queue(), ^{
     __strong typeof(self) strongSelf = weakSelf;
     if (strongSelf && strongSelf.manager.previewLayer.connection.isVideoOrientationSupported) {
-      strongSelf.manager.previewLayer.connection.videoOrientation = orientation;
+      [strongSelf.manager.previewLayer.connection setVideoOrientation:videoOrientation];
     }
   });
 }

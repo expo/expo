@@ -1,18 +1,66 @@
 [
-  { "name": "Amplitude-iOS", "version": "~> 3.8" },
-  { "name": "Analytics", "version": "~> 3.5" },
-  { "name": "AppAuth", "version": "~> 0.4" },
-  { "name": "CocoaLumberjack", "version": "~> 3.2.1" },
-  { "name": "Crashlytics", "version": "~> 3.8" },
-  { "name": "FBAudienceNetwork", "version": "~> 4.24" },
-  { "name": "FBSDKCoreKit", "version": "~> 4.28" },
-  { "name": "FBSDKLoginKit", "version": "~> 4.28" },
-  { "name": "FBSDKShareKit", "version": "~> 4.28" },
-  { "name": "Fabric", "version": "~> 1.6" },
-  { "name": "GoogleSignIn", "version": "~> 3.0" },
-  { "name": "GoogleMaps", "version": "~> 2.2.0" },
-  { "name": "lottie-ios", "version": "~> 2.1.3" },
-  { "name": "GPUImage", "version": "~> 0.1.7" },
-  { "name": "Branch", "version": "~> 0.14.12" },
-  { "name": "Google-Mobile-Ads-SDK", "version": "~> 7.22.0" }
+  {
+    "name": "Amplitude-iOS",
+    "version": "~> 3.8"
+  },
+  {
+    "name": "Analytics",
+    "version": "~> 3.5"
+  },
+  {
+    "name": "AppAuth",
+    "version": "~> 0.4"
+  },
+  {
+    "name": "CocoaLumberjack",
+    "version": "~> 3.2.1"
+  },
+  {
+    "name": "Crashlytics",
+    "version": "~> 3.8"
+  },
+  {
+    "name": "FBAudienceNetwork",
+    "version": "~> 4.24"
+  },
+  {
+    "name": "FBSDKCoreKit",
+    "version": "~> 4.28"
+  },
+  {
+    "name": "FBSDKLoginKit",
+    "version": "~> 4.28"
+  },
+  {
+    "name": "FBSDKShareKit",
+    "version": "~> 4.28"
+  },
+  {
+    "name": "Fabric",
+    "version": "~> 1.6"
+  },
+  {
+    "name": "GoogleSignIn",
+    "version": "~> 3.0"
+  },
+  {
+    "name": "GoogleMaps",
+    "version": "~> 2.2.0"
+  },
+  {
+    "name": "lottie-ios",
+    "version": "~> 2.1.3"
+  },
+  {
+    "name": "GPUImage",
+    "version": "~> 0.1.7"
+  },
+  {
+    "name": "Branch",
+    "version": "~> 0.14.12"
+  },
+  {
+    "name": "Google-Mobile-Ads-SDK",
+    "version": "~> 7.22.0"
+  }
 ]

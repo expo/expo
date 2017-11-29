@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
   s.subspec "Core" do |ss|
     ss.source_files = "ios/Exponent/**/*.{h,m}"
     ss.preserve_paths = "ios/Exponent/**/*.{h,m}"
-    ss.exclude_files = "ios/Exponent/EXAppDelegate.*", "ios/Exponent/EXRootViewController.*", "ios/Exponent/Supporting/**", "ios/UnversionedModules/Payments/**", "ios/Exponent/Versioned/Modules/Api/GL/ARKit/**"
+    ss.exclude_files = "ios/Exponent/EXAppDelegate.*", "ios/Exponent/EXRootViewController.*", "ios/Exponent/Supporting/**", "ios/UnversionedModules/Payments/**", "ios/Exponent/Versioned/Modules/Api/GL/ARKit/**", "ios/Exponent/Versioned/Modules/Api/Components/FaceDetector/**"
 
 ${IOS_EXPOKIT_DEPS}
   end
@@ -36,5 +36,12 @@ ${IOS_EXPOKIT_DEPS}
   s.subspec "AR" do |ss|
     ss.dependency "ExpoKit/Core"
     ss.source_files = 'ios/Exponent/Versioned/Modules/Api/GL/ARKit/**'
+  end
+
+  s.subspec "FaceDetector" do |ss|
+    ss.dependency "ExpoKit/Core"
+    ss.dependency "GoogleMobileVision/FaceDetector", '~> 1.1.0'
+    ss.dependency "GoogleMobileVision/MVDataOutput", '~> 1.1.0'
+    ss.source_files = 'ios/Exponent/Versioned/Modules/Api/Components/FaceDetector/**'
   end
 end

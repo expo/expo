@@ -2,43 +2,34 @@ package versioned.host.exp.exponent.modules.api.components.camera;
 
 import android.Manifest;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.os.Build;
 import android.support.annotation.Nullable;
-import android.util.Base64;
 
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.google.android.cameraview.AspectRatio;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.text.SimpleDateFormat;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import host.exp.exponent.utils.ExpFileUtils;
+import versioned.host.exp.exponent.modules.api.components.camera.tasks.ResolveTakenPictureAsyncTask;
 import host.exp.expoview.Exponent;
 
 public class CameraViewManager extends ViewGroupManager<ExpoCameraView> {
-
   public enum Events {
     EVENT_CAMERA_READY("onCameraReady"),
     EVENT_ON_MOUNT_ERROR("onMountError"),
-    EVENT_ON_BAR_CODE_READ("onBarCodeRead");
+    EVENT_ON_BAR_CODE_READ("onBarCodeRead"),
+    EVENT_ON_FACES_DETECTED("onFacesDetected"),
+    EVENT_ON_FACE_DETECTION_ERROR("onFaceDetectionError");
 
     private final String mName;
 
@@ -133,8 +124,28 @@ public class CameraViewManager extends ViewGroupManager<ExpoCameraView> {
   }
 
   @ReactProp(name = "barCodeScannerEnabled")
-  public void setScanning(ExpoCameraView view, boolean barCodeScannerEnabled) {
-    view.setScanning(barCodeScannerEnabled);
+  public void setBarCodeScanning(ExpoCameraView view, boolean barCodeScannerEnabled) {
+    view.setShouldScanBarCodes(barCodeScannerEnabled);
+  }
+
+  @ReactProp(name = "faceDetectorEnabled")
+  public void setFaceDetecting(ExpoCameraView view, boolean faceDetectorEnabled) {
+    view.setShouldDetectFaces(faceDetectorEnabled);
+  }
+
+  @ReactProp(name = "faceDetectionMode")
+  public void setFaceDetectionMode(ExpoCameraView view, int mode) {
+    view.setFaceDetectionMode(mode);
+  }
+
+  @ReactProp(name = "faceDetectionLandmarks")
+  public void setFaceDetectionLandmarks(ExpoCameraView view, int landmarks) {
+    view.setFaceDetectionLandmarks(landmarks);
+  }
+
+  @ReactProp(name = "faceDetectionClassifications")
+  public void setFaceDetectionClassifications(ExpoCameraView view, int classifications) {
+    view.setFaceDetectionClassifications(classifications);
   }
 
   public void takePicture(ReadableMap options, Promise promise) {
@@ -145,18 +156,10 @@ public class CameraViewManager extends ViewGroupManager<ExpoCameraView> {
         promise.reject("E_CAMERA_UNAVAILABLE", "Camera is not running");
       }
     } else {
-      int quality = (int) (options.getDouble("quality") * 100);
-      WritableMap response = Arguments.createMap();
-      Bitmap image = generateSimulatorPhoto();
-      response.putInt("width", image.getWidth());
-      response.putInt("height", image.getHeight());
-      if (options.hasKey("base64")) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.JPEG, quality, out);
-        response.putString("base64", Base64.encodeToString(out.toByteArray(), Base64.DEFAULT));
-      }
-      response.putString("uri", ExpFileUtils.uriFromFile(new File(mCameraView.writeImage(image, quality))).toString());
-      promise.resolve(response);
+      Bitmap image = ExpoCameraViewHelper.generateSimulatorPhoto(mCameraView.getWidth(), mCameraView.getHeight());
+      ByteBuffer byteBuffer = ByteBuffer.allocate(image.getRowBytes() * image.getHeight());
+      image.copyPixelsToBuffer(byteBuffer);
+      new ResolveTakenPictureAsyncTask(byteBuffer.array(), promise, options).execute();
     }
   }
 
@@ -190,22 +193,5 @@ public class CameraViewManager extends ViewGroupManager<ExpoCameraView> {
       return mCameraView.getSupportedAspectRatios();
     }
     return null;
-  }
-
-  private Bitmap generateSimulatorPhoto() {
-    int width = mCameraView.getWidth();
-    int height = mCameraView.getHeight();
-    Bitmap fakePhoto = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-    Canvas canvas = new Canvas(fakePhoto);
-    Paint background = new Paint();
-    background.setColor(Color.BLACK);
-    canvas.drawRect(0, 0, width, height, background);
-    Paint textPaint = new Paint();
-    textPaint.setColor(Color.YELLOW);
-    textPaint.setTextSize(35);
-    Calendar calendar = Calendar.getInstance();
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.YY HH:mm:ss", Locale.getDefault());
-    canvas.drawText(simpleDateFormat.format(calendar.getTime()), width * 0.1f, height * 0.9f, textPaint);
-    return fakePhoto;
   }
 }

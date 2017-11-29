@@ -232,6 +232,7 @@ dependencies {
   compile 'com.google.android.gms:play-services-location:9.8.0'
   compile 'com.google.android.gms:play-services-ads:9.8.0'
   compile 'com.google.android.gms:play-services-fitness:9.8.0'
+  compile 'com.google.android.gms:play-services-vision:9.8.0'
   compile 'com.google.android.gms:play-services-wallet:9.8.0' //may need 10.+
   compile 'com.stripe:stripe-android:2.1.+'
   compile 'com.github.thefuntasty:CreditCardEntry:1.4.8.4'

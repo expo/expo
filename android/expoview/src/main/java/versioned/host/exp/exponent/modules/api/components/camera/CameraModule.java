@@ -19,6 +19,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 import host.exp.exponent.utils.ScopedContext;
+import versioned.host.exp.exponent.modules.api.components.facedetector.ExpoFaceDetector;
 
 public class CameraModule extends ReactContextBaseJavaModule {
   private static final String TAG = "CameraModule";
@@ -27,7 +28,6 @@ public class CameraModule extends ReactContextBaseJavaModule {
 
   private static ScopedContext mScopedContext;
   static final int VIDEO_2160P = 0;
-
   static final int VIDEO_1080P = 1;
   static final int VIDEO_720P = 2;
   static final int VIDEO_480P = 3;
@@ -86,6 +86,40 @@ public class CameraModule extends ReactContextBaseJavaModule {
         put("WhiteBalance", getWhiteBalanceConstants());
         put("VideoQuality", getVideoQualityConstants());
         put("BarCodeType", getBarCodeConstants());
+        put("FaceDetection", Collections.unmodifiableMap(new HashMap<String, Object>() {
+          {
+            put("Mode", getFaceDetectionModeConstants());
+            put("Landmarks", getFaceDetectionLandmarksConstants());
+            put("Classifications", getFaceDetectionClassificationsConstants());
+          }
+
+          private Map<String, Object> getFaceDetectionModeConstants() {
+            return Collections.unmodifiableMap(new HashMap<String, Object>() {
+              {
+                put("fast", ExpoFaceDetector.FAST_MODE);
+                put("accurate", ExpoFaceDetector.ACCURATE_MODE);
+              }
+            });
+          }
+
+          private Map<String, Object> getFaceDetectionClassificationsConstants() {
+            return Collections.unmodifiableMap(new HashMap<String, Object>() {
+              {
+                put("all", ExpoFaceDetector.ALL_CLASSIFICATIONS);
+                put("none", ExpoFaceDetector.NO_CLASSIFICATIONS);
+              }
+            });
+          }
+
+          private Map<String, Object> getFaceDetectionLandmarksConstants() {
+            return Collections.unmodifiableMap(new HashMap<String, Object>() {
+              {
+                put("all", ExpoFaceDetector.ALL_LANDMARKS);
+                put("none", ExpoFaceDetector.NO_LANDMARKS);
+              }
+            });
+          }
+        }));
       }
 
       private Map<String, Object> getTypeConstants() {
