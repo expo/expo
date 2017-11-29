@@ -42,20 +42,20 @@ NS_ASSUME_NONNULL_BEGIN
                       errorBlock:(EXCachedResourceErrorBlock)error
 {
   switch (behavior) {
-    case kEXCachedResourceNoCache: {
+    case EXCachedResourceNoCache: {
       NSLog(@"EXCachedResource: Not using cache for %@", _resourceName);
       [self _loadRemoteResourceWithSuccess:success error:error ignoringCache:YES];
       break;
     }
-    case kEXCachedResourceUseCacheImmediately: {
+    case EXCachedResourceUseCacheImmediately: {
       [self _loadCacheImmediatelyAndDownload:YES withSuccess:success error:error];
       break;
     }
-    case kEXCachedResourceFallBackToCache: default: {
+    case EXCachedResourceFallBackToCache: default: {
       [self _loadRemoteAndFallBackToCacheWithSuccess:success error:error];
       break;
     }
-    case kEXCachedResourceOnlyCache: {
+    case EXCachedResourceOnlyCache: {
       [self _loadCacheImmediatelyAndDownload:NO withSuccess:success error:error];
       break;
     }

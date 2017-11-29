@@ -30,6 +30,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.modules.network.OkHttpClientProvider;
+import com.facebook.react.modules.network.ReactCookieJarContainer;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 
@@ -43,12 +44,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.ExponentDevActivity;
 import host.exp.exponent.LauncherActivity;
+import host.exp.exponent.ReactNativeStaticHelpers;
 import host.exp.exponent.experience.ShellAppActivity;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.experience.BaseExperienceActivity;
@@ -148,15 +151,21 @@ public class Kernel extends KernelInterface {
   }
 
   private void updateKernelRNOkHttp() {
-    OkHttpClient.Builder clientBuilder = OkHttpClientProvider.getOkHttpClient().newBuilder()
+    OkHttpClient.Builder client = new OkHttpClient.Builder()
+        .connectTimeout(0, TimeUnit.MILLISECONDS)
+        .readTimeout(0, TimeUnit.MILLISECONDS)
+        .writeTimeout(0, TimeUnit.MILLISECONDS)
+        .cookieJar(new ReactCookieJarContainer())
         .cache(mExponentNetwork.getCache());
+
     if (BuildConfig.DEBUG) {
       // FIXME: 8/9/17
       // broke with lib versioning
       // clientBuilder.addNetworkInterceptor(new StethoInterceptor());
     }
-    mExponentNetwork.addOfflineInterceptors(clientBuilder);
-    OkHttpClientProvider.replaceOkHttpClient(clientBuilder.build());
+
+    mExponentNetwork.addInterceptors(client);
+    ReactNativeStaticHelpers.setOkHttpClient(OkHttpClientProvider.enableTls12OnPreLollipop(client).build());
   }
 
   // Don't call this until a loading screen is up, since it has to do some work on the main thread.

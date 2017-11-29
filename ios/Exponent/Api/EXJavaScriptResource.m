@@ -67,8 +67,8 @@
 {
   if ([EXShellManager sharedInstance].isShell && ![EXShellManager sharedInstance].isRemoteJSEnabled) {
     // JS downloads are disabled
-    if (behavior != kEXCachedResourceOnlyCache) {
-      behavior = kEXCachedResourceOnlyCache;
+    if (behavior != EXCachedResourceOnlyCache) {
+      behavior = EXCachedResourceOnlyCache;
       DDLogWarn(@"%s: JS downloads are not allowed. Local resource will be used if it exists.", __func__);
     }
   }

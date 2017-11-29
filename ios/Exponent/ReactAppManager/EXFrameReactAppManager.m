@@ -55,12 +55,12 @@
 {
   if ([[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:self.experienceId]) {
     // if this experience id encountered a loading error before, discard any cache we might have
-    return kEXCachedResourceNoCache;
+    return EXCachedResourceNoCache;
   }
-  EXCachedResourceBehavior devBehavior = kEXCachedResourceNoCache;
-  EXCachedResourceBehavior prodBehavior = kEXCachedResourceFallBackToCache;
+  EXCachedResourceBehavior devBehavior = EXCachedResourceNoCache;
+  EXCachedResourceBehavior prodBehavior = EXCachedResourceFallBackToCache;
   if ([EXShellManager sharedInstance].loadJSInBackgroundExperimental) {
-    prodBehavior = kEXCachedResourceUseCacheImmediately;
+    prodBehavior = EXCachedResourceUseCacheImmediately;
   }
   return ([self _doesManifestEnableDeveloperTools]) ? devBehavior : prodBehavior;
 }
@@ -77,7 +77,7 @@
 {
   NSMutableDictionary *props = [NSMutableDictionary dictionary];
   NSMutableDictionary *expProps = [NSMutableDictionary dictionary];
-  
+
   if (_frame && _frame.initialProps) {
     [expProps addEntriesFromDictionary:_frame.initialProps];
   }
@@ -86,9 +86,9 @@
     expProps[@"errorRecovery"] = errorRecoveryProps;
     [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager increaseAutoReloadBuffer];
   }
-  
+
   props[@"exp"] = expProps;
-  
+
   return props;
 }
 
@@ -103,7 +103,7 @@
   if (manifest && manifest[@"appKey"]) {
     return manifest[@"appKey"];
   }
-  
+
   if (_frame.source) {
     NSURLComponents *components = [NSURLComponents componentsWithURL:_frame.source resolvingAgainstBaseURL:YES];
     NSArray<NSURLQueryItem *> *queryItems = components.queryItems;
@@ -113,7 +113,7 @@
       }
     }
   }
-  
+
   return @"main";
 }
 
@@ -161,7 +161,7 @@
   // we allow the vanilla RN dev menu in some circumstances.
   BOOL isDetached = [EXShellManager sharedInstance].isDetached;
   BOOL isStandardDevMenuAllowed = [EXKernelDevKeyCommands sharedInstance].isLegacyMenuBehaviorEnabled || isDetached;
-  
+
   NSDictionary *params = @{
                            @"frame": _frame,
                            @"manifest": _frame.manifest,

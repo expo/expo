@@ -41,7 +41,7 @@ static NSString* kPublicKeyTag = @"exp.host.publickey";
                                                                           resourceType:@"pem"
                                                                              remoteUrl:publicKeyUrl
                                                                              cachePath:nil];
-  EXCachedResourceBehavior cacheBehavior = useCache ? kEXCachedResourceUseCacheImmediately : kEXCachedResourceNoCache;
+  EXCachedResourceBehavior cacheBehavior = useCache ? EXCachedResourceUseCacheImmediately : EXCachedResourceNoCache;
   [publicKeyResource loadResourceWithBehavior:cacheBehavior progressBlock:nil successBlock:^(NSData *publicKeyData) {
     dispatch_async(dispatch_get_main_queue(), ^{
       SecKeyRef publicKey = [self keyRefFromPEMData:publicKeyData];

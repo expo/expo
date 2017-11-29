@@ -180,7 +180,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   
   __weak typeof(self) weakSelf = self;
   EXCachedResourceBehavior cacheBehavior = [self cacheBehaviorForJSResource];
-  if (cacheBehavior == kEXCachedResourceNoCache) {
+  if (cacheBehavior == EXCachedResourceNoCache) {
     // no cache - wait longer before timing out
     _jsResource.requestTimeoutInterval = kEXJavaScriptResourceLongerTimeout;
   }

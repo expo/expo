@@ -121,11 +121,11 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
 {
   if ([EXBuildConstants sharedInstance].isDevKernel) {
     // to prevent running dev native code against prod js.
-    return kEXCachedResourceNoCache;
+    return EXCachedResourceNoCache;
   } else {
     return [[NSUserDefaults standardUserDefaults] boolForKey:kEXSkipCacheUserDefaultsKey] ?
-      kEXCachedResourceNoCache :
-      kEXCachedResourceUseCacheImmediately;
+      EXCachedResourceNoCache :
+      EXCachedResourceUseCacheImmediately;
   }
 }
 

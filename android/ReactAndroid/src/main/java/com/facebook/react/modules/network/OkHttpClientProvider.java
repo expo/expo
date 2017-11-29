@@ -46,14 +46,12 @@ public class OkHttpClientProvider {
   }
 
   public static OkHttpClient createClient() {
-    // No timeouts by default
-    OkHttpClient.Builder client = new OkHttpClient.Builder()
-      .connectTimeout(0, TimeUnit.MILLISECONDS)
-      .readTimeout(0, TimeUnit.MILLISECONDS)
-      .writeTimeout(0, TimeUnit.MILLISECONDS)
-      .cookieJar(new ReactCookieJarContainer());
-
-    return enableTls12OnPreLollipop(client).build();
+    try {
+      return (OkHttpClient) Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("getOkHttpClient").invoke(null);
+    } catch (Exception expoHandleErrorException) {
+      expoHandleErrorException.printStackTrace();
+      return null;
+    }
   }
 
   /*

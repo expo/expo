@@ -17,7 +17,9 @@
 		192B8CB01EC464DF0045BE97 /* RNBranchProperty.m in Sources */ = {isa = PBXBuildFile; fileRef = 192B8CA81EC464DF0045BE97 /* RNBranchProperty.m */; };
 		19382BA91EC2EACC001ED4A1 /* EXBranchManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 19382BA81EC2EACC001ED4A1 /* EXBranchManager.m */; };
 		194804CF1E92CFB400623005 /* EXDocumentPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 194804CE1E92CFB400623005 /* EXDocumentPicker.m */; };
+		19523B2A1FA0FC8700EA62CC /* EXBundleImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 19523B291FA0FC8700EA62CC /* EXBundleImageLoader.m */; };
 		1981B9F71E3C28BA00057CA9 /* EXKeepAwake.m in Sources */ = {isa = PBXBuildFile; fileRef = 1981B9F61E3C28BA00057CA9 /* EXKeepAwake.m */; };
+		19B2EF751FB25A1A003F2E1B /* EXCachedResourceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 19B2EF741FB25A1A003F2E1B /* EXCachedResourceManager.m */; };
 		19B96C351EE7D9F20006A7DB /* EXScreenOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 19B96C341EE7D9F20006A7DB /* EXScreenOrientation.m */; };
 		19F72F571E764AE100F9A671 /* EXContactsRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 19F72F561E764AE100F9A671 /* EXContactsRequester.m */; };
 		200C29ED1855EF40345E4BA2 /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B84B3DEFB2C488FAE7279AD /* libPods-ExponentIntegrationTests.a */; };
@@ -302,8 +304,13 @@
 		19382BA81EC2EACC001ED4A1 /* EXBranchManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXBranchManager.m; sourceTree = "<group>"; };
 		194804CD1E92CFB400623005 /* EXDocumentPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EXDocumentPicker.h; path = Exponent/Versioned/Modules/Api/EXDocumentPicker.h; sourceTree = SOURCE_ROOT; };
 		194804CE1E92CFB400623005 /* EXDocumentPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EXDocumentPicker.m; path = Exponent/Versioned/Modules/Api/EXDocumentPicker.m; sourceTree = SOURCE_ROOT; };
+		19523B281FA0FC8700EA62CC /* EXBundleImageLoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXBundleImageLoader.h; sourceTree = "<group>"; };
+		19523B291FA0FC8700EA62CC /* EXBundleImageLoader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXBundleImageLoader.m; sourceTree = "<group>"; };
 		1981B9F51E3C28BA00057CA9 /* EXKeepAwake.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKeepAwake.h; sourceTree = "<group>"; };
 		1981B9F61E3C28BA00057CA9 /* EXKeepAwake.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKeepAwake.m; sourceTree = "<group>"; };
+		19B2EF731FB25A1A003F2E1B /* EXCachedResourceManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXCachedResourceManager.h; sourceTree = "<group>"; };
+		19B2EF741FB25A1A003F2E1B /* EXCachedResourceManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXCachedResourceManager.m; sourceTree = "<group>"; };
+		19B2EF761FB26A3F003F2E1B /* EXResourceLoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXResourceLoader.h; sourceTree = "<group>"; };
 		19B96C331EE7D9F20006A7DB /* EXScreenOrientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScreenOrientation.h; sourceTree = "<group>"; };
 		19B96C341EE7D9F20006A7DB /* EXScreenOrientation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScreenOrientation.m; sourceTree = "<group>"; };
 		19F72F551E764AE100F9A671 /* EXContactsRequester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXContactsRequester.h; sourceTree = "<group>"; };
@@ -1289,22 +1296,25 @@
 			isa = PBXGroup;
 			children = (
 				B5AC39C41E95B01F00540AA7 /* DevSupport */,
-				B5678C5A1DB6D65B00380A6E /* Frame */,
-				B5EF82741F5A1B7900FC7424 /* Test */,
 				A1158D311D4C4AA400286352 /* EXAppLoadingManager.h */,
 				A1158D301D4C4AA400286352 /* EXAppLoadingManager.m */,
 				B56FACA01D4AB279009FC106 /* EXAppState.h */,
 				B56FACA11D4AB279009FC106 /* EXAppState.m */,
+				19523B281FA0FC8700EA62CC /* EXBundleImageLoader.h */,
+				19523B291FA0FC8700EA62CC /* EXBundleImageLoader.m */,
 				B5F12CA01DB009A40080ECA6 /* EXKernelModule.h */,
 				B5F12CA11DB009A40080ECA6 /* EXKernelModule.m */,
 				B55089801D06455D009FBBC5 /* EXLinkingManager.h */,
 				B55089811D06455D009FBBC5 /* EXLinkingManager.m */,
 				780D4ACC1F737ADC00E70C7F /* EXNativeModuleIntrospection.h */,
 				780D4ACD1F737ADC00E70C7F /* EXNativeModuleIntrospection.m */,
-				B592FFED1E9D489100437664 /* EXStatusBarManager.h */,
-				B592FFEE1E9D489100437664 /* EXStatusBarManager.m */,
 				B57929921F047B1400588628 /* EXScopedModuleRegistry.h */,
 				B57929931F047B1400588628 /* EXScopedModuleRegistry.m */,
+				B592FFED1E9D489100437664 /* EXStatusBarManager.h */,
+				B592FFEE1E9D489100437664 /* EXStatusBarManager.m */,
+				19B2EF761FB26A3F003F2E1B /* EXResourceLoader.h */,
+				B5678C5A1DB6D65B00380A6E /* Frame */,
+				B5EF82741F5A1B7900FC7424 /* Test */,
 			);
 			path = Internal;
 			sourceTree = "<group>";
@@ -1469,12 +1479,12 @@
 		B587F1DB1D53DE600071715C /* Api */ = {
 			isa = PBXGroup;
 			children = (
-				B5AC39881E95A7EC00540AA7 /* EXApiUtil.h */,
-				B5AC39891E95A7EC00540AA7 /* EXApiUtil.m */,
 				B575EE981D53E0AB00DCABBC /* EXCachedResource.h */,
 				B575EE991D53E0AB00DCABBC /* EXCachedResource.m */,
 				B587F1DE1D53DEB70071715C /* EXFileDownloader.h */,
 				B587F1DF1D53DEB70071715C /* EXFileDownloader.m */,
+				B5AC39881E95A7EC00540AA7 /* EXApiUtil.h */,
+				B5AC39891E95A7EC00540AA7 /* EXApiUtil.m */,
 				B575EE9C1D53EEC300DCABBC /* EXJavaScriptResource.h */,
 				B575EE9D1D53EEC300DCABBC /* EXJavaScriptResource.m */,
 				B575EE9F1D54053500DCABBC /* EXManifestResource.h */,
@@ -1575,6 +1585,8 @@
 				B52217D71F146686002241BA /* EXKernelService.h */,
 				19382BA71EC2EACC001ED4A1 /* EXBranchManager.h */,
 				19382BA81EC2EACC001ED4A1 /* EXBranchManager.m */,
+				19B2EF731FB25A1A003F2E1B /* EXCachedResourceManager.h */,
+				19B2EF741FB25A1A003F2E1B /* EXCachedResourceManager.m */,
 				B5AC39D41E95B17300540AA7 /* EXErrorRecoveryManager.h */,
 				B5AC39D51E95B17300540AA7 /* EXErrorRecoveryManager.m */,
 				B58FFAAA1F1016B700A51363 /* EXGoogleAuthManager.h */,
@@ -2227,6 +2239,7 @@
 				B5AC398A1E95A7EC00540AA7 /* EXApiUtil.m in Sources */,
 				A12B68251E8392560079896C /* EXSQLite.m in Sources */,
 				7847A2CD1EB9AF210088BF69 /* AIRMapUrlTileManager.m in Sources */,
+				19B2EF751FB25A1A003F2E1B /* EXCachedResourceManager.m in Sources */,
 				7847A2C21EB9AF210088BF69 /* AIRMapCircle.m in Sources */,
 				88E089A41D6BC02200562FA1 /* EXAmplitude.m in Sources */,
 				7847A3791EC0F1550088BF69 /* RNSVGClipPath.m in Sources */,
@@ -2379,6 +2392,8 @@
 				B5C7A3C31EC3E38300DD9E1D /* EXAVPlayerData.m in Sources */,
 				B57181001F0FF41600315A66 /* EXScreenOrientationManager.m in Sources */,
 				A1DCE8481DC3FC63009665FD /* EXGLViewManager.m in Sources */,
+				BB22D9571F3CDE6C00A35CC6 /* RNGestureHandlerEvents.m in Sources */,
+				19523B2A1FA0FC8700EA62CC /* EXBundleImageLoader.m in Sources */,
 				7847A3951EC0F1550088BF69 /* RNSVGRenderable.m in Sources */,
 				7847A37F1EC0F1550088BF69 /* RNSVGGlyphContext.m in Sources */,
 				7847A3881EC0F1550088BF69 /* RNSVGNode.m in Sources */,
