@@ -8,6 +8,7 @@ import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.TextureView;
+import android.view.ViewTreeObserver;
 import android.widget.MediaController;
 
 import com.facebook.react.bridge.Arguments;
@@ -38,6 +39,16 @@ public class VideoView extends TextureView implements
     }
   };
 
+  private boolean mScrollChangedListenerIsSetup = false;
+  private final ViewTreeObserver.OnScrollChangedListener mScrollChangedListener = new ViewTreeObserver.OnScrollChangedListener() {
+    @Override
+    public void onScrollChanged() {
+      if (mMediaController != null) {
+        mMediaController.hide();
+      }
+    }
+  };
+
   private boolean mIsAttachedToWindow = false;
 
   private RCTEventEmitter mEventEmitter;
@@ -65,6 +76,7 @@ public class VideoView extends TextureView implements
 
   private void unloadPlayerAndMediaController() {
     if (mMediaController != null) {
+      ensureScrollChangeListenerIsRemoved();
       mMediaController.hide();
       mMediaController.setEnabled(false);
       mMediaController.setAnchorView(null);
@@ -122,9 +134,24 @@ public class VideoView extends TextureView implements
     }
   }
 
+  private void ensureScrollChangeListenerIsSetup() {
+    if (!mScrollChangedListenerIsSetup) {
+      getViewTreeObserver().addOnScrollChangedListener(mScrollChangedListener);
+      mScrollChangedListenerIsSetup = true;
+    }
+  }
+
+  private void ensureScrollChangeListenerIsRemoved() {
+    if (mScrollChangedListenerIsSetup) {
+      getViewTreeObserver().removeOnScrollChangedListener(mScrollChangedListener);
+      mScrollChangedListenerIsSetup = false;
+    }
+  }
+
   private void updateMediaControllerForUseNativeControls() {
     if (mMediaController != null) {
       mMediaController.setEnabled(mUseNativeControls);
+      ensureScrollChangeListenerIsSetup();
       if (mUseNativeControls) {
         mMediaController.show();
       } else {
