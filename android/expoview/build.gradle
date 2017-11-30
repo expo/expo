@@ -169,6 +169,7 @@ android {
 }
 
 task generateDynamicMacros(type: Exec) {
+  environment "EXPO_ANDROID_GRADLE_TASK_NAMES", "${gradle.startParameter.taskNames}"
   if (Os.isFamily(Os.FAMILY_WINDOWS)) {
     // This gets run from the 'app' directory
     workingDir '../../tools-public'

@@ -26,15 +26,13 @@ public class BaseTestClass {
   protected JSTestRunnerIdlingResource mJSTestRunnerIdlingResource;
 
   @BeforeClass
-  public static void enableDrawOverOtherApps() {
+  public static void beforeClass() {
     KernelConfig.IS_TEST = true;
     KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE = true;
     KernelConfig.HIDE_NUX = true;
 
     sUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
     TestNativeModuleServer.getInstance().setUiDevice(sUiDevice);
-
-    DeviceUtils.allowDrawingOverOtherApps(sUiDevice);
 
     // Increase Espresso timeout
     IdlingPolicies.setMasterPolicyTimeout(3, TimeUnit.MINUTES);

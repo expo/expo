@@ -2,11 +2,13 @@
 
 package host.exp.exponent;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
+import android.support.test.rule.GrantPermissionRule;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.Until;
 
@@ -23,7 +25,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
 import host.exp.exponent.annotations.ExpoAlwaysPassThroughFilter;
-import host.exp.exponent.annotations.ExpoDevModeTest;
 import host.exp.exponent.annotations.ExpoSdkVersionTest;
 import host.exp.exponent.annotations.ExpoTestSuiteTest;
 import host.exp.exponent.generated.ExponentBuildConstants;
@@ -34,8 +35,10 @@ import host.exp.exponent.utils.JSTestRunnerIdlingResource;
 import host.exp.exponent.utils.LoadingScreenIdlingResource;
 import host.exp.exponent.utils.RetryTestRule;
 import host.exp.exponent.utils.TestConfig;
+import host.exp.exponent.utils.TestContacts;
 import host.exp.exponent.utils.TestReporterRule;
 
+import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
@@ -45,20 +48,18 @@ import static host.exp.exponent.utils.ExponentMatchers.withTestId;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestSuiteTests extends BaseTestClass {
 
+  private boolean mHaveContactsBeenAdded = false;
+
+  private void ensureContactsAdded() {
+    if (mHaveContactsBeenAdded) {
+      return;
+    }
+    mHaveContactsBeenAdded = true;
+    TestContacts.add(getTargetContext());
+  }
+
   @BeforeClass
   public static void beforeClass() {
-    try {
-      // Add contacts
-      Context context = InstrumentationRegistry.getContext();
-      Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("exppreparetestsapp://blahblahblah"));
-      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      context.startActivity(intent);
-      sUiDevice.wait(Until.hasObject(By.pkg("host.exp.preparetestsapp").depth(0)), LAUNCH_TIMEOUT);
-    } catch (Throwable e) {
-      // Don't worry if this isn't installed. Probably means it's running on a developer's device
-      // and they already have contacts.
-    }
-
     // Press home
     sUiDevice.pressHome();
     final String launcherPackage = sUiDevice.getLauncherPackageName();
@@ -88,6 +89,8 @@ public class TestSuiteTests extends BaseTestClass {
   }
 
   private void runTestSuiteTest(String testSuiteUri) {
+    ensureContactsAdded();
+
     String deepLink = TestConfig.get().toString();
     testSuiteUri = testSuiteUri + "+" + deepLink;
 
@@ -122,6 +125,10 @@ public class TestSuiteTests extends BaseTestClass {
 
   @Rule
   public RuleChain chain = RuleChain.outerRule(testReporterRule).around(new RetryTestRule(2));
+
+  @Rule
+  public GrantPermissionRule permissionRule = GrantPermissionRule.grant(Manifest.permission.SYSTEM_ALERT_WINDOW, Manifest.permission.READ_CONTACTS, Manifest.permission.ACCESS_COARSE_LOCATION
+      , Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_CONTACTS);
 
   @Test
   @ExpoTestSuiteTest

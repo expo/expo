@@ -21,6 +21,12 @@ const ProjectVersions = require('./project-versions');
 
 const EXPONENT_DIR = path.join(__dirname, '..');
 
+// We need these permissions when testing but don't want them
+// ending up in our release.
+const ANDROID_TEST_PERMISSIONS = `
+  <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+`;
+
 let isInUniverse = true;
 try {
   let universePkgJson = require('../../package.json');
@@ -348,7 +354,7 @@ async function readExistingSourceAsync(filepath) {
   }
 }
 
-async function copyTemplateFileAsync(source, dest, templateSubstitutions) {
+async function copyTemplateFileAsync(source, dest, templateSubstitutions, configuration) {
   let promises = await Promise.all([
     readExistingSourceAsync(source),
     readExistingSourceAsync(dest),
@@ -362,6 +368,13 @@ async function copyTemplateFileAsync(source, dest, templateSubstitutions) {
       value
     );
   });
+
+  if (configuration === 'debug') {
+    currentSourceFile = currentSourceFile.replace(
+      `<!-- ADD TEST PERMISSIONS HERE -->`,
+      ANDROID_TEST_PERMISSIONS
+    );
+  }
 
   if (currentSourceFile !== currentDestFile) {
     await fs.writeFile(dest, currentSourceFile, 'utf8');
@@ -443,7 +456,8 @@ async function copyTemplateFilesAsync(platform, args, templateSubstitutions) {
       copyTemplateFileAsync(
         path.join(templateFilesPath, platform, source),
         path.join(EXPONENT_DIR, dest, source),
-        templateSubstitutions
+        templateSubstitutions,
+        args.configuration
       )
     );
   });
@@ -480,9 +494,9 @@ async function generateBuildConfigAsync(platform, args) {
 /**
  *  args:
  *    platform (ios|android)
- *    configuration - optional but we behave differently if this is Debug
  *    buildConstantsPath
  *  ios-only:
+ *    configuration - optional but we behave differently if this is Debug
  *    infoPlistPath
  *    expoKitPath (optional - if provided, generate files for ExpoKit)
  */
@@ -499,6 +513,8 @@ exports.generateDynamicMacrosAsync = async function generateDynamicMacrosAsync(
         'Info',
         templateSubstitutions
       );
+    } else {
+      args.configuration = process.env.EXPO_ANDROID_GRADLE_TASK_NAMES.includes('Debug') ? 'debug' : 'release';
     }
 
     await generateBuildConfigAsync(platform, args);
