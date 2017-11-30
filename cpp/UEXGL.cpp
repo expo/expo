@@ -830,7 +830,7 @@ private:
 
   // Renderbuffers
   // -------------
-  
+
   _WRAP_METHOD(bindRenderbuffer, 2) {
     EXJS_UNPACK_ARGV(GLenum target, UEXGLObjectId fRenderbuffer);
     addToNextBatch([=] {
@@ -847,7 +847,7 @@ private:
       return renderbuffer;
     });
   }
-  
+
   _WRAP_METHOD(deleteRenderbuffer, 1) {
     EXJS_UNPACK_ARGV(UEXGLObjectId fRenderbuffer);
     addToNextBatch([=] {
