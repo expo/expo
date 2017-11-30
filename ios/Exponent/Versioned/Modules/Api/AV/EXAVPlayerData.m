@@ -9,6 +9,8 @@ NSString *const EXAVPlayerDataStatusURIKeyPath = @"uri";
 NSString *const EXAVPlayerDataStatusProgressUpdateIntervalMillisKeyPath = @"progressUpdateIntervalMillis";
 NSString *const EXAVPlayerDataStatusDurationMillisKeyPath = @"durationMillis";
 NSString *const EXAVPlayerDataStatusPositionMillisKeyPath = @"positionMillis";
+NSString *const EXAVPlayerDataStatusSeekMillisToleranceBeforeKeyPath = @"seekMillisToleranceBefore";
+NSString *const EXAVPlayerDataStatusSeekMillisToleranceAfterKeyPath = @"seekMillisToleranceAfter";
 NSString *const EXAVPlayerDataStatusPlayableDurationMillisKeyPath = @"playableDurationMillis";
 NSString *const EXAVPlayerDataStatusShouldPlayKeyPath = @"shouldPlay";
 NSString *const EXAVPlayerDataStatusIsPlayingKeyPath = @"isPlaying";
@@ -221,6 +223,22 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     }
   }
   
+  // Default values, see: https://developer.apple.com/documentation/avfoundation/avplayer/1388493-seek
+  CMTime toleranceBefore = kCMTimePositiveInfinity;
+  CMTime toleranceAfter = kCMTimePositiveInfinity;
+  
+  // We need to set toleranceBefore only if we will seek
+  if (mustSeek && [parameters objectForKey:EXAVPlayerDataStatusSeekMillisToleranceBeforeKeyPath] != nil) {
+    NSNumber *seekMillisToleranceBefore = parameters[EXAVPlayerDataStatusSeekMillisToleranceBeforeKeyPath];
+    toleranceBefore = CMTimeMakeWithSeconds(seekMillisToleranceBefore.floatValue / 1000, NSEC_PER_SEC);
+  }
+  
+  // We need to set toleranceAfter only if we will seek
+  if (mustSeek && [parameters objectForKey:EXAVPlayerDataStatusSeekMillisToleranceAfterKeyPath] != nil) {
+    NSNumber *seekMillisToleranceAfter = parameters[EXAVPlayerDataStatusSeekMillisToleranceAfterKeyPath];
+    toleranceAfter = CMTimeMakeWithSeconds(seekMillisToleranceAfter.floatValue / 1000, NSEC_PER_SEC);
+  }
+  
   if ([parameters objectForKey:EXAVPlayerDataStatusShouldPlayKeyPath] != nil) {
     NSNumber *shouldPlay = parameters[EXAVPlayerDataStatusShouldPlayKeyPath];
     _shouldPlay = shouldPlay.boolValue;
@@ -296,7 +314,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     
     // Apply seek if necessary.
     if (mustSeek) {
-      [_player seekToTime:newPosition completionHandler:^(BOOL seekSucceeded) {
+      [_player seekToTime:newPosition toleranceBefore:toleranceBefore toleranceAfter:toleranceAfter completionHandler:^(BOOL seekSucceeded) {
         dispatch_async(_exAV.methodQueue, ^{
           applyPostSeekParameters(seekSucceeded);
         });
