@@ -9,7 +9,9 @@ const { mkdir } = require('shelljs');
 const { IosPlist, IosPodsTools, ExponentTools, UrlUtils, Project } = require('xdl');
 const JsonFile = require('@exponent/json-file');
 const spawnAsync = require('@exponent/spawn-async');
-const request = require('request-promise-native');
+const request = require('request-promise-native').defaults({
+  resolveWithFullResponse: true,
+});
 const ip = require('ip');
 const uuidv4 = require('uuid/v4');
 
