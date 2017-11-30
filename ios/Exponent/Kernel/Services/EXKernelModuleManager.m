@@ -86,7 +86,7 @@
     cacheBehavior = EXCachedResourceNoCache;
   }
   if ([EXShellManager sharedInstance].loadJSInBackgroundExperimental) {
-    cacheBehavior = kEXCachedResourceUseCacheImmediately;
+    cacheBehavior = EXCachedResourceUseCacheImmediately;
   }
   EXManifestResource *manifestResource = [[EXManifestResource alloc] initWithManifestUrl:url originalUrl:originalUrl];
   [manifestResource loadResourceWithBehavior:cacheBehavior progressBlock:nil successBlock:^(NSData * _Nonnull data) {
