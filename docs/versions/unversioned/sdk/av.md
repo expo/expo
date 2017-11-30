@@ -142,6 +142,12 @@ The following convenience methods built on top of `setStatusAsync()` are also pr
 
     Playback may not start immediately after calling this function for reasons such as buffering. Make sure to update your UI based on the `isPlaying` and `isBuffering` properties of the `PlaybackStatus` (described below).
 
+-   `playbackObject.playFromPositionAsync(millis, { toleranceMillisBefore, toleranceMillisAfter })`
+
+    This is equivalent to `playbackObject.setStatusAsync({ shouldPlay: true, positionMillis: millis, seekMillisToleranceBefore: toleranceMillisBefore, seekMillisToleranceAfter: toleranceMillisAfter })`.  The tolerances are used only on iOS ([more details](#what-is-seek-tolerance-and-why-would-i-want-to-use-it)).
+
+    Playback may not start immediately after calling this function for reasons such as buffering. Make sure to update your UI based on the `isPlaying` and `isBuffering` properties of the `PlaybackStatus` (described below).
+
     #### Parameters
 
     -   **millis (_number_)** -- The desired position of playback in milliseconds.
@@ -157,6 +163,10 @@ The following convenience methods built on top of `setStatusAsync()` are also pr
 -   `playbackObject.setPositionAsync(millis)`
 
     This is equivalent to `playbackObject.setStatusAsync({ positionMillis: millis })`.
+
+-   `playbackObject.setPositionAsync(millis, { toleranceMillisBefore, toleranceMillisAfter })`
+
+    This is equivalent to `playbackObject.setStatusAsync({ positionMillis: millis, seekMillisToleranceBefore: toleranceMillisBefore, seekMillisToleranceAfter: toleranceMillisAfter })`. The tolerances are used only on iOS ([more details](#what-is-seek-tolerance-and-why-would-i-want-to-use-it)).
 
     #### Parameters
 
@@ -241,6 +251,8 @@ Most of the preceding API calls revolve around passing or returning the _status_
 
     -   `progressUpdateIntervalMillis` : the new minimum interval in milliseconds between calls of `onPlaybackStatusUpdate`. See `setOnPlaybackStatusUpdate()` for details.
     -   `positionMillis` : the desired position of playback in milliseconds.
+    -   `seekMillisToleranceBefore` : the tolerance in milliseconds with which seek will be applied to the player. _[iOS only, [details](#what-is-seek-tolerance-and-why-would-i-want-to-use-it)]_
+    -   `seekMillisToleranceAfter` : the tolerance in milliseconds with which seek will be applied to the player. _[iOS only, [details](#what-is-seek-tolerance-and-why-would-i-want-to-use-it)]_
     -   `shouldPlay` : a boolean describing if the media is supposed to play. Playback may not start immediately after setting this value for reasons such as buffering. Make sure to update your UI based on the `isPlaying` and `isBuffering` properties of the `PlaybackStatus`.
     -   `rate` : the desired playback rate of the media. This value must be between `0.0` and `32.0`. Only available on Android API version 23 and later and iOS.
     -   `shouldCorrectPitch` : a boolean describing if we should correct the pitch for a changed rate. If set to `true`, the pitch of the audio will be corrected (so a rate different than `1.0` will timestretch the audio).
@@ -270,6 +282,12 @@ The default initial `PlaybackStatusToSet` of all `Expo.Audio.Sound` objects and 
 ```
 
 This default initial status can be overwritten by setting the optional `initialStatus` in `loadAsync()` or `Expo.Audio.Sound.create()`.
+
+### What is seek tolerance and why would I want to use it [iOS only]
+
+When asked to seek an A/V item, native player in iOS sometimes may seek to a slightly different time. This technique, mentioned in [Apple documentation](https://developer.apple.com/documentation/avfoundation/avplayer/1387741-seek#discussion), is used to shorten the time of the `seekTo` call (the player may decide to play immediately from a different time than requested, instead of decoding the exact requested part and playing it with the decoding delay).
+
+If you matter about the precision more than about the delay, you can specify the tolerance with which the player will seek according to your needs.
 
 ## Example usage
 
