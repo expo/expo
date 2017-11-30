@@ -124,14 +124,17 @@ public class ExponentNetwork {
         Request originalRequest = chain.request();
         String urlString = originalRequest.url().toString();
 
+        // Check if assets loaded from the cdn were included in the bundle.
         if (urlString.startsWith("https://d1wp6m56sqw74a.cloudfront.net/~assets/")) {
           List<String> path = originalRequest.url().pathSegments();
           String assetName = "asset_" + path.get(path.size() - 1);
-          Resources resources = mContext.getResources();
-          int id = resources.getIdentifier(assetName, "drawable", mContext.getPackageName());
-          if (id > 0) {
-            InputStream inputStream = resources.openRawResource(id);
-            String type = URLConnection.guessContentTypeFromStream(inputStream);
+          InputStream inputStream = null;
+          try {
+            inputStream = mContext.getAssets().open(assetName);
+          } catch (IOException ex) {
+            // The file doesn't exists in the bundle, fallback to network.
+          }
+          if (inputStream != null) {
             BufferedSource buffer = Okio.buffer(Okio.source(inputStream));
             ResponseBody body = ResponseBody.create(null, -1, buffer);
             return new Response.Builder()
