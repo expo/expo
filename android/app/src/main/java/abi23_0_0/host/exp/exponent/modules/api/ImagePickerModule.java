@@ -326,7 +326,8 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
                 bmp.compress(Bitmap.CompressFormat.JPEG, quality, out);
               }
 
-              returnImageResult(exifData, path, bmp.getWidth(), bmp.getHeight(), out, promise);
+              String internalUri = ExpFileUtils.uriFromFile(new File(path)).toString();
+              returnImageResult(exifData, internalUri, bmp.getWidth(), bmp.getHeight(), out, promise);
             }
           } else {
             WritableMap response = Arguments.createMap();
@@ -353,10 +354,10 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
     });
   }
 
-  private void returnImageResult(WritableMap exifData, String path, int width, int height,
+  private void returnImageResult(WritableMap exifData, String uri, int width, int height,
                                  ByteArrayOutputStream base64OutputStream, Promise promise) {
     WritableMap response = Arguments.createMap();
-    response.putString("uri", ExpFileUtils.uriFromFile(new File(path)).toString());
+    response.putString("uri", uri);
     if (base64) {
       response.putString("base64", Base64.encodeToString(base64OutputStream.toByteArray(), Base64.DEFAULT));
     }
