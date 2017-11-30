@@ -358,20 +358,28 @@ private:
       return std::shared_ptr<void>(JSObjectGetTypedArrayDataMalloc(jsCtx, (JSObjectRef) jsVal,
                                                                    pByteLength), free);
     } else {
-      JSObjectRef jsObject = (JSObjectRef) jsVal;
+      void *data = nullptr;
+      size_t byteLength = 0;
 
-      size_t byteLength = JSObjectGetTypedArrayByteLength(jsCtx, jsObject, nullptr);
+      JSObjectRef jsObject = (JSObjectRef) jsVal;
+      JSTypedArrayType type = JSValueGetTypedArrayType(jsCtx, jsVal, nullptr);
+      if (type == kJSTypedArrayTypeArrayBuffer) {
+        byteLength = JSObjectGetArrayBufferByteLength(jsCtx, jsObject, nullptr);
+        data = JSObjectGetArrayBufferBytesPtr(jsCtx, jsObject, nullptr);
+      } else if (type != kJSTypedArrayTypeNone) {
+        byteLength = JSObjectGetTypedArrayByteLength(jsCtx, jsObject, nullptr);
+        data = JSObjectGetTypedArrayBytesPtr(jsCtx, jsObject, nullptr);
+      }
+
       if (pByteLength) {
         *pByteLength = byteLength;
       }
 
-      void *data = JSObjectGetTypedArrayBytesPtr(jsCtx, jsObject, nullptr);
+      // Copy data since it's unclear how long JavaScriptCore's buffer will live
+      // TODO(nikki): See if we can just pin/unpin and not copy?
       if (!data) {
         return std::shared_ptr<void>(nullptr);
       }
-
-      // Copy data since it's unclear how long JavaScriptCore's buffer will live
-      // TODO(nikki): See if we can just pin/unpin and not copy?
       void *dataMalloc = malloc(byteLength);
       memcpy(dataMalloc, data, byteLength);
       return std::shared_ptr<void>(dataMalloc, free);
