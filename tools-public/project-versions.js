@@ -1,8 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 'use strict';
 
-require('instapromise');
-
 const path = require('path');
 const JsonFile = require('@exponent/json-file');
 const mux = require('@expo/mux');

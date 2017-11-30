@@ -1,9 +1,7 @@
 'use strict';
 
-require('instapromise');
-
 const _ = require('lodash');
-const fs = require('fs');
+const fs = require('fs-extra');
 const os = require('os');
 const path = require('path');
 const process = require('process');
@@ -11,7 +9,7 @@ const { mkdir } = require('shelljs');
 const { IosPlist, IosPodsTools, ExponentTools, UrlUtils, Project } = require('xdl');
 const JsonFile = require('@exponent/json-file');
 const spawnAsync = require('@exponent/spawn-async');
-const request = require('request');
+const request = require('request-promise-native');
 const ip = require('ip');
 const uuidv4 = require('uuid/v4');
 
@@ -88,7 +86,7 @@ const macrosFuncs = {
       try {
         let lanAddress = ip.address();
         let localServerUrl = `http://${lanAddress}:3013`
-        let result = await request.promise.get(`${localServerUrl}/expo-test-server-status`);
+        let result = await request.get(`${localServerUrl}/expo-test-server-status`);
         if (result.body === 'running!') {
           url = localServerUrl;
         }
@@ -342,7 +340,7 @@ async function generateMacrosAsync(platform, configuration) {
 
 async function readExistingSourceAsync(filepath) {
   try {
-    return await fs.promise.readFile(filepath, 'utf8');
+    return await fs.readFile(filepath, 'utf8');
   } catch (e) {
     return null;
   }
@@ -364,7 +362,7 @@ async function copyTemplateFileAsync(source, dest, templateSubstitutions) {
   });
 
   if (currentSourceFile !== currentDestFile) {
-    await fs.promise.writeFile(dest, currentSourceFile, 'utf8');
+    await fs.writeFile(dest, currentSourceFile, 'utf8');
   }
 }
 
@@ -470,7 +468,7 @@ async function generateBuildConfigAsync(platform, args) {
     let existingSource = result[1];
 
     if (source !== existingSource) {
-      await fs.promise.writeFile(filepath, source, 'utf8');
+      await fs.writeFile(filepath, source, 'utf8');
     }
   } else {
     await generateIOSBuildConstantsFromMacrosAsync(filepath, macros, configuration, args.infoPlist);
