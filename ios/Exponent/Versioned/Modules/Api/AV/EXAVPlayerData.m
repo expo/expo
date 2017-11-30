@@ -640,6 +640,10 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
           case AVPlayerStatusFailed: {
             _isLoaded = NO;
             NSString *errorMessage = [NSString stringWithFormat:@"The AVPlayer instance has failed with the error code %li and domain \"%@\".", _player.error.code, _player.error.domain];
+            if (_player.error.localizedFailureReason) {
+              NSString *reasonMessage = [_player.error.localizedFailureReason stringByAppendingString:@" - "];
+              errorMessage = [reasonMessage stringByAppendingString:errorMessage];
+            }
             if (_loadFinishBlock) {
               _loadFinishBlock(NO, nil, errorMessage);
               _loadFinishBlock = nil;
@@ -685,6 +689,10 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
             break;
           case AVPlayerItemStatusFailed: {
             NSString *errorMessage = [NSString stringWithFormat:@"The AVPlayerItem instance has failed with the error code %li and domain \"%@\".", _player.currentItem.error.code, _player.currentItem.error.domain];
+            if (_player.currentItem.error.localizedFailureReason) {
+              NSString *reasonMessage = [_player.currentItem.error.localizedFailureReason stringByAppendingString:@" - "];
+              errorMessage = [reasonMessage stringByAppendingString:errorMessage];
+            }
             if (_loadFinishBlock) {
               _loadFinishBlock(NO, nil, errorMessage);
               _loadFinishBlock = nil;
