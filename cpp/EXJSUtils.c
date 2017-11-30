@@ -49,6 +49,20 @@ void EXJSObjectSetFunctionWithUTF8CStringName(JSContextRef ctx,
 
 #ifndef EXJS_USE_JSC_TYPEDARRAY_HEADER
 
+JS_EXPORT JSTypedArrayType JSValueGetTypedArrayType(JSContextRef ctx, JSValueRef value, JSValueRef* exception) {
+  return kJSTypedArrayTypeNone;
+}
+
+JS_EXPORT size_t JSObjectGetArrayBufferByteLength(JSContextRef ctx, JSObjectRef object, JSValueRef* exception) {
+  EXJSConsoleLog(ctx, "EXJS: Tried to use non-existent TypedArray API");
+  return 0;
+}
+
+JS_EXPORT void* JSObjectGetArrayBufferBytesPtr(JSContextRef ctx, JSObjectRef object, JSValueRef* exception) {
+  EXJSConsoleLog(ctx, "EXJS: Tried to use non-existent TypedArray API");
+  return NULL;
+}
+
 JS_EXPORT size_t JSObjectGetTypedArrayByteLength(JSContextRef ctx, JSObjectRef object,
                                                  JSValueRef* exception) {
   EXJSConsoleLog(ctx, "EXJS: Tried to use non-existent TypedArray API");
