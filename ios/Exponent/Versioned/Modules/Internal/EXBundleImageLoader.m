@@ -17,6 +17,8 @@
 
 @implementation EXBundleImageLoader
 
+@synthesize bridge = _bridge;
+
 EX_EXPORT_SCOPED_MODULE(ExponentBundleImageLoader, CachedResourceManager);
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
