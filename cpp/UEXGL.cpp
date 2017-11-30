@@ -961,6 +961,26 @@ private:
     *dst++ = '\0';
   }
 
+  // Load image data from an object with a `.localUri` member
+  std::shared_ptr<void> loadImage(JSContextRef jsCtx, JSObjectRef jsPixels,
+                                  int *fileWidth, int *fileHeight, int *fileComp) {
+    JSValueRef jsLocalUri = EXJSObjectGetPropertyNamed(jsCtx, jsPixels, "localUri");
+    if (jsLocalUri && JSValueIsString(jsCtx, jsLocalUri)) {
+      // TODO(nikki): Check that this file is in the right scope
+      auto localUri = jsValueToSharedStr(jsCtx, jsLocalUri);
+      if (strncmp(localUri.get(), "file://", 7) != 0) {
+        return std::shared_ptr<void>(nullptr);
+      }
+      char localPath[strlen(localUri.get())];
+      decodeURI(localPath, localUri.get() + 7);
+      return std::shared_ptr<void>(stbi_load(localPath,
+                                             fileWidth, fileHeight, fileComp,
+                                             STBI_rgb_alpha),
+                                   stbi_image_free);
+    }
+    return std::shared_ptr<void>(nullptr);
+  }
+
   _WRAP_METHOD(texImage2D, 6) {
     GLenum target;
     GLint level, internalformat;
@@ -970,9 +990,7 @@ private:
 
     if (jsArgc == 9) {
       // 9-argument version
-      EXJS_UNPACK_ARGV(target, level, internalformat,
-                       width, height, border,
-                       format, type);
+      EXJS_UNPACK_ARGV(target, level, internalformat, width, height, border, format, type);
       jsPixels = (JSObjectRef) jsArgv[8];
     } else if  (jsArgc == 6) {
       // 6-argument version
@@ -985,75 +1003,35 @@ private:
     // Null?
     if (JSValueIsNull(jsCtx, jsPixels)) {
       addToNextBatch([=] {
-        glTexImage2D(target, level, internalformat,
-                     width, height, border,
-                     format, type, nullptr);
+        glTexImage2D(target, level, internalformat, width, height, border, format, type, nullptr);
       });
       return nullptr;
     }
 
-    // Raw texture data TypedArray?
-    {
-      auto data = jsValueToSharedArray(jsCtx, jsPixels, nullptr);
-      if (data && jsArgc == 9) {
-        if (unpackFLipY) {
-          flipPixels((GLubyte *) data.get(), width * bytesPerPixel(type, format), height);
-        }
-        addToNextBatch([=] {
-          glTexImage2D(target, level, internalformat,
-                       width, height, border,
-                       format, type, data.get());
-        });
-        return nullptr;
-      }
+    std::shared_ptr<void> data(nullptr);
+
+    // Try TypedArray
+    if (jsArgc == 9) {
+      data = jsValueToSharedArray(jsCtx, jsPixels, nullptr);
     }
 
-    // Exponent.Asset object?
-    JSValueRef jsLocalUri = EXJSObjectGetPropertyNamed(jsCtx, jsPixels, "localUri");
-    if (jsLocalUri && JSValueIsString(jsCtx, jsLocalUri)) {
-      // TODO(nikki): Check that this file is in the right scope
-      auto localUri = jsValueToSharedStr(jsCtx, jsLocalUri);
-      if (strncmp(localUri.get(), "file://", 7) != 0) {
-        throw std::runtime_error("EXGL: Asset doesn't have a cached local file for"
-                                 " gl.texImage2D()!");
-      }
-      char localPath[strlen(localUri.get())];
-      decodeURI(localPath, localUri.get() + 7);
+    // Try object with `.localUri` member
+    if (!data) {
+      data = loadImage(jsCtx, jsPixels, &width, &height, nullptr);
+    }
 
-      int fileWidth, fileHeight, fileComp;
-      std::shared_ptr<void> data(stbi_load(localPath, &fileWidth, &fileHeight,
-                                           &fileComp, STBI_rgb_alpha),
-                                 stbi_image_free);
-      if (!data) {
-        throw std::runtime_error("EXGL: Couldn't read image from Asset's local file"
-                                 " for gl.texImage2D()!");
-      }
-
-      // If width and height were given, check that they match, else just use the file's
-      if (jsArgc == 9) {
-        if (width != fileWidth || height != fileHeight) {
-          throw std::runtime_error("EXGL: Asset's width and height don't match"
-                                   " given width and height for gl.texImage2D()!");
-        }
-      } else {
-        width = fileWidth;
-        height = fileHeight;
-      }
-
+    if (data) {
       if (unpackFLipY) {
         flipPixels((GLubyte *) data.get(), width * bytesPerPixel(type, format), height);
       }
       addToNextBatch([=] {
-        glTexImage2D(target, level, internalformat,
-                     width, height, border,
-                     format, type, data.get());
+        glTexImage2D(target, level, internalformat, width, height, border, format, type, data.get());
       });
       return nullptr;
     }
 
-    // None of the above?
-    throw std::runtime_error("EXGL: Invalid pixel data argument for"
-                             " gl.texImage2D()!");
+    // Nothing worked...
+    throw std::runtime_error("EXGL: Invalid pixel data argument for gl.texImage2D()!");
   }
 
   _WRAP_METHOD_UNIMPL(texSubImage2D)
