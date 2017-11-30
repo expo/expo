@@ -128,3 +128,21 @@ Returns a promise that resolves to the number that is displayed in a badge on th
 
 Sets the number displayed in the app icon's badge to the given number. Setting the number to zero will both clear the badge and the list of notifications in the device's notification center on iOS. On Android this method does nothing.
 
+## Standalone App Only
+
+### `Expo.Notifications.getDevicePushTokenAsync(config)`
+
+Note: Most people do not need to use this. It is easier to use `getExpoPushTokenAsync` unless you have a specific reason to need the actual device tokens. We also don't guarantee that the iOS and Android clients will continue expecting the same push notification payload format.
+
+Returns a native APNS or GCM token that can be used with another push notification service.
+
+#### Arguments
+
+-   **config (_object_)** -- An object with the following fields:
+    -   **gcmSenderId (_string_)** -- GCM sender ID.
+
+#### Returns
+
+A Promise that resolves to an object with the following fields:
+-   **type (_string_)** -- Either "apns" or "gcm".
+-   **data (_string_)** -- The push token as a string.
