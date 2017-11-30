@@ -1,10 +1,11 @@
 package host.exp.exponent;
 
+import android.Manifest;
 import android.support.test.espresso.Espresso;
+import android.support.test.rule.GrantPermissionRule;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,6 +39,9 @@ public class DevModeTests extends BaseTestClass {
 
   @Rule
   public RuleChain chain = RuleChain.outerRule(new TestReporterRule()).around(new RetryTestRule(3));
+
+  @Rule
+  public GrantPermissionRule permissionRule = GrantPermissionRule.grant(Manifest.permission.SYSTEM_ALERT_WINDOW);
 
   @Test
   @ExpoDevModeTest
