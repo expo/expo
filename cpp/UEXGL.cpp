@@ -1034,7 +1034,60 @@ private:
     throw std::runtime_error("EXGL: Invalid pixel data argument for gl.texImage2D()!");
   }
 
-  _WRAP_METHOD_UNIMPL(texSubImage2D)
+  _WRAP_METHOD(texSubImage2D, 7) {
+    GLenum target;
+    GLint level, xoffset, yoffset;
+    GLsizei width = 0, height = 0;
+    GLenum format, type;
+    JSObjectRef jsPixels;
+
+    if (jsArgc == 9) {
+      // 9-argument version
+      EXJS_UNPACK_ARGV(target, level, xoffset, yoffset, width, height, format, type);
+      jsPixels = (JSObjectRef) jsArgv[8];
+    } else if  (jsArgc == 7) {
+      // 7-argument version
+      EXJS_UNPACK_ARGV(target, level, xoffset, yoffset, format, type);
+      jsPixels = (JSObjectRef) jsArgv[6];
+    } else {
+      throw std::runtime_error("EXGL: Invalid number of arguments to gl.texSubImage2D()!");
+    }
+
+    // Null?
+    if (JSValueIsNull(jsCtx, jsPixels)) {
+      addToNextBatch([=] {
+        void *nulled = calloc(width * height, bytesPerPixel(type, format));
+        glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, nulled);
+        free(nulled);
+      });
+      return nullptr;
+    }
+
+    std::shared_ptr<void> data(nullptr);
+
+    // Try TypedArray
+    if (jsArgc == 9) {
+      data = jsValueToSharedArray(jsCtx, jsPixels, nullptr);
+    }
+
+    // Try object with `.localUri` member
+    if (!data) {
+      data = loadImage(jsCtx, jsPixels, &width, &height, nullptr);
+    }
+
+    if (data) {
+      if (unpackFLipY) {
+        flipPixels((GLubyte *) data.get(), width * bytesPerPixel(type, format), height);
+      }
+      addToNextBatch([=] {
+        glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, data.get());
+      });
+      return nullptr;
+    }
+
+    // Nothing worked...
+    throw std::runtime_error("EXGL: Invalid pixel data argument for gl.texSubImage2D()!");
+  }
 
   _WRAP_METHOD_SIMPLE(texParameterf, glTexParameterf, target, pname, param)
 
