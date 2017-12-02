@@ -514,7 +514,7 @@ exports.generateDynamicMacrosAsync = async function generateDynamicMacrosAsync(
         templateSubstitutions
       );
     } else {
-      args.configuration = process.env.EXPO_ANDROID_GRADLE_TASK_NAMES.includes('Debug') ? 'debug' : 'release';
+      args.configuration = process.env.EXPO_ANDROID_GRADLE_TASK_NAMES && process.env.EXPO_ANDROID_GRADLE_TASK_NAMES.includes('Debug') ? 'debug' : 'release';
     }
 
     await generateBuildConfigAsync(platform, args);
