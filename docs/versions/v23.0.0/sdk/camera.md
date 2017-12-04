@@ -117,7 +117,7 @@ Callback that is invoked when a bar code has been successfully read. The callbac
 
 - **barCodeTypes (_Array<string>_)**
 
-An array of bar code types. Usage: `Camera.Constants.BarCodeType.<codeType>` where `codeType` is one of the listed above. Default: all supported bar code types. For example: `barCodeTypes={[Camera.Constants.BarCodeType.qr]}
+An array of bar code types. Usage: `Camera.Constants.BarCodeType.<codeType>` where `codeType` is one of the listed above. Default: all supported bar code types. For example: `barCodeTypes={[Camera.Constants.BarCodeType.qr]}`
 
 ## Methods
 
