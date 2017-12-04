@@ -25,7 +25,6 @@ public class BaseTestClass {
   protected ElapsedTimeIdlingResource mElapsedTimeIdlingResource;
   protected JSTestRunnerIdlingResource mJSTestRunnerIdlingResource;
 
-  @BeforeClass
   public static void beforeClass() {
     KernelConfig.IS_TEST = true;
     KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE = true;
