@@ -48,6 +48,14 @@ The following is a list of properties that are available for you under the `"exp
 
    Your app version, use whatever versioning scheme that you like.
 
+- `platforms`
+
+   Platforms that your project explicitly supports. If not specified, it defaults to `["ios", "android"]`.
+
+- `githubUrl`
+
+   If you would like to share the source code of your app on Github, enter the URL for the repository here and it will be linked to from your Expo project page.
+
 - `orientation`
 
    Lock your app to a specific orientation with `portrait` or `landscape`. Defaults to no lock.
@@ -186,6 +194,10 @@ The following is a list of properties that are available for you under the `"exp
 
       Merchant ID for use with Apple Pay in your standalone app.
 
+   - `appStoreUrl`
+
+      URL to your app on the Apple App Store, if you have deployed it there. This is used to link to your store page from your Expo project page if your app is public.
+
    - `config`
 
       
@@ -279,6 +291,10 @@ The following is a list of properties that are available for you under the `"exp
    - `icon`
 
       Local path or remote url to an image to use for your app's icon. If specified, this overrides the top-level `icon` key. We recommend that you use a 1024x1024 png file (transparency is recommended for the Google Play Store). This icon will appear on the home screen and within the Expo app.
+
+   - `playStoreUrl`
+
+      URL to your app on the Google Play Store, if you have deployed it there. This is used to link to your store page from your Expo project page if your app is public.
 
    - `permissions`
 
