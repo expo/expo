@@ -90,11 +90,13 @@ public class TestSuiteTests extends BaseTestClass {
     return !ExponentBuildConstants.TEST_APP_URI.equals("");
   }
 
-  private void runTestSuiteTest(String testSuiteUri) {
+  private void runTestSuiteTest(String testSuiteUri, boolean shouldAddDeepLink) {
     ensureContactsAdded();
 
-    String deepLink = TestConfig.get().toString();
-    testSuiteUri = testSuiteUri + "+" + deepLink;
+    if (shouldAddDeepLink) {
+      String deepLink = TestConfig.get().toString();
+      testSuiteUri = testSuiteUri + "+" + deepLink;
+    }
 
     // Launch the app
     Context context = InstrumentationRegistry.getContext();
@@ -141,42 +143,42 @@ public class TestSuiteTests extends BaseTestClass {
     }
 
     KernelConfig.FORCE_UNVERSIONED_PUBLISHED_EXPERIENCES = true;
-    runTestSuiteTest(ExponentBuildConstants.TEST_APP_URI);
+    runTestSuiteTest(ExponentBuildConstants.TEST_APP_URI, true);
   }
 
   @Test
   @ExpoTestSuiteTest
   @ExpoSdkVersionTest("22.0.0")
   public void sdk22TestSuite() {
-    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-22-0-0");
+    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-22-0-0", false);
   }
 
   @Test
   @ExpoTestSuiteTest
   @ExpoSdkVersionTest("21.0.0")
   public void sdk21TestSuite() {
-    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-21-0-0");
+    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-21-0-0", false);
   }
 
   @Test
   @ExpoTestSuiteTest
   @ExpoSdkVersionTest("20.0.0")
   public void sdk20TestSuite() {
-    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-20-0-0");
+    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-20-0-0", false);
   }
 
   @Test
   @ExpoTestSuiteTest
   @ExpoSdkVersionTest("19.0.0")
   public void sdk19TestSuite() {
-    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-19-0-0");
+    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-19-0-0", false);
   }
 
   @Test
   @ExpoTestSuiteTest
   @ExpoSdkVersionTest("18.0.0")
   public void sdk18TestSuite() {
-    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-18-0-0");
+    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-18-0-0", false);
   }
 
   @Test
