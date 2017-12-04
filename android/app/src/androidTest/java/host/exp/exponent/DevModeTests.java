@@ -6,6 +6,7 @@ import android.support.test.rule.GrantPermissionRule;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,6 +25,11 @@ import host.exp.exponent.utils.TestServerUtils;
 @RunWith(ExpoTestRunner.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class DevModeTests extends BaseTestClass {
+
+  @BeforeClass
+  public static void beforeClass() {
+    BaseTestClass.beforeClass();
+  }
 
   @Before
   public void before() {

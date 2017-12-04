@@ -60,6 +60,8 @@ public class TestSuiteTests extends BaseTestClass {
 
   @BeforeClass
   public static void beforeClass() {
+    BaseTestClass.beforeClass();
+
     // Press home
     sUiDevice.pressHome();
     final String launcherPackage = sUiDevice.getLauncherPackageName();
