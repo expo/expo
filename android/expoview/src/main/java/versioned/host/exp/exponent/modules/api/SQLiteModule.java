@@ -8,6 +8,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableNativeArray;
 
 import android.database.Cursor;
@@ -15,9 +16,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.os.Handler;
 import android.os.HandlerThread;
-
-import org.json.JSONArray;
-import org.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,7 +64,7 @@ public class SQLiteModule extends ReactContextBaseJavaModule {
       for (int i = 0; i < numQueries; i++) {
         ReadableArray sqlQuery = queries.getArray(i);
         String sql = sqlQuery.getString(0);
-        String[] bindArgs = jsonArrayToStringArray(sqlQuery.getString(1));
+        String[] bindArgs = convertParamsToStringArray(sqlQuery.getArray(1));
         try {
           if (isSelect(sql)) {
             results[i] = doSelectInBackgroundAndPossiblyThrow(sql, bindArgs, db);
@@ -98,7 +96,13 @@ public class SQLiteModule extends ReactContextBaseJavaModule {
     try {
       statement = db.compileStatement(sql);
       if (bindArgs != null) {
-        statement.bindAllArgsAsStrings(bindArgs);
+        for (int i = bindArgs.length; i != 0; i--) {
+          if (bindArgs[i - 1] == null) {
+            statement.bindNull(i);
+          } else {
+            statement.bindString(i, bindArgs[i - 1]);
+          }
+        }
       }
       if (isInsert(sql)) {
         long insertId = statement.executeInsert();
@@ -274,14 +278,29 @@ public class SQLiteModule extends ReactContextBaseJavaModule {
     return true;
   }
 
-  private static String[] jsonArrayToStringArray(String jsonArray) throws JSONException {
-    JSONArray array = new JSONArray(jsonArray);
-    int len = array.length();
+  private static String[] convertParamsToStringArray(ReadableArray paramArray) {
+    int len = paramArray.size();
     String[] res = new String[len];
     for (int i = 0; i < len; i++) {
-      res[i] = array.getString(i);
+      ReadableType type = paramArray.getType(i);
+      if (type == ReadableType.String) {
+        String unescaped = unescapeBlob(paramArray.getString(i));
+        res[i] = unescaped;
+      } else if (type == ReadableType.Boolean) {
+        res[i] = paramArray.getBoolean(i) ? "0" : "1";
+      } else if (type == ReadableType.Null) {
+        res[i] = null;
+      } else if (type == ReadableType.Number) {
+        res[i] = Double.toString(paramArray.getDouble(i));
+      }
     }
     return res;
+  }
+
+  private static String unescapeBlob(String str) {
+    return str.replaceAll("\u0001\u0001", "\u0000")
+        .replaceAll("\u0001\u0002", "\u0001")
+        .replaceAll("\u0002\u0002", "\u0002");
   }
 
   private static class SQLitePluginResult {
