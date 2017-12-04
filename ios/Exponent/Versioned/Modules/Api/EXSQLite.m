@@ -31,19 +31,28 @@ RCT_EXPORT_MODULE(ExponentSQLite)
   cachedDatabases = [NSMutableDictionary dictionary];
 }
 
+- (NSString *)pathForDatabaseName:(NSString *)name
+{
+  NSString *directory = [self.bridge.scopedModules.fileSystem.documentDirectory stringByAppendingPathComponent:@"SQLite"];
+  [EXFileSystem ensureDirExistsWithPath:directory];
+  return [directory stringByAppendingPathComponent:name];
+}
+
 - (NSValue *)openDatabase:(NSString *)dbName
 {
-  NSValue *cachedDB = [cachedDatabases objectForKey:dbName];
+  NSValue *cachedDB = nil;
+  NSString *path = [self pathForDatabaseName:dbName];
+  if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
+    cachedDB = [cachedDatabases objectForKey:dbName];
+  }
   if (cachedDB == nil) {
-    NSString *directory = [self.bridge.scopedModules.fileSystem.documentDirectory stringByAppendingPathComponent:@"SQLite"];
-    [EXFileSystem ensureDirExistsWithPath:directory];
-    NSString *path = [directory stringByAppendingPathComponent:dbName];
+    [cachedDatabases removeObjectForKey:dbName];
     sqlite3 *db;
     if (sqlite3_open([path UTF8String], &db) != SQLITE_OK) {
       return nil;
     };
     cachedDB = [NSValue valueWithPointer:db];
-    [cachedDatabases setObject:cachedDB forKey: dbName];
+    [cachedDatabases setObject:cachedDB forKey:dbName];
   }
   return cachedDB;
 }

@@ -164,16 +164,21 @@ public class SQLiteModule extends ReactContextBaseJavaModule {
     return null;
   }
 
+  private String pathForDatabaseName(String name) throws IOException {
+    File directory = new File(mScopedContext.getFilesDir() + File.separator + "SQLite");
+    ExpFileUtils.ensureDirExists(directory);
+    return directory + File.separator + name;
+  }
+
   private SQLiteDatabase getDatabase(String name) throws IOException {
-    SQLiteDatabase database = DATABASES.get(name);
+    SQLiteDatabase database = null;
+    String path = pathForDatabaseName(name);
+    if ((new File(path)).exists()) {
+      database = DATABASES.get(name);
+    }
     if (database == null) {
-      if (":memory:".equals(name)) {
-        database = SQLiteDatabase.openOrCreateDatabase(name, null);
-      } else {
-        File directory = new File(mScopedContext.getFilesDir() + File.separator + "SQLite");
-        ExpFileUtils.ensureDirExists(directory);
-        database = SQLiteDatabase.openOrCreateDatabase(directory + File.separator + name, null);
-      }
+      DATABASES.remove(name);
+      database = SQLiteDatabase.openOrCreateDatabase(path, null);
       DATABASES.put(name, database);
     }
     return database;
