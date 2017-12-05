@@ -188,7 +188,10 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     [_jsResource removeCache];
   }
   [_jsResource loadResourceWithBehavior:cacheBehavior progressBlock:^(EXLoadingProgress * _Nonnull progress) {
-    [weakSelf.delegate reactAppManager:weakSelf loadedJavaScriptWithProgress:progress];
+    __strong typeof(self) strongSelf = weakSelf;
+    if (strongSelf) {
+      [strongSelf.delegate reactAppManager:strongSelf loadedJavaScriptWithProgress:progress];
+    }
   } successBlock:^(NSData * _Nonnull sourceData) {
     if ([self _compareVersionTo:22] == NSOrderedAscending) {
       SDK21RCTSourceLoadBlock legacyLoadCallback = (SDK21RCTSourceLoadBlock)loadCallback;
