@@ -234,7 +234,7 @@ class SimpleExoPlayerData extends PlayerData
 
   @Override
   public void onLoadingChanged(final boolean isLoading) {
-    if (isLoading && mLoadCompletionListener != null) {
+    if (!isLoading && mLoadCompletionListener != null) {
       final LoadCompletionListener listener = mLoadCompletionListener;
       mLoadCompletionListener = null;
       listener.onLoadSuccess(getStatus());

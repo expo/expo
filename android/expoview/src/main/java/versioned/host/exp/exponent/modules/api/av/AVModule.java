@@ -329,7 +329,7 @@ public class AVModule extends ReactContextBaseJavaModule
       @Override
       public void onLoadError(final String error) {
         mSoundMap.remove(key);
-        loadError.invoke();
+        loadError.invoke(error);
       }
     });
 
