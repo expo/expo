@@ -94,8 +94,21 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
   } else { // RNImagePickerTargetLibrarySingleImage
     self.picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
   }
+  
+  NSMutableArray *mediaTypes = [[NSMutableArray alloc] init];
+  NSString *requestedMediaTypes = self.options[@"mediaTypes"];
+  if (requestedMediaTypes != nil) {
+    if ([requestedMediaTypes isEqualToString:@"Images"] || [requestedMediaTypes isEqualToString:@"All"]) {
+      [mediaTypes addObject:(NSString *)kUTTypeImage];
+    }
+    if ([requestedMediaTypes isEqualToString:@"Videos"] || [requestedMediaTypes isEqualToString:@"All"]) {
+      [mediaTypes addObject:(NSString*) kUTTypeMovie];
+    }
+  } else {
+    [mediaTypes addObject:(NSString *)kUTTypeImage];
+  }
 
-  self.picker.mediaTypes = @[(NSString *)kUTTypeImage, (NSString*) kUTTypeMovie];
+  self.picker.mediaTypes = mediaTypes;
 
   if ([[self.options objectForKey:@"allowsEditing"] boolValue]) {
     self.picker.allowsEditing = true;

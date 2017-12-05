@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -56,6 +57,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
 
   final String OPTION_QUALITY = "quality";
   final String OPTION_ALLOWS_EDITING = "allowsEditing";
+  final String OPTION_MEDIA_TYPES = "mediaTypes";
   final String OPTION_ASPECT = "aspect";
   final String OPTION_BASE64 = "base64";
   final String OPTION_EXIF = "exif";
@@ -64,6 +66,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
   private Boolean allowsEditing = false;
   private ReadableArray forceAspect = null;
   private Boolean base64 = false;
+  private String mediaTypes = null;
   private Boolean exif = false;
 
   private ScopedContext mScopedContext;
@@ -85,6 +88,9 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
     }
     if (options.hasKey(OPTION_ALLOWS_EDITING)) {
       allowsEditing = options.getBoolean(OPTION_ALLOWS_EDITING);
+    }
+    if (options.hasKey(OPTION_MEDIA_TYPES)) {
+      mediaTypes = options.getString(OPTION_MEDIA_TYPES);
     }
     if (options.hasKey(OPTION_ASPECT)) {
       forceAspect = options.getArray(OPTION_ASPECT);
@@ -184,9 +190,20 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
 
   private void launchImageLibraryWithPermissionsGranted(Promise promise) {
     Intent libraryIntent = new Intent();
-    libraryIntent.setType("*/*");
-    String[] mimetypes = {"image/*", "video/*"};
-    libraryIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
+    if (mediaTypes != null) {
+      if (mediaTypes.equals("Images")) {
+        libraryIntent.setType("image/*");
+      } else if (mediaTypes.equals("Videos")) {
+        libraryIntent.setType("video/*");
+      } else if (mediaTypes.equals("All")) {
+        libraryIntent.setType("*/*");
+        String[] mimetypes = {"image/*", "video/*"};
+        libraryIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
+      }
+    } else {
+      libraryIntent.setType("image/*");
+    }
+
     libraryIntent.setAction(Intent.ACTION_GET_CONTENT);
     mPromise = promise;
     Exponent.getInstance().getCurrentActivity().startActivityForResult(libraryIntent, REQUEST_LAUNCH_IMAGE_LIBRARY);
