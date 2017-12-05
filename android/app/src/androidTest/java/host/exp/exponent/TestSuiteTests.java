@@ -146,12 +146,12 @@ public class TestSuiteTests extends BaseTestClass {
     runTestSuiteTest(ExponentBuildConstants.TEST_APP_URI, true);
   }
 
-  @Test
+  /*@Test
   @ExpoTestSuiteTest
   @ExpoSdkVersionTest("22.0.0")
   public void sdk22TestSuite() {
     runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-22-0-0", false);
-  }
+  }*/
 
   @Test
   @ExpoTestSuiteTest
