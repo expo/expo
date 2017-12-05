@@ -264,14 +264,14 @@ ABI22_0_0RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 
 #pragma mark - ABI22_0_0EXReactABI22_0_0AppManagerDelegate
 
-- (void)ReactABI22_0_0AppManagerDidInitApp:(id)appManager
+- (void)reactAppManagerDidInitApp:(id)appManager
 {
   UIView *ReactABI22_0_0RootView = [appManager ReactABI22_0_0RootView];
   ReactABI22_0_0RootView.frame = self.bounds;
   [self addSubview:ReactABI22_0_0RootView];
 }
 
-- (void)ReactABI22_0_0AppManagerDidDestroyApp:(id)appManager
+- (void)reactAppManagerDidDestroyApp:(id)appManager
 {
   if (_tmrReload) {
     [_tmrReload invalidate];
@@ -279,14 +279,14 @@ ABI22_0_0RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
   }
 }
 
-- (void)ReactABI22_0_0AppManagerStartedLoadingJavaScript:(id)appManager
+- (void)reactAppManagerStartedLoadingJavaScript:(id)appManager
 {
   if (_onLoadingStart) {
     _onLoadingStart(nil);
   }
 }
 
-- (void)ReactABI22_0_0AppManager:(id)appManager loadedJavaScriptWithProgress:(ABI22_0_0RCTLoadingProgress *)progress;
+- (void)reactAppManager:(id)appManager loadedJavaScriptWithProgress:(ABI22_0_0RCTLoadingProgress *)progress;
 {
   if (_onLoadingProgress) {
     _onLoadingProgress(@{
@@ -297,7 +297,7 @@ ABI22_0_0RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
   }
 }
 
-- (void)ReactABI22_0_0AppManagerFinishedLoadingJavaScript:(id)appManager
+- (void)reactAppManagerFinishedLoadingJavaScript:(id)appManager
 {
   if (_viewTestTimer) {
     [_viewTestTimer invalidate];
@@ -309,17 +309,17 @@ ABI22_0_0RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
                                                    repeats:YES];
 }
 
-- (void)ReactABI22_0_0AppManager:(id)appManager failedToLoadJavaScriptWithError:(NSError *)error
+- (void)reactAppManager:(id)appManager failedToLoadJavaScriptWithError:(NSError *)error
 {
   [self _sendLoadingError:error];
 }
 
-- (void)ReactABI22_0_0AppManager:(id)appManager failedToDownloadBundleWithError:(NSError *)error
+- (void)reactAppManager:(id)appManager failedToDownloadBundleWithError:(NSError *)error
 {
   
 }
 
-- (void)ReactABI22_0_0AppManagerDidForeground:(id)appManager
+- (void)reactAppManagerDidForeground:(id)appManager
 {
   if (_debuggerHostname) {
     [[NSUserDefaults standardUserDefaults] setObject:_debuggerHostname forKey:@"websocket-executor-hostname"];
