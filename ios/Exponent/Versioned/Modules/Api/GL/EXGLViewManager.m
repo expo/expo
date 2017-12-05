@@ -75,6 +75,7 @@ RCT_REMAP_METHOD(stopARSessionAsync,
 }
 
 RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(getARMatrices,
+                                      nullable NSDictionary *,
                                       getARMatricesWithSessionId:(nonnull NSNumber *)sessionId
                                       viewportWidth:(nonnull NSNumber *)vpWidth
                                       viewportHeight:(nonnull NSNumber *)vpHeight
