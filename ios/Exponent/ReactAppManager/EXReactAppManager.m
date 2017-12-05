@@ -17,7 +17,7 @@
 #import <React/RCTRootView.h>
 
 NSString * const kEXDevToolShowDevMenuKey = @"devmenu";
-NSTimeInterval const kEXJavaScriptResourceLongerTimeout = 120;
+NSTimeInterval const kEXJavaScriptResourceLongerTimeout = 60 * 5;
 
 typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t sourceLength);
 
