@@ -45,6 +45,9 @@ static NSRegularExpression* percentageRegExp;
 
 + (BOOL)isPercentage:(NSString *) string
 {
+    if (![string isKindOfClass:[NSString class]]) {
+      return NO;
+    }
     return [percentageRegExp firstMatchInString:string options:0 range:NSMakeRange(0, [string length])] != nil;
 }
 
