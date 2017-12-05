@@ -36,10 +36,7 @@ uploadArchives {
 buildscript {
   repositories {
     maven { url 'https://maven.fabric.io/public' }
-      maven { url "https://jitpack.io" }
-    flatDir {
-      dirs 'libs'
-    }
+    maven { url "https://jitpack.io" }
   }
 }
 
@@ -49,12 +46,8 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 repositories {
   maven { url 'https://maven.fabric.io/public' }
-    maven { url "https://jitpack.io" }
-  flatDir {
-    dirs 'libs'
-  }
+  maven { url "https://jitpack.io" }
 }
-
 
 // Custom task for NDK module
 
@@ -190,6 +183,16 @@ dependencies {
   /* UNCOMMENT WHEN DISTRIBUTING
   compile 'com.facebook.react:react-native:23.0.0'
   END UNCOMMENT WHEN DISTRIBUTING */
+
+  // Versioned react native
+  // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+  compile(name: 'ReactAndroid-release-abi23_0_0', ext: 'aar')
+  compile(name: 'ReactAndroid-release-abi22_0_0', ext: 'aar')
+  compile(name: 'ReactAndroid-release-abi21_0_0', ext: 'aar')
+  compile(name: 'ReactAndroid-release-abi20_0_0', ext: 'aar')
+  compile(name: 'ReactAndroid-release-abi19_0_0', ext: 'aar')
+  compile(name: 'ReactAndroid-release-abi18_0_0', ext: 'aar')
+  compile(name: 'ReactAndroid-release-abi17_0_0', ext: 'aar')
 
   // React native dependencies
   // We use a different version of appcompat
