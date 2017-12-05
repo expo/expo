@@ -174,6 +174,9 @@ NSNotificationName kEXKernelRefreshForegroundTaskNotification = @"EXKernelRefres
 + (NSString *)linkingUriForExperienceUri:(NSURL *)uri
 {
   uri = [self uriTransformedForLinking:uri isUniversalLink:NO];
+  if (!uri) {
+    return nil;
+  }
   NSURLComponents *components = [NSURLComponents componentsWithURL:uri resolvingAgainstBaseURL:YES];
 
   // if the provided uri is the shell app manifest uri,
