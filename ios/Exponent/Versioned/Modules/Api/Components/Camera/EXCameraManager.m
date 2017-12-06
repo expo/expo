@@ -444,7 +444,11 @@ RCT_REMAP_METHOD(takePicture,
       
       UIImage *takenImage = [UIImage imageWithData:imageData];
 
-      CGRect cropRect = [_previewLayer metadataOutputRectOfInterestForRect:_camera.frame];
+      CGRect frame = [_previewLayer metadataOutputRectOfInterestForRect:_camera.frame];
+      CGImageRef takenCGImage = takenImage.CGImage;
+      size_t width = CGImageGetWidth(takenCGImage);
+      size_t height = CGImageGetHeight(takenCGImage);
+      CGRect cropRect = CGRectMake(frame.origin.x * width, frame.origin.y * height, frame.size.width * width, frame.size.height * height);
       takenImage = [EXImageUtils cropImage:takenImage toRect:cropRect];
       
       NSData *takenImageData = UIImageJPEGRepresentation(takenImage, quality);

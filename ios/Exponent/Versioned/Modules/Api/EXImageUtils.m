@@ -33,10 +33,7 @@
 + (UIImage *)cropImage:(UIImage *)image toRect:(CGRect)rect
 {
   CGImageRef takenCGImage = image.CGImage;
-  size_t width = CGImageGetWidth(takenCGImage);
-  size_t height = CGImageGetHeight(takenCGImage);
-  CGRect cropRect = CGRectMake(rect.origin.x * width, rect.origin.y * height, rect.size.width * width, rect.size.height * height);
-  CGImageRef cropCGImage = CGImageCreateWithImageInRect(takenCGImage, cropRect);
+  CGImageRef cropCGImage = CGImageCreateWithImageInRect(takenCGImage, rect);
   image = [UIImage imageWithCGImage:cropCGImage scale:image.scale orientation:image.imageOrientation];
   CGImageRelease(cropCGImage);
   return image;

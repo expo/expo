@@ -20,6 +20,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import host.exp.exponent.utils.ExpFileUtils;
+import versioned.host.exp.exponent.modules.api.components.camera.CameraModule;
 import versioned.host.exp.exponent.modules.api.components.camera.ExpoCameraViewHelper;
 
 public class ResolveTakenPictureAsyncTask extends AsyncTask<Void, Void, WritableMap> {
@@ -125,7 +126,7 @@ public class ResolveTakenPictureAsyncTask extends AsyncTask<Void, Void, Writable
     FileOutputStream outputStream = null;
 
     try {
-      outputPath = ExpoCameraViewHelper.getCacheFilename() + ".jpg";
+      outputPath = ExpFileUtils.generateOutputPath(CameraModule.getScopedContextSingleton().getCacheDir(), "Camera", ".jpg");
       outputStream = new FileOutputStream(outputPath);
       inputStream.writeTo(outputStream);
     } catch (IOException e) {

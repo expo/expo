@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.UUID;
 
 import host.exp.expoview.Exponent;
 
@@ -31,6 +32,13 @@ public class ExpFileUtils {
       throw new IOException("Couldn't create directory '" + dir + "'");
     }
     return dir;
+  }
+
+  public static String generateOutputPath(File internalDirectory, String dirName, String extension) throws IOException {
+    File directory = new File(internalDirectory + File.separator + dirName);
+    ExpFileUtils.ensureDirExists(directory);
+    String filename = UUID.randomUUID().toString();
+    return directory + File.separator + filename + extension;
   }
 
   public static String md5(File file) throws IOException {

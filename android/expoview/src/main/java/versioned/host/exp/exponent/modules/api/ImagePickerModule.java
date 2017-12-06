@@ -300,7 +300,13 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
                     .setInitialCropWindowPaddingRatio(0);
               }
               cropImage
-                  .setOutputUri(ExpFileUtils.uriFromFile(new File(generateOutputPath(".jpg"))))
+                  .setOutputUri(ExpFileUtils.uriFromFile(
+                      new File(ExpFileUtils
+                          .generateOutputPath(
+                              mScopedContext.getCacheDir(),
+                              "ImagePicker",
+                              ".jpg"
+                          ))))
                   .setOutputCompressQuality(quality)
                   .start(Exponent.getInstance().getCurrentActivity());
             } else {
@@ -388,18 +394,11 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
     promise.resolve(response);
   }
 
-  private String generateOutputPath(String extension) throws IOException {
-    File directory = new File(mScopedContext.getCacheDir() + File.separator + "ImagePicker");
-    ExpFileUtils.ensureDirExists(directory);
-    String filename = UUID.randomUUID().toString();
-    return directory + File.separator + filename + extension;
-  }
-
   private String writeImage(Bitmap image) {
     FileOutputStream out = null;
     String path = null;
     try {
-      path = generateOutputPath(".jpg");
+      path = ExpFileUtils.generateOutputPath(mScopedContext.getCacheDir(), "ImagePicker", ".jpg");
       out = new FileOutputStream(path);
       image.compress(Bitmap.CompressFormat.JPEG, quality, out);
     } catch (Exception e) {
@@ -426,7 +425,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
         byte[] buffer = new byte[in.available()];
         in.read(buffer);
 
-        path = generateOutputPath(".mp4");
+        path = ExpFileUtils.generateOutputPath(mScopedContext.getCacheDir(), "ImagePicker", ".mp4");
         out = new FileOutputStream(path);
         out.write(buffer);
       }

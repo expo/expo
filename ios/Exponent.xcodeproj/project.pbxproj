@@ -32,6 +32,7 @@
 		31DE60051FBEDAB800472014 /* EXFaceDetectorManagerStub.m in Sources */ = {isa = PBXBuildFile; fileRef = 31DE60041FBEDAB800472014 /* EXFaceDetectorManagerStub.m */; };
 		31DE93EA1FBF17D000BD9753 /* EXImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 31DE93E91FBF17D000BD9753 /* EXImageUtils.m */; };
 		3778B7EB1E70831F000A1742 /* EXAudioRecordingPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 3778B7E91E70831F000A1742 /* EXAudioRecordingPermissionRequester.m */; };
+		3C07E6C41FD0018A00A8148F /* EXImageManipulator.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C07E6C31FD0018A00A8148F /* EXImageManipulator.m */; };
 		3C2A25821F2752E9000566ED /* EXCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C2A257F1F2752E9000566ED /* EXCamera.m */; };
 		3C2A25831F2752E9000566ED /* EXCameraManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C2A25811F2752E9000566ED /* EXCameraManager.m */; };
 		3CA241951F029BB700C3332E /* EXSpeech.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CA241941F029BB700C3332E /* EXSpeech.m */; };
@@ -334,6 +335,8 @@
 		34B965207078EF139F54C545 /* Pods-ExponentIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
 		3778B7E91E70831F000A1742 /* EXAudioRecordingPermissionRequester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAudioRecordingPermissionRequester.m; sourceTree = "<group>"; };
 		3778B7EA1E70831F000A1742 /* EXAudioRecordingPermissionRequester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAudioRecordingPermissionRequester.h; sourceTree = "<group>"; };
+		3C07E6C31FD0018A00A8148F /* EXImageManipulator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXImageManipulator.m; sourceTree = "<group>"; };
+		3C07E6C61FD001F800A8148F /* EXImageManipulator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXImageManipulator.h; sourceTree = "<group>"; };
 		3C2A257E1F2752E9000566ED /* EXCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXCamera.h; sourceTree = "<group>"; };
 		3C2A257F1F2752E9000566ED /* EXCamera.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXCamera.m; sourceTree = "<group>"; };
 		3C2A25801F2752E9000566ED /* EXCameraManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXCameraManager.h; sourceTree = "<group>"; };
@@ -1257,6 +1260,8 @@
 				A1F37F601CEFD6B2001E9EFC /* EXFontLoader.m */,
 				B51C2AFB1DC7BB2000120834 /* EXGoogle.h */,
 				B51C2AFC1DC7BB2000120834 /* EXGoogle.m */,
+				3C07E6C61FD001F800A8148F /* EXImageManipulator.h */,
+				3C07E6C31FD0018A00A8148F /* EXImageManipulator.m */,
 				A15DC4BB1CFF99FE009F940D /* EXImagePicker.h */,
 				A15DC4BA1CFF99FE009F940D /* EXImagePicker.m */,
 				31DE93E81FBF17D000BD9753 /* EXImageUtils.h */,
@@ -2257,6 +2262,7 @@
 				B526B5081E6A543500606CAB /* ExpoKit.m in Sources */,
 				7847A3741EC0F1550088BF69 /* RCTConvert+RNSVG.m in Sources */,
 				B56FACAD1D4C0266009FC106 /* EXFingerprint.m in Sources */,
+				3C07E6C41FD0018A00A8148F /* EXImageManipulator.m in Sources */,
 				7847A3981EC0F1550088BF69 /* RNSVGSvgView.m in Sources */,
 				A1F37F731CEFD6B2001E9EFC /* EXFontLoader.m in Sources */,
 				B5F12C991DAEDF960080ECA6 /* EXKernelReactAppManager.m in Sources */,

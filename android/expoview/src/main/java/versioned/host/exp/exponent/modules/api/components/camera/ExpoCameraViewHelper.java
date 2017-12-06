@@ -155,13 +155,6 @@ public class ExpoCameraViewHelper {
     return exifMap;
   }
 
-  public static String getCacheFilename() throws IOException {
-    File directory = new File(CameraModule.getScopedContextSingleton().getCacheDir() + File.separator + "Camera");
-    ExpFileUtils.ensureDirExists(directory);
-    String filename = UUID.randomUUID().toString();
-    return directory + File.separator + filename;
-  }
-
   public static Bitmap generateSimulatorPhoto(int width, int height) {
     Bitmap fakePhoto = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
     Canvas canvas = new Canvas(fakePhoto);

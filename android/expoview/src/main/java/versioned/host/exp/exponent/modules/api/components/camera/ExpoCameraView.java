@@ -158,7 +158,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
 
   public void record(ReadableMap options, final Promise promise) {
     try {
-      String path = ExpoCameraViewHelper.getCacheFilename() + ".mp4";
+      String path = ExpFileUtils.generateOutputPath(CameraModule.getScopedContextSingleton().getCacheDir(), "Camera", ".mp4");
       int maxDuration = options.hasKey("maxDuration") ? options.getInt("maxDuration") : -1;
       int maxFileSize = options.hasKey("maxFileSize") ? options.getInt("maxFileSize") : -1;
 
