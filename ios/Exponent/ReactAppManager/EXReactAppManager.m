@@ -141,27 +141,14 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (NSDictionary<NSString *, NSString *> *)devMenuItems
 {
-  if ([self.versionManager respondsToSelector:@selector(devMenuItemsForBridge:)]) {
-    return [self.versionManager devMenuItemsForBridge:self.reactBridge];
-  }
-  // pre-SDK 15 default: just make old RN dev menu available
-  return @{
-    kEXDevToolShowDevMenuKey: @{ @"label": @"Show Dev Menu", @"isEnabled": @YES },
-  };
+  return [self.versionManager devMenuItemsForBridge:self.reactBridge];
 }
 
 - (void)selectDevMenuItemWithKey:(NSString *)key
 {
-  if ([self.versionManager respondsToSelector:@selector(selectDevMenuItemWithKey:onBridge:)]) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [self.versionManager selectDevMenuItemWithKey:key onBridge:self.reactBridge];
-    });
-  } else {
-    // pre-SDK 15 default: only option is RN dev menu
-    if ([key isEqualToString:kEXDevToolShowDevMenuKey]) {
-      [self showDevMenu];
-    }
-  }
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self.versionManager selectDevMenuItemWithKey:key onBridge:self.reactBridge];
+  });
 }
 
 
