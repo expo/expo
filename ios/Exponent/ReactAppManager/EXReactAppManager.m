@@ -103,6 +103,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     _reactBridge = nil;
     if (_delegate) {
       [_delegate reactAppManagerDidDestroyApp:self];
+      _delegate = nil;
     }
   }
   [self _invalidateVersionState];
@@ -176,7 +177,8 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   }
   [_jsResource loadResourceWithBehavior:cacheBehavior progressBlock:^(EXLoadingProgress * _Nonnull progress) {
     __strong typeof(self) strongSelf = weakSelf;
-    if (strongSelf) {
+    __strong id<EXReactAppManagerDelegate> delegate = weakSelf.delegate;
+    if (strongSelf && delegate) {
       [strongSelf.delegate reactAppManager:strongSelf loadedJavaScriptWithProgress:progress];
     }
   } successBlock:^(NSData * _Nonnull sourceData) {
