@@ -132,7 +132,6 @@
 		A131D2101FAA4AC700330632 /* EXFileSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = A131D20B1FAA4AC700330632 /* EXFileSystem.m */; };
 		A131D2111FAA4AC700330632 /* EXFileSystemAssetLibraryHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = A131D20D1FAA4AC700330632 /* EXFileSystemAssetLibraryHandler.m */; };
 		A131D2121FAA4AC700330632 /* EXFileSystemLocalFileHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = A131D20F1FAA4AC700330632 /* EXFileSystemLocalFileHandler.m */; };
-		A149D6901E8F31DC00B71E3D /* EXLegacyAsyncLocalStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = A149D68F1E8F31DC00B71E3D /* EXLegacyAsyncLocalStorage.m */; };
 		A15DC4BC1CFF99FE009F940D /* EXImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = A15DC4BA1CFF99FE009F940D /* EXImagePicker.m */; };
 		A15DC4CC1D011248009F940D /* EXFacebook.m in Sources */ = {isa = PBXBuildFile; fileRef = A15DC4CA1D011248009F940D /* EXFacebook.m */; };
 		A17E583A1FBA6114007F4B37 /* EXCameraRollRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = A17E58381FBA6113007F4B37 /* EXCameraRollRequester.m */; };
@@ -543,8 +542,6 @@
 		A131D20D1FAA4AC700330632 /* EXFileSystemAssetLibraryHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFileSystemAssetLibraryHandler.m; sourceTree = "<group>"; };
 		A131D20E1FAA4AC700330632 /* EXFileSystemLocalFileHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFileSystemLocalFileHandler.h; sourceTree = "<group>"; };
 		A131D20F1FAA4AC700330632 /* EXFileSystemLocalFileHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFileSystemLocalFileHandler.m; sourceTree = "<group>"; };
-		A149D68E1E8F31DC00B71E3D /* EXLegacyAsyncLocalStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXLegacyAsyncLocalStorage.h; sourceTree = "<group>"; };
-		A149D68F1E8F31DC00B71E3D /* EXLegacyAsyncLocalStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXLegacyAsyncLocalStorage.m; sourceTree = "<group>"; };
 		A15DC4BA1CFF99FE009F940D /* EXImagePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXImagePicker.m; sourceTree = "<group>"; };
 		A15DC4BB1CFF99FE009F940D /* EXImagePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXImagePicker.h; sourceTree = "<group>"; };
 		A15DC4CA1D011248009F940D /* EXFacebook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFacebook.m; sourceTree = "<group>"; };
@@ -1266,8 +1263,6 @@
 				31DE93E91FBF17D000BD9753 /* EXImageUtils.m */,
 				1981B9F51E3C28BA00057CA9 /* EXKeepAwake.h */,
 				1981B9F61E3C28BA00057CA9 /* EXKeepAwake.m */,
-				A149D68E1E8F31DC00B71E3D /* EXLegacyAsyncLocalStorage.h */,
-				A149D68F1E8F31DC00B71E3D /* EXLegacyAsyncLocalStorage.m */,
 				A12CC94A1D11E80E0023A57B /* EXLocation.h */,
 				A12CC94B1D11E80E0023A57B /* EXLocation.m */,
 				B5218E781D232B8800C54B61 /* EXNotifications.h */,
@@ -2347,7 +2342,6 @@
 				7847A37E1EC0F1550088BF69 /* RNSVGEllipseManager.m in Sources */,
 				3123B81D1FC5C39600140B83 /* EXFaceDetectorUtils.m in Sources */,
 				B5844C3F1D482EA40015C683 /* EXLocationRequester.m in Sources */,
-				A149D6901E8F31DC00B71E3D /* EXLegacyAsyncLocalStorage.m in Sources */,
 				7847A2C11EB9AF210088BF69 /* AIRMapCalloutManager.m in Sources */,
 				7847A3921EC0F1550088BF69 /* RNSVGRadialGradientManager.m in Sources */,
 				B5C7A3C41EC3E38300DD9E1D /* EXVideoManager.m in Sources */,
@@ -2392,7 +2386,6 @@
 				B5C7A3C31EC3E38300DD9E1D /* EXAVPlayerData.m in Sources */,
 				B57181001F0FF41600315A66 /* EXScreenOrientationManager.m in Sources */,
 				A1DCE8481DC3FC63009665FD /* EXGLViewManager.m in Sources */,
-				BB22D9571F3CDE6C00A35CC6 /* RNGestureHandlerEvents.m in Sources */,
 				19523B2A1FA0FC8700EA62CC /* EXBundleImageLoader.m in Sources */,
 				7847A3951EC0F1550088BF69 /* RNSVGRenderable.m in Sources */,
 				7847A37F1EC0F1550088BF69 /* RNSVGGlyphContext.m in Sources */,
