@@ -304,4 +304,34 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   return @{};
 }
 
+- (NSDictionary *)arLightEstimation
+{
+  if (_arSessionManager) {
+    return [_arSessionManager arLightEstimation];
+  }
+  return @{};
+}
+
+- (NSDictionary *)rawFeaturePoints
+{
+  if (_arSessionManager) {
+    return [_arSessionManager rawFeaturePoints];
+  }
+  return @{};
+}
+
+- (void)setIsPlaneDetectionEnabled:(BOOL)planeDetectionEnabled
+{
+  if (_arSessionManager) {
+    [_arSessionManager setIsPlaneDetectionEnabled:planeDetectionEnabled];
+  }
+}
+
+- (void)setIsLightEstimationEnabled:(BOOL)lightEstimationEnabled
+{
+  if (_arSessionManager) {
+    [_arSessionManager setIsLightEstimationEnabled:lightEstimationEnabled];
+  }
+}
+
 @end

@@ -91,4 +91,50 @@ RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(getARMatrices,
                                         zFar:[zFar floatValue]];
 }
 
+
+RCT_REMAP_METHOD(setIsPlaneDetectionEnabled,
+                 setIsPlaneDetectionEnabledWithSessionId:(nonnull NSNumber *)sessionId
+                 planeDetectionEnabled:(BOOL)planeDetectionEnabled)
+{
+  EXGLView *exglView = _arSessions[sessionId];
+  if (!exglView) {
+    return;
+  }
+  [exglView setIsPlaneDetectionEnabled:planeDetectionEnabled];
+}
+
+RCT_REMAP_METHOD(setIsLightEstimationEnabled,
+                 setIsLightEstimationEnabledWithSessionId:(nonnull NSNumber *)sessionId
+                 lightEstimationEnabled:(BOOL)lightEstimationEnabled)
+{
+  EXGLView *exglView = _arSessions[sessionId];
+  if (!exglView) {
+    return;
+  }
+  [exglView setIsLightEstimationEnabled:lightEstimationEnabled];
+}
+
+RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(getARLightEstimation,
+                                      nullable NSDictionary *,
+                                      getARLightEstimationWithSessionId:(nonnull NSNumber *)sessionId)
+{
+  EXGLView *exglView = _arSessions[sessionId];
+  if (!exglView) {
+    return nil;
+  }
+
+  return [exglView arLightEstimation];
+}
+
+RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(getRawFeaturePoints,
+                                      nullable NSDictionary *,
+                                      getRawFeaturePointsWithSessionId:(nonnull NSNumber *)sessionId)
+{
+  EXGLView *exglView = _arSessions[sessionId];
+  if (!exglView) {
+    return nil;
+  }
+  return [exglView rawFeaturePoints];
+}
+
 @end
