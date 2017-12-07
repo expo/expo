@@ -1,4 +1,4 @@
-package detach.app.template.pkg.name;
+package host.exp.exponent;
 
 import android.os.Bundle;
 
@@ -8,19 +8,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import detach.app.template.pkg.name.generated.ExponentBuildConstants;
-import host.exp.expoview.ExponentActivity;
+import host.exp.exponent.generated.DetachBuildConstants;
+import host.exp.expoview.DetachActivity;
 
-public class MainActivity extends ExponentActivity {
+public class MainActivity extends DetachActivity {
 
   @Override
   public String publishedUrl() {
-    return "TEMPLATE_INITIAL_URL";
+    return Constants.INITIAL_URL;
   }
 
   @Override
   public String developmentUrl() {
-    return ExponentBuildConstants.DEVELOPMENT_URL;
+    return DetachBuildConstants.DEVELOPMENT_URL;
   }
 
   @Override

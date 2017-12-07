@@ -8,6 +8,7 @@ import android.content.Intent;
 import com.amplitude.api.Amplitude;
 import com.google.android.gms.analytics.CampaignTrackingReceiver;
 
+import host.exp.exponent.ExpoApplication;
 import io.branch.referral.InstallListener;
 
 import org.json.JSONException;
@@ -32,8 +33,8 @@ public class InstallReferrerReceiver extends CampaignTrackingReceiver {
   public void onReceive(Context context, Intent intent) {
     super.onReceive(context, intent);
 
-    if (!(context.getApplicationContext().getClass().getSimpleName().equals("ExponentApplication"))) {
-      EXL.e(TAG, "InstallReferrerReceiver.context.getApplicationContext() not an instance of ExponentApplication");
+    if (!(context.getApplicationContext() instanceof ExpoApplication)) {
+      EXL.e(TAG, "InstallReferrerReceiver.context.getApplicationContext() not an instance of ExpoApplication");
       return;
     }
 
