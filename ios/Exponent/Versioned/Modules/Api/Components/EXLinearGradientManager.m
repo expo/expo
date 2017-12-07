@@ -21,8 +21,8 @@ RCT_EXPORT_MODULE(ExponentLinearGradientManager);
 }
 
 RCT_EXPORT_VIEW_PROPERTY(colors, NSArray);
-RCT_EXPORT_VIEW_PROPERTY(start, CGPoint);
-RCT_EXPORT_VIEW_PROPERTY(end, CGPoint);
+RCT_EXPORT_VIEW_PROPERTY(startPoint, CGPoint);
+RCT_EXPORT_VIEW_PROPERTY(endPoint, CGPoint);
 RCT_EXPORT_VIEW_PROPERTY(locations, NSArray);
 
 @end
