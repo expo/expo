@@ -2,22 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>detachedNativeVersions</key>
-	<dict>
-		<key>shell</key>
-		<string>11.0.0</string>
-		<key>kernel</key>
-		<string>11.0.0</string>
-	</dict>
 	<key>sdkVersions</key>
 	<array>
-          <string>17.0.0</string>
-	  <string>18.0.0</string>
-	  <string>19.0.0</string>
-	  <string>20.0.0</string>
-	  <string>21.0.0</string>
-	  <string>22.0.0</string>
-	  <string>23.0.0</string>
+		<string>18.0.0</string>
+		<string>19.0.0</string>
+		<string>20.0.0</string>
+		<string>21.0.0</string>
+		<string>22.0.0</string>
+		<string>23.0.0</string>
 	</array>
 </dict>
 </plist>
