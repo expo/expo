@@ -848,7 +848,9 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
                 currentPreview.right - widthOffset,
                 currentPreview.bottom - heightOffset
             );
-            mPreviewRequestBuilder.set(CaptureRequest.SCALER_CROP_REGION, zoomedPreview);
+            if (zoomedWidth != currentWidth && zoomedHeight != currentHeight) {
+                mPreviewRequestBuilder.set(CaptureRequest.SCALER_CROP_REGION, zoomedPreview);
+            }
         }
     }
 
