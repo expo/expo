@@ -19,6 +19,7 @@ public class Constants {
 
   public static final String VERSION_NAME = null;
   public static String INITIAL_URL = null;
+  public static final boolean IS_DETACHED = false;
   public static final String SHELL_APP_SCHEME = null;
   public static final String API_HOST = "https://exp.host";
   public static String ABI_VERSIONS;
@@ -103,12 +104,7 @@ public class Constants {
     }
   }
 
-  private static boolean sIsDetached = true;
-  public static void setIsDetached(boolean isDetached) {
-    sIsDetached = isDetached;
-  }
-
   public static boolean isDetached() {
-    return sIsDetached;
+    return IS_DETACHED;
   }
 }

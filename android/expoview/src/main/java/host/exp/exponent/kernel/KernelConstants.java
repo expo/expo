@@ -3,7 +3,7 @@
 package host.exp.exponent.kernel;
 
 import host.exp.exponent.notifications.ExponentNotification;
-import host.exp.expoview.ExponentActivity;
+import host.exp.expoview.DetachActivity;
 
 public class KernelConstants {
   public static final String MANIFEST_KEY = "manifest";
@@ -31,7 +31,7 @@ public class KernelConstants {
   public static final String NOTIFICATION_OBJECT_KEY = "notification_object";
   public static final String DEV_FLAG = "dev_flag";
 
-  public static Class MAIN_ACTIVITY_CLASS = ExponentActivity.class;
+  public static Class MAIN_ACTIVITY_CLASS = DetachActivity.class;
 
   public static class ExperienceOptions {
     public final String manifestUri;

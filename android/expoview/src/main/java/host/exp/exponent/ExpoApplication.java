@@ -2,14 +2,18 @@
 
 package host.exp.exponent;
 
+import android.os.Bundle;
 import android.os.Debug;
 import android.support.multidex.MultiDexApplication;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
 import com.crashlytics.android.core.CrashlyticsListener;
+import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.soloader.SoLoader;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -30,20 +34,14 @@ import host.exp.expoview.ExpoViewBuildConfig;
 import io.fabric.sdk.android.Fabric;
 import me.leolin.shortcutbadger.ShortcutBadger;
 
-public class ExponentApplication extends MultiDexApplication {
+public abstract class ExpoApplication extends MultiDexApplication {
 
-  static {
-    ExpoViewBuildConfig.USE_INTERNET_KERNEL = BuildVariantConstants.USE_INTERNET_KERNEL;
-    ExpoViewBuildConfig.DEBUG = BuildConfig.DEBUG;
-  }
+  // Override me!
+  public abstract String gcmSenderId();
+  public abstract boolean isDebug();
+  public abstract boolean shouldUseInternetKernel();
 
-  private static final String TAG = ExponentApplication.class.getSimpleName();
-
-  private static ExponentApplication sApplication;
-
-  public static ExponentApplication getApplication() {
-    return sApplication;
-  }
+  private static final String TAG = ExpoApplication.class.getSimpleName();
 
   @Inject
   ExponentSharedPreferences mExponentSharedPreferences;
@@ -52,15 +50,16 @@ public class ExponentApplication extends MultiDexApplication {
   public void onCreate() {
     super.onCreate();
 
-    KernelConstants.MAIN_ACTIVITY_CLASS = LauncherActivity.class;
+    ExpoViewBuildConfig.DEBUG = isDebug();
+    ExpoViewBuildConfig.USE_INTERNET_KERNEL = shouldUseInternetKernel();
 
-    if (host.exp.expoview.BuildConfig.DEBUG && Constants.WAIT_FOR_DEBUGGER) {
+    if (ExpoViewBuildConfig.DEBUG && Constants.WAIT_FOR_DEBUGGER) {
       Debug.waitForDebugger();
     }
 
-    Constants.setIsDetached(false);
-
-    sApplication = this;
+    if (!Constants.IS_DETACHED) {
+      KernelConstants.MAIN_ACTIVITY_CLASS = LauncherActivity.class;
+    }
 
     KernelProvider.setFactory(new KernelProvider.KernelFactory() {
       @Override
@@ -78,11 +77,11 @@ public class ExponentApplication extends MultiDexApplication {
 
     Exponent.initialize(this, this);
     NativeModuleDepsProvider.getInstance().add(Kernel.class, KernelProvider.getInstance());
-    Exponent.getInstance().setGCMSenderId(getString(R.string.gcm_defaultSenderId));
+    Exponent.getInstance().setGCMSenderId(gcmSenderId());
     
-    NativeModuleDepsProvider.getInstance().inject(ExponentApplication.class, this);
+    NativeModuleDepsProvider.getInstance().inject(ExpoApplication.class, this);
 
-    if (!BuildConfig.DEBUG) {
+    if (!ExpoViewBuildConfig.DEBUG) {
       final CrashlyticsListener listener = new CrashlyticsListener() {
         @Override
         public void crashlyticsDidDetectCrashDuringPreviousExecution(){

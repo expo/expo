@@ -35,10 +35,9 @@ import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.ExpoViewKernel;
 import host.exp.exponent.kernel.KernelProvider;
-import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.utils.ExperienceActivityUtils;
 
-public abstract class ExponentActivity extends ReactNativeActivity implements Exponent.StartReactInstanceDelegate {
+public abstract class DetachActivity extends ReactNativeActivity implements Exponent.StartReactInstanceDelegate {
 
   // Override me!
   public abstract String publishedUrl();
@@ -95,7 +94,7 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
 
     SoLoader.init(this, false);
 
-    NativeModuleDepsProvider.getInstance().inject(ExponentActivity.class, this);
+    NativeModuleDepsProvider.getInstance().inject(DetachActivity.class, this);
 
     String defaultUrl = isDebug() ? developmentUrl() : publishedUrl();
     Constants.INITIAL_URL = defaultUrl;
@@ -166,7 +165,7 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
           return;
         }
 
-        mReactRootView.loadVersion(RNObject.UNVERSIONED).construct(ExponentActivity.this);
+        mReactRootView.loadVersion(RNObject.UNVERSIONED).construct(DetachActivity.this);
         setView((View) mReactRootView.get());
 
         String id;
@@ -197,11 +196,11 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
               });
         }
 
-        ExperienceActivityUtils.setWindowTransparency(mSDKVersion, finalManifest, ExponentActivity.this);
+        ExperienceActivityUtils.setWindowTransparency(mSDKVersion, finalManifest, DetachActivity.this);
 
         showLoadingScreen(finalManifest);
 
-        ExperienceActivityUtils.setTaskDescription(mExponentManifest, finalManifest, ExponentActivity.this);
+        ExperienceActivityUtils.setTaskDescription(mExponentManifest, finalManifest, DetachActivity.this);
       }
     });
   }
@@ -212,7 +211,7 @@ public abstract class ExponentActivity extends ReactNativeActivity implements Ex
       @Override
       public void onSuccess() {
         // TODO: annoying that we need to use RNObject.UNVERSIONED here
-        mReactInstanceManager = startReactInstance(ExponentActivity.this, null, null, RNObject.UNVERSIONED, null, true, reactPackages(), mDevBundleDownloadProgressListener);
+        mReactInstanceManager = startReactInstance(DetachActivity.this, null, null, RNObject.UNVERSIONED, null, true, reactPackages(), mDevBundleDownloadProgressListener);
       }
 
       @Override
