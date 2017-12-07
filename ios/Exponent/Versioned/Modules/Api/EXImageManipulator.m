@@ -22,6 +22,11 @@ RCT_EXPORT_MODULE(ExponentImageManipulator);
   _bridge = bridge;
 }
 
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
+}
+
 RCT_EXPORT_METHOD(manipulate:(NSString *)uri
                   actions:(NSArray *)actions
                   saveOptions:(NSDictionary *)saveOptions
