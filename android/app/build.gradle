@@ -153,6 +153,11 @@ dependencies {
   androidTestCompile 'com.google.code.findbugs:jsr305:3.0.0'
   androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
   androidTestCompile 'com.azimolabs.conditionwatcher:conditionwatcher:0.2'
+
+
+  /* UNCOMMENT WHEN DISTRIBUTING
+  compile('host.exp.exponent:expoview:24.0.0@aar')
+  END UNCOMMENT WHEN DISTRIBUTING */
   compile project(path: ':expoview')
 }
 
