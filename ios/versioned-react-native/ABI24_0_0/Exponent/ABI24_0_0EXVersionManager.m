@@ -127,7 +127,7 @@ void ABI24_0_0EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceC
   ABI24_0_0RCTDevSettings *devSettings = [self _moduleInstanceForBridge:bridge named:@"DevSettings"];
   BOOL isDevModeEnabled = [self _isDevModeEnabledForBridge:bridge];
   NSMutableDictionary *items = [@{
-    @"dev-reload": @{ @"label": @"Reload", @"isEnabled": @YES },
+    @"dev-reload": @{ @"label": @"Reload JS Bundle", @"isEnabled": @YES },
     @"dev-inspector": @{ @"label": @"Toggle Element Inspector", @"isEnabled": @YES },
   } mutableCopy];
   if (devSettings.isRemoteDebuggingAvailable && isDevModeEnabled) {
