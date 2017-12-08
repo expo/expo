@@ -3,7 +3,7 @@ apply plugin: 'maven'
 
 //maven repository info
 group = 'host.exp.exponent'
-version = '23.0.0'
+version = '24.0.0'
 
 //Upload android library to maven with javadoc and android sources
 configurations {
@@ -181,7 +181,7 @@ dependencies {
   // Current react native
   compile project(':ReactAndroid')
   /* UNCOMMENT WHEN DISTRIBUTING
-  compile 'com.facebook.react:react-native:23.0.0'
+  compile 'com.facebook.react:react-native:24.0.0'
   END UNCOMMENT WHEN DISTRIBUTING */
 
   // Versioned react native
