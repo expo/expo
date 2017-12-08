@@ -10,8 +10,8 @@
 #import "EXFaceDetectorUtils.h"
 #import "EXFaceDetectorPointTransformCalculator.h"
 
-NSString *const GMVDataOutputWidthKey = @"Width";
-NSString *const GMVDataOutputHeightKey = @"Height";
+NSString *const EXGMVDataOutputWidthKey = @"Width";
+NSString *const EXGMVDataOutputHeightKey = @"Height";
 
 @implementation EXFaceDetectorUtils
 
@@ -53,8 +53,8 @@ NSString *const GMVDataOutputHeightKey = @"Height";
   BOOL interfaceIsLandscape = interfaceVideoOrientation == AVCaptureVideoOrientationLandscapeLeft || interfaceVideoOrientation == AVCaptureVideoOrientationLandscapeRight;
   CGFloat interfaceWidth = interfaceIsLandscape ? mainScreen.bounds.size.height : mainScreen.bounds.size.width;
   CGFloat interfaceHeight = interfaceIsLandscape ? mainScreen.bounds.size.width : mainScreen.bounds.size.height;
-  CGFloat xScale = interfaceWidth / [(NSNumber *)dataOutput.videoSettings[GMVDataOutputHeightKey] floatValue];
-  CGFloat yScale = interfaceHeight / [(NSNumber *)dataOutput.videoSettings[GMVDataOutputWidthKey] floatValue];
+  CGFloat xScale = interfaceWidth / [(NSNumber *)dataOutput.videoSettings[EXGMVDataOutputHeightKey] floatValue];
+  CGFloat yScale = interfaceHeight / [(NSNumber *)dataOutput.videoSettings[EXGMVDataOutputWidthKey] floatValue];
   CGAffineTransform dataOutputTransform = CGAffineTransformIdentity;
   dataOutputTransform = CGAffineTransformScale(dataOutputTransform, xScale, yScale);
   return dataOutputTransform;
@@ -65,8 +65,8 @@ NSString *const GMVDataOutputHeightKey = @"Height";
   UIDeviceOrientation currentDeviceOrientation = [[UIDevice currentDevice] orientation];
   AVCaptureVideoOrientation deviceVideoOrientation = [EXCameraUtils videoOrientationForDeviceOrientation:currentDeviceOrientation];
   
-  NSNumber *videoWidth = dataOutput.videoSettings[GMVDataOutputWidthKey];
-  NSNumber *videoHeight = dataOutput.videoSettings[GMVDataOutputHeightKey];
+  NSNumber *videoWidth = dataOutput.videoSettings[EXGMVDataOutputWidthKey];
+  NSNumber *videoHeight = dataOutput.videoSettings[EXGMVDataOutputHeightKey];
   
   CGAffineTransform interfaceTransform = [self transformFromDeviceVideoOrientation:deviceVideoOrientation toInterfaceVideoOrientation:interfaceVideoOrientation videoWidth:videoWidth videoHeight:videoHeight];
   
