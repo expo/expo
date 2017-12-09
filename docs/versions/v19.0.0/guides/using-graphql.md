@@ -86,7 +86,7 @@ When you are done setting up your data model, it's time to start querying your d
 
 > Note: You can either use the playground that is available directly in the [GraphQL console](https://console.graph.cool) or copy the endpoint into the address bar of your browser if you want to work with it separately. The **autocompletion feature** of the playground is a fantastic tool that helps you to build exactly the queries you need.
 
-<img src="http://i.imgur.com/dSGk5u4.png" height="450">
+<img src="http://i.imgur.com/dSGk5u4.png" height="450" />
 
 In an Instagram-like app, you could query all _posts_ using a _query_ that looks as follows:
 

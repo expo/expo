@@ -7,7 +7,7 @@ In this tutorial we want to show you how easy it is to create a 2D mobile game w
 
 Demo (scan in Expo app): <a href="https://expo.io/@lele0108/floatyplane-gl">https://expo.io/@lele0108/floatyplane-gl</a>
 
-<img src="http://i.imgur.com/F1Xkzu1.png" width="100px">
+<img src="http://i.imgur.com/F1Xkzu1.png" width="100px" />
 
 
 ### Prerequisites
