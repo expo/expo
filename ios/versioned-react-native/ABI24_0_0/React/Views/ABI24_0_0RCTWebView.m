@@ -19,7 +19,7 @@
 #import "ABI24_0_0RCTView.h"
 #import "UIView+ReactABI24_0_0.h"
 
-NSString *const ABI24_0_0RCTJSNavigationScheme = @"ReactABI24_0_0-js-navigation";
+NSString *const ABI24_0_0RCTJSNavigationScheme = @"react-js-navigation";
 
 static NSString *const kPostMessageHost = @"postMessage";
 
