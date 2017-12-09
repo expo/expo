@@ -1,5 +1,5 @@
 ---
-title: Facebook Ads
+title: FacebookAds
 ---
 
 **Facebook Audience SDK** integration for Expo apps.

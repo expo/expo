@@ -1,5 +1,5 @@
 ---
-title: Intent Launcher (Android)
+title: IntentLauncherAndroid
 ---
 
 Provides a way to launch android intents. e.g. - opening a specific settings screen.
