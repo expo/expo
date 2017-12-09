@@ -1,5 +1,5 @@
 ---
-title: Getting started with Expo + Three.js
+title: Creating A 2D Game
 ---
 
 ### Goal
