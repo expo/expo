@@ -36,6 +36,4 @@ public class MainApplication extends ExpoApplication {
   public boolean shouldUseInternetKernel() {
     return BuildVariantConstants.USE_INTERNET_KERNEL;
   }
-
-  // TODO: set isDetached in ExpoApplication
 }

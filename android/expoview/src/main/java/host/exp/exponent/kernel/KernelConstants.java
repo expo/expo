@@ -3,7 +3,7 @@
 package host.exp.exponent.kernel;
 
 import host.exp.exponent.notifications.ExponentNotification;
-import host.exp.expoview.DetachActivity;
+import host.exp.exponent.experience.DetachActivity;
 
 public class KernelConstants {
   public static final String MANIFEST_KEY = "manifest";

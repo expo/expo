@@ -20,81 +20,46 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <artifactId>ReactAndroid-release-abi23_0_0</artifactId>
-      <type>aar</type>
+      <groupId>host.exp</groupId>
+      <artifactId>reactandroid-abi23</artifactId>
+      <version>1.0.0</version>
       <scope>compile</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>*</artifactId>
-          <groupId>*</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
-      <artifactId>ReactAndroid-release-abi22_0_0</artifactId>
-      <type>aar</type>
+      <groupId>host.exp</groupId>
+      <artifactId>reactandroid-abi22</artifactId>
+      <version>1.0.0</version>
       <scope>compile</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>*</artifactId>
-          <groupId>*</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
-      <artifactId>ReactAndroid-release-abi21_0_0</artifactId>
-      <type>aar</type>
+      <groupId>host.exp</groupId>
+      <artifactId>reactandroid-abi21</artifactId>
+      <version>1.0.0</version>
       <scope>compile</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>*</artifactId>
-          <groupId>*</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
-      <artifactId>ReactAndroid-release-abi20_0_0</artifactId>
-      <type>aar</type>
+      <groupId>host.exp</groupId>
+      <artifactId>reactandroid-abi20</artifactId>
+      <version>1.0.0</version>
       <scope>compile</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>*</artifactId>
-          <groupId>*</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
-      <artifactId>ReactAndroid-release-abi19_0_0</artifactId>
-      <type>aar</type>
+      <groupId>host.exp</groupId>
+      <artifactId>reactandroid-abi19</artifactId>
+      <version>1.0.0</version>
       <scope>compile</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>*</artifactId>
-          <groupId>*</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
-      <artifactId>ReactAndroid-release-abi18_0_0</artifactId>
-      <type>aar</type>
+      <groupId>host.exp</groupId>
+      <artifactId>reactandroid-abi18</artifactId>
+      <version>1.0.0</version>
       <scope>compile</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>*</artifactId>
-          <groupId>*</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
-      <artifactId>ReactAndroid-release-abi17_0_0</artifactId>
-      <type>aar</type>
+      <groupId>host.exp</groupId>
+      <artifactId>reactandroid-abi17</artifactId>
+      <version>1.0.0</version>
       <scope>compile</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>*</artifactId>
-          <groupId>*</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.android.support</groupId>
