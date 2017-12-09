@@ -186,13 +186,13 @@ dependencies {
 
   // Versioned react native
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
-  compile(name: 'ReactAndroid-release-abi23_0_0', ext: 'aar')
-  compile(name: 'ReactAndroid-release-abi22_0_0', ext: 'aar')
-  compile(name: 'ReactAndroid-release-abi21_0_0', ext: 'aar')
-  compile(name: 'ReactAndroid-release-abi20_0_0', ext: 'aar')
-  compile(name: 'ReactAndroid-release-abi19_0_0', ext: 'aar')
-  compile(name: 'ReactAndroid-release-abi18_0_0', ext: 'aar')
-  compile(name: 'ReactAndroid-release-abi17_0_0', ext: 'aar')
+  compile 'host.exp:reactandroid-abi23:1.0.0'
+  compile 'host.exp:reactandroid-abi22:1.0.0'
+  compile 'host.exp:reactandroid-abi21:1.0.0'
+  compile 'host.exp:reactandroid-abi20:1.0.0'
+  compile 'host.exp:reactandroid-abi19:1.0.0'
+  compile 'host.exp:reactandroid-abi18:1.0.0'
+  compile 'host.exp:reactandroid-abi17:1.0.0'
 
   // React native dependencies
   // We use a different version of appcompat

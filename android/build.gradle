@@ -28,7 +28,7 @@ allprojects {
     }
     flatDir {
       dirs 'libs'
-      dirs project(':expoview').file('libs')
+      // dirs project(':expoview').file('libs')
     }
     maven { url "https://jitpack.io" }
     maven {

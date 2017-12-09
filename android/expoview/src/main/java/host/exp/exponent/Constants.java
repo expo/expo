@@ -5,9 +5,9 @@ package host.exp.exponent;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.text.TextUtils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,21 +15,31 @@ import host.exp.exponent.analytics.EXL;
 
 public class Constants {
 
+  public static class ExpoViewAppConstants {
+    public String VERSION_NAME;
+    public String INITIAL_URL;
+    public boolean IS_DETACHED;
+    public String SHELL_APP_SCHEME;
+    public String RELEASE_CHANNEL;
+    public boolean SHOW_LOADING_VIEW_IN_SHELL_APP;
+    public List<Constants.EmbeddedResponse> EMBEDDED_RESPONSES;
+  }
+
   private static final String TAG = Constants.class.getSimpleName();
 
-  public static final String VERSION_NAME = null;
+  public static String VERSION_NAME = null;
   public static String INITIAL_URL = null;
-  public static final boolean IS_DETACHED = false;
-  public static final String SHELL_APP_SCHEME = null;
+  public static boolean IS_DETACHED = false;
+  public static String SHELL_APP_SCHEME = null;
   public static final String API_HOST = "https://exp.host";
   public static String ABI_VERSIONS;
   public static String SDK_VERSIONS;
   public static List<String> SDK_VERSIONS_LIST;
   public static final String TEMPORARY_ABI_VERSION = null;
   public static final String EMBEDDED_KERNEL_PATH = "assets://kernel.android.bundle";
-  public static final List<EmbeddedResponse> EMBEDDED_RESPONSES;
+  public static List<EmbeddedResponse> EMBEDDED_RESPONSES;
   public static boolean DISABLE_NUX = false;
-  public static final String RELEASE_CHANNEL = "default";
+  public static String RELEASE_CHANNEL = "default";
   public static boolean SHOW_LOADING_VIEW_IN_SHELL_APP = false;
 
   public static void setSdkVersions(List<String> sdkVersions) {
@@ -60,10 +70,32 @@ public class Constants {
 
     List<EmbeddedResponse> embeddedResponses = new ArrayList<>();
     embeddedResponses.add(new EmbeddedResponse("https://exp.host/@exponent/home/bundle", EMBEDDED_KERNEL_PATH, "application/javascript"));
+
     // ADD EMBEDDED RESPONSES HERE
     // START EMBEDDED RESPONSES
     // END EMBEDDED RESPONSES
-    EMBEDDED_RESPONSES = embeddedResponses;
+
+    try {
+      Class appConstantsClass = Class.forName("host.exp.exponent.generated.AppConstants");
+      ExpoViewAppConstants appConstants = (ExpoViewAppConstants) appConstantsClass.getMethod("get").invoke(null);
+      VERSION_NAME = appConstants.VERSION_NAME;
+      INITIAL_URL = appConstants.INITIAL_URL;
+      IS_DETACHED = appConstants.IS_DETACHED;
+      SHELL_APP_SCHEME = appConstants.SHELL_APP_SCHEME;
+      RELEASE_CHANNEL = appConstants.RELEASE_CHANNEL;
+      SHOW_LOADING_VIEW_IN_SHELL_APP = appConstants.SHOW_LOADING_VIEW_IN_SHELL_APP;
+
+      embeddedResponses.addAll(appConstants.EMBEDDED_RESPONSES);
+      EMBEDDED_RESPONSES = embeddedResponses;
+    } catch (ClassNotFoundException e) {
+      e.printStackTrace();
+    } catch (IllegalAccessException e) {
+      e.printStackTrace();
+    } catch (NoSuchMethodException e) {
+      e.printStackTrace();
+    } catch (InvocationTargetException e) {
+      e.printStackTrace();
+    }
   }
 
   public static final boolean DEBUG_COLD_START_METHOD_TRACING = false;

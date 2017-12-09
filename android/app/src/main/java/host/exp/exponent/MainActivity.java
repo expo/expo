@@ -9,13 +9,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import host.exp.exponent.generated.DetachBuildConstants;
-import host.exp.expoview.DetachActivity;
+import host.exp.exponent.experience.DetachActivity;
 
 public class MainActivity extends DetachActivity {
 
   @Override
   public String publishedUrl() {
-    return Constants.INITIAL_URL;
+    return "TEMPLATE_INITIAL_URL";
   }
 
   @Override

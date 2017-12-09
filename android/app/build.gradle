@@ -90,6 +90,18 @@ android {
 //   }
 // }
 
+/* UNCOMMENT WHEN DISTRIBUTING
+task exponentPrebuildStep(type: Exec) {
+  workingDir '../'
+  if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+    commandLine 'cmd', '/c', '.\\detach-scripts\\prepare-detached-build.bat'
+  } else {
+    commandLine './detach-scripts/prepare-detached-build.sh'
+  }
+}
+preBuild.dependsOn exponentPrebuildStep
+END UNCOMMENT WHEN DISTRIBUTING */
+
 dependencies {
   compile fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -156,7 +168,9 @@ dependencies {
 
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  compile('host.exp.exponent:expoview:24.0.0@aar')
+  compile('host.exp.exponent:expoview:24.0.0@aar') {
+    transitive = true
+  }
   END UNCOMMENT WHEN DISTRIBUTING */
   compile project(path: ':expoview')
 }

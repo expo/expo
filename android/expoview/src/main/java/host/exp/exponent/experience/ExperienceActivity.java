@@ -21,6 +21,7 @@ import android.widget.RemoteViews;
 
 import com.amplitude.api.Amplitude;
 import com.facebook.react.ReactInstanceManager;
+import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.soloader.SoLoader;
 
@@ -30,6 +31,7 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
+import java.util.List;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -65,6 +67,15 @@ import static host.exp.exponent.kernel.KernelConstants.IS_OPTIMISTIC_KEY;
 import static host.exp.exponent.kernel.KernelConstants.MANIFEST_URL_KEY;
 
 public class ExperienceActivity extends BaseExperienceActivity implements Exponent.StartReactInstanceDelegate {
+
+  // Override
+  public List<ReactPackage> reactPackages() {
+    return null;
+  }
+
+  public boolean forceUnversioned() {
+    return false;
+  }
 
   private static final String TAG = ExperienceActivity.class.getSimpleName();
 
@@ -487,7 +498,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     Exponent.getInstance().testPackagerStatus(isDebugModeEnabled(), mManifest, new Exponent.PackagerStatusCallback() {
       @Override
       public void onSuccess() {
-        mReactInstanceManager = startReactInstance(ExperienceActivity.this, mIntentUri, mLinkingPackage, mSDKVersion, mNotification, mIsShellApp, null, mDevBundleDownloadProgressListener);
+        mReactInstanceManager = startReactInstance(ExperienceActivity.this, mIntentUri, mLinkingPackage, forceUnversioned() ? RNObject.UNVERSIONED : mSDKVersion, mNotification, mIsShellApp, reactPackages(), mDevBundleDownloadProgressListener);
       }
 
       @Override
