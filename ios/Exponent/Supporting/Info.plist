@@ -75,10 +75,8 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
-	<key>NSBluetoothPeripheralUsageDescription </key>
-	<string>Give Expo experiences permission to connect over Bluetooth</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Allow Expo experiences to use your camera</string>
+	<string>Expo uses your camera to scan project QR codes. Expo experiences you open may use the camera with the Expo camera API.</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Allow Expo experiences to access your contacts</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
