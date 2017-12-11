@@ -270,7 +270,12 @@ public abstract class PlayerData implements AudioEventHandler {
 
   abstract void getExtraStatusFields(final WritableMap map);
 
-  public final WritableMap getStatus() {
+  // Sometimes another thread would release the player
+  // in the middle of `getStatus()` call, which would result
+  // in a null reference method invocation in `getExtraStatusFields`,
+  // so we need to ensure nothing will release or nullify the property
+  // while we get the latest status.
+  public synchronized final WritableMap getStatus() {
     if (!isLoaded()) {
       final WritableMap map = getUnloadedStatus();
       map.putString(STATUS_ANDROID_IMPLEMENTATION_KEY_PATH, getImplementationName());
