@@ -1,4 +1,3 @@
-
 ---
 title: Preloading & Caching Assets
 ---
