@@ -2,9 +2,11 @@
 title: Preloading & Caching Assets
 ---
 
-In order to keep the loading screen visible while we cache our assets, we render [Expo.AppLoading](../sdk/app-loading.html#app-loading) and only that component until everything is ready.
+Assets are cached differently depending on where they're stored and how they're used. This guide offers best practices for making sure you only download assets when you need to. In order to keep the loading screen visible while caching assets, it's also a good idea to render [Expo.AppLoading](../sdk/app-loading.html#app-loading) and only that component until everything is ready. See also: [Offline Support](./offline-support.html).
 
-For images that we have saved to our local filesytem, we can use `Expo.Asset.fromModule(image).downloadAsync()` to download and cache the image. For web images, we can use `Image.prefetch(image)`. Continue referencing the image normally, eg. with `<Image source={require('path/to/image.png')} />`.
+For images that saved to the local filesytem, use `Expo.Asset.fromModule(image).downloadAsync()` to download and cache the image. There is also a [loadAsync()](../sdk/asset.html#expoassetloadasyncmodules) helper method to cache a batch of assets.
+
+For web images, use `Image.prefetch(image)`. Continue referencing the image normally, e.g. with `<Image source={require('path/to/image.png')} />`.
 
 Fonts are preloaded using `Expo.Font.loadAsync(font)`. The `font`
 argument in this case is an object such as the following: `{OpenSans:
