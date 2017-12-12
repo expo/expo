@@ -21,6 +21,12 @@
     </dependency>
     <dependency>
       <groupId>host.exp</groupId>
+      <artifactId>reactandroid-abi24_0_0</artifactId>
+      <version>1.0.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>host.exp</groupId>
       <artifactId>reactandroid-abi23</artifactId>
       <version>1.0.0</version>
       <scope>compile</scope>

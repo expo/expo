@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expoview" revision="24.0.0" status="integration" default="true" publication="20171208190120"/>
+  <info organisation="host.exp.exponent" module="expoview" revision="24.0.0" status="integration" default="true" publication="20171211211753"/>
   <configurations>
     <conf name="_debugAndroidTestAnnotationProcessor" visibility="private" extends="_debugAnnotationProcessor,androidTestAnnotationProcessor"/>
     <conf name="_debugAndroidTestApk" visibility="private" extends="_debugPublish,androidTestCompile,androidTestPublish"/>
@@ -83,6 +83,7 @@
     <dependency org="com.raizlabs.android" name="DBFlow-Compiler" rev="2.2.1" conf="apt-&gt;default"/>
     <dependency org="com.android.support" name="multidex" rev="1.0.1" conf="compile-&gt;default"/>
     <dependency org="com.facebook.react" name="react-native" rev="24.0.0" conf="compile-&gt;default"/>
+    <dependency org="host.exp" name="reactandroid-abi24_0_0" rev="1.0.0" conf="compile-&gt;default"/>
     <dependency org="host.exp" name="reactandroid-abi23" rev="1.0.0" conf="compile-&gt;default"/>
     <dependency org="host.exp" name="reactandroid-abi22" rev="1.0.0" conf="compile-&gt;default"/>
     <dependency org="host.exp" name="reactandroid-abi21" rev="1.0.0" conf="compile-&gt;default"/>
