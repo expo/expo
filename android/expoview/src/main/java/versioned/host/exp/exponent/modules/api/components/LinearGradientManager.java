@@ -9,8 +9,8 @@ public class LinearGradientManager extends SimpleViewManager<LinearGradientView>
     public static final String REACT_CLASS = "ExponentLinearGradient";
     public static final String PROP_COLORS = "colors";
     public static final String PROP_LOCATIONS = "locations";
-    public static final String PROP_START_POS = "start";
-    public static final String PROP_END_POS = "end";
+    public static final String PROP_START_POS = "startPoint";
+    public static final String PROP_END_POS = "endPoint";
     public static final String PROP_BORDER_RADII = "borderRadii";
 
     @Override
