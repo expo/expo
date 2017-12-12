@@ -43,7 +43,7 @@ public class OkHttpClientProvider {
 
     public static OkHttpClient createClient() {
         try {
-            return (OkHttpClient) Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("getOkHttpClient").invoke(null);
+            return (OkHttpClient) Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("getOkHttpClient", Class.class).invoke(null, OkHttpClientProvider.class);
         } catch (Exception expoHandleErrorException) {
             expoHandleErrorException.printStackTrace();
             return null;

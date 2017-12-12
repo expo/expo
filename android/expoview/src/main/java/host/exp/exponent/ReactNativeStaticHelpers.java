@@ -2,21 +2,14 @@
 
 package host.exp.exponent;
 
+
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.common.JavascriptException;
-import com.facebook.react.modules.network.OkHttpClientProvider;
-import com.facebook.react.modules.network.ReactCookieJarContainer;
-
-import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
 import expolib_v1.okhttp3.OkHttpClient;
-import host.exp.exponent.network.ExponentHttpClient;
-import host.exp.exponent.network.ExponentNetwork;
-import host.exp.expoview.Exponent;
-
 import host.exp.expoview.Exponent;
 
 @DoNotStrip
@@ -87,7 +80,7 @@ public class ReactNativeStaticHelpers {
   }
 
   @DoNotStrip
-  public static OkHttpClient getOkHttpClient() {
+  public static OkHttpClient getOkHttpClient(Class callingClass) {
     Assertions.assertNotNull(sOkHttpClient);
 
     return sOkHttpClient;
