@@ -150,8 +150,8 @@ public class ReactAndroidCodeTransformer {
           case "createClient":
             BlockStmt stmt = JavaParser.parseBlock(getCallMethodReflectionBlock(
                 "host.exp.exponent.ReactNativeStaticHelpers",
-                "\"getOkHttpClient\"",
-                "null",
+                "\"getOkHttpClient\", Class.class",
+                "null, OkHttpClientProvider.class",
                 "return (OkHttpClient) ",
                 "return null;"));
             n.setBody(stmt);
