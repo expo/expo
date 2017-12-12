@@ -165,7 +165,7 @@ public class Kernel extends KernelInterface {
     }
 
     mExponentNetwork.addInterceptors(client);
-    ReactNativeStaticHelpers.setOkHttpClient(OkHttpClientProvider.enableTls12OnPreLollipop(client).build());
+    ReactNativeStaticHelpers.setExponentNetwork(mExponentNetwork);
   }
 
   // Don't call this until a loading screen is up, since it has to do some work on the main thread.

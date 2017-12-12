@@ -91,6 +91,15 @@ public class RNObject {
     }
   }
 
+  public static String versionForClassname(final String classname) {
+    if (classname.startsWith("abi")) {
+      String abiVersion = classname.split("\\.")[0];
+      return abiVersion.substring(3);
+    } else {
+      return UNVERSIONED;
+    }
+  }
+
   public RNObject construct(Object... args) {
     try {
       mInstance = getConstructorWithTypes(mClazz, objectsToClasses(args)).newInstance(args);
