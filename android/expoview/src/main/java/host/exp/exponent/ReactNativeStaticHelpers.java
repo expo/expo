@@ -3,13 +3,20 @@
 package host.exp.exponent;
 
 
-import com.facebook.infer.annotation.Assertions;
+import android.util.Log;
+
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.common.JavascriptException;
+import com.facebook.react.modules.network.OkHttpClientProvider;
+import com.facebook.react.modules.network.ReactCookieJarContainer;
+
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
+import expolib_v1.okhttp3.CookieJar;
 import expolib_v1.okhttp3.OkHttpClient;
+import host.exp.exponent.network.ExponentNetwork;
 import host.exp.expoview.Exponent;
 
 @DoNotStrip
@@ -73,16 +80,25 @@ public class ReactNativeStaticHelpers {
     }
   }
 
-  private static @Nullable OkHttpClient sOkHttpClient;
+  private static @Nullable ExponentNetwork sExponentNetwork;
 
-  public static void setOkHttpClient(OkHttpClient client) {
-    sOkHttpClient = client;
+  public static void setExponentNetwork(ExponentNetwork exponentNetwork) {
+    sExponentNetwork = exponentNetwork;
   }
 
   @DoNotStrip
   public static OkHttpClient getOkHttpClient(Class callingClass) {
-    Assertions.assertNotNull(sOkHttpClient);
+    String version = RNObject.versionForClassname(callingClass.getName());
+    Object cookieJar = new RNObject("com.facebook.react.modules.network.ReactCookieJarContainer").loadVersion(version).construct().get();
 
-    return sOkHttpClient;
+    OkHttpClient.Builder client = new OkHttpClient.Builder()
+        .connectTimeout(0, TimeUnit.MILLISECONDS)
+        .readTimeout(0, TimeUnit.MILLISECONDS)
+        .writeTimeout(0, TimeUnit.MILLISECONDS)
+        .cookieJar((CookieJar) cookieJar)
+        .cache(sExponentNetwork.getCache());
+
+    sExponentNetwork.addInterceptors(client);
+    return OkHttpClientProvider.enableTls12OnPreLollipop(client).build();
   }
 }
