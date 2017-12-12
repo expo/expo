@@ -26,13 +26,12 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   NSString *resourceName;
   if ([EXShellManager sharedInstance].isShell && [originalUrl.absoluteString isEqual:[EXShellManager sharedInstance].shellManifestUrl]) {
     resourceName = kEXShellManifestResourceName;
+    if ([EXShellManager sharedInstance].releaseChannel){
+      self.releaseChannel = [EXShellManager sharedInstance].releaseChannel;
+    }
     NSLog(@"EXManifestResource: Standalone manifest remote url is %@ (%@)", url, originalUrl);
   } else {
     resourceName = [EXKernelLinkingManager linkingUriForExperienceUri:url];
-  }
-  
-  if ([EXShellManager sharedInstance].releaseChannel){
-    self.releaseChannel = [EXShellManager sharedInstance].releaseChannel;
   }
 
   if (self = [super initWithResourceName:resourceName resourceType:@"json" remoteUrl:url cachePath:[[self class] cachePath]]) {
