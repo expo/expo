@@ -9,7 +9,7 @@ title: Configuration with app.json
   "expo": {
     "name": "My app",
     "slug": "my-app",
-    "sdkVersion": "UNVERSIONED",
+    "sdkVersion": "24.0.0",
     "privacy": "public"
   }
 }
@@ -48,6 +48,14 @@ The following is a list of properties that are available for you under the `"exp
 
    Your app version, use whatever versioning scheme that you like.
 
+- `platforms`
+
+   Platforms that your project explicitly supports. If not specified, it defaults to `["ios", "android"]`.
+
+- `githubUrl`
+
+   If you would like to share the source code of your app on Github, enter the URL for the repository here and it will be linked to from your Expo project page.
+
 - `orientation`
 
    Lock your app to a specific orientation with `portrait` or `landscape`. Defaults to no lock.
@@ -60,7 +68,7 @@ The following is a list of properties that are available for you under the `"exp
 
 - `icon`
 
-   Local path or remote url to an image to use for your app's icon. We recommend that you use a 512x512 png file with transparency. This icon will appear on the home screen and within the Expo app.
+   Local path or remote url to an image to use for your app's icon. We recommend that you use a 1024x1024 png file. This icon will appear on the home screen and within the Expo app.
 
 - `notification`
 
@@ -155,16 +163,16 @@ The following is a list of properties that are available for you under the `"exp
 
 - `rnCliPath`
 
-
+   
 - `packagerOpts`
 
-
+   
 - `ignoreNodeModulesValidation`
 
-
+   
 - `nodeModulesPath`
 
-
+   
 - `ios`
 
    **Standalone Apps Only**. iOS standalone app specific configuration
@@ -180,15 +188,19 @@ The following is a list of properties that are available for you under the `"exp
 
    - `icon`
 
-      Local path or remote url to an image to use for your app's icon on iOS. If specified, this overrides the top-level `icon` key. iOS icons should be square png files with no transparent pixels. This icon will appear on the home screen and within the Expo app.
+      Local path or remote URL to an image to use for your app's icon on iOS. If specified, this overrides the top-level `icon` key. Use a 1024x1024 icon which follows Apple's interface guidelines for icons, including color profile and transparency. Expo will generate the other required sizes. This icon will appear on the home screen and within the Expo app.
 
    - `merchantId`
 
       Merchant ID for use with Apple Pay in your standalone app.
 
+   - `appStoreUrl`
+
+      URL to your app on the Apple App Store, if you have deployed it there. This is used to link to your store page from your Expo project page if your app is public.
+
    - `config`
 
-
+      
        - `branch`
 
           [Branch](https://branch.io/) key to hook up Branch linking services.
@@ -211,11 +223,15 @@ The following is a list of properties that are available for you under the `"exp
 
            - `reservedClientId`
 
-              The reserved client id url scheme. Can be found in `GoogeService-Info.plist`.
+              The reserved client ID URL scheme. Can be found in `GoogeService-Info.plist`.
 
    - `isRemoteJSEnabled`
 
       If set to false, your standalone app will never download any code, and will only use code bundled locally on the device. In that case, all updates to your app must be submitted through Apple review. Defaults to true. (Note that this will not work out of the box with ExpoKit projects)
+
+   - `loadJSInBackgroundExperimental`
+
+      If true, your standalone app will immediately run its cached JS bundle, if one exists, and request a new one in the background.
 
    - `supportsTablet`
 
@@ -274,16 +290,20 @@ The following is a list of properties that are available for you under the `"exp
 
    - `icon`
 
-      Local path or remote url to an image to use for your app's icon. We recommend that you use a 512x512 png file with transparency. This icon will appear on the home screen and within the Expo app.
+      Local path or remote url to an image to use for your app's icon. If specified, this overrides the top-level `icon` key. We recommend that you use a 1024x1024 png file (transparency is recommended for the Google Play Store). This icon will appear on the home screen and within the Expo app.
+
+   - `playStoreUrl`
+
+      URL to your app on the Google Play Store, if you have deployed it there. This is used to link to your store page from your Expo project page if your app is public.
 
    - `permissions`
 
       List of permissions used by the standalone app. Remove the field to use the default list of permissions.
-
+    
     Example: `[ "CAMERA", "ACCESS_FINE_LOCATION" ]`.
-
+    
     You can specify the following permissions depending on what you need:
-
+    
       - `ACCESS_COARSE_LOCATION`
       - `ACCESS_FINE_LOCATION`
       - `CAMERA`
@@ -311,7 +331,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `config`
 
-
+      
        - `branch`
 
           [Branch](https://branch.io/) key to hook up Branch linking services.
@@ -390,6 +410,14 @@ The following is a list of properties that are available for you under the `"exp
 
           Local path or remote url to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
 
+- `facebookAppId`
+
+   Used for all Facebook libraries. Set up your Facebook App ID at https://developers.facebook.com.
+
+- `facebookDisplayName`
+
+   Used for native Facebook login.
+
 - `facebookScheme`
 
    Used for Facebook native login. Starts with 'fb' and followed by a string of digits, like 'fb1234567890'. You can find your scheme at https://developers.facebook.com/docs/facebook-login/ios in the 'Configuring Your info.plist' section.
@@ -417,3 +445,8 @@ The following is a list of properties that are available for you under the `"exp
    Configuration for scripts to run to hook into the publish process
 
    - `postPublish`
+
+      
+- `assetBundlePatterns`
+
+   
