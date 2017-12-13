@@ -44,15 +44,7 @@ open it.
 
 When you're ready to distribute your app to end-users, you can create a
 standalone app binary (an ipa or apk file) and put it in the iOS App
-Store and the Google Play Store. [See the full guide to building a
-standalone app.](building-standalone-apps.html)
-
-When you build the binary, the current version of your app JavaScript is
-bundled so that it loads immediately the first time the app opens. But
-you're not stuck with that version of your code, you can publish updates
-at any time after that without needing to re-build the binary. For
-example, if you find a bug or want to add some functionality to the app
-after submitting the binary.
+Store and the Google Play Store. See [Distributing Your App](../distribution/index.html).
 
 The standalone app knows to look for updates at your app's published
 url, and if you publish an update then the next time a user opens your
@@ -61,12 +53,7 @@ commonly referred to as "Over the Air" (OTA) updates, the functionality
 is similar to [CodePush](https://microsoft.github.io/code-push/), but it
 is built into Expo so you don't need to install anything.
 
-Updates are handled differently on iOS and Android. On Android, updates
-are downloaded in the background. This means that the first time a user opens
-your app after an update they will get the old version while the new version
-is downloaded in the background. The second time they open the app they'll get
-the new version. On iOS, updates are downloaded synchronously, so users will
-get the new version the first time they open your app after an update.
+To configure the way your app handles JS updates, see [Offline Support](./offline-support.html).
 
 ## Limitations
 
@@ -80,6 +67,7 @@ re-build the binaries for your app for the change to take effect:
 - Change your app `name`
 - Change your app `scheme`
 - Change your `facebookScheme`
+- Change your bundled assets under `assetBundlePatterns`
 
 ## Privacy
 
