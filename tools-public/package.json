@@ -31,7 +31,7 @@
     "shelljs": "^0.7.0",
     "username": "^2.2.2",
     "uuid": "^3.1.0",
-    "xdl": "^43.0.1"
+    "xdl": "^47.1.0"
   },
   "devDependencies": {
     "jest": "21.2.0"
