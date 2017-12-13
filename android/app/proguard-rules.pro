@@ -23,6 +23,8 @@
 
 -dontnote **
 
+-keep class host.exp.exponent.generated.AppConstants { *; }
+
 ##### Crashlytics #####
 -keepattributes SourceFile,LineNumberTable
 

@@ -1,10 +1,13 @@
 package host.exp.exponent.generated;
 
+import com.facebook.common.internal.DoNotStrip;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import host.exp.exponent.Constants;
 
+@DoNotStrip
 public class AppConstants {
 
   public static final String VERSION_NAME = null;
