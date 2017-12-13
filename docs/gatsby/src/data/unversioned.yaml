@@ -30,6 +30,7 @@
 - title: Guides
   index: /versions/unversioned/guides/index.html
   links:
+    App Icons: /versions/unversioned/guides/app-icons.html
     Assets: /versions/unversioned/guides/assets.html
     Error Handling: /versions/unversioned/guides/errors.html
     Preloading & Caching Assets: /versions/unversioned/guides/preloading-and-caching-assets.html
@@ -39,6 +40,7 @@
     Configuring Status Bar: /versions/unversioned/guides/configuring-statusbar.html
     Offline Support: /versions/unversioned/guides/offline-support.html
     Push Notifications: /versions/unversioned/guides/push-notifications.html
+    Splash Screens: /versions/unversioned/guides/splash-screens.html
     Using Modern JavaScript: /versions/unversioned/guides/using-modern-javascript.html
     Using ClojureScript: /versions/unversioned/guides/using-clojurescript.html
     Using Firebase: /versions/unversioned/guides/using-firebase.html
@@ -47,10 +49,9 @@
 - title: Distributing Your App
   index: /versions/unversioned/distribution/index.html
   links:
-    App Icons: /versions/unversioned/guides/app-icons.html
     Building Standalone Apps: /versions/unversioned/guides/building-standalone-apps.html
+    Deploying to App Stores: /versions/unversioned/guides/app-stores.html
     Release Channels: /versions/unversioned/guides/release-channels.html
-    Splash Screens: /versions/unversioned/guides/splash-screens.html
 - title: Tutorials
   index: /versions/unversioned/tutorials/index.html
   links:
