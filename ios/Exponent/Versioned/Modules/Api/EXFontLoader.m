@@ -85,7 +85,11 @@ static const char *EXFontAssocKey = "EXFont";
 
   // If it's an EXFont, generate the corresponding UIFont, else fallback to React Native's built-in method
   if (exFont) {
-    return [exFont UIFontWithSize:[RCTConvert CGFloat:size] ?: uiFont.pointSize ?: defaultFontSize];
+    CGFloat computedSize = [RCTConvert CGFloat:size] ?: uiFont.pointSize ?: defaultFontSize;
+    if (scaleMultiplier > 0.0 && scaleMultiplier != 1.0) {
+      computedSize = round(computedSize * scaleMultiplier);
+    }
+    return [exFont UIFontWithSize:computedSize];
   } else {
     return [self EXUpdateFont:uiFont withFamily:family size:size weight:weight style:style variant:variant scaleMultiplier:scaleMultiplier];
   }
