@@ -180,9 +180,9 @@ class SimpleExoPlayerData extends PlayerData
         getClippedIntegerForValue((int) mSimpleExoPlayer.getBufferedPosition(), 0, duration));
 
     map.putBoolean(STATUS_IS_PLAYING_KEY_PATH,
-        mSimpleExoPlayer.getPlaybackState() == ExoPlayer.STATE_READY && mSimpleExoPlayer.getPlayWhenReady());
+        mSimpleExoPlayer.getPlayWhenReady() && mSimpleExoPlayer.getPlaybackState() == ExoPlayer.STATE_READY);
     map.putBoolean(STATUS_IS_BUFFERING_KEY_PATH,
-        mSimpleExoPlayer.getPlaybackState() == ExoPlayer.STATE_BUFFERING || mIsLoading);
+        mIsLoading || mSimpleExoPlayer.getPlaybackState() == ExoPlayer.STATE_BUFFERING);
 
     map.putBoolean(STATUS_IS_LOOPING_KEY_PATH, mIsLooping);
   }
@@ -234,17 +234,18 @@ class SimpleExoPlayerData extends PlayerData
 
   @Override
   public void onLoadingChanged(final boolean isLoading) {
-    if (!isLoading && mLoadCompletionListener != null) {
-      final LoadCompletionListener listener = mLoadCompletionListener;
-      mLoadCompletionListener = null;
-      listener.onLoadSuccess(getStatus());
-    }
     mIsLoading = isLoading;
     callStatusUpdateListener();
   }
 
   @Override
   public void onPlayerStateChanged(final boolean playWhenReady, final int playbackState) {
+    if (playbackState == ExoPlayer.STATE_READY && mLoadCompletionListener != null) {
+      final LoadCompletionListener listener = mLoadCompletionListener;
+      mLoadCompletionListener = null;
+      listener.onLoadSuccess(getStatus());
+    }
+
     if (mLastPlaybackState != null
         && playbackState != mLastPlaybackState
         && playbackState == ExoPlayer.STATE_ENDED) {
