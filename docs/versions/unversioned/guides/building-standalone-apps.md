@@ -6,6 +6,8 @@ The purpose of this guide is to help you create standalone binaries of your Expo
 
 An Apple Developer account is needed to build an iOS standalone app, but a Google Play Developer account is not needed to build the Android standalone app. If you'd like to submit to either app store, you will need a developer account on that store.
 
+It's a good idea to read the best practices about [Deploying to App Stores](./app-stores.html) to ensure your app is in good shape to get accepted into the Apple and Google marketplaces. We can generate builds for you, but it's up to you to make your app awesome.
+
 > **Warning:** Standalone apps are currently in beta!
 
 ## 1. Install exp
