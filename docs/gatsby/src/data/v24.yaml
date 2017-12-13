@@ -30,6 +30,7 @@
 - title: Guides
   index: /versions/v24.0.0/guides/index.html
   links:
+    App Icons: /versions/v24.0.0/guides/app-icons.html
     Assets: /versions/v24.0.0/guides/assets.html
     Error Handling: /versions/v24.0.0/guides/errors.html
     Preloading & Caching Assets: /versions/v24.0.0/guides/preloading-and-caching-assets.html
@@ -39,6 +40,7 @@
     Configuring Status Bar: /versions/v24.0.0/guides/configuring-statusbar.html
     Offline Support: /versions/v24.0.0/guides/offline-support.html
     Push Notifications: /versions/v24.0.0/guides/push-notifications.html
+    Splash Screens: /versions/v24.0.0/guides/splash-screens.html
     Using Modern JavaScript: /versions/v24.0.0/guides/using-modern-javascript.html
     Using ClojureScript: /versions/v24.0.0/guides/using-clojurescript.html
     Using Firebase: /versions/v24.0.0/guides/using-firebase.html
@@ -47,10 +49,9 @@
 - title: Distributing Your App
   index: /versions/v24.0.0/distribution/index.html
   links:
-    App Icons: /versions/v24.0.0/guides/app-icons.html
     Building Standalone Apps: /versions/v24.0.0/guides/building-standalone-apps.html
+    Deploying to App Stores: /versions/v24.0.0/guides/app-stores.html
     Release Channels: /versions/v24.0.0/guides/release-channels.html
-    Splash Screens: /versions/v24.0.0/guides/splash-screens.html
 - title: Tutorials
   index: /versions/v24.0.0/tutorials/index.html
   links:
