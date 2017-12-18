@@ -86,9 +86,9 @@ Move a file or directory to a new location.
 
 -   **options (_object_)** -- A map of options:
 
-  -   **from (_string_)** -- `file://` URI to the file or directory at its original location.
+    -   **from (_string_)** -- `file://` URI to the file or directory at its original location.
 
-  -   **to (_string_)** -- `file://` URI to the file or directory at what should be its new location.
+    -   **to (_string_)** -- `file://` URI to the file or directory at what should be its new location.
 
 ### `Expo.FileSystem.copyAsync(options)`
 
