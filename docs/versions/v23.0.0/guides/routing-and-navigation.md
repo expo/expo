@@ -97,7 +97,7 @@ In this file, we export a new `TabNavigator` with three routes, "Home", "Links",
 
 ### screens/[\*](#id1)Screen.js
 
-All of the components that represent screens in our app are organized into a `Screens` directory (a screen is not strictly defined anywhere, it is up to you to decide what you think fits -- generally this is usually anything that would be `pushed` or `popped` from a stack).
+All of the components that represent screens in our app are organized into a `screens` directory (a screen is not strictly defined anywhere, it is up to you to decide what you think fits -- generally this is usually anything that would be `pushed` or `popped` from a stack).
 
 ## Learning more about routing & navigation
 
