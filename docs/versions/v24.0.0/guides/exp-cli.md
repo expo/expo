@@ -33,24 +33,28 @@ Commands:
   build:status|bs [options] [project-dir]         Gets the status of a current (or most recently finished) build for your project.
   convert|onentize [options] [project-dir]        Initialize Expo project files within an existing React Native project
   detach [options] [project-dir]                  Creates Xcode and Android Studio projects for your app. Use this if you need to add custom native functionality.
-  diagnostics [project-dir]                       Uploads diagnostics information and returns a url to share with the Expo team.
+  diagnostics [options] [project-dir]             Uploads diagnostics information and returns a url to share with the Expo team.
   doctor [options] [project-dir]                  Diagnoses issues with your Expo project.
-  fetch:ios:certs [project-dir]                   Fetch this project's iOS certificates. Writes to PROJECT_DIR/PROJECT_NAME_(dist|push).p12 and prints passwords to stdout.
-  fetch:android:keystore [project-dir]            Fetch this project's Android keystore. Writes keystore to PROJECT_DIR/PROJECT_NAME.jks and prints passwords to stdout.
+  fetch:ios:certs [options] [project-dir]         Fetch this project's iOS certificates. Writes to PROJECT_DIR/PROJECT_NAME_(dist|push).p12 and prints passwords to stdout.
+  fetch:android:keystore [options] [project-dir]  Fetch this project's Android keystore. Writes keystore to PROJECT_DIR/PROJECT_NAME.jks and prints passwords to stdout.
   init|i [options] [project-dir]                  Initializes a directory with an example project. Run it without any options and you will be prompted for the name and type.
-  install:ios                                     Install the latest version of Expo Client for iOS on the simulator
-  install:android                                 Install the latest version of Expo Client for Android on a connected device or emulator
+  install:ios [options]                           Install the latest version of Expo Client for iOS on the simulator
+  install:android [options]                       Install the latest version of Expo Client for Android on a connected device or emulator
   ios [options] [project-dir]                     Opens your app in Expo in an iOS simulator on your computer
   login|signin [options]                          Login to Expo
-  logout                                          Logout from exp.host
-  path                                            Sets PATH for XDE
+  logout [options]                                Logout from exp.host
+  path [options]                                  Sets PATH for XDE
   prepare-detached-build [options] [project-dir]  Prepares a detached project for building
+  publish:history|ph [options] [project-dir]      View a log of your published releases.
+  publish:details|pd [options] [project-dir]      View the details of a published release.
+  publish:set|ps [options] [project-dir]          Set a published release to be served from a specified channel.
+  publish:rollback|pr [options] [project-dir]     Rollback an update to a channel.
   publish|p [options] [project-dir]               Publishes your project to exp.host
   register [options]                              Sign up for a new Expo account
   send [options] [project-dir]                    Sends a link to your project to a phone number or e-mail address
   start|r [options] [project-dir]                 Starts or restarts a local server for your app and gives you a URL to it
   url|u [options] [project-dir]                   Displays the URL you can use to view your project in Expo
-  whoami|w                                        Checks with the server and then says who you are logged in as
+  whoami|w [options]                              Checks with the server and then says who you are logged in as
 ```
 
 View additional information about a specific command by passing the `--help` flag. For example, `exp start --help` outputs:
