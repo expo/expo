@@ -201,10 +201,17 @@ static GLfloat arCamVerts[] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
   [self _reload];
 }
 
+- (void)setWorldAlignment:(NSInteger)worldAlignment
+{
+  _worldAlignment = worldAlignment;
+  ARWorldTrackingConfiguration *configuration = (ARWorldTrackingConfiguration *) self.arSession.configuration;
+  configuration.worldAlignment = worldAlignment;
+  [self _reload];
+}
 
 - (void)_reload
 {
-  [self.arSession runWithConfiguration:self.arConfig];
+  [self.arSession runWithConfiguration:self.arConfig options:ARSessionRunOptionResetTracking];
 }
 
 - (NSDictionary *)arLightEstimation
