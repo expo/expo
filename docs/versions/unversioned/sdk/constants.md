@@ -71,3 +71,7 @@ The [manifest](../guides/how-expo-works.html#expo-manifest) object for the app.
 ### `Expo.Constants.linkingUri`
 
 When an app is opened due to a deep link, the prefix of the URI without the deep link part. This value depends on `Expo.Constants.appOwnership`: it may be different if your app is running standalone vs. in the Expo client.
+
+### `Expo.Constants.androidVersionCode`
+
+_Android only_. Returns the version code set by `android.versionCode` in app.json.
