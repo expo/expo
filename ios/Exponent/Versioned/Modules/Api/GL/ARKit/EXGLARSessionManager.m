@@ -1,5 +1,6 @@
 #import "EXGLARSessionManager.h"
 
+#import <ARKit/ARKit.h>
 #import <GPUImage.h>
 #include <OpenGLES/ES2/gl.h>
 #include <OpenGLES/ES2/glext.h>
