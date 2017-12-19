@@ -94,7 +94,7 @@ The following is a list of properties that are available for you under the `"exp
 
 - `loading`
 
-   Configuration for the loading screen that users see when opening your app, while fetching & caching bundle and assets.
+   DEPREACTED: Use `splash` instead. Configuration for the loading screen that users see when opening your app, while fetching & caching bundle and assets.
 
    - `icon`
 
@@ -449,4 +449,4 @@ The following is a list of properties that are available for you under the `"exp
       
 - `assetBundlePatterns`
 
-   
+   An array of file glob strings which point to assets that will be bundled within your standalone app binary. Read more in the [Offline Support guide](https://docs.expo.io/versions/latest/guides/offline-support.html)
