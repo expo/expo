@@ -5,6 +5,7 @@ import com.facebook.common.internal.DoNotStrip;
 import java.util.ArrayList;
 import java.util.List;
 
+import host.exp.exponent.BuildConfig;
 import host.exp.exponent.Constants;
 
 @DoNotStrip
@@ -37,6 +38,7 @@ public class AppConstants {
     constants.RELEASE_CHANNEL = RELEASE_CHANNEL;
     constants.SHOW_LOADING_VIEW_IN_SHELL_APP = SHOW_LOADING_VIEW_IN_SHELL_APP;
     constants.EMBEDDED_RESPONSES = EMBEDDED_RESPONSES;
+    constants.ANDROID_VERSION_CODE = BuildConfig.VERSION_CODE;
     return constants;
   }
 }
