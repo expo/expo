@@ -1,6 +1,5 @@
 #import "EXGLARSessionManager.h"
 
-#import <ARKit/ARKit.h>
 #import <GPUImage.h>
 #include <OpenGLES/ES2/gl.h>
 #include <OpenGLES/ES2/glext.h>
@@ -22,7 +21,6 @@
 @property (nonatomic, assign) EXGLView *glView;
 @property (atomic, strong) ARSession *arSession;
 @property (atomic, strong) ARWorldTrackingConfiguration *arConfig;
-
 @end
 
 @implementation EXGLARSessionManager
@@ -49,7 +47,7 @@ static GLfloat arCamVerts[] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
              };
   }
   [self.arSession runWithConfiguration:self.arConfig];
-
+  
   CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, _glView.eaglCtx, NULL, &_arCamCache);
   if (err) {
     NSLog(@"Error from CVOpenGLESTextureCacheCreate(...): %d", err);
@@ -202,14 +200,13 @@ static GLfloat arCamVerts[] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
 - (void)setWorldAlignment:(NSInteger)worldAlignment
 {
   _worldAlignment = worldAlignment;
-  ARWorldTrackingConfiguration *configuration = (ARWorldTrackingConfiguration *) self.arSession.configuration;
-  configuration.worldAlignment = worldAlignment;
+  self.arConfig.worldAlignment = worldAlignment;
   [self _reload];
 }
 
 - (void)_reload
 {
-  [self.arSession runWithConfiguration:self.arConfig options:ARSessionRunOptionResetTracking];
+  [self.arSession runWithConfiguration:self.arConfig];
 }
 
 - (NSDictionary *)arLightEstimation
@@ -267,8 +264,7 @@ static GLfloat arCamVerts[] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
       ARPlaneAnchor *planeAnchor = (ARPlaneAnchor *)anchors[i];
       vector_float3 extent = planeAnchor.extent;
       vector_float3 center = planeAnchor.center;
-      // TODO: alignment, etc.
-      
+
       [planes addObject:@{
                           @"center": @{
                               @"x": @(center[0]),
@@ -279,10 +275,9 @@ static GLfloat arCamVerts[] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
                               @"width": @(extent[0]),
                               @"length": @(extent[2])
                               },
-                          @"id": [NSString stringWithFormat:@"%d", planeAnchor.identifier],
+                          @"id": [NSString stringWithFormat:@"%@", planeAnchor.identifier],
                           @"transform": [EXGLARSessionManager nsArrayForMatrix: planeAnchor.transform]
                           }];
-      
     }
   }
   
@@ -309,7 +304,7 @@ static GLfloat arCamVerts[] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
 
   glBindFramebuffer(GL_FRAMEBUFFER, _arCamOutputFramebuffer);
   glViewport(0, 0, 1280, 720);
-
+  
   glUseProgram(_arCamProgram);
   glEnableVertexAttribArray(_arCamPositionAttrib);
   glBindBuffer(GL_ARRAY_BUFFER, _arCamBuffer);

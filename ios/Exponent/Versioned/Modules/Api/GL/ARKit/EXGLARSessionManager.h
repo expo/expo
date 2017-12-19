@@ -1,3 +1,4 @@
+#import <ARKit/ARKit.h>
 #import "EXGLView.h"
 
 @interface EXGLARSessionManager : NSObject
