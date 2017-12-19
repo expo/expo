@@ -22,8 +22,6 @@ Before your code runs in your app, Metro also transforms your code and your depe
 
 ## JavaScript Support in Expo
 
-<!-- Generated with gatsby/src/data/javascript-features.js -->
-
 |Feature|Works with Expo|Links|Spec|Implementation|
 |-------|---------------|-----|----|--------------|
 |Object rest/spread|<span class="centered-text-cell">✅</span>|[MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_operator)<br />[2ality](http://2ality.com/2016/10/rest-spread-properties.html)|Proposal|Babel<hr class="vertical-divider" />No JSC support|

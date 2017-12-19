@@ -22,7 +22,6 @@ Before your code runs in your app, Metro also transforms your code and your depe
 
 ## JavaScript Support in Expo
 
-<!-- Generated with gatsby/src/data/javascript-features.js -->
 
 |Feature|Works with Expo|Links|Spec|Implementation|
 |-------|---------------|-----|----|--------------|
