@@ -96,4 +96,16 @@ RCT_EXPORT_METHOD(flush)
   }
 }
 
+RCT_EXPORT_METHOD(optOut:(BOOL)optOut)
+{
+  if (_instance) {
+    if (optOut) {
+      [_instance disable];
+    }
+    else {
+      [_instance enable];
+    }
+  }
+}
+
 @end

@@ -156,4 +156,11 @@ public class SegmentModule extends ReactContextBaseJavaModule {
       mClient.reset();
     }
   }
+
+  @ReactMethod
+  public void optOut(final boolean optOut) {
+    if (mClient != null) {
+      mClient.optOut(optOut);
+    }
+  }
 }
