@@ -570,6 +570,7 @@ RCT_EXPORT_METHOD(loadForSound:(nonnull NSString *)uriString
                      withError:(RCTResponseSenderBlock)loadError)
 {
   NSNumber *key = @(_soundDictionaryKeyCount++);
+
   __weak __typeof__(self) weakSelf = self;
   EXAVPlayerData *data = [[EXAVPlayerData alloc] initWithEXAV:self
                                                       withURL:[NSURL URLWithString:uriString]
@@ -583,7 +584,7 @@ RCT_EXPORT_METHOD(loadForSound:(nonnull NSString *)uriString
                                            }
                                          }];
   data.errorCallback = ^(NSString *error) {
-    __strong __typeof__(self) strongSelf = weakSelf;
+    __strong __typeof__(weakSelf) strongSelf = weakSelf;
     
     if (strongSelf) {
       [strongSelf _removeSoundForKey:key];
@@ -591,7 +592,7 @@ RCT_EXPORT_METHOD(loadForSound:(nonnull NSString *)uriString
   };
   
   data.statusUpdateCallback = ^(NSDictionary *status) {
-    __strong __typeof__(self) strongSelf = weakSelf;
+    __strong __typeof__(weakSelf) strongSelf = weakSelf;
     if (strongSelf && strongSelf.isBeingObserved) {
       NSDictionary<NSString *, id> *response = @{@"key": key, @"status": status};
       [strongSelf sendEventWithName:EXDidUpdatePlaybackStatusEventName body:response];
