@@ -550,11 +550,12 @@ RCT_EXPORT_METHOD(stopRecording) {
     if (self.presetCamera == AVCaptureDevicePositionUnspecified) {
       return;
     }
-    
+
     AVCaptureStillImageOutput *stillImageOutput = [[AVCaptureStillImageOutput alloc] init];
     if ([self.session canAddOutput:stillImageOutput]) {
       stillImageOutput.outputSettings = @{AVVideoCodecKey : AVVideoCodecJPEG};
       [self.session addOutput:stillImageOutput];
+      [stillImageOutput setHighResolutionStillImageOutputEnabled:YES];
       self.stillImageOutput = stillImageOutput;
     }
     
