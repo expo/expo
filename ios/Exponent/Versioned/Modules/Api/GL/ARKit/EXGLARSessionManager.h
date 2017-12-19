@@ -12,6 +12,7 @@
 
 @property (nonatomic, assign) BOOL isPlaneDetectionEnabled;
 @property (nonatomic, assign) BOOL isLightEstimationEnabled;
+@property (nonatomic, assign) NSInteger worldAlignment;
 
 @end
 

@@ -114,6 +114,17 @@ RCT_REMAP_METHOD(setIsLightEstimationEnabled,
   [exglView setIsLightEstimationEnabled:lightEstimationEnabled];
 }
 
+RCT_REMAP_METHOD(setWorldAlignment,
+                 setWorldAlignmentWithSessionId:(nonnull NSNumber *)sessionId
+                 worldAlignment:(NSInteger)worldAlignment)
+{
+  EXGLView *exglView = _arSessions[sessionId];
+  if (!exglView) {
+    return;
+  }
+  [exglView setWorldAlignment:worldAlignment];
+}
+
 RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(getARLightEstimation,
                                       nullable NSDictionary *,
                                       getARLightEstimationWithSessionId:(nonnull NSNumber *)sessionId)

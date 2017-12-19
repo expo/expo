@@ -18,6 +18,7 @@
 - (NSDictionary *)planes;
 - (void)setIsPlaneDetectionEnabled:(BOOL)planeDetectionEnabled;
 - (void)setIsLightEstimationEnabled:(BOOL)lightEstimationEnabled;
+- (void)setWorldAlignment:(NSInteger)worldAlignment;
 
 // "protected"
 @property (nonatomic, strong) EAGLContext *eaglCtx;

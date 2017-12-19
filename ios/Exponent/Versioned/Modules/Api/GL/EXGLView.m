@@ -342,4 +342,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   }
 }
 
+- (void)setWorldAlignment:(NSInteger)worldAlignment
+{
+  if (_arSessionManager) {
+    [_arSessionManager setWorldAlignment:worldAlignment];
+  }
+}
+
 @end
