@@ -137,4 +137,15 @@ RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(getRawFeaturePoints,
   return [exglView rawFeaturePoints];
 }
 
+RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(getPlanes,
+                                      nullable NSDictionary *,
+                                      getPlanesWithSessionId:(nonnull NSNumber *)sessionId)
+{
+  EXGLView *exglView = _arSessions[sessionId];
+  if (!exglView) {
+    return nil;
+  }
+  return [exglView planes];
+}
+
 @end

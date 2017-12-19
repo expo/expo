@@ -184,11 +184,10 @@ static GLfloat arCamVerts[] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
 - (void)setIsPlaneDetectionEnabled:(BOOL)isPlaneDetectionEnabled
 {
   _isPlaneDetectionEnabled = isPlaneDetectionEnabled;
-  ARWorldTrackingConfiguration *configuration = (ARWorldTrackingConfiguration *) self.arSession.configuration;
   if (isPlaneDetectionEnabled) {
-    configuration.planeDetection = ARPlaneDetectionHorizontal;
+    self.arConfig.planeDetection = ARPlaneDetectionHorizontal;
   } else {
-    configuration.planeDetection = ARPlaneDetectionNone;
+    self.arConfig.planeDetection = ARPlaneDetectionNone;
   }
   [self _reload];
 }
@@ -196,8 +195,7 @@ static GLfloat arCamVerts[] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
 - (void)setIsLightEstimationEnabled:(BOOL)isLightEstimationEnabled
 {
   _isLightEstimationEnabled = isLightEstimationEnabled;
-  ARWorldTrackingConfiguration *configuration = (ARWorldTrackingConfiguration *) self.arSession.configuration;
-  configuration.lightEstimationEnabled = isLightEstimationEnabled;
+  self.arConfig.lightEstimationEnabled = isLightEstimationEnabled;
   [self _reload];
 }
 
@@ -245,6 +243,44 @@ static GLfloat arCamVerts[] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
 
   return @{
            @"featurePoints": featurePoints
+           };
+}
+
+- (NSDictionary *)planes
+{
+  if (!self.arSession) {
+    return nil;
+  }
+  
+  NSArray<ARAnchor *> *anchors = self.arSession.currentFrame.anchors;
+  NSMutableArray *planes = [NSMutableArray array];
+  
+  for (int i = 0; i < anchors.count; i++) {
+    if ([anchors[i] isKindOfClass:[ARPlaneAnchor class]]){
+      ARPlaneAnchor *planeAnchor = (ARPlaneAnchor *)anchors[i];
+      vector_float3 extent = planeAnchor.extent;
+      vector_float3 center = planeAnchor.center;
+      // TODO: alignment, etc.
+      
+      [planes addObject:@{
+                          @"center": @{
+                              @"x": @(center[0]),
+                              @"y": @(center[1]),
+                              @"z": @(center[2])
+                              },
+                          @"extent": @{
+                              @"width": @(extent[0]),
+                              @"length": @(extent[2])
+                              },
+                          @"id": [NSString stringWithFormat:@"%d", planeAnchor.identifier],
+                          @"transform": [EXGLARSessionManager nsArrayForMatrix: planeAnchor.transform]
+                          }];
+      
+    }
+  }
+  
+  return @{
+           @"planes": planes
            };
 }
 

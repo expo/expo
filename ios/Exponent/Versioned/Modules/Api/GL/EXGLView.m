@@ -320,6 +320,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   return @{};
 }
 
+- (NSDictionary *)planes
+{
+  if (_arSessionManager) {
+    return [_arSessionManager planes];
+  }
+  return @{};
+}
+
 - (void)setIsPlaneDetectionEnabled:(BOOL)planeDetectionEnabled
 {
   if (_arSessionManager) {
