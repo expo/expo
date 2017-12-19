@@ -93,6 +93,7 @@ public class ConstantsModule extends ReactContextBaseJavaModule {
       constants.putAll(mExperienceProperties);
     }
     constants.put("systemVersion", Build.VERSION.RELEASE);
+    constants.put("androidVersionCode", Constants.ANDROID_VERSION_CODE);
     return constants;
   }
 

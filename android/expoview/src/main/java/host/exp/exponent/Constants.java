@@ -23,6 +23,7 @@ public class Constants {
     public String RELEASE_CHANNEL;
     public boolean SHOW_LOADING_VIEW_IN_SHELL_APP;
     public List<Constants.EmbeddedResponse> EMBEDDED_RESPONSES;
+    public int ANDROID_VERSION_CODE;
   }
 
   private static final String TAG = Constants.class.getSimpleName();
@@ -41,6 +42,7 @@ public class Constants {
   public static boolean DISABLE_NUX = false;
   public static String RELEASE_CHANNEL = "default";
   public static boolean SHOW_LOADING_VIEW_IN_SHELL_APP = false;
+  public static int ANDROID_VERSION_CODE;
 
   public static void setSdkVersions(List<String> sdkVersions) {
     ABI_VERSIONS = TextUtils.join(",", sdkVersions);
@@ -85,6 +87,7 @@ public class Constants {
       SHELL_APP_SCHEME = appConstants.SHELL_APP_SCHEME;
       RELEASE_CHANNEL = appConstants.RELEASE_CHANNEL;
       SHOW_LOADING_VIEW_IN_SHELL_APP = appConstants.SHOW_LOADING_VIEW_IN_SHELL_APP;
+      ANDROID_VERSION_CODE = appConstants.ANDROID_VERSION_CODE;
 
       embeddedResponses.addAll(appConstants.EMBEDDED_RESPONSES);
       EMBEDDED_RESPONSES = embeddedResponses;
