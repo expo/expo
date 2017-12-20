@@ -58,7 +58,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 {
   EXAssertMainThread();
   NSAssert((_delegate != nil), @"Cannot init react app without EXReactAppManagerDelegate");
-  [self invalidate];
+  [self _invalidateAndClearDelegate:NO];
   [self computeVersionSymbolPrefix];
   [RCTDevLoadingView setEnabled:NO];
   
@@ -88,6 +88,16 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (void)invalidate
 {
+  [self _invalidateAndClearDelegate:YES];
+}
+
+- (void)dealloc
+{
+  [self _invalidateAndClearDelegate:YES];
+}
+
+- (void)_invalidateAndClearDelegate:(BOOL)clearDelegate
+{
   [self _stopObservingBridgeNotifications];
   if (_versionManager) {
     [_versionManager invalidate];
@@ -103,7 +113,9 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     _reactBridge = nil;
     if (_delegate) {
       [_delegate reactAppManagerDidDestroyApp:self];
-      _delegate = nil;
+      if (clearDelegate) {
+        _delegate = nil;
+      }
     }
   }
   [self _invalidateVersionState];
