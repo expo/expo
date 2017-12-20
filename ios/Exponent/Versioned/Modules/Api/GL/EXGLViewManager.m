@@ -114,6 +114,17 @@ RCT_REMAP_METHOD(setIsLightEstimationEnabled,
   [exglView setIsLightEstimationEnabled:lightEstimationEnabled];
 }
 
+RCT_REMAP_METHOD(setWorldAlignment,
+                 setWorldAlignmentWithSessionId:(nonnull NSNumber *)sessionId
+                 worldAlignment:(NSInteger)worldAlignment)
+{
+  EXGLView *exglView = _arSessions[sessionId];
+  if (!exglView) {
+    return;
+  }
+  [exglView setWorldAlignment:worldAlignment];
+}
+
 RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(getARLightEstimation,
                                       nullable NSDictionary *,
                                       getARLightEstimationWithSessionId:(nonnull NSNumber *)sessionId)
@@ -135,6 +146,17 @@ RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(getRawFeaturePoints,
     return nil;
   }
   return [exglView rawFeaturePoints];
+}
+
+RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(getPlanes,
+                                      nullable NSDictionary *,
+                                      getPlanesWithSessionId:(nonnull NSNumber *)sessionId)
+{
+  EXGLView *exglView = _arSessions[sessionId];
+  if (!exglView) {
+    return nil;
+  }
+  return [exglView planes];
 }
 
 @end
