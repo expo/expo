@@ -253,9 +253,9 @@ The following is a list of properties that are available for you under the `"exp
 
       List of permissions used by the standalone app. Remove the field to use the default list of permissions.
     
-	Example: `[ "CAMERA", "ACCESS_FINE_LOCATION" ]`.
+      Example: `[ "CAMERA", "ACCESS_FINE_LOCATION" ]`.
     
-	You can specify the following permissions depending on what you need:
+      You can specify the following permissions depending on what you need:
     
       - `ACCESS_COARSE_LOCATION`
       - `ACCESS_FINE_LOCATION`
@@ -335,3 +335,4 @@ The following is a list of properties that are available for you under the `"exp
 
    - `postPublish`
 
+      
