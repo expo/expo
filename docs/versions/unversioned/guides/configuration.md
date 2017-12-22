@@ -94,7 +94,7 @@ The following is a list of properties that are available for you under the `"exp
 
 - `loading`
 
-   Configuration for the loading screen that users see when opening your app, while fetching & caching bundle and assets.
+   DEPREACTED: Use `splash` instead. Configuration for the loading screen that users see when opening your app, while fetching & caching bundle and assets.
 
    - `icon`
 
@@ -164,16 +164,16 @@ The following is a list of properties that are available for you under the `"exp
 
 - `rnCliPath`
 
-
+   
 - `packagerOpts`
 
-
+   
 - `ignoreNodeModulesValidation`
 
-
+   
 - `nodeModulesPath`
 
-
+   
 - `ios`
 
    **Standalone Apps Only**. iOS standalone app specific configuration
@@ -201,7 +201,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `config`
 
-
+      
        - `branch`
 
           [Branch](https://branch.io/) key to hook up Branch linking services.
@@ -300,11 +300,11 @@ The following is a list of properties that are available for you under the `"exp
    - `permissions`
 
       List of permissions used by the standalone app. Remove the field to use the default list of permissions.
-
-	Example: `[ "CAMERA", "ACCESS_FINE_LOCATION" ]`.
-
-	You can specify the following permissions depending on what you need:
-
+    
+      Example: `[ "CAMERA", "ACCESS_FINE_LOCATION" ]`.
+    
+      You can specify the following permissions depending on what you need:
+    
       - `ACCESS_COARSE_LOCATION`
       - `ACCESS_FINE_LOCATION`
       - `CAMERA`
@@ -332,7 +332,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `config`
 
-
+      
        - `branch`
 
           [Branch](https://branch.io/) key to hook up Branch linking services.
@@ -447,5 +447,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `postPublish`
 
-
+      
 - `assetBundlePatterns`
+
+   An array of file glob strings which point to assets that will be bundled within your standalone app binary. Read more in the [Offline Support guide](https://docs.expo.io/versions/latest/guides/offline-support.html)
