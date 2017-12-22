@@ -1,10 +1,5 @@
 FROM gcr.io/exponentjs/docs-builder:v2
 
-MOUNT ../:/universe
-MOUNT ../node_modules-tarballs:/root/node_modules-tarballs
-
-RUN cp /universe/.yarnrc /root/.yarnrc
-
 ADD gatsby/yarn.lock /root/docs/gatsby/yarn.lock
 ADD gatsby/package.json /root/docs/gatsby/package.json
 WORKDIR /root/docs/gatsby
