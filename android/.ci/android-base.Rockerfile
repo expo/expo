@@ -1,9 +1,5 @@
 FROM gcr.io/exponentjs/android-tools:{{ .ToolsVersion }}
 
-# Mount universe and node_modules-tarballs
-MOUNT ../.yarnrc:/root/.yarnrc
-MOUNT ../node_modules-tarballs:/root/node_modules-tarballs
-
 ## Build XDL
 ADD ../dev/xdl /src/xdl
 RUN cd /src/xdl && \
