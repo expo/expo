@@ -66,4 +66,9 @@ public abstract class DetachActivity extends ExperienceActivity {
       }
     });
   }
+
+  @Override
+  public boolean forceUnversioned() {
+    return true;
+  }
 }
