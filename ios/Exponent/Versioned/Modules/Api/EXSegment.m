@@ -82,6 +82,20 @@ RCT_EXPORT_METHOD(screenWithProperties:(NSString *)screenName withProperties:(NS
   }
 }
 
+RCT_EXPORT_METHOD(alias:(NSString *)newId)
+{
+  if (_instance) {
+    [_instance alias:newId];
+  }
+}
+
+RCT_EXPORT_METHOD(aliasWithOptions:(NSString *)newId, withOptions:(NSDictionary *)options)
+{
+  if (_instance) {
+    [_instance alias:newId options:options];
+  }
+}
+
 RCT_EXPORT_METHOD(reset)
 {
   if (_instance) {

@@ -144,6 +144,20 @@ public class SegmentModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void alias(final String newId) {
+    if (mClient != null) {
+      mClient.alias(newId);
+    }
+  }
+
+  @ReactMethod
+  public void aliasWithOptions(final String newId, final Options options) {
+    if (mClient != null) {
+      mClient.alias(newId, options);
+    }
+  }
+
+  @ReactMethod
   public void flush() {
     if (mClient != null) {
       mClient.flush();
