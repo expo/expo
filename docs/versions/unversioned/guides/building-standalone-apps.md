@@ -71,23 +71,28 @@ If you don't know what this means, let us handle it! :)
 
 ### If you choose to build for iOS
 
-The first time you build the project, you will be prompted for your Apple ID and password for your developer account, and your Apple Team ID. This is needed to manage certificates and provisioning profiles, so we can build and send off push notifications.
+You are given a choice of letting the `exp` client create the
+necessary credentials for you, while still having a chance to provide
+your own overrides. Your Apple ID and password is used locally and
+never saved on Expo's servers.
 
 ```bash
+[exp] Making sure project is set up correctly...
+[exp] Your project looks good!
+[exp] Checking if current build exists...
+
 [exp] No currently active or previous builds for this project.
-
-We need your Apple ID/password to manage certificates and provisioning
-profiles from your Apple Developer account.
-
-What's your Apple ID? example@gmail.com
-Password? ******************
-What is your Apple Team ID (you can find that on this page:
-https://developer.apple.com/account/#/membership)? XY1234567
+? How would you like to upload your credentials?
+ (Use arrow keys)
+❯ Expo handles all credentials, you can still provide overrides
+  I will provide all the credentials and files needed, Expo does no validation
 ```
 
-> **Note:** If your Apple id has two-factor authentication enabled, use the `--local-auth` flag (currently in beta).
-
-Next we will ask you if you'd like us to handle your distribution certificate or use your own. Similar to the Android keystore, if you don't know what a distribution certificate is, just let us handle it for you. If you do need to upload your own certificates, we recommend following [this excellent guide on making a p12 file](https://calvium.com/how-to-make-a-p12-file/).
+We ask you if you'd like us to handle your distribution certificate or
+use your own. Similar to the Android keystore, if you don't know what
+a distribution certificate is, just let us handle it for you. If you
+do need to upload your own certificates, we recommend following 
+[this excellent guide on making a p12file](https://calvium.com/how-to-make-a-p12-file/).
 
 > **Note:** The Expo build service supports both normal App Store distribution as well as enterprise distribution. To use the latter, you must be a member of the ["Apple Developer Enterprise Program"](https://developer.apple.com/programs/enterprise/). Only normal Apple developer accounts can build apps that can be submitted to the Apple App Store, and only enterprise developer accounts can build apps that can be distributed using enterprise distribution methods. During the build process, the Expo build service will detect the account type and select or create the correct type of distribution certificate and provisioning profile. At this time, the standalone app builder does not support "ad hoc" distribution certificates or provisioning profiles.
 
