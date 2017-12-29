@@ -67,9 +67,14 @@ Pod::Spec.new do |s|
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
   end
 
-  s.subspec "Exponent" do |ss|
+  s.subspec "Expo" do |ss|
     ss.dependency         "ReactABI22_0_0/Core"
-    ss.source_files     = "Exponent/**/*.{h,m}"
+    ss.source_files     = "Expo/Core/**/*.{h,m}"
+  end
+
+  s.subspec "ExpoOptional" do |ss|
+    ss.dependency         "ReactABI22_0_0/Expo"
+    ss.source_files     = "Expo/Optional/**/*.{h,m}"
   end
 
   s.subspec "BatchedBridge" do |ss|
