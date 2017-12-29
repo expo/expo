@@ -420,6 +420,7 @@ async function writeIOSTemplatesAsync(platform, args, templateFilesPath, templat
     {
       TARGET_NAME: 'Exponent',
       REACT_NATIVE_PATH: templateSubstitutions.REACT_NATIVE_PATH,
+      REACT_NATIVE_EXPO_SUBSPECS: ['Expo', 'ExpoOptional'],
     }
   );
 

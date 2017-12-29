@@ -5,8 +5,6 @@
       'ART',
       'BatchedBridge',
       'DevSupport',
-      'Expo',
-      'ExpoOptional',
       'RCTActionSheet',
       'RCTAnimation',
       'RCTCameraRoll',
@@ -16,6 +14,7 @@
       'RCTText',
       'RCTVibration',
       'RCTWebSocket',
+      ${REACT_NATIVE_EXPO_SUBSPECS}
     ]
     pod 'YogaABI21_0_0', :path => '${VERSIONED_REACT_NATIVE_PATH}/ABI21_0_0/ReactCommon/ABI21_0_0yoga'
     # End generated dependency

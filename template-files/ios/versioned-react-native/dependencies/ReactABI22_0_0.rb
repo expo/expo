@@ -4,8 +4,6 @@
       'Core',
       'ART',
       'DevSupport',
-      'Expo',
-      'ExpoOptional',
       'RCTActionSheet',
       'RCTAnimation',
       'RCTCameraRoll',
@@ -16,6 +14,7 @@
       'RCTVibration',
       'RCTWebSocket',
       'CxxBridge',
+      ${REACT_NATIVE_EXPO_SUBSPECS}
     ]
     pod 'yogaABI22_0_0', :path => '${VERSIONED_REACT_NATIVE_PATH}/ABI22_0_0/ReactCommon/ABI22_0_0yoga'
     # End generated dependency
