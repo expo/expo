@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
   s.subspec "Core" do |ss|
     ss.source_files = "ios/Exponent/**/*.{h,m}"
     ss.preserve_paths = "ios/Exponent/**/*.{h,m}"
-    ss.exclude_files = "ios/Exponent/EXAppDelegate.*", "ios/Exponent/EXRootViewController.*", "ios/Exponent/Supporting/**", "ios/UnversionedModules/Payments/**", "ios/Exponent/Versioned/Modules/Api/GL/ARKit/**", "ios/Exponent/Versioned/Modules/Api/Components/FaceDetector/**"
+    ss.exclude_files = "ios/Exponent/EXAppDelegate.*", "ios/Exponent/EXRootViewController.*", "ios/Exponent/Supporting/**", "ios/Exponent/Versioned/Optional/**"
 
 ${IOS_EXPOKIT_DEPS}
   end
@@ -30,18 +30,18 @@ ${IOS_EXPOKIT_DEPS}
   s.subspec "Payments" do |ss|
     ss.dependency "ExpoKit/Core"
     ss.dependency 'Stripe', '~> 10.1.0'
-    ss.source_files = 'ios/UnversionedModules/Payments/*.{h,m}'
+    ss.source_files = 'ios/Exponent/Versioned/Optional/Payments/*.{h,m}'
   end
 
   s.subspec "AR" do |ss|
     ss.dependency "ExpoKit/Core"
-    ss.source_files = 'ios/Exponent/Versioned/Modules/Api/GL/ARKit/**'
+    ss.source_files = 'ios/Exponent/Versioned/Optional/ARKit/**'
   end
 
   s.subspec "FaceDetector" do |ss|
     ss.dependency "ExpoKit/Core"
     ss.dependency "GoogleMobileVision/FaceDetector", '~> 1.1.0'
     ss.dependency "GoogleMobileVision/MVDataOutput", '~> 1.1.0'
-    ss.source_files = 'ios/Exponent/Versioned/Modules/Api/Components/FaceDetector/**'
+    ss.source_files = 'ios/Exponent/Versioned/Optional/FaceDetector/**'
   end
 end
