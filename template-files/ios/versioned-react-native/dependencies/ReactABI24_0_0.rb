@@ -1,6 +1,6 @@
 
     # Generated dependency: ReactABI24_0_0
-    pod 'ReactABI24_0_0', :inhibit_warnings => true, :path => 'versioned-react-native/ABI24_0_0', :subspecs => [
+    pod 'ReactABI24_0_0', :inhibit_warnings => true, :path => '${VERSIONED_REACT_NATIVE_PATH}/ABI24_0_0', :subspecs => [
       'Core',
       'ART',
       'DevSupport',
@@ -17,5 +17,5 @@
       'RCTWebSocket',
       'CxxBridge',
     ]
-    pod 'yogaABI24_0_0', :path => 'versioned-react-native/ABI24_0_0/ReactCommon/ABI24_0_0yoga'
+    pod 'yogaABI24_0_0', :path => '${VERSIONED_REACT_NATIVE_PATH}/ABI24_0_0/ReactCommon/ABI24_0_0yoga'
     # End generated dependency

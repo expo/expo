@@ -1,6 +1,6 @@
 
     # Generated dependency: ReactABI21_0_0
-    pod 'ReactABI21_0_0', :inhibit_warnings => true, :path => 'versioned-react-native/ABI21_0_0', :subspecs => [
+    pod 'ReactABI21_0_0', :inhibit_warnings => true, :path => '${VERSIONED_REACT_NATIVE_PATH}/ABI21_0_0', :subspecs => [
       'Core',
       'ART',
       'BatchedBridge',
@@ -17,5 +17,5 @@
       'RCTVibration',
       'RCTWebSocket',
     ]
-    pod 'YogaABI21_0_0', :path => 'versioned-react-native/ABI21_0_0/ReactCommon/ABI21_0_0yoga'
+    pod 'YogaABI21_0_0', :path => '${VERSIONED_REACT_NATIVE_PATH}/ABI21_0_0/ReactCommon/ABI21_0_0yoga'
     # End generated dependency
