@@ -23,7 +23,7 @@ import com.facebook.react.common.ReactConstants;
 public class ReactDatabaseSupplier extends SQLiteOpenHelper {
 
     // VisibleForTesting
-    public String DATABASE_NAME = "RKStorage";
+    public static String DATABASE_NAME = "RKStorage";
 
     public static int DATABASE_VERSION = 1;
 

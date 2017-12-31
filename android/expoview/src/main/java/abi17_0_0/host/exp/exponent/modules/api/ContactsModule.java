@@ -120,7 +120,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
           contact.putInt("id", id);
           contact.putString("name", name);
           contacts.pushMap(contact);
-
+          System.out.println(id + " ---- " + name);
           currentIndex++;
         }
 

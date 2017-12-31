@@ -141,6 +141,9 @@ android {
     ndk {
       abiFilters 'armeabi-v7a', 'x86'
     }
+    manifestPlaceholders = [
+            'appAuthRedirectScheme': 'host.exp.exponent'
+    ]
   }
 
   // Use custom task for NDK module from above
@@ -266,6 +269,26 @@ dependencies {
   }
   compile 'com.android.support:exifinterface:26.0.1'
   compile 'com.google.android:cameraview:1.0.0'
+
+  testCompile 'junit:junit:4.12'
+  testCompile 'org.mockito:mockito-core:1.10.19'
+  testCompile "org.powermock:powermock-api-mockito:1.6.5"
+  testCompile 'org.powermock:powermock-module-junit4:1.6.5'
+  testCompile "org.powermock:powermock-module-junit4-rule:1.6.5"
+  testCompile "org.powermock:powermock-classloading-xstream:1.6.5"
+  testCompile "org.robolectric:robolectric:3.0"
+
+  androidTestCompile 'com.android.support:support-annotations:24.0.0'
+  androidTestCompile 'com.android.support.test:runner:0.5'
+  androidTestCompile 'com.android.support.test:rules:0.5'
+  // Optional -- Hamcrest library
+  androidTestCompile 'org.hamcrest:hamcrest-library:1.3'
+  // Optional -- UI testing with Espresso
+  androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
+  // Optional -- UI testing with UI Automator
+  androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
+
+
   /*compile('com.gettipsi:stripeview:1.0.0') {
       transitive = false
       exclude group: 'com.facebook.react', module: 'react-native'

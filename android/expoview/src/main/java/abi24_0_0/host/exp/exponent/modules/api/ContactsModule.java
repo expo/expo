@@ -43,9 +43,9 @@ public class ContactsModule extends ReactContextBaseJavaModule {
   private static final String TAG = ContactsModule.class.getSimpleName();
 
   private static final String[] PROJECTION = new String[]{
-      CommonDataKinds.Phone.CONTACT_ID,
-      CommonDataKinds.Phone.NUMBER,
-      CommonDataKinds.Email.DATA,
+          CommonDataKinds.Phone.CONTACT_ID,
+          CommonDataKinds.Phone.NUMBER,
+          CommonDataKinds.Email.DATA,
   };
 
   public ContactsModule(ReactApplicationContext reactContext) {
@@ -76,11 +76,11 @@ public class ContactsModule extends ReactContextBaseJavaModule {
 
     ContentResolver cr = getReactApplicationContext().getContentResolver();
     Cursor cursor = cr.query(
-        CommonDataKinds.Phone.CONTENT_URI,
-        PROJECTION,
-        fetchSingleContact ? Data.CONTACT_ID + " = ?" : null,
-        fetchSingleContact ? new String[] { options.getString("id") } : null,
-        null
+            CommonDataKinds.Phone.CONTENT_URI,
+            PROJECTION,
+            fetchSingleContact ? Data.CONTACT_ID + " = ?" : null,
+            fetchSingleContact ? new String[] { options.getString("id") } : null,
+            null
     );
     if (cursor != null) {
       try {
@@ -130,17 +130,17 @@ public class ContactsModule extends ReactContextBaseJavaModule {
 
           HashMap<String, WritableArray> collections = new HashMap<>();
           collections.put("emails", fieldsSet.contains("emails") ?
-              getEmailsFromContentResolver(id, cr) : null);
+                  getEmailsFromContentResolver(id, cr) : null);
           collections.put("phoneNumbers", fieldsSet.contains("phoneNumbers") ?
-              getPhoneNumbersFromContentResolver(id, cr) : null);
+                  getPhoneNumbersFromContentResolver(id, cr) : null);
           collections.put("addresses", fieldsSet.contains("addresses") ?
-              getAddressesFromContentResolver(id, cr) : null);
+                  getAddressesFromContentResolver(id, cr) : null);
           collections.put("instantMessageAddresses", fieldsSet.contains("instantMessageAddresses") ?
-              getInstantMessageAddressesFromContentResolver(id, cr) : null);
+                  getInstantMessageAddressesFromContentResolver(id, cr) : null);
           collections.put("urlAddresses", fieldsSet.contains("urlAddresses") ?
-              getUrlAddressesFromContentResolver(id, cr) : null);
+                  getUrlAddressesFromContentResolver(id, cr) : null);
           collections.put("relationships", fieldsSet.contains("relationships") ?
-              getRelationshipsFromContentResolver(id, cr) : null);
+                  getRelationshipsFromContentResolver(id, cr) : null);
 
           for (String fieldName : collections.keySet()) {
             WritableArray value = collections.get(fieldName);
@@ -188,11 +188,11 @@ public class ContactsModule extends ReactContextBaseJavaModule {
 
   private WritableMap addIdentityFromContentResolver(Set<String> fieldsSet, ContentResolver cr, WritableMap contact, long id) {
     Cursor cursor = cr.query(
-        Data.CONTENT_URI,
-        null,
-        Data.CONTACT_ID + " = ? AND " + Data.MIMETYPE + " = ?",
-        new String[] { Long.toString(id), CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE },
-        null
+            Data.CONTENT_URI,
+            null,
+            Data.CONTACT_ID + " = ? AND " + Data.MIMETYPE + " = ?",
+            new String[] { Long.toString(id), CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE },
+            null
     );
 
     if (cursor != null) {
@@ -237,11 +237,11 @@ public class ContactsModule extends ReactContextBaseJavaModule {
 
   private String getNicknameFromContentResolver(ContentResolver cr, long id) {
     Cursor cursor = cr.query(
-        Data.CONTENT_URI,
-        null,
-        Data.CONTACT_ID + " = ? AND " + Data.MIMETYPE + " = ?",
-        new String[] { Long.toString(id), CommonDataKinds.Nickname.CONTENT_ITEM_TYPE },
-        null
+            Data.CONTENT_URI,
+            null,
+            Data.CONTACT_ID + " = ? AND " + Data.MIMETYPE + " = ?",
+            new String[] { Long.toString(id), CommonDataKinds.Nickname.CONTENT_ITEM_TYPE },
+            null
     );
     String nickNameIndex = CommonDataKinds.Nickname.NAME;
     String nickname = null;
@@ -257,11 +257,11 @@ public class ContactsModule extends ReactContextBaseJavaModule {
   private WritableArray getEmailsFromContentResolver(long id, ContentResolver cr) {
     WritableArray emails = Arguments.createArray();
     Cursor cursor = cr.query(
-      CommonDataKinds.Email.CONTENT_URI,
-      null,
-      CommonDataKinds.Email.CONTACT_ID + " = ?",
-      new String[] { Long.toString(id) },
-      null
+            CommonDataKinds.Email.CONTENT_URI,
+            null,
+            CommonDataKinds.Email.CONTACT_ID + " = ?",
+            new String[] { Long.toString(id) },
+            null
     );
     if (cursor != null) {
       try {
@@ -316,19 +316,19 @@ public class ContactsModule extends ReactContextBaseJavaModule {
 
   private boolean isMissingPermissions() {
     return Build.VERSION.SDK_INT >= 23 &&
-        ContextCompat.checkSelfPermission(
-            getReactApplicationContext(),
-            Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED;
+            ContextCompat.checkSelfPermission(
+                    getReactApplicationContext(),
+                    Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED;
   }
 
   private WritableArray getPhoneNumbersFromContentResolver(long id, ContentResolver cr) {
     WritableArray phoneNumbers = Arguments.createArray();
     Cursor cursor = cr.query(
-        CommonDataKinds.Phone.CONTENT_URI,
-        null,
-        CommonDataKinds.Phone.CONTACT_ID + " = ?",
-        new String[] { Long.toString(id) },
-        null
+            CommonDataKinds.Phone.CONTENT_URI,
+            null,
+            CommonDataKinds.Phone.CONTACT_ID + " = ?",
+            new String[] { Long.toString(id) },
+            null
     );
     if (cursor != null) {
       try {
@@ -384,11 +384,11 @@ public class ContactsModule extends ReactContextBaseJavaModule {
   private WritableArray getAddressesFromContentResolver(long id, ContentResolver cr) {
     WritableArray addresses = Arguments.createArray();
     Cursor cursor = cr.query(
-        CommonDataKinds.StructuredPostal.CONTENT_URI,
-        null,
-        CommonDataKinds.StructuredPostal.CONTACT_ID + " = ?",
-        new String[] { Long.toString(id) },
-        null
+            CommonDataKinds.StructuredPostal.CONTENT_URI,
+            null,
+            CommonDataKinds.StructuredPostal.CONTACT_ID + " = ?",
+            new String[] { Long.toString(id) },
+            null
     );
 
     if (cursor != null) {
@@ -466,11 +466,11 @@ public class ContactsModule extends ReactContextBaseJavaModule {
   @Nullable
   private HashMap<String, String> getOrganizationFromContentResolver(long id, ContentResolver cr) {
     Cursor cursor = cr.query(
-        ContactsContract.Data.CONTENT_URI,
-        null,
-        ContactsContract.Data.CONTACT_ID + " = ? AND " + ContactsContract.Data.MIMETYPE + " = ?",
-        new String[] { Long.toString(id), ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE },
-        null
+            ContactsContract.Data.CONTENT_URI,
+            null,
+            ContactsContract.Data.CONTACT_ID + " = ? AND " + ContactsContract.Data.MIMETYPE + " = ?",
+            new String[] { Long.toString(id), ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE },
+            null
     );
     if (cursor != null) {
       try {
@@ -491,29 +491,29 @@ public class ContactsModule extends ReactContextBaseJavaModule {
 
   private WritableMap addImageInfoFromContentResolver(Set<String> fieldsSet, ContentResolver cr, WritableMap contact, long id) {
     Cursor imageCursor = cr.query(
-        Data.CONTENT_URI,
-        null,
-        Data.CONTACT_ID + "= ? AND " +
-            Data.MIMETYPE + "= ?",
-        new String[] { Long.toString(id), CommonDataKinds.Photo.CONTENT_ITEM_TYPE },
-        null
+            Data.CONTENT_URI,
+            null,
+            Data.CONTACT_ID + "= ? AND " +
+                    Data.MIMETYPE + "= ?",
+            new String[] { Long.toString(id), CommonDataKinds.Photo.CONTENT_ITEM_TYPE },
+            null
     );
     boolean imageAvailable = false;
     if (imageCursor != null) {
       try {
         if (imageCursor.moveToFirst()) {
-            Uri imageUri = Uri.withAppendedPath(
-                ContentUris.withAppendedId(Contacts.CONTENT_URI, id),
-                Contacts.Photo.CONTENT_DIRECTORY);
+          Uri imageUri = Uri.withAppendedPath(
+                  ContentUris.withAppendedId(Contacts.CONTENT_URI, id),
+                  Contacts.Photo.CONTENT_DIRECTORY);
 
-            try {
-              InputStream is = cr.openInputStream(imageUri);
-              is.close();
-              imageAvailable = true;
-            } catch (Exception e) {
-              EXL.e(TAG, e.getMessage());
-            }
-            contact.putBoolean("imageAvailable", imageAvailable);
+          try {
+            InputStream is = cr.openInputStream(imageUri);
+            is.close();
+            imageAvailable = true;
+          } catch (Exception e) {
+            EXL.e(TAG, e.getMessage());
+          }
+          contact.putBoolean("imageAvailable", imageAvailable);
 
           if (fieldsSet.contains("thumbnail")) {
             WritableMap thumbnail = Arguments.createMap();
@@ -530,11 +530,11 @@ public class ContactsModule extends ReactContextBaseJavaModule {
 
   private String getNoteFromContentResolver(ContentResolver cr, long id) {
     Cursor cursor = cr.query(
-        ContactsContract.Data.CONTENT_URI,
-        null,
-        ContactsContract.Data.CONTACT_ID + " = ? AND " + ContactsContract.Data.MIMETYPE + " = ?",
-        new String[]{ Long.toString(id), ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE },
-        null
+            ContactsContract.Data.CONTENT_URI,
+            null,
+            ContactsContract.Data.CONTACT_ID + " = ? AND " + ContactsContract.Data.MIMETYPE + " = ?",
+            new String[]{ Long.toString(id), ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE },
+            null
     );
     String note = null;
     if (cursor != null) {
@@ -550,14 +550,14 @@ public class ContactsModule extends ReactContextBaseJavaModule {
                                                   long id, boolean birthday) throws ParseException {
     WritableArray dates = Arguments.createArray();
     String selectBirthday = birthday ?
-        " AND " + ContactsContract.CommonDataKinds.Event.TYPE + "=" +
-            ContactsContract.CommonDataKinds.Event.TYPE_BIRTHDAY : "";
+            " AND " + ContactsContract.CommonDataKinds.Event.TYPE + "=" +
+                    ContactsContract.CommonDataKinds.Event.TYPE_BIRTHDAY : "";
     Cursor cursor = cr.query(
-        Data.CONTENT_URI,
-        null,
-        Data.CONTACT_ID + " = ? AND " + Data.MIMETYPE + " = ?" + selectBirthday,
-        new String[] { Long.toString(id), CommonDataKinds.Event.CONTENT_ITEM_TYPE },
-        null
+            Data.CONTENT_URI,
+            null,
+            Data.CONTACT_ID + " = ? AND " + Data.MIMETYPE + " = ?" + selectBirthday,
+            new String[] { Long.toString(id), CommonDataKinds.Event.CONTENT_ITEM_TYPE },
+            null
     );
 
     String label, dateString;
@@ -624,11 +624,11 @@ public class ContactsModule extends ReactContextBaseJavaModule {
   private WritableArray getInstantMessageAddressesFromContentResolver(long id, ContentResolver cr) {
     WritableArray addresses = Arguments.createArray();
     Cursor cursor = cr.query(
-        Data.CONTENT_URI,
-        null,
-        Data.CONTACT_ID + " = ? AND " + Data.MIMETYPE + " = ?",
-        new String[] { Long.toString(id), CommonDataKinds.Im.CONTENT_ITEM_TYPE },
-        null
+            Data.CONTENT_URI,
+            null,
+            Data.CONTACT_ID + " = ? AND " + Data.MIMETYPE + " = ?",
+            new String[] { Long.toString(id), CommonDataKinds.Im.CONTENT_ITEM_TYPE },
+            null
     );
 
     if (cursor != null) {
@@ -712,11 +712,11 @@ public class ContactsModule extends ReactContextBaseJavaModule {
   private WritableArray getUrlAddressesFromContentResolver(long id, ContentResolver cr) {
     WritableArray addresses = Arguments.createArray();
     Cursor cursor = cr.query(
-        Data.CONTENT_URI,
-        null,
-        Data.CONTACT_ID + " = ? AND " + Data.MIMETYPE + " = ?",
-        new String[] { Long.toString(id), CommonDataKinds.Website.CONTENT_ITEM_TYPE },
-        null
+            Data.CONTENT_URI,
+            null,
+            Data.CONTACT_ID + " = ? AND " + Data.MIMETYPE + " = ?",
+            new String[] { Long.toString(id), CommonDataKinds.Website.CONTENT_ITEM_TYPE },
+            null
     );
 
     if (cursor != null) {
@@ -771,11 +771,11 @@ public class ContactsModule extends ReactContextBaseJavaModule {
   private WritableArray getRelationshipsFromContentResolver(long id, ContentResolver cr) {
     WritableArray relationships = Arguments.createArray();
     Cursor cursor = cr.query(
-        Data.CONTENT_URI,
-        null,
-        Data.CONTACT_ID + " = ? AND " + Data.MIMETYPE + " = ?",
-        new String[] { Long.toString(id), CommonDataKinds.Relation.CONTENT_ITEM_TYPE },
-        null
+            Data.CONTENT_URI,
+            null,
+            Data.CONTACT_ID + " = ? AND " + Data.MIMETYPE + " = ?",
+            new String[] { Long.toString(id), CommonDataKinds.Relation.CONTENT_ITEM_TYPE },
+            null
     );
 
     if (cursor != null) {
