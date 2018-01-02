@@ -415,6 +415,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 
 - (void)handleFatalJSExceptionWithMessage:(NSString *)message stack:(NSArray *)stack exceptionId:(NSNumber *)exceptionId
 {
+  [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXKernelAppDidDisplay") object:self];
+
   // mark the experience as hitting an error so we can recover later
   [_appManager registerErrorForBridge:RCTErrorWithMessage(message)];
 
