@@ -59,6 +59,13 @@ RCT_EXPORT_METHOD(getDocumentAsync:(NSDictionary *)options resolver:(RCTPromiseR
     return;
   }
   documentMenuVC.delegate = self;
+  
+  // Because of the way IPad works with Actionsheets such as this one, we need to provide a source view and set it's position.
+  if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    documentMenuVC.popoverPresentationController.sourceRect = CGRectMake(CGRectGetMidX([RCTPresentedViewController().view frame]), CGRectGetMaxY([RCTPresentedViewController().view frame]), 0, 0);
+    documentMenuVC.popoverPresentationController.sourceView = RCTPresentedViewController().view;
+    documentMenuVC.modalPresentationStyle = UIModalPresentationPageSheet;
+  }
 
   [RCTPresentedViewController() presentViewController:documentMenuVC animated:YES completion:nil];
 }
