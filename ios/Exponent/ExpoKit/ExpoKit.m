@@ -2,6 +2,7 @@
 
 #import "ExpoKit.h"
 #import "EXAnalytics.h"
+#import "EXBuildConstants.h"
 #import "EXFacebook.h"
 #import "EXFatalHandler.h"
 #import "EXGoogleAuthManager.h"
@@ -58,6 +59,7 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
                                              selector:@selector(_onKernelAppDidDisplay)
                                                  name:kEXKernelAppDidDisplay
                                                object:nil];
+    [self _initDefaultKeys];
   }
   return self;
 }
@@ -263,6 +265,17 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
   }
   
   return NO;
+}
+
+#pragma mark - internal
+
+- (void)_initDefaultKeys
+{
+  // these are provided in the expo/expo open source repo as defaults; they can all be overridden by setting
+  // the `applicationKeys` property on ExpoKit.
+  if ([EXBuildConstants sharedInstance].defaultApiKeys) {
+    self.applicationKeys = [EXBuildConstants sharedInstance].defaultApiKeys;
+  }
 }
 
 @end

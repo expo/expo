@@ -13,6 +13,7 @@ typedef enum EXKernelDevManifestSource {
 + (instancetype)sharedInstance;
 
 @property (nonatomic, readonly) BOOL isDevKernel;
+@property (nonatomic, readonly) NSDictionary *defaultApiKeys;
 @property (nonatomic, readonly) EXKernelDevManifestSource kernelDevManifestSource;
 @property (nonatomic, readonly) NSString *kernelManifestJsonString;
 @property (nonatomic, strong) NSString *temporarySdkVersion;
