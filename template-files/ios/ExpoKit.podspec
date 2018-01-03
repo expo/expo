@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
   s.source = { :git => "http://github.com/expo/expo.git" }
 
   s.subspec "Core" do |ss|
-    ss.source_files = "ios/Exponent/**/*.{h,m}"
+    ss.source_files = "ios/Exponent/**/*.{h,m}", "template-files/keys.json"
     ss.preserve_paths = "ios/Exponent/**/*.{h,m}"
     ss.exclude_files = "ios/Exponent/EXAppDelegate.*", "ios/Exponent/EXRootViewController.*", "ios/Exponent/Supporting/**", "ios/Exponent/Versioned/Optional/**/*.{h,m}"
 
