@@ -18,9 +18,16 @@ static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
 
 @property (nonatomic, weak) EXAV *exAV;
 
+@property (nonatomic, assign) BOOL playerHasLoaded;
 @property (nonatomic, strong) EXAVPlayerData *data;
 @property (nonatomic, strong) AVPlayerLayer *playerLayer;
 @property (nonatomic, strong) EXVideoPlayerViewController *playerViewController;
+
+@property (nonatomic, assign) BOOL fullscreenPlayerIsDismissing;
+@property (nonatomic, strong) EXVideoPlayerViewController *fullscreenPlayerViewController;
+@property (nonatomic, strong) RCTPromiseResolveBlock requestedFullscreenChangeResolver;
+@property (nonatomic, strong) RCTPromiseRejectBlock requestedFullscreenChangeRejecter;
+@property (nonatomic, assign) BOOL requestedFullscreenChange;
 
 @property (nonatomic, strong) UIViewController *presentingViewController;
 @property (nonatomic, assign) BOOL fullscreenPlayerPresented;
@@ -41,9 +48,15 @@ static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
     
     _data = nil;
     _playerLayer = nil;
+    _playerHasLoaded = NO;
     _playerViewController = nil;
     _presentingViewController = nil;
     _fullscreenPlayerPresented = NO;
+    _fullscreenPlayerViewController = nil;
+    _requestedFullscreenChangeResolver = nil;
+    _requestedFullscreenChangeRejecter = nil;
+    _fullscreenPlayerIsDismissing = NO;
+    _requestedFullscreenChange = NO;
     _statusToSet = [NSMutableDictionary new];
     _useNativeControls = NO;
     _nativeResizeMode = AVLayerVideoGravityResizeAspectFill;
@@ -89,38 +102,54 @@ static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
 
 - (void)_updateForNewPlayer
 {
-  [self setNativeResizeMode:_nativeResizeMode];
+  [self setPlayerHasLoaded:YES];
+  [self _updateNativeResizeMode];
   [self setUseNativeControls:_useNativeControls];
   if (_onLoad) {
     _onLoad([self getStatus]);
+  }
+  if (_requestedFullscreenChangeResolver || _requestedFullscreenChangeRejecter) {
+    [self setFullscreen:_requestedFullscreenChange resolver:_requestedFullscreenChangeResolver rejecter:_requestedFullscreenChangeRejecter];
+    _requestedFullscreenChangeResolver = nil;
+    _requestedFullscreenChangeRejecter = nil;
+    _requestedFullscreenChange = NO;
   }
 }
 
 - (void)_removePlayer
 {
+  if (_requestedFullscreenChangeRejecter) {
+    NSString *errorMessage = @"Player is being removed, cancelling fullscreen change request.";
+    _requestedFullscreenChangeRejecter(@"E_VIDEO_FULLSCREEN", errorMessage, RCTErrorWithMessage(errorMessage));
+    _requestedFullscreenChangeResolver = nil;
+    _requestedFullscreenChangeRejecter = nil;
+    _requestedFullscreenChange = NO;
+  }
+
   if (_data) {
     [_data pauseImmediately];
-    _data.statusUpdateCallback = nil;
+    [_data setStatusUpdateCallback:nil];
     [_exAV demoteAudioSessionIfPossible];
+    [self _removeFullscreenPlayerViewController];
     [self _removePlayerLayer];
-    [_playerViewController.view removeFromSuperview];
-    _playerViewController = nil;
+    [self _removePlayerViewController];
     _data = nil;
   }
 }
 
 #pragma mark - _playerViewController / _playerLayer management
 
-- (EXVideoPlayerViewController *)_getNewPlayerViewController
+- (EXVideoPlayerViewController *)_createNewPlayerViewController
 {
   if (_data == nil) {
     return nil;
   }
   EXVideoPlayerViewController *controller = [[EXVideoPlayerViewController alloc] init];
-  controller.showsPlaybackControls = _useNativeControls;
-  controller.rctDelegate = self;
-  controller.view.frame = self.bounds;
-  controller.player = _data.player;
+  [controller setShowsPlaybackControls:_useNativeControls];
+  [controller setRctDelegate:self];
+  [controller.view setFrame:self.bounds];
+  [controller setPlayer:_data.player];
+  [controller addObserver:self forKeyPath:EXVideoReadyForDisplayKeyPath options:NSKeyValueObservingOptionNew context:nil];
   return controller;
 }
 
@@ -128,31 +157,51 @@ static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
 {
   if (_data) {
     _playerLayer = [AVPlayerLayer playerLayerWithPlayer:_data.player];
-    _playerLayer.frame = self.bounds;
-    _playerLayer.needsDisplayOnBoundsChange = YES;
-    
-    // to prevent video from being animated when resizeMode is 'cover'
-    // resize mode must be set before layer is added
-    [self setNativeResizeMode:_nativeResizeMode];
+    [_playerLayer setFrame:self.bounds];
+    [_playerLayer setNeedsDisplayOnBoundsChange:YES];
     [_playerLayer addObserver:self forKeyPath:EXVideoReadyForDisplayKeyPath options:NSKeyValueObservingOptionNew context:nil];
     
+    // Resize mode must be set before layer is added
+    // to prevent video from being animated when `resizeMode` is `cover`
+    [self _updateNativeResizeMode];
+    
     [self.layer addSublayer:_playerLayer];
-    self.layer.needsDisplayOnBoundsChange = YES;
+    [self.layer setNeedsDisplayOnBoundsChange:YES];
   }
 }
 
 - (void)_removePlayerLayer
 {
-  [_playerLayer removeFromSuperlayer];
-  [_playerLayer removeObserver:self forKeyPath:EXVideoReadyForDisplayKeyPath];
-  _playerLayer = nil;
+  if (_playerLayer) {
+    [_playerLayer removeFromSuperlayer];
+    [_playerLayer removeObserver:self forKeyPath:EXVideoReadyForDisplayKeyPath];
+    _playerLayer = nil;
+  }
 }
+
+- (void)_removeFullscreenPlayerViewController
+{
+  if (_fullscreenPlayerViewController) {
+    [_fullscreenPlayerViewController removeObserver:self forKeyPath:EXVideoReadyForDisplayKeyPath];
+    _fullscreenPlayerViewController = nil;
+  }
+}
+
+- (void)_removePlayerViewController
+{
+  if (_playerViewController) {
+    [_playerViewController.view removeFromSuperview];
+    [_playerViewController removeObserver:self forKeyPath:EXVideoReadyForDisplayKeyPath];
+    _playerViewController = nil;
+  }
+}
+
 
 #pragma mark - Observers
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-  if (object == _playerLayer && [keyPath isEqualToString:EXVideoReadyForDisplayKeyPath]) {
+  if ((object == _playerLayer || object == _playerViewController || object == _fullscreenPlayerViewController) && [keyPath isEqualToString:EXVideoReadyForDisplayKeyPath]) {
     if ([change objectForKey:NSKeyValueChangeNewKey] && _onReadyForDisplay) {
       // Calculate natural size of video:
       NSDictionary *naturalSize;
@@ -208,17 +257,17 @@ static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
   NSMutableDictionary *statusToInitiallySet = [NSMutableDictionary dictionaryWithDictionary:_statusToSet];
   [_statusToSet removeAllObjects];
   
-  __weak __typeof__(self) weakSelf = self;
+  __weak EXVideoView *weakSelf = self;
   
   void (^statusUpdateCallback)(NSDictionary *) = ^(NSDictionary *status) {
-    __strong __typeof__(self) strongSelf = weakSelf;
+    __strong EXVideoView *strongSelf = weakSelf;
     if (strongSelf && strongSelf.onStatusUpdate) {
       strongSelf.onStatusUpdate(status);
     }
   };
   
   void (^errorCallback)(NSString *) = ^(NSString *error) {
-    __strong __typeof__(self) strongSelf = weakSelf;
+    __strong EXVideoView *strongSelf = weakSelf;
     if (strongSelf) {
       [strongSelf _removePlayer];
       [strongSelf _callErrorCallback:error];
@@ -228,27 +277,29 @@ static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
   _data = [[EXAVPlayerData alloc] initWithEXAV:_exAV
                                        withURL:[NSURL URLWithString:uri]
                                     withStatus:statusToInitiallySet
-                          withLoadFinishBlock:^(BOOL success, NSDictionary *successStatus, NSString *error) {
-                            if (success) {
-                              [weakSelf _updateForNewPlayer];
-                              if (resolve) {
-                                resolve(successStatus);
-                              }
-                            } else {
-                              [self _removePlayer];
-                              if (reject) {
-                                reject(@"E_VIDEO_NOTCREATED", nil, RCTErrorWithMessage(error));
-                              }
-                              [weakSelf _callErrorCallback:error];
-                            }
-                          }];
-  _data.statusUpdateCallback = statusUpdateCallback;
-  _data.errorCallback = errorCallback;
+                           withLoadFinishBlock:^(BOOL success, NSDictionary *successStatus, NSString *error) {
+                             __strong EXVideoView *strongSelf = weakSelf;
+                             if (strongSelf && success) {
+                               [strongSelf _updateForNewPlayer];
+                               if (resolve) {
+                                 resolve(successStatus);
+                               }
+                             } else if (strongSelf) {
+                               [strongSelf _removePlayer];
+                               if (reject) {
+                                 reject(@"E_VIDEO_NOTCREATED", error, RCTErrorWithMessage(error));
+                               }
+                               [strongSelf _callErrorCallback:error];
+                             }
+                           }];
+  [_data setStatusUpdateCallback:statusUpdateCallback];
+  [_data setErrorCallback:errorCallback];
   
   // Call onLoadStart on next run loop, otherwise it might not be set yet (if it is set at the same time as uri, via props)
   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) 0), dispatch_get_main_queue(), ^{
-    if (weakSelf.onLoadStart) {
-      weakSelf.onLoadStart(nil);
+    __strong EXVideoView *strongSelf = weakSelf;
+    if (strongSelf && strongSelf.onLoadStart) {
+      strongSelf.onLoadStart(nil);
     }
   });
 }
@@ -282,58 +333,92 @@ static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
              rejecter:(RCTPromiseRejectBlock)reject
 {
   if (!_data) {
-    // We have no video. TODO what about when video is mid-load?
+    // Tried to set fullscreen for an unloaded component.
     if (reject) {
-      reject(@"E_VIDEO_FULLSCREEN", nil, RCTErrorWithMessage(@"Fullscreen encountered an error: video is not loaded."));
+      NSString *errorMessage = @"Fullscreen encountered an error: video is not loaded.";
+      reject(@"E_VIDEO_FULLSCREEN", errorMessage, RCTErrorWithMessage(errorMessage));
     }
     return;
-  }
-  
-  // TODO test race condition of calling this twice in rapid succession
-  
-  __weak __typeof__(self) weakSelf = self;
-  if (value && !_fullscreenPlayerPresented) {
-    if (_useNativeControls || _playerViewController != nil) {
-      [_playerViewController.view removeFromSuperview];
-      _playerViewController = nil;
-      [self _usePlayerLayer];
+  } else if (!_playerHasLoaded) {
+    // `setUri` has been called, but the video has not yet loaded.
+    if (_requestedFullscreenChangeRejecter) {
+      NSString *errorMessage = @"Received newer request, cancelling fullscreen mode change request.";
+      _requestedFullscreenChangeRejecter(@"E_VIDEO_FULLSCREEN", errorMessage, RCTErrorWithMessage(errorMessage));
     }
-    _playerViewController = [self _getNewPlayerViewController];
     
-    // to prevent video from being animated when resizeMode is 'cover'
-    // resize mode must be set before subview is added
-    [self setNativeResizeMode:_nativeResizeMode];
-    
-    // Set presentation style to fullscreen
-    [_playerViewController setModalPresentationStyle:UIModalPresentationFullScreen];
-    
-    // Find the nearest view controller
-    _presentingViewController = RCTPresentedViewController();
-    [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerWillPresent];
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [weakSelf.presentingViewController presentViewController:weakSelf.playerViewController animated:YES completion:^{
-        weakSelf.playerViewController.showsPlaybackControls = YES;
-        weakSelf.fullscreenPlayerPresented = YES;
-        [weakSelf _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerDidPresent];
-        if (resolve) {
-          resolve([weakSelf getStatus]);
+    _requestedFullscreenChange = value;
+    _requestedFullscreenChangeRejecter = reject;
+    _requestedFullscreenChangeResolver = resolve;
+    return;
+  } else {
+    __weak EXVideoView *weakSelf = self;
+    if (value && !_fullscreenPlayerPresented && !_fullscreenPlayerViewController) {
+      _fullscreenPlayerViewController = [self _createNewPlayerViewController];
+
+      // Resize mode must be set before layer is added
+      // to prevent video from being animated when `resizeMode` is `cover`
+      [self _updateNativeResizeMode];
+
+      // Set presentation style to fullscreen
+      [_fullscreenPlayerViewController setModalPresentationStyle:UIModalPresentationFullScreen];
+
+      // Find the nearest view controller
+      _presentingViewController = RCTPresentedViewController();
+      [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerWillPresent];
+
+      dispatch_async(dispatch_get_main_queue(), ^{
+        __strong EXVideoView *strongSelf = weakSelf;
+        if (strongSelf) {
+          strongSelf.fullscreenPlayerViewController.showsPlaybackControls = YES;
+          [strongSelf.presentingViewController presentViewController:strongSelf.fullscreenPlayerViewController animated:YES completion:^{
+            __strong EXVideoView *strongSelfInner = weakSelf;
+            if (strongSelfInner) {
+              strongSelfInner.fullscreenPlayerPresented = YES;
+              [strongSelfInner _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerDidPresent];
+              if (resolve) {
+                resolve([strongSelfInner getStatus]);
+              }
+            }
+          }];
         }
-      }];
-    });
-  } else if (!value && _fullscreenPlayerPresented) {
-    [self videoPlayerViewControllerWillDismiss:_playerViewController];
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [weakSelf.presentingViewController dismissViewControllerAnimated:YES completion:^{
-        [weakSelf videoPlayerViewControllerDidDismiss:weakSelf.playerViewController]; // TODO does this fire twice?
-        if (resolve) {
-          resolve([weakSelf getStatus]);
+      });
+    } else if (!value && _fullscreenPlayerPresented && !_fullscreenPlayerIsDismissing) {
+      [self videoPlayerViewControllerWillDismiss:_fullscreenPlayerViewController];
+
+      dispatch_async(dispatch_get_main_queue(), ^{
+        __strong EXVideoView *strongSelf = weakSelf;
+        if (strongSelf) {
+          [strongSelf.presentingViewController dismissViewControllerAnimated:YES completion:^{
+            __strong EXVideoView *strongSelfInner = weakSelf;
+            if (strongSelfInner) {
+              [strongSelfInner videoPlayerViewControllerDidDismiss:strongSelfInner.fullscreenPlayerViewController];
+              if (resolve) {
+                resolve([strongSelfInner getStatus]);
+              }
+            }
+          }];
         }
-      }];
-    });
-  } else if (resolve) { // Fullscreen is already appropriately set.
-    resolve([self getStatus]);
+      });
+    } else if (value && !_fullscreenPlayerPresented && _fullscreenPlayerViewController && reject) {
+      // Fullscreen player should be presented, is being presented, but hasn't been presented yet.
+      NSString *errorMessage = @"Fullscreen player is already being presented. Await the first change request.";
+      reject(@"E_VIDEO_FULLSCREEN", errorMessage, RCTErrorWithMessage(errorMessage));
+    } else if (!value && _fullscreenPlayerIsDismissing && _fullscreenPlayerViewController && reject) {
+      // Fullscreen player should be dismissing, is already dismissing, but hasn't dismissed yet.
+      NSString *errorMessage = @"Fullscreen player is already being dismissed. Await the first change request.";
+      reject(@"E_VIDEO_FULLSCREEN", errorMessage, RCTErrorWithMessage(errorMessage));
+    } else if (!value && !_fullscreenPlayerPresented && _fullscreenPlayerViewController && reject) {
+      // Fullscreen player is being presented and we receive request to dismiss it.
+      NSString *errorMessage = @"Fullscreen player is being presented. Await the `present` request and then dismiss the player.";
+      reject(@"E_VIDEO_FULLSCREEN", errorMessage, RCTErrorWithMessage(errorMessage));
+    } else if (value && _fullscreenPlayerIsDismissing && _fullscreenPlayerViewController && reject) {
+      // Fullscreen player is being dismissed and we receive request to present it.
+      NSString *errorMessage = @"Fullscreen player is being dismissed. Await the `dismiss` request and then present the player again.";
+      reject(@"E_VIDEO_FULLSCREEN", errorMessage, RCTErrorWithMessage(errorMessage));
+    } else if (resolve) {
+       // Fullscreen is already appropriately set.
+      resolve([self getStatus]);
+    }
   }
 }
 
@@ -356,25 +441,26 @@ static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
     return;
   }
   
+  __weak EXVideoView *weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
-    if (_useNativeControls) {
-      if (_playerLayer) {
-        [self _removePlayerLayer];
+    __strong EXVideoView *strongSelf = weakSelf;
+    if (strongSelf && strongSelf.useNativeControls) {
+      if (strongSelf.playerLayer) {
+        [strongSelf _removePlayerLayer];
       }
-      if (!_playerViewController && _data) {
-        _playerViewController = [self _getNewPlayerViewController];
-        // to prevent video from being animated when resizeMode is 'cover'
-        // resize mode must be set before subview is added
-        [self setNativeResizeMode:_nativeResizeMode];
-        [self addSubview:_playerViewController.view];
+      if (!strongSelf.playerViewController && strongSelf.data) {
+        strongSelf.playerViewController = [strongSelf _createNewPlayerViewController];
+        // Resize mode must be set before layer is added
+        // to prevent video from being animated when `resizeMode` is `cover`
+        [strongSelf _updateNativeResizeMode];
+        [strongSelf addSubview:strongSelf.playerViewController.view];
       }
-    } else {
-      if (_playerViewController) {
-        [_playerViewController.view removeFromSuperview];
-        _playerViewController = nil;
+    } else if (strongSelf) {
+      if (strongSelf.playerViewController) {
+        [strongSelf _removePlayerViewController];
       }
-      if (!_playerLayer) {
-        [self _usePlayerLayer];
+      if (!strongSelf.playerLayer) {
+        [strongSelf _usePlayerLayer];
       }
     }
   });
@@ -383,12 +469,20 @@ static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
 - (void)setNativeResizeMode:(NSString*)mode
 {
   _nativeResizeMode = mode;
+  [self _updateNativeResizeMode];
+}
+
+- (void)_updateNativeResizeMode
+{
   if (_useNativeControls) {
     if (_playerViewController) {
-      _playerViewController.videoGravity = mode;
+      [_playerViewController setVideoGravity:_nativeResizeMode];
+    }
+    if (_fullscreenPlayerViewController) {
+      [_fullscreenPlayerViewController setVideoGravity:_nativeResizeMode];
     }
   } else if (_playerLayer) {
-    _playerLayer.videoGravity = mode;
+    [_playerLayer setVideoGravity:_nativeResizeMode];
   }
 }
 
@@ -418,12 +512,11 @@ static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
   
   if (_useNativeControls && _playerViewController) {
     [super insertReactSubview:view atIndex:atIndex];
-    view.frame = self.bounds;
+    [view setFrame:self.bounds];
     [_playerViewController.contentOverlayView insertSubview:view atIndex:atIndex];
   } else {
     RCTLogError(@"video cannot have any subviews");
   }
-  return;
 }
 
 - (void)removeReactSubview:(UIView *)subview
@@ -434,23 +527,22 @@ static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
   } else {
     RCTLogError(@"video cannot have any subviews");
   }
-  return;
 }
 
 - (void)layoutSubviews
 {
   [super layoutSubviews];
   if (_useNativeControls && _playerViewController) {
-    _playerViewController.view.frame = self.bounds;
+    [_playerViewController.view setFrame:self.bounds];
     
     // also adjust all subviews of contentOverlayView
     for (UIView* subview in _playerViewController.contentOverlayView.subviews) {
-      subview.frame = self.bounds;
+      [subview setFrame:self.bounds];
     }
   } else if (!_useNativeControls && _playerLayer) {
     [CATransaction begin];
     [CATransaction setAnimationDuration:0];
-    _playerLayer.frame = self.bounds;
+    [_playerLayer setFrame:self.bounds];
     [CATransaction commit];
   }
 }
@@ -466,17 +558,19 @@ static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
 
 - (void)videoPlayerViewControllerWillDismiss:(AVPlayerViewController *)playerViewController
 {
-  if (_playerViewController == playerViewController && _fullscreenPlayerPresented) {
+  if (_fullscreenPlayerViewController == playerViewController && _fullscreenPlayerPresented) {
+    _fullscreenPlayerIsDismissing = YES;
     [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerWillDismiss];
   }
 }
 
 - (void)videoPlayerViewControllerDidDismiss:(AVPlayerViewController *)playerViewController
 {
-  if (_playerViewController == playerViewController && _fullscreenPlayerPresented) {
-    _fullscreenPlayerPresented = false;
+  if (_fullscreenPlayerViewController == playerViewController && _fullscreenPlayerPresented) {
+    _fullscreenPlayerIsDismissing = NO;
+    _fullscreenPlayerPresented = NO;
     _presentingViewController = nil;
-    _playerViewController = nil;
+    [self _removeFullscreenPlayerViewController];
     [self setUseNativeControls:_useNativeControls];
     [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerDidDismiss];
   }
@@ -524,12 +618,14 @@ static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
       _onLoadStart(nil);
     }
     [self _removePlayerLayer];
-    [_playerViewController.view removeFromSuperview];
-    _playerViewController = nil;
+    [self _removePlayerViewController];
     
     __weak __typeof__(self) weakSelf = self;
     [_data handleMediaServicesReset:^{
-      [weakSelf _updateForNewPlayer];
+      __strong EXVideoView *strongSelf = weakSelf;
+      if (strongSelf) {
+        [strongSelf _updateForNewPlayer];
+      }
       if (finishCallback != nil) {
         finishCallback();
       }
@@ -548,3 +644,4 @@ static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
 }
 
 @end
+
