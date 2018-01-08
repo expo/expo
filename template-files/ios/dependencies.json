@@ -56,6 +56,10 @@
     "version": "~> 0.1.7"
   },
   {
+    "name": "JKBigInteger2",
+    "version": "0.0.5"
+  },
+  {
     "name": "Branch",
     "version": "~> 0.14.12"
   },

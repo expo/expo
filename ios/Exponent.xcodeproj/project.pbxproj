@@ -269,6 +269,7 @@
 		B5FB74EF1FF6DADC001C764B /* EXTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74231FF6DADB001C764B /* EXTest.m */; };
 		B5FB74F01FF6DADC001C764B /* EXScopedBridgeModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74261FF6DADB001C764B /* EXScopedBridgeModule.m */; };
 		B5FB74F11FF6DADC001C764B /* EXScopedEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74281FF6DADB001C764B /* EXScopedEventEmitter.m */; };
+		BBD03196200011C9009F0434 /* RNAWSCognito.m in Sources */ = {isa = PBXBuildFile; fileRef = BBD03192200011C9009F0434 /* RNAWSCognito.m */; };
 		F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F77DDB921E04AC1100624CA2 /* SafariServices.framework */; };
 /* End PBXBuildFile section */
 
@@ -813,6 +814,8 @@
 		B5FB74261FF6DADB001C764B /* EXScopedBridgeModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedBridgeModule.m; sourceTree = "<group>"; };
 		B5FB74271FF6DADB001C764B /* EXScopedEventEmitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedEventEmitter.h; sourceTree = "<group>"; };
 		B5FB74281FF6DADB001C764B /* EXScopedEventEmitter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedEventEmitter.m; sourceTree = "<group>"; };
+		BBD0318B200011C9009F0434 /* RNAWSCognito.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNAWSCognito.h; sourceTree = "<group>"; };
+		BBD03192200011C9009F0434 /* RNAWSCognito.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNAWSCognito.m; sourceTree = "<group>"; };
 		BD69154E1D289060B003BB86 /* Pods-Exponent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Exponent.release.xcconfig"; path = "Pods/Target Support Files/Pods-Exponent/Pods-Exponent.release.xcconfig"; sourceTree = "<group>"; };
 		D045154CF3903164C70A59B6 /* Pods-ExponentIntegrationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.debug.xcconfig"; sourceTree = "<group>"; };
 		F77DDB921E04AC1100624CA2 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
@@ -1151,6 +1154,7 @@
 			children = (
 				B5FB72721FF6DADB001C764B /* AdMob */,
 				B5FB727F1FF6DADB001C764B /* AV */,
+				BBD0318A200011C9009F0434 /* Cognito */,
 				B5FB728D1FF6DADB001C764B /* Components */,
 				B5FB73741FF6DADB001C764B /* EXAmplitude.h */,
 				B5FB73751FF6DADB001C764B /* EXAmplitude.m */,
@@ -1755,6 +1759,15 @@
 			path = ScopedModule;
 			sourceTree = "<group>";
 		};
+		BBD0318A200011C9009F0434 /* Cognito */ = {
+			isa = PBXGroup;
+			children = (
+				BBD0318B200011C9009F0434 /* RNAWSCognito.h */,
+				BBD03192200011C9009F0434 /* RNAWSCognito.m */,
+			);
+			path = Cognito;
+			sourceTree = "<group>";
+		};
 		FBBF25BCC6E70D733A60A01D /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -2208,6 +2221,7 @@
 				B5FB74C51FF6DADC001C764B /* EXGLObjectManager.m in Sources */,
 				B5FB743D1FF6DADB001C764B /* RNNativeViewHandler.m in Sources */,
 				B5FB74771FF6DADC001C764B /* RNSVGEllipse.m in Sources */,
+				BBD03196200011C9009F0434 /* RNAWSCognito.m in Sources */,
 				B5FB745B1FF6DADB001C764B /* EXAnimationViewManager.m in Sources */,
 				B5FB749F1FF6DADC001C764B /* EXAmplitude.m in Sources */,
 				B5FB74DA1FF6DADC001C764B /* RNBranchAgingDictionary.m in Sources */,
