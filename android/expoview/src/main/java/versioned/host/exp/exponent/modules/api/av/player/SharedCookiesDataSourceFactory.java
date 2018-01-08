@@ -38,7 +38,7 @@ public class SharedCookiesDataSourceFactory implements DataSource.Factory {
 
   private void setDataSourceCookies(HttpDataSource dataSource, Uri uri) {
     HttpUrl url = HttpUrl.get(URI.create(uri.toString()));
-    List<Cookie> cookies = ReactNativeStaticHelpers.getOkHttpClient().cookieJar().loadForRequest(url);
+    List<Cookie> cookies = ReactNativeStaticHelpers.getOkHttpClient(this.getClass()).cookieJar().loadForRequest(url);
     StringBuilder cookieValue = new StringBuilder();
     for(Cookie cookie : cookies) {
       if (cookie.matches(url)) {
