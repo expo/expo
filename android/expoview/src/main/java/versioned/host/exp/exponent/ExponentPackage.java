@@ -61,6 +61,7 @@ import versioned.host.exp.exponent.modules.api.UtilModule;
 import versioned.host.exp.exponent.modules.api.WebBrowserModule;
 import versioned.host.exp.exponent.modules.api.av.AVModule;
 import versioned.host.exp.exponent.modules.api.av.video.VideoViewManager;
+import versioned.host.exp.exponent.modules.api.cognito.RNAWSCognitoModule;
 import versioned.host.exp.exponent.modules.api.components.LinearGradientManager;
 import versioned.host.exp.exponent.modules.api.components.camera.CameraModule;
 import versioned.host.exp.exponent.modules.api.components.camera.CameraViewManager;
@@ -186,6 +187,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new RNGestureHandlerModule(reactContext));
         nativeModules.add(new StripeModule(reactContext));
         nativeModules.add(new BarCodeScannerModule(reactContext));
+        nativeModules.add(new RNAWSCognitoModule(reactContext));
       } catch (JSONException | UnsupportedEncodingException e) {
         EXL.e(TAG, e.toString());
       }
