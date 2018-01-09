@@ -88,6 +88,14 @@ RCT_EXPORT_MODULE(ExponentSpeech)
   RCT_EXPORT_METHOD(stop) {
     [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
   }
+
+  RCT_EXPORT_METHOD(pause) {
+    [_synthesizer pauseSpeakingAtBoundary:AVSpeechBoundaryImmediate];
+  }
+
+  RCT_EXPORT_METHOD(resume) {
+    [_synthesizer continueSpeaking];
+  }
   
   RCT_REMAP_METHOD(isSpeaking, resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     resolve(@([_synthesizer isSpeaking]));
