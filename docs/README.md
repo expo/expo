@@ -4,6 +4,10 @@ Hi! This is what will make Expo actually be useable by people. :)
 
 ## How to edit
 
+Usually you want to edit the docs in the `unversioned` directory. If you want
+your changes to appear right away (instead of waiting for the next sdk release),
+read on to the next section.
+
 #### A note about versioning
 
 Expo's SDK is versioned so that apps made on old SDKs are still supported
