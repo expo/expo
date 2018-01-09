@@ -2,8 +2,6 @@
 title: AuthSession
 ---
 
-# AuthSession
-
 `AuthSession` is the easiest way to add web browser based authentication (for example, browser-based OAuth flows) to your app, built on top of [WebBrowser](webbrowser.html). If you would like to understand how it does this, read this document from top to bottom. If you just want to use it, jump to the [Example](#example).
 
 ## How web browser based authentication flows work
