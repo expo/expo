@@ -298,7 +298,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `permissions`
 
-      List of permissions used by the standalone app. Remove the field to use the default list of permissions.
+      List of additional permissions the standalone app will request upon installation, along with the minimum necessary for an expo app to function.  Remove the field to use the default list of permissions.  Set the field to an empty list to use only the minimum necessary permissions.
     
       Example: `[ "CAMERA", "ACCESS_FINE_LOCATION" ]`.
     
