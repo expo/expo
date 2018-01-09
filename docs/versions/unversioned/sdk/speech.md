@@ -27,9 +27,17 @@ Speak out loud the `text` given `options`. Calling this when another text is bei
 
 Interrupts current speech and deletes all in queue.
 
+### `Expo.Speech.pause()`
+
+Pauses current speech.
+
+### `Expo.Speech.resume()`
+
+Resumes speaking previously paused speech or does nothing if there's none.
+
 ### `Expo.Speech.isSpeakingAsync()`
 
-Determine whether the Text-to-speech utility is currently speaking.
+Determine whether the Text-to-speech utility is currently speaking. Will return `true` if speaker is paused.
 
 #### Returns
 
