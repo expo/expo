@@ -1,7 +1,6 @@
 package versioned.host.exp.exponent.modules.api.components.camera;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.media.CamcorderProfile;
@@ -76,7 +75,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
 
       @Override
       public void onMountError(CameraView cameraView) {
-        ExpoCameraViewHelper.emitMountErrorEvent(cameraView);
+        ExpoCameraViewHelper.emitMountErrorEvent(cameraView, "Camera component could not be rendered - is there any other instance running?");
       }
 
       @Override
@@ -287,9 +286,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
         start();
       }
     } else {
-      WritableMap error = Arguments.createMap();
-      error.putString("message", "Camera permissions not granted - component could not be rendered.");
-      ExpoCameraViewHelper.emitMountErrorEvent(this);
+      ExpoCameraViewHelper.emitMountErrorEvent(this,  "Camera permissions not granted - component could not be rendered.");
     }
   }
 

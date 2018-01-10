@@ -11,15 +11,24 @@ import versioned.host.exp.exponent.modules.api.components.camera.CameraViewManag
 
 public class CameraMountErrorEvent extends Event<CameraMountErrorEvent> {
   private static final Pools.SynchronizedPool<CameraMountErrorEvent> EVENTS_POOL = new Pools.SynchronizedPool<>(3);
+  private String mMessage;
   private CameraMountErrorEvent() {}
 
-  public static CameraMountErrorEvent obtain(int viewTag) {
+  public static CameraMountErrorEvent obtain(int viewTag, String message) {
     CameraMountErrorEvent event = EVENTS_POOL.acquire();
     if (event == null) {
       event = new CameraMountErrorEvent();
     }
-    event.init(viewTag);
+    event.init(viewTag, message);
     return event;
+  }
+
+  private void init(
+      int viewTag,
+      String message
+  ) {
+    super.init(viewTag);
+    mMessage = message;
   }
 
   @Override
@@ -38,6 +47,8 @@ public class CameraMountErrorEvent extends Event<CameraMountErrorEvent> {
   }
 
   private WritableMap serializeEventData() {
-    return Arguments.createMap();
+    WritableMap event = Arguments.createMap();
+    event.putString("message", mMessage);
+    return event;
   }
 }

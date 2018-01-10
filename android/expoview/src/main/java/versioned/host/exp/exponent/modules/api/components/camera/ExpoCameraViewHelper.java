@@ -38,8 +38,8 @@ import versioned.host.exp.exponent.modules.api.components.facedetector.ExpoFaceD
 public class ExpoCameraViewHelper {
   // Mount error event
 
-  public static void emitMountErrorEvent(ViewGroup view) {
-    CameraMountErrorEvent event = CameraMountErrorEvent.obtain(view.getId());
+  public static void emitMountErrorEvent(ViewGroup view, String message) {
+    CameraMountErrorEvent event = CameraMountErrorEvent.obtain(view.getId(), message);
     ReactContext reactContext = (ReactContext) view.getContext();
     reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(event);
   }
