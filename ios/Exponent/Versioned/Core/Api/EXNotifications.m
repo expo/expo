@@ -126,15 +126,25 @@ RCT_EXPORT_METHOD(cancelScheduledNotification:(NSString *)uniqueId)
   }];
 }
 
-RCT_EXPORT_METHOD(cancelAllScheduledNotifications)
+RCT_REMAP_METHOD(cancelAllScheduledNotifications,
+                 cancelAllScheduledNotificationsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
 {
-  for (UILocalNotification *notification in [RCTSharedApplication() scheduledLocalNotifications]) {
-    if ([notification.userInfo[@"experienceId"] isEqualToString:self.experienceId]) {
-      [self _performSynchronouslyOnMainThread:^{
+  [self cancelAllScheduledNotificationsAsyncWithResolver:resolve rejecter:reject];
+}
+
+RCT_REMAP_METHOD(cancelAllScheduledNotificationsAsync,
+                 cancelAllScheduledNotificationsAsyncWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(__unused RCTPromiseRejectBlock)reject)
+{
+  [self _performSynchronouslyOnMainThread:^{
+    for (UILocalNotification *notification in [RCTSharedApplication() scheduledLocalNotifications]) {
+      if ([notification.userInfo[@"experienceId"] isEqualToString:self.experienceId]) {
         [RCTSharedApplication() cancelLocalNotification:notification];
-      }];
+      }
     }
-  }
+  }];
+  resolve(nil);
 }
 
 #pragma mark - Badges
