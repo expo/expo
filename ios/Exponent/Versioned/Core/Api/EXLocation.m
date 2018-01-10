@@ -92,6 +92,11 @@ RCT_EXPORT_MODULE(ExponentLocation)
   return self;
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 - (void)setBridge:(RCTBridge *)bridge
 {
   [super setBridge:bridge];

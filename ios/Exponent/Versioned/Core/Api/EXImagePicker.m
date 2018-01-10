@@ -48,6 +48,11 @@ RCT_EXPORT_MODULE(ExponentImagePicker);
   return self;
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 RCT_EXPORT_METHOD(launchCameraAsync:(NSDictionary *)options
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)

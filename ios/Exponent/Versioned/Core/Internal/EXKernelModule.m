@@ -31,6 +31,11 @@
   return self;
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 - (NSDictionary *)constantsToExport
 {
   return @{ @"sdkVersions": _sdkVersions };
