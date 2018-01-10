@@ -36,6 +36,13 @@ Gets the user agent string which would be included in requests sent by a web vie
 
 - `ios`
 
+  - `buildNumber`
+
+    The build number specified in the embedded `Info.plist` value for `CFBundleVersion` in this app.
+    In a standalone app, you can set this with the `ios.buildNumber` value in `app.json`. This
+    may differ from the value in `Expo.Constants.manifest.ios.buildNumber` because the manifest
+    can be updated over the air, whereas this value will never change for a given native binary.
+
   - `platform`
 
     The Apple internal model identifier for this device, e.g. `iPhone1,1`.
