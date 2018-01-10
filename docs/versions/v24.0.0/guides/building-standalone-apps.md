@@ -8,8 +8,6 @@ An Apple Developer account is needed to build an iOS standalone app, but a Googl
 
 It's a good idea to read the best practices about [Deploying to App Stores](./app-stores.html) to ensure your app is in good shape to get accepted into the Apple and Google marketplaces. We can generate builds for you, but it's up to you to make your app awesome.
 
-> **Warning:** Standalone apps are currently in beta!
-
 ## 1. Install exp
 
 XDE currently doesn't include an option for building a standalone app, so we'll need `exp` for this. Run `npm install -g exp` to get it.
