@@ -54,6 +54,7 @@ EX_EXPORT_SCOPED_MODULE(ExponentConstants, nil)
                                       @"systemFonts": [self _getSystemFontNames],
                                       @"platform": @{
                                           @"ios": @{
+                                              @"buildNumber": [self _buildNumber],
                                               @"platform": [self _devicePlatform],
                                               @"model": [self _deviceModel],
                                               @"userInterfaceIdiom": [self _userInterfaceIdiom],
@@ -90,6 +91,13 @@ RCT_REMAP_METHOD(getWebViewUserAgentAsync,
 }
 
 #pragma mark - Internal
+
+- (NSString *)_buildNumber
+{
+  // always get this constant from the embedded Info.plist
+  // because the one in the manifest can get updated later.
+  return [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+}
 
 - (CGFloat)_getStatusBarHeight
 {
