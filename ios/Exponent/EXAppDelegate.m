@@ -9,7 +9,6 @@
 #import <Fabric/Fabric.h>
 
 #import "ExpoKit.h"
-#import "EXKeys.h"
 #import "EXRootViewController.h"
 #import "EXConstants.h"
 
@@ -28,7 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
   [CrashlyticsKit setObjectValue:[EXBuildConstants sharedInstance].expoRuntimeVersion forKey:@"exp_client_version"];
 
   [[ExpoKit sharedInstance] registerRootViewControllerClass:[EXRootViewController class]];
-  [[ExpoKit sharedInstance] setApplicationKeys:self._applicationKeys];
   [[ExpoKit sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
 
   _window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
@@ -90,23 +88,6 @@ NS_ASSUME_NONNULL_BEGIN
   } else {
     // we'll get notified of success by some other method, e.g. `didRegisterForRemoteNotifications`
   }
-}
-
-#pragma mark - internal
-
-- (NSDictionary *)_applicationKeys
-{
-  NSMutableDictionary *result = [NSMutableDictionary dictionary];
-#ifdef AMPLITUDE_KEY
-  result[@"AMPLITUDE_KEY"] = AMPLITUDE_KEY;
-#endif
-#ifdef AMPLITUDE_DEV_KEY
-  result[@"AMPLITUDE_DEV_KEY"] = AMPLITUDE_DEV_KEY;
-#endif
-#ifdef GOOGLE_MAPS_IOS_API_KEY
-  result[@"GOOGLE_MAPS_IOS_API_KEY"] = GOOGLE_MAPS_IOS_API_KEY;
-#endif
-  return result;
 }
 
 @end
