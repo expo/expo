@@ -194,7 +194,8 @@ async function generateIOSBuildConstantsFromMacrosAsync(
   buildConfigPlistPath,
   macros,
   buildConfiguration,
-  infoPlistContents
+  infoPlistContents,
+  keys
 ) {
   const plistPath = path.dirname(buildConfigPlistPath);
   const plistName = path.basename(buildConfigPlistPath);
@@ -219,6 +220,10 @@ async function generateIOSBuildConstantsFromMacrosAsync(
       config.EXPO_RUNTIME_VERSION = infoPlistContents.CFBundleVersion
         ? infoPlistContents.CFBundleVersion
         : infoPlistContents.CFBundleShortVersionString;
+      if (keys) {
+        const allowedKeys = ['AMPLITUDE_KEY', 'AMPLITUDE_DEV_KEY', 'GOOGLE_MAPS_IOS_API_KEY'];
+        config.DEFAULT_API_KEYS = _.pickBy(keys, (value, key) => allowedKeys.includes(key));
+      }
       return validateIOSBuildConstants(config, buildConfiguration);
     }
   });
@@ -488,7 +493,7 @@ async function generateBuildConfigAsync(platform, args) {
       await fs.writeFile(filepath, source, 'utf8');
     }
   } else {
-    await generateIOSBuildConstantsFromMacrosAsync(filepath, macros, configuration, args.infoPlist);
+    await generateIOSBuildConstantsFromMacrosAsync(filepath, macros, configuration, args.infoPlist, args.templateSubstitutions);
   }
 }
 
@@ -514,6 +519,7 @@ exports.generateDynamicMacrosAsync = async function generateDynamicMacrosAsync(
         'Info',
         templateSubstitutions
       );
+      args.templateSubstitutions = templateSubstitutions;
     } else {
       args.configuration = process.env.EXPO_ANDROID_GRADLE_TASK_NAMES && process.env.EXPO_ANDROID_GRADLE_TASK_NAMES.includes('Debug') ? 'debug' : 'release';
     }

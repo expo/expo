@@ -312,7 +312,6 @@
 		B55FDEF91C7FE1310020AA8F /* EXRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXRootViewController.m; sourceTree = "<group>"; };
 		B57180FE1F0FF41600315A66 /* EXScreenOrientationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScreenOrientationManager.h; sourceTree = "<group>"; };
 		B57180FF1F0FF41600315A66 /* EXScreenOrientationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScreenOrientationManager.m; sourceTree = "<group>"; };
-		B5722ACA1DFB36440084848F /* EXKeys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKeys.h; sourceTree = "<group>"; };
 		B575EE981D53E0AB00DCABBC /* EXCachedResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXCachedResource.h; sourceTree = "<group>"; };
 		B575EE991D53E0AB00DCABBC /* EXCachedResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXCachedResource.m; sourceTree = "<group>"; };
 		B575EE9C1D53EEC300DCABBC /* EXJavaScriptResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXJavaScriptResource.h; sourceTree = "<group>"; };
@@ -882,7 +881,6 @@
 				B53BB2851C7E6C1E00D52FBD /* Analytics */,
 				B587F1DB1D53DE600071715C /* Api */,
 				B526B5031E6A543500606CAB /* ExpoKit */,
-				B5722AC81DFB36440084848F /* Generated */,
 				B5AC398B1E95A90B00540AA7 /* Kernel */,
 				B5F12C901DAEDC980080ECA6 /* ReactAppManager */,
 				B5E49B521D1346FA00AA6436 /* Supporting */,
@@ -932,14 +930,6 @@
 				B5A358611C7E6C4300D1BE67 /* EXAnalytics.m */,
 			);
 			path = Analytics;
-			sourceTree = "<group>";
-		};
-		B5722AC81DFB36440084848F /* Generated */ = {
-			isa = PBXGroup;
-			children = (
-				B5722ACA1DFB36440084848F /* EXKeys.h */,
-			);
-			path = Generated;
 			sourceTree = "<group>";
 		};
 		B5812C331C9CD59200A10345 /* Versioned */ = {
