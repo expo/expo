@@ -81,6 +81,11 @@ EX_EXPORT_SCOPED_MODULE(ExponentFileSystem, nil);
   return self;
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 - (NSDictionary *)constantsToExport
 {
   return @{

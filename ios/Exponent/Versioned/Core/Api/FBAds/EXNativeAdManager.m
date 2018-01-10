@@ -42,6 +42,11 @@ RCT_EXPORT_MODULE(CTKNativeAdManager)
   return self;
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 RCT_EXPORT_METHOD(init:(NSString *)placementId withAdsToRequest:(nonnull NSNumber *)adsToRequest)
 {
   if (![EXFacebook facebookAppIdFromNSBundle]) {

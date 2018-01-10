@@ -93,6 +93,11 @@ NSString *const EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybackStatus";
   return self;
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 #pragma mark - Expo experience lifecycle
 
 - (void)setBridge:(RCTBridge *)bridge

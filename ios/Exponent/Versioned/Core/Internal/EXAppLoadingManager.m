@@ -15,6 +15,11 @@ RCT_EXPORT_MODULE(ExponentAppLoadingManager);
   return self;
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 - (UIView *)view
 {
   _started = YES;

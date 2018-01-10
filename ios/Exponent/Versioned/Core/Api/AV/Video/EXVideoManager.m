@@ -28,6 +28,11 @@ RCT_EXPORT_MODULE(ExponentVideoManager);
            @"ScaleAspectFill": AVLayerVideoGravityResizeAspectFill};
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 // Props set directly in <Video> component
 RCT_EXPORT_VIEW_PROPERTY(status, NSDictionary);
 RCT_EXPORT_VIEW_PROPERTY(useNativeControls, BOOL);

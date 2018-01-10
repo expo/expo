@@ -43,6 +43,11 @@ RCT_EXPORT_MODULE(CTKAdSettingsManager)
   return self;
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 - (void)setBridge:(RCTBridge *)bridge
 {
   _bridge = bridge;

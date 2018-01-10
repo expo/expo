@@ -38,6 +38,11 @@ RCT_EXPORT_MODULE(ExpoFaceDetector);
   _bridge = bridge;
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 - (NSDictionary *)constantsToExport
 {
   return [EXFaceDetectorUtils constantsToExport];

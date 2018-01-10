@@ -65,6 +65,11 @@ RCT_EXPORT_VIEW_PROPERTY(onFacesDetected, RCTDirectEventBlock);
   return self;
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+  return YES;
+}
+
 - (UIView *)view
 {
   self.session = [[AVCaptureSession alloc] init];

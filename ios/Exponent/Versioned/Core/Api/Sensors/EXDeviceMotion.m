@@ -39,6 +39,11 @@ EX_EXPORT_SCOPED_MODULE(ExponentDeviceMotion, SensorManager);
                                              object:self.bridge];
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 - (NSDictionary *)constantsToExport
 {
   return @{ @"Gravity" : @(EXGravity) };

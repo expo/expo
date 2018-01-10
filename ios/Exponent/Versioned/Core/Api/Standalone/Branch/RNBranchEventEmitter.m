@@ -32,6 +32,11 @@ RCT_EXPORT_MODULE();
     return self;
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 - (NSArray<NSString *> *)supportedEvents {
     return @[RNBranchInitSessionSuccess,
              RNBranchInitSessionError

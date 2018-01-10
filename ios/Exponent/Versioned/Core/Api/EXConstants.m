@@ -34,6 +34,12 @@ EX_EXPORT_SCOPED_MODULE(ExponentConstants, nil)
   return self;
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+  // we call UIKit methods to determine some of the constants
+  return YES;
+}
+
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();

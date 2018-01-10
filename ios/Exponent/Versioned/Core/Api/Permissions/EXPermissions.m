@@ -33,6 +33,11 @@ RCT_EXPORT_MODULE(ExponentPermissions);
   return self;
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 RCT_REMAP_METHOD(getAsync,
                  getCurrentPermissionsWithType:(NSString *)type
                  resolver:(RCTPromiseResolveBlock)resolve

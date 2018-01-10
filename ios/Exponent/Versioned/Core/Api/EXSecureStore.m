@@ -221,6 +221,11 @@ RCT_ENUM_CONVERTER(EXSecureStoreAccessible, (@{
 
 #pragma mark - SecureStore API
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 - (NSDictionary *)constantsToExport
 {
   return @{

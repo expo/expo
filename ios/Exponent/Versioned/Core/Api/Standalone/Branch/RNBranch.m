@@ -43,6 +43,11 @@ static NSInteger const RNBranchUniversalObjectNotFoundError = 1;
 
 RCT_EXPORT_MODULE();
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 - (NSDictionary<NSString *, NSString *> *)constantsToExport {
     return @{
              // RN events transmitted to JS by event emitter
