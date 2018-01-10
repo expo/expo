@@ -11,8 +11,10 @@ package com.facebook.react.devsupport;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.widget.Toast;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.R;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.network.OkHttpCallUtil;
@@ -22,6 +24,7 @@ import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 import com.facebook.react.packagerconnection.FileIoHandler;
 import com.facebook.react.packagerconnection.JSPackagerClient;
 import com.facebook.react.packagerconnection.NotificationOnlyHandler;
+import com.facebook.react.packagerconnection.ReconnectingWebSocket.ConnectionCallback;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.packagerconnection.RequestOnlyHandler;
 import com.facebook.react.packagerconnection.Responder;
@@ -53,7 +56,7 @@ import org.json.JSONObject;
  *
  * One can use 'debug_http_host' shared preferences key to provide a host name for the debug server.
  * If the setting is empty we support and detect two basic configuration that works well for android
- * emulators connectiong to debug server running on emulator's host:
+ * emulators connection to debug server running on emulator's host:
  *  - Android stock emulator with standard non-configurable local loopback alias: 10.0.2.2,
  *  - Genymotion emulator with default settings: 10.0.3.2
  */
@@ -63,11 +66,9 @@ public class DevServerHelper {
 
     public static String RELOAD_APP_ACTION_SUFFIX = ".RELOAD_APP_ACTION";
 
-    public static String BUNDLE_URL_FORMAT = "http://%s/%s.bundle?platform=android&dev=%s&minify=%s";
+    public static String BUNDLE_URL_FORMAT = "http://%s/%s.%s?platform=android&dev=%s&minify=%s";
 
     public static String RESOURCE_URL_FORMAT = "http://%s/%s";
-
-    public static String SOURCE_MAP_URL_FORMAT = BUNDLE_URL_FORMAT.replaceFirst("\\.bundle", ".map");
 
     public static String LAUNCH_JS_DEVTOOLS_COMMAND_URL_FORMAT = "http://%s/launch-js-devtools";
 
@@ -80,6 +81,8 @@ public class DevServerHelper {
     public static String HEAP_CAPTURE_UPLOAD_URL_FORMAT = "http://%s/jscheapcaptureupload";
 
     public static String INSPECTOR_DEVICE_URL_FORMAT = "http://%s/inspector/device?name=%s&app=%s";
+
+    public static String INSPECTOR_ATTACH_URL_FORMAT = "http://%s/nuclide/attach-debugger-nuclide?title=%s&app=%s&device=%s";
 
     public static String SYMBOLICATE_URL_FORMAT = "http://%s/symbolicate";
 
@@ -102,6 +105,10 @@ public class DevServerHelper {
     }
 
     public interface PackagerCommandListener {
+
+        void onPackagerConnected();
+
+        void onPackagerDisconnected();
 
         void onPackagerReloadCommand();
 
@@ -188,7 +195,19 @@ public class DevServerHelper {
                     }
                 });
                 handlers.putAll(new FileIoHandler().handlers());
-                mPackagerClient = new JSPackagerClient(clientId, mSettings.getPackagerConnectionSettings(), handlers);
+                ConnectionCallback onPackagerConnectedCallback = new ConnectionCallback() {
+
+                    @Override
+                    public void onConnected() {
+                        commandListener.onPackagerConnected();
+                    }
+
+                    @Override
+                    public void onDisconnected() {
+                        commandListener.onPackagerDisconnected();
+                    }
+                };
+                mPackagerClient = new JSPackagerClient(clientId, mSettings.getPackagerConnectionSettings(), handlers, onPackagerConnectedCallback);
                 mPackagerClient.init();
                 return null;
             }
@@ -247,6 +266,37 @@ public class DevServerHelper {
                     mInspectorPackagerConnection = null;
                 }
                 return null;
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    public void attachDebugger(final Context context, final String title) {
+        new AsyncTask<Void, String, Boolean>() {
+
+            @Override
+            protected Boolean doInBackground(Void... ignore) {
+                return doSync();
+            }
+
+            public boolean doSync() {
+                try {
+                    String attachToNuclideUrl = getInspectorAttachUrl(title);
+                    OkHttpClient client = new OkHttpClient();
+                    Request request = new Request.Builder().url(attachToNuclideUrl).build();
+                    client.newCall(request).execute();
+                    return true;
+                } catch (IOException e) {
+                    FLog.e(ReactConstants.TAG, "Failed to send attach request to Inspector", e);
+                    return false;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Boolean result) {
+                if (!result) {
+                    String message = context.getString(R.string.catalyst_debugjs_nuclide_failure);
+                    Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+                }
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
@@ -317,6 +367,10 @@ public class DevServerHelper {
         return String.format(Locale.US, INSPECTOR_DEVICE_URL_FORMAT, mSettings.getPackagerConnectionSettings().getInspectorServerHost(), AndroidInfoHelpers.getFriendlyDeviceName(), mPackageName);
     }
 
+    public String getInspectorAttachUrl(String title) {
+        return String.format(Locale.US, INSPECTOR_ATTACH_URL_FORMAT, AndroidInfoHelpers.getServerHost(), title, mPackageName, AndroidInfoHelpers.getFriendlyDeviceName());
+    }
+
     public BundleDownloader getBundleDownloader() {
         return mBundleDownloader;
     }
@@ -349,7 +403,7 @@ public class DevServerHelper {
         return mSettings.isJSMinifyEnabled();
     }
 
-    private String createBundleURL(String host, String jsModulePath, boolean devMode, boolean jsMinify) {
+    private String createBundleURL(String host, String jsModulePath, boolean devMode, boolean jsMinify, boolean useDeltas) {
         try {
             return (String) Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("getBundleUrlForActivityId", int.class, String.class, String.class, boolean.class, boolean.class).invoke(null, mSettings.exponentActivityId, host, jsModulePath, devMode, jsMinify);
         } catch (Exception expoHandleErrorException) {
@@ -371,7 +425,7 @@ public class DevServerHelper {
     }
 
     public String getDevServerBundleURL(final String jsModulePath) {
-        return createBundleURL(mSettings.getPackagerConnectionSettings().getDebugServerHost(), jsModulePath, getDevMode(), getJSMinifyMode());
+        return createBundleURL(mSettings.getPackagerConnectionSettings().getDebugServerHost(), jsModulePath, getDevMode(), getJSMinifyMode(), mSettings.isBundleDeltasEnabled());
     }
 
     public void isPackagerRunning(final PackagerStatusCallback callback) {
@@ -504,16 +558,16 @@ public class DevServerHelper {
     }
 
     public String getSourceMapUrl(String mainModuleName) {
-        return String.format(Locale.US, SOURCE_MAP_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost(), mainModuleName, getDevMode(), getJSMinifyMode());
+        return String.format(Locale.US, BUNDLE_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost(), mainModuleName, "map", getDevMode(), getJSMinifyMode());
     }
 
     public String getSourceUrl(String mainModuleName) {
-        return String.format(Locale.US, BUNDLE_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost(), mainModuleName, getDevMode(), getJSMinifyMode());
+        return String.format(Locale.US, BUNDLE_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost(), mainModuleName, mSettings.isBundleDeltasEnabled() ? "delta" : "bundle", getDevMode(), getJSMinifyMode());
     }
 
     public String getJSBundleURLForRemoteDebugging(String mainModuleName) {
         // host itself.
-        return createBundleURL(getHostForJSProxy(), mainModuleName, getDevMode(), getJSMinifyMode());
+        return createBundleURL(getHostForJSProxy(), mainModuleName, getDevMode(), getJSMinifyMode(), false);
     }
 
     /**
