@@ -82,9 +82,9 @@ import expolib_v1.okhttp3.RequestBody;
  * bound to make sure that we don't display overlay or that we we don't listen for sensor events
  * when app is backgrounded.
  *
- * {@link ReactInstanceDevCommandsHandler} implementation is responsible for instantiating this
- * instance and for populating with an instance of {@link CatalystInstance} whenever instance
- * manager recreates it (through {@link #onNewCatalystContextCreated}). Also, instance manager is
+ * {@link ReactInstanceManager} implementation is responsible for instantiating this class
+ * as well as for populating with a referece to {@link CatalystInstance} whenever instance
+ * manager recreates it (through {@link #onNewReactContextCreated). Also, instance manager is
  * responsible for enabling/disabling dev support in case when app is backgrounded or when all the
  * views has been detached from the instance (through {@link #setDevSupportEnabled} method).
  *
@@ -108,6 +108,10 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
 
     public static String EXOPACKAGE_LOCATION_FORMAT = "/data/local/tmp/exopackage/%s//secondary-dex";
 
+    public static String EMOJI_HUNDRED_POINTS_SYMBOL = " 💯";
+
+    public static String EMOJI_FACE_WITH_NO_GOOD_GESTURE = " 🙅";
+
     public final Context mApplicationContext;
 
     public final ShakeDetector mShakeDetector;
@@ -118,7 +122,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
 
     public final LinkedHashMap<String, DevOptionHandler> mCustomDevOptions = new LinkedHashMap<>();
 
-    public final ReactInstanceDevCommandsHandler mReactInstanceCommandsHandler;
+    public final ReactInstanceManagerDevHelper mReactInstanceManagerHelper;
 
     @Nullable
     public final String mJSAppBundleName;
@@ -198,12 +202,12 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
         }
     }
 
-    public DevSupportManagerImpl(Context applicationContext, ReactInstanceDevCommandsHandler reactInstanceCommandsHandler, @Nullable String packagerPathForJSBundleName, boolean enableOnCreate, int minNumShakes) {
-        this(applicationContext, reactInstanceCommandsHandler, packagerPathForJSBundleName, enableOnCreate, null, null, minNumShakes);
+    public DevSupportManagerImpl(Context applicationContext, ReactInstanceManagerDevHelper reactInstanceManagerHelper, @Nullable String packagerPathForJSBundleName, boolean enableOnCreate, int minNumShakes) {
+        this(applicationContext, reactInstanceManagerHelper, packagerPathForJSBundleName, enableOnCreate, null, null, minNumShakes);
     }
 
-    public DevSupportManagerImpl(Context applicationContext, ReactInstanceDevCommandsHandler reactInstanceCommandsHandler, @Nullable String packagerPathForJSBundleName, boolean enableOnCreate, @Nullable RedBoxHandler redBoxHandler, @Nullable DevBundleDownloadListener devBundleDownloadListener, int minNumShakes) {
-        mReactInstanceCommandsHandler = reactInstanceCommandsHandler;
+    public DevSupportManagerImpl(Context applicationContext, ReactInstanceManagerDevHelper reactInstanceManagerHelper, @Nullable String packagerPathForJSBundleName, boolean enableOnCreate, @Nullable RedBoxHandler redBoxHandler, @Nullable DevBundleDownloadListener devBundleDownloadListener, int minNumShakes) {
+        mReactInstanceManagerHelper = reactInstanceManagerHelper;
         mApplicationContext = applicationContext;
         mJSAppBundleName = packagerPathForJSBundleName;
         mDevSettings = new DevInternalSettings(applicationContext, this);
@@ -243,7 +247,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
         mDefaultNativeModuleCallExceptionHandler = new DefaultNativeModuleCallExceptionHandler();
         setDevSupportEnabled(enableOnCreate);
         mRedBoxHandler = redBoxHandler;
-        mDevLoadingViewController = new DevLoadingViewController(applicationContext);
+        mDevLoadingViewController = new DevLoadingViewController(applicationContext, reactInstanceManagerHelper);
     }
 
     @Override
@@ -357,8 +361,12 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
             @Override
             public void run() {
                 if (mRedBoxDialog == null) {
-                    mRedBoxDialog = new RedBoxDialog(mApplicationContext, DevSupportManagerImpl.this, mRedBoxHandler);
-                    mRedBoxDialog.getWindow().setType(WindowOverlayCompat.TYPE_SYSTEM_ALERT);
+                    Context context = mReactInstanceManagerHelper.getCurrentActivity();
+                    if (context == null) {
+                        FLog.e(ReactConstants.TAG, "Unable to launch redbox because react activity " + "is not available, here is the error that redbox would've displayed: " + message);
+                        return;
+                    }
+                    mRedBoxDialog = new RedBoxDialog(context, DevSupportManagerImpl.this, mRedBoxHandler);
                 }
                 if (mRedBoxDialog.isShowing()) {
                     // show the first and most actionable one.
@@ -393,7 +401,22 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
                 handleReloadJS();
             }
         });
-        options.put(mDevSettings.isRemoteJSDebugEnabled() ? mApplicationContext.getString(R.string.catalyst_debugjs_off) : mApplicationContext.getString(R.string.catalyst_debugjs), new DevOptionHandler() {
+        if (mDevSettings.isNuclideJSDebugEnabled()) {
+            // The concatenation is applied directly here because XML isn't emoji-friendly
+            String nuclideJsDebugMenuItemTitle = mApplicationContext.getString(R.string.catalyst_debugjs_nuclide) + EMOJI_HUNDRED_POINTS_SYMBOL;
+            options.put(nuclideJsDebugMenuItemTitle, new DevOptionHandler() {
+
+                @Override
+                public void onOptionSelected() {
+                    mDevServerHelper.attachDebugger(mApplicationContext, "ReactNative");
+                }
+            });
+        }
+        String remoteJsDebugMenuItemTitle = mDevSettings.isRemoteJSDebugEnabled() ? mApplicationContext.getString(R.string.catalyst_debugjs_off) : mApplicationContext.getString(R.string.catalyst_debugjs);
+        if (mDevSettings.isNuclideJSDebugEnabled()) {
+            remoteJsDebugMenuItemTitle += EMOJI_FACE_WITH_NO_GOOD_GESTURE;
+        }
+        options.put(remoteJsDebugMenuItemTitle, new DevOptionHandler() {
 
             @Override
             public void onOptionSelected() {
@@ -421,13 +444,22 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
             @Override
             public void onOptionSelected() {
                 mDevSettings.setElementInspectorEnabled(!mDevSettings.isElementInspectorEnabled());
-                mReactInstanceCommandsHandler.toggleElementInspector();
+                mReactInstanceManagerHelper.toggleElementInspector();
             }
         });
         options.put(mDevSettings.isFpsDebugEnabled() ? mApplicationContext.getString(R.string.catalyst_perf_monitor_off) : mApplicationContext.getString(R.string.catalyst_perf_monitor), new DevOptionHandler() {
 
             @Override
             public void onOptionSelected() {
+                if (!mDevSettings.isFpsDebugEnabled()) {
+                    // Request overlay permission if needed when "Show Perf Monitor" option is selected
+                    Context context = mReactInstanceManagerHelper.getCurrentActivity();
+                    if (context == null) {
+                        FLog.e(ReactConstants.TAG, "Unable to get reference to react activity");
+                    } else {
+                        DebugOverlayController.requestPermission(context);
+                    }
+                }
                 mDevSettings.setFpsDebugEnabled(!mDevSettings.isFpsDebugEnabled());
             }
         });
@@ -443,7 +475,12 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
             options.putAll(mCustomDevOptions);
         }
         final DevOptionHandler[] optionHandlers = options.values().toArray(new DevOptionHandler[0]);
-        mDevOptionsDialog = new AlertDialog.Builder(mApplicationContext).setItems(options.keySet().toArray(new String[0]), new DialogInterface.OnClickListener() {
+        Context context = mReactInstanceManagerHelper.getCurrentActivity();
+        if (context == null) {
+            FLog.e(ReactConstants.TAG, "Unable to launch dev options menu because react activity " + "isn't available");
+            return;
+        }
+        mDevOptionsDialog = new AlertDialog.Builder(context).setItems(options.keySet().toArray(new String[0]), new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -457,7 +494,6 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
                 mDevOptionsDialog = null;
             }
         }).create();
-        mDevOptionsDialog.getWindow().setType(WindowOverlayCompat.TYPE_SYSTEM_ALERT);
         mDevOptionsDialog.show();
     }
 
@@ -469,7 +505,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
     @Override
     public void setDevSupportEnabled(boolean isDevSupportEnabled) {
         mIsDevSupportEnabled = isDevSupportEnabled;
-        reload();
+        reloadSettings();
     }
 
     @Override
@@ -582,7 +618,17 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
 
     @Override
     public void reloadSettings() {
-        reload();
+        if (UiThreadUtil.isOnUiThread()) {
+            reload();
+        } else {
+            UiThreadUtil.runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    reload();
+                }
+            });
+        }
     }
 
     public void onInternalSettingsChanged() {
@@ -630,6 +676,16 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
     @Nullable
     public StackFrame[] getLastErrorStack() {
         return mLastErrorStack;
+    }
+
+    @Override
+    public void onPackagerConnected() {
+    // No-op
+    }
+
+    @Override
+    public void onPackagerDisconnected() {
+    // No-op
     }
 
     @Override
@@ -751,7 +807,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
                 }
             }
         };
-        mReactInstanceCommandsHandler.onReloadWithJSDebugger(factory);
+        mReactInstanceManagerHelper.onReloadWithJSDebugger(factory);
     }
 
     private WebsocketJavaScriptExecutor.JSExecutorConnectCallback getExecutorConnectCallback(final SimpleSettableFuture<Boolean> future) {
@@ -793,7 +849,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
                     @Override
                     public void run() {
                         ReactMarker.logMarker(ReactMarkerConstants.DOWNLOAD_END, bundleInfo.toJSONString());
-                        mReactInstanceCommandsHandler.onJSBundleLoadedFromServer();
+                        mReactInstanceManagerHelper.onJSBundleLoadedFromServer();
                     }
                 });
             }
@@ -843,6 +899,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
     }
 
     private void reload() {
+        UiThreadUtil.assertOnUiThread();
         // reload settings, show/hide debug overlay if required & start/stop shake detector
         if (mIsDevSupportEnabled) {
             // update visibility of FPS debug overlay depending on the settings

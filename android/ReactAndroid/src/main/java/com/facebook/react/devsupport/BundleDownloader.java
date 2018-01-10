@@ -9,27 +9,26 @@
 
 package com.facebook.react.devsupport;
 
+import android.util.JsonReader;
+import android.util.JsonToken;
 import android.util.Log;
-
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.DebugServerException;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.annotation.Nullable;
-
 import expolib_v1.okhttp3.Call;
 import expolib_v1.okhttp3.Callback;
+import expolib_v1.okhttp3.Headers;
 import expolib_v1.okhttp3.OkHttpClient;
 import expolib_v1.okhttp3.Request;
 import expolib_v1.okhttp3.Response;
@@ -37,6 +36,8 @@ import expolib_v1.okio.Buffer;
 import expolib_v1.okio.BufferedSource;
 import expolib_v1.okio.Okio;
 import expolib_v1.okio.Sink;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class BundleDownloader {
   private static final String TAG = "BundleDownloader";
@@ -46,6 +47,11 @@ public class BundleDownloader {
 
   private final OkHttpClient mClient;
 
+  private final LinkedHashMap<Number, byte[]> mPreModules = new LinkedHashMap<>();
+  private final LinkedHashMap<Number, byte[]> mDeltaModules = new LinkedHashMap<>();
+  private final LinkedHashMap<Number, byte[]> mPostModules = new LinkedHashMap<>();
+
+  private @Nullable String mDeltaId;
   private @Nullable Call mDownloadBundleFromURLCall;
 
   public static class BundleInfo {
@@ -103,10 +109,18 @@ public class BundleDownloader {
       final File outputFile,
       final String bundleURL,
       final @Nullable BundleInfo bundleInfo) {
-    final Request request = new Request.Builder()
-        .url(bundleURL)
-        .addHeader("Accept", "multipart/mixed")
-        .build();
+
+    String finalUrl = bundleURL;
+
+    if (isDeltaUrl(bundleURL) && mDeltaId != null) {
+      finalUrl += "&deltaBundleId=" + mDeltaId;
+    }
+
+    final Request request =
+        new Request.Builder()
+            .url(finalUrl)
+            .addHeader("Accept", "multipart/mixed")
+            .build();
     mDownloadBundleFromURLCall = Assertions.assertNotNull(mClient.newCall(request));
     mDownloadBundleFromURLCall.enqueue(new Callback() {
       @Override
@@ -154,11 +168,12 @@ public class BundleDownloader {
                 if (headers.containsKey("X-Http-Status")) {
                   status = Integer.parseInt(headers.get("X-Http-Status"));
                 }
-                processBundleResult(url, status, expolib_v1.okhttp3.Headers.of(headers), body, outputFile, bundleInfo, callback);
+                processBundleResult(url, status, Headers.of(headers), body, outputFile, bundleInfo, callback);
               } else {
                 if (!headers.containsKey("Content-Type") || !headers.get("Content-Type").equals("application/json")) {
                   return;
                 }
+
                 try {
                   JSONObject progress = new JSONObject(body.readUtf8());
                   String status = null;
@@ -200,14 +215,15 @@ public class BundleDownloader {
     }
   }
 
-  private static void processBundleResult(
+  private void processBundleResult(
       String url,
       int statusCode,
-      expolib_v1.okhttp3.Headers headers,
+      Headers headers,
       BufferedSource body,
       File outputFile,
       BundleInfo bundleInfo,
-      DevBundleDownloadListener callback) throws IOException {
+      DevBundleDownloadListener callback)
+      throws IOException {
     // Check for server errors. If the server error has the expected form, fail with more info.
     if (statusCode != 200) {
       String bodyString = body.readUtf8();
@@ -230,9 +246,32 @@ public class BundleDownloader {
     }
 
     File tmpFile = new File(outputFile.getPath() + ".tmp");
+
+    boolean bundleUpdated;
+
+    if (isDeltaUrl(url)) {
+      // If the bundle URL has the delta extension, we need to use the delta patching logic.
+      bundleUpdated = storeDeltaInFile(body, tmpFile);
+    } else {
+      resetDeltaCache();
+      bundleUpdated = storePlainJSInFile(body, tmpFile);
+    }
+
+    if (bundleUpdated) {
+      // If we have received a new bundle from the server, move it to its final destination.
+      if (!tmpFile.renameTo(outputFile)) {
+        throw new IOException("Couldn't rename " + tmpFile + " to " + outputFile);
+      }
+    }
+
+    callback.onSuccess();
+  }
+
+  private static boolean storePlainJSInFile(BufferedSource body, File outputFile)
+      throws IOException {
     Sink output = null;
     try {
-      output = Okio.sink(tmpFile);
+      output = Okio.sink(outputFile);
       body.readAll(output);
     } finally {
       if (output != null) {
@@ -240,14 +279,105 @@ public class BundleDownloader {
       }
     }
 
-    if (tmpFile.renameTo(outputFile)) {
-      callback.onSuccess();
-    } else {
-      throw new IOException("Couldn't rename " + tmpFile + " to " + outputFile);
-    }
+    return true;
   }
 
-  private static void populateBundleInfo(String url, expolib_v1.okhttp3.Headers headers, BundleInfo bundleInfo) {
+  private boolean storeDeltaInFile(BufferedSource body, File outputFile) throws IOException {
+
+    JsonReader jsonReader = new JsonReader(new InputStreamReader(body.inputStream()));
+
+    jsonReader.beginObject();
+
+    int numChangedModules = 0;
+
+    while (jsonReader.hasNext()) {
+      String name = jsonReader.nextName();
+      if (name.equals("id")) {
+        mDeltaId = jsonReader.nextString();
+      } else if (name.equals("pre")) {
+        numChangedModules += patchDelta(jsonReader, mPreModules);
+      } else if (name.equals("post")) {
+        numChangedModules += patchDelta(jsonReader, mPostModules);
+      } else if (name.equals("delta")) {
+        numChangedModules += patchDelta(jsonReader, mDeltaModules);
+      } else {
+        jsonReader.skipValue();
+      }
+    }
+
+    jsonReader.endObject();
+    jsonReader.close();
+
+    if (numChangedModules == 0) {
+      // If we receive an empty delta, we don't need to save the file again (it'll have the
+      // same content).
+      return false;
+    }
+
+    FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
+
+    try {
+      for (byte[] code : mPreModules.values()) {
+        fileOutputStream.write(code);
+        fileOutputStream.write('\n');
+      }
+
+      for (byte[] code : mDeltaModules.values()) {
+        fileOutputStream.write(code);
+        fileOutputStream.write('\n');
+      }
+
+      for (byte[] code : mPostModules.values()) {
+        fileOutputStream.write(code);
+        fileOutputStream.write('\n');
+      }
+    } finally {
+      fileOutputStream.flush();
+      fileOutputStream.close();
+    }
+
+    return true;
+  }
+
+  private static int patchDelta(JsonReader jsonReader, LinkedHashMap<Number, byte[]> map)
+      throws IOException {
+    jsonReader.beginArray();
+
+    int numModules = 0;
+    while (jsonReader.hasNext()) {
+      jsonReader.beginArray();
+
+      int moduleId = jsonReader.nextInt();
+
+      if (jsonReader.peek() == JsonToken.NULL) {
+        jsonReader.skipValue();
+        map.remove(moduleId);
+      } else {
+        map.put(moduleId, jsonReader.nextString().getBytes());
+      }
+
+      jsonReader.endArray();
+      numModules++;
+    }
+
+    jsonReader.endArray();
+
+    return numModules;
+  }
+
+  private void resetDeltaCache() {
+    mDeltaId = null;
+
+    mDeltaModules.clear();
+    mPreModules.clear();
+    mPostModules.clear();
+  }
+
+  private static boolean isDeltaUrl(String bundleUrl) {
+    return bundleUrl.indexOf(".delta?") != -1;
+  }
+
+  private static void populateBundleInfo(String url, Headers headers, BundleInfo bundleInfo) {
     bundleInfo.mUrl = url;
 
     String filesChangedCountStr = headers.get("X-Metro-Files-Changed-Count");

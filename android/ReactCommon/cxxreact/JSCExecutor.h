@@ -66,6 +66,7 @@ public:
     std::string sourceURL) override;
 
   virtual void setBundleRegistry(std::unique_ptr<RAMBundleRegistry> bundleRegistry) override;
+  virtual void registerBundle(uint32_t bundleId, const std::string& bundlePath) override;
 
   virtual void callFunction(
     const std::string& moduleId,
@@ -116,7 +117,7 @@ private:
   folly::Optional<Object> m_callFunctionReturnResultAndFlushedQueueJS;
 
   void initOnJSVMThread() throw(JSException);
-  bool isNetworkInspected(const std::string &owner, const std::string &app, const std::string &device);
+  static bool isNetworkInspected(const std::string &owner, const std::string &app, const std::string &device);
   // This method is experimental, and may be modified or removed.
   Value callFunctionSyncWithValue(
     const std::string& module, const std::string& method, Value value);
