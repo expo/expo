@@ -93,7 +93,14 @@ public class ConstantsModule extends ReactContextBaseJavaModule {
       constants.putAll(mExperienceProperties);
     }
     constants.put("systemVersion", Build.VERSION.RELEASE);
-    constants.put("androidVersionCode", Constants.ANDROID_VERSION_CODE);
+
+    Map<String, Object> platform = new HashMap<>();
+    Map<String, Object> androidPlatform = new HashMap<>();
+
+    androidPlatform.put("versionCode", Constants.ANDROID_VERSION_CODE);
+
+    platform.put("android", androidPlatform);
+    constants.put("platform", platform);
     return constants;
   }
 
