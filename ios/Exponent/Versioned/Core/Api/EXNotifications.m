@@ -3,6 +3,7 @@
 #import "EXNotifications.h"
 #import "EXConstants.h"
 #import "EXUnversioned.h"
+#import "EXUtil.h"
 
 #import <React/RCTUtils.h>
 #import <React/RCTConvert.h>
@@ -90,7 +91,7 @@ RCT_EXPORT_METHOD(presentLocalNotification:(NSDictionary *)payload
 {
   UILocalNotification *notification = [self _localNotificationFromPayload:payload];
 
-  [self _performSynchronouslyOnMainThread:^{
+  [EXUtil performSynchronouslyOnMainThread:^{
     [RCTSharedApplication() presentLocalNotificationNow:notification];
   }];
 
@@ -107,7 +108,7 @@ RCT_EXPORT_METHOD(scheduleLocalNotification:(NSDictionary *)payload
   notification.fireDate = [RCTConvert NSDate:options[@"time"]] ?: [NSDate new];
   notification.repeatInterval = [RCTConvert NSCalendarUnit:options[@"repeat"]] ?: 0;
 
-  [self _performSynchronouslyOnMainThread:^{
+  [EXUtil performSynchronouslyOnMainThread:^{
     [RCTSharedApplication() scheduleLocalNotification:notification];
   }];
 
@@ -116,7 +117,7 @@ RCT_EXPORT_METHOD(scheduleLocalNotification:(NSDictionary *)payload
 
 RCT_EXPORT_METHOD(cancelScheduledNotification:(NSString *)uniqueId)
 {
-  [self _performSynchronouslyOnMainThread:^{
+  [EXUtil performSynchronouslyOnMainThread:^{
     for (UILocalNotification *notification in [RCTSharedApplication() scheduledLocalNotifications]) {
       if ([notification.userInfo[@"id"] isEqualToString:uniqueId]) {
         [RCTSharedApplication() cancelLocalNotification:notification];
@@ -137,7 +138,7 @@ RCT_REMAP_METHOD(cancelAllScheduledNotificationsAsync,
                  cancelAllScheduledNotificationsAsyncWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(__unused RCTPromiseRejectBlock)reject)
 {
-  [self _performSynchronouslyOnMainThread:^{
+  [EXUtil performSynchronouslyOnMainThread:^{
     for (UILocalNotification *notification in [RCTSharedApplication() scheduledLocalNotifications]) {
       if ([notification.userInfo[@"experienceId"] isEqualToString:self.experienceId]) {
         [RCTSharedApplication() cancelLocalNotification:notification];
@@ -156,7 +157,7 @@ RCT_REMAP_METHOD(getBadgeNumberAsync,
                  rejecter:(__unused RCTPromiseRejectBlock)reject)
 {
   __block NSInteger badgeNumber;
-  [self _performSynchronouslyOnMainThread:^{
+  [EXUtil performSynchronouslyOnMainThread:^{
     badgeNumber = RCTSharedApplication().applicationIconBadgeNumber;
   }];
   resolve(@(badgeNumber));
@@ -166,22 +167,13 @@ RCT_EXPORT_METHOD(setBadgeNumberAsync:(nonnull NSNumber *)number
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(__unused RCTPromiseRejectBlock)reject)
 {
-  [self _performSynchronouslyOnMainThread:^{
+  [EXUtil performSynchronouslyOnMainThread:^{
     RCTSharedApplication().applicationIconBadgeNumber = number.integerValue;
   }];
   resolve(nil);
 }
 
 #pragma mark - internal
-
-- (void)_performSynchronouslyOnMainThread:(void (^)(void))block
-{
-  if ([NSThread isMainThread]) {
-    block();
-  } else {
-    dispatch_sync(dispatch_get_main_queue(), block);
-  }
-}
 
 - (UILocalNotification *)_localNotificationFromPayload:(NSDictionary *)payload
 {

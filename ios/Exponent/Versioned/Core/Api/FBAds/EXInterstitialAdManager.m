@@ -1,6 +1,7 @@
 #import "EXFacebook.h"
 #import "EXInterstitialAdManager.h"
 #import "EXUnversioned.h"
+#import "EXUtil.h"
 
 #import <FBAudienceNetwork/FBAudienceNetwork.h>
 #import <React/RCTUtils.h>
@@ -55,7 +56,7 @@ RCT_EXPORT_METHOD(
   
   _interstitialAd = [[FBInterstitialAd alloc] initWithPlacementID:placementId];
   _interstitialAd.delegate = self;
-  [self _performSynchronouslyOnMainThread:^{
+  [EXUtil performSynchronouslyOnMainThread:^{
     [_interstitialAd loadAd];
   }];
 }
@@ -113,17 +114,6 @@ RCT_EXPORT_METHOD(
   _interstitialAd = nil;
   _adViewController = nil;
   _didClick = false;
-}
-
-#pragma mark - internal
-
-- (void)_performSynchronouslyOnMainThread:(void (^)(void))block
-{
-  if ([NSThread isMainThread]) {
-    block();
-  } else {
-    dispatch_sync(dispatch_get_main_queue(), block);
-  }
 }
 
 @end
