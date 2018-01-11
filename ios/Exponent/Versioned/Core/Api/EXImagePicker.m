@@ -169,8 +169,18 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
   response[@"type"] = @"image";
   response[@"width"] = @(image.size.width);
   response[@"height"] = @(image.size.height);
+  
+  NSString *extension = @".jpg";
   NSData *data = UIImageJPEGRepresentation(image, [[self.options valueForKey:@"quality"] floatValue]);
-  NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:@".jpg"];
+  
+  if ([[imageURL absoluteString] containsString:@"ext=PNG"]) {
+    extension = @".png";
+    data = UIImagePNGRepresentation(image);
+  } else if (![[imageURL absoluteString] containsString:@"ext=JPG"]) {
+    RCTLogWarn(@"Unsupported format of the picked image. Using JPEG instead.");
+  }
+  
+  NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:extension];
   NSString *path = [directory stringByAppendingPathComponent:fileName];
   [data writeToFile:path atomically:YES];
   NSURL *fileURL = [NSURL fileURLWithPath:path];
