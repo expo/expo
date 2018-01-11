@@ -42,12 +42,6 @@ import static android.provider.ContactsContract.*;
 public class ContactsModule extends ReactContextBaseJavaModule {
   private static final String TAG = ContactsModule.class.getSimpleName();
 
-  private static final String[] PROJECTION = new String[]{
-      CommonDataKinds.Phone.CONTACT_ID,
-      CommonDataKinds.Phone.NUMBER,
-      CommonDataKinds.Email.DATA,
-  };
-
   public ContactsModule(ReactApplicationContext reactContext) {
     super(reactContext);
   }
@@ -76,8 +70,8 @@ public class ContactsModule extends ReactContextBaseJavaModule {
 
     ContentResolver cr = getReactApplicationContext().getContentResolver();
     Cursor cursor = cr.query(
-        CommonDataKinds.Phone.CONTENT_URI,
-        PROJECTION,
+        ContactsContract.Contacts.CONTENT_URI,
+        null,
         fetchSingleContact ? Data.CONTACT_ID + " = ?" : null,
         fetchSingleContact ? new String[] { options.getString("id") } : null,
         null
@@ -86,8 +80,9 @@ public class ContactsModule extends ReactContextBaseJavaModule {
       try {
         cursor.move(pageOffset);
         int currentIndex = 0;
+        Set<Long> ids = new HashSet<>();
 
-        final int contactIdIndex = cursor.getColumnIndex(CommonDataKinds.Phone.CONTACT_ID);
+        final int contactIdIndex = cursor.getColumnIndex(Contacts._ID);
         while (cursor.moveToNext()) {
           if (currentIndex >= pageSize) {
             break;
@@ -95,79 +90,84 @@ public class ContactsModule extends ReactContextBaseJavaModule {
 
           WritableMap contact = Arguments.createMap();
           long id = cursor.getLong(contactIdIndex);
-          contact.putString("id", String.valueOf(id));
 
-          contact = addIdentityFromContentResolver(fieldsSet, cr, contact, id);
-          String nickname = getNicknameFromContentResolver(cr, id);
-          if (nickname != null) {
-            contact.putString("nickname", nickname);
-          }
-          if (fieldsSet.contains("note")) {
-            contact.putString("note", getNoteFromContentResolver(cr, id));
-          }
-          if (fieldsSet.contains("birthday")) {
-            contact = addDatesFromContentResolver(cr, contact, id, true);
-          }
-          if (fieldsSet.contains("dates")) {
-            contact = addDatesFromContentResolver(cr, contact, id, false);
-          }
+          if (!ids.contains(id)) {
+            ids.add(id);
 
-          contact = addImageInfoFromContentResolver(fieldsSet, cr, contact, id);
+            contact.putString("id", String.valueOf(id));
 
-          String company = null;
-          String jobTitle = null;
-          String note = fieldsSet.contains("note") ? getNoteFromContentResolver(cr, id) : null;
-
-          HashMap<String, String> organization = getOrganizationFromContentResolver(id, cr);
-          if (organization != null) {
-            if (fieldsSet.contains("company")) {
-              company = organization.get("company");
+            contact = addIdentityFromContentResolver(fieldsSet, cr, contact, id);
+            String nickname = getNicknameFromContentResolver(cr, id);
+            if (nickname != null) {
+              contact.putString("nickname", nickname);
             }
-            if (fieldsSet.contains("jobTitle")) {
-              jobTitle = organization.get("jobTitle");
+            if (fieldsSet.contains("note")) {
+              contact.putString("note", getNoteFromContentResolver(cr, id));
             }
-          }
-
-          HashMap<String, WritableArray> collections = new HashMap<>();
-          collections.put("emails", fieldsSet.contains("emails") ?
-              getEmailsFromContentResolver(id, cr) : null);
-          collections.put("phoneNumbers", fieldsSet.contains("phoneNumbers") ?
-              getPhoneNumbersFromContentResolver(id, cr) : null);
-          collections.put("addresses", fieldsSet.contains("addresses") ?
-              getAddressesFromContentResolver(id, cr) : null);
-          collections.put("instantMessageAddresses", fieldsSet.contains("instantMessageAddresses") ?
-              getInstantMessageAddressesFromContentResolver(id, cr) : null);
-          collections.put("urlAddresses", fieldsSet.contains("urlAddresses") ?
-              getUrlAddressesFromContentResolver(id, cr) : null);
-          collections.put("relationships", fieldsSet.contains("relationships") ?
-              getRelationshipsFromContentResolver(id, cr) : null);
-
-          for (String fieldName : collections.keySet()) {
-            WritableArray value = collections.get(fieldName);
-            if (value != null && value.size() > 0) {
-              contact.putArray(fieldName, value);
+            if (fieldsSet.contains("birthday")) {
+              contact = addDatesFromContentResolver(cr, contact, id, true);
             }
-          }
+            if (fieldsSet.contains("dates")) {
+              contact = addDatesFromContentResolver(cr, contact, id, false);
+            }
 
-          if (note != null && !note.isEmpty()) {
-            contact.putString("note", note);
-          }
-          if (company != null && !company.isEmpty()) {
-            contact.putString("company", company);
-          }
-          if (jobTitle != null && !jobTitle.isEmpty()) {
-            contact.putString("jobTitle", jobTitle);
-          }
+            contact = addImageInfoFromContentResolver(fieldsSet, cr, contact, id);
 
-          if (fetchSingleContact) {
-            promise.resolve(contact);
-          } else {
-            contacts.pushMap(contact);
-            currentIndex++;
+            String company = null;
+            String jobTitle = null;
+            String note = fieldsSet.contains("note") ? getNoteFromContentResolver(cr, id) : null;
+
+            HashMap<String, String> organization = getOrganizationFromContentResolver(id, cr);
+            if (organization != null) {
+              if (fieldsSet.contains("company")) {
+                company = organization.get("company");
+              }
+              if (fieldsSet.contains("jobTitle")) {
+                jobTitle = organization.get("jobTitle");
+              }
+            }
+
+            HashMap<String, WritableArray> collections = new HashMap<>();
+            collections.put("emails", fieldsSet.contains("emails") ?
+                getEmailsFromContentResolver(id, cr) : null);
+            collections.put("phoneNumbers", fieldsSet.contains("phoneNumbers") ?
+                getPhoneNumbersFromContentResolver(id, cr) : null);
+            collections.put("addresses", fieldsSet.contains("addresses") ?
+                getAddressesFromContentResolver(id, cr) : null);
+            collections.put("instantMessageAddresses", fieldsSet.contains("instantMessageAddresses") ?
+                getInstantMessageAddressesFromContentResolver(id, cr) : null);
+            collections.put("urlAddresses", fieldsSet.contains("urlAddresses") ?
+                getUrlAddressesFromContentResolver(id, cr) : null);
+            collections.put("relationships", fieldsSet.contains("relationships") ?
+                getRelationshipsFromContentResolver(id, cr) : null);
+
+            for (String fieldName : collections.keySet()) {
+              WritableArray value = collections.get(fieldName);
+              if (value != null && value.size() > 0) {
+                contact.putArray(fieldName, value);
+              }
+            }
+
+            if (note != null && !note.isEmpty()) {
+              contact.putString("note", note);
+            }
+            if (company != null && !company.isEmpty()) {
+              contact.putString("company", company);
+            }
+            if (jobTitle != null && !jobTitle.isEmpty()) {
+              contact.putString("jobTitle", jobTitle);
+            }
+
+            if (fetchSingleContact) {
+              promise.resolve(contact);
+            } else {
+              contacts.pushMap(contact);
+              currentIndex++;
+            }
           }
         }
 
-        int total = cursor.getCount();
+        int total = ids.size();
         if (!fetchSingleContact) {
           response.putArray("data", contacts);
           response.putBoolean("hasPreviousPage", pageOffset > 0);
