@@ -13,7 +13,7 @@ public class BarCodeScanner {
 
   private final HashMap<Integer, CameraInfoWrapper> mCameraInfos;
   private final HashMap<Integer, Integer> mCameraTypeToIndex;
-  private List<String> mBarCodeTypes = null;
+  private List<Integer> mBarCodeTypes = null;
   private int torchMode;
   private final Set<Number> mCameras;
   private Camera mCamera = null;
@@ -107,11 +107,11 @@ public class BarCodeScanner {
     return smallestSize;
   }
 
-  public List<String> getBarCodeTypes() {
+  public List<Integer> getBarCodeTypes() {
     return mBarCodeTypes;
   }
 
-  public void setBarCodeTypes(List<String> barCodeTypes) {
+  public void setBarCodeTypes(List<Integer> barCodeTypes) {
     mBarCodeTypes = barCodeTypes;
   }
 

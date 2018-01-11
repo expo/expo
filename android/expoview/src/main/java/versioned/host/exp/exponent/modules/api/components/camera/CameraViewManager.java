@@ -116,9 +116,9 @@ public class CameraViewManager extends ViewGroupManager<ExpoCameraView> {
     if (barCodeTypes == null) {
       return;
     }
-    List<String> result = new ArrayList<>(barCodeTypes.size());
+    List<Integer> result = new ArrayList<>(barCodeTypes.size());
     for (int i = 0; i < barCodeTypes.size(); i++) {
-      result.add(barCodeTypes.getString(i));
+      result.add(barCodeTypes.getInt(i));
     }
     view.setBarCodeTypes(result);
   }

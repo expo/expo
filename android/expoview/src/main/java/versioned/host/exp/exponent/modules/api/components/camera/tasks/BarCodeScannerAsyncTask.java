@@ -1,23 +1,22 @@
 package versioned.host.exp.exponent.modules.api.components.camera.tasks;
 
-import com.google.zxing.BinaryBitmap;
-import com.google.zxing.MultiFormatReader;
-import com.google.zxing.NotFoundException;
-import com.google.zxing.PlanarYUVLuminanceSource;
-import com.google.zxing.Result;
-import com.google.zxing.common.HybridBinarizer;
+import android.util.SparseArray;
 
-public class BarCodeScannerAsyncTask extends android.os.AsyncTask<Void, Void, Result> {
+import com.google.android.gms.vision.barcode.Barcode;
+import com.google.android.gms.vision.barcode.BarcodeDetector;
+
+import versioned.host.exp.exponent.modules.api.components.facedetector.ExpoFrameFactory;
+
+public class BarCodeScannerAsyncTask extends android.os.AsyncTask<Void, Void, Barcode> {
+  private final BarcodeDetector mDetector;
   private byte[] mImageData;
   private int mWidth;
   private int mHeight;
   private BarCodeScannerAsyncTaskDelegate mDelegate;
-  private final MultiFormatReader mMultiFormatReader;
 
-  //  note(sjchmiela): From my short research it's ok to ignore rotation of the image.
   public BarCodeScannerAsyncTask(
       BarCodeScannerAsyncTaskDelegate delegate,
-      MultiFormatReader multiFormatReader,
+      BarcodeDetector detector,
       byte[] imageData,
       int width,
       int height
@@ -26,49 +25,30 @@ public class BarCodeScannerAsyncTask extends android.os.AsyncTask<Void, Void, Re
     mWidth = width;
     mHeight = height;
     mDelegate = delegate;
-    mMultiFormatReader = multiFormatReader;
+    mDetector = detector;
   }
 
   @Override
-  protected Result doInBackground(Void... ignored) {
+  protected Barcode doInBackground(Void... ignored) {
     if (isCancelled() || mDelegate == null) {
       return null;
     }
 
-    Result result = null;
+    SparseArray<Barcode> result = mDetector.detect(ExpoFrameFactory.buildFrame(mImageData, mWidth, mHeight, 0).getFrame());
 
-    try {
-      BinaryBitmap bitmap = generateBitmapFromImageData(mImageData, mWidth, mHeight);
-      result = mMultiFormatReader.decodeWithState(bitmap);
-    } catch (NotFoundException e) {
-      // No barcode found, result is already null.
-    } catch (Throwable t) {
-      t.printStackTrace();
+    if (result.size() > 0) {
+      return result.valueAt(0);
+    } else {
+      return null;
     }
-
-    return result;
   }
 
   @Override
-  protected void onPostExecute(Result result) {
+  protected void onPostExecute(Barcode result) {
     super.onPostExecute(result);
     if (result != null) {
       mDelegate.onBarCodeRead(result);
     }
     mDelegate.onBarCodeScanningTaskCompleted();
-  }
-
-  private BinaryBitmap generateBitmapFromImageData(byte[] imageData, int width, int height) {
-    PlanarYUVLuminanceSource source = new PlanarYUVLuminanceSource(
-        imageData, // byte[] yuvData
-        width, // int dataWidth
-        height, // int dataHeight
-        0, // int left
-        0, // int top
-        width, // int width
-        height, // int height
-        false // boolean reverseHorizontal
-    );
-    return new BinaryBitmap(new HybridBinarizer(source));
   }
 }

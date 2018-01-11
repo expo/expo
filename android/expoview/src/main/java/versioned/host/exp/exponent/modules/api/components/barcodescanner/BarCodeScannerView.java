@@ -100,7 +100,7 @@ public class BarCodeScannerView extends ViewGroup {
     }
   }
 
-  public void setBarCodeTypes(List<String> types) {
+  public void setBarCodeTypes(List<Integer> types) {
     BarCodeScanner.getInstance().setBarCodeTypes(types);
   }
 

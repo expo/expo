@@ -4,9 +4,9 @@ import android.support.annotation.Nullable;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.uimanager.*;
-import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.ViewGroupManager;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerView.Events;
 
 import java.util.List;
@@ -52,9 +52,9 @@ public class BarCodeScannerViewManager extends ViewGroupManager<BarCodeScannerVi
         if (barCodeTypes == null) {
             return;
         }
-        List<String> result = new ArrayList<String>(barCodeTypes.size());
+        List<Integer> result = new ArrayList<>(barCodeTypes.size());
         for (int i = 0; i < barCodeTypes.size(); i++) {
-            result.add(barCodeTypes.getString(i));
+            result.add(barCodeTypes.getInt(i));
         }
         view.setBarCodeTypes(result);
     }

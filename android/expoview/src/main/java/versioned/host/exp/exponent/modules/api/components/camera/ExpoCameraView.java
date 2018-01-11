@@ -16,22 +16,23 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.google.android.cameraview.CameraView;
+import com.google.android.gms.vision.barcode.Barcode;
+import com.google.android.gms.vision.barcode.BarcodeDetector;
 import com.google.android.gms.vision.face.Face;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.DecodeHintType;
-import com.google.zxing.MultiFormatReader;
-import com.google.zxing.Result;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.utils.ExpFileUtils;
 import versioned.host.exp.exponent.modules.api.components.camera.tasks.BarCodeScannerAsyncTask;
 import versioned.host.exp.exponent.modules.api.components.camera.tasks.BarCodeScannerAsyncTaskDelegate;
@@ -42,17 +43,19 @@ import versioned.host.exp.exponent.modules.api.components.camera.utils.ImageDime
 import versioned.host.exp.exponent.modules.api.components.facedetector.ExpoFaceDetector;
 
 public class ExpoCameraView extends CameraView implements LifecycleEventListener, BarCodeScannerAsyncTaskDelegate, FaceDetectorAsyncTaskDelegate {
+  private ThemedReactContext mThemedReactContext;
+
   private Queue<Promise> mPictureTakenPromises = new ConcurrentLinkedQueue<>();
   private Map<Promise, ReadableMap> mPictureTakenOptions = new ConcurrentHashMap<>();
   private Promise mVideoRecordedPromise;
-  private List<String> mBarCodeTypes = null;
+  private List<Integer> mBarCodeTypes = null;
 
   // Concurrency lock for scanners to avoid flooding the runtime
   public volatile boolean barCodeScannerTaskLock = false;
   public volatile boolean faceDetectorTaskLock = false;
 
   // Scanning-related properties
-  private final MultiFormatReader mMultiFormatReader = new MultiFormatReader();
+  private BarcodeDetector mDetector;
   private final ExpoFaceDetector mFaceDetector;
   private boolean mShouldDetectFaces = false;
   private boolean mShouldScanBarCodes = false;
@@ -62,6 +65,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
 
   public ExpoCameraView(ThemedReactContext themedReactContext) {
     super(themedReactContext);
+    mThemedReactContext = themedReactContext;
     initBarcodeReader();
     mFaceDetector = new ExpoFaceDetector(themedReactContext);
     setupFaceDetector();
@@ -106,7 +110,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
         if (mShouldScanBarCodes && !barCodeScannerTaskLock && cameraView instanceof BarCodeScannerAsyncTaskDelegate) {
           barCodeScannerTaskLock = true;
           BarCodeScannerAsyncTaskDelegate delegate = (BarCodeScannerAsyncTaskDelegate) cameraView;
-          new BarCodeScannerAsyncTask(delegate, mMultiFormatReader, data, width, height).execute();
+          new BarCodeScannerAsyncTask(delegate, mDetector, data, width, height).execute();
         }
 
         if (mShouldDetectFaces && !faceDetectorTaskLock && cameraView instanceof FaceDetectorAsyncTaskDelegate) {
@@ -144,7 +148,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
     this.addView(this.getView(), 0);
   }
 
-  public void setBarCodeTypes(List<String> barCodeTypes) {
+  public void setBarCodeTypes(List<Integer> barCodeTypes) {
     mBarCodeTypes = barCodeTypes;
     initBarcodeReader();
   }
@@ -184,20 +188,19 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
    * Additionally supports [codabar, code128, maxicode, rss14, rssexpanded, upc_a, upc_ean]
    */
   private void initBarcodeReader() {
-    EnumMap<DecodeHintType, Object> hints = new EnumMap<>(DecodeHintType.class);
-    EnumSet<BarcodeFormat> decodeFormats = EnumSet.noneOf(BarcodeFormat.class);
-
+    int barcodeFormats = 0;
     if (mBarCodeTypes != null) {
-      for (String code : mBarCodeTypes) {
-        String formatString = (String) CameraModule.VALID_BARCODE_TYPES.get(code);
-        if (formatString != null) {
-          decodeFormats.add(BarcodeFormat.valueOf(code));
-        }
+      for (Integer code : mBarCodeTypes) {
+        barcodeFormats = barcodeFormats | code;
       }
     }
 
-    hints.put(DecodeHintType.POSSIBLE_FORMATS, decodeFormats);
-    mMultiFormatReader.setHints(hints);
+    mDetector = new BarcodeDetector.Builder(mThemedReactContext)
+        .setBarcodeFormats(barcodeFormats)
+        .build();
+    if (!mDetector.isOperational()) {
+      EXL.w("ExpoCameraView", "Could not start barcode scanner.");
+    }
   }
 
   public void setShouldScanBarCodes(boolean shouldScanBarCodes) {
@@ -205,8 +208,8 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
     setScanning(mShouldDetectFaces || mShouldScanBarCodes);
   }
 
-  public void onBarCodeRead(Result barCode) {
-    String barCodeType = barCode.getBarcodeFormat().toString();
+  public void onBarCodeRead(Barcode barCode) {
+    int barCodeType = barCode.format;
     if (!mShouldScanBarCodes || !mBarCodeTypes.contains(barCodeType)) {
       return;
     }
@@ -216,7 +219,6 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
 
   public void onBarCodeScanningTaskCompleted() {
     barCodeScannerTaskLock = false;
-    mMultiFormatReader.reset();
   }
 
   /**

@@ -9,7 +9,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.google.android.cameraview.AspectRatio;
 import com.google.android.cameraview.Constants;
-import com.google.zxing.BarcodeFormat;
+import com.google.android.gms.vision.barcode.Barcode;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,23 +36,19 @@ public class CameraModule extends ReactContextBaseJavaModule {
   public static final Map<String, Object> VALID_BARCODE_TYPES =
       Collections.unmodifiableMap(new HashMap<String, Object>() {
         {
-          put("aztec", BarcodeFormat.AZTEC.toString());
-          put("ean13", BarcodeFormat.EAN_13.toString());
-          put("ean8", BarcodeFormat.EAN_8.toString());
-          put("qr", BarcodeFormat.QR_CODE.toString());
-          put("pdf417", BarcodeFormat.PDF_417.toString());
-          put("upc_e", BarcodeFormat.UPC_E.toString());
-          put("datamatrix", BarcodeFormat.DATA_MATRIX.toString());
-          put("code39", BarcodeFormat.CODE_39.toString());
-          put("code93", BarcodeFormat.CODE_93.toString());
-          put("interleaved2of5", BarcodeFormat.ITF.toString());
-          put("codabar", BarcodeFormat.CODABAR.toString());
-          put("code128", BarcodeFormat.CODE_128.toString());
-          put("maxicode", BarcodeFormat.MAXICODE.toString());
-          put("rss14", BarcodeFormat.RSS_14.toString());
-          put("rssexpanded", BarcodeFormat.RSS_EXPANDED.toString());
-          put("upc_a", BarcodeFormat.UPC_A.toString());
-          put("upc_ean", BarcodeFormat.UPC_EAN_EXTENSION.toString());
+          put("aztec", Barcode.AZTEC);
+          put("ean13", Barcode.EAN_13);
+          put("ean8", Barcode.EAN_8);
+          put("qr", Barcode.QR_CODE);
+          put("pdf417", Barcode.PDF417);
+          put("upc_e", Barcode.UPC_E);
+          put("datamatrix", Barcode.DATA_MATRIX);
+          put("code39", Barcode.CODE_39);
+          put("code93", Barcode.CODE_93);
+          put("itf14", Barcode.ITF);
+          put("codabar", Barcode.CODABAR);
+          put("code128", Barcode.CODE_128);
+          put("upc_a", Barcode.UPC_A);
         }
       });
 

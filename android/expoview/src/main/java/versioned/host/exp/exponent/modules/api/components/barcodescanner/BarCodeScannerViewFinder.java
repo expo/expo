@@ -4,26 +4,23 @@ import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.os.Looper;
+import android.util.SparseArray;
 import android.view.TextureView;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.BinaryBitmap;
-import com.google.zxing.DecodeHintType;
-import com.google.zxing.MultiFormatReader;
-import com.google.zxing.PlanarYUVLuminanceSource;
-import com.google.zxing.Result;
-import com.google.zxing.common.HybridBinarizer;
-import android.os.Handler;
+import com.google.android.gms.vision.barcode.Barcode;
+import com.google.android.gms.vision.barcode.BarcodeDetector;
 
-
-import java.util.EnumMap;
-import java.util.EnumSet;
 import java.util.List;
 
+import host.exp.exponent.analytics.EXL;
+import versioned.host.exp.exponent.modules.api.components.facedetector.ExpoFrameFactory;
+
 class BarCodeScannerViewFinder extends TextureView implements TextureView.SurfaceTextureListener, Camera.PreviewCallback {
+  private final Context mContext;
   private int mCameraType;
   private SurfaceTexture mSurfaceTexture;
   private boolean mIsStarting;
@@ -35,11 +32,12 @@ class BarCodeScannerViewFinder extends TextureView implements TextureView.Surfac
   // Concurrency lock for barcode scanner to avoid flooding the runtime
   public static volatile boolean barCodeScannerTaskLock = false;
 
-  // Reader instance for the barcode scanner
-  private final MultiFormatReader mMultiFormatReader = new MultiFormatReader();
+  // Detector instance for the barcode scanner
+  private BarcodeDetector mDetector;
 
   public BarCodeScannerViewFinder(Context context, int type, BarCodeScannerView barCodeScannerView) {
     super(context);
+    mContext = context;
     this.setSurfaceTextureListener(this);
     mCameraType = type;
     mBarCodeScannerView = barCodeScannerView;
@@ -163,24 +161,23 @@ class BarCodeScannerViewFinder extends TextureView implements TextureView.Surfac
 
   /**
    * Initialize the barcode decoder.
-   * Supports all iOS codes except [code138, code39mod43, itf14]
-   * Additionally supports [codabar, code128, maxicode, rss14, rssexpanded, upc_a, upc_ean]
+   * Supports all iOS codes except [code138, code39mod43, interleaved2of5]
+   * Additionally supports [codabar, code128, upc_a]
    */
-  private void initBarcodeReader(List<String> barCodeTypes) {
-    EnumMap<DecodeHintType, Object> hints = new EnumMap<>(DecodeHintType.class);
-    EnumSet<BarcodeFormat> decodeFormats = EnumSet.noneOf(BarcodeFormat.class);
-
+  private void initBarcodeReader(List<Integer> barCodeTypes) {
+    int barcodeFormats = 0;
     if (barCodeTypes != null) {
-      for (String code : barCodeTypes) {
-        String formatString = (String) BarCodeScannerModule.VALID_BARCODE_TYPES.get(code);
-        if (formatString != null) {
-          decodeFormats.add(BarcodeFormat.valueOf(code));
-        }
+      for (Integer code : barCodeTypes) {
+        barcodeFormats |= code;
       }
     }
 
-    hints.put(DecodeHintType.POSSIBLE_FORMATS, decodeFormats);
-    mMultiFormatReader.setHints(hints);
+    mDetector = new BarcodeDetector.Builder(mContext)
+        .setBarcodeFormats(barcodeFormats)
+        .build();
+    if (!mDetector.isOperational()) {
+      EXL.w("ExpoCameraView", "Could not start barcode scanner.");
+    }
   }
 
   public void onPreviewFrame(byte[] data, Camera camera) {
@@ -214,46 +211,27 @@ class BarCodeScannerViewFinder extends TextureView implements TextureView.Surfac
         int width = size.width;
         int height = size.height;
 
-        // rotate for zxing if orientation is portrait
-        if (BarCodeScanner.getInstance().getActualDeviceOrientation() == 0) {
-          byte[] rotated = new byte[mImageData.length];
-          for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-              rotated[x * height + height - y - 1] = mImageData[x + y * width];
-            }
-          }
-          width = size.height;
-          height = size.width;
-          mImageData = rotated;
-        }
+        final SparseArray<Barcode> result = mDetector.detect(ExpoFrameFactory.buildFrame(mImageData, width, height, 0).getFrame());
 
-        try {
-          PlanarYUVLuminanceSource source = new PlanarYUVLuminanceSource(mImageData, width, height, 0, 0, width, height, false);
-          BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
-          final Result result = mMultiFormatReader.decodeWithState(bitmap);
-
+        if (result.size() > 0) {
           new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-              String type = result.getBarcodeFormat().toString();
+              Barcode barcode = result.valueAt(0);
+              int type = barcode.format;
               if (BarCodeScanner.getInstance().getBarCodeTypes().contains(type)) {
                 WritableMap event = Arguments.createMap();
-                event.putString("data", result.getText());
-                event.putString("type", type);
+                event.putString("data", barcode.rawValue);
+                event.putInt("type", type);
                 mBarCodeScannerView.onBarCodeRead(event);
               }
             }
           });
-
-        } catch (Throwable t) {
-          // Unhandled error, unsure what would cause this
-        } finally {
-          mMultiFormatReader.reset();
-          BarCodeScannerViewFinder.barCodeScannerTaskLock = false;
-          return null;
         }
+
+        BarCodeScannerViewFinder.barCodeScannerTaskLock = false;
+        return null;
       } else {
-        mMultiFormatReader.reset();
         BarCodeScannerViewFinder.barCodeScannerTaskLock = false;
         return null;
       }
