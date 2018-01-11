@@ -27,12 +27,19 @@ public class ResolveTakenPictureAsyncTask extends AsyncTask<Void, Void, Writable
   private static final String ERROR_TAG = "E_TAKING_PICTURE_FAILED";
   private Promise mPromise;
   private byte[] mImageData;
+  private Bitmap mBitmap;
   private ReadableMap mOptions;
 
   public ResolveTakenPictureAsyncTask(byte[] imageData, Promise promise, ReadableMap options) {
     mPromise = promise;
     mOptions = options;
     mImageData = imageData;
+  }
+
+  public ResolveTakenPictureAsyncTask(Bitmap bitmap, Promise promise, ReadableMap options) {
+    mPromise = promise;
+    mBitmap = bitmap;
+    mOptions = options;
   }
 
   private int getQuality() {
@@ -42,41 +49,48 @@ public class ResolveTakenPictureAsyncTask extends AsyncTask<Void, Void, Writable
   @Override
   protected WritableMap doInBackground(Void... voids) {
     WritableMap response = Arguments.createMap();
-    Bitmap bitmap = BitmapFactory.decodeByteArray(mImageData, 0, mImageData.length);
-    ByteArrayInputStream inputStream = new ByteArrayInputStream(mImageData);
+    ByteArrayInputStream inputStream = null;
+
+    // we need the stream only for photos from a device
+    if (mBitmap == null) {
+      mBitmap = BitmapFactory.decodeByteArray(mImageData, 0, mImageData.length);
+      inputStream = new ByteArrayInputStream(mImageData);
+    }
 
     try {
-      ExifInterface exifInterface = new ExifInterface(inputStream);
-      // Get orientation of the image from mImageData via inputStream
-      int orientation = exifInterface.getAttributeInt(
-          ExifInterface.TAG_ORIENTATION,
-          ExifInterface.ORIENTATION_UNDEFINED
-      );
+      if (inputStream != null) {
+        ExifInterface exifInterface = new ExifInterface(inputStream);
+        // Get orientation of the image from mImageData via inputStream
+        int orientation = exifInterface.getAttributeInt(
+            ExifInterface.TAG_ORIENTATION,
+            ExifInterface.ORIENTATION_UNDEFINED
+        );
 
-      // Rotate the bitmap to the proper orientation if needed
-      if (orientation != ExifInterface.ORIENTATION_UNDEFINED) {
-        bitmap = rotateBitmap(bitmap, getImageRotation(orientation));
+        // Rotate the bitmap to the proper orientation if needed
+        if (orientation != ExifInterface.ORIENTATION_UNDEFINED) {
+          mBitmap = rotateBitmap(mBitmap, getImageRotation(orientation));
+        }
+
+        // Write Exif data to the response if requested
+        if (mOptions.hasKey("exif") && mOptions.getBoolean("exif")) {
+          WritableMap exifData = ExpoCameraViewHelper.getExifData(exifInterface);
+          response.putMap("exif", exifData);
+        }
       }
 
       // Upon rotating, write the image's dimensions to the response
-      response.putInt("width", bitmap.getWidth());
-      response.putInt("height", bitmap.getHeight());
+      response.putInt("width", mBitmap.getWidth());
+      response.putInt("height", mBitmap.getHeight());
 
       // Cache compressed image in imageStream
       ByteArrayOutputStream imageStream = new ByteArrayOutputStream();
-      bitmap.compress(Bitmap.CompressFormat.JPEG, getQuality(), imageStream);
+      mBitmap.compress(Bitmap.CompressFormat.JPEG, getQuality(), imageStream);
 
       // Write compressed image to file in cache directory
       String filePath = writeStreamToFile(imageStream);
       File imageFile = new File(filePath);
       String fileUri = ExpFileUtils.uriFromFile(imageFile).toString();
       response.putString("uri", fileUri);
-
-      // Write Exif data to the response if requested
-      if (mOptions.hasKey("exif") && mOptions.getBoolean("exif")) {
-        WritableMap exifData = ExpoCameraViewHelper.getExifData(exifInterface);
-        response.putMap("exif", exifData);
-      }
 
       // Write base64-encoded image to the response if requested
       if (mOptions.hasKey("base64") && mOptions.getBoolean("base64")) {
@@ -85,8 +99,10 @@ public class ResolveTakenPictureAsyncTask extends AsyncTask<Void, Void, Writable
 
       // Cleanup
       imageStream.close();
-      inputStream.close();
-      inputStream = null;
+      if (inputStream != null) {
+        inputStream.close();
+        inputStream = null;
+      }
 
       return response;
     } catch (Resources.NotFoundException e) {

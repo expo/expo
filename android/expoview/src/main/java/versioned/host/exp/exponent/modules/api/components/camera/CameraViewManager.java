@@ -157,9 +157,7 @@ public class CameraViewManager extends ViewGroupManager<ExpoCameraView> {
       }
     } else {
       Bitmap image = ExpoCameraViewHelper.generateSimulatorPhoto(mCameraView.getWidth(), mCameraView.getHeight());
-      ByteBuffer byteBuffer = ByteBuffer.allocate(image.getRowBytes() * image.getHeight());
-      image.copyPixelsToBuffer(byteBuffer);
-      new ResolveTakenPictureAsyncTask(byteBuffer.array(), promise, options).execute();
+      new ResolveTakenPictureAsyncTask(image, promise, options).execute();
     }
   }
 
