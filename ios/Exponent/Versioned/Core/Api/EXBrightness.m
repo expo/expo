@@ -1,4 +1,5 @@
 #import "EXBrightness.h"
+#import "EXUtil.h"
 
 #import <UIKit/UIKit.h>
 
@@ -12,7 +13,7 @@ RCT_EXPORT_METHOD(setBrightnessAsync:
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 {
-  [self _performSynchronouslyOnMainThread:^{
+  [EXUtil performSynchronouslyOnMainThread:^{
     [UIScreen mainScreen].brightness = brightnessValue;
   }];
   resolve(nil);
@@ -23,19 +24,10 @@ RCT_REMAP_METHOD(getBrightnessAsync,
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
   __block float result = 0;
-  [self _performSynchronouslyOnMainThread:^{
+  [EXUtil performSynchronouslyOnMainThread:^{
     result = [UIScreen mainScreen].brightness;
   }];
   resolve(@(result));
-}
-
-- (void)_performSynchronouslyOnMainThread:(void (^)(void))block
-{
-  if ([NSThread isMainThread]) {
-    block();
-  } else {
-    dispatch_sync(dispatch_get_main_queue(), block);
-  }
 }
 
 @end

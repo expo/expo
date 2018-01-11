@@ -11,5 +11,6 @@
 @interface EXUtil : EXScopedBridgeModule
 
 + (NSString *)escapedResourceName:(NSString *)name;
++ (void)performSynchronouslyOnMainThread:(void (^)(void))block;
 
 @end

@@ -2,6 +2,7 @@
 
 #import "EXKeepAwake.h"
 #import "EXUnversioned.h"
+#import "EXUtil.h"
 
 #import <UIKit/UIKit.h>
 
@@ -37,7 +38,7 @@ RCT_EXPORT_MODULE(ExponentKeepAwake);
 RCT_EXPORT_METHOD(activate)
 {
   _active = YES;
-  [self _performSynchronouslyOnMainThread:^{
+  [EXUtil performSynchronouslyOnMainThread:^{
     [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
   }];
 }
@@ -45,7 +46,7 @@ RCT_EXPORT_METHOD(activate)
 RCT_EXPORT_METHOD(deactivate)
 {
   _active = NO;
-  [self _performSynchronouslyOnMainThread:^{
+  [EXUtil performSynchronouslyOnMainThread:^{
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
   }];
 }
@@ -53,7 +54,7 @@ RCT_EXPORT_METHOD(deactivate)
 - (void)bridgeDidForeground:(NSNotification *)notification
 {
   if (_active) {
-    [self _performSynchronouslyOnMainThread:^{
+    [EXUtil performSynchronouslyOnMainThread:^{
       [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
     }];
   }
@@ -61,20 +62,9 @@ RCT_EXPORT_METHOD(deactivate)
 
 - (void)bridgeDidBackground:(NSNotification *)notification
 {
-  [self _performSynchronouslyOnMainThread:^{
+  [EXUtil performSynchronouslyOnMainThread:^{
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
   }];
-}
-
-#pragma mark - internal
-
-- (void)_performSynchronouslyOnMainThread:(void (^)(void))block
-{
-  if ([NSThread isMainThread]) {
-    block();
-  } else {
-    dispatch_sync(dispatch_get_main_queue(), block);
-  }
 }
 
 @end

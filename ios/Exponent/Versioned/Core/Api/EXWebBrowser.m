@@ -4,6 +4,7 @@
 #import <SafariServices/SafariServices.h>
 #import "EXWebBrowser.h"
 #import "EXUnversioned.h"
+#import "EXUtil.h"
 
 @interface EXWebBrowser () <SFSafariViewControllerDelegate>
 
@@ -98,7 +99,7 @@ RCT_EXPORT_METHOD(openBrowserAsync:(NSString *)authURL
 - (void)_dismissBrowser
 {
   __weak typeof(self) weakSelf = self;
-  [self _performSynchronouslyOnMainThread:^{
+  [EXUtil performSynchronouslyOnMainThread:^{
     [RCTPresentedViewController() dismissViewControllerAnimated:YES completion:^{
       __strong typeof(self) strongSelf = weakSelf;
       if (strongSelf) {
@@ -170,15 +171,6 @@ RCT_EXPORT_METHOD(dismissAuthSession) {
 #pragma clang diagnostic pop
   _redirectResolve = nil;
   _redirectReject = nil;
-}
-
-- (void)_performSynchronouslyOnMainThread:(void (^)(void))block
-{
-  if ([NSThread isMainThread]) {
-    block();
-  } else {
-    dispatch_sync(dispatch_get_main_queue(), block);
-  }
 }
 
 @end
