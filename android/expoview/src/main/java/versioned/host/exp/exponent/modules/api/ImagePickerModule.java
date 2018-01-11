@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Base64;
+import android.webkit.MimeTypeMap;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -22,9 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -47,6 +46,9 @@ import host.exp.exponent.utils.ScopedContext;
 import host.exp.expoview.Exponent;
 
 public class ImagePickerModule extends ReactContextBaseJavaModule implements ActivityResultListener {
+
+  public static final String TAG = "ExponentImagePicker";
+
   static final int REQUEST_LAUNCH_CAMERA = 1;
   static final int REQUEST_LAUNCH_IMAGE_LIBRARY = 2;
 
@@ -284,9 +286,28 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
         try {
           Uri uri = requestCode == REQUEST_LAUNCH_CAMERA ? mCameraCaptureURI : intent.getData();
           WritableMap exifData = exif ? readExif(uri) : null;
-          boolean isImage = getReactApplicationContext().getContentResolver().getType(uri).contains("image");
+          String type = getReactApplicationContext().getContentResolver().getType(uri);
+
+          // previous method sometimes returns null
+          if (type == null) {
+            String extension = MimeTypeMap.getFileExtensionFromUrl(uri.toString());
+            if (extension != null) {
+              type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+            }
+          }
+
+          boolean isImage = type.contains("image");
 
           if (isImage) {
+            String extension = ".jpg";
+            Bitmap.CompressFormat compressFormat = Bitmap.CompressFormat.JPEG;
+            if (type.contains("png")) {
+              compressFormat = Bitmap.CompressFormat.PNG;
+              extension = ".png";
+            } else if (!type.contains("jpeg")) {
+              EXL.w(TAG, "Image type not supported. Falling back to JPEG instead.");
+              extension = ".jpg";
+            }
             if (allowsEditing) {
               mLaunchedCropper = true;
               mPromise = promise; // Need promise again later
@@ -305,8 +326,9 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
                           .generateOutputPath(
                               mScopedContext.getCacheDir(),
                               "ImagePicker",
-                              ".jpg"
+                              extension
                           ))))
+                  .setOutputCompressFormat(compressFormat)
                   .setOutputCompressQuality(quality)
                   .start(Exponent.getInstance().getCurrentActivity());
             } else {
@@ -341,7 +363,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
                 }
                 return;
               }
-              String path = writeImage(bmp);
+              String path = writeImage(bmp, extension, compressFormat);
 
               ByteArrayOutputStream out = null;
               if (base64) {
@@ -394,13 +416,13 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
     promise.resolve(response);
   }
 
-  private String writeImage(Bitmap image) {
+  private String writeImage(Bitmap image, String extension, Bitmap.CompressFormat compressFormat) {
     FileOutputStream out = null;
     String path = null;
     try {
-      path = ExpFileUtils.generateOutputPath(mScopedContext.getCacheDir(), "ImagePicker", ".jpg");
+      path = ExpFileUtils.generateOutputPath(mScopedContext.getCacheDir(), "ImagePicker", extension);
       out = new FileOutputStream(path);
-      image.compress(Bitmap.CompressFormat.JPEG, quality, out);
+      image.compress(compressFormat, quality, out);
     } catch (Exception e) {
       e.printStackTrace();
     } finally {
