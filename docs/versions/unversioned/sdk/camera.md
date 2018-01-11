@@ -230,25 +230,27 @@ Returns a Promise that resolves to an array of strings representing ratios, eg. 
 
 # Supported bar code formats
 
-| Bar code format | iOS | Android |
-| --------------- | --- | ------- |
-| aztec           | Yes | Yes     |
-| codabar         | No  | Yes     |
-| code39          | Yes | Yes     |
-| code93          | Yes | Yes     |
-| code128         | Yes | Yes     |
-| code138         | Yes | No      |
-| code39mod43     | Yes | No      |
-| datamatrix      | Yes | Yes     |
-| ean13           | Yes | Yes     |
-| ean8            | Yes | Yes     |
-| interleaved2of5 | Yes | Yes     |
-| itf14           | Yes | No      |
-| maxicode        | No  | Yes     |
-| pdf417          | Yes | Yes     |
-| rss14           | No  | Yes     |
-| rssexpanded     | No  | Yes     |
-| upc_a           | No  | Yes     |
-| upc_e           | Yes | Yes     |
-| upc_ean         | No  | Yes     |
-| qr              | Yes | Yes     |
+| Bar code format | iOS  | Android |
+| --------------- | ---- | ------- |
+| aztec           | Yes  | Yes     |
+| codabar         | No   | Yes     |
+| code39          | Yes  | Yes     |
+| code93          | Yes  | Yes     |
+| code128         | Yes  | Yes     |
+| code138         | Yes  | No      |
+| code39mod43     | Yes  | No      |
+| datamatrix      | Yes  | Yes     |
+| ean13           | Yes  | Yes     |
+| ean8            | Yes  | Yes     |
+| interleaved2of5 | Yes  | No      |
+| itf14           | Yes* | Yes     |
+| maxicode        | No   | Yes     |
+| pdf417          | Yes  | Yes     |
+| rss14           | No   | Yes     |
+| rssexpanded     | No   | Yes     |
+| upc_a           | No   | Yes     |
+| upc_e           | Yes  | Yes     |
+| upc_ean         | No   | Yes     |
+| qr              | Yes  | Yes     |
+
+* sometimes when an ITF-14 barcode is recognized it's type is set to `interleaved2of5`.
