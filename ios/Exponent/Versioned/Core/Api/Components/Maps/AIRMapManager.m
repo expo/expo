@@ -23,6 +23,7 @@
 #import "AIRMapCircle.h"
 #import "SMCalloutView.h"
 #import "AIRMapUrlTile.h"
+#import "AIRMapLocalTile.h"
 #import "AIRMapSnapshot.h"
 #import "RCTConvert+AirMap.h"
 
@@ -36,7 +37,10 @@ static NSString *const RCTMapViewKey = @"MapView";
 @end
 
 @implementation AIRMapManager
-
+{
+    BOOL didCallOnMapReady;
+}
+  
 RCT_EXPORT_MODULE()
 
 - (UIView *)view
@@ -534,6 +538,8 @@ RCT_EXPORT_METHOD(takeSnapshot:(nonnull NSNumber *)reactTag
         return ((AIRMapCircle *)overlay).renderer;
     } else if ([overlay isKindOfClass:[AIRMapUrlTile class]]) {
         return ((AIRMapUrlTile *)overlay).renderer;
+    } else if ([overlay isKindOfClass:[AIRMapLocalTile class]]) {
+        return ((AIRMapLocalTile *)overlay).renderer;
     } else if([overlay isKindOfClass:[MKTileOverlay class]]) {
         return [[MKTileOverlayRenderer alloc] initWithTileOverlay:overlay];
     } else {
@@ -708,6 +714,12 @@ static int kDragCenterContext;
 
 - (void)mapViewWillStartRenderingMap:(AIRMap *)mapView
 {
+    if (!didCallOnMapReady)
+    {
+      didCallOnMapReady = YES;
+      mapView.onMapReady(@{});
+    }
+  
     mapView.hasStartedRendering = YES;
     [mapView beginLoading];
     [self _emitRegionChangeEvent:mapView continuous:NO];
@@ -716,9 +728,6 @@ static int kDragCenterContext;
 - (void)mapViewDidFinishRenderingMap:(AIRMap *)mapView fullyRendered:(BOOL)fullyRendered
 {
     [mapView finishLoading];
-    [mapView cacheViewIfNeeded];
-
-    mapView.onMapReady(@{});
 }
 
 #pragma mark Private
