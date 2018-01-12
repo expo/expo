@@ -47,3 +47,33 @@ You can continue updating v1 of your app with `exp publish --release-channel pro
 ## Using Release Channels with ExpoKit
 
 Since `exp build` does not apply to ExpoKit projects, you can edit the native project's release channel manually by modifying the `releaseChannel` key in `EXShell.plist` (iOS) or `Constants.java` (Android).
+
+## Notes
+
+`expo.manifest.releaseChannel` does NOT exist in dev mode. It does exist, however when you explicitly publish / build with it.
+
+## Using Release Channels for Environment Variable Configuration
+
+Enironment variables don't exist explicitly, but you can utilize release channels to make that happen!
+
+Say you have a workflow of releasing builds like this:
+
+- `exp publish --release-channel prod-v1`
+- `exp publish --release-channel prod-v2`
+- `exp publish --release-channel prod-v3`
+
+- `exp publish --release-channel staging-v1`
+- `exp publish --release-channel staging-v2`
+
+
+You can create a function that looks for the specific release and sets the correct variable.
+
+```es6
+function getApiUrl(releaseChannel) {
+  if (releaseChannel === undefined) return App.apiUrl.dev // since releaseChannels are undefined in dev, return your default.
+  if (releaseChannel.indexOf('prod') !== -1) return App.apiUrl.prod // this would pick up prod-v1, prod-v2, prod-v3
+  if (releaseChannel.indexOf('staging') !== -1) return App.apiUrl.staging // return staging environment variables
+}
+```
+
+You can do this for any amount of environment variables, too and return an entire object instead of just the url.
