@@ -127,27 +127,19 @@ RCT_EXPORT_METHOD(cancelScheduledNotification:(NSString *)uniqueId)
   }];
 }
 
-RCT_REMAP_METHOD(cancelAllScheduledNotifications,
-                 cancelAllScheduledNotificationsWithResolver:(RCTPromiseResolveBlock)resolve
-                 rejecter:(RCTPromiseRejectBlock)reject)
-{
-  [self cancelAllScheduledNotificationsAsyncWithResolver:resolve rejecter:reject];
-}
-
 RCT_REMAP_METHOD(cancelAllScheduledNotificationsAsync,
                  cancelAllScheduledNotificationsAsyncWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(__unused RCTPromiseRejectBlock)reject)
 {
-  [EXUtil performSynchronouslyOnMainThread:^{
-    for (UILocalNotification *notification in [RCTSharedApplication() scheduledLocalNotifications]) {
-      if ([notification.userInfo[@"experienceId"] isEqualToString:self.experienceId]) {
-        [RCTSharedApplication() cancelLocalNotification:notification];
-      }
+  for (UILocalNotification *notification in [RCTSharedApplication() scheduledLocalNotifications]) {
+    if ([notification.userInfo[@"experienceId"] isEqualToString:self.experienceId]) {
+      [EXUtil performSynchronouslyOnMainThread:^{
+	  [RCTSharedApplication() cancelLocalNotification:notification];
+	}];
     }
-  }];
+  }
   resolve(nil);
 }
-
 #pragma mark - Badges
 
 // TODO: Make this read from the kernel instead of UIApplication for the main Exponent app

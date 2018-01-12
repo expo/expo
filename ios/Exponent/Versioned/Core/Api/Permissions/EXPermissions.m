@@ -1,10 +1,12 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import "EXAudioRecordingPermissionRequester.h"
+#import "EXCalendarRequester.h"
 #import "EXCameraPermissionRequester.h"
 #import "EXContactsRequester.h"
 #import "EXLocationRequester.h"
 #import "EXPermissions.h"
+#import "EXRemindersRequester.h"
 #import "EXRemoteNotificationRequester.h"
 #import "EXCameraRollRequester.h"
 
@@ -57,6 +59,10 @@ RCT_REMAP_METHOD(getAsync,
     resolve([EXPermissions alwaysGrantedPermissions]); // permission is implicit
   } else if ([type isEqualToString:@"cameraRoll"]) {
     resolve([EXCameraRollRequester permissions]);
+  } else if ([type isEqualToString:@"calendar"]) {
+    resolve([EXCalendarRequester permissions]);
+  } else if ([type isEqualToString:@"reminders"]) {
+    resolve([EXRemindersRequester permissions]);
   } else {
     reject(@"E_PERMISSION_UNKNOWN", [NSString stringWithFormat:@"Unrecognized permission: %@", type], nil);
   }
@@ -85,6 +91,10 @@ RCT_REMAP_METHOD(askAsync,
         requester = [[EXAudioRecordingPermissionRequester alloc] init];
       } else if ([type isEqualToString:@"cameraRoll"]) {
         requester = [[EXCameraRollRequester alloc] init];
+      } else if ([type isEqualToString:@"calendar"]) {
+        requester = [[EXCalendarRequester alloc] init];
+      } else if ([type isEqualToString:@"reminders"]) {
+        requester = [[EXRemindersRequester alloc] init];
       } else {
         // TODO: other types of permission requesters, e.g. facebook
         reject(@"E_PERMISSION_UNSUPPORTED", [NSString stringWithFormat:@"Cannot request permission: %@", type], nil);
