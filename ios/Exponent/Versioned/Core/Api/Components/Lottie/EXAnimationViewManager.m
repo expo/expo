@@ -39,6 +39,11 @@ RCT_EXPORT_MODULE(LottieAnimationView)
   return [EXContainerView new];
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+    return YES;
+}
+
 - (NSDictionary *)constantsToExport
 {
   return @{
@@ -46,13 +51,16 @@ RCT_EXPORT_MODULE(LottieAnimationView)
   };
 }
 
-RCT_EXPORT_VIEW_PROPERTY(sourceJson, NSDictionary);
+RCT_EXPORT_VIEW_PROPERTY(resizeMode, NSString)
+RCT_EXPORT_VIEW_PROPERTY(sourceJson, NSString);
 RCT_EXPORT_VIEW_PROPERTY(sourceName, NSString);
 RCT_EXPORT_VIEW_PROPERTY(progress, CGFloat);
 RCT_EXPORT_VIEW_PROPERTY(loop, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(speed, CGFloat);
 
-RCT_EXPORT_METHOD(play:(nonnull NSNumber *)reactTag)
+RCT_EXPORT_METHOD(play:(nonnull NSNumber *)reactTag
+                  fromFrame:(nonnull NSNumber *) startFrame
+                  toFrame:(nonnull NSNumber *) endFrame)
 {
   [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     id view = viewRegistry[reactTag];
@@ -60,7 +68,11 @@ RCT_EXPORT_METHOD(play:(nonnull NSNumber *)reactTag)
       RCTLogError(@"Invalid view returned from registry, expecting LottieContainerView, got: %@", view);
     } else {
       EXContainerView *lottieView = (EXContainerView *)view;
-      [lottieView play];
+      if ([startFrame intValue] != -1 && [endFrame intValue] != -1) {
+        [lottieView playFromFrame:startFrame toFrame:endFrame];
+      } else {
+        [lottieView play];
+      }
     }
   }];
 }
