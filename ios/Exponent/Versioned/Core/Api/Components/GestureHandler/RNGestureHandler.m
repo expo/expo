@@ -57,7 +57,7 @@
     if (prop != nil) {
         _shouldCancelWhenOutside = [RCTConvert BOOL:prop];
     } else {
-        _shouldCancelWhenOutside = YES;
+        _shouldCancelWhenOutside = NO;
     }
 
     prop = config[@"hitSlop"];
