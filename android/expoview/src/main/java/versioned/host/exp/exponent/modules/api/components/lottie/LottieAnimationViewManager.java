@@ -3,11 +3,11 @@ package versioned.host.exp.exponent.modules.api.components.lottie;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.view.ViewCompat;
-
 import android.util.Log;
+import android.widget.ImageView;
+
 import com.airbnb.lottie.LottieAnimationView;
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -35,7 +35,9 @@ class LottieAnimationViewManager extends SimpleViewManager<LottieAnimationView> 
   }
 
   @Override public LottieAnimationView createViewInstance(ThemedReactContext context) {
-    return new LottieAnimationView(context);
+    LottieAnimationView view = new LottieAnimationView(context);
+    view.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+    return view;
   }
 
   @Override public Map<String, Integer> getCommandsMap() {
@@ -46,11 +48,16 @@ class LottieAnimationViewManager extends SimpleViewManager<LottieAnimationView> 
   }
 
   @Override
-  public void receiveCommand(final LottieAnimationView view, int commandId, ReadableArray args) {
+  public void receiveCommand(final LottieAnimationView view, int commandId, final ReadableArray args) {
     switch (commandId) {
       case COMMAND_PLAY: {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
           @Override public void run() {
+            int startFrame = args.getInt(0);
+            int endFrame = args.getInt(1);
+            if (startFrame != -1 && endFrame != -1) {
+              view.setMinAndMaxFrame(args.getInt(0), args.getInt(1));
+            }
             if (ViewCompat.isAttachedToWindow(view)) {
               view.setProgress(0f);
               view.playAnimation();
@@ -81,12 +88,23 @@ class LottieAnimationViewManager extends SimpleViewManager<LottieAnimationView> 
   }
 
   @ReactProp(name = "sourceJson")
-  public void setSourceJson(LottieAnimationView view, ReadableMap json) {
+  public void setSourceJson(LottieAnimationView view, String json) {
     try {
-        view.setAnimation(new JSONObject(json.toHashMap()));
+        view.setAnimation(new JSONObject(json));
     } catch (Exception e) {
       // TODO: expose this to the user better. maybe an `onError` event?
       Log.e(TAG,"setSourceJsonError", e);
+    }
+  }
+
+  @ReactProp(name = "resizeMode")
+  public void setResizeMode(LottieAnimationView view, String resizeMode) {
+    if ("cover".equals(resizeMode)) {
+      view.setScaleType(ImageView.ScaleType.CENTER_CROP);
+    } else if ("contain".equals(resizeMode)) {
+      view.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+    } else if ("center".equals(resizeMode)) {
+      view.setScaleType(ImageView.ScaleType.CENTER);
     }
   }
 
@@ -97,7 +115,7 @@ class LottieAnimationViewManager extends SimpleViewManager<LottieAnimationView> 
 
   @ReactProp(name = "speed")
   public void setSpeed(LottieAnimationView view, double speed) {
-    // TODO?
+    view.setSpeed((float)speed);
   }
 
   @ReactProp(name = "loop")
@@ -105,8 +123,18 @@ class LottieAnimationViewManager extends SimpleViewManager<LottieAnimationView> 
     view.loop(loop);
   }
 
+  @ReactProp(name = "hardwareAccelerationAndroid")
+  public void setHardwareAcceleration(LottieAnimationView view, boolean use) {
+    view.useHardwareAcceleration(use);
+  }
+
   @ReactProp(name = "imageAssetsFolder")
   public void setImageAssetsFolder(LottieAnimationView view, String imageAssetsFolder) {
     view.setImageAssetsFolder(imageAssetsFolder);
+  }
+
+  @ReactProp(name = "enableMergePathsAndroidForKitKatAndAbove")
+  public void setEnableMergePaths(LottieAnimationView view, boolean enableMergePaths) {
+    view.enableMergePathsForKitKatAndAbove(enableMergePaths);
   }
 }
