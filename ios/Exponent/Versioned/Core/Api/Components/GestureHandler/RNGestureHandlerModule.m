@@ -130,7 +130,7 @@ RCT_EXPORT_METHOD(handleClearJSResponder)
 
 #pragma mark - RCTUIManagerObserver
 
-- (void)uiManagerWillFlushUIBlocks:(RCTUIManager *)uiManager
+- (void)uiManagerWillPerformMounting:(RCTUIManager *)uiManager
 {
     if (_operations.count == 0) {
         return;
