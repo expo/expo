@@ -33,10 +33,10 @@ RCT_EXPORT_METHOD(manipulate:(NSString *)uri
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 {
-  NSString *path = [self scopedPathFromUri:uri];
-  
-  if (path == nil) {
-    reject(@"E_IMAGE_MANIPULATION_FAILED", @"The image has to be in the local app's directories.", nil);
+  NSURL *url = [NSURL URLWithString:uri];
+  NSString *path = [url.path stringByStandardizingPath];
+  if (!([self.bridge.scopedModules.fileSystem permissionsForURI:url] & EXFileSystemPermissionRead)) {
+    reject(@"E_FILESYSTEM_PERMISSIONS", [NSString stringWithFormat:@"File '%@' isn't readable.", uri], nil);
     return;
   }
   
@@ -168,19 +168,6 @@ RCT_EXPORT_METHOD(manipulate:(NSString *)uri
     response[@"base64"] = [imageData base64EncodedStringWithOptions:0];
   }
   resolve(response);
-}
-
-- (NSString *)scopedPathFromUri:(NSString *)uri
-{
-  NSString *path = [[NSURL URLWithString:uri].path stringByStandardizingPath];
-  if (!path) {
-    return nil;
-  }
-  if ([path hasPrefix:[_bridge.scopedModules.fileSystem.documentDirectory stringByStandardizingPath]] ||
-      [path hasPrefix:[_bridge.scopedModules.fileSystem.cachesDirectory stringByStandardizingPath]]) {
-    return path;
-  }
-  return nil;
 }
 
 @end
