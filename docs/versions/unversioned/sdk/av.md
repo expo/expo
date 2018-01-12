@@ -62,7 +62,10 @@ On the `playbackObject` reference, the following API is provided:
 
     -   **source (_object_ / _number_ / _Asset_)** -- The source of the media. The following forms are supported:
 
-        -   A dictionary of the form `{ uri: 'http://path/to/file' }` with a network URL pointing to a media file on the web.
+        -   A dictionary of the form `{ uri: string, overrideFileExtensionAndroid?: string }` with a network URL pointing to a media file on the web and an optional Android-specific `overrideFileExtensionAndroid` string overriding extension inferred from the URL.
+            
+            The `overrideFileExtensionAndroid` property may come in handy if the player receives an URL like `example.com/play` which redirects to `example.com/player.m3u8`. Setting this property to `m3u8` would allow the Android player to properly infer the content type of the media and use proper media file reader.
+
         -   `require('path/to/file')` for a media file asset in the source code directory.
         -   An [`Expo.Asset`](asset.html) object for a media file asset.
 
