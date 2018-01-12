@@ -1,9 +1,10 @@
 package versioned.host.exp.exponent.modules.api.components.gesturehandler.react;
 
 import android.content.Context;
-import android.util.SparseArray;
 import android.view.MotionEvent;
+import android.view.View;
 
+import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -12,7 +13,9 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.UIBlock;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.GestureHandler;
@@ -38,7 +41,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static final String KEY_ENABLED = "enabled";
   private static final String KEY_HIT_SLOP = "hitSlop";
   private static final String KEY_HIT_SLOP_LEFT = "left";
-  private static final String KEY_HIT_SLOP_TOP = "left";
+  private static final String KEY_HIT_SLOP_TOP = "top";
   private static final String KEY_HIT_SLOP_RIGHT = "right";
   private static final String KEY_HIT_SLOP_BOTTOM = "bottom";
   private static final String KEY_HIT_SLOP_VERTICAL = "vertical";
@@ -49,6 +52,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static final String KEY_TAP_MAX_DURATION_MS = "maxDurationMs";
   private static final String KEY_TAP_MAX_DELAY_MS = "maxDelayMs";
   private static final String KEY_LONG_PRESS_MIN_DURATION_MS = "minDurationMs";
+  private static final String KEY_LONG_PRESS_MAX_DIST = "maxDist";
   private static final String KEY_PAN_MIN_DELTA_X = "minDeltaX";
   private static final String KEY_PAN_MIN_DELTA_Y = "minDeltaY";
   private static final String KEY_PAN_MAX_DELTA_X = "maxDeltaX";
@@ -178,7 +182,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
     @Override
     public LongPressGestureHandler create(Context context) {
-      return new LongPressGestureHandler();
+      return new LongPressGestureHandler(context);
     }
 
     @Override
@@ -186,6 +190,9 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       super.configure(handler, config);
       if (config.hasKey(KEY_LONG_PRESS_MIN_DURATION_MS)) {
         handler.setMinDurationMs(config.getInt(KEY_LONG_PRESS_MIN_DURATION_MS));
+      }
+      if (config.hasKey(KEY_LONG_PRESS_MAX_DIST)) {
+        handler.setMaxDist(PixelUtil.toPixelFromDIP(config.getDouble(KEY_LONG_PRESS_MAX_DIST)));
       }
     }
   }
@@ -350,11 +357,12 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
           new PinchGestureHandlerFactory(),
           new RotationGestureHandlerFactory()
   };
-  private RNGestureHandlerRegistry mRegistry;
+  private final RNGestureHandlerRegistry mRegistry = new RNGestureHandlerRegistry();
 
   private RNGestureHandlerInteractionManager mInteractionManager =
           new RNGestureHandlerInteractionManager();
-  private List<RNGestureHandlerEnabledRootView> mRootViews = new ArrayList<>();
+  private List<RNGestureHandlerRootHelper> mRoots = new ArrayList<>();
+  private List<Integer> mEnqueuedRootViewInit = new ArrayList<>();
 
   public RNGestureHandlerModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -376,7 +384,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
         GestureHandler handler = handlerFactory.create(getReactApplicationContext());
         handler.setTag(handlerTag);
         handler.setOnTouchEventListener(mEventListener);
-        getOrCreateRegistry().registerHandler(handler);
+        mRegistry.registerHandler(handler);
         mInteractionManager.configureInteractions(handler, config);
         handlerFactory.configure(handler, config);
         return;
@@ -387,7 +395,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void attachGestureHandler(int handlerTag, int viewTag) {
-    if (!getOrCreateRegistry().attachHandlerToView(handlerTag, viewTag)) {
+    tryInitializeHandlerForReactRootView(viewTag);
+    if (!mRegistry.attachHandlerToView(handlerTag, viewTag)) {
       throw new JSApplicationIllegalArgumentException(
               "Handler with tag " + handlerTag + " does not exists");
     }
@@ -397,7 +406,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   public void updateGestureHandler(
           int handlerTag,
           ReadableMap config) {
-    GestureHandler handler = getOrCreateRegistry().getHandler(handlerTag);
+    GestureHandler handler = mRegistry.getHandler(handlerTag);
     if (handler != null) {
       HandlerFactory factory = findFactoryForHandler(handler);
       if (factory != null) {
@@ -411,13 +420,13 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void dropGestureHandler(int handlerTag) {
     mInteractionManager.dropRelationsForHandlerWithTag(handlerTag);
-    getOrCreateRegistry().dropHandler(handlerTag);
+    mRegistry.dropHandler(handlerTag);
   }
 
   @ReactMethod
   public void handleSetJSResponder(int viewTag, boolean blockNativeResponder) {
     if (mRegistry != null) {
-      RNGestureHandlerEnabledRootView rootView = findRootViewForAncestor(viewTag);
+      RNGestureHandlerRootHelper rootView = findRootHelperForViewAncestor(viewTag);
       if (rootView != null) {
         rootView.handleSetJSResponder(viewTag, blockNativeResponder);
       }
@@ -440,55 +449,105 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     ));
   }
 
-  private RNGestureHandlerRegistry getOrCreateRegistry() {
-    if (mRegistry != null) {
-      return mRegistry;
-    }
-    mRegistry = new RNGestureHandlerRegistry();
-    for (RNGestureHandlerEnabledRootView rootView : mRootViews) {
-      rootView.initialize(mRegistry);
-    }
+  public RNGestureHandlerRegistry getRegistry() {
     return mRegistry;
   }
 
-  /*package*/ void registerRootView(RNGestureHandlerEnabledRootView rootView) {
-    if (mRootViews.contains(rootView)) {
-      throw new IllegalStateException("RootView " + rootView + " already registered");
-    }
-    mRootViews.add(rootView);
-    if (mRegistry != null) {
-      rootView.initialize(mRegistry);
-    }
-  }
-
-  /*package*/ void unregisterRootView(RNGestureHandlerEnabledRootView rootView) {
-    mRootViews.remove(rootView);
-  }
 
   @Override
   public void onCatalystInstanceDestroy() {
-    if (mRegistry != null) {
-      mRegistry.dropAllHandlers();
-      mRegistry = null;
-      mInteractionManager.reset();
-      for (RNGestureHandlerEnabledRootView rootView : mRootViews) {
-        rootView.reset();
+    mRegistry.dropAllHandlers();
+    mInteractionManager.reset();
+    synchronized (mRoots) {
+      while (!mRoots.isEmpty()) {
+        int sizeBefore = mRoots.size();
+        RNGestureHandlerRootHelper root = mRoots.get(0);
+        ReactRootView reactRootView = root.getRootView();
+        if (reactRootView instanceof RNGestureHandlerEnabledRootView) {
+          ((RNGestureHandlerEnabledRootView) reactRootView).tearDown();
+        } else {
+          root.tearDown();
+        }
+        if (mRoots.size() >= sizeBefore) {
+          throw new IllegalStateException("Expected root helper to get unregistered while tearing down");
+        }
       }
-      mRootViews.clear();
     }
     super.onCatalystInstanceDestroy();
   }
 
-  private @Nullable RNGestureHandlerEnabledRootView findRootViewForAncestor(int viewTag) {
+  private void tryInitializeHandlerForReactRootView(int ancestorViewTag) {
+    UIManagerModule uiManager = getReactApplicationContext().getNativeModule(UIManagerModule.class);
+    final int rootViewTag = uiManager.resolveRootTagFromReactTag(ancestorViewTag);
+    if (rootViewTag < 1) {
+      throw new JSApplicationIllegalArgumentException("Could find root view for a given ancestor with tag "
+              + ancestorViewTag);
+    }
+    synchronized (mRoots) {
+      for (int i = 0; i < mRoots.size(); i++) {
+        RNGestureHandlerRootHelper root = mRoots.get(i);
+        if (root.getRootView().getRootViewTag() == rootViewTag) {
+          // we have found root helper registered for a given react root, we don't need to
+          // initialize a new one then
+          return;
+        }
+      }
+    }
+    synchronized (mEnqueuedRootViewInit) {
+      if (mEnqueuedRootViewInit.contains(rootViewTag)) {
+        // root view initialization already enqueued -> we skip
+        return;
+      }
+      mEnqueuedRootViewInit.add(rootViewTag);
+    }
+    // root helper for a given root tag has not been found, we may wat to check if the root view is
+    // an instance of RNGestureHandlerEnabledRootView and then initialize gesture handler with it
+    uiManager.addUIBlock(new UIBlock() {
+      @Override
+      public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
+        View view = nativeViewHierarchyManager.resolveView(rootViewTag);
+        if (view instanceof RNGestureHandlerEnabledRootView) {
+          ((RNGestureHandlerEnabledRootView) view).initialize();
+        } else {
+          // Seems like the root view is something else than RNGestureHandlerEnabledRootView, this
+          // is fine though as long as gestureHandlerRootHOC is used in JS
+          // FIXME: check and warn about gestureHandlerRootHOC
+        }
+        synchronized (mEnqueuedRootViewInit) {
+          mEnqueuedRootViewInit.remove(new Integer(rootViewTag));
+        }
+      }
+    });
+  }
+
+  public void registerRootHelper(RNGestureHandlerRootHelper root) {
+    synchronized (mRoots) {
+      if (mRoots.contains(root)) {
+        throw new IllegalStateException("Root helper" + root + " already registered");
+      }
+      mRoots.add(root);
+    }
+  }
+
+  public void unregisterRootHelper(RNGestureHandlerRootHelper root) {
+    synchronized (mRoots) {
+      mRoots.remove(root);
+    }
+  }
+
+
+  private @Nullable RNGestureHandlerRootHelper findRootHelperForViewAncestor(int viewTag) {
     UIManagerModule uiManager = getReactApplicationContext().getNativeModule(UIManagerModule.class);
     int rootViewTag = uiManager.resolveRootTagFromReactTag(viewTag);
     if (rootViewTag < 1) {
       return null;
     }
-    for (int i = 0; i < mRootViews.size(); i++) {
-      RNGestureHandlerEnabledRootView rootView = mRootViews.get(i);
-      if (rootView.getRootViewTag() == rootViewTag) {
-        return rootView;
+    synchronized (mRoots) {
+      for (int i = 0; i < mRoots.size(); i++) {
+        RNGestureHandlerRootHelper root = mRoots.get(i);
+        if (root.getRootView().getRootViewTag() == rootViewTag) {
+          return root;
+        }
       }
     }
     return null;

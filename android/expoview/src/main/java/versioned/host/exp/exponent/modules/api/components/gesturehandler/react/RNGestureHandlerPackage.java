@@ -4,6 +4,8 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.view.ReactViewManager;
 
@@ -15,24 +17,35 @@ import javax.annotation.Nullable;
 
 public class RNGestureHandlerPackage implements ReactPackage {
 
-  /**
-   * This is an empty implementation of {@link ViewManager}. It is only used to export direct
-   * event configuration through {@link UIManagerModule} – no actual views using this manager gets
-   * instantiated. The direct event configuration serves the purpose of translating event names from
-   * event names used in native code to "registration names" used in JS. This is necessary for the
-   * native Animated implementation that has to match events by their names on the native side by
-   * their "registration names" passed down from JS. For relevant code parts please refer to the
-   * following react-native core code parts:
-   *  - {@link UIManagerModule.CustomEventNamesResolver}
-   *  - {@link UIManagerModuleConstantsHelper#createConstantsForViewManager}
-   *  - {@link NativeAnimatedNodesManager#handleEvent}
-   */
-  private static class DummyViewManager extends ReactViewManager {
+  private static class DummyViewManager extends ViewGroupManager<RNGestureHandlerRootView> {
     @Override
     public String getName() {
-      return "GestureHandlerDummyView";
+      return "GestureHandlerRootView";
     }
 
+    @Override
+    protected RNGestureHandlerRootView createViewInstance(ThemedReactContext reactContext) {
+      return new RNGestureHandlerRootView(reactContext);
+    }
+
+    @Override
+    public void onDropViewInstance(RNGestureHandlerRootView view) {
+      view.tearDown();
+    }
+
+    /**
+     * The following event configuration is necessary even if you are not using
+     * GestureHandlerRootView component directly.
+     *
+     * This direct event configuration serves the purpose of translating event names from
+     * the names used in native code to "registration names" used in JS. This is necessary for the
+     * native Animated implementation that has to match events by their names on the native side
+     * given their "registration names" passed down from JS. For relevant code parts please refer to
+     * the following react-native core code parts:
+     *  - {@link UIManagerModule.CustomEventNamesResolver}
+     *  - {@link UIManagerModuleConstantsHelper#createConstantsForViewManager}
+     *  - {@link NativeAnimatedNodesManager#handleEvent}
+     */
     @Override
     public @Nullable Map getExportedCustomDirectEventTypeConstants() {
       return MapBuilder.of(
