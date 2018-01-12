@@ -161,7 +161,7 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
         if (file.exists()) {
           result.putBoolean("exists", true);
           result.putBoolean("isDirectory", file.isDirectory());
-          result.putString("uri", ExpFileUtils.uriFromFile(file).toString());
+          result.putString("uri", Uri.fromFile(file).toString());
           if (options.hasKey("md5") && options.getBoolean("md5")) {
             result.putString("md5", ExpFileUtils.md5(file));
           }
@@ -420,7 +420,7 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
             sink.close();
 
             WritableMap result = Arguments.createMap();
-            result.putString("uri", ExpFileUtils.uriFromFile(file).toString());
+            result.putString("uri", Uri.fromFile(file).toString());
             if (options.hasKey("md5") && options.getBoolean("md5")) {
               result.putString("md5", ExpFileUtils.md5(file));
             }
@@ -576,7 +576,7 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
         }
 
         WritableMap result = Arguments.createMap();
-        result.putString("uri", ExpFileUtils.uriFromFile(file).toString());
+        result.putString("uri", Uri.fromFile(file).toString());
         if (options.hasKey("md5") && options.getBoolean("md5")) {
           result.putString("md5", ExpFileUtils.md5(file));
         }

@@ -3,11 +3,18 @@
 #import "EXScopedEventEmitter.h"
 #import "EXScopedModuleRegistry.h"
 
+typedef NS_OPTIONS(unsigned int, EXFileSystemPermissionFlags) {
+  EXFileSystemPermissionNone = 0,
+  EXFileSystemPermissionRead = 1 << 1,
+  EXFileSystemPermissionWrite = 1 << 2,
+};
 
 @interface EXFileSystem : EXScopedEventEmitter
 
 @property (nonatomic, readonly) NSString *documentDirectory;
 @property (nonatomic, readonly) NSString *cachesDirectory;
+
+- (EXFileSystemPermissionFlags)permissionsForURI:(NSURL *)uri;
 
 + (BOOL)ensureDirExistsWithPath:(NSString *)path;
 + (NSString *)documentDirectoryForExperienceId:(NSString *)experienceId;

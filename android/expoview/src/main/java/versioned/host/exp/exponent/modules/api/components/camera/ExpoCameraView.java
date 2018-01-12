@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.media.CamcorderProfile;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.util.SparseArray;
@@ -94,7 +95,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
         if (mVideoRecordedPromise != null) {
           if (path != null) {
             WritableMap result = Arguments.createMap();
-            result.putString("uri", ExpFileUtils.uriFromFile(new File(path)).toString());
+            result.putString("uri", Uri.fromFile(new File(path)).toString());
             mVideoRecordedPromise.resolve(result);
           } else {
             mVideoRecordedPromise.reject("E_RECORDING", "Couldn't stop recording - there is none in progress");

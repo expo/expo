@@ -4,6 +4,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.media.ExifInterface;
 import android.util.Base64;
@@ -89,7 +90,7 @@ public class ResolveTakenPictureAsyncTask extends AsyncTask<Void, Void, Writable
       // Write compressed image to file in cache directory
       String filePath = writeStreamToFile(imageStream);
       File imageFile = new File(filePath);
-      String fileUri = ExpFileUtils.uriFromFile(imageFile).toString();
+      String fileUri = Uri.fromFile(imageFile).toString();
       response.putString("uri", fileUri);
 
       // Write base64-encoded image to the response if requested

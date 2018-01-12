@@ -52,15 +52,16 @@ RCT_EXPORT_METHOD(detectFaces:(nonnull NSDictionary *)options
                      resolver:(RCTPromiseResolveBlock)resolve
                      rejecter:(RCTPromiseRejectBlock)reject)
 {
-  if (options[@"uri"] == nil) {
+  NSString *uri = options[@"uri"];
+  if (uri == nil) {
     reject(@"E_FACE_DETECTION_FAILED", @"You must define a URI.", nil);
     return;
   }
   
-  NSString *path = [self scopedPathFromUri:options[@"uri"]];
-
-  if (path == nil) {
-    reject(@"E_FACE_DETECTION_FAILED", @"The image has to be in the local app's directories.", nil);
+  NSURL *url = [NSURL URLWithString:uri];
+  NSString *path = [url.path stringByStandardizingPath];
+  if (!([self.bridge.scopedModules.fileSystem permissionsForURI:url] & EXFileSystemPermissionRead)) {
+    reject(@"E_FILESYSTEM_PERMISSIONS", [NSString stringWithFormat:@"File '%@' isn't readable.", uri], nil);
     return;
   }
   
@@ -136,20 +137,6 @@ RCT_EXPORT_METHOD(detectFaces:(nonnull NSDictionary *)options
 }
 
 # pragma mark: - Utility methods
-
-// We have to check if the requested image is in a directory accessible by our app.
-- (NSString *)scopedPathFromUri:(NSString *)uri
-{
-  NSString *path = [[NSURL URLWithString:uri].path stringByStandardizingPath];
-  if (!path) {
-    return nil;
-  }
-  if ([path hasPrefix:[_bridge.scopedModules.fileSystem.documentDirectory stringByStandardizingPath]] ||
-      [path hasPrefix:[_bridge.scopedModules.fileSystem.cachesDirectory stringByStandardizingPath]]) {
-    return path;
-  }
-  return nil;
-}
 
 + (NSDictionary *)detectionOptionsForImage:(UIImage *)image
 {

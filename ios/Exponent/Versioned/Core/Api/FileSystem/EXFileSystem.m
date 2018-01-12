@@ -10,12 +10,6 @@
 #import "EXFileSystemLocalFileHandler.h"
 #import "EXFileSystemAssetLibraryHandler.h"
 
-typedef NS_OPTIONS(unsigned int, EXFileSystemPermissionFlags) {
-  EXFileSystemPermissionNone = 0,
-  EXFileSystemPermissionRead = 1 << 1,
-  EXFileSystemPermissionWrite = 1 << 2,
-};
-
 NSString * const EXDownloadProgressEventName = @"Exponent.downloadProgress";
 
 @interface EXDownloadResumable : NSObject
@@ -105,7 +99,7 @@ RCT_REMAP_METHOD(getInfoAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  if (!([self _permissionsForURI:uri] & EXFileSystemPermissionRead)) {
+  if (!([self permissionsForURI:uri] & EXFileSystemPermissionRead)) {
     reject(@"E_FILESYSTEM_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't readable.", uri],
            nil);
@@ -129,7 +123,7 @@ RCT_REMAP_METHOD(readAsStringAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  if (!([self _permissionsForURI:uri] & EXFileSystemPermissionRead)) {
+  if (!([self permissionsForURI:uri] & EXFileSystemPermissionRead)) {
     reject(@"E_FILESYSTEM_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't readable.", uri],
            nil);
@@ -160,7 +154,7 @@ RCT_REMAP_METHOD(writeAsStringAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  if (!([self _permissionsForURI:uri] & EXFileSystemPermissionWrite)) {
+  if (!([self permissionsForURI:uri] & EXFileSystemPermissionWrite)) {
     reject(@"E_FILESYSTEM_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't writable.", uri],
            nil);
@@ -189,7 +183,7 @@ RCT_REMAP_METHOD(deleteAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  if (!([self _permissionsForURI:[uri URLByAppendingPathComponent:@".."]] & EXFileSystemPermissionWrite)) {
+  if (!([self permissionsForURI:[uri URLByAppendingPathComponent:@".."]] & EXFileSystemPermissionWrite)) {
     reject(@"E_FILESYSTEM_PERMISSIONS",
            [NSString stringWithFormat:@"Location '%@' isn't deletable.", uri],
            nil);
@@ -233,7 +227,7 @@ RCT_REMAP_METHOD(moveAsync,
     reject(@"E_MISSING_PARAMETER", @"Need a `from` location.", nil);
     return;
   }
-  if (!([self _permissionsForURI:[from URLByAppendingPathComponent:@".."]] & EXFileSystemPermissionWrite)) {
+  if (!([self permissionsForURI:[from URLByAppendingPathComponent:@".."]] & EXFileSystemPermissionWrite)) {
     reject(@"E_FILESYSTEM_PERMISSIONS",
            [NSString stringWithFormat:@"Location '%@' isn't movable.", from],
            nil);
@@ -244,7 +238,7 @@ RCT_REMAP_METHOD(moveAsync,
     reject(@"E_MISSING_PARAMETER", @"Need a `to` location.", nil);
     return;
   }
-  if (!([self _permissionsForURI:to] & EXFileSystemPermissionWrite)) {
+  if (!([self permissionsForURI:to] & EXFileSystemPermissionWrite)) {
     reject(@"E_FILESYSTEM_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't writable.", to],
            nil);
@@ -289,7 +283,7 @@ RCT_REMAP_METHOD(copyAsync,
     reject(@"E_MISSING_PARAMETER", @"Need a `from` location.", nil);
     return;
   }
-  if (!([self _permissionsForURI:from] & EXFileSystemPermissionRead)) {
+  if (!([self permissionsForURI:from] & EXFileSystemPermissionRead)) {
     reject(@"E_FILESYSTEM_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't readable.", from],
            nil);
@@ -300,7 +294,7 @@ RCT_REMAP_METHOD(copyAsync,
     reject(@"E_MISSING_PARAMETER", @"Need a `to` location.", nil);
     return;
   }
-  if (!([self _permissionsForURI:to] & EXFileSystemPermissionWrite)) {
+  if (!([self permissionsForURI:to] & EXFileSystemPermissionWrite)) {
     reject(@"E_FILESYSTEM_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't writable.", to],
            nil);
@@ -324,7 +318,7 @@ RCT_REMAP_METHOD(makeDirectoryAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  if (!([self _permissionsForURI:uri] & EXFileSystemPermissionWrite)) {
+  if (!([self permissionsForURI:uri] & EXFileSystemPermissionWrite)) {
     reject(@"E_FILESYSTEM_PERMISSIONS",
            [NSString stringWithFormat:@"Directory '%@' could not be created because the location isn't writable.", uri],
            nil);
@@ -356,7 +350,7 @@ RCT_REMAP_METHOD(readDirectoryAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  if (!([self _permissionsForURI:uri] & EXFileSystemPermissionRead)) {
+  if (!([self permissionsForURI:uri] & EXFileSystemPermissionRead)) {
     reject(@"E_FILESYSTEM_PERMISSIONS",
            [NSString stringWithFormat:@"Location '%@' isn't readable.", uri],
            nil);
@@ -387,7 +381,7 @@ RCT_REMAP_METHOD(downloadAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  if (!([self _permissionsForURI:localUri] & EXFileSystemPermissionWrite)) {
+  if (!([self permissionsForURI:localUri] & EXFileSystemPermissionWrite)) {
     reject(@"E_FILESYSTEM_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't writable.", localUri],
            nil);
@@ -564,17 +558,6 @@ RCT_REMAP_METHOD(downloadResumablePauseAsync,
   [downloadTask resume];
 }
 
-- (EXFileSystemPermissionFlags)_permissionsForURI:(NSURL *)uri
-{
-  if ([uri.scheme isEqualToString:@"assets-library"]) {
-    return EXFileSystemPermissionRead;
-  }
-  if ([uri.scheme isEqualToString:@"file"]) {
-    return [self _permissionsForPath:uri.path];
-  }
-  return EXFileSystemPermissionNone;
-}
-
 - (EXFileSystemPermissionFlags)_permissionsForPath:(NSString *)path
 {
   path = [path stringByStandardizingPath];
@@ -589,6 +572,19 @@ RCT_REMAP_METHOD(downloadResumablePauseAsync,
   }
   if ([path isEqualToString:_cachesDirectory])  {
     return EXFileSystemPermissionRead | EXFileSystemPermissionWrite;
+  }
+  return EXFileSystemPermissionNone;
+}
+
+#pragma mark - Public utils
+
+- (EXFileSystemPermissionFlags)permissionsForURI:(NSURL *)uri
+{
+  if ([uri.scheme isEqualToString:@"assets-library"]) {
+    return EXFileSystemPermissionRead;
+  }
+  if ([uri.scheme isEqualToString:@"file"]) {
+    return [self _permissionsForPath:uri.path];
   }
   return EXFileSystemPermissionNone;
 }

@@ -179,7 +179,7 @@ public class ImageManipulatorModule extends ReactContextBaseJavaModule {
     }
 
     WritableMap response = Arguments.createMap();
-    response.putString("uri", ExpFileUtils.uriFromFile(new File(path)).toString());
+    response.putString("uri", Uri.fromFile(new File(path)).toString());
     response.putInt("width", bmp.getWidth());
     response.putInt("height", bmp.getHeight());
     if (base64) {

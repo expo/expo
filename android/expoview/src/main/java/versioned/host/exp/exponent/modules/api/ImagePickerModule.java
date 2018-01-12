@@ -321,7 +321,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
                     .setInitialCropWindowPaddingRatio(0);
               }
               cropImage
-                  .setOutputUri(ExpFileUtils.uriFromFile(
+                  .setOutputUri(Uri.fromFile(
                       new File(ExpFileUtils
                           .generateOutputPath(
                               mScopedContext.getCacheDir(),
@@ -371,12 +371,12 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
                 bmp.compress(Bitmap.CompressFormat.JPEG, quality, out);
               }
 
-              String internalUri = ExpFileUtils.uriFromFile(new File(path)).toString();
-              returnImageResult(exifData, internalUri, bmp.getWidth(), bmp.getHeight(), out, promise);
+              String fileUri = Uri.fromFile(new File(path)).toString();
+              returnImageResult(exifData, fileUri, bmp.getWidth(), bmp.getHeight(), out, promise);
             }
           } else {
             WritableMap response = Arguments.createMap();
-            response.putString("uri", ExpFileUtils.uriFromFile(new File(writeVideo(uri))).toString());
+            response.putString("uri", Uri.fromFile(new File(writeVideo(uri))).toString());
             response.putBoolean("cancelled", false);
             response.putString("type", "video");
 
