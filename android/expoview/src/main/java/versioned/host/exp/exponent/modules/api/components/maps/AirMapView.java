@@ -13,7 +13,6 @@ import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.MotionEventCompat;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -65,12 +64,12 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
 
   private LatLngBounds boundsToMove;
   private boolean showUserLocation = false;
-  private boolean isMonitoringRegion = false;
-  private boolean isTouchDown = false;
   private boolean handlePanDrag = false;
   private boolean moveOnMarkerPress = true;
   private boolean cacheEnabled = false;
   private boolean initialRegionSet = false;
+  private LatLngBounds cameraLastIdleBounds;
+  private int cameraMoveReason = 0;
 
   private static final String[] PERMISSIONS = new String[]{
       "android.permission.ACCESS_FINE_LOCATION", "android.permission.ACCESS_COARSE_LOCATION"};
@@ -79,7 +78,6 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
   private final Map<Marker, AirMapMarker> markerMap = new HashMap<>();
   private final Map<Polyline, AirMapPolyline> polylineMap = new HashMap<>();
   private final Map<Polygon, AirMapPolygon> polygonMap = new HashMap<>();
-  private final ScaleGestureDetector scaleDetector;
   private final GestureDetectorCompat gestureDetector;
   private final AirMapManager manager;
   private LifecycleEventListener lifecycleListener;
@@ -133,23 +131,9 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
     super.getMapAsync(this);
 
     final AirMapView view = this;
-    scaleDetector =
-        new ScaleGestureDetector(reactContext,
-            new ScaleGestureDetector.SimpleOnScaleGestureListener() {
-              @Override
-              public boolean onScaleBegin(ScaleGestureDetector detector) {
-                view.startMonitoringRegion();
-                return true; // stop recording this gesture. let mapview handle it.
-              }
-            });
 
     gestureDetector =
         new GestureDetectorCompat(reactContext, new GestureDetector.SimpleOnGestureListener() {
-          @Override
-          public boolean onDoubleTap(MotionEvent e) {
-            view.startMonitoringRegion();
-            return false;
-          }
 
           @Override
           public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
@@ -157,7 +141,6 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
             if (handlePanDrag) {
               onPanDrag(e2);
             }
-            view.startMonitoringRegion();
             return false;
           }
         });
@@ -272,14 +255,32 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
       }
     });
 
-    map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+    map.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
       @Override
-      public void onCameraChange(CameraPosition position) {
+      public void onCameraMoveStarted(int reason) {
+        cameraMoveReason = reason;
+      }
+    });
+
+    map.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
+      @Override
+      public void onCameraMove() {
         LatLngBounds bounds = map.getProjection().getVisibleRegion().latLngBounds;
-        LatLng center = position.target;
-        lastBoundsEmitted = bounds;
-        eventDispatcher.dispatchEvent(new RegionChangeEvent(getId(), bounds, center, isTouchDown));
-        view.stopMonitoringRegion();
+        cameraLastIdleBounds = null;
+        eventDispatcher.dispatchEvent(new RegionChangeEvent(getId(), bounds, true));
+      }
+    });
+
+    map.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
+      @Override
+      public void onCameraIdle() {
+        LatLngBounds bounds = map.getProjection().getVisibleRegion().latLngBounds;
+        if ((cameraMoveReason != 0) &&
+          ((cameraLastIdleBounds == null) ||
+            LatLngBoundsUtils.BoundsAreDifferent(bounds, cameraLastIdleBounds))) {
+          cameraLastIdleBounds = bounds;
+          eventDispatcher.dispatchEvent(new RegionChangeEvent(getId(), bounds, false));
+        }
       }
     });
 
@@ -501,11 +502,17 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
       AirMapUrlTile urlTileView = (AirMapUrlTile) child;
       urlTileView.addToMap(map);
       features.add(index, urlTileView);
-    } else {
+    } else if (child instanceof AirMapLocalTile) {
+      AirMapLocalTile localTileView = (AirMapLocalTile) child;
+      localTileView.addToMap(map);
+      features.add(index, localTileView);
+    } else if (child instanceof ViewGroup) {
       ViewGroup children = (ViewGroup) child;
       for (int i = 0; i < children.getChildCount(); i++) {
         addFeature(children.getChildAt(i), index);
       }
+    } else {
+      addView(child, index);
     }
   }
 
@@ -565,40 +572,35 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
   }
 
   public void animateToRegion(LatLngBounds bounds, int duration) {
-    if (map != null) {
-      startMonitoringRegion();
-      map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0), duration, null);
-    }
+    if (map == null) return;
+    map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0), duration, null);
   }
 
   public void animateToViewingAngle(float angle, int duration) {
-    if (map != null) {
-      startMonitoringRegion();
-      CameraPosition cameraPosition = new CameraPosition.Builder(map.getCameraPosition())
-          .tilt(angle)
-          .build();
-      map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), duration, null);
-    }
+    if (map == null) return;
+
+    CameraPosition cameraPosition = new CameraPosition.Builder(map.getCameraPosition())
+      .tilt(angle)
+      .build();
+    map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), duration, null);
   }
 
   public void animateToBearing(float bearing, int duration) {
-    if (map != null) {
-      startMonitoringRegion();
-      CameraPosition cameraPosition = new CameraPosition.Builder(map.getCameraPosition())
-          .bearing(bearing)
-          .build();
-      map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), duration, null);
-    }
+    if (map == null) return;
+    CameraPosition cameraPosition = new CameraPosition.Builder(map.getCameraPosition())
+        .bearing(bearing)
+        .build();
+    map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), duration, null);
   }
 
   public void animateToCoordinate(LatLng coordinate, int duration) {
-    if (map != null) {
-      startMonitoringRegion();
-      map.animateCamera(CameraUpdateFactory.newLatLng(coordinate), duration, null);
-    }
+    if (map == null) return;
+    map.animateCamera(CameraUpdateFactory.newLatLng(coordinate), duration, null);
   }
 
   public void fitToElements(boolean animated) {
+    if (map == null) return;
+
     LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
     boolean addedPosition = false;
@@ -615,7 +617,6 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
       LatLngBounds bounds = builder.build();
       CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, baseMapPadding);
       if (animated) {
-        startMonitoringRegion();
         map.animateCamera(cu);
       } else {
         map.moveCamera(cu);
@@ -624,6 +625,8 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
   }
 
   public void fitToSuppliedMarkers(ReadableArray markerIDsArray, boolean animated) {
+    if (map == null) return;
+
     LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
     String[] markerIDs = new String[markerIDsArray.size()];
@@ -650,7 +653,6 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
       LatLngBounds bounds = builder.build();
       CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, baseMapPadding);
       if (animated) {
-        startMonitoringRegion();
         map.animateCamera(cu);
       } else {
         map.moveCamera(cu);
@@ -660,6 +662,8 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
 
   public void fitToCoordinates(ReadableArray coordinatesArray, ReadableMap edgePadding,
       boolean animated) {
+    if (map == null) return;
+
     LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
     for (int i = 0; i < coordinatesArray.size(); i++) {
@@ -678,13 +682,30 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
     }
 
     if (animated) {
-      startMonitoringRegion();
       map.animateCamera(cu);
     } else {
       map.moveCamera(cu);
     }
     map.setPadding(0, 0, 0,
         0); // Without this, the Google logo is moved up by the value of edgePadding.bottom
+  }
+
+  public void setMapBoundaries(ReadableMap northEast, ReadableMap southWest) {
+    if (map == null) return;
+
+    LatLngBounds.Builder builder = new LatLngBounds.Builder();
+
+    Double latNE = northEast.getDouble("latitude");
+    Double lngNE = northEast.getDouble("longitude");
+    builder.include(new LatLng(latNE, lngNE));
+
+    Double latSW = southWest.getDouble("latitude");
+    Double lngSW = southWest.getDouble("longitude");
+    builder.include(new LatLng(latSW, lngSW));
+
+    LatLngBounds bounds = builder.build();
+
+    map.setLatLngBoundsForCameraTarget(bounds);
   }
 
   // InfoWindowAdapter interface
@@ -703,7 +724,6 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
 
   @Override
   public boolean dispatchTouchEvent(MotionEvent ev) {
-    scaleDetector.onTouchEvent(ev);
     gestureDetector.onTouchEvent(ev);
 
     int action = MotionEventCompat.getActionMasked(ev);
@@ -712,60 +732,15 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
       case (MotionEvent.ACTION_DOWN):
         this.getParent().requestDisallowInterceptTouchEvent(
             map != null && map.getUiSettings().isScrollGesturesEnabled());
-        isTouchDown = true;
-        break;
-      case (MotionEvent.ACTION_MOVE):
-        startMonitoringRegion();
         break;
       case (MotionEvent.ACTION_UP):
         // Clear this regardless, since isScrollGesturesEnabled() may have been updated
         this.getParent().requestDisallowInterceptTouchEvent(false);
-        isTouchDown = false;
         break;
     }
     super.dispatchTouchEvent(ev);
     return true;
   }
-
-  // Timer Implementation
-
-  public void startMonitoringRegion() {
-    if (map == null || isMonitoringRegion) return;
-    timerHandler.postDelayed(timerRunnable, 100);
-    isMonitoringRegion = true;
-  }
-
-  public void stopMonitoringRegion() {
-    if (map == null || !isMonitoringRegion) return;
-    timerHandler.removeCallbacks(timerRunnable);
-    isMonitoringRegion = false;
-  }
-
-  private LatLngBounds lastBoundsEmitted;
-
-  Handler timerHandler = new Handler();
-  Runnable timerRunnable = new Runnable() {
-
-    @Override
-    public void run() {
-
-      if (map != null) {
-        Projection projection = map.getProjection();
-        VisibleRegion region = (projection != null) ? projection.getVisibleRegion() : null;
-        LatLngBounds bounds = (region != null) ? region.latLngBounds : null;
-
-        if ((bounds != null) &&
-            (lastBoundsEmitted == null ||
-                LatLngBoundsUtils.BoundsAreDifferent(bounds, lastBoundsEmitted))) {
-          LatLng center = map.getCameraPosition().target;
-          lastBoundsEmitted = bounds;
-          eventDispatcher.dispatchEvent(new RegionChangeEvent(getId(), bounds, center, true));
-        }
-      }
-
-      timerHandler.postDelayed(this, 100);
-    }
-  };
 
   @Override
   public void onMarkerDragStart(Marker marker) {
