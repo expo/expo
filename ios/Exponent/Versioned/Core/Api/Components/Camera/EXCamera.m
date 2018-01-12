@@ -6,6 +6,7 @@
 #import "EXFaceEncoder.h"
 #import "EXFileSystem.h"
 #import "EXUnversioned.h"
+#import "EXUtil.h"
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
@@ -476,7 +477,10 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   if (self.videoCaptureDeviceInput.device.position == self.presetCamera) {
     return;
   }
-  UIInterfaceOrientation interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+  __block UIInterfaceOrientation interfaceOrientation;
+  [EXUtil performSynchronouslyOnMainThread:^{
+    interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+  }];
   AVCaptureVideoOrientation orientation = [EXCameraUtils videoOrientationForInterfaceOrientation:interfaceOrientation];
   dispatch_async(self.sessionQueue, ^{
     [self.session beginConfiguration];
