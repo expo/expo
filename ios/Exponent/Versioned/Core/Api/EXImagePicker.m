@@ -137,7 +137,6 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
     NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
     response[@"cancelled"] = @NO;
     NSString *directory = [self.bridge.scopedModules.fileSystem.cachesDirectory stringByAppendingPathComponent:@"ImagePicker"];
-    [EXFileSystem ensureDirExistsWithPath:directory];
     if ([mediaType isEqualToString:(NSString *)kUTTypeImage]) {
       [self handleImageWithInfo:info saveAt:directory updateResponse:response completionHandler:^{
         self.resolve(response);
@@ -169,19 +168,18 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
   response[@"type"] = @"image";
   response[@"width"] = @(image.size.width);
   response[@"height"] = @(image.size.height);
-  
+
   NSString *extension = @".jpg";
   NSData *data = UIImageJPEGRepresentation(image, [[self.options valueForKey:@"quality"] floatValue]);
-  
+
   if ([[imageURL absoluteString] containsString:@"ext=PNG"]) {
     extension = @".png";
     data = UIImagePNGRepresentation(image);
   } else if (![[imageURL absoluteString] containsString:@"ext=JPG"]) {
     RCTLogWarn(@"Unsupported format of the picked image. Using JPEG instead.");
   }
-  
-  NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:extension];
-  NSString *path = [directory stringByAppendingPathComponent:fileName];
+
+  NSString *path = [EXFileSystem generatePathInDirectory:directory withExtension:extension];
   [data writeToFile:path atomically:YES];
   NSURL *fileURL = [NSURL fileURLWithPath:path];
   NSString *filePath = [fileURL absoluteString];
@@ -237,9 +235,8 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
   }
   
   response[@"type"] = @"video";
-  NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:@".mov"];
   NSError *error = nil;
-  NSString *path = [directory stringByAppendingPathComponent:fileName];
+  NSString *path = [EXFileSystem generatePathInDirectory:directory withExtension:@".mov"];
   [[NSFileManager defaultManager] moveItemAtURL:videoURL
                                           toURL:[NSURL fileURLWithPath:path]
                                           error:&error];

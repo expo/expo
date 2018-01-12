@@ -14,6 +14,10 @@ static NSString * const EXFaceDetectionHasBeenStubbedMessage = @"Face detection 
 @implementation EXFaceDetectorManagerStub
 
 - (NSDictionary *)constantsToExport {
+  return [[self class] constants];
+}
+
++ (NSDictionary *)constants {
   return @{@"Mode" : @{},
            @"Landmarks" : @{},
            @"Classifications" : @{}};

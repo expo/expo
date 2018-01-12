@@ -1,27 +1,17 @@
 package versioned.host.exp.exponent.modules.api.components.camera;
 
-import android.Manifest;
-import android.graphics.Bitmap;
-import android.os.Build;
 import android.support.annotation.Nullable;
 
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.google.android.cameraview.AspectRatio;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import versioned.host.exp.exponent.modules.api.components.camera.tasks.ResolveTakenPictureAsyncTask;
-import host.exp.expoview.Exponent;
 
 public class CameraViewManager extends ViewGroupManager<ExpoCameraView> {
   public enum Events {
@@ -45,15 +35,11 @@ public class CameraViewManager extends ViewGroupManager<ExpoCameraView> {
 
   private static final String REACT_CLASS = "ExponentCamera";
 
-  private static CameraViewManager instance;
-  private ExpoCameraView mCameraView;
-
-  public CameraViewManager() {
-    super();
-    instance = this;
+  @Override
+  public void onDropViewInstance(ExpoCameraView view) {
+    view.stop();
+    super.onDropViewInstance(view);
   }
-
-  public static CameraViewManager getInstance() { return instance; }
 
   @Override
   public String getName() {
@@ -62,8 +48,7 @@ public class CameraViewManager extends ViewGroupManager<ExpoCameraView> {
 
   @Override
   protected ExpoCameraView createViewInstance(ThemedReactContext themedReactContext) {
-    mCameraView = new ExpoCameraView(themedReactContext);
-    return mCameraView;
+    return new ExpoCameraView(themedReactContext);
   }
 
   @Override
@@ -146,50 +131,5 @@ public class CameraViewManager extends ViewGroupManager<ExpoCameraView> {
   @ReactProp(name = "faceDetectionClassifications")
   public void setFaceDetectionClassifications(ExpoCameraView view, int classifications) {
     view.setFaceDetectionClassifications(classifications);
-  }
-
-  public void takePicture(ReadableMap options, Promise promise) {
-    if (!Build.FINGERPRINT.contains("generic")) {
-      if (mCameraView.isCameraOpened()) {
-        mCameraView.takePicture(options, promise);
-      } else {
-        promise.reject("E_CAMERA_UNAVAILABLE", "Camera is not running");
-      }
-    } else {
-      Bitmap image = ExpoCameraViewHelper.generateSimulatorPhoto(mCameraView.getWidth(), mCameraView.getHeight());
-      new ResolveTakenPictureAsyncTask(image, promise, options).execute();
-    }
-  }
-
-  public void record(final ReadableMap options, final Promise promise) {
-    Exponent.getInstance().getPermissions(new Exponent.PermissionsListener() {
-      @Override
-      public void permissionsGranted() {
-        if (mCameraView.isCameraOpened()) {
-          mCameraView.record(options, promise);
-        } else {
-          promise.reject("E_CAMERA_UNAVAILABLE", "Camera is not running");
-        }
-      }
-
-      @Override
-      public void permissionsDenied() {
-        promise.reject(new SecurityException("User rejected audio permissions"));
-      }
-    }, new String[]{Manifest.permission.RECORD_AUDIO});
-
-  }
-
-  public void stopRecording() {
-    if (mCameraView.isCameraOpened()) {
-      mCameraView.stopRecording();
-    }
-  }
-
-  public Set<AspectRatio> getSupportedRatios() {
-    if (mCameraView.isCameraOpened()) {
-      return mCameraView.getSupportedAspectRatios();
-    }
-    return null;
   }
 }

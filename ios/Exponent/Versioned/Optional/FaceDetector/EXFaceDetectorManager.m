@@ -33,6 +33,11 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 
 - (NSDictionary *)constantsToExport
 {
+  return [[self class] constants];
+}
+
++ (NSDictionary *)constants
+{
   return [EXFaceDetectorUtils constantsToExport];
 }
 

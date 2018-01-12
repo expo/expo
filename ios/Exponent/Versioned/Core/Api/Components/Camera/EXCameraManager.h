@@ -2,12 +2,6 @@
 #import <React/RCTBridgeModule.h>
 #import <AVFoundation/AVFoundation.h>
 
-#if __has_include("EXFaceDetectorManager.h")
-#import "EXFaceDetectorManager.h"
-#else
-#import "EXFaceDetectorManagerStub.h"
-#endif
-
 @class EXCamera;
 
 static const int EXFlashModeTorch = 3;
@@ -52,24 +46,8 @@ typedef NS_ENUM(NSInteger, EXCameraVideoResolution) {
   EXCameraVideo4x3 = 3,
 };
 
-@interface EXCameraManager : RCTViewManager <RCTBridgeModule, AVCaptureMetadataOutputObjectsDelegate, AVCaptureFileOutputRecordingDelegate, EXFaceDetectorDelegate>
+@interface EXCameraManager : RCTViewManager <RCTBridgeModule>
 
-@property(nonatomic, strong) dispatch_queue_t sessionQueue;
-@property(nonatomic, strong) AVCaptureSession *session;
-@property(nonatomic, strong) AVCaptureDeviceInput *videoCaptureDeviceInput;
-@property(nonatomic, strong) AVCaptureStillImageOutput *stillImageOutput;
-@property(nonatomic, strong) AVCaptureMovieFileOutput *movieFileOutput;
-@property(nonatomic, strong) AVCaptureMetadataOutput *metadataOutput;
-@property(nonatomic, strong) id runtimeErrorHandlingObserver;
-@property(nonatomic, assign) NSInteger presetCamera;
-@property(nonatomic, strong) AVCaptureVideoPreviewLayer *previewLayer;
-@property(nonatomic, strong) NSArray *barCodeTypes;
-@property(nonatomic, strong) EXCamera *camera;
-
-- (void)initializeCaptureSessionInput:(NSString *)type;
-- (void)startSession;
-- (void)stopSession;
-
-- (void)onFacesDetected:(NSArray<NSDictionary *> *)faces;
++ (NSDictionary *)validBarCodeTypes;
 
 @end

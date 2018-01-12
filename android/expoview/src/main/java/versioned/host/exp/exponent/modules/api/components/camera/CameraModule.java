@@ -1,5 +1,13 @@
 package versioned.host.exp.exponent.modules.api.components.camera;
 
+import android.Manifest;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.os.Build;
+import android.util.Base64;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -7,26 +15,39 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.uimanager.NativeViewHierarchyManager;
+import com.facebook.react.uimanager.UIBlock;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.google.android.cameraview.AspectRatio;
 import com.google.android.cameraview.Constants;
 import com.google.android.gms.vision.barcode.Barcode;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.nio.ByteBuffer;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nullable;
 
+import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.utils.ExpFileUtils;
 import host.exp.exponent.utils.ScopedContext;
+import host.exp.expoview.Exponent;
+import versioned.host.exp.exponent.modules.api.components.camera.tasks.ResolveTakenPictureAsyncTask;
 import versioned.host.exp.exponent.modules.api.components.facedetector.ExpoFaceDetector;
 
 public class CameraModule extends ReactContextBaseJavaModule {
   private static final String TAG = "CameraModule";
 
-  private static ReactApplicationContext mReactContext;
+  private ScopedContext mScopedContext;
 
-  private static ScopedContext mScopedContext;
   static final int VIDEO_2160P = 0;
   static final int VIDEO_1080P = 1;
   static final int VIDEO_720P = 2;
@@ -54,16 +75,7 @@ public class CameraModule extends ReactContextBaseJavaModule {
 
   public CameraModule(ReactApplicationContext reactContext, ScopedContext scopedContext) {
     super(reactContext);
-    mReactContext = reactContext;
     mScopedContext = scopedContext;
-  }
-
-  public static ReactApplicationContext getReactContextSingleton() {
-    return mReactContext;
-  }
-
-  public static ScopedContext getScopedContextSingleton() {
-    return mScopedContext;
   }
 
   @Override
@@ -179,31 +191,113 @@ public class CameraModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void takePicture(ReadableMap options, final Promise promise) {
-    CameraViewManager.getInstance().takePicture(options, promise);
-  }
+  public void takePicture(final ReadableMap options, final int viewTag, final Promise promise) {
+    final ReactApplicationContext context = getReactApplicationContext();
+    final File cacheDirectory = mScopedContext.getCacheDir();
+    UIManagerModule uiManager = context.getNativeModule(UIManagerModule.class);
+    uiManager.addUIBlock(new UIBlock() {
+      @Override
+      public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
+        ExpoCameraView cameraView = (ExpoCameraView) nativeViewHierarchyManager.resolveView(viewTag);
 
-  @ReactMethod
-  public void record(ReadableMap options, final Promise promise) {
-    CameraViewManager.getInstance().record(options, promise);
-  }
-
-  @ReactMethod
-  public void stopRecording() {
-    CameraViewManager.getInstance().stopRecording();
-  }
-
-  @ReactMethod
-  public void getSupportedRatios(final Promise promise) {
-    WritableArray result = Arguments.createArray();
-    Set<AspectRatio> ratios = CameraViewManager.getInstance().getSupportedRatios();
-    if (ratios != null) {
-      for (AspectRatio ratio : ratios) {
-        result.pushString(ratio.toString());
+        try {
+          if (!Build.FINGERPRINT.contains("generic")) {
+            if (cameraView.isCameraOpened()) {
+              cameraView.takePicture(options, promise, cacheDirectory);
+            } else {
+              promise.reject("E_CAMERA_UNAVAILABLE", "Camera is not running");
+            }
+          } else {
+            Bitmap image = ExpoCameraViewHelper.generateSimulatorPhoto(cameraView.getWidth(), cameraView.getHeight());
+            new ResolveTakenPictureAsyncTask(image, promise, options, cacheDirectory).execute();
+          }
+        } catch (Exception e) {
+          promise.reject("E_CAMERA_BAD_VIEWTAG", "takePictureAsync: Expected a Camera component");
+        }
       }
-      promise.resolve(result);
-    } else {
-      promise.reject("E_CAMERA_UNAVAILABLE", "Camera is not running");
-    }
+    });
+  }
+
+  @ReactMethod
+  public void record(final ReadableMap options, final int viewTag, final Promise promise) {
+    Exponent.getInstance().getPermissions(new Exponent.PermissionsListener() {
+      @Override
+      public void permissionsGranted() {
+        final ReactApplicationContext context = getReactApplicationContext();
+        final File cacheDirectory = mScopedContext.getCacheDir();
+        UIManagerModule uiManager = context.getNativeModule(UIManagerModule.class);
+        uiManager.addUIBlock(new UIBlock() {
+          @Override
+          public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
+            final ExpoCameraView cameraView;
+
+            try {
+              cameraView = (ExpoCameraView) nativeViewHierarchyManager.resolveView(viewTag);
+              if (cameraView.isCameraOpened()) {
+                cameraView.record(options, promise, cacheDirectory);
+              } else {
+                promise.reject("E_CAMERA_UNAVAILABLE", "Camera is not running");
+              }
+            } catch (Exception e) {
+              promise.reject("E_CAMERA_BAD_VIEWTAG", "recordAsync: Expected a Camera component");
+            }
+          }
+        });
+      }
+
+      @Override
+      public void permissionsDenied() {
+        promise.reject(new SecurityException("User rejected audio permissions"));
+      }
+    }, new String[]{Manifest.permission.RECORD_AUDIO});
+  }
+
+  @ReactMethod
+  public void stopRecording(final int viewTag) {
+    final ReactApplicationContext context = getReactApplicationContext();
+    UIManagerModule uiManager = context.getNativeModule(UIManagerModule.class);
+    uiManager.addUIBlock(new UIBlock() {
+      @Override
+      public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
+        final ExpoCameraView cameraView;
+
+        try {
+          cameraView = (ExpoCameraView) nativeViewHierarchyManager.resolveView(viewTag);
+          if (cameraView.isCameraOpened()) {
+            cameraView.stopRecording();
+          }
+        } catch (Exception e) {
+          EXL.e("E_CAMERA_BAD_VIEWTAG", "stopRecording: Expected a Camera component");
+        }
+      }
+    });
+  }
+
+  @ReactMethod
+  public void getSupportedRatios(final int viewTag, final Promise promise) {
+    final ReactApplicationContext context = getReactApplicationContext();
+    UIManagerModule uiManager = context.getNativeModule(UIManagerModule.class);
+    uiManager.addUIBlock(new UIBlock() {
+      @Override
+      public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
+        final ExpoCameraView cameraView;
+
+        try {
+          cameraView = (ExpoCameraView) nativeViewHierarchyManager.resolveView(viewTag);
+          WritableArray result = Arguments.createArray();
+          if (cameraView.isCameraOpened()) {
+            Set<AspectRatio> ratios = cameraView.getSupportedAspectRatios();
+            for (AspectRatio ratio : ratios) {
+              result.pushString(ratio.toString());
+            }
+            promise.resolve(result);
+          } else {
+            promise.reject("E_CAMERA_UNAVAILABLE", "Camera is not running");
+          }
+        } catch (Exception e) {
+          EXL.e("E_CAMERA_BAD_VIEWTAG", "getSupportedRatiosAsync: Expected a Camera component");
+        }
+      }
+    });
   }
 }

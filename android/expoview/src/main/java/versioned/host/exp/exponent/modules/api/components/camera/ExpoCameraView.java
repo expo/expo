@@ -48,8 +48,12 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
 
   private Queue<Promise> mPictureTakenPromises = new ConcurrentLinkedQueue<>();
   private Map<Promise, ReadableMap> mPictureTakenOptions = new ConcurrentHashMap<>();
+  private Map<Promise, File> mPictureTakenDirectories = new ConcurrentHashMap<>();
   private Promise mVideoRecordedPromise;
   private List<Integer> mBarCodeTypes = null;
+
+  private boolean mIsPaused = false;
+  private boolean mIsNew = true;
 
   // Concurrency lock for scanners to avoid flooding the runtime
   public volatile boolean barCodeScannerTaskLock = false;
@@ -86,8 +90,9 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
       @Override
       public void onPictureTaken(CameraView cameraView, final byte[] data) {
         Promise promise = mPictureTakenPromises.poll();
+        final File cacheDirectory = mPictureTakenDirectories.remove(promise);
         ReadableMap options = mPictureTakenOptions.remove(promise);
-        new ResolveTakenPictureAsyncTask(data, promise, options).execute();
+        new ResolveTakenPictureAsyncTask(data, promise, options, cacheDirectory).execute();
       }
 
       @Override
@@ -154,15 +159,16 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
     initBarcodeReader();
   }
 
-  public void takePicture(ReadableMap options, final Promise promise) {
+  public void takePicture(ReadableMap options, final Promise promise, File cacheDirectory) {
     mPictureTakenPromises.add(promise);
     mPictureTakenOptions.put(promise, options);
+    mPictureTakenDirectories.put(promise, cacheDirectory);
     super.takePicture();
   }
 
-  public void record(ReadableMap options, final Promise promise) {
+  public void record(ReadableMap options, final Promise promise, File cacheDirectory) {
     try {
-      String path = ExpFileUtils.generateOutputPath(CameraModule.getScopedContextSingleton().getCacheDir(), "Camera", ".mp4");
+      String path = ExpFileUtils.generateOutputPath(cacheDirectory, "Camera", ".mp4");
       int maxDuration = options.hasKey("maxDuration") ? options.getInt("maxDuration") : -1;
       int maxFileSize = options.hasKey("maxFileSize") ? options.getInt("maxFileSize") : -1;
 
@@ -285,8 +291,12 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
   @Override
   public void onHostResume() {
     if (hasCameraPermissions()) {
-      if (!Build.FINGERPRINT.contains("generic")) {
-        start();
+      if ((mIsPaused && !isCameraOpened()) || mIsNew) {
+        mIsPaused = false;
+        mIsNew = false;
+        if (!Build.FINGERPRINT.contains("generic")) {
+          start();
+        }
       }
     } else {
       ExpoCameraViewHelper.emitMountErrorEvent(this,  "Camera permissions not granted - component could not be rendered.");
@@ -295,7 +305,10 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
 
   @Override
   public void onHostPause() {
-    stop();
+    if (!mIsPaused && isCameraOpened()) {
+      mIsPaused = true;
+      stop();
+    }
   }
 
   @Override

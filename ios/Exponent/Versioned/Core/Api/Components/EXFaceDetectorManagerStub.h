@@ -18,6 +18,7 @@
 @interface EXFaceDetectorManagerStub : NSObject
 
 - (NSDictionary *)constantsToExport;
++ (NSDictionary *)constants;
 
 - (instancetype)initWithSessionQueue:(dispatch_queue_t)sessionQueue delegate:(id <EXFaceDetectorDelegate>)delegate;
 

@@ -76,10 +76,10 @@ RCT_EXPORT_METHOD(takeSnapshot:(nonnull NSNumber *)target
       NSString *res = nil;
       if ([result isEqualToString:@"file"]) {
         // Save to a temp file
-        NSString *fileName = [[[[NSUUID UUID] UUIDString] stringByAppendingString:@"."] stringByAppendingString:format];
+        NSString *extension = [@"." stringByAppendingString:format];
         NSString *directory = [self.bridge.scopedModules.fileSystem.cachesDirectory stringByAppendingPathComponent:@"ViewShot"];
         [EXFileSystem ensureDirExistsWithPath:directory];
-        NSString *path = [directory stringByAppendingPathComponent:fileName];
+        NSString *path = [EXFileSystem generatePathInDirectory:directory withExtension:extension];
         if (path) {
           if ([data writeToFile:path options:(NSDataWritingOptions)0 error:&error]) {
             res = [NSURL fileURLWithPath:path].absoluteString;

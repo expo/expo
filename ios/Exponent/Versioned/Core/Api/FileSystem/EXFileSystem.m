@@ -621,4 +621,11 @@ RCT_REMAP_METHOD(downloadResumablePauseAsync,
            stringByAppendingPathComponent:subdir] stringByStandardizingPath];
 }
 
++ (NSString *)generatePathInDirectory:(NSString *)directory withExtension:(NSString *)extension
+{
+  NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:extension];
+  [EXFileSystem ensureDirExistsWithPath:directory];
+  return [directory stringByAppendingPathComponent:fileName];
+}
+
 @end

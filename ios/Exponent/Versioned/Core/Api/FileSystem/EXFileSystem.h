@@ -19,6 +19,7 @@ typedef NS_OPTIONS(unsigned int, EXFileSystemPermissionFlags) {
 + (BOOL)ensureDirExistsWithPath:(NSString *)path;
 + (NSString *)documentDirectoryForExperienceId:(NSString *)experienceId;
 + (NSString *)cachesDirectoryForExperienceId:(NSString *)experienceId;
++ (NSString *)generatePathInDirectory:(NSString *)directory withExtension:(NSString *)extension;
 
 @end
 

@@ -30,17 +30,20 @@ public class ResolveTakenPictureAsyncTask extends AsyncTask<Void, Void, Writable
   private byte[] mImageData;
   private Bitmap mBitmap;
   private ReadableMap mOptions;
+  private File mDirectory;
 
-  public ResolveTakenPictureAsyncTask(byte[] imageData, Promise promise, ReadableMap options) {
+  public ResolveTakenPictureAsyncTask(byte[] imageData, Promise promise, ReadableMap options, File directory) {
     mPromise = promise;
     mOptions = options;
     mImageData = imageData;
+    mDirectory = directory;
   }
 
-  public ResolveTakenPictureAsyncTask(Bitmap bitmap, Promise promise, ReadableMap options) {
+  public ResolveTakenPictureAsyncTask(Bitmap bitmap, Promise promise, ReadableMap options, File directory) {
     mPromise = promise;
     mBitmap = bitmap;
     mOptions = options;
+    mDirectory = directory;
   }
 
   private int getQuality() {
@@ -143,7 +146,7 @@ public class ResolveTakenPictureAsyncTask extends AsyncTask<Void, Void, Writable
     FileOutputStream outputStream = null;
 
     try {
-      outputPath = ExpFileUtils.generateOutputPath(CameraModule.getScopedContextSingleton().getCacheDir(), "Camera", ".jpg");
+      outputPath = ExpFileUtils.generateOutputPath(mDirectory, "Camera", ".jpg");
       outputStream = new FileOutputStream(outputPath);
       inputStream.writeTo(outputStream);
     } catch (IOException e) {
