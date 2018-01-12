@@ -148,16 +148,20 @@ public class VideoView extends TextureView implements
     }
   }
 
-  private void updateMediaControllerForUseNativeControls() {
+  private void updateMediaControllerForUseNativeControls(boolean showMediaControllerIfEnabled) {
     if (mMediaController != null) {
       mMediaController.setEnabled(mUseNativeControls);
       ensureScrollChangeListenerIsSetup();
-      if (mUseNativeControls) {
+      if (mUseNativeControls && showMediaControllerIfEnabled) {
         mMediaController.show();
       } else {
         mMediaController.hide();
       }
     }
+  }
+
+  private void updateMediaControllerForUseNativeControls() {
+    updateMediaControllerForUseNativeControls(true);
   }
 
   // Prop setting
@@ -247,7 +251,7 @@ public class VideoView extends TextureView implements
         mMediaController = new MediaController(VideoView.this.getContext());
         mMediaController.setMediaPlayer(new PlayerDataControl(mPlayerData));
         mMediaController.setAnchorView(VideoView.this);
-        updateMediaControllerForUseNativeControls();
+        updateMediaControllerForUseNativeControls(false);
 
         mEventEmitter.receiveEvent(getId(), Events.EVENT_LOAD.toString(), status);
       }
