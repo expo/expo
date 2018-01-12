@@ -27,6 +27,9 @@
 		B575EEA11D54053500DCABBC /* EXManifestResource.m in Sources */ = {isa = PBXBuildFile; fileRef = B575EEA01D54053500DCABBC /* EXManifestResource.m */; };
 		B575EEA41D54175B00DCABBC /* shell-app-manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = B575EEA21D54175A00DCABBC /* shell-app-manifest.json */; };
 		B575EEA51D54175B00DCABBC /* shell-app.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B575EEA31D54175B00DCABBC /* shell-app.bundle */; };
+		B57EF7C42008446200DA8960 /* AIRMapLocalTileOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = B57EF7BF2008446100DA8960 /* AIRMapLocalTileOverlay.m */; };
+		B57EF7C52008446200DA8960 /* AIRMapLocalTile.m in Sources */ = {isa = PBXBuildFile; fileRef = B57EF7C12008446100DA8960 /* AIRMapLocalTile.m */; };
+		B57EF7C62008446200DA8960 /* AIRMapLocalTileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B57EF7C32008446200DA8960 /* AIRMapLocalTileManager.m */; };
 		B587F1E01D53DEB70071715C /* EXFileDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = B587F1DF1D53DEB70071715C /* EXFileDownloader.m */; };
 		B58FFAAC1F1016B700A51363 /* EXGoogleAuthManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B58FFAAB1F1016B700A51363 /* EXGoogleAuthManager.m */; };
 		B59981C11F153DCD00F6FF81 /* EXKernelModuleManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B59981C01F153DCD00F6FF81 /* EXKernelModuleManager.m */; };
@@ -323,6 +326,12 @@
 		B575EEA01D54053500DCABBC /* EXManifestResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXManifestResource.m; sourceTree = "<group>"; };
 		B575EEA21D54175A00DCABBC /* shell-app-manifest.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "shell-app-manifest.json"; sourceTree = "<group>"; };
 		B575EEA31D54175B00DCABBC /* shell-app.bundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "shell-app.bundle"; sourceTree = "<group>"; };
+		B57EF7BE2008446100DA8960 /* AIRMapLocalTile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AIRMapLocalTile.h; sourceTree = "<group>"; };
+		B57EF7BF2008446100DA8960 /* AIRMapLocalTileOverlay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIRMapLocalTileOverlay.m; sourceTree = "<group>"; };
+		B57EF7C02008446100DA8960 /* AIRMapLocalTileOverlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AIRMapLocalTileOverlay.h; sourceTree = "<group>"; };
+		B57EF7C12008446100DA8960 /* AIRMapLocalTile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIRMapLocalTile.m; sourceTree = "<group>"; };
+		B57EF7C22008446200DA8960 /* AIRMapLocalTileManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AIRMapLocalTileManager.h; sourceTree = "<group>"; };
+		B57EF7C32008446200DA8960 /* AIRMapLocalTileManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIRMapLocalTileManager.m; sourceTree = "<group>"; };
 		B587F1DE1D53DEB70071715C /* EXFileDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFileDownloader.h; sourceTree = "<group>"; };
 		B587F1DF1D53DEB70071715C /* EXFileDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFileDownloader.m; sourceTree = "<group>"; };
 		B58FFAAA1F1016B700A51363 /* EXGoogleAuthManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGoogleAuthManager.h; sourceTree = "<group>"; };
@@ -1393,6 +1402,12 @@
 		B5FB72E61FF6DADB001C764B /* Maps */ = {
 			isa = PBXGroup;
 			children = (
+				B57EF7BE2008446100DA8960 /* AIRMapLocalTile.h */,
+				B57EF7C12008446100DA8960 /* AIRMapLocalTile.m */,
+				B57EF7C22008446200DA8960 /* AIRMapLocalTileManager.h */,
+				B57EF7C32008446200DA8960 /* AIRMapLocalTileManager.m */,
+				B57EF7C02008446100DA8960 /* AIRMapLocalTileOverlay.h */,
+				B57EF7BF2008446100DA8960 /* AIRMapLocalTileOverlay.m */,
 				B5FB72E71FF6DADB001C764B /* AIRMap.h */,
 				B5FB72E81FF6DADB001C764B /* AIRMap.m */,
 				B5FB72E91FF6DADB001C764B /* AIRMapCallout.h */,
@@ -2293,8 +2308,10 @@
 				B5FB74C21FF6DADC001C764B /* EXGLARSessionManagerStub.m in Sources */,
 				B5BC7B191FF6DA7B00F102C1 /* EXGLARSessionManager.m in Sources */,
 				B5FB74AF1FF6DADC001C764B /* EXNotifications.m in Sources */,
+				B57EF7C42008446200DA8960 /* AIRMapLocalTileOverlay.m in Sources */,
 				B5FB74E11FF6DADC001C764B /* EXDisabledDevLoadingView.m in Sources */,
 				B5FB743B1FF6DADB001C764B /* EXLinearGradientManager.m in Sources */,
+				B57EF7C52008446200DA8960 /* AIRMapLocalTile.m in Sources */,
 				B5F12C951DAEDC980080ECA6 /* EXReactAppManager.m in Sources */,
 				B5FB74E31FF6DADC001C764B /* EXDisabledRedBox.m in Sources */,
 				B587F1E01D53DEB70071715C /* EXFileDownloader.m in Sources */,
@@ -2339,6 +2356,7 @@
 				B5AC39A71E95A90B00540AA7 /* EXKernel.m in Sources */,
 				B5FB74971FF6DADC001C764B /* RNSVGTextManager.m in Sources */,
 				B5FB747E1FF6DADC001C764B /* RNSVGLine.m in Sources */,
+				B57EF7C62008446200DA8960 /* AIRMapLocalTileManager.m in Sources */,
 				B5FB74561FF6DADB001C764B /* AIRGoogleMapPolyline.m in Sources */,
 				B5FB74721FF6DADB001C764B /* RNSVGCircleManager.m in Sources */,
 				B5FB74C71FF6DADC001C764B /* EXGLViewManager.m in Sources */,
