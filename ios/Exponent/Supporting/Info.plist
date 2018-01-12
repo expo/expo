@@ -75,6 +75,8 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Allow Expo experiences to access your calendar</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Expo uses your camera to scan project QR codes. Expo experiences you open may use the camera with the Expo camera API.</string>
 	<key>NSContactsUsageDescription</key>
@@ -89,6 +91,8 @@
 	<string>Give Expo experiences permission to save photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Give Expo experiences permission to access your photos</string>
+	<key>NSRemindersUsageDescription</key>
+	<string>Allow Expo experiences to access your reminders</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
