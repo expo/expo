@@ -46,6 +46,11 @@ typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
 
 RCT_EXPORT_MODULE()
 
++ (BOOL)requiresMainQueueSetup
+{
+    return YES;
+}
+
 - (void)invalidate
 {
     _manager = nil;
