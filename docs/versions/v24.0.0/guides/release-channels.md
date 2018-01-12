@@ -28,9 +28,11 @@ Build your standalone app by running
 
 with the `exp` cli. The binary produced will only pull releases published under the specified channel. If you do not specify a channel, your binary will pull releases from the `default` channel.
 
-## Get Channels
+## Access Channel from Code
 
 You can access the channel your release is published under with the `releaseChannel` field in the [manifest object] (https://docs.expo.io/versions/latest/sdk/constants.html#expoconstantsmanifest).
+
+> `Expo.Constants.manifest.releaseChannel` does NOT exist in dev mode. It does exist, however when you explicitly publish / build with it.
 
 ## Example Workflow
 
@@ -48,13 +50,9 @@ You can continue updating v1 of your app with `exp publish --release-channel pro
 
 Since `exp build` does not apply to ExpoKit projects, you can edit the native project's release channel manually by modifying the `releaseChannel` key in `EXShell.plist` (iOS) or `Constants.java` (Android).
 
-## Notes
-
-`expo.manifest.releaseChannel` does NOT exist in dev mode. It does exist, however when you explicitly publish / build with it.
-
 ## Using Release Channels for Environment Variable Configuration
 
-Enironment variables don't exist explicitly, but you can utilize release channels to make that happen!
+Environment variables don't exist explicitly, but you can utilize release channels to make that happen!
 
 Say you have a workflow of releasing builds like this:
 
@@ -75,5 +73,3 @@ function getApiUrl(releaseChannel) {
   if (releaseChannel.indexOf('staging') !== -1) return App.apiUrl.staging // return staging environment variables
 }
 ```
-
-You can do this for any amount of environment variables, too and return an entire object instead of just the url.
