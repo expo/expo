@@ -2,49 +2,42 @@
 
 package versioned.host.exp.exponent.modules.api.sensors;
 
-import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
+import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.services.sensors.SubscribableSensorKernelService;
 
-public class GyroscopeModule extends SensorModuleBase {
+public class GyroscopeModule extends BaseSensorModule {
+  public GyroscopeModule(ReactApplicationContext reactContext, ExperienceId experienceId) {
+    super(reactContext, experienceId);
+  }
 
   @Override
   public String getName() {
     return "ExponentGyroscope";
   }
 
-  public GyroscopeModule(ReactApplicationContext reactContext) {
-    super(reactContext);
+  @Override
+  public String getEventName() {
+    return "gyroscopeDidUpdate";
   }
 
-  private static WritableMap eventToMap(SensorEvent sensorEvent) {
+  @Override
+  protected SubscribableSensorKernelService getKernelService() {
+    return mKernelServiceRegistry.getGyroscopeKernelService();
+  }
+
+  protected WritableMap eventToMap(SensorEvent sensorEvent) {
     WritableMap map = Arguments.createMap();
     map.putDouble("x", sensorEvent.values[0]);
     map.putDouble("y", sensorEvent.values[1]);
     map.putDouble("z", sensorEvent.values[2]);
     return map;
-  }
-
-  @Override
-  public int getSensorType() {
-    return Sensor.TYPE_GYROSCOPE;
-  }
-
-  @Override
-  public void onSensorDataChanged(SensorEvent sensorEvent) {
-    getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class).
-        emit("gyroscopeDidUpdate", eventToMap(sensorEvent));
-  }
-
-  @ReactMethod
-  public void setUpdateInterval(int updateInterval) {
-    super.setUpdateInterval(updateInterval);
   }
 
   @ReactMethod
@@ -55,5 +48,10 @@ public class GyroscopeModule extends SensorModuleBase {
   @ReactMethod
   public void stopObserving() {
     super.stopObserving();
+  }
+
+  @ReactMethod
+  public void setUpdateInterval(int updateInterval) {
+    super.setUpdateInterval(updateInterval);
   }
 }

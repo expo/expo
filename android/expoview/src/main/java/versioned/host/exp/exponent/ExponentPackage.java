@@ -89,8 +89,6 @@ import versioned.host.exp.exponent.modules.internal.ExponentUnsignedAsyncStorage
 import versioned.host.exp.exponent.modules.api.components.payments.StripeModule;
 import versioned.host.exp.exponent.modules.test.ExponentTestNativeModule;
 
-import static android.R.attr.version;
-
 public class ExponentPackage implements ReactPackage {
 
   private static final String TAG = ExponentPackage.class.getSimpleName();
@@ -145,11 +143,11 @@ public class ExponentPackage implements ReactPackage {
         ScopedContext scopedContext = new ScopedContext(reactContext, experienceId.getUrlEncoded());
 
         nativeModules.add(new ExponentAsyncStorageModule(reactContext, mManifest));
-        nativeModules.add(new AccelerometerModule(reactContext));
-        nativeModules.add(new GyroscopeModule(reactContext));
-        nativeModules.add(new MagnetometerModule(reactContext));
-        nativeModules.add(new DeviceMotionModule(reactContext));
-        nativeModules.add(new MagnetometerUncalibratedModule(reactContext));
+        nativeModules.add(new AccelerometerModule(reactContext, experienceId));
+        nativeModules.add(new GyroscopeModule(reactContext, experienceId));
+        nativeModules.add(new MagnetometerModule(reactContext, experienceId));
+        nativeModules.add(new DeviceMotionModule(reactContext, experienceId));
+        nativeModules.add(new MagnetometerUncalibratedModule(reactContext, experienceId));
         nativeModules.add(new NotificationsModule(reactContext, mManifest, mExperienceProperties));
         nativeModules.add(new ContactsModule(reactContext));
         nativeModules.add(new FileSystemModule(reactContext, scopedContext));

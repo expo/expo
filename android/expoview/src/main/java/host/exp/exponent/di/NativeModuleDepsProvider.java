@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.kernel.Crypto;
+import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 
@@ -39,6 +40,9 @@ public class NativeModuleDepsProvider {
   @Inject
   ExponentManifest mExponentManifest;
 
+  @Inject
+  ExpoKernelServiceRegistry mKernelServiceRegistry;
+
   private Map<Class, Object> mClassesToInjectedObjects = new HashMap<>();
 
   public NativeModuleDepsProvider(Application application) {
@@ -46,6 +50,7 @@ public class NativeModuleDepsProvider {
     mApplicationContext = application;
     mExponentSharedPreferences = new ExponentSharedPreferences(mContext);
     mExponentNetwork = new ExponentNetwork(mContext, mExponentSharedPreferences);
+    mKernelServiceRegistry = new ExpoKernelServiceRegistry(mContext);
     mCrypto = new Crypto(mExponentNetwork);
     mExponentManifest = new ExponentManifest(mContext, mExponentNetwork, mCrypto, mExponentSharedPreferences);
 
