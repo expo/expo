@@ -90,17 +90,17 @@ The `onPlaybackStatusUpdate`, `onReadyForDisplay`, and `onIOSFullscreenUpdate` p
       - `orientation`: a string describing the natural orientation of the video data, either `'portrait'` or `'landscape'`
   - `status`: the `PlaybackStatus` of the video; see the [AV documentation](av.html) for further information.
 
-- `onIOSFullscreenUpdate`
+- `onFullscreenUpdate`
 
-  A function to be called when the state of the native iOS fullscreen view changes (controlled via the `presentIOSFullscreenPlayer()` and `dismissIOSFullscreenPlayer()` methods on the `Video`'s `ref`).
+  A function to be called when the state of the native iOS fullscreen view changes (controlled via the `presentFullscreenPlayer()` and `dismissFullscreenPlayer()` methods on the `Video`'s `ref`).
 
   The function is passed a dictionary with the following key-value pairs:
 
   - `fullscreenUpdate`: a number taking one of the following values:
-      - `Expo.Video.IOS_FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT`: describing that the fullscreen player is about to present
-      - `Expo.Video.IOS_FULLSCREEN_UPDATE_PLAYER_DID_PRESENT`: describing that the fullscreen player just finished presenting
-      - `Expo.Video.IOS_FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS`: describing that the fullscreen player is about to dismiss
-      - `Expo.Video.IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS`: describing that the fullscreen player just finished dismissing
+      - `Expo.Video.FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT`: describing that the fullscreen player is about to present
+      - `Expo.Video.FULLSCREEN_UPDATE_PLAYER_DID_PRESENT`: describing that the fullscreen player just finished presenting
+      - `Expo.Video.FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS`: describing that the fullscreen player is about to dismiss
+      - `Expo.Video.FULLSCREEN_UPDATE_PLAYER_DID_DISMISS`: describing that the fullscreen player just finished dismissing
   - `status`: the `PlaybackStatus` of the video; see the [AV documentation](av.html) for further information.
 
 - `onLoadStart`
@@ -155,17 +155,17 @@ Finally, the following props are available to control the playback of the video,
 
 #### The following methods are available on the component's ref:
 
-- `videoRef.presentIOSFullscreenPlayer()`
+- `videoRef.presentFullscreenPlayer()`
 
-  (iOS only) This presents a fullscreen view of your video component on top of your app's UI. Note that even if `useNativeControls` is set to `false`, native controls will be visible in fullscreen mode. Implementing a custom fullscreen mode is necessary if you want fullscreen on Android and/or with custom controls overlayed.
+  This presents a fullscreen view of your video component on top of your app's UI. Note that even if `useNativeControls` is set to `false`, native controls will be visible in fullscreen mode.
 
   #### Returns
 
   A `Promise` that is fulfilled with the `PlaybackStatus` of the video once the fullscreen player has finished presenting, or rejects if there was an error, or if this was called on an Android device.
 
-- `videoRef.dismissIOSFullscreenPlayer()`
+- `videoRef.dismissFullscreenPlayer()`
 
- (iOS only) This dismisses the fullscreen video view.
+ This dismisses the fullscreen video view.
 
   #### Returns
 
