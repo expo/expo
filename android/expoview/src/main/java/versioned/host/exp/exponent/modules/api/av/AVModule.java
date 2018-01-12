@@ -13,6 +13,7 @@ import android.media.MediaRecorder;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
+import android.net.Uri;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
