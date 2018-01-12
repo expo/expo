@@ -12,19 +12,19 @@ import javax.annotation.Nullable;
 
 public class RNGestureHandlerRegistry implements GestureHandlerRegistry {
 
-  private SparseArray<GestureHandler> mHandlers = new SparseArray<>();
-  private SparseArray<Integer> mAttachedTo = new SparseArray<>();
-  private SparseArray<ArrayList<GestureHandler>> mHandlersForView = new SparseArray<>();
+  private final SparseArray<GestureHandler> mHandlers = new SparseArray<>();
+  private final SparseArray<Integer> mAttachedTo = new SparseArray<>();
+  private final SparseArray<ArrayList<GestureHandler>> mHandlersForView = new SparseArray<>();
 
-  public void registerHandler(GestureHandler handler) {
+  public synchronized void registerHandler(GestureHandler handler) {
     mHandlers.put(handler.getTag(), handler);
   }
 
-  public @Nullable GestureHandler getHandler(int handlerTag) {
+  public synchronized @Nullable GestureHandler getHandler(int handlerTag) {
     return mHandlers.get(handlerTag);
   }
 
-  public boolean attachHandlerToView(int handlerTag, int viewTag) {
+  public synchronized boolean attachHandlerToView(int handlerTag, int viewTag) {
     GestureHandler handler = mHandlers.get(handlerTag);
     if (handler != null) {
       detachHandler(handler);
@@ -35,7 +35,7 @@ public class RNGestureHandlerRegistry implements GestureHandlerRegistry {
     }
   }
 
-  private void registerHandlerForViewWithTag(int viewTag, GestureHandler handler) {
+  private synchronized void registerHandlerForViewWithTag(int viewTag, GestureHandler handler) {
     if (mAttachedTo.get(handler.getTag()) != null) {
       throw new IllegalStateException("Handler " + handler + " already attached");
     }
@@ -50,7 +50,7 @@ public class RNGestureHandlerRegistry implements GestureHandlerRegistry {
     }
   }
 
-  private void detachHandler(GestureHandler handler) {
+  private synchronized void detachHandler(GestureHandler handler) {
     Integer attachedToView = mAttachedTo.get(handler.getTag());
     if (attachedToView != null) {
       mAttachedTo.remove(handler.getTag());
@@ -62,9 +62,15 @@ public class RNGestureHandlerRegistry implements GestureHandlerRegistry {
         }
       }
     }
+    if (handler.getView() != null) {
+      // Handler is in "prepared" state which means it is registered in the orchestrator and can
+      // receive touch events. This means that before we remove it from the registry we need to
+      // "cancel" it so that orchestrator does no longer keep a reference to it.
+      handler.cancel();
+    }
   }
 
-  public void dropHandler(int handlerTag) {
+  public synchronized void dropHandler(int handlerTag) {
     GestureHandler handler = mHandlers.get(handlerTag);
     if (handler != null) {
       detachHandler(handler);
@@ -72,18 +78,18 @@ public class RNGestureHandlerRegistry implements GestureHandlerRegistry {
     }
   }
 
-  public void dropAllHandlers() {
+  public synchronized void dropAllHandlers() {
     mHandlers.clear();
     mAttachedTo.clear();
     mHandlersForView.clear();
   }
 
-  public ArrayList<GestureHandler> getHandlersForViewWithTag(int viewTag) {
+  public synchronized ArrayList<GestureHandler> getHandlersForViewWithTag(int viewTag) {
     return mHandlersForView.get(viewTag);
   }
 
   @Override
-  public ArrayList<GestureHandler> getHandlersForView(View view) {
+  public synchronized ArrayList<GestureHandler> getHandlersForView(View view) {
     return getHandlersForViewWithTag(view.getId());
   }
 }
