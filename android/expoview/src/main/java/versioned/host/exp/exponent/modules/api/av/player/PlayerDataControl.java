@@ -90,4 +90,12 @@ public class PlayerDataControl implements MediaController.MediaPlayerControl {
   public int getAudioSessionId() {
     return mPlayerData.getAudioSessionId();
   }
+
+  public boolean isFullscreen() {
+    return mPlayerData.isPresentedFullscreen();
+  }
+
+  public void toggleFullscreen() {
+    mPlayerData.toggleFullscreen();
+  }
 }

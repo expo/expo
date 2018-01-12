@@ -25,6 +25,7 @@ import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.modules.api.BrightnessModule;
 import versioned.host.exp.exponent.modules.api.ImageManipulatorModule;
 import versioned.host.exp.exponent.modules.api.MailComposerModule;
+import versioned.host.exp.exponent.modules.api.av.video.VideoManager;
 import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerModule;
 import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerViewManager;
 import versioned.host.exp.exponent.modules.api.components.facedetector.FaceDetectorModule;
@@ -170,6 +171,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new ExponentTestNativeModule(reactContext));
         nativeModules.add(new WebBrowserModule(reactContext));
         nativeModules.add(new AVModule(reactContext, scopedContext));
+        nativeModules.add(new VideoManager(reactContext));
         nativeModules.add(new NativeAdManager(reactContext));
         nativeModules.add(new AdSettingsManager(reactContext));
         nativeModules.add(new InterstitialAdManager(reactContext));

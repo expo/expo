@@ -294,7 +294,7 @@ class SimpleExoPlayerData extends PlayerData
   // SimpleExoPlayer.VideoListener
 
   @Override
-  public void onVideoSizeChanged(final int width, final int height, final int unappliedRotationDegrees, final float pixelWidthHeightRatio) {
+  public void onVideoSizeChanged(final int width, final int height, final int unAppliedRotationDegrees, final float pixelWidthHeightRatio) {
     // TODO other params?
     mVideoWidthHeight = new Pair<>(width, height);
     if (mFirstFrameRendered && mVideoSizeUpdateListener != null) {

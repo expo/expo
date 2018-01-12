@@ -1,15 +1,12 @@
 package versioned.host.exp.exponent.modules.api.av.video;
 
 import android.annotation.SuppressLint;
-import android.graphics.Matrix;
-import android.graphics.SurfaceTexture;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.Surface;
-import android.view.TextureView;
-import android.view.ViewTreeObserver;
-import android.widget.MediaController;
+import android.widget.FrameLayout;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -18,65 +15,75 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.yqritc.scalablevideoview.ScalableType;
-import com.yqritc.scalablevideoview.ScaleManager;
-import com.yqritc.scalablevideoview.Size;
 
 import versioned.host.exp.exponent.modules.api.av.AVModule;
 import versioned.host.exp.exponent.modules.api.av.AudioEventHandler;
 import versioned.host.exp.exponent.modules.api.av.player.PlayerData;
 import versioned.host.exp.exponent.modules.api.av.player.PlayerDataControl;
-import versioned.host.exp.exponent.modules.api.av.video.VideoViewManager.Events;
 
 @SuppressLint("ViewConstructor")
-public class VideoView extends TextureView implements
-    TextureView.SurfaceTextureListener,
-    AudioEventHandler {
+public class VideoView extends FrameLayout implements AudioEventHandler, FullscreenVideoPlayerPresentationChangeListener, PlayerData.FullscreenPresenter {
+
+  private final Runnable mMediaControllerUpdater = new Runnable() {
+    @Override
+    public void run() {
+      mMediaController.updateControls();
+    }
+  };
 
   private final PlayerData.StatusUpdateListener mStatusUpdateListener = new PlayerData.StatusUpdateListener() {
     @Override
     public void onStatusUpdate(final WritableMap status) {
-      mEventEmitter.receiveEvent(getId(), Events.EVENT_STATUS_UPDATE.toString(), status);
+      post(mMediaControllerUpdater);
+      mEventEmitter.receiveEvent(getReactId(), VideoViewManager.Events.EVENT_STATUS_UPDATE.toString(), status);
     }
   };
-
-  private boolean mScrollChangedListenerIsSetup = false;
-  private final ViewTreeObserver.OnScrollChangedListener mScrollChangedListener = new ViewTreeObserver.OnScrollChangedListener() {
-    @Override
-    public void onScrollChanged() {
-      if (mMediaController != null) {
-        mMediaController.hide();
-      }
-    }
-  };
-
-  private boolean mIsAttachedToWindow = false;
 
   private RCTEventEmitter mEventEmitter;
   private final AVModule mAVModule;
+  private VideoViewWrapper mVideoViewWrapper;
 
   private PlayerData mPlayerData = null;
 
   private ScalableType mResizeMode = ScalableType.LEFT_TOP;
   private boolean mUseNativeControls = false;
+  private Boolean mOverridingUseNativeControls = null;
   private MediaController mMediaController = null;
+  private FullscreenVideoPlayerPresentationChangeProgressListener mFullscreenPlayerPresentationChangeProgressListener = null;
 
   private WritableMap mStatusToSet = Arguments.createMap();
 
-  private Surface mSurface = null;
+  private FullscreenVideoPlayer mFullscreenPlayer = null;
+  private VideoTextureView mVideoTextureView = null;
 
-  public VideoView(final ThemedReactContext themedReactContext) {
-    super(themedReactContext, null, 0);
+  // Fullscreen change requests before the video loads
+  private boolean mIsLoaded = false;
+  private boolean mShouldShowFullscreenPlayerOnLoad = false;
+  private FullscreenVideoPlayerPresentationChangeProgressListener mFullscreenVideoPlayerPresentationOnLoadChangeListener = null;
 
-    mEventEmitter = themedReactContext.getJSModule(RCTEventEmitter.class);
-    mAVModule = themedReactContext.getNativeModule(AVModule.class);
+  public VideoView(@NonNull ThemedReactContext context, VideoViewWrapper videoViewWrapper) {
+    super(context);
+
+    mVideoViewWrapper = videoViewWrapper;
+
+    mEventEmitter = context.getJSModule(RCTEventEmitter.class);
+    mAVModule = context.getNativeModule(AVModule.class);
     mAVModule.registerVideoViewForAudioLifecycle(this);
 
-    setSurfaceTextureListener(this);
+    mVideoTextureView = new VideoTextureView(context, this);
+    addView(mVideoTextureView, generateDefaultLayoutParams());
+
+    mFullscreenPlayer = new FullscreenVideoPlayer(context, this);
+    mFullscreenPlayer.setUpdateListener(this);
+
+    mMediaController = new MediaController(VideoView.this.getContext());
+    mMediaController.setAnchorView(this);
+    maybeUpdateMediaControllerForUseNativeControls();
   }
 
   private void unloadPlayerAndMediaController() {
+    ensureFullscreenPlayerIsDismissed();
     if (mMediaController != null) {
-      ensureScrollChangeListenerIsRemoved();
       mMediaController.hide();
       mMediaController.setEnabled(false);
       mMediaController.setAnchorView(null);
@@ -86,6 +93,7 @@ public class VideoView extends TextureView implements
       mPlayerData.release();
       mPlayerData = null;
     }
+    mIsLoaded = false;
   }
 
   void onDropViewInstance() {
@@ -96,7 +104,7 @@ public class VideoView extends TextureView implements
   private void callOnError(final String error) {
     final WritableMap map = Arguments.createMap();
     map.putString("error", error);
-    mEventEmitter.receiveEvent(getId(), Events.EVENT_ERROR.toString(), map);
+    mEventEmitter.receiveEvent(getReactId(), VideoViewManager.Events.EVENT_ERROR.toString(), map);
   }
 
   private void callOnReadyForDisplay(final Pair<Integer, Integer> videoWidthHeight) {
@@ -115,44 +123,18 @@ public class VideoView extends TextureView implements
     final WritableMap map = Arguments.createMap();
     map.putMap("naturalSize", naturalSize);
     map.putMap("status", mPlayerData.getStatus());
-    mEventEmitter.receiveEvent(getId(), Events.EVENT_READY_FOR_DISPLAY.toString(), map);
+    mEventEmitter.receiveEvent(getReactId(), VideoViewManager.Events.EVENT_READY_FOR_DISPLAY.toString(), map);
   }
 
-  private void scaleVideoSize(final Pair<Integer, Integer> videoWidthHeight) {
-    final int videoWidth = videoWidthHeight.first;
-    final int videoHeight = videoWidthHeight.second;
-
-    if (videoWidth == 0 || videoHeight == 0) {
-      return;
-    }
-
-    final Size viewSize = new Size(getWidth(), getHeight());
-    final Size videoSize = new Size(videoWidth, videoHeight);
-    final Matrix matrix = new ScaleManager(viewSize, videoSize).getScaleMatrix(mResizeMode);
-    if (matrix != null) {
-      setTransform(matrix);
-    }
+  public void maybeUpdateMediaControllerForUseNativeControls() {
+    maybeUpdateMediaControllerForUseNativeControls(true);
   }
 
-  private void ensureScrollChangeListenerIsSetup() {
-    if (!mScrollChangedListenerIsSetup) {
-      getViewTreeObserver().addOnScrollChangedListener(mScrollChangedListener);
-      mScrollChangedListenerIsSetup = true;
-    }
-  }
-
-  private void ensureScrollChangeListenerIsRemoved() {
-    if (mScrollChangedListenerIsSetup) {
-      getViewTreeObserver().removeOnScrollChangedListener(mScrollChangedListener);
-      mScrollChangedListenerIsSetup = false;
-    }
-  }
-
-  private void updateMediaControllerForUseNativeControls(boolean showMediaControllerIfEnabled) {
-    if (mMediaController != null) {
-      mMediaController.setEnabled(mUseNativeControls);
-      ensureScrollChangeListenerIsSetup();
-      if (mUseNativeControls && showMediaControllerIfEnabled) {
+  public void maybeUpdateMediaControllerForUseNativeControls(boolean showMediaControllerIfEnabled) {
+    if (mPlayerData != null && mMediaController != null) {
+      mMediaController.updateControls();
+      mMediaController.setEnabled(shouldUseNativeControls());
+      if (shouldUseNativeControls() && showMediaControllerIfEnabled) {
         mMediaController.show();
       } else {
         mMediaController.hide();
@@ -160,8 +142,121 @@ public class VideoView extends TextureView implements
     }
   }
 
-  private void updateMediaControllerForUseNativeControls() {
-    updateMediaControllerForUseNativeControls(true);
+  // Imperative API
+
+  public void ensureFullscreenPlayerIsPresented() {
+    ensureFullscreenPlayerIsPresented(null);
+  }
+
+  public void ensureFullscreenPlayerIsPresented(FullscreenVideoPlayerPresentationChangeProgressListener listener) {
+    if (!mIsLoaded) {
+      saveFullscreenPlayerStateForOnLoad(true, listener);
+      return;
+    }
+
+    if (mFullscreenPlayerPresentationChangeProgressListener != null) {
+      if (listener != null) {
+        listener.onFullscreenPlayerPresentationTriedToInterrupt();
+      }
+      return;
+    }
+
+    if (!isBeingPresentedFullscreen()) {
+      if (listener != null) {
+        mFullscreenPlayerPresentationChangeProgressListener = listener;
+      }
+
+      mFullscreenPlayer.show();
+    } else {
+      if (listener != null) {
+        listener.onFullscreenPlayerDidPresent();
+      }
+    }
+  }
+
+  public void ensureFullscreenPlayerIsDismissed() {
+    ensureFullscreenPlayerIsDismissed(null);
+  }
+
+  public void ensureFullscreenPlayerIsDismissed(FullscreenVideoPlayerPresentationChangeProgressListener listener) {
+    if (!mIsLoaded) {
+      saveFullscreenPlayerStateForOnLoad(false, listener);
+      return;
+    }
+
+    if (mFullscreenPlayerPresentationChangeProgressListener != null) {
+      if (listener != null) {
+        listener.onFullscreenPlayerPresentationTriedToInterrupt();
+      }
+      return;
+    }
+
+    if (isBeingPresentedFullscreen()) {
+      if (listener != null) {
+        mFullscreenPlayerPresentationChangeProgressListener = listener;
+      }
+
+      mFullscreenPlayer.dismiss();
+    } else {
+      if (listener != null) {
+        listener.onFullscreenPlayerDidDismiss();
+      }
+    }
+  }
+
+  private void saveFullscreenPlayerStateForOnLoad(boolean requestedIsPresentedFullscreen, FullscreenVideoPlayerPresentationChangeProgressListener listener) {
+    mShouldShowFullscreenPlayerOnLoad = requestedIsPresentedFullscreen;
+    if (mFullscreenVideoPlayerPresentationOnLoadChangeListener != null) {
+      mFullscreenVideoPlayerPresentationOnLoadChangeListener.onFullscreenPlayerPresentationInterrupted();
+    }
+    mFullscreenVideoPlayerPresentationOnLoadChangeListener = listener;
+  }
+
+  @Override
+  public void onFullscreenPlayerWillPresent() {
+    callFullscreenCallbackWithUpdate(VideoViewManager.FullscreenPlayerUpdate.FULLSCREEN_PLAYER_WILL_PRESENT);
+
+    if (mFullscreenPlayerPresentationChangeProgressListener != null) {
+      mFullscreenPlayerPresentationChangeProgressListener.onFullscreenPlayerWillPresent();
+    }
+  }
+
+  @Override
+  public void onFullscreenPlayerDidPresent() {
+    mMediaController.updateControls();
+    callFullscreenCallbackWithUpdate(VideoViewManager.FullscreenPlayerUpdate.FULLSCREEN_PLAYER_DID_PRESENT);
+
+    if (mFullscreenPlayerPresentationChangeProgressListener != null) {
+      mFullscreenPlayerPresentationChangeProgressListener.onFullscreenPlayerDidPresent();
+      mFullscreenPlayerPresentationChangeProgressListener = null;
+    }
+  }
+
+  @Override
+  public void onFullscreenPlayerWillDismiss() {
+    callFullscreenCallbackWithUpdate(VideoViewManager.FullscreenPlayerUpdate.FULLSCREEN_PLAYER_WILL_DISMISS);
+
+    if (mFullscreenPlayerPresentationChangeProgressListener != null) {
+      mFullscreenPlayerPresentationChangeProgressListener.onFullscreenPlayerWillDismiss();
+    }
+  }
+
+  @Override
+  public void onFullscreenPlayerDidDismiss() {
+    mMediaController.updateControls();
+    callFullscreenCallbackWithUpdate(VideoViewManager.FullscreenPlayerUpdate.FULLSCREEN_PLAYER_DID_DISMISS);
+
+    if (mFullscreenPlayerPresentationChangeProgressListener != null) {
+      mFullscreenPlayerPresentationChangeProgressListener.onFullscreenPlayerDidDismiss();
+      mFullscreenPlayerPresentationChangeProgressListener = null;
+    }
+  }
+
+  private void callFullscreenCallbackWithUpdate(VideoViewManager.FullscreenPlayerUpdate update) {
+    WritableMap event = Arguments.createMap();
+    event.putInt("fullscreenUpdate", update.getValue());
+    event.putMap("status", getStatus());
+    mEventEmitter.receiveEvent(getReactId(), VideoViewManager.Events.EVENT_FULLSCREEN_PLAYER_UPDATE.toString(), event);
   }
 
   // Prop setting
@@ -182,12 +277,22 @@ public class VideoView extends TextureView implements
     return mPlayerData == null ? PlayerData.getUnloadedStatus() : mPlayerData.getStatus();
   }
 
+  private boolean shouldUseNativeControls() {
+    if (mOverridingUseNativeControls != null) {
+      return mOverridingUseNativeControls;
+    }
+
+    return mUseNativeControls;
+  }
+
+  void setOverridingUseNativeControls(final Boolean useNativeControls) {
+    mOverridingUseNativeControls = useNativeControls;
+    maybeUpdateMediaControllerForUseNativeControls();
+  }
+
   void setUseNativeControls(final boolean useNativeControls) {
     mUseNativeControls = useNativeControls;
-
-    if (mPlayerData != null) {
-      updateMediaControllerForUseNativeControls();
-    }
+    maybeUpdateMediaControllerForUseNativeControls();
   }
 
   public void setUri(final Uri uri, final ReadableMap initialStatus, final Promise promise) {
@@ -195,6 +300,7 @@ public class VideoView extends TextureView implements
       mStatusToSet.merge(mPlayerData.getStatus());
       mPlayerData.release();
       mPlayerData = null;
+      mIsLoaded = false;
     }
 
     if (initialStatus != null) {
@@ -208,7 +314,7 @@ public class VideoView extends TextureView implements
       return;
     }
 
-    mEventEmitter.receiveEvent(getId(), Events.EVENT_LOAD_START.toString(), Arguments.createMap());
+    mEventEmitter.receiveEvent(getReactId(), VideoViewManager.Events.EVENT_LOAD_START.toString(), Arguments.createMap());
 
     final WritableMap statusToInitiallySet = Arguments.createMap();
     statusToInitiallySet.merge(mStatusToSet);
@@ -226,18 +332,21 @@ public class VideoView extends TextureView implements
     mPlayerData.setVideoSizeUpdateListener(new PlayerData.VideoSizeUpdateListener() {
       @Override
       public void onVideoSizeUpdate(final Pair<Integer, Integer> videoWidthHeight) {
-        scaleVideoSize(videoWidthHeight);
+        mVideoTextureView.scaleVideoSize(videoWidthHeight, mResizeMode);
         callOnReadyForDisplay(videoWidthHeight);
       }
     });
 
+    mPlayerData.setFullscreenPresenter(this);
+
     mPlayerData.load(statusToInitiallySet, new PlayerData.LoadCompletionListener() {
       @Override
       public void onLoadSuccess(final WritableMap status) {
-        scaleVideoSize(mPlayerData.getVideoWidthHeight());
+        mIsLoaded = true;
+        mVideoTextureView.scaleVideoSize(mPlayerData.getVideoWidthHeight(), mResizeMode);
 
-        if (mIsAttachedToWindow) {
-          mPlayerData.tryUpdateVideoSurface(mSurface);
+        if (mVideoTextureView.isAttachedToWindow()) {
+          mPlayerData.tryUpdateVideoSurface(mVideoTextureView.getSurface());
         }
 
         if (promise != null) {
@@ -247,17 +356,31 @@ public class VideoView extends TextureView implements
         }
 
         mPlayerData.setStatusUpdateListener(mStatusUpdateListener);
-
-        mMediaController = new MediaController(VideoView.this.getContext());
         mMediaController.setMediaPlayer(new PlayerDataControl(mPlayerData));
         mMediaController.setAnchorView(VideoView.this);
-        updateMediaControllerForUseNativeControls(false);
+        maybeUpdateMediaControllerForUseNativeControls(false);
+        mEventEmitter.receiveEvent(getReactId(), VideoViewManager.Events.EVENT_LOAD.toString(), status);
+        // Execute the fullscreen player state change requested before the video loaded
+        if (mFullscreenVideoPlayerPresentationOnLoadChangeListener != null) {
+          FullscreenVideoPlayerPresentationChangeProgressListener listener = mFullscreenVideoPlayerPresentationOnLoadChangeListener;
+          mFullscreenVideoPlayerPresentationOnLoadChangeListener = null;
+          if (mShouldShowFullscreenPlayerOnLoad) {
+            ensureFullscreenPlayerIsPresented(listener);
+          } else {
+            ensureFullscreenPlayerIsDismissed(listener);
+          }
+        }
 
-        mEventEmitter.receiveEvent(getId(), Events.EVENT_LOAD.toString(), status);
       }
 
       @Override
       public void onLoadError(final String error) {
+        if (mFullscreenVideoPlayerPresentationOnLoadChangeListener != null) {
+          mFullscreenVideoPlayerPresentationOnLoadChangeListener.onFullscreenPlayerPresentationError(error);
+          mFullscreenVideoPlayerPresentationOnLoadChangeListener = null;
+        }
+        mShouldShowFullscreenPlayerOnLoad = false;
+
         unloadPlayerAndMediaController();
         if (promise != null) {
           promise.reject("E_VIDEO_NOTCREATED", error);
@@ -270,15 +393,20 @@ public class VideoView extends TextureView implements
   void setResizeMode(final ScalableType resizeMode) {
     mResizeMode = resizeMode;
     if (mPlayerData != null) {
-      scaleVideoSize(mPlayerData.getVideoWidthHeight());
+      mVideoTextureView.scaleVideoSize(mPlayerData.getVideoWidthHeight(), mResizeMode);
     }
   }
 
   // View
 
+  private int getReactId() {
+    return mVideoViewWrapper.getId();
+  }
+
+  @SuppressLint("ClickableViewAccessibility")
   @Override
   public boolean onTouchEvent(final MotionEvent event) {
-    if (mUseNativeControls && mMediaController != null) {
+    if (shouldUseNativeControls() && mMediaController != null) {
       mMediaController.show();
     }
     return super.onTouchEvent(event);
@@ -290,51 +418,15 @@ public class VideoView extends TextureView implements
     super.onLayout(changed, left, top, right, bottom);
 
     if (changed && mPlayerData != null) {
-      scaleVideoSize(mPlayerData.getVideoWidthHeight());
+      mVideoTextureView.scaleVideoSize(mPlayerData.getVideoWidthHeight(), mResizeMode);
     }
   }
 
   // TextureView
 
-  @Override
-  public void onSurfaceTextureAvailable(final SurfaceTexture surfaceTexture, final int width, final int height) {
-    mSurface = new Surface(surfaceTexture);
+  public void tryUpdateVideoSurface(Surface surface) {
     if (mPlayerData != null) {
-      mPlayerData.tryUpdateVideoSurface(mSurface);
-    }
-  }
-
-  @Override
-  public void onSurfaceTextureSizeChanged(final SurfaceTexture surfaceTexture, final int width, final int height) {
-    // no-op
-  }
-
-  @Override
-  public boolean onSurfaceTextureDestroyed(final SurfaceTexture surfaceTexture) {
-    mSurface = null;
-    if (mPlayerData != null) {
-      mPlayerData.tryUpdateVideoSurface(null);
-    }
-    return true;
-  }
-
-  @Override
-  public void onSurfaceTextureUpdated(final SurfaceTexture surfaceTexture) {
-    // no-op
-  }
-
-  @Override
-  protected void onDetachedFromWindow() {
-    super.onDetachedFromWindow();
-    mIsAttachedToWindow = false;
-  }
-
-  @Override
-  protected void onAttachedToWindow() {
-    super.onAttachedToWindow();
-    mIsAttachedToWindow = true;
-    if (mPlayerData != null) {
-      mPlayerData.tryUpdateVideoSurface(mSurface);
+      mPlayerData.tryUpdateVideoSurface(surface);
     }
   }
 
@@ -376,6 +468,7 @@ public class VideoView extends TextureView implements
   @Override
   public void onPause() {
     if (mPlayerData != null) {
+      ensureFullscreenPlayerIsDismissed();
       mPlayerData.onPause();
     }
   }
@@ -384,6 +477,22 @@ public class VideoView extends TextureView implements
   public void onResume() {
     if (mPlayerData != null) {
       mPlayerData.onResume();
+    }
+  }
+
+  // FullscreenPresenter
+
+  @Override
+  public boolean isBeingPresentedFullscreen() {
+    return mFullscreenPlayer.isShowing();
+  }
+
+  @Override
+  public void setFullscreenMode(boolean isFullscreen) {
+    if (isFullscreen) {
+      ensureFullscreenPlayerIsPresented();
+    } else {
+      ensureFullscreenPlayerIsDismissed();
     }
   }
 }

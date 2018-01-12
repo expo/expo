@@ -13,7 +13,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-public class VideoViewManager extends SimpleViewManager<VideoView> {
+public class VideoViewManager extends SimpleViewManager<VideoViewWrapper> {
   public static final String REACT_CLASS = "ExponentVideo";
 
   private static final String PROP_STATUS = "status";
@@ -21,12 +21,27 @@ public class VideoViewManager extends SimpleViewManager<VideoView> {
   private static final String PROP_URI = "uri";
   private static final String PROP_NATIVE_RESIZE_MODE = "nativeResizeMode";
 
+  enum FullscreenPlayerUpdate {
+    FULLSCREEN_PLAYER_WILL_PRESENT(0),
+    FULLSCREEN_PLAYER_DID_PRESENT(1),
+    FULLSCREEN_PLAYER_WILL_DISMISS(2),
+    FULLSCREEN_PLAYER_DID_DISMISS(3);
+
+    private final int mValue;
+    FullscreenPlayerUpdate(final int value) {
+      mValue = value;
+    }
+
+    public int getValue() { return mValue; }
+  }
+
   enum Events {
     EVENT_STATUS_UPDATE("onStatusUpdateNative"),
     EVENT_LOAD_START("onLoadStartNative"),
     EVENT_LOAD("onLoadNative"),
     EVENT_ERROR("onErrorNative"),
-    EVENT_READY_FOR_DISPLAY("onReadyForDisplayNative");
+    EVENT_READY_FOR_DISPLAY("onReadyForDisplayNative"),
+    EVENT_FULLSCREEN_PLAYER_UPDATE("onFullscreenUpdateNative");
 
     private final String mName;
 
@@ -46,14 +61,14 @@ public class VideoViewManager extends SimpleViewManager<VideoView> {
   }
 
   @Override
-  protected VideoView createViewInstance(final ThemedReactContext themedReactContext) {
-    return new VideoView(themedReactContext);
+  protected VideoViewWrapper createViewInstance(final ThemedReactContext themedReactContext) {
+    return new VideoViewWrapper(themedReactContext);
   }
 
   @Override
-  public void onDropViewInstance(final VideoView view) {
-    super.onDropViewInstance(view);
-    view.onDropViewInstance();
+  public void onDropViewInstance(final VideoViewWrapper videoViewWrapper) {
+    super.onDropViewInstance(videoViewWrapper);
+    videoViewWrapper.getVideoViewInstance().onDropViewInstance();
   }
 
   @Override
@@ -71,25 +86,25 @@ public class VideoViewManager extends SimpleViewManager<VideoView> {
   // Props set directly in <Video> component:
 
   @ReactProp(name = PROP_STATUS)
-  public void setStatus(final VideoView videoView, final ReadableMap status) {
-    videoView.setStatus(status, null);
+  public void setStatus(final VideoViewWrapper videoViewWrapper, final ReadableMap status) {
+    videoViewWrapper.getVideoViewInstance().setStatus(status, null);
   }
 
   @ReactProp(name = PROP_USE_NATIVE_CONTROLS, defaultBoolean = false)
-  public void setUseNativeControls(final VideoView videoView, final boolean useNativeControls) {
-    videoView.setUseNativeControls(useNativeControls);
+  public void setUseNativeControls(final VideoViewWrapper videoViewWrapper, final boolean useNativeControls) {
+    videoViewWrapper.getVideoViewInstance().setUseNativeControls(useNativeControls);
   }
 
   // Native only props -- set by Video.js
 
   @ReactProp(name = PROP_URI)
-  public void setUri(final VideoView videoView, final @Nullable String uri) {
-    videoView.setUri(uri == null ? null : Uri.parse(uri), null, null);
+  public void setUri(final VideoViewWrapper videoViewWrapper, final @Nullable String uri) {
+    videoViewWrapper.getVideoViewInstance().setUri(uri == null ? null : Uri.parse(uri), null, null);
   }
 
   @ReactProp(name = PROP_NATIVE_RESIZE_MODE, defaultBoolean = false)
-  public void setNativeResizeMode(final VideoView videoView, final String resizeModeOrdinalString) {
-    videoView.setResizeMode(ScalableType.values()[Integer.parseInt(resizeModeOrdinalString)]);
+  public void setNativeResizeMode(final VideoViewWrapper videoViewWrapper, final String resizeModeOrdinalString) {
+    videoViewWrapper.getVideoViewInstance().setResizeMode(ScalableType.values()[Integer.parseInt(resizeModeOrdinalString)]);
   }
 
   @Override

@@ -41,7 +41,9 @@ import java.util.UUID;
 import host.exp.exponent.utils.ExpFileUtils;
 import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.modules.api.av.player.PlayerData;
+import versioned.host.exp.exponent.modules.api.av.video.VideoTextureView;
 import versioned.host.exp.exponent.modules.api.av.video.VideoView;
+import versioned.host.exp.exponent.modules.api.av.video.VideoViewWrapper;
 
 import static android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED;
 
@@ -402,18 +404,18 @@ public class AVModule extends ReactContextBaseJavaModule
     mReactApplicationContext.getNativeModule(UIManagerModule.class).addUIBlock(new UIBlock() {
       @Override
       public void execute(final NativeViewHierarchyManager nativeViewHierarchyManager) {
-        final VideoView videoView;
+        final VideoViewWrapper videoViewWrapper;
         try {
           final View view = nativeViewHierarchyManager.resolveView(tag);
-          if (!(view instanceof VideoView)) {
+          if (!(view instanceof VideoViewWrapper)) {
             throw new Exception();
           }
-          videoView = (VideoView) view;
+          videoViewWrapper = (VideoViewWrapper) view;
         } catch (final Throwable e) {
           promise.reject("E_VIDEO_TAGINCORRECT", "Invalid view returned from registry.");
           return;
         }
-        callback.runWithVideoView(videoView);
+        callback.runWithVideoView(videoViewWrapper.getVideoViewInstance());
       }
     });
   }

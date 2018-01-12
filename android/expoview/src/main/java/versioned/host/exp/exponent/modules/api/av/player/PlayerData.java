@@ -64,10 +64,16 @@ public abstract class PlayerData implements AudioEventHandler {
     void onSetStatusError(final String error);
   }
 
+  public interface FullscreenPresenter {
+    boolean isBeingPresentedFullscreen();
+    void setFullscreenMode(boolean isFullscreen);
+  }
+
   final AVModule mAVModule;
   final Uri mUri;
 
   private Timer mTimer = null;
+  private FullscreenPresenter mFullscreenPresenter = null;
   private StatusUpdateListener mStatusUpdateListener = null;
   ErrorListener mErrorListener = null;
   VideoSizeUpdateListener mVideoSizeUpdateListener = null;
@@ -316,11 +322,23 @@ public abstract class PlayerData implements AudioEventHandler {
     mVideoSizeUpdateListener = videoSizeUpdateListener;
   }
 
+  public final void setFullscreenPresenter(final FullscreenPresenter fullscreenPresenter) {
+    mFullscreenPresenter = fullscreenPresenter;
+  }
+
   public abstract Pair<Integer, Integer> getVideoWidthHeight();
 
   public abstract void tryUpdateVideoSurface(final Surface surface);
 
   abstract int getAudioSessionId();
+
+  public boolean isPresentedFullscreen() {
+    return mFullscreenPresenter.isBeingPresentedFullscreen();
+  }
+
+  public void toggleFullscreen() {
+    mFullscreenPresenter.setFullscreenMode(!isPresentedFullscreen());
+  }
 
   // AudioEventHandler
 
