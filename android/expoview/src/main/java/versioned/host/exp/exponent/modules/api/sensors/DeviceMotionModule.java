@@ -3,16 +3,13 @@ package versioned.host.exp.exponent.modules.api.sensors;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.view.Surface;
 import android.view.WindowManager;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
@@ -20,18 +17,22 @@ import com.facebook.react.modules.core.ChoreographerCompat;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ReactChoreographer;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
 
-public class DeviceMotionModule extends ReactContextBaseJavaModule
-    implements SensorEventListener, LifecycleEventListener {
+import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.services.sensors.SensorEventListener;
+import host.exp.exponent.kernel.services.sensors.SubscribableSensorKernelService;
+import host.exp.exponent.kernel.services.sensors.SensorKernelServiceSubscription;
+import versioned.host.exp.exponent.modules.ExpoKernelServiceConsumerBaseModule;
 
-  private SensorManager mSensorManager;
-  private boolean mPaused = false;
-  private boolean mEnabled = false;
+public class DeviceMotionModule extends ExpoKernelServiceConsumerBaseModule implements SensorEventListener {
   private long mLastUpdate = 0;
   private int mUpdateInterval = 100;
   private float[] mRotationMatrix = new float[9];
@@ -43,19 +44,10 @@ public class DeviceMotionModule extends ReactContextBaseJavaModule
   private SensorEvent mRotationRateEvent;
   private SensorEvent mGravityEvent;
 
-  private ReactApplicationContext mReactContext;
+  private List<SensorKernelServiceSubscription> mServiceSubscriptions = null;
 
-  private static int[] sensorTypes = {
-      Sensor.TYPE_GYROSCOPE,
-      Sensor.TYPE_LINEAR_ACCELERATION,
-      Sensor.TYPE_ACCELEROMETER,
-      Sensor.TYPE_ROTATION_VECTOR,
-      Sensor.TYPE_GRAVITY,
-  };
-
-  public DeviceMotionModule(ReactApplicationContext reactContext) {
-    super(reactContext);
-    mReactContext = reactContext;
+  public DeviceMotionModule(ReactApplicationContext reactContext, ExperienceId experienceId) {
+    super(reactContext, experienceId);
   }
 
   @Override
@@ -80,20 +72,27 @@ public class DeviceMotionModule extends ReactContextBaseJavaModule
 
   @ReactMethod
   public void startObserving() {
-    mEnabled = true;
-    for (int type : sensorTypes) {
-      mSensorManager.registerListener(
-          this,
-          mSensorManager.getDefaultSensor(type),
-          SensorManager.SENSOR_DELAY_FASTEST
-      );
+    if (mServiceSubscriptions == null) {
+      mServiceSubscriptions = new ArrayList<>();
+      for (SubscribableSensorKernelService kernelService : getSensorKernelServices()) {
+        SensorKernelServiceSubscription subscription = kernelService.createSubscriptionForListener(experienceId, this);
+        // We want handle update interval on our own,
+        // because we need to coordinate updates from multiple sensor services.
+        subscription.setUpdateInterval(0);
+        mServiceSubscriptions.add(subscription);
+      }
+    }
+
+    for (SensorKernelServiceSubscription subscription : mServiceSubscriptions) {
+      subscription.start();
     }
   }
 
   @ReactMethod
   public void stopObserving() {
-    mEnabled = false;
-    mSensorManager.unregisterListener(this);
+    for (SensorKernelServiceSubscription subscription : mServiceSubscriptions) {
+      subscription.stop();
+    }
     UiThreadUtil.assertOnUiThread();
     mCurrentFrameCallback.stop();
   }
@@ -101,29 +100,21 @@ public class DeviceMotionModule extends ReactContextBaseJavaModule
   @Override
   public void initialize() {
     ReactApplicationContext reactContext = getReactApplicationContext();
-    mSensorManager = (android.hardware.SensorManager)reactContext.getSystemService(Context.SENSOR_SERVICE);
-    reactContext.addLifecycleEventListener(this);
     mDeviceEventEmitter = reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
   }
 
-  private void maybeResumeObserving() {
-    if (mEnabled && mPaused) {
-      mPaused = false;
-      startObserving();
-    }
-  }
-
-  private void maybePauseObserving() {
-    if (mEnabled && !mPaused) {
-      mPaused = true;
-      mSensorManager.unregisterListener(this);
-      UiThreadUtil.assertOnUiThread();
-      mCurrentFrameCallback.stop();
-    }
+  private List<SubscribableSensorKernelService> getSensorKernelServices() {
+    return Arrays.asList(
+        mKernelServiceRegistry.getGyroscopeKernelService(),
+        mKernelServiceRegistry.getLinearAccelerationSensorKernelService(),
+        mKernelServiceRegistry.getAccelerometerKernelService(),
+        mKernelServiceRegistry.getRotationVectorSensorKernelService(),
+        mKernelServiceRegistry.getGravitySensorKernelService()
+    );
   }
 
   @Override
-  public void onSensorChanged(SensorEvent sensorEvent) {
+  public void onSensorDataChanged(SensorEvent sensorEvent) {
     Sensor sensor = sensorEvent.sensor;
 
     if (sensor.getType() == Sensor.TYPE_GYROSCOPE) {
@@ -161,7 +152,7 @@ public class DeviceMotionModule extends ReactContextBaseJavaModule
 
       long curTime = System.currentTimeMillis();
       if ((curTime - mLastUpdate) > mUpdateInterval) {
-        mReactContext.runOnJSQueueThread(mDispatchEventRunnable);
+        getReactApplicationContext().runOnJSQueueThread(mDispatchEventRunnable);
         mLastUpdate = curTime;
       }
     }
@@ -187,10 +178,10 @@ public class DeviceMotionModule extends ReactContextBaseJavaModule
         return;
       }
 
-      if (mReactContext.isOnUiQueueThread()) {
+      if (getReactApplicationContext().isOnUiQueueThread()) {
         maybePost();
       } else {
-        mReactContext.runOnUiQueueThread(new Runnable() {
+        getReactApplicationContext().runOnUiQueueThread(new Runnable() {
           @Override
           public void run() {
             maybePost();
@@ -252,7 +243,7 @@ public class DeviceMotionModule extends ReactContextBaseJavaModule
   }
 
   private int getOrientation() {
-    switch(((WindowManager) mReactContext.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation()) {
+    switch(((WindowManager) getReactApplicationContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation()) {
       case Surface.ROTATION_0:
         return 0;
       case Surface.ROTATION_90:
@@ -265,24 +256,4 @@ public class DeviceMotionModule extends ReactContextBaseJavaModule
         return 0;
     }
   }
-
-  @Override
-  public void onAccuracyChanged(Sensor sensor, int accuracy) {
-  }
-
-  @Override
-  public void onHostResume() {
-    maybeResumeObserving();
-  }
-
-  @Override
-  public void onHostPause() {
-    maybePauseObserving();
-  }
-
-  @Override
-  public void onHostDestroy() {
-    stopObserving();
-  }
 }
-

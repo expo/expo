@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.gcm.RegistrationIntentService;
+import host.exp.exponent.kernel.ExperienceId;
 import host.exp.expoview.BuildConfig;
 import host.exp.expoview.Exponent;
 import host.exp.exponent.RNObject;
@@ -25,6 +26,22 @@ import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.modules.ExponentKernelModule;
 
 public abstract class BaseExperienceActivity extends MultipleVersionReactNativeActivity {
+  private static abstract class ExperienceEvent {
+    private ExperienceId mExperienceId;
+    ExperienceEvent(ExperienceId experienceId) {
+      this.mExperienceId = experienceId;
+    }
+
+    public ExperienceId getExperienceId() {
+      return mExperienceId;
+    }
+  }
+  public static class ExperienceForegroundedEvent extends ExperienceEvent {
+    ExperienceForegroundedEvent(ExperienceId experienceId) { super(experienceId); }
+  }
+  public static class ExperienceBackgroundedEvent extends ExperienceEvent {
+    ExperienceBackgroundedEvent(ExperienceId experienceId) { super(experienceId); }
+  }
 
   private static BaseExperienceActivity sVisibleActivity;
 
@@ -73,10 +90,12 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
     mIsInForeground = true;
 
     mOnResumeTime = System.currentTimeMillis();
+    EventBus.getDefault().post(new ExperienceForegroundedEvent(mExperienceId));
   }
 
   @Override
   protected void onPause() {
+    EventBus.getDefault().post(new ExperienceBackgroundedEvent(mExperienceId));
     super.onPause();
 
     // For some reason onPause sometimes gets called soon after onResume.
