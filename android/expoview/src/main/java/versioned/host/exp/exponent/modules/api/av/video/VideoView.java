@@ -295,7 +295,7 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
     maybeUpdateMediaControllerForUseNativeControls();
   }
 
-  public void setUri(final Uri uri, final ReadableMap initialStatus, final Promise promise) {
+  public void setSource(final ReadableMap source, final ReadableMap initialStatus, final Promise promise) {
     if (mPlayerData != null) {
       mStatusToSet.merge(mPlayerData.getStatus());
       mPlayerData.release();
@@ -307,7 +307,9 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
       mStatusToSet.merge(initialStatus);
     }
 
-    if (uri == null) {
+    final String uriString = source != null ? source.getString(PlayerData.STATUS_URI_KEY_PATH) : null;
+
+    if (uriString == null) {
       if (promise != null) {
         promise.resolve(PlayerData.getUnloadedStatus());
       }
@@ -320,7 +322,7 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
     statusToInitiallySet.merge(mStatusToSet);
     mStatusToSet = Arguments.createMap();
 
-    mPlayerData = PlayerData.createUnloadedPlayerData(mAVModule, uri, statusToInitiallySet);
+    mPlayerData = PlayerData.createUnloadedPlayerData(mAVModule, source, statusToInitiallySet);
 
     mPlayerData.setErrorListener(new PlayerData.ErrorListener() {
       @Override

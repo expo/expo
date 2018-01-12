@@ -68,7 +68,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 #pragma mark - Init and player loading
 
 - (instancetype)initWithEXAV:(EXAV *)exAV
-                     withURL:(NSURL *)url
+                  withSource:(NSDictionary *)source
                   withStatus:(NSDictionary *)parameters
          withLoadFinishBlock:(void (^)(BOOL success, NSDictionary *successStatus, NSString *error))loadFinishBlock
 {
@@ -80,7 +80,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   
     _player = nil;
   
-    _url = url;
+    _url = [NSURL URLWithString:[source objectForKey:EXAVPlayerDataStatusURIKeyPath]];
   
     _timeObserver = nil;
     _finishObserver = nil;

@@ -38,7 +38,7 @@ RCT_EXPORT_VIEW_PROPERTY(status, NSDictionary);
 RCT_EXPORT_VIEW_PROPERTY(useNativeControls, BOOL);
 
 // Native only props -- set by Video.js
-RCT_EXPORT_VIEW_PROPERTY(uri, NSString);
+RCT_EXPORT_VIEW_PROPERTY(source, NSDictionary);
 RCT_EXPORT_VIEW_PROPERTY(nativeResizeMode, NSString);
 RCT_REMAP_VIEW_PROPERTY(onStatusUpdateNative, onStatusUpdate, RCTDirectEventBlock);
 RCT_REMAP_VIEW_PROPERTY(onLoadStartNative, onLoadStart, RCTDirectEventBlock);

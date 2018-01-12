@@ -569,7 +569,7 @@ RCT_EXPORT_METHOD(setAudioMode:(nonnull NSDictionary *)mode
 
 #pragma mark - Unified playback API - Audio
 
-RCT_EXPORT_METHOD(loadForSound:(nonnull NSString *)uriString
+RCT_EXPORT_METHOD(loadForSound:(nonnull NSDictionary *)source
                     withStatus:(nonnull NSDictionary *)status
                    withSuccess:(RCTResponseSenderBlock)loadSuccess
                      withError:(RCTResponseSenderBlock)loadError)
@@ -578,7 +578,7 @@ RCT_EXPORT_METHOD(loadForSound:(nonnull NSString *)uriString
 
   __weak __typeof__(self) weakSelf = self;
   EXAVPlayerData *data = [[EXAVPlayerData alloc] initWithEXAV:self
-                                                      withURL:[NSURL URLWithString:uriString]
+                                                   withSource:source
                                                    withStatus:status
                                          withLoadFinishBlock:^(BOOL success, NSDictionary *successStatus, NSString *error) {
                                            if (success) {
@@ -673,13 +673,13 @@ RCT_EXPORT_METHOD(setErrorCallbackForSound:(nonnull NSNumber *)key
 #pragma mark - Unified playback API - Video
 
 RCT_EXPORT_METHOD(loadForVideo:(nonnull NSNumber *)reactTag
-                           uri:(nonnull NSString *)uriString
+                        source:(nonnull NSDictionary *)source
                     withStatus:(nonnull NSDictionary *)status
                       resolver:(RCTPromiseResolveBlock)resolve
                       rejecter:(RCTPromiseRejectBlock)reject)
 {
   [self _runBlock:^(EXVideoView *view) {
-    [view setUri:uriString withStatus:status resolver:resolve rejecter:reject];
+    [view setSource:source withStatus:status resolver:resolve rejecter:reject];
   } withEXVideoViewForTag:reactTag withRejecter:reject];
 }
 
@@ -688,7 +688,7 @@ RCT_EXPORT_METHOD(unloadForVideo:(nonnull NSNumber *)reactTag
                         rejecter:(RCTPromiseRejectBlock)reject)
 {
   [self _runBlock:^(EXVideoView *view) {
-    [view setUri:nil withStatus:nil resolver:resolve rejecter:reject];
+    [view setSource:nil withStatus:nil resolver:resolve rejecter:reject];
   } withEXVideoViewForTag:reactTag withRejecter:reject];
 }
 

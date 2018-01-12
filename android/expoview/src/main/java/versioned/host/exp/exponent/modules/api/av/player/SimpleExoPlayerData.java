@@ -4,27 +4,36 @@ import android.media.PlaybackParams;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Pair;
 import android.view.Surface;
 
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
-import com.google.android.exoplayer2.extractor.ExtractorsFactory;
+import com.google.android.exoplayer2.source.AdaptiveMediaSourceEventListener;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.dash.DashMediaSource;
+import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
+import com.google.android.exoplayer2.source.hls.HlsMediaSource;
+import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource;
+import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
 import com.google.android.exoplayer2.trackselection.AdaptiveVideoTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.util.Util;
 
@@ -33,11 +42,12 @@ import java.io.IOException;
 import versioned.host.exp.exponent.modules.api.av.AVModule;
 
 class SimpleExoPlayerData extends PlayerData
-    implements ExoPlayer.EventListener, ExtractorMediaSource.EventListener, SimpleExoPlayer.VideoListener {
+    implements ExoPlayer.EventListener, ExtractorMediaSource.EventListener, SimpleExoPlayer.VideoListener, AdaptiveMediaSourceEventListener {
 
   private static final String IMPLEMENTATION_NAME = "SimpleExoPlayer";
 
   private SimpleExoPlayer mSimpleExoPlayer = null;
+  private String mOverridingExtension = null;
   private LoadCompletionListener mLoadCompletionListener = null;
   private boolean mFirstFrameRendered = false;
   private Pair<Integer, Integer> mVideoWidthHeight = null;
@@ -45,8 +55,9 @@ class SimpleExoPlayerData extends PlayerData
   private boolean mIsLooping = false;
   private boolean mIsLoading = true;
 
-  SimpleExoPlayerData(final AVModule avModule, final Uri uri) {
+  SimpleExoPlayerData(final AVModule avModule, final Uri uri, final String overridingExtension) {
     super(avModule, uri);
+    mOverridingExtension = overridingExtension;
   }
 
   @Override
@@ -76,13 +87,15 @@ class SimpleExoPlayerData extends PlayerData
 
     // Produces DataSource instances through which media data is loaded.
     final DataSource.Factory dataSourceFactory = new SharedCookiesDataSourceFactory(mUri, mAVModule.mScopedContext, Util.getUserAgent(mAVModule.mScopedContext, "yourApplicationName"));
-    // Produces Extractor instances for parsing the media data.
-    final ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
-    // This is the MediaSource representing the media to be played.
-    final MediaSource videoSource = new ExtractorMediaSource(mUri, dataSourceFactory, extractorsFactory, mainHandler, this);
-    // Prepare the player with the source.
-    mSimpleExoPlayer.prepare(videoSource);
-    setStatus(status, null);
+    try {
+      // This is the MediaSource representing the media to be played.
+      final MediaSource source = buildMediaSource(mUri, mOverridingExtension, mainHandler, dataSourceFactory);
+      // Prepare the player with the source.
+      mSimpleExoPlayer.prepare(source);
+      setStatus(status, null);
+    } catch (IllegalStateException e) {
+      onFatalError(e);
+    }
   }
 
   @Override
@@ -283,6 +296,10 @@ class SimpleExoPlayerData extends PlayerData
 
   @Override
   public void onLoadError(final IOException error) {
+    onFatalError(error);
+  }
+
+  private void onFatalError(final Exception error) {
     if (mLoadCompletionListener != null) {
       final LoadCompletionListener listener = mLoadCompletionListener;
       mLoadCompletionListener = null;
@@ -312,6 +329,58 @@ class SimpleExoPlayerData extends PlayerData
 
   @Override
   public void onVideoTracksDisabled() {
+
+  }
+
+  // https://github.com/google/ExoPlayer/blob/2b20780482a9c6b07416bcbf4de829532859d10a/demos/main/src/main/java/com/google/android/exoplayer2/demo/PlayerActivity.java#L365-L393
+  private MediaSource buildMediaSource(Uri uri, String overrideExtension, Handler mainHandler, DataSource.Factory factory) {
+    @C.ContentType int type = TextUtils.isEmpty(overrideExtension) ? Util.inferContentType(String.valueOf(uri)) : Util.inferContentType("." + overrideExtension);
+    switch (type) {
+      case C.TYPE_SS:
+        return new SsMediaSource(uri, factory,
+            new DefaultSsChunkSource.Factory(factory), mainHandler, this);
+      case C.TYPE_DASH:
+        return new DashMediaSource(uri, factory,
+            new DefaultDashChunkSource.Factory(factory), mainHandler, this);
+      case C.TYPE_HLS:
+        return new HlsMediaSource(uri, factory, mainHandler, this);
+      case C.TYPE_OTHER:
+        return new ExtractorMediaSource(uri, factory, new DefaultExtractorsFactory(), mainHandler, this);
+      default: {
+        throw new IllegalStateException("Content of this type is unsupported at the moment. Unsupported type: " + type);
+      }
+    }
+  }
+
+  // AdaptiveMediaSourceEventListener
+
+  @Override
+  public void onLoadStarted(DataSpec dataSpec, int dataType, int trackType, Format trackFormat, int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs, long mediaEndTimeMs, long elapsedRealtimeMs) {
+
+  }
+
+  @Override
+  public void onLoadCompleted(DataSpec dataSpec, int dataType, int trackType, Format trackFormat, int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs, long mediaEndTimeMs, long elapsedRealtimeMs, long loadDurationMs, long bytesLoaded) {
+
+  }
+
+  @Override
+  public void onLoadCanceled(DataSpec dataSpec, int dataType, int trackType, Format trackFormat, int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs, long mediaEndTimeMs, long elapsedRealtimeMs, long loadDurationMs, long bytesLoaded) {
+
+  }
+
+  @Override
+  public void onLoadError(DataSpec dataSpec, int dataType, int trackType, Format trackFormat, int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs, long mediaEndTimeMs, long elapsedRealtimeMs, long loadDurationMs, long bytesLoaded, IOException error, boolean wasCanceled) {
+    onLoadError(error);
+  }
+
+  @Override
+  public void onUpstreamDiscarded(int trackType, long mediaStartTimeMs, long mediaEndTimeMs) {
+
+  }
+
+  @Override
+  public void onDownstreamFormatChanged(int trackType, Format trackFormat, int trackSelectionReason, Object trackSelectionData, long mediaTimeMs) {
 
   }
 }

@@ -14,7 +14,7 @@
 + (NSDictionary *)getUnloadedStatus;
 
 - (instancetype)initWithEXAV:(EXAV *)exAV
-                     withURL:(NSURL *)url
+                  withSource:(NSDictionary *)source
                   withStatus:(NSDictionary *)parameters
          withLoadFinishBlock:(void (^)(BOOL success, NSDictionary *successStatus, NSString *error))loadFinishBlock;
 

@@ -17,10 +17,10 @@ typedef NS_OPTIONS(NSUInteger, EXVideoFullscreenUpdate)
   EXVideoFullscreenUpdatePlayerDidDismiss  = 3,
 };
 
-@property (nonatomic, strong, getter=getStatus, setter=setStatus:) NSDictionary *status;
-@property (nonatomic, strong, getter=getUri, setter=setUri:) NSString *uri;
-@property (nonatomic, assign, setter=setUseNativeControls:) BOOL useNativeControls;
-@property (nonatomic, strong, setter=setNativeResizeMode:) NSString *nativeResizeMode;
+@property (nonatomic, strong, getter=getStatus) NSDictionary *status;
+@property (nonatomic, strong) NSDictionary *source;
+@property (nonatomic, assign) BOOL useNativeControls;
+@property (nonatomic, strong) NSString *nativeResizeMode;
 @property (nonatomic, copy) RCTDirectEventBlock onLoadStart;
 @property (nonatomic, copy) RCTDirectEventBlock onLoad;
 @property (nonatomic, copy) RCTDirectEventBlock onError;
@@ -38,10 +38,10 @@ typedef NS_OPTIONS(NSUInteger, EXVideoFullscreenUpdate)
                 resolver:(RCTPromiseResolveBlock)resolve
                 rejecter:(RCTPromiseRejectBlock)reject;
 
-- (void)setUri:(NSString *)uri
-    withStatus:(NSDictionary *)initialStatus
-      resolver:(RCTPromiseResolveBlock)resolve
-      rejecter:(RCTPromiseRejectBlock)reject;
+- (void)setSource:(NSDictionary *)source
+       withStatus:(NSDictionary *)initialStatus
+         resolver:(RCTPromiseResolveBlock)resolve
+         rejecter:(RCTPromiseRejectBlock)reject;
 
 - (void)setFullscreen:(BOOL)value
              resolver:(RCTPromiseResolveBlock)resolve

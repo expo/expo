@@ -10,7 +10,6 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.MediaRecorder;
-import android.net.Uri;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
@@ -312,9 +311,9 @@ public class AVModule extends ReactContextBaseJavaModule
   }
 
   @ReactMethod
-  public void loadForSound(final String uriString, final ReadableMap status, final Callback loadSuccess, final Callback loadError) {
+  public void loadForSound(final ReadableMap source, final ReadableMap status, final Callback loadSuccess, final Callback loadError) {
     final int key = mSoundMapKeyCount++;
-    final PlayerData data = PlayerData.createUnloadedPlayerData(this, Uri.parse(uriString), status);
+    final PlayerData data = PlayerData.createUnloadedPlayerData(this, source, status);
     data.setErrorListener(new PlayerData.ErrorListener() {
       @Override
       public void onError(final String error) {
@@ -421,11 +420,11 @@ public class AVModule extends ReactContextBaseJavaModule
   }
 
   @ReactMethod
-  public void loadForVideo(final Integer tag, final String uriString, final ReadableMap status, final Promise promise) {
+  public void loadForVideo(final Integer tag, final ReadableMap source, final ReadableMap status, final Promise promise) {
     tryRunWithVideoView(tag, new VideoViewCallback() {
       @Override
       public void runWithVideoView(final VideoView videoView) {
-        videoView.setUri(Uri.parse(uriString), status, promise);
+        videoView.setSource(source, status, promise);
       }
     }, promise); // Otherwise, tryRunWithVideoView has already rejected the promise.
   }
@@ -435,7 +434,7 @@ public class AVModule extends ReactContextBaseJavaModule
     tryRunWithVideoView(tag, new VideoViewCallback() {
       @Override
       public void runWithVideoView(final VideoView videoView) {
-        videoView.setUri(null, null, promise);
+        videoView.setSource(null, null, promise);
       }
     }, promise); // Otherwise, tryRunWithVideoView has already rejected the promise.
   }

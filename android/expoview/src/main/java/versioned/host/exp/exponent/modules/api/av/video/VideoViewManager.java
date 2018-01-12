@@ -1,7 +1,5 @@
 package versioned.host.exp.exponent.modules.api.av.video;
 
-import android.net.Uri;
-
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.SimpleViewManager;
@@ -18,7 +16,7 @@ public class VideoViewManager extends SimpleViewManager<VideoViewWrapper> {
 
   private static final String PROP_STATUS = "status";
   private static final String PROP_USE_NATIVE_CONTROLS = "useNativeControls";
-  private static final String PROP_URI = "uri";
+  private static final String PROP_SOURCE = "source";
   private static final String PROP_NATIVE_RESIZE_MODE = "nativeResizeMode";
 
   enum FullscreenPlayerUpdate {
@@ -97,9 +95,9 @@ public class VideoViewManager extends SimpleViewManager<VideoViewWrapper> {
 
   // Native only props -- set by Video.js
 
-  @ReactProp(name = PROP_URI)
-  public void setUri(final VideoViewWrapper videoViewWrapper, final @Nullable String uri) {
-    videoViewWrapper.getVideoViewInstance().setUri(uri == null ? null : Uri.parse(uri), null, null);
+  @ReactProp(name = PROP_SOURCE)
+  public void setSource(final VideoViewWrapper videoViewWrapper, final @Nullable ReadableMap source) {
+    videoViewWrapper.getVideoViewInstance().setSource(source, null, null);
   }
 
   @ReactProp(name = PROP_NATIVE_RESIZE_MODE, defaultBoolean = false)

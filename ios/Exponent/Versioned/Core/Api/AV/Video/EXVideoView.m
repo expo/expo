@@ -13,6 +13,7 @@
 #import "EXVideoPlayerViewController.h"
 
 static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
+static NSString *const EXVideoSourceURIKeyPath = @"uri";
 
 @interface EXVideoView ()
 
@@ -233,10 +234,10 @@ static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
 
 #pragma mark - Imperative API
 
-- (void)setUri:(NSString *)uri
-    withStatus:(NSDictionary *)initialStatus
-      resolver:(RCTPromiseResolveBlock)resolve
-      rejecter:(RCTPromiseRejectBlock)reject
+- (void)setSource:(NSDictionary *)source
+       withStatus:(NSDictionary *)initialStatus
+         resolver:(RCTPromiseResolveBlock)resolve
+         rejecter:(RCTPromiseRejectBlock)reject
 {
   if (_data) {
     [_statusToSet addEntriesFromDictionary:[_data getStatus]];
@@ -247,7 +248,7 @@ static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
     [_statusToSet addEntriesFromDictionary:initialStatus];
   }
   
-  if (uri == nil) {
+  if (source == nil) {
     if (resolve) {
       resolve([EXAVPlayerData getUnloadedStatus]);
     }
@@ -275,7 +276,7 @@ static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
   };
   
   _data = [[EXAVPlayerData alloc] initWithEXAV:_exAV
-                                       withURL:[NSURL URLWithString:uri]
+                                    withSource:source
                                     withStatus:statusToInitiallySet
                            withLoadFinishBlock:^(BOOL success, NSDictionary *successStatus, NSString *error) {
                              __strong EXVideoView *strongSelf = weakSelf;
@@ -424,14 +425,16 @@ static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
 
 #pragma mark - Prop setters
 
-- (void)setUri:(NSString *)uri
+- (void)setSource:(NSDictionary *)source
 {
-  [self setUri:uri withStatus:nil resolver:nil rejecter:nil];
+  [self setSource:source withStatus:nil resolver:nil rejecter:nil];
 }
 
-- (NSString *)getUri
+- (NSDictionary *)source
 {
-  return _data != nil ? _data.url.absoluteString : @"";
+  return @{
+           EXVideoSourceURIKeyPath: (_data != nil && _data.url != nil) ? _data.url.absoluteString : @""
+           };
 }
 
 - (void)setUseNativeControls:(BOOL)useNativeControls

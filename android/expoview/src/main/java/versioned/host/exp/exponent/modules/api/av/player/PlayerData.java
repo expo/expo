@@ -19,7 +19,8 @@ import versioned.host.exp.exponent.modules.api.av.AudioEventHandler;
 public abstract class PlayerData implements AudioEventHandler {
   static final String STATUS_ANDROID_IMPLEMENTATION_KEY_PATH = "androidImplementation";
   static final String STATUS_IS_LOADED_KEY_PATH = "isLoaded";
-  static final String STATUS_URI_KEY_PATH = "uri";
+  public static final String STATUS_URI_KEY_PATH = "uri";
+  static final String STATUS_OVERRIDING_EXTENSION_KEY_PATH = "overridingExtension";
   static final String STATUS_PROGRESS_UPDATE_INTERVAL_MILLIS_KEY_PATH = "progressUpdateIntervalMillis";
   static final String STATUS_DURATION_MILLIS_KEY_PATH = "durationMillis";
   static final String STATUS_POSITION_MILLIS_KEY_PATH = "positionMillis";
@@ -90,12 +91,17 @@ public abstract class PlayerData implements AudioEventHandler {
     mUri = uri;
   }
 
-  public static PlayerData createUnloadedPlayerData(final AVModule avModule, final Uri uri, final ReadableMap status) {
+  public static PlayerData createUnloadedPlayerData(final AVModule avModule, final ReadableMap source, final ReadableMap status) {
+    final String uriString = source.getString(STATUS_URI_KEY_PATH);
+    final String uriOverridingExtension = source.hasKey(STATUS_OVERRIDING_EXTENSION_KEY_PATH) ? source.getString(STATUS_OVERRIDING_EXTENSION_KEY_PATH) : null;
+    // uriString is guaranteed not to be null (both VideoView.setSource and Sound.loadAsync handle that case)
+    final Uri uri = Uri.parse(uriString);
+
     if (status.hasKey(STATUS_ANDROID_IMPLEMENTATION_KEY_PATH)
         && status.getString(STATUS_ANDROID_IMPLEMENTATION_KEY_PATH).equals(MediaPlayerData.IMPLEMENTATION_NAME)) {
       return new MediaPlayerData(avModule, uri);
     } else {
-      return new SimpleExoPlayerData(avModule, uri);
+      return new SimpleExoPlayerData(avModule, uri, uriOverridingExtension);
     }
   }
 
