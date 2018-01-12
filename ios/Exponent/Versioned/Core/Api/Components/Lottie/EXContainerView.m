@@ -50,7 +50,21 @@
   }
 }
 
-- (void)setSourceJson:(NSDictionary *)json {
+- (void)setResizeMode:(NSString *)resizeMode {
+  if ([resizeMode isEqualToString:@"cover"]) {
+    [self setContentMode:UIViewContentModeScaleAspectFill];
+  } else if ([resizeMode isEqualToString:@"contain"]) {
+    [self setContentMode:UIViewContentModeScaleAspectFit];
+  } else if ([resizeMode isEqualToString:@"center"]) {
+    [self setContentMode:UIViewContentModeCenter];
+  }
+}
+
+- (void)setSourceJson:(NSString *)jsonString {
+  NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+  NSDictionary *json = [NSJSONSerialization JSONObjectWithData:jsonData
+                                                       options:kNilOptions
+                                                         error:nil];
   [self replaceAnimationView:[LOTAnimationView animationFromJSON:json]];
 }
 
@@ -61,6 +75,14 @@
 - (void)play {
   if (_animationView != nil) {
     [_animationView play];
+  }
+}
+
+- (void)playFromFrame:(NSNumber *)startFrame
+              toFrame:(NSNumber *)endFrame {
+  if (_animationView != nil) {
+    [_animationView playFromFrame:startFrame
+                          toFrame:endFrame withCompletion:nil];
   }
 }
 
@@ -80,6 +102,7 @@
   _animationView = next;
   [self addSubview: next];
   [_animationView reactSetFrame:self.frame];
+  [_animationView setContentMode:UIViewContentModeScaleAspectFit];
   [self applyProperties];
 }
 

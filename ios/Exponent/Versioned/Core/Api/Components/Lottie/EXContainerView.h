@@ -27,6 +27,8 @@
 @property (nonatomic, strong) NSString *sourceName;
 
 - (void)play;
+- (void)playFromFrame:(NSNumber *)startFrame
+              toFrame:(NSNumber *)endFrame;
 - (void)reset;
 
 @end
