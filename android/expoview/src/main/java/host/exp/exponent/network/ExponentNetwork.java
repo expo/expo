@@ -118,6 +118,8 @@ public class ExponentNetwork {
   }
 
   public void addInterceptors(OkHttpClient.Builder clientBuilder) {
+    // TODO(janic): Either backport bundled assets from sdk25 or remove
+    // when sdk24 is no longer supported.
     Interceptor bundledAssetsInterceptor = new Interceptor() {
       @Override
       public Response intercept(Chain chain) throws IOException {

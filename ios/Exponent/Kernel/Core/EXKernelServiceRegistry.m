@@ -4,6 +4,7 @@
 #import "EXBranchManager.h"
 #import "EXCachedResourceManager.h"
 #import "EXErrorRecoveryManager.h"
+#import "EXFileSystemManager.h"
 #import "EXGoogleAuthManager.h"
 #import "EXKernelLinkingManager.h"
 #import "EXKernelModuleManager.h"
@@ -16,6 +17,7 @@
 
 @property (nonatomic, strong) EXBranchManager *branchManager;
 @property (nonatomic, strong) EXCachedResourceManager *cachedResourceManager;
+@property (nonatomic, strong) EXFileSystemManager *fileSystemManager;
 @property (nonatomic, strong) EXGoogleAuthManager *googleAuthManager;
 @property (nonatomic, strong) EXErrorRecoveryManager *errorRecoveryManager;
 @property (nonatomic, strong) EXKernelModuleManager *kernelModuleManager;
@@ -42,6 +44,7 @@
     [self screenOrientationManager];
     [self googleAuthManager];
     [self sensorManager];
+    [self fileSystemManager];
   }
   return self;
 }
@@ -76,6 +79,14 @@
     _errorRecoveryManager = [[EXErrorRecoveryManager alloc] init];
   }
   return _errorRecoveryManager;
+}
+
+- (EXFileSystemManager *)fileSystemManager
+{
+  if (!_fileSystemManager) {
+    _fileSystemManager = [[EXFileSystemManager alloc] init];
+  }
+  return _fileSystemManager;
 }
 
 - (EXGoogleAuthManager *)googleAuthManager
@@ -122,7 +133,7 @@
 {
   if (!_allServices) {
     NSMutableDictionary *result = [NSMutableDictionary dictionary];
-    for (id service in @[ self.branchManager, self.cachedResourceManager, self.errorRecoveryManager, self.googleAuthManager, self.kernelModuleManager, self.linkingManager, self.remoteNotificationManager, self.screenOrientationManager, self.sensorManager ]) {
+    for (id service in @[ self.branchManager, self.cachedResourceManager, self.errorRecoveryManager, self.fileSystemManager, self.googleAuthManager, self.kernelModuleManager, self.linkingManager, self.remoteNotificationManager, self.screenOrientationManager, self.sensorManager ]) {
       NSString *className = NSStringFromClass([service class]);
       result[className] = service;
     }

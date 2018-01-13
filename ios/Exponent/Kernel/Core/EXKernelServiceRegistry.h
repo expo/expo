@@ -4,6 +4,7 @@
 
 @class EXBranchManager;
 @class EXErrorRecoveryManager;
+@class EXFileSystemManager;
 @class EXGoogleAuthManager;
 @class EXKernelLinkingManager;
 @class EXKernelModuleManager;
@@ -15,6 +16,7 @@
 // TODO: roll these into a macro in the respective classes instead of defining explicitly here.
 @property (nonatomic, readonly) EXBranchManager *branchManager;
 @property (nonatomic, readonly) EXErrorRecoveryManager *errorRecoveryManager;
+@property (nonatomic, readonly) EXFileSystemManager *fileSystemManager;
 @property (nonatomic, readonly) EXGoogleAuthManager *googleAuthManager;
 @property (nonatomic, readonly) EXKernelModuleManager *kernelModuleManager;
 @property (nonatomic, readonly) EXKernelLinkingManager *linkingManager;

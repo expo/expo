@@ -9,6 +9,13 @@ typedef NS_OPTIONS(unsigned int, EXFileSystemPermissionFlags) {
   EXFileSystemPermissionWrite = 1 << 2,
 };
 
+@protocol EXFileSystemScopedModuleDelegate
+
+- (NSString *)bundleDirectoryForExperienceId:(NSString *)experienceId;
+- (NSArray<NSString *> *)bundledAssetsForExperienceId:(NSString *)experienceId;
+
+@end
+
 @interface EXFileSystem : EXScopedEventEmitter
 
 @property (nonatomic, readonly) NSString *documentDirectory;

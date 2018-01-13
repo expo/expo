@@ -3,9 +3,17 @@
 #import <UIKit/UIKit.h>
 
 #import "EXCachedResource.h"
-#import "EXBundleImageLoader.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
+@protocol EXCachedResourceManagerScopedModuleDelegate
+
+- (id)createCachedResourceWithName:(NSString *)resourceName
+                      resourceType:(NSString *)resourceType
+                         remoteUrl:(NSURL *)url
+                         cachePath:(NSString * _Nullable)cachePath;
+
+@end
 
 /**
  * Used to create instances of EXCachedResource in versioned code.

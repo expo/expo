@@ -152,7 +152,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new MagnetometerUncalibratedModule(reactContext, experienceId));
         nativeModules.add(new NotificationsModule(reactContext, mManifest, mExperienceProperties));
         nativeModules.add(new ContactsModule(reactContext));
-        nativeModules.add(new FileSystemModule(reactContext, scopedContext));
+        nativeModules.add(new FileSystemModule(reactContext, scopedContext, mExperienceProperties));
         nativeModules.add(new LocationModule(reactContext, scopedContext));
         nativeModules.add(new CryptoModule(reactContext));
         nativeModules.add(new ImagePickerModule(reactContext, scopedContext));

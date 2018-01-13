@@ -32,6 +32,7 @@ public class Constants {
   public static String INITIAL_URL = null;
   public static boolean IS_DETACHED = false;
   public static String SHELL_APP_SCHEME = null;
+  public static final String SHELL_APP_EMBEDDED_MANIFEST_PATH = "shell-app-manifest.json";
   public static final String API_HOST = "https://exp.host";
   public static String ABI_VERSIONS;
   public static String SDK_VERSIONS;

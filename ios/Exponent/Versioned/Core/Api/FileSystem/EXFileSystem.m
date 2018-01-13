@@ -39,6 +39,7 @@ NSString * const EXDownloadProgressEventName = @"Exponent.downloadProgress";
 @interface EXFileSystem ()
 
 @property (nonatomic, strong) NSMutableDictionary<NSString *, EXDownloadResumable*> *downloadObjects;
+@property (nonatomic, weak) id<EXFileSystemScopedModuleDelegate> kernelFileSystemDelegate;
 
 @end
 
@@ -61,11 +62,12 @@ EX_DEFINE_SCOPED_MODULE_GETTER(EXFileSystem, fileSystem)
 
 @implementation EXFileSystem
 
-EX_EXPORT_SCOPED_MODULE(ExponentFileSystem, nil);
+EX_EXPORT_SCOPED_MODULE(ExponentFileSystem, FileSystemManager);
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
 {
   if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
+    _kernelFileSystemDelegate = kernelServiceInstance;
     _documentDirectory = [[self class] documentDirectoryForExperienceId:self.experienceId];
     _cachesDirectory = [[self class] cachesDirectoryForExperienceId:self.experienceId];
     _downloadObjects = [NSMutableDictionary dictionary];
@@ -82,9 +84,12 @@ EX_EXPORT_SCOPED_MODULE(ExponentFileSystem, nil);
 
 - (NSDictionary *)constantsToExport
 {
+  NSString *bundleDirectory = [_kernelFileSystemDelegate bundleDirectoryForExperienceId:self.experienceId];
   return @{
     @"documentDirectory": [NSURL fileURLWithPath:_documentDirectory].absoluteString,
     @"cacheDirectory": [NSURL fileURLWithPath:_cachesDirectory].absoluteString,
+    @"bundleDirectory":  bundleDirectory != nil ? [NSURL fileURLWithPath:bundleDirectory].absoluteString : [NSNull null],
+    @"bundledAssets": [_kernelFileSystemDelegate bundledAssetsForExperienceId:self.experienceId] ?: [NSNull null],
   };
 }
 
@@ -572,6 +577,10 @@ RCT_REMAP_METHOD(downloadResumablePauseAsync,
   }
   if ([path isEqualToString:_cachesDirectory])  {
     return EXFileSystemPermissionRead | EXFileSystemPermissionWrite;
+  }
+  NSString *bundleDirectory = [_kernelFileSystemDelegate bundleDirectoryForExperienceId:self.experienceId];
+  if (bundleDirectory != nil && [path hasPrefix:[bundleDirectory stringByAppendingString:@"/"]]) {
+    return EXFileSystemPermissionRead;
   }
   return EXFileSystemPermissionNone;
 }

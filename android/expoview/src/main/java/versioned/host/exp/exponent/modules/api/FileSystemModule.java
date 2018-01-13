@@ -2,6 +2,7 @@
 
 package versioned.host.exp.exponent.modules.api;
 
+import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -16,6 +17,8 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -31,12 +34,14 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 import com.facebook.react.modules.network.OkHttpClientProvider;
 
+import host.exp.exponent.Constants;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.utils.ExpFileUtils;
 import host.exp.exponent.utils.ScopedContext;
@@ -62,13 +67,18 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
   private static final long MIN_EVENT_DT_MS = 100;
   private static final String HEADER_KEY = "headers";
 
-  private ScopedContext mScopedContext;
+  private final ScopedContext mScopedContext;
+  private final Map<String, Object> mExperienceProperties;
 
   private final Map<String, DownloadResumable> mDownloadResumableMap = new HashMap<>();
 
-  public FileSystemModule(ReactApplicationContext reactContext, ScopedContext scopedContext) {
+  public FileSystemModule(
+      ReactApplicationContext reactContext,
+      ScopedContext scopedContext,
+      Map<String, Object>  experienceProperties) {
     super(reactContext);
     mScopedContext = scopedContext;
+    mExperienceProperties = experienceProperties;
     try {
       ExpFileUtils.ensureDirExists(mScopedContext.getFilesDir());
       ExpFileUtils.ensureDirExists(mScopedContext.getCacheDir());
@@ -87,11 +97,38 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
     Map<String, Object> constants = new HashMap<>();
     constants.put("documentDirectory", Uri.fromFile(mScopedContext.getFilesDir()).toString() + "/");
     constants.put("cacheDirectory", Uri.fromFile(mScopedContext.getCacheDir()).toString() + "/");
+    constants.put("bundleDirectory", "asset:///");
+    constants.put("bundledAssets", getBundledAssets());
+
     return constants;
   }
 
   private enum Permission {
     READ, WRITE,
+  }
+
+  private WritableArray getBundledAssets() {
+    // Fastpath, only standalone apps support bundled assets.
+    if (!ConstantsModule.getAppOwnership(mExperienceProperties).equals("standalone")) {
+      return null;
+    }
+    try {
+      InputStream inputStream = getReactApplicationContext().getAssets().open(Constants.SHELL_APP_EMBEDDED_MANIFEST_PATH);
+      String jsonString = IOUtils.toString(inputStream);
+      JSONObject manifest = new JSONObject(jsonString);
+      JSONArray bundledAssetsJSON = manifest.getJSONArray("bundledAssets");
+      if (bundledAssetsJSON == null) {
+        return null;
+      }
+      WritableArray result = Arguments.createArray();
+      for (int i = 0; i < bundledAssetsJSON.length(); i++) {
+        result.pushString(bundledAssetsJSON.getString(i));
+      }
+      return result;
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      return null;
+    }
   }
 
   private File uriToFile(Uri uri) throws IOException {
