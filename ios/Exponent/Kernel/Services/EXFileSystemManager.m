@@ -20,12 +20,13 @@ BOOL EXIsShellExperience(NSString *experienceId) {
 
 - (NSArray<NSString *> *)bundledAssetsForExperienceId:(NSString *)experienceId
 {
+  if (!EXIsShellExperience(experienceId)) {
+    return nil;
+  }
+  
   static NSArray<NSString *> *bundledAssets = nil;
   static dispatch_once_t once;
   dispatch_once(&once, ^{
-    if (!EXIsShellExperience(experienceId)) {
-      return;
-    }
     NSString *manifestBundlePath = [[NSBundle mainBundle] pathForResource:kEXShellManifestResourceName ofType:@"json"];
     NSData *data = [NSData dataWithContentsOfFile:manifestBundlePath];
     if (data.length == 0) {
