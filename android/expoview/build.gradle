@@ -192,8 +192,6 @@ dependencies {
   compile 'host.exp:reactandroid-abi21:1.0.0'
   compile 'host.exp:reactandroid-abi20:1.0.0'
   compile 'host.exp:reactandroid-abi19:1.0.0'
-  compile 'host.exp:reactandroid-abi18:1.0.0'
-  compile 'host.exp:reactandroid-abi17:1.0.0'
 
   // React native dependencies
   // We use a different version of appcompat
