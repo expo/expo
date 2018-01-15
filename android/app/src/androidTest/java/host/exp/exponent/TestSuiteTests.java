@@ -175,13 +175,6 @@ public class TestSuiteTests extends BaseTestClass {
   }
 
   @Test
-  @ExpoTestSuiteTest
-  @ExpoSdkVersionTest("18.0.0")
-  public void sdk18TestSuite() {
-    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-18-0-0", false);
-  }
-
-  @Test
   @ExpoAlwaysPassThroughFilter
   public void junitIsSillyAndWillFailIfThereIsntOneTestRunPerFile() {}
 }
