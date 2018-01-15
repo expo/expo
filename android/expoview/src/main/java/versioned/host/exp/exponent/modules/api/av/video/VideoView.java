@@ -27,7 +27,9 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
   private final Runnable mMediaControllerUpdater = new Runnable() {
     @Override
     public void run() {
-      mMediaController.updateControls();
+      if (mMediaController != null) {
+        mMediaController.updateControls();
+      }
     }
   };
 
