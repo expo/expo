@@ -52,6 +52,7 @@
     Building Standalone Apps: /versions/v24.0.0/guides/building-standalone-apps.html
     Deploying to App Stores: /versions/v24.0.0/guides/app-stores.html
     Release Channels: /versions/v24.0.0/guides/release-channels.html
+    Advanced Release Channels: /versions/unversioned/guides/advanced-release-channels.html
 - title: Tutorials
   index: /versions/v24.0.0/tutorials/index.html
   links:
