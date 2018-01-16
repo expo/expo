@@ -241,8 +241,10 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     super.onNewIntent(intent);
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      // TODO (ben): Not sure this ever actually gets called.
-      handleUri(intent.getData().toString());
+      Uri uri = intent.getData();
+      if (uri != null) {
+        handleUri(uri.toString());
+      }
     } else {
       // Always just restart this activity. Don't call Activity.recreate() because that uses
       // the old savedInstanceState.
