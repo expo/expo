@@ -99,7 +99,15 @@ NSNotificationName const kEXErrorRecoverySetPropsNotification = @"EXErrorRecover
     record.isRecovering = YES;
   }
   if (record) {
-    record.error = error;
+    // if this record already shows an error,
+    // and the new error is about AppRegistry,
+    // don't override the previous error message.
+    if (record.error &&
+        [error.localizedDescription rangeOfString:@"AppRegistry is not a registered callable module"].length != 0) {
+      DDLogWarn(@"Ignoring misleading error: %@", error);
+    } else {
+      record.error = error;
+    }
   }
 }
 
