@@ -70,7 +70,7 @@ RCT_EXPORT_METHOD(manipulate:(NSString *)uri
       }
       
       CGSize requestedSize = CGSizeMake(requestedWidth, requestedHeight);
-      UIGraphicsBeginImageContextWithOptions(requestedSize, NO, 0.0);
+      UIGraphicsBeginImageContextWithOptions(requestedSize, NO, 1.0);
         [image drawInRect:CGRectMake(0, 0, requestedWidth, requestedHeight)];
         image = UIGraphicsGetImageFromCurrentImageContext();
       UIGraphicsEndImageContext();
@@ -162,8 +162,8 @@ RCT_EXPORT_METHOD(manipulate:(NSString *)uri
   NSString *filePath = [fileURL absoluteString];
   NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
   response[@"uri"] = filePath;
-  response[@"width"] = @(image.size.width);
-  response[@"height"] = @(image.size.height);
+  response[@"width"] = @(CGImageGetWidth(image.CGImage));
+  response[@"height"] = @(CGImageGetHeight(image.CGImage));
   if (saveOptions[@"base64"]) {
     response[@"base64"] = [imageData base64EncodedStringWithOptions:0];
   }
