@@ -20,6 +20,10 @@ public class ExpFileUtils {
 
   // http://stackoverflow.com/a/38858040/1771921
   public static Uri uriFromFile(File file) {
+    return Uri.fromFile(file);
+  }
+
+  public static Uri contentUriFromFile(File file) {
     try {
       return FileProvider.getUriForFile(Exponent.getInstance().getApplication(), Exponent.getInstance().getApplication().getPackageName() + ".provider", file);
     } catch (Exception e) {

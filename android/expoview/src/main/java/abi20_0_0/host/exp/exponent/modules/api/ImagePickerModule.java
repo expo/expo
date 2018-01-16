@@ -137,7 +137,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
       promise.reject(new IOException("Could not create temporary image file."));
       return;
     }
-    mCameraCaptureURI = ExpFileUtils.uriFromFile(imageFile);
+    mCameraCaptureURI = ExpFileUtils.contentUriFromFile(imageFile);
     cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCameraCaptureURI);
     mPromise = promise;
     Exponent.getInstance().getCurrentActivity().startActivityForResult(cameraIntent, REQUEST_LAUNCH_CAMERA);

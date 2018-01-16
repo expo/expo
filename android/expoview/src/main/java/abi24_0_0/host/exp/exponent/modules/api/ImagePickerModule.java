@@ -148,7 +148,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
       promise.reject(new IOException("Could not create temporary image file."));
       return;
     }
-    mCameraCaptureURI = ExpFileUtils.uriFromFile(imageFile);
+    mCameraCaptureURI = ExpFileUtils.contentUriFromFile(imageFile);
 
     // fix for Permission Denial in Android < 21
     List<ResolveInfo> resolvedIntentActivities = Exponent.getInstance().getApplication()
