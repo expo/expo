@@ -81,7 +81,7 @@ public class MailComposerModule extends ReactContextBaseJavaModule implements Li
       ReadableArray requestedAttachments = options.getArray("attachments");
       for (int i = 0; i < requestedAttachments.size(); i++) {
         File attachmentFile = new File(Uri.parse(options.getArray("attachments").getString(0)).getPath());
-        attachments.add(ExpFileUtils.uriFromFile(attachmentFile));
+        attachments.add(ExpFileUtils.contentUriFromFile(attachmentFile));
       }
     }
 
