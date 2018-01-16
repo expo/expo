@@ -7,8 +7,6 @@
 // if the app crashes and it has not yet been 5 seconds since it loaded, don't auto refresh.
 #define EX_AUTO_REFRESH_BUFFER_BASE_SECONDS 5.0
 
-NSNotificationName const kEXErrorRecoverySetPropsNotification = @"EXErrorRecoverySetPropsNotification";
-
 @interface EXErrorRecoveryRecord : NSObject
 
 @property (nonatomic, assign) BOOL isRecovering;
@@ -38,17 +36,8 @@ NSNotificationName const kEXErrorRecoverySetPropsNotification = @"EXErrorRecover
     _reloadBufferDepth = 0;
     _dtmAnyExperienceLoaded = [NSDate date];
     _experienceInfo = [NSMutableDictionary dictionary];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(_handleRecoveryPropsNotification:)
-                                                 name:kEXErrorRecoverySetPropsNotification
-                                               object:nil];
   }
   return self;
-}
-
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)setDeveloperInfo:(NSDictionary *)developerInfo forExperienceid:(NSString *)experienceId
@@ -189,12 +178,6 @@ NSNotificationName const kEXErrorRecoverySetPropsNotification = @"EXErrorRecover
     }
   }
   return result;
-}
-
-- (void)_handleRecoveryPropsNotification:(NSNotification *)notif
-{
-  NSDictionary *params = notif.userInfo;
-  [self setDeveloperInfo:params[@"props"] forExperienceid:params[@"experienceId"]];
 }
 
 - (NSTimeInterval)reloadBufferSeconds

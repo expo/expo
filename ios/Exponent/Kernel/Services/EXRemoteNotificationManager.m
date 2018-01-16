@@ -8,8 +8,6 @@
 
 #import <React/RCTUtils.h>
 
-NSNotificationName kEXKernelGetPushTokenNotification = @"EXKernelGetPushTokenNotification";
-
 NSString * const kEXCurrentAPNSTokenDefaultsKey = @"EXCurrentAPNSTokenDefaultsKey";
 
 @implementation NSData (EXRemoteNotification)
@@ -39,10 +37,6 @@ NSString * const kEXCurrentAPNSTokenDefaultsKey = @"EXCurrentAPNSTokenDefaultsKe
     _isPostingToken = NO;
     _isKernelJSLoaded = NO;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_onKernelJSLoaded) name:kEXKernelJSIsLoadedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(_handleGetPushToken:)
-                                                 name:kEXKernelGetPushTokenNotification
-                                               object:nil];
   }
   return self;
 }
@@ -150,17 +144,6 @@ NSString * const kEXCurrentAPNSTokenDefaultsKey = @"EXCurrentAPNSTokenDefaultsKe
         weakSelf.isPostingToken = NO;
       }];
     }
-  }
-}
-
-- (void)_handleGetPushToken: (NSNotification *)notif
-{
-  if (notif && notif.userInfo) {
-    void (^success)(NSDictionary *) = [notif.userInfo objectForKey:@"onSuccess"];
-    void (^failure)(NSString *) = [notif.userInfo objectForKey:@"onFailure"];
-    [self _getExpoPushTokenForExperienceId:[notif.userInfo objectForKey:@"experienceId"]
-                                   success:success
-                                   failure:failure];
   }
 }
 
