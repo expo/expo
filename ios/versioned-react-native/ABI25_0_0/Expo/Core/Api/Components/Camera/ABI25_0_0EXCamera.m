@@ -3,7 +3,6 @@
 #import "ABI25_0_0EXImageUtils.h"
 #import "ABI25_0_0EXCameraManager.h"
 #import "ABI25_0_0EXCameraPermissionRequester.h"
-#import "ABI25_0_0EXFaceEncoder.h"
 #import "ABI25_0_0EXFileSystem.h"
 #import "ABI25_0_0EXUnversioned.h"
 #import "ABI25_0_0EXUtil.h"

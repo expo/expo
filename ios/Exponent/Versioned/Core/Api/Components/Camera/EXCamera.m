@@ -3,7 +3,6 @@
 #import "EXImageUtils.h"
 #import "EXCameraManager.h"
 #import "EXCameraPermissionRequester.h"
-#import "EXFaceEncoder.h"
 #import "EXFileSystem.h"
 #import "EXUnversioned.h"
 #import "EXUtil.h"
