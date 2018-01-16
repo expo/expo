@@ -6,15 +6,6 @@
 #import "EXReactAppManager.h"
 #import "EXUtil.h"
 
-FOUNDATION_EXPORT NSNotificationName kEXKernelRefreshForegroundTaskNotification DEPRECATED_ATTRIBUTE;
-
-/**
- * Post this notification with to indicate that you want the kernel
- * to try and open that link. Parameters in the notification may include:
- *   url - the url to try and open.
- */
-FOUNDATION_EXPORT NSNotificationName kEXKernelOpenUrlNotification DEPRECATED_MSG_ATTRIBUTE("Use `openUrl`");
-
 @interface EXKernelLinkingManager : NSObject
   <EXLinkingManagerScopedModuleDelegate, EXUtilScopedModuleDelegate>
 

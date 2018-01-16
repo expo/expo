@@ -5,8 +5,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-FOUNDATION_EXPORT NSNotificationName kEXDidBeginOAuthFlowNotification DEPRECATED_ATTRIBUTE;
-
 @interface EXGoogleAuthManager : NSObject <EXGoogleScopedModuleDelegate>
 
 - (BOOL)application:(UIApplication *)application

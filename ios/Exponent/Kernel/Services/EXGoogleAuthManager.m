@@ -5,8 +5,6 @@
 #import <GoogleSignIn/GoogleSignIn.h>
 #import <AppAuth.h>
 
-NSNotificationName kEXDidBeginOAuthFlowNotification = @"EXDidBeginOAuthFlow";
-
 @interface EXGoogleAuthManager ()
 
 @property (nonatomic, nullable, strong) id<OIDAuthorizationFlowSession> currentAuthorizationFlow;
@@ -14,17 +12,6 @@ NSNotificationName kEXDidBeginOAuthFlowNotification = @"EXDidBeginOAuthFlow";
 @end
 
 @implementation EXGoogleAuthManager
-
-- (instancetype)init
-{
-  if (self = [super init]) {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(_onBeginOAuthFlow:)
-                                                 name:kEXDidBeginOAuthFlowNotification
-                                               object:nil];
-  }
-  return self;
-}
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(nullable NSString *)sourceApplication annotation:(id)annotation
 {
@@ -46,13 +33,6 @@ NSNotificationName kEXDidBeginOAuthFlowNotification = @"EXDidBeginOAuthFlow";
 - (void)googleModule:(__unused id)scopedGoogleModule didBeginOAuthFlow:(id)authorizationFlowSession
 {
   _currentAuthorizationFlow = authorizationFlowSession;
-}
-
-#pragma mark - internal
-
-- (void)_onBeginOAuthFlow:(NSNotification *)notif
-{
-  _currentAuthorizationFlow = notif.userInfo[@"authorizationFlow"];
 }
 
 @end

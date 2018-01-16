@@ -7,8 +7,6 @@
 #import "EXErrorRecovery.h"
 #import "EXKernelService.h"
 
-FOUNDATION_EXPORT NSNotificationName const kEXErrorRecoverySetPropsNotification DEPRECATED_ATTRIBUTE;
-
 @interface EXErrorRecoveryManager : NSObject
   <EXKernelService, EXErrorRecoveryScopedModuleDelegate>
 

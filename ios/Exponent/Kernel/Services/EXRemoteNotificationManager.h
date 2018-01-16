@@ -2,8 +2,6 @@
 
 #import "EXNotifications.h"
 
-FOUNDATION_EXPORT NSNotificationName kEXKernelGetPushTokenNotification DEPRECATED_ATTRIBUTE;
-
 @interface NSData (EXRemoteNotification)
 
 - (NSString *)apnsTokenString;

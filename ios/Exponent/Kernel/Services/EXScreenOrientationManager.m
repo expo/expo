@@ -10,22 +10,6 @@ NSNotificationName kEXChangeForegroundTaskSupportedOrientationsNotification = @"
 
 @implementation EXScreenOrientationManager
 
-- (instancetype)init
-{
-  if (self = [super init]) {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(_changeSupportedOrientations:)
-                                                 name:kEXChangeForegroundTaskSupportedOrientationsNotification
-                                               object:nil];
-  }
-  return self;
-}
-
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 - (void)setSupportInterfaceOrientations:(UIInterfaceOrientationMask)supportedInterfaceOrientations forExperienceId:(NSString *)experienceId
 {
   EXKernelBridgeRegistry *bridgeRegistry = [EXKernel sharedInstance].bridgeRegistry;
@@ -70,12 +54,6 @@ NSNotificationName kEXChangeForegroundTaskSupportedOrientationsNotification = @"
 didChangeSupportedInterfaceOrientations:(UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
   [self setSupportInterfaceOrientations:supportedInterfaceOrientations forExperienceId:((EXScopedBridgeModule *)scopedOrientationModule).experienceId];
-}
-
-- (void)_changeSupportedOrientations:(NSNotification *)notification
-{
-  NSNumber *orientationNumber = notification.userInfo[@"orientation"];
-  [self setSupportedInterfaceOrientationsForForegroundExperience:(UIInterfaceOrientationMask)[orientationNumber longValue]];
 }
 
 @end

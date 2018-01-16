@@ -12,9 +12,6 @@
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <React/RCTBridge+Private.h>
 
-NSNotificationName kEXKernelOpenUrlNotification = @"EXKernelOpenUrlNotification";
-NSNotificationName kEXKernelRefreshForegroundTaskNotification = @"EXKernelRefreshForegroundTaskNotification";
-
 @interface EXKernelLinkingManager ()
 
 @property (nonatomic, weak) EXReactAppManager *appManagerToRefresh;
@@ -22,26 +19,6 @@ NSNotificationName kEXKernelRefreshForegroundTaskNotification = @"EXKernelRefres
 @end
 
 @implementation EXKernelLinkingManager
-
-- (instancetype)init
-{
-  if (self = [super init]) {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(_onKernelOpenUrl:)
-                                                 name:kEXKernelOpenUrlNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(_onRefreshForegroundTaskNotif:)
-                                                 name:kEXKernelRefreshForegroundTaskNotification
-                                               object:nil];
-  }
-  return self;
-}
-
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
 
 - (void)openUrl:(NSString *)urlString isUniversalLink:(BOOL)isUniversalLink
 {
@@ -143,16 +120,6 @@ NSNotificationName kEXKernelRefreshForegroundTaskNotification = @"EXKernelRefres
 }
 
 #pragma mark - internal
-
-- (void)_onRefreshForegroundTaskNotif: (NSNotification *)notif
-{
-  [self _refreshForegroundTaskAndValidateBridge:notif.userInfo[@"bridge"]];
-}
-
-- (void)_onKernelOpenUrl: (NSNotification *)notif
-{
-  [self openUrl:notif.userInfo[@"url"] isUniversalLink:NO];
-}
 
 - (void)_refreshForegroundTaskAndValidateBridge:(id)bridge
 {
