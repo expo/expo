@@ -12,10 +12,8 @@
 #import <ReactABI25_0_0/ABI25_0_0RCTUtils.h>
 #import <ReactABI25_0_0/UIView+ReactABI25_0_0.h>
 #import <AVFoundation/AVFoundation.h>
-#import <GoogleMobileVision/GoogleMobileVision.h>
-#import <GoogleMVDataOutput/GoogleMVDataOutput.h>
 
-@interface ABI25_0_0EXCamera ()<GMVDataOutputDelegate>
+@interface ABI25_0_0EXCamera ()
 
 @property (nonatomic, weak) ABI25_0_0RCTBridge *bridge;
 
@@ -737,28 +735,6 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
                        @"faces": faces
                        });
   }
-}
-
-# pragma mark - Utilities
-
-+ (NSDictionary *)getDefaultFaceDetectorOptions
-{
-  if (defaultFaceDetectorOptions == nil) {
-    [self initDefaultFaceDetectorOptions];
-  }
-  
-  return defaultFaceDetectorOptions;
-}
-
-+ (void)initDefaultFaceDetectorOptions
-{
-  defaultFaceDetectorOptions = @{
-                                 GMVDetectorFaceTrackingEnabled : @(YES),
-                                 GMVDetectorFaceMode : @(GMVDetectorFaceFastMode),
-                                 GMVDetectorFaceLandmarkType : @(GMVDetectorFaceLandmarkNone),
-                                 GMVDetectorFaceClassificationType : @(GMVDetectorFaceClassificationNone),
-                                 GMVDetectorFaceMinSize : @(0.15)
-                                 };
 }
 
 @end
