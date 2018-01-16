@@ -78,22 +78,22 @@ public class ContactsModule extends ReactContextBaseJavaModule {
     );
     if (cursor != null) {
       try {
-        cursor.move(pageOffset);
         int currentIndex = 0;
         Set<Long> ids = new HashSet<>();
 
         final int contactIdIndex = cursor.getColumnIndex(Contacts._ID);
         while (cursor.moveToNext()) {
-          if (currentIndex >= pageSize) {
-            break;
-          }
-
-          WritableMap contact = Arguments.createMap();
           long id = cursor.getLong(contactIdIndex);
 
           if (!ids.contains(id)) {
             ids.add(id);
 
+            if (currentIndex < pageOffset || currentIndex >= pageSize + pageOffset) {
+              currentIndex++;
+              continue;
+            }
+
+            WritableMap contact = Arguments.createMap();
             contact.putString("id", String.valueOf(id));
 
             contact = addIdentityFromContentResolver(fieldsSet, cr, contact, id);
