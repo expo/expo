@@ -1,1 +1,1 @@
-This version adds support for React Native 0.51.
+This version adds support for React Native 0.52.
