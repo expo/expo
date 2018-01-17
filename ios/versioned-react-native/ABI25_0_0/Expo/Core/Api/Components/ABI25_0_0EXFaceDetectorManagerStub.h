@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIKit.h>
-#import "ABI25_0_0EXCamera.h"
 
 @protocol ABI25_0_0EXFaceDetectorDelegate
 - (void)onFacesDetected:(NSArray<NSDictionary *> *)faces;
