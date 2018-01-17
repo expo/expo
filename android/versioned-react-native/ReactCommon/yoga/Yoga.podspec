@@ -1,7 +1,7 @@
 package = JSON.parse(File.read(File.expand_path('../../package.json', __dir__)))
 version = package['version']
 
-source = { :git => ENV['INSTALL_YOGA_FROM_LOCATION'] || 'https://github.abi24_0_0/com/facebook/react-native.git' }
+source = { :git => ENV['INSTALL_YOGA_FROM_LOCATION'] || 'https://github.abi25_0_0/com/facebook/react-native.git' }
 if version == '1000.0.0'
   # This is an unpublished version, use the latest commit hash of the react-native repo, which we’re presumably in.
   source[:commit] = `git rev-parse HEAD`.strip
@@ -29,7 +29,7 @@ Pod::Spec.new do |spec|
       '-fexceptions',
       '-Wall',
       '-Werror',
-      '-std=c11',
+      '-std=c++1y',
       '-fPIC'
   ]
 
@@ -38,7 +38,7 @@ Pod::Spec.new do |spec|
 
   # Set this environment variable when not using the `:path` option to install the pod.
   # E.g. when publishing this spec to a spec repo.
-  source_files = 'yoga/**/*.{c,h}'
+  source_files = 'yoga/**/*.{cpp,h}'
   source_files = File.join('ReactCommon/yoga', source_files) if ENV['INSTALL_YOGA_WITHOUT_PATH_OPTION']
   spec.source_files = source_files
 end
