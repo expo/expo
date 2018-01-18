@@ -10,7 +10,7 @@ There are three main steps to wiring up push notifications: sending a user's Exp
 
 ## 1. Save the user's Expo Push Token on your server
 
-In order to send a push notification to somebody, we need to know about their device. Sure, we know our user's account information, but Apple, Google, and Expo do not understand what devices correspond to "Brent" in your proprietary user account system. Expo takes care of identifying your device with Apple and Google through the Expo push token, so all we need to do is send this to your server so you can associate it with the user account and use it in the future for sending push notifications.![Diagram explaining saving tokens](./saving-token.png)
+In order to send a push notification to somebody, we need to know about their device. Sure, we know our user's account information, but Apple, Google, and Expo do not understand what devices correspond to "Brent" in your proprietary user account system. Expo takes care of identifying your device with Apple and Google through the Expo push token, which is unique each time an app is installed on a device. All we need to do is send this token to your server so you can associate it with the user account and use it in the future for sending push notifications.![Diagram explaining saving tokens](./saving-token.png)
 
 ```javascript
 import { Permissions, Notifications } from 'expo';
