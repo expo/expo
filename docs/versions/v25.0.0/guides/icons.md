@@ -6,9 +6,7 @@ As trendy as it is these days, not every app has to use emoji for all icons 😳
 
 ## @expo/vector-icons
 
-This library is installed by default on the template project that you create through XDE. (If you're adding it to an existing project, you'll need to follow the special instructions in [Existing Projects](#for-existing-projects) below). It includes eight icon sets, you can browse all of the icons using the [@expo/vector-icons directory](https://expo.github.io/vector-icons/).
-
-![](./vector-icons-directory.png)
+This library is installed by default on the template project that you create through XDE or exp -- it is part of the `expo` package. It includes popular icon sets and you can browse all of the icons using the [@expo/vector-icons directory](https://expo.github.io/vector-icons/).
 
 ```javascript
 import React from 'react';
@@ -110,3 +108,5 @@ export default class SlackIcon extends React.Component {
 Let's assume that our `SlackIcon` class is located in `my-project/components/SlackIcon.js`, and our icon images are in `my-project/assets/images`, in order to refer to the image we use require and include the relative path. You can provide versions of your icon at various pixel densities and the appropriate image will be automatically used for you. In this example, we actually have `slack-icon@2x.png` and `slack-icon@3x.png`, so if I view this on an iPhone 6s the image I will see is `slack-icon@3x.png`. More on this in the [Images guide in the react-native documentation](https://facebook.github.io/react-native/docs/images.html#static-image-resources).
 
 We also set the `fadeDuration` (an Android specific property) to `0` because we usually want the icon to appear immediately rather than fade in over several hundred milliseconds.
+
+
