@@ -19,14 +19,14 @@ To enable background JS downloads:
 
 By default, all of your assets (images, fonts, etc.) are [uploaded to Expo's CDN](./assets.html) when you publish updates to your app, which allows you to update them over the air. Once they're downloaded, you can [cache them](./preloading-and-caching-assets.html) so you don't need to download them a second time. If you publish changes, the cache will be invalidated and the changed version will be downloaded.
 
-## Bundle your images inside your standalone binary
+## Bundle your assets inside your standalone binary
 
-Expo can bundle images into your standalone binary during the build process so that they will be available immediately, even if the user has never run your app before. This is important if:
+Expo can bundle assets into your standalone binary during the build process so that they will be available immediately, even if the user has never run your app before. This is important if:
 
 - Your users may not have internet the first time they open your app, or
 - If your app relies on a nontrivial amount of assets for the very first screen to function properly.
 
-To bundle images in your binary, use the [assetBundlePatterns](./configuration.html) key in `app.json` to provide a list of image paths in your project directory:
+To bundle assets in your binary, use the [assetBundlePatterns](./configuration.html) key in `app.json` to provide a list of paths in your project directory:
 
 ```
 "assetBundlePatterns": [
@@ -36,7 +36,7 @@ To bundle images in your binary, use the [assetBundlePatterns](./configuration.h
 
 Images with paths matching the given patterns will be bundled into your native binaries next time you run `exp build`.
 
-> **Note:** Bundling assets only works for images right now. We're working on adding support for other types of assets, such as fonts and videos. Also, this behavior does not apply to detached ExpoKit projects. We're working on that too.
+> **Note:** This behavior does not apply to detached ExpoKit projects. We're working on that.
 
 ## Listen for changes in network availability
 
