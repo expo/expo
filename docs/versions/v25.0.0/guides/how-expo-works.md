@@ -13,7 +13,7 @@ You can also browse the source, fork, hack on and contribute to the Expo tooling
 
 ## Serving an Expo project for local development
 
-There are two pieces here: the Expo app and the Expo development tool (either XDE or `exp` CLI). We'll just assume XDE here for simplicity of naming. When you open an app up in XDE, it spawns and manages two server processes in the background: the Expo Development Server and the React Native Packager Server.
+There are two pieces here: the Expo app and the Expo development tool (either XDE or `exp` CLI). We'll assume XDE here for simplicity of naming. When you open an app up in XDE, it spawns and manages two server processes in the background: the Expo Development Server and the React Native Packager Server.
 
 ![](./fetch-app-from-xde.png)
 
