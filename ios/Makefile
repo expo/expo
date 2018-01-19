@@ -7,6 +7,7 @@ build-archive:
 		template-files \
 		exponent-view-template \
 		shellAppBase-builds \
+		shellAppWorkspaces \
 		ios \
 		tools-public \
 		tools
