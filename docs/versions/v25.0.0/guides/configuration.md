@@ -310,6 +310,8 @@ The following is a list of properties that are available for you under the `"exp
       - `CAMERA`
       - `MANAGE_DOCUMENTS`
       - `READ_CONTACTS`
+      - `READ_CALENDAR`
+      - `WRITE_CALENDAR`
       - `READ_EXTERNAL_STORAGE`
       - `READ_INTERNAL_STORAGE`
       - `READ_PHONE_STATE`
