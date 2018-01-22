@@ -80,6 +80,7 @@
     BlurView: /versions/unversioned/sdk/blur-view.html
     Branch: /versions/unversioned/sdk/branch.html
     Brightness: /versions/unversioned/sdk/brightness.html
+    Calendar: /versions/unversioned/sdk/calendar.html
     Camera: /versions/unversioned/sdk/camera.html
     Constants: /versions/unversioned/sdk/constants.html
     Contacts: /versions/unversioned/sdk/contacts.html
