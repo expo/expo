@@ -14,6 +14,8 @@ XDE currently doesn't include an option for building a standalone app, so we'll 
 
 If you haven't used `exp` before, the first thing you'll need to do is login with your Expo account using `exp login`.
 
+**Windows users** must have WSL enabled. We recommend picking Ubuntu from the Windows Store. Be sure to Launch Ubuntu at least once. After that, use an Admin powershell to run: `Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux`
+
 ## 2. Configure app.json
 
 ```javascript
@@ -34,24 +36,16 @@ If you haven't used `exp` before, the first thing you'll need to do is login wit
  }
 ```
 
-The iOS `bundleIdentifier` and Android `package` fields use reverse DNS notation, but don't have to be related to a domain. Replace `"com.yourcompany.yourappname"` with whatever makes sense for your app.
+- The iOS `bundleIdentifier` and Android `package` fields use reverse DNS notation, but don't have to be related to a domain. Replace `"com.yourcompany.yourappname"` with whatever makes sense for your app.
+- You're probably not surprised that `name`, `icon` and `version` are required.
+- `slug` is the url name that your app's JavaScript is published to. For example: `expo.io/@community/native-component-list`, where `community` is my username and `native-component-list` is the slug.
+- The `sdkVersion` tells Expo what Expo runtime version to use, which corresponds to a React Native version. Although `"XX.0.0"` is listed in the example, you already have an `sdkVersion` in your app.json and should not change it except when you want to update to a new version of Expo.
 
-You're probably not surprised that `name`, `icon` and `version` are required, but if you haven't used Expo much you might be confused by `slug` and `sdkVersion`. `slug` is the url name that your app's JavaScript is published to, for example `exp.host/@community/native-component-list`, where `community` is my username and `native-component-list` is the slug. The `sdkVersion` tells Expo what Expo runtime version to use, which corresponds to a React Native version. Although `"XX.0.0"` is listed in the example, you already have an `sdkVersion` in your app.json and should not change it except when you want to update to a new version of Expo.
-
-There are other options you might want to add to `app.json`. We have only covered what is required. For example, some people like to configure their own build number, linking scheme, and more. We highly recommend you read through [Configuration with app.json](configuration.html) for the full spec.
-
-> **Note**: iOS standalone apps [default](https://developer.apple.com/documentation/uikit/uibarstyle/uibarstyledefault) the status bar text color to white. But when developing within the Expo app, the default is black since the Expo app itself has a black status bar. Users are often surprised that their standalone apps suddenly have white status bars. In order to keep it black, you'll need to use a `<StatusBar barStyle="dark-content" />` component. See [StatusBar docs](https://facebook.github.io/react-native/docs/statusbar.html) for more information.
-
+There are other options you might want to add to `app.json`. We have only covered what is required. For example, some people like to configure their own build number, linking scheme, and more. We highly recommend you read through [Configuration with app.json](configuration.html) for the full spec. This is also your last chance to double check our [recommendations](./app-stores.html) for App Store metadata.
 
 ## 3. Start the build
 
-> Note for windows users, make sure you have WSL enabled. We recommend
-> picking Ubuntu from the Windows Store, be sure to Launch Ubuntu at
-> least once. Once you have that done, run 
-> in an Admin powershell: `Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux`
-
--   Run `exp start` in your app directory to boot up the Expo packager. This is necessary because during the build process your app will be republished to ensure it is the latest version.
--   Once the app has started, run `exp build:android` or `exp build:ios`.
+Run `exp build:android` or `exp build:ios`. If you don't already have a packager running for this project, `exp` will start one for you.
 
 ### If you choose to build for Android
 
@@ -98,7 +92,7 @@ do need to upload your own certificates, we recommend following
 
 ## 4. Wait for it to finish building
 
-This will take a few minutes, you can check up on it by running `exp build:status`. When it's done, you'll see the url of a `.apk` (Android) or `.ipa` (iOS) file -- this is your app. Copy and paste the link into your browser to download the file.
+We'll print a url you can visit (such as `expo.io/builds/some-unique-id`) to watch your build logs. Alternatively, you can check up on it by running `exp build:status`. When it's done, you'll see the url of a `.apk` (Android) or `.ipa` (iOS) file -- this is your app. Copy and paste the link into your browser to download the file.
 
 > **Note:** We enable bitcode for iOS, so the `.ipa` files for iOS are much larger than the eventual App Store download available to your users. For more information, see [App Thinning](https://developer.apple.com/library/content/documentation/IDEs/Conceptual/AppDistributionGuide/AppThinning/AppThinning.html).
 
@@ -106,7 +100,7 @@ This will take a few minutes, you can check up on it by running `exp build:statu
 
 -   You can drag and drop the `.apk` into your Android emulator. This is the easiest way to test out that the build was successful. But it's not the most satisfying.
 -   **To run it on your Android device**, make sure you have the Android platform tools installed along with `adb`, then just run `adb install app-filename.apk` with [USB debugging enabled on your device](https://developer.android.com/studio/run/device.html#device-developer-options) and the device plugged in.
--   **To run it on your iOS Simulator**, first build your expo project with the simulator flag by running `exp build:ios -t simulator`, then download the tarball with the link given upon completion when running `exp build:status`. Unpack the tar.gz by running `tar -xvzf your-app.tar.gz`. Then you can run it by starting an iOS Simulator instance, then running `xcrun simctl install booted <app path>` and `xcrun simctl launch booted <app identifier>`. Another alternative which some people prefer is to install the [ios-sim](https://github.com/phonegap/ios-sim) tool and then use `ios-sim launch <app path>`.
+-   **To run it on your iOS Simulator**, first build your expo project with the simulator flag by running `exp build:ios -t simulator`, then download the tarball with the link given upon completion when running `exp build:status`. Unpack the tar.gz by running `tar -xvzf your-app.tar.gz`. Then you can run it by starting an iOS Simulator instance, then running `xcrun simctl install booted <app path>` and `xcrun simctl launch booted <app identifier>`.
 - **To test a device build with Apple TestFlight**, download the .ipa file to your local machine. You are ready to upload your app to TestFlight. Within TestFlight, click the plus icon and create a New App. Make sure your `bundleIdentifier` matches what you've placed in `exp.json`.
 
 > **Note:** You will not see your build here just yet! You will need to use Xcode or Application Loader to upload your IPA first. Once you do that, you can check the status of your build under `Activity`. Processing an app can take 10-15 minutes before it shows up under available builds.
@@ -124,4 +118,4 @@ For the most part, when you want to update your app, just Publish again from exp
 
 To keep track of this, you can also update the binary's [versionCode](configuration.html#versioncode) and [buildNumber](configuration.html#buildnumber). It is a good idea to glance through the [app.json documentation](configuration.html) to get an idea of all the properties you can change, e.g. the icons, deep linking url scheme, handset/tablet support, and a lot more.
 
-If you run into problems during this process, we're more than happy to help out! [Join our Slack](https://slack.expo.io/) and let us know if you have any questions.
+If you run into problems during this process, we're more than happy to help out! [Join our Forums](https://forums.expo.io/) and let us know if you have any questions.
