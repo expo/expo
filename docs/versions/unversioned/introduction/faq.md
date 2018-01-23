@@ -78,6 +78,40 @@ The fastest way to share your Expo project is to publish it. You can do this by 
 
 When you're ready, you can also create a standalone app (`.ipa` and `.apk`) for submission to Apple and Google's app stores. Expo will build the binary for you when you run one command; see [Building Standalone Apps](../guides/building-standalone-apps.html#building-standalone-apps). Apple charges $99/year to publish your app in the App Store and Google charges a $25 one-time fee for the Play Store.
 
+## Why does Expo use a fork of React Native?
+
+Each Expo SDK Version corresponds to a React Native release. For example, SDK 19 corresponds to React Native 0.46.1. Often there is no difference between the fork for a given a SDK version and its corresponding React Native version, but occasionally we will find issues or want to include some code that hasn't yet been merged into the release and we will put it in our fork. Using a fork also makes it easier for people to verify that they are using the correct version of React Native for the Expo SDK version -- you know that if your SDK Version is set to 19.0.0 then you should use `https://github.com/expo/react-native/archive/sdk-19.0.0.tar.gz`.
+
+## How do I get my existing React Native project running with Expo?
+
+Right now, the easiest way to do this is to use XDE or exp to make a new project, and then copy over all your JavaScript source code from your existing project, and then `yarn add`ing the library dependencies you have.
+
+If you have similar native module dependencies to what is exposed through the Expo SDK, this process shouldn't take more than a few minutes (not including `npm install` time). Please feel free to ask us questions if you run into any issues.
+
+If you are using native libraries that aren't supported by Expo, you will either have to rewrite some parts of your application to use similar APIs that are part of Expo, or you just might not be able to get all parts of your app to work. Many things do though! 
+
+_N.B. We used to maintain a tool `exp convert` but it is not currently working or maintained so the above method is the best way to get an existing React Native project working on Expo_
+
+## How do I remove an Expo project that I published?
+
+The default [privacy setting](../guides/configuration.html) for Expo apps is `unlisted` so nobody can find your app unless you share the link with them.
+
+If you really want your published app to be 'unpublished', check out our guide on [Advanced Release Channels](../guides/advanced-release-channels.html), which explains how to roll back.
+
+## What is Exponent and how is it different from Expo?
+
+Exponent is the original name of the Expo project. You might occasionally run across some old references to it in blog posts or code or documentation. They are the same thing; we just shortened the name.
+
+## What version of Android and iOS are supported by Expo apps?
+
+Expo supports Android 4.4+ and iOS 9+.
+
+## Can I use Node.js packages with Expo?
+
+If the package depends on [Node standard library APIs](https://nodejs.org/api/index.html), you will not be able to use it with Expo. The Node standard library is a set of functionality implemented largely in C++ that exposes functions to JavaScript that aren't part of the JavaScript language specification, such as the ability to read and write to your filesystem. React Native, and by extension Expo, do not include the Node standard library, just like Chrome and Firefox do not include it. JavaScript is a language that is used in many contexts, from mobile apps (in our case), to servers, and of course on websites. These contexts all include their own runtime environments that expose different APIs to JavaScript, depending on what makes sense in the context.
+
+As a side note, some Node standard library APIs do not depend on C++ extensions but instead can be implemented directly in JavaScript, such as [url](https://www.npmjs.com/package/url) and [assert](https://www.npmjs.com/package/assert). If a package you wish to use only depends on these Node APIs, you can install them from npm and the package will work.
+
 ## Can I use Expo with Relay?
 
 You can! Update your `.babelrc` you get on a new Expo project to the following:
@@ -97,37 +131,3 @@ You can! Update your `.babelrc` you get on a new Expo project to the following:
 ```
 
 Substitute `./pathToYourBabelRelayPlugin` with the path to your Relay plugin.
-
-## Why does Expo use a fork of React Native?
-
-Each Expo SDK Version corresponds to a React Native release. For example, SDK 19 corresponds to React Native 0.46.1. Often there is no difference between the fork for a given a SDK version and its corresponding React Native version, but occasionally we will find issues or want to include some code that hasn't yet been merged into the release and we will put it in our fork. Using a fork also makes it easier for people to verify that they are using the correct version of React Native for the Expo SDK version -- you know that if your SDK Version is set to 19.0.0 then you should use `https://github.com/expo/react-native/archive/sdk-19.0.0.tar.gz`.
-
-## How do I get my existing React Native project running with Expo?
-
-Right now, the easiest way to do this is to use XDE or exp to make a new project, and then copy over all your JavaScript source code from your existing project, and then `yarn add`ing the library dependencies you have.
-
-If you have similar native module dependencies to what is exposed through the Expo SDK, this process shouldn't take more than a few minutes (not including `npm install` time). Please feel free to ask us questions if you run into any issues.
-
-If you are using native libraries that aren't supported by Expo, you will either have to rewrite some parts of your application to use similar APIs that are part of Expo, or you just might not be able to get all parts of your app to work. Many things do though! 
-
-_N.B. We used to maintain a tool `exp convert` but it is not currently working or maintained so the above method is the best way to get an existing React Native project working on Expo_
-
-## How do I remove an Expo project that I published?
-
-The default [privacy setting](../guides/configuration.html) for Expo apps is `unlisted` so nobody can find your app unless you share the link with them.
-
-If you really want your published app to be 'unpublished', right now the best course of action is to just drop us a note on Slack and we can do this for you. If nobody is awake to help you, you can also publish a blank `<View />` over your app.
-
-## What is Exponent and how is it different from Expo?
-
-Exponent is the original name of the Expo project. You might occasionally run across some old references to it in blog posts or code or documentation. They are the same thing; we just shortened the name.
-
-## What version of Android and iOS are supported by Expo apps?
-
-Expo supports Android 4.4+ and iOS 9+.
-
-## Can I use Node.js packages with Expo?
-
-If the package depends on [Node standard library APIs](https://nodejs.org/api/index.html), you will not be able to use it with Expo. The Node standard library is a set of functionality implemented largely in C++ that exposes functions to JavaScript that aren't part of the JavaScript language specification, such as the ability to read and write to your filesystem. React Native, and by extension Expo, do not include the Node standard library, just like Chrome and Firefox do not include it. JavaScript is a language that is used in many contexts, from mobile apps (in our case), to servers, and of course on websites. These contexts all include their own runtime environments that expose different APIs to JavaScript, depending on what makes sense in the context.
-
-As a side note, some Node standard library APIs do not depend on C++ extensions but instead can be implemented directly in JavaScript, such as [url](https://www.npmjs.com/package/url) and [assert](https://www.npmjs.com/package/assert). If a package you wish to use only depends on these Node APIs, you can install them from npm and the package will work.
