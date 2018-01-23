@@ -70,7 +70,7 @@ However, if you need something very custom--like on-the-fly video processing or 
 
 ## Is Expo similar to React for web development?
 
-Expo and React Native are similar to React. You'll have to learn a new set of components (`View` instead of `div`, for example) and writing mobile apps is very different from websites; you think more in terms of screens and different navigators instead of separate web pages, but much more your knowledge carries over than if you were writing a traditional Android or iOS app.
+Expo and React Native are similar to React. You'll have to learn a new set of components (`View` instead of `div`, for example) and writing mobile apps is very different from websites; you think more in terms of screens and different navigators instead of separate web pages, but much more of your knowledge carries over than if you were writing a traditional Android or iOS app.
 
 ## How do I share my Expo project? Can I submit it to the app stores?
 
