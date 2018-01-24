@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		19065BE72006015D007706D6 /* EXFileSystemManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 19065BE62006015D007706D6 /* EXFileSystemManager.m */; };
 		07E26F301FFFFB55004667A1 /* EXCalendarConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E26F2D1FFFFB55004667A1 /* EXCalendarConverter.m */; };
 		07E26F311FFFFB55004667A1 /* EXCalendar.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E26F2E1FFFFB55004667A1 /* EXCalendar.m */; };
 		07E26F361FFFFB68004667A1 /* EXCalendarRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E26F321FFFFB67004667A1 /* EXCalendarRequester.m */; };
 		07E26F371FFFFB68004667A1 /* EXRemindersRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E26F341FFFFB67004667A1 /* EXRemindersRequester.m */; };
+		19065BE72006015D007706D6 /* EXFileSystemManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 19065BE62006015D007706D6 /* EXFileSystemManager.m */; };
 		19382BA91EC2EACC001ED4A1 /* EXBranchManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 19382BA81EC2EACC001ED4A1 /* EXBranchManager.m */; };
 		19B2EF751FB25A1A003F2E1B /* EXCachedResourceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 19B2EF741FB25A1A003F2E1B /* EXCachedResourceManager.m */; };
 		200C29ED1855EF40345E4BA2 /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B84B3DEFB2C488FAE7279AD /* libPods-ExponentIntegrationTests.a */; };
