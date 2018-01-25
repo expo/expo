@@ -25,9 +25,9 @@ Any WebGL-supporting library that expects a [WebGLRenderingContext](https://www.
 
 ## WebGL API
 
-Once the component is mounted and the OpenGL ES context has been created, the `gl` object received through the [`onContextCreate`](#expoglviewoncontextcreate "Expo.GLView.onContextCreate") prop becomes the interface to the OpenGL ES context, providing a WebGL API. It resembles a [WebGLRenderingContext](https://www.khronos.org/registry/webgl/specs/latest/1.0/#5.14) in the WebGL 1 spec. An additional method `gl.endFrameEXP()` is present which notifies the context that the current frame is ready to be presented. This is similar to a 'swap buffers' API call in other OpenGL platforms.
+Once the component is mounted and the OpenGL ES context has been created, the `gl` object received through the [`onContextCreate`](#expoglviewoncontextcreate "Expo.GLView.onContextCreate") prop becomes the interface to the OpenGL ES context, providing a WebGL API. It resembles a [WebGL2RenderingContext](https://www.khronos.org/registry/webgl/specs/latest/2.0/#3.7) in the WebGL 2 spec. An additional method `gl.endFrameEXP()` is present which notifies the context that the current frame is ready to be presented. This is similar to a 'swap buffers' API call in other OpenGL platforms.
 
-The following WebGLRenderContext methods are currently unimplemented:
+The following WebGL2RenderingContext methods are currently unimplemented:
 
 - `getFramebufferAttachmentParameter()`
 - `getRenderbufferParameter()`
@@ -37,6 +37,20 @@ The following WebGLRenderContext methods are currently unimplemented:
 - `getUniform()`
 - `getVertexAttrib()`
 - `getVertexAttribOffset()`
+- `getBufferSubData()`
+- `getInternalformatParameter()`
+- `renderbufferStorageMultisample()`
+- `texImage3D()`
+- `texSubImage3D()`
+- `compressedTexImage3D()`
+- `compressedTexSubImage3D()`
+- `fenceSync()`
+- `isSync()`
+- `deleteSync()`
+- `clientWaitSync()`
+- `waitSync()`
+- `getSyncParameter()`
+- `getActiveUniformBlockParameter()`
 
 The `pixels` argument of [`texImage2D()`](https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/texImage2D) must be `null`, an `ArrayBuffer` with pixel data, or an object of the form `{ localUri }` where `localUri` is the `file://` URI of an image in the device's file system. Thus an `Expo.Asset` object could be used once `.downloadAsync()` has been called on it (and completed) to fetch the resource.
 
