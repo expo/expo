@@ -48,6 +48,8 @@ Once it's running, the iOS app should automatically request your JS bundle from 
 Open the `android` directory in Android Studio, then build and run the project on an Android device
 or a Genymotion emulator.
 
+When opening the project, Android Studio may prompt you to upgrade the version of Gradle or other build tools, but don't do this as you may get unexpected results. ExpoKit always ships with the latest supported versions of all build tools.
+
 Once the Android project is running, it should automatically request your development url from XDE
 or `exp`. You can develop your project normally from here.
 
