@@ -356,7 +356,9 @@ We provide the following preset options for convenience, as used in the example 
 
     -   `linearPCMIsFloat` : a boolean describing if the PCM data should be encoded in floating point or integral values. This key is optional.
 
-Following is an enumeration of all of the valid values for certain `RecordingOptions` keys:
+Following is an enumeration of all of the valid values for certain `RecordingOptions` keys.
+
+> **Note** Not all of the iOS formats included in this list of constants are currently supported by iOS, in spite of appearing in the Apple source code. For an accurate list of formats supported by iOS, see [Core Audio Codecs](https://developer.apple.com/library/content/documentation/MusicAudio/Conceptual/CoreAudioOverview/CoreAudioEssentials/CoreAudioEssentials.html#//apple_ref/doc/uid/TP40003577-CH10-SW26) and [iPhone Audio File Formats](https://developer.apple.com/library/content/documentation/MusicAudio/Conceptual/CoreAudioOverview/CoreAudioEssentials/CoreAudioEssentials.html#//apple_ref/doc/uid/TP40003577-CH10-SW57).
 
 -   `android` :
 
