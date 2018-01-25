@@ -3,10 +3,14 @@
 
 
 #ifdef __ANDROID__
-#include <GLES2/gl2.h>
+#include <GLES3/gl3.h>
 #endif
 #ifdef __APPLE__
-#include <OpenGLES/ES2/gl.h>
+#include <OpenGLES/ES3/gl.h>
+#endif
+
+#ifdef __cplusplus
+#include <functional>
 #endif
 
 #include <JavaScriptCore/JSBase.h>
@@ -26,10 +30,31 @@ extern "C" {
 // used as a 'null' value.
 typedef unsigned int UEXGLContextId;
 
+// Identifies an EXGL object. EXGL objects represent virtual mappings to underlying OpenGL objects.
+// No EXGL object has the id 0, so that can be used as a 'null' value.
+typedef unsigned int UEXGLObjectId;
+
 // [JS thread] Create an EXGL context and return its id number. Saves the
 // JavaScript interface object (has a WebGLRenderingContext-style API) at
 // `global.__EXGLContexts[id]` in JavaScript.
 UEXGLContextId UEXGLContextCreate(JSGlobalContextRef jsCtx);
+
+#ifdef __cplusplus
+// [JS thread] Pass function to cpp that will run GL operations on GL thread
+void UEXGLContextSetFlushMethod(UEXGLContextId exglCtxId, std::function<void(void)> flushMethod);
+#endif
+
+#ifdef __APPLE__
+// Objective-C wrapper for UEXGLContextSetFlushMethod
+typedef void(^UEXGLFlushMethodBlock)(void);
+void UEXGLContextSetFlushMethodObjc(UEXGLContextId exglCtxId, UEXGLFlushMethodBlock flushMethod);
+#endif
+
+// [Any thread] Check whether we should redraw the surface
+bool UEXGLContextNeedsRedraw(UEXGLContextId exglCtxId);
+
+// [GL thread] Tell cpp that we finished drawing to the surface
+void UEXGLContextDrawEnded(UEXGLContextId exglCtxId);
 
 // [Any thread] Release the resources for an EXGL context. The same id is never
 // reused.
@@ -41,11 +66,6 @@ void UEXGLContextFlush(UEXGLContextId exglCtxId);
 // [GL thread] Set the default framebuffer (used when binding 0). Allows using
 // platform-specific extensions on the default framebuffer, such as MSAA.
 void UEXGLContextSetDefaultFramebuffer(UEXGLContextId exglCtxId, GLint framebuffer);
-
-
-// Identifies an EXGL object. EXGL objects represent virtual mappings to underlying OpenGL objects.
-// No EXGL object has the id 0, so that can be used as a 'null' value.
-typedef unsigned int UEXGLObjectId;
 
 // [Any thread] Create an EXGL object. Initially maps to the OpenGL object zero.
 UEXGLObjectId UEXGLContextCreateObject(UEXGLContextId exglCtxId);

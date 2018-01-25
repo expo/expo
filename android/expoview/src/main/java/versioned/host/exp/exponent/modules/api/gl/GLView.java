@@ -13,7 +13,8 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
-import java.util.ArrayList;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
@@ -25,16 +26,23 @@ import host.exp.exponent.analytics.EXL;
 
 import static host.exp.exponent.exgl.EXGL.EXGLContextCreate;
 import static host.exp.exponent.exgl.EXGL.EXGLContextDestroy;
+import static host.exp.exponent.exgl.EXGL.EXGLContextDrawEnded;
 import static host.exp.exponent.exgl.EXGL.EXGLContextFlush;
+import static host.exp.exponent.exgl.EXGL.EXGLContextNeedsRedraw;
+import static host.exp.exponent.exgl.EXGL.EXGLContextSetFlushMethod;
 
 public class GLView extends TextureView implements TextureView.SurfaceTextureListener  {
   private boolean mOnSurfaceCreateCalled = false;
   private int mEXGLCtxId = -1;
 
   private GLThread mGLThread;
+  private EGLDisplay mEGLDisplay;
+  private EGLSurface mEGLSurface;
+  private EGLContext mEGLContext;
+  private EGL10 mEGL;
 
   private static SparseArray<GLView> mGLViewMap = new SparseArray<>();
-  private ArrayList<Runnable> mEventQueue = new ArrayList<>();
+  private BlockingQueue<Runnable> mEventQueue = new LinkedBlockingQueue<>();
 
   public GLView(Context context) {
     super(context);
@@ -45,11 +53,11 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
 
   // Public interface to allow running events on GL thread
 
-  public synchronized void runOnGLThread(Runnable r) {
+  public void runOnGLThread(Runnable r) {
     mEventQueue.add(r);
   }
 
-  public static synchronized void runOnGLThread(int exglCtxId, Runnable r) {
+  public static void runOnGLThread(int exglCtxId, Runnable r) {
     GLView glView = mGLViewMap.get(exglCtxId);
     if (glView != null) {
       glView.runOnGLThread(r);
@@ -75,6 +83,7 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
           synchronized (jsContext) {
             mEXGLCtxId = EXGLContextCreate(jsContext.get());
           }
+          EXGLContextSetFlushMethod(mEXGLCtxId, glView);
           mGLViewMap.put(mEXGLCtxId, glView);
           WritableMap arg = Arguments.createMap();
           arg.putInt("exglCtxId", mEXGLCtxId);
@@ -109,6 +118,27 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
   public void onSurfaceTextureUpdated(SurfaceTexture surface) {
   }
 
+  public void flush() {
+    runOnGLThread(new Runnable() {
+      @Override
+      public void run() {
+        // mEXGLCtxId may be unset if we get here (on the GL thread) before EXGLContextCreate(...) is
+        // called on the JS thread (see above in the implementation of `onSurfaceTextureAvailable(...)`)
+
+        if (mEXGLCtxId > 0) {
+          EXGLContextFlush(mEXGLCtxId);
+
+          if (EXGLContextNeedsRedraw(mEXGLCtxId)) {
+            if (!mEGL.eglSwapBuffers(mEGLDisplay, mEGLSurface)) {
+              EXL.e("GLView", "cannot swap buffers!");
+            }
+            EXGLContextDrawEnded(mEXGLCtxId);
+          }
+        }
+      }
+    });
+  }
+
 
   // All actual GL calls are made on this thread
 
@@ -116,10 +146,6 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
     private final SurfaceTexture mSurfaceTexture;
 
     private static final int EGL_CONTEXT_CLIENT_VERSION = 0x3098;
-    private EGLDisplay mEGLDisplay;
-    private EGLSurface mEGLSurface;
-    private EGLContext mEGLContext;
-    private EGL10 mEGL;
 
     GLThread(SurfaceTexture surfaceTexture) {
       mSurfaceTexture = surfaceTexture;
@@ -132,25 +158,8 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
       while (true) {
         try {
           makeEGLContextCurrent();
-
-          // Flush any queued events
-          for (Runnable r : mEventQueue) {
-            r.run();
-          }
-          mEventQueue.clear();
-
-          // mEXGLCtxId may be unset if we get here (on the GL thread) before EXGLContextCreate(...) is
-          // called on the JS thread (see above in the implementation of `onSurfaceTextureAvailable(...)`)
-          if (mEXGLCtxId > 0) {
-            EXGLContextFlush(mEXGLCtxId);
-          }
-
-          if (!mEGL.eglSwapBuffers(mEGLDisplay, mEGLSurface)) {
-            EXL.e("GLView", "cannot swap buffers!");
-          }
+          mEventQueue.take().run();
           checkEGLError();
-
-          Thread.sleep(1000 / 60);
         } catch (InterruptedException e) {
           break;
         }
@@ -192,7 +201,7 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
       }
 
       // Create EGLContext and EGLSurface
-      int[] attribs = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL10.EGL_NONE };
+      int[] attribs = { EGL_CONTEXT_CLIENT_VERSION, 3, EGL10.EGL_NONE };
       mEGLContext = mEGL.eglCreateContext(mEGLDisplay, eglConfig, EGL10.EGL_NO_CONTEXT, attribs);
       checkEGLError();
       mEGLSurface = mEGL.eglCreateWindowSurface(mEGLDisplay, eglConfig, mSurfaceTexture, null);
@@ -239,6 +248,10 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
         EXL.e("GLView", "EGL error = 0x" + Integer.toHexString(error));
       }
     }
+  }
+
+  public int getEXGLCtxId() {
+    return mEXGLCtxId;
   }
 }
 

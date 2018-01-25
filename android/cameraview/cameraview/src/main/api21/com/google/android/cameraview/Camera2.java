@@ -20,6 +20,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
+import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
@@ -37,6 +38,8 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.Surface;
+import android.os.Handler;
+import android.os.Looper;
 
 import java.io.File;
 import java.io.IOException;
@@ -231,6 +234,8 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
     private int mWhiteBalance;
 
     private boolean mIsScanning;
+
+    private Surface mPreviewSurface;
 
     Camera2(Callback callback, PreviewImpl preview, Context context) {
         super(callback, preview);
@@ -436,7 +441,7 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
 
                 Size size = chooseOptimalSize();
                 mPreview.setBufferSize(size.getWidth(), size.getHeight());
-                Surface surface = mPreview.getSurface();
+                Surface surface = getPreviewSurface();
                 Surface mMediaRecorderSurface = mMediaRecorder.getSurface();
 
                 mPreviewRequestBuilder = mCamera.createCaptureRequest(CameraDevice.TEMPLATE_RECORD);
@@ -709,10 +714,11 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
         }
         Size previewSize = chooseOptimalSize();
         mPreview.setBufferSize(previewSize.getWidth(), previewSize.getHeight());
-        Surface surface = mPreview.getSurface();
+        Surface surface = getPreviewSurface();
         try {
             mPreviewRequestBuilder = mCamera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             mPreviewRequestBuilder.addTarget(surface);
+
             if (mIsScanning) {
                 mPreviewRequestBuilder.addTarget(mScanImageReader.getSurface());
             }
@@ -721,6 +727,41 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
         } catch (CameraAccessException e) {
             mCallback.onMountError();
         }
+    }
+
+    public Surface getPreviewSurface() {
+        if (mPreviewSurface != null) {
+            return mPreviewSurface;
+        }
+        return mPreview.getSurface();
+    }
+
+    @Override
+    public void setPreviewTexture(SurfaceTexture surfaceTexture) {
+        if (surfaceTexture != null) {
+            Surface previewSurface = new Surface(surfaceTexture);
+            mPreviewSurface = previewSurface;
+        } else {
+            mPreviewSurface = null;
+        }
+
+        // it may be called from another thread, so make sure we're in main looper
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mCaptureSession != null) {
+                    mCaptureSession.close();
+                    mCaptureSession = null;
+                }
+                startCaptureSession();
+            }
+        });
+    }
+
+    @Override
+    public Size getPreviewSize() {
+        return new Size(mPreview.getWidth(), mPreview.getHeight());
     }
 
     /**

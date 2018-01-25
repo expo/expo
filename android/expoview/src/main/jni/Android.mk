@@ -24,7 +24,7 @@ LOCAL_SRC_FILES := \
   ../../../../../cpp/UEXGL.cpp \
   ../../../../../cpp/EXJSUtils.c \
   ../../../../../cpp/EXJSConvertTypedArray.c \
-  EXGL.c
+  EXGL.cpp
 
 # weird hack that lets us mix C++ with -std=c++11 and C with -std=c99
 LOCAL_C99_FILES := $(filter %.c, $(LOCAL_SRC_FILES))

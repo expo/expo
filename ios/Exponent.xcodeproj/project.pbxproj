@@ -231,7 +231,6 @@
 		B5FB74C01FF6DADC001C764B /* EXFileSystemAssetLibraryHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73B91FF6DADB001C764B /* EXFileSystemAssetLibraryHandler.m */; };
 		B5FB74C11FF6DADC001C764B /* EXFileSystemLocalFileHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73BB1FF6DADB001C764B /* EXFileSystemLocalFileHandler.m */; };
 		B5FB74C21FF6DADC001C764B /* EXGLARSessionManagerStub.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73BE1FF6DADB001C764B /* EXGLARSessionManagerStub.m */; };
-		B5FB74C31FF6DADC001C764B /* EXGLGPUImageObject.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73C01FF6DADB001C764B /* EXGLGPUImageObject.m */; };
 		B5FB74C41FF6DADC001C764B /* EXGLObject.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73C21FF6DADB001C764B /* EXGLObject.m */; };
 		B5FB74C51FF6DADC001C764B /* EXGLObjectManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73C41FF6DADB001C764B /* EXGLObjectManager.m */; };
 		B5FB74C61FF6DADC001C764B /* EXGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73C61FF6DADB001C764B /* EXGLView.m */; };
@@ -278,6 +277,7 @@
 		B5FB74F01FF6DADC001C764B /* EXScopedBridgeModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74261FF6DADB001C764B /* EXScopedBridgeModule.m */; };
 		B5FB74F11FF6DADC001C764B /* EXScopedEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74281FF6DADB001C764B /* EXScopedEventEmitter.m */; };
 		BBD03196200011C9009F0434 /* RNAWSCognito.m in Sources */ = {isa = PBXBuildFile; fileRef = BBD03192200011C9009F0434 /* RNAWSCognito.m */; };
+		F1A4595220187C2B00C9704B /* EXGLCameraObject.m in Sources */ = {isa = PBXBuildFile; fileRef = F1A4595120187C2A00C9704B /* EXGLCameraObject.m */; };
 		F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F77DDB921E04AC1100624CA2 /* SafariServices.framework */; };
 /* End PBXBuildFile section */
 
@@ -743,8 +743,6 @@
 		B5FB73BB1FF6DADB001C764B /* EXFileSystemLocalFileHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFileSystemLocalFileHandler.m; sourceTree = "<group>"; };
 		B5FB73BD1FF6DADB001C764B /* EXGLARSessionManagerStub.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGLARSessionManagerStub.h; sourceTree = "<group>"; };
 		B5FB73BE1FF6DADB001C764B /* EXGLARSessionManagerStub.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGLARSessionManagerStub.m; sourceTree = "<group>"; };
-		B5FB73BF1FF6DADB001C764B /* EXGLGPUImageObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGLGPUImageObject.h; sourceTree = "<group>"; };
-		B5FB73C01FF6DADB001C764B /* EXGLGPUImageObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGLGPUImageObject.m; sourceTree = "<group>"; };
 		B5FB73C11FF6DADB001C764B /* EXGLObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGLObject.h; sourceTree = "<group>"; };
 		B5FB73C21FF6DADB001C764B /* EXGLObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGLObject.m; sourceTree = "<group>"; };
 		B5FB73C31FF6DADB001C764B /* EXGLObjectManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGLObjectManager.h; sourceTree = "<group>"; };
@@ -841,6 +839,8 @@
 		BBD03192200011C9009F0434 /* RNAWSCognito.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNAWSCognito.m; sourceTree = "<group>"; };
 		BD69154E1D289060B003BB86 /* Pods-Exponent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Exponent.release.xcconfig"; path = "Pods/Target Support Files/Pods-Exponent/Pods-Exponent.release.xcconfig"; sourceTree = "<group>"; };
 		D045154CF3903164C70A59B6 /* Pods-ExponentIntegrationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.debug.xcconfig"; sourceTree = "<group>"; };
+		F1A4595020187C2A00C9704B /* EXGLCameraObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGLCameraObject.h; sourceTree = "<group>"; };
+		F1A4595120187C2A00C9704B /* EXGLCameraObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGLCameraObject.m; sourceTree = "<group>"; };
 		F77DDB921E04AC1100624CA2 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
 		F8B7CBE8449DB220A8A6DF82 /* Pods-Exponent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Exponent.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Exponent/Pods-Exponent.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1625,8 +1625,8 @@
 			children = (
 				B5FB73BD1FF6DADB001C764B /* EXGLARSessionManagerStub.h */,
 				B5FB73BE1FF6DADB001C764B /* EXGLARSessionManagerStub.m */,
-				B5FB73BF1FF6DADB001C764B /* EXGLGPUImageObject.h */,
-				B5FB73C01FF6DADB001C764B /* EXGLGPUImageObject.m */,
+				F1A4595020187C2A00C9704B /* EXGLCameraObject.h */,
+				F1A4595120187C2A00C9704B /* EXGLCameraObject.m */,
 				B5FB73C11FF6DADB001C764B /* EXGLObject.h */,
 				B5FB73C21FF6DADB001C764B /* EXGLObject.m */,
 				B5FB73C31FF6DADB001C764B /* EXGLObjectManager.h */,
@@ -2081,7 +2081,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		8B4DC8ADD4224A9E1D4FCDF3 /* [CP] Copy Pods Resources */ = {
@@ -2209,7 +2209,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		F976496B69F7AF7E130D3222 /* [CP] Check Pods Manifest.lock */ = {
@@ -2315,7 +2315,6 @@
 				07E26F371FFFFB68004667A1 /* EXRemindersRequester.m in Sources */,
 				B5FB744B1FF6DADB001C764B /* AIRGMSPolygon.m in Sources */,
 				B5FB74B41FF6DADC001C764B /* EXSQLite.m in Sources */,
-				B5FB74C31FF6DADC001C764B /* EXGLGPUImageObject.m in Sources */,
 				B5FB74B91FF6DADC001C764B /* EXBannerView.m in Sources */,
 				B5FB74961FF6DADC001C764B /* RNSVGText.m in Sources */,
 				B5FB74B11FF6DADC001C764B /* EXSecureStore.m in Sources */,
@@ -2343,6 +2342,7 @@
 				B5FB74E11FF6DADC001C764B /* EXDisabledDevLoadingView.m in Sources */,
 				B5FB743B1FF6DADB001C764B /* EXLinearGradientManager.m in Sources */,
 				B57EF80F20085C8200DA8960 /* RNPinchHandler.m in Sources */,
+				F1A4595220187C2B00C9704B /* EXGLCameraObject.m in Sources */,
 				B57EF7C52008446200DA8960 /* AIRMapLocalTile.m in Sources */,
 				B5F12C951DAEDC980080ECA6 /* EXReactAppManager.m in Sources */,
 				B5FB74E31FF6DADC001C764B /* EXDisabledRedBox.m in Sources */,

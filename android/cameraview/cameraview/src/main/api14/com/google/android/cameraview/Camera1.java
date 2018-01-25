@@ -98,6 +98,8 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
 
     private boolean mIsScanning;
 
+    private SurfaceTexture mPreviewTexture;
+
     Camera1(Callback callback, PreviewImpl preview) {
         super(callback, preview);
         preview.setCallback(new PreviewImpl.Callback() {
@@ -156,7 +158,9 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
     @SuppressLint("NewApi")
     void setUpPreview() {
         try {
-            if (mPreview.getOutputClass() == SurfaceHolder.class) {
+            if (mPreviewTexture != null) {
+                mCamera.setPreviewTexture(mPreviewTexture);
+            } else if (mPreview.getOutputClass() == SurfaceHolder.class) {
                 final boolean needsToStopPreview = mShowingPreview && Build.VERSION.SDK_INT < 14;
                 if (needsToStopPreview) {
                     mCamera.stopPreview();
@@ -405,6 +409,35 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
                 startCameraPreview();
             }
         }
+    }
+
+    @Override
+    public void setPreviewTexture(SurfaceTexture surfaceTexture) {
+        try {
+            if (mCamera == null) {
+                mPreviewTexture = surfaceTexture;
+                return;
+            }
+
+            mCamera.stopPreview();
+
+            if (surfaceTexture == null) {
+                mCamera.setPreviewTexture((SurfaceTexture) mPreview.getSurfaceTexture());
+            } else {
+                mCamera.setPreviewTexture(surfaceTexture);
+            }
+
+            mPreviewTexture = surfaceTexture;
+            startCameraPreview();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Size getPreviewSize() {
+        Camera.Size cameraSize = mCameraParameters.getPreviewSize();
+        return new Size(cameraSize.width, cameraSize.height);
     }
 
     /**
