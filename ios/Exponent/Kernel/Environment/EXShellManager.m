@@ -196,7 +196,9 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
   [[EXAnalytics sharedInstance] setUserProperties:@{ @"INITIAL_URL": _shellManifestUrl }];
   [CrashlyticsKit setObjectValue:_shellManifestUrl forKey:@"initial_url"];
   if (self.isDetached) {
+#ifndef EX_DETACHED_SERVICE
     [[EXAnalytics sharedInstance] setUserProperties:@{ @"IS_DETACHED": @YES }];
+#endif
   }
 }
 

@@ -10,4 +10,10 @@ Pod::Spec.new do |s|
   s.source       = { :path => '.' }
 
   s.source_files = '*.{h,c,cpp,m,mm}', '**/*.{h,c,cpp,m,mm}'
+  s.exclude_files = 'UEXGL.*'
+
+  s.subspec 'GL' do |ss|
+    ss.source_files = 'UEXGL.*'
+    ss.compiler_flags = '-x objective-c++'
+  end
 end

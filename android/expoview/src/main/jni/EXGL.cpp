@@ -1,12 +1,17 @@
 #include <stdint.h>
 
 #include <jni.h>
+#include <thread>
+#include <android/log.h>
 
 #include <JavaScriptCore/JSContextRef.h>
 
 
 #include "UEXGL.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 JNIEXPORT jint JNICALL
 Java_host_exp_exponent_exgl_EXGL_EXGLContextCreate
@@ -47,3 +52,32 @@ Java_host_exp_exponent_exgl_EXGL_EXGLContextMapObject
 (JNIEnv *env, jclass clazz, jint exglCtxId, jint exglObjId, jint glObj) {
   UEXGLContextMapObject(exglCtxId, exglObjId, glObj);
 }
+
+JNIEXPORT void JNICALL
+Java_host_exp_exponent_exgl_EXGL_EXGLContextSetFlushMethod
+(JNIEnv *env, jclass clazz, jint exglCtxId, jobject glView) {
+  jclass GLViewClass = env->GetObjectClass(glView);
+  jobject glViewRef = env->NewGlobalRef(glView);
+  jmethodID flushMethodRef = env->GetMethodID(GLViewClass, "flush", "()V");
+
+  std::function<void(void)> flushMethod = [env, glViewRef, flushMethodRef, exglCtxId] {
+    env->CallVoidMethod(glViewRef, flushMethodRef);
+  };
+  UEXGLContextSetFlushMethod(exglCtxId, flushMethod);
+}
+
+JNIEXPORT bool JNICALL
+Java_host_exp_exponent_exgl_EXGL_EXGLContextNeedsRedraw
+(JNIEnv *env, jclass clazz, jint exglCtxId) {
+  return UEXGLContextNeedsRedraw(exglCtxId);
+}
+
+JNIEXPORT void JNICALL
+Java_host_exp_exponent_exgl_EXGL_EXGLContextDrawEnded
+(JNIEnv *env, jclass clazz, jint exglCtxId) {
+  UEXGLContextDrawEnded(exglCtxId);
+}
+
+#ifdef __cplusplus
+}
+#endif

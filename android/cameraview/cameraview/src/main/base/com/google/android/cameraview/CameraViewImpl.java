@@ -18,6 +18,7 @@ package com.google.android.cameraview;
 
 import android.media.CamcorderProfile;
 import android.view.View;
+import android.graphics.SurfaceTexture;
 
 import java.util.Set;
 
@@ -90,6 +91,10 @@ abstract class CameraViewImpl {
     abstract void setScanning(boolean isScanning);
 
     abstract boolean getScanning();
+
+    abstract public void setPreviewTexture(SurfaceTexture surfaceTexture);
+
+    abstract public Size getPreviewSize();
 
     interface Callback {
 

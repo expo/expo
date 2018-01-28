@@ -31,6 +31,7 @@ import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.graphics.SurfaceTexture;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -456,6 +457,14 @@ public class CameraView extends FrameLayout {
 
     public void stopRecording() {
         mImpl.stopRecording();
+    }
+
+    public void setPreviewTexture(SurfaceTexture surfaceTexture) {
+        mImpl.setPreviewTexture(surfaceTexture);
+    }
+
+    public Size getPreviewSize() {
+        return mImpl.getPreviewSize();
     }
 
     private class CallbackBridge implements CameraViewImpl.Callback {
