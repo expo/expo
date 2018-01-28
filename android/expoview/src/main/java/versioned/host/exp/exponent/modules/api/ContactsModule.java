@@ -49,15 +49,6 @@ public class ContactsModule extends ReactContextBaseJavaModule {
       CommonDataKinds.Email.DATA,
   };
 
-  class AddOnProjection {
-    public String mimeType;
-    public String[] projection;
-
-    public AddOnProjection(String mimeType) {
-      this.mimeType = mimeType;
-    }
-  }
-
   private static final List<String> JUST_ME_PROJECTION = new ArrayList<String>() {{
     add(ContactsContract.Data.CONTACT_ID);
     add(ContactsContract.Data.LOOKUP_KEY);
@@ -144,6 +135,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
       String selection = ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=?";
       ArrayList<String> selectionArgs = new ArrayList<>(Arrays.asList(CommonDataKinds.Email.CONTENT_ITEM_TYPE, CommonDataKinds.Phone.CONTENT_ITEM_TYPE, CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE, CommonDataKinds.Organization.CONTENT_ITEM_TYPE, CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE));
 
+      // handle "add on" fields from query request
       if (fieldsSet.contains("note")) {
         selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
         selectionArgs.add(ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE);
@@ -188,13 +180,14 @@ public class ContactsModule extends ReactContextBaseJavaModule {
     }
     if (cursor != null) {
       try {
+        // populate list of contacts from cursor query
         contacts = loadContactsFrom(cursor);
 
         WritableArray contactsArray = Arguments.createArray();
 
         // introduce paging at this level to ensure all data elements
         // are appropriately mapped to contacts from cursor
-        // NOTE: paging provides essentially no performance improvement at this point
+        // NOTE: paging provides essentially no performance improvement, recommended primarily for functional reasons
         int currentIndex;
         ArrayList<Contact> contactList = new ArrayList<>(contacts.values());
         int collectionSize = contactList.size();
@@ -249,6 +242,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
         contactId = String.valueOf(-1);//no contact id for 'ME' user
       }
 
+      // add or update contact accordingly
       if (!map.containsKey(contactId)) {
         map.put(contactId, new Contact(contactId));
       }
@@ -412,6 +406,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
       this.contactId = contactId;
     }
 
+    // convert to react native object
     public WritableMap toMap(Set<String> fieldSet) throws ParseException {
       if (givenName.toLowerCase().contains("chad")) {
         String debug = "Stop";
