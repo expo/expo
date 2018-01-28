@@ -43,13 +43,13 @@ NSString * const kEXCurrentAPNSTokenDefaultsKey = @"EXCurrentAPNSTokenDefaultsKe
 
 - (void)registerForRemoteNotifications
 {
-#ifdef EX_DETACHED
-  DDLogWarn(@"Expo Remote Notification services won't work in an ExpoKit app because Expo can not manage your APNS certificates.");
-#else
-  // don't register, because the detached app may not be built with APNS entitlements,
-  // and in that case this method would actually be bad to call. (not just a no-op.)
-  [RCTSharedApplication() registerForRemoteNotifications];
-#endif
+  if ([self _disableDetachedPushNotifications]) {
+    // don't register, because the detached app may not be built with APNS entitlements,
+    // and in that case this method would actually be bad to call. (not just a no-op.)
+    DDLogWarn(@"Expo Remote Notification services won't work in an ExpoKit app because Expo can not manage your APNS certificates.");
+  } else {
+    [RCTSharedApplication() registerForRemoteNotifications];
+  }
 }
 
 - (void)registerAPNSToken:(NSData *)token
@@ -154,6 +154,15 @@ NSString * const kEXCurrentAPNSTokenDefaultsKey = @"EXCurrentAPNSTokenDefaultsKe
                                   @"deviceId": [EXKernel deviceInstallUUID],
                                 };
   [[EXKernel sharedInstance] dispatchKernelJSEvent:@"getExponentPushToken" body:eventParams onSuccess:success onFailure:failure];
+}
+
+- (BOOL)_disableDetachedPushNotifications
+{
+  BOOL isDetached = [EXShellManager sharedInstance].isDetached, isDetachedService = NO;
+#ifdef EX_DETACHED_SERVICE
+  isDetachedService = YES;
+#endif
+  return (isDetached && !isDetachedService);
 }
 
 @end
