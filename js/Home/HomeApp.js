@@ -1,6 +1,6 @@
 /* @flow */
 
-import { Asset, Font } from 'expo';
+import { Asset, Font, Constants } from 'expo';
 import React from 'react';
 import { ActivityIndicator, Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { NavigationProvider, StackNavigation } from '@expo/ex-navigation';
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   statusBarUnderlay: {
-    height: 24,
+    height: Constants.statusBarHeight,
     backgroundColor: 'rgba(0,0,0,0.2)',
     position: 'absolute',
     top: 0,
