@@ -59,8 +59,6 @@ public class ContactsModule extends ReactContextBaseJavaModule {
     add(CommonDataKinds.StructuredName.GIVEN_NAME);
     add(CommonDataKinds.StructuredName.MIDDLE_NAME);
     add(CommonDataKinds.StructuredName.FAMILY_NAME);
-    add(CommonDataKinds.StructuredName.PREFIX);
-    add(CommonDataKinds.StructuredName.SUFFIX);
     add(CommonDataKinds.Phone.NUMBER);
     add(CommonDataKinds.Phone.TYPE);
     add(CommonDataKinds.Phone.LABEL);
@@ -171,6 +169,26 @@ public class ContactsModule extends ReactContextBaseJavaModule {
         selectionArgs.add(CommonDataKinds.Relation.CONTENT_ITEM_TYPE );
       }
 
+      if (fieldsSet.contains("phoneticFirstName")) {
+        FULL_PROJECTION.add(CommonDataKinds.StructuredName.PHONETIC_GIVEN_NAME);
+      }
+
+      if (fieldsSet.contains("phoneticLastName")) {
+        FULL_PROJECTION.add(CommonDataKinds.StructuredName.PHONETIC_FAMILY_NAME);
+      }
+
+      if (fieldsSet.contains("phoneticMiddleName")) {
+        FULL_PROJECTION.add(CommonDataKinds.StructuredName.PHONETIC_MIDDLE_NAME);
+      }
+
+      if (fieldsSet.contains("namePrefix")) {
+        FULL_PROJECTION.add(CommonDataKinds.StructuredName.PREFIX);
+      }
+
+      if (fieldsSet.contains("nameSuffix")) {
+        FULL_PROJECTION.add(CommonDataKinds.StructuredName.SUFFIX);
+      }
+
       cursor = cr.query(
           ContactsContract.Data.CONTENT_URI,
           FULL_PROJECTION.toArray(new String[FULL_PROJECTION.size()]),
@@ -181,7 +199,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
     if (cursor != null) {
       try {
         // populate list of contacts from cursor query
-        contacts = loadContactsFrom(cursor);
+        contacts = loadContactsFrom(cursor, fieldsSet);
 
         WritableArray contactsArray = Arguments.createArray();
 
@@ -228,7 +246,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
   }
 
   @NonNull
-  private Map<String, Contact> loadContactsFrom(Cursor cursor) {
+  private Map<String, Contact> loadContactsFrom(Cursor cursor, Set<String> fieldsSet) {
 
     Map<String, Contact> map = new LinkedHashMap<>();
 
@@ -268,8 +286,11 @@ public class ContactsModule extends ReactContextBaseJavaModule {
         contact.givenName = cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.GIVEN_NAME));
         contact.middleName = cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.MIDDLE_NAME));
         contact.familyName = cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.FAMILY_NAME));
-        contact.prefix = cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.PREFIX));
-        contact.suffix = cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.SUFFIX));
+        contact.prefix = fieldsSet.contains("namePrefix") ? cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.PREFIX)) : "";
+        contact.suffix = fieldsSet.contains("nameSuffix") ? cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.SUFFIX)) : "";
+        contact.phoneticFirstName = fieldsSet.contains("phoneticFirstName") ? cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.PHONETIC_GIVEN_NAME)) : "";
+        contact.phoneticMiddleName = fieldsSet.contains("phoneticMiddleName") ? cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.PHONETIC_MIDDLE_NAME)) : "";
+        contact.phoneticLastName = fieldsSet.contains("phoneticLastName") ? cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.PHONETIC_FAMILY_NAME)) : "";
       } else if (mimeType.equals(CommonDataKinds.Phone.CONTENT_ITEM_TYPE)) {
         String phoneNumber = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Phone.NUMBER));
         int type = cursor.getInt(cursor.getColumnIndex(CommonDataKinds.Phone.TYPE));
@@ -387,6 +408,9 @@ public class ContactsModule extends ReactContextBaseJavaModule {
     private String familyName = "";
     private String prefix = "";
     private String suffix = "";
+    private String phoneticFirstName = "";
+    private String phoneticMiddleName = "";
+    private String phoneticLastName = "";
     private String company = "";
     private String jobTitle ="";
     private String department ="";
@@ -408,19 +432,28 @@ public class ContactsModule extends ReactContextBaseJavaModule {
 
     // convert to react native object
     public WritableMap toMap(Set<String> fieldSet) throws ParseException {
-      if (givenName.toLowerCase().contains("chad")) {
-        String debug = "Stop";
-      }
-
       WritableMap contact = Arguments.createMap();
       contact.putString("id", contactId);
-      contact.putString("name", TextUtils.isEmpty(givenName) ? displayName : givenName + " " + familyName);
+      contact.putString("name", !TextUtils.isEmpty(displayName) ? displayName : givenName + " " + familyName);
       contact.putString("firstName", givenName);
       contact.putString("middleName", middleName);
       contact.putString("lastName", familyName);
       contact.putString("nickname", nickname);
-      contact.putString("prefix", prefix);
-      contact.putString("suffix", suffix);
+      if (!TextUtils.isEmpty(prefix)) {
+        contact.putString("namePrefix", prefix);
+      }
+      if (!TextUtils.isEmpty(suffix)) {
+        contact.putString("nameSuffix", suffix);
+      }
+      if (!TextUtils.isEmpty(phoneticFirstName)) {
+        contact.putString("phoneticFirstName", phoneticFirstName);
+      }
+      if (!TextUtils.isEmpty(phoneticLastName)) {
+        contact.putString("phoneticLastName", phoneticLastName);
+      }
+      if (!TextUtils.isEmpty(phoneticMiddleName)) {
+        contact.putString("phoneticMiddleName", phoneticMiddleName);
+      }
       contact.putString("company", company);
       contact.putString("jobTitle", jobTitle);
       contact.putString("department", department);
