@@ -260,11 +260,11 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
     boolean gotPermissions = Exponent.getInstance().getPermissions(new Exponent.PermissionsListener() {
       @Override
       public void permissionsGranted() {
-        promise.resolve(getLocationPermissions());
+        promise.resolve(getCameraRollPermissions());
       }
       @Override
       public void permissionsDenied() {
-        promise.resolve(getLocationPermissions());
+        promise.resolve(getCameraRollPermissions());
       }
     }, permissions);
 
