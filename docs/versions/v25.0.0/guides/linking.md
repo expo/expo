@@ -78,6 +78,16 @@ lyft://ridetype?id=lyft&pickup[latitude]=37.764728&pickup[longitude]=-122.422999
 
 It's possible that the user doesn't have the Lyft app installed, in which case you may want to open the App / Play Store, or let them know that they need to install it first. We recommend using the library [react-native-app-link](https://github.com/fiber-god/react-native-app-link) for these cases.
 
+On iOS, `Linking.canOpenUrl` requires additional configuration to query other apps' linking schemes. You can use the `ios.infoPlist` key in your `app.json` to specify a list of schemes your app needs to query. For example:
+
+```
+  "infoPlist": {
+    "LSApplicationQueriesSchemes": ["lyft"]
+  }
+```
+
+If you don't specify this list, `Linking.canOpenUrl` may return `false` regardless of whether the device has the app installed. Note that this configuration can only be tested in standalone apps, because it requires native changes that will not be applied when testing in Expo Client.
+
 ## Linking to your app
 
 ### In the Expo client
