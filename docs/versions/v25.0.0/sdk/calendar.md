@@ -485,7 +485,7 @@ A method for having the OS automatically remind the user about an calendar item
 | Field name | Type | Platforms | Description | Possible values |
 | --- | --- | --- | --- | --- |
 | absoluteDate | _Date_ | iOS | Date object or string representing an absolute time the alarm should occur; overrides `relativeOffset` and `structuredLocation` if specified alongside either | |
-| relativeOffset | _string_ | both | Number of minutes from the `startDate` of the calendar item that the alarm should occur; use negative values to have the alarm occur before the `startDate` | |
+| relativeOffset | _number_ | both | Number of minutes from the `startDate` of the calendar item that the alarm should occur; use negative values to have the alarm occur before the `startDate` | |
 | method | _string_ | Android | Method of alerting the user that this alarm should use; on iOS this is always a notification | `Expo.Calendar.AlarmMethod.ALARM`, `Expo.Calendar.AlarmMethod.ALERT`, `Expo.Calendar.AlarmMethod.EMAIL`, `Expo.Calendar.AlarmMethod.SMS`, `Expo.Calendar.AlarmMethod.DEFAULT` |
 
 ### Source
