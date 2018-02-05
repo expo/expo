@@ -6,6 +6,8 @@
 
 <!-- In your terminal run `exp diagnostics` and paste the output here. -->
 
+<!-- Please also let us know about your app's target (iOS, Android, Client, Standalone, ExpoKit) -->
+
 ### Steps to Reproduce
 
 <!--
