@@ -45,9 +45,8 @@ A map of options:
 -   **permissions (_array_)** -- An array specifying the permissions to ask for from Facebook for this login. The permissions are strings as specified in the [Facebook API documentation](https://developers.facebook.com/docs/facebook-login/permissions). The default permissions are `['public_profile', 'email', 'user_friends']`.
 -   **behavior (_string_)** -- The type of login prompt to show. Currently this is only supported on iOS, and must be one of the following values:
     -   `'web'` (default) -- Attempts to log in through a modal `UIWebView` pop up.
-    -   `'native'` -- Attempts to log in through the native Facebook app. This is only supported for standalone apps.
     -   `'browser'` -- Attempts to log in through Safari or `SFSafariViewController`. This is only supported for standalone apps.
-    -   `'system'` -- Attempts to log in through the Facebook account currently signed in through the device Settings. This is only supported for standalone apps.
+    -   `'system'` -- Attempts to log in through the Facebook account currently signed in through the device Settings. This is only supported for standalone apps. This will fallback to `web` behavior on iOS11+ as the Settings has been removed along with it's release.
 
 #### Returns
 
