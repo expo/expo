@@ -19,7 +19,7 @@ Demo: https://snack.expo.io/@community/flappy-bird
 * Expo XDE + iOS/Android App
 
 ### Getting Started
-The starter code sets up the basics of creating an Expo app with [Three.js](threejs.org/). It also has some a psuedo-lib called GameKit which emulates some of the core features from [phaser.js](https://phaser.io/).
+The starter code sets up the basics of creating an Expo app with [Three.js](https://threejs.org/). It also has some a psuedo-lib called GameKit which emulates some of the core features from [phaser.js](https://phaser.io/).
 To get started open this snack: https://snack.expo.io/@community/flappy-bird-starter
 
 
