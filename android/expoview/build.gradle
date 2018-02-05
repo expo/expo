@@ -141,6 +141,9 @@ android {
     ndk {
       abiFilters 'armeabi-v7a', 'x86'
     }
+    manifestPlaceholders = [
+      'appAuthRedirectScheme': 'host.exp.exponent'
+    ]
   }
 
   // Use custom task for NDK module from above
