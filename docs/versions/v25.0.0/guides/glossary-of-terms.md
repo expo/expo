@@ -36,7 +36,7 @@ The iOS and Android app that runs Expo apps. When you want to run your app outsi
 
 ### Expo SDK
 
-The Expo SDK provides access to device/system functionality such as camera, push notification, contacts, file system, and more. Scroll to the SDK API reference in the documentation navigation to see a full list of APIs and to explore them. [Read more about the Expo SDK](https://docs.expo.io/versions/latest/sdk/index.html). [Find it on Github](https://github.com/expo/expo-sdk).
+The Expo software development kit (SDK) provides access to device/system functionality such as camera, push notification, contacts, file system, and more. Scroll to the SDK API reference in the documentation navigation to see a full list of APIs and to explore them. [Read more about the Expo SDK](https://docs.expo.io/versions/latest/sdk/index.html). [Find it on Github](https://github.com/expo/expo-sdk).
 
 ### ExpoKit
 
@@ -64,7 +64,7 @@ The React Native ecosystem has thousands of libraries. Without a purpose-built t
 
 ### Over the Air updates
 
-Traditionally, apps for iOS and Android are updated by submitting an updated binary to the App and Play stores. Over the Air (OTA) updates allow you to push an update to your app without the overhead of submitting a new release to the stores. [Read more in "Publishing"](publishing.html).
+Traditionally, apps for iOS and Android are updated by submitting an updated binary to the App and Play stores. Over-the-Air (OTA) updates allow you to push an update to your app without the overhead of submitting a new release to the stores. [Read more in "Publishing"](publishing.html).
 
 ### Package Manager
 
@@ -100,8 +100,8 @@ An application binary that can be submitted to the iOS App Store or Android Play
 
 ### XDE
 
-A desktop tool with a graphical user interface (GUI) for working with Expo projects. It mostly the same functionality as the [exp CLI tool](#exp) but is intended for people who are more comfortable with a GUI.
+A desktop tool with a graphical user interface (GUI) for working with Expo projects. It has mostly the same functionality as the [exp CLI tool](#exp), but is intended for people who are more comfortable with a GUI.
 
 ### yarn
 
-A package manager for JavaScript. [Read more](https://yarnpkg.com/)
+A package manager for JavaScript. [Read more](https://yarnpkg.com/).
