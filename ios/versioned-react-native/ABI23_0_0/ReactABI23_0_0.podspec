@@ -136,13 +136,13 @@ Pod::Spec.new do |s|
 
   s.subspec "cxxReactABI23_0_0" do |ss|
     ss.dependency             "ReactABI23_0_0/ABI23_0_0jschelpers"
-    ss.dependency             "boost"
+    ss.dependency             "boost-for-react-native", "1.63.0"
     ss.dependency             "Folly", "2016.09.26.00"
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "ReactCommon/cxxReactABI23_0_0/*.{cpp,h}"
     ss.exclude_files        = "ReactCommon/cxxReactABI23_0_0/ABI23_0_0SampleCxxModule.*"
     ss.private_header_files = "ReactCommon/cxxReactABI23_0_0/*.h"
-    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Folly\"" }
+    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Folly\"" }
   end
 
   s.subspec "ART" do |ss|
