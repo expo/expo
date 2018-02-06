@@ -8,6 +8,7 @@
  */
 package com.facebook.react.devsupport;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -361,8 +362,8 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
             @Override
             public void run() {
                 if (mRedBoxDialog == null) {
-                    Context context = mReactInstanceManagerHelper.getCurrentActivity();
-                    if (context == null) {
+                    Activity context = mReactInstanceManagerHelper.getCurrentActivity();
+                    if (context == null || context.isFinishing()) {
                         FLog.e(ReactConstants.TAG, "Unable to launch redbox because react activity " + "is not available, here is the error that redbox would've displayed: " + message);
                         return;
                     }
@@ -475,8 +476,8 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
             options.putAll(mCustomDevOptions);
         }
         final DevOptionHandler[] optionHandlers = options.values().toArray(new DevOptionHandler[0]);
-        Context context = mReactInstanceManagerHelper.getCurrentActivity();
-        if (context == null) {
+        Activity context = mReactInstanceManagerHelper.getCurrentActivity();
+        if (context == null || context.isFinishing()) {
             FLog.e(ReactConstants.TAG, "Unable to launch dev options menu because react activity " + "isn't available");
             return;
         }
