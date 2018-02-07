@@ -19,7 +19,7 @@ When using Facebook Ads in development, you'll need to register your device to b
 ```js
 import { FacebookAds } from 'expo';
 
-FacebookAds.AdSettings.addTestDevice(AdSettings.currentDeviceHash);
+FacebookAds.AdSettings.addTestDevice(FacebookAds.AdSettings.currentDeviceHash);
 ```
 
 You should see fake ads after you add this snippet.
