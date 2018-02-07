@@ -95,7 +95,12 @@ public class FacebookModule extends ReactContextBaseJavaModule implements Activi
         promise.reject(error);
       }
     });
-         LoginManager.getInstance().logInWithReadPermissions(Exponent.getInstance().getCurrentActivity(), permissions);
+
+    try {
+      LoginManager.getInstance().logInWithReadPermissions(Exponent.getInstance().getCurrentActivity(), permissions);
+    } catch (FacebookException e) {
+      promise.reject("E_FBLOGIN_ERROR", "An error occurred while trying to log in to Facebook", e);
+    }
   }
 
   @Override
