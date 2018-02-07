@@ -84,25 +84,31 @@ RCT_REMAP_METHOD(logInWithReadPermissionsAsync,
       }
     }
 
-    [loginMgr logInWithReadPermissions:permissions fromViewController:nil handler:^(FBSDKLoginManagerLoginResult *result, NSError *error) {
-      if (error) {
-        reject(@"error", @"Error with Facebook login", error);
-        return;
-      }
+    @try {
+      [loginMgr logInWithReadPermissions:permissions fromViewController:nil handler:^(FBSDKLoginManagerLoginResult *result, NSError *error) {
+        if (error) {
+          reject(@"E_FBLOGIN_ERROR", @"Error with Facebook login", error);
+          return;
+        }
 
-      if (result.isCancelled || !result.token) {
-        resolve(@{ @"type": @"cancel" });
-        return;
-      }
+        if (result.isCancelled || !result.token) {
+          resolve(@{ @"type": @"cancel" });
+          return;
+        }
 
-      if (![result.token.appID isEqualToString:appId]) {
-        reject(@"error", @"Logged into wrong app, try again?", nil);
-        return;
-      }
+        if (![result.token.appID isEqualToString:appId]) {
+          reject(@"E_FBLOGIN_ERROR", @"Logged into wrong app, try again?", nil);
+          return;
+        }
 
-      NSInteger expiration = [result.token.expirationDate timeIntervalSince1970];
-      resolve(@{ @"type": @"success", @"token": result.token.tokenString, @"expires": @(expiration) });
-    }];
+        NSInteger expiration = [result.token.expirationDate timeIntervalSince1970];
+        resolve(@{ @"type": @"success", @"token": result.token.tokenString, @"expires": @(expiration) });
+      }];
+    }
+    @catch (NSException *exception) {
+      NSString *message = [@"An error occurred while trying to log in to Facebook: " stringByAppendingString:exception.reason];
+      reject(@"E_FBLOGIN_ERROR", message, nil);
+    }
   });
 }
 
