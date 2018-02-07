@@ -4,7 +4,7 @@ title: Push Notifications
 
 Push Notifications are an important feature to, as _"growth hackers"_ would say, retain and re-engage users and monetize on their attention, or something. From my point of view it's just super handy to know when a relevant event happens in an app so I can jump back into it and read more. Let's look at how to do this with Expo. Spoiler alert: it's almost too easy.
 
-> **Note:** iOS and Android simulators cannot receive push notifications, to test them out you will need to use a real-life device. Additionally, when calling Permissions.askAsync on the simulator, it will resolve immediately with "undetermined" as the status, regardless of whether you choose to allow or not.
+> **Note:** iOS and Android simulators cannot receive push notifications. To test them out you will need to use a real-life device. Additionally, when calling Permissions.askAsync on the simulator, it will resolve immediately with "undetermined" as the status, regardless of whether you choose to allow or not.
 
 There are three main steps to wiring up push notifications: sending a user's Expo Push Token to your server, calling Expo's Push API with the token when you want to send a notification, and responding to receiving and/or selecting the notification in your app (for example to jump to a particular screen that the notification refers to).
 
@@ -61,51 +61,16 @@ async function registerForPushNotificationsAsync() {
 
 ## 2. Call Expo's Push API with the user's token
 
-Push notifications have to come from somewhere, and that somewhere is your server, probably (you could write a command line tool to send them if you wanted, it's all the same). When you're ready to send a push notification, grab the Expo push token off of the user record and send it over to the Expo API using a plain old HTTP POST request. We've taken care of wrapping that for you in a few languages:![Diagram explaining sending a push from your server to device](./sending-notification.png)
+Push notifications have to come from somewhere, and that somewhere is your server, probably (you could write a command line tool to send them if you wanted, it's all the same). When you're ready to send a push notification, grab the Expo push token off of the user record and send it over to the Expo API using a plain old HTTPS POST request. We've taken care of wrapping that for you in a few languages:![Diagram explaining sending a push from your server to device](./sending-notification.png)
 
--   [exponent-server-sdk-ruby](https://github.com/exponent/exponent-server-sdk-ruby)
--   [exponent-server-sdk-python](https://github.com/exponent/exponent-server-sdk-python)
--   [exponent-server-sdk-node](https://github.com/exponent/exponent-server-sdk-node)
+-   [exponent-server-sdk-node](https://github.com/exponent/exponent-server-sdk-node) for Node.js. Maintained by the Expo team.
+-   [exponent-server-sdk-python](https://github.com/exponent/exponent-server-sdk-python) for Python. Maintained by community developers.
+-   [exponent-server-sdk-ruby](https://github.com/exponent/exponent-server-sdk-ruby) for Ruby. Unmaintained.
+-   [ExpoNotificationsBundle](https://github.com/solvecrew/ExpoNotificationsBundle) for Symfony. Maintained by SolveCrew.
 
-Check out the source if you would like to implement it in another language. For the sake of demonstration, let's look at our [simple-rails-push-server-example](https://github.com/exponent/simple-rails-push-server-example).
+Check out the source if you would like to implement it in another language.
 
-```javascript
-require 'exponent-server-sdk'
-
-class TokensController < ApplicationController
-  def create
-    # You probably actually want to associate this with a user,
-    # otherwise it's not particularly useful
-    @token = Token.where(value: params[:token][:value]).first
-
-    message = ''
-    if @token.present?
-      message = 'Welcome back!'
-    else
-      @token = Token.create(token_params)
-      message = 'Welcome to Expo'
-    end
-
-    exponent.publish(
-      exponentPushToken: @token.value,
-      message: message,
-      data: {a: 'b'}, # Data is required, pass any arbitrary data to include with the notification
-    )
-
-    render json: {success: true}
-  end
-
-  private
-
-  def token_params
-    params.require(:token).permit(:value)
-  end
-
-  def exponent
-    @exponent ||= Exponent::Push::Client.new
-  end
-end
-```
+The [Expo push notification tool](https://expo.io/dashboard/notifications) is also useful for testing push notifications during development. It lets you easily send test notifications to your device.
 
 ## 3. Handle receiving and/or selecting the notification
 
@@ -166,7 +131,7 @@ It's not entirely clear from the above when your app will be able to handle the 
 
 ## HTTP/2 API
 
-Although we provide server-side SDKs in several languages to help you send push notifications, you may want to directly send requests to our HTTP/2 API.
+Although there are server-side SDKs in several languages to help you send push notifications, you may want to directly send requests to our HTTP/2 API.
 
 ### Sending notifications
 
@@ -176,9 +141,9 @@ Send a POST request to `https://exp.host/--/api/v2/push/send` with the following
     accept-encoding: gzip, deflate
     content-type: application/json
 
-This API does not require any authentication.
+This API currently does not require any authentication.
 
-Here's an hello world request done with curl (replace with your push token):
+This is a "hello world" request using cURL (replace the placeholder push token with your own):
 
 ```bash
 curl -H "Content-Type: application/json" -X POST https://exp.host/--/api/v2/push/send -d '{
