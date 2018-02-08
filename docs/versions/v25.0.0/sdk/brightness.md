@@ -3,7 +3,7 @@ title: Brightness
 ---
 An API to get and set screen brightness.
 
-### `Expo.Brightness.setBrightness(brightnessValue)`
+### `Expo.Brightness.setBrightnessAsync(brightnessValue)`
 Sets screen brightness.
 
 #### Arguments
@@ -16,7 +16,7 @@ Gets screen brightness.
 #### Returns
 A `Promise` that is resolved with a number between 0 and 1, representing the current screen brightness. 
 
-### `Expo.Brightness.setSystemBrightness(brightnessValue)`
+### `Expo.Brightness.setSystemBrightnessAsync(brightnessValue)`
 > **WARNING:** this method is experimental.
 
 Sets global system screen brightness, requires `WRITE_SETTINGS` permissions on Android.
@@ -32,7 +32,7 @@ await Permissions.askAsync(Permissions.SYSTEM_BRIGHTNESS);
 
 const { status } = await Permissions.getAsync(Permissions.SYSTEM_BRIGHTNESS);
 if (status === 'granted') {
-  Expo.Brightness.setSystemBrightness(100);
+  Expo.Brightness.setSystemBrightnessAsync(1);
 }
 ...
 ```
