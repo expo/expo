@@ -63,15 +63,21 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 
 - (void)setIsEnabled:(id)json
 {
+  // If the data output is already initialized, we toggle its connections instead of adding/removing the output from camera session.
+  // It allows us to smoothly toggle face detection without interrupting preview and reconfiguring camera session.
   BOOL newFaceDetecting = [RCTConvert BOOL:json];
   
   if ([self isDetectingFaces] != newFaceDetecting) {
     _faceDetecting = newFaceDetecting;
     [self _runBlockIfQueueIsPresent:^{
       if ([self isDetectingFaces]) {
-        [self tryEnablingFaceDetection];
+        if (_dataOutput) {
+          [self _setConnectionsEnabled:true];
+        } else {
+          [self tryEnablingFaceDetection];
+        }
       } else {
-        [self stopFaceDetection];
+        [self _setConnectionsEnabled:false];
       }
     }];
   }
@@ -155,6 +161,16 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 }
 
 # pragma mark Private API
+
+- (void)_setConnectionsEnabled:(BOOL)enabled
+{
+  if (!_dataOutput) {
+    return;
+  }
+  for (AVCaptureConnection *connection in _dataOutput.connections) {
+    connection.enabled = enabled;
+  }
+}
 
 - (void)_resetFaceDetector
 {
