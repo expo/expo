@@ -53,6 +53,16 @@ In development, your ExpoKit project will request your local build from XDE/exp.
 
 In production, your ExpoKit project will request your published JS bundle. This is configured in `EXShell.plist` (iOS) and `MainActivity.java` (Android). If you want to specify custom behavior in iOS, you can also set the `[ExpoKit sharedInstance].publishedManifestUrlOverride` property.
 
+## Enabling Optional Expo Modules on iOS
+
+A few Expo modules are not included in Standalone iOS Apps produced by `exp build`. Typically this is either because they add a disproportionate amount of bloat to the binary, or because they include APIs that are governed by extra Apple review guidelines. Right now those modules are:
+
+- FaceDetector
+- ARKit
+- Payments
+
+If you want to use any of these modules in your Expo iOS app, you need to detach to ExpoKit rather than using `exp build`. (It's on our roadmap to improve this.) Within your ExpoKit project, you'll need to include the appropriate [subspec](https://github.com/expo/expo/blob/master/ExpoKit.podspec) in your `Podfile`. By default, none are included.
+
 ## Using DocumentPicker
 
 In iOS Expokit projects, the DocumentPicker module requires the iCloud entitlement to work properly. If your app doesn't have it already, you can add it by opening the project in Xcode and following these steps:
