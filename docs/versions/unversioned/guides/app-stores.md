@@ -26,8 +26,6 @@ Try your app on tablets in addition to handsets. Even if you have `ios.supportsT
 - Use [native gestures](../sdk/gesture-handler.html) whenever possible.
 - Use interface elements that make sense on the device. For example, see the [iOS Human Interface Guidelines](https://developer.apple.com/ios/human-interface-guidelines/overview/themes/).
 
-> **Note**: iOS standalone apps [default](https://developer.apple.com/documentation/uikit/uibarstyle/uibarstyledefault) the status bar text color to white. But when developing within the Expo app, the default is black since the Expo app itself has a black status bar. Users are often surprised that their standalone apps suddenly have white status bars. In order to keep it black, you'll need to use a `<StatusBar barStyle="dark-content" />` component. See [StatusBar docs](https://facebook.github.io/react-native/docs/statusbar.html) for more information.
-
 ## Tailor your app metadata
 
 - Add a great [icon](./app-icons.html). Icon requirements between iOS and Android differ and are fairly strict, so be sure and familiarize yourself with that guide.
