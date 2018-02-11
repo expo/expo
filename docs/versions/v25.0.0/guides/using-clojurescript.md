@@ -106,7 +106,7 @@ exp start --ios
 ```javascript
 exp start
 ```
-Once you connect, in the Expo app on the device, turn off Enable Live Reload and Enable Hot Reloading.
+Once you connect, in the Expo app on the device, disable Live Reload and Hot Reloading.
 
 # Or connect to Android devices or simulators
 exp start --android
