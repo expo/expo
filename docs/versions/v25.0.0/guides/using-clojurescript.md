@@ -54,7 +54,7 @@ cd your-project && yarn install
 ## 2. Checkpoint: Test your Expo setup
 ```javascript
 lein prod-build
-expo start
+exp start
 ```
 ## 3. Configure the project for figwheel
 ### Put your IP address in .lan-ip
