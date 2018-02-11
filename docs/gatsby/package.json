@@ -42,7 +42,7 @@
     "tippy.js": "^1.2.0",
     "typeface-source-code-pro": "^0.0.35",
     "typeface-source-sans-pro": "^0.0.35",
-    "typography": "^0.16.0",
+    "typography": "^0.16.5",
     "typography-plugin-code": "^0.15.11",
     "unist-util-inspect": "^4.1.1"
   }
