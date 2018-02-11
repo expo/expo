@@ -9,6 +9,7 @@ const typography = new Typography({
   headerFontFamily: [
     '-apple-system',
     'system-ui',
+    'Segoe UI',
     'Roboto',
     'Ubuntu',
     'Cantarell',
@@ -20,6 +21,7 @@ const typography = new Typography({
   bodyFontFamily: [
     '-apple-system',
     'system-ui',
+    'Segoe UI',
     'Roboto',
     'Ubuntu',
     'Cantarell',
