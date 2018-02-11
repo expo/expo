@@ -52,7 +52,16 @@ lein new expo your-project +om
 cd your-project && yarn install
 ```
 
-## 2. Connect to a REPL
+## 2. Configure the project
+### Put your IP address in .lan-ip
+Edit or create the file .lan-ip. The file should simple contain your IP address.
+
+### Set Expo Host Type to LAN
+Edit the file .expo/settings.json. Set the hostType to "lan"
+```javascript
+"hostType": "lan"
+```
+## 3. Connect to a REPL
 
 ### CLI REPL
 
@@ -82,7 +91,7 @@ In Intellij make sure your REPL config is selected and click the green **play** 
 
 Run `(start-figwheel)` in the connected REPL.
 
-## 3. Start Expo server
+## 4. Start Expo server
 
 ### Using `exp` CLI
 
@@ -92,6 +101,9 @@ npm install -g exp
 
 # Connect to iOS simulator
 exp start --ios
+
+# Connect to iOS device
+exp start
 
 # Or connect to Android devices or simulators
 exp start --android
@@ -103,7 +115,7 @@ For more information, see [exp Command-Line Interface](exp-cli.html#exp-cli).
 
 For more information, see [XDE tour](../introduction/xde-tour.html#xde-tour).
 
-## 4. Publish your app
+## 5. Publish your app
 
 ```javascript
 # Generate main.js
