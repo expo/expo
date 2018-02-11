@@ -54,7 +54,7 @@ cd your-project && yarn install
 
 ## 2. Configure the project
 ### Put your IP address in .lan-ip
-Edit or create the file .lan-ip. The file should simple contain your IP address.
+Edit or create the file .lan-ip. The file should simply contain your IP address.
 
 ### Set Expo Host Type to LAN
 Edit the file .expo/settings.json. Set the hostType to "lan"
@@ -101,9 +101,12 @@ npm install -g exp
 
 # Connect to iOS simulator
 exp start --ios
-
+```
 # Connect to iOS device
+```javascript
 exp start
+```
+Once you connect, in the Expo app on the device, turn off Enable Live Reload and Enable Hot Reloading.
 
 # Or connect to Android devices or simulators
 exp start --android
