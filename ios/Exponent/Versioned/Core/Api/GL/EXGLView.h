@@ -8,6 +8,7 @@
 
 - (instancetype)initWithManager:(EXGLViewManager *)mgr;
 - (void)runOnGLThreadAsync:(void(^)(void))callback;
+- (void)saveSnapshotWithOptions:(nonnull NSDictionary *)options callback:(void(^)(NSMutableDictionary *))callback;
 
 @property (nonatomic, copy) RCTDirectEventBlock onSurfaceCreate;
 

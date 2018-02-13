@@ -76,6 +76,9 @@ void UEXGLContextDestroyObject(UEXGLContextId exglCtxId, UEXGLObjectId exglObjId
 // [GL thread] Set the underlying OpenGL object an EXGL object maps to.
 void UEXGLContextMapObject(UEXGLContextId exglCtxId, UEXGLObjectId exglObjId, GLuint glObj);
 
+// [GL thread] Get the underlying OpenGL object an EXGL object maps to.
+GLuint UEXGLContextGetObject(UEXGLContextId exglCtxId, UEXGLObjectId exglObjId);
+
 #ifdef __cplusplus
 }
 #endif

@@ -184,11 +184,6 @@ private:
   std::unordered_map<UEXGLObjectId, GLuint> objects;
   static std::atomic_uint nextObjectId;
 
-  inline GLuint lookupObject(UEXGLObjectId exglObjId) noexcept {
-    auto iter = objects.find(exglObjId);
-    return iter == objects.end() ? 0 : iter->second;
-  }
-
 public:
   inline UEXGLObjectId createObject(void) noexcept {
     return nextObjectId++;
@@ -200,6 +195,11 @@ public:
 
   inline void mapObject(UEXGLObjectId exglObjId, GLuint glObj) noexcept {
     objects[exglObjId] = glObj;
+  }
+  
+  inline GLuint lookupObject(UEXGLObjectId exglObjId) noexcept {
+    auto iter = objects.find(exglObjId);
+    return iter == objects.end() ? 0 : iter->second;
   }
 
 
@@ -3003,4 +3003,12 @@ void UEXGLContextMapObject(UEXGLContextId exglCtxId, UEXGLObjectId exglObjId, GL
   if (exglCtx) {
     exglCtx->mapObject(exglObjId, glObj);
   }
+}
+
+GLuint UEXGLContextGetObject(UEXGLContextId exglCtxId, UEXGLObjectId exglObjId) {
+  auto exglCtx = EXGLContextGet(exglCtxId);
+  if (exglCtx) {
+    return exglCtx->lookupObject(exglObjId);
+  }
+  return 0;
 }

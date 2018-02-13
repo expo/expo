@@ -13,6 +13,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.UIBlock;
@@ -24,6 +25,7 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import versioned.host.exp.exponent.modules.api.components.camera.ExpoCameraView;
+import host.exp.exponent.utils.ScopedContext;
 
 import static host.exp.exponent.exgl.EXGL.*;
 
@@ -253,9 +255,11 @@ class GLCameraObject extends GLObject implements SurfaceTexture.OnFrameAvailable
 
 public class GLObjectManagerModule extends ReactContextBaseJavaModule {
   private SparseArray<GLObject> mGLObjects = new SparseArray<>();
+  private ScopedContext mScopedContext;
 
-  public GLObjectManagerModule(ReactApplicationContext reactContext) {
+  public GLObjectManagerModule(ReactApplicationContext reactContext, ScopedContext scopedContext) {
     super(reactContext);
+    mScopedContext = scopedContext;
   }
 
   @Override
@@ -309,6 +313,28 @@ public class GLObjectManagerModule extends ReactContextBaseJavaModule {
             promise.resolve(response);
           }
         });
+      }
+    });
+  }
+
+  @ReactMethod
+  public void saveSnapshotAsync(final int glViewTag, final ReadableMap options, final Promise promise) {
+    ReactApplicationContext reactContext = getReactApplicationContext();
+    UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+
+    uiManager.addUIBlock(new UIBlock() {
+      @Override
+      public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
+        final GLView glView;
+
+        try {
+          glView = (GLView) nativeViewHierarchyManager.resolveView(glViewTag);
+        } catch (Exception e) {
+          promise.reject("E_GL_BAD_VIEW_TAG", "ExponentGLObjectManager.saveSnapshotAsync: Expected a GLView");
+          return;
+        }
+
+        glView.saveSnapshot(options, mScopedContext, promise);
       }
     });
   }

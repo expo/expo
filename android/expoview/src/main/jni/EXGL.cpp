@@ -53,6 +53,12 @@ Java_host_exp_exponent_exgl_EXGL_EXGLContextMapObject
   UEXGLContextMapObject(exglCtxId, exglObjId, glObj);
 }
 
+JNIEXPORT jint JNICALL
+Java_host_exp_exponent_exgl_EXGL_EXGLContextGetObject
+(JNIEnv *env, jclass clazz, jint exglCtxId, jint exglObjId) {
+  return UEXGLContextGetObject(exglCtxId, exglObjId);
+}
+
 JNIEXPORT void JNICALL
 Java_host_exp_exponent_exgl_EXGL_EXGLContextSetFlushMethod
 (JNIEnv *env, jclass clazz, jint exglCtxId, jobject glView) {

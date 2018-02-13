@@ -64,4 +64,25 @@ RCT_REMAP_METHOD(createCameraTextureAsync,
   });
 }
 
+# pragma mark - Snapshots
+
+RCT_REMAP_METHOD(saveSnapshotAsync,
+                 saveSnapshotAsyncWithReactTag:(nonnull NSNumber *)tag
+                 andOptions:(nonnull NSDictionary *)options
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UIView *view = [self.bridge.uiManager viewForReactTag:tag];
+    
+    if (![view isKindOfClass:[EXGLView class]]) {
+      reject(@"E_GL_BAD_VIEW_TAG", nil, RCTErrorWithMessage(@"ExponentGLObjectManager.saveSnapshotAsync: Expected an EXGLView"));
+      return;
+    }
+    
+    EXGLView *exglView = (EXGLView *)view;
+    [exglView saveSnapshotWithOptions:options callback:resolve];
+  });
+}
+
 @end

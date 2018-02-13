@@ -1,4 +1,5 @@
 #import "EXGLView.h"
+#import "EXFileSystem.h"
 
 #include <OpenGLES/ES3/gl.h>
 #include <OpenGLES/ES3/glext.h>
@@ -379,6 +380,106 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     // mark renderbuffer as not presented
     _renderbufferPresented = NO;
   }
+}
+
+#pragma mark - save texture
+
+// Saves the contents of the framebuffer to a file.
+// Possible options:
+// - `flip`: if true, the image will be flipped vertically.
+// - `framebuffer`: WebGLFramebuffer that we will be reading from. If not specified, the default framebuffer for this context will be used.
+// - `rect`: { x, y, width, height } object used to crop the snapshot.
+- (void)saveSnapshotWithOptions:(nonnull NSDictionary *)options callback:(void(^)(NSMutableDictionary *))callback
+{
+  // contentScaleFactor should be called on the main thread
+  CGFloat scale = self.contentScaleFactor;
+  
+  [self runOnGLThreadAsync:^{
+    NSString *filePath = [self generateSnapshotPathWithExtension:@".jpeg"];
+    NSDictionary *rect = options[@"rect"] ?: @{ @"x": @0, @"y": @0, @"width": @(_layerWidth), @"height": @(_layerHeight) };
+    BOOL flip = options[@"flip"] != nil && [options[@"flip"] boolValue];
+    
+    int x = [rect[@"x"] intValue];
+    int y = [rect[@"y"] intValue];
+    int width = [rect[@"width"] intValue];
+    int height = [rect[@"height"] intValue];
+    
+    // Set source framebuffer that we take snapshot from
+    GLint sourceFramebuffer = _viewFramebuffer;
+    
+    if (options[@"framebuffer"] && options[@"framebuffer"][@"id"]) {
+      int exglFramebufferId = [options[@"framebuffer"][@"id"] intValue];
+      sourceFramebuffer = UEXGLContextGetObject(_exglCtxId, exglFramebufferId);
+    }
+    
+    // Save surrounding framebuffer
+    GLint prevFramebuffer;
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFramebuffer);
+    
+    // Bind source framebuffer
+    glBindFramebuffer(GL_FRAMEBUFFER, sourceFramebuffer);
+    
+    // Allocate pixel buffer and read pixels
+    NSInteger dataLength = width * height * 4;
+    GLubyte *buffer = (GLubyte *) malloc(dataLength * sizeof(GLubyte));
+    glReadPixels(x, y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+    
+    // Create CGImage
+    CGDataProviderRef providerRef = CGDataProviderCreateWithData(NULL, buffer, dataLength, NULL);
+    CGColorSpaceRef colorspaceRef = CGColorSpaceCreateDeviceRGB();
+    CGImageRef imageRef = CGImageCreate(width, height, 8, 32, width * 4, colorspaceRef, kCGBitmapByteOrder32Big | kCGImageAlphaPremultipliedLast,
+                                    providerRef, NULL, true, kCGRenderingIntentDefault);
+    
+    // Begin image context
+    NSInteger widthInPoints = width / scale;
+    NSInteger heightInPoints = height / scale;
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(widthInPoints, heightInPoints), NO, scale);
+    
+    // Flip and draw image to CGImage
+    CGContextRef cgContext = UIGraphicsGetCurrentContext();
+    if (flip) {
+      CGAffineTransform flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, heightInPoints);
+      CGContextConcatCTM(cgContext, flipVertical);
+    }
+    CGContextDrawImage(cgContext, CGRectMake(0.0, 0.0, widthInPoints, heightInPoints), imageRef);
+    
+    // Retrieve the UIImage from the current context
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    // Cleanup
+    free(buffer);
+    CFRelease(providerRef);
+    CFRelease(colorspaceRef);
+    CGImageRelease(imageRef);
+    
+    // Write image to file
+    NSData *imageData = UIImageJPEGRepresentation(image, 1.0);
+    [imageData writeToFile:filePath atomically:YES];
+    
+    // Restore surrounding framebuffer
+    glBindFramebuffer(GL_FRAMEBUFFER, prevFramebuffer);
+    
+    // Return result object which imitates Expo.Asset so it can be used again to fill the texture
+    NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
+    NSString *fileUrl = [[NSURL fileURLWithPath:filePath] absoluteString];
+    
+    result[@"uri"] = fileUrl;
+    result[@"localUri"] = fileUrl;
+    result[@"width"] = @(width);
+    result[@"height"] = @(height);
+    
+    callback(result);
+  }];
+}
+
+- (NSString *)generateSnapshotPathWithExtension:(NSString *)extension
+{
+  NSString *directory = [_viewManager.bridge.scopedModules.fileSystem.cachesDirectory stringByAppendingPathComponent:@"GLView"];
+  NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:extension];
+  [EXFileSystem ensureDirExistsWithPath:directory];
+  
+  return [directory stringByAppendingPathComponent:fileName];
 }
 
 #pragma mark - maybe AR

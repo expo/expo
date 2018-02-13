@@ -1,6 +1,8 @@
 package versioned.host.exp.exponent.modules.api.gl;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.graphics.SurfaceTexture;
 import android.opengl.EGL14;
 import android.opengl.GLUtils;
@@ -9,12 +11,17 @@ import android.view.TextureView;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JavaScriptContextHolder;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.nio.IntBuffer;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
@@ -23,13 +30,17 @@ import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.egl.EGLSurface;
 
 import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.utils.ExpFileUtils;
+import host.exp.exponent.utils.ScopedContext;
 
+import static android.opengl.GLES30.*;
 import static host.exp.exponent.exgl.EXGL.EXGLContextCreate;
 import static host.exp.exponent.exgl.EXGL.EXGLContextDestroy;
 import static host.exp.exponent.exgl.EXGL.EXGLContextDrawEnded;
 import static host.exp.exponent.exgl.EXGL.EXGLContextFlush;
 import static host.exp.exponent.exgl.EXGL.EXGLContextNeedsRedraw;
 import static host.exp.exponent.exgl.EXGL.EXGLContextSetFlushMethod;
+import static host.exp.exponent.exgl.EXGL.EXGLContextGetObject;
 
 public class GLView extends TextureView implements TextureView.SurfaceTextureListener  {
   private boolean mOnSurfaceCreateCalled = false;
@@ -139,6 +150,110 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
     });
   }
 
+  public void saveSnapshot(final ReadableMap options, final ScopedContext scopedContext, final Promise promise) {
+    runOnGLThread(new Runnable() {
+      @Override
+      public void run() {
+        ReadableMap rect = options.hasKey("rect") ? options.getMap("rect") : getViewportRect();
+        boolean flip = options.hasKey("flip") && options.getBoolean("flip");
+
+        int x = rect.getInt("x");
+        int y = rect.getInt("y");
+        int width = rect.getInt("width");
+        int height = rect.getInt("height");
+
+        // Save surrounding framebuffer
+        int[] prevFramebuffer = new int[1];
+        glGetIntegerv(GL_FRAMEBUFFER_BINDING, prevFramebuffer, 0);
+
+        // Set source framebuffer that we take snapshot from
+        int sourceFramebuffer = 0;
+        ReadableMap framebufferMap = options.hasKey("framebuffer") ? options.getMap("framebuffer") : null;
+
+        if (framebufferMap != null && framebufferMap.hasKey("id")) {
+          sourceFramebuffer = EXGLContextGetObject(mEXGLCtxId, framebufferMap.getInt("id"));
+        }
+
+        // Bind source framebuffer
+        glBindFramebuffer(GL_FRAMEBUFFER, sourceFramebuffer);
+
+        // Allocate pixel buffer and read pixels
+        final int[] dataArray = new int[width * height];
+        final IntBuffer dataBuffer = IntBuffer.wrap(dataArray);
+        dataBuffer.position(0);
+        glReadPixels(x, y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, dataBuffer);
+
+        // Convert RGBA data format to bitmap's ARGB
+        for (int i = 0; i < height; i++) {
+          for (int j = 0; j < width; j++) {
+            int offset = i * width + j;
+            int pixel = dataArray[offset];
+            int blue = (pixel >> 16) & 0xff;
+            int red = (pixel << 16) & 0x00ff0000;
+            dataArray[offset] = (pixel & 0xff00ff00) | red | blue;
+          }
+        }
+
+        // Create Bitmap and flip
+        Bitmap bitmap = Bitmap.createBitmap(dataArray, width, height, Bitmap.Config.ARGB_8888);
+
+        if (!flip) {
+          // the bitmap is automatically flipped on Android, however we may want to unflip it
+          // in case we take a snapshot from framebuffer that is already flipped
+          Matrix flipMatrix = new Matrix();
+          flipMatrix.postScale(1, -1, width / 2, height / 2);
+          bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, flipMatrix, true);
+        }
+
+        // Write bitmap to file
+        String path = null;
+        FileOutputStream output = null;
+
+        try {
+          path = ExpFileUtils.generateOutputPath(scopedContext.getCacheDir(), "GLView", ".jpeg");
+          output = new FileOutputStream(path);
+          bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output);
+          output.flush();
+          output.close();
+          output = null;
+
+        } catch (Exception e) {
+          e.printStackTrace();
+          promise.reject("E_GL_CANT_SAVE_SNAPSHOT", e.getMessage());
+        }
+
+        // Restore surrounding framebuffer
+        glBindFramebuffer(GL_FRAMEBUFFER, prevFramebuffer[0]);
+
+        if (output == null) {
+          // Return result object which imitates Expo.Asset so it can be used again to fill the texture
+          WritableMap result = Arguments.createMap();
+          String fileUri = ExpFileUtils.uriFromFile(new File(path)).toString();
+
+          result.putString("uri", fileUri);
+          result.putString("localUri", fileUri);
+          result.putInt("width", width);
+          result.putInt("height", height);
+
+          promise.resolve(result);
+        }
+      }
+    });
+  }
+
+  // must be called in GL thread
+  private ReadableMap getViewportRect() {
+    int[] viewport = new int[4];
+    glGetIntegerv(GL_VIEWPORT, viewport, 0);
+
+    WritableMap results = Arguments.createMap();
+    results.putInt("x", viewport[0]);
+    results.putInt("y", viewport[1]);
+    results.putInt("width", viewport[2]);
+    results.putInt("height", viewport[3]);
+
+    return results;
+  }
 
   // All actual GL calls are made on this thread
 
