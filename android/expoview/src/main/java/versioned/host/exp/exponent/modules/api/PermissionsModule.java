@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 
 import com.facebook.react.bridge.Arguments;
@@ -51,9 +52,12 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
       promise.resolve(existingPermissions);
     } else {
       switch (type) {
+        case "notifications": {
+          promise.resolve(getNotificationPermissions());
+          break;
+        }
         case "remoteNotifications": {
-          // nothing to ask for, always granted
-          promise.resolve(getAlwaysGrantedPermissions());
+          promise.resolve(getNotificationPermissions());
           break;
         }
         case "location": {
@@ -92,9 +96,11 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
 
   private WritableMap getPermissions(final String type) {
     switch (type) {
+      case "notifications": {
+        return getNotificationPermissions();
+      }
       case "remoteNotifications": {
-        // these permissions are always the same
-        return getAlwaysGrantedPermissions();
+        return getNotificationPermissions();
       }
       case "location": {
         return getLocationPermissions();
@@ -126,6 +132,17 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
     WritableMap response = Arguments.createMap();
     response.putString("status", "granted");
     response.putString("expires", PERMISSION_EXPIRES_NEVER);
+    return response;
+  }
+
+  private WritableMap getNotificationPermissions() {
+    WritableMap response = Arguments.createMap();
+
+    boolean areEnabled = NotificationManagerCompat.from(getReactApplicationContext()).areNotificationsEnabled();
+    response.putString("status", areEnabled ? "granted" : "denied");
+
+    response.putString("expires", PERMISSION_EXPIRES_NEVER);
+
     return response;
   }
 

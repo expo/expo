@@ -2,7 +2,7 @@
 
 #import "EXPermissions.h"
 
-@interface EXRemoteNotificationRequester : NSObject <EXPermissionRequester>
+@interface EXRemoteNotificationRequester : NSObject <EXPermissionRequester, EXPermissionRequesterDelegate>
 
 + (NSDictionary *)permissions;
 
