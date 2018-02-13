@@ -104,7 +104,7 @@ RCT_EXPORT_METHOD(openBrowserAsync:(NSString *)authURL
       __strong typeof(self) strongSelf = weakSelf;
       if (strongSelf) {
         strongSelf.redirectResolve(@{
-                                     @"type": @"dismissed",
+                                     @"type": @"dismiss",
                                      });
         [strongSelf flowDidFinish];
       }
@@ -121,7 +121,7 @@ RCT_EXPORT_METHOD(dismissAuthSession) {
     [_authSession cancel];
     if (_redirectResolve) {
       _redirectResolve(@{
-        @"type": @"dismissed"
+        @"type": @"dismiss"
       });
 
       [self flowDidFinish];
