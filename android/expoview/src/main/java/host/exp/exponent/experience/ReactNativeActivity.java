@@ -166,6 +166,9 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   }
 
   protected void stopLoading() {
+    if (!mIsLoading) {
+      return;
+    }
     mHandler.removeCallbacksAndMessages(null);
     mLoadingView.setAlpha(0.0f);
     mLoadingView.setShowIcon(false);
@@ -205,6 +208,9 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   }
 
   public void showLoadingScreen(JSONObject manifest) {
+    if (mIsLoading) {
+      return;
+    }
     mLoadingView.setManifest(manifest);
     mLoadingView.setShowIcon(true);
     mLoadingView.clearAnimation();
@@ -213,6 +219,9 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   }
 
   private void fadeLoadingScreen() {
+    if (!mIsLoading) {
+      return;
+    }
     runOnUiThread(new Runnable() {
       @Override
       public void run() {
@@ -239,6 +248,11 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
         boolean didDoubleTapR = Assertions.assertNotNull(mDoubleTapReloadRecognizer)
             .didDoubleTapR(keyCode, getCurrentFocus());
         if (didDoubleTapR) {
+          // The loading screen is hidden by versioned code when reloading JS so we can't show it
+          // on older sdks.
+          if (ABIVersion.toNumber(mSDKVersion) >= ABIVersion.toNumber("26.0.0")) {
+            showLoadingScreen(mManifest);
+          }
           devSupportManager.call("handleReloadJS");
           return true;
         }

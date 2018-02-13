@@ -19,7 +19,7 @@ public class ExponentDevBundleDownloadListener implements DevBundleDownloadListe
 
   @Override
   public void onSuccess() {
-
+    mListener.onSuccess();
   }
 
   @Override
@@ -29,6 +29,6 @@ public class ExponentDevBundleDownloadListener implements DevBundleDownloadListe
 
   @Override
   public void onFailure(Exception cause) {
-
+    mListener.onFailure(cause);
   }
 }
