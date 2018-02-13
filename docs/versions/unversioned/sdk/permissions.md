@@ -58,9 +58,21 @@ async function getLocationAsync() {
 
 ### `Expo.Permissions.NOTIFICATIONS`
 
-The permission type for local and push notifications.
+The permission type for local notifications.
+
+> **Note:** iOS is capable of returning detailed permission status, so the permission status will contain not only `status` and `expires`, but also booleans for `allowsSound`, `allowsAlert` and `allowsBadge`.
+
+> **Note:** Android does not differentiate between permissions for local and remote notifications, so status of permission for `NOTIFICATIONS` should always be the same as the status for `REMOTE_NOTIFICATIONS`.
+
+### `Expo.Permissions.REMOTE_NOTIFICATIONS`
+
+The permission type for push/remote notifications.
+
+> **Note:** On iOS, asking for this permission asks the user not only for permission to register for push/remote notifications, but also for showing notifications as such. At the moment remote notifications will only be received when notifications are permitted to play a sound, change the app badge or be displayed as an alert. As iOS is more detailed when it comes to notifications permissions, this permission status will contain not only `status` and `expires`, but also booleans for `allowsSound`, `allowsAlert` and `allowsBadge`.
 
 > **Note:** On iOS, this does not disambiguate `undetermined` from `denied` and so will only ever return `granted` or `undetermined`. This is due to the way the underlying native API is implemented.
+
+> **Note:** Android does not differentiate between permissions for local and remote notifications, so status of permission for `REMOTE_NOTIFICATIONS` should always be the same as the status for `NOTIFICATIONS`.
 
 ### `Expo.Permissions.LOCATION`
 
