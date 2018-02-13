@@ -20,6 +20,7 @@
 #import <GoogleMaps/GoogleMaps.h>
 
 NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDidRegisterForRemoteNotificationsNotification";
+NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"EXAppDidRegisterUserNotificationSettingsNotification";
 
 @interface ExpoKit () <CrashlyticsDelegate>
 {
@@ -198,6 +199,11 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
 {
   BOOL isFromBackground = !(application.applicationState == UIApplicationStateActive);
   [[EXLocalNotificationManager sharedInstance] handleLocalNotification:notification fromBackground:isFromBackground];
+}
+
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(nonnull UIUserNotificationSettings *)notificationSettings
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:EXAppDidRegisterUserNotificationSettingsNotification object:nil];
 }
 
 #pragma mark - deep linking hooks

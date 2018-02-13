@@ -5,6 +5,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 FOUNDATION_EXPORT NSString * const EXAppDidRegisterForRemoteNotificationsNotification;
+FOUNDATION_EXPORT NSString * const EXAppDidRegisterUserNotificationSettingsNotification;
 
 @class EXViewController;
 
@@ -48,6 +49,7 @@ FOUNDATION_EXPORT NSString * const EXAppDidRegisterForRemoteNotificationsNotific
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification;
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)token;
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)err;
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(nonnull UIUserNotificationSettings *)notificationSettings;
 
 #pragma mark - deep linking hooks
 

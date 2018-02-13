@@ -81,13 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(nonnull UIUserNotificationSettings *)notificationSettings
 {
-  if (notificationSettings.types == UIUserNotificationTypeNone) {
-    // happens when user hits "don't allow" on notifications permission dialogue.
-    NSError *err = [NSError errorWithDomain:@"EXNotifications" code:-1 userInfo:@{ NSLocalizedDescriptionKey: @"User denied notification permissions" }];
-    [[ExpoKit sharedInstance] application:application didFailToRegisterForRemoteNotificationsWithError:err];
-  } else {
-    // we'll get notified of success by some other method, e.g. `didRegisterForRemoteNotifications`
-  }
+  [[ExpoKit sharedInstance] application:application didRegisterUserNotificationSettings:notificationSettings];
 }
 
 @end
