@@ -19,25 +19,27 @@ import {
   bannerSize="fullBanner"
   adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
   testDeviceID="EMULATOR"
-  didFailToReceiveAdWithError={this.bannerError} />
+  onDidFailToReceiveAdWithError={this.bannerError} />
 
 // Display a DFP Publisher banner
 <PublisherBanner
   bannerSize="fullBanner"
   adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
   testDeviceID="EMULATOR"
-  didFailToReceiveAdWithError={this.bannerError}
-  admobDispatchAppEvent={this.adMobEvent} />
+  onDidFailToReceiveAdWithError={this.bannerError}
+  onAdMobDispatchAppEvent={this.adMobEvent} />
 
 // Display an interstitial
 AdMobInterstitial.setAdUnitID('ca-app-pub-3940256099942544/1033173712'); // Test ID, Replace with your-admob-unit-id
 AdMobInterstitial.setTestDeviceID('EMULATOR');
-AdMobInterstitial.requestAd(() => AdMobInterstitial.showAd())
+await AdMobInterstitial.requestAdAsync();
+await AdMobInterstitial.showAdAsync();
 
 // Display a rewarded ad
 AdMobRewarded.setAdUnitID('ca-app-pub-3940256099942544/1033173712'); // Test ID, Replace with your-admob-unit-id
 AdMobRewarded.setTestDeviceID('EMULATOR');
-AdMobRewarded.requestAd(() => AdMobRewarded.showAd());
+await AdMobRewarded.requestAdAsync();
+await AdMobRewarded.showAdAsync();
 ```
 
 ## Components
@@ -45,82 +47,84 @@ AdMobRewarded.requestAd(() => AdMobRewarded.showAd());
 ### AdMobBanner
 
 #### bannerSize property
-*Corresponding to [iOS framework banner size constants](https://developers.google.com/admob/ios/banner)*
 
-| Prop value              | Description                                 | Size                  |
-|-------------------------|---------------------------------------------|-----------------------|
-|`banner`                 |Standard Banner for Phones and Tablets       |320x50                 |
-|`largeBanner`            |Large Banner for Phones and Tablets          |320x100                |
-|`mediumRectangle`        |IAB Medium Rectangle for Phones and Tablets  |300x250                |
-|`fullBanner`             |IAB Full-Size Banner for Tablet              |468x60                 |
-|`leaderboard`            |IAB Leaderboard for Tablets                  |728x90                 |
-|**`smartBannerPortrait`**|Smart Banner for Phones and Tablets (default)|Screen width x 32|50|90|
-|`smartBannerLandscape`   |Smart Banner for Phones and Tablets          |Screen width x 32|50|90|
+_Corresponding to [iOS framework banner size constants](https://developers.google.com/admob/ios/banner)_
 
-*Note: There is no `smartBannerPortrait` and `smartBannerLandscape` on Android. Both prop values will map to `smartBanner`*
+| Prop value                | Description                                       | Size              |
+| ------------------------- | ------------------------------------------------- | ----------------- |
+| `banner`                  | Standard Banner for Phones and Tablets            | 320x50            |
+| `largeBanner`             | Large Banner for Phones and Tablets               | 320x100           |
+| `mediumRectangle`         | IAB Medium Rectangle for Phones and Tablets       | 300x250           |
+| `fullBanner`              | IAB Full-Size Banner for Tablet                   | 468x60            |
+| `leaderboard`             | IAB Leaderboard for Tablets                       | 728x90            |
+| **`smartBannerPortrait`** | **Smart Banner for Phones and Tablets (default)** | Screen width x 32 |
+| `smartBannerLandscape`    | Smart Banner for Phones and Tablets               | Screen width x 32 |
 
+_Note: There is no `smartBannerPortrait` and `smartBannerLandscape` on Android. Both prop values will map to `smartBanner`_
 
 #### Events as function props
-*Corresponding to [Ad lifecycle event callbacks](https://developers.google.com/admob/ios/banner)*
 
-| Prop                                           |
-|------------------------------------------------|
-|`adViewDidReceiveAd()`                          |
-|`didFailToReceiveAdWithError(errorDescription)` |
-|`adViewWillPresentScreen()`                     |
-|`adViewWillDismissScreen()`                     |
-|`adViewDidDismissScreen()`                      |
-|`adViewWillLeaveApplication()`                  |
+_Corresponding to [Ad lifecycle event callbacks](https://developers.google.com/admob/ios/banner)_
+
+| Prop                                                      |
+| --------------------------------------------------------- |
+| `onAdViewDidReceiveAd()`                                  |
+| `onDidFailToReceiveAdWithError(errorDescription: string)` |
+| `onAdViewWillPresentScreen()`                             |
+| `onAdViewWillDismissScreen()`                             |
+| `onAdViewDidDismissScreen()`                              |
+| `onAdViewWillLeaveApplication()`                          |
 
 ### AdMobInterstitials
 
 #### Methods
 
-| Name                      | Description                                                                                                     |
-|---------------------------|-----------------------------------------------------------------------------------------------------------------|
-|`setAdUnitID(adUnitID)`    | sets the AdUnit ID for all future ad requests.                                                                  |
-|`setTestDeviceID(deviceID)`| sets the test device ID                                                                                         |
-|`requestAd(callback)`      | requests an interstitial and calls callback when `interstitialDidLoad` or`interstitialDidFailToLoad` event fires|
-|`showAd(callback)`         | shows an interstitial if it is ready and calls callback when `interstitialDidOpen` event fires                  |
-|`isReady(callback)`        | calls callback with boolean whether interstitial is ready to be shown                                           |
+| Name                        | Description                                                                                                 |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `setAdUnitID(adUnitID)`     | sets the AdUnit ID for all future ad requests.                                                              |
+| `setTestDeviceID(deviceID)` | sets the test device ID                                                                                     |
+| `requestAdAsync()`          | requests an interstitial and resolves when `interstitialDidLoad` or `interstitialDidFailToLoad` event fires |
+| `showAdAsync()`             | shows an interstitial if it is ready and resolves when `interstitialDidOpen` event fires                    |
+| `getIsReadyAsync()`         | resolves with boolean whether interstitial is ready to be shown                                             |
 
-*For simulators/emulators you can use `'EMULATOR'` for the test device ID.*
+_For simulators/emulators you can use `'EMULATOR'` for the test device ID._
 
 #### Events
+
 Unfortunately, events are not consistent across iOS and Android. To have one unified API, new event names are introduced for pairs that are roughly equivalent.
 
-| iOS                                      | *this library*                   | Android             |
-|------------------------------------------|----------------------------------|---------------------|
-|`interstitialDidReceiveAd`                |`interstitialDidLoad`             |`onAdLoaded`         |
-|`interstitial:didFailToReceiveAdWithError`|`interstitialDidFailToLoad`       |`onAdFailedToLoad`   |
-|`interstitialWillPresentScreen`           |`interstitialDidOpen`             |`onAdOpened`         |
-|`interstitialDidFailToPresentScreen`      |                                  |                     |
-|`interstitialWillDismissScreen`           |                                  |                     |
-|`interstitialDidDismissScreen`            |`interstitialDidClose`            |`onAdClosed`         |
-|`interstitialWillLeaveApplication`        |`interstitialWillLeaveApplication`|`onAdLeftApplication`|
+| iOS                                        | _this library_                     | Android               |
+| ------------------------------------------ | ---------------------------------- | --------------------- |
+| `interstitialDidReceiveAd`                 | `interstitialDidLoad`              | `onAdLoaded`          |
+| `interstitial:didFailToReceiveAdWithError` | `interstitialDidFailToLoad`        | `onAdFailedToLoad`    |
+| `interstitialWillPresentScreen`            | `interstitialDidOpen`              | `onAdOpened`          |
+| `interstitialDidFailToPresentScreen`       |                                    |                       |
+| `interstitialWillDismissScreen`            |                                    |                       |
+| `interstitialDidDismissScreen`             | `interstitialDidClose`             | `onAdClosed`          |
+| `interstitialWillLeaveApplication`         | `interstitialWillLeaveApplication` | `onAdLeftApplication` |
 
-*Note that `interstitialWillLeaveApplication` and `onAdLeftApplication` are not exactly the same but share one event in this library.*
-
+_Note that `interstitialWillLeaveApplication` and `onAdLeftApplication` are not exactly the same but share one event in this library._
 
 ### AdMobRewarded
 
 Opens a rewarded AdMob ad.
 
 #### Methods
-| Name                      | Description                                                                                                     |
-|---------------------------|-----------------------------------------------------------------------------------------------------------------|
-|`setAdUnitID(adUnitID)`    | sets the AdUnit ID for all future ad requests.                                                                  |
-|`setTestDeviceID(deviceID)`| sets the test device ID                                                                                         |
-|`requestAd(callback)`      | requests a rewarded ad|
-|`showAd(callback)`         | shows a rewarded if it is ready                  |
+
+| Name                                    | Description                                     |
+| --------------------------------------- | ----------------------------------------------- |
+| `setAdUnitID(adUnitID: string)`         | sets the AdUnit ID for all future ad requests.  |
+| `setTestDeviceID(testDeviceID: string)` | sets the test device ID                         |
+| `requestAdAsync()`                      | (async) requests a rewarded ad                  |
+| `showAdAsync()`                         | (async) shows a rewarded if it is ready (async) |
 
 #### Events
 
-| iOS                                        | *this library*                    | Android                          |
-|--------------------------------------------|-----------------------------------|----------------------------------|
-|`rewardBasedVideoAd:didRewardUserWithReward`|`rewardedVideoDidRewardUser`       |`onRewarded`                      |
-|`rewardBasedVideoAdDidReceiveAd`            |`rewardedVideoDidLoad`             |`onRewardedVideoAdLoaded`         |
-|`rewardBasedVideoAd:didFailToLoadWithError` |`rewardedVideoDidFailToLoad`       |`onRewardedVideoAdFailedToLoad`   |
-|`rewardBasedVideoAdDidOpen`                 |`rewardedVideoDidOpen`             |`onRewardedVideoAdOpened`         |
-|`rewardBasedVideoAdDidClose`                |`rewardedVideoDidClose`            |`onRewardedVideoAdClosed`         |
-|`rewardBasedVideoAdWillLeaveApplication`    |`rewardedVideoWillLeaveApplication`|`onRewardedVideoAdLeftApplication`|
+| iOS                                          | _this library_                      | Android                            |
+| -------------------------------------------- | ----------------------------------- | ---------------------------------- |
+| `rewardBasedVideoAd:didRewardUserWithReward` | `rewardedVideoDidRewardUser`        | `onRewarded`                       |
+| `rewardBasedVideoAdDidReceiveAd`             | `rewardedVideoDidLoad`              | `onRewardedVideoAdLoaded`          |
+| `rewardBasedVideoAd:didFailToLoadWithError`  | `rewardedVideoDidFailToLoad`        | `onRewardedVideoAdFailedToLoad`    |
+| `rewardBasedVideoAdDidOpen`                  | `rewardedVideoDidOpen`              | `onRewardedVideoAdOpened`          |
+| `rewardBasedVideoAdDidClose`                 | `rewardedVideoDidClose`             | `onRewardedVideoAdClosed`          |
+| `rewardBasedVideoAdWillLeaveApplication`     | `rewardedVideoWillLeaveApplication` | `onRewardedVideoAdLeftApplication` |
