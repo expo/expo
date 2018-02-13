@@ -164,8 +164,7 @@ setupBackground = async () => {
 
 Now when you run the snack you should see this dope background!
 
-<img src="./flappy_00.jpg" width="270px" height="480px"/>
-
+![](./flappy_00.jpg)
 
 So the app is a little boring now, no drama or tension.
 We should add a player to the game to spice things up!
@@ -233,7 +232,7 @@ updateGame = delta => {
 Now we should see the bird flapping and bobbing!
 Congrats on making an animated sprite BTW :} 🤓💙
 
-<img src="./flappy_01.gif" width="200px"/>
+![](./flappy_01.gif)
 
 
 ### Pipes
@@ -445,7 +444,7 @@ updateGame = delta => {
 YAY! 😛 Now we have pipes working! Our game is starting to come together pretty nicely.
 Now we need someway to control the bird and flap it right into a pipe!! 🙃
 
-<img src="./flappy_02.gif" width="200px"/>
+![](./flappy_02.gif)
 
 ### Physics
 
@@ -501,7 +500,7 @@ updateGame = delta => {
 
 And that's all we need to give our user a way to control the bird, pretty easy! 😁
 
-<img src="./flappy_03.gif" width="200px"/>
+![](./flappy_03.gif)
 
 ### Collisions
 
@@ -592,7 +591,7 @@ updateGame = delta => {
 3. If the child ground node is off screen then get the next child ground node on the screen.
 4. Get the position of the last node and move the current node behind it.
 
-<img src="./flappy_04.gif" width="200px"/>
+![](./flappy_04.gif)
 
 ---
 Alright, play time is over for this bird.
@@ -655,7 +654,7 @@ updateGame = delta => {
 4. Check to see if the user's y position is lower than the floor, if so then we end the game.
 5. If the game is over than let the player continue to fall until they hit the floor.
 
-<img src="./flappy_05.gif" width="200px"/>
+![](./flappy_05.gif)
 
 ### Game Over
 
@@ -748,7 +747,7 @@ render() {
 3. Here we will define what the score label will look like. We use a native Text component to do this! 🤤
 4. Now we will add our score component to the main render method 😬
 
-<img src="./flappy_06.gif" width="200px"/>
+![](./flappy_06.gif)
 
 ### Loading Sounds
 
