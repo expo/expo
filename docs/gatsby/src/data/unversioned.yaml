@@ -111,6 +111,7 @@
     Payments: /versions/unversioned/sdk/payments.html
     Pedometer: /versions/unversioned/sdk/pedometer.html
     Permissions: /versions/unversioned/sdk/permissions.html
+    Print: /versions/unversioned/sdk/print.html
     registerRootComponent: /versions/unversioned/sdk/register-root-component.html
     ScreenOrientation: /versions/unversioned/sdk/screen-orientation.html
     SecureStore: /versions/unversioned/sdk/securestore.html
