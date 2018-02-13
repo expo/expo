@@ -113,6 +113,26 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
         }
       });
     }
+
+    @Override
+    public void onSuccess() {
+      UiThreadUtil.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          stopLoading();
+        }
+      });
+    }
+
+    @Override
+    public void onFailure(Exception error) {
+      UiThreadUtil.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          stopLoading();
+        }
+      });
+    }
   };
 
   /*
