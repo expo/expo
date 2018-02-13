@@ -154,10 +154,6 @@ The following is a list of properties that are available for you under the `"exp
    **Standalone Apps Only**. URL scheme to link into your app. For example, if we set this to `'demo'`, then demo:// URLs would open your app when tapped.
  String beginning with a letter followed by any combination of letters, digits, "+", "." or "-"
 
-- `entryPoint`
-
-   The relative path to your main JavaScript file.
-
 - `extra`
 
    Any extra fields you want to pass to your experience. Values are accessible via `Expo.Constants.manifest.extra` ([read more](../sdk/constants.html#expoconstantsmanifest))
