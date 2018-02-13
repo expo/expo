@@ -16,6 +16,7 @@ public class EXGL {
   public static native int EXGLContextCreateObject(int exglCtxId);
   public static native void EXGLContextDestroyObject(int exglCtxId, int exglObjId);
   public static native void EXGLContextMapObject(int exglCtxId, int exglObjId, int glObj);
+  public static native int EXGLContextGetObject(int exglCtxId, int exglObjId);
   public static native void EXGLContextSetFlushMethod(int exglCtxId, GLView glView);
   public static native boolean EXGLContextNeedsRedraw(int exglCtxId);
   public static native void EXGLContextDrawEnded(int exglCtxId);

@@ -184,7 +184,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new ScreenOrientationModule(reactContext));
         nativeModules.add(new SpeechModule(reactContext));
         nativeModules.add(new SecureStoreModule(reactContext, scopedContext));
-        nativeModules.add(new GLObjectManagerModule(reactContext));
+        nativeModules.add(new GLObjectManagerModule(reactContext, scopedContext));
         nativeModules.add(new BrightnessModule(reactContext));
         nativeModules.add(new RNGestureHandlerModule(reactContext));
         nativeModules.add(new StripeModule(reactContext));
