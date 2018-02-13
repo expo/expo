@@ -6,13 +6,33 @@ title: GLView
 
 A `View` that acts as an OpenGL ES render target. On mounting, an OpenGL ES context is created. Its drawing buffer is presented as the contents of the `View` every frame.
 
+### props
 Other than the regular `View` props for layout and touch handling, the following props are available:
 
- `onContextCreate`
-A function that will be called when the OpenGL ES context is created. The function is passed a single argument `gl` that has a [WebGLRenderingContext](https://www.khronos.org/registry/webgl/specs/latest/1.0/#5.14) interface.
+- **onContextCreate**
 
- `msaaSamples`
-`GLView` can enable iOS's built-in [multisampling](https://www.khronos.org/registry/OpenGL/extensions/APPLE/APPLE_framebuffer_multisample.txt). This prop specifies the number of samples to use. By default this is 4. Setting this to 0 turns off multisampling. On Android this is ignored.
+  A function that will be called when the OpenGL ES context is created. The function is passed a single argument `gl` that has a [WebGLRenderingContext](https://www.khronos.org/registry/webgl/specs/latest/1.0/#5.14) interface.
+
+- **msaaSamples**
+
+  `GLView` can enable iOS's built-in [multisampling](https://www.khronos.org/registry/OpenGL/extensions/APPLE/APPLE_framebuffer_multisample.txt). This prop specifies the number of samples to use. By default this is 4. Setting this to 0 turns off multisampling. On Android this is ignored.
+
+### Methods
+
+### `saveSnapshotAsync`
+
+Takes a snapshot of the framebuffer and saves it as JPEG file to app's cache directory.
+
+#### Arguments
+
+-   **options (_object_)** -- A map of options:
+    -   **framebuffer (_WebGLFramebuffer_)** -- Specify the framebuffer that we will be reading from. Defaults to underlying framebuffer that is presented in the view.
+    -   **rect (_{ x: number, y: number, width: number, height: number }_)** -- Rect to crop the snapshot. It's passed directly to `glReadPixels`.
+    -   **flip (_boolean_)** -- Whether to flip the snapshot vertically. Defaults to `false`.
+
+#### Returns
+
+Returns `{ uri, localUri, width, height }` where `uri` is a URI to the snapshot. `localUri` is a synonym for `uri` that makes this object compatible with `texImage2D`. `width, height` specify the dimensions of the snapshot.
 
 ## High-level APIs
 
