@@ -53,7 +53,8 @@ Fetch the stored value associated with the provided key.
   
     -   **keychainService (_string_)** -- 
       iOS: The item's service, equivalent to `kSecAttrService`.
-      Android: Equivalent of the public/private key pair `Alias`.  
+      Android: Equivalent of the public/private key pair `Alias`.
+
       **NOTE** If the item is set with the `keychainService` option, it will be required to later fetch the value.
 
 #### Returns
