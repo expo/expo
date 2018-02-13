@@ -5,7 +5,7 @@ import android.os.Looper;
 import android.support.annotation.Nullable;
 
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -16,11 +16,30 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 
 public class RNAdMobInterstitialAdModule extends ReactContextBaseJavaModule {
-  InterstitialAd mInterstitialAd;
-  String adUnitID;
-  String testDeviceID;
-  Callback requestAdCallback;
-  Callback showAdCallback;
+  private InterstitialAd mInterstitialAd;
+  private String mTestDeviceID;
+  private String mAdUnitID;
+  private Promise mRequestAdPromise;
+  private Promise mShowAdPromise;
+
+  public enum Events {
+    DID_LOAD("interstitialDidLoad"),
+    DID_FAIL_TO_LOAD("interstitialDidFailToLoad"),
+    DID_OPEN("interstitialDidOpen"),
+    DID_CLOSE("interstitialDidClose"),
+    WILL_LEAVE_APPLICATION("interstitialWillLeaveApplication");
+
+    private final String mName;
+
+    Events(final String name) {
+      mName = name;
+    }
+
+    @Override
+    public String toString() {
+      return mName;
+    }
+  }
 
   @Override
   public String getName() {
@@ -29,7 +48,94 @@ public class RNAdMobInterstitialAdModule extends ReactContextBaseJavaModule {
 
   public RNAdMobInterstitialAdModule(ReactApplicationContext reactContext) {
     super(reactContext);
-    mInterstitialAd = new InterstitialAd(reactContext);
+  }
+  private void sendEvent(String eventName, @Nullable WritableMap params) {
+    getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, params);
+  }
+
+  @ReactMethod
+  public void setAdUnitID(String adUnitID) {
+    mAdUnitID = adUnitID;
+  }
+
+  @ReactMethod
+  public void setTestDeviceID(String testDeviceID) {
+    mTestDeviceID = testDeviceID;
+  }
+
+  @ReactMethod
+  public void requestAd(final Promise promise) {
+    new Handler(Looper.getMainLooper()).post(new Runnable() {
+      @Override
+      public void run () {
+        recreateInterstitialAdWithAdUnitID(mAdUnitID);
+        if (mInterstitialAd.isLoaded() || mInterstitialAd.isLoading()) {
+          promise.reject("E_AD_ALREADY_LOADED", "Ad is already loaded.", null);
+        } else {
+          mRequestAdPromise = promise;
+          AdRequest.Builder adRequestBuilder = new AdRequest.Builder();
+          if (mTestDeviceID != null) {
+            if (mTestDeviceID.equals("EMULATOR")) {
+              adRequestBuilder = adRequestBuilder.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
+            } else {
+              adRequestBuilder = adRequestBuilder.addTestDevice(mTestDeviceID);
+            }
+          }
+          AdRequest adRequest = adRequestBuilder.build();
+          mInterstitialAd.loadAd(adRequest);
+        }
+      }
+    });
+  }
+
+  @ReactMethod
+  public void showAd(final Promise promise) {
+    new Handler(Looper.getMainLooper()).post(new Runnable() {
+      @Override
+      public void run () {
+        if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
+          mShowAdPromise = promise;
+          mInterstitialAd.show();
+        } else {
+          promise.reject("E_AD_NOT_READY", "Ad is not ready", null);
+        }
+      }
+    });
+  }
+
+  @ReactMethod
+  public void dismissAd(final Promise promise) {
+    new Handler(Looper.getMainLooper()).post(new Runnable() {
+      @Override
+      public void run () {
+        if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
+          mShowAdPromise = promise;
+
+          recreateInterstitialAdWithAdUnitID(mAdUnitID);
+        } else {
+          promise.reject("E_AD_NOT_READY", "Ad is not ready", null);
+        }
+      }
+    });
+  }
+
+  @ReactMethod
+  public void getIsReady(final Promise promise) {
+    new Handler(Looper.getMainLooper()).post(new Runnable() {
+      @Override
+      public void run () {
+        promise.resolve(mInterstitialAd != null && mInterstitialAd.isLoaded());
+      }
+    });
+  }
+
+  private void recreateInterstitialAdWithAdUnitID(String adUnitID) {
+    if (mInterstitialAd != null) {
+      mInterstitialAd = null;
+    }
+
+    mInterstitialAd = new InterstitialAd(getReactApplicationContext());
+    mInterstitialAd.setAdUnitId(adUnitID);
 
     new Handler(Looper.getMainLooper()).post(new Runnable() {
       @Override
@@ -37,9 +143,9 @@ public class RNAdMobInterstitialAdModule extends ReactContextBaseJavaModule {
         mInterstitialAd.setAdListener(new AdListener() {
           @Override
           public void onAdClosed() {
-            sendEvent("interstitialDidClose", null);
-            showAdCallback.invoke();
+            sendEvent(Events.DID_CLOSE.toString(), null);
           }
+
           @Override
           public void onAdFailedToLoad(int errorCode) {
             WritableMap event = Arguments.createMap();
@@ -59,85 +165,36 @@ public class RNAdMobInterstitialAdModule extends ReactContextBaseJavaModule {
                 break;
             }
             event.putString("error", errorString);
-            sendEvent("interstitialDidFailToLoad", event);
-            requestAdCallback.invoke(errorString);
-          }
-          @Override
-          public void onAdLeftApplication() {
-            sendEvent("interstitialWillLeaveApplication", null);
-          }
-          @Override
-          public void onAdLoaded() {
-            sendEvent("interstitialDidLoad", null);
-            requestAdCallback.invoke();
-          }
-          @Override
-          public void onAdOpened() {
-            sendEvent("interstitialDidOpen", null);
-          }
-        });
-      }
-    });
-  }
-  private void sendEvent(String eventName, @Nullable WritableMap params) {
-    getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, params);
-  }
-
-  @ReactMethod
-  public void setAdUnitID(String adUnitID) {
-    mInterstitialAd.setAdUnitId(adUnitID);
-  }
-
-  @ReactMethod
-  public void setTestDeviceID(String testDeviceID) {
-    this.testDeviceID = testDeviceID;
-  }
-
-  @ReactMethod
-  public void requestAd(final Callback callback) {
-    new Handler(Looper.getMainLooper()).post(new Runnable() {
-      @Override
-      public void run () {
-        if (mInterstitialAd.isLoaded() || mInterstitialAd.isLoading()) {
-          callback.invoke("Ad is already loaded."); // TODO: make proper error
-        } else {
-          requestAdCallback = callback;
-          AdRequest.Builder adRequestBuilder = new AdRequest.Builder();
-          if (testDeviceID != null){
-            if (testDeviceID.equals("EMULATOR")) {
-              adRequestBuilder = adRequestBuilder.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
-            } else {
-              adRequestBuilder = adRequestBuilder.addTestDevice(testDeviceID);
+            sendEvent(Events.DID_FAIL_TO_LOAD.toString(), event);
+            if (mRequestAdPromise != null) {
+              mRequestAdPromise.reject("E_AD_REQUEST_FAILED", errorString, null);
+              mRequestAdPromise = null;
             }
           }
-          AdRequest adRequest = adRequestBuilder.build();
-          mInterstitialAd.loadAd(adRequest);
-        }
-      }
-    });
-  }
 
-  @ReactMethod
-  public void showAd(final Callback callback) {
-    new Handler(Looper.getMainLooper()).post(new Runnable() {
-      @Override
-      public void run () {
-        if (mInterstitialAd.isLoaded()) {
-          showAdCallback = callback;
-          mInterstitialAd.show();
-        } else {
-          callback.invoke("Ad is not ready."); // TODO: make proper error
-        }
-      }
-    });
-  }
+          @Override
+          public void onAdLeftApplication() {
+            sendEvent(Events.WILL_LEAVE_APPLICATION.toString(), null);
+          }
 
-  @ReactMethod
-  public void isReady(final Callback callback) {
-    new Handler(Looper.getMainLooper()).post(new Runnable() {
-      @Override
-      public void run () {
-        callback.invoke(mInterstitialAd.isLoaded());
+          @Override
+          public void onAdLoaded() {
+            sendEvent(Events.DID_LOAD.toString(), null);
+            if (mRequestAdPromise != null) {
+              mRequestAdPromise.resolve(null);
+              mRequestAdPromise = null;
+            }
+          }
+
+          @Override
+          public void onAdOpened() {
+            sendEvent(Events.DID_OPEN.toString(), null);
+            if (mShowAdPromise != null) {
+              mShowAdPromise.resolve(null);
+              mShowAdPromise = null;
+            }
+          }
+        });
       }
     });
   }

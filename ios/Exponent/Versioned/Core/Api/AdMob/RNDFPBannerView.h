@@ -4,7 +4,7 @@
 
 @class RCTEventDispatcher;
 
-@interface RNDFPBannerView : UIView <GADBannerViewDelegate>
+@interface RNDFPBannerView : UIView <GADBannerViewDelegate, GADAppEventDelegate>
 
 @property (nonatomic, copy) NSString *bannerSize;
 @property (nonatomic, copy) NSString *adUnitID;
@@ -19,7 +19,6 @@
 @property (nonatomic, copy) RCTBubblingEventBlock onAdViewDidDismissScreen;
 @property (nonatomic, copy) RCTBubblingEventBlock onAdViewWillLeaveApplication;
 
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
 - (GADAdSize)getAdSizeFromString:(NSString *)bannerSize;
 - (void)loadBanner;
 

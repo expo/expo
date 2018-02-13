@@ -4,23 +4,23 @@
 #import <React/RCTLog.h>
 
 @implementation RNBannerView {
-  GADBannerView  *_bannerView;
+  GADBannerView *_bannerView;
 }
 
-- (void)insertReactSubview:(UIView *)view atIndex:(NSInteger)atIndex
-{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wobjc-missing-super-calls"
+- (void)insertReactSubview:(UIView *)view atIndex:(NSInteger)atIndex {
   RCTLogError(@"AdMob Banner cannot have any subviews");
   return;
 }
 
-- (void)removeReactSubview:(UIView *)subview
-{
+- (void)removeReactSubview:(UIView *)subview {
   RCTLogError(@"AdMob Banner cannot have any subviews");
   return;
 }
+#pragma clang diagnostic pop
 
-- (GADAdSize)getAdSizeFromString:(NSString *)bannerSize
-{
+- (GADAdSize)getAdSizeFromString:(NSString *)bannerSize {
   if ([bannerSize isEqualToString:@"banner"]) {
     return kGADAdSizeBanner;
   } else if ([bannerSize isEqualToString:@"largeBanner"]) {
@@ -40,25 +40,24 @@
   }
 }
 
--(void)loadBanner
-{
+- (void)loadBanner {
   if (_adUnitID && _bannerSize) {
     GADAdSize size = [self getAdSizeFromString:_bannerSize];
     _bannerView = [[GADBannerView alloc] initWithAdSize:size];
-    if(!CGRectEqualToRect(self.bounds, _bannerView.bounds)) {
+    if (!CGRectEqualToRect(self.bounds, _bannerView.bounds)) {
       if (self.onSizeChange) {
         self.onSizeChange(@{
-               @"width": [NSNumber numberWithFloat: _bannerView.bounds.size.width],
-               @"height": [NSNumber numberWithFloat: _bannerView.bounds.size.height]
-        });
+                            @"width" : [NSNumber numberWithFloat:_bannerView.bounds.size.width],
+                            @"height" : [NSNumber numberWithFloat:_bannerView.bounds.size.height]
+                            });
       }
     }
     _bannerView.delegate = self;
     _bannerView.adUnitID = _adUnitID;
     _bannerView.rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
     GADRequest *request = [GADRequest request];
-    if(_testDeviceID) {
-      if([_testDeviceID isEqualToString:@"EMULATOR"]) {
+    if (_testDeviceID) {
+      if ([_testDeviceID isEqualToString:@"EMULATOR"]) {
         request.testDevices = @[kGADSimulatorID];
       } else {
         request.testDevices = @[_testDeviceID];
@@ -68,9 +67,8 @@
   }
 }
 
-- (void)setBannerSize:(NSString *)bannerSize
-{
-  if(![bannerSize isEqual:_bannerSize]) {
+- (void)setBannerSize:(NSString *)bannerSize {
+  if (![bannerSize isEqual:_bannerSize]) {
     _bannerSize = bannerSize;
     if (_bannerView) {
       [_bannerView removeFromSuperview];
@@ -79,9 +77,8 @@
   }
 }
 
-- (void)setAdUnitID:(NSString *)adUnitID
-{
-  if(![adUnitID isEqual:_adUnitID]) {
+- (void)setAdUnitID:(NSString *)adUnitID {
+  if (![adUnitID isEqual:_adUnitID]) {
     _adUnitID = adUnitID;
     if (_bannerView) {
       [_bannerView removeFromSuperview];
@@ -90,9 +87,8 @@
   }
 }
 
-- (void)setTestDeviceID:(NSString *)testDeviceID
-{
-  if(![testDeviceID isEqual:_testDeviceID]) {
+- (void)setTestDeviceID:(NSString *)testDeviceID {
+  if (![testDeviceID isEqual:_testDeviceID]) {
     _testDeviceID = testDeviceID;
     if (_bannerView) {
       [_bannerView removeFromSuperview];
@@ -101,14 +97,14 @@
   }
 }
 
--(void)layoutSubviews
-{
+- (void)layoutSubviews {
   [super layoutSubviews];
   self.frame = CGRectMake(
-    self.bounds.origin.x,
-    self.bounds.origin.x,
-    _bannerView.frame.size.width,
-    _bannerView.frame.size.height);
+                          self.bounds.origin.x,
+                          self.bounds.origin.y,
+                          _bannerView.frame.size.width,
+                          _bannerView.frame.size.height
+                          );
   [self addSubview:_bannerView];
 }
 
@@ -120,10 +116,9 @@
 }
 
 /// Tells the delegate an ad request failed.
-- (void)adView:(GADBannerView *)adView
-didFailToReceiveAdWithError:(GADRequestError *)error {
+- (void)adView:(GADBannerView *)adView didFailToReceiveAdWithError:(GADRequestError *)error {
   if (self.onDidFailToReceiveAdWithError) {
-    self.onDidFailToReceiveAdWithError(@{@"error": [error localizedDescription]});
+    self.onDidFailToReceiveAdWithError(@{ @"error" : [error description] });
   }
 }
 
@@ -158,3 +153,4 @@ didFailToReceiveAdWithError:(GADRequestError *)error {
 }
 
 @end
+

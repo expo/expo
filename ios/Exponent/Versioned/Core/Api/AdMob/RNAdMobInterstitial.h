@@ -1,7 +1,7 @@
 #import <React/RCTBridgeModule.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventEmitter.h>
 
 #import <GoogleMobileAds/GoogleMobileAds.h>
 
-@interface RNAdMobInterstitial : NSObject <RCTBridgeModule, GADInterstitialDelegate>
+@interface RNAdMobInterstitial : RCTEventEmitter <RCTBridgeModule, GADInterstitialDelegate>
 @end
