@@ -2,8 +2,7 @@
 title: Creating A 2D Game
 ---
 
-> **Notice**
-> This tutorial is written for [Expo v22](https://docs.expo.io/versions/v22.0.0/index.html)
+> **Notice** This tutorial is written for [Expo v22](https://docs.expo.io/versions/v22.0.0/index.html)
 
 ### Goal
 In this tutorial we want to show you how easy it is to create a 2D cross-platform mobile game with React Native, Expo, and Three.js. We'll be recreating a version of the popular (and addictive) game Flappy Bird!
@@ -113,9 +112,7 @@ setupBackground = async () => {
 
 Because we will be building a lot of static nodes we should create a helper function for that.
 
-> **Tip**
-> Sprites are used for images and animations
-> We use nodes for positioning and managing state
+> **Tip** Sprites are used for images and animations. We use nodes for positioning and managing state.
 
 
 ```js
