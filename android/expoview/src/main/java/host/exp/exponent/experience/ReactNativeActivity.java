@@ -208,9 +208,6 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   }
 
   public void showLoadingScreen(JSONObject manifest) {
-    if (mIsLoading) {
-      return;
-    }
     mLoadingView.setManifest(manifest);
     mLoadingView.setShowIcon(true);
     mLoadingView.clearAnimation();
