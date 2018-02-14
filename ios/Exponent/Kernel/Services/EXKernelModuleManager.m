@@ -3,6 +3,7 @@
 #import "EXErrorRecoveryManager.h"
 #import "EXFileDownloader.h"
 #import "EXKernel.h"
+#import "EXKernelAppLoader.h"
 #import "EXKernelDevKeyCommands.h"
 #import "EXKernelDevMenuViewController.h"
 #import "EXKernelDevMotionHandler.h"
@@ -37,21 +38,21 @@
 
 - (BOOL)kernelModuleShouldEnableDevtools:(__unused EXKernelModule *)module
 {
-  EXKernelBridgeRegistry *bridgeRegistry = [EXKernel sharedInstance].bridgeRegistry;
+  EXKernelAppRegistry *appRegistry = [EXKernel sharedInstance].appRegistry;
   return (
-    bridgeRegistry.lastKnownForegroundAppManager != bridgeRegistry.kernelAppManager &&
-    [bridgeRegistry.lastKnownForegroundAppManager areDevtoolsEnabled]
+    appRegistry.lastKnownForegroundAppManager != appRegistry.kernelAppManager &&
+    [appRegistry.lastKnownForegroundAppManager areDevtoolsEnabled]
   );
 }
 
 - (NSDictionary<NSString *, NSString *> *)devMenuItemsForKernelModule:(EXKernelModule *)module
 {
-  return [[EXKernel sharedInstance].bridgeRegistry.lastKnownForegroundAppManager devMenuItems];
+  return [[EXKernel sharedInstance].appRegistry.lastKnownForegroundAppManager devMenuItems];
 }
 
 - (void)kernelModule:(EXKernelModule *)module didSelectDevMenuItemWithKey:(NSString *)key
 {
-  [[EXKernel sharedInstance].bridgeRegistry.lastKnownForegroundAppManager selectDevMenuItemWithKey:key];
+  [[EXKernel sharedInstance].appRegistry.lastKnownForegroundAppManager selectDevMenuItemWithKey:key];
 }
 
 - (void)kernelModuleDidSelectKernelDevMenu:(__unused EXKernelModule *)module
@@ -64,7 +65,7 @@
 
 - (BOOL)kernelModuleShouldAutoReloadCurrentTask:(EXKernelModule *)module
 {
-  NSString *foregroundTaskExperienceId = [EXKernel sharedInstance].bridgeRegistry.lastKnownForegroundAppManager.experienceId;
+  NSString *foregroundTaskExperienceId = [EXKernel sharedInstance].appRegistry.lastKnownForegroundAppManager.experienceId;
   return [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdShouldReloadOnError:foregroundTaskExperienceId];
 }
 
@@ -75,35 +76,21 @@
 
 - (void)kernelModule:(EXKernelModule *)module didRequestManifestWithUrl:(NSURL *)url originalUrl:(NSURL *)originalUrl success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure
 {
-  if (!([url.scheme isEqualToString:@"http"] || [url.scheme isEqualToString:@"https"])) {
-    NSURLComponents *components = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO];
-    components.scheme = @"http";
-    url = [components URL];
-  }
-  EXCachedResourceBehavior cacheBehavior = EXCachedResourceFallBackToCache;
-  if ([url.host isEqualToString:@"localhost"]) {
-    // we can't pre-detect if this person is using a developer tool, but using localhost is a pretty solid indicator.
-    cacheBehavior = EXCachedResourceNoCache;
-  }
-  if ([EXShellManager sharedInstance].loadJSInBackgroundExperimental) {
-    cacheBehavior = EXCachedResourceUseCacheImmediately;
-  }
-  EXManifestResource *manifestResource = [[EXManifestResource alloc] initWithManifestUrl:url originalUrl:originalUrl];
-  [manifestResource loadResourceWithBehavior:cacheBehavior progressBlock:nil successBlock:^(NSData * _Nonnull data) {
-    NSString *manifestString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    success(manifestString);
-  } errorBlock:^(NSError * _Nonnull error) {
-#if DEBUG
-    if ([EXShellManager sharedInstance].isShell && error &&
-        (error.code == 404 || error.domain == EXNetworkErrorDomain)) {
-      NSString *message = error.localizedDescription;
-      message = [NSString stringWithFormat:@"Make sure you are serving your project from XDE or exp (%@)", message];
-      error = [NSError errorWithDomain:error.domain code:error.code userInfo:@{ NSLocalizedDescriptionKey: message }];
-      [[NSNotificationCenter defaultCenter] postNotificationName:kEXKernelAppDidDisplay object:self];
+  EXKernelAppRegistry *appRegistry = [EXKernel sharedInstance].appRegistry;
+  NSString *recordId = [appRegistry registerAppWithManifestUrl:originalUrl];
+  EXKernelAppRecord *record = [appRegistry recordForId:recordId];
+  [record.appLoader requestManifestWithHttpUrl:url success:^(NSDictionary * _Nonnull manifest) {
+    NSError *err;
+    NSMutableDictionary *mutableManifest = [manifest mutableCopy];
+    // TODO: ditch this once the kernel JS is gone and we can just send the recordId directly to the frame
+    mutableManifest[@"recordId"] = recordId;
+    NSString *manifestString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:manifest options:kNilOptions error:&err] encoding:NSUTF8StringEncoding];
+    if (manifestString) {
+      success(manifestString);
+    } else {
+      failure(err);
     }
-#endif
-    failure(error);
-  }];
+  } failure:failure];
 }
 
 - (void)kernelModule:(__unused EXKernelModule *)module didOpenUrl:(NSString *)url

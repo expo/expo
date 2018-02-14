@@ -6,6 +6,7 @@
 #import "EXErrorRecoveryManager.h"
 #import "EXFileSystemManager.h"
 #import "EXGoogleAuthManager.h"
+#import "EXKernelAppRegistry.h"
 #import "EXKernelLinkingManager.h"
 #import "EXKernelModuleManager.h"
 #import "EXKernelService.h"
@@ -142,22 +143,22 @@
   return _allServices;
 }
 
-#pragma mark - bridge registry delegate
+#pragma mark - app registry delegate
 
-- (void)bridgeRegistry:(EXKernelBridgeRegistry *)registry didRegisterBridgeRecord:(EXKernelBridgeRecord *)bridgeRecord
+- (void)appRegistry:(EXKernelAppRegistry *)registry didRegisterAppRecord:(EXKernelAppRecord *)appRecord
 {
   [self.allServices enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull className, id  _Nonnull service, BOOL * _Nonnull stop) {
-    if ([service respondsToSelector:@selector(kernelDidRegisterBridgeWithRecord:)]) {
-      [service kernelDidRegisterBridgeWithRecord:bridgeRecord];
+    if ([service respondsToSelector:@selector(kernelDidRegisterAppWithRecord:)]) {
+      [service kernelDidRegisterAppWithRecord:appRecord];
     }
   }];
 }
 
-- (void)bridgeRegistry:(EXKernelBridgeRegistry *)registry willUnregisterBridgeRecord:(EXKernelBridgeRecord *)bridgeRecord
+- (void)appRegistry:(EXKernelAppRegistry *)registry willUnregisterAppRecord:(EXKernelAppRecord *)appRecord
 {
   [self.allServices enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull className, id  _Nonnull service, BOOL * _Nonnull stop) {
-    if ([service respondsToSelector:@selector(kernelWillUnregisterBridgeWithRecord:)]) {
-      [service kernelWillUnregisterBridgeWithRecord:bridgeRecord];
+    if ([service respondsToSelector:@selector(kernelWillUnregisterAppWithRecord:)]) {
+      [service kernelWillUnregisterAppWithRecord:appRecord];
     }
   }];
 }

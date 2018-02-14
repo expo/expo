@@ -1,11 +1,11 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-@class EXKernelBridgeRecord;
+@class EXKernelAppRecord;
 
 @protocol EXKernelService <NSObject>
 
 @optional
-- (void)kernelDidRegisterBridgeWithRecord:(EXKernelBridgeRecord *)record;
-- (void)kernelWillUnregisterBridgeWithRecord:(EXKernelBridgeRecord *)record;
+- (void)kernelDidRegisterAppWithRecord:(EXKernelAppRecord *)record;
+- (void)kernelWillUnregisterAppWithRecord:(EXKernelAppRecord *)record;
 
 @end

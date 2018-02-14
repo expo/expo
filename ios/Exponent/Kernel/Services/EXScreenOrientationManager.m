@@ -12,11 +12,14 @@ NSNotificationName kEXChangeForegroundTaskSupportedOrientationsNotification = @"
 
 - (void)setSupportInterfaceOrientations:(UIInterfaceOrientationMask)supportedInterfaceOrientations forExperienceId:(NSString *)experienceId
 {
-  EXKernelBridgeRegistry *bridgeRegistry = [EXKernel sharedInstance].bridgeRegistry;
-  for (id bridge in bridgeRegistry.bridgeEnumerator) {
-    EXKernelBridgeRecord *bridgeRecord = [bridgeRegistry recordForBridge:bridge];
-    if ([bridgeRecord.experienceId isEqualToString:experienceId] && bridgeRecord.appManager.frame) {
-      bridgeRecord.appManager.frame.supportedInterfaceOrientations = supportedInterfaceOrientations;
+  EXKernelAppRegistry *appRegistry = [EXKernel sharedInstance].appRegistry;
+  for (NSString *recordId in appRegistry.appEnumerator) {
+    EXKernelAppRecord *appRecord = [appRegistry recordForId:recordId];
+    if (!appRecord || appRecord.status != EXKernelAppRecordStatusRunning) {
+      continue;
+    }
+    if (appRecord.experienceId && [appRecord.experienceId isEqualToString:experienceId] && appRecord.appManager && appRecord.appManager.frame) {
+      appRecord.appManager.frame.supportedInterfaceOrientations = supportedInterfaceOrientations;
       break;
     }
   }
@@ -24,8 +27,8 @@ NSNotificationName kEXChangeForegroundTaskSupportedOrientationsNotification = @"
 
 - (void)setSupportedInterfaceOrientationsForForegroundExperience:(UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-  EXKernelBridgeRegistry *bridgeRegistry = [EXKernel sharedInstance].bridgeRegistry;
-  EXReactAppManager *foregroundAppManager = bridgeRegistry.lastKnownForegroundAppManager;
+  EXKernelAppRegistry *appRegistry = [EXKernel sharedInstance].appRegistry;
+  EXReactAppManager *foregroundAppManager = appRegistry.lastKnownForegroundAppManager;
   if ([foregroundAppManager isKindOfClass:[EXFrameReactAppManager class]]) {
     EXFrame *frame = ((EXFrameReactAppManager *)foregroundAppManager).frame;
     if (frame) {
@@ -36,8 +39,8 @@ NSNotificationName kEXChangeForegroundTaskSupportedOrientationsNotification = @"
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientationsForForegroundExperience
 {
-  EXKernelBridgeRegistry *bridgeRegistry = [EXKernel sharedInstance].bridgeRegistry;
-  EXReactAppManager *foregroundAppManager = bridgeRegistry.lastKnownForegroundAppManager;
+  EXKernelAppRegistry *appRegistry = [EXKernel sharedInstance].appRegistry;
+  EXReactAppManager *foregroundAppManager = appRegistry.lastKnownForegroundAppManager;
   if ([foregroundAppManager isKindOfClass:[EXFrameReactAppManager class]]) {
     EXFrame *frame = ((EXFrameReactAppManager *)foregroundAppManager).frame;
     if (frame) {

@@ -397,6 +397,10 @@ public class Exponent {
   }
 
   public boolean loadJSBundle(JSONObject manifest, final String urlString, final String id, String abiVersion, final BundleListener bundleListener, boolean shouldForceNetwork) {
+    return loadJSBundle(manifest, urlString, id, abiVersion, bundleListener, shouldForceNetwork, false);
+  }
+
+  public boolean loadJSBundle(JSONObject manifest, final String urlString, final String id, String abiVersion, final BundleListener bundleListener, boolean shouldForceNetwork, boolean shouldForceCache) {
     if (!id.equals(KernelConstants.KERNEL_BUNDLE_ID)) {
       Analytics.markEvent(Analytics.TimedEvent.STARTED_FETCHING_BUNDLE);
     }
@@ -530,7 +534,9 @@ public class Exponent {
         }
       };
 
-      if (shouldForceNetwork) {
+      if (shouldForceCache) {
+        mExponentNetwork.getLongTimeoutClient().tryForcedCachedResponse(request.url().toString(), request, callback, null, null);
+      } else if (shouldForceNetwork) {
         mExponentNetwork.getLongTimeoutClient().callSafe(request, callback);
       } else {
         mExponentNetwork.getLongTimeoutClient().callDefaultCache(request, callback);

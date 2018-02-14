@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXKernelBridgeRegistry.h"
+#import "EXKernelAppRegistry.h"
 
 @class EXBranchManager;
 @class EXErrorRecoveryManager;
@@ -11,7 +11,7 @@
 @class EXRemoteNotificationManager;
 @class EXScreenOrientationManager;
 
-@interface EXKernelServiceRegistry : NSObject <EXKernelBridgeRegistryDelegate>
+@interface EXKernelServiceRegistry : NSObject <EXKernelAppRegistryDelegate>
 
 // TODO: roll these into a macro in the respective classes instead of defining explicitly here.
 @property (nonatomic, readonly) EXBranchManager *branchManager;

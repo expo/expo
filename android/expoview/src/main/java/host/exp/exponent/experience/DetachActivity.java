@@ -11,6 +11,7 @@ import org.json.JSONObject;
 
 import java.util.List;
 
+import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.kernel.ExponentUrls;
@@ -36,9 +37,19 @@ public abstract class DetachActivity extends ExperienceActivity {
     String defaultUrl = isDebug() ? developmentUrl() : publishedUrl();
     Constants.INITIAL_URL = defaultUrl;
 
-    mExponentManifest.fetchManifest(Constants.INITIAL_URL, new ExponentManifest.ManifestListener() {
+    new AppLoader(Constants.INITIAL_URL, mExponentManifest, mExponentSharedPreferences) {
       @Override
-      public void onCompleted(final JSONObject manifest) {
+      public void onOptimisticManifest(final JSONObject optimisticManifest) {
+        Exponent.getInstance().runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            setLoadingScreenManifest(optimisticManifest);
+          }
+        });
+      }
+
+      @Override
+      public void onManifestCompleted(final JSONObject manifest) {
         Exponent.getInstance().runOnUiThread(new Runnable() {
           @Override
           public void run() {
@@ -47,12 +58,17 @@ public abstract class DetachActivity extends ExperienceActivity {
               JSONObject opts = new JSONObject();
               opts.put(KernelConstants.OPTION_LOAD_NUX_KEY, false);
 
-              loadExperience(Constants.INITIAL_URL, manifest, bundleUrl, opts);
+              setManifest(Constants.INITIAL_URL, manifest, bundleUrl, opts);
             } catch (JSONException e) {
               mKernel.handleError(e);
             }
           }
         });
+      }
+
+      @Override
+      public void onBundleCompleted(String localBundlePath) {
+        setBundle(localBundlePath);
       }
 
       @Override
@@ -64,7 +80,7 @@ public abstract class DetachActivity extends ExperienceActivity {
       public void onError(String e) {
         mKernel.handleError(e);
       }
-    });
+    }.start();
   }
 
   @Override

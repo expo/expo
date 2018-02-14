@@ -38,6 +38,7 @@ import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.ABIVersion;
+import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentIntentService;
 import host.exp.exponent.ExponentManifest;
@@ -50,6 +51,7 @@ import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.gcm.ExponentGcmListenerService;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.ExponentError;
+import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.kernel.KernelProvider;
@@ -82,12 +84,15 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   private static final String KERNEL_STARTED_RUNNING_KEY = "experienceActivityKernelDidLoad";
   private static final String NUX_REACT_MODULE_NAME = "ExperienceNuxApp";
   private static final int NOTIFICATION_ID = 10101;
+  private static String READY_FOR_BUNDLE = "readyForBundle";
 
   private RNObject mLinkingPackage = null;
   private ReactUnthemedRootView mNuxOverlayView;
   private ExponentNotification mNotification;
+  private ExponentNotification mTempNotification;
   private boolean mIsShellApp;
   private String mIntentUri;
+  private boolean mIsReadyForBundle;
 
   private RemoteViews mNotificationRemoteViews;
   private Handler mNotificationAnimationHandler;
@@ -182,19 +187,48 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     }
 
     if (mManifestUrl != null && shouldOpenImmediately) {
-      ExponentSharedPreferences.ManifestAndBundleUrl manifestAndBundleUrl = mExponentSharedPreferences.getManifest(mManifestUrl);
-      if (manifestAndBundleUrl != null) {
-        Kernel.ExperienceActivityTask task = mKernel.getExperienceActivityTask(mManifestUrl);
-        task.taskId = getTaskId();
-        task.experienceActivity = new WeakReference<>(this);
-        task.activityId = mActivityId;
-        task.bundleUrl = manifestAndBundleUrl.bundleUrl;
-        loadExperience(mManifestUrl, manifestAndBundleUrl.manifest, manifestAndBundleUrl.bundleUrl);
-        return;
-      } else {
-        // Something went really wrong. Tell the kernel to load this again.
-        mKernel.reloadVisibleExperience(mManifestUrl);
-      }
+      new AppLoader(mManifestUrl, mExponentManifest, mExponentSharedPreferences) {
+        @Override
+        public void onOptimisticManifest(final JSONObject optimisticManifest) {
+          Exponent.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              setLoadingScreenManifest(optimisticManifest);
+            }
+          });
+        }
+
+        @Override
+        public void onManifestCompleted(final JSONObject manifest) {
+          Exponent.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              try {
+                String bundleUrl = ExponentUrls.toHttp(manifest.getString("bundleUrl"));
+
+                setManifest(mManifestUrl, manifest, bundleUrl, null);
+              } catch (JSONException e) {
+                mKernel.handleError(e);
+              }
+            }
+          });
+        }
+
+        @Override
+        public void onBundleCompleted(String localBundlePath) {
+          setBundle(localBundlePath);
+        }
+
+        @Override
+        public void onError(Exception e) {
+          mKernel.handleError(e);
+        }
+
+        @Override
+        public void onError(String e) {
+          mKernel.handleError(e);
+        }
+      }.start();
     }
 
     mKernel.setOptimisticActivity(this, getTaskId());
@@ -289,11 +323,26 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
    *
    */
 
-  public void loadExperience(final String manifestUrl, final JSONObject manifest, final String bundleUrl) {
-    loadExperience(manifestUrl, manifest, bundleUrl, null);
+  public void setLoadingScreenManifest(final JSONObject manifest) {
+    runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        if (!isInForeground()) {
+          return;
+        }
+
+        // grab SDK version from optimisticManifest -- in this context we just need to know ensure it's above 5.0.0 (which it should always be)
+        String optimisticSdkVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
+        ExperienceActivityUtils.setWindowTransparency(optimisticSdkVersion, manifest, ExperienceActivity.this);
+
+        showLoadingScreen(manifest);
+
+        ExperienceActivityUtils.setTaskDescription(mExponentManifest, manifest, ExperienceActivity.this);
+      }
+    });
   }
 
-  public void loadExperience(final String manifestUrl, final JSONObject manifest, final String bundleUrl, final JSONObject kernelOptions) {
+  public void setManifest(String manifestUrl, final JSONObject manifest, final String bundleUrl, final JSONObject kernelOptions) {
     if (!isInForeground()) {
       return;
     }
@@ -305,6 +354,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     // twice otherwise. Turn on "Don't keep activites", trigger a notification, background the app, and then
     // press on the notification in a shell app to see this happen.
     mIsLoadExperienceAllowedToRun = false;
+
+    mIsReadyForBundle = false;
 
     mManifestUrl = manifestUrl;
     mManifest = manifest;
@@ -420,19 +471,9 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
           mNotification = finalNotificationObject;
           waitForDrawOverOtherAppPermission("");
         } else {
-          hasCachedBundle = Exponent.getInstance().loadJSBundle(manifest, bundleUrl, id, mSDKVersion,
-              new Exponent.BundleListener() {
-                @Override
-                public void onBundleLoaded(String localBundlePath) {
-                  mNotification = finalNotificationObject;
-                  waitForDrawOverOtherAppPermission(localBundlePath);
-                }
-
-                @Override
-                public void onError(Exception e) {
-                  KernelProvider.getInstance().handleError(e);
-                }
-              });
+          mTempNotification = finalNotificationObject;
+          mIsReadyForBundle = true;
+          AsyncCondition.notify(READY_FOR_BUNDLE);
         }
 
         ExperienceActivityUtils.setWindowTransparency(mDetachSdkVersion, manifest, ExperienceActivity.this);
@@ -443,6 +484,26 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
         handleExperienceOptions(kernelOptions);
       }
     });
+  }
+
+  public void setBundle(final String localBundlePath) {
+    if (!isDebugModeEnabled()) {
+      final boolean finalIsReadyForBundle = mIsReadyForBundle;
+      AsyncCondition.wait(READY_FOR_BUNDLE, new AsyncCondition.AsyncConditionListener() {
+        @Override
+        public boolean isReady() {
+          return finalIsReadyForBundle;
+        }
+
+        @Override
+        public void execute() {
+          mNotification = mTempNotification;
+          mTempNotification = null;
+          waitForDrawOverOtherAppPermission(localBundlePath);
+          AsyncCondition.remove(READY_FOR_BUNDLE);
+        }
+      });
+    }
   }
 
   public void onEventMainThread(ReceivedNotificationEvent event) {

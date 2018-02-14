@@ -29,8 +29,12 @@ typedef void (^EXCachedResourceProgressBlock)(EXLoadingProgress *progress);
 typedef enum EXCachedResourceBehavior {
   // load the resource without using any cache.
   EXCachedResourceNoCache,
+  // load the resource without reading from the cache, but still write the loaded resource to the cache.
+  EXCachedResourceWriteToCache,
   // return immediately with cached data if it exists, then try to download the resource and replace the cache in the background.
   EXCachedResourceUseCacheImmediately,
+  // return immediately with cached data if it exists, and only try to download the resource if cached data is not found.
+  EXCachedResourceFallBackToNetwork,
   // try to download the resource, but fall back to the cached version if the download fails.
   EXCachedResourceFallBackToCache,
   // use a cache if it exists, otherwise fail. (don't download anything)

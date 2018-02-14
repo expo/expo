@@ -134,7 +134,7 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
 - (void)viewWillAppear:(BOOL)animated
 {
   [super viewWillAppear:animated];
-  RCTBridge *kernelBridge = [EXKernel sharedInstance].bridgeRegistry.kernelAppManager.reactBridge;
+  RCTBridge *kernelBridge = [EXKernel sharedInstance].appRegistry.kernelAppManager.reactBridge;
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleKernelLoadEvent:)
                                                name:RCTJavaScriptDidLoadNotification
@@ -158,7 +158,7 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
 - (void)_onTapDevMenu
 {
   [self dismissViewControllerAnimated:YES completion:^{
-    EXKernelReactAppManager *appMgr = [EXKernel sharedInstance].bridgeRegistry.kernelAppManager;
+    EXKernelReactAppManager *appMgr = [EXKernel sharedInstance].appRegistry.kernelAppManager;
     [appMgr showDevMenu];
   }];
 }
