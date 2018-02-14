@@ -63,7 +63,6 @@ public class Constants {
     abiVersions.add("22.0.0");
     abiVersions.add("21.0.0");
     abiVersions.add("20.0.0");
-    abiVersions.add("19.0.0");
 
     if (TEMPORARY_ABI_VERSION != null) {
       abiVersions.add(TEMPORARY_ABI_VERSION);
