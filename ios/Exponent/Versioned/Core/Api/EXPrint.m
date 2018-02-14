@@ -23,59 +23,37 @@ RCT_EXPORT_METHOD(print:(NSDictionary *)options
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 {
-  NSString *uri, *htmlString;
+  UIPrintInteractionController *printInteractionController = [self _makePrintInteractionControllerWithUri:options[@"uri"]];
+  
+  if (options[@"uri"]) {
+    NSString *uri = [RCTConvert NSString:options[@"uri"]];
+    NSData *printData = [self _dataFromUri:uri];
+    if (printData) {
+      printInteractionController.printingItem = printData;
+    } else {
+      NSString *message = [NSString stringWithFormat:@"The specified url is not valid for printing: %@", uri];
+      reject(@"E_URL_INVALID", message, RCTErrorWithMessage(message));
+      return;
+    }
+  }
+  
+  if (options[@"html"]) {
+    NSString *htmlString = [RCTConvert NSString:options[@"html"]];
+    if (htmlString != nil) {
+      UIMarkupTextPrintFormatter *formatter = [[UIMarkupTextPrintFormatter alloc] initWithMarkupText:htmlString];
+      printInteractionController.printFormatter = formatter;
+    } else {
+      NSString *message = [NSString stringWithFormat:@"The specified html string is not valid for printing."];
+      reject(@"E_HTML_INVALID", message, RCTErrorWithMessage(message));
+      return;
+    }
+  }
+  
   NSURL *printerURL;
   UIPrinter *printer;
-  
-  if (options[@"uri"]){
-    uri = [RCTConvert NSString:options[@"uri"]];
-  }
-  
-  if (options[@"html"]){
-    htmlString = [RCTConvert NSString:options[@"html"]];
-  }
-  
   if (options[@"printerUrl"]){
     printerURL = [NSURL URLWithString:[RCTConvert NSString:options[@"printerUrl"]]];
     printer = [UIPrinter printerWithURL:printerURL];
-  }
-  
-  NSData *printData;
-  BOOL isValidURL = NO;
-  NSURL *candidateURL = [NSURL URLWithString:uri];
-
-  // iCloud url looks like: `file:///private/var/mobile/Containers/Data/Application/[...].pdf`
-  // data url looks like: `data:application/pdf;base64,JVBERi0x...`
-  if (candidateURL && candidateURL.scheme) {
-    isValidURL = YES;
-  }
-  
-  if (isValidURL) {
-    // TODO: This needs updated to use NSURLSession dataTaskWithURL:completionHandler:
-    printData = [NSData dataWithContentsOfURL:candidateURL];
-  } else {
-    NSString *message = [NSString stringWithFormat:@"The specified url is not valid for printing: %@", candidateURL];
-    reject(@"E_URL_INVALID", message, RCTErrorWithMessage(message));
-    return;
-  }
-  
-  UIPrintInteractionController *printInteractionController = [UIPrintInteractionController sharedPrintController];
-  printInteractionController.delegate = self;
-  
-  UIPrintInfo *printInfo = [UIPrintInfo printInfo];
-  
-  printInfo.outputType = UIPrintInfoOutputGeneral;
-  printInfo.jobName = [uri lastPathComponent];
-  printInfo.duplex = UIPrintInfoDuplexLongEdge;
-  
-  printInteractionController.printInfo = printInfo;
-  printInteractionController.showsPageRange = YES;
-  
-  if (htmlString != nil) {
-    UIMarkupTextPrintFormatter *formatter = [[UIMarkupTextPrintFormatter alloc] initWithMarkupText:htmlString];
-    printInteractionController.printFormatter = formatter;
-  } else {
-    printInteractionController.printingItem = printData;
   }
   
   void (^completionHandler)(UIPrintInteractionController *, BOOL, NSError *) =
@@ -129,6 +107,39 @@ RCT_EXPORT_METHOD(selectPrinter:(RCTPromiseResolveBlock)resolve
 - (UIViewController *)printInteractionControllerParentViewController:(UIPrintInteractionController *)printInteractionController
 {
   return RCTPresentedViewController();
+}
+
+#pragma mark - internal
+
+- (NSData *)_dataFromUri:(NSString *)uri
+{
+  NSURL *candidateURL = [NSURL URLWithString:uri];
+  
+  // iCloud url looks like: `file:///private/var/mobile/Containers/Data/Application/[...].pdf`
+  // data url looks like: `data:application/pdf;base64,JVBERi0x...`
+  BOOL isValidURL = (candidateURL && candidateURL.scheme);
+  
+  if (isValidURL) {
+    // TODO: This needs updated to use NSURLSession dataTaskWithURL:completionHandler:
+    return [NSData dataWithContentsOfURL:candidateURL];
+  }
+  return nil;
+}
+
+- (UIPrintInteractionController *)_makePrintInteractionControllerWithUri:(NSString *)uri
+{
+  UIPrintInteractionController *printInteractionController = [UIPrintInteractionController sharedPrintController];
+  printInteractionController.delegate = self;
+  
+  UIPrintInfo *printInfo = [UIPrintInfo printInfo];
+  
+  printInfo.outputType = UIPrintInfoOutputGeneral;
+  printInfo.jobName = [uri lastPathComponent];
+  printInfo.duplex = UIPrintInfoDuplexLongEdge;
+  
+  printInteractionController.printInfo = printInfo;
+  printInteractionController.showsPageRange = YES;
+  return printInteractionController;
 }
 
 @end
