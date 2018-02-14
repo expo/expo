@@ -51,12 +51,6 @@ public class DevModeTests extends BaseTestClass {
 
   @Test
   @ExpoDevModeTest
-  public void sdk19LiveReload() throws Exception {
-    TestServerUtils.runFixtureTest(sUiDevice, "android-sdk19-live-reload");
-  }
-
-  @Test
-  @ExpoDevModeTest
   public void sdk20LiveReload() throws Exception {
     TestServerUtils.runFixtureTest(sUiDevice, "android-sdk20-live-reload");
   }
