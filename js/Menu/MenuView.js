@@ -397,7 +397,7 @@ let styles = StyleSheet.create({
   },
   overlay: {
     flex: 1,
-    backgroundColor: 'transparent',
+    backgroundColor: '#ffffff',
     marginTop: Constants.statusBarHeight,
   },
   closeButtonIcon: {
