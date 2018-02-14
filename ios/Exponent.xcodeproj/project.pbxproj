@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		071E30A51FFF112E001A7C46 /* EXKernelAppLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 071E30A41FFF112E001A7C46 /* EXKernelAppLoader.m */; };
+		0726F0592007E438004992E7 /* EXKernelAppRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F0582007E438004992E7 /* EXKernelAppRecord.m */; };
+		0726F05C2007E446004992E7 /* EXKernelAppRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F05B2007E446004992E7 /* EXKernelAppRegistry.m */; };
 		07E26F301FFFFB55004667A1 /* EXCalendarConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E26F2D1FFFFB55004667A1 /* EXCalendarConverter.m */; };
 		07E26F311FFFFB55004667A1 /* EXCalendar.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E26F2E1FFFFB55004667A1 /* EXCalendar.m */; };
 		07E26F361FFFFB68004667A1 /* EXCalendarRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E26F321FFFFB67004667A1 /* EXCalendarRequester.m */; };
@@ -57,8 +60,6 @@
 		B5A358621C7E6C4300D1BE67 /* EXAnalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A358611C7E6C4300D1BE67 /* EXAnalytics.m */; };
 		B5AC398A1E95A7EC00540AA7 /* EXApiUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC39891E95A7EC00540AA7 /* EXApiUtil.m */; };
 		B5AC39A71E95A90B00540AA7 /* EXKernel.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC398E1E95A90B00540AA7 /* EXKernel.m */; };
-		B5AC39A81E95A90B00540AA7 /* EXKernelBridgeRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC39901E95A90B00540AA7 /* EXKernelBridgeRecord.m */; };
-		B5AC39A91E95A90B00540AA7 /* EXKernelBridgeRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC39921E95A90B00540AA7 /* EXKernelBridgeRegistry.m */; };
 		B5AC39AA1E95A90B00540AA7 /* EXKernelDevKeyCommands.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC39961E95A90B00540AA7 /* EXKernelDevKeyCommands.m */; };
 		B5AC39AB1E95A90B00540AA7 /* EXKernelDevMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC39981E95A90B00540AA7 /* EXKernelDevMenuViewController.m */; };
 		B5AC39AC1E95A90B00540AA7 /* EXKernelDevMotionHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC399A1E95A90B00540AA7 /* EXKernelDevMotionHandler.m */; };
@@ -294,6 +295,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		071E30A31FFF112E001A7C46 /* EXKernelAppLoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXKernelAppLoader.h; sourceTree = "<group>"; };
+		071E30A41FFF112E001A7C46 /* EXKernelAppLoader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXKernelAppLoader.m; sourceTree = "<group>"; };
+		0726F0572007E438004992E7 /* EXKernelAppRecord.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXKernelAppRecord.h; sourceTree = "<group>"; };
+		0726F0582007E438004992E7 /* EXKernelAppRecord.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXKernelAppRecord.m; sourceTree = "<group>"; };
+		0726F05A2007E446004992E7 /* EXKernelAppRegistry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXKernelAppRegistry.h; sourceTree = "<group>"; };
+		0726F05B2007E446004992E7 /* EXKernelAppRegistry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXKernelAppRegistry.m; sourceTree = "<group>"; };
 		07E26F2C1FFFFB55004667A1 /* EXCalendar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXCalendar.h; sourceTree = "<group>"; };
 		07E26F2D1FFFFB55004667A1 /* EXCalendarConverter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXCalendarConverter.m; sourceTree = "<group>"; };
 		07E26F2E1FFFFB55004667A1 /* EXCalendar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXCalendar.m; sourceTree = "<group>"; };
@@ -392,10 +399,6 @@
 		B5AC39891E95A7EC00540AA7 /* EXApiUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXApiUtil.m; sourceTree = "<group>"; };
 		B5AC398D1E95A90B00540AA7 /* EXKernel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernel.h; sourceTree = "<group>"; };
 		B5AC398E1E95A90B00540AA7 /* EXKernel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernel.m; sourceTree = "<group>"; };
-		B5AC398F1E95A90B00540AA7 /* EXKernelBridgeRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelBridgeRecord.h; sourceTree = "<group>"; };
-		B5AC39901E95A90B00540AA7 /* EXKernelBridgeRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelBridgeRecord.m; sourceTree = "<group>"; };
-		B5AC39911E95A90B00540AA7 /* EXKernelBridgeRegistry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelBridgeRegistry.h; sourceTree = "<group>"; };
-		B5AC39921E95A90B00540AA7 /* EXKernelBridgeRegistry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelBridgeRegistry.m; sourceTree = "<group>"; };
 		B5AC39931E95A90B00540AA7 /* EXKernelUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelUtil.h; sourceTree = "<group>"; };
 		B5AC39951E95A90B00540AA7 /* EXKernelDevKeyCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelDevKeyCommands.h; sourceTree = "<group>"; };
 		B5AC39961E95A90B00540AA7 /* EXKernelDevKeyCommands.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelDevKeyCommands.m; sourceTree = "<group>"; };
@@ -1059,10 +1062,12 @@
 			children = (
 				B5AC398D1E95A90B00540AA7 /* EXKernel.h */,
 				B5AC398E1E95A90B00540AA7 /* EXKernel.m */,
-				B5AC398F1E95A90B00540AA7 /* EXKernelBridgeRecord.h */,
-				B5AC39901E95A90B00540AA7 /* EXKernelBridgeRecord.m */,
-				B5AC39911E95A90B00540AA7 /* EXKernelBridgeRegistry.h */,
-				B5AC39921E95A90B00540AA7 /* EXKernelBridgeRegistry.m */,
+				071E30A31FFF112E001A7C46 /* EXKernelAppLoader.h */,
+				071E30A41FFF112E001A7C46 /* EXKernelAppLoader.m */,
+				0726F0572007E438004992E7 /* EXKernelAppRecord.h */,
+				0726F0582007E438004992E7 /* EXKernelAppRecord.m */,
+				0726F05A2007E446004992E7 /* EXKernelAppRegistry.h */,
+				0726F05B2007E446004992E7 /* EXKernelAppRegistry.m */,
 				B52217D41F146658002241BA /* EXKernelServiceRegistry.h */,
 				B52217D51F146658002241BA /* EXKernelServiceRegistry.m */,
 				B5AC39931E95A90B00540AA7 /* EXKernelUtil.h */,
@@ -2284,6 +2289,7 @@
 				B5FB74B31FF6DADC001C764B /* EXSpeech.m in Sources */,
 				B5FB74941FF6DADC001C764B /* RNSVGSymbol.m in Sources */,
 				B5FB74951FF6DADC001C764B /* RNSVGSymbolManager.m in Sources */,
+				071E30A51FFF112E001A7C46 /* EXKernelAppLoader.m in Sources */,
 				B5FB74541FF6DADB001C764B /* AIRGoogleMapPolygon.m in Sources */,
 				B5FB748A1FF6DADC001C764B /* RNSVGPercentageConverter.m in Sources */,
 				B5FB74CD1FF6DADC001C764B /* EXLocationRequester.m in Sources */,
@@ -2301,7 +2307,6 @@
 				B5FB74301FF6DADB001C764B /* EXAVPlayerData.m in Sources */,
 				B5FB74DD1FF6DADC001C764B /* RNBranchProperty.m in Sources */,
 				B58FFAAC1F1016B700A51363 /* EXGoogleAuthManager.m in Sources */,
-				B5AC39A91E95A90B00540AA7 /* EXKernelBridgeRegistry.m in Sources */,
 				B5FB74751FF6DADB001C764B /* RNSVGDefs.m in Sources */,
 				B5FB74381FF6DADB001C764B /* EXBlurViewManager.m in Sources */,
 				B57EF81520085C8200DA8960 /* RNGestureHandlerManager.m in Sources */,
@@ -2313,6 +2318,7 @@
 				B5FB74A61FF6DADC001C764B /* EXFacebook.m in Sources */,
 				B57EF80E20085C8200DA8960 /* RNPanHandler.m in Sources */,
 				B5FB74711FF6DADB001C764B /* RNSVGCircle.m in Sources */,
+				0726F0592007E438004992E7 /* EXKernelAppRecord.m in Sources */,
 				B5AC398A1E95A7EC00540AA7 /* EXApiUtil.m in Sources */,
 				B5FB742F1FF6DADB001C764B /* EXAV.m in Sources */,
 				B5FB74791FF6DADC001C764B /* RNSVGGlyphContext.m in Sources */,
@@ -2450,6 +2456,7 @@
 				B5FB74BE1FF6DADC001C764B /* EXNativeAdView.m in Sources */,
 				B5FB74C41FF6DADC001C764B /* EXGLObject.m in Sources */,
 				B5FB74A91FF6DADC001C764B /* EXGoogle.m in Sources */,
+				0726F05C2007E446004992E7 /* EXKernelAppRegistry.m in Sources */,
 				B5BC7B1D1FF6DA7B00F102C1 /* EXFaceDetectorUtils.m in Sources */,
 				B5FB74881FF6DADC001C764B /* RNSVGPathParser.m in Sources */,
 				B5FB74891FF6DADC001C764B /* RNSVGPattern.m in Sources */,
@@ -2472,7 +2479,6 @@
 				B5FB74371FF6DADB001C764B /* EXBlurView.m in Sources */,
 				B55FDEFA1C7FE1310020AA8F /* EXRootViewController.m in Sources */,
 				B5FB74391FF6DADB001C764B /* EXFaceDetectorManagerStub.m in Sources */,
-				B5AC39A81E95A90B00540AA7 /* EXKernelBridgeRecord.m in Sources */,
 				B5FB74861FF6DADC001C764B /* RNSVGPath.m in Sources */,
 				B5FB74501FF6DADB001C764B /* AIRGoogleMapCircleManager.m in Sources */,
 				B57EF80C20085C8200DA8960 /* RNLongPressHandler.m in Sources */,

@@ -159,11 +159,13 @@
 
 #pragma mark - kernel service
 
-- (void)kernelDidRegisterBridgeWithRecord:(EXKernelBridgeRecord *)record
+- (void)kernelDidRegisterAppWithRecord:(EXKernelAppRecord *)record
 {
   @synchronized (_experienceInfo) {
     // if this experience had a loading error previously, consider it recovered now
-    [_experienceInfo removeObjectForKey:record.experienceId];
+    if (record.experienceId) {
+      [_experienceInfo removeObjectForKey:record.experienceId];
+    }
   }
 }
 

@@ -81,7 +81,9 @@
       progress.total = progressData.total;
       progress.done = progressData.done;
       progress.status = progressData.status ?: @"Building JavaScript bundle...";
-      progressBlock(progress);
+      if (progressBlock) {
+        progressBlock(progress);
+      }
     } onComplete:^(NSError *error, RCTSource *source) {
       if (error != nil) {
         // In case we received something else than JS add more info to the error specific to expo for

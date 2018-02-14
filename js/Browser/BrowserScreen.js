@@ -6,8 +6,16 @@
 'use strict';
 
 import React, { PropTypes } from 'react';
-import { StatusBar, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
+import {
+  DeviceEventEmitter,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 
+import Browser from 'Browser';
 import BrowserActions from 'BrowserActions';
 import BrowserErrorView from 'BrowserErrorView';
 import BrowserScreenLoading from 'BrowserScreenLoading';
@@ -15,6 +23,7 @@ import ExColors from 'ExColors';
 import ExManifests from 'ExManifests';
 import ExponentKernel from 'ExponentKernel';
 import Frame from 'Frame';
+import Immutable from 'immutable';
 import { connect } from 'react-redux';
 
 import isIPhoneX from '../Util/isIPhoneX';
@@ -64,6 +73,11 @@ class BrowserScreen extends React.Component {
       manifestJS: props.task && props.task.manifest ? props.task.manifest.toJS() : null,
       initialPropsJS: props.task && props.task.initialProps ? props.task.initialProps.toJS() : null,
     };
+
+    this.listenersAdded = false;
+    if (props.task) {
+      this._addListeners(props);
+    }
   }
 
   render() {
@@ -83,14 +97,14 @@ class BrowserScreen extends React.Component {
       }
       if (task.bundleUrl) {
         content = this._renderFrame();
-        if (task.isLoading) {
-          loadingView = (
-            <BrowserScreenLoading
-              loadingStatus={this.state.loadingStatus}
-              manifest={task.manifest}
-            />
-          );
-        }
+      }
+      if (task.isLoading) {
+        loadingView = (
+          <BrowserScreenLoading
+            loadingStatus={this.state.loadingStatus}
+            manifest={task.manifest || this.state.optimisticManifest}
+          />
+        );
       }
     }
 
@@ -180,6 +194,26 @@ class BrowserScreen extends React.Component {
     this._recomputePropsJS(nextProps);
   }
 
+  componentWillUnmount() {
+    this.progressListener.remove();
+    // in case this is still around for some reason, remove it
+    this.optimisticManifestListener.remove();
+  }
+
+  _addListeners = props => {
+    if (!this.listenersAdded && props.task) {
+      this.listenersAdded = true;
+      this.progressListener = DeviceEventEmitter.addListener(
+        `ExponentKernel.loadingProgress-${props.task.manifestUrl}`,
+        this._handleLoadingProgress
+      );
+      this.optimisticManifestListener = DeviceEventEmitter.addListener(
+        `ExponentKernel.optimisticManifest-${props.task.manifestUrl}`,
+        this._handleOptimisticManifest
+      );
+    }
+  };
+
   _getInitialProps(baseInitialProps) {
     // start with whatever came from the browser task's initial props (e.g. a push notification payload)
     let baseProps = {};
@@ -231,6 +265,9 @@ class BrowserScreen extends React.Component {
           this.setState({ initialPropsJS: null });
         }
       }
+      if (!this.props.task) {
+        this._addListeners(props);
+      }
     } else {
       this.setState({
         manifestJS: null,
@@ -247,8 +284,22 @@ class BrowserScreen extends React.Component {
     this.props.dispatch(BrowserActions.setLoadingState(this.props.url, true));
   };
 
-  _handleLoadingProgress = event => {
-    this.setState({ loadingStatus: event.nativeEvent });
+  _handleLoadingProgress = loadingStatus => {
+    this.setState({ loadingStatus });
+  };
+
+  _handleOptimisticManifest = optimisticManifest => {
+    this.setState({ optimisticManifest: Immutable.fromJS(optimisticManifest) });
+    // this will only be called once, so remove it after it's called
+    this.optimisticManifestListener.remove();
+  };
+
+  _clearLoadingProgress = () => {
+    this.setState({
+      loadingStatus: null,
+      optimisticManifest: null,
+    });
+    this.optimisticManifestListener.remove();
   };
 
   _handleFrameLoadingFinish = event => {
@@ -261,7 +312,7 @@ class BrowserScreen extends React.Component {
       this.props.dispatch(BrowserActions.showMenuAsync(false));
     }
 
-    this.setState({ loadingStatus: null });
+    this._clearLoadingProgress();
   };
 
   _handleFrameLoadingError = event => {
@@ -278,7 +329,7 @@ class BrowserScreen extends React.Component {
       )
     );
 
-    this.setState({ loadingStatus: null });
+    this._clearLoadingProgress();
   };
 
   _handleUncaughtError = event => {
@@ -321,7 +372,7 @@ class BrowserScreen extends React.Component {
       let urlToRefresh = this.props.task.loadingError.originalUrl;
       this.props.dispatch(BrowserActions.clearTaskWithError(urlToRefresh));
       if (this.props.isShell) {
-        this.props.dispatch(BrowserActions.navigateToUrlAsync(this.props.shellManifestUrl));
+        Browser.navigateToUrlAsync(this.props.shellManifestUrl);
       } else {
         ExponentKernel.openURL(urlToRefresh);
       }

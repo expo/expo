@@ -142,13 +142,13 @@ export default class HomeScreen extends React.Component {
     return this.props.recentHistory.map((project, i) => (
       <SmallProjectCard
         key={project.manifestUrl}
-        iconUrl={project.manifest.iconUrl}
+        iconUrl={project.manifest && project.manifest.iconUrl}
         releaseChannel={
           /* 28/11/17(brentvatne) - we can remove extractReleaseChannel in a couple of months
           when project history is unlikely to include any projects with release channels */
-          project.manifest.releaseChannel || extractReleaseChannel(project.manifestUrl)
+          project.manifest && project.manifest.releaseChannel || extractReleaseChannel(project.manifestUrl)
         }
-        projectName={project.manifest.name}
+        projectName={project.manifest && project.manifest.name}
         username={
           project.manifestUrl.includes('exp://exp.host')
             ? extractUsername(project.manifestUrl)

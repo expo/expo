@@ -55,23 +55,42 @@ const Settings = Record({
 });
 
 export default Flux.createReducer(new BrowserState(), {
-  [BrowserActionTypes.navigateToUrlAsync]: {
+  [BrowserActionTypes.navigateToUrlAsync](state, action) {
+    let { url, task } = createImmutableTask(action.payload);
+    return validateBrowserState(
+      state.merge({
+        isHomeVisible: false,
+        isMenuVisible: false,
+        foregroundTaskUrl: url,
+        tasks: state.tasks.set(url, task),
+      })
+    );
+  },
+
+  [BrowserActionTypes.loadBundleAsync]: {
     begin(state, action) {
-      let { url, task } = createImmutableTask(action.meta);
+      const { manifestUrl, manifest, bundleUrl } = action.meta;
+      let task = state.tasks.get(manifestUrl, null);
+      let updatedTasks = state.tasks;
+      if (task) {
+        updatedTasks = state.tasks.set(
+          manifestUrl,
+          task.merge({
+            manifest,
+            bundleUrl,
+          })
+        );
+      }
 
       // remove any existing history item with the same url from the middle of the stack
       // and prepend a new history item.
       let historyItem = new HistoryItem(action.meta.historyItem);
       let history = state.history.filter(item => item.url !== historyItem.url).unshift(historyItem);
-      return validateBrowserState(
-        state.merge({
-          isHomeVisible: false,
-          isMenuVisible: false,
-          foregroundTaskUrl: url,
-          tasks: state.tasks.set(url, task),
-          history,
-        })
-      );
+
+      return state.merge({
+        tasks: updatedTasks,
+        history,
+      });
     },
 
     // overwrite the history with the result of the promise in action.payload,
@@ -319,7 +338,7 @@ function createImmutableTask(meta) {
       manifestUrl,
       manifest: Immutable.fromJS(manifest),
       initialProps: Immutable.fromJS(initialProps),
-      isLoading: false,
+      isLoading: true,
       loadingError: null,
     }),
   };

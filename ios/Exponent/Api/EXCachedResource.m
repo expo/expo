@@ -47,8 +47,16 @@ NS_ASSUME_NONNULL_BEGIN
       [self _loadRemoteResourceWithSuccess:success error:error ignoringCache:YES];
       break;
     }
+    case EXCachedResourceWriteToCache: {
+      [self _loadRemoteAndWriteToCacheWithSuccess:success error:error];
+      break;
+    }
     case EXCachedResourceUseCacheImmediately: {
       [self _loadCacheImmediatelyAndDownload:YES withSuccess:success error:error];
+      break;
+    }
+    case EXCachedResourceFallBackToNetwork: {
+      [self _loadCacheAndDownloadConditionallyWithSuccess:success error:error];
       break;
     }
     case EXCachedResourceFallBackToCache: default: {
@@ -148,6 +156,19 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
+- (void)_loadRemoteAndWriteToCacheWithSuccess:(EXCachedResourceSuccessBlock)successBlock
+                                           error:(EXCachedResourceErrorBlock)errorBlock
+{
+  NSString *resourceCachePath = [self resourceCachePath];
+
+  [self _loadRemoteResourceWithSuccess:^(NSData * _Nonnull data) {
+    // write to cache for next time
+    NSLog(@"EXCachedResource: Caching resource to %@...", resourceCachePath);
+    [data writeToFile:resourceCachePath atomically:YES];
+    successBlock(data);
+  } error:errorBlock ignoringCache:YES];
+}
+
 - (void)_loadRemoteAndFallBackToCacheWithSuccess:(EXCachedResourceSuccessBlock)successBlock
                                            error:(EXCachedResourceErrorBlock)errorBlock
 {
@@ -174,6 +195,14 @@ NS_ASSUME_NONNULL_BEGIN
       errorBlock(error);
     }
   } ignoringCache:NO];
+}
+
+- (void)_loadCacheAndDownloadConditionallyWithSuccess:(EXCachedResourceSuccessBlock)successBlock
+                                                error:(EXCachedResourceErrorBlock)errorBlock
+{
+  [self _loadCacheImmediatelyAndDownload:NO withSuccess:successBlock error:^(NSError * _Nonnull error) {
+    [self _loadRemoteAndWriteToCacheWithSuccess:successBlock error:errorBlock];
+  }];
 }
 
 - (NSString *)resourceCachePath

@@ -116,7 +116,7 @@ public class ExponentHttpClient {
     }, null, null);
   }
 
-  private void tryForcedCachedResponse(final String uri, final Request request, final SafeCallback callback, final Response initialResponse, final IOException initialException) {
+  public void tryForcedCachedResponse(final String uri, final Request request, final SafeCallback callback, final Response initialResponse, final IOException initialException) {
     Request newRequest = request.newBuilder()
         .cacheControl(CacheControl.FORCE_CACHE)
         .header(ExponentNetwork.IGNORE_INTERCEPTORS_HEADER, "blah")

@@ -19,18 +19,9 @@
 NSString * const kEXDevToolShowDevMenuKey = @"devmenu";
 NSTimeInterval const kEXJavaScriptResourceLongerTimeout = 60 * 5;
 
-typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t sourceLength);
-
 @interface EXReactAppManager ()
 
 @property (nonnull, strong) EXJavaScriptResource *jsResource;
-
-@end
-
-
-@interface RCTSource (EXReactAppManager)
-
-- (instancetype)initWithURL:(nonnull NSURL *)url data:(nonnull NSData *)data;
 
 @end
 
@@ -194,7 +185,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
       [strongSelf.delegate reactAppManager:strongSelf loadedJavaScriptWithProgress:progress];
     }
   } successBlock:^(NSData * _Nonnull sourceData) {
-    if ([self _compareVersionTo:22] == NSOrderedAscending) {
+    if ([self compareVersionTo:22] == NSOrderedAscending) {
       SDK21RCTSourceLoadBlock legacyLoadCallback = (SDK21RCTSourceLoadBlock)loadCallback;
       legacyLoadCallback(nil, sourceData, sourceData.length);
     } else {
@@ -210,10 +201,10 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
       [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:error forExperienceId:strongSelf.experienceId];
       
       // react won't post this for us
-      [[NSNotificationCenter defaultCenter] postNotificationName:[strongSelf _versionedString:RCTJavaScriptDidFailToLoadNotification] object:error];
+      [[NSNotificationCenter defaultCenter] postNotificationName:[strongSelf versionedString:RCTJavaScriptDidFailToLoadNotification] object:error];
     }
     
-    if ([self _compareVersionTo:22] == NSOrderedAscending) {
+    if ([self compareVersionTo:22] == NSOrderedAscending) {
       SDK21RCTSourceLoadBlock legacyLoadCallback = (SDK21RCTSourceLoadBlock)loadCallback;
       legacyLoadCallback(error, nil, 0);
     } else {
@@ -230,15 +221,15 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleJavaScriptStartLoadingEvent:)
-                                               name:[self _versionedString:RCTJavaScriptWillStartLoadingNotification]
+                                               name:[self versionedString:RCTJavaScriptWillStartLoadingNotification]
                                              object:_reactBridge];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleJavaScriptLoadEvent:)
-                                               name:[self _versionedString:RCTJavaScriptDidLoadNotification]
+                                               name:[self versionedString:RCTJavaScriptDidLoadNotification]
                                              object:_reactBridge];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleJavaScriptLoadEvent:)
-                                               name:[self _versionedString:RCTJavaScriptDidFailToLoadNotification]
+                                               name:[self versionedString:RCTJavaScriptDidFailToLoadNotification]
                                              object:_reactBridge];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleBridgeForegroundEvent:)
@@ -252,9 +243,9 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (void)_stopObservingBridgeNotifications
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:[self _versionedString:RCTJavaScriptWillStartLoadingNotification] object:_reactBridge];
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:[self _versionedString:RCTJavaScriptDidLoadNotification] object:_reactBridge];
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:[self _versionedString:RCTJavaScriptDidFailToLoadNotification] object:_reactBridge];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:[self versionedString:RCTJavaScriptWillStartLoadingNotification] object:_reactBridge];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:[self versionedString:RCTJavaScriptDidLoadNotification] object:_reactBridge];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:[self versionedString:RCTJavaScriptDidFailToLoadNotification] object:_reactBridge];
   [[NSNotificationCenter defaultCenter] removeObserver:self name:kEXKernelBridgeDidForegroundNotification object:_reactBridge];
   [[NSNotificationCenter defaultCenter] removeObserver:self name:kEXKernelBridgeDidBackgroundNotification object:_reactBridge];
 }
@@ -273,9 +264,10 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 - (void)_handleJavaScriptLoadEvent:(NSNotification *)notification
 {
   __weak typeof(self) weakSelf = self;
-  if ([notification.name isEqualToString:[self _versionedString:RCTJavaScriptDidLoadNotification]]) {
+  if ([notification.name isEqualToString:[self versionedString:RCTJavaScriptDidLoadNotification]]) {
     [_versionManager bridgeFinishedLoading];
     [self _handleBridgeForegroundEvent:nil];
+    [self experienceFinishedLoading];
     dispatch_async(dispatch_get_main_queue(), ^{
       __strong typeof(self) strongSelf = weakSelf;
       if (strongSelf) {
@@ -283,7 +275,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
         [strongSelf.delegate reactAppManagerFinishedLoadingJavaScript:strongSelf];
       }
     });
-  } else if ([notification.name isEqualToString:[self _versionedString:RCTJavaScriptDidFailToLoadNotification]]) {
+  } else if ([notification.name isEqualToString:[self versionedString:RCTJavaScriptDidFailToLoadNotification]]) {
     NSError *error = (notification.userInfo) ? notification.userInfo[@"error"] : nil;
     dispatch_async(dispatch_get_main_queue(), ^{
       __strong typeof(self) strongSelf = weakSelf;
@@ -320,15 +312,15 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (Class)versionedClassFromString: (NSString *)classString
 {
-  return NSClassFromString([self _versionedString:classString]);
+  return NSClassFromString([self versionedString:classString]);
 }
 
-- (NSString *)_versionedString: (NSString *)string
+- (NSString *)versionedString: (NSString *)string
 {
   return [EXVersions versionedString:string withPrefix:_versionSymbolPrefix];
 }
 
-- (NSComparisonResult)_compareVersionTo:(NSUInteger)version
+- (NSComparisonResult)compareVersionTo:(NSUInteger)version
 {
   // Unversioned projects are always considered to be on the latest version
   if (!_validatedVersion || _validatedVersion.length == 0) {
@@ -368,5 +360,6 @@ EX_APP_MANAGER_ABSTRACT(- (RCTLogLevel)logLevel)
 EX_APP_MANAGER_ABSTRACT(- (void)registerBridge)
 EX_APP_MANAGER_ABSTRACT(- (void)unregisterBridge)
 EX_APP_MANAGER_ABSTRACT(- (NSString *)experienceId)
+EX_APP_MANAGER_ABSTRACT(- (void)experienceFinishedLoading)
 
 @end

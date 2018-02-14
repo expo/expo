@@ -6,7 +6,7 @@ import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'rea
 import { connect } from 'react-redux';
 import Colors from '../constants/Colors';
 
-import BrowserActions from 'BrowserActions';
+import Browser from 'Browser';
 
 const LoadingWarningDelayMs = 5000;
 
@@ -88,7 +88,7 @@ export default class GlobalLoadingOverlay extends React.Component {
 
   _cancelLoadingExperienceAsync = async () => {
     try {
-      this.props.dispatch(BrowserActions.cancelLoadingMostRecentManifestRequest());
+      Browser.cancelLoadingMostRecentManifestRequest();
     } catch (e) {
       console.log(`Unable to cancel: ${e.message}`);
     }

@@ -29,6 +29,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXReactAppManager : NSObject <RCTBridgeDelegate>
 
+NS_ASSUME_NONNULL_END
+
+typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t sourceLength);
+
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * Tear down and rebuild the bridge (user-facing expo menu reload)
  */

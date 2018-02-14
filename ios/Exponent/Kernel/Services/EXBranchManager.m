@@ -47,7 +47,7 @@ NSString * const EXBranchLinkOpenedNotification = @"RNBranchLinkOpenedNotificati
 
 #pragma mark - kernel service
 
-- (void)kernelDidRegisterBridgeWithRecord:(EXKernelBridgeRecord *)record
+- (void)kernelDidRegisterAppWithRecord:(EXKernelAppRecord *)record
 {
   // The first EXFrameReactAppManager will always be the standalone app one.
   if (_appManager == nil &&
@@ -57,7 +57,7 @@ NSString * const EXBranchLinkOpenedNotification = @"RNBranchLinkOpenedNotificati
   }
 }
 
-- (void)kernelWillUnregisterBridgeWithRecord:(EXKernelBridgeRecord *)record
+- (void)kernelWillUnregisterAppWithRecord:(EXKernelAppRecord *)record
 {
   if (record.appManager == _appManager) {
     _appManager = nil;

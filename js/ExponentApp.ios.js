@@ -85,15 +85,13 @@ class ExponentApp extends React.Component {
 
     // don't compare to old url and refresh, because the manifest at this url may have changed
     ExStore.dispatch(BrowserActions.setKernelLoadingState(true));
-    ExStore.dispatch(BrowserActions.navigateToUrlAsync(targetUrl));
+    Browser.navigateToUrlAsync(targetUrl);
   };
 
   _handleNotification = (event: { body: any, experienceId: string }) => {
     let { body, experienceId } = event;
     ExStore.dispatch(BrowserActions.setKernelLoadingState(true));
-    ExStore.dispatch(
-      BrowserActions.navigateToExperienceIdWithNotificationAsync(experienceId, body)
-    );
+    Browser.navigateToExperienceIdWithNotificationAsync(experienceId, body);
   };
 }
 

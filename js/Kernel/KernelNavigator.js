@@ -112,7 +112,7 @@ class KernelNavigator extends React.Component {
         // don't call ExponentKernel.openURL because we don't want to re-route
         // the existing url. we want to force a reload of the manifest.
         this.props.dispatch(BrowserActions.setKernelLoadingState(true));
-        this.props.dispatch(BrowserActions.navigateToUrlAsync(this.props.shellManifestUrl));
+        Browser.navigateToUrlAsync(this.props.shellManifestUrl);
       } else if (this.props.foregroundTaskUrl) {
         let urlToRefresh = this.props.foregroundTaskUrl;
         await this.props.dispatch(BrowserActions.foregroundHomeAsync({ clearTasks: true }));

@@ -3,7 +3,7 @@
 #import "EXFrameReactAppManager.h"
 #import "EXKernel.h"
 #import "EXKernelDevKeyCommands.h"
-#import "EXKernelBridgeRegistry.h"
+#import "EXKernelAppRegistry.h"
 #import "EXKernelDevMotionHandler.h"
 #import "EXKernelReactAppManager.h"
 #import "EXShellManager.h"
@@ -60,7 +60,7 @@ static NSNotificationName EXShakeGestureNotification = @"EXShakeGestureNotificat
 - (void)_handleShakeGesture
 {
   if ([EXShellManager sharedInstance].isDetached || [EXKernelDevKeyCommands sharedInstance].isLegacyMenuBehaviorEnabled) {
-    [[EXKernel sharedInstance].bridgeRegistry.lastKnownForegroundAppManager showDevMenu];
+    [[EXKernel sharedInstance].appRegistry.lastKnownForegroundAppManager showDevMenu];
   } else {
     [[EXKernel sharedInstance] dispatchKernelJSEvent:@"switchTasks" body:@{} onSuccess:nil onFailure:nil];
   }

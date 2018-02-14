@@ -3,7 +3,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "EXKernelBridgeRegistry.h"
+#import "EXKernelAppRegistry.h"
 #import "EXKernelServiceRegistry.h"
 #import "EXKernelUtil.h"
 
@@ -20,7 +20,7 @@ FOUNDATION_EXPORT NSString * const kEXKernelClearJSCacheUserDefaultsKey;
 
 @interface EXKernel : NSObject
 
-@property (nonatomic, strong, readonly) EXKernelBridgeRegistry *bridgeRegistry;
+@property (nonatomic, strong, readonly) EXKernelAppRegistry *appRegistry;
 @property (nonatomic, strong, readonly) EXKernelServiceRegistry *serviceRegistry;
 
 + (instancetype)sharedInstance;

@@ -6,6 +6,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface RCTSource (EXReactAppManager)
+
+- (instancetype)initWithURL:(nonnull NSURL *)url data:(nonnull NSData *)data;
+
+@end
+
 @interface EXReactAppManager ()
 
 @property (nonatomic, strong) NSString *versionSymbolPrefix;
@@ -33,6 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)unregisterBridge;
 
 - (Class)versionedClassFromString: (NSString *)classString;
+- (NSString *)versionedString: (NSString *)string;
+- (NSComparisonResult)compareVersionTo:(NSUInteger)version;
 
 @end
 

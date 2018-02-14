@@ -27,53 +27,58 @@
     DDLogInfo(@"Tried to route invalid url: %@", urlString);
     return;
   }
-  EXKernelBridgeRegistry *bridgeRegistry = [EXKernel sharedInstance].bridgeRegistry;
+  EXKernelAppRegistry *appRegistry = [EXKernel sharedInstance].appRegistry;
 
   // kernel bridge is our default handler for this url
   // because it can open a new bridge if we don't already have one.
   EXReactAppManager *destinationAppManager;
-  NSString *urlToRoute;
+  NSURL *urlToRoute;
 
   if (isUniversalLink && [EXShellManager sharedInstance].isShell) {
     // Find the app manager for the shell app.
-    urlToRoute = url.absoluteString;
-    for (id bridge in [bridgeRegistry bridgeEnumerator]) {
-      EXKernelBridgeRecord *bridgeRecord = [bridgeRegistry recordForBridge:bridge];
-      if ([bridgeRecord.appManager.frame.initialProps[@"shell"] boolValue]) {
-        destinationAppManager = bridgeRecord.appManager;
+    urlToRoute = url;
+    for (NSString *recordId in [appRegistry appEnumerator]) {
+      EXKernelAppRecord *appRecord = [appRegistry recordForId:recordId];
+      if (!appRecord || appRecord.status != EXKernelAppRecordStatusRunning) {
+        continue;
+      }
+      if (appRecord.appManager && [appRecord.appManager.frame.initialProps[@"shell"] boolValue]) {
+        destinationAppManager = appRecord.appManager;
         break;
       }
     }
   } else {
-    urlToRoute = [[self class] uriTransformedForLinking:url isUniversalLink:isUniversalLink].absoluteString;
-    destinationAppManager = bridgeRegistry.kernelAppManager;
+    urlToRoute = [[self class] uriTransformedForLinking:url isUniversalLink:isUniversalLink];
+    destinationAppManager = appRegistry.kernelAppManager;
 
-    for (id bridge in [bridgeRegistry bridgeEnumerator]) {
-      EXKernelBridgeRecord *bridgeRecord = [bridgeRegistry recordForBridge:bridge];
-      if ([urlToRoute hasPrefix:[[self class] linkingUriForExperienceUri:bridgeRecord.appManager.frame.initialUri]]) {
+    for (NSString *recordId in [appRegistry appEnumerator]) {
+      EXKernelAppRecord *appRecord = [appRegistry recordForId:recordId];
+      if (!appRecord || appRecord.status != EXKernelAppRecordStatusRunning) {
+        continue;
+      }
+      if (appRecord.appManager && [urlToRoute.absoluteString hasPrefix:[[self class] linkingUriForExperienceUri:appRecord.appManager.frame.initialUri]]) {
         // this is a link into a bridge we already have running.
         // use this bridge as the link's destination instead of the kernel.
-        destinationAppManager = bridgeRecord.appManager;
+        destinationAppManager = appRecord.appManager;
         break;
       }
     }
-
   }
 
   if (destinationAppManager) {
-    [[EXKernel sharedInstance] openUrl:urlToRoute onAppManager:destinationAppManager];
+    [[EXKernel sharedInstance] openUrl:urlToRoute.absoluteString onAppManager:destinationAppManager];
   }
 }
 
 - (void)refreshForegroundTask
 {
-  _appManagerToRefresh = [EXKernel sharedInstance].bridgeRegistry.lastKnownForegroundAppManager;
+  _appManagerToRefresh = [EXKernel sharedInstance].appRegistry.lastKnownForegroundAppManager;
   [[EXKernel sharedInstance] dispatchKernelJSEvent:@"refresh" body:@{} onSuccess:nil onFailure:nil];
 }
 
 - (BOOL)isRefreshExpectedForAppManager:(id)manager
 {
-  EXKernelBridgeRegistry *bridgeRegistry = [EXKernel sharedInstance].bridgeRegistry;
+  EXKernelAppRegistry *appRegistry = [EXKernel sharedInstance].appRegistry;
   
   // consume this reference, don't reuse
   EXReactAppManager *appManagerToRefresh = _appManagerToRefresh;
@@ -82,8 +87,8 @@
   return ([EXShellManager sharedInstance].isShell
           && manager
           && manager == appManagerToRefresh
-          && manager != bridgeRegistry.kernelAppManager
-          && manager == bridgeRegistry.lastKnownForegroundAppManager);
+          && manager != appRegistry.kernelAppManager
+          && manager == appRegistry.lastKnownForegroundAppManager);
 }
 
 #pragma mark - scoped module delegate
@@ -126,11 +131,11 @@
   if ([bridge respondsToSelector:@selector(parentBridge)]) {
     bridge = [bridge parentBridge];
   }
-  if (bridge == [EXKernel sharedInstance].bridgeRegistry.kernelAppManager.reactBridge) {
+  if (bridge == [EXKernel sharedInstance].appRegistry.kernelAppManager.reactBridge) {
     DDLogError(@"Can't use ExponentUtil.reload() on the kernel bridge. Use RN dev tools to reload the bundle.");
     return;
   }
-  if (bridge == [EXKernel sharedInstance].bridgeRegistry.lastKnownForegroundBridge) {
+  if (bridge == [EXKernel sharedInstance].appRegistry.lastKnownForegroundAppManager.reactBridge) {
     // only the foreground task is allowed to force a reload
     [self refreshForegroundTask];
   }

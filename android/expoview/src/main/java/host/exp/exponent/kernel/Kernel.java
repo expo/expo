@@ -49,6 +49,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
+import host.exp.exponent.AppLoader;
 import host.exp.exponent.ExponentDevActivity;
 import host.exp.exponent.LauncherActivity;
 import host.exp.exponent.ReactNativeStaticHelpers;
@@ -617,9 +618,19 @@ public class Kernel extends KernelInterface {
     }
 
     final ActivityManager.AppTask finalExistingTask = existingTask;
-    mExponentManifest.fetchManifest(manifestUrl, new ExponentManifest.ManifestListener() {
+    new AppLoader(manifestUrl, mExponentManifest, mExponentSharedPreferences) {
       @Override
-      public void onCompleted(final JSONObject manifest) {
+      public void onOptimisticManifest(final JSONObject optimisticManifest) {
+        Exponent.getInstance().runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            sendLoadingScreenManifestToExperienceActivity(optimisticManifest);
+          }
+        });
+      }
+
+      @Override
+      public void onManifestCompleted(final JSONObject manifest) {
         Exponent.getInstance().runOnUiThread(new Runnable() {
           @Override
           public void run() {
@@ -633,6 +644,11 @@ public class Kernel extends KernelInterface {
       }
 
       @Override
+      public void onBundleCompleted(String localBundlePath) {
+        sendBundleToExperienceActivity(localBundlePath);
+      }
+
+      @Override
       public void onError(Exception e) {
         handleError(e);
       }
@@ -641,7 +657,7 @@ public class Kernel extends KernelInterface {
       public void onError(String e) {
         handleError(e);
       }
-    }, forceNetwork);
+    }.start();
   }
 
   private void openManifestUrlStep2(String manifestUrl, JSONObject manifest, ActivityManager.AppTask existingTask) throws JSONException {
@@ -660,7 +676,7 @@ public class Kernel extends KernelInterface {
     opts.put(KernelConstants.OPTION_LOAD_NUX_KEY, loadNux);
 
     if (existingTask == null) {
-      populateOptimisticExperienceActivity(manifestUrl, manifest, bundleUrl, opts);
+      sendManifestToExperienceActivity(manifestUrl, manifest, bundleUrl, opts);
     }
 
     if (loadNux) {
@@ -756,10 +772,25 @@ public class Kernel extends KernelInterface {
     mOptimisticActivity = experienceActivity;
     mOptimisticTaskId = taskId;
 
+    AsyncCondition.notify(KernelConstants.OPEN_OPTIMISTIC_EXPERIENCE_ACTIVITY_KEY);
     AsyncCondition.notify(KernelConstants.OPEN_EXPERIENCE_ACTIVITY_KEY);
   }
 
-  public void populateOptimisticExperienceActivity(
+  public void sendLoadingScreenManifestToExperienceActivity(final JSONObject manifest) {
+    AsyncCondition.wait(KernelConstants.OPEN_OPTIMISTIC_EXPERIENCE_ACTIVITY_KEY, new AsyncCondition.AsyncConditionListener() {
+      @Override
+      public boolean isReady() {
+        return mOptimisticActivity != null && mOptimisticTaskId != null;
+      }
+
+      @Override
+      public void execute() {
+        mOptimisticActivity.setLoadingScreenManifest(manifest);
+      }
+    });
+  }
+
+  public void sendManifestToExperienceActivity(
       final String manifestUrl, final JSONObject manifest, final String bundleUrl, final JSONObject kernelOptions) {
     AsyncCondition.wait(KernelConstants.OPEN_EXPERIENCE_ACTIVITY_KEY, new AsyncCondition.AsyncConditionListener() {
       @Override
@@ -769,7 +800,22 @@ public class Kernel extends KernelInterface {
 
       @Override
       public void execute() {
-        mOptimisticActivity.loadExperience(manifestUrl, manifest, bundleUrl, kernelOptions);
+        mOptimisticActivity.setManifest(manifestUrl, manifest, bundleUrl, kernelOptions);
+        AsyncCondition.notify(KernelConstants.LOAD_BUNDLE_FOR_EXPERIENCE_ACTIVITY_KEY);
+      }
+    });
+  }
+
+  public void sendBundleToExperienceActivity(final String localBundlePath) {
+    AsyncCondition.wait(KernelConstants.LOAD_BUNDLE_FOR_EXPERIENCE_ACTIVITY_KEY, new AsyncCondition.AsyncConditionListener() {
+      @Override
+      public boolean isReady() {
+        return mOptimisticActivity != null && mOptimisticTaskId != null;
+      }
+
+      @Override
+      public void execute() {
+        mOptimisticActivity.setBundle(localBundlePath);
 
         mOptimisticActivity = null;
         mOptimisticTaskId = null;

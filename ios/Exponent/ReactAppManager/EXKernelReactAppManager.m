@@ -177,12 +177,12 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
 
 - (void)registerBridge
 {
-  [[EXKernel sharedInstance].bridgeRegistry registerKernelAppManager:self];
+  [[EXKernel sharedInstance].appRegistry registerKernelAppManager:self];
 }
 
 - (void)unregisterBridge
 {
-  [[EXKernel sharedInstance].bridgeRegistry unregisterKernelAppManager];
+  [[EXKernel sharedInstance].appRegistry unregisterKernelAppManager];
   _exceptionHandler = nil;
 }
 
@@ -190,6 +190,11 @@ NSString *kEXKernelManifestResourceName = @"kernel-manifest";
 {
   NSDictionary *manifest = [[self class] kernelManifest];
   return (manifest) ? manifest[@"id"] : nil;
+}
+
+- (void)experienceFinishedLoading
+{
+  // this is a no-op, since only EXFrameReactAppManager needs to react currently
 }
 
 #pragma mark - RCTBridgeDelegate
