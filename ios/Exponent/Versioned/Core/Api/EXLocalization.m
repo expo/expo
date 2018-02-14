@@ -5,19 +5,9 @@
 
 #import "EXLocalization.h"
 
-@interface EXLocalization ()
-
-@end
-
 @implementation EXLocalization
 
-@synthesize bridge = _bridge;
-
 RCT_EXPORT_MODULE(ExponentLocalization);
-
-- (void)dealloc {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
 
 RCT_REMAP_METHOD(getCurrentLocaleAsync, getCurrentLocaleWithResolver
                  : (RCTPromiseResolveBlock)resolve rejecter
