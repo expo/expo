@@ -145,4 +145,20 @@ If you need to access Google APIs using the user's authorization you need to pas
 
 1.  Open your browser to [Google Developer Credentials](https://console.developers.google.com/apis/credentials)
 2.  Click **Create credentials** and then **OAuth client ID**, then choose **web** and press **Create**.
-3.  Wherever you use `Expo.Google.logInAsync`, provide the **OAuth client ID** as the `webClientId` option.
+-   **For Standalone apps**
+Wherever you use `Expo.Google.logInAsync`, provide the **OAuth client ID** as the `webClientId` option.
+-   **Inside of Expo apps**
+When your app is running as an Expo experience, the process is a little different. Due to Google's restrictions, the only way to make this work is via web authentication flow. Once you have your code, send it to your backend and exchange it, but make sure to set the redirect_uri parameter to the same value you used on your client side call to Google.
+(Something similar to https://auth.expo.io/@username/your-app-slug). With Expo, you can easily authenticate your user with the `AuthSession` module:
+```javascript
+let result = await Expo.AuthSession.startAsync({
+authUrl:
+`https://accounts.google.com/o/oauth2/v2/auth?` +
+`&client_id=${googleWebAppId}` +
+`&redirect_uri=${encodeURIComponent(redirectUrl)}` +
+`&response_type=code` +
+`&access_type=offline` +
+`&scope=profile`,
+});
+```
+
