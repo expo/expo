@@ -22,6 +22,7 @@
 		3CDB94EB202AE8900039E406 /* EXPrint.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CDB94EA202AE8900039E406 /* EXPrint.m */; };
 		3CE707941F6A725100255742 /* EXSensorManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CE707931F6A725100255742 /* EXSensorManager.m */; };
 		3CEBDC411FFBC73E0025EF24 /* EXMailComposer.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CEBDC401FFBC73D0025EF24 /* EXMailComposer.m */; };
+		6D3FF9032022B57E000D4015 /* EXLocalization.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D3FF9012022B57D000D4015 /* EXLocalization.m */; };
 		78CEE2D11ACD07D70095B124 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 78CEE2D01ACD07D70095B124 /* Images.xcassets */; };
 		78CEE2D41ACD07D70095B124 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 78CEE2D21ACD07D70095B124 /* LaunchScreen.xib */; };
 		78CEE2ED1ACD22D90095B124 /* EXAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 78CEE2EC1ACD22D90095B124 /* EXAppDelegate.m */; };
@@ -326,6 +327,8 @@
 		3CE707951F6A74AB00255742 /* EXSensorManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSensorManager.h; sourceTree = "<group>"; };
 		3CEBDC3F1FFBC73C0025EF24 /* EXMailComposer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXMailComposer.h; sourceTree = "<group>"; };
 		3CEBDC401FFBC73D0025EF24 /* EXMailComposer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXMailComposer.m; sourceTree = "<group>"; };
+		6D3FF9012022B57D000D4015 /* EXLocalization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXLocalization.m; sourceTree = "<group>"; };
+		6D3FF9022022B57D000D4015 /* EXLocalization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXLocalization.h; sourceTree = "<group>"; };
 		78CEE2C01ACD07D70095B124 /* Exponent.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Exponent.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		78CEE2D01ACD07D70095B124 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		78CEE2D31ACD07D70095B124 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -1248,6 +1251,8 @@
 				B5FB737B1FF6DADB001C764B /* EXContacts.m */,
 				B5FB737C1FF6DADB001C764B /* EXDocumentPicker.h */,
 				B5FB737D1FF6DADB001C764B /* EXDocumentPicker.m */,
+				6D3FF9022022B57D000D4015 /* EXLocalization.h */,
+				6D3FF9012022B57D000D4015 /* EXLocalization.m */,
 				B5FB737E1FF6DADB001C764B /* EXDownloadDelegate.h */,
 				B5FB737F1FF6DADB001C764B /* EXDownloadDelegate.m */,
 				B5FB73801FF6DADB001C764B /* EXErrorRecovery.h */,
@@ -2313,6 +2318,7 @@
 				B5FB74E51FF6DADC001C764B /* EXAppState.m in Sources */,
 				B5FB74981FF6DADC001C764B /* RNSVGTextPath.m in Sources */,
 				B5FB74551FF6DADB001C764B /* AIRGoogleMapPolygonManager.m in Sources */,
+				6D3FF9032022B57E000D4015 /* EXLocalization.m in Sources */,
 				B5FB74841FF6DADC001C764B /* RNSVGPainter.m in Sources */,
 				B5FB74CC1FF6DADC001C764B /* EXContactsRequester.m in Sources */,
 				B5FB74A61FF6DADC001C764B /* EXFacebook.m in Sources */,

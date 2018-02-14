@@ -54,24 +54,4 @@ public class UtilModule extends ReactContextBaseJavaModule {
     KernelProvider.getInstance().reloadVisibleExperience((String) mExperienceProperties.get(KernelConstants.MANIFEST_URL_KEY));
   }
 
-  @ReactMethod
-  public void getCurrentLocaleAsync(final Promise promise) {
-    promise.resolve(getReactApplicationContext().getResources().getConfiguration().locale.toString());
-  }
-
-  @ReactMethod
-  public void getCurrentDeviceCountryAsync(final Promise promise) {
-    Locale current = getReactApplicationContext().getResources().getConfiguration().locale;
-    String country = current.getCountry();
-    if (country == null || country.length() == 0) {
-      promise.reject("E_NO_DEVICE_COUNTRY", "This device does not indicate its country");
-    } else {
-      promise.resolve(country);
-    }
-  }
-
-  @ReactMethod
-  public void getCurrentTimeZoneAsync(final Promise promise) {
-    promise.resolve(TimeZone.getDefault().getID());
-  }
 }
