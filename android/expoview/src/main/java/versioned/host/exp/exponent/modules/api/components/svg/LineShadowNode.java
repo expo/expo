@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015-present, Horcrux.
  * All rights reserved.
  *
@@ -17,7 +17,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 /**
  * Shadow node for virtual Line view
  */
-public class LineShadowNode extends RenderableShadowNode {
+class LineShadowNode extends RenderableShadowNode {
 
     private String mX1;
     private String mY1;
@@ -51,13 +51,13 @@ public class LineShadowNode extends RenderableShadowNode {
     @Override
     protected Path getPath(Canvas canvas, Paint paint) {
         Path path = new Path();
-        float x1 = relativeOnWidth(mX1);
-        float y1 = relativeOnHeight(mY1);
-        float x2 = relativeOnWidth(mX2);
-        float y2 = relativeOnHeight(mY2);
+        double x1 = relativeOnWidth(mX1);
+        double y1 = relativeOnHeight(mY1);
+        double x2 = relativeOnWidth(mX2);
+        double y2 = relativeOnHeight(mY2);
 
-        path.moveTo(x1, y1);
-        path.lineTo(x2, y2);
+        path.moveTo((float) x1, (float) y1);
+        path.lineTo((float) x2, (float) y2);
         return path;
     }
 }

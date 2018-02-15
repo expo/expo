@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015-present, Horcrux.
  * All rights reserved.
  *
@@ -20,7 +20,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 /**
  * Shadow node for virtual Use view
  */
-public class UseShadowNode extends RenderableShadowNode {
+class UseShadowNode extends RenderableShadowNode {
 
     private String mHref;
     private String mWidth;
@@ -44,14 +44,6 @@ public class UseShadowNode extends RenderableShadowNode {
         markUpdated();
     }
 
-    public String getWidth() {
-        return mWidth;
-    }
-
-    public String getHeight() {
-        return mHeight;
-    }
-
     @Override
     public void draw(Canvas canvas, Paint paint, float opacity) {
         VirtualNode template = getSvgShadowNode().getDefinedTemplate(mHref);
@@ -66,7 +58,7 @@ public class UseShadowNode extends RenderableShadowNode {
 
             if (template instanceof SymbolShadowNode) {
                 SymbolShadowNode symbol = (SymbolShadowNode)template;
-                symbol.drawSymbol(canvas, paint, opacity, relativeOnWidth(mWidth), relativeOnHeight(mHeight));
+                symbol.drawSymbol(canvas, paint, opacity, (float) relativeOnWidth(mWidth), (float) relativeOnHeight(mHeight));
             } else {
                 template.draw(canvas, paint, opacity * mOpacity);
             }

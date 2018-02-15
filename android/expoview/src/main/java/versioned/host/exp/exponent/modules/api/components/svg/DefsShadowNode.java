@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015-present, Horcrux.
  * All rights reserved.
  *
@@ -15,23 +15,24 @@ import android.graphics.Paint;
 /**
  * Shadow node for virtual Defs view
  */
-public class DefsShadowNode extends DefinitionShadowNode {
+class DefsShadowNode extends DefinitionShadowNode {
 
     @Override
     public void draw(Canvas canvas, Paint paint, float opacity) {
-        traverseChildren(new NodeRunnable() {
-            public boolean run(VirtualNode node) {
-                node.saveDefinition();
-                return true;
-            }
-        });
         NodeRunnable markUpdateSeenRecursive = new NodeRunnable() {
-            public boolean run(VirtualNode node) {
+            public void run(VirtualNode node) {
                 node.markUpdateSeen();
                 node.traverseChildren(this);
-                return true;
             }
         };
         traverseChildren(markUpdateSeenRecursive);
+    }
+
+    void saveDefinition() {
+        traverseChildren(new NodeRunnable() {
+            public void run(VirtualNode node) {
+                node.saveDefinition();
+            }
+        });
     }
 }

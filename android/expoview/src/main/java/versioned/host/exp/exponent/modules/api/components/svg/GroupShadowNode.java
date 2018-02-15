@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015-present, Horcrux.
  * All rights reserved.
  *
@@ -14,29 +14,65 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
+import android.graphics.RectF;
 
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.ReactShadowNode;
-
+import com.facebook.react.uimanager.annotations.ReactProp;
 
 import javax.annotation.Nullable;
 
 /**
  * Shadow node for virtual Group view
  */
-public class GroupShadowNode extends RenderableShadowNode {
+class GroupShadowNode extends RenderableShadowNode {
+    @Nullable ReadableMap mFont;
+
+    private GlyphContext mGlyphContext;
+
+    @ReactProp(name = "font")
+    public void setFont(@Nullable ReadableMap font) {
+        mFont = font;
+        markUpdated();
+    }
+
+    void setupGlyphContext(Canvas canvas) {
+        RectF clipBounds = new RectF(canvas.getClipBounds());
+        mMatrix.mapRect(clipBounds);
+        mGlyphContext = new GlyphContext(mScale, clipBounds.width(), clipBounds.height());
+    }
+
+    GlyphContext getGlyphContext() {
+        return mGlyphContext;
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    GlyphContext getTextRootGlyphContext() {
+        return getTextRoot().getGlyphContext();
+    }
+
+    void pushGlyphContext() {
+        getTextRootGlyphContext().pushContext(this, mFont);
+    }
+
+    void popGlyphContext() {
+        getTextRootGlyphContext().popContext();
+    }
 
     public void draw(final Canvas canvas, final Paint paint, final float opacity) {
+        setupGlyphContext(canvas);
         if (opacity > MIN_OPACITY_FOR_DRAW) {
             clip(canvas, paint);
             drawGroup(canvas, paint, opacity);
         }
     }
 
-    protected void drawGroup(final Canvas canvas, final Paint paint, final float opacity) {
+    void drawGroup(final Canvas canvas, final Paint paint, final float opacity) {
+        pushGlyphContext();
         final SvgViewShadowNode svg = getSvgShadowNode();
         final GroupShadowNode self = this;
         traverseChildren(new NodeRunnable() {
-            public boolean run(VirtualNode node) {
+            public void run(VirtualNode node) {
                 if (node instanceof RenderableShadowNode) {
                     ((RenderableShadowNode)node).mergeProperties(self);
                 }
@@ -54,12 +90,12 @@ public class GroupShadowNode extends RenderableShadowNode {
                 if (node.isResponsible()) {
                     svg.enableTouchEvents();
                 }
-                return true;
             }
         });
+        popGlyphContext();
     }
 
-    protected void drawPath(Canvas canvas, Paint paint, float opacity) {
+    void drawPath(Canvas canvas, Paint paint, float opacity) {
         super.draw(canvas, paint, opacity);
     }
 
@@ -68,9 +104,8 @@ public class GroupShadowNode extends RenderableShadowNode {
         final Path path = new Path();
 
         traverseChildren(new NodeRunnable() {
-            public boolean run(VirtualNode node) {
+            public void run(VirtualNode node) {
                 path.addPath(node.getPath(canvas, paint));
-                return true;
             }
         });
 
@@ -113,15 +148,14 @@ public class GroupShadowNode extends RenderableShadowNode {
         return -1;
     }
 
-    protected void saveDefinition() {
+    void saveDefinition() {
         if (mName != null) {
             getSvgShadowNode().defineTemplate(this, mName);
         }
 
         traverseChildren(new NodeRunnable() {
-            public boolean run(VirtualNode node) {
+            public void run(VirtualNode node) {
                 node.saveDefinition();
-                return true;
             }
         });
     }
@@ -129,11 +163,10 @@ public class GroupShadowNode extends RenderableShadowNode {
     @Override
     public void resetProperties() {
         traverseChildren(new NodeRunnable() {
-            public boolean run(VirtualNode node) {
+            public void run(VirtualNode node) {
                 if (node instanceof RenderableShadowNode) {
                     ((RenderableShadowNode)node).resetProperties();
                 }
-                return true;
             }
         });
     }

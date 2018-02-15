@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015-present, Horcrux.
  * All rights reserved.
  *
@@ -20,10 +20,14 @@ import javax.annotation.Nullable;
 /**
  * Shadow node for virtual TextPath view
  */
-public class TextPathShadowNode extends TextShadowNode {
+class TextPathShadowNode extends TextShadowNode {
 
     private String mHref;
+    private TextPathSide mSide;
+    private TextPathMidLine mMidLine;
     private @Nullable String mStartOffset;
+    private TextPathMethod mMethod = TextPathMethod.align;
+    private TextPathSpacing mSpacing = TextPathSpacing.exact;
 
     @ReactProp(name = "href")
     public void setHref(String href) {
@@ -37,12 +41,58 @@ public class TextPathShadowNode extends TextShadowNode {
         markUpdated();
     }
 
+    @ReactProp(name = "method")
+    public void setMethod(@Nullable String method) {
+        mMethod = TextPathMethod.valueOf(method);
+        markUpdated();
+    }
+
+    @ReactProp(name = "spacing")
+    public void setSpacing(@Nullable String spacing) {
+        mSpacing = TextPathSpacing.valueOf(spacing);
+        markUpdated();
+    }
+
+    @ReactProp(name = "side")
+    public void setSide(@Nullable String side) {
+        mSide = TextPathSide.valueOf(side);
+        markUpdated();
+    }
+
+    @ReactProp(name = "midLine")
+    public void setSharp(@Nullable String midLine) {
+        mMidLine = TextPathMidLine.valueOf(midLine);
+        markUpdated();
+    }
+
+    @SuppressWarnings("unused")
+    TextPathMethod getMethod() {
+        return mMethod;
+    }
+
+    @SuppressWarnings("unused")
+    TextPathSpacing getSpacing() {
+        return mSpacing;
+    }
+
+    TextPathSide getSide() {
+        return mSide;
+    }
+
+    TextPathMidLine getMidLine() {
+        return mMidLine;
+    }
+
+    String getStartOffset() {
+        return mStartOffset;
+    }
+
     @Override
     public void draw(Canvas canvas, Paint paint, float opacity) {
         drawGroup(canvas, paint, opacity);
     }
 
-    public BezierTransformer getBezierTransformer() {
+    public Path getPath() {
         SvgViewShadowNode svg = getSvgShadowNode();
         VirtualNode template = svg.getDefinedTemplate(mHref);
 
@@ -52,7 +102,7 @@ public class TextPathShadowNode extends TextShadowNode {
         }
 
         PathShadowNode path = (PathShadowNode)template;
-        return new BezierTransformer(path.getBezierCurves(), relativeOnWidth(mStartOffset));
+        return path.getPath();
     }
 
     @Override
@@ -69,5 +119,4 @@ public class TextPathShadowNode extends TextShadowNode {
     protected void popGlyphContext() {
         // do nothing
     }
-
 }
