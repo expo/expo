@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015-present, Horcrux.
  * All rights reserved.
  *
@@ -9,15 +9,13 @@
 
 package versioned.host.exp.exponent.modules.api.components.svg;
 
-import android.util.Log;
-
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 
-public class SvgViewModule extends ReactContextBaseJavaModule {
-    public SvgViewModule(ReactApplicationContext reactContext) {
+class SvgViewModule extends ReactContextBaseJavaModule {
+    SvgViewModule(ReactApplicationContext reactContext) {
         super(reactContext);
     }
 

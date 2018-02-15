@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015-present, Horcrux.
  * All rights reserved.
  *
@@ -16,10 +16,12 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.util.Base64;
 
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.LayoutShadowNode;
+import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
@@ -37,7 +39,7 @@ public class SvgViewShadowNode extends LayoutShadowNode {
     private final Map<String, VirtualNode> mDefinedTemplates = new HashMap<>();
     private final Map<String, Brush> mDefinedBrushes = new HashMap<>();
     private Canvas mCanvas;
-    protected final float mScale;
+    private final float mScale;
 
     private float mMinX;
     private float mMinY;
@@ -109,7 +111,7 @@ public class SvgViewShadowNode extends LayoutShadowNode {
         SvgViewManager.setShadowNode(this);
     }
 
-    public Object drawOutput() {
+    private Object drawOutput() {
         Bitmap bitmap = Bitmap.createBitmap(
                 (int) getLayoutWidth(),
                 (int) getLayoutHeight(),
@@ -120,41 +122,51 @@ public class SvgViewShadowNode extends LayoutShadowNode {
         return bitmap;
     }
 
-    public Rect getCanvasBounds() {
+    Rect getCanvasBounds() {
         return mCanvas.getClipBounds();
     }
 
-    private void drawChildren(Canvas canvas) {
+    private void drawChildren(final Canvas canvas) {
 
         if (mAlign != null) {
-            RectF vbRect = new RectF(mMinX * mScale, mMinY * mScale, (mMinX + mVbWidth) * mScale, (mMinY + mVbHeight) * mScale);
+            RectF vbRect = getViewBox();
             RectF eRect = new RectF(0, 0, getLayoutWidth(), getLayoutHeight());
-            mViewBoxMatrix = ViewBox.getTransform(vbRect, eRect, mAlign, mMeetOrSlice, false);
+            mViewBoxMatrix = ViewBox.getTransform(vbRect, eRect, mAlign, mMeetOrSlice);
             canvas.concat(mViewBoxMatrix);
         }
 
-        Paint paint = new Paint();
+        final Paint paint = new Paint();
 
-        for (int i = 0; i < getChildCount(); i++) {
-            if (!(getChildAt(i) instanceof VirtualNode)) {
-                continue;
+        paint.setFlags(Paint.ANTI_ALIAS_FLAG | Paint.DEV_KERN_TEXT_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
+
+        paint.setTypeface(Typeface.DEFAULT);
+
+
+        traverseChildren(new VirtualNode.NodeRunnable() {
+            public void run(VirtualNode node) {
+                node.saveDefinition();
             }
+        });
 
-            VirtualNode child = (VirtualNode) getChildAt(i);
-            child.saveDefinition();
+        traverseChildren(new VirtualNode.NodeRunnable() {
+            public void run(VirtualNode node) {
+                int count = node.saveAndSetupCanvas(canvas);
+                node.draw(canvas, paint, 1f);
+                node.restoreCanvas(canvas, count);
+                node.markUpdateSeen();
 
-            int count = child.saveAndSetupCanvas(canvas);
-            child.draw(canvas, paint, 1f);
-            child.restoreCanvas(canvas, count);
-            child.markUpdateSeen();
-
-            if (child.isResponsible() && !mResponsible) {
-                mResponsible = true;
+                if (node.isResponsible() && !mResponsible) {
+                    mResponsible = true;
+                }
             }
-        }
+        });
     }
 
-    public String toDataURL() {
+    private RectF getViewBox() {
+        return new RectF(mMinX * mScale, mMinY * mScale, (mMinX + mVbWidth) * mScale, (mMinY + mVbHeight) * mScale);
+    }
+
+    String toDataURL() {
         Bitmap bitmap = Bitmap.createBitmap(
                 (int) getLayoutWidth(),
                 (int) getLayoutHeight(),
@@ -168,13 +180,13 @@ public class SvgViewShadowNode extends LayoutShadowNode {
         return Base64.encodeToString(bitmapBytes, Base64.DEFAULT);
     }
 
-    public void enableTouchEvents() {
+    void enableTouchEvents() {
         if (!mResponsible) {
             mResponsible = true;
         }
     }
 
-    public int hitTest(Point point) {
+    int hitTest(Point point) {
         if (!mResponsible) {
             return -1;
         }
@@ -195,27 +207,38 @@ public class SvgViewShadowNode extends LayoutShadowNode {
         return viewTag;
     }
 
-    public void defineClipPath(VirtualNode clipPath, String clipPathRef) {
+    void defineClipPath(VirtualNode clipPath, String clipPathRef) {
         mDefinedClipPaths.put(clipPathRef, clipPath);
     }
 
-    public VirtualNode getDefinedClipPath(String clipPathRef) {
+    VirtualNode getDefinedClipPath(String clipPathRef) {
         return mDefinedClipPaths.get(clipPathRef);
     }
 
-    public void defineTemplate(VirtualNode template, String templateRef) {
+    void defineTemplate(VirtualNode template, String templateRef) {
         mDefinedTemplates.put(templateRef, template);
     }
 
-    public VirtualNode getDefinedTemplate(String templateRef) {
+    VirtualNode getDefinedTemplate(String templateRef) {
         return mDefinedTemplates.get(templateRef);
     }
 
-    public void defineBrush(Brush brush, String brushRef) {
+    void defineBrush(Brush brush, String brushRef) {
         mDefinedBrushes.put(brushRef, brush);
     }
 
-    public Brush getDefinedBrush(String brushRef) {
+    Brush getDefinedBrush(String brushRef) {
         return mDefinedBrushes.get(brushRef);
+    }
+
+    void traverseChildren(VirtualNode.NodeRunnable runner) {
+        for (int i = 0; i < getChildCount(); i++) {
+            ReactShadowNode child = getChildAt(i);
+            if (!(child instanceof VirtualNode)) {
+                continue;
+            }
+
+            runner.run((VirtualNode) child);
+        }
     }
 }

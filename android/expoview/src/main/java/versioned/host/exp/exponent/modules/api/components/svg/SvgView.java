@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015-present, Horcrux.
  * All rights reserved.
  *
@@ -9,6 +9,7 @@
 
 package versioned.host.exp.exponent.modules.api.components.svg;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Point;
@@ -29,12 +30,15 @@ import javax.annotation.Nullable;
 /**
  * Custom {@link View} implementation that draws an RNSVGSvg React view and its \childrn.
  */
+@SuppressLint("ViewConstructor")
 public class SvgView extends View {
     public enum Events {
+        @SuppressWarnings("unused")
         EVENT_DATA_URL("onDataURL");
 
         private final String mName;
 
+        @SuppressWarnings({"unused", "SameParameterValue"})
         Events(final String name) {
             mName = name;
         }
@@ -46,7 +50,7 @@ public class SvgView extends View {
     }
 
     private @Nullable Bitmap mBitmap;
-    private EventDispatcher mEventDispatcher;
+    private final EventDispatcher mEventDispatcher;
     private long mGestureStartTime = TouchEvent.UNSET;
     private int mTargetTag;
 
@@ -131,7 +135,7 @@ public class SvgView extends View {
                 mTouchEventCoalescingKeyHelper));
     }
 
-    public void handleTouchEvent(MotionEvent ev) {
+    private void handleTouchEvent(MotionEvent ev) {
         int action = ev.getAction() & MotionEvent.ACTION_MASK;
         if (action == MotionEvent.ACTION_DOWN) {
             mGestureStartTime = ev.getEventTime();
@@ -148,6 +152,7 @@ public class SvgView extends View {
             // this gesture.
             dispatch(ev, TouchEventType.END);
             mTargetTag = -1;
+            mGestureStartTime = TouchEvent.UNSET;
         } else if (action == MotionEvent.ACTION_MOVE) {
             // Update pointer position for current gesture
             dispatch(ev, TouchEventType.MOVE);
@@ -157,8 +162,6 @@ public class SvgView extends View {
         } else if (action == MotionEvent.ACTION_POINTER_UP) {
             // Exactly onw of the pointers goes up
             dispatch(ev, TouchEventType.END);
-            mTargetTag = -1;
-            mGestureStartTime = TouchEvent.UNSET;
         } else if (action == MotionEvent.ACTION_CANCEL) {
             dispatchCancelEvent(ev);
             mTargetTag = -1;

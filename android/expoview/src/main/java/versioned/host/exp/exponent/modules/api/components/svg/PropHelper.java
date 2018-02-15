@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015-present, Horcrux.
  * All rights reserved.
  *
@@ -9,16 +9,8 @@
 
 package versioned.host.exp.exponent.modules.api.components.svg;
 
-import android.graphics.Color;
 import android.graphics.Path;
 import android.graphics.RectF;
-import android.graphics.Paint;
-import android.graphics.RadialGradient;
-import android.graphics.LinearGradient;
-import android.graphics.Shader;
-import android.graphics.Matrix;
-
-import javax.annotation.Nullable;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableArray;
@@ -33,61 +25,131 @@ import java.util.regex.Pattern;
  */
 class PropHelper {
 
+    private static final int inputMatrixDataSize = 6;
+
     /**
-     * Converts {@link ReadableArray} to an array of {@code float}. Returns newly created array.
+     * Converts given {@link ReadableArray} to a matrix data array, {@code float[6]}.
+     * Writes result to the array passed in {@param into}.
+     * This method will write exactly six items to the output array from the input array.
      *
-     * @return a {@code float[]} if converted successfully, or {@code null} if {@param value} was
-     * {@code null}.
-     */
-
-    static
-    @Nullable
-    float[] toFloatArray(@Nullable ReadableArray value) {
-        if (value != null) {
-            float[] result = new float[value.size()];
-            toFloatArray(value, result);
-            return result;
-        }
-        return null;
-    }
-
-    /**
-     * Converts given {@link ReadableArray} to an array of {@code float}. Writes result to the array
-     * passed in {@param into}. This method will write to the output array up to the number of items
-     * from the input array. If the input array is longer than output the remaining part of the input
-     * will not be converted.
+     * If the input array has a different size, then only the size is returned;
+     * Does not check output array size. Ensure space for at least six elements.
      *
      * @param value input array
-     * @param into  output array
-     * @return number of items copied from input to the output array
+     * @param sRawMatrix output matrix
+     * @param mScale current resolution scaling
+     * @return size of input array
      */
-
-    static int toFloatArray(ReadableArray value, float[] into) {
-        int length = value.size() > into.length ? into.length : value.size();
-        for (int i = 0; i < length; i++) {
-            into[i] = (float) value.getDouble(i);
+    static int toMatrixData(ReadableArray value, float[] sRawMatrix, float mScale) {
+        int fromSize = value.size();
+        if (fromSize != inputMatrixDataSize) {
+            return fromSize;
         }
-        return value.size();
 
+        sRawMatrix[0] = (float) value.getDouble(0);
+        sRawMatrix[1] = (float) value.getDouble(2);
+        sRawMatrix[2] = (float) value.getDouble(4) * mScale;
+        sRawMatrix[3] = (float) value.getDouble(1);
+        sRawMatrix[4] = (float) value.getDouble(3);
+        sRawMatrix[5] = (float) value.getDouble(5) * mScale;
+
+        return inputMatrixDataSize;
     }
 
-    static private Pattern percentageRegExp = Pattern.compile("^(\\-?\\d+(?:\\.\\d+)?)%$");
+    static private final Pattern percentageRegExp = Pattern.compile("^(-?\\d+(?:\\.\\d+)?)%$");
 
     /**
-     * Converts percentage string into actual based on a relative number
+     * Converts length string into px / user units
+     * in the current user coordinate system
      *
-     * @param percentage percentage string
-     * @param relative   relative number
-     * @param offset     offset number
-     * @return actual float based on relative number
+     * @param length     length string
+     * @param relative   relative size for percentages
+     * @param offset     offset for all units
+     * @param scale      scaling parameter
+     * @param fontSize   current font size
+     * @return value in the current user coordinate system
      */
+    static double fromRelative(String length, double relative, double offset, double scale, double fontSize) {
+        /*
+            TODO list
 
-    static float fromPercentageToFloat(String percentage, float relative, float offset, float scale) {
-        Matcher matched = percentageRegExp.matcher(percentage);
-        if (matched.matches()) {
-            return Float.valueOf(matched.group(1)) / 100 * relative + offset;
+            unit  relative to
+            em    font size of the element
+            ex    x-height of the element’s font
+            ch    width of the "0" (ZERO, U+0030) glyph in the element’s font
+            rem   font size of the root element
+            vw    1% of viewport’s width
+            vh    1% of viewport’s height
+            vmin  1% of viewport’s smaller dimension
+            vmax  1% of viewport’s larger dimension
+
+            relative-size [ larger | smaller ]
+            absolute-size: [ xx-small | x-small | small | medium | large | x-large | xx-large ]
+
+            https://www.w3.org/TR/css3-values/#relative-lengths
+            https://www.w3.org/TR/css3-values/#absolute-lengths
+            https://drafts.csswg.org/css-cascade-4/#computed-value
+            https://drafts.csswg.org/css-fonts-3/#propdef-font-size
+            https://drafts.csswg.org/css2/fonts.html#propdef-font-size
+        */
+        length = length.trim();
+        int stringLength = length.length();
+        int percentIndex = stringLength - 1;
+        if (stringLength == 0 || length.equals("normal")) {
+            return offset;
+        } else if (length.codePointAt(percentIndex) == '%') {
+            return Double.valueOf(length.substring(0, percentIndex)) / 100 * relative + offset;
         } else {
-            return Float.valueOf(percentage) * scale + offset;
+            int twoLetterUnitIndex = stringLength - 2;
+            if (twoLetterUnitIndex > 0) {
+                String lastTwo = length.substring(twoLetterUnitIndex);
+                int end = twoLetterUnitIndex;
+                double unit = 1;
+
+                switch (lastTwo) {
+                    case "px":
+                        break;
+
+                    case "em":
+                        unit = fontSize;
+                        break;
+
+                    /*
+                     "1pt" equals "1.25px" (and therefore 1.25 user units)
+                     "1pc" equals "15px" (and therefore 15 user units)
+                     "1mm" would be "3.543307px" (3.543307 user units)
+                     "1cm" equals "35.43307px" (and therefore 35.43307 user units)
+                     "1in" equals "90px" (and therefore 90 user units)
+                     */
+
+                    case "pt":
+                        unit = 1.25d;
+                        break;
+
+                    case "pc":
+                        unit = 15;
+                        break;
+
+                    case "mm":
+                        unit = 3.543307d;
+                        break;
+
+                    case "cm":
+                        unit = 35.43307d;
+                        break;
+
+                    case "in":
+                        unit = 90;
+                        break;
+
+                    default:
+                        end = stringLength;
+                }
+
+                return Double.valueOf(length.substring(0, end)) * unit * scale + offset;
+            } else {
+                return Double.valueOf(length) * scale + offset;
+            }
         }
     }
 
@@ -103,12 +165,12 @@ class PropHelper {
     }
 
     static class PathParser {
-        static private Pattern PATH_REG_EXP = Pattern.compile("[a-df-z]|[\\-+]?(?:[\\d.]e[\\-+]?|[^\\s\\-+,a-z])+", Pattern.CASE_INSENSITIVE);
-        static private Pattern DECIMAL_REG_EXP = Pattern.compile("(\\.\\d+)(?=\\-?\\.)");
+        static private final Pattern PATH_REG_EXP = Pattern.compile("[a-df-z]|[\\-+]?(?:[\\d.]e[\\-+]?|[^\\s\\-+,a-z])+", Pattern.CASE_INSENSITIVE);
+        static private final Pattern DECIMAL_REG_EXP = Pattern.compile("(\\.\\d+)(?=-?\\.)");
 
         private Matcher mMatcher;
         private Path mPath;
-        private String mString;
+        private final String mString;
         private float mPenX = 0f;
         private float mPenY = 0f;
         private float mPenDownX;
@@ -124,16 +186,9 @@ class PropHelper {
         private WritableArray mBezierCurves;
         private WritableMap mLastStartPoint;
 
-        public PathParser(String d, float scale) {
+        PathParser(String d, float scale) {
             mScale = scale;
             mString = d;
-        }
-
-        public ReadableArray getBezierCurves() {
-            if (mBezierCurves == null) {
-                getPath();
-            }
-            return mBezierCurves;
         }
 
         private void executeCommand(String command) {

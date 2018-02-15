@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015-present, Horcrux.
  * All rights reserved.
  *
@@ -9,48 +9,81 @@
 
 package versioned.host.exp.exponent.modules.api.components.svg;
 
-import javax.annotation.Nullable;
-
 import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.Point;
-import android.graphics.PointF;
-import android.graphics.Rect;
-import android.graphics.RectF;
-import android.util.Log;
 
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
+import javax.annotation.Nullable;
+
 /**
  * Shadow node for virtual Text view
  */
 
-public class TextShadowNode extends GroupShadowNode {
-
-    private static final int TEXT_ANCHOR_AUTO = 0;
-    private static final int TEXT_ANCHOR_START = 1;
-    private static final int TEXT_ANCHOR_MIDDLE = 2;
-    private static final int TEXT_ANCHOR_END = 3;
-
-    private int mTextAnchor = TEXT_ANCHOR_AUTO;
-    private @Nullable  ReadableArray mDeltaX;
+class TextShadowNode extends GroupShadowNode {
+    String mTextLength = null;
+    String mBaselineShift = null;
+    TextLengthAdjust mLengthAdjust = TextLengthAdjust.spacing;
+    private AlignmentBaseline mAlignmentBaseline;
+    private @Nullable ReadableArray mPositionX;
+    private @Nullable ReadableArray mPositionY;
+    private @Nullable ReadableArray mRotate;
+    private @Nullable ReadableArray mDeltaX;
     private @Nullable ReadableArray mDeltaY;
-    private @Nullable String mPositionX;
-    private @Nullable String mPositionY;
-    private @Nullable ReadableMap mFont;
 
-    private GlyphContext mGlyphContext;
-    private TextShadowNode mTextRoot;
+    @ReactProp(name = "textLength")
+    public void setmTextLength(@Nullable String length) {
+        mTextLength = length;
+        markUpdated();
+    }
 
-    @ReactProp(name = "textAnchor", defaultInt = TEXT_ANCHOR_AUTO)
-    public void setTextAnchor(int textAnchor) {
-        mTextAnchor = textAnchor;
+    @ReactProp(name = "lengthAdjust")
+    public void setLengthAdjust(@Nullable String adjustment) {
+        mLengthAdjust = TextLengthAdjust.valueOf(adjustment);
+        markUpdated();
+    }
+
+    @ReactProp(name = "alignmentBaseline")
+    public void setMethod(@Nullable String alignment) {
+        mAlignmentBaseline = AlignmentBaseline.getEnum(alignment);
+        markUpdated();
+    }
+
+    @ReactProp(name = "baselineShift")
+    public void setBaselineShift(@Nullable String baselineShift) {
+        mBaselineShift = baselineShift;
+        markUpdated();
+    }
+
+    @ReactProp(name = "verticalAlign")
+    public void setVerticalAlign(@Nullable String verticalAlign) {
+        if (verticalAlign != null) {
+            verticalAlign = verticalAlign.trim();
+            int i = verticalAlign.lastIndexOf(' ');
+            try {
+                mAlignmentBaseline = AlignmentBaseline.getEnum(verticalAlign.substring(i));
+            } catch (IllegalArgumentException e) {
+                mAlignmentBaseline = AlignmentBaseline.baseline;
+            }
+            try {
+                mBaselineShift = verticalAlign.substring(0, i);
+            } catch (IndexOutOfBoundsException e) {
+                mBaselineShift = null;
+            }
+        } else {
+            mAlignmentBaseline = AlignmentBaseline.baseline;
+            mBaselineShift = null;
+        }
+        markUpdated();
+    }
+
+    @ReactProp(name = "rotate")
+    public void setRotate(@Nullable ReadableArray rotate) {
+        mRotate = rotate;
         markUpdated();
     }
 
@@ -67,13 +100,13 @@ public class TextShadowNode extends GroupShadowNode {
     }
 
     @ReactProp(name = "positionX")
-    public void setPositionX(@Nullable String positionX) {
+    public void setPositionX(@Nullable ReadableArray positionX) {
         mPositionX = positionX;
         markUpdated();
     }
 
     @ReactProp(name = "positionY")
-    public void setPositionY(@Nullable String positionY) {
+    public void setPositionY(@Nullable ReadableArray positionY) {
         mPositionY = positionY;
         markUpdated();
     }
@@ -87,11 +120,9 @@ public class TextShadowNode extends GroupShadowNode {
     @Override
     public void draw(Canvas canvas, Paint paint, float opacity) {
         if (opacity > MIN_OPACITY_FOR_DRAW) {
-            setupGlyphContext();
+            setupGlyphContext(canvas);
             clip(canvas, paint);
-            Path path = getGroupPath(canvas, paint);
-            Matrix matrix = getAlignMatrix(path);
-            canvas.concat(matrix);
+            getGroupPath(canvas, paint);
             drawGroup(canvas, paint, opacity);
             releaseCachedPath();
         }
@@ -99,80 +130,61 @@ public class TextShadowNode extends GroupShadowNode {
 
     @Override
     protected Path getPath(Canvas canvas, Paint paint) {
-        setupGlyphContext();
+        setupGlyphContext(canvas);
         Path groupPath = getGroupPath(canvas, paint);
-        Matrix matrix = getAlignMatrix(groupPath);
-        groupPath.transform(matrix);
-
         releaseCachedPath();
         return groupPath;
     }
 
-    protected void drawGroup(Canvas canvas, Paint paint, float opacity) {
-        pushGlyphContext();
-        super.drawGroup(canvas, paint, opacity);
-        popGlyphContext();
-    }
-
-    private int getTextAnchor() {
-        return mTextAnchor;
-    }
-
-    private int getComputedTextAnchor() {
-        int anchor = mTextAnchor;
-        ReactShadowNode shadowNode = this;
-
-        while (shadowNode.getChildCount() > 0 &&
-                anchor == TEXT_ANCHOR_AUTO) {
-            shadowNode = shadowNode.getChildAt(0);
-
-            if (shadowNode instanceof TextShadowNode) {
-                anchor = ((TextShadowNode) shadowNode).getTextAnchor();
-            } else {
-                break;
+    AlignmentBaseline getAlignmentBaseline() {
+        if (mAlignmentBaseline == null) {
+            ReactShadowNode parent = this.getParent();
+            while (parent != null) {
+                if (parent instanceof TextShadowNode) {
+                    TextShadowNode node = (TextShadowNode)parent;
+                    final AlignmentBaseline baseline = node.mAlignmentBaseline;
+                    if (baseline != null) {
+                        mAlignmentBaseline = baseline;
+                        return baseline;
+                    }
+                }
+                parent = parent.getParent();
             }
         }
-        return anchor;
+        if (mAlignmentBaseline == null) {
+            mAlignmentBaseline = AlignmentBaseline.baseline;
+        }
+        return mAlignmentBaseline;
     }
 
-    private TextShadowNode getTextRoot() {
-        if (mTextRoot == null) {
-            mTextRoot = this;
-
-            while (mTextRoot != null) {
-                if (mTextRoot.getClass() == TextShadowNode.class) {
-                    break;
+    String getBaselineShift() {
+        if (mBaselineShift == null) {
+            ReactShadowNode parent = this.getParent();
+            while (parent != null) {
+                if (parent instanceof TextShadowNode) {
+                    TextShadowNode node = (TextShadowNode)parent;
+                    final String baselineShift = node.mBaselineShift;
+                    if (baselineShift != null) {
+                        mBaselineShift = baselineShift;
+                        return baselineShift;
+                    }
                 }
-
-                ReactShadowNode parent = mTextRoot.getParent();
-
-                if (!(parent instanceof TextShadowNode)) {
-                    //todo: throw exception here
-                    mTextRoot = null;
-                } else {
-                    mTextRoot = (TextShadowNode)parent;
-                }
+                parent = parent.getParent();
             }
         }
-
-        return mTextRoot;
+        return mBaselineShift;
     }
 
-    private void setupGlyphContext() {
-        mGlyphContext = new GlyphContext(mScale, getCanvasWidth(), getCanvasHeight());
-    }
-
-    protected void releaseCachedPath() {
+    void releaseCachedPath() {
         traverseChildren(new NodeRunnable() {
-            public boolean run(VirtualNode node) {
+            public void run(VirtualNode node) {
                 TextShadowNode text = (TextShadowNode)node;
                 text.releaseCachedPath();
-                return true;
             }
         });
     }
 
-    protected Path getGroupPath(Canvas canvas, Paint paint) {
+    Path getGroupPath(Canvas canvas, Paint paint) {
         pushGlyphContext();
         Path groupPath = super.getPath(canvas, paint);
         popGlyphContext();
@@ -180,44 +192,9 @@ public class TextShadowNode extends GroupShadowNode {
         return groupPath;
     }
 
-    protected GlyphContext getGlyphContext() {
-        return mGlyphContext;
-    }
-
-    protected void pushGlyphContext() {
-        getTextRoot().getGlyphContext().pushContext(mFont, mDeltaX, mDeltaY, mPositionX, mPositionY);
-    }
-
-    protected void popGlyphContext() {
-        getTextRoot().getGlyphContext().popContext();
-    }
-
-    protected ReadableMap getFontFromContext() {
-        return  getTextRoot().getGlyphContext().getGlyphFont();
-    }
-
-    protected PointF getGlyphPointFromContext(float offset, float glyphWidth) {
-        return  getTextRoot().getGlyphContext().getNextGlyphPoint(offset, glyphWidth);
-    }
-
-    private Matrix getAlignMatrix(Path path) {
-        RectF box = new RectF();
-        path.computeBounds(box, true);
-
-        float width = box.width();
-        float x = 0;
-
-        switch (getComputedTextAnchor()) {
-            case TEXT_ANCHOR_MIDDLE:
-                x = -width / 2;
-                break;
-            case TEXT_ANCHOR_END:
-                x = -width;
-                break;
-        }
-
-        Matrix matrix = new Matrix();
-        matrix.setTranslate(x, 0);
-        return matrix;
+    @Override
+    void pushGlyphContext() {
+        boolean isTextNode = !(this instanceof TextPathShadowNode) && !(this instanceof TSpanShadowNode);
+        getTextRootGlyphContext().pushContext(isTextNode, this, mFont, mPositionX, mPositionY, mDeltaX, mDeltaY, mRotate);
     }
 }

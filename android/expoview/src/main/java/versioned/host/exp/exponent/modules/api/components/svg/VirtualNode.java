@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015-present, Horcrux.
  * All rights reserved.
  *
@@ -26,35 +26,97 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 
 import javax.annotation.Nullable;
 
-public abstract class VirtualNode extends LayoutShadowNode {
+import static versioned.host.exp.exponent.modules.api.components.svg.FontData.DEFAULT_FONT_SIZE;
 
-    protected static final float MIN_OPACITY_FOR_DRAW = 0.01f;
+abstract class VirtualNode extends LayoutShadowNode {
+    /*
+        N[1/Sqrt[2], 36]
+        The inverse of the square root of 2.
+        Provide enough digits for the 128-bit IEEE quad (36 significant digits).
+    */
+    private static final double M_SQRT1_2l = 0.707106781186547524400844362104849039;
 
-    private static final float[] sMatrixData = new float[9];
-    private static final float[] sRawMatrix = new float[9];
-    protected float mOpacity = 1f;
-    protected Matrix mMatrix = new Matrix();
+    static final float MIN_OPACITY_FOR_DRAW = 0.01f;
+
+    private static final float[] sRawMatrix = new float[]{
+        1, 0, 0,
+        0, 1, 0,
+        0, 0, 1
+    };
+    float mOpacity = 1f;
+    Matrix mMatrix = new Matrix();
 
     private int mClipRule;
-    protected @Nullable String mClipPath;
+    private @Nullable String mClipPath;
 
     private static final int CLIP_RULE_EVENODD = 0;
     private static final int CLIP_RULE_NONZERO = 1;
 
-    protected final float mScale;
-    protected boolean mResponsible;
-    protected String mName;
+    final float mScale;
+    private boolean mResponsible;
+    String mName;
 
     private SvgViewShadowNode mSvgShadowNode;
     private Path mCachedClipPath;
+    private GroupShadowNode mTextRoot;
+    private float canvasHeight = -1;
+    private float canvasWidth = -1;
+    private GlyphContext glyphContext;
 
-    public VirtualNode() {
+    VirtualNode() {
         mScale = DisplayMetricsHolder.getScreenDisplayMetrics().density;
     }
 
     @Override
     public boolean isVirtual() {
         return true;
+    }
+
+    @Nullable
+    GroupShadowNode getTextRoot() {
+        VirtualNode node = this;
+        if (mTextRoot == null) {
+            while (node != null) {
+                if (node instanceof GroupShadowNode && ((GroupShadowNode) node).getGlyphContext() != null) {
+                    mTextRoot = (GroupShadowNode)node;
+                    break;
+                }
+
+                ReactShadowNode parent = node.getParent();
+
+                if (!(parent instanceof VirtualNode)) {
+                    node = null;
+                } else {
+                    node = (VirtualNode)parent;
+                }
+            }
+        }
+
+        return mTextRoot;
+    }
+
+    @Nullable
+    GroupShadowNode getParentTextRoot() {
+        ReactShadowNode parent = this.getParent();
+        if (!(parent instanceof VirtualNode)) {
+            return null;
+        } else {
+            return ((VirtualNode) parent).getTextRoot();
+        }
+    }
+
+
+    private double getFontSizeFromContext() {
+        GroupShadowNode root = getTextRoot();
+        if (root == null) {
+            return DEFAULT_FONT_SIZE;
+        }
+
+        if (glyphContext == null) {
+            glyphContext = root.getGlyphContext();
+        }
+
+        return glyphContext.getFontSize();
     }
 
     public abstract void draw(Canvas canvas, Paint paint, float opacity);
@@ -68,7 +130,7 @@ public abstract class VirtualNode extends LayoutShadowNode {
      *
      * @param canvas the canvas to set up
      */
-    protected int saveAndSetupCanvas(Canvas canvas) {
+    int saveAndSetupCanvas(Canvas canvas) {
         int count = canvas.save();
         canvas.concat(mMatrix);
         return count;
@@ -80,7 +142,7 @@ public abstract class VirtualNode extends LayoutShadowNode {
      *
      * @param canvas the canvas to restore
      */
-    protected void restoreCanvas(Canvas canvas, int count) {
+    void restoreCanvas(Canvas canvas, int count) {
         canvas.restoreToCount(count);
     }
 
@@ -112,17 +174,11 @@ public abstract class VirtualNode extends LayoutShadowNode {
     @ReactProp(name = "matrix")
     public void setMatrix(@Nullable ReadableArray matrixArray) {
         if (matrixArray != null) {
-            int matrixSize = PropHelper.toFloatArray(matrixArray, sMatrixData);
+            int matrixSize = PropHelper.toMatrixData(matrixArray, sRawMatrix, mScale);
             if (matrixSize == 6) {
-                sRawMatrix[0] = sMatrixData[0];
-                sRawMatrix[1] = sMatrixData[2];
-                sRawMatrix[2] = sMatrixData[4] * mScale;
-                sRawMatrix[3] = sMatrixData[1];
-                sRawMatrix[4] = sMatrixData[3];
-                sRawMatrix[5] = sMatrixData[5] * mScale;
-                sRawMatrix[6] = 0;
-                sRawMatrix[7] = 0;
-                sRawMatrix[8] = 1;
+                if (mMatrix == null) {
+                    mMatrix = new Matrix();
+                }
                 mMatrix.setValues(sRawMatrix);
             } else if (matrixSize != -1) {
                 FLog.w(ReactConstants.TAG, "RNSVG: Transform matrices must be of size 6");
@@ -134,17 +190,17 @@ public abstract class VirtualNode extends LayoutShadowNode {
         markUpdated();
     }
 
-    @ReactProp(name = "responsible", defaultBoolean = false)
+    @ReactProp(name = "responsible")
     public void setResponsible(boolean responsible) {
         mResponsible = responsible;
         markUpdated();
     }
 
-    protected @Nullable Path getClipPath() {
+    @Nullable Path getClipPath() {
         return mCachedClipPath;
     }
 
-    protected @Nullable Path getClipPath(Canvas canvas, Paint paint) {
+    @Nullable Path getClipPath(Canvas canvas, Paint paint) {
         if (mClipPath != null) {
             VirtualNode node = getSvgShadowNode().getDefinedClipPath(mClipPath);
 
@@ -168,7 +224,7 @@ public abstract class VirtualNode extends LayoutShadowNode {
         return getClipPath();
     }
 
-    protected void clip(Canvas canvas, Paint paint) {
+    void clip(Canvas canvas, Paint paint) {
         Path clip = getClipPath(canvas, paint);
 
         if (clip != null) {
@@ -184,7 +240,7 @@ public abstract class VirtualNode extends LayoutShadowNode {
 
     abstract protected Path getPath(Canvas canvas, Paint paint);
 
-    protected SvgViewShadowNode getSvgShadowNode() {
+    SvgViewShadowNode getSvgShadowNode() {
         if (mSvgShadowNode != null) {
             return mSvgShadowNode;
         }
@@ -202,50 +258,67 @@ public abstract class VirtualNode extends LayoutShadowNode {
         return mSvgShadowNode;
     }
 
-    protected float relativeOnWidth(String length) {
-        return PropHelper.fromPercentageToFloat(length, getCanvasWidth(), 0, mScale);
+    double relativeOnWidth(String length) {
+        return PropHelper.fromRelative(length, getCanvasWidth(), 0, mScale, getFontSizeFromContext());
     }
 
-    protected float relativeOnHeight(String length) {
-        return PropHelper.fromPercentageToFloat(length, getCanvasHeight(), 0, mScale);
+    double relativeOnHeight(String length) {
+        return PropHelper.fromRelative(length, getCanvasHeight(), 0, mScale, getFontSizeFromContext());
     }
 
-    protected float getCanvasWidth() {
-        return getSvgShadowNode().getCanvasBounds().width();
+    double relativeOnOther(String length) {
+        double powX = Math.pow((getCanvasWidth()), 2);
+        double powY = Math.pow((getCanvasHeight()), 2);
+        double r = Math.sqrt(powX + powY) * M_SQRT1_2l;
+        return PropHelper.fromRelative(length, r, 0, mScale, getFontSizeFromContext());
     }
 
-    protected float getCanvasHeight() {
-        return getSvgShadowNode().getCanvasBounds().height();
+    private float getCanvasWidth() {
+        if (canvasWidth != -1) {
+            return canvasWidth;
+        }
+        GroupShadowNode root = getTextRoot();
+        if (root == null) {
+            canvasWidth = getSvgShadowNode().getCanvasBounds().width();
+        } else {
+            canvasWidth = root.getGlyphContext().getWidth();
+        }
+
+        return canvasWidth;
     }
 
-    protected float getCanvasLeft() {
-        return getSvgShadowNode().getCanvasBounds().left;
+    private float getCanvasHeight() {
+        if (canvasHeight != -1) {
+            return canvasHeight;
+        }
+        GroupShadowNode root = getTextRoot();
+        if (root == null) {
+            canvasHeight = getSvgShadowNode().getCanvasBounds().height();
+        } else {
+            canvasHeight = root.getGlyphContext().getHeight();
+        }
+
+        return canvasHeight;
     }
 
-    protected float getCanvasTop() {
-        return getSvgShadowNode().getCanvasBounds().top;
-    }
-
-    protected void saveDefinition() {
+    void saveDefinition() {
         if (mName != null) {
             getSvgShadowNode().defineTemplate(this, mName);
         }
     }
 
-    protected interface NodeRunnable {
-        boolean run(VirtualNode node);
+    interface NodeRunnable {
+        void run(VirtualNode node);
     }
 
-    protected void traverseChildren(NodeRunnable runner) {
+    void traverseChildren(NodeRunnable runner) {
         for (int i = 0; i < getChildCount(); i++) {
             ReactShadowNode child = getChildAt(i);
             if (!(child instanceof VirtualNode)) {
                 continue;
             }
 
-            if (!runner.run((VirtualNode) child)) {
-                break;
-            }
+            runner.run((VirtualNode) child);
         }
     }
 }
