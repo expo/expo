@@ -6,10 +6,8 @@
 //  Copyright © 2018 650 Industries. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-#import <React/RCTView.h>
 #import <React/RCTBridgeModule.h>
 
-@interface EXPrint : RCTView <RCTBridgeModule, UIPrintInteractionControllerDelegate, UIPrinterPickerControllerDelegate>
+@interface EXPrint : NSObject <RCTBridgeModule>
 
 @end

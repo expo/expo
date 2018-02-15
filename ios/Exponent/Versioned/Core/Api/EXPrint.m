@@ -10,6 +10,10 @@
 #import <React/RCTConvert.h>
 #import <React/RCTUtils.h>
 
+@interface EXPrint () <UIPrintInteractionControllerDelegate, UIPrinterPickerControllerDelegate>
+
+@end
+
 @implementation EXPrint
 
 - (dispatch_queue_t)methodQueue
