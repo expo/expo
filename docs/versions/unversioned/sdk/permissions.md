@@ -93,3 +93,11 @@ The permission type for reading contacts.
 ### `Expo.Permissions.CAMERA_ROLL`
 
 The permission type for reading or writing to the camera roll.
+
+### `Expo.Permissions.CALENDAR`
+
+The permission type for reading or writing to the calendar.
+
+### `Expo.Permissions.REMINDERS`
+
+The permission type for reading or writing reminders (iOS only).

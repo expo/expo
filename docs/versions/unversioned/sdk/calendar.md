@@ -4,6 +4,8 @@ title: Calendar
 
 Provides an API for interacting with the device's system calendars, events, reminders, and associated records.
 
+Requires `Permissions.CALENDAR`. Interacting with reminders on iOS requires `Permissions.REMINDERS`.
+
 See the bottom of this page for a complete list of all possible fields for the objects used in this API.
 
 ### `Expo.Calendar.getCalendarsAsync(entityType)`
@@ -16,11 +18,11 @@ Gets an array of calendar objects with details about the different calendars sto
 
 #### Returns
 
-An array of Calendar objects matching the provided entity type (if provided).
+An array of [calendar objects](#calendar "Calendar") matching the provided entity type (if provided).
 
 ### `Expo.Calendar.createCalendarAsync(details)`
 
-Creates a new calendar on the device, allowing events to be added later and displayed.
+Creates a new calendar on the device, allowing events to be added later and displayed in the OS Calendar app.
 
 #### Arguments
 
@@ -80,7 +82,7 @@ Deletes an existing calendar and all associated events/reminders/attendees from 
 
 ### `Expo.Calendar.getEventsAsync(calendarIds, startDate, endDate)`
 
-Returns all events in a given set of calendars over a specified time period.
+Returns all events in a given set of calendars over a specified time period. The filtering has slightly different behavior per-platform -- on iOS, all events that overlap at all with the `[startDate, endDate]` interval are returned, whereas on Android, only events that begin on or after the `startDate` and end on or before the `endDate` will be returned.
 
 #### Arguments
 
@@ -90,7 +92,7 @@ Returns all events in a given set of calendars over a specified time period.
 
 #### Returns
 
-An array of Event objects matching the search criteria.
+An array of [event objects](#event "Event") matching the search criteria.
 
 ### `Expo.Calendar.getEventAsync(id, recurringEventOptions)`
 
@@ -107,7 +109,7 @@ Returns a specific event selected by ID. If a specific instance of a recurring e
 
 #### Returns
 
-An Event object matching the provided criteria, if one exists.
+An [event object](#event "Event") matching the provided criteria, if one exists.
 
 ### `Expo.Calendar.createEventAsync(calendarId, details)`
 
@@ -142,7 +144,7 @@ Creates a new event on the specified calendar.
 
 A string representing the ID of the newly created event.
 
-### `Expo.Calendar.updateEventAsync(id, details, recurrentEventOptions)`
+### `Expo.Calendar.updateEventAsync(id, details, recurringEventOptions)`
 
 Updates the provided details of an existing calendar stored on the device. To remove a property, explicitly set it to `null` in `details`.
 
@@ -171,7 +173,7 @@ Updates the provided details of an existing calendar stored on the device. To re
     -   **guestsCanInviteOthers (_boolean_)** -- (Android only)
     -   **guestsCanSeeGuests (_boolean_)** -- (Android only)
 
--   **recurrentEventOptions (_object_)** --
+-   **recurringEventOptions (_object_)** --
 
       A map of options for recurring events:
 
@@ -185,7 +187,7 @@ Deletes an existing event from the device. Use with caution.
 #### Arguments
 
 -   **id (_string_)** -- ID of the event to be deleted. Required.
--   **recurrentEventOptions (_object_)** --
+-   **recurringEventOptions (_object_)** --
 
       A map of options for recurring events:
 
@@ -208,7 +210,7 @@ Gets all attendees for a given event (or instance of a recurring event).
 
 #### Returns
 
-An array of Attendee objects associated with the specified event.
+An array of [attendee objects](#attendee "Attendee") associated with the specified event.
 
 ### `Expo.Calendar.createAttendeeAsync(eventId, details)`
 
@@ -260,7 +262,7 @@ A string representing the ID of the newly created attendee record.
 
 ### `Expo.Calendar.getRemindersAsync(calendarIds, status, startDate, endDate)`
 
-**Available on iOS only.** Returns a list of reminders matching the provided criteria.
+**Available on iOS only.** Returns a list of reminders matching the provided criteria. If `startDate` and `endDate` are defined, returns all reminders that overlap at all with the [startDate, endDate] interval -- i.e. all reminders that end after the `startDate` or begin before the `endDate`.
 
 #### Arguments
 
@@ -271,7 +273,7 @@ A string representing the ID of the newly created attendee record.
 
 #### Returns
 
-An array of Reminder objects matching the search criteria.
+An array of [reminder objects](#reminder "Reminder") matching the search criteria.
 
 ### `Expo.Calendar.getReminderAsync(id)`
 
@@ -283,7 +285,7 @@ An array of Reminder objects matching the search criteria.
 
 #### Returns
 
-An Reminder object matching the provided ID, if one exists.
+An [reminder object](#reminder "Reminder") matching the provided ID, if one exists.
 
 ### `Expo.Calendar.createReminderAsync(calendarId, details)`
 
@@ -348,7 +350,7 @@ A string representing the ID of the newly created reminder.
 
 #### Returns
 
-An array of Source objects all sources for calendars stored on the device.
+An array of [source objects](#source "Source") all sources for calendars stored on the device.
 
 ### `Expo.Calendar.getSourceAsync(id)`
 
@@ -360,7 +362,7 @@ An array of Source objects all sources for calendars stored on the device.
 
 #### Returns
 
-A Source object matching the provided ID, if one exists.
+A [source object](#source "Source") matching the provided ID, if one exists.
 
 ### `Expo.Calendar.openEventInCalendar(id)`
 
