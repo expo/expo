@@ -93,8 +93,6 @@ public:
 
   virtual void* getJavaScriptContext() override;
 
-  virtual bool isInspectable() override;
-
 #ifdef WITH_JSC_MEMORY_PRESSURE
   virtual void handleMemoryPressure(int pressureLevel) override;
 #endif
