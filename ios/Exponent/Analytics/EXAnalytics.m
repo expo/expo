@@ -93,12 +93,7 @@ NSString * const kEXAnalyticsDisabledConfigKey = @"EXAnalyticsDisabled";
   }
   self.visibleRoute = route;
   if (route < kEXKernelRouteUndefined) {
-    NSArray *eventIdentifiers = nil;
-    if ([EXBuildConstants sharedInstance].isDevKernel) {
-      eventIdentifiers = @[@"EXPERIENCE_APPEARED"];
-    } else {
-      eventIdentifiers = @[@"HOME_APPEARED", @"EXPERIENCE_APPEARED", @"ERROR_APPEARED" ];
-    }
+    NSArray *eventIdentifiers = @[ @"HOME_APPEARED", @"EXPERIENCE_APPEARED", @"ERROR_APPEARED" ];
     NSDictionary *eventProperties = @{ @"SOURCE": (isFromJS) ? @"JS" : @"SYSTEM" };
     [[Amplitude instance] logEvent:eventIdentifiers[route] withEventProperties:eventProperties];
   }
