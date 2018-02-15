@@ -60,11 +60,6 @@
     [[ExpoKit sharedInstance] application:application didReceiveLocalNotification:notification];
 }
 
-- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
-{
-    [[ExpoKit sharedInstance] application:application didFailToRegisterForRemoteNotificationsWithError:error];
-}
-
 - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(nonnull UIUserNotificationSettings *)notificationSettings
 {
     [[ExpoKit sharedInstance] application:application didRegisterUserNotificationSettings:notificationSettings];
