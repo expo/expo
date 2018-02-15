@@ -60,9 +60,6 @@ public class Analytics {
   }
 
   public static void logEventWithManifestUrlSdkVersion(String eventType, String manifestUrl, String sdkVersion) {
-    if (!Constants.isShellApp() && (!eventType.equals(EXPERIENCE_APPEARED))) {
-      return;
-    }
     try {
       JSONObject eventProperties = new JSONObject();
       if (manifestUrl != null) {
