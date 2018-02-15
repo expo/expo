@@ -9,6 +9,7 @@
 #import <React/UIView+React.h>
 #import "RNSVGCGFCRule.h"
 #import "RNSVGSvgView.h"
+@class RNSVGGroup;
 
 /**
  * RNSVG nodes are implemented as base UIViews. They should be implementation for all basic
@@ -16,6 +17,14 @@
  */
 
 @interface RNSVGNode : UIView
+
+/*
+ N[1/Sqrt[2], 36]
+ The inverse of the square root of 2.
+ Provide enough digits for the 128-bit IEEE quad (36 significant digits).
+ */
+extern CGFloat const M_SQRT1_2l;
+extern CGFloat const RNSVG_DEFAULT_FONT_SIZE;
 
 @property (nonatomic, strong) NSString *name;
 @property (nonatomic, assign) CGFloat opacity;
@@ -26,6 +35,9 @@
 @property (nonatomic, assign) BOOL active;
 
 - (void)invalidate;
+
+- (RNSVGGroup *)getTextRoot;
+- (RNSVGGroup *)getParentTextRoot;
 
 - (void)renderTo:(CGContextRef)context;
 
@@ -69,6 +81,10 @@
 - (CGFloat)relativeOnWidth:(NSString *)length;
 
 - (CGFloat)relativeOnHeight:(NSString *)length;
+
+- (CGFloat)relativeOnOther:(NSString *)length;
+
+- (CGFloat)getFontSizeFromContext;
 
 - (CGFloat)getContextWidth;
 
