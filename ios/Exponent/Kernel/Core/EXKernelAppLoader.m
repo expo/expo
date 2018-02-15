@@ -161,7 +161,8 @@ NSString *kEXKernelOptimisticManifestEventBase = @"optimisticManifest";
 {
   if ([self _areDevToolsEnabledWithManifest:manifest]) {
     // ignore in dev mode, we'll just go straight through to the downloader instead
-    [self _resolve:nil];
+    _success(manifest);
+    _manifestFinished = YES;
     return;
   }
   EXCachedResourceBehavior cacheBehavior = [self _cacheBehaviorForJSWithManifest:manifest];
