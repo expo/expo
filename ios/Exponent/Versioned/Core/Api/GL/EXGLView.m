@@ -389,7 +389,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 // - `flip`: if true, the image will be flipped vertically.
 // - `framebuffer`: WebGLFramebuffer that we will be reading from. If not specified, the default framebuffer for this context will be used.
 // - `rect`: { x, y, width, height } object used to crop the snapshot.
-- (void)saveSnapshotWithOptions:(nonnull NSDictionary *)options callback:(void(^)(NSMutableDictionary *))callback
+- (void)takeSnapshotWithOptions:(nonnull NSDictionary *)options callback:(void(^)(NSMutableDictionary *))callback
 {
   // contentScaleFactor should be called on the main thread
   CGFloat scale = self.contentScaleFactor;

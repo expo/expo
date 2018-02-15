@@ -66,8 +66,8 @@ RCT_REMAP_METHOD(createCameraTextureAsync,
 
 # pragma mark - Snapshots
 
-RCT_REMAP_METHOD(saveSnapshotAsync,
-                 saveSnapshotAsyncWithReactTag:(nonnull NSNumber *)tag
+RCT_REMAP_METHOD(takeSnapshotAsync,
+                 takeSnapshotAsyncWithReactTag:(nonnull NSNumber *)tag
                  andOptions:(nonnull NSDictionary *)options
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
@@ -76,12 +76,12 @@ RCT_REMAP_METHOD(saveSnapshotAsync,
     UIView *view = [self.bridge.uiManager viewForReactTag:tag];
     
     if (![view isKindOfClass:[EXGLView class]]) {
-      reject(@"E_GL_BAD_VIEW_TAG", nil, RCTErrorWithMessage(@"ExponentGLObjectManager.saveSnapshotAsync: Expected an EXGLView"));
+      reject(@"E_GL_BAD_VIEW_TAG", nil, RCTErrorWithMessage(@"ExponentGLObjectManager.takeSnapshotAsync: Expected an EXGLView"));
       return;
     }
     
     EXGLView *exglView = (EXGLView *)view;
-    [exglView saveSnapshotWithOptions:options callback:resolve];
+    [exglView takeSnapshotWithOptions:options callback:resolve];
   });
 }
 

@@ -318,7 +318,7 @@ public class GLObjectManagerModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void saveSnapshotAsync(final int glViewTag, final ReadableMap options, final Promise promise) {
+  public void takeSnapshotAsync(final int glViewTag, final ReadableMap options, final Promise promise) {
     ReactApplicationContext reactContext = getReactApplicationContext();
     UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
 
@@ -330,11 +330,11 @@ public class GLObjectManagerModule extends ReactContextBaseJavaModule {
         try {
           glView = (GLView) nativeViewHierarchyManager.resolveView(glViewTag);
         } catch (Exception e) {
-          promise.reject("E_GL_BAD_VIEW_TAG", "ExponentGLObjectManager.saveSnapshotAsync: Expected a GLView");
+          promise.reject("E_GL_BAD_VIEW_TAG", "ExponentGLObjectManager.takeSnapshotAsync: Expected a GLView");
           return;
         }
 
-        glView.saveSnapshot(options, mScopedContext, promise);
+        glView.takeSnapshot(options, mScopedContext, promise);
       }
     });
   }

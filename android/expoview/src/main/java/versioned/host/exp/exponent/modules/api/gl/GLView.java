@@ -150,7 +150,7 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
     });
   }
 
-  public void saveSnapshot(final ReadableMap options, final ScopedContext scopedContext, final Promise promise) {
+  public void takeSnapshot(final ReadableMap options, final ScopedContext scopedContext, final Promise promise) {
     runOnGLThread(new Runnable() {
       @Override
       public void run() {
