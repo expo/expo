@@ -284,7 +284,11 @@ class BrowserScreen extends React.Component {
     this.props.dispatch(BrowserActions.setLoadingState(this.props.url, true));
   };
 
-  _handleLoadingProgress = loadingStatus => {
+  _handleLoadingProgress = event => {
+    let loadingStatus = event;
+    if (event.nativeEvent) {
+      loadingStatus = event.nativeEvent;
+    }
     this.setState({ loadingStatus });
   };
 
