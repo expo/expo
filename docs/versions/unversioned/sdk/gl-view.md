@@ -19,7 +19,7 @@ Other than the regular `View` props for layout and touch handling, the following
 
 ### Methods
 
-### `saveSnapshotAsync`
+### `takeSnapshotAsync`
 
 Takes a snapshot of the framebuffer and saves it as JPEG file to app's cache directory.
 
