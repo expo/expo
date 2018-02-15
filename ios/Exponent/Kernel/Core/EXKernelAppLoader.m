@@ -104,9 +104,26 @@ NSString *kEXKernelOptimisticManifestEventBase = @"optimisticManifest";
 {
   _bundleLoaderDelegate = delegate;
 
-  // if we're too late and everything has already finished downloading, call _resolveBundle explicitly so that we can get the delegate callbacks
-  // otherwise _resolveBundle will be called elsewhere when the bundle finishes downloading
-  if (_manifestFinished) {
+  if ([self _areDevToolsEnabledWithManifest:_manifest]) {
+    // if we're in dev mode, just pass through directly to the downloader since we don't want to time out
+    void (^progressBlock)(EXLoadingProgress * _Nonnull) = ^(EXLoadingProgress * _Nonnull progress) {
+      [_bundleLoaderDelegate appLoader:self didLoadBundleWithProgress:progress];
+    };
+    void (^successBlock)(NSData * _Nonnull) = ^(NSData * _Nonnull data) {
+      [_bundleLoaderDelegate appLoader:self didFinishLoadingBundle:data];
+    };
+    void (^errorBlock)(NSError * _Nonnull) = ^(NSError * _Nonnull error) {
+      [_bundleLoaderDelegate appLoader:self didFailLoadingBundleWithError:error];
+    };
+    [self _fetchJSBundleWithManifest:_manifest
+                       cacheBehavior:[self _cacheBehaviorForJSWithManifest:_manifest]
+                     timeoutInterval:kEXJSBundleTimeout
+                            progress:progressBlock
+                             success:successBlock
+                               error:errorBlock];
+  } else if (_manifestFinished) {
+    // if we're too late and everything has already finished downloading, call _resolveBundle explicitly so that we can get the delegate callbacks
+    // otherwise _resolveBundle will be called elsewhere when the bundle finishes downloading
     [self _resolveBundle:nil];
   }
 }
@@ -142,6 +159,11 @@ NSString *kEXKernelOptimisticManifestEventBase = @"optimisticManifest";
 
 - (void)_fetchRemoteJSBundleWithManifest:(NSDictionary *)manifest
 {
+  if ([self _areDevToolsEnabledWithManifest:manifest]) {
+    // ignore in dev mode, we'll just go straight through to the downloader instead
+    [self _resolve:nil];
+    return;
+  }
   EXCachedResourceBehavior cacheBehavior = [self _cacheBehaviorForJSWithManifest:manifest];
 
   [self _fetchJSBundleWithManifest:manifest cacheBehavior:cacheBehavior timeoutInterval:kEXJSBundleTimeout progress:^(EXLoadingProgress * _Nonnull progress) {
@@ -190,7 +212,7 @@ NSString *kEXKernelOptimisticManifestEventBase = @"optimisticManifest";
 
 - (void)_resolveBundle:(NSError * _Nullable)err
 {
-  if (!_bundleLoaderDelegate) {
+  if (!_bundleLoaderDelegate || [self _areDevToolsEnabledWithManifest:_manifest]) {
     return;
   }
 
