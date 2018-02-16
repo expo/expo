@@ -3,7 +3,7 @@ apply plugin: 'maven'
 
 //maven repository info
 group = 'host.exp.exponent'
-version = '25.0.0'
+version = '26.0.0'
 
 //Upload android library to maven with javadoc and android sources
 configurations {
@@ -182,13 +182,14 @@ dependencies {
   compile 'com.android.support:multidex:1.0.1'
 
   // Current react native
-  compile project(':ReactAndroid')
-  /* UNCOMMENT WHEN DISTRIBUTING
-  compile 'com.facebook.react:react-native:25.0.0'
-  END UNCOMMENT WHEN DISTRIBUTING */
+  
+  
+  compile 'com.facebook.react:react-native:26.0.0'
+  
 
   // Versioned react native
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+  compile 'host.exp:reactandroid-abi26_0_0:1.0.0'
   compile 'host.exp:reactandroid-abi25_0_0:1.0.0'
   compile 'host.exp:reactandroid-abi24_0_0:1.0.0'
   compile 'host.exp:reactandroid-abi23:1.0.0'
