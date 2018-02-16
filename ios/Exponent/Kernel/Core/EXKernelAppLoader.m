@@ -74,7 +74,7 @@ NSString *kEXKernelOptimisticManifestEventBase = @"optimisticManifest";
     if (updates && [updates isKindOfClass:[NSDictionary class]]) {
       NSDictionary *updatesDict = (NSDictionary *)updates;
       id checkAutomaticallyVal = updatesDict[@"checkAutomatically"];
-      if (checkAutomaticallyVal && [checkAutomaticallyVal isKindOfClass:[NSString class]] && ![(NSString *)checkAutomaticallyVal isEqualToString:@"never"]) {
+      if (checkAutomaticallyVal && [checkAutomaticallyVal isKindOfClass:[NSString class]] && [(NSString *)checkAutomaticallyVal isEqualToString:@"never"]) {
         shouldCheckForUpdate = NO;
       }
 
