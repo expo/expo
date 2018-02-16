@@ -127,7 +127,11 @@ public abstract class AppLoader {
       @Override
       public void onCompleted(JSONObject manifest) {
         mManifest = manifest;
-        onOptimisticManifest(manifest);
+        // don't send manifest for loading screen in dev mode, as loading screen is handled
+        // separately by RN activity in this case
+        if (!ExponentManifest.isDebugModeEnabled(manifest)) {
+          onOptimisticManifest(manifest);
+        }
         fetchJSBundle(false);
       }
 
