@@ -46,9 +46,9 @@ ABI26_0_0RCT_REMAP_METHOD(getAsync,
                  resolver:(ABI26_0_0RCTPromiseResolveBlock)resolve
                  rejecter:(ABI26_0_0RCTPromiseRejectBlock)reject)
 {
-  if ([type isEqualToString:@"remoteNotifications"]) {
+  if ([type isEqualToString:@"notifications"]) {
     resolve([ABI26_0_0EXRemoteNotificationRequester permissions]);
-  } else if ([type isEqualToString:@"notifications"]) {
+  } else if ([type isEqualToString:@"userFacingNotifications"]) {
     resolve([ABI26_0_0EXLocalNotificationRequester permissions]);
   } else if ([type isEqualToString:@"location"]) {
     resolve([ABI26_0_0EXLocationRequester permissions]);
@@ -82,9 +82,9 @@ ABI26_0_0RCT_REMAP_METHOD(askAsync,
       resolve(result);
     } else {
       NSObject<ABI26_0_0EXPermissionRequester> *requester;
-      if ([type isEqualToString:@"remoteNotifications"]) {
+      if ([type isEqualToString:@"notifications"]) {
         requester = [[ABI26_0_0EXRemoteNotificationRequester alloc] init];
-      } else if ([type isEqualToString:@"notifications"]) {
+      } else if ([type isEqualToString:@"userFacingNotifications"]) {
         requester = [[ABI26_0_0EXLocalNotificationRequester alloc] init];
       } else if ([type isEqualToString:@"location"]) {
         requester = [[ABI26_0_0EXLocationRequester alloc] init];
