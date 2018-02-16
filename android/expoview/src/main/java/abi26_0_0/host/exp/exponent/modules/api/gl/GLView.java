@@ -41,8 +41,9 @@ import static host.exp.exponent.exgl.EXGL.EXGLContextFlush;
 import static host.exp.exponent.exgl.EXGL.EXGLContextNeedsRedraw;
 import static host.exp.exponent.exgl.EXGL.EXGLContextSetFlushMethod;
 import static host.exp.exponent.exgl.EXGL.EXGLContextGetObject;
+import host.exp.exponent.exgl.VersionedGLView;
 
-public class GLView extends TextureView implements TextureView.SurfaceTextureListener  {
+public class GLView extends TextureView implements TextureView.SurfaceTextureListener, VersionedGLView  {
   private boolean mOnSurfaceCreateCalled = false;
   private int mEXGLCtxId = -1;
 
