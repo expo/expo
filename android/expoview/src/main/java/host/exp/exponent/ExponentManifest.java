@@ -113,7 +113,6 @@ public class ExponentManifest {
   public static final String MANIFEST_LOADING_EXPONENT_ICON_GRAYSCALE = "exponentIconGrayscale";
   public static final String MANIFEST_LOADING_BACKGROUND_IMAGE_URL = "backgroundImageUrl";
   public static final String MANIFEST_LOADING_BACKGROUND_COLOR = "backgroundColor";
-  public static final String MANIFEST_LOADING_HIDE_EXPONENT_TEXT_KEY = "hideExponentText";
 
   // Splash
   public static final String MANIFEST_SPLASH_INFO_KEY = "splash";
@@ -299,18 +298,37 @@ public class ExponentManifest {
         }
 
         @Override
-        public void onCachedResponse(Call call, Response response, boolean isEmbedded) {
+        public void onCachedResponse(Call call, Response response, final boolean isEmbedded) {
           EXL.d(TAG, "Using cached or embedded response.");
 
           ManifestListener newListener = listener;
+          final String embeddedResponse = mExponentNetwork.getClient().getHardCodedResponse(finalUri);
+          if (embeddedResponse != null) {
+            // use newer of two responses
+            newListener = new ManifestListener() {
+              @Override
+              public void onCompleted(JSONObject manifest) {
+                if (isEmbedded) {
+                  // When offline it is possible that the embedded manifest is returned but we have
+                  // a more recent one available in shared preferences. Make sure to use the most
+                  // recent one to avoid regressing manifest versions.
+                  try {
+                    ExponentSharedPreferences.ManifestAndBundleUrl manifestAndBundleUrl = mExponentSharedPreferences.getManifest(manifestUrl);
+                    String cachedManifestTimestamp = manifestAndBundleUrl.manifest.getString(MANIFEST_PUBLISHED_TIME_KEY);
+                    String embeddedManifestTimestamp = manifest.getString(MANIFEST_PUBLISHED_TIME_KEY);
+                    DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+                    Date cachedManifestDate = formatter.parse(cachedManifestTimestamp);
+                    Date embeddedManifestDate = formatter.parse(embeddedManifestTimestamp);
 
-          if (!isEmbedded) {
-            final String embeddedResponse = mExponentNetwork.getClient().getHardCodedResponse(finalUri);
-            if (embeddedResponse != null) {
-              // use newer of two responses
-              newListener = new ManifestListener() {
-                @Override
-                public void onCompleted(JSONObject manifest) {
+                    if (embeddedManifestDate.before(cachedManifestDate)) {
+                      listener.onCompleted(manifestAndBundleUrl.manifest);
+                    } else {
+                      listener.onCompleted(manifest);
+                    }
+                  } catch (Throwable ex) {
+                    listener.onCompleted(manifest);
+                  }
+                } else {
                   try {
                     JSONObject embeddedManifest = new JSONObject(embeddedResponse);
                     embeddedManifest.put("loadedFromCache", true);
@@ -331,18 +349,18 @@ public class ExponentManifest {
                     listener.onCompleted(manifest);
                   }
                 }
+              }
 
-                @Override
-                public void onError(Exception e) {
-                  listener.onError(e);
-                }
+              @Override
+              public void onError(Exception e) {
+                listener.onError(e);
+              }
 
-                @Override
-                public void onError(String e) {
-                  listener.onError(e);
-                }
-              };
-            }
+              @Override
+              public void onError(String e) {
+                listener.onError(e);
+              }
+            };
           }
 
           final ManifestListener finalManifestListener = newListener;

@@ -36,9 +36,6 @@ import expolib_v1.okio.Source;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 
 public class ExponentHttpClient {
-
-  private static final String USED_EMBEDDED_RESPONSE_KEY = "USED_EMBEDDED_RESPONSE_";
-
   ExponentSharedPreferences mExponentSharedPreferences;
 
   private static final String TAG = ExponentHttpClient.class.getSimpleName();
@@ -191,9 +188,7 @@ public class ExponentHttpClient {
         // where we have version 1 of a manifest saved as the embedded response, get version 2 saved
         // to the OkHttp cache, cache gets evicted, and we regress to version 1. Want to only use
         // monotonically increasing manifest versions.
-        String sharedPrefKey = USED_EMBEDDED_RESPONSE_KEY + normalizedUri;
-
-        if (normalizedUri.equals(normalizeUri(embeddedResponse.url)) && !mExponentSharedPreferences.getBoolean(sharedPrefKey, false)) {
+        if (normalizedUri.equals(normalizeUri(embeddedResponse.url))) {
           Response response = new Response.Builder()
               .request(call.request())
               .protocol(Protocol.HTTP_1_1)
@@ -203,8 +198,6 @@ public class ExponentHttpClient {
               .build();
           callback.onCachedResponse(call, response, true);
           logEventWithUri(Analytics.HTTP_USED_EMBEDDED_RESPONSE, uri);
-          mExponentSharedPreferences.setBoolean(sharedPrefKey, true);
-
           return;
         }
       }
