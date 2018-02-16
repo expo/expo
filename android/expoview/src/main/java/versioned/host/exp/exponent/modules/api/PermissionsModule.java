@@ -20,7 +20,7 @@ import com.facebook.react.bridge.WritableMap;
 
 import host.exp.expoview.Exponent;
 
-public class PermissionsModule  extends ReactContextBaseJavaModule {
+public class PermissionsModule extends ReactContextBaseJavaModule {
   private static String PERMISSION_EXPIRES_NEVER = "never";
 
   public PermissionsModule(ReactApplicationContext reactContext) {
@@ -29,8 +29,8 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-        return "ExponentPermissions";
-    }
+    return "ExponentPermissions";
+  }
 
   @ReactMethod
   public void getAsync(final String type, final Promise promise) {
@@ -45,86 +45,85 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
   @ReactMethod
   public void askAsync(final String type, final Promise promise) {
     WritableMap existingPermissions = getPermissions(type);
-    if (existingPermissions != null &&
-        existingPermissions.getString("status") != null &&
-        existingPermissions.getString("status").equals("granted")) {
+    if (existingPermissions != null && existingPermissions.getString("status") != null
+        && existingPermissions.getString("status").equals("granted")) {
       // if we already have permission granted, resolve immediately with that
       promise.resolve(existingPermissions);
     } else {
       switch (type) {
-        case "notifications": {
-          promise.resolve(getNotificationPermissions());
-          break;
-        }
-        case "remoteNotifications": {
-          promise.resolve(getNotificationPermissions());
-          break;
-        }
-        case "location": {
-          askForLocationPermissions(promise);
-          break;
-        }
-        case "camera": {
-          askForSimplePermission(Manifest.permission.CAMERA, promise);
-          break;
-        }
-        case "contacts": {
-          askForSimplePermission(Manifest.permission.READ_CONTACTS, promise);
-          break;
-        }
-        case "audioRecording": {
-          askForSimplePermission(Manifest.permission.RECORD_AUDIO, promise);
-          break;
-        }
-        case "systemBrightness": {
-          askForWriteSettingsPermission(promise);
-          break;
-        }
-        case "cameraRoll":{
-          askForCameraRollPermissions(promise);
-          break;
-        }
-        case "calendar": {
-          askForCalendarPermissions(promise);
-          break;
-        }
-        default:
-          promise.reject("E_PERMISSION_UNSUPPORTED", String.format("Cannot request permission: %s", type));
+      case "notifications": {
+        promise.resolve(getNotificationPermissions());
+        break;
+      }
+      case "userFacingNotifications": {
+        promise.resolve(getNotificationPermissions());
+        break;
+      }
+      case "location": {
+        askForLocationPermissions(promise);
+        break;
+      }
+      case "camera": {
+        askForSimplePermission(Manifest.permission.CAMERA, promise);
+        break;
+      }
+      case "contacts": {
+        askForSimplePermission(Manifest.permission.READ_CONTACTS, promise);
+        break;
+      }
+      case "audioRecording": {
+        askForSimplePermission(Manifest.permission.RECORD_AUDIO, promise);
+        break;
+      }
+      case "systemBrightness": {
+        askForWriteSettingsPermission(promise);
+        break;
+      }
+      case "cameraRoll": {
+        askForCameraRollPermissions(promise);
+        break;
+      }
+      case "calendar": {
+        askForCalendarPermissions(promise);
+        break;
+      }
+      default:
+        promise.reject("E_PERMISSION_UNSUPPORTED", String.format("Cannot request permission: %s", type));
       }
     }
   }
 
   private WritableMap getPermissions(final String type) {
     switch (type) {
-      case "notifications": {
-        return getNotificationPermissions();
-      }
-      case "remoteNotifications": {
-        return getNotificationPermissions();
-      }
-      case "location": {
-        return getLocationPermissions();
-      }
-      case "camera": {
-        return getSimplePermission(android.Manifest.permission.CAMERA);
-      }
-      case "contacts": {
-        return getSimplePermission(Manifest.permission.READ_CONTACTS);
-      }
-      case "audioRecording": {
-        return getSimplePermission(Manifest.permission.RECORD_AUDIO);
-      }
-      case "systemBrightness": {
-        return getWriteSettingsPermission();
-      }
-      case "cameraRoll": {
-        return getCameraRollPermissions();
-      }
-      case "calendar": {
-        return getCalendarPermissions();
-      }
-      default:
-        return null;
+    case "notifications": {
+      return getNotificationPermissions();
+    }
+    case "userFacingNotifications": {
+      return getNotificationPermissions();
+    }
+    case "location": {
+      return getLocationPermissions();
+    }
+    case "camera": {
+      return getSimplePermission(android.Manifest.permission.CAMERA);
+    }
+    case "contacts": {
+      return getSimplePermission(Manifest.permission.READ_CONTACTS);
+    }
+    case "audioRecording": {
+      return getSimplePermission(Manifest.permission.RECORD_AUDIO);
+    }
+    case "systemBrightness": {
+      return getWriteSettingsPermission();
+    }
+    case "cameraRoll": {
+      return getCameraRollPermissions();
+    }
+    case "calendar": {
+      return getCalendarPermissions();
+    }
+    default:
+      return null;
     }
   }
 
@@ -151,13 +150,15 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
     Boolean isGranted = false;
     String scope = "none";
 
-    int finePermission = ContextCompat.checkSelfPermission(getReactApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION);
+    int finePermission = ContextCompat.checkSelfPermission(getReactApplicationContext(),
+        Manifest.permission.ACCESS_FINE_LOCATION);
     if (finePermission == PackageManager.PERMISSION_GRANTED) {
       response.putString("status", "granted");
-      scope =  "fine";
+      scope = "fine";
       isGranted = true;
     } else {
-      int coarsePermission = ContextCompat.checkSelfPermission(getReactApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION);
+      int coarsePermission = ContextCompat.checkSelfPermission(getReactApplicationContext(),
+          Manifest.permission.ACCESS_COARSE_LOCATION);
       if (coarsePermission == PackageManager.PERMISSION_GRANTED) {
         response.putString("status", "granted");
         scope = "coarse";
@@ -207,7 +208,7 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
       WritableMap response = Arguments.createMap();
       response.putString("status", "unknown");
       promise.resolve(response);
-    } catch (Exception e){
+    } catch (Exception e) {
       promise.reject("Error launching write settings activity:", e.getMessage());
     }
   }
@@ -236,6 +237,7 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
       public void permissionsGranted() {
         promise.resolve(getSimplePermission(permission));
       }
+
       @Override
       public void permissionsDenied() {
         promise.resolve(getSimplePermission(permission));
@@ -243,21 +245,19 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
     }, new String[] { permission });
 
     if (!gotPermissions) {
-      promise.reject("E_ACTIVITY_DOES_NOT_EXIST", "No visible activity. Must request " +
-          permission + " when visible.");
+      promise.reject("E_ACTIVITY_DOES_NOT_EXIST", "No visible activity. Must request " + permission + " when visible.");
     }
   }
 
   private void askForLocationPermissions(final Promise promise) {
-    final String[] permissions = new String[]{
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION
-    };
+    final String[] permissions = new String[] { Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION };
     boolean gotPermissions = Exponent.getInstance().getPermissions(new Exponent.PermissionsListener() {
       @Override
       public void permissionsGranted() {
         promise.resolve(getLocationPermissions());
       }
+
       @Override
       public void permissionsDenied() {
         promise.resolve(getLocationPermissions());
@@ -270,15 +270,14 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
   }
 
   private void askForCameraRollPermissions(final Promise promise) {
-    final String[] permissions = new String[]{
-        Manifest.permission.READ_EXTERNAL_STORAGE,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE
-    };
+    final String[] permissions = new String[] { Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE };
     boolean gotPermissions = Exponent.getInstance().getPermissions(new Exponent.PermissionsListener() {
       @Override
       public void permissionsGranted() {
         promise.resolve(getCameraRollPermissions());
       }
+
       @Override
       public void permissionsDenied() {
         promise.resolve(getCameraRollPermissions());
@@ -286,7 +285,8 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
     }, permissions);
 
     if (!gotPermissions) {
-      promise.reject("E_ACTIVITY_DOES_NOT_EXIST", "No visible activity. Must request camera roll permission when visible.");
+      promise.reject("E_ACTIVITY_DOES_NOT_EXIST",
+          "No visible activity. Must request camera roll permission when visible.");
     }
   }
 
@@ -312,15 +312,13 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
   }
 
   private void askForCalendarPermissions(final Promise promise) {
-    final String[] permissions = new String[]{
-        Manifest.permission.READ_CALENDAR,
-        Manifest.permission.WRITE_CALENDAR
-    };
+    final String[] permissions = new String[] { Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR };
     boolean gotPermissions = Exponent.getInstance().getPermissions(new Exponent.PermissionsListener() {
       @Override
       public void permissionsGranted() {
         promise.resolve(getCalendarPermissions());
       }
+
       @Override
       public void permissionsDenied() {
         promise.resolve(getCalendarPermissions());
@@ -336,8 +334,10 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
     WritableMap response = Arguments.createMap();
 
     if (Build.VERSION.SDK_INT >= 23) {
-      int readPermission = ContextCompat.checkSelfPermission(getReactApplicationContext(), Manifest.permission.READ_CALENDAR);
-      int writePermission = ContextCompat.checkSelfPermission(getReactApplicationContext(), Manifest.permission.WRITE_CALENDAR);
+      int readPermission = ContextCompat.checkSelfPermission(getReactApplicationContext(),
+          Manifest.permission.READ_CALENDAR);
+      int writePermission = ContextCompat.checkSelfPermission(getReactApplicationContext(),
+          Manifest.permission.WRITE_CALENDAR);
       if (readPermission == PackageManager.PERMISSION_GRANTED && writePermission == PackageManager.PERMISSION_GRANTED) {
         response.putString("status", "granted");
       } else {
