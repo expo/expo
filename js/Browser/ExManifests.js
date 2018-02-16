@@ -89,6 +89,10 @@ let ExManifests = {
   },
 
   isManifestSdkVersionSupported(manifest) {
+    if (Platform.OS !== 'ios') {
+      // this logic is handled elsewhere on android
+      return true;
+    }
     let sdkVersion = manifest.sdkVersion;
     if (sdkVersion === 'UNVERSIONED') {
       return true; // you're on your own, buddy!

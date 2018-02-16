@@ -37,7 +37,8 @@ addListenerWithJavaCallback('ExponentKernel.openManifestUrl', async event => {
   let { manifestUrl, manifestString, bundleUrl } = event;
 
   let manifest = JSON.parse(manifestString);
-  ExStore.dispatch(BrowserActions.navigateToUrlAsync(manifestUrl, manifest, bundleUrl));
+  ExStore.dispatch(BrowserActions.navigateToUrlAsync(manifestUrl));
+  ExStore.dispatch(BrowserActions.loadBundleAsync(manifestUrl, manifest, bundleUrl));
 
   return {};
 });
