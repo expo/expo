@@ -182,10 +182,10 @@ dependencies {
   compile 'com.android.support:multidex:1.0.1'
 
   // Current react native
-  
-  
+  compile project(':ReactAndroid')
+  /* UNCOMMENT WHEN DISTRIBUTING
   compile 'com.facebook.react:react-native:26.0.0'
-  
+  END UNCOMMENT WHEN DISTRIBUTING */
 
   // Versioned react native
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
