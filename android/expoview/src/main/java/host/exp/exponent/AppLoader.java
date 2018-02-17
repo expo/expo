@@ -54,23 +54,20 @@ public abstract class AppLoader {
         int fallbackToCacheTimeout = DEFAULT_TIMEOUT_LENGTH;
 
         try {
-          if (mCachedManifest.has(ExponentManifest.MANIFEST_STRING_KEY)) {
-            JSONObject innerManifest = new JSONObject(mCachedManifest.getString(ExponentManifest.MANIFEST_STRING_KEY));
-            String experienceId = innerManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
-            JSONObject updatesManifest = innerManifest.optJSONObject(ExponentManifest.MANIFEST_UPDATES_INFO_KEY);
-            if (updatesManifest != null) {
-              String checkAutomaticallyBehavior = updatesManifest.optString(ExponentManifest.MANIFEST_UPDATES_CHECK_AUTOMATICALLY_KEY, ExponentManifest.MANIFEST_UPDATES_CHECK_AUTOMATICALLY_LAUNCH);
-              if (checkAutomaticallyBehavior.equals(ExponentManifest.MANIFEST_UPDATES_CHECK_AUTOMATICALLY_NEVER)) {
-                shouldCheckForUpdate = false;
-              }
-              fallbackToCacheTimeout = updatesManifest.optInt(ExponentManifest.MANIFEST_UPDATES_TIMEOUT_KEY, fallbackToCacheTimeout);
+          String experienceId = mCachedManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+          JSONObject updatesManifest = mCachedManifest.optJSONObject(ExponentManifest.MANIFEST_UPDATES_INFO_KEY);
+          if (updatesManifest != null) {
+            String checkAutomaticallyBehavior = updatesManifest.optString(ExponentManifest.MANIFEST_UPDATES_CHECK_AUTOMATICALLY_KEY, ExponentManifest.MANIFEST_UPDATES_CHECK_AUTOMATICALLY_LAUNCH);
+            if (checkAutomaticallyBehavior.equals(ExponentManifest.MANIFEST_UPDATES_CHECK_AUTOMATICALLY_NEVER)) {
+              shouldCheckForUpdate = false;
             }
+            fallbackToCacheTimeout = updatesManifest.optInt(ExponentManifest.MANIFEST_UPDATES_TIMEOUT_KEY, fallbackToCacheTimeout);
+          }
 
-            // if previous run of this app failed due to a loading error, set shouldCheckForUpdate to true regardless
-            JSONObject experienceMetadata = mExponentSharedPreferences.getExperienceMetadata(experienceId);
-            if (experienceMetadata != null && experienceMetadata.optBoolean(ExponentSharedPreferences.EXPERIENCE_METADATA_LOADING_ERROR)) {
-              shouldCheckForUpdate = true;
-            }
+          // if previous run of this app failed due to a loading error, set shouldCheckForUpdate to true regardless
+          JSONObject experienceMetadata = mExponentSharedPreferences.getExperienceMetadata(experienceId);
+          if (experienceMetadata != null && experienceMetadata.optBoolean(ExponentSharedPreferences.EXPERIENCE_METADATA_LOADING_ERROR)) {
+            shouldCheckForUpdate = true;
           }
         } catch (JSONException e) {
           onError(e);
