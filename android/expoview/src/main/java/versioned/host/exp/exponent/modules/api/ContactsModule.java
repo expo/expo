@@ -129,9 +129,22 @@ public class ContactsModule extends ReactContextBaseJavaModule {
       );
     else {
 
+      ArrayList<String> selectionArgs = new ArrayList<>(
+          Arrays.asList(
+              CommonDataKinds.Email.CONTENT_ITEM_TYPE,
+              CommonDataKinds.Phone.CONTENT_ITEM_TYPE,
+              CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE,
+              CommonDataKinds.Organization.CONTENT_ITEM_TYPE,
+              CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE
+          )
+      );
 
-      String selection = ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=?";
-      ArrayList<String> selectionArgs = new ArrayList<>(Arrays.asList(CommonDataKinds.Email.CONTENT_ITEM_TYPE, CommonDataKinds.Phone.CONTENT_ITEM_TYPE, CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE, CommonDataKinds.Organization.CONTENT_ITEM_TYPE, CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE));
+      // selection ORs need to match arg count from above selectionArgs
+      String selection = ContactsContract.Data.MIMETYPE +
+          "=? OR " + ContactsContract.Data.MIMETYPE + "=? OR " +
+          ContactsContract.Data.MIMETYPE + "=? OR " +
+          ContactsContract.Data.MIMETYPE + "=? OR " +
+          ContactsContract.Data.MIMETYPE + "=?";
 
       // handle "add on" fields from query request
       if (fieldsSet.contains("note")) {
