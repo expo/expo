@@ -42,13 +42,6 @@ import static android.provider.ContactsContract.*;
 public class ContactsModule extends ReactContextBaseJavaModule {
   private static final String TAG = ContactsModule.class.getSimpleName();
 
-  private static final String[] PROJECTION = new String[]{
-      CommonDataKinds.Phone.CONTACT_ID,
-      ContactsContract.RawContacts.ACCOUNT_TYPE,
-      CommonDataKinds.Phone.NUMBER,
-      CommonDataKinds.Email.DATA,
-  };
-
   private static final List<String> JUST_ME_PROJECTION = new ArrayList<String>() {{
     add(ContactsContract.Data.CONTACT_ID);
     add(ContactsContract.Data.LOOKUP_KEY);
@@ -220,9 +213,9 @@ public class ContactsModule extends ReactContextBaseJavaModule {
         // NOTE: paging performance improvement is minimized as cursor iterations will always fully run
         int currentIndex;
         ArrayList<Contact> contactList = new ArrayList<>(contacts.values());
-        int collectionSize = contactList.size();
+        int contactListSize = contactList.size();
         // convert from contact pojo to react native
-        for (currentIndex = pageOffset; currentIndex < collectionSize; currentIndex++) {
+        for (currentIndex = pageOffset; currentIndex < contactListSize; currentIndex++) {
           Contact contact = contactList.get(currentIndex);
 
           // if fetching single contact, short circuit and return contact
@@ -237,13 +230,12 @@ public class ContactsModule extends ReactContextBaseJavaModule {
           }
         }
 
-        int total = cursor.getCount();
         if (!fetchSingleContact) {
           // wrap in pagination
           response.putArray("data", contactsArray);
           response.putBoolean("hasPreviousPage", pageOffset > 0);
-          response.putBoolean("hasNextPage", pageOffset + pageSize < total);
-          response.putInt("total", total);
+          response.putBoolean("hasNextPage", pageOffset + pageSize < contactListSize);
+          response.putInt("total", contactListSize);
           promise.resolve(response);
         }
       } catch (Exception e) {
@@ -447,10 +439,10 @@ public class ContactsModule extends ReactContextBaseJavaModule {
       WritableMap contact = Arguments.createMap();
       contact.putString("id", contactId);
       contact.putString("name", !TextUtils.isEmpty(displayName) ? displayName : givenName + " " + familyName);
-      if (!TextUtils.isEmpty(prefix)) {
+      if (!TextUtils.isEmpty(givenName)) {
         contact.putString("firstName", givenName);
       }
-      if (!TextUtils.isEmpty(prefix)) {
+      if (!TextUtils.isEmpty(middleName)) {
         contact.putString("middleName", middleName);
       }
       if (!TextUtils.isEmpty(familyName)) {
