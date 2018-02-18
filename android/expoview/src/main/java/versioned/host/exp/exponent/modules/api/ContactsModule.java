@@ -198,18 +198,17 @@ public class ContactsModule extends ReactContextBaseJavaModule {
     }
     if (cursor != null) {
       try {
-        // populate list of contacts from cursor query
         contacts = loadContactsFrom(cursor, fieldsSet);
 
         WritableArray contactsArray = Arguments.createArray();
 
         // introduce paging at this level to ensure all data elements
         // are appropriately mapped to contacts from cursor
-        // NOTE: paging provides essentially no performance improvement, recommended primarily for functional reasons
+        // NOTE: paging performance improvement is minimized as cursor iterations will always fully run
         int currentIndex;
         ArrayList<Contact> contactList = new ArrayList<>(contacts.values());
         int collectionSize = contactList.size();
-        // convert from pojo to react native
+        // convert from contact pojo to react native
         for (currentIndex = pageOffset; currentIndex < collectionSize; currentIndex++) {
           Contact contact = contactList.get(currentIndex);
 
@@ -260,7 +259,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
         contactId = String.valueOf(-1);//no contact id for 'ME' user
       }
 
-      // add or update contact accordingly
+      // add or update existing contact for iterating data based on contact id
       if (!map.containsKey(contactId)) {
         map.put(contactId, new Contact(contactId));
       }
@@ -435,12 +434,17 @@ public class ContactsModule extends ReactContextBaseJavaModule {
       WritableMap contact = Arguments.createMap();
       contact.putString("id", contactId);
       contact.putString("name", !TextUtils.isEmpty(displayName) ? displayName : givenName + " " + familyName);
-      contact.putString("firstName", givenName);
-      contact.putString("middleName", middleName);
-      contact.putString("lastName", familyName);
-      contact.putString("nickname", nickname);
       if (!TextUtils.isEmpty(prefix)) {
-        contact.putString("namePrefix", prefix);
+        contact.putString("firstName", givenName);
+      }
+      if (!TextUtils.isEmpty(prefix)) {
+        contact.putString("middleName", middleName);
+      }
+      if (!TextUtils.isEmpty(familyName)) {
+        contact.putString("lastName", familyName);
+      }
+      if (!TextUtils.isEmpty(nickname)) {
+        contact.putString("nickname", nickname);
       }
       if (!TextUtils.isEmpty(suffix)) {
         contact.putString("nameSuffix", suffix);
@@ -458,7 +462,6 @@ public class ContactsModule extends ReactContextBaseJavaModule {
       contact.putString("jobTitle", jobTitle);
       contact.putString("department", department);
       contact.putBoolean("imageAvailable", this.hasPhoto);
-      //contact.putString("thumbnailPath", photoUri == null ? "" : photoUri);
       if (fieldSet.contains("thumbnail")) {
         WritableMap thumbnail = Arguments.createMap();
         thumbnail.putString("uri", this.hasPhoto ? photoUri.toString() : null);
