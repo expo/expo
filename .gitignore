@@ -102,8 +102,3 @@ ios/RCTTest.podspec
 ios/Podfile.lock
 ios/Pods
 .expo
-
-# VS Code
-.project
-.classpath
-.settings
