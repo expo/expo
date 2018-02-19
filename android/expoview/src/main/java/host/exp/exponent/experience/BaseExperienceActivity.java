@@ -17,6 +17,8 @@ import de.greenrobot.event.EventBus;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.gcm.RegistrationIntentService;
 import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.KernelConstants;
+import host.exp.exponent.utils.AsyncCondition;
 import host.exp.expoview.BuildConfig;
 import host.exp.expoview.Exponent;
 import host.exp.exponent.RNObject;
@@ -90,7 +92,17 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
     mIsInForeground = true;
 
     mOnResumeTime = System.currentTimeMillis();
-    EventBus.getDefault().post(new ExperienceForegroundedEvent(mExperienceId));
+    AsyncCondition.wait(KernelConstants.EXPERIENCE_ID_SET_FOR_ACTIVITY_KEY, new AsyncCondition.AsyncConditionListener() {
+      @Override
+      public boolean isReady() {
+        return mExperienceId != null || BaseExperienceActivity.this instanceof HomeActivity;
+      }
+
+      @Override
+      public void execute() {
+        EventBus.getDefault().post(new ExperienceForegroundedEvent(mExperienceId));
+      }
+    });
   }
 
   @Override
