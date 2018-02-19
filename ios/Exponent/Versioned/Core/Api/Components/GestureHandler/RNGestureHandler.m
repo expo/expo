@@ -24,11 +24,45 @@
 
 @end
 
+typedef struct RNGHHitSlop {
+    CGFloat top, left, bottom, right, width, height;
+} RNGHHitSlop;
+
+static RNGHHitSlop RNGHHitSlopEmpty = { NAN, NAN, NAN, NAN, NAN, NAN };
+
+#define RNGH_HIT_SLOP_GET(key) (prop[key] == nil ? NAN : [prop[key] doubleValue])
+#define RNGH_HIT_SLOP_IS_SET(hitSlop) (!isnan(hitSlop.left) || !isnan(hitSlop.right) || \
+                                        !isnan(hitSlop.top) || !isnan(hitSlop.bottom))
+#define RNGH_HIT_SLOP_INSET(key) (isnan(hitSlop.key) ? 0. : hitSlop.key)
+
+CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
+    rect.origin.x -= RNGH_HIT_SLOP_INSET(left);
+    rect.origin.y -= RNGH_HIT_SLOP_INSET(top);
+
+    if (!isnan(hitSlop.width)) {
+        if (!isnan(hitSlop.left)) {
+            rect.origin.x = rect.size.width - hitSlop.width + RNGH_HIT_SLOP_INSET(right);
+        }
+        rect.size.width = hitSlop.width;
+    } else {
+        rect.size.width += (RNGH_HIT_SLOP_INSET(left) + RNGH_HIT_SLOP_INSET(right));
+    }
+    if (!isnan(hitSlop.height)) {
+        if (!isnan(hitSlop.top)) {
+            rect.origin.y = rect.size.height - hitSlop.height + RNGH_HIT_SLOP_INSET(bottom);
+        }
+        rect.size.height = hitSlop.height;
+    } else {
+        rect.size.height += (RNGH_HIT_SLOP_INSET(top) + RNGH_HIT_SLOP_INSET(bottom));
+    }
+    return rect;
+}
+
 
 @implementation RNGestureHandler {
     NSArray<NSNumber *> *_handlersToWaitFor;
     NSArray<NSNumber *> *_simultaniousHandlers;
-    UIEdgeInsets _hitSlopEdgeInsets;
+    RNGHHitSlop _hitSlop;
 }
 
 - (instancetype)initWithTag:(NSNumber *)tag
@@ -36,7 +70,7 @@
     if ((self = [super init])) {
         _tag = tag;
         _lastState = RNGestureHandlerStateUndetermined;
-        _hitSlopEdgeInsets = UIEdgeInsetsZero;
+        _hitSlop = RNGHHitSlopEmpty;
     }
     return self;
 }
@@ -61,9 +95,29 @@
     }
 
     prop = config[@"hitSlop"];
-    if (prop != nil) {
-         UIEdgeInsets insets = [RCTConvert UIEdgeInsets:prop];
-        _hitSlopEdgeInsets = UIEdgeInsetsMake(-insets.top, -insets.left, -insets.bottom, -insets.right);
+    if ([prop isKindOfClass:[NSNumber class]]) {
+        _hitSlop.left = _hitSlop.right = _hitSlop.top = _hitSlop.bottom = [prop doubleValue];
+    } else if (prop != nil) {
+        _hitSlop.left = _hitSlop.right = RNGH_HIT_SLOP_GET(@"horizontal");
+        _hitSlop.top = _hitSlop.bottom = RNGH_HIT_SLOP_GET(@"vertical");
+        _hitSlop.left = RNGH_HIT_SLOP_GET(@"left");
+        _hitSlop.right = RNGH_HIT_SLOP_GET(@"right");
+        _hitSlop.top = RNGH_HIT_SLOP_GET(@"top");
+        _hitSlop.bottom = RNGH_HIT_SLOP_GET(@"bottom");
+        _hitSlop.width = RNGH_HIT_SLOP_GET(@"width");
+        _hitSlop.height = RNGH_HIT_SLOP_GET(@"height");
+        if (isnan(_hitSlop.left) && isnan(_hitSlop.right) && !isnan(_hitSlop.width)) {
+            RCTLogError(@"When width is set one of left or right pads need to be defined");
+        }
+        if (!isnan(_hitSlop.width) && !isnan(_hitSlop.left) && !isnan(_hitSlop.right)) {
+            RCTLogError(@"Cannot have all of left, right and width defined");
+        }
+        if (isnan(_hitSlop.top) && isnan(_hitSlop.bottom) && !isnan(_hitSlop.height)) {
+            RCTLogError(@"When height is set one of top or bottom pads need to be defined");
+        }
+        if (!isnan(_hitSlop.height) && !isnan(_hitSlop.top) && !isnan(_hitSlop.bottom)) {
+            RCTLogError(@"Cannot have all of top, bottom and height defined");
+        }
     }
 }
 
@@ -242,9 +296,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     // unless touch startes in the bounds of the attached view. To acheve similar effect with positive
     // values of hitSlop one should set hitSlop for the underlying view. This limitation is due to the
     // fact that hitTest method is only available at the level of UIView
-    if (!UIEdgeInsetsEqualToEdgeInsets(_hitSlopEdgeInsets, UIEdgeInsetsZero)) {
+    if (RNGH_HIT_SLOP_IS_SET(_hitSlop)) {
         CGPoint location = [touch locationInView:gestureRecognizer.view];
-        CGRect hitFrame = UIEdgeInsetsInsetRect(gestureRecognizer.view.bounds, _hitSlopEdgeInsets);
+        CGRect hitFrame = RNGHHitSlopInsetRect(gestureRecognizer.view.bounds, _hitSlop);
         return CGRectContainsPoint(hitFrame, location);
     }
     return YES;
