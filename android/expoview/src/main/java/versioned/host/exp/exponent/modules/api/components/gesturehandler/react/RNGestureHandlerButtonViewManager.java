@@ -96,11 +96,11 @@ public class RNGestureHandlerButtonViewManager extends
     }
 
     private Drawable createSelectableDrawable() {
-      String identifier = mUseBorderless ? "selectableItemBackgroundBorderless"
+      final int version = Build.VERSION.SDK_INT;
+      String identifier = mUseBorderless && version >= 21 ? "selectableItemBackgroundBorderless"
               : "selectableItemBackground";
       int attrID = getResources().getIdentifier(identifier, "attr", "android");
       getContext().getTheme().resolveAttribute(attrID, sResolveOutValue, true);
-      final int version = Build.VERSION.SDK_INT;
       if (version >= 21) {
         return getResources().getDrawable(sResolveOutValue.resourceId, getContext().getTheme());
       } else {
