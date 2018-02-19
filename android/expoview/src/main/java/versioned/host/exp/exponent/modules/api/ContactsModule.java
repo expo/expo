@@ -256,13 +256,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
 
     while (cursor.moveToNext()) {
       int columnIndex = cursor.getColumnIndex(ContactsContract.Data.CONTACT_ID);
-      String contactId;
-      if (columnIndex != -1) {
-        contactId = cursor.getString(columnIndex);
-      } else {
-        //todo - double check this, it may not be necessary any more
-        contactId = String.valueOf(-1);//no contact id for 'ME' user
-      }
+      String contactId = cursor.getString(columnIndex);
 
       // add or update existing contact for iterating data based on contact id
       if (!map.containsKey(contactId)) {
