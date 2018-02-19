@@ -403,6 +403,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     try {
       mExperienceIdString = manifest.getString(ExponentManifest.MANIFEST_ID_KEY);
       mExperienceId = ExperienceId.create(mExperienceIdString);
+      AsyncCondition.notify(KernelConstants.EXPERIENCE_ID_SET_FOR_ACTIVITY_KEY);
     } catch (JSONException e) {
       KernelProvider.getInstance().handleError("No ID found in manifest.");
       return;
