@@ -12,10 +12,14 @@ public class GestureHandler<T extends GestureHandler> {
   public static final int STATE_ACTIVE = 4;
   public static final int STATE_END = 5;
 
+  public static final float HIT_SLOP_NONE = Float.NaN;
+
   private static final int HIT_SLOP_LEFT_IDX = 0;
   private static final int HIT_SLOP_TOP_IDX = 1;
   private static final int HIT_SLOP_RIGHT_IDX = 2;
   private static final int HIT_SLOP_BOTTOM_IDX = 3;
+  private static final int HIT_SLOP_WIDTH_IDX = 4;
+  private static final int HIT_SLOP_HEIGHT_IDX = 5;
 
   private int mTag;
   private View mView;
@@ -33,6 +37,10 @@ public class GestureHandler<T extends GestureHandler> {
   /*package*/ int mActivationIndex; // set and accessed only by the orchestrator
   /*package*/ boolean mIsActive; // set and accessed only by the orchestrator
   /*package*/ boolean mIsAwaiting; // set and accessed only by the orchestrator
+
+  private static boolean hitSlopSet(float value) {
+    return !Float.isNaN(value);
+  }
 
   /*package*/ void dispatchStateChange(int newState, int prevState) {
     if (mListener != null) {
@@ -65,19 +73,33 @@ public class GestureHandler<T extends GestureHandler> {
     return mEnabled;
   }
 
-  public T setHitSlop(float leftPad, float topPad, float rightPad, float bottomPad) {
+  public T setHitSlop(float leftPad, float topPad, float rightPad, float bottomPad, float width, float height) {
     if (mHitSlop == null) {
-      mHitSlop = new float[4];
+      mHitSlop = new float[6];
     }
     mHitSlop[HIT_SLOP_LEFT_IDX] = leftPad;
     mHitSlop[HIT_SLOP_TOP_IDX] = topPad;
     mHitSlop[HIT_SLOP_RIGHT_IDX] = rightPad;
     mHitSlop[HIT_SLOP_BOTTOM_IDX] = bottomPad;
+    mHitSlop[HIT_SLOP_WIDTH_IDX] = width;
+    mHitSlop[HIT_SLOP_HEIGHT_IDX] = height;
+    if (hitSlopSet(width) && hitSlopSet(leftPad) && hitSlopSet(rightPad)) {
+      throw new IllegalArgumentException("Cannot have all of left, right and width defined");
+    }
+    if (hitSlopSet(width) && !hitSlopSet(leftPad) && !hitSlopSet(rightPad)) {
+      throw new IllegalArgumentException("When width is set one of left or right pads need to be defined");
+    }
+    if (hitSlopSet(height) && hitSlopSet(bottomPad) && hitSlopSet(topPad)) {
+      throw new IllegalArgumentException("Cannot have all of top, bottom and height defined");
+    }
+    if (hitSlopSet(height) && !hitSlopSet(bottomPad) && !hitSlopSet(topPad)) {
+      throw new IllegalArgumentException("When height is set one of top or bottom pads need to be defined");
+    }
     return (T) this;
   }
 
   public T setHitSlop(float padding) {
-    return setHitSlop(padding, padding, padding, padding);
+    return setHitSlop(padding, padding, padding, padding, HIT_SLOP_NONE, HIT_SLOP_NONE);
   }
 
   public T setInteractionController(GestureHandlerInteractionController controller) {
@@ -197,10 +219,39 @@ public class GestureHandler<T extends GestureHandler> {
     float right = view.getWidth();
     float bottom = view.getHeight();
     if (mHitSlop != null) {
-      left -= mHitSlop[HIT_SLOP_LEFT_IDX];
-      top -= mHitSlop[HIT_SLOP_TOP_IDX];
-      right += mHitSlop[HIT_SLOP_RIGHT_IDX];
-      bottom += mHitSlop[HIT_SLOP_BOTTOM_IDX];
+      float padLeft = mHitSlop[HIT_SLOP_LEFT_IDX];
+      float padTop = mHitSlop[HIT_SLOP_TOP_IDX];
+      float padRight = mHitSlop[HIT_SLOP_RIGHT_IDX];
+      float padBottom = mHitSlop[HIT_SLOP_BOTTOM_IDX];
+      if (hitSlopSet(padLeft)) {
+        left -= padLeft;
+      }
+      if (hitSlopSet(padTop)) {
+        top -= padBottom;
+      }
+      if (hitSlopSet(padRight)) {
+        right += padRight;
+      }
+      if (hitSlopSet(padBottom)) {
+        bottom += padBottom;
+      }
+
+      float width = mHitSlop[HIT_SLOP_WIDTH_IDX];
+      float height= mHitSlop[HIT_SLOP_HEIGHT_IDX];
+      if (hitSlopSet(width)) {
+        if (!hitSlopSet(padLeft)) {
+          left = padRight - width;
+        } else if (!hitSlopSet(padRight)) {
+          right = padLeft + width;
+        }
+      }
+      if (hitSlopSet(height)) {
+        if (!hitSlopSet(top)) {
+          top = bottom - height;
+        } else if (!hitSlopSet(bottom)) {
+          bottom = top + height;
+        }
+      }
     }
     return posX >= left && posX <= right && posY >= top && posY <= bottom;
   }

@@ -33,6 +33,8 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import static abi26_0_0.host.exp.exponent.modules.api.components.gesturehandler.GestureHandler.HIT_SLOP_NONE;
+
 public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
   public static final String MODULE_NAME = "RNGestureHandlerModule";
@@ -46,6 +48,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static final String KEY_HIT_SLOP_BOTTOM = "bottom";
   private static final String KEY_HIT_SLOP_VERTICAL = "vertical";
   private static final String KEY_HIT_SLOP_HORIZONTAL = "horizontal";
+  private static final String KEY_HIT_SLOP_WIDTH = "width";
+  private static final String KEY_HIT_SLOP_HEIGHT = "height";
   private static final String KEY_NATIVE_VIEW_SHOULD_ACTIVATE_ON_START = "shouldActivateOnStart";
   private static final String KEY_NATIVE_VIEW_DISALLOW_INTERRUPTION = "disallowInterruption";
   private static final String KEY_TAP_NUMBER_OF_TAPS = "numberOfTaps";
@@ -598,10 +602,11 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static void handleHitSlopProperty(GestureHandler handler, ReadableMap config) {
     if (config.getType(KEY_HIT_SLOP) == ReadableType.Number) {
       float hitSlop = PixelUtil.toPixelFromDIP(config.getDouble(KEY_HIT_SLOP));
-      handler.setHitSlop(hitSlop, hitSlop, hitSlop, hitSlop);
+      handler.setHitSlop(hitSlop, hitSlop, hitSlop, hitSlop, HIT_SLOP_NONE, HIT_SLOP_NONE);
     } else {
       ReadableMap hitSlop = config.getMap(KEY_HIT_SLOP);
-      float left = 0, top = 0, right = 0, bottom = 0;
+      float left = HIT_SLOP_NONE, top = HIT_SLOP_NONE, right = HIT_SLOP_NONE, bottom = HIT_SLOP_NONE;
+      float width = HIT_SLOP_NONE, height = HIT_SLOP_NONE;
       if (hitSlop.hasKey(KEY_HIT_SLOP_HORIZONTAL)) {
         float horizontalPad = PixelUtil.toPixelFromDIP(hitSlop.getDouble(KEY_HIT_SLOP_HORIZONTAL));
         left = right = horizontalPad;
@@ -622,7 +627,13 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       if (hitSlop.hasKey(KEY_HIT_SLOP_BOTTOM)) {
         bottom = PixelUtil.toPixelFromDIP(hitSlop.getDouble(KEY_HIT_SLOP_BOTTOM));
       }
-      handler.setHitSlop(left, top, right, bottom);
+      if (hitSlop.hasKey(KEY_HIT_SLOP_WIDTH)) {
+        width = PixelUtil.toPixelFromDIP(hitSlop.getDouble(KEY_HIT_SLOP_WIDTH));
+      }
+      if (hitSlop.hasKey(KEY_HIT_SLOP_HEIGHT)) {
+        height = PixelUtil.toPixelFromDIP(hitSlop.getDouble(KEY_HIT_SLOP_HEIGHT));
+      }
+      handler.setHitSlop(left, top, right, bottom, width, height);
     }
   }
 }
