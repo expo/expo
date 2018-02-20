@@ -473,7 +473,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
         contact.putMap("thumbnail", thumbnail);
       }
 
-      if (fieldSet.contains("note") && !TextUtils.isEmpty(department)) { // double if check with query
+      if (fieldSet.contains("note") && !TextUtils.isEmpty(note)) { // double if check with query
         contact.putString("note", note);
       }
 
