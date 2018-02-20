@@ -457,9 +457,15 @@ public class ContactsModule extends ReactContextBaseJavaModule {
       if (!TextUtils.isEmpty(phoneticMiddleName)) {
         contact.putString("phoneticMiddleName", phoneticMiddleName);
       }
-      contact.putString("company", company);
-      contact.putString("jobTitle", jobTitle);
-      contact.putString("department", department);
+      if (!TextUtils.isEmpty(company)) {
+        contact.putString("company", company);
+      }
+      if (!TextUtils.isEmpty(jobTitle)) {
+        contact.putString("jobTitle", jobTitle);
+      }
+      if (!TextUtils.isEmpty(department)) {
+        contact.putString("department", department);
+      }
       contact.putBoolean("imageAvailable", this.hasPhoto);
       if (fieldSet.contains("thumbnail")) {
         WritableMap thumbnail = Arguments.createMap();
@@ -467,7 +473,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
         contact.putMap("thumbnail", thumbnail);
       }
 
-      if (fieldSet.contains("note")) { // double if check with query
+      if (fieldSet.contains("note") && !TextUtils.isEmpty(department)) { // double if check with query
         contact.putString("note", note);
       }
 
