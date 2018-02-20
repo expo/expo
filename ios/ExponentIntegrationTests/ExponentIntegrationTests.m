@@ -57,6 +57,7 @@
 
 - (void)_loadConfig
 {
+  // This plist is generated with `powertools configure-ios-test-suite-url`
   NSString *configPath = [[NSBundle bundleForClass:[self class]] pathForResource:@"EXTestEnvironment" ofType:@"plist"];
   NSDictionary *testConfig = (configPath) ? [NSDictionary dictionaryWithContentsOfFile:configPath] : [NSDictionary dictionary];
   if (testConfig) {
