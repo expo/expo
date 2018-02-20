@@ -36,10 +36,14 @@ Try your app on tablets in addition to handsets. Even if you have `ios.supportsT
 ## iOS-specific guidelines
 
 - All apps in the iTunes Store must abide by the [App Store Review Guidelines](https://developer.apple.com/app-store/review/guidelines/).
+- Apple will ask you whether your app uses the IDFA. Because Expo depends on Segment Analytics, the answer is yes, and you'll need to check a couple boxes on the Apple submission form. See [Segment's Guide](https://segment.com/docs/sources/mobile/ios/quickstart/#step-5-submitting-to-the-app-store) for which specific boxes to fill in.
+
+## Common App Rejections
+
 - It's helpful to glance over [Common App Rejections](https://developer.apple.com/app-store/review/rejections/).
 - Binaries can get rejected for having poorly formatted icons, so double check the [App Icon guide](./app-icons.html).
 - Apple can reject your app if elements don't render properly on an iPad, even if your app doesn't target the iPad form factor. Be sure and test your app on an iPad (or iPad simulator).
-- Apple will ask you whether your app uses the IDFA. Because Expo depends on Segment Analytics, the answer is yes, and you'll need to check a couple boxes on the Apple submission form. See [Segment's Guide](https://segment.com/docs/sources/mobile/ios/quickstart/#step-5-submitting-to-the-app-store) for which specific boxes to fill in.
+- Occasionally people get a message from Apple which mentions an IPv6 network. Typically this is just Apple's way of informing you what kind of network they tested on, and the actual "IPv6" detail is a red herring. All of Expo's iOS code uses `NSURLSession`, which is IPv6-compatible. [More info](https://forums.expo.io/t/ios-standalone-rejected-at-review-because-of-ipv6/7062).
 
 ## System permissions dialogs on iOS
 
