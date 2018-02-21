@@ -126,7 +126,7 @@ public abstract class AppLoader {
         mManifest = manifest;
         // don't send manifest for loading screen in dev mode, as loading screen is handled
         // separately by RN activity in this case
-        if (!ExponentManifest.isDebugModeEnabled(manifest)) {
+        if (!ExponentManifest.isDebugModeEnabled(manifest) && !hasResolved) {
           onOptimisticManifest(manifest);
         }
         fetchJSBundle(false);
