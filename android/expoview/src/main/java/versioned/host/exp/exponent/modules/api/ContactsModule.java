@@ -52,30 +52,9 @@ public class ContactsModule extends ReactContextBaseJavaModule {
     add(CommonDataKinds.StructuredName.GIVEN_NAME);
     add(CommonDataKinds.StructuredName.MIDDLE_NAME);
     add(CommonDataKinds.StructuredName.FAMILY_NAME);
-    add(CommonDataKinds.Phone.NUMBER);
-    add(CommonDataKinds.Phone.TYPE);
-    add(CommonDataKinds.Phone.LABEL);
-    add(CommonDataKinds.Phone.IS_PRIMARY);
-    add(CommonDataKinds.Phone._ID);
-    add(CommonDataKinds.Email.DATA);
-    add(CommonDataKinds.Email.ADDRESS);
-    add(CommonDataKinds.Email.TYPE);
-    add(CommonDataKinds.Email.LABEL);
-    add(CommonDataKinds.Email.IS_PRIMARY);
-    add(CommonDataKinds.Email._ID);
     add(CommonDataKinds.Organization.COMPANY);
     add(CommonDataKinds.Organization.TITLE);
     add(CommonDataKinds.Organization.DEPARTMENT);
-    add(CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS);
-    add(CommonDataKinds.StructuredPostal.TYPE);
-    add(CommonDataKinds.StructuredPostal.LABEL);
-    add(CommonDataKinds.StructuredPostal.STREET);
-    add(CommonDataKinds.StructuredPostal.POBOX);
-    add(CommonDataKinds.StructuredPostal.NEIGHBORHOOD);
-    add(CommonDataKinds.StructuredPostal.CITY);
-    add(CommonDataKinds.StructuredPostal.REGION);
-    add(CommonDataKinds.StructuredPostal.POSTCODE);
-    add(CommonDataKinds.StructuredPostal.COUNTRY);
   }};
 
   private static List<String> FULL_PROJECTION = new ArrayList<String>() {{
@@ -112,34 +91,56 @@ public class ContactsModule extends ReactContextBaseJavaModule {
 
     ContentResolver cr = getReactApplicationContext().getContentResolver();
     Cursor cursor;
-    if (fetchSingleContact)
-      cursor = cr.query(
-          ContactsContract.Data.CONTENT_URI,
-          FULL_PROJECTION.toArray(new String[FULL_PROJECTION.size()]),
-          ContactsContract.Data.CONTACT_ID + " = ?",
-          new String[] { options.getString("id") },
-          null
-      );
-    else {
+
 
       ArrayList<String> selectionArgs = new ArrayList<>(
           Arrays.asList(
-              CommonDataKinds.Email.CONTENT_ITEM_TYPE,
-              CommonDataKinds.Phone.CONTENT_ITEM_TYPE,
               CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE,
-              CommonDataKinds.Organization.CONTENT_ITEM_TYPE,
-              CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE
+              CommonDataKinds.Organization.CONTENT_ITEM_TYPE
           )
       );
 
       // selection ORs need to match arg count from above selectionArgs
-      String selection = ContactsContract.Data.MIMETYPE +
-          "=? OR " + ContactsContract.Data.MIMETYPE + "=? OR " +
-          ContactsContract.Data.MIMETYPE + "=? OR " +
-          ContactsContract.Data.MIMETYPE + "=? OR " +
+      String selection = ContactsContract.Data.MIMETYPE + "=? OR " +
           ContactsContract.Data.MIMETYPE + "=?";
 
       // handle "add on" fields from query request
+      if (fieldsSet.contains("phoneNumbers")) {
+        FULL_PROJECTION.add(CommonDataKinds.Phone.NUMBER);
+        FULL_PROJECTION.add(CommonDataKinds.Phone.TYPE);
+        FULL_PROJECTION.add(CommonDataKinds.Phone.LABEL);
+        FULL_PROJECTION.add(CommonDataKinds.Phone.IS_PRIMARY);
+        FULL_PROJECTION.add(CommonDataKinds.Phone._ID);
+        selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
+        selectionArgs.add(CommonDataKinds.Phone.CONTENT_ITEM_TYPE);
+      }
+
+      if (fieldsSet.contains("emails")) {
+        FULL_PROJECTION.add(CommonDataKinds.Email.DATA);
+        FULL_PROJECTION.add(CommonDataKinds.Email.ADDRESS);
+        FULL_PROJECTION.add(CommonDataKinds.Email.TYPE);
+        FULL_PROJECTION.add(CommonDataKinds.Email.LABEL);
+        FULL_PROJECTION.add(CommonDataKinds.Email.IS_PRIMARY);
+        FULL_PROJECTION.add(CommonDataKinds.Email._ID);
+        selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
+        selectionArgs.add(CommonDataKinds.Email.CONTENT_ITEM_TYPE);
+      }
+
+      if (fieldsSet.contains("addresses")) {
+        FULL_PROJECTION.add(CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS);
+        FULL_PROJECTION.add(CommonDataKinds.StructuredPostal.TYPE);
+        FULL_PROJECTION.add(CommonDataKinds.StructuredPostal.LABEL);
+        FULL_PROJECTION.add(CommonDataKinds.StructuredPostal.STREET);
+        FULL_PROJECTION.add(CommonDataKinds.StructuredPostal.POBOX);
+        FULL_PROJECTION.add(CommonDataKinds.StructuredPostal.NEIGHBORHOOD);
+        FULL_PROJECTION.add(CommonDataKinds.StructuredPostal.CITY);
+        FULL_PROJECTION.add(CommonDataKinds.StructuredPostal.REGION);
+        FULL_PROJECTION.add(CommonDataKinds.StructuredPostal.POSTCODE);
+        FULL_PROJECTION.add(CommonDataKinds.StructuredPostal.COUNTRY);
+        selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
+        selectionArgs.add(CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE);
+      }
+
       if (fieldsSet.contains("note")) {
         selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
         selectionArgs.add(ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE);
@@ -195,6 +196,14 @@ public class ContactsModule extends ReactContextBaseJavaModule {
         FULL_PROJECTION.add(CommonDataKinds.StructuredName.SUFFIX);
       }
 
+    if (fetchSingleContact) {
+      cursor = cr.query(
+          ContactsContract.Data.CONTENT_URI,
+          FULL_PROJECTION.toArray(new String[FULL_PROJECTION.size()]),
+          ContactsContract.Data.CONTACT_ID + " = ?",
+          new String[]{options.getString("id")},
+          null);
+    } else {
       cursor = cr.query(
           ContactsContract.Data.CONTENT_URI,
           FULL_PROJECTION.toArray(new String[FULL_PROJECTION.size()]),
