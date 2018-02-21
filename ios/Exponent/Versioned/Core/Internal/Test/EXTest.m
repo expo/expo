@@ -3,10 +3,13 @@
 #import "EXTest.h"
 #import "EXUnversioned.h"
 
+#import <os/log.h>
+
 NSNotificationName EXTestSuiteCompletedNotification = @"EXTestSuiteCompletedNotification";
 
 @interface EXTest ()
 
+@property (class, nonatomic, assign, readonly) os_log_t log;
 @property (nonatomic, assign) EXTestEnvironment environment;
 
 @end
@@ -14,6 +17,15 @@ NSNotificationName EXTestSuiteCompletedNotification = @"EXTestSuiteCompletedNoti
 @implementation EXTest
 
 + (NSString *)moduleName { return @"ExponentTest"; }
+
++ (os_log_t)log {
+  static os_log_t log;
+  static dispatch_once_t once;
+  dispatch_once(&once, ^{
+    log = os_log_create("host.exp.Exponent", "test");
+  });
+  return log;
+}
 
 - (instancetype)initWithEnvironment:(EXTestEnvironment)environment
 {
@@ -23,11 +35,11 @@ NSNotificationName EXTestSuiteCompletedNotification = @"EXTestSuiteCompletedNoti
   return self;
 }
 
-RCT_EXPORT_METHOD(completed: (NSString *)jsonStringifiedResult)
+RCT_EXPORT_METHOD(completed:(NSString *)jsonStringifiedResult)
 {
   NSDictionary *failedResult = @{ @"failed": @(1) };
   
-  __block NSError *jsonError;
+  NSError *jsonError;
   NSData *jsonData = [jsonStringifiedResult dataUsingEncoding:NSUTF8StringEncoding];
   id resultObj = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:&jsonError];
   if (jsonError) {
@@ -37,6 +49,10 @@ RCT_EXPORT_METHOD(completed: (NSString *)jsonStringifiedResult)
   [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXTestSuiteCompletedNotification")
                                                       object:nil
                                                     userInfo:resultObj];
+  
+  // Apple's unified logging more precisely ensures the output is visible in a standalone app built
+  // for release and for us to filter for this message
+  os_log(EXTest.log, "[TEST-SUITE-END] %{public}@", jsonStringifiedResult);
 }
 
 RCT_REMAP_METHOD(action,
