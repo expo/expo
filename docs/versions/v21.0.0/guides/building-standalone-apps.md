@@ -120,8 +120,8 @@ If you plan to submit to the Apple App Store, your app will be subject to normal
 
 For the most part, when you want to update your app, just Publish again from exp or XDE. Your users will download the new JS the next time they open the app. There are only a couple reasons why you might want to rebuild and resubmit the native binaries:
 
-- If you want to change native metadata like the app's name or icon
-- If you upgrade to a newer `sdkVersion` of your app (which requires new native code)
+* If you want to change native metadata like the app's name or icon
+* If you upgrade to a newer `sdkVersion` of your app (which requires new native code)
 
 To keep track of this, you can also update the binary's [versionCode](configuration.html#versioncode) and [buildNumber](configuration.html#buildnumber). It is a good idea to glance through the [app.json documentation](configuration.html) to get an idea of all the properties you can change, e.g. the icons, deep linking url scheme, handset/tablet support, and a lot more.
 
