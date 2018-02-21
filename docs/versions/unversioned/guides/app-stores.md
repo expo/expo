@@ -56,3 +56,21 @@ If your app asks for [system permissions](../sdk/permissions.html) from the user
 ```
 
 The full list of keys Expo provides by default can be seen [here](https://github.com/expo/expo/blob/master/exponent-view-template/ios/exponent-view-template/Supporting/Info.plist#L28-L41). You can provide any overrides you want in the `infoPlist` configuration. Because these strings are configured at the native level, they will only be published when you build a new binary with `exp build`.
+
+## Localizing system dialogs on iOS
+
+If your app uses a language besides English, you can optionally provide [localized](../sdk/localization.html) strings for the system dialogs. For example, in `app.json`, you can provide
+
+```
+"locales": {
+  "ru": "./languages/russian.json"
+}
+```
+
+...where `russian.json` looks like:
+
+```
+{
+  "NSContactsUsageDescription": "Hello Russian words"
+}
+```

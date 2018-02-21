@@ -448,26 +448,10 @@ The following is a list of properties that are available for you under the `"exp
    Configuration for scripts to run to hook into the publish process
 
    - `postPublish`
+
 - `locales`
 
-  (iOS system Dialogs only) Provide overrides by locale for System Dialog prompts like Permissions,
-  an example
-  ```
-  "locales": {
-    "ru": "./languages/russian.json"
-  }
-  ```
-  ...where `russian.json` looks like:
-  ```
-  {
-    "NSContactsUsageDescription": "Hello Russian words"
-  }
-  ```
-  Keys for the localization JSON are those found in InfoPlist, currently for `expo` this includes:
-  `NSCalendarsUsageDescription`, `NSCameraUsageDescription`, `NSContactsUsageDescription`, 
-  `NSLocationWhenInUseUsageDescription`, `NSMicrophoneUsageDescription`, `NSMotionUsageDescription`, 
-  `NSPhotoLibraryAddUsageDescription`, `NSPhotoLibraryUsageDescription`, and
-  `NSRemindersUsageDescription`.
+  Provide overrides by locale for System Dialog prompts like Permissions Boxes
 
 - `assetBundlePatterns`
 

@@ -22,7 +22,11 @@ Returns an array of user's preferred Locales, in order of preference.
 
 Returns an array of `ISO` currency codes like `AMD`, `GEL` and `JPY`.
 
-## Using a local store
+## Localizing system dialogs
+
+iOS standalone apps created with `exp build` can support multiple languages in system permission dialogs. For more information, see [Deploying to App Stores](../guides/app-stores.html).
+
+## Using a locale store
 
 #### Example: `Expo.Localization.LocaleStore`
 
