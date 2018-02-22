@@ -522,6 +522,7 @@ public class ExponentManifest {
             });
       }
     } else {
+      manifest.put(MANIFEST_LOADED_FROM_CACHE_KEY, isCached);
       if (isEmbedded || isMainShellAppExperience) {
         fetchManifestStep3(manifestUrl, manifest, true, listener);
       } else {
