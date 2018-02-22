@@ -218,13 +218,29 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   /* package */ void loadScriptFromFile(String fileName, String sourceURL, boolean loadSynchronously) {
     mSourceURL = sourceURL;
-    jniLoadScriptFromFile(fileName, sourceURL, loadSynchronously);
+
+    try {
+      final String contents = (String) Class.forName("host.exp.exponent.ReactNativeStaticHelpers")
+          .getMethod("getBundleSourceForPath", String.class)
+          .invoke(null, fileName);
+      if (contents == null) {
+        Log.d("CatalystInstanceImpl", "Loading script from file");
+        jniLoadScriptFromFile(fileName, sourceURL, loadSynchronously);
+      } else {
+        Log.d("CatalystInstanceImpl", "Loading script from string. Length: " + contents.length());
+        jniLoadScriptFromString(contents, sourceURL, loadSynchronously);
+      }
+    } catch (Exception e) {
+      Log.d("CatalystInstanceImpl", "Loading script from file");
+      jniLoadScriptFromFile(fileName, sourceURL, loadSynchronously);
+    }
   }
 
   private native void jniSetSourceURL(String sourceURL);
   private native void jniRegisterSegment(int segmentId, String path);
   private native void jniLoadScriptFromAssets(AssetManager assetManager, String assetURL, boolean loadSynchronously);
   private native void jniLoadScriptFromFile(String fileName, String sourceURL, boolean loadSynchronously);
+  private native void jniLoadScriptFromString(String script, String mSourceURL, boolean loadSynchronously);
 
   @Override
   public void runJSBundle() {
