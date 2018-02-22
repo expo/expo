@@ -42,7 +42,7 @@ import static android.provider.ContactsContract.*;
 public class ContactsModule extends ReactContextBaseJavaModule {
   private static final String TAG = ContactsModule.class.getSimpleName();
 
-  private static final List<String> JUST_ME_PROJECTION = new ArrayList<String>() {{
+  private static List<String> PROJECTION = new ArrayList<String>() {{
     add(ContactsContract.Data.CONTACT_ID);
     add(ContactsContract.Data.LOOKUP_KEY);
     add(ContactsContract.Contacts.Data.MIMETYPE);
@@ -55,10 +55,6 @@ public class ContactsModule extends ReactContextBaseJavaModule {
     add(CommonDataKinds.Organization.COMPANY);
     add(CommonDataKinds.Organization.TITLE);
     add(CommonDataKinds.Organization.DEPARTMENT);
-  }};
-
-  private static List<String> FULL_PROJECTION = new ArrayList<String>() {{
-    addAll(JUST_ME_PROJECTION);
   }};
 
   public ContactsModule(ReactApplicationContext reactContext) {
@@ -106,37 +102,37 @@ public class ContactsModule extends ReactContextBaseJavaModule {
 
       // handle "add on" fields from query request
       if (fieldsSet.contains("phoneNumbers")) {
-        FULL_PROJECTION.add(CommonDataKinds.Phone.NUMBER);
-        FULL_PROJECTION.add(CommonDataKinds.Phone.TYPE);
-        FULL_PROJECTION.add(CommonDataKinds.Phone.LABEL);
-        FULL_PROJECTION.add(CommonDataKinds.Phone.IS_PRIMARY);
-        FULL_PROJECTION.add(CommonDataKinds.Phone._ID);
+        PROJECTION.add(CommonDataKinds.Phone.NUMBER);
+        PROJECTION.add(CommonDataKinds.Phone.TYPE);
+        PROJECTION.add(CommonDataKinds.Phone.LABEL);
+        PROJECTION.add(CommonDataKinds.Phone.IS_PRIMARY);
+        PROJECTION.add(CommonDataKinds.Phone._ID);
         selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
         selectionArgs.add(CommonDataKinds.Phone.CONTENT_ITEM_TYPE);
       }
 
       if (fieldsSet.contains("emails")) {
-        FULL_PROJECTION.add(CommonDataKinds.Email.DATA);
-        FULL_PROJECTION.add(CommonDataKinds.Email.ADDRESS);
-        FULL_PROJECTION.add(CommonDataKinds.Email.TYPE);
-        FULL_PROJECTION.add(CommonDataKinds.Email.LABEL);
-        FULL_PROJECTION.add(CommonDataKinds.Email.IS_PRIMARY);
-        FULL_PROJECTION.add(CommonDataKinds.Email._ID);
+        PROJECTION.add(CommonDataKinds.Email.DATA);
+        PROJECTION.add(CommonDataKinds.Email.ADDRESS);
+        PROJECTION.add(CommonDataKinds.Email.TYPE);
+        PROJECTION.add(CommonDataKinds.Email.LABEL);
+        PROJECTION.add(CommonDataKinds.Email.IS_PRIMARY);
+        PROJECTION.add(CommonDataKinds.Email._ID);
         selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
         selectionArgs.add(CommonDataKinds.Email.CONTENT_ITEM_TYPE);
       }
 
       if (fieldsSet.contains("addresses")) {
-        FULL_PROJECTION.add(CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS);
-        FULL_PROJECTION.add(CommonDataKinds.StructuredPostal.TYPE);
-        FULL_PROJECTION.add(CommonDataKinds.StructuredPostal.LABEL);
-        FULL_PROJECTION.add(CommonDataKinds.StructuredPostal.STREET);
-        FULL_PROJECTION.add(CommonDataKinds.StructuredPostal.POBOX);
-        FULL_PROJECTION.add(CommonDataKinds.StructuredPostal.NEIGHBORHOOD);
-        FULL_PROJECTION.add(CommonDataKinds.StructuredPostal.CITY);
-        FULL_PROJECTION.add(CommonDataKinds.StructuredPostal.REGION);
-        FULL_PROJECTION.add(CommonDataKinds.StructuredPostal.POSTCODE);
-        FULL_PROJECTION.add(CommonDataKinds.StructuredPostal.COUNTRY);
+        PROJECTION.add(CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS);
+        PROJECTION.add(CommonDataKinds.StructuredPostal.TYPE);
+        PROJECTION.add(CommonDataKinds.StructuredPostal.LABEL);
+        PROJECTION.add(CommonDataKinds.StructuredPostal.STREET);
+        PROJECTION.add(CommonDataKinds.StructuredPostal.POBOX);
+        PROJECTION.add(CommonDataKinds.StructuredPostal.NEIGHBORHOOD);
+        PROJECTION.add(CommonDataKinds.StructuredPostal.CITY);
+        PROJECTION.add(CommonDataKinds.StructuredPostal.REGION);
+        PROJECTION.add(CommonDataKinds.StructuredPostal.POSTCODE);
+        PROJECTION.add(CommonDataKinds.StructuredPostal.COUNTRY);
         selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
         selectionArgs.add(CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE);
       }
@@ -152,61 +148,61 @@ public class ContactsModule extends ReactContextBaseJavaModule {
       }
 
       if (fieldsSet.contains("instantMessageAddresses")) {
-        FULL_PROJECTION.add(CommonDataKinds.Im.DATA);
-        FULL_PROJECTION.add(CommonDataKinds.Im.TYPE);
-        FULL_PROJECTION.add(CommonDataKinds.Im.PROTOCOL);
-        FULL_PROJECTION.add(CommonDataKinds.Im._ID);
+        PROJECTION.add(CommonDataKinds.Im.DATA);
+        PROJECTION.add(CommonDataKinds.Im.TYPE);
+        PROJECTION.add(CommonDataKinds.Im.PROTOCOL);
+        PROJECTION.add(CommonDataKinds.Im._ID);
         selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
         selectionArgs.add(CommonDataKinds.Im.CONTENT_ITEM_TYPE);
       }
 
       if (fieldsSet.contains("urlAddresses")) {
-        FULL_PROJECTION.add(CommonDataKinds.Website.URL);
-        FULL_PROJECTION.add(CommonDataKinds.Website.TYPE);
-        FULL_PROJECTION.add(CommonDataKinds.Website._ID);
+        PROJECTION.add(CommonDataKinds.Website.URL);
+        PROJECTION.add(CommonDataKinds.Website.TYPE);
+        PROJECTION.add(CommonDataKinds.Website._ID);
         selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
         selectionArgs.add(CommonDataKinds.Website.CONTENT_ITEM_TYPE);
       }
 
       if (fieldsSet.contains("relationships")) {
-        FULL_PROJECTION.add(CommonDataKinds.Relation.NAME);
-        FULL_PROJECTION.add(CommonDataKinds.Relation.TYPE);
-        FULL_PROJECTION.add(CommonDataKinds.Relation._ID);
+        PROJECTION.add(CommonDataKinds.Relation.NAME);
+        PROJECTION.add(CommonDataKinds.Relation.TYPE);
+        PROJECTION.add(CommonDataKinds.Relation._ID);
         selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
         selectionArgs.add(CommonDataKinds.Relation.CONTENT_ITEM_TYPE );
       }
 
       if (fieldsSet.contains("phoneticFirstName")) {
-        FULL_PROJECTION.add(CommonDataKinds.StructuredName.PHONETIC_GIVEN_NAME);
+        PROJECTION.add(CommonDataKinds.StructuredName.PHONETIC_GIVEN_NAME);
       }
 
       if (fieldsSet.contains("phoneticLastName")) {
-        FULL_PROJECTION.add(CommonDataKinds.StructuredName.PHONETIC_FAMILY_NAME);
+        PROJECTION.add(CommonDataKinds.StructuredName.PHONETIC_FAMILY_NAME);
       }
 
       if (fieldsSet.contains("phoneticMiddleName")) {
-        FULL_PROJECTION.add(CommonDataKinds.StructuredName.PHONETIC_MIDDLE_NAME);
+        PROJECTION.add(CommonDataKinds.StructuredName.PHONETIC_MIDDLE_NAME);
       }
 
       if (fieldsSet.contains("namePrefix")) {
-        FULL_PROJECTION.add(CommonDataKinds.StructuredName.PREFIX);
+        PROJECTION.add(CommonDataKinds.StructuredName.PREFIX);
       }
 
       if (fieldsSet.contains("nameSuffix")) {
-        FULL_PROJECTION.add(CommonDataKinds.StructuredName.SUFFIX);
+        PROJECTION.add(CommonDataKinds.StructuredName.SUFFIX);
       }
 
     if (fetchSingleContact) {
       cursor = cr.query(
           ContactsContract.Data.CONTENT_URI,
-          FULL_PROJECTION.toArray(new String[FULL_PROJECTION.size()]),
+          PROJECTION.toArray(new String[PROJECTION.size()]),
           ContactsContract.Data.CONTACT_ID + " = ?",
           new String[]{options.getString("id")},
           null);
     } else {
       cursor = cr.query(
           ContactsContract.Data.CONTENT_URI,
-          FULL_PROJECTION.toArray(new String[FULL_PROJECTION.size()]),
+          PROJECTION.toArray(new String[PROJECTION.size()]),
           selection,
           selectionArgs.toArray(new String[selectionArgs.size()]),
           null);
@@ -457,6 +453,9 @@ public class ContactsModule extends ReactContextBaseJavaModule {
       if (!TextUtils.isEmpty(suffix)) {
         contact.putString("nameSuffix", suffix);
       }
+      if (!TextUtils.isEmpty(prefix)) {
+        contact.putString("namePrefix", prefix);
+      }
       if (!TextUtils.isEmpty(phoneticFirstName)) {
         contact.putString("phoneticFirstName", phoneticFirstName);
       }
@@ -478,7 +477,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
       contact.putBoolean("imageAvailable", this.hasPhoto);
       if (fieldSet.contains("thumbnail")) {
         WritableMap thumbnail = Arguments.createMap();
-        thumbnail.putString("uri", this.hasPhoto ? photoUri.toString() : null);
+        thumbnail.putString("uri", this.hasPhoto ? photoUri : null);
         contact.putMap("thumbnail", thumbnail);
       }
 
