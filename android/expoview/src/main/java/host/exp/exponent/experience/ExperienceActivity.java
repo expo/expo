@@ -100,6 +100,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   private int mNotificationAnimationFrame;
   private Notification.Builder mNotificationBuilder;
   private boolean mIsLoadExperienceAllowedToRun = false;
+  private boolean mShouldShowLoadingScreenWithOptimisticManifest = false;
 
   // In detach we want UNVERSIONED most places. We still need the numbered sdk version
   // when creating cache keys.
@@ -151,6 +152,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     super.onCreate(savedInstanceState);
 
     mIsLoadExperienceAllowedToRun = true;
+    mShouldShowLoadingScreenWithOptimisticManifest = true;
 
     NativeModuleDepsProvider.getInstance().inject(ExperienceActivity.class, this);
     EventBus.getDefault().registerSticky(this);
@@ -331,6 +333,10 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
           return;
         }
 
+        if (!mShouldShowLoadingScreenWithOptimisticManifest) {
+          return;
+        }
+
         // grab SDK version from optimisticManifest -- in this context we just need to know ensure it's above 5.0.0 (which it should always be)
         String optimisticSdkVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
         ExperienceActivityUtils.setWindowTransparency(optimisticSdkVersion, manifest, ExperienceActivity.this);
@@ -487,6 +493,9 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   }
 
   public void setBundle(final String localBundlePath) {
+    // by this point, setManifest should have also been called, so prevent
+    // setLoadingScreenManifest from showing a rogue loading screen
+    mShouldShowLoadingScreenWithOptimisticManifest = false;
     if (!isDebugModeEnabled()) {
       final boolean finalIsReadyForBundle = mIsReadyForBundle;
       AsyncCondition.wait(READY_FOR_BUNDLE, new AsyncCondition.AsyncConditionListener() {
