@@ -90,6 +90,8 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
 
   if (shellConfig) {
     _isShell = [shellConfig[@"isShell"] boolValue];
+    _testEnvironment = [EXTest testEnvironmentFromString:shellConfig[@"testEnvironment"]];
+
     if (_isShell) {
       // configure published shell url
       [self _loadProductionUrlFromConfig:shellConfig];
@@ -185,7 +187,6 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
   _loadJSInBackgroundExperimental = (shellConfig[@"loadJSInBackgroundExperimental"] == nil)
     ? NO
     : [shellConfig[@"loadJSInBackgroundExperimental"] boolValue];
-  _testEnvironment = [EXTest testEnvironmentFromString:shellConfig[@"testEnvironment"]];
   _isSplashScreenDisabled = ([shellConfig[@"isSplashScreenDisabled"] boolValue]); // we can remove this when the old loading api is dead.
   _releaseChannel = (shellConfig[@"releaseChannel"] == nil) ? @"default" : shellConfig[@"releaseChannel"];
   // other shell config goes here
