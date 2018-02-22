@@ -93,6 +93,8 @@ import versioned.host.exp.exponent.modules.internal.ExponentUnsignedAsyncStorage
 import versioned.host.exp.exponent.modules.api.components.payments.StripeModule;
 import versioned.host.exp.exponent.modules.test.ExponentTestNativeModule;
 
+import static host.exp.exponent.kernel.KernelConstants.LINKING_URI_KEY;
+
 public class ExponentPackage implements ReactPackage {
 
   private static final String TAG = ExponentPackage.class.getSimpleName();
@@ -115,6 +117,7 @@ public class ExponentPackage implements ReactPackage {
 
   public static ExponentPackage kernelExponentPackage(JSONObject manifest) {
     Map<String, Object> kernelExperienceProperties = new HashMap<>();
+    kernelExperienceProperties.put(LINKING_URI_KEY, "exp://");
     return new ExponentPackage(true, kernelExperienceProperties, manifest);
   }
 
