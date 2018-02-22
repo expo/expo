@@ -93,9 +93,12 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"EXAppD
 
 - (void)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  
-  [DDLog addLogger:[DDASLLogger sharedInstance]];
-  [DDLog addLogger:[DDTTYLogger sharedInstance]];
+  if (@available(iOS 10, *)) {
+    [DDLog addLogger:[DDOSLogger sharedInstance]];
+  } else {
+    [DDLog addLogger:[DDASLLogger sharedInstance]];
+    [DDLog addLogger:[DDTTYLogger sharedInstance]];
+  }
 
   RCTSetFatalHandler(handleFatalReactError);
 
