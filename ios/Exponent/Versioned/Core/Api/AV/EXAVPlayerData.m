@@ -563,29 +563,13 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 
         if (strongSelfInner) {
           [strongSelfInner _callStatusUpdateCallbackWithExtraFields:@{EXAVPlayerDataStatusDidJustFinishKeyPath: @(YES)}];
-          AVPlayerItem *playerItem = strongSelfInner.player.currentItem;
-          [strongSelfInner _removeObserversForPlayerItem:playerItem];
           // If the player is looping, we would only like to advance to next item (which is handled by actionAtItemEnd)
           if (!strongSelfInner.isLooping) {
             [strongSelfInner.player pause];
-            strongSelfInner.currentPosition = kCMTimeZero; // We keep track of _currentPosition to reset the AVPlayer in handleMediaServicesReset.
-            [strongSelfInner.player seekToTime:kCMTimeZero completionHandler:^(BOOL finished) {
-              __strong EXAVPlayerData *strongSelfInnerInner = weakSelf;
-              __strong EXAV *strongEXAVInnerInner = strongSelfInnerInner ? strongSelfInnerInner.exAV : nil;
-              if (strongEXAVInnerInner) {
-                dispatch_async(strongEXAVInnerInner.methodQueue, ^{
-                  __strong EXAVPlayerData *strongSelfInnerInnerInner = weakSelf;
-                  if (strongSelfInnerInnerInner) {
-                    [strongSelfInnerInnerInner.player advanceToNextItem];
-
-                    __strong EXAV *strongEXAVInnerInnerInner = strongSelfInnerInnerInner.exAV;
-                    if (strongEXAVInnerInnerInner) {
-                      [strongEXAVInnerInnerInner demoteAudioSessionIfPossible];
-                    }
-                  }
-                });
-              }
-            }];
+            __strong EXAV *strongEXAVInner = strongSelfInner.exAV;
+            if (strongEXAVInner) {
+              [strongEXAVInner demoteAudioSessionIfPossible];
+            }
           }
         }
       });
