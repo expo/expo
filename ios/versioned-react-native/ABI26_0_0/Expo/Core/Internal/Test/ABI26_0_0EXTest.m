@@ -3,10 +3,13 @@
 #import "ABI26_0_0EXTest.h"
 #import "ABI26_0_0EXUnversioned.h"
 
+#import <os/log.h>
+
 NSNotificationName ABI26_0_0EXTestSuiteCompletedNotification = @"ABI26_0_0EXTestSuiteCompletedNotification";
 
 @interface ABI26_0_0EXTest ()
 
+@property (class, nonatomic, assign, readonly) os_log_t log;
 @property (nonatomic, assign) ABI26_0_0EXTestEnvironment environment;
 
 @end
@@ -14,6 +17,15 @@ NSNotificationName ABI26_0_0EXTestSuiteCompletedNotification = @"ABI26_0_0EXTest
 @implementation ABI26_0_0EXTest
 
 + (NSString *)moduleName { return @"ExponentTest"; }
+
++ (os_log_t)log {
+  static os_log_t log;
+  static dispatch_once_t once;
+  dispatch_once(&once, ^{
+    log = os_log_create("host.exp.Exponent", "test");
+  });
+  return log;
+}
 
 - (instancetype)initWithEnvironment:(ABI26_0_0EXTestEnvironment)environment
 {
@@ -37,6 +49,8 @@ ABI26_0_0RCT_EXPORT_METHOD(completed: (NSString *)jsonStringifiedResult)
   [[NSNotificationCenter defaultCenter] postNotificationName:@"EXTestSuiteCompletedNotification"
                                                       object:nil
                                                     userInfo:resultObj];
+  
+  os_log(ABI26_0_0EXTest.log, "[TEST-SUITE-END] %{public}@", jsonStringifiedResult);
 }
 
 ABI26_0_0RCT_REMAP_METHOD(action,
