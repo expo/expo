@@ -34,7 +34,7 @@ Returns `{ uri, width, height }` where `uri` is a URI to the modified image (use
 This will first rotate the image 90 degrees clockwise, then flip the rotated image vertically and save it as a PNG.
 
 ```javascript
-mport React from 'react';
+import React from 'react';
 import { Button, TouchableOpacity, Text, View, Image } from 'react-native';
 import { Asset, ImageManipulator } from 'expo';
 
