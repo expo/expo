@@ -34,7 +34,7 @@ Here are some of the things Expo gives you out of the box that work right away:
 
 -   **Push Notifications**
 
-    Push notifications work right out of the box across both iOS and Android, using a single, unified API. You don't have to set up APNS and GCM/FCM or configure ZeroPush or anything like that. We think we've made this as easy as it can be right now
+    Push notifications work right out of the box across both iOS and Android, using a single, unified API. You don't have to set up APNS and GCM/FCM or configure ZeroPush or anything like that. We think we've made this as easy as it can be right now.
 
 -   **Facebook Login**
 
@@ -42,7 +42,7 @@ Here are some of the things Expo gives you out of the box that work right away:
 
 -   **Instant Updating**
 
-    All Expo apps can be updated in seconds by just clicking Publish in XDE. You don't have to set anything up; it just works this way. If you aren't using Expo, you'd either use Microsoft Code Push or roll your own solution for this problem
+    All Expo apps can be updated in seconds by just clicking Publish in XDE. You don't have to set anything up; it just works this way. If you aren't using Expo, you'd either use Microsoft Code Push or roll your own solution for this problem.
 
 -   **Asset Management**
 
