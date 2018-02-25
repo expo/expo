@@ -4,18 +4,11 @@
  * @providesModule AuthTokenActions
  */
 
-import Analytics from '../Api/Analytics';
 import LocalStorage from '../Storage/LocalStorage';
-import ApolloClient from '../Api/ApolloClient';
 
 import { action } from 'Flux';
 
 let AuthTokenActions = {
-  signIn(tokens) {
-    ApolloClient.resetStore();
-    return AuthTokenActions.setAuthTokens(tokens);
-  },
-
   @action
   setAuthTokens(tokens) {
     LocalStorage.saveAuthTokensAsync(tokens);
@@ -29,13 +22,8 @@ let AuthTokenActions = {
   },
 
   @action
-  signOut() {
+  clearAuthTokens() {
     LocalStorage.removeAuthTokensAsync();
-    LocalStorage.clearHistoryAsync();
-
-    Analytics.track(Analytics.events.USER_LOGGED_OUT);
-    Analytics.identify(null);
-    ApolloClient.resetStore();
     return null;
   },
 };

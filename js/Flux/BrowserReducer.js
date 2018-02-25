@@ -5,13 +5,13 @@
  */
 'use strict';
 
-import AuthTokenActions from 'AuthTokenActions';
+import SessionActions from 'SessionActions';
 import BrowserActions from 'BrowserActions';
 import ConsoleActions from 'ConsoleActions';
 import Flux from 'Flux';
 import Immutable, { List, Map, Record } from 'immutable';
 
-const AuthTokenActionTypes = Flux.getActionTypes(AuthTokenActions);
+const SessionActionTypes = Flux.getActionTypes(SessionActions);
 const BrowserActionTypes = Flux.getActionTypes(BrowserActions);
 const ConsoleActionTypes = Flux.getActionTypes(ConsoleActions);
 const BrowserState = Record({
@@ -257,7 +257,7 @@ export default Flux.createReducer(new BrowserState(), {
     },
   },
 
-  [AuthTokenActionTypes.signOut](state, action) {
+  [SessionActionTypes.signOutAsync](state, action) {
     return state.merge({
       history: state.history.clear(),
     });

@@ -15,6 +15,7 @@ import { Constants } from 'expo';
 
 import AuthTokenActions from '../../Flux/AuthTokenActions';
 import BrowserActions from '../../Flux/BrowserActions';
+import SessionActions from '../../Flux/SessionActions';
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
 import Analytics from '../../Api/Analytics';
@@ -66,7 +67,8 @@ export default class UserSettingsScreen extends React.Component {
   _handlePressSignOut = () => {
     this.props.navigator.pop();
     requestAnimationFrame(() => {
-      this.props.dispatch(AuthTokenActions.signOut());
+      this.props.dispatch(AuthTokenActions.clearAuthTokens());
+      this.props.dispatch(SessionActions.signOutAsync());
     });
   };
 

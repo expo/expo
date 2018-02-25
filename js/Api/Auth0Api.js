@@ -1,32 +1,39 @@
 /* @flow */
 
 import jwtDecode from 'jwt-decode';
-import { Constants } from 'expo';
+import ApiV2HttpClient from 'ApiV2HttpClient';
 
 const AuthScope = 'openid offline_access nickname username';
-const AuthEndpoint = 'https://exponent.auth0.com/oauth/ro';
 const DelegationEndpoint = 'https://exponent.auth0.com/delegation';
 const SignUpEndpoint = 'https://exp.host/--/api/v2/auth/createOrUpdateUser';
+const MigrationEndpoint = 'https://exp.host/--/api/v2/auth/auth0ToSession';
+const SignOutEndpoint = 'https://exp.host/--/api/v2/auth/logoutAsync';
 const ClientId = 'qIdMWQxxXqD8PbCA90mZh0r2djqJylzg';
 
-async function signInAsync(username: string, password: string) {
-  let response = await fetch(AuthEndpoint, {
+type SignInOptions = {
+  testSession?: boolean,
+};
+async function signInAsync(username: string, password: string, options: SignInOptions = {}) {
+  let testSession = options.testSession || false;
+  let api = new ApiV2HttpClient();
+  return api.postAsync('auth/loginAsync', {
+    username,
+    password,
+    clientId: ClientId,
+    ...(testSession ? { testSession } : {}),
+  });
+}
+
+async function signOutAsync(sessionSecret) {
+  if (!sessionSecret) {
+    return;
+  }
+  await fetch(SignOutEndpoint, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
+      'Expo-Session': sessionSecret,
     },
-    body: JSON.stringify({
-      client_id: ClientId,
-      username,
-      password,
-      device: Constants.deviceId,
-      connection: 'Username-Password-Authentication',
-      scope: AuthScope,
-    }),
   });
-
-  let result = await response.json();
-  return result;
 }
 
 type SignUpData = {
@@ -89,8 +96,29 @@ async function refreshIdTokenAsync(refreshToken: string) {
   return result;
 }
 
+async function migrateAuth0ToSessionAsync(idToken: string) {
+  try {
+    let response = await fetch(MigrationEndpoint, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+      },
+    });
+
+    let result = await response.json();
+    return result;
+  } catch (e) {
+    if (__DEV__) {
+      alert('Could not reach migration endpoint.');
+    }
+    return null;
+  }
+}
+
 export default {
+  migrateAuth0ToSessionAsync,
   signInAsync,
+  signOutAsync,
   signUpAsync,
   refreshIdTokenAsync,
   tokenIsExpired,

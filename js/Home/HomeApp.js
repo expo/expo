@@ -9,6 +9,7 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 import AuthTokenActions from '../Flux/AuthTokenActions';
 import BrowserActions from '../Flux/BrowserActions';
+import SessionActions from '../Flux/SessionActions';
 import LocalStorage from '../Storage/LocalStorage';
 import GlobalLoadingOverlay from './containers/GlobalLoadingOverlay';
 import ExStore from '../Flux/ExStore';
@@ -33,9 +34,14 @@ export default class AppContainer extends React.Component {
       ExStore.dispatch(BrowserActions.loadSettingsAsync());
       ExStore.dispatch(BrowserActions.loadHistoryAsync());
       let storedAuthTokens = await LocalStorage.getAuthTokensAsync();
+      let storedSession = await LocalStorage.getSessionAsync();
 
       if (storedAuthTokens) {
         ExStore.dispatch(AuthTokenActions.setAuthTokens(storedAuthTokens));
+      }
+
+      if (storedSession){
+        ExStore.dispatch(SessionActions.setSession(storedSession));
       }
 
       if (Platform.OS === 'ios') {

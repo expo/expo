@@ -9,11 +9,11 @@ type AuthAwareNetworkInterfaceOptions = {
   getRefreshToken: () => ?string,
   idTokenIsValid: () => boolean,
   refreshIdTokenAsync: () => Promise<string>,
+  getSessionSecret: () => ?string,
+  setSession: (session: { [string]: any }) => void,
+  signOutAsync: () => Promise<void>,
+  migrateAuth0ToSessionAsync: () => void,
 };
-
-// note(brentvatne): in dev we will always try to refresh our id token when we
-// load the app, in order to surface any problems with our refresh token flow
-let DEBUG_INVALIDATE_ID_TOKEN_ON_LOAD = __DEV__;
 
 class AuthAwareNetworkInterface {
   _requestQueue = [];
@@ -23,6 +23,10 @@ class AuthAwareNetworkInterface {
   _refreshIdTokenAsync: () => Promise<string>;
   _idTokenIsValid: () => boolean;
   _networkInterface: ConnectivityAwareHTTPNetworkInterface;
+  _getSessionSecret: () => ?string;
+  _setSession: (session: { [string]: any }) => void;
+  _signOutAsync: () => void;
+  _migrateAuth0ToSessionAsync: () => void;
 
   __debug_hasCompletedRefresh: any;
 
@@ -34,12 +38,12 @@ class AuthAwareNetworkInterface {
       getRefreshToken,
       idTokenIsValid,
       refreshIdTokenAsync,
+      getSessionSecret,
+      setSession,
+      signOutAsync,
+      migrateAuth0ToSessionAsync,
       ...connectivityInterfaceOptions
     } = options;
-
-    if (DEBUG_INVALIDATE_ID_TOKEN_ON_LOAD) {
-      this.__debug_hasCompletedRefresh = false;
-    }
 
     this._networkInterface = new ConnectivityAwareHTTPNetworkInterface(
       uri,
@@ -50,6 +54,10 @@ class AuthAwareNetworkInterface {
     this._getRefreshToken = getRefreshToken;
     this._idTokenIsValid = idTokenIsValid;
     this._refreshIdTokenAsync = refreshIdTokenAsync;
+    this._getSessionSecret = getSessionSecret;
+    this._setSession = setSession;
+    this._signOutAsync = signOutAsync;
+    this._migrateAuth0ToSessionAsync = migrateAuth0ToSessionAsync;
 
     this._applyAuthorizationHeaderMiddleware();
   }
@@ -60,6 +68,11 @@ class AuthAwareNetworkInterface {
         applyMiddleware: (req, next) => {
           if (!req.options.headers) {
             req.options.headers = {};
+          }
+
+          const sessionSecret = this._getSessionSecret();
+          if (sessionSecret) {
+            req.options.headers['Expo-Session'] = sessionSecret;
           }
 
           const idToken = this._getIdToken();
@@ -74,44 +87,51 @@ class AuthAwareNetworkInterface {
   };
 
   query(request: any) {
-    if (this.__debug_shouldForceRefreshToken() && (this._idTokenIsValid() || !this._getIdToken())) {
+    // Use a session if we have it
+    if (this._getSessionSecret()) {
       return this._networkInterface.query(request);
-    } else {
-      // Throw it into the queue
-      return new Promise(async (resolve, reject) => {
-        this._requestQueue.push(() => {
-          this._networkInterface
-            .query(request)
-            .then(resolve)
-            .catch(reject);
-        });
+    }
 
-        // If it's the first one thrown into the queue, refresh token
-        if (this._requestQueue.length === 1) {
-          let newIdToken = await this._refreshIdTokenAsync();
-          this._setIdToken(newIdToken);
-          this.__debug_doneForceRefreshToken();
-          this._flushRequestQueue();
-        }
+    // We dont have a session, but we have a valid idToken
+    if (this._idTokenIsValid()) {
+      // try migrating, but dont wait for the call back
+      // this should never throw an error
+      this._migrateAuth0ToSessionAsync();
+
+      return this._networkInterface.query(request);
+    }
+
+    // We dont have a session or a valid idToken
+    // If Auth0 has already shut down, we must log out and start again
+    const dateAuth0Gone = new Date(2018, 1, 2); // April 1, 2018 - the months are 0 indexed
+    if (Date.now() > dateAuth0Gone) {
+      return new Promise(async (resolve, reject) => {
+        await this._signOutAsync({ shouldResetApolloStore: false });
+        alert('Your session has expired, logging out. Please sign in again.');
+        resolve({
+          data: { error: 'Your session has expired, logging out. Please sign in again.' },
+        });
       });
     }
+
+    // We dont have a session or a valid idToken
+    // Auth0 hasnt shut down yet, so we ask them for a valid token
+    return new Promise(async (resolve, reject) => {
+      // Throw it into the queue
+      this._requestQueue.push(() => {
+        this._networkInterface
+          .query(request)
+          .then(resolve)
+          .catch(reject);
+      });
+
+      if (this._requestQueue.length === 1) {
+        let newIdToken = await this._refreshIdTokenAsync();
+        this._setIdToken(newIdToken);
+        this._flushRequestQueue();
+      }
+    });
   }
-
-  __debug_shouldForceRefreshToken = () => {
-    if (!DEBUG_INVALIDATE_ID_TOKEN_ON_LOAD) {
-      return true;
-    }
-
-    return this.__debug_hasCompletedRefresh;
-  };
-
-  __debug_doneForceRefreshToken = () => {
-    if (!DEBUG_INVALIDATE_ID_TOKEN_ON_LOAD) {
-      return;
-    }
-
-    this.__debug_hasCompletedRefresh = true;
-  };
 
   _flushRequestQueue() {
     this._requestQueue.forEach(queuedRequest => queuedRequest());

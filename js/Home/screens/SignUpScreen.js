@@ -5,6 +5,7 @@ import { Keyboard, ScrollView, StyleSheet, TextInput, View } from 'react-native'
 import { connect } from 'react-redux';
 
 import AuthTokenActions from '../../Flux/AuthTokenActions';
+import SessionActions from '../../Flux/SessionActions';
 
 import Analytics from '../../Api/Analytics';
 import Alerts from '../constants/Alerts';
@@ -242,6 +243,9 @@ export default class SignUpScreen extends React.Component {
           this._handleError(signInResult);
         } else {
           this.props.navigator.hideLocalAlert();
+          this.props.dispatch(
+            SessionActions.setSession({ sessionSecret: signInResult.sessionSecret })
+          );
           this.props.dispatch(
             AuthTokenActions.setAuthTokens({
               refreshToken: signInResult.refresh_token,

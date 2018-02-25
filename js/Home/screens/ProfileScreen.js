@@ -17,6 +17,7 @@ import { connectActionSheet } from '@expo/react-native-action-sheet';
 import { withNavigation } from '@expo/ex-navigation';
 
 import AuthTokenActions from '../../Flux/AuthTokenActions';
+import SessionActions from '../../Flux/SessionActions';
 
 import ProfileUnauthenticated from '../components/ProfileUnauthenticated';
 import MyProfileContainer from '../containers/MyProfileContainer';
@@ -111,7 +112,8 @@ class SignOutButtonAndroid extends React.Component {
       () => {},
       (action, selectedIndex) => {
         if (selectedIndex === 0) {
-          this.props.dispatch(AuthTokenActions.signOut());
+          this.props.dispatch(AuthTokenActions.clearAuthTokens());
+          this.props.dispatch(SessionActions.signOutAsync());
         }
       }
     );

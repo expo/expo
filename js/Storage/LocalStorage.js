@@ -11,6 +11,7 @@ import mapValues from 'lodash/mapValues';
 const Keys = mapValues(
   {
     AuthTokens: 'authTokens',
+    Session: 'session',
     History: 'history',
     Settings: 'settings',
     NuxIsFinished: 'nuxIsFinishedApr-17-2017',
@@ -55,8 +56,23 @@ async function getAuthTokensAsync() {
   }
 }
 
+async function getSessionAsync() {
+  let results = await AsyncStorage.getItem(Keys.Session);
+
+  try {
+    let session = JSON.parse(results);
+    return session;
+  } catch (e) {
+    return null;
+  }
+}
+
 async function saveAuthTokensAsync(authTokens) {
   return AsyncStorage.setItem(Keys.AuthTokens, JSON.stringify(authTokens));
+}
+
+async function saveSessionAsync(session) {
+  return AsyncStorage.setItem(Keys.Session, JSON.stringify(session));
 }
 
 async function getHistoryAsync() {
@@ -98,6 +114,10 @@ async function removeAuthTokensAsync() {
   return AsyncStorage.removeItem(Keys.AuthTokens);
 }
 
+async function removeSessionAsync() {
+  return AsyncStorage.removeItem(Keys.Session);
+}
+
 async function clearAllAsync() {
   await Promise.all(Object.values(Keys).map(k => AsyncStorage.removeItem(k)));
 }
@@ -106,13 +126,16 @@ export default {
   clearHistoryAsync,
   clearAllAsync,
   getAuthTokensAsync,
+  getSessionAsync,
   getIsNuxFinishedAsync,
   getHistoryAsync,
   getSettingsAsync,
   saveAuthTokensAsync,
   saveHistoryAsync,
+  saveSessionAsync,
   saveIsNuxFinishedAsync,
   removeAuthTokensAsync,
+  removeSessionAsync,
   updateIdTokenAsync,
   updateSettingsAsync,
 };

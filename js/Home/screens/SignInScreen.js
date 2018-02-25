@@ -7,10 +7,12 @@ import { connect } from 'react-redux';
 import Alerts from '../constants/Alerts';
 import Analytics from '../../Api/Analytics';
 import AuthTokenActions from '../../Flux/AuthTokenActions';
+import SessionActions from '../../Flux/SessionActions';
 import Colors from '../constants/Colors';
 import Form from '../components/Form';
 import PrimaryButton from '../components/PrimaryButton';
 import Auth0Api from '../../Api/Auth0Api';
+import ApolloClient from '../../Api/ApolloClient';
 
 const DEBUG = false;
 
@@ -143,8 +145,10 @@ export default class SignInScreen extends React.Component {
           Analytics.identify(result.id, trackingOpts);
           Analytics.track(Analytics.events.USER_LOGGED_IN, trackingOpts);
 
+          ApolloClient.resetStore();
+          this.props.dispatch(SessionActions.setSession({ sessionSecret: result.sessionSecret }));
           this.props.dispatch(
-            AuthTokenActions.signIn({
+            AuthTokenActions.setAuthTokens({
               refreshToken: result.refresh_token,
               accessToken: result.access_token,
               idToken: result.id_token,
