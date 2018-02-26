@@ -31,11 +31,6 @@ RCT_EXPORT_MODULE(ExponentGLViewManager);
   return NO;
 }
 
-- (dispatch_queue_t)methodQueue
-{
-  return dispatch_queue_create("host.exp.exponent.GLViewManager", DISPATCH_QUEUE_SERIAL);
-}
-
 - (UIView *)view
 {
   return [[EXGLView alloc] initWithManager:self];
