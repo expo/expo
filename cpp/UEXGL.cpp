@@ -1211,9 +1211,101 @@ private:
 
   _WRAP_METHOD_SIMPLE(texStorage3D, glTexStorage3D, target, levels, internalformat, width, height, depth)
 
-  _WRAP_METHOD_UNIMPL(texImage3D)
-
-  _WRAP_METHOD_UNIMPL(texSubImage3D)
+  _WRAP_METHOD(texImage3D, 10) {
+    GLenum target;
+    GLint level, internalformat;
+    GLsizei width, height, depth, border;
+    GLenum format, type;
+    JSObjectRef jsPixels;
+    
+    EXJS_UNPACK_ARGV(target, level, internalformat, width, height, depth, border, format, type);
+    jsPixels = (JSObjectRef) jsArgv[9];
+    
+    // Null?
+    if (JSValueIsNull(jsCtx, jsPixels)) {
+      addToNextBatch([=] {
+        glTexImage3D(target, level, internalformat, width, height, depth, border, format, type, nullptr);
+      });
+      return nullptr;
+    }
+    
+    std::shared_ptr<void> data(nullptr);
+    
+    // Try TypedArray
+    data = jsValueToSharedArray(jsCtx, jsPixels, nullptr);
+    
+    // Try object with `.localUri` member
+    if (!data) {
+      data = loadImage(jsCtx, jsPixels, &width, &height, nullptr);
+    }
+    
+    if (data) {
+      if (unpackFLipY) {
+        GLubyte *texels = (GLubyte *) data.get();
+        GLubyte *texelLayer = texels;
+        for (int z = 0; z < depth; z++) {
+          flipPixels(texelLayer, width * bytesPerPixel(type, format), height);
+          texelLayer += bytesPerPixel(type, format) * width * height;
+        }
+      }
+      addToNextBatch([=] {
+        glTexImage3D(target, level, internalformat, width, height, depth, border, format, type, data.get());
+      });
+      return nullptr;
+    }
+    
+    // Nothing worked...
+    throw std::runtime_error("EXGL: Invalid pixel data argument for gl.texImage3D()!");
+  }
+  
+  _WRAP_METHOD(texSubImage3D, 11) {
+    GLenum target;
+    GLint level, xoffset, yoffset, zoffset;
+    GLsizei width, height, depth;
+    GLenum format, type;
+    JSObjectRef jsPixels;
+    
+    EXJS_UNPACK_ARGV(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type);
+    jsPixels = (JSObjectRef) jsArgv[10];
+    
+    // Null?
+    if (JSValueIsNull(jsCtx, jsPixels)) {
+      addToNextBatch([=] {
+        void *nulled = calloc(width * height, bytesPerPixel(type, format));
+        glTexSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, nulled);
+        free(nulled);
+      });
+      return nullptr;
+    }
+    
+    std::shared_ptr<void> data(nullptr);
+    
+    // Try TypedArray
+    data = jsValueToSharedArray(jsCtx, jsPixels, nullptr);
+    
+    // Try object with `.localUri` member
+    if (!data) {
+      data = loadImage(jsCtx, jsPixels, &width, &height, nullptr);
+    }
+    
+    if (data) {
+      if (unpackFLipY) {
+        GLubyte *texels = (GLubyte *) data.get();
+        GLubyte *texelLayer = texels;
+        for (int z = 0; z < depth; z++) {
+          flipPixels(texelLayer, width * bytesPerPixel(type, format), height);
+          texelLayer += bytesPerPixel(type, format) * width * height;
+        }
+      }
+      addToNextBatch([=] {
+        glTexSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, data.get());
+      });
+      return nullptr;
+    }
+    
+    // Nothing worked...
+    throw std::runtime_error("EXGL: Invalid pixel data argument for gl.texSubImage3D()!");
+  }
 
   _WRAP_METHOD_SIMPLE(copyTexSubImage3D, glCopyTexSubImage3D,
     target, level, xoffset, yoffset, zoffset, x, y, width, height)
