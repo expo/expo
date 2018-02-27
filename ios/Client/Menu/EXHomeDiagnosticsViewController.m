@@ -1,18 +1,18 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXKernelDevMenuViewController.h"
+#import "EXHomeDiagnosticsViewController.h"
 #import "EXBuildConstants.h"
 #import "EXFileDownloader.h"
 #import "EXJavaScriptResource.h"
 #import "EXKernel.h"
-#import "EXKernelReactAppManager.h"
 #import "EXKernelUtil.h"
+#import "EXHomeAppManager.h"
 
 #import <React/RCTBridge.h>
 
 NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
 
-@interface EXKernelDevMenuViewController ()
+@interface EXHomeDiagnosticsViewController () <UINavigationBarDelegate>
 
 @property (nonatomic, strong) UINavigationBar *vTitleBar;
 @property (nonatomic, strong) UIButton *btnDevMenu;
@@ -30,16 +30,17 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
 
 @end
 
-@implementation EXKernelDevMenuViewController
+@implementation EXHomeDiagnosticsViewController
 
 - (void)viewDidLoad
 {
   [super viewDidLoad];
   self.view.backgroundColor = [UIColor whiteColor];
-  self.navigationItem.title = @"Dev Menu";
+  self.navigationItem.title = @"Home Diagnostics";
   
   // title bar
   self.vTitleBar = [[UINavigationBar alloc] init];
+  _vTitleBar.delegate = self;
   self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(_onTapCancel)];
   _vTitleBar.items = @[ self.navigationItem ];
   [self.view addSubview:_vTitleBar];
@@ -104,10 +105,20 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
   }
 }
 
+- (UIRectEdge) edgesForExtendedLayout
+{
+  return [super edgesForExtendedLayout] ^ UIRectEdgeTop ^ UIRectEdgeBottom;
+}
+
+- (UIBarPosition)positionForBar:(__unused id<UIBarPositioning>)bar
+{
+  return UIBarPositionTopAttached;
+}
+
 - (void)viewWillLayoutSubviews
 {
   [super viewWillLayoutSubviews];
-  _vTitleBar.frame = CGRectMake(0, 0, self.view.frame.size.width, 64.0f);
+  _vTitleBar.frame = CGRectMake(0.0f, 40.0f, self.view.frame.size.width, 64.0f);
   
   _lblKernelHeading.frame = CGRectMake(16.0f, CGRectGetMaxY(_vTitleBar.frame) + 16.0f, self.view.bounds.size.width - 32.0f, 18.0f);
   _lblKernelInfo.frame = CGRectMake(0, 0, _lblKernelHeading.bounds.size.width, CGFLOAT_MAX);
@@ -134,7 +145,7 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
 - (void)viewWillAppear:(BOOL)animated
 {
   [super viewWillAppear:animated];
-  RCTBridge *kernelBridge = [EXKernel sharedInstance].appRegistry.kernelAppManager.reactBridge;
+  RCTBridge *kernelBridge = [EXKernel sharedInstance].appRegistry.homeAppRecord.appManager.reactBridge;
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleKernelLoadEvent:)
                                                name:RCTJavaScriptDidLoadNotification
@@ -158,7 +169,7 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
 - (void)_onTapDevMenu
 {
   [self dismissViewControllerAnimated:YES completion:^{
-    EXKernelReactAppManager *appMgr = [EXKernel sharedInstance].appRegistry.kernelAppManager;
+    EXReactAppManager *appMgr = [EXKernel sharedInstance].appRegistry.homeAppRecord.appManager;
     [appMgr showDevMenu];
   }];
 }
@@ -186,7 +197,7 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
 
 - (void)_populateKernelInfoLabel
 {
-  NSURL *kernelUrl = [EXKernelReactAppManager kernelBundleUrl];
+  NSURL *kernelUrl = nil;// TODO: BEN [old_EXKernelReactAppManager kernelBundleUrl];
   _lblKernelInfo.text = (kernelUrl) ? kernelUrl.absoluteString : @"";
 
   NSMutableURLRequest *kernelReq = [NSMutableURLRequest requestWithURL:kernelUrl];
@@ -206,10 +217,11 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
 
 - (void)_populateCacheInfoLabel
 {
-  // the actual logic for downloading the kernel JS lives in EXKernelReactAppManager and EXJavaScriptLoader;
+  // TODO: BEN
+  // the actual logic for downloading the kernel JS lives in old_EXKernelReactAppManager and EXJavaScriptLoader;
   // we just provide diagnostics on it here
   
-  if ([EXBuildConstants sharedInstance].isDevKernel) {
+  /* if ([EXBuildConstants sharedInstance].isDevKernel) {
     _lblCacheInfo.text = @"No cache is used when developing the kernel, though one may exist.";
   } else {
     NSURL *dummyUrl = [NSURL URLWithString:@""]; // we're just making this for diagnostic purposes and won't download anything here
@@ -245,7 +257,7 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
       _lblCacheInfo.text = @"No local cache exists";
     }
   }
-  [self.view setNeedsLayout];
+  [self.view setNeedsLayout]; */
 }
 
 #pragma mark - Listeners

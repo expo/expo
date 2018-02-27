@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXErrorView.h"
-#import "EXKernelReactAppManager.h"
 
 #import <React/RCTBridge.h>
 
@@ -9,7 +8,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXViewController : UIViewController <EXReactAppManagerDelegate>
+@interface EXViewController : UIViewController
 
 - (instancetype)initWithLaunchOptions: (NSDictionary *)launchOptions;
 - (void)loadReactApplication;
@@ -19,7 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 // TODO: make private
 @property (nonatomic, assign) BOOL isLoading;
 @property (nonatomic, strong) UIView *contentView;
-@property (nonatomic, strong) EXKernelReactAppManager *appManager;
 
 @end
 

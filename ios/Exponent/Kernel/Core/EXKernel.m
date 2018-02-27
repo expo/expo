@@ -4,7 +4,6 @@
 #import "EXAppState.h"
 #import "EXBuildConstants.h"
 #import "EXFrame.h"
-#import "EXFrameReactAppManager.h"
 #import "EXKernel.h"
 #import "EXKernelAppRecord.h"
 #import "EXKernelModule.h"
@@ -29,8 +28,6 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
 NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey";
 
 @interface EXKernel () <EXKernelAppRegistryDelegate>
-
-@property (nonatomic, weak) EXViewController *vcExponentRoot;
 
 @end
 
@@ -80,19 +77,10 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)registerRootExponentViewController:(EXViewController *)exponentViewController
-{
-  _vcExponentRoot = exponentViewController;
-}
-
-- (EXViewController *)rootViewController
-{
-  return _vcExponentRoot;
-}
-
 - (void)_onKernelJSLoaded
 {
   // used by appetize: optionally disable nux
+  // TODO: ben: audit
   BOOL disableNuxDefaultsValue = [[NSUserDefaults standardUserDefaults] boolForKey:EXKernelDisableNuxDefaultsKey];
   if (disableNuxDefaultsValue) {
     [self dispatchKernelJSEvent:@"resetNuxState" body:@{ @"isNuxCompleted": @YES } onSuccess:nil onFailure:nil];
@@ -145,10 +133,11 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
 
 - (void)dispatchKernelJSEvent:(NSString *)eventName body:(NSDictionary *)eventBody onSuccess:(void (^_Nullable)(NSDictionary * _Nullable))success onFailure:(void (^_Nullable)(NSString * _Nullable))failure
 {
-  EXKernelModule *kernelModule = [self nativeModuleForAppManager:_appRegistry.kernelAppManager named:@"ExponentKernel"];
+  // TODO: ben: kill me
+  /* EXKernelModule *kernelModule = [self nativeModuleForAppManager:_appRegistry.kernelAppManager named:@"ExponentKernel"];
   if (kernelModule) {
     [kernelModule dispatchJSEvent:eventName body:eventBody onSuccess:success onFailure:failure];
-  }
+  } */
 }
 
 - (void)_dispatchJSEvent:(NSString *)eventName body:(NSDictionary *)eventBody onAppManager:(EXReactAppManager *)appManager
@@ -197,7 +186,7 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
           fromBackground:(BOOL)isFromBackground
                 isRemote:(BOOL)isRemote
 {
-  EXReactAppManager *destinationAppManager = _appRegistry.kernelAppManager;
+  EXReactAppManager *destinationAppManager = _appRegistry.homeAppRecord.appManager; // TODO: BEN
   EXKernelAppRecord *recordWithExperienceId = [_appRegistry newestRecordWithExperienceId:destinationExperienceId];
   if (recordWithExperienceId && recordWithExperienceId.appManager) {
     destinationAppManager = recordWithExperienceId.appManager;
@@ -213,14 +202,14 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
                                    @"data": notifBody,
                                    };
   if (destinationAppManager) {
-    if (destinationAppManager == _appRegistry.kernelAppManager) {
+    if (destinationAppManager == _appRegistry.homeAppRecord.appManager) { // TODO: BEN
       // send both the body and the experience id, so we can open a new experience from the kernel
       [self _dispatchJSEvent:@"Exponent.notification"
                         body:@{
                                @"body": bodyWithOrigin,
                                @"experienceId": destinationExperienceId,
                                }
-                onAppManager:_appRegistry.kernelAppManager];
+                onAppManager:_appRegistry.homeAppRecord.appManager]; // TODO: BEN
     } else {
       // send the body to the already-open experience
       [self _dispatchJSEvent:@"Exponent.notification" body:bodyWithOrigin onAppManager:destinationAppManager];
@@ -231,61 +220,71 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
 
 #pragma mark - App State
 
-- (void)handleJSTaskDidForegroundWithType:(NSInteger)type params:(NSDictionary *)params
+- (void)switchTasks
 {
-  EXKernelRoute routetype = (EXKernelRoute)type;
-  [[EXAnalytics sharedInstance] logForegroundEventForRoute:routetype fromJS:YES];
-  
-  NSString *urlToForeground, *urlToBackground;
-  if (params) {
-    urlToForeground = RCTNilIfNull(params[@"url"]);
-    urlToBackground = RCTNilIfNull(params[@"urlToBackground"]);
+  if (!_browserController) {
+    return;
   }
   
-  EXReactAppManager *appManagerToForeground = nil;
-  EXReactAppManager *appManagerToBackground = nil;
-  
-  if (routetype == kEXKernelRouteHome) {
-    appManagerToForeground = _appRegistry.kernelAppManager;
-  }
-  if (routetype == kEXKernelRouteBrowser && !urlToBackground) {
-    appManagerToBackground = _appRegistry.kernelAppManager;
-  }
-  
-  for (NSString *recordId in [_appRegistry appEnumerator]) {
-    EXKernelAppRecord *appRecord = [_appRegistry recordForId:recordId];
-    if (!appRecord || appRecord.status != EXKernelAppRecordStatusRunning) {
-      continue;
-    }
-    if (urlToForeground && appRecord.appManager && [appRecord.appManager.frame.initialUri.absoluteString isEqualToString:urlToForeground]) {
-      appManagerToForeground = appRecord.appManager;
-    } else if (urlToBackground && appRecord.appManager && [appRecord.appManager.frame.initialUri.absoluteString isEqualToString:urlToBackground]) {
-      appManagerToBackground = appRecord.appManager;
-    }
-  }
-  
-  if ([_serviceRegistry.linkingManager isRefreshExpectedForAppManager:appManagerToForeground]) {
-    // shell app foregrounded the same bridge as before.
-    // this would be a no-op, so we force a reload on the existing frame.
-    // this is usually triggered by calling Util.reload() when no new JS bundle is available.
-    [((EXFrameReactAppManager *)_appRegistry.lastKnownForegroundAppManager).frame reload];
+  if (_visibleApp != _appRegistry.homeAppRecord) {
+    [EXUtil performSynchronouslyOnMainThread:^{
+      [_browserController toggleMenu];
+    }];
   } else {
-    if (appManagerToBackground) {
-      [self _postNotificationName:kEXKernelBridgeDidBackgroundNotification onAbstractBridge:appManagerToBackground.reactBridge];
-      id appStateModule = [self nativeModuleForAppManager:appManagerToBackground named:@"AppState"];
+    EXKernelAppRegistry *appRegistry = [EXKernel sharedInstance].appRegistry;
+    for (NSString *recordId in appRegistry.appEnumerator) {
+      EXKernelAppRecord *record = [appRegistry recordForId:recordId];
+      // foreground the first thing we find
+      [self moveAppToVisible:record];
+    }
+  }
+}
+
+- (void)moveAppToVisible:(EXKernelAppRecord *)appRecord
+{
+  if (_browserController) {
+    [EXUtil performSynchronouslyOnMainThread:^{
+      [_browserController moveAppToVisible:appRecord];
+    }];
+  }
+}
+
+- (void)appDidBecomeVisible:(EXKernelAppRecord *)appRecord
+{
+  EXKernelAppRecord *appRecordPreviouslyVisible = _visibleApp;
+  if (appRecord != appRecordPreviouslyVisible) {
+    if (appRecordPreviouslyVisible) {
+      [self _postNotificationName:kEXKernelBridgeDidBackgroundNotification onAbstractBridge:appRecordPreviouslyVisible.appManager.reactBridge];
+      id appStateModule = [self nativeModuleForAppManager:appRecordPreviouslyVisible.appManager named:@"AppState"];
       if ([appStateModule respondsToSelector:@selector(setState:)]) {
         [appStateModule setState:@"background"];
       }
     }
-    if (appManagerToForeground) {
-      [self _postNotificationName:kEXKernelBridgeDidForegroundNotification onAbstractBridge:appManagerToForeground.reactBridge];
-      id appStateModule = [self nativeModuleForAppManager:appManagerToForeground named:@"AppState"];
+    if (appRecord) {
+      [self _postNotificationName:kEXKernelBridgeDidForegroundNotification onAbstractBridge:appRecord.appManager.reactBridge];
+      id appStateModule = [self nativeModuleForAppManager:appRecord.appManager named:@"AppState"];
       if ([appStateModule respondsToSelector:@selector(setState:)]) {
         [appStateModule setState:@"active"];
       }
-      _appRegistry.lastKnownForegroundAppManager = appManagerToForeground;
+      _visibleApp = appRecord;
+      [[EXAnalytics sharedInstance] logKernelAppVisibleEvent];
     } else {
-      _appRegistry.lastKnownForegroundAppManager = nil;
+      _visibleApp = nil;
+    }
+    
+    if (_visibleApp && _visibleApp != _appRegistry.homeAppRecord) {
+      [self _unregisterUnusedAppRecords];
+    }
+  }
+}
+
+- (void)_unregisterUnusedAppRecords
+{
+  for (NSString *recordId in _appRegistry.appEnumerator) {
+    EXKernelAppRecord *record = [_appRegistry recordForId:recordId];
+    if (record && record != _visibleApp) {
+      [_appRegistry unregisterAppWithRecordId:recordId];
+      break;
     }
   }
 }
@@ -314,8 +313,8 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
     }
   }
   
-  if (_appRegistry.lastKnownForegroundAppManager) {
-    EXReactAppManager *appManager = [_appRegistry lastKnownForegroundAppManager];
+  if (_visibleApp) {
+    EXReactAppManager *appManager = _visibleApp.appManager;
     id appStateModule = [self nativeModuleForAppManager:appManager named:@"AppState"];
     NSString *lastKnownState;
     if ([appStateModule respondsToSelector:@selector(lastKnownState)]) {
@@ -326,22 +325,23 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
     }
     if (!lastKnownState || ![newState isEqualToString:lastKnownState]) {
       if ([newState isEqualToString:@"active"]) {
-        [self _postNotificationName:kEXKernelBridgeDidForegroundNotification onAbstractBridge:_appRegistry.lastKnownForegroundAppManager.reactBridge];
+        [self _postNotificationName:kEXKernelBridgeDidForegroundNotification onAbstractBridge:appManager.reactBridge];
       } else if ([newState isEqualToString:@"background"]) {
-        [self _postNotificationName:kEXKernelBridgeDidBackgroundNotification onAbstractBridge:_appRegistry.lastKnownForegroundAppManager.reactBridge];
+        [self _postNotificationName:kEXKernelBridgeDidBackgroundNotification onAbstractBridge:appManager.reactBridge];
       }
     }
   }
 }
 
+// TODO: BEN
 - (void)_moveAppManagerToForeground: (EXReactAppManager *)appManager
 {
-  if (appManager != _appRegistry.kernelAppManager) {
+  /* if (appManager != _appRegistry.kernelAppManager) {
     EXFrameReactAppManager *frameAppManager = (EXFrameReactAppManager *)appManager;
     // kernel JS needs to bring the relevant frame/bridge to visibility.
     NSURL *frameUrlToForeground = frameAppManager.frame.initialUri;
     [self dispatchKernelJSEvent:kEXKernelShouldForegroundTaskEvent body:@{ @"taskUrl":frameUrlToForeground.absoluteString } onSuccess:nil onFailure:nil];
-  }
+  } */
 }
 
 @end

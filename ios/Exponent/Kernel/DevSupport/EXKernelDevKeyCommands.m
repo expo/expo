@@ -1,10 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXFrameReactAppManager.h"
 #import "EXKernelDevKeyCommands.h"
 #import "EXKernel.h"
 #import "EXKernelAppRegistry.h"
-#import "EXKernelReactAppManager.h"
+#import "EXReactAppManager.h"
 #import "EXShellManager.h"
 
 #import <React/RCTDefines.h>
@@ -170,32 +169,31 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)_handleMenuCommand
 {
   if ([EXShellManager sharedInstance].isDetached || _isLegacyMenuBehaviorEnabled) {
-    [[EXKernel sharedInstance].appRegistry.lastKnownForegroundAppManager showDevMenu];
+    [[EXKernel sharedInstance].visibleApp.appManager showDevMenu];
   } else {
-    [[EXKernel sharedInstance] dispatchKernelJSEvent:@"switchTasks" body:@{} onSuccess:nil onFailure:nil];
+    [[EXKernel sharedInstance] switchTasks];
   }
 }
 
 - (void)_handleRefreshCommand
 {
-  [[EXKernel sharedInstance].appRegistry.lastKnownForegroundAppManager reloadBridge];
+  [[EXKernel sharedInstance].visibleApp.appManager reloadBridge];
 }
 
 - (void)_handleDisableDebuggingCommand
 {
-  [[EXKernel sharedInstance].appRegistry.lastKnownForegroundAppManager disableRemoteDebugging];
+  [[EXKernel sharedInstance].visibleApp.appManager disableRemoteDebugging];
 }
 
 - (void)_handleToggleInspectorCommand
 {
-  [[EXKernel sharedInstance].appRegistry.lastKnownForegroundAppManager toggleElementInspector];
+  [[EXKernel sharedInstance].visibleApp.appManager toggleElementInspector];
 }
 
 - (void)_handleKernelMenuCommand
 {
-  EXReactAppManager *foregroundAppManager = [EXKernel sharedInstance].appRegistry.lastKnownForegroundAppManager;
-  if (foregroundAppManager == [EXKernel sharedInstance].appRegistry.kernelAppManager) {
-    [foregroundAppManager showDevMenu];
+  if ([EXKernel sharedInstance].visibleApp == [EXKernel sharedInstance].appRegistry.homeAppRecord) {
+    [[EXKernel sharedInstance].appRegistry.homeAppRecord.appManager showDevMenu];
   }
 }
 

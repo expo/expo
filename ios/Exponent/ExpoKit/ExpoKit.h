@@ -14,17 +14,6 @@ FOUNDATION_EXPORT NSString * const EXAppDidRegisterUserNotificationSettingsNotif
 + (instancetype)sharedInstance;
 
 /**
- *  Register an EXViewController subclass as the root class.
- *  This must be the first method called on ExpoKit's singleton instance to make any difference.
- */
-- (void)registerRootViewControllerClass:(Class)rootViewControllerClass;
-
-/**
- *  The root Exponent view controller hosting a detached Exponent app.
- */
-- (EXViewController *)rootViewController;
-
-/**
  *  Keys to third-party integrations used inside ExpoKit.
  *  TODO: document this.
  */

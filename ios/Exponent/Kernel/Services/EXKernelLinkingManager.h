@@ -19,12 +19,14 @@
  *  Called by Util.reload() to rerequest the foreground tasks's manifest
  *  and reload the bundle url it contains.
  */
+// TODO: ben: audit
 - (void)refreshForegroundTask;
 
 /**
  *  Flagged when `refreshForegroundTask` is called. After the manifest round trip is complete,
  *  the kernel may need to disambiguate loading a new app from refreshing the existing app.
  */
+// TODO: BEN: reloading
 - (BOOL)isRefreshExpectedForAppManager:(EXReactAppManager *)manager;
 
 /**
@@ -37,6 +39,8 @@
  *  standalone-app-specific deep link formatting.
  */
 + (NSURL *)uriTransformedForLinking:(NSURL *)uri isUniversalLink:(BOOL)isUniversalLink;
+
++ (NSString *)stringByRemovingDeepLink:(NSString *)path;
 
 # pragma mark - app-wide linking handlers
 

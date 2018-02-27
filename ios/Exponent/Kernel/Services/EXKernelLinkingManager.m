@@ -2,9 +2,7 @@
 
 #import "EXKernelLinkingManager.h"
 #import "EXFrame.h"
-#import "EXFrameReactAppManager.h"
 #import "EXKernel.h"
-#import "EXKernelReactAppManager.h"
 #import "EXReactAppManager.h"
 #import "EXShellManager.h"
 #import "EXVersions.h"
@@ -35,47 +33,50 @@
   NSURL *urlToRoute;
 
   if (isUniversalLink && [EXShellManager sharedInstance].isShell) {
+    /*
+     TODO: ben: restore universal link support
     // Find the app manager for the shell app.
     urlToRoute = url;
     for (NSString *recordId in [appRegistry appEnumerator]) {
       EXKernelAppRecord *appRecord = [appRegistry recordForId:recordId];
-      if (!appRecord || appRecord.status != EXKernelAppRecordStatusRunning) {
+      if (!appRecord || appRecord.status != kEXKernelAppRecordStatusRunning) {
         continue;
       }
       if (appRecord.appManager && [appRecord.appManager.frame.initialProps[@"shell"] boolValue]) {
         destinationAppManager = appRecord.appManager;
         break;
       }
-    }
+    } */
   } else {
     urlToRoute = [[self class] uriTransformedForLinking:url isUniversalLink:isUniversalLink];
-    destinationAppManager = appRegistry.kernelAppManager;
+    destinationAppManager = appRegistry.homeAppRecord.appManager; // TODO: BEN
 
     for (NSString *recordId in [appRegistry appEnumerator]) {
       EXKernelAppRecord *appRecord = [appRegistry recordForId:recordId];
-      if (!appRecord || appRecord.status != EXKernelAppRecordStatusRunning) {
+      if (!appRecord || appRecord.status != kEXKernelAppRecordStatusRunning) {
         continue;
       }
-      if (appRecord.appManager && [urlToRoute.absoluteString hasPrefix:[[self class] linkingUriForExperienceUri:appRecord.appManager.frame.initialUri]]) {
+      // TODO: ben: restore frame.initialUri without frame
+      /* (if (appRecord.appManager && [urlToRoute.absoluteString hasPrefix:[[self class] linkingUriForExperienceUri:appRecord.appManager.frame.initialUri]]) {
         // this is a link into a bridge we already have running.
         // use this bridge as the link's destination instead of the kernel.
         destinationAppManager = appRecord.appManager;
         break;
-      }
+      } */
     }
   }
+  
+  // TODO: ben
+  NSString *recordId = [appRegistry registerAppWithManifestUrl:urlToRoute];
+  EXKernelAppRecord *record = [appRegistry recordForId:recordId];
+  [[EXKernel sharedInstance] moveAppToVisible:record];
 
-  if (destinationAppManager) {
+  /* if (destinationAppManager) {
     [[EXKernel sharedInstance] openUrl:urlToRoute.absoluteString onAppManager:destinationAppManager];
-  }
+  } */
 }
 
-- (void)refreshForegroundTask
-{
-  _appManagerToRefresh = [EXKernel sharedInstance].appRegistry.lastKnownForegroundAppManager;
-  [[EXKernel sharedInstance] dispatchKernelJSEvent:@"refresh" body:@{} onSuccess:nil onFailure:nil];
-}
-
+// TODO: ben: wtf this method
 - (BOOL)isRefreshExpectedForAppManager:(id)manager
 {
   EXKernelAppRegistry *appRegistry = [EXKernel sharedInstance].appRegistry;
@@ -87,8 +88,8 @@
   return ([EXShellManager sharedInstance].isShell
           && manager
           && manager == appManagerToRefresh
-          && manager != appRegistry.kernelAppManager
-          && manager == appRegistry.lastKnownForegroundAppManager);
+          && manager != appRegistry.homeAppRecord.appManager
+          && manager == [EXKernel sharedInstance].visibleApp.appManager);
 }
 
 #pragma mark - scoped module delegate
@@ -121,25 +122,12 @@
 
 - (void)utilModuleDidSelectReload:(id)scopedUtilModule
 {
-  [self _refreshForegroundTaskAndValidateBridge:((EXScopedBridgeModule *)scopedUtilModule).bridge];
+  // TODO: ben: util.reload
+  // [self _refreshForegroundTaskAndValidateBridge:((EXScopedBridgeModule *)scopedUtilModule).bridge];
+  // this used to send a "refresh" JS event
 }
 
 #pragma mark - internal
-
-- (void)_refreshForegroundTaskAndValidateBridge:(id)bridge
-{
-  if ([bridge respondsToSelector:@selector(parentBridge)]) {
-    bridge = [bridge parentBridge];
-  }
-  if (bridge == [EXKernel sharedInstance].appRegistry.kernelAppManager.reactBridge) {
-    DDLogError(@"Can't use ExponentUtil.reload() on the kernel bridge. Use RN dev tools to reload the bundle.");
-    return;
-  }
-  if (bridge == [EXKernel sharedInstance].appRegistry.lastKnownForegroundAppManager.reactBridge) {
-    // only the foreground task is allowed to force a reload
-    [self refreshForegroundTask];
-  }
-}
 
 #pragma mark - static link transforming logic
 
@@ -161,10 +149,7 @@
   NSMutableString* path = [NSMutableString stringWithString:components.path];
 
   // if the uri already contains a deep link, strip everything specific to that
-  NSRange deepLinkRange = [path rangeOfString:@"+"];
-  if (deepLinkRange.length > 0) {
-    path = [[path substringToIndex:deepLinkRange.location] mutableCopy];
-  }
+  path = [[self stringByRemovingDeepLink:path] mutableCopy];
 
   if (path.length == 0 || [path characterAtIndex:path.length - 1] != '/') {
     [path appendString:@"/"];
@@ -175,6 +160,15 @@
   components.query = nil;
 
   return [components string];
+}
+
++ (NSString *)stringByRemovingDeepLink:(NSString *)path
+{
+  NSRange deepLinkRange = [path rangeOfString:@"+"];
+  if (deepLinkRange.length > 0) {
+    path = [path substringToIndex:deepLinkRange.location];
+  }
+  return path;
 }
 
 + (NSURL *)uriTransformedForLinking:(NSURL *)uri isUniversalLink:(BOOL)isUniversalLink

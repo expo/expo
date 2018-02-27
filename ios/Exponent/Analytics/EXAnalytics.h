@@ -19,10 +19,6 @@ typedef enum EXKernelRoute : NSUInteger {
 
 - (void)setUserProperties: (nonnull NSDictionary *)props;
 
-/**
- *  @param isFromJS true if the event came from an action taken in JS.
- *         false if the event came from iOS.
- */
-- (void)logForegroundEventForRoute:(EXKernelRoute)route fromJS:(BOOL)isFromJS;
+- (void)logKernelAppVisibleEvent;
 
 @end

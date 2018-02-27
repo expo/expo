@@ -4,6 +4,6 @@
 
 FOUNDATION_EXPORT NSString * const kEXSkipCacheUserDefaultsKey;
 
-@interface EXKernelDevMenuViewController : UIViewController
+@interface EXHomeDiagnosticsViewController : UIViewController
 
 @end

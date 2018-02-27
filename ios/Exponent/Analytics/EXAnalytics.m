@@ -2,6 +2,7 @@
 
 #import "EXAnalytics.h"
 #import "EXBuildConstants.h"
+#import "EXKernel.h"
 #import "ExpoKit.h"
 #import "EXShellManager.h"
 
@@ -87,17 +88,17 @@ NSString * const kEXAnalyticsDisabledConfigKey = @"EXAnalyticsDisabled";
   [self _logEvent:eventIdentifier withEventProperties:mutableProps];
 }
 
-- (void)logForegroundEventForRoute:(EXKernelRoute)route fromJS:(BOOL)isFromJS
+- (void)logKernelAppVisibleEvent
 {
   if (_isDisabled) {
     return;
   }
-  self.visibleRoute = route;
-  if (route < kEXKernelRouteUndefined) {
-    NSArray *eventIdentifiers = @[ @"HOME_APPEARED", @"EXPERIENCE_APPEARED", @"ERROR_APPEARED" ];
-    NSDictionary *eventProperties = @{ @"SOURCE": (isFromJS) ? @"JS" : @"SYSTEM" };
-    [self _logEvent:eventIdentifiers[route] withEventProperties:eventProperties];
-  }
+  EXKernelAppRecord *visibleApp = [EXKernel sharedInstance].visibleApp;
+  NSString *eventIdentifier = (visibleApp == [EXKernel sharedInstance].appRegistry.homeAppRecord)
+    ? @"HOME_APPEARED"
+    : @"EXPERIENCE_APPEARED";
+  NSDictionary *eventProperties = @{ @"SOURCE": @"SYSTEM" };
+  [self _logEvent:eventIdentifier withEventProperties:eventProperties];
 }
 
 #pragma mark - Internal
@@ -121,7 +122,7 @@ NSString * const kEXAnalyticsDisabledConfigKey = @"EXAnalyticsDisabled";
 
 - (void)_onApplicationEnterForeground
 {
-  [self logForegroundEventForRoute:_visibleRoute fromJS:NO];
+  [self logKernelAppVisibleEvent];
 }
 
 @end

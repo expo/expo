@@ -4,8 +4,6 @@
 
 #import <Branch/Branch.h>
 
-#import "EXReactAppManager.h"
-#import "EXFrameReactAppManager.h"
 #import "EXKernel.h"
 #import "EXShellManager.h"
 
@@ -24,7 +22,7 @@ NSString * const EXBranchLinkOpenedNotification = @"RNBranchLinkOpenedNotificati
   NSDictionary *_launchOptions;
   BOOL _isInitialized;
   NSURL *_url;
-  EXReactAppManager *_appManager;
+  // TODO: BEN EXReactAppManager *_appManager;
 }
 
 + (instancetype)sharedInstance
@@ -49,19 +47,19 @@ NSString * const EXBranchLinkOpenedNotification = @"RNBranchLinkOpenedNotificati
 
 - (void)kernelDidRegisterAppWithRecord:(EXKernelAppRecord *)record
 {
-  // The first EXFrameReactAppManager will always be the standalone app one.
-  if (_appManager == nil &&
+  // The first non-kernel AppManager will always be the standalone app one.
+  /* if (_appManager == nil &&
       [EXShellManager sharedInstance].isShell) {
     _appManager = record.appManager;
     [self tryInitBranch];
-  }
+  } */
 }
 
 - (void)kernelWillUnregisterAppWithRecord:(EXKernelAppRecord *)record
 {
-  if (record.appManager == _appManager) {
+  /* if (record.appManager == _appManager) {
     _appManager = nil;
-  }
+  } */
 }
 
 #pragma mark - linking hooks
@@ -92,9 +90,9 @@ NSString * const EXBranchLinkOpenedNotification = @"RNBranchLinkOpenedNotificati
 
 - (void)tryInitBranch
 {
-  if (_appManager == nil || _isInitialized) {
+  /* TODO: BEN if (_appManager == nil || _isInitialized) {
     return;
-  }
+  } */
 
   _isInitialized = YES;
 
@@ -118,8 +116,8 @@ NSString * const EXBranchLinkOpenedNotification = @"RNBranchLinkOpenedNotificati
     // on the native module of the standalone app.
     NSNotification *notification =
       [[NSNotification alloc] initWithName:EXBranchLinkOpenedNotification object:self userInfo:result];
-    id branchModule = [[EXKernel sharedInstance] nativeModuleForAppManager:_appManager named:@"RNBranch"];
-    [branchModule onInitSessionFinished:notification];
+    /* TODO: BEN id branchModule = [[EXKernel sharedInstance] nativeModuleForAppManager:_appManager named:@"RNBranch"];
+    [branchModule onInitSessionFinished:notification]; */
   }];
 }
 

@@ -15,9 +15,10 @@ RCTFatalHandler handleFatalReactError = ^(NSError *error) {
     BOOL isFrameError = [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager errorBelongsToExperience:error];
 
     if (!isFrameError) {
-      [[EXKernel sharedInstance].rootViewController
+      // TODO: BEN
+      /* [[EXKernel sharedInstance].rootViewController
        showErrorWithType:kEXFatalErrorTypeException
-       error:error];
+       error:error]; */
     }
   });
 };

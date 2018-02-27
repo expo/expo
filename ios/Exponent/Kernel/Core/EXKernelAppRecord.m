@@ -1,8 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXFrame.h"
-#import "EXFrameReactAppManager.h"
+#import "EXReactAppManager.h"
+#import "EXKernelAppLoader.h"
 #import "EXKernelAppRecord.h"
+#import "EXAppViewController.h"
 
 #import <React/RCTUtils.h>
 
@@ -11,34 +12,47 @@ NSString *kEXKernelBridgeDidBackgroundNotification = @"EXKernelBridgeDidBackgrou
 
 @implementation EXKernelAppRecord
 
-+ (instancetype)recordWithManifestUrl:(NSURL *)manifestUrl
-{
-  return [[EXKernelAppRecord alloc] initWithManifestUrl:manifestUrl];
-}
-
 - (instancetype)initWithManifestUrl:(NSURL *)manifestUrl
 {
   if (self = [super init]) {
-    _manifestUrl = manifestUrl;
+    _appManager = [[EXReactAppManager alloc] initWithAppRecord:self];
     _appLoader = [[EXKernelAppLoader alloc] initWithManifestUrl:manifestUrl];
+    _viewController = [[EXAppViewController alloc] initWithAppRecord:self];
     _timeCreated = [NSDate date];
-    _experienceFinishedLoading = NO;
+  }
+  return self;
+}
+
+- (instancetype)initWithAppLoader:(EXKernelAppLoader *)customAppLoader appManager:(EXReactAppManager *)customAppManager
+{
+  if (self = [super init]) {
+    _appManager = customAppManager;
+    _appManager.appRecord = self;
+    _appLoader = customAppLoader;
+    _viewController = [[EXAppViewController alloc] initWithAppRecord:self];
+    _timeCreated = [NSDate date];
   }
   return self;
 }
 
 - (EXKernelAppRecordStatus)status
 {
-  if (self.experienceFinishedLoading) {
-    return EXKernelAppRecordStatusRunning;
+  if (_appLoader.status == kEXKernelAppLoaderStatusError) {
+    return kEXKernelAppRecordStatusError;
   }
-  if (self.appLoader.bundleFinished) {
-    return EXKernelAppRecordStatusHasManifestAndBundle;
+  if (_appManager && _appManager.status == kEXReactAppManagerStatusError && _appLoader.status == kEXKernelAppLoaderStatusHasManifestAndBundle) {
+    return kEXKernelAppRecordStatusError;
   }
-  if (self.appLoader.manifest) {
-    return EXKernelAppRecordStatusHasManifest;
+  if (_appManager && _appManager.isBridgeRunning) {
+    return kEXKernelAppRecordStatusRunning;
   }
-  return EXKernelAppRecordStatusNew;
+  if (_appLoader.status == kEXKernelAppLoaderStatusHasManifestAndBundle) {
+    return kEXKernelAppRecordStatusBridgeLoading;
+  }
+  if (_appLoader.status != kEXKernelAppLoaderStatusNew) {
+    return kEXKernelAppRecordStatusDownloading;
+  }
+  return kEXKernelAppRecordStatusNew;
 }
 
 - (NSString * _Nullable)experienceId

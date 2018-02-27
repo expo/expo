@@ -6,12 +6,7 @@
 
 @protocol EXKernelModuleDelegate <NSObject>
 
-- (void)kernelModule: (EXKernelModule *)module taskDidForegroundWithType: (NSInteger)type params: (NSDictionary *)params;
-- (void)kernelModule:(EXKernelModule *)module
-didRequestManifestWithUrl:(NSURL *)url
-         originalUrl:(NSURL *)originalUrl
-             success:(void (^)(NSString *manifestString))success
-             failure:(void (^)(NSError *err))failure;
+// TODO: ben: kill much of this file
 
 /**
  *  Whether the kernel JS should show any devtools UI or respond to devtools commands.
@@ -36,8 +31,7 @@ didRequestManifestWithUrl:(NSURL *)url
 
 - (void)kernelModule:(EXKernelModule *)module didSelectDevMenuItemWithKey:(NSString *)key;
 
-// TODO: kill this as an RCTDevSettings followup
-- (void)kernelModuleDidSelectKernelDevMenu: (EXKernelModule *)module DEPRECATED_ATTRIBUTE;
+- (void)kernelModuleDidSelectHomeDiagnostics:(EXKernelModule *)module;
 
 - (void)kernelModule:(EXKernelModule *)module didOpenUrl:(NSString *)url;
 
