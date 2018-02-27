@@ -158,19 +158,7 @@ RCT_EXPORT_METHOD(addDevMenu)
   __weak typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
     if (weakSelf.delegate) {
-      [weakSelf.delegate kernelModuleDidSelectKernelDevMenu:weakSelf];
-    }
-  });
-}
-
-RCT_REMAP_METHOD(routeDidForeground,
-                 routeDidForegroundWithType:(NSUInteger)routeType
-                 params:(NSDictionary *)params)
-{
-  __weak typeof(self) weakSelf = self;
-  dispatch_async(dispatch_get_main_queue(), ^{
-    if (weakSelf.delegate) {
-      [weakSelf.delegate kernelModule:weakSelf taskDidForegroundWithType:routeType params:params];
+      [weakSelf.delegate kernelModuleDidSelectHomeDiagnostics:self];
     }
   });
 }
@@ -178,21 +166,6 @@ RCT_REMAP_METHOD(routeDidForeground,
 RCT_EXPORT_METHOD(onLoaded)
 {
   [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXKernelJSIsLoadedNotification") object:self];
-}
-
-RCT_REMAP_METHOD(getManifestAsync,
-                 getManifestWithUrl:(NSURL *)url
-                 originalUrl:(NSURL *)originalUrl
-                 resolve:(RCTPromiseResolveBlock)resolve
-                 reject:(RCTPromiseRejectBlock)reject)
-{
-  if (_delegate) {
-    [_delegate kernelModule:self didRequestManifestWithUrl:url originalUrl:originalUrl success:^(NSString *manifestString) {
-      resolve(manifestString);
-    } failure:^(NSError *error) {
-      reject([NSString stringWithFormat:@"%ld", (long)error.code], error.localizedDescription, error);
-    }];
-  }
 }
 
 RCT_REMAP_METHOD(onEventSuccess,

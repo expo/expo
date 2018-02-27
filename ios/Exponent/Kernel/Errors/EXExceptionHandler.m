@@ -46,10 +46,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 
   dispatch_async(dispatch_get_main_queue(), ^{
+    // TODO: BEN
     // human-readable error, since RCTRedBox is disabled in production
-    [[EXKernel sharedInstance].rootViewController
+    /* [[EXKernel sharedInstance].rootViewController
      showErrorWithType:kEXFatalErrorTypeException
-     error:error];
+     error:error]; */
   });
 }
 

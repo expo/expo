@@ -1,37 +1,40 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import "EXKernelAppLoader.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 FOUNDATION_EXPORT NSString *kEXKernelBridgeDidForegroundNotification;
 FOUNDATION_EXPORT NSString *kEXKernelBridgeDidBackgroundNotification;
 
-@class EXFrameReactAppManager;
+@class EXAppViewController;
+@class EXReactAppManager;
+@class EXKernelAppLoader;
 
 typedef enum EXKernelAppRecordStatus {
-  EXKernelAppRecordStatusNew, // record just created, has no manifest
-  EXKernelAppRecordStatusHasManifest, // has remote manifest, but does not have bundle yet
-  EXKernelAppRecordStatusHasManifestAndBundle, // has downloaded manifest and bundle, but we have not heard from bridge yet
-  EXKernelAppRecordStatusRunning // has loaded everything and successfully sent bundle to bridge
+  kEXKernelAppRecordStatusNew, // record just created
+  kEXKernelAppRecordStatusDownloading, // resolving manifest or bundle
+  kEXKernelAppRecordStatusBridgeLoading, // bridge not loaded yet
+  kEXKernelAppRecordStatusRunning, // app is running
+  kEXKernelAppRecordStatusError,
 } EXKernelAppRecordStatus;
 
 @interface EXKernelAppRecord : NSObject
 
-+ (instancetype)recordWithManifestUrl:(NSURL *)manifestUrl;
 - (instancetype)initWithManifestUrl:(NSURL *)manifestUrl;
+- (instancetype)initWithAppLoader:(EXKernelAppLoader *)customAppLoader
+                       appManager:(EXReactAppManager *)customAppManager;
 
 @property (nonatomic, readonly, assign) EXKernelAppRecordStatus status;
-@property (nonatomic, readonly, strong) NSURL *manifestUrl;
-@property (nonatomic, readonly, strong) NSString * _Nullable experienceId;
 @property (nonatomic, readonly, strong) NSDate *timeCreated;
-@property (nonatomic, weak) EXFrameReactAppManager * _Nullable appManager;
+@property (nonatomic, readonly) NSString * _Nullable experienceId;
+@property (nonatomic, readonly) EXReactAppManager *appManager;
 @property (nonatomic, readonly, strong) EXKernelAppLoader *appLoader;
-@property (nonatomic, assign) BOOL experienceFinishedLoading;
+@property (nonatomic, readonly) EXAppViewController *viewController;
 
 /**
  *  See EXKernelAppRegistry::setError:forAppRecord:
+ *  TODO: BEN: rename?
  */
 @property (nonatomic, strong)  NSError * _Nullable error;
 

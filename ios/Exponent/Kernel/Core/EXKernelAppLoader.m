@@ -5,6 +5,7 @@
 #import "EXJavaScriptResource.h"
 #import "EXKernel.h"
 #import "EXKernelAppLoader.h"
+#import "EXKernelLinkingManager.h"
 #import "EXManifestResource.h"
 #import "EXShellManager.h"
 #import "EXVersions.h"
@@ -15,25 +16,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 int EX_DEFAULT_TIMEOUT_LENGTH = 30000;
 NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
-NSString *kEXKernelLoadingProgressEventBase = @"loadingProgress";
-NSString *kEXKernelOptimisticManifestEventBase = @"optimisticManifest";
 
 @interface EXKernelAppLoader ()
 
-@property (nonatomic, strong) NSURL *manifestUrl;
+@property (nonatomic, strong) NSURL * _Nullable manifestUrl;
+@property (nonatomic, strong) NSDictionary * _Nullable localManifest; // used by Home. TODO: clean up
 @property (nonatomic, strong) NSURL * _Nullable httpManifestUrl;
-@property (nonatomic, strong) NSDictionary * _Nullable cachedManifest;
-@property (nonatomic, readwrite, strong) NSDictionary * _Nullable manifest;
-@property (nonatomic, strong) NSData * _Nullable bundle;
-@property (nonatomic, strong) NSError * _Nullable bundleError;
-@property (nonatomic, copy) void  (^ _Nullable success)(NSDictionary *);
-@property (nonatomic, copy) void  (^ _Nullable failure)(NSError *);
 
-@property (nonatomic, weak) id<EXKernelBundleLoaderDelegate> _Nullable bundleLoaderDelegate;
+@property (nonatomic, strong) NSDictionary * _Nullable confirmedManifest; // definitely working, cached
+@property (nonatomic, strong) NSDictionary * _Nullable optimisticManifest; // we haven't completely downloaded a bundle for this and we haven't cached it
+
+@property (nonatomic, strong) NSData * _Nullable bundle;
+@property (nonatomic, strong) NSError * _Nullable error;
 
 @property (nonatomic, strong) NSTimer * _Nullable timer;
-@property (nonatomic, readwrite, assign) BOOL manifestFinished;
-@property (nonatomic, readwrite, assign) BOOL bundleFinished;
 
 @end
 
@@ -47,133 +43,202 @@ NSString *kEXKernelOptimisticManifestEventBase = @"optimisticManifest";
   return self;
 }
 
-- (void)requestManifestWithHttpUrl:(NSURL *)url success:(void (^)(NSDictionary *))success failure:(void (^)(NSError *))failure
+- (instancetype)initWithLocalManifest:(NSDictionary *)manifest
 {
-  RCTAssert(_success == nil && _failure == nil, @"Tried to register multiple success or failure handlers for requestManifestWithHttpUrl with manifestUrl: %@", _manifestUrl);
-  _success = success;
-  _failure = failure;
-  _manifestFinished = NO;
-  _httpManifestUrl = url;
+  if (self = [super init]) {
+    _localManifest = manifest;
+  }
+  return self;
+}
 
+#pragma mark - getters and lifecycle
+
+- (void)_reset
+{
+  _confirmedManifest = nil;
+  _optimisticManifest = nil;
+  _error = nil;
+  _bundle = nil;
+}
+
+- (EXKernelAppLoaderStatus)status
+{
+  if (_error) {
+    return kEXKernelAppLoaderStatusError;
+  } else if (_bundle && _confirmedManifest) {
+    return kEXKernelAppLoaderStatusHasManifestAndBundle;
+  } else if (_optimisticManifest || _confirmedManifest) {
+    return kEXKernelAppLoaderStatusHasManifest;
+  }
+  return kEXKernelAppLoaderStatusNew;
+}
+
+- (NSDictionary * _Nullable)manifest
+{
+  if (_optimisticManifest) {
+    return _optimisticManifest;
+  }
+  if (_confirmedManifest) {
+    return _confirmedManifest;
+  }
+  return nil;
+}
+
+#pragma mark - public
+
+- (void)request
+{
+  [self _reset];
+  if (_localManifest) {
+    [self _beginRequestWithLocalManifest];
+  } else if (_manifestUrl) {
+    _httpManifestUrl = [EXKernelAppLoader _httpUrlFromManifestUrl:_manifestUrl];
+    [self _beginRequestWithRemoteManifest];
+  } else {
+    [self _finishWithError:RCTErrorWithMessage(@"Can't load app with no remote url nor local manifest.")];
+  }
+}
+
+#pragma mark - internal
+
++ (NSURL *)_httpUrlFromManifestUrl:(NSURL *)url
+{
+  NSURLComponents *components = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:YES];
+  components.scheme = @"http";
+  NSMutableString *path = [((components.path) ? components.path : @"") mutableCopy];
+  path = [[EXKernelLinkingManager stringByRemovingDeepLink:path] mutableCopy];
+  if (path.length == 0 || [path characterAtIndex:path.length - 1] != '/') {
+    [path appendString:@"/"];
+  }
+  [path appendString:@"index.exp"];
+  components.path = path;
+  return [components URL];
+}
+
+- (void)_beginRequestWithLocalManifest
+{
+  _confirmedManifest = _localManifest;
+  _optimisticManifest = _localManifest;
+  [self _fetchRemoteJSBundleWithOptimisticManifest];
+  if (_delegate) {
+    [_delegate appLoader:self didLoadOptimisticManifest:_optimisticManifest];
+  }
+}
+
+- (void)_beginRequestWithRemoteManifest
+{
   // if we're in dev mode, don't try loading cached manifest
-  if ([url.host isEqualToString:@"localhost"]) {
+  if ([_httpManifestUrl.host isEqualToString:@"localhost"]) {
     // we can't pre-detect if this person is using a developer tool, but using localhost is a pretty solid indicator.
-    [self _fetchRemoteManifestWithHttpUrl:url shouldFallBackToCache:NO timeoutLength:0];
+    [self _resolveManifestAndBundleWithTimeout:0];
     return;
   }
-
+  
   // first get cached manifest
   // then try to fetch new one over network
-  [self _fetchManifestWithHttpUrl:url cacheBehavior:EXCachedResourceOnlyCache success:^(NSDictionary * cachedManifest) {
-    _cachedManifest = cachedManifest;
-
+  [self _fetchManifestWithHttpUrl:_httpManifestUrl cacheBehavior:EXCachedResourceOnlyCache success:^(NSDictionary * cachedManifest) {
+    _confirmedManifest = cachedManifest;
+    
     BOOL shouldCheckForUpdate = YES;
     int fallbackToCacheTimeout = EX_DEFAULT_TIMEOUT_LENGTH;
-
-    id updates = _cachedManifest[@"updates"];
+    
+    id updates = _confirmedManifest[@"updates"];
     if (updates && [updates isKindOfClass:[NSDictionary class]]) {
       NSDictionary *updatesDict = (NSDictionary *)updates;
       id checkAutomaticallyVal = updatesDict[@"checkAutomatically"];
       if (checkAutomaticallyVal && [checkAutomaticallyVal isKindOfClass:[NSString class]] && [(NSString *)checkAutomaticallyVal isEqualToString:@"never"]) {
         shouldCheckForUpdate = NO;
       }
-
+      
       id fallbackToCacheTimeoutVal = updatesDict[@"fallbackToCacheTimeout"];
       if (fallbackToCacheTimeoutVal && [fallbackToCacheTimeoutVal isKindOfClass:[NSNumber class]]) {
         fallbackToCacheTimeout = [(NSNumber *)fallbackToCacheTimeoutVal intValue];
       }
     }
-
-    if ([[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:[self _experienceIdWithManifest:_cachedManifest]]) {
+    
+    if ([[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:[self _experienceIdWithManifest:_confirmedManifest]]) {
       // if this experience id encountered a loading error before,
       // we should always check for an update, even if the manifest says not to
       shouldCheckForUpdate = YES;
     }
-
+    
     if (shouldCheckForUpdate) {
-      [self _fetchRemoteManifestWithHttpUrl:url shouldFallBackToCache:YES timeoutLength:fallbackToCacheTimeout];
+      [self _resolveManifestAndBundleWithTimeout:fallbackToCacheTimeout];
     } else {
-      [self _resolve:nil];
+      [self _finishWithError:nil];
     }
   } failure:^(NSError * error) {
-    [self _fetchRemoteManifestWithHttpUrl:url shouldFallBackToCache:YES timeoutLength:EX_DEFAULT_TIMEOUT_LENGTH];
+    [self _resolveManifestAndBundleWithTimeout:EX_DEFAULT_TIMEOUT_LENGTH];
   }];
 }
 
-- (void)requestJSBundleWithDelegate:(id<EXKernelBundleLoaderDelegate>)delegate
+/**
+ *  Specify zero timeout length to not use a timer, and not fall back to any cache.
+ */
+- (void)_resolveManifestAndBundleWithTimeout:(NSUInteger)timeoutLengthInMs
 {
-  _bundleLoaderDelegate = delegate;
-
-  if ([self _areDevToolsEnabledWithManifest:_manifest]) {
-    // if we're in dev mode, just pass through directly to the downloader since we don't want to time out
-    void (^progressBlock)(EXLoadingProgress * _Nonnull) = ^(EXLoadingProgress * _Nonnull progress) {
-      [_bundleLoaderDelegate appLoader:self didLoadBundleWithProgress:progress];
-    };
-    void (^successBlock)(NSData * _Nonnull) = ^(NSData * _Nonnull data) {
-      [_bundleLoaderDelegate appLoader:self didFinishLoadingBundle:data];
-    };
-    void (^errorBlock)(NSError * _Nonnull) = ^(NSError * _Nonnull error) {
-      [_bundleLoaderDelegate appLoader:self didFailLoadingBundleWithError:error];
-    };
-    [self _fetchJSBundleWithManifest:_manifest
-                       cacheBehavior:[self _cacheBehaviorForJSWithManifest:_manifest]
-                     timeoutInterval:kEXJSBundleTimeout
-                            progress:progressBlock
-                             success:successBlock
-                               error:errorBlock];
-  } else if (_manifestFinished) {
-    // if we're too late and everything has already finished downloading, call _resolveBundle explicitly so that we can get the delegate callbacks
-    // otherwise _resolveBundle will be called elsewhere when the bundle finishes downloading
-    [self _resolveBundle:nil];
-  }
-}
-
-# pragma mark - internal logic
-
-- (void)_fetchRemoteManifestWithHttpUrl:(NSURL *)url shouldFallBackToCache:(BOOL)useTimer timeoutLength:(int)timeoutLengthInMs
-{
-  if (useTimer && !_timer) {
+  if (timeoutLengthInMs > 0 && !_timer) {
     EXKernelAppLoader * __weak weakSelf = self;
     _timer = [NSTimer scheduledTimerWithTimeInterval:(timeoutLengthInMs / 1000) repeats:NO block:^(NSTimer * _Nonnull timer) {
-      [weakSelf _resolve:nil];
+      [weakSelf _finishWithError:nil];
     }];
   }
-
+  
   EXCachedResourceBehavior cacheBehavior = EXCachedResourceWriteToCache;
-  if (!useTimer) {
+  if (timeoutLengthInMs == 0) {
     // if we're in dev mode (meaning we should not ever fall back to cache), don't write to the cache either
     cacheBehavior = EXCachedResourceNoCache;
   }
   if ([EXShellManager sharedInstance].loadJSInBackgroundExperimental) {
     cacheBehavior = EXCachedResourceUseCacheImmediately;
   }
-  [self _fetchManifestWithHttpUrl:url cacheBehavior:cacheBehavior success:^(NSDictionary * _Nonnull manifest) {
-    _manifest = manifest;
-    [self _fetchRemoteJSBundleWithManifest:manifest];
-    // send new manifest optimistically to JS so it can display the proper loading icon/color/etc
-    [self _sendOptimisticManifest:manifest];
+  [self _fetchManifestWithHttpUrl:_httpManifestUrl cacheBehavior:cacheBehavior success:^(NSDictionary * _Nonnull manifest) {
+    _optimisticManifest = manifest;
+    [self _fetchRemoteJSBundleWithOptimisticManifest];
+    if (_delegate) {
+      [_delegate appLoader:self didLoadOptimisticManifest:_optimisticManifest];
+    }
   } failure:^(NSError * _Nonnull error) {
-    [self _resolve:error];
+    [self _finishWithError:error];
   }];
 }
 
-- (void)_fetchRemoteJSBundleWithManifest:(NSDictionary *)manifest
+- (void)_fetchRemoteJSBundleWithOptimisticManifest
 {
-  if ([self _areDevToolsEnabledWithManifest:manifest]) {
+  if ([self _areDevToolsEnabledWithManifest:_optimisticManifest]) {
     // ignore in dev mode, we'll just go straight through to the downloader instead
-    _success(manifest);
+    /* _success(manifest);
     _manifestFinished = YES;
-    return;
+    return; */
+    // TODO: make sure progress events are passed to dev loading view in AppManager.
+    /* void (^progressBlock)(EXLoadingProgress * _Nonnull) = ^(EXLoadingProgress * _Nonnull progress) {
+      [_bundleLoadingDelegate appLoader:self didLoadBundleWithProgress:progress];
+    };
+    void (^successBlock)(NSData * _Nonnull) = ^(NSData * _Nonnull data) {
+      [_bundleLoadingDelegate appLoader:self didFinishLoadingBundle:data];
+    };
+    void (^errorBlock)(NSError * _Nonnull) = ^(NSError * _Nonnull error) {
+      [_bundleLoadingDelegate appLoader:self didFailLoadingBundleWithError:error];
+    };
+     or if we already have a manifest and a bundle, make sure to resolveBundle here.
+     */
   }
-  EXCachedResourceBehavior cacheBehavior = [self _cacheBehaviorForJSWithManifest:manifest];
+  EXCachedResourceBehavior cacheBehavior = [self _cacheBehaviorForJSWithManifest:_optimisticManifest];
 
-  [self _fetchJSBundleWithManifest:manifest cacheBehavior:cacheBehavior timeoutInterval:kEXJSBundleTimeout progress:^(EXLoadingProgress * _Nonnull progress) {
-    [self _sendBundleProgress:progress];
+  [self _fetchJSBundleWithManifest:_optimisticManifest cacheBehavior:cacheBehavior timeoutInterval:kEXJSBundleTimeout progress:^(EXLoadingProgress * _Nonnull progress) {
+    if (_delegate) {
+      [_delegate appLoader:self didLoadBundleWithProgress:progress];
+    }
   } success:^(NSData * _Nonnull data) {
+    // promote optimistic manifest to confirmed manifest.
+    _confirmedManifest = _optimisticManifest;
+    _optimisticManifest = nil;
     _bundle = data;
-    [self _resolve:nil];
+    [self _finishWithError:nil];
   } error:^(NSError * _Nonnull error) {
-    [self _resolve:error];
+    // discard optimistic manifest.
+    _optimisticManifest = nil;
+    [self _finishWithError:nil];
   }];
 }
 
@@ -185,76 +250,46 @@ NSString *kEXKernelOptimisticManifestEventBase = @"optimisticManifest";
   }
 }
 
-- (void)_resolve:(NSError * _Nullable)err
+- (void)_finishWithError:(NSError * _Nullable)err
 {
-  if (_manifestFinished) {
-    return;
-  }
-
   [self _stopTimer];
-
-  if (_manifest && _bundle) {
-    _success(_manifest);
-    [self _resolveBundle:err];
-    _manifestFinished = YES;
-  } else if (_cachedManifest) {
-    _success(_cachedManifest);
-    _manifest = _cachedManifest;
-    [self _resolveBundle:err];
-    _manifestFinished = YES;
-  } else {
-    _failure(err);
+  
+  if (_optimisticManifest) {
+    // we're finishing no matter what, so discard any optimistic manifest that hasn't been confirmed yet.
+    _optimisticManifest = nil;
   }
-
-  if (_manifest && ![[EXKernel sharedInstance].appRegistry isExperienceIdUnique:[self _experienceIdWithManifest:_manifest]]) {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"experienceId is not unique across AppRegistry" userInfo:nil];
-  }
-}
-
-- (void)_resolveBundle:(NSError * _Nullable)err
-{
-  if (!_bundleLoaderDelegate || [self _areDevToolsEnabledWithManifest:_manifest]) {
-    return;
-  }
-
-  if (_manifest && _bundle) {
-    _bundleFinished = YES;
-    [_bundleLoaderDelegate appLoader:self didFinishLoadingBundle:_bundle];
-  } else if (_cachedManifest) {
-    [self _fetchJSBundleWithManifest:_cachedManifest cacheBehavior:EXCachedResourceFallBackToNetwork timeoutInterval:kEXJSBundleTimeout progress:^(EXLoadingProgress * _Nonnull progress) {
-      [self _sendBundleProgress:progress];
+  
+  if (_bundle) {
+    // we have everything
+    if (_delegate) {
+      [_delegate appLoader:self didFinishLoadingManifest:_confirmedManifest bundle:_bundle];
+    }
+  } else if (_confirmedManifest) {
+    // we don't have a bundle but need to finish,
+    // try to grab a cache
+    [self _fetchJSBundleWithManifest:_confirmedManifest cacheBehavior:EXCachedResourceFallBackToNetwork timeoutInterval:kEXJSBundleTimeout progress:^(EXLoadingProgress * _Nonnull progress) {
+      if (_delegate) {
+        [_delegate appLoader:self didLoadBundleWithProgress:progress];
+      }
     } success:^(NSData * _Nonnull data) {
-      _bundleFinished = YES;
       _bundle = data;
-      [_bundleLoaderDelegate appLoader:self didFinishLoadingBundle:data];
+      if (_delegate) {
+        [_delegate appLoader:self didFinishLoadingManifest:_confirmedManifest bundle:_bundle];
+      }
     } error:^(NSError * _Nonnull error) {
-      _bundleFinished = YES;
-      _bundleError = error;
-      [_bundleLoaderDelegate appLoader:self didFailLoadingBundleWithError:error];
+      _error = error;
+      if (_delegate) {
+        [_delegate appLoader:self didFailWithError:error];
+      }
     }];
   } else {
-    [_bundleLoaderDelegate appLoader:self didFailLoadingBundleWithError:err];
+    // we have nothing to work with at all
+    _error = err;
+    if (_delegate) {
+      [_delegate appLoader:self didFailWithError:err];
+    }
   }
 }
-
-- (void)_sendBundleProgress:(EXLoadingProgress *)progress
-{
-  NSDictionary *eventBody = @{
-                              @"status": RCTNullIfNil(progress.status),
-                              @"done": RCTNullIfNil(progress.done),
-                              @"total": RCTNullIfNil(progress.total),
-                              };
-  NSString *eventName = [NSString stringWithFormat:@"%@-%@", kEXKernelLoadingProgressEventBase, _manifestUrl.absoluteString];
-  [[EXKernel sharedInstance] dispatchKernelJSEvent:eventName body:eventBody onSuccess:nil onFailure:nil];
-}
-
-- (void)_sendOptimisticManifest:(NSDictionary *)manifest
-{
-  NSString *eventName = [NSString stringWithFormat:@"%@-%@", kEXKernelOptimisticManifestEventBase, _manifestUrl.absoluteString];
-  [[EXKernel sharedInstance] dispatchKernelJSEvent:eventName body:manifest onSuccess:nil onFailure:nil];
-}
-
-#pragma mark - fetch resource methods
 
 - (void)_fetchManifestWithHttpUrl:(NSURL *)url cacheBehavior:(EXCachedResourceBehavior)cacheBehavior success:(void (^)(NSDictionary *))success failure:(void (^)(NSError *))failure
 {
@@ -264,7 +299,7 @@ NSString *kEXKernelOptimisticManifestEventBase = @"optimisticManifest";
                                    reason:@"EXManifestResource should never be loaded with FallBackToCache behavior"
                                  userInfo:nil];
   }
-
+  
   if (!([url.scheme isEqualToString:@"http"] || [url.scheme isEqualToString:@"https"])) {
     NSURLComponents *components = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO];
     components.scheme = @"http";
@@ -282,15 +317,15 @@ NSString *kEXKernelOptimisticManifestEventBase = @"optimisticManifest";
       // TODO: handle this - make own NSError
       return;
     }
-
+    
     // insert loadedFromCache: boolean key into manifest
     NSMutableDictionary *mutableManifest = [(NSDictionary *)manifest mutableCopy];
-
+    
     BOOL loadedFromCache = YES;
     if (cacheBehavior == EXCachedResourceNoCache || cacheBehavior == EXCachedResourceWriteToCache) {
       loadedFromCache = NO;
     }
-
+    
     mutableManifest[@"loadedFromCache"] = @(loadedFromCache);
     success([NSDictionary dictionaryWithDictionary:mutableManifest]);
   } errorBlock:^(NSError * _Nonnull error) {
@@ -310,7 +345,7 @@ NSString *kEXKernelOptimisticManifestEventBase = @"optimisticManifest";
 - (void)_fetchJSBundleWithManifest:(NSDictionary *)manifest
                      cacheBehavior:(EXCachedResourceBehavior)cacheBehavior
                    timeoutInterval:(NSTimeInterval)timeoutInterval
-                          progress:( void (^ _Nullable )(EXLoadingProgress *))progressBlock
+                          progress:(void (^ _Nullable )(EXLoadingProgress *))progressBlock
                            success:(void (^)(NSData *))successBlock
                              error:(void (^)(NSError *))errorBlock
 {

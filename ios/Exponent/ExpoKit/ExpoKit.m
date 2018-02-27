@@ -88,7 +88,8 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"EXAppD
 
 - (void)setLaunchOptions:(NSDictionary *)launchOptions
 {
-  self.rootViewController.appManager.launchOptions = launchOptions;
+  // TODO: BEN: put this somewhere
+  // self.rootViewController.appManager.launchOptions = launchOptions;
 }
 
 - (void)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions

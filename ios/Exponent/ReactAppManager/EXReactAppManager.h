@@ -1,73 +1,42 @@
-// Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <React/RCTBridge.h>
+#import <UIKit/UIKit.h>
+#import "EXKernelAppRecord.h"
 
-#import "EXCachedResource.h"
+typedef enum EXReactAppManagerStatus {
+  kEXReactAppManagerStatusNew,
+  kEXReactAppManagerStatusBridgeLoading,
+  kEXReactAppManagerStatusRunning,
+  kEXReactAppManagerStatusError,
+} EXReactAppManagerStatus;
 
-@import UIKit;
+@protocol EXReactAppManagerUIDelegate <NSObject>
 
-NS_ASSUME_NONNULL_BEGIN
-
-@class EXReactAppManager;
-
-@protocol EXReactAppManagerDelegate <NSObject>
-
-- (void)reactAppManagerDidInitApp:(EXReactAppManager *)appManager;
-- (void)reactAppManagerDidDestroyApp:(EXReactAppManager *)appManager;
-
-- (void)reactAppManager:(EXReactAppManager *)appManager failedToDownloadBundleWithError:(NSError *)error;
-- (void)reactAppManagerStartedLoadingJavaScript:(EXReactAppManager *)appManager;
-- (void)reactAppManager:(EXReactAppManager *)appManager loadedJavaScriptWithProgress:(EXLoadingProgress *)progress;
-- (void)reactAppManagerFinishedLoadingJavaScript:(EXReactAppManager *)appManager;
-- (void)reactAppManager:(EXReactAppManager *)appManager failedToLoadJavaScriptWithError:(NSError *)error;
-
-@optional
-- (void)reactAppManagerDidForeground:(EXReactAppManager *)appManager;
-- (void)reactAppManagerDidBackground:(EXReactAppManager *)appManager;
+- (void)reactAppManagerIsReadyForDisplay:(EXReactAppManager *)appManager;
+- (void)reactAppManagerDidInvalidate:(EXReactAppManager *)appManager;
 
 @end
 
-@interface EXReactAppManager : NSObject <RCTBridgeDelegate>
+@interface EXReactAppManager : NSObject
 
-NS_ASSUME_NONNULL_END
-
-typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t sourceLength);
-
-NS_ASSUME_NONNULL_BEGIN
-
-/**
- * Tear down and rebuild the bridge (user-facing expo menu reload)
- */
+- (instancetype)initWithAppRecord:(EXKernelAppRecord *)record;
 - (void)reload;
 
 /**
  * Call reload on existing bridge (developer-facing devtools reload)
  */
 - (void)reloadBridge;
-
 /**
  * Clear any executor class on the bridge and reload. Used by Cmd+N devtool key command.
  */
 - (void)disableRemoteDebugging;
-
 - (void)toggleElementInspector;
-
-- (void)invalidate;
 - (void)showDevMenu;
 
-/**
- *  Whether or not the managed app enables react dev tools.
- */
-- (BOOL)areDevtoolsEnabled;
-- (NSDictionary<NSString *, NSString *> *)devMenuItems;
-- (void)selectDevMenuItemWithKey:(NSString *)key;
-
-@property (nonatomic, assign) id<EXReactAppManagerDelegate> delegate;
-@property (nonatomic, strong) UIView * __nullable reactRootView;
-@property (nonatomic, strong) id __nullable reactBridge;
-@property (nonatomic, readonly) NSString *experienceId;
+@property (nonatomic, readonly) BOOL isBridgeRunning;
+@property (nonatomic, readonly) EXReactAppManagerStatus status;
+@property (nonatomic, readonly) UIView *rootView;
+@property (nonatomic, strong) id reactBridge;
+@property (nonatomic, assign) id<EXReactAppManagerUIDelegate> delegate;
+@property (nonatomic, weak) EXKernelAppRecord *appRecord;
 
 @end
-
-NS_ASSUME_NONNULL_END
-
