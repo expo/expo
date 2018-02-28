@@ -13,12 +13,19 @@ import android.support.v4.app.NotificationCompat;
 import android.text.format.DateUtils;
 
 import de.greenrobot.event.EventBus;
+import expolib_v1.okhttp3.Call;
+import expolib_v1.okhttp3.Callback;
+import expolib_v1.okhttp3.Request;
+import expolib_v1.okhttp3.Response;
 import host.exp.exponent.Constants;
+import host.exp.exponent.kernel.ExponentUrls;
+import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.utils.JSONUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -37,6 +44,12 @@ public class NotificationHelper {
 
   public interface Listener {
     void onSuccess(int id);
+
+    void onFailure(Exception e);
+  }
+
+  public interface TokenListener {
+    void onSuccess(String token);
 
     void onFailure(Exception e);
   }
@@ -80,6 +93,42 @@ public class NotificationHelper {
     }
 
     exponentManifest.loadIconBitmap(iconUrl, bitmapListener);
+  }
+
+  public static void getPushNotificationToken(
+      String deviceId,
+      String experienceId,
+      ExponentNetwork exponentNetwork,
+      final TokenListener listener) {
+    Uri.Builder uriBuilder = Uri.parse("https://exp.host/--/api/v2/push/getExponentPushToken").buildUpon();
+    uriBuilder.appendQueryParameter("deviceId", deviceId);
+    uriBuilder.appendQueryParameter("experienceId", experienceId);
+
+    String uri = uriBuilder.build().toString();
+
+    Request request = ExponentUrls.addExponentHeadersToUrl(uri, false, true).build();
+
+    exponentNetwork.getClient().call(request, new Callback() {
+      @Override
+      public void onFailure(Call call, IOException e) {
+        listener.onFailure(e);
+      }
+
+      @Override
+      public void onResponse(Call call, Response response) throws IOException {
+        if (!response.isSuccessful()) {
+          listener.onFailure(new Exception("Couldn't get GCM token for device"));
+          return;
+        }
+
+        try {
+          JSONObject result = new JSONObject(response.body().string());
+          listener.onSuccess(result.getJSONObject("data").getString("exponentPushToken"));
+        } catch (Exception e) {
+          listener.onFailure(e);
+        }
+      }
+    });
   }
 
   public static void showNotification(
