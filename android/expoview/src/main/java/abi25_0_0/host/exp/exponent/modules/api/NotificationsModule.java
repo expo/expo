@@ -17,6 +17,7 @@ import com.google.android.gms.iid.InstanceID;
 
 import host.exp.exponent.Constants;
 import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.notifications.NotificationHelper;
 import host.exp.exponent.notifications.ExponentNotificationManager;
 import org.json.JSONException;
@@ -31,9 +32,7 @@ import javax.inject.Inject;
 
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 import host.exp.exponent.storage.ExponentSharedPreferences;
-import host.exp.expoview.Exponent;
 
 public class NotificationsModule extends ReactContextBaseJavaModule {
 
@@ -44,6 +43,9 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
 
   @Inject
   ExponentManifest mExponentManifest;
+
+  @Inject
+  ExponentNetwork mExponentNetwork;
 
   private final JSONObject mManifest;
 
@@ -94,27 +96,23 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
       return;
     }
 
-    com.facebook.react.bridge.WritableMap params = com.facebook.react.bridge.Arguments.createMap();
-    params.putString("deviceId", uuid);
     try {
-      params.putString("experienceId", mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
+      String experienceId = mManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+      NotificationHelper.getPushNotificationToken(uuid, experienceId, mExponentNetwork, new NotificationHelper.TokenListener() {
+        @Override
+        public void onSuccess(String token) {
+          promise.resolve(token);
+        }
+
+        @Override
+        public void onFailure(Exception e) {
+          promise.reject("E_GET_GCM_TOKEN_FAILED", "Couldn't get GCM token for device", e);
+        }
+      });
     } catch (JSONException e) {
-      promise.reject("Requires Experience Id");
+      promise.reject("E_GET_GCM_TOKEN_FAILED", "Couldn't get GCM token for device", e);
       return;
     }
-
-    ExponentKernelModuleProvider.queueEvent("ExponentKernel.getExponentPushToken", params, new ExponentKernelModuleProvider.KernelEventCallback() {
-      @Override
-      public void onEventSuccess(com.facebook.react.bridge.ReadableMap result) {
-        String exponentPushToken = result.getString("exponentPushToken");
-        promise.resolve(exponentPushToken);
-      }
-
-      @Override
-      public void onEventFailure(String errorMessage) {
-        promise.reject(errorMessage);
-      }
-    });
   }
 
   @ReactMethod

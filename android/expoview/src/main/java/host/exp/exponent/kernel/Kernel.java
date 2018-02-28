@@ -170,6 +170,10 @@ public class Kernel extends KernelInterface {
 
   // Don't call this until a loading screen is up, since it has to do some work on the main thread.
   public void startJSKernel() {
+    if (Constants.isShellApp()) {
+      return;
+    }
+
     SoLoader.init(mContext, false);
 
     synchronized (this) {

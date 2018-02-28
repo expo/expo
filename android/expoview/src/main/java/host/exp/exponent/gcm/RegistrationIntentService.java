@@ -6,20 +6,27 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.util.Log;
 
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
 import com.facebook.soloader.SoLoader;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 
 import javax.inject.Inject;
 
+import expolib_v1.okhttp3.Call;
+import expolib_v1.okhttp3.Callback;
+import expolib_v1.okhttp3.MediaType;
+import expolib_v1.okhttp3.Request;
+import expolib_v1.okhttp3.RequestBody;
+import expolib_v1.okhttp3.Response;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.kernel.ExponentKernelModuleProvider;
+import host.exp.exponent.kernel.ExponentUrls;
+import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.expoview.Exponent;
 
@@ -29,6 +36,9 @@ public class RegistrationIntentService extends IntentService {
 
   @Inject
   ExponentSharedPreferences mExponentSharedPreferences;
+
+  @Inject
+  ExponentNetwork mExponentNetwork;
 
   public RegistrationIntentService() {
     super(TAG);
@@ -74,23 +84,38 @@ public class RegistrationIntentService extends IntentService {
       SoLoader.init(this, false);
 
       String uuid = mExponentSharedPreferences.getOrCreateUUID();
-      WritableMap params = Arguments.createMap();
-      params.putString("deviceToken", token);
-      params.putString("deviceId", uuid);
-      params.putString("appId", getApplicationContext().getPackageName());
-      ExponentKernelModuleProvider.queueEvent("ExponentKernel.updateDeviceToken", params, new ExponentKernelModuleProvider.KernelEventCallback() {
-        @Override
-        public void onEventSuccess(ReadableMap result) {
-          mExponentSharedPreferences.setString(ExponentSharedPreferences.GCM_TOKEN_KEY, token);
-        }
 
-        @Override
-        public void onEventFailure(String errorMessage) {
-          // Don't do anything here. We'll retry next time.
-        }
-      });
+      try {
+        JSONObject params = new JSONObject();
+        params.put("deviceToken", token);
+        params.put("deviceId", uuid);
+        params.put("appId", getApplicationContext().getPackageName());
+        params.put("type", "gcm");
 
-      Log.i(TAG, "GCM Registration Token: " + token);
+        RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), params.toString());
+        Request request = ExponentUrls.addExponentHeadersToUrl("https://exp.host/--/api/v2/push/updateDeviceToken", false, true)
+            .header("Content-Type", "application/json")
+            .post(body)
+            .build();
+
+        mExponentNetwork.getClient().call(request, new Callback() {
+          @Override
+          public void onFailure(Call call, IOException e) {
+            // Don't do anything here. We'll retry next time.
+          }
+
+          @Override
+          public void onResponse(Call call, Response response) throws IOException {
+            if (response.isSuccessful()) {
+              mExponentSharedPreferences.setString(ExponentSharedPreferences.GCM_TOKEN_KEY, token);
+            }
+          }
+        });
+
+        Log.i(TAG, "GCM Registration Token: " + token);
+      } catch (JSONException e) {
+        EXL.e(TAG, e);
+      }
     } catch (IOException e) {
       EXL.e(TAG, e.getMessage());
     } catch (SecurityException e) {
