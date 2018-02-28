@@ -99,7 +99,7 @@ Camera white balance. Use one of `Camera.Constants.WhiteBalance`: `auto`, `sunny
 
 - **focusDepth** (_float_)
 
-Distance to plane of sharpest focus. A value between 0 and 1: 0 - infinity focus, 1 - focus as close as possible. Default: 0. For Android is availbe only for some devices and when `useCamera2Api` is set to true.
+Distance to plane of sharpest focus. A value between 0 and 1: 0 - infinity focus, 1 - focus as close as possible. Default: 0. For Android this is available only for some devices and when `useCamera2Api` is set to true.
 
 - **ratio** (_string_)
 
