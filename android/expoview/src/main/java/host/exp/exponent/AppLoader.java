@@ -141,7 +141,7 @@ public abstract class AppLoader {
       public void onError(String e) {
         resolve();
       }
-    }, true);
+    });
   }
 
   private void stopTimer() {

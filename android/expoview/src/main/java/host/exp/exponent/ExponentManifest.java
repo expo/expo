@@ -9,8 +9,6 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Debug;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.util.LruCache;
 
@@ -26,13 +24,10 @@ import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.KernelProvider;
 import host.exp.exponent.network.ExponentHttpClient;
 import host.exp.exponent.network.ExponentNetwork;
-import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.ColorParser;
-import host.exp.expoview.Exponent;
 import host.exp.expoview.R;
 import expolib_v1.okhttp3.Call;
-import expolib_v1.okhttp3.Callback;
 import expolib_v1.okhttp3.Headers;
 import expolib_v1.okhttp3.Request;
 import expolib_v1.okhttp3.Response;
@@ -49,7 +44,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -160,10 +154,6 @@ public class ExponentManifest {
   }
 
   public void fetchManifest(final String manifestUrl, final ManifestListener listener) {
-    fetchManifest(manifestUrl, listener, false);
-  }
-
-  public void fetchManifest(final String manifestUrl, final ManifestListener listener, final boolean forceNetwork) {
     Analytics.markEvent(Analytics.TimedEvent.STARTED_FETCHING_MANIFEST);
 
     String realManifestUrl = manifestUrl;
@@ -201,110 +191,125 @@ public class ExponentManifest {
     Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToUrl(httpManifestUrl, manifestUrl.equals(Constants.INITIAL_URL), false);
     requestBuilder.header("Exponent-Accept-Signature", "true");
     requestBuilder.header("Expo-JSON-Error", "true");
+    requestBuilder.cacheControl(CacheControl.FORCE_NETWORK);
 
     Analytics.markEvent(Analytics.TimedEvent.STARTED_MANIFEST_NETWORK_REQUEST);
     if (Constants.DEBUG_MANIFEST_METHOD_TRACING) {
       Debug.startMethodTracing("manifest");
     }
 
-    boolean isDevelopment = false;
-    if (uri.getHost().equals("localhost") || uri.getHost().endsWith(".exp.direct")) {
-      isDevelopment = true;
+    mExponentNetwork.getClient().callSafe(requestBuilder.build(), new ExponentHttpClient.SafeCallback() {
+      private void handleResponse(Response response, boolean isCached) {
+        if (!response.isSuccessful()) {
+          ManifestException exception;
+          try {
+            final JSONObject errorJSON = new JSONObject(response.body().string());
+            exception = new ManifestException(null, manifestUrl, errorJSON);
+          } catch (JSONException | IOException e) {
+            exception = new ManifestException(null, manifestUrl);
+          }
+          listener.onError(exception);
+          return;
+        }
+
+        try {
+          String manifestString = response.body().string();
+          fetchManifestStep2(manifestUrl, manifestString, response.headers(), listener, false, isCached);
+        } catch (JSONException e) {
+          listener.onError(e);
+        } catch (IOException e) {
+          listener.onError(e);
+        }
+      }
+
+      @Override
+      public void onFailure(Call call, IOException e) {
+        listener.onError(new ManifestException(e, manifestUrl));
+      }
+
+      @Override
+      public void onResponse(Call call, Response response) {
+        // OkHttp sometimes decides to use the cache anyway here
+        boolean isCached = false;
+        if (response.networkResponse() == null) {
+          isCached = true;
+        }
+        handleResponse(response, isCached);
+      }
+
+      @Override
+      public void onCachedResponse(Call call, Response response, boolean isEmbedded) {
+        // this is only called if network is unavailable for some reason
+        handleResponse(response, true);
+      }
+    });
+  }
+
+  public boolean fetchCachedManifest(final String manifestUrl, final ManifestListener listener) {
+    String realManifestUrl = manifestUrl;
+    if (manifestUrl.contains(REDIRECT_SNIPPET)) {
+      // Redirect urls look like "https://exp.host/--/to-exp/exp%3A%2F%2Fgj-5x6.jesse.internal.exp.direct%3A80".
+      // Android is crazy and catches this url with this intent filter:
+      //  <data
+      //    android:host="*.exp.direct"
+      //    android:pathPattern=".*"
+      //    android:scheme="http"/>
+      //  <data
+      //    android:host="*.exp.direct"
+      //    android:pathPattern=".*"
+      //    android:scheme="https"/>
+      // so we have to add some special logic to handle that. This is than handling arbitrary HTTP 301s and 302
+      // because we need to add /index.exp to the paths.
+      realManifestUrl = Uri.decode(realManifestUrl.substring(realManifestUrl.indexOf(REDIRECT_SNIPPET) + REDIRECT_SNIPPET.length()));
     }
 
-    if (isDevelopment || forceNetwork) {
-      requestBuilder.cacheControl(CacheControl.FORCE_NETWORK);
-      // If we're sure this is a development url, don't cache. Note that LAN development urls
-      // might still be cached
-      mExponentNetwork.getClient().callSafe(requestBuilder.build(), new ExponentHttpClient.SafeCallback() {
-        private void handleResponse(Response response, boolean isCached) {
-          if (!response.isSuccessful()) {
-            ManifestException exception;
-            try {
-              final JSONObject errorJSON = new JSONObject(response.body().string());
-              exception = new ManifestException(null, manifestUrl, errorJSON);
-            } catch (JSONException | IOException e) {
-              exception = new ManifestException(null, manifestUrl);
-            }
-            listener.onError(exception);
-            return;
-          }
+    String httpManifestUrl = ExponentUrls.toHttp(realManifestUrl);
 
+    // Append index.exp to path
+    Uri uri = Uri.parse(httpManifestUrl);
+    String newPath = uri.getPath();
+    if (newPath == null) {
+      newPath = "";
+    }
+    if (!newPath.endsWith("/")) {
+      newPath += "/";
+    }
+    newPath += "index.exp";
+    httpManifestUrl = uri.buildUpon().encodedPath(newPath).build().toString();
+
+    if (uri.getHost().equals("localhost") || uri.getHost().endsWith(".exp.direct")) {
+      // if we're in development mode, we don't ever want to fetch a cached manifest
+      return false;
+    }
+
+    // Fetch manifest
+    Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToUrl(httpManifestUrl, manifestUrl.equals(Constants.INITIAL_URL), false);
+    requestBuilder.header("Exponent-Accept-Signature", "true");
+    requestBuilder.header("Expo-JSON-Error", "true");
+
+    Request request = requestBuilder.build();
+    final String finalUri = request.url().toString();
+
+    mExponentNetwork.getClient().tryForcedCachedResponse(finalUri, request, new ExponentHttpClient.SafeCallback() {
+      private void handleResponse(Response response, final boolean isEmbedded) {
+        if (!response.isSuccessful()) {
+          ManifestException exception;
           try {
-            String manifestString = response.body().string();
-            fetchManifestStep2(manifestUrl, manifestString, response.headers(), listener, false, isCached);
-          } catch (JSONException e) {
-            listener.onError(e);
-          } catch (IOException e) {
-            listener.onError(e);
+            final JSONObject errorJSON = new JSONObject(response.body().string());
+            exception = new ManifestException(null, manifestUrl, errorJSON);
+          } catch (JSONException | IOException e) {
+            exception = new ManifestException(null, manifestUrl);
           }
+          listener.onError(exception);
+          return;
         }
 
-        @Override
-        public void onFailure(Call call, IOException e) {
-          listener.onError(new ManifestException(e, manifestUrl));
-        }
+        try {
+          String manifestString = response.body().string();
 
-        @Override
-        public void onResponse(Call call, Response response) {
-          // OkHttp sometimes decides to use the cache anyway here
-          boolean isCached = false;
-          if (response.networkResponse() == null) {
-            isCached = true;
-          }
-          handleResponse(response, isCached);
-        }
-
-        @Override
-        public void onCachedResponse(Call call, Response response, boolean isEmbedded) {
-          // this is only called if network is unavailable for some reason
-          handleResponse(response, true);
-        }
-      });
-    } else {
-      final Request request = requestBuilder.build();
-      final String finalUri = request.url().toString();
-      mExponentNetwork.getClient().callDefaultCache(request, new ExponentHttpClient.SafeCallback() {
-
-        private void handleResponse(ManifestListener listener, Response response, boolean isEmbedded, boolean isCached) {
-          if (!response.isSuccessful()) {
-            listener.onError(new ManifestException(null, manifestUrl));
-            return;
-          }
-
-          try {
-            String manifestString = response.body().string();
-            fetchManifestStep2(manifestUrl, manifestString, response.headers(), listener, isEmbedded, isCached);
-          } catch (JSONException e) {
-            listener.onError(e);
-          } catch (IOException e) {
-            listener.onError(e);
-          }
-        }
-
-        @Override
-        public void onFailure(Call call, IOException e) {
-          listener.onError(new ManifestException(e, manifestUrl));
-        }
-
-        @Override
-        public void onResponse(Call call, Response response) {
-          // OkHttp sometimes decides to use the cache anyway here
-          boolean isCached = false;
-          if (response.networkResponse() == null) {
-            isCached = true;
-          }
-          handleResponse(listener, response, false, isCached);
-        }
-
-        @Override
-        public void onCachedResponse(Call call, Response response, final boolean isEmbedded) {
-          EXL.d(TAG, "Using cached or embedded response.");
-
-          ManifestListener newListener = listener;
           final String embeddedResponse = mExponentNetwork.getClient().getHardCodedResponse(finalUri);
+          ManifestListener newListener = listener;
           if (embeddedResponse != null) {
-            // use newer of two responses
             newListener = new ManifestListener() {
               @Override
               public void onCompleted(JSONObject manifest) {
@@ -363,109 +368,7 @@ public class ExponentManifest {
             };
           }
 
-          final ManifestListener finalManifestListener = newListener;
-          handleResponse(new ManifestListener() {
-            @Override
-            public void onCompleted(JSONObject manifest) {
-              finalManifestListener.onCompleted(manifest);
-              AsyncTask.execute(new Runnable() {
-                @Override
-                public void run() {
-                  Exponent.getInstance().preloadManifestAndBundle(manifestUrl);
-                }
-              });
-            }
-
-            @Override
-            public void onError(Exception e) {
-              finalManifestListener.onError(e);
-            }
-
-            @Override
-            public void onError(String e) {
-              finalManifestListener.onError(e);
-            }
-          }, response, isEmbedded, true);
-        }
-      });
-    }
-  }
-
-  public boolean fetchCachedManifest(final String manifestUrl, final ManifestListener listener) {
-//    Analytics.markEvent(Analytics.TimedEvent.STARTED_FETCHING_MANIFEST);
-
-    String realManifestUrl = manifestUrl;
-    if (manifestUrl.contains(REDIRECT_SNIPPET)) {
-      // Redirect urls look like "https://exp.host/--/to-exp/exp%3A%2F%2Fgj-5x6.jesse.internal.exp.direct%3A80".
-      // Android is crazy and catches this url with this intent filter:
-      //  <data
-      //    android:host="*.exp.direct"
-      //    android:pathPattern=".*"
-      //    android:scheme="http"/>
-      //  <data
-      //    android:host="*.exp.direct"
-      //    android:pathPattern=".*"
-      //    android:scheme="https"/>
-      // so we have to add some special logic to handle that. This is than handling arbitrary HTTP 301s and 302
-      // because we need to add /index.exp to the paths.
-      realManifestUrl = Uri.decode(realManifestUrl.substring(realManifestUrl.indexOf(REDIRECT_SNIPPET) + REDIRECT_SNIPPET.length()));
-    }
-
-    String httpManifestUrl = ExponentUrls.toHttp(realManifestUrl);
-
-    // Append index.exp to path
-    Uri uri = Uri.parse(httpManifestUrl);
-    String newPath = uri.getPath();
-    if (newPath == null) {
-      newPath = "";
-    }
-    if (!newPath.endsWith("/")) {
-      newPath += "/";
-    }
-    newPath += "index.exp";
-    httpManifestUrl = uri.buildUpon().encodedPath(newPath).build().toString();
-
-    if (uri.getHost().equals("localhost") || uri.getHost().endsWith(".exp.direct")) {
-      // if we're in development mode, we don't ever want to fetch a cached manifest
-      return false;
-    }
-
-    // Fetch manifest
-    Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToUrl(httpManifestUrl, manifestUrl.equals(Constants.INITIAL_URL), false);
-    requestBuilder.header("Exponent-Accept-Signature", "true");
-    requestBuilder.header("Expo-JSON-Error", "true");
-
-//    Analytics.markEvent(Analytics.TimedEvent.STARTED_MANIFEST_NETWORK_REQUEST);
-//    if (Constants.DEBUG_MANIFEST_METHOD_TRACING) {
-//      Debug.startMethodTracing("manifest");
-//    }
-
-    Request request = requestBuilder.build();
-
-    mExponentNetwork.getClient().tryForcedCachedResponse(request.url().toString(), request, new ExponentHttpClient.SafeCallback() {
-      @Override
-      public void onFailure(Call call, IOException e) {
-
-        listener.onError(new ManifestException(e, manifestUrl));
-      }
-
-      @Override
-      public void onResponse(Call call, Response response) {
-        if (!response.isSuccessful()) {
-          ManifestException exception;
-          try {
-            final JSONObject errorJSON = new JSONObject(response.body().string());
-            exception = new ManifestException(null, manifestUrl, errorJSON);
-          } catch (JSONException | IOException e) {
-            exception = new ManifestException(null, manifestUrl);
-          }
-          listener.onError(exception);
-          return;
-        }
-
-        try {
-          String manifestString = response.body().string();
-          fetchManifestStep2(manifestUrl, manifestString, response.headers(), listener, false, true);
+          fetchManifestStep2(manifestUrl, manifestString, response.headers(), newListener, false, true);
         } catch (JSONException e) {
           listener.onError(e);
         } catch (IOException e) {
@@ -474,8 +377,18 @@ public class ExponentManifest {
       }
 
       @Override
+      public void onFailure(Call call, IOException e) {
+        listener.onError(new ManifestException(e, manifestUrl));
+      }
+
+      @Override
+      public void onResponse(Call call, Response response) {
+        handleResponse(response, false);
+      }
+
+      @Override
       public void onCachedResponse(Call call, Response response, boolean isEmbedded) {
-        onResponse(call, response);
+        handleResponse(response, isEmbedded);
       }
     }, null, null);
 
