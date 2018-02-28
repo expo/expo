@@ -6,6 +6,8 @@ A React component that renders a preview for the device's either front or back c
 
 > **Note**: Only one Camera preview is supported by Expo right now. When using navigation, the best practice is to unmount previously rendered `Camera` component so next screens can use camera without issues.
 
+> **Note**: Android devices can use one of two available Camera apis underneath. This was previously chosen automatically, based on the device's Android system version and camera hardware capabilities. As we experienced some issues with Android's Camera2 API, we decided to choose the older API as a default. However, using the newer one is still possible through setting `useCamera2Api` prop to true. The change we made should be barely visible - the only thing that is not supported using the old Android's API is setting focus depth.
+
 Requires `Permissions.CAMERA`. Video recording requires `Permissions.AUDIO_RECORDING`.
 
 ### Basic Example
@@ -97,7 +99,7 @@ Camera white balance. Use one of `Camera.Constants.WhiteBalance`: `auto`, `sunny
 
 - **focusDepth** (_float_)
 
-Distance to plane of sharpest focus. A value between 0 and 1: 0 - infinity focus, 1 - focus as close as possible. Default: 0.
+Distance to plane of sharpest focus. A value between 0 and 1: 0 - infinity focus, 1 - focus as close as possible. Default: 0. For Android is availbe only for some devices and when `useCamera2Api` is set to true.
 
 - **ratio** (_string_)
 
@@ -161,6 +163,10 @@ Callback that is invoked when a bar code has been successfully read. The callbac
 - **barCodeTypes (_Array<string>_)**
 
 An array of bar code types. Usage: `Camera.Constants.BarCodeType.<codeType>` where `codeType` is one of the listed above. Default: all supported bar code types. For example: `barCodeTypes={[Camera.Constants.BarCodeType.qr]}`
+
+- **useCamera2Api** (_boolean_)
+
+Android only. Whether to use Android's Camera2 API. See `Note` at the top of this page.
 
 ## Methods
 
