@@ -61,7 +61,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
   private final MultiFormatReader mMultiFormatReader = new MultiFormatReader();
 
   public ExpoCameraView(ThemedReactContext themedReactContext) {
-    super(themedReactContext);
+    super(themedReactContext, false);
 
     themedReactContext.addLifecycleEventListener(this);
     mEventEmitter = themedReactContext.getJSModule(RCTEventEmitter.class);

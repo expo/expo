@@ -30,7 +30,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
   private Queue<Promise> pictureTakenPromises = new ConcurrentLinkedQueue<>();
 
   public ExpoCameraView(ThemedReactContext themedReactContext) {
-    super(themedReactContext);
+    super(themedReactContext, false);
 
     themedReactContext.addLifecycleEventListener(this);
     mEventEmitter = themedReactContext.getJSModule(RCTEventEmitter.class);

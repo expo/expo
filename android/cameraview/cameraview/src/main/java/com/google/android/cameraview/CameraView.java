@@ -78,36 +78,39 @@ public class CameraView extends FrameLayout {
 
     private boolean mAdjustViewBounds;
 
+    private Context mContext;
+
     private final DisplayOrientationDetector mDisplayOrientationDetector;
 
-    public CameraView(Context context) {
-        this(context, null);
+    public CameraView(Context context, boolean fallbackToOldApi) {
+        this(context, null, fallbackToOldApi);
     }
 
-    public CameraView(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+    public CameraView(Context context, AttributeSet attrs, boolean fallbackToOldApi) {
+        this(context, attrs, 0, fallbackToOldApi);
     }
 
     @SuppressWarnings("WrongConstant")
-    public CameraView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public CameraView(Context context, AttributeSet attrs, int defStyleAttr, boolean fallbackToOldApi) {
         super(context, attrs, defStyleAttr);
         if (isInEditMode()){
             mCallbacks = null;
             mDisplayOrientationDetector = null;
             return;
         }
+        mAdjustViewBounds = true;
+        mContext = context;
+
         // Internal setup
         final PreviewImpl preview = createPreviewImpl(context);
         mCallbacks = new CallbackBridge();
-        if (Build.VERSION.SDK_INT < 21) {
+        if (fallbackToOldApi || Build.VERSION.SDK_INT < 21) {
             mImpl = new Camera1(mCallbacks, preview);
         } else if (Build.VERSION.SDK_INT < 23) {
             mImpl = new Camera2(mCallbacks, preview, context);
         } else {
             mImpl = new Camera2Api23(mCallbacks, preview, context);
         }
-
-        mAdjustViewBounds = true;
 
         // Display orientation detector
         mDisplayOrientationDetector = new DisplayOrientationDetector(context) {
@@ -235,6 +238,39 @@ public class CameraView extends FrameLayout {
         setZoom(ss.zoom);
         setWhiteBalance(ss.whiteBalance);
         setScanning(ss.scanning);
+    }
+
+    public void setUsingCamera2Api(boolean useCamera2) {
+        if (Build.VERSION.SDK_INT < 21) {
+          return;
+        }
+
+        boolean wasOpened = isCameraOpened();
+        Parcelable state = onSaveInstanceState();
+
+        if (useCamera2) {
+            if (wasOpened) {
+                stop();
+            }
+            if (Build.VERSION.SDK_INT < 23) {
+                mImpl = new Camera2(mCallbacks, mImpl.mPreview, mContext);
+            } else {
+                mImpl = new Camera2Api23(mCallbacks, mImpl.mPreview, mContext);
+            }
+        } else {
+            if (mImpl instanceof Camera1) {
+              return;
+            }
+
+            if (wasOpened) {
+                stop();
+            }
+            mImpl = new Camera1(mCallbacks, mImpl.mPreview);
+        }
+        onRestoreInstanceState(state);
+        if (wasOpened) {
+            start();
+        }
     }
 
     /**

@@ -69,7 +69,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
   private int mFaceDetectionClassifications = ExpoFaceDetector.NO_CLASSIFICATIONS;
 
   public ExpoCameraView(ThemedReactContext themedReactContext) {
-    super(themedReactContext);
+    super(themedReactContext, true);
     mThemedReactContext = themedReactContext;
     initBarcodeReader();
     mFaceDetector = new ExpoFaceDetector(themedReactContext);

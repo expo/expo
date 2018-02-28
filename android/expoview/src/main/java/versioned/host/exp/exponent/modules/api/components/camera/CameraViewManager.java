@@ -108,6 +108,11 @@ public class CameraViewManager extends ViewGroupManager<ExpoCameraView> {
     view.setBarCodeTypes(result);
   }
 
+  @ReactProp(name = "useCamera2Api")
+  public void setUseCamera2Api(ExpoCameraView view, boolean useCamera2Api) {
+    view.setUsingCamera2Api(useCamera2Api);
+  }
+
   @ReactProp(name = "barCodeScannerEnabled")
   public void setBarCodeScanning(ExpoCameraView view, boolean barCodeScannerEnabled) {
     view.setShouldScanBarCodes(barCodeScannerEnabled);
