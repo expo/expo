@@ -321,7 +321,7 @@ public class ExponentManifest {
                     ExponentSharedPreferences.ManifestAndBundleUrl manifestAndBundleUrl = mExponentSharedPreferences.getManifest(manifestUrl);
                     String cachedManifestTimestamp = manifestAndBundleUrl.manifest.getString(MANIFEST_PUBLISHED_TIME_KEY);
                     String embeddedManifestTimestamp = manifest.getString(MANIFEST_PUBLISHED_TIME_KEY);
-                    DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+                    DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
                     Date cachedManifestDate = formatter.parse(cachedManifestTimestamp);
                     Date embeddedManifestDate = formatter.parse(embeddedManifestTimestamp);
 
@@ -331,6 +331,7 @@ public class ExponentManifest {
                       listener.onCompleted(manifest);
                     }
                   } catch (Throwable ex) {
+                    EXL.e(TAG, ex);
                     listener.onCompleted(manifest);
                   }
                 } else {
@@ -341,7 +342,10 @@ public class ExponentManifest {
                     String cachedManifestTimestamp = manifest.getString(MANIFEST_PUBLISHED_TIME_KEY);
                     String embeddedManifestTimestamp = embeddedManifest.getString(MANIFEST_PUBLISHED_TIME_KEY);
 
-                    DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+                    // SimpleDateFormat on Android does not support the ISO-8601 representation of the timezone,
+                    // namely, using 'Z' to represent GMT. Since all our dates here are in the same timezone,
+                    // and we're just comparing them relative to each other, we can just ignore this character.
+                    DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
                     Date cachedManifestDate = formatter.parse(cachedManifestTimestamp);
                     Date embeddedManifestDate = formatter.parse(embeddedManifestTimestamp);
 
@@ -351,6 +355,7 @@ public class ExponentManifest {
                       listener.onCompleted(manifest);
                     }
                   } catch (Throwable e) {
+                    EXL.e(TAG, e);
                     listener.onCompleted(manifest);
                   }
                 }
