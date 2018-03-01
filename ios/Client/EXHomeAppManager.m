@@ -1,5 +1,4 @@
 
-#import "EXReactAppManager+Private.h"
 #import "EXBuildConstants.h"
 #import "EXHomeAppManager.h"
 #import "EXKernel.h"
@@ -7,6 +6,8 @@
 #import "EXKernelLinkingManager.h"
 #import "EXKernelUtil.h"
 #import "EXLog.h"
+#import "ExpoKit.h"
+#import "EXReactAppManager+Private.h"
 #import "EXVersionManager.h"
 #import "EXVersions.h"
 
@@ -44,6 +45,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
                                    @"services": [EXKernel sharedInstance].serviceRegistry.allServices,
                                    } mutableCopy];
   
+  // TODO: ben: starting home with an initial url
   // used by appetize - override the kernel initial url if there's something in NSUserDefaults
   NSURL *initialKernelUrl;
   NSString *kernelInitialUrlDefaultsValue = [[NSUserDefaults standardUserDefaults] stringForKey:kEXHomeLaunchUrlDefaultsKey];
@@ -52,8 +54,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:kEXHomeLaunchUrlDefaultsKey];
     [[NSUserDefaults standardUserDefaults] synchronize];
   } else {
-    // TODO: BEN: _launchOptions
-    initialKernelUrl = [EXKernelLinkingManager initialUrlFromLaunchOptions:@{}];
+    initialKernelUrl = [EXKernelLinkingManager initialUrlFromLaunchOptions:[self launchOptionsForBridge]];
   }
   params[@"initialUri"] = initialKernelUrl;
   
@@ -83,6 +84,16 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
 - (RCTLogLevel)logLevel
 {
   return RCTLogLevelWarning;
+}
+                        
+- (NSDictionary *)launchOptionsForBridge
+{
+  if (!self.hasBridgeEverLoaded) {
+    return [ExpoKit sharedInstance].launchOptions;
+  } else {
+    // don't want to re-consume launch options when the bridge reloads.
+    return nil;
+  }
 }
 
 #pragma mark - util

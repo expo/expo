@@ -3,7 +3,6 @@
 #import "EXErrorRecoveryManager.h"
 #import "EXFatalHandler.h"
 #import "EXKernel.h"
-#import "EXViewController.h"
 
 #import <CocoaLumberjack/CocoaLumberjack.h>
 

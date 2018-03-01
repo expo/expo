@@ -10,7 +10,6 @@
 #import "EXKernelLinkingManager.h"
 #import "EXLinkingManager.h"
 #import "EXVersions.h"
-#import "EXViewController.h"
 
 #import <React/RCTBridge+Private.h>
 #import <React/RCTEventDispatcher.h>

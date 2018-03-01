@@ -7,8 +7,6 @@ NS_ASSUME_NONNULL_BEGIN
 FOUNDATION_EXPORT NSString * const EXAppDidRegisterForRemoteNotificationsNotification;
 FOUNDATION_EXPORT NSString * const EXAppDidRegisterUserNotificationSettingsNotification;
 
-@class EXViewController;
-
 @interface ExpoKit : NSObject
 
 + (instancetype)sharedInstance;
@@ -18,6 +16,8 @@ FOUNDATION_EXPORT NSString * const EXAppDidRegisterUserNotificationSettingsNotif
  *  TODO: document this.
  */
 @property (nonatomic, strong) NSDictionary *applicationKeys;
+
+@property (nonatomic, readonly) NSDictionary *launchOptions;
 
 #pragma mark - remote JS loading hooks
 
@@ -29,7 +29,6 @@ FOUNDATION_EXPORT NSString * const EXAppDidRegisterUserNotificationSettingsNotif
 
 #pragma mark - misc AppDelegate hooks
 
-- (void)setLaunchOptions:(NSDictionary * _Nullable)launchOptions;
 - (void)application:(UIApplication *)application didFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions;
 
 #pragma mark - APNS hooks

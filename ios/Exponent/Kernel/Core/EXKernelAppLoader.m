@@ -205,24 +205,6 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
 - (void)_fetchRemoteJSBundleWithOptimisticManifest
 {
-  if ([self _areDevToolsEnabledWithManifest:_optimisticManifest]) {
-    // ignore in dev mode, we'll just go straight through to the downloader instead
-    /* _success(manifest);
-    _manifestFinished = YES;
-    return; */
-    // TODO: make sure progress events are passed to dev loading view in AppManager.
-    /* void (^progressBlock)(EXLoadingProgress * _Nonnull) = ^(EXLoadingProgress * _Nonnull progress) {
-      [_bundleLoadingDelegate appLoader:self didLoadBundleWithProgress:progress];
-    };
-    void (^successBlock)(NSData * _Nonnull) = ^(NSData * _Nonnull data) {
-      [_bundleLoadingDelegate appLoader:self didFinishLoadingBundle:data];
-    };
-    void (^errorBlock)(NSError * _Nonnull) = ^(NSError * _Nonnull error) {
-      [_bundleLoadingDelegate appLoader:self didFailLoadingBundleWithError:error];
-    };
-     or if we already have a manifest and a bundle, make sure to resolveBundle here.
-     */
-  }
   EXCachedResourceBehavior cacheBehavior = [self _cacheBehaviorForJSWithManifest:_optimisticManifest];
 
   [self _fetchJSBundleWithManifest:_optimisticManifest cacheBehavior:cacheBehavior timeoutInterval:kEXJSBundleTimeout progress:^(EXLoadingProgress * _Nonnull progress) {

@@ -39,10 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   [super viewDidLoad];
   self.view.backgroundColor = [UIColor yellowColor];
-  
-  // this class only exists in expo client
-  // build an EXViewController pointing at @exponent/home
-  // TODO: launchOptions
+
   EXHomeAppManager *homeAppManager = [[EXHomeAppManager alloc] init];
   EXKernelAppLoader *homeAppLoader = [[EXKernelAppLoader alloc] initWithLocalManifest:[EXHomeAppManager bundledHomeManifest]];
   EXKernelAppRecord *homeAppRecord = [[EXKernelAppRecord alloc] initWithAppLoader:homeAppLoader appManager:homeAppManager];

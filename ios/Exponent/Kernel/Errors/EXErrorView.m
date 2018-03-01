@@ -33,7 +33,7 @@
     
     // retry button
     self.btnRetry = [UIButton buttonWithType:UIButtonTypeSystem];
-    [_btnRetry setTitle:@"Refresh" forState:UIControlStateNormal];
+    [_btnRetry setTitle:@"Retry" forState:UIControlStateNormal];
     [_btnRetry addTarget:self action:@selector(_onTapRetry) forControlEvents:UIControlEventTouchUpInside];
     [_vContainer addSubview:_btnRetry];
 
@@ -53,11 +53,12 @@
   _type = type;
   NSString *appOwnerName;
   if ([EXShellManager sharedInstance].isShell) {
-    // TODO: allow the developer to configure this somehow
     appOwnerName = @"the app";
   } else {
     appOwnerName = @"Expo";
   }
+  // TODO: ben: make this nice
+  appOwnerName = @"whatever you were trying to load";
   switch (type) {
     case kEXFatalErrorTypeLoading: {
       _lblError.text = [NSString stringWithFormat:@"There was a problem loading %@. Make sure you're connected to the internet and retry.", appOwnerName];
