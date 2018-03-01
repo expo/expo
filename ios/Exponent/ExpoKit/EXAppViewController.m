@@ -19,8 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXAppViewController () <EXReactAppManagerUIDelegate, EXKernelAppLoaderDelegate, EXErrorViewDelegate>
 
-- (void)showErrorWithType:(EXFatalErrorType)type error: (nullable NSError *)error;
-
 @property (nonatomic, assign) BOOL isLoading;
 @property (nonatomic, strong) UIView *contentView;
 @property (nonatomic, weak) EXKernelAppRecord *appRecord;
@@ -85,24 +83,26 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Public
 
-- (void)showErrorWithType:(EXFatalErrorType)type error:(nullable NSError *)error
+- (void)maybeShowError:(NSError *)error
 {
-  EXAssertMainThread();
-  if (_errorView && _contentView == _errorView) {
-    // already showing, just update
-    _errorView.type = type;
-    _errorView.error = error;
-  } {
-    [_contentView removeFromSuperview];
-    if (!_errorView) {
-      _errorView = [[EXErrorView alloc] initWithFrame:self.view.bounds];
-      _errorView.delegate = self;
+  BOOL isNetworkError = ([error.domain isEqualToString:(NSString *)kCFErrorDomainCFNetwork] ||
+                         [error.domain isEqualToString:EXNetworkErrorDomain]);
+    if (isNetworkError) {
+      // show a human-readable reachability error
+      [EXUtil performSynchronouslyOnMainThread:^{
+        [self _showErrorWithType:kEXFatalErrorTypeLoading error:error];
+      }];
+    } else if ([error.domain isEqualToString:@"JSServer"] && [_appRecord.appManager enablesDeveloperTools]) {
+      // RCTRedBox already handled this
+    } else if ([error.domain rangeOfString:RCTErrorDomain].length > 0 && [_appRecord.appManager enablesDeveloperTools]) {
+      // RCTRedBox already handled this
+    } else {
+      // TODO: ben: handle other error cases
+      // also, can test for (error.code == kCFURLErrorNotConnectedToInternet)
+      [EXUtil performSynchronouslyOnMainThread:^{
+        [self _showErrorWithType:kEXFatalErrorTypeException error:error];
+      }];
     }
-    _errorView.type = type;
-    _errorView.error = error;
-    _contentView = _errorView;
-    [self.view addSubview:_contentView];
-  }
 }
 
 - (void)reload
@@ -125,18 +125,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)appLoader:(EXKernelAppLoader *)appLoader didLoadOptimisticManifest:(NSDictionary *)manifest
 {
   _loadingView.manifest = manifest;
-}
-
-- (void)appLoader:(EXKernelAppLoader *)appLoader didLoadBundleWithProgress:(EXLoadingProgress *)progress
-{
-  // TODO: ben: pass to loading view
-  dispatch_async(dispatch_get_main_queue(), ^{
-    _loadingView.progress = ([progress.done floatValue] / [progress.total floatValue]);
-  });
-}
-
-- (void)appLoader:(EXKernelAppLoader *)appLoader didFinishLoadingManifest:(NSDictionary *)manifest bundle:(NSData *)data
-{
   // TODO: BEN:
   // dev --> hook up to RCTSource bundle progress, so does this method matter?
   // not dev --> hide loading screen and proceed with current logic
@@ -145,23 +133,26 @@ NS_ASSUME_NONNULL_BEGIN
   });
 }
 
+- (void)appLoader:(EXKernelAppLoader *)appLoader didLoadBundleWithProgress:(EXLoadingProgress *)progress
+{
+  dispatch_async(dispatch_get_main_queue(), ^{
+    _loadingView.progress = ([progress.done floatValue] / [progress.total floatValue]);
+  });
+}
+
+- (void)appLoader:(EXKernelAppLoader *)appLoader didFinishLoadingManifest:(NSDictionary *)manifest bundle:(NSData *)data
+{
+  if (_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {
+    [_appRecord.appManager appLoaderFinished];
+  }
+}
+
 - (void)appLoader:(EXKernelAppLoader *)appLoader didFailWithError:(NSError *)error
 {
   if (_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {
     [_appRecord.appManager appLoaderFailedWithError:error];
   }
-  BOOL isNetworkError = ([error.domain isEqualToString:(NSString *)kCFErrorDomainCFNetwork] ||
-                         [error.domain isEqualToString:EXNetworkErrorDomain]);
-  [EXUtil performSynchronouslyOnMainThread:^{
-    if (isNetworkError) {
-      // show a human-readable reachability error
-      [self showErrorWithType:kEXFatalErrorTypeLoading error:error];
-    } else {
-      // TODO: ben: handle other error cases
-      // also, can test for (error.code == kCFURLErrorNotConnectedToInternet)
-      [self showErrorWithType:kEXFatalErrorTypeException error:error];
-    }
-  }];
+  [self maybeShowError:error];
 }
 
 #pragma mark - EXReactAppManagerDelegate
@@ -206,12 +197,15 @@ NS_ASSUME_NONNULL_BEGIN
 {
   EXAssertMainThread();
   self.isLoading = NO;
-  [self showErrorWithType:kEXFatalErrorTypeLoading error:error];
+  [self maybeShowError:error];
 }
 
 - (void)reactAppManagerDidInvalidate:(EXReactAppManager *)appManager
 {
-  
+  if (_viewTestTimer) {
+    [_viewTestTimer invalidate];
+    _viewTestTimer = nil;
+  }
 }
 
 - (void)errorViewDidSelectRetry:(EXErrorView *)errorView
@@ -220,6 +214,26 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark - Internal
+
+- (void)_showErrorWithType:(EXFatalErrorType)type error:(nullable NSError *)error
+{
+  EXAssertMainThread();
+  if (_errorView && _contentView == _errorView) {
+    // already showing, just update
+    _errorView.type = type;
+    _errorView.error = error;
+  } {
+    [_contentView removeFromSuperview];
+    if (!_errorView) {
+      _errorView = [[EXErrorView alloc] initWithFrame:self.view.bounds];
+      _errorView.delegate = self;
+    }
+    _errorView.type = type;
+    _errorView.error = error;
+    _contentView = _errorView;
+    [self.view addSubview:_contentView];
+  }
+}
 
 - (void)setIsLoading:(BOOL)isLoading
 {

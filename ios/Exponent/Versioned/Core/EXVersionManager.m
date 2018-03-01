@@ -6,7 +6,6 @@
 #import "EXDisabledDevMenu.h"
 #import "EXDisabledRedBox.h"
 #import "EXFileSystem.h"
-#import "EXFrameExceptionsManager.h"
 #import "EXKernelModule.h"
 #import "EXVersionManager.h"
 #import "EXStatusBarManager.h"
@@ -18,6 +17,7 @@
 #import <React/RCTBridge+Private.h>
 #import <React/RCTDevMenu.h>
 #import <React/RCTDevSettings.h>
+#import <React/RCTExceptionsManager.h>
 #import <React/RCTLog.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTUtils.h>
@@ -272,6 +272,8 @@ void EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceClassName)
 }
 
 /**
+ * TODO: ben: audit
+ * 
  *  Expected params:
  *    NSDictionary *manifest
  *    NSDictionary *constants
@@ -285,9 +287,6 @@ void EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceClassName)
  *    EXKernel *kernel
  *    NSArray *supportedSdkVersions
  *    id exceptionsManagerDelegate
- *
- * Frame-only:
- *    EXFrame *frame
  */
 - (NSArray *)extraModulesWithParams:(NSDictionary *)params
 {
@@ -308,17 +307,13 @@ void EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceClassName)
   
   // add scoped modules
   [extraModules addObjectsFromArray:[self _newScopedModulesWithExperienceId:experienceId services:services params:params]];
-  
-  if (params[@"frame"]) {
-    [extraModules addObject:[[EXFrameExceptionsManager alloc] initWithDelegate:params[@"frame"]]];
+
+  id exceptionsManagerDelegate = params[@"exceptionsManagerDelegate"];
+  if (exceptionsManagerDelegate) {
+    RCTExceptionsManager *exceptionsManager = [[RCTExceptionsManager alloc] initWithDelegate:exceptionsManagerDelegate];
+    [extraModules addObject:exceptionsManager];
   } else {
-    id exceptionsManagerDelegate = params[@"exceptionsManagerDelegate"];
-    if (exceptionsManagerDelegate) {
-      RCTExceptionsManager *exceptionsManager = [[RCTExceptionsManager alloc] initWithDelegate:exceptionsManagerDelegate];
-      [extraModules addObject:exceptionsManager];
-    } else {
-      RCTLogWarn(@"No exceptions manager provided when building extra modules for bridge.");
-    }
+    RCTLogWarn(@"No exceptions manager provided when building extra modules for bridge.");
   }
   
   if (params[@"testEnvironment"]) {

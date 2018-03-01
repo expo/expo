@@ -73,7 +73,7 @@
     [self addSubview:_loadingIndicator];
     _lblShittyProgress = [[UILabel alloc] init];
     _lblShittyProgress.font = [UIFont boldSystemFontOfSize:14.0f];
-    _lblShittyProgress.textColor = [UIColor whiteColor];
+    _lblShittyProgress.textColor = [UIColor darkGrayColor];
     _lblShittyProgress.textAlignment = NSTextAlignmentCenter;
     _lblShittyProgress.hidden = YES;
     self.progress = 0;

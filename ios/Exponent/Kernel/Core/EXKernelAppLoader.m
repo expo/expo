@@ -84,6 +84,22 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   return nil;
 }
 
+- (void)forceBundleReload
+{
+  if (self.status == kEXKernelAppLoaderStatusNew) {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:@"Tried to load a bundle from an AppLoader with no manifest."
+                                 userInfo:@{}];
+  }
+  if (!_optimisticManifest) {
+    _optimisticManifest = _confirmedManifest;
+  }
+  if (_bundle) {
+    _bundle = nil;
+  }
+  [self _fetchRemoteJSBundleWithOptimisticManifest];
+}
+
 #pragma mark - public
 
 - (void)request
@@ -119,7 +135,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 {
   _confirmedManifest = _localManifest;
   _optimisticManifest = _localManifest;
-  [self _fetchRemoteJSBundleWithOptimisticManifest];
+  [self _fetchRemoteJSBundleInProductionWithOptimisticManifest];
   if (_delegate) {
     [_delegate appLoader:self didLoadOptimisticManifest:_optimisticManifest];
   }
@@ -194,13 +210,26 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   }
   [self _fetchManifestWithHttpUrl:_httpManifestUrl cacheBehavior:cacheBehavior success:^(NSDictionary * _Nonnull manifest) {
     _optimisticManifest = manifest;
-    [self _fetchRemoteJSBundleWithOptimisticManifest];
+    // if we're never using a cache, go ahead and confirm the manifest now
+    if (cacheBehavior == EXCachedResourceNoCache && !_confirmedManifest) {
+      _confirmedManifest = _optimisticManifest;
+    }
+    [self _fetchRemoteJSBundleInProductionWithOptimisticManifest];
     if (_delegate) {
       [_delegate appLoader:self didLoadOptimisticManifest:_optimisticManifest];
     }
   } failure:^(NSError * _Nonnull error) {
     [self _finishWithError:error];
   }];
+}
+
+- (void)_fetchRemoteJSBundleInProductionWithOptimisticManifest
+{
+  if ([self _areDevToolsEnabledWithManifest:_optimisticManifest]) {
+    // stop and wait for somebody to manually ask for the bundle via `forceBundleReload`.
+  } else {
+    [self _fetchRemoteJSBundleWithOptimisticManifest];
+  }
 }
 
 - (void)_fetchRemoteJSBundleWithOptimisticManifest
@@ -220,7 +249,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   } error:^(NSError * _Nonnull error) {
     // discard optimistic manifest.
     _optimisticManifest = nil;
-    [self _finishWithError:nil];
+    [self _finishWithError:error];
   }];
 }
 

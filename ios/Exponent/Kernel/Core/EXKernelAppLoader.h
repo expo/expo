@@ -34,7 +34,20 @@ typedef enum EXKernelAppLoaderStatus {
 
 - (instancetype)initWithManifestUrl:(NSURL *)url;
 - (instancetype)initWithLocalManifest:(NSDictionary * _Nonnull)manifest;
+
+/**
+ *  Begin a new request.
+ *  In production, this will fetch a manifest and a bundle using the caching behavior specified by the Updates API.
+ *  If the manifest enables developer tools, this will stop after it gets a manifest, and wait for `forceBundleReload`.
+ */
 - (void)request;
+
+/**
+ *  Reset status to `kEXKernelAppLoaderStatusHasManifest` and fetch the bundle at the existing
+ *  manifest. This is called when RN devtools reload an AppManager/RCTBridge directly
+ *  via reload, live reload, etc.
+ */
+- (void)forceBundleReload;
 
 @end
 
