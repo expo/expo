@@ -7,6 +7,7 @@
 #import "EXKernelUtil.h"
 #import "EXLog.h"
 #import "ExpoKit.h"
+#import "EXReactAppExceptionHandler.h"
 #import "EXReactAppManager+Private.h"
 #import "EXVersionManager.h"
 #import "EXVersions.h"
@@ -22,13 +23,10 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
 
 - (NSArray *)extraModulesForBridge:(RCTBridge *)bridge
 {
-  // TODO: BEN: error handling
-  // _exceptionHandler = [[EXExceptionHandler alloc] initWithBridge:self.reactBridge];
-  // ... @"exceptionsManagerDelegate": _exceptionHandler,
-  
   NSMutableArray *modules = [NSMutableArray array];
+  self.exceptionHandler = [[EXReactAppExceptionHandler alloc] initWithAppRecord:self.appRecord];
   
-  // TODO: common constants impl?
+  // TODO: ben: common params impl?
   NSMutableDictionary *params = [@{
                                    @"constants": @{
                                        @"deviceId": [EXKernel deviceInstallUUID],
@@ -36,7 +34,8 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
                                        @"linkingUri": @"exp://",
                                        @"manifest": self.appRecord.appLoader.manifest,
                                        @"appOwnership": @"expo",
-                                       },
+                                     },
+                                   @"exceptionsManagerDelegate": self.exceptionHandler,
                                    @"kernel": [EXKernel sharedInstance],
                                    @"supportedSdkVersions": [EXVersions sharedInstance].versions[@"sdkVersions"],
                                    @"isDeveloper": @([EXBuildConstants sharedInstance].isDevKernel),

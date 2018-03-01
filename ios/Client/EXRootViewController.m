@@ -10,6 +10,7 @@
 #import "EXKernelAppLoader.h"
 #import "EXKernelAppRecord.h"
 #import "EXKernelAppRegistry.h"
+#import "EXKernelLinkingManager.h"
 #import "EXKernelServiceRegistry.h"
 #import "EXMenuViewController.h"
 #import "EXRootViewController.h"
@@ -98,7 +99,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)menuViewControllerDidSelectRefresh:(EXMenuViewController *)menuVC
 {
   [self setIsMenuVisible:NO];
-  [[EXKernel sharedInstance].visibleApp.viewController refresh];
+  NSURL *urlToRefresh = [EXKernel sharedInstance].visibleApp.appLoader.manifestUrl;
+  [[EXKernel sharedInstance].serviceRegistry.linkingManager openUrl:urlToRefresh.absoluteString isUniversalLink:NO];
 }
 
 #pragma mark - internal

@@ -1,5 +1,6 @@
 
 #import "EXReactAppManager.h"
+#import "EXReactAppExceptionHandler.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -11,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) NSString *versionSymbolPrefix;
 @property (nonatomic, strong, nullable) NSString *validatedVersion;
+
+@property (nonatomic, strong) EXReactAppExceptionHandler *exceptionHandler;
 
 - (NSDictionary *)launchOptionsForBridge;
 

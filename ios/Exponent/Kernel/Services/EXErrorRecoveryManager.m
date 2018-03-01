@@ -4,6 +4,8 @@
 #import "EXErrorRecoveryManager.h"
 #import "EXKernel.h"
 
+#import <React/RCTAssert.h>
+
 // if the app crashes and it has not yet been 5 seconds since it loaded, don't auto refresh.
 #define EX_AUTO_REFRESH_BUFFER_BASE_SECONDS 5.0
 
@@ -96,6 +98,7 @@
       DDLogWarn(@"Ignoring misleading error: %@", error);
     } else {
       record.error = error;
+      NSLog(@"ben set error %p for record %p", error, record);
     }
   }
 }
@@ -111,11 +114,30 @@
   }
   for (NSString *experienceId in experienceIds) {
     EXErrorRecoveryRecord *record = [self _recordForExperienceId:experienceId];
-    if ([record.error isEqual:error]) {
+    if ([self isJSError:record.error equalToOtherJSError:error]) {
       return YES;
     }
   }
   return NO;
+}
+
+- (EXKernelAppRecord *)appRecordForError:(NSError *)error
+{
+  if (!error) {
+    return nil;
+  }
+  NSArray<NSString *> *experienceIds;
+  @synchronized (_experienceInfo) {
+    experienceIds = _experienceInfo.allKeys;
+  }
+  for (NSString *experienceId in experienceIds) {
+    EXErrorRecoveryRecord *record = [self _recordForExperienceId:experienceId];
+    NSLog(@"ben is record's error %p equal to error %p ?", record.error, error);
+    if ([self isJSError:record.error equalToOtherJSError:error]) {
+      return [[EXKernel sharedInstance].appRegistry newestRecordWithExperienceId:experienceId];
+    }
+  }
+  return nil;
 }
 
 - (void)experienceFinishedLoadingWithId:(NSString *)experienceId
@@ -170,6 +192,18 @@
 }
 
 #pragma mark - internal
+
+- (BOOL)isJSError:(NSError *)error1 equalToOtherJSError: (NSError *)error2
+{
+  // use rangeOfString: to catch versioned RCTErrorDomain
+  if ([error1.domain rangeOfString:RCTErrorDomain].length > 0 && [error2.domain rangeOfString:RCTErrorDomain].length > 0) {
+    NSDictionary *userInfo1 = error1.userInfo;
+    NSDictionary *userInfo2 = error2.userInfo;
+    // could also possibly compare ([userInfo1[RCTJSStackTraceKey] isEqual:userInfo2[RCTJSStackTraceKey]]) if this isn't enough
+    return ([userInfo1[NSLocalizedDescriptionKey] isEqualToString:userInfo2[NSLocalizedDescriptionKey]]);
+  }
+  return [error1 isEqual:error2];
+}
 
 - (EXErrorRecoveryRecord *)_recordForExperienceId: (NSString *)experienceId;
 {

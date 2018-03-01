@@ -1,9 +1,6 @@
 
-#import "EXReactAppManager.h"
-#import "EXReactAppManager+Private.h"
 #import "EXBuildConstants.h"
 #import "EXErrorRecoveryManager.h"
-#import "EXFatalHandler.h"
 #import "EXKernel.h"
 #import "EXKernelAppLoader.h"
 #import "EXKernelDevKeyCommands.h"
@@ -12,6 +9,8 @@
 #import "EXKernelUtil.h"
 #import "EXLog.h"
 #import "ExpoKit.h"
+#import "EXReactAppManager.h"
+#import "EXReactAppManager+Private.h"
 #import "EXShellManager.h"
 #import "EXVersionManager.h"
 #import "EXVersions.h"
@@ -57,16 +56,15 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (EXReactAppManagerStatus)status
 {
-  if (!_appRecord ||
-      [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:_appRecord.experienceId]) {
+  if (!_appRecord) {
     return kEXReactAppManagerStatusError;
-  }
-  if (_isBridgeRunning) {
-    return kEXReactAppManagerStatusRunning;
   }
   if (_loadCallback) {
     // we have a RCTBridge load callback so we're ready to receive load events
     return kEXReactAppManagerStatusBridgeLoading;
+  }
+  if (_isBridgeRunning) {
+    return kEXReactAppManagerStatusRunning;
   }
   return kEXReactAppManagerStatusNew;
 }
@@ -79,7 +77,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 - (void)rebuildBridge
 {
   EXAssertMainThread();
-  // TODO: BEN NSAssert((_delegate != nil), @"Cannot init react app without EXReactAppManagerDelegate");
+  NSAssert((_delegate != nil), @"Cannot init react app without EXReactAppManagerDelegate");
   [self _invalidateAndClearDelegate:NO];
   [self computeVersionSymbolPrefix];
   
@@ -101,7 +99,6 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     [_delegate reactAppManagerIsReadyForLoad:self];
     
     NSAssert([_reactBridge isLoading], @"React bridge should be loading once initialized");
-    [self _startObservingBridgeNotifications];
     [_versionManager bridgeWillStartLoading:_reactBridge];
   }
 }
@@ -115,6 +112,11 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     }
   }
   return nil;
+}
+
+- (void)invalidate
+{
+  [self _invalidateAndClearDelegate:YES];
 }
 
 - (void)_invalidateAndClearDelegate:(BOOL)clearDelegate
@@ -161,20 +163,18 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (RCTLogFunction)logFunction
 {
-  return (([self _doesManifestEnableDeveloperTools]) ? EXDeveloperRCTLogFunction : EXDefaultRCTLogFunction);
+  return (([self enablesDeveloperTools]) ? EXDeveloperRCTLogFunction : EXDefaultRCTLogFunction);
 }
 
 - (RCTLogLevel)logLevel
 {
-  return ([self _doesManifestEnableDeveloperTools]) ? RCTLogLevelInfo : RCTLogLevelWarning;
+  return ([self enablesDeveloperTools]) ? RCTLogLevelInfo : RCTLogLevelWarning;
 }
 
 - (BOOL)isReadyToLoad
 {
   if (_appRecord) {
-    // TODO: BEN: in dev mode, this should only check for manifest
-    // and then wire up loading callbacks.
-    return (_appRecord.appLoader.status == kEXKernelAppLoaderStatusHasManifestAndBundle);
+    return (_appRecord.appLoader.status == kEXKernelAppLoaderStatusHasManifest);
   }
   return NO;
 }
@@ -190,7 +190,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   _validatedVersion = nil;
 }
 
-- (BOOL)_doesManifestEnableDeveloperTools
+- (BOOL)enablesDeveloperTools
 {
   NSDictionary *manifest = _appRecord.appLoader.manifest;
   if (manifest) {
@@ -212,6 +212,11 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 {
   // clear any potentially old loading state
   [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:nil forExperienceId:_appRecord.experienceId];
+  [self _startObservingBridgeNotificationsForBridge:bridge];
+  
+  if ([self enablesDeveloperTools]) {
+    [_appRecord.appLoader forceBundleReload];
+  }
   
   _loadCallback = loadCallback;
   if (_appRecord.appLoader.status == kEXKernelAppLoaderStatusHasManifestAndBundle) {
@@ -228,7 +233,8 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   BOOL isDetached = [EXShellManager sharedInstance].isDetached;
   BOOL isStandardDevMenuAllowed = [EXKernelDevKeyCommands sharedInstance].isLegacyMenuBehaviorEnabled || isDetached;
   
-  // TODO: used to provide `frame` here
+  _exceptionHandler = [[EXReactAppExceptionHandler alloc] initWithAppRecord:_appRecord];
+
   NSDictionary *params = @{
                            @"manifest": _appRecord.appLoader.manifest,
                            @"constants": @{
@@ -237,9 +243,10 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
                                @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,
                                @"manifest": _appRecord.appLoader.manifest,
                                @"appOwnership": @"expo", // TODO: BEN (used to derive from frame initial props)
-                               },
+                             },
+                           @"exceptionsManagerDelegate": _exceptionHandler,
                            @"initialUri": [EXKernelLinkingManager uriTransformedForLinking:_appRecord.appLoader.manifestUrl isUniversalLink:NO], // TODO: _frame.initialUri
-                           @"isDeveloper": @([self _doesManifestEnableDeveloperTools]),
+                           @"isDeveloper": @([self enablesDeveloperTools]),
                            @"isStandardDevMenuAllowed": @(isStandardDevMenuAllowed),
                            @"testEnvironment": @([EXShellManager sharedInstance].testEnvironment),
                            @"services": [EXKernel sharedInstance].serviceRegistry.allServices,
@@ -257,6 +264,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     } else {
       _loadCallback(nil, [[RCTSource alloc] initWithURL:[self bundleUrl] data:data]);
     }
+    _loadCallback = nil;
   }
 }
 
@@ -264,7 +272,9 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 {
   // RN is going to call RCTFatal() on this error, so keep a reference to it for later
   // so we can distinguish this non-fatal error from actual fatal cases.
-  [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:error forExperienceId:_appRecord.experienceId];
+  if (_appRecord.experienceId) {
+    [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:error forExperienceId:_appRecord.experienceId];
+  }
   
   // react won't post this for us
   [[NSNotificationCenter defaultCenter] postNotificationName:[self versionedString:RCTJavaScriptDidFailToLoadNotification] object:error];
@@ -276,35 +286,36 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     } else {
       _loadCallback(error, nil);
     }
+    _loadCallback = nil;
   }
 }
 
 #pragma mark - JavaScript loading
 
-- (void)_startObservingBridgeNotifications
+- (void)_startObservingBridgeNotificationsForBridge:(RCTBridge *)bridge
 {
-  NSAssert(_reactBridge, @"Must subscribe to loading notifs for a non-null bridge");
+  NSAssert(bridge, @"Must subscribe to loading notifs for a non-null bridge");
   
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleJavaScriptStartLoadingEvent:)
                                                name:[self versionedString:RCTJavaScriptWillStartLoadingNotification]
-                                             object:_reactBridge];
+                                             object:bridge];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleJavaScriptLoadEvent:)
                                                name:[self versionedString:RCTJavaScriptDidLoadNotification]
-                                             object:_reactBridge];
+                                             object:bridge];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleJavaScriptLoadEvent:)
                                                name:[self versionedString:RCTJavaScriptDidFailToLoadNotification]
-                                             object:_reactBridge];
+                                             object:bridge];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleBridgeForegroundEvent:)
                                                name:kEXKernelBridgeDidForegroundNotification
-                                             object:_reactBridge];
+                                             object:bridge];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleBridgeBackgroundEvent:)
                                                name:kEXKernelBridgeDidBackgroundNotification
-                                             object:_reactBridge];
+                                             object:bridge];
 }
 
 - (void)_stopObservingBridgeNotifications
@@ -344,6 +355,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     });
   } else if ([notification.name isEqualToString:[self versionedString:RCTJavaScriptDidFailToLoadNotification]]) {
     NSError *error = (notification.userInfo) ? notification.userInfo[@"error"] : nil;
+    [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:error forExperienceId:_appRecord.experienceId];
     dispatch_async(dispatch_get_main_queue(), ^{
       __strong typeof(self) strongSelf = weakSelf;
       if (strongSelf) {
@@ -387,7 +399,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (void)showDevMenu
 {
-  if ([self _doesManifestEnableDeveloperTools]) {
+  if ([self enablesDeveloperTools]) {
     dispatch_async(dispatch_get_main_queue(), ^{
       [self.versionManager showDevMenuForBridge:self.reactBridge];
     });
@@ -396,21 +408,21 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (void)reloadBridge
 {
-  if ([self _doesManifestEnableDeveloperTools]) {
+  if ([self enablesDeveloperTools]) {
     [self.reactBridge reload];
   }
 }
 
 - (void)disableRemoteDebugging
 {
-  if ([self _doesManifestEnableDeveloperTools]) {
+  if ([self enablesDeveloperTools]) {
     [self.versionManager disableRemoteDebuggingForBridge:self.reactBridge];
   }
 }
 
 - (void)toggleElementInspector
 {
-  if ([self _doesManifestEnableDeveloperTools]) {
+  if ([self enablesDeveloperTools]) {
     [self.versionManager toggleElementInspectorForBridge:self.reactBridge];
   }
 }

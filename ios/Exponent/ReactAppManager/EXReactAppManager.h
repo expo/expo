@@ -23,12 +23,15 @@ typedef enum EXReactAppManagerStatus {
 
 - (instancetype)initWithAppRecord:(EXKernelAppRecord *)record;
 - (void)rebuildBridge;
+- (void)invalidate;
 
 // these are piped in from the view controller when the app manager is waiting for a bundle.
 - (void)appLoaderFinished;
 - (void)appLoaderFailedWithError:(NSError *)error;
 
 - (id)appLoadingManagerInstance;
+
+- (BOOL)enablesDeveloperTools;
 
 /**
  * Call reload on existing bridge (developer-facing devtools reload)

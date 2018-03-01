@@ -2,6 +2,7 @@
 
 #import "EXKernelAppRegistry.h"
 #import "EXKernelAppLoader.h"
+#import "EXReactAppManager.h"
 #import "EXKernel.h"
 #import "EXFrame.h"
 
@@ -41,6 +42,7 @@
     if (_delegate) {
       [_delegate appRegistry:self willUnregisterAppRecord:record];
     }
+    [record.appManager invalidate];
     [_appRegistry removeObjectForKey:recordId];
   }
 }

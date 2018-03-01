@@ -67,5 +67,13 @@ NSString *kEXKernelBridgeDidBackgroundNotification = @"EXKernelBridgeDidBackgrou
   return nil;
 }
 
+- (NSString *)description
+{
+  return [NSString stringWithFormat:@"EXKernelAppRecord %p:\n  url: %@\n  experience id: %@",
+          self,
+          self.appLoader.manifestUrl,
+          (self.experienceId) ? self.experienceId : @"(none)"];
+}
+
 @end
 
