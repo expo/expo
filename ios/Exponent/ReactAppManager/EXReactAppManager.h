@@ -11,7 +11,10 @@ typedef enum EXReactAppManagerStatus {
 
 @protocol EXReactAppManagerUIDelegate <NSObject>
 
-- (void)reactAppManagerIsReadyForDisplay:(EXReactAppManager *)appManager;
+- (void)reactAppManagerIsReadyForLoad:(EXReactAppManager *)appManager;
+- (void)reactAppManagerStartedLoadingJavaScript:(EXReactAppManager *)appManager;
+- (void)reactAppManagerFinishedLoadingJavaScript:(EXReactAppManager *)appManager;
+- (void)reactAppManager:(EXReactAppManager *)appManager failedToLoadJavaScriptWithError:(NSError *)error;
 - (void)reactAppManagerDidInvalidate:(EXReactAppManager *)appManager;
 
 @end
@@ -19,7 +22,13 @@ typedef enum EXReactAppManagerStatus {
 @interface EXReactAppManager : NSObject
 
 - (instancetype)initWithAppRecord:(EXKernelAppRecord *)record;
-- (void)reload;
+- (void)rebuildBridge;
+
+// these are piped in from the view controller when the app manager is waiting for a bundle.
+- (void)appLoaderFinished;
+- (void)appLoaderFailedWithError:(NSError *)error;
+
+- (id)appLoadingManagerInstance;
 
 /**
  * Call reload on existing bridge (developer-facing devtools reload)

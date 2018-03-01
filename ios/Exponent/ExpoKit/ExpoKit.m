@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "ExpoKit.h"
+#import "EXAppViewController.h"
 #import "EXAnalytics.h"
 #import "EXBuildConstants.h"
 #import "EXFacebook.h"
@@ -11,7 +12,6 @@
 #import "EXKernelLinkingManager.h"
 #import "EXRemoteNotificationManager.h"
 #import "EXLocalNotificationManager.h"
-#import "EXViewController.h"
 #import "EXBranchManager.h"
 #import "EXShellManager.h"
 
@@ -28,7 +28,8 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"EXAppD
   BOOL _hasConsumedLaunchNotification;
 }
 
-@property (nonatomic, nullable, strong) EXViewController *rootViewController;
+@property (nonatomic, nullable, strong) EXAppViewController *rootViewController;
+@property (nonatomic, strong) NSDictionary *launchOptions;
 
 @end
 
@@ -49,7 +50,7 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"EXAppD
 - (instancetype)init
 {
   if (self = [super init]) {
-    _rootViewControllerClass = [EXViewController class];
+    _rootViewControllerClass = [EXAppViewController class];
     _hasConsumedLaunchNotification = NO;
     
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -72,25 +73,20 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"EXAppD
 
 - (void)registerRootViewControllerClass:(Class)rootViewControllerClass
 {
-  NSAssert([rootViewControllerClass isSubclassOfClass:[EXViewController class]], @"ExpoKit root view controller class must subclass EXViewController.");
+  NSAssert([rootViewControllerClass isSubclassOfClass:[EXAppViewController class]], @"ExpoKit root view controller class must subclass EXAppViewController.");
   _rootViewControllerClass = rootViewControllerClass;
 }
 
-- (EXViewController *)rootViewController
+// TODO: ben: rewire this to AppDelegate
+- (EXAppViewController *)rootViewController
 {
   if (!_rootViewController) {
-    _rootViewController = [[_rootViewControllerClass alloc] initWithLaunchOptions:@{}];
+    _rootViewController = [[_rootViewControllerClass alloc] init];
   }
   return _rootViewController;
 }
 
 #pragma mark - misc AppDelegate hooks
-
-- (void)setLaunchOptions:(NSDictionary *)launchOptions
-{
-  // TODO: BEN: put this somewhere
-  // self.rootViewController.appManager.launchOptions = launchOptions;
-}
 
 - (void)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -126,7 +122,7 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"EXAppD
   // then registering for a push token is a no-op
   [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager registerForRemoteNotifications];
   [[EXKernel sharedInstance].serviceRegistry.branchManager application:application didFinishLaunchingWithOptions:launchOptions];
-  [self setLaunchOptions:launchOptions];
+  _launchOptions = launchOptions;
 }
 
 #pragma mark - handling JS loads
@@ -151,14 +147,13 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"EXAppD
 {
   if (!_hasConsumedLaunchNotification) {
     _hasConsumedLaunchNotification = YES;
-    NSDictionary *launchOptions = self.rootViewController.launchOptions;
-    NSDictionary *remoteNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+    NSDictionary *remoteNotification = [_launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
     
     if (remoteNotification) {
       [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager handleRemoteNotification:remoteNotification fromBackground:YES];
     }
     
-    UILocalNotification *localNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
+    UILocalNotification *localNotification = [_launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
     if (localNotification) {
       [[EXLocalNotificationManager sharedInstance] handleLocalNotification:localNotification fromBackground:YES];
     }

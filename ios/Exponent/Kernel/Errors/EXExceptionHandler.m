@@ -2,7 +2,6 @@
 
 #import "EXExceptionHandler.h"
 #import "EXKernel.h"
-#import "EXViewController.h"
 
 #import <Crashlytics/Crashlytics.h>
 #import <React/RCTAssert.h>

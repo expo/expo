@@ -11,7 +11,6 @@
 #import "EXManifestResource.h"
 #import "EXReactAppManager.h"
 #import "EXShellManager.h"
-#import "EXViewController.h"
 
 @implementation EXKernelModuleManager
 

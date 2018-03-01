@@ -11,6 +11,7 @@
 #import "EXKernelServiceRegistry.h"
 #import "EXKernelUtil.h"
 #import "EXLog.h"
+#import "ExpoKit.h"
 #import "EXShellManager.h"
 #import "EXVersionManager.h"
 #import "EXVersions.h"
@@ -75,7 +76,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   return _reactRootView;
 }
 
-- (void)reload
+- (void)rebuildBridge
 {
   EXAssertMainThread();
   // TODO: BEN NSAssert((_delegate != nil), @"Cannot init react app without EXReactAppManagerDelegate");
@@ -97,12 +98,23 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
                                                 moduleName:[self applicationKeyForRootView]
                                          initialProperties:[self initialPropertiesForRootView]];
     
-    [_delegate reactAppManagerIsReadyForDisplay:self];
+    [_delegate reactAppManagerIsReadyForLoad:self];
     
     NSAssert([_reactBridge isLoading], @"React bridge should be loading once initialized");
     [self _startObservingBridgeNotifications];
     [_versionManager bridgeWillStartLoading:_reactBridge];
   }
+}
+
+- (id)appLoadingManagerInstance
+{
+  Class loadingManagerClass = [self versionedClassFromString:@"EXAppLoadingManager"];
+  for (Class class in [self.reactBridge moduleClasses]) {
+    if ([class isSubclassOfClass:loadingManagerClass]) {
+      return [self.reactBridge moduleForClass:loadingManagerClass];
+    }
+  }
+  return nil;
 }
 
 - (void)_invalidateAndClearDelegate:(BOOL)clearDelegate
@@ -147,13 +159,11 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   return [EXVersions versionedString:string withPrefix:_versionSymbolPrefix];
 }
 
-// TODO: move to delegate?
 - (RCTLogFunction)logFunction
 {
   return (([self _doesManifestEnableDeveloperTools]) ? EXDeveloperRCTLogFunction : EXDefaultRCTLogFunction);
 }
 
-// TODO: move to delegate?
 - (RCTLogLevel)logLevel
 {
   return ([self _doesManifestEnableDeveloperTools]) ? RCTLogLevelInfo : RCTLogLevelWarning;
@@ -162,7 +172,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 - (BOOL)isReadyToLoad
 {
   if (_appRecord) {
-    // TODO: BEN: outside dev mode, this should only check for manifest
+    // TODO: BEN: in dev mode, this should only check for manifest
     // and then wire up loading callbacks.
     return (_appRecord.appLoader.status == kEXKernelAppLoaderStatusHasManifestAndBundle);
   }
@@ -205,10 +215,10 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   
   _loadCallback = loadCallback;
   if (_appRecord.appLoader.status == kEXKernelAppLoaderStatusHasManifestAndBundle) {
-    // finish loading immediately (app loader won't call this late)
-    [self appLoader:_appRecord.appLoader didFinishLoadingBundle:_appRecord.appLoader.bundle];
+    // finish loading immediately (app loader won't call this since it's already done)
+    [self appLoaderFinished];
   } else {
-    // TODO: mark self as ready to receive loading events
+    // wait for something else to call `appLoaderFinished` or `appLoaderFailed` later.
   }
 }
 
@@ -237,18 +247,9 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   return [self.versionManager extraModulesWithParams:params];
 }
 
-#pragma mark - EXKernelBundleLoaderDelegate
-
-- (void)appLoader:(EXKernelAppLoader *)appLoader didLoadBundleWithProgress:(EXLoadingProgress *)progress
+- (void)appLoaderFinished
 {
-  /* TODO: pass to view controller?
-   if (self.delegate) {
-    [self.delegate reactAppManager:self loadedJavaScriptWithProgress:progress];
-  } */
-}
-
-- (void)appLoader:(EXKernelAppLoader *)appLoader didFinishLoadingBundle:(NSData *)data
-{
+  NSData *data = _appRecord.appLoader.bundle;
   if (_loadCallback) {
     if ([self compareVersionTo:22] == NSOrderedAscending) {
       SDK21RCTSourceLoadBlock legacyLoadCallback = (SDK21RCTSourceLoadBlock)_loadCallback;
@@ -259,10 +260,8 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   }
 }
 
-- (void)appLoader:(EXKernelAppLoader *)appLoader didFailLoadingBundleWithError:(NSError *)error
+- (void)appLoaderFailedWithError:(NSError *)error
 {
-  // TODO: delegate [self.delegate reactAppManager:self failedToDownloadBundleWithError:error];
-  
   // RN is going to call RCTFatal() on this error, so keep a reference to it for later
   // so we can distinguish this non-fatal error from actual fatal cases.
   [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:error forExperienceId:_appRecord.experienceId];
@@ -323,7 +322,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   dispatch_async(dispatch_get_main_queue(), ^{
     __strong typeof(self) strongSelf = weakSelf;
     if (strongSelf) {
-      // TODO: how do we want to delegate? [strongSelf.delegate reactAppManagerStartedLoadingJavaScript:strongSelf];
+      [strongSelf.delegate reactAppManagerStartedLoadingJavaScript:strongSelf];
     }
   });
 }
@@ -335,11 +334,12 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     [_versionManager bridgeFinishedLoading];
     [self _handleBridgeForegroundEvent:nil];
     _isBridgeRunning = YES;
+    _hasBridgeEverLoaded = YES;
     dispatch_async(dispatch_get_main_queue(), ^{
       __strong typeof(self) strongSelf = weakSelf;
       if (strongSelf) {
         [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceFinishedLoadingWithId:strongSelf.appRecord.experienceId];
-        // TODO: delegate [strongSelf.delegate reactAppManagerFinishedLoadingJavaScript:strongSelf];
+        [strongSelf.delegate reactAppManagerFinishedLoadingJavaScript:strongSelf];
       }
     });
   } else if ([notification.name isEqualToString:[self versionedString:RCTJavaScriptDidFailToLoadNotification]]) {
@@ -347,7 +347,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     dispatch_async(dispatch_get_main_queue(), ^{
       __strong typeof(self) strongSelf = weakSelf;
       if (strongSelf) {
-        // TODO: delegate [strongSelf.delegate reactAppManager:strongSelf failedToLoadJavaScriptWithError:error];
+        [strongSelf.delegate reactAppManager:strongSelf failedToLoadJavaScriptWithError:error];
       }
     });
   }
@@ -429,9 +429,12 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   });
 }
 
-// TODO: remove?
 - (NSDictionary *)launchOptionsForBridge
 {
+  if ([EXShellManager sharedInstance].isShell) {
+    // pass the native app's launch options to shell bridge.
+    return [ExpoKit sharedInstance].launchOptions;
+  }
   return @{};
 }
 
@@ -491,7 +494,6 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
  EX_APP_MANAGER_ABSTRACT(- (NSString *)bundleNameForJSResource)
  EX_APP_MANAGER_ABSTRACT(- (EXCachedResourceBehavior)cacheBehaviorForJSResource)
  EX_APP_MANAGER_ABSTRACT(- (BOOL)shouldInvalidateJSResourceCache)
- EX_APP_MANAGER_ABSTRACT(- (NSDictionary * _Nullable)launchOptionsForBridge)
  EX_APP_MANAGER_ABSTRACT(- (NSDictionary * _Nullable)initialPropertiesForRootView)
  EX_APP_MANAGER_ABSTRACT(- (void)registerBridge)
  EX_APP_MANAGER_ABSTRACT(- (void)unregisterBridge)
@@ -575,16 +577,6 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 {
   [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:error forExperienceId:self.experienceId];
 }
-
-- (id)appLoadingManagerInstance
-{
-  Class loadingManagerClass = [self versionedClassFromString:@"EXAppLoadingManager"];
-  for (Class class in [self.reactBridge moduleClasses]) {
-    if ([class isSubclassOfClass:loadingManagerClass]) {
-      return [self.reactBridge moduleForClass:loadingManagerClass];
-    }
-  }
-  return nil;
-} */
+ */
 
 @end
