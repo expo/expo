@@ -15,6 +15,8 @@
 #import "EXShellManager.h"
 #import "EXUtil.h"
 
+#define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXAppViewController () <EXReactAppManagerUIDelegate, EXKernelAppLoaderDelegate, EXErrorViewDelegate>
@@ -25,10 +27,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) EXAppLoadingView *loadingView;
 @property (nonatomic, strong) EXErrorView *errorView;
 @property (nonatomic, strong) NSTimer *viewTestTimer;
+@property (nonatomic, assign) UIInterfaceOrientationMask supportedInterfaceOrientations; // override super
 
 @end
 
 @implementation EXAppViewController
+
+@synthesize supportedInterfaceOrientations = _supportedInterfaceOrientations;
 
 #pragma mark - Lifecycle
 
@@ -36,6 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   if (self = [super init]) {
     _appRecord = record;
+    _supportedInterfaceOrientations = EX_INTERFACE_ORIENTATION_USE_MANIFEST;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_appDidDisplay:) name:kEXKernelAppDidDisplay object:nil];
   }
   return self;
@@ -120,15 +126,26 @@ NS_ASSUME_NONNULL_BEGIN
   [_appRecord.appLoader request];
 }
 
+- (void)appDidBecomeVisible
+{
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self _enforceDesiredDeviceOrientation];
+  });
+  [_appRecord.appManager appDidBecomeVisible];
+}
+
+- (void)appDidBackground
+{
+  [_appRecord.appManager appDidBackground];
+}
+
 #pragma mark - EXKernelAppLoaderDelegate
 
 - (void)appLoader:(EXKernelAppLoader *)appLoader didLoadOptimisticManifest:(NSDictionary *)manifest
 {
   _loadingView.manifest = manifest;
-  // TODO: BEN:
-  // dev --> hook up to RCTSource bundle progress, so does this method matter?
-  // not dev --> hide loading screen and proceed with current logic
   dispatch_async(dispatch_get_main_queue(), ^{
+    [self _enforceDesiredDeviceOrientation];
     [self reload];
   });
 }
@@ -213,6 +230,73 @@ NS_ASSUME_NONNULL_BEGIN
   [self refresh];
 }
 
+#pragma mark - orientation
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+  if (_supportedInterfaceOrientations != EX_INTERFACE_ORIENTATION_USE_MANIFEST) {
+    return _supportedInterfaceOrientations;
+  }
+  if (_appRecord.appLoader.manifest) {
+    NSString *orientationConfig = _appRecord.appLoader.manifest[@"orientation"];
+    if ([orientationConfig isEqualToString:@"portrait"]) {
+      // lock to portrait
+      return UIInterfaceOrientationMaskPortrait;
+    } else if ([orientationConfig isEqualToString:@"landscape"]) {
+      // lock to landscape
+      return UIInterfaceOrientationMaskLandscape;
+    }
+  }
+  // no config or default value: allow autorotation
+  return UIInterfaceOrientationMaskAllButUpsideDown;
+}
+
+- (void)setSupportedInterfaceOrientations:(UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+  _supportedInterfaceOrientations = supportedInterfaceOrientations;
+  [self _enforceDesiredDeviceOrientation];
+}
+
+- (void)_enforceDesiredDeviceOrientation
+{
+  RCTAssertMainQueue();
+  UIInterfaceOrientationMask mask = [self supportedInterfaceOrientations];
+  UIDeviceOrientation currentOrientation = [[UIDevice currentDevice] orientation];
+  UIInterfaceOrientation newOrientation = UIInterfaceOrientationUnknown;
+  switch (mask) {
+    case UIInterfaceOrientationMaskPortrait:
+      if (!UIDeviceOrientationIsPortrait(currentOrientation)) {
+        newOrientation = UIInterfaceOrientationPortrait;
+      }
+      break;
+    case UIInterfaceOrientationMaskPortraitUpsideDown:
+      newOrientation = UIInterfaceOrientationPortraitUpsideDown;
+      break;
+    case UIInterfaceOrientationMaskLandscape:
+      if (!UIDeviceOrientationIsLandscape(currentOrientation)) {
+        newOrientation = UIInterfaceOrientationLandscapeLeft;
+      }
+      break;
+    case UIInterfaceOrientationMaskLandscapeLeft:
+      newOrientation = UIInterfaceOrientationLandscapeLeft;
+      break;
+    case UIInterfaceOrientationMaskLandscapeRight:
+      newOrientation = UIInterfaceOrientationLandscapeRight;
+      break;
+    case UIInterfaceOrientationMaskAllButUpsideDown:
+      if (currentOrientation == UIDeviceOrientationFaceDown) {
+        newOrientation = UIInterfaceOrientationPortrait;
+      }
+      break;
+    default:
+      break;
+  }
+  if (newOrientation != UIInterfaceOrientationUnknown) {
+    [[UIDevice currentDevice] setValue:@(newOrientation) forKey:@"orientation"];
+  }
+  [UIViewController attemptRotationToDeviceOrientation];
+}
+
 #pragma mark - Internal
 
 - (void)_showErrorWithType:(EXFatalErrorType)type error:(nullable NSError *)error
@@ -288,35 +372,6 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-/*
- TODO: ben: orientation. should this be in a different class?
- // also, should be using orientationsForMyAppRecord rather than foregroundExperience
-- (UIInterfaceOrientationMask)supportedInterfaceOrientations
-{
-  [EXKernel sharedInstance].serviceRegistry.screenOrientationManager supportedInterfaceOrientationsForForegroundExperience];
-  return [super supportedInterfaceOrientations];
-}
-- (void)reactAppManagerDidForeground:(EXReactAppManager *)appManager
-{
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [self _enforceKernelOrientation];
-  });
-  
-  - (void)_enforceKernelOrientation
-  {
-    EXAssertMainThread();
-    UIInterfaceOrientationMask mask = [self supportedInterfaceOrientations];
-    UIDeviceOrientation currentOrientation = [[UIDevice currentDevice] orientation];
-    if (mask == UIInterfaceOrientationMaskLandscape && (currentOrientation == UIDeviceOrientationPortrait)) {
-      [[UIDevice currentDevice] setValue:@(UIInterfaceOrientationLandscapeLeft) forKey:@"orientation"];
-    } else if (mask == UIInterfaceOrientationMaskPortrait && (currentOrientation != UIDeviceOrientationPortrait)) {
-      [[UIDevice currentDevice] setValue:@(UIDeviceOrientationPortrait) forKey:@"orientation"];
-    }
-    [UIViewController attemptRotationToDeviceOrientation];
-  } */
-
 @end
 
 NS_ASSUME_NONNULL_END
-
-

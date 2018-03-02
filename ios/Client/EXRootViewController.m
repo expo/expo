@@ -61,12 +61,9 @@ NS_ASSUME_NONNULL_BEGIN
   return YES;
 }
 
-// TODO: ben: maybe these shouldn't live here?
-// because ExpoKit won't have this controller.
-// instead it should pass thru to foreground controller.
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-  return [[EXKernel sharedInstance].serviceRegistry.screenOrientationManager supportedInterfaceOrientationsForForegroundExperience];
+  return [[EXKernel sharedInstance].serviceRegistry.screenOrientationManager supportedInterfaceOrientationsForVisibleApp];
 }
 
 #pragma mark - EXAppBrowserController

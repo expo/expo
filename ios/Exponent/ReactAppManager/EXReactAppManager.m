@@ -146,9 +146,15 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (void)computeVersionSymbolPrefix
 {
-  // TODO: kernel checks detached versions here
+  // TODO: ben: kernel checks detached versions here
   _validatedVersion = [[EXVersions sharedInstance] availableSdkVersionForManifest:_appRecord.appLoader.manifest];
   _versionSymbolPrefix = [[EXVersions sharedInstance] symbolPrefixForSdkVersion:self.validatedVersion isKernel:NO];
+}
+
+- (void)_invalidateVersionState
+{
+  _versionSymbolPrefix = @"";
+  _validatedVersion = nil;
 }
 
 - (Class)versionedClassFromString: (NSString *)classString
@@ -184,12 +190,6 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   return [NSURL URLWithString:[_appRecord.appLoader.manifest objectForKey:@"bundleUrl"]];
 }
 
-- (void)_invalidateVersionState
-{
-  _versionSymbolPrefix = @"";
-  _validatedVersion = nil;
-}
-
 - (BOOL)enablesDeveloperTools
 {
   NSDictionary *manifest = _appRecord.appLoader.manifest;
@@ -199,6 +199,16 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     return (isDeployedFromTool);
   }
   return false;
+}
+
+- (void)appDidBecomeVisible
+{
+  [_versionManager bridgeDidForeground];
+}
+
+- (void)appDidBackground
+{
+  [_versionManager bridgeDidBackground];
 }
 
 #pragma mark - RCTBridgeDelegate
@@ -308,14 +318,6 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
                                            selector:@selector(_handleJavaScriptLoadEvent:)
                                                name:[self versionedString:RCTJavaScriptDidFailToLoadNotification]
                                              object:bridge];
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(_handleBridgeForegroundEvent:)
-                                               name:kEXKernelBridgeDidForegroundNotification
-                                             object:bridge];
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(_handleBridgeBackgroundEvent:)
-                                               name:kEXKernelBridgeDidBackgroundNotification
-                                             object:bridge];
 }
 
 - (void)_stopObservingBridgeNotifications
@@ -323,8 +325,6 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   [[NSNotificationCenter defaultCenter] removeObserver:self name:[self versionedString:RCTJavaScriptWillStartLoadingNotification] object:_reactBridge];
   [[NSNotificationCenter defaultCenter] removeObserver:self name:[self versionedString:RCTJavaScriptDidLoadNotification] object:_reactBridge];
   [[NSNotificationCenter defaultCenter] removeObserver:self name:[self versionedString:RCTJavaScriptDidFailToLoadNotification] object:_reactBridge];
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:kEXKernelBridgeDidForegroundNotification object:_reactBridge];
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:kEXKernelBridgeDidBackgroundNotification object:_reactBridge];
 }
 
 - (void)_handleJavaScriptStartLoadingEvent:(NSNotification *)notification
@@ -343,7 +343,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   __weak typeof(self) weakSelf = self;
   if ([notification.name isEqualToString:[self versionedString:RCTJavaScriptDidLoadNotification]]) {
     [_versionManager bridgeFinishedLoading];
-    [self _handleBridgeForegroundEvent:nil];
+    [self appDidBecomeVisible]; // TODO: ben: check if this is needed
     _isBridgeRunning = YES;
     _hasBridgeEverLoaded = YES;
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -380,22 +380,6 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 }
 
 #pragma mark - TODO: BEN
-
-- (void)_handleBridgeForegroundEvent:(NSNotification * _Nullable)notification
-{
-  /* TODO: delegate if ([_delegate respondsToSelector:@selector(reactAppManagerDidForeground:)]) {
-   [_delegate reactAppManagerDidForeground:self];
-   } */
-  [_versionManager bridgeDidForeground];
-}
-
-- (void)_handleBridgeBackgroundEvent:(NSNotification *)notification
-{
-  /* TODO: delegate if ([_delegate respondsToSelector:@selector(reactAppManagerDidBackground:)]) {
-   [_delegate reactAppManagerDidBackground:self];
-   } */
-  [_versionManager bridgeDidBackground];
-}
 
 - (void)showDevMenu
 {
@@ -585,10 +569,6 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   [[EXAnalytics sharedInstance] logEvent:eventId manifestUrl:manifestUrl eventProperties:eventProperties];
 }
 
-- (void)registerErrorForBridge:(NSError *)error
-{
-  [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:error forExperienceId:self.experienceId];
-}
  */
 
 @end
