@@ -80,10 +80,11 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
 - (void)_onKernelJSLoaded
 {
   // used by appetize: optionally disable nux
-  // TODO: ben: audit
   BOOL disableNuxDefaultsValue = [[NSUserDefaults standardUserDefaults] boolForKey:EXKernelDisableNuxDefaultsKey];
   if (disableNuxDefaultsValue) {
-    [self dispatchKernelJSEvent:@"resetNuxState" body:@{ @"isNuxCompleted": @YES } onSuccess:nil onFailure:nil];
+    // TODO: ben: nux home
+    // TODO: ben: snack
+    // [self dispatchKernelJSEvent:@"resetNuxState" body:@{ @"isNuxCompleted": @YES } onSuccess:nil onFailure:nil];
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:EXKernelDisableNuxDefaultsKey];
   }
 }
@@ -132,21 +133,6 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
   [self moveAppToVisible:app];
 }
 
-- (void)dispatchKernelJSEvent:(NSString *)eventName body:(NSDictionary *)eventBody onSuccess:(void (^_Nullable)(NSDictionary * _Nullable))success onFailure:(void (^_Nullable)(NSString * _Nullable))failure
-{
-  // TODO: ben: kill me
-  /* EXKernelModule *kernelModule = [self nativeModuleForAppManager:_appRegistry.kernelAppManager named:@"ExponentKernel"];
-  if (kernelModule) {
-    [kernelModule dispatchJSEvent:eventName body:eventBody onSuccess:success onFailure:failure];
-  } */
-}
-
-- (void)_dispatchJSEvent:(NSString *)eventName body:(NSDictionary *)eventBody onAppManager:(EXReactAppManager *)appManager
-{
-  [appManager.reactBridge enqueueJSCall:@"RCTDeviceEventEmitter.emit"
-                                   args:eventBody ? @[eventName, eventBody] : @[eventName]];
-}
-
 - (id)nativeModuleForAppManager:(EXReactAppManager *)appManager named:(NSString *)moduleName
 {
   id destinationBridge = appManager.reactBridge;
@@ -169,6 +155,44 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
   return nil;
 }
 
+- (void)sendNotification:(NSDictionary *)notifBody
+      toExperienceWithId:(NSString *)destinationExperienceId
+          fromBackground:(BOOL)isFromBackground
+                isRemote:(BOOL)isRemote
+{
+  EXKernelAppRecord *destinationApp = [_appRegistry newestRecordWithExperienceId:destinationExperienceId];
+
+  // if the notification came from the background, in most but not all cases, this means the user acted on an iOS notification
+  // and caused the app to launch.
+  // From SO:
+  // > Note that "App opened from Notification" will be a false positive if the notification is sent while the user is on a different
+  // > screen (for example, if they pull down the status bar and then receive a notification from your app).
+  NSDictionary *bodyWithOrigin = @{
+                                   @"origin": (isFromBackground) ? @"selected" : @"received",
+                                   @"remote": @(isRemote),
+                                   @"data": notifBody,
+                                   };
+  if (destinationApp) {
+    // send the body to the already-open experience
+    [self _dispatchJSEvent:@"Exponent.notification" body:bodyWithOrigin toApp:destinationApp];
+    [self moveAppToVisible:destinationApp];
+  } else {
+    // no app is currently running for this experience id.
+    // if we're Expo Client, we can query Home for a past experience in the user's history, and route the notification there.
+    if (_browserController) {
+      __weak typeof(self) weakSelf = self;
+      [_browserController getHistoryUrlForExperienceId:destinationExperienceId completion:^(NSString *urlString) {
+        if (urlString) {
+          NSURL *url = [NSURL URLWithString:urlString];
+          if (url) {
+            [weakSelf createNewAppWithUrl:url initialProps:@{ @"notification": bodyWithOrigin }];
+          }
+        }
+      }];
+    }
+  }
+}
+
 /**
  *  If the bridge has a batchedBridge or parentBridge selector, posts the notification on that object as well.
  */
@@ -182,48 +206,17 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
   }
 }
 
-- (void)sendNotification:(NSDictionary *)notifBody
-      toExperienceWithId:(NSString *)destinationExperienceId
-          fromBackground:(BOOL)isFromBackground
-                isRemote:(BOOL)isRemote
+- (void)_dispatchJSEvent:(NSString *)eventName body:(NSDictionary *)eventBody toApp:(EXKernelAppRecord *)appRecord
 {
-  EXReactAppManager *destinationAppManager = _appRegistry.homeAppRecord.appManager; // TODO: BEN
-  EXKernelAppRecord *recordWithExperienceId = [_appRegistry newestRecordWithExperienceId:destinationExperienceId];
-  if (recordWithExperienceId && recordWithExperienceId.appManager) {
-    destinationAppManager = recordWithExperienceId.appManager;
-  }
-  // if the notification came from the background, in most but not all cases, this means the user acted on an iOS notification
-  // and caused the app to launch.
-  // From SO:
-  // > Note that "App opened from Notification" will be a false positive if the notification is sent while the user is on a different
-  // > screen (for example, if they pull down the status bar and then receive a notification from your app).
-  NSDictionary *bodyWithOrigin = @{
-                                   @"origin": (isFromBackground) ? @"selected" : @"received",
-                                   @"remote": @(isRemote),
-                                   @"data": notifBody,
-                                   };
-  if (destinationAppManager) {
-    if (destinationAppManager == _appRegistry.homeAppRecord.appManager) { // TODO: BEN
-      // send both the body and the experience id, so we can open a new experience from the kernel
-      [self _dispatchJSEvent:@"Exponent.notification"
-                        body:@{
-                               @"body": bodyWithOrigin,
-                               @"experienceId": destinationExperienceId,
-                               }
-                onAppManager:_appRegistry.homeAppRecord.appManager]; // TODO: BEN
-    } else {
-      // send the body to the already-open experience
-      [self _dispatchJSEvent:@"Exponent.notification" body:bodyWithOrigin onAppManager:destinationAppManager];
-      // TODO [self _moveAppToVisible:TODO: BEN];
-    }
-  }
+  [appRecord.appManager.reactBridge enqueueJSCall:@"RCTDeviceEventEmitter.emit"
+                                             args:eventBody ? @[eventName, eventBody] : @[eventName]];
 }
 
 #pragma mark - App State
 
-- (void)createNewAppWithUrl:(NSURL *)url
+- (void)createNewAppWithUrl:(NSURL *)url initialProps:(nullable NSDictionary *)initialProps
 {
-  NSString *recordId = [_appRegistry registerAppWithManifestUrl:url];
+  NSString *recordId = [_appRegistry registerAppWithManifestUrl:url initialProps:initialProps];
   EXKernelAppRecord *record = [_appRegistry recordForId:recordId];
   [self moveAppToVisible:record];
 }

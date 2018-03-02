@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)moveAppToVisible:(EXKernelAppRecord *)appRecord;
 - (void)toggleMenu;
 - (void)showDiagnostics;
+- (void)getHistoryUrlForExperienceId:(NSString *)experienceId completion:(void (^)(NSString * _Nullable))completion;
 
 @end
 
@@ -28,25 +29,15 @@ FOUNDATION_EXPORT NSString * const kEXKernelClearJSCacheUserDefaultsKey;
 
 @property (nonatomic, strong, readonly) EXKernelAppRegistry *appRegistry;
 @property (nonatomic, strong, readonly) EXKernelServiceRegistry *serviceRegistry;
+@property (nonatomic, readonly) EXKernelAppRecord *visibleApp;
+@property (nonatomic, assign) id<EXAppBrowserController> browserController;
 
 + (instancetype)sharedInstance;
 
-- (void)createNewAppWithUrl:(NSURL *)url;
+- (void)createNewAppWithUrl:(NSURL *)url initialProps:(nullable NSDictionary *)initialProps;
 - (void)moveAppToVisible:(EXKernelAppRecord *)appRecord;
 - (void)switchTasks;
 - (void)appDidBecomeVisible:(EXKernelAppRecord *)appRecord;
-
-@property (nonatomic, assign) id<EXAppBrowserController> browserController;
-@property (nonatomic, readonly) EXKernelAppRecord *visibleApp;
-
-/**
- *  Dispatch a JS event to the kernel bridge, with optional completion handlers.
- */
-// TODO: ben: audit
-- (void)dispatchKernelJSEvent: (NSString *)eventName
-                   body: (NSDictionary *)eventBody
-              onSuccess: (void (^_Nullable)(NSDictionary * _Nullable ))success
-              onFailure: (void (^_Nullable)(NSString * _Nullable ))failure;
 
 /**
  *  Send a notification to a given experience id.

@@ -176,7 +176,7 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
 
 - (void)_onTapResetNux
 {
-  [[EXKernel sharedInstance] dispatchKernelJSEvent:@"resetNuxState" body:@{ @"isNuxCompleted": @NO } onSuccess:nil onFailure:nil];
+  // TODO: ben: nux home [[EXKernel sharedInstance] dispatchKernelJSEvent:@"resetNuxState" body:@{ @"isNuxCompleted": @NO } onSuccess:nil onFailure:nil];
   [self dismissViewControllerAnimated:YES completion:nil];
 }
 

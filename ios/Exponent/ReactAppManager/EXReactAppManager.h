@@ -21,7 +21,7 @@ typedef enum EXReactAppManagerStatus {
 
 @interface EXReactAppManager : NSObject
 
-- (instancetype)initWithAppRecord:(EXKernelAppRecord *)record;
+- (instancetype)initWithAppRecord:(EXKernelAppRecord *)record initialProps:(NSDictionary *)initialProps;
 - (void)rebuildBridge;
 - (void)invalidate;
 

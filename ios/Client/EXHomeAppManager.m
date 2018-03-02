@@ -4,6 +4,7 @@
 #import "EXKernel.h"
 #import "EXKernelAppLoader.h"
 #import "EXKernelLinkingManager.h"
+#import "EXKernelModule.h"
 #import "EXKernelUtil.h"
 #import "EXLog.h"
 #import "ExpoKit.h"
@@ -20,6 +21,18 @@ NSString *kEXHomeBundleResourceName = @"kernel.ios";
 NSString *kEXHomeManifestResourceName = @"kernel-manifest";
 
 @implementation EXHomeAppManager
+
+- (void)getHistoryUrlForExperienceId:(NSString *)experienceId completion:(void (^)(NSString *))completion
+{
+  [self _dispatchHomeJSEvent:@"getHistoryUrlForExperienceId"
+                        body:@{ @"experienceId": experienceId }
+                   onSuccess:^(NSDictionary *result) {
+                     NSString *url = result[@"url"];
+                     completion(url);
+                   } onFailure:^(NSString *errorMessage) {
+                     completion(nil);
+                   }];
+}
 
 - (NSArray *)extraModulesForBridge:(RCTBridge *)bridge
 {
@@ -96,6 +109,18 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
 }
 
 #pragma mark - util
+
+- (void)_dispatchHomeJSEvent:(NSString *)eventName body:(NSDictionary *)eventBody onSuccess:(void (^_Nullable)(NSDictionary * _Nullable))success onFailure:(void (^_Nullable)(NSString * _Nullable))failure
+{
+  EXKernelModule *kernelModule = [[EXKernel sharedInstance] nativeModuleForAppManager:self named:@"ExponentKernel"];
+  if (kernelModule) {
+    [kernelModule dispatchJSEvent:eventName body:eventBody onSuccess:success onFailure:failure];
+  } else {
+    if (failure) {
+      failure(nil);
+    }
+  }
+}
 
 + (NSDictionary * _Nullable)bundledHomeManifest
 {

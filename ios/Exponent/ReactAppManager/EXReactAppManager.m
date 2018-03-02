@@ -41,15 +41,17 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 @property (nonatomic, strong) UIView * __nullable reactRootView;
 @property (nonatomic, copy) RCTSourceLoadBlock loadCallback;
+@property (nonatomic, strong) NSDictionary *initialProps;
 
 @end
 
 @implementation EXReactAppManager
 
-- (instancetype)initWithAppRecord:(EXKernelAppRecord *)record
+- (instancetype)initWithAppRecord:(EXKernelAppRecord *)record initialProps:(NSDictionary *)initialProps
 {
   if (self = [super init]) {
     _appRecord = record;
+    _initialProps = initialProps;
   }
   return self;
 }
@@ -466,11 +468,13 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager increaseAutoReloadBuffer];
   }
   
-  // TODO: ben: push: initial props contain push payload
   // TODO: ben: shell:
   //   initial props contain shell: true when this is standalone app record
   expProps[@"shell"] = @NO;
   expProps[@"appOwnership"] = [self _appOwnership];
+  if (_initialProps) {
+    [expProps addEntriesFromDictionary:_initialProps];
+  }
   
   expProps[@"manifest"] = _appRecord.appLoader.manifest;
   if (_appRecord.appLoader.manifestUrl) {

@@ -85,6 +85,12 @@ NS_ASSUME_NONNULL_BEGIN
   [self presentViewController:vcDiagnostics animated:NO completion:nil];
 }
 
+- (void)getHistoryUrlForExperienceId:(NSString *)experienceId completion:(void (^)(NSString *))completion
+{
+  EXHomeAppManager *homeAppManager = (EXHomeAppManager *)[EXKernel sharedInstance].appRegistry.homeAppRecord.appManager;
+  return [homeAppManager getHistoryUrlForExperienceId:experienceId completion:completion];
+}
+
 #pragma mark - EXMenuDelegate
 
 - (void)menuViewControllerDidSelectHome:(EXMenuViewController *)menuVC
@@ -97,7 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   [self setIsMenuVisible:NO];
   NSURL *urlToRefresh = [EXKernel sharedInstance].visibleApp.appLoader.manifestUrl;
-  [[EXKernel sharedInstance] createNewAppWithUrl:urlToRefresh];
+  [[EXKernel sharedInstance] createNewAppWithUrl:urlToRefresh initialProps:nil];
 }
 
 #pragma mark - internal

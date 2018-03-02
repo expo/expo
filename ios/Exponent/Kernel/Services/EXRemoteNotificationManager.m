@@ -136,13 +136,14 @@ NSString * const kEXCurrentAPNSTokenDefaultsKey = @"EXCurrentAPNSTokenDefaultsKe
         @"development": @([EXProvisioningProfile mainProvisioningProfile].development),
       };
       __weak typeof(self) weakSelf = self;
-      [[EXKernel sharedInstance] dispatchKernelJSEvent:@"updateDeviceToken" body:eventParams onSuccess:^(NSDictionary *result) {
+      // TODO: ben: notifs
+      /* [[EXKernel sharedInstance] dispatchKernelJSEvent:@"updateDeviceToken" body:eventParams onSuccess:^(NSDictionary *result) {
         weakSelf.isLatestTokenPosted = YES;
         weakSelf.isPostingToken = NO;
       } onFailure:^(NSString *message) {
         DDLogInfo(@"Failed to post APNS token: %@", message);
         weakSelf.isPostingToken = NO;
-      }];
+      }]; */
     }
   }
 }
@@ -153,7 +154,8 @@ NSString * const kEXCurrentAPNSTokenDefaultsKey = @"EXCurrentAPNSTokenDefaultsKe
                                 @"experienceId": experienceId,
                                   @"deviceId": [EXKernel deviceInstallUUID],
                                 };
-  [[EXKernel sharedInstance] dispatchKernelJSEvent:@"getExponentPushToken" body:eventParams onSuccess:success onFailure:failure];
+  // TODO: ben: notifs
+  // [[EXKernel sharedInstance] dispatchKernelJSEvent:@"getExponentPushToken" body:eventParams onSuccess:success onFailure:failure];
 }
 
 - (BOOL)_disableDetachedPushNotifications
