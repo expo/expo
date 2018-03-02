@@ -248,14 +248,14 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   NSDictionary *params = @{
                            @"manifest": _appRecord.appLoader.manifest,
                            @"constants": @{
-                               @"linkingUri": [EXKernelLinkingManager linkingUriForExperienceUri:_appRecord.appLoader.manifestUrl], // TODO: _frame.initialUri
+                               @"linkingUri": [EXKernelLinkingManager linkingUriForExperienceUri:_appRecord.appLoader.manifestUrl],
                                @"deviceId": [EXKernel deviceInstallUUID],
                                @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,
                                @"manifest": _appRecord.appLoader.manifest,
-                               @"appOwnership": @"expo", // TODO: BEN (used to derive from frame initial props)
+                               @"appOwnership": [self _appOwnership],
                              },
                            @"exceptionsManagerDelegate": _exceptionHandler,
-                           @"initialUri": [EXKernelLinkingManager uriTransformedForLinking:_appRecord.appLoader.manifestUrl isUniversalLink:NO], // TODO: _frame.initialUri
+                           @"initialUri": [EXKernelLinkingManager uriTransformedForLinking:_appRecord.appLoader.manifestUrl isUniversalLink:NO],
                            @"isDeveloper": @([self enablesDeveloperTools]),
                            @"isStandardDevMenuAllowed": @(isStandardDevMenuAllowed),
                            @"testEnvironment": @([EXShellManager sharedInstance].testEnvironment),
@@ -434,7 +434,6 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   return @{};
 }
 
-// TODO: remove?
 - (NSString *)applicationKeyForRootView
 {
   NSDictionary *manifest = _appRecord.appLoader.manifest;
@@ -456,21 +455,35 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   return @"main";
 }
 
-// TODO: simplify
 - (NSDictionary * _Nullable)initialPropertiesForRootView
 {
   NSMutableDictionary *props = [NSMutableDictionary dictionary];
   NSMutableDictionary *expProps = [NSMutableDictionary dictionary];
-  
+
   NSDictionary *errorRecoveryProps = [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager developerInfoForExperienceId:_appRecord.experienceId];
   if (errorRecoveryProps && [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:_appRecord.experienceId]) {
     expProps[@"errorRecovery"] = errorRecoveryProps;
     [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager increaseAutoReloadBuffer];
   }
   
-  props[@"exp"] = expProps;
+  // TODO: ben: push: initial props contain push payload
+  // TODO: ben: shell:
+  //   initial props contain shell: true when this is standalone app record
+  expProps[@"shell"] = @NO;
+  expProps[@"appOwnership"] = [self _appOwnership];
   
+  expProps[@"manifest"] = _appRecord.appLoader.manifest;
+  if (_appRecord.appLoader.manifestUrl) {
+    expProps[@"initialUri"] = _appRecord.appLoader.manifestUrl;
+  }
+  props[@"exp"] = expProps;
   return props;
+}
+
+- (NSString *)_appOwnership
+{
+  // TODO: ben: shell: initial props change appOwnership to standalone when this is standalone app record
+  return @"expo";
 }
 
 /**

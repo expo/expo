@@ -31,6 +31,7 @@ FOUNDATION_EXPORT NSString * const kEXKernelClearJSCacheUserDefaultsKey;
 
 + (instancetype)sharedInstance;
 
+- (void)createNewAppWithUrl:(NSURL *)url;
 - (void)moveAppToVisible:(EXKernelAppRecord *)appRecord;
 - (void)switchTasks;
 - (void)appDidBecomeVisible:(EXKernelAppRecord *)appRecord;
@@ -62,9 +63,9 @@ FOUNDATION_EXPORT NSString * const kEXKernelClearJSCacheUserDefaultsKey;
 - (id)nativeModuleForAppManager:(EXReactAppManager *)appManager named:(NSString *)moduleName;
 
 /**
- *  Send the given url to this app manager (via the Linking module) and foreground it.
+ *  Send the given url to this app (via the RN Linking module) and foreground it.
  */
-- (void)openUrl:(NSString *)url onAppManager:(EXReactAppManager *)appManager;
+- (void)sendUrl:(NSString *)url toAppRecord:(EXKernelAppRecord *)app;
 
 /**
  *  An id that uniquely identifies this installation of Exponent.

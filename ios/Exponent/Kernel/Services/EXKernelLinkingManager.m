@@ -1,8 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXKernelLinkingManager.h"
-#import "EXFrame.h"
 #import "EXKernel.h"
+#import "EXKernelAppLoader.h"
+#import "EXKernelLinkingManager.h"
 #import "EXReactAppManager.h"
 #import "EXShellManager.h"
 #import "EXVersions.h"
@@ -26,15 +26,12 @@
     return;
   }
   EXKernelAppRegistry *appRegistry = [EXKernel sharedInstance].appRegistry;
-
-  // kernel bridge is our default handler for this url
-  // because it can open a new bridge if we don't already have one.
-  EXReactAppManager *destinationAppManager;
-  NSURL *urlToRoute;
+  EXKernelAppRecord *destinationApp = nil;
+  NSURL *urlToRoute = nil;
 
   if (isUniversalLink && [EXShellManager sharedInstance].isShell) {
     /*
-     TODO: ben: restore universal link support
+     TODO: ben: shell: restore universal link support
     // Find the app manager for the shell app.
     urlToRoute = url;
     for (NSString *recordId in [appRegistry appEnumerator]) {
@@ -49,47 +46,26 @@
     } */
   } else {
     urlToRoute = [[self class] uriTransformedForLinking:url isUniversalLink:isUniversalLink];
-    destinationAppManager = appRegistry.homeAppRecord.appManager; // TODO: BEN
 
     for (NSString *recordId in [appRegistry appEnumerator]) {
       EXKernelAppRecord *appRecord = [appRegistry recordForId:recordId];
       if (!appRecord || appRecord.status != kEXKernelAppRecordStatusRunning) {
         continue;
       }
-      // TODO: ben: restore frame.initialUri without frame
-      /* (if (appRecord.appManager && [urlToRoute.absoluteString hasPrefix:[[self class] linkingUriForExperienceUri:appRecord.appManager.frame.initialUri]]) {
+      if (appRecord.appLoader.manifestUrl && [urlToRoute.absoluteString hasPrefix:[[self class] linkingUriForExperienceUri:appRecord.appLoader.manifestUrl]]) {
         // this is a link into a bridge we already have running.
         // use this bridge as the link's destination instead of the kernel.
-        destinationAppManager = appRecord.appManager;
+        destinationApp = appRecord;
         break;
-      } */
+      }
     }
   }
-  
-  // TODO: ben
-  NSString *recordId = [appRegistry registerAppWithManifestUrl:urlToRoute];
-  EXKernelAppRecord *record = [appRegistry recordForId:recordId];
-  [[EXKernel sharedInstance] moveAppToVisible:record];
 
-  /* if (destinationAppManager) {
-    [[EXKernel sharedInstance] openUrl:urlToRoute.absoluteString onAppManager:destinationAppManager];
-  } */
-}
-
-// TODO: ben: wtf this method
-- (BOOL)isRefreshExpectedForAppManager:(id)manager
-{
-  EXKernelAppRegistry *appRegistry = [EXKernel sharedInstance].appRegistry;
-  
-  // consume this reference, don't reuse
-  EXReactAppManager *appManagerToRefresh = _appManagerToRefresh;
-  _appManagerToRefresh = nil;
-
-  return ([EXShellManager sharedInstance].isShell
-          && manager
-          && manager == appManagerToRefresh
-          && manager != appRegistry.homeAppRecord.appManager
-          && manager == [EXKernel sharedInstance].visibleApp.appManager);
+  if (destinationApp) {
+    [[EXKernel sharedInstance] sendUrl:urlToRoute.absoluteString toAppRecord:destinationApp];
+  } else {
+    [[EXKernel sharedInstance] createNewAppWithUrl:urlToRoute];
+  }
 }
 
 #pragma mark - scoped module delegate
@@ -122,9 +98,9 @@
 
 - (void)utilModuleDidSelectReload:(id)scopedUtilModule
 {
-  // TODO: ben: util.reload
-  // [self _refreshForegroundTaskAndValidateBridge:((EXScopedBridgeModule *)scopedUtilModule).bridge];
-  // this used to send a "refresh" JS event
+  NSString *experienceId = ((EXScopedBridgeModule *)scopedUtilModule).experienceId;
+  EXKernelAppRecord *appRecord = [[EXKernel sharedInstance].appRegistry newestRecordWithExperienceId:experienceId];
+  [[EXKernel sharedInstance] createNewAppWithUrl:appRecord.appLoader.manifestUrl];
 }
 
 #pragma mark - internal

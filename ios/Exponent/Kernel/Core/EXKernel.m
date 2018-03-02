@@ -90,20 +90,6 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
 
 #pragma mark - Misc
 
-- (void)openUrl:(NSString *)urlString onAppManager:(EXReactAppManager *)appManager
-{
-  // fire a Linking url event on this (possibly versioned) bridge
-  id linkingModule = [self nativeModuleForAppManager:appManager named:@"LinkingManager"];
-  if (!linkingModule) {
-    DDLogError(@"Could not find the Linking module to open URL (%@)", urlString);
-  } else if ([linkingModule respondsToSelector:@selector(dispatchOpenUrlEvent:)]) {
-    [linkingModule dispatchOpenUrlEvent:[NSURL URLWithString:urlString]];
-  } else {
-    DDLogError(@"Linking module doesn't support the API we use to open URL (%@)", urlString);
-  }
-  // TODO [self _moveAppToVisible:TODO: BEN];
-}
-
 + (NSString *)deviceInstallUUID
 {
   NSString *uuid = [[NSUserDefaults standardUserDefaults] stringForKey:kEXDeviceInstallUUIDKey];
@@ -129,7 +115,22 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
   [_serviceRegistry appRegistry:registry willUnregisterAppRecord:appRecord];
 }
 
-#pragma mark - interfacing with app managers
+#pragma mark - Interfacing with JS
+
+- (void)sendUrl:(NSString *)urlString toAppRecord:(EXKernelAppRecord *)app
+{
+  // fire a Linking url event on this (possibly versioned) bridge
+  EXReactAppManager *appManager = app.appManager;
+  id linkingModule = [self nativeModuleForAppManager:appManager named:@"LinkingManager"];
+  if (!linkingModule) {
+    DDLogError(@"Could not find the Linking module to open URL (%@)", urlString);
+  } else if ([linkingModule respondsToSelector:@selector(dispatchOpenUrlEvent:)]) {
+    [linkingModule dispatchOpenUrlEvent:[NSURL URLWithString:urlString]];
+  } else {
+    DDLogError(@"Linking module doesn't support the API we use to open URL (%@)", urlString);
+  }
+  [self moveAppToVisible:app];
+}
 
 - (void)dispatchKernelJSEvent:(NSString *)eventName body:(NSDictionary *)eventBody onSuccess:(void (^_Nullable)(NSDictionary * _Nullable))success onFailure:(void (^_Nullable)(NSString * _Nullable))failure
 {
@@ -219,6 +220,13 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
 }
 
 #pragma mark - App State
+
+- (void)createNewAppWithUrl:(NSURL *)url
+{
+  NSString *recordId = [_appRegistry registerAppWithManifestUrl:url];
+  EXKernelAppRecord *record = [_appRegistry recordForId:recordId];
+  [self moveAppToVisible:record];
+}
 
 - (void)switchTasks
 {

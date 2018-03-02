@@ -20,7 +20,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 @interface EXKernelAppLoader ()
 
 @property (nonatomic, strong) NSURL * _Nullable manifestUrl;
-@property (nonatomic, strong) NSDictionary * _Nullable localManifest; // used by Home. TODO: clean up
+@property (nonatomic, strong) NSDictionary * _Nullable localManifest; // used by Home. TODO: ben: clean up
 @property (nonatomic, strong) NSURL * _Nullable httpManifestUrl;
 
 @property (nonatomic, strong) NSDictionary * _Nullable confirmedManifest; // definitely working, cached

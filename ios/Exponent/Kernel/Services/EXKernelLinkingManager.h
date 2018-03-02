@@ -16,20 +16,6 @@
 - (void)openUrl:(NSString *)urlString isUniversalLink:(BOOL)isUniversalLink;
 
 /**
- *  Called by Util.reload() to rerequest the foreground tasks's manifest
- *  and reload the bundle url it contains.
- */
-// TODO: ben: audit
-- (void)refreshForegroundTask;
-
-/**
- *  Flagged when `refreshForegroundTask` is called. After the manifest round trip is complete,
- *  the kernel may need to disambiguate loading a new app from refreshing the existing app.
- */
-// TODO: BEN: reloading
-- (BOOL)isRefreshExpectedForAppManager:(EXReactAppManager *)manager;
-
-/**
  *  Returns the deep link prefix for a given experience uri.
  */
 + (NSString *)linkingUriForExperienceUri:(NSURL *)uri;
