@@ -2,6 +2,7 @@
 
 #import "EXAnalytics.h"
 #import "EXAppState.h"
+#import "EXAppViewController.h"
 #import "EXBuildConstants.h"
 #import "EXFrame.h"
 #import "EXKernel.h"
@@ -100,7 +101,7 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
   } else {
     DDLogError(@"Linking module doesn't support the API we use to open URL (%@)", urlString);
   }
-  [self _moveAppManagerToForeground:appManager];
+  // TODO [self _moveAppToVisible:TODO: BEN];
 }
 
 + (NSString *)deviceInstallUUID
@@ -212,7 +213,7 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
     } else {
       // send the body to the already-open experience
       [self _dispatchJSEvent:@"Exponent.notification" body:bodyWithOrigin onAppManager:destinationAppManager];
-      [self _moveAppManagerToForeground:destinationAppManager];
+      // TODO [self _moveAppToVisible:TODO: BEN];
     }
   }
 }
@@ -253,6 +254,7 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
   EXKernelAppRecord *appRecordPreviouslyVisible = _visibleApp;
   if (appRecord != appRecordPreviouslyVisible) {
     if (appRecordPreviouslyVisible) {
+      [appRecordPreviouslyVisible.viewController appDidBackground];
       [self _postNotificationName:kEXKernelBridgeDidBackgroundNotification onAbstractBridge:appRecordPreviouslyVisible.appManager.reactBridge];
       id appStateModule = [self nativeModuleForAppManager:appRecordPreviouslyVisible.appManager named:@"AppState"];
       if ([appStateModule respondsToSelector:@selector(setState:)]) {
@@ -260,6 +262,7 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
       }
     }
     if (appRecord) {
+      [appRecord.viewController appDidBecomeVisible];
       [self _postNotificationName:kEXKernelBridgeDidForegroundNotification onAbstractBridge:appRecord.appManager.reactBridge];
       id appStateModule = [self nativeModuleForAppManager:appRecord.appManager named:@"AppState"];
       if ([appStateModule respondsToSelector:@selector(setState:)]) {
@@ -324,23 +327,14 @@ NSString * const EXKernelDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey
     }
     if (!lastKnownState || ![newState isEqualToString:lastKnownState]) {
       if ([newState isEqualToString:@"active"]) {
+        [_visibleApp.viewController appDidBecomeVisible];
         [self _postNotificationName:kEXKernelBridgeDidForegroundNotification onAbstractBridge:appManager.reactBridge];
       } else if ([newState isEqualToString:@"background"]) {
+        [_visibleApp.viewController appDidBackground];
         [self _postNotificationName:kEXKernelBridgeDidBackgroundNotification onAbstractBridge:appManager.reactBridge];
       }
     }
   }
-}
-
-// TODO: BEN
-- (void)_moveAppManagerToForeground: (EXReactAppManager *)appManager
-{
-  /* if (appManager != _appRegistry.kernelAppManager) {
-    EXFrameReactAppManager *frameAppManager = (EXFrameReactAppManager *)appManager;
-    // kernel JS needs to bring the relevant frame/bridge to visibility.
-    NSURL *frameUrlToForeground = frameAppManager.frame.initialUri;
-    [self dispatchKernelJSEvent:kEXKernelShouldForegroundTaskEvent body:@{ @"taskUrl":frameUrlToForeground.absoluteString } onSuccess:nil onFailure:nil];
-  } */
 }
 
 @end

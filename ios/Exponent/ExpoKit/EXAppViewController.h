@@ -13,4 +13,12 @@
  */
 - (void)maybeShowError:(NSError *)error;
 
+/**
+ *  Settable by the app's screen orientation API via the orientation kernel service.
+ */
+- (void)setSupportedInterfaceOrientations:(UIInterfaceOrientationMask)supportedInterfaceOrientations;
+
+- (void)appDidBecomeVisible;
+- (void)appDidBackground;
+
 @end
