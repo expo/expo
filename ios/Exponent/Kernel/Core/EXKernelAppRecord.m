@@ -12,10 +12,10 @@ NSString *kEXKernelBridgeDidBackgroundNotification = @"EXKernelBridgeDidBackgrou
 
 @implementation EXKernelAppRecord
 
-- (instancetype)initWithManifestUrl:(NSURL *)manifestUrl
+- (instancetype)initWithManifestUrl:(NSURL *)manifestUrl initialProps:(NSDictionary *)initialProps
 {
   if (self = [super init]) {
-    _appManager = [[EXReactAppManager alloc] initWithAppRecord:self];
+    _appManager = [[EXReactAppManager alloc] initWithAppRecord:self initialProps:initialProps];
     _appLoader = [[EXKernelAppLoader alloc] initWithManifestUrl:manifestUrl];
     _viewController = [[EXAppViewController alloc] initWithAppRecord:self];
     _timeCreated = [NSDate date];

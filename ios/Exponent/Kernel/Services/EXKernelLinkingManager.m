@@ -64,7 +64,7 @@
   if (destinationApp) {
     [[EXKernel sharedInstance] sendUrl:urlToRoute.absoluteString toAppRecord:destinationApp];
   } else {
-    [[EXKernel sharedInstance] createNewAppWithUrl:urlToRoute];
+    [[EXKernel sharedInstance] createNewAppWithUrl:urlToRoute initialProps:nil];
   }
 }
 
@@ -100,7 +100,7 @@
 {
   NSString *experienceId = ((EXScopedBridgeModule *)scopedUtilModule).experienceId;
   EXKernelAppRecord *appRecord = [[EXKernel sharedInstance].appRegistry newestRecordWithExperienceId:experienceId];
-  [[EXKernel sharedInstance] createNewAppWithUrl:appRecord.appLoader.manifestUrl];
+  [[EXKernel sharedInstance] createNewAppWithUrl:appRecord.appLoader.manifestUrl initialProps:nil];
 }
 
 #pragma mark - internal

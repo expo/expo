@@ -21,7 +21,7 @@ typedef enum EXKernelAppRecordStatus {
 
 @interface EXKernelAppRecord : NSObject
 
-- (instancetype)initWithManifestUrl:(NSURL *)manifestUrl;
+- (instancetype)initWithManifestUrl:(NSURL *)manifestUrl initialProps:(nullable NSDictionary *)initialProps;
 - (instancetype)initWithAppLoader:(EXKernelAppLoader *)customAppLoader
                        appManager:(EXReactAppManager *)customAppManager;
 

@@ -25,11 +25,11 @@
   return self;
 }
 
-- (NSString *)registerAppWithManifestUrl:(NSURL *)manifestUrl
+- (NSString *)registerAppWithManifestUrl:(NSURL *)manifestUrl initialProps:(NSDictionary *)initialProps
 {
   NSAssert(manifestUrl, @"Cannot register an app with no manifest URL");
   // not enforcing uniqueness yet - we will do this once we download the manifest & have the experienceId
-  EXKernelAppRecord *newRecord = [[EXKernelAppRecord alloc] initWithManifestUrl:manifestUrl];
+  EXKernelAppRecord *newRecord = [[EXKernelAppRecord alloc] initWithManifestUrl:manifestUrl initialProps:initialProps];
   NSString *recordId = [[NSUUID UUID] UUIDString];
   [_appRegistry setObject:newRecord forKey:recordId];
   return recordId;

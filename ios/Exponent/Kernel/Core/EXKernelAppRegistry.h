@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)registerHomeAppRecord:(EXKernelAppRecord *)homeRecord;
 - (void)unregisterHomeAppRecord;
 
-- (NSString *)registerAppWithManifestUrl:(NSURL *)manifestUrl;
+- (NSString *)registerAppWithManifestUrl:(NSURL *)manifestUrl initialProps:(NSDictionary *)initialProps;
 - (void)unregisterAppWithRecordId:(NSString *)recordId;
 
 @property (nonatomic, weak) id<EXKernelAppRegistryDelegate> delegate;
