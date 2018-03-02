@@ -97,7 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   [self setIsMenuVisible:NO];
   NSURL *urlToRefresh = [EXKernel sharedInstance].visibleApp.appLoader.manifestUrl;
-  [[EXKernel sharedInstance].serviceRegistry.linkingManager openUrl:urlToRefresh.absoluteString isUniversalLink:NO];
+  [[EXKernel sharedInstance] createNewAppWithUrl:urlToRefresh];
 }
 
 #pragma mark - internal

@@ -44,7 +44,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
                                    @"services": [EXKernel sharedInstance].serviceRegistry.allServices,
                                    } mutableCopy];
   
-  // TODO: ben: starting home with an initial url
+  // TODO: ben: snack: starting home with an initial url
   // used by appetize - override the kernel initial url if there's something in NSUserDefaults
   NSURL *initialKernelUrl;
   NSString *kernelInitialUrlDefaultsValue = [[NSUserDefaults standardUserDefaults] stringForKey:kEXHomeLaunchUrlDefaultsKey];
@@ -134,21 +134,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
 
 // TODO: BEN: here's some other things that were different about the old kernel manager
 
-/* - (NSDictionary * _Nullable)initialPropertiesForRootView
-{
-  NSMutableDictionary *props = [NSMutableDictionary dictionary];
-  if ([EXShellManager sharedInstance].isShell) {
-    [props addEntriesFromDictionary:@{
-                                      @"shell": @YES,
-                                      @"shellManifestUrl": [EXShellManager sharedInstance].shellManifestUrl,
-                                      }];
-  }
-  // TODO: do we want to use this for anything? needed for exponent-sdk to function
-  props[@"exp"] = @{};
-  
-  return props;
-}
-
+/*
 - (NSString *)bundleNameForJSResource
 {
   return kEXKernelBundleResourceName;
