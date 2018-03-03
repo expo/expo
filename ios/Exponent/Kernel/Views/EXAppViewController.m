@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)viewDidLoad
 {
   [super viewDidLoad];
-  _loadingView = [[EXAppLoadingView alloc] initUsingSplash:[self _usesSplashScreen]];
+  _loadingView = [[EXAppLoadingView alloc] initWithAppRecord:_appRecord];
   [self.view addSubview:_loadingView];
   _appRecord.appManager.delegate = self;
   self.isLoading = YES;
@@ -142,8 +142,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appLoader:(EXKernelAppLoader *)appLoader didLoadOptimisticManifest:(NSDictionary *)manifest
 {
-  _loadingView.manifest = manifest;
   dispatch_async(dispatch_get_main_queue(), ^{
+    _loadingView.manifest = manifest;
     [self _enforceDesiredDeviceOrientation];
     [self reload];
   });
@@ -152,7 +152,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)appLoader:(EXKernelAppLoader *)appLoader didLoadBundleWithProgress:(EXLoadingProgress *)progress
 {
   dispatch_async(dispatch_get_main_queue(), ^{
-    _loadingView.progress = ([progress.done floatValue] / [progress.total floatValue]);
+    [_loadingView updateStatusWithProgress:progress];
   });
 }
 
@@ -328,18 +328,6 @@ NS_ASSUME_NONNULL_BEGIN
       self.loadingView.hidden = YES;
     }
   });
-}
-
-- (BOOL)_usesSplashScreen
-{
-  if (_appRecord == [EXKernel sharedInstance].appRegistry.homeAppRecord) {
-    // home always uses splash
-    return YES;
-  } else {
-    // most shell apps use splash unless overridden
-    // TODO: disable if this is a different appManager but still run in a shell context.
-    return [EXShellManager sharedInstance].isShell && !([EXShellManager sharedInstance].isSplashScreenDisabled);
-  }
 }
 
 - (void)_checkAppFinishedLoading:(NSTimer *)timer
