@@ -169,16 +169,6 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   return [EXVersions versionedString:string withPrefix:_versionSymbolPrefix];
 }
 
-- (RCTLogFunction)logFunction
-{
-  return (([self enablesDeveloperTools]) ? EXDeveloperRCTLogFunction : EXDefaultRCTLogFunction);
-}
-
-- (RCTLogLevel)logLevel
-{
-  return ([self enablesDeveloperTools]) ? RCTLogLevelInfo : RCTLogLevelWarning;
-}
-
 - (BOOL)isReadyToLoad
 {
   if (_appRecord) {
@@ -190,17 +180,6 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 - (NSURL *)bundleUrl
 {
   return [NSURL URLWithString:[_appRecord.appLoader.manifest objectForKey:@"bundleUrl"]];
-}
-
-- (BOOL)enablesDeveloperTools
-{
-  NSDictionary *manifest = _appRecord.appLoader.manifest;
-  if (manifest) {
-    NSDictionary *manifestDeveloperConfig = manifest[@"developer"];
-    BOOL isDeployedFromTool = (manifestDeveloperConfig && manifestDeveloperConfig[@"tool"] != nil);
-    return (isDeployedFromTool);
-  }
-  return false;
 }
 
 - (void)appDidBecomeVisible
@@ -381,7 +360,28 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   return (projectVersionNumber < version) ? NSOrderedAscending : NSOrderedDescending;
 }
 
-#pragma mark - TODO: BEN
+#pragma mark - dev tools
+
+- (RCTLogFunction)logFunction
+{
+  return (([self enablesDeveloperTools]) ? EXDeveloperRCTLogFunction : EXDefaultRCTLogFunction);
+}
+
+- (RCTLogLevel)logLevel
+{
+  return ([self enablesDeveloperTools]) ? RCTLogLevelInfo : RCTLogLevelWarning;
+}
+
+- (BOOL)enablesDeveloperTools
+{
+  NSDictionary *manifest = _appRecord.appLoader.manifest;
+  if (manifest) {
+    NSDictionary *manifestDeveloperConfig = manifest[@"developer"];
+    BOOL isDeployedFromTool = (manifestDeveloperConfig && manifestDeveloperConfig[@"tool"] != nil);
+    return (isDeployedFromTool);
+  }
+  return false;
+}
 
 - (void)showDevMenu
 {
@@ -424,6 +424,8 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     [self.versionManager selectDevMenuItemWithKey:key onBridge:self.reactBridge];
   });
 }
+
+#pragma mark - RN configuration
 
 - (NSDictionary *)launchOptionsForBridge
 {
@@ -487,103 +489,5 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   // TODO: ben: shell: initial props change appOwnership to standalone when this is standalone app record
   return @"expo";
 }
-
-/**
- TODO: BEN: here's all the old things that could be overridden
- #pragma mark - abstract stubs
- 
- #define EX_APP_MANAGER_ABSTRACT(method) \
- method \
- { \
- @throw [NSException exceptionWithName:NSInternalInconsistencyException \
- reason:[NSString stringWithFormat:@"Do not call %@ directly, use a subclass", NSStringFromSelector(_cmd)] \
- userInfo:nil]; \
- }
- 
- EX_APP_MANAGER_ABSTRACT(- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge)
- EX_APP_MANAGER_ABSTRACT(- (BOOL)isReadyToLoad)
- EX_APP_MANAGER_ABSTRACT(- (NSString *)bundleNameForJSResource)
- EX_APP_MANAGER_ABSTRACT(- (EXCachedResourceBehavior)cacheBehaviorForJSResource)
- EX_APP_MANAGER_ABSTRACT(- (BOOL)shouldInvalidateJSResourceCache)
- EX_APP_MANAGER_ABSTRACT(- (NSDictionary * _Nullable)initialPropertiesForRootView)
- EX_APP_MANAGER_ABSTRACT(- (void)registerBridge)
- EX_APP_MANAGER_ABSTRACT(- (void)unregisterBridge)
- EX_APP_MANAGER_ABSTRACT(- (NSString *)experienceId)
- EX_APP_MANAGER_ABSTRACT(- (void)experienceFinishedLoading)
- */
-
-/* TODO: ben: here is the old load source method
-
-- (void)loadSourceForBridge:(RCTBridge *)bridge withBlock:(RCTSourceLoadBlock)loadCallback
-{
-  // clear any potentially old loading state
-  [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:nil forExperienceId:self.experienceId];
-  
-  NSURL *bundleUrl = bridge.bundleURL;
-  _jsResource = [[EXJavaScriptResource alloc] initWithBundleName:[self bundleNameForJSResource]
-                                                       remoteUrl:bundleUrl
-                                                 devToolsEnabled:[self areDevtoolsEnabled]];
-  _jsResource.abiVersion = _validatedVersion;
-  
-  __weak typeof(self) weakSelf = self;
-  EXCachedResourceBehavior cacheBehavior = [self cacheBehaviorForJSResource];
-  if (cacheBehavior == EXCachedResourceNoCache) {
-    // no cache - wait longer before timing out
-    _jsResource.requestTimeoutInterval = kEXJavaScriptResourceLongerTimeout;
-  }
-  if ([self shouldInvalidateJSResourceCache]) {
-    [_jsResource removeCache];
-  }
-  [_jsResource loadResourceWithBehavior:cacheBehavior progressBlock:^(EXLoadingProgress * _Nonnull progress) {
-    __strong typeof(self) strongSelf = weakSelf;
-    __strong id<EXReactAppManagerDelegate> delegate = weakSelf.delegate;
-    if (strongSelf && delegate) {
-      [strongSelf.delegate reactAppManager:strongSelf loadedJavaScriptWithProgress:progress];
-    }
-  } successBlock:^(NSData * _Nonnull sourceData) {
-    if ([self compareVersionTo:22] == NSOrderedAscending) {
-      SDK21RCTSourceLoadBlock legacyLoadCallback = (SDK21RCTSourceLoadBlock)loadCallback;
-      legacyLoadCallback(nil, sourceData, sourceData.length);
-    } else {
-      loadCallback(nil, [[RCTSource alloc] initWithURL:bundleUrl data:sourceData]);
-    }
-  } errorBlock:^(NSError * _Nonnull error) {
-    __strong typeof(self) strongSelf = weakSelf;
-    if (strongSelf) {
-      [strongSelf.delegate reactAppManager:strongSelf failedToDownloadBundleWithError:error];
-      
-      // RN is going to call RCTFatal() on this error, so keep a reference to it for later
-      // so we can distinguish this non-fatal error from actual fatal cases.
-      [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:error forExperienceId:strongSelf.experienceId];
-      
-      // react won't post this for us
-      [[NSNotificationCenter defaultCenter] postNotificationName:[strongSelf versionedString:RCTJavaScriptDidFailToLoadNotification] object:error];
-    }
-    
-    if ([self compareVersionTo:22] == NSOrderedAscending) {
-      SDK21RCTSourceLoadBlock legacyLoadCallback = (SDK21RCTSourceLoadBlock)loadCallback;
-      legacyLoadCallback(error, nil, 0);
-    } else {
-      loadCallback(error, nil);
-    }
-  }];
-} */
-
-/*
-#pragma mark - Unversioned utilities for EXFrame from EXFrameReactAppManager
-
-- (void)logKernelAnalyticsEventWithParams:(NSDictionary *)params
-{
-  NSString *eventId = params[@"eventIdentifier"];
-  NSURL *manifestUrl = params[@"manifestUrl"];
-  NSMutableDictionary *eventProperties = (params[@"eventProperties"]) ? [params[@"eventProperties"] mutableCopy] : [NSMutableDictionary dictionary];
-  if (!eventProperties[@"SDK_VERSION"] && self.validatedVersion) {
-    eventProperties[@"SDK_VERSION"] = self.validatedVersion;
-  }
-  
-  [[EXAnalytics sharedInstance] logEvent:eventId manifestUrl:manifestUrl eventProperties:eventProperties];
-}
-
- */
 
 @end

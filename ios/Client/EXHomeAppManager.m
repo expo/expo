@@ -182,6 +182,11 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
   }
 }
 
+ // TODO: ben: restore
+ // this happened before the js resource download call:
+ if ([self shouldInvalidateJSResourceCache]) {
+   [_jsResource removeCache];
+ }
 - (BOOL)shouldInvalidateJSResourceCache
 {
   // if crashlytics shows that we're recovering from a native crash, invalidate any downloaded kernel cache.
@@ -192,6 +197,21 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
   }
   return NO;
 }
+ 
+ #pragma mark - Unversioned utilities for EXFrame from EXFrameReactAppManager
+ 
+ - (void)logKernelAnalyticsEventWithParams:(NSDictionary *)params
+ {
+ NSString *eventId = params[@"eventIdentifier"];
+ NSURL *manifestUrl = params[@"manifestUrl"];
+ NSMutableDictionary *eventProperties = (params[@"eventProperties"]) ? [params[@"eventProperties"] mutableCopy] : [NSMutableDictionary dictionary];
+ if (!eventProperties[@"SDK_VERSION"] && self.validatedVersion) {
+ eventProperties[@"SDK_VERSION"] = self.validatedVersion;
+ }
+ 
+ [[EXAnalytics sharedInstance] logEvent:eventId manifestUrl:manifestUrl eventProperties:eventProperties];
+ }
+ 
 */
 
 @end
