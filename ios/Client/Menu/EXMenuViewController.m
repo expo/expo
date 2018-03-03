@@ -1,54 +1,95 @@
 
 #import "EXMenuViewController.h"
+#import "EXKernel.h"
+#import "EXKernelAppLoader.h"
+#import "EXKernelAppRegistry.h"
+#import "EXReactAppManager.h"
+#import "EXUtil.h"
+
+#import <React/RCTRootView.h>
 
 @interface EXMenuViewController ()
 
-@property (nonatomic, strong) UIButton *btnGoHome;
-@property (nonatomic, strong) UIButton *btnRefresh;
+@property (nonatomic, strong) RCTRootView *reactRootView;
+@property (nonatomic, assign) BOOL hasCalledJSLoadedNotification;
+
+@end
+
+@interface RCTRootView (EXMenuView)
+
+- (void)javaScriptDidLoad:(NSNotification *)notification;
+- (void)hideLoadingView;
 
 @end
 
 @implementation EXMenuViewController
 
+- (instancetype)init
+{
+  if (self = [super init]) {
+    _hasCalledJSLoadedNotification = NO;
+    _reactRootView = [[RCTRootView alloc] initWithBridge:[self _homeReactBridge] moduleName:@"HomeMenu" initialProperties:@{}];
+  }
+  return self;
+}
+
 - (void)viewDidLoad
 {
   [super viewDidLoad];
   self.view.backgroundColor = [UIColor whiteColor];
+  self.edgesForExtendedLayout = UIRectEdgeNone;
 
-  _btnGoHome = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-  [_btnGoHome setTitle:@"Home" forState:UIControlStateNormal];
-  [_btnGoHome addTarget:self action:@selector(_onPressGoHome) forControlEvents:UIControlEventTouchUpInside];
-  [self.view addSubview:_btnGoHome];
-  
-  _btnRefresh = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-  [_btnRefresh setTitle:@"Refresh" forState:UIControlStateNormal];
-  [_btnRefresh addTarget:self action:@selector(_onPressRefresh) forControlEvents:UIControlEventTouchUpInside];
-  [self.view addSubview:_btnRefresh];
+  [self.view addSubview:_reactRootView];
 }
 
 - (void)viewWillLayoutSubviews
 {
   [super viewWillLayoutSubviews];
-  _btnRefresh.frame = CGRectMake(0, 0, self.view.bounds.size.width - 16.0f, 32.0f);
-  _btnRefresh.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 24.0f);
-  _btnGoHome.frame = _btnRefresh.frame;
-  _btnGoHome.center = CGPointMake(_btnRefresh.center.x, _btnRefresh.center.y + 48.0f);
+  _reactRootView.frame = self.view.bounds;
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+  [super viewWillAppear:animated];
+  [self _updateMenuProps];
 }
 
 #pragma mark - internal
 
-- (void)_onPressGoHome
+- (void)_updateMenuProps
 {
-  if (_delegate) {
-    [_delegate menuViewControllerDidSelectHome:self];
+  EXKernelAppRecord *visibleApp = [EXKernel sharedInstance].visibleApp;
+  NSDictionary *task = @{
+    @"manifestUrl": visibleApp.appLoader.manifestUrl.absoluteString,
+    @"manifest": visibleApp.appLoader.manifest,
+  };
+  // include randomness to force the component to rerender
+  NSDictionary *menuProps = @{ @"task": task, @"uuid": [[NSUUID UUID] UUIDString] };
+  [EXUtil performSynchronouslyOnMainThread:^{
+    [self _forceRootViewToRenderHack];
+    _reactRootView.frame = self.view.bounds;
+    _reactRootView.sizeFlexibility = RCTRootViewSizeFlexibilityWidthAndHeight;
+    _reactRootView.appProperties = menuProps;
+  }];
+}
+
+// RCTRootView assumes it is created on a loading bridge.
+// in our case, the bridge has usually already loaded. so we need to prod the view.
+- (void)_forceRootViewToRenderHack
+{
+  if (!_hasCalledJSLoadedNotification) {
+    NSNotification *notif = [[NSNotification alloc] initWithName:RCTJavaScriptDidLoadNotification
+                                                          object:nil
+                                                        userInfo:@{ @"bridge": [self _homeReactBridge] }];
+    [_reactRootView javaScriptDidLoad:notif];
+    _hasCalledJSLoadedNotification = YES;
   }
 }
 
-- (void)_onPressRefresh
+- (RCTBridge *)_homeReactBridge
 {
-  if (_delegate) {
-    [_delegate menuViewControllerDidSelectRefresh:self];
-  }
+  EXReactAppManager *mgr = [EXKernel sharedInstance].appRegistry.homeAppRecord.appManager;
+  return mgr.reactBridge;
 }
 
 @end

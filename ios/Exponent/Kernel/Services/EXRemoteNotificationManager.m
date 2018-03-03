@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXKernel.h"
-#import "EXKernelModule.h"
 #import "EXProvisioningProfile.h"
 #import "EXRemoteNotificationManager.h"
 #import "EXShellManager.h"

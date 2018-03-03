@@ -6,7 +6,7 @@
 #import "EXDisabledDevMenu.h"
 #import "EXDisabledRedBox.h"
 #import "EXFileSystem.h"
-#import "EXKernelModule.h"
+#import "EXHomeModule.h"
 #import "EXVersionManager.h"
 #import "EXStatusBarManager.h"
 #import "EXUnversioned.h"
@@ -325,10 +325,10 @@ void EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceClassName)
   }
   
   if (params[@"kernel"]) {
-    EXKernelModule *kernel = [[EXKernelModule alloc] initWithExperienceId:experienceId
-                                                    kernelServiceDelegate:services[EX_UNVERSIONED(@"EXKernelModuleManager")]
+    EXHomeModule *homeModule = [[EXHomeModule alloc] initWithExperienceId:experienceId
+                                                    kernelServiceDelegate:services[EX_UNVERSIONED(@"EXHomeModuleManager")]
                                                                    params:params];
-    [extraModules addObject:kernel];
+    [extraModules addObject:homeModule];
   }
 
   if ([params[@"isStandardDevMenuAllowed"] boolValue] && isDeveloper) {

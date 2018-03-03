@@ -413,13 +413,11 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   }
 }
 
-// TODO: menu: reimpl native
 - (NSDictionary<NSString *, NSString *> *)devMenuItems
 {
   return [self.versionManager devMenuItemsForBridge:self.reactBridge];
 }
 
-// TODO: menu: reimpl native
 - (void)selectDevMenuItemWithKey:(NSString *)key
 {
   dispatch_async(dispatch_get_main_queue(), ^{

@@ -4,7 +4,7 @@
 #import "EXKernel.h"
 #import "EXKernelAppLoader.h"
 #import "EXKernelLinkingManager.h"
-#import "EXKernelModule.h"
+#import "EXHomeModule.h"
 #import "EXKernelUtil.h"
 #import "EXLog.h"
 #import "ExpoKit.h"
@@ -112,9 +112,9 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
 
 - (void)_dispatchHomeJSEvent:(NSString *)eventName body:(NSDictionary *)eventBody onSuccess:(void (^_Nullable)(NSDictionary * _Nullable))success onFailure:(void (^_Nullable)(NSString * _Nullable))failure
 {
-  EXKernelModule *kernelModule = [[EXKernel sharedInstance] nativeModuleForAppManager:self named:@"ExponentKernel"];
-  if (kernelModule) {
-    [kernelModule dispatchJSEvent:eventName body:eventBody onSuccess:success onFailure:failure];
+  EXHomeModule *homeModule = [[EXKernel sharedInstance] nativeModuleForAppManager:self named:@"ExponentKernel"];
+  if (homeModule) {
+    [homeModule dispatchJSEvent:eventName body:eventBody onSuccess:success onFailure:failure];
   } else {
     if (failure) {
       failure(nil);

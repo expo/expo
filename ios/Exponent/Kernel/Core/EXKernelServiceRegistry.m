@@ -6,9 +6,9 @@
 #import "EXErrorRecoveryManager.h"
 #import "EXFileSystemManager.h"
 #import "EXGoogleAuthManager.h"
+#import "EXHomeModuleManager.h"
 #import "EXKernelAppRegistry.h"
 #import "EXKernelLinkingManager.h"
-#import "EXKernelModuleManager.h"
 #import "EXKernelService.h"
 #import "EXRemoteNotificationManager.h"
 #import "EXScreenOrientationManager.h"
@@ -21,7 +21,7 @@
 @property (nonatomic, strong) EXFileSystemManager *fileSystemManager;
 @property (nonatomic, strong) EXGoogleAuthManager *googleAuthManager;
 @property (nonatomic, strong) EXErrorRecoveryManager *errorRecoveryManager;
-@property (nonatomic, strong) EXKernelModuleManager *kernelModuleManager;
+@property (nonatomic, strong) EXHomeModuleManager *homeModuleManager;
 @property (nonatomic, strong) EXKernelLinkingManager *linkingManager;
 @property (nonatomic, strong) EXRemoteNotificationManager *remoteNotificationManager;
 @property (nonatomic, strong) EXScreenOrientationManager *screenOrientationManager;
@@ -41,7 +41,7 @@
     [self errorRecoveryManager];
     [self remoteNotificationManager];
     [self linkingManager];
-    [self kernelModuleManager];
+    [self homeModuleManager];
     [self screenOrientationManager];
     [self googleAuthManager];
     [self sensorManager];
@@ -106,12 +106,12 @@
   return _linkingManager;
 }
 
-- (EXKernelModuleManager *)kernelModuleManager
+- (EXHomeModuleManager *)homeModuleManager
 {
-  if (!_kernelModuleManager) {
-    _kernelModuleManager = [[EXKernelModuleManager alloc] init];
+  if (!_homeModuleManager) {
+    _homeModuleManager = [[EXHomeModuleManager alloc] init];
   }
-  return _kernelModuleManager;
+  return _homeModuleManager;
 }
 
 - (EXScreenOrientationManager *)screenOrientationManager
@@ -134,7 +134,7 @@
 {
   if (!_allServices) {
     NSMutableDictionary *result = [NSMutableDictionary dictionary];
-    for (id service in @[ self.branchManager, self.cachedResourceManager, self.errorRecoveryManager, self.fileSystemManager, self.googleAuthManager, self.kernelModuleManager, self.linkingManager, self.remoteNotificationManager, self.screenOrientationManager, self.sensorManager ]) {
+    for (id service in @[ self.branchManager, self.cachedResourceManager, self.errorRecoveryManager, self.fileSystemManager, self.googleAuthManager, self.homeModuleManager, self.linkingManager, self.remoteNotificationManager, self.screenOrientationManager, self.sensorManager ]) {
       NSString *className = NSStringFromClass([service class]);
       result[className] = service;
     }

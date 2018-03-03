@@ -7,7 +7,6 @@
 #import "EXFrame.h"
 #import "EXKernel.h"
 #import "EXKernelAppRecord.h"
-#import "EXKernelModule.h"
 #import "EXKernelLinkingManager.h"
 #import "EXLinkingManager.h"
 #import "EXVersions.h"

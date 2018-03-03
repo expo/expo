@@ -35,12 +35,22 @@ typedef enum EXReactAppManagerStatus {
 
 - (id)appLoadingManagerInstance;
 
+@property (nonatomic, readonly) BOOL isBridgeRunning;
+@property (nonatomic, readonly) EXReactAppManagerStatus status;
+@property (nonatomic, readonly) UIView *rootView;
+@property (nonatomic, strong) id reactBridge;
+@property (nonatomic, assign) id<EXReactAppManagerUIDelegate> delegate;
+@property (nonatomic, weak) EXKernelAppRecord *appRecord;
+
+#pragma mark - developer tools
+
 - (BOOL)enablesDeveloperTools;
 
 /**
  * Call reload on existing bridge (developer-facing devtools reload)
  */
 - (void)reloadBridge;
+
 /**
  * Clear any executor class on the bridge and reload. Used by Cmd+N devtool key command.
  */
@@ -48,11 +58,10 @@ typedef enum EXReactAppManagerStatus {
 - (void)toggleElementInspector;
 - (void)showDevMenu;
 
-@property (nonatomic, readonly) BOOL isBridgeRunning;
-@property (nonatomic, readonly) EXReactAppManagerStatus status;
-@property (nonatomic, readonly) UIView *rootView;
-@property (nonatomic, strong) id reactBridge;
-@property (nonatomic, assign) id<EXReactAppManagerUIDelegate> delegate;
-@property (nonatomic, weak) EXKernelAppRecord *appRecord;
+/**
+ *  Enumerates items for the dev menu for this app
+ */
+- (NSDictionary<NSString *, NSString *> *)devMenuItems;
+- (void)selectDevMenuItemWithKey:(NSString *)key;
 
 @end
