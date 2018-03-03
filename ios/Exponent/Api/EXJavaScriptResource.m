@@ -76,8 +76,8 @@
   // For dev builds that use the packager use RCTJavaScriptLoader which handles the packager's multipart
   // responses to show loading progress.
   if (self.devToolsEnabled) {
+    __block EXLoadingProgress *progress = [EXLoadingProgress new];
     [RCTJavaScriptLoader loadBundleAtURL:self.remoteUrl onProgress:^(RCTLoadingProgress *progressData) {
-      EXLoadingProgress *progress = [EXLoadingProgress new];
       progress.total = progressData.total;
       progress.done = progressData.done;
       progress.status = progressData.status ?: @"Building JavaScript bundle...";
