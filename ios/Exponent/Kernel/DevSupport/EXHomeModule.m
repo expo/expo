@@ -1,22 +1,22 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXKernelModule.h"
+#import "EXHomeModule.h"
 #import "EXUnversioned.h"
 
 #import <React/RCTEventDispatcher.h>
 
-@interface EXKernelModule ()
+@interface EXHomeModule ()
 
 @property (nonatomic, assign) BOOL hasListeners;
 @property (nonatomic, strong) NSMutableDictionary *eventSuccessBlocks;
 @property (nonatomic, strong) NSMutableDictionary *eventFailureBlocks;
 @property (nonatomic, strong) NSArray * _Nonnull sdkVersions;
-@property (nonatomic, weak) id<EXKernelModuleDelegate> delegate;
+@property (nonatomic, weak) id<EXHomeModuleDelegate> delegate;
 
 
 @end
 
-@implementation EXKernelModule
+@implementation EXHomeModule
 
 + (NSString *)moduleName { return @"ExponentKernel"; }
 
@@ -85,7 +85,7 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL
                   reject:(__unused RCTPromiseRejectBlock)reject)
 {
   if (URL) {
-    [_delegate kernelModule:self didOpenUrl:URL.absoluteString];
+    [_delegate homeModule:self didOpenUrl:URL.absoluteString];
     resolve(@YES);
   } else {
     NSError *err = [NSError errorWithDomain:EX_UNVERSIONED(@"EXKernelErrorDomain") code:-1 userInfo:@{ NSLocalizedDescriptionKey: @"Cannot open a nil url" }];
@@ -98,7 +98,7 @@ RCT_REMAP_METHOD(doesCurrentTaskEnableDevtools,
                  reject:(RCTPromiseRejectBlock)reject)
 {
   if (_delegate) {
-    resolve(@([_delegate kernelModuleShouldEnableDevtools:self]));
+    resolve(@([_delegate homeModuleShouldEnableDevtools:self]));
   } else {
     // don't reject, just disable devtools
     resolve(@NO);
@@ -110,7 +110,7 @@ RCT_REMAP_METHOD(shouldCurrentTaskAutoReload,
                  reject:(RCTPromiseRejectBlock)reject)
 {
   if (_delegate) {
-    resolve(@([_delegate kernelModuleShouldAutoReloadCurrentTask:self]));
+    resolve(@([_delegate homeModuleShouldAutoReloadCurrentTask:self]));
   } else {
     resolve(@NO);
   }
@@ -121,7 +121,7 @@ RCT_REMAP_METHOD(isLegacyMenuBehaviorEnabledAsync,
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
   if (_delegate) {
-    resolve(@([_delegate kernelModuleShouldEnableLegacyMenuBehavior:self]));
+    resolve(@([_delegate homeModuleShouldEnableLegacyMenuBehavior:self]));
   } else {
     resolve(@(NO));
   }
@@ -130,7 +130,7 @@ RCT_REMAP_METHOD(isLegacyMenuBehaviorEnabledAsync,
 RCT_EXPORT_METHOD(setIsLegacyMenuBehaviorEnabledAsync:(BOOL)isEnabled)
 {
   if (_delegate) {
-    [_delegate kernelModule:self didSelectEnableLegacyMenuBehavior:isEnabled];
+    [_delegate homeModule:self didSelectEnableLegacyMenuBehavior:isEnabled];
   }
 }
 
@@ -138,8 +138,8 @@ RCT_REMAP_METHOD(getDevMenuItemsToShow,
                  getDevMenuItemsToShowWithResolver:(RCTPromiseResolveBlock)resolve
                  reject:(RCTPromiseRejectBlock)reject)
 {
-  if (_delegate && [_delegate kernelModuleShouldEnableDevtools:self]) {
-    resolve([_delegate devMenuItemsForKernelModule:self]);
+  if (_delegate && [_delegate homeModuleShouldEnableDevtools:self]) {
+    resolve([_delegate devMenuItemsForHomeModule:self]);
   } else {
     // don't reject, just show no devtools
     resolve(@{});
@@ -149,7 +149,28 @@ RCT_REMAP_METHOD(getDevMenuItemsToShow,
 RCT_EXPORT_METHOD(selectDevMenuItemWithKey:(NSString *)key)
 {
   if (_delegate) {
-    [_delegate kernelModule:self didSelectDevMenuItemWithKey:key];
+    [_delegate homeModule:self didSelectDevMenuItemWithKey:key];
+  }
+}
+
+RCT_EXPORT_METHOD(selectRefresh)
+{
+  if (_delegate) {
+    [_delegate homeModuleDidSelectRefresh:self];
+  }
+}
+
+RCT_EXPORT_METHOD(selectCloseMenu)
+{
+  if (_delegate) {
+    [_delegate homeModuleDidSelectCloseMenu:self];
+  }
+}
+
+RCT_EXPORT_METHOD(selectGoToHome)
+{
+  if (_delegate) {
+    [_delegate homeModuleDidSelectGoToHome:self];
   }
 }
 
@@ -158,7 +179,7 @@ RCT_EXPORT_METHOD(addDevMenu)
   __weak typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
     if (weakSelf.delegate) {
-      [weakSelf.delegate kernelModuleDidSelectHomeDiagnostics:self];
+      [weakSelf.delegate homeModuleDidSelectHomeDiagnostics:self];
     }
   });
 }

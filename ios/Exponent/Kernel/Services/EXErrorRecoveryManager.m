@@ -98,7 +98,6 @@
       DDLogWarn(@"Ignoring misleading error: %@", error);
     } else {
       record.error = error;
-      NSLog(@"ben set error %p for record %p", error, record);
     }
   }
 }
@@ -132,7 +131,6 @@
   }
   for (NSString *experienceId in experienceIds) {
     EXErrorRecoveryRecord *record = [self _recordForExperienceId:experienceId];
-    NSLog(@"ben is record's error %p equal to error %p ?", record.error, error);
     if ([self isJSError:record.error equalToOtherJSError:error]) {
       return [[EXKernel sharedInstance].appRegistry newestRecordWithExperienceId:experienceId];
     }

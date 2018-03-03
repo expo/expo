@@ -12,7 +12,10 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol EXAppBrowserController
 
 - (void)moveAppToVisible:(EXKernelAppRecord *)appRecord;
+- (void)moveHomeToVisible;
+- (void)refreshVisibleApp;
 - (void)toggleMenu;
+- (void)setIsMenuVisible:(BOOL)isMenuVisible;
 - (void)showDiagnostics;
 - (void)getHistoryUrlForExperienceId:(NSString *)experienceId completion:(void (^)(NSString * _Nullable))completion;
 

@@ -18,7 +18,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXRootViewController () <EXAppBrowserController, EXMenuDelegate>
+@interface EXRootViewController () <EXAppBrowserController>
 
 @property (nonatomic, weak) UIViewController *contentViewController;
 @property (nonatomic, strong) EXMenuViewController *menuViewController;
@@ -78,41 +78,10 @@ NS_ASSUME_NONNULL_BEGIN
   [self setIsMenuVisible:!_isMenuVisible];
 }
 
-- (void)showDiagnostics
-{
-  EXHomeDiagnosticsViewController *vcDiagnostics = [[EXHomeDiagnosticsViewController alloc] init];
-  [self setIsMenuVisible:NO];
-  [self presentViewController:vcDiagnostics animated:NO completion:nil];
-}
-
-- (void)getHistoryUrlForExperienceId:(NSString *)experienceId completion:(void (^)(NSString *))completion
-{
-  EXHomeAppManager *homeAppManager = (EXHomeAppManager *)[EXKernel sharedInstance].appRegistry.homeAppRecord.appManager;
-  return [homeAppManager getHistoryUrlForExperienceId:experienceId completion:completion];
-}
-
-#pragma mark - EXMenuDelegate
-
-- (void)menuViewControllerDidSelectHome:(EXMenuViewController *)menuVC
-{
-  [self setIsMenuVisible:NO];
-  [[EXKernel sharedInstance] moveAppToVisible:[EXKernel sharedInstance].appRegistry.homeAppRecord];
-}
-
-- (void)menuViewControllerDidSelectRefresh:(EXMenuViewController *)menuVC
-{
-  [self setIsMenuVisible:NO];
-  NSURL *urlToRefresh = [EXKernel sharedInstance].visibleApp.appLoader.manifestUrl;
-  [[EXKernel sharedInstance] createNewAppWithUrl:urlToRefresh initialProps:nil];
-}
-
-#pragma mark - internal
-
 - (void)setIsMenuVisible:(BOOL)isMenuVisible
 {
   if (!_menuViewController) {
     _menuViewController = [[EXMenuViewController alloc] init];
-    _menuViewController.delegate = self;
   }
   
   // TODO: ben: can this be more robust?
@@ -130,6 +99,34 @@ NS_ASSUME_NONNULL_BEGIN
     }
   }
 }
+
+- (void)showDiagnostics
+{
+  EXHomeDiagnosticsViewController *vcDiagnostics = [[EXHomeDiagnosticsViewController alloc] init];
+  [self setIsMenuVisible:NO];
+  [self presentViewController:vcDiagnostics animated:NO completion:nil];
+}
+
+- (void)getHistoryUrlForExperienceId:(NSString *)experienceId completion:(void (^)(NSString *))completion
+{
+  EXHomeAppManager *homeAppManager = (EXHomeAppManager *)[EXKernel sharedInstance].appRegistry.homeAppRecord.appManager;
+  return [homeAppManager getHistoryUrlForExperienceId:experienceId completion:completion];
+}
+
+- (void)moveHomeToVisible
+{
+  [self setIsMenuVisible:NO];
+  [[EXKernel sharedInstance] moveAppToVisible:[EXKernel sharedInstance].appRegistry.homeAppRecord];
+}
+
+- (void)refreshVisibleApp
+{
+  [self setIsMenuVisible:NO];
+  NSURL *urlToRefresh = [EXKernel sharedInstance].visibleApp.appLoader.manifestUrl;
+  [[EXKernel sharedInstance] createNewAppWithUrl:urlToRefresh initialProps:nil];
+}
+
+#pragma mark - internal
 
 - (void)_foregroundAppRecord:(EXKernelAppRecord *)appRecord
 {
