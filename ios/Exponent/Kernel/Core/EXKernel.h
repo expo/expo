@@ -22,7 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 FOUNDATION_EXPORT NSNotificationName kEXKernelJSIsLoadedNotification; // TODO: ben: audit
-FOUNDATION_EXPORT NSNotificationName kEXKernelAppDidDisplay; // TODO: ben: rename (this is the splash screen hide notif)
 FOUNDATION_EXPORT NSString *kEXKernelErrorDomain;
 
 // this key is set to YES when crashlytics sends a crash report.

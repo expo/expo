@@ -63,7 +63,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   NSDictionary *errorInfo = @{ NSLocalizedDescriptionKey: description, RCTJSStackTraceKey: stack };
   NSError *error = [NSError errorWithDomain:RCTErrorDomain code:0 userInfo:errorInfo];
 
-  [[NSNotificationCenter defaultCenter] postNotificationName:kEXKernelAppDidDisplay object:_appRecord];
   [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:error forExperienceId:_appRecord.experienceId];
 
   if ([self _isProdHome]) {

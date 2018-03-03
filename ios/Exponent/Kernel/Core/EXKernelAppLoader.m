@@ -346,7 +346,6 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
       NSString *message = error.localizedDescription;
       message = [NSString stringWithFormat:@"Make sure you are serving your project from XDE or exp (%@)", message];
       error = [NSError errorWithDomain:error.domain code:error.code userInfo:@{ NSLocalizedDescriptionKey: message }];
-      [[NSNotificationCenter defaultCenter] postNotificationName:kEXKernelAppDidDisplay object:self];
     }
 #endif
     failure(error);

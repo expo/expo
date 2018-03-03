@@ -1,4 +1,4 @@
-import { Asset, Font } from 'expo';
+import { AppLoading, Asset, Font } from 'expo';
 import React from 'react';
 import { ActivityIndicator, Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { NavigationProvider, StackNavigation } from '@expo/ex-navigation';
@@ -58,17 +58,7 @@ export default class App extends React.Component {
 
   render() {
     if (!this.state.isReady) {
-      return (
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: 'white',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-          <ActivityIndicator />
-        </View>
-      );
+      return (<AppLoading />);
     }
 
     return (

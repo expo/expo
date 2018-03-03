@@ -349,7 +349,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
       [_appManager reactRootView].subviews.firstObject.subviews.count > 0) {
     EXAppLoadingManager *appLoading = [_appManager appLoadingManagerInstance];
     if (!appLoading || !appLoading.started || appLoading.finished) {
-      [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXKernelAppDidDisplay") object:self];
+      // [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXKernelAppDidDisplay") object:self];
       if (_onLoadingFinish) {
         _onLoadingFinish(nil);
       }
@@ -362,7 +362,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 - (void)_sendLoadingError: (NSError *)error
 {
   [_appManager registerErrorForBridge:error];
-  [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXKernelAppDidDisplay") object:self];
+  // [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXKernelAppDidDisplay") object:self];
   if (_onLoadingError) {
     NSMutableDictionary *event = [@{
                                     @"domain": error.domain,
@@ -415,7 +415,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 
 - (void)handleFatalJSExceptionWithMessage:(NSString *)message stack:(NSArray *)stack exceptionId:(NSNumber *)exceptionId
 {
-  [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXKernelAppDidDisplay") object:self];
+  // [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXKernelAppDidDisplay") object:self];
 
   // mark the experience as hitting an error so we can recover later
   [_appManager registerErrorForBridge:RCTErrorWithMessage(message)];
