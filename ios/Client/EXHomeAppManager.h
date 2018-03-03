@@ -7,5 +7,6 @@ FOUNDATION_EXPORT NSString *kEXHomeManifestResourceName;
 
 + (NSDictionary *)bundledHomeManifest;
 - (void)getHistoryUrlForExperienceId:(NSString *)experienceId completion:(void (^)(NSString *))completion;
+- (void)showQRReader;
 
 @end

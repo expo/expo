@@ -94,6 +94,15 @@
   }
 }
 
+- (void)homeModuleDidSelectQRReader:(EXHomeModule *)module
+{
+  if ([EXKernel sharedInstance].browserController) {
+    [EXUtil performSynchronouslyOnMainThread:^{
+      [[EXKernel sharedInstance].browserController showQRReader];
+    }];
+  }
+}
+
 - (BOOL)homeModuleShouldAutoReloadCurrentTask:(EXHomeModule *)module
 {
   // TODO: ben: error recovery audit
