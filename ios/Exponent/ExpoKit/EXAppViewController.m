@@ -13,7 +13,6 @@
 #import "EXKernelUtil.h"
 #import "EXScreenOrientationManager.h"
 #import "EXShellManager.h"
-#import "EXUtil.h"
 
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
 
@@ -42,7 +41,6 @@ NS_ASSUME_NONNULL_BEGIN
   if (self = [super init]) {
     _appRecord = record;
     _supportedInterfaceOrientations = EX_INTERFACE_ORIENTATION_USE_MANIFEST;
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_appDidDisplay:) name:kEXKernelAppDidDisplay object:nil];
   }
   return self;
 }
@@ -57,8 +55,8 @@ NS_ASSUME_NONNULL_BEGIN
   [super viewDidLoad];
   _loadingView = [[EXAppLoadingView alloc] initUsingSplash:[self _usesSplashScreen]];
   [self.view addSubview:_loadingView];
-  
   _appRecord.appManager.delegate = self;
+  self.isLoading = YES;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -91,13 +89,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)maybeShowError:(NSError *)error
 {
+  self.isLoading = NO;
   BOOL isNetworkError = ([error.domain isEqualToString:(NSString *)kCFErrorDomainCFNetwork] ||
                          [error.domain isEqualToString:EXNetworkErrorDomain]);
     if (isNetworkError) {
       // show a human-readable reachability error
-      [EXUtil performSynchronouslyOnMainThread:^{
+      dispatch_async(dispatch_get_main_queue(), ^{
         [self _showErrorWithType:kEXFatalErrorTypeLoading error:error];
-      }];
+      });
     } else if ([error.domain isEqualToString:@"JSServer"] && [_appRecord.appManager enablesDeveloperTools]) {
       // RCTRedBox already handled this
     } else if ([error.domain rangeOfString:RCTErrorDomain].length > 0 && [_appRecord.appManager enablesDeveloperTools]) {
@@ -105,9 +104,9 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
       // TODO: ben: handle other error cases
       // also, can test for (error.code == kCFURLErrorNotConnectedToInternet)
-      [EXUtil performSynchronouslyOnMainThread:^{
+      dispatch_async(dispatch_get_main_queue(), ^{
         [self _showErrorWithType:kEXFatalErrorTypeException error:error];
-      }];
+      });
     }
 }
 
@@ -213,7 +212,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)reactAppManager:(EXReactAppManager *)appManager failedToLoadJavaScriptWithError:(NSError *)error
 {
   EXAssertMainThread();
-  self.isLoading = NO;
   [self maybeShowError:error];
 }
 
@@ -322,13 +320,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setIsLoading:(BOOL)isLoading
 {
   _isLoading = isLoading;
-  if (!isLoading) {
-    if (![self _usesSplashScreen]) {
-      // If no splash screen is used, hide the loading here.
-      // otherwise wait for `appDidDisplay` notif
+  dispatch_async(dispatch_get_main_queue(), ^{
+    if (isLoading) {
+      self.loadingView.hidden = NO;
+      [self.view bringSubviewToFront:self.loadingView];
+    } else {
       self.loadingView.hidden = YES;
     }
-  }
+  });
 }
 
 - (BOOL)_usesSplashScreen
@@ -343,17 +342,6 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-- (void)_appDidDisplay:(NSNotification *)note
-{
-  __weak typeof(self) weakSelf = self;
-  dispatch_async(dispatch_get_main_queue(), ^{
-    __strong typeof(self) strongSelf = weakSelf;
-    if (strongSelf) {
-      strongSelf.loadingView.hidden = YES;
-    }
-  });
-}
-
 - (void)_checkAppFinishedLoading:(NSTimer *)timer
 {
   // When root view has been filled with something, there are two cases:
@@ -365,7 +353,6 @@ NS_ASSUME_NONNULL_BEGIN
     EXAppLoadingManager *appLoading = [_appRecord.appManager appLoadingManagerInstance];
     if (!appLoading || !appLoading.started || appLoading.finished) {
       self.isLoading = NO;
-      [[NSNotificationCenter defaultCenter] postNotificationName:kEXKernelAppDidDisplay object:self];
       [_viewTestTimer invalidate];
       _viewTestTimer = nil;
     }

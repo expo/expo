@@ -57,10 +57,6 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"EXAppD
                                              selector:@selector(_onKernelJSLoaded)
                                                  name:kEXKernelJSIsLoadedNotification
                                                object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(_onKernelAppDidDisplay)
-                                                 name:kEXKernelAppDidDisplay
-                                               object:nil];
     [self _initDefaultKeys];
   }
   return self;
