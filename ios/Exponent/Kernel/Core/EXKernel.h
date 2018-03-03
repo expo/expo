@@ -2,24 +2,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "EXAppBrowserController.h"
 #import "EXKernelAppRegistry.h"
 #import "EXKernelServiceRegistry.h"
 #import "EXKernelUtil.h"
 
 NS_ASSUME_NONNULL_BEGIN
-
-// TODO: ben: break out to new class?
-@protocol EXAppBrowserController
-
-- (void)moveAppToVisible:(EXKernelAppRecord *)appRecord;
-- (void)moveHomeToVisible;
-- (void)refreshVisibleApp;
-- (void)toggleMenu;
-- (void)setIsMenuVisible:(BOOL)isMenuVisible;
-- (void)showDiagnostics;
-- (void)getHistoryUrlForExperienceId:(NSString *)experienceId completion:(void (^)(NSString * _Nullable))completion;
-
-@end
 
 FOUNDATION_EXPORT NSNotificationName kEXKernelJSIsLoadedNotification; // TODO: ben: audit
 FOUNDATION_EXPORT NSString *kEXKernelErrorDomain;

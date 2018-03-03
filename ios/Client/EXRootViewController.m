@@ -107,6 +107,13 @@ NS_ASSUME_NONNULL_BEGIN
   [self presentViewController:vcDiagnostics animated:NO completion:nil];
 }
 
+- (void)showQRReader
+{
+  [self moveHomeToVisible];
+  EXHomeAppManager *homeAppManager = (EXHomeAppManager *)[EXKernel sharedInstance].appRegistry.homeAppRecord.appManager;
+  [homeAppManager showQRReader];
+}
+
 - (void)getHistoryUrlForExperienceId:(NSString *)experienceId completion:(void (^)(NSString *))completion
 {
   EXHomeAppManager *homeAppManager = (EXHomeAppManager *)[EXKernel sharedInstance].appRegistry.homeAppRecord.appManager;

@@ -34,6 +34,11 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
                    }];
 }
 
+- (void)showQRReader
+{
+  [self _dispatchHomeJSEvent:@"showQRReader" body:@{} onSuccess:nil onFailure:nil];
+}
+
 - (NSArray *)extraModulesForBridge:(RCTBridge *)bridge
 {
   NSMutableArray *modules = [NSMutableArray array];

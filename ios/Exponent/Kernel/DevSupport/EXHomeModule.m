@@ -174,6 +174,13 @@ RCT_EXPORT_METHOD(selectGoToHome)
   }
 }
 
+RCT_EXPORT_METHOD(selectQRReader)
+{
+  if (_delegate) {
+    [_delegate homeModuleDidSelectQRReader:self];
+  }
+}
+
 RCT_EXPORT_METHOD(addDevMenu)
 {
   __weak typeof(self) weakSelf = self;

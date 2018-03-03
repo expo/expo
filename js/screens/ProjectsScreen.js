@@ -17,6 +17,7 @@ import { createFocusAwareComponent, withNavigation } from '@expo/ex-navigation';
 import { Constants } from 'expo';
 import { connect } from 'react-redux';
 
+import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
 import Alerts from '../constants/Alerts';
 import Colors from '../constants/Colors';
 import HistoryActions from '../redux/HistoryActions';
@@ -34,7 +35,6 @@ import extractReleaseChannel from '../utils/extractReleaseChannel';
 export default class ProjectsScreen extends React.Component {
   props: {
     navigation: any,
-    immediatelyLoadingModalName?: string,
     isFocused: boolean,
     dispatch: () => void,
     recentHistory: any,
@@ -55,20 +55,18 @@ export default class ProjectsScreen extends React.Component {
 
   static getDataProps(data) {
     let { history } = data.history;
-    let projectScreenImmediatelyNavigatesToModalNamed = null; // TODO: BEN
 
     return {
       recentHistory: history.take(6),
       allHistory: history,
-      immediatelyLoadingModalName: projectScreenImmediatelyNavigatesToModalNamed,
     };
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (!this.props.immediatelyLoadingModalName && nextProps.immediatelyLoadingModalName) {
-      this.props.navigation.showModal(nextProps.immediatelyLoadingModalName);
-      // TODO: BEN Store.dispatch(BrowserActions.clearImmediatelyLoadingModalName());
-    }
+  componentDidMount() {
+    addListenerWithNativeCallback('ExponentKernel.showQRReader', async (event) => {
+      this.props.navigation.showModal('qrCode');
+      return { success: true };
+    });
   }
 
   render() {

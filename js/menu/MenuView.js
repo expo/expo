@@ -304,11 +304,7 @@ export default class MenuView extends React.Component {
 
   _onOpenQRCode = async () => {
     if (await requestCameraPermissionsAsync()) {
-      /* TODO: BEN Store.dispatch(
-        BrowserActions.foregroundHomeAsync({
-          projectScreenImmediatelyNavigatesToModalNamed: 'qrCode',
-        })
-      ); */
+      ExponentKernel.selectQRReader();
     } else {
       alert('In order to use the QR Code scanner you need to provide camera permissions');
     }
