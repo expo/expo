@@ -61,7 +61,7 @@
   EXKernelAppRecord *visibleApp = [EXKernel sharedInstance].visibleApp;
   NSDictionary *task = @{
     @"manifestUrl": visibleApp.appLoader.manifestUrl.absoluteString,
-    @"manifest": visibleApp.appLoader.manifest,
+    @"manifest": (visibleApp.appLoader.manifest) ? visibleApp.appLoader.manifest : [NSNull null],
   };
   // include randomness to force the component to rerender
   NSDictionary *menuProps = @{ @"task": task, @"uuid": [[NSUUID UUID] UUIDString] };

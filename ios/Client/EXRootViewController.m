@@ -110,14 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showQRReader
 {
   [self moveHomeToVisible];
-  EXHomeAppManager *homeAppManager = (EXHomeAppManager *)[EXKernel sharedInstance].appRegistry.homeAppRecord.appManager;
-  [homeAppManager showQRReader];
-}
-
-- (void)getHistoryUrlForExperienceId:(NSString *)experienceId completion:(void (^)(NSString *))completion
-{
-  EXHomeAppManager *homeAppManager = (EXHomeAppManager *)[EXKernel sharedInstance].appRegistry.homeAppRecord.appManager;
-  return [homeAppManager getHistoryUrlForExperienceId:experienceId completion:completion];
+  [[self _getHomeAppManager] showQRReader];
 }
 
 - (void)moveHomeToVisible
@@ -131,6 +124,16 @@ NS_ASSUME_NONNULL_BEGIN
   [self setIsMenuVisible:NO];
   NSURL *urlToRefresh = [EXKernel sharedInstance].visibleApp.appLoader.manifestUrl;
   [[EXKernel sharedInstance] createNewAppWithUrl:urlToRefresh initialProps:nil];
+}
+
+- (void)addHistoryItemWithUrl:(NSURL *)manifestUrl manifest:(NSDictionary *)manifest
+{
+  [[self _getHomeAppManager] addHistoryItemWithUrl:manifestUrl manifest:manifest];
+}
+
+- (void)getHistoryUrlForExperienceId:(NSString *)experienceId completion:(void (^)(NSString *))completion
+{
+  return [[self _getHomeAppManager] getHistoryUrlForExperienceId:experienceId completion:completion];
 }
 
 #pragma mark - internal
@@ -155,6 +158,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self.view setNeedsLayout];
     [[EXKernel sharedInstance] appDidBecomeVisible:appRecord];
   }
+}
+
+- (EXHomeAppManager *)_getHomeAppManager
+{
+  return (EXHomeAppManager *)[EXKernel sharedInstance].appRegistry.homeAppRecord.appManager;
 }
 
 @end
