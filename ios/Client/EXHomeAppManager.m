@@ -22,6 +22,20 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
 
 @implementation EXHomeAppManager
 
+#pragma mark - interfacing with home JS
+
+- (void)addHistoryItemWithUrl:(NSURL *)manifestUrl manifest:(NSDictionary *)manifest
+{
+  if (!manifest || !manifestUrl || [manifest[@"id"] isEqualToString:@"@exponent/home"]) {
+    return;
+  }
+  NSDictionary *params = @{
+    @"manifestUrl": manifestUrl.absoluteString,
+    @"manifest": manifest,
+  };
+  [self _dispatchHomeJSEvent:@"addHistoryItem" body:params onSuccess:nil onFailure:nil];
+}
+
 - (void)getHistoryUrlForExperienceId:(NSString *)experienceId completion:(void (^)(NSString *))completion
 {
   [self _dispatchHomeJSEvent:@"getHistoryUrlForExperienceId"
@@ -38,6 +52,8 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
 {
   [self _dispatchHomeJSEvent:@"showQRReader" body:@{} onSuccess:nil onFailure:nil];
 }
+
+#pragma mark - EXReactAppManager
 
 - (NSArray *)extraModulesForBridge:(RCTBridge *)bridge
 {

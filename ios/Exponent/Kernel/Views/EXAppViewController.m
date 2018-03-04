@@ -142,6 +142,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appLoader:(EXKernelAppLoader *)appLoader didLoadOptimisticManifest:(NSDictionary *)manifest
 {
+  if ([EXKernel sharedInstance].browserController) {
+    [[EXKernel sharedInstance].browserController addHistoryItemWithUrl:appLoader.manifestUrl manifest:manifest];
+  }
   dispatch_async(dispatch_get_main_queue(), ^{
     _loadingView.manifest = manifest;
     [self _enforceDesiredDeviceOrientation];

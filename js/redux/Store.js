@@ -14,17 +14,13 @@ import AuthTokenReducer from './AuthTokenReducer';
 import HistoryReducer from './HistoryReducer';
 import SessionReducer from './SessionReducer';
 import SettingsReducer from './SettingsReducer';
-/* import BrowserReducer from 'BrowserReducer';
-import ConsoleReducer from 'ConsoleReducer';
-import ExButtonReducer from 'ExButtonReducer'; */
+// import ExButtonReducer from 'ExButtonReducer';
 
 const reduce = combineReducers({
   authTokens: AuthTokenReducer,
   history: HistoryReducer,
   session: SessionReducer,
   settings: SettingsReducer,
-  // browser: BrowserReducer,
-  // console: ConsoleReducer,
   // exponentButton: ExButtonReducer,
   apollo: ApolloClient.reducer(),
 });

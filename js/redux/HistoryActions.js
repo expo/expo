@@ -1,8 +1,5 @@
 import LocalStorage from '../storage/LocalStorage';
 
-// TODO: adding items to history
-// (once we have native bundle loading / navigation working)
-
 export default {
   loadHistory() {
     return async (dispatch) => {
@@ -21,5 +18,27 @@ export default {
         type: 'clearHistory',
       });
     };
+  },
+
+  addHistoryItem(manifestUrl, manifest) {
+    return async (dispatch) => {
+      const historyItem = {
+        bundleUrl: manifest.bundleUrl,
+        manifestUrl,
+        manifest,
+        url: manifestUrl,
+        time: Date.now(),
+      };
+
+      let history = await LocalStorage.getHistoryAsync();
+      history = history.filter(item => item.url !== historyItem.url);
+      history.unshift(historyItem);
+      await LocalStorage.saveHistoryAsync(history);
+
+      return dispatch({
+        type: 'loadHistory',
+        payload: { history },
+      });
+    }
   },
 }
