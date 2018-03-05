@@ -89,12 +89,13 @@ class AuthAwareNetworkInterface {
   query(request: any) {
     // If we don't have an auth0 token, we make a regular query
     // It either means we are logged out, or have only interacted with our Sessions system
-    if (!this._getIdToken) {
+    if (!this._getIdToken()) {
+      console.log('no id token');
       return this._networkInterface.query(request);
     }
 
     // If we have auth0 tokens, but have a session secret, we make a regular query
-    if (this._getSessionSecret) {
+    if (this._getSessionSecret()) {
       return this._networkInterface.query(request);
     }
 
