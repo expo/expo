@@ -202,12 +202,14 @@ The HTTP request body must be JSON. It may either be a single message object or 
 
 Upon success, the HTTP response will be a JSON object whose `data` field is an array of push receipts, each of which corresponds to the message at its respective index in the request. Continuing the above example, this is what a successful response body looks like:
 
+```json
     {
       "data": [
         {"status": "ok"},
         {"status": "ok"}
       ]
     }
+```
 
 When there is an error delivering a message, the receipt's status will be "error" and the receipt will contain information about the error. More information about the response format is documented below.
 

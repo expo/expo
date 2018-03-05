@@ -105,18 +105,15 @@ npm install -g exp
 
 # Connect to iOS simulator
 exp start --ios
-```
+
 # Connect to iOS device
-```javascript
 exp start
-```
-Once you connect, in the Expo app on the device, disable Live Reload and Hot Reloading.
 
 # Or connect to Android devices or simulators
 exp start --android
 ```
 
-For more information, see [exp Command-Line Interface](exp-cli.html#exp-cli).
+Once you connect, in the Expo app on the device, disable Live Reload and Hot Reloading. For more information, see [exp Command-Line Interface](exp-cli.html#exp-cli).
 
 ### Using XDE
 

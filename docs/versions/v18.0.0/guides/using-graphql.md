@@ -30,8 +30,7 @@ If you don't want to build the backend yourself, you can use [**Graphcool**](www
 
 Same goes for the **GraphQL client**, it is of course possible for you to write the client that is responsible for interacting with a GraphQL backend yourself.
 
-But if you want to save time, you can use
-[**Apollo**](http://dev.apollodata.com/), a ready-made GraphQL client
+But if you want to save time, you can use [**Apollo**](http://dev.apollodata.com/), a ready-made GraphQL client
 that integrates easily with React Native as well as with any other
 frontend technology of your choice. This means that you could reuse the
 code from your Expo app in your web app regardless of the framework. Apollo also integrates cleanly into popular development tools like Redux, and may be easily extended to fit your apps specific needs. Most important though is that Apollo Client is community driven with all development happening in the open.
@@ -46,8 +45,7 @@ these two technologies. For an in-depth tutorial on how to use Graphcool
 with Apollo Client, visit the [Learn Apollo Guide](https://www.learnapollo.com/tutorial-react-native/react-native-01/).
 
 We also prepared a full **Instagram example that uses Graphcool, Apollo
-and Auth0** - you can check it out
-[here](https://github.com/graphcool-examples/expo-auth0-instagram-example).
+and Auth0** - you can check it out [here](https://github.com/graphcool-examples/expo-auth0-instagram-example).
 
 
 ## Setting up a Graphcool backend
@@ -157,8 +155,7 @@ mutation ($idToken: String!, $name: String!) {
 
 #### Social OAuth Authentication providers
 
-Learn how to integrate with Auth0 social providers in the
-[expo-auth0-example](https://github.com/graphcool-examples/react-native-graphql/tree/master/authentication-with-expo-and-auth0) repository.
+Learn how to integrate with Auth0 social providers in the [expo-auth0-example](https://github.com/graphcool-examples/react-native-graphql/tree/master/authentication-with-expo-and-auth0) repository.
 
 ### Permissions
 
