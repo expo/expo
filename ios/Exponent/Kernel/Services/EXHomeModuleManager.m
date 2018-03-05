@@ -115,4 +115,19 @@
   [[EXKernel sharedInstance].serviceRegistry.linkingManager openUrl:url isUniversalLink:NO];
 }
 
+- (void)homeModule:(EXHomeModule *)homeModule didFinishNux:(BOOL)isNuxFinished
+{
+  if ([EXKernel sharedInstance].browserController) {
+    [[EXKernel sharedInstance].browserController setIsNuxFinished:isNuxFinished];
+  }
+}
+
+- (BOOL)homeModuleShouldFinishNux:(EXHomeModule *)homeModule
+{
+  if ([EXKernel sharedInstance].browserController) {
+    return [[EXKernel sharedInstance].browserController isNuxFinished];
+  }
+  return NO;
+}
+
 @end

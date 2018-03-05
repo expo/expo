@@ -13,7 +13,6 @@
 @property (nonatomic, strong) NSArray * _Nonnull sdkVersions;
 @property (nonatomic, weak) id<EXHomeModuleDelegate> delegate;
 
-
 @end
 
 @implementation EXHomeModule
@@ -191,9 +190,24 @@ RCT_EXPORT_METHOD(addDevMenu)
   });
 }
 
-RCT_EXPORT_METHOD(onLoaded)
+RCT_REMAP_METHOD(getIsNuxFinishedAsync,
+                 getIsNuxFinishedWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
 {
-  [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXKernelJSIsLoadedNotification") object:self];
+  if (_delegate) {
+    BOOL isFinished = [_delegate homeModuleShouldFinishNux:self];
+    resolve(@(isFinished));
+  } else {
+    resolve(@(NO));
+  }
+}
+
+RCT_REMAP_METHOD(setIsNuxFinishedAsync,
+                 setIsNuxFinished:(BOOL)isNuxFinished)
+{
+  if (_delegate) {
+    [_delegate homeModule:self didFinishNux:isNuxFinished];
+  }
 }
 
 RCT_REMAP_METHOD(onEventSuccess,

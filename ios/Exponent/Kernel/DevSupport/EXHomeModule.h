@@ -27,6 +27,9 @@
  */
 - (NSDictionary <NSString *, NSString *> *)devMenuItemsForHomeModule:(EXHomeModule *)module;
 
+- (BOOL)homeModuleShouldFinishNux:(EXHomeModule *)homeModule;
+- (void)homeModule:(EXHomeModule *)homeModule didFinishNux:(BOOL)isNuxFinished;
+
 - (void)homeModule:(EXHomeModule *)module didSelectDevMenuItemWithKey:(NSString *)key;
 - (void)homeModuleDidSelectHomeDiagnostics:(EXHomeModule *)module;
 - (void)homeModule:(EXHomeModule *)module didOpenUrl:(NSString *)url;

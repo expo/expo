@@ -3,7 +3,6 @@
 @import UIKit;
 
 #import "EXAppLoadingView.h"
-#import "EXAppLoadingManager.h"
 #import "EXFileDownloader.h"
 #import "EXAppViewController.h"
 #import "EXReactAppManager.h"
@@ -13,6 +12,8 @@
 #import "EXKernelUtil.h"
 #import "EXScreenOrientationManager.h"
 #import "EXShellManager.h"
+
+#import <React/RCTUtils.h>
 
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
 
@@ -25,7 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) EXKernelAppRecord *appRecord;
 @property (nonatomic, strong) EXAppLoadingView *loadingView;
 @property (nonatomic, strong) EXErrorView *errorView;
-@property (nonatomic, strong) NSTimer *viewTestTimer;
 @property (nonatomic, assign) UIInterfaceOrientationMask supportedInterfaceOrientations; // override super
 
 @end
@@ -117,10 +117,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)refresh
 {
-  if (_viewTestTimer) {
-    [_viewTestTimer invalidate];
-    _viewTestTimer = nil;
-  }
   self.isLoading = YES;
   [_appRecord.appLoader request];
 }
@@ -200,16 +196,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)reactAppManagerFinishedLoadingJavaScript:(EXReactAppManager *)appManager
 {
   EXAssertMainThread();
-  
-  if (_viewTestTimer) {
-    [_viewTestTimer invalidate];
-    _viewTestTimer = nil;
+  self.isLoading = NO;
+  if ([EXKernel sharedInstance].browserController) {
+    [[EXKernel sharedInstance].browserController appDidFinishLoadingSuccessfully:_appRecord];
   }
-  _viewTestTimer = [NSTimer scheduledTimerWithTimeInterval:0.02
-                                                    target:self
-                                                  selector:@selector(_checkAppFinishedLoading:)
-                                                  userInfo:nil
-                                                   repeats:YES];
 }
 
 - (void)reactAppManager:(EXReactAppManager *)appManager failedToLoadJavaScriptWithError:(NSError *)error
@@ -220,10 +210,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)reactAppManagerDidInvalidate:(EXReactAppManager *)appManager
 {
-  if (_viewTestTimer) {
-    [_viewTestTimer invalidate];
-    _viewTestTimer = nil;
-  }
+
 }
 
 - (void)errorViewDidSelectRetry:(EXErrorView *)errorView
@@ -331,23 +318,6 @@ NS_ASSUME_NONNULL_BEGIN
       self.loadingView.hidden = YES;
     }
   });
-}
-
-- (void)_checkAppFinishedLoading:(NSTimer *)timer
-{
-  // When root view has been filled with something, there are two cases:
-  //   1. AppLoading was never mounted, in which case we hide the loading indicator immediately
-  //   2. AppLoading was mounted, in which case we wait till it is unmounted to hide the loading indicator
-  if ([_appRecord.appManager rootView] &&
-      [_appRecord.appManager rootView].subviews.count > 0 &&
-      [_appRecord.appManager rootView].subviews.firstObject.subviews.count > 0) {
-    EXAppLoadingManager *appLoading = [_appRecord.appManager appLoadingManagerInstance];
-    if (!appLoading || !appLoading.started || appLoading.finished) {
-      self.isLoading = NO;
-      [_viewTestTimer invalidate];
-      _viewTestTimer = nil;
-    }
-  }
 }
 
 @end
