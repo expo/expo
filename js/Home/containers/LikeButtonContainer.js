@@ -76,8 +76,6 @@ export default class LikeButtonContainer extends React.Component {
         appId: this.props.appId,
         like: !liked,
       });
-
-      console.log({ result, appId: this.props.appId });
     } catch (e) {
       if (e.graphQLErrors) {
         // TODO: handle error. this can happen if you like a project
