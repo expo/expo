@@ -57,7 +57,7 @@ export default class ExploreScreen extends React.Component {
 
   static getDataProps(data) {
     return {
-      isAuthenticated: isUserAuthenticated(data.authTokens),
+      isAuthenticated: isUserAuthenticated(data.authTokens, data.session),
     };
   }
 

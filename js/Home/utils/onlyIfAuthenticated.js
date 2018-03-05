@@ -8,7 +8,7 @@ import isUserAuthenticated from './isUserAuthenticated';
 class Authenticated extends React.Component {
   static getDataProps(data) {
     return {
-      isAuthenticated: isUserAuthenticated(data.authTokens),
+      isAuthenticated: isUserAuthenticated(data.authTokens, data.session),
     };
   }
 
