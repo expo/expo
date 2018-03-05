@@ -1,4 +1,4 @@
-
+#import "EXAppLoadingManager.h"
 #import "EXBuildConstants.h"
 #import "EXErrorRecoveryManager.h"
 #import "EXKernel.h"
@@ -42,6 +42,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 @property (nonatomic, strong) UIView * __nullable reactRootView;
 @property (nonatomic, copy) RCTSourceLoadBlock loadCallback;
 @property (nonatomic, strong) NSDictionary *initialProps;
+@property (nonatomic, strong) NSTimer *viewTestTimer;
 
 @end
 
@@ -105,17 +106,6 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   }
 }
 
-- (id)appLoadingManagerInstance
-{
-  Class loadingManagerClass = [self versionedClassFromString:@"EXAppLoadingManager"];
-  for (Class class in [self.reactBridge moduleClasses]) {
-    if ([class isSubclassOfClass:loadingManagerClass]) {
-      return [self.reactBridge moduleForClass:loadingManagerClass];
-    }
-  }
-  return nil;
-}
-
 - (void)invalidate
 {
   [self _invalidateAndClearDelegate:YES];
@@ -124,6 +114,10 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 - (void)_invalidateAndClearDelegate:(BOOL)clearDelegate
 {
   [self _stopObservingBridgeNotifications];
+  if (_viewTestTimer) {
+    [_viewTestTimer invalidate];
+    _viewTestTimer = nil;
+  }
   if (_versionManager) {
     [_versionManager invalidate];
     _versionManager = nil;
@@ -249,7 +243,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 {
   NSData *data = _appRecord.appLoader.bundle;
   if (_loadCallback) {
-    if ([self compareVersionTo:22] == NSOrderedAscending) {
+    if ([self _compareVersionTo:22] == NSOrderedAscending) {
       SDK21RCTSourceLoadBlock legacyLoadCallback = (SDK21RCTSourceLoadBlock)_loadCallback;
       legacyLoadCallback(nil, data, data.length);
     } else {
@@ -271,7 +265,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   [[NSNotificationCenter defaultCenter] postNotificationName:[self versionedString:RCTJavaScriptDidFailToLoadNotification] object:error];
   
   if (_loadCallback) {
-    if ([self compareVersionTo:22] == NSOrderedAscending) {
+    if ([self _compareVersionTo:22] == NSOrderedAscending) {
       SDK21RCTSourceLoadBlock legacyLoadCallback = (SDK21RCTSourceLoadBlock)_loadCallback;
       legacyLoadCallback(error, nil, 0);
     } else {
@@ -323,17 +317,11 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 {
   __weak typeof(self) weakSelf = self;
   if ([notification.name isEqualToString:[self versionedString:RCTJavaScriptDidLoadNotification]]) {
-    [_versionManager bridgeFinishedLoading];
-    [self appDidBecomeVisible]; // TODO: ben: check if this is needed
     _isBridgeRunning = YES;
     _hasBridgeEverLoaded = YES;
-    dispatch_async(dispatch_get_main_queue(), ^{
-      __strong typeof(self) strongSelf = weakSelf;
-      if (strongSelf) {
-        [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceFinishedLoadingWithId:strongSelf.appRecord.experienceId];
-        [strongSelf.delegate reactAppManagerFinishedLoadingJavaScript:strongSelf];
-      }
-    });
+    [_versionManager bridgeFinishedLoading];
+    [self appDidBecomeVisible];
+    [self _beginWaitingForAppLoading];
   } else if ([notification.name isEqualToString:[self versionedString:RCTJavaScriptDidFailToLoadNotification]]) {
     NSError *error = (notification.userInfo) ? notification.userInfo[@"error"] : nil;
     [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:error forExperienceId:_appRecord.experienceId];
@@ -346,18 +334,57 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   }
 }
 
-- (NSComparisonResult)compareVersionTo:(NSUInteger)version
+- (void)_beginWaitingForAppLoading
 {
-  // Unversioned projects are always considered to be on the latest version
-  if (!_validatedVersion || _validatedVersion.length == 0) {
-    return NSOrderedDescending;
+  if (_viewTestTimer) {
+    [_viewTestTimer invalidate];
+    _viewTestTimer = nil;
   }
-  
-  NSUInteger projectVersionNumber = _validatedVersion.integerValue;
-  if (projectVersionNumber == version) {
-    return NSOrderedSame;
+  _viewTestTimer = [NSTimer scheduledTimerWithTimeInterval:0.02
+                                                    target:self
+                                                  selector:@selector(_checkAppFinishedLoading:)
+                                                  userInfo:nil
+                                                   repeats:YES];
+}
+
+- (id)_appLoadingManagerInstance
+{
+  Class loadingManagerClass = [self versionedClassFromString:@"EXAppLoadingManager"];
+  for (Class class in [self.reactBridge moduleClasses]) {
+    if ([class isSubclassOfClass:loadingManagerClass]) {
+      return [self.reactBridge moduleForClass:loadingManagerClass];
+    }
   }
-  return (projectVersionNumber < version) ? NSOrderedAscending : NSOrderedDescending;
+  return nil;
+}
+
+- (void)_checkAppFinishedLoading:(NSTimer *)timer
+{
+  // When root view has been filled with something, there are two cases:
+  //   1. AppLoading was never mounted, in which case we hide the loading indicator immediately
+  //   2. AppLoading was mounted, in which case we wait till it is unmounted to hide the loading indicator
+  if ([_appRecord.appManager rootView] &&
+      [_appRecord.appManager rootView].subviews.count > 0 &&
+      [_appRecord.appManager rootView].subviews.firstObject.subviews.count > 0) {
+    EXAppLoadingManager *appLoading = [self _appLoadingManagerInstance];
+    if (!appLoading || !appLoading.started || appLoading.finished) {
+      [self _appLoadingFinished];
+    }
+  }
+}
+
+- (void)_appLoadingFinished
+{
+  [_viewTestTimer invalidate];
+  _viewTestTimer = nil;
+  __weak typeof(self) weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    __strong typeof(weakSelf) strongSelf = weakSelf;
+    if (strongSelf) {
+      [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceFinishedLoadingWithId:strongSelf.appRecord.experienceId];
+      [strongSelf.delegate reactAppManagerFinishedLoadingJavaScript:strongSelf];
+    }
+  });
 }
 
 #pragma mark - dev tools
@@ -426,6 +453,20 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 }
 
 #pragma mark - RN configuration
+
+- (NSComparisonResult)_compareVersionTo:(NSUInteger)version
+{
+  // Unversioned projects are always considered to be on the latest version
+  if (!_validatedVersion || _validatedVersion.length == 0) {
+    return NSOrderedDescending;
+  }
+  
+  NSUInteger projectVersionNumber = _validatedVersion.integerValue;
+  if (projectVersionNumber == version) {
+    return NSOrderedSame;
+  }
+  return (projectVersionNumber < version) ? NSOrderedAscending : NSOrderedDescending;
+}
 
 - (NSDictionary *)launchOptionsForBridge
 {

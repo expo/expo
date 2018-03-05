@@ -38,23 +38,43 @@ export default class MenuView extends React.Component {
     this.state = {
       enableDevMenuTools: false,
       devMenuItems: {},
+      isNuxFinished: false,
+      isLoading: false,
+      isLoaded: false,
     };
   }
 
   async componentDidMount() {
     this._mounted = true;
     this.forceStatusBarUpdateAsync();
-    let enableDevMenuTools = await ExponentKernel.doesCurrentTaskEnableDevtools();
-    let devMenuItems = await ExponentKernel.getDevMenuItemsToShow();
-    if (this._mounted) {
-      // eslint-disable-next-line react/no-did-mount-set-state
-      this.setState({ enableDevMenuTools, devMenuItems });
-    }
   }
 
   componentWillUnmount() {
     this.restoreStatusBar();
     this._mounted = false;
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (!this.state.isLoading) {
+      this._loadStateAsync();
+    }
+  }
+
+  _loadStateAsync = async () => {
+    this.setState({ isLoading: true, isLoaded: false }, async () => {
+      const enableDevMenuTools = await ExponentKernel.doesCurrentTaskEnableDevtools();
+      const devMenuItems = await ExponentKernel.getDevMenuItemsToShow();
+      const isNuxFinished = await ExponentKernel.getIsNuxFinishedAsync();
+      if (this._mounted) {
+        this.setState({
+          enableDevMenuTools,
+          devMenuItems,
+          isNuxFinished,
+          isLoading: false,
+          isLoaded: true,
+        });
+      }
+    });
   }
 
   forceStatusBarUpdateAsync = async () => {
@@ -76,6 +96,10 @@ export default class MenuView extends React.Component {
     }
   };
   render() {
+    if (!this.state.isLoaded) {
+      return (<View />);
+    }
+    
     let copyUrlButton;
     if (this.props.task && this.props.task.manifestUrl) {
       copyUrlButton = this._renderButton({
@@ -90,7 +114,7 @@ export default class MenuView extends React.Component {
       <BlurView style={styles.container} tint="light" intensity={85}>
         <StatusBar barStyle="default" />
         <ScrollView style={styles.overlay}>
-          {this.props.isNuxFinished ? this._renderTaskInfoRow() : this._renderNUXRow()}
+          {this.state.isNuxFinished ? this._renderTaskInfoRow() : this._renderNUXRow()}
           <View style={styles.separator} />
           <View style={styles.buttonContainer}>
             {this._renderButton({
@@ -311,7 +335,7 @@ export default class MenuView extends React.Component {
   };
 
   _onPressFinishNux = () => {
-    // TODO: BEN Store.dispatch(BrowserActions.setIsNuxFinishedAsync(true));
+    ExponentKernel.setIsNuxFinishedAsync(true);
     ExponentKernel.selectCloseMenu();
   };
 

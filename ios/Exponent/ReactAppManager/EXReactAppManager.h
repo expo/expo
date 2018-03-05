@@ -33,8 +33,6 @@ typedef enum EXReactAppManagerStatus {
 - (void)appDidBecomeVisible;
 - (void)appDidBackground;
 
-- (id)appLoadingManagerInstance;
-
 @property (nonatomic, readonly) BOOL isBridgeRunning;
 @property (nonatomic, readonly) EXReactAppManagerStatus status;
 @property (nonatomic, readonly) UIView *rootView;

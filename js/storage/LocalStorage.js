@@ -1,6 +1,7 @@
-import { AsyncStorage } from 'react-native';
+import { AsyncStorage, NativeModules } from 'react-native';
 import mapValues from 'lodash/mapValues';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
+const { ExponentKernel } = NativeModules;
 
 const Keys = mapValues(
   {
@@ -13,9 +14,17 @@ const Keys = mapValues(
   value => `Exponent.${value}`
 );
 
-async function getIsNuxFinishedAsync() {
+async function _getLegacyIsNuxFinishedAsync() {
   let result = await AsyncStorage.getItem(Keys.NuxIsFinished);
   return result;
+}
+
+async function migrateNuxStateToNativeAsync() {
+  const result = await _getLegacyIsNuxFinishedAsync();
+  if (result === 'true' && ExponentKernel && ExponentKernel.setIsNuxFinishedAsync) {
+    await ExponentKernel.setIsNuxFinishedAsync(true);
+    await AsyncStorage.removeItem(Keys.NuxIsFinished);
+  }
 }
 
 async function getSettingsAsync() {
@@ -89,10 +98,6 @@ async function clearHistoryAsync() {
   return AsyncStorage.removeItem(Keys.History);
 }
 
-async function saveIsNuxFinishedAsync(isFinished) {
-  return AsyncStorage.setItem(Keys.NuxIsFinished, JSON.stringify(isFinished));
-}
-
 async function updateIdTokenAsync(idToken) {
   let tokens = await getAuthTokensAsync();
 
@@ -141,13 +146,12 @@ export default {
   clearAllAsync,
   getAuthTokensAsync,
   getSessionAsync,
-  getIsNuxFinishedAsync,
   getHistoryAsync,
   getSettingsAsync,
   saveAuthTokensAsync,
   saveHistoryAsync,
   saveSessionAsync,
-  saveIsNuxFinishedAsync,
+  migrateNuxStateToNativeAsync,
   removeAuthTokensAsync,
   removeSessionAsync,
   updateIdTokenAsync,

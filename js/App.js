@@ -9,12 +9,6 @@ import Store from './redux/Store';
 import ApolloClient from './api/ApolloClient';
 import HomeApp from './HomeApp';
 
-// import ConsoleActions from 'ConsoleActions';
-// import ErrorScreenApp from 'ErrorScreenApp';
-// import ExperienceNuxApp from 'ExperienceNuxApp';
-// import InfoScreenApp from 'InfoScreenApp';
-// TODO: BEN import 'Kernel';
-
 class WrapWithStore extends React.Component {
   render() {
     return (

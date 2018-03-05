@@ -4,7 +4,7 @@ import { NativeModules } from 'react-native';
 const { ExponentKernel } = NativeModules;
 
 const addListenerWithNativeCallback = (eventName, eventListener) => {
-  if (ExponentKernel && ExponentKernel.onLoaded) {
+  if (ExponentKernel) {
     DeviceEventEmitter.addListener(eventName, async (event) => {
       try {
         let result = await eventListener(event);

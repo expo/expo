@@ -4,6 +4,7 @@
 #import "EXKernel.h"
 #import "EXKernelLinkingManager.h"
 #import "EXRootViewController.h"
+#import "EXHomeAppManager.h"
 #import "EXShellManager.h"
 #import "EXTest.h"
 
@@ -26,10 +27,9 @@
   [super setUp];
   [self _loadConfig];
   
-  _rootViewController = (EXRootViewController *)[ExpoKit sharedInstance].rootViewController;
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_onKernelJSLoaded)
-                                               name:kEXKernelJSIsLoadedNotification
+                                               name:kEXHomeJSIsLoadedNotification
                                              object:nil];
   
 }
@@ -49,7 +49,6 @@
                              jsTestSuiteResult = notification.userInfo;
                              [expectation fulfill];
                            }];
-  [_rootViewController applicationWillEnterForeground];
   
   [self waitForExpectations:@[expectation] timeout:180];
   [NSNotificationCenter.defaultCenter removeObserver:observer];

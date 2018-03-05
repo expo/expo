@@ -16,6 +16,9 @@
 #import "EXRootViewController.h"
 #import "EXScreenOrientationManager.h"
 
+NSString * const kEXHomeDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey";
+NSString * const kEXHomeIsNuxFinishedDefaultsKey = @"EXHomeIsNuxFinishedDefaultsKey";
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXRootViewController () <EXAppBrowserController>
@@ -40,6 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   [super viewDidLoad];
   self.view.backgroundColor = [UIColor yellowColor];
+  [self _maybeResetNuxState];
 
   EXHomeAppManager *homeAppManager = [[EXHomeAppManager alloc] init];
   EXKernelAppLoader *homeAppLoader = [[EXKernelAppLoader alloc] initWithLocalManifest:[EXHomeAppManager bundledHomeManifest]];
@@ -136,6 +140,28 @@ NS_ASSUME_NONNULL_BEGIN
   return [[self _getHomeAppManager] getHistoryUrlForExperienceId:experienceId completion:completion];
 }
 
+- (void)setIsNuxFinished:(BOOL)isFinished
+{
+  [[NSUserDefaults standardUserDefaults] setBool:isFinished forKey:kEXHomeIsNuxFinishedDefaultsKey];
+  [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (BOOL)isNuxFinished
+{
+  return [[NSUserDefaults standardUserDefaults] boolForKey:kEXHomeIsNuxFinishedDefaultsKey];
+}
+
+- (void)appDidFinishLoadingSuccessfully:(EXKernelAppRecord *)appRecord
+{
+  // show nux if needed
+  if (!self.isNuxFinished
+      && appRecord == [EXKernel sharedInstance].visibleApp
+      && appRecord != [EXKernel sharedInstance].appRegistry.homeAppRecord
+      && !self.isMenuVisible) {
+    [self setIsMenuVisible:YES];
+  }
+}
+
 #pragma mark - internal
 
 - (void)_foregroundAppRecord:(EXKernelAppRecord *)appRecord
@@ -163,6 +189,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (EXHomeAppManager *)_getHomeAppManager
 {
   return (EXHomeAppManager *)[EXKernel sharedInstance].appRegistry.homeAppRecord.appManager;
+}
+
+- (void)_maybeResetNuxState
+{
+  // used by appetize: optionally disable nux
+  BOOL disableNuxDefaultsValue = [[NSUserDefaults standardUserDefaults] boolForKey:kEXHomeDisableNuxDefaultsKey];
+  if (disableNuxDefaultsValue) {
+    [self setIsNuxFinished:YES];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kEXHomeDisableNuxDefaultsKey];
+  }
 }
 
 @end

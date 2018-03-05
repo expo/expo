@@ -11,7 +11,6 @@ import SessionActions from './redux/SessionActions';
 import SettingsActions from './redux/SettingsActions';
 import LocalStorage from './storage/LocalStorage';
 import MenuView from './menu/MenuView';
-import GlobalLoadingOverlay from './containers/GlobalLoadingOverlay';
 import Store from './redux/Store';
 
 import customNavigationContext from './navigation/customNavigationContext';
@@ -33,6 +32,7 @@ export default class App extends React.Component {
     try {
       Store.dispatch(SettingsActions.loadSettings());
       Store.dispatch(HistoryActions.loadHistory());
+      await LocalStorage.migrateNuxStateToNativeAsync();
       const storedAuthTokens = await LocalStorage.getAuthTokensAsync();
       const storedSession = await LocalStorage.getSessionAsync();
 
@@ -43,7 +43,7 @@ export default class App extends React.Component {
       if (storedSession) {
         Store.dispatch(SessionActions.setSession(storedSession));
       }
-
+      
       if (Platform.OS === 'ios') {
         await Promise.all([Font.loadAsync(Ionicons.font)]);
       } else {
@@ -69,7 +69,6 @@ export default class App extends React.Component {
           </NavigationProvider>
         </ActionSheetProvider>
 
-        {Platform.OS === 'ios' && <GlobalLoadingOverlay />}
         {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
         {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
       </View>
