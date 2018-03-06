@@ -34,7 +34,6 @@ typedef enum EXKernelAppRecordStatus {
 
 /**
  *  See EXKernelAppRegistry::setError:forAppRecord:
- *  TODO: BEN: rename?
  */
 @property (nonatomic, strong)  NSError * _Nullable error;
 
