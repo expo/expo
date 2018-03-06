@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-@import UIKit;
+#import "EXViewController.h"
 
-@interface EXRootViewController : UIViewController
+@interface EXRootViewController : EXViewController
 
 @end

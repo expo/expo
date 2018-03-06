@@ -7,9 +7,22 @@ NS_ASSUME_NONNULL_BEGIN
 FOUNDATION_EXPORT NSString * const EXAppDidRegisterForRemoteNotificationsNotification;
 FOUNDATION_EXPORT NSString * const EXAppDidRegisterUserNotificationSettingsNotification;
 
+@class EXViewController;
+
 @interface ExpoKit : NSObject
 
 + (instancetype)sharedInstance;
+
+/**
+ *  Register an EXViewController subclass as the root class.
+ *  This must be the first method called on ExpoKit's singleton instance to make any difference.
+ */
+- (void)registerRootViewControllerClass:(Class)rootViewControllerClass;
+
+/**
+ *  The root Exponent view controller hosting a detached Exponent app.
+ */
+- (EXViewController *)rootViewController;
 
 /**
  *  Keys to third-party integrations used inside ExpoKit.

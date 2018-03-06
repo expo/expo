@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "ExpoKit.h"
-#import "EXAppViewController.h"
+#import "EXViewController.h"
 #import "EXAnalytics.h"
 #import "EXBuildConstants.h"
 #import "EXFacebook.h"
@@ -28,7 +28,7 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"EXAppD
   BOOL _hasConsumedLaunchNotification;
 }
 
-@property (nonatomic, nullable, strong) EXAppViewController *rootViewController;
+@property (nonatomic, nullable, strong) EXViewController *rootViewController;
 @property (nonatomic, strong) NSDictionary *launchOptions;
 
 @end
@@ -50,7 +50,7 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"EXAppD
 - (instancetype)init
 {
   if (self = [super init]) {
-    _rootViewControllerClass = [EXAppViewController class];
+    _rootViewControllerClass = [EXViewController class];
     _hasConsumedLaunchNotification = NO;
     [self _initDefaultKeys];
   }
@@ -64,12 +64,11 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"EXAppD
 
 - (void)registerRootViewControllerClass:(Class)rootViewControllerClass
 {
-  NSAssert([rootViewControllerClass isSubclassOfClass:[EXAppViewController class]], @"ExpoKit root view controller class must subclass EXAppViewController.");
+  NSAssert([rootViewControllerClass isSubclassOfClass:[EXViewController class]], @"ExpoKit root view controller class must subclass EXViewController.");
   _rootViewControllerClass = rootViewControllerClass;
 }
 
-// TODO: ben: rewire this to AppDelegate
-- (EXAppViewController *)rootViewController
+- (EXViewController *)rootViewController
 {
   if (!_rootViewController) {
     _rootViewController = [[_rootViewControllerClass alloc] init];

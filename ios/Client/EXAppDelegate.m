@@ -26,11 +26,12 @@ NS_ASSUME_NONNULL_BEGIN
   [Fabric with:@[CrashlyticsKit]];
   [CrashlyticsKit setObjectValue:[EXBuildConstants sharedInstance].expoRuntimeVersion forKey:@"exp_client_version"];
 
+  [[ExpoKit sharedInstance] registerRootViewControllerClass:[EXRootViewController class]];
   [[ExpoKit sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
-
+  
   _window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   _window.backgroundColor = [UIColor whiteColor];
-  _rootViewController = [[EXRootViewController alloc] init];
+  _rootViewController = (EXRootViewController *)[ExpoKit sharedInstance].rootViewController;
   _window.rootViewController = _rootViewController;
 
   [_window makeKeyAndVisible];

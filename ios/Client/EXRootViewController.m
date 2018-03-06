@@ -14,7 +14,6 @@
 #import "EXKernelServiceRegistry.h"
 #import "EXMenuViewController.h"
 #import "EXRootViewController.h"
-#import "EXScreenOrientationManager.h"
 
 NSString * const kEXHomeDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey";
 NSString * const kEXHomeIsNuxFinishedDefaultsKey = @"EXHomeIsNuxFinishedDefaultsKey";
@@ -23,7 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXRootViewController () <EXAppBrowserController>
 
-@property (nonatomic, weak) UIViewController *contentViewController;
 @property (nonatomic, strong) EXMenuViewController *menuViewController;
 @property (nonatomic, assign) BOOL isMenuVisible;
 
@@ -35,39 +33,20 @@ NS_ASSUME_NONNULL_BEGIN
 {
   if (self = [super init]) {
     [EXKernel sharedInstance].browserController = self;
+    [self _maybeResetNuxState];
   }
   return self;
 }
 
-- (void)viewDidLoad
-{
-  [super viewDidLoad];
-  self.view.backgroundColor = [UIColor yellowColor];
-  [self _maybeResetNuxState];
+#pragma mark - EXViewController
 
+- (void)createRootAppAndMakeVisible
+{
   EXHomeAppManager *homeAppManager = [[EXHomeAppManager alloc] init];
   EXKernelAppLoader *homeAppLoader = [[EXKernelAppLoader alloc] initWithLocalManifest:[EXHomeAppManager bundledHomeManifest]];
   EXKernelAppRecord *homeAppRecord = [[EXKernelAppRecord alloc] initWithAppLoader:homeAppLoader appManager:homeAppManager];
   [[EXKernel sharedInstance].appRegistry registerHomeAppRecord:homeAppRecord];
   [self moveAppToVisible:homeAppRecord];
-}
-
-- (void)viewWillLayoutSubviews
-{
-  [super viewWillLayoutSubviews];
-  if (_contentViewController) {
-    _contentViewController.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height);
-  }
-}
-
-- (BOOL)shouldAutorotate
-{
-  return YES;
-}
-
-- (UIInterfaceOrientationMask)supportedInterfaceOrientations
-{
-  return [[EXKernel sharedInstance].serviceRegistry.screenOrientationManager supportedInterfaceOrientationsForVisibleApp];
 }
 
 #pragma mark - EXAppBrowserController
@@ -167,11 +146,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)_foregroundAppRecord:(EXKernelAppRecord *)appRecord
 {
   UIViewController *viewControllerToShow = appRecord.viewController;
-  if (viewControllerToShow != _contentViewController) {
-    if (_contentViewController) {
-      [_contentViewController willMoveToParentViewController:nil];
-      [_contentViewController.view removeFromSuperview];
-      [_contentViewController didMoveToParentViewController:nil];
+  if (viewControllerToShow != self.contentViewController) {
+    if (self.contentViewController) {
+      [self.contentViewController willMoveToParentViewController:nil];
+      [self.contentViewController.view removeFromSuperview];
+      [self.contentViewController didMoveToParentViewController:nil];
     }
     
     if (viewControllerToShow) {
@@ -180,7 +159,7 @@ NS_ASSUME_NONNULL_BEGIN
       [viewControllerToShow didMoveToParentViewController:self];
     }
     
-    _contentViewController = viewControllerToShow;
+    self.contentViewController = viewControllerToShow;
     [self.view setNeedsLayout];
     [[EXKernel sharedInstance] appDidBecomeVisible:appRecord];
   }
