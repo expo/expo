@@ -134,12 +134,12 @@ public abstract class AppLoader {
 
       @Override
       public void onError(Exception e) {
-        resolve();
+        resolve(e.getMessage());
       }
 
       @Override
       public void onError(String e) {
-        resolve();
+        resolve(e);
       }
     });
   }
@@ -149,6 +149,10 @@ public abstract class AppLoader {
   }
 
   private void resolve() {
+    resolve(null);
+  }
+
+  private void resolve(String errorMessage) {
     if (hasResolved) {
       return;
     }
@@ -181,7 +185,12 @@ public abstract class AppLoader {
       mManifest = mCachedManifest;
       fetchJSBundle(true);
     } else {
-      onError("Timed out, no manifest in cache");
+      hasResolved = true;
+      if (errorMessage != null) {
+        onError(errorMessage);
+      } else {
+        onError("Timed out, no manifest in cache");
+      }
     }
   }
 
