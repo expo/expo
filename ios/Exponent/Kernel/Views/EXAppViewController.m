@@ -299,6 +299,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (!_errorView) {
       _errorView = [[EXErrorView alloc] initWithFrame:self.view.bounds];
       _errorView.delegate = self;
+      _errorView.appRecord = _appRecord;
     }
     _errorView.type = type;
     _errorView.error = error;

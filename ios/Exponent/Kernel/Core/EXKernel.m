@@ -133,7 +133,10 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
       return [moduleData instance];
     }
   } else {
-    DDLogError(@"Bridge does not support the API we use to get its underlying batched bridge");
+    // bridge can be null if the record is in an error state and never created a bridge.
+    if (destinationBridge) {
+      DDLogError(@"Bridge does not support the API we use to get its underlying batched bridge");
+    }
   }
   return nil;
 }
