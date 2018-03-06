@@ -1,12 +1,16 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXErrorView.h"
-#import "EXShellManager.h"
+#import "EXKernel.h"
+#import "EXKernelAppLoader.h"
+#import "EXKernelAppRecord.h"
 
 @interface EXErrorView ()
 
 @property (nonatomic, strong) UILabel *lblError;
 @property (nonatomic, strong) UIButton *btnRetry;
+@property (nonatomic, strong) UIButton *btnBack;
+@property (nonatomic, strong) UILabel *lblUrl;
 @property (nonatomic, strong) UILabel *lblErrorDetail;
 @property (nonatomic, strong) UIScrollView *vContainer;
 
@@ -32,18 +36,32 @@
     [_vContainer addSubview:_lblError];
     
     // retry button
-    self.btnRetry = [UIButton buttonWithType:UIButtonTypeSystem];
-    [_btnRetry setTitle:@"Retry" forState:UIControlStateNormal];
+    self.btnRetry = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [_btnRetry setTitle:@"Try Again" forState:UIControlStateNormal];
     [_btnRetry addTarget:self action:@selector(_onTapRetry) forControlEvents:UIControlEventTouchUpInside];
     [_vContainer addSubview:_btnRetry];
+    
+    // back button
+    self.btnBack = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [_btnBack setTitle:@"Go back to Expo Home" forState:UIControlStateNormal];
+    [_btnBack addTarget:self action:@selector(_onTapBack) forControlEvents:UIControlEventTouchUpInside];
+    [_vContainer addSubview:_btnBack];
+    
+    // url label
+    self.lblUrl = [[UILabel alloc] init];
+    _lblUrl.textAlignment = NSTextAlignmentCenter;
+    [_vContainer addSubview:_lblUrl];
 
     // error detail label
     self.lblErrorDetail = [[UILabel alloc] init];
     _lblErrorDetail.numberOfLines = 0;
     _lblErrorDetail.textAlignment = NSTextAlignmentLeft;
-    _lblErrorDetail.font = [UIFont systemFontOfSize:14.0f];
-    _lblErrorDetail.textColor = [UIColor lightGrayColor];
     [_vContainer addSubview:_lblErrorDetail];
+    
+    for (UILabel *lblToStyle in @[ _lblUrl, _lblErrorDetail ]) {
+      lblToStyle.font = [UIFont systemFontOfSize:14.0f];
+      lblToStyle.textColor = [UIColor lightGrayColor];
+    }
   }
   return self;
 }
@@ -51,17 +69,21 @@
 - (void)setType:(EXFatalErrorType)type
 {
   _type = type;
-  NSString *appOwnerName;
-  if ([EXShellManager sharedInstance].isShell) {
-    appOwnerName = @"the app";
-  } else {
-    appOwnerName = @"Expo";
+  NSString *appOwnerName = @"the app";
+  if (_appRecord) {
+    if (_appRecord == [EXKernel sharedInstance].appRegistry.homeAppRecord) {
+      appOwnerName = @"Expo";
+    } else if (_appRecord.appLoader.manifest && _appRecord.appLoader.manifest[@"name"]) {
+        appOwnerName = _appRecord.appLoader.manifest[@"name"];
+    }
   }
-  // TODO: ben: make this nice
-  appOwnerName = @"whatever you were trying to load";
+
   switch (type) {
     case kEXFatalErrorTypeLoading: {
-      _lblError.text = [NSString stringWithFormat:@"There was a problem loading %@. Make sure you're connected to the internet and retry.", appOwnerName];
+      _lblError.text = [NSString stringWithFormat:@"There was a problem loading %@.", appOwnerName];
+      if (_error.code == kCFURLErrorNotConnectedToInternet) {
+        _lblError.text = [NSString stringWithFormat:@"%@ Make sure you're connected to the internet.", _lblError.text];
+      }
       break;
     }
     case kEXFatalErrorTypeException: {
@@ -79,6 +101,12 @@
   [self _resetUIState];
 }
 
+- (void)setAppRecord:(EXKernelAppRecord *)appRecord
+{
+  _appRecord = appRecord;
+  [self _resetUIState];
+}
+
 - (void)layoutSubviews
 {
   [super layoutSubviews];
@@ -92,16 +120,16 @@
 
   _btnRetry.frame = CGRectMake(0, 0, self.bounds.size.width, 24.0f);
   _btnRetry.center = CGPointMake(_lblError.center.x, CGRectGetMaxY(_lblError.frame) + 48);
+  
+  _btnBack.frame = CGRectMake(0, 0, self.bounds.size.width, 24.0f);
+  _btnBack.center = CGPointMake(_lblError.center.x, CGRectGetMaxY(_btnRetry.frame) + 24);
+  
+  _lblUrl.frame = CGRectMake(24.0f, CGRectGetMaxY(_btnBack.frame) + 12.0f, self.bounds.size.width - 48.0f, 24.0f);
 
   _lblErrorDetail.frame = CGRectMake(0, 0, maxLabelWidth, CGFLOAT_MAX);
   [_lblErrorDetail sizeToFit];
 
-  CGFloat minErrorDetailY = CGRectGetMaxY(_btnRetry.frame) + 16;
-  if (_lblErrorDetail.bounds.size.height > self.bounds.size.height - minErrorDetailY) {
-    _lblErrorDetail.center = CGPointMake(_lblError.center.x, minErrorDetailY + CGRectGetMidY(_lblErrorDetail.bounds));
-  } else {
-    _lblErrorDetail.center = CGPointMake(_lblError.center.x, CGRectGetMaxY(self.bounds) - CGRectGetMidY(_lblErrorDetail.bounds) - 16.0f);
-  }
+  _lblErrorDetail.center = CGPointMake(_lblError.center.x, CGRectGetMaxY(_lblUrl.frame) + 24.0f + CGRectGetMidY(_lblErrorDetail.bounds));
 
   _vContainer.contentSize = CGSizeMake(_vContainer.bounds.size.width, CGRectGetMaxY(_lblErrorDetail.frame) + 12.0f);
 }
@@ -110,6 +138,11 @@
 
 - (void)_resetUIState
 {
+  EXKernelAppRecord *homeRecord = [EXKernel sharedInstance].appRegistry.homeAppRecord;
+  _btnBack.hidden = (!homeRecord || _appRecord == homeRecord);
+  _lblUrl.hidden = (!homeRecord);
+  _lblUrl.text = _appRecord.appLoader.manifestUrl.absoluteString;
+  // TODO: maybe hide retry (see BrowserErrorView)
   [self setNeedsLayout];
 }
 
@@ -117,6 +150,13 @@
 {
   if (_delegate) {
     [_delegate errorViewDidSelectRetry:self];
+  }
+}
+
+- (void)_onTapBack
+{
+  if ([EXKernel sharedInstance].browserController) {
+    [[EXKernel sharedInstance].browserController moveHomeToVisible];
   }
 }
 
