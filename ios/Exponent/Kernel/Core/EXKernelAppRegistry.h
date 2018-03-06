@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) EXKernelAppRecord *homeAppRecord;
 
 - (EXKernelAppRecord *)recordForId:(NSString *)recordId;
-- (EXKernelAppRecord * _Nullable)newestRecordWithExperienceId:(NSString *)experienceId; // TODO: ben: audit
+- (EXKernelAppRecord * _Nullable)newestRecordWithExperienceId:(NSString *)experienceId;
 - (NSEnumerator<id> *)appEnumerator; // does not include home
 - (BOOL)isExperienceIdUnique:(NSString *)experienceId;
 

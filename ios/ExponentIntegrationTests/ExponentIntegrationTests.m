@@ -27,10 +27,19 @@
   [super setUp];
   [self _loadConfig];
   
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(_onKernelJSLoaded)
-                                               name:kEXHomeJSIsLoadedNotification
-                                             object:nil];
+  _rootViewController = (EXRootViewController *)[ExpoKit sharedInstance].rootViewController;
+  // if test environment isn't configured for a shell app, override here
+  // since clearly we're running tests
+  if ([EXShellManager sharedInstance].testEnvironment == EXTestEnvironmentNone) {
+    [EXShellManager sharedInstance].testEnvironment = EXTestEnvironmentLocal;
+  }
+  
+  // NOTE(2018-02-20): Without giving the kernel a second to run, it never opens test-suite. With a
+  // cursory pass through the code, I didn't see the correct event to wait for. Perhaps after we
+  // implement a pure-native kernel, we'll be able to remove this shoddy delay.
+  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    [[EXKernel sharedInstance].serviceRegistry.linkingManager openUrl:_testSuiteUrl isUniversalLink:NO];
+  });
   
 }
 
@@ -67,22 +76,6 @@
   if (testConfig) {
     _testSuiteUrl = testConfig[@"testSuiteUrl"];
   }
-}
-
-- (void)_onKernelJSLoaded
-{
-  // if test environment isn't configured for a shell app, override here
-  // since clearly we're running tests
-  if ([EXShellManager sharedInstance].testEnvironment == EXTestEnvironmentNone) {
-    [EXShellManager sharedInstance].testEnvironment = EXTestEnvironmentLocal;
-  }
-  
-  // NOTE(2018-02-20): Without giving the kernel a second to run, it never opens test-suite. With a
-  // cursory pass through the code, I didn't see the correct event to wait for. Perhaps after we
-  // implement a pure-native kernel, we'll be able to remove this shoddy delay.
-  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-    [[EXKernel sharedInstance].serviceRegistry.linkingManager openUrl:_testSuiteUrl isUniversalLink:NO];
-  });
 }
 
 @end
