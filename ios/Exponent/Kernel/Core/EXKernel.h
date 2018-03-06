@@ -23,7 +23,7 @@ FOUNDATION_EXPORT NSString * const kEXKernelClearJSCacheUserDefaultsKey;
 
 + (instancetype)sharedInstance;
 
-- (void)createNewAppWithUrl:(NSURL *)url initialProps:(nullable NSDictionary *)initialProps;
+- (EXKernelAppRecord *)createNewAppWithUrl:(NSURL *)url initialProps:(nullable NSDictionary *)initialProps;
 - (void)moveAppToVisible:(EXKernelAppRecord *)appRecord;
 - (void)switchTasks;
 - (void)appDidBecomeVisible:(EXKernelAppRecord *)appRecord;

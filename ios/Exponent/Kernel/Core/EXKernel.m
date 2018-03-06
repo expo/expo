@@ -200,11 +200,12 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
 
 #pragma mark - App State
 
-- (void)createNewAppWithUrl:(NSURL *)url initialProps:(nullable NSDictionary *)initialProps
+- (EXKernelAppRecord *)createNewAppWithUrl:(NSURL *)url initialProps:(nullable NSDictionary *)initialProps
 {
   NSString *recordId = [_appRegistry registerAppWithManifestUrl:url initialProps:initialProps];
   EXKernelAppRecord *record = [_appRegistry recordForId:recordId];
   [self moveAppToVisible:record];
+  return record;
 }
 
 - (void)switchTasks
