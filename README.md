@@ -41,7 +41,6 @@ If you are running on an phone with Android 5 you might have to use `./run.sh in
 #### iOS
 - Make sure you have latest non-beta Xcode installed.
 - Install [Cocoapods](https://cocoapods.org/): `gem install cocoapods --no-ri --no-rdoc`
-- Make sure you have a JS packager for the root Expo project already running
 - `cd tools-public; ./generate-files-ios.sh; cd ..`
 - `cd ios; pod install; cd ..`
 - Run `ios/Exponent.xcworkspace` in Xcode.
@@ -80,14 +79,11 @@ Here are the steps to build a standalone iOS app:
 - There are a few more optional flags you can pass to this script. They are all documented in the block comment for `createIOSShellAppAsync()` inside `ios-shell-app.js`.
 
 ## Modifying JS Code
-The Expo client apps run a root Expo project in addition to native
-code. By default this will use a published version of the project, so any changes
-made in the `js` directory will not show up without some extra work.
+The Expo client apps run a root Expo project in addition to native code. By default this will use a published version of the project, so any changes made in the `js` directory will not show up without some extra work.
 
-Serve this project locally by running `exp start` from the `js` directory.
-The native Android Studio and XCode projects have a build hook which
-will find this if `exp start` is running. Keep this running and rebuild the
-app on each platform.
+Serve this project locally by running `exp start` from the `js` directory. On iOS, you'll additionally need to set `DEV_KERNEL_SOURCE` to `LOCAL` in `EXBuildConstants.plist` (the default is `PUBLISHED`).
+
+The native Android Studio and XCode projects have a build hook which will find this if `exp start` is running. Keep this running and rebuild the app on each platform.
 
 ## Project Layout
 
