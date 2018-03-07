@@ -6,6 +6,22 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+FOUNDATION_EXPORT NSString * const EXApiErrorDomain;
+
+typedef NS_ENUM(NSInteger, EXApiErrorCode) {
+  EXApiErrorCodeMalformedRequestBody,
+  EXApiErrorCodeEmptyResponse,
+  EXApiErrorCodeMalformedJson,
+  EXApiErrorCodeMalformedResponse,
+  EXApiErrorCodeApiError,
+};
+
+FOUNDATION_EXPORT NSString * const EXApiResponseKey;
+FOUNDATION_EXPORT NSString * const EXApiResultKey;
+FOUNDATION_EXPORT NSString * const EXApiHttpStatusCodeKey;
+FOUNDATION_EXPORT NSString * const EXApiErrorCodeKey;
+FOUNDATION_EXPORT NSString * const EXApiErrorStackKey;
+
 typedef void (^EXApiV2CompletionHandler)(EXApiV2Result * _Nullable response,
                                          NSError * _Nullable error);
 

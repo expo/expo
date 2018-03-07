@@ -6,7 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXApiV2Result
 
-- (instancetype)initWithData:(nullable id<NSCopying>)data
+- (instancetype)initWithData:(nullable id<NSObject>)data
                        error:(nullable NSError *)error
               httpStatusCode:(NSInteger)statusCode
 {

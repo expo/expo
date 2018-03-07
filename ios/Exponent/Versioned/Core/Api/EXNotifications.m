@@ -71,18 +71,17 @@ RCT_REMAP_METHOD(getExponentPushTokenAsync,
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
   if (!self.experienceId) {
-    reject(0, @"Requires experience Id", nil);
+    reject(@"E_NOTIFICATIONS_INTERNAL_ERROR", @"The notifications module is missing the current project's ID", nil);
     return;
   }
-  void (^success)(NSDictionary *) = ^(NSDictionary *result) {
-    resolve([result objectForKey:@"exponentPushToken"]);
-  };
-  void (^failure)(NSString *) = ^(NSString *message) {
-    reject(0, message, nil);
-  };
-  [_kernelNotificationsDelegate getExpoPushTokenForScopedModule:self
-                                                        success:success
-                                                        failure:failure];
+
+  [_kernelNotificationsDelegate getExpoPushTokenForScopedModule:self completionHandler:^(NSString *pushToken, NSError *error) {
+    if (error) {
+      reject(@"E_NOTIFICATIONS_TOKEN_REGISTRATION_FAILED", error.localizedDescription, error);
+    } else {
+      resolve(pushToken);
+    }
+  }];
 }
 
 RCT_EXPORT_METHOD(presentLocalNotification:(NSDictionary *)payload

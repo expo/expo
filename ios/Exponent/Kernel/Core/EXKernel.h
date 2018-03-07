@@ -11,6 +11,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 FOUNDATION_EXPORT NSString *kEXKernelErrorDomain;
+typedef NS_ENUM(NSInteger, EXKernelErrorCode) {
+  EXKernelErrorCodeModuleDeallocated,
+};
 
 // this key is set to YES when crashlytics sends a crash report.
 FOUNDATION_EXPORT NSString * const kEXKernelClearJSCacheUserDefaultsKey;
