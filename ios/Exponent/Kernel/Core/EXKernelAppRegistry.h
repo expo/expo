@@ -25,7 +25,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id<EXKernelAppRegistryDelegate> delegate;
 
-@property (nonatomic, readonly) EXKernelAppRecord *homeAppRecord;
+/**
+ *  If Expo Home is available, return the record representing the Home app.
+ */
+@property (nonatomic, readonly, nullable) EXKernelAppRecord *homeAppRecord;
+
+/**
+ *  If we are running a standalone app, return the record for the standalone app.
+ */
+@property (nonatomic, readonly, nullable) EXKernelAppRecord *standaloneAppRecord;
 
 - (EXKernelAppRecord *)recordForId:(NSString *)recordId;
 - (EXKernelAppRecord * _Nullable)newestRecordWithExperienceId:(NSString *)experienceId;

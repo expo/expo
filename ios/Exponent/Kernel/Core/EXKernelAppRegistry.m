@@ -4,7 +4,7 @@
 #import "EXKernelAppLoader.h"
 #import "EXReactAppManager.h"
 #import "EXKernel.h"
-#import "EXFrame.h"
+#import "EXShellManager.h"
 
 #import <React/RCTBridge.h>
 
@@ -32,6 +32,11 @@
   EXKernelAppRecord *newRecord = [[EXKernelAppRecord alloc] initWithManifestUrl:manifestUrl initialProps:initialProps];
   NSString *recordId = [[NSUUID UUID] UUIDString];
   [_appRegistry setObject:newRecord forKey:recordId];
+  
+  if (_delegate) {
+    [_delegate appRegistry:self didRegisterAppRecord:newRecord];
+  }
+  
   return recordId;
 }
 
@@ -60,6 +65,20 @@
 - (EXKernelAppRecord *)homeAppRecord
 {
   return _homeAppRecord;
+}
+
+- (EXKernelAppRecord *)standaloneAppRecord
+{
+  if ([EXShellManager sharedInstance].isShell) {
+    for (NSString *recordId in self.appEnumerator) {
+      EXKernelAppRecord *record = [self recordForId:recordId];
+      if (record.appLoader.manifestUrl
+          && [record.appLoader.manifestUrl.absoluteString isEqualToString:[EXShellManager sharedInstance].shellManifestUrl]) {
+        return record;
+      }
+    }
+  }
+  return nil;
 }
 
 - (EXKernelAppRecord *)recordForId:(NSString *)recordId
