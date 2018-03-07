@@ -6,6 +6,7 @@
 #import "EXBuildConstants.h"
 #import "EXFrame.h"
 #import "EXKernel.h"
+#import "EXKernelAppLoader.h"
 #import "EXKernelAppRecord.h"
 #import "EXKernelLinkingManager.h"
 #import "EXLinkingManager.h"
@@ -225,6 +226,16 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
       // foreground the first thing we find
       [self moveAppToVisible:record];
     }
+  }
+}
+
+- (void)reloadAppWithExperienceId:(NSString *)experienceId
+{
+  EXKernelAppRecord *appRecord = [_appRegistry newestRecordWithExperienceId:experienceId];
+  if (_browserController) {
+    [self createNewAppWithUrl:appRecord.appLoader.manifestUrl initialProps:nil];
+  } else if (_appRegistry.standaloneAppRecord && appRecord == _appRegistry.standaloneAppRecord) {
+    [appRecord.viewController refresh];
   }
 }
 
