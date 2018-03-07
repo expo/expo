@@ -3,7 +3,7 @@ import HashIds from 'hashids';
 import gql from 'graphql-tag';
 import Auth0Api from '../Auth0Api';
 import ApolloClient from '../ApolloClient';
-import ExStore from '../../redux/Store';
+import Store from '../../redux/Store';
 import AuthTokenActions from '../../redux/AuthTokenActions';
 import SessionActions from '../../redux/SessionActions';
 
