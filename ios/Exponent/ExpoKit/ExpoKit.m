@@ -166,14 +166,14 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"EXAppD
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)token
 {
-  [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager registerAPNSToken:token];
+  [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager registerAPNSToken:token registrationError:nil];
   [[NSNotificationCenter defaultCenter] postNotificationName:EXAppDidRegisterForRemoteNotificationsNotification object:nil];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)err
 {
   DDLogWarn(@"Failed to register for remote notifs: %@", err);
-  [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager registerAPNSToken:nil];
+  [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager registerAPNSToken:nil registrationError:err];
 
   // Post this even in the failure case -- up to subscribers to subsequently read the system permission state
   [[NSNotificationCenter defaultCenter] postNotificationName:EXAppDidRegisterForRemoteNotificationsNotification object:nil];

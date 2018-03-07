@@ -8,11 +8,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) BOOL successful;
 @property (nullable, strong, nonatomic, readonly) NSError *error;
-@property (nullable, strong, nonatomic, readonly) id<NSCopying> data;
+@property (nullable, strong, nonatomic, readonly) id<NSObject> data;
 @property (nonatomic, readonly) NSInteger httpStatusCode;
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithData:(nullable id<NSCopying>)data
+- (instancetype)initWithData:(nullable id<NSObject>)data
                        error:(nullable NSError *)error
               httpStatusCode:(NSInteger)statusCode NS_DESIGNATED_INITIALIZER;
 

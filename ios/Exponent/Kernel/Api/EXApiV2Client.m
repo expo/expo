@@ -8,15 +8,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString * const EXApiErrorDomain = @"www";
 
-typedef NS_ENUM(NSInteger, EXApiErrorCode) {
-  EXApiErrorCodeMalformedRequestBody,
-  EXApiErrorCodeEmptyResponse,
-  EXApiErrorCodeMalformedJson,
-  EXApiErrorCodeMalformedResponse,
-  EXApiErrorCodeApiError,
-};
-
 NSString * const EXApiResponseKey = @"EXApiResponse";
+NSString * const EXApiResultKey = @"EXApiResult";
 NSString * const EXApiHttpStatusCodeKey = @"EXApiHttpStatusCode";
 NSString * const EXApiErrorCodeKey = @"EXApiErrorCode";
 NSString * const EXApiErrorStackKey = @"EXApiHttpStatusCode";
@@ -166,7 +159,7 @@ NSString * const EXApiHttpCacheDirectory = @"kernel-www";
     }
     
     // API response (which could have API-level errors)
-    id<NSCopying> resultData = nil;
+    id<NSObject> resultData = nil;
     NSError *resultError = nil;
     NSDictionary *resultObject = object;
     
