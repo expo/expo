@@ -508,10 +508,8 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     expProps[@"errorRecovery"] = errorRecoveryProps;
     [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager increaseAutoReloadBuffer];
   }
-  
-  // TODO: ben: shell:
-  //   initial props contain shell: true when this is standalone app record
-  expProps[@"shell"] = @NO;
+
+  expProps[@"shell"] = @(_appRecord == [EXKernel sharedInstance].appRegistry.standaloneAppRecord);
   expProps[@"appOwnership"] = [self _appOwnership];
   if (_initialProps) {
     [expProps addEntriesFromDictionary:_initialProps];
@@ -527,7 +525,9 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (NSString *)_appOwnership
 {
-  // TODO: ben: shell: initial props change appOwnership to standalone when this is standalone app record
+  if (_appRecord == [EXKernel sharedInstance].appRegistry.standaloneAppRecord) {
+    return @"standalone";
+  }
   return @"expo";
 }
 

@@ -30,20 +30,7 @@
   NSURL *urlToRoute = nil;
 
   if (isUniversalLink && [EXShellManager sharedInstance].isShell) {
-    /*
-     TODO: ben: shell: restore universal link support
-    // Find the app manager for the shell app.
-    urlToRoute = url;
-    for (NSString *recordId in [appRegistry appEnumerator]) {
-      EXKernelAppRecord *appRecord = [appRegistry recordForId:recordId];
-      if (!appRecord || appRecord.status != kEXKernelAppRecordStatusRunning) {
-        continue;
-      }
-      if (appRecord.appManager && [appRecord.appManager.frame.initialProps[@"shell"] boolValue]) {
-        destinationAppManager = appRecord.appManager;
-        break;
-      }
-    } */
+    destinationApp = [EXKernel sharedInstance].appRegistry.standaloneAppRecord;
   } else {
     urlToRoute = [[self class] uriTransformedForLinking:url isUniversalLink:isUniversalLink];
 
