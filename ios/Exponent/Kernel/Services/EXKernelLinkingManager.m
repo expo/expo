@@ -86,8 +86,7 @@
 - (void)utilModuleDidSelectReload:(id)scopedUtilModule
 {
   NSString *experienceId = ((EXScopedBridgeModule *)scopedUtilModule).experienceId;
-  EXKernelAppRecord *appRecord = [[EXKernel sharedInstance].appRegistry newestRecordWithExperienceId:experienceId];
-  [[EXKernel sharedInstance] createNewAppWithUrl:appRecord.appLoader.manifestUrl initialProps:nil];
+  [[EXKernel sharedInstance] reloadAppWithExperienceId:experienceId];
 }
 
 #pragma mark - internal
