@@ -41,7 +41,12 @@ static NSInteger const ABI24_0_0RNBranchUniversalObjectNotFoundError = 1;
 
 @synthesize bridge = _bridge;
 
-ABI24_0_0RCT_EXPORT_MODULE();
+ABI24_0_0EX_EXPORT_SCOPED_MODULE(RNBranch, BranchManager);
+
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
 
 - (NSDictionary<NSString *, NSString *> *)constantsToExport {
     return @{
@@ -106,8 +111,12 @@ ABI24_0_0RCT_EXPORT_MODULE();
 
 #pragma mark - Object lifecycle
 
-- (instancetype)init {
-    return [super init];
+- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
+{
+  if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
+    [kernelServiceInstance branchModuleDidInit:self];
+  }
+  return self;
 }
 
 - (void)setBridge:(ABI24_0_0RCTBridge *)bridge

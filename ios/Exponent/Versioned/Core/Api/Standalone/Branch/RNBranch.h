@@ -1,5 +1,4 @@
-#import <Foundation/Foundation.h>
-#import <React/RCTBridgeModule.h>
+#import "EXScopedBridgeModule.h"
 
 extern NSString * const RNBranchLinkOpenedNotification;
 extern NSString * const RNBranchLinkOpenedNotificationErrorKey;
@@ -8,7 +7,13 @@ extern NSString * const RNBranchLinkOpenedNotificationUriKey;
 extern NSString * const RNBranchLinkOpenedNotificationBranchUniversalObjectKey;
 extern NSString * const RNBranchLinkOpenedNotificationLinkPropertiesKey;
 
-@interface RNBranch : NSObject <RCTBridgeModule>
+@protocol EXBranchScopedModuleDelegate
+
+- (void)branchModuleDidInit:(id)branchModule;
+
+@end
+
+@interface RNBranch : EXScopedBridgeModule
 
 + (void)initSessionWithLaunchOptions:(NSDictionary *)launchOptions isReferrable:(BOOL)isReferrable;
 + (BOOL)handleDeepLink:(NSURL *)url;

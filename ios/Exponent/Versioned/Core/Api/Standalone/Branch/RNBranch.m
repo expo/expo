@@ -41,7 +41,7 @@ static NSInteger const RNBranchUniversalObjectNotFoundError = 1;
 
 @synthesize bridge = _bridge;
 
-RCT_EXPORT_MODULE();
+EX_EXPORT_SCOPED_MODULE(RNBranch, BranchManager);
 
 + (BOOL)requiresMainQueueSetup
 {
@@ -111,8 +111,12 @@ RCT_EXPORT_MODULE();
 
 #pragma mark - Object lifecycle
 
-- (instancetype)init {
-    return [super init];
+- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
+{
+  if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
+    [kernelServiceInstance branchModuleDidInit:self];
+  }
+  return self;
 }
 
 - (void)setBridge:(RCTBridge *)bridge
