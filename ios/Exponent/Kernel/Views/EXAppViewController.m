@@ -101,22 +101,20 @@ NS_ASSUME_NONNULL_BEGIN
   }
   BOOL isNetworkError = ([error.domain isEqualToString:(NSString *)kCFErrorDomainCFNetwork] ||
                          [error.domain isEqualToString:EXNetworkErrorDomain]);
-    if (isNetworkError) {
-      // show a human-readable reachability error
-      dispatch_async(dispatch_get_main_queue(), ^{
-        [self _showErrorWithType:kEXFatalErrorTypeLoading error:error];
-      });
-    } else if ([error.domain isEqualToString:@"JSServer"] && [_appRecord.appManager enablesDeveloperTools]) {
-      // RCTRedBox already handled this
-    } else if ([error.domain rangeOfString:RCTErrorDomain].length > 0 && [_appRecord.appManager enablesDeveloperTools]) {
-      // RCTRedBox already handled this
-    } else {
-      // TODO: ben: handle other error cases
-      // also, can test for (error.code == kCFURLErrorNotConnectedToInternet)
-      dispatch_async(dispatch_get_main_queue(), ^{
-        [self _showErrorWithType:kEXFatalErrorTypeException error:error];
-      });
-    }
+  if (isNetworkError) {
+    // show a human-readable reachability error
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self _showErrorWithType:kEXFatalErrorTypeLoading error:error];
+    });
+  } else if ([error.domain isEqualToString:@"JSServer"] && [_appRecord.appManager enablesDeveloperTools]) {
+    // RCTRedBox already handled this
+  } else if ([error.domain rangeOfString:RCTErrorDomain].length > 0 && [_appRecord.appManager enablesDeveloperTools]) {
+    // RCTRedBox already handled this
+  } else {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self _showErrorWithType:kEXFatalErrorTypeException error:error];
+    });
+  }
 }
 
 - (void)_rebuildBridge
