@@ -4,7 +4,6 @@
 #import "EXAppState.h"
 #import "EXAppViewController.h"
 #import "EXBuildConstants.h"
-#import "EXFrame.h"
 #import "EXKernel.h"
 #import "EXKernelAppLoader.h"
 #import "EXKernelAppRecord.h"
