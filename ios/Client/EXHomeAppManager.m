@@ -78,18 +78,11 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
                                    @"services": [EXKernel sharedInstance].serviceRegistry.allServices,
                                    } mutableCopy];
   
-  // TODO: ben: snack: starting home with an initial url
-  // used by appetize - override the kernel initial url if there's something in NSUserDefaults
-  NSURL *initialKernelUrl;
-  NSString *kernelInitialUrlDefaultsValue = [[NSUserDefaults standardUserDefaults] stringForKey:kEXHomeLaunchUrlDefaultsKey];
-  if (kernelInitialUrlDefaultsValue) {
-    initialKernelUrl = [NSURL URLWithString:kernelInitialUrlDefaultsValue];
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kEXHomeLaunchUrlDefaultsKey];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-  } else {
-    initialKernelUrl = [EXKernelLinkingManager initialUrlFromLaunchOptions:[self launchOptionsForBridge]];
+
+  NSURL *initialHomeUrl = [self _initialHomeUrl];
+  if (initialHomeUrl) {
+    params[@"initialUri"] = initialHomeUrl;
   }
-  params[@"initialUri"] = initialKernelUrl;
   
   [modules addObjectsFromArray:[self.versionManager extraModulesWithParams:params]];
   
@@ -141,6 +134,21 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
       failure(nil);
     }
   }
+}
+
+- (NSURL *)_initialHomeUrl
+{
+  // used by appetize - override the kernel initial url if there's something in NSUserDefaults
+  NSURL *initialHomeUrl;
+  NSString *kernelInitialUrlDefaultsValue = [[NSUserDefaults standardUserDefaults] stringForKey:kEXHomeLaunchUrlDefaultsKey];
+  if (kernelInitialUrlDefaultsValue) {
+    initialHomeUrl = [NSURL URLWithString:kernelInitialUrlDefaultsValue];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kEXHomeLaunchUrlDefaultsKey];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+  } else {
+    initialHomeUrl = [EXKernelLinkingManager initialUrlFromLaunchOptions:[self launchOptionsForBridge]];
+  }
+  return initialHomeUrl;
 }
 
 + (NSDictionary * _Nullable)bundledHomeManifest

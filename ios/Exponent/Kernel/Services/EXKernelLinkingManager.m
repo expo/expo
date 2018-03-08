@@ -51,7 +51,13 @@
   if (destinationApp) {
     [[EXKernel sharedInstance] sendUrl:urlToRoute.absoluteString toAppRecord:destinationApp];
   } else {
-    [[EXKernel sharedInstance] createNewAppWithUrl:urlToRoute initialProps:nil];
+    if (![EXShellManager sharedInstance].isShell
+        && [EXKernel sharedInstance].appRegistry.homeAppRecord
+        && [EXKernel sharedInstance].appRegistry.homeAppRecord.appManager.status == kEXReactAppManagerStatusRunning) {
+      // if Home is present and running, open a new app with this url.
+      // if home isn't running yet, we'll handle the LaunchOptions url after home finishes launching.
+      [[EXKernel sharedInstance] createNewAppWithUrl:urlToRoute initialProps:nil];
+    }
   }
 }
 
