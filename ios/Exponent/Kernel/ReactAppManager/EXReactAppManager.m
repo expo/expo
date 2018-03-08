@@ -176,12 +176,12 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   return [NSURL URLWithString:[_appRecord.appLoader.manifest objectForKey:@"bundleUrl"]];
 }
 
-- (void)appDidBecomeVisible
+- (void)appStateDidBecomeActive
 {
   [_versionManager bridgeDidForeground];
 }
 
-- (void)appDidBackground
+- (void)appStateDidBecomeInactive
 {
   [_versionManager bridgeDidBackground];
 }
@@ -320,7 +320,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     _isBridgeRunning = YES;
     _hasBridgeEverLoaded = YES;
     [_versionManager bridgeFinishedLoading];
-    [self appDidBecomeVisible];
+    [self appStateDidBecomeActive];
     [self _beginWaitingForAppLoading];
   } else if ([notification.name isEqualToString:[self versionedString:RCTJavaScriptDidFailToLoadNotification]]) {
     NSError *error = (notification.userInfo) ? notification.userInfo[@"error"] : nil;
@@ -504,9 +504,11 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   NSMutableDictionary *expProps = [NSMutableDictionary dictionary];
 
   NSDictionary *errorRecoveryProps = [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager developerInfoForExperienceId:_appRecord.experienceId];
-  if (errorRecoveryProps && [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:_appRecord.experienceId]) {
-    expProps[@"errorRecovery"] = errorRecoveryProps;
+  if ([[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:_appRecord.experienceId]) {
     [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager increaseAutoReloadBuffer];
+    if (errorRecoveryProps) {
+      expProps[@"errorRecovery"] = errorRecoveryProps;
+    }
   }
 
   expProps[@"shell"] = @(_appRecord == [EXKernel sharedInstance].appRegistry.standaloneAppRecord);

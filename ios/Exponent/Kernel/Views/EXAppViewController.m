@@ -3,6 +3,7 @@
 @import UIKit;
 
 #import "EXAppLoadingView.h"
+#import "EXErrorRecoveryManager.h"
 #import "EXFileDownloader.h"
 #import "EXAppViewController.h"
 #import "EXReactAppManager.h"
@@ -17,6 +18,8 @@
 
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
 
+const CGFloat kEXAutoReloadDebounceSeconds = 0.1;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXAppViewController () <EXReactAppManagerUIDelegate, EXKernelAppLoaderDelegate, EXErrorViewDelegate>
@@ -27,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) EXAppLoadingView *loadingView;
 @property (nonatomic, strong) EXErrorView *errorView;
 @property (nonatomic, assign) UIInterfaceOrientationMask supportedInterfaceOrientations; // override super
+@property (nonatomic, strong) NSTimer *tmrAutoReloadDebounce;
 
 @end
 
@@ -47,6 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)dealloc
 {
+  [self _invalidateRecoveryTimer];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -90,6 +95,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)maybeShowError:(NSError *)error
 {
   self.isLoading = NO;
+  if ([self _willAutoRecoverFromError:error]) {
+    return;
+  }
   BOOL isNetworkError = ([error.domain isEqualToString:(NSString *)kCFErrorDomainCFNetwork] ||
                          [error.domain isEqualToString:EXNetworkErrorDomain]);
     if (isNetworkError) {
@@ -110,28 +118,30 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)reload
+- (void)_rebuildBridge
 {
+  [self _invalidateRecoveryTimer];
   [_appRecord.appManager rebuildBridge];
 }
 
 - (void)refresh
 {
   self.isLoading = YES;
+  [self _invalidateRecoveryTimer];
   [_appRecord.appLoader request];
 }
 
-- (void)appDidBecomeVisible
+- (void)appStateDidBecomeActive
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     [self _enforceDesiredDeviceOrientation];
   });
-  [_appRecord.appManager appDidBecomeVisible];
+  [_appRecord.appManager appStateDidBecomeActive];
 }
 
-- (void)appDidBackground
+- (void)appStateDidBecomeInactive
 {
-  [_appRecord.appManager appDidBackground];
+  [_appRecord.appManager appStateDidBecomeInactive];
 }
 
 #pragma mark - EXKernelAppLoaderDelegate
@@ -144,7 +154,7 @@ NS_ASSUME_NONNULL_BEGIN
   dispatch_async(dispatch_get_main_queue(), ^{
     _loadingView.manifest = manifest;
     [self _enforceDesiredDeviceOrientation];
-    [self reload];
+    [self _rebuildBridge];
   });
 }
 
@@ -319,6 +329,33 @@ NS_ASSUME_NONNULL_BEGIN
       self.loadingView.hidden = YES;
     }
   });
+}
+
+#pragma mark - error recovery
+
+- (BOOL)_willAutoRecoverFromError:(NSError *)error
+{
+  if (![_appRecord.appManager enablesDeveloperTools]) {
+    BOOL shouldRecover = [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdShouldReloadOnError:_appRecord.experienceId];
+    if (shouldRecover) {
+      [self _invalidateRecoveryTimer];
+      _tmrAutoReloadDebounce = [NSTimer scheduledTimerWithTimeInterval:kEXAutoReloadDebounceSeconds
+                                                                target:self
+                                                              selector:@selector(refresh)
+                                                              userInfo:nil
+                                                               repeats:NO];
+    }
+    return shouldRecover;
+  }
+  return NO;
+}
+
+- (void)_invalidateRecoveryTimer
+{
+  if (_tmrAutoReloadDebounce) {
+    [_tmrAutoReloadDebounce invalidate];
+    _tmrAutoReloadDebounce = nil;
+  }
 }
 
 @end

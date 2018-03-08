@@ -38,7 +38,9 @@
     
   _contentViewController = viewControllerToShow;
   [self.view setNeedsLayout];
-  [[EXKernel sharedInstance] appDidBecomeVisible:appRecord];
+  if (_delegate) {
+    [_delegate viewController:self didNavigateAppToVisible:appRecord];
+  }
 }
 
 - (BOOL)shouldAutorotate

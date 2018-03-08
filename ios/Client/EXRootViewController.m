@@ -99,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)moveHomeToVisible
 {
   [self setIsMenuVisible:NO];
-  [[EXKernel sharedInstance] moveAppToVisible:[EXKernel sharedInstance].appRegistry.homeAppRecord];
+  [self moveAppToVisible:[EXKernel sharedInstance].appRegistry.homeAppRecord];
 }
 
 - (void)refreshVisibleApp
@@ -163,7 +163,9 @@ NS_ASSUME_NONNULL_BEGIN
     
     self.contentViewController = viewControllerToShow;
     [self.view setNeedsLayout];
-    [[EXKernel sharedInstance] appDidBecomeVisible:appRecord];
+    if (self.delegate) {
+      [self.delegate viewController:self didNavigateAppToVisible:appRecord];
+    }
   }
 }
 

@@ -1,6 +1,5 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXErrorRecoveryManager.h"
 #import "EXFileDownloader.h"
 #import "EXKernel.h"
 #import "EXKernelAppLoader.h"
@@ -101,13 +100,6 @@
       [[EXKernel sharedInstance].browserController showQRReader];
     }];
   }
-}
-
-- (BOOL)homeModuleShouldAutoReloadCurrentTask:(EXHomeModule *)module
-{
-  // TODO: ben: error recovery audit
-  NSString *visibleAppExperienceId = [EXKernel sharedInstance].visibleApp.experienceId;
-  return [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdShouldReloadOnError:visibleAppExperienceId];
 }
 
 - (void)homeModule:(__unused EXHomeModule *)module didOpenUrl:(NSString *)url

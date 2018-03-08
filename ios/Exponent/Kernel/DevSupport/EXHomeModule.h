@@ -12,11 +12,6 @@
 - (BOOL)homeModuleShouldEnableDevtools:(EXHomeModule *)module;
 
 /**
- *  Whether the kernel JS should auto reload an experience after it encounters a fatal JS error.
- */
-- (BOOL)homeModuleShouldAutoReloadCurrentTask:(EXHomeModule *)module;
-
-/**
  *  Whether to enable legacy gesture/button for the Expo menu.
  */
 - (BOOL)homeModuleShouldEnableLegacyMenuBehavior:(EXHomeModule *)module;
