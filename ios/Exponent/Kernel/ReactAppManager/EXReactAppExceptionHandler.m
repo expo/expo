@@ -16,13 +16,16 @@ RCTFatalHandler handleFatalReactError = ^(NSError *error) {
   [EXUtil performSynchronouslyOnMainThread:^{
     EXKernelAppRecord *record = [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager appRecordForError:error];
     if (!record) {
-      // show the error on Home if we can't figure out who this error belongs to
-      record = [EXKernel sharedInstance].appRegistry.homeAppRecord;
+      // show the error on Home or on the main standalone app if we can't figure out who this error belongs to
+      if ([EXKernel sharedInstance].appRegistry.homeAppRecord) {
+        record = [EXKernel sharedInstance].appRegistry.homeAppRecord;
+      } else if ([EXKernel sharedInstance].appRegistry.standaloneAppRecord) {
+        record = [EXKernel sharedInstance].appRegistry.standaloneAppRecord;
+      }
     }
     if (record) {
       [record.viewController maybeShowError:error];
     }
-    // TODO: ben: what if no AppRecord exists (not even home)?
   }];
 };
 

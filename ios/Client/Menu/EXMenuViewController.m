@@ -73,8 +73,8 @@
   }];
 }
 
-// RCTRootView assumes it is created on a loading bridge.
-// in our case, the bridge has usually already loaded. so we need to prod the view.
+  // RCTRootView assumes it is created on a loading bridge.
+  // in our case, the bridge has usually already loaded. so we need to prod the view.
 - (void)_forceRootViewToRenderHack
 {
   if (!_hasCalledJSLoadedNotification) {

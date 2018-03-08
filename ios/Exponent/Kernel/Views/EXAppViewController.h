@@ -18,7 +18,7 @@
  */
 - (void)setSupportedInterfaceOrientations:(UIInterfaceOrientationMask)supportedInterfaceOrientations;
 
-- (void)appDidBecomeVisible;
-- (void)appDidBackground;
+- (void)appStateDidBecomeActive;
+- (void)appStateDidBecomeInactive;
 
 @end

@@ -86,7 +86,7 @@
       }
     }
     // mark this experience id as having loading problems, so future attempts will bust the cache.
-    // this flag never gets unset until the record is removed, even if the error is nullified.
+    // this flag never gets unset until the app loads successfully, even if the error is nullified.
     record.isRecovering = YES;
   }
   if (record) {
@@ -148,6 +148,7 @@
     }
   }
   record.dtmLastLoaded = [NSDate date];
+  record.isRecovering = NO;
 
   // maintain a global record of when anything last loaded, used to calculate autoreload backoff.
   _dtmAnyExperienceLoaded = [NSDate date];
@@ -175,18 +176,6 @@
 - (void)increaseAutoReloadBuffer
 {
   _reloadBufferDepth++;
-}
-
-#pragma mark - kernel service
-
-- (void)kernelDidRegisterAppWithRecord:(EXKernelAppRecord *)record
-{
-  @synchronized (_experienceInfo) {
-    // if this experience had a loading error previously, consider it recovered now
-    if (record.experienceId) {
-      [_experienceInfo removeObjectForKey:record.experienceId];
-    }
-  }
 }
 
 #pragma mark - internal

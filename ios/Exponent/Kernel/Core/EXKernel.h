@@ -6,6 +6,7 @@
 #import "EXKernelAppRegistry.h"
 #import "EXKernelServiceRegistry.h"
 #import "EXKernelUtil.h"
+#import "EXViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -14,7 +15,7 @@ FOUNDATION_EXPORT NSString *kEXKernelErrorDomain;
 // this key is set to YES when crashlytics sends a crash report.
 FOUNDATION_EXPORT NSString * const kEXKernelClearJSCacheUserDefaultsKey;
 
-@interface EXKernel : NSObject
+@interface EXKernel : NSObject <EXViewControllerDelegate>
 
 @property (nonatomic, strong, readonly) EXKernelAppRegistry *appRegistry;
 @property (nonatomic, strong, readonly) EXKernelServiceRegistry *serviceRegistry;
@@ -24,10 +25,8 @@ FOUNDATION_EXPORT NSString * const kEXKernelClearJSCacheUserDefaultsKey;
 + (instancetype)sharedInstance;
 
 - (EXKernelAppRecord *)createNewAppWithUrl:(NSURL *)url initialProps:(nullable NSDictionary *)initialProps;
-- (void)moveAppToVisible:(EXKernelAppRecord *)appRecord;
 - (void)switchTasks;
 - (void)reloadAppWithExperienceId:(NSString *)experienceId; // called by Util.reload
-- (void)appDidBecomeVisible:(EXKernelAppRecord *)appRecord;
 
 /**
  *  Send a notification to a given experience id.

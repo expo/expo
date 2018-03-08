@@ -30,8 +30,8 @@ typedef enum EXReactAppManagerStatus {
 - (void)appLoaderFailedWithError:(NSError *)error;
 
 // these are piped in from the view controller when the app becomes visible or moves to background.
-- (void)appDidBecomeVisible;
-- (void)appDidBackground;
+- (void)appStateDidBecomeActive;
+- (void)appStateDidBecomeInactive;
 
 @property (nonatomic, readonly) BOOL isBridgeRunning;
 @property (nonatomic, readonly) EXReactAppManagerStatus status;

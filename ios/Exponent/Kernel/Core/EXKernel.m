@@ -114,7 +114,7 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
   } else {
     DDLogError(@"Linking module doesn't support the API we use to open URL (%@)", urlString);
   }
-  [self moveAppToVisible:app];
+  [self _moveAppToVisible:app];
 }
 
 - (id)nativeModuleForAppManager:(EXReactAppManager *)appManager named:(NSString *)moduleName
@@ -162,7 +162,7 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
   if (destinationApp) {
     // send the body to the already-open experience
     [self _dispatchJSEvent:@"Exponent.notification" body:bodyWithOrigin toApp:destinationApp];
-    [self moveAppToVisible:destinationApp];
+    [self _moveAppToVisible:destinationApp];
   } else {
     // no app is currently running for this experience id.
     // if we're Expo Client, we can query Home for a past experience in the user's history, and route the notification there.
@@ -205,7 +205,7 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
 {
   NSString *recordId = [_appRegistry registerAppWithManifestUrl:url initialProps:initialProps];
   EXKernelAppRecord *record = [_appRegistry recordForId:recordId];
-  [self moveAppToVisible:record];
+  [self _moveAppToVisible:record];
   return record;
 }
 
@@ -224,7 +224,7 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
     for (NSString *recordId in appRegistry.appEnumerator) {
       EXKernelAppRecord *record = [appRegistry recordForId:recordId];
       // foreground the first thing we find
-      [self moveAppToVisible:record];
+      [self _moveAppToVisible:record];
     }
   }
 }
@@ -239,21 +239,12 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
   }
 }
 
-- (void)moveAppToVisible:(EXKernelAppRecord *)appRecord
-{
-  if (_browserController) {
-    [EXUtil performSynchronouslyOnMainThread:^{
-      [_browserController moveAppToVisible:appRecord];
-    }];
-  }
-}
-
-- (void)appDidBecomeVisible:(EXKernelAppRecord *)appRecord
+- (void)viewController:(__unused EXViewController *)vc didNavigateAppToVisible:(EXKernelAppRecord *)appRecord
 {
   EXKernelAppRecord *appRecordPreviouslyVisible = _visibleApp;
   if (appRecord != appRecordPreviouslyVisible) {
     if (appRecordPreviouslyVisible) {
-      [appRecordPreviouslyVisible.viewController appDidBackground];
+      [appRecordPreviouslyVisible.viewController appStateDidBecomeInactive];
       [self _postNotificationName:kEXKernelBridgeDidBackgroundNotification onAbstractBridge:appRecordPreviouslyVisible.appManager.reactBridge];
       id appStateModule = [self nativeModuleForAppManager:appRecordPreviouslyVisible.appManager named:@"AppState"];
       if ([appStateModule respondsToSelector:@selector(setState:)]) {
@@ -261,7 +252,7 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
       }
     }
     if (appRecord) {
-      [appRecord.viewController appDidBecomeVisible];
+      [appRecord.viewController appStateDidBecomeActive];
       [self _postNotificationName:kEXKernelBridgeDidForegroundNotification onAbstractBridge:appRecord.appManager.reactBridge];
       id appStateModule = [self nativeModuleForAppManager:appRecord.appManager named:@"AppState"];
       if ([appStateModule respondsToSelector:@selector(setState:)]) {
@@ -326,13 +317,22 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
     }
     if (!lastKnownState || ![newState isEqualToString:lastKnownState]) {
       if ([newState isEqualToString:@"active"]) {
-        [_visibleApp.viewController appDidBecomeVisible];
+        [_visibleApp.viewController appStateDidBecomeActive];
         [self _postNotificationName:kEXKernelBridgeDidForegroundNotification onAbstractBridge:appManager.reactBridge];
       } else if ([newState isEqualToString:@"background"]) {
-        [_visibleApp.viewController appDidBackground];
+        [_visibleApp.viewController appStateDidBecomeInactive];
         [self _postNotificationName:kEXKernelBridgeDidBackgroundNotification onAbstractBridge:appManager.reactBridge];
       }
     }
+  }
+}
+
+- (void)_moveAppToVisible:(EXKernelAppRecord *)appRecord
+{
+  if (_browserController) {
+    [EXUtil performSynchronouslyOnMainThread:^{
+      [_browserController moveAppToVisible:appRecord];
+    }];
   }
 }
 

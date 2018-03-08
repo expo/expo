@@ -72,6 +72,7 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"EXAppD
 {
   if (!_rootViewController) {
     _rootViewController = [[_rootViewControllerClass alloc] init];
+    _rootViewController.delegate = [EXKernel sharedInstance];
   }
   return _rootViewController;
 }

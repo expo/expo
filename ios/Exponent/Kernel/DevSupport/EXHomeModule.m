@@ -104,17 +104,6 @@ RCT_REMAP_METHOD(doesCurrentTaskEnableDevtools,
   }
 }
 
-RCT_REMAP_METHOD(shouldCurrentTaskAutoReload,
-                 shouldCurrentTaskAutoReloadWithResolver:(RCTPromiseResolveBlock)resolve
-                 reject:(RCTPromiseRejectBlock)reject)
-{
-  if (_delegate) {
-    resolve(@([_delegate homeModuleShouldAutoReloadCurrentTask:self]));
-  } else {
-    resolve(@NO);
-  }
-}
-
 RCT_REMAP_METHOD(isLegacyMenuBehaviorEnabledAsync,
                  isLegacyMenuBehaviorEnabledWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
