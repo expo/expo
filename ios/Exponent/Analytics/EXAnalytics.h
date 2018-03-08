@@ -19,6 +19,7 @@ typedef enum EXKernelRoute : NSUInteger {
 
 - (void)setUserProperties: (nonnull NSDictionary *)props;
 
-- (void)logKernelAppVisibleEvent;
+- (void)logAppVisibleEvent;
+- (void)logErrorVisibleEvent;
 
 @end

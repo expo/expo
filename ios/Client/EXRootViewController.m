@@ -107,7 +107,9 @@ NS_ASSUME_NONNULL_BEGIN
   // this is different from Util.reload()
   // because it can work even on an errored app record (e.g. with no manifest, or with no running bridge).
   [self setIsMenuVisible:NO];
-  NSURL *urlToRefresh = [EXKernel sharedInstance].visibleApp.appLoader.manifestUrl;
+  EXKernelAppRecord *visibleApp = [EXKernel sharedInstance].visibleApp;
+  [[EXKernel sharedInstance] logAnalyticsEvent:@"RELOAD_EXPERIENCE" forAppRecord:visibleApp];
+  NSURL *urlToRefresh = visibleApp.appLoader.manifestUrl;
   [[EXKernel sharedInstance] createNewAppWithUrl:urlToRefresh initialProps:nil];
 }
 

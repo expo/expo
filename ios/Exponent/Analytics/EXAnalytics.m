@@ -88,7 +88,17 @@ NSString * const kEXAnalyticsDisabledConfigKey = @"EXAnalyticsDisabled";
   [self _logEvent:eventIdentifier withEventProperties:mutableProps];
 }
 
-- (void)logKernelAppVisibleEvent
+- (void)logErrorVisibleEvent
+{
+  if (_isDisabled) {
+    return;
+  }
+  NSString *eventIdentifier = @"ERROR_APPEARED";
+  NSDictionary *eventProperties = @{ @"SOURCE": @"SYSTEM" };
+  [self _logEvent:eventIdentifier withEventProperties:eventProperties];
+}
+
+- (void)logAppVisibleEvent
 {
   if (_isDisabled) {
     return;
@@ -122,7 +132,7 @@ NSString * const kEXAnalyticsDisabledConfigKey = @"EXAnalyticsDisabled";
 
 - (void)_onApplicationEnterForeground
 {
-  [self logKernelAppVisibleEvent];
+  [self logAppVisibleEvent];
 }
 
 @end

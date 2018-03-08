@@ -52,6 +52,8 @@ FOUNDATION_EXPORT NSString * const kEXKernelClearJSCacheUserDefaultsKey;
  */
 + (NSString *)deviceInstallUUID;
 
+- (void)logAnalyticsEvent:(NSString *)eventId forAppRecord:(EXKernelAppRecord *)appRecord;
+
 @end
 
 NS_ASSUME_NONNULL_END
