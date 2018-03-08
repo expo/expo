@@ -2,6 +2,7 @@
 
 @import UIKit;
 
+#import "EXAnalytics.h"
 #import "EXAppLoadingView.h"
 #import "EXErrorRecoveryManager.h"
 #import "EXFileDownloader.h"
@@ -121,6 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)_rebuildBridge
 {
   [self _invalidateRecoveryTimer];
+  [[EXKernel sharedInstance] logAnalyticsEvent:@"LOAD_EXPERIENCE" forAppRecord:_appRecord];
   [_appRecord.appManager rebuildBridge];
 }
 
@@ -315,6 +317,7 @@ NS_ASSUME_NONNULL_BEGIN
     _errorView.error = error;
     _contentView = _errorView;
     [self.view addSubview:_contentView];
+    [[EXAnalytics sharedInstance] logErrorVisibleEvent];
   }
 }
 

@@ -221,21 +221,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
   }
   return NO;
 }
- 
- #pragma mark - Unversioned utilities for EXFrame from EXFrameReactAppManager
- 
- - (void)logKernelAnalyticsEventWithParams:(NSDictionary *)params
- {
- NSString *eventId = params[@"eventIdentifier"];
- NSURL *manifestUrl = params[@"manifestUrl"];
- NSMutableDictionary *eventProperties = (params[@"eventProperties"]) ? [params[@"eventProperties"] mutableCopy] : [NSMutableDictionary dictionary];
- if (!eventProperties[@"SDK_VERSION"] && self.validatedVersion) {
- eventProperties[@"SDK_VERSION"] = self.validatedVersion;
- }
- 
- [[EXAnalytics sharedInstance] logEvent:eventId manifestUrl:manifestUrl eventProperties:eventProperties];
- }
- 
+
 */
 
 @end

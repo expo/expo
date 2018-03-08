@@ -86,6 +86,18 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
   return uuid;
 }
 
+- (void)logAnalyticsEvent:(NSString *)eventId forAppRecord:(EXKernelAppRecord *)appRecord
+{
+  if (_appRegistry.homeAppRecord && appRecord == _appRegistry.homeAppRecord) {
+    return;
+  }
+  NSString *validatedSdkVersion = [[EXVersions sharedInstance] availableSdkVersionForManifest:appRecord.appLoader.manifest];
+  NSDictionary *props = (validatedSdkVersion) ? @{ @"SDK_VERSION": validatedSdkVersion } : @{};
+  [[EXAnalytics sharedInstance] logEvent:eventId
+                             manifestUrl:appRecord.appLoader.manifestUrl
+                         eventProperties:props];
+}
+
 #pragma mark - bridge registry delegate
 
 - (void)appRegistry:(EXKernelAppRegistry *)registry didRegisterAppRecord:(EXKernelAppRecord *)appRecord
@@ -259,7 +271,7 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
         [appStateModule setState:@"active"];
       }
       _visibleApp = appRecord;
-      [[EXAnalytics sharedInstance] logKernelAppVisibleEvent];
+      [[EXAnalytics sharedInstance] logAppVisibleEvent];
     } else {
       _visibleApp = nil;
     }
