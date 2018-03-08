@@ -4,6 +4,7 @@
 #import "EXKernel.h"
 #import "EXKernelAppLoader.h"
 #import "EXKernelAppRecord.h"
+#import "EXUtil.h"
 
 @interface EXErrorView ()
 
@@ -47,6 +48,11 @@
     [_btnBack addTarget:self action:@selector(_onTapBack) forControlEvents:UIControlEventTouchUpInside];
     [_vContainer addSubview:_btnBack];
     
+    for (UIButton *btnToStyle in @[ _btnRetry, _btnBack ]) {
+      [btnToStyle setTintColor:[EXUtil colorWithRGB:0x49a7e8]];
+      [btnToStyle.titleLabel setFont:[UIFont boldSystemFontOfSize:14.0f]];
+    }
+    
     // url label
     self.lblUrl = [[UILabel alloc] init];
     _lblUrl.textAlignment = NSTextAlignmentCenter;
@@ -69,7 +75,7 @@
 - (void)setType:(EXFatalErrorType)type
 {
   _type = type;
-  NSString *appOwnerName = @"the app";
+  NSString *appOwnerName = @"the requested app";
   if (_appRecord) {
     if (_appRecord == [EXKernel sharedInstance].appRegistry.homeAppRecord) {
       appOwnerName = @"Expo";
@@ -83,6 +89,13 @@
       _lblError.text = [NSString stringWithFormat:@"There was a problem loading %@.", appOwnerName];
       if (_error.code == kCFURLErrorNotConnectedToInternet) {
         _lblError.text = [NSString stringWithFormat:@"%@ Make sure you're connected to the internet.", _lblError.text];
+      } else if (_appRecord.appLoader.manifestUrl) {
+        NSString *url = _appRecord.appLoader.manifestUrl.absoluteString;
+        if ([self _urlLooksLikeLAN:url]) {
+          _lblError.text = [NSString stringWithFormat:
+                            @"%@ It looks like you may be using a LAN url."
+                            "Make sure your device is on the same network as the server or try using a tunnel.", _lblError.text];
+        }
       }
       break;
     }
@@ -112,14 +125,14 @@
   [super layoutSubviews];
 
   _vContainer.frame = self.bounds;
-  CGFloat maxLabelWidth = self.bounds.size.width * 0.95f;
+  CGFloat maxLabelWidth = self.bounds.size.width - 32.0f;
 
   _lblError.frame = CGRectMake(0, 0, maxLabelWidth, CGFLOAT_MAX);
   [_lblError sizeToFit];
-  _lblError.center = CGPointMake(self.bounds.size.width * 0.5f, self.bounds.size.height * 0.3f);
+  _lblError.center = CGPointMake(self.bounds.size.width * 0.5f, self.bounds.size.height * 0.25f);
 
   _btnRetry.frame = CGRectMake(0, 0, self.bounds.size.width, 24.0f);
-  _btnRetry.center = CGPointMake(_lblError.center.x, CGRectGetMaxY(_lblError.frame) + 48);
+  _btnRetry.center = CGPointMake(_lblError.center.x, CGRectGetMaxY(_lblError.frame) + 32.0f);
   
   _btnBack.frame = CGRectMake(0, 0, self.bounds.size.width, 24.0f);
   _btnBack.center = CGPointMake(_lblError.center.x, CGRectGetMaxY(_btnRetry.frame) + 24);
@@ -158,6 +171,18 @@
   if ([EXKernel sharedInstance].browserController) {
     [[EXKernel sharedInstance].browserController moveHomeToVisible];
   }
+}
+
+- (BOOL)_urlLooksLikeLAN:(NSString *)url
+{
+  return (
+    url && (
+      [url rangeOfString:@".local"].length > 0 ||
+      [url rangeOfString:@"192."].length > 0 ||
+      [url rangeOfString:@"10."].length > 0 ||
+      [url rangeOfString:@"172."].length > 0
+    )
+  );
 }
 
 @end

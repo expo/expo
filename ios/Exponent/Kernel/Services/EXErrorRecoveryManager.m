@@ -169,8 +169,9 @@
   if (record) {
     return ([record.dtmLastLoaded timeIntervalSinceNow] < -[self reloadBufferSeconds]);
   }
-  // if we have no knowledge of this experience, sure, try reloading right away.
-  return YES;
+  // if we have no knowledge of this experience, this is probably a manifest loading error
+  // so we should assume we'd just hit the same issue again next time. don't try to autoreload.
+  return NO;
 }
 
 - (void)increaseAutoReloadBuffer

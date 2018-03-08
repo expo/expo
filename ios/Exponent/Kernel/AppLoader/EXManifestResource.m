@@ -169,7 +169,9 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
     NSString *rawMessage = [error localizedDescription];
     
     NSString *formattedMessage = [NSString stringWithFormat:@"Could not load %@.", self.originalUrl];
-    if ([errorCode isEqualToString:@"EXPERIENCE_NOT_FOUND"] || [errorCode isEqualToString:@"EXPERIENCE_NOT_PUBLISHED_ERROR"] || [errorCode isEqualToString:@"EXPERIENCE_RELEASE_NOT_FOUND_ERROR"]) {
+    if ([errorCode isEqualToString:@"EXPERIENCE_NOT_FOUND"]
+        || [errorCode isEqualToString:@"EXPERIENCE_NOT_PUBLISHED_ERROR"]
+        || [errorCode isEqualToString:@"EXPERIENCE_RELEASE_NOT_FOUND_ERROR"]) {
       formattedMessage = [NSString stringWithFormat:@"No experience found at %@.", self.originalUrl];
     } else if ([errorCode isEqualToString:@"EXPERIENCE_SDK_VERSION_OUTDATED"]) {
       NSDictionary *metadata = userInfo[@"metadata"];
@@ -178,9 +180,10 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
       
       NSArray *clientSDKVersionsAvailable = [EXVersions sharedInstance].versions[@"sdkVersions"];
       NSString *earliestSDKVersion = [clientSDKVersionsAvailable firstObject];
-      formattedMessage = [NSString stringWithFormat:@"This experience uses SDK v%@, but this Expo client requires at least v%@.", sdkVersionRequired, earliestSDKVersion];
+      formattedMessage = [NSString stringWithFormat:@"The experience you requested uses Expo SDK v%@, but this copy of Expo Client "
+                          "requires at least v%@. The author should update their experience to a newer Expo SDK version.", sdkVersionRequired, earliestSDKVersion];
     } else if ([errorCode isEqualToString:@"EXPERIENCE_SDK_VERSION_TOO_NEW"]) {
-      formattedMessage = @"This experience requires a newer version of the Expo client - please download the latest version from the App Store.";
+      formattedMessage = @"The experience you requested requires a newer version of the Expo Client app. Please download the latest version from the App Store.";
     } else if ([errorCode isEqualToString:@"USER_SNACK_NOT_FOUND"] || [errorCode isEqualToString:@"SNACK_NOT_FOUND"]) {
       formattedMessage = [NSString stringWithFormat:@"No snack found at %@.", self.originalUrl];
     } else if ([errorCode isEqualToString:@"SNACK_RUNTIME_NOT_RELEASE"]) {
