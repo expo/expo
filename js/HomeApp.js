@@ -1,6 +1,6 @@
 import { AppLoading, Asset, Font } from 'expo';
 import React from 'react';
-import { ActivityIndicator, Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Linking, Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { NavigationProvider, StackNavigation } from '@expo/ex-navigation';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
@@ -52,7 +52,15 @@ export default class App extends React.Component {
     } catch (e) {
       // ..
     } finally {
-      this.setState({ isReady: true });
+      this.setState({ isReady: true }, async () => {
+        if (Platform.OS == 'ios') {
+          // if expo client is opened via deep linking, we'll get the url here
+          const initialUrl = await Linking.getInitialURL();
+          if (initialUrl) {
+            Linking.openURL(initialUrl);
+          }
+        }
+      });
     }
   };
 
