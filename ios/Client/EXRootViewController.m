@@ -24,6 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) EXMenuViewController *menuViewController;
 @property (nonatomic, assign) BOOL isMenuVisible;
+@property (nonatomic, assign) BOOL isAnimatingMenu;
+@property (nonatomic, assign) BOOL isAnimatingAppTransition;
 
 @end
 
@@ -56,12 +58,12 @@ NS_ASSUME_NONNULL_BEGIN
   [self _foregroundAppRecord:appRecord];
 }
 
-- (void)toggleMenu
+- (void)toggleMenuWithCompletion:(void (^ _Nullable)(void))completion
 {
-  [self setIsMenuVisible:!_isMenuVisible];
+  [self setIsMenuVisible:!_isMenuVisible completion:completion];
 }
 
-- (void)setIsMenuVisible:(BOOL)isMenuVisible
+- (void)setIsMenuVisible:(BOOL)isMenuVisible completion:(void (^ _Nullable)(void))completion
 {
   if (!_menuViewController) {
     _menuViewController = [[EXMenuViewController alloc] init];
@@ -73,21 +75,22 @@ NS_ASSUME_NONNULL_BEGIN
     [self.presentedViewController dismissViewControllerAnimated:NO completion:nil];
   }
   
-  if (isMenuVisible != _isMenuVisible) {
+  if (!_isAnimatingMenu && isMenuVisible != _isMenuVisible) {
     _isMenuVisible = isMenuVisible;
-    if (_isMenuVisible) {
-      [self presentViewController:_menuViewController animated:NO completion:nil];
-    } else {
-      [_menuViewController dismissViewControllerAnimated:NO completion:nil];
-    }
+    [self _animateMenuToVisible:_isMenuVisible completion:completion];
   }
 }
 
 - (void)showDiagnostics
 {
-  EXHomeDiagnosticsViewController *vcDiagnostics = [[EXHomeDiagnosticsViewController alloc] init];
-  [self setIsMenuVisible:NO];
-  [self presentViewController:vcDiagnostics animated:NO completion:nil];
+  __weak typeof(self) weakSelf = self;
+  [self setIsMenuVisible:NO completion:^{
+    __strong typeof(weakSelf) strongSelf = weakSelf;
+    if (strongSelf) {
+      EXHomeDiagnosticsViewController *vcDiagnostics = [[EXHomeDiagnosticsViewController alloc] init];
+      [strongSelf presentViewController:vcDiagnostics animated:NO completion:nil];
+    }
+  }];
 }
 
 - (void)showQRReader
@@ -98,15 +101,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)moveHomeToVisible
 {
-  [self setIsMenuVisible:NO];
-  [self moveAppToVisible:[EXKernel sharedInstance].appRegistry.homeAppRecord];
+  __weak typeof(self) weakSelf = self;
+  [self setIsMenuVisible:NO completion:^{
+    __strong typeof(weakSelf) strongSelf = weakSelf;
+    if (strongSelf) {
+      [strongSelf moveAppToVisible:[EXKernel sharedInstance].appRegistry.homeAppRecord];
+    }
+  }];
 }
 
 - (void)refreshVisibleApp
 {
   // this is different from Util.reload()
   // because it can work even on an errored app record (e.g. with no manifest, or with no running bridge).
-  [self setIsMenuVisible:NO];
+  [self setIsMenuVisible:NO completion:nil];
   EXKernelAppRecord *visibleApp = [EXKernel sharedInstance].visibleApp;
   [[EXKernel sharedInstance] logAnalyticsEvent:@"RELOAD_EXPERIENCE" forAppRecord:visibleApp];
   NSURL *urlToRefresh = visibleApp.appLoader.manifestUrl;
@@ -141,7 +149,7 @@ NS_ASSUME_NONNULL_BEGIN
       && appRecord == [EXKernel sharedInstance].visibleApp
       && appRecord != [EXKernel sharedInstance].appRegistry.homeAppRecord
       && !self.isMenuVisible) {
-    [self setIsMenuVisible:YES];
+    [self setIsMenuVisible:YES completion:nil];
   }
 }
 
@@ -149,25 +157,108 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_foregroundAppRecord:(EXKernelAppRecord *)appRecord
 {
-  UIViewController *viewControllerToShow = appRecord.viewController;
+  if (_isAnimatingAppTransition) {
+    return;
+  }
+  EXAppViewController *viewControllerToShow = appRecord.viewController;
+  EXAppViewController *viewControllerToHide;
   if (viewControllerToShow != self.contentViewController) {
+    _isAnimatingAppTransition = YES;
     if (self.contentViewController) {
-      [self.contentViewController willMoveToParentViewController:nil];
-      [self.contentViewController.view removeFromSuperview];
-      [self.contentViewController didMoveToParentViewController:nil];
+      viewControllerToHide = (EXAppViewController *)self.contentViewController;
     }
-    
     if (viewControllerToShow) {
       [viewControllerToShow willMoveToParentViewController:self];
       [self.view addSubview:viewControllerToShow.view];
-      [viewControllerToShow didMoveToParentViewController:self];
     }
+
+    __weak typeof(self) weakSelf = self;
+    void (^transitionFinished)(void) = ^{
+      __strong typeof(weakSelf) strongSelf = weakSelf;
+      if (strongSelf) {
+        if (viewControllerToHide) {
+          [viewControllerToHide willMoveToParentViewController:nil];
+          [viewControllerToHide.view removeFromSuperview];
+          [viewControllerToHide didMoveToParentViewController:nil];
+        }
+        if (viewControllerToShow) {
+          [viewControllerToShow didMoveToParentViewController:strongSelf];
+          strongSelf.contentViewController = viewControllerToShow;
+        }
+        [strongSelf.view setNeedsLayout];
+        strongSelf.isAnimatingAppTransition = NO;
+        if (strongSelf.delegate) {
+          [strongSelf.delegate viewController:strongSelf didNavigateAppToVisible:appRecord];
+        }
+      }
+    };
     
-    self.contentViewController = viewControllerToShow;
-    [self.view setNeedsLayout];
-    if (self.delegate) {
-      [self.delegate viewController:self didNavigateAppToVisible:appRecord];
+    BOOL animated = (viewControllerToHide && viewControllerToShow);
+    if (animated) {
+      if (viewControllerToHide.contentView) {
+        viewControllerToHide.contentView.transform = CGAffineTransformIdentity;
+        viewControllerToHide.contentView.alpha = 1.0f;
+      }
+      if (viewControllerToShow.contentView) {
+        viewControllerToShow.contentView.transform = CGAffineTransformMakeScale(1.1f, 1.1f);
+        viewControllerToShow.contentView.alpha = 0;
+      }
+      [UIView animateWithDuration:0.3f animations:^{
+        if (viewControllerToHide.contentView) {
+          viewControllerToHide.contentView.transform = CGAffineTransformMakeScale(0.95f, 0.95f);
+          viewControllerToHide.contentView.alpha = 0.5f;
+        }
+        if (viewControllerToShow.contentView) {
+          viewControllerToShow.contentView.transform = CGAffineTransformIdentity;
+          viewControllerToShow.contentView.alpha = 1.0f;
+        }
+      } completion:^(BOOL finished) {
+        transitionFinished();
+      }];
+    } else {
+      transitionFinished();
     }
+  }
+}
+
+- (void)_animateMenuToVisible:(BOOL)visible completion:(void (^ _Nullable)(void))completion
+{
+  _isAnimatingMenu = YES;
+  __weak typeof(self) weakSelf = self;
+  if (visible) {
+    [_menuViewController willMoveToParentViewController:self];
+    [self.view addSubview:_menuViewController.view];
+    _menuViewController.view.alpha = 0.0f;
+    _menuViewController.view.transform = CGAffineTransformMakeScale(1.1f, 1.1f);
+    [UIView animateWithDuration:0.1f animations:^{
+      _menuViewController.view.alpha = 1.0f;
+      _menuViewController.view.transform = CGAffineTransformIdentity;
+    } completion:^(BOOL finished) {
+      __strong typeof(weakSelf) strongSelf = weakSelf;
+      if (strongSelf) {
+        strongSelf.isAnimatingMenu = NO;
+        [strongSelf.menuViewController didMoveToParentViewController:self];
+        if (completion) {
+          completion();
+        }
+      }
+    }];
+  } else {
+    _menuViewController.view.alpha = 1.0f;
+    [UIView animateWithDuration:0.1f animations:^{
+      _menuViewController.view.alpha = 0.0f;
+    } completion:^(BOOL finished) {
+      __strong typeof(weakSelf) strongSelf = weakSelf;
+      if (strongSelf) {
+        strongSelf.isAnimatingMenu = NO;
+        [strongSelf.menuViewController willMoveToParentViewController:nil];
+        [strongSelf.menuViewController.view removeFromSuperview];
+        [strongSelf.menuViewController didMoveToParentViewController:nil];
+        if (completion) {
+          completion();
+        }
+      }
+    }];
   }
 }
 

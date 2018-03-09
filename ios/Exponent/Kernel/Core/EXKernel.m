@@ -228,7 +228,7 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
   
   if (_visibleApp != _appRegistry.homeAppRecord) {
     [EXUtil performSynchronouslyOnMainThread:^{
-      [_browserController toggleMenu];
+      [_browserController toggleMenuWithCompletion:nil];
     }];
   } else {
     EXKernelAppRegistry *appRegistry = [EXKernel sharedInstance].appRegistry;

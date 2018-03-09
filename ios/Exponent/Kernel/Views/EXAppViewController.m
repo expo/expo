@@ -26,7 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXAppViewController () <EXReactAppManagerUIDelegate, EXKernelAppLoaderDelegate, EXErrorViewDelegate>
 
 @property (nonatomic, assign) BOOL isLoading;
-@property (nonatomic, strong) UIView *contentView;
 @property (nonatomic, weak) EXKernelAppRecord *appRecord;
 @property (nonatomic, strong) EXAppLoadingView *loadingView;
 @property (nonatomic, strong) EXErrorView *errorView;
@@ -83,11 +82,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
   [super viewWillLayoutSubviews];
   if (_loadingView) {
-    _loadingView.frame = self.view.bounds;
-    [_loadingView setNeedsLayout];
+    _loadingView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
   }
   if (_contentView) {
-    _contentView.frame = self.view.bounds;
+    _contentView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
   }
 }
 
@@ -185,7 +183,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)reactAppManagerIsReadyForLoad:(EXReactAppManager *)appManager
 {
   UIView *reactView = appManager.rootView;
-  reactView.frame = self.view.bounds;
+  reactView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
   reactView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
   reactView.backgroundColor = [UIColor clearColor];
   
@@ -307,7 +305,7 @@ NS_ASSUME_NONNULL_BEGIN
   } {
     [_contentView removeFromSuperview];
     if (!_errorView) {
-      _errorView = [[EXErrorView alloc] initWithFrame:self.view.bounds];
+      _errorView = [[EXErrorView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
       _errorView.delegate = self;
       _errorView.appRecord = _appRecord;
     }
