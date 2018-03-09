@@ -11,7 +11,7 @@ In this tutorial we want to show you how easy it is to create a 2D cross-platfor
 
 Demo: https://snack.expo.io/@community/flappy-bird
 
-![sketch](@community/flappy-bird)
+${<SnackEmbed snackId="@community/flappy-bird" />}
 
 ### Prerequisites
 * NodeJS 6+ (LTS)

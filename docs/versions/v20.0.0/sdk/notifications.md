@@ -49,7 +49,7 @@ If your app doesn't need push notifications, Expo allows you to also send local 
 
  On Android, we only need to do step 1. Here's an example of local notifications on Android.
 
- ![sketch](S1gdfOb4Z)
+ ${<SnackEmbed snackId="S1gdfOb4Z" />}
 
 To make this example work on iOS, we need to first request permissions from the user.
 
@@ -64,7 +64,7 @@ async function getiOSNotificationPermission() {
 
 And then, we just need to subscribe for notifications with `Expo.Notifications.addListener` and display an [`Alert`](https://facebook.github.io/react-native/docs/alert.html). Here's the Android example expanded to work on iOS. Note: when testing out this example, make sure that you exit out of the app before time is up. The notification won't display on iOS if the app is being viewed. Also, make sure you don't have "Do Not Disturb" turned on.
 
-![sketch](rk7VdlH6b)
+${<SnackEmbed snackId="rk7VdlH6b" />}
 
 ### `Expo.Notifications.presentLocalNotificationAsync(localNotification)`
 

@@ -154,16 +154,16 @@ The following is a list of properties that are available for you under the `"exp
 
 - `rnCliPath`
 
-   
+
 - `packagerOpts`
 
-   
+
 - `ignoreNodeModulesValidation`
 
-   
+
 - `nodeModulesPath`
 
-   
+
 - `ios`
 
    **Standalone Apps Only**. iOS standalone app specific configuration
@@ -183,7 +183,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `config`
 
-      
+
        - `branch`
 
           [Branch](https://branch.io/) key to hook up Branch linking services.
@@ -251,7 +251,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `config`
 
-      
+
        - `branch`
 
           [Branch](https://branch.io/) key to hook up Branch linking services.
@@ -301,4 +301,3 @@ The following is a list of properties that are available for you under the `"exp
    Configuration for scripts to run to hook into the publish process
 
    - `postPublish`
-

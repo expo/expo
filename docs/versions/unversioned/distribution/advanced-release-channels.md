@@ -10,13 +10,13 @@ For a quick introduction to release channels, read [this] (https://docs.expo.io/
 
 When you publish your app by running `exp publish --release-channel staging`, it creates:
 
-- a release, identified by a `publicationId` for Android and iOS platforms. A release refers to your bundled source code and assets at the time of publication. 
+- a release, identified by a `publicationId` for Android and iOS platforms. A release refers to your bundled source code and assets at the time of publication.
 - a link to the release in the `staging` channel, identified by a `channelId`. This is like a commit on a git branch.
 
 For simplicity, the rest of this article will refer to just the `ios` releases, but you could swap out ios for android at any point and everything would still be true.
 
 ## See past publishes
-You can see everything that you’ve published with `exp publish:history`. 
+You can see everything that you’ve published with `exp publish:history`.
 
 #### Example command and output
 `exp publish:history --platform ios`
@@ -48,7 +48,7 @@ The following flowchart shows how we determine which release to return to a user
 
 Example use case: you previously published a release to `staging` and everything went well in your testing. Now you want this release to be active in another channel (ie) production
 
-We run `exp publish:set` to push our release to the `production` channel. 
+We run `exp publish:set` to push our release to the `production` channel.
 `exp publish:set --publish-id d9bd6b80 --release-channel production`
 
 Continuing from the previous section, we can see that our release is available in both the `staging` and the `production` channels.
@@ -60,7 +60,7 @@ Continuing from the previous section, we can see that our release is available i
 | 2018-01-05T23:55:04.603Z  |  1.0.0 | 24.0.0 |  ios | staging  | 9133d577  | d9bd6b80  |
 | 2018-01-05T23:55:04.603Z  |  1.0.0 | 24.0.0 |  ios | production  | 6e406223  | d9bd6b80  |
 
-## Rollback a channel entry 
+## Rollback a channel entry
 
 Example use case: you published a release to your `production` channel, only to realize that it includes a major regression for some of your users, so you want to revert back to the previous version.
 
@@ -81,7 +81,7 @@ Now we can see that our release is no longer available in the production channel
 
 ```
   Usage: exp publish:history [--release-channel <channel-name>] [--count <number-of-logs>]
-  
+
   View a log of your published releases.
 
   Options:
@@ -101,7 +101,7 @@ Now we can see that our release is no longer available in the production channel
 ### Publish rollback
 ```
 Usage: exp publish:rollback --channel-id <channel-id>
-  
+
   Rollback an update to a channel.
 
   Options:

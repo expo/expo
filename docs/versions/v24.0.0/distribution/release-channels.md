@@ -12,17 +12,17 @@ Use release channels in Expo to send out different versions of your application 
 
 Publish your release by running:
 
-`exp publish --release-channel <your-channel>` 
+`exp publish --release-channel <your-channel>`
 
 with the `exp` cli. Your users can see this release in the Expo client app with a parameterized URL `https://exp.host/@username/yourApp?release-channel=<your-channel>`. If you do not specify a channel, you will publish to the `default` channel.
 
 ## Build with Channels
 
-Build your standalone app by running 
+Build your standalone app by running
 
 `exp build:ios --release-channel <your-channel>`
 
-`exp build:android --release-channel <your-channel>` 
+`exp build:android --release-channel <your-channel>`
 
 with the `exp` cli. The binary produced will only pull releases published under the specified channel. If you do not specify a channel, your binary will pull releases from the `default` channel.
 

@@ -9,7 +9,7 @@ title: Configuration with app.json
   "expo": {
     "name": "My app",
     "slug": "my-app",
-    "sdkVersion": "24.0.0",
+    "sdkVersion": "25.0.0",
     "privacy": "public"
   }
 }
@@ -152,6 +152,7 @@ The following is a list of properties that are available for you under the `"exp
 - `scheme`
 
    **Standalone Apps Only**. URL scheme to link into your app. For example, if we set this to `'demo'`, then demo:// URLs would open your app when tapped.
+ String beginning with a letter followed by any combination of letters, digits, "+", "." or "-"
 
 - `entryPoint`
 
@@ -163,16 +164,16 @@ The following is a list of properties that are available for you under the `"exp
 
 - `rnCliPath`
 
-   
+
 - `packagerOpts`
 
-   
+
 - `ignoreNodeModulesValidation`
 
-   
+
 - `nodeModulesPath`
 
-   
+
 - `ios`
 
    **Standalone Apps Only**. iOS standalone app specific configuration
@@ -200,7 +201,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `config`
 
-      
+
        - `branch`
 
           [Branch](https://branch.io/) key to hook up Branch linking services.
@@ -290,7 +291,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `icon`
 
-      Local path or remote url to an image to use for your app's icon. If specified, this overrides the top-level `icon` key. We recommend that you use a 1024x1024 png file (transparency is recommended for the Google Play Store). This icon will appear on the home screen and within the Expo app.
+      Local path or remote url to an image to use for your app's icon on Android. If specified, this overrides the top-level `icon` key. We recommend that you use a 1024x1024 png file (transparency is recommended for the Google Play Store). This icon will appear on the home screen and within the Expo app.
 
    - `playStoreUrl`
 
@@ -298,12 +299,12 @@ The following is a list of properties that are available for you under the `"exp
 
    - `permissions`
 
-      List of additional permissions the standalone app will request upon installation, along with the minimum necessary for an expo app to function.  Remove the field to use the default list of permissions.  Set the field to an empty list to use only the minimum necessary permissions.
-    
+      List of permissions used by the standalone app. Remove the field to use the default list of permissions.
+
       Example: `[ "CAMERA", "ACCESS_FINE_LOCATION" ]`.
-    
+
       You can specify the following permissions depending on what you need:
-    
+
       - `ACCESS_COARSE_LOCATION`
       - `ACCESS_FINE_LOCATION`
       - `CAMERA`
@@ -331,7 +332,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `config`
 
-      
+
        - `branch`
 
           [Branch](https://branch.io/) key to hook up Branch linking services.
@@ -446,7 +447,7 @@ The following is a list of properties that are available for you under the `"exp
 
    - `postPublish`
 
-      
+
 - `assetBundlePatterns`
 
    An array of file glob strings which point to assets that will be bundled within your standalone app binary. Read more in the [Offline Support guide](https://docs.expo.io/versions/latest/guides/offline-support.html)

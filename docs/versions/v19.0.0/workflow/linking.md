@@ -44,7 +44,7 @@ Usually you don't open a URL without it being requested by the user -- here's an
 import { Linking, Text } from 'react-native';
 
 export default class Anchor extends React.Component {
-  handlePress = () => {
+  _handlePress = () => {
     Linking.openURL(this.props.href);
     this.props.onPress && this.props.onPress();
   };
@@ -66,7 +66,7 @@ export default class Anchor extends React.Component {
 
 The following example illustrates the difference between opening a web link with `Expo.WebBrowser.openBrowserAsync` and React Native's `Linking.openURL`. Often `WebBrowser` is a better option because it's a modal within your app and users can easily close out of it and return to your app.
 
-![sketch](H11a8rk7b)
+${<SnackEmbed snackId="H11a8rk7b" />}
 
 ### Opening links to other apps
 

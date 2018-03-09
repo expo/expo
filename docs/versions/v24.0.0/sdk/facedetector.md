@@ -50,23 +50,23 @@ Returns a Promise that resolves to an object: `{ faces, image }` where `faces` i
 A detected face is an object containing at most following fields:
 
 - **bounds (_object_)** -- an object containing:
-  - **origin (_{ x: number, y: number }_)** -- position of the top left corner of a square containing the face in image coordinates,
-  - **size (_{ width: number, height: number }_)** -- size of the square containing the face in image coordinates,
+  - **origin (`{ x: number, y: number }`)** -- position of the top left corner of a square containing the face in image coordinates,
+  - **size (`{ width: number, height: number }`)** -- size of the square containing the face in image coordinates,
 - **rollAngle (_number_)** -- roll angle of the face (bank),
 - **yawAngle (_number_)** -- yaw angle of the face (heading, turning head left or right),
 - **smilingProbability (_number_)** -- probability that the face is smiling,
-- **leftEarPosition (_{ x: number, y: number}_)** -- position of the left ear in image coordinates,
-- **rightEarPosition (_{ x: number, y: number}_)** -- position of the right ear in image coordinates,
-- **leftEyePosition (_{ x: number, y: number}_)** -- position of the left eye in image coordinates,
+- **leftEarPosition (`{ x: number, y: number}`)** -- position of the left ear in image coordinates,
+- **rightEarPosition (`{ x: number, y: number}`)** -- position of the right ear in image coordinates,
+- **leftEyePosition (`{ x: number, y: number}`)** -- position of the left eye in image coordinates,
 - **leftEyeOpenProbability (_number_)** -- probability that the left eye is open,
-- **rightEyePosition (_{ x: number, y: number}_)** -- position of the right eye in image coordinates,
+- **rightEyePosition (`{ x: number, y: number}`)** -- position of the right eye in image coordinates,
 - **rightEyeOpenProbability (_number_)** -- probability that the right eye is open,
-- **leftCheekPosition (_{ x: number, y: number}_)** -- position of the left cheek in image coordinates,
-- **rightCheekPosition (_{ x: number, y: number}_)** -- position of the right cheek in image coordinates,
-- **mouthPosition (_{ x: number, y: number}_)** -- position of the center of the mouth in image coordinates,
-- **leftMouthPosition (_{ x: number, y: number}_)** -- position of the left edge of the mouth in image coordinates,
-- **rightMouthPosition (_{ x: number, y: number}_)** -- position of the right edge of the mouth in image coordinates,
-- **noseBasePosition (_{ x: number, y: number}_)** -- position of the nose base in image coordinates.
+- **leftCheekPosition (`{ x: number, y: number}`)** -- position of the left cheek in image coordinates,
+- **rightCheekPosition (`{ x: number, y: number}`)** -- position of the right cheek in image coordinates,
+- **mouthPosition (`{ x: number, y: number}`)** -- position of the center of the mouth in image coordinates,
+- **leftMouthPosition (`{ x: number, y: number}`)** -- position of the left edge of the mouth in image coordinates,
+- **rightMouthPosition (`{ x: number, y: number}`)** -- position of the right edge of the mouth in image coordinates,
+- **noseBasePosition (`{ x: number, y: number}`)** -- position of the nose base in image coordinates.
 
 `smilingProbability`, `leftEyeOpenProbability` and `rightEyeOpenProbability` are returned only if `runClassifications` option is set to `.all`.
 

@@ -4,7 +4,7 @@ title: Pedometer
 
 Use Core Motion (iOS) or Google Fit (Android) to get the user's step count.
 
-![sketch](S1gdfOb4Z)
+${<SnackEmbed snackId="S1gdfOb4Z" />}
 
 ### `Expo.Pedometer.isAvailableAsync()`
 

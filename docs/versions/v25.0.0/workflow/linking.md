@@ -66,7 +66,7 @@ export default class Anchor extends React.Component {
 
 The following example illustrates the difference between opening a web link with `Expo.WebBrowser.openBrowserAsync` and React Native's `Linking.openURL`. Often `WebBrowser` is a better option because it's a modal within your app and users can easily close out of it and return to your app.
 
-![sketch](H11a8rk7b)
+${<SnackEmbed snackId="H11a8rk7b" />}
 
 ### Opening links to other apps
 
@@ -77,6 +77,16 @@ lyft://ridetype?id=lyft&pickup[latitude]=37.764728&pickup[longitude]=-122.422999
 ```
 
 It's possible that the user doesn't have the Lyft app installed, in which case you may want to open the App / Play Store, or let them know that they need to install it first. We recommend using the library [react-native-app-link](https://github.com/fiber-god/react-native-app-link) for these cases.
+
+On iOS, `Linking.canOpenURL` requires additional configuration to query other apps' linking schemes. You can use the `ios.infoPlist` key in your `app.json` to specify a list of schemes your app needs to query. For example:
+
+```
+  "infoPlist": {
+    "LSApplicationQueriesSchemes": ["lyft"]
+  }
+```
+
+If you don't specify this list, `Linking.canOpenURL` may return `false` regardless of whether the device has the app installed. Note that this configuration can only be tested in standalone apps, because it requires native changes that will not be applied when testing in Expo Client.
 
 ## Linking to your app
 
