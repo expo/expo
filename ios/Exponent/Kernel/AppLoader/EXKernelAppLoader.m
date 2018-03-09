@@ -51,6 +51,11 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   return self;
 }
 
+- (void)dealloc
+{
+  [self _stopTimer];
+}
+
 #pragma mark - getters and lifecycle
 
 - (void)_reset
@@ -236,20 +241,28 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 {
   EXCachedResourceBehavior cacheBehavior = [self _cacheBehaviorForJSWithManifest:_optimisticManifest];
 
+  __weak typeof(self) weakSelf = self;
   [self _fetchJSBundleWithManifest:_optimisticManifest cacheBehavior:cacheBehavior timeoutInterval:kEXJSBundleTimeout progress:^(EXLoadingProgress * _Nonnull progress) {
-    if (_delegate) {
-      [_delegate appLoader:self didLoadBundleWithProgress:progress];
+    __strong typeof(weakSelf) strongSelf = weakSelf;
+    if (strongSelf && strongSelf.delegate) {
+      [_delegate appLoader:strongSelf didLoadBundleWithProgress:progress];
     }
   } success:^(NSData * _Nonnull data) {
-    // promote optimistic manifest to confirmed manifest.
-    _confirmedManifest = _optimisticManifest;
-    _optimisticManifest = nil;
-    _bundle = data;
-    [self _finishWithError:nil];
+    __strong typeof(weakSelf) strongSelf = weakSelf;
+    if (strongSelf) {
+      // promote optimistic manifest to confirmed manifest.
+      strongSelf.confirmedManifest = strongSelf.optimisticManifest;
+      strongSelf.optimisticManifest = nil;
+      strongSelf.bundle = data;
+      [strongSelf _finishWithError:nil];
+    }
   } error:^(NSError * _Nonnull error) {
-    // discard optimistic manifest.
-    _optimisticManifest = nil;
-    [self _finishWithError:error];
+    __strong typeof(weakSelf) strongSelf = weakSelf;
+    if (strongSelf) {
+      // discard optimistic manifest.
+      strongSelf.optimisticManifest = nil;
+      [strongSelf _finishWithError:error];
+    }
   }];
 }
 
