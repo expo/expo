@@ -2,6 +2,12 @@
   Is this a feature request? Please vote or post it at https://expo.canny.io instead.
 -->
 
+### Attention
+
+  If you are unable to create a reproducible Snack example that demonstrates the bug/issue,
+  please first post in our forums at https://forums.expo.io/ before opening an issue here! 
+  (Unless the bug/issue pertains to a standalone, non-detached build)
+  
 ### Environment
 
 <!-- In your terminal run `exp diagnostics` and paste the output here. -->
