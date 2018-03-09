@@ -169,6 +169,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
       return;
     } else {
       id updates = _confirmedManifest[@"updates"];
+      id ios = _confirmedManifest[@"ios"];
       if (updates && [updates isKindOfClass:[NSDictionary class]]) {
         NSDictionary *updatesDict = (NSDictionary *)updates;
         id checkAutomaticallyVal = updatesDict[@"checkAutomatically"];
@@ -179,6 +180,14 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
         id fallbackToCacheTimeoutVal = updatesDict[@"fallbackToCacheTimeout"];
         if (fallbackToCacheTimeoutVal && [fallbackToCacheTimeoutVal isKindOfClass:[NSNumber class]]) {
           fallbackToCacheTimeout = [(NSNumber *)fallbackToCacheTimeoutVal intValue];
+        }
+      } else if (ios && [ios isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *iosDict = (NSDictionary *)ios;
+        // map loadJSInBackgroundExperimental internally to
+        // checkAutomatically: launch and fallbackToCacheTimeout: 0
+        if (iosDict[@"loadJSInBackgroundExperimental"]) {
+          shouldCheckForUpdate = YES;
+          fallbackToCacheTimeout = 0;
         }
       }
 
@@ -225,9 +234,6 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   if (!shouldUseTimer) {
     // if we're in dev mode (meaning we should not ever fall back to cache), don't write to the cache either
     cacheBehavior = EXCachedResourceNoCache;
-  }
-  if ([EXShellManager sharedInstance].loadJSInBackgroundExperimental) {
-    cacheBehavior = EXCachedResourceUseCacheImmediately;
   }
   [self _fetchManifestWithHttpUrl:_httpManifestUrl cacheBehavior:cacheBehavior success:^(NSDictionary * _Nonnull manifest) {
     _optimisticManifest = manifest;
@@ -441,9 +447,6 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   if ([[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:[self _experienceIdWithManifest:manifest]]) {
     // if this experience id encountered a loading error before, discard any cache we might have
     return EXCachedResourceWriteToCache;
-  }
-  if ([EXShellManager sharedInstance].loadJSInBackgroundExperimental && ![self _areDevToolsEnabledWithManifest:manifest]) {
-    return EXCachedResourceUseCacheImmediately;
   }
   if ([self _areDevToolsEnabledWithManifest:manifest]) {
     return EXCachedResourceNoCache;
