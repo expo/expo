@@ -4,7 +4,7 @@ title: XDE Tour
 
 ## Sign in screen
 
-When you open XDE for the first time you'll be greeted by this sign in screen. If you have an account already, go ahead and sign in. If you don't, either sign in with Github or register an account.![XDE sign in screen](./xde-signin.png)
+When you open XDE for the first time you'll be greeted by this sign in screen. If you have an account already, go ahead and sign in. If you don't, you can register an account.![XDE sign in screen](./xde-signin.png)
 
 ## Home screen
 
@@ -43,4 +43,3 @@ In addition to the options provided from the home screen, with a project opened 
 While you work on your project, it is given a temporary URL which is served from your computer. When you're ready to share the project with others, you can **Publish** the project to get a permanent URL (something like `expo.io/@your-username/your-app-slug`) that anybody can open with the Expo Client.
 
 When you click the **Publish** button in XDE, you'll be asked to confirm that you want your project to be available to the public. XDE takes some time to generate your minified JS bundle and upload your Assets to our servers, and once it's done, prints out your app's published URL. You can read more details about how publishing works in [How Expo Works](../guides/how-expo-works.html#how-expo-works) and the [Publishing guide](../guides/publishing.html).![XDE publish](./xde-publish.png)
-
