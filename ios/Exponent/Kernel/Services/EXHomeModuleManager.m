@@ -52,7 +52,7 @@
   [[EXKernel sharedInstance].visibleApp.appManager selectDevMenuItemWithKey:key];
   if ([EXKernel sharedInstance].browserController) {
     dispatch_async(dispatch_get_main_queue(), ^{
-      [[EXKernel sharedInstance].browserController toggleMenu];
+      [[EXKernel sharedInstance].browserController toggleMenuWithCompletion:^{}];
     });
   }
 }
@@ -70,7 +70,7 @@
 {
   if ([EXKernel sharedInstance].browserController) {
     dispatch_async(dispatch_get_main_queue(), ^{
-      [[EXKernel sharedInstance].browserController setIsMenuVisible:NO];
+      [[EXKernel sharedInstance].browserController setIsMenuVisible:NO completion:^{}];
     });
   }
 }

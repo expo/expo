@@ -21,4 +21,10 @@
 - (void)appStateDidBecomeActive;
 - (void)appStateDidBecomeInactive;
 
+/**
+ *  The underlying react view or loading view. We need to expose this for animation/transitions
+ *  because react does weird stuff with layout that prevents us from operating on the superview.
+ */
+@property (nonatomic, strong) UIView *contentView;
+
 @end
