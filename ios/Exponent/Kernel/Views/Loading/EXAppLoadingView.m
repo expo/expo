@@ -1,4 +1,5 @@
 #import "EXAppLoadingView.h"
+#import "EXAppLoadingCancelView.h"
 #import "EXAppLoadingProgressView.h"
 #import "EXKernel.h"
 #import "EXKernelUtil.h"
@@ -17,13 +18,14 @@
 
 @end
 
-@interface EXAppLoadingView ()
+@interface EXAppLoadingView () <EXAppLoadingCancelViewDelegate>
 
 @property (nonatomic, strong) UIActivityIndicatorView *loadingIndicator;
 @property (nonatomic, strong) UIView *loadingView;
 @property (nonatomic, assign) BOOL usesSplashFromNSBundle;
 @property (nonatomic, strong) EXAppLoadingProgressView *vProgress;
 @property (nonatomic, strong) RCTImageView *vBackgroundImage;
+@property (nonatomic, strong) EXAppLoadingCancelView *vCancel;
 
 @end
 
@@ -47,6 +49,11 @@
   if (!_usesSplashFromNSBundle && !_manifest) {
     // show placeholder loading indicator if we have nothing else
     _loadingIndicator.center = CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds));
+    if (_vCancel) {
+      _loadingIndicator.center = CGPointMake(_loadingIndicator.center.x, _loadingIndicator.center.y - 64.0f);
+      CGFloat vCancelY = CGRectGetMaxY(_loadingIndicator.frame) + 24.0f;
+      _vCancel.frame = CGRectMake(0, vCancelY, self.bounds.size.width, self.bounds.size.height - vCancelY);
+    }
   }
 }
 
@@ -89,8 +96,14 @@
     self.loadingView = [[UIView alloc] init];
     [self addSubview:_loadingView];
     _loadingView.backgroundColor = [UIColor whiteColor];
-    _loadingIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    _loadingIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+    [_loadingIndicator setColor:[UIColor grayColor]];
     [self addSubview:_loadingIndicator];
+    if ([self _isCancelAvailable]) {
+      _vCancel = [[EXAppLoadingCancelView alloc] init];
+      _vCancel.delegate = self;
+      [self addSubview:_vCancel];
+    }
   }
   _loadingIndicator.hidesWhenStopped = YES;
   [_loadingIndicator startAnimating];
@@ -103,7 +116,7 @@
 
 + (BOOL)_recordUsesSplashScreenFromNSBundle:(EXKernelAppRecord *)record
 {
-  if (record == [EXKernel sharedInstance].appRegistry.homeAppRecord) {
+  if (record && record == [EXKernel sharedInstance].appRegistry.homeAppRecord) {
     // home always uses splash
     return YES;
   } else {
@@ -172,6 +185,11 @@
   [self bringSubviewToFront:_vProgress];
 }
 
+- (BOOL)_isCancelAvailable
+{
+  return ([EXKernel sharedInstance].appRegistry.homeAppRecord != nil);
+}
+
 - (void)_hidePlaceholder
 {
   // if we used splash from NSBundle, we didn't use a placeholder in the first place
@@ -180,7 +198,19 @@
   }
   dispatch_async(dispatch_get_main_queue(), ^{
     [_loadingIndicator stopAnimating];
+    if (_vCancel) {
+      _vCancel.hidden = YES;
+    }
   });
+}
+
+#pragma mark - delegate
+
+- (void)appLoadingCancelViewDidCancel:(EXAppLoadingCancelView *)view
+{
+  if ([EXKernel sharedInstance].browserController) {
+    [[EXKernel sharedInstance].browserController moveHomeToVisible];
+  }
 }
 
 @end
