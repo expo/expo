@@ -71,7 +71,6 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
   _shellManifestUrl = nil;
   _urlScheme = nil;
   _isRemoteJSEnabled = YES;
-  _loadJSInBackgroundExperimental = NO;
   _allManifestUrls = @[];
 }
 
@@ -184,9 +183,6 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
   _isRemoteJSEnabled = (shellConfig[@"isRemoteJSEnabled"] == nil)
     ? YES
     : [shellConfig[@"isRemoteJSEnabled"] boolValue];
-  _loadJSInBackgroundExperimental = (shellConfig[@"loadJSInBackgroundExperimental"] == nil)
-    ? NO
-    : [shellConfig[@"loadJSInBackgroundExperimental"] boolValue];
   _isSplashScreenDisabled = ([shellConfig[@"isSplashScreenDisabled"] boolValue]); // we can remove this when the old loading api is dead.
   _releaseChannel = (shellConfig[@"releaseChannel"] == nil) ? @"default" : shellConfig[@"releaseChannel"];
   // other shell config goes here

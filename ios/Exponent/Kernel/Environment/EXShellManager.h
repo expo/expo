@@ -19,7 +19,6 @@ FOUNDATION_EXPORT NSString * const kEXShellManifestResourceName;
 @property (nonatomic, readonly) NSArray *allManifestUrls;
 @property (nonatomic, readonly) BOOL isManifestVerificationBypassed;
 @property (nonatomic, readonly) BOOL isRemoteJSEnabled;
-@property (nonatomic, readonly) BOOL loadJSInBackgroundExperimental;
 @property (nonatomic, readonly) BOOL isSplashScreenDisabled;
 @property (nonatomic, assign) EXTestEnvironment testEnvironment;
 
