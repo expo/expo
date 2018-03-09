@@ -1,0 +1,40 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "fullname" . }}
+  labels:
+    app: {{ template "fullname" . }}
+    heritage: {{.Release.Service | quote }}
+    release: {{.Release.Name | quote }}
+    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  minReadySeconds: 10
+  revisionHistoryLimit: 10
+  strategy:
+    type: 'RollingUpdate'
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 5
+  template:
+    metadata:
+      labels:
+        app: {{ template "fullname" . }}
+        heritage: {{.Release.Service | quote }}
+        release: {{.Release.Name | quote }}
+        chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+    spec:
+      restartPolicy: Always
+      {{- if .Values.nodeSelector }}
+      nodeSelector:
+  {{ toYaml .Values.nodeSelector | indent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 80
+            name: http
+          resources:
+{{ toYaml .Values.resources | indent 12 }}

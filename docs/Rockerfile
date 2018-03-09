@@ -1,0 +1,32 @@
+FROM gcr.io/exponentjs/node-base-builder:8.2.1-0
+
+MOUNT ../:/root/universe
+
+ENV TERM xterm-256color
+ENV PATH /root/universe/tools/bin/:$PATH
+
+RUN apk add bash tini
+
+ADD ./package.json /root/app/package.json
+ADD ./yarn.lock /root/app/yarn.lock
+
+RUN cd /root/universe/docs && \
+    echo "--- :yarn: Install dependencies" && \
+    yarn && \
+    yarn build && \
+    echo "--- Copying...." && \
+    mkdir -p /app/node_modules && \
+    cp -R ./node_modules /app/node_modules && \
+    echo "--- Cleaning up..." && \
+    rm -rf `yarn cache dir` && \
+    echo "--- Finishing build and pushing..."
+
+ADD . /app
+WORKDIR /app
+
+ENV NODE_ENV production
+
+ENTRYPOINT ["/sbin/tini", "--"]
+CMD ["./node_modules/.bin/cross-env", "NODE_ENV=production", "node", "server.js"]
+
+PUSH {{ .ImageName }}:{{ .ImageTag }}

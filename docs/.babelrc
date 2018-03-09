@@ -1,0 +1,13 @@
+{
+    "presets": [
+      "next/babel"
+    ],
+    "plugins": [
+      [
+        "transform-define",
+        "./env-config.js"
+      ],
+      "markdown-in-js/babel",
+      "babel-plugin-root-import"
+    ]
+}
