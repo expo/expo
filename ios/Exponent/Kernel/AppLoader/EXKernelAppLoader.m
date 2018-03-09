@@ -151,7 +151,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   // if we're in dev mode, don't try loading cached manifest
   if ([_httpManifestUrl.host isEqualToString:@"localhost"]) {
     // we can't pre-detect if this person is using a developer tool, but using localhost is a pretty solid indicator.
-    [self _resolveManifestAndBundleWithTimeout:0];
+    [self _resolveManifestAndBundleWithTimeout:NO length:0];
     return;
   }
   
@@ -159,54 +159,70 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   // then try to fetch new one over network
   [self _fetchManifestWithHttpUrl:_httpManifestUrl cacheBehavior:EXCachedResourceOnlyCache success:^(NSDictionary * cachedManifest) {
     _confirmedManifest = cachedManifest;
-    
+
     BOOL shouldCheckForUpdate = YES;
     int fallbackToCacheTimeout = EX_DEFAULT_TIMEOUT_LENGTH;
-    
-    id updates = _confirmedManifest[@"updates"];
-    if (updates && [updates isKindOfClass:[NSDictionary class]]) {
-      NSDictionary *updatesDict = (NSDictionary *)updates;
-      id checkAutomaticallyVal = updatesDict[@"checkAutomatically"];
-      if (checkAutomaticallyVal && [checkAutomaticallyVal isKindOfClass:[NSString class]] && [(NSString *)checkAutomaticallyVal isEqualToString:@"never"]) {
-        shouldCheckForUpdate = NO;
+
+    // in case check for dev mode failed before, check again
+    if ([self _areDevToolsEnabledWithManifest:cachedManifest]) {
+      [self _resolveManifestAndBundleWithTimeout:NO length:0];
+      return;
+    } else {
+      id updates = _confirmedManifest[@"updates"];
+      if (updates && [updates isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *updatesDict = (NSDictionary *)updates;
+        id checkAutomaticallyVal = updatesDict[@"checkAutomatically"];
+        if (checkAutomaticallyVal && [checkAutomaticallyVal isKindOfClass:[NSString class]] && [(NSString *)checkAutomaticallyVal isEqualToString:@"never"]) {
+          shouldCheckForUpdate = NO;
+        }
+
+        id fallbackToCacheTimeoutVal = updatesDict[@"fallbackToCacheTimeout"];
+        if (fallbackToCacheTimeoutVal && [fallbackToCacheTimeoutVal isKindOfClass:[NSNumber class]]) {
+          fallbackToCacheTimeout = [(NSNumber *)fallbackToCacheTimeoutVal intValue];
+        }
       }
-      
-      id fallbackToCacheTimeoutVal = updatesDict[@"fallbackToCacheTimeout"];
-      if (fallbackToCacheTimeoutVal && [fallbackToCacheTimeoutVal isKindOfClass:[NSNumber class]]) {
-        fallbackToCacheTimeout = [(NSNumber *)fallbackToCacheTimeoutVal intValue];
+
+      if (![EXKernel sharedInstance].appRegistry.standaloneAppRecord) {
+        // only support checkAutomatically: never in shell & detached apps
+        shouldCheckForUpdate = YES;
+      }
+
+      if ([[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:[self _experienceIdWithManifest:_confirmedManifest]]) {
+        // if this experience id encountered a loading error before,
+        // we should always check for an update, even if the manifest says not to
+        shouldCheckForUpdate = YES;
       }
     }
-    
-    if ([[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:[self _experienceIdWithManifest:_confirmedManifest]]) {
-      // if this experience id encountered a loading error before,
-      // we should always check for an update, even if the manifest says not to
-      shouldCheckForUpdate = YES;
-    }
-    
+
     if (shouldCheckForUpdate) {
-      [self _resolveManifestAndBundleWithTimeout:fallbackToCacheTimeout];
+      [self _resolveManifestAndBundleWithTimeout:YES length:fallbackToCacheTimeout];
     } else {
       [self _finishWithError:nil];
     }
   } failure:^(NSError * error) {
-    [self _resolveManifestAndBundleWithTimeout:EX_DEFAULT_TIMEOUT_LENGTH];
+    [self _resolveManifestAndBundleWithTimeout:YES length:EX_DEFAULT_TIMEOUT_LENGTH];
   }];
 }
 
 /**
- *  Specify zero timeout length to not use a timer, and not fall back to any cache.
+ *  Pass NO to not use a timer, and not fall back to any cache.
  */
-- (void)_resolveManifestAndBundleWithTimeout:(NSUInteger)timeoutLengthInMs
+- (void)_resolveManifestAndBundleWithTimeout:(BOOL)shouldUseTimer length:(NSUInteger)timeoutLengthInMs
 {
-  if (timeoutLengthInMs > 0 && !_timer) {
-    EXKernelAppLoader * __weak weakSelf = self;
-    _timer = [NSTimer scheduledTimerWithTimeInterval:(timeoutLengthInMs / 1000) repeats:NO block:^(NSTimer * _Nonnull timer) {
-      [weakSelf _finishWithError:nil];
-    }];
+  if (shouldUseTimer && !_timer) {
+    if (timeoutLengthInMs > 0) {
+      EXKernelAppLoader * __weak weakSelf = self;
+      _timer = [NSTimer scheduledTimerWithTimeInterval:(timeoutLengthInMs / 1000) repeats:NO block:^(NSTimer * _Nonnull timer) {
+        [weakSelf _finishWithError:nil];
+      }];
+    } else {
+      // resolve right away but continue downloading updated code in the background
+      [self _finishWithError:nil];
+    }
   }
   
   EXCachedResourceBehavior cacheBehavior = EXCachedResourceWriteToCache;
-  if (timeoutLengthInMs == 0) {
+  if (!shouldUseTimer) {
     // if we're in dev mode (meaning we should not ever fall back to cache), don't write to the cache either
     cacheBehavior = EXCachedResourceNoCache;
   }
