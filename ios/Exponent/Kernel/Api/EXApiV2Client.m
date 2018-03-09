@@ -65,6 +65,16 @@ NSString * const EXApiHttpCacheDirectory = @"kernel-www";
   return configuration;
 }
 
++ (BOOL)_canSendBodyWithHttpMethod:(NSString *)httpMethod
+{
+  static NSSet<NSString *> *httpMethodsWithBody;
+  static dispatch_once_t once;
+  dispatch_once(&once, ^{
+    httpMethodsWithBody = [NSSet setWithObjects:@"POST", @"PUT", @"PATCH", nil];
+  });
+  return [httpMethodsWithBody containsObject:httpMethod.uppercaseString];
+}
+
 - (instancetype)initWithUrlSession:(NSURLSession *)urlSession
 {
   if (self = [super init]) {
@@ -81,12 +91,19 @@ NSString * const EXApiHttpCacheDirectory = @"kernel-www";
                               completionHandler:(EXApiV2CompletionHandler)handler
 {
   NSURL *remoteMethodUrl = [NSURL URLWithString:methodPath relativeToURL:_serverUrl].absoluteURL;
+  if (arguments && ![EXApiV2Client _canSendBodyWithHttpMethod:httpMethod]) {
+    remoteMethodUrl = [self _urlFromRemoteMethodUrl:remoteMethodUrl withArguments:arguments];
+  }
+  
+  NSMutableDictionary *headers = [NSMutableDictionary dictionaryWithDictionary:@{
+                                                                                 @"accept": @"application/json",
+                                                                                 }];
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:remoteMethodUrl];
   request.timeoutInterval = 30;
   request.HTTPMethod = httpMethod;
   request.HTTPShouldHandleCookies = NO;
   
-  if (arguments) {
+  if (arguments && [EXApiV2Client _canSendBodyWithHttpMethod:httpMethod]) {
     NSError *error = nil;
     NSData *requestBody = [self _requestBodyForMethod:methodPath arguments:arguments error:&error];
     if (!requestBody) {
@@ -94,8 +111,10 @@ NSString * const EXApiHttpCacheDirectory = @"kernel-www";
       return nil;
     }
     request.HTTPBody = requestBody;
+    headers[@"content-type"] = @"application/json; charset=utf-8";
   }
   
+  request.allHTTPHeaderFields = headers;
   NSURLSessionTask *task = [_urlSession dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data,
                                                                                         NSURLResponse * _Nullable response,
                                                                                         NSError * _Nullable error) {
@@ -172,6 +191,20 @@ NSString * const EXApiHttpCacheDirectory = @"kernel-www";
   task.priority = NSURLSessionTaskPriorityHigh;
   [task resume];
   return task;
+}
+
+- (NSURL *)_urlFromRemoteMethodUrl:(NSURL *)url withArguments:(NSDictionary *)arguments
+{
+  NSURLComponents *urlComponents = [NSURLComponents componentsWithURL:url
+                                              resolvingAgainstBaseURL:YES];
+  NSMutableArray<NSURLQueryItem *> *queryItems =
+  [urlComponents.queryItems mutableCopy] ?: [NSMutableArray arrayWithCapacity:arguments.count];
+  for (NSString *parameterName in arguments) {
+    NSString *parameterValue = [arguments[parameterName] description];
+    [queryItems addObject:[NSURLQueryItem queryItemWithName:parameterName value:parameterValue]];
+  }
+  urlComponents.queryItems = queryItems;
+  return urlComponents.URL;
 }
 
 - (NSData *)_requestBodyForMethod:(NSString *)methodPath arguments:(NSDictionary *)arguments error:(NSError **)error

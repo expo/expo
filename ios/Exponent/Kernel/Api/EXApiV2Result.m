@@ -23,6 +23,12 @@ NS_ASSUME_NONNULL_BEGIN
   return _httpStatusCode >= 200 && _httpStatusCode < 300 && !_error;
 }
 
+- (NSString *)description
+{
+  return [NSString stringWithFormat:@"<%@: %p, httpStatusCode: %ld, data: %@, error: %@>",
+          NSStringFromClass([self class]), self, _httpStatusCode, _data, _error];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
