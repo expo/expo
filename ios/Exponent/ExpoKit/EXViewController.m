@@ -14,7 +14,7 @@
 - (void)viewDidLoad
 {
   [super viewDidLoad];
-  self.view.backgroundColor = [UIColor darkGrayColor];
+  self.view.backgroundColor = [UIColor whiteColor];
   [self createRootAppAndMakeVisible];
 }
 
@@ -22,8 +22,18 @@
 {
   [super viewWillLayoutSubviews];
   if (_contentViewController) {
-    _contentViewController.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height);
+    _contentViewController.view.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
   }
+}
+
+- (UIRectEdge)edgesForExtendedLayout
+{
+  return UIRectEdgeNone;
+}
+
+- (BOOL)extendedLayoutIncludesOpaqueBars
+{
+  return YES;
 }
 
 - (void)createRootAppAndMakeVisible
