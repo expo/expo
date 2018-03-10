@@ -91,9 +91,16 @@
   if (!_reactRootView
       || _reactRootView.bridge != [self _homeReactBridge]) // this can happen if the home bridge restarted for some reason (e.g. due to an error)
   {
+    if (_reactRootView) {
+      [_reactRootView removeFromSuperview];
+      _reactRootView = nil;
+    }
     _hasCalledJSLoadedNotification = NO;
     _reactRootView = [[RCTRootView alloc] initWithBridge:[self _homeReactBridge] moduleName:@"HomeMenu" initialProperties:@{}];
-    [self.view setNeedsLayout];
+    if ([self isViewLoaded]) {
+      [self.view addSubview:_reactRootView];
+      [self.view setNeedsLayout];
+    }
   }
 }
 
