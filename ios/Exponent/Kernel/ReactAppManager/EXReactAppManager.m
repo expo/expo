@@ -166,7 +166,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 - (BOOL)isReadyToLoad
 {
   if (_appRecord) {
-    return (_appRecord.appLoader.status == kEXKernelAppLoaderStatusHasManifest);
+    return (_appRecord.appLoader.status == kEXKernelAppLoaderStatusHasManifest || _appRecord.appLoader.status == kEXKernelAppLoaderStatusHasManifestAndBundle);
   }
   return NO;
 }

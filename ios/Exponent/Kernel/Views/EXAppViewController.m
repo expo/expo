@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXAppViewController () <EXReactAppManagerUIDelegate, EXKernelAppLoaderDelegate, EXErrorViewDelegate>
 
 @property (nonatomic, assign) BOOL isLoading;
+@property (nonatomic, assign) BOOL isBridgeAlreadyLoading;
 @property (nonatomic, weak) EXKernelAppRecord *appRecord;
 @property (nonatomic, strong) EXAppLoadingView *loadingView;
 @property (nonatomic, strong) EXErrorView *errorView;
@@ -125,6 +126,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)refresh
 {
   self.isLoading = YES;
+  self.isBridgeAlreadyLoading = NO;
   [self _invalidateRecoveryTimer];
   [_appRecord.appLoader request];
 }
@@ -142,6 +144,18 @@ NS_ASSUME_NONNULL_BEGIN
   [_appRecord.appManager appStateDidBecomeInactive];
 }
 
+- (void)_rebuildBridgeWithLoadingViewManifest:(NSDictionary *)manifest
+{
+  if (!self.isBridgeAlreadyLoading) {
+    self.isBridgeAlreadyLoading = YES;
+    dispatch_async(dispatch_get_main_queue(), ^{
+      _loadingView.manifest = manifest;
+      [self _enforceDesiredDeviceOrientation];
+      [self _rebuildBridge];
+    });
+  }
+}
+
 #pragma mark - EXKernelAppLoaderDelegate
 
 - (void)appLoader:(EXKernelAppLoader *)appLoader didLoadOptimisticManifest:(NSDictionary *)manifest
@@ -149,11 +163,7 @@ NS_ASSUME_NONNULL_BEGIN
   if ([EXKernel sharedInstance].browserController) {
     [[EXKernel sharedInstance].browserController addHistoryItemWithUrl:appLoader.manifestUrl manifest:manifest];
   }
-  dispatch_async(dispatch_get_main_queue(), ^{
-    _loadingView.manifest = manifest;
-    [self _enforceDesiredDeviceOrientation];
-    [self _rebuildBridge];
-  });
+  [self _rebuildBridgeWithLoadingViewManifest:manifest];
 }
 
 - (void)appLoader:(EXKernelAppLoader *)appLoader didLoadBundleWithProgress:(EXLoadingProgress *)progress
@@ -165,6 +175,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appLoader:(EXKernelAppLoader *)appLoader didFinishLoadingManifest:(NSDictionary *)manifest bundle:(NSData *)data
 {
+  [self _rebuildBridgeWithLoadingViewManifest:manifest];
   if (_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {
     [_appRecord.appManager appLoaderFinished];
   }

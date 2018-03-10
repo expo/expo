@@ -30,6 +30,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 @property (nonatomic, strong) NSError * _Nullable error;
 
 @property (nonatomic, strong) NSTimer * _Nullable timer;
+@property (nonatomic, assign) BOOL hasFinished;
 
 @end
 
@@ -64,6 +65,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   _optimisticManifest = nil;
   _error = nil;
   _bundle = nil;
+  _hasFinished = NO;
 }
 
 - (EXKernelAppLoaderStatus)status
@@ -297,6 +299,11 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 {
   [self _stopTimer];
   
+  if (_hasFinished) {
+    return;
+  }
+  _hasFinished = YES;
+
   if (_optimisticManifest) {
     // we're finishing no matter what, so discard any optimistic manifest that hasn't been confirmed yet.
     _optimisticManifest = nil;
