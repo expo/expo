@@ -82,7 +82,7 @@ typedef void(^EXRemoteNotificationAPNSTokenHandler)(NSData * _Nullable apnsToken
 
 - (void)handleRemoteNotification:(nullable NSDictionary *)notification fromBackground:(BOOL)isFromBackground
 {
-  if (![self _doesNotSupportDetachedApp]) {
+  if (![self _supportsCurrentRuntimeEnvironment]) {
     DDLogWarn(@"Expo Remote Notification services won't work in an ExpoKit app because Expo cannot manage your APNS certificates.");
   }
   if (notification) {
