@@ -36,9 +36,18 @@
 {
   [super viewDidLoad];
   self.view.backgroundColor = [UIColor whiteColor];
-  self.edgesForExtendedLayout = UIRectEdgeNone;
 
   [self.view addSubview:_reactRootView];
+}
+
+- (UIRectEdge)edgesForExtendedLayout
+{
+  return UIRectEdgeNone;
+}
+
+- (BOOL)extendedLayoutIncludesOpaqueBars
+{
+  return YES;
 }
 
 - (void)viewWillLayoutSubviews
