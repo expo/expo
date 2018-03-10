@@ -27,8 +27,7 @@
 - (instancetype)init
 {
   if (self = [super init]) {
-    _hasCalledJSLoadedNotification = NO;
-    _reactRootView = [[RCTRootView alloc] initWithBridge:[self _homeReactBridge] moduleName:@"HomeMenu" initialProperties:@{}];
+    [self _maybeRebuildRootView];
   }
   return self;
 }
@@ -51,6 +50,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
   [super viewWillAppear:animated];
+  [self _maybeRebuildRootView];
   [self _updateMenuProps];
 }
 
@@ -83,6 +83,17 @@
                                                         userInfo:@{ @"bridge": [self _homeReactBridge] }];
     [_reactRootView javaScriptDidLoad:notif];
     _hasCalledJSLoadedNotification = YES;
+  }
+}
+
+- (void)_maybeRebuildRootView
+{
+  if (!_reactRootView
+      || _reactRootView.bridge != [self _homeReactBridge]) // this can happen if the home bridge restarted for some reason (e.g. due to an error)
+  {
+    _hasCalledJSLoadedNotification = NO;
+    _reactRootView = [[RCTRootView alloc] initWithBridge:[self _homeReactBridge] moduleName:@"HomeMenu" initialProperties:@{}];
+    [self.view setNeedsLayout];
   }
 }
 
