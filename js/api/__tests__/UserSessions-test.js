@@ -12,6 +12,7 @@ jest.mock('react-native', () => {
   ReactNative.NativeModules.ExponentKernel = {
     sdkVersions: '12.0.0,11.0.0',
   };
+  ReactNative.AsyncStorage.setItem = () => {};
   return ReactNative;
 });
 global.fetch = require('node-fetch');
@@ -53,8 +54,8 @@ describe('User Authentication Flow', () => {
 
     await Auth0Api.signUpAsync(newUser);
 
-    Store.dispatch(AuthTokenActions.clearAuthTokens());
-    Store.dispatch(SessionActions.signOut());
+    await Store.dispatch(AuthTokenActions.clearAuthTokens());
+    await Store.dispatch(SessionActions.signOut());
   });
 
   afterAll(async () => {
@@ -76,8 +77,8 @@ describe('User Authentication Flow', () => {
     const { id_token, access_token, refresh_token, sessionSecret } = signinResult;
 
     // store auth and session tokens
-    Store.dispatch(SessionActions.setSession({ sessionSecret: signinResult.sessionSecret }));
-    Store.dispatch(
+    await Store.dispatch(SessionActions.setSession({ sessionSecret: signinResult.sessionSecret }));
+    await Store.dispatch(
       AuthTokenActions.setAuthTokens({
         refreshToken: signinResult.refresh_token,
         accessToken: signinResult.access_token,
@@ -106,8 +107,8 @@ describe('User Authentication Flow', () => {
     const { id_token, access_token, refresh_token, sessionSecret } = signinResult;
 
     // store auth and session tokens
-    Store.dispatch(SessionActions.setSession({ sessionSecret: signinResult.sessionSecret }));
-    Store.dispatch(
+    await Store.dispatch(SessionActions.setSession({ sessionSecret: signinResult.sessionSecret }));
+    await Store.dispatch(
       AuthTokenActions.setAuthTokens({
         refreshToken: signinResult.refresh_token,
         accessToken: signinResult.access_token,
@@ -126,7 +127,7 @@ describe('User Authentication Flow', () => {
     expect(access_token).toBe(retrievedTokens.accessToken);
     expect(sessionSecret).toBe('TEST');
     expect(sessionSecret).toBe(retrievedSession.sessionSecret);
-  }); 
+  });
 
   function createSpies() {
     return {
@@ -175,8 +176,8 @@ describe('User Authentication Flow', () => {
     });
 
     // store auth and session tokens
-    Store.dispatch(SessionActions.setSession({ sessionSecret: signinResult.sessionSecret }));
-    Store.dispatch(
+    await Store.dispatch(SessionActions.setSession({ sessionSecret: signinResult.sessionSecret }));
+    await Store.dispatch(
       AuthTokenActions.setAuthTokens({
         refreshToken: signinResult.refresh_token,
         accessToken: signinResult.access_token,
@@ -190,7 +191,7 @@ describe('User Authentication Flow', () => {
     expect(_migrateAuth0ToSessionAsync).toHaveBeenCalledTimes(0);
     expect(_signOutAsync).toHaveBeenCalledTimes(0);
     expect(_refreshIdToken).toHaveBeenCalledTimes(0);
-  }); 
+  });
 
    it('does graphQL queries correctly, using id token', async () => {
     let {
@@ -206,8 +207,8 @@ describe('User Authentication Flow', () => {
     });
 
     // store auth and session tokens
-    Store.dispatch(SessionActions.setSession({ sessionSecret: signinResult.sessionSecret }));
-    Store.dispatch(
+    await Store.dispatch(SessionActions.setSession({ sessionSecret: signinResult.sessionSecret }));
+    await Store.dispatch(
       AuthTokenActions.setAuthTokens({
         refreshToken: signinResult.refresh_token,
         accessToken: signinResult.access_token,
@@ -221,7 +222,7 @@ describe('User Authentication Flow', () => {
     expect(_migrateAuth0ToSessionAsync).toHaveBeenCalledTimes(1);
     expect(_signOutAsync).toHaveBeenCalledTimes(0);
     expect(_refreshIdToken).toHaveBeenCalledTimes(0);
-  }); 
+  });
 
   it('does graphQL queries correctly, using an expired id token with Auth0 in business', async () => {
     // sign in, request for only Auth0 tokens
@@ -230,8 +231,8 @@ describe('User Authentication Flow', () => {
     });
 
     // store auth and session tokens
-    Store.dispatch(SessionActions.setSession({ sessionSecret: signinResult.sessionSecret }));
-    Store.dispatch(
+    await Store.dispatch(SessionActions.setSession({ sessionSecret: signinResult.sessionSecret }));
+    await Store.dispatch(
       AuthTokenActions.setAuthTokens({
         refreshToken: signinResult.refresh_token,
         accessToken: signinResult.access_token,
@@ -283,8 +284,8 @@ describe('User Authentication Flow', () => {
     });
 
     // store auth and session tokens
-    Store.dispatch(SessionActions.setSession({ sessionSecret: signinResult.sessionSecret }));
-    Store.dispatch(
+    await Store.dispatch(SessionActions.setSession({ sessionSecret: signinResult.sessionSecret }));
+    await Store.dispatch(
       AuthTokenActions.setAuthTokens({
         refreshToken: signinResult.refresh_token,
         accessToken: signinResult.access_token,
@@ -322,5 +323,5 @@ describe('User Authentication Flow', () => {
     expect(_migrateAuth0ToSessionAsync).toHaveBeenCalledTimes(0);
     expect(_signOutAsync).toHaveBeenCalledTimes(1);
     expect(_refreshIdToken).toHaveBeenCalledTimes(0);
-  }); 
+  });
 });
