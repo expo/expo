@@ -220,10 +220,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 {
   if (shouldUseTimer && !_timer) {
     if (timeoutLengthInMs > 0) {
-      EXKernelAppLoader * __weak weakSelf = self;
-      _timer = [NSTimer scheduledTimerWithTimeInterval:(timeoutLengthInMs / 1000) repeats:NO block:^(NSTimer * _Nonnull timer) {
-        [weakSelf _finishWithError:nil];
-      }];
+      _timer = [NSTimer scheduledTimerWithTimeInterval:(timeoutLengthInMs / 1000) target:self selector:@selector(_finishWithError:) userInfo:nil repeats:NO];
     } else {
       // resolve right away but continue downloading updated code in the background
       [self _finishWithError:nil];
