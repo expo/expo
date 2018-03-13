@@ -60,7 +60,9 @@ typedef void(^EXRemoteNotificationAPNSTokenHandler)(NSData * _Nullable apnsToken
 
 - (void)registerAPNSToken:(nullable NSData *)token registrationError:(nullable NSError *)error
 {
-  dispatch_assert_queue(_queue);
+  if (@available(iOS 10, *)) {
+    dispatch_assert_queue(_queue);
+  }
   
   BOOL tokenDidChange = (token != _currentAPNSToken) && ![token isEqualToData:_currentAPNSToken];
   if (tokenDidChange) {
@@ -208,14 +210,18 @@ typedef void(^EXRemoteNotificationAPNSTokenHandler)(NSData * _Nullable apnsToken
 
 - (BOOL)_canRegisterForRemoteNotifications
 {
-  dispatch_assert_queue(_queue);
+  if (@available(iOS 10, *)) {
+    dispatch_assert_queue(_queue);
+  }
   
   // When the user has not granted permission to display any type of notification, iOS doesn't
   // invoke the delegate methods and registering for remote notifications will never complete
   //
   // TODO: Switch this to use UNNotificationSettings for iOS 10+. Note that UNNotificationCenter
   // is not thread-safe but can run off of the main thread (ex: a serial queue for notifications).
-  dispatch_assert_queue(dispatch_get_main_queue());
+  if (@available(iOS 10, *)) {
+    dispatch_assert_queue(dispatch_get_main_queue());
+  }
   UIUserNotificationSettings * settings = RCTSharedApplication().currentUserNotificationSettings;
   return settings.types != UIUserNotificationTypeNone;
 }
