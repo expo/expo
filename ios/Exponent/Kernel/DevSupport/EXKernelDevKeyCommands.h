@@ -2,6 +2,8 @@
 
 #import <Foundation/Foundation.h>
 
+FOUNDATION_EXPORT NSNotificationName kEXKernelDidChangeMenuBehaviorNotification;
+
 @interface EXKernelDevKeyCommands : NSObject
 
 + (instancetype)sharedInstance;
