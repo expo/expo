@@ -14,6 +14,7 @@
 #import "EXKernelDevKeyCommands.h"
 #import "EXKernelLinkingManager.h"
 #import "EXKernelServiceRegistry.h"
+#import "EXMenuGestureRecognizer.h"
 #import "EXMenuViewController.h"
 #import "EXRootViewController.h"
 
@@ -39,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
   if (self = [super init]) {
     [EXKernel sharedInstance].browserController = self;
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(_updateMenuGestureBehavior)
+                                             selector:@selector(_updateMenuButtonBehavior)
                                                  name:kEXKernelDidChangeMenuBehaviorNotification
                                                object:nil];
     [self _maybeResetNuxState];
@@ -53,6 +54,8 @@ NS_ASSUME_NONNULL_BEGIN
   _btnMenu = [[EXButtonView alloc] init];
   _btnMenu.hidden = YES;
   [self.view addSubview:_btnMenu];
+  EXMenuGestureRecognizer *menuGestureRecognizer = [[EXMenuGestureRecognizer alloc] initWithTarget:self action:@selector(_onMenuGestureRecognized:)];
+  [((EXAppDelegate *)[UIApplication sharedApplication].delegate).window addGestureRecognizer:menuGestureRecognizer];
 }
 
 - (void)viewWillLayoutSubviews
@@ -175,8 +178,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self setIsMenuVisible:YES completion:nil];
   }
   
-  // check button/gesture availability when any new app loads
-  [self _updateMenuGestureBehavior];
+  // check button availability when any new app loads
+  [self _updateMenuButtonBehavior];
 }
 
 #pragma mark - internal
@@ -303,19 +306,19 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-- (void)_updateMenuGestureBehavior
+- (void)_updateMenuButtonBehavior
 {
-  BOOL isSomeProjectOpen = NO;
-  for (EXKernelAppRecord *appRecord in [EXKernel sharedInstance].appRegistry.appEnumerator) {
-    if (appRecord != [EXKernel sharedInstance].appRegistry.homeAppRecord) {
-      isSomeProjectOpen = YES;
-      break;
-    }
-  }
-  BOOL shouldShowButton = isSomeProjectOpen && [EXKernelDevKeyCommands sharedInstance].isLegacyMenuBehaviorEnabled;
+  BOOL shouldShowButton = [[EXKernelDevKeyCommands sharedInstance] isLegacyMenuButtonAvailable];
   dispatch_async(dispatch_get_main_queue(), ^{
     _btnMenu.hidden = !shouldShowButton;
   });
+}
+
+- (void)_onMenuGestureRecognized:(EXMenuGestureRecognizer *)sender
+{
+  if (sender.state == UIGestureRecognizerStateEnded) {
+    [[EXKernel sharedInstance] switchTasks];
+  }
 }
 
 @end

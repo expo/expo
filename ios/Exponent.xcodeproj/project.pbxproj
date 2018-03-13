@@ -84,6 +84,7 @@
 		B51333431CE649FE00E9FC9E /* ExponentIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B51333421CE649FE00E9FC9E /* ExponentIntegrationTests.m */; };
 		B52217D61F146658002241BA /* EXKernelServiceRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = B52217D51F146658002241BA /* EXKernelServiceRegistry.m */; };
 		B526B5081E6A543500606CAB /* ExpoKit.m in Sources */ = {isa = PBXBuildFile; fileRef = B526B5051E6A543500606CAB /* ExpoKit.m */; };
+		B532EB672058431000569CF2 /* EXMenuGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = B532EB662058431000569CF2 /* EXMenuGestureRecognizer.m */; };
 		B54D2913205307380019411A /* EXAppLoadingCancelView.m in Sources */ = {isa = PBXBuildFile; fileRef = B54D2912205307380019411A /* EXAppLoadingCancelView.m */; };
 		B5576082204A41F90041D9C8 /* EXHomeModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B5576080204A41F90041D9C8 /* EXHomeModule.m */; };
 		B5576085204A423B0041D9C8 /* EXHomeModuleManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5576084204A423B0041D9C8 /* EXHomeModuleManager.m */; };
@@ -464,6 +465,8 @@
 		B52217D71F146686002241BA /* EXKernelService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelService.h; sourceTree = "<group>"; };
 		B526B5041E6A543500606CAB /* ExpoKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExpoKit.h; sourceTree = "<group>"; };
 		B526B5051E6A543500606CAB /* ExpoKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExpoKit.m; sourceTree = "<group>"; };
+		B532EB652058431000569CF2 /* EXMenuGestureRecognizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXMenuGestureRecognizer.h; sourceTree = "<group>"; };
+		B532EB662058431000569CF2 /* EXMenuGestureRecognizer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXMenuGestureRecognizer.m; sourceTree = "<group>"; };
 		B54D2911205307380019411A /* EXAppLoadingCancelView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAppLoadingCancelView.h; sourceTree = "<group>"; };
 		B54D2912205307380019411A /* EXAppLoadingCancelView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAppLoadingCancelView.m; sourceTree = "<group>"; };
 		B5576080204A41F90041D9C8 /* EXHomeModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXHomeModule.m; sourceTree = "<group>"; };
@@ -1194,6 +1197,8 @@
 				B56C65CE20477223002B2424 /* EXHomeDiagnosticsViewController.m */,
 				B5D52377205746E300F36C66 /* EXButtonView.h */,
 				B5D52378205746E300F36C66 /* EXButtonView.m */,
+				B532EB652058431000569CF2 /* EXMenuGestureRecognizer.h */,
+				B532EB662058431000569CF2 /* EXMenuGestureRecognizer.m */,
 			);
 			path = Menu;
 			sourceTree = "<group>";
@@ -2591,6 +2596,7 @@
 				B5FB744E1FF6DADB001C764B /* AIRGoogleMapCalloutManager.m in Sources */,
 				B5FB74BE1FF6DADC001C764B /* EXNativeAdView.m in Sources */,
 				B5A473DC204A66F70035C61C /* EXErrorView.m in Sources */,
+				B532EB672058431000569CF2 /* EXMenuGestureRecognizer.m in Sources */,
 				B5FB74C41FF6DADC001C764B /* EXGLObject.m in Sources */,
 				B5FB74A91FF6DADC001C764B /* EXGoogle.m in Sources */,
 				0726F05C2007E446004992E7 /* EXKernelAppRegistry.m in Sources */,

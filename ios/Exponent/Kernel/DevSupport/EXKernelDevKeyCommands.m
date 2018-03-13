@@ -142,6 +142,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [[NSNotificationCenter defaultCenter] postNotificationName:kEXKernelDidChangeMenuBehaviorNotification object:nil];
 }
 
+- (BOOL)isLegacyMenuButtonAvailable
+{
+    BOOL isSimulator = NO;
+#if TARGET_OS_SIMULATOR
+    isSimulator = YES;
+#endif
+  return (
+    isSimulator
+    && _isLegacyMenuBehaviorEnabled
+    && [EXKernel sharedInstance].appRegistry.appEnumerator.allObjects.count > 0
+  );
+}
+
 #pragma mark - expo dev commands
 
 - (void)_addDevCommands

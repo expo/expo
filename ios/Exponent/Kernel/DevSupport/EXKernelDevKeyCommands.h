@@ -13,4 +13,9 @@ FOUNDATION_EXPORT NSNotificationName kEXKernelDidChangeMenuBehaviorNotification;
  */
 @property (nonatomic, assign) BOOL isLegacyMenuBehaviorEnabled;
 
+/**
+ *  Whether the legacy button is available.
+ */
+@property (nonatomic, readonly) BOOL isLegacyMenuButtonAvailable;
+
 @end
