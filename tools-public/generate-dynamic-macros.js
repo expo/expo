@@ -220,6 +220,9 @@ async function generateIOSBuildConstantsFromMacrosAsync(
       config.EXPO_RUNTIME_VERSION = infoPlistContents.CFBundleVersion
         ? infoPlistContents.CFBundleVersion
         : infoPlistContents.CFBundleShortVersionString;
+      if (!config.API_SERVER_ENDPOINT) {
+        config.API_SERVER_ENDPOINT = 'https://exp.host/--/api/v2/';
+      }
       if (keys) {
         const allowedKeys = ['AMPLITUDE_KEY', 'AMPLITUDE_DEV_KEY', 'GOOGLE_MAPS_IOS_API_KEY'];
         config.DEFAULT_API_KEYS = _.pickBy(keys, (value, key) => allowedKeys.includes(key));

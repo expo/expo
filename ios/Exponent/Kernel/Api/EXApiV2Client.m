@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXApiV2Client.h"
-
+#import "EXBuildConstants.h"
 #import "EXKernelUtil.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -19,7 +19,6 @@ NSString * const EXApiHttpCacheDirectory = @"kernel-www";
 
 @interface EXApiV2Client ()
 
-@property (nonatomic, strong, readonly) NSURL *serverUrl;
 @property (nonatomic, strong, readonly) NSURLSession *urlSession;
 
 @end
@@ -71,8 +70,6 @@ NSString * const EXApiHttpCacheDirectory = @"kernel-www";
 - (instancetype)initWithUrlSession:(NSURLSession *)urlSession
 {
   if (self = [super init]) {
-    // NOTE: This may become "https://api.expo.io/v2/"
-    _serverUrl = [NSURL URLWithString:@"https://exp.host/--/api/v2/"];
     _urlSession = urlSession;
   }
   return self;
@@ -83,7 +80,8 @@ NSString * const EXApiHttpCacheDirectory = @"kernel-www";
                                      httpMethod:(NSString *)httpMethod
                               completionHandler:(EXApiV2CompletionHandler)handler
 {
-  NSURL *remoteMethodUrl = [NSURL URLWithString:methodPath relativeToURL:_serverUrl].absoluteURL;
+  NSURL *apiEndpoint = [EXBuildConstants sharedInstance].apiServerEndpoint;
+  NSURL *remoteMethodUrl = [NSURL URLWithString:methodPath relativeToURL:apiEndpoint].absoluteURL;
   if (arguments && ![EXApiV2Client _canSendBodyWithHttpMethod:httpMethod]) {
     remoteMethodUrl = [self _urlFromRemoteMethodUrl:remoteMethodUrl withArguments:arguments];
   }
