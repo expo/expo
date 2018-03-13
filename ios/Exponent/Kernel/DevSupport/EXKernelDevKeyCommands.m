@@ -11,6 +11,8 @@
 
 #import <UIKit/UIKit.h>
 
+NSNotificationName kEXKernelDidChangeMenuBehaviorNotification = @"EXKernelDidChangeMenuBehaviorNotification";
+
 @interface EXKeyCommand : NSObject <NSCopying>
 
 @property (nonatomic, strong) UIKeyCommand *keyCommand;
@@ -132,6 +134,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     [self _addDevCommands];
   }
   return self;
+}
+
+- (void)setIsLegacyMenuBehaviorEnabled:(BOOL)isLegacyMenuBehaviorEnabled
+{
+  _isLegacyMenuBehaviorEnabled = isLegacyMenuBehaviorEnabled;
+  [[NSNotificationCenter defaultCenter] postNotificationName:kEXKernelDidChangeMenuBehaviorNotification object:nil];
 }
 
 #pragma mark - expo dev commands

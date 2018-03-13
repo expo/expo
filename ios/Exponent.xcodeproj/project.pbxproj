@@ -146,6 +146,7 @@
 		B5D0D678204F4C0400DDFC99 /* EXJavaScriptResource.m in Sources */ = {isa = PBXBuildFile; fileRef = B5D0D66C204F4C0400DDFC99 /* EXJavaScriptResource.m */; };
 		B5D0D679204F4C0400DDFC99 /* EXReactAppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5D0D66F204F4C0400DDFC99 /* EXReactAppManager.m */; };
 		B5D0D67A204F4C0400DDFC99 /* EXReactAppExceptionHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B5D0D671204F4C0400DDFC99 /* EXReactAppExceptionHandler.m */; };
+		B5D52379205746E300F36C66 /* EXButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = B5D52378205746E300F36C66 /* EXButtonView.m */; };
 		B5E49B571D1346FA00AA6436 /* Exponent.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = B5E49B551D1346FA00AA6436 /* Exponent.entitlements */; };
 		B5E49B631D1347B800AA6436 /* EXSDKVersions.plist in Resources */ = {isa = PBXBuildFile; fileRef = B5E49B621D1347B800AA6436 /* EXSDKVersions.plist */; };
 		B5E49B691D1348E800AA6436 /* EXShell.plist in Resources */ = {isa = PBXBuildFile; fileRef = B5E49B671D1348E800AA6436 /* EXShell.plist */; };
@@ -586,6 +587,8 @@
 		B5D0D670204F4C0400DDFC99 /* EXReactAppManager+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "EXReactAppManager+Private.h"; sourceTree = "<group>"; };
 		B5D0D671204F4C0400DDFC99 /* EXReactAppExceptionHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXReactAppExceptionHandler.m; sourceTree = "<group>"; };
 		B5D0D672204F4C0400DDFC99 /* EXReactAppManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXReactAppManager.h; sourceTree = "<group>"; };
+		B5D52377205746E300F36C66 /* EXButtonView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXButtonView.h; sourceTree = "<group>"; };
+		B5D52378205746E300F36C66 /* EXButtonView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXButtonView.m; sourceTree = "<group>"; };
 		B5E458EC204B59B300DC2B2E /* EXAppBrowserController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAppBrowserController.h; sourceTree = "<group>"; };
 		B5E49B541D1346FA00AA6436 /* Exponent-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Exponent-Prefix.pch"; sourceTree = "<group>"; };
 		B5E49B551D1346FA00AA6436 /* Exponent.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Exponent.entitlements; sourceTree = "<group>"; };
@@ -1189,6 +1192,8 @@
 				B56C65CB204769F9002B2424 /* EXMenuViewController.m */,
 				B56C65CD20477223002B2424 /* EXHomeDiagnosticsViewController.h */,
 				B56C65CE20477223002B2424 /* EXHomeDiagnosticsViewController.m */,
+				B5D52377205746E300F36C66 /* EXButtonView.h */,
+				B5D52378205746E300F36C66 /* EXButtonView.m */,
 			);
 			path = Menu;
 			sourceTree = "<group>";
@@ -2508,6 +2513,7 @@
 				B5FB74CE1FF6DADC001C764B /* EXPermissions.m in Sources */,
 				B5D0D677204F4C0400DDFC99 /* EXFileDownloader.m in Sources */,
 				B5FB74681FF6DADB001C764B /* AIRMapPolyline.m in Sources */,
+				B5D52379205746E300F36C66 /* EXButtonView.m in Sources */,
 				B5D0D678204F4C0400DDFC99 /* EXJavaScriptResource.m in Sources */,
 				B5BC7B1C1FF6DA7B00F102C1 /* EXFaceDetectorPointTransformCalculator.m in Sources */,
 				B5FB74A11FF6DADC001C764B /* EXConstants.m in Sources */,

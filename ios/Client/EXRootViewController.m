@@ -4,12 +4,14 @@
 
 #import "EXAppDelegate.h"
 #import "EXAppViewController.h"
+#import "EXButtonView.h"
 #import "EXHomeAppManager.h"
 #import "EXHomeDiagnosticsViewController.h"
 #import "EXKernel.h"
 #import "EXKernelAppLoader.h"
 #import "EXKernelAppRecord.h"
 #import "EXKernelAppRegistry.h"
+#import "EXKernelDevKeyCommands.h"
 #import "EXKernelLinkingManager.h"
 #import "EXKernelServiceRegistry.h"
 #import "EXMenuViewController.h"
@@ -26,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL isMenuVisible;
 @property (nonatomic, assign) BOOL isAnimatingMenu;
 @property (nonatomic, assign) BOOL isAnimatingAppTransition;
+@property (nonatomic, strong) EXButtonView *btnMenu;
 
 @end
 
@@ -35,9 +38,29 @@ NS_ASSUME_NONNULL_BEGIN
 {
   if (self = [super init]) {
     [EXKernel sharedInstance].browserController = self;
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(_updateMenuGestureBehavior)
+                                                 name:kEXKernelDidChangeMenuBehaviorNotification
+                                               object:nil];
     [self _maybeResetNuxState];
   }
   return self;
+}
+
+- (void)viewDidLoad
+{
+  [super viewDidLoad];
+  _btnMenu = [[EXButtonView alloc] init];
+  _btnMenu.hidden = YES;
+  [self.view addSubview:_btnMenu];
+}
+
+- (void)viewWillLayoutSubviews
+{
+  [super viewWillLayoutSubviews];
+  _btnMenu.frame = CGRectMake(0, 0, 48.0f, 48.0f);
+  _btnMenu.center = CGPointMake(self.view.frame.size.width - 36.0f, self.view.frame.size.height - 72.0f);
+  [self.view bringSubviewToFront:_btnMenu];
 }
 
 #pragma mark - EXViewController
@@ -151,6 +174,9 @@ NS_ASSUME_NONNULL_BEGIN
       && !self.isMenuVisible) {
     [self setIsMenuVisible:YES completion:nil];
   }
+  
+  // check button/gesture availability when any new app loads
+  [self _updateMenuGestureBehavior];
 }
 
 #pragma mark - internal
@@ -275,6 +301,21 @@ NS_ASSUME_NONNULL_BEGIN
     [self setIsNuxFinished:YES];
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:kEXHomeDisableNuxDefaultsKey];
   }
+}
+
+- (void)_updateMenuGestureBehavior
+{
+  BOOL isSomeProjectOpen = NO;
+  for (EXKernelAppRecord *appRecord in [EXKernel sharedInstance].appRegistry.appEnumerator) {
+    if (appRecord != [EXKernel sharedInstance].appRegistry.homeAppRecord) {
+      isSomeProjectOpen = YES;
+      break;
+    }
+  }
+  BOOL shouldShowButton = isSomeProjectOpen && [EXKernelDevKeyCommands sharedInstance].isLegacyMenuBehaviorEnabled;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    _btnMenu.hidden = !shouldShowButton;
+  });
 }
 
 @end
