@@ -101,9 +101,13 @@ NS_ASSUME_NONNULL_BEGIN
     [self.presentedViewController dismissViewControllerAnimated:NO completion:nil];
   }
   
-  if (!_isAnimatingMenu && isMenuVisible != _isMenuVisible) {
-    _isMenuVisible = isMenuVisible;
-    [self _animateMenuToVisible:_isMenuVisible completion:completion];
+  if (isMenuVisible != _isMenuVisible) {
+    if (!_isAnimatingMenu) {
+      _isMenuVisible = isMenuVisible;
+      [self _animateMenuToVisible:_isMenuVisible completion:completion];
+    }
+  } else {
+    completion();
   }
 }
 
