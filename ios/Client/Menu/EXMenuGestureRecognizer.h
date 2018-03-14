@@ -8,4 +8,6 @@
  */
 + (BOOL)isLegacyMenuGestureAvailable;
 
++ (NSTimeInterval)longPressDuration;
+
 @end
