@@ -1,0 +1,86 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: docs
+  namespace: ${ENVIRONMENT}
+  labels:
+    app: docs
+    heritage: "Tiller"
+    release: docs
+    chart: "next-docs-1.0.0"
+spec:
+  replicas: ${REPLICAS}
+  minReadySeconds: 10
+  revisionHistoryLimit: 10
+  strategy:
+    type: "RollingUpdate"
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 5
+  template:
+    metadata:
+      labels:
+        app: docs
+        heritage: "Tiller"
+        release: docs
+        chart: "next-docs-1.0.0"
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: next-docs
+          image: "gcr.io/exponentjs/exponent-docs-v2:${TAG}"
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 80
+            name: http
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: docs
+  namespace: ${ENVIRONMENT}
+  labels:
+    app: docs
+    heritage: "Tiller"
+    release: docs
+    chart: "next-docs-1.0.0"
+spec:
+  selector:
+    app: docs
+  ports:
+  - name: http
+    port: 80
+    targetPort: 3000
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: docs
+  namespace: ${ENVIRONMENT}
+  labels:
+    app: docs
+    heritage: "Tiller"
+    release: docs
+    chart: "next-docs-1.0.0"
+    ssl: "true"
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    kubernetes.io/tls-acme: "true"
+spec:
+  tls:
+  - hosts:
+    - ${INGRESS_HOSTNAME}
+    secretName: docs-tls
+  rules:
+    - host: ${INGRESS_HOSTNAME}
+      http:
+        paths:
+        - backend:
+            serviceName: docs
+            servicePort: 80
+          path: /
