@@ -7,7 +7,6 @@ const gulp = require('gulp');
 const shell = require('gulp-shell');
 const minimist = require('minimist');
 const path = require('path');
-const username = require('username');
 const { IosIcons, IosShellApp, AndroidShellApp } = require('xdl');
 
 const { startReactNativeServer } = require('./react-native-tasks');
@@ -16,8 +15,7 @@ const {
   cleanupDynamicMacrosAsync,
   runFabricIOSAsync,
 } = require('./generate-dynamic-macros');
-
-const { createIOSShellAppAsync } = IosShellApp;
+const logger = require('./logger');
 
 const ptool = './ptool';
 const _projects = './_projects';
@@ -96,10 +94,13 @@ function updateAndroidShellAppWithArguments() {
 
 function createIOSShellAppWithArguments() {
   const { resizeIconWithSharpAsync, getImageDimensionsWithSharpAsync } = require('./image-helpers');
-  console.log('IosIcons: setting image functions to alternative sharp implementations');
+  logger.info(
+    { buildPhase: 'icons setup' },
+    'IosIcons: setting image functions to alternative sharp implementations'
+  );
   IosIcons.setResizeImageFunction(resizeIconWithSharpAsync);
   IosIcons.setGetImageDimensionsFunction(getImageDimensionsWithSharpAsync);
-  return createIOSShellAppAsync(argv);
+  return IosShellApp.createIOSShellAppAsync(argv);
 }
 
 let watcher = null;
