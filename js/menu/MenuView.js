@@ -27,9 +27,7 @@ import requestCameraPermissionsAsync from '../utils/requestCameraPermissionsAsyn
 
 const { ExponentKernel } = NativeModules;
 
-const SCREEN_WIDTH = Dimensions.get('window').width,
-      SCREEN_HEIGHT = Dimensions.get('window').height;
-let MENU_NARROW_SCREEN = SCREEN_WIDTH < 375;
+let MENU_NARROW_SCREEN = Dimensions.get('window').width < 375;
 
 export default class MenuView extends React.Component {
   constructor(props, context) {
@@ -110,8 +108,13 @@ export default class MenuView extends React.Component {
       });
     }
 
+    const screenStyles = {
+      width: Dimensions.get('window').width,
+      height: Dimensions.get('window').height,
+    };
+
     return (
-      <BlurView style={styles.container} tint="light" intensity={85}>
+      <BlurView style={[styles.container, screenStyles]} tint="light" intensity={85}>
         <StatusBar barStyle="default" />
         <ScrollView style={styles.overlay}>
           {this.state.isNuxFinished ? this._renderTaskInfoRow() : this._renderNUXRow()}
@@ -359,8 +362,6 @@ export default class MenuView extends React.Component {
 let styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: SCREEN_WIDTH,
-    height: SCREEN_HEIGHT,
   },
   overlay: {
     flex: 1,
