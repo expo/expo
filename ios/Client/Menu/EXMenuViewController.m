@@ -5,6 +5,7 @@
 #import "EXKernelAppRegistry.h"
 #import "EXReactAppManager.h"
 #import "EXUtil.h"
+#import "EXScreenOrientationManager.h"
 
 #import <React/RCTRootView.h>
 
@@ -53,7 +54,7 @@
 - (void)viewWillLayoutSubviews
 {
   [super viewWillLayoutSubviews];
-  _reactRootView.frame = self.view.bounds;
+  _reactRootView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -61,6 +62,16 @@
   [super viewWillAppear:animated];
   [self _maybeRebuildRootView];
   [self _updateMenuProps];
+}
+
+- (BOOL)shouldAutorotate
+{
+  return YES;
+}
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+  return [[EXKernel sharedInstance].serviceRegistry.screenOrientationManager supportedInterfaceOrientationsForVisibleApp];
 }
 
 #pragma mark - internal
