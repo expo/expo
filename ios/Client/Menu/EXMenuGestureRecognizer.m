@@ -11,6 +11,10 @@ const CGFloat kEXForceTouchCaptureThreshold = 0.85;
 @interface EXMenuGestureRecognizer () <UIGestureRecognizerDelegate>
 
 @property (nonatomic, strong) NSMutableSet<UITouch *> *touches;
+@property (nonatomic, assign) BOOL usesForceTouch;
+
+@property (nonatomic, strong) NSDate *dtmLongPressBegan;
+@property (nonatomic, strong) NSTimer *tmrLongPress;
 
 @end
 
@@ -19,6 +23,7 @@ const CGFloat kEXForceTouchCaptureThreshold = 0.85;
 - (instancetype)initWithTarget:(id)target action:(SEL)action
 {
   if ((self = [super initWithTarget:target action:action])) {
+    _usesForceTouch = RCTForceTouchAvailable();
     self.cancelsTouchesInView = NO;
     self.delaysTouchesBegan = NO;
     self.delaysTouchesEnded = NO;
@@ -42,7 +47,12 @@ const CGFloat kEXForceTouchCaptureThreshold = 0.85;
   );
 }
 
-#pragma mark - `UIResponder`-ish touch-delivery methods
++ (NSTimeInterval)longPressDuration
+{
+  return 0.4f;
+}
+
+#pragma mark - UIGestureRecognizer lifecycle
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
@@ -90,7 +100,77 @@ shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecog
   return [self canBePreventedByGestureRecognizer:otherGestureRecognizer];
 }
 
-#pragma mark - internal
+#pragma mark - analyzing the current gesture
+
+- (void)_updateStateWithActiveTouches
+{
+  [self _triageTouches];
+  UIGestureRecognizerState finalState = UIGestureRecognizerStateCancelled;
+  if ([[self class] isLegacyMenuGestureAvailable]) {
+    if (_usesForceTouch) {
+      finalState = [self _stateFromActiveTouchesUsingForceTouch];
+    } else {
+      finalState = [self _stateFromActiveTouchesUsingLongPress];
+    }
+  }
+  self.state = finalState;
+}
+
+- (UIGestureRecognizerState)_stateFromActiveTouchesUsingForceTouch
+{
+  UIGestureRecognizerState finalState = UIGestureRecognizerStatePossible;
+  CGFloat avgForce = [self _forceFromTouches];
+  if (_touches.count == 2 && avgForce > kEXForceTouchCaptureThreshold) {
+    if (self.state == UIGestureRecognizerStatePossible || self.state == UIGestureRecognizerStateCancelled) {
+      finalState = UIGestureRecognizerStateBegan;
+    } else {
+      finalState = UIGestureRecognizerStateChanged;
+    }
+    // if force exceeds higher threshold, complete gesture
+    if (avgForce > kEXForceTouchSwitchThreshold) {
+      finalState = UIGestureRecognizerStateEnded;
+    }
+  } else {
+    // not 2 touches, or not within force threshold
+    if (self.state != UIGestureRecognizerStatePossible) {
+      finalState = UIGestureRecognizerStateCancelled;
+    }
+  }
+  return finalState;
+}
+
+- (UIGestureRecognizerState)_stateFromActiveTouchesUsingLongPress
+{
+  UIGestureRecognizerState finalState = UIGestureRecognizerStatePossible;
+  if (_touches.count == 2) {
+    NSDate *now = [NSDate date];
+    if (self.state == UIGestureRecognizerStatePossible || self.state == UIGestureRecognizerStateCancelled) {
+      finalState = UIGestureRecognizerStateBegan;
+      _dtmLongPressBegan = now;
+      _tmrLongPress = [NSTimer scheduledTimerWithTimeInterval:[[self class] longPressDuration]
+                                                       target:self
+                                                     selector:@selector(_updateStateWithActiveTouches)
+                                                     userInfo:nil
+                                                      repeats:NO];
+    } else {
+      finalState = UIGestureRecognizerStateChanged;
+    }
+    // if long press lasts long enough, complete gesture
+    if ([now timeIntervalSinceDate:_dtmLongPressBegan] > [[self class] longPressDuration]) {
+      finalState = UIGestureRecognizerStateEnded;
+      [self _invalidateLongPress];
+    }
+  } else {
+    // not 2 touches
+    if (self.state != UIGestureRecognizerStatePossible) {
+      finalState = UIGestureRecognizerStateCancelled;
+    }
+    [self _invalidateLongPress];
+  }
+  return finalState;
+}
+
+#pragma mark - internal utility
 
 - (void)_addTouches:(NSSet<UITouch *> *)touches
 {
@@ -107,34 +187,6 @@ shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecog
   for (UITouch *touch in touches) {
     [_touches removeObject:touch];
   }
-}
-
-- (void)_updateStateWithActiveTouches
-{
-  [self _triageTouches];
-  UIGestureRecognizerState finalState = UIGestureRecognizerStateCancelled;
-  if ([[self class] isLegacyMenuGestureAvailable]) {
-    finalState = UIGestureRecognizerStatePossible;
-    CGFloat avgForce = [self _forceFromTouches];
-    if (_touches.count == 2 && avgForce > kEXForceTouchCaptureThreshold) {
-      if (self.state == UIGestureRecognizerStatePossible || self.state == UIGestureRecognizerStateCancelled) {
-        finalState = UIGestureRecognizerStateBegan;
-      } else {
-        finalState = UIGestureRecognizerStateChanged;
-      }
-      // if force exceeds higher threshold,
-      // switch tasks / complete gesture
-      if (avgForce > kEXForceTouchSwitchThreshold) {
-        finalState = UIGestureRecognizerStateEnded;
-      }
-    } else {
-      // not 2 touches, or not within force threshold
-      if (self.state != UIGestureRecognizerStatePossible) {
-        finalState = UIGestureRecognizerStateCancelled;
-      }
-    }
-  }
-  self.state = finalState;
 }
 
 - (void)_triageTouches
@@ -156,7 +208,7 @@ shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecog
 
 - (CGFloat)_forceFromTouches
 {
-  if (RCTForceTouchAvailable()) {
+  if (_usesForceTouch) {
     CGFloat forceSum = 0;
     for (UITouch *touch in _touches) {
       forceSum += RCTZeroIfNaN(touch.force / touch.maximumPossibleForce);
@@ -164,6 +216,15 @@ shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecog
     return forceSum / (CGFloat)_touches.count;
   }
   return 0;
+}
+
+- (void)_invalidateLongPress
+{
+  _dtmLongPressBegan = nil;
+  if (_tmrLongPress) {
+    [_tmrLongPress invalidate];
+    _tmrLongPress = nil;
+  }
 }
 
 + (BOOL)allTouchesAreCancelledOrEnded:(NSSet<UITouch *> *)touches
