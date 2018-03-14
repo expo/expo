@@ -16,7 +16,4 @@ const LATEST_VERSION =
     ? window._LATEST_VERSION
     : process.env.LATEST_VERSION;
 
-module.exports = {
-  VERSIONS,
-  LATEST_VERSION,
-};
+export { VERSIONS, LATEST_VERSION };
