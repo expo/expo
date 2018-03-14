@@ -60,7 +60,6 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
   ExponentNetwork mExponentNetwork;
 
   private static Map<String, ExponentKernelModuleProvider.KernelEventCallback> sKernelEventCallbacks = new HashMap<>();
-  private boolean mIsLoaded = false;
 
   public ExponentKernelModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -109,10 +108,6 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
     }
   }
 
-  public static boolean isLoaded() {
-    return sInstance != null && sInstance.mIsLoaded;
-  }
-
   @Override
   public String getName() {
     return "ExponentKernel";
@@ -120,7 +115,7 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
 
   @Override
   public void consumeEventQueue() {
-    if (!mIsLoaded || ExponentKernelModuleProvider.sEventQueue.size() == 0) {
+    if (ExponentKernelModuleProvider.sEventQueue.size() == 0) {
       return;
     }
 
@@ -137,12 +132,6 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
         .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
         .emit(event.name, event.data);
 
-    consumeEventQueue();
-  }
-
-  @ReactMethod
-  public void onLoaded() {
-    mIsLoaded = true;
     consumeEventQueue();
   }
 

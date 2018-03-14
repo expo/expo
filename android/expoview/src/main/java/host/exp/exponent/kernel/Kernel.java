@@ -591,8 +591,6 @@ public class Kernel extends KernelInterface {
       return;
     }
 
-    ExponentKernelModuleProvider.queueEvent("ExponentKernel.clearConsole", Arguments.createMap(), null);
-
     final List<ActivityManager.AppTask> tasks = getExperienceActivityTasks();
     ActivityManager.AppTask existingTask = null;
     if (tasks != null) {
@@ -689,16 +687,15 @@ public class Kernel extends KernelInterface {
     WritableMap params = Arguments.createMap();
     params.putString("manifestUrl", manifestUrl);
     params.putString("manifestString", manifest.toString());
-    params.putString("bundleUrl", bundleUrl);
-    ExponentKernelModuleProvider.queueEvent("ExponentKernel.openManifestUrl", params, new ExponentKernelModuleProvider.KernelEventCallback() {
+    ExponentKernelModuleProvider.queueEvent("ExponentKernel.addHistoryItem", params, new ExponentKernelModuleProvider.KernelEventCallback() {
       @Override
       public void onEventSuccess(ReadableMap result) {
-        EXL.d(TAG, "Successfully called ExponentKernel.openManifestUrl in kernel JS.");
+        EXL.d(TAG, "Successfully called ExponentKernel.addHistoryItem in kernel JS.");
       }
 
       @Override
       public void onEventFailure(String errorMessage) {
-        EXL.e(TAG, "Error calling ExponentKernel.openManifestUrl in kernel JS: " + errorMessage);
+        EXL.e(TAG, "Error calling ExponentKernel.addHistoryItem in kernel JS: " + errorMessage);
       }
     });
 

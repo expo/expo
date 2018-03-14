@@ -63,13 +63,16 @@ export default class ProjectsScreen extends React.Component {
   }
 
   componentDidMount() {
-    addListenerWithNativeCallback('ExponentKernel.showQRReader', async (event) => {
+    addListenerWithNativeCallback('ExponentKernel.showQRReader', async event => {
       this.props.navigation.showModal('qrCode');
       return { success: true };
     });
 
-    addListenerWithNativeCallback('ExponentKernel.addHistoryItem', async (event) => {
-      const { manifestUrl, manifest } = event;
+    addListenerWithNativeCallback('ExponentKernel.addHistoryItem', async event => {
+      let { manifestUrl, manifest, manifestString } = event;
+      if (!manifest && manifestString) {
+        manifest = JSON.parse(manifestString);
+      }
       Store.dispatch(HistoryActions.addHistoryItem(manifestUrl, manifest));
     });
   }
