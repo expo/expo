@@ -25,4 +25,4 @@ Expo.Font.loadAsync({
 
 #### Returns
 
-Doesn't return anything and simply awaits till all fonts are available to use.
+Returns a promise. The promise will be resolved when the fonts have finished loading.
