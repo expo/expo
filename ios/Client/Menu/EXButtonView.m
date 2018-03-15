@@ -33,7 +33,7 @@
   [_button addTarget:self action:@selector(_onTouchEnd)
     forControlEvents:UIControlEventTouchUpInside | UIControlEventTouchUpOutside | UIControlEventTouchCancel];
   [_button addTarget:self action:@selector(_onPress) forControlEvents:UIControlEventTouchUpInside];
-  _button.layer.borderColor = [UIColor blackColor].CGColor;
+  _button.layer.borderColor = [UIColor lightGrayColor].CGColor;
   _button.layer.borderWidth = 1.0f;
   _button.backgroundColor = [UIColor whiteColor];
   [self addSubview:_button];
