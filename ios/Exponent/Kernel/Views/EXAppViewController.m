@@ -98,16 +98,17 @@ NS_ASSUME_NONNULL_BEGIN
   if ([self _willAutoRecoverFromError:error]) {
     return;
   }
-  BOOL isNetworkError = ([error.domain isEqualToString:(NSString *)kCFErrorDomainCFNetwork] ||
-                         [error.domain isEqualToString:EXNetworkErrorDomain]);
+  NSString *domain = (error && error.domain) ? error.domain : @"";
+  BOOL isNetworkError = ([domain isEqualToString:(NSString *)kCFErrorDomainCFNetwork] || [domain isEqualToString:EXNetworkErrorDomain]);
+
   if (isNetworkError) {
     // show a human-readable reachability error
     dispatch_async(dispatch_get_main_queue(), ^{
       [self _showErrorWithType:kEXFatalErrorTypeLoading error:error];
     });
-  } else if ([error.domain isEqualToString:@"JSServer"] && [_appRecord.appManager enablesDeveloperTools]) {
+  } else if ([domain isEqualToString:@"JSServer"] && [_appRecord.appManager enablesDeveloperTools]) {
     // RCTRedBox already handled this
-  } else if ([error.domain rangeOfString:RCTErrorDomain].length > 0 && [_appRecord.appManager enablesDeveloperTools]) {
+  } else if ([domain rangeOfString:RCTErrorDomain].length > 0 && [_appRecord.appManager enablesDeveloperTools]) {
     // RCTRedBox already handled this
   } else {
     dispatch_async(dispatch_get_main_queue(), ^{
