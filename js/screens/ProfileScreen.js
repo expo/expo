@@ -112,7 +112,6 @@ class SignOutButtonAndroid extends React.Component {
       () => {},
       (action, selectedIndex) => {
         if (selectedIndex === 0) {
-          this.props.dispatch(AuthTokenActions.signOut());
           this.props.dispatch(AuthTokenActions.clearAuthTokens());
           this.props.dispatch(SessionActions.signOut());
         }
@@ -187,7 +186,8 @@ class SignOutButtonIOS extends React.Component {
   }
 
   _handlePress = () => {
-    this.props.dispatch(AuthTokenActions.signOut());
+    this.props.dispatch(AuthTokenActions.clearAuthTokens());
+    this.props.dispatch(SessionActions.signOut());
   };
 }
 
