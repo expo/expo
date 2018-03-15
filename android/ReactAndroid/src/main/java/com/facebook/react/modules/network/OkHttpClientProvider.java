@@ -28,6 +28,14 @@ public class OkHttpClientProvider {
     @Nullable
     public static OkHttpClient sClient;
 
+    // User-provided OkHttpClient factory
+    @Nullable
+    public static OkHttpClientFactory sFactory;
+
+    public static void setOkHttpClientFactory(OkHttpClientFactory factory) {
+        sFactory = factory;
+    }
+
     public static OkHttpClient getOkHttpClient() {
         if (sClient == null) {
             sClient = createClient();
