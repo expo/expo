@@ -67,7 +67,6 @@ const NSTimeInterval kEXTimeUntilCancelAppears = 5.0f;
   [self addSubview:_btnCancel];
   
   _lblAdvice.hidden = YES;
-  _btnCancel.hidden = YES;
   _tmrShowCancel = [NSTimer scheduledTimerWithTimeInterval:kEXTimeUntilCancelAppears
                                                     target:self
                                                   selector:@selector(_onCancelTimerFinished)
@@ -97,7 +96,6 @@ const NSTimeInterval kEXTimeUntilCancelAppears = 5.0f;
 {
   [self _invalidateTimer];
   _lblAdvice.hidden = NO;
-  _btnCancel.hidden = NO;
 }
 
 @end
