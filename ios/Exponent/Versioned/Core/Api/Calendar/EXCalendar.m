@@ -182,7 +182,10 @@ RCT_EXPORT_METHOD(getEventByIdAsync:(NSString *)eventId startDate:(NSDate *)star
 RCT_EXPORT_METHOD(saveEventAsync:(NSDictionary *)details options:(NSDictionary *)options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
   EKEvent *calendarEvent = nil;
-  NSString *calendarId = [RCTConvert NSString:details[@"calendarId"]];
+  NSString *calendarId;
+  if (details[@"calendarId"]) {
+    calendarId = [RCTConvert NSString:details[@"calendarId"]];
+  }
   NSString *eventId = [RCTConvert NSString:details[@"id"]];
   NSString *title = [RCTConvert NSString:details[@"title"]];
   NSString *location = [RCTConvert NSString:details[@"location"]];
@@ -427,7 +430,10 @@ RCT_EXPORT_METHOD(getReminderByIdAsync:(NSString *)reminderId resolver:(RCTPromi
 RCT_EXPORT_METHOD(saveReminderAsync:(NSDictionary *)details resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
   EKReminder *reminder = nil;
-  NSString *calendarId = [RCTConvert NSString:details[@"calendarId"]];
+  NSString *calendarId;
+  if (details[@"calendarId"]) {
+    calendarId = [RCTConvert NSString:details[@"calendarId"]];
+  }
   NSString *reminderId = [RCTConvert NSString:details[@"id"]];
   NSDate *startDate = [RCTConvert NSDate:details[@"startDate"]];
   NSDate *dueDate = [RCTConvert NSDate:details[@"dueDate"]];
