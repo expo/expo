@@ -183,7 +183,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
     if (updates && [updates isKindOfClass:[NSDictionary class]]) {
       NSDictionary *updatesDict = (NSDictionary *)updates;
       id checkAutomaticallyVal = updatesDict[@"checkAutomatically"];
-      if (checkAutomaticallyVal && [checkAutomaticallyVal isKindOfClass:[NSString class]] && [(NSString *)checkAutomaticallyVal isEqualToString:@"onErrorRecovery"]) {
+      if (checkAutomaticallyVal && [checkAutomaticallyVal isKindOfClass:[NSString class]] && [(NSString *)checkAutomaticallyVal isEqualToString:@"ON_ERROR_RECOVERY"]) {
         shouldCheckForUpdate = NO;
       }
 
@@ -194,14 +194,14 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
     } else if (ios && [ios isKindOfClass:[NSDictionary class]]) {
       NSDictionary *iosDict = (NSDictionary *)ios;
       // map loadJSInBackgroundExperimental internally to
-      // checkAutomatically: onLoad and fallbackToCacheTimeout: 0
+      // checkAutomatically: ON_LOAD and fallbackToCacheTimeout: 0
       if (iosDict[@"loadJSInBackgroundExperimental"]) {
         shouldCheckForUpdate = YES;
         fallbackToCacheTimeout = 0;
       }
     }
 
-    // only support checkAutomatically: onErrorRecovery in shell & detached apps
+    // only support checkAutomatically: ON_ERROR_RECOVERY in shell & detached apps
     if (![EXKernel sharedInstance].appRegistry.standaloneAppRecord) {
       shouldCheckForUpdate = YES;
     }
