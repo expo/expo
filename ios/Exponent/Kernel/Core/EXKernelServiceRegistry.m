@@ -13,6 +13,7 @@
 #import "EXRemoteNotificationManager.h"
 #import "EXScreenOrientationManager.h"
 #import "EXSensorManager.h"
+#import "EXAudioSessionManager.h"
 #import "EXUpdatesManager.h"
 
 @interface EXKernelServiceRegistry ()
@@ -27,6 +28,7 @@
 @property (nonatomic, strong) EXRemoteNotificationManager *remoteNotificationManager;
 @property (nonatomic, strong) EXScreenOrientationManager *screenOrientationManager;
 @property (nonatomic, strong) EXSensorManager *sensorManager;
+@property (nonatomic, strong) EXAudioSessionManager *audioSessionManager;
 @property (nonatomic, strong) EXUpdatesManager *updatesManager;
 @property (nonatomic, strong) NSDictionary<NSString *, id> *allServices;
 
@@ -48,6 +50,7 @@
     [self googleAuthManager];
     [self sensorManager];
     [self fileSystemManager];
+    [self audioSessionManager];
     [self updatesManager];
   }
   return self;
@@ -133,6 +136,14 @@
   return _sensorManager;
 }
 
+- (EXAudioSessionManager *)audioSessionManager
+{
+  if (!_audioSessionManager) {
+    _audioSessionManager = [[EXAudioSessionManager alloc] init];
+  }
+  return _audioSessionManager;
+}
+
 - (EXUpdatesManager *)updatesManager
 {
   if (!_updatesManager) {
@@ -145,7 +156,7 @@
 {
   if (!_allServices) {
     NSMutableDictionary *result = [NSMutableDictionary dictionary];
-    for (id service in @[ self.branchManager, self.cachedResourceManager, self.errorRecoveryManager, self.fileSystemManager, self.googleAuthManager, self.homeModuleManager, self.linkingManager, self.remoteNotificationManager, self.screenOrientationManager, self.sensorManager, self.updatesManager ]) {
+    for (id service in @[ self.branchManager, self.cachedResourceManager, self.errorRecoveryManager, self.fileSystemManager, self.googleAuthManager, self.homeModuleManager, self.linkingManager, self.remoteNotificationManager, self.screenOrientationManager, self.sensorManager, self.updatesManager, self.audioSessionManager ]) {
       NSString *className = NSStringFromClass([service class]);
       result[className] = service;
     }
