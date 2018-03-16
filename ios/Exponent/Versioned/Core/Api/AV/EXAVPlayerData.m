@@ -566,6 +566,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
           // If the player is looping, we would only like to advance to next item (which is handled by actionAtItemEnd)
           if (!strongSelfInner.isLooping) {
             [strongSelfInner.player pause];
+            strongSelfInner.shouldPlay = NO;
             __strong EXAV *strongEXAVInner = strongSelfInner.exAV;
             if (strongEXAVInner) {
               [strongEXAVInner demoteAudioSessionIfPossible];

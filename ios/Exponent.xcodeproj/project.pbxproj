@@ -20,6 +20,7 @@
 		19B2EF751FB25A1A003F2E1B /* EXCachedResourceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 19B2EF741FB25A1A003F2E1B /* EXCachedResourceManager.m */; };
 		200C29ED1855EF40345E4BA2 /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B84B3DEFB2C488FAE7279AD /* libPods-ExponentIntegrationTests.a */; };
 		317123572003B2F600600AED /* EXLocalNotificationRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 317123562003B2F600600AED /* EXLocalNotificationRequester.m */; };
+		31827BF5203CF0C000A12E65 /* EXAudioSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31827BF4203CF0C000A12E65 /* EXAudioSessionManager.m */; };
 		3CDB94EB202AE8900039E406 /* EXPrint.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CDB94EA202AE8900039E406 /* EXPrint.m */; };
 		3CE707941F6A725100255742 /* EXSensorManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CE707931F6A725100255742 /* EXSensorManager.m */; };
 		3CEBDC411FFBC73E0025EF24 /* EXMailComposer.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CEBDC401FFBC73D0025EF24 /* EXMailComposer.m */; };
@@ -336,6 +337,8 @@
 		1B1D1884419563A8205AED29 /* libPods-Exponent.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Exponent.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		317123552003B2F600600AED /* EXLocalNotificationRequester.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXLocalNotificationRequester.h; sourceTree = "<group>"; };
 		317123562003B2F600600AED /* EXLocalNotificationRequester.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXLocalNotificationRequester.m; sourceTree = "<group>"; };
+		31827BF4203CF0C000A12E65 /* EXAudioSessionManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAudioSessionManager.m; sourceTree = "<group>"; };
+		31827BF6203CF0E000A12E65 /* EXAudioSessionManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAudioSessionManager.h; sourceTree = "<group>"; };
 		34B965207078EF139F54C545 /* Pods-ExponentIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
 		3CDB94E9202AE82D0039E406 /* EXPrint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXPrint.h; sourceTree = "<group>"; };
 		3CDB94EA202AE8900039E406 /* EXPrint.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXPrint.m; sourceTree = "<group>"; };
@@ -1367,6 +1370,8 @@
 			isa = PBXGroup;
 			children = (
 				B52217D71F146686002241BA /* EXKernelService.h */,
+				31827BF6203CF0E000A12E65 /* EXAudioSessionManager.h */,
+				31827BF4203CF0C000A12E65 /* EXAudioSessionManager.m */,
 				19382BA71EC2EACC001ED4A1 /* EXBranchManager.h */,
 				19382BA81EC2EACC001ED4A1 /* EXBranchManager.m */,
 				19B2EF731FB25A1A003F2E1B /* EXCachedResourceManager.h */,
@@ -2545,6 +2550,8 @@
 				B5FB74AF1FF6DADC001C764B /* EXNotifications.m in Sources */,
 				783435D5205B8BEE00DD28C3 /* AIRGoogleMapPolyline.m in Sources */,
 				7846B21120355E9900638E43 /* RNSVGDefsManager.m in Sources */,
+				B57EF7C42008446200DA8960 /* AIRMapLocalTileOverlay.m in Sources */,
+				31827BF5203CF0C000A12E65 /* EXAudioSessionManager.m in Sources */,
 				7846B21920355E9900638E43 /* RNSVGLineManager.m in Sources */,
 				B5FB74E11FF6DADC001C764B /* EXDisabledDevLoadingView.m in Sources */,
 				78343613205B8C5F00DD28C3 /* SMCalloutView.m in Sources */,

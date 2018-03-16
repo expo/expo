@@ -4,6 +4,8 @@
 
 @interface EXScopedEventEmitter : RCTEventEmitter
 
++ (NSString *)getExperienceIdFromEventEmitter:(id)eventEmitter;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId

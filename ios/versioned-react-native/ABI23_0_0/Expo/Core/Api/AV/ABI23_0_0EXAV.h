@@ -1,7 +1,9 @@
 // Copyright 2017-present 650 Industries. All rights reserved.
 
+#import <AVFoundation/AVFoundation.h>
 #import <ReactABI23_0_0/ABI23_0_0RCTBridgeModule.h>
 
+#import "ABI23_0_0EXScopedEventEmitter.h"
 #import "ABI23_0_0EXAVObject.h"
 
 typedef NS_OPTIONS(NSUInteger, ABI23_0_0EXAudioInterruptionMode)
@@ -19,7 +21,20 @@ typedef NS_OPTIONS(NSUInteger, ABI23_0_0EXAudioRecordingOptionBitRateStrategy)
   ABI23_0_0EXAudioRecordingOptionBitRateStrategyVariable            = 3
 };
 
-@interface ABI23_0_0EXAV : NSObject <ABI23_0_0RCTBridgeModule>
+@protocol ABI23_0_0EXAVScopedModuleDelegate
+
+- (void)scopedModuleDidBackground:(id)scopedModule;
+- (void)scopedModuleDidForeground:(id)scopedModule;
+- (void)scopedModuleWillDeallocate:(id)scopedModule;
+- (NSError *)setActive:(BOOL)active forScopedModule:(id)scopedModule;
+- (NSError *)setCategory:(NSString *)category withOptions:(AVAudioSessionCategoryOptions)options forScopedModule:(id)scopedModule;
+
+@end
+
+@interface ABI23_0_0EXAV : ABI23_0_0EXScopedEventEmitter <ABI23_0_0RCTBridgeModule>
+
+- (void)handleMediaServicesReset:(NSNotification *)notification;
+- (void)handleAudioSessionInterruption:(NSNotification *)notification;
 
 - (NSError *)promoteAudioSessionIfNecessary;
 

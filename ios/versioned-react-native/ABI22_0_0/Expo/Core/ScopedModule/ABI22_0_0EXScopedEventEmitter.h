@@ -4,6 +4,8 @@
 
 @interface ABI22_0_0EXScopedEventEmitter : ABI22_0_0RCTEventEmitter
 
++ (NSString *)getExperienceIdFromEventEmitter:(id)eventEmitter;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId
