@@ -299,9 +299,10 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 {
   [self _stopTimer];
   
-  if (_hasFinished) {
+  // TODO: eric: this was breaking reload in development with Cmd+R etc.
+  /* if (_hasFinished) {
     return;
-  }
+  } */
   _hasFinished = YES;
 
   if (_optimisticManifest) {
