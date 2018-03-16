@@ -704,6 +704,28 @@ public class Kernel extends KernelInterface {
 
   // Called from DevServerHelper via ReactNativeStaticHelpers
   @DoNotStrip
+  public static String getBundleUrlForActivityId(final int activityId, String host,
+                                                 String mainModuleId, String bundleTypeId,
+                                                 boolean devMode, boolean jsMinify) {
+    // NOTE: This current implementation doesn't look at the bundleTypeId (see RN's private
+    // BundleType enum for the possible values) but may need to
+
+    if (activityId == -1) {
+      // This is the kernel
+      return sInstance.getBundleUrl();
+    }
+
+    for (ExperienceActivityTask task : sManifestUrlToExperienceActivityTask.values()) {
+      if (task.activityId == activityId) {
+        return task.bundleUrl;
+      }
+    }
+
+    return null;
+  }
+
+  // <= SDK 25
+  @DoNotStrip
   public static String getBundleUrlForActivityId(final int activityId, String host, String jsModulePath, boolean devMode, boolean jsMinify) {
     if (activityId == -1) {
       // This is the kernel

@@ -29,6 +29,20 @@ public class ReactNativeStaticHelpers {
   }
 
   @DoNotStrip
+  public static String getBundleUrlForActivityId(final int activityId, String mainModuleId,
+                                                 String bundleTypeId, String host, boolean devMode,
+                                                 boolean jsMinify) {
+    try {
+      return (String) Class.forName("host.exp.exponent.kernel.Kernel")
+          .getMethod("getBundleUrlForActivityId", int.class, String.class, String.class, String.class, boolean.class, boolean.class)
+          .invoke(null, activityId, mainModuleId, bundleTypeId, host, devMode, jsMinify);
+    } catch (Exception e) {
+      return sBundleUrl;
+    }
+  }
+
+  // <= SDK 25
+  @DoNotStrip
   public static String getBundleUrlForActivityId(final int activityId, String host, String jsModulePath, boolean devMode, boolean jsMinify) {
     try {
       return (String) Class.forName("host.exp.exponent.kernel.Kernel")

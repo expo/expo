@@ -385,7 +385,7 @@ public class DevServerHelper {
 
     private String createBundleURL(String mainModuleID, BundleType type, String host) {
         try {
-            return (String) Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("getBundleUrlForActivityId", int.class, String.class, String.class, boolean.class, boolean.class).invoke(null, mSettings.exponentActivityId, host, jsModulePath, devMode, jsMinify);
+            return (String) Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("getBundleUrlForActivityId", int.class, String.class, String.class, String.class, boolean.class, boolean.class).invoke(null, mSettings.exponentActivityId, mainModuleID, type.typeID(), host, getDevMode(), getJSMinifyMode());
         } catch (Exception expoHandleErrorException) {
             expoHandleErrorException.printStackTrace();
             return null;
@@ -393,12 +393,7 @@ public class DevServerHelper {
     }
 
     private String createBundleURL(String mainModuleID, BundleType type) {
-        try {
-            return (String) Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("getBundleUrlForActivityId", int.class, String.class, String.class, boolean.class, boolean.class).invoke(null, mSettings.exponentActivityId, host, jsModulePath, devMode, jsMinify);
-        } catch (Exception expoHandleErrorException) {
-            expoHandleErrorException.printStackTrace();
-            return null;
-        }
+        return createBundleURL(mainModuleID, type, mSettings.getPackagerConnectionSettings().getDebugServerHost());
     }
 
     private static String createResourceURL(String host, String resourcePath) {
