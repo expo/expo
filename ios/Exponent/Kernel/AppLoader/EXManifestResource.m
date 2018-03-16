@@ -168,18 +168,20 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
 {
   NSString *errorCode;
   if (maybeManifest && maybeManifest[@"sdkVersion"]) {
-    NSInteger manifestSdkVersion = [maybeManifest[@"sdkVersion"] integerValue];
-    if (manifestSdkVersion) {
-      NSInteger oldestSdkVersion = [[self _earliestSdkVersionSupported] integerValue];
-      NSInteger newestSdkVersion = [[self _latestSdkVersionSupported] integerValue];
-      if (manifestSdkVersion < oldestSdkVersion) {
-        errorCode = @"EXPERIENCE_SDK_VERSION_OUTDATED";
+    if (![maybeManifest[@"sdkVersion"] isEqualToString:@"UNVERSIONED"]) {
+      NSInteger manifestSdkVersion = [maybeManifest[@"sdkVersion"] integerValue];
+      if (manifestSdkVersion) {
+        NSInteger oldestSdkVersion = [[self _earliestSdkVersionSupported] integerValue];
+        NSInteger newestSdkVersion = [[self _latestSdkVersionSupported] integerValue];
+        if (manifestSdkVersion < oldestSdkVersion) {
+          errorCode = @"EXPERIENCE_SDK_VERSION_OUTDATED";
+        }
+        if (manifestSdkVersion > newestSdkVersion) {
+          errorCode = @"EXPERIENCE_SDK_VERSION_TOO_NEW";
+        }
+      } else {
+        errorCode = @"MALFORMED_SDK_VERSION";
       }
-      if (manifestSdkVersion > newestSdkVersion) {
-        errorCode = @"EXPERIENCE_SDK_VERSION_TOO_NEW";
-      }
-    } else {
-      errorCode = @"MALFORMED_SDK_VERSION";
     }
   } else {
     errorCode = @"NO_SDK_VERSION_SPECIFIED";
