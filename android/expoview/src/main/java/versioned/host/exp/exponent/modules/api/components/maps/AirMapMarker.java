@@ -8,6 +8,9 @@ import android.graphics.drawable.Animatable;
 import android.net.Uri;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.animation.ObjectAnimator;
+import android.util.Property;
+import android.animation.TypeEvaluator;
 
 import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.DataSource;
@@ -215,6 +218,29 @@ public class AirMapMarker extends AirMapFeature {
       marker.setInfoWindowAnchor(calloutAnchorX, calloutAnchorY);
     }
     update();
+  }
+
+  public LatLng interpolate(float fraction, LatLng a, LatLng b) {
+    double lat = (b.latitude - a.latitude) * fraction + a.latitude;
+    double lng = (b.longitude - a.longitude) * fraction + a.longitude;
+    return new LatLng(lat, lng);
+  }
+
+  public void animateToCoodinate(LatLng finalPosition, Integer duration) {
+    TypeEvaluator<LatLng> typeEvaluator = new TypeEvaluator<LatLng>() {
+      @Override
+      public LatLng evaluate(float fraction, LatLng startValue, LatLng endValue) {
+        return interpolate(fraction, startValue, endValue);
+      }
+    };
+    Property<Marker, LatLng> property = Property.of(Marker.class, LatLng.class, "position");
+    ObjectAnimator animator = ObjectAnimator.ofObject(
+      marker,
+      property,
+      typeEvaluator,
+      finalPosition);
+    animator.setDuration(duration);
+    animator.start();
   }
 
   public void setImage(String uri) {

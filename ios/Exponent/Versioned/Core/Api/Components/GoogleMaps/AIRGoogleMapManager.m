@@ -58,7 +58,10 @@ RCT_EXPORT_VIEW_PROPERTY(scrollEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(pitchEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showsUserLocation, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showsMyLocationButton, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(showsIndoorLevelPicker, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(customMapStyleString, NSString)
+RCT_EXPORT_VIEW_PROPERTY(mapPadding, UIEdgeInsets)
+RCT_EXPORT_VIEW_PROPERTY(onMapReady, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onLongPress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
@@ -66,6 +69,8 @@ RCT_EXPORT_VIEW_PROPERTY(onMarkerPress, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onRegionChange, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onRegionChangeComplete, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(mapType, GMSMapViewType)
+RCT_EXPORT_VIEW_PROPERTY(minZoomLevel, CGFloat)
+RCT_EXPORT_VIEW_PROPERTY(maxZoomLevel, CGFloat)
 
 RCT_EXPORT_METHOD(animateToRegion:(nonnull NSNumber *)reactTag
                   withRegion:(MKCoordinateRegion)region
@@ -100,6 +105,42 @@ RCT_EXPORT_METHOD(animateToCoordinate:(nonnull NSNumber *)reactTag
       [CATransaction begin];
       [CATransaction setAnimationDuration:duration/1000];
       [(AIRGoogleMap *)view animateToLocation:latlng];
+      [CATransaction commit];
+    }
+  }];
+}
+
+RCT_EXPORT_METHOD(animateToViewingAngle:(nonnull NSNumber *)reactTag
+                  withAngle:(double)angle
+                  withDuration:(CGFloat)duration)
+{
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    id view = viewRegistry[reactTag];
+    if (![view isKindOfClass:[AIRGoogleMap class]]) {
+      RCTLogError(@"Invalid view returned from registry, expecting AIRGoogleMap, got: %@", view);
+    } else {
+      [CATransaction begin];
+      [CATransaction setAnimationDuration:duration/1000];
+      AIRGoogleMap *mapView = (AIRGoogleMap *)view;
+      [mapView animateToViewingAngle:angle];
+      [CATransaction commit];
+    }
+  }];
+}
+
+RCT_EXPORT_METHOD(animateToBearing:(nonnull NSNumber *)reactTag
+                  withBearing:(CGFloat)bearing
+                  withDuration:(CGFloat)duration)
+{
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    id view = viewRegistry[reactTag];
+    if (![view isKindOfClass:[AIRGoogleMap class]]) {
+      RCTLogError(@"Invalid view returned from registry, expecting AIRGoogleMap, got: %@", view);
+    } else {
+      [CATransaction begin];
+      [CATransaction setAnimationDuration:duration/1000];
+      AIRGoogleMap *mapView = (AIRGoogleMap *)view;
+      [mapView animateToBearing:bearing];
       [CATransaction commit];
     }
   }];
@@ -188,12 +229,19 @@ RCT_EXPORT_METHOD(takeSnapshot:(nonnull NSNumber *)reactTag
                   withWidth:(nonnull NSNumber *)width
                   withHeight:(nonnull NSNumber *)height
                   withRegion:(MKCoordinateRegion)region
+                  format:(nonnull NSString *)format
+                  quality:(nonnull NSNumber *)quality
+                  result:(nonnull NSString *)result
                   withCallback:(RCTResponseSenderBlock)callback)
 {
+  NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+  NSString *pathComponent = [NSString stringWithFormat:@"Documents/snapshot-%.20lf.%@", timeStamp, format];
+  NSString *filePath = [NSHomeDirectory() stringByAppendingPathComponent: pathComponent];
+
   [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     id view = viewRegistry[reactTag];
     if (![view isKindOfClass:[AIRGoogleMap class]]) {
-      RCTLogError(@"Invalid view returned from registry, expecting AIRMap, got: %@", view);
+        RCTLogError(@"Invalid view returned from registry, expecting AIRMap, got: %@", view);
     } else {
       AIRGoogleMap *mapView = (AIRGoogleMap *)view;
 
@@ -202,23 +250,130 @@ RCT_EXPORT_METHOD(takeSnapshot:(nonnull NSNumber *)reactTag
       UIGraphicsBeginImageContextWithOptions(mapView.frame.size, YES, 0.0f);
       [mapView.layer renderInContext:UIGraphicsGetCurrentContext()];
       UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-      UIGraphicsEndImageContext();
 
-      NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-      NSString *pathComponent = [NSString stringWithFormat:@"Documents/snapshot-%.20lf.png", timeStamp];
-      NSString *filePath = [NSHomeDirectory() stringByAppendingPathComponent: pathComponent];
+      NSData *data;
+      if ([format isEqualToString:@"png"]) {
+          data = UIImagePNGRepresentation(image);
 
-      NSData *data = UIImagePNGRepresentation(image);
-      [data writeToFile:filePath atomically:YES];
-      NSDictionary *snapshotData = @{
-                                     @"uri": filePath,
-                                     @"data": [data base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithCarriageReturn]
-                                     };
-      callback(@[[NSNull null], snapshotData]);
+      }
+      else if([format isEqualToString:@"jpg"]) {
+            data = UIImageJPEGRepresentation(image, quality.floatValue);
+      }
+
+      if ([result isEqualToString:@"file"]) {
+          [data writeToFile:filePath atomically:YES];
+            callback(@[[NSNull null], filePath]);
+        }
+        else if ([result isEqualToString:@"base64"]) {
+            callback(@[[NSNull null], [data base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithCarriageReturn]]);
+        }
+        else if ([result isEqualToString:@"legacy"]) {
+
+            // In the initial (iOS only) implementation of takeSnapshot,
+            // both the uri and the base64 encoded string were returned.
+            // Returning both is rarely useful and in fact causes a
+            // performance penalty when only the file URI is desired.
+            // In that case the base64 encoded string was always marshalled
+            // over the JS-bridge (which is quite slow).
+            // A new more flexible API was created to cover this.
+            // This code should be removed in a future release when the
+            // old API is fully deprecated.
+            [data writeToFile:filePath atomically:YES];
+            NSDictionary *snapshotData = @{
+                                           @"uri": filePath,
+                                           @"data": [data base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithCarriageReturn]
+                                           };
+            callback(@[[NSNull null], snapshotData]);
+        }
+
+    }
+    UIGraphicsEndImageContext();
+  }];
+}
+
+RCT_EXPORT_METHOD(pointForCoordinate:(nonnull NSNumber *)reactTag
+                  coordinate:(NSDictionary *)coordinate
+                  withCallback:(RCTResponseSenderBlock)callback)
+{
+  CLLocationCoordinate2D coord =
+  CLLocationCoordinate2DMake(
+                             [coordinate[@"latitude"] doubleValue],
+                             [coordinate[@"longitude"] doubleValue]
+                             );
+  
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    id view = viewRegistry[reactTag];
+    if (![view isKindOfClass:[AIRGoogleMap class]]) {
+      RCTLogError(@"Invalid view returned from registry, expecting AIRMap, got: %@", view);
+    } else {
+      AIRGoogleMap *mapView = (AIRGoogleMap *)view;
+      
+      CGPoint touchPoint = [mapView.projection pointForCoordinate:coord];
+      
+      callback(@[[NSNull null], @{
+                   @"x": @(touchPoint.x),
+                   @"y": @(touchPoint.y),
+                   }]);
     }
   }];
 }
 
+RCT_EXPORT_METHOD(coordinateForPoint:(nonnull NSNumber *)reactTag
+                  point:(NSDictionary *)point
+                  withCallback:(RCTResponseSenderBlock)callback)
+{
+  CGPoint pt = CGPointMake(
+                           [point[@"x"] doubleValue],
+                           [point[@"y"] doubleValue]
+                           );
+  
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    id view = viewRegistry[reactTag];
+    if (![view isKindOfClass:[AIRGoogleMap class]]) {
+      RCTLogError(@"Invalid view returned from registry, expecting AIRMap, got: %@", view);
+    } else {
+      AIRGoogleMap *mapView = (AIRGoogleMap *)view;
+      
+      CLLocationCoordinate2D coordinate = [mapView.projection coordinateForPoint:pt];
+      
+      callback(@[[NSNull null], @{
+                @"latitude": @(coordinate.latitude),
+                @"longitude": @(coordinate.longitude),
+                }]);
+    }
+  }];
+}
+
+RCT_EXPORT_METHOD(setMapBoundaries:(nonnull NSNumber *)reactTag
+                  northEast:(CLLocationCoordinate2D)northEast
+                  southWest:(CLLocationCoordinate2D)southWest)
+{
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    id view = viewRegistry[reactTag];
+    if (![view isKindOfClass:[AIRGoogleMap class]]) {
+      RCTLogError(@"Invalid view returned from registry, expecting AIRGoogleMap, got: %@", view);
+    } else {
+      AIRGoogleMap *mapView = (AIRGoogleMap *)view;
+
+      GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] initWithCoordinate:northEast coordinate:southWest];
+
+      mapView.cameraTargetBounds = bounds;
+    }
+  }];
+}
+
++ (BOOL)requiresMainQueueSetup {
+  return YES;
+}
+
+- (NSDictionary *)constantsToExport {
+  return @{ @"legalNotice": [GMSServices openSourceLicenseInfo] };
+}
+
+- (void)mapViewDidStartTileRendering:(GMSMapView *)mapView {
+  AIRGoogleMap *googleMapView = (AIRGoogleMap *)mapView;
+  [googleMapView didPrepareMap];
+}
 
 - (BOOL)mapView:(GMSMapView *)mapView didTapMarker:(GMSMarker *)marker {
   AIRGoogleMap *googleMapView = (AIRGoogleMap *)mapView;

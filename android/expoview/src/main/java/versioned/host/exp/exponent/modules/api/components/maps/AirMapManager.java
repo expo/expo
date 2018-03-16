@@ -181,6 +181,11 @@ public class AirMapManager extends ViewGroupManager<AirMapView> {
     view.map.getUiSettings().setZoomGesturesEnabled(zoomEnabled);
   }
 
+  @ReactProp(name = "zoomControlEnabled", defaultBoolean = true)
+  public void setZoomControlEnabled(AirMapView view, boolean zoomControlEnabled) {
+    view.map.getUiSettings().setZoomControlsEnabled(zoomControlEnabled);
+  }
+
   @ReactProp(name = "rotateEnabled", defaultBoolean = false)
   public void setRotateEnabled(AirMapView view, boolean rotateEnabled) {
     view.map.getUiSettings().setRotateGesturesEnabled(rotateEnabled);

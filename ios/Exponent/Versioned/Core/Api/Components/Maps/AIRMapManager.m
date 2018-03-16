@@ -37,9 +37,6 @@ static NSString *const RCTMapViewKey = @"MapView";
 @end
 
 @implementation AIRMapManager
-{
-    BOOL didCallOnMapReady;
-}
   
 RCT_EXPORT_MODULE()
 
@@ -714,13 +711,10 @@ static int kDragCenterContext;
 
 - (void)mapViewWillStartRenderingMap:(AIRMap *)mapView
 {
-    if (!didCallOnMapReady)
-    {
-      didCallOnMapReady = YES;
-      mapView.onMapReady(@{});
+    if (!mapView.hasStartedRendering) {
+      mapView.onMapReady(@{}); 
+      mapView.hasStartedRendering = YES;
     }
-  
-    mapView.hasStartedRendering = YES;
     [mapView beginLoading];
     [self _emitRegionChangeEvent:mapView continuous:NO];
 }

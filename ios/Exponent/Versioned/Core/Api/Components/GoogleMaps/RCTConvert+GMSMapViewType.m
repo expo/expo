@@ -13,6 +13,7 @@
   (
     @{
       @"standard": @(kGMSTypeNormal),
+      @"satellite": @(kGMSTypeSatellite),
       @"hybrid": @(kGMSTypeHybrid),
       @"terrain": @(kGMSTypeTerrain),
       @"none": @(kGMSTypeNone)
