@@ -128,10 +128,17 @@ public class ReactAndroidCodeTransformer {
       public Node visit(String methodName, MethodDeclaration n) {
         switch (methodName) {
           case "createBundleURL":
+            // In RN 0.54 this method is overloaded; skip the convenience version
+            NodeList<Parameter> params = n.getParameters();
+            if (params.size() == 2 && params.get(0).getNameAsString().equals("mainModuleID") &&
+                params.get(1).getNameAsString().equals("type")) {
+              return n;
+            }
+
             BlockStmt stmt = JavaParser.parseBlock(getCallMethodReflectionBlock(
                 "host.exp.exponent.ReactNativeStaticHelpers",
-                "\"getBundleUrlForActivityId\", int.class, String.class, String.class, boolean.class, boolean.class",
-                "null, mSettings.exponentActivityId, host, jsModulePath, devMode, jsMinify",
+                "\"getBundleUrlForActivityId\", int.class, String.class, String.class, String.class, boolean.class, boolean.class",
+                "null, mSettings.exponentActivityId, mainModuleID, type.typeID(), host, getDevMode(), getJSMinifyMode()",
                 "return (String) ",
                 "return null;"));
             n.setBody(stmt);
