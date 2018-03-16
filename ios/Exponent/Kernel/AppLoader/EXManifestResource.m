@@ -74,6 +74,12 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
       }
     }
     
+    NSError *sdkVersionError = [self _verifyManifestSdkVersion:innerManifestObj];
+    if (sdkVersionError) {
+      errorBlock(sdkVersionError);
+      return;
+    }
+    
     EXVerifySignatureSuccessBlock signatureSuccess = ^(BOOL isValid) {
       [innerManifestObj setObject:@(isValid) forKey:@"isVerified"];
       successBlock([NSJSONSerialization dataWithJSONObject:innerManifestObj options:0 error:&jsonError]);
@@ -158,47 +164,97 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   return nil;
 }
 
+- (NSError *)_verifyManifestSdkVersion:(NSDictionary *)maybeManifest
+{
+  NSString *errorCode;
+  if (maybeManifest && maybeManifest[@"sdkVersion"]) {
+    NSInteger manifestSdkVersion = [maybeManifest[@"sdkVersion"] integerValue];
+    if (manifestSdkVersion) {
+      NSInteger oldestSdkVersion = [[self _earliestSdkVersionSupported] integerValue];
+      NSInteger newestSdkVersion = [[self _latestSdkVersionSupported] integerValue];
+      if (manifestSdkVersion < oldestSdkVersion) {
+        errorCode = @"EXPERIENCE_SDK_VERSION_OUTDATED";
+      }
+      if (manifestSdkVersion > newestSdkVersion) {
+        errorCode = @"EXPERIENCE_SDK_VERSION_TOO_NEW";
+      }
+    } else {
+      errorCode = @"MALFORMED_SDK_VERSION";
+    }
+  } else {
+    errorCode = @"NO_SDK_VERSION_SPECIFIED";
+  }
+  if (errorCode) {
+    // will be handled by _validateErrorData:
+    return [self _formatError:[NSError errorWithDomain:EXNetworkErrorDomain code:0 userInfo:@{
+      @"errorCode": errorCode,
+    }]];
+  } else {
+    return nil;
+  }
+}
+
 - (NSError *)_validateErrorData:(NSError *)error response:(NSURLResponse *)response
 {
-  NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:error.userInfo];
+  NSError *formattedError;
   if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
     // we got back a response from the server, and we can use the info we got back to make a nice
     // error message for the user
     
-    NSString *errorCode = userInfo[@"errorCode"];
-    NSString *rawMessage = [error localizedDescription];
-    
-    NSString *formattedMessage = [NSString stringWithFormat:@"Could not load %@.", self.originalUrl];
-    if ([errorCode isEqualToString:@"EXPERIENCE_NOT_FOUND"]
-        || [errorCode isEqualToString:@"EXPERIENCE_NOT_PUBLISHED_ERROR"]
-        || [errorCode isEqualToString:@"EXPERIENCE_RELEASE_NOT_FOUND_ERROR"]) {
-      formattedMessage = [NSString stringWithFormat:@"No experience found at %@.", self.originalUrl];
-    } else if ([errorCode isEqualToString:@"EXPERIENCE_SDK_VERSION_OUTDATED"]) {
-      NSDictionary *metadata = userInfo[@"metadata"];
-      NSArray *availableSDKVersions = metadata[@"availableSDKVersions"];
-      NSString *sdkVersionRequired = [availableSDKVersions firstObject];
-      
-      NSArray *clientSDKVersionsAvailable = [EXVersions sharedInstance].versions[@"sdkVersions"];
-      NSString *earliestSDKVersion = [clientSDKVersionsAvailable firstObject];
-      formattedMessage = [NSString stringWithFormat:@"The experience you requested uses Expo SDK v%@, but this copy of Expo Client "
-                          "requires at least v%@. The author should update their experience to a newer Expo SDK version.", sdkVersionRequired, earliestSDKVersion];
-    } else if ([errorCode isEqualToString:@"EXPERIENCE_SDK_VERSION_TOO_NEW"]) {
-      formattedMessage = @"The experience you requested requires a newer version of the Expo Client app. Please download the latest version from the App Store.";
-    } else if ([errorCode isEqualToString:@"USER_SNACK_NOT_FOUND"] || [errorCode isEqualToString:@"SNACK_NOT_FOUND"]) {
-      formattedMessage = [NSString stringWithFormat:@"No snack found at %@.", self.originalUrl];
-    } else if ([errorCode isEqualToString:@"SNACK_RUNTIME_NOT_RELEASE"]) {
-      formattedMessage = rawMessage; // From server: `The Snack runtime for corresponding sdk version of this Snack ("${sdkVersions[0]}") is not released.`,
-    } else if ([errorCode isEqualToString:@"SNACK_NOT_FOUND_FOR_SDK_VERSIONS"]) {
-      formattedMessage = rawMessage; // From server: `The snack "${fullName}" was found, but wasn't released for platform "${platform}" and sdk version "${sdkVersions[0]}".`
-    }
-    userInfo[NSLocalizedDescriptionKey] = formattedMessage;
+    formattedError = [self _formatError:error];
   } else {
     // was a network error
+    NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:error.userInfo];
     userInfo[@"errorCode"] = @"NETWORK_ERROR";
+    formattedError = [NSError errorWithDomain:EXNetworkErrorDomain code:error.code userInfo:userInfo];
   }
   
-  NSError *networkError = [NSError errorWithDomain:EXNetworkErrorDomain code:error.code userInfo:userInfo];
-  return [super _validateErrorData:networkError response:response];
+  return [super _validateErrorData:formattedError response:response];
+}
+
+- (NSString *)_earliestSdkVersionSupported
+{
+  NSArray *clientSDKVersionsAvailable = [EXVersions sharedInstance].versions[@"sdkVersions"];
+  return [clientSDKVersionsAvailable firstObject]; // TODO: this is bad, we can't guarantee this array will always be ordered properly.
+}
+
+- (NSString *)_latestSdkVersionSupported
+{
+  NSArray *clientSDKVersionsAvailable = [EXVersions sharedInstance].versions[@"sdkVersions"];
+  return [clientSDKVersionsAvailable lastObject]; // TODO: this is bad, we can't guarantee this array will always be ordered properly.
+}
+
+- (NSError *)_formatError:(NSError *)error
+{
+  NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:error.userInfo];
+  NSString *errorCode = userInfo[@"errorCode"];
+  NSString *rawMessage = [error localizedDescription];
+  
+  NSString *formattedMessage = [NSString stringWithFormat:@"Could not load %@.", self.originalUrl];
+  if ([errorCode isEqualToString:@"EXPERIENCE_NOT_FOUND"]
+      || [errorCode isEqualToString:@"EXPERIENCE_NOT_PUBLISHED_ERROR"]
+      || [errorCode isEqualToString:@"EXPERIENCE_RELEASE_NOT_FOUND_ERROR"]) {
+    formattedMessage = [NSString stringWithFormat:@"No experience found at %@.", self.originalUrl];
+  } else if ([errorCode isEqualToString:@"EXPERIENCE_SDK_VERSION_OUTDATED"]) {
+    NSDictionary *metadata = userInfo[@"metadata"];
+    NSArray *availableSDKVersions = metadata[@"availableSDKVersions"];
+    NSString *sdkVersionRequired = [availableSDKVersions firstObject];
+    
+    NSString *earliestSDKVersion = [self _earliestSdkVersionSupported];
+    formattedMessage = [NSString stringWithFormat:@"The experience you requested uses Expo SDK v%@, but this copy of Expo Client "
+                        "requires at least v%@. The author should update their experience to a newer Expo SDK version.", sdkVersionRequired, earliestSDKVersion];
+  } else if ([errorCode isEqualToString:@"EXPERIENCE_SDK_VERSION_TOO_NEW"]) {
+    formattedMessage = @"The experience you requested requires a newer version of the Expo Client app. Please download the latest version from the App Store.";
+  } else if ([errorCode isEqualToString:@"USER_SNACK_NOT_FOUND"] || [errorCode isEqualToString:@"SNACK_NOT_FOUND"]) {
+    formattedMessage = [NSString stringWithFormat:@"No snack found at %@.", self.originalUrl];
+  } else if ([errorCode isEqualToString:@"SNACK_RUNTIME_NOT_RELEASE"]) {
+    formattedMessage = rawMessage; // From server: `The Snack runtime for corresponding sdk version of this Snack ("${sdkVersions[0]}") is not released.`,
+  } else if ([errorCode isEqualToString:@"SNACK_NOT_FOUND_FOR_SDK_VERSIONS"]) {
+    formattedMessage = rawMessage; // From server: `The snack "${fullName}" was found, but wasn't released for platform "${platform}" and sdk version "${sdkVersions[0]}".`
+  }
+  userInfo[NSLocalizedDescriptionKey] = formattedMessage;
+  
+  return [NSError errorWithDomain:EXNetworkErrorDomain code:error.code userInfo:userInfo];
 }
 
 @end
