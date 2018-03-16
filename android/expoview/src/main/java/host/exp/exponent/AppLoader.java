@@ -31,6 +31,13 @@ public abstract class AppLoader {
 
   private static final int DEFAULT_TIMEOUT_LENGTH = 30000;
 
+  public static final String UPDATES_EVENT_NAME = "Exponent.nativeUpdatesEvent";
+  public static final String UPDATE_DOWNLOAD_START_EVENT = "downloadStart";
+  public static final String UPDATE_DOWNLOAD_PROGRESS_EVENT = "downloadProgress";
+  public static final String UPDATE_DOWNLOAD_FINISHED_EVENT = "downloadFinished";
+  public static final String UPDATE_NO_UPDATE_AVAILABLE_EVENT = "noUpdateAvailable";
+  public static final String UPDATE_ERROR_EVENT = "error";
+
   public AppLoader(String manifestUrl, ExponentManifest exponentManifest, ExponentSharedPreferences exponentSharedPreferences) {
     mManifestUrl = manifestUrl;
     mExponentManifest = exponentManifest;
@@ -45,6 +52,28 @@ public abstract class AppLoader {
   }
 
   public void start() {
+    // if remote updates are disabled, skip all code that could fetch remote updates
+    if (!Constants.ARE_REMOTE_UPDATES_ENABLED) {
+      mExponentManifest.fetchEmbeddedManifest(mManifestUrl, new ExponentManifest.ManifestListener() {
+        @Override
+        public void onCompleted(JSONObject manifest) {
+          mManifest = manifest;
+          fetchJSBundle(true, true);
+        }
+
+        @Override
+        public void onError(Exception e) {
+          resolve(e.getMessage());
+        }
+
+        @Override
+        public void onError(String e) {
+          resolve(e);
+        }
+      });
+      return;
+    }
+
     boolean isFetchingCachedManifest = mExponentManifest.fetchCachedManifest(mManifestUrl, new ExponentManifest.ManifestListener() {
       @Override
       public void onCompleted(JSONObject manifest) {
@@ -54,11 +83,16 @@ public abstract class AppLoader {
         int fallbackToCacheTimeout = DEFAULT_TIMEOUT_LENGTH;
 
         try {
+          // another check in case dev mode check failed before
+          if (ExponentManifest.isDebugModeEnabled(mCachedManifest)) {
+            fetchRemoteManifest();
+            return;
+          }
           String experienceId = mCachedManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
           JSONObject updatesManifest = mCachedManifest.optJSONObject(ExponentManifest.MANIFEST_UPDATES_INFO_KEY);
           if (updatesManifest != null) {
-            String checkAutomaticallyBehavior = updatesManifest.optString(ExponentManifest.MANIFEST_UPDATES_CHECK_AUTOMATICALLY_KEY, ExponentManifest.MANIFEST_UPDATES_CHECK_AUTOMATICALLY_LAUNCH);
-            if (checkAutomaticallyBehavior.equals(ExponentManifest.MANIFEST_UPDATES_CHECK_AUTOMATICALLY_NEVER)) {
+            String checkAutomaticallyBehavior = updatesManifest.optString(ExponentManifest.MANIFEST_UPDATES_CHECK_AUTOMATICALLY_KEY, ExponentManifest.MANIFEST_UPDATES_CHECK_AUTOMATICALLY_ON_LOAD);
+            if (checkAutomaticallyBehavior.equals(ExponentManifest.MANIFEST_UPDATES_CHECK_AUTOMATICALLY_ON_ERROR)) {
               shouldCheckForUpdate = false;
             }
             fallbackToCacheTimeout = updatesManifest.optInt(ExponentManifest.MANIFEST_UPDATES_TIMEOUT_KEY, fallbackToCacheTimeout);
@@ -73,6 +107,11 @@ public abstract class AppLoader {
           onError(e);
         }
 
+        if (!Constants.isShellApp() && !Constants.isDetached()) {
+          // only support checkAutomatically: never in shell & detached apps
+          shouldCheckForUpdate = true;
+        }
+
         if (shouldCheckForUpdate) {
           startTimerAndFetchRemoteManifest(fallbackToCacheTimeout);
         } else {
@@ -82,13 +121,13 @@ public abstract class AppLoader {
 
       @Override
       public void onError(Exception e) {
-        EXL.d(TAG, "Error fetching cached manifest, falling back to default timeout: " + e.toString());
+        EXL.e(TAG, "Error fetching cached manifest, falling back to default timeout: " + e.getMessage());
         startTimerAndFetchRemoteManifest();
       }
 
       @Override
       public void onError(String e) {
-        EXL.d(TAG, "Error fetching cached manifest, falling back to default timeout: " + e);
+        EXL.e(TAG, "Error fetching cached manifest, falling back to default timeout: " + e);
         startTimerAndFetchRemoteManifest();
       }
     });
@@ -104,6 +143,8 @@ public abstract class AppLoader {
   public abstract void onManifestCompleted(JSONObject manifest);
 
   public abstract void onBundleCompleted(String localBundlePath);
+
+  public abstract void emitEvent(JSONObject params);
 
   public abstract void onError(Exception e);
 
@@ -218,9 +259,11 @@ public abstract class AppLoader {
 
       try {
         String bundleUrl = mManifest.getString(ExponentManifest.MANIFEST_BUNDLE_URL_KEY);
-        boolean wasUpdated = !bundleUrl.equals(finalOldBundleUrl);
+        final boolean wasUpdated = !bundleUrl.equals(finalOldBundleUrl);
         String id = mManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
         String sdkVersion = mManifest.getString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
+
+        final JSONObject finalManifest = mManifest;
 
         Exponent.getInstance().loadJSBundle(mManifest, bundleUrl, Exponent.getInstance().encodeExperienceId(id), sdkVersion, new Exponent.BundleListener() {
           @Override
@@ -228,20 +271,44 @@ public abstract class AppLoader {
             // if we fail to get a cached bundle, try to download it over the network as a last resort before failing
             // if we've already done this last resort and it also failed, then show the error
             // otherwise we've just failed to get a network resource, and we should try to resolve with a cached resource
+            if (shouldFailOnError) {
+              AppLoader.this.onError(e);
+              return;
+            }
             if (forceCache) {
               fetchJSBundle(false, true);
-            } else {
-              if (shouldFailOnError) {
-                AppLoader.this.onError(e);
-              } else {
-                resolve();
+              return;
+            }
+            if (hasResolved) {
+              JSONObject params = new JSONObject();
+              try {
+                params.put("type", UPDATE_ERROR_EVENT);
+                params.put("message", e.getMessage());
+                emitEvent(params);
+              } catch (Exception ex) {
+                EXL.e(TAG, ex);
               }
             }
+            resolve();
           }
 
           @Override
           public void onBundleLoaded(String localBundlePath) {
             mLocalBundlePath = localBundlePath;
+            if (hasResolved) {
+              JSONObject params = new JSONObject();
+              try {
+                if (wasUpdated) {
+                  params.put("type", UPDATE_DOWNLOAD_FINISHED_EVENT);
+                  params.put("manifestString", finalManifest.toString());
+                } else {
+                  params.put("type", UPDATE_NO_UPDATE_AVAILABLE_EVENT);
+                }
+                emitEvent(params);
+              } catch (Exception e) {
+                EXL.e(TAG, e);
+              }
+            }
             resolve();
           }
           // forceNetwork fetch the bundle depending on whether or not the bundleUrl has changed

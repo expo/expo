@@ -6,8 +6,7 @@
 #import "EXReactAppManager.h"
 #import "EXUtil.h"
 
-@interface EXKernelLinkingManager : NSObject
-  <EXLinkingManagerScopedModuleDelegate, EXUtilScopedModuleDelegate>
+@interface EXKernelLinkingManager : NSObject <EXLinkingManagerScopedModuleDelegate>
 
 /**
  *  Either opens the url on an existing bridge, or sends it to the kernel

@@ -650,6 +650,17 @@ public class Kernel extends KernelInterface {
       }
 
       @Override
+      public void emitEvent(JSONObject params) {
+        ExperienceActivityTask task = sManifestUrlToExperienceActivityTask.get(manifestUrl);
+        if (task != null) {
+          ExperienceActivity experienceActivity = task.experienceActivity.get();
+          if (experienceActivity != null) {
+            experienceActivity.emitUpdatesEvent(params);
+          }
+        }
+      }
+
+      @Override
       public void onError(Exception e) {
         handleError(e);
       }

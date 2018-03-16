@@ -118,8 +118,8 @@ public class ExponentManifest {
   public static final String MANIFEST_UPDATES_INFO_KEY = "updates";
   public static final String MANIFEST_UPDATES_TIMEOUT_KEY = "fallbackToCacheTimeout";
   public static final String MANIFEST_UPDATES_CHECK_AUTOMATICALLY_KEY = "checkAutomatically";
-  public static final String MANIFEST_UPDATES_CHECK_AUTOMATICALLY_LAUNCH = "launch";
-  public static final String MANIFEST_UPDATES_CHECK_AUTOMATICALLY_NEVER = "never";
+  public static final String MANIFEST_UPDATES_CHECK_AUTOMATICALLY_ON_LOAD = "onLoad";
+  public static final String MANIFEST_UPDATES_CHECK_AUTOMATICALLY_ON_ERROR = "onErrorRecovery";
 
   private static final int MAX_BITMAP_SIZE = 192;
   private static final String REDIRECT_SNIPPET = "exp.host/--/to-exp/";
@@ -154,6 +154,10 @@ public class ExponentManifest {
   }
 
   public void fetchManifest(final String manifestUrl, final ManifestListener listener) {
+    fetchManifest(manifestUrl, listener, true);
+  }
+
+  public void fetchManifest(final String manifestUrl, final ManifestListener listener, boolean shouldWriteToCache) {
     Analytics.markEvent(Analytics.TimedEvent.STARTED_FETCHING_MANIFEST);
 
     String realManifestUrl = manifestUrl;
@@ -185,7 +189,15 @@ public class ExponentManifest {
       newPath += "/";
     }
     newPath += "index.exp";
-    httpManifestUrl = uri.buildUpon().encodedPath(newPath).build().toString();
+
+    Uri.Builder uriBuilder = uri.buildUpon().encodedPath(newPath);
+    if (!shouldWriteToCache) {
+      // add a dummy parameter so this doesn't overwrite the current cached manifest
+      // more correct would be to add Cache-Control: no-store header, but this doesn't seem to
+      // work correctly with requests in okhttp
+      uriBuilder.appendQueryParameter("cache", "false");
+    }
+    httpManifestUrl = uriBuilder.build().toString();
 
     // Fetch manifest
     Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToUrl(httpManifestUrl, manifestUrl.equals(Constants.INITIAL_URL), false);
@@ -337,7 +349,7 @@ public class ExponentManifest {
                 } else {
                   try {
                     JSONObject embeddedManifest = new JSONObject(embeddedResponse);
-                    embeddedManifest.put("loadedFromCache", true);
+                    embeddedManifest.put(ExponentManifest.MANIFEST_LOADED_FROM_CACHE_KEY, true);
 
                     String cachedManifestTimestamp = manifest.getString(MANIFEST_PUBLISHED_TIME_KEY);
                     String embeddedManifestTimestamp = embeddedManifest.getString(MANIFEST_PUBLISHED_TIME_KEY);
@@ -398,6 +410,43 @@ public class ExponentManifest {
     }, null, null);
 
     return true;
+  }
+
+  // this is used only if updates.enabled == false
+  public void fetchEmbeddedManifest(final String manifestUrl, final ManifestListener listener) {
+    String realManifestUrl = manifestUrl;
+    if (manifestUrl.contains(REDIRECT_SNIPPET)) {
+      realManifestUrl = Uri.decode(realManifestUrl.substring(realManifestUrl.indexOf(REDIRECT_SNIPPET) + REDIRECT_SNIPPET.length()));
+    }
+
+    String httpManifestUrl = ExponentUrls.toHttp(realManifestUrl);
+
+    // Append index.exp to path
+    Uri uri = Uri.parse(httpManifestUrl);
+    String newPath = uri.getPath();
+    if (newPath == null) {
+      newPath = "";
+    }
+    if (!newPath.endsWith("/")) {
+      newPath += "/";
+    }
+    newPath += "index.exp";
+    httpManifestUrl = uri.buildUpon().encodedPath(newPath).build().toString();
+
+    Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToUrl(httpManifestUrl, manifestUrl.equals(Constants.INITIAL_URL), false);
+    requestBuilder.header("Exponent-Accept-Signature", "true");
+    requestBuilder.header("Expo-JSON-Error", "true");
+    String finalUri = requestBuilder.build().url().toString();
+
+    String embeddedResponse = mExponentNetwork.getClient().getHardCodedResponse(finalUri);
+
+    try {
+      JSONObject embeddedManifest = new JSONObject(embeddedResponse);
+      embeddedManifest.put(ExponentManifest.MANIFEST_LOADED_FROM_CACHE_KEY, true);
+      fetchManifestStep3(manifestUrl, embeddedManifest, true, listener);
+    } catch (Exception e) {
+      listener.onError(e);
+    }
   }
 
   private void fetchManifestStep2(final String manifestUrl, final String manifestString, final Headers headers, final ManifestListener listener, final boolean isEmbedded, boolean isCached) throws JSONException {

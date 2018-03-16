@@ -4,7 +4,9 @@
 #import "EXFileDownloader.h"
 #import "EXJavaScriptResource.h"
 #import "EXKernel.h"
-#import "EXKernelAppLoader.h"
+#import "EXKernelAppLoader+Updates.h"
+#import "EXKernelAppRecord.h"
+#import "EXKernelAppRegistry.h"
 #import "EXKernelLinkingManager.h"
 #import "EXManifestResource.h"
 #import "EXShellManager.h"
@@ -40,6 +42,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 {
   if (self = [super init]) {
     _manifestUrl = url;
+    _httpManifestUrl = [EXKernelAppLoader _httpUrlFromManifestUrl:_manifestUrl];
   }
   return self;
 }
@@ -115,7 +118,6 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   if (_localManifest) {
     [self _beginRequestWithLocalManifest];
   } else if (_manifestUrl) {
-    _httpManifestUrl = [EXKernelAppLoader _httpUrlFromManifestUrl:_manifestUrl];
     [self _beginRequestWithRemoteManifest];
   } else {
     [self _finishWithError:RCTErrorWithMessage(@"Can't load app with no remote url nor local manifest.")];
@@ -136,6 +138,11 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   [path appendString:@"index.exp"];
   components.path = path;
   return [components URL];
+}
+
+- (BOOL)_isCacheUpToDate
+{
+  return self.confirmedManifest && self.optimisticManifest && self.confirmedManifest[@"revisionId"] && [self.confirmedManifest[@"revisionId"] isEqualToString:self.optimisticManifest[@"revisionId"]];
 }
 
 - (void)_beginRequestWithLocalManifest
@@ -159,7 +166,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   
   // first get cached manifest
   // then try to fetch new one over network
-  [self _fetchManifestWithHttpUrl:_httpManifestUrl cacheBehavior:EXCachedResourceOnlyCache success:^(NSDictionary * cachedManifest) {
+  [self fetchManifestWithCacheBehavior:EXCachedResourceOnlyCache success:^(NSDictionary * cachedManifest) {
     _confirmedManifest = cachedManifest;
 
     BOOL shouldCheckForUpdate = YES;
@@ -169,40 +176,45 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
     if ([self _areDevToolsEnabledWithManifest:cachedManifest]) {
       [self _resolveManifestAndBundleWithTimeout:NO length:0];
       return;
-    } else {
-      id updates = _confirmedManifest[@"updates"];
-      id ios = _confirmedManifest[@"ios"];
-      if (updates && [updates isKindOfClass:[NSDictionary class]]) {
-        NSDictionary *updatesDict = (NSDictionary *)updates;
-        id checkAutomaticallyVal = updatesDict[@"checkAutomatically"];
-        if (checkAutomaticallyVal && [checkAutomaticallyVal isKindOfClass:[NSString class]] && [(NSString *)checkAutomaticallyVal isEqualToString:@"never"]) {
-          shouldCheckForUpdate = NO;
-        }
+    }
 
-        id fallbackToCacheTimeoutVal = updatesDict[@"fallbackToCacheTimeout"];
-        if (fallbackToCacheTimeoutVal && [fallbackToCacheTimeoutVal isKindOfClass:[NSNumber class]]) {
-          fallbackToCacheTimeout = [(NSNumber *)fallbackToCacheTimeoutVal intValue];
-        }
-      } else if (ios && [ios isKindOfClass:[NSDictionary class]]) {
-        NSDictionary *iosDict = (NSDictionary *)ios;
-        // map loadJSInBackgroundExperimental internally to
-        // checkAutomatically: launch and fallbackToCacheTimeout: 0
-        if (iosDict[@"loadJSInBackgroundExperimental"]) {
-          shouldCheckForUpdate = YES;
-          fallbackToCacheTimeout = 0;
-        }
+    id updates = _confirmedManifest[@"updates"];
+    id ios = _confirmedManifest[@"ios"];
+    if (updates && [updates isKindOfClass:[NSDictionary class]]) {
+      NSDictionary *updatesDict = (NSDictionary *)updates;
+      id checkAutomaticallyVal = updatesDict[@"checkAutomatically"];
+      if (checkAutomaticallyVal && [checkAutomaticallyVal isKindOfClass:[NSString class]] && [(NSString *)checkAutomaticallyVal isEqualToString:@"onErrorRecovery"]) {
+        shouldCheckForUpdate = NO;
       }
 
-      if (![EXKernel sharedInstance].appRegistry.standaloneAppRecord) {
-        // only support checkAutomatically: never in shell & detached apps
+      id fallbackToCacheTimeoutVal = updatesDict[@"fallbackToCacheTimeout"];
+      if (fallbackToCacheTimeoutVal && [fallbackToCacheTimeoutVal isKindOfClass:[NSNumber class]]) {
+        fallbackToCacheTimeout = [(NSNumber *)fallbackToCacheTimeoutVal intValue];
+      }
+    } else if (ios && [ios isKindOfClass:[NSDictionary class]]) {
+      NSDictionary *iosDict = (NSDictionary *)ios;
+      // map loadJSInBackgroundExperimental internally to
+      // checkAutomatically: onLoad and fallbackToCacheTimeout: 0
+      if (iosDict[@"loadJSInBackgroundExperimental"]) {
         shouldCheckForUpdate = YES;
+        fallbackToCacheTimeout = 0;
       }
+    }
 
-      if ([[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:[self _experienceIdWithManifest:_confirmedManifest]]) {
-        // if this experience id encountered a loading error before,
-        // we should always check for an update, even if the manifest says not to
-        shouldCheckForUpdate = YES;
-      }
+    // only support checkAutomatically: onErrorRecovery in shell & detached apps
+    if (![EXKernel sharedInstance].appRegistry.standaloneAppRecord) {
+      shouldCheckForUpdate = YES;
+    }
+
+    // if this experience id encountered a loading error before,
+    // we should always check for an update, even if the manifest says not to
+    if ([[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:[self _experienceIdWithManifest:_confirmedManifest]]) {
+      shouldCheckForUpdate = YES;
+    }
+
+    // if we've disabled updates, override everything else
+    if ([EXShellManager sharedInstance].isShell && ![EXShellManager sharedInstance].areRemoteUpdatesEnabled) {
+      shouldCheckForUpdate = NO;
     }
 
     if (shouldCheckForUpdate) {
@@ -234,7 +246,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
     // if we're in dev mode (meaning we should not ever fall back to cache), don't write to the cache either
     cacheBehavior = EXCachedResourceNoCache;
   }
-  [self _fetchManifestWithHttpUrl:_httpManifestUrl cacheBehavior:cacheBehavior success:^(NSDictionary * _Nonnull manifest) {
+  [self fetchManifestWithCacheBehavior:cacheBehavior success:^(NSDictionary * _Nonnull manifest) {
     _optimisticManifest = manifest;
     // if we're never using a cache, go ahead and confirm the manifest now
     if (cacheBehavior == EXCachedResourceNoCache && !_confirmedManifest) {
@@ -261,9 +273,12 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 - (void)_fetchRemoteJSBundleWithOptimisticManifest
 {
   EXCachedResourceBehavior cacheBehavior = [self _cacheBehaviorForJSWithManifest:_optimisticManifest];
+  if ([self _isCacheUpToDate]) {
+    cacheBehavior = EXCachedResourceFallBackToNetwork;
+  }
 
   __weak typeof(self) weakSelf = self;
-  [self _fetchJSBundleWithManifest:_optimisticManifest cacheBehavior:cacheBehavior timeoutInterval:kEXJSBundleTimeout progress:^(EXLoadingProgress * _Nonnull progress) {
+  [self fetchJSBundleWithManifest:_optimisticManifest cacheBehavior:cacheBehavior timeoutInterval:kEXJSBundleTimeout progress:^(EXLoadingProgress * _Nonnull progress) {
     __strong typeof(weakSelf) strongSelf = weakSelf;
     if (strongSelf && strongSelf.delegate) {
       [_delegate appLoader:strongSelf didLoadBundleWithProgress:progress];
@@ -271,9 +286,11 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   } success:^(NSData * _Nonnull data) {
     __strong typeof(weakSelf) strongSelf = weakSelf;
     if (strongSelf) {
-      // promote optimistic manifest to confirmed manifest.
-      strongSelf.confirmedManifest = strongSelf.optimisticManifest;
-      strongSelf.optimisticManifest = nil;
+      if (!_hasFinished) {
+        // promote optimistic manifest to confirmed manifest.
+        strongSelf.confirmedManifest = strongSelf.optimisticManifest;
+        strongSelf.optimisticManifest = nil;
+      }
       strongSelf.bundle = data;
       [strongSelf _finishWithError:nil];
     }
@@ -298,11 +315,12 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 - (void)_finishWithError:(NSError * _Nullable)err
 {
   [self _stopTimer];
-  
-  // TODO: eric: this was breaking reload in development with Cmd+R etc.
-  /* if (_hasFinished) {
-    return;
-  } */
+
+  if (_hasFinished) {
+    // AppLoader has already "finished" but a new bundle was resolved
+    // so we should notify the delegate so it can send an event to the running app
+    [_delegate appLoader:self didResolveUpdatedBundleWithManifest:_optimisticManifest isFromCache:[self _isCacheUpToDate] error:err];
+  }
   _hasFinished = YES;
 
   if (_optimisticManifest) {
@@ -318,7 +336,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   } else if (_confirmedManifest) {
     // we don't have a bundle but need to finish,
     // try to grab a cache
-    [self _fetchJSBundleWithManifest:_confirmedManifest cacheBehavior:EXCachedResourceFallBackToNetwork timeoutInterval:kEXJSBundleTimeout progress:^(EXLoadingProgress * _Nonnull progress) {
+    [self fetchJSBundleWithManifest:_confirmedManifest cacheBehavior:EXCachedResourceFallBackToNetwork timeoutInterval:kEXJSBundleTimeout progress:^(EXLoadingProgress * _Nonnull progress) {
       if (_delegate) {
         [_delegate appLoader:self didLoadBundleWithProgress:progress];
       }
@@ -342,7 +360,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   }
 }
 
-- (void)_fetchManifestWithHttpUrl:(NSURL *)url cacheBehavior:(EXCachedResourceBehavior)cacheBehavior success:(void (^)(NSDictionary *))success failure:(void (^)(NSError *))failure
+- (void)fetchManifestWithCacheBehavior:(EXCachedResourceBehavior)cacheBehavior success:(void (^)(NSDictionary *))success failure:(void (^)(NSError *))failure
 {
   // this fetch behavior should never be used, as we re-create it ourselves within this class
   if (cacheBehavior == EXCachedResourceFallBackToCache) {
@@ -351,12 +369,12 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
                                  userInfo:nil];
   }
   
-  if (!([url.scheme isEqualToString:@"http"] || [url.scheme isEqualToString:@"https"])) {
-    NSURLComponents *components = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO];
+  if (!([_httpManifestUrl.scheme isEqualToString:@"http"] || [_httpManifestUrl.scheme isEqualToString:@"https"])) {
+    NSURLComponents *components = [NSURLComponents componentsWithURL:_httpManifestUrl resolvingAgainstBaseURL:NO];
     components.scheme = @"http";
-    url = [components URL];
+    _httpManifestUrl = [components URL];
   }
-  EXManifestResource *manifestResource = [[EXManifestResource alloc] initWithManifestUrl:url originalUrl:_manifestUrl];
+  EXManifestResource *manifestResource = [[EXManifestResource alloc] initWithManifestUrl:_httpManifestUrl originalUrl:_manifestUrl];
   [manifestResource loadResourceWithBehavior:cacheBehavior progressBlock:nil successBlock:^(NSData * _Nonnull data) {
     NSError *error;
     id manifest = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
@@ -365,7 +383,11 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
       return;
     }
     if (![manifest isKindOfClass:[NSDictionary class]]) {
-      // TODO: handle this - make own NSError
+      NSDictionary *errorInfo = @{
+                                  NSLocalizedDescriptionKey: @"Cannot parse manifest",
+                                  NSLocalizedFailureReasonErrorKey: @"Tried to load a manifest which was not in the proper format",
+                                  };
+      failure([NSError errorWithDomain:EXNetworkErrorDomain code:-1 userInfo:errorInfo]);
       return;
     }
     
@@ -392,7 +414,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   }];
 }
 
-- (void)_fetchJSBundleWithManifest:(NSDictionary *)manifest
+- (void)fetchJSBundleWithManifest:(NSDictionary *)manifest
                      cacheBehavior:(EXCachedResourceBehavior)cacheBehavior
                    timeoutInterval:(NSTimeInterval)timeoutInterval
                           progress:(void (^ _Nullable )(EXLoadingProgress *))progressBlock
@@ -404,6 +426,12 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
                                                                       devToolsEnabled:[self _areDevToolsEnabledWithManifest:manifest]];
   jsResource.abiVersion = [[EXVersions sharedInstance] availableSdkVersionForManifest:manifest];
   jsResource.requestTimeoutInterval = timeoutInterval;
+
+  EXCachedResourceBehavior behavior = cacheBehavior;
+  // if we've disabled updates, ignore all other settings and only use the cache
+  if ([EXShellManager sharedInstance].isShell && ![EXShellManager sharedInstance].areRemoteUpdatesEnabled) {
+    behavior = EXCachedResourceOnlyCache;
+  }
 
   [jsResource loadResourceWithBehavior:cacheBehavior progressBlock:progressBlock successBlock:successBlock errorBlock:errorBlock];
 }

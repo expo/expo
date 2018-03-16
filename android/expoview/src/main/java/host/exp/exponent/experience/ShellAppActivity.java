@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
+import host.exp.exponent.RNObject;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.expoview.Exponent;
@@ -55,6 +56,11 @@ public class ShellAppActivity extends ExperienceActivity {
       }
 
       @Override
+      public void emitEvent(JSONObject params) {
+        emitUpdatesEvent(params);
+      }
+
+      @Override
       public void onError(Exception e) {
         mKernel.handleError(e);
       }
@@ -66,4 +72,3 @@ public class ShellAppActivity extends ExperienceActivity {
     }.start();
   }
 }
-

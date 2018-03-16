@@ -14,6 +14,7 @@
 #import "EXKernelUtil.h"
 #import "EXScreenOrientationManager.h"
 #import "EXShellManager.h"
+#import "EXUpdatesManager.h"
 
 #import <React/RCTUtils.h>
 
@@ -188,6 +189,11 @@ NS_ASSUME_NONNULL_BEGIN
     [_appRecord.appManager appLoaderFailedWithError:error];
   }
   [self maybeShowError:error];
+}
+
+- (void)appLoader:(EXKernelAppLoader *)appLoader didResolveUpdatedBundleWithManifest:(NSDictionary * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error
+{
+  [[EXKernel sharedInstance].serviceRegistry.updatesManager notifyApp:_appRecord ofDownloadWithManifest:manifest isNew:!isFromCache error:error];
 }
 
 #pragma mark - EXReactAppManagerDelegate

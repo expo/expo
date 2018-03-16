@@ -70,7 +70,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
   _isShell = NO;
   _shellManifestUrl = nil;
   _urlScheme = nil;
-  _isRemoteJSEnabled = YES;
+  _areRemoteUpdatesEnabled = YES;
   _allManifestUrls = @[];
 }
 
@@ -180,9 +180,9 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
 - (void)_loadMiscShellPropertiesWithConfig:(NSDictionary *)shellConfig
 {
   _isManifestVerificationBypassed = [shellConfig[@"isManifestVerificationBypassed"] boolValue];
-  _isRemoteJSEnabled = (shellConfig[@"isRemoteJSEnabled"] == nil)
+  _areRemoteUpdatesEnabled = (shellConfig[@"areRemoteUpdatesEnabled"] == nil)
     ? YES
-    : [shellConfig[@"isRemoteJSEnabled"] boolValue];
+    : [shellConfig[@"areRemoteUpdatesEnabled"] boolValue];
   _isSplashScreenDisabled = ([shellConfig[@"isSplashScreenDisabled"] boolValue]); // we can remove this when the old loading api is dead.
   _releaseChannel = (shellConfig[@"releaseChannel"] == nil) ? @"default" : shellConfig[@"releaseChannel"];
   // other shell config goes here

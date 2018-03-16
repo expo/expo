@@ -17,6 +17,7 @@ public class AppConstants {
   public static final String SHELL_APP_SCHEME = null;
   public static final String RELEASE_CHANNEL = "default";
   public static boolean SHOW_LOADING_VIEW_IN_SHELL_APP = false;
+  public static boolean ARE_REMOTE_UPDATES_ENABLED = true;
   public static final List<Constants.EmbeddedResponse> EMBEDDED_RESPONSES;
 
   static {
@@ -37,6 +38,7 @@ public class AppConstants {
     constants.SHELL_APP_SCHEME = SHELL_APP_SCHEME;
     constants.RELEASE_CHANNEL = RELEASE_CHANNEL;
     constants.SHOW_LOADING_VIEW_IN_SHELL_APP = SHOW_LOADING_VIEW_IN_SHELL_APP;
+    constants.ARE_REMOTE_UPDATES_ENABLED = ARE_REMOTE_UPDATES_ENABLED;
     constants.EMBEDDED_RESPONSES = EMBEDDED_RESPONSES;
     constants.ANDROID_VERSION_CODE = BuildConfig.VERSION_CODE;
     return constants;

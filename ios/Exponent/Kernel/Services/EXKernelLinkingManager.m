@@ -89,12 +89,6 @@
   return NO;
 }
 
-- (void)utilModuleDidSelectReload:(id)scopedUtilModule
-{
-  NSString *experienceId = ((EXScopedBridgeModule *)scopedUtilModule).experienceId;
-  [[EXKernel sharedInstance] reloadAppWithExperienceId:experienceId];
-}
-
 #pragma mark - internal
 
 #pragma mark - static link transforming logic
