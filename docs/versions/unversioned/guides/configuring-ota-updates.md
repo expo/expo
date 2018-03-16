@@ -18,7 +18,7 @@ The timeout length is configurable by setting `updates.fallbackToCacheTimeout` (
 
 In standalone apps, is also possible to turn off automatic updates, and to instead control updates entirely within your JS code. This is desirable if you want some custom logic around fetching updates (e.g. only over Wi-Fi).
 
-Setting `updates.checkAutomatically` to `"onErrorRecovery"` in app.json will prevent Expo from automatically fetching the latest update every time your app is launched. Only the most recent cached version of your bundle will be loaded. It will only automatically fetch an update if the last run of the cached bundle produced a fatal JS error.
+Setting `updates.checkAutomatically` to `"ON_ERROR_RECOVERY"` in app.json will prevent Expo from automatically fetching the latest update every time your app is launched. Only the most recent cached version of your bundle will be loaded. It will only automatically fetch an update if the last run of the cached bundle produced a fatal JS error.
 
 You can then use the [`Expo.Updates](../sdk/updates.html) module to download new updates and, if appropriate, notify the user and reload the experience.
 
@@ -35,7 +35,7 @@ try {
 }
 ```
 
-Note that `checkAutomatically: "onErrorRecovery"` will be ignored in the Expo client, although the imperative Updates methods will still function normally.
+Note that `checkAutomatically: "ON_ERROR_RECOVERY"` will be ignored in the Expo client, although the imperative Updates methods will still function normally.
 
 ## Disabling Updates
 
