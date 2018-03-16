@@ -17,7 +17,7 @@ import {
   View,
 } from 'react-native';
 
-import Expo, { BlurView, Constants } from 'expo';
+import Expo, { Constants } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
 import ResponsiveImage from '@expo/react-native-responsive-image';
 
@@ -114,7 +114,7 @@ export default class MenuView extends React.Component {
     };
 
     return (
-      <BlurView style={[styles.container, screenStyles]} tint="light" intensity={85}>
+      <View style={[styles.container, screenStyles]}>
         <StatusBar barStyle="default" />
         <ScrollView style={styles.overlay}>
           {this.state.isNuxFinished ? this._renderTaskInfoRow() : this._renderNUXRow()}
@@ -151,7 +151,7 @@ export default class MenuView extends React.Component {
             <Ionicons name="md-close" size={20} style={styles.closeButtonIcon} />
           </TouchableHighlight>
         </ScrollView>
-      </BlurView>
+      </View>
     );
   }
 
