@@ -26,6 +26,9 @@
     if (!_urlTemplateSet) return;
     self.tileOverlay = [[MKTileOverlay alloc] initWithURLTemplate:self.urlTemplate];
     self.tileOverlay.canReplaceMapContent = YES;
+    if (self.maximumZ) {
+        self.tileOverlay.maximumZ = self.maximumZ;
+    }
     self.renderer = [[MKTileOverlayRenderer alloc] initWithTileOverlay:self.tileOverlay];
 }
 

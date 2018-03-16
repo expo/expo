@@ -506,6 +506,10 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
       AirMapLocalTile localTileView = (AirMapLocalTile) child;
       localTileView.addToMap(map);
       features.add(index, localTileView);
+    } else if (child instanceof AirMapOverlay) {
+      AirMapOverlay overlayView = (AirMapOverlay) child;
+      overlayView.addToMap(map);
+      features.add(index, overlayView);
     } else if (child instanceof ViewGroup) {
       ViewGroup children = (ViewGroup) child;
       for (int i = 0; i < children.getChildCount(); i++) {

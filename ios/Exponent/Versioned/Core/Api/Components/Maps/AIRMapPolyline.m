@@ -4,11 +4,12 @@
 //
 
 #import "AIRMapPolyline.h"
+#import "AIRMapPolylineRenderer.h"
 #import <React/UIView+React.h>
 
 
 @implementation AIRMapPolyline {
-
+    
 }
 
 - (void)setFillColor:(UIColor *)fillColor {
@@ -18,6 +19,14 @@
 
 - (void)setStrokeColor:(UIColor *)strokeColor {
     _strokeColor = strokeColor;
+    [self update];
+}
+
+- (void)setStrokeColors:(NSArray<UIColor *> *)strokeColors {
+    _strokeColors = strokeColors;
+    if ((self.renderer != nil) && ![_renderer isKindOfClass:[AIRMapPolylineRenderer class]]) {
+        self.renderer = [self createRenderer];
+    }
     [self update];
 }
 
@@ -59,27 +68,48 @@
         coords[i] = coordinates[i].coordinate;
     }
     self.polyline = [MKPolyline polylineWithCoordinates:coords count:coordinates.count];
-    self.renderer = [[MKPolylineRenderer alloc] initWithPolyline:self.polyline];
+    self.renderer = [self createRenderer];
     [self update];
+}
+
+- (MKOverlayPathRenderer*)createRenderer {
+    if (self.polyline == nil) return nil;
+    if (self.strokeColors == nil) {
+        // Use the default renderer when no array of stroke-colors is defined.
+        // This behaviour may be changed in the future if we permanently want to 
+        // use the custom renderer, because it can add funtionality that is not
+        // supported by the default renderer.
+        return [[MKPolylineRenderer alloc] initWithPolyline:self.polyline];
+    }
+    else {
+        return [[AIRMapPolylineRenderer alloc] initWithOverlay:self polyline:self.polyline];
+    }
 }
 
 - (void) update
 {
     if (!_renderer) return;
-    _renderer.fillColor = _fillColor;
-    _renderer.strokeColor = _strokeColor;
-    _renderer.lineWidth = _strokeWidth;
-    _renderer.lineCap = _lineCap;
-    _renderer.lineJoin = _lineJoin;
-    _renderer.miterLimit = _miterLimit;
-    _renderer.lineDashPhase = _lineDashPhase;
-    _renderer.lineDashPattern = _lineDashPattern;
-
+    [self updateRenderer:_renderer];
+    
     if (_map == nil) return;
     [_map removeOverlay:self];
     [_map addOverlay:self];
 }
 
+- (void) updateRenderer:(MKOverlayPathRenderer*)renderer {
+    renderer.fillColor = _fillColor;
+    renderer.strokeColor = _strokeColor;
+    renderer.lineWidth = _strokeWidth;
+    renderer.lineCap = _lineCap;
+    renderer.lineJoin = _lineJoin;
+    renderer.miterLimit = _miterLimit;
+    renderer.lineDashPhase = _lineDashPhase;
+    renderer.lineDashPattern = _lineDashPattern;
+    
+    if ([renderer isKindOfClass:[AIRMapPolylineRenderer class]]) {
+        ((AIRMapPolylineRenderer*)renderer).strokeColors = _strokeColors;
+    }
+}
 
 #pragma mark MKOverlay implementation
 
@@ -109,38 +139,9 @@
 
 - (void) drawToSnapshot:(MKMapSnapshot *) snapshot context:(CGContextRef) context
 {
-    // Prepare context
-    CGContextSetStrokeColorWithColor(context, self.strokeColor.CGColor);
-    CGContextSetLineWidth(context, self.strokeWidth);
-    CGContextSetLineCap(context, self.lineCap);
-    CGContextSetLineJoin(context, self.lineJoin);
-    CGContextSetMiterLimit(context, self.miterLimit);
-    CGFloat dashes[self.lineDashPattern.count];
-    for (NSUInteger i = 0; i < self.lineDashPattern.count; i++) {
-        dashes[i] = self.lineDashPattern[i].floatValue;
-    }
-    CGContextSetLineDash(context, self.lineDashPhase, dashes, self.lineDashPattern.count);
-    
-    // Begin path
-    CGContextBeginPath(context);
-    
-    // Get coordinates
-    CLLocationCoordinate2D coordinates[[self.polyline pointCount]];
-    [self.polyline getCoordinates:coordinates range:NSMakeRange(0, [self.polyline pointCount])];
-    
-    // Draw line segments
-    for(int i = 0; i < [self.polyline pointCount]; i++) {
-        CGPoint point = [snapshot pointForCoordinate:coordinates[i]];
-        if (i == 0) {
-            CGContextMoveToPoint(context,point.x, point.y);
-        }
-        else{
-            CGContextAddLineToPoint(context,point.x, point.y);
-        }
-    }
-    
-    // Finish path
-    CGContextStrokePath(context);
+    AIRMapPolylineRenderer* renderer = [[AIRMapPolylineRenderer alloc] initWithSnapshot:snapshot overlay:self polyline:self.polyline];
+    [self updateRenderer:renderer];
+    [renderer drawWithZoomScale:2 inContext:context];
 }
 
 @end

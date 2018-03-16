@@ -47,6 +47,11 @@ public class AirMapPolygonManager extends ViewGroupManager<AirMapPolygon> {
     view.setCoordinates(coordinates);
   }
 
+  @ReactProp(name = "holes")
+  public  void setHoles(AirMapPolygon view, ReadableArray holes) {
+    view.setHoles(holes);
+  }
+
   @ReactProp(name = "strokeWidth", defaultFloat = 1f)
   public void setStrokeWidth(AirMapPolygon view, float widthInPoints) {
     float widthInScreenPx = metrics.density * widthInPoints; // done for parity with iOS
