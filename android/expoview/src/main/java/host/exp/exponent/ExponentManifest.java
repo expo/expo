@@ -118,8 +118,8 @@ public class ExponentManifest {
   public static final String MANIFEST_UPDATES_INFO_KEY = "updates";
   public static final String MANIFEST_UPDATES_TIMEOUT_KEY = "fallbackToCacheTimeout";
   public static final String MANIFEST_UPDATES_CHECK_AUTOMATICALLY_KEY = "checkAutomatically";
-  public static final String MANIFEST_UPDATES_CHECK_AUTOMATICALLY_ON_LOAD = "onLoad";
-  public static final String MANIFEST_UPDATES_CHECK_AUTOMATICALLY_ON_ERROR = "onErrorRecovery";
+  public static final String MANIFEST_UPDATES_CHECK_AUTOMATICALLY_ON_LOAD = "ON_LOAD";
+  public static final String MANIFEST_UPDATES_CHECK_AUTOMATICALLY_ON_ERROR = "ON_ERROR_RECOVERY";
 
   private static final int MAX_BITMAP_SIZE = 192;
   private static final String REDIRECT_SNIPPET = "exp.host/--/to-exp/";
