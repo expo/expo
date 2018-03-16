@@ -41,6 +41,7 @@
     Offline Support: /versions/unversioned/guides/offline-support.html
     Push Notifications: /versions/unversioned/guides/push-notifications.html
     Splash Screens: /versions/unversioned/guides/splash-screens.html
+    Configuring OTA Updates: /versions/unversioned/guides/configuring-ota-updates.html
     Using Modern JavaScript: /versions/unversioned/guides/using-modern-javascript.html
     Using ClojureScript: /versions/unversioned/guides/using-clojurescript.html
     Using Firebase: /versions/unversioned/guides/using-firebase.html
@@ -120,6 +121,6 @@
     SQLite: /versions/unversioned/sdk/sqlite.html
     Svg: /versions/unversioned/sdk/svg.html
     takeSnapshotAsync: /versions/unversioned/sdk/take-snapshot-async.html
-    Util: /versions/unversioned/sdk/util.html
+    Updates: /versions/unversioned/sdk/updates.html
     Video: /versions/unversioned/sdk/video.html
     WebBrowser: /versions/unversioned/sdk/webbrowser.html
