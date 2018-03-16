@@ -197,6 +197,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 {
   // clear any potentially old loading state
   [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:nil forExperienceId:_appRecord.experienceId];
+  [self _stopObservingBridgeNotifications];
   [self _startObservingBridgeNotificationsForBridge:bridge];
   
   if ([self enablesDeveloperTools]) {
