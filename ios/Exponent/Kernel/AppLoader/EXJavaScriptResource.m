@@ -65,14 +65,6 @@
                     successBlock:(EXCachedResourceSuccessBlock)successBlock
                       errorBlock:(EXCachedResourceErrorBlock)errorBlock
 {
-  if ([EXShellManager sharedInstance].isShell && ![EXShellManager sharedInstance].isRemoteJSEnabled) {
-    // JS downloads are disabled
-    if (behavior != EXCachedResourceOnlyCache) {
-      behavior = EXCachedResourceOnlyCache;
-      DDLogWarn(@"%s: JS downloads are not allowed. Local resource will be used if it exists.", __func__);
-    }
-  }
-  
   // For dev builds that use the packager use RCTJavaScriptLoader which handles the packager's multipart
   // responses to show loading progress.
   if (self.devToolsEnabled) {

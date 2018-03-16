@@ -222,6 +222,11 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
         }
 
         @Override
+        public void emitEvent(JSONObject params) {
+          emitUpdatesEvent(params);
+        }
+
+        @Override
         public void onError(Exception e) {
           mKernel.handleError(e);
         }
@@ -584,6 +589,10 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     // Emits a "url" event to the Linking event emitter
     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
     super.onNewIntent(intent);
+  }
+
+  public void emitUpdatesEvent(JSONObject params) {
+    KernelProvider.getInstance().addEventForExperience(mManifestUrl, new KernelConstants.ExperienceEvent(AppLoader.UPDATES_EVENT_NAME, params.toString()));
   }
 
   @Override

@@ -8,6 +8,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+FOUNDATION_EXPORT NSTimeInterval const kEXJSBundleTimeout;
+
 typedef enum EXKernelAppLoaderStatus {
   kEXKernelAppLoaderStatusNew,
   kEXKernelAppLoaderStatusHasManifest, // possibly optimistic
@@ -21,6 +23,7 @@ typedef enum EXKernelAppLoaderStatus {
 - (void)appLoader:(EXKernelAppLoader *)appLoader didLoadBundleWithProgress:(EXLoadingProgress *)progress;
 - (void)appLoader:(EXKernelAppLoader *)appLoader didFinishLoadingManifest:(NSDictionary *)manifest bundle:(NSData *)data;
 - (void)appLoader:(EXKernelAppLoader *)appLoader didFailWithError:(NSError *)error;
+- (void)appLoader:(EXKernelAppLoader *)appLoader didResolveUpdatedBundleWithManifest:(NSDictionary * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error;
 
 @end
 

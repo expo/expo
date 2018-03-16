@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		0726F0592007E438004992E7 /* EXKernelAppRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F0582007E438004992E7 /* EXKernelAppRecord.m */; };
 		0726F05C2007E446004992E7 /* EXKernelAppRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F05B2007E446004992E7 /* EXKernelAppRegistry.m */; };
+		07295CD920559E7300ED42D4 /* EXUpdatesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 07295CD820559E7300ED42D4 /* EXUpdatesManager.m */; };
+		07639ABA20507B2000B4BE4C /* EXUpdates.m in Sources */ = {isa = PBXBuildFile; fileRef = 07639AB920507B2000B4BE4C /* EXUpdates.m */; };
 		07E26F301FFFFB55004667A1 /* EXCalendarConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E26F2D1FFFFB55004667A1 /* EXCalendarConverter.m */; };
 		07E26F311FFFFB55004667A1 /* EXCalendar.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E26F2E1FFFFB55004667A1 /* EXCalendar.m */; };
 		07E26F361FFFFB68004667A1 /* EXCalendarRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E26F321FFFFB67004667A1 /* EXCalendarRequester.m */; };
@@ -311,6 +313,11 @@
 		0726F0582007E438004992E7 /* EXKernelAppRecord.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXKernelAppRecord.m; sourceTree = "<group>"; };
 		0726F05A2007E446004992E7 /* EXKernelAppRegistry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXKernelAppRegistry.h; sourceTree = "<group>"; };
 		0726F05B2007E446004992E7 /* EXKernelAppRegistry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXKernelAppRegistry.m; sourceTree = "<group>"; };
+		07295CD720559E6200ED42D4 /* EXUpdatesManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXUpdatesManager.h; sourceTree = "<group>"; };
+		07295CD820559E7300ED42D4 /* EXUpdatesManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXUpdatesManager.m; sourceTree = "<group>"; };
+		07639AB920507B2000B4BE4C /* EXUpdates.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXUpdates.m; sourceTree = "<group>"; };
+		07639ABB20507B2C00B4BE4C /* EXUpdates.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXUpdates.h; sourceTree = "<group>"; };
+		07720C2E205A0219003062F0 /* EXKernelAppLoader+Updates.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "EXKernelAppLoader+Updates.h"; sourceTree = "<group>"; };
 		07E26F2C1FFFFB55004667A1 /* EXCalendar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXCalendar.h; sourceTree = "<group>"; };
 		07E26F2D1FFFFB55004667A1 /* EXCalendarConverter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXCalendarConverter.m; sourceTree = "<group>"; };
 		07E26F2E1FFFFB55004667A1 /* EXCalendar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXCalendar.m; sourceTree = "<group>"; };
@@ -1380,6 +1387,8 @@
 				B57180FF1F0FF41600315A66 /* EXScreenOrientationManager.m */,
 				3CE707951F6A74AB00255742 /* EXSensorManager.h */,
 				3CE707931F6A725100255742 /* EXSensorManager.m */,
+				07295CD720559E6200ED42D4 /* EXUpdatesManager.h */,
+				07295CD820559E7300ED42D4 /* EXUpdatesManager.m */,
 				78D8252B2051213D00CBD9D9 /* Notifications */,
 			);
 			path = Services;
@@ -1432,6 +1441,7 @@
 				B5D0D665204F4C0400DDFC99 /* EXJavaScriptResource.h */,
 				B5D0D66C204F4C0400DDFC99 /* EXJavaScriptResource.m */,
 				B5D0D664204F4C0400DDFC99 /* EXKernelAppLoader.h */,
+				07720C2E205A0219003062F0 /* EXKernelAppLoader+Updates.h */,
 				B5D0D669204F4C0400DDFC99 /* EXKernelAppLoader.m */,
 				B5D0D662204F4C0400DDFC99 /* EXManifestResource.h */,
 				B5D0D668204F4C0400DDFC99 /* EXManifestResource.m */,
@@ -1542,6 +1552,8 @@
 				B5FB739D1FF6DADB001C764B /* EXSpeech.m */,
 				B5FB739E1FF6DADB001C764B /* EXSQLite.h */,
 				B5FB739F1FF6DADB001C764B /* EXSQLite.m */,
+				07639ABB20507B2C00B4BE4C /* EXUpdates.h */,
+				07639AB920507B2000B4BE4C /* EXUpdates.m */,
 				B5FB73A01FF6DADB001C764B /* EXUtil.h */,
 				B5FB73A11FF6DADB001C764B /* EXUtil.m */,
 				B5FB73A21FF6DADB001C764B /* EXViewShot.h */,
@@ -2625,6 +2637,7 @@
 				19382BA91EC2EACC001ED4A1 /* EXBranchManager.m in Sources */,
 				783435E3205B8BEE00DD28C3 /* AIRDummyView.m in Sources */,
 				B5FB74B71FF6DADC001C764B /* EXWebBrowser.m in Sources */,
+				07639ABA20507B2000B4BE4C /* EXUpdates.m in Sources */,
 				B5ADEE951F7DB4E000C88D2F /* EXBuildConstants.m in Sources */,
 				783435E1205B8BEE00DD28C3 /* AIRGoogleMapCallout.m in Sources */,
 				B5FB74BE1FF6DADC001C764B /* EXNativeAdView.m in Sources */,
@@ -2677,6 +2690,8 @@
 				B5FB74BD1FF6DADC001C764B /* EXNativeAdManager.m in Sources */,
 				19065BE72006015D007706D6 /* EXFileSystemManager.m in Sources */,
 				B5FB74D21FF6DADC001C764B /* EXGyroscope.m in Sources */,
+				07295CD920559E7300ED42D4 /* EXUpdatesManager.m in Sources */,
+				B5FB74611FF6DADB001C764B /* AIRMapCircleManager.m in Sources */,
 				7846B20820355E9900638E43 /* RNSVGUseManager.m in Sources */,
 				7846B20320355E9900638E43 /* RCTConvert+RNSVG.m in Sources */,
 				78343614205B8C5F00DD28C3 /* AIRMapPolylineManager.m in Sources */,

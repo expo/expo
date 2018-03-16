@@ -72,6 +72,11 @@ public abstract class DetachActivity extends ExperienceActivity {
       }
 
       @Override
+      public void emitEvent(JSONObject params) {
+        emitUpdatesEvent(params);
+      }
+
+      @Override
       public void onError(Exception e) {
         mKernel.handleError(e);
       }

@@ -735,24 +735,13 @@ public class Exponent {
 
   public void preloadManifestAndBundle(final String manifestUrl) {
     try {
-      String oldBundleUrl = null;
-      try {
-        JSONObject oldManifest = mExponentSharedPreferences.getManifest(manifestUrl).manifest;
-        oldBundleUrl = oldManifest.getString(ExponentManifest.MANIFEST_BUNDLE_URL_KEY);
-      } catch (Throwable e) {
-        EXL.e(TAG, "Couldn't get old manifest from shared preferences");
-      }
-      final String finalOldBundleUrl = oldBundleUrl;
-
       mExponentManifest.fetchManifest(manifestUrl, new ExponentManifest.ManifestListener() {
         @Override
         public void onCompleted(JSONObject manifest) {
           try {
             String bundleUrl = manifest.getString(ExponentManifest.MANIFEST_BUNDLE_URL_KEY);
-            boolean wasUpdated = !bundleUrl.equals(finalOldBundleUrl);
 
             preloadBundle(
-                wasUpdated,
                 manifest,
                 manifestUrl,
                 bundleUrl,
@@ -781,7 +770,7 @@ public class Exponent {
     }
   }
 
-  private void preloadBundle(final boolean shouldNotifyUpdated, final JSONObject manifest, final String manifestUrl, final String bundleUrl, final String id, final String sdkVersion) {
+  private void preloadBundle(final JSONObject manifest, final String manifestUrl, final String bundleUrl, final String id, final String sdkVersion) {
     try {
       Exponent.getInstance().loadJSBundle(manifest, bundleUrl, Exponent.getInstance().encodeExperienceId(id), sdkVersion, new Exponent.BundleListener() {
         @Override
@@ -792,16 +781,6 @@ public class Exponent {
         @Override
         public void onBundleLoaded(String localBundlePath) {
           EXL.d(TAG, "Successfully preloaded manifest and bundle for " + manifestUrl + " " + bundleUrl);
-
-          if (shouldNotifyUpdated) {
-            try {
-              JSONObject newVersionAvailableEvent = new JSONObject();
-              newVersionAvailableEvent.put("manifest", manifest);
-              KernelProvider.getInstance().addEventForExperience(manifestUrl, new KernelConstants.ExperienceEvent("Exponent.newVersionAvailable", newVersionAvailableEvent.toString()));
-            } catch (Throwable e) {
-              EXL.e(TAG, "Couldn't serialize newVersionAvailable event");
-            }
-          }
         }
       }, true);
     } catch (UnsupportedEncodingException e) {

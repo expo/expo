@@ -8,7 +8,7 @@
 
 @interface ABI22_0_0EXUtil ()
 
-@property (nonatomic, weak) id kernelUtilServiceDelegate;
+@property (nonatomic, weak) id kernelUpdatesServiceDelegate;
 
 @end
 
@@ -18,12 +18,12 @@
 
 // delegate to kernel linking manager because our only kernel work (right now)
 // is refreshing the foreground task.
-ABI22_0_0EX_EXPORT_SCOPED_MODULE(ExponentUtil, KernelLinkingManager);
+ABI22_0_0EX_EXPORT_SCOPED_MODULE(ExponentUtil, UpdatesManager);
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
 {
   if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
-    _kernelUtilServiceDelegate = kernelServiceInstance;
+    _kernelUpdatesServiceDelegate = kernelServiceInstance;
   }
   return self;
 }
@@ -35,7 +35,7 @@ ABI22_0_0EX_EXPORT_SCOPED_MODULE(ExponentUtil, KernelLinkingManager);
 
 ABI22_0_0RCT_EXPORT_METHOD(reload)
 {
-  [_kernelUtilServiceDelegate utilModuleDidSelectReload:self];
+  [_kernelUpdatesServiceDelegate updatesModuleDidSelectReload:self];
 }
 
 ABI22_0_0RCT_REMAP_METHOD(getCurrentLocaleAsync,

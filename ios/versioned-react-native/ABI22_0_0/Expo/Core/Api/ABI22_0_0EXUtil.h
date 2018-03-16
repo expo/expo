@@ -4,7 +4,7 @@
 
 @protocol ABI22_0_0EXUtilScopedModuleDelegate
 
-- (void)utilModuleDidSelectReload:(id)scopedUtilModule;
+- (void)updatesModuleDidSelectReload:(id)scopedUpdatesModule;
 
 @end
 

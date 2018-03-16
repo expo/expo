@@ -2,41 +2,8 @@
 
 #import "EXUtil.h"
 #import "EXScopedModuleRegistry.h"
-#import <React/RCTUIManager.h>
-#import <React/RCTBridge.h>
-#import <React/RCTUtils.h>
-
-@interface EXUtil ()
-
-@property (nonatomic, weak) id kernelUtilServiceDelegate;
-
-@end
 
 @implementation EXUtil
-
-@synthesize bridge = _bridge;
-
-// delegate to kernel linking manager because our only kernel work (right now)
-// is refreshing the foreground task.
-EX_EXPORT_SCOPED_MODULE(ExponentUtil, KernelLinkingManager);
-
-- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
-{
-  if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
-    _kernelUtilServiceDelegate = kernelServiceInstance;
-  }
-  return self;
-}
-
-- (dispatch_queue_t)methodQueue
-{
-  return self.bridge.uiManager.methodQueue;
-}
-
-RCT_EXPORT_METHOD(reload)
-{
-  [_kernelUtilServiceDelegate utilModuleDidSelectReload:self];
-}
 
 + (NSString *)escapedResourceName:(NSString *)name
 {

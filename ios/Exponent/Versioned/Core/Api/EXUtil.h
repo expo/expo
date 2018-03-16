@@ -1,14 +1,8 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import "EXScopedBridgeModule.h"
+#import <UIKit/UIKit.h>
 
-@protocol EXUtilScopedModuleDelegate
-
-- (void)utilModuleDidSelectReload:(id)scopedUtilModule;
-
-@end
-
-@interface EXUtil : EXScopedBridgeModule
+@interface EXUtil : NSObject
 
 + (NSString *)escapedResourceName:(NSString *)name;
 + (void)performSynchronouslyOnMainThread:(void (^)(void))block;

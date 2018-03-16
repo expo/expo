@@ -13,6 +13,7 @@
 #import "EXRemoteNotificationManager.h"
 #import "EXScreenOrientationManager.h"
 #import "EXSensorManager.h"
+#import "EXUpdatesManager.h"
 
 @interface EXKernelServiceRegistry ()
 
@@ -26,6 +27,7 @@
 @property (nonatomic, strong) EXRemoteNotificationManager *remoteNotificationManager;
 @property (nonatomic, strong) EXScreenOrientationManager *screenOrientationManager;
 @property (nonatomic, strong) EXSensorManager *sensorManager;
+@property (nonatomic, strong) EXUpdatesManager *updatesManager;
 @property (nonatomic, strong) NSDictionary<NSString *, id> *allServices;
 
 @end
@@ -46,6 +48,7 @@
     [self googleAuthManager];
     [self sensorManager];
     [self fileSystemManager];
+    [self updatesManager];
   }
   return self;
 }
@@ -130,11 +133,19 @@
   return _sensorManager;
 }
 
+- (EXUpdatesManager *)updatesManager
+{
+  if (!_updatesManager) {
+    _updatesManager = [[EXUpdatesManager alloc] init];
+  }
+  return _updatesManager;
+}
+
 - (NSDictionary *)allServices
 {
   if (!_allServices) {
     NSMutableDictionary *result = [NSMutableDictionary dictionary];
-    for (id service in @[ self.branchManager, self.cachedResourceManager, self.errorRecoveryManager, self.fileSystemManager, self.googleAuthManager, self.homeModuleManager, self.linkingManager, self.remoteNotificationManager, self.screenOrientationManager, self.sensorManager ]) {
+    for (id service in @[ self.branchManager, self.cachedResourceManager, self.errorRecoveryManager, self.fileSystemManager, self.googleAuthManager, self.homeModuleManager, self.linkingManager, self.remoteNotificationManager, self.screenOrientationManager, self.sensorManager, self.updatesManager ]) {
       NSString *className = NSStringFromClass([service class]);
       result[className] = service;
     }

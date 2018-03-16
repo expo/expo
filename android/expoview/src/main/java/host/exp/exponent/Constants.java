@@ -22,6 +22,7 @@ public class Constants {
     public String SHELL_APP_SCHEME;
     public String RELEASE_CHANNEL;
     public boolean SHOW_LOADING_VIEW_IN_SHELL_APP;
+    public boolean ARE_REMOTE_UPDATES_ENABLED;
     public List<Constants.EmbeddedResponse> EMBEDDED_RESPONSES;
     public int ANDROID_VERSION_CODE;
   }
@@ -43,6 +44,7 @@ public class Constants {
   public static boolean DISABLE_NUX = false;
   public static String RELEASE_CHANNEL = "default";
   public static boolean SHOW_LOADING_VIEW_IN_SHELL_APP = false;
+  public static boolean ARE_REMOTE_UPDATES_ENABLED = true;
   public static int ANDROID_VERSION_CODE;
 
   public static void setSdkVersions(List<String> sdkVersions) {
@@ -87,6 +89,7 @@ public class Constants {
       SHELL_APP_SCHEME = appConstants.SHELL_APP_SCHEME;
       RELEASE_CHANNEL = appConstants.RELEASE_CHANNEL;
       SHOW_LOADING_VIEW_IN_SHELL_APP = appConstants.SHOW_LOADING_VIEW_IN_SHELL_APP;
+      ARE_REMOTE_UPDATES_ENABLED = appConstants.ARE_REMOTE_UPDATES_ENABLED;
       ANDROID_VERSION_CODE = appConstants.ANDROID_VERSION_CODE;
 
       embeddedResponses.addAll(appConstants.EMBEDDED_RESPONSES);
