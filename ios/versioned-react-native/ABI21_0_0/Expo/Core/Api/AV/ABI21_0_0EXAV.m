@@ -497,6 +497,11 @@ withEXVideoViewForTag:(nonnull NSNumber *)ReactABI21_0_0Tag
 
 ABI21_0_0EX_EXPORT_SCOPED_MODULE(ExponentAV, AudioSessionManager);
 
+- (NSArray<NSString *> *)supportedEvents
+{
+  return @[];
+}
+
 #pragma mark - Audio API: Global settings
 
 ABI21_0_0RCT_EXPORT_METHOD(setAudioIsEnabled:(BOOL)value
