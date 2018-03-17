@@ -252,10 +252,10 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
     if (cacheBehavior == EXCachedResourceNoCache && !_confirmedManifest) {
       _confirmedManifest = _optimisticManifest;
     }
-    [self _fetchRemoteJSBundleInProductionWithOptimisticManifest];
     if (_delegate) {
       [_delegate appLoader:self didLoadOptimisticManifest:_optimisticManifest];
     }
+    [self _fetchRemoteJSBundleInProductionWithOptimisticManifest];
   } failure:^(NSError * _Nonnull error) {
     [self _finishWithError:error];
   }];
