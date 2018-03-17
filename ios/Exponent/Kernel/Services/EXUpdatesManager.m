@@ -40,8 +40,8 @@ ofDownloadWithManifest:(NSDictionary * _Nullable)manifest
              @"type": EXUpdatesNotAvailableEventType
              };
   }
-  if (appRecord.status == kEXKernelAppRecordStatusRunning) {
-    RCTBridge *bridge = appRecord.appManager.reactBridge;
+  RCTBridge *bridge = appRecord.appManager.reactBridge;
+  if (appRecord.status == kEXKernelAppRecordStatusRunning && [self _doesBridgeSupportUpdatesModule:bridge]) {
     [bridge.scopedModules.updates sendEventWithBody:body];
   }
 }
@@ -100,6 +100,12 @@ didRequestBundleWithManifest:(NSDictionary *)manifest
                               progress:progressDictBlock
                                success:success
                                  error:failure];
+}
+
+- (BOOL)_doesBridgeSupportUpdatesModule:(RCTBridge *)bridge
+{
+  // sdk versions prior to 26 didn't include this module.
+  return ([bridge.scopedModules respondsToSelector:@selector(updates)]);
 }
 
 @end
