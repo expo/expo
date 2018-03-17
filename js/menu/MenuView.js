@@ -361,7 +361,7 @@ export default class MenuView extends React.Component {
 
 let styles = StyleSheet.create({
   container: {
-    flex: 1,
+    backgroundColor: '#ffffff',
   },
   overlay: {
     flex: 1,
