@@ -1,0 +1,15 @@
+// Copyright 2004-present Facebook. All Rights Reserved.
+
+#pragma once
+
+#include <cxxReactABI26_0_0/JSBigString.h>
+#include <jschelpers/JavaScriptCore.h>
+#include <jschelpers/Value.h>
+
+namespace facebook {
+namespace ReactABI26_0_0 {
+
+String jsStringFromBigString(JSContextRef ctx, const JSBigString& bigstr);
+
+}
+}
