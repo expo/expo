@@ -17,6 +17,12 @@ typedef enum EXKernelAppLoaderStatus {
   kEXKernelAppLoaderStatusError,
 } EXKernelAppLoaderStatus;
 
+@protocol EXKernelAppLoaderDataSource <NSObject>
+
+- (NSString *)bundleResourceNameForAppLoader:(EXKernelAppLoader *)appLoader;
+
+@end
+
 @protocol EXKernelAppLoaderDelegate <NSObject>
 
 - (void)appLoader:(EXKernelAppLoader *)appLoader didLoadOptimisticManifest:(NSDictionary *)manifest;
@@ -33,7 +39,9 @@ typedef enum EXKernelAppLoaderStatus {
 @property (nonatomic, readonly) NSDictionary * _Nullable manifest; // possibly optimistic
 @property (nonatomic, readonly) NSData * _Nullable bundle;
 @property (nonatomic, readonly) EXKernelAppLoaderStatus status;
+
 @property (nonatomic, weak) id<EXKernelAppLoaderDelegate> delegate;
+@property (nonatomic, weak) id<EXKernelAppLoaderDataSource> dataSource;
 
 - (instancetype)initWithManifestUrl:(NSURL *)url;
 - (instancetype)initWithLocalManifest:(NSDictionary * _Nonnull)manifest;

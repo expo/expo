@@ -24,7 +24,8 @@ const CGFloat kEXAutoReloadDebounceSeconds = 0.1;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXAppViewController () <EXReactAppManagerUIDelegate, EXKernelAppLoaderDelegate, EXErrorViewDelegate>
+@interface EXAppViewController ()
+  <EXReactAppManagerUIDelegate, EXKernelAppLoaderDelegate, EXErrorViewDelegate>
 
 @property (nonatomic, assign) BOOL isLoading;
 @property (nonatomic, assign) BOOL isBridgeAlreadyLoading;
@@ -71,6 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
   [super viewDidAppear:animated];
   if (_appRecord && _appRecord.status == kEXKernelAppRecordStatusNew) {
     _appRecord.appLoader.delegate = self;
+    _appRecord.appLoader.dataSource = _appRecord.appManager;
     [self refresh];
   }
 }

@@ -1,5 +1,6 @@
 
 #import <UIKit/UIKit.h>
+#import "EXKernelAppLoader.h"
 #import "EXKernelAppRecord.h"
 
 typedef enum EXReactAppManagerStatus {
@@ -19,7 +20,7 @@ typedef enum EXReactAppManagerStatus {
 
 @end
 
-@interface EXReactAppManager : NSObject
+@interface EXReactAppManager : NSObject <EXKernelAppLoaderDataSource>
 
 - (instancetype)initWithAppRecord:(EXKernelAppRecord *)record initialProps:(NSDictionary *)initialProps;
 - (void)rebuildBridge;

@@ -142,7 +142,12 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
 - (BOOL)_isCacheUpToDate
 {
-  return self.confirmedManifest && self.optimisticManifest && self.confirmedManifest[@"revisionId"] && [self.confirmedManifest[@"revisionId"] isEqualToString:self.optimisticManifest[@"revisionId"]];
+  if (_localManifest) {
+    // local manifest won't give us sufficient information to tell
+    return NO;
+  }
+  return self.confirmedManifest && self.optimisticManifest && self.confirmedManifest[@"revisionId"]
+    && [self.confirmedManifest[@"revisionId"] isEqualToString:self.optimisticManifest[@"revisionId"]];
 }
 
 - (void)_beginRequestWithLocalManifest
@@ -421,7 +426,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
                            success:(void (^)(NSData *))successBlock
                              error:(void (^)(NSError *))errorBlock
 {
-  EXJavaScriptResource *jsResource = [[EXJavaScriptResource alloc] initWithBundleName:[self _bundleNameWithManifest:manifest]
+  EXJavaScriptResource *jsResource = [[EXJavaScriptResource alloc] initWithBundleName:[_dataSource bundleResourceNameForAppLoader:self]
                                                                             remoteUrl:[self _bundleUrlWithManifest:manifest]
                                                                       devToolsEnabled:[self _areDevToolsEnabledWithManifest:manifest]];
   jsResource.abiVersion = [[EXVersions sharedInstance] availableSdkVersionForManifest:manifest];
@@ -456,16 +461,6 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
     return [NSURL URLWithString:bundleUrlJsonValue relativeToURL:_httpManifestUrl];
   }
   return nil;
-}
-
-- (NSString *)_bundleNameWithManifest:(NSDictionary *)manifest
-{
-  if ([EXShellManager sharedInstance].isShell) {
-    NSLog(@"EXKernelAppLoader: Standalone bundle remote url is %@", [EXShellManager sharedInstance].shellManifestUrl);
-    return kEXShellBundleResourceName;
-  } else {
-    return [self _experienceIdWithManifest:manifest];
-  }
 }
 
 - (BOOL)_areDevToolsEnabledWithManifest:(NSDictionary *)manifest

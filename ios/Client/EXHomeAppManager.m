@@ -122,6 +122,11 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
   }
 }
 
+- (NSString *)bundleResourceNameForAppLoader:(EXKernelAppLoader *)appLoader
+{
+  return kEXHomeBundleResourceName;
+}
+
 #pragma mark - util
 
 - (void)_dispatchHomeJSEvent:(NSString *)eventName body:(NSDictionary *)eventBody onSuccess:(void (^_Nullable)(NSDictionary * _Nullable))success onFailure:(void (^_Nullable)(NSString * _Nullable))failure
@@ -186,26 +191,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
   return nil;
 }
 
-// TODO: BEN: here's some other things that were different about the old kernel manager
-
 /*
-- (NSString *)bundleNameForJSResource
-{
-  return kEXKernelBundleResourceName;
-}
-
-- (EXCachedResourceBehavior)cacheBehaviorForJSResource
-{
-  if ([EXBuildConstants sharedInstance].isDevKernel) {
-    // to prevent running dev native code against prod js.
-    return EXCachedResourceNoCache;
-  } else {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:kEXSkipCacheUserDefaultsKey] ?
-    EXCachedResourceNoCache :
-    EXCachedResourceUseCacheImmediately;
-  }
-}
-
  // TODO: ben: restore
  // this happened before the js resource download call:
  if ([self shouldInvalidateJSResourceCache]) {
