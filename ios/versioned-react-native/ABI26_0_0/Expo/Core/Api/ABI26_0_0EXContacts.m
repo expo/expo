@@ -141,7 +141,7 @@ ABI26_0_0RCT_EXPORT_METHOD(getContactsAsync:(NSDictionary *)options resolver:(AB
       contact[@"instantMessageAddresses"] = [self _instantMessageAddressesForContact:person];
     }
     if ([keysToFetch containsObject:CNContactUrlAddressesKey]) {
-      contact[@"urls"] = [self _urlsForContact:person];
+      contact[@"urlAddresses"] = [self _urlsForContact:person];
     }
     if ([keysToFetch containsObject:CNContactDatesKey]) {
       contact[@"dates"] = [self _datesForContact:person];

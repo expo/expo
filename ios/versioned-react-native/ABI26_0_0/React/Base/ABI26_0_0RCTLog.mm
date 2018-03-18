@@ -215,7 +215,7 @@ void _ABI26_0_0RCTLogNativeInternal(ABI26_0_0RCTLogLevel level, const char *file
       logFunction(level, ABI26_0_0RCTLogSourceNative, fileName ? @(fileName) : nil, lineNumber > 0 ? @(lineNumber) : nil, message);
     }
 
-#if ABI26_0_0RCT_DEBUG
+#if ABI26_0_0RCT_DEV
 
     // Log to red box in debug mode.
     if (ABI26_0_0RCTSharedApplication() && level >= ABI26_0_0RCTLOG_REDBOX_LEVEL) {
