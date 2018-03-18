@@ -122,7 +122,7 @@ Fields: `{ service, localizedProfile, url, username, userId }`
 
 Fields: `{ service, username, localizedService }`
 
-**urls** -- An array containing website urls of a contact.
+**urlAddresses** -- An array containing website urls of a contact.
 
 Fields: `{ url }`
 
