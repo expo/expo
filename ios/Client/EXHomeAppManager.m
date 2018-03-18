@@ -122,9 +122,20 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
   }
 }
 
-- (NSString *)bundleResourceNameForAppLoader:(EXKernelAppLoader *)appLoader
+- (NSString *)bundleResourceNameForAppLoader:(__unused EXKernelAppLoader *)appLoader
 {
   return kEXHomeBundleResourceName;
+}
+
+- (BOOL)appLoaderShouldInvalidateBundleCache:(__unused EXKernelAppLoader *)appLoader
+{
+  // if crashlytics shows that we're recovering from a native crash, invalidate any downloaded home cache.
+  BOOL shouldClearKernelCache = [[NSUserDefaults standardUserDefaults] boolForKey:kEXKernelClearJSCacheUserDefaultsKey];
+  if (shouldClearKernelCache) {
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kEXKernelClearJSCacheUserDefaultsKey];
+    return YES;
+  }
+  return NO;
 }
 
 #pragma mark - util
@@ -190,24 +201,5 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
   }
   return nil;
 }
-
-/*
- // TODO: ben: restore
- // this happened before the js resource download call:
- if ([self shouldInvalidateJSResourceCache]) {
-   [_jsResource removeCache];
- }
-- (BOOL)shouldInvalidateJSResourceCache
-{
-  // if crashlytics shows that we're recovering from a native crash, invalidate any downloaded kernel cache.
-  BOOL shouldClearKernelCache = [[NSUserDefaults standardUserDefaults] boolForKey:kEXKernelClearJSCacheUserDefaultsKey];
-  if (shouldClearKernelCache) {
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kEXKernelClearJSCacheUserDefaultsKey];
-    return YES;
-  }
-  return NO;
-}
-
-*/
 
 @end

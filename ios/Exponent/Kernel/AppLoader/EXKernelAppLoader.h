@@ -20,6 +20,7 @@ typedef enum EXKernelAppLoaderStatus {
 @protocol EXKernelAppLoaderDataSource <NSObject>
 
 - (NSString *)bundleResourceNameForAppLoader:(EXKernelAppLoader *)appLoader;
+- (BOOL)appLoaderShouldInvalidateBundleCache:(EXKernelAppLoader *)appLoader;
 
 @end
 

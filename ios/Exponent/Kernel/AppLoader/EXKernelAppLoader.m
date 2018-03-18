@@ -437,6 +437,10 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   if ([EXShellManager sharedInstance].isShell && ![EXShellManager sharedInstance].areRemoteUpdatesEnabled) {
     behavior = EXCachedResourceOnlyCache;
   }
+  
+  if ([_dataSource appLoaderShouldInvalidateBundleCache:self]) {
+    [jsResource removeCache];
+  }
 
   [jsResource loadResourceWithBehavior:cacheBehavior progressBlock:progressBlock successBlock:successBlock errorBlock:errorBlock];
 }
