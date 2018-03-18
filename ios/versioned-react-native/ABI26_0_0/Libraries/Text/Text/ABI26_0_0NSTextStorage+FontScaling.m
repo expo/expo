@@ -19,7 +19,7 @@ typedef NS_OPTIONS(NSInteger, ABI26_0_0RCTTextSizeComparisonOptions) {
 
 @implementation NSTextStorage (FontScaling)
 
-- (void)scaleFontSizeToFitSize:(CGSize)size
+- (void)abi26_0_0_rct_scaleFontSizeToFitSize:(CGSize)size
                minimumFontSize:(CGFloat)minimumFontSize
                maximumFontSize:(CGFloat)maximumFontSize
 {
@@ -32,12 +32,12 @@ typedef NS_OPTIONS(NSInteger, ABI26_0_0RCTTextSizeComparisonOptions) {
   CGFloat lastRatioWhichFits = 0.02;
 
   while (true) {
-    [self scaleFontSizeWithRatio:ratio
+    [self abi26_0_0_rct_scaleFontSizeWithRatio:ratio
                  minimumFontSize:minimumFontSize
                  maximumFontSize:maximumFontSize];
 
     ABI26_0_0RCTTextSizeComparisonOptions comparsion =
-      [self compareToSize:size thresholdRatio:0.01];
+      [self abi26_0_0_rct_compareToSize:size thresholdRatio:0.01];
 
     if (
         (comparsion & ABI26_0_0RCTTextSizeComparisonWithinRange) &&
@@ -62,7 +62,7 @@ typedef NS_OPTIONS(NSInteger, ABI26_0_0RCTTextSizeComparisonOptions) {
       [self replaceCharactersInRange:(NSRange){0, self.length}
                 withAttributedString:originalAttributedString];
 
-      [self scaleFontSizeWithRatio:lastRatioWhichFits
+      [self abi26_0_0_rct_scaleFontSizeWithRatio:lastRatioWhichFits
                    minimumFontSize:minimumFontSize
                    maximumFontSize:maximumFontSize];
       return;
@@ -74,7 +74,7 @@ typedef NS_OPTIONS(NSInteger, ABI26_0_0RCTTextSizeComparisonOptions) {
 }
 
 
-- (ABI26_0_0RCTTextSizeComparisonOptions)compareToSize:(CGSize)size thresholdRatio:(CGFloat)thresholdRatio
+- (ABI26_0_0RCTTextSizeComparisonOptions)abi26_0_0_rct_compareToSize:(CGSize)size thresholdRatio:(CGFloat)thresholdRatio
 {
   NSLayoutManager *layoutManager = self.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
@@ -112,7 +112,7 @@ typedef NS_OPTIONS(NSInteger, ABI26_0_0RCTTextSizeComparisonOptions) {
   return result;
 }
 
-- (void)scaleFontSizeWithRatio:(CGFloat)ratio
+- (void)abi26_0_0_rct_scaleFontSizeWithRatio:(CGFloat)ratio
                minimumFontSize:(CGFloat)minimumFontSize
                maximumFontSize:(CGFloat)maximumFontSize
 {
