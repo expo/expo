@@ -17,8 +17,6 @@
 @property (nonatomic, strong) UIButton *btnResetNux;
 @property (nonatomic, strong) UILabel *lblKernelHeading;
 @property (nonatomic, strong) UILabel *lblKernelInfo;
-@property (nonatomic, strong) UILabel *lblCacheHeading;
-@property (nonatomic, strong) UILabel *lblCacheInfo;
 @property (nonatomic, strong) UILabel *lblIsDevKernel;
 
 - (void)_onTapCancel;
@@ -66,25 +64,16 @@
   self.lblIsDevKernel = [[UILabel alloc] init];
   [self.view addSubview:_lblIsDevKernel];
   
-  // cache info heading
-  self.lblCacheHeading = [[UILabel alloc] init];
-  _lblCacheHeading.text = @"Kernel JS Cache Source";
-  [self.view addSubview:_lblCacheHeading];
-  
-  // cache info label
-  self.lblCacheInfo = [[UILabel alloc] init];
-  [self.view addSubview:_lblCacheInfo];
-  
   for (UIButton *btn in @[ _btnDevMenu, _btnResetNux ]) {
     btn.layer.cornerRadius = 3.0f;
     btn.backgroundColor = [UIColor colorWithWhite:0.9f alpha:1.0f];
   }
   
-  for (UILabel *lbl in @[ _lblKernelHeading, _lblIsDevKernel, _lblCacheHeading ]) {
+  for (UILabel *lbl in @[ _lblKernelHeading, _lblIsDevKernel ]) {
     lbl.font = [UIFont boldSystemFontOfSize:10.0f];
     lbl.textColor = [UIColor blackColor];
   }
-  for (UILabel *lbl in @[ _lblKernelInfo, _lblCacheInfo ]) {
+  for (UILabel *lbl in @[ _lblKernelInfo ]) {
     lbl.numberOfLines = 0;
     lbl.font = [UIFont systemFontOfSize:10.0f];
     lbl.textColor = [UIColor grayColor];
@@ -93,7 +82,7 @@
 
 - (UIRectEdge) edgesForExtendedLayout
 {
-  return [super edgesForExtendedLayout] ^ UIRectEdgeTop ^ UIRectEdgeBottom;
+  return UIRectEdgeNone;
 }
 
 - (UIBarPosition)positionForBar:(__unused id<UIBarPositioning>)bar
@@ -101,25 +90,25 @@
   return UIBarPositionTopAttached;
 }
 
+- (BOOL)extendedLayoutIncludesOpaqueBars
+{
+  return YES;
+}
+
 - (void)viewWillLayoutSubviews
 {
   [super viewWillLayoutSubviews];
   _vTitleBar.frame = CGRectMake(0.0f, 40.0f, self.view.frame.size.width, 64.0f);
   
-  _lblKernelHeading.frame = CGRectMake(16.0f, CGRectGetMaxY(_vTitleBar.frame) + 16.0f, self.view.bounds.size.width - 32.0f, 18.0f);
+  _lblKernelHeading.frame = CGRectMake(16.0f, CGRectGetMaxY(_vTitleBar.frame) + 12.0f, self.view.bounds.size.width - 32.0f, 18.0f);
   _lblKernelInfo.frame = CGRectMake(0, 0, _lblKernelHeading.bounds.size.width, CGFLOAT_MAX);
   [_lblKernelInfo sizeToFit];
   _lblKernelInfo.frame = CGRectMake(_lblKernelHeading.frame.origin.x, CGRectGetMaxY(_lblKernelHeading.frame) + 6.0f, _lblKernelInfo.bounds.size.width, _lblKernelInfo.bounds.size.height);
   
-  _lblIsDevKernel.frame = CGRectMake(_lblKernelHeading.frame.origin.x, CGRectGetMaxY(_lblKernelInfo.frame) + 16.0f, _lblKernelHeading.bounds.size.width, _lblKernelHeading.bounds.size.height);
+  _lblIsDevKernel.frame = CGRectMake(_lblKernelHeading.frame.origin.x, CGRectGetMaxY(_lblKernelInfo.frame) + 12.0f, _lblKernelHeading.bounds.size.width, _lblKernelHeading.bounds.size.height);
 
-  _lblCacheHeading.frame = CGRectMake(_lblKernelHeading.frame.origin.x, CGRectGetMaxY(_lblIsDevKernel.frame) + 8.0f, _lblKernelHeading.bounds.size.width, _lblKernelHeading.bounds.size.height);
-  _lblCacheInfo.frame = CGRectMake(0, 0, _lblCacheHeading.bounds.size.width, CGFLOAT_MAX);
-  [_lblCacheInfo sizeToFit];
-  _lblCacheInfo.frame = CGRectMake(_lblCacheHeading.frame.origin.x, CGRectGetMaxY(_lblCacheHeading.frame) + 6.0f, _lblCacheInfo.bounds.size.width, _lblCacheInfo.bounds.size.height);
-  
   _btnDevMenu.frame = CGRectMake(0, 0, _lblKernelHeading.bounds.size.width, 36.0f);
-  _btnDevMenu.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMaxY(_lblCacheInfo.frame) + 42.0f);
+  _btnDevMenu.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMaxY(_lblIsDevKernel.frame) + 42.0f);
 
   _btnResetNux.frame = CGRectMake(0, 0, _btnDevMenu.bounds.size.width, _btnDevMenu.bounds.size.height);
   _btnResetNux.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMaxY(_btnDevMenu.frame) + 30.0f);
@@ -175,15 +164,14 @@
   EXAssertMainThread();
   [self _populateKernelInfoLabel];
   [self _populateDevKernelLabel];
-  [self _populateCacheInfoLabel];
 }
 
 - (void)_populateKernelInfoLabel
 {
-  NSURL *kernelUrl = nil;// TODO: BEN [old_EXKernelReactAppManager kernelBundleUrl];
-  _lblKernelInfo.text = (kernelUrl) ? kernelUrl.absoluteString : @"";
+  NSString *kernelUrl = [[EXHomeAppManager bundledHomeManifest] objectForKey:@"bundleUrl"];
+  _lblKernelInfo.text = kernelUrl;
 
-  NSMutableURLRequest *kernelReq = [NSMutableURLRequest requestWithURL:kernelUrl];
+  NSMutableURLRequest *kernelReq = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:kernelUrl]];
   EXFileDownloader *downloader = [[EXFileDownloader alloc] init];
   [downloader setHTTPHeaderFields:kernelReq];
   NSString *headerString = [kernelReq allHTTPHeaderFields].description;
@@ -196,51 +184,6 @@
 {
   BOOL isDevKernel = [EXBuildConstants sharedInstance].isDevKernel;
   _lblIsDevKernel.text = [NSString stringWithFormat:@"Development kernel? %@", (isDevKernel) ? @"Yes" : @"No"];
-}
-
-- (void)_populateCacheInfoLabel
-{
-  // TODO: BEN
-  // the actual logic for downloading the kernel JS lives in old_EXKernelReactAppManager and EXJavaScriptLoader;
-  // we just provide diagnostics on it here
-  
-  /* if ([EXBuildConstants sharedInstance].isDevKernel) {
-    _lblCacheInfo.text = @"No cache is used when developing the kernel, though one may exist.";
-  } else {
-    NSURL *dummyUrl = [NSURL URLWithString:@""]; // we're just making this for diagnostic purposes and won't download anything here
-    EXJavaScriptResource *dummyResource = [[EXJavaScriptResource alloc] initWithBundleName:kEXKernelBundleResourceName
-                                                                                 remoteUrl:dummyUrl
-                                                                           devToolsEnabled:NO];
-    NSString *localBundlePath = [dummyResource resourceLocalPathPreferringCache];
-    NSDate *dtmBundleModified;
-    
-    if (localBundlePath) {
-      if ([[NSFileManager defaultManager] fileExistsAtPath:localBundlePath isDirectory:nil]) {
-        NSURL *fileUrl = [NSURL fileURLWithPath:localBundlePath];
-        NSError *err;
-        [fileUrl getResourceValue:&dtmBundleModified forKey:NSURLContentModificationDateKey error:&err];
-        if (err) {
-          dtmBundleModified = nil;
-        }
-      } else {
-        localBundlePath = nil;
-      }
-    }
-    
-    if (localBundlePath) {
-      _lblCacheInfo.text = localBundlePath;
-      if (dtmBundleModified) {
-        NSString *dateString = [NSString stringWithFormat:@"\n\nCache modified: %@",
-                                [NSDateFormatter localizedStringFromDate:dtmBundleModified
-                                                               dateStyle:NSDateFormatterShortStyle
-                                                               timeStyle:NSDateFormatterFullStyle]];
-        _lblCacheInfo.text = [_lblCacheInfo.text stringByAppendingString:dateString];
-      }
-    } else {
-      _lblCacheInfo.text = @"No local cache exists";
-    }
-  }
-  [self.view setNeedsLayout]; */
 }
 
 #pragma mark - Listeners

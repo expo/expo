@@ -272,8 +272,6 @@ void EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceClassName)
 }
 
 /**
- * TODO: ben: audit
- * 
  *  Expected params:
  *    NSDictionary *manifest
  *    NSDictionary *constants
