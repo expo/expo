@@ -271,8 +271,6 @@ void ABI26_0_0EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceC
 }
 
 /**
- * TODO: ben: audit
- * 
  *  Expected params:
  *    NSDictionary *manifest
  *    NSDictionary *constants

@@ -222,7 +222,6 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"EXAppD
     return YES;
   }
 
-  // TODO: don't want to launch more bridges when in detached state.
   return [EXKernelLinkingManager application:application openURL:url sourceApplication:sourceApplication annotation:annotation];
 }
 
@@ -250,7 +249,6 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"EXAppD
       NSUInteger matchCount = [regex numberOfMatchesInString:path options:0 range:NSMakeRange(0, path.length)];
       
       if (matchCount > 0) {
-        // TODO: don't want to launch more bridges when in detached state.
         [EXKernelLinkingManager application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
         return YES;
       } else {
