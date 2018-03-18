@@ -2,8 +2,6 @@
 
 #import <UIKit/UIKit.h>
 
-FOUNDATION_EXPORT NSString * const kEXSkipCacheUserDefaultsKey;
-
 @interface EXHomeDiagnosticsViewController : UIViewController
 
 @end

@@ -186,6 +186,18 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   [_versionManager bridgeDidBackground];
 }
 
+#pragma mark - EXKernelAppLoaderDataSource
+
+- (NSString *)bundleResourceNameForAppLoader:(EXKernelAppLoader *)appLoader
+{
+  if ([EXShellManager sharedInstance].isShell) {
+    NSLog(@"Standalone bundle remote url is %@", [EXShellManager sharedInstance].shellManifestUrl);
+    return kEXShellBundleResourceName;
+  } else {
+    return appLoader.manifest[@"id"];
+  }
+}
+
 #pragma mark - RCTBridgeDelegate
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge

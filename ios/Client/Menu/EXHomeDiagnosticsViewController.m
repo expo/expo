@@ -10,8 +10,6 @@
 
 #import <React/RCTBridge.h>
 
-NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
-
 @interface EXHomeDiagnosticsViewController () <UINavigationBarDelegate>
 
 @property (nonatomic, strong) UINavigationBar *vTitleBar;
@@ -22,8 +20,6 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
 @property (nonatomic, strong) UILabel *lblCacheHeading;
 @property (nonatomic, strong) UILabel *lblCacheInfo;
 @property (nonatomic, strong) UILabel *lblIsDevKernel;
-@property (nonatomic, strong) UILabel *lblUseCache;
-@property (nonatomic, strong) UISwitch *vUseCache;
 
 - (void)_onTapCancel;
 - (void)_onTapDevMenu;
@@ -79,22 +75,12 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
   self.lblCacheInfo = [[UILabel alloc] init];
   [self.view addSubview:_lblCacheInfo];
   
-  // use cache label
-  self.lblUseCache = [[UILabel alloc] init];
-  _lblUseCache.text = @"Use kernel cache for prod kernel?";
-  [self.view addSubview:_lblUseCache];
-  
-  // use cache switch
-  _vUseCache = [[UISwitch alloc] init];
-  [_vUseCache addTarget:self action:@selector(_handleUseCacheChanged:) forControlEvents:UIControlEventValueChanged];
-  [self.view addSubview:_vUseCache];
-  
   for (UIButton *btn in @[ _btnDevMenu, _btnResetNux ]) {
     btn.layer.cornerRadius = 3.0f;
     btn.backgroundColor = [UIColor colorWithWhite:0.9f alpha:1.0f];
   }
   
-  for (UILabel *lbl in @[ _lblKernelHeading, _lblIsDevKernel, _lblCacheHeading, _lblUseCache ]) {
+  for (UILabel *lbl in @[ _lblKernelHeading, _lblIsDevKernel, _lblCacheHeading ]) {
     lbl.font = [UIFont boldSystemFontOfSize:10.0f];
     lbl.textColor = [UIColor blackColor];
   }
@@ -132,11 +118,8 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
   [_lblCacheInfo sizeToFit];
   _lblCacheInfo.frame = CGRectMake(_lblCacheHeading.frame.origin.x, CGRectGetMaxY(_lblCacheHeading.frame) + 6.0f, _lblCacheInfo.bounds.size.width, _lblCacheInfo.bounds.size.height);
   
-  _vUseCache.center = CGPointMake(_lblCacheInfo.frame.origin.x + _vUseCache.bounds.size.width * 0.5f, CGRectGetMaxY(_lblCacheInfo.frame) + _vUseCache.bounds.size.height * 0.5f + 8.0f);
-  _lblUseCache.frame = CGRectMake(CGRectGetMaxX(_vUseCache.frame) + 4.0f, _vUseCache.frame.origin.y, self.view.bounds.size.width, _vUseCache.frame.size.height);
-  
   _btnDevMenu.frame = CGRectMake(0, 0, _lblKernelHeading.bounds.size.width, 36.0f);
-  _btnDevMenu.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMaxY(_vUseCache.frame) + 42.0f);
+  _btnDevMenu.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMaxY(_lblCacheInfo.frame) + 42.0f);
 
   _btnResetNux.frame = CGRectMake(0, 0, _btnDevMenu.bounds.size.width, _btnDevMenu.bounds.size.height);
   _btnResetNux.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMaxY(_btnDevMenu.frame) + 30.0f);
@@ -193,8 +176,6 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
   [self _populateKernelInfoLabel];
   [self _populateDevKernelLabel];
   [self _populateCacheInfoLabel];
-  BOOL skipCache = [[NSUserDefaults standardUserDefaults] boolForKey:kEXSkipCacheUserDefaultsKey];
-  _vUseCache.on = !skipCache;
 }
 
 - (void)_populateKernelInfoLabel
@@ -270,12 +251,6 @@ NSString * const kEXSkipCacheUserDefaultsKey = @"EXSkipCacheUserDefaultsKey";
   dispatch_async(dispatch_get_main_queue(), ^{
     [weakSelf _populateContent];
   });
-}
-
-- (void)_handleUseCacheChanged:(id)sender
-{
-  [[NSUserDefaults standardUserDefaults] setBool:!_vUseCache.isOn forKey:kEXSkipCacheUserDefaultsKey];
-  [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 @end
