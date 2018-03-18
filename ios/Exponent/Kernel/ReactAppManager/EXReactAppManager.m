@@ -198,6 +198,11 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   }
 }
 
+- (BOOL)appLoaderShouldInvalidateBundleCache:(EXKernelAppLoader *)appLoader
+{
+  return NO;
+}
+
 #pragma mark - RCTBridgeDelegate
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
