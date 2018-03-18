@@ -51,7 +51,7 @@
     _loadingIndicator.center = CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds));
     if (_vCancel) {
       _loadingIndicator.center = CGPointMake(_loadingIndicator.center.x, _loadingIndicator.center.y - 64.0f);
-      CGFloat vCancelY = CGRectGetMaxY(_loadingIndicator.frame) + 24.0f;
+      CGFloat vCancelY = CGRectGetMaxY(_loadingIndicator.frame) + 8.0f;
       _vCancel.frame = CGRectMake(0, vCancelY, self.bounds.size.width, self.bounds.size.height - vCancelY);
     }
   }
@@ -96,8 +96,8 @@
     self.loadingView = [[UIView alloc] init];
     [self addSubview:_loadingView];
     _loadingView.backgroundColor = [UIColor whiteColor];
-    _loadingIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-    [_loadingIndicator setColor:[UIColor grayColor]];
+    _loadingIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    [_loadingIndicator setColor:[UIColor blackColor]];
     [self addSubview:_loadingIndicator];
     if ([self _isCancelAvailable]) {
       _vCancel = [[EXAppLoadingCancelView alloc] init];
