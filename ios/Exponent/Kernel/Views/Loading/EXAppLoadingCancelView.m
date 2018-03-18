@@ -30,12 +30,13 @@ const NSTimeInterval kEXTimeUntilCancelAppears = 5.0f;
 {
   [super setFrame:frame];
   _lblStatus.frame = CGRectMake(16.0f, 0, self.bounds.size.width - 32.0f, 24.0f);
-  _lblAdvice.frame = CGRectMake(_lblStatus.frame.origin.x, 0, _lblStatus.frame.size.width, CGFLOAT_MAX);
+
+  _btnCancel.frame = CGRectMake(0, 0, 84.0f, 36.0f);
+  _btnCancel.center = CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMaxY(_lblStatus.frame) + 48.0f);
+
+  _lblAdvice.frame = CGRectMake(_lblStatus.frame.origin.x, 0, MIN(_lblStatus.frame.size.width, 300.0f), CGFLOAT_MAX);
   [_lblAdvice sizeToFit];
-  _lblAdvice.center = CGPointMake(CGRectGetMidX(_lblAdvice.frame), CGRectGetMaxY(_lblStatus.frame) + CGRectGetMidY(_lblAdvice.frame) + 16.0f);
-  
-  _btnCancel.frame = CGRectMake(0, 0, self.bounds.size.width - 48.0f, 36.0f);
-  _btnCancel.center = CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMaxY(_lblAdvice.frame) + 42.0f);
+  _lblAdvice.center = CGPointMake(CGRectGetMidX(_lblAdvice.frame), CGRectGetMaxY(_btnCancel.frame) + CGRectGetMidY(_lblAdvice.frame) + 24.0f);
 }
 
 - (void)_setUpViews
@@ -57,7 +58,7 @@ const NSTimeInterval kEXTimeUntilCancelAppears = 5.0f;
   [self addSubview:_lblAdvice];
   
   _btnCancel = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-  [_btnCancel setTitle:@"Go Back to Home" forState:UIControlStateNormal];
+  [_btnCancel setTitle:@"Go back" forState:UIControlStateNormal];
   _btnCancel.titleLabel.font = [UIFont boldSystemFontOfSize:14.0f];
   [_btnCancel setTitleColor:[UIColor darkGrayColor] forState:UIControlStateNormal];
   _btnCancel.layer.borderWidth = 1.0f;
