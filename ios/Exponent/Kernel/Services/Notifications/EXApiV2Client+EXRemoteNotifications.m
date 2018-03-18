@@ -52,21 +52,30 @@
                   return;
                 }
                 
-                if (![result.data isKindOfClass:[NSDictionary class]] ||
-                    ![result.data[@"expoPushToken"] isKindOfClass:[NSString class]]) {
-                  NSError *error = [NSError errorWithDomain:EXApiErrorDomain
-                                                       code:EXApiErrorCodeMalformedResponse
-                                                   userInfo:@{
-                                                              NSLocalizedDescriptionKey: @"The server did not send back an Expo push token",
-                                                              EXApiResultKey: result,
-                                                              }];
-                  handler(nil, error);
+                if (![result.data isKindOfClass:[NSDictionary class]]) {
+                  handler(nil, [self _errorForMalformedResult:result]);
                   return;
                 }
                 
-                NSString *expoPushToken = result.data[@"expoPushToken"];
+                NSDictionary *data = (NSDictionary *)result.data;
+                if (![data[@"expoPushToken"] isKindOfClass:[NSString class]]) {
+                  handler(nil, [self _errorForMalformedResult:result]);
+                  return;
+                }
+                
+                NSString *expoPushToken = (NSString *)data[@"expoPushToken"];
                 handler(expoPushToken, nil);
               }];
+}
+
+- (NSError *)_errorForMalformedResult:(EXApiV2Result *)result
+{
+  return [NSError errorWithDomain:EXApiErrorDomain
+                             code:EXApiErrorCodeMalformedResponse
+                         userInfo:@{
+                                    NSLocalizedDescriptionKey: @"The server did not send back an Expo push token",
+                                    EXApiResultKey: result,
+                                    }];
 }
 
 @end
