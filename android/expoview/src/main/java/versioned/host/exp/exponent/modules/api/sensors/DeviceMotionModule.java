@@ -90,11 +90,16 @@ public class DeviceMotionModule extends ExpoKernelServiceConsumerBaseModule impl
 
   @ReactMethod
   public void stopObserving() {
-    for (SensorKernelServiceSubscription subscription : mServiceSubscriptions) {
-      subscription.stop();
-    }
-    UiThreadUtil.assertOnUiThread();
-    mCurrentFrameCallback.stop();
+    getReactApplicationContext().runOnUiQueueThread(new Runnable() {
+      @Override
+      public void run() {
+        for (SensorKernelServiceSubscription subscription : mServiceSubscriptions) {
+          subscription.stop();
+        }
+        UiThreadUtil.assertOnUiThread();
+        mCurrentFrameCallback.stop();
+      }
+    });
   }
 
   @Override
