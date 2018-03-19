@@ -45,7 +45,8 @@ Any WebGL-supporting library that expects a [WebGLRenderingContext](https://www.
 
 ## WebGL API
 
-Once the component is mounted and the OpenGL ES context has been created, the `gl` object received through the [`onContextCreate`](#expoglviewoncontextcreate "Expo.GLView.onContextCreate") prop becomes the interface to the OpenGL ES context, providing a WebGL API. It resembles a [WebGL2RenderingContext](https://www.khronos.org/registry/webgl/specs/latest/2.0/#3.7) in the WebGL 2 spec. An additional method `gl.endFrameEXP()` is present which notifies the context that the current frame is ready to be presented. This is similar to a 'swap buffers' API call in other OpenGL platforms.
+Once the component is mounted and the OpenGL ES context has been created, the `gl` object received through the [`onContextCreate`](#expoglviewoncontextcreate "Expo.GLView.onContextCreate") prop becomes the interface to the OpenGL ES context, providing a WebGL API. It resembles a [WebGL2RenderingContext](https://www.khronos.org/registry/webgl/specs/latest/2.0/#3.7) in the WebGL 2 spec. However, some older Android devices may not support WebGL2 features. To check whether the device supports WebGL2 it's recommended to use `gl instanceof WebGL2RenderingContext`.
+An additional method `gl.endFrameEXP()` is present which notifies the context that the current frame is ready to be presented. This is similar to a 'swap buffers' API call in other OpenGL platforms.
 
 The following WebGL2RenderingContext methods are currently unimplemented:
 
@@ -60,8 +61,6 @@ The following WebGL2RenderingContext methods are currently unimplemented:
 - `getBufferSubData()`
 - `getInternalformatParameter()`
 - `renderbufferStorageMultisample()`
-- `texImage3D()`
-- `texSubImage3D()`
 - `compressedTexImage3D()`
 - `compressedTexSubImage3D()`
 - `fenceSync()`
