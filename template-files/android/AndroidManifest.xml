@@ -40,7 +40,7 @@
 
   <!-- ADD TEST PERMISSIONS HERE -->
 
-  <uses-feature android:glEsVersion="0x00030000" android:required="false" />
+  <uses-feature android:glEsVersion="0x00020000" android:required="false" />
 
   <application
     android:name=".MainApplication"
