@@ -327,7 +327,7 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
     statusToInitiallySet.merge(mStatusToSet);
     mStatusToSet = Arguments.createMap();
 
-    mPlayerData = PlayerData.createUnloadedPlayerData(mAVModule, source, statusToInitiallySet);
+    mPlayerData = PlayerData.createUnloadedPlayerData(mAVModule, (ThemedReactContext) getContext(), source, statusToInitiallySet);
 
     mPlayerData.setErrorListener(new PlayerData.ErrorListener() {
       @Override

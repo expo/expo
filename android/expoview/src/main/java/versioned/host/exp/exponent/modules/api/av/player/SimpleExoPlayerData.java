@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.util.Pair;
 import android.view.Surface;
 
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.exoplayer2.C;
@@ -54,9 +55,11 @@ class SimpleExoPlayerData extends PlayerData
   private Integer mLastPlaybackState = null;
   private boolean mIsLooping = false;
   private boolean mIsLoading = true;
+  private ReactContext mReactContext = null;
 
-  SimpleExoPlayerData(final AVModule avModule, final Uri uri, final String overridingExtension) {
+  SimpleExoPlayerData(final AVModule avModule, final ReactContext context, final Uri uri, final String overridingExtension) {
     super(avModule, uri);
+    mReactContext = context;
     mOverridingExtension = overridingExtension;
   }
 
@@ -86,7 +89,7 @@ class SimpleExoPlayerData extends PlayerData
     mSimpleExoPlayer.setVideoListener(this);
 
     // Produces DataSource instances through which media data is loaded.
-    final DataSource.Factory dataSourceFactory = new SharedCookiesDataSourceFactory(mUri, mAVModule.mScopedContext, Util.getUserAgent(mAVModule.mScopedContext, "yourApplicationName"));
+    final DataSource.Factory dataSourceFactory = new SharedCookiesDataSourceFactory(mUri, mAVModule.mScopedContext, mReactContext, Util.getUserAgent(mAVModule.mScopedContext, "yourApplicationName"));
     try {
       // This is the MediaSource representing the media to be played.
       final MediaSource source = buildMediaSource(mUri, mOverridingExtension, mainHandler, dataSourceFactory);

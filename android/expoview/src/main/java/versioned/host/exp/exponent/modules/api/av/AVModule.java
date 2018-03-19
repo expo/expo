@@ -314,7 +314,7 @@ public class AVModule extends ReactContextBaseJavaModule
   @ReactMethod
   public void loadForSound(final ReadableMap source, final ReadableMap status, final Callback loadSuccess, final Callback loadError) {
     final int key = mSoundMapKeyCount++;
-    final PlayerData data = PlayerData.createUnloadedPlayerData(this, source, status);
+    final PlayerData data = PlayerData.createUnloadedPlayerData(this, mReactApplicationContext, source, status);
     data.setErrorListener(new PlayerData.ErrorListener() {
       @Override
       public void onError(final String error) {

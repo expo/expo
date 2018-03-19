@@ -3,10 +3,10 @@ package versioned.host.exp.exponent.modules.api.av.player;
 import android.net.Uri;
 import android.util.Pair;
 import android.view.Surface;
-import android.widget.MediaController;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 
@@ -91,7 +91,7 @@ public abstract class PlayerData implements AudioEventHandler {
     mUri = uri;
   }
 
-  public static PlayerData createUnloadedPlayerData(final AVModule avModule, final ReadableMap source, final ReadableMap status) {
+  public static PlayerData createUnloadedPlayerData(final AVModule avModule, final ReactContext context, final ReadableMap source, final ReadableMap status) {
     final String uriString = source.getString(STATUS_URI_KEY_PATH);
     final String uriOverridingExtension = source.hasKey(STATUS_OVERRIDING_EXTENSION_KEY_PATH) ? source.getString(STATUS_OVERRIDING_EXTENSION_KEY_PATH) : null;
     // uriString is guaranteed not to be null (both VideoView.setSource and Sound.loadAsync handle that case)
@@ -99,9 +99,9 @@ public abstract class PlayerData implements AudioEventHandler {
 
     if (status.hasKey(STATUS_ANDROID_IMPLEMENTATION_KEY_PATH)
         && status.getString(STATUS_ANDROID_IMPLEMENTATION_KEY_PATH).equals(MediaPlayerData.IMPLEMENTATION_NAME)) {
-      return new MediaPlayerData(avModule, uri);
+      return new MediaPlayerData(avModule, context, uri);
     } else {
-      return new SimpleExoPlayerData(avModule, uri, uriOverridingExtension);
+      return new SimpleExoPlayerData(avModule, context, uri, uriOverridingExtension);
     }
   }
 

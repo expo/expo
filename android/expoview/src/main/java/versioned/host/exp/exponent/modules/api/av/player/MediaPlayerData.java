@@ -9,9 +9,20 @@ import android.support.annotation.RequiresApi;
 import android.util.Pair;
 import android.view.Surface;
 
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.modules.network.NetworkingModule;
 
+import java.net.HttpCookie;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import expolib_v1.okhttp3.Cookie;
+import expolib_v1.okhttp3.HttpUrl;
 import host.exp.exponent.analytics.EXL;
 import versioned.host.exp.exponent.modules.api.av.AVModule;
 
@@ -27,13 +38,15 @@ class MediaPlayerData extends PlayerData implements
   static final String IMPLEMENTATION_NAME = "MediaPlayer";
 
   private MediaPlayer mMediaPlayer = null;
+  private ReactContext mReactContext = null;
   private boolean mMediaPlayerHasStartedEver = false;
 
   private Integer mPlayableDurationMillis = null;
   private boolean mIsBuffering = false;
 
-  MediaPlayerData(final AVModule avModule, final Uri uri) {
+  MediaPlayerData(final AVModule avModule, final ReactContext context, final Uri uri) {
     super(avModule, uri);
+    mReactContext = context;
   }
 
   @Override
@@ -56,7 +69,21 @@ class MediaPlayerData extends PlayerData implements
     final MediaPlayer unpreparedPlayer = new MediaPlayer();
 
     try {
-      unpreparedPlayer.setDataSource(mAVModule.mScopedContext, mUri);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        unpreparedPlayer.setDataSource(mAVModule.mScopedContext, mUri, null, getHttpCookiesList());
+      } else {
+        Map<String, String> headers = new HashMap<>(1);
+        StringBuilder cookieBuilder = new StringBuilder();
+        for(HttpCookie httpCookie : getHttpCookiesList()) {
+          cookieBuilder.append(httpCookie.getName());
+          cookieBuilder.append("=");
+          cookieBuilder.append(httpCookie.getValue());
+          cookieBuilder.append("; ");
+        }
+        cookieBuilder.append("\r\n");
+        headers.put("Cookie", cookieBuilder.toString());
+        unpreparedPlayer.setDataSource(mAVModule.mScopedContext, mUri, headers);
+      }
     } catch (final Throwable throwable) {
       loadCompletionListener.onLoadError("Load encountered an error: setDataSource() threw an exception was thrown with message: " + throwable.toString());
       return;
@@ -367,5 +394,19 @@ class MediaPlayerData extends PlayerData implements
     if (mVideoSizeUpdateListener != null) {
       mVideoSizeUpdateListener.onVideoSizeUpdate(new Pair<>(width, height));
     }
+  }
+
+  // Utilities
+
+  private List<HttpCookie> getHttpCookiesList() {
+    HttpUrl url = HttpUrl.get(URI.create(mUri.toString()));
+    List<Cookie> cookieList = mReactContext.getNativeModule(NetworkingModule.class).mCookieJarContainer.loadForRequest(url);
+    List<HttpCookie> httpCookieList = new ArrayList<>(cookieList.size());
+    for(Cookie cookie : cookieList) {
+      if (cookie.matches(url)) {
+        httpCookieList.add(new HttpCookie(cookie.name(), cookie.value()));
+      }
+    }
+    return httpCookieList;
   }
 }
