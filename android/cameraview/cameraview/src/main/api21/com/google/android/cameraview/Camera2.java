@@ -111,11 +111,12 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
                 return;
             }
             mCaptureSession = session;
+            mInitialCropRegion = mPreviewRequestBuilder.get(CaptureRequest.SCALER_CROP_REGION);
             updateAutoFocus();
             updateFlash();
             updateFocusDepth();
             updateWhiteBalance();
-            updateZoom(mZoom);
+            updateZoom();
             try {
                 mCaptureSession.setRepeatingRequest(mPreviewRequestBuilder.build(),
                         mCaptureCallback, null);
@@ -236,6 +237,8 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
     private boolean mIsScanning;
 
     private Surface mPreviewSurface;
+
+    private Rect mInitialCropRegion;
 
     Camera2(Callback callback, PreviewImpl preview, Context context) {
         super(callback, preview);
@@ -504,7 +507,7 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
       float saved = mZoom;
       mZoom = zoom;
       if (mCaptureSession != null) {
-          updateZoom(saved);
+          updateZoom();
           try {
               mCaptureSession.setRepeatingRequest(mPreviewRequestBuilder.build(),
                   mCaptureCallback, null);
@@ -867,15 +870,15 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
     /**
      * Updates the internal state of zoom to {@link #mZoom}.
      */
-    void updateZoom(float saved) {
+    void updateZoom() {
         float maxZoom = mCameraCharacteristics.get(CameraCharacteristics.SCALER_AVAILABLE_MAX_DIGITAL_ZOOM);
         float scaledZoom = mZoom * (maxZoom - 1.0f) + 1.0f;
         Rect currentPreview = mCameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE);
         if (currentPreview != null) {
             int currentWidth = currentPreview.width();
             int currentHeight = currentPreview.height();
-            int zoomedWidth = (int) (currentWidth / scaledZoom / (saved * (maxZoom - 1.0f) + 1.0f));
-            int zoomedHeight = (int) (currentHeight / scaledZoom / (saved * (maxZoom - 1.0f) + 1.0f));
+            int zoomedWidth = (int) (currentWidth / scaledZoom);
+            int zoomedHeight = (int) (currentHeight / scaledZoom);
             int widthOffset = (currentWidth - zoomedWidth) / 2;
             int heightOffset = (currentHeight - zoomedHeight) / 2;
 
@@ -885,8 +888,13 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
                 currentPreview.right - widthOffset,
                 currentPreview.bottom - heightOffset
             );
-            if (zoomedWidth != currentWidth && zoomedHeight != currentHeight) {
+
+            // ¯\_(ツ)_/¯ for some devices calculating the Rect for zoom=1 results in a bit different
+            // Rect that device claims as its no-zoom crop region and the preview freezes
+            if (scaledZoom != 1.0f) {
                 mPreviewRequestBuilder.set(CaptureRequest.SCALER_CROP_REGION, zoomedPreview);
+            } else {
+              mPreviewRequestBuilder.set(CaptureRequest.SCALER_CROP_REGION, mInitialCropRegion);
             }
         }
     }
@@ -978,6 +986,7 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
                     break;
             }
             captureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, getOutputRotation());
+            captureRequestBuilder.set(CaptureRequest.SCALER_CROP_REGION, mPreviewRequestBuilder.get(CaptureRequest.SCALER_CROP_REGION));
             // Stop preview and capture a still picture.
             mCaptureSession.stopRepeating();
             mCaptureSession.capture(captureRequestBuilder.build(),
