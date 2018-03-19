@@ -36,6 +36,7 @@ import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.utils.IoUtils;
 import com.theartofdev.edmodo.cropper.CropImage;
 
@@ -345,6 +346,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
                     new DisplayImageOptions.Builder()
                         .cacheOnDisk(true)
                         .considerExifParams(true)
+                        .imageScaleType(ImageScaleType.NONE)
                         .build());
               } catch (Throwable e) {}
               if (bmp == null) {
@@ -353,6 +355,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
                       new DisplayImageOptions.Builder()
                           .cacheOnDisk(true)
                           .considerExifParams(true)
+                          .imageScaleType(ImageScaleType.NONE)
                           .build());
                 } catch (Throwable e) {}
               }
