@@ -206,6 +206,7 @@ public:
   // --- Init/destroy and JS object binding ------------------------------------
 private:
   JSObjectRef jsGl;
+  bool supportsWebGL2 = false;
 
 public:
   EXGLContext(JSGlobalContextRef jsCtx, UEXGLContextId exglCtxId) {
@@ -221,6 +222,10 @@ public:
 
     // Clear everything to initial values
     addToNextBatch([this] {
+      std::string version = (char *) glGetString(GL_VERSION);
+      double glesVersion = strtod(version.substr(10).c_str(), 0);
+      this->supportsWebGL2 = glesVersion >= 3.0;
+      
       glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebuffer);
       glClearColor(0, 0, 0, 0);
       glClearDepthf(1);
@@ -444,7 +449,7 @@ private:
 
 
   // Standard method wrapper, run on JS thread, return a value
-#define _WRAP_METHOD(name, minArgc)                                     \
+#define _WRAP_METHOD_INTERNAL(name, minArgc, requiresWebGL2)            \
   static JSValueRef exglNativeStatic_##name(JSContextRef jsCtx,         \
                                             JSObjectRef jsFunction,     \
                                             JSObjectRef jsThis,         \
@@ -461,6 +466,9 @@ private:
       if (jsArgc < minArgc) {                                           \
         throw std::runtime_error("EXGL: Too few arguments to " #name "()!"); \
       }                                                                 \
+      if (requiresWebGL2 && !exglCtx->supportsWebGL2) {                 \
+        throw std::runtime_error("EXGL: This device doesn't support WebGL2 method: " #name "()!"); \
+      }                                                                 \
       return exglCtx->exglNativeInstance_##name(jsCtx, jsFunction, jsThis, \
                                                 jsArgc, jsArgv, jsException); \
     } catch (const std::exception &e) {                                 \
@@ -475,6 +483,9 @@ private:
                                               const JSValueRef jsArgv[], \
                                               JSValueRef* jsException)
 
+#define _WRAP_METHOD(name, minArgc) _WRAP_METHOD_INTERNAL(name, minArgc, false)
+#define _WRAP_WEBGL2_METHOD(name, minArgc) _WRAP_METHOD_INTERNAL(name, minArgc, true)
+
   // Wrapper raises an exception saying the function isn't implemented yet
 #define _WRAP_METHOD_UNIMPL(name)                                       \
   _WRAP_METHOD(name, 0) {                                               \
@@ -483,11 +494,14 @@ private:
   }
 
   // Wrapper that takes only scalar arguments and returns nothing
-#define _WRAP_METHOD_SIMPLE(name, glFunc, ...)                          \
-  _WRAP_METHOD(name, EXJS_ARGC(__VA_ARGS__)) {                          \
+#define _WRAP_METHOD_SIMPLE_INTERNAL(name, isWebGL2Method, glFunc, ...) \
+  _WRAP_METHOD_INTERNAL(name, EXJS_ARGC(__VA_ARGS__), isWebGL2Method) { \
     addToNextBatch(std::bind(glFunc, EXJS_MAP_EXT(0, _EXJS_COMMA, _WRAP_METHOD_SIMPLE_UNPACK, __VA_ARGS__))); \
     return nullptr;                                                     \
   }
+#define _WRAP_METHOD_SIMPLE(name, glFunc, ...) _WRAP_METHOD_SIMPLE_INTERNAL(name, false, glFunc, __VA_ARGS__)
+#define _WRAP_WEBGL2_METHOD_SIMPLE(name, glFunc, ...) _WRAP_METHOD_SIMPLE_INTERNAL(name, true, glFunc, __VA_ARGS__)
+
 #define _WRAP_METHOD_SIMPLE_UNPACK(i, _) EXJSValueToNumberFast(jsCtx, jsArgv[i])
 
 
@@ -798,9 +812,9 @@ private:
     return JSValueMakeNumber(jsCtx, glResult);
   }
 
-#define _WRAP_METHOD_IS_OBJECT(type)              \
-  _WRAP_METHOD(is ## type, 1) {                   \
-    EXJS_UNPACK_ARGV(UEXGLObjectId f);             \
+#define _WRAP_METHOD_IS_OBJECT_INTERNAL(type, requiresWebGL2) \
+  _WRAP_METHOD_INTERNAL(is ## type, 1, requiresWebGL2) { \
+    EXJS_UNPACK_ARGV(UEXGLObjectId f);            \
     GLboolean glResult;                           \
     addBlockingToNextBatch([&] {                  \
       glResult = glIs ## type(lookupObject(f));   \
@@ -808,12 +822,15 @@ private:
     return JSValueMakeBoolean(jsCtx, glResult);   \
   }
 
+#define _WRAP_METHOD_IS_OBJECT(type)        _WRAP_METHOD_IS_OBJECT_INTERNAL(type, false)
+#define _WRAP_WEBGL2_METHOD_IS_OBJECT(type) _WRAP_METHOD_IS_OBJECT_INTERNAL(type, true)
+
   _WRAP_METHOD_IS_OBJECT(Buffer)
 
 
   // Buffers (WebGL2)
 
-  _WRAP_METHOD_SIMPLE(copyBufferSubData, glCopyBufferSubData,
+  _WRAP_WEBGL2_METHOD_SIMPLE(copyBufferSubData, glCopyBufferSubData,
                       readTarget, writeTarget, readOffset, writeOffset, size)
 
   // glGetBufferSubData is not available in OpenGL ES
@@ -906,7 +923,7 @@ private:
                       dstX0, dstY0, dstX1, dstY1,
                       mask, filter)
   
-  _WRAP_METHOD(framebufferTextureLayer, 5) {
+  _WRAP_WEBGL2_METHOD(framebufferTextureLayer, 5) {
     EXJS_UNPACK_ARGV(GLenum target, GLenum attachment, UEXGLObjectId texture, GLint level, GLint layer);
     addToNextBatch([=] {
       glFramebufferTextureLayer(target, attachment, lookupObject(texture), level, layer);
@@ -914,7 +931,7 @@ private:
     return nullptr;
   }
   
-  _WRAP_METHOD(invalidateFramebuffer, 2) {
+  _WRAP_WEBGL2_METHOD(invalidateFramebuffer, 2) {
     EXJS_UNPACK_ARGV(GLenum target);
     size_t length;
     auto attachments = jsValueToSharedArray(jsCtx, jsArgv[1], &length);
@@ -924,7 +941,7 @@ private:
     return nullptr;
   }
   
-  _WRAP_METHOD(invalidateSubFramebuffer, 6) {
+  _WRAP_WEBGL2_METHOD(invalidateSubFramebuffer, 6) {
     EXJS_UNPACK_ARGV(GLenum target);
     EXJS_UNPACK_ARGV_OFFSET(2, GLint x, GLint y, GLint width, GLint height);
     size_t length;
@@ -935,7 +952,7 @@ private:
     return nullptr;
   }
   
-  _WRAP_METHOD_SIMPLE(readBuffer, glReadBuffer, mode)
+  _WRAP_WEBGL2_METHOD_SIMPLE(readBuffer, glReadBuffer, mode)
   
   
   // Renderbuffers
@@ -1211,7 +1228,7 @@ private:
 
   _WRAP_METHOD_SIMPLE(texStorage3D, glTexStorage3D, target, levels, internalformat, width, height, depth)
 
-  _WRAP_METHOD(texImage3D, 10) {
+  _WRAP_WEBGL2_METHOD(texImage3D, 10) {
     GLenum target;
     GLint level, internalformat;
     GLsizei width, height, depth, border;
@@ -1258,7 +1275,7 @@ private:
     throw std::runtime_error("EXGL: Invalid pixel data argument for gl.texImage3D()!");
   }
   
-  _WRAP_METHOD(texSubImage3D, 11) {
+  _WRAP_WEBGL2_METHOD(texSubImage3D, 11) {
     GLenum target;
     GLint level, xoffset, yoffset, zoffset;
     GLsizei width, height, depth;
@@ -1307,7 +1324,7 @@ private:
     throw std::runtime_error("EXGL: Invalid pixel data argument for gl.texSubImage3D()!");
   }
 
-  _WRAP_METHOD_SIMPLE(copyTexSubImage3D, glCopyTexSubImage3D,
+  _WRAP_WEBGL2_METHOD_SIMPLE(copyTexSubImage3D, glCopyTexSubImage3D,
     target, level, xoffset, yoffset, zoffset, x, y, width, height)
 
   _WRAP_METHOD_UNIMPL(compressedTexImage3D)
@@ -1729,11 +1746,11 @@ private:
   // Drawing buffers (WebGL2)
   // ------------------------
   
-  _WRAP_METHOD_SIMPLE(vertexAttribDivisor, glVertexAttribDivisor, index, divisor)
+  _WRAP_WEBGL2_METHOD_SIMPLE(vertexAttribDivisor, glVertexAttribDivisor, index, divisor)
   
-  _WRAP_METHOD_SIMPLE(drawArraysInstanced, glDrawArraysInstanced, mode, first, count, instancecount)
+  _WRAP_WEBGL2_METHOD_SIMPLE(drawArraysInstanced, glDrawArraysInstanced, mode, first, count, instancecount)
   
-  _WRAP_METHOD(drawElementsInstanced, 5) {
+  _WRAP_WEBGL2_METHOD(drawElementsInstanced, 5) {
     EXJS_UNPACK_ARGV(GLenum mode, GLsizei count, GLenum type, GLint offset, GLsizei instanceCount);
     addToNextBatch([=] {
       glDrawElementsInstanced(mode, count, type, bufferOffset(offset), instanceCount);
@@ -1741,7 +1758,7 @@ private:
     return nullptr;
   }
   
-  _WRAP_METHOD(drawRangeElements, 6) {
+  _WRAP_WEBGL2_METHOD(drawRangeElements, 6) {
     EXJS_UNPACK_ARGV(GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, GLint offset);
     addToNextBatch([=] {
       glDrawRangeElements(mode, start, end, count, type, bufferOffset(offset));
@@ -1749,7 +1766,7 @@ private:
     return nullptr;
   }
   
-  _WRAP_METHOD(drawBuffers, 1) {
+  _WRAP_WEBGL2_METHOD(drawBuffers, 1) {
     size_t length;
     auto data = jsValueToSharedArray(jsCtx, jsArgv[0], &length);
     addToNextBatch([=] { glDrawBuffers((GLsizei) length, (GLenum *) data.get()); });
@@ -1757,7 +1774,7 @@ private:
   }
   
 #define _WRAP_METHOD_CLEAR_BUFFER(suffix, Type)                         \
-  _WRAP_METHOD(clearBuffer##suffix, 4) {                                \
+  _WRAP_WEBGL2_METHOD(clearBuffer##suffix, 4) {                         \
     EXJS_UNPACK_ARGV(GLenum buffer, GLint drawbuffer);                  \
     auto values = jsValueToSharedArray(jsCtx, jsArgv[2], nullptr);      \
     addToNextBatch([=] {                                                \
@@ -1771,13 +1788,13 @@ private:
   _WRAP_METHOD_CLEAR_BUFFER(uiv, GLuint)
 #undef _WRAP_METHOD_CLEAR_BUFFER
   
-  _WRAP_METHOD_SIMPLE(clearBufferfi, glClearBufferfi, buffer, drawbuffer, depth, stencil)
+  _WRAP_WEBGL2_METHOD_SIMPLE(clearBufferfi, glClearBufferfi, buffer, drawbuffer, depth, stencil)
 
 
   // Query objects (WebGL2)
   // ----------------------
 
-  _WRAP_METHOD(createQuery, 0) {
+  _WRAP_WEBGL2_METHOD(createQuery, 0) {
     return addFutureToNextBatch(jsCtx, [] {
       GLuint query;
       glGenQueries(1, &query);
@@ -1785,7 +1802,7 @@ private:
     });
   }
 
-  _WRAP_METHOD(deleteQuery, 1) {
+  _WRAP_WEBGL2_METHOD(deleteQuery, 1) {
     EXJS_UNPACK_ARGV(UEXGLObjectId fQuery);
     addToNextBatch([=] {
       GLuint query = lookupObject(fQuery);
@@ -1794,24 +1811,24 @@ private:
     return nullptr;
   }
 
-  _WRAP_METHOD_IS_OBJECT(Query)
+  _WRAP_WEBGL2_METHOD_IS_OBJECT(Query)
 
-  _WRAP_METHOD(beginQuery, 2) {
+  _WRAP_WEBGL2_METHOD(beginQuery, 2) {
     EXJS_UNPACK_ARGV(GLenum target, UEXGLObjectId query);
     addToNextBatch([=] { glBeginQuery(target, lookupObject(query)); });
     return nullptr;
   }
 
-  _WRAP_METHOD_SIMPLE(endQuery, glEndQuery, target)
+  _WRAP_WEBGL2_METHOD_SIMPLE(endQuery, glEndQuery, target)
 
-  _WRAP_METHOD(getQuery, 2) {
+  _WRAP_WEBGL2_METHOD(getQuery, 2) {
     EXJS_UNPACK_ARGV(GLenum target, GLenum pname);
     GLint params;
     addBlockingToNextBatch([&] { glGetQueryiv(target, pname, &params); });
     return params == 0 ? JSValueMakeNull(jsCtx) : JSValueMakeNumber(jsCtx, params);
   }
 
-  _WRAP_METHOD(getQueryParameter, 2) {
+  _WRAP_WEBGL2_METHOD(getQueryParameter, 2) {
     EXJS_UNPACK_ARGV(UEXGLObjectId query, GLenum pname);
     GLuint params;
     addBlockingToNextBatch([&] { glGetQueryObjectuiv(lookupObject(query), pname, &params); });
@@ -1822,7 +1839,7 @@ private:
   // Samplers (WebGL2)
   // -----------------
 
-  _WRAP_METHOD(createSampler, 0) {
+  _WRAP_WEBGL2_METHOD(createSampler, 0) {
     return addFutureToNextBatch(jsCtx, [] {
       GLuint sampler;
       glGenSamplers(1, &sampler);
@@ -1830,7 +1847,7 @@ private:
     });
   }
 
-  _WRAP_METHOD(deleteSampler, 1) {
+  _WRAP_WEBGL2_METHOD(deleteSampler, 1) {
     EXJS_UNPACK_ARGV(UEXGLObjectId fSampler);
     addToNextBatch([=] {
       GLuint sampler = lookupObject(fSampler);
@@ -1839,27 +1856,27 @@ private:
     return nullptr;
   }
 
-  _WRAP_METHOD(bindSampler, 2) {
+  _WRAP_WEBGL2_METHOD(bindSampler, 2) {
     EXJS_UNPACK_ARGV(GLuint unit, UEXGLObjectId sampler);
     addToNextBatch([=] { glBindSampler(unit, lookupObject(sampler)); });
     return nullptr;
   }
 
-  _WRAP_METHOD_IS_OBJECT(Sampler)
+  _WRAP_WEBGL2_METHOD_IS_OBJECT(Sampler)
 
-  _WRAP_METHOD(samplerParameteri, 3) {
+  _WRAP_WEBGL2_METHOD(samplerParameteri, 3) {
     EXJS_UNPACK_ARGV(UEXGLObjectId sampler, GLenum pname, GLint param);
     addToNextBatch([=] { glSamplerParameteri(lookupObject(sampler), pname, param); });
     return nullptr;
   }
 
-  _WRAP_METHOD(samplerParameterf, 3) {
+  _WRAP_WEBGL2_METHOD(samplerParameterf, 3) {
     EXJS_UNPACK_ARGV(UEXGLObjectId sampler, GLenum pname, GLfloat param);
     addToNextBatch([=] { glSamplerParameterf(lookupObject(sampler), pname, param); });
     return nullptr;
   }
 
-  _WRAP_METHOD(getSamplerParameter, 2) {
+  _WRAP_WEBGL2_METHOD(getSamplerParameter, 2) {
     EXJS_UNPACK_ARGV(UEXGLObjectId fSampler, GLenum pname);
     bool isFloatParam = pname == GL_TEXTURE_MAX_LOD || pname == GL_TEXTURE_MIN_LOD;
     GLfloat paramf;
@@ -1897,7 +1914,7 @@ private:
   // Transform feedback (WebGL2)
   // ---------------------------
 
-  _WRAP_METHOD(createTransformFeedback, 0) {
+  _WRAP_WEBGL2_METHOD(createTransformFeedback, 0) {
     return addFutureToNextBatch(jsCtx, [] {
       GLuint transformFeedback;
       glGenTransformFeedbacks(1, &transformFeedback);
@@ -1905,7 +1922,7 @@ private:
     });
   }
 
-  _WRAP_METHOD(deleteTransformFeedback, 1) {
+  _WRAP_WEBGL2_METHOD(deleteTransformFeedback, 1) {
     EXJS_UNPACK_ARGV(UEXGLObjectId fTransformFeedback);
     addToNextBatch([=] {
       GLuint transformFeedback = lookupObject(fTransformFeedback);
@@ -1914,22 +1931,22 @@ private:
     return nullptr;
   }
 
-  _WRAP_METHOD_IS_OBJECT(TransformFeedback)
+  _WRAP_WEBGL2_METHOD_IS_OBJECT(TransformFeedback)
 
-  _WRAP_METHOD(bindTransformFeedback, 1) {
+  _WRAP_WEBGL2_METHOD(bindTransformFeedback, 1) {
     EXJS_UNPACK_ARGV(GLenum target, UEXGLObjectId transformFeedback);
     addToNextBatch([=] { glBindTransformFeedback(target, lookupObject(transformFeedback)); });
     return nullptr;
   }
 
-  _WRAP_METHOD_SIMPLE(beginTransformFeedback, glBeginTransformFeedback, primitiveMode)
+  _WRAP_WEBGL2_METHOD_SIMPLE(beginTransformFeedback, glBeginTransformFeedback, primitiveMode)
 
-  _WRAP_METHOD(endTransformFeedback, 0) {
+  _WRAP_WEBGL2_METHOD(endTransformFeedback, 0) {
     addToNextBatch([=] { glEndTransformFeedback(); });
     return nullptr;
   }
 
-  _WRAP_METHOD(transformFeedbackVaryings, 3) {
+  _WRAP_WEBGL2_METHOD(transformFeedbackVaryings, 3) {
     EXJS_UNPACK_ARGV(UEXGLObjectId program);
     EXJS_UNPACK_ARGV_OFFSET(2, GLenum bufferMode);
     int length;
@@ -1941,16 +1958,16 @@ private:
     return nullptr;
   }
 
-  _WRAP_METHOD(getTransformFeedbackVarying, 2) {
+  _WRAP_WEBGL2_METHOD(getTransformFeedbackVarying, 2) {
     return getActiveInfo(jsCtx, jsArgv, GL_TRANSFORM_FEEDBACK_VARYING_MAX_LENGTH, glGetTransformFeedbackVarying);
   }
 
-  _WRAP_METHOD(pauseTransformFeedback, 0) {
+  _WRAP_WEBGL2_METHOD(pauseTransformFeedback, 0) {
     addToNextBatch([=] { glPauseTransformFeedback(); });
     return nullptr;
   }
 
-  _WRAP_METHOD(resumeTransformFeedback, 0) {
+  _WRAP_WEBGL2_METHOD(resumeTransformFeedback, 0) {
     addToNextBatch([=] { glResumeTransformFeedback(); });
     return nullptr;
   }
@@ -1959,19 +1976,19 @@ private:
   // Uniform buffer objects (WebGL2)
   // -------------------------------
 
-  _WRAP_METHOD(bindBufferBase, 3) {
+  _WRAP_WEBGL2_METHOD(bindBufferBase, 3) {
     EXJS_UNPACK_ARGV(GLenum target, GLuint index, UEXGLObjectId buffer);
     addToNextBatch([=] { glBindBufferBase(target, index, lookupObject(buffer)); });
     return nullptr;
   }
 
-  _WRAP_METHOD(bindBufferRange, 5) {
+  _WRAP_WEBGL2_METHOD(bindBufferRange, 5) {
     EXJS_UNPACK_ARGV(GLenum target, GLuint index, UEXGLObjectId buffer, GLint offset, GLsizei size);
     addToNextBatch([=] { glBindBufferRange(target, index, lookupObject(buffer), offset, size); });
     return nullptr;
   }
 
-  _WRAP_METHOD(getUniformIndices, 2) {
+  _WRAP_WEBGL2_METHOD(getUniformIndices, 2) {
     EXJS_UNPACK_ARGV(UEXGLObjectId program);
     int length;
     auto uniformNames = jsValueToSharedStringArray(jsCtx, jsArgv[1], &length);
@@ -1983,7 +2000,7 @@ private:
     return makeTypedArray(jsCtx, kJSTypedArrayTypeUint32Array, indices, sizeof(indices));
   }
 
-  _WRAP_METHOD(getActiveUniforms, 3) {
+  _WRAP_WEBGL2_METHOD(getActiveUniforms, 3) {
     EXJS_UNPACK_ARGV(UEXGLObjectId program);
     EXJS_UNPACK_ARGV_OFFSET(2, GLenum pname);
     size_t length;
@@ -1997,7 +2014,7 @@ private:
     return makeTypedArray(jsCtx, kJSTypedArrayTypeInt32Array, params, sizeof(params));
   }
 
-  _WRAP_METHOD(getUniformBlockIndex, 2) {
+  _WRAP_WEBGL2_METHOD(getUniformBlockIndex, 2) {
     EXJS_UNPACK_ARGV(UEXGLObjectId program);
     auto uniformBlockName = jsValueToSharedStr(jsCtx, jsArgv[1]);
     GLuint blockIndex;
@@ -2010,7 +2027,7 @@ private:
 
   _WRAP_METHOD_UNIMPL(getActiveUniformBlockParameter)
 
-  _WRAP_METHOD(getActiveUniformBlockName, 2) {
+  _WRAP_WEBGL2_METHOD(getActiveUniformBlockName, 2) {
     EXJS_UNPACK_ARGV(UEXGLObjectId fProgram, GLuint uniformBlockIndex);
     std::string blockName;
 
@@ -2023,7 +2040,7 @@ private:
     return EXJSValueMakeStringFromUTF8CString(jsCtx, blockName.c_str());
   }
 
-  _WRAP_METHOD(uniformBlockBinding, 3) {
+  _WRAP_WEBGL2_METHOD(uniformBlockBinding, 3) {
     EXJS_UNPACK_ARGV(UEXGLObjectId program, GLuint uniformBlockIndex, GLuint uniformBlockBinding);
     addToNextBatch([=] {
       glUniformBlockBinding(lookupObject(program), uniformBlockIndex, uniformBlockBinding);
@@ -2035,7 +2052,7 @@ private:
   // Vertex Array Object (WebGL2)
   // ----------------------------
   
-  _WRAP_METHOD(createVertexArray, 0) {
+  _WRAP_WEBGL2_METHOD(createVertexArray, 0) {
     return addFutureToNextBatch(jsCtx, [] {
       GLuint vertexArray;
       glGenVertexArrays(1, &vertexArray);
@@ -2043,7 +2060,7 @@ private:
     });
   }
   
-  _WRAP_METHOD(deleteVertexArray, 1) {
+  _WRAP_WEBGL2_METHOD(deleteVertexArray, 1) {
     EXJS_UNPACK_ARGV(UEXGLObjectId fVertexArray);
     addToNextBatch([=] {
       GLuint vertexArray = lookupObject(fVertexArray);
@@ -2052,9 +2069,9 @@ private:
     return nullptr;
   }
   
-  _WRAP_METHOD_IS_OBJECT(VertexArray)
+  _WRAP_WEBGL2_METHOD_IS_OBJECT(VertexArray)
   
-  _WRAP_METHOD(bindVertexArray, 1) {
+  _WRAP_WEBGL2_METHOD(bindVertexArray, 1) {
     EXJS_UNPACK_ARGV(UEXGLObjectId vertexArray);
     addToNextBatch([=] { glBindVertexArray(lookupObject(vertexArray)); });
     return nullptr;

@@ -284,6 +284,11 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
       deinitEGL();
     }
 
+    private EGLContext createGLContext(int contextVersion, EGLConfig eglConfig) {
+      int[] attribs = { EGL_CONTEXT_CLIENT_VERSION, contextVersion, EGL10.EGL_NONE };
+      return mEGL.eglCreateContext(mEGLDisplay, eglConfig, EGL10.EGL_NO_CONTEXT, attribs);
+    }
+
     private void initEGL() {
       mEGL = (EGL10) EGLContext.getEGL();
 
@@ -317,8 +322,10 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
       }
 
       // Create EGLContext and EGLSurface
-      int[] attribs = { EGL_CONTEXT_CLIENT_VERSION, 3, EGL10.EGL_NONE };
-      mEGLContext = mEGL.eglCreateContext(mEGLDisplay, eglConfig, EGL10.EGL_NO_CONTEXT, attribs);
+      mEGLContext = createGLContext(3, eglConfig);
+      if (mEGLContext == null || mEGLContext == EGL10.EGL_NO_CONTEXT) {
+        mEGLContext = createGLContext(2, eglConfig);
+      }
       checkEGLError();
       mEGLSurface = mEGL.eglCreateWindowSurface(mEGLDisplay, eglConfig, mSurfaceTexture, null);
       checkEGLError();
