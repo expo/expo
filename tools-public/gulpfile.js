@@ -7,7 +7,7 @@ const gulp = require('gulp');
 const shell = require('gulp-shell');
 const minimist = require('minimist');
 const path = require('path');
-const { IosIcons, IosShellApp, AndroidShellApp } = require('xdl');
+const { IosClient, IosIcons, IosShellApp, AndroidShellApp } = require('xdl');
 
 const { startReactNativeServer } = require('./react-native-tasks');
 const {
@@ -103,6 +103,16 @@ function createIOSShellAppWithArguments() {
   return IosShellApp.createIOSShellAppAsync(argv);
 }
 
+function buildIOSClientWithArguments() {
+  const { type, configuration, verbose } = argv;
+  return IosClient.buildAsync(type, configuration, verbose);
+}
+
+function configureIOSClientBundleWithArguments() {
+  const { archivePath, bundleId, appleTeamId } = argv;
+  return IosClient.configureBundleAsync(archivePath, bundleId, appleTeamId);
+}
+
 let watcher = null;
 
 gulp.task('watch', function(done) {
@@ -129,6 +139,8 @@ gulp.task('update-android-shell-app', updateAndroidShellAppWithArguments);
 
 // iOS
 gulp.task('ios-shell-app', createIOSShellAppWithArguments);
+gulp.task('build-ios-client', buildIOSClientWithArguments);
+gulp.task('configure-ios-client-bundle', configureIOSClientBundleWithArguments);
 
 gulp.task('ptool', shell.task([`${ptool} ${_projects}`]));
 gulp.task('ptool:watch', gulp.series('ptool', 'watch'));
