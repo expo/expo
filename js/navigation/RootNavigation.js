@@ -9,7 +9,7 @@ import Colors from '../constants/Colors';
 import defaultRouteConfig from './defaultRouteConfig';
 
 export default class RootNavigation extends React.Component {
-  _currentTab = 'projects';
+  _currentTab = (Platform.OS === 'ios' ) ? 'profile' : 'projects';
 
   render() {
     return (
