@@ -1,7 +1,7 @@
 const slugs = require(`github-slugger`)();
-slugs.reset();
 
 const generateSlug = node => {
+  slugs.reset();
   return slugs.slug(toString(node));
 };
 
