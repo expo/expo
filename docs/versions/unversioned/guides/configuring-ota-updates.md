@@ -20,7 +20,7 @@ In standalone apps, is also possible to turn off automatic updates, and to inste
 
 Setting `updates.checkAutomatically` to `"ON_ERROR_RECOVERY"` in app.json will prevent Expo from automatically fetching the latest update every time your app is launched. Only the most recent cached version of your bundle will be loaded. It will only automatically fetch an update if the last run of the cached bundle produced a fatal JS error.
 
-You can then use the [`Expo.Updates](../sdk/updates.html) module to download new updates and, if appropriate, notify the user and reload the experience.
+You can then use the [`Expo.Updates`](../sdk/updates.html) module to download new updates and, if appropriate, notify the user and reload the experience.
 
 ```javascript
 try {
