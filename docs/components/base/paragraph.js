@@ -50,6 +50,13 @@ export const PDIV = ({ children }) => {
             max-width: 800px;
             width: 800px;
           }
+
+          @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+            div.wider {
+              max-width: 100%;
+              width: 100%;
+            }
+          }
         `}
       </style>
     </div>
