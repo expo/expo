@@ -21,7 +21,7 @@ import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallbac
 import Alerts from '../constants/Alerts';
 import Colors from '../constants/Colors';
 import HistoryActions from '../redux/HistoryActions';
-import OpenProjectByURLButton from '../components/OpenProjectByURLButton';
+import NoProjectTools from '../components/NoProjectTools';
 import ProjectTools from '../components/ProjectTools';
 import SharedStyles from '../constants/SharedStyles';
 import SmallProjectCard from '../components/SmallProjectCard';
@@ -45,11 +45,6 @@ export default class ProjectsScreen extends React.Component {
   static route = {
     navigationBar: {
       title: 'Projects',
-      ...Platform.select({
-        ios: {
-          renderRight: () => <OpenProjectByURLButton />,
-        },
-      }),
     },
   };
 
@@ -115,7 +110,15 @@ export default class ProjectsScreen extends React.Component {
   };
 
   _renderProjectTools = () => {
-    return <ProjectTools pollForUpdates={this.props.isFocused} />;
+    if (Platform.OS === 'ios') {
+      return (
+        <View style={{ marginBottom: 15 }}>
+          <NoProjectTools />
+        </View>
+      );
+    } else {
+      return <ProjectTools pollForUpdates={this.props.isFocused} />;
+    }
   };
 
   _renderRecentHistory = () => {

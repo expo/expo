@@ -127,14 +127,6 @@ export default class MenuView extends React.Component {
               iconSource: require('../assets/ios-menu-refresh.png'),
             })}
             {copyUrlButton}
-            {Expo.Constants.isDevice
-              ? this._renderButton({
-                key: 'qrcode',
-                text: 'Scan QR code',
-                    onPress: this._onOpenQRCode,
-                svgName: Platform.OS === 'ios' ? 'ios-qr-scanner' : 'md-qr-scanner',
-              })
-            : undefined}
             {this._renderButton({
               key: 'home',
               text: 'Go to Expo Home',
