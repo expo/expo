@@ -2,35 +2,36 @@
 
 The Expo client app for Android and iOS.
 
-To develop or run Expo experiences on your device, download Expo [for Android 4.4+ from the Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent) or [for iOS 9+ from the App Store](https://itunes.com/apps/exponent). [Click here for instructions to install the app on an iOS simulator or Android emulator](https://docs.expo.io/versions/latest/introduction/installation.html).
-
 [Click here to view our documentation](https://docs.expo.io) for developing on Expo.
 
 ## Introduction
 
-This is the source code for the Expo client app used to view experiences published to the Expo service. **Most people will not need to build the Expo clients from source**.
+This is the source code for the Expo client app used to view experiences published to the Expo service. If you want to build and install the Expo client directly onto a device, you're in the right place. Note that if you just want to install the Expo client app on a simulator, you do not need to build it from source. Instead, you should [follow the instructions here](https://docs.expo.io/versions/latest/introduction/installation.html).
+
+To build the Expo client app, follow the instructions in the [Set Up](#set-up) section below. You'll be able to use [XDE](https://github.com/expo/xde) or [exp](https://github.com/expo/exp) and the rest of Expo's infrastructure with the app you build.
+
+Please ask us on the [forums](https://forums.expo.io/) if you get stuck.
+
+**Disclaimers:**
 
 If you want to build a standalone app that has a custom icon and name, see [our documentation here](https://docs.expo.io/versions/latest/guides/building-standalone-apps.html). You're in the wrong place, you shouldn't need to build the Expo clients from source.
 
 If you need to make native code changes to your Expo project, such as adding custom native modules, we can [generate a native project for you](https://docs.expo.io/versions/latest/guides/changing-native-code.html). You're in the wrong place, you shouldn't need to build the Expo clients from source.
 
-If you want to build the Expo client apps for some reason, there are a few steps to getting this working:
-- Join us on Slack at https://slack.expo.io/. The code base and build process is complicated so please ask us if you get stuck.
-- Get the iOS and Android clients building on your machine using the [Set Up](#set-up) section below.
-- Make your native changes and test. You can still use [XDE](https://github.com/expo/xde) or [exp](https://github.com/expo/exp) and the rest of Expo's infrastructure.
-
 ## Set Up
 
-**These instructions are different if you are using Expo's internal monorepo.** In that case, read the `__internal__` instructions instead.
+Please use Node 8+ and npm 4. We recommend installing Node using [nvm](https://github.com/creationix/nvm). We support building the clients only on macOS.
 
-Please use Node 7 and npm 4. We recommend installing Node using [nvm](https://github.com/creationix/nvm). We support building the clients only on macOS.
-
-- Install [the Gulp CLI](http://gulpjs.com/) globally: `npm i gulp-cli -g`.
-- Clone [xdl](https://github.com/expo/xdl), run `npm install` in the xdl directory and then run
-`gulp build`. Next, run `npm link` in the xdl directory.
+- Install [the Gulp CLI](http://gulpjs.com/) globally: `npm install gulp-cli -g`.
 - Run `npm install` in the `js` and `tools-public` directories.
-- Run `npm link xdl` in the `tools-public` directory.
-- If you don't have it yet, install [exp](https://github.com/expo/exp), the Expo cli.
+
+Note: If you have the Expo client app from the Play Store or the App Store you will have to uninstall those before installing this client.
+
+#### iOS
+- Make sure you have latest non-beta Xcode installed.
+- Install [Cocoapods](https://cocoapods.org/): `gem install cocoapods --no-ri --no-rdoc`
+- Run `pod install` in the `ios` directory.
+- Open and run `ios/Exponent.xcworkspace` in Xcode.
 
 #### Android
 - Make sure you have Android Studio 2 and the [Android NDK](https://facebook.github.io/react-native/docs/android-building-from-source.html#download-links-for-android-ndk) version `r10e` installed.
@@ -38,14 +39,7 @@ Please use Node 7 and npm 4. We recommend installing Node using [nvm](https://gi
 
 If you are running on an phone with Android 5 you might have to use `./run.sh installDev19Debug`. There is a bug running multidex applications in debug mode on Android 5 devices: https://code.google.com/p/android/issues/detail?id=79826.
 
-#### iOS
-- Make sure you have latest non-beta Xcode installed.
-- Install [Cocoapods](https://cocoapods.org/): `gem install cocoapods --no-ri --no-rdoc`
-- `cd tools-public; ./generate-files-ios.sh; cd ..`
-- `cd ios; pod install; cd ..`
-- Run `ios/Exponent.xcworkspace` in Xcode.
-
-Note: If you have the Expo client app from the Play Store or the App Store you will have to uninstall those before installing this client.
+**These instructions are different if you are using Expo's internal monorepo.** In that case, read the `__internal__` instructions instead.
 
 ## Standalone Apps
 
