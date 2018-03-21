@@ -164,10 +164,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appLoader:(EXKernelAppLoader *)appLoader didLoadOptimisticManifest:(NSDictionary *)manifest
 {
-  if ([EXKernel sharedInstance].browserController) {
-    [[EXKernel sharedInstance].browserController addHistoryItemWithUrl:appLoader.manifestUrl manifest:manifest];
-  }
-  [self _rebuildBridgeWithLoadingViewManifest:manifest];
+  [self _whenManifestIsValidToOpen:manifest performBlock:^{
+    if ([EXKernel sharedInstance].browserController) {
+      [[EXKernel sharedInstance].browserController addHistoryItemWithUrl:appLoader.manifestUrl manifest:manifest];
+    }
+    [self _rebuildBridgeWithLoadingViewManifest:manifest];
+  }];
 }
 
 - (void)appLoader:(EXKernelAppLoader *)appLoader didLoadBundleWithProgress:(EXLoadingProgress *)progress
@@ -179,10 +181,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appLoader:(EXKernelAppLoader *)appLoader didFinishLoadingManifest:(NSDictionary *)manifest bundle:(NSData *)data
 {
-  [self _rebuildBridgeWithLoadingViewManifest:manifest];
-  if (_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {
-    [_appRecord.appManager appLoaderFinished];
-  }
+  [self _whenManifestIsValidToOpen:manifest performBlock:^{
+    [self _rebuildBridgeWithLoadingViewManifest:manifest];
+    if (_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {
+      [_appRecord.appManager appLoaderFinished];
+    }
+  }];
 }
 
 - (void)appLoader:(EXKernelAppLoader *)appLoader didFailWithError:(NSError *)error
@@ -374,6 +378,24 @@ NS_ASSUME_NONNULL_BEGIN
   if (_tmrAutoReloadDebounce) {
     [_tmrAutoReloadDebounce invalidate];
     _tmrAutoReloadDebounce = nil;
+  }
+}
+
+- (void)_whenManifestIsValidToOpen:(NSDictionary *)manifest performBlock:(void (^)(void))block
+{
+  if (self.appRecord.appManager.requiresValidManifests && [EXKernel sharedInstance].browserController) {
+    [[EXKernel sharedInstance].browserController getIsValidHomeManifestToOpen:manifest completion:^(BOOL isValid) {
+      if (isValid) {
+        block();
+      } else {
+        [self appLoader:_appRecord.appLoader didFailWithError:[NSError errorWithDomain:EXNetworkErrorDomain
+                                                                                  code:-1
+                                                                              userInfo:@{ NSLocalizedDescriptionKey: @"Expo Client can only be used to view your own projects. Are you signed in to the correct Expo account?" }]];
+      }
+    }];
+  } else {
+    // no browser present, everything is valid
+    block();
   }
 }
 

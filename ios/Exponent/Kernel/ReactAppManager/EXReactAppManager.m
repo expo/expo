@@ -428,6 +428,11 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   return false;
 }
 
+- (BOOL)requiresValidManifests
+{
+  return YES;
+}
+
 - (void)showDevMenu
 {
   if ([self enablesDeveloperTools]) {

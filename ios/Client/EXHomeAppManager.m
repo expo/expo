@@ -48,6 +48,18 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
                    }];
 }
 
+- (void)getIsValidHomeManifestToOpen:(NSDictionary *)manifest completion:(void (^)(BOOL))completion
+{
+  [self _dispatchHomeJSEvent:@"getIsValidHomeManifestToOpen"
+                        body:@{ @"manifest": manifest }
+                   onSuccess:^(NSDictionary *result) {
+                     BOOL isValid = [result[@"isValid"] boolValue];
+                     completion(isValid);
+                   } onFailure:^(NSString *errorMessage) {
+                     completion(NO);
+                   }];
+}
+
 - (void)showQRReader
 {
   [self _dispatchHomeJSEvent:@"showQRReader" body:@{} onSuccess:nil onFailure:nil];
@@ -200,6 +212,12 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
     }
   }
   return nil;
+}
+
+- (BOOL)requiresValidManifests
+{
+  // running home
+  return NO;
 }
 
 @end
