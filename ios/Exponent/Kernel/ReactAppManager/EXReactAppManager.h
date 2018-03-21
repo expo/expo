@@ -44,6 +44,7 @@ typedef enum EXReactAppManagerStatus {
 #pragma mark - developer tools
 
 - (BOOL)enablesDeveloperTools;
+- (BOOL)requiresValidManifests;
 
 /**
  * Call reload on existing bridge (developer-facing devtools reload)

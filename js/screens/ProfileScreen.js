@@ -68,6 +68,7 @@ export default class ProfileScreen extends React.Component {
     return {
       isAuthenticated,
       isOwnProfile,
+      username: props.username,
     };
   }
 
