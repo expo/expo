@@ -95,7 +95,6 @@ android/app/google-services.json
 android/app/src/main/java/host/exp/exponent/generated/ExponentKeys.java
 android/app/fabric.properties
 ios/Exponent/Supporting/Generated/EXKeys.h
-ios/Podfile
 ios/RCTTest.podspec
 
 # Open source
