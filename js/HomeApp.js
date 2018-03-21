@@ -5,6 +5,7 @@ import { NavigationProvider, StackNavigation } from '@expo/ex-navigation';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
+import getViewerUsernameAsync from './utils/getViewerUsernameAsync';
 import addListenerWithNativeCallback from './utils/addListenerWithNativeCallback';
 import AuthTokenActions from './redux/AuthTokenActions';
 import HistoryActions from './redux/HistoryActions';
@@ -44,10 +45,7 @@ export default class App extends React.Component {
           let manifestAuthorComponents = manifest.id.split('/');
           let manifestAuthor = manifestAuthorComponents[0].substring(1);
 
-          // TODO: figure out their actual username
-          let state = await Store.getState();
-          const idToken = (state.authTokens && state.authTokens.idToken) ? state.authTokens.idToken : null;
-          const { username } = jwtDecode(idToken, { complete: true });
+          let username = await getViewerUsernameAsync();
 
           if (username && manifestAuthor && manifestAuthor === username) {
             isValid = true;
