@@ -21,6 +21,7 @@
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
 
 const CGFloat kEXAutoReloadDebounceSeconds = 0.1;
+const NSUInteger kEXErrorCodeAppForbidden = 424242;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -358,6 +359,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)_willAutoRecoverFromError:(NSError *)error
 {
+  if (error.code == kEXErrorCodeAppForbidden) {
+    return NO;
+  }
   if (![_appRecord.appManager enablesDeveloperTools]) {
     BOOL shouldRecover = [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdShouldReloadOnError:_appRecord.experienceId];
     if (shouldRecover) {
@@ -389,7 +393,7 @@ NS_ASSUME_NONNULL_BEGIN
         block();
       } else {
         [self appLoader:_appRecord.appLoader didFailWithError:[NSError errorWithDomain:EXNetworkErrorDomain
-                                                                                  code:-1
+                                                                                  code:kEXErrorCodeAppForbidden
                                                                               userInfo:@{ NSLocalizedDescriptionKey: @"Expo Client can only be used to view your own projects. Are you signed in to the correct Expo account?" }]];
       }
     }];
