@@ -16,7 +16,7 @@ export default {
 
   signOut(options = {}) {
     return async (dispatch) => {
-      const { shouldResetApolloStore } = options.shouldResetApolloStore || true;
+      const shouldResetApolloStore = options.shouldResetApolloStore || true;
       const session = await LocalStorage.getSessionAsync();
       if (session) {
         await Auth0Api.signOutAsync(session.sessionSecret);
