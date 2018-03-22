@@ -25,8 +25,6 @@ Please use Node 8+ and npm 4. We recommend installing Node using [nvm](https://g
 - Install [the Gulp CLI](http://gulpjs.com/) globally: `npm install gulp-cli -g`.
 - Run `npm install` in the `js` and `tools-public` directories.
 
-Note: If you have the Expo client app from the Play Store or the App Store you will have to uninstall those before installing this client.
-
 #### iOS
 - Make sure you have latest non-beta Xcode installed.
 - Install [Cocoapods](https://cocoapods.org/): `gem install cocoapods --no-ri --no-rdoc`
@@ -40,6 +38,22 @@ Note: If you have the Expo client app from the Play Store or the App Store you w
 If you are running on an phone with Android 5 you might have to use `./run.sh installDev19Debug`. There is a bug running multidex applications in debug mode on Android 5 devices: https://code.google.com/p/android/issues/detail?id=79826.
 
 **These instructions are different if you are using Expo's internal monorepo.** In that case, read the `__internal__` instructions instead.
+
+## Running on a Device
+
+### iOS
+- In Xcode's menu bar, open the **Xcode** drop-down menu, and select **Preferences**.  Then in the **Accounts** tab of the preferences menu, add add your personal or team apple developer account.
+- Connect your test device to your computer with a USB cable.
+- In Xcode's menu bar, open the **Product** drop-down menu, select **Destination**, then in the _Device_ grouping select your device.
+- In the project navigator, select the **Exponent** project to bring up the project's settings, and then:
+  - In the **General** tab, in the **Identity** section, put in a unique Bundle Identifier.
+  - Also in the **General** tab, in the **Signing** section, select your personal or team apple developer account as your **Team**, and create a new signing certificate by clicking **Fix Issue**.
+- Finally, run the build
+
+### Android
+- If the Play Store version of the Expo Client App is installed on your test device, uninstall it.
+- Connect your test device to your computer with a USB cable.
+- Run `cd android; ./run.sh`, or alternately open the `android` directory in Android Studio, start it, and in the **Select Deployment Target** dialog, select your device.
 
 ## Standalone Apps
 
