@@ -72,26 +72,26 @@ public class ContactsModule extends ReactContextBaseJavaModule {
     Cursor cursor = cr.query(
         ContactsContract.Contacts.CONTENT_URI,
         null,
-        fetchSingleContact ? Data.CONTACT_ID + " = ?" : null,
+        fetchSingleContact ? Contacts._ID + " = ?" : null,
         fetchSingleContact ? new String[] { options.getString("id") } : null,
         null
     );
     if (cursor != null) {
       try {
+        cursor.move(pageOffset);
         int currentIndex = 0;
         Set<Long> ids = new HashSet<>();
 
         final int contactIdIndex = cursor.getColumnIndex(Contacts._ID);
         while (cursor.moveToNext()) {
+          if (currentIndex >= pageSize) {
+            break;
+          }
+
           long id = cursor.getLong(contactIdIndex);
 
           if (!ids.contains(id)) {
             ids.add(id);
-
-            if (currentIndex < pageOffset || currentIndex >= pageSize + pageOffset) {
-              currentIndex++;
-              continue;
-            }
 
             WritableMap contact = Arguments.createMap();
             contact.putString("id", String.valueOf(id));
@@ -160,6 +160,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
 
             if (fetchSingleContact) {
               promise.resolve(contact);
+              break;
             } else {
               contacts.pushMap(contact);
               currentIndex++;
@@ -167,7 +168,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
           }
         }
 
-        int total = ids.size();
+        int total = cursor.getCount();
         if (!fetchSingleContact) {
           response.putArray("data", contacts);
           response.putBoolean("hasPreviousPage", pageOffset > 0);
@@ -511,7 +512,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
               is.close();
               imageAvailable = true;
             } catch (Exception e) {
-              EXL.e(TAG, e.getMessage());
+              // image not available - do not spam the console
             }
             contact.putBoolean("imageAvailable", imageAvailable);
 
