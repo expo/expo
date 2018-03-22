@@ -35,6 +35,11 @@ NSNotificationName EXTestSuiteCompletedNotification = @"EXTestSuiteCompletedNoti
   return self;
 }
 
+RCT_EXPORT_METHOD(log:(NSString *)message)
+{
+  os_log(EXTest.log, "%{public}@", message);
+}
+
 RCT_EXPORT_METHOD(completed:(NSString *)jsonStringifiedResult)
 {
   NSDictionary *failedResult = @{ @"failed": @(1) };
