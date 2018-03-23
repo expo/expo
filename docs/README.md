@@ -37,8 +37,6 @@ yarn run start
 
 ### Editing Docs Content
 
-[FUTURE]
-
 You can find the source of the documentation inside the `versions` directory. Documentation is mostly written in markdown with the help of some React components (for Snack embeds, etc). The routes and navbar are automatically inferred from the directory structure within `versions`.
 
 ### Adding Images and Assets
@@ -58,19 +56,9 @@ Always try to use the existing components and features in markdown. Create a new
 
 ### Compile process
 
-#### FUTURE
+In both `yarn run start` and `yarn run dev`, we initially compile (see `mdjs` dir) all `.md` files in `versions` to `.js` files under `pages/versions` (which is git-ignored, and never commited). At this point, we also generate the json file `navigation-data.json` for the navbar, and copy images in `versions` to the `static` folder.
 
-In both `yarn run start` and `yarn run dev`, we initially compile (see `mdjs` dir) all `.md` files in `docs` to `.js` files under `pages/versions` (which is git-ignored, and never commited). At this point, we also generate the json file `navigation-data.json` for the navbar, and move images in `docs` to the `static` folder.
-
-In `yarn run dev`, the watcher watches for changes to files in `docs`, and re-compiles as necessary. Note: navigation changes probably won't live-reload so make sure to restart the server.
-
-#### PRESENT
-
-On `yarn run start` and `yarn run dev`, we first fix all markdown files in `versions` (symlinked to `universe/docs/versions`) and copy them as new files under `docs` (which is git-ignored, and never commited). Then, we "compile" all markdown files in `docs` to javascript files under `pages/versions` (which is git-ignored, and never commited). At this point, we also generate the json file `navigation-data.json` for the navbar, and move images in `docs` to the `static` folder.
-
-### Temporary scripts
-
-At the moment, while we transition from the existing docs server to this next.js server, I have a `fix-markdown.js` that makes a couple of straightforward regex replacements, and moves markdown files in the workflow/distribution/expokit sections into seperate directories.
+In `yarn run dev`, the watcher watches for changes to files in `versions`, and re-compiles as necessary. Note: navigation changes probably won't live-reload so make sure to restart the server.
 
 ### Not breaking existing incoming links
 
@@ -81,7 +69,7 @@ At the moment, while we transition from the existing docs server to this next.js
 Expo's SDK is versioned so that apps made on old SDKs are still supported
 when new SDKs are relased. The website documents previous SDK versions too.
 
-Version names correspond to directory names under `docs`.
+Version names correspond to directory names under `versions`.
 
 `unversioned` is a special version for the next SDK release.
 
@@ -100,8 +88,8 @@ so don't worry if you have code changes or such elsewhere.
 
 ### Updating latest version of docs
 
-When we release a new SDK, we copy the `unversioned` directory, and rename it to the new version. Latest version of docs is read from `package.json` so make sure to update the `version` key there as well. However, if you update the `version` key there, you need to `rm -rf node_modules/.cache/` before the change is picked up (why? [read this](https://github.com/zeit/next.js/pull/1747/files)).
+When we release a new SDK, we copy the `unversioned` directory, and rename it to the new version. Latest version of docs is read from `package.json` so make sure to update the `version` key there as well. However, if you update the `version` key there, you need to `rm -rf node_modules/.cache/` before the change is picked up (why? [read this](https://github.com/zeit/next.js/blob/4.0.0/examples/with-universal-configuration/README.md#caveats)).
 
-That's all you need to do. The `docs` directory is listed on server start to find all available versions. The routes and navbar contents are automatically inferred from the directory structure within `docs`. So, `/versions/v24.0.0/guides/development-mode` refers to `pages/versions/guides/development-mode`.
+That's all you need to do. The `versions` directory is listed on server start to find all available versions. The routes and navbar contents are automatically inferred from the directory structure within `versions`. So, `/versions/v24.0.0/guides/development-mode` refers to `pages/versions/guides/development-mode`.
 
 Because the navbar is automatically generated from the directory structure, the default ordering of the links under each section is alphabetical. However, for many sections, this is not ideal UX. So, if you wish to override the alphabetical ordering, manipulate page titles in `navbarOrder.js`.
