@@ -10,6 +10,7 @@ The following resources are useful for learning Expo and some of the projects th
 
 ## Courses using Expo
 
+- [Harvard CS50 Mobile](https://cs50.github.io/mobile/) (free)
 - [repl.it - React Native - Build your first app in the next 5 minutes](https://repl.it/site/react_native) (free)
 - [React Europe - Introduction to React Native Workshop videos on YouTube](https://www.youtube.com/playlist?list=PLCC436JpVnK2RFms3NG9ubPToWCNbMLbT) (free)
 - [RMOTR - React Native & Expo for Mobile Development](https://rmotr.com/introduction-to-react-native-and-expo) (paid)
