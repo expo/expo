@@ -7,7 +7,15 @@ const gulp = require('gulp');
 const shell = require('gulp-shell');
 const minimist = require('minimist');
 const path = require('path');
-const { IosClient, IosIcons, IosShellApp, AndroidShellApp } = require('xdl');
+const _ = require('lodash');
+const {
+  IosClient,
+  IosIcons,
+  IosShellApp,
+  AndroidShellApp,
+  IosKeychain,
+  IosIPABuilder: createIPABuilder,
+} = require('xdl');
 
 const { startReactNativeServer } = require('./react-native-tasks');
 const {
@@ -69,25 +77,19 @@ function runFabricIOSWithArguments() {
 }
 
 function createAndroidShellAppWithArguments() {
-  if (!argv.url) {
-    throw new Error('Must run with `--url MANIFEST_URL`');
-  }
-
-  if (!argv.sdkVersion) {
-    throw new Error('Must run with `--sdkVersion SDK_VERSION`');
-  }
+  validateArgv({
+    url: 'Must run with `--url MANIFEST_URL`',
+    sdkVersion: 'Must run with `--sdkVersion SDK_VERSION`',
+  });
 
   return AndroidShellApp.createAndroidShellAppAsync(argv);
 }
 
 function updateAndroidShellAppWithArguments() {
-  if (!argv.url) {
-    throw new Error('Must run with `--url MANIFEST_URL`');
-  }
-
-  if (!argv.sdkVersion) {
-    throw new Error('Must run with `--sdkVersion SDK_VERSION`');
-  }
+  validateArgv({
+    url: 'Must run with `--url MANIFEST_URL`',
+    sdkVersion: 'Must run with `--sdkVersion SDK_VERSION`',
+  });
 
   return AndroidShellApp.updateAndroidShellAppAsync(argv);
 }
@@ -111,6 +113,56 @@ function buildIOSClientWithArguments() {
 function configureIOSClientBundleWithArguments() {
   const { archivePath, bundleId, appleTeamId } = argv;
   return IosClient.configureBundleAsync(archivePath, bundleId, appleTeamId);
+}
+
+function createIOSKeychainWithArguments() {
+  validateArgv({
+    appUUID: 'Must run with `--appUUID APP_UUID`',
+  });
+
+  return IosKeychain.createKeychain(argv.appUUID);
+}
+
+function importCertIntoIOSKeychainWithArguments() {
+  validateArgv({
+    keychainPath: 'Must run with `--keychainPath KEYCHAIN_PATH`',
+    certPath: 'Must run with `--certPath CERTIFICATE_PATH`',
+    certPassword: 'Must run with `--certPassword CERTIFICATE_PASSWORD`',
+  });
+
+  return IosKeychain.importIntoKeychain(argv);
+}
+
+function deleteIOSKeychainWithArguments() {
+  validateArgv({
+    keychainPath: 'Must run with `--keychainPath KEYCHAIN_PATH`',
+    appUUID: 'Must run with `--appUUID APP_UUID`',
+  });
+
+  return IosKeychain.deleteKeychain({ path: argv.keychainPath, appUUID: argv.appUUID });
+}
+
+function buildAndSignIpaWithArguments() {
+  validateArgv({
+    keychainPath: 'Must run with `--keychainPath KEYCHAIN_PATH`',
+    provisioningProfilePath: 'Must run with `--provisioningProfilePath PROVISIONING_PROFILE_PATH`',
+    appUUID: 'Must run with `--appUUID APP_UUID`',
+    certPath: 'Must run with `--certPath CERT_PATH`',
+    certPassword: 'Must run with `--certPassword CERT_PASSWORD`',
+    teamID: 'Must run with `--teamID TEAM_ID`',
+    bundleIdentifier: 'Must run with `--bundleIdentifier BUNDLE_IDENTIFIER`',
+  });
+
+  const builder = createIPABuilder(argv);
+  return builder.build();
+}
+
+function validateArgv(errors) {
+  Object.keys(errors).forEach(fieldName => {
+    if (!argv[fieldName]) {
+      throw new Error(errors[fieldName]);
+    }
+  });
 }
 
 let watcher = null;
@@ -141,6 +193,10 @@ gulp.task('update-android-shell-app', updateAndroidShellAppWithArguments);
 gulp.task('ios-shell-app', createIOSShellAppWithArguments);
 gulp.task('build-ios-client', buildIOSClientWithArguments);
 gulp.task('configure-ios-client-bundle', configureIOSClientBundleWithArguments);
+gulp.task('ios:create-keychain', createIOSKeychainWithArguments);
+gulp.task('ios:import-cert-into-keychain', importCertIntoIOSKeychainWithArguments);
+gulp.task('ios:delete-keychain', deleteIOSKeychainWithArguments);
+gulp.task('ios:build-and-sign-ipa', buildAndSignIpaWithArguments);
 
 gulp.task('ptool', shell.task([`${ptool} ${_projects}`]));
 gulp.task('ptool:watch', gulp.series('ptool', 'watch'));
