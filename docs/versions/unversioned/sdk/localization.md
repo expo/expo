@@ -2,23 +2,23 @@
 title: Localization
 ---
 
-### `Expo.Localization.getCurrentDeviceCountryAsync()`
+### `Expo.DangerZone.Localization.getCurrentDeviceCountryAsync()`
 
 Returns the current device country code.
 
-### `Expo.Localization.getCurrentLocaleAsync()`
+### `Expo.DangerZone.Localization.getCurrentLocaleAsync()`
 
 Returns the current device locale as a string.
 
-### `Expo.Localization.getCurrentTimeZoneAsync()`
+### `Expo.DangerZone.Localization.getCurrentTimeZoneAsync()`
 
 Returns the current device time zone name.
 
-### `Expo.Localization.getPreferredLocalesAsync()`
+### `Expo.DangerZone.Localization.getPreferredLocalesAsync()`
 
 Returns an array of user's preferred Locales, in order of preference.
 
-### `Expo.Localization.getISOCurrencyCodesAsync()`
+### `Expo.DangerZone.Localization.getISOCurrencyCodesAsync()`
 
 Returns an array of `ISO` currency codes like `AMD`, `GEL` and `JPY`.
 
@@ -28,11 +28,13 @@ iOS standalone apps created with `exp build` can support multiple languages in s
 
 ## Using a locale store
 
-#### Example: `Expo.Localization.LocaleStore`
+#### Example: `Expo.DangerZone.Localization.LocaleStore`
 
 ```javascript
 import React from 'react';
 import { StyleSheet, Button, Text, View, Picker, ScrollView, Platform } from 'react-native';
+import { DangerZone } from 'expo';
+const { Localization } = DangerZone;
 
 const russianMesssage = { phrase: 'Привет мой друг' };
 
@@ -136,5 +138,4 @@ const styles = StyleSheet.create({
   plainBanner: { fontSize: 18 },
   centeredText: { textAlign: 'center' },
 });
-
 ```
