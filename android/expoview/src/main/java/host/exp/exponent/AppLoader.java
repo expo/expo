@@ -63,12 +63,12 @@ public abstract class AppLoader {
 
         @Override
         public void onError(Exception e) {
-          resolve(e.getMessage());
+          resolve(e);
         }
 
         @Override
         public void onError(String e) {
-          resolve(e);
+          resolve(new Exception(e));
         }
       });
       return;
@@ -175,12 +175,12 @@ public abstract class AppLoader {
 
       @Override
       public void onError(Exception e) {
-        resolve(e.getMessage());
+        resolve(e);
       }
 
       @Override
       public void onError(String e) {
-        resolve(e);
+        resolve(new Exception(e));
       }
     });
   }
@@ -193,7 +193,7 @@ public abstract class AppLoader {
     resolve(null);
   }
 
-  private void resolve(String errorMessage) {
+  private void resolve(Exception e) {
     if (hasResolved) {
       return;
     }
@@ -205,8 +205,8 @@ public abstract class AppLoader {
       String bundleUrl;
       try {
         bundleUrl = ExponentUrls.toHttp(mManifest.getString(ExponentManifest.MANIFEST_BUNDLE_URL_KEY));
-      } catch (JSONException e) {
-        onError(e);
+      } catch (JSONException ex) {
+        onError(ex);
         return;
       }
 
@@ -224,13 +224,15 @@ public abstract class AppLoader {
       }
     } else if (mCachedManifest != null) {
       mManifest = mCachedManifest;
+      // make sure we only go down this path once
+      mCachedManifest = null;
       fetchJSBundle(true);
     } else {
       hasResolved = true;
-      if (errorMessage != null) {
-        onError(errorMessage);
+      if (e != null) {
+        onError(e);
       } else {
-        onError("Timed out, no manifest in cache");
+        onError("Could not load request from " + mManifestUrl + ": the request timed out");
       }
     }
   }
@@ -272,7 +274,7 @@ public abstract class AppLoader {
             // if we've already done this last resort and it also failed, then show the error
             // otherwise we've just failed to get a network resource, and we should try to resolve with a cached resource
             if (shouldFailOnError) {
-              AppLoader.this.onError(e);
+              resolve(e);
               return;
             }
             if (forceCache) {
@@ -317,15 +319,15 @@ public abstract class AppLoader {
 
       } catch (JSONException e) {
         EXL.e(TAG, e);
-        onError(e);
+        resolve(e);
       } catch (Exception e) {
         // Don't let any errors through
         EXL.e(TAG, "Couldn't load bundle: " + e.toString());
-        onError(e);
+        resolve(e);
       }
     } catch (Exception e) {
       EXL.e(TAG, "Couldn't load manifest: " + e.toString());
-      onError(e);
+      resolve(e);
     }
   }
 }
