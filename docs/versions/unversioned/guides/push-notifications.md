@@ -92,14 +92,15 @@ import {
   View,
 } from 'react-native';
 
-import registerForPushNotificationsAsync from 'registerForPushNotificationsAsync';
+// This refers to the function defined earlier in this guide
+import registerForPushNotificationsAsync from './registerForPushNotificationsAsync';
 
 export default class AppContainer extends React.Component {
   state = {
     notification: {},
   };
 
-  componentWillMount() {
+  componentDidMount() {
     registerForPushNotificationsAsync();
 
     // Handle notifications that are received or selected while the app
