@@ -591,6 +591,8 @@ public class Kernel extends KernelInterface {
       return;
     }
 
+    ExponentKernelModuleProvider.queueEvent("ExponentKernel.clearConsole", Arguments.createMap(), null);
+
     final List<ActivityManager.AppTask> tasks = getExperienceActivityTasks();
     ActivityManager.AppTask existingTask = null;
     if (tasks != null) {
