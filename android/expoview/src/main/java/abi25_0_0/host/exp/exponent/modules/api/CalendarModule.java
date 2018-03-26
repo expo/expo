@@ -761,7 +761,7 @@ public class CalendarModule extends ReactContextBaseJavaModule {
           startCal.setTime(sdf.parse(details.getString("instanceStartDate")));
           exceptionValues.put(CalendarContract.Events.ORIGINAL_INSTANCE_TIME, startCal.getTimeInMillis());
         } else if (type == ReadableType.Number) {
-          exceptionValues.put(CalendarContract.Events.ORIGINAL_INSTANCE_TIME, (long) details.getDouble("startDate"));
+          exceptionValues.put(CalendarContract.Events.ORIGINAL_INSTANCE_TIME, (long) details.getDouble("instanceStartDate"));
         }
       } catch (ParseException e) {
         Log.e(TAG, "error", e);
