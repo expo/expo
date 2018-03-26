@@ -21,6 +21,7 @@ import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallbac
 import Alerts from '../constants/Alerts';
 import Colors from '../constants/Colors';
 import HistoryActions from '../redux/HistoryActions';
+import OpenProjectByURLButton from '../components/OpenProjectByURLButton';
 import NoProjectTools from '../components/NoProjectTools';
 import ProjectTools from '../components/ProjectTools';
 import SharedStyles from '../constants/SharedStyles';
@@ -45,6 +46,11 @@ export default class ProjectsScreen extends React.Component {
   static route = {
     navigationBar: {
       title: 'Projects',
+      ...Platform.select({
+        ios: {
+          renderRight: () => (Constants.isDevice) ? null : <OpenProjectByURLButton />,
+        },
+      }),
     },
   };
 
@@ -110,7 +116,7 @@ export default class ProjectsScreen extends React.Component {
   };
 
   _renderProjectTools = () => {
-    if (Platform.OS === 'ios') {
+    if (Platform.OS === 'ios' && Constants.isDevice) {
       return (
         <View style={{ marginBottom: 15 }}>
           <NoProjectTools />

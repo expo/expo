@@ -1,4 +1,4 @@
-import { AppLoading, Asset, Font } from 'expo';
+import { AppLoading, Asset, Constants, Font } from 'expo';
 import React from 'react';
 import { ActivityIndicator, Linking, Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { NavigationProvider, StackNavigation } from '@expo/ex-navigation';
@@ -35,7 +35,10 @@ export default class App extends React.Component {
   _getIsValidHomeManifestToOpen = async (event) => {
     const { manifest } = event;
     let isValid = false;
-    if (manifest) {
+    if (!Constants.isDevice) {
+      // simulator has no restriction
+      isValid = true;
+    } else if (manifest) {
       if (manifest.developer && manifest.developer.tool) {
         isValid = true;
       } else if (manifest.slug === 'snack') {
