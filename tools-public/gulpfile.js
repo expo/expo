@@ -13,6 +13,7 @@ const {
   IosIcons,
   IosShellApp,
   AndroidShellApp,
+  AndroidKeystore,
   IosKeychain,
   IosIPABuilder: createIPABuilder,
 } = require('xdl');
@@ -92,6 +93,18 @@ function updateAndroidShellAppWithArguments() {
   });
 
   return AndroidShellApp.updateAndroidShellAppAsync(argv);
+}
+
+function createAndroidKeystoreWithArguments() {
+  validateArgv({
+    keystorePassword: 'Must run with `--keystorePassword KEYSTORE_PASSWORD`',
+    keyPassword: 'Must run with `--keyPassword KEY_PASSWORD`',
+    keystoreFilename: 'Must run with `--keystoreFilename KEYSTORE_FILENAME`',
+    keystoreAlias: 'Must run with `--keystoreAlias KEYSTORE_ALIAS`',
+    androidPackage: 'Must run with `--androidPackage ANDROID_PACKAGE`',
+  });
+
+  return AndroidKeystore.createKeystore(argv);
 }
 
 function createIOSShellAppWithArguments() {
@@ -188,6 +201,7 @@ gulp.task('watch:stop', function(done) {
 // Shell app (android)
 gulp.task('android-shell-app', createAndroidShellAppWithArguments);
 gulp.task('update-android-shell-app', updateAndroidShellAppWithArguments);
+gulp.task('android:create-keystore', createAndroidKeystoreWithArguments);
 
 // iOS
 gulp.task('ios-shell-app', createIOSShellAppWithArguments);
