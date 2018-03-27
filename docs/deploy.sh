@@ -10,7 +10,7 @@ if [ "$environment" == "production" ]; then
   export ENVIRONMENT=production
 elif [ "$environment" == "staging" ]; then
   export REPLICAS=1
-  export INGRESS_HOSTNAME=staging.next-docs.expo.io
+  export INGRESS_HOSTNAME=staging.docs.expo.io
   export ENVIRONMENT=staging
 else
   echo "Unrecognized environment $environment"
