@@ -91,7 +91,7 @@ export default class ProjectsScreen extends React.Component {
           style={styles.container}
           contentContainerStyle={styles.contentContainer}>
           <View style={SharedStyles.sectionLabelContainer}>
-            <Text style={SharedStyles.sectionLabelText}>TOOLS</Text>
+            <Text style={SharedStyles.sectionLabelText}>CLIPBOARD</Text>
           </View>
           {this._renderProjectTools()}
 

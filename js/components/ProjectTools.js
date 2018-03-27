@@ -67,10 +67,12 @@ export default class ProjectTools extends React.Component {
 
     return (
       <View style={{ marginBottom: 15 }}>
-        <QRCodeButton fullWidthBorder={!displayOpenClipboardButton} />
-        {displayOpenClipboardButton && (
-          <OpenFromClipboardButton clipboardContents={clipboardContents} fullWidthBorder />
-        )}
+        {/* <QRCodeButton fullWidthBorder={!displayOpenClipboardButton} /> */}
+        <OpenFromClipboardButton
+          clipboardContents={clipboardContents}
+          isValid={displayOpenClipboardButton}
+          fullWidthBorder
+        />
       </View>
     );
   }

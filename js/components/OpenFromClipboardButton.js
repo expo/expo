@@ -20,7 +20,17 @@ import UrlUtils from '../utils/UrlUtils';
 @withNavigation
 export default class OpenFromClipboardButton extends React.Component {
   render() {
-    let { fullWidthBorder, clipboardContents } = this.props;
+    let { fullWidthBorder, clipboardContents, isValid } = this.props;
+
+    if (!isValid) {
+      return (
+        <View style={[styles.container, styles.infoContainer, styles.invalidContainer]}>
+          <Text style={styles.subtitleText} ellipsizeMode="tail" numberOfLines={1}>
+            {isValid ? clipboardContents : 'Press ⌘+v to move clipboard to simulator'}
+          </Text>
+        </View>
+      );
+    }
 
     return (
       <TouchableNativeFeedbackSafe
@@ -37,7 +47,10 @@ export default class OpenFromClipboardButton extends React.Component {
         </View>
 
         <View style={[styles.infoContainer, !fullWidthBorder && styles.bottomBorder]}>
-          <Text style={styles.titleText} ellipsizeMode="tail" numberOfLines={1}>
+          <Text
+            style={[styles.titleText, !isValid && styles.invalidContents]}
+            ellipsizeMode="tail"
+            numberOfLines={1}>
             Open from Clipboard
           </Text>
 
@@ -103,5 +116,8 @@ const styles = StyleSheet.create({
     flex: 1,
     color: Colors.greyText,
     fontSize: 13,
+  },
+  invalidContainer: {
+    paddingLeft: 20,
   },
 });
