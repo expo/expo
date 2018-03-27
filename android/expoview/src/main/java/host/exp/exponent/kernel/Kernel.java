@@ -454,7 +454,15 @@ public class Kernel extends KernelInterface {
       }
     }
 
-    Intent intent = new Intent(mActivityContext, ShellAppActivity.class);
+    Class clazz = ShellAppActivity.class;
+    try {
+      if (Constants.isDetached()) {
+        clazz = Class.forName("host.exp.exponent.MainActivity");
+      }
+    } catch (Exception e) {
+      EXL.e(TAG, "Cannot find MainActivity, falling back to ShellAppActivity");
+    }
+    Intent intent = new Intent(mActivityContext, clazz);
     Kernel.addIntentDocumentFlags(intent);
 
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
