@@ -216,14 +216,13 @@ public class ErrorActivity extends MultipleVersionReactNativeActivity {
     }
 
     if (mManifestUrl != null) {
-      mKernel.reloadVisibleExperience(mManifestUrl);
-
       // Mark as not visible so that any new errors go to a new activity.
       if (sVisibleActivity == this) {
         sVisibleActivity = null;
       }
 
       mKernel.killActivityStack(this);
+      mKernel.reloadVisibleExperience(mManifestUrl);
     } else {
       // Mark as not visible so that any new errors go to a new activity.
       if (sVisibleActivity == this) {
