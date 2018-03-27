@@ -97,6 +97,9 @@ public class ErrorActivity extends MultipleVersionReactNativeActivity {
     }
     Boolean isDebugModeEnabled = bundle.getBoolean(DEBUG_MODE_KEY);
     mManifestUrl = bundle.getString(MANIFEST_URL_KEY);
+    if (mManifestUrl == null && Constants.INITIAL_URL != null) {
+      mManifestUrl = Constants.INITIAL_URL;
+    }
     boolean isHomeError = bundle.getBoolean(IS_HOME_KEY, false);
     mIsShellApp = mManifestUrl != null && mManifestUrl.equals(Constants.INITIAL_URL);
     mShouldShowJSErrorScreen = mKernel.isRunning();

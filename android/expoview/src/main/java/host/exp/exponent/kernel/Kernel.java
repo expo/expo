@@ -245,6 +245,9 @@ public class Kernel extends KernelInterface {
   }
 
   public void reloadJSBundle() {
+    if (Constants.isShellApp()) {
+      return;
+    }
     String bundleUrl = getBundleUrl();
     mHasError = false;
     Exponent.getInstance().loadJSBundle(null, bundleUrl, KernelConstants.KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, kernelBundleListener(), true);
