@@ -30,6 +30,8 @@ import Store from '../redux/Store';
 
 import extractReleaseChannel from '../utils/extractReleaseChannel';
 
+const IS_RESTRICTED = Constants.isDevice && Platform.OS === 'ios';
+
 @createFocusAwareComponent
 @withNavigation
 @connect(data => ProjectsScreen.getDataProps(data))
@@ -48,7 +50,7 @@ export default class ProjectsScreen extends React.Component {
       title: 'Projects',
       ...Platform.select({
         ios: {
-          renderRight: () => (Constants.isDevice) ? null : <OpenProjectByURLButton />,
+          renderRight: () => (Constants.isDevice ? null : <OpenProjectByURLButton />),
         },
       }),
     },
@@ -91,7 +93,9 @@ export default class ProjectsScreen extends React.Component {
           style={styles.container}
           contentContainerStyle={styles.contentContainer}>
           <View style={SharedStyles.sectionLabelContainer}>
-            <Text style={SharedStyles.sectionLabelText}>CLIPBOARD</Text>
+            <Text style={SharedStyles.sectionLabelText}>
+              {IS_RESTRICTED || Platform.OS === 'android' ? 'TOOLS' : 'CLIPBOARD'}
+            </Text>
           </View>
           {this._renderProjectTools()}
 
@@ -116,7 +120,7 @@ export default class ProjectsScreen extends React.Component {
   };
 
   _renderProjectTools = () => {
-    if (Platform.OS === 'ios' && Constants.isDevice) {
+    if (IS_RESTRICTED) {
       return (
         <View style={{ marginBottom: 15 }}>
           <NoProjectTools />
@@ -162,7 +166,8 @@ export default class ProjectsScreen extends React.Component {
         releaseChannel={
           /* 28/11/17(brentvatne) - we can remove extractReleaseChannel in a couple of months
           when project history is unlikely to include any projects with release channels */
-          project.manifest && project.manifest.releaseChannel || extractReleaseChannel(project.manifestUrl)
+          (project.manifest && project.manifest.releaseChannel) ||
+          extractReleaseChannel(project.manifestUrl)
         }
         projectName={project.manifest && project.manifest.name}
         username={
