@@ -164,15 +164,16 @@ function buildAndSignIpaWithArguments() {
     certPassword: 'Must run with `--certPassword CERT_PASSWORD`',
     teamID: 'Must run with `--teamID TEAM_ID`',
     bundleIdentifier: 'Must run with `--bundleIdentifier BUNDLE_IDENTIFIER`',
+    clientBuild: 'Must run with `--clientBuild CLIENT_BUILD`',
   });
 
-  const builder = createIPABuilder(argv);
+  const builder = createIPABuilder({ ...argv, clientBuild: argv.clientBuild === 1 });
   return builder.build();
 }
 
 function validateArgv(errors) {
   Object.keys(errors).forEach(fieldName => {
-    if (!argv[fieldName]) {
+    if (!(fieldName in argv)) {
       throw new Error(errors[fieldName]);
     }
   });
@@ -206,7 +207,7 @@ gulp.task('android:create-keystore', createAndroidKeystoreWithArguments);
 // iOS
 gulp.task('ios-shell-app', createIOSShellAppWithArguments);
 gulp.task('build-ios-client', buildIOSClientWithArguments);
-gulp.task('configure-ios-client-bundle', configureIOSClientBundleWithArguments);
+gulp.task('ios:configure-client-bundle', configureIOSClientBundleWithArguments);
 gulp.task('ios:create-keychain', createIOSKeychainWithArguments);
 gulp.task('ios:import-cert-into-keychain', importCertIntoIOSKeychainWithArguments);
 gulp.task('ios:delete-keychain', deleteIOSKeychainWithArguments);
