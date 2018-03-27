@@ -4,6 +4,7 @@
 
 import React from 'react';
 import { AppState, Clipboard, Platform, View } from 'react-native';
+import { Constants } from 'expo';
 
 import QRCodeButton from './QRCodeButton';
 import OpenFromClipboardButton from './OpenFromClipboardButton';
