@@ -28,4 +28,4 @@ fi
 
 echo "Environment set, found image, deploying..."
 
-envsubst < ./docs.k8s.template.yml | kubectl apply -f -
+envsubst < ./docs.k8s.template.yml | kubectl apply --namespace $environment -f -
