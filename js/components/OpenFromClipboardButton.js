@@ -23,6 +23,10 @@ export default class OpenFromClipboardButton extends React.Component {
     let { fullWidthBorder, clipboardContents, isValid } = this.props;
 
     if (!isValid) {
+      if (Platform.OS === 'android') {
+        return null;
+      }
+
       return (
         <View style={[styles.container, styles.infoContainer, styles.invalidContainer]}>
           <Text style={styles.subtitleText} ellipsizeMode="tail" numberOfLines={1}>
