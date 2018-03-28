@@ -6,7 +6,7 @@ environment=$1
 
 if [ "$environment" == "production" ]; then
   export REPLICAS=2
-  export INGRESS_HOSTNAME=next-docs.expo.io
+  export INGRESS_HOSTNAME=docs.expo.io
   export ENVIRONMENT=production
 elif [ "$environment" == "staging" ]; then
   export REPLICAS=1
