@@ -15,7 +15,7 @@ import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.gcm.RegistrationIntentService;
+import host.exp.exponent.gcm.GcmRegistrationIntentService;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.utils.AsyncCondition;
@@ -255,7 +255,7 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   protected void registerForNotifications() {
     int googlePlayServicesCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
     if (googlePlayServicesCode == ConnectionResult.SUCCESS) {
-      Intent intent = new Intent(this, RegistrationIntentService.class);
+      Intent intent = new Intent(this, GcmRegistrationIntentService.class);
       startService(intent);
     } else if (!BuildConfig.DEBUG) {
       // TODO: should we actually show an error or fail silently?
