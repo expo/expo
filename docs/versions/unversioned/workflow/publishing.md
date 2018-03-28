@@ -20,14 +20,14 @@ turn off your laptop or close XDE, you won’t be able to load your
 project from that URL. "Publish" is the term we use for deploying your
 project. It makes your project available at a persistent URL, for
 example https://expo.io/@community/native-component-list, which can be
-opened with the Expo client. It also uploads all of your app images,
+opened with the Expo Client app. It also uploads all of your app images,
 fonts, and videos to a CDN ([read more
 here](how-expo-works.html#publishingdeploying-an-expo-app-in-production)).
 
 ## How to Publish
 
 To publish a project, click the Publish button in XDE. (It’s in the
-upper right of the window.) If you're using the exp cli tool, then run
+upper right of the window.) If you're using `exp`, run
 `exp publish`. No setup is required, go ahead and create a new project
 and publish it without any changes and you will see that it works.
 
@@ -57,6 +57,8 @@ To configure the way your app handles JS updates, see [Offline Support](./offlin
 
 ## Limitations
 
+### Some native configuration can't be updated by publishing
+
 If you make any of the following changes in `app.json`, you will need to
 re-build the binaries for your app for the change to take effect:
 
@@ -68,6 +70,15 @@ re-build the binaries for your app for the change to take effect:
 - Change your app `scheme`
 - Change your `facebookScheme`
 - Change your bundled assets under `assetBundlePatterns`
+
+### On iOS, you can't share your published link
+
+When you publish, any Android user can open your app inside Expo Client immediately.
+
+Due to restrictions imposed by Apple, the best way to share your published app is
+to build a native binary with Expo's build service. You can use Apple TestFlight to
+share the app with your testers, and you can submit it to the iTunes Store to share
+more widely.
 
 ## Privacy
 

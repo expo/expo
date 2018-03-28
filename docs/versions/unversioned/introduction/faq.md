@@ -74,9 +74,9 @@ Expo and React Native are similar to React. You'll have to learn a new set of co
 
 ## How do I share my Expo project? Can I submit it to the app stores?
 
-The fastest way to share your Expo project is to publish it. You can do this by clicking 'Publish' in XDE or running `exp publish` in your project. This gives your app a URL; you can share this URL with anybody who has the Expo client and they can open your app immediately. [Read more about publishing on Expo](https://blog.expo.io/publishing-on-exponent-790493660d24).
+The fastest way to share your Expo project is to publish it. You can do this by clicking 'Publish' in XDE or running `exp publish` in your project. This gives your app a URL; you can share this URL with anybody who has the Expo Client for Android and they can open your app immediately. [Read more about publishing on Expo](https://blog.expo.io/publishing-on-exponent-790493660d24). To share with iOS users, you can use Apple TestFlight.
 
-When you're ready, you can also create a standalone app (`.ipa` and `.apk`) for submission to Apple and Google's app stores. Expo will build the binary for you when you run one command; see [Building Standalone Apps](../guides/building-standalone-apps.html#building-standalone-apps). Apple charges $99/year to publish your app in the App Store and Google charges a $25 one-time fee for the Play Store.
+When you're ready, you can create a standalone app (`.ipa` and `.apk`) for submission to Apple and Google's app stores. Expo will build the binary for you when you run one command; see [Building Standalone Apps](../guides/building-standalone-apps.html#building-standalone-apps). Apple charges $99/year to publish your app in the App Store and Google charges a $25 one-time fee for the Play Store.
 
 ## Why does Expo use a fork of React Native?
 

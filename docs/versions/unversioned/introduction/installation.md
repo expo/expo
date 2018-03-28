@@ -2,9 +2,11 @@
 title: Installation
 ---
 
-There are two tools that you need to develop apps with Expo - a desktop development tool and a mobile client to open your app.
+There are two tools that you need to develop apps with Expo: a local development tool and a mobile client to open your app.
 
-## Desktop Development Tool: XDE
+## Local Development Tool: XDE (or exp)
+
+### Desktop Tool: XDE
 
 XDE stands for Expo Development Environment. It is a standalone desktop app that includes all dependencies you'll need to get started.
 
@@ -12,9 +14,15 @@ Download the latest version of XDE for [macOS](https://xde-updates.exponentjs.co
 
 On Linux, open with `chmod a+x xde*.AppImage` and `./xde*.AppImage`.
 
+### Optional Command Line Tool: exp
+
+`exp` is an alternative to XDE for users who prefer to use the command line. You can choose whichever one you want. Some advanced Expo features may require you to use `exp` later.
+
+You can install `exp` by running `npm i -g exp`.
+
 ## Mobile Client: Expo for iOS and Android
 
-The Expo client is like a browser for apps built with Expo. When you boot up XDE on your project it generates a unique development URL for you, and you can access that from the Expo client on iOS or Android, either on a real device or in a simulator.
+Expo Client helps view your projects while you're developing them. When you serve your project from XDE or `exp`, it generates a development URL that you can open in Expo Client to preview your app. On Android, Expo Client can also be used to view others' projects on [expo.io](https://expo.io). Expo Client works on devices, simulators, and emulators.
 
 ### On your device
 
@@ -28,7 +36,7 @@ You don't need to manually install the Expo client on your emulator/simulator, b
 
 Install [Xcode through the Apple App Store](https://itunes.apple.com/app/xcode/id497799835). It'll take a while, go have a nap. Next, open up Xcode, go to preferences and click the Components tab, install a simulator from the list.
 
-Once the simulator is open and you have a project open in XDE, you can press _Open on iOS simulator_ in XDE and it will install the Expo Client to the emulator and open up your app inside of it.
+Once the simulator is open and you have a project open in XDE, you can press _Open on iOS simulator_ in XDE and it will install the Expo Client to the simulator and open up your app inside of it.
 
 > **Not working?** Occasionally XDE will have trouble installing the Expo Client automatically, usually due to annoying small differences in your environment or Xcode toolchain. If you need to install the Expo Client on your simulator manually, you can follow these steps:
 > 

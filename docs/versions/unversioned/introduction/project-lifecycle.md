@@ -21,7 +21,9 @@ During this time, you test your project using a pre-built iOS/Android app called
 ## Publishing your Project
 If you click the **Publish** button in XDE, we upload a minified copy of your app to our CDN, and give you a shareable url of the form `expo.io/@your-username/your-app-slug`.
 
-You can share this link immediately with anybody who has the Expo Client app. [Read more about Publishing here](../guides/publishing.html).
+You can share this link immediately with anybody who has the Expo Client app for Android. [Read more about Publishing here](../guides/publishing.html).
+
+On iOS, you'll need to use Apple Testflight to share your app with others.
 
 ## Updating your App
 You can continue making changes locally without disrupting your users. Any time you **Publish** changes to your app, your new version becomes available immediately to anybody with the link.
