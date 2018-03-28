@@ -117,7 +117,7 @@ Creates a new event on the specified calendar.
 
 #### Arguments
 
--   **calendarId (_string_)** -- ID of the calendar to create this event in. Required.
+-   **calendarId (_string_)** -- ID of the calendar to create this event in (or `Expo.Calendar.DEFAULT` to add the calendar to the OS-specified default calendar for events). Required.
 -   **details (_object_)** --
 
       A map of details for the event to be created (see below for a description of these fields):
@@ -293,7 +293,7 @@ An [reminder object](#reminder "Reminder") matching the provided ID, if one exis
 
 #### Arguments
 
--   **calendarId (_string_)** -- ID of the calendar to create this reminder in. Required.
+-   **calendarId (_string_)** -- ID of the calendar to create this reminder in (or `Expo.Calendar.DEFAULT` to add the calendar to the OS-specified default calendar for reminders). Required.
 -   **details (_object_)** --
 
       A map of details for the reminder to be created: (see below for a description of these fields)
