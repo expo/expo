@@ -28,7 +28,13 @@ export default class OpenFromClipboardButton extends React.Component {
       }
 
       return (
-        <View style={[styles.container, styles.infoContainer, styles.invalidContainer]}>
+        <View
+          style={[
+            styles.container,
+            styles.infoContainer,
+            styles.invalidContainer,
+            styles.bottomBorder,
+          ]}>
           <Text style={styles.subtitleText} ellipsizeMode="tail" numberOfLines={1}>
             {isValid ? clipboardContents : 'Press ⌘+v to move clipboard to simulator'}
           </Text>
@@ -41,7 +47,7 @@ export default class OpenFromClipboardButton extends React.Component {
         onPress={this._handlePressAsync}
         fallback={TouchableHighlight}
         underlayColor="#b7b7b7"
-        style={[styles.container, fullWidthBorder && styles.bottomBorder]}>
+        style={[styles.container, styles.bottomBorder]}>
         <View style={styles.iconContainer}>
           <Ionicons
             name={Platform.OS === 'ios' ? 'ios-open-outline' : 'md-open'}
@@ -50,7 +56,7 @@ export default class OpenFromClipboardButton extends React.Component {
           />
         </View>
 
-        <View style={[styles.infoContainer, !fullWidthBorder && styles.bottomBorder]}>
+        <View style={styles.infoContainer}>
           <Text
             style={[styles.titleText, !isValid && styles.invalidContents]}
             ellipsizeMode="tail"

@@ -103,13 +103,14 @@ export default class SmallProjectCard extends React.Component {
   }
 
   _maybeRenderIcon = () => {
-    let { iconUrl } = this.props;
+    let { iconUrl, icon } = this.props;
+    let source = icon ? icon : { uri: iconUrl };
 
-    if (iconUrl) {
+    if (iconUrl || icon) {
       return (
-        <View style={styles.iconClipContainer}>
+        <View style={[styles.iconClipContainer, this.props.iconBorderStyle]}>
           <FadeIn placeholderColor="#eee">
-            <Image source={{ uri: iconUrl }} style={styles.icon} />
+            <Image source={source} style={styles.icon} />
           </FadeIn>
         </View>
       );

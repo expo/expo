@@ -205,7 +205,7 @@ export default class Profile extends React.Component {
       return (
         <View>
           <View style={[SharedStyles.sectionLabelContainer, { marginTop: 10 }]}>
-            <Text style={SharedStyles.sectionLabelText}>PROJECTS</Text>
+            <Text style={SharedStyles.sectionLabelText}>PUBLISHED PROJECTS</Text>
           </View>
 
           {take(apps, 3).map(this._renderApp)}

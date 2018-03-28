@@ -16,23 +16,15 @@ export default class QRCodeButton extends React.Component {
         onPress={this._handlePressAsync}
         fallback={TouchableHighlight}
         underlayColor="#b7b7b7"
-        style={[styles.container, fullWidthBorder && styles.bottomBorder]}>
-        <View style={styles.iconContainer}>
-          <Ionicons
-            name="ios-hammer"
-            size={28}
-            color="#888"
-          />
-        </View>
-
-        <View style={[styles.infoContainer, !fullWidthBorder && styles.bottomBorder]}>
+        style={[styles.container, styles.bottomBorder]}>
+        <View style={[styles.infoContainer]}>
           <Text style={styles.titleText} ellipsizeMode="tail" numberOfLines={1}>
             Get started with Expo
           </Text>
 
           <View style={styles.subtitleContainer}>
             <Text style={styles.subtitleText} ellipsizeMode="tail" numberOfLines={1}>
-              Run projects from Expo XDE or CLI
+              Run projects from Expo XDE, CLI, or Snack.
             </Text>
           </View>
         </View>
@@ -54,17 +46,11 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     backgroundColor: '#fff',
-    paddingLeft: 5,
     flex: 1,
-  },
-  iconContainer: {
-    width: 50,
-    paddingTop: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   infoContainer: {
     paddingTop: 13,
+    paddingLeft: 20,
     flexDirection: 'column',
     alignSelf: 'stretch',
     paddingBottom: 10,
