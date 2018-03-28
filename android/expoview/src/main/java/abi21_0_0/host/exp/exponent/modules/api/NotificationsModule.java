@@ -92,7 +92,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   public void getExponentPushTokenAsync(final Promise promise) {
     String uuid = mExponentSharedPreferences.getUUID();
     if (uuid == null) {
-      // This should have been set by RegistrationIntentService when Activity was created/resumed.
+      // This should have been set by GcmRegistrationIntentService when Activity was created/resumed.
       promise.reject("Couldn't get GCM token on device.");
       return;
     }

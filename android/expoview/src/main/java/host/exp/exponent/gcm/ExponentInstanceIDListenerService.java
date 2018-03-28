@@ -11,7 +11,7 @@ public class ExponentInstanceIDListenerService extends InstanceIDListenerService
   @Override
   public void onTokenRefresh() {
     // Fetch updated Instance ID token.
-    Intent intent = new Intent(this, RegistrationIntentService.class);
+    Intent intent = new Intent(this, GcmRegistrationIntentService.class);
     startService(intent);
   }
 }

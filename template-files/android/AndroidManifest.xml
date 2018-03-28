@@ -261,9 +261,11 @@
       </intent-filter>
     </service>
     <service
-      android:name=".gcm.RegistrationIntentService"
+      android:name=".gcm.GcmRegistrationIntentService"
       android:exported="false">
     </service>
+
+    <!-- ADD FCM CONFIG HERE -->
 
     <!-- ImagePicker native module -->
     <activity

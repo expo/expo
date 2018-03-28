@@ -6,7 +6,7 @@ buildscript {
   }
   dependencies {
     classpath 'com.android.tools.build:gradle:2.3.3'
-    classpath 'com.google.gms:google-services:3.0.0'
+    classpath 'com.google.gms:google-services:3.2.0'
     classpath 'de.undercouch:gradle-download-task:2.0.0'
     classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
   }
