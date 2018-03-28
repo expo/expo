@@ -28,9 +28,13 @@ The "React packager" is a simple HTTP server that compiles our app JavaScript co
 
 ## Open the app on your phone or simulator
 
-You'll see that XDE shows you a URL like `http://4v-9wa.notbrent.mynewproject.exp.direct:80`- feel free to open this up in your browser, you will see that it serves up some JSON. This JSON is the Expo manifest. We can open our app by opening the Expo app on our phone typing this URL into the address bar. Alternatively, press `Share`, enter your phone number, and press `Send Link`. Open the message on your phone and tap on the link to open it in Expo. You can share this link with anybody else who has the Expo app installed, but it will only be available as long as you have the project open in XDE.
+The fastest way to see your app on your device is to open the Expo Client mobile app and log in to the same account you're using in XDE. Once you log in, a link to your project will automatically appear inside Expo Client on your phone.
+
+Alternatively, press `Share`, enter your phone number, and press `Send Link`. Open the message on your phone and tap on the link to open it in Expo. You can share this link with anybody else who has the Expo app installed, but it will only be available as long as you have the project open in XDE.
 
 To open the app in the iOS simulator you can press the `Device` button and choose `Open on iOS Simulator` (macOS only). To open the app in the Android emulator, first boot it up and then press `Device` and `Open on Android`.
+
+Lastly, you will see a QR code inside the `Share` menu in XDE. For Android users, one fast way to open your project is simply to scan the QR code.
 
 ## Making your first change
 
@@ -56,11 +60,11 @@ Live reload is enabled by default, but let's just make sure we go over the steps
 
     [![Refresh using Expo buttons](./expo-refresh.png)](/_images/expo-refresh.png)
 
-#### Congratulations
+### Congratulations
 
 You have created a new Expo project, made a change, and seen it update.
 
-#### Next Steps
+### Next Steps
 
 -   The [Additional Resources](../introduction/additional-resources.html#additional-resources) has a bunch of useful resources for learning.
 -   Read about the [Expo SDK](../sdk/index.html#expo-sdk) to learn about some useful APIs we provide out of the box.
