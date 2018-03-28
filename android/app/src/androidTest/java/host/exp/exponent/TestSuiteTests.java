@@ -146,7 +146,36 @@ public class TestSuiteTests extends BaseTestClass {
     runTestSuiteTest(ExponentBuildConstants.TEST_APP_URI, true);
   }
 
-  /*@Test
+  @Test
+  @ExpoTestSuiteTest
+  @ExpoSdkVersionTest("26.0.0")
+  public void sdk26TestSuite() {
+    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-26-0-0", false);
+  }
+
+  @Test
+  @ExpoTestSuiteTest
+  @ExpoSdkVersionTest("25.0.0")
+  public void sdk25TestSuite() {
+    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-25-0-0", false);
+  }
+
+  @Test
+  @ExpoTestSuiteTest
+  @ExpoSdkVersionTest("24.0.0")
+  public void sdk24TestSuite() {
+    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-24-0-0", false);
+  }
+
+  @Test
+  @ExpoTestSuiteTest
+  @ExpoSdkVersionTest("23.0.0")
+  public void sdk23TestSuite() {
+    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-23-0-0", false);
+  }
+
+  /* SDK 22 test-suite is borked so just skip it for now
+  @Test
   @ExpoTestSuiteTest
   @ExpoSdkVersionTest("22.0.0")
   public void sdk22TestSuite() {
