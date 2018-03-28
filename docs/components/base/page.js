@@ -223,6 +223,7 @@ class Page extends React.Component {
               justify-content: left;
               -webkit-font-smoothing: antialiased;
               padding-top: 30px;
+              width: 100%;
             }
 
             .topbar {
@@ -232,6 +233,7 @@ class Page extends React.Component {
             .content {
               flex: 1;
               padding-left: 20px;
+              max-width: 800px;
             }
 
             ._markdown_ div {
