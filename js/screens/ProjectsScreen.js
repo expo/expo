@@ -19,6 +19,7 @@ import {
 import { createFocusAwareComponent, withNavigation } from '@expo/ex-navigation';
 import { Constants } from 'expo';
 import { connect } from 'react-redux';
+import _ from 'lodash';
 
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
 import Alerts from '../constants/Alerts';
@@ -174,8 +175,8 @@ export default class ProjectsScreen extends React.Component {
 
     if (prevProps.isAuthenticated && !this.props.isAuthenticated) {
       // Remove all projects except Snack, because they are tied to device id
-      this.setState(({projects}) => ({
-        projects: projects.filter(p => p.source === 'snack')
+      this.setState(({ projects }) => ({
+        projects: projects.filter(p => p.source === 'snack'),
       }));
     }
   }
@@ -211,7 +212,8 @@ export default class ProjectsScreen extends React.Component {
       `${BASE_URL}/--/api/v2/development-sessions?deviceId=${getSnackId()}`
     );
     let result = await response.json();
-    let projects = result.data || [];
+    let rawProjects = (result.data || []).reverse();
+    let projects = _.uniqBy(rawProjects, p => p.url);
     this.setState({ projects });
   };
 
