@@ -81,6 +81,8 @@ export class Code extends React.Component {
               font-size: 13px;
               line-height: 20px;
               white-space: inherit;
+              padding: 0px;
+              margin: 0px;
             }
           `}
         </style>
