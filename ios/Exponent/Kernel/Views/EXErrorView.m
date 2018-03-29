@@ -4,6 +4,7 @@
 #import "EXKernel.h"
 #import "EXKernelAppLoader.h"
 #import "EXKernelAppRecord.h"
+#import "EXShellManager.h"
 #import "EXUtil.h"
 
 @interface EXErrorView ()
@@ -55,6 +56,7 @@
     
     // url label
     self.lblUrl = [[UILabel alloc] init];
+    _lblUrl.numberOfLines = 0;
     _lblUrl.textAlignment = NSTextAlignmentCenter;
     [_vContainer addSubview:_lblUrl];
 
@@ -137,7 +139,9 @@
   _btnBack.frame = CGRectMake(0, 0, self.bounds.size.width, 24.0f);
   _btnBack.center = CGPointMake(_lblError.center.x, CGRectGetMaxY(_btnRetry.frame) + 24);
   
-  _lblUrl.frame = CGRectMake(24.0f, CGRectGetMaxY(_btnBack.frame) + 12.0f, self.bounds.size.width - 48.0f, 24.0f);
+  _lblUrl.frame = CGRectMake(0, 0, self.bounds.size.width - 48.0f, CGFLOAT_MAX);
+  [_lblUrl sizeToFit];
+  _lblUrl.center = CGPointMake(_lblError.center.x, CGRectGetMaxY(_btnBack.frame) + 12.0f + CGRectGetMidY(_lblUrl.bounds));
 
   _lblErrorDetail.frame = CGRectMake(0, 0, maxLabelWidth, CGFLOAT_MAX);
   [_lblErrorDetail sizeToFit];
@@ -153,7 +157,7 @@
 {
   EXKernelAppRecord *homeRecord = [EXKernel sharedInstance].appRegistry.homeAppRecord;
   _btnBack.hidden = (!homeRecord || _appRecord == homeRecord);
-  _lblUrl.hidden = (!homeRecord);
+  _lblUrl.hidden = (!homeRecord && ![self _isDevDetached]);
   _lblUrl.text = _appRecord.appLoader.manifestUrl.absoluteString;
   // TODO: maybe hide retry (see BrowserErrorView)
   [self setNeedsLayout];
@@ -183,6 +187,14 @@
       [url rangeOfString:@"172."].length > 0
     )
   );
+}
+
+- (BOOL)_isDevDetached
+{
+#if DEBUG
+  return [EXShellManager sharedInstance].isDetached;
+#endif
+  return NO;
 }
 
 @end
