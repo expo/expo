@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expoview" revision="26.0.0" status="integration" default="true" publication="20180328105705"/>
+  <info organisation="host.exp.exponent" module="expoview" revision="26.0.0" status="integration" default="true" publication="20180329102153"/>
   <configurations>
     <conf name="_debugAndroidTestAnnotationProcessor" visibility="private" extends="_debugAnnotationProcessor,androidTestAnnotationProcessor"/>
     <conf name="_debugAndroidTestApk" visibility="private" extends="_debugPublish,androidTestCompile,androidTestPublish"/>
