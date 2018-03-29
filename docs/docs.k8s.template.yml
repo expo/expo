@@ -7,7 +7,7 @@ metadata:
   labels:
     app: docs
 spec:
-  replicas: ${REPLICAS}
+  replicas: 2
   selector:
     matchLabels:
       app: docs
