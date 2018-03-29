@@ -38,7 +38,7 @@
     
     // retry button
     self.btnRetry = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [_btnRetry setTitle:@"Try Again" forState:UIControlStateNormal];
+    [_btnRetry setTitle:@"Try again" forState:UIControlStateNormal];
     [_btnRetry addTarget:self action:@selector(_onTapRetry) forControlEvents:UIControlEventTouchUpInside];
     [_vContainer addSubview:_btnRetry];
     
@@ -93,7 +93,7 @@
         NSString *url = _appRecord.appLoader.manifestUrl.absoluteString;
         if ([self _urlLooksLikeLAN:url]) {
           _lblError.text = [NSString stringWithFormat:
-                            @"%@ It looks like you may be using a LAN url."
+                            @"%@ It looks like you may be using a LAN URL. "
                             "Make sure your device is on the same network as the server or try using a tunnel.", _lblError.text];
         }
       }

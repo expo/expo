@@ -36,7 +36,7 @@ const NSTimeInterval kEXTimeUntilCancelAppears = 5.0f;
 
   _lblAdvice.frame = CGRectMake(_lblStatus.frame.origin.x, 0, MIN(_lblStatus.frame.size.width, 300.0f), CGFLOAT_MAX);
   [_lblAdvice sizeToFit];
-  _lblAdvice.center = CGPointMake(CGRectGetMidX(_lblAdvice.frame), CGRectGetMaxY(_btnCancel.frame) + CGRectGetMidY(_lblAdvice.frame) + 24.0f);
+  _lblAdvice.center = CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMaxY(_btnCancel.frame) + CGRectGetMidY(_lblAdvice.frame) + 24.0f);
 }
 
 - (void)_setUpViews
