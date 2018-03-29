@@ -27,9 +27,9 @@ class DocsPage extends React.Component {
     const setVersion = version_ => {
       this.version = version_;
       if (version_ === 'latest') {
-        Router.push('/versions/' + LATEST_VERSION, '/versions/' + version_);
+        Router.push('/versions/' + LATEST_VERSION + '/', '/versions/' + version_ + '/');
       } else {
-        Router.push('/versions/' + version_, '/versions/' + version_);
+        Router.push('/versions/' + version_ + '/', '/versions/' + version_ + '/');
       }
     };
 
