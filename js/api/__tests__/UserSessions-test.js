@@ -7,6 +7,7 @@ import Store from '../../redux/Store';
 import AuthTokenActions from '../../redux/AuthTokenActions';
 import SessionActions from '../../redux/SessionActions';
 
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 jest.mock('react-native', () => {
   const ReactNative = require.requireActual('react-native');
   ReactNative.NativeModules.ExponentKernel = {
