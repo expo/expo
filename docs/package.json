@@ -1,6 +1,6 @@
 {
   "name": "expo-docs",
-  "version": "25.0.0",
+  "version": "26.0.0",
   "private": true,
   "scripts": {
     "dev": "concurrently -k 'yarn run mdjs' 'node server.js'",
@@ -54,10 +54,6 @@
     "shelljs": "^0.7.8"
   },
   "lint-staged": {
-    "*.js": [
-      "eslint",
-      "prettier --write --no-semi --single-quote",
-      "git add"
-    ]
+    "*.js": ["eslint", "prettier --write --no-semi --single-quote", "git add"]
   }
 }
