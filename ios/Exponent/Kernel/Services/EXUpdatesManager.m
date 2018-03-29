@@ -31,6 +31,10 @@ ofDownloadWithManifest:(NSDictionary * _Nullable)manifest
              @"message": error.localizedDescription
              };
   } else if (isBundleNew) {
+    if (!manifest) {
+      // prevent a crash, but this shouldn't ever happen
+      manifest = @{};
+    }
     body = @{
              @"type": EXUpdatesDownloadFinishedEventType,
              @"manifest": manifest
