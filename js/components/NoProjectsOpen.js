@@ -12,7 +12,7 @@ export default class NoProjectsOpen extends React.Component {
     if (isAuthenticated) {
       message = 'No projects are currently open.';
     } else {
-      message = 'Please sign in to see the projects that you have recently been working on, or enter your Device ID in Snack.'
+      message = 'Please sign in to see the projects that you have recently been working on.'
     }
 
     return (
