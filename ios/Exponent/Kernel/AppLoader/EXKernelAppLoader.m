@@ -258,6 +258,11 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   [self fetchManifestWithCacheBehavior:cacheBehavior success:^(NSDictionary * _Nonnull manifest) {
     _optimisticManifest = manifest;
     _remoteManifest = manifest;
+    if ([self _areDevToolsEnabledWithManifest:manifest] && _timer) {
+      // make sure we never time out in dev mode
+      // this can happen because there is no cached manifest & therefore we fall back to default behavior w/ timer
+      [self _stopTimer];
+    }
     // if we're never using a cache, go ahead and confirm the manifest now
     if (cacheBehavior == EXCachedResourceNoCache && !_confirmedManifest) {
       _confirmedManifest = _optimisticManifest;
