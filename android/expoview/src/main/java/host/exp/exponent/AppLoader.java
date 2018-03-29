@@ -30,6 +30,7 @@ public abstract class AppLoader {
   private Runnable mRunnable;
 
   private static final int DEFAULT_TIMEOUT_LENGTH = 30000;
+  private static final int DEFAULT_TIMEOUT_LENGTH_BEFORE_SDK26 = 0;
 
   public static final String UPDATES_EVENT_NAME = "Exponent.nativeUpdatesEvent";
   public static final String UPDATE_DOWNLOAD_START_EVENT = "downloadStart";
@@ -81,6 +82,7 @@ public abstract class AppLoader {
 
         boolean shouldCheckForUpdate = true;
         int fallbackToCacheTimeout = DEFAULT_TIMEOUT_LENGTH;
+        String manifestSdkVersion = null;
 
         try {
           // another check in case dev mode check failed before
@@ -89,6 +91,7 @@ public abstract class AppLoader {
             return;
           }
           String experienceId = mCachedManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+          manifestSdkVersion = mCachedManifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY, null);
           JSONObject updatesManifest = mCachedManifest.optJSONObject(ExponentManifest.MANIFEST_UPDATES_INFO_KEY);
           if (updatesManifest != null) {
             String checkAutomaticallyBehavior = updatesManifest.optString(ExponentManifest.MANIFEST_UPDATES_CHECK_AUTOMATICALLY_KEY, ExponentManifest.MANIFEST_UPDATES_CHECK_AUTOMATICALLY_ON_LOAD);
@@ -107,7 +110,14 @@ public abstract class AppLoader {
           onError(e);
         }
 
-        if (!Constants.isShellApp() && !Constants.isDetached()) {
+        if (Constants.isShellApp() || Constants.isDetached()) {
+          // in shell/detached apps with SDK <26, we should default to 0 timeout to not introduce a breaking change
+          if (manifestSdkVersion != null) {
+            if (ABIVersion.toNumber(manifestSdkVersion) < ABIVersion.toNumber("26.0.0")) {
+              fallbackToCacheTimeout = DEFAULT_TIMEOUT_LENGTH_BEFORE_SDK26;
+            }
+          }
+        } else {
           // only support checkAutomatically: never in shell & detached apps
           shouldCheckForUpdate = true;
         }
