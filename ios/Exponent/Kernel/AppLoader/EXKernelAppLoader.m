@@ -27,6 +27,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
 @property (nonatomic, strong) NSDictionary * _Nullable confirmedManifest; // definitely working, cached
 @property (nonatomic, strong) NSDictionary * _Nullable optimisticManifest; // we haven't completely downloaded a bundle for this and we haven't cached it
+@property (nonatomic, strong) NSDictionary * _Nullable remoteManifest; // same as optimisticManifest but is never set to nil - just whatever was downloaded from the server, may never actually be run
 
 @property (nonatomic, strong) NSData * _Nullable bundle;
 @property (nonatomic, strong) NSError * _Nullable error;
@@ -256,6 +257,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   }
   [self fetchManifestWithCacheBehavior:cacheBehavior success:^(NSDictionary * _Nonnull manifest) {
     _optimisticManifest = manifest;
+    _remoteManifest = manifest;
     // if we're never using a cache, go ahead and confirm the manifest now
     if (cacheBehavior == EXCachedResourceNoCache && !_confirmedManifest) {
       _confirmedManifest = _optimisticManifest;
@@ -329,10 +331,10 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 {
   [self _stopTimer];
 
-  if (_hasFinished) {
+  if (_hasFinished && _remoteManifest) {
     // AppLoader has already "finished" but a new bundle was resolved
     // so we should notify the delegate so it can send an event to the running app
-    [_delegate appLoader:self didResolveUpdatedBundleWithManifest:_optimisticManifest isFromCache:[self _isCacheUpToDate] error:err];
+    [_delegate appLoader:self didResolveUpdatedBundleWithManifest:_remoteManifest isFromCache:[self _isCacheUpToDate] error:err];
   }
   _hasFinished = YES;
 
