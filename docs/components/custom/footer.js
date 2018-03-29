@@ -17,12 +17,7 @@ class Footer extends React.PureComponent {
         <a
           className="pr"
           style={{ fontSize: '0.8rem' }}
-          href={
-            'https://github.com/expo/expo-docs/tree/master' +
-            this.props.url.pathname +
-            (this.props.url.pathname.slice(-1) === '/' ? 'index' : '') +
-            '.md'
-          }>
+          href={'https://github.com/expo/expo-docs/'}>
           You can edit these docs by sending us a PR
         </a>
         <style jsx>
