@@ -102,6 +102,12 @@ NS_ASSUME_NONNULL_BEGIN
   if ([self _willAutoRecoverFromError:error]) {
     return;
   }
+  if (error && ![error isKindOfClass:[NSError class]]) {
+#if DEBUG
+    NSAssert(NO, @"AppViewController error handler was called on an object that isn't an NSError");
+#endif
+    return;
+  }
   NSString *domain = (error && error.domain) ? error.domain : @"";
   BOOL isNetworkError = ([domain isEqualToString:(NSString *)kCFErrorDomainCFNetwork] || [domain isEqualToString:EXNetworkErrorDomain]);
 
