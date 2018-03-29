@@ -28,27 +28,23 @@ app.prepare().then(() => {
       pathname = pathname.slice(0, -1);
     }
 
-    // `latest` URLs should render the latest version
     const splitPath = pathname.split('/');
-    if (splitPath[2] === 'latest') {
-      splitPath[2] = LATEST_VERSION;
-      req.originalPath = parsedUrl;
-      app.render(req, res, splitPath.join('/'), query);
-    } else {
+
+    // `latest` URLs should render the latest version
+    if (splitPath[2] === 'latest') { splitPath[2] = LATEST_VERSION; }
+
       // Alias old URLs to new ones
+    if (splitPath[3] === 'guides') {
       for (let i = 0; i < aliases.length; i++) {
         let alias = aliases[i];
-        if (splitPath[3] === 'guides' && alias.files.indexOf(splitPath[4]) > -1) {
+        if (alias.files.indexOf(splitPath[4]) > -1) {
           splitPath[3] = alias.path;
-          req.originalPath = parsedUrl;
-          app.render(req, res, splitPath.join('/'), query);
-          return;
         }
       }
-
-      req.originalPath = parsedUrl;
-      app.render(req, res, pathname, query);
     }
+
+    req.originalPath = parsedUrl;
+    app.render(req, res, splitPath.join('/'), query);
   }).listen(3000, err => {
     if (err) throw err;
     console.log('> Ready on http://localhost:3000');
