@@ -206,15 +206,22 @@ export default class ProjectsScreen extends React.Component {
   };
 
   _fetchProjectsAsync = async () => {
-    let BASE_URL = __DEV__ ? 'https://staging.expo.io' : 'https://exp.host';
-    let fetchStrategy = isAuthenticated() ? authenticatedFetch : fetch;
-    let response = await fetchStrategy(
-      `${BASE_URL}/--/api/v2/development-sessions?deviceId=${getSnackId()}`
-    );
-    let result = await response.json();
-    let rawProjects = (result.data || []).reverse();
-    let projects = _.uniqBy(rawProjects, p => p.url);
-    this.setState({ projects });
+    try {
+      let BASE_URL = __DEV__ ? 'https://staging.expo.io' : 'https://exp.host';
+      let fetchStrategy = isAuthenticated() ? authenticatedFetch : fetch;
+      let response = await fetchStrategy(
+        `${BASE_URL}/--/api/v2/development-sessions?deviceId=${getSnackId()}`
+      );
+      let result = await response.json();
+      let rawProjects = (result.data || []).reverse();
+      let projects = _.uniqBy(rawProjects, p => p.url);
+      this.setState({ projects });
+    } catch (e) {
+      // this doesn't really matter, we will try again later
+      if (__DEV__) {
+        console.log(e);
+      }
+    }
   };
 
   _handleRefreshAsync = async () => {
