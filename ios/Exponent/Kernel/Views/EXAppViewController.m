@@ -20,7 +20,15 @@
 
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
 
+// when we encounter an error and auto-refresh, we may actually see a series of errors.
+// we only want to trigger refresh once, so we debounce refresh on a timer.
 const CGFloat kEXAutoReloadDebounceSeconds = 0.1;
+
+// in development only, some errors can happen before we even start loading
+// (e.g. certain packager errors, such as an invalid bundle url)
+// and we want to make sure not to cover the error with a loading view or other chrome.
+const CGFloat kEXDevelopmentErrorCoolDownSeconds = 0.1;
+
 const NSUInteger kEXErrorCodeAppForbidden = 424242;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -35,6 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) EXErrorView *errorView;
 @property (nonatomic, assign) UIInterfaceOrientationMask supportedInterfaceOrientations; // override super
 @property (nonatomic, strong) NSTimer *tmrAutoReloadDebounce;
+@property (nonatomic, strong) NSDate *dtmLastFatalErrorShown;
 
 @end
 
@@ -329,6 +338,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)_showErrorWithType:(EXFatalErrorType)type error:(nullable NSError *)error
 {
   EXAssertMainThread();
+  _dtmLastFatalErrorShown = [NSDate date];
   if (_errorView && _contentView == _errorView) {
     // already showing, just update
     _errorView.type = type;
@@ -350,6 +360,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setIsLoading:(BOOL)isLoading
 {
+  if ([_appRecord.appManager enablesDeveloperTools] && _dtmLastFatalErrorShown) {
+    if ([_dtmLastFatalErrorShown timeIntervalSinceNow] >= -kEXDevelopmentErrorCoolDownSeconds) {
+      // we just showed a fatal error very recently, do not begin loading.
+      // this can happen in some cases where react native sends the 'started loading' notif
+      // in spite of a packager error.
+      NSLog(@"BEN: ignoring loading");
+      return;
+    }
+  }
   _isLoading = isLoading;
   dispatch_async(dispatch_get_main_queue(), ^{
     if (isLoading) {
