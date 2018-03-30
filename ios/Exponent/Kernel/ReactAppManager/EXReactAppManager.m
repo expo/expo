@@ -542,7 +542,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   
   expProps[@"manifest"] = _appRecord.appLoader.manifest;
   if (_appRecord.appLoader.manifestUrl) {
-    expProps[@"initialUri"] = _appRecord.appLoader.manifestUrl;
+    expProps[@"initialUri"] = [_appRecord.appLoader.manifestUrl absoluteString];
   }
   props[@"exp"] = expProps;
   return props;
