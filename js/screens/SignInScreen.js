@@ -26,6 +26,7 @@ export default class SignInScreen extends React.Component {
 
   static getDataProps(data) {
     return {
+      session: data.session,
       authTokens: data.authTokens,
     };
   }
@@ -53,7 +54,9 @@ export default class SignInScreen extends React.Component {
   }
 
   componentWillReceiveProps(nextProps: Object) {
-    if (nextProps.authTokens.idToken && !this.props.authTokens.idToken) {
+    const hasNewAuthTokens = nextProps.authTokens.idToken && !this.props.authTokens.idToken;
+    const hasNewUserSession = nextProps.session.sessionSecret && !this.props.session.sessionSecret;
+    if (hasNewAuthTokens || hasNewUserSession) {
       TextInput.State.blurTextInput(TextInput.State.currentlyFocusedField());
       this.props.navigation.dismissModal();
     }
@@ -131,7 +134,6 @@ export default class SignInScreen extends React.Component {
 
     try {
       let result = await Auth0Api.signInAsync(email, password);
-
       if (this._isMounted) {
         if (result.error) {
           this._handleError(result);
