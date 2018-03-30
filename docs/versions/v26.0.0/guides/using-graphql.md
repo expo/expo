@@ -157,11 +157,9 @@ There are four major GraphQL clients available at the moment:
 
 Apollo, Relay and Urql implement further features like caching, realtime support with GraphQL subscriptions or optimistic UI updates.
 
-<<<<<<< HEAD
-### Creating your own GraphQL server
-=======
 Learn how to integrate with Auth0 social providers in the [expo-auth0-example](https://github.com/graphcool-examples/react-native-graphql/tree/master/authentication-with-expo-and-auth0) repository.
->>>>>>> [docs] manually fix minor markdown issues
+
+### Creating your own GraphQL server
 
 The fastest way to get started with GraphQL is by using a [GraphQL boilerplate](https://github.com/graphql-boilerplates) project for the technology of your choice. GraphQL boilerplates provide the ideal starter kits for your GraphQL-based projects - no matter if backend-only or fullstack.
 
