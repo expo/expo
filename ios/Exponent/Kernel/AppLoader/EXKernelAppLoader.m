@@ -159,10 +159,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 {
   _confirmedManifest = _localManifest;
   _optimisticManifest = _localManifest;
-  [self _fetchRemoteJSBundleInProductionWithOptimisticManifest];
-  if (_delegate) {
-    [_delegate appLoader:self didLoadOptimisticManifest:_optimisticManifest];
-  }
+  [self _fetchCachedManifest];
 }
 
 - (void)_beginRequestWithRemoteManifest
@@ -173,7 +170,11 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
     [self _resolveManifestAndBundleWithTimeout:NO length:0];
     return;
   }
-  
+  [self _fetchCachedManifest];
+}
+
+- (void)_fetchCachedManifest
+{
   // first get cached manifest
   // then try to fetch new one over network
   [self fetchManifestWithCacheBehavior:EXCachedResourceOnlyCache success:^(NSDictionary * cachedManifest) {
@@ -390,6 +391,12 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
                                  userInfo:nil];
   }
   
+  // if we're using a localManifest, just return it immediately
+  if (_localManifest) {
+    success(_localManifest);
+    return;
+  }
+
   if (!([_httpManifestUrl.scheme isEqualToString:@"http"] || [_httpManifestUrl.scheme isEqualToString:@"https"])) {
     NSURLComponents *components = [NSURLComponents componentsWithURL:_httpManifestUrl resolvingAgainstBaseURL:NO];
     components.scheme = @"http";
