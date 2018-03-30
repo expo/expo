@@ -14,6 +14,7 @@ import abi24_0_0.com.facebook.react.bridge.ReadableNativeMap;
 import abi24_0_0.com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import host.exp.exponent.Constants;
 import host.exp.exponent.analytics.EXL;
@@ -67,19 +68,31 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
       promise.reject("getDevicePushTokenAsync is only accessible within standalone applications");
     }
     try {
-      InstanceID instanceID = InstanceID.getInstance(this.getReactApplicationContext());
-      String gcmSenderId = config.getString("gcmSenderId");
-      if (gcmSenderId == null || gcmSenderId.length() == 0) {
-        throw new InvalidParameterException("GCM Sender ID is null/empty");
-      }
-      final String token = instanceID.getToken(gcmSenderId, GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
-      if (token == null) {
-        promise.reject("GCM token has not been set");
+      if (Constants.FCM_ENABLED) {
+        String token = FirebaseInstanceId.getInstance().getToken();
+        if (token == null) {
+          promise.reject("FCM token has not been set");
+        } else {
+          WritableMap params = Arguments.createMap();
+          params.putString("type", "fcm");
+          params.putString("data", token);
+          promise.resolve(params);
+        }
       } else {
-        WritableMap params = Arguments.createMap();
-        params.putString("type", "gcm");
-        params.putString("data", token);
-        promise.resolve(params);
+        InstanceID instanceID = InstanceID.getInstance(this.getReactApplicationContext());
+        String gcmSenderId = config.getString("gcmSenderId");
+        if (gcmSenderId == null || gcmSenderId.length() == 0) {
+          throw new InvalidParameterException("GCM Sender ID is null/empty");
+        }
+        final String token = instanceID.getToken(gcmSenderId, GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
+        if (token == null) {
+          promise.reject("GCM token has not been set");
+        } else {
+          WritableMap params = Arguments.createMap();
+          params.putString("type", "gcm");
+          params.putString("data", token);
+          promise.resolve(params);
+        }
       }
     } catch (Exception e) {
       EXL.e(TAG, e.getMessage());
@@ -91,7 +104,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   public void getExponentPushTokenAsync(final Promise promise) {
     String uuid = mExponentSharedPreferences.getUUID();
     if (uuid == null) {
-      // This should have been set by GcmRegistrationIntentService when Activity was created/resumed.
+      // This should have been set by ExponentNotificationIntentService when Activity was created/resumed.
       promise.reject("Couldn't get GCM token on device.");
       return;
     }

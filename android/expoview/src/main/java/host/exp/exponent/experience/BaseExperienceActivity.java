@@ -257,8 +257,10 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   protected void registerForNotifications() {
     int googlePlayServicesCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
     if (googlePlayServicesCode == ConnectionResult.SUCCESS) {
-      Intent intent = new Intent(this, Constants.FCM_ENABLED ? FcmRegistrationIntentService.class : GcmRegistrationIntentService.class);
-      startService(intent);
+      if (!Constants.FCM_ENABLED) {
+        Intent intent = new Intent(this, Constants.FCM_ENABLED ? FcmRegistrationIntentService.class : GcmRegistrationIntentService.class);
+        startService(intent);
+      }
     } else if (!BuildConfig.DEBUG) {
       // TODO: should we actually show an error or fail silently?
       // GoogleApiAvailability.getInstance().getErrorDialog(this, googlePlayServicesCode, 0).show();

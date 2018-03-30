@@ -20,7 +20,7 @@ public class FcmRegistrationIntentService extends ExponentNotificationIntentServ
   @Override
   public String getToken() throws IOException {
     String token = FirebaseInstanceId.getInstance().getToken();
-    Log.d("FCM Device Token", token);
+    Log.d("FCM Device Token", token == null ? "null" : token);
     return token;
   }
 

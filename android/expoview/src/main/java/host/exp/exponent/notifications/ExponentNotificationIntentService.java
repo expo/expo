@@ -68,6 +68,10 @@ public abstract class ExponentNotificationIntentService extends IntentService {
 
     try {
       final String token = getToken();
+      if (token == null) {
+        EXL.e(TAG, "Device push token is null");
+        return;
+      }
 
       String sharedPreferencesToken = mExponentSharedPreferences.getString(getSharedPrefsKey());
       if (sharedPreferencesToken != null && sharedPreferencesToken.equals(token)) {
