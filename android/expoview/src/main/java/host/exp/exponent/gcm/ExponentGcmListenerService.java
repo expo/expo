@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import com.google.android.gms.gcm.GcmListenerService;
 
+import host.exp.exponent.Constants;
 import host.exp.exponent.notifications.*;
 
 import host.exp.exponent.analytics.EXL;
@@ -30,6 +31,10 @@ public class ExponentGcmListenerService extends GcmListenerService {
 
   @Override
   public void onMessageReceived(String from, Bundle bundle) {
+    if (Constants.FCM_ENABLED) {
+      return;
+    }
+
     final String body = bundle.getString("body");
 
     final String experienceId = bundle.getString("experienceId");
