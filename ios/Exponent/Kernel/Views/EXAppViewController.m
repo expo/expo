@@ -365,7 +365,6 @@ NS_ASSUME_NONNULL_BEGIN
       // we just showed a fatal error very recently, do not begin loading.
       // this can happen in some cases where react native sends the 'started loading' notif
       // in spite of a packager error.
-      NSLog(@"BEN: ignoring loading");
       return;
     }
   }
