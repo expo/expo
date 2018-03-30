@@ -109,7 +109,7 @@ class AuthAwareNetworkInterface {
 
     // We dont have a session or a valid idToken
     // If Auth0 has already shut down, we must log out and start again
-    const dateAuth0Gone = new Date(2018, 3, 2); // April 1, 2018 - the months are 0 indexed
+    const dateAuth0Gone = new Date(2018, 6, 2); // July 1, 2018 - the months are 0 indexed
     if (Date.now() > dateAuth0Gone) {
       return new Promise(async (resolve, reject) => {
         await this._signOutAsync({ shouldResetApolloStore: false });
