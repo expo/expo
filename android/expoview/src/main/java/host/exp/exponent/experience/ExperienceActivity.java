@@ -57,6 +57,7 @@ import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.kernel.KernelProvider;
 import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.notifications.ExponentNotificationManager;
+import host.exp.exponent.notifications.PushNotificationHelper;
 import host.exp.exponent.notifications.ReceivedNotificationEvent;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.AsyncCondition;
@@ -617,9 +618,9 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
   @Override
   public void handleUnreadNotifications(JSONArray unreadNotifications) {
-    ExponentGcmListenerService gcmListenerService = ExponentGcmListenerService.getInstance();
-    if (gcmListenerService != null) {
-      gcmListenerService.removeNotifications(unreadNotifications);
+    PushNotificationHelper pushNotificationHelper = PushNotificationHelper.getInstance();
+    if (pushNotificationHelper != null) {
+      pushNotificationHelper.removeNotifications(this, unreadNotifications);
     }
   }
 

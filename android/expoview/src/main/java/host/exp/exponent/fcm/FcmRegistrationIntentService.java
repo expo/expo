@@ -1,5 +1,7 @@
 package host.exp.exponent.fcm;
 
+import android.util.Log;
+
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.io.IOException;
@@ -17,7 +19,9 @@ public class FcmRegistrationIntentService extends ExponentNotificationIntentServ
 
   @Override
   public String getToken() throws IOException {
-    return FirebaseInstanceId.getInstance().getToken();
+    String token = FirebaseInstanceId.getInstance().getToken();
+    Log.d("FUUU", token);
+    return token;
   }
 
   @Override
