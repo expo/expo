@@ -88,12 +88,10 @@ export default class ProjectsScreen extends React.Component {
     Connectivity.addListener(this._updateConnectivity);
     this._startPollingForProjects();
 
-    if (Platform.OS === 'android') {
-      addListenerWithNativeCallback('ExponentKernel.showQRReader', async event => {
-        this.props.navigation.showModal('qrCode');
-        return { success: true };
-      });
-    }
+    addListenerWithNativeCallback('ExponentKernel.showQRReader', async event => {
+      this.props.navigation.showModal('qrCode');
+      return { success: true };
+    });
 
     addListenerWithNativeCallback('ExponentKernel.addHistoryItem', async event => {
       let { manifestUrl, manifest, manifestString } = event;
