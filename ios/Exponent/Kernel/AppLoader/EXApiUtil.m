@@ -3,6 +3,7 @@
 #import "EXApiUtil.h"
 
 #import <CommonCrypto/CommonDigest.h>
+#import <React/RCTUtils.h>
 
 #import "EXCachedResource.h"
 
@@ -11,6 +12,17 @@ NS_ASSUME_NONNULL_BEGIN
 static NSString* kPublicKeyTag = @"exp.host.publickey";
 
 @implementation EXApiUtil
+
++ (NSURL *)bundleUrlFromManifest:(NSDictionary *)manifest
+{
+  NSString *urlString = [manifest objectForKey:@"bundleUrl"];
+  RCTAssert([urlString isKindOfClass:[NSString class]], @"Manifest contains a bundleUrl which is not a string: %@", urlString);
+  NSURL *url = [NSURL URLWithString:urlString];
+  if (!url) {
+    url = [NSURL URLWithString:[urlString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
+  }
+  return url;
+}
 
 + (void)verifySignatureWithPublicKeyUrl:(NSURL *)publicKeyUrl
                                    data:(NSString *)data

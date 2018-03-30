@@ -1,3 +1,4 @@
+#import "EXApiUtil.h"
 #import "EXAppLoadingManager.h"
 #import "EXBuildConstants.h"
 #import "EXErrorRecoveryManager.h"
@@ -173,7 +174,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (NSURL *)bundleUrl
 {
-  return [NSURL URLWithString:[_appRecord.appLoader.manifest objectForKey:@"bundleUrl"]];
+  return [EXApiUtil bundleUrlFromManifest:_appRecord.appLoader.manifest];
 }
 
 - (void)appStateDidBecomeActive

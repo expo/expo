@@ -1,5 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+#import "EXApiUtil.h"
 #import "EXErrorRecoveryManager.h"
 #import "EXFileDownloader.h"
 #import "EXJavaScriptResource.h"
@@ -442,7 +443,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
                              error:(void (^)(NSError *))errorBlock
 {
   EXJavaScriptResource *jsResource = [[EXJavaScriptResource alloc] initWithBundleName:[_dataSource bundleResourceNameForAppLoader:self]
-                                                                            remoteUrl:[self _bundleUrlWithManifest:manifest]
+                                                                            remoteUrl:[EXApiUtil bundleUrlFromManifest:manifest]
                                                                       devToolsEnabled:[self _areDevToolsEnabledWithManifest:manifest]];
   jsResource.abiVersion = [[EXVersions sharedInstance] availableSdkVersionForManifest:manifest];
   jsResource.requestTimeoutInterval = timeoutInterval;
@@ -468,16 +469,6 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   if (experienceIdJsonValue) {
     RCTAssert([experienceIdJsonValue isKindOfClass:[NSString class]], @"Manifest contains an id which is not a string: %@", experienceIdJsonValue);
     return experienceIdJsonValue;
-  }
-  return nil;
-}
-
-- (NSURL *)_bundleUrlWithManifest:(NSDictionary *)manifest
-{
-  id bundleUrlJsonValue = manifest[@"bundleUrl"];
-  if (bundleUrlJsonValue) {
-    RCTAssert([bundleUrlJsonValue isKindOfClass:[NSString class]], @"Manifest contains a bundleUrl which is not a string: %@", bundleUrlJsonValue);
-    return [NSURL URLWithString:bundleUrlJsonValue relativeToURL:_httpManifestUrl];
   }
   return nil;
 }
