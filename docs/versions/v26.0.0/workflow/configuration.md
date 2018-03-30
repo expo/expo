@@ -9,7 +9,7 @@ title: Configuration with app.json
   "expo": {
     "name": "My app",
     "slug": "my-app",
-    "sdkVersion": "UNVERSIONED",
+    "sdkVersion": "26.0.0",
     "privacy": "public"
   }
 }
@@ -174,6 +174,24 @@ The following is a list of properties that are available for you under the `"exp
 - `nodeModulesPath`
 
 
+- `updates`
+
+   Configuration for how and when the app should request OTA JavaScript updates
+
+   - `enabled`
+
+      If set to false, your standalone app will never download any code, and will only use code bundled locally on the device. In that case, all updates to your app must be submitted through Apple review. Defaults to true. (Note that this will not work out of the box with ExpoKit projects)
+
+   - `checkAutomatically`
+
+      By default, Expo will check for updates every time the app is loaded. Set this to `'ON_ERROR_RECOVERY'` to disable automatic checking unless recovering from an error.
+     Must be one of `ON_LOAD` or `ON_ERROR_RECOVERY`.
+
+   - `fallbackToCacheTimeout`
+
+      How long (in ms) to allow for fetching OTA updates before falling back to a cached version of the app. Defaults to 30000 (30 sec).
+     Must be between 0 and 300000 (5 minutes).
+
 - `ios`
 
    **Standalone Apps Only**. iOS standalone app specific configuration
@@ -228,11 +246,11 @@ The following is a list of properties that are available for you under the `"exp
 
    - `isRemoteJSEnabled`
 
-      If set to false, your standalone app will never download any code, and will only use code bundled locally on the device. In that case, all updates to your app must be submitted through Apple review. Defaults to true. (Note that this will not work out of the box with ExpoKit projects)
+      DEPRECATED: use `updates.enabled` instead.
 
    - `loadJSInBackgroundExperimental`
 
-      If true, your standalone app will immediately run its cached JS bundle, if one exists, and request a new one in the background.
+      DEPRECATED: use `updates` key with `fallbackToCacheTimeout: 0` instead.
 
    - `supportsTablet`
 
