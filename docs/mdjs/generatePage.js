@@ -58,9 +58,6 @@ const generateJsPage = (filePath, filename) => {
   // generate HTML from the markdown tables, and inline that into the markdown
   markdown = replaceTables(markdown);
 
-  // Replace '--' with '—'
-  markdown = markdown.replace(/\B--\B/g, '—');
-
   // Replace ` and ``` blocks with <InlineCode> and <Code> components respectively
   let codeBlocks = 0;
   let inlineCodeBlocks = 0;
@@ -115,6 +112,8 @@ const generateJsPage = (filePath, filename) => {
   // Linkify URLs
   regex = /(\s)(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*))\b/g;
   markdown = markdown.replace(regex, (match, leadingSpace, url) => {
+    console.log('match: ', match);
+    console.log('url:   ', url);
     return leadingSpace + `[${url}](${url})`;
   });
 
