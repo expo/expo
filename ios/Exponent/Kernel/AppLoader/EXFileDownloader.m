@@ -69,7 +69,7 @@ NSTimeInterval const EXFileDownloaderDefaultTimeoutInterval = 60;
   NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
   [request setValue:version forHTTPHeaderField:@"Exponent-Version"];
   NSString *requestAbiVersion;
-  if (_abiVersion) {
+  if (_abiVersion && _abiVersion.length) {
     requestAbiVersion = _abiVersion;
   } else {
     NSArray *versionsAvailable = [EXVersions sharedInstance].versions[@"sdkVersions"];
