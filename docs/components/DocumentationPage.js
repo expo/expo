@@ -4,7 +4,7 @@ import * as React from 'react';
 import * as Utilities from '~/common/utilities';
 import { VERSIONS, LATEST_VERSION } from '~/common/versions';
 
-import { H1, H2, H3, H4 } from '~/components/base/headers';
+import { H1, H2, H3, H4 } from '~/components/base/headings';
 import Head from '~/components/base/head';
 import Page from '~/components/base/page';
 import Header from '~/components/custom/header';
@@ -42,11 +42,7 @@ export default class DocumentationPage extends React.Component {
           {version === 'unversioned' && <meta name="robots" content="noindex" />}
           {version !== 'unversioned' && <link rel="canonical" href={canonicalUrl} />}
         </Head>
-        <div
-          className="header"
-          style={{
-            display: this.state.isMobileOverlayVisible ? 'none' : 'block',
-          }}>
+        <div>
           <Header
             inverse
             user={this.props.user}
@@ -83,32 +79,25 @@ export default class DocumentationPage extends React.Component {
             setSidebarScrollPosition={val => (this.sidebar.scrollTop = val)}
           />
         )}
+
         {!this.state.isMobileOverlayVisible && (
-          <div className="page-container">
-            <FreezePageScroll>
-              <div
-                className="sidebar"
-                style={{ background: 'white' }}
-                ref={sidebar => {
-                  this.sidebar = sidebar;
-                }}>
-                <Navbar
-                  url={this.props.url}
-                  asPath={this.props.asPath}
-                  activeVersion={this.version}
-                  getSidebarScrollPosition={() => this.sidebar.scrollTop}
-                  setSidebarScrollPosition={val => (this.sidebar.scrollTop = val)}
-                />
-              </div>
-            </FreezePageScroll>
-            <div className="doc-layout">
-              <div className="content" id="content">
-                <H1>{this.props.title}</H1>
-                <div className="doc-markdown">
-                  {this.props.children}
-                  <Footer url={this.props.url} />
-                </div>
-              </div>
+          <div>
+            <div
+              ref={sidebar => {
+                this.sidebar = sidebar;
+              }}>
+              <Navbar
+                url={this.props.url}
+                asPath={this.props.asPath}
+                activeVersion={this.version}
+                getSidebarScrollPosition={() => this.sidebar.scrollTop}
+                setSidebarScrollPosition={val => (this.sidebar.scrollTop = val)}
+              />
+            </div>
+            <div id="content">
+              <H1>{this.props.title}</H1>
+              {this.props.children}
+              <Footer url={this.props.url} />
             </div>
           </div>
         )}

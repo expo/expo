@@ -1,4 +1,4 @@
-import { H2, H3, H4 } from '~/components/base/headers';
+import { H2, H3, H4 } from '~/components/base/headings';
 import { PDIV, P, Quote } from '~/components/base/paragraph';
 import { UL, OL, LI } from '~/components/base/list';
 import { InlineCode } from '~/components/base/code';

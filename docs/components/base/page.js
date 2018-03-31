@@ -51,16 +51,6 @@ class Page extends React.Component {
                 display: block;
               }
 
-              html, body {
-                height: 100%;
-                background-color: '#fff';
-                color: '#000';
-                width: 100%;
-                height: 100%;
-                margin: 0px;
-                padding: 0px;
-              }
-
               a {
                 -webkit-tap-highlight-color: rgba(0,0,0,0);
                 color: ${Constants.colors.expoLighter};
@@ -70,12 +60,11 @@ class Page extends React.Component {
                 font-family: ${Constants.fonts.book};
                 text-rendering: optimizeLegibility;
                 font-size: 16px;
-                padding-bottom: 24px;
               }
 
               ::selection {
                 background-color: ${Constants.colors.lila};
-                color: black;
+                color: ${Constants.colors.black};
               }
           `,
             }}
@@ -145,107 +134,6 @@ class Page extends React.Component {
                   font-family: ${Constants.fontFamilies.book};
                   overflow-wrap: break-word;
                 }
-          `,
-            }}
-          />
-
-          <style
-            dangerouslySetInnerHTML={{
-              __html: `
-            /* Overall layout */
-
-            .header {
-              position: fixed;
-              top: 0;
-              left: 0;
-              right: 0;
-              z-index: 99;
-            }
-
-            .page-container {
-              display: flex;
-              flex-direction: row;
-              max-width: 1440px;
-              margin: 60px auto 0px auto;
-            }
-
-            .sidebar {
-              position: fixed;
-              z-index: 98;
-              width: 280px;
-              height: calc(100vh - 80px);
-              -webkit-font-smoothing: antialiased;
-              border-right: 1px solid #eee;
-              overflow: scroll;
-              padding-top: 30px;
-            }
-
-            .doc-layout {
-              display: flex;
-              margin: 0px 40px 50px 280px;
-              padding: 0 20px;
-              justify-content: left;
-              -webkit-font-smoothing: antialiased;
-              padding-top: 30px;
-              width: 100%;
-            }
-
-            .topbar {
-              display: none;
-            }
-
-            .content {
-              flex: 1;
-              padding-left: 20px;
-              max-width: 1200px;
-            }
-
-            ._markdown_ div {
-              max-width: 850px;
-            }
-
-            .content img {
-              max-width: 100%;
-            }
-
-            @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-              .header {
-                position: relative;
-              }
-
-              /* .page-container > .doc-layout > content > .doc-markdown > ._markdown_ */
-
-              .page-container {
-                margin-top: 0px;
-                width: 100%;
-              }
-
-              .doc-layout {
-                display: block;
-                margin: 0;
-                margin-top: 20px;
-                width: 100%;
-              }
-
-              ._markdown_ div {
-                width: 100%;
-              }
-
-              .content {
-                width: 100%;
-                margin-left: 0;
-                padding-left: 0px;
-              }
-
-              .sidebar {
-                display: none;
-              }
-
-              .topbar {
-                display: block;
-              }
-
-            }
           `,
             }}
           />
