@@ -44,7 +44,7 @@ your Expo JS code the same way. However, if you add native dependencies that are
 in Expo, other users won't be able to run those features of your app with the main Expo app.
 You'll need to distribute the native project yourself.
 
->  **Note:** `detach` is currently an alpha feature and you may run into issues. Your project must be running Expo SDK 16.0.0 or newer to detach. Proceed at your own risk and please reach out to us with any feedback or issues you encounter.
+>  **Note:** `detach` is currently an alpha feature and you may run into issues. Proceed at your own risk and please reach out to us with any feedback or issues you encounter.
 
 ### 1. Install exp
 
