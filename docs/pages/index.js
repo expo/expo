@@ -1,2 +1,3 @@
-import redirect from '~/lib/redirect';
+import redirect from '~/common/redirect';
+
 export default redirect('/versions/latest/');

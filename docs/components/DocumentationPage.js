@@ -1,5 +1,8 @@
-import React from 'react';
 import Router from 'next/router';
+
+import * as React from 'react';
+import * as Utilities from '~/common/utilities';
+import { VERSIONS, LATEST_VERSION } from '~/common/versions';
 
 import { H1, H2, H3, H4 } from '~/components/base/headers';
 import Head from '~/components/base/head';
@@ -9,10 +12,7 @@ import Navbar from '~/components/custom/navbar';
 import Footer from '~/components/custom/footer';
 import FreezePageScroll from '~/components/custom/freeze-page-scroll';
 
-import { replaceVersionInUrl } from '~/lib/url';
-import { VERSIONS, LATEST_VERSION } from '~/lib/versions';
-
-class DocsPage extends React.Component {
+export default class DocumentationPage extends React.Component {
   state = {
     isMobileOverlayVisible: false,
   };
@@ -34,7 +34,7 @@ class DocsPage extends React.Component {
     };
 
     const canonicalUrl =
-      'https://docs.expo.io' + replaceVersionInUrl(this.props.url.pathname, 'latest');
+      'https://docs.expo.io' + Utilities.replaceVersionInUrl(this.props.url.pathname, 'latest');
 
     return (
       <Page>
@@ -61,7 +61,8 @@ class DocsPage extends React.Component {
             toggleMobileOverlay={() =>
               this.setState({
                 isMobileOverlayVisible: !this.state.isMobileOverlayVisible,
-              })}
+              })
+            }
           />
         </div>
 
@@ -75,7 +76,8 @@ class DocsPage extends React.Component {
             toggleMobileOverlay={() =>
               this.setState({
                 isMobileOverlayVisible: !this.state.isMobileOverlayVisible,
-              })}
+              })
+            }
             setVersion={setVersion}
             getSidebarScrollPosition={() => this.sidebar.scrollTop}
             setSidebarScrollPosition={val => (this.sidebar.scrollTop = val)}
@@ -114,5 +116,3 @@ class DocsPage extends React.Component {
     );
   }
 }
-
-export default DocsPage;

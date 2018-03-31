@@ -1,8 +1,9 @@
-import React from 'react';
 import { orderBy } from 'lodash';
 
-import { VERSIONS, LATEST_VERSION } from '~/lib/versions';
-import * as Constants from '~/style/constants';
+import * as React from 'react';
+import * as Constants from '~/common/constants';
+
+import { VERSIONS, LATEST_VERSION } from '~/common/versions';
 
 class VersionSelector extends React.Component {
   render() {

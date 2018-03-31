@@ -1,12 +1,14 @@
-import React from 'react';
 import Link from 'next/link';
+
+import * as React from 'react';
+import * as Constants from '~/common/constants';
+
 import Logo from '~/components/icons/logo';
 import AlgoliaSearch from '~/components/plugins/algolia-search';
 import VersionSelector from '~/components/custom/version-selector';
 import Button from '~/components/base/button';
-import * as Constants from '~/style/constants';
 
-class Header extends React.PureComponent {
+export default class Header extends React.PureComponent {
   render() {
     return (
       <div>
@@ -98,5 +100,3 @@ class Header extends React.PureComponent {
     );
   }
 }
-
-export default Header;

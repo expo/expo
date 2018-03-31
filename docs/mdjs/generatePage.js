@@ -119,14 +119,19 @@ const generateJsPage = (filePath, filename) => {
   });
 
   let output = `
-  import React from 'react';
   import markdown from 'markdown-in-js';
-  import withDoc, { components } from '~/lib/with-doc';
+
+  import * as React from 'react';
+  import * as TranslatedComponents from '~/common/translate-markdown';
+
+  import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
+
   import { Code, InlineCode } from '~/components/base/code';
   import SnackEmbed from '~/components/plugins/snack-embed';
-  export default withDoc({
+
+  export default withDocumentationElements({
     title: '${frontmatter.title}',
-  })(markdown(components)\`
+  })(markdown(TranslatedComponents)\`
   ${markdown}
   \`);
   `;

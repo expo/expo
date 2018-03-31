@@ -1,7 +1,7 @@
-import React from 'react';
-import * as Constants from '~/style/constants';
+import * as React from 'react';
+import * as Constants from '~/common/constants';
 
-class Footer extends React.PureComponent {
+export default class Footer extends React.PureComponent {
   render() {
     return (
       <div
@@ -36,5 +36,3 @@ class Footer extends React.PureComponent {
     );
   }
 }
-
-export default Footer;

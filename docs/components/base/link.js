@@ -1,6 +1,7 @@
-import React from 'react';
 import NativeLink from 'next/link';
-import * as Constants from '~/style/constants';
+
+import * as React from 'react';
+import * as Constants from '~/common/constants';
 
 export const InternalLink = ({ href, as, children }) => (
   <NativeLink prefetch href={href} as={as}>

@@ -1,17 +1,18 @@
-import React from 'react';
 import Link from 'next/link';
 import Router from 'next/router';
 import qs from 'query-string';
 import _ from 'lodash';
+
+import * as React from 'react';
+import * as Utilities from '~/common/utilities';
+import * as Constants from '~/common/constants';
+import { LATEST_VERSION } from '~/common/versions';
 
 import navigation from '~/navigation-data.json';
 
 import Button from '~/components/base/button';
 import AlgoliaSearch from '~/components/plugins/algolia-search';
 import VersionSelector from '~/components/custom/version-selector';
-import { replaceVersionInUrl } from '~/lib/url';
-import { LATEST_VERSION } from '~/lib/versions';
-import * as Constants from '~/style/constants';
 
 export class NavLink extends React.Component {
   isSelected() {
@@ -165,7 +166,7 @@ export default class Navbar extends React.Component {
       // href is the underlying page (so if latest, it's the page referring to the latest version, v22)
       // as is the URL display in the browser (latest)
       if (element.href) {
-        element.as = replaceVersionInUrl(element.href, 'latest');
+        element.as = Utilities.replaceVersionInUrl(element.href, 'latest');
       }
       if (element.posts) {
         this.updateLinks(element.posts);

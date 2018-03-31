@@ -63,7 +63,8 @@ console.log(`Create an index page under pages/version`);
 fs.writeFileSync(
   `${DESTINATION_PATH_PREFIX}/index.js`,
   `
-import redirect from '~/lib/redirect';
+import redirect from '~/common/redirect';
+
 export default redirect('/versions/latest/');
 `
 );

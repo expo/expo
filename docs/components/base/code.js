@@ -1,7 +1,7 @@
-import React from 'react';
 import Prism from 'prismjs';
 
-import * as Constants from '~/style/constants';
+import * as React from 'react';
+import * as Constants from '~/common/constants';
 
 /* global tippy */
 
