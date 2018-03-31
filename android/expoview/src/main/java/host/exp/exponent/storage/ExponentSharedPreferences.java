@@ -70,10 +70,16 @@ public class ExponentSharedPreferences {
   }
 
   private SharedPreferences mSharedPreferences;
+  private Context mContext;
 
   @Inject
   public ExponentSharedPreferences(Context context) {
     mSharedPreferences = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+    mContext = context;
+  }
+
+  public Context getContext() {
+    return mContext;
   }
 
   public boolean getBoolean(String key) {
