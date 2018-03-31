@@ -6,14 +6,11 @@ Your app will encounter circumstances where the internet connection is sub-par o
 
 ## Load JS updates in the background
 
-When you [publish](./publishing.html) an update to your app, your users will receieve the new version of your JS over the air. The new version will download either next time the app starts, or next time you call [Util.reload()](../sdk/util.html). This behavior also applies the very first time the user opens your app.
+When you [publish](./publishing.html) an update to your app, your users will receieve the new version of your JS over the air. The new version will download either next time the app starts, or next time you call [Updates.reload()](../sdk/updates.html). This behavior also applies the very first time the user opens your app.
 
 Expo offers multiple behaviors for how it should download your JS. It can either block the UI with a [splash screen](./splash-screens.html) or [AppLoading component](../sdk/app-loading.html) until the new JS is downloaded, or it can immediately show an old version of your JS and download the update in the background. The former option is better if your users must have the latest version at all times; the latter option is better if you have a bad internet connection and need to show something right away.
 
-To enable background JS downloads:
-
-- On iOS, set the `ios.loadJSInBackgroundExperimental` key to `true` in `app.json`. This configuration itself will not update over the air and requires generating a new binary with `exp build:ios` to take effect.
-- On Android, this option is always enabled. You can use [Util.addNewVersionListenerExperimental()](../sdk/util.html) to perform an action when the background download is complete.
+To enable background JS downloads, set `updates.fallbackToCacheTimeout` to `0` in `app.json`. You can also listen to see when a new version has finished downloading. For more information, see [Configuring OTA Updates](./configuring-ota-updates.html).
 
 ## Cache your assets after downloading
 
