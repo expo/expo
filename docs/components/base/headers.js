@@ -8,11 +8,12 @@ export const H1 = ({ children }) => (
       {`
         h1 {
           font-family: ${Constants.fonts.book};
-          font-size: 2.25rem;
+          font-size: 2.4rem;
           line-height: 2.75rem;
-          margin-bottom: 3rem;
-          padding-bottom: 1rem;
-          border-bottom: 1px solid #ccc;
+          margin-bottom: 1.5rem;
+          margin-top: 0.1rem;
+          padding-bottom: 0.25rem;
+          border-bottom: 1px solid #eee;
         }
       `}
     </style>

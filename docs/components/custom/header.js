@@ -11,23 +11,25 @@ class Header extends React.PureComponent {
     return (
       <div>
         <header
-          className="desktop"
+          className="desktop header-desktop"
           style={{
             position: 'relative',
             maxWidth: 1440,
+            display: 'flex',
+            justifyContent: 'space-between',
             margin: '0 auto',
-            padding: '30px 30px 20px 20px',
+            padding: '15px 30px 15px 20px',
             borderBottom: '1px solid #eee',
             backgroundColor: '#ffffff',
           }}>
           <Link prefetch href="/versions">
             <a className="logo">
               <Logo />
-              <span style={{ display: 'inline-block', marginLeft: '10px' }}>Expo Docs</span>
+              {/* <span style={{ display: 'inline-block', marginLeft: '10px' }}>Documentation</span> */}
             </a>
           </Link>
 
-          <div style={{ float: 'right', display: 'flex', flexDirection: 'row' }}>
+          <div style={{ display: 'flex', flexDirection: 'row' }}>
             <AlgoliaSearch router={this.props.router} activeVersion={this.props.activeVersion} />
             <VersionSelector
               activeVersion={this.props.activeVersion}
@@ -70,11 +72,13 @@ class Header extends React.PureComponent {
               text-decoration: none;
               color: black;
               font-size: 24px;
+              display: flex;
+              align-items: center;
             }
 
             @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-              header {
-                display: none;
+              header.desktop {
+                display: none !important;
               }
 
               header.mobile {

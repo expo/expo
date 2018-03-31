@@ -202,12 +202,12 @@ class Page extends React.Component {
               display: flex;
               flex-direction: row;
               max-width: 1440px;
-              margin: 80px auto 0px auto;
+              margin: 60px auto 0px auto;
             }
 
             .sidebar {
               position: fixed;
-              z-index: 10000;
+              z-index: 98;
               width: 280px;
               height: calc(100vh - 80px);
               -webkit-font-smoothing: antialiased;
@@ -233,24 +233,15 @@ class Page extends React.Component {
             .content {
               flex: 1;
               padding-left: 20px;
-              max-width: 800px;
+              max-width: 1200px;
             }
 
             ._markdown_ div {
-              max-width: 700px;
+              max-width: 850px;
             }
 
             .content img {
               max-width: 100%;
-            }
-
-            .content h1 {
-              color: #000;
-              font-size: 26px;
-              line-height: 20px;
-              font-weight: 400;
-              margin: 0 0 30px 0;
-              padding-bottom: 20;
             }
 
             @media screen and (max-width: ${Constants.breakpoints.mobile}) {
