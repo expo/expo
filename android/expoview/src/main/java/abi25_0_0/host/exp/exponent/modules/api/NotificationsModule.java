@@ -119,11 +119,11 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
 
         @Override
         public void onFailure(Exception e) {
-          promise.reject("E_GET_GCM_TOKEN_FAILED", "Couldn't get GCM token for device", e);
+          promise.reject("E_GET_GCM_TOKEN_FAILED", "Couldn't get GCM token for device " + e.toString(), e);
         }
       });
     } catch (JSONException e) {
-      promise.reject("E_GET_GCM_TOKEN_FAILED", "Couldn't get GCM token for device", e);
+      promise.reject("E_GET_GCM_TOKEN_FAILED", "Couldn't get GCM token for device " + e.toString(), e);
       return;
     }
   }
