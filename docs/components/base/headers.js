@@ -1,5 +1,5 @@
-import React from 'react';
-import * as Constants from '~/style/constants';
+import * as React from 'react';
+import * as Constants from '~/common/constants';
 
 export const H1 = ({ children }) => (
   <h1>

@@ -1,7 +1,7 @@
-import React from 'react';
-import * as Constants from '~/style/constants';
+import * as React from 'react';
+import * as Constants from '~/common/constants';
 
-class Button extends React.Component {
+export default class Button extends React.Component {
   render() {
     return (
       <span
@@ -25,5 +25,3 @@ class Button extends React.Component {
     );
   }
 }
-
-export default Button;

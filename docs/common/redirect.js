@@ -1,7 +1,8 @@
-import React from 'react';
 import Head from 'next/head';
 
-const redirectTo = destination =>
+import * as React from 'react';
+
+export default destination =>
   class RedirectRoute extends React.Component {
     render() {
       return (
@@ -11,5 +12,3 @@ const redirectTo = destination =>
       );
     }
   };
-
-export default redirectTo;

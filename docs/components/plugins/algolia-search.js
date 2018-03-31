@@ -1,9 +1,9 @@
-import React from 'react';
 import Router from 'next/router';
 
-import { replaceVersionInUrl } from '~/lib/url';
-import { LATEST_VERSION } from '~/lib/versions';
-import * as Constants from '~/style/constants';
+import * as React from 'react';
+import * as Constants from '~/common/constants';
+import * as Utilities from '~/common/utilities';
+import { LATEST_VERSION } from '~/common/versions';
 
 class AlgoliaSearch extends React.Component {
   componentWillReceiveProps(nextProps) {
@@ -34,9 +34,9 @@ class AlgoliaSearch extends React.Component {
       inputSelector: '#algolia-search-box',
       algoliaOptions: {
         facetFilters: [
-          `tags:${this.props.activeVersion === 'latest'
-            ? LATEST_VERSION
-            : this.props.activeVersion}`,
+          `tags:${
+            this.props.activeVersion === 'latest' ? LATEST_VERSION : this.props.activeVersion
+          }`,
         ],
         hitsPerPage: 10,
       },
@@ -48,7 +48,7 @@ class AlgoliaSearch extends React.Component {
 
         let asPath = null;
         if (this.props.activeVersion === 'latest') {
-          asPath = this.processUrl(replaceVersionInUrl(route, 'latest'));
+          asPath = this.processUrl(Utilities.replaceVersionInUrl(route, 'latest'));
         }
         route = this.processUrl(route);
         if (asPath) {

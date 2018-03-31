@@ -1,7 +1,9 @@
-import React from 'react';
 import Head from 'next/head';
-import * as Constants from '~/style/constants';
-import { LATEST_VERSION } from '~/lib/versions';
+
+import * as React from 'react';
+import * as Constants from '~/common/constants';
+
+import { LATEST_VERSION } from '~/common/versions';
 
 class Page extends React.Component {
   render() {

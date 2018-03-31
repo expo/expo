@@ -1,7 +1,8 @@
-import React from 'react';
+import * as React from 'react';
+import * as Utilities from '~/common/utilities';
+
 import PermalinkIcon from '~/components/icons/permalink-icon';
 import BulletIcon from '~/components/icons/bullet-icon';
-import generateSlug from '~/components/base/generate-slug';
 
 export const UL = ({ children }) => (
   <ul>
@@ -39,7 +40,7 @@ export const OL = ({ children }) => (
 
 export const LI = ({ id, children }) => {
   if (id == null) {
-    id = generateSlug(children);
+    id = Utilities.generateSlug(children);
   }
 
   return (

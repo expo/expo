@@ -1,7 +1,8 @@
-import React from 'react';
+import * as React from 'react';
+import * as Constants from '~/common/constants';
+import * as Utilities from '~/common/utilities';
+
 import PermalinkIcon from '~/components/icons/permalink-icon';
-import * as Constants from '~/style/constants';
-import generateSlug from '~/components/base/generate-slug';
 
 class Permalink extends React.Component {
   render() {
@@ -23,7 +24,7 @@ const fn = props => {
   let id = props.id;
 
   if (id == null) {
-    id = generateSlug(children);
+    id = Utilities.generateSlug(children);
   }
 
   return (

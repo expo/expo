@@ -1,7 +1,7 @@
-import React from 'react';
-import * as Constants from '~/style/constants';
+import * as React from 'react';
+import * as Constants from '~/common/constants';
 
-const PermalinkIcon = () => (
+export default () => (
   <svg className="anchor-icon" viewBox="0 0 11 11" version="1.1" xmlns="http://www.w3.org/2000/svg">
     <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
       <g transform="translate(-432.000000, -181.000000)" fill="#9B9B9B">
@@ -10,5 +10,3 @@ const PermalinkIcon = () => (
     </g>
   </svg>
 );
-
-export default PermalinkIcon;
