@@ -24,6 +24,7 @@ import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
+import host.exp.exponent.utils.AsyncCondition;
 
 public abstract class ExponentNotificationIntentService extends IntentService {
 
@@ -68,6 +69,9 @@ public abstract class ExponentNotificationIntentService extends IntentService {
 
     try {
       final String token = getToken();
+
+      AsyncCondition.notify("devicePushToken");
+
       if (token == null) {
         EXL.e(TAG, "Device push token is null");
         return;
