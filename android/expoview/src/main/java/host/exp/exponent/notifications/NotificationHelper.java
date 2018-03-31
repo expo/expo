@@ -15,11 +15,14 @@ import android.text.format.DateUtils;
 import de.greenrobot.event.EventBus;
 import expolib_v1.okhttp3.Call;
 import expolib_v1.okhttp3.Callback;
+import expolib_v1.okhttp3.MediaType;
 import expolib_v1.okhttp3.Request;
+import expolib_v1.okhttp3.RequestBody;
 import expolib_v1.okhttp3.Response;
 import host.exp.exponent.Constants;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.network.ExponentNetwork;
+import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.JSONUtils;
 
 import org.json.JSONException;
@@ -99,14 +102,32 @@ public class NotificationHelper {
       String deviceId,
       String experienceId,
       ExponentNetwork exponentNetwork,
+      ExponentSharedPreferences exponentSharedPreferences,
       final TokenListener listener) {
-    Uri.Builder uriBuilder = Uri.parse("https://exp.host/--/api/v2/push/getExponentPushToken").buildUpon();
-    uriBuilder.appendQueryParameter("deviceId", deviceId);
-    uriBuilder.appendQueryParameter("experienceId", experienceId);
+    String sharedPreferencesToken = exponentSharedPreferences.getString(Constants.FCM_ENABLED ? ExponentSharedPreferences.FCM_TOKEN_KEY : ExponentSharedPreferences.GCM_TOKEN_KEY);
+    if (sharedPreferencesToken == null || sharedPreferencesToken.length() == 0) {
+      listener.onFailure(new Exception("No device token found"));
+      return;
+    }
 
-    String uri = uriBuilder.build().toString();
+    JSONObject params = new JSONObject();
+    try {
+      params.put("deviceId", deviceId);
+      params.put("experienceId", experienceId);
+      params.put("appId", exponentSharedPreferences.getContext().getApplicationContext().getPackageName());
+      params.put("deviceToken", sharedPreferencesToken);
+      params.put("type", Constants.FCM_ENABLED ? "fcm" : "gcm");
+      params.put("development", false);
+    } catch (JSONException e) {
+      listener.onFailure(new Exception("Error constructing request"));
+      return;
+    }
 
-    Request request = ExponentUrls.addExponentHeadersToUrl(uri, false, true).build();
+    RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), params.toString());
+    Request request = ExponentUrls.addExponentHeadersToUrl("https://exp.host/--/api/v2/push/getExpoPushToken", false, true)
+        .header("Content-Type", "application/json")
+        .post(body)
+        .build();
 
     exponentNetwork.getClient().call(request, new Callback() {
       @Override
@@ -117,13 +138,14 @@ public class NotificationHelper {
       @Override
       public void onResponse(Call call, Response response) throws IOException {
         if (!response.isSuccessful()) {
-          listener.onFailure(new Exception("Couldn't get GCM token for device"));
+          listener.onFailure(new Exception("Couldn't get android push token for device"));
           return;
         }
 
         try {
           JSONObject result = new JSONObject(response.body().string());
-          listener.onSuccess(result.getJSONObject("data").getString("exponentPushToken"));
+          JSONObject data = result.getJSONObject("data");
+          listener.onSuccess(data.getString("expoPushToken"));
         } catch (Exception e) {
           listener.onFailure(e);
         }
