@@ -218,7 +218,7 @@ class Page extends React.Component {
 
             .doc-layout {
               display: flex;
-              margin: 0px 80px 50px 280px;
+              margin: 0px 40px 50px 280px;
               padding: 0 20px;
               justify-content: left;
               -webkit-font-smoothing: antialiased;

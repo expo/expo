@@ -17,6 +17,7 @@ class Header extends React.PureComponent {
             maxWidth: 1440,
             display: 'flex',
             justifyContent: 'space-between',
+            height: 65, // fix the height so no jumpiness
             margin: '0 auto',
             padding: '15px 30px 15px 20px',
             borderBottom: '1px solid #eee',
@@ -87,6 +88,7 @@ class Header extends React.PureComponent {
               }
 
               .logo {
+                margin-top: 5px;
                 margin-left: 0px;
               }
             }
