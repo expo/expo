@@ -67,7 +67,7 @@ export class Code extends React.Component {
           margin: '10px 0',
           whiteSpace: 'pre',
           overflow: 'auto',
-          maxWidth: '800px',
+          maxWidth: '850px',
           WebkitOverflowScrolling: 'touch',
           backgroundColor: 'rgba(0, 1, 31, 0.03)',
           lineHeight: '1.2rem',

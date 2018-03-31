@@ -78,7 +78,7 @@ export default class SnackEmbed extends React.Component {
           borderWidth: 1,
           borderStyle: 'solid',
           height: 505,
-          maxWidth: '800px',
+          maxWidth: '1200px',
           borderRadius: 4,
           borderColor: 'rgba(0,0,0,.16)',
           ...embedStyle,
