@@ -37,7 +37,7 @@ let versions = fs.readdirSync(ORIGINAL_PATH_PREFIX);
 
 // Compile all files initially
 
-console.time('initial compile');
+console.time('Compiling *.md files to *.js');
 
 const navigationData = [];
 
@@ -47,7 +47,7 @@ versions.forEach(dir => {
 
   fs.emptyDirSync(`${DESTINATION_PATH_PREFIX}/${dir}`);
 
-  console.log(`Processing markdown files in ${dir}`);
+  console.log(`Processing markdown files for version: ${dir}`);
   generateJsFromMd(`${ORIGINAL_PATH_PREFIX}/${dir}`);
 
   navigationData.push({
@@ -56,10 +56,14 @@ versions.forEach(dir => {
   });
 });
 
-console.log(`Generating navigation JSON, writing to ./generated/navigation-data.json`);
-jsonfile.writeFileSync(`./generated/navigation-data.json`, navigationData);
+console.log(`Script is running from:                `, __dirname);
+console.log(`Generating navigation-data.json at:    ./generated/navigation-data.json`);
 
-console.log(`Create an index page under pages/version`);
+// NOTE(jim): CircleCI seems to forget where it is? With __dirname the path begins where the
+// mdjs script was executed.
+jsonfile.writeFileSync(`${__dirname}/../generated/navigation-data.json`, navigationData);
+
+console.log(`Generating index.js at:                ./pages/version`);
 fs.writeFileSync(
   `${DESTINATION_PATH_PREFIX}/index.js`,
   `
@@ -69,10 +73,9 @@ export default redirect('/versions/latest/');
 `
 );
 
-console.timeEnd('initial compile');
+console.timeEnd('Compiling *.md files to *.js');
 
 // Watch for changes in directory
-
 if (process.argv.length < 3) {
   fs.watch(`${ORIGINAL_PATH_PREFIX}`, { recursive: true }, (eventType, filename) => {
     let filePath = path.join(`${ORIGINAL_PATH_PREFIX}`, filename);
