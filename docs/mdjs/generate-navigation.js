@@ -9,7 +9,7 @@ const {
   GUIDES,
   DISTRIBUTION,
   EXPOKIT,
-} = require('./navbarOrder');
+} = require('./sidebar-navigation-order');
 
 const DIR_MAPPING = {
   introduction: 'Introduction',

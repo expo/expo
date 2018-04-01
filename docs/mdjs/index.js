@@ -2,8 +2,8 @@ const path = require('path');
 const fs = require('fs-extra');
 const jsonfile = require('jsonfile');
 
-const generatePage = require('./generatePage');
-const generateNavLinks = require('./generateNav');
+const generatePage = require('./generate-page');
+const generateNavLinks = require('./generate-navigation');
 
 const ORIGINAL_PATH_PREFIX = './versions';
 const DESTINATION_PATH_PREFIX = './pages/versions';
