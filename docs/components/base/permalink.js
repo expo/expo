@@ -20,8 +20,6 @@ class Permalink extends React.Component {
   }
 }
 
-// TODO(jim):
-// Remove styled-jsx here.
 const STYLES_CONTAINER = css`
   margin-left: -20px;
   display: flex;
