@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as Constants from '~/common/constants';
 
 export default () => (
   <svg className="anchor-icon" viewBox="0 0 11 11" version="1.1" xmlns="http://www.w3.org/2000/svg">

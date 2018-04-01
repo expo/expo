@@ -7,13 +7,13 @@ import * as Utilities from '~/common/utilities';
 import { VERSIONS, LATEST_VERSION } from '~/common/versions';
 
 import NavigationJSON from '~/generated/navigation-data.json';
-import Head from '~/components/base/head';
-import { H1 } from '~/components/base/headings';
 
 import DocumentationHeader from '~/components/DocumentationHeader';
 import DocumentationFooter from '~/components/DocumentationFooter';
 import DocumentationPageLayout from '~/components/DocumentationPageLayout';
 import DocumentationSidebar from '~/components/DocumentationSidebar';
+import Head from '~/components/Head';
+import { H1 } from '~/components/base/headings';
 
 const STYLES_DOCUMENT = css`
   padding: 24px;

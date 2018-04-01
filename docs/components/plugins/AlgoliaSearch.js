@@ -14,6 +14,7 @@ const STYLES_INPUT_FIELD = css`
   padding: 2px 10px;
 `;
 
+// TODO(jim): Not particularly happy with how this component chunks in while loading.
 class AlgoliaSearch extends React.Component {
   componentWillReceiveProps(nextProps) {
     if (this.props.activeVersion && this.props.activeVersion !== nextProps.activeVersion) {
