@@ -8,54 +8,19 @@ import { VERSIONS, LATEST_VERSION } from '~/common/versions';
 class VersionSelector extends React.Component {
   render() {
     return (
-      <div>
-        <div
-          style={{
-            paddingTop: '8px',
-            paddingRight: '10px',
-            display: 'inline-block',
-          }}>
-          <select
-            value={this.props.activeVersion}
-            onChange={e => this.props.setVersion(e.target.value)}
-            style={{
-              marginLeft: '4px',
-              cursor: `pointer`,
-              fontSize: '100%',
-              background: 'transparent',
-              fontFamily: Constants.fontFamilies.book,
-            }}>
-            {orderVersions(VERSIONS)
-              .map(version => {
-                return (
-                  <option key={version} value={version}>
-                    {version === 'latest' ? 'latest (' + LATEST_VERSION + ')' : version}
-                  </option>
-                );
-              })
-              .reverse()}
-          </select>
-          <style jsx>
-            {`
-              // Desktop
-              @media screen and (min-width: ${Constants.breakpoints.mobile}) {
-                border: none;
-                border-radius: 0;
-                outline: none;
-              }
-
-              // Mobile
-              @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-                select {
-                  border-radius: 2px;
-                  border: 1px solid rgb(166, 166, 166);
-                  padding: 5px;
-                }
-              }
-            `}
-          </style>
-        </div>
-      </div>
+      <select
+        value={this.props.activeVersion}
+        onChange={e => this.props.setVersion(e.target.value)}>
+        {orderVersions(VERSIONS)
+          .map(version => {
+            return (
+              <option key={version} value={version}>
+                {version === 'latest' ? 'latest (' + LATEST_VERSION + ')' : version}
+              </option>
+            );
+          })
+          .reverse()}
+      </select>
     );
   }
 }

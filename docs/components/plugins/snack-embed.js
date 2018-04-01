@@ -22,7 +22,7 @@ export default class SnackEmbed extends React.Component {
   }
 
   render() {
-    // TODO: Handle `data-snack-sdk-version` somehow
+    // TODO(abi): Handle `data-snack-sdk-version` somehow
     // maybe using `context`?
 
     // get snack data from snack id or from inline code
@@ -30,8 +30,7 @@ export default class SnackEmbed extends React.Component {
     if (this.props.snackId) {
       embedProps = { 'data-snack-id': this.props.snackId };
     } else {
-      let code = React.Children
-        .toArray(this.props.children)
+      let code = React.Children.toArray(this.props.children)
         .join('')
         .trim();
       embedProps = {
