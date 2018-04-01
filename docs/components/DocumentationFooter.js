@@ -17,7 +17,7 @@ const STYLES_FOOTER_LINK = css`
   margin-bottom: 12px;
 `;
 
-export default class Footer extends React.PureComponent {
+export default class DocumentationFooter extends React.PureComponent {
   render() {
     return (
       <footer className={STYLES_FOOTER}>

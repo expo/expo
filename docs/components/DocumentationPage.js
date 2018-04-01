@@ -7,11 +7,11 @@ import * as Utilities from '~/common/utilities';
 import { VERSIONS, LATEST_VERSION } from '~/common/versions';
 
 import NavigationJSON from '~/generated/navigation-data.json';
-import { H1, H2, H3, H4 } from '~/components/base/headings';
 import Head from '~/components/base/head';
-import Header from '~/components/custom/header';
-import Footer from '~/components/custom/footer';
+import { H1 } from '~/components/base/headings';
 
+import DocumentationHeader from '~/components/DocumentationHeader';
+import DocumentationFooter from '~/components/DocumentationFooter';
 import DocumentationPageLayout from '~/components/DocumentationPageLayout';
 import DocumentationSidebar from '~/components/DocumentationSidebar';
 
@@ -32,7 +32,23 @@ const mutateRouteDataForRender = data => {
 };
 
 export default class DocumentationPage extends React.Component {
+  componentDidMount() {
+    Router.onRouteChangeStart = () => {
+      window.NProgress.start();
+    };
+
+    Router.onRouteChangeComplete = () => {
+      window.NProgress.done();
+    };
+
+    Router.onRouteChangeError = () => {
+      window.NProgress.done();
+    };
+  }
+
   render() {
+    // TODO(jim): Theres too much state management occuring at the render.
+    // This needs to be moved elsewhere.
     let version = (this.props.asPath || this.props.url.pathname).split(`/`)[2];
     if (!version || VERSIONS.indexOf(version) === -1) {
       version = VERSIONS[0];
@@ -51,7 +67,7 @@ export default class DocumentationPage extends React.Component {
     const canonicalUrl =
       'https://docs.expo.io' + Utilities.replaceVersionInUrl(this.props.url.pathname, 'latest');
 
-    // TODO(jim): I ripped
+    // TODO(jim): I ripped this out of the sidebar.
     let sidebarVersion = version;
     if (sidebarVersion === 'latest') {
       sidebarVersion = LATEST_VERSION;
@@ -66,7 +82,7 @@ export default class DocumentationPage extends React.Component {
     }
 
     const headerElement = (
-      <Header
+      <DocumentationHeader
         user={this.props.user}
         pathname={this.props.url.pathname}
         activeVersion={this.version}
@@ -93,7 +109,7 @@ export default class DocumentationPage extends React.Component {
         <div className={STYLES_DOCUMENT}>
           <H1>{this.props.title}</H1>
           {this.props.children}
-          <Footer url={this.props.url} />
+          <DocumentationFooter />
         </div>
       </DocumentationPageLayout>
     );

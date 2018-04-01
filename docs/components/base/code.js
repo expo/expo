@@ -1,9 +1,81 @@
+import styled, { keyframes, css } from 'react-emotion';
 import Prism from 'prismjs';
 
 import * as React from 'react';
 import * as Constants from '~/common/constants';
 
-/* global tippy */
+const STYLES_CODE_BLOCK = css`
+  color: ${Constants.colors.black80};
+  font-family: ${Constants.fontFamilies.mono};
+  font-size: 13px;
+  line-height: 20px;
+  white-space: inherit;
+  padding: 0px;
+  margin: 0px;
+
+  .code-annotation {
+    font-weight: 600;
+  }
+
+  .code-annotation:hover {
+    cursor: pointer;
+    opacity: 0.6;
+    animation: none;
+  }
+
+  .tippy-tooltip.expo-theme {
+    background-color: white;
+    color: black;
+    text-align: left;
+  }
+
+  .tippy-popper[x-placement^='top'] .tippy-tooltip.expo-theme .tippy-roundarrow {
+    fill: white;
+  }
+
+  .tippy-tooltip.expo-theme .tippy-content {
+    padding: 10px 5px;
+    line-height: 1.5em;
+    font-family: ${Constants.fonts.book};
+  }
+`;
+
+const STYLES_INLINE_CODE = css`
+  color: ${Constants.colors.black80};
+  font-family: ${Constants.fontFamilies.mono};
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+  display: inline;
+  padding: 4px;
+  margin: 2px;
+  line-height: 20px;
+  max-width: 100%;
+
+  word-wrap: break-word;
+  background-color: ${Constants.colors.blackRussian};
+  vertical-align: middle;
+  overflow-x: scroll;
+
+  ::before {
+    content: '';
+  }
+
+  ::after {
+    content: '';
+  }
+`;
+
+const STYLES_CODE_CONTAINER = css`
+  border: 1px solid #eaeaea;
+  padding: 20px;
+  margin: 10px 0;
+  whitespace: pre;
+  overflow: auto;
+  maxwidth: 850px';
+  webkitoverflowscrolling: touch;
+  backgroundcolor: rgba(0, 1, 31, 0.03);
+  lineheight: 1.2rem;
+`;
 
 export class Code extends React.Component {
   componentDidMount() {
@@ -60,101 +132,11 @@ export class Code extends React.Component {
     }
 
     return (
-      <pre
-        style={{
-          border: '1px solid #eaeaea',
-          padding: '20px',
-          margin: '10px 0',
-          whiteSpace: 'pre',
-          overflow: 'auto',
-          maxWidth: '850px',
-          WebkitOverflowScrolling: 'touch',
-          backgroundColor: 'rgba(0, 1, 31, 0.03)',
-          lineHeight: '1.2rem',
-        }}>
-        <code dangerouslySetInnerHTML={{ __html: html }} />
-        <style jsx>
-          {`
-            code {
-              color: ${Constants.colors.black80};
-              font-family: ${Constants.fontFamilies.mono};
-              font-size: 13px;
-              line-height: 20px;
-              white-space: inherit;
-              padding: 0px;
-              margin: 0px;
-            }
-          `}
-        </style>
-        <style jsx global>
-          {`
-            /* Code annotation styles */
-            .code-annotation {
-              font-weight: 600;
-            }
-
-            .code-annotation:hover {
-              cursor: pointer;
-              opacity: 0.6;
-              animation: none;
-            }
-
-            .tippy-tooltip.expo-theme {
-              background-color: white;
-              color: black;
-              text-align: left;
-            }
-
-            .tippy-popper[x-placement^='top'] .tippy-tooltip.expo-theme .tippy-roundarrow {
-              fill: white;
-            }
-
-            .tippy-tooltip.expo-theme .tippy-content {
-              padding: 10px 5px;
-              line-height: 1.5em;
-              font-family: ${Constants.fonts.book};
-            }
-          `}
-        </style>
+      <pre className={STYLES_CODE_CONTAINER}>
+        <code className={STYLES_CODE_BLOCK} dangerouslySetInnerHTML={{ __html: html }} />
       </pre>
     );
   }
 }
 
-export const InlineCode = ({ children }) => (
-  <code className="inline">
-    {children}
-    <style jsx global>
-      {`
-        code {
-          color: ${Constants.colors.black80};
-          font-family: ${Constants.fontFamilies.mono};
-          font-size: 0.9rem;
-          white-space: pre-wrap;
-          display: inline;
-          padding: 4px;
-          margin: 2px;
-          line-height: 20px;
-          max-width: 100%;
-        }
-
-        code.inline {
-          word-wrap: break-word;
-          background-color: ${Constants.colors.blackRussian};
-          vertical-align: middle;
-          overflow-x: scroll;
-        }
-
-        code::before {
-          content: '';
-          /* content: '\`'; */
-        }
-
-        code::after {
-          /* content: '\`'; */
-          content: '';
-        }
-      `}
-    </style>
-  </code>
-);
+export const InlineCode = ({ children }) => <code className={STYLES_INLINE_CODE}>{children}</code>;

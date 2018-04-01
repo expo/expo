@@ -25,7 +25,7 @@ const STYLES_ACTIVE = css`
 `;
 
 const STYLES_DEFAULT = css`
-  color: ${Constants.colors.black80};
+  color: ${Constants.colors.black60};
   transition: 200ms ease color;
 
   :visited {
