@@ -1,82 +1,60 @@
+import styled, { keyframes, css } from 'react-emotion';
+
 import * as React from 'react';
 import * as Constants from '~/common/constants';
 
-export const P = ({ children }) => (
-  <p>
-    {children}
-    <style jsx>
-      {`
-        p {
-          font-size: 1rem;
-          line-height: 1.725rem;
-          margin-bottom: 1.5rem;
-        }
-      `}
-    </style>
-  </p>
-);
+const STYLES_PARAGRAPH = css`
+  font-size: 1rem;
+  line-height: 1.725rem;
+  margin-bottom: 1.5rem;
+`;
 
-const B = ({ children }) => (
-  <span>
-    {children}
-    <style jsx>
-      {`
-        span {
-          font-family: ${Constants.fontFamilies.bold};
-          font-weight: 400;
-          letter-spacing: 0.3px;
-        }
-      `}
-    </style>
-  </span>
-);
+export const P = ({ children }) => <p className={STYLES_PARAGRAPH}>{children}</p>;
+
+const STYLES_BOLD_PARAGRAPH = css`
+  font-family: ${Constants.fontFamilies.bold};
+  font-weight: 400;
+  letter-spacing: 0.3px;
+`;
+
+const B = ({ children }) => <strong className={STYLES_BOLD_PARAGRAPH}>{children}</strong>;
 
 P.B = B;
 
+const STYLES_PARAGRAPH_DIV = css`
+  font-size: 1rem;
+  line-height: 1.8rem;
+  margin-bottom: 1.4rem;
+
+  &.is-wider {
+    max-width: 1200px;
+  }
+
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+    &.is-wider {
+      max-width: 100%;
+      width: 100%;
+    }
+  }
+`;
+
 export const PDIV = ({ children }) => {
-  const wider = children.props && children.props.snackId;
-  return (
-    <div className={wider ? 'wider' : ''}>
-      {children}
-      <style jsx>
-        {`
-          div {
-            font-size: 1rem;
-            line-height: 1.8rem;
-            margin-bottom: 1.4rem;
-          }
-
-          div.wider {
-            max-width: 1200px;
-          }
-
-          @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-            div.wider {
-              max-width: 100%;
-              width: 100%;
-            }
-          }
-        `}
-      </style>
-    </div>
-  );
+  const isWider = children.props && children.props.snackId;
+  return <div className={`${STYLES_PARAGRAPH_DIV} ${isWider ? 'is-wider' : ''}`}>{children}</div>;
 };
 
-export const Quote = ({ children }) => (
-  <blockquote>
-    {children}
-    <style jsx>{`
-      blockquote {
-        font-family: ${Constants.fontFamilies.book};
-        padding: 12px 24px;
-        border-left: 5px solid ${Constants.colors.darkGrey};
-        margin: 0 0 1.5rem 0;
-        color: ${Constants.colors.black80};
-      }
+const STYLES_BLOCKQUOTE = css`
+  font-family: ${Constants.fontFamilies.book};
+  padding: 12px 24px;
+  border-left: 5px solid ${Constants.colors.darkGrey};
+  margin: 0 0 1.5rem 0;
+  color: ${Constants.colors.black80};
 
-      blockquote :global(div) {
-        margin: 0;
-      }
-    `}</style>
-  </blockquote>
+  div {
+    margin: 0;
+  }
+`;
+
+export const Quote = ({ children }) => (
+  <blockquote className={STYLES_BLOCKQUOTE}>{children}</blockquote>
 );
