@@ -1,3 +1,4 @@
+import styled, { keyframes, css } from 'react-emotion';
 import Router from 'next/router';
 
 import * as React from 'react';
@@ -5,6 +6,13 @@ import * as Constants from '~/common/constants';
 import * as Utilities from '~/common/utilities';
 
 import { LATEST_VERSION } from '~/common/versions';
+
+const STYLES_INPUT_FIELD = css`
+  border: 1px solid ${Constants.colors.border};
+  border-radius: 3;
+  font-size: 14px;
+  padding: 2px 10px;
+`;
 
 class AlgoliaSearch extends React.Component {
   componentWillReceiveProps(nextProps) {
@@ -85,6 +93,7 @@ class AlgoliaSearch extends React.Component {
     return (
       <div style={this.props.style}>
         <input
+          className={STYLES_INPUT_FIELD}
           id="algolia-search-box"
           type="text"
           placeholder="Search..."
@@ -92,17 +101,6 @@ class AlgoliaSearch extends React.Component {
           spellCheck="false"
           dir="auto"
         />
-
-        <style jsx global>
-          {`
-            #algolia-search-box {
-              border: 1px solid ${Constants.colors.border};
-              border-radius: 3;
-              font-size: 14px;
-              padding: 2px 10px;
-            }
-          `}
-        </style>
       </div>
     );
   }

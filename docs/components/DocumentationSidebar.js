@@ -29,20 +29,6 @@ export default class DocumentationSidebar extends React.Component {
     routes: [],
   };
 
-  componentDidMount() {
-    Router.onRouteChangeStart = () => {
-      window.NProgress.start();
-    };
-
-    Router.onRouteChangeComplete = () => {
-      window.NProgress.done();
-    };
-
-    Router.onRouteChangeError = () => {
-      window.NProgress.done();
-    };
-  }
-
   _renderPostElements = info => {
     return (
       <DocumentationSidebarLink

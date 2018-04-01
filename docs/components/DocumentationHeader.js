@@ -32,7 +32,7 @@ const STYLES_NAV = css`
   margin: 0 auto 0 auto;
 `;
 
-export default class Header extends React.PureComponent {
+export default class DocumentationHeader extends React.PureComponent {
   render() {
     return (
       <header className={STYLES_NAV}>
