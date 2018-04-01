@@ -6,7 +6,7 @@ import * as React from 'react';
 import * as Utilities from '~/common/utilities';
 import { VERSIONS, LATEST_VERSION } from '~/common/versions';
 
-import NavigationJSON from '~/navigation-data.json';
+import NavigationJSON from '~/generated/navigation-data.json';
 import { H1, H2, H3, H4 } from '~/components/base/headings';
 import Head from '~/components/base/head';
 import Header from '~/components/custom/header';
