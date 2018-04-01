@@ -71,6 +71,10 @@ export default class MyDocument extends Document {
                 display: block;
               }
 
+              img {
+                width: 100%;
+              }
+
               a {
                 -webkit-tap-highlight-color: rgba(0,0,0,0);
                 color: ${Constants.colors.expoLighter};
@@ -207,6 +211,10 @@ export default class MyDocument extends Document {
                 font-size: 1rem;
                 line-height: 1.725rem;
                 margin-bottom: 1.25rem;
+              }
+
+              ol {
+                padding-left: 20px;
               }
 
               li a.anchor {

@@ -1,5 +1,6 @@
 export const colors = {
   temporary: '#FF0000',
+  border: '#ECECEC',
   grey: '#F3F3F3',
   darkGrey: 'rgba(153, 153, 165, 1)',
   white: '#FFFFFF',

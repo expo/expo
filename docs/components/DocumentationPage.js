@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import Router from 'next/router';
 import styled, { keyframes, css } from 'react-emotion';
 
@@ -5,6 +6,7 @@ import * as React from 'react';
 import * as Utilities from '~/common/utilities';
 import { VERSIONS, LATEST_VERSION } from '~/common/versions';
 
+import NavigationJSON from '~/navigation-data.json';
 import { H1, H2, H3, H4 } from '~/components/base/headings';
 import Head from '~/components/base/head';
 import Header from '~/components/custom/header';
@@ -16,6 +18,18 @@ import DocumentationSidebar from '~/components/DocumentationSidebar';
 const STYLES_DOCUMENT = css`
   padding: 24px;
 `;
+
+const mutateRouteDataForRender = data => {
+  data.forEach(element => {
+    if (element.href) {
+      element.as = Utilities.replaceVersionInUrl(element.href, 'latest');
+    }
+
+    if (element.posts) {
+      mutateRouteDataForRender(element.posts);
+    }
+  });
+};
 
 export default class DocumentationPage extends React.Component {
   render() {
@@ -37,15 +51,24 @@ export default class DocumentationPage extends React.Component {
     const canonicalUrl =
       'https://docs.expo.io' + Utilities.replaceVersionInUrl(this.props.url.pathname, 'latest');
 
+    // TODO(jim): I ripped
+    let sidebarVersion = version;
+    if (sidebarVersion === 'latest') {
+      sidebarVersion = LATEST_VERSION;
+    }
+
+    let routes = _.find(NavigationJSON, { version: sidebarVersion.replace('.0.0', '') }).navigation;
+
+    // TODO(jim): Cut this in another refactor. Should never have to do this. here.
+    if (sidebarVersion === 'latest') {
+      routes = _.cloneDeep(routes);
+      mutateRouteDataForRender(routes);
+    }
+
     const headerElement = (
       <Header
         user={this.props.user}
         pathname={this.props.url.pathname}
-        onLogout={() => {
-          this.props.onUser(null);
-          this.props.url.push('/login');
-        }}
-        onLogoRightClick={() => this.props.url.push('/logos')}
         activeVersion={this.version}
         setVersion={setVersion}
       />
@@ -55,9 +78,8 @@ export default class DocumentationPage extends React.Component {
       <DocumentationSidebar
         url={this.props.url}
         asPath={this.props.asPath}
+        routes={routes}
         activeVersion={this.version}
-        getSidebarScrollPosition={() => this.sidebar.scrollTop}
-        setSidebarScrollPosition={val => (this.sidebar.scrollTop = val)}
       />
     );
 

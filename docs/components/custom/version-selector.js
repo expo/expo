@@ -9,6 +9,7 @@ class VersionSelector extends React.Component {
   render() {
     return (
       <select
+        style={this.props.style}
         value={this.props.activeVersion}
         onChange={e => this.props.setVersion(e.target.value)}>
         {orderVersions(VERSIONS)

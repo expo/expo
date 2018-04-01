@@ -13,7 +13,7 @@ export const H1 = ({ children }) => (
           margin-bottom: 1.5rem;
           margin-top: 0.1rem;
           padding-bottom: 0.25rem;
-          border-bottom: 1px solid #eee;
+          border-bottom: 1px solid ${Constants.colors.border};
         }
       `}
     </style>
@@ -32,7 +32,7 @@ export const H2 = ({ children }) => (
           margin-bottom: 1.8rem;
           margin-top: 2rem;
           padding-bottom: 0.3rem;
-          border-bottom: 1px solid #eee;
+          border-bottom: 1px solid ${Constants.colors.border};
         }
       `}
     </style>
