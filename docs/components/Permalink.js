@@ -21,36 +21,44 @@ class Permalink extends React.Component {
 }
 
 const STYLES_CONTAINER = css`
-  margin-left: -20px;
-  display: flex;
-  flex-direction: row;
+  position: relative;
+  cursor: pointer;
 
-  :hover > .permalink {
-    visibility: visible;
+  .anchor-icon {
+    position: absolute;
+    top: 2px;
+    width: 20px;
+    height: 20px;
+    visibility: hidden;
   }
 
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-    margin-left: 0px;
+  .permalink-child {
+    transition: 200ms ease transform;
+  }
+
+  :hover {
+    .anchor-icon {
+      visibility: visible;
+    }
+
+    .permalink-child {
+      transform: translateX(28px);
+    }
   }
 `;
 
 const STYLES_CONTAINER_ANCHOR = css`
-  color: inherit;
-  margin-right: 5px;
-  text-decoration: none;
-  text-align: center;
-  vertical-align: middle;
-  visibility: hidden;
-
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-    margin-left: -20px;
-    padding-left: 5px;
-  }
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
 `;
 
 const STYLES_CONTAINER_TARGET = css`
   display: block;
-  margin-top: -100px;
+  position: absolute
+  top: -100px;
   visibility: hidden;
 `;
 
@@ -70,7 +78,7 @@ export default props => {
         <a href={'#' + id} className={`permalink ${STYLES_CONTAINER_ANCHOR}`}>
           <PermalinkIcon />
         </a>
-        <div style={{ lineHeight: '1.5em' }}>{children}</div>
+        <div className="permalink-child">{children}</div>
       </div>
     </Permalink>
   );
