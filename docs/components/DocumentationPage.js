@@ -1,4 +1,5 @@
 import Router from 'next/router';
+import styled, { keyframes, css } from 'react-emotion';
 
 import * as React from 'react';
 import * as Utilities from '~/common/utilities';
@@ -6,10 +7,15 @@ import { VERSIONS, LATEST_VERSION } from '~/common/versions';
 
 import { H1, H2, H3, H4 } from '~/components/base/headings';
 import Head from '~/components/base/head';
-import Page from '~/components/base/page';
 import Header from '~/components/custom/header';
-import Navbar from '~/components/custom/navbar';
 import Footer from '~/components/custom/footer';
+
+import DocumentationPageLayout from '~/components/DocumentationPageLayout';
+import DocumentationSidebar from '~/components/DocumentationSidebar';
+
+const STYLES_DOCUMENT = css`
+  padding: 24px;
+`;
 
 export default class DocumentationPage extends React.Component {
   render() {
@@ -31,39 +37,43 @@ export default class DocumentationPage extends React.Component {
     const canonicalUrl =
       'https://docs.expo.io' + Utilities.replaceVersionInUrl(this.props.url.pathname, 'latest');
 
+    const headerElement = (
+      <Header
+        user={this.props.user}
+        pathname={this.props.url.pathname}
+        onLogout={() => {
+          this.props.onUser(null);
+          this.props.url.push('/login');
+        }}
+        onLogoRightClick={() => this.props.url.push('/logos')}
+        activeVersion={this.version}
+        setVersion={setVersion}
+      />
+    );
+
+    const sidebarElement = (
+      <DocumentationSidebar
+        url={this.props.url}
+        asPath={this.props.asPath}
+        activeVersion={this.version}
+        getSidebarScrollPosition={() => this.sidebar.scrollTop}
+        setSidebarScrollPosition={val => (this.sidebar.scrollTop = val)}
+      />
+    );
+
     return (
-      <Page>
+      <DocumentationPageLayout header={headerElement} sidebar={sidebarElement}>
         <Head title={`${this.props.title} - Expo Documentation`}>
           {version === 'unversioned' && <meta name="robots" content="noindex" />}
           {version !== 'unversioned' && <link rel="canonical" href={canonicalUrl} />}
         </Head>
 
-        <Header
-          user={this.props.user}
-          pathname={this.props.url.pathname}
-          onLogout={() => {
-            this.props.onUser(null);
-            this.props.url.push('/login');
-          }}
-          onLogoRightClick={() => this.props.url.push('/logos')}
-          activeVersion={this.version}
-          setVersion={setVersion}
-        />
-
-        <Navbar
-          url={this.props.url}
-          asPath={this.props.asPath}
-          activeVersion={this.version}
-          getSidebarScrollPosition={() => this.sidebar.scrollTop}
-          setSidebarScrollPosition={val => (this.sidebar.scrollTop = val)}
-        />
-
-        <div id="content">
+        <div className={STYLES_DOCUMENT}>
           <H1>{this.props.title}</H1>
           {this.props.children}
           <Footer url={this.props.url} />
         </div>
-      </Page>
+      </DocumentationPageLayout>
     );
   }
 }

@@ -1,4 +1,5 @@
-import Link from 'next/link';
+import styled, { keyframes, css } from 'react-emotion';
+import NextLink from 'next/link';
 import Router from 'next/router';
 import qs from 'query-string';
 import _ from 'lodash';
@@ -14,6 +15,11 @@ import Button from '~/components/base/button';
 import AlgoliaSearch from '~/components/plugins/algolia-search';
 import VersionSelector from '~/components/custom/version-selector';
 
+const STYLES_NAVIGATION = css`
+  width: 100%;
+  max-width: 320px;
+`;
+
 export class NavLink extends React.Component {
   isSelected() {
     const linkUrl = this.props.info.as || this.props.info.href;
@@ -27,14 +33,14 @@ export class NavLink extends React.Component {
   render() {
     const { info } = this.props;
     return (
-      <Link prefetch href={info.href} as={info.as || info.href}>
+      <NextLink prefetch href={info.href} as={info.as || info.href}>
         <a>{info.name}</a>
-      </Link>
+      </NextLink>
     );
   }
 }
 
-export default class Navbar extends React.Component {
+export default class DocumentationSidebar extends React.Component {
   componentDidMount() {
     Router.onRouteChangeStart = () => {
       // Maintain navbar scroll position when navigating
@@ -98,6 +104,10 @@ export default class Navbar extends React.Component {
       this.updateLinks(routes);
     }
 
-    return <nav>{routes.map(categoryInfo => this.renderCategory(categoryInfo))}</nav>;
+    return (
+      <nav className={STYLES_NAVIGATION}>
+        {routes.map(categoryInfo => this.renderCategory(categoryInfo))}
+      </nav>
+    );
   }
 }

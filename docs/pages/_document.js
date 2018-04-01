@@ -1,15 +1,37 @@
-import Head from 'next/head';
+import Document, { Head, Main, NextScript } from 'next/document';
+import { extractCritical } from 'emotion-server';
+import { hydrate } from 'react-emotion';
 
 import * as React from 'react';
 import * as Constants from '~/common/constants';
 
 import { LATEST_VERSION } from '~/common/versions';
 
-export default class Page extends React.Component {
+if (typeof window !== 'undefined') {
+  hydrate(window.__NEXT_DATA__.ids);
+}
+
+export default class MyDocument extends Document {
+  static getInitialProps({ renderPage }) {
+    const page = renderPage();
+    const styles = extractCritical(page.html);
+    return { ...page, ...styles };
+  }
+
+  constructor(props) {
+    super(props);
+    const { __NEXT_DATA__, ids } = props;
+    if (ids) {
+      __NEXT_DATA__.ids = ids;
+    }
+  }
+
   render() {
     return (
-      <div>
+      <html>
         <Head>
+          <style dangerouslySetInnerHTML={{ __html: this.props.css }} />
+
           <script
             dangerouslySetInnerHTML={{
               __html: `
@@ -236,8 +258,11 @@ export default class Page extends React.Component {
             }}
           />
         </Head>
-        {this.props.children}
-      </div>
+        <body>
+          <Main />
+          <NextScript />
+        </body>
+      </html>
     );
   }
 }
