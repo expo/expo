@@ -8,21 +8,21 @@ You can access this documentation online at https://docs.expo.io/. It's built us
 
 Download the copy of this repostory.
 
-~~~sh
+```sh
 git clone https://github.com/expo/expo-docs.git
-~~~
+```
 
 Then `cd` into the downloaded directory and install dependencies with:
 
-~~~sh
+```sh
 yarn
-~~~
+```
 
 Then you can run the app with:
 
-~~~sh
+```sh
 yarn run dev
-~~~
+```
 
 This starts two processes: a `next.js` server, and a compiler/watcher that converts markdown files into javascript pages that `next.js` understands.
 
@@ -30,10 +30,10 @@ Now the documentation is running at http://localhost:3000
 
 ### Running in production mode
 
-~~~sh
+```sh
 yarn run build
 yarn run start
-~~~
+```
 
 ### Editing Docs Content
 
@@ -81,7 +81,7 @@ other versions. For example, to update the docs in `unversioned` then apply it
 on `v8.0.0` and `v7.0.0`, you'd do the following after editing the docs in
 `unversioned` such that it shows up in `git diff`:
 
-```./scripts/versionpatch.sh unversioned v8.0.0 v7.0.0```
+`./scripts/versionpatch.sh unversioned v8.0.0 v7.0.0`
 
 Any changes in your `git diff` outside the `unversioned` directory are ignored
 so don't worry if you have code changes or such elsewhere.
@@ -92,4 +92,4 @@ When we release a new SDK, we copy the `unversioned` directory, and rename it to
 
 That's all you need to do. The `versions` directory is listed on server start to find all available versions. The routes and navbar contents are automatically inferred from the directory structure within `versions`. So, `/versions/v24.0.0/guides/development-mode` refers to `pages/versions/guides/development-mode`.
 
-Because the navbar is automatically generated from the directory structure, the default ordering of the links under each section is alphabetical. However, for many sections, this is not ideal UX. So, if you wish to override the alphabetical ordering, manipulate page titles in `navbarOrder.js`.
+Because the navbar is automatically generated from the directory structure, the default ordering of the links under each section is alphabetical. However, for many sections, this is not ideal UX. So, if you wish to override the alphabetical ordering, manipulate page titles in `sidebar-navigation-order.js`.

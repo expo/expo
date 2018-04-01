@@ -23,6 +23,10 @@ const STYLES_CONTENT = css`
 const STYLES_LEFT = css`
   flex-shrink: 0;
   border-right: 1px solid ${Constants.colors.border};
+
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+    display: none;
+  }
 `;
 
 const STYLES_RIGHT = css`
