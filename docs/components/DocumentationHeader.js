@@ -4,7 +4,7 @@ import Link from 'next/link';
 import * as React from 'react';
 import * as Constants from '~/common/constants';
 
-import Logo from '~/components/icons/Logo';
+import BrandLogo from '~/components/icons/BrandLogo';
 import AlgoliaSearch from '~/components/plugins/AlgoliaSearch';
 import VersionSelector from '~/components/VersionSelector';
 
@@ -39,7 +39,7 @@ export default class DocumentationHeader extends React.PureComponent {
         <div className={STYLES_LEFT}>
           <Link prefetch href="/versions">
             <a className="logo">
-              <Logo />
+              <BrandLogo />
             </a>
           </Link>
         </div>
