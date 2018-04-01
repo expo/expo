@@ -1,42 +1,46 @@
+import styled, { keyframes, css } from 'react-emotion';
+
 import * as React from 'react';
 import * as Utilities from '~/common/utilities';
 
 import PermalinkIcon from '~/components/icons/permalink-icon';
 import BulletIcon from '~/components/icons/bullet-icon';
 
-export const UL = ({ children }) => (
-  <ul>
-    {children}
-    <style jsx>
-      {`
-        ul {
-          padding: 0;
-          margin-left: 15px;
-          margin-top: 20px;
-          list-style-image: none;
-          list-style-type: none;
-        }
-      `}
-    </style>
-  </ul>
-);
+const STYLES_UNORDERED_LIST = css`
+  padding: 0;
+  margin-left: 16px;
+  margin-top: 24px;
+  list-style-image: none;
+  list-style-type: none;
+`;
 
-export const OL = ({ children }) => (
-  <ol>
-    {children}
-    <style jsx global>
-      {`
-        ol {
-          padding-left: 0;
-          margin-left: 15px;
-          margin-top: 20px;
-          list-style-position: outside;
-          list-style-image: none;
-        }
-      `}
-    </style>
-  </ol>
-);
+export const UL = ({ children }) => <ul className={STYLES_UNORDERED_LIST}>{children}</ul>;
+
+const STYLES_ORDERED_LIST = css`
+  padding-left: 0;
+  margin-left: 16px;
+  margin-top: 24px;
+  list-style-position: outside;
+  list-style-image: none;
+`;
+
+export const OL = ({ children }) => <ol className={STYLES_ORDERED_LIST}>{children}</ol>;
+
+const STYLES_LIST_ITEM = css`
+  position: 'relative';
+`;
+
+const STYLES_LIST_ITEM_ANCHOR = css`
+  width: 20px;
+  height: 20px;
+`;
+
+const STYLES_LIST_ITEM_TARGET = css`
+  display: block;
+  position: absolute
+  top: -100px;
+  visibility: hidden;
+`;
 
 export const LI = ({ id, children }) => {
   if (id == null) {
@@ -44,37 +48,13 @@ export const LI = ({ id, children }) => {
   }
 
   return (
-    <div style={{ position: 'relative' }}>
-      <li>
-        <span id={id} className="target" />
-        <a href={'#' + id} className="anchor">
-          <BulletIcon />
-          <PermalinkIcon />
-        </a>
-        <p>{children}</p>
-        <style jsx>
-          {`
-
-            a.anchor {
-              width: 20px;
-              height: 20px;
-            }
-
-            .permalink {
-              text-align: center;
-              vertical-align: middle;
-              visibility: hidden;
-            }
-
-            .target {
-              display: block;
-              position: absolute
-              top: -100px;
-              visibility: hidden;
-            }
-          `}
-        </style>
-      </li>
-    </div>
+    <li className={STYLES_LIST_ITEM}>
+      <span id={id} className={STYLES_LIST_ITEM_TARGET} />
+      <a href={'#' + id} className={`${STYLES_LIST_ITEM_ANCHOR} anchor`}>
+        <BulletIcon />
+        <PermalinkIcon />
+      </a>
+      <div>{children}</div>
+    </li>
   );
 };

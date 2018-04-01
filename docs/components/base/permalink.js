@@ -18,6 +18,8 @@ class Permalink extends React.Component {
   }
 }
 
+// TODO(jim):
+// Remove styled-jsx here.
 export default props => {
   const component = props.children;
   const children = component.props.children || '';
@@ -71,6 +73,7 @@ export default props => {
             .container {
               margin-left: 0px;
             }
+
             .permalink {
               margin-left: -20px;
               padding-left: 5px;
