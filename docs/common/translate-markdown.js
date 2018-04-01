@@ -18,6 +18,7 @@ export const p = PDIV;
 export const strong = P.B;
 export const ul = UL;
 export const li = LI;
+export const ol = OL;
 export const h2 = createPermalinkedComponent(H2);
 export const h3 = createPermalinkedComponent(H3);
 export const h4 = createPermalinkedComponent(H4);
