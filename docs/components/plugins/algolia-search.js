@@ -96,10 +96,10 @@ class AlgoliaSearch extends React.Component {
         <style jsx global>
           {`
             #algolia-search-box {
-              border: '1px solid #eee';
+              border: 1px solid ${Constants.colors.border};
               border-radius: 3;
-              font-size: '14px';
-              padding: '2px 10px';
+              font-size: 14px;
+              padding: 2px 10px;
             }
           `}
         </style>

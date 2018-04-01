@@ -1,12 +1,14 @@
-import * as React from 'react';
 import styled, { keyframes, css } from 'react-emotion';
+
+import * as React from 'react';
+import * as Constants from '~/common/constants';
 
 const STYLES_CONTAINER = css`
   width: 100%;
 `;
 
 const STYLES_HEADER = css`
-  border-bottom: 1px solid #ececec;
+  border-bottom: 1px solid ${Constants.colors.border};
 `;
 
 const STYLES_CONTENT = css`
@@ -20,10 +22,12 @@ const STYLES_CONTENT = css`
 
 const STYLES_LEFT = css`
   flex-shrink: 0;
+  border-right: 1px solid ${Constants.colors.border};
 `;
 
 const STYLES_RIGHT = css`
   min-width: 5%;
+  min-height: 100vh;
   width: 100%;
 `;
 
