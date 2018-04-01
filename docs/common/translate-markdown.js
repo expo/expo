@@ -4,7 +4,7 @@ import { UL, OL, LI } from '~/components/base/list';
 import { InlineCode } from '~/components/base/code';
 import { ExternalLink } from '~/components/base/link';
 
-import Permalink from '~/components/base/permalink';
+import Permalink from '~/components/Permalink';
 
 const createPermalinkedComponent = BaseComponent => {
   return ({ children }) => (

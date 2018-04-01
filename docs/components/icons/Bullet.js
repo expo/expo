@@ -1,6 +1,7 @@
-import React from 'react';
+import * as React from 'react';
 
-const BulletIcon = () => (
+// TODO(jim): Some of these styles are affected globally when under an li.
+export default () => (
   <svg
     className="bullet-icon"
     aria-hidden="true"
@@ -11,5 +12,3 @@ const BulletIcon = () => (
     <circle cx="8" cy="8" r="2" />
   </svg>
 );
-
-export default BulletIcon;

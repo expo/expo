@@ -3,8 +3,8 @@ import styled, { keyframes, css } from 'react-emotion';
 import * as React from 'react';
 import * as Utilities from '~/common/utilities';
 
-import PermalinkIcon from '~/components/icons/permalink-icon';
-import BulletIcon from '~/components/icons/bullet-icon';
+import PermalinkIcon from '~/components/icons/Permalink';
+import BulletIcon from '~/components/icons/Bullet';
 
 const STYLES_UNORDERED_LIST = css`
   padding: 0;

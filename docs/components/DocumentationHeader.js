@@ -4,9 +4,9 @@ import Link from 'next/link';
 import * as React from 'react';
 import * as Constants from '~/common/constants';
 
-import Logo from '~/components/icons/logo';
-import AlgoliaSearch from '~/components/plugins/algolia-search';
-import VersionSelector from '~/components/custom/version-selector';
+import Logo from '~/components/icons/Logo';
+import AlgoliaSearch from '~/components/plugins/AlgoliaSearch';
+import VersionSelector from '~/components/VersionSelector';
 
 const STYLES_LEFT = css`
   flex-shrink: 0;

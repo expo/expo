@@ -4,7 +4,7 @@ import * as React from 'react';
 import * as Constants from '~/common/constants';
 import * as Utilities from '~/common/utilities';
 
-import PermalinkIcon from '~/components/icons/permalink-icon';
+import PermalinkIcon from '~/components/icons/Permalink';
 
 class Permalink extends React.Component {
   render() {

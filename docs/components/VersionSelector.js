@@ -5,28 +5,7 @@ import * as Constants from '~/common/constants';
 
 import { VERSIONS, LATEST_VERSION } from '~/common/versions';
 
-class VersionSelector extends React.Component {
-  render() {
-    return (
-      <select
-        style={this.props.style}
-        value={this.props.activeVersion}
-        onChange={e => this.props.setVersion(e.target.value)}>
-        {orderVersions(VERSIONS)
-          .map(version => {
-            return (
-              <option key={version} value={version}>
-                {version === 'latest' ? 'latest (' + LATEST_VERSION + ')' : version}
-              </option>
-            );
-          })
-          .reverse()}
-      </select>
-    );
-  }
-}
-
-function orderVersions(versions) {
+const orderVersions = versions => {
   versions = [...versions];
 
   if (versions.indexOf('unversioned') >= 0) {
@@ -56,6 +35,25 @@ function orderVersions(versions) {
   }
 
   return versions;
-}
+};
 
-export default VersionSelector;
+export default class VersionSelector extends React.Component {
+  render() {
+    return (
+      <select
+        style={this.props.style}
+        value={this.props.activeVersion}
+        onChange={e => this.props.setVersion(e.target.value)}>
+        {orderVersions(VERSIONS)
+          .map(version => {
+            return (
+              <option key={version} value={version}>
+                {version === 'latest' ? 'latest (' + LATEST_VERSION + ')' : version}
+              </option>
+            );
+          })
+          .reverse()}
+      </select>
+    );
+  }
+}

@@ -126,8 +126,8 @@ const generateJsPage = (filePath, filename) => {
 
   import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
 
+  import SnackEmbed from '~/components/plugins/SnackEmbed';
   import { Code, InlineCode } from '~/components/base/code';
-  import SnackEmbed from '~/components/plugins/snack-embed';
 
   export default withDocumentationElements({
     title: '${frontmatter.title}',

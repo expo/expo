@@ -25,11 +25,11 @@ const STYLES_ACTIVE = css`
 `;
 
 const STYLES_DEFAULT = css`
-  color: ${Constants.colors.black60};
+  color: ${Constants.colors.black40};
   transition: 200ms ease color;
 
   :visited {
-    color: ${Constants.colors.black60};
+    color: ${Constants.colors.black40};
   }
 
   :hover {
