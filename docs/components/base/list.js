@@ -9,17 +9,28 @@ import BulletIcon from '~/components/icons/Bullet';
 const STYLES_UNORDERED_LIST = css`
   padding: 0;
   margin-top: 24px;
+  padding-left: 24px;
   list-style-image: none;
   list-style-type: none;
 `;
 
 export const UL = ({ children }) => <ul className={STYLES_UNORDERED_LIST}>{children}</ul>;
 
+// TODO(jim): Get anchors working properly for ordered lists.
 const STYLES_ORDERED_LIST = css`
   padding: 0;
   margin-top: 24px;
+  padding-left: 16px;
   list-style-position: outside;
   list-style-image: none;
+
+  .bullet-icon {
+    display: none;
+  }
+
+  .anchor-icon {
+    display: none;
+  }
 `;
 
 export const OL = ({ children }) => <ol className={STYLES_ORDERED_LIST}>{children}</ol>;
@@ -55,7 +66,7 @@ const STYLES_LIST_ITEM = css`
 const STYLES_LIST_ITEM_ANCHOR = css`
   position: absolute;
   top: 0;
-  left: 0;
+  left: -20px;
   width: 20px;
   height: 20px;
 `;
@@ -70,7 +81,6 @@ const STYLES_LIST_ITEM_TARGET = css`
 const STYLES_LIST_ITEM_BODY = css`
   font-size: 1rem;
   line-height: 1.2rem;
-  padding-left: 24px;
 `;
 
 export const LI = ({ id, children }) => {
@@ -79,7 +89,7 @@ export const LI = ({ id, children }) => {
   }
 
   return (
-    <li className={STYLES_LIST_ITEM}>
+    <li className={`${STYLES_LIST_ITEM} docs-list-item`}>
       <span id={id} className={STYLES_LIST_ITEM_TARGET} />
       <a href={'#' + id} className={`${STYLES_LIST_ITEM_ANCHOR} anchor`}>
         <BulletIcon />
