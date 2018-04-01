@@ -90,7 +90,7 @@ export default class MyDocument extends Document {
                 background-color: ${Constants.colors.lila};
                 color: ${Constants.colors.black};
               }
-          `,
+          `.replace(/\s/g, ''),
             }}
           />
 
@@ -115,7 +115,7 @@ export default class MyDocument extends Document {
             #nprogress .spinner {
               display: none;
             }
-          `,
+          `.replace(/\s/g, ''),
             }}
           />
 
@@ -158,7 +158,7 @@ export default class MyDocument extends Document {
                   font-family: ${Constants.fontFamilies.book};
                   overflow-wrap: break-word;
                 }
-          `,
+          `.replace(/\s/g, ''),
             }}
           />
 
@@ -196,73 +196,7 @@ export default class MyDocument extends Document {
               th {
                 font-weight: bold;
               }
-          `,
-            }}
-          />
-
-          {/* Lists */}
-          <style
-            dangerouslySetInnerHTML={{
-              __html: `
-
-              /* Lists and permalinks */
-
-              li {
-                font-size: 1rem;
-                line-height: 1.725rem;
-                margin-bottom: 1.25rem;
-              }
-
-              ol {
-                padding-left: 20px;
-              }
-
-              li a.anchor {
-                margin-left: -20px;
-                float: left;
-              }
-
-              li > a.anchor > svg.bullet-icon {
-                position: absolute;
-                margin-top: 3px;
-                visibility: visible;
-              }
-
-              li a.anchor > svg.anchor-icon {
-                position: absolute;
-                margin-top: 3px;
-                visibility: hidden;
-              }
-
-              li:hover > a.anchor > svg.bullet-icon {
-                visibility: hidden;
-              }
-
-              li:hover > a.anchor > svg.anchor-icon {
-                visibility: visible;
-              }
-
-              ol li a.anchor > svg.bullet-icon {
-                display: none;
-              }
-
-              ol li a.anchor svg.anchor-icon {
-                background: #fff;
-                padding: 3px;
-              }
-
-              svg.anchor-icon {
-                width: 13px;
-                height: 13px;
-              }
-
-              @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-                svg.anchor-icon {
-                  width: 10px;
-                  height: 10px;
-                }
-              }
-          `,
+          `.replace(/\s/g, ''),
             }}
           />
         </Head>
