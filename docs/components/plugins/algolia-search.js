@@ -3,6 +3,7 @@ import Router from 'next/router';
 import * as React from 'react';
 import * as Constants from '~/common/constants';
 import * as Utilities from '~/common/utilities';
+
 import { LATEST_VERSION } from '~/common/versions';
 
 class AlgoliaSearch extends React.Component {
@@ -27,6 +28,7 @@ class AlgoliaSearch extends React.Component {
   componentDidMount() {
     const docsearch = require('docsearch.js');
     const Hotshot = require('hotshot');
+
     this.docsearch = docsearch({
       appId: 'S6DBW4862L',
       apiKey: 'f469a45764b6fd7b279f2bff604127ac',
@@ -82,16 +84,14 @@ class AlgoliaSearch extends React.Component {
   render() {
     return (
       <div style={this.props.style}>
-        <div className="search-container">
-          <input
-            id="algolia-search-box"
-            type="text"
-            placeholder="Search..."
-            autoComplete="off"
-            spellCheck="false"
-            dir="auto"
-          />
-        </div>
+        <input
+          id="algolia-search-box"
+          type="text"
+          placeholder="Search..."
+          autoComplete="off"
+          spellCheck="false"
+          dir="auto"
+        />
 
         <style jsx global>
           {`
@@ -100,17 +100,6 @@ class AlgoliaSearch extends React.Component {
               border-radius: 3;
               font-size: '14px';
               padding: '2px 10px';
-              margin-top: '2px';
-            }
-
-            #docsearch {
-              font-family: ${Constants.fontFamilies.book};
-            }
-
-            @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-              .search-container {
-                margin-top: 12px;
-              }
             }
           `}
         </style>

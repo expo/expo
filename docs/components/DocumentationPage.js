@@ -10,13 +10,8 @@ import Page from '~/components/base/page';
 import Header from '~/components/custom/header';
 import Navbar from '~/components/custom/navbar';
 import Footer from '~/components/custom/footer';
-import FreezePageScroll from '~/components/custom/freeze-page-scroll';
 
 export default class DocumentationPage extends React.Component {
-  state = {
-    isMobileOverlayVisible: false,
-  };
-
   render() {
     let version = (this.props.asPath || this.props.url.pathname).split(`/`)[2];
     if (!version || VERSIONS.indexOf(version) === -1) {
@@ -42,65 +37,32 @@ export default class DocumentationPage extends React.Component {
           {version === 'unversioned' && <meta name="robots" content="noindex" />}
           {version !== 'unversioned' && <link rel="canonical" href={canonicalUrl} />}
         </Head>
-        <div>
-          <Header
-            inverse
-            user={this.props.user}
-            pathname={this.props.url.pathname}
-            onLogout={() => {
-              this.props.onUser(null);
-              this.props.url.push('/login');
-            }}
-            onLogoRightClick={() => this.props.url.push('/logos')}
-            activeVersion={this.version}
-            setVersion={setVersion}
-            toggleMobileOverlay={() =>
-              this.setState({
-                isMobileOverlayVisible: !this.state.isMobileOverlayVisible,
-              })
-            }
-          />
+
+        <Header
+          user={this.props.user}
+          pathname={this.props.url.pathname}
+          onLogout={() => {
+            this.props.onUser(null);
+            this.props.url.push('/login');
+          }}
+          onLogoRightClick={() => this.props.url.push('/logos')}
+          activeVersion={this.version}
+          setVersion={setVersion}
+        />
+
+        <Navbar
+          url={this.props.url}
+          asPath={this.props.asPath}
+          activeVersion={this.version}
+          getSidebarScrollPosition={() => this.sidebar.scrollTop}
+          setSidebarScrollPosition={val => (this.sidebar.scrollTop = val)}
+        />
+
+        <div id="content">
+          <H1>{this.props.title}</H1>
+          {this.props.children}
+          <Footer url={this.props.url} />
         </div>
-
-        {this.state.isMobileOverlayVisible && (
-          <Navbar
-            mobile
-            className="mobile-overlay"
-            url={this.props.url}
-            asPath={this.props.asPath}
-            activeVersion={this.version}
-            toggleMobileOverlay={() =>
-              this.setState({
-                isMobileOverlayVisible: !this.state.isMobileOverlayVisible,
-              })
-            }
-            setVersion={setVersion}
-            getSidebarScrollPosition={() => this.sidebar.scrollTop}
-            setSidebarScrollPosition={val => (this.sidebar.scrollTop = val)}
-          />
-        )}
-
-        {!this.state.isMobileOverlayVisible && (
-          <div>
-            <div
-              ref={sidebar => {
-                this.sidebar = sidebar;
-              }}>
-              <Navbar
-                url={this.props.url}
-                asPath={this.props.asPath}
-                activeVersion={this.version}
-                getSidebarScrollPosition={() => this.sidebar.scrollTop}
-                setSidebarScrollPosition={val => (this.sidebar.scrollTop = val)}
-              />
-            </div>
-            <div id="content">
-              <H1>{this.props.title}</H1>
-              {this.props.children}
-              <Footer url={this.props.url} />
-            </div>
-          </div>
-        )}
       </Page>
     );
   }

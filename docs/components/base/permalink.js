@@ -18,7 +18,7 @@ class Permalink extends React.Component {
   }
 }
 
-const fn = props => {
+export default props => {
   const component = props.children;
   const children = component.props.children || '';
   let id = props.id;
@@ -82,4 +82,3 @@ const fn = props => {
   );
 };
 
-export default fn;

@@ -5,12 +5,10 @@ import * as Constants from '~/common/constants';
 
 import { LATEST_VERSION } from '~/common/versions';
 
-class Page extends React.Component {
+export default class Page extends React.Component {
   render() {
-    const { children } = this.props;
     return (
       <div>
-        {children}
         <Head>
           <script
             dangerouslySetInnerHTML={{
@@ -238,9 +236,8 @@ class Page extends React.Component {
             }}
           />
         </Head>
+        {this.props.children}
       </div>
     );
   }
 }
-
-export default Page;
