@@ -56,8 +56,8 @@ versions.forEach(dir => {
   });
 });
 
-console.log(`Generating navigation JSON, writing to ./navigation-data.json`);
-jsonfile.writeFileSync(`./navigation-data.json`, navigationData);
+console.log(`Generating navigation JSON, writing to ./generated/navigation-data.json`);
+jsonfile.writeFileSync(`./generated/navigation-data.json`, navigationData);
 
 console.log(`Create an index page under pages/version`);
 fs.writeFileSync(

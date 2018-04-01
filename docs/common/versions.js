@@ -1,4 +1,4 @@
-import navigation from '~/navigation-data.json';
+import navigation from '~/generated/navigation-data.json';
 import _ from 'lodash';
 
 let VERSIONS = _.map(navigation, 'version');
