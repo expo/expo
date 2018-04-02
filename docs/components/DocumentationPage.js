@@ -4,6 +4,7 @@ import styled, { keyframes, css } from 'react-emotion';
 
 import * as React from 'react';
 import * as Utilities from '~/common/utilities';
+import * as Constants from '~/common/constants';
 import { VERSIONS, LATEST_VERSION } from '~/common/versions';
 
 import NavigationJSON from '~/generated/navigation-data.json';
@@ -17,6 +18,10 @@ import { H1 } from '~/components/base/headings';
 
 const STYLES_DOCUMENT = css`
   padding: 24px;
+
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+    padding: 16px;
+  }
 `;
 
 const mutateRouteDataForRender = data => {

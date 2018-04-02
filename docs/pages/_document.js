@@ -84,6 +84,10 @@ export default class MyDocument extends Document {
                 font-family: ${Constants.fonts.book};
                 text-rendering: optimizeLegibility;
                 font-size: 16px;
+
+                @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+                  font-size: 14px;
+                }
               }
 
               ::selection {

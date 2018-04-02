@@ -10,9 +10,18 @@ import DismissIcon from '~/components/icons/DismissIcon';
 import AlgoliaSearch from '~/components/plugins/AlgoliaSearch';
 import VersionSelector from '~/components/VersionSelector';
 
+const STYLES_HIDE_MOBILE = css`
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+    display: none;
+  }
+`;
+
 const STYLES_LEFT = css`
   flex-shrink: 0;
   padding-right: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 `;
 
 const STYLES_RIGHT = css`
@@ -24,8 +33,29 @@ const STYLES_RIGHT = css`
   justify-content: flex-end;
 `;
 
-const STYLES_HIDE_MOBILE = css`
+const STYLES_NAV = css`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 48px;
+  width: 100%;
+  max-width: 1248px;
+  padding: 0 24px 0 24px;
+  margin: 0 auto 0 auto;
+
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+    padding: 0 16px 0 16px;
+  }
+`;
+
+const STYLES_TITLE_TEXT = css`
+  margin-left: 8px;
+  font-size: 1.3rem;
+  display: inline-block;
+  padding-bottom: 2px;
+  font-family: ${Constants.fonts.demi};
+
+  @media screen and (max-width: 340px) {
     display: none;
   }
 `;
@@ -52,6 +82,7 @@ const STYLES_MENU_BUTTON = css`
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     display: flex;
+    padding-left: 16px;
   }
 `;
 
@@ -74,16 +105,10 @@ const STYLES_DISMISS_BUTTON = css`
   :hover {
     color: ${Constants.colors.expo};
   }
-`;
 
-const STYLES_NAV = css`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 48px;
-  max-width: 1248px;
-  padding: 0 24px 0 24px;
-  margin: 0 auto 0 auto;
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+    padding-left: 16px;
+  }
 `;
 
 export default class DocumentationHeader extends React.PureComponent {
@@ -96,6 +121,17 @@ export default class DocumentationHeader extends React.PureComponent {
               <BrandLogo />
             </a>
           </Link>
+
+          <h1 className={STYLES_TITLE_TEXT}>Expo Docs</h1>
+
+          {!this.props.hideVersionSelector && (
+            <VersionSelector
+              className={STYLES_HIDE_MOBILE}
+              style={{ marginLeft: 16 }}
+              activeVersion={this.props.activeVersion}
+              onSetVersion={this.props.onSetVersion}
+            />
+          )}
         </div>
         <div className={STYLES_RIGHT}>
           {!this.props.hideAlgoliaSearch && (
@@ -103,15 +139,6 @@ export default class DocumentationHeader extends React.PureComponent {
               className={STYLES_HIDE_MOBILE}
               router={this.props.router}
               activeVersion={this.props.activeVersion}
-            />
-          )}
-
-          {!this.props.hideVersionSelector && (
-            <VersionSelector
-              className={STYLES_HIDE_MOBILE}
-              style={{ marginLeft: 16, height: 32 }}
-              activeVersion={this.props.activeVersion}
-              onSetVersion={this.props.onSetVersion}
             />
           )}
 
