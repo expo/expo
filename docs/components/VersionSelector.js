@@ -1,11 +1,47 @@
-import styled, { keyframes, css } from 'react-emotion';
-
 import { orderBy } from 'lodash';
+
+import styled, { keyframes, css } from 'react-emotion';
 
 import * as React from 'react';
 import * as Constants from '~/common/constants';
-
 import { VERSIONS, LATEST_VERSION } from '~/common/versions';
+
+import ChevronDownIcon from '~/components/icons/ChevronDown';
+
+const STYLES_SELECT = css`
+  display: inline-flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0 0 4px 0;
+`;
+
+const STYLES_SELECT_TEXT = css`
+  font-family: ${Constants.fontFamilies.mono};
+  font-size: 10px;
+  background: ${Constants.colors.black};
+  color: ${Constants.colors.white};
+  border-radius: 4px;
+  padding: 4px 8px 4px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.07);
+`;
+
+const STYLES_SELECT_ELEMENT = css`
+  position: absolute;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0;
+  width: 100%;
+  border-radius: 0px;
+  background: blue;
+`;
 
 const orderVersions = versions => {
   versions = [...versions];
@@ -42,21 +78,25 @@ const orderVersions = versions => {
 export default class VersionSelector extends React.Component {
   render() {
     return (
-      <select
-        className={this.props.className}
-        style={this.props.style}
-        value={this.props.activeVersion}
-        onChange={e => this.props.onSetVersion(e.target.value)}>
-        {orderVersions(VERSIONS)
-          .map(version => {
-            return (
-              <option key={version} value={version}>
-                {version === 'latest' ? 'latest (' + LATEST_VERSION + ')' : version}
-              </option>
-            );
-          })
-          .reverse()}
-      </select>
+      <div className={STYLES_SELECT} style={this.props.style}>
+        <label className={STYLES_SELECT_TEXT} for="version-menu">
+          {this.props.activeVersion} <ChevronDownIcon style={{ marginLeft: 8 }} />
+        </label>
+        <select
+          className={STYLES_SELECT_ELEMENT}
+          value={this.props.activeVersion}
+          onChange={e => this.props.onSetVersion(e.target.value)}>
+          {orderVersions(VERSIONS)
+            .map(version => {
+              return (
+                <option key={version} value={version}>
+                  {version === 'latest' ? 'latest (' + LATEST_VERSION + ')' : version}
+                </option>
+              );
+            })
+            .reverse()}
+        </select>
+      </div>
     );
   }
 }
