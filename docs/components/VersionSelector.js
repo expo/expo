@@ -43,9 +43,10 @@ export default class VersionSelector extends React.Component {
   render() {
     return (
       <select
+        className={this.props.className}
         style={this.props.style}
         value={this.props.activeVersion}
-        onChange={e => this.props.setVersion(e.target.value)}>
+        onChange={e => this.props.onSetVersion(e.target.value)}>
         {orderVersions(VERSIONS)
           .map(version => {
             return (

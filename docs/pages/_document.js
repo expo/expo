@@ -115,7 +115,7 @@ export default class MyDocument extends Document {
             #nprogress .spinner {
               display: none;
             }
-          `.replace(/\s/g, ''),
+          `,
             }}
           />
 

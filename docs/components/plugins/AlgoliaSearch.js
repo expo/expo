@@ -92,9 +92,9 @@ class AlgoliaSearch extends React.Component {
 
   render() {
     return (
-      <div style={this.props.style}>
+      <div className={this.props.className} style={this.props.style}>
         <input
-          className={STYLES_INPUT_FIELD}
+          className={`${STYLES_INPUT_FIELD}`}
           id="algolia-search-box"
           type="text"
           placeholder="Search..."

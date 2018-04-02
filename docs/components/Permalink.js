@@ -63,6 +63,7 @@ const STYLES_CONTAINER_TARGET = css`
 `;
 
 export default props => {
+  // TODO(jim): Figure out what the reason is for this...
   const component = props.children;
   const children = component.props.children || '';
   let id = props.id;

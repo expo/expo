@@ -6,7 +6,8 @@ import * as Constants from '~/common/constants';
 
 const STYLES_LINK = css`
   display: block;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
+  line-height: 1.3rem;
   text-decoration: none;
 `;
 
@@ -39,6 +40,10 @@ const STYLES_DEFAULT = css`
 
 export default class DocumentationSidebarLink extends React.Component {
   isSelected() {
+    if (!this.props.url) {
+      return false;
+    }
+
     const linkUrl = this.props.info.as || this.props.info.href;
     if (linkUrl === this.props.url.pathname || linkUrl === this.props.asPath) {
       return true;
