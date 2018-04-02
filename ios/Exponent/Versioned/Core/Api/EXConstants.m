@@ -54,15 +54,15 @@ EX_EXPORT_SCOPED_MODULE(ExponentConstants, nil)
                                       @"sessionId": _sessionId,
                                       @"expoVersion": [self _getExpoClientVersion],
                                       @"statusBarHeight": @([self _getStatusBarHeight]),
-                                      @"deviceYearClass": [self _deviceYear],
-                                      @"deviceName": [self _deviceName],
+                                      @"deviceYearClass": [[self class] deviceYear],
+                                      @"deviceName": [[self class] deviceName],
                                       @"isDevice": @([self _isDevice]),
                                       @"systemFonts": [self _getSystemFontNames],
                                       @"platform": @{
                                           @"ios": @{
                                               @"buildNumber": [self _buildNumber],
-                                              @"platform": [self _devicePlatform],
-                                              @"model": [self _deviceModel],
+                                              @"platform": [[self class] devicePlatform],
+                                              @"model": [[self class] deviceModel],
                                               @"userInterfaceIdiom": [self _userInterfaceIdiom],
                                               @"systemVersion": [self _iosVersion],
                                               },
@@ -157,7 +157,9 @@ RCT_REMAP_METHOD(getWebViewUserAgentAsync,
   return [fontNames sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
 }
 
-- (NSString *)_devicePlatform
+#pragma mark - device info
+
++ (NSString *)devicePlatform
 {
   // https://gist.github.com/Jaybles/1323251
   // https://www.theiphonewiki.com/wiki/Models
@@ -170,9 +172,9 @@ RCT_REMAP_METHOD(getWebViewUserAgentAsync,
   return platform;
 }
 
-- (NSString *)_deviceModel
++ (NSString *)deviceModel
 {
-  NSString *platform = [self _devicePlatform];
+  NSString *platform = [self devicePlatform];
 
   // Apple TV
   if ([platform isEqualToString:@"AppleTV2,1"])   return @"Apple TV 2G";
@@ -280,9 +282,9 @@ RCT_REMAP_METHOD(getWebViewUserAgentAsync,
   return @"";
 }
 
-- (NSNumber *)_deviceYear
++ (NSNumber *)deviceYear
 {
-  NSString *platform = [self _devicePlatform];
+  NSString *platform = [self devicePlatform];
 
   // TODO: apple TV and apple watch
 
@@ -396,7 +398,7 @@ RCT_REMAP_METHOD(getWebViewUserAgentAsync,
   return @([yearString intValue]);
 }
 
-- (NSString *)_deviceName
++ (NSString *)deviceName
 {
   return [UIDevice currentDevice].name;
 }

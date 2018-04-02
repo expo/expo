@@ -24,7 +24,7 @@
 {
   [super setFrame:frame];
   _topBorder.frame = CGRectMake(0.0f, 0.0f, frame.size.width, 1.0f);
-  _lblStatus.frame = CGRectMake(10.0f, 0.0f, frame.size.width - 20.0f, frame.size.height);
+  _lblStatus.frame = CGRectMake(10.0f, 0.0f, frame.size.width - 20.0f, 36.0f);
 }
 
 - (void)updateStatusWithProgress:(EXLoadingProgress *)progress

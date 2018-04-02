@@ -7,6 +7,11 @@
 
 @property (nonatomic, readonly) NSString *appOwnership;
 
++ (NSString *)devicePlatform;
++ (NSString *)deviceModel;
++ (NSNumber *)deviceYear;
++ (NSString *)deviceName;
+
 @end
 
 EX_DECLARE_SCOPED_MODULE_GETTER(EXConstants, constants)

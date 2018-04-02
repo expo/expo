@@ -1,6 +1,7 @@
 #import "EXAppLoadingView.h"
 #import "EXAppLoadingCancelView.h"
 #import "EXAppLoadingProgressView.h"
+#import "EXConstants.h"
 #import "EXKernel.h"
 #import "EXKernelUtil.h"
 #import "EXShellManager.h"
@@ -45,7 +46,9 @@
   [super setFrame:frame];
   _loadingView.frame = self.bounds;
   _vBackgroundImage.frame = self.bounds;
-  _vProgress.frame = CGRectMake(0, self.bounds.size.height - 36.0f, self.bounds.size.width, 36.0f);
+  
+  CGFloat progressHeight = ([self _isIPhoneX]) ? 48.0f : 36.0f;
+  _vProgress.frame = CGRectMake(0, self.bounds.size.height - progressHeight, self.bounds.size.width, progressHeight);
   if (!_usesSplashFromNSBundle && !_manifest) {
     // show placeholder loading indicator if we have nothing else
     _loadingIndicator.center = CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds));
@@ -202,6 +205,14 @@
       _vCancel.hidden = YES;
     }
   });
+}
+
+- (BOOL)_isIPhoneX
+{
+  return (
+    [[EXConstants deviceModel] isEqualToString:@"iPhone X"] // doesn't work on sim
+    || [UIScreen mainScreen].nativeBounds.size.height == 2436.0f
+  );
 }
 
 #pragma mark - delegate
