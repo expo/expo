@@ -32,17 +32,9 @@ const STYLES_CONTAINER = css`
     visibility: hidden;
   }
 
-  .permalink-child {
-    transition: 200ms ease transform;
-  }
-
   :hover {
     .anchor-icon {
       visibility: visible;
-    }
-
-    .permalink-child {
-      transform: translateX(28px);
     }
   }
 `;
@@ -50,7 +42,7 @@ const STYLES_CONTAINER = css`
 const STYLES_CONTAINER_ANCHOR = css`
   position: absolute;
   top: 0;
-  left: 0;
+  left: -24px;
   width: 20px;
   height: 20px;
 `;
