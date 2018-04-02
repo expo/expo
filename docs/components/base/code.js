@@ -71,7 +71,7 @@ const STYLES_CODE_CONTAINER = css`
   margin: 10px 0;
   whitespace: pre;
   overflow: auto;
-  maxwidth: 850px';
+  max-width: 850px;
   webkitoverflowscrolling: touch;
   backgroundcolor: rgba(0, 1, 31, 0.03);
   lineheight: 1.2rem;
