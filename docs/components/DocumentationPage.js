@@ -46,47 +46,38 @@ export default class DocumentationPage extends React.Component {
     };
   }
 
+  _handleSetVersion = version => {
+    this.version = version;
+
+    if (version === 'latest') {
+      Router.push('/versions/' + LATEST_VERSION + '/', '/versions/' + version + '/');
+    } else {
+      Router.push('/versions/' + version + '/', '/versions/' + version + '/');
+    }
+  };
+
   render() {
-    // TODO(jim): Theres too much state management occuring at the render.
-    // This needs to be moved elsewhere.
+    const canonicalUrl = `https://docs.expo.io${Utilities.replaceVersionInUrl(
+      this.props.url.pathname,
+      'latest'
+    )}`;
+
     let version = (this.props.asPath || this.props.url.pathname).split(`/`)[2];
     if (!version || VERSIONS.indexOf(version) === -1) {
       version = VERSIONS[0];
     }
     this.version = version;
 
-    const setVersion = version_ => {
-      this.version = version_;
-      if (version_ === 'latest') {
-        Router.push('/versions/' + LATEST_VERSION + '/', '/versions/' + version_ + '/');
-      } else {
-        Router.push('/versions/' + version_ + '/', '/versions/' + version_ + '/');
-      }
-    };
-
-    const canonicalUrl =
-      'https://docs.expo.io' + Utilities.replaceVersionInUrl(this.props.url.pathname, 'latest');
-
-    // TODO(jim): I ripped this out of the sidebar.
-    let sidebarVersion = version;
-    if (sidebarVersion === 'latest') {
-      sidebarVersion = LATEST_VERSION;
-    }
-
-    let routes = _.find(NavigationJSON, { version: sidebarVersion.replace('.0.0', '') }).navigation;
-
-    // TODO(jim): Cut this in another refactor. Should never have to do this. here.
-    if (sidebarVersion === 'latest') {
-      routes = _.cloneDeep(routes);
-      mutateRouteDataForRender(routes);
-    }
+    const routes = _.find(NavigationJSON, {
+      version:
+        version !== 'latest' ? version.replace('.0.0', '') : LATEST_VERSION.replace('.0.0', ''),
+    }).navigation;
 
     const headerElement = (
       <DocumentationHeader
-        user={this.props.user}
         pathname={this.props.url.pathname}
         activeVersion={this.version}
-        setVersion={setVersion}
+        onSetVersion={this._handleSetVersion}
       />
     );
 

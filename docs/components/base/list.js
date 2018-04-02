@@ -65,7 +65,7 @@ const STYLES_LIST_ITEM = css`
 
 const STYLES_LIST_ITEM_ANCHOR = css`
   position: absolute;
-  top: 0;
+  top: 4px;
   left: -20px;
   width: 20px;
   height: 20px;
@@ -80,7 +80,7 @@ const STYLES_LIST_ITEM_TARGET = css`
 
 const STYLES_LIST_ITEM_BODY = css`
   font-size: 1rem;
-  line-height: 1.2rem;
+  line-height: 1.8rem;
 `;
 
 export const LI = ({ id, children }) => {

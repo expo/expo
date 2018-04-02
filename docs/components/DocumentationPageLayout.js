@@ -23,6 +23,12 @@ const STYLES_CONTENT = css`
 const STYLES_LEFT = css`
   flex-shrink: 0;
   border-right: 1px solid ${Constants.colors.border};
+  max-width: 280px;
+  transition: 200ms ease max-width;
+
+  @media screen and (max-width: 1200px) {
+    max-width: 240px;
+  }
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     display: none;
