@@ -22,22 +22,6 @@ const STYLES_CODE_BLOCK = css`
     opacity: 0.6;
     animation: none;
   }
-
-  .tippy-tooltip.expo-theme {
-    background-color: white;
-    color: black;
-    text-align: left;
-  }
-
-  .tippy-popper[x-placement^='top'] .tippy-tooltip.expo-theme .tippy-roundarrow {
-    fill: white;
-  }
-
-  .tippy-tooltip.expo-theme .tippy-content {
-    padding: 10px 5px;
-    line-height: 1.5em;
-    font-family: ${Constants.fonts.book};
-  }
 `;
 
 const STYLES_INLINE_CODE = css`
@@ -71,7 +55,7 @@ const STYLES_CODE_CONTAINER = css`
   margin: 10px 0;
   whitespace: pre;
   overflow: auto;
-  max-width: 850px;
+  max-width: 960px;
   webkitoverflowscrolling: touch;
   backgroundcolor: rgba(0, 1, 31, 0.03);
   lineheight: 1.2rem;

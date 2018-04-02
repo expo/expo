@@ -10,6 +10,7 @@ import { globalNProgress } from '~/global-styles/nprogress';
 import { globalTables } from '~/global-styles/tables';
 import { globalFonts } from '~/global-styles/fonts';
 import { globalPrism } from '~/global-styles/prism';
+import { globalTippy } from '~/global-styles/tippy';
 
 import { LATEST_VERSION } from '~/common/versions';
 
@@ -55,6 +56,7 @@ export default class MyDocument extends Document {
           <style dangerouslySetInnerHTML={{ __html: globalNProgress }} />
           <style dangerouslySetInnerHTML={{ __html: globalTables }} />
           <style dangerouslySetInnerHTML={{ __html: globalPrism }} />
+          <style dangerouslySetInnerHTML={{ __html: globalTippy }} />
           <link href="/static/libs/algolia/algolia.min.css" rel="stylesheet" />
         </Head>
         <body>
