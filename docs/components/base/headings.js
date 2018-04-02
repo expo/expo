@@ -30,7 +30,7 @@ export const H2 = ({ children }) => <h2 className={STYLES_H2}>{children}</h2>;
 const STYLES_H3 = css`
   font-size: 1.1rem;
   line-height: 1.75rem;
-  font-family: ${Constants.fonts.bold};
+  font-family: ${Constants.fonts.demi};
   margin-bottom: 1rem;
   margin-top: 2rem;
 
@@ -43,7 +43,7 @@ const STYLES_H3 = css`
 export const H3 = ({ children }) => <h3 className={STYLES_H3}>{children}</h3>;
 
 const STYLES_H4 = css`
-  font-family: ${Constants.fonts.bold};
+  font-family: ${Constants.fonts.demi};
   font-weight: 400;
   line-height: 1.625rem;
   font-size: 1.1rem;
