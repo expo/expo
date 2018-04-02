@@ -135,11 +135,7 @@ export default class DocumentationHeader extends React.PureComponent {
         </div>
         <div className={STYLES_RIGHT}>
           {!this.props.hideAlgoliaSearch && (
-            <AlgoliaSearch
-              className={STYLES_HIDE_MOBILE}
-              router={this.props.router}
-              activeVersion={this.props.activeVersion}
-            />
+            <AlgoliaSearch router={this.props.router} activeVersion={this.props.activeVersion} />
           )}
 
           {!this.props.isMenuActive && (

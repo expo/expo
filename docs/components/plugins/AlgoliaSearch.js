@@ -1,4 +1,5 @@
 import styled, { keyframes, css } from 'react-emotion';
+
 import Router from 'next/router';
 
 import * as React from 'react';
@@ -7,11 +8,41 @@ import * as Utilities from '~/common/utilities';
 
 import { LATEST_VERSION } from '~/common/versions';
 
-const STYLES_INPUT_FIELD = css`
-  border: 1px solid ${Constants.colors.border};
-  border-radius: 3;
-  font-size: 14px;
-  padding: 2px 10px;
+const STYLES_INPUT = css`
+  display: flex;
+  align-items: flex-end;
+
+  .searchbox {
+    width: auto;
+  }
+
+  .searchbox__input,
+  input {
+    font-family: ${Constants.fontFamilies.book};
+    color: ${Constants.colors.black80};
+    box-sizing: border-box;
+    width: 380px;
+    font-size: 14px;
+    padding: 0 36px 0 32px;
+    border-radius: 5px;
+    height: 32px;
+    outline: 0;
+    border: 1px solid ${Constants.colors.border};
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.04);
+
+    :focus {
+      border: 1px solid ${Constants.colors.expo};
+      outline: 0;
+    }
+  }
+
+  .svg-icons {
+    left: 240px;
+  }
+
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+    display: none;
+  }
 `;
 
 // TODO(jim): Not particularly happy with how this component chunks in while loading.
@@ -92,12 +123,11 @@ class AlgoliaSearch extends React.Component {
 
   render() {
     return (
-      <div className={this.props.className} style={this.props.style}>
+      <div className={STYLES_INPUT} style={this.props.style}>
         <input
-          className={`${STYLES_INPUT_FIELD}`}
           id="algolia-search-box"
           type="text"
-          placeholder="Search..."
+          placeholder="Search the docs"
           autoComplete="off"
           spellCheck="false"
           dir="auto"
