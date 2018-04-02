@@ -260,6 +260,7 @@ ABI26_0_0RCT_EXPORT_METHOD(release:(NSString *)blobId)
 
 - (id)handleNetworkingResponse:(NSURLResponse *)response data:(NSData *)data
 {
+  data = data ?: [NSData new];
   return @{
     @"blobId": [self store:data],
     @"offset": @0,
