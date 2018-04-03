@@ -9,7 +9,7 @@ import DocumentationSidebarTitle from '~/components/DocumentationSidebarTitle';
 
 const STYLES_SIDEBAR = css`
   width: 100%;
-  padding: 34px 24px 24px 24px;
+  padding: 32px 24px 24px 24px;
 `;
 
 const STYLES_SECTION_CATEGORY = css`

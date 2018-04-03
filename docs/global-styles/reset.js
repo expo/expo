@@ -40,8 +40,10 @@ export const globalReset = `
       font-family: ${Constants.fonts.book};
       text-rendering: optimizeLegibility;
       font-size: 16px;
+    }
 
-      @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+    @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+      body {
         font-size: 14px;
       }
     }
@@ -50,4 +52,4 @@ export const globalReset = `
       background-color: ${Constants.colors.lila};
       color: ${Constants.colors.black};
     }
-`.replace(/\s/g, '');
+`;

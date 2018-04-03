@@ -47,5 +47,6 @@ export const fontFamilies = {
 };
 
 export const breakpoints = {
-  mobile: '750px',
+  mobile: '748px',
+  mobileValue: 748,
 };
