@@ -5,6 +5,7 @@ import styled, { keyframes, css } from 'react-emotion';
 import * as React from 'react';
 import * as Utilities from '~/common/utilities';
 import * as Constants from '~/common/constants';
+import * as WindowUtils from '~/common/window';
 import { VERSIONS, LATEST_VERSION } from '~/common/versions';
 
 import NavigationJSON from '~/generated/navigation-data.json';
@@ -13,14 +14,16 @@ import DocumentationHeader from '~/components/DocumentationHeader';
 import DocumentationFooter from '~/components/DocumentationFooter';
 import DocumentationPageLayout from '~/components/DocumentationPageLayout';
 import DocumentationSidebar from '~/components/DocumentationSidebar';
+import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScrollLayout';
 import Head from '~/components/Head';
 import { H1 } from '~/components/base/headings';
 
 const STYLES_DOCUMENT = css`
   padding: 24px 24px 24px 48px;
+  max-width: 968px;
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-    padding: 16px;
+    padding: 32px 16px 48px 16px;
   }
 `;
 
@@ -53,7 +56,24 @@ export default class DocumentationPage extends React.Component {
     Router.onRouteChangeError = () => {
       window.NProgress.done();
     };
+
+    window.addEventListener('resize', this._handleResize);
   }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._handleResize);
+  }
+
+  _handleResize = () => {
+    // NOTE(jim):
+    // We switch frequently between mobile and web layouts while in a browser that can resize.
+    // Therefore, we accomodate that case here.
+    const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+
+    if (WindowUtils.getViewportSize().width >= Constants.breakpoints.mobileValue) {
+      window.scrollTo(0, 0);
+    }
+  };
 
   _handleSetVersion = version => {
     this.version = version;
@@ -111,7 +131,7 @@ export default class DocumentationPage extends React.Component {
     );
 
     return (
-      <DocumentationPageLayout
+      <DocumentationNestedScrollLayout
         header={headerElement}
         sidebar={sidebarElement}
         isMenuActive={this.state.isMenuActive}>
@@ -129,7 +149,7 @@ export default class DocumentationPage extends React.Component {
         ) : (
           <DocumentationSidebar url={this.props.url} asPath={this.props.asPath} routes={routes} />
         )}
-      </DocumentationPageLayout>
+      </DocumentationNestedScrollLayout>
     );
   }
 }

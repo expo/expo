@@ -33,9 +33,7 @@ const STYLES_NAV = css`
   justify-content: space-between;
   height: 48px;
   width: 100%;
-  max-width: 1248px;
   padding: 0 24px 0 24px;
-  margin: 0 auto 0 auto;
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     padding: 0 16px 0 16px;
