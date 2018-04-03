@@ -8,12 +8,15 @@
 #import <React/RCTUtils.h>
 
 #import "EXAV.h"
+#import "EXUtil.h"
 #import "EXVideoView.h"
 #import "EXAVPlayerData.h"
 #import "EXVideoPlayerViewController.h"
 
 static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
 static NSString *const EXVideoSourceURIKeyPath = @"uri";
+static NSString *const EXVideoBoundsKeyPath = @"videoBounds";
+static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenViewController";
 
 @interface EXVideoView ()
 
@@ -25,6 +28,7 @@ static NSString *const EXVideoSourceURIKeyPath = @"uri";
 @property (nonatomic, strong) EXVideoPlayerViewController *playerViewController;
 
 @property (nonatomic, assign) BOOL fullscreenPlayerIsDismissing;
+@property (nonatomic, weak) UIViewController *nativeFullscreenPlayerViewController;
 @property (nonatomic, strong) EXVideoPlayerViewController *fullscreenPlayerViewController;
 @property (nonatomic, strong) RCTPromiseResolveBlock requestedFullscreenChangeResolver;
 @property (nonatomic, strong) RCTPromiseRejectBlock requestedFullscreenChangeRejecter;
@@ -56,6 +60,7 @@ static NSString *const EXVideoSourceURIKeyPath = @"uri";
     _fullscreenPlayerViewController = nil;
     _requestedFullscreenChangeResolver = nil;
     _requestedFullscreenChangeRejecter = nil;
+    _nativeFullscreenPlayerViewController = nil;
     _fullscreenPlayerIsDismissing = NO;
     _requestedFullscreenChange = NO;
     _statusToSet = [NSMutableDictionary new];
@@ -191,9 +196,18 @@ static NSString *const EXVideoSourceURIKeyPath = @"uri";
 - (void)_removePlayerViewController
 {
   if (_playerViewController) {
-    [_playerViewController.view removeFromSuperview];
-    [_playerViewController removeObserver:self forKeyPath:EXVideoReadyForDisplayKeyPath];
-    _playerViewController = nil;
+    __weak EXVideoView *weakSelf = self;
+    void (^block)(void) = ^ {
+      __strong EXVideoView *strongSelf = weakSelf;
+      if (strongSelf && strongSelf.playerViewController) {
+        [strongSelf.playerViewController.view removeFromSuperview];
+        [strongSelf.playerViewController removeObserver:strongSelf forKeyPath:EXVideoReadyForDisplayKeyPath];
+        [strongSelf.playerViewController removeObserver:strongSelf forKeyPath:EXVideoBoundsKeyPath];
+        strongSelf.playerViewController = nil;
+      }
+    };
+
+    [EXUtil performSynchronouslyOnMainThread:block];
   }
 }
 
@@ -226,6 +240,40 @@ static NSString *const EXVideoSourceURIKeyPath = @"uri";
         _onReadyForDisplay(@{@"naturalSize": naturalSize,
                              @"status": [_data getStatus]});
       }
+    }
+  } else if (object == _playerViewController && [keyPath isEqualToString:EXVideoBoundsKeyPath]) {
+    if (RCTPresentedViewController() == nil) {
+      return;
+    }
+
+    // For a short explanation on why we're detecting fullscreen changes in such an extraordinary way
+    // see https://stackoverflow.com/questions/36323259/detect-video-playing-full-screen-in-portrait-or-landscape/36388184#36388184
+
+    // We may be presenting a fullscreen player for this video item
+    UIViewController *fullscreenViewController;
+
+    if ([[RCTPresentedViewController().class description] isEqualToString:EXAVFullScreenViewControllerClassName]) {
+      // RCTPresentedViewController() is fullscreen
+       fullscreenViewController = RCTPresentedViewController();
+    } else if (RCTPresentedViewController().presentedViewController != nil && [[RCTPresentedViewController().presentedViewController.class description] isEqualToString:EXAVFullScreenViewControllerClassName]) {
+      // RCTPresentedViewController().presentedViewController is fullscreen
+      fullscreenViewController = RCTPresentedViewController().presentedViewController;
+    }
+
+    if (fullscreenViewController.isBeingDismissed && _fullscreenPlayerPresented && _nativeFullscreenPlayerViewController == fullscreenViewController) {
+      // Fullscreen player is being dismissed
+      _fullscreenPlayerPresented = false;
+      _nativeFullscreenPlayerViewController = nil;
+      [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerWillDismiss];
+      [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerDidDismiss];
+    } else if (fullscreenViewController.isBeingPresented && !_fullscreenPlayerPresented && _nativeFullscreenPlayerViewController == nil) {
+      // Fullscreen player is being presented
+      _fullscreenPlayerPresented = true;
+      _nativeFullscreenPlayerViewController = fullscreenViewController;
+      [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerWillPresent];
+      [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerDidPresent];
+    } else {
+      return;
     }
   } else {
     [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
@@ -459,6 +507,11 @@ static NSString *const EXVideoSourceURIKeyPath = @"uri";
       }
       if (!strongSelf.playerViewController && strongSelf.data) {
         strongSelf.playerViewController = [strongSelf _createNewPlayerViewController];
+        // We're listening for changes to `videoBounds`, because it seems
+        // to be the easiest way to detect fullscreen changes triggered by the native video button.
+        // See https://stackoverflow.com/questions/36323259/detect-video-playing-full-screen-in-portrait-or-landscape/36388184#36388184
+        // and https://github.com/expo/expo/issues/1566
+        [strongSelf.playerViewController addObserver:self forKeyPath:EXVideoBoundsKeyPath options:NSKeyValueObservingOptionNew context:nil];
         // Resize mode must be set before layer is added
         // to prevent video from being animated when `resizeMode` is `cover`
         [strongSelf _updateNativeResizeMode];
