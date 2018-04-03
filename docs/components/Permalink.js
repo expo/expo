@@ -22,9 +22,9 @@ class Permalink extends React.Component {
 
 const STYLES_CONTAINER = css`
   position: relative;
-  cursor: pointer;
 
   .anchor-icon {
+    cursor: pointer;
     position: absolute;
     top: 2px;
     width: 20px;
