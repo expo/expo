@@ -4,6 +4,7 @@ import { hydrate } from 'react-emotion';
 
 import * as React from 'react';
 import * as Constants from '~/common/constants';
+import * as Analytics from '~/common/analytics';
 
 import { globalReset } from '~/global-styles/reset';
 import { globalNProgress } from '~/global-styles/nprogress';
@@ -37,9 +38,11 @@ export default class MyDocument extends Document {
     return (
       <html>
         <Head>
+          <Analytics.GoogleScript id="UA-107832480-2" />
           <script src="/static/libs/prism/prism.js" />
           <script src="/static/libs/tippy/tippy.all.min.js" />
           <script src="/static/libs/nprogress/nprogress.js" />
+
           <style dangerouslySetInnerHTML={{ __html: this.props.css }} />
 
           <script
