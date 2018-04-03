@@ -15,6 +15,11 @@ injectGlobal`
 
   body {
     height: 100%;
+    background: #F6F6F6;
+
+    @media screen and (max-width: 1440px) {
+      background: ${Constants.colors.white}
+    }
   }
 
   body>div {
@@ -76,6 +81,17 @@ injectGlobal`
 
 const STYLES_CONTAINER = css`
   height: 100%;
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto 0 auto;
+  border-left: 1px solid ${Constants.colors.border};
+  border-right: 1px solid ${Constants.colors.border};
+  background: ${Constants.colors.white};
+
+  @media screen and (max-width: 1440px) {
+    border-left: 0px;
+    border-right: 0px;
+  }
 `;
 
 const STYLES_HEADER = css`

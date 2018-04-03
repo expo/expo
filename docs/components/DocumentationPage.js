@@ -20,7 +20,6 @@ import { H1 } from '~/components/base/headings';
 
 const STYLES_DOCUMENT = css`
   padding: 24px 24px 24px 48px;
-  max-width: 968px;
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     padding: 32px 16px 48px 16px;
