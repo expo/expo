@@ -37,6 +37,10 @@ const mutateRouteDataForRender = data => {
 };
 
 export default class DocumentationPage extends React.Component {
+  state = {
+    isMenuActive: false,
+  };
+
   componentDidMount() {
     Router.onRouteChangeStart = () => {
       window.NProgress.start();
@@ -61,6 +65,18 @@ export default class DocumentationPage extends React.Component {
     }
   };
 
+  _handleShowMenu = () => {
+    this.setState({
+      isMenuActive: true,
+    });
+  };
+
+  _handleHideMenu = () => {
+    this.setState({
+      isMenuActive: false,
+    });
+  };
+
   render() {
     const canonicalUrl = `https://docs.expo.io${Utilities.replaceVersionInUrl(
       this.props.url.pathname,
@@ -81,32 +97,38 @@ export default class DocumentationPage extends React.Component {
     const headerElement = (
       <DocumentationHeader
         pathname={this.props.url.pathname}
-        activeVersion={this.version}
+        version={this.version}
+        isMenuActive={this.state.isMenuActive}
+        isAlogiaSearchHidden={this.state.isMenuActive}
         onSetVersion={this._handleSetVersion}
+        onShowMenu={this._handleShowMenu}
+        onHideMenu={this._handleHideMenu}
       />
     );
 
     const sidebarElement = (
-      <DocumentationSidebar
-        url={this.props.url}
-        asPath={this.props.asPath}
-        routes={routes}
-        activeVersion={this.version}
-      />
+      <DocumentationSidebar url={this.props.url} asPath={this.props.asPath} routes={routes} />
     );
 
     return (
-      <DocumentationPageLayout header={headerElement} sidebar={sidebarElement}>
+      <DocumentationPageLayout
+        header={headerElement}
+        sidebar={sidebarElement}
+        isMenuActive={this.state.isMenuActive}>
         <Head title={`${this.props.title} - Expo Documentation`}>
           {version === 'unversioned' && <meta name="robots" content="noindex" />}
           {version !== 'unversioned' && <link rel="canonical" href={canonicalUrl} />}
         </Head>
 
-        <div className={STYLES_DOCUMENT}>
-          <H1>{this.props.title}</H1>
-          {this.props.children}
-          <DocumentationFooter />
-        </div>
+        {!this.state.isMenuActive ? (
+          <div className={STYLES_DOCUMENT}>
+            <H1>{this.props.title}</H1>
+            {this.props.children}
+            <DocumentationFooter />
+          </div>
+        ) : (
+          <DocumentationSidebar url={this.props.url} asPath={this.props.asPath} routes={routes} />
+        )}
       </DocumentationPageLayout>
     );
   }

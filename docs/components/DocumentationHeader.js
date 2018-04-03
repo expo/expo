@@ -10,12 +10,6 @@ import DismissIcon from '~/components/icons/DismissIcon';
 import AlgoliaSearch from '~/components/plugins/AlgoliaSearch';
 import VersionSelector from '~/components/VersionSelector';
 
-const STYLES_HIDE_MOBILE = css`
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-    display: none;
-  }
-`;
-
 const STYLES_LEFT = css`
   flex-shrink: 0;
   padding-right: 24px;
@@ -63,7 +57,6 @@ const STYLES_TITLE_TEXT = css`
 const STYLES_MENU_BUTTON = css`
   cursor: pointer;
   height: 100%;
-  display: none;
   align-items: center;
   justify-content: center;
   padding-left: 24px;
@@ -81,34 +74,20 @@ const STYLES_MENU_BUTTON = css`
   }
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-    display: flex;
     padding-left: 16px;
   }
 `;
 
-const STYLES_DISMISS_BUTTON = css`
-  cursor: pointer;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-left: 24px;
-  margin-left: 16px;
-  border-left: 1px solid ${Constants.colors.border};
-  text-decoration: none;
-  color: ${Constants.colors.black};
-
-  :visited {
-    color: ${Constants.colors.black};
-  }
-
-  :hover {
-    color: ${Constants.colors.expo};
-  }
+const STYLES_MENU_BUTTON_IS_MOBILE = css`
+  display: none;
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-    padding-left: 16px;
+    display: flex;
   }
+`;
+
+const STYLES_MENU_BUTTON_VISIBLE = css`
+  display: flex;
 `;
 
 export default class DocumentationHeader extends React.PureComponent {
@@ -124,33 +103,31 @@ export default class DocumentationHeader extends React.PureComponent {
 
           <h1 className={STYLES_TITLE_TEXT}>Expo Docs</h1>
 
-          {!this.props.hideVersionSelector && (
+          {!this.props.isVersionSelectorHidden && (
             <VersionSelector
-              className={STYLES_HIDE_MOBILE}
               style={{ marginLeft: 16 }}
-              activeVersion={this.props.activeVersion}
+              version={this.props.version}
               onSetVersion={this.props.onSetVersion}
             />
           )}
         </div>
         <div className={STYLES_RIGHT}>
-          {!this.props.hideAlgoliaSearch && (
-            <AlgoliaSearch router={this.props.router} activeVersion={this.props.activeVersion} />
+          {!this.props.isAlogliaSearchHidden && (
+            <AlgoliaSearch router={this.props.router} version={this.props.version} />
           )}
 
           {!this.props.isMenuActive && (
-            <Link
-              prefetch
-              href={`/mobile-navigation`}
-              as={`/mobile-navigation/${this.props.activeVersion}`}>
-              <a className={STYLES_MENU_BUTTON}>
-                <MenuIcon />
-              </a>
-            </Link>
+            <span
+              className={`${STYLES_MENU_BUTTON} ${STYLES_MENU_BUTTON_IS_MOBILE}`}
+              onClick={this.props.onShowMenu}>
+              <MenuIcon />
+            </span>
           )}
 
           {this.props.isMenuActive && (
-            <span className={STYLES_DISMISS_BUTTON} onClick={() => window.history.back()}>
+            <span
+              className={`${STYLES_MENU_BUTTON} ${STYLES_MENU_BUTTON_VISIBLE}`}
+              onClick={this.props.onHideMenu}>
               <DismissIcon />
             </span>
           )}

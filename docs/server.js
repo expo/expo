@@ -65,10 +65,6 @@ app.prepare().then(() => {
     server.use(compression());
   }
 
-  server.get('/mobile-navigation/:version', (req, res) => {
-    app.render(req, res, '/mobile-navigation', { version: req.params.version });
-  });
-
   // NOTE(jim): Mutations have to line up with FS paths provided by mdjs.
   server.get('/versions/:version', (req, res) => {
     const { query } = parse(req.url, true);

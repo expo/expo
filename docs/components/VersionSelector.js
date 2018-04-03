@@ -80,12 +80,12 @@ export default class VersionSelector extends React.Component {
     return (
       <div className={STYLES_SELECT} style={this.props.style}>
         <label className={STYLES_SELECT_TEXT} htmlFor="version-menu">
-          {this.props.activeVersion} <ChevronDownIcon style={{ marginLeft: 8 }} />
+          {this.props.version} <ChevronDownIcon style={{ marginLeft: 8 }} />
         </label>
         <select
           className={STYLES_SELECT_ELEMENT}
           id="version-menu"
-          value={this.props.activeVersion}
+          value={this.props.version}
           onChange={e => this.props.onSetVersion(e.target.value)}>
           {orderVersions(VERSIONS)
             .map(version => {
