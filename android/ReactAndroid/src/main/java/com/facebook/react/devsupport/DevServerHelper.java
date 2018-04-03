@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 package com.facebook.react.devsupport;
 
@@ -564,8 +562,7 @@ public class DevServerHelper {
     public File downloadBundleResourceFromUrlSync(final String resourcePath, final File outputFile) {
         final String resourceURL = createResourceURL(mSettings.getPackagerConnectionSettings().getDebugServerHost(), resourcePath);
         final Request request = new Request.Builder().url(resourceURL).build();
-        try {
-            Response response = mClient.newCall(request).execute();
+        try (Response response = mClient.newCall(request).execute()) {
             if (!response.isSuccessful()) {
                 return null;
             }
