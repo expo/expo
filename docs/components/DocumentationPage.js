@@ -46,6 +46,9 @@ export default class DocumentationPage extends React.Component {
 
   componentDidMount() {
     Router.onRouteChangeStart = () => {
+      if (this.refs.layout) {
+        window.__sidebarScroll = this.refs.layout.getSidebarScrollTop();
+      }
       window.NProgress.start();
     };
 
@@ -65,9 +68,7 @@ export default class DocumentationPage extends React.Component {
   }
 
   _handleResize = () => {
-    // NOTE(jim):
-    // We switch frequently between mobile and web layouts while in a browser that can resize.
-    // Therefore, we accomodate that case here.
+    // NOTE(jim): Handles switching between web and mobile layouts.
     const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
 
     if (WindowUtils.getViewportSize().width >= Constants.breakpoints.mobileValue) {
@@ -76,7 +77,7 @@ export default class DocumentationPage extends React.Component {
   };
 
   _handleSetVersion = version => {
-    this.version = version;
+    this._version = version;
 
     if (version === 'latest') {
       Router.push('/versions/' + LATEST_VERSION + '/', '/versions/' + version + '/');
@@ -98,6 +99,7 @@ export default class DocumentationPage extends React.Component {
   };
 
   render() {
+    const sidebarScrollPosition = process.browser ? window.__sidebarScroll : 0;
     const canonicalUrl = `https://docs.expo.io${Utilities.replaceVersionInUrl(
       this.props.url.pathname,
       'latest'
@@ -107,7 +109,7 @@ export default class DocumentationPage extends React.Component {
     if (!version || VERSIONS.indexOf(version) === -1) {
       version = VERSIONS[0];
     }
-    this.version = version;
+    this._version = version;
 
     const routes = _.find(NavigationJSON, {
       version:
@@ -117,7 +119,7 @@ export default class DocumentationPage extends React.Component {
     const headerElement = (
       <DocumentationHeader
         pathname={this.props.url.pathname}
-        version={this.version}
+        version={this._version}
         isMenuActive={this.state.isMenuActive}
         isAlogiaSearchHidden={this.state.isMenuActive}
         onSetVersion={this._handleSetVersion}
@@ -132,9 +134,11 @@ export default class DocumentationPage extends React.Component {
 
     return (
       <DocumentationNestedScrollLayout
+        ref="layout"
         header={headerElement}
         sidebar={sidebarElement}
-        isMenuActive={this.state.isMenuActive}>
+        isMenuActive={this.state.isMenuActive}
+        sidebarScrollPosition={sidebarScrollPosition}>
         <Head title={`${this.props.title} - Expo Documentation`}>
           {version === 'unversioned' && <meta name="robots" content="noindex" />}
           {version !== 'unversioned' && <link rel="canonical" href={canonicalUrl} />}

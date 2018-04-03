@@ -36,7 +36,7 @@ injectGlobal`
 
       /* width */
       ::-webkit-scrollbar {
-        width: 4px;
+        width: 6px;
       }
 
       /* Track */
@@ -135,7 +135,7 @@ const STYLES_SCROLL_CONTAINER = css`
 
   /* width */
   ::-webkit-scrollbar {
-    width: 4px;
+    width: 6px;
   }
 
   /* Track */
@@ -158,26 +158,56 @@ const STYLES_SCROLL_CONTAINER = css`
   }
 `;
 
-const ScrollContainer = props => {
-  return <div className={STYLES_SCROLL_CONTAINER}>{props.children}</div>;
-};
+class ScrollContainer extends React.Component {
+  componentDidMount() {
+    if (this.props.scrollPosition && this.refs.scroll) {
+      this.refs.scroll.scrollTop = this.props.scrollPosition;
+    }
+  }
 
-export default props => {
-  return (
-    <div className={STYLES_CONTAINER}>
-      <div className={STYLES_HEADER}>{props.header}</div>
-      <div className={STYLES_CONTENT}>
-        {!props.isMenuActive ? (
-          <div className={STYLES_LEFT}>
-            <ScrollContainer>{props.sidebar}</ScrollContainer>
+  getScrollTop = () => {
+    return this.refs.scroll.scrollTop;
+  };
+
+  render() {
+    return (
+      <div className={STYLES_SCROLL_CONTAINER} ref="scroll">
+        {this.props.children}
+      </div>
+    );
+  }
+}
+
+export default class DocumentationNestedScrollLayout extends React.Component {
+  static defaultProps = {
+    sidebarScrollPosition: 0,
+  };
+
+  getSidebarScrollTop = () => {
+    if (this.refs.sidebar) {
+      return this.refs.sidebar.getScrollTop();
+    }
+  };
+
+  render() {
+    return (
+      <div className={STYLES_CONTAINER}>
+        <div className={STYLES_HEADER}>{this.props.header}</div>
+        <div className={STYLES_CONTENT}>
+          {!this.props.isMenuActive ? (
+            <div className={STYLES_LEFT}>
+              <ScrollContainer ref="sidebar" scrollPosition={this.props.sidebarScrollPosition}>
+                {this.props.sidebar}
+              </ScrollContainer>
+            </div>
+          ) : (
+            undefined
+          )}
+          <div className={STYLES_RIGHT}>
+            <ScrollContainer>{this.props.children}</ScrollContainer>
           </div>
-        ) : (
-          undefined
-        )}
-        <div className={STYLES_RIGHT}>
-          <ScrollContainer>{props.children}</ScrollContainer>
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+}
