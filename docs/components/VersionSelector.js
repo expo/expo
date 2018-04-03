@@ -40,7 +40,6 @@ const STYLES_SELECT_ELEMENT = css`
   opacity: 0;
   width: 100%;
   border-radius: 0px;
-  background: blue;
 `;
 
 const orderVersions = versions => {
