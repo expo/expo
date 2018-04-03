@@ -4,6 +4,7 @@ package host.exp.exponent.kernel.services;
 
 import android.content.Context;
 
+import host.exp.exponent.kernel.services.linking.LinkingKernelService;
 import host.exp.exponent.kernel.services.sensors.AccelerometerKernelService;
 import host.exp.exponent.kernel.services.sensors.GravitySensorKernelService;
 import host.exp.exponent.kernel.services.sensors.GyroscopeKernelService;
@@ -13,6 +14,7 @@ import host.exp.exponent.kernel.services.sensors.MagnetometerUncalibratedKernelS
 import host.exp.exponent.kernel.services.sensors.RotationVectorSensorKernelService;
 
 public class ExpoKernelServiceRegistry {
+  private LinkingKernelService mLinkingKernelService = null;
   private GyroscopeKernelService mGyroscopeKernelService = null;
   private MagnetometerKernelService mMagnetometerKernelService = null;
   private AccelerometerKernelService mAccelerometerKernelService = null;
@@ -22,6 +24,7 @@ public class ExpoKernelServiceRegistry {
   private MagnetometerUncalibratedKernelService mMagnetometerUncalibratedKernelService = null;
 
   public ExpoKernelServiceRegistry(Context context) {
+    mLinkingKernelService = new LinkingKernelService();
     mGyroscopeKernelService = new GyroscopeKernelService(context);
     mMagnetometerKernelService = new MagnetometerKernelService(context);
     mAccelerometerKernelService = new AccelerometerKernelService(context);
@@ -29,6 +32,10 @@ public class ExpoKernelServiceRegistry {
     mRotationVectorSensorKernelService = new RotationVectorSensorKernelService(context);
     mLinearAccelerationSensorKernelService = new LinearAccelerationSensorKernelService(context);
     mMagnetometerUncalibratedKernelService = new MagnetometerUncalibratedKernelService(context);
+  }
+
+  public LinkingKernelService getLinkingKernelService() {
+    return mLinkingKernelService;
   }
 
   public GyroscopeKernelService getGyroscopeKernelService() {
