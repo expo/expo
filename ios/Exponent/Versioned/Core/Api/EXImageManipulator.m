@@ -164,7 +164,7 @@ RCT_EXPORT_METHOD(manipulate:(NSString *)uri
   response[@"uri"] = filePath;
   response[@"width"] = @(CGImageGetWidth(image.CGImage));
   response[@"height"] = @(CGImageGetHeight(image.CGImage));
-  if (saveOptions[@"base64"]) {
+  if (saveOptions[@"base64"] && [saveOptions[@"base64"] boolValue]) {
     response[@"base64"] = [imageData base64EncodedStringWithOptions:0];
   }
   resolve(response);
