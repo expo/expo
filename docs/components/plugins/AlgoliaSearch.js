@@ -16,6 +16,10 @@ const STYLES_INPUT = css`
     width: auto;
   }
 
+  .searchbox__submit {
+    pointer-events: none;
+  }
+
   .searchbox__input,
   input {
     font-family: ${Constants.fontFamilies.book};
@@ -23,7 +27,7 @@ const STYLES_INPUT = css`
     box-sizing: border-box;
     width: 380px;
     font-size: 14px;
-    padding: 0 36px 0 32px;
+    padding: 2px 36px 0 32px;
     border-radius: 5px;
     height: 32px;
     outline: 0;
