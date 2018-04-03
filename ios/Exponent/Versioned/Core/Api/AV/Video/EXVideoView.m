@@ -427,7 +427,13 @@ static NSString *const EXVideoSourceURIKeyPath = @"uri";
 
 - (void)setSource:(NSDictionary *)source
 {
-  [self setSource:source withStatus:nil resolver:nil rejecter:nil];
+  __weak EXVideoView *weakSelf = self;
+  dispatch_async(_exAV.methodQueue, ^{
+    __strong EXVideoView *strongSelf = weakSelf;
+    if (strongSelf) {
+      [strongSelf setSource:source withStatus:nil resolver:nil rejecter:nil];
+    }
+  });
 }
 
 - (NSDictionary *)source
@@ -491,7 +497,13 @@ static NSString *const EXVideoSourceURIKeyPath = @"uri";
 
 - (void)setStatus:(NSDictionary *)status
 {
-  [self setStatus:status resolver:nil rejecter:nil];
+  __weak EXVideoView *weakSelf = self;
+  dispatch_async(_exAV.methodQueue, ^{
+    __strong EXVideoView *strongSelf = weakSelf;
+    if (strongSelf) {
+      [strongSelf setStatus:status resolver:nil rejecter:nil];
+    }
+  });
 }
 
 - (NSDictionary *)getStatus
