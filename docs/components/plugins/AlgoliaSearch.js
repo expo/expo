@@ -48,11 +48,11 @@ const STYLES_INPUT = css`
 // TODO(jim): Not particularly happy with how this component chunks in while loading.
 class AlgoliaSearch extends React.Component {
   componentWillReceiveProps(nextProps) {
-    if (this.props.activeVersion && this.props.activeVersion !== nextProps.activeVersion) {
+    if (this.props.version && this.props.version !== nextProps.version) {
       this.docsearch.algoliaOptions = {
         ...this.docsearch.algoliaOptions,
         facetFilters: [
-          `tags:${nextProps.activeVersion === 'latest' ? LATEST_VERSION : nextProps.activeVersion}`,
+          `tags:${nextProps.version === 'latest' ? LATEST_VERSION : nextProps.version}`,
         ],
       };
     }
@@ -76,9 +76,7 @@ class AlgoliaSearch extends React.Component {
       inputSelector: '#algolia-search-box',
       algoliaOptions: {
         facetFilters: [
-          `tags:${
-            this.props.activeVersion === 'latest' ? LATEST_VERSION : this.props.activeVersion
-          }`,
+          `tags:${this.props.version === 'latest' ? LATEST_VERSION : this.props.version}`,
         ],
         hitsPerPage: 10,
       },
@@ -89,7 +87,7 @@ class AlgoliaSearch extends React.Component {
         let route = url.match(/https?:\/\/(.*)(\/versions\/.*)/)[2];
 
         let asPath = null;
-        if (this.props.activeVersion === 'latest') {
+        if (this.props.version === 'latest') {
           asPath = this.processUrl(Utilities.replaceVersionInUrl(route, 'latest'));
         }
         route = this.processUrl(route);
