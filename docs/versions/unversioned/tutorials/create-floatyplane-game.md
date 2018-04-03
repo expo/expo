@@ -22,8 +22,7 @@ ${<SnackEmbed snackId="@community/flappy-bird" />}
 The starter code sets up the basics of creating an Expo app with [Three.js](threejs.org/). It also has some a psuedo-lib called GameKit which emulates some of the core features from [phaser.js](https://phaser.io/).
 To get started open this snack: https://snack.expo.io/@community/flappy-bird-starter
 
-
-After scanning you should see a beautiful blank canvas!
+You should see a beautiful blank canvas!
 
 ### Three.js Basics
 Three is a Javascript library that makes it easy to create WebGL 3D graphics. There are three things needed to display graphics:
