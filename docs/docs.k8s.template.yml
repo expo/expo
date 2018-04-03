@@ -25,12 +25,17 @@ spec:
     spec:
       restartPolicy: Always
       containers:
-        - name: next-docs
+        - name: docs
           image: "gcr.io/exponentjs/exponent-docs-v2:${TAG}"
           imagePullPolicy: Always
           ports:
           - containerPort: 80
             name: http
+          livenessProbe:
+            httpGet:
+              path: "/"
+              port: 3000
+            initialDelaySeconds: 5
           resources:
             requests:
               cpu: 200m
