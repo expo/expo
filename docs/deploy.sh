@@ -6,10 +6,8 @@ environment=$1
 
 if [ "$environment" == "production" ]; then
   export INGRESS_HOSTNAME=docs.expo.io
-  export ENVIRONMENT=production
 elif [ "$environment" == "staging" ]; then
   export INGRESS_HOSTNAME=staging.docs.expo.io
-  export ENVIRONMENT=staging
 else
   echo "Unrecognized environment $environment"
   exit 1
