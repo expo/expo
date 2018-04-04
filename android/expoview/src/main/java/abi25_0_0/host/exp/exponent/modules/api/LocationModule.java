@@ -157,13 +157,17 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
   }
 
   private boolean startWatching() {
-    if (mScopedContext == null || mLocationParams == null || mOnLocationUpdatedListener == null) {
+    if (mScopedContext == null) {
       return false;
     }
 
     // if permissions not granted it won't work anyway, but this can be invoked when permission dialog disappears
     if (!isMissingPermissions()) {
       mGeocoderPaused = false;
+    }
+
+    if (mLocationParams == null || mOnLocationUpdatedListener == null) {
+      return false;
     }
 
     // LocationControl has an internal map from Context -> LocationProvider, so each experience
@@ -383,7 +387,7 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
   @ReactMethod
   public void geocodeAsync(final String address, final Promise promise) {
     if (mGeocoderPaused) {
-      promise.reject("E_LOCATION_UNAUTHORIZED", "Not authorized to use location services.");
+      promise.reject("E_CANNOT_GEOCODE", "Geocoder is not running.");
       return;
     }
 

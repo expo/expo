@@ -157,10 +157,18 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
   }
 
   private boolean startWatching() {
-    if (mScopedContext == null || mLocationParams == null || mOnLocationUpdatedListener == null) {
+    if (mScopedContext == null) {
       return false;
     }
-    mGeocoderPaused = false;
+
+    // if permissions not granted it won't work anyway, but this can be invoked when permission dialog disappears
+    if (!isMissingPermissions()) {
+      mGeocoderPaused = false;
+    }
+
+    if (mLocationParams == null || mOnLocationUpdatedListener == null) {
+      return false;
+    }
 
     // LocationControl has an internal map from Context -> LocationProvider, so each experience
     // will only have one instance of a LocationProvider.
@@ -176,10 +184,12 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
     if (mScopedContext == null) {
       return;
     }
-    if (Geocoder.isPresent()) {
+
+    // if permissions not granted it won't work anyway, but this can be invoked when permission dialog appears
+    if (Geocoder.isPresent() && !isMissingPermissions()) {
       SmartLocation.with(mScopedContext).geocoding().stop();
+      mGeocoderPaused = true;
     }
-    mGeocoderPaused = true;
 
     if (mLocationParams == null || mOnLocationUpdatedListener == null) {
       SmartLocation.with(mScopedContext).location().stop();
@@ -377,6 +387,7 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
   @ReactMethod
   public void geocodeAsync(final String address, final Promise promise) {
     if (mGeocoderPaused) {
+      promise.reject("E_CANNOT_GEOCODE", "Geocoder is not running.");
       return;
     }
 
@@ -414,6 +425,7 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
   @ReactMethod
   public void reverseGeocodeAsync(final ReadableMap locationMap, final Promise promise) {
     if (mGeocoderPaused) {
+      promise.reject("E_CANNOT_GEOCODE", "Geocoder is not running.");
       return;
     }
 
