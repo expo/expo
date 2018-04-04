@@ -8,13 +8,7 @@ import * as Constants from '~/common/constants';
 
 // NOTE(jim): Global styles if and only if this component is used.
 injectGlobal`
-  html {
-    height: 100%;
-    overflow: hidden;
-  }
-
   body {
-    height: 100%;
     background: #F6F6F6;
 
     @media screen and (max-width: 1440px) {
@@ -22,23 +16,8 @@ injectGlobal`
     }
   }
 
-  body>div {
-    height: 100%;
-  }
-
-  #__next {
-    height: 100%;
-  }
-
-  [data-reactroot] {
-    height: 100%;
-  }
-
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     html {
-      height: auto;
-      overflow: auto;
-
       /* width */
       ::-webkit-scrollbar {
         width: 6px;
@@ -59,43 +38,39 @@ injectGlobal`
         background: ${Constants.colors.expo};
       }
     }
-
-    body {
-      height: auto;
-    }
-
-    body>div {
-      height: auto;
-    }
-
-    #__next {
-      height: auto;
-    }
-
-    [data-reactroot] {
-      height: auto;
-
-    }
   }
 `;
 
 const STYLES_CONTAINER = css`
-  height: 100%;
   max-width: 1440px;
   width: 100%;
+  height: 100vh;
+  overflow; hidden;
   margin: 0 auto 0 auto;
   border-left: 1px solid ${Constants.colors.border};
   border-right: 1px solid ${Constants.colors.border};
   background: ${Constants.colors.white};
 
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: column;
+
   @media screen and (max-width: 1440px) {
     border-left: 0px;
     border-right: 0px;
+  }
+
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+    display: block;
+    height: auto;
   }
 `;
 
 const STYLES_HEADER = css`
   border-bottom: 1px solid ${Constants.colors.border};
+  flex-shrink: 0;
+  width: 100%;
 `;
 
 const STYLES_CONTENT = css`
@@ -104,6 +79,7 @@ const STYLES_CONTENT = css`
   justify-content: space-between;
   width: 100%;
   height: 100%;
+  min-height: 25%;
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     height: auto;
@@ -114,14 +90,13 @@ const STYLES_LEFT = css`
   flex-shrink: 0;
   border-right: 1px solid ${Constants.colors.border};
   max-width: 280px;
+  height: 100%;
+  overflow: hidden;
   transition: 200ms ease max-width;
 
   @media screen and (max-width: 1200px) {
     max-width: 240px;
   }
-
-  height: 100%;
-  overflow: hidden;
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     display: none;

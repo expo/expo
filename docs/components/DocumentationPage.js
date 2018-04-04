@@ -38,6 +38,14 @@ const mutateRouteDataForRender = data => {
   });
 };
 
+const handleResetScrollBasedOnViewport = () => {
+  const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+
+  if (WindowUtils.getViewportSize().width >= Constants.breakpoints.mobileValue) {
+    window.scrollTo(0, 0);
+  }
+};
+
 export default class DocumentationPage extends React.Component {
   state = {
     isMenuActive: false,
@@ -68,11 +76,7 @@ export default class DocumentationPage extends React.Component {
 
   _handleResize = () => {
     // NOTE(jim): Handles switching between web and mobile layouts.
-    const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
-
-    if (WindowUtils.getViewportSize().width >= Constants.breakpoints.mobileValue) {
-      window.scrollTo(0, 0);
-    }
+    handleResetScrollBasedOnViewport();
   };
 
   _handleSetVersion = version => {
