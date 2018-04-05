@@ -14,13 +14,15 @@ const STYLES_CODE_BLOCK = css`
   margin: 0px;
 
   .code-annotation {
-    font-weight: 600;
+    transition: 200ms ease all;
+    transition-property: text-shadow, opacity;
+    text-shadow: 1px 1px ${Constants.colors.black30};
   }
 
   .code-annotation:hover {
     cursor: pointer;
-    opacity: 0.6;
     animation: none;
+    opacity: 0.8;
   }
 `;
 
