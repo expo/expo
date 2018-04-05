@@ -19,7 +19,7 @@ import Head from '~/components/Head';
 import { H1 } from '~/components/base/headings';
 
 const STYLES_DOCUMENT = css`
-  padding: 24px 24px 24px 48px;
+  padding: 24px 24px 24px 32px;
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     padding: 32px 16px 48px 16px;
@@ -36,14 +36,6 @@ const mutateRouteDataForRender = data => {
       mutateRouteDataForRender(element.posts);
     }
   });
-};
-
-const handleResetScrollBasedOnViewport = () => {
-  const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
-
-  if (WindowUtils.getViewportSize().width >= Constants.breakpoints.mobileValue) {
-    window.scrollTo(0, 0);
-  }
 };
 
 export default class DocumentationPage extends React.Component {
@@ -76,7 +68,11 @@ export default class DocumentationPage extends React.Component {
 
   _handleResize = () => {
     // NOTE(jim): Handles switching between web and mobile layouts.
-    handleResetScrollBasedOnViewport();
+    const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+
+    if (WindowUtils.getViewportSize().width >= Constants.breakpoints.mobileValue) {
+      window.scrollTo(0, 0);
+    }
   };
 
   _handleSetVersion = version => {
