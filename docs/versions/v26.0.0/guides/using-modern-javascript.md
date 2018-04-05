@@ -11,10 +11,6 @@ You can use much of modern JavaScript with Expo and React Native. The JavaScript
 On iOS, Expo uses the JavaScriptCore VM that is part of iOS. This means that different versions of iOS have different versions of JavaScriptCore. The newer versions support more features.
 
 On Android, Expo includes its own copy of JavaScriptCore. This means that Expo projects have the same JavaScript features across all Android devices. Expo's version of JavaScriptCore is similar to that included with iOS 8.
-<!-- 10.3.
-
-The table later on this page tells you which features Expo supports. [Kangax's compatibility tables](https://kangax.github.io/compat-table/) also are a helpful resource to see which versions of Safari, which uses JavaScriptCore, support which features of modern JavaScript.
--->
 
 ## Polyfills and Babel Transforms
 
@@ -22,10 +18,9 @@ Some parts of the modern JavaScript API are implemented in polyfills. These poly
 
 Before your code runs in your app, Metro also transforms your code and your dependencies with Babel. By default, Expo projects define a preset Babel configuration (babel-preset-expo) based on the React Native preset ([babel-preset-react-native](https://github.com/facebook/react-native/tree/master/babel-preset)).
 
-<!--
 ## JavaScript Support in Expo
 
-
+<!-- prettier-ignore -->
 |Feature|Works with Expo|Links|Spec|Implementation|
 |-------|---------------|-----|----|--------------|
 |Object rest/spread|<span class="centered-text-cell">✅</span>|[MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_operator)<br />[2ality](http://2ality.com/2016/10/rest-spread-properties.html)|Proposal|Babel<hr class="vertical-divider" />No JSC support|
@@ -76,7 +71,7 @@ Before your code runs in your app, Metro also transforms your code and your depe
 |Proxy|<span class="centered-text-cell">⚠️<br />(Android and iOS 10+)</span>|[MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy)<br />[Exploring ES6](http://exploringjs.com/es6/ch_proxies.html)|ES2015|JSC support: Android, iOS 10+|
 |Reflect (object introspection)|<span class="centered-text-cell">⚠️<br />(Android and iOS 10+)</span>|[MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflex)<br />[Exploring ES6](http://exploringjs.com/es6/ch_proxies.html#_reflect)|ES2015|JSC support: Android, iOS 10+|
 |Tail call optimization|<span class="centered-text-cell">✅</span>|[Exploring ES6](http://exploringjs.com/es6/ch_tail-calls.html)<br />[2ality](http://www.2ality.com/2015/06/tail-call-optimization.html)|ES2015|JSC support: Android, iOS 9+|
--->
+
 ## WebAssembly
 
 WebAssembly, or WASM for short, is a low-level language implemented in JavaScript interpreters. WebAssembly is not JavaScript, but WebAssembly code can interact with JavaScript code in the same program. Currently, Expo does not support WebAssembly.
