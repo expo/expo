@@ -156,7 +156,7 @@
 
 - (void)setMagnetometerUpdateInterval:(NSTimeInterval)intervalMs
 {
-  [self.manager setMagnetometerUpdateInterval:intervalMs];
+  [self.manager setDeviceMotionUpdateInterval:intervalMs];
 }
 
 - (void)sensorModuleDidSubscribeForMagnetometerUncalibratedUpdates:(id)scopedSensorModule
