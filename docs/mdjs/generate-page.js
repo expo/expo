@@ -58,9 +58,6 @@ const generateJsPage = (filePath, filename) => {
   // generate HTML from the markdown tables, and inline that into the markdown
   markdown = replaceTables(markdown);
 
-  // Replace '--' with '—'
-  markdown = markdown.replace(/\B--\B/g, '—');
-
   // Replace ` and ``` blocks with <InlineCode> and <Code> components respectively
   let codeBlocks = 0;
   let inlineCodeBlocks = 0;
