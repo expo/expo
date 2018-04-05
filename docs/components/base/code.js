@@ -55,7 +55,6 @@ const STYLES_CODE_CONTAINER = css`
   margin: 16px 0 16px 0;
   white-space: pre;
   overflow: auto;
-  max-width: 960px;
   -webkit-overflow-scrolling: touch;
   background-color: rgba(0, 1, 31, 0.03);
   line-height: 1.2rem;
