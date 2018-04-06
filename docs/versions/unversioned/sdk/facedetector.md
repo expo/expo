@@ -24,12 +24,12 @@ import { FaceDetector } from 'expo';
 // ...
 detectFaces = async (imageUri) => {
   const options = { mode: FaceDetector.Constants.Mode.fast };
-  return await FaceDetector.detectFaces(imageUri, options);
+  return await FaceDetector.detectFacesAsync(imageUri, options);
 };
 // ...
 ```
 
-### `detectFaces`
+### `detectFacesAsync`
 
 Detect faces on a picture.
 
