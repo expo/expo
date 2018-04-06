@@ -71,6 +71,7 @@
 
 - (void)_setUpViews
 {
+  self.backgroundColor = [UIColor whiteColor];
   BOOL hasSplashScreen = NO;
   if (_usesSplashFromNSBundle) {
     // Display the launch screen behind the React view so that the React view appears to seamlessly load
