@@ -71,6 +71,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)viewDidLoad
 {
   [super viewDidLoad];
+  self.view.backgroundColor = [UIColor whiteColor];
+
   _loadingView = [[EXAppLoadingView alloc] initWithAppRecord:_appRecord];
   [self.view addSubview:_loadingView];
   _appRecord.appManager.delegate = self;
