@@ -13,7 +13,7 @@ Subscribe for updates to the accelerometer.
 
 -   **listener (_function_)** -- A callback that is invoked when an
     accelerometer update is available. When invoked, the listener is
-    provided a single argumument that is an object    containing keys x, y,
+    provided a single argument that is an object    containing keys x, y,
     z.
 
 #### Returns
