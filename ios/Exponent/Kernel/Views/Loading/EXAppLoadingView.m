@@ -21,7 +21,7 @@
 
 @interface EXAppLoadingView () <EXAppLoadingCancelViewDelegate>
 
-@property (nonatomic, strong) UIActivityIndicatorView *loadingIndicator;
+@property (nonatomic, strong) UIActivityIndicatorView *loadingIndicatorFromNib;
 @property (nonatomic, strong) UIView *loadingView;
 @property (nonatomic, assign) BOOL usesSplashFromNSBundle;
 @property (nonatomic, strong) EXAppLoadingProgressView *vProgress;
@@ -49,14 +49,9 @@
   
   CGFloat progressHeight = ([self _isIPhoneX]) ? 48.0f : 36.0f;
   _vProgress.frame = CGRectMake(0, self.bounds.size.height - progressHeight, self.bounds.size.width, progressHeight);
-  if (!_usesSplashFromNSBundle && !_manifest) {
-    // show placeholder loading indicator if we have nothing else
-    _loadingIndicator.center = CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds));
-    if (_vCancel) {
-      _loadingIndicator.center = CGPointMake(_loadingIndicator.center.x, _loadingIndicator.center.y - 64.0f);
-      CGFloat vCancelY = CGRectGetMaxY(_loadingIndicator.frame) + 8.0f;
-      _vCancel.frame = CGRectMake(0, vCancelY, self.bounds.size.width, self.bounds.size.height - vCancelY);
-    }
+  if (!_usesSplashFromNSBundle && !_manifest && _vCancel) {
+    CGFloat vCancelY = CGRectGetMidY(self.bounds) - 64.0f;
+    _vCancel.frame = CGRectMake(0, vCancelY, self.bounds.size.width, self.bounds.size.height - vCancelY);
   }
 }
 
@@ -91,7 +86,9 @@
       self.loadingView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
       [self addSubview:self.loadingView];
       
-      _loadingIndicator = (UIActivityIndicatorView *)[self.loadingView viewWithTag:1];
+      _loadingIndicatorFromNib = (UIActivityIndicatorView *)[self.loadingView viewWithTag:1];
+      _loadingIndicatorFromNib.hidesWhenStopped = YES;
+      [_loadingIndicatorFromNib startAnimating];
       hasSplashScreen = YES;
     }
   }
@@ -99,17 +96,12 @@
     self.loadingView = [[UIView alloc] init];
     [self addSubview:_loadingView];
     _loadingView.backgroundColor = [UIColor whiteColor];
-    _loadingIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-    [_loadingIndicator setColor:[UIColor blackColor]];
-    [self addSubview:_loadingIndicator];
     if ([self _isCancelAvailable]) {
       _vCancel = [[EXAppLoadingCancelView alloc] init];
       _vCancel.delegate = self;
       [self addSubview:_vCancel];
     }
   }
-  _loadingIndicator.hidesWhenStopped = YES;
-  [_loadingIndicator startAnimating];
   _vProgress = [[EXAppLoadingProgressView alloc] init];
   _vProgress.hidden = YES;
   [self addSubview:_vProgress];
@@ -200,7 +192,9 @@
     return;
   }
   dispatch_async(dispatch_get_main_queue(), ^{
-    [_loadingIndicator stopAnimating];
+    if (_loadingIndicatorFromNib) {
+      [_loadingIndicatorFromNib stopAnimating];
+    }
     if (_vCancel) {
       _vCancel.hidden = YES;
     }

@@ -4,6 +4,7 @@ const NSTimeInterval kEXTimeUntilCancelAppears = 5.0f;
 
 @interface EXAppLoadingCancelView ()
 
+@property (nonatomic, strong) UIActivityIndicatorView *loadingIndicator;
 @property (nonatomic, strong) UILabel *lblStatus;
 @property (nonatomic, strong) UILabel *lblAdvice;
 @property (nonatomic, strong) UIButton *btnCancel;
@@ -29,12 +30,20 @@ const NSTimeInterval kEXTimeUntilCancelAppears = 5.0f;
 - (void)setFrame:(CGRect)frame
 {
   [super setFrame:frame];
-  _lblStatus.frame = CGRectMake(16.0f, 0, self.bounds.size.width - 32.0f, 24.0f);
+  
+  CGFloat statusWidth;
+  _lblStatus.frame = CGRectMake(0, 0, self.bounds.size.width - 32.0f, 24.0f);
+  [_lblStatus sizeToFit];
+  statusWidth = _lblStatus.frame.size.width + _loadingIndicator.frame.size.width + 8.0f;
+  
+  _loadingIndicator.center = CGPointMake(CGRectGetMidX(self.bounds) - (statusWidth * 0.5f) + _loadingIndicator.frame.size.width * 0.5f,
+                                         CGRectGetMidY(_loadingIndicator.frame));
+  _lblStatus.center = CGPointMake(CGRectGetMaxX(_loadingIndicator.frame) + 8.0f + CGRectGetMidX(_lblStatus.frame), _loadingIndicator.center.y);
 
   _btnCancel.frame = CGRectMake(0, 0, 84.0f, 36.0f);
   _btnCancel.center = CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMaxY(_lblStatus.frame) + 48.0f);
 
-  _lblAdvice.frame = CGRectMake(_lblStatus.frame.origin.x, 0, MIN(_lblStatus.frame.size.width, 300.0f), CGFLOAT_MAX);
+  _lblAdvice.frame = CGRectMake(_lblStatus.frame.origin.x, 0, MIN(self.frame.size.width - 32.0f, 300.0f), CGFLOAT_MAX);
   [_lblAdvice sizeToFit];
   _lblAdvice.center = CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMaxY(_btnCancel.frame) + CGRectGetMidY(_lblAdvice.frame) + 24.0f);
 }
@@ -42,9 +51,14 @@ const NSTimeInterval kEXTimeUntilCancelAppears = 5.0f;
 - (void)_setUpViews
 {
   self.backgroundColor = [UIColor clearColor];
+  _loadingIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+  [_loadingIndicator setColor:[UIColor blackColor]];
+  [self addSubview:_loadingIndicator];
+  [_loadingIndicator startAnimating];
+  
   _lblStatus = [[UILabel alloc] init];
   _lblStatus.text = @"Opening project...";
-  _lblStatus.font = [UIFont boldSystemFontOfSize:14.0f];
+  _lblStatus.font = [UIFont fontWithName:@"HelveticaNeue-Medium" size:14.0f];
   _lblStatus.textColor = [UIColor blackColor];
   _lblStatus.textAlignment = NSTextAlignmentCenter;
   [self addSubview:_lblStatus];
