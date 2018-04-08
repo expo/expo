@@ -59,7 +59,7 @@ export default class ImageManipulatorSample extends React.Component {
 
   render() {
     return (
-      <View style={{ flex: 1 }>
+      <View style={{ flex: 1 }}>
         <View style={{ padding: 10 }}>
           <Button onPress={this._rotate90andFlip} />
           {this.state.ready && this._renderImage()}
