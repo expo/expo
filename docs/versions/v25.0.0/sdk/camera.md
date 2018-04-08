@@ -6,7 +6,7 @@ A React component that renders a preview for the device's either front or back c
 
 > **Note**: Only one Camera preview is supported by Expo right now. When using navigation, the best practice is to unmount previously rendered `Camera` component so next screens can use camera without issues.
 
-Requires `Permissions.CAMERA`. Video recording requires `Permissions.AUDIO_RECORDING`.
+Requires `Permissions.CAMERA`. Video recording requires `Permissions.AUDIO_RECORDING`. On Android, you may also require `Permissions.READ_INTERNAL_STORAGE`, `Permissions.READ_EXTERNAL_STORAGE`, & `Permissions.WRITE_EXTERNAL_STORAGE`.
 
 ### Basic Example
 
