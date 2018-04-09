@@ -73,7 +73,7 @@ export default class ProjectsScreen extends React.Component {
     return {
       recentHistory: history.take(10),
       allHistory: history,
-      isAuthenticated: data.authTokens && data.authTokens.idToken,
+      isAuthenticated: data.session && data.session.sessionSecret,
     };
   }
 
@@ -247,7 +247,9 @@ export default class ProjectsScreen extends React.Component {
 
     let baseMessage = `Make sure you are signed in to the same Expo account on your computer and this app. Also verify that your computer is connected to the internet, and ideally to the same WiFi network as your mobile device. Lastly, ensure that you are using the latest version of exp or XDE. Pull to refresh to update.`;
     let message = Platform.select({
-      ios: Constants.isDevice ? baseMessage : `${baseMessage} If this still doesn't work, press the + icon on the header to type the project URL manually.`,
+      ios: Constants.isDevice
+        ? baseMessage
+        : `${baseMessage} If this still doesn't work, press the + icon on the header to type the project URL manually.`,
       android: baseMessage,
     });
     Alert.alert('Troubleshooting', message);

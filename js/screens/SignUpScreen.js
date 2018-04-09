@@ -4,7 +4,6 @@ import React from 'react';
 import { Keyboard, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { connect } from 'react-redux';
 
-import AuthTokenActions from '../redux/AuthTokenActions';
 import SessionActions from '../redux/SessionActions';
 
 import Analytics from '../api/Analytics';
@@ -26,7 +25,7 @@ export default class SignUpScreen extends React.Component {
 
   static getDataProps(data) {
     return {
-      authTokens: data.authTokens,
+      session: data.session,
     };
   }
 
@@ -57,7 +56,7 @@ export default class SignUpScreen extends React.Component {
   _keyboardDidHideSubscription: { remove: Function };
 
   componentWillReceiveProps(nextProps: Object) {
-    if (nextProps.authTokens.idToken && !this.props.authTokens.isToken) {
+    if (nextProps.session.sessionSecret && !this.props.session.sessionSecret) {
       TextInput.State.blurTextInput(TextInput.State.currentlyFocusedField());
       this.props.navigation.dismissModal();
     }
@@ -245,13 +244,6 @@ export default class SignUpScreen extends React.Component {
           this.props.navigator.hideLocalAlert();
           this.props.dispatch(
             SessionActions.setSession({ sessionSecret: signInResult.sessionSecret })
-          );
-          this.props.dispatch(
-            AuthTokenActions.setAuthTokens({
-              refreshToken: signInResult.refresh_token,
-              accessToken: signInResult.access_token,
-              idToken: signInResult.id_token,
-            })
           );
         }
       }

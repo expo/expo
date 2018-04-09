@@ -16,7 +16,6 @@ import { connect } from 'react-redux';
 import { connectActionSheet } from '@expo/react-native-action-sheet';
 import { withNavigation } from '@expo/ex-navigation';
 
-import AuthTokenActions from '../redux/AuthTokenActions';
 import SessionActions from '../redux/SessionActions';
 
 import ProfileUnauthenticated from '../components/ProfileUnauthenticated';
@@ -62,7 +61,7 @@ export default class ProfileScreen extends React.Component {
   };
 
   static getDataProps(data, props) {
-    let isAuthenticated = isUserAuthenticated(data.authTokens, data.session);
+    let isAuthenticated = isUserAuthenticated(data.session);
 
     return {
       isAuthenticated,
@@ -138,7 +137,6 @@ class SignOutButtonAndroid extends React.Component {
       () => {},
       (action, selectedIndex) => {
         if (selectedIndex === 0) {
-          this.props.dispatch(AuthTokenActions.clearAuthTokens());
           this.props.dispatch(SessionActions.signOut());
         }
       }
@@ -212,7 +210,6 @@ class SignOutButtonIOS extends React.Component {
   }
 
   _handlePress = () => {
-    this.props.dispatch(AuthTokenActions.clearAuthTokens());
     this.props.dispatch(SessionActions.signOut());
   };
 }

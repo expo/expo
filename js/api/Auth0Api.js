@@ -6,7 +6,6 @@ import ApiV2HttpClient from 'ApiV2HttpClient';
 const AuthScope = 'openid offline_access nickname username';
 const DelegationEndpoint = 'https://exponent.auth0.com/delegation';
 const SignUpEndpoint = 'https://exp.host/--/api/v2/auth/createOrUpdateUser';
-const MigrationEndpoint = 'https://exp.host/--/api/v2/auth/auth0ToSession';
 const SignOutEndpoint = 'https://exp.host/--/api/v2/auth/logoutAsync';
 const ClientId = 'qIdMWQxxXqD8PbCA90mZh0r2djqJylzg';
 
@@ -70,56 +69,8 @@ async function signUpAsync(data: SignUpData) {
   return result;
 }
 
-function tokenIsExpired(idToken: string) {
-  const { exp } = jwtDecode(idToken, { complete: true });
-
-  return exp - new Date().getTime() / 1000 <= 60 * 60;
-}
-
-async function refreshIdTokenAsync(refreshToken: string) {
-  let response = await fetch(DelegationEndpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      refresh_token: refreshToken,
-      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-      api_type: 'app',
-      scope: AuthScope,
-      client_id: ClientId,
-      target: ClientId,
-    }),
-  });
-
-  let result = await response.json();
-  return result;
-}
-
-async function migrateAuth0ToSessionAsync(idToken: string) {
-  try {
-    let response = await fetch(MigrationEndpoint, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${idToken}`,
-      },
-    });
-
-    let result = await response.json();
-    return result;
-  } catch (e) {
-    if (__DEV__) {
-      alert('Could not reach migration endpoint.');
-    }
-    return null;
-  }
-}
-
 export default {
-  migrateAuth0ToSessionAsync,
   signInAsync,
   signOutAsync,
   signUpAsync,
-  refreshIdTokenAsync,
-  tokenIsExpired,
 };

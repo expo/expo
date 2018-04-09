@@ -4,7 +4,6 @@ import gql from 'graphql-tag';
 import Auth0Api from '../Auth0Api';
 import ApolloClient from '../ApolloClient';
 import Store from '../../redux/Store';
-import AuthTokenActions from '../../redux/AuthTokenActions';
 import SessionActions from '../../redux/SessionActions';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
@@ -17,7 +16,7 @@ jest.mock('react-native', () => {
   return ReactNative;
 });
 global.fetch = require('node-fetch');
-global.alert = ()=>{}; // dont need user input to bypass alerts
+global.alert = () => {}; // dont need user input to bypass alerts
 
 const DeletionEndpoint = 'https://exp.host/--/api/v2/auth/deleteUser';
 
@@ -55,7 +54,6 @@ describe('User Authentication Flow', () => {
 
     await Auth0Api.signUpAsync(newUser);
 
-    await Store.dispatch(AuthTokenActions.clearAuthTokens());
     await Store.dispatch(SessionActions.signOut());
   });
 
@@ -72,30 +70,19 @@ describe('User Authentication Flow', () => {
   });
 
   // login with Auth0, expect tokens to be stored
-   it('login and stores auth tokens correctly', async () => {
+  it('login and stores auth tokens correctly', async () => {
     // sign in
     const signinResult = await Auth0Api.signInAsync(testUsername, testPassword);
-    const { id_token, access_token, refresh_token, sessionSecret } = signinResult;
+    const { sessionSecret } = signinResult;
 
     // store auth and session tokens
     await Store.dispatch(SessionActions.setSession({ sessionSecret: signinResult.sessionSecret }));
-    await Store.dispatch(
-      AuthTokenActions.setAuthTokens({
-        refreshToken: signinResult.refresh_token,
-        accessToken: signinResult.access_token,
-        idToken: signinResult.id_token,
-      })
-    );
 
     // retrieve auth and session tokens
     const state = Store.getState();
-    const retrievedTokens = state.authTokens;
     const retrievedSession = state.session;
 
     // make sure the retrieved tokens are the same as the ones we originally received
-    expect(id_token).toBe(retrievedTokens.idToken);
-    expect(refresh_token).toBe(retrievedTokens.refreshToken);
-    expect(access_token).toBe(retrievedTokens.accessToken);
     expect(sessionSecret).toBe(undefined);
     expect(retrievedSession.sessionSecret).toBe(undefined);
   });
@@ -105,39 +92,23 @@ describe('User Authentication Flow', () => {
     const signinResult = await Auth0Api.signInAsync(testUsername, testPassword, {
       testSession: true,
     });
-    const { id_token, access_token, refresh_token, sessionSecret } = signinResult;
+    const { sessionSecret } = signinResult;
 
     // store auth and session tokens
     await Store.dispatch(SessionActions.setSession({ sessionSecret: signinResult.sessionSecret }));
-    await Store.dispatch(
-      AuthTokenActions.setAuthTokens({
-        refreshToken: signinResult.refresh_token,
-        accessToken: signinResult.access_token,
-        idToken: signinResult.id_token,
-      })
-    );
 
     // retrieve auth and session tokens
     const state = Store.getState();
-    const retrievedTokens = state.authTokens;
     const retrievedSession = state.session;
 
     // make sure the retrieved tokens are the same as the ones we originally received
-    expect(id_token).toBe(retrievedTokens.idToken);
-    expect(refresh_token).toBe(retrievedTokens.refreshToken);
-    expect(access_token).toBe(retrievedTokens.accessToken);
     expect(sessionSecret).toBe('TEST');
     expect(sessionSecret).toBe(retrievedSession.sessionSecret);
   });
 
   function createSpies() {
     return {
-      _migrateAuth0ToSessionAsync: jest.spyOn(
-        ApolloClient.networkInterface,
-        '_migrateAuth0ToSessionAsync'
-      ),
       _signOutAsync: jest.spyOn(ApolloClient.networkInterface, '_signOutAsync'),
-      _refreshIdToken: jest.spyOn(ApolloClient.networkInterface, '_refreshIdTokenAsync'),
       connectivityAwareNetworkQuery: jest.spyOn(
         ApolloClient.networkInterface._networkInterface,
         'query'
@@ -147,7 +118,7 @@ describe('User Authentication Flow', () => {
 
   async function doGraphqlQuery() {
     try {
-       await ApolloClient.query({
+      await ApolloClient.query({
         query: gql`
           {
             app {
@@ -159,17 +130,12 @@ describe('User Authentication Flow', () => {
         `,
         variables: null,
       });
-    // reset client caches
-    ApolloClient.resetStore();
+      // reset client caches
+      ApolloClient.resetStore();
     } catch (e) {}
   }
-   it('does graphQL queries correctly, using sessions', async () => {
-    let {
-      _migrateAuth0ToSessionAsync,
-      _signOutAsync,
-      _refreshIdToken,
-      connectivityAwareNetworkQuery,
-    } = createSpies();
+  it('does graphQL queries correctly, using sessions', async () => {
+    let { _signOutAsync, connectivityAwareNetworkQuery } = createSpies();
 
     // sign in, request for session secret to be returned
     const signinResult = await Auth0Api.signInAsync(testUsername, testPassword, {
@@ -178,29 +144,15 @@ describe('User Authentication Flow', () => {
 
     // store auth and session tokens
     await Store.dispatch(SessionActions.setSession({ sessionSecret: signinResult.sessionSecret }));
-    await Store.dispatch(
-      AuthTokenActions.setAuthTokens({
-        refreshToken: signinResult.refresh_token,
-        accessToken: signinResult.access_token,
-        idToken: signinResult.id_token,
-      })
-    );
     await doGraphqlQuery();
 
     // expect to do just a query
     expect(connectivityAwareNetworkQuery).toHaveBeenCalledTimes(1);
-    expect(_migrateAuth0ToSessionAsync).toHaveBeenCalledTimes(0);
     expect(_signOutAsync).toHaveBeenCalledTimes(0);
-    expect(_refreshIdToken).toHaveBeenCalledTimes(0);
   });
 
-   it('does graphQL queries correctly, using id token', async () => {
-    let {
-      _migrateAuth0ToSessionAsync,
-      _signOutAsync,
-      _refreshIdToken,
-      connectivityAwareNetworkQuery,
-    } = createSpies();
+  it('does graphQL queries correctly, using id token', async () => {
+    let { _signOutAsync, connectivityAwareNetworkQuery } = createSpies();
 
     // sign in, request for only Auth0 tokens
     const signinResult = await Auth0Api.signInAsync(testUsername, testPassword, {
@@ -209,20 +161,11 @@ describe('User Authentication Flow', () => {
 
     // store auth and session tokens
     await Store.dispatch(SessionActions.setSession({ sessionSecret: signinResult.sessionSecret }));
-    await Store.dispatch(
-      AuthTokenActions.setAuthTokens({
-        refreshToken: signinResult.refresh_token,
-        accessToken: signinResult.access_token,
-        idToken: signinResult.id_token,
-      })
-    );
     await doGraphqlQuery();
 
     // expect to perform migration
     expect(connectivityAwareNetworkQuery).toHaveBeenCalledTimes(1);
-    expect(_migrateAuth0ToSessionAsync).toHaveBeenCalledTimes(1);
     expect(_signOutAsync).toHaveBeenCalledTimes(0);
-    expect(_refreshIdToken).toHaveBeenCalledTimes(0);
   });
 
   it('does graphQL queries correctly, using an expired id token with Auth0 in business', async () => {
@@ -233,24 +176,8 @@ describe('User Authentication Flow', () => {
 
     // store auth and session tokens
     await Store.dispatch(SessionActions.setSession({ sessionSecret: signinResult.sessionSecret }));
-    await Store.dispatch(
-      AuthTokenActions.setAuthTokens({
-        refreshToken: signinResult.refresh_token,
-        accessToken: signinResult.access_token,
-        idToken: signinResult.id_token,
-      })
-    );
 
-    let {
-      _migrateAuth0ToSessionAsync,
-      _signOutAsync,
-      _refreshIdToken,
-      connectivityAwareNetworkQuery,
-    } = createSpies();
-    // HACK: Auth0 is not responsive in the test :/
-    _refreshIdToken.mockImplementation(() => {
-      return { id_token: signinResult.id_token };
-    });
+    let { _signOutAsync, connectivityAwareNetworkQuery } = createSpies();
 
     const spoofTokenValidity = (() => {
       // Use closures to return 'NOT VALID' on first call, then 'VALID' afterwards
@@ -273,12 +200,10 @@ describe('User Authentication Flow', () => {
 
     // expect to refresh once, and perform migrations the second time
     expect(connectivityAwareNetworkQuery).toHaveBeenCalledTimes(2);
-    expect(_migrateAuth0ToSessionAsync).toHaveBeenCalledTimes(1);
     expect(_signOutAsync).toHaveBeenCalledTimes(0);
-    expect(_refreshIdToken).toHaveBeenCalledTimes(1);
   });
 
-   it('signs out of graphQL queries correctly, using an expired id token with Auth0 gone forever', async () => {
+  it('signs out of graphQL queries correctly, using an expired id token with Auth0 gone forever', async () => {
     // sign in, request for only Auth0 tokens
     const signinResult = await Auth0Api.signInAsync(testUsername, testPassword, {
       testSession: false,
@@ -286,20 +211,8 @@ describe('User Authentication Flow', () => {
 
     // store auth and session tokens
     await Store.dispatch(SessionActions.setSession({ sessionSecret: signinResult.sessionSecret }));
-    await Store.dispatch(
-      AuthTokenActions.setAuthTokens({
-        refreshToken: signinResult.refresh_token,
-        accessToken: signinResult.access_token,
-        idToken: signinResult.id_token,
-      })
-    );
 
-    let {
-      _migrateAuth0ToSessionAsync,
-      _signOutAsync,
-      _refreshIdToken,
-      connectivityAwareNetworkQuery,
-    } = createSpies();
+    let { _signOutAsync, connectivityAwareNetworkQuery } = createSpies();
 
     const spoofTokenValidity = (() => {
       // Use closures to return 'NOT VALID' on first call, then 'VALID' afterwards
@@ -321,8 +234,6 @@ describe('User Authentication Flow', () => {
 
     // expect to have signed out
     expect(connectivityAwareNetworkQuery).toHaveBeenCalledTimes(0);
-    expect(_migrateAuth0ToSessionAsync).toHaveBeenCalledTimes(0);
     expect(_signOutAsync).toHaveBeenCalledTimes(1);
-    expect(_refreshIdToken).toHaveBeenCalledTimes(0);
   });
 });

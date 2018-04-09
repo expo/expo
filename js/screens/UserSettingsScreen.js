@@ -13,7 +13,6 @@ import { connect } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import { Constants } from 'expo';
 
-import AuthTokenActions from '../redux/AuthTokenActions';
 import SessionActions from '../redux/SessionActions';
 import SettingsActions from '../redux/SettingsActions';
 import Colors from '../constants/Colors';
@@ -67,7 +66,6 @@ export default class UserSettingsScreen extends React.Component {
   _handlePressSignOut = () => {
     this.props.navigator.pop();
     requestAnimationFrame(() => {
-      this.props.dispatch(AuthTokenActions.clearAuthTokens());
       this.props.dispatch(SessionActions.signOut());
     });
   };

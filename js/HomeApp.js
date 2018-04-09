@@ -7,7 +7,6 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 import getViewerUsernameAsync from './utils/getViewerUsernameAsync';
 import addListenerWithNativeCallback from './utils/addListenerWithNativeCallback';
-import AuthTokenActions from './redux/AuthTokenActions';
 import HistoryActions from './redux/HistoryActions';
 import jwtDecode from 'jwt-decode';
 import SessionActions from './redux/SessionActions';
@@ -29,10 +28,13 @@ export default class App extends React.Component {
 
   componentDidMount() {
     this._initializeStateAsync();
-    addListenerWithNativeCallback('ExponentKernel.getIsValidHomeManifestToOpen', this._getIsValidHomeManifestToOpen);
+    addListenerWithNativeCallback(
+      'ExponentKernel.getIsValidHomeManifestToOpen',
+      this._getIsValidHomeManifestToOpen
+    );
   }
 
-  _getIsValidHomeManifestToOpen = async (event) => {
+  _getIsValidHomeManifestToOpen = async event => {
     const { manifest } = event;
     let isValid = false;
     if (!Constants.isDevice) {
@@ -57,24 +59,19 @@ export default class App extends React.Component {
       }
     }
     return { isValid };
-  }
+  };
 
   _initializeStateAsync = async () => {
     try {
       Store.dispatch(SettingsActions.loadSettings());
       Store.dispatch(HistoryActions.loadHistory());
       await LocalStorage.migrateNuxStateToNativeAsync();
-      const storedAuthTokens = await LocalStorage.getAuthTokensAsync();
       const storedSession = await LocalStorage.getSessionAsync();
-
-      if (storedAuthTokens) {
-        Store.dispatch(AuthTokenActions.setAuthTokens(storedAuthTokens));
-      }
 
       if (storedSession) {
         Store.dispatch(SessionActions.setSession(storedSession));
       }
-      
+
       if (Platform.OS === 'ios') {
         await Promise.all([Font.loadAsync(Ionicons.font)]);
       } else {
@@ -97,7 +94,7 @@ export default class App extends React.Component {
 
   render() {
     if (!this.state.isReady) {
-      return (<AppLoading />);
+      return <AppLoading />;
     }
 
     return (

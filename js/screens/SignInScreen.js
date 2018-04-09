@@ -6,7 +6,6 @@ import { connect } from 'react-redux';
 
 import Alerts from '../constants/Alerts';
 import Analytics from '../api/Analytics';
-import AuthTokenActions from '../redux/AuthTokenActions';
 import SessionActions from '../redux/SessionActions';
 import Colors from '../constants/Colors';
 import Form from '../components/Form';
@@ -27,7 +26,6 @@ export default class SignInScreen extends React.Component {
   static getDataProps(data) {
     return {
       session: data.session,
-      authTokens: data.authTokens,
     };
   }
 
@@ -54,9 +52,8 @@ export default class SignInScreen extends React.Component {
   }
 
   componentWillReceiveProps(nextProps: Object) {
-    const hasNewAuthTokens = nextProps.authTokens.idToken && !this.props.authTokens.idToken;
     const hasNewUserSession = nextProps.session.sessionSecret && !this.props.session.sessionSecret;
-    if (hasNewAuthTokens || hasNewUserSession) {
+    if (hasNewUserSession) {
       TextInput.State.blurTextInput(TextInput.State.currentlyFocusedField());
       this.props.navigation.dismissModal();
     }
@@ -149,14 +146,6 @@ export default class SignInScreen extends React.Component {
 
           ApolloClient.resetStore();
           this.props.dispatch(SessionActions.setSession({ sessionSecret: result.sessionSecret }));
-
-          this.props.dispatch(
-            AuthTokenActions.setAuthTokens({
-              refreshToken: result.refresh_token,
-              accessToken: result.access_token,
-              idToken: result.id_token,
-            })
-          );
         }
       }
     } catch (e) {

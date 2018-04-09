@@ -48,17 +48,6 @@ async function updateSettingsAsync(updatedSettings) {
   return AsyncStorage.setItem(Keys.Settings, JSON.stringify(newSettings));
 }
 
-async function getAuthTokensAsync() {
-  let results = await AsyncStorage.getItem(Keys.AuthTokens);
-
-  try {
-    let authTokens = JSON.parse(results);
-    return authTokens;
-  } catch (e) {
-    return null;
-  }
-}
-
 async function getSessionAsync() {
   let results = await AsyncStorage.getItem(Keys.Session);
 
@@ -68,10 +57,6 @@ async function getSessionAsync() {
   } catch (e) {
     return null;
   }
-}
-
-async function saveAuthTokensAsync(authTokens) {
-  return AsyncStorage.setItem(Keys.AuthTokens, JSON.stringify(authTokens));
 }
 
 async function saveSessionAsync(session) {
@@ -98,17 +83,6 @@ async function clearHistoryAsync() {
   return AsyncStorage.removeItem(Keys.History);
 }
 
-async function updateIdTokenAsync(idToken) {
-  let tokens = await getAuthTokensAsync();
-
-  if (!tokens) {
-    await clearAllAsync();
-    throw new Error('Missing cached authentication tokens');
-  }
-
-  return saveAuthTokensAsync({ ...tokens, idToken });
-}
-
 async function removeAuthTokensAsync() {
   return AsyncStorage.removeItem(Keys.AuthTokens);
 }
@@ -123,7 +97,7 @@ async function clearAllAsync() {
 
 // adds a hook for native code to query Home's history.
 // needed for routing push notifications in Home.
-addListenerWithNativeCallback('ExponentKernel.getHistoryUrlForExperienceId', async (event) => {
+addListenerWithNativeCallback('ExponentKernel.getHistoryUrlForExperienceId', async event => {
   const { experienceId } = event;
   let history = await getHistoryAsync();
   history = history.sort((item1, item2) => {
@@ -144,16 +118,13 @@ addListenerWithNativeCallback('ExponentKernel.getHistoryUrlForExperienceId', asy
 export default {
   clearHistoryAsync,
   clearAllAsync,
-  getAuthTokensAsync,
   getSessionAsync,
   getHistoryAsync,
   getSettingsAsync,
-  saveAuthTokensAsync,
   saveHistoryAsync,
   saveSessionAsync,
   migrateNuxStateToNativeAsync,
   removeAuthTokensAsync,
   removeSessionAsync,
-  updateIdTokenAsync,
   updateSettingsAsync,
 };
