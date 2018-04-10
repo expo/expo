@@ -164,10 +164,9 @@ function buildAndSignIpaWithArguments() {
     certPassword: 'Must run with `--certPassword CERT_PASSWORD`',
     teamID: 'Must run with `--teamID TEAM_ID`',
     bundleIdentifier: 'Must run with `--bundleIdentifier BUNDLE_IDENTIFIER`',
-    clientBuild: 'Must run with `--clientBuild CLIENT_BUILD`',
   });
 
-  const builder = createIPABuilder({ ...argv, clientBuild: argv.clientBuild === 1 });
+  const builder = createIPABuilder(argv);
   return builder.build();
 }
 
