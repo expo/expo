@@ -27,6 +27,7 @@ target 'Exponent' do
 
   pod 'React',
     :path => "../js/node_modules/react-native",
+    :inhibit_warnings => true,
     :subspecs => [
       "Core",
       "ART",
@@ -43,7 +44,8 @@ target 'Exponent' do
       "CxxBridge"
     ]
   pod 'yoga',
-    :path => "../js/node_modules/react-native/ReactCommon/yoga"
+    :path => "../js/node_modules/react-native/ReactCommon/yoga",
+    :inhibit_warnings => true
   pod 'DoubleConversion',
     :podspec => "../js/node_modules/react-native/third-party-podspecs/DoubleConversion.podspec",
     :inhibit_warnings => true

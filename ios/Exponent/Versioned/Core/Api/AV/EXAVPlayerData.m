@@ -674,7 +674,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
               break;
             case AVPlayerStatusFailed: {
               strongSelf.isLoaded = NO;
-              NSString *errorMessage = [NSString stringWithFormat:@"The AVPlayer instance has failed with the error code %i and domain \"%@\".", _player.error.code, _player.error.domain];
+              NSString *errorMessage = [NSString stringWithFormat:@"The AVPlayer instance has failed with the error code %li and domain \"%@\".", _player.error.code, _player.error.domain];
               if (strongSelf.player.error.localizedFailureReason) {
                 NSString *reasonMessage = [strongSelf.player.error.localizedFailureReason stringByAppendingString:@" - "];
                 errorMessage = [reasonMessage stringByAppendingString:errorMessage];
@@ -752,7 +752,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
               }
               break;
             case AVPlayerItemStatusFailed: {
-              NSString *errorMessage = [NSString stringWithFormat:@"The AVPlayerItem instance has failed with the error code %i and domain \"%@\".", strongSelf.player.currentItem.error.code, strongSelf.player.currentItem.error.domain];
+              NSString *errorMessage = [NSString stringWithFormat:@"The AVPlayerItem instance has failed with the error code %li and domain \"%@\".", strongSelf.player.currentItem.error.code, strongSelf.player.currentItem.error.domain];
               if (strongSelf.player.currentItem.error.localizedFailureReason) {
                 NSString *reasonMessage = [strongSelf.player.currentItem.error.localizedFailureReason stringByAppendingString:@" - "];
                 errorMessage = [reasonMessage stringByAppendingString:errorMessage];
