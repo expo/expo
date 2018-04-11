@@ -20,8 +20,14 @@
 }
 
 @property (nonatomic, assign) EXGLView *glView;
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunguarded-availability"
+
 @property (atomic, strong) ARSession *arSession;
 @property (atomic, strong) ARWorldTrackingConfiguration *arConfig;
+#pragma clang diagnostic pop
+
 @end
 
 @implementation EXGLARSessionManager
@@ -32,8 +38,10 @@ static GLfloat arCamVerts[] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
 {
   self.glView = glView;
   
-  self.arSession = [[ARSession alloc] init];
-  self.arConfig = [[ARWorldTrackingConfiguration alloc] init];
+  if (@available(iOS 11.0, *)) {
+    self.arSession = [[ARSession alloc] init];
+    self.arConfig = [[ARWorldTrackingConfiguration alloc] init];
+  }
   if (!self.arConfig) {
     return @{
              @"error": @"ARKit is not available on this device.",
@@ -218,12 +226,16 @@ static GLfloat arCamVerts[] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
     return nil;
   }
 
-  ARLightEstimate *arLightEstimation = self.arSession.currentFrame.lightEstimate;
+  if (@available(iOS 11.0, *)) {
+    ARLightEstimate *arLightEstimation = self.arSession.currentFrame.lightEstimate;
 
-  return @{
-    @"ambientIntensity": [NSNumber numberWithFloat:arLightEstimation.ambientIntensity],
-    @"ambientColorTemperature": [NSNumber numberWithFloat:arLightEstimation.ambientColorTemperature]
-  };
+    return @{
+      @"ambientIntensity": [NSNumber numberWithFloat:arLightEstimation.ambientIntensity],
+      @"ambientColorTemperature": [NSNumber numberWithFloat:arLightEstimation.ambientColorTemperature]
+    };
+  } else {
+    return nil;
+  }
 }
 
 - (NSDictionary *)rawFeaturePoints
@@ -232,25 +244,29 @@ static GLfloat arCamVerts[] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
     return nil;
   }
 
-  ARPointCloud *rawFeaturePoints = self.arSession.currentFrame.rawFeaturePoints;
+  if (@available(iOS 11.0, *)) {
+    ARPointCloud *rawFeaturePoints = self.arSession.currentFrame.rawFeaturePoints;
 
-  NSMutableArray *featurePoints = [NSMutableArray array];
-  for (int i = 0; i < rawFeaturePoints.count; i++) {
-    vector_float3 point = rawFeaturePoints.points[i];
+    NSMutableArray *featurePoints = [NSMutableArray array];
+    for (int i = 0; i < rawFeaturePoints.count; i++) {
+      vector_float3 point = rawFeaturePoints.points[i];
 
-    NSString *pointId = [NSString stringWithFormat:@"featurepoint_%lld", rawFeaturePoints.identifiers[i]];
+      NSString *pointId = [NSString stringWithFormat:@"featurepoint_%lld", rawFeaturePoints.identifiers[i]];
 
-    [featurePoints addObject:@{
-                               @"x": @(point[0]),
-                               @"y": @(point[1]),
-                               @"z": @(point[2]),
-                               @"id": pointId,
-                               }];
+      [featurePoints addObject:@{
+                                 @"x": @(point[0]),
+                                 @"y": @(point[1]),
+                                 @"z": @(point[2]),
+                                 @"id": pointId,
+                                 }];
+    }
+
+    return @{
+      @"featurePoints": featurePoints
+    };
+  } else {
+    return nil;
   }
-
-  return @{
-           @"featurePoints": featurePoints
-           };
 }
 
 - (NSDictionary *)planes
@@ -259,34 +275,38 @@ static GLfloat arCamVerts[] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
     return nil;
   }
   
-  NSArray<ARAnchor *> *anchors = self.arSession.currentFrame.anchors;
-  NSMutableArray *planes = [NSMutableArray array];
-  
-  for (int i = 0; i < anchors.count; i++) {
-    if ([anchors[i] isKindOfClass:[ARPlaneAnchor class]]){
-      ARPlaneAnchor *planeAnchor = (ARPlaneAnchor *)anchors[i];
-      vector_float3 extent = planeAnchor.extent;
-      vector_float3 center = planeAnchor.center;
+  if (@available(iOS 11.0, *)) {
+    NSArray<ARAnchor *> *anchors = self.arSession.currentFrame.anchors;
+    NSMutableArray *planes = [NSMutableArray array];
+    
+    for (int i = 0; i < anchors.count; i++) {
+      if ([anchors[i] isKindOfClass:[ARPlaneAnchor class]]){
+        ARPlaneAnchor *planeAnchor = (ARPlaneAnchor *)anchors[i];
+        vector_float3 extent = planeAnchor.extent;
+        vector_float3 center = planeAnchor.center;
 
-      [planes addObject:@{
-                          @"center": @{
-                              @"x": @(center[0]),
-                              @"y": @(center[1]),
-                              @"z": @(center[2])
-                              },
-                          @"extent": @{
-                              @"width": @(extent[0]),
-                              @"length": @(extent[2])
-                              },
-                          @"id": [NSString stringWithFormat:@"%@", planeAnchor.identifier],
-                          @"transform": [EXGLARSessionManager nsArrayForMatrix: planeAnchor.transform]
-                          }];
+        [planes addObject:@{
+                            @"center": @{
+                                @"x": @(center[0]),
+                                @"y": @(center[1]),
+                                @"z": @(center[2])
+                                },
+                            @"extent": @{
+                                @"width": @(extent[0]),
+                                @"length": @(extent[2])
+                                },
+                            @"id": [NSString stringWithFormat:@"%@", planeAnchor.identifier],
+                            @"transform": [EXGLARSessionManager nsArrayForMatrix: planeAnchor.transform]
+                            }];
+      }
     }
+    
+    return @{
+      @"planes": planes
+    };
+  } else {
+    return nil;
   }
-  
-  return @{
-           @"planes": planes
-           };
 }
 
 - (void)updateARCamTexture

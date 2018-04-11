@@ -4,27 +4,31 @@
 
 #import "EXGLViewManager.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface EXGLView : UIView
 
 - (instancetype)initWithManager:(EXGLViewManager *)mgr;
 - (void)runOnGLThreadAsync:(void(^)(void))callback;
 - (void)takeSnapshotWithOptions:(nonnull NSDictionary *)options callback:(void(^)(NSMutableDictionary *))callback;
 
-@property (nonatomic, copy) RCTDirectEventBlock onSurfaceCreate;
+@property (nonatomic, copy, nullable) RCTDirectEventBlock onSurfaceCreate;
 
-- (NSDictionary *)maybeStartARSession;
+- (nonnull NSDictionary *)maybeStartARSession;
 - (void)maybeStopARSession;
-- (NSDictionary *)arMatricesForViewportSize:(CGSize)viewportSize zNear:(CGFloat)zNear zFar:(CGFloat)zFar;
-- (NSDictionary *)arLightEstimation;
-- (NSDictionary *)rawFeaturePoints;
-- (NSDictionary *)planes;
+- (nullable NSDictionary *)arMatricesForViewportSize:(CGSize)viewportSize zNear:(CGFloat)zNear zFar:(CGFloat)zFar;
+- (nullable NSDictionary *)arLightEstimation;
+- (nullable NSDictionary *)rawFeaturePoints;
+- (nullable NSDictionary *)planes;
 - (void)setIsPlaneDetectionEnabled:(BOOL)planeDetectionEnabled;
 - (void)setIsLightEstimationEnabled:(BOOL)lightEstimationEnabled;
 - (void)setWorldAlignment:(NSInteger)worldAlignment;
 
 // "protected"
-@property (nonatomic, strong) EAGLContext *eaglCtx;
-@property (nonatomic, strong) EAGLContext *uiEaglCtx;
+@property (nonatomic, strong, nullable) EAGLContext *eaglCtx;
+@property (nonatomic, strong, nullable) EAGLContext *uiEaglCtx;
 @property (nonatomic, assign) UEXGLContextId exglCtxId;
 
 @end
+
+NS_ASSUME_NONNULL_END
