@@ -29,8 +29,6 @@ const CGFloat kEXAutoReloadDebounceSeconds = 0.1;
 // and we want to make sure not to cover the error with a loading view or other chrome.
 const CGFloat kEXDevelopmentErrorCoolDownSeconds = 0.1;
 
-const NSUInteger kEXErrorCodeAppForbidden = 424242;
-
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXAppViewController ()
@@ -420,7 +418,7 @@ NS_ASSUME_NONNULL_BEGIN
       } else {
         [self appLoader:_appRecord.appLoader didFailWithError:[NSError errorWithDomain:EXNetworkErrorDomain
                                                                                   code:kEXErrorCodeAppForbidden
-                                                                              userInfo:@{ NSLocalizedDescriptionKey: @"Expo Client can only be used to view your own projects. Are you signed in to the correct Expo account?" }]];
+                                                                              userInfo:@{ NSLocalizedDescriptionKey: @"Expo Client can only be used to view your own projects. To view this project, please ensure you are signed in to the same Expo account that created it." }]];
       }
     }];
   } else {

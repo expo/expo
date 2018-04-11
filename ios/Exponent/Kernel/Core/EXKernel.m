@@ -23,6 +23,8 @@ NSString *kEXKernelShouldForegroundTaskEvent = @"foregroundTask";
 NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
 NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUserDefaultsKey";
 
+const NSUInteger kEXErrorCodeAppForbidden = 424242;
+
 @interface EXKernel () <EXKernelAppRegistryDelegate>
 
 @end
