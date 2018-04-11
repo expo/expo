@@ -43,7 +43,7 @@ Try your app on tablets in addition to handsets. Even if you have `ios.supportsT
 
 ## System permissions dialogs on iOS
 
-If your app asks for [system permissions](../sdk/permissions.html) from the user, e.g. to use the device's camera, access photos, or send notifications, Apple requires an explanation for how your app makes use of that data. Expo will automatically provide a boilerplate reason for you, such as "Allow cool-app to access the camera." If you would like to provide more information, you can override these values using the [ios.infoPlist](./guides/configuration.html#infoplist) key in `app.json`, for example:
+If your app asks for [system permissions](../sdk/permissions.html) from the user, e.g. to use the device's camera, access photos, or send notifications, Apple requires an explanation for how your app makes use of that data. Expo will automatically provide a boilerplate reason for you, such as "Allow cool-app to access the camera." If you would like to provide more information, you can override these values using the [ios.infoPlist](../workflow/configuration) key in `app.json`, for example:
 
 ```
 "infoPlist": {
