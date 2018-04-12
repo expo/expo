@@ -36,6 +36,7 @@ Pod::Spec.new do |s|
     ss.dependency 'JKBigInteger2', '0.0.5'
     ss.dependency 'Branch', '~> 0.14.12'
     ss.dependency 'Google-Mobile-Ads-SDK', '~> 7.22.0'
+    ss.dependency 'React' # explicit dependency required for CocoaPods >= 1.5.0
   end
 
   s.subspec "CPP" do |ss|
