@@ -20,6 +20,7 @@ Pod::Spec.new do |s|
     ss.exclude_files = "ios/Exponent/Supporting/**", "ios/Exponent/Versioned/Optional/**/*.{h,m}"
 
 ${IOS_EXPOKIT_DEPS}
+    ss.dependency 'React' # explicit dependency required for CocoaPods >= 1.5.0
   end
 
   s.subspec "CPP" do |ss|
