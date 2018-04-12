@@ -36,7 +36,7 @@ This step ensures that the React Native packager is running and serving your app
 This step ensures the native iOS project is correctly configured and ready for development.
 
 - Make sure you have the latest Xcode.
-- If you don't have it already, install [CocoaPods](https://cocoapods.org), which is a native dependency manager for iOS.
+- If you don't have it already, install [CocoaPods](https://cocoapods.org), which is a native dependency manager for iOS. **Note:** Please use CocoaPods 1.4.0, as there are issues with the newer version.
 - Run `pod install` from your project's `ios` directory.
 - Open your project's `xcworkspace` file in Xcode.
 - Use Xcode to build, install and run the project on your test device or simulator. (this will happen by default if you click the big "Play" button in Xcode.)
@@ -64,6 +64,8 @@ Your ExpoKit project is configured to load your app's published url when you bui
 ### iOS
 
 Your ExpoKit project manages its dependencies with [CocoaPods](https://cocoapods.org).
+
+> **Note:** Please use CocoaPods 1.4.0, which is not the newest version. We'll update this note when we think CocoaPods 1.5.x will work with ExpoKit.
 
 Many libraries in the React Native ecosystem include instructions to run `react-native link`. These are supported with ExpoKit for iOS.
 
