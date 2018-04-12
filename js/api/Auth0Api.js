@@ -18,7 +18,7 @@ async function signInAsync(username: string, password: string, options: SignInOp
   return api.postAsync('auth/loginAsync', {
     username,
     password,
-    clientId: ClientId,
+    clientId: 'enable-sessions',
     ...(testSession ? { testSession } : {}),
   });
 }
