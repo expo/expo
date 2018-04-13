@@ -69,24 +69,6 @@ describe('User Authentication Flow', () => {
     jest.restoreAllMocks();
   });
 
-  // login with Auth0, expect tokens to be stored
-  it('login and stores auth tokens correctly', async () => {
-    // sign in
-    const signinResult = await Auth0Api.signInAsync(testUsername, testPassword);
-    const { sessionSecret } = signinResult;
-
-    // store auth and session tokens
-    await Store.dispatch(SessionActions.setSession({ sessionSecret: signinResult.sessionSecret }));
-
-    // retrieve auth and session tokens
-    const state = Store.getState();
-    const retrievedSession = state.session;
-
-    // make sure the retrieved tokens are the same as the ones we originally received
-    expect(sessionSecret).toBe(undefined);
-    expect(retrievedSession.sessionSecret).toBe(undefined);
-  });
-
   it('login and stores auth tokens and sessions correctly', async () => {
     // sign in
     const signinResult = await Auth0Api.signInAsync(testUsername, testPassword, {
@@ -97,12 +79,12 @@ describe('User Authentication Flow', () => {
     // store auth and session tokens
     await Store.dispatch(SessionActions.setSession({ sessionSecret: signinResult.sessionSecret }));
 
-    // retrieve auth and session tokens
+    // retrieve session tokens
     const state = Store.getState();
     const retrievedSession = state.session;
 
     // make sure the retrieved tokens are the same as the ones we originally received
-    expect(sessionSecret).toBe('TEST');
+    expect(sessionSecret).not.toBe(undefined);
     expect(sessionSecret).toBe(retrievedSession.sessionSecret);
   });
 
@@ -149,91 +131,5 @@ describe('User Authentication Flow', () => {
     // expect to do just a query
     expect(connectivityAwareNetworkQuery).toHaveBeenCalledTimes(1);
     expect(_signOutAsync).toHaveBeenCalledTimes(0);
-  });
-
-  it('does graphQL queries correctly, using id token', async () => {
-    let { _signOutAsync, connectivityAwareNetworkQuery } = createSpies();
-
-    // sign in, request for only Auth0 tokens
-    const signinResult = await Auth0Api.signInAsync(testUsername, testPassword, {
-      testSession: false,
-    });
-
-    // store auth and session tokens
-    await Store.dispatch(SessionActions.setSession({ sessionSecret: signinResult.sessionSecret }));
-    await doGraphqlQuery();
-
-    // expect to perform migration
-    expect(connectivityAwareNetworkQuery).toHaveBeenCalledTimes(1);
-    expect(_signOutAsync).toHaveBeenCalledTimes(0);
-  });
-
-  it('does graphQL queries correctly, using an expired id token with Auth0 in business', async () => {
-    // sign in, request for only Auth0 tokens
-    const signinResult = await Auth0Api.signInAsync(testUsername, testPassword, {
-      testSession: false,
-    });
-
-    // store auth and session tokens
-    await Store.dispatch(SessionActions.setSession({ sessionSecret: signinResult.sessionSecret }));
-
-    let { _signOutAsync, connectivityAwareNetworkQuery } = createSpies();
-
-    const spoofTokenValidity = (() => {
-      // Use closures to return 'NOT VALID' on first call, then 'VALID' afterwards
-      let isFirstCall = true;
-      return () => {
-        if (isFirstCall) {
-          isFirstCall = false;
-          return false;
-        }
-        return true;
-      };
-    })();
-    ApolloClient.networkInterface._idTokenIsValid = jest.fn(spoofTokenValidity);
-
-    // Hardcode today to be Jan 1, 2018
-    global.Date.now = () => new Date(2018, 0, 1);
-
-    await doGraphqlQuery();
-    await doGraphqlQuery();
-
-    // expect to refresh once, and perform migrations the second time
-    expect(connectivityAwareNetworkQuery).toHaveBeenCalledTimes(2);
-    expect(_signOutAsync).toHaveBeenCalledTimes(0);
-  });
-
-  it('signs out of graphQL queries correctly, using an expired id token with Auth0 gone forever', async () => {
-    // sign in, request for only Auth0 tokens
-    const signinResult = await Auth0Api.signInAsync(testUsername, testPassword, {
-      testSession: false,
-    });
-
-    // store auth and session tokens
-    await Store.dispatch(SessionActions.setSession({ sessionSecret: signinResult.sessionSecret }));
-
-    let { _signOutAsync, connectivityAwareNetworkQuery } = createSpies();
-
-    const spoofTokenValidity = (() => {
-      // Use closures to return 'NOT VALID' on first call, then 'VALID' afterwards
-      let isFirstCall = true;
-      return () => {
-        if (isFirstCall) {
-          isFirstCall = false;
-          return false;
-        }
-        return true;
-      };
-    })();
-    ApolloClient.networkInterface._idTokenIsValid = jest.fn(spoofTokenValidity);
-
-    // Hardcode today to be Dec 1, 2018
-    global.Date.now = () => new Date(2018, 11, 1);
-
-    await doGraphqlQuery();
-
-    // expect to have signed out
-    expect(connectivityAwareNetworkQuery).toHaveBeenCalledTimes(0);
-    expect(_signOutAsync).toHaveBeenCalledTimes(1);
   });
 });
