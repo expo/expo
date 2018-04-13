@@ -12,6 +12,10 @@
                kernelServiceDelegate:(id)kernelServiceInstance
                               params:(NSDictionary *)params NS_DESIGNATED_INITIALIZER;
 
+- (instancetype)initWithExperienceId:(NSString *)experienceId
+              kernelServiceDelegates:(NSDictionary *)kernelServiceInstances
+                              params:(NSDictionary *)params NS_DESIGNATED_INITIALIZER;
+
 @property (nonatomic, readonly) NSString *experienceId;
 
 @end

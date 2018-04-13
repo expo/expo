@@ -5,6 +5,10 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 
 #import "ABI25_0_0EXFileSystem.h"
+#import "ABI25_0_0EXCameraPermissionRequester.h"
+#import "ABI25_0_0EXCameraRollRequester.h"
+#import "ABI25_0_0EXPermissions.h"
+#import "ABI25_0_0EXScopedModuleRegistry.h"
 
 @import MobileCoreServices;
 @import Photos;
@@ -15,6 +19,7 @@
 @property (nonatomic, strong) UIImagePickerController *picker;
 @property (nonatomic, strong) ABI25_0_0RCTPromiseResolveBlock resolve;
 @property (nonatomic, strong) ABI25_0_0RCTPromiseRejectBlock reject;
+@property (nonatomic, weak) id kernelPermissionsServiceDelegate;
 @property (nonatomic, strong) NSDictionary *defaultOptions;
 @property (nonatomic, retain) NSMutableDictionary *options;
 @property (nonatomic, strong) NSDictionary *customButtons;
@@ -32,9 +37,10 @@ ABI25_0_0RCT_EXPORT_MODULE(ExponentImagePicker);
   _bridge = bridge;
 }
 
-- (instancetype)init
+- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
 {
-  if (self = [super init]) {
+  if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
+    _kernelPermissionsServiceDelegate = kernelServiceInstance;
     self.defaultOptions = @{
       @"title": @"Select a Photo",
       @"cancelButtonTitle": @"Cancel",
@@ -57,6 +63,13 @@ ABI25_0_0RCT_EXPORT_METHOD(launchCameraAsync:(NSDictionary *)options
                   resolver:(ABI25_0_0RCTPromiseResolveBlock)resolve
                   rejecter:(ABI25_0_0RCTPromiseRejectBlock)reject)
 {
+  if ([ABI25_0_0EXPermissions statusForPermissions:[ABI25_0_0EXCameraRollRequester permissions]] != ABI25_0_0EXPermissionStatusGranted ||
+      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"cameraRoll" forExperience:self.experienceId] ||
+      [ABI25_0_0EXPermissions statusForPermissions:[ABI25_0_0EXCameraPermissionRequester permissions]] != ABI25_0_0EXPermissionStatusGranted ||
+      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"camera" forExperience:self.experienceId]) {
+    reject(@"E_MISSING_PERMISSION", @"Missing camera or camera roll permission.", nil);
+    return;
+  }
   self.resolve = resolve;
   self.reject = reject;
   [self launchImagePicker:ABI25_0_0RNImagePickerTargetCamera options:options];
@@ -66,6 +79,11 @@ ABI25_0_0RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
                   resolver:(ABI25_0_0RCTPromiseResolveBlock)resolve
                   rejecter:(ABI25_0_0RCTPromiseRejectBlock)reject)
 {
+  if ([ABI25_0_0EXPermissions statusForPermissions:[ABI25_0_0EXCameraRollRequester permissions]] != ABI25_0_0EXPermissionStatusGranted ||
+      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"cameraRoll" forExperience:self.experienceId]) {
+    reject(@"E_MISSING_PERMISSION", @"Missing camera roll permission.", nil);
+    return;
+  }
   self.resolve = resolve;
   self.reject = reject;
   [self launchImagePicker:ABI25_0_0RNImagePickerTargetLibrarySingleImage options:options];

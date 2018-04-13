@@ -46,9 +46,10 @@
 - (void)requestPermissionsWithResolver:(ABI22_0_0RCTPromiseResolveBlock)resolve rejecter:(ABI22_0_0RCTPromiseRejectBlock)reject
 {
   [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
-    resolve([[self class] permissions]);
+    NSDictionary *result = [[self class] permissions];
+    resolve(result);
     if (_delegate) {
-      [_delegate permissionRequesterDidFinish:self];
+      [_delegate permissionsRequester:self didFinishWithResult:result];
     }
   }];
 }

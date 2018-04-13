@@ -5,19 +5,15 @@ package abi20_0_0.host.exp.exponent.modules.api;
 import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentUris;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 
 import android.net.Uri;
-import android.os.Build;
 import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 
 import abi20_0_0.com.facebook.react.bridge.Arguments;
 import abi20_0_0.com.facebook.react.bridge.Promise;
 import abi20_0_0.com.facebook.react.bridge.ReactApplicationContext;
-import abi20_0_0.com.facebook.react.bridge.ReactContextBaseJavaModule;
 import abi20_0_0.com.facebook.react.bridge.ReactMethod;
 import abi20_0_0.com.facebook.react.bridge.ReadableArray;
 import abi20_0_0.com.facebook.react.bridge.ReadableMap;
@@ -35,11 +31,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import abi20_0_0.host.exp.exponent.modules.ExpoKernelServiceConsumerBaseModule;
 import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.kernel.ExperienceId;
+import host.exp.expoview.Exponent;
 
 import static android.provider.ContactsContract.*;
 
-public class ContactsModule extends ReactContextBaseJavaModule {
+public class ContactsModule extends ExpoKernelServiceConsumerBaseModule {
   private static final String TAG = ContactsModule.class.getSimpleName();
 
   private static final String[] PROJECTION = new String[]{
@@ -48,8 +47,8 @@ public class ContactsModule extends ReactContextBaseJavaModule {
       CommonDataKinds.Email.DATA,
   };
 
-  public ContactsModule(ReactApplicationContext reactContext) {
-    super(reactContext);
+  public ContactsModule(ReactApplicationContext reactContext, ExperienceId experienceId) {
+    super(reactContext, experienceId);
   }
 
   @Override
@@ -315,10 +314,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
   }
 
   private boolean isMissingPermissions() {
-    return Build.VERSION.SDK_INT >= 23 &&
-        ContextCompat.checkSelfPermission(
-            getReactApplicationContext(),
-            Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED;
+    return !Exponent.getInstance().getPermissions(Manifest.permission.READ_CONTACTS, this.experienceId);
   }
 
   private WritableArray getPhoneNumbersFromContentResolver(long id, ContentResolver cr) {

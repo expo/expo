@@ -5,6 +5,10 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 
 #import "EXFileSystem.h"
+#import "EXCameraPermissionRequester.h"
+#import "EXCameraRollRequester.h"
+#import "EXPermissions.h"
+#import "EXScopedModuleRegistry.h"
 
 @import MobileCoreServices;
 @import Photos;
@@ -15,6 +19,7 @@
 @property (nonatomic, strong) UIImagePickerController *picker;
 @property (nonatomic, strong) RCTPromiseResolveBlock resolve;
 @property (nonatomic, strong) RCTPromiseRejectBlock reject;
+@property (nonatomic, weak) id kernelPermissionsServiceDelegate;
 @property (nonatomic, strong) NSDictionary *defaultOptions;
 @property (nonatomic, retain) NSMutableDictionary *options;
 @property (nonatomic, strong) NSDictionary *customButtons;
@@ -23,7 +28,7 @@
 
 @implementation EXImagePicker
 
-RCT_EXPORT_MODULE(ExponentImagePicker);
+EX_EXPORT_SCOPED_MODULE(ExponentImagePicker, PermissionsManager);
 
 @synthesize bridge = _bridge;
 
@@ -32,18 +37,19 @@ RCT_EXPORT_MODULE(ExponentImagePicker);
   _bridge = bridge;
 }
 
-- (instancetype)init
+- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
 {
-  if (self = [super init]) {
+  if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
+    _kernelPermissionsServiceDelegate = kernelServiceInstance;
     self.defaultOptions = @{
-      @"title": @"Select a Photo",
-      @"cancelButtonTitle": @"Cancel",
-      @"takePhotoButtonTitle": @"Take Photo…",
-      @"chooseFromLibraryButtonTitle": @"Choose from Library…",
-      @"quality" : @0.2, // 1.0 best to 0.0 worst
-      @"allowsEditing" : @NO,
-      @"base64": @NO,
-    };
+                            @"title": @"Select a Photo",
+                            @"cancelButtonTitle": @"Cancel",
+                            @"takePhotoButtonTitle": @"Take Photo…",
+                            @"chooseFromLibraryButtonTitle": @"Choose from Library…",
+                            @"quality" : @0.2, // 1.0 best to 0.0 worst
+                            @"allowsEditing" : @NO,
+                            @"base64": @NO,
+                            };
   }
   return self;
 }
@@ -57,6 +63,13 @@ RCT_EXPORT_METHOD(launchCameraAsync:(NSDictionary *)options
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 {
+  if ([EXPermissions statusForPermissions:[EXCameraRollRequester permissions]] != EXPermissionStatusGranted ||
+      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"cameraRoll" forExperience:self.experienceId] ||
+      [EXPermissions statusForPermissions:[EXCameraPermissionRequester permissions]] != EXPermissionStatusGranted ||
+      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"camera" forExperience:self.experienceId]) {
+    reject(@"E_MISSING_PERMISSION", @"Missing camera or camera roll permission.", nil);
+    return;
+  }
   self.resolve = resolve;
   self.reject = reject;
   [self launchImagePicker:RNImagePickerTargetCamera options:options];
@@ -66,6 +79,11 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 {
+  if ([EXPermissions statusForPermissions:[EXCameraRollRequester permissions]] != EXPermissionStatusGranted ||
+      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"cameraRoll" forExperience:self.experienceId]) {
+    reject(@"E_MISSING_PERMISSION", @"Missing camera roll permission.", nil);
+    return;
+  }
   self.resolve = resolve;
   self.reject = reject;
   [self launchImagePicker:RNImagePickerTargetLibrarySingleImage options:options];

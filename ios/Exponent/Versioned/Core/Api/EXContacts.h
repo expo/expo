@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <React/RCTBridgeModule.h>
+#import "EXScopedBridgeModule.h"
 
-@interface EXContacts : NSObject <RCTBridgeModule>
+@interface EXContacts : EXScopedBridgeModule
 
 @end

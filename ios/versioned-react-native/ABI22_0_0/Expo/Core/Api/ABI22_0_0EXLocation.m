@@ -2,6 +2,8 @@
 
 #import "ABI22_0_0EXLocation.h"
 #import "ABI22_0_0EXUnversioned.h"
+#import "ABI22_0_0EXScopedModuleRegistry.h"
+#import "ABI22_0_0EXPermissions.h"
 
 #import <CoreLocation/CLLocationManager.h>
 #import <CoreLocation/CLLocationManagerDelegate.h>
@@ -78,15 +80,18 @@ NSString * const ABI22_0_0EXHeadingChangedEventName = @"Exponent.headingChanged"
 @property (nonatomic, strong) NSMutableDictionary<NSNumber *, ABI22_0_0EXLocationDelegate*> *delegates;
 @property (nonatomic, strong) CLGeocoder *geocoder;
 @property (nonatomic, assign, getter=isPaused) BOOL paused;
+@property (nonatomic, weak) id kernelPermissionsServiceDelegate;
 
 @end
 
 @implementation ABI22_0_0EXLocation
 
-ABI22_0_0RCT_EXPORT_MODULE(ExponentLocation)
+ABI22_0_0EX_EXPORT_SCOPED_MODULE(ExponentLocation, PermissionsManager)
 
-- (instancetype)init {
-  if ((self = [super init])) {
+- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
+{
+  if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
+    _kernelPermissionsServiceDelegate = kernelServiceInstance;
     _delegates = [NSMutableDictionary dictionary];
   }
   return self;
@@ -146,7 +151,8 @@ ABI22_0_0RCT_REMAP_METHOD(watchPositionImplAsync,
     reject(@"E_LOCATION_SERVICES_DISABLED", @"Location services are disabled", nil);
     return;
   }
-  if (!([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedWhenInUse)) {
+  if (!([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedWhenInUse) ||
+      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"location" forExperience:self.experienceId]) {
     reject(@"E_LOCATION_UNAUTHORIZED", @"Not authorized to use location services", nil);
     return;
   }
@@ -197,6 +203,11 @@ ABI22_0_0RCT_REMAP_METHOD(watchDeviceHeading,
                  watchId:(nonnull NSNumber *)watchId
                  watchDeviceHeading_resolver:(ABI22_0_0RCTPromiseResolveBlock)resolve
                  watchDeviceHeading_rejecter:(ABI22_0_0RCTPromiseRejectBlock)reject) {
+  if (!([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedWhenInUse ||
+        [_kernelPermissionsServiceDelegate hasGrantedPermission:@"location" forExperience:self.experienceId])) {
+    reject(@"E_LOCATION_UNAUTHORIZED", @"Not authorized to use location services", nil);
+    return;
+  }
   __weak typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
     CLLocationManager *locMgr = [[CLLocationManager alloc] init];

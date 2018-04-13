@@ -23,13 +23,9 @@ import com.google.android.gms.vision.face.Face;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.EnumMap;
-import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 

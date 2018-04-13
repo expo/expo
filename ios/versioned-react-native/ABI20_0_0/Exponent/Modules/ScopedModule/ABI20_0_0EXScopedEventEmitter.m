@@ -26,6 +26,14 @@
   return self;
 }
 
+- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegates:(NSDictionary *)kernelServiceInstances params:(NSDictionary *)params
+{
+  if (self = [super init]) {
+    _experienceId = experienceId;
+  }
+  return self;
+}
+
 - (NSArray<NSString *> *)supportedEvents
 {
   return @[];

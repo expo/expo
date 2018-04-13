@@ -11,6 +11,9 @@
 #import "EXFileSystem.h"
 #import "EXVideoView.h"
 #import "EXUnversioned.h"
+#import "EXAudioRecordingPermissionRequester.h"
+#import "EXPermissions.h"
+#import "EXScopedModuleRegistry.h"
 
 NSString *const EXAudioRecordingOptionsKey = @"ios";
 NSString *const EXAudioRecordingOptionExtensionKey = @"extension";
@@ -30,6 +33,7 @@ NSString *const EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybackStatus";
 @interface EXAV ()
 
 @property (nonatomic, weak) id kernelAudioSessionManagerDelegate;
+@property (nonatomic, weak) id kernelPermissionsServiceDelegate;
 
 @property (nonatomic, assign) BOOL audioIsEnabled;
 @property (nonatomic, assign) EXAVAudioSessionMode currentAudioSessionMode;
@@ -57,9 +61,9 @@ NSString *const EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybackStatus";
 
 @synthesize methodQueue = _methodQueue;
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
+- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegates:(NSDictionary *)kernelServiceInstances params:(NSDictionary *)params
 {
-  if ((self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params])) {
+  if (self = [super initWithExperienceId:experienceId kernelServiceDelegates:kernelServiceInstances params:params]) {
     _audioIsEnabled = YES;
     _currentAudioSessionMode = EXAVAudioSessionModeInactive;
     _isBackgrounded = NO;
@@ -80,7 +84,8 @@ NSString *const EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybackStatus";
     _audioRecorderShouldBeginRecording = false;
     _audioRecorderDurationMillis = 0;
 
-    _kernelAudioSessionManagerDelegate = kernelServiceInstance;
+    _kernelPermissionsServiceDelegate = kernelServiceInstances[@"PermissionsManager"];
+    _kernelAudioSessionManagerDelegate = kernelServiceInstances[@"AudioSessionManager"];
     [_kernelAudioSessionManagerDelegate scopedModuleDidForeground:self];
   }
   return self;
@@ -529,7 +534,7 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
   }
 }
 
-EX_EXPORT_SCOPED_MODULE(ExponentAV, AudioSessionManager);
+EX_EXPORT_SCOPED_MULTISERVICE_MODULE(ExponentAV, @"AudioSessionManager", @"PermissionsManager");
 
 - (NSArray<NSString *> *)supportedEvents
 {
@@ -725,6 +730,12 @@ RCT_EXPORT_METHOD(prepareAudioRecorder:(nonnull NSDictionary *)options
                               resolver:(RCTPromiseResolveBlock)resolve
                               rejecter:(RCTPromiseRejectBlock)reject)
 {
+  if ([EXPermissions statusForPermissions:[EXAudioRecordingPermissionRequester permissions]] != EXPermissionStatusGranted ||
+      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"audioRecording" forExperience:self.experienceId]) {
+    reject(@"E_MISSING_PERMISSION", @"Missing audio recording permission.", nil);
+    return;
+  }
+
   [self _setNewAudioRecorderFilenameAndSettings:options];
   NSError *error = [self _createNewAudioRecorder];
   
@@ -749,6 +760,11 @@ RCT_EXPORT_METHOD(prepareAudioRecorder:(nonnull NSDictionary *)options
 RCT_EXPORT_METHOD(startAudioRecording:(RCTPromiseResolveBlock)resolve
                              rejecter:(RCTPromiseRejectBlock)reject)
 {
+  if ([EXPermissions statusForPermissions:[EXAudioRecordingPermissionRequester permissions]] != EXPermissionStatusGranted ||
+      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"audioRecording" forExperience:self.experienceId]) {
+    reject(@"E_MISSING_PERMISSION", @"Missing audio recording permission.", nil);
+    return;
+  }
   if ([self _checkAudioRecorderExistsOrReject:reject]) {
     if (!_allowsAudioRecording) {
       reject(@"E_AUDIO_AUDIOMODE", nil, RCTErrorWithMessage(@"Recording not allowed on iOS."));

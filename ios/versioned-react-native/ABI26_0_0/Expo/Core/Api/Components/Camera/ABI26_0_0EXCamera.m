@@ -386,7 +386,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
       [self updateSessionPreset:[ABI26_0_0EXCameraUtils captureSessionPresetForVideoResolution:(ABI26_0_0EXCameraVideoResolution)[options[@"quality"] integerValue]]];
     }
     
-    [self updateSessionAudioIsMuted:!!options[@"mute"]];
+    [self updateSessionAudioIsMuted:options[@"mute"] && [options[@"mute"] boolValue]];
     
     AVCaptureConnection *connection = [self.movieFileOutput connectionWithMediaType:AVMediaTypeVideo];
     [connection setVideoOrientation:[ABI26_0_0EXCameraUtils videoOrientationForInterfaceOrientation:[[UIApplication sharedApplication] statusBarOrientation]]];

@@ -23,6 +23,7 @@
 		31827BF5203CF0C000A12E65 /* EXAudioSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31827BF4203CF0C000A12E65 /* EXAudioSessionManager.m */; };
 		3CDB94EB202AE8900039E406 /* EXPrint.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CDB94EA202AE8900039E406 /* EXPrint.m */; };
 		3CE707941F6A725100255742 /* EXSensorManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CE707931F6A725100255742 /* EXSensorManager.m */; };
+		3CE8050D20488C8200D8D2DB /* EXPermissionsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CE8050C20488C8200D8D2DB /* EXPermissionsManager.m */; };
 		3CEBDC411FFBC73E0025EF24 /* EXMailComposer.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CEBDC401FFBC73D0025EF24 /* EXMailComposer.m */; };
 		6D3FF9032022B57E000D4015 /* EXLocalization.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D3FF9012022B57D000D4015 /* EXLocalization.m */; };
 		783435D3205B8BEE00DD28C3 /* AIRGoogleMapPolylineManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 783435AE205B8BE900DD28C3 /* AIRGoogleMapPolylineManager.m */; };
@@ -345,6 +346,8 @@
 		3CDB94EA202AE8900039E406 /* EXPrint.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXPrint.m; sourceTree = "<group>"; };
 		3CE707931F6A725100255742 /* EXSensorManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXSensorManager.m; sourceTree = "<group>"; };
 		3CE707951F6A74AB00255742 /* EXSensorManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSensorManager.h; sourceTree = "<group>"; };
+		3CE8050C20488C8200D8D2DB /* EXPermissionsManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXPermissionsManager.m; sourceTree = "<group>"; };
+		3CE8050E20488CA700D8D2DB /* EXPermissionsManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXPermissionsManager.h; sourceTree = "<group>"; };
 		3CEBDC3F1FFBC73C0025EF24 /* EXMailComposer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXMailComposer.h; sourceTree = "<group>"; };
 		3CEBDC401FFBC73D0025EF24 /* EXMailComposer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXMailComposer.m; sourceTree = "<group>"; };
 		6D3FF9012022B57D000D4015 /* EXLocalization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXLocalization.m; sourceTree = "<group>"; };
@@ -1391,6 +1394,8 @@
 				B5C2740B1EC24AE1003355CE /* EXKernelLinkingManager.m */,
 				B5AC39A31E95A90B00540AA7 /* EXLocalNotificationManager.h */,
 				B5AC39A41E95A90B00540AA7 /* EXLocalNotificationManager.m */,
+				3CE8050E20488CA700D8D2DB /* EXPermissionsManager.h */,
+				3CE8050C20488C8200D8D2DB /* EXPermissionsManager.m */,
 				B57180FE1F0FF41600315A66 /* EXScreenOrientationManager.h */,
 				B57180FF1F0FF41600315A66 /* EXScreenOrientationManager.m */,
 				3CE707951F6A74AB00255742 /* EXSensorManager.h */,
@@ -2533,6 +2538,7 @@
 				B5FB74BF1FF6DADC001C764B /* EXFileSystem.m in Sources */,
 				B57EF81420085C8200DA8960 /* RNGestureHandlerEvents.m in Sources */,
 				783435E4205B8BEE00DD28C3 /* AIRGMSMarker.m in Sources */,
+				3CE8050D20488C8200D8D2DB /* EXPermissionsManager.m in Sources */,
 				B5FB74A21FF6DADC001C764B /* EXContacts.m in Sources */,
 				19B2EF751FB25A1A003F2E1B /* EXCachedResourceManager.m in Sources */,
 				3CDB94EB202AE8900039E406 /* EXPrint.m in Sources */,

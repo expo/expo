@@ -10,6 +10,8 @@ import android.os.Build;
 import android.provider.Settings;
 import android.support.v4.content.ContextCompat;
 
+import org.json.JSONObject;
+
 import abi24_0_0.com.facebook.react.bridge.Arguments;
 import abi24_0_0.com.facebook.react.bridge.Promise;
 import abi24_0_0.com.facebook.react.bridge.ReactApplicationContext;
@@ -17,13 +19,22 @@ import abi24_0_0.com.facebook.react.bridge.ReactContextBaseJavaModule;
 import abi24_0_0.com.facebook.react.bridge.ReactMethod;
 import abi24_0_0.com.facebook.react.bridge.WritableMap;
 
+import abi24_0_0.host.exp.exponent.modules.ExpoKernelServiceConsumerBaseModule;
+import host.exp.exponent.ExponentManifest;
+import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.services.PermissionsKernelService;
 import host.exp.expoview.Exponent;
 
-public class PermissionsModule  extends ReactContextBaseJavaModule {
+public class PermissionsModule  extends ExpoKernelServiceConsumerBaseModule {
   private static String PERMISSION_EXPIRES_NEVER = "never";
 
-  public PermissionsModule(ReactApplicationContext reactContext) {
-    super(reactContext);
+  private JSONObject mManifest;
+  private PermissionsKernelService mPermissionsKernelService;
+
+  public PermissionsModule(ReactApplicationContext reactContext, ExperienceId experienceId, JSONObject manifest) {
+    super(reactContext, experienceId);
+    mPermissionsKernelService = mKernelServiceRegistry.getPermissionsKernelService();
+    mManifest = manifest;
   }
 
   @Override
@@ -127,14 +138,26 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
     Boolean isGranted = false;
     String scope = "none";
 
-    int finePermission = ContextCompat.checkSelfPermission(getReactApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION);
-    if (finePermission == PackageManager.PERMISSION_GRANTED) {
+    int globalFinePermission = PackageManager.PERMISSION_GRANTED;
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      globalFinePermission = ContextCompat.checkSelfPermission(getReactApplicationContext(),
+          Manifest.permission.ACCESS_FINE_LOCATION);
+    }
+    boolean experienceFinePermission = mPermissionsKernelService
+        .hasGrantedPermissions(Manifest.permission.ACCESS_FINE_LOCATION, this.experienceId);
+    if (globalFinePermission == PackageManager.PERMISSION_GRANTED && experienceFinePermission) {
       response.putString("status", "granted");
-      scope =  "fine";
+      scope = "fine";
       isGranted = true;
     } else {
-      int coarsePermission = ContextCompat.checkSelfPermission(getReactApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION);
-      if (coarsePermission == PackageManager.PERMISSION_GRANTED) {
+      int globalCoarsePermission = PackageManager.PERMISSION_GRANTED;
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        globalCoarsePermission = ContextCompat.checkSelfPermission(getReactApplicationContext(),
+            Manifest.permission.ACCESS_COARSE_LOCATION);
+      }
+      boolean experienceCoarsePermission = mPermissionsKernelService
+          .hasGrantedPermissions(Manifest.permission.ACCESS_COARSE_LOCATION, this.experienceId);
+      if (globalCoarsePermission == PackageManager.PERMISSION_GRANTED  && experienceCoarsePermission) {
         response.putString("status", "granted");
         scope = "coarse";
         isGranted = true;
@@ -171,35 +194,52 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
   }
 
   private void askForWriteSettingsPermission(final Promise promise) {
-    try {
-      // Launch systems dialog for write settings
-      Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS);
-      intent.setData(Uri.parse("package:" + getReactApplicationContext().getPackageName()));
-      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      getReactApplicationContext().startActivity(intent);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      if (!Settings.System.canWrite(getReactApplicationContext())) {
+        try {
+          // Launch systems dialog for write settings
+          Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS);
+          intent.setData(Uri.parse("package:" + getReactApplicationContext().getPackageName()));
+          intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+          getReactApplicationContext().startActivity(intent);
 
-      // Action returns nothing so we return unknown status
-      // https://stackoverflow.com/questions/44389632/proper-way-to-handle-action-manage-write-settings-activity
-      WritableMap response = Arguments.createMap();
-      response.putString("status", "unknown");
-      promise.resolve(response);
-    } catch (Exception e){
-      promise.reject("Error launching write settings activity:", e.getMessage());
+          // Action returns nothing so we return unknown status
+          // https://stackoverflow.com/questions/44389632/proper-way-to-handle-action-manage-write-settings-activity
+          com.facebook.react.bridge.WritableMap response = com.facebook.react.bridge.Arguments.createMap();
+          response.putString("status", "unknown");
+          promise.resolve(response);
+        } catch (Exception e) {
+          promise.reject("Error launching write settings activity:", e.getMessage());
+        }
+      } else {
+        Exponent.getInstance().requestExperiencePermissions(new Exponent.PermissionsListener() {
+          @Override
+          public void permissionsGranted() {
+            promise.resolve(getWriteSettingsPermission());
+          }
+
+          @Override
+          public void permissionsDenied() {
+            promise.resolve(getWriteSettingsPermission());
+          }
+        }, new String[] { android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS }, this.experienceId,
+            mManifest.optString(ExponentManifest.MANIFEST_NAME_KEY));
+      }
     }
   }
 
   private WritableMap getSimplePermission(String permission) {
     WritableMap response = Arguments.createMap();
 
+    int globalResult = PackageManager.PERMISSION_GRANTED;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      int result = ContextCompat.checkSelfPermission(getReactApplicationContext(), permission);
-      if (result == PackageManager.PERMISSION_GRANTED) {
-        response.putString("status", "granted");
-      } else {
-        response.putString("status", "denied");
-      }
-    } else {
+      globalResult = ContextCompat.checkSelfPermission(getReactApplicationContext(), permission);
+    }
+    if (globalResult == PackageManager.PERMISSION_GRANTED &&
+        mPermissionsKernelService.hasGrantedPermissions(permission, this.experienceId)) {
       response.putString("status", "granted");
+    } else {
+      response.putString("status", "denied");
     }
     response.putString("expires", PERMISSION_EXPIRES_NEVER);
 
@@ -207,16 +247,17 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
   }
 
   private void askForSimplePermission(final String permission, final Promise promise) {
-    boolean gotPermissions = Exponent.getInstance().getPermissions(new Exponent.PermissionsListener() {
+    boolean gotPermissions = Exponent.getInstance().requestPermissions(new Exponent.PermissionsListener() {
       @Override
       public void permissionsGranted() {
         promise.resolve(getSimplePermission(permission));
       }
+
       @Override
       public void permissionsDenied() {
         promise.resolve(getSimplePermission(permission));
       }
-    }, new String[] { permission });
+    }, new String[] { permission }, this.experienceId, mManifest.optString(ExponentManifest.MANIFEST_NAME_KEY));
 
     if (!gotPermissions) {
       promise.reject("E_ACTIVITY_DOES_NOT_EXIST", "No visible activity. Must request " +
@@ -229,16 +270,17 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION
     };
-    boolean gotPermissions = Exponent.getInstance().getPermissions(new Exponent.PermissionsListener() {
+    boolean gotPermissions = Exponent.getInstance().requestPermissions(new Exponent.PermissionsListener() {
       @Override
       public void permissionsGranted() {
         promise.resolve(getLocationPermissions());
       }
+
       @Override
       public void permissionsDenied() {
         promise.resolve(getLocationPermissions());
       }
-    }, permissions);
+    }, permissions, this.experienceId, mManifest.optString(ExponentManifest.MANIFEST_NAME_KEY));
 
     if (!gotPermissions) {
       promise.reject("E_ACTIVITY_DOES_NOT_EXIST", "No visible activity. Must request location when visible.");
@@ -250,16 +292,17 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
         Manifest.permission.READ_EXTERNAL_STORAGE,
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
-    boolean gotPermissions = Exponent.getInstance().getPermissions(new Exponent.PermissionsListener() {
+    boolean gotPermissions = Exponent.getInstance().requestPermissions(new Exponent.PermissionsListener() {
       @Override
       public void permissionsGranted() {
-        promise.resolve(getLocationPermissions());
+        promise.resolve(getCameraRollPermissions());
       }
+
       @Override
       public void permissionsDenied() {
-        promise.resolve(getLocationPermissions());
+        promise.resolve(getCameraRollPermissions());
       }
-    }, permissions);
+    }, permissions, this.experienceId, mManifest.optString(ExponentManifest.MANIFEST_NAME_KEY));
 
     if (!gotPermissions) {
       promise.reject("E_ACTIVITY_DOES_NOT_EXIST", "No visible activity. Must request camera roll permission when visible.");
@@ -269,18 +312,23 @@ public class PermissionsModule  extends ReactContextBaseJavaModule {
   private WritableMap getCameraRollPermissions() {
     WritableMap response = Arguments.createMap();
 
+    int globalRead, globalWrite;
+    globalRead = globalWrite = PackageManager.PERMISSION_GRANTED;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      int read = ContextCompat.checkSelfPermission(getReactApplicationContext(),
+      globalRead = ContextCompat.checkSelfPermission(getReactApplicationContext(),
           Manifest.permission.READ_EXTERNAL_STORAGE);
-      int write = ContextCompat.checkSelfPermission(getReactApplicationContext(),
+      globalWrite = ContextCompat.checkSelfPermission(getReactApplicationContext(),
           Manifest.permission.WRITE_EXTERNAL_STORAGE);
-      if (read == PackageManager.PERMISSION_GRANTED && write == PackageManager.PERMISSION_GRANTED) {
-        response.putString("status", "granted");
-      } else {
-        response.putString("status", "denied");
-      }
-    } else {
+    }
+    boolean experienceRead = mPermissionsKernelService
+        .hasGrantedPermissions(Manifest.permission.READ_EXTERNAL_STORAGE, this.experienceId);
+    boolean experienceWrite = mPermissionsKernelService
+        .hasGrantedPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, this.experienceId);
+    if (globalRead == PackageManager.PERMISSION_GRANTED && globalWrite == PackageManager.PERMISSION_GRANTED &&
+        experienceRead && experienceWrite) {
       response.putString("status", "granted");
+    } else {
+      response.putString("status", "denied");
     }
     response.putString("expires", PERMISSION_EXPIRES_NEVER);
 

@@ -436,7 +436,7 @@ ABI22_0_0RCT_REMAP_METHOD(record,
       [self updateSessionPreset:[[self class] captureSessionPresetForVideoResolution:(ABI22_0_0EXCameraVideoResolution)[options[@"quality"] integerValue]]];
     }
     
-    [self updateSessionAudioIsMuted:!!options[@"mute"]];
+    [self updateSessionAudioIsMuted:options[@"mute"] && [options[@"mute"] boolValue]];
 
     AVCaptureConnection *connection = [self.movieFileOutput connectionWithMediaType:AVMediaTypeVideo];
     [connection setVideoOrientation:[[self class] videoOrientationForInterfaceOrientation:[[UIApplication sharedApplication] statusBarOrientation]]];

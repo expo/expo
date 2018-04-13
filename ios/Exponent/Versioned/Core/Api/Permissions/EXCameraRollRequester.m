@@ -37,9 +37,10 @@
 - (void)requestPermissionsWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject
 {
   [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
-    resolve([[self class] permissions]);
+    NSDictionary *result = [[self class] permissions];
+    resolve(result);
     if (_delegate) {
-      [_delegate permissionRequesterDidFinish:self];
+      [_delegate permissionsRequester:self didFinishWithResult:result];
     }
   }];
 }

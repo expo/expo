@@ -40,14 +40,16 @@
 
   [contactStore requestAccessForEntityType:CNEntityTypeContacts completionHandler:^(BOOL granted, NSError * _Nullable error) {
     // Error code 100 is a when the user denies permission, in that case we don't want to reject.
+    NSDictionary *result;
     if (error && error.code != 100) {
       reject(@"E_CONTACTS_ERROR_UNKNOWN", error.localizedDescription, error);
     } else {
-      resolve([[self class] permissions]);
+      result = [[self class] permissions];
+      resolve(result);
     }
-
+    
     if (_delegate) {
-      [_delegate permissionRequesterDidFinish:self];
+      [_delegate permissionsRequester:self didFinishWithResult:result];
     }
   }];
 }

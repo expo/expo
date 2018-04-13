@@ -4,19 +4,15 @@ package versioned.host.exp.exponent.modules.api;
 
 import android.Manifest;
 import android.content.ContentResolver;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 
-import android.os.Build;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -36,10 +32,13 @@ import java.util.Map;
 import java.util.Set;
 
 import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.kernel.ExperienceId;
+import host.exp.expoview.Exponent;
+import versioned.host.exp.exponent.modules.ExpoKernelServiceConsumerBaseModule;
 
 import static android.provider.ContactsContract.*;
 
-public class ContactsModule extends ReactContextBaseJavaModule {
+public class ContactsModule extends ExpoKernelServiceConsumerBaseModule {
   private static final String TAG = ContactsModule.class.getSimpleName();
 
   private static List<String> PROJECTION = new ArrayList<String>() {{
@@ -57,8 +56,8 @@ public class ContactsModule extends ReactContextBaseJavaModule {
     add(CommonDataKinds.Organization.DEPARTMENT);
   }};
 
-  public ContactsModule(ReactApplicationContext reactContext) {
-    super(reactContext);
+  public ContactsModule(ReactApplicationContext reactContext, ExperienceId experienceId) {
+    super(reactContext, experienceId);
   }
 
   @Override
@@ -397,10 +396,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
 
 
   private boolean isMissingPermissions() {
-    return Build.VERSION.SDK_INT >= 23 &&
-        ContextCompat.checkSelfPermission(
-            getReactApplicationContext(),
-            Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED;
+    return !Exponent.getInstance().getPermissions(Manifest.permission.READ_CONTACTS, this.experienceId);
   }
 
   private static class Contact {

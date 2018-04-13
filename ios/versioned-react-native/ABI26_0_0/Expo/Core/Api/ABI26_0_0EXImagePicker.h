@@ -1,4 +1,4 @@
-#import <ReactABI26_0_0/ABI26_0_0RCTBridgeModule.h>
+#import "ABI26_0_0EXScopedBridgeModule.h"
 #import <UIKit/UIKit.h>
 
 typedef NS_ENUM(NSInteger, ABI26_0_0RNImagePickerTarget) {
@@ -6,6 +6,6 @@ typedef NS_ENUM(NSInteger, ABI26_0_0RNImagePickerTarget) {
   ABI26_0_0RNImagePickerTargetLibrarySingleImage,
 };
 
-@interface ABI26_0_0EXImagePicker : NSObject <ABI26_0_0RCTBridgeModule, UINavigationControllerDelegate, UIImagePickerControllerDelegate>
+@interface ABI26_0_0EXImagePicker : ABI26_0_0EXScopedBridgeModule <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 
 @end

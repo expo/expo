@@ -2,13 +2,11 @@
 
 package abi21_0_0.host.exp.exponent.modules.api;
 
-import android.content.pm.PackageManager;
+import android.Manifest;
 import android.hardware.GeomagneticField;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.os.Build;
-import android.support.v4.content.ContextCompat;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -18,7 +16,6 @@ import abi21_0_0.com.facebook.react.bridge.Arguments;
 import abi21_0_0.com.facebook.react.bridge.LifecycleEventListener;
 import abi21_0_0.com.facebook.react.bridge.Promise;
 import abi21_0_0.com.facebook.react.bridge.ReactApplicationContext;
-import abi21_0_0.com.facebook.react.bridge.ReactContextBaseJavaModule;
 import abi21_0_0.com.facebook.react.bridge.ReactMethod;
 import abi21_0_0.com.facebook.react.bridge.ReadableMap;
 import abi21_0_0.com.facebook.react.bridge.WritableArray;
@@ -28,8 +25,11 @@ import abi21_0_0.com.facebook.react.modules.core.DeviceEventManagerModule.RCTDev
 
 import java.util.List;
 
+import abi21_0_0.host.exp.exponent.modules.ExpoKernelServiceConsumerBaseModule;
+import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.utils.ScopedContext;
 import host.exp.exponent.utils.TimeoutObject;
+import host.exp.expoview.Exponent;
 import io.nlopez.smartlocation.OnGeocodingListener;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.OnReverseGeocodingListener;
@@ -39,7 +39,7 @@ import io.nlopez.smartlocation.location.config.LocationAccuracy;
 import io.nlopez.smartlocation.location.config.LocationParams;
 import io.nlopez.smartlocation.location.utils.LocationState;
 
-public class LocationModule extends ReactContextBaseJavaModule implements LifecycleEventListener, SensorEventListener {
+public class LocationModule extends ExpoKernelServiceConsumerBaseModule implements LifecycleEventListener, SensorEventListener {
 
   private ScopedContext mScopedContext;
   private LocationParams mLocationParams;
@@ -58,8 +58,9 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
   private static final double DEGREE_DELTA = 0.0355; // in radians, about 2 degrees
   private static final float TIME_DELTA = 50; // in milliseconds
 
-  public LocationModule(ReactApplicationContext reactContext, ScopedContext scopedContext) {
-    super(reactContext);
+  public LocationModule(ReactApplicationContext reactContext, ScopedContext scopedContext,
+                        ExperienceId experienceId) {
+    super(reactContext, experienceId);
     reactContext.addLifecycleEventListener(this);
 
     mScopedContext = scopedContext;
@@ -100,9 +101,8 @@ public class LocationModule extends ReactContextBaseJavaModule implements Lifecy
   }
 
   private boolean isMissingPermissions() {
-    return Build.VERSION.SDK_INT >= 23 &&
-        ContextCompat.checkSelfPermission(getReactApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
-        ContextCompat.checkSelfPermission(getReactApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED;
+    return !Exponent.getInstance().getPermissions(android.Manifest.permission.ACCESS_FINE_LOCATION, this.experienceId) &&
+        !Exponent.getInstance().getPermissions(Manifest.permission.ACCESS_COARSE_LOCATION, this.experienceId);
   }
 
   @ReactMethod

@@ -2,12 +2,10 @@
 
 package host.exp.expoview;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
@@ -15,7 +13,6 @@ import android.os.Looper;
 import android.os.StrictMode;
 import android.os.UserManager;
 import android.provider.Settings;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.amplitude.api.Amplitude;
@@ -35,7 +32,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -70,12 +66,14 @@ import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.generated.ExponentKeys;
+import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.kernel.KernelProvider;
 import host.exp.exponent.network.ExponentHttpClient;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
+import host.exp.exponent.utils.PermissionsHelper;
 
 public class Exponent {
 
@@ -230,96 +228,34 @@ public class Exponent {
   }
 
 
-
-
   public interface PermissionsListener {
     void permissionsGranted();
 
     void permissionsDenied();
   }
 
-  private PermissionsListener mPermissionsListener;
-  private static final int EXPONENT_PERMISSIONS_REQUEST = 13;
   private List<ActivityResultListener> mActivityResultListeners = new ArrayList<>();
+  private PermissionsHelper mPermissionsHelper;
 
-  public boolean getPermissionToReadUserContacts(PermissionsListener listener) {
-    return getPermissions(listener, new String[]{Manifest.permission.READ_CONTACTS});
+  public boolean getPermissions(String permissions, ExperienceId experienceId) {
+    return new PermissionsHelper(experienceId).getPermissions(permissions);
   }
 
-  public boolean getPermissions(PermissionsListener listener, String[] permissions) {
-    if (mActivity == null) {
-      return false;
-    }
+  public boolean requestPermissions(PermissionsListener listener, String[] permissions,
+                                    ExperienceId experienceId, String experienceName) {
+    mPermissionsHelper = new PermissionsHelper(experienceId);
+    return mPermissionsHelper.requestPermissions(listener, permissions, experienceName);
+  }
 
-    // Compiler is dumb and shows error on M api calls if these two ifs are merged.
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      listener.permissionsGranted();
-    }
-    // Dumb compiler.
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      return true;
-    }
-
-    boolean isGranted = true;
-    List<String> permissionsToRequest = new ArrayList<>();
-    List<String> permissionsToExplain = new ArrayList<>();
-    for (String permission : permissions) {
-      if (ContextCompat.checkSelfPermission(mActivity, permission) != PackageManager.PERMISSION_GRANTED) {
-        isGranted = false;
-        permissionsToRequest.add(permission);
-
-        if (mActivity.shouldShowRequestPermissionRationale(permission)) {
-          permissionsToExplain.add(permission);
-        }
-      }
-    }
-
-    if (isGranted) {
-      listener.permissionsGranted();
-      return true;
-    }
-
-    // TODO: explain why this experience needs permissionsToExplain
-
-    mPermissionsListener = listener;
-    mActivity.requestPermissions(permissionsToRequest.toArray(new String[permissionsToRequest.size()]),
-        EXPONENT_PERMISSIONS_REQUEST);
-
-    return true;
+  public void requestExperiencePermissions(PermissionsListener listener, String[] permissions,
+                                           ExperienceId experienceId, String experienceName) {
+    new PermissionsHelper(experienceId).requestExperiencePermissions(listener, permissions, experienceName);
   }
 
   public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-    if (requestCode == EXPONENT_PERMISSIONS_REQUEST) {
-      if (mPermissionsListener == null) {
-        // sometimes onRequestPermissionsResult is called multiple times if the first permission
-        // is rejected...
-        return;
-      }
-
-      boolean isGranted = false;
-      if (grantResults.length > 0) {
-        isGranted = true;
-        for (int result : grantResults) {
-          if (result != PackageManager.PERMISSION_GRANTED) {
-            isGranted = false;
-            break;
-          }
-        }
-      }
-
-      if (isGranted) {
-        mPermissionsListener.permissionsGranted();
-      } else {
-        mPermissionsListener.permissionsDenied();
-      }
-      mPermissionsListener = null;
-    } else {
-      if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-        mActivity.onRequestPermissionsResult(requestCode, permissions, grantResults);
-      }
-    }
+    mPermissionsHelper.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    mPermissionsHelper = null;
   }
-
 
 
   public static class InstanceManagerBuilderProperties {

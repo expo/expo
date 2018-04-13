@@ -38,8 +38,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.utils.ExpFileUtils;
 import host.exp.exponent.utils.ScopedContext;
+import host.exp.expoview.Exponent;
+import versioned.host.exp.exponent.modules.ExpoKernelServiceConsumerBaseModule;
 import versioned.host.exp.exponent.modules.api.av.player.PlayerData;
 import versioned.host.exp.exponent.modules.api.av.video.VideoTextureView;
 import versioned.host.exp.exponent.modules.api.av.video.VideoView;
@@ -47,7 +50,7 @@ import versioned.host.exp.exponent.modules.api.av.video.VideoViewWrapper;
 
 import static android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED;
 
-public class AVModule extends ReactContextBaseJavaModule
+public class AVModule extends ExpoKernelServiceConsumerBaseModule
     implements LifecycleEventListener, AudioManager.OnAudioFocusChangeListener, MediaRecorder.OnInfoListener {
   private static final String AUDIO_MODE_SHOULD_DUCK_KEY = "shouldDuckAndroid";
   private static final String AUDIO_MODE_INTERRUPTION_MODE_KEY = "interruptionModeAndroid";
@@ -106,8 +109,9 @@ public class AVModule extends ReactContextBaseJavaModule
     return "ExponentAV";
   }
 
-  public AVModule(final ReactApplicationContext reactContext, final ScopedContext scopedContext) {
-    super(reactContext);
+  public AVModule(final ReactApplicationContext reactContext, final ScopedContext scopedContext,
+                  ExperienceId experienceId) {
+    super(reactContext, experienceId);
 
     mScopedContext = scopedContext;
     mReactApplicationContext = reactContext;
@@ -475,8 +479,7 @@ public class AVModule extends ReactContextBaseJavaModule
   // Recording API
 
   private boolean isMissingAudioRecordingPermissions() {
-    return Build.VERSION.SDK_INT >= 23 &&
-        ContextCompat.checkSelfPermission(getReactApplicationContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED;
+    return Exponent.getInstance().getPermissions(Manifest.permission.RECORD_AUDIO, this.experienceId);
   }
 
   // Rejects the promise and returns false if the MediaRecorder is not found.

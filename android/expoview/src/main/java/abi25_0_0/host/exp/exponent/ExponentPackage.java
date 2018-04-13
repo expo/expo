@@ -151,26 +151,26 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new DeviceMotionModule(reactContext, experienceId));
         nativeModules.add(new MagnetometerUncalibratedModule(reactContext, experienceId));
         nativeModules.add(new NotificationsModule(reactContext, mManifest, mExperienceProperties));
-        nativeModules.add(new ContactsModule(reactContext));
+        nativeModules.add(new ContactsModule(reactContext, experienceId));
         nativeModules.add(new FileSystemModule(reactContext, scopedContext, mExperienceProperties));
-        nativeModules.add(new LocationModule(reactContext, scopedContext));
+        nativeModules.add(new LocationModule(reactContext, scopedContext, experienceId));
         nativeModules.add(new CryptoModule(reactContext));
-        nativeModules.add(new ImagePickerModule(reactContext, scopedContext));
+        nativeModules.add(new ImagePickerModule(reactContext, scopedContext, experienceId));
         nativeModules.add(new ImageManipulatorModule(reactContext, scopedContext));
         nativeModules.add(new FacebookModule(reactContext));
         nativeModules.add(new FabricModule(reactContext, mExperienceProperties));
         nativeModules.add(new FingerprintModule(reactContext));
         nativeModules.add(new GoogleModule(reactContext, mExperienceProperties));
-        nativeModules.add(new PermissionsModule(reactContext));
+        nativeModules.add(new PermissionsModule(reactContext, experienceId, mManifest));
         nativeModules.add(new AmplitudeModule(reactContext, scopedContext));
         nativeModules.add(new SegmentModule(reactContext, scopedContext));
-        nativeModules.add(new CameraModule(reactContext, scopedContext));
+        nativeModules.add(new CameraModule(reactContext, scopedContext, experienceId));
         nativeModules.add(new FaceDetectorModule(reactContext, scopedContext));
         nativeModules.add(new RNViewShotModule(reactContext, scopedContext));
         nativeModules.add(new KeepAwakeModule(reactContext));
         nativeModules.add(new ExponentTestNativeModule(reactContext));
         nativeModules.add(new WebBrowserModule(reactContext));
-        nativeModules.add(new AVModule(reactContext, scopedContext));
+        nativeModules.add(new AVModule(reactContext, scopedContext, experienceId));
         nativeModules.add(new VideoManager(reactContext));
         nativeModules.add(new NativeAdManager(reactContext));
         nativeModules.add(new AdSettingsManager(reactContext));
@@ -191,7 +191,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new BarCodeScannerModule(reactContext));
         nativeModules.add(new RNAWSCognitoModule(reactContext));
         nativeModules.add(new MailComposerModule(reactContext));
-        nativeModules.add(new CalendarModule(reactContext));
+        nativeModules.add(new CalendarModule(reactContext, experienceId));
       } catch (JSONException | UnsupportedEncodingException e) {
         EXL.e(TAG, e.toString());
       }

@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <ReactABI26_0_0/ABI26_0_0RCTBridgeModule.h>
+#import "ABI26_0_0EXScopedBridgeModule.h"
 
-@interface ABI26_0_0EXContacts : NSObject <ABI26_0_0RCTBridgeModule>
+@interface ABI26_0_0EXContacts : ABI26_0_0EXScopedBridgeModule
 
 @end

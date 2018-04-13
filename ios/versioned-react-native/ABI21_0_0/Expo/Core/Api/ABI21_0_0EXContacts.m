@@ -2,18 +2,29 @@
 
 #import "ABI21_0_0EXContacts.h"
 #import "ABI21_0_0EXContactsRequester.h"
+#import "ABI21_0_0EXPermissions.h"
+#import "ABI21_0_0EXScopedModuleRegistry.h"
 
 @import Contacts;
 
 @interface ABI21_0_0EXContacts ()
 
 @property (nonatomic, strong) CNContactStore *contactStore;
+@property (nonatomic, weak) id kernelPermissionsServiceDelegate;
 
 @end
 
 @implementation ABI21_0_0EXContacts
 
-ABI21_0_0RCT_EXPORT_MODULE(ExponentContacts);
+ABI21_0_0EX_EXPORT_SCOPED_MODULE(ExponentContacts, PermissionsManager);
+
+- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
+{
+  if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
+    _kernelPermissionsServiceDelegate = kernelServiceInstance;
+  }
+  return self;
+}
 
 /**
  * @param options Options including what fields to get and paging information.
@@ -24,7 +35,8 @@ ABI21_0_0RCT_EXPORT_METHOD(getContactsAsync:(NSDictionary *)options resolver:(AB
     _contactStore = [[CNContactStore alloc] init];
   }
 
-  if ([ABI21_0_0EXPermissions statusForPermissions:[ABI21_0_0EXContactsRequester permissions]] != ABI21_0_0EXPermissionStatusGranted) {
+  if ([ABI21_0_0EXPermissions statusForPermissions:[ABI21_0_0EXContactsRequester permissions]] != ABI21_0_0EXPermissionStatusGranted ||
+      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"contacts" forExperience:self.experienceId]) {
     reject(@"E_MISSING_PERMISSION", @"Missing contacts permission.", nil);
     return;
   }

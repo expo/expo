@@ -35,15 +35,18 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import abi25_0_0.host.exp.exponent.modules.ExpoKernelServiceConsumerBaseModule;
 import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.kernel.ExperienceId;
+import host.exp.expoview.Exponent;
 
 import static android.provider.ContactsContract.*;
 
-public class ContactsModule extends ReactContextBaseJavaModule {
+public class ContactsModule extends ExpoKernelServiceConsumerBaseModule {
   private static final String TAG = ContactsModule.class.getSimpleName();
 
-  public ContactsModule(ReactApplicationContext reactContext) {
-    super(reactContext);
+  public ContactsModule(ReactApplicationContext reactContext, ExperienceId experienceId) {
+    super(reactContext, experienceId);
   }
 
   @Override
@@ -316,10 +319,7 @@ public class ContactsModule extends ReactContextBaseJavaModule {
   }
 
   private boolean isMissingPermissions() {
-    return Build.VERSION.SDK_INT >= 23 &&
-        ContextCompat.checkSelfPermission(
-            getReactApplicationContext(),
-            Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED;
+    return !Exponent.getInstance().getPermissions(Manifest.permission.READ_CONTACTS, this.experienceId);
   }
 
   private WritableArray getPhoneNumbersFromContentResolver(long id, ContentResolver cr) {

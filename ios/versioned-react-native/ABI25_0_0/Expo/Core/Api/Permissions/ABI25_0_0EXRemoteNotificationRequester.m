@@ -64,7 +64,7 @@
     _reject = nil;
   }
   if (_delegate) {
-    [_delegate permissionRequesterDidFinish:self];
+    [_delegate permissionsRequester:self didFinishWithResult:nil];
   }
 }
 

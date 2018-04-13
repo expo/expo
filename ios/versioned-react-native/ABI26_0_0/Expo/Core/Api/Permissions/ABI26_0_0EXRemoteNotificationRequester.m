@@ -90,14 +90,14 @@
       _reject = nil;
     }
     if (_delegate) {
-      [_delegate permissionRequesterDidFinish:self];
+      [_delegate permissionsRequester:self didFinishWithResult:nil];
     }
   }
 }
 
 # pragma mark - ABI26_0_0EXPermissionRequesterDelegate
 
-- (void)permissionRequesterDidFinish:(NSObject<ABI26_0_0EXPermissionRequester> *)requester
+- (void)permissionsRequester:(NSObject<ABI26_0_0EXPermissionRequester> *)requester didFinishWithResult:(NSDictionary *)requestResult
 {
   if (requester == _localNotificationRequester) {
     _localNotificationRequester = nil;

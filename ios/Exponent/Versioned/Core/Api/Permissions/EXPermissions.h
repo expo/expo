@@ -1,6 +1,7 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <React/RCTBridgeModule.h>
+#import "EXScopedBridgeModule.h"
+#import <UIKit/UIKit.h>
 
 FOUNDATION_EXPORT NSString * const EXPermissionExpiresNever;
 
@@ -20,11 +21,18 @@ typedef enum EXPermissionStatus {
 
 @protocol EXPermissionRequesterDelegate <NSObject>
 
-- (void)permissionRequesterDidFinish: (NSObject<EXPermissionRequester> *)requester;
+- (void)permissionsRequester:(NSObject<EXPermissionRequester> *)requester didFinishWithResult:(NSDictionary *)requestResult;
 
 @end
 
-@interface EXPermissions : NSObject <RCTBridgeModule, EXPermissionRequesterDelegate>
+@protocol EXPermissionsScopedModuleDelegate
+
+- (BOOL)hasGrantedPermission:(NSString *)permission forExperience:(NSString *)experienceId;
+- (BOOL)savePermission:(NSDictionary *)permission ofType:(NSString *)type forExperience:(NSString *)experienceId;
+
+@end
+
+@interface EXPermissions : EXScopedBridgeModule <EXPermissionRequesterDelegate>
 
 + (NSString *)permissionStringForStatus:(EXPermissionStatus)status;
 

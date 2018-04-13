@@ -2,48 +2,38 @@ package abi26_0_0.host.exp.exponent.modules.api.components.camera;
 
 import android.Manifest;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.os.Build;
-import android.util.Base64;
 
-import abi26_0_0.com.facebook.react.bridge.Arguments;
-import abi26_0_0.com.facebook.react.bridge.Promise;
-import abi26_0_0.com.facebook.react.bridge.ReactApplicationContext;
-import abi26_0_0.com.facebook.react.bridge.ReactContextBaseJavaModule;
-import abi26_0_0.com.facebook.react.bridge.ReactMethod;
-import abi26_0_0.com.facebook.react.bridge.ReadableMap;
-import abi26_0_0.com.facebook.react.bridge.WritableArray;
-import abi26_0_0.com.facebook.react.bridge.WritableMap;
-import abi26_0_0.com.facebook.react.uimanager.NativeViewHierarchyManager;
-import abi26_0_0.com.facebook.react.uimanager.UIBlock;
-import abi26_0_0.com.facebook.react.uimanager.UIManagerModule;
 import com.google.android.cameraview.AspectRatio;
 import com.google.android.cameraview.Constants;
 import com.google.android.gms.vision.barcode.Barcode;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.nio.ByteBuffer;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import host.exp.exponent.analytics.EXL;
-import host.exp.exponent.utils.ExpFileUtils;
-import host.exp.exponent.utils.ScopedContext;
-import host.exp.expoview.Exponent;
+import abi26_0_0.com.facebook.react.bridge.Arguments;
+import abi26_0_0.com.facebook.react.bridge.Promise;
+import abi26_0_0.com.facebook.react.bridge.ReactApplicationContext;
+import abi26_0_0.com.facebook.react.bridge.ReactMethod;
+import abi26_0_0.com.facebook.react.bridge.ReadableMap;
+import abi26_0_0.com.facebook.react.bridge.WritableArray;
+import abi26_0_0.com.facebook.react.uimanager.NativeViewHierarchyManager;
+import abi26_0_0.com.facebook.react.uimanager.UIBlock;
+import abi26_0_0.com.facebook.react.uimanager.UIManagerModule;
+import abi26_0_0.host.exp.exponent.modules.ExpoKernelServiceConsumerBaseModule;
 import abi26_0_0.host.exp.exponent.modules.api.components.camera.tasks.ResolveTakenPictureAsyncTask;
 import abi26_0_0.host.exp.exponent.modules.api.components.facedetector.ExpoFaceDetector;
+import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.utils.ScopedContext;
+import host.exp.expoview.Exponent;
 
-public class CameraModule extends ReactContextBaseJavaModule {
+public class CameraModule extends ExpoKernelServiceConsumerBaseModule {
   private static final String TAG = "CameraModule";
 
   private ScopedContext mScopedContext;
@@ -73,8 +63,9 @@ public class CameraModule extends ReactContextBaseJavaModule {
         }
       });
 
-  public CameraModule(ReactApplicationContext reactContext, ScopedContext scopedContext) {
-    super(reactContext);
+  public CameraModule(ReactApplicationContext reactContext, ScopedContext scopedContext,
+                      ExperienceId experienceId) {
+    super(reactContext, experienceId);
     mScopedContext = scopedContext;
   }
 
@@ -220,36 +211,31 @@ public class CameraModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void record(final ReadableMap options, final int viewTag, final Promise promise) {
-    Exponent.getInstance().getPermissions(new Exponent.PermissionsListener() {
+    if ((!options.hasKey("mute") || (options.hasKey("mute") && !options.getBoolean("mute"))) &&
+        !Exponent.getInstance().getPermissions(Manifest.permission.RECORD_AUDIO, this.experienceId)) {
+      promise.reject(new SecurityException("User rejected audio permissions"));
+      return;
+    }
+    final ReactApplicationContext context = getReactApplicationContext();
+    final File cacheDirectory = mScopedContext.getCacheDir();
+    UIManagerModule uiManager = context.getNativeModule(UIManagerModule.class);
+    uiManager.addUIBlock(new UIBlock() {
       @Override
-      public void permissionsGranted() {
-        final ReactApplicationContext context = getReactApplicationContext();
-        final File cacheDirectory = mScopedContext.getCacheDir();
-        UIManagerModule uiManager = context.getNativeModule(UIManagerModule.class);
-        uiManager.addUIBlock(new UIBlock() {
-          @Override
-          public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
-            final ExpoCameraView cameraView;
+      public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
+        final ExpoCameraView cameraView;
 
-            try {
-              cameraView = (ExpoCameraView) nativeViewHierarchyManager.resolveView(viewTag);
-              if (cameraView.isCameraOpened()) {
-                cameraView.record(options, promise, cacheDirectory);
-              } else {
-                promise.reject("E_CAMERA_UNAVAILABLE", "Camera is not running");
-              }
-            } catch (Exception e) {
-              promise.reject("E_CAMERA_BAD_VIEWTAG", "recordAsync: Expected a Camera component");
-            }
+        try {
+          cameraView = (ExpoCameraView) nativeViewHierarchyManager.resolveView(viewTag);
+          if (cameraView.isCameraOpened()) {
+            cameraView.record(options, promise, cacheDirectory);
+          } else {
+            promise.reject("E_CAMERA_UNAVAILABLE", "Camera is not running");
           }
-        });
+        } catch (Exception e) {
+          promise.reject("E_CAMERA_BAD_VIEWTAG", "recordAsync: Expected a Camera component");
+        }
       }
-
-      @Override
-      public void permissionsDenied() {
-        promise.reject(new SecurityException("User rejected audio permissions"));
-      }
-    }, new String[]{Manifest.permission.RECORD_AUDIO});
+    });
   }
 
   @ReactMethod

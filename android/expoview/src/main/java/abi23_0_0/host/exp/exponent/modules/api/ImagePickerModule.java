@@ -39,13 +39,15 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.utils.IoUtils;
 import com.theartofdev.edmodo.cropper.CropImage;
 
+import abi23_0_0.host.exp.exponent.modules.ExpoKernelServiceConsumerBaseModule;
 import host.exp.exponent.ActivityResultListener;
 import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.utils.ExpFileUtils;
 import host.exp.exponent.utils.ScopedContext;
 import host.exp.expoview.Exponent;
 
-public class ImagePickerModule extends ReactContextBaseJavaModule implements ActivityResultListener {
+public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule implements ActivityResultListener {
   static final int REQUEST_LAUNCH_CAMERA = 1;
   static final int REQUEST_LAUNCH_IMAGE_LIBRARY = 2;
 
@@ -68,8 +70,9 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
 
   private ScopedContext mScopedContext;
 
-  public ImagePickerModule(ReactApplicationContext reactContext, ScopedContext scopedContext) {
-    super(reactContext);
+  public ImagePickerModule(ReactApplicationContext reactContext, ScopedContext scopedContext,
+                           ExperienceId experienceId) {
+    super(reactContext, experienceId);
     mScopedContext = scopedContext;
     Exponent.getInstance().addActivityResultListener(this);
   }
@@ -116,17 +119,12 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
       return;
     }
 
-    Exponent.getInstance().getPermissions(new Exponent.PermissionsListener() {
-      @Override
-      public void permissionsGranted() {
-        launchCameraWithPermissionsGranted(promise, cameraIntent);
-      }
-
-      @Override
-      public void permissionsDenied() {
-        promise.reject(new SecurityException("User rejected permissions"));
-      }
-    }, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA});
+    if (Exponent.getInstance().getPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, this.experienceId) &&
+        Exponent.getInstance().getPermissions(Manifest.permission.CAMERA, this.experienceId)) {
+      launchCameraWithPermissionsGranted(promise, cameraIntent);
+    } else {
+      promise.reject(new SecurityException("User rejected permissions"));
+    }
   }
 
   private void launchCameraWithPermissionsGranted(Promise promise, Intent cameraIntent) {
@@ -169,27 +167,17 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
       return;
     }
 
-    Exponent.getInstance().getPermissions(new Exponent.PermissionsListener() {
-      @Override
-      public void permissionsGranted() {
-        launchImageLibraryWithPermissionsGranted(promise);
-      }
-
-      @Override
-      public void permissionsDenied() {
-        promise.reject(new SecurityException("User rejected permissions."));
-      }
-    }, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE});
-  }
-
-  private void launchImageLibraryWithPermissionsGranted(Promise promise) {
-    Intent libraryIntent = new Intent();
-    libraryIntent.setType("*/*");
-    String[] mimetypes = {"image/*", "video/*"};
-    libraryIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
-    libraryIntent.setAction(Intent.ACTION_GET_CONTENT);
-    mPromise = promise;
-    Exponent.getInstance().getCurrentActivity().startActivityForResult(libraryIntent, REQUEST_LAUNCH_IMAGE_LIBRARY);
+    if (Exponent.getInstance().getPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, this.experienceId)) {
+      Intent libraryIntent = new Intent();
+      libraryIntent.setType("*/*");
+      String[] mimetypes = {"image/*", "video/*"};
+      libraryIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
+      libraryIntent.setAction(Intent.ACTION_GET_CONTENT);
+      mPromise = promise;
+      Exponent.getInstance().getCurrentActivity().startActivityForResult(libraryIntent, REQUEST_LAUNCH_IMAGE_LIBRARY);
+    } else {
+      promise.reject(new SecurityException("User rejected permissions."));
+    }
   }
 
   public void onActivityResult(final int requestCode, final int resultCode, final Intent intent) {

@@ -2,18 +2,29 @@
 
 #import "EXContacts.h"
 #import "EXContactsRequester.h"
+#import "EXPermissions.h"
+#import "EXScopedModuleRegistry.h"
 
 @import Contacts;
 
 @interface EXContacts ()
 
 @property (nonatomic, strong) CNContactStore *contactStore;
+@property (nonatomic, weak) id kernelPermissionsServiceDelegate;
 
 @end
 
 @implementation EXContacts
 
-RCT_EXPORT_MODULE(ExponentContacts);
+EX_EXPORT_SCOPED_MODULE(ExponentContacts, PermissionsManager);
+
+- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
+{
+  if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
+    _kernelPermissionsServiceDelegate = kernelServiceInstance;
+  }
+  return self;
+}
 
 /**
  * @param options Options including what fields to get and paging information.
@@ -24,7 +35,8 @@ RCT_EXPORT_METHOD(getContactsAsync:(NSDictionary *)options resolver:(RCTPromiseR
     _contactStore = [[CNContactStore alloc] init];
   }
 
-  if ([EXPermissions statusForPermissions:[EXContactsRequester permissions]] != EXPermissionStatusGranted) {
+  if ([EXPermissions statusForPermissions:[EXContactsRequester permissions]] != EXPermissionStatusGranted ||
+      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"contacts" forExperience:self.experienceId]) {
     reject(@"E_MISSING_PERMISSION", @"Missing contacts permission.", nil);
     return;
   }

@@ -1,9 +1,10 @@
 package abi22_0_0.host.exp.exponent.modules.api.components.camera;
 
+import android.Manifest;
+
 import abi22_0_0.com.facebook.react.bridge.Arguments;
 import abi22_0_0.com.facebook.react.bridge.Promise;
 import abi22_0_0.com.facebook.react.bridge.ReactApplicationContext;
-import abi22_0_0.com.facebook.react.bridge.ReactContextBaseJavaModule;
 import abi22_0_0.com.facebook.react.bridge.ReactMethod;
 import abi22_0_0.com.facebook.react.bridge.ReadableMap;
 import abi22_0_0.com.facebook.react.bridge.WritableArray;
@@ -17,9 +18,12 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
+import abi22_0_0.host.exp.exponent.modules.ExpoKernelServiceConsumerBaseModule;
+import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.utils.ScopedContext;
+import host.exp.expoview.Exponent;
 
-public class CameraModule extends ReactContextBaseJavaModule {
+public class CameraModule extends ExpoKernelServiceConsumerBaseModule {
   private static final String TAG = "CameraModule";
 
   private static ReactApplicationContext mReactContext;
@@ -31,8 +35,9 @@ public class CameraModule extends ReactContextBaseJavaModule {
   static final int VIDEO_480P = 3;
   static final int VIDEO_4x3 = 4;
 
-  public CameraModule(ReactApplicationContext reactContext, ScopedContext scopedContext) {
-    super(reactContext);
+  public CameraModule(ReactApplicationContext reactContext, ScopedContext scopedContext,
+                      ExperienceId experienceId) {
+    super(reactContext, experienceId);
     mReactContext = reactContext;
     mScopedContext = scopedContext;
   }
@@ -125,6 +130,11 @@ public class CameraModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void record(ReadableMap options, final Promise promise) {
+    if ((!options.hasKey("mute") || (options.hasKey("mute") && !options.getBoolean("mute"))) &&
+        !Exponent.getInstance().getPermissions(Manifest.permission.RECORD_AUDIO, this.experienceId)) {
+      promise.reject(new SecurityException("User rejected audio permissions"));
+      return;
+    }
     CameraViewManager.getInstance().record(options, promise);
   }
 

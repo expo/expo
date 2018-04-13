@@ -71,7 +71,7 @@
     // just resolve with whatever existing permissions.
     resolve(existingPermissions);
     if (_delegate) {
-      [_delegate permissionRequesterDidFinish:self];
+      [_delegate permissionsRequester:self didFinishWithResult:existingPermissions];
     }
   } else {
     _resolve = resolve;
@@ -89,7 +89,7 @@
     } else {
       _reject(@"E_LOCATION_INFO_PLIST", @"Either NSLocationWhenInUseUsageDescription or NSLocationAlwaysUsageDescription key must be present in Info.plist to use geolocation.", nil);
       if (_delegate) {
-        [_delegate permissionRequesterDidFinish:self];
+        [_delegate permissionsRequester:self didFinishWithResult:nil];
       }
     }
   }
@@ -110,7 +110,7 @@
     _reject = nil;
   }
   if (_delegate) {
-    [_delegate permissionRequesterDidFinish:self];
+    [_delegate permissionsRequester:self didFinishWithResult:nil];
   }
 }
 
@@ -122,13 +122,14 @@
     // http://stackoverflow.com/questions/30106341/swift-locationmanager-didchangeauthorizationstatus-always-called/30107511#30107511
     return;
   }
+  NSDictionary *result = [[self class] permissions];
   if (_resolve) {
-    _resolve([[self class] permissions]);
+    _resolve(result);
     _resolve = nil;
     _reject = nil;
   }
   if (_delegate) {
-    [_delegate permissionRequesterDidFinish:self];
+    [_delegate permissionsRequester:self didFinishWithResult:result];
   }
 }
 

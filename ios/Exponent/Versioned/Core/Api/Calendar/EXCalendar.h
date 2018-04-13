@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <React/RCTBridgeModule.h>
+#import "EXScopedBridgeModule.h"
 
-@interface EXCalendar : NSObject <RCTBridgeModule>
+@interface EXCalendar : EXScopedBridgeModule
 
 @end

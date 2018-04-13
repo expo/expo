@@ -44,15 +44,17 @@
 {
   EKEventStore *eventStore = [[EKEventStore alloc] init];
   [eventStore requestAccessToEntityType:EKEntityTypeEvent completion:^(BOOL granted, NSError *error) {
+    NSDictionary *result;
     // Error code 100 is a when the user denies permission; in that case we don't want to reject.
     if (error && error.code != 100) {
       reject(@"E_CALENDAR_ERROR_UNKNOWN", error.localizedDescription, error);
     } else {
-      resolve([[self class] permissions]);
+      result = [[self class] permissions];
+      resolve(result);
     }
 
     if (_delegate) {
-      [_delegate permissionRequesterDidFinish:self];
+      [_delegate permissionsRequester:self didFinishWithResult:result];
     }
   }];
 }
