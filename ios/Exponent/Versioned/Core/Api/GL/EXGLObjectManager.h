@@ -4,4 +4,7 @@
 
 @interface EXGLObjectManager : NSObject <RCTBridgeModule>
 
+- (void)saveContext:(nonnull id)glContext;
+- (void)deleteContextWithId:(nonnull NSNumber *)contextId;
+
 @end

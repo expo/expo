@@ -255,6 +255,7 @@ class GLCameraObject extends GLObject implements SurfaceTexture.OnFrameAvailable
 
 public class GLObjectManagerModule extends ReactContextBaseJavaModule {
   private SparseArray<GLObject> mGLObjects = new SparseArray<>();
+  private SparseArray<GLContext> mGLContextMap = new SparseArray<>();
   private ScopedContext mScopedContext;
 
   public GLObjectManagerModule(ReactApplicationContext reactContext, ScopedContext scopedContext) {
@@ -265,6 +266,18 @@ public class GLObjectManagerModule extends ReactContextBaseJavaModule {
   @Override
   public String getName() {
     return "ExponentGLObjectManager";
+  }
+
+  public GLContext getContextWithId(int exglCtxId) {
+    return mGLContextMap.get(exglCtxId);
+  }
+
+  public void saveContext(final GLContext glContext) {
+    mGLContextMap.put(glContext.getContextId(), glContext);
+  }
+
+  public void deleteContextWithId(final int exglCtxId) {
+    mGLContextMap.delete(exglCtxId);
   }
 
   @ReactMethod
@@ -318,24 +331,40 @@ public class GLObjectManagerModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void takeSnapshotAsync(final int glViewTag, final ReadableMap options, final Promise promise) {
+  public void takeSnapshotAsync(final int exglCtxId, final ReadableMap options, final Promise promise) {
+    GLContext glContext = getContextWithId(exglCtxId);
+
+    if (glContext == null) {
+      promise.reject("E_GL_NO_CONTEXT", "ExponentGLObjectManager.takeSnapshotAsync: GLContext not found for given context id.");
+    } else {
+      glContext.takeSnapshot(options, mScopedContext, promise);
+    }
+  }
+
+  @ReactMethod
+  public void createContextAsync(final Promise promise) {
+    final GLContext glContext = new GLContext(this);
     ReactApplicationContext reactContext = getReactApplicationContext();
-    UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
 
-    uiManager.addUIBlock(new UIBlock() {
+    glContext.initialize(reactContext, null, new Runnable() {
       @Override
-      public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
-        final GLView glView;
-
-        try {
-          glView = (GLView) nativeViewHierarchyManager.resolveView(glViewTag);
-        } catch (Exception e) {
-          promise.reject("E_GL_BAD_VIEW_TAG", "ExponentGLObjectManager.takeSnapshotAsync: Expected a GLView");
-          return;
-        }
-
-        glView.takeSnapshot(options, mScopedContext, promise);
+      public void run() {
+        WritableMap results = Arguments.createMap();
+        results.putInt("exglCtxId", glContext.getContextId());
+        promise.resolve(results);
       }
     });
+  }
+
+  @ReactMethod
+  public void destroyContextAsync(final int exglCtxId, final Promise promise) {
+    GLContext glContext = getContextWithId(exglCtxId);
+
+    if (glContext != null) {
+      glContext.destroy();
+      promise.resolve(true);
+    } else {
+      promise.resolve(false);
+    }
   }
 }

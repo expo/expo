@@ -17,8 +17,10 @@
 
 - (instancetype)initWithView:(EXGLView *)glView andCamera:(EXCamera *)camera
 {
-  if (self = [super initWithConfig:@{ @"exglCtxId": @([glView exglCtxId]) }]) {
-    _eaglCtx = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3 sharegroup:[[glView eaglCtx] sharegroup]];
+  UEXGLContextId exglCtxId = [glView.glContext contextId];
+
+  if (self = [super initWithConfig:@{ @"exglCtxId": @(exglCtxId) }]) {
+    _eaglCtx = [glView.glContext createSharedEAGLContext];
     _camera = camera;
 
     dispatch_async(camera.sessionQueue, ^{

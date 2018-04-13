@@ -227,10 +227,21 @@ public:
       this->supportsWebGL2 = glesVersion >= 3.0;
       
       glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebuffer);
-      glClearColor(0, 0, 0, 0);
-      glClearDepthf(1);
-      glClearStencil(0);
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+      GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+      // This should not be called on headless contexts as they don't have default framebuffer.
+      // On headless context, status is undefined.
+      if (status != GL_FRAMEBUFFER_UNDEFINED) {
+        glClearColor(0, 0, 0, 0);
+        glClearDepthf(1);
+        glClearStencil(0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+      } else {
+        // Set up an initial viewport for headless context.
+        // These values are the same as newly created WebGL context has,
+        // however they should be changed by the user anyway.
+        glViewport(0, 0, 300, 150);
+      }
     });
   }
 

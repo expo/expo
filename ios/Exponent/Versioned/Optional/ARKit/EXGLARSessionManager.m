@@ -50,7 +50,7 @@ static GLfloat arCamVerts[] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
   [self.arSession runWithConfiguration:self.arConfig];
   _arCamOutputEXGLObj = UEXGLContextCreateObject(_glView.exglCtxId);
 
-  [_glView runOnGLThreadAsync:^{
+  [_glView.glContext runAsync:^{
     // Save previous GL state
     GLint prevBuffer, prevActiveTexture, prevTextureBinding, prevFramebuffer, prevProgram;
     glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &prevBuffer);
@@ -58,8 +58,8 @@ static GLfloat arCamVerts[] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
     glGetIntegerv(GL_ACTIVE_TEXTURE, &prevActiveTexture);
     glGetIntegerv(GL_TEXTURE_BINDING_2D, &prevTextureBinding);
     glGetIntegerv(GL_CURRENT_PROGRAM, &prevProgram);
-    
-    CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, _glView.eaglCtx, NULL, &_arCamCache);
+
+    CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, _glView.glContext.eaglCtx, NULL, &_arCamCache);
     if (err) {
       NSLog(@"Error from CVOpenGLESTextureCacheCreate(...): %d", err);
     }
@@ -315,7 +315,7 @@ static GLfloat arCamVerts[] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
     return;
   }
 
-  [_glView runOnGLThreadAsync:^{
+  [_glView.glContext runAsync:^{
     // Save previous GL state
     GLint prevBuffer, prevActiveTexture, prevTextureBinding, prevFramebuffer, prevProgram;
     GLint prevViewport[4];

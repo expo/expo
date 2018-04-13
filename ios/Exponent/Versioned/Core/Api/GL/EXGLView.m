@@ -1,4 +1,5 @@
 #import "EXGLView.h"
+#import "EXGLContext.h"
 #import "EXFileSystem.h"
 
 #include <OpenGLES/ES3/gl.h>
@@ -36,8 +37,8 @@
 @property (nonatomic, strong) CADisplayLink *displayLink;
 
 @property (nonatomic, assign) NSNumber *msaaSamples;
+@property (nonatomic, assign) BOOL isLayouted;
 @property (nonatomic, assign) BOOL renderbufferPresented;
-@property (nonatomic, assign) BOOL isInitializingContext;
 @property (nonatomic, assign) CGSize viewBuffersSize;
 
 @property (nonatomic, strong) id arSessionManager;
@@ -65,9 +66,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 {
   if ((self = [super init])) {
     _viewManager = viewManager;
-    _glQueue = dispatch_queue_create("host.exp.gl", DISPATCH_QUEUE_SERIAL);
+    _isLayouted = NO;
     _renderbufferPresented = YES;
-    _isInitializingContext = NO;
     _viewBuffersSize = CGSizeZero;
     
     self.contentScaleFactor = RCTScreenScale();
@@ -76,58 +76,44 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     CAEAGLLayer *eaglLayer = (CAEAGLLayer *) self.layer;
     eaglLayer.opaque = YES;
     eaglLayer.drawableProperties = @{
-                                     kEAGLDrawablePropertyRetainedBacking: @(YES),
-                                     kEAGLDrawablePropertyColorFormat: kEAGLColorFormatRGBA8,
-                                     };
-    
-    // Initialize GL context, view buffers will be created on layout event
-    _eaglCtx = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3];
-    _uiEaglCtx = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3 sharegroup:[_eaglCtx sharegroup]];
+      kEAGLDrawablePropertyRetainedBacking: @(YES),
+      kEAGLDrawablePropertyColorFormat: kEAGLColorFormatRGBA8,
+    };
+
+    // Initialize GL context
+    EXGLObjectManager *objectManager = [viewManager.bridge moduleForClass:[EXGLObjectManager class]];
+    _glContext = [[EXGLContext alloc] initWithDelegate:self andManager:objectManager];
+    _uiEaglCtx = [_glContext createSharedEAGLContext];
+    [_glContext initialize:nil];
+
+    // View buffers will be created on layout event
     _msaaFramebuffer = _msaaRenderbuffer = _viewFramebuffer = _viewColorbuffer = _viewDepthStencilbuffer = 0;
     
     // Set up a draw loop
     _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(draw)];
     //    _displayLink.preferredFramesPerSecond = 60;
     [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
-    
-    // Will fill this in later from JS thread once `onSurfaceCreate` callback is set
-    _exglCtxId = 0;
   }
   return self;
 }
 
-- (void)initEXGLContext
+- (UEXGLContextId)exglCtxId
 {
-  RCTBridge *bridge = _viewManager.bridge;
-  if (!bridge.executorClass || [NSStringFromClass(bridge.executorClass) isEqualToString:@"RCTJSCExecutor"]) {
-    // On JS thread, extract JavaScriptCore context, create EXGL context, call JS callback
-    __weak __typeof__(self) weakSelf = self;
-    __weak __typeof__(bridge) weakBridge = bridge;
-    _isInitializingContext = YES;
-    
-    [bridge dispatchBlock:^{
-      __typeof__(self) self = weakSelf;
-      __typeof__(bridge) bridge = weakBridge;
-      if (!self || !bridge || !bridge.valid) {
-        return;
-      }
-      
-      JSGlobalContextRef jsContextRef = [bridge jsContextRef];
-      if (!jsContextRef) {
-        RCTLogError(@"EXGL: The React Native bridge unexpectedly does not have a JavaScriptCore context.");
-        return;
-      }
-      
-      _exglCtxId = UEXGLContextCreate(jsContextRef);
-      UEXGLContextSetDefaultFramebuffer(_exglCtxId, _msaaFramebuffer);
-      UEXGLContextSetFlushMethodObjc(_exglCtxId, ^{
-        [self flush];
-      });
-      _onSurfaceCreate(@{ @"exglCtxId": @(_exglCtxId) });
-      _isInitializingContext = NO;
-    } queue:RCTJSThread];
-  } else {
-    RCTLog(@"EXGL: Can only run on JavaScriptCore! Do you have 'Remote Debugging' enabled in your app's Developer Menu (https://facebook.github.io/react-native/docs/debugging.html)? EXGL is not supported while using Remote Debugging, you will need to disable it to use EXGL.");
+  return [_glContext contextId];
+}
+
+- (void)maybeCallSurfaceCreated
+{
+  // Because initialization things happen asynchronously,
+  // we need to be sure that they all are done before we pass GL object to JS.
+
+  if (_onSurfaceCreate && _glContext.isInitialized && _isLayouted) {
+    UEXGLContextId exglCtxId = _glContext.contextId;
+    UEXGLContextSetDefaultFramebuffer(exglCtxId, _msaaFramebuffer);
+    _onSurfaceCreate(@{ @"exglCtxId": @(exglCtxId) });
+
+    // unset onSurfaceCreate - it will not be needed anymore
+    _onSurfaceCreate = nil;
   }
 }
 
@@ -135,63 +121,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 {
   [self resizeViewBuffersToWidth:self.contentScaleFactor * self.frame.size.width
                           height:self.contentScaleFactor * self.frame.size.height];
-  
-  // Initialize EXGL context on the first layout
-  // If we have already received onSurfaceCreate event block
-  if (_onSurfaceCreate && _exglCtxId == 0 && !_isInitializingContext) {
-    [self initEXGLContext];
-  }
+
+  _isLayouted = YES;
+  [self maybeCallSurfaceCreated];
 }
 
 - (void)setOnSurfaceCreate:(RCTDirectEventBlock)onSurfaceCreate
 {
   _onSurfaceCreate = onSurfaceCreate;
-  
-  if (_onSurfaceCreate && _msaaFramebuffer != 0) {
-    // Got non-empty onSurfaceCreate callback
-    // Set up JS binding, but only if the buffers are already created
-    // Otherwise, we will set it up later on layoutSubviews call
-    [self initEXGLContext];
-  }
-}
-
-- (void)runInEAGLContext:(EAGLContext*)context callback:(void(^)(void))callback
-{
-  [EAGLContext setCurrentContext:context];
-  callback();
-  glFlush();
-  [EAGLContext setCurrentContext:nil];
-}
-
-- (void)runOnGLThreadAsync:(void(^)(void))callback
-{
-  if (_glQueue) {
-    dispatch_async(_glQueue, ^{
-      [self runInEAGLContext:_eaglCtx callback:callback];
-    });
-  }
+  [self maybeCallSurfaceCreated];
 }
 
 - (void)runOnUIThread:(void(^)(void))callback
 {
   dispatch_sync(dispatch_get_main_queue(), ^{
-    [self runInEAGLContext:_uiEaglCtx callback:callback];
+    [_glContext runInEAGLContext:_uiEaglCtx callback:callback];
   });
-}
-
-- (void)flush
-{
-  [self runOnGLThreadAsync:^{
-    UEXGLContextFlush(_exglCtxId);
-    
-    // blit framebuffers if endFrameEXP was called
-    if (UEXGLContextNeedsRedraw(_exglCtxId)) {
-      // actually draw isn't yet finished, but it's here to prevent blitting the same thing multiple times
-      UEXGLContextDrawEnded(_exglCtxId);
-      
-      [self blitFramebuffers];
-    }
-  }];
 }
 
 - (void)deleteViewBuffers
@@ -230,8 +175,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   // update viewBuffersSize on UI thread (before actual resize takes place)
   // to get rid of redundant resizes if layoutSubviews is called multiple times with the same frame size
   _viewBuffersSize = newViewBuffersSize;
-  
-  [self runOnGLThreadAsync:^{
+
+  [_glContext runAsync:^{
     // Save surrounding framebuffer/renderbuffer
     GLint prevFramebuffer;
     GLint prevRenderbuffer;
@@ -271,9 +216,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
                                      _layerWidth, _layerHeight);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                               GL_RENDERBUFFER, _msaaRenderbuffer);
-    
-    if (_exglCtxId) {
-      UEXGLContextSetDefaultFramebuffer(_exglCtxId, _msaaFramebuffer);
+
+    if (_glContext.isInitialized) {
+      UEXGLContextSetDefaultFramebuffer(_glContext.contextId, _msaaFramebuffer);
     }
     
     // Set up new depth+stencil renderbuffer
@@ -302,21 +247,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 // TODO(nikki): Should all this be done in `dealloc` instead?
 - (void)removeFromSuperview
 {
-  __strong typeof(self) strongSelf = self;
-  [self runOnGLThreadAsync:^{
-    // Stop AR session if running
-    [strongSelf maybeStopARSession];
-    
-    // flush all the stuff
-    UEXGLContextFlush(_exglCtxId);
-    
-    // Destroy JS binding
-    UEXGLContextDestroy(_exglCtxId);
-    
-    // Destroy GL objects owned by us
-    [strongSelf deleteViewBuffers];
-  }];
-  
+  // Destroy EXGLContext
+  [_glContext destroy];
+
   // Stop draw loop
   [_displayLink invalidate];
   _displayLink = nil;
@@ -326,15 +259,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
 - (void)draw
 {
-  // _exglCtxId may be unset if we get here (on the UI thread) before UEXGLContextCreate(...) is
-  // called on the JS thread to create the EXGL context and save its id (see init method). In
-  // this case no GL work has been sent yet so we skip this frame.
+  // exglCtxId may be unset if we get here (on the UI thread) before UEXGLContextCreate(...) is
+  // called on the JS thread to create the EXGL context and save its id (see EXGLContext.initializeContextWithBridge method).
+  // In this case no GL work has been sent yet so we skip this frame.
   //
   // _viewFramebuffer may be 0 if we haven't had a layout event yet and so the size of the
   // framebuffer to create is unknown. In this case we have nowhere to render to so we skip
   // this frame (the GL work to run remains on the queue for next time).
-  
-  if (_exglCtxId != 0 && _viewFramebuffer != 0) {
+
+  if (_glContext.isInitialized && _viewFramebuffer != 0) {
     // Update AR stuff if we have an AR session running
     if (_arSessionManager) {
       [_arSessionManager updateARCamTexture];
@@ -344,7 +277,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     // This happens exactly at `gl.endFrameEXP()` in the queue
     if (_viewColorbuffer != 0 && !_renderbufferPresented) {
       // bind renderbuffer and present it on the layer
-      [self runInEAGLContext:_uiEaglCtx callback:^{
+      [_glContext runInEAGLContext:_uiEaglCtx callback:^{
         glBindRenderbuffer(GL_RENDERBUFFER, _viewColorbuffer);
         [_uiEaglCtx presentRenderbuffer:GL_RENDERBUFFER];
       }];
@@ -359,7 +292,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 // about presenting the new content of the renderbuffer on the next draw call
 - (void)blitFramebuffers
 {
-  if (_exglCtxId != 0 && _viewFramebuffer != 0 && _viewColorbuffer != 0) {
+  if (_glContext.isInitialized && _viewFramebuffer != 0 && _viewColorbuffer != 0) {
     // Save surrounding framebuffer
     GLint prevFramebuffer;
     glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFramebuffer);
@@ -382,104 +315,39 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   }
 }
 
-#pragma mark - save texture
+#pragma mark - EXGLContextDelegate
 
-// Saves the contents of the framebuffer to a file.
-// Possible options:
-// - `flip`: if true, the image will be flipped vertically.
-// - `framebuffer`: WebGLFramebuffer that we will be reading from. If not specified, the default framebuffer for this context will be used.
-// - `rect`: { x, y, width, height } object used to crop the snapshot.
-- (void)takeSnapshotWithOptions:(nonnull NSDictionary *)options callback:(void(^)(NSMutableDictionary *))callback
+// [GL thread]
+- (void)glContextFlushed:(nonnull EXGLContext *)context
 {
-  // contentScaleFactor should be called on the main thread
-  CGFloat scale = self.contentScaleFactor;
-  
-  [self runOnGLThreadAsync:^{
-    NSString *filePath = [self generateSnapshotPathWithExtension:@".jpeg"];
-    NSDictionary *rect = options[@"rect"] ?: @{ @"x": @0, @"y": @0, @"width": @(_layerWidth), @"height": @(_layerHeight) };
-    BOOL flip = options[@"flip"] != nil && [options[@"flip"] boolValue];
-    
-    int x = [rect[@"x"] intValue];
-    int y = [rect[@"y"] intValue];
-    int width = [rect[@"width"] intValue];
-    int height = [rect[@"height"] intValue];
-    
-    // Set source framebuffer that we take snapshot from
-    GLint sourceFramebuffer = _viewFramebuffer;
-    
-    if (options[@"framebuffer"] && options[@"framebuffer"][@"id"]) {
-      int exglFramebufferId = [options[@"framebuffer"][@"id"] intValue];
-      sourceFramebuffer = UEXGLContextGetObject(_exglCtxId, exglFramebufferId);
-    }
-    
-    // Save surrounding framebuffer
-    GLint prevFramebuffer;
-    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFramebuffer);
-    
-    // Bind source framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, sourceFramebuffer);
-    
-    // Allocate pixel buffer and read pixels
-    NSInteger dataLength = width * height * 4;
-    GLubyte *buffer = (GLubyte *) malloc(dataLength * sizeof(GLubyte));
-    glReadPixels(x, y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
-    
-    // Create CGImage
-    CGDataProviderRef providerRef = CGDataProviderCreateWithData(NULL, buffer, dataLength, NULL);
-    CGColorSpaceRef colorspaceRef = CGColorSpaceCreateDeviceRGB();
-    CGImageRef imageRef = CGImageCreate(width, height, 8, 32, width * 4, colorspaceRef, kCGBitmapByteOrder32Big | kCGImageAlphaPremultipliedLast,
-                                    providerRef, NULL, true, kCGRenderingIntentDefault);
-    
-    // Begin image context
-    NSInteger widthInPoints = width / scale;
-    NSInteger heightInPoints = height / scale;
-    UIGraphicsBeginImageContextWithOptions(CGSizeMake(widthInPoints, heightInPoints), NO, scale);
-    
-    // Flip and draw image to CGImage
-    CGContextRef cgContext = UIGraphicsGetCurrentContext();
-    if (flip) {
-      CGAffineTransform flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, heightInPoints);
-      CGContextConcatCTM(cgContext, flipVertical);
-    }
-    CGContextDrawImage(cgContext, CGRectMake(0.0, 0.0, widthInPoints, heightInPoints), imageRef);
-    
-    // Retrieve the UIImage from the current context
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    
-    // Cleanup
-    free(buffer);
-    CFRelease(providerRef);
-    CFRelease(colorspaceRef);
-    CGImageRelease(imageRef);
-    
-    // Write image to file
-    NSData *imageData = UIImageJPEGRepresentation(image, 1.0);
-    [imageData writeToFile:filePath atomically:YES];
-    
-    // Restore surrounding framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, prevFramebuffer);
-    
-    // Return result object which imitates Expo.Asset so it can be used again to fill the texture
-    NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
-    NSString *fileUrl = [[NSURL fileURLWithPath:filePath] absoluteString];
-    
-    result[@"uri"] = fileUrl;
-    result[@"localUri"] = fileUrl;
-    result[@"width"] = @(width);
-    result[@"height"] = @(height);
-    
-    callback(result);
-  }];
+  // blit framebuffers if endFrameEXP was called
+  if (UEXGLContextNeedsRedraw(_glContext.contextId)) {
+    // actually draw isn't yet finished, but it's here to prevent blitting the same thing multiple times
+    UEXGLContextDrawEnded(_glContext.contextId);
+
+    [self blitFramebuffers];
+  }
 }
 
-- (NSString *)generateSnapshotPathWithExtension:(NSString *)extension
+// [JS thread]
+- (void)glContextInitialized:(nonnull EXGLContext *)context
 {
-  NSString *directory = [_viewManager.bridge.scopedModules.fileSystem.cachesDirectory stringByAppendingPathComponent:@"GLView"];
-  NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:extension];
-  [EXFileSystem ensureDirExistsWithPath:directory];
-  
-  return [directory stringByAppendingPathComponent:fileName];
+  [self maybeCallSurfaceCreated];
+}
+
+// [GL thread]
+- (void)glContextWillDestroy:(nonnull EXGLContext *)context
+{
+  // Stop AR session if running
+  [self maybeStopARSession];
+
+  // Destroy GL objects owned by us
+  [self deleteViewBuffers];
+}
+
+- (UEXGLObjectId)glContextGetDefaultFramebuffer
+{
+  return _viewFramebuffer;
 }
 
 #pragma mark - maybe AR

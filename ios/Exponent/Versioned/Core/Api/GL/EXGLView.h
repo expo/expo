@@ -2,15 +2,15 @@
 #import <React/RCTBridge.h>
 #import <UEXGL.h>
 
+#import "EXGLContext.h"
 #import "EXGLViewManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXGLView : UIView
+@interface EXGLView : UIView <EXGLContextDelegate>
 
 - (instancetype)initWithManager:(EXGLViewManager *)mgr;
-- (void)runOnGLThreadAsync:(void(^)(void))callback;
-- (void)takeSnapshotWithOptions:(nonnull NSDictionary *)options callback:(void(^)(NSMutableDictionary *))callback;
+- (UEXGLContextId)exglCtxId;
 
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onSurfaceCreate;
 
@@ -25,9 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setWorldAlignment:(NSInteger)worldAlignment;
 
 // "protected"
-@property (nonatomic, strong, nullable) EAGLContext *eaglCtx;
+@property (nonatomic, strong, nullable) EXGLContext *glContext;
 @property (nonatomic, strong, nullable) EAGLContext *uiEaglCtx;
-@property (nonatomic, assign) UEXGLContextId exglCtxId;
 
 @end
 

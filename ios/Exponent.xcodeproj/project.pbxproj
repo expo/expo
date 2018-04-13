@@ -296,6 +296,7 @@
 		B5FB74F11FF6DADC001C764B /* EXScopedEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74281FF6DADB001C764B /* EXScopedEventEmitter.m */; };
 		BBD03196200011C9009F0434 /* RNAWSCognito.m in Sources */ = {isa = PBXBuildFile; fileRef = BBD03192200011C9009F0434 /* RNAWSCognito.m */; };
 		F1A4595220187C2B00C9704B /* EXGLCameraObject.m in Sources */ = {isa = PBXBuildFile; fileRef = F1A4595120187C2A00C9704B /* EXGLCameraObject.m */; };
+		F1BF5862201B32BE001EA8FD /* EXGLContext.m in Sources */ = {isa = PBXBuildFile; fileRef = F1BF5860201B32BD001EA8FD /* EXGLContext.m */; };
 		F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F77DDB921E04AC1100624CA2 /* SafariServices.framework */; };
 /* End PBXBuildFile section */
 
@@ -896,6 +897,8 @@
 		D045154CF3903164C70A59B6 /* Pods-ExponentIntegrationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.debug.xcconfig"; sourceTree = "<group>"; };
 		F1A4595020187C2A00C9704B /* EXGLCameraObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGLCameraObject.h; sourceTree = "<group>"; };
 		F1A4595120187C2A00C9704B /* EXGLCameraObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGLCameraObject.m; sourceTree = "<group>"; };
+		F1BF5860201B32BD001EA8FD /* EXGLContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGLContext.m; sourceTree = "<group>"; };
+		F1BF5861201B32BD001EA8FD /* EXGLContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGLContext.h; sourceTree = "<group>"; };
 		F77DDB921E04AC1100624CA2 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
 		F8B7CBE8449DB220A8A6DF82 /* Pods-Exponent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Exponent.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Exponent/Pods-Exponent.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1822,6 +1825,8 @@
 				B5FB73BE1FF6DADB001C764B /* EXGLARSessionManagerStub.m */,
 				F1A4595020187C2A00C9704B /* EXGLCameraObject.h */,
 				F1A4595120187C2A00C9704B /* EXGLCameraObject.m */,
+				F1BF5861201B32BD001EA8FD /* EXGLContext.h */,
+				F1BF5860201B32BD001EA8FD /* EXGLContext.m */,
 				B5FB73C11FF6DADB001C764B /* EXGLObject.h */,
 				B5FB73C21FF6DADB001C764B /* EXGLObject.m */,
 				B5FB73C31FF6DADB001C764B /* EXGLObjectManager.h */,
@@ -2499,6 +2504,10 @@
 				7846B22520355E9900638E43 /* RNSVGTSpan.m in Sources */,
 				7846B21620355E9900638E43 /* RNSVGImageManager.m in Sources */,
 				6D3FF9032022B57E000D4015 /* EXLocalization.m in Sources */,
+				B5FB74981FF6DADC001C764B /* RNSVGTextPath.m in Sources */,
+				B5FB74551FF6DADB001C764B /* AIRGoogleMapPolygonManager.m in Sources */,
+				F1BF5862201B32BE001EA8FD /* EXGLContext.m in Sources */,
+				B5FB74841FF6DADC001C764B /* RNSVGPainter.m in Sources */,
 				B5FB74CC1FF6DADC001C764B /* EXContactsRequester.m in Sources */,
 				7846B1F620355E9900638E43 /* RNSVGLine.m in Sources */,
 				B5FB74A61FF6DADC001C764B /* EXFacebook.m in Sources */,
