@@ -51,7 +51,9 @@ public class BannerViewManager extends SimpleViewManager<BannerView> {
       "onAdPress",
       MapBuilder.of("registrationName", "onAdPress"),
       "onAdError",
-      MapBuilder.of("registrationName", "onAdError")
+      MapBuilder.of("registrationName", "onAdError"),
+      "onLoggingImpression",
+      MapBuilder.of("registrationName", "onLoggingImpression")
     );
   }
 
