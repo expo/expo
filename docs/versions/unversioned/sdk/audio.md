@@ -398,8 +398,6 @@ Following is an enumeration of all of the valid values for certain `RecordingOpt
 
         - `Expo.Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC_ELD`
 
-        - `Expo.Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_VORBIS`
-
 -   `ios` :
 
     -   `outputFormat` :
