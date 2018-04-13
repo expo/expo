@@ -40,24 +40,32 @@ static NSNumber *EXVersionManagerIsFirstLoad;
 
 @end
 
-static NSMutableDictionary<NSString *, NSString *> *EXScopedModuleClasses;
-void EXRegisterScopedModule(Class, NSString *);
-void EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceClassName)
+static NSMutableDictionary<NSString *, NSDictionary *> *EXScopedModuleClasses;
+void EXRegisterScopedModule(Class, ...);
+void EXRegisterScopedModule(Class moduleClass, ...)
 {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     EXScopedModuleClasses = [NSMutableDictionary dictionary];
   });
   
-  NSString *unversionedKernelServiceClassName;
-  if ([kernelServiceClassName isEqualToString:@"nil"]) {
-    unversionedKernelServiceClassName = EX_KERNEL_SERVICE_NONE;
-  } else {
-    unversionedKernelServiceClassName = [EX_UNVERSIONED(@"EX") stringByAppendingString:kernelServiceClassName];
-  }
+  NSString *kernelServiceClassName;
+  va_list argumentList;
+  NSMutableDictionary *unversionedKernelServiceClassNames = [[NSMutableDictionary alloc] init];
+  
+  va_start(argumentList, moduleClass);
+    while ((kernelServiceClassName = va_arg(argumentList, NSString*))) {
+      if ([kernelServiceClassName isEqualToString:@"nil"]) {
+        unversionedKernelServiceClassNames[kernelServiceClassName] = EX_KERNEL_SERVICE_NONE;
+      } else {
+        unversionedKernelServiceClassNames[kernelServiceClassName] = [EX_UNVERSIONED(@"EX") stringByAppendingString:kernelServiceClassName];
+      }
+    }
+  va_end(argumentList);
+  
   NSString *moduleClassName = NSStringFromClass(moduleClass);
   if (moduleClassName) {
-    EXScopedModuleClasses[moduleClassName] = unversionedKernelServiceClassName;
+    EXScopedModuleClasses[moduleClassName] = unversionedKernelServiceClassNames;
   }
 }
 
@@ -347,10 +355,22 @@ void EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceClassName)
 {
   NSMutableArray *result = [NSMutableArray array];
   if (EXScopedModuleClasses) {
-    [EXScopedModuleClasses enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull scopedModuleClassName, NSString * _Nonnull kernelServiceClassName, BOOL * _Nonnull stop) {
-      id service = ([kernelServiceClassName isEqualToString:EX_KERNEL_SERVICE_NONE]) ? nil : services[kernelServiceClassName];
+    [EXScopedModuleClasses enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull scopedModuleClassName, NSDictionary * _Nonnull kernelServiceClassNames, BOOL * _Nonnull stop) {
+      NSMutableDictionary *moduleServices = [[NSMutableDictionary alloc] init];
+      for (id kernelServiceClassName in kernelServiceClassNames) {
+        NSString *kernelSerivceName = kernelServiceClassNames[kernelServiceClassName];
+        id service = ([kernelSerivceName isEqualToString:EX_KERNEL_SERVICE_NONE]) ? [NSNull null] : services[kernelSerivceName];
+        moduleServices[kernelServiceClassName] = service;
+      }
+      
+      id scopedModule;
       Class scopedModuleClass = NSClassFromString(scopedModuleClassName);
-      id scopedModule = [[scopedModuleClass alloc] initWithExperienceId:experienceId kernelServiceDelegate:service params:params];
+      if (moduleServices.count > 1) {
+        scopedModule = [[scopedModuleClass alloc] initWithExperienceId:experienceId kernelServiceDelegates:moduleServices params:params];
+      } else {
+        scopedModule = [[scopedModuleClass alloc] initWithExperienceId:experienceId kernelServiceDelegate:moduleServices[[moduleServices allKeys][0]] params:params];
+      }
+      
       if (scopedModule) {
         [result addObject:scopedModule];
       }

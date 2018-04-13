@@ -12,7 +12,20 @@
   <string name="default_media_controller_time">00:00</string>
   <string name="android_pay_unavaliable">Android Pay unavailable on your device.</string>
   <string name="user_cancel_dialog">User cancel dialog. No card added!</string>
-  
+  <string name="experience_needs_permissions">%1$s needs permissions for %2$s. You\'ve already granted permission to another Expo experience. Allow %1$s to use it also?</string>
+  <string name="allow_experience_permissions">Allow</string>
+  <string name="deny_experience_permissions">Deny</string>
+  <string name="perm_audio_recording">audio recording</string>
+  <string name="perm_calendar_read">reading calendars</string>
+  <string name="perm_calendar_write">modifying calendars</string>
+  <string name="perm_camera">accessing camera</string>
+  <string name="perm_camera_roll_read">reading camera roll</string>
+  <string name="perm_camera_roll_write">modifying camera roll</string>
+  <string name="perm_contacts">reading contacts</string>
+  <string name="perm_fine_location">fine location</string>
+  <string name="perm_coarse_location">coarse location</string>
+  <string name="perm_system_brightness">system brightness</string>
+
   <string-array name="currency_array">
       <item>Currency (optional)</item>
       <item>Unspecified</item>

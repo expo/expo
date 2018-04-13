@@ -1,7 +1,7 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <React/RCTEventEmitter.h>
+#import "EXScopedEventEmitter.h"
 
-@interface EXLocation : RCTEventEmitter
+@interface EXLocation : EXScopedEventEmitter
 
 @end

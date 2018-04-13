@@ -2,6 +2,7 @@
 
 package versioned.host.exp.exponent.modules.api;
 
+import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -33,13 +34,17 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.TimeZone;
 
-public class CalendarModule extends ReactContextBaseJavaModule {
+import host.exp.exponent.kernel.ExperienceId;
+import host.exp.expoview.Exponent;
+import versioned.host.exp.exponent.modules.ExpoKernelServiceConsumerBaseModule;
+
+public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
   private static final String TAG = CalendarModule.class.getSimpleName();
 
   private ReactContext reactContext;
 
-  public CalendarModule(ReactApplicationContext reactContext) {
-    super(reactContext);
+  public CalendarModule(ReactApplicationContext reactContext, ExperienceId experienceId) {
+    super(reactContext, experienceId);
     this.reactContext = reactContext;
   }
 
@@ -50,6 +55,10 @@ public class CalendarModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void getCalendarsAsync(final String type, final Promise promise) {
+    if (isMissingPermissions()) {
+      promise.reject("E_CANNOT_GET_CALENDARS", "User rejected permissions required to get calendars.");
+      return;
+    }
     if (type != null && type.equals("reminder")) {
       promise.reject("E_CALENDARS_NOT_FOUND", "Calendars of type `reminder` are not supported on Android");
       return;
@@ -69,6 +78,10 @@ public class CalendarModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void saveCalendarAsync(final ReadableMap details, final Promise promise) {
+    if (isMissingPermissions()) {
+      promise.reject("E_CANNOT_SAVE_CALENDAR", "User rejected permissions required to save the calendar.");
+      return;
+    }
     try {
       AsyncTask.execute(new Runnable() {
         @Override
@@ -88,6 +101,10 @@ public class CalendarModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void deleteCalendarAsync(final String calendarID, final Promise promise) {
+    if (isMissingPermissions()) {
+      promise.reject("E_CANNOT_SAVE_CALENDAR", "User rejected permissions required to delete the calendar.");
+      return;
+    }
     try {
       AsyncTask.execute(new Runnable() {
         @Override
@@ -108,6 +125,10 @@ public class CalendarModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void getEventsAsync(final Dynamic startDate, final Dynamic endDate, final ReadableArray calendars, final Promise promise) {
+    if (isMissingPermissions()) {
+      promise.reject("E_CANNOT_SAVE_CALENDAR", "User rejected permissions required to get events.");
+      return;
+    }
     try {
       AsyncTask.execute(new Runnable() {
         @Override
@@ -124,6 +145,10 @@ public class CalendarModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void getEventByIdAsync(final String eventID, final Promise promise) {
+    if (isMissingPermissions()) {
+      promise.reject("E_CANNOT_SAVE_CALENDAR", "User rejected permissions required to get the event.");
+      return;
+    }
     try {
       AsyncTask.execute(new Runnable() {
         @Override
@@ -140,6 +165,10 @@ public class CalendarModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void saveEventAsync(final ReadableMap details, final ReadableMap options, final Promise promise) {
+    if (isMissingPermissions()) {
+      promise.reject("E_CANNOT_SAVE_CALENDAR", "User rejected permissions required to save the event.");
+      return;
+    }
     try {
       AsyncTask.execute(new Runnable() {
         @Override
@@ -159,6 +188,10 @@ public class CalendarModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void deleteEventAsync(final ReadableMap details, final ReadableMap options, final Promise promise) {
+    if (isMissingPermissions()) {
+      promise.reject("E_CANNOT_SAVE_CALENDAR", "User rejected permissions required to delete the event.");
+      return;
+    }
     try {
       AsyncTask.execute(new Runnable() {
         @Override
@@ -183,6 +216,10 @@ public class CalendarModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void getAttendeesForEventAsync(final String eventID, final Promise promise) {
+    if (isMissingPermissions()) {
+      promise.reject("E_CANNOT_SAVE_CALENDAR", "User rejected permissions required to get attendees.");
+      return;
+    }
     try {
       AsyncTask.execute(new Runnable() {
         @Override
@@ -199,6 +236,10 @@ public class CalendarModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void saveAttendeeForEventAsync(final ReadableMap details, final String eventID, final Promise promise) {
+    if (isMissingPermissions()) {
+      promise.reject("E_CANNOT_SAVE_CALENDAR", "User rejected permissions required to save the attendee.");
+      return;
+    }
     try {
       AsyncTask.execute(new Runnable() {
         @Override
@@ -218,6 +259,10 @@ public class CalendarModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void deleteAttendeeAsync(final String attendeeID, final Promise promise) {
+    if (isMissingPermissions()) {
+      promise.reject("E_CANNOT_SAVE_CALENDAR", "User rejected permissions required to delete the attendee.");
+      return;
+    }
     try {
       AsyncTask.execute(new Runnable() {
         @Override
@@ -1371,5 +1416,10 @@ public class CalendarModule extends ReactContextBaseJavaModule {
       return 0;
     }
     return cursor.getInt(index);
+  }
+
+  private boolean isMissingPermissions() {
+    return !Exponent.getInstance().getPermissions(Manifest.permission.READ_CALENDAR, this.experienceId) &&
+        !Exponent.getInstance().getPermissions(Manifest.permission.WRITE_CALENDAR, this.experienceId);
   }
 }

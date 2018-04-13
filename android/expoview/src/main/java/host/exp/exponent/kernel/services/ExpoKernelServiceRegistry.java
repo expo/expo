@@ -12,6 +12,7 @@ import host.exp.exponent.kernel.services.sensors.LinearAccelerationSensorKernelS
 import host.exp.exponent.kernel.services.sensors.MagnetometerKernelService;
 import host.exp.exponent.kernel.services.sensors.MagnetometerUncalibratedKernelService;
 import host.exp.exponent.kernel.services.sensors.RotationVectorSensorKernelService;
+import host.exp.exponent.storage.ExponentSharedPreferences;
 
 public class ExpoKernelServiceRegistry {
   private LinkingKernelService mLinkingKernelService = null;
@@ -22,8 +23,9 @@ public class ExpoKernelServiceRegistry {
   private RotationVectorSensorKernelService mRotationVectorSensorKernelService = null;
   private LinearAccelerationSensorKernelService mLinearAccelerationSensorKernelService = null;
   private MagnetometerUncalibratedKernelService mMagnetometerUncalibratedKernelService = null;
+  private PermissionsKernelService mPermissionsKernelService = null;
 
-  public ExpoKernelServiceRegistry(Context context) {
+  public ExpoKernelServiceRegistry(Context context, ExponentSharedPreferences exponentSharedPreferences) {
     mLinkingKernelService = new LinkingKernelService();
     mGyroscopeKernelService = new GyroscopeKernelService(context);
     mMagnetometerKernelService = new MagnetometerKernelService(context);
@@ -32,6 +34,7 @@ public class ExpoKernelServiceRegistry {
     mRotationVectorSensorKernelService = new RotationVectorSensorKernelService(context);
     mLinearAccelerationSensorKernelService = new LinearAccelerationSensorKernelService(context);
     mMagnetometerUncalibratedKernelService = new MagnetometerUncalibratedKernelService(context);
+    mPermissionsKernelService = new PermissionsKernelService(context, exponentSharedPreferences);
   }
 
   public LinkingKernelService getLinkingKernelService() {
@@ -65,5 +68,9 @@ public class ExpoKernelServiceRegistry {
 
   public MagnetometerUncalibratedKernelService getMagnetometerUncalibratedKernelService() {
     return mMagnetometerUncalibratedKernelService;
+  }
+
+  public PermissionsKernelService getPermissionsKernelService() {
+    return mPermissionsKernelService;
   }
 }
