@@ -1,10 +1,6 @@
 /* @flow */
-
-import jwtDecode from 'jwt-decode';
 import ApiV2HttpClient from 'ApiV2HttpClient';
 
-const AuthScope = 'openid offline_access nickname username';
-const DelegationEndpoint = 'https://exponent.auth0.com/delegation';
 const SignUpEndpoint = 'https://exp.host/--/api/v2/auth/createOrUpdateUser';
 const SignOutEndpoint = 'https://exp.host/--/api/v2/auth/logoutAsync';
 const ClientId = 'qIdMWQxxXqD8PbCA90mZh0r2djqJylzg';
