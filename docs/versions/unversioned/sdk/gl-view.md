@@ -2,11 +2,10 @@
 title: GLView
 ---
 
-### `Expo.GLView()`
-
 A `View` that acts as an OpenGL ES render target. On mounting, an OpenGL ES context is created. Its drawing buffer is presented as the contents of the `View` every frame.
 
-### props
+## Props
+
 Other than the regular `View` props for layout and touch handling, the following props are available:
 
 - **onContextCreate**
@@ -17,16 +16,45 @@ Other than the regular `View` props for layout and touch handling, the following
 
   `GLView` can enable iOS's built-in [multisampling](https://www.khronos.org/registry/OpenGL/extensions/APPLE/APPLE_framebuffer_multisample.txt). This prop specifies the number of samples to use. By default this is 4. Setting this to 0 turns off multisampling. On Android this is ignored.
 
-### Methods
+## Methods
 
-### `takeSnapshotAsync`
+### `takeSnapshotAsync(options)`
+
+Same as [GLView.takeSnapshotAsync](#expoglviewtakesnapshotasyncgloptions) but uses WebGL context that is associated with the view on which the method is called.
+
+## Static methods
+
+### `Expo.GLView.createContextAsync()`
+
+Imperative API that creates headless context which is devoid of underlying view. It's useful for headless rendering or in case you want to keep just one context per application and share it between multiple components.
+It is slightly faster than usual context as it doesn't swap framebuffers and doesn't present them on the canvas, however it may require you to take a snapshot in order to present its results.
+Also, keep in mind that you need to set up a viewport and create your own framebuffer and texture that you will be drawing to, before you take a snapshot.
+
+#### Returns
+
+A promise that resolves to WebGL context object. See [WebGL API](#webgl-api) for more details.
+
+### `Expo.GLView.destroyContextAsync(gl)`
+
+Destroys given context.
+
+#### Arguments
+
+-   **gl (_object_)** -- WebGL context to destroy.
+
+#### Returns
+
+A promise that resolves to boolean value that is `true` if given context existed and has been destroyed successfully.
+
+### `Expo.GLView.takeSnapshotAsync(gl, options)`
 
 Takes a snapshot of the framebuffer and saves it as JPEG file to app's cache directory.
 
 #### Arguments
 
+-   **gl (_object_)** -- WebGL context to take a snapshot from.
 -   **options (_object_)** -- A map of options:
-    -   **framebuffer (_WebGLFramebuffer_)** -- Specify the framebuffer that we will be reading from. Defaults to underlying framebuffer that is presented in the view.
+    -   **framebuffer (_WebGLFramebuffer_)** -- Specify the framebuffer that we will be reading from. Defaults to underlying framebuffer that is presented in the view or the current framebuffer if context is headless.
     -   **rect (`{ x: number, y: number, width: number, height: number }`)** -- Rect to crop the snapshot. It's passed directly to `glReadPixels`.
     -   **flip (_boolean_)** -- Whether to flip the snapshot vertically. Defaults to `false`.
 
