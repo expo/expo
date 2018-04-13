@@ -71,7 +71,7 @@ On the `playbackObject` reference, the following API is provided:
 
         The [iOS developer documentation](https://developer.apple.com/library/ios/documentation/Miscellaneous/Conceptual/iPhoneOSTechOverview/MediaLayer/MediaLayer.html) lists the audio and video formats supported on iOS.
 
-        The [Android developer documentation](https://developer.android.com/guide/appendix/media-formats.html#formats-table) lists the audio and video formats supported on Android.
+        There are two sets of audio and video formats supported on Android: [formats supported by ExoPlayer](https://google.github.io/ExoPlayer/supported-formats.html) and [formats supported by Android's MediaPlayer](https://developer.android.com/guide/appendix/media-formats.html#formats-table). Expo uses ExoPlayer implementation by default; to use `MediaPlayer`, add `androidImplementation: 'MediaPlayer'` to the initial status of the AV object.
 
     -   **initialStatus (_PlaybackStatusToSet_)** -- The initial intended `PlaybackStatusToSet` of the `playbackObject`, whose values will override the default initial playback status. This value defaults to `{}` if no parameter is passed. See below for details on `PlaybackStatusToSet` and the default initial playback status.
 
@@ -262,6 +262,7 @@ Most of the preceding API calls revolve around passing or returning the _status_
     -   `volume` : the desired volume of the audio for this media. This value must be between `0.0` (silence) and `1.0` (maximum volume).
     -   `isMuted` : a boolean describing if the audio of this media should be muted.
     -   `isLooping` : a boolean describing if the media should play once (`false`) or loop indefinitely (`true`).
+    -   `androidImplementation` : underlying implementation to use (when set to `MediaPlayer` it uses [Android's MediaPlayer](https://developer.android.com/reference/android/media/MediaPlayer.html), uses [ExoPlayer](https://google.github.io/ExoPlayer/) otherwise). You may need to use this property if you're trying to play an item unsupported by ExoPlayer ([formats supported by ExoPlayer](https://google.github.io/ExoPlayer/supported-formats.html), [formats supported by Android's MediaPlayer](https://developer.android.com/guide/appendix/media-formats.html#formats-table)). Note that setting this property takes effect only when the AV object is just being created (toggling its value later will do nothing). _[Android only]_
 
     Note that a `rate` different than `1.0` is currently only available on Android API version 23 and later and iOS.
 
