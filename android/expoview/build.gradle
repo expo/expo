@@ -270,6 +270,7 @@ dependencies {
   compile 'com.google.android:cameraview:1.0.0'
   compile 'com.google.firebase:firebase-core:9.8.0'
   compile 'com.google.firebase:firebase-messaging:9.8.0'
+  compile 'com.google.maps.android:android-maps-utils:0.5+'
   /*compile('com.gettipsi:stripeview:1.0.0') {
       transitive = false
       exclude group: 'com.facebook.react', module: 'react-native'
