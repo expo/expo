@@ -94,15 +94,7 @@ android {
 // }
 
 /* UNCOMMENT WHEN DISTRIBUTING
-task exponentPrebuildStep(type: Exec) {
-  workingDir '../'
-  if (System.getProperty('os.name').toLowerCase().contains('windows')) {
-    commandLine 'cmd', '/c', '.\\detach-scripts\\prepare-detached-build.bat'
-  } else {
-    commandLine './detach-scripts/prepare-detached-build.sh'
-  }
-}
-preBuild.dependsOn exponentPrebuildStep
+apply from: 'expo.gradle'
 END UNCOMMENT WHEN DISTRIBUTING */
 
 dependencies {
