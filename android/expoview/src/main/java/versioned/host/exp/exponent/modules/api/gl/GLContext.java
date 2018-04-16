@@ -6,8 +6,10 @@ import android.graphics.Matrix;
 import android.graphics.SurfaceTexture;
 import android.opengl.EGL14;
 import android.opengl.GLUtils;
+import android.os.AsyncTask;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactContext;
@@ -153,6 +155,8 @@ public class GLContext implements VersionedGLView {
       public void run() {
         ReadableMap rect = options.hasKey("rect") ? options.getMap("rect") : getViewportRect();
         boolean flip = options.hasKey("flip") && options.getBoolean("flip");
+        String format = options.hasKey("format") ? options.getString("format") : null;
+        int compressionQuality = options.hasKey("compress") ? (int) (100 * options.getDouble("compress")) : 100;
 
         int x = rect.getInt("x");
         int y = rect.getInt("y");
@@ -180,62 +184,98 @@ public class GLContext implements VersionedGLView {
         dataBuffer.position(0);
         glReadPixels(x, y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, dataBuffer);
 
-        // Convert RGBA data format to bitmap's ARGB
-        for (int i = 0; i < height; i++) {
-          for (int j = 0; j < width; j++) {
-            int offset = i * width + j;
-            int pixel = dataArray[offset];
-            int blue = (pixel >> 16) & 0xff;
-            int red = (pixel << 16) & 0x00ff0000;
-            dataArray[offset] = (pixel & 0xff00ff00) | red | blue;
-          }
-        }
-
-        // Create Bitmap and flip
-        Bitmap bitmap = Bitmap.createBitmap(dataArray, width, height, Bitmap.Config.ARGB_8888);
-
-        if (!flip) {
-          // the bitmap is automatically flipped on Android, however we may want to unflip it
-          // in case we take a snapshot from framebuffer that is already flipped
-          Matrix flipMatrix = new Matrix();
-          flipMatrix.postScale(1, -1, width / 2, height / 2);
-          bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, flipMatrix, true);
-        }
-
-        // Write bitmap to file
-        String path = null;
-        FileOutputStream output = null;
-
-        try {
-          path = ExpFileUtils.generateOutputPath(scopedContext.getCacheDir(), "GLView", ".jpeg");
-          output = new FileOutputStream(path);
-          bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output);
-          output.flush();
-          output.close();
-          output = null;
-
-        } catch (Exception e) {
-          e.printStackTrace();
-          promise.reject("E_GL_CANT_SAVE_SNAPSHOT", e.getMessage());
-        }
-
         // Restore surrounding framebuffer
         glBindFramebuffer(GL_FRAMEBUFFER, prevFramebuffer[0]);
 
-        if (output == null) {
-          // Return result object which imitates Expo.Asset so it can be used again to fill the texture
-          WritableMap result = Arguments.createMap();
-          String fileUri = ExpFileUtils.uriFromFile(new File(path)).toString();
-
-          result.putString("uri", fileUri);
-          result.putString("localUri", fileUri);
-          result.putInt("width", width);
-          result.putInt("height", height);
-
-          promise.resolve(result);
-        }
+        new TakeSnapshot(scopedContext, width, height, flip, format, compressionQuality, dataArray, promise)
+            .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
       }
     });
+  }
+
+  private static class TakeSnapshot extends GuardedAsyncTask<Void, Void> {
+    private final ScopedContext mScopedContext;
+    private final int mWidth;
+    private final int mHeight;
+    private final boolean mFlip;
+    private final String mFormat;
+    private final int mCompress;
+    private final int[] mDataArray;
+    private final Promise mPromise;
+
+    TakeSnapshot(ScopedContext scopedContext, int width, int height, boolean flip, String format, int compress, int[] dataArray, Promise promise) {
+      super((ReactContext) scopedContext.getContext());
+      mScopedContext = scopedContext;
+      mWidth = width;
+      mHeight = height;
+      mFlip = flip;
+      mFormat = format;
+      mCompress = compress;
+      mDataArray = dataArray;
+      mPromise = promise;
+    }
+
+    @Override
+    protected void doInBackgroundGuarded(Void... params) {
+      // Convert RGBA data format to bitmap's ARGB
+      for (int i = 0; i < mHeight; i++) {
+        for (int j = 0; j < mWidth; j++) {
+          int offset = i * mWidth + j;
+          int pixel = mDataArray[offset];
+          int blue = (pixel >> 16) & 0xff;
+          int red = (pixel << 16) & 0x00ff0000;
+          mDataArray[offset] = (pixel & 0xff00ff00) | red | blue;
+        }
+      }
+
+      // Create Bitmap and flip
+      Bitmap bitmap = Bitmap.createBitmap(mDataArray, mWidth, mHeight, Bitmap.Config.ARGB_8888);
+
+      if (!mFlip) {
+        // the bitmap is automatically flipped on Android, however we may want to unflip it
+        // in case we take a snapshot from framebuffer that is already flipped
+        Matrix flipMatrix = new Matrix();
+        flipMatrix.postScale(1, -1, mWidth / 2, mHeight / 2);
+        bitmap = Bitmap.createBitmap(bitmap, 0, 0, mWidth, mHeight, flipMatrix, true);
+      }
+
+      // Write bitmap to file
+      String path = null;
+      String extension = ".jpeg";
+      FileOutputStream output = null;
+      Bitmap.CompressFormat compressFormat = Bitmap.CompressFormat.JPEG;
+
+      if (mFormat.equals("png")) {
+        compressFormat = Bitmap.CompressFormat.PNG;
+        extension = ".png";
+      }
+
+      try {
+        path = ExpFileUtils.generateOutputPath(mScopedContext.getCacheDir(), "GLView", extension);
+        output = new FileOutputStream(path);
+        bitmap.compress(compressFormat, mCompress, output);
+        output.flush();
+        output.close();
+        output = null;
+
+      } catch (Exception e) {
+        e.printStackTrace();
+        mPromise.reject("E_GL_CANT_SAVE_SNAPSHOT", e.getMessage());
+      }
+
+      if (output == null) {
+        // Return result object which imitates Expo.Asset so it can be used again to fill the texture
+        WritableMap result = Arguments.createMap();
+        String fileUri = ExpFileUtils.uriFromFile(new File(path)).toString();
+
+        result.putString("uri", fileUri);
+        result.putString("localUri", fileUri);
+        result.putInt("width", mWidth);
+        result.putInt("height", mHeight);
+
+        mPromise.resolve(result);
+      }
+    }
   }
 
 

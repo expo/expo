@@ -154,6 +154,8 @@
 // - `flip`: if true, the image will be flipped vertically.
 // - `framebuffer`: WebGLFramebuffer that we will be reading from. If not specified, the default framebuffer for this context will be used.
 // - `rect`: { x, y, width, height } object used to crop the snapshot.
+// - `format`: "jpeg" or "png" - specifies what type of compression and file extension should be used.
+// - `compress`: A value in 0 - 1 range specyfing compression level. JPEG format only.
 - (void)takeSnapshotWithOptions:(nonnull NSDictionary *)options
                         resolve:(RCTPromiseResolveBlock)resolve
                          reject:(RCTPromiseRejectBlock)reject
@@ -161,9 +163,9 @@
   [self flush];
   
   [self runAsync:^{
-    NSString *filePath = [self generateSnapshotPathWithExtension:@".jpeg"];
     NSDictionary *rect = options[@"rect"] ?: [self currentViewport];
     BOOL flip = options[@"flip"] != nil && [options[@"flip"] boolValue];
+    NSString *format = options[@"format"];
 
     int x = [rect[@"x"] intValue];
     int y = [rect[@"y"] intValue];
@@ -242,7 +244,22 @@
     CGImageRelease(imageRef);
 
     // Write image to file
-    NSData *imageData = UIImageJPEGRepresentation(image, 1.0);
+    NSData *imageData;
+    NSString *extension;
+    
+    if ([format isEqualToString:@"png"]) {
+      imageData = UIImagePNGRepresentation(image);
+      extension = @".png";
+    } else {
+      float compress = 1.0;
+      if (options[@"compress"] != nil) {
+        compress = [(NSString *)options[@"compress"] floatValue];
+      }
+      imageData = UIImageJPEGRepresentation(image, compress);
+      extension = @".jpeg";
+    }
+    
+    NSString *filePath = [self generateSnapshotPathWithExtension:extension];
     [imageData writeToFile:filePath atomically:YES];
 
     // Restore surrounding framebuffer
