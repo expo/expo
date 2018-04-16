@@ -427,8 +427,7 @@ NSString *const ABI26_0_0EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"pl
                                           ABI26_0_0EXAVPlayerDataStatusURIKeyPath: [_url absoluteString],
                                           
                                           ABI26_0_0EXAVPlayerDataStatusProgressUpdateIntervalMillisKeyPath: _progressUpdateIntervalMillis,
-                                          ABI26_0_0EXAVPlayerDataStatusPositionMillisKeyPath: positionMillis,
-                                          // playableDurationMillis, and durationMillis may be nil and are added after this definition.
+                                          // positionMillis, playableDurationMillis, and durationMillis may be nil and are added after this definition.
                                           
                                           ABI26_0_0EXAVPlayerDataStatusShouldPlayKeyPath: @(_shouldPlay),
                                           ABI26_0_0EXAVPlayerDataStatusIsPlayingKeyPath: @(isPlaying),
@@ -446,6 +445,7 @@ NSString *const ABI26_0_0EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"pl
   
   mutableStatus[ABI26_0_0EXAVPlayerDataStatusPlayableDurationMillisKeyPath] = playableDurationMillis;
   mutableStatus[ABI26_0_0EXAVPlayerDataStatusDurationMillisKeyPath] = durationMillis;
+  mutableStatus[ABI26_0_0EXAVPlayerDataStatusPositionMillisKeyPath] = positionMillis;
   
   return mutableStatus;
 }
