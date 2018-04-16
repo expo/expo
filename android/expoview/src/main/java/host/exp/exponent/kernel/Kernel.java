@@ -559,22 +559,51 @@ public class Kernel extends KernelInterface {
     openManifestUrl(getManifestUrlFromFullUri(options.manifestUri), options, true);
   }
 
-  private String getManifestUrlFromFullUri(String uri) {
-    if (uri != null) {
-      int deepLinkPosition = uri.indexOf('+');
-      if (deepLinkPosition >= 0) {
-        uri = uri.substring(0, deepLinkPosition);
+  private String getManifestUrlFromFullUri(String uriString) {
+    if (uriString != null) {
+      int deepLinkPositionDashes = uriString.indexOf(ExponentManifest.DEEP_LINK_SEPARATOR_WITH_SLASH);
+      if (deepLinkPositionDashes >= 0) {
+        // do this safely so we preserve any query string
+        Uri uri = Uri.parse(uriString);
+        List<String> pathSegments = uri.getPathSegments();
+        Uri.Builder builder = uri.buildUpon();
+        builder.path(null);
+
+        for (String segment : pathSegments) {
+          if (ExponentManifest.DEEP_LINK_SEPARATOR.equals(segment)) {
+            break;
+          }
+          builder.appendEncodedPath(segment);
+        }
+
+        // ignore any query param other than the release-channel
+        // as these will cause the client to treat this as a different experience
+        String releaseChannel = uri.getQueryParameter(ExponentManifest.QUERY_PARAM_KEY_RELEASE_CHANNEL);
+        builder.query(null);
+        if (releaseChannel != null) {
+          builder.appendQueryParameter(ExponentManifest.QUERY_PARAM_KEY_RELEASE_CHANNEL, releaseChannel);
+        }
+
+        // ignore fragments as well (e.g. those added by auth-session)
+        builder.fragment(null);
+
+        uriString = builder.build().toString();
+      }
+      int deepLinkPositionPlus = uriString.indexOf('+');
+      if (deepLinkPositionPlus >= 0 && deepLinkPositionDashes < 0) {
+        // need to keep this for backwards compatibility
+        uriString = uriString.substring(0, deepLinkPositionPlus);
       }
 
       // manifest url doesn't have a trailing slash
-      if (uri.length() > 0) {
-        char lastUrlChar = uri.charAt(uri.length() - 1);
+      if (uriString.length() > 0) {
+        char lastUrlChar = uriString.charAt(uriString.length() - 1);
         if (lastUrlChar == '/') {
-          uri = uri.substring(0, uri.length() - 1);
+          uriString = uriString.substring(0, uriString.length() - 1);
         }
       }
 
-      return uri;
+      return uriString;
     }
     return null;
   }

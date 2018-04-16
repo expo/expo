@@ -370,7 +370,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
       return new RNObject("com.facebook.react.ReactInstanceManager");
     }
 
-    String linkingUri = Constants.SHELL_APP_SCHEME != null ? Constants.SHELL_APP_SCHEME + "://" : mManifestUrl + "/+";
+    String linkingUri = getLinkingUri();
     Map<String, Object> experienceProperties = MapBuilder.<String, Object>of(
         MANIFEST_URL_KEY, mManifestUrl,
         LINKING_URI_KEY, linkingUri,
@@ -544,6 +544,38 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
       }
     } catch (Throwable e) {
       EXL.e(TAG, e);
+    }
+  }
+
+  // deprecated in favor of Expo.Linking.makeUrl
+  // TODO: remove this
+  private String getLinkingUri() {
+    if (Constants.SHELL_APP_SCHEME != null) {
+      return Constants.SHELL_APP_SCHEME + "://";
+    } else {
+      if (ABIVersion.toNumber(mSDKVersion) < ABIVersion.toNumber("27.0.0")) {
+        // keep old behavior on old projects to not introduce breaking changes
+        return mManifestUrl + "/+";
+      }
+      Uri uri = Uri.parse(mManifestUrl);
+      String host = uri.getHost();
+      if (host != null && (host.equals("exp.host") || host.equals("expo.io") || host.equals("exp.direct") || host.equals("expo.test") ||
+          host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(".exp.direct") || host.endsWith(".expo.test"))) {
+        List<String> pathSegments = uri.getPathSegments();
+        Uri.Builder builder = uri.buildUpon();
+        builder.path(null);
+
+        for (String segment : pathSegments) {
+          if (ExponentManifest.DEEP_LINK_SEPARATOR.equals(segment)) {
+            break;
+          }
+          builder.appendEncodedPath(segment);
+        }
+
+        return builder.appendEncodedPath(ExponentManifest.DEEP_LINK_SEPARATOR_WITH_SLASH).build().toString();
+      } else {
+        return mManifestUrl;
+      }
     }
   }
 }

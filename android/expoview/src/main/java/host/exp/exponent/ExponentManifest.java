@@ -121,6 +121,10 @@ public class ExponentManifest {
   public static final String MANIFEST_UPDATES_CHECK_AUTOMATICALLY_ON_LOAD = "ON_LOAD";
   public static final String MANIFEST_UPDATES_CHECK_AUTOMATICALLY_ON_ERROR = "ON_ERROR_RECOVERY";
 
+  public static final String DEEP_LINK_SEPARATOR = "--";
+  public static final String DEEP_LINK_SEPARATOR_WITH_SLASH = "--/";
+  public static final String QUERY_PARAM_KEY_RELEASE_CHANNEL = "release-channel";
+
   private static final int MAX_BITMAP_SIZE = 192;
   private static final String REDIRECT_SNIPPET = "exp.host/--/to-exp/";
   private static final String ANONYMOUS_EXPERIENCE_PREFIX = "@anonymous/";
@@ -153,13 +157,7 @@ public class ExponentManifest {
     };
   }
 
-  public void fetchManifest(final String manifestUrl, final ManifestListener listener) {
-    fetchManifest(manifestUrl, listener, true);
-  }
-
-  public void fetchManifest(final String manifestUrl, final ManifestListener listener, boolean shouldWriteToCache) {
-    Analytics.markEvent(Analytics.TimedEvent.STARTED_FETCHING_MANIFEST);
-
+  private Uri.Builder httpManifestUrlBuilder(String manifestUrl) {
     String realManifestUrl = manifestUrl;
     if (manifestUrl.contains(REDIRECT_SNIPPET)) {
       // Redirect urls look like "https://exp.host/--/to-exp/exp%3A%2F%2Fgj-5x6.jesse.internal.exp.direct%3A80".
@@ -185,19 +183,33 @@ public class ExponentManifest {
     if (newPath == null) {
       newPath = "";
     }
+    int deepLinkIndex = newPath.indexOf(DEEP_LINK_SEPARATOR_WITH_SLASH);
+    if (deepLinkIndex > -1) {
+      newPath = newPath.substring(0, deepLinkIndex);
+    }
     if (!newPath.endsWith("/")) {
       newPath += "/";
     }
     newPath += "index.exp";
 
-    Uri.Builder uriBuilder = uri.buildUpon().encodedPath(newPath);
+    return uri.buildUpon().encodedPath(newPath);
+  }
+
+  public void fetchManifest(final String manifestUrl, final ManifestListener listener) {
+    fetchManifest(manifestUrl, listener, true);
+  }
+
+  public void fetchManifest(final String manifestUrl, final ManifestListener listener, boolean shouldWriteToCache) {
+    Analytics.markEvent(Analytics.TimedEvent.STARTED_FETCHING_MANIFEST);
+
+    Uri.Builder uriBuilder = httpManifestUrlBuilder(manifestUrl);
     if (!shouldWriteToCache) {
       // add a dummy parameter so this doesn't overwrite the current cached manifest
       // more correct would be to add Cache-Control: no-store header, but this doesn't seem to
       // work correctly with requests in okhttp
       uriBuilder.appendQueryParameter("cache", "false");
     }
-    httpManifestUrl = uriBuilder.build().toString();
+    String httpManifestUrl = uriBuilder.build().toString();
 
     // Fetch manifest
     Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToUrl(httpManifestUrl, manifestUrl.equals(Constants.INITIAL_URL), false);
@@ -258,36 +270,8 @@ public class ExponentManifest {
   }
 
   public boolean fetchCachedManifest(final String manifestUrl, final ManifestListener listener) {
-    String realManifestUrl = manifestUrl;
-    if (manifestUrl.contains(REDIRECT_SNIPPET)) {
-      // Redirect urls look like "https://exp.host/--/to-exp/exp%3A%2F%2Fgj-5x6.jesse.internal.exp.direct%3A80".
-      // Android is crazy and catches this url with this intent filter:
-      //  <data
-      //    android:host="*.exp.direct"
-      //    android:pathPattern=".*"
-      //    android:scheme="http"/>
-      //  <data
-      //    android:host="*.exp.direct"
-      //    android:pathPattern=".*"
-      //    android:scheme="https"/>
-      // so we have to add some special logic to handle that. This is than handling arbitrary HTTP 301s and 302
-      // because we need to add /index.exp to the paths.
-      realManifestUrl = Uri.decode(realManifestUrl.substring(realManifestUrl.indexOf(REDIRECT_SNIPPET) + REDIRECT_SNIPPET.length()));
-    }
-
-    String httpManifestUrl = ExponentUrls.toHttp(realManifestUrl);
-
-    // Append index.exp to path
-    Uri uri = Uri.parse(httpManifestUrl);
-    String newPath = uri.getPath();
-    if (newPath == null) {
-      newPath = "";
-    }
-    if (!newPath.endsWith("/")) {
-      newPath += "/";
-    }
-    newPath += "index.exp";
-    httpManifestUrl = uri.buildUpon().encodedPath(newPath).build().toString();
+    Uri uri = httpManifestUrlBuilder(manifestUrl).build();
+    String httpManifestUrl = uri.toString();
 
     if (uri.getHost().equals("localhost") || uri.getHost().endsWith(".exp.direct")) {
       // if we're in development mode, we don't ever want to fetch a cached manifest
@@ -414,24 +398,7 @@ public class ExponentManifest {
 
   // this is used only if updates.enabled == false
   public void fetchEmbeddedManifest(final String manifestUrl, final ManifestListener listener) {
-    String realManifestUrl = manifestUrl;
-    if (manifestUrl.contains(REDIRECT_SNIPPET)) {
-      realManifestUrl = Uri.decode(realManifestUrl.substring(realManifestUrl.indexOf(REDIRECT_SNIPPET) + REDIRECT_SNIPPET.length()));
-    }
-
-    String httpManifestUrl = ExponentUrls.toHttp(realManifestUrl);
-
-    // Append index.exp to path
-    Uri uri = Uri.parse(httpManifestUrl);
-    String newPath = uri.getPath();
-    if (newPath == null) {
-      newPath = "";
-    }
-    if (!newPath.endsWith("/")) {
-      newPath += "/";
-    }
-    newPath += "index.exp";
-    httpManifestUrl = uri.buildUpon().encodedPath(newPath).build().toString();
+    String httpManifestUrl = httpManifestUrlBuilder(manifestUrl).build().toString();
 
     Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToUrl(httpManifestUrl, manifestUrl.equals(Constants.INITIAL_URL), false);
     requestBuilder.header("Exponent-Accept-Signature", "true");

@@ -98,16 +98,14 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
         [allManifestUrls addObject:_shellManifestUrl];
       }
       if (self._isLocalDetach) {
-        // local detach development: point shell manifest url at local development url,
-        // and use exp<udid> scheme.
-        [self _loadDetachedDevelopmentUrlAndScheme:expoKitDevelopmentUrl fallbackToShellConfig:shellConfig];
+        // local detach development: point shell manifest url at local development url
+        [self _loadDetachedDevelopmentUrl:expoKitDevelopmentUrl fallbackToShellConfig:shellConfig];
         if (_shellManifestUrl) {
           [allManifestUrls addObject:_shellManifestUrl];
         }
-      } else {
-        // load standalone url scheme
-        [self _loadProductionUrlScheme];
       }
+      // load standalone url scheme
+      [self _loadUrlScheme];
       if (!_shellManifestUrl) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                        reason:@"This app is configured to be a standalone app, but does not specify a standalone experience url."
@@ -131,7 +129,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
   }
 }
 
-- (void)_loadDetachedDevelopmentUrlAndScheme:(NSString *)expoKitDevelopmentUrl fallbackToShellConfig:(NSDictionary *)shellConfig
+- (void)_loadDetachedDevelopmentUrl:(NSString *)expoKitDevelopmentUrl fallbackToShellConfig:(NSDictionary *)shellConfig
 {
   NSString *developmentUrl = nil;
   if (expoKitDevelopmentUrl) {
@@ -143,10 +141,6 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
   
   if (developmentUrl) {
     _shellManifestUrl = developmentUrl;
-    NSURLComponents *components = [NSURLComponents componentsWithURL:[NSURL URLWithString:_shellManifestUrl] resolvingAgainstBaseURL:YES];
-    if ([self _isValidShellUrlScheme:components.scheme forDevelopment:YES]) {
-      _urlScheme = components.scheme;
-    }
   } else {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                    reason:@"You are running a detached app from Xcode, but it hasn't been configured for local development yet. "
@@ -155,7 +149,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
   }
 }
 
-- (void)_loadProductionUrlScheme
+- (void)_loadUrlScheme
 {
   NSDictionary *iosConfig = [[NSBundle mainBundle] infoDictionary];
   if (iosConfig[@"CFBundleURLTypes"]) {
@@ -209,8 +203,8 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
     if (isForDevelopment) {
       return YES;
     } else {
-      // prod shell apps must have some non-exp url scheme
-      return (![urlScheme hasPrefix:@"exp"]);
+      // prod shell apps must have some non-exp/exps url scheme
+      return (![urlScheme isEqualToString:@"exp"] && ![urlScheme isEqualToString:@"exps"]);
     }
   }
   return NO;

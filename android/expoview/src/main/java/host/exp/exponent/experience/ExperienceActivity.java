@@ -434,7 +434,11 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     }
 
     if (mIntentUri == null) {
-      mIntentUri = mManifestUrl;
+      if (Constants.SHELL_APP_SCHEME != null) {
+        mIntentUri = Constants.SHELL_APP_SCHEME + "://";
+      } else {
+        mIntentUri = mManifestUrl;
+      }
     }
 
     final ExponentNotification finalNotificationObject = notificationObject;
