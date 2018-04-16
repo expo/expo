@@ -615,4 +615,8 @@ public class ScopedContext extends Context {
   public boolean isDeviceProtectedStorage() {
     return mContext.isDeviceProtectedStorage();
   }
+
+  public Context getContext() {
+    return mContext;
+  }
 }
