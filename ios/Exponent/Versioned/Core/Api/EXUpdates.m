@@ -46,6 +46,11 @@ RCT_EXPORT_METHOD(reload)
   [_kernelUpdatesServiceDelegate updatesModuleDidSelectReload:self];
 }
 
+RCT_EXPORT_METHOD(reloadFromCache)
+{
+  [_kernelUpdatesServiceDelegate updatesModuleDidSelectReloadFromCache:self];
+}
+
 RCT_EXPORT_METHOD(checkForUpdateAsync:(RCTPromiseResolveBlock)resolve
                              rejecter:(RCTPromiseRejectBlock)reject)
 {

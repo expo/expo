@@ -151,6 +151,14 @@ NS_ASSUME_NONNULL_BEGIN
   [_appRecord.appLoader request];
 }
 
+- (void)reloadFromCache
+{
+  self.isLoading = YES;
+  self.isBridgeAlreadyLoading = NO;
+  [self _invalidateRecoveryTimer];
+  [_appRecord.appLoader requestFromCache];
+}
+
 - (void)appStateDidBecomeActive
 {
   dispatch_async(dispatch_get_main_queue(), ^{

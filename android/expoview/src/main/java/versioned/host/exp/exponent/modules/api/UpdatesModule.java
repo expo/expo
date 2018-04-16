@@ -49,6 +49,11 @@ public class UpdatesModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void reloadFromCache() {
+    KernelProvider.getInstance().reloadVisibleExperience((String) mExperienceProperties.get(KernelConstants.MANIFEST_URL_KEY), true);
+  }
+
+  @ReactMethod
   public void checkForUpdateAsync(final Promise promise) {
     if (!Constants.ARE_REMOTE_UPDATES_ENABLED) {
       promise.reject("E_CHECK_UPDATE_FAILED", "Remote updates are disabled in app.json");

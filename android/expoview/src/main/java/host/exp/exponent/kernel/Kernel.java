@@ -583,7 +583,7 @@ public class Kernel extends KernelInterface {
     openManifestUrl(manifestUrl, options, isOptimistic, false);
   }
 
-  private void openManifestUrl(final String manifestUrl, final KernelConstants.ExperienceOptions options, final Boolean isOptimistic, final boolean forceNetwork) {
+  private void openManifestUrl(final String manifestUrl, final KernelConstants.ExperienceOptions options, final Boolean isOptimistic, boolean forceCache) {
     SoLoader.init(mContext, false);
 
     if (options == null) {
@@ -632,7 +632,7 @@ public class Kernel extends KernelInterface {
     }
 
     final ActivityManager.AppTask finalExistingTask = existingTask;
-    new AppLoader(manifestUrl, mExponentManifest, mExponentSharedPreferences) {
+    new AppLoader(manifestUrl, mExponentManifest, mExponentSharedPreferences, forceCache) {
       @Override
       public void onOptimisticManifest(final JSONObject optimisticManifest) {
         Exponent.getInstance().runOnUiThread(new Runnable() {
@@ -969,7 +969,7 @@ public class Kernel extends KernelInterface {
   }
 
   @Override
-  public boolean reloadVisibleExperience(String manifestUrl) {
+  public boolean reloadVisibleExperience(String manifestUrl, boolean forceCache) {
     if (manifestUrl == null) {
       return false;
     }
@@ -978,7 +978,7 @@ public class Kernel extends KernelInterface {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
       // TODO: make debug mode work here
       openOptimisticExperienceActivity(manifestUrl);
-      openManifestUrl(manifestUrl, null, false, true);
+      openManifestUrl(manifestUrl, null, false, forceCache);
     } else {
       ExperienceActivity activity = null;
       for (final ExperienceActivityTask experienceActivityTask : sManifestUrlToExperienceActivityTask.values()) {
@@ -1008,7 +1008,7 @@ public class Kernel extends KernelInterface {
       if (activity != null) {
         killActivityStack(activity);
       }
-      openManifestUrl(manifestUrl, null, true, true);
+      openManifestUrl(manifestUrl, null, true, forceCache);
     }
 
     return true;

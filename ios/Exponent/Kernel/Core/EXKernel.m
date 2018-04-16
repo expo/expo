@@ -252,6 +252,12 @@ const NSUInteger kEXErrorCodeAppForbidden = 424242;
   }
 }
 
+- (void)reloadAppFromCacheWithExperienceId:(NSString *)experienceId
+{
+  EXKernelAppRecord *appRecord = [_appRegistry newestRecordWithExperienceId:experienceId];
+  [appRecord.viewController reloadFromCache];
+}
+
 - (void)viewController:(__unused EXViewController *)vc didNavigateAppToVisible:(EXKernelAppRecord *)appRecord
 {
   EXKernelAppRecord *appRecordPreviouslyVisible = _visibleApp;

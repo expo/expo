@@ -24,6 +24,7 @@ public abstract class AppLoader {
   private JSONObject mManifest;
   private String mLocalBundlePath;
   private boolean hasResolved = false;
+  private final boolean mUseCacheOnly;
   private ExponentManifest mExponentManifest;
   private ExponentSharedPreferences mExponentSharedPreferences;
   private Handler mHandler;
@@ -40,9 +41,14 @@ public abstract class AppLoader {
   public static final String UPDATE_ERROR_EVENT = "error";
 
   public AppLoader(String manifestUrl, ExponentManifest exponentManifest, ExponentSharedPreferences exponentSharedPreferences) {
+    this(manifestUrl, exponentManifest, exponentSharedPreferences, false);
+  }
+
+  public AppLoader(String manifestUrl, ExponentManifest exponentManifest, ExponentSharedPreferences exponentSharedPreferences, boolean useCacheOnly) {
     mManifestUrl = manifestUrl;
     mExponentManifest = exponentManifest;
     mExponentSharedPreferences = exponentSharedPreferences;
+    mUseCacheOnly = useCacheOnly;
     mHandler = new Handler(Looper.getMainLooper());
     mRunnable = new Runnable() {
       @Override
@@ -120,6 +126,12 @@ public abstract class AppLoader {
         } else {
           // only support checkAutomatically: never in shell & detached apps
           shouldCheckForUpdate = true;
+        }
+
+        if (mUseCacheOnly) {
+          // finally, ignore everything else and don't check for updates if this is a cache-only AppLoader
+          // e.g. user has called Updates.reloadFromCache()
+          shouldCheckForUpdate = false;
         }
 
         if (shouldCheckForUpdate) {

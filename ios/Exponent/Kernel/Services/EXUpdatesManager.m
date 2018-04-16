@@ -67,6 +67,12 @@ ofDownloadWithManifest:(NSDictionary * _Nullable)manifest
   [[EXKernel sharedInstance] reloadAppWithExperienceId:experienceId];
 }
 
+- (void)updatesModuleDidSelectReloadFromCache:(id)scopedModule
+{
+  NSString *experienceId = ((EXScopedBridgeModule *)scopedModule).experienceId;
+  [[EXKernel sharedInstance] reloadAppFromCacheWithExperienceId:experienceId];
+}
+
 - (void)updatesModule:(id)scopedModule
 didRequestManifestWithCacheBehavior:(EXCachedResourceBehavior)cacheBehavior
               success:(void (^)(NSDictionary * _Nonnull))success
