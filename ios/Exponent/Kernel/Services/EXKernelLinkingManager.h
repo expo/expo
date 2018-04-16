@@ -17,13 +17,19 @@
 /**
  *  Returns the deep link prefix for a given experience uri.
  */
-+ (NSString *)linkingUriForExperienceUri:(NSURL *)uri;
++ (NSString *)linkingUriForExperienceUri:(NSURL *)uri useLegacy:(BOOL)useLegacy;
 
 /**
  *  Normalize a uri and (if needed) subtitute
  *  standalone-app-specific deep link formatting.
  */
 + (NSURL *)uriTransformedForLinking:(NSURL *)uri isUniversalLink:(BOOL)isUniversalLink;
+
+/**
+ *  Replace (if needed) initial uri with one from launch options,
+ *  and transform for correct deep link formatting.
+ */
++ (NSURL *)initialUriWithManifestUrl:(NSURL *)manifestUrl;
 
 + (NSString *)stringByRemovingDeepLink:(NSString *)path;
 

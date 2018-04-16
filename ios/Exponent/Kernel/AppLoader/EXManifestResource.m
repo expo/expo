@@ -31,7 +31,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
     }
     NSLog(@"EXManifestResource: Standalone manifest remote url is %@ (%@)", url, originalUrl);
   } else {
-    resourceName = [EXKernelLinkingManager linkingUriForExperienceUri:url];
+    resourceName = [EXKernelLinkingManager linkingUriForExperienceUri:url useLegacy:YES];
   }
 
   if (self = [super initWithResourceName:resourceName resourceType:@"json" remoteUrl:url cachePath:[[self class] cachePath]]) {
