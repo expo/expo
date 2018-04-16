@@ -28,7 +28,7 @@ try {
   if (update.isAvailable) {
     await Expo.Updates.fetchUpdateAsync();
     // ... notify user of update ...
-    Expo.Updates.reload();
+    Expo.Updates.reloadFromCache();
   }
 } catch (e) {
   // handle or log error

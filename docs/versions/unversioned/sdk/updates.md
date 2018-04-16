@@ -6,7 +6,11 @@ API for controlling and responding to over-the-air updates to your app.
 
 ### `Expo.Updates.reload()`
 
-Reloads the current experience. This will use your app.json `updates` configuration to fetch and load the newest available JS supported by the device's Expo environment. This is useful for triggering an update of your experience if you have published a new version.
+Immediately reloads the current experience. This will use your app.json `updates` configuration to fetch and load the newest available JS supported by the device's Expo environment. This is useful for triggering an update of your experience if you have published a new version.
+
+### `Expo.Updates.reloadFromCache()`
+
+Immediately reloads the current experience using the most recent cached version. This is useful for triggering an update of your experience if you have published and already downloaded a new version.
 
 ### `Expo.Updates.checkForUpdateAsync()`
 
