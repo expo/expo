@@ -298,6 +298,7 @@
 		C467A515C39D7BC540174FC6 /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 52EE209A2B46C07B4237CBD5 /* libPods-ExponentIntegrationTests.a */; };
 		F174C8BC201E67DB00F434C9 /* EXMediaLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = F174C8BA201E67DB00F434C9 /* EXMediaLibrary.m */; };
 		F19BDA11206B877F00BE0843 /* EXMediaLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = F19BDA0F206B877F00BE0843 /* EXMediaLibrary.m */; };
+		CD9939502040C1AA0087C883 /* EXHaptic.m in Sources */ = {isa = PBXBuildFile; fileRef = CD99394F2040C1AA0087C883 /* EXHaptic.m */; };
 		F1A4595220187C2B00C9704B /* EXGLCameraObject.m in Sources */ = {isa = PBXBuildFile; fileRef = F1A4595120187C2A00C9704B /* EXGLCameraObject.m */; };
 		F1BF5862201B32BE001EA8FD /* EXGLContext.m in Sources */ = {isa = PBXBuildFile; fileRef = F1BF5860201B32BD001EA8FD /* EXGLContext.m */; };
 		F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F77DDB921E04AC1100624CA2 /* SafariServices.framework */; };
@@ -902,6 +903,8 @@
 		BBD0318B200011C9009F0434 /* RNAWSCognito.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNAWSCognito.h; sourceTree = "<group>"; };
 		BBD03192200011C9009F0434 /* RNAWSCognito.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNAWSCognito.m; sourceTree = "<group>"; };
 		BD69154E1D289060B003BB86 /* Pods-Exponent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Exponent.release.xcconfig"; path = "Pods/Target Support Files/Pods-Exponent/Pods-Exponent.release.xcconfig"; sourceTree = "<group>"; };
+		CD99394E2040C1AA0087C883 /* EXHaptic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXHaptic.h; sourceTree = "<group>"; };
+		CD99394F2040C1AA0087C883 /* EXHaptic.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXHaptic.m; sourceTree = "<group>"; };
 		D045154CF3903164C70A59B6 /* Pods-ExponentIntegrationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.debug.xcconfig"; sourceTree = "<group>"; };
 		F19BDA0F206B877F00BE0843 /* EXMediaLibrary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXMediaLibrary.m; sourceTree = "<group>"; };
 		F19BDA10206B877F00BE0843 /* EXMediaLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXMediaLibrary.h; sourceTree = "<group>"; };
@@ -1554,6 +1557,8 @@
 				B5FB73871FF6DADB001C764B /* EXFontLoader.m */,
 				B5FB73881FF6DADB001C764B /* EXGoogle.h */,
 				B5FB73891FF6DADB001C764B /* EXGoogle.m */,
+				CD99394E2040C1AA0087C883 /* EXHaptic.h */,
+				CD99394F2040C1AA0087C883 /* EXHaptic.m */,
 				B5FB738A1FF6DADB001C764B /* EXImageManipulator.h */,
 				B5FB738B1FF6DADB001C764B /* EXImageManipulator.m */,
 				B5FB738C1FF6DADB001C764B /* EXImagePicker.h */,
@@ -2457,6 +2462,8 @@
 				B5FB74BC1FF6DADC001C764B /* EXNativeAdEmitter.m in Sources */,
 				B5A473DA204A66F70035C61C /* EXAppViewController.m in Sources */,
 				07E26F371FFFFB68004667A1 /* EXRemindersRequester.m in Sources */,
+				CD9939502040C1AA0087C883 /* EXHaptic.m in Sources */,
+				B5FB744B1FF6DADB001C764B /* AIRGMSPolygon.m in Sources */,
 				7846B1FA20355E9900638E43 /* RNSVGRadialGradient.m in Sources */,
 				B5FB74B41FF6DADC001C764B /* EXSQLite.m in Sources */,
 				B5FB74B91FF6DADC001C764B /* EXBannerView.m in Sources */,
