@@ -1,0 +1,81 @@
+// Gradle script for detached apps.
+
+import org.apache.tools.ant.taskdefs.condition.Os
+
+void runBefore(String dependentTaskName, Task task) {
+    Task dependentTask = tasks.findByPath(dependentTaskName);
+    if (dependentTask != null) {
+        dependentTask.dependsOn task
+    }
+}
+
+afterEvaluate {
+    def expoRoot = file("../../")
+    def inputExcludes = ["android/**", "ios/**"]
+
+    task exponentPrebuildStep(type: Exec) {
+        workingDir expoRoot
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            commandLine "cmd", "/c", ".\\android\\detach-scripts\\run-exp.bat"
+        } else {
+            commandLine "./android/detach-scripts/run-exp.sh", "prepare-detached-build", "--platform", "android", expoRoot
+        }
+    }
+    runBefore("preBuild", exponentPrebuildStep)
+
+    // Based on https://github.com/facebook/react-native/blob/master/react.gradle
+    // Grab all build types and product flavors
+    def buildTypes = android.buildTypes.collect { type -> type.name }
+    def productFlavors = android.productFlavors.collect { flavor -> flavor.name }
+
+    // When no product flavors defined, use empty
+    if (!productFlavors) productFlavors.add("")
+
+    productFlavors.each { productFlavorName ->
+        buildTypes.each { buildTypeName ->
+            // Create variant and target names
+            def flavorNameCapitalized = "${productFlavorName.capitalize()}"
+            def buildNameCapitalized = "${buildTypeName.capitalize()}"
+            def targetName = "${flavorNameCapitalized}${buildNameCapitalized}"
+            def targetPath = productFlavorName ?
+                    "${productFlavorName}/${buildTypeName}" :
+                    "${buildTypeName}"
+
+            def assetsDir = file("$buildDir/intermediates/assets/${targetPath}")
+
+            // Bundle task name for variant
+            def bundleExpoAssetsTaskName = "bundle${targetName}ExpoAssets"
+
+            def currentBundleTask = tasks.create(
+                    name: bundleExpoAssetsTaskName,
+                    type: Exec) {
+                description = "Expo bundle assets for ${targetName}."
+
+                // Create dirs if they are not there (e.g. the "clean" task just ran)
+                doFirst {
+                    assetsDir.mkdirs()
+                }
+
+                // Set up inputs and outputs so gradle can cache the result
+                inputs.files fileTree(dir: expoRoot, excludes: inputExcludes)
+                outputs.dir assetsDir
+
+                // Set up the call to exp
+                workingDir expoRoot
+
+                if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                    commandLine("cmd", "/c", ".\\android\\detach-scripts\\run-exp.bat", "bundle-assets", expoRoot, "--platform", "android", "--dest", assetsDir)
+                } else {
+                    commandLine("./android/detach-scripts/run-exp.sh", "bundle-assets", expoRoot, "--platform", "android", "--dest", assetsDir)
+                }
+
+                enabled targetName.toLowerCase().contains("release") || targetName.toLowerCase().contains("prod")
+            }
+
+            currentBundleTask.dependsOn("merge${targetName}Resources")
+            currentBundleTask.dependsOn("merge${targetName}Assets")
+
+            runBefore("process${targetName}Resources", currentBundleTask)
+        }
+    }
+}
