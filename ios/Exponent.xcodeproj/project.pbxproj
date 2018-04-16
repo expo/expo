@@ -296,6 +296,8 @@
 		B5FB74F11FF6DADC001C764B /* EXScopedEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74281FF6DADB001C764B /* EXScopedEventEmitter.m */; };
 		BBD03196200011C9009F0434 /* RNAWSCognito.m in Sources */ = {isa = PBXBuildFile; fileRef = BBD03192200011C9009F0434 /* RNAWSCognito.m */; };
 		C467A515C39D7BC540174FC6 /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 52EE209A2B46C07B4237CBD5 /* libPods-ExponentIntegrationTests.a */; };
+		F174C8BC201E67DB00F434C9 /* EXPhotoLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = F174C8BA201E67DB00F434C9 /* EXPhotoLibrary.m */; };
+		F19BDA11206B877F00BE0843 /* EXMediaLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = F19BDA0F206B877F00BE0843 /* EXMediaLibrary.m */; };
 		F1A4595220187C2B00C9704B /* EXGLCameraObject.m in Sources */ = {isa = PBXBuildFile; fileRef = F1A4595120187C2A00C9704B /* EXGLCameraObject.m */; };
 		F1BF5862201B32BE001EA8FD /* EXGLContext.m in Sources */ = {isa = PBXBuildFile; fileRef = F1BF5860201B32BD001EA8FD /* EXGLContext.m */; };
 		F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F77DDB921E04AC1100624CA2 /* SafariServices.framework */; };
@@ -899,6 +901,10 @@
 		B5FB74281FF6DADB001C764B /* EXScopedEventEmitter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedEventEmitter.m; sourceTree = "<group>"; };
 		BBD0318B200011C9009F0434 /* RNAWSCognito.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNAWSCognito.h; sourceTree = "<group>"; };
 		BBD03192200011C9009F0434 /* RNAWSCognito.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNAWSCognito.m; sourceTree = "<group>"; };
+		BD69154E1D289060B003BB86 /* Pods-Exponent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Exponent.release.xcconfig"; path = "Pods/Target Support Files/Pods-Exponent/Pods-Exponent.release.xcconfig"; sourceTree = "<group>"; };
+		D045154CF3903164C70A59B6 /* Pods-ExponentIntegrationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.debug.xcconfig"; sourceTree = "<group>"; };
+		F19BDA0F206B877F00BE0843 /* EXMediaLibrary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXMediaLibrary.m; sourceTree = "<group>"; };
+		F19BDA10206B877F00BE0843 /* EXMediaLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXMediaLibrary.h; sourceTree = "<group>"; };
 		F1A4595020187C2A00C9704B /* EXGLCameraObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGLCameraObject.h; sourceTree = "<group>"; };
 		F1A4595120187C2A00C9704B /* EXGLCameraObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGLCameraObject.m; sourceTree = "<group>"; };
 		F1BF5860201B32BD001EA8FD /* EXGLContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGLContext.m; sourceTree = "<group>"; };
@@ -1589,6 +1595,7 @@
 				B5FB73BC1FF6DADB001C764B /* GL */,
 				B5FB73C91FF6DADB001C764B /* OAuthViewController */,
 				B5FB73CC1FF6DADB001C764B /* Permissions */,
+				F174C8B9201E677600F434C9 /* MediaLibrary */,
 				B5FB73DB1FF6DADB001C764B /* Sensors */,
 				B5FB73E81FF6DADB001C764B /* Standalone */,
 			);
@@ -2007,6 +2014,26 @@
 				BBD03192200011C9009F0434 /* RNAWSCognito.m */,
 			);
 			path = Cognito;
+			sourceTree = "<group>";
+		};
+		F174C8B9201E677600F434C9 /* MediaLibrary */ = {
+			isa = PBXGroup;
+			children = (
+				F19BDA10206B877F00BE0843 /* EXMediaLibrary.h */,
+				F19BDA0F206B877F00BE0843 /* EXMediaLibrary.m */,
+			);
+			path = MediaLibrary;
+			sourceTree = "<group>";
+		};
+		FBBF25BCC6E70D733A60A01D /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				F8B7CBE8449DB220A8A6DF82 /* Pods-Exponent.debug.xcconfig */,
+				BD69154E1D289060B003BB86 /* Pods-Exponent.release.xcconfig */,
+				D045154CF3903164C70A59B6 /* Pods-ExponentIntegrationTests.debug.xcconfig */,
+				34B965207078EF139F54C545 /* Pods-ExponentIntegrationTests.release.xcconfig */,
+			);
+			name = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -2506,6 +2533,7 @@
 				B5FB74341FF6DADB001C764B /* EXCamera.m in Sources */,
 				B5D0D675204F4C0400DDFC99 /* EXKernelAppLoader.m in Sources */,
 				B57EF81620085C8200DA8960 /* RNGestureHandlerModule.m in Sources */,
+				F19BDA11206B877F00BE0843 /* EXMediaLibrary.m in Sources */,
 				7846B20720355E9900638E43 /* RNSVGViewBox.m in Sources */,
 				B5AC39B01E95A90B00540AA7 /* EXLocalNotificationManager.m in Sources */,
 				B5D0D674204F4C0400DDFC99 /* EXManifestResource.m in Sources */,

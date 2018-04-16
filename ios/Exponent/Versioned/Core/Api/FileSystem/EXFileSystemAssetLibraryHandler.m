@@ -56,7 +56,11 @@
   PHFetchResult<PHAsset *> *fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[from] options:nil];
   if (fetchResult.count > 0) {
     PHAsset *asset = fetchResult[0];
-    [[PHImageManager defaultManager] requestImageDataForAsset:asset options:nil resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
+    PHImageRequestOptions *options = [PHImageRequestOptions new];
+
+    options.networkAccessAllowed = YES;
+
+    [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
       if ([imageData writeToFile:toPath atomically:YES]) {
         resolve(nil);
       } else {
