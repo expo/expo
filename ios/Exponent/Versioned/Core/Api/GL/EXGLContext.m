@@ -43,7 +43,7 @@
 
     _manager = manager;
     _glQueue = dispatch_queue_create("host.exp.gl", DISPATCH_QUEUE_SERIAL);
-    _eaglCtx = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3];
+    _eaglCtx = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3] ?: [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
   }
   return self;
 }
@@ -55,7 +55,7 @@
 
 - (EAGLContext *)createSharedEAGLContext
 {
-  return [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3 sharegroup:[_eaglCtx sharegroup]];
+  return [[EAGLContext alloc] initWithAPI:[_eaglCtx API] sharegroup:[_eaglCtx sharegroup]];
 }
 
 - (void)runInEAGLContext:(EAGLContext*)context callback:(void(^)(void))callback
