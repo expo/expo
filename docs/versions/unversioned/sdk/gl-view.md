@@ -48,7 +48,7 @@ A promise that resolves to boolean value that is `true` if given context existed
 
 ### `Expo.GLView.takeSnapshotAsync(gl, options)`
 
-Takes a snapshot of the framebuffer and saves it as JPEG file to app's cache directory.
+Takes a snapshot of the framebuffer and saves it as a file to app's cache directory.
 
 #### Arguments
 
@@ -57,6 +57,8 @@ Takes a snapshot of the framebuffer and saves it as JPEG file to app's cache dir
     -   **framebuffer (_WebGLFramebuffer_)** -- Specify the framebuffer that we will be reading from. Defaults to underlying framebuffer that is presented in the view or the current framebuffer if context is headless.
     -   **rect (`{ x: number, y: number, width: number, height: number }`)** -- Rect to crop the snapshot. It's passed directly to `glReadPixels`.
     -   **flip (_boolean_)** -- Whether to flip the snapshot vertically. Defaults to `false`.
+    -   **format (_string_)** -- Either `'jpeg'` or `'png'`. Specifies what type of compression should be used and what is the result file extension. PNG compression is lossless but slower, JPEG is faster but the image has visible artifacts. Defaults to `'jpeg'`.
+    -   **compress (_number_)** -- A value in range 0 - 1 specifying compression level of the result image. 1 means no compression and 0 the highest compression. Defaults to `1.0`.
 
 #### Returns
 
