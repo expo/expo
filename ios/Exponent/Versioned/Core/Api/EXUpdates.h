@@ -16,6 +16,7 @@ FOUNDATION_EXPORT NSString * const EXUpdatesDownloadFinishedEventType;
 @protocol EXUpdatesScopedModuleDelegate
 
 - (void)updatesModuleDidSelectReload:(id)scopedModule;
+- (void)updatesModuleDidSelectReloadFromCache:(id)scopedModule;
 - (void)updatesModule:(id)scopedModule
 didRequestManifestWithCacheBehavior:(EXCachedResourceBehavior)cacheBehavior
               success:(void (^)(NSDictionary * _Nonnull))success

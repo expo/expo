@@ -26,15 +26,16 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 @property (nonatomic, strong) NSDictionary * _Nullable localManifest; // used by Home. TODO: ben: clean up
 @property (nonatomic, strong) NSURL * _Nullable httpManifestUrl;
 
-@property (nonatomic, strong) NSDictionary * _Nullable confirmedManifest; // definitely working, cached
-@property (nonatomic, strong) NSDictionary * _Nullable optimisticManifest; // we haven't completely downloaded a bundle for this and we haven't cached it
-@property (nonatomic, strong) NSDictionary * _Nullable remoteManifest; // same as optimisticManifest but is never set to nil - just whatever was downloaded from the server, may never actually be run
+@property (nonatomic, strong) NSDictionary * _Nullable confirmedManifest; // manifest that is actually being used
+@property (nonatomic, strong) NSDictionary * _Nullable cachedManifest; // manifest that is cached and we definitely have, may fall back to it
+@property (nonatomic, strong) NSDictionary * _Nullable remoteManifest; // manifest for which a bundle exists remotely, but we may not have the bundle yet
 
 @property (nonatomic, strong) NSData * _Nullable bundle;
 @property (nonatomic, strong) NSError * _Nullable error;
 
 @property (nonatomic, strong) NSTimer * _Nullable timer;
 @property (nonatomic, assign) BOOL hasFinished;
+@property (nonatomic, assign) BOOL shouldUseCacheOnly;
 
 @end
 
@@ -67,10 +68,12 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 - (void)_reset
 {
   _confirmedManifest = nil;
-  _optimisticManifest = nil;
+  _cachedManifest = nil;
+  _remoteManifest = nil;
   _error = nil;
   _bundle = nil;
   _hasFinished = NO;
+  _shouldUseCacheOnly = NO;
 }
 
 - (EXKernelAppLoaderStatus)status
@@ -79,7 +82,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
     return kEXKernelAppLoaderStatusError;
   } else if (_bundle && _confirmedManifest) {
     return kEXKernelAppLoaderStatusHasManifestAndBundle;
-  } else if (_optimisticManifest || _confirmedManifest) {
+  } else if (_cachedManifest || _remoteManifest) {
     return kEXKernelAppLoaderStatusHasManifest;
   }
   return kEXKernelAppLoaderStatusNew;
@@ -87,11 +90,14 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
 - (NSDictionary * _Nullable)manifest
 {
-  if (_optimisticManifest) {
-    return _optimisticManifest;
-  }
   if (_confirmedManifest) {
     return _confirmedManifest;
+  }
+  if (_remoteManifest) {
+    return _remoteManifest;
+  }
+  if (_cachedManifest) {
+    return _cachedManifest;
   }
   return nil;
 }
@@ -103,13 +109,10 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
                                    reason:@"Tried to load a bundle from an AppLoader with no manifest."
                                  userInfo:@{}];
   }
-  if (!_optimisticManifest) {
-    _optimisticManifest = _confirmedManifest;
-  }
   if (_bundle) {
     _bundle = nil;
   }
-  [self _fetchRemoteJSBundleWithOptimisticManifest];
+  [self _fetchRemoteJSBundleWithRemoteManifest];
 }
 
 #pragma mark - public
@@ -117,6 +120,19 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 - (void)request
 {
   [self _reset];
+  if (_localManifest) {
+    [self _beginRequestWithLocalManifest];
+  } else if (_manifestUrl) {
+    [self _beginRequestWithRemoteManifest];
+  } else {
+    [self _finishWithError:RCTErrorWithMessage(@"Can't load app with no remote url nor local manifest.")];
+  }
+}
+
+- (void)requestFromCache
+{
+  [self _reset];
+  _shouldUseCacheOnly = YES;
   if (_localManifest) {
     [self _beginRequestWithLocalManifest];
   } else if (_manifestUrl) {
@@ -151,14 +167,20 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
     // local manifest won't give us sufficient information to tell
     return NO;
   }
-  return self.confirmedManifest && self.optimisticManifest && self.confirmedManifest[@"revisionId"]
-    && [self.confirmedManifest[@"revisionId"] isEqualToString:self.optimisticManifest[@"revisionId"]];
+  if (!self.cachedManifest || !self.remoteManifest) {
+    // if either of these don't exist, we don't have enough information to tell
+    return NO;
+  }
+  return self.remoteManifest[@"revisionId"]
+    ? [self.remoteManifest[@"revisionId"] isEqualToString:self.cachedManifest[@"revisionId"]]
+    : NO;
 }
 
 - (void)_beginRequestWithLocalManifest
 {
   _confirmedManifest = _localManifest;
-  _optimisticManifest = _localManifest;
+  _cachedManifest = _localManifest;
+  _remoteManifest = _localManifest;
   [self _fetchCachedManifest];
 }
 
@@ -178,7 +200,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   // first get cached manifest
   // then try to fetch new one over network
   [self fetchManifestWithCacheBehavior:EXCachedResourceOnlyCache success:^(NSDictionary * cachedManifest) {
-    _confirmedManifest = cachedManifest;
+    _cachedManifest = cachedManifest;
 
     BOOL shouldCheckForUpdate = YES;
     int fallbackToCacheTimeout = EX_DEFAULT_TIMEOUT_LENGTH;
@@ -189,8 +211,8 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
       return;
     }
 
-    id updates = _confirmedManifest[@"updates"];
-    id ios = _confirmedManifest[@"ios"];
+    id updates = _cachedManifest[@"updates"];
+    id ios = _cachedManifest[@"ios"];
     if (updates && [updates isKindOfClass:[NSDictionary class]]) {
       NSDictionary *updatesDict = (NSDictionary *)updates;
       id checkAutomaticallyVal = updatesDict[@"checkAutomatically"];
@@ -219,12 +241,17 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
     // if this experience id encountered a loading error before,
     // we should always check for an update, even if the manifest says not to
-    if ([[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:[self _experienceIdWithManifest:_confirmedManifest]]) {
+    if ([[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:[self _experienceIdWithManifest:_cachedManifest]]) {
       shouldCheckForUpdate = YES;
     }
 
     // if we've disabled updates, override everything else
     if ([EXShellManager sharedInstance].isShell && ![EXShellManager sharedInstance].areRemoteUpdatesEnabled) {
+      shouldCheckForUpdate = NO;
+    }
+
+    // if we've requested this bundle using Updates.reloadFromCache, don't fetch from the network either
+    if (_shouldUseCacheOnly) {
       shouldCheckForUpdate = NO;
     }
 
@@ -258,7 +285,6 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
     cacheBehavior = EXCachedResourceNoCache;
   }
   [self fetchManifestWithCacheBehavior:cacheBehavior success:^(NSDictionary * _Nonnull manifest) {
-    _optimisticManifest = manifest;
     _remoteManifest = manifest;
     if ([self _areDevToolsEnabledWithManifest:manifest] && _timer) {
       // make sure we never time out in dev mode
@@ -267,35 +293,35 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
     }
     // if we're never using a cache, go ahead and confirm the manifest now
     if (cacheBehavior == EXCachedResourceNoCache && !_confirmedManifest) {
-      _confirmedManifest = _optimisticManifest;
+      _confirmedManifest = _remoteManifest;
     }
     if (_delegate) {
-      [_delegate appLoader:self didLoadOptimisticManifest:_optimisticManifest];
+      [_delegate appLoader:self didLoadOptimisticManifest:_remoteManifest];
     }
-    [self _fetchRemoteJSBundleInProductionWithOptimisticManifest];
+    [self _fetchRemoteJSBundleInProductionWithRemoteManifest];
   } failure:^(NSError * _Nonnull error) {
     [self _finishWithError:error];
   }];
 }
 
-- (void)_fetchRemoteJSBundleInProductionWithOptimisticManifest
+- (void)_fetchRemoteJSBundleInProductionWithRemoteManifest
 {
-  if ([self _areDevToolsEnabledWithManifest:_optimisticManifest]) {
+  if ([self _areDevToolsEnabledWithManifest:_remoteManifest]) {
     // stop and wait for somebody to manually ask for the bundle via `forceBundleReload`.
   } else {
-    [self _fetchRemoteJSBundleWithOptimisticManifest];
+    [self _fetchRemoteJSBundleWithRemoteManifest];
   }
 }
 
-- (void)_fetchRemoteJSBundleWithOptimisticManifest
+- (void)_fetchRemoteJSBundleWithRemoteManifest
 {
-  EXCachedResourceBehavior cacheBehavior = [self _cacheBehaviorForJSWithManifest:_optimisticManifest];
+  EXCachedResourceBehavior cacheBehavior = [self _cacheBehaviorForJSWithManifest:_remoteManifest];
   if ([self _isCacheUpToDate]) {
     cacheBehavior = EXCachedResourceFallBackToNetwork;
   }
 
   __weak typeof(self) weakSelf = self;
-  [self fetchJSBundleWithManifest:_optimisticManifest cacheBehavior:cacheBehavior timeoutInterval:kEXJSBundleTimeout progress:^(EXLoadingProgress * _Nonnull progress) {
+  [self fetchJSBundleWithManifest:_remoteManifest cacheBehavior:cacheBehavior timeoutInterval:kEXJSBundleTimeout progress:^(EXLoadingProgress * _Nonnull progress) {
     __strong typeof(weakSelf) strongSelf = weakSelf;
     if (strongSelf && strongSelf.delegate) {
       [_delegate appLoader:strongSelf didLoadBundleWithProgress:progress];
@@ -303,19 +329,16 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   } success:^(NSData * _Nonnull data) {
     __strong typeof(weakSelf) strongSelf = weakSelf;
     if (strongSelf) {
-      if (!_hasFinished) {
-        // promote optimistic manifest to confirmed manifest.
-        strongSelf.confirmedManifest = strongSelf.optimisticManifest;
-        strongSelf.optimisticManifest = nil;
-      }
       strongSelf.bundle = data;
+      if (!strongSelf.hasFinished) {
+        // promote optimistic manifest to confirmed manifest.
+        strongSelf.confirmedManifest = strongSelf.remoteManifest;
+      }
       [strongSelf _finishWithError:nil];
     }
   } error:^(NSError * _Nonnull error) {
     __strong typeof(weakSelf) strongSelf = weakSelf;
     if (strongSelf) {
-      // discard optimistic manifest.
-      strongSelf.optimisticManifest = nil;
       [strongSelf _finishWithError:error];
     }
   }];
@@ -344,21 +367,18 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
     [_delegate appLoader:self didResolveUpdatedBundleWithManifest:_remoteManifest isFromCache:[self _isCacheUpToDate] error:err];
   }
   _hasFinished = YES;
-
-  if (_optimisticManifest) {
-    // we're finishing no matter what, so discard any optimistic manifest that hasn't been confirmed yet.
-    _optimisticManifest = nil;
-  }
   
   if (_bundle) {
     // we have everything
     if (_delegate) {
       [_delegate appLoader:self didFinishLoadingManifest:_confirmedManifest bundle:_bundle];
     }
-  } else if (_confirmedManifest) {
+  } else if (_cachedManifest) {
     // we don't have a bundle but need to finish,
     // try to grab a cache
-    [self fetchJSBundleWithManifest:_confirmedManifest cacheBehavior:EXCachedResourceFallBackToNetwork timeoutInterval:kEXJSBundleTimeout progress:^(EXLoadingProgress * _Nonnull progress) {
+    // go ahead and confirm the cached manifest since that's what we'll use
+    _confirmedManifest = _cachedManifest;
+    [self fetchJSBundleWithManifest:_cachedManifest cacheBehavior:EXCachedResourceFallBackToNetwork timeoutInterval:kEXJSBundleTimeout progress:^(EXLoadingProgress * _Nonnull progress) {
       if (_delegate) {
         [_delegate appLoader:self didLoadBundleWithProgress:progress];
       }

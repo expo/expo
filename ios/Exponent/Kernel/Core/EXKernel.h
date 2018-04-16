@@ -31,7 +31,8 @@ FOUNDATION_EXPORT NSString * const kEXKernelClearJSCacheUserDefaultsKey;
 
 - (EXKernelAppRecord *)createNewAppWithUrl:(NSURL *)url initialProps:(nullable NSDictionary *)initialProps;
 - (void)switchTasks;
-- (void)reloadAppWithExperienceId:(NSString *)experienceId; // called by Util.reload
+- (void)reloadAppWithExperienceId:(NSString *)experienceId; // called by Updates.reload
+- (void)reloadAppFromCacheWithExperienceId:(NSString *)experienceId; // called by Updates.reloadFromCache
 
 /**
  *  Send a notification to a given experience id.

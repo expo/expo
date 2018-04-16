@@ -7,6 +7,7 @@
 
 - (instancetype)initWithAppRecord:(EXKernelAppRecord *)record;
 - (void)refresh;
+- (void)reloadFromCache;
 
 /**
  *  Maybe displays an error to the user. Ignores it if RCTRedBox is already showing it.
