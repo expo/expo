@@ -28,7 +28,6 @@ import versioned.host.exp.exponent.modules.api.MailComposerModule;
 import versioned.host.exp.exponent.modules.api.MediaLibraryModule;
 import versioned.host.exp.exponent.modules.api.PrintModule;
 import versioned.host.exp.exponent.modules.api.UpdatesModule;
-import versioned.host.exp.exponent.modules.api.PhotoLibraryModule;
 import versioned.host.exp.exponent.modules.api.av.video.VideoManager;
 import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerModule;
 import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerViewManager;
@@ -202,7 +201,6 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new MediaLibraryModule(reactContext, experienceId));
         nativeModules.add(new PrintModule(reactContext));
         nativeModules.add(new LocalizationModule(reactContext));
-        nativeModules.add(new PhotoLibraryModule(reactContext));
       } catch (JSONException | UnsupportedEncodingException e) {
         EXL.e(TAG, e.toString());
       }
