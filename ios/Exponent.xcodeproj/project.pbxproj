@@ -2058,7 +2058,6 @@
 				B575EEC61D5AA56100DCABBC /* Clean Up Dynamic Macros */,
 				78CEE2EA1ACD22AF0095B124 /* Clear Bundle Version */,
 				78F81D401B70746F000E5595 /* Fabric */,
-				F3E4FEFA210CB5C160FB2CB7 /* [CP] Embed Pods Frameworks */,
 				FE413F13B15B6DEB599EF7CD /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
@@ -2078,8 +2077,6 @@
 				B513333C1CE649FE00E9FC9E /* Sources */,
 				B513333D1CE649FE00E9FC9E /* Frameworks */,
 				B513333E1CE649FE00E9FC9E /* Resources */,
-				982D3C9C32DF99E22A82D27E /* [CP] Embed Pods Frameworks */,
-				2D0D9BF80753E1BBD8FA3682 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -2199,21 +2196,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		2D0D9BF80753E1BBD8FA3682 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		3D9888152A4F82FA2D3717B5 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2290,21 +2272,6 @@
 			shellPath = /bin/bash;
 			shellScript = "set -eo pipefail\n\nif [ -z \"$EXPONENT_TOOLS_DIR\" ]; then\nEXPONENT_TOOLS_DIR=\"${SRCROOT}/../tools-public\"\nfi\n\npushd ${EXPONENT_TOOLS_DIR}\nsource source-login-scripts.sh\ngulp run-fabric-ios --fabricPath \"${PODS_ROOT}/Fabric/run\" --iosPath \"${SRCROOT}\"\npopd\n";
 		};
-		982D3C9C32DF99E22A82D27E /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		B575EEC61D5AA56100DCABBC /* Clean Up Dynamic Macros */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2318,21 +2285,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
 			shellScript = "set -eo pipefail\n\nif [ -z \"$EXPONENT_TOOLS_DIR\" ]; then\n    EXPONENT_TOOLS_DIR=\"${SRCROOT}/../tools-public\"\nfi\n\npushd ${EXPONENT_TOOLS_DIR}\nsource source-login-scripts.sh\ngulp cleanup-dynamic-macros --infoPlistPath \"${SRCROOT}/Exponent/Supporting\" --platform ios\npopd";
-		};
-		F3E4FEFA210CB5C160FB2CB7 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Exponent/Pods-Exponent-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
 		};
 		FE413F13B15B6DEB599EF7CD /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
