@@ -319,7 +319,13 @@ public class GLContext implements VersionedGLView {
     // Creates headless GL context if surfaceTexture == null
     private EGLSurface createGLSurface(EGLConfig eglConfig, SurfaceTexture surfaceTexture) {
       if (surfaceTexture == null) {
-        return mEGL.eglCreatePbufferSurface(mEGLDisplay, eglConfig, null);
+        // Some devices are crashing when pbuffer surface doesn't have EGL_WIDTH and EGL_HEIGHT attributes set
+        int[] surfaceAttribs = {
+            EGL10.EGL_WIDTH, 1,
+            EGL10.EGL_HEIGHT, 1,
+            EGL10.EGL_NONE
+        };
+        return mEGL.eglCreatePbufferSurface(mEGLDisplay, eglConfig, surfaceAttribs);
       } else {
         return mEGL.eglCreateWindowSurface(mEGLDisplay, eglConfig, surfaceTexture, null);
       }
