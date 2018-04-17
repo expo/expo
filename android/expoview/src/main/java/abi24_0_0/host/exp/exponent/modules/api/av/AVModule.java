@@ -477,7 +477,7 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
   // Recording API
 
   private boolean isMissingAudioRecordingPermissions() {
-    return Exponent.getInstance().getPermissions(Manifest.permission.RECORD_AUDIO, this.experienceId);
+    return !Exponent.getInstance().getPermissions(Manifest.permission.RECORD_AUDIO, this.experienceId);
   }
 
   // Rejects the promise and returns false if the MediaRecorder is not found.
