@@ -561,12 +561,12 @@ public class Kernel extends KernelInterface {
 
   private String getManifestUrlFromFullUri(String uriString) {
     if (uriString != null) {
+      Uri uri = Uri.parse(uriString);
+      Uri.Builder builder = uri.buildUpon();
       int deepLinkPositionDashes = uriString.indexOf(ExponentManifest.DEEP_LINK_SEPARATOR_WITH_SLASH);
       if (deepLinkPositionDashes >= 0) {
         // do this safely so we preserve any query string
-        Uri uri = Uri.parse(uriString);
         List<String> pathSegments = uri.getPathSegments();
-        Uri.Builder builder = uri.buildUpon();
         builder.path(null);
 
         for (String segment : pathSegments) {
@@ -575,20 +575,21 @@ public class Kernel extends KernelInterface {
           }
           builder.appendEncodedPath(segment);
         }
-
-        // ignore any query param other than the release-channel
-        // as these will cause the client to treat this as a different experience
-        String releaseChannel = uri.getQueryParameter(ExponentManifest.QUERY_PARAM_KEY_RELEASE_CHANNEL);
-        builder.query(null);
-        if (releaseChannel != null) {
-          builder.appendQueryParameter(ExponentManifest.QUERY_PARAM_KEY_RELEASE_CHANNEL, releaseChannel);
-        }
-
-        // ignore fragments as well (e.g. those added by auth-session)
-        builder.fragment(null);
-
-        uriString = builder.build().toString();
       }
+
+      // ignore any query param other than the release-channel
+      // as these will cause the client to treat this as a different experience
+      String releaseChannel = uri.getQueryParameter(ExponentManifest.QUERY_PARAM_KEY_RELEASE_CHANNEL);
+      builder.query(null);
+      if (releaseChannel != null) {
+        builder.appendQueryParameter(ExponentManifest.QUERY_PARAM_KEY_RELEASE_CHANNEL, releaseChannel);
+      }
+
+      // ignore fragments as well (e.g. those added by auth-session)
+      builder.fragment(null);
+
+      uriString = builder.build().toString();
+
       int deepLinkPositionPlus = uriString.indexOf('+');
       if (deepLinkPositionPlus >= 0 && deepLinkPositionDashes < 0) {
         // need to keep this for backwards compatibility
