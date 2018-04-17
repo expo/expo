@@ -245,7 +245,7 @@ public class GLContext implements VersionedGLView {
       FileOutputStream output = null;
       Bitmap.CompressFormat compressFormat = Bitmap.CompressFormat.JPEG;
 
-      if (mFormat.equals("png")) {
+      if (mFormat != null && mFormat.equals("png")) {
         compressFormat = Bitmap.CompressFormat.PNG;
         extension = ".png";
       }
