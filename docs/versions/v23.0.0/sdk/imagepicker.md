@@ -4,6 +4,8 @@ title: ImagePicker
 
 Provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.
 
+Requires `Permissions.CAMERA_ROLL`.
+
 ### `Expo.ImagePicker.launchImageLibraryAsync(options)`
 
 Display the system UI for choosing an image or a video from the phone's library.
@@ -31,7 +33,7 @@ Otherwise, returns `{ cancelled: false, uri, width, height, type }` where `uri` 
 
 ### `Expo.ImagePicker.launchCameraAsync(options)`
 
-Display the system UI for taking a photo with the camera.
+Display the system UI for taking a photo with the camera. Requires `Permissions.CAMERA` along with `Permissions.CAMERA_ROLL`.
 
 #### Arguments
 
