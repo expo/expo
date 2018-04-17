@@ -74,7 +74,7 @@ Delete a file or directory. If the URI points to a directory, the directory and 
 
 -   **options (_object_)** -- A map of options:
 
-  -   **idempotent (_boolean_)** -- If `true`, don't throw an error if there is no file or directory at this URI. `false` by default.
+    -   **idempotent (_boolean_)** -- If `true`, don't throw an error if there is no file or directory at this URI. `false` by default.
 
 ### `Expo.FileSystem.moveAsync(options)`
 
@@ -84,9 +84,9 @@ Move a file or directory to a new location.
 
 -   **options (_object_)** -- A map of options:
 
-  -   **from (_string_)** -- `file://` URI to the file or directory at its original location.
+    -   **from (_string_)** -- `file://` URI to the file or directory at its original location.
 
-  -   **to (_string_)** -- `file://` URI to the file or directory at what should be its new location.
+    -   **to (_string_)** -- `file://` URI to the file or directory at what should be its new location.
 
 ### `Expo.FileSystem.copyAsync(options)`
 
