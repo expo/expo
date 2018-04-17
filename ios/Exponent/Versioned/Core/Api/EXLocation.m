@@ -78,7 +78,6 @@ NSString * const EXHeadingChangedEventName = @"Exponent.headingChanged";
 @interface EXLocation ()
 
 @property (nonatomic, strong) NSMutableDictionary<NSNumber *, EXLocationDelegate*> *delegates;
-@property (nonatomic, strong) CLGeocoder *geocoder;
 @property (nonatomic, assign, getter=isPaused) BOOL paused;
 @property (nonatomic, weak) id kernelPermissionsServiceDelegate;
 
@@ -284,11 +283,9 @@ RCT_REMAP_METHOD(geocodeAsync,
     return;
   }
   
-  if (!_geocoder) {
-    _geocoder = [[CLGeocoder alloc] init];
-  }
+  CLGeocoder *geocoder = [[CLGeocoder alloc] init];
 
-  [_geocoder geocodeAddressString:address completionHandler:^(NSArray* placemarks, NSError* error){
+  [geocoder geocodeAddressString:address completionHandler:^(NSArray* placemarks, NSError* error){
     if (!error) {
       NSMutableArray *results = [NSMutableArray arrayWithCapacity:placemarks.count];
       for (CLPlacemark* placemark in placemarks)
@@ -321,13 +318,10 @@ RCT_REMAP_METHOD(reverseGeocodeAsync,
     return;
   }
   
-  if (!_geocoder) {
-    _geocoder = [[CLGeocoder alloc] init];
-  }
-
+  CLGeocoder *geocoder = [[CLGeocoder alloc] init];
   CLLocation *location = [[CLLocation alloc] initWithLatitude:[locationMap[@"latitude"] floatValue] longitude:[locationMap[@"longitude"] floatValue]];
 
-  [_geocoder reverseGeocodeLocation:location completionHandler:^(NSArray* placemarks, NSError* error){
+  [geocoder reverseGeocodeLocation:location completionHandler:^(NSArray* placemarks, NSError* error){
     if (!error) {
       NSMutableArray *results = [NSMutableArray arrayWithCapacity:placemarks.count];
       for (CLPlacemark* placemark in placemarks)
@@ -362,7 +356,7 @@ RCT_REMAP_METHOD(reverseGeocodeAsync,
 
 - (void)bridgeDidBackground:(NSNotification *)notification
 {
-  if (_geocoder) {
+  if (![self isPaused]) {
     [self setPaused:YES];
   }
 }
