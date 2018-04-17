@@ -67,11 +67,28 @@ Pod::Spec.new do |s|
 
   s.subspec "Expo" do |ss|
     ss.dependency         "ReactABI26_0_0/Core"
+    ss.dependency 'Amplitude-iOS'
+    ss.dependency 'Analytics'
+    ss.dependency 'AppAuth'
+    ss.dependency 'ExponentCPP'
+    ss.dependency 'FBAudienceNetwork'
+    ss.dependency 'FBSDKCoreKit'
+    ss.dependency 'FBSDKLoginKit'
+    ss.dependency 'FBSDKShareKit'
+    ss.dependency 'Google-Mobile-Ads-SDK'
+    ss.dependency 'GoogleSignIn'
+    ss.dependency 'GoogleMaps'
+    ss.dependency 'GPUImage'
+    ss.dependency 'lottie-ios'
+    ss.dependency 'JKBigInteger2'
+    ss.dependency 'Branch'
     ss.source_files     = "Expo/Core/**/*.{h,m}"
   end
 
   s.subspec "ExpoOptional" do |ss|
     ss.dependency         "ReactABI26_0_0/Expo"
+    ss.dependency "GoogleMobileVision/FaceDetector"
+    ss.dependency "GoogleMobileVision/MVDataOutput"
     ss.source_files     = "Expo/Optional/**/*.{h,m}"
   end
 
