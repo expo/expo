@@ -11,12 +11,12 @@ TEST_SRCS = [
 ]
 
 if not IS_OSS_BUILD:
+    load("@xplat//build_defs:fb_xplat_cxx.bzl", "cxx_test")
     load("@xplat//configurations/buck/android:jni_instrumentation_test", "jni_instrumentation_test_lib")
-    load("@xplat//configurations/buck:fb_xplat_cxx.bzl", "cxx_test")
     load("@xplat//configurations/buck:default_platform_defs.bzl", "APPLE")
     jni_instrumentation_test_lib(
         name = 'tests',
-        class_under_test = 'abi26_0_0/com/facebook/react/XplatBridgeTest',
+        class_under_test = 'abi27_0_0/com/facebook/react/XplatBridgeTest',
         soname = 'libxplat-bridge.so',
         srcs = TEST_SRCS,
         compiler_flags = [
