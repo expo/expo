@@ -15,6 +15,7 @@ import android.text.TextUtils;
 
 import com.facebook.common.logging.FLog;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -63,8 +64,17 @@ public class DebugServerException extends RuntimeException {
     try {
       JSONObject jsonObject = new JSONObject(str);
       String fullFileName = jsonObject.getString("filename");
+      String description = null;
+      if (jsonObject.has("description")) {
+        description = jsonObject.getString("description");
+      } else {
+        JSONArray jsonErrors = jsonObject.getJSONArray("errors");
+        JSONObject jsonError = jsonErrors.getJSONObject(0);
+        description = jsonError.getString("description");
+      }
+
       return new DebugServerException(
-          jsonObject.getString("description"),
+          description,
           shortenFileName(fullFileName),
           jsonObject.getInt("lineNumber"),
           jsonObject.getInt("column"));

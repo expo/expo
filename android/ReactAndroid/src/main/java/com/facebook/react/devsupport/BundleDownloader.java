@@ -254,17 +254,17 @@ public class BundleDownloader {
     // Check for server errors. If the server error has the expected form, fail with more info.
     if (statusCode != 200) {
       String bodyString = body.readUtf8();
+      // NOTE(expo): Remove JSON-encoded ANSI color codes from the string
+      bodyString = bodyString.replaceAll("\\\\u001b\\[[\\d;]*m", "");
       DebugServerException debugServerException = DebugServerException.parse(bodyString);
       if (debugServerException != null) {
         callback.onFailure(debugServerException);
       } else {
-        // NOTE(expo): Remove ANSI color codes from the string
-        String plainString = bodyString.replaceAll("\u001b\\[[\\d;]*m", "");
         StringBuilder sb = new StringBuilder();
         sb.append("The development server returned response error code: ").append(statusCode).append("\n\n")
           .append("URL: ").append(url).append("\n\n")
-          .append("Body:\n")
-          .append(plainString);
+          .append("BodyX:\n")
+          .append(bodyString);
         callback.onFailure(new DebugServerException(sb.toString()));
       }
       return;
