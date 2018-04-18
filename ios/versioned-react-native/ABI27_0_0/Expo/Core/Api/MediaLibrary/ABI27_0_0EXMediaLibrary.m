@@ -45,6 +45,11 @@ ABI27_0_0EX_EXPORT_SCOPED_MODULE(ExponentMediaLibrary, PermissionsManager);
   return dispatch_queue_create("host.exp.exponent.MediaLibrary", DISPATCH_QUEUE_SERIAL);
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 - (NSDictionary *)constantsToExport
 {
   return @{
