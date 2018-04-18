@@ -46,7 +46,7 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
         if (!appRecord || appRecord.status != kEXKernelAppRecordStatusRunning) {
           continue;
         }
-        if (appRecord.appLoader.manifestUrl && [urlToRoute.absoluteString hasPrefix:[[self class] linkingUriForExperienceUri:appRecord.appLoader.manifestUrl useLegacy:NO]]) {
+        if (appRecord.appLoader.manifestUrl && [[self class] _isUrl:urlToRoute deepLinkIntoAppWithManifestUrl:appRecord.appLoader.manifestUrl]) {
           // this is a link into a bridge we already have running.
           // use this bridge as the link's destination instead of the kernel.
           destinationApp = appRecord;
@@ -253,6 +253,56 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
       [components.host hasSuffix:@".expo.test"];
   }
   return NO;
+}
+
++ (BOOL)_isUrl:(NSURL *)urlToRoute deepLinkIntoAppWithManifestUrl:(NSURL *)manifestUrl
+{
+  NSURLComponents *urlToRouteComponents = [NSURLComponents componentsWithURL:urlToRoute resolvingAgainstBaseURL:YES];
+  NSURLComponents *manifestUrlComponents = [NSURLComponents componentsWithURL:[self uriTransformedForLinking:manifestUrl isUniversalLink:NO] resolvingAgainstBaseURL:YES];
+
+  if (urlToRouteComponents.host && manifestUrlComponents.host && [urlToRouteComponents.host isEqualToString:manifestUrlComponents.host]) {
+    if ((!urlToRouteComponents.port && !manifestUrlComponents.port) || (urlToRouteComponents.port && [urlToRouteComponents.port isEqualToNumber:manifestUrlComponents.port])) {
+      NSString *urlToRouteBasePath = [[self class] _normalizePath:urlToRouteComponents.path];
+      NSString *manifestUrlBasePath = [[self class] _normalizePath:manifestUrlComponents.path];
+
+      if ([urlToRouteBasePath isEqualToString:manifestUrlBasePath]) {
+        // release-channel is a special query parameter that we treat as a separate app, so we need to check that here
+        NSString *manifestUrlReleaseChannel = [[self class] _releaseChannelWithUrlComponents:manifestUrlComponents];
+        NSString *urlToRouteReleaseChannel = [[self class] _releaseChannelWithUrlComponents:urlToRouteComponents];
+        if ([manifestUrlReleaseChannel isEqualToString:urlToRouteReleaseChannel]) {
+          return YES;
+        }
+      }
+    }
+  }
+  return NO;
+}
+
++ (NSString *)_normalizePath:(NSString *)path
+{
+  if (!path) {
+    return @"/";
+  }
+  NSString *basePath = [[self class] stringByRemovingDeepLink:path];
+  NSMutableString *mutablePath = [basePath mutableCopy];
+  if (mutablePath.length == 0 || [mutablePath characterAtIndex:mutablePath.length - 1] != '/') {
+    [mutablePath appendString:@"/"];
+  }
+  return mutablePath;
+}
+
++ (NSString *)_releaseChannelWithUrlComponents:(NSURLComponents *)urlComponents
+{
+  NSString *releaseChannel = @"default";
+  NSArray<NSURLQueryItem *> *queryItems = urlComponents.queryItems;
+  if (queryItems) {
+    for (NSURLQueryItem *item in queryItems) {
+      if ([item.name isEqualToString:@"release-channel"]) {
+        releaseChannel = item.value;
+      }
+    }
+  }
+  return releaseChannel;
 }
 
 #pragma mark - UIApplication hooks
