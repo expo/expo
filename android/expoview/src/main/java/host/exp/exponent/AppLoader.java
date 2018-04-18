@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.exceptions.ExceptionUtils;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.storage.ExponentSharedPreferences;
@@ -143,7 +144,7 @@ public abstract class AppLoader {
 
       @Override
       public void onError(Exception e) {
-        EXL.e(TAG, "Error fetching cached manifest, falling back to default timeout: " + e.getMessage());
+        EXL.e(TAG, "Error fetching cached manifest, falling back to default timeout: " + ExceptionUtils.exceptionToErrorMessage(e).developerErrorMessage());
         startTimerAndFetchRemoteManifest();
       }
 
@@ -232,7 +233,6 @@ public abstract class AppLoader {
         return;
       }
 
-      EXL.d(TAG, "Done fetching manifest");
       Analytics.markEvent(Analytics.TimedEvent.FINISHED_FETCHING_MANIFEST);
 
       mExponentSharedPreferences.updateManifest(mManifestUrl, mManifest, bundleUrl);
@@ -252,6 +252,7 @@ public abstract class AppLoader {
     } else {
       hasResolved = true;
       if (e != null) {
+        EXL.e(TAG, "Could not load app: " + ExceptionUtils.exceptionToErrorMessage(e).developerErrorMessage());
         onError(e);
       } else {
         onError("Could not load request from " + mManifestUrl + ": the request timed out");
