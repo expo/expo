@@ -163,7 +163,7 @@ dependencies {
 
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  compile('host.exp.exponent:expoview:26.0.0@aar') {
+  compile('host.exp.exponent:expoview:27.0.0@aar') {
     transitive = true
   }
   END UNCOMMENT WHEN DISTRIBUTING */
