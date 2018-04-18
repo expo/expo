@@ -258,11 +258,13 @@ public class BundleDownloader {
       if (debugServerException != null) {
         callback.onFailure(debugServerException);
       } else {
+        // NOTE(expo): Remove ANSI color codes from the string
+        String plainString = bodyString.replaceAll("\u001b\\[[\\d;]*m", "");
         StringBuilder sb = new StringBuilder();
         sb.append("The development server returned response error code: ").append(statusCode).append("\n\n")
           .append("URL: ").append(url).append("\n\n")
           .append("Body:\n")
-          .append(bodyString);
+          .append(plainString);
         callback.onFailure(new DebugServerException(sb.toString()));
       }
       return;
