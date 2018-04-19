@@ -165,15 +165,11 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
       return;
     }
 
-    if (Exponent.getInstance().getPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, this.experienceId)) {
-      Intent libraryIntent = new Intent();
-      libraryIntent.setType("image/*");
-      libraryIntent.setAction(Intent.ACTION_GET_CONTENT);
-      mPromise = promise;
-      Exponent.getInstance().getCurrentActivity().startActivityForResult(libraryIntent, REQUEST_LAUNCH_IMAGE_LIBRARY);
-    } else {
-      promise.reject(new SecurityException("User rejected permissions."));
-    }
+    Intent libraryIntent = new Intent();
+    libraryIntent.setType("image/*");
+    libraryIntent.setAction(Intent.ACTION_GET_CONTENT);
+    mPromise = promise;
+    Exponent.getInstance().getCurrentActivity().startActivityForResult(libraryIntent, REQUEST_LAUNCH_IMAGE_LIBRARY);
   }
 
   public void onActivityResult(final int requestCode, final int resultCode, final Intent intent) {
