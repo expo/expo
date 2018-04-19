@@ -12,7 +12,7 @@ Requires `Permissions.CAMERA_ROLL` permissions.
 
 Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](./camera.html).
 
-```javascript
+```
 const { uri } = await camera.takePictureAsync();
 const asset = await MediaLibrary.createAssetAsync(uri);
 ```
@@ -35,7 +35,7 @@ Fetches a page of assets matching the provided criteria.
     -   **first (_number_)** -- The maximum number of items on a single page.
     -   **after (_string_)** -- Asset ID of the last item returned on the previous page.
     -   **album (_string_ | _Album_)** -- [Album](#album) or its ID to get assets from specific album.
-    -   **sortBy (_array_)** -- An array of [SortBy](#sort-by) keys. By default, all keys are sorted in descending order, however you can also pass a pair ```[key, ascending]``` where the second item is a `boolean` value that means whether to use ascending order.
+    -   **sortBy (_array_)** -- An array of [SortBy](#sort-by) keys. By default, all keys are sorted in descending order, however you can also pass a pair `[key, ascending]` where the second item is a `boolean` value that means whether to use ascending order.
     Earlier items have higher priority when sorting out the results.
     If empty, this method will use the default sorting that is provided by the platform.
     -   **mediaType (_array_)** -- An array of [MediaType](#media-type) types.
@@ -153,7 +153,7 @@ An array of [albums](#album) whose type is `moment`.
 
 ### `Asset`
 
-| Field name       | Type     | Platforms | Description                              | Possible values                                                                                     |
+| Field name | Type | Platforms | Description | Possible values |
 | ---------------- | -------- | --------- | ---------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | id               | _string_ | both      | Internal ID that represents an asset     |                                                                                                     |
 | filename         | _string_ | both      | Filename of the asset                    |                                                                                                     |
@@ -167,16 +167,16 @@ An array of [albums](#album) whose type is `moment`.
 | mediaSubtypes    | _array_  | iOS       | An array of media subtypes               | `hdr`, `panorama`, `stream`, `timelapse`, `screenshot`, `highFrameRate`, `livePhoto`, `depthEffect` |
 | albumId          | _string_ | Android   | Album ID that the asset belongs to       |                                                                                                     |
 | localUri *       | _string_ | both      | Local URI for the asset                  |                                                                                                     |
-| location *       | _object_ | both      | GPS location if available                | `{ latitude: number, longitude: number }` or `null`                                                 |
+| location *       | _object_ | both      | GPS location if available                | `latitude: number, longitude: number` or `null`                                                 |
 | exif *           | _object_ | both      | EXIF metadata associated with the image  |                                                                                                     |
 | orientation *    | _number_ | iOS       | Display orientation of the image         | Numbers 1-8, see [EXIF orientation specification](http://sylvana.net/jpegcrop/exif_orientation.html)|
 | isFavorite *     | _boolean_| iOS       | Whether the asset is marked as favorite  | `true`, `false`                                                                                     |
 
-> **\*** These fields can be obtained only by calling `getAssetInfoAsync` method
+> These fields can be obtained only by calling `getAssetInfoAsync` method
 
 ### `Album`
 
-| Field name            | Type     | Platforms | Description                                             | Possible values                                     |
+| Field name | Type | Platforms | Description | Possible values |
 | -------------------   | -------- | --------- | ------------------------------------------------------- | --------------------------------------------------- |
 | id                    | _string_ | both      |                                                         |                                                     |
 | title                 | _string_ | both      |                                                         |                                                     |
@@ -184,10 +184,10 @@ An array of [albums](#album) whose type is `moment`.
 | type                  | _string_ | iOS       | The type of the assets album                            | `album`, `moment`, `smartAlbum`                     |
 | startTime *           | _number_ | iOS       | Earliest creation timestamp of all assets in the moment |                                                     |
 | endTime *             | _number_ | iOS       | Latest creation timestamp of all assets in the moment   |                                                     |
-| approximateLocation * | _object_ | iOS       | Approximated location of all assets in the moment       | `{ latitude: number, longitude: number }` or `null` |
+| approximateLocation * | _object_ | iOS       | Approximated location of all assets in the moment       | `latitude: number, longitude: number` or `null` |
 | locationNames *       | _array_  | iOS       | Names of locations grouped in the moment                |                                                     |
 
-> **\*** These fields apply only to albums whose type is `moment`
+> These fields apply only to albums whose type is `moment`
 
 ## Constants
 
