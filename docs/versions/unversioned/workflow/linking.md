@@ -59,7 +59,7 @@ export default class Anchor extends React.Component {
 }
 
 // <Anchor href="https://google.com">Go to Google</Anchor>
-// <Anchor href="mailto://support@expo.io">Go to Google</Anchor>
+// <Anchor href="mailto://support@expo.io">Email support</Anchor>
 ```
 
 ### Using `Expo.WebBrowser` instead of `Linking` for opening web links
