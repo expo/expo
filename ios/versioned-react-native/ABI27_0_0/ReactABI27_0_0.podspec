@@ -51,7 +51,7 @@ Pod::Spec.new do |s|
                               "React/DevSupport/*",
                               "React/Inspector/*",
                               "ReactCommon/ABI27_0_0fabric/*",
-                              "ReactCommon/yogaABI27_0_0/*",
+                              "ReactCommon/ABI27_0_0yoga/*",
                               "React/Cxx*/*",
     ss.ios.exclude_files    = "React/**/ABI27_0_0RCTTV*.*"
     ss.tvos.exclude_files   = "React/Modules/RCTClipboard*",
