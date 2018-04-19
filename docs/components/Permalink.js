@@ -55,20 +55,22 @@ const STYLES_CONTAINER_TARGET = css`
 `;
 
 export default props => {
-  // TODO(jim): Figure out what the reason is for this...
+  // NOTE(jim): Not the greatest way to generate permalinks.
+  // for now I've shortened the length of permalinks.
   const component = props.children;
   const children = component.props.children || '';
-  let id = props.id;
 
-  if (id == null) {
-    id = Utilities.generateSlug(children);
+  let permalinkKey = props.id;
+
+  if (!permalinkKey) {
+    permalinkKey = Utilities.generateSlug(children);
   }
 
   return (
     <Permalink component={component} data-components-heading>
       <div className={STYLES_CONTAINER}>
-        <span id={id} className={STYLES_CONTAINER_TARGET} />
-        <a href={'#' + id} className={`permalink ${STYLES_CONTAINER_ANCHOR}`}>
+        <span id={permalinkKey} className={STYLES_CONTAINER_TARGET} />
+        <a href={'#' + permalinkKey} className={`permalink ${STYLES_CONTAINER_ANCHOR}`}>
           <PermalinkIcon />
         </a>
         <div className="permalink-child">{children}</div>
