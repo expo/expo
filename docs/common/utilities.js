@@ -15,9 +15,18 @@ export const toString = node => {
   }
 };
 
-export const generateSlug = node => {
+export const generateSlug = (node, length = 7) => {
   GithubSluggerInstance.reset();
-  return GithubSluggerInstance.slug(toString(node));
+
+  const stringToSlug = toString(node)
+    .split(' ')
+    .splice(0, length)
+    .join('-');
+
+  // NOTE(jim): This will strip out commas from stringToSlug
+  const slug = GithubSluggerInstance.slug(stringToSlug);
+
+  return slug;
 };
 
 export const replaceVersionInUrl = (url, replaceWith) => {
