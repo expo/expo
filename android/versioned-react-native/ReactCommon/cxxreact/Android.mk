@@ -16,10 +16,10 @@ LOCAL_SRC_FILES := \
   JSCPerfStats.cpp \
   JSCSamplingProfiler.cpp \
   JSCTracing.cpp \
-  JSCUtils.cpp \
   JSIndexedRAMBundle.cpp \
-  ModuleRegistry.cpp \
+  JSCUtils.cpp \
   MethodCall.cpp \
+  ModuleRegistry.cpp \
   NativeToJsBridge.cpp \
   Platform.cpp \
 	RAMBundleRegistry.cpp \
@@ -43,8 +43,8 @@ include $(BUILD_STATIC_LIBRARY)
 $(call import-module,fb)
 $(call import-module,folly)
 $(call import-module,jsc)
-$(call import-module,glog)
 $(call import-module,jschelpers)
+$(call import-module,glog)
 $(call import-module,jsinspector)
 $(call import-module,privatedata)
 
