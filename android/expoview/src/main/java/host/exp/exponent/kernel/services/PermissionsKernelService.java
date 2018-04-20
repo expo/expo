@@ -5,6 +5,7 @@ import android.content.Context;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import host.exp.exponent.Constants;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 
@@ -69,6 +70,10 @@ public class PermissionsKernelService extends BaseKernelService {
   }
 
   public boolean hasGrantedPermissions(String permission, ExperienceId experienceId) {
+    // we don't want to worry about per-experience permissions for shell apps
+    if (Constants.isShellApp()) {
+      return true;
+    }
     JSONObject metadata = mExponentSharedPreferences.getExperienceMetadata(experienceId.get());
     if (metadata == null) {
       return false;
