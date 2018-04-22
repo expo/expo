@@ -73,7 +73,6 @@ Pod::Spec.new do |s|
     ss.dependency 'Amplitude-iOS'
     ss.dependency 'Analytics'
     ss.dependency 'AppAuth'
-    ss.dependency 'ExponentCPP'
     ss.dependency 'FBAudienceNetwork'
     ss.dependency 'FBSDKCoreKit'
     ss.dependency 'FBSDKLoginKit'
