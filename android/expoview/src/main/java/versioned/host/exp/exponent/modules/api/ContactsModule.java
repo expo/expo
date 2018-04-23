@@ -74,183 +74,187 @@ public class ContactsModule extends ExpoKernelServiceConsumerBaseModule {
       promise.reject("E_MISSING_PERMISSION", "Missing contacts permission.");
       return;
     }
+    new Thread(new Runnable() {
+      @Override
+      public void run() {
+        Set<String> fieldsSet = getFieldsSet(options.getArray("fields"));
 
-    Set<String> fieldsSet = getFieldsSet(options.getArray("fields"));
+        int pageOffset = options.getInt("pageOffset");
+        int pageSize = options.getInt("pageSize");
+        boolean fetchSingleContact = options.hasKey("id");
+        WritableMap response = Arguments.createMap();
 
-    int pageOffset = options.getInt("pageOffset");
-    int pageSize = options.getInt("pageSize");
-    boolean fetchSingleContact = options.hasKey("id");
-    WritableMap response = Arguments.createMap();
+        Map<String, Contact> contacts;
 
-    Map<String, Contact> contacts;
-
-    ContentResolver cr = getReactApplicationContext().getContentResolver();
-    Cursor cursor;
+        ContentResolver cr = getReactApplicationContext().getContentResolver();
+        Cursor cursor;
 
 
-      ArrayList<String> selectionArgs = new ArrayList<>(
-          Arrays.asList(
-              CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE,
-              CommonDataKinds.Organization.CONTENT_ITEM_TYPE
-          )
-      );
+        ArrayList<String> selectionArgs = new ArrayList<>(
+            Arrays.asList(
+                CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE,
+                CommonDataKinds.Organization.CONTENT_ITEM_TYPE
+            )
+        );
 
-      // selection ORs need to match arg count from above selectionArgs
-      String selection = ContactsContract.Data.MIMETYPE + "=? OR " +
-          ContactsContract.Data.MIMETYPE + "=?";
+        // selection ORs need to match arg count from above selectionArgs
+        String selection = ContactsContract.Data.MIMETYPE + "=? OR " +
+            ContactsContract.Data.MIMETYPE + "=?";
 
-      // handle "add on" fields from query request
-      if (fieldsSet.contains("phoneNumbers")) {
-        PROJECTION.add(CommonDataKinds.Phone.NUMBER);
-        PROJECTION.add(CommonDataKinds.Phone.TYPE);
-        PROJECTION.add(CommonDataKinds.Phone.LABEL);
-        PROJECTION.add(CommonDataKinds.Phone.IS_PRIMARY);
-        PROJECTION.add(CommonDataKinds.Phone._ID);
-        selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
-        selectionArgs.add(CommonDataKinds.Phone.CONTENT_ITEM_TYPE);
-      }
-
-      if (fieldsSet.contains("emails")) {
-        PROJECTION.add(CommonDataKinds.Email.DATA);
-        PROJECTION.add(CommonDataKinds.Email.ADDRESS);
-        PROJECTION.add(CommonDataKinds.Email.TYPE);
-        PROJECTION.add(CommonDataKinds.Email.LABEL);
-        PROJECTION.add(CommonDataKinds.Email.IS_PRIMARY);
-        PROJECTION.add(CommonDataKinds.Email._ID);
-        selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
-        selectionArgs.add(CommonDataKinds.Email.CONTENT_ITEM_TYPE);
-      }
-
-      if (fieldsSet.contains("addresses")) {
-        PROJECTION.add(CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS);
-        PROJECTION.add(CommonDataKinds.StructuredPostal.TYPE);
-        PROJECTION.add(CommonDataKinds.StructuredPostal.LABEL);
-        PROJECTION.add(CommonDataKinds.StructuredPostal.STREET);
-        PROJECTION.add(CommonDataKinds.StructuredPostal.POBOX);
-        PROJECTION.add(CommonDataKinds.StructuredPostal.NEIGHBORHOOD);
-        PROJECTION.add(CommonDataKinds.StructuredPostal.CITY);
-        PROJECTION.add(CommonDataKinds.StructuredPostal.REGION);
-        PROJECTION.add(CommonDataKinds.StructuredPostal.POSTCODE);
-        PROJECTION.add(CommonDataKinds.StructuredPostal.COUNTRY);
-        selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
-        selectionArgs.add(CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE);
-      }
-
-      if (fieldsSet.contains("note")) {
-        selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
-        selectionArgs.add(ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE);
-      }
-
-      if (fieldsSet.contains("birthday") || fieldsSet.contains("dates")) {
-        selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
-        selectionArgs.add(ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE);
-      }
-
-      if (fieldsSet.contains("instantMessageAddresses")) {
-        PROJECTION.add(CommonDataKinds.Im.DATA);
-        PROJECTION.add(CommonDataKinds.Im.TYPE);
-        PROJECTION.add(CommonDataKinds.Im.PROTOCOL);
-        PROJECTION.add(CommonDataKinds.Im._ID);
-        selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
-        selectionArgs.add(CommonDataKinds.Im.CONTENT_ITEM_TYPE);
-      }
-
-      if (fieldsSet.contains("urlAddresses")) {
-        PROJECTION.add(CommonDataKinds.Website.URL);
-        PROJECTION.add(CommonDataKinds.Website.TYPE);
-        PROJECTION.add(CommonDataKinds.Website._ID);
-        selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
-        selectionArgs.add(CommonDataKinds.Website.CONTENT_ITEM_TYPE);
-      }
-
-      if (fieldsSet.contains("relationships")) {
-        PROJECTION.add(CommonDataKinds.Relation.NAME);
-        PROJECTION.add(CommonDataKinds.Relation.TYPE);
-        PROJECTION.add(CommonDataKinds.Relation._ID);
-        selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
-        selectionArgs.add(CommonDataKinds.Relation.CONTENT_ITEM_TYPE );
-      }
-
-      if (fieldsSet.contains("phoneticFirstName")) {
-        PROJECTION.add(CommonDataKinds.StructuredName.PHONETIC_GIVEN_NAME);
-      }
-
-      if (fieldsSet.contains("phoneticLastName")) {
-        PROJECTION.add(CommonDataKinds.StructuredName.PHONETIC_FAMILY_NAME);
-      }
-
-      if (fieldsSet.contains("phoneticMiddleName")) {
-        PROJECTION.add(CommonDataKinds.StructuredName.PHONETIC_MIDDLE_NAME);
-      }
-
-      if (fieldsSet.contains("namePrefix")) {
-        PROJECTION.add(CommonDataKinds.StructuredName.PREFIX);
-      }
-
-      if (fieldsSet.contains("nameSuffix")) {
-        PROJECTION.add(CommonDataKinds.StructuredName.SUFFIX);
-      }
-
-    if (fetchSingleContact) {
-      cursor = cr.query(
-          ContactsContract.Data.CONTENT_URI,
-          PROJECTION.toArray(new String[PROJECTION.size()]),
-          ContactsContract.Data.CONTACT_ID + " = ?",
-          new String[]{options.getString("id")},
-          null);
-    } else {
-      cursor = cr.query(
-          ContactsContract.Data.CONTENT_URI,
-          PROJECTION.toArray(new String[PROJECTION.size()]),
-          selection,
-          selectionArgs.toArray(new String[selectionArgs.size()]),
-          null);
-    }
-    if (cursor != null) {
-      try {
-        contacts = loadContactsFrom(cursor, fieldsSet);
-
-        WritableArray contactsArray = Arguments.createArray();
-
-        // introduce paging at this level to ensure all data elements
-        // are appropriately mapped to contacts from cursor
-        // NOTE: paging performance improvement is minimized as cursor iterations will always fully run
-        int currentIndex;
-        ArrayList<Contact> contactList = new ArrayList<>(contacts.values());
-        int contactListSize = contactList.size();
-        // convert from contact pojo to react native
-        for (currentIndex = pageOffset; currentIndex < contactListSize; currentIndex++) {
-          Contact contact = contactList.get(currentIndex);
-
-          // if fetching single contact, short circuit and return contact
-          if (fetchSingleContact) {
-            promise.resolve(contact.toMap(fieldsSet));
-            break;
-          } else {
-            if ((currentIndex - pageOffset) >= pageSize) {
-              break;
-            }
-            contactsArray.pushMap(contact.toMap(fieldsSet));
-          }
+        // handle "add on" fields from query request
+        if (fieldsSet.contains("phoneNumbers")) {
+          PROJECTION.add(CommonDataKinds.Phone.NUMBER);
+          PROJECTION.add(CommonDataKinds.Phone.TYPE);
+          PROJECTION.add(CommonDataKinds.Phone.LABEL);
+          PROJECTION.add(CommonDataKinds.Phone.IS_PRIMARY);
+          PROJECTION.add(CommonDataKinds.Phone._ID);
+          selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
+          selectionArgs.add(CommonDataKinds.Phone.CONTENT_ITEM_TYPE);
         }
 
-        if (!fetchSingleContact) {
-          // wrap in pagination
-          response.putArray("data", contactsArray);
-          response.putBoolean("hasPreviousPage", pageOffset > 0);
-          response.putBoolean("hasNextPage", pageOffset + pageSize < contactListSize);
-          response.putInt("total", contactListSize);
+        if (fieldsSet.contains("emails")) {
+          PROJECTION.add(CommonDataKinds.Email.DATA);
+          PROJECTION.add(CommonDataKinds.Email.ADDRESS);
+          PROJECTION.add(CommonDataKinds.Email.TYPE);
+          PROJECTION.add(CommonDataKinds.Email.LABEL);
+          PROJECTION.add(CommonDataKinds.Email.IS_PRIMARY);
+          PROJECTION.add(CommonDataKinds.Email._ID);
+          selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
+          selectionArgs.add(CommonDataKinds.Email.CONTENT_ITEM_TYPE);
+        }
+
+        if (fieldsSet.contains("addresses")) {
+          PROJECTION.add(CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS);
+          PROJECTION.add(CommonDataKinds.StructuredPostal.TYPE);
+          PROJECTION.add(CommonDataKinds.StructuredPostal.LABEL);
+          PROJECTION.add(CommonDataKinds.StructuredPostal.STREET);
+          PROJECTION.add(CommonDataKinds.StructuredPostal.POBOX);
+          PROJECTION.add(CommonDataKinds.StructuredPostal.NEIGHBORHOOD);
+          PROJECTION.add(CommonDataKinds.StructuredPostal.CITY);
+          PROJECTION.add(CommonDataKinds.StructuredPostal.REGION);
+          PROJECTION.add(CommonDataKinds.StructuredPostal.POSTCODE);
+          PROJECTION.add(CommonDataKinds.StructuredPostal.COUNTRY);
+          selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
+          selectionArgs.add(CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE);
+        }
+
+        if (fieldsSet.contains("note")) {
+          selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
+          selectionArgs.add(ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE);
+        }
+
+        if (fieldsSet.contains("birthday") || fieldsSet.contains("dates")) {
+          selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
+          selectionArgs.add(ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE);
+        }
+
+        if (fieldsSet.contains("instantMessageAddresses")) {
+          PROJECTION.add(CommonDataKinds.Im.DATA);
+          PROJECTION.add(CommonDataKinds.Im.TYPE);
+          PROJECTION.add(CommonDataKinds.Im.PROTOCOL);
+          PROJECTION.add(CommonDataKinds.Im._ID);
+          selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
+          selectionArgs.add(CommonDataKinds.Im.CONTENT_ITEM_TYPE);
+        }
+
+        if (fieldsSet.contains("urlAddresses")) {
+          PROJECTION.add(CommonDataKinds.Website.URL);
+          PROJECTION.add(CommonDataKinds.Website.TYPE);
+          PROJECTION.add(CommonDataKinds.Website._ID);
+          selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
+          selectionArgs.add(CommonDataKinds.Website.CONTENT_ITEM_TYPE);
+        }
+
+        if (fieldsSet.contains("relationships")) {
+          PROJECTION.add(CommonDataKinds.Relation.NAME);
+          PROJECTION.add(CommonDataKinds.Relation.TYPE);
+          PROJECTION.add(CommonDataKinds.Relation._ID);
+          selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
+          selectionArgs.add(CommonDataKinds.Relation.CONTENT_ITEM_TYPE);
+        }
+
+        if (fieldsSet.contains("phoneticFirstName")) {
+          PROJECTION.add(CommonDataKinds.StructuredName.PHONETIC_GIVEN_NAME);
+        }
+
+        if (fieldsSet.contains("phoneticLastName")) {
+          PROJECTION.add(CommonDataKinds.StructuredName.PHONETIC_FAMILY_NAME);
+        }
+
+        if (fieldsSet.contains("phoneticMiddleName")) {
+          PROJECTION.add(CommonDataKinds.StructuredName.PHONETIC_MIDDLE_NAME);
+        }
+
+        if (fieldsSet.contains("namePrefix")) {
+          PROJECTION.add(CommonDataKinds.StructuredName.PREFIX);
+        }
+
+        if (fieldsSet.contains("nameSuffix")) {
+          PROJECTION.add(CommonDataKinds.StructuredName.SUFFIX);
+        }
+
+        if (fetchSingleContact) {
+          cursor = cr.query(
+              ContactsContract.Data.CONTENT_URI,
+              PROJECTION.toArray(new String[PROJECTION.size()]),
+              ContactsContract.Data.CONTACT_ID + " = ?",
+              new String[]{options.getString("id")},
+              null);
+        } else {
+          cursor = cr.query(
+              ContactsContract.Data.CONTENT_URI,
+              PROJECTION.toArray(new String[PROJECTION.size()]),
+              selection,
+              selectionArgs.toArray(new String[selectionArgs.size()]),
+              null);
+        }
+        if (cursor != null) {
+          try {
+            contacts = loadContactsFrom(cursor, fieldsSet);
+
+            WritableArray contactsArray = Arguments.createArray();
+
+            // introduce paging at this level to ensure all data elements
+            // are appropriately mapped to contacts from cursor
+            // NOTE: paging performance improvement is minimized as cursor iterations will always fully run
+            int currentIndex;
+            ArrayList<Contact> contactList = new ArrayList<>(contacts.values());
+            int contactListSize = contactList.size();
+            // convert from contact pojo to react native
+            for (currentIndex = pageOffset; currentIndex < contactListSize; currentIndex++) {
+              Contact contact = contactList.get(currentIndex);
+
+              // if fetching single contact, short circuit and return contact
+              if (fetchSingleContact) {
+                promise.resolve(contact.toMap(fieldsSet));
+                break;
+              } else {
+                if ((currentIndex - pageOffset) >= pageSize) {
+                  break;
+                }
+                contactsArray.pushMap(contact.toMap(fieldsSet));
+              }
+            }
+
+            if (!fetchSingleContact) {
+              // wrap in pagination
+              response.putArray("data", contactsArray);
+              response.putBoolean("hasPreviousPage", pageOffset > 0);
+              response.putBoolean("hasNextPage", pageOffset + pageSize < contactListSize);
+              response.putInt("total", contactListSize);
+              promise.resolve(response);
+            }
+          } catch (Exception e) {
+            EXL.e(TAG, e.getMessage());
+            promise.reject(e);
+          } finally {
+            cursor.close();
+          }
+        } else {
           promise.resolve(response);
         }
-      } catch (Exception e) {
-        EXL.e(TAG, e.getMessage());
-        promise.reject(e);
-      } finally {
-        cursor.close();
       }
-    } else {
-      promise.resolve(response);
-    }
+    }).start();
   }
 
   @NonNull
@@ -391,7 +395,7 @@ public class ContactsModule extends ExpoKernelServiceConsumerBaseModule {
         contact.relationships.add(new Contact.RelationshipItem(cursor));
       }
     }
-      return map;
+    return map;
   }
 
 
@@ -411,8 +415,8 @@ public class ContactsModule extends ExpoKernelServiceConsumerBaseModule {
     private String phoneticMiddleName = "";
     private String phoneticLastName = "";
     private String company = "";
-    private String jobTitle ="";
-    private String department ="";
+    private String jobTitle = "";
+    private String department = "";
     private String nickname = "";
     private boolean hasPhoto = false;
     private String photoUri;
@@ -545,8 +549,8 @@ public class ContactsModule extends ExpoKernelServiceConsumerBaseModule {
       if (showDates || showBirthday) { // double if check with query with cursor
         boolean hasYear;
         Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat datePattern = new SimpleDateFormat ("yyyy-MM-dd", Locale.getDefault());
-        SimpleDateFormat noYearPattern = new SimpleDateFormat ("--MM-dd", Locale.getDefault());
+        SimpleDateFormat datePattern = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        SimpleDateFormat noYearPattern = new SimpleDateFormat("--MM-dd", Locale.getDefault());
 
         WritableArray datesArray = Arguments.createArray();
         for (Item item : dates) {
@@ -719,7 +723,7 @@ public class ContactsModule extends ExpoKernelServiceConsumerBaseModule {
 
       public UrlAddressItem(Cursor cursor) {
         map = Arguments.createMap();
-        map.putString("url",cursor.getString(cursor.getColumnIndex(CommonDataKinds.Website.URL)));
+        map.putString("url", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Website.URL)));
         int type = cursor.getInt(cursor.getColumnIndex(CommonDataKinds.Website.TYPE));
         String label;
 
@@ -762,7 +766,7 @@ public class ContactsModule extends ExpoKernelServiceConsumerBaseModule {
 
       public RelationshipItem(Cursor cursor) {
         map = Arguments.createMap();
-        map.putString("name",cursor.getString(cursor.getColumnIndex(CommonDataKinds.Relation.NAME)));
+        map.putString("name", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Relation.NAME)));
         int type = cursor.getInt(cursor.getColumnIndex(CommonDataKinds.Relation.TYPE));
         String label;
 
