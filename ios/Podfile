@@ -1,6 +1,8 @@
 source 'https://github.com/CocoaPods/Specs.git'
 platform :ios, '9.0'
 
+EXPO_CPP_HEADER_DIR = 'ExponentCPP'
+
 target 'Exponent' do
   pod 'Amplitude-iOS', '~> 3.8', :inhibit_warnings => true
   pod 'Analytics', '~> 3.5', :inhibit_warnings => true
@@ -215,7 +217,7 @@ target 'Exponent' do
       if target.pod_name.start_with?('React')
         target.native_target.build_configurations.each do |config|
           config.build_settings['HEADER_SEARCH_PATHS'] ||= ['$(inherited)']
-          config.build_settings['HEADER_SEARCH_PATHS'] << '${PODS_ROOT}/Headers/Public/ExponentCPP'
+          config.build_settings['HEADER_SEARCH_PATHS'] << "${PODS_ROOT}/Headers/Public/#{EXPO_CPP_HEADER_DIR}"
         end
       end
 
