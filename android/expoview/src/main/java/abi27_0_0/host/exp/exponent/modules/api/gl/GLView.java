@@ -20,9 +20,6 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
 
   private GLContext mGLContext;
 
-  private static SparseArray<GLView> mGLViewMap = new SparseArray<>();
-  private BlockingQueue<Runnable> mEventQueue = new LinkedBlockingQueue<>();
-
   public GLView(Context context) {
     super(context);
     setSurfaceTextureListener(this);
@@ -36,14 +33,11 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
   // Public interface to allow running events on GL thread
 
   public void runOnGLThread(Runnable r) {
-    mEventQueue.add(r);
+    mGLContext.runAsync(r);
   }
 
-  public static void runOnGLThread(int exglCtxId, Runnable r) {
-    GLView glView = mGLViewMap.get(exglCtxId);
-    if (glView != null) {
-      glView.runOnGLThread(r);
-    }
+  public GLContext getGLContext() {
+    return mGLContext;
   }
 
 

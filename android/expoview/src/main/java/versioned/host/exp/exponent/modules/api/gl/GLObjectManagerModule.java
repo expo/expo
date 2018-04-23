@@ -50,6 +50,7 @@ class GLObject {
 
 class GLCameraObject extends GLObject implements SurfaceTexture.OnFrameAvailableListener {
   private ExpoCameraView mCameraView;
+  private GLContext mGLContext;
   private int mProgram;
   private int mFramebuffer;
   private int mVertexBuffer;
@@ -91,9 +92,10 @@ class GLCameraObject extends GLObject implements SurfaceTexture.OnFrameAvailable
       + "}";
 
   // Must be constructed on GL thread!
-  GLCameraObject(final GLView glView, final ExpoCameraView cameraView) {
-    super(glView.getEXGLCtxId());
+  GLCameraObject(final GLContext glContext, final ExpoCameraView cameraView) {
+    super(glContext.getContextId());
 
+    mGLContext = glContext;
     mCameraView = cameraView;
 
     int[] textures = new int[2];
@@ -149,7 +151,7 @@ class GLCameraObject extends GLObject implements SurfaceTexture.OnFrameAvailable
     final int previewWidth = previewSize.getWidth();
     final int previewHeight = previewSize.getHeight();
 
-    GLView.runOnGLThread(exglCtxId, new Runnable() {
+    mGLContext.runAsync(new Runnable() {
       @Override
       public void run() {
         if (mCameraSurfaceTexture == null) {
@@ -316,7 +318,7 @@ public class GLObjectManagerModule extends ReactContextBaseJavaModule {
         glView.runOnGLThread(new Runnable() {
           @Override
           public void run() {
-            GLCameraObject cameraTexture = new GLCameraObject(glView, cameraView);
+            GLCameraObject cameraTexture = new GLCameraObject(glView.getGLContext(), cameraView);
 
             int exglObjId = cameraTexture.getEXGLObjId();
             mGLObjects.put(exglObjId, cameraTexture);
