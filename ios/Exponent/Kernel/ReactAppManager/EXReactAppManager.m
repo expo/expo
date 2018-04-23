@@ -242,14 +242,14 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   NSDictionary *params = @{
                            @"manifest": _appRecord.appLoader.manifest,
                            @"constants": @{
-                               @"linkingUri": [EXKernelLinkingManager linkingUriForExperienceUri:_appRecord.appLoader.manifestUrl useLegacy:[self _compareVersionTo:27] == NSOrderedAscending],
+                               @"linkingUri": RCTNullIfNil([EXKernelLinkingManager linkingUriForExperienceUri:_appRecord.appLoader.manifestUrl useLegacy:[self _compareVersionTo:27] == NSOrderedAscending]),
                                @"deviceId": [EXKernel deviceInstallUUID],
                                @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,
                                @"manifest": _appRecord.appLoader.manifest,
                                @"appOwnership": [self _appOwnership],
                              },
                            @"exceptionsManagerDelegate": _exceptionHandler,
-                           @"initialUri": [EXKernelLinkingManager initialUriWithManifestUrl:_appRecord.appLoader.manifestUrl],
+                           @"initialUri": RCTNullIfNil([EXKernelLinkingManager initialUriWithManifestUrl:_appRecord.appLoader.manifestUrl]),
                            @"isDeveloper": @([self enablesDeveloperTools]),
                            @"isStandardDevMenuAllowed": @(isStandardDevMenuAllowed),
                            @"testEnvironment": @([EXShellManager sharedInstance].testEnvironment),
