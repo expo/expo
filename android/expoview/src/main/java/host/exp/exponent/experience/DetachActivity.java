@@ -88,6 +88,19 @@ public abstract class DetachActivity extends ExperienceActivity {
     }.start();
   }
 
+  // TODO: eric: make Constants.INITIAL_URI reliable so we can get rid of this
+  @Override
+  public void shouldCheckOptions() {
+    if (mManifestUrl != null && mKernel.hasOptionsForManifestUrl(mManifestUrl)) {
+      handleOptions(mKernel.popOptionsForManifestUrl(mManifestUrl));
+    } else if (isDebug() && mKernel.hasOptionsForManifestUrl(publishedUrl())) {
+      // also check publishedUrl since this can get set before Constants.INITIAL_URL is set to developmentUrl
+      handleOptions(mKernel.popOptionsForManifestUrl(publishedUrl()));
+    }
+
+    clearNotifications();
+  }
+
   @Override
   public boolean forceUnversioned() {
     return true;

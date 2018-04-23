@@ -274,7 +274,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     clearNotifications();
   }
 
-  private void clearNotifications() {
+  protected void clearNotifications() {
     String experienceId = mManifest.optString(ExponentManifest.MANIFEST_ID_KEY);
     if (experienceId != null) {
       ExponentNotificationManager manager = new ExponentNotificationManager(this);
