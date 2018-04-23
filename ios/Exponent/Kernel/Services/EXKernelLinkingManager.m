@@ -195,7 +195,10 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
   NSURL *urlToTransform = manifestUrl;
   if ([EXShellManager sharedInstance].isShell) {
     NSDictionary *launchOptions = [ExpoKit sharedInstance].launchOptions;
-    urlToTransform = [[self class] initialUrlFromLaunchOptions:launchOptions];
+    NSURL *launchOptionsUrl = [[self class] initialUrlFromLaunchOptions:launchOptions];
+    if (launchOptionsUrl) {
+      urlToTransform = launchOptionsUrl;
+    }
   }
   return [[self class] uriTransformedForLinking:urlToTransform isUniversalLink:NO];
 }
