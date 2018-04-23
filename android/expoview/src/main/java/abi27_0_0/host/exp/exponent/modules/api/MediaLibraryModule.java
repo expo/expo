@@ -181,17 +181,19 @@ public class MediaLibraryModule extends ExpoKernelServiceConsumerBaseModule {
     protected void doInBackgroundGuarded(Void... params) {
       try {
         File localFile = new File(mUri.getPath());
-        if (localFile.exists() && localFile.isFile()) {
+        File destDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+        File destFile = safeCopyFile(localFile, destDir);
+
+        if (destFile.exists() && destFile.isFile()) {
           MediaScannerConnection.scanFile(mContext,
-              new String[]{localFile.getPath()}, null,
+              new String[]{destFile.getPath()}, null,
               new MediaScannerConnection.OnScanCompletedListener() {
                 @Override
                 public void onScanCompleted(String path, Uri uri) {
                   if (uri != null) {
                     final String selection = Media.DATA + "=?";
                     final String[] args = {path};
-                    queryAssetInfo(mContext, selection, args, mPromise);
-                    mPromise.resolve(true);
+                    queryAssetInfo(mContext, selection, args, false, mPromise);
                   } else {
                     mPromise.reject(ERROR_UNABLE_TO_SAVE, "Could not add image to gallery.");
                   }
@@ -200,6 +202,8 @@ public class MediaLibraryModule extends ExpoKernelServiceConsumerBaseModule {
         } else {
           mPromise.reject(ERROR_UNABLE_TO_SAVE, "Could not create asset record. Related file is not existing.");
         }
+      } catch (IOException e) {
+        mPromise.reject(ERROR_IO_EXCEPTION, "Unable to copy file into external storage.", e);
       } catch (SecurityException e) {
         mPromise.reject(ERROR_UNABLE_TO_LOAD_PERMISSION,
             "Could not get asset: need READ_EXTERNAL_STORAGE permission.", e);
@@ -491,12 +495,11 @@ public class MediaLibraryModule extends ExpoKernelServiceConsumerBaseModule {
 
     @Override
     protected void doInBackgroundGuarded(Void... params) {
-      queryAssetInfo(mContext, mSelection, mSelectionArgs, mPromise);
+      queryAssetInfo(mContext, mSelection, mSelectionArgs, true, mPromise);
     }
   }
 
-  private static void queryAssetInfo(Context reactContext, final String selection, final String[] selectionArgs, Promise promise) {
-    WritableMap response = Arguments.createMap();
+  private static void queryAssetInfo(Context reactContext, final String selection, final String[] selectionArgs, boolean fullInfo, Promise promise) {
     try (Cursor asset = reactContext.getContentResolver().query(
         EXTERNAL_CONTENT,
         ASSET_PROJECTION,
@@ -510,7 +513,7 @@ public class MediaLibraryModule extends ExpoKernelServiceConsumerBaseModule {
         if (asset.getCount() == 1) {
           asset.moveToFirst();
           WritableArray array = Arguments.createArray();
-          putAssetsInfo(asset, array, 1, 0, true);
+          putAssetsInfo(asset, array, 1, 0, fullInfo);
 
           // actually we want to return just the first item, but array.getMap returns ReadableMap
           // which is not compatible with promise.resolve and there is no simple solution to convert
@@ -522,7 +525,7 @@ public class MediaLibraryModule extends ExpoKernelServiceConsumerBaseModule {
       promise.reject(ERROR_UNABLE_TO_LOAD_PERMISSION,
           "Could not get asset: need READ_EXTERNAL_STORAGE permission.", e);
     } catch (IOException e) {
-      Log.e(ERROR_UNABLE_TO_LOAD, "Could not read file or parse EXIF tags", e);
+      promise.reject(ERROR_IO_EXCEPTION, "Could not read file or parse EXIF tags", e);
     }
   }
 
