@@ -110,17 +110,15 @@ To link to your standalone app, you need to specify a scheme for your app. You c
 
 Once you build your standalone app and install it to your device, you will be able to open it with links to `myapp://`.
 
-### `Expo.Constants.linkingUri`
+### `Expo.Linking` module
 
-To save you the trouble of inserting a bunch of conditionals based on the environment that you're in and hardcoding urls, we provide the `linkingUri` constant. When you want to provide a service with a url that it needs to redirect back into your app, you can use this and it will resolve to the following:
+To save you the trouble of inserting a bunch of conditionals based on the environment that you're in and hardcoding urls, we provide some helper methods in our extension of the `Linking` module. When you want to provide a service with a url that it needs to redirect back into your app, you can call `Expo.Linking.makeUrl()` and it will resolve to the following:
 
-- *Published app in Expo client*: `exp://exp.host/@community/with-webbrowser-redirect/+`
-- *Published app in standalone*: `myapp://+`
-- *Development*: `exp://wg-qka.community.app.exp.direct:80/+`
+- *Published app in Expo client*: `exp://exp.host/@community/with-webbrowser-redirect`
+- *Published app in standalone*: `myapp://`
+- *Development*: `exp://wg-qka.community.app.exp.direct:80`
 
-You will notice that at the end of each URL there is a `/+` -- anything after the `/+` is to be used by your app to receive data, which we will talk about in the next section.
-
-**Note**: There is currently a [known issue](https://github.com/expo/expo/issues/765) where the `+` does not appear in Android standalone builds. We expect to resolve this in a release soon!
+You can also change the returned url by passing optional parameters into `Expo.Linking.makeUrl()`. These will be used by your app to receive data, which we will talk about in the next section.
 
 ### Handling links into your app
 
@@ -138,24 +136,29 @@ See the examples below to see these in action.
 
 ### Passing data to your app through the URL
 
-If I want to pass some data into my app, I can append it as a query string on the end of the `Constants.linkingUri`. You can then parse the query string with something like [qs](https://www.npmjs.com/package/qs).
+To pass some data into your app, you can append it as a path or query string on your url. `Expo.Linking.makeUrl(path, queryParams)` will construct a working url automatically for you. You can use it like this:
+
+```javascript
+let redirectUrl = Expo.Linking.makeUrl('path/into/app', { hello: 'world', goodbye: 'now'});
+```
+
+This would return something like `myapp://path/into/app?hello=world&goodbye=now` for a standalone app.
+
+When your app is opened using the deep link, you can parse the link with `Expo.Linking.parse()` to get back the path and query parameters you passed in.
 
 When [handling the URL that is used to open/foreground your app](#handling-urls-in-your-app), it would look something like this:
 
 ```javascript
 _handleUrl = (url) => {
   this.setState({ url });
-  let queryString = url.replace(Constants.linkingUri, '');
-  if (queryString) {
-    let data = qs.parse(queryString);
-    alert(`Linked to app with data: ${JSON.stringify(data)}`);
-  }
+  let { path, queryParams } = Expo.Linking.parse(url);
+  alert(`Linked to app with path: ${path} and data: ${JSON.stringify(queryParams)}`);
 }
 ```
 
 If you opened a URL like
-`${Constants.linkingUri}?hello=world&goodbye=now`, this would alert
-`{hello: 'world', goodbye: 'now'}`.
+`myapp://path/into/app?hello=world&goodbye=now`, this would alert
+`Linked to app with path: path/into/app and data: {hello: 'world', goodbye: 'now'}`.
 
 ### Example: linking back to your app from WebBrowser
 

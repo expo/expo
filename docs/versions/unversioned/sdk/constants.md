@@ -80,7 +80,3 @@ A list of the system font names available on the current device.
 ### `Expo.Constants.manifest`
 
 The [manifest](../guides/how-expo-works.html#expo-manifest) object for the app.
-
-### `Expo.Constants.linkingUri`
-
-When an app is opened due to a deep link, the prefix of the URI without the deep link part. This value depends on `Expo.Constants.appOwnership`: it may be different if your app is running standalone vs. in the Expo client.
