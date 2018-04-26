@@ -86,7 +86,7 @@ spawn(
     '-e',
     `CONFIG='${JSON.stringify(config)}'`,
     '-t',
-    'algolia/documentation-scraper:latest',
+    'algolia/documentation-scrapper:latest',
     '/root/run',
   ],
   {

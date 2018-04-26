@@ -14,7 +14,7 @@
     "mdjs-prod": "node ./mdjs --no-watch",
     "fix-markdown": "node ./transition/fix-markdown.js",
     "clean": "rm -r docs pages/versions generated/navigation-data.json static/images/generated",
-    "update-search-index": "node ./scripts/update-search-index"
+    "update-search-index": "node ./__internal__/update-search-index"
   },
   "dependencies": {
     "babel-plugin-emotion": "^8.0.4",
