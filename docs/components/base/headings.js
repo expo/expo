@@ -3,6 +3,10 @@ import styled, { keyframes, css } from 'react-emotion';
 import * as React from 'react';
 import * as Constants from '~/common/constants';
 
+const attributes = {
+  'data-heading': true,
+};
+
 const STYLES_H1 = css`
   font-family: ${Constants.fonts.book};
   font-size: 2.4rem;
@@ -13,7 +17,11 @@ const STYLES_H1 = css`
   border-bottom: 1px solid ${Constants.colors.border};
 `;
 
-export const H1 = ({ children }) => <h1 className={STYLES_H1}>{children}</h1>;
+export const H1 = ({ children }) => (
+  <h1 {...attributes} className={STYLES_H1}>
+    {children}
+  </h1>
+);
 
 const STYLES_H2 = css`
   font-family: ${Constants.fonts.book};
@@ -25,7 +33,11 @@ const STYLES_H2 = css`
   border-bottom: 1px solid ${Constants.colors.border};
 `;
 
-export const H2 = ({ children }) => <h2 className={STYLES_H2}>{children}</h2>;
+export const H2 = ({ children }) => (
+  <h2 {...attributes} className={STYLES_H2}>
+    {children}
+  </h2>
+);
 
 const STYLES_H3 = css`
   font-size: 1.1rem;
@@ -40,7 +52,11 @@ const STYLES_H3 = css`
   }
 `;
 
-export const H3 = ({ children }) => <h3 className={STYLES_H3}>{children}</h3>;
+export const H3 = ({ children }) => (
+  <h3 {...attributes} className={STYLES_H3}>
+    {children}
+  </h3>
+);
 
 const STYLES_H4 = css`
   font-family: ${Constants.fonts.demi};
@@ -50,4 +66,8 @@ const STYLES_H4 = css`
   margin-bottom: 0.25rem;
 `;
 
-export const H4 = ({ children }) => <h4 className={STYLES_H4}>{children}</h4>;
+export const H4 = ({ children }) => (
+  <h4 {...attributes} className={STYLES_H4}>
+    {children}
+  </h4>
+);

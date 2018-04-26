@@ -4,6 +4,10 @@ import Prism from 'prismjs';
 import * as React from 'react';
 import * as Constants from '~/common/constants';
 
+const attributes = {
+  'data-text': true,
+};
+
 const STYLES_CODE_BLOCK = css`
   color: ${Constants.colors.black80};
   font-family: ${Constants.fontFamilies.mono};
@@ -117,7 +121,7 @@ export class Code extends React.Component {
     }
 
     return (
-      <pre className={STYLES_CODE_CONTAINER}>
+      <pre className={STYLES_CODE_CONTAINER} {...attributes}>
         <code className={STYLES_CODE_BLOCK} dangerouslySetInnerHTML={{ __html: html }} />
       </pre>
     );

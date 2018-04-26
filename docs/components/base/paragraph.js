@@ -3,13 +3,21 @@ import styled, { keyframes, css } from 'react-emotion';
 import * as React from 'react';
 import * as Constants from '~/common/constants';
 
+const attributes = {
+  'data-text': true,
+};
+
 const STYLES_PARAGRAPH = css`
   font-size: 1rem;
   line-height: 1.725rem;
   margin-bottom: 1.5rem;
 `;
 
-export const P = ({ children }) => <p className={STYLES_PARAGRAPH}>{children}</p>;
+export const P = ({ children }) => (
+  <p {...attributes} className={STYLES_PARAGRAPH}>
+    {children}
+  </p>
+);
 
 const STYLES_BOLD_PARAGRAPH = css`
   font-family: ${Constants.fontFamilies.bold};
@@ -40,7 +48,11 @@ const STYLES_PARAGRAPH_DIV = css`
 
 export const PDIV = ({ children }) => {
   const isWider = children.props && children.props.snackId;
-  return <div className={`${STYLES_PARAGRAPH_DIV} ${isWider ? 'is-wider' : ''}`}>{children}</div>;
+  return (
+    <div {...attributes} className={`${STYLES_PARAGRAPH_DIV} ${isWider ? 'is-wider' : ''}`}>
+      {children}
+    </div>
+  );
 };
 
 const STYLES_BLOCKQUOTE = css`
@@ -56,5 +68,7 @@ const STYLES_BLOCKQUOTE = css`
 `;
 
 export const Quote = ({ children }) => (
-  <blockquote className={STYLES_BLOCKQUOTE}>{children}</blockquote>
+  <blockquote {...attributes} className={STYLES_BLOCKQUOTE}>
+    {children}
+  </blockquote>
 );

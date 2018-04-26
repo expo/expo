@@ -53,12 +53,20 @@ export default class DocumentationSidebarLink extends React.Component {
   }
 
   render() {
+    const customDataAttributes = this.isSelected()
+      ? {
+          'data-sidebar-anchor-selected': true,
+        }
+      : {};
+
     return (
       <NextLink
         prefetch
         href={this.props.info.href}
         as={this.props.info.as || this.props.info.href}>
-        <a className={`${STYLES_LINK} ${this.isSelected() ? STYLES_ACTIVE : STYLES_DEFAULT}`}>
+        <a
+          {...customDataAttributes}
+          className={`${STYLES_LINK} ${this.isSelected() ? STYLES_ACTIVE : STYLES_DEFAULT}`}>
           {this.props.children}
         </a>
       </NextLink>
