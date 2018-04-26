@@ -12,7 +12,7 @@ export default class NoProjectsOpen extends React.Component {
     if (isAuthenticated) {
       message = 'No projects are currently open.';
     } else {
-      message = 'Please sign in to see the projects that you have recently been working on.'
+      message = 'Sign in to your Expo account to see the projects you have recently been working on.'
     }
 
     return (
@@ -42,6 +42,7 @@ const styles = StyleSheet.create({
   infoContainer: {
     paddingTop: 13,
     paddingLeft: 20,
+    paddingRight: 10,
     flexDirection: 'column',
     alignSelf: 'stretch',
     paddingBottom: 12,
