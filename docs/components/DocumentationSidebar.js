@@ -58,8 +58,12 @@ export default class DocumentationSidebar extends React.Component {
   };
 
   render() {
+    const customDataAttributes = {
+      'data-sidebar': true,
+    };
+
     return (
-      <nav className={STYLES_SIDEBAR}>
+      <nav className={STYLES_SIDEBAR} {...customDataAttributes}>
         {this.props.routes.map(categoryInfo => this._renderCategoryElements(categoryInfo))}
       </nav>
     );

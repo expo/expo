@@ -6,6 +6,10 @@ import * as Utilities from '~/common/utilities';
 import PermalinkIcon from '~/components/icons/Permalink';
 import BulletIcon from '~/components/icons/Bullet';
 
+const attributes = {
+  'data-text': true,
+};
+
 const STYLES_UNORDERED_LIST = css`
   padding: 0;
   margin-top: 24px;
@@ -14,7 +18,11 @@ const STYLES_UNORDERED_LIST = css`
   list-style-type: none;
 `;
 
-export const UL = ({ children }) => <ul className={STYLES_UNORDERED_LIST}>{children}</ul>;
+export const UL = ({ children }) => (
+  <ul {...attributes} className={STYLES_UNORDERED_LIST}>
+    {children}
+  </ul>
+);
 
 // TODO(jim): Get anchors working properly for ordered lists.
 const STYLES_ORDERED_LIST = css`
@@ -33,7 +41,11 @@ const STYLES_ORDERED_LIST = css`
   }
 `;
 
-export const OL = ({ children }) => <ol className={STYLES_ORDERED_LIST}>{children}</ol>;
+export const OL = ({ children }) => (
+  <ol {...attributes} className={STYLES_ORDERED_LIST}>
+    {children}
+  </ol>
+);
 
 const STYLES_LIST_ITEM = css`
   position: relative;
