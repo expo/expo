@@ -125,7 +125,7 @@ public class PushNotificationHelper {
         ReceivedNotificationEvent notificationEvent = new ReceivedNotificationEvent(experienceId, body, notificationId, isMultiple, true);
 
         // Create pending intent
-        Intent intent = new Intent(context, LauncherActivity.class);
+        Intent intent = new Intent(context, KernelConstants.MAIN_ACTIVITY_CLASS);
         intent.putExtra(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY, manifestUrl);
         intent.putExtra(KernelConstants.NOTIFICATION_KEY, body); // deprecated
         intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString());

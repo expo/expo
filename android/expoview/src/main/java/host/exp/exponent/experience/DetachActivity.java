@@ -2,6 +2,7 @@
 
 package host.exp.exponent.experience;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.facebook.react.ReactPackage;
@@ -13,7 +14,6 @@ import java.util.List;
 
 import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
-import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.expoview.ExpoViewBuildConfig;
@@ -36,6 +36,8 @@ public abstract class DetachActivity extends ExperienceActivity {
     Constants.setSdkVersions(sdkVersions());
     String defaultUrl = isDebug() ? developmentUrl() : publishedUrl();
     Constants.INITIAL_URL = defaultUrl;
+
+    mKernel.handleIntent(this, getIntent());
 
     new AppLoader(Constants.INITIAL_URL, mExponentManifest, mExponentSharedPreferences) {
       @Override
@@ -86,6 +88,12 @@ public abstract class DetachActivity extends ExperienceActivity {
         mKernel.handleError(e);
       }
     }.start();
+  }
+
+  @Override
+  public void onNewIntent(Intent intent) {
+    super.onNewIntent(intent);
+    mKernel.handleIntent(this, intent);
   }
 
   // TODO: eric: make Constants.INITIAL_URI reliable so we can get rid of this

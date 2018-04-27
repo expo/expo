@@ -103,6 +103,7 @@
 
     <activity
       android:name=".MainActivity"
+      android:launchMode="singleTask"
       android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
       android:theme="@style/Theme.Exponent.Splash"
       android:windowSoftInputMode="adjustResize">
