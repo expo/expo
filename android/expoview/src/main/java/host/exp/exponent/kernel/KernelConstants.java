@@ -2,10 +2,13 @@
 
 package host.exp.exponent.kernel;
 
+import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.experience.DetachActivity;
 
 public class KernelConstants {
+  public static final String TAG = KernelConstants.class.getSimpleName();
+
   public static final String MANIFEST_KEY = "manifest";
   public static final String BUNDLE_URL_KEY = "bundleUrl";
   public static final String MANIFEST_URL_KEY = "experienceUrl";
@@ -35,6 +38,13 @@ public class KernelConstants {
   public static final String DEV_FLAG = "dev_flag";
 
   public static Class MAIN_ACTIVITY_CLASS = DetachActivity.class;
+  static {
+    try {
+      MAIN_ACTIVITY_CLASS = Class.forName("host.exp.exponent.MainActivity");
+    } catch (Exception e) {
+      EXL.e(TAG, "Could not find MainActivity, falling back to DetachActivity: " + e.getMessage());
+    }
+  }
 
   public static class ExperienceOptions {
     public final String manifestUri;
