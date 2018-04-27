@@ -132,6 +132,7 @@
 		B5276E9E208572380052C13F /* AIRMapOverlayManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5276E99208572380052C13F /* AIRMapOverlayManager.m */; };
 		B532EB672058431000569CF2 /* EXMenuGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = B532EB662058431000569CF2 /* EXMenuGestureRecognizer.m */; };
 		B5356CB72093C42800AA6C7D /* EXLinkingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5356CB62093C42800AA6C7D /* EXLinkingTests.m */; };
+		B5356CB92093D71200AA6C7D /* EXAppLoaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5356CB82093D71200AA6C7D /* EXAppLoaderTests.m */; };
 		B54D2913205307380019411A /* EXAppLoadingCancelView.m in Sources */ = {isa = PBXBuildFile; fileRef = B54D2912205307380019411A /* EXAppLoadingCancelView.m */; };
 		B5576082204A41F90041D9C8 /* EXHomeModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B5576080204A41F90041D9C8 /* EXHomeModule.m */; };
 		B5576085204A423B0041D9C8 /* EXHomeModuleManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5576084204A423B0041D9C8 /* EXHomeModuleManager.m */; };
@@ -580,6 +581,7 @@
 		B532EB652058431000569CF2 /* EXMenuGestureRecognizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXMenuGestureRecognizer.h; sourceTree = "<group>"; };
 		B532EB662058431000569CF2 /* EXMenuGestureRecognizer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXMenuGestureRecognizer.m; sourceTree = "<group>"; };
 		B5356CB62093C42800AA6C7D /* EXLinkingTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXLinkingTests.m; sourceTree = "<group>"; };
+		B5356CB82093D71200AA6C7D /* EXAppLoaderTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAppLoaderTests.m; sourceTree = "<group>"; };
 		B54D2911205307380019411A /* EXAppLoadingCancelView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAppLoadingCancelView.h; sourceTree = "<group>"; };
 		B54D2912205307380019411A /* EXAppLoadingCancelView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAppLoadingCancelView.m; sourceTree = "<group>"; };
 		B5576080204A41F90041D9C8 /* EXHomeModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXHomeModule.m; sourceTree = "<group>"; };
@@ -1207,6 +1209,7 @@
 			isa = PBXGroup;
 			children = (
 				B51333421CE649FE00E9FC9E /* ExponentIntegrationTests.m */,
+				B5356CB82093D71200AA6C7D /* EXAppLoaderTests.m */,
 				B5356CB62093C42800AA6C7D /* EXLinkingTests.m */,
 				B59B59481F6369480083850D /* EXTestEnvironment.plist */,
 				B51333441CE649FE00E9FC9E /* Info.plist */,
@@ -2639,6 +2642,7 @@
 			files = (
 				B51333431CE649FE00E9FC9E /* ExponentIntegrationTests.m in Sources */,
 				B5356CB72093C42800AA6C7D /* EXLinkingTests.m in Sources */,
+				B5356CB92093D71200AA6C7D /* EXAppLoaderTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
