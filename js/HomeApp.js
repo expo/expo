@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   statusBarUnderlay: {
-    height: 24,
+    height: Constants.statusBarHeight,
     backgroundColor: 'rgba(0,0,0,0.2)',
     position: 'absolute',
     top: 0,
