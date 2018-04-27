@@ -24,7 +24,7 @@
   [super setUp];
 }
 
-#pragma mark - tests
+#pragma mark - test link routing
 
 - (void)testIsClientDeepLinkRoutedCorrectly
 {
@@ -71,6 +71,44 @@
 {
   [self _assertDeepLink:@"https://expo.io/@ben/foodwheel" doesNotRouteToManifest:@"https://exp.host/@ben/foodwheel"];
   [self _assertDeepLink:@"https://google.com/@ben/foodwheel" doesNotRouteToManifest:@"https://exp.host/@ben/foodwheel"];
+  [self _assertDeepLink:@"https://@ben/foodwheel" doesNotRouteToManifest:@"https://exp.host/@ben/foodwheel"];
+  [self _assertDeepLink:@"https://expo.io/@ben/foodwheel" doesNotRouteToManifest:@"https://@ben/foodwheel"];
+}
+
+- (void)testIsDeepLinkingInvariantToQueryString
+{
+  [self _assertDeepLink:@"https://exp.host/@ben/foodwheel?a=b&c=d" routesToManifest:@"exp://exp.host/@ben/foodwheel"];
+  [self _assertDeepLink:@"https://exp.host/@ben/foodwheel?a=b&c=d" routesToManifest:@"exp://exp.host/@ben/foodwheel?release-channel=default"];
+  [self _assertDeepLink:@"https://exp.host/@ben/foodwheel?a=b&c=d&release-channel=default" routesToManifest:@"exp://exp.host/@ben/foodwheel?release-channel=default"];
+  [self _assertDeepLink:@"https://exp.host/@ben/foodwheel/--/spin?a=b&c=d" routesToManifest:@"exp://exp.host/@ben/foodwheel"];
+  [self _assertDeepLink:@"https://exp.host/@ben/foodwheel/--/spin?a=b&c=d" routesToManifest:@"exp://exp.host/@ben/foodwheel?release-channel=default"];
+  [self _assertDeepLink:@"https://exp.host/@ben/foodwheel/--/spin?a=b&c=d&release-channel=default" routesToManifest:@"exp://exp.host/@ben/foodwheel?release-channel=default"];
+  [self _assertDeepLink:@"https://exp.host/@ben/foodwheel/--/spin?a=b&c=d&release-channel=banana" doesNotRouteToManifest:@"exp://exp.host/@ben/foodwheel"];
+}
+
+- (void)testIsDeepLinkingInvariantToDeepLinkPath
+{
+  [self _assertDeepLink:@"https://exp.host/@ben/foodwheel/--/a/b/c" routesToManifest:@"exp://exp.host/@ben/foodwheel"];
+  [self _assertDeepLink:@"https://exp.host/@ben/foodwheel" routesToManifest:@"exp://exp.host/@ben/foodwheel/--/a/b/c"];
+}
+
+#pragma mark - test url parsing/transforms
+
+- (void)testIsDeepLinkRemoved
+{
+  NSString *manifestWithNoDeepLink = @"https://exp.host/@ben/foodwheel/";
+  NSArray<NSString *> *deepLinks = @[
+    @"https://exp.host/@ben/foodwheel/--/",
+    @"https://exp.host/@ben/foodwheel/--/spin",
+    @"https://exp.host/@ben/foodwheel/--/a/b/c",
+    @"https://exp.host/@ben/foodwheel/--/spin?a=b&c=d",
+    // @"https://exp.host/@ben/foodwheel?a=b&c=d", // TODO: should this case be supported?
+  ];
+  for (NSString *deepLink in deepLinks) {
+    NSString *result = [EXKernelLinkingManager stringByRemovingDeepLink:deepLink];
+    XCTAssert([result isEqualToString:manifestWithNoDeepLink],
+              @"Linking manager should correctly remove the deep link from %@, but instead it returned %@", deepLink, result);
+  }
 }
 
 #pragma mark - internal
