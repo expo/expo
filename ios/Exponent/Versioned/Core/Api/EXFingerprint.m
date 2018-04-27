@@ -38,7 +38,7 @@ RCT_EXPORT_METHOD(authenticateAsync:(NSString *)reason
 {
   LAContext *context = [LAContext new];
 
-  [context evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
+  [context evaluatePolicy:LAPolicyDeviceOwnerAuthentication
           localizedReason:reason
                     reply:^(BOOL success, NSError *error) {
                       if (success) {
