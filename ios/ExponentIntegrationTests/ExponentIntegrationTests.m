@@ -1,4 +1,11 @@
-// Copyright 2015-present 650 Industries. All rights reserved.
+/**
+ *  This test launches the JS Expo app called `test-suite` and checks whether all the JS tests there pass.
+ *  `test-suite` runs a bunch of jasmine JS tests against the Expo SDK.
+ *  The purpose of this file is to provide a native pass/fail hook into the JS sdk tests.
+ *
+ *  To configure it, make sure this target contains a file called `EXTestEnvironment.plist`
+ *  with a key `testSuiteUrl` whose value is the url to load some version of Expo's `test-suite` app.
+ */
 
 #import "ExpoKit.h"
 #import "EXKernel.h"
