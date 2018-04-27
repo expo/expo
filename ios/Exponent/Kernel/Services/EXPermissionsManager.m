@@ -10,6 +10,10 @@ NSString * const kEXPermissionsKey = @"ExpoPermissions";
 
 - (BOOL)hasGrantedPermission:(NSString *)permission forExperience:(NSString *)experienceId
 {
+  if ([EXShellManager sharedInstance].isShell) {
+    return YES;
+  }
+  
   NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
   NSDictionary *expoPermissions = [userDefaults dictionaryForKey:kEXPermissionsKey];
   if (expoPermissions == nil) {
