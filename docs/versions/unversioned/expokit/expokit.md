@@ -89,6 +89,6 @@ ExpoKit's release cycle follows the Expo SDK release cycle. When a new version o
 
 - Go to https://expo.io/--/api/v2/versions and find the `androidExpoViewUrl` key under `sdkVersions.[NEW SDK VERSION]`.
 - Download that `.tar.gz` file and extract it.
-- Go to your project's `.expo-source/android` directory and replace it with the `android` directory from the file you downloaded.
+- Go to your project's `android` directory and replace the `detach-scripts` and `maven` directories with the respective directories from the download.
 - Go to `MainActivity.java` and replace `Arrays.asList("[OLD SDK VERSION]")` with `Arrays.asList("[NEW SDK VERSION]")`.
-- Go to `build.gradle` and replace `compile('host.exp.exponent:expoview:[OLD SDK VERSION]@aar') {` with `compile('host.exp.exponent:expoview:[NEW SDK VERSION]@aar') {`.
+- Go to `app/build.gradle` and replace `compile('host.exp.exponent:expoview:[OLD SDK VERSION]@aar') {` with `compile('host.exp.exponent:expoview:[NEW SDK VERSION]@aar') {`. Depending on what Expo SDK features you are using you might also need to copy other new dependencies from the downloaded `app/build.gradle` file into yours.
