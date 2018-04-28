@@ -103,6 +103,14 @@ The native Android Studio and XCode projects have a build hook which will find t
 - `template-files` contains templates for files that require private keys. They are populated using the keys in `template-files/keys.json`.
 - `template-files/ios/dependencies.json` specifies the CocoaPods dependencies of the app.
 
+## Tests
+
+### iOS
+
+Press Command+U in XCode to build and test the `ExponentIntegrationTests` unit test target. Most of the tests are normal XCTests.
+
+One test in particular, `testDoesTestSuiteAppPassAllJSTests`, requires you to configure `EXTestEnvironment.plist` with a key `testSuiteUrl` whose value is the url to load some version of Expo's [test-suite](https://github.com/expo/test-suite) app. This will run a bunch of Jasmine tests against the Expo SDK.
+
 ## Contributing
 Please check with us before putting work into a Pull Request! It is often harder to maintain code than it is to write it. The best place to talk to us is on Slack at https://slack.expo.io.
 
