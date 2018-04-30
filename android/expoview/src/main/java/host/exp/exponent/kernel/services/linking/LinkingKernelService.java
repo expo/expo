@@ -31,6 +31,6 @@ public class LinkingKernelService {
 
     String host = uri.getHost();
 
-    return "exp.host".equals(host) || host.endsWith("exp.direct");
+    return host != null && ("exp.host".equals(host) || host.endsWith("exp.direct"));
   }
 }
