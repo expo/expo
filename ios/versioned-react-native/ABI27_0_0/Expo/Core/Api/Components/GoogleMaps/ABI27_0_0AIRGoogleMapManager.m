@@ -42,6 +42,7 @@ ABI27_0_0RCT_EXPORT_MODULE()
 - (UIView *)view
 {
   ABI27_0_0AIRGoogleMap *map = [ABI27_0_0AIRGoogleMap new];
+  map.bridge = self.bridge;
   map.delegate = self;
   return map;
 }
@@ -62,15 +63,19 @@ ABI27_0_0RCT_EXPORT_VIEW_PROPERTY(showsIndoorLevelPicker, BOOL)
 ABI27_0_0RCT_EXPORT_VIEW_PROPERTY(customMapStyleString, NSString)
 ABI27_0_0RCT_EXPORT_VIEW_PROPERTY(mapPadding, UIEdgeInsets)
 ABI27_0_0RCT_EXPORT_VIEW_PROPERTY(onMapReady, ABI27_0_0RCTBubblingEventBlock)
+ABI27_0_0RCT_EXPORT_VIEW_PROPERTY(onKmlReady, ABI27_0_0RCTBubblingEventBlock)
 ABI27_0_0RCT_EXPORT_VIEW_PROPERTY(onPress, ABI27_0_0RCTBubblingEventBlock)
 ABI27_0_0RCT_EXPORT_VIEW_PROPERTY(onLongPress, ABI27_0_0RCTBubblingEventBlock)
+ABI27_0_0RCT_EXPORT_VIEW_PROPERTY(onUserLocationChange, ABI27_0_0RCTBubblingEventBlock)
 ABI27_0_0RCT_EXPORT_VIEW_PROPERTY(onChange, ABI27_0_0RCTBubblingEventBlock)
 ABI27_0_0RCT_EXPORT_VIEW_PROPERTY(onMarkerPress, ABI27_0_0RCTDirectEventBlock)
 ABI27_0_0RCT_EXPORT_VIEW_PROPERTY(onRegionChange, ABI27_0_0RCTDirectEventBlock)
 ABI27_0_0RCT_EXPORT_VIEW_PROPERTY(onRegionChangeComplete, ABI27_0_0RCTDirectEventBlock)
+ABI27_0_0RCT_EXPORT_VIEW_PROPERTY(onPoiClick, ABI27_0_0RCTDirectEventBlock)
 ABI27_0_0RCT_EXPORT_VIEW_PROPERTY(mapType, GMSMapViewType)
 ABI27_0_0RCT_EXPORT_VIEW_PROPERTY(minZoomLevel, CGFloat)
 ABI27_0_0RCT_EXPORT_VIEW_PROPERTY(maxZoomLevel, CGFloat)
+ABI27_0_0RCT_EXPORT_VIEW_PROPERTY(kmlSrc, NSString)
 
 ABI27_0_0RCT_EXPORT_METHOD(animateToRegion:(nonnull NSNumber *)ReactABI27_0_0Tag
                   withRegion:(MKCoordinateRegion)region
@@ -300,16 +305,16 @@ ABI27_0_0RCT_EXPORT_METHOD(pointForCoordinate:(nonnull NSNumber *)ReactABI27_0_0
                              [coordinate[@"latitude"] doubleValue],
                              [coordinate[@"longitude"] doubleValue]
                              );
-  
+
   [self.bridge.uiManager addUIBlock:^(__unused ABI27_0_0RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     id view = viewRegistry[ReactABI27_0_0Tag];
     if (![view isKindOfClass:[ABI27_0_0AIRGoogleMap class]]) {
       ABI27_0_0RCTLogError(@"Invalid view returned from registry, expecting ABI27_0_0AIRMap, got: %@", view);
     } else {
       ABI27_0_0AIRGoogleMap *mapView = (ABI27_0_0AIRGoogleMap *)view;
-      
+
       CGPoint touchPoint = [mapView.projection pointForCoordinate:coord];
-      
+
       callback(@[[NSNull null], @{
                    @"x": @(touchPoint.x),
                    @"y": @(touchPoint.y),
@@ -326,16 +331,16 @@ ABI27_0_0RCT_EXPORT_METHOD(coordinateForPoint:(nonnull NSNumber *)ReactABI27_0_0
                            [point[@"x"] doubleValue],
                            [point[@"y"] doubleValue]
                            );
-  
+
   [self.bridge.uiManager addUIBlock:^(__unused ABI27_0_0RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     id view = viewRegistry[ReactABI27_0_0Tag];
     if (![view isKindOfClass:[ABI27_0_0AIRGoogleMap class]]) {
       ABI27_0_0RCTLogError(@"Invalid view returned from registry, expecting ABI27_0_0AIRMap, got: %@", view);
     } else {
       ABI27_0_0AIRGoogleMap *mapView = (ABI27_0_0AIRGoogleMap *)view;
-      
+
       CLLocationCoordinate2D coordinate = [mapView.projection coordinateForPoint:pt];
-      
+
       callback(@[[NSNull null], @{
                 @"latitude": @(coordinate.latitude),
                 @"longitude": @(coordinate.longitude),
@@ -432,5 +437,13 @@ ABI27_0_0RCT_EXPORT_METHOD(setMapBoundaries:(nonnull NSNumber *)ReactABI27_0_0Ta
 - (void)mapView:(GMSMapView *)mapView didDragMarker:(GMSMarker *)marker {
   ABI27_0_0AIRGMSMarker *aMarker = (ABI27_0_0AIRGMSMarker *)marker;
   [aMarker.fakeMarker didDragMarker:aMarker];
+}
+
+- (void)mapView:(GMSMapView *)mapView
+    didTapPOIWithPlaceID:(NSString *)placeID
+                    name:(NSString *)name
+                location:(CLLocationCoordinate2D)location {
+    ABI27_0_0AIRGoogleMap *googleMapView = (ABI27_0_0AIRGoogleMap *)mapView;
+    [googleMapView didTapPOIWithPlaceID:placeID name:name location:location];
 }
 @end

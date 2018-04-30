@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 #import <ReactABI27_0_0/ABI27_0_0RCTComponent.h>
+#import <ReactABI27_0_0/ABI27_0_0RCTBridge.h>
 #import <GoogleMaps/GoogleMaps.h>
 #import <MapKit/MapKit.h>
 #import "ABI27_0_0AIRGMSMarker.h"
@@ -15,15 +16,19 @@
 @interface ABI27_0_0AIRGoogleMap : GMSMapView
 
 // TODO: don't use MK region?
+@property (nonatomic, weak) ABI27_0_0RCTBridge *bridge;
 @property (nonatomic, assign) MKCoordinateRegion initialRegion;
 @property (nonatomic, assign) MKCoordinateRegion region;
 @property (nonatomic, assign) NSString *customMapStyleString;
 @property (nonatomic, assign) UIEdgeInsets mapPadding;
 @property (nonatomic, copy) ABI27_0_0RCTBubblingEventBlock onMapReady;
+@property (nonatomic, copy) ABI27_0_0RCTBubblingEventBlock onKmlReady;
 @property (nonatomic, copy) ABI27_0_0RCTBubblingEventBlock onPress;
 @property (nonatomic, copy) ABI27_0_0RCTBubblingEventBlock onLongPress;
+@property (nonatomic, copy) ABI27_0_0RCTBubblingEventBlock onUserLocationChange;
 @property (nonatomic, copy) ABI27_0_0RCTBubblingEventBlock onMarkerPress;
 @property (nonatomic, copy) ABI27_0_0RCTBubblingEventBlock onChange;
+@property (nonatomic, copy) ABI27_0_0RCTBubblingEventBlock onPoiClick;
 @property (nonatomic, copy) ABI27_0_0RCTDirectEventBlock onRegionChange;
 @property (nonatomic, copy) ABI27_0_0RCTDirectEventBlock onRegionChangeComplete;
 @property (nonatomic, strong) NSMutableArray *markers;
@@ -31,6 +36,7 @@
 @property (nonatomic, strong) NSMutableArray *polylines;
 @property (nonatomic, strong) NSMutableArray *circles;
 @property (nonatomic, strong) NSMutableArray *tiles;
+@property (nonatomic, strong) NSMutableArray *overlays;
 
 @property (nonatomic, assign) BOOL showsBuildings;
 @property (nonatomic, assign) BOOL showsTraffic;
@@ -42,6 +48,7 @@
 @property (nonatomic, assign) BOOL showsUserLocation;
 @property (nonatomic, assign) BOOL showsMyLocationButton;
 @property (nonatomic, assign) BOOL showsIndoorLevelPicker;
+@property (nonatomic, assign) NSString *kmlSrc;
 
 - (void)didPrepareMap;
 - (BOOL)didTapMarker:(GMSMarker *)marker;
@@ -51,6 +58,7 @@
 - (void)didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate;
 - (void)didChangeCameraPosition:(GMSCameraPosition *)position;
 - (void)idleAtCameraPosition:(GMSCameraPosition *)position;
+- (void)didTapPOIWithPlaceID:(NSString *)placeID name:(NSString *) name location:(CLLocationCoordinate2D) location;
 
 + (MKCoordinateRegion)makeGMSCameraPositionFromMap:(GMSMapView *)map andGMSCameraPosition:(GMSCameraPosition *)position;
 + (GMSCameraPosition*)makeGMSCameraPositionFromMap:(GMSMapView *)map andMKCoordinateRegion:(MKCoordinateRegion)region;
