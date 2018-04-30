@@ -3,6 +3,7 @@ package versioned.host.exp.exponent.modules.api;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.Nullable;
+import android.net.Uri;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -45,6 +46,39 @@ public class IntentLauncherModule extends ReactContextBaseJavaModule implements 
 
       if (data != null) {
         intent.putExtras(Arguments.toBundle(data));
+      }
+
+      if (currentActivity != null) {
+        currentActivity.startActivity(intent);
+      } else {
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        getReactApplicationContext().startActivity(intent);
+      }
+
+      pendingPromise = promise;
+    } catch (Exception e) {
+      promise.reject("ERR_LAUNCHING_ACTIVITY", e);
+    }
+  }
+
+  @ReactMethod
+  public void startActivityWithUri(String activity, String uri, Promise promise) {
+    if (pendingPromise != null) {
+      pendingPromise.reject("ERR_INTERRUPTED", "A new activity was started");
+      pendingPromise = null;
+    }
+
+    if (activity == null || activity.isEmpty()) {
+      promise.reject("ERR_EMPTY_ACTIVITY", "Specified activity was empty");
+      return;
+    }
+
+    try {
+      Activity currentActivity = getCurrentActivity();
+      Intent intent = new Intent(activity);
+
+      if (uri != null && !uri.isEmpty()) {
+        intent.setData(Uri.parse(uri));
       }
 
       if (currentActivity != null) {
