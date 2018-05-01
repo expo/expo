@@ -161,17 +161,7 @@ const NSUInteger kEXErrorCodeAppForbidden = 424242;
                 isRemote:(BOOL)isRemote
 {
   EXKernelAppRecord *destinationApp = [_appRegistry newestRecordWithExperienceId:destinationExperienceId];
-
-  // if the notification came from the background, in most but not all cases, this means the user acted on an iOS notification
-  // and caused the app to launch.
-  // From SO:
-  // > Note that "App opened from Notification" will be a false positive if the notification is sent while the user is on a different
-  // > screen (for example, if they pull down the status bar and then receive a notification from your app).
-  NSDictionary *bodyWithOrigin = @{
-                                   @"origin": (isFromBackground) ? @"selected" : @"received",
-                                   @"remote": @(isRemote),
-                                   @"data": notifBody,
-                                   };
+  NSDictionary *bodyWithOrigin = [self _notificationPropsWithBody:notifBody isFromBackground:isFromBackground isRemote:isRemote];
   if (destinationApp) {
     // send the body to the already-open experience
     [self _dispatchJSEvent:@"Exponent.notification" body:bodyWithOrigin toApp:destinationApp];
@@ -210,6 +200,40 @@ const NSUInteger kEXErrorCodeAppForbidden = 424242;
 {
   [appRecord.appManager.reactBridge enqueueJSCall:@"RCTDeviceEventEmitter.emit"
                                              args:eventBody ? @[eventName, eventBody] : @[eventName]];
+}
+
+#pragma mark - App props
+
+- (NSDictionary *)initialAppPropsFromLaunchOptions:(NSDictionary *)launchOptions
+{
+  NSMutableDictionary *initialProps = [NSMutableDictionary dictionary];
+  
+  NSDictionary *remoteNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+  if (remoteNotification) {
+    initialProps[@"notification"] = [self _notificationPropsWithBody:remoteNotification[@"body"] isFromBackground:YES isRemote:YES];
+  }
+  UILocalNotification *localNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
+  if (localNotification) {
+    initialProps[@"notification"] = [self _notificationPropsWithBody:localNotification.userInfo[@"body"] isFromBackground:YES isRemote:NO];
+  }
+  return initialProps;
+}
+
+- (NSDictionary *)_notificationPropsWithBody:(NSDictionary *)notifBody isFromBackground:(BOOL)isFromBackground isRemote:(BOOL)isRemote
+{
+  // if the notification came from the background, in most but not all cases, this means the user acted on an iOS notification
+  // and caused the app to launch.
+  // From SO:
+  // > Note that "App opened from Notification" will be a false positive if the notification is sent while the user is on a different
+  // > screen (for example, if they pull down the status bar and then receive a notification from your app).
+  if (!notifBody) {
+    notifBody = @{};
+  }
+  return @{
+    @"origin": (isFromBackground) ? @"selected" : @"received",
+    @"remote": @(isRemote),
+    @"data": notifBody,
+  };
 }
 
 #pragma mark - App State
