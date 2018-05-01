@@ -90,8 +90,7 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
   if (components) {
     return ([components.scheme isEqualToString:@"exp"] ||
             [components.scheme isEqualToString:@"exps"] ||
-            [components.host isEqualToString:@"exp.host"] ||
-            [components.host hasSuffix:@".exp.host"]
+            [[self class] _isExpoHostedUrlComponents:components]
             );
   }
   return NO;

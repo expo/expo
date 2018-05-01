@@ -3,6 +3,7 @@
  */
 
 #import <XCTest/XCTest.h>
+#import "EXKernel.h"
 #import "EXKernelLinkingManager.h"
 
 #pragma mark - private/internal methods in Linking Manager
@@ -90,6 +91,17 @@
 {
   [self _assertDeepLink:@"https://exp.host/@ben/foodwheel/--/a/b/c" routesToManifest:@"exp://exp.host/@ben/foodwheel"];
   [self _assertDeepLink:@"https://exp.host/@ben/foodwheel" routesToManifest:@"exp://exp.host/@ben/foodwheel/--/a/b/c"];
+}
+
+- (void)testArePhoneLinksNotDeepLinks
+{
+  // tel and sms links should never be deep links
+  NSURL *smsUrl = [NSURL URLWithString:@"sms:+604-288-8555"];
+  NSURL *telUrl = [NSURL URLWithString:@"tel:1-408-555-5555"];
+  for (NSURL *url in @[ smsUrl, telUrl ]) {
+    XCTAssert([[EXKernel sharedInstance].serviceRegistry.linkingManager linkingModule:nil shouldOpenExpoUrl:url] == NO,
+              @"URL %@ should not be routed internally as a deep link", url);
+  }
 }
 
 #pragma mark - test url parsing/transforms
