@@ -43,6 +43,11 @@ FOUNDATION_EXPORT NSString * const kEXKernelClearJSCacheUserDefaultsKey;
                 isRemote: (BOOL)isRemote;
 
 /**
+ *  Initial props to pass to an app based on LaunchOptions from UIApplicationDelegate.
+ */
+- (NSDictionary *)initialAppPropsFromLaunchOptions:(NSDictionary *)launchOptions;
+
+/**
  *  Find and return the (potentially versioned) native module instance belonging to the
  *  specified app manager. Module name is the exported name such as @"AppState".
  */

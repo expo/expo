@@ -3,6 +3,7 @@
 #import "EXKernel.h"
 #import "EXScreenOrientationManager.h"
 #import "EXViewController.h"
+#import "ExpoKit.h"
 #import "EXShellManager.h"
 
 @interface EXViewController ()
@@ -39,7 +40,9 @@
 - (void)createRootAppAndMakeVisible
 {
   NSURL *standaloneAppUrl = [NSURL URLWithString:[EXShellManager sharedInstance].shellManifestUrl];
-  EXKernelAppRecord *appRecord = [[EXKernel sharedInstance] createNewAppWithUrl:standaloneAppUrl initialProps:@{}];
+  NSDictionary *initialProps = [[EXKernel sharedInstance] initialAppPropsFromLaunchOptions:[ExpoKit sharedInstance].launchOptions];
+  EXKernelAppRecord *appRecord = [[EXKernel sharedInstance] createNewAppWithUrl:standaloneAppUrl
+                                                                   initialProps:initialProps];
   
   UIViewController *viewControllerToShow = (UIViewController *)appRecord.viewController;
 

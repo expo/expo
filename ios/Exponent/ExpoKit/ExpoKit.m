@@ -25,7 +25,6 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"EXAppD
 @interface ExpoKit () <CrashlyticsDelegate>
 {
   Class _rootViewControllerClass;
-  BOOL _hasConsumedLaunchNotification;
 }
 
 @property (nonatomic, nullable, strong) EXViewController *rootViewController;
@@ -51,7 +50,6 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"EXAppD
 {
   if (self = [super init]) {
     _rootViewControllerClass = [EXViewController class];
-    _hasConsumedLaunchNotification = NO;
     [self _initDefaultKeys];
   }
   return self;
@@ -114,41 +112,6 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"EXAppD
   [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager registerForRemoteNotifications];
   [[EXKernel sharedInstance].serviceRegistry.branchManager application:application didFinishLaunchingWithOptions:launchOptions];
   _launchOptions = launchOptions;
-}
-
-#pragma mark - handling JS loads
-
-- (void)_onKernelJSLoaded
-{
-  if (![EXShellManager sharedInstance].isShell) {
-    // see complementary call in _onKernelAppDidDisplay.
-    [self _sendRemoteOrLocalNotificationFromLaunch];
-  }
-}
-
-- (void)_onKernelAppDidDisplay
-{
-  if ([EXShellManager sharedInstance].isShell) {
-    // see complementary call in _onKernelJSLoaded.
-    [self _sendRemoteOrLocalNotificationFromLaunch];
-  }
-}
-
-- (void)_sendRemoteOrLocalNotificationFromLaunch
-{
-  if (!_hasConsumedLaunchNotification) {
-    _hasConsumedLaunchNotification = YES;
-    NSDictionary *remoteNotification = [_launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
-    
-    if (remoteNotification) {
-      [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager handleRemoteNotification:remoteNotification fromBackground:YES];
-    }
-    
-    UILocalNotification *localNotification = [_launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
-    if (localNotification) {
-      [[EXLocalNotificationManager sharedInstance] handleLocalNotification:localNotification fromBackground:YES];
-    }
-  }
 }
 
 #pragma mark - Crash handling
