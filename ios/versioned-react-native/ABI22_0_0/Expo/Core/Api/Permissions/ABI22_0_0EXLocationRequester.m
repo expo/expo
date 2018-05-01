@@ -25,7 +25,7 @@
   
   CLAuthorizationStatus systemStatus;
   NSString *whenInUseUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"];
-  if (whenInUseUsageDescription) {
+  if (!whenInUseUsageDescription) {
     ABI22_0_0RCTFatal(ABI22_0_0RCTErrorWithMessage(@"This app is missing NSLocationWhenInUseUsageDescription, so location services will fail. Add one of these keys to your bundle's Info.plist."));
     systemStatus = kCLAuthorizationStatusDenied;
   } else {
