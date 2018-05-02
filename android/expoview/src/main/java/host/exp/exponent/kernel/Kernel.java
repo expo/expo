@@ -583,6 +583,14 @@ public class Kernel extends KernelInterface {
       String releaseChannel = uri.getQueryParameter(ExponentManifest.QUERY_PARAM_KEY_RELEASE_CHANNEL);
       builder.query(null);
       if (releaseChannel != null) {
+        // release channels cannot contain the ' ' character, so if this is present,
+        // it must be an encoded form of '+' which indicated a deep link in SDK <27.
+        // therefore, nothing after this is part of the release channel name so we should strip it.
+        // TODO: remove this check once SDK 26 and below are no longer supported
+        int releaseChannelDeepLinkPosition = releaseChannel.indexOf(' ');
+        if (releaseChannelDeepLinkPosition > -1) {
+          releaseChannel = releaseChannel.substring(0, releaseChannelDeepLinkPosition);
+        }
         builder.appendQueryParameter(ExponentManifest.QUERY_PARAM_KEY_RELEASE_CHANNEL, releaseChannel);
       }
 
