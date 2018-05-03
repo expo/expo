@@ -24,11 +24,11 @@ const _makeShortId = (salt: string, minLength: number = 10): string => {
   const hashIds = new HashIds(salt, minLength);
   return hashIds.encode(Date.now());
 };
-async function deleteUserAsync(idToken) {
+async function deleteUserAsync(sessionSecret) {
   let response = await fetch(DeletionEndpoint, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${idToken}`,
+      'Expo-Session': sessionSecret,
     },
   });
 
@@ -60,7 +60,7 @@ describe('User Authentication Flow', () => {
   afterAll(async () => {
     // sign in to obtain token, then delete user
     const signinResult = await Auth0Api.signInAsync(testUsername, testPassword);
-    await deleteUserAsync(signinResult.id_token);
+    await deleteUserAsync(signinResult.sessionSecret);
   });
 
   afterEach(async () => {
@@ -120,9 +120,7 @@ describe('User Authentication Flow', () => {
     let { _signOutAsync, connectivityAwareNetworkQuery } = createSpies();
 
     // sign in, request for session secret to be returned
-    const signinResult = await Auth0Api.signInAsync(testUsername, testPassword, {
-      testSession: true,
-    });
+    const signinResult = await Auth0Api.signInAsync(testUsername, testPassword);
 
     // store auth and session tokens
     await Store.dispatch(SessionActions.setSession({ sessionSecret: signinResult.sessionSecret }));
