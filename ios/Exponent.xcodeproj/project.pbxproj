@@ -7,10 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0725C91F209A34E2005A1C1E /* EXKernelAppFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 0725C91E209A34E2005A1C1E /* EXKernelAppFetcher.m */; };
 		0726F0592007E438004992E7 /* EXKernelAppRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F0582007E438004992E7 /* EXKernelAppRecord.m */; };
 		0726F05C2007E446004992E7 /* EXKernelAppRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F05B2007E446004992E7 /* EXKernelAppRegistry.m */; };
 		07295CD920559E7300ED42D4 /* EXUpdatesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 07295CD820559E7300ED42D4 /* EXUpdatesManager.m */; };
 		07639ABA20507B2000B4BE4C /* EXUpdates.m in Sources */ = {isa = PBXBuildFile; fileRef = 07639AB920507B2000B4BE4C /* EXUpdates.m */; };
+		076F0991209905E30029145F /* EXKernelAppFetcherWithTimeout.m in Sources */ = {isa = PBXBuildFile; fileRef = 076F0990209905E30029145F /* EXKernelAppFetcherWithTimeout.m */; };
+		076F0995209918B70029145F /* EXKernelAppFetcherDevelopmentMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 076F0994209918B70029145F /* EXKernelAppFetcherDevelopmentMode.m */; };
+		076F099820991C7C0029145F /* EXKernelAppFetcherCacheOnly.m in Sources */ = {isa = PBXBuildFile; fileRef = 076F099720991C7C0029145F /* EXKernelAppFetcherCacheOnly.m */; };
 		0779EE2620977C9E00C2D71B /* AIRGoogleMapOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 0779EE2120977C9D00C2D71B /* AIRGoogleMapOverlay.m */; };
 		0779EE2720977C9E00C2D71B /* AIRGoogleMapOverlayManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0779EE2320977C9D00C2D71B /* AIRGoogleMapOverlayManager.m */; };
 		0779EE2820977C9E00C2D71B /* AIRDummyView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0779EE2420977C9E00C2D71B /* AIRDummyView.m */; };
@@ -321,6 +325,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0725C91E209A34E2005A1C1E /* EXKernelAppFetcher.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXKernelAppFetcher.m; sourceTree = "<group>"; };
+		0725C920209A496E005A1C1E /* EXKernelAppFetcher+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "EXKernelAppFetcher+Private.h"; sourceTree = "<group>"; };
 		0726F0572007E438004992E7 /* EXKernelAppRecord.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXKernelAppRecord.h; sourceTree = "<group>"; };
 		0726F0582007E438004992E7 /* EXKernelAppRecord.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXKernelAppRecord.m; sourceTree = "<group>"; };
 		0726F05A2007E446004992E7 /* EXKernelAppRegistry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXKernelAppRegistry.h; sourceTree = "<group>"; };
@@ -329,6 +335,13 @@
 		07295CD820559E7300ED42D4 /* EXUpdatesManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXUpdatesManager.m; sourceTree = "<group>"; };
 		07639AB920507B2000B4BE4C /* EXUpdates.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXUpdates.m; sourceTree = "<group>"; };
 		07639ABB20507B2C00B4BE4C /* EXUpdates.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXUpdates.h; sourceTree = "<group>"; };
+		076F098E209904C80029145F /* EXKernelAppFetcher.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXKernelAppFetcher.h; sourceTree = "<group>"; };
+		076F0990209905E30029145F /* EXKernelAppFetcherWithTimeout.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXKernelAppFetcherWithTimeout.m; sourceTree = "<group>"; };
+		076F09922099063A0029145F /* EXKernelAppFetcherWithTimeout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXKernelAppFetcherWithTimeout.h; sourceTree = "<group>"; };
+		076F0993209918A90029145F /* EXKernelAppFetcherDevelopmentMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXKernelAppFetcherDevelopmentMode.h; sourceTree = "<group>"; };
+		076F0994209918B70029145F /* EXKernelAppFetcherDevelopmentMode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXKernelAppFetcherDevelopmentMode.m; sourceTree = "<group>"; };
+		076F099620991C6E0029145F /* EXKernelAppFetcherCacheOnly.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXKernelAppFetcherCacheOnly.h; sourceTree = "<group>"; };
+		076F099720991C7C0029145F /* EXKernelAppFetcherCacheOnly.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXKernelAppFetcherCacheOnly.m; sourceTree = "<group>"; };
 		07720C2E205A0219003062F0 /* EXKernelAppLoader+Updates.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "EXKernelAppLoader+Updates.h"; sourceTree = "<group>"; };
 		0779EE2020977C9D00C2D71B /* AIRGoogleMapOverlayManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AIRGoogleMapOverlayManager.h; sourceTree = "<group>"; };
 		0779EE2120977C9D00C2D71B /* AIRGoogleMapOverlay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIRGoogleMapOverlay.m; sourceTree = "<group>"; };
@@ -1352,8 +1365,8 @@
 			isa = PBXGroup;
 			children = (
 				78D82524204E8F6C00CBD9D9 /* Api */,
-				B5AC398C1E95A90B00540AA7 /* Core */,
 				B5D0D660204F4C0400DDFC99 /* AppLoader */,
+				B5AC398C1E95A90B00540AA7 /* Core */,
 				B5AC39941E95A90B00540AA7 /* DevSupport */,
 				B5AC399B1E95A90B00540AA7 /* Environment */,
 				B5D0D66D204F4C0400DDFC99 /* ReactAppManager */,
@@ -1491,6 +1504,15 @@
 				B5D0D66B204F4C0400DDFC99 /* EXFileDownloader.m */,
 				B5D0D665204F4C0400DDFC99 /* EXJavaScriptResource.h */,
 				B5D0D66C204F4C0400DDFC99 /* EXJavaScriptResource.m */,
+				076F098E209904C80029145F /* EXKernelAppFetcher.h */,
+				0725C920209A496E005A1C1E /* EXKernelAppFetcher+Private.h */,
+				0725C91E209A34E2005A1C1E /* EXKernelAppFetcher.m */,
+				076F099620991C6E0029145F /* EXKernelAppFetcherCacheOnly.h */,
+				076F099720991C7C0029145F /* EXKernelAppFetcherCacheOnly.m */,
+				076F0993209918A90029145F /* EXKernelAppFetcherDevelopmentMode.h */,
+				076F0994209918B70029145F /* EXKernelAppFetcherDevelopmentMode.m */,
+				076F09922099063A0029145F /* EXKernelAppFetcherWithTimeout.h */,
+				076F0990209905E30029145F /* EXKernelAppFetcherWithTimeout.m */,
 				B5D0D664204F4C0400DDFC99 /* EXKernelAppLoader.h */,
 				07720C2E205A0219003062F0 /* EXKernelAppLoader+Updates.h */,
 				B5D0D669204F4C0400DDFC99 /* EXKernelAppLoader.m */,
@@ -2606,6 +2628,7 @@
 				B5FB74361FF6DADB001C764B /* EXCameraUtils.m in Sources */,
 				78343623205B8C5F00DD28C3 /* AIRMap.m in Sources */,
 				0779EE2720977C9E00C2D71B /* AIRGoogleMapOverlayManager.m in Sources */,
+				0725C91F209A34E2005A1C1E /* EXKernelAppFetcher.m in Sources */,
 				B52217D61F146658002241BA /* EXKernelServiceRegistry.m in Sources */,
 				B5FB74A31FF6DADC001C764B /* EXDocumentPicker.m in Sources */,
 				7846B1F920355E9900638E43 /* RNSVGSymbol.m in Sources */,
@@ -2615,6 +2638,7 @@
 				19382BA91EC2EACC001ED4A1 /* EXBranchManager.m in Sources */,
 				B5FB74B71FF6DADC001C764B /* EXWebBrowser.m in Sources */,
 				07639ABA20507B2000B4BE4C /* EXUpdates.m in Sources */,
+				076F0995209918B70029145F /* EXKernelAppFetcherDevelopmentMode.m in Sources */,
 				B5ADEE951F7DB4E000C88D2F /* EXBuildConstants.m in Sources */,
 				783435E1205B8BEE00DD28C3 /* AIRGoogleMapCallout.m in Sources */,
 				B5FB74BE1FF6DADC001C764B /* EXNativeAdView.m in Sources */,
@@ -2649,6 +2673,7 @@
 				B5D0D67A204F4C0400DDFC99 /* EXReactAppExceptionHandler.m in Sources */,
 				B5FB74AC1FF6DADC001C764B /* EXImageUtils.m in Sources */,
 				7846B20620355E9900638E43 /* RNSVGPercentageConverter.m in Sources */,
+				076F099820991C7C0029145F /* EXKernelAppFetcherCacheOnly.m in Sources */,
 				B57181001F0FF41600315A66 /* EXScreenOrientationManager.m in Sources */,
 				B5D0D673204F4C0400DDFC99 /* EXApiUtil.m in Sources */,
 				B5FB74CA1FF6DADC001C764B /* EXCameraPermissionRequester.m in Sources */,
@@ -2675,6 +2700,7 @@
 				B5FB74D81FF6DADC001C764B /* NSObject+RNBranch.m in Sources */,
 				B5FB74A81FF6DADC001C764B /* EXFontLoader.m in Sources */,
 				B5FB74D61FF6DADC001C764B /* BranchLinkProperties+RNBranch.m in Sources */,
+				076F0991209905E30029145F /* EXKernelAppFetcherWithTimeout.m in Sources */,
 				7846B20220355E9900638E43 /* RNSVGGroup.m in Sources */,
 				B5FB74D41FF6DADC001C764B /* EXMagnetometerUncalibrated.m in Sources */,
 				7846B21E20355E9900638E43 /* RNSVGPainter.m in Sources */,

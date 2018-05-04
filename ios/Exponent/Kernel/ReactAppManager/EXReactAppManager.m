@@ -187,19 +187,19 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   [_versionManager bridgeDidBackground];
 }
 
-#pragma mark - EXKernelAppLoaderDataSource
+#pragma mark - EXKernelAppFetcherDataSource
 
-- (NSString *)bundleResourceNameForAppLoader:(EXKernelAppLoader *)appLoader
+- (NSString *)bundleResourceNameForAppFetcher:(EXKernelAppFetcher *)appFetcher withManifest:(nonnull NSDictionary *)manifest
 {
   if ([EXShellManager sharedInstance].isShell) {
     NSLog(@"Standalone bundle remote url is %@", [EXShellManager sharedInstance].shellManifestUrl);
     return kEXShellBundleResourceName;
   } else {
-    return appLoader.manifest[@"id"];
+    return manifest[@"id"];
   }
 }
 
-- (BOOL)appLoaderShouldInvalidateBundleCache:(EXKernelAppLoader *)appLoader
+- (BOOL)appFetcherShouldInvalidateBundleCache:(EXKernelAppFetcher *)appFetcher
 {
   return NO;
 }

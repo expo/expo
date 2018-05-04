@@ -11,11 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXKernelAppLoader ()
 
 /**
- * Fetch manifest without any side effects or interaction with the timer.
- */
-- (void)fetchManifestWithCacheBehavior:(EXCachedResourceBehavior)cacheBehavior success:(void (^)(NSDictionary *))success failure:(void (^)(NSError *))failure;
-
-/**
  * Fetch JS bundle without any side effects or interaction with the timer.
  */
 - (void)fetchJSBundleWithManifest:(NSDictionary *)manifest
@@ -28,4 +23,3 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
-

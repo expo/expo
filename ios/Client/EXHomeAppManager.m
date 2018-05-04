@@ -2,6 +2,7 @@
 #import "EXBuildConstants.h"
 #import "EXHomeAppManager.h"
 #import "EXKernel.h"
+#import "EXKernelAppFetcher.h"
 #import "EXKernelAppLoader.h"
 #import "EXKernelLinkingManager.h"
 #import "EXHomeModule.h"
@@ -134,12 +135,12 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
   }
 }
 
-- (NSString *)bundleResourceNameForAppLoader:(__unused EXKernelAppLoader *)appLoader
+- (NSString *)bundleResourceNameForAppFetcher:(__unused EXKernelAppFetcher *)appFetcher withManifest:(nonnull __unused NSDictionary *)manifest
 {
   return kEXHomeBundleResourceName;
 }
 
-- (BOOL)appLoaderShouldInvalidateBundleCache:(__unused EXKernelAppLoader *)appLoader
+- (BOOL)appFetcherShouldInvalidateBundleCache:(__unused EXKernelAppFetcher *)appFetcher
 {
   // if crashlytics shows that we're recovering from a native crash, invalidate any downloaded home cache.
   BOOL shouldClearKernelCache = [[NSUserDefaults standardUserDefaults] boolForKey:kEXKernelClearJSCacheUserDefaultsKey];

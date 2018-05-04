@@ -12,6 +12,7 @@ FOUNDATION_EXPORT NSString * const kEXShellManifestResourceName;
 
 @property (nonatomic, readonly) BOOL isShell;
 @property (nonatomic, readonly) BOOL isDetached;
+@property (nonatomic, readonly) BOOL isLocalDetach;
 
 @property (nonatomic, readonly) NSString *shellManifestUrl;
 @property (nonatomic, readonly) NSString *urlScheme;
