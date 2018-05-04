@@ -53,10 +53,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
 #endif
 }
 
-
-#pragma mark internal
-
-- (BOOL)_isLocalDetach
+- (BOOL)isLocalDetach
 {
 #if DEBUG
   return self.isDetached;
@@ -64,6 +61,9 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
   return NO;
 #endif
 }
+
+
+#pragma mark internal
 
 - (void)_reset
 {
@@ -97,7 +97,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
       if (_shellManifestUrl) {
         [allManifestUrls addObject:_shellManifestUrl];
       }
-      if (self._isLocalDetach) {
+      if (self.isLocalDetach) {
         // local detach development: point shell manifest url at local development url
         [self _loadDetachedDevelopmentUrl:expoKitDevelopmentUrl fallbackToShellConfig:shellConfig];
         if (_shellManifestUrl) {

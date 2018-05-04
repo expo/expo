@@ -2,6 +2,9 @@
 
 #import <Foundation/Foundation.h>
 #import "EXCachedResource.h"
+#import "EXKernelAppFetcher.h"
+#import "EXKernelAppFetcherDevelopmentMode.h"
+#import "EXKernelAppFetcherWithTimeout.h"
 
 @class EXKernelAppRecord;
 @class EXKernelAppLoader;
@@ -17,13 +20,6 @@ typedef enum EXKernelAppLoaderStatus {
   kEXKernelAppLoaderStatusError,
 } EXKernelAppLoaderStatus;
 
-@protocol EXKernelAppLoaderDataSource <NSObject>
-
-- (NSString *)bundleResourceNameForAppLoader:(EXKernelAppLoader *)appLoader;
-- (BOOL)appLoaderShouldInvalidateBundleCache:(EXKernelAppLoader *)appLoader;
-
-@end
-
 @protocol EXKernelAppLoaderDelegate <NSObject>
 
 - (void)appLoader:(EXKernelAppLoader *)appLoader didLoadOptimisticManifest:(NSDictionary *)manifest;
@@ -34,7 +30,7 @@ typedef enum EXKernelAppLoaderStatus {
 
 @end
 
-@interface EXKernelAppLoader : NSObject
+@interface EXKernelAppLoader : NSObject <EXKernelAppFetcherDelegate, EXKernelAppFetcherDevelopmentModeDelegate, EXKernelAppFetcherWithTimeoutDelegate, EXKernelAppFetcherCacheDataSource>
 
 @property (nonatomic, readonly) NSURL *manifestUrl;
 @property (nonatomic, readonly) NSDictionary * _Nullable manifest; // possibly optimistic
@@ -42,7 +38,7 @@ typedef enum EXKernelAppLoaderStatus {
 @property (nonatomic, readonly) EXKernelAppLoaderStatus status;
 
 @property (nonatomic, weak) id<EXKernelAppLoaderDelegate> delegate;
-@property (nonatomic, weak) id<EXKernelAppLoaderDataSource> dataSource;
+@property (nonatomic, weak) id<EXKernelAppFetcherDataSource> dataSource;
 
 - (instancetype)initWithManifestUrl:(NSURL *)url;
 - (instancetype)initWithLocalManifest:(NSDictionary * _Nonnull)manifest;
@@ -67,6 +63,11 @@ typedef enum EXKernelAppLoaderStatus {
  *  via reload, live reload, etc.
  */
 - (void)forceBundleReload;
+
+/**
+ * Fetch manifest without any side effects or interaction with the timer.
+ */
+- (void)fetchManifestWithCacheBehavior:(EXCachedResourceBehavior)cacheBehavior success:(void (^)(NSDictionary *))success failure:(void (^)(NSError *))failure;
 
 @end
 
