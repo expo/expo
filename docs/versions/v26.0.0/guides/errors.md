@@ -16,7 +16,7 @@ Expo can also report custom information back to you after your app reloads. If y
 
 ## Tracking JS Errors
 
-We recommend using [Sentry](https://sentry.io/for/javascript/) to track JS errors in production.
+We recommend using [Sentry](../guides/using-sentry) to track JS errors in production and configuring our post-publish hook to keep your source maps up to date.
 
 ## What about Native Errors?
 
@@ -26,4 +26,4 @@ Nonetheless, if you really want native crash logs and are deploying your app as 
 
 For iOS, right now we don't expose a way for you to see native crash logs from your Expo app. This is because we don't build iOS native code on demand, which would be a requirement for uploading your debug symbols to Fabric (or a similar service).
 
-`*` There are a few circumstances where it's possible to crash native code by writing bad JS. Usually these are in areas where it would be performance-prohibitive to add native validation to your code, e.g. the part of the React Native bridge that converts JS objects into typed native values. If you encounter an explicable native crash, double check that your parameters are of the right type.
+`*` There are a few circumstances where it's possible to crash native code by writing bad JS. Usually these are in areas where it would be performance-prohibitive to add native validation to your code, e.g. the part of the React Native bridge that converts JS objects into typed native values. If you encounter an inexplicable native crash, double check that your parameters are of the right type.
