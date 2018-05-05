@@ -51,7 +51,7 @@ import expo.core.ExpoMethod;
 
     for (ExportedModule exportedModule : exportedModules) {
       String moduleName = exportedModule.getName();
-      Map<String, Method> exportedMethodsMap = createExportedMethodsMap(exportedModule);
+      Map<String, Method> exportedMethodsMap = exportedModule.getExportedMethods();
 
       mModulesMap.put(moduleName, exportedModule);
       mExportedMethodsMap.put(moduleName, exportedMethodsMap);
@@ -185,41 +185,6 @@ import expo.core.ExpoMethod;
       }
     }
     return nativeArguments;
-  }
-
-
-  /**
-   * Creates a String-keyed map of methods exported from {@link ExportedModule},
-   * i. e. methods annotated with {@link ExpoMethod}, which should be available in JS-land.
-   */
-  private static Map<String, Method> createExportedMethodsMap(ExportedModule exportedModule) {
-    String moduleName = exportedModule.getName();
-    Map<String, Method> exportedMethodsMap = new HashMap<>();
-    Method[] declaredMethodsArray = exportedModule.getClass().getDeclaredMethods();
-
-    for (Method method : declaredMethodsArray) {
-      if (method.getAnnotation(ExpoMethod.class) != null) {
-        String methodName = method.getName();
-        Class<?>[] methodParameterTypes = method.getParameterTypes();
-        Class<?> lastParameterClass = methodParameterTypes[methodParameterTypes.length - 1];
-
-        if (lastParameterClass != expo.core.Promise.class) {
-          throw new IllegalArgumentException(
-            "Last argument of method " + methodName + " of Java Module " + moduleName + " does not expect a Promise"
-          );
-        }
-
-        if (exportedMethodsMap.containsKey(methodName)) {
-          throw new IllegalArgumentException(
-            "Java Module " + moduleName + " method name already registered: " + methodName + "."
-          );
-        }
-
-        exportedMethodsMap.put(methodName, method);
-      }
-    }
-
-    return exportedMethodsMap;
   }
 
   /**
