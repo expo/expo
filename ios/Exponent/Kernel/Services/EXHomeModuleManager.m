@@ -2,7 +2,7 @@
 
 #import "EXFileDownloader.h"
 #import "EXKernel.h"
-#import "EXKernelAppLoader.h"
+#import "EXAppLoader.h"
 #import "EXKernelDevKeyCommands.h"
 #import "EXKernelDevMotionHandler.h"
 #import "EXKernelLinkingManager.h"

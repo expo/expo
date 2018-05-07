@@ -1,7 +1,7 @@
 
 #import "EXMenuViewController.h"
 #import "EXKernel.h"
-#import "EXKernelAppLoader.h"
+#import "EXAppLoader.h"
 #import "EXKernelAppRegistry.h"
 #import "EXReactAppManager.h"
 #import "EXUtil.h"

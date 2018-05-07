@@ -1,13 +1,13 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXKernelAppFetcherDevelopmentMode.h"
-#import "EXKernelAppLoader.h"
+#import "EXAppFetcherCacheOnly.h"
+#import "EXAppLoader.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@implementation EXKernelAppFetcherDevelopmentMode
+@implementation EXAppFetcherCacheOnly
 
-- (instancetype)initWithAppLoader:(EXKernelAppLoader *)appLoader manifest:(NSDictionary *)manifest;
+- (instancetype)initWithAppLoader:(EXAppLoader *)appLoader manifest:(NSDictionary *)manifest;
 {
   if (self = [super initWithAppLoader:appLoader]) {
     self.manifest = manifest;
@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
   if (self.manifest) {
     [self startWithManifest];
   } else {
-    [self.appLoader fetchManifestWithCacheBehavior:EXCachedResourceNoCache success:^(NSDictionary * _Nonnull manifest) {
+    [self.appLoader fetchManifestWithCacheBehavior:EXCachedResourceOnlyCache success:^(NSDictionary * _Nonnull manifest) {
       self.manifest = manifest;
       [self startWithManifest];
     } failure:^(NSError * _Nonnull error) {
@@ -32,22 +32,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)startWithManifest
 {
   [self.delegate appFetcher:self didLoadOptimisticManifest:self.manifest];
+  [self _fetchJSBundle];
 }
 
-- (void)forceBundleReload
-{
-  if (self.bundle) {
-    self.bundle = nil;
-  }
-  [self _fetchRemoteJSBundle];
-}
-
-- (void)_fetchRemoteJSBundle
+- (void)_fetchJSBundle
 {
   __weak typeof(self) weakSelf = self;
-  [self fetchJSBundleWithManifest:self.manifest cacheBehavior:EXCachedResourceNoCache timeoutInterval:kEXJSBundleTimeout progress:^(EXLoadingProgress * _Nonnull progress) {
-    [self.developmentModeDelegate appFetcher:self didLoadBundleWithProgress:progress];
-  } success:^(NSData * _Nonnull data) {
+  [self fetchJSBundleWithManifest:self.manifest cacheBehavior:EXCachedResourceOnlyCache timeoutInterval:kEXJSBundleTimeout progress:nil success:^(NSData * _Nonnull data) {
     __strong typeof(weakSelf) strongSelf = weakSelf;
     if (strongSelf) {
       strongSelf.bundle = data;

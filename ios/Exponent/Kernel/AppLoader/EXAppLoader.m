@@ -3,11 +3,11 @@
 #import "EXErrorRecoveryManager.h"
 #import "EXFileDownloader.h"
 #import "EXKernel.h"
-#import "EXKernelAppFetcher.h"
-#import "EXKernelAppFetcherDevelopmentMode.h"
-#import "EXKernelAppFetcherCacheOnly.h"
-#import "EXKernelAppFetcherWithTimeout.h"
-#import "EXKernelAppLoader+Updates.h"
+#import "EXAppFetcher.h"
+#import "EXAppFetcherDevelopmentMode.h"
+#import "EXAppFetcherCacheOnly.h"
+#import "EXAppFetcherWithTimeout.h"
+#import "EXAppLoader+Updates.h"
 #import "EXKernelAppRecord.h"
 #import "EXKernelAppRegistry.h"
 #import "EXKernelLinkingManager.h"
@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 int EX_DEFAULT_TIMEOUT_LENGTH = 30000;
 NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
-@interface EXKernelAppLoader ()
+@interface EXAppLoader ()
 
 @property (nonatomic, strong) NSURL * _Nullable manifestUrl;
 @property (nonatomic, strong) NSDictionary * _Nullable localManifest; // used by Home. TODO: ben: clean up
@@ -30,7 +30,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 @property (nonatomic, strong) NSDictionary * _Nullable confirmedManifest; // manifest that is actually being used
 @property (nonatomic, strong) NSDictionary * _Nullable cachedManifest; // manifest that is cached and we definitely have, may fall back to it
 
-@property (nonatomic, strong) EXKernelAppFetcher * _Nullable appFetcher;
+@property (nonatomic, strong) EXAppFetcher * _Nullable appFetcher;
 @property (nonatomic, strong) NSError * _Nullable error;
 
 @property (nonatomic, assign) BOOL hasFinished;
@@ -38,13 +38,13 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
 @end
 
-@implementation EXKernelAppLoader
+@implementation EXAppLoader
 
 - (instancetype)initWithManifestUrl:(NSURL *)url
 {
   if (self = [super init]) {
     _manifestUrl = url;
-    _httpManifestUrl = [EXKernelAppLoader _httpUrlFromManifestUrl:_manifestUrl];
+    _httpManifestUrl = [EXAppLoader _httpUrlFromManifestUrl:_manifestUrl];
   }
   return self;
 }
@@ -69,16 +69,16 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   _shouldUseCacheOnly = NO;
 }
 
-- (EXKernelAppLoaderStatus)status
+- (EXAppLoaderStatus)status
 {
   if (_error || (_appFetcher && _appFetcher.error)) {
-    return kEXKernelAppLoaderStatusError;
+    return kEXAppLoaderStatusError;
   } else if (_appFetcher && _appFetcher.bundle && _confirmedManifest) {
-    return kEXKernelAppLoaderStatusHasManifestAndBundle;
+    return kEXAppLoaderStatusHasManifestAndBundle;
   } else if (_cachedManifest || (_appFetcher && _appFetcher.manifest)) {
-    return kEXKernelAppLoaderStatusHasManifest;
+    return kEXAppLoaderStatusHasManifest;
   }
-  return kEXKernelAppLoaderStatusNew;
+  return kEXAppLoaderStatusNew;
 }
 
 - (NSDictionary * _Nullable)manifest
@@ -106,13 +106,13 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
 - (void)forceBundleReload
 {
-  if (self.status == kEXKernelAppLoaderStatusNew) {
+  if (self.status == kEXAppLoaderStatusNew) {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                    reason:@"Tried to load a bundle from an AppLoader with no manifest."
                                  userInfo:@{}];
   }
-  RCTAssert([_appFetcher isKindOfClass:[EXKernelAppFetcherDevelopmentMode class]], @"Tried to force a bundle reload on a non-development bundle");
-  [(EXKernelAppFetcherDevelopmentMode *)_appFetcher forceBundleReload];
+  RCTAssert([_appFetcher isKindOfClass:[EXAppFetcherDevelopmentMode class]], @"Tried to force a bundle reload on a non-development bundle");
+  [(EXAppFetcherDevelopmentMode *)_appFetcher forceBundleReload];
 }
 
 #pragma mark - public
@@ -173,7 +173,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   // if we're in dev mode, don't try loading cached manifest
   if ([_httpManifestUrl.host isEqualToString:@"localhost"] || ([EXShellManager sharedInstance].isShell && [EXShellManager sharedInstance].isLocalDetach)) {
     // we can't pre-detect if this person is using a developer tool, but using localhost is a pretty solid indicator.
-    [self _startAppFetcher:[[EXKernelAppFetcherDevelopmentMode alloc] initWithAppLoader:self]];
+    [self _startAppFetcher:[[EXAppFetcherDevelopmentMode alloc] initWithAppLoader:self]];
   } else {
     [self _fetchCachedManifest];
   }
@@ -185,7 +185,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
     _cachedManifest = cachedManifest;
     [self _fetchBundleWithManifest:cachedManifest];
   } failure:^(NSError * error) {
-    [self _startAppFetcher:[[EXKernelAppFetcherWithTimeout alloc] initWithAppLoader:self timeoutLengthInMs:EX_DEFAULT_TIMEOUT_LENGTH]];
+    [self _startAppFetcher:[[EXAppFetcherWithTimeout alloc] initWithAppLoader:self timeoutLengthInMs:EX_DEFAULT_TIMEOUT_LENGTH]];
   }];
 }
 
@@ -195,8 +195,8 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   int fallbackToCacheTimeout = EX_DEFAULT_TIMEOUT_LENGTH;
 
   // in case check for dev mode failed before, check again
-  if ([EXKernelAppFetcher areDevToolsEnabledWithManifest:manifest]) {
-    [self _startAppFetcher:[[EXKernelAppFetcherDevelopmentMode alloc] initWithAppLoader:self]];
+  if ([EXAppFetcher areDevToolsEnabledWithManifest:manifest]) {
+    [self _startAppFetcher:[[EXAppFetcherDevelopmentMode alloc] initWithAppLoader:self]];
     return;
   }
 
@@ -230,7 +230,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
   // if this experience id encountered a loading error before,
   // we should always check for an update, even if the manifest says not to
-  if ([[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:[EXKernelAppFetcher experienceIdWithManifest:manifest]]) {
+  if ([[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:[EXAppFetcher experienceIdWithManifest:manifest]]) {
     shouldCheckForUpdate = YES;
   }
 
@@ -241,22 +241,22 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   }
 
   if (shouldCheckForUpdate) {
-    [self _startAppFetcher:[[EXKernelAppFetcherWithTimeout alloc] initWithAppLoader:self timeoutLengthInMs:fallbackToCacheTimeout]];
+    [self _startAppFetcher:[[EXAppFetcherWithTimeout alloc] initWithAppLoader:self timeoutLengthInMs:fallbackToCacheTimeout]];
   } else {
-    [self _startAppFetcher:[[EXKernelAppFetcherCacheOnly alloc] initWithAppLoader:self manifest:manifest]];
+    [self _startAppFetcher:[[EXAppFetcherCacheOnly alloc] initWithAppLoader:self manifest:manifest]];
   }
 }
 
-- (void)_startAppFetcher:(EXKernelAppFetcher *)appFetcher
+- (void)_startAppFetcher:(EXAppFetcher *)appFetcher
 {
   _appFetcher = appFetcher;
   _appFetcher.delegate = self;
   _appFetcher.dataSource = _dataSource;
   _appFetcher.cacheDataSource = self;
-  if ([_appFetcher isKindOfClass:[EXKernelAppFetcherDevelopmentMode class]]) {
-    ((EXKernelAppFetcherDevelopmentMode *)_appFetcher).developmentModeDelegate = self;
-  } else if ([_appFetcher isKindOfClass:[EXKernelAppFetcherWithTimeout class]]) {
-    ((EXKernelAppFetcherWithTimeout *)_appFetcher).withTimeoutDelegate = self;
+  if ([_appFetcher isKindOfClass:[EXAppFetcherDevelopmentMode class]]) {
+    ((EXAppFetcherDevelopmentMode *)_appFetcher).developmentModeDelegate = self;
+  } else if ([_appFetcher isKindOfClass:[EXAppFetcherWithTimeout class]]) {
+    ((EXAppFetcherWithTimeout *)_appFetcher).withTimeoutDelegate = self;
   }
   [_appFetcher start];
 }
@@ -269,9 +269,9 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   }
 }
 
-#pragma mark - EXKernelAppFetcherCacheDataSource
+#pragma mark - EXAppFetcherCacheDataSource
 
-- (BOOL)isCacheUpToDateWithAppFetcher:(EXKernelAppFetcher *)appFetcher
+- (BOOL)isCacheUpToDateWithAppFetcher:(EXAppFetcher *)appFetcher
 {
   if (_localManifest) {
     // local manifest won't give us sufficient information to tell
@@ -286,21 +286,21 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   : NO;
 }
 
-#pragma mark - EXKernelAppFetcherDelegate
+#pragma mark - EXAppFetcherDelegate
 
-- (void)appFetcher:(EXKernelAppFetcher *)appFetcher didSwitchToAppFetcher:(EXKernelAppFetcher *)newAppFetcher
+- (void)appFetcher:(EXAppFetcher *)appFetcher didSwitchToAppFetcher:(EXAppFetcher *)newAppFetcher
 {
   [self _startAppFetcher:newAppFetcher];
 }
 
-- (void)appFetcher:(EXKernelAppFetcher *)appFetcher didLoadOptimisticManifest:(NSDictionary *)manifest
+- (void)appFetcher:(EXAppFetcher *)appFetcher didLoadOptimisticManifest:(NSDictionary *)manifest
 {
   if (_delegate) {
     [_delegate appLoader:self didLoadOptimisticManifest:manifest];
   }
 }
 
-- (void)appFetcher:(EXKernelAppFetcher *)appFetcher didFinishLoadingManifest:(NSDictionary *)manifest bundle:(NSData *)bundle
+- (void)appFetcher:(EXAppFetcher *)appFetcher didFinishLoadingManifest:(NSDictionary *)manifest bundle:(NSData *)bundle
 {
   _confirmedManifest = manifest;
   if (_delegate) {
@@ -308,7 +308,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   }
 }
 
-- (void)appFetcher:(EXKernelAppFetcher *)appFetcher didFailWithError:(NSError *)error
+- (void)appFetcher:(EXAppFetcher *)appFetcher didFailWithError:(NSError *)error
 {
   _error = error;
   _appFetcher = nil;
@@ -317,18 +317,18 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   }
 }
 
-#pragma mark - EXKernelAppFetcherDevelopmentModeDelegate
+#pragma mark - EXAppFetcherDevelopmentModeDelegate
 
-- (void)appFetcher:(EXKernelAppFetcher *)appFetcher didLoadBundleWithProgress:(EXLoadingProgress *)progress
+- (void)appFetcher:(EXAppFetcher *)appFetcher didLoadBundleWithProgress:(EXLoadingProgress *)progress
 {
   if (_delegate) {
     [_delegate appLoader:self didLoadBundleWithProgress:progress];
   }
 }
 
-#pragma mark - EXKernelAppFetcherWithTimeoutDelegate
+#pragma mark - EXAppFetcherWithTimeoutDelegate
 
-- (void)appFetcher:(EXKernelAppFetcher *)appFetcher didResolveUpdatedBundleWithManifest:(NSDictionary * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error
+- (void)appFetcher:(EXAppFetcher *)appFetcher didResolveUpdatedBundleWithManifest:(NSDictionary * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error
 {
   if (_delegate) {
     [_delegate appLoader:self didResolveUpdatedBundleWithManifest:manifest isFromCache:isFromCache error:error];

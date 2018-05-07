@@ -1,13 +1,13 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import "EXKernelAppFetcher.h"
+#import "EXAppFetcher.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXKernelAppFetcher ()
+@interface EXAppFetcher ()
 
-@property (nonatomic, weak) EXKernelAppLoader *appLoader;
+@property (nonatomic, weak) EXAppLoader *appLoader;
 
 @property (nonatomic, strong) NSDictionary * _Nullable manifest;
 @property (nonatomic, strong) NSData * _Nullable bundle;

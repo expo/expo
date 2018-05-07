@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXKernelAppLoader.h"
+#import "EXAppLoader.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Private header that should only be used by EXUpdatesManager kernel service
  */
 
-@interface EXKernelAppLoader ()
+@interface EXAppLoader ()
 
 /**
  * Fetch JS bundle without any side effects or interaction with the timer.
