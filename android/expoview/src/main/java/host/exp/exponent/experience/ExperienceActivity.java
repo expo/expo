@@ -433,7 +433,11 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       notificationObject = options.notificationObject;
     }
 
-    if (mIntentUri == null) {
+    // if we have an embedded initial url, we never need any part of this in the initial url
+    // passed to the JS, so we check for that and filter it out here.
+    // this can happen in dev mode on a detached app, for example, because the intent will have
+    // a url like customscheme://localhost:19000 but we don't care about the localhost:19000 part.
+    if (mIntentUri == null || mIntentUri.equals(Constants.INITIAL_URL)) {
       if (Constants.SHELL_APP_SCHEME != null) {
         mIntentUri = Constants.SHELL_APP_SCHEME + "://";
       } else {
