@@ -107,6 +107,7 @@
       android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
       android:theme="@style/Theme.Exponent.Splash"
       android:windowSoftInputMode="adjustResize">
+      <!-- ADD DETACH SCHEME HERE -->
       <!-- ADD DETACH INTENT FILTERS HERE -->
     </activity>
 
