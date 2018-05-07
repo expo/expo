@@ -3,7 +3,7 @@
 #import "EXBuildConstants.h"
 #import "EXErrorRecoveryManager.h"
 #import "EXKernel.h"
-#import "EXKernelAppLoader.h"
+#import "EXAppLoader.h"
 #import "EXKernelDevKeyCommands.h"
 #import "EXKernelLinkingManager.h"
 #import "EXKernelServiceRegistry.h"
@@ -167,7 +167,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 - (BOOL)isReadyToLoad
 {
   if (_appRecord) {
-    return (_appRecord.appLoader.status == kEXKernelAppLoaderStatusHasManifest || _appRecord.appLoader.status == kEXKernelAppLoaderStatusHasManifestAndBundle);
+    return (_appRecord.appLoader.status == kEXAppLoaderStatusHasManifest || _appRecord.appLoader.status == kEXAppLoaderStatusHasManifestAndBundle);
   }
   return NO;
 }
@@ -187,9 +187,9 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   [_versionManager bridgeDidBackground];
 }
 
-#pragma mark - EXKernelAppFetcherDataSource
+#pragma mark - EXAppFetcherDataSource
 
-- (NSString *)bundleResourceNameForAppFetcher:(EXKernelAppFetcher *)appFetcher withManifest:(nonnull NSDictionary *)manifest
+- (NSString *)bundleResourceNameForAppFetcher:(EXAppFetcher *)appFetcher withManifest:(nonnull NSDictionary *)manifest
 {
   if ([EXShellManager sharedInstance].isShell) {
     NSLog(@"Standalone bundle remote url is %@", [EXShellManager sharedInstance].shellManifestUrl);
@@ -199,7 +199,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   }
 }
 
-- (BOOL)appFetcherShouldInvalidateBundleCache:(EXKernelAppFetcher *)appFetcher
+- (BOOL)appFetcherShouldInvalidateBundleCache:(EXAppFetcher *)appFetcher
 {
   return NO;
 }
@@ -223,7 +223,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   }
   
   _loadCallback = loadCallback;
-  if (_appRecord.appLoader.status == kEXKernelAppLoaderStatusHasManifestAndBundle) {
+  if (_appRecord.appLoader.status == kEXAppLoaderStatusHasManifestAndBundle) {
     // finish loading immediately (app loader won't call this since it's already done)
     [self appLoaderFinished];
   } else {

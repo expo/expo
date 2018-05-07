@@ -8,7 +8,7 @@
 #import "EXHomeAppManager.h"
 #import "EXHomeDiagnosticsViewController.h"
 #import "EXKernel.h"
-#import "EXKernelAppLoader.h"
+#import "EXAppLoader.h"
 #import "EXKernelAppRecord.h"
 #import "EXKernelAppRegistry.h"
 #import "EXKernelDevKeyCommands.h"
@@ -71,7 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)createRootAppAndMakeVisible
 {
   EXHomeAppManager *homeAppManager = [[EXHomeAppManager alloc] init];
-  EXKernelAppLoader *homeAppLoader = [[EXKernelAppLoader alloc] initWithLocalManifest:[EXHomeAppManager bundledHomeManifest]];
+  EXAppLoader *homeAppLoader = [[EXAppLoader alloc] initWithLocalManifest:[EXHomeAppManager bundledHomeManifest]];
   EXKernelAppRecord *homeAppRecord = [[EXKernelAppRecord alloc] initWithAppLoader:homeAppLoader appManager:homeAppManager];
   [[EXKernel sharedInstance].appRegistry registerHomeAppRecord:homeAppRecord];
   [self moveAppToVisible:homeAppRecord];

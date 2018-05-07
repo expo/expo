@@ -10,7 +10,7 @@
 #import "EXReactAppManager.h"
 #import "EXErrorView.h"
 #import "EXKernel.h"
-#import "EXKernelAppLoader.h"
+#import "EXAppLoader.h"
 #import "EXKernelUtil.h"
 #import "EXScreenOrientationManager.h"
 #import "EXShellManager.h"
@@ -32,7 +32,7 @@ const CGFloat kEXDevelopmentErrorCoolDownSeconds = 0.1;
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXAppViewController ()
-  <EXReactAppManagerUIDelegate, EXKernelAppLoaderDelegate, EXErrorViewDelegate>
+  <EXReactAppManagerUIDelegate, EXAppLoaderDelegate, EXErrorViewDelegate>
 
 @property (nonatomic, assign) BOOL isLoading;
 @property (nonatomic, assign) BOOL isBridgeAlreadyLoading;
@@ -184,9 +184,9 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-#pragma mark - EXKernelAppLoaderDelegate
+#pragma mark - EXAppLoaderDelegate
 
-- (void)appLoader:(EXKernelAppLoader *)appLoader didLoadOptimisticManifest:(NSDictionary *)manifest
+- (void)appLoader:(EXAppLoader *)appLoader didLoadOptimisticManifest:(NSDictionary *)manifest
 {
   [self _whenManifestIsValidToOpen:manifest performBlock:^{
     if ([EXKernel sharedInstance].browserController) {
@@ -196,14 +196,14 @@ NS_ASSUME_NONNULL_BEGIN
   }];
 }
 
-- (void)appLoader:(EXKernelAppLoader *)appLoader didLoadBundleWithProgress:(EXLoadingProgress *)progress
+- (void)appLoader:(EXAppLoader *)appLoader didLoadBundleWithProgress:(EXLoadingProgress *)progress
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     [_loadingView updateStatusWithProgress:progress];
   });
 }
 
-- (void)appLoader:(EXKernelAppLoader *)appLoader didFinishLoadingManifest:(NSDictionary *)manifest bundle:(NSData *)data
+- (void)appLoader:(EXAppLoader *)appLoader didFinishLoadingManifest:(NSDictionary *)manifest bundle:(NSData *)data
 {
   [self _whenManifestIsValidToOpen:manifest performBlock:^{
     [self _rebuildBridgeWithLoadingViewManifest:manifest];
@@ -213,7 +213,7 @@ NS_ASSUME_NONNULL_BEGIN
   }];
 }
 
-- (void)appLoader:(EXKernelAppLoader *)appLoader didFailWithError:(NSError *)error
+- (void)appLoader:(EXAppLoader *)appLoader didFailWithError:(NSError *)error
 {
   if (_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {
     [_appRecord.appManager appLoaderFailedWithError:error];
@@ -221,7 +221,7 @@ NS_ASSUME_NONNULL_BEGIN
   [self maybeShowError:error];
 }
 
-- (void)appLoader:(EXKernelAppLoader *)appLoader didResolveUpdatedBundleWithManifest:(NSDictionary * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error
+- (void)appLoader:(EXAppLoader *)appLoader didResolveUpdatedBundleWithManifest:(NSDictionary * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error
 {
   [[EXKernel sharedInstance].serviceRegistry.updatesManager notifyApp:_appRecord ofDownloadWithManifest:manifest isNew:!isFromCache error:error];
 }

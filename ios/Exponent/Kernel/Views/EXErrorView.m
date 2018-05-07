@@ -2,7 +2,7 @@
 
 #import "EXErrorView.h"
 #import "EXKernel.h"
-#import "EXKernelAppLoader.h"
+#import "EXAppLoader.h"
 #import "EXKernelAppRecord.h"
 #import "EXShellManager.h"
 #import "EXUtil.h"

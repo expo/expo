@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXReactAppManager.h"
-#import "EXKernelAppLoader.h"
+#import "EXAppLoader.h"
 #import "EXKernelAppRecord.h"
 #import "EXAppViewController.h"
 
@@ -16,14 +16,14 @@ NSString *kEXKernelBridgeDidBackgroundNotification = @"EXKernelBridgeDidBackgrou
 {
   if (self = [super init]) {
     _appManager = [[EXReactAppManager alloc] initWithAppRecord:self initialProps:initialProps];
-    _appLoader = [[EXKernelAppLoader alloc] initWithManifestUrl:manifestUrl];
+    _appLoader = [[EXAppLoader alloc] initWithManifestUrl:manifestUrl];
     _viewController = [[EXAppViewController alloc] initWithAppRecord:self];
     _timeCreated = [NSDate date];
   }
   return self;
 }
 
-- (instancetype)initWithAppLoader:(EXKernelAppLoader *)customAppLoader appManager:(EXReactAppManager *)customAppManager
+- (instancetype)initWithAppLoader:(EXAppLoader *)customAppLoader appManager:(EXReactAppManager *)customAppManager
 {
   if (self = [super init]) {
     _appManager = customAppManager;
@@ -37,19 +37,19 @@ NSString *kEXKernelBridgeDidBackgroundNotification = @"EXKernelBridgeDidBackgrou
 
 - (EXKernelAppRecordStatus)status
 {
-  if (_appLoader.status == kEXKernelAppLoaderStatusError) {
+  if (_appLoader.status == kEXAppLoaderStatusError) {
     return kEXKernelAppRecordStatusError;
   }
-  if (_appManager && _appManager.status == kEXReactAppManagerStatusError && _appLoader.status == kEXKernelAppLoaderStatusHasManifestAndBundle) {
+  if (_appManager && _appManager.status == kEXReactAppManagerStatusError && _appLoader.status == kEXAppLoaderStatusHasManifestAndBundle) {
     return kEXKernelAppRecordStatusError;
   }
   if (_appManager && _appManager.isBridgeRunning) {
     return kEXKernelAppRecordStatusRunning;
   }
-  if (_appLoader.status == kEXKernelAppLoaderStatusHasManifestAndBundle) {
+  if (_appLoader.status == kEXAppLoaderStatusHasManifestAndBundle) {
     return kEXKernelAppRecordStatusBridgeLoading;
   }
-  if (_appLoader.status != kEXKernelAppLoaderStatusNew) {
+  if (_appLoader.status != kEXAppLoaderStatusNew) {
     return kEXKernelAppRecordStatusDownloading;
   }
   return kEXKernelAppRecordStatusNew;

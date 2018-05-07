@@ -2,43 +2,43 @@
 
 #import <Foundation/Foundation.h>
 #import "EXCachedResource.h"
-#import "EXKernelAppFetcher.h"
-#import "EXKernelAppFetcherDevelopmentMode.h"
-#import "EXKernelAppFetcherWithTimeout.h"
+#import "EXAppFetcher.h"
+#import "EXAppFetcherDevelopmentMode.h"
+#import "EXAppFetcherWithTimeout.h"
 
 @class EXKernelAppRecord;
-@class EXKernelAppLoader;
+@class EXAppLoader;
 
 NS_ASSUME_NONNULL_BEGIN
 
 FOUNDATION_EXPORT NSTimeInterval const kEXJSBundleTimeout;
 
-typedef enum EXKernelAppLoaderStatus {
-  kEXKernelAppLoaderStatusNew,
-  kEXKernelAppLoaderStatusHasManifest, // possibly optimistic
-  kEXKernelAppLoaderStatusHasManifestAndBundle,
-  kEXKernelAppLoaderStatusError,
-} EXKernelAppLoaderStatus;
+typedef enum EXAppLoaderStatus {
+  kEXAppLoaderStatusNew,
+  kEXAppLoaderStatusHasManifest, // possibly optimistic
+  kEXAppLoaderStatusHasManifestAndBundle,
+  kEXAppLoaderStatusError,
+} EXAppLoaderStatus;
 
-@protocol EXKernelAppLoaderDelegate <NSObject>
+@protocol EXAppLoaderDelegate <NSObject>
 
-- (void)appLoader:(EXKernelAppLoader *)appLoader didLoadOptimisticManifest:(NSDictionary *)manifest;
-- (void)appLoader:(EXKernelAppLoader *)appLoader didLoadBundleWithProgress:(EXLoadingProgress *)progress;
-- (void)appLoader:(EXKernelAppLoader *)appLoader didFinishLoadingManifest:(NSDictionary *)manifest bundle:(NSData *)data;
-- (void)appLoader:(EXKernelAppLoader *)appLoader didFailWithError:(NSError *)error;
-- (void)appLoader:(EXKernelAppLoader *)appLoader didResolveUpdatedBundleWithManifest:(NSDictionary * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error;
+- (void)appLoader:(EXAppLoader *)appLoader didLoadOptimisticManifest:(NSDictionary *)manifest;
+- (void)appLoader:(EXAppLoader *)appLoader didLoadBundleWithProgress:(EXLoadingProgress *)progress;
+- (void)appLoader:(EXAppLoader *)appLoader didFinishLoadingManifest:(NSDictionary *)manifest bundle:(NSData *)data;
+- (void)appLoader:(EXAppLoader *)appLoader didFailWithError:(NSError *)error;
+- (void)appLoader:(EXAppLoader *)appLoader didResolveUpdatedBundleWithManifest:(NSDictionary * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error;
 
 @end
 
-@interface EXKernelAppLoader : NSObject <EXKernelAppFetcherDelegate, EXKernelAppFetcherDevelopmentModeDelegate, EXKernelAppFetcherWithTimeoutDelegate, EXKernelAppFetcherCacheDataSource>
+@interface EXAppLoader : NSObject <EXAppFetcherDelegate, EXAppFetcherDevelopmentModeDelegate, EXAppFetcherWithTimeoutDelegate, EXAppFetcherCacheDataSource>
 
 @property (nonatomic, readonly) NSURL *manifestUrl;
 @property (nonatomic, readonly) NSDictionary * _Nullable manifest; // possibly optimistic
 @property (nonatomic, readonly) NSData * _Nullable bundle;
-@property (nonatomic, readonly) EXKernelAppLoaderStatus status;
+@property (nonatomic, readonly) EXAppLoaderStatus status;
 
-@property (nonatomic, weak) id<EXKernelAppLoaderDelegate> delegate;
-@property (nonatomic, weak) id<EXKernelAppFetcherDataSource> dataSource;
+@property (nonatomic, weak) id<EXAppLoaderDelegate> delegate;
+@property (nonatomic, weak) id<EXAppFetcherDataSource> dataSource;
 
 - (instancetype)initWithManifestUrl:(NSURL *)url;
 - (instancetype)initWithLocalManifest:(NSDictionary * _Nonnull)manifest;
@@ -58,7 +58,7 @@ typedef enum EXKernelAppLoaderStatus {
 - (void)requestFromCache;
 
 /**
- *  Reset status to `kEXKernelAppLoaderStatusHasManifest` and fetch the bundle at the existing
+ *  Reset status to `kEXAppLoaderStatusHasManifest` and fetch the bundle at the existing
  *  manifest. This is called when RN devtools reload an AppManager/RCTBridge directly
  *  via reload, live reload, etc.
  */

@@ -4,8 +4,8 @@
 #import "EXErrorRecoveryManager.h"
 #import "EXJavaScriptResource.h"
 #import "EXKernel.h"
-#import "EXKernelAppFetcher+Private.h"
-#import "EXKernelAppLoader.h"
+#import "EXAppFetcher+Private.h"
+#import "EXAppLoader.h"
 #import "EXShellManager.h"
 #import "EXVersions.h"
 
@@ -13,9 +13,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@implementation EXKernelAppFetcher
+@implementation EXAppFetcher
 
-- (instancetype)initWithAppLoader:(EXKernelAppLoader *)appLoader
+- (instancetype)initWithAppLoader:(EXAppLoader *)appLoader
 {
   if (self = [super init]) {
     _appLoader = appLoader;
@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)start
 {
   // overridden by subclasses
-  @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Should not call EXKernelAppFetcher#start -- use a subclass instead" userInfo:nil];
+  @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Should not call EXAppFetcher#start -- use a subclass instead" userInfo:nil];
 }
 
 - (void)fetchJSBundleWithManifest:(NSDictionary *)manifest

@@ -9,7 +9,7 @@ FOUNDATION_EXPORT NSString *kEXKernelBridgeDidBackgroundNotification;
 
 @class EXAppViewController;
 @class EXReactAppManager;
-@class EXKernelAppLoader;
+@class EXAppLoader;
 
 typedef enum EXKernelAppRecordStatus {
   kEXKernelAppRecordStatusNew, // record just created
@@ -22,14 +22,14 @@ typedef enum EXKernelAppRecordStatus {
 @interface EXKernelAppRecord : NSObject
 
 - (instancetype)initWithManifestUrl:(NSURL *)manifestUrl initialProps:(nullable NSDictionary *)initialProps;
-- (instancetype)initWithAppLoader:(EXKernelAppLoader *)customAppLoader
+- (instancetype)initWithAppLoader:(EXAppLoader *)customAppLoader
                        appManager:(EXReactAppManager *)customAppManager;
 
 @property (nonatomic, readonly, assign) EXKernelAppRecordStatus status;
 @property (nonatomic, readonly, strong) NSDate *timeCreated;
 @property (nonatomic, readonly) NSString * _Nullable experienceId;
 @property (nonatomic, readonly) EXReactAppManager *appManager;
-@property (nonatomic, readonly, strong) EXKernelAppLoader *appLoader;
+@property (nonatomic, readonly, strong) EXAppLoader *appLoader;
 @property (nonatomic, readonly) EXAppViewController *viewController;
 
 /**

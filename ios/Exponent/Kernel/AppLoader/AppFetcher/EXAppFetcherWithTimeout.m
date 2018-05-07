@@ -1,12 +1,12 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXKernelAppFetcherDevelopmentMode.h"
-#import "EXKernelAppFetcherWithTimeout.h"
-#import "EXKernelAppLoader.h"
+#import "EXAppFetcherDevelopmentMode.h"
+#import "EXAppFetcherWithTimeout.h"
+#import "EXAppLoader.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXKernelAppFetcherWithTimeout ()
+@interface EXAppFetcherWithTimeout ()
 
 @property (nonatomic, strong) NSTimer * _Nullable timer;
 @property (nonatomic, assign) BOOL hasFinished;
@@ -14,9 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@implementation EXKernelAppFetcherWithTimeout
+@implementation EXAppFetcherWithTimeout
 
-- (instancetype)initWithAppLoader:(EXKernelAppLoader *)appLoader timeoutLengthInMs:(NSUInteger)timeoutLengthInMs;
+- (instancetype)initWithAppLoader:(EXAppLoader *)appLoader timeoutLengthInMs:(NSUInteger)timeoutLengthInMs;
 {
   if (self = [super initWithAppLoader:appLoader]) {
     _timeoutLengthInMs = timeoutLengthInMs;
@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
       // make sure we never time out in dev mode
       // this can happen because there is no cached manifest & therefore we fall back to default behavior w/ timer
       [self _stopTimer];
-      EXKernelAppFetcherDevelopmentMode *newFetcher = [[EXKernelAppFetcherDevelopmentMode alloc] initWithAppLoader:self.appLoader manifest:manifest];
+      EXAppFetcherDevelopmentMode *newFetcher = [[EXAppFetcherDevelopmentMode alloc] initWithAppLoader:self.appLoader manifest:manifest];
       [self.delegate appFetcher:self didSwitchToAppFetcher:newFetcher];
       return;
     }
