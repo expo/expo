@@ -5,16 +5,17 @@ import android.content.Context;
 import java.util.Collections;
 import java.util.List;
 
+import expo.core.interfaces.Module;
+import expo.core.interfaces.Package;
+import expo.core.interfaces.ViewManager;
+
 public class BasePackage implements Package {
-  public List<Module> createModules() {
+  @Override
+  public List<Module> createInternalModules(Context context) {
     return Collections.emptyList();
   }
 
   @Override
-  public List<Module> createModules(Context context) {
-    return Collections.emptyList();
-  }
-
   public List<ExportedModule> createExportedModules(Context reactContext) {
     return Collections.emptyList();
   }

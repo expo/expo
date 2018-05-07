@@ -3,7 +3,9 @@ package expo.adapters.react;
 import android.util.Log;
 import android.view.ViewGroup;
 
+import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
@@ -12,14 +14,15 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import expo.core.ExpoProp;
+import expo.core.interfaces.ExpoProp;
 import expo.core.ModuleRegistry;
-import expo.core.ModuleRegistryConsumer;
-import expo.core.ViewManager;
+import expo.core.interfaces.ModuleRegistryConsumer;
+import expo.core.interfaces.ViewManager;
 
 public class ViewManagerAdapter<M extends ViewManager<V>, V extends ViewGroup> extends ViewGroupManager<V> implements ModuleRegistryConsumer {
   private M mViewManager;
@@ -28,7 +31,6 @@ public class ViewManagerAdapter<M extends ViewManager<V>, V extends ViewGroup> e
   public ViewManagerAdapter(M viewManager) {
     mViewManager = viewManager;
     mPropertiesMethods = getPropertiesMethods();
-
   }
 
   @Override
@@ -57,13 +59,17 @@ public class ViewManagerAdapter<M extends ViewManager<V>, V extends ViewGroup> e
 
   @ReactProp(name = "proxiedProperties")
   public void setProxiedProperties(V view, ReadableMap proxiedProperties) {
-    Map<String, Object> proxiedPropertiesMap = proxiedProperties.toHashMap();
-    for (String key : proxiedPropertiesMap.keySet()) {
+    ReadableMapKeySetIterator keyIterator = proxiedProperties.keySetIterator();
+    while (keyIterator.hasNextKey()) {
+      String key = keyIterator.nextKey();
       if (!mPropertiesMethods.containsKey(key)) {
         Log.e(getName(), "No setter found for prop " + key);
       } else {
         try {
-          mPropertiesMethods.get(key).invoke(mViewManager, view, proxiedPropertiesMap.get(key));
+          Class<?> propertyParameterType = mPropertiesMethods.get(key).getParameterTypes()[1];
+          Dynamic dynamicPropertyValue = proxiedProperties.getDynamic(key);
+          Object castPropertyValue = NativeModulesProxy.getNativeArgumentForExpectedClass(dynamicPropertyValue, propertyParameterType);
+          mPropertiesMethods.get(key).invoke(mViewManager, view, castPropertyValue);
         } catch (Exception e) {
           Log.e(getName(), "Error when setting prop " + key + ". " + e.getMessage());
         }

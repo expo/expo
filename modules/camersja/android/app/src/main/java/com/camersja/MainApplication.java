@@ -7,7 +7,7 @@ import com.facebook.react.ReactApplication;
 import expo.adapters.react.ModuleRegistryWrapper;
 import expo.adapters.react.ReactAdapterPackage;
 import expo.core.ModuleRegistryBuilder;
-import expo.core.Package;
+import expo.core.interfaces.Package;
 import expo.modules.filesystem.FileSystemPackage;
 import expo.modules.facedetector.FaceDetectorPackage;
 import expo.modules.camera.CameraPackage;

@@ -5,7 +5,7 @@ import android.support.v4.util.Pools;
 
 import com.google.android.gms.vision.barcode.Barcode;
 
-import expo.core.interfaces.EventEmitter;
+import expo.core.interfaces.services.EventEmitter;
 import expo.modules.camera.CameraViewManager;
 
 public class BarCodeReadEvent extends EventEmitter.BaseEvent {

@@ -31,11 +31,11 @@ import java.util.List;
 import java.util.Map;
 
 import expo.core.ExportedModule;
-import expo.core.ExpoMethod;
+import expo.core.interfaces.ExpoMethod;
 import expo.core.ModuleRegistry;
-import expo.core.ModuleRegistryConsumer;
+import expo.core.interfaces.ModuleRegistryConsumer;
 import expo.core.Promise;
-import expo.core.interfaces.EventEmitter;
+import expo.core.interfaces.services.EventEmitter;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Headers;

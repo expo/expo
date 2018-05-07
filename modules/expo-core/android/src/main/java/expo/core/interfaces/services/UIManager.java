@@ -1,8 +1,8 @@
-package expo.core.interfaces;
+package expo.core.interfaces.services;
 
 import android.view.View;
 
-import expo.core.LifecycleEventListener;
+import expo.core.interfaces.LifecycleEventListener;
 
 public interface UIManager {
   interface UIBlock<T> {

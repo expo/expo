@@ -1,6 +1,8 @@
-package expo.core;
+package expo.core.interfaces;
 
 import java.util.List;
+
+import expo.core.ModuleRegistry;
 
 /**
  * Interface for "Expo" modules -- modules available over {@link ModuleRegistry},

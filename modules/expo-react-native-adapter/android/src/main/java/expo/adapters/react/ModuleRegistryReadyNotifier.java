@@ -2,6 +2,7 @@ package expo.adapters.react;
 
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.ReactApplicationContext;
 
 import expo.core.ModuleRegistry;
 
@@ -12,10 +13,14 @@ import expo.core.ModuleRegistry;
  * ({@link NativeModule#initialize()}) it delegates the call to {@link ModuleRegistry}.
  */
 /* package */ class ModuleRegistryReadyNotifier extends BaseJavaModule {
+  private ReactApplicationContext mContext;
   private ModuleRegistry mModuleRegistry;
+  private ModuleRegistryWrapper mModuleRegistryWrapper;
 
-  /* package */ ModuleRegistryReadyNotifier(ModuleRegistry moduleRegistry) {
+  /* package */ ModuleRegistryReadyNotifier(ReactApplicationContext context, ModuleRegistry moduleRegistry, ModuleRegistryWrapper wrapper) {
+    mContext = context;
     mModuleRegistry = moduleRegistry;
+    mModuleRegistryWrapper = wrapper;
   }
 
   @Override
@@ -26,5 +31,11 @@ import expo.core.ModuleRegistry;
   @Override
   public void initialize() {
     mModuleRegistry.initialize();
+  }
+
+  @Override
+  public void onCatalystInstanceDestroy() {
+    super.onCatalystInstanceDestroy();
+    mModuleRegistryWrapper.onCatalystInstanceDestroy(mContext);
   }
 }

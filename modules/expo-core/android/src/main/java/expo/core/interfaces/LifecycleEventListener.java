@@ -1,4 +1,4 @@
-package expo.core;
+package expo.core.interfaces;
 
 public interface LifecycleEventListener {
   void onHostResume();

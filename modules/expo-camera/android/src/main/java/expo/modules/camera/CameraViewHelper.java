@@ -18,7 +18,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-import expo.core.interfaces.EventEmitter;
+import expo.core.interfaces.services.EventEmitter;
 import expo.interfaces.facedetector.FaceDetector;
 import expo.modules.camera.events.BarCodeReadEvent;
 import expo.modules.camera.events.CameraMountErrorEvent;

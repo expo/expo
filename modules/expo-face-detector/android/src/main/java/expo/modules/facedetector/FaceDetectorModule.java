@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import expo.core.ExpoMethod;
+import expo.core.interfaces.ExpoMethod;
 import expo.core.ExportedModule;
 import expo.core.Promise;
 import expo.modules.facedetector.tasks.FileFaceDetectionAsyncTask;

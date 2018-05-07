@@ -19,11 +19,11 @@ import java.util.Map;
 import java.util.Set;
 
 import expo.core.ExportedModule;
-import expo.core.ExpoMethod;
+import expo.core.interfaces.ExpoMethod;
 import expo.core.ModuleRegistry;
-import expo.core.ModuleRegistryConsumer;
+import expo.core.interfaces.ModuleRegistryConsumer;
 import expo.core.Promise;
-import expo.core.interfaces.UIManager;
+import expo.core.interfaces.services.UIManager;
 import expo.interfaces.filesystem.FileSystem;
 import expo.interfaces.permissions.Permissions;
 import expo.modules.camera.tasks.ResolveTakenPictureAsyncTask;

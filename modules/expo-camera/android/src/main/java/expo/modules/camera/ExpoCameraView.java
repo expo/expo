@@ -25,11 +25,11 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import expo.core.LifecycleEventListener;
+import expo.core.interfaces.LifecycleEventListener;
 import expo.core.ModuleRegistry;
 import expo.core.Promise;
-import expo.core.interfaces.EventEmitter;
-import expo.core.interfaces.UIManager;
+import expo.core.interfaces.services.EventEmitter;
+import expo.core.interfaces.services.UIManager;
 import expo.interfaces.facedetector.FaceDetector;
 import expo.interfaces.facedetector.FaceDetectorProvider;
 import expo.interfaces.filesystem.FileSystem;

@@ -1,4 +1,4 @@
-package expo.core.interfaces;
+package expo.core.interfaces.services;
 
 import android.os.Bundle;
 

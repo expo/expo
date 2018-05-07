@@ -2,26 +2,24 @@ package expo.adapters.react;
 
 import android.content.Context;
 
-import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import expo.adapters.react.services.CookieManagerModule;
 import expo.adapters.react.services.EventEmitterModule;
 import expo.adapters.react.services.UIManagerModuleWrapper;
 import expo.core.BasePackage;
-import expo.core.Module;
+import expo.core.interfaces.Module;
+import expo.core.interfaces.Package;
 
 /**
- * A {@link expo.core.Package} creating modules provided with the expo-react-native-adapter package.
+ * A {@link Package} creating modules provided with the expo-react-native-adapter package.
  */
 public class ReactAdapterPackage extends BasePackage {
   @Override
-  public List<Module> createModules(Context context) {
+  public List<Module> createInternalModules(Context context) {
     // We can force-cast here, because this package will only be used in React Native context.
     ReactContext reactContext = (ReactContext) context;
     return Arrays.asList(

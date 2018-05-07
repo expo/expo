@@ -8,18 +8,16 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
-import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import expo.core.LifecycleEventListener;
-import expo.core.Module;
-import expo.core.interfaces.UIManager;
+import expo.core.interfaces.LifecycleEventListener;
+import expo.core.interfaces.Module;
+import expo.core.interfaces.services.UIManager;
 import expo.interfaces.permissions.PermissionsManager;
 import expo.interfaces.permissions.PermissionsListener;
 

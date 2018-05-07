@@ -47,6 +47,7 @@ export const requireNativeViewManager = (name, component) => {
     'children',
     ...ViewPropTypesKeys,
     ...Object.keys(UIManager[getViewManagerAdapterNameForViewName(name)].NativeProps),
+    ...Object.keys(UIManager[getViewManagerAdapterNameForViewName(name)].directEventTypes),
   ];
   class NativeComponentWrapper extends React.Component {
     render() {

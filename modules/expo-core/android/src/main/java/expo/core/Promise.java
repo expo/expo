@@ -8,7 +8,7 @@ public abstract class Promise {
 
   // Obsolete methods, however nice-to-have when porting React Native modules to Expo modules.
   public void reject(Throwable e) {
-    reject("UNKNOWN_ERROR", e);
+    reject(UNKNOWN_ERROR, e);
   }
   public void reject(String code, String message) {
     reject(code, message, null);

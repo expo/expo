@@ -8,11 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import expo.core.ExpoProp;
+import expo.core.interfaces.ExpoProp;
 import expo.core.ModuleRegistry;
-import expo.core.ModuleRegistryConsumer;
-import expo.core.ViewManager;
-import expo.core.interfaces.UIManager;
+import expo.core.interfaces.ModuleRegistryConsumer;
+import expo.core.interfaces.ViewManager;
+import expo.core.interfaces.services.UIManager;
 
 public class CameraViewManager implements ModuleRegistryConsumer, ViewManager<ExpoCameraView> {
   public enum Events {
@@ -68,8 +68,8 @@ public class CameraViewManager implements ModuleRegistryConsumer, ViewManager<Ex
   }
 
   @ExpoProp(name = "type")
-  public void setType(ExpoCameraView view, Double type) {
-    view.setFacing(type.intValue());
+  public void setType(ExpoCameraView view, int type) {
+    view.setFacing(type);
   }
 
   @ExpoProp(name = "ratio")
@@ -78,28 +78,28 @@ public class CameraViewManager implements ModuleRegistryConsumer, ViewManager<Ex
   }
 
   @ExpoProp(name = "flashMode")
-  public void setFlashMode(ExpoCameraView view, Double torchMode) {
-    view.setFlash(torchMode.intValue());
+  public void setFlashMode(ExpoCameraView view, int torchMode) {
+    view.setFlash(torchMode);
   }
 
   @ExpoProp(name = "autoFocus")
-  public void setAutoFocus(ExpoCameraView view, Boolean autoFocus) {
+  public void setAutoFocus(ExpoCameraView view, boolean autoFocus) {
     view.setAutoFocus(autoFocus);
   }
 
   @ExpoProp(name = "focusDepth")
-  public void setFocusDepth(ExpoCameraView view, Double depth) {
-    view.setFocusDepth(depth.floatValue());
+  public void setFocusDepth(ExpoCameraView view, float depth) {
+    view.setFocusDepth(depth);
   }
 
   @ExpoProp(name = "zoom")
-  public void setZoom(ExpoCameraView view, Double zoom) {
-    view.setZoom(zoom.floatValue());
+  public void setZoom(ExpoCameraView view, float zoom) {
+    view.setZoom(zoom);
   }
 
   @ExpoProp(name = "whiteBalance")
-  public void setWhiteBalance(ExpoCameraView view, Double whiteBalance) {
-    view.setWhiteBalance(whiteBalance.intValue());
+  public void setWhiteBalance(ExpoCameraView view, int whiteBalance) {
+    view.setWhiteBalance(whiteBalance);
   }
 
   @ExpoProp(name = "barCodeTypes")
@@ -115,22 +115,22 @@ public class CameraViewManager implements ModuleRegistryConsumer, ViewManager<Ex
   }
 
   @ExpoProp(name = "useCamera2Api")
-  public void setUseCamera2Api(ExpoCameraView view, Boolean useCamera2Api) {
+  public void setUseCamera2Api(ExpoCameraView view, boolean useCamera2Api) {
     view.setUsingCamera2Api(useCamera2Api);
   }
 
   @ExpoProp(name = "barCodeScannerEnabled")
-  public void setBarCodeScanning(ExpoCameraView view, Boolean barCodeScannerEnabled) {
+  public void setBarCodeScanning(ExpoCameraView view, boolean barCodeScannerEnabled) {
     view.setShouldScanBarCodes(barCodeScannerEnabled);
   }
 
   @ExpoProp(name = "faceDetectorEnabled")
-  public void setFaceDetectorEnabled(ExpoCameraView view, Boolean faceDetectorEnabled) {
+  public void setFaceDetectorEnabled(ExpoCameraView view, boolean faceDetectorEnabled) {
     view.setShouldDetectFaces(faceDetectorEnabled);
   }
 
   @ExpoProp(name = "faceDetectorSettings")
-  public void setFaceDetectorSettings(ExpoCameraView view, Map settings) {
-    view.setFaceDetectorSettings((Map<String, Object>) settings);
+  public void setFaceDetectorSettings(ExpoCameraView view, Map<String, Object> settings) {
+    view.setFaceDetectorSettings(settings);
   }
 }

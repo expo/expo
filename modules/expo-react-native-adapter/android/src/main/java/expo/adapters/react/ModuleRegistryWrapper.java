@@ -1,7 +1,5 @@
 package expo.adapters.react;
 
-import android.content.Context;
-
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -11,12 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.WeakHashMap;
 
-import expo.core.ExportedModule;
-import expo.core.Module;
 import expo.core.ModuleRegistry;
 import expo.core.ModuleRegistryBuilder;
-import expo.core.ModuleRegistryConsumer;
-import expo.core.Package;
 
 /**
  * A proxy over {@link ModuleRegistry}, compatible with React (implementing {@link ReactPackage}).
@@ -25,7 +19,7 @@ import expo.core.Package;
  */
 public class ModuleRegistryWrapper implements ReactPackage {
   private ModuleRegistryBuilder mModuleRegistryBuilder;
-  private WeakHashMap<Context, ModuleRegistry> mRegistryForContext = new WeakHashMap<>();
+  private WeakHashMap<ReactApplicationContext, ModuleRegistry> mRegistryForContext = new WeakHashMap<>();
 
   public ModuleRegistryWrapper(ModuleRegistryBuilder moduleRegistryBuilder) {
     mModuleRegistryBuilder = moduleRegistryBuilder;
@@ -34,38 +28,26 @@ public class ModuleRegistryWrapper implements ReactPackage {
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
     ModuleRegistry moduleRegistry = getOrCreateModuleRegistryForContext(reactContext);
-    List<NativeModule> nativeModulesList = new ArrayList<>();
-    List<ExportedModule> allExpoExportedModules = new ArrayList<>();
-    for (Package pkg : mModuleRegistryBuilder.getPackages()) {
-      allExpoExportedModules.addAll(pkg.createExportedModules(reactContext));
-    }
 
-    ExportedModule[] exportedModulesArray = allExpoExportedModules.toArray(new ExportedModule[allExpoExportedModules.size()]);
-    nativeModulesList.add(new NativeModulesProxy(reactContext, exportedModulesArray));
+    List<NativeModule> nativeModulesList = new ArrayList<>(2);
 
-    registerModulesInRegistry(allExpoExportedModules, moduleRegistry);
+    nativeModulesList.add(new NativeModulesProxy(reactContext, moduleRegistry));
 
     // Add listener that will notify expo.core.ModuleRegistry when all modules are ready
-    nativeModulesList.add(new ModuleRegistryReadyNotifier(moduleRegistry));
+    nativeModulesList.add(new ModuleRegistryReadyNotifier(reactContext, moduleRegistry, this));
 
     return nativeModulesList;
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
     ModuleRegistry moduleRegistry = getOrCreateModuleRegistryForContext(reactContext);
     List<ViewManager> viewManagerList = new ArrayList<>();
-    for (Package pkg : mModuleRegistryBuilder.getPackages()) {
-      if (pkg instanceof expo.adapters.react.ReactPackage) {
-        expo.adapters.react.ReactPackage reactPackage = (expo.adapters.react.ReactPackage) pkg;
-        viewManagerList.addAll(reactPackage.createViewManagers(reactContext));
-      }
 
-      for(expo.core.ViewManager viewManager : pkg.createViewManagers(reactContext)) {
-        viewManagerList.add(new ViewManagerAdapter(viewManager));
-      }
+    for (expo.core.interfaces.ViewManager viewManager : moduleRegistry.getAllViewManagers()) {
+      viewManagerList.add(new ViewManagerAdapter(viewManager));
     }
-    registerModulesInRegistry(viewManagerList, moduleRegistry);
     return viewManagerList;
   }
 
@@ -73,7 +55,7 @@ public class ModuleRegistryWrapper implements ReactPackage {
    * Get {@link ModuleRegistry} from {@link #mRegistryForContext}
    * if we already have an instance for this Context, create new one otherwise.
    */
-  private ModuleRegistry getOrCreateModuleRegistryForContext(Context context) {
+  private ModuleRegistry getOrCreateModuleRegistryForContext(final ReactApplicationContext context) {
     ModuleRegistry moduleRegistry = mRegistryForContext.get(context);
     if (moduleRegistry == null) {
       moduleRegistry = mModuleRegistryBuilder.build(context);
@@ -82,15 +64,7 @@ public class ModuleRegistryWrapper implements ReactPackage {
     return moduleRegistry;
   }
 
-  private void registerModulesInRegistry(List maybeModules, ModuleRegistry moduleRegistry) {
-    for (Object nativeModule : maybeModules) {
-      if (nativeModule instanceof ModuleRegistryConsumer) {
-        moduleRegistry.addRegistryConsumer((ModuleRegistryConsumer) nativeModule);
-      }
-
-      if (nativeModule instanceof Module) {
-        moduleRegistry.registerModule((Module) nativeModule);
-      }
-    }
+  public void onCatalystInstanceDestroy(ReactApplicationContext context) {
+    mRegistryForContext.remove(context);
   }
 }

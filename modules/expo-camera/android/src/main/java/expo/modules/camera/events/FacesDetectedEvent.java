@@ -5,7 +5,7 @@ import android.support.v4.util.Pools;
 
 import java.util.List;
 
-import expo.core.interfaces.EventEmitter;
+import expo.core.interfaces.services.EventEmitter;
 import expo.modules.camera.CameraViewManager;
 
 public class FacesDetectedEvent extends EventEmitter.BaseEvent {

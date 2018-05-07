@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import expo.core.Module;
+import expo.core.interfaces.Module;
 
 public class FileSystem implements Module, expo.interfaces.filesystem.FileSystem {
   @Override

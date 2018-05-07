@@ -8,7 +8,7 @@ import java.util.List;
 
 import expo.core.ExportedModule;
 import expo.core.BasePackage;
-import expo.core.ViewManager;
+import expo.core.interfaces.ViewManager;
 
 public class CameraPackage extends BasePackage {
   @Override

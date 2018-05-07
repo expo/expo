@@ -17,10 +17,10 @@ import java.util.Collections;
 import java.util.List;
 
 import expo.core.ExportedModule;
-import expo.core.ExpoMethod;
-import expo.core.Module;
+import expo.core.interfaces.ExpoMethod;
+import expo.core.interfaces.Module;
 import expo.core.ModuleRegistry;
-import expo.core.ModuleRegistryConsumer;
+import expo.core.interfaces.ModuleRegistryConsumer;
 import expo.core.Promise;
 import expo.interfaces.permissions.Permissions;
 import expo.interfaces.permissions.PermissionsListener;

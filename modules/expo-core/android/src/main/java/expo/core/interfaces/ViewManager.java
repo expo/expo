@@ -1,4 +1,4 @@
-package expo.core;
+package expo.core.interfaces;
 
 import android.content.Context;
 import android.view.View;
