@@ -20,7 +20,7 @@ Other than the regular `View` props for layout and touch handling, the following
 
 ### `takeSnapshotAsync(options)`
 
-Same as [GLView.takeSnapshotAsync](#expoglviewtakesnapshotasyncgloptions) but uses WebGL context that is associated with the view on which the method is called.
+Same as [GLView.takeSnapshotAsync](#expoglviewtakesnapshotasyncgl-options) but uses WebGL context that is associated with the view on which the method is called.
 
 ## Static methods
 
