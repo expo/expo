@@ -28,7 +28,7 @@
 
 @implementation ABI25_0_0EXImagePicker
 
-ABI25_0_0RCT_EXPORT_MODULE(ExponentImagePicker);
+ABI25_0_0EX_EXPORT_SCOPED_MODULE(ExponentImagePicker, PermissionsManager);
 
 @synthesize bridge = _bridge;
 
