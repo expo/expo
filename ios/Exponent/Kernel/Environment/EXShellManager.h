@@ -10,9 +10,9 @@ FOUNDATION_EXPORT NSString * const kEXShellManifestResourceName;
 
 + (instancetype)sharedInstance;
 
-@property (nonatomic, readonly) BOOL isShell;
+@property (nonatomic, readonly) BOOL isShell; // TODO: retire this property expo/universe#2460
 @property (nonatomic, readonly) BOOL isDetached;
-@property (nonatomic, readonly) BOOL isLocalDetach;
+@property (nonatomic, readonly) BOOL isDebugXCodeScheme;
 
 @property (nonatomic, readonly) NSString *shellManifestUrl;
 @property (nonatomic, readonly) NSString *urlScheme;

@@ -74,7 +74,7 @@
   [self waitForExpectations:@[ expectToDownload ] timeout:10.0];
 }
 
-#pragma mark - app loader
+#pragma mark - app loader configuration in app.json
 
 - (void)testIsDefaultUpdatesConfigUsed
 {
@@ -88,10 +88,10 @@
 - (void)testIsUpdateTimeoutConfigRespected
 {
   NSDictionary *manifest = @{
-                             @"updates": @{
-                                 @"fallbackToCacheTimeout": @1000,
-                                 }
-                             };
+    @"updates": @{
+      @"fallbackToCacheTimeout": @1000,
+    }
+  };
   EXAppLoader *appLoader = [[EXAppLoader alloc] initWithManifestUrl:[NSURL URLWithString:@"exp://exp.host/@esamelson/test-fetch-update"]];
   [appLoader _fetchBundleWithManifest:manifest];
   XCTAssert([appLoader.appFetcher isKindOfClass:[EXAppFetcherWithTimeout class]], @"AppLoader should choose to use AppFetcherWithTimeout when fetching remotely");
@@ -101,10 +101,10 @@
 - (void)testIsUpdateAutomaticallyConfigRespected
 {
   NSDictionary *manifest = @{
-                             @"updates": @{
-                                 @"checkAutomatically": @"ON_ERROR_RECOVERY"
-                                 }
-                             };
+    @"updates": @{
+      @"checkAutomatically": @"ON_ERROR_RECOVERY"
+    }
+  };
   EXAppLoader *appLoader = [[EXAppLoader alloc] initWithManifestUrl:[NSURL URLWithString:@"exp://exp.host/@esamelson/test-fetch-update"]];
   [appLoader _fetchBundleWithManifest:manifest];
   if ([EXShellManager sharedInstance].isShell) {
