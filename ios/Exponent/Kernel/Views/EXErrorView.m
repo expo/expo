@@ -193,10 +193,7 @@
 
 - (BOOL)_isDevDetached
 {
-#if DEBUG
-  return [EXShellManager sharedInstance].isDetached;
-#endif
-  return NO;
+  return [EXShellManager sharedInstance].isDetached && [EXShellManager sharedInstance].isDebugXCodeScheme;
 }
 
 @end

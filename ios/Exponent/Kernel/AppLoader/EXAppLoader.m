@@ -171,7 +171,8 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 - (void)_beginRequestWithRemoteManifest
 {
   // if we're in dev mode, don't try loading cached manifest
-  if ([_httpManifestUrl.host isEqualToString:@"localhost"] || ([EXShellManager sharedInstance].isShell && [EXShellManager sharedInstance].isLocalDetach)) {
+  if ([_httpManifestUrl.host isEqualToString:@"localhost"]
+      || ([EXShellManager sharedInstance].isShell && [EXShellManager sharedInstance].isDebugXCodeScheme)) {
     // we can't pre-detect if this person is using a developer tool, but using localhost is a pretty solid indicator.
     [self _startAppFetcher:[[EXAppFetcherDevelopmentMode alloc] initWithAppLoader:self]];
   } else {

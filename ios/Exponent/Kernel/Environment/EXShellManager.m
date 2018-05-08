@@ -29,7 +29,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
 - (id)init
 {
   if (self = [super init]) {
-    [self _loadConfig];
+    [self _loadDefaultConfig];
   }
   return self;
 }
@@ -44,47 +44,64 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
   return (_urlScheme != nil);
 }
 
-- (BOOL)isDetached
-{
-#ifdef EX_DETACHED
-  return YES;
-#else
-  return NO;
-#endif
-}
-
-- (BOOL)isLocalDetach
-{
-#if DEBUG
-  return self.isDetached;
-#else
-  return NO;
-#endif
-}
-
-
-#pragma mark internal
+#pragma mark - internal
 
 - (void)_reset
 {
   _isShell = NO;
+  _isDetached = NO;
   _shellManifestUrl = nil;
   _urlScheme = nil;
   _areRemoteUpdatesEnabled = YES;
   _allManifestUrls = @[];
+  _isDebugXCodeScheme = NO;
 }
 
-- (void)_loadConfig
+- (void)_loadDefaultConfig
 {
-  [self _reset];
-  
-  // load EXShell.plist
+  // use bundled EXShell.plist
   NSString *configPath = [[NSBundle mainBundle] pathForResource:@"EXShell" ofType:@"plist"];
   NSDictionary *shellConfig = (configPath) ? [NSDictionary dictionaryWithContentsOfFile:configPath] : [NSDictionary dictionary];
   
-  // load EXBuildConstants
+  // use ExpoKit dev url from EXBuildConstants
   NSString *expoKitDevelopmentUrl = [EXBuildConstants sharedInstance].expoKitDevelopmentUrl;
+  
+  // use bundled info.plist
+  NSDictionary *infoPlist = [[NSBundle mainBundle] infoDictionary];
+  
+  BOOL isDetached = NO;
+#ifdef EX_DETACHED
+  isDetached = YES;
+#endif
+  
+  BOOL isDebugXCodeScheme = NO;
+#if DEBUG
+  isDebugXCodeScheme = YES;
+#endif
+  
+  BOOL isUserDetach = NO;
+  if (isDetached) {
+#ifndef EX_DETACHED_SERVICE
+  isUserDetach = YES;
+#endif
+  }
+  
+  [self _loadShellConfig:shellConfig
+           withInfoPlist:infoPlist
+       withExpoKitDevUrl:expoKitDevelopmentUrl
+              isDetached:isDetached
+      isDebugXCodeScheme:isDebugXCodeScheme
+            isUserDetach:isUserDetach];
+}
 
+- (void)_loadShellConfig:(NSDictionary *)shellConfig
+           withInfoPlist:(NSDictionary *)infoPlist
+       withExpoKitDevUrl:(NSString *)expoKitDevelopmentUrl
+              isDetached:(BOOL)isDetached
+      isDebugXCodeScheme:(BOOL)isDebugScheme
+            isUserDetach:(BOOL)isUserDetach
+{
+  [self _reset];
   NSMutableArray *allManifestUrls = [NSMutableArray array];
 
   if (shellConfig) {
@@ -97,7 +114,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
       if (_shellManifestUrl) {
         [allManifestUrls addObject:_shellManifestUrl];
       }
-      if (self.isLocalDetach) {
+      if (isDetached && isDebugScheme) {
         // local detach development: point shell manifest url at local development url
         [self _loadDetachedDevelopmentUrl:expoKitDevelopmentUrl fallbackToShellConfig:shellConfig];
         if (_shellManifestUrl) {
@@ -105,7 +122,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
         }
       }
       // load standalone url scheme
-      [self _loadUrlScheme];
+      [self _loadUrlSchemeFromInfoPlist:infoPlist];
       if (!_shellManifestUrl) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                        reason:@"This app is configured to be a standalone app, but does not specify a standalone experience url."
@@ -115,7 +132,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
       // load everything else from EXShell
       [self _loadMiscShellPropertiesWithConfig:shellConfig];
 
-      [self _setAnalyticsProperties];
+      [self _setAnalyticsPropertiesWithShellManifestUrl:_shellManifestUrl isUserDetached:isUserDetach];
     }
   }
   _allManifestUrls = allManifestUrls;
@@ -149,13 +166,12 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
   }
 }
 
-- (void)_loadUrlScheme
+- (void)_loadUrlSchemeFromInfoPlist:(NSDictionary *)infoPlist
 {
-  NSDictionary *iosConfig = [[NSBundle mainBundle] infoDictionary];
-  if (iosConfig[@"CFBundleURLTypes"]) {
+  if (infoPlist[@"CFBundleURLTypes"]) {
     // if the shell app has a custom url scheme, read that.
     // this was configured when the shell app was built.
-    NSArray *urlTypes = iosConfig[@"CFBundleURLTypes"];
+    NSArray *urlTypes = infoPlist[@"CFBundleURLTypes"];
     if (urlTypes && urlTypes.count) {
       NSDictionary *urlType = urlTypes[0];
       NSArray *urlSchemes = urlType[@"CFBundleURLSchemes"];
@@ -182,14 +198,13 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
   // other shell config goes here
 }
 
-- (void)_setAnalyticsProperties
+- (void)_setAnalyticsPropertiesWithShellManifestUrl:(NSString *)shellManifestUrl
+                                     isUserDetached:(BOOL)isUserDetached
 {
-  [[EXAnalytics sharedInstance] setUserProperties:@{ @"INITIAL_URL": _shellManifestUrl }];
+  [[EXAnalytics sharedInstance] setUserProperties:@{ @"INITIAL_URL": shellManifestUrl }];
   [CrashlyticsKit setObjectValue:_shellManifestUrl forKey:@"initial_url"];
-  if (self.isDetached) {
-#ifndef EX_DETACHED_SERVICE
+  if (isUserDetached) {
     [[EXAnalytics sharedInstance] setUserProperties:@{ @"IS_DETACHED": @YES }];
-#endif
   }
 }
 
