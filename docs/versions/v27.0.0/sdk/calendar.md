@@ -48,7 +48,7 @@ Creates a new calendar on the device, allowing events to be added later and disp
     -   **allowedAttendeeTypes (_array_)** -- (Android only)
     -   **isVisible (_boolean_)** -- (Android only)
     -   **isSynced (_boolean_)** -- (Android only)
-    -   **accessLevel (_string_)** -- (Android only)
+    -   **accessLevel (_string_)** -- Required (Android only)
 
 #### Returns
 
