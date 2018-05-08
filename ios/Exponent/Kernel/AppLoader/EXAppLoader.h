@@ -11,6 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+FOUNDATION_EXPORT NSTimeInterval const kEXAppLoaderDefaultTimeout;
 FOUNDATION_EXPORT NSTimeInterval const kEXJSBundleTimeout;
 
 typedef enum EXAppLoaderStatus {

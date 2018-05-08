@@ -10,16 +10,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) NSTimer * _Nullable timer;
 @property (nonatomic, assign) BOOL hasFinished;
-@property (nonatomic, assign) NSUInteger timeoutLengthInMs;
+@property (nonatomic, assign) NSTimeInterval timeout;
 
 @end
 
 @implementation EXAppFetcherWithTimeout
 
-- (instancetype)initWithAppLoader:(EXAppLoader *)appLoader timeoutLengthInMs:(NSUInteger)timeoutLengthInMs;
+- (instancetype)initWithAppLoader:(EXAppLoader *)appLoader timeout:(NSTimeInterval)timeout;
 {
   if (self = [super initWithAppLoader:appLoader]) {
-    _timeoutLengthInMs = timeoutLengthInMs;
+    _timeout = timeout;
   }
   return self;
 }
@@ -31,8 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)start
 {
-  if (_timeoutLengthInMs > 0) {
-    _timer = [NSTimer scheduledTimerWithTimeInterval:(_timeoutLengthInMs / 1000) target:self selector:@selector(_timeOutWithTimer:) userInfo:nil repeats:NO];
+  if (_timeout > 0) {
+    _timer = [NSTimer scheduledTimerWithTimeInterval:_timeout target:self selector:@selector(_timeOutWithTimer:) userInfo:nil repeats:NO];
   } else {
     // resolve right away but continue downloading updated code in the background
     [self _finishWithError:nil];

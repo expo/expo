@@ -18,7 +18,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-int EX_DEFAULT_TIMEOUT_LENGTH = 30000;
+NSTimeInterval const kEXAppLoaderDefaultTimeout = 30;
 NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
 @interface EXAppLoader ()
@@ -185,14 +185,14 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
     _cachedManifest = cachedManifest;
     [self _fetchBundleWithManifest:cachedManifest];
   } failure:^(NSError * error) {
-    [self _startAppFetcher:[[EXAppFetcherWithTimeout alloc] initWithAppLoader:self timeoutLengthInMs:EX_DEFAULT_TIMEOUT_LENGTH]];
+    [self _startAppFetcher:[[EXAppFetcherWithTimeout alloc] initWithAppLoader:self timeout:kEXAppLoaderDefaultTimeout]];
   }];
 }
 
 - (void)_fetchBundleWithManifest:(NSDictionary *)manifest
 {
   BOOL shouldCheckForUpdate = YES;
-  int fallbackToCacheTimeout = EX_DEFAULT_TIMEOUT_LENGTH;
+  NSTimeInterval fallbackToCacheTimeout = kEXAppLoaderDefaultTimeout;
 
   // in case check for dev mode failed before, check again
   if ([EXAppFetcher areDevToolsEnabledWithManifest:manifest]) {
@@ -211,7 +211,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
     id fallbackToCacheTimeoutVal = updatesDict[@"fallbackToCacheTimeout"];
     if (fallbackToCacheTimeoutVal && [fallbackToCacheTimeoutVal isKindOfClass:[NSNumber class]]) {
-      fallbackToCacheTimeout = [(NSNumber *)fallbackToCacheTimeoutVal intValue];
+      fallbackToCacheTimeout = [(NSNumber *)fallbackToCacheTimeoutVal intValue] / 1000.0f;
     }
   } else if (ios && [ios isKindOfClass:[NSDictionary class]]) {
     NSDictionary *iosDict = (NSDictionary *)ios;
@@ -241,7 +241,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   }
 
   if (shouldCheckForUpdate) {
-    [self _startAppFetcher:[[EXAppFetcherWithTimeout alloc] initWithAppLoader:self timeoutLengthInMs:fallbackToCacheTimeout]];
+    [self _startAppFetcher:[[EXAppFetcherWithTimeout alloc] initWithAppLoader:self timeout:fallbackToCacheTimeout]];
   } else {
     [self _startAppFetcher:[[EXAppFetcherCacheOnly alloc] initWithAppLoader:self manifest:manifest]];
   }
