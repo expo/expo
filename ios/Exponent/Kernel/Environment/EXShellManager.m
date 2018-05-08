@@ -201,10 +201,12 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
 - (void)_setAnalyticsPropertiesWithShellManifestUrl:(NSString *)shellManifestUrl
                                      isUserDetached:(BOOL)isUserDetached
 {
-  [[EXAnalytics sharedInstance] setUserProperties:@{ @"INITIAL_URL": shellManifestUrl }];
-  [CrashlyticsKit setObjectValue:_shellManifestUrl forKey:@"initial_url"];
-  if (isUserDetached) {
-    [[EXAnalytics sharedInstance] setUserProperties:@{ @"IS_DETACHED": @YES }];
+  if (_testEnvironment == EXTestEnvironmentNone) {
+    [[EXAnalytics sharedInstance] setUserProperties:@{ @"INITIAL_URL": shellManifestUrl }];
+    [CrashlyticsKit setObjectValue:_shellManifestUrl forKey:@"initial_url"];
+    if (isUserDetached) {
+      [[EXAnalytics sharedInstance] setUserProperties:@{ @"IS_DETACHED": @YES }];
+    }
   }
 }
 
