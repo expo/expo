@@ -225,7 +225,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   }
 
   // only support checkAutomatically: ON_ERROR_RECOVERY in shell & detached apps
-  if (![EXKernel sharedInstance].appRegistry.standaloneAppRecord) {
+  if (![EXShellManager sharedInstance].isShell) {
     shouldCheckForUpdate = YES;
   }
 

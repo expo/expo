@@ -6,6 +6,7 @@
 #import "EXAppFetcherWithTimeout.h"
 #import "EXFileDownloader.h"
 #import "EXShellManager.h"
+#import "EXShellManagerMocks.h"
 
 #pragma mark - private/internal methods in App Loader & App Fetchers
 
@@ -25,8 +26,6 @@
 
 @interface EXAppLoaderTests : XCTestCase
 
-@property (nonatomic, strong) NSMutableURLRequest *jsBundleDownloadRequest;
-
 @end
 
 @implementation EXAppLoaderTests
@@ -35,30 +34,31 @@
 {
   [super setUp];
   
-  // mock a url request for a JS bundle
-  _jsBundleDownloadRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"https://exp.host/@exponent/home/bundle"]];
-  EXFileDownloader *downloader = [[EXFileDownloader alloc] init];
-  [downloader setHTTPHeaderFields:_jsBundleDownloadRequest];
+  if ([EXShellManager sharedInstance].testEnvironment == EXTestEnvironmentNone) {
+    [EXShellManager sharedInstance].testEnvironment = EXTestEnvironmentLocal;
+  }
 }
 
 #pragma mark - file downloader
 
 - (void)testIsExpoSDKVersionHeaderConfigured
 {
-  NSString *sdkVersionHeader = [_jsBundleDownloadRequest valueForHTTPHeaderField:@"Exponent-SDK-Version"];
+  NSURLRequest *request = [self _mockJsBundleDownloadRequest];
+  NSString *sdkVersionHeader = [request valueForHTTPHeaderField:@"Exponent-SDK-Version"];
   NSArray *sdkVersions = [sdkVersionHeader componentsSeparatedByString:@","];
   XCTAssert(sdkVersions.count > 0, @"Expo SDK version header should contain at least one comma-separated SDK version");
 }
 
 - (void)testAreOtherHeadersConfigured
 {
+  NSURLRequest *request = [self _mockJsBundleDownloadRequest];
   NSArray<NSString *> *requiredHeaderFields = @[
     @"Exponent-SDK-Version",
     @"Exponent-Platform",
     @"Exponent-Accept-Signature",
   ];
   for (NSString *header in requiredHeaderFields) {
-    NSString *headerValue = [_jsBundleDownloadRequest valueForHTTPHeaderField:header];
+    NSString *headerValue = [request valueForHTTPHeaderField:header];
     XCTAssert((headerValue != nil), @"HTTP header %@ should be set", header);
   }
 }
@@ -98,8 +98,9 @@
   XCTAssert([(EXAppFetcherWithTimeout *)appLoader.appFetcher timeout] == 1.0f, @"AppFetcherWithTimeout should have the correct user-specified timeout length");
 }
 
-- (void)testIsUpdateAutomaticallyConfigRespected
+- (void)testIsOnErrorRecoveryIgnoredInExpoClient
 {
+  [EXShellManagerMocks loadExpoClientConfig];
   NSDictionary *manifest = @{
     @"updates": @{
       @"checkAutomatically": @"ON_ERROR_RECOVERY"
@@ -107,11 +108,31 @@
   };
   EXAppLoader *appLoader = [[EXAppLoader alloc] initWithManifestUrl:[NSURL URLWithString:@"exp://exp.host/@esamelson/test-fetch-update"]];
   [appLoader _fetchBundleWithManifest:manifest];
-  if ([EXShellManager sharedInstance].isShell) {
-    XCTAssert([appLoader.appFetcher isKindOfClass:[EXAppFetcherCacheOnly class]], @"AppLoader should choose to use AppFetcherCacheOnly in a shell app with ON_ERROR_RECOVERY");
-  } else {
-    XCTAssert([appLoader.appFetcher isKindOfClass:[EXAppFetcherWithTimeout class]], @"AppLoader should ignore ON_ERROR_RECOVERY in the Expo client");
-  }
+  XCTAssert([appLoader.appFetcher isKindOfClass:[EXAppFetcherWithTimeout class]], @"AppLoader should ignore ON_ERROR_RECOVERY in the Expo client");
+}
+
+- (void)testIsOnErrorRecoveryRespectedInShellApp
+{
+  [EXShellManagerMocks loadProdServiceConfig];
+  NSDictionary *manifest = @{
+    @"updates": @{
+      @"checkAutomatically": @"ON_ERROR_RECOVERY"
+    }
+  };
+  EXAppLoader *appLoader = [[EXAppLoader alloc] initWithManifestUrl:[NSURL URLWithString:@"exp://exp.host/@esamelson/test-fetch-update"]];
+  [appLoader _fetchBundleWithManifest:manifest];
+  XCTAssert([appLoader.appFetcher isKindOfClass:[EXAppFetcherCacheOnly class]], @"AppLoader should choose to use AppFetcherCacheOnly in a shell app with ON_ERROR_RECOVERY");
+}
+
+#pragma mark - internal
+
+- (NSMutableURLRequest *)_mockJsBundleDownloadRequest
+{
+  // mock a url request for a JS bundle
+  NSMutableURLRequest *jsBundleDownloadRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"https://exp.host/@exponent/home/bundle"]];
+  EXFileDownloader *downloader = [[EXFileDownloader alloc] init];
+  [downloader setHTTPHeaderFields:jsBundleDownloadRequest];
+  return jsBundleDownloadRequest;
 }
 
 @end
