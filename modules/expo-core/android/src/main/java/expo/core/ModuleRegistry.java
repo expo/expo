@@ -3,7 +3,7 @@ package expo.core;
 import android.content.Context;
 import android.util.Log;
 
-import java.lang.reflect.Method;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,26 +20,31 @@ public class ModuleRegistry {
   private final Map<String, ViewManager> mViewManagersMap = new HashMap<>();
   private final Map<String, ExportedModule> mExportedModulesMap = new HashMap<>();
 
-  private List<ModuleRegistryConsumer> mRegistryConsumers = new ArrayList<>();
+  private List<WeakReference<ModuleRegistryConsumer>> mRegistryConsumers = new ArrayList<>();
 
-  protected ModuleRegistry(List<Package> packages, Context context) {
-    for (Package pkg : packages) {
-      for (Module module : pkg.createInternalModules(context)) {
-        registerInternalModule(module);
-      }
-
-      for (ExportedModule module : pkg.createExportedModules(context)) {
-        registerExportedModule(module);
-      }
-
-      for (ViewManager manager : pkg.createViewManagers(context)) {
-        registerViewManager(manager);
-      }
+  public ModuleRegistry(
+          Collection<Module> internalModules,
+          Collection<ExportedModule> exportedModules,
+          Collection<ViewManager> viewManagers) {
+    for (Module module : internalModules) {
+      registerInternalModule(module);
     }
 
-    addRegistryConsumers(mInternalModulesMap.values());
-    addRegistryConsumers(mViewManagersMap.values());
-    addRegistryConsumers(mExportedModulesMap.values());
+    for (ExportedModule module : exportedModules) {
+      registerExportedModule(module);
+    }
+
+    for (ViewManager manager : viewManagers) {
+      registerViewManager(manager);
+    }
+  }
+
+  public ModuleRegistry(List<Package> packages, Context context) {
+    this(
+            createInternalModules(packages, context),
+            createExportedModules(packages, context),
+            createViewManagers(packages, context)
+    );
   }
 
   /********************************************************
@@ -77,6 +82,7 @@ public class ModuleRegistry {
         Log.w("E_DUPLICATE_MOD_ALIAS", "Module map already contains a module for key " + exportedInterface + ". Dropping module " + module + ".");
       } else {
         mInternalModulesMap.put(exportedInterface, module);
+        maybeAddRegistryConsumer(module);
       }
     }
   }
@@ -88,6 +94,7 @@ public class ModuleRegistry {
       Log.w("E_DUPLICATE_MOD_ALIAS", "Exported modules map already contains a module for key " + moduleName + ". Dropping module " + module + ".");
     } else {
       mExportedModulesMap.put(moduleName, module);
+      maybeAddRegistryConsumer(module);
     }
   }
 
@@ -98,6 +105,7 @@ public class ModuleRegistry {
       Log.w("E_DUPLICATE_MOD_ALIAS", "View managers map already contains a manager for key " + managerName + ". Dropping manager " + manager + ".");
     } else {
       mViewManagersMap.put(managerName, manager);
+      maybeAddRegistryConsumer(manager);
     }
   }
 
@@ -113,14 +121,12 @@ public class ModuleRegistry {
    * all the {@link Module} instances registered.
    */
   public void addRegistryConsumer(ModuleRegistryConsumer consumer) {
-    mRegistryConsumers.add(consumer);
+    mRegistryConsumers.add(new WeakReference<>(consumer));
   }
 
-  public void addRegistryConsumers(Collection objects) {
-    for (Object maybeConsumer : objects) {
-      if (maybeConsumer instanceof ModuleRegistryConsumer) {
-        addRegistryConsumer((ModuleRegistryConsumer) maybeConsumer);
-      }
+  private void maybeAddRegistryConsumer(Object maybeConsumer) {
+    if (maybeConsumer instanceof ModuleRegistryConsumer) {
+      addRegistryConsumer((ModuleRegistryConsumer) maybeConsumer);
     }
   }
 
@@ -130,8 +136,45 @@ public class ModuleRegistry {
    * all the needed instances.
    */
   public void initialize() {
-    for (ModuleRegistryConsumer consumer : mRegistryConsumers) {
-      consumer.setModuleRegistry(this);
+    Collection<WeakReference> emptyReferences = new ArrayList<>();
+    for (WeakReference<ModuleRegistryConsumer> consumerWeakReference : mRegistryConsumers) {
+      ModuleRegistryConsumer consumer = consumerWeakReference.get();
+      if (consumer != null) {
+        consumer.setModuleRegistry(this);
+      } else {
+        emptyReferences.add(consumerWeakReference);
+      }
     }
+    mRegistryConsumers.removeAll(emptyReferences);
+  }
+
+  /********************************************************
+   *
+   *  Initializing helpers
+   *
+   *******************************************************/
+
+  public static Collection<Module> createInternalModules(Collection<Package> packages, Context context) {
+    Collection<Module> internalModules = new ArrayList<>();
+    for (Package pkg : packages) {
+      internalModules.addAll(pkg.createInternalModules(context));
+    }
+    return internalModules;
+  }
+
+  public static Collection<ExportedModule> createExportedModules(Collection<Package> packages, Context context) {
+    Collection<ExportedModule> exportedModules = new ArrayList<>();
+    for (Package pkg : packages) {
+      exportedModules.addAll(pkg.createExportedModules(context));
+    }
+    return exportedModules ;
+  }
+
+  public static Collection<ViewManager> createViewManagers(Collection<Package> packages, Context context) {
+    Collection<ViewManager> viewManagers = new ArrayList<>();
+    for (Package pkg : packages) {
+      viewManagers.addAll(pkg.createViewManagers(context));
+    }
+    return viewManagers;
   }
 }

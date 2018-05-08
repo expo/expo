@@ -3,25 +3,29 @@ package expo.adapters.react;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.WeakHashMap;
 
+import expo.adapters.react.services.UIManagerModuleWrapper;
 import expo.core.ModuleRegistry;
 import expo.core.ModuleRegistryBuilder;
 
 /**
- * A proxy over {@link ModuleRegistry}, compatible with React (implementing {@link ReactPackage}).
+ * An adapter over {@link ModuleRegistry}, compatible with React (implementing {@link ReactPackage}).
  * Provides React Native with native modules and view managers,
  * which in turn are created by packages provided by {@link ModuleRegistryBuilder}.
  */
-public class ModuleRegistryWrapper implements ReactPackage {
+public class ModuleRegistryAdapter implements ReactPackage {
   private ModuleRegistryBuilder mModuleRegistryBuilder;
-  private WeakHashMap<ReactApplicationContext, ModuleRegistry> mRegistryForContext = new WeakHashMap<>();
+  private Map<ReactApplicationContext, ModuleRegistry> mRegistryForContext = new WeakHashMap<>();
 
-  public ModuleRegistryWrapper(ModuleRegistryBuilder moduleRegistryBuilder) {
+  public ModuleRegistryAdapter(ModuleRegistryBuilder moduleRegistryBuilder) {
     mModuleRegistryBuilder = moduleRegistryBuilder;
   }
 
@@ -65,6 +69,7 @@ public class ModuleRegistryWrapper implements ReactPackage {
   }
 
   public void onCatalystInstanceDestroy(ReactApplicationContext context) {
-    mRegistryForContext.remove(context);
+    mRegistryForContext.get(context).getModule(UIManagerModuleWrapper.class).unregisterEventListeners();
+//    mRegistryForContext.remove(context);
   }
 }

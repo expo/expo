@@ -15,12 +15,12 @@ import expo.core.ModuleRegistry;
 /* package */ class ModuleRegistryReadyNotifier extends BaseJavaModule {
   private ReactApplicationContext mContext;
   private ModuleRegistry mModuleRegistry;
-  private ModuleRegistryWrapper mModuleRegistryWrapper;
+  private ModuleRegistryAdapter mModuleRegistryAdapter;
 
-  /* package */ ModuleRegistryReadyNotifier(ReactApplicationContext context, ModuleRegistry moduleRegistry, ModuleRegistryWrapper wrapper) {
+  /* package */ ModuleRegistryReadyNotifier(ReactApplicationContext context, ModuleRegistry moduleRegistry, ModuleRegistryAdapter wrapper) {
     mContext = context;
     mModuleRegistry = moduleRegistry;
-    mModuleRegistryWrapper = wrapper;
+    mModuleRegistryAdapter = wrapper;
   }
 
   @Override
@@ -36,6 +36,6 @@ import expo.core.ModuleRegistry;
   @Override
   public void onCatalystInstanceDestroy() {
     super.onCatalystInstanceDestroy();
-    mModuleRegistryWrapper.onCatalystInstanceDestroy(mContext);
+    mModuleRegistryAdapter.onCatalystInstanceDestroy(mContext);
   }
 }

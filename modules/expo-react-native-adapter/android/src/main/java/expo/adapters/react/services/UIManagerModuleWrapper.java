@@ -31,7 +31,7 @@ public class UIManagerModuleWrapper implements Module, UIManager, PermissionsMan
 
   @Override
   public List<Class> getExportedInterfaces() {
-    return Arrays.asList((Class) PermissionsManager.class, UIManager.class);
+    return Arrays.asList((Class) PermissionsManager.class, UIManager.class, UIManagerModuleWrapper.class);
   }
 
   @Override
@@ -61,35 +61,36 @@ public class UIManagerModuleWrapper implements Module, UIManager, PermissionsMan
 
   @Override
   public void registerLifecycleEventListener(final LifecycleEventListener listener) {
-    if (mReactContext instanceof ReactApplicationContext) {
-      ReactApplicationContext themedReactContext = (ReactApplicationContext) mReactContext;
-      mLifecycleListenersMap.put(listener, new com.facebook.react.bridge.LifecycleEventListener() {
-        @Override
-        public void onHostResume() {
-          listener.onHostResume();
-        }
+    mLifecycleListenersMap.put(listener, new com.facebook.react.bridge.LifecycleEventListener() {
+      @Override
+      public void onHostResume() {
+        listener.onHostResume();
+      }
 
-        @Override
-        public void onHostPause() {
-          listener.onHostPause();
-        }
+      @Override
+      public void onHostPause() {
+        listener.onHostPause();
+      }
 
-        @Override
-        public void onHostDestroy() {
-          listener.onHostDestroy();
-        }
-      });
-      themedReactContext.addLifecycleEventListener(mLifecycleListenersMap.get(listener));
-    }
+      @Override
+      public void onHostDestroy() {
+        listener.onHostDestroy();
+      }
+    });
+    mReactContext.addLifecycleEventListener(mLifecycleListenersMap.get(listener));
   }
 
   @Override
   public void unregisterLifecycleEventListener(LifecycleEventListener listener) {
-    if (mReactContext instanceof ReactApplicationContext) {
-      ReactApplicationContext themedReactContext = (ReactApplicationContext) mReactContext;
-      themedReactContext.removeLifecycleEventListener(mLifecycleListenersMap.get(listener));
-      mLifecycleListenersMap.remove(listener);
+    mReactContext.removeLifecycleEventListener(mLifecycleListenersMap.get(listener));
+    mLifecycleListenersMap.remove(listener);
+  }
+
+  public void unregisterEventListeners() {
+    for (com.facebook.react.bridge.LifecycleEventListener listener : mLifecycleListenersMap.values()) {
+      mReactContext.removeLifecycleEventListener(listener);
     }
+    mLifecycleListenersMap.clear();
   }
 
   @Override

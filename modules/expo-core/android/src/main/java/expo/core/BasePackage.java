@@ -16,7 +16,7 @@ public class BasePackage implements Package {
   }
 
   @Override
-  public List<ExportedModule> createExportedModules(Context reactContext) {
+  public List<ExportedModule> createExportedModules(Context context) {
     return Collections.emptyList();
   }
 

@@ -17,6 +17,10 @@ public class ModuleRegistryBuilder {
     mPackages = initialPackages;
   }
 
+  protected List<Package> getPackages() {
+    return mPackages;
+  }
+
   public ModuleRegistry build(Context context) {
     return new ModuleRegistry(mPackages, context);
   }
