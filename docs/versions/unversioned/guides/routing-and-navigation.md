@@ -9,6 +9,4 @@ A "single page app" on the web is not an app with a single screen, that would in
 
 This same concept applies to native mobile apps. When you navigate to a new screen, rather than refreshing the entire app and starting fresh from that screen, the screen is pushed onto a navigation stack and animated into view according to its configuration.
 
-The library that we recommend to use for routing & navigation in Expo is [React Navigation](https://github.com/react-community/react-navigation). You can see the [full documentation for React Nativation on the React Navigation website](https://www.reactnavigation.org/).
-
-We recommend following the [fundamentals guide](https://reactnavigation.org/docs/en/getting-started.html) in the [React Navigation documentation](https://reactnavigation.org/) to learn more about how to use the it.
+The library that we recommend to use for routing & navigation in Expo is [React Navigation](https://github.com/react-community/react-navigation). We recommend following the [fundamentals guide](https://reactnavigation.org/docs/en/getting-started.html) in the [React Navigation documentation](https://reactnavigation.org/) to learn more about how to use it.
