@@ -19,7 +19,7 @@
 
 @interface EXAppFetcherWithTimeout (EXAppLoaderTests)
 
-@property (nonatomic, readonly) NSUInteger timeoutLengthInMs;
+@property (nonatomic, readonly) NSTimeInterval timeout;
 
 @end
 
@@ -82,7 +82,7 @@
   EXAppLoader *appLoader = [[EXAppLoader alloc] initWithManifestUrl:[NSURL URLWithString:@"exp://exp.host/@esamelson/test-fetch-update"]];
   [appLoader _fetchBundleWithManifest:manifest];
   XCTAssert([appLoader.appFetcher isKindOfClass:[EXAppFetcherWithTimeout class]], @"AppLoader should choose to use AppFetcherWithTimeout when fetching remotely");
-  XCTAssert([(EXAppFetcherWithTimeout *)appLoader.appFetcher timeoutLengthInMs] == 30000, @"AppFetcherWithTimeout should have the correct user-specified timeout length");
+  XCTAssert([(EXAppFetcherWithTimeout *)appLoader.appFetcher timeout] == kEXAppLoaderDefaultTimeout, @"AppFetcherWithTimeout should have the correct user-specified timeout length");
 }
 
 - (void)testIsUpdateTimeoutConfigRespected
@@ -95,7 +95,7 @@
   EXAppLoader *appLoader = [[EXAppLoader alloc] initWithManifestUrl:[NSURL URLWithString:@"exp://exp.host/@esamelson/test-fetch-update"]];
   [appLoader _fetchBundleWithManifest:manifest];
   XCTAssert([appLoader.appFetcher isKindOfClass:[EXAppFetcherWithTimeout class]], @"AppLoader should choose to use AppFetcherWithTimeout when fetching remotely");
-  XCTAssert([(EXAppFetcherWithTimeout *)appLoader.appFetcher timeoutLengthInMs] == 1000, @"AppFetcherWithTimeout should have the correct user-specified timeout length");
+  XCTAssert([(EXAppFetcherWithTimeout *)appLoader.appFetcher timeout] == 1.0f, @"AppFetcherWithTimeout should have the correct user-specified timeout length");
 }
 
 - (void)testIsUpdateAutomaticallyConfigRespected

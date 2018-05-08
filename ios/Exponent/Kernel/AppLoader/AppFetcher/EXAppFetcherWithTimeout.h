@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id<EXAppFetcherWithTimeoutDelegate> withTimeoutDelegate;
 
-- (instancetype)initWithAppLoader:(EXAppLoader *)appLoader timeoutLengthInMs:(NSUInteger)timeoutLengthInMs;
+- (instancetype)initWithAppLoader:(EXAppLoader *)appLoader timeout:(NSTimeInterval)timeout;
 
 @end
 
