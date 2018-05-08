@@ -4,7 +4,7 @@ title: Lottie
 
 Expo includes support for [Lottie](https://airbnb.design/lottie/), the animation library from AirBnB.
 
-${<SnackEmbed snackId="SJdIbHe4b" />}
+${<SnackEmbed snackId="Byu2WM2af" />}
 
 
 ## Importing Lottie
