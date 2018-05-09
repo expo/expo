@@ -25,6 +25,11 @@ FOUNDATION_EXPORT NSString * const EXAppDidRegisterUserNotificationSettingsNotif
 - (EXViewController *)rootViewController;
 
 /**
+ *  The current view controller that is presented by Exponent app.
+ */
+- (UIViewController *)currentViewController;
+
+/**
  *  Keys to third-party integrations used inside ExpoKit.
  *  TODO: document this.
  */

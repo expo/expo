@@ -75,6 +75,16 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"EXAppD
   return _rootViewController;
 }
 
+- (UIViewController *)currentViewController
+{
+  EXViewController *rootViewController = [self rootViewController];
+  UIViewController *controller = [rootViewController contentViewController];
+  while (controller.presentedViewController != nil) {
+    controller = controller.presentedViewController;
+  }
+  return controller;
+}
+
 #pragma mark - misc AppDelegate hooks
 
 - (void)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions

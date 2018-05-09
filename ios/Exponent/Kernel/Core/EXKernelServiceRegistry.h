@@ -12,6 +12,7 @@
 @class EXScreenOrientationManager;
 @class EXUpdatesManager;
 @class EXPermissionsManager;
+@class EXUtilService;
 
 @interface EXKernelServiceRegistry : NSObject <EXKernelAppRegistryDelegate>
 
@@ -26,6 +27,7 @@
 @property (nonatomic, readonly) EXScreenOrientationManager *screenOrientationManager;
 @property (nonatomic, readonly) EXUpdatesManager *updatesManager;
 @property (nonatomic, readonly) EXPermissionsManager *permissionsManager;
+@property (nonatomic, readonly) EXUtilService *utilService;
 
 @property (nonatomic, readonly) NSDictionary<NSString *, id> *allServices;
 

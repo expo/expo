@@ -17,6 +17,7 @@
 #import "EXMenuGestureRecognizer.h"
 #import "EXMenuViewController.h"
 #import "EXRootViewController.h"
+#import "EXMenuWindow.h"
 
 NSString * const kEXHomeDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey";
 NSString * const kEXHomeIsNuxFinishedDefaultsKey = @"EXHomeIsNuxFinishedDefaultsKey";
@@ -30,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL isAnimatingMenu;
 @property (nonatomic, assign) BOOL isAnimatingAppTransition;
 @property (nonatomic, strong) EXButtonView *btnMenu;
+@property (nonatomic, strong) EXMenuWindow *menuWindow;
 
 @end
 
@@ -94,13 +96,6 @@ NS_ASSUME_NONNULL_BEGIN
   if (!_menuViewController) {
     _menuViewController = [[EXMenuViewController alloc] init];
   }
-  
-  // TODO: ben: can this be more robust?
-  // some third party libs (and core RN) often just look for the root VC and present random crap from it.
-  if (self.presentedViewController && self.presentedViewController != _menuViewController) {
-    [self.presentedViewController dismissViewControllerAnimated:NO completion:nil];
-  }
-  
   if (isMenuVisible != _isMenuVisible) {
     if (!_isAnimatingMenu) {
       _isMenuVisible = isMenuVisible;
@@ -136,6 +131,10 @@ NS_ASSUME_NONNULL_BEGIN
     __strong typeof(weakSelf) strongSelf = weakSelf;
     if (strongSelf) {
       [strongSelf moveAppToVisible:[EXKernel sharedInstance].appRegistry.homeAppRecord];
+      
+      if (strongSelf.isMenuVisible) {
+        [strongSelf setIsMenuVisible:NO completion:nil];
+      }
     }
   }];
 }
@@ -218,6 +217,9 @@ NS_ASSUME_NONNULL_BEGIN
           [viewControllerToHide willMoveToParentViewController:nil];
           [viewControllerToHide.view removeFromSuperview];
           [viewControllerToHide didMoveToParentViewController:nil];
+          
+          // dismisses all modals that are presented by the app
+          [viewControllerToHide dismissViewControllerAnimated:NO completion:nil];
         }
         if (viewControllerToShow) {
           [viewControllerToShow didMoveToParentViewController:strongSelf];
@@ -265,7 +267,15 @@ NS_ASSUME_NONNULL_BEGIN
   __weak typeof(self) weakSelf = self;
   if (visible) {
     [_menuViewController willMoveToParentViewController:self];
-    [self.view addSubview:_menuViewController.view];
+    
+    if (_menuWindow == nil) {
+      _menuWindow = [[EXMenuWindow alloc] init];
+    }
+    
+    [_menuWindow setFrame:self.view.frame];
+    [_menuWindow addSubview:_menuViewController.view];
+    [_menuWindow makeKeyAndVisible];
+    
     _menuViewController.view.alpha = 0.0f;
     _menuViewController.view.transform = CGAffineTransformMakeScale(1.1f, 1.1f);
     [UIView animateWithDuration:0.1f animations:^{
@@ -292,6 +302,7 @@ NS_ASSUME_NONNULL_BEGIN
         [strongSelf.menuViewController willMoveToParentViewController:nil];
         [strongSelf.menuViewController.view removeFromSuperview];
         [strongSelf.menuViewController didMoveToParentViewController:nil];
+        _menuWindow = nil;
         if (completion) {
           completion();
         }

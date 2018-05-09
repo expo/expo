@@ -1,6 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXDocumentPicker.h"
+#import "EXScopedModuleRegistry.h"
+#import "EXUtil.h"
 
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <UIKit/UIKit.h>
@@ -39,6 +41,8 @@ static NSString * EXConvertMimeTypeToUTI(NSString *mimeType)
 
 @implementation EXDocumentPicker
 
+@synthesize bridge = _bridge;
+
 RCT_EXPORT_MODULE(ExponentDocumentPicker)
 
 RCT_EXPORT_METHOD(getDocumentAsync:(NSDictionary *)options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
@@ -67,13 +71,13 @@ RCT_EXPORT_METHOD(getDocumentAsync:(NSDictionary *)options resolver:(RCTPromiseR
     documentMenuVC.modalPresentationStyle = UIModalPresentationPageSheet;
   }
 
-  [RCTPresentedViewController() presentViewController:documentMenuVC animated:YES completion:nil];
+  [_bridge.scopedModules.util.currentViewController presentViewController:documentMenuVC animated:YES completion:nil];
 }
 
 - (void)documentMenu:(UIDocumentMenuViewController *)documentMenu didPickDocumentPicker:(UIDocumentPickerViewController *)documentPicker
 {
   documentPicker.delegate = self;
-  [RCTPresentedViewController() presentViewController:documentPicker animated:YES completion:nil];
+  [_bridge.scopedModules.util.currentViewController presentViewController:documentPicker animated:YES completion:nil];
 }
 
 - (void)documentMenuWasCancelled:(UIDocumentMenuViewController *)documentMenu

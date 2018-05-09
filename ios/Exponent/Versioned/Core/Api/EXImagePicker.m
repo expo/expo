@@ -9,6 +9,7 @@
 #import "EXCameraRollRequester.h"
 #import "EXPermissions.h"
 #import "EXScopedModuleRegistry.h"
+#import "EXUtil.h"
 
 @import MobileCoreServices;
 @import Photos;
@@ -136,15 +137,11 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
   if ([[self.options objectForKey:@"allowsEditing"] boolValue]) {
     self.picker.allowsEditing = true;
   }
-  self.picker.modalPresentationStyle = UIModalPresentationCurrentContext;
+  self.picker.modalPresentationStyle = UIModalPresentationOverFullScreen; // only fullscreen styles work well with modals
   self.picker.delegate = self;
 
   dispatch_async(dispatch_get_main_queue(), ^{
-    UIViewController *root = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
-    while (root.presentedViewController != nil) {
-      root = root.presentedViewController;
-    }
-    [root presentViewController:self.picker animated:YES completion:nil];
+    [_bridge.scopedModules.util.currentViewController presentViewController:self.picker animated:YES completion:nil];
   });
 }
 
