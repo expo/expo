@@ -28,8 +28,8 @@ If you have already integrated Google Sign In into your standalone app, this is 
     6.  Choose the **Android apps** radio button under **Key restriction**.
     7.  Click the **+ Add package name and fingerprint** button.
     8.  Add your `android.package` from `app.json` (eg: `ca.brentvatne.growlerprowler`) to the Package name field.
-    9.  Run `keytool -list -printcert -jarfile growler.apk | grep SHA1 | awk '{ print $2 }'` where `growler.apk` is the path to the apk you built in step 1.
-    10. Take the output from step 9 and insert it in the "SHA-1 certificate fingerprint" field.
+    9.  Run `exp fetch:android:hashes`.
+    10. Copy `Google Certificate Fingerprint` from the output from step 9 and insert it in the "SHA-1 certificate fingerprint" field.
     11. Copy the API key (the first text input on the page) into `app.json` under the `android.config.googleMaps.apiKey` field. [See an example diff](https://github.com/brentvatne/growler-prowler/commit/3496e69b14adb21eb2025ef9e0719c2edbef2aa2).
     12. Press `Save` and then rebuild the app like in step 1.
 

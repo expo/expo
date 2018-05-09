@@ -107,23 +107,23 @@ If you want to use Google Sign In for a standalone app, you can follow these ste
     3.  Click **Create credentials**, then **API Key**, and finally click **RESTRICT KEY** in the modal that pops up.
     4.  Click the **Android apps** radio button under **Key restriction**, then click **+ Add package name and fingerprint**.
     5.  Add your `android.package` from `app.json` (eg: `ca.brentvatne.growlerprowler`) to the **Package name** field.
-    6.  Run `keytool -list -printcert -jarfile growler.apk | grep SHA1 | awk '{ print $2 }'` (where `growler.apk` is the name of the apk produced in step 1).
-    7.  Take the output from the previous step and insert it in the **SHA-1 certificate fingerprint** field.
+    6.  Run `exp fetch:android:hashes`.
+    7.  Take `Google Certificate Fingerprint` from previous step and insert it in the **SHA-1 certificate fingerprint** field.
     8.  Press **Save**.
 -   **Get an OAuth client ID for your app**
     1.  Build a standalone app and download the apk, or find one that you have already built.
     2.  Go to the [Google Developer Credentials](https://console.developers.google.com/apis/credentials).
     3.  Click **Create credentials**, then **OAuth client ID**, then select the **Android** radio button.
-    4.  Run `keytool -list -printcert -jarfile growler.apk | grep SHA1 | awk '{ print $2 }'` (where `growler.apk` is the name of the apk produced in step 1).
-    5.  Take the output from the previous step and insert it in the **Signing-certificate fingerprint** field.
+    4.  Run `exp fetch:android:hashes`.
+    5.  Take `Google Certificate Fingerprint` from previous step and insert it in the **Signing-certificate fingerprint** field.
     6.  Add your `android.package` from `app.json` (eg: `ca.brentvatne.growlerprowler`) to the **Package name** field.
     7.  Press **Create**.
 -   **Add the configuration to your app**
     1.  Build a standalone app and download the apk, or find one that you have already built.
     2.  Go to the [Google Developer Credentials](https://console.developers.google.com/apis/credentials) and find your API key.
     3.  Open `app.json` and add your **Google API Key** to `android.config.googleSignIn.apiKey`.
-    4.  Run `keytool -list -printcert -jarfile growler.apk | grep SHA1 | awk '{ print $2 }' | sed -e 's/\://g'` (where `growler.apk` is the name of the apk produced in step 1).
-    5.  Add the result from the previous step to `app.json` under `android.config.googleSignIn.certificateHash`.
+    4.  Run `exp fetch:android:hashes`.
+    5.  Take `Google Certificate Hash` from the previous step to `app.json` under `android.config.googleSignIn.certificateHash`.
     6.  When you use `Expo.Google.logInAsync(..)`, pass in the **OAuth client ID** as the `androidStandaloneAppClientId` option.
     7.  Rebuild your standalone app.
 

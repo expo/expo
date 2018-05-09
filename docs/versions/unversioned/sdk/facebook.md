@@ -23,8 +23,8 @@ Follow [Facebook's developer documentation](https://developers.facebook.com/docs
 -   **Android standalone app**
 
     -   [Build your standalone app](../guides/building-standalone-apps.html#building-standalone-apps) for Android.
-    -   Run `keytool -list -printcert -jarfile YOUR_APK.apk | grep SHA1 | awk '{ print $2 }' | xxd -r -p | openssl base64` (replace `YOUR_APK.apk` with the name of your APK file).
-    -   Add that output as an additional key hash in your Facebook developer page pictured above.
+    -   Run `exp fetch:android:hashes`.
+    -   Copy `Facebook Key Hash` and paste it as an additional key hash in your Facebook developer page pictured above.
 
 You may have to switch the app from 'development mode' to 'public mode' on the Facebook developer page before other users can log in.
 
