@@ -74,16 +74,9 @@ class AlgoliaSearch extends React.Component {
     const Hotshot = require('hotshot');
 
     this.docsearch = docsearch({
-      appId: 'S6DBW4862L',
-      apiKey: 'f469a45764b6fd7b279f2bff604127ac',
-      indexName: 'exponent-docs-v3',
+      apiKey: '2955d7b41a0accbe5b6aa2db32f3b8ac',
+      indexName: 'expo',
       inputSelector: '#algolia-search-box',
-      algoliaOptions: {
-        facetFilters: [
-          `tags:${this.props.version === 'latest' ? LATEST_VERSION : this.props.version}`,
-        ],
-        hitsPerPage: 10,
-      },
       enhancedSearchInput: true,
       handleSelected: (input, event, suggestion) => {
         input.setVal('');
@@ -94,6 +87,7 @@ class AlgoliaSearch extends React.Component {
         if (this.props.version === 'latest') {
           asPath = this.processUrl(Utilities.replaceVersionInUrl(route, 'latest'));
         }
+
         route = this.processUrl(route);
         if (asPath) {
           Router.push(route, asPath);
@@ -105,9 +99,11 @@ class AlgoliaSearch extends React.Component {
         const searchbox = document.querySelector('input#docsearch');
         const reset = document.querySelector('.searchbox [type="reset"]');
         reset.className = 'searchbox__reset';
+
         if (searchbox.value.length === 0) {
           reset.className += ' hide';
         }
+
         this.props.closeSidebar && this.props.closeSidebar();
       },
     });
