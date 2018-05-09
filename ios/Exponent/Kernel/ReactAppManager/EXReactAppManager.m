@@ -219,7 +219,11 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   [self _startObservingBridgeNotificationsForBridge:bridge];
   
   if ([self enablesDeveloperTools]) {
-    [_appRecord.appLoader forceBundleReload];
+    if ([_appRecord.appLoader supportsBundleReload]) {
+      [_appRecord.appLoader forceBundleReload];
+    } else {
+      [[EXKernel sharedInstance] reloadAppWithExperienceId:_appRecord.experienceId];
+    }
   }
   
   _loadCallback = loadCallback;
