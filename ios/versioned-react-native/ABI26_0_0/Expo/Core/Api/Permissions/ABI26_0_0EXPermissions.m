@@ -47,6 +47,12 @@ ABI26_0_0EX_EXPORT_SCOPED_MODULE(ExponentPermissions, PermissionsManager);
   return NO;
 }
 
++ (NSArray<NSString *> *)excludedScopedPermissions
+{
+  // temporarily exclude notifactions from permissions per experience; system brightness is always granted
+  return @[@"notifications", @"userFacingNotifications", @"systemBrightness"];
+}
+
 ABI26_0_0RCT_REMAP_METHOD(getAsync,
                           getCurrentPermissionsWithType:(NSString *)type
                           resolver:(ABI26_0_0RCTPromiseResolveBlock)resolve
@@ -59,8 +65,7 @@ ABI26_0_0RCT_REMAP_METHOD(getAsync,
   }
   
   NSMutableDictionary *response = [[NSMutableDictionary alloc] initWithDictionary:globalPermissionsResult];
-  // temporarily exclude notifactions from permissions per experience
-  if (![type isEqualToString:@"notifications"] && ![type isEqualToString:@"userFacingNotifications"] &&
+    if (![[[self class] excludedScopedPermissions] containsObject:type] &&
       [globalPermissionsResult[@"status"] isEqualToString:[[self class] permissionStringForStatus:ABI26_0_0EXPermissionStatusGranted]]) {
     if (![_kernelPermissionsServiceDelegate hasGrantedPermission:type forExperience:self.experienceId]) {
       response[@"status"] = [[self class] permissionStringForStatus:ABI26_0_0EXPermissionStatusDenied];
@@ -80,8 +85,7 @@ ABI26_0_0RCT_REMAP_METHOD(askAsync,
     return;
   }
   if ([systemPermissions[@"status"] isEqualToString:[ABI26_0_0EXPermissions permissionStringForStatus:ABI26_0_0EXPermissionStatusGranted]]) {
-    // temporarily exclude notifactions from permissions per experience
-    if (![type isEqualToString:@"notifications"] && ![type isEqualToString:@"userFacingNotifications"] &&
+    if (![[[self class] excludedScopedPermissions] containsObject:type] &&
         ![_kernelPermissionsServiceDelegate hasGrantedPermission:type forExperience:self.experienceId]) {
       __weak typeof(self) weakSelf = self;
       UIAlertAction *allow = [UIAlertAction actionWithTitle:@"Allow" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {

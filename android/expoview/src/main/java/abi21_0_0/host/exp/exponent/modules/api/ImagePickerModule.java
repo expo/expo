@@ -12,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
 import android.util.Base64;
 
 import java.io.ByteArrayOutputStream;
@@ -117,7 +118,8 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
       return;
     }
 
-    if (Exponent.getInstance().getPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, this.experienceId) &&
+    if ((Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
+        ContextCompat.checkSelfPermission(mScopedContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) &&
         Exponent.getInstance().getPermissions(Manifest.permission.CAMERA, this.experienceId)) {
       launchCameraWithPermissionsGranted(promise, cameraIntent);
     } else {

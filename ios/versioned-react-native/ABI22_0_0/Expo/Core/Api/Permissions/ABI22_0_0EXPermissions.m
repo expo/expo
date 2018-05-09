@@ -38,6 +38,12 @@ ABI22_0_0EX_EXPORT_SCOPED_MODULE(ExponentPermissions, PermissionsManager);
   return self;
 }
 
++ (NSArray<NSString *> *)excludedScopedPermissions
+{
+  // temporarily exclude notifactions from permissions per experience; system brightness is always granted
+  return @[@"remoteNotifications", @"systemBrightness"];
+}
+
 ABI22_0_0RCT_REMAP_METHOD(getAsync,
                  getCurrentPermissionsWithType:(NSString *)type
                  resolver:(ABI22_0_0RCTPromiseResolveBlock)resolve
@@ -50,8 +56,7 @@ ABI22_0_0RCT_REMAP_METHOD(getAsync,
   }
   
   NSMutableDictionary *response = [[NSMutableDictionary alloc] initWithDictionary:globalPermissionsResult];
-  // temporarily exclude notifactions from permissions per experience
-  if (![type isEqualToString:@"notifications"] && ![type isEqualToString:@"userFacingNotifications"] &&
+    if (![[[self class] excludedScopedPermissions] containsObject:type] &&
       [globalPermissionsResult[@"status"] isEqualToString:[[self class] permissionStringForStatus:ABI22_0_0EXPermissionStatusGranted]]) {
     if (![_kernelPermissionsServiceDelegate hasGrantedPermission:type forExperience:self.experienceId]) {
       response[@"status"] = [[self class] permissionStringForStatus:ABI22_0_0EXPermissionStatusDenied];
@@ -71,8 +76,7 @@ ABI22_0_0RCT_REMAP_METHOD(askAsync,
     return;
   }
   if ([systemPermissions[@"status"] isEqualToString:[ABI22_0_0EXPermissions permissionStringForStatus:ABI22_0_0EXPermissionStatusGranted]]) {
-    // temporarily exclude notifactions from permissions per experience
-    if (![type isEqualToString:@"notifications"] && ![type isEqualToString:@"userFacingNotifications"] &&
+    if (![[[self class] excludedScopedPermissions] containsObject:type] &&
         ![_kernelPermissionsServiceDelegate hasGrantedPermission:type forExperience:self.experienceId]) {
       __weak typeof(self) weakSelf = self;
       UIAlertAction *allow = [UIAlertAction actionWithTitle:@"Allow" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
