@@ -62,8 +62,16 @@ typedef enum EXAppLoaderStatus {
  *  Reset status to `kEXAppLoaderStatusHasManifest` and fetch the bundle at the existing
  *  manifest. This is called when RN devtools reload an AppManager/RCTBridge directly
  *  via reload, live reload, etc.
+ *
+ *  This will throw if not supported, i.e. if `supportsBundleReload` returns false.
  */
 - (void)forceBundleReload;
+
+/**
+ *  Return whether this AppLoader supports directly reloading the bundle. Right now the only case
+ *  where that's possible is if we're running an app in dev mode.
+ */
+- (BOOL)supportsBundleReload;
 
 /**
  * Fetch manifest without any side effects or interaction with the timer.

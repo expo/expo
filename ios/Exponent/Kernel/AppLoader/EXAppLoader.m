@@ -111,8 +111,13 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
                                    reason:@"Tried to load a bundle from an AppLoader with no manifest."
                                  userInfo:@{}];
   }
-  RCTAssert([_appFetcher isKindOfClass:[EXAppFetcherDevelopmentMode class]], @"Tried to force a bundle reload on a non-development bundle");
+  RCTAssert([self supportsBundleReload], @"Tried to force a bundle reload on a non-development bundle");
   [(EXAppFetcherDevelopmentMode *)_appFetcher forceBundleReload];
+}
+
+- (BOOL)supportsBundleReload
+{
+  return (_appFetcher && [_appFetcher isKindOfClass:[EXAppFetcherDevelopmentMode class]]);
 }
 
 #pragma mark - public
