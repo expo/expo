@@ -30,6 +30,8 @@ NSString *const EXAssetMediaTypeAll = @"all";
 
 @implementation EXMediaLibrary
 
+@synthesize bridge = _bridge;
+
 EX_EXPORT_SCOPED_MODULE(ExponentMediaLibrary, PermissionsManager);
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id<EXPermissionsScopedModuleDelegate>)kernelServiceInstance params:(NSDictionary *)params
@@ -89,20 +91,20 @@ RCT_REMAP_METHOD(createAssetAsync,
     return;
   }
   
+  NSURL *assetUrl = [NSURL URLWithString:localUri];
+  
+  if (assetUrl == nil) {
+    reject(@"E_INVALID_URI", @"Provided localUri is not a valid URI", nil);
+    return;
+  }
+  if (!([_bridge.scopedModules.fileSystem permissionsForURI:assetUrl] & EXFileSystemPermissionRead)) {
+    reject(@"E_FILESYSTEM_PERMISSIONS", [NSString stringWithFormat:@"File '%@' isn't readable.", assetUrl], nil);
+    return;
+  }
+  
   __block PHObjectPlaceholder *assetPlaceholder;
   
   [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-    NSURL *assetUrl = [NSURL URLWithString:localUri];
-    
-    if (assetUrl == nil) {
-      reject(@"E_INVALID_URI", @"Provided localUri is not a valid URI", nil);
-      return;
-    }
-    if (!([self.bridge.scopedModules.fileSystem permissionsForURI:assetUrl] & EXFileSystemPermissionRead)) {
-      reject(@"E_FILESYSTEM_PERMISSIONS", [NSString stringWithFormat:@"File '%@' isn't readable.", assetUrl], nil);
-      return;
-    }
-    
     PHAssetChangeRequest *changeRequest = assetType == PHAssetMediaTypeVideo
                                         ? [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:assetUrl]
                                         : [PHAssetChangeRequest creationRequestForAssetFromImageAtFileURL:assetUrl];
