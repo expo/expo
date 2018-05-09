@@ -2,6 +2,8 @@ package expo.adapters.react;
 
 import android.content.Context;
 
+import com.facebook.react.bridge.ReactApplicationContext;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,6 +18,14 @@ import expo.core.interfaces.Module;
 import expo.core.interfaces.Package;
 import expo.core.interfaces.ViewManager;
 
+/**
+ * Since React Native v0.55, {@link com.facebook.react.ReactPackage#createViewManagers(ReactApplicationContext)}
+ * gets called only once per lifetime of {@link com.facebook.react.ReactInstanceManager}.
+ *
+ * To make expo-react-native-adapter compatible with this change we have to remember view managers collection
+ * which is returned in {@link ModuleRegistryAdapter#createViewManagers(ReactApplicationContext)}
+ * only once (and managers returned this one time will persist "forever").
+ */
 public class ReactModuleRegistryBuilder extends ModuleRegistryBuilder {
   private Collection<ViewManager> mViewManagers;
 

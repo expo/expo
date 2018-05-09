@@ -3,11 +3,9 @@ package expo.adapters.react;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -69,6 +67,7 @@ public class ModuleRegistryAdapter implements ReactPackage {
   }
 
   public void onCatalystInstanceDestroy(ReactApplicationContext context) {
+    // TODO: Check if it is needed here.
     mRegistryForContext.get(context).getModule(UIManagerModuleWrapper.class).unregisterEventListeners();
 //    mRegistryForContext.remove(context);
   }
