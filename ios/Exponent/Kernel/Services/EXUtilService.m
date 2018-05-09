@@ -8,12 +8,7 @@
 
 - (UIViewController *)currentViewController
 {
-  EXViewController *exViewController = [[ExpoKit sharedInstance] rootViewController];
-  UIViewController *controller = [exViewController contentViewController];
-  while (controller.presentedViewController != nil) {
-    controller = controller.presentedViewController;
-  }
-  return controller;
+  return [[ExpoKit sharedInstance] currentViewController];
 }
 
 @end
