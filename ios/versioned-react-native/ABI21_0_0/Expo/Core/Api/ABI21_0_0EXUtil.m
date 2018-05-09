@@ -8,9 +8,12 @@
 
 @interface ABI21_0_0EXUtil ()
 
-@property (nonatomic, weak) id kernelUpdatesServiceDelegate;
+@property (nonatomic, weak) id<ABI21_0_0EXUtilScopedModuleDelegate> kernelUpdatesServiceDelegate;
+@property (nonatomic, weak) id<ABI21_0_0EXUtilService> kernelUtilService;
 
 @end
+
+ABI21_0_0EX_DEFINE_SCOPED_MODULE_GETTER(ABI21_0_0EXUtil, util)
 
 @implementation ABI21_0_0EXUtil
 
@@ -18,12 +21,13 @@
 
 // delegate to kernel linking manager because our only kernel work (right now)
 // is refreshing the foreground task.
-ABI21_0_0EX_EXPORT_SCOPED_MODULE(ExponentUtil, UpdatesManager);
+ABI21_0_0EX_EXPORT_SCOPED_MULTISERVICE_MODULE(ExponentUtil, @"UpdatesManager", @"UtilService");
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
+- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegates:(NSDictionary *)kernelServiceInstances params:(NSDictionary *)params
 {
-  if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
-    _kernelUpdatesServiceDelegate = kernelServiceInstance;
+  if (self = [super initWithExperienceId:experienceId kernelServiceDelegates:kernelServiceInstances params:params]) {
+    _kernelUpdatesServiceDelegate = kernelServiceInstances[@"UpdatesManager"];
+    _kernelUtilService = kernelServiceInstances[@"UtilService"];
   }
   return self;
 }
@@ -82,6 +86,11 @@ ABI21_0_0RCT_REMAP_METHOD(getCurrentTimeZoneAsync,
   NSString *charactersToEscape = @"!*'();:@&=+$,/?%#[]";
   NSCharacterSet *allowedCharacters = [[NSCharacterSet characterSetWithCharactersInString:charactersToEscape] invertedSet];
   return [name stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
+}
+
+- (UIViewController *)currentViewController
+{
+  return [_kernelUtilService currentViewController];
 }
 
 @end

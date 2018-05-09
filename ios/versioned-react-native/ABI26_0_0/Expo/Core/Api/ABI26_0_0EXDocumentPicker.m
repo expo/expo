@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "ABI26_0_0EXDocumentPicker.h"
+#import "ABI26_0_0EXUtil.h"
 
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <UIKit/UIKit.h>
@@ -39,6 +40,8 @@ static NSString * ABI26_0_0EXConvertMimeTypeToUTI(NSString *mimeType)
 
 @implementation ABI26_0_0EXDocumentPicker
 
+@synthesize bridge = _bridge;
+
 ABI26_0_0RCT_EXPORT_MODULE(ExponentDocumentPicker)
 
 ABI26_0_0RCT_EXPORT_METHOD(getDocumentAsync:(NSDictionary *)options resolver:(ABI26_0_0RCTPromiseResolveBlock)resolve rejecter:(ABI26_0_0RCTPromiseRejectBlock)reject) {
@@ -67,13 +70,13 @@ ABI26_0_0RCT_EXPORT_METHOD(getDocumentAsync:(NSDictionary *)options resolver:(AB
     documentMenuVC.modalPresentationStyle = UIModalPresentationPageSheet;
   }
 
-  [ABI26_0_0RCTPresentedViewController() presentViewController:documentMenuVC animated:YES completion:nil];
+  [_bridge.scopedModules.util.currentViewController presentViewController:documentMenuVC animated:YES completion:nil];
 }
 
 - (void)documentMenu:(UIDocumentMenuViewController *)documentMenu didPickDocumentPicker:(UIDocumentPickerViewController *)documentPicker
 {
   documentPicker.delegate = self;
-  [ABI26_0_0RCTPresentedViewController() presentViewController:documentPicker animated:YES completion:nil];
+  [_bridge.scopedModules.util.currentViewController presentViewController:documentPicker animated:YES completion:nil];
 }
 
 - (void)documentMenuWasCancelled:(UIDocumentMenuViewController *)documentMenu

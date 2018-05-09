@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "ABI23_0_0EXDocumentPicker.h"
+#import "ABI23_0_0EXUtil.h"
 
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <UIKit/UIKit.h>
@@ -39,6 +40,8 @@ static NSString * ABI23_0_0EXConvertMimeTypeToUTI(NSString *mimeType)
 
 @implementation ABI23_0_0EXDocumentPicker
 
+@synthesize bridge = _bridge;
+
 ABI23_0_0RCT_EXPORT_MODULE(ExponentDocumentPicker)
 
 ABI23_0_0RCT_EXPORT_METHOD(getDocumentAsync:(NSDictionary *)options resolver:(ABI23_0_0RCTPromiseResolveBlock)resolve rejecter:(ABI23_0_0RCTPromiseRejectBlock)reject) {
@@ -60,13 +63,13 @@ ABI23_0_0RCT_EXPORT_METHOD(getDocumentAsync:(NSDictionary *)options resolver:(AB
   }
   documentMenuVC.delegate = self;
 
-  [ABI23_0_0RCTPresentedViewController() presentViewController:documentMenuVC animated:YES completion:nil];
+  [_bridge.scopedModules.util.currentViewController presentViewController:documentMenuVC animated:YES completion:nil];
 }
 
 - (void)documentMenu:(UIDocumentMenuViewController *)documentMenu didPickDocumentPicker:(UIDocumentPickerViewController *)documentPicker
 {
   documentPicker.delegate = self;
-  [ABI23_0_0RCTPresentedViewController() presentViewController:documentPicker animated:YES completion:nil];
+  [_bridge.scopedModules.util.currentViewController presentViewController:documentPicker animated:YES completion:nil];
 }
 
 - (void)documentMenuWasCancelled:(UIDocumentMenuViewController *)documentMenu

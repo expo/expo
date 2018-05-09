@@ -5,6 +5,7 @@
 #import "EXViewController.h"
 #import "ExpoKit.h"
 #import "EXShellManager.h"
+#import "EXUtil.h"
 
 @interface EXViewController ()
 
@@ -65,6 +66,21 @@
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
   return [[EXKernel sharedInstance].serviceRegistry.screenOrientationManager supportedInterfaceOrientationsForVisibleApp];
+}
+
+- (void)presentViewController:(UIViewController *)viewControllerToPresent animated:(BOOL)flag completion:(void (^_Nullable)(void))completion
+{
+  // @tsapeta: some RN's modules try to present modal view controllers on EXRootViewController
+  // but for the correct behavior they should be presented on the innermost controller in EXAppViewController hierarchy,
+  // so we just pass this call to the current controller.
+  if ([viewControllerToPresent isKindOfClass:[UIAlertController class]]
+      || [viewControllerToPresent isKindOfClass:[UIDocumentMenuViewController class]]
+      || [viewControllerToPresent isKindOfClass:[UIImagePickerController class]]
+      || [viewControllerToPresent isKindOfClass:[UIActivityViewController class]]) {
+    [[[ExpoKit sharedInstance] currentViewController] presentViewController:viewControllerToPresent animated:flag completion:completion];
+  } else {
+    [super presentViewController:viewControllerToPresent animated:flag completion:completion];
+  }
 }
 
 @end

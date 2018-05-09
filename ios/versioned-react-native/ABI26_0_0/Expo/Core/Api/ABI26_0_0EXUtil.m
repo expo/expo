@@ -3,7 +3,25 @@
 #import "ABI26_0_0EXUtil.h"
 #import "ABI26_0_0EXScopedModuleRegistry.h"
 
+@interface ABI26_0_0EXUtil ()
+
+@property (nonatomic, weak) id<ABI26_0_0EXUtilService> kernelUtilService;
+
+@end
+
+ABI26_0_0EX_DEFINE_SCOPED_MODULE_GETTER(ABI26_0_0EXUtil, util)
+
 @implementation ABI26_0_0EXUtil
+
+ABI26_0_0EX_EXPORT_SCOPED_MODULE(ExponentUtil, UtilService);
+
+- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id<ABI26_0_0EXUtilService>)kernelServiceInstance params:(NSDictionary *)params
+{
+  if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
+    _kernelUtilService = kernelServiceInstance;
+  }
+  return self;
+}
 
 + (NSString *)escapedResourceName:(NSString *)name
 {
@@ -66,6 +84,11 @@
                            alpha:1.0f];
   }
   return nil;
+}
+
+- (UIViewController *)currentViewController
+{
+  return [_kernelUtilService currentViewController];
 }
 
 @end

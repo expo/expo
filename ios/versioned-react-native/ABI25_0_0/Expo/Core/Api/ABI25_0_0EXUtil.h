@@ -1,6 +1,7 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import "ABI25_0_0EXScopedBridgeModule.h"
+#import "ABI25_0_0EXScopedModuleRegistry.h"
 
 @protocol ABI25_0_0EXUtilScopedModuleDelegate
 
@@ -12,5 +13,14 @@
 
 + (NSString *)escapedResourceName:(NSString *)name;
 + (void)performSynchronouslyOnMainThread:(void (^)(void))block;
+- (UIViewController *)currentViewController;
 
 @end
+
+@protocol ABI25_0_0EXUtilService
+
+- (UIViewController *)currentViewController;
+
+@end
+
+ABI25_0_0EX_DECLARE_SCOPED_MODULE_GETTER(ABI25_0_0EXUtil, util)

@@ -9,6 +9,7 @@
 #import "ABI25_0_0EXCameraRollRequester.h"
 #import "ABI25_0_0EXPermissions.h"
 #import "ABI25_0_0EXScopedModuleRegistry.h"
+#import "ABI25_0_0EXUtil.h"
 
 @import MobileCoreServices;
 @import Photos;
@@ -136,15 +137,11 @@ ABI25_0_0RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
   if ([[self.options objectForKey:@"allowsEditing"] boolValue]) {
     self.picker.allowsEditing = true;
   }
-  self.picker.modalPresentationStyle = UIModalPresentationCurrentContext;
+  self.picker.modalPresentationStyle = UIModalPresentationOverFullScreen; // only fullscreen styles work well with modals
   self.picker.delegate = self;
 
   dispatch_async(dispatch_get_main_queue(), ^{
-    UIViewController *root = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
-    while (root.presentedViewController != nil) {
-      root = root.presentedViewController;
-    }
-    [root presentViewController:self.picker animated:YES completion:nil];
+    [_bridge.scopedModules.util.currentViewController presentViewController:self.picker animated:YES completion:nil];
   });
 }
 
