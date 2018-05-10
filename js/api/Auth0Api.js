@@ -3,7 +3,6 @@ import ApiV2HttpClient from 'ApiV2HttpClient';
 
 const SignUpEndpoint = 'https://exp.host/--/api/v2/auth/createOrUpdateUser';
 const SignOutEndpoint = 'https://exp.host/--/api/v2/auth/logoutAsync';
-const ClientId = 'qIdMWQxxXqD8PbCA90mZh0r2djqJylzg';
 
 type SignInOptions = {
   testSession?: boolean,
@@ -14,7 +13,6 @@ async function signInAsync(username: string, password: string, options: SignInOp
   return api.postAsync('auth/loginAsync', {
     username,
     password,
-    clientId: 'enable-sessions',
     ...(testSession ? { testSession } : {}),
   });
 }
@@ -47,7 +45,6 @@ async function signUpAsync(data: SignUpData) {
     },
     body: JSON.stringify({
       userData: {
-        client_id: ClientId,
         connection: 'Username-Password-Authentication',
         email: data.email,
         password: data.password,
