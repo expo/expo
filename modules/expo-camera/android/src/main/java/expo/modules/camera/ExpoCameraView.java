@@ -73,10 +73,6 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
     mModuleRegistry = moduleRegistry;
     mThemedReactContext = themedReactContext;
     initBarcodeReader();
-    FaceDetectorProvider faceDetectorProvider = moduleRegistry.getModule(FaceDetectorProvider.class);
-    if (faceDetectorProvider != null) {
-      mFaceDetector = faceDetectorProvider.createFaceDetectorWithContext(themedReactContext);
-    }
 
     mModuleRegistry.getModule(UIManager.class).registerLifecycleEventListener(this);
 
@@ -260,6 +256,11 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
         mIsNew = false;
         if (!Build.FINGERPRINT.contains("generic")) {
           start();
+
+          FaceDetectorProvider faceDetectorProvider = mModuleRegistry.getModule(FaceDetectorProvider.class);
+          if (faceDetectorProvider != null) {
+            mFaceDetector = faceDetectorProvider.createFaceDetectorWithContext(getContext());
+          }
         }
       }
     } else {
@@ -270,6 +271,9 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
   @Override
   public void onHostPause() {
     if (!mIsPaused && isCameraOpened()) {
+      if (mFaceDetector != null) {
+        mFaceDetector.release();
+      }
       mIsPaused = true;
       stop();
     }
@@ -277,7 +281,9 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
 
   @Override
   public void onHostDestroy() {
-    mFaceDetector.release();
+    if (mFaceDetector != null) {
+      mFaceDetector.release();
+    }
     stop();
   }
 

@@ -4,7 +4,6 @@ import android.content.Context;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

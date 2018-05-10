@@ -14,7 +14,6 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.annotation.Nullable;

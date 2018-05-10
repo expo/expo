@@ -1,16 +1,18 @@
 package expo.adapters.react;
 
+import android.content.Context;
+
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import expo.adapters.react.services.UIManagerModuleWrapper;
 import expo.core.ModuleRegistry;
 import expo.core.ModuleRegistryBuilder;
 
@@ -21,7 +23,7 @@ import expo.core.ModuleRegistryBuilder;
  */
 public class ModuleRegistryAdapter implements ReactPackage {
   private ModuleRegistryBuilder mModuleRegistryBuilder;
-  private Map<ReactApplicationContext, ModuleRegistry> mRegistryForContext = new WeakHashMap<>();
+  private Map<Context, WeakReference<ModuleRegistry>> mRegistryForContext = new WeakHashMap<>();
 
   public ModuleRegistryAdapter(ModuleRegistryBuilder moduleRegistryBuilder) {
     mModuleRegistryBuilder = moduleRegistryBuilder;
@@ -36,7 +38,7 @@ public class ModuleRegistryAdapter implements ReactPackage {
     nativeModulesList.add(new NativeModulesProxy(reactContext, moduleRegistry));
 
     // Add listener that will notify expo.core.ModuleRegistry when all modules are ready
-    nativeModulesList.add(new ModuleRegistryReadyNotifier(reactContext, moduleRegistry, this));
+    nativeModulesList.add(new ModuleRegistryReadyNotifier(moduleRegistry));
 
     return nativeModulesList;
   }
@@ -57,18 +59,12 @@ public class ModuleRegistryAdapter implements ReactPackage {
    * Get {@link ModuleRegistry} from {@link #mRegistryForContext}
    * if we already have an instance for this Context, create new one otherwise.
    */
-  private ModuleRegistry getOrCreateModuleRegistryForContext(final ReactApplicationContext context) {
-    ModuleRegistry moduleRegistry = mRegistryForContext.get(context);
-    if (moduleRegistry == null) {
-      moduleRegistry = mModuleRegistryBuilder.build(context);
-      mRegistryForContext.put(context, moduleRegistry);
+  private ModuleRegistry getOrCreateModuleRegistryForContext(final Context context) {
+    WeakReference<ModuleRegistry> moduleRegistryReference = mRegistryForContext.get(context);
+    if (moduleRegistryReference == null || moduleRegistryReference.get() == null) {
+      moduleRegistryReference = new WeakReference<>(mModuleRegistryBuilder.build(context));
+      mRegistryForContext.put(context, moduleRegistryReference);
     }
-    return moduleRegistry;
-  }
-
-  public void onCatalystInstanceDestroy(ReactApplicationContext context) {
-    // TODO: Check if it is needed here.
-    mRegistryForContext.get(context).getModule(UIManagerModuleWrapper.class).unregisterEventListeners();
-//    mRegistryForContext.remove(context);
+    return moduleRegistryReference.get();
   }
 }

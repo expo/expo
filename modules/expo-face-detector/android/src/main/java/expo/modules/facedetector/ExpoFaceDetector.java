@@ -22,7 +22,7 @@ public class ExpoFaceDetector implements expo.interfaces.facedetector.FaceDetect
 
   private FaceDetector mFaceDetector = null;
   private ImageDimensions mPreviousDimensions;
-  private FaceDetector.Builder mBuilder = null;
+  private FaceDetector.Builder mBuilder;
 
   private int mClassificationType = NO_CLASSIFICATIONS;
   private int mLandmarkType = NO_LANDMARKS;

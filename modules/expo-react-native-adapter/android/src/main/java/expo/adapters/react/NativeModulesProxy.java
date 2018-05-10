@@ -8,7 +8,6 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableType;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,7 +27,8 @@ import expo.core.interfaces.ExpoMethod;
  */
 /* package */ class NativeModulesProxy extends ReactContextBaseJavaModule {
   private final static String NAME = "ExpoNativeModuleProxy";
-  private final static String EXPORTED_METHODS_CONSTANT_NAME = "exportedMethods";
+  private final static String MODULES_CONSTANTS_KEY = "modulesConstants";
+  private final static String EXPORTED_METHODS_KEY = "exportedMethods";
 
   private final static String METHOD_INFO_ARGUMENTS_COUNT = "argumentsCount";
 
@@ -51,18 +51,19 @@ import expo.core.interfaces.ExpoMethod;
   @Nullable
   @Override
   public Map<String, Object> getConstants() {
-    Map<String, Object> constants = new HashMap<>(1);
-
     Collection<ExportedModule> exportedModules = mModuleRegistry.getAllExportedModules();
+    Map<String, Object> modulesConstants = new HashMap<>(exportedModules.size());
     Map<String, Object> exportedMethodsMap = new HashMap<>(exportedModules.size());
 
     for (ExportedModule exportedModule : exportedModules) {
       String moduleName = exportedModule.getName();
-      constants.put(moduleName, exportedModule.getConstants());
+      modulesConstants.put(moduleName, exportedModule.getConstants());
       exportedMethodsMap.put(moduleName, transformExportedMethodsMap(exportedModule.getExportedMethods()));
     }
 
-    constants.put(EXPORTED_METHODS_CONSTANT_NAME, exportedMethodsMap);
+    Map<String, Object> constants = new HashMap<>(2);
+    constants.put(MODULES_CONSTANTS_KEY, modulesConstants);
+    constants.put(EXPORTED_METHODS_KEY, exportedMethodsMap);
     return constants;
   }
 
