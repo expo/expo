@@ -110,6 +110,8 @@ To link to your standalone app, you need to specify a scheme for your app. You c
 
 Once you build your standalone app and install it to your device, you will be able to open it with links to `myapp://`.
 
+If your app is detached, note that like some other parts of `app.json`, changing the `scheme` key after your app is already detached will not have the desired effect. If you'd like to change the deep link scheme in your detached app, see [this guide](../expokit/advanced-expokit-topics.html#changing-the-deep-link-scheme).
+
 ### `Expo.Linking` module
 
 To save you the trouble of inserting a bunch of conditionals based on the environment that you're in and hardcoding urls, we provide some helper methods in our extension of the `Linking` module. When you want to provide a service with a url that it needs to redirect back into your app, you can call `Expo.Linking.makeUrl()` and it will resolve to the following:
