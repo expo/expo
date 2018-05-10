@@ -8,7 +8,7 @@ import expo.core.ExportedModule;
 import expo.core.ViewManager;
 
 public interface Package {
-  List<Module> createInternalModules(Context context);
+  List<InternalModule> createInternalModules(Context context);
   List<ExportedModule> createExportedModules(Context context);
 
   /**

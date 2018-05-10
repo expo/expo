@@ -7,7 +7,7 @@
 #import <EXCamera/EXFileSystem.h>
 #import <EXCamera/EXFaceDetector.h>
 #import <EXCamera/EXPermissions.h>
-#import <EXCamera/EXPlatformAdapter.h>
+#import <EXCamera/EXLifecycleManager.h>
 #import <EXCore/EXUtil.h>
 
 @interface EXCamera ()
@@ -16,7 +16,7 @@
 @property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 @property (nonatomic, strong) id<EXFaceDetectorManager> faceDetectorManager;
 @property (nonatomic, weak) id<EXPermissions> permissionsManager;
-@property (nonatomic, weak) id<EXPlatformAdapter> platformAdapter;
+@property (nonatomic, weak) id<EXLifecycleManager> lifecycleManager;
 
 @property (nonatomic, assign, getter=isSessionPaused) BOOL paused;
 
@@ -41,7 +41,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     self.session = [AVCaptureSession new];
     self.sessionQueue = dispatch_queue_create("cameraQueue", DISPATCH_QUEUE_SERIAL);
     self.faceDetectorManager = [self createFaceDetectorManager];
-    self.platformAdapter = [moduleRegistry getModuleForName:@"PlatformAdapter" downcastedTo:@protocol(EXPlatformAdapter) exception:nil];
+    self.lifecycleManager = [moduleRegistry getModuleForName:@"LifecycleManager" downcastedTo:@protocol(EXLifecycleManager) exception:nil];
     self.fileSystem = [moduleRegistry getModuleForName:@"ExponentFileSystem" downcastedTo:@protocol(EXFileSystem) exception:nil];
     self.permissionsManager = [moduleRegistry getModuleForName:@"Permissions" downcastedTo:@protocol(EXPermissions) exception:nil];
 #if !(TARGET_IPHONE_SIMULATOR)
@@ -57,7 +57,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
                                              selector:@selector(orientationChanged:)
                                                  name:UIDeviceOrientationDidChangeNotification
                                                object:nil];
-    [_platformAdapter registerAppLifecycleListener:self];
+    [_lifecycleManager registerAppLifecycleListener:self];
   }
   return self;
 }
@@ -107,7 +107,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 
 - (void)removeFromSuperview
 {
-  [_platformAdapter unregisterAppLifecycleListener:self];
+  [_lifecycleManager unregisterAppLifecycleListener:self];
   [self stopSession];
   [super removeFromSuperview];
   [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
@@ -777,7 +777,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 
 - (id)createFaceDetectorManager
 {
-  id <EXFaceDetectorManager> faceDetector = [_moduleRegistry createModuleForName:@"FaceDetector" downcastedTo:@protocol(EXFaceDetectorManager) exception:nil];
+  id <EXFaceDetectorManager> faceDetector = [_moduleRegistry getModuleForName:@"FaceDetector" downcastedTo:@protocol(EXFaceDetectorManager) exception:nil];
   if (faceDetector) {
     __weak EXCamera *weakSelf = self;
     [faceDetector setOnFacesDetected:^(NSArray<NSDictionary *> *faces) {

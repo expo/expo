@@ -13,7 +13,7 @@ import java.util.WeakHashMap;
 import expo.core.ExportedModule;
 import expo.core.ModuleRegistry;
 import expo.core.ModuleRegistryProvider;
-import expo.core.interfaces.Module;
+import expo.core.interfaces.InternalModule;
 import expo.core.ViewManager;
 import expo.core.interfaces.Package;
 
@@ -34,7 +34,7 @@ public class ReactModuleRegistryProvider extends ModuleRegistryProvider {
 
   @Override
   public ModuleRegistry get(Context context) {
-    Collection<Module> internalModules = new ArrayList<>();
+    Collection<InternalModule> internalModules = new ArrayList<>();
     Collection<ExportedModule> exportedModules = new ArrayList<>();
     for(Package pkg : getPackages()) {
       internalModules.addAll(pkg.createInternalModules(context));

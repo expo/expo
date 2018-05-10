@@ -15,6 +15,8 @@ export default class GalleryScreen extends React.Component {
 
   componentDidMount() {
     this._mounted = true;
+    // const resumable = FileSystem.createDownloadResumable("http://192.168.83.210:5000/Barcelona.mp4", FileSystem.documentDirectory + "photos/barc.mp4", {}, data => console.warn(data));
+    // resumable.downloadAsync();
     FileSystem.readDirectoryAsync(FileSystem.documentDirectory + 'photos').then(photos => {
       if (this._mounted) {
         this.setState(

@@ -8,12 +8,12 @@ import java.util.List;
 
 import expo.core.ExportedModule;
 import expo.core.BasePackage;
-import expo.core.interfaces.Module;
+import expo.core.interfaces.InternalModule;
 
 public class FaceDetectorPackage extends BasePackage {
   @Override
-  public List<Module> createInternalModules(Context context) {
-    return Collections.singletonList((Module) new FaceDetectorProvider());
+  public List<InternalModule> createInternalModules(Context context) {
+    return Collections.singletonList((InternalModule) new FaceDetectorProvider());
   }
 
   @Override

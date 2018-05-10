@@ -45,42 +45,41 @@ and run `pod install`.
 ### Glossary
 
 - **Native code** — iOS/Android native code.
-- **Client code** — code _over the bridge_, for React Native it would be JavaScript app, for Flutter it would be Flutter code.
-- **Module** — a class implementing `EXModule`/`expo.core.Module` interface. Its instance can be exported to client code or exposed internally to other modules via *Module Registry*.
+- **Client code** — code _over the bridge_, for React Native it would be the JavaScript app, for Flutter it would be Flutter code.
+- **Internal module** — a class implementing `EXInternalModule`/`expo.core.interfaces.InternalModule` interface. Its instance can be exposed internally to other modules via *Module Registry* (how dependants reference modules differs between platforms).
 - **Module interface** — an interface that should be implemented by the dependency so it can act as an implementation of it.
 
-    On Android modules implement an external interface (`expo-file-system` package implements interface provided by `expo-file-system-interface`). Dependents may access the implementations by calling
+    On Android modules implement an external interface (`expo-file-system` package implements interface provided by `expo-file-system-interface`). Dependants may access the implementations by calling
     ```java
     public <T> T getModule(Class<T> interfaceClass);
     ```
     method on the module registry.
 
-    On iOS its the consumer who defines required protocol. Implementations are identified by string. Dependents access the implementation by calling
+    On iOS its the consumer who defines required protocol. Implementations are identified by string. Dependants access the implementation by calling
     ```objc
     - (id)getModuleForName:(NSString *)name downcastedTo:(Protocol *)protocol exception:(NSException * __autoreleasing *)outException;
     ```
     method on the module registry. If `outException` argument is provided and an exception occurs (eg. argument mismatch is detected), it is filled with concrete exception data. Call to this function takes the module registered under `name` and tries to downcast it to the protocol provided.
-- **Module Registry** — well, a registry of modules. It initializes all the registered modules and provides them with itself, so they can ask for their dependencies (eg. `Camera` would ask for `FileSystem` module).
+- **Module Registry** — well, a registry of modules. Instance of this class is used to fetch another internal or exported module.
 - **Exported methods** — a subset of instance methods of a given module that should get exposed to client code by specific platform adapter.
-- **Exported module** — a class implementing `{EX,expo.core.}ExportedModule` interface. Its methods annotated with `expo.core.ExpoMethod`/`EX_EXPORT_METHOD_AS` are exported to client code.
+- **Exported module** — a subclass of `{EX,expo.core.}ExportedModule`. Its methods annotated with `expo.core.ExpoMethod`/`EX_EXPORT_METHOD_AS` are exported to client code.
+- **View manager** — a class capable of providing platform adapter with custom views.
 
 ### Registering modules in the registry
 
 #### iOS
 
 1. Open the header file for your module.
-2. Import `<EXCore/EXModule.h>`.
-3. Add `EXModule` to a list of implemented interfaces by the module instances (eg. `NSObject <EXModule>`). 
-4. Open the implementation file for your module.
-5. Use `EX_REGISTER_INTERNAL_MODULE` macro to register the module. Macro requires two arguments (`internalName`). One of them may be empty, eg. `EX_REGISTER_INTERNAL_MODULE(Camera)`.
-    > You can also use `EX_REGISTER_MODULE` macro, which expects two arguments (`clientCodeName`, `internalName`). Use it if you want to register a module which should be both accessible internally and exported to client code.
+2. Import `<EXCore/EXInternalModule.h>`.
+3. Add `EXModule` to a list of implemented interfaces by the module instances (eg. `NSObject <EXInternalModule>`). 
+4. Open the implementation file for your module and implement methods required by the protocol.
+5. Use `EX_REGISTER_MODULE();` macro to register the module.
 6. That's it!
-
 
 #### Android
 
-1. Add `expo.core.Module` to your class's imports.
-2. Make your module class implement `Module` interface.
+1. Add `expo.core.interfaces.InternalModule` to your class's imports.
+2. Make your module class implement `InternalModule` interface.
     1. Implement `public List<Class> getExportedInterfaces();`. Return a list of module interfaces implemented by the class, for example:
         ```java
         return Collections.singletonList((Class) expo.interfaces.filesystem.FileSystem.class);
@@ -95,14 +94,14 @@ and run `pod install`.
           )
         )
         ```
-4. Add your module to be returned by either `List<Module> createModules();` or `List<Module> createModules(Context context);`, depending on whether your module requires `Context` during initialization.
+4. Add your module to be returned by `List<InternalModule> createInternalModules(Context context);`.
 5. You're good to go!
 
 ### Exporting module to client code
 
 #### iOS
 
-When registering your module for export to client code, use either `EX_REGISTER_EXPORTED_MODULE(clientCodeName)` or `EX_REGISTER_MODULE(clientCodeName, internalName)`. (You cannot put both `EX_REGISTER_EXPORTED_MODULE` and `EX_REGISTER_INTERNAL_MODULE` in the same file, so for a module exported both internally and exported, use `EX_REGISTER_MODULE`.)
+When registering your module for export to client code, you must first decide whether the class will only be exported to client code or will it be both internal and exported module. If the former is applicable, you easily just subclass `EXExportedModule` and use macro `EX_EXPORT_MODULE(clientCodeName)` to provide a name under which it should be exported. If your module should be both internal and exported module, you also have to subclass `EXExportedModule`, but this time use `EX_REGISTER_MODULE()` in the implementation and then manually override methods `internalModuleNames` and `exportedModuleName`.
 
 #### Android
 
@@ -112,11 +111,11 @@ Subclass `expo.core.ExportedModule` and add your module to a list returned by `P
 
 #### iOS
 
-Use `EX_EXPORT_METHOD_AS(exportedName, definition)` macro to export given method to client code. Note that for the module to be available in the client code you have to provide a non-empty client code name in `EX_REGISTER_MODULE(clientCodeName, internalName)`. For now, arguments have to use basic, object types, like `NSString *`, `NSDictionary *`, `NSNumber *`. Methods are required to receive `EXPromiseResolveBlock` and `EXPromiseRejectBlock` as two last arguments.
+Use `EX_EXPORT_METHOD_AS(exportedName, definition)` macro to export given method to client code. Note that for the module to be available in the client code you have to provide a non-empty client code name in `EX_EXPORT_MODULE(clientCodeName)` or `- (const NSString *)exportedModuleName`. For now, arguments have to use basic, object types, like `NSString *`, `NSDictionary *`, `NSNumber *`. Methods are required to receive `EXPromiseResolveBlock` and `EXPromiseRejectBlock` as two last arguments.
 
 #### Android
 
-Given that your module class implements `expo.core.ExportedModule` and it is return by the respective `Package`, you just have to annotate the given method with `@ExpoMethod` annotation. Methods are required to receive `expo.core.Promise` as the last argument.
+Given that your module subclasses `expo.core.ExportedModule` and it is returned by the respective `Package`, you just have to annotate the given method with `@ExpoMethod` annotation. Methods are required to receive `expo.core.Promise` as the last argument.
 
 ### Exporting constants to client code
 
@@ -127,3 +126,19 @@ Implement `- (NSDictionary *)constantsToExport` method to export constants to cl
 #### Android
 
 Override `public Map<String, Object> getConstants();` method to export constants to client code.
+
+### Creating a custom view manager
+
+#### iOS
+
+Subclass `EXViewManager` and override at least `- (UIView *)view` and `- (NSString *)viewName`. Register it with `EX_REGISTER_MODULE()`.
+
+Use `EX_VIEW_PROPERTY(propName, propClass, viewClass)` to define custom view properties.
+
+#### Android
+
+TODO: ViewManager from interface to a class
+
+Implement `expo.core.interfaces.ViewManager` in your class and respond with its instance in `List<ViewManager> createViewManagers(Context context);` in corresponding `Package`.
+
+Annotate prop setter methods with `@ExpoProp(name = <name>)` to define custom view properties.

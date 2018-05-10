@@ -11,7 +11,7 @@ import expo.adapters.react.services.CookieManagerModule;
 import expo.adapters.react.services.EventEmitterModule;
 import expo.adapters.react.services.UIManagerModuleWrapper;
 import expo.core.BasePackage;
-import expo.core.interfaces.Module;
+import expo.core.interfaces.InternalModule;
 import expo.core.interfaces.Package;
 
 /**
@@ -19,7 +19,7 @@ import expo.core.interfaces.Package;
  */
 public class ReactAdapterPackage extends BasePackage {
   @Override
-  public List<Module> createInternalModules(Context context) {
+  public List<InternalModule> createInternalModules(Context context) {
     // We can force-cast here, because this package will only be used in React Native context.
     ReactContext reactContext = (ReactContext) context;
     return Arrays.asList(

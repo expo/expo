@@ -1,6 +1,5 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <EXCore/EXModule.h>
 #import <EXCore/EXModuleRegistry.h>
 
 #import <EXFileSystem/EXDownloadDelegate.h>
@@ -12,7 +11,7 @@
 #import <EXFileSystem/EXFileSystemLocalFileHandler.h>
 #import <EXFileSystem/EXFileSystemAssetLibraryHandler.h>
 
-#import <EXFileSystem/EXPlatformAdapter.h>
+#import <EXFileSystem/EXEventEmitterService.h>
 
 NSString * const EXDownloadProgressEventName = @"Exponent.downloadProgress";
 
@@ -45,7 +44,7 @@ NSString * const EXDownloadProgressEventName = @"Exponent.downloadProgress";
 @property (nonatomic, strong) NSMutableDictionary<NSString *, EXDownloadResumable*> *downloadObjects;
 @property (nonatomic, strong) id<EXFileSystemScopedModuleDelegate> kernelFileSystemDelegate;
 @property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
-@property (nonatomic, weak) id<EXPlatformAdapter> platformAdapter;
+@property (nonatomic, weak) id<EXEventEmitterService> eventEmitter;
 
 @end
 
@@ -66,7 +65,17 @@ NSString * const EXDownloadProgressEventName = @"Exponent.downloadProgress";
 
 @implementation EXFileSystem
 
-EX_REGISTER_MODULE(ExponentFileSystem, ExponentFileSystem);
+EX_REGISTER_MODULE();
+
++ (const NSString *)exportedModuleName
+{
+  return @"ExponentFileSystem";
+}
+
++ (const NSArray<NSString *> *)internalModuleNames
+{
+  return @[@"ExponentFileSystem"];
+}
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId
 {
@@ -84,7 +93,7 @@ EX_REGISTER_MODULE(ExponentFileSystem, ExponentFileSystem);
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  _platformAdapter = [_moduleRegistry getModuleForName:@"PlatformAdapter" downcastedTo:@protocol(EXPlatformAdapter) exception:nil];
+  _eventEmitter = [_moduleRegistry getModuleForName:@"EventEmitter" downcastedTo:@protocol(EXEventEmitterService) exception:nil];
 }
 
 + (BOOL)requiresMainQueueSetup
@@ -107,6 +116,16 @@ EX_REGISTER_MODULE(ExponentFileSystem, ExponentFileSystem);
 {
   return @[EXDownloadProgressEventName];
 }
+
+- (void)startObserving {
+  
+}
+
+
+- (void)stopObserving {
+  
+}
+
 
 EX_EXPORT_METHOD_AS(getInfoAsync,
                     getInfoAsyncWithURI:(NSString *)uriString
@@ -624,8 +643,8 @@ EX_EXPORT_METHOD_AS(downloadResumablePauseAsync,
 
 - (void)sendEventWithName:(NSString *)eventName body:(id)body
 {
-  if (_platformAdapter != nil) {
-    [_platformAdapter sendEventWithName:eventName body:body];
+  if (_eventEmitter != nil) {
+    [_eventEmitter sendEventWithName:eventName body:body];
   }
 }
 

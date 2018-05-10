@@ -11,10 +11,10 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 import java.util.Collections;
 import java.util.List;
 
-import expo.core.interfaces.Module;
+import expo.core.interfaces.InternalModule;
 import expo.core.interfaces.services.EventEmitter;
 
-public class EventEmitterModule implements EventEmitter, Module {
+public class EventEmitterModule implements EventEmitter, InternalModule {
   private ReactContext mReactContext;
 
   public EventEmitterModule(ReactContext reactContext) {

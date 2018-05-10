@@ -1,5 +1,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <EXCore/EXViewManager.h>
+#import <EXCore/EXExportedModule.h>
+#import <EXCore/EXModuleRegistryConsumer.h>
 #import <EXCamera/EXCamera.h>
 
 static const int EXFlashModeTorch = 3;
@@ -44,7 +46,7 @@ typedef NS_ENUM(NSInteger, EXCameraVideoResolution) {
   EXCameraVideo4x3 = 3,
 };
 
-@interface EXCameraManager : NSObject <EXViewManager>
+@interface EXCameraManager : EXViewManager <EXModuleRegistryConsumer>
 
 + (NSDictionary *)validBarCodeTypes;
 

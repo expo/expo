@@ -8,6 +8,7 @@
 
 #import <GoogleMobileVision/GoogleMobileVision.h>
 #import <EXCore/EXExportedModule.h>
+#import <EXCore/EXModuleRegistryConsumer.h>
 
-@interface EXFaceDetectorModule : NSObject <EXExportedModule>
+@interface EXFaceDetectorModule : EXExportedModule <EXModuleRegistryConsumer>
 @end

@@ -13,9 +13,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import expo.core.interfaces.Module;
+import expo.core.interfaces.InternalModule;
 
-public class FileSystem implements Module, expo.interfaces.filesystem.FileSystem {
+public class FileSystem implements InternalModule, expo.interfaces.filesystem.FileSystem {
   @Override
   public List<Class> getExportedInterfaces() {
     return Collections.singletonList((Class) expo.interfaces.filesystem.FileSystem.class);

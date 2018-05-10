@@ -18,9 +18,9 @@ Object.keys(NativeProxy[exportedMethodsKey]).forEach(moduleName => {
     };
   }
   NativeModulesProxy[moduleName].addListener = (...args) =>
-    NativeProxy.addProxiedListener(moduleName, ...args);
+    NativeModules.EXReactNativeEventEmitter.addProxiedListener(moduleName, ...args);
   NativeModulesProxy[moduleName].removeListeners = (...args) =>
-    NativeProxy.removeProxiedListeners(moduleName, ...args);
+    NativeModules.EXReactNativeEventEmitter.removeProxiedListeners(moduleName, ...args);
 });
 
 module.exports = NativeModulesProxy;

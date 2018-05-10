@@ -19,25 +19,23 @@
 #define EX_VIEW_PROPERTY(external_name, type, viewClass) \
   - (void)EX_CONCAT(EX_PROPSETTERS_PREFIX, external_name):(type)value view:(viewClass *)view
 
-#define EX_REGISTER_INTERNAL_MODULE(internal_name) \
-  EX_REGISTER_MODULE(, internal_name)
-
-#define EX_REGISTER_EXPORTED_MODULE(exported_name) \
-  EX_REGISTER_MODULE(exported_name,)
-
-#define EX_REGISTER_MODULE(external_name, internal_name) \
-  _EX_REGISTER_MODULE(external_name, internal_name, )
-
-#define _EX_REGISTER_MODULE(external_name, internal_name, _custom_load_code) \
-  extern void EXRegisterExportedModule(Class, NSString *); \
-  extern void EXRegisterInternalModule(Class, NSString *); \
-  + (NSString *)internalModuleName { return @#internal_name; } \
-  + (NSString *)moduleName { return @#external_name; } \
+#define _EX_DEFINE_CUSTOM_LOAD(_custom_load_code) \
+  extern void EXRegisterModule(Class); \
   + (void)load { \
-    if (@#internal_name != nil) { EXRegisterInternalModule(self, @#internal_name); } \
-    if (@#external_name != nil) { EXRegisterExportedModule(self, @#external_name); } \
+    EXRegisterModule(self); \
     _custom_load_code \
   }
+
+#define EX_EXPORT_MODULE_WITH_CUSTOM_LOAD(external_name, _custom_load_code) \
+  _EX_DEFINE_CUSTOM_LOAD(_custom_load_code) \
+  + (const NSString *)exportedModuleName { return @#external_name; }
+
+#define EX_EXPORT_MODULE(external_name) \
+  EX_EXPORT_MODULE_WITH_CUSTOM_LOAD(external_name,)
+
+#define EX_REGISTER_MODULE(_custom_load_code) \
+  _EX_DEFINE_CUSTOM_LOAD(_custom_load_code)
+
 
 #import <Foundation/Foundation.h>
 

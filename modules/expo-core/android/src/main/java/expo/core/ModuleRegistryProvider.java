@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import expo.core.interfaces.Module;
+import expo.core.interfaces.InternalModule;
 import expo.core.interfaces.Package;
 
 /**
@@ -32,8 +32,8 @@ public class ModuleRegistryProvider {
     );
   }
 
-  public Collection<Module> createInternalModules(Context context) {
-    Collection<Module> internalModules = new ArrayList<>();
+  public Collection<InternalModule> createInternalModules(Context context) {
+    Collection<InternalModule> internalModules = new ArrayList<>();
     for (Package pkg : getPackages()) {
       internalModules.addAll(pkg.createInternalModules(context));
     }

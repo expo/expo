@@ -13,6 +13,6 @@ import expo.core.ModuleRegistry;
  * will be able to pick it up and register as a provider for this interface, in case some other module
  * asks for `expo.interfaces.filesystem.FileSystem` provider.
  */
-public interface Module {
+public interface InternalModule {
   List<Class> getExportedInterfaces();
 }

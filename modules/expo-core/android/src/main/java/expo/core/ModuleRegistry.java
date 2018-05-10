@@ -9,22 +9,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import expo.core.interfaces.Module;
+import expo.core.interfaces.InternalModule;
 import expo.core.interfaces.ModuleRegistryConsumer;
 
 public class ModuleRegistry {
-  private final Map<Class, Module> mInternalModulesMap = new HashMap<>();
+  private final Map<Class, InternalModule> mInternalModulesMap = new HashMap<>();
   private final Map<String, ViewManager> mViewManagersMap = new HashMap<>();
   private final Map<String, ExportedModule> mExportedModulesMap = new HashMap<>();
 
   private List<WeakReference<ModuleRegistryConsumer>> mRegistryConsumers = new ArrayList<>();
 
   public ModuleRegistry(
-          Collection<Module> internalModules,
+          Collection<InternalModule> internalModules,
           Collection<ExportedModule> exportedModules,
           Collection<ViewManager> viewManagers) {
-    for (Module module : internalModules) {
-      registerInternalModule(module);
+    for (InternalModule internalModule : internalModules) {
+      registerInternalModule(internalModule);
     }
 
     for (ExportedModule module : exportedModules) {
@@ -65,7 +65,7 @@ public class ModuleRegistry {
    *
    *******************************************************/
 
-  public void registerInternalModule(Module module) {
+  public void registerInternalModule(InternalModule module) {
     for (Class exportedInterface : module.getExportedInterfaces()) {
       if (mInternalModulesMap.containsKey(exportedInterface)) {
         Log.w("E_DUPLICATE_MOD_ALIAS", "Module map already contains a module for key " + exportedInterface + ". Dropping module " + module + ".");
@@ -107,7 +107,7 @@ public class ModuleRegistry {
   /**
    * Register a {@link ModuleRegistryConsumer} as interested of
    * when {@link ModuleRegistry} will be ready, i.e. will have
-   * all the {@link Module} instances registered.
+   * all the {@link InternalModule} instances registered.
    */
   public void addRegistryConsumer(ModuleRegistryConsumer consumer) {
     mRegistryConsumers.add(new WeakReference<>(consumer));

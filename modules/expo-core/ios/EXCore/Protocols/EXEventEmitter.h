@@ -4,7 +4,10 @@
 #import <EXCore/EXDefines.h>
 #import <EXCore/EXExportedModule.h>
 
-@protocol EXEventEmitter <EXExportedModule>
+// Implement this protocol in your exported module to be able
+// to send events through platform event emitter.
+
+@protocol EXEventEmitter
 
 - (void)startObserving;
 - (void)stopObserving;

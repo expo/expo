@@ -37,11 +37,16 @@ static NSDictionary *defaultDetectorOptions = nil;
   return self;
 }
 
-EX_REGISTER_EXPORTED_MODULE(ExpoFaceDetector);
+EX_EXPORT_MODULE(ExpoFaceDetector);
 
 - (NSDictionary *)constantsToExport
 {
   return [EXFaceDetectorUtils constantsToExport];
+}
+
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+{
+  _moduleRegistry = moduleRegistry;
 }
 
 EX_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)options resolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject) {

@@ -31,7 +31,11 @@ static const NSString *runClassificationsKeyPath = @"runClassifications";
 
 @implementation EXFaceDetectorManager
 
-EX_REGISTER_INTERNAL_MODULE(FaceDetector);
+EX_REGISTER_MODULE();
+
++ (const NSArray<NSString *> *)internalModuleNames {
+  return @[@"FaceDetector"];
+}
 
 static NSDictionary *defaultFaceDetectorOptions = nil;
 

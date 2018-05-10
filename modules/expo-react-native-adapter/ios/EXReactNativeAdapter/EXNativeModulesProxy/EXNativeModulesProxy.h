@@ -1,17 +1,16 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <React/RCTBridgeModule.h>
-#import <React/RCTEventEmitter.h>
-#import <EXCore/EXModule.h>
+#import <EXCore/EXInternalModule.h>
 #import <EXCore/EXModuleRegistry.h>
 
-@interface EXNativeModulesProxy : RCTEventEmitter <RCTBridgeModule>
+// RCTBridgeModule capable of receiving method calls from JS and forwarding them
+// to proper exported Expo modules. Also, it exports important constants to JS, like
+// properties of exported methods and modules' constants.
 
-@property (nonatomic, strong, readonly) EXModuleRegistry *moduleRegistry;
-@property (nonatomic, strong, readonly) NSDictionary<NSString *, NSDictionary<NSString *, NSString *> *> *exportedMethods;
+@interface EXNativeModulesProxy : NSObject <RCTBridgeModule>
 
 - (instancetype)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry;
-- (NSArray<id<RCTBridgeModule>> *)getBridgeModules;
 
 @end
 

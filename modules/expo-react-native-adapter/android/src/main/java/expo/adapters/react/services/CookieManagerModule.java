@@ -8,9 +8,9 @@ import java.net.CookieHandler;
 import java.util.Collections;
 import java.util.List;
 
-import expo.core.interfaces.Module;
+import expo.core.interfaces.InternalModule;
 
-public class CookieManagerModule extends ForwardingCookieHandler implements Module, NativeModule {
+public class CookieManagerModule extends ForwardingCookieHandler implements InternalModule, NativeModule {
   private static final String TAG = "CookieManagerModule";
 
   public CookieManagerModule(ReactContext context) {

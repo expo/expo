@@ -6,9 +6,6 @@
 
 static const NSString *viewManagerAdapterModuleNamePrefix = @"ViewManagerAdapter_";
 
-static EXViewManagerAdapterClassesRegistry *sharedSingleton;
-static dispatch_once_t singletonToken;
-
 static IMP directEventBlockImplementation = nil;
 static dispatch_once_t directEventBlockImplementationOnceToken;
 
@@ -20,14 +17,6 @@ static dispatch_once_t directEventBlockImplementationOnceToken;
 
 @implementation EXViewManagerAdapterClassesRegistry
 
-+ (instancetype)sharedInstance
-{
-  dispatch_once(&singletonToken, ^{
-    sharedSingleton = [[EXViewManagerAdapterClassesRegistry alloc] init];
-  });
-  return sharedSingleton;
-}
-
 - (instancetype)init
 {
   if (self = [super init]) {
@@ -36,7 +25,7 @@ static dispatch_once_t directEventBlockImplementationOnceToken;
   return self;
 }
 
-- (Class)viewManagerAdapterClassForViewManager:(id<EXViewManager>)viewManager
+- (Class)viewManagerAdapterClassForViewManager:(EXViewManager *)viewManager
 {
   Class viewManagerClass = [viewManager class];
   if (_viewManagerAdaptersClasses[viewManagerClass] == nil) {
@@ -45,7 +34,7 @@ static dispatch_once_t directEventBlockImplementationOnceToken;
   return _viewManagerAdaptersClasses[viewManagerClass];
 }
 
-- (Class)_createViewManagerAdapterClassForViewManager:(id<EXViewManager>)viewManager
+- (Class)_createViewManagerAdapterClassForViewManager:(EXViewManager *)viewManager
 {
   const char *viewManagerClassName = [[viewManagerAdapterModuleNamePrefix stringByAppendingString:[viewManager viewName]] UTF8String];
   Class viewManagerAdapterClass = objc_allocateClassPair([EXViewManagerAdapter class], viewManagerClassName, 0);

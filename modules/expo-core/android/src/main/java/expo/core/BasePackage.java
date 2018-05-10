@@ -5,12 +5,12 @@ import android.content.Context;
 import java.util.Collections;
 import java.util.List;
 
-import expo.core.interfaces.Module;
+import expo.core.interfaces.InternalModule;
 import expo.core.interfaces.Package;
 
 public class BasePackage implements Package {
   @Override
-  public List<Module> createInternalModules(Context context) {
+  public List<InternalModule> createInternalModules(Context context) {
     return Collections.emptyList();
   }
 

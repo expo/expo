@@ -14,13 +14,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import expo.core.interfaces.InternalModule;
 import expo.core.interfaces.LifecycleEventListener;
-import expo.core.interfaces.Module;
 import expo.core.interfaces.services.UIManager;
 import expo.interfaces.permissions.PermissionsManager;
 import expo.interfaces.permissions.PermissionsListener;
 
-public class UIManagerModuleWrapper implements Module, UIManager, PermissionsManager {
+public class UIManagerModuleWrapper implements InternalModule, UIManager, PermissionsManager {
   private ReactContext mReactContext;
   private Map<LifecycleEventListener, com.facebook.react.bridge.LifecycleEventListener> mLifecycleListenersMap = new WeakHashMap<>();
 

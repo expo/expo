@@ -1,6 +1,8 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
+#import <EXCore/EXExportedModule.h>
+#import <EXCore/EXModuleRegistryConsumer.h>
 #import <EXCore/EXEventEmitter.h>
 
 typedef NS_OPTIONS(unsigned int, EXFileSystemPermissionFlags) {
@@ -16,7 +18,7 @@ typedef NS_OPTIONS(unsigned int, EXFileSystemPermissionFlags) {
 
 @end
 
-@interface EXFileSystem : NSObject <EXEventEmitter>
+@interface EXFileSystem : EXExportedModule <EXEventEmitter, EXModuleRegistryConsumer>
 
 @property (nonatomic, readonly) NSString *documentDirectory;
 @property (nonatomic, readonly) NSString *cachesDirectory;

@@ -24,7 +24,7 @@ typedef enum EXPermissionStatus {
 
 @end
 
-@interface EXPermissions : NSObject <EXExportedModule, EXPermissionRequesterDelegate>
+@interface EXPermissions : EXExportedModule <EXPermissionRequesterDelegate>
 
 - (NSDictionary *)getPermissionsForResource:(NSString *)resource;
 

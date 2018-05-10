@@ -21,7 +21,16 @@ NSString * const EXPermissionExpiresNever = @"never";
 
 @implementation EXPermissions
 
-EX_REGISTER_MODULE(ExponentPermissions, Permissions);
+EX_EXPORT_MODULE(ExponentPermissions);
+
++ (const NSArray<NSString *> *)internalModuleNames
+{
+  return @[@"Permissions"];
+}
+
+- (NSDictionary *)constantsToExport {
+  return nil;
+}
 
 - (dispatch_queue_t)methodQueue
 {

@@ -6,8 +6,8 @@
 
 @interface EXReactNativeAdapter ()
 
-@property (weak, nonatomic) RCTBridge *bridge;
-@property (weak, nonatomic) EXNativeModulesProxy *modulesProxy;
+@property (nonatomic, weak) RCTBridge *bridge;
+@property (nonatomic, weak) EXNativeModulesProxy *modulesProxy;
 @property (nonatomic, assign) BOOL isForegrounded;
 @property (nonatomic, strong) NSMutableSet<id<EXAppLifecycleListener>> *lifecycleListeners;
 
@@ -15,7 +15,17 @@
 
 @implementation EXReactNativeAdapter
 
-EX_RCT_REGISTER_MODULE(,PlatformAdapter);
+EX_REGISTER_MODULE();
+
++ (NSString *)moduleName
+{
+  return nil;
+}
+
++ (const NSArray<NSString *> *)internalModuleNames
+{
+  return @[@"LifecycleManager", @"UIManager"];
+}
 
 # pragma mark - Lifecycle methods
 
@@ -52,18 +62,6 @@ EX_RCT_REGISTER_MODULE(,PlatformAdapter);
       }];
     }
   });
-}
-
-- (void)sendEventWithName:(NSString *)name body:(id)body
-{
-  if (_modulesProxy != nil) {
-    [_modulesProxy sendEventWithName:name body:body];
-  }
-}
-
-- (void)setNativeModulesProxy:(EXNativeModulesProxy *)modulesProxy
-{
-  _modulesProxy = modulesProxy;
 }
 
 - (void)setBridge:(RCTBridge *)bridge

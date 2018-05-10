@@ -1,20 +1,20 @@
 #import <EXCamera/EXCamera.h>
 #import <EXCamera/EXCameraManager.h>
 #import <EXCamera/EXFileSystem.h>
-#import <EXCamera/EXPlatformAdapter.h>
+#import <EXCamera/EXUIManager.h>
 #import <EXCamera/EXImageUtils.h>
 
 @interface EXCameraManager ()
 
 @property (nonatomic, weak) id<EXFileSystem> fileSystem;
-@property (nonatomic, weak) id<EXPlatformAdapter> platformManager;
+@property (nonatomic, weak) id<EXUIManager> uiManager;
 @property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 
 @end
 
 @implementation EXCameraManager
 
-EX_REGISTER_MODULE(ExponentCameraManager,);
+EX_EXPORT_MODULE(ExponentCameraManager);
 
 - (NSString *)viewName
 {
@@ -25,7 +25,7 @@ EX_REGISTER_MODULE(ExponentCameraManager,);
 {
   _moduleRegistry = moduleRegistry;
   _fileSystem = [moduleRegistry getModuleForName:@"ExponentFileSystem" downcastedTo:@protocol(EXFileSystem) exception:nil];
-  _platformManager = [moduleRegistry getModuleForName:@"PlatformAdapter" downcastedTo:@protocol(EXPlatformAdapter) exception:nil];
+  _uiManager = [moduleRegistry getModuleForName:@"UIManager" downcastedTo:@protocol(EXUIManager) exception:nil];
 }
 
 - (UIView *)view
@@ -176,7 +176,7 @@ EX_EXPORT_METHOD_AS(takePicture,
   }
   resolve(response);
 #else
-  [_platformManager addUIBlock:^(id view) {
+  [_uiManager addUIBlock:^(id view) {
     if (view != nil) {
       [view takePicture:options resolve:resolve reject:reject];
     } else {
@@ -197,7 +197,7 @@ EX_EXPORT_METHOD_AS(record,
   reject(@"E_RECORDING_FAILED", @"Video recording is not supported on a simulator.", nil);
   return;
 #endif
-  [_platformManager addUIBlock:^(id view) {
+  [_uiManager addUIBlock:^(id view) {
     if (view != nil) {
       [view record:options resolve:resolve reject:reject];
     } else {
@@ -212,7 +212,7 @@ EX_EXPORT_METHOD_AS(stopRecording,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  [_platformManager addUIBlock:^(id view) {
+  [_uiManager addUIBlock:^(id view) {
     if (view != nil) {
       [view stopRecording];
       resolve(nil);

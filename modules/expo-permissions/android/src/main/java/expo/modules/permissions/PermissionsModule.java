@@ -18,7 +18,7 @@ import java.util.List;
 
 import expo.core.ExportedModule;
 import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.Module;
+import expo.core.interfaces.InternalModule;
 import expo.core.ModuleRegistry;
 import expo.core.interfaces.ModuleRegistryConsumer;
 import expo.core.Promise;
@@ -26,7 +26,7 @@ import expo.interfaces.permissions.Permissions;
 import expo.interfaces.permissions.PermissionsListener;
 import expo.interfaces.permissions.PermissionsManager;
 
-public class PermissionsModule extends ExportedModule implements Module, Permissions, ModuleRegistryConsumer {
+public class PermissionsModule extends ExportedModule implements InternalModule, Permissions, ModuleRegistryConsumer {
   private static String PERMISSION_EXPIRES_NEVER = "never";
   private static final int PERMISSIONS_REQUEST = 13;
 

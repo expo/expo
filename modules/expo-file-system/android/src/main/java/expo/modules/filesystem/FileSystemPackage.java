@@ -8,12 +8,12 @@ import java.util.List;
 
 import expo.core.ExportedModule;
 import expo.core.BasePackage;
-import expo.core.interfaces.Module;
+import expo.core.interfaces.InternalModule;
 
 public class FileSystemPackage extends BasePackage {
   @Override
-  public List<Module> createInternalModules(Context context) {
-    return Collections.<Module>singletonList(new FileSystem());
+  public List<InternalModule> createInternalModules(Context context) {
+    return Collections.<InternalModule>singletonList(new FileSystem());
   }
 
   @Override

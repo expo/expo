@@ -2,7 +2,7 @@
 
 #import <Foundation/Foundation.h>
 
-@protocol EXPlatformAdapter
+@protocol EXEventEmitterService
 
 - (void)sendEventWithName:(NSString *)name body:(id)body;
 
