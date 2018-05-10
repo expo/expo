@@ -1,6 +1,5 @@
 package expo.core;
 
-import android.content.Context;
 import android.util.Log;
 
 import java.lang.ref.WeakReference;
@@ -12,7 +11,6 @@ import java.util.Map;
 
 import expo.core.interfaces.Module;
 import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.interfaces.Package;
 import expo.core.interfaces.ViewManager;
 
 public class ModuleRegistry {
@@ -37,14 +35,6 @@ public class ModuleRegistry {
     for (ViewManager manager : viewManagers) {
       registerViewManager(manager);
     }
-  }
-
-  public ModuleRegistry(List<Package> packages, Context context) {
-    this(
-            createInternalModules(packages, context),
-            createExportedModules(packages, context),
-            createViewManagers(packages, context)
-    );
   }
 
   /********************************************************
@@ -146,35 +136,5 @@ public class ModuleRegistry {
       }
     }
     mRegistryConsumers.removeAll(emptyReferences);
-  }
-
-  /********************************************************
-   *
-   *  Initializing helpers
-   *
-   *******************************************************/
-
-  public static Collection<Module> createInternalModules(Collection<Package> packages, Context context) {
-    Collection<Module> internalModules = new ArrayList<>();
-    for (Package pkg : packages) {
-      internalModules.addAll(pkg.createInternalModules(context));
-    }
-    return internalModules;
-  }
-
-  public static Collection<ExportedModule> createExportedModules(Collection<Package> packages, Context context) {
-    Collection<ExportedModule> exportedModules = new ArrayList<>();
-    for (Package pkg : packages) {
-      exportedModules.addAll(pkg.createExportedModules(context));
-    }
-    return exportedModules ;
-  }
-
-  public static Collection<ViewManager> createViewManagers(Collection<Package> packages, Context context) {
-    Collection<ViewManager> viewManagers = new ArrayList<>();
-    for (Package pkg : packages) {
-      viewManagers.addAll(pkg.createViewManagers(context));
-    }
-    return viewManagers;
   }
 }

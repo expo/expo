@@ -12,7 +12,7 @@ import java.util.WeakHashMap;
 
 import expo.core.ExportedModule;
 import expo.core.ModuleRegistry;
-import expo.core.ModuleRegistryBuilder;
+import expo.core.ModuleRegistryProvider;
 import expo.core.interfaces.Module;
 import expo.core.interfaces.Package;
 import expo.core.interfaces.ViewManager;
@@ -25,15 +25,15 @@ import expo.core.interfaces.ViewManager;
  * which is returned in {@link ModuleRegistryAdapter#createViewManagers(ReactApplicationContext)}
  * only once (and managers returned this one time will persist "forever").
  */
-public class ReactModuleRegistryBuilder extends ModuleRegistryBuilder {
+public class ReactModuleRegistryProvider extends ModuleRegistryProvider {
   private Collection<ViewManager> mViewManagers;
 
-  public ReactModuleRegistryBuilder(List<Package> initialPackages) {
+  public ReactModuleRegistryProvider(List<Package> initialPackages) {
     super(initialPackages);
   }
 
   @Override
-  public ModuleRegistry build(Context context) {
+  public ModuleRegistry get(Context context) {
     Collection<Module> internalModules = new ArrayList<>();
     Collection<ExportedModule> exportedModules = new ArrayList<>();
     for(Package pkg : getPackages()) {
@@ -49,7 +49,7 @@ public class ReactModuleRegistryBuilder extends ModuleRegistryBuilder {
     }
 
     mViewManagers = Collections.newSetFromMap(new WeakHashMap<ViewManager, Boolean>());
-    mViewManagers.addAll(ModuleRegistry.createViewManagers(getPackages(), context));
+    mViewManagers.addAll(createViewManagers(context));
     return mViewManagers;
   }
 }
