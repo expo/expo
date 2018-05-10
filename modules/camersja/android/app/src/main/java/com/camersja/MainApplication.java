@@ -6,8 +6,8 @@ import com.facebook.react.ReactApplication;
 
 import expo.adapters.react.ModuleRegistryAdapter;
 import expo.adapters.react.ReactAdapterPackage;
-import expo.adapters.react.ReactModuleRegistryBuilder;
-import expo.core.ModuleRegistryBuilder;
+import expo.adapters.react.ReactModuleRegistryProvider;
+import expo.core.ModuleRegistryProvider;
 import expo.core.interfaces.Package;
 import expo.modules.filesystem.FileSystemPackage;
 import expo.modules.facedetector.FaceDetectorPackage;
@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MainApplication extends Application implements ReactApplication {
-  private final ModuleRegistryBuilder mModuleRegistryBuilder = new ReactModuleRegistryBuilder(Arrays.<Package>asList(
+  private final ModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(
     new FileSystemPackage(),
     new FaceDetectorPackage(),
     new PermissionsPackage(),
@@ -41,7 +41,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
-          new ModuleRegistryAdapter(mModuleRegistryBuilder)
+          new ModuleRegistryAdapter(mModuleRegistryProvider)
       );
     }
 
