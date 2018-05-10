@@ -14,6 +14,7 @@ import host.exp.exponent.exceptions.ExceptionUtils;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.storage.ExponentSharedPreferences;
+import host.exp.expoview.ExpoViewBuildConfig;
 import host.exp.expoview.Exponent;
 
 public abstract class AppLoader {
@@ -61,7 +62,7 @@ public abstract class AppLoader {
 
   public void start() {
     // if remote updates are disabled, skip all code that could fetch remote updates
-    if (!Constants.ARE_REMOTE_UPDATES_ENABLED) {
+    if (!Constants.ARE_REMOTE_UPDATES_ENABLED && !ExpoViewBuildConfig.DEBUG) {
       mExponentManifest.fetchEmbeddedManifest(mManifestUrl, new ExponentManifest.ManifestListener() {
         @Override
         public void onCompleted(JSONObject manifest) {
