@@ -100,6 +100,7 @@ public class AirMapOverlay extends AirMapFeature implements ImageReadable {
 
   @Override
   public void removeFromMap(GoogleMap map) {
+    this.map = null;
     if (this.groundOverlay != null) {
       this.groundOverlay.remove();
       this.groundOverlay = null;
