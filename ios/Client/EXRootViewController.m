@@ -207,6 +207,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (viewControllerToShow) {
       [viewControllerToShow willMoveToParentViewController:self];
       [self.view addSubview:viewControllerToShow.view];
+      [viewControllerToShow foregroundControllers];
     }
 
     __weak typeof(self) weakSelf = self;
@@ -214,12 +215,13 @@ NS_ASSUME_NONNULL_BEGIN
       __strong typeof(weakSelf) strongSelf = weakSelf;
       if (strongSelf) {
         if (viewControllerToHide) {
-          [viewControllerToHide willMoveToParentViewController:nil];
-          [viewControllerToHide.view removeFromSuperview];
-          [viewControllerToHide didMoveToParentViewController:nil];
-          
-          // dismisses all modals that are presented by the app
-          [viewControllerToHide dismissViewControllerAnimated:NO completion:nil];
+          // backgrounds and then dismisses all modals that are presented by the app
+          [viewControllerToHide backgroundControllers];
+          [viewControllerToHide dismissViewControllerAnimated:NO completion:^{
+            [viewControllerToHide willMoveToParentViewController:nil];
+            [viewControllerToHide.view removeFromSuperview];
+            [viewControllerToHide didMoveToParentViewController:nil];
+          }];
         }
         if (viewControllerToShow) {
           [viewControllerToShow didMoveToParentViewController:strongSelf];
