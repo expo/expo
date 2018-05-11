@@ -68,6 +68,18 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
   
   // use bundled info.plist
   NSDictionary *infoPlist = [[NSBundle mainBundle] infoDictionary];
+
+  // use bundled shell app manifest
+  NSDictionary *embeddedManifest = @{};
+  NSString *path = [[NSBundle mainBundle] pathForResource:kEXShellManifestResourceName ofType:@"json"];
+  NSData *data = [NSData dataWithContentsOfFile:path];
+  if (data) {
+    NSError *jsonError;
+    id manifest = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&jsonError];
+    if (!jsonError && [manifest isKindOfClass:[NSDictionary class]]) {
+      embeddedManifest = (NSDictionary *)manifest;
+    }
+  }
   
   BOOL isDetached = NO;
 #ifdef EX_DETACHED
@@ -89,6 +101,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
   [self _loadShellConfig:shellConfig
            withInfoPlist:infoPlist
        withExpoKitDevUrl:expoKitDevelopmentUrl
+    withEmbeddedManifest:embeddedManifest
               isDetached:isDetached
       isDebugXCodeScheme:isDebugXCodeScheme
             isUserDetach:isUserDetach];
@@ -97,6 +110,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
 - (void)_loadShellConfig:(NSDictionary *)shellConfig
            withInfoPlist:(NSDictionary *)infoPlist
        withExpoKitDevUrl:(NSString *)expoKitDevelopmentUrl
+    withEmbeddedManifest:(NSDictionary *)embeddedManifest
               isDetached:(BOOL)isDetached
       isDebugXCodeScheme:(BOOL)isDebugScheme
             isUserDetach:(BOOL)isUserDetach
@@ -129,6 +143,9 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
                                      userInfo:nil];
       }
       
+      // load bundleUrl from embedded manifest
+      [self _loadEmbeddedBundleUrlWithManifest:embeddedManifest];
+
       // load everything else from EXShell
       [self _loadMiscShellPropertiesWithConfig:shellConfig];
 
@@ -196,6 +213,14 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
   _isSplashScreenDisabled = ([shellConfig[@"isSplashScreenDisabled"] boolValue]); // we can remove this when the old loading api is dead.
   _releaseChannel = (shellConfig[@"releaseChannel"] == nil) ? @"default" : shellConfig[@"releaseChannel"];
   // other shell config goes here
+}
+
+- (void)_loadEmbeddedBundleUrlWithManifest:(NSDictionary *)manifest
+{
+  id bundleUrl = manifest[@"bundleUrl"];
+  if (bundleUrl && [bundleUrl isKindOfClass:[NSString class]]) {
+    _embeddedBundleUrl = (NSString *)bundleUrl;
+  }
 }
 
 - (void)_setAnalyticsPropertiesWithShellManifestUrl:(NSString *)shellManifestUrl
