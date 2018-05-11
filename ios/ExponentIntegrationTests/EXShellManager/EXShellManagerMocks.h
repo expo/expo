@@ -33,6 +33,11 @@
 + (NSMutableDictionary *)infoPlist;
 
 /**
+ *  Return a mock of an embedded shell manifest
+ */
++ (NSDictionary *)embeddedManifest;
+
+/**
  *  Return a mock of an app's prod custom url scheme
  */
 + (NSString *)prodUrlScheme;

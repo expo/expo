@@ -27,10 +27,12 @@
   [EXShellManagerMocks loadProdServiceConfig];
   NSDictionary *expectedShellConfig = [EXShellManagerMocks shellConfig];
   NSString *expectedUrlScheme = [EXShellManagerMocks prodUrlScheme];
+  NSDictionary *expectedEmbeddedManifest = [EXShellManagerMocks embeddedManifest];
   XCTAssert(_shellManager.isShell, @"Shell manager should indicate isShell == true when a valid shell config is provided");
   XCTAssert([_shellManager.shellManifestUrl isEqualToString:expectedShellConfig[@"manifestUrl"]], @"Shell manager should adopt the manifest url specified in the config");
   XCTAssert([_shellManager.releaseChannel isEqualToString:@"default"], @"Shell manager should use default release channel when none is specified");
   XCTAssert([_shellManager.urlScheme isEqualToString:expectedUrlScheme], @"Shell manager should adopt url scheme %@ when configured", expectedUrlScheme);
+  XCTAssert([_shellManager.embeddedBundleUrl isEqualToString:expectedEmbeddedManifest[@"bundleUrl"]], @"Shell manager should adopt the bundle url specified in the embedded manifest");
 }
 
 - (void)testIsDevDetachConfigRespected
@@ -38,10 +40,12 @@
   [EXShellManagerMocks loadDevDetachConfig];
   NSString *expectedUrl = [EXShellManagerMocks expoKitDevUrl];
   NSString *expectedUrlScheme = [EXShellManagerMocks prodUrlScheme];
+  NSDictionary *expectedEmbeddedManifest = [EXShellManagerMocks embeddedManifest];
   XCTAssert(_shellManager.isShell, @"Shell manager should indicate isShell == true when a dev detach config is provided");
   XCTAssert([_shellManager.shellManifestUrl isEqualToString:expectedUrl], @"Shell manager should adopt the local dev url when a dev detach config is provided");
   XCTAssert([_shellManager.releaseChannel isEqualToString:@"default"], @"Shell manager should use default release channel when a dev detach config is provided");
   XCTAssert([_shellManager.urlScheme isEqualToString:expectedUrlScheme], @"Shell manager should adopt url scheme %@ when configured", expectedUrlScheme);
+  XCTAssert([_shellManager.embeddedBundleUrl isEqualToString:expectedEmbeddedManifest[@"bundleUrl"]], @"Shell manager should adopt the bundle url specified in the embedded manifest");
 }
 
 - (void)testDoesMissingDevDetachUrlThrow
@@ -51,6 +55,7 @@
     [_shellManager _loadShellConfig:[EXShellManagerMocks shellConfig]
                       withInfoPlist:[EXShellManagerMocks infoPlist]
                   withExpoKitDevUrl:nil
+               withEmbeddedManifest:[EXShellManagerMocks embeddedManifest]
                          isDetached:YES
                  isDebugXCodeScheme:YES
                        isUserDetach:YES]
@@ -63,6 +68,7 @@
   [_shellManager _loadShellConfig:expectedShellConfig
                     withInfoPlist:[EXShellManagerMocks infoPlist]
                 withExpoKitDevUrl:[EXShellManagerMocks expoKitDevUrl]
+             withEmbeddedManifest:[EXShellManagerMocks embeddedManifest]
                        isDetached:YES
                isDebugXCodeScheme:NO
                      isUserDetach:YES];

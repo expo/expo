@@ -11,6 +11,7 @@
   [[EXShellManager sharedInstance] _loadShellConfig:@{}
                                       withInfoPlist:[EXShellManagerMocks _expoClientInfoPlist]
                                   withExpoKitDevUrl:nil
+                               withEmbeddedManifest:[EXShellManagerMocks embeddedManifest]
                                          isDetached:NO
                                  isDebugXCodeScheme:NO
                                        isUserDetach:NO];
@@ -21,6 +22,7 @@
   [[EXShellManager sharedInstance] _loadShellConfig:[EXShellManagerMocks shellConfig]
                     withInfoPlist:[EXShellManagerMocks infoPlist]
                 withExpoKitDevUrl:nil
+             withEmbeddedManifest:[EXShellManagerMocks embeddedManifest]
                        isDetached:YES
                isDebugXCodeScheme:NO
                      isUserDetach:NO];
@@ -31,6 +33,7 @@
   [[EXShellManager sharedInstance] _loadShellConfig:[EXShellManagerMocks shellConfig]
                     withInfoPlist:[EXShellManagerMocks infoPlist]
                 withExpoKitDevUrl:[EXShellManagerMocks expoKitDevUrl]
+             withEmbeddedManifest:[EXShellManagerMocks embeddedManifest]
                        isDetached:YES
                isDebugXCodeScheme:YES
                      isUserDetach:YES];
@@ -67,6 +70,13 @@
       },
     ],
   } mutableCopy];
+}
+
++ (NSDictionary *)embeddedManifest
+{
+  return @{
+   @"bundleUrl": @"https://d1wp6m56sqw74a.cloudfront.net/%40community%2Fnative-component-list%2F25.1.0%2Fdbe753ef7122562ed798ee55cfa489ed-25.0.0-ios.js"
+  };
 }
 
 + (NSMutableDictionary *)_expoClientInfoPlist

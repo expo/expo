@@ -9,11 +9,16 @@
 #import "EXShellManager.h"
 #import "EXVersions.h"
 
+#import <React/RCTConvert.h>
+
 NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
 
 @interface EXManifestResource ()
 
 @property (nonatomic, strong) NSURL * _Nullable originalUrl;
+
+// cache this value so we only have to compute it once per instance
+@property (nonatomic, strong) NSNumber * _Nullable isUsingEmbeddedManifest;
 
 @end
 
@@ -57,7 +62,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
     NSString *manifestSignature = (NSString *)manifestObj[@"signature"];
     
     NSMutableDictionary *innerManifestObj;
-    if (!innerManifestString && [self isLocalPathFromNSBundle]) {
+    if (!innerManifestString && [self isUsingEmbeddedResource]) {
       // locally bundled manifests are not signed
       innerManifestObj = [manifestObj mutableCopy];
     } else {
@@ -107,6 +112,70 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   } errorBlock:errorBlock];
 }
 
+- (BOOL)isUsingEmbeddedResource
+{
+  // return cached value if we've already computed it once
+  if (_isUsingEmbeddedManifest != nil) {
+    return [_isUsingEmbeddedManifest boolValue];
+  }
+
+  _isUsingEmbeddedManifest = @NO;
+
+  if ([super isUsingEmbeddedResource]) {
+    _isUsingEmbeddedManifest = @YES;
+  } else {
+    NSString *cachePath = [self resourceCachePath];
+    NSString *bundlePath = [self resourceBundlePath];
+    if (bundlePath) {
+      // we cannot assume the cached manifest is newer than the embedded one, so we need to read both
+      NSData *cachedData = [NSData dataWithContentsOfFile:cachePath];
+      NSData *embeddedData = [NSData dataWithContentsOfFile:bundlePath];
+
+      NSError *jsonErrorCached;
+      NSError *jsonErrorEmbedded;
+      id cachedManifest = [NSJSONSerialization JSONObjectWithData:cachedData options:kNilOptions error:&jsonErrorCached];
+      id embeddedManifest = [NSJSONSerialization JSONObjectWithData:embeddedData options:kNilOptions error:&jsonErrorEmbedded];
+
+      if (!jsonErrorCached && !jsonErrorEmbedded && [self _isUsingEmbeddedManifest:embeddedManifest withCachedManifest:cachedManifest]) {
+        _isUsingEmbeddedManifest = @YES;
+      }
+    }
+  }
+  return [_isUsingEmbeddedManifest boolValue];
+}
+
+- (BOOL)_isUsingEmbeddedManifest:(id)embeddedManifest withCachedManifest:(id)cachedManifest
+{
+  NSString *embeddedPublishDateString = embeddedManifest[@"publishedTime"];
+  if (embeddedPublishDateString) {
+    // cached manifests are signed so we have to parse the inner manifest
+    NSString *cachedManifestString = cachedManifest[@"manifestString"];
+    NSDictionary *innerCachedManifest;
+    if (!cachedManifestString) {
+      innerCachedManifest = cachedManifest;
+    } else {
+      NSError *jsonError;
+      innerCachedManifest = [NSJSONSerialization JSONObjectWithData:[cachedManifestString dataUsingEncoding:kCFStringEncodingUTF8]
+                                                            options:kNilOptions
+                                                              error:&jsonError];
+      if (jsonError) {
+        // just resolve with NO for now, we'll catch this error later on
+        return NO;
+      }
+    }
+    NSString *cachedPublishDateString = innerCachedManifest[@"publishedTime"];
+
+    if (cachedPublishDateString) {
+      NSDate *embeddedPublishDate = [RCTConvert NSDate:embeddedPublishDateString];
+      NSDate *cachedPublishDate = [RCTConvert NSDate:cachedPublishDateString];
+      if (embeddedPublishDate && cachedPublishDate && [embeddedPublishDate compare:cachedPublishDate] == NSOrderedDescending) {
+        return YES;
+      }
+    }
+  }
+  return NO;
+}
+
 + (NSString *)cachePath
 {
   NSString *cachesDirectory = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
@@ -139,7 +208,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
           [EXShellManager sharedInstance].isManifestVerificationBypassed ||
           
           // we're using a copy that came with the NSBundle and was therefore already codesigned
-          [self isLocalPathFromNSBundle]
+          [self isUsingEmbeddedResource]
   );
 }
 
