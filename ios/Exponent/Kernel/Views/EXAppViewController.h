@@ -23,6 +23,16 @@
 - (void)appStateDidBecomeInactive;
 
 /**
+ *  Backgrounds all descendant controllers (modals) presented by this controller.
+ */
+- (void)backgroundControllers;
+
+/**
+ *  Restores backgrounded controllers.
+ */
+- (void)foregroundControllers;
+
+/**
  *  The underlying react view or loading view. We need to expose this for animation/transitions
  *  because react does weird stuff with layout that prevents us from operating on the superview.
  */

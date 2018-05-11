@@ -42,6 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) UIInterfaceOrientationMask supportedInterfaceOrientations; // override super
 @property (nonatomic, strong) NSTimer *tmrAutoReloadDebounce;
 @property (nonatomic, strong) NSDate *dtmLastFatalErrorShown;
+@property (nonatomic, strong) NSMutableArray<UIViewController *> *backgroundedControllers;
 
 @end
 
@@ -181,6 +182,36 @@ NS_ASSUME_NONNULL_BEGIN
       [self _enforceDesiredDeviceOrientation];
       [self _rebuildBridge];
     });
+  }
+}
+
+- (void)foregroundControllers
+{
+  if (_backgroundedControllers != nil) {
+    __block UIViewController *parentController = self;
+    
+    [_backgroundedControllers enumerateObjectsUsingBlock:^(UIViewController * _Nonnull viewController, NSUInteger idx, BOOL * _Nonnull stop) {
+      [parentController presentViewController:viewController animated:NO completion:nil];
+      parentController = viewController;
+    }];
+    
+    _backgroundedControllers = nil;
+  }
+}
+
+- (void)backgroundControllers
+{
+  UIViewController *childController = [self presentedViewController];
+  
+  if (childController != nil) {
+    if (_backgroundedControllers == nil) {
+      _backgroundedControllers = [NSMutableArray new];
+    }
+    
+    while (childController != nil) {
+      [_backgroundedControllers addObject:childController];
+      childController = childController.presentedViewController;
+    }
   }
 }
 
