@@ -49,11 +49,8 @@ async function signUpAsync(data: SignUpData) {
         email: data.email,
         password: data.password,
         username: data.username,
-        user_metadata: {
-          onboarded: true,
-          given_name: data.firstName,
-          family_name: data.lastName,
-        },
+        given_name: data.firstName,
+        family_name: data.lastName,
       },
     }),
   });
