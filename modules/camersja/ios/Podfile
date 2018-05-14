@@ -1,0 +1,42 @@
+source 'https://github.com/CocoaPods/Specs.git'
+platform :ios, '9.0'
+
+target 'Camersja' do
+  # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
+  # use_frameworks!
+
+  # Pods for Camersja
+  rn_path = "../node_modules/react-native"
+  pod 'React', path: rn_path, subspecs: [
+    "Core",
+    "ART",
+    "RCTActionSheet",
+    "RCTAnimation",
+    "RCTCameraRoll",
+    "RCTGeolocation",
+    "RCTImage",
+    "RCTNetwork",
+    "RCTText",
+    "RCTVibration",
+    "RCTWebSocket",
+    "DevSupport",
+    "CxxBridge"
+  ]
+  pod 'yoga', path: "#{rn_path}/ReactCommon/yoga"
+  pod 'Folly',
+    :podspec => "#{rn_path}/third-party-podspecs/Folly.podspec",
+    :inhibit_warnings => true
+  pod 'DoubleConversion',
+    :podspec => "#{rn_path}/third-party-podspecs/DoubleConversion.podspec",
+    :inhibit_warnings => true
+  pod 'glog',
+    :podspec => "#{rn_path}/third-party-podspecs/GLog.podspec",
+    :inhibit_warnings => true
+  
+  pod 'EXCore', path: '../node_modules/expo-core'
+  pod 'EXCamera', path: '../node_modules/expo-camera'
+  pod 'EXFileSystem', path: '../node_modules/expo-file-system'
+  pod 'EXFaceDetector', path: '../node_modules/expo-face-detector'
+  pod 'EXPermissions', path: '../node_modules/expo-permissions'
+  pod 'EXReactNativeAdapter', path: '../node_modules/expo-react-native-adapter'
+end

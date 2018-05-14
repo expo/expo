@@ -1,0 +1,26 @@
+{
+  "name": "camersja",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start"
+  },
+  "dependencies": {
+    "expo-camera": "link:../expo-camera/",
+    "expo-core": "link:../expo-core/",
+    "expo-face-detector": "link:../expo-face-detector/",
+    "expo-permissions": "link:../expo-permissions/",
+    "expo-file-system": "link:../expo-file-system/",
+    "expo-react-native-adapter": "link:../expo-react-native-adapter/",
+    "react": "16.3.2",
+    "react-native": "0.55.4",
+    "react-native-is-iphonex": "^1.0.1"
+  },
+  "devDependencies": {
+    "babel-jest": "22.4.1",
+    "babel-preset-expo": "^4.0.0",
+    "babel-preset-react-native": "4.0.0",
+    "jest": "22.4.2",
+    "react-test-renderer": "16.2.0"
+  }
+}

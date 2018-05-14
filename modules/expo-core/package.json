@@ -1,0 +1,13 @@
+{
+  "name": "expo-core",
+  "version": "1.0.0",
+  "description": "Expo Core standalone module",
+  "main": "index.js",
+  "keywords": ["react-native", "expo"],
+  "homepage": "https://docs.expo.io/",
+  "author": "650 Industries, Inc.",
+  "license": "BSD",
+  "peerDependencies": {
+    "expo-react-native-adapter": "link:../expo-react-native-adapter"
+  }
+}
