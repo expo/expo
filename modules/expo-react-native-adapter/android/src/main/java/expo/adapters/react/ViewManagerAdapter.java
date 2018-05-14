@@ -82,7 +82,7 @@ public class ViewManagerAdapter<M extends ViewManager<V>, V extends ViewGroup> e
 
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
-    if (moduleRegistry instanceof ModuleRegistryConsumer) {
+    if (mViewManager instanceof ModuleRegistryConsumer) {
       ((ModuleRegistryConsumer) mViewManager).setModuleRegistry(moduleRegistry);
     }
   }
