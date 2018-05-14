@@ -44,7 +44,7 @@ public class ModuleRegistryAdapter implements ReactPackage {
 
     List<ViewManager> viewManagerList = new ArrayList<>();
 
-    for (expo.core.interfaces.ViewManager viewManager : moduleRegistry.getAllViewManagers()) {
+    for (expo.core.ViewManager viewManager : moduleRegistry.getAllViewManagers()) {
       viewManagerList.add(new ViewManagerAdapter(viewManager));
     }
     return viewManagerList;

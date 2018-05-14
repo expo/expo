@@ -7,7 +7,6 @@ import java.util.List;
 
 import expo.core.interfaces.Module;
 import expo.core.interfaces.Package;
-import expo.core.interfaces.ViewManager;
 
 public class BasePackage implements Package {
   @Override

@@ -8,7 +8,6 @@ import java.util.List;
 
 import expo.core.interfaces.Module;
 import expo.core.interfaces.Package;
-import expo.core.interfaces.ViewManager;
 
 /**
  * Builder for {@link ModuleRegistry}. Override this class to add some custom

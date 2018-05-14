@@ -5,6 +5,7 @@ import android.content.Context;
 import java.util.List;
 
 import expo.core.ExportedModule;
+import expo.core.ViewManager;
 
 public interface Package {
   List<Module> createInternalModules(Context context);

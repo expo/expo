@@ -14,8 +14,8 @@ import expo.core.ExportedModule;
 import expo.core.ModuleRegistry;
 import expo.core.ModuleRegistryProvider;
 import expo.core.interfaces.Module;
+import expo.core.ViewManager;
 import expo.core.interfaces.Package;
-import expo.core.interfaces.ViewManager;
 
 /**
  * Since React Native v0.55, {@link com.facebook.react.ReactPackage#createViewManagers(ReactApplicationContext)}

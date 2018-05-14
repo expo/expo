@@ -8,13 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import expo.core.ViewManager;
 import expo.core.interfaces.ExpoProp;
 import expo.core.ModuleRegistry;
 import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.interfaces.ViewManager;
 import expo.core.interfaces.services.UIManager;
 
-public class CameraViewManager implements ModuleRegistryConsumer, ViewManager<ExpoCameraView> {
+public class CameraViewManager extends ViewManager<ExpoCameraView> implements ModuleRegistryConsumer {
   public enum Events {
     EVENT_CAMERA_READY("onCameraReady"),
     EVENT_ON_MOUNT_ERROR("onMountError"),

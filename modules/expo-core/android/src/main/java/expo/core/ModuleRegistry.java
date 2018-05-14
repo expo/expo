@@ -11,7 +11,6 @@ import java.util.Map;
 
 import expo.core.interfaces.Module;
 import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.interfaces.ViewManager;
 
 public class ModuleRegistry {
   private final Map<Class, Module> mInternalModulesMap = new HashMap<>();

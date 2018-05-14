@@ -21,15 +21,13 @@ import javax.annotation.Nullable;
 import expo.core.interfaces.ExpoProp;
 import expo.core.ModuleRegistry;
 import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.interfaces.ViewManager;
+import expo.core.ViewManager;
 
 public class ViewManagerAdapter<M extends ViewManager<V>, V extends ViewGroup> extends ViewGroupManager<V> implements ModuleRegistryConsumer {
   private M mViewManager;
-  private Map<String, Method> mPropertiesMethods;
 
   public ViewManagerAdapter(M viewManager) {
     mViewManager = viewManager;
-    mPropertiesMethods = getPropertiesMethods();
   }
 
   @Override
@@ -61,17 +59,19 @@ public class ViewManagerAdapter<M extends ViewManager<V>, V extends ViewGroup> e
     ReadableMapKeySetIterator keyIterator = proxiedProperties.keySetIterator();
     while (keyIterator.hasNextKey()) {
       String key = keyIterator.nextKey();
-      if (!mPropertiesMethods.containsKey(key)) {
-        Log.e(getName(), "No setter found for prop " + key);
-      } else {
-        try {
-          Class<?> propertyParameterType = mPropertiesMethods.get(key).getParameterTypes()[1];
-          Dynamic dynamicPropertyValue = proxiedProperties.getDynamic(key);
-          Object castPropertyValue = NativeModulesProxy.getNativeArgumentForExpectedClass(dynamicPropertyValue, propertyParameterType);
-          mPropertiesMethods.get(key).invoke(mViewManager, view, castPropertyValue);
-        } catch (Exception e) {
-          Log.e(getName(), "Error when setting prop " + key + ". " + e.getMessage());
+      try {
+        Method propSetter = mViewManager.getPropSetters().get(key);
+        if (propSetter == null) {
+          throw new IllegalArgumentException("No setter found for prop " + key + " in " + getName());
         }
+        Dynamic dynamicPropertyValue = proxiedProperties.getDynamic(key);
+        // TODO: Do not use Methods as values for getPropSetters()
+        // Arguments length has been validated in getParameterTypes
+        // TODO: Move getNativeArgument to ArgumentsHelper
+        Object castPropertyValue = NativeModulesProxy.getNativeArgumentForExpectedClass(dynamicPropertyValue, propSetter.getParameterTypes()[1]);
+        mViewManager.updateProp(view, key, castPropertyValue);
+      } catch (Exception e) {
+        Log.e(getName(), "Error when setting prop " + key + ". " + e.getMessage());
       }
     }
   }
@@ -86,30 +86,10 @@ public class ViewManagerAdapter<M extends ViewManager<V>, V extends ViewGroup> e
     return builder.build();
   }
 
-  private Map<String, Method> getPropertiesMethods() {
-    Map<String, Method> propertiesMethods = new HashMap<>();
-    Method[] methods = mViewManager.getClass().getDeclaredMethods();
-    for (Method method : methods) {
-      ExpoProp annotation = getExpoPropAnnotation(method);
-      if (annotation != null) {
-        propertiesMethods.put(annotation.name(), method);
-      }
-    }
-    return propertiesMethods;
-  }
-
-  private ExpoProp getExpoPropAnnotation(Method method) {
-    Annotation[] methodAnnotations = method.getDeclaredAnnotations();
-    for (Annotation methodAnnotation : methodAnnotations) {
-      if (methodAnnotation.annotationType() == ExpoProp.class) {
-        return (ExpoProp) methodAnnotation;
-      }
-    }
-    return null;
-  }
-
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
-    mViewManager.setModuleRegistry(moduleRegistry);
+    if (moduleRegistry instanceof ModuleRegistryConsumer) {
+      ((ModuleRegistryConsumer) mViewManager).setModuleRegistry(moduleRegistry);
+    }
   }
 }
