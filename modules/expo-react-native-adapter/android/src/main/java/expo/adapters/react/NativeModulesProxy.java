@@ -76,7 +76,7 @@ import expo.core.interfaces.ExpoMethod;
   @ReactMethod
   public void callMethod(String moduleName, String methodName, ReadableArray arguments, final Promise promise) {
     try {
-      List<Object> nativeArguments = getNativeArgumentsForMethod(arguments, mModuleRegistry.getExportedModule(moduleName).getExportedMethods().get(methodName));
+      List<Object> nativeArguments = getNativeArgumentsForMethod(arguments, mModuleRegistry.getExportedModule(moduleName).getExportedMethodInfos().get(methodName));
       nativeArguments.add(new PromiseWrapper(promise));
 
       mModuleRegistry.getExportedModule(moduleName).invokeExportedMethod(methodName, nativeArguments);
@@ -98,50 +98,13 @@ import expo.core.interfaces.ExpoMethod;
    * Throws {@link RuntimeException} if it can't convert some {@link ReadableType} to Object.
    * Method is used when converting Double to proper argument.
    */
-  private static List<Object> getNativeArgumentsForMethod(ReadableArray arguments, Method method) {
+  private static List<Object> getNativeArgumentsForMethod(ReadableArray arguments, ExportedModule.MethodInfo methodInfo) {
     List<Object> nativeArguments = new ArrayList<>();
 
     for (int i = 0; i < arguments.size(); i++) {
-      nativeArguments.add(getNativeArgumentForExpectedClass(arguments.getDynamic(i), method.getParameterTypes()[i]));
+      nativeArguments.add(ArgumentsHelper.getNativeArgumentForExpectedClass(arguments.getDynamic(i), methodInfo.getParameterTypes()[i]));
     }
     return nativeArguments;
-  }
-
-  /* package */ static Object getNativeArgumentForExpectedClass(Dynamic argument, Class<?> expectedArgumentClass) {
-    switch (argument.getType()) {
-      case String:
-        return argument.asString();
-      case Map:
-        return argument.asMap().toHashMap();
-      case Array:
-        return argument.asArray().toArrayList();
-      case Number:
-        // Argument of type .Number is remembered as Double by default.
-        Double doubleArgument = argument.asDouble();
-        // We have to provide ExportedModule with proper Number value
-        if (expectedArgumentClass == byte.class || expectedArgumentClass == Byte.class) {
-          return doubleArgument.byteValue();
-        } else if (expectedArgumentClass == short.class || expectedArgumentClass == Short.class) {
-          return doubleArgument.shortValue();
-        } else if (expectedArgumentClass == int.class || expectedArgumentClass == Integer.class) {
-          return doubleArgument.intValue();
-        } else if (expectedArgumentClass == float.class || expectedArgumentClass == Float.class) {
-          return doubleArgument.floatValue();
-        } else if (expectedArgumentClass == long.class || expectedArgumentClass == Long.class) {
-          return doubleArgument.longValue();
-        } else {
-          return doubleArgument;
-        }
-      case Boolean:
-        return argument.asBoolean();
-      case Null:
-        return null;
-      default:
-        // JS argument is not null, however we can't recognize the type.
-        throw new RuntimeException(
-                "Don't know how to convert React Native argument of type " + argument.getType() + " to native."
-        );
-    }
   }
 
   /**

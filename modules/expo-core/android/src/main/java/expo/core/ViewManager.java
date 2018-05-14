@@ -13,6 +13,22 @@ import java.util.Map;
 import expo.core.interfaces.ExpoProp;
 
 public abstract class ViewManager<V extends View> {
+  /**
+   * A helper class for passing information about prop setter so that
+   * eg. adapter can infer the expected class of the property value.
+   */
+  public class PropSetterInfo {
+    private Class<?> mExpectedPropertyClass;
+    PropSetterInfo(Class<?>[] parameterTypes) {
+      mExpectedPropertyClass = parameterTypes[parameterTypes.length - 1];
+    }
+
+    public Class<?> getExpectedValueClass() {
+      return mExpectedPropertyClass;
+    }
+  }
+
+  private Map<String, PropSetterInfo> mPropSetterInfos;
   private Map<String, Method> mPropSetters;
 
   public abstract String getName();
@@ -26,7 +42,50 @@ public abstract class ViewManager<V extends View> {
     // by default do nothing
   }
 
-  public Map<String, Method> getPropSetters() {
+  /**
+   * Returns a map of { propName => propInfo } so that platform adapter knows value of what class
+   * does the propsetter expect.
+   */
+  public Map<String, PropSetterInfo> getPropSetterInfos() {
+    if (mPropSetterInfos != null) {
+      return mPropSetterInfos;
+    }
+
+    Map<String, PropSetterInfo> propSetterInfos = new HashMap<>();
+    for (Map.Entry<String, Method> entry : getPropSetters().entrySet()) {
+      propSetterInfos.put(entry.getKey(), new PropSetterInfo(entry.getValue().getParameterTypes()));
+    }
+
+    mPropSetterInfos = propSetterInfos;
+    return mPropSetterInfos;
+  }
+
+  public void updateProp(V view, String propName, Object propValue) throws RuntimeException {
+    Method propSetter = getPropSetters().get(propName);
+    if (propSetter == null) {
+      throw new IllegalArgumentException("There is no propSetter in " + getName() + " for prop of name " + propName + ".");
+    }
+
+    // We've validated parameter types length in getPropSetterInfos()
+    Object transformedPropertyValue = transformArgumentToClass(propValue, getPropSetterInfos().get(propName).getExpectedValueClass());
+
+    try {
+      propSetter.invoke(this, view, transformedPropertyValue);
+    } catch (IllegalAccessException | InvocationTargetException e) {
+      throw new RuntimeException("Exception occurred while updating property " + propName
+              + " on module " + getName() + ": " + e.getMessage(), e);
+    }
+  }
+
+  protected Object transformArgumentToClass(Object argument, Class<?> expectedArgumentClass) {
+    return ArgumentsHelper.validatedArgumentForClass(argument, expectedArgumentClass);
+  }
+
+  /**
+   * Creates or returns a cached map of propName => methodSettingThatProp. Validates returned methods.
+   * @return Map of { propName => methodSettingThatProp }
+   */
+  private Map<String, Method> getPropSetters() {
     if (mPropSetters != null) {
       return mPropSetters;
     }
@@ -40,7 +99,9 @@ public abstract class ViewManager<V extends View> {
         String propName = propAnnotation.name();
         Class<?>[] methodParameterTypes = method.getParameterTypes();
         if (methodParameterTypes.length != 2) {
-          throw new IllegalArgumentException("Expo prop setter should define at least two arguments: view and prop value. Propsetter for " + propName + " of module " + getName() + " does not define these arguments.");
+          throw new IllegalArgumentException(
+                  "Expo prop setter should define at least two arguments: view and prop value. Propsetter for " + propName + " of module " + getName() + " does not define these arguments."
+          );
         }
 
         if (mPropSetters.containsKey(propName)) {
@@ -54,26 +115,5 @@ public abstract class ViewManager<V extends View> {
     }
 
     return mPropSetters;
-  }
-
-  public void updateProp(V view, String propName, Object propValue) throws RuntimeException {
-    Method propSetter = getPropSetters().get(propName);
-    if (propSetter == null) {
-      throw new IllegalArgumentException("There is no propSetter in " + getName() + " for prop of name " + propName + ".");
-    }
-
-    // We've validated parameter types length in getPropSetters()
-    Object transformedPropertyValue = transformArgumentToClass(propValue, propSetter.getParameterTypes()[1]);
-
-    try {
-      propSetter.invoke(this, view, transformedPropertyValue);
-    } catch (IllegalAccessException | InvocationTargetException e) {
-      throw new RuntimeException("Exception occurred while updating property " + propName
-              + " on module " + getName() + ": " + e.getMessage(), e);
-    }
-  }
-
-  protected Object transformArgumentToClass(Object argument, Class<?> expectedArgumentClass) {
-    return ArgumentsHelper.transformArgumentToClass(argument, expectedArgumentClass);
   }
 }

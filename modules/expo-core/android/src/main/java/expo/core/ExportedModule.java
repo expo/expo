@@ -21,8 +21,20 @@ import expo.core.interfaces.ExpoMethod;
  * to support them.
  */
 public abstract class ExportedModule {
+  public class MethodInfo {
+    private Class<?>[] mParameterTypes;
+
+    MethodInfo(Method method) {
+      mParameterTypes = method.getParameterTypes();
+    }
+
+    public Class<?>[] getParameterTypes() {
+      return mParameterTypes;
+    }
+  }
   private Context mContext;
   private Map<String, Method> mExportedMethods;
+  private Map<String, MethodInfo> mExportedMethodInfos;
 
   public ExportedModule(Context context) {
     mContext = context;
@@ -39,7 +51,61 @@ public abstract class ExportedModule {
   }
 
   /**
-   * Creates a String-keyed map of methods exported from {@link ExportedModule},
+   * Returns a map of { exportedMethodName => methodInfo } so that eg. platform adapter knows
+   * what classes of arguments does the method expect.
+   */
+  public Map<String, MethodInfo> getExportedMethodInfos() {
+    if (mExportedMethodInfos != null) {
+      return mExportedMethodInfos;
+    }
+
+    Map<String, MethodInfo> exportedMethodInfos = new HashMap<>();
+    for(Map.Entry<String, Method> entry : getExportedMethods().entrySet()) {
+      exportedMethodInfos.put(entry.getKey(), new MethodInfo(entry.getValue()));
+    }
+    mExportedMethodInfos = exportedMethodInfos;
+    return mExportedMethodInfos;
+  }
+
+  /**
+   * Invokes an exported method
+   */
+  public Object invokeExportedMethod(String methodName, Collection<Object> arguments) throws NoSuchMethodException, RuntimeException {
+    Method method = mExportedMethods.get(methodName);
+
+    if (method  == null) {
+      throw new NoSuchMethodException("Module " + getName() + "does not export method " + methodName + ".");
+    }
+
+    int expectedArgumentsCount = method.getParameterTypes().length;
+    if (arguments.size() != expectedArgumentsCount) {
+      throw new IllegalArgumentException(
+              "Method " + methodName + " on class " + getName() + " expects " + expectedArgumentsCount + " arguments, "
+                      + "whereas " + arguments.size() + " arguments have been provided.");
+    }
+
+    Class<?>[] expectedArgumentClasses = method.getParameterTypes();
+    Iterator<Object> actualArgumentsIterator = arguments.iterator();
+    List<Object> transformedArguments = new ArrayList<>(arguments.size());
+
+    for (int i = 0; i < expectedArgumentsCount; i++) {
+      transformedArguments.add(transformArgumentToClass(actualArgumentsIterator.next(), expectedArgumentClasses[i]));
+    }
+
+    try {
+      return method.invoke(this, transformedArguments.toArray());
+    } catch (IllegalAccessException | InvocationTargetException e) {
+      throw new RuntimeException("Exception occurred while executing exported method " + methodName
+              + " on module " + getName() + ": " + e.getMessage(), e);
+    }
+  }
+
+  protected Object transformArgumentToClass(Object argument, Class<?> expectedArgumentClass) {
+    return ArgumentsHelper.validatedArgumentForClass(argument, expectedArgumentClass);
+  }
+
+  /**
+   * Creates or returns a cached String-keyed map of validated methods exported from {@link ExportedModule},
    * i. e. methods annotated with {@link ExpoMethod}, which should be available in client code land.
    */
   public Map<String, Method> getExportedMethods() {
@@ -79,42 +145,5 @@ public abstract class ExportedModule {
     }
 
     return mExportedMethods;
-  }
-
-  /**
-   * Invokes an exported method
-   */
-  public Object invokeExportedMethod(String methodName, Collection<Object> arguments) throws NoSuchMethodException, RuntimeException {
-    Method method = mExportedMethods.get(methodName);
-
-    if (method  == null) {
-      throw new NoSuchMethodException("Module " + getName() + "does not export method " + methodName + ".");
-    }
-
-    int expectedArgumentsCount = method.getParameterTypes().length;
-    if (arguments.size() != expectedArgumentsCount) {
-      throw new IllegalArgumentException(
-              "Method " + methodName + " on class " + getName() + " expects " + expectedArgumentsCount + " arguments, "
-                      + "whereas " + arguments.size() + " arguments have been provided.");
-    }
-
-    Class<?>[] expectedArgumentClasses = method.getParameterTypes();
-    Iterator<Object> actualArgumentsIterator = arguments.iterator();
-    List<Object> transformedArguments = new ArrayList<>(arguments.size());
-
-    for (int i = 0; i < expectedArgumentsCount; i++) {
-      transformedArguments.add(transformArgumentToClass(actualArgumentsIterator.next(), expectedArgumentClasses[i]));
-    }
-
-    try {
-      return method.invoke(this, transformedArguments.toArray());
-    } catch (IllegalAccessException | InvocationTargetException e) {
-      throw new RuntimeException("Exception occurred while executing exported method " + methodName
-              + " on module " + getName() + ": " + e.getMessage(), e);
-    }
-  }
-
-  protected Object transformArgumentToClass(Object argument, Class<?> expectedArgumentClass) {
-    return ArgumentsHelper.transformArgumentToClass(argument, expectedArgumentClass);
   }
 }

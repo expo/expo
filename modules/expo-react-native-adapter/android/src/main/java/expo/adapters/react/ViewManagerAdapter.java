@@ -11,14 +11,11 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import expo.core.interfaces.ExpoProp;
 import expo.core.ModuleRegistry;
 import expo.core.interfaces.ModuleRegistryConsumer;
 import expo.core.ViewManager;
@@ -60,15 +57,12 @@ public class ViewManagerAdapter<M extends ViewManager<V>, V extends ViewGroup> e
     while (keyIterator.hasNextKey()) {
       String key = keyIterator.nextKey();
       try {
-        Method propSetter = mViewManager.getPropSetters().get(key);
-        if (propSetter == null) {
+        ViewManager.PropSetterInfo propSetterInfo = mViewManager.getPropSetterInfos().get(key);
+        if (propSetterInfo == null) {
           throw new IllegalArgumentException("No setter found for prop " + key + " in " + getName());
         }
         Dynamic dynamicPropertyValue = proxiedProperties.getDynamic(key);
-        // TODO: Do not use Methods as values for getPropSetters()
-        // Arguments length has been validated in getParameterTypes
-        // TODO: Move getNativeArgument to ArgumentsHelper
-        Object castPropertyValue = NativeModulesProxy.getNativeArgumentForExpectedClass(dynamicPropertyValue, propSetter.getParameterTypes()[1]);
+        Object castPropertyValue = ArgumentsHelper.getNativeArgumentForExpectedClass(dynamicPropertyValue, propSetterInfo.getExpectedValueClass());
         mViewManager.updateProp(view, key, castPropertyValue);
       } catch (Exception e) {
         Log.e(getName(), "Error when setting prop " + key + ". " + e.getMessage());

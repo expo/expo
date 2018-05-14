@@ -1,7 +1,7 @@
 package expo.core;
 
 public class ArgumentsHelper {
-  protected static Object transformArgumentToClass(Object argument, Class<?> expectedArgumentClass) {
+  /* package */ static Object validatedArgumentForClass(Object argument, Class<?> expectedArgumentClass) {
     if (Object.class.isAssignableFrom(expectedArgumentClass)) {
       // Expected argument class is an Object descendant
       if (argument != null) {
