@@ -6,6 +6,8 @@ import com.facebook.react.ReactPackage;
 import java.util.Arrays;
 import java.util.List;
 
+import expolib_v1.okhttp3.OkHttpClient;
+
 // Needed for `react-native link`
 // import com.facebook.react.ReactApplication;
 
@@ -35,5 +37,10 @@ public class MainApplication extends ExpoApplication {
   @Override
   public boolean shouldUseInternetKernel() {
     return BuildVariantConstants.USE_INTERNET_KERNEL;
+  }
+
+  public static OkHttpClient.Builder okHttpClientBuilder(OkHttpClient.Builder builder) {
+    // Customize/override OkHttp client here
+    return builder;
   }
 }
