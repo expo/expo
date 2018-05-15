@@ -101,8 +101,11 @@ EX_VIEW_PROPERTY(type, NSNumber *, EXCamera)
 
 EX_VIEW_PROPERTY(flashMode, NSNumber *, EXCamera)
 {
-  [view setFlashMode:[value longValue]];
-  [view updateFlashMode];
+  long longValue = [value longValue];
+  if (longValue != view.flashMode) {
+    [view setFlashMode:longValue];
+    [view updateFlashMode];
+  }
 }
 
 EX_VIEW_PROPERTY(faceDetectorSettings, NSDictionary *, EXCamera)
@@ -113,38 +116,56 @@ EX_VIEW_PROPERTY(faceDetectorSettings, NSDictionary *, EXCamera)
 
 EX_VIEW_PROPERTY(autoFocus, NSNumber *, EXCamera)
 {
-  [view setAutoFocus:[value longValue]];
-  [view updateFocusMode];
+  long longValue = [value longValue];
+  if (longValue != view.autoFocus) {
+    [view setAutoFocus:longValue];
+    [view updateFocusMode];
+  }
 }
 
 EX_VIEW_PROPERTY(focusDepth, NSNumber *, EXCamera)
 {
-  [view setFocusDepth:[value floatValue]];
-  [view updateFocusDepth];
+  float floatValue = [value floatValue];
+  if (view.focusDepth - floatValue > FLT_EPSILON) {
+    [view setFocusDepth:floatValue];
+    [view updateFocusDepth];
+  }
 }
 
 EX_VIEW_PROPERTY(zoom, NSNumber *, EXCamera)
 {
-  [view setZoom:[value doubleValue]];
-  [view updateZoom];
+  double doubleValue = [value doubleValue];
+  if (view.zoom - doubleValue > DBL_EPSILON) {
+    [view setZoom:doubleValue];
+    [view updateZoom];
+  }
 }
 
 EX_VIEW_PROPERTY(whiteBalance, NSNumber *, EXCamera)
 {
-  [view setWhiteBalance:[value longValue]];
-  [view updateWhiteBalance];
+  long longValue = [value longValue];
+  if (longValue != view.whiteBalance) {
+    [view setWhiteBalance:longValue];
+    [view updateWhiteBalance];
+  }
 }
 
 EX_VIEW_PROPERTY(faceDetectorEnabled, NSNumber *, EXCamera)
 {
-  [view setFaceDetecting:[value boolValue]];
+  bool boolValue = [value boolValue];
+  if ([view isDetectingFaces] != boolValue) {
+    [view setFaceDetecting:boolValue];
+  }
 }
 
 
 EX_VIEW_PROPERTY(barCodeScannerEnabled, NSNumber *, EXCamera)
 {
-  view.barCodeReading = [value boolValue];
-  [view setupOrDisableBarcodeScanner];
+  bool boolValue = [value boolValue];
+  if ([view isReadingBarCodes] != boolValue) {
+    [view setBarCodeReading:boolValue];
+    [view setupOrDisableBarcodeScanner];
+  }
 }
 
 EX_VIEW_PROPERTY(barCodeTypes, NSArray *, EXCamera)
@@ -159,15 +180,18 @@ EX_EXPORT_METHOD_AS(takePicture,
                     rejecter:(EXPromiseRejectBlock)reject)
 {
 #if TARGET_IPHONE_SIMULATOR
-  NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
-  float quality = [options[@"quality"] floatValue];
   if (!_fileSystem) {
     reject(@"E_IMAGE_SAVE_FAILED", @"No filesystem module", nil);
     return;
   }
+  
   NSString *path = [_fileSystem generatePathInDirectory:[_fileSystem.cachesDirectory stringByAppendingPathComponent:@"Camera"] withExtension:@".jpg"];
   UIImage *generatedPhoto = [EXImageUtils generatePhotoOfSize:CGSizeMake(200, 200)];
+
+  float quality = [options[@"quality"] floatValue];
   NSData *photoData = UIImageJPEGRepresentation(generatedPhoto, quality);
+
+  NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
   response[@"uri"] = [EXImageUtils writeImage:photoData toPath:path];
   response[@"width"] = @(generatedPhoto.size.width);
   response[@"height"] = @(generatedPhoto.size.height);
@@ -180,7 +204,7 @@ EX_EXPORT_METHOD_AS(takePicture,
     if (view != nil) {
       [view takePicture:options resolve:resolve reject:reject];
     } else {
-      NSString *reason = [NSString stringWithFormat:@"Invalid view returned from registry, expecting EXCamera, got: %@", view];
+      NSString *reason = [NSString stringWithFormat:@"Invalid view returned from registry, expected EXCamera, got: %@", view];
       reject(@"E_INVALID_VIEW", reason, nil);
     }
   } forView:reactTag ofClass:[EXCamera class]];
@@ -201,7 +225,7 @@ EX_EXPORT_METHOD_AS(record,
     if (view != nil) {
       [view record:options resolve:resolve reject:reject];
     } else {
-      NSString *reason = [NSString stringWithFormat:@"Invalid view returned from registry, expecting EXCamera, got: %@", view];
+      NSString *reason = [NSString stringWithFormat:@"Invalid view returned from registry, expected EXCamera, got: %@", view];
       reject(@"E_INVALID_VIEW", reason, nil);
     }
   } forView:reactTag ofClass:[EXCamera class]];
@@ -217,7 +241,7 @@ EX_EXPORT_METHOD_AS(stopRecording,
       [view stopRecording];
       resolve(nil);
     } else {
-      EXLogError(@"Invalid view returned from registry, expecting EXCamera, got: %@", view);
+      EXLogError(@"Invalid view returned from registry, expected EXCamera, got: %@", view);
     }
   } forView:reactTag ofClass:[EXCamera class]];
 }
