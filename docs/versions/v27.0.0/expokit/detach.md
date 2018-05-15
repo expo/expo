@@ -24,7 +24,7 @@ We call this "detaching" because you still depend on the Expo SDK, but your proj
 
 ### You should not detach if:
 
-- All you need is to distribute your app in the iTunes Store or Google Play. Expo can [build binaries for you](building-standalone-apps.html) in that case. If you detach, we can't automatically build for you any more.
+- All you need is to distribute your app in the iTunes Store or Google Play. Expo can [build binaries for you](../distribution/building-standalone-apps.html) in that case. If you detach, we can't automatically build for you any more.
 - You are uncomfortable writing native code. Detached apps will require you to manage Xcode and Android Studio projects.
 - You enjoy the painless React Native upgrades that come with Expo. After your app is detached, breaking changes in React Native will affect your project differently, and you may need to figure them out for your particular situation.
 - You require Expo's push notification services. After detaching, since Expo no longer manages your push certificates, you'll need to manage your own push notification pipeline.
@@ -55,7 +55,7 @@ with your Expo account using `exp login`.
 
 ### 2. Make sure you have the necessary keys in app.json
 
-Detaching requires the same keys as building a standalone app. [Follow these instructions before continuing to the next step](building-standalone-apps.html#2-configure-appjson).
+Detaching requires the same keys as building a standalone app. [Follow these instructions before continuing to the next step](../distribution/building-standalone-apps.html#2-configure-appjson).
 
 ### 3. Detach
 
