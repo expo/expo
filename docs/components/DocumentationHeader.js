@@ -103,7 +103,7 @@ export default class DocumentationHeader extends React.PureComponent {
 
           {!this.props.isVersionSelectorHidden && (
             <VersionSelector
-              style={{ marginLeft: 16 }}
+              style={{ marginLeft: 29 }}
               version={this.props.version}
               onSetVersion={this.props.onSetVersion}
             />
