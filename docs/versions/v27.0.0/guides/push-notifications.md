@@ -130,7 +130,13 @@ export default class AppContainer extends React.Component {
 
 It's not entirely clear from the above when your app will be able to handle the notification depending on it's state at the time the notification is received. For clarification, see the following table:
 
-![Timing of notifications](./receiving-push.png)
+| Push was received when...                       | Android           | iOS               |
+| ------------------------------------------------|:-----------------:| -----------------:|
+| App is open and foregrounded                    | Exponent.notification: origin: "received", data: Object | Same as Android
+| App is open and backgrounded                    | Can only be handled if the notification is selected. If it is dismissed, app cannot know it was received. | Same as Android
+| App is open and backgrounded, then foregrounded by selecting the notification | Exponent.notification: origin: "selected" | Exponent.notification: origin: "received" |
+| App was not open, and then opened by selecting the push notification | Passed as props.exp.notification on app root component | props.exp.notification: origin: "selected" | props.exp.notification | props.exp.notification: origin: "received" |
+| App was not open, and then opened by tapping the home screen icon | Can only be handled if the notification is selected. If it is dismissed, the app cannot know it was received. | Same as Android
 
 ## HTTP/2 API
 
@@ -140,9 +146,11 @@ Although there are server-side SDKs in several languages to help you send push n
 
 Send a POST request to `https://exp.host/--/api/v2/push/send` with the following HTTP headers:
 
-    accept: application/json
-    accept-encoding: gzip, deflate
-    content-type: application/json
+```
+accept: application/json
+accept-encoding: gzip, deflate
+content-type: application/json
+```
 
 This API currently does not require any authentication.
 

@@ -3,31 +3,35 @@ import * as Constants from '~/common/constants';
 export const globalTables = `
   table {
     margin-bottom: 1rem;
-    font-size: 1rem;
-    line-height: 1.45rem;
+    font-size: 0.8rem;
+    line-height: 1.2rem;
     border-collapse: collapse;
-    border: 1px solid hsla(0,0%,0%,0.12);
+    border: 1px solid ${Constants.colors.border};
+    border-radius: 4px;
     width: 100%;
   }
 
   thead {
+    border-radius: 4px 4px 0 0;
     text-align: left;
   }
 
-  th, td {
+  td, th {
+    padding: 16px;
+    border-bottom: 1px solid ${Constants.colors.border};
+    border-right: 1px solid ${Constants.colors.border};
+
+    :last-child {
+      border-right: 0px;
+    }
+  }
+
+  td {
     text-align: left;
-    border-bottom: 1px solid hsla(0,0%,0%,0.12);
-    font-feature-settings: "tnum";
-    -moz-font-feature-settings: "tnum";
-    -ms-font-feature-settings: "tnum";
-    -webkit-font-feature-settings: "tnum";
-    padding-left: 0.96667rem;
-    padding-right: 0.96667rem;
-    padding-top: 0.725rem;
-    padding-bottom: calc(0.725rem - 1px);
   }
 
   th {
-    font-weight: bold;
+    font-family: ${Constants.fontFamilies.bold};
+    font-weight: 400;
   }
-`.replace(/\s/g, '');
+`;
