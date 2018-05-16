@@ -371,7 +371,7 @@ If you want to use Apple Pay for payments, you'll need to set up your merchant I
 
 If you haven't already, set up an Apple Merchant ID via the [Apple Developer Portal](https://developer.apple.com/). Then, open the application in XCode and navigate to the capabilities tab. Enable Apple Pay and insert your merchant ID into the corresponding space.
 
-![applepay](https://imgur.com/QcuhCn4)
+![applepay](/static/icloud-entitlement.png)
 
 Finally, you'll want to include your merchant ID in the JavaScript code before publishing your standalone application. Change the initialization of payments to mimic the following:
 
