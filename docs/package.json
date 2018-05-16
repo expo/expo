@@ -13,8 +13,7 @@
     "mdjs": "babel-node ./mdjs",
     "mdjs-prod": "node ./mdjs --no-watch",
     "fix-markdown": "node ./transition/fix-markdown.js",
-    "clean": "rm -r docs pages/versions generated/navigation-data.json static/images/generated",
-    "update-search-index": "node ./__internal__/update-search-index"
+    "clean": "rm -r docs pages/versions generated/navigation-data.json static/images/generated"
   },
   "dependencies": {
     "babel-plugin-emotion": "^8.0.4",
