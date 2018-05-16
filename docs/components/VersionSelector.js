@@ -14,20 +14,20 @@ const STYLES_SELECT = css`
   align-items: center;
   justify-content: center;
   margin: 0;
-  padding: 0 0 4px 0;
+  height: 48px;
+  padding: 0 16px 0 16px;
+  border-left: 1px solid ${Constants.colors.border};
+  border-right: 1px solid ${Constants.colors.border};
 `;
 
 const STYLES_SELECT_TEXT = css`
-  font-family: ${Constants.fontFamilies.mono};
-  font-size: 10px;
-  background: ${Constants.colors.black};
-  color: ${Constants.colors.white};
-  border-radius: 4px;
-  padding: 4px 8px 4px 8px;
+  font-family: ${Constants.fontFamilies.demi};
+  color: ${Constants.colors.black};
+  font-size: 14px;
+  padding-bottom: 1px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.07);
 `;
 
 const STYLES_SELECT_ELEMENT = css`
