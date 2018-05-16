@@ -1,0 +1,6 @@
+.project
+ReactAndroid/.project
+ReactAndroid/bin/
+app/bin/
+expoview/bin/
+tools/bin/
