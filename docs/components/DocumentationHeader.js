@@ -10,6 +10,8 @@ import DismissIcon from '~/components/icons/DismissIcon';
 import AlgoliaSearch from '~/components/plugins/AlgoliaSearch';
 import VersionSelector from '~/components/VersionSelector';
 
+const STYLES_LOGO = css``;
+
 const STYLES_LEFT = css`
   flex-shrink: 0;
   padding-right: 24px;
@@ -41,7 +43,9 @@ const STYLES_NAV = css`
 `;
 
 const STYLES_TITLE_TEXT = css`
-  margin-left: 8px;
+  width: 137px;
+  white-space: nowrap;
+  padding: 0 0 0 8px;
   font-size: 1.3rem;
   display: inline-block;
   padding-bottom: 2px;
@@ -94,7 +98,7 @@ export default class DocumentationHeader extends React.PureComponent {
       <header className={STYLES_NAV}>
         <div className={STYLES_LEFT}>
           <Link prefetch href="/versions">
-            <a className="logo">
+            <a>
               <BrandLogo />
             </a>
           </Link>
@@ -102,11 +106,7 @@ export default class DocumentationHeader extends React.PureComponent {
           <h1 className={STYLES_TITLE_TEXT}>Expo Docs</h1>
 
           {!this.props.isVersionSelectorHidden && (
-            <VersionSelector
-              style={{ marginLeft: 29 }}
-              version={this.props.version}
-              onSetVersion={this.props.onSetVersion}
-            />
+            <VersionSelector version={this.props.version} onSetVersion={this.props.onSetVersion} />
           )}
         </div>
         <div className={STYLES_RIGHT}>
