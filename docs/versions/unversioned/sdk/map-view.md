@@ -33,6 +33,16 @@ If you have already integrated Google Sign In into your standalone app, this is 
     11. Copy the API key (the first text input on the page) into `app.json` under the `android.config.googleMaps.apiKey` field. [See an example diff](https://github.com/brentvatne/growler-prowler/commit/3496e69b14adb21eb2025ef9e0719c2edbef2aa2).
     12. Press `Save` and then rebuild the app like in step 1.
 
-## Deploying to a standalone app on iOS
+## Deploying Google Maps to a standalone app on iOS
 
-No special configuration required.
+Apple Maps should just work with no extra configuration. For Google Maps, you can specify your own Google Maps API key using the `ios.config.googleMapsApiKey` [configuration](../workflow/configuration#ios) in your project's app.json.
+
+## Deploying Google Maps to ExpoKit for iOS
+
+If you want to add MapView with Google Maps to an [ExpoKit](../expokit) (detached) project on iOS, you may need to manually provide a key by calling:
+
+```
+[GMSServices provideApiKey:@"your api key"]
+```
+
+Alternatively, you can provide the `GMSApiKey` key in your app's `Info.plist` and ExpoKit will pick it up automatically. If you detached after already configuring Google Maps, the detach step may have already provided this for you.

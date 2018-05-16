@@ -83,3 +83,7 @@ In iOS Expokit projects, the DocumentPicker module requires the iCloud entitleme
 If everything worked properly your screen should look like this:
 
 ![](./icloud-entitlement.png)
+
+## Using Google Maps
+
+If you integrate Google Maps to your ExpoKit app with the MapView component, you may need to follow additional instructions to provide your Google Maps API key. See the [MapView docs](../sdk/map-view).
