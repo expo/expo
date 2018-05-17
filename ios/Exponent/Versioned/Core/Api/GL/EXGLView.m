@@ -2,6 +2,7 @@
 #import "EXGLContext.h"
 #import "EXFileSystem.h"
 
+#include <OpenGLES/ES2/glext.h>
 #include <OpenGLES/ES3/gl.h>
 #include <OpenGLES/ES3/glext.h>
 #import <ARKit/ARKit.h>
@@ -303,7 +304,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     // Resolve multisampling and present
     glBindFramebuffer(GL_READ_FRAMEBUFFER, _msaaFramebuffer);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _viewFramebuffer);
-    glBlitFramebuffer(0,0,_layerWidth,_layerHeight, 0,0,_layerWidth,_layerHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+    
+    // glBlitFramebuffer works only on OpenGL ES 3.0, so we need a fallback to Apple's extension for OpenGL ES 2.0
+    if (_glContext.eaglCtx.API == kEAGLRenderingAPIOpenGLES3) {
+      glBlitFramebuffer(0, 0, _layerWidth, _layerHeight, 0, 0, _layerWidth, _layerHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+    } else {
+      glResolveMultisampleFramebufferAPPLE();
+    }
     
     // Restore surrounding framebuffer
     if (prevFramebuffer != 0) {
