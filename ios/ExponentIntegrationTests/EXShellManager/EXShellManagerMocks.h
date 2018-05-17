@@ -18,11 +18,6 @@
 + (void)loadProdServiceConfig;
 
 /**
- *  Load mock configuration for native component list as dev detached xdl should write it.
- */
-+ (void)loadDevDetachConfig;
-
-/**
  *  Return a mock of EXShell.plist
  */
 + (NSMutableDictionary *)shellConfig;
