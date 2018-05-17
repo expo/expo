@@ -115,7 +115,14 @@ function createIOSShellAppWithArguments() {
   );
   IosIcons.setResizeImageFunction(resizeIconWithSharpAsync);
   IosIcons.setGetImageDimensionsFunction(getImageDimensionsWithSharpAsync);
-  return IosShellApp.createIOSShellAppAsync(argv);
+
+  if (argv.action === 'build') {
+    return IosShellApp.buildAndCopyArtifactAsync(argv);
+  } else if (argv.action === 'configure') {
+    return IosShellApp.configureAndCopyArchiveAsync(argv);
+  } else {
+    throw new Error(`Unsupported action '${argv.action}'.`);
+  }
 }
 
 function buildIOSClientWithArguments() {
