@@ -120,6 +120,8 @@ function createIOSShellAppWithArguments() {
     return IosShellApp.buildAndCopyArtifactAsync(argv);
   } else if (argv.action === 'configure') {
     return IosShellApp.configureAndCopyArchiveAsync(argv);
+  } else if (argv.action === 'create-workspace') {
+    return IosShellApp.createTurtleWorkspaceAsync(argv);
   } else {
     throw new Error(`Unsupported action '${argv.action}'.`);
   }
