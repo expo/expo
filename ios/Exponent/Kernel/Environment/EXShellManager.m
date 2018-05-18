@@ -117,6 +117,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
 {
   [self _reset];
   NSMutableArray *allManifestUrls = [NSMutableArray array];
+  _isDetached = isDetached;
 
   if (shellConfig) {
     _isShell = [shellConfig[@"isShell"] boolValue];
