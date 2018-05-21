@@ -8,7 +8,7 @@ An [example to do list app](https://github.com/expo/sqlite-example) is available
 
 ### `Expo.SQLite.openDatabase(name, version, description, size)`
 
-Open a database, creating it if it doesn't exist, and return a `Database` object.
+Open a database, creating it if it doesn't exist, and return a `Database` object. On disk, the database will be created under the app's [documents directory](./filesystem), i.e. `${Expo.FileSystem.documentDirectory}/SQLite/${name}`.
 
 #### Arguments
 
