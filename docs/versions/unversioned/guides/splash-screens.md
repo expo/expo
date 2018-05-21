@@ -10,7 +10,7 @@ The default splash screen is a blank white screen. This might work for you, if i
 
 ### Make a splash image
 
-The [iOS Human Interface Guidlindes](https://developer.apple.com/ios/human-interface-guidelines/icons-and-images/launch-screen/) list the static launch image sizes. I'll go with `1242` pixels wide and `2436` pixels tall -- this is the width of the iPhone 8 Plus (the widest iPhone) and the height of the iPhone X (the tallest iPhone). Expo will resize the image for you depending on the size of the device, and we can specify the strategy used to resize the image with `splash.resizeMode`.
+The [iOS Human Interface Guidelines](https://developer.apple.com/ios/human-interface-guidelines/icons-and-images/launch-screen/) list the static launch image sizes. I'll go with `1242` pixels wide and `2436` pixels tall -- this is the width of the iPhone 8 Plus (the widest iPhone) and the height of the iPhone X (the tallest iPhone). Expo will resize the image for you depending on the size of the device, and we can specify the strategy used to resize the image with `splash.resizeMode`.
 
 Android screen sizes vary greatly with the massive variety of devices on the market. One strategy to deal with this is to look at the most common resolutions and design around that - [you can see some statistics on this published by Unity here](https://hwstats.unity3d.com/mobile/display-android.html). Given that we can resize and crop our splash image automatically, it looks like we can stick with our dimensions, as long as we don't depend on the splash image fitting the screen exactly. This is convenient because we can use one splash image for both iOS and Android - less for you to read in this guide and less work for you to do.
 
