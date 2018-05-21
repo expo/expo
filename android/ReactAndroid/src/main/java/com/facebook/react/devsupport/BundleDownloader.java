@@ -263,7 +263,7 @@ public class BundleDownloader {
         StringBuilder sb = new StringBuilder();
         sb.append("The development server returned response error code: ").append(statusCode).append("\n\n")
           .append("URL: ").append(url).append("\n\n")
-          .append("BodyX:\n")
+          .append("Body:\n")
           .append(bodyString);
         callback.onFailure(new DebugServerException(sb.toString()));
       }
