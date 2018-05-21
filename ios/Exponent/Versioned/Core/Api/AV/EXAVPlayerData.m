@@ -282,17 +282,18 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     if (![self _shouldPlayerPlay]) {
       [_player pause];
     }
+
     if (_isMuted || ![self _isPlayerPlaying]) {
       _player.muted = _isMuted;
     }
-    [_exAV demoteAudioSessionIfPossible];
-    
+
     // Apply idempotent parameters.
     if (_shouldCorrectPitch) {
       _player.currentItem.audioTimePitchAlgorithm = AVAudioTimePitchAlgorithmLowQualityZeroLatency;
     } else {
       _player.currentItem.audioTimePitchAlgorithm = AVAudioTimePitchAlgorithmVarispeed;
     }
+
     _player.volume = _volume.floatValue;
     
     
@@ -325,6 +326,8 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
           [strongSelf _callStatusUpdateCallback];
         }
       }
+
+      [strongSelf.exAV demoteAudioSessionIfPossible];
     };
     
     // Apply seek if necessary.
