@@ -653,7 +653,21 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     return;
   }
   
-  __weak EXAVPlayerData *weakSelf = self;
+  __weak EXAVPlayerData *weakSelf = nil;
+
+  // Specification of Objective-C always allows creation of weak references,
+  // however on iOS trying to create a weak reference to a deallocated object
+  // results in throwing an exception. If this happens we have nothing to do
+  // as the EXAVPlayerData is being deallocated, so let's early return.
+  //
+  // See Stackoverflow question:
+  // https://stackoverflow.com/questions/35991363/why-setting-object-that-is-undergoing-deallocation-to-weak-property-results-in-c#42329741
+  @try {
+     weakSelf = self;
+  } @catch (NSException *exception) {
+    return;
+  }
+
   __strong EXAV *strongEXAV = _exAV;
   if (strongEXAV == nil) {
     return;
@@ -674,7 +688,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
               break;
             case AVPlayerStatusFailed: {
               strongSelf.isLoaded = NO;
-              NSString *errorMessage = [NSString stringWithFormat:@"The AVPlayer instance has failed with the error code %li and domain \"%@\".", _player.error.code, _player.error.domain];
+              NSString *errorMessage = [NSString stringWithFormat:@"The AVPlayer instance has failed with the error code %li and domain \"%@\".", strongSelf.player.error.code, strongSelf.player.error.domain];
               if (strongSelf.player.error.localizedFailureReason) {
                 NSString *reasonMessage = [strongSelf.player.error.localizedFailureReason stringByAppendingString:@" - "];
                 errorMessage = [reasonMessage stringByAppendingString:errorMessage];
@@ -695,7 +709,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
           // If replayResolve is not nil here, it means that we had to pause playback due to empty queue of rewinded items.
           // This clause handles iOS 9.
           if (strongSelf.player.rate > 0 && strongSelf.replayResolve) {
-            strongSelf.replayResolve([self getStatus]);
+            strongSelf.replayResolve([strongSelf getStatus]);
             strongSelf.replayResolve = nil;
           }
 
@@ -715,7 +729,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
           // If replayResolve is not nil here, it means that we had to pause playback due to empty queue of rewinded items.
           // This clause handles iOS 10+.
           if (strongSelf.timeControlStatus == AVPlayerTimeControlStatusPlaying && strongSelf.replayResolve) {
-            strongSelf.replayResolve([self getStatus]);
+            strongSelf.replayResolve([strongSelf getStatus]);
             strongSelf.replayResolve = nil;
           }
         } else if ([keyPath isEqualToString:EXAVPlayerDataObserverCurrentItemKeyPath]) {
