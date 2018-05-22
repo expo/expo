@@ -6,7 +6,6 @@
 #import "ExpoKit.h"
 #import "EXReactAppManager.h"
 #import "EXShellManager.h"
-#import "EXVersions.h"
 
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <React/RCTBridge+Private.h>
@@ -78,9 +77,8 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
 
 - (BOOL)linkingModule:(__unused id)linkingModule shouldOpenExpoUrl:(NSURL *)url
 {
-  // do not attempt to route internal exponent links at all if we're in a detached exponent app.
-  NSDictionary *versionsConfig = [EXVersions sharedInstance].versions;
-  if (versionsConfig && versionsConfig[@"detachedNativeVersions"]) {
+  // do not attempt to route internal exponent links at all if we're in a detached app.
+  if ([EXShellManager sharedInstance].isDetached) {
     return NO;
   }
   
