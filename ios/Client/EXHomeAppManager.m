@@ -104,13 +104,6 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
 
 - (void)computeVersionSymbolPrefix
 {
-  /* TODO: BEN: kill me
-   NSDictionary *detachedVersions = [EXVersions sharedInstance].versions[@"detachedNativeVersions"];
-  if (detachedVersions) {
-    self.validatedVersion = detachedVersions[@"kernel"];
-  } else {
-    self.validatedVersion = nil;
-  } */
   self.validatedVersion = nil;
   self.versionSymbolPrefix = [[EXVersions sharedInstance] symbolPrefixForSdkVersion:self.validatedVersion isKernel:YES];
 }
