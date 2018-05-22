@@ -38,3 +38,6 @@ Subscribe to pedometer updates.
 #### Returns
 
 - An EventSubscription object that you can call remove() on when you would like to unsubscribe the listener.
+
+## Standalone Applications
+You'll need to configure an Android OAuth client for your app on the Google Play console for it to work as a standalone application on the Android platform. See https://developers.google.com/fit/android/get-api-key
