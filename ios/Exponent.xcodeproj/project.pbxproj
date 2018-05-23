@@ -312,6 +312,7 @@
 		CD9939502040C1AA0087C883 /* EXHaptic.m in Sources */ = {isa = PBXBuildFile; fileRef = CD99394F2040C1AA0087C883 /* EXHaptic.m */; };
 		F1545BF920877E39002DAC67 /* EXMenuWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = F1545BF820877E39002DAC67 /* EXMenuWindow.m */; };
 		F167C43B209C7EE600F01382 /* EXUtilService.m in Sources */ = {isa = PBXBuildFile; fileRef = F167C43A209C7EE600F01382 /* EXUtilService.m */; };
+		CDBF79FA20868287009B25D6 /* EXStoreReview.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBF79F920868287009B25D6 /* EXStoreReview.m */; };
 		F19BDA11206B877F00BE0843 /* EXMediaLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = F19BDA0F206B877F00BE0843 /* EXMediaLibrary.m */; };
 		F1A4595220187C2B00C9704B /* EXGLCameraObject.m in Sources */ = {isa = PBXBuildFile; fileRef = F1A4595120187C2A00C9704B /* EXGLCameraObject.m */; };
 		F1BF5862201B32BE001EA8FD /* EXGLContext.m in Sources */ = {isa = PBXBuildFile; fileRef = F1BF5860201B32BD001EA8FD /* EXGLContext.m */; };
@@ -947,6 +948,8 @@
 		F1545BF820877E39002DAC67 /* EXMenuWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXMenuWindow.m; sourceTree = "<group>"; };
 		F167C439209C7EE600F01382 /* EXUtilService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXUtilService.h; sourceTree = "<group>"; };
 		F167C43A209C7EE600F01382 /* EXUtilService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXUtilService.m; sourceTree = "<group>"; };
+		CDBF79F820868287009B25D6 /* EXStoreReview.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXStoreReview.h; sourceTree = "<group>"; };
+		CDBF79F920868287009B25D6 /* EXStoreReview.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXStoreReview.m; sourceTree = "<group>"; };
 		F19BDA0F206B877F00BE0843 /* EXMediaLibrary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXMediaLibrary.m; sourceTree = "<group>"; };
 		F19BDA10206B877F00BE0843 /* EXMediaLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXMediaLibrary.h; sourceTree = "<group>"; };
 		F1A4595020187C2A00C9704B /* EXGLCameraObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGLCameraObject.h; sourceTree = "<group>"; };
@@ -1643,6 +1646,8 @@
 				B5FB73891FF6DADB001C764B /* EXGoogle.m */,
 				CD99394E2040C1AA0087C883 /* EXHaptic.h */,
 				CD99394F2040C1AA0087C883 /* EXHaptic.m */,
+				CDBF79F820868287009B25D6 /* EXStoreReview.h */,
+				CDBF79F920868287009B25D6 /* EXStoreReview.m */,
 				B5FB738A1FF6DADB001C764B /* EXImageManipulator.h */,
 				B5FB738B1FF6DADB001C764B /* EXImageManipulator.m */,
 				B5FB738C1FF6DADB001C764B /* EXImagePicker.h */,
@@ -2479,6 +2484,7 @@
 				B5FB74381FF6DADB001C764B /* EXBlurViewManager.m in Sources */,
 				B57EF81520085C8200DA8960 /* RNGestureHandlerManager.m in Sources */,
 				B5FB74E51FF6DADC001C764B /* EXAppState.m in Sources */,
+				CDBF79FA20868287009B25D6 /* EXStoreReview.m in Sources */,
 				B56C65CF20477223002B2424 /* EXHomeDiagnosticsViewController.m in Sources */,
 				0779EE2620977C9E00C2D71B /* AIRGoogleMapOverlay.m in Sources */,
 				7846B22520355E9900638E43 /* RNSVGTSpan.m in Sources */,
