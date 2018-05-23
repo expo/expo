@@ -20,7 +20,7 @@ public class ClearExperienceData {
 
   private static final String TAG = ClearExperienceData.class.getSimpleName();
 
-  public static void clear(Context context, String experienceId, String manifestUrl) {
+  public static void clear(Context context, String experienceId) {
     try {
       String databaseName = ExponentAsyncStorageModule.experienceIdToDatabaseName(experienceId);
       ReactDatabaseSupplier supplier = new ReactDatabaseSupplier(context, databaseName);

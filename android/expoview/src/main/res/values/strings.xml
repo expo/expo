@@ -1,9 +1,22 @@
 <resources>
   <string name="app_name">Exponent</string>
   <string name="dev_activity_name">Exponent Dev</string>
+  <string name="info_activity_name">Info</string>
+  <string name="info_app_name_placeholder">App Name</string>
+  <string name="info_sdk_version">SDK Version: %s</string>
+  <string name="info_id">ID: %s</string>
+  <string name="info_published_time">Published Time: %s</string>
+  <string name="info_is_verified">Is Verified: %s</string>
+  <string name="info_clear_data">Clear Data</string>
+  <string name="info_show_manifest">Show Manifest</string>
+  <string name="info_hide_manifest">Hide Manifest</string>
   <string name="preference_file_key">host.exp.exponent.SharedPreferences</string>
-  <string name="error_default">Something went wrong. Sorry about that.</string>
+  <string name="error_header">Something went wrong.</string>
+  <string name="error_default_client">Sorry about that. You can go back to Expo home or try to reload the Experience.</string>
+  <string name="error_default_shell">Sorry about that. Press the reload button to try again.</string>
   <string name="error_unable_to_load_experience">Unable to load Experience.</string>
+  <string name="error_uncaught">Uncaught Error: %s</string>
+  <string name="view_error_log">View error log</string>
   <string name="enter_fullscreen_mode">Enter fullscreen mode</string>
   <string name="exit_fullscreen_mode">Exit fullscreen mode</string>
   <string name="cardNumber">Card Number</string>

@@ -27,7 +27,6 @@ import host.exp.exponent.RNObject;
 import host.exp.exponent.kernel.ExponentError;
 import host.exp.exponent.kernel.ExponentErrorMessage;
 import host.exp.exponent.kernel.Kernel;
-import host.exp.exponent.modules.ExponentKernelModule;
 
 public abstract class BaseExperienceActivity extends MultipleVersionReactNativeActivity {
   private static abstract class ExperienceEvent {
@@ -61,7 +60,7 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
       sVisibleActivity.consumeErrorQueue();
     } else if (ErrorActivity.getVisibleActivity() != null) {
       // If ErrorActivity is already started and we get another error from RN.
-      sendErrorsToJS();
+      sendErrorsToErrorActivity();
     }
 
     // Otherwise onResume will consumeErrorQueue
@@ -182,7 +181,7 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
           return;
         }
 
-        Pair<Boolean, ExponentErrorMessage> result = sendErrorsToJS();
+        Pair<Boolean, ExponentErrorMessage> result = sendErrorsToErrorActivity();
         boolean isFatal = result.first;
         ExponentErrorMessage errorMessage = result.second;
 
@@ -216,14 +215,14 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
     });
   }
 
-  private static Pair<Boolean, ExponentErrorMessage> sendErrorsToJS() {
+  private static Pair<Boolean, ExponentErrorMessage> sendErrorsToErrorActivity() {
     boolean isFatal = false;
     ExponentErrorMessage errorMessage = ExponentErrorMessage.developerErrorMessage("");
 
     synchronized (sErrorQueue) {
       while (!sErrorQueue.isEmpty()) {
         ExponentError error = sErrorQueue.remove();
-        ExponentKernelModule.addError(error);
+        ErrorActivity.addError(error);
         if (sVisibleActivity != null) {
           sVisibleActivity.onError(error);
         }
