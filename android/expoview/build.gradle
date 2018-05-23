@@ -37,10 +37,16 @@ buildscript {
   repositories {
     maven { url 'https://maven.fabric.io/public' }
     maven { url "https://jitpack.io" }
+    mavenCentral()
+    jcenter()
+  }
+  dependencies {
+    classpath 'com.jakewharton:butterknife-gradle-plugin:8.8.1'
   }
 }
 
 apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'com.jakewharton.butterknife'
 
 import org.apache.tools.ant.taskdefs.condition.Os
 
@@ -271,6 +277,8 @@ dependencies {
   compile 'com.google.firebase:firebase-core:9.8.0'
   compile 'com.google.firebase:firebase-messaging:9.8.0'
   compile 'com.google.maps.android:android-maps-utils:0.5+'
+  compile 'com.jakewharton:butterknife:8.8.1'
+  apt 'com.jakewharton:butterknife-compiler:8.8.1'
   /*compile('com.gettipsi:stripeview:1.0.0') {
       transitive = false
       exclude group: 'com.facebook.react', module: 'react-native'

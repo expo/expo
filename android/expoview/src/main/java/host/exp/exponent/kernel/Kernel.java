@@ -53,6 +53,7 @@ import host.exp.exponent.AppLoader;
 import host.exp.exponent.ExponentDevActivity;
 import host.exp.exponent.LauncherActivity;
 import host.exp.exponent.ReactNativeStaticHelpers;
+import host.exp.exponent.experience.ErrorActivity;
 import host.exp.exponent.experience.ShellAppActivity;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.experience.BaseExperienceActivity;
@@ -641,7 +642,7 @@ public class Kernel extends KernelInterface {
       return;
     }
 
-    ExponentKernelModuleProvider.queueEvent("ExponentKernel.clearConsole", Arguments.createMap(), null);
+    ErrorActivity.clearErrorList();
 
     final List<ActivityManager.AppTask> tasks = getExperienceActivityTasks();
     ActivityManager.AppTask existingTask = null;

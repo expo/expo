@@ -2,36 +2,32 @@
 
 package host.exp.exponent.experience;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.ImageButton;
-import android.widget.TextView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 
 import javax.inject.Inject;
 
-import com.amplitude.api.Amplitude;
-import com.facebook.react.ReactInstanceManager;
-import com.facebook.react.ReactRootView;
+import java.util.LinkedList;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import de.greenrobot.event.EventBus;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.Constants;
 import host.exp.exponent.LauncherActivity;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.expoview.Exponent;
+import host.exp.exponent.kernel.ExponentError;
 import host.exp.expoview.R;
-import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.kernel.Kernel;
-import host.exp.exponent.storage.ExponentSharedPreferences;
-import host.exp.exponent.utils.JSONBundleConverter;
+import host.exp.expoview.R2;
 
-public class ErrorActivity extends MultipleVersionReactNativeActivity {
-
-  private static final String TAG = ErrorActivity.class.getSimpleName();
+public class ErrorActivity extends FragmentActivity {
 
   public static final String IS_HOME_KEY = "isHome";
   public static final String MANIFEST_URL_KEY = "manifestUrl";
@@ -39,21 +35,18 @@ public class ErrorActivity extends MultipleVersionReactNativeActivity {
   public static final String DEVELOPER_ERROR_MESSAGE_KEY = "developerErrorMessage";
   public static final String DEBUG_MODE_KEY = "isDebugModeEnabled";
 
-  private static final String ERROR_MODULE_NAME = "ErrorScreenApp";
-
   private static ErrorActivity sVisibleActivity;
 
-  TextView mErrorMessageView;
-  View mHomeButton;
-  ImageButton mReloadButton;
+  private static LinkedList<ExponentError> sErrorList = new LinkedList<>();
 
-  private boolean mShouldShowJSErrorScreen;
+  @BindView(R2.id.error_viewPager) ViewPager mPager;
+  private PagerAdapter mPagerAdapter;
+  private static ErrorConsoleFragment mErrorConsoleFragment;
+
   private String mManifestUrl;
-  private ReactRootView mReactRootView;
-  private String mUserErrorMessage;
-  private String mDeveloperErrorMessage;
-  private String mDefaultErrorMessage;
-  private boolean mIsShellApp;
+
+  @Inject
+  Context mContext;
 
   @Inject
   Kernel mKernel;
@@ -62,82 +55,55 @@ public class ErrorActivity extends MultipleVersionReactNativeActivity {
     return sVisibleActivity;
   }
 
+  public Context getContext() {
+    return mContext;
+  }
+
+  public static void addError(ExponentError error) {
+    synchronized (sErrorList) {
+      sErrorList.addFirst(error);
+    }
+    // notify ErrorConsoleFragment of the update so that it can refresh its ListView
+    if (sVisibleActivity != null && mErrorConsoleFragment != null) {
+      sVisibleActivity.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          if (mErrorConsoleFragment.mAdapter != null) {
+            mErrorConsoleFragment.mAdapter.notifyDataSetChanged();
+          }
+        }
+      });
+    }
+  }
+
+  public static void clearErrorList() {
+    synchronized (sErrorList) {
+      sErrorList.clear();
+    }
+  }
+
+  public static LinkedList<ExponentError> getErrorList() {
+    return sErrorList;
+  }
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    mShouldDestroyRNInstanceOnExit = false;
-
-    setContentView(R.layout.error_activity);
-    mErrorMessageView = (TextView) findViewById(R.id.error_message);
-    mHomeButton = findViewById(R.id.home_button);
-    mReloadButton = (ImageButton) findViewById(R.id.reload_button);
-    mHomeButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        onClickHome();
-      }
-    });
-    mReloadButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        onClickReload();
-      }
-    });
+    setContentView(R.layout.error_activity_new);
+    ButterKnife.bind(this);
 
     NativeModuleDepsProvider.getInstance().inject(ErrorActivity.class, this);
 
     ExperienceActivity.removeNotification(this);
 
     Bundle bundle = getIntent().getExtras();
-    mUserErrorMessage = bundle.getString(USER_ERROR_MESSAGE_KEY);
-    mDeveloperErrorMessage = bundle.getString(DEVELOPER_ERROR_MESSAGE_KEY);
-    mDefaultErrorMessage = mUserErrorMessage;
-    if (mDefaultErrorMessage == null || mDefaultErrorMessage.length() == 0) {
-      mDefaultErrorMessage = mDeveloperErrorMessage;
-    }
-    Boolean isDebugModeEnabled = bundle.getBoolean(DEBUG_MODE_KEY);
     mManifestUrl = bundle.getString(MANIFEST_URL_KEY);
     if (mManifestUrl == null && Constants.INITIAL_URL != null) {
       mManifestUrl = Constants.INITIAL_URL;
     }
-    boolean isHomeError = bundle.getBoolean(IS_HOME_KEY, false);
-    mIsShellApp = mManifestUrl != null && mManifestUrl.equals(Constants.INITIAL_URL);
-    mShouldShowJSErrorScreen = mKernel.isRunning();
 
-    try {
-      JSONObject eventProperties = new JSONObject();
-      eventProperties.put(Analytics.USER_ERROR_MESSAGE, mUserErrorMessage);
-      eventProperties.put(Analytics.DEVELOPER_ERROR_MESSAGE, mDeveloperErrorMessage);
-      eventProperties.put(Analytics.MANIFEST_URL, mManifestUrl);
-      Amplitude.getInstance().logEvent(Analytics.ERROR_SCREEN, eventProperties);
-    } catch (Exception e) {
-      EXL.e(TAG, e.getMessage());
-    }
-
-    if (isHomeError || mManifestUrl == null || mManifestUrl.equals(Constants.INITIAL_URL)) {
-      // Kernel is probably dead.
-      mHomeButton.setVisibility(View.GONE);
-      mErrorMessageView.setText(mDefaultErrorMessage);
-    } else {
-      if (mShouldShowJSErrorScreen) {
-        // Show JS error screen.
-        if (!isDebugModeEnabled) {
-          mErrorMessageView.setText(this.getString(R.string.error_unable_to_load_experience));
-        }
-      } else {
-        mErrorMessageView.setText(mDefaultErrorMessage);
-      }
-    }
-
-    EventBus.getDefault().registerSticky(this);
-    EXL.e(TAG, "ErrorActivity message: " + mDefaultErrorMessage);
-
-    if (!mKernel.isStarted()) {
-      // Might not be started if the Experience crashed immediately.
-      // ONLY start it if it hasn't been started already, don't want to retry immediately
-      // if there was an error in the kernel.
-      mKernel.startJSKernel();
-    }
+    mPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+    mPager.setAdapter(mPagerAdapter);
   }
 
   @Override
@@ -157,50 +123,17 @@ public class ErrorActivity extends MultipleVersionReactNativeActivity {
     }
   }
 
-  public void onEventMainThread(Kernel.KernelStartedRunningEvent event) {
-    if (!mKernel.isRunning()) {
-      return;
-    }
-
-    JSONObject props = new JSONObject();
-    try {
-      props.put("isShellApp", mIsShellApp);
-      props.put("userErrorMessage", mUserErrorMessage);
-      props.put("developerErrorMessage", mDeveloperErrorMessage);
-    } catch (JSONException e) {
-      EXL.e(TAG, e);
-    }
-    Bundle bundle = JSONBundleConverter.JSONToBundle(props);
-
-    mReactInstanceManager.assign(mKernel.getReactInstanceManager());
-    mReactRootView = new ReactRootView(this);
-    mReactRootView.startReactApplication(
-        (ReactInstanceManager) mReactInstanceManager.get(),
-        ERROR_MODULE_NAME,
-        bundle
-    );
-    mReactInstanceManager.onHostResume(this, this);
-    setContentView(mReactRootView);
-  }
-
   @Override
   public void onBackPressed() {
-    if (mReactInstanceManager.isNotNull() && !mIsCrashed) {
-      mReactInstanceManager.call("onBackPressed");
-    } else {
+    if (mPager.getCurrentItem() == 0) {
       mKernel.killActivityStack(this);
+    } else {
+      mPager.setCurrentItem(mPager.getCurrentItem() - 1);
     }
-  }
-
-  @Override
-  public void invokeDefaultOnBackPressed() {
-    mKernel.killActivityStack(this);
   }
 
   public void onClickHome() {
-    if (!mKernel.isRunning()) {
-      mKernel.reloadJSBundle();
-    }
+    clearErrorList();
 
     Intent intent = new Intent(this, LauncherActivity.class);
     startActivity(intent);
@@ -214,11 +147,9 @@ public class ErrorActivity extends MultipleVersionReactNativeActivity {
   }
 
   public void onClickReload() {
-    if (!mKernel.isRunning()) {
-      mKernel.reloadJSBundle();
-    }
-
     if (mManifestUrl != null) {
+      clearErrorList();
+
       // Mark as not visible so that any new errors go to a new activity.
       if (sVisibleActivity == this) {
         sVisibleActivity = null;
@@ -233,6 +164,41 @@ public class ErrorActivity extends MultipleVersionReactNativeActivity {
       }
 
       finish();
+    }
+  }
+
+  public void onClickViewErrorLog() {
+    if (mPager != null && mPager.getCurrentItem() == 0) {
+      mPager.setCurrentItem(1);
+    }
+  }
+
+  private class ViewPagerAdapter extends FragmentPagerAdapter {
+
+    public ViewPagerAdapter(FragmentManager fm) {
+      super(fm);
+    }
+
+    @Override
+    public Fragment getItem(int pos) {
+      Bundle args = getIntent().getExtras();
+      args.putString("manifestUrl", mManifestUrl);
+      switch (pos) {
+        case 1:
+          mErrorConsoleFragment = new ErrorConsoleFragment();
+          mErrorConsoleFragment.setArguments(args);
+          return mErrorConsoleFragment;
+        case 0:
+        default:
+          Fragment errorFragment = new ErrorFragment();
+          errorFragment.setArguments(args);
+          return errorFragment;
+      }
+    }
+
+    @Override
+    public int getCount() {
+      return 2;
     }
   }
 }

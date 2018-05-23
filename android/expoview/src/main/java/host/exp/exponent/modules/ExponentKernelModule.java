@@ -3,16 +3,13 @@
 package host.exp.exponent.modules;
 
 import android.app.Activity;
-import android.content.Context;
 import android.support.annotation.Nullable;
 
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -29,7 +26,6 @@ import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.experience.ErrorActivity;
 import host.exp.exponent.experience.ExperienceActivity;
-import host.exp.exponent.kernel.ExponentError;
 import host.exp.exponent.kernel.ExponentKernelModuleInterface;
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 import host.exp.exponent.kernel.ExponentUrls;
@@ -46,9 +42,6 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
   private static final String TAG = ExponentKernelModule.class.getSimpleName();
 
   private static ExponentKernelModule sInstance;
-
-  @Inject
-  Context mContext;
 
   @Inject
   Kernel mKernel;
@@ -75,25 +68,6 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
         "sdkVersions", Constants.SDK_VERSIONS
     );
     return constants;
-  }
-
-  public static void addError(ExponentError error) {
-    WritableArray stackArray = null;
-    if (error.stack != null) {
-      stackArray = Arguments.fromArray(error.stack);
-    }
-
-    try {
-      WritableMap params = Arguments.createMap();
-      params.putString("errorMessage", error.errorMessage.developerErrorMessage());
-      params.putArray("stack", stackArray);
-      params.putInt("exceptionId", error.exceptionId);
-      params.putBoolean("isFatal", error.isFatal);
-
-      queueEvent("ExponentKernel.addError", params, null);
-    } catch (Throwable e) {
-      EXL.e(TAG, e);
-    }
   }
 
   public static void queueEvent(String name, WritableMap data, ExponentKernelModuleProvider.KernelEventCallback callback) {
@@ -199,12 +173,6 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
       currentExperienceActivity.dismissNuxViewIfVisible(false);
     }
     promise.resolve(true);
-  }
-
-  @ReactMethod
-  public void clearExperienceData(String experienceId, String manifestUrl) {
-    ClearExperienceData.clear(mContext, experienceId, manifestUrl);
-    mKernel.reloadVisibleExperience(manifestUrl);
   }
 
   @ReactMethod
