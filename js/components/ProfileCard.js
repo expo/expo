@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 import FadeIn from '@expo/react-native-fade-in-image';
-import { withNavigation } from '@expo/ex-navigation';
+import { withNavigation } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 
@@ -77,9 +77,9 @@ export default class ProfileCard extends React.Component {
 
   _handlePressProjects = () => {
     // note(brentvatne): navigation should do this automatically
-    Keyboard.dismiss();
+    // Keyboard.dismiss();
 
-    this.props.navigator.push('projectsForUser', {
+    this.props.navigation.navigate('ProjectsForUser', {
       username: this.props.username,
     });
   };
@@ -91,7 +91,7 @@ export default class ProfileCard extends React.Component {
     if (this.props.onPressUsername) {
       this.props.onPressUsername(this.props.username);
     } else {
-      this.props.navigator.push('profile', { username: this.props.username });
+      this.props.navigation.navigate('Profile', { username: this.props.username });
     }
   };
 }

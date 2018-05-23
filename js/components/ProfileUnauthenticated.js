@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { withNavigation } from '@expo/ex-navigation';
+import { withNavigation } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 import PrimaryButton from './PrimaryButton';
@@ -48,11 +48,11 @@ export default class ProfileUnauthenticated extends React.Component {
   }
 
   _handleSignInPress = () => {
-    this.props.navigation.showModal('signIn');
+    this.props.navigation.navigate('SignIn');
   };
 
   _handleSignUpPress = () => {
-    this.props.navigation.showModal('signUp');
+    this.props.navigation.navigate('SignUp');
   };
 }
 

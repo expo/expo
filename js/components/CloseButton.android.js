@@ -1,7 +1,7 @@
 /* @flow */
 
 import React from 'react';
-import { withNavigation } from '@expo/ex-navigation';
+import { withNavigation } from 'react-navigation';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -21,7 +21,7 @@ export default class CloseButton extends React.Component {
   }
 
   _handlePress = () => {
-    this.props.navigation.dismissModal();
+    this.props.navigation.goBack(null);
   };
 }
 

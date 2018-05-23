@@ -20,10 +20,8 @@ import Layout from '../constants/Layout';
 const DEFAULT_RATIO = '16:9';
 
 export default class BarCodeScreen extends React.Component {
-  static route = {
-    navigationBar: {
-      visible: false,
-    },
+  static navigationOptions = {
+    header: null,
   };
 
   state = {
@@ -106,7 +104,7 @@ export default class BarCodeScreen extends React.Component {
   }, 1000);
 
   _openUrl = (url: string) => {
-    this.props.navigation.dismissModal();
+    this.props.navigation.pop();
 
     // note(brentvatne): Give the modal a bit of time to dismiss on Android
     setTimeout(() => {
@@ -123,7 +121,7 @@ export default class BarCodeScreen extends React.Component {
   };
 
   _handlePressCancel = () => {
-    this.props.navigation.dismissModal();
+    this.props.navigation.pop();
   };
 
   _setAspectRatio = async () => {

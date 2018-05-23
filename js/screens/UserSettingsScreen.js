@@ -24,10 +24,8 @@ const forceTouchAvailable =
 
 @connect(data => UserSettingsScreen.getDataProps(data))
 export default class UserSettingsScreen extends React.Component {
-  static route = {
-    navigationBar: {
-      title: 'Options',
-    },
+  static navigationOptions = {
+    title: 'Options',
   };
 
   static getDataProps(data) {
@@ -64,10 +62,8 @@ export default class UserSettingsScreen extends React.Component {
   }
 
   _handlePressSignOut = () => {
-    this.props.navigator.pop();
-    requestAnimationFrame(() => {
-      this.props.dispatch(SessionActions.signOut());
-    });
+    this.props.dispatch(SessionActions.signOut());
+    requestAnimationFrame(this.props.navigation.pop);
   };
 
   _setLegacyMenuGestureAsync = (useLegacyGesture: boolean) => {

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
-import { withNavigation } from '@expo/ex-navigation';
+import { withNavigation } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 import PrimaryButton from './PrimaryButton';

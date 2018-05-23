@@ -1,6 +1,6 @@
 /* @flow */
 
-import { createRouter } from '@expo/ex-navigation';
+import { createRouter } from 'react-navigation';
 
 export default createRouter(
   () => ({

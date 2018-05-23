@@ -8,6 +8,7 @@ import Alerts from '../constants/Alerts';
 import Analytics from '../api/Analytics';
 import SessionActions from '../redux/SessionActions';
 import Colors from '../constants/Colors';
+import CloseButton from '../components/CloseButton';
 import Form from '../components/Form';
 import PrimaryButton from '../components/PrimaryButton';
 import Auth0Api from '../api/Auth0Api';
@@ -17,10 +18,9 @@ const DEBUG = false;
 
 @connect(data => SignInScreen.getDataProps(data))
 export default class SignInScreen extends React.Component {
-  static route = {
-    navigationBar: {
-      title: 'Sign In',
-    },
+  static navigationOptions = {
+    title: 'Sign In',
+    headerLeft: <CloseButton />,
   };
 
   static getDataProps(data) {
@@ -55,7 +55,7 @@ export default class SignInScreen extends React.Component {
     const hasNewUserSession = nextProps.session.sessionSecret && !this.props.session.sessionSecret;
     if (hasNewUserSession) {
       TextInput.State.blurTextInput(TextInput.State.currentlyFocusedField());
-      this.props.navigation.dismissModal();
+      this.props.navigation.pop();
     }
   }
 
@@ -135,8 +135,6 @@ export default class SignInScreen extends React.Component {
         if (result.error) {
           this._handleError(result);
         } else {
-          this.props.navigator.hideLocalAlert();
-
           let trackingOpts = {
             id: result.id,
             emailOrUsername: email,
@@ -158,7 +156,7 @@ export default class SignInScreen extends React.Component {
   _handleError = (error: Error) => {
     console.log({ error });
     let message = error.error_description || error.message || 'Sorry, something went wrong.';
-    this.props.navigator.showLocalAlert(message, Alerts.error);
+    alert(message);
   };
 }
 

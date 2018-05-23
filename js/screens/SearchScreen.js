@@ -3,14 +3,15 @@
 import { Constants } from 'expo';
 import React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
-import { NavigationStyles } from '@expo/ex-navigation';
 
 import gql from 'graphql-tag';
 import { groupBy, debounce } from 'lodash';
 import { graphql } from 'react-apollo';
+import { EventEmitter } from 'fbemitter';
 
 import SearchBar from '../components/SearchBar';
 import SearchResults from '../components/SearchResults';
+import isIPhoneX from '../utils/isIPhoneX';
 
 const ResultsLimit = 10;
 const SearchQuery = gql`
@@ -65,59 +66,48 @@ const SearchQuery = gql`
     variables: {
       offset: 0,
       limit: props.limit || ResultsLimit,
-      query: props.query || '',
+      query: props.navigation.getParam('query', ''),
     },
     fetchPolicy: 'cache-and-network',
   }),
 })
 export default class SearchScreen extends React.Component {
-  static route = {
-    styles: NavigationStyles.NoAnimation,
-    navigationBar: Platform.select({
-      ios: {
-        // We render the seach bar within the SearchScreen so we
-        // get more pleasant transitions since it is taller than other
-        // screen navigation bars
-        visible: false,
-      },
-      android: {
-        renderTitle: ({ config: { eventEmitter } }) => {
-          return <SearchBar emitter={eventEmitter} />;
-        },
-      },
-    }),
-  };
-
   state = {
     text: '',
+    emitter: new EventEmitter(),
   };
 
   _searchSubscription: any;
 
-  componentWillMount() {
-    const emitter = this.props.route.getEventEmitter();
-    this._searchSubscription = emitter.addListener(
+  componentDidMount() {
+    this._searchSubscription = this.state.emitter.addListener(
       'change',
       debounce(this._handleChangeQuery, 16.6 * 2)
     );
+
+    this.props.navigation.setParams({ emitter: this.state.emitter });
   }
 
   _handleChangeQuery = (text: string) => {
-    this.props.navigator.updateCurrentRouteParams({
+    this.props.navigation.setParams({
       query: text,
     });
   };
 
   componentWillUnmount() {
-    this._searchSubscription.remove();
+    this._searchSubscription && this._searchSubscription.remove();
   }
 
   render() {
     return (
       <View style={styles.container}>
-        {Platform.OS === 'ios' && (
+        {Platform.OS === 'ios' ? (
           <View style={styles.iosSearchBarContainer}>
-            <SearchBar emitter={this.props.route.getEventEmitter()} />
+            <SearchBar emitter={this.state.emitter} />
+          </View>
+        ) : (
+          <View style={styles.androidSearchBarContainer}>
+            <SearchBar emitter={this.state.emitter} />
           </View>
         )}
 
@@ -127,12 +117,21 @@ export default class SearchScreen extends React.Component {
   }
 }
 
+const NOTCH_HEIGHT = isIPhoneX ? 20 : 0;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#fff',
   },
   iosSearchBarContainer: {
-    height: 70,
+    height: 70 + NOTCH_HEIGHT,
+    paddingTop: 20 + NOTCH_HEIGHT,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: 'rgba(46, 59, 76, 0.10)',
+  },
+  androidSearchBarContainer: {
+    height: 56 + Constants.statusBarHeight,
     paddingTop: Constants.statusBarHeight,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: 'rgba(46, 59, 76, 0.10)',

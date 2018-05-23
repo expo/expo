@@ -9,6 +9,7 @@ import SessionActions from '../redux/SessionActions';
 import Analytics from '../api/Analytics';
 import Alerts from '../constants/Alerts';
 import Auth0Api from '../api/Auth0Api';
+import CloseButton from '../components/CloseButton';
 import Colors from '../constants/Colors';
 import Form from '../components/Form';
 import PrimaryButton from '../components/PrimaryButton';
@@ -17,10 +18,9 @@ const DEBUG = false;
 
 @connect(data => SignUpScreen.getDataProps(data))
 export default class SignUpScreen extends React.Component {
-  static route = {
-    navigationBar: {
-      title: 'Sign Up',
-    },
+  static navigationOptions = {
+    title: 'Sign Up',
+    headerLeft: <CloseButton />,
   };
 
   static getDataProps(data) {
@@ -58,7 +58,7 @@ export default class SignUpScreen extends React.Component {
   componentWillReceiveProps(nextProps: Object) {
     if (nextProps.session.sessionSecret && !this.props.session.sessionSecret) {
       TextInput.State.blurTextInput(TextInput.State.currentlyFocusedField());
-      this.props.navigation.dismissModal();
+      this.props.navigation.pop();
     }
   }
 
@@ -241,7 +241,6 @@ export default class SignUpScreen extends React.Component {
         if (signInResult.error) {
           this._handleError(signInResult);
         } else {
-          this.props.navigator.hideLocalAlert();
           this.props.dispatch(
             SessionActions.setSession({ sessionSecret: signInResult.sessionSecret })
           );
@@ -297,7 +296,7 @@ export default class SignUpScreen extends React.Component {
       errorMessage = result.error_description || result.message;
     }
 
-    this.props.navigator.showLocalAlert(errorMessage, Alerts.error);
+    alert(errorMessage);
   };
 }
 

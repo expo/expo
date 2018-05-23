@@ -1,7 +1,7 @@
 /* @flow */
 
 import React from 'react';
-import { withNavigation } from '@expo/ex-navigation';
+import { withNavigation } from 'react-navigation';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -12,16 +12,16 @@ export default class CloseButton extends React.Component {
   render() {
     return (
       <TouchableOpacity
-        hitSlop={{ top: 10, left: 10, right: 10, bottom: 10 }}
+        hitSlop={{ top: 15, left: 15, right: 15, bottom: 15 }}
         onPress={this._handlePress}
         style={styles.buttonContainer}>
-        <Ionicons name="ios-close-outline" size={32} color={Colors.tintColor} />
+        <Ionicons name="ios-close-outline" size={40} color={Colors.tintColor} />
       </TouchableOpacity>
     );
   }
 
   _handlePress = () => {
-    this.props.navigation.dismissModal();
+    this.props.navigation.goBack(null);
   };
 }
 
@@ -31,6 +31,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingLeft: 15,
-    paddingTop: 2,
+    paddingTop: 3,
   },
 });

@@ -14,7 +14,7 @@ import {
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { connect } from 'react-redux';
 import { connectActionSheet } from '@expo/react-native-action-sheet';
-import { withNavigation } from '@expo/ex-navigation';
+import { withNavigation } from 'react-navigation';
 
 import SessionActions from '../redux/SessionActions';
 
@@ -28,53 +28,42 @@ import isUserAuthenticated from '../utils/isUserAuthenticated';
 
 @connect((data, props) => ProfileScreen.getDataProps(data, props))
 export default class ProfileScreen extends React.Component {
-  static route = {
-    navigationBar: {
-      title(params) {
-        if (params.username) {
-          return params.username;
-        } else {
-          return 'Profile';
-        }
+  static navigationOptions = ({ navigation }) => ({
+    title: navigation.getParam('username', 'Profile'),
+    ...Platform.select({
+      ios: {
+        headerRight: navigation.getParam('username') ? (
+          <OptionsButtonIOS />
+        ) : (
+          <UserSettingsButtonIOS />
+        ),
       },
-      ...Platform.select({
-        ios: {
-          renderRight: ({ params }) => {
-            if (params.username) {
-              return <OptionsButtonIOS />;
-            } else {
-              return <UserSettingsButtonIOS />;
-            }
-          },
-        },
-        android: {
-          renderRight: ({ params }) => {
-            if (params.username) {
-              return <OptionsButtonAndroid />;
-            } else {
-              return <SignOutButtonAndroid />;
-            }
-          },
-        },
-      }),
-    },
-  };
+      android: {
+        headerRight: navigation.getParam('username') ? (
+          <OptionsButtonAndroid />
+        ) : (
+          <SignOutButtonAndroid />
+        ),
+      },
+    }),
+  });
 
   static getDataProps(data, props) {
     let isAuthenticated = isUserAuthenticated(data.session);
 
     return {
       isAuthenticated,
-      username: props.username,
+      username: props.navigation.getParam('username'),
     };
   }
 
   constructor(props) {
     super(props);
+
     this.state = {
       // NOTE: An empty username prop means to display the viewer's profile. We use null to
       // indicate we don't yet know if this is the viewer's own profile.
-      isOwnProfile: !props.username ? true : null,
+      isOwnProfile: !props.navigation.getParam('username') ? true : null,
     };
   }
 
@@ -123,7 +112,7 @@ class SignOutButtonAndroid extends React.Component {
           style={{ position: 'absolute', top: 5, left: 0 }}
         />
         <TouchableOpacity style={styles.buttonContainer} onPress={this._handlePress}>
-          <MaterialIcons name="more-vert" size={27} color="#4E9BDE" />
+          <MaterialIcons name="more-vert" size={27} color="#000" />
         </TouchableOpacity>
       </View>
     );
@@ -158,7 +147,7 @@ class OptionsButtonAndroid extends React.Component {
           style={{ position: 'absolute', top: 5, left: 0 }}
         />
         <TouchableOpacity style={styles.buttonContainer} onPress={this._handlePress}>
-          <MaterialIcons name="more-vert" size={27} color="#4E9BDE" />
+          <MaterialIcons name="more-vert" size={27} color="#000" />
         </TouchableOpacity>
       </View>
     );
@@ -194,7 +183,7 @@ class UserSettingsButtonIOS extends React.Component {
   }
 
   _handlePress = () => {
-    this.props.navigator.push('userSettings');
+    this.props.navigation.navigate('UserSettings');
   };
 }
 

@@ -1,21 +1,20 @@
 import { AppLoading, Asset, Constants, Font } from 'expo';
 import React from 'react';
 import { ActivityIndicator, Linking, Platform, StatusBar, StyleSheet, View } from 'react-native';
-import { NavigationProvider, StackNavigation } from '@expo/ex-navigation';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
-import getViewerUsernameAsync from './utils/getViewerUsernameAsync';
-import addListenerWithNativeCallback from './utils/addListenerWithNativeCallback';
+import Navigation from './navigation/Navigation';
 import HistoryActions from './redux/HistoryActions';
-import jwtDecode from 'jwt-decode';
 import SessionActions from './redux/SessionActions';
 import SettingsActions from './redux/SettingsActions';
 import LocalStorage from './storage/LocalStorage';
 import MenuView from './menu/MenuView';
 import Store from './redux/Store';
 
-import customNavigationContext from './navigation/customNavigationContext';
+import addListenerWithNativeCallback from './utils/addListenerWithNativeCallback';
+import getViewerUsernameAsync from './utils/getViewerUsernameAsync';
+import jwtDecode from 'jwt-decode';
 
 function cacheImages(images) {
   return images.map(image => Asset.fromModule(image).downloadAsync());
@@ -100,9 +99,7 @@ export default class App extends React.Component {
     return (
       <View style={styles.container}>
         <ActionSheetProvider>
-          <NavigationProvider context={customNavigationContext}>
-            {this.state.isReady && <StackNavigation id="root" initialRoute="rootNavigation" />}
-          </NavigationProvider>
+          <Navigation />
         </ActionSheetProvider>
 
         {Platform.OS === 'ios' && <StatusBar barStyle="default" />}

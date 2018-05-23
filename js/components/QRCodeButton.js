@@ -3,7 +3,7 @@
 import React from 'react';
 import { Keyboard, Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { withNavigation } from '@expo/ex-navigation';
+import { withNavigation } from 'react-navigation';
 import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 
 import Colors from '../constants/Colors';
@@ -44,11 +44,8 @@ export default class QRCodeButton extends React.Component {
   }
 
   _handlePressAsync = async () => {
-    // note(brentvatne): navigation should do this automatically
-    Keyboard.dismiss();
-
     if (await requestCameraPermissionsAsync()) {
-      this.props.navigation.showModal('qrCode');
+      this.props.navigation.navigate('QRCode');
     } else {
       alert('In order to use the QR Code scanner you need to provide camera permissions');
     }

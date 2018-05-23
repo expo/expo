@@ -5,17 +5,18 @@ import MyProjectsListContainer from '../containers/MyProjectsListContainer';
 import OtherUserProjectListContainer from '../containers/OtherUserProjectListContainer';
 
 export default class ProjectsForUserScreen extends React.Component {
-  static route = {
-    navigationBar: {
-      title: 'Projects',
-    },
+  static navigationOptions = {
+    title: 'Projects',
   };
 
   render() {
-    if (this.props.belongsToCurrentUser) {
+    let username = this.props.navigation.getParam('username');
+    let belongsToCurrentUser = this.props.navigation.getParam('belongsToCurrentUser', false);
+
+    if (belongsToCurrentUser) {
       return <MyProjectsListContainer belongsToCurrentUser />;
     } else {
-      return <OtherUserProjectListContainer username={this.props.username} />;
+      return <OtherUserProjectListContainer username={username} />;
     }
   }
 }

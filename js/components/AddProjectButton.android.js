@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
-import { withNavigation } from '@expo/ex-navigation';
+import { withNavigation } from 'react-navigation';
 
 import ExUrls from 'ExUrls';
 import Colors from '../constants/Colors';
@@ -47,7 +47,7 @@ export default class AddProjectButton extends React.Component {
       async (action, buttonIndex) => {
         if (buttonIndex === 0) {
           if (await requestCameraPermissionsAsync()) {
-            this.props.navigation.showModal('qrCode');
+            this.props.navigation.navigate('QRCode');
           } else {
             alert('In order to use the QR Code scanner you need to provide camera permissions');
           }

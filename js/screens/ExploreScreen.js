@@ -2,17 +2,17 @@
 
 import React from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
-import { SlidingTabNavigationItem, withNavigation } from '@expo/ex-navigation';
+import { withNavigation } from 'react-navigation';
 import { Ionicons } from '@expo/vector-icons';
 import TouchableNativeFeedback from '@expo/react-native-touchable-native-feedback-safe';
 import { connect } from 'react-redux';
 
 import Colors from '../constants/Colors';
 import SearchBar from '../components/SearchBar';
-import StyledSlidingTabNavigation from '../navigation/StyledSlidingTabNavigation';
 import ExploreTabContainer from '../containers/ExploreTabContainer';
 import FeatureFlags from '../FeatureFlags';
 import isUserAuthenticated from '../utils/isUserAuthenticated';
+import isIPhoneX from '../utils/isIPhoneX';
 
 let TabTitles: Object = {
   new: 'New projects',
@@ -36,23 +36,20 @@ class SearchButton extends React.Component {
           alignItems: 'center',
           justifyContent: 'center',
         }}>
-        <Ionicons name="md-search" size={27} color="#4E9BDE" />
+        <Ionicons name="md-search" size={27} color="#000" />
       </TouchableNativeFeedback>
     );
   }
 
   _handlePress = () => {
-    this.props.navigator.push('search');
+    this.props.navigation.navigate('Search');
   };
 }
 
 @connect(data => ExploreScreen.getDataProps(data))
 export default class ExploreScreen extends React.Component {
-  static route = {
-    navigationBar: {
-      // Disable the built-in navigation bar for better transitions
-      visible: false,
-    },
+  static navigationOptions = {
+    header: null,
   };
 
   static getDataProps(data) {
@@ -71,48 +68,13 @@ export default class ExploreScreen extends React.Component {
   }
 
   _renderContent() {
-    if (FeatureFlags.HIDE_EXPLORE_TABS) {
-      return (
-        <ExploreTabContainer
-          filter="FEATURED"
-          key={this.props.isAuthenticated ? 'authenticated' : 'guest'}
-          listTitle={Platform.OS === 'ios' ? 'FEATURED PROJECTS' : ''}
-          onPressUsername={this._handlePressUsername}
-        />
-      );
-    } else {
-      return (
-        <StyledSlidingTabNavigation
-          key={this.props.isAuthenticated ? 'authenticated' : 'guest'}
-          lazy
-          tabBarStyle={Platform.OS === 'android' && styles.tabBarAndroid}
-          initialTab="featured"
-          keyToTitle={TabTitles}>
-          {this._renderTabs()}
-        </StyledSlidingTabNavigation>
-      );
-    }
-  }
-
-  _renderTabs() {
-    let tabs = [
-      <SlidingTabNavigationItem id="featured" key="featured">
-        <ExploreTabContainer filter="FEATURED" onPressUsername={this._handlePressUsername} />
-      </SlidingTabNavigationItem>,
-      <SlidingTabNavigationItem id="new" key="new">
-        <ExploreTabContainer filter="NEW" onPressUsername={this._handlePressUsername} />
-      </SlidingTabNavigationItem>,
-    ];
-
-    if (FeatureFlags.DISPLAY_EXPERIMENTAL_EXPLORE_TABS) {
-      tabs.push(
-        <SlidingTabNavigationItem id="top" key="top">
-          <ExploreTabContainer filter="TOP" onPressUsername={this._handlePressUsername} />
-        </SlidingTabNavigationItem>
-      );
-    }
-
-    return tabs;
+    return (
+      <ExploreTabContainer
+        filter="FEATURED"
+        key={this.props.isAuthenticated ? 'authenticated' : 'guest'}
+        onPressUsername={this._handlePressUsername}
+      />
+    );
   }
 
   _renderSearchBar() {
@@ -140,7 +102,7 @@ export default class ExploreScreen extends React.Component {
   }
 
   _handlePressUsername = (username: string) => {
-    this.props.navigator.push('profile', { username });
+    this.props.navigation.push('Profile', { username });
   };
 }
 
@@ -152,6 +114,8 @@ if (FeatureFlags.HIDE_EXPLORE_TABS) {
     borderBottomColor: Colors.navBarBorderBottom,
   };
 }
+
+const NOTCH_HEIGHT = isIPhoneX ? 20 : 0;
 
 const styles = StyleSheet.create({
   container: {
@@ -171,9 +135,9 @@ const styles = StyleSheet.create({
     // marginTop: 1,
   },
   titleBarIOS: {
-    height: 70,
+    height: 70 + NOTCH_HEIGHT,
     backgroundColor: '#fff',
-    paddingTop: 20,
+    paddingTop: 20 + NOTCH_HEIGHT,
     ...navBarBorder,
   },
   titleBarAndroid: {

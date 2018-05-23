@@ -16,7 +16,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { createFocusAwareComponent, withNavigation } from '@expo/ex-navigation';
+import { withNavigationFocus, withNavigation } from 'react-navigation';
 import { Constants } from 'expo';
 import { connect } from 'react-redux';
 import _ from 'lodash';
@@ -42,7 +42,7 @@ import extractReleaseChannel from '../utils/extractReleaseChannel';
 const IS_RESTRICTED = Constants.isDevice && Platform.OS === 'ios';
 const PROJECT_UPDATE_INTERVAL = 10000;
 
-@createFocusAwareComponent
+@withNavigationFocus
 @withNavigation
 @connect(data => ProjectsScreen.getDataProps(data))
 export default class ProjectsScreen extends React.Component {
@@ -56,15 +56,13 @@ export default class ProjectsScreen extends React.Component {
     isAuthenticated: boolean,
   };
 
-  static route = {
-    navigationBar: {
-      title: 'Projects',
-      ...Platform.select({
-        ios: {
-          renderRight: () => (Constants.isDevice ? null : <OpenProjectByURLButton />),
-        },
-      }),
-    },
+  static navigationOptions = {
+    title: 'Projects',
+    ...Platform.select({
+      ios: {
+        headerRight: Constants.isDevice ? null : <OpenProjectByURLButton />,
+      },
+    }),
   };
 
   static getDataProps(data) {
@@ -89,7 +87,7 @@ export default class ProjectsScreen extends React.Component {
     this._startPollingForProjects();
 
     addListenerWithNativeCallback('ExponentKernel.showQRReader', async event => {
-      this.props.navigation.showModal('qrCode');
+      this.props.navigation.showModal('QRCode');
       return { success: true };
     });
 
@@ -336,18 +334,14 @@ export default class ProjectsScreen extends React.Component {
 
   _copySnackIdToClipboard = () => {
     Clipboard.setString(getSnackId());
-    this.props.navigator.showLocalAlert(
-      'The device ID has been copied to your clipboard',
-      Alerts.notice
-    );
+
+    // Should have some integrated alert banner
+    alert('The device ID has been copied to your clipboard');
   };
 
   _copyClientVersionToClipboard = () => {
     Clipboard.setString(Constants.expoVersion);
-    this.props.navigator.showLocalAlert(
-      'The client version has been copied to your clipboard',
-      Alerts.notice
-    );
+    alert('The client version has been copied to your clipboard');
   };
 
   _renderProjects = () => {

@@ -59,7 +59,8 @@ export default class Profile extends React.Component {
       let isConnectionError = nextProps.data.error.message.includes('No connection available');
 
       if (isConnectionError) {
-        this.props.navigator.showLocalAlert('No connection available', Alerts.error);
+        // Should have some integrated alert banner
+        alert('No connection available');
       }
     }
   }
@@ -221,7 +222,7 @@ export default class Profile extends React.Component {
   };
 
   _handlePressProjectList = () => {
-    this.props.navigator.push('projectsForUser', {
+    this.props.navigation.navigate('ProjectsForUser', {
       username: this.props.username,
       belongsToCurrentUser: this.props.isOwnProfile,
     });

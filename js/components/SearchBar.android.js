@@ -2,13 +2,14 @@
 
 import React from 'react';
 import { NativeModules, StyleSheet, TextInput, View } from 'react-native';
-import { withNavigation } from '@expo/ex-navigation';
+import { HeaderBackButton, withNavigation, withNavigationFocus } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 
 const { ExponentKernel } = NativeModules;
 
 @withNavigation
+@withNavigationFocus
 export default class SearchBar extends React.Component {
   componentDidMount() {
     requestAnimationFrame(() => {
@@ -20,9 +21,16 @@ export default class SearchBar extends React.Component {
     text: '',
   };
 
+  componentDidUpdate(prevProps) {
+    if (!prevProps.isFocused && this.props.isFocused) {
+      this._textInput && this._textInput.focus();
+    }
+  }
+
   render() {
     return (
       <View style={styles.container}>
+        <HeaderBackButton onPress={() => this.props.navigation.goBack()} />
         <TextInput
           ref={view => {
             this._textInput = view;
@@ -43,7 +51,7 @@ export default class SearchBar extends React.Component {
 
   _handleChangeText = text => {
     this.setState({ text });
-    this.props.emitter.emit('change', text);
+    this.props.emitter && this.props.emitter.emit('change', text);
   };
 
   _handleSubmit = () => {

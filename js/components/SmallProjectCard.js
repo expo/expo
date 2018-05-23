@@ -13,7 +13,7 @@ import {
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { withNavigation } from '@expo/ex-navigation';
+import { withNavigation } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 import Layout from '../constants/Layout';
@@ -22,7 +22,7 @@ import FadeIn from '@expo/react-native-fade-in-image';
 import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 
 @withNavigation
-export default class SmallProjectCard extends React.Component {
+export default class SmallProjectCard extends React.PureComponent {
   render() {
     let {
       hideUsername,
@@ -120,9 +120,6 @@ export default class SmallProjectCard extends React.Component {
   };
 
   _handlePressProject = () => {
-    // note(brentvatne): navigation should do this automatically
-    Keyboard.dismiss();
-
     let url = UrlUtils.normalizeUrl(this.props.projectUrl);
     Linking.openURL(url);
   };
@@ -137,10 +134,7 @@ export default class SmallProjectCard extends React.Component {
   };
 
   _handlePressUsername = () => {
-    // note(brentvatne): navigation should do this automatically
-    Keyboard.dismiss();
-
-    this.props.navigator.push('profile', { username: this.props.username });
+    this.props.navigation.navigate('Profile', { username: this.props.username });
   };
 }
 

@@ -3,7 +3,7 @@
 import React from 'react';
 import {
   ActivityIndicator,
-  ListView,
+  FlatList,
   Platform,
   TouchableOpacity,
   StyleSheet,
@@ -32,22 +32,8 @@ const SERVER_ERROR_TEXT = dedent`
 
 export default class ExploreTab extends React.Component {
   state = {
-    dataSource: new ListView.DataSource({
-      rowHasChanged: (r1, r2) => r1 !== r2,
-    }),
     isRefetching: false,
   };
-
-  componentWillReceiveProps(nextProps: any) {
-    if (!nextProps.data) {
-      return;
-    }
-
-    if (nextProps.data.apps !== this.props.data.apps) {
-      let dataSource = this.state.dataSource.cloneWithRows(nextProps.data.apps);
-      this.setState({ dataSource });
-    }
-  }
 
   render() {
     if (this.props.data.loading || (this.state.isRefetching && !this.props.data.apps)) {
@@ -108,11 +94,12 @@ export default class ExploreTab extends React.Component {
     }
 
     return (
-      <ListView
-        dataSource={this.state.dataSource}
-        renderHeader={this._renderHeader}
-        renderRow={this._renderRow}
+      <FlatList
+        data={this.props.data.apps}
+        ListHeaderComponent={this._renderHeader}
+        renderItem={this._renderItem}
         style={styles.container}
+        keyExtractor={item => item.id}
         contentContainerStyle={{ paddingBottom: 5 }}
         {...extraOptions}
       />
@@ -126,13 +113,15 @@ export default class ExploreTab extends React.Component {
           <Text style={SharedStyles.sectionLabelText}>{this.props.listTitle}</Text>
         </View>
       );
+    } else {
+      return <View />;
     }
   };
 
-  _renderRow = (app: Object, i: number) => {
+  _renderItem = ({ item: app, index }: { item: Object, index: number }) => {
     return (
       <ProjectCard
-        key={i}
+        key={index.toString()}
         isLikedByMe={app.isLikedByMe}
         likeCount={app.likeCount}
         id={app.id}

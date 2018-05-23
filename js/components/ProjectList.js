@@ -1,9 +1,9 @@
 /* @flow */
 
 import React from 'react';
-import { ActivityIndicator, ListView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
-import { withNavigation } from '@expo/ex-navigation';
+import { withNavigation } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 import ProjectCard from './ProjectCard';
@@ -12,38 +12,30 @@ import SmallProjectCard from './SmallProjectCard';
 @withNavigation
 export default class ProjectList extends React.Component {
   state = {
-    dataSource: new ListView.DataSource({
-      rowHasChanged: (r1, r2) => r1 !== r2,
-    }),
+    isReady: false,
     isRefetching: false,
     isLoadingMore: false,
   };
 
   _isMounted: boolean;
+  _readyTimer: any;
 
   componentDidMount() {
     this._isMounted = true;
+    this._readyTimer = setTimeout(() => {
+      this.setState({ isReady: true });
+    }, 500);
   }
 
   componentWillUnmount() {
+    clearTimeout(this._readyTimer);
     this._isMounted = false;
-  }
-
-  componentWillReceiveProps(nextProps: any) {
-    if (!nextProps.data) {
-      return;
-    }
-
-    if (nextProps.data.apps !== this.props.data.apps) {
-      let dataSource = this.state.dataSource.cloneWithRows(nextProps.data.apps);
-      this.setState({ dataSource });
-    }
   }
 
   render() {
     return (
       <View style={{ flex: 1 }}>
-        {this.props.data.apps && this.props.data.apps.length
+        {this.state.isReady && this.props.data.apps && this.props.data.apps.length
           ? this._renderContent()
           : this._maybeRenderLoading()}
       </View>
@@ -51,29 +43,31 @@ export default class ProjectList extends React.Component {
   }
 
   _maybeRenderLoading = () => {
-    if (!this.props.data.loading) {
-      return null;
+    if (!this.state.isReady) {
+      return (
+        <View style={{ flex: 1, padding: 30, alignItems: 'center' }}>
+          <ActivityIndicator />
+        </View>
+      );
     }
-
-    return (
-      <View style={{ flex: 1, padding: 30, alignItems: 'center' }}>
-        <ActivityIndicator />
-      </View>
-    );
   };
 
   _renderContent = () => {
     return (
-      <ListView
-        dataSource={this.state.dataSource}
-        renderRow={this._renderRow}
+      <FlatList
+        data={this.props.data.apps}
+        keyExtractor={this._extractKey}
+        renderItem={this._renderItem}
         style={[{ flex: 1 }, !this.props.belongsToCurrentUser && styles.largeProjectCardList]}
         renderScrollComponent={props => <InfiniteScrollView {...props} />}
         canLoadMore={this._canLoadMore()}
         onLoadMoreAsync={this._handleLoadMoreAsync}
-        removeClippedSubviews={false}
       />
     );
+  };
+
+  _extractKey = item => {
+    return item.id;
   };
 
   _handleLoadMoreAsync = async () => {
@@ -95,11 +89,11 @@ export default class ProjectList extends React.Component {
     return this.props.data.apps.length < this.props.data.appCount;
   };
 
-  _renderRow = (app: any, i: number) => {
+  _renderItem = ({ item: app, index }) => {
     if (this.props.belongsToCurrentUser) {
       return (
         <SmallProjectCard
-          key={i}
+          key={index.toString()}
           hideUsername
           iconUrl={app.iconUrl}
           likeCount={app.likeCount}
@@ -112,7 +106,7 @@ export default class ProjectList extends React.Component {
     } else {
       return (
         <ProjectCard
-          key={i}
+          key={index}
           style={styles.largeProjectCard}
           isLikedByMe={app.isLikedByMe}
           likeCount={app.likeCount}
@@ -129,7 +123,7 @@ export default class ProjectList extends React.Component {
   };
 
   _handlePressUsername = (username: string) => {
-    this.props.navigator.push('profile', { username });
+    this.props.navigation.navigate('Profile', { username });
   };
 }
 

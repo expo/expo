@@ -14,14 +14,14 @@ import {
 } from 'react-native';
 import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 import FadeIn from '@expo/react-native-fade-in-image';
-import { withNavigation } from '@expo/ex-navigation';
+import { withNavigation } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 import LikeButtonContainer from '../containers/LikeButtonContainer';
 import UrlUtils from '../utils/UrlUtils';
 
 @withNavigation
-export default class ProjectCard extends React.Component {
+export default class ProjectCard extends React.PureComponent {
   render() {
     let { id, description, projectName, username, isLikedByMe, likeCount } = this.props;
 
@@ -111,7 +111,7 @@ export default class ProjectCard extends React.Component {
     if (this.props.onPressUsername) {
       this.props.onPressUsername(this.props.username);
     } else {
-      this.props.navigator.push('profile', { username: this.props.username });
+      this.props.navigation.navigate('Profile', { username: this.props.username });
     }
   };
 }

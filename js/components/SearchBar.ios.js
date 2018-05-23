@@ -12,7 +12,7 @@ import {
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { withNavigation } from '@expo/ex-navigation';
+import { withNavigation, withNavigationFocus } from 'react-navigation';
 
 import Layout from '../constants/Layout';
 
@@ -36,13 +36,14 @@ class PlaceholderButtonSearchBar extends React.Component {
           hitSlop={{ top: 10, left: 10, bottom: 5, right: 10 }}
           onPress={this._handlePress}>
           <View style={styles.searchContainer}>
-            <TextInput
-              editable={false}
-              placeholder="Find a project or enter a URL..."
-              placeholderStyle={styles.searchInputPlaceholderText}
-              style={styles.searchInput}
-            />
-
+            <View pointerEvents="none" style={{ flex: 1 }}>
+              <TextInput
+                editable={false}
+                placeholder="Find a project or enter a URL..."
+                placeholderStyle={styles.searchInputPlaceholderText}
+                style={styles.searchInput}
+              />
+            </View>
             <SearchIcon />
           </View>
         </TouchableWithoutFeedback>
@@ -51,13 +52,16 @@ class PlaceholderButtonSearchBar extends React.Component {
   }
 
   _handlePress = () => {
-    this.props.navigator.push('search');
+    this.props.navigation.navigate('Search');
   };
 }
 
 @withNavigation
+@withNavigationFocus
 export default class SearchBar extends React.Component {
   static PlaceholderButton = PlaceholderButtonSearchBar;
+
+  _textInput: TextInput;
 
   state = {
     text: '',
@@ -65,41 +69,11 @@ export default class SearchBar extends React.Component {
     inputWidth: Layout.window.width,
   };
 
-  _textInput: TextInput;
-
-  componentDidMount() {
-    requestAnimationFrame(() => {
-      this._textInput.focus();
-    });
-  }
-
-  _handleLayoutCancelButton = (e: Object) => {
-    if (this.state.showCancelButton) {
-      return;
+  componentDidUpdate(prevProps) {
+    if (!prevProps.isFocused && this.props.isFocused) {
+      this._textInput && this._textInput.focus();
     }
-
-    const cancelButtonWidth = e.nativeEvent.layout.width;
-
-    requestAnimationFrame(() => {
-      LayoutAnimation.configureNext({
-        duration: 200,
-        create: {
-          type: LayoutAnimation.Types.linear,
-          property: LayoutAnimation.Properties.opacity,
-        },
-        update: {
-          type: LayoutAnimation.Types.spring,
-          springDamping: 0.9,
-          initialVelocity: 10,
-        },
-      });
-
-      this.setState({
-        showCancelButton: true,
-        inputWidth: SearchContainerWidth - cancelButtonWidth,
-      });
-    });
-  };
+  }
 
   render() {
     let { inputWidth, showCancelButton } = this.state;
@@ -108,6 +82,7 @@ export default class SearchBar extends React.Component {
       <View style={styles.container}>
         <View style={[styles.searchContainer, { width: inputWidth }]}>
           <TextInput
+            autoFocus
             ref={view => {
               this._textInput = view;
             }}
@@ -143,7 +118,12 @@ export default class SearchBar extends React.Component {
 
   _handleChangeText = (text: string) => {
     this.setState({ text });
-    this.props.emitter && this.props.emitter.emit('change', text);
+    let emitter = this.props.navigation.getParam('emitter');
+    if (!emitter) {
+      return;
+    }
+
+    emitter && emitter.emit('change', text);
   };
 
   _handleSubmit = () => {
@@ -156,8 +136,37 @@ export default class SearchBar extends React.Component {
   };
 
   _handlePressCancelButton = () => {
-    this.props.navigator.pop();
+    this.props.navigation.goBack();
   };
+
+  _handleLayoutCancelButton = (e: Object) => {
+    if (this.state.showCancelButton) {
+      return;
+    }
+
+    const cancelButtonWidth = e.nativeEvent.layout.width;
+
+    requestAnimationFrame(() => {
+      LayoutAnimation.configureNext({
+        duration: 200,
+        create: {
+          type: LayoutAnimation.Types.linear,
+          property: LayoutAnimation.Properties.opacity,
+        },
+        update: {
+          type: LayoutAnimation.Types.spring,
+          springDamping: 0.9,
+          initialVelocity: 10,
+        },
+      });
+
+      this.setState({
+        showCancelButton: true,
+        inputWidth: SearchContainerWidth - cancelButtonWidth,
+      });
+    });
+  };
+
 }
 
 const styles = StyleSheet.create({
@@ -169,7 +178,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     top: 0,
-    paddingTop: 15,
+    bottom: 0,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
