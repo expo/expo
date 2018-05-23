@@ -9,22 +9,34 @@ import android.view.Surface;
 
 import abi21_0_0.com.facebook.react.bridge.ReadableMap;
 import abi21_0_0.com.facebook.react.bridge.WritableMap;
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.Format;
+import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.extractor.ExtractorsFactory;
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.source.AdaptiveMediaSourceEventListener;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.trackselection.AdaptiveVideoTrackSelection;
+import com.google.android.exoplayer2.source.TrackGroupArray;
+import com.google.android.exoplayer2.source.dash.DashMediaSource;
+import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
+import com.google.android.exoplayer2.source.hls.HlsMediaSource;
+import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource;
+import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
+import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
@@ -67,8 +79,8 @@ class SimpleExoPlayerData extends PlayerData
     final Handler mainHandler = new Handler();
     // Measures bandwidth during playback. Can be null if not required.
     final BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
-    final TrackSelection.Factory videoTrackSelectionFactory = new AdaptiveVideoTrackSelection.Factory(bandwidthMeter);
-    final TrackSelector trackSelector = new DefaultTrackSelector(mainHandler, videoTrackSelectionFactory);
+    final TrackSelection.Factory videoTrackSelectionFactory = new AdaptiveTrackSelection.Factory(bandwidthMeter);
+    final TrackSelector trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
 
     // Create the player
     mSimpleExoPlayer = ExoPlayerFactory.newSimpleInstance(mAVModule.mScopedContext, trackSelector, new DefaultLoadControl());
@@ -115,14 +127,7 @@ class SimpleExoPlayerData extends PlayerData
 
     // TODO get beta version of ExoPlayer for PlaybackParameters
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      PlaybackParams params = mSimpleExoPlayer.getPlaybackParams();
-      if (params == null) {
-        params = new PlaybackParams();
-      }
-      params.setPitch(mShouldCorrectPitch ? 1.0f : mRate);
-      params.setSpeed(mRate);
-      params.setAudioFallbackMode(PlaybackParams.AUDIO_FALLBACK_MODE_DEFAULT);
-      mSimpleExoPlayer.setPlaybackParams(params);
+      mSimpleExoPlayer.setPlaybackParameters(new PlaybackParameters(mRate, mShouldCorrectPitch ? 1.0f : mRate));
     }
 
     mSimpleExoPlayer.setPlayWhenReady(mShouldPlay);
@@ -244,6 +249,20 @@ class SimpleExoPlayerData extends PlayerData
   }
 
   @Override
+  public void onPlaybackParametersChanged(PlaybackParameters parameters) {
+  }
+
+  @Override
+  public void onRepeatModeChanged(int repeatMode) {
+  }
+
+  @Override
+  public void onTracksChanged(TrackGroupArray trackGroups,
+                              TrackSelectionArray trackSelections) {
+
+  }
+
+  @Override
   public void onPlayerStateChanged(final boolean playWhenReady, final int playbackState) {
     if (mLastPlaybackState != null
         && playbackState != mLastPlaybackState
@@ -308,10 +327,5 @@ class SimpleExoPlayerData extends PlayerData
       mVideoSizeUpdateListener.onVideoSizeUpdate(mVideoWidthHeight);
     }
     mFirstFrameRendered = true;
-  }
-
-  @Override
-  public void onVideoTracksDisabled() {
-
   }
 }
