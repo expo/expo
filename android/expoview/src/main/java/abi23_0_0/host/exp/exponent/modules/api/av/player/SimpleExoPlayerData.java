@@ -1,34 +1,23 @@
 package abi23_0_0.host.exp.exponent.modules.api.av.player;
 
-import android.media.PlaybackParams;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Handler;
 import android.util.Pair;
 import android.view.Surface;
 
 import abi23_0_0.com.facebook.react.bridge.ReadableMap;
 import abi23_0_0.com.facebook.react.bridge.WritableMap;
-import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.extractor.ExtractorsFactory;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
-import com.google.android.exoplayer2.source.AdaptiveMediaSourceEventListener;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
-import com.google.android.exoplayer2.source.dash.DashMediaSource;
-import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
-import com.google.android.exoplayer2.source.hls.HlsMediaSource;
-import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource;
-import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
@@ -36,7 +25,6 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
@@ -46,7 +34,7 @@ import java.io.IOException;
 import abi23_0_0.host.exp.exponent.modules.api.av.AVModule;
 
 class SimpleExoPlayerData extends PlayerData
-    implements ExoPlayer.EventListener, ExtractorMediaSource.EventListener, SimpleExoPlayer.VideoListener {
+    implements Player.EventListener, ExtractorMediaSource.EventListener, SimpleExoPlayer.VideoListener {
 
   private static final String IMPLEMENTATION_NAME = "SimpleExoPlayer";
 
@@ -83,9 +71,9 @@ class SimpleExoPlayerData extends PlayerData
     final TrackSelector trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
 
     // Create the player
-    mSimpleExoPlayer = ExoPlayerFactory.newSimpleInstance(mAVModule.mScopedContext, trackSelector, new DefaultLoadControl());
+    mSimpleExoPlayer = ExoPlayerFactory.newSimpleInstance(mAVModule.mScopedContext, trackSelector);
     mSimpleExoPlayer.addListener(this);
-    mSimpleExoPlayer.setVideoListener(this);
+    mSimpleExoPlayer.addVideoListener(this);
 
     // Produces DataSource instances through which media data is loaded.
     final DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(mAVModule.mScopedContext, Util.getUserAgent(mAVModule.mScopedContext, "yourApplicationName"));
@@ -125,10 +113,7 @@ class SimpleExoPlayerData extends PlayerData
 
     updateVolumeMuteAndDuck();
 
-    // TODO get beta version of ExoPlayer for PlaybackParameters
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      mSimpleExoPlayer.setPlaybackParameters(new PlaybackParameters(mRate, mShouldCorrectPitch ? 1.0f : mRate));
-    }
+    mSimpleExoPlayer.setPlaybackParameters(new PlaybackParameters(mRate, mShouldCorrectPitch ? 1.0f : mRate));
 
     mSimpleExoPlayer.setPlayWhenReady(mShouldPlay);
 
@@ -144,8 +129,12 @@ class SimpleExoPlayerData extends PlayerData
 
     // Set looping idempotently
     if (newIsLooping != null) {
-      // TODO get beta version of ExoPlayer for seamless looping with setRepeatMode
       mIsLooping = newIsLooping;
+      if (mIsLooping) {
+        mSimpleExoPlayer.setRepeatMode(Player.REPEAT_MODE_ALL);
+      } else {
+        mSimpleExoPlayer.setRepeatMode(Player.REPEAT_MODE_OFF);
+      }
     }
 
     // Pause first if necessary.
@@ -185,9 +174,9 @@ class SimpleExoPlayerData extends PlayerData
         getClippedIntegerForValue((int) mSimpleExoPlayer.getBufferedPosition(), 0, duration));
 
     map.putBoolean(STATUS_IS_PLAYING_KEY_PATH,
-        mSimpleExoPlayer.getPlaybackState() == ExoPlayer.STATE_READY && mSimpleExoPlayer.getPlayWhenReady());
+        mSimpleExoPlayer.getPlaybackState() == Player.STATE_READY && mSimpleExoPlayer.getPlayWhenReady());
     map.putBoolean(STATUS_IS_BUFFERING_KEY_PATH,
-        mSimpleExoPlayer.getPlaybackState() == ExoPlayer.STATE_BUFFERING || mIsLoading);
+        mSimpleExoPlayer.getPlaybackState() == Player.STATE_BUFFERING || mIsLoading);
 
     map.putBoolean(STATUS_IS_LOOPING_KEY_PATH, mIsLooping);
   }
@@ -266,17 +255,8 @@ class SimpleExoPlayerData extends PlayerData
   public void onPlayerStateChanged(final boolean playWhenReady, final int playbackState) {
     if (mLastPlaybackState != null
         && playbackState != mLastPlaybackState
-        && playbackState == ExoPlayer.STATE_ENDED) {
+        && playbackState == Player.STATE_ENDED) {
       callStatusUpdateListenerWithDidJustFinish();
-
-      // TODO remove this when setRepeatMode is integrated.
-      if (mIsLooping) {
-        try {
-          applyNewStatus(0, null);
-        } catch (final AVModule.AudioFocusNotAcquiredException e) {
-          // Do nothing --  the audio focus will remain in the same state as before.
-        }
-      }
     } else {
       callStatusUpdateListener();
     }
@@ -290,7 +270,7 @@ class SimpleExoPlayerData extends PlayerData
 
   @Override
   public void onPlayerError(final ExoPlaybackException error) {
-    // TODO : see error listener for media player
+    mErrorListener.onError("Player error: " + error.getMessage());
   }
 
   @Override
