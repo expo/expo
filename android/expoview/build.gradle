@@ -259,6 +259,7 @@ dependencies {
   releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
   compile 'com.facebook.device.yearclass:yearclass:1.0.1'
   compile 'commons-io:commons-io:1.3.2'
+  compile 'com.google.android.exoplayer:exoplayer:r2.5.0'
   compile 'me.leolin:ShortcutBadger:1.1.4@aar'
   compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
   compile 'com.theartofdev.edmodo:android-image-cropper:2.4.7'
