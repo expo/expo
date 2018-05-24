@@ -108,7 +108,7 @@
 {
   // if the URL of our request matches the remote URL of the embedded JS bundle,
   // skip checking any caches and just immediately open the NSBundle copy
-  if ([EXEnvironment sharedEnvironment].isShell &&
+  if ([EXEnvironment sharedEnvironment].isDetached &&
       [EXEnvironment sharedEnvironment].embeddedBundleUrl &&
       [self.remoteUrl isEqual:[EXApiUtil encodedUrlFromString:[EXEnvironment sharedEnvironment].embeddedBundleUrl]]) {
     return YES;

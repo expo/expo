@@ -1,6 +1,6 @@
 #import "EXEnvironment.h"
-#import "EXShellManager+Tests.h"
-#import "EXShellManagerMocks.h"
+#import "EXEnvironment+Tests.h"
+#import "EXEnvironmentMocks.h"
 
 @implementation EXShellManagerMocks
 
@@ -44,7 +44,6 @@
 + (NSMutableDictionary *)shellConfig
 {
   return [@{
-    @"isShell": @YES,
     @"manifestUrl": @"https://exp.host/@community/native-component-list",
   } mutableCopy];
 }

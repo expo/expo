@@ -3,22 +3,23 @@
 #import <Foundation/Foundation.h>
 #import "EXTest.h"
 
-FOUNDATION_EXPORT NSString * const kEXShellBundleResourceName;
-FOUNDATION_EXPORT NSString * const kEXShellManifestResourceName;
+NS_ASSUME_NONNULL_BEGIN
+
+FOUNDATION_EXPORT NSString * const kEXEmbeddedBundleResourceName;
+FOUNDATION_EXPORT NSString * const kEXEmbeddedManifestResourceName;
 
 @interface EXEnvironment : NSObject
 
 + (instancetype)sharedEnvironment;
 
-@property (nonatomic, readonly) BOOL isShell; // TODO: retire this property expo/universe#2460
 @property (nonatomic, readonly) BOOL isDetached;
 @property (nonatomic, readonly) BOOL isDebugXCodeScheme;
 
-@property (nonatomic, readonly) NSString *shellManifestUrl;
-@property (nonatomic, readonly) NSString *urlScheme;
-@property (nonatomic, readonly) NSString *releaseChannel;
+@property (nonatomic, readonly, nullable) NSString *standaloneManifestUrl;
+@property (nonatomic, readonly, nullable) NSString *urlScheme;
+@property (nonatomic, readonly, nonnull) NSString *releaseChannel;
 @property (nonatomic, readonly) NSString * _Nullable embeddedBundleUrl;
-@property (nonatomic, readonly) NSArray *allManifestUrls;
+@property (nonatomic, readonly, nonnull) NSArray *allManifestUrls;
 @property (nonatomic, readonly) BOOL isManifestVerificationBypassed;
 @property (nonatomic, readonly) BOOL areRemoteUpdatesEnabled;
 @property (nonatomic, readonly) BOOL isSplashScreenDisabled;
@@ -27,7 +28,7 @@ FOUNDATION_EXPORT NSString * const kEXShellManifestResourceName;
 /**
  *  True if the given string is not null and equals self.urlScheme
  */
-- (BOOL)isShellUrlScheme: (NSString *)scheme;
+- (BOOL)isStandaloneUrlScheme:(NSString *)scheme;
 
 /**
  *  True if urlScheme is nonnull.
@@ -35,3 +36,5 @@ FOUNDATION_EXPORT NSString * const kEXShellManifestResourceName;
 - (BOOL)hasUrlScheme;
 
 @end
+
+NS_ASSUME_NONNULL_END

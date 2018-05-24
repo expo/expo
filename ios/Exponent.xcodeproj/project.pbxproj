@@ -160,6 +160,8 @@
 		B57EF81720085C8200DA8960 /* RNGestureHandlerRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = B57EF80820085C8100DA8960 /* RNGestureHandlerRegistry.m */; };
 		B57EF81820085C8200DA8960 /* RNRootViewGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = B57EF80B20085C8100DA8960 /* RNRootViewGestureRecognizer.m */; };
 		B58F125C20B73455003E13F1 /* EXEnvironment.m in Sources */ = {isa = PBXBuildFile; fileRef = B58F125B20B73455003E13F1 /* EXEnvironment.m */; };
+		B58F126320B73934003E13F1 /* EXEnvironmentMocks.m in Sources */ = {isa = PBXBuildFile; fileRef = B58F125F20B73934003E13F1 /* EXEnvironmentMocks.m */; };
+		B58F126420B73934003E13F1 /* EXEnvironmentTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B58F126220B73934003E13F1 /* EXEnvironmentTests.m */; };
 		B58FFAAC1F1016B700A51363 /* EXGoogleAuthManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B58FFAAB1F1016B700A51363 /* EXGoogleAuthManager.m */; };
 		B59B59491F6369480083850D /* EXTestEnvironment.plist in Resources */ = {isa = PBXBuildFile; fileRef = B59B59481F6369480083850D /* EXTestEnvironment.plist */; };
 		B5A358621C7E6C4300D1BE67 /* EXAnalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A358611C7E6C4300D1BE67 /* EXAnalytics.m */; };
@@ -175,8 +177,6 @@
 		B5A72C2F20A0D1BF00974CCE /* EXAppFetcherDevelopmentMode.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C2720A0D1BF00974CCE /* EXAppFetcherDevelopmentMode.m */; };
 		B5A72C3020A0D1BF00974CCE /* EXAppFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C2B20A0D1BF00974CCE /* EXAppFetcher.m */; };
 		B5A72C3420A0D42D00974CCE /* EXAppLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C3120A0D42C00974CCE /* EXAppLoader.m */; };
-		B5A72C3B20A2611600974CCE /* EXShellManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C3920A2611600974CCE /* EXShellManagerTests.m */; };
-		B5A72C3E20A2612800974CCE /* EXShellManagerMocks.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C3D20A2612800974CCE /* EXShellManagerMocks.m */; };
 		B5AC39A71E95A90B00540AA7 /* EXKernel.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC398E1E95A90B00540AA7 /* EXKernel.m */; };
 		B5AC39AA1E95A90B00540AA7 /* EXKernelDevKeyCommands.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC39961E95A90B00540AA7 /* EXKernelDevKeyCommands.m */; };
 		B5AC39AC1E95A90B00540AA7 /* EXKernelDevMotionHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC399A1E95A90B00540AA7 /* EXKernelDevMotionHandler.m */; };
@@ -645,6 +645,10 @@
 		B57EF80B20085C8100DA8960 /* RNRootViewGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNRootViewGestureRecognizer.m; sourceTree = "<group>"; };
 		B58F125A20B73455003E13F1 /* EXEnvironment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXEnvironment.h; sourceTree = "<group>"; };
 		B58F125B20B73455003E13F1 /* EXEnvironment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXEnvironment.m; sourceTree = "<group>"; };
+		B58F125F20B73934003E13F1 /* EXEnvironmentMocks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXEnvironmentMocks.m; sourceTree = "<group>"; };
+		B58F126020B73934003E13F1 /* EXEnvironment+Tests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "EXEnvironment+Tests.h"; sourceTree = "<group>"; };
+		B58F126120B73934003E13F1 /* EXEnvironmentMocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXEnvironmentMocks.h; sourceTree = "<group>"; };
+		B58F126220B73934003E13F1 /* EXEnvironmentTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXEnvironmentTests.m; sourceTree = "<group>"; };
 		B58FFAAA1F1016B700A51363 /* EXGoogleAuthManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGoogleAuthManager.h; sourceTree = "<group>"; };
 		B58FFAAB1F1016B700A51363 /* EXGoogleAuthManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGoogleAuthManager.m; sourceTree = "<group>"; };
 		B59B59481F6369480083850D /* EXTestEnvironment.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = EXTestEnvironment.plist; sourceTree = "<group>"; };
@@ -676,10 +680,6 @@
 		B5A72C3120A0D42C00974CCE /* EXAppLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppLoader.m; sourceTree = "<group>"; };
 		B5A72C3220A0D42C00974CCE /* EXAppLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAppLoader.h; sourceTree = "<group>"; };
 		B5A72C3320A0D42D00974CCE /* EXAppLoader+Updates.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "EXAppLoader+Updates.h"; sourceTree = "<group>"; };
-		B5A72C3920A2611600974CCE /* EXShellManagerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXShellManagerTests.m; sourceTree = "<group>"; };
-		B5A72C3A20A2611600974CCE /* EXShellManager+Tests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "EXShellManager+Tests.h"; sourceTree = "<group>"; };
-		B5A72C3C20A2612800974CCE /* EXShellManagerMocks.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXShellManagerMocks.h; sourceTree = "<group>"; };
-		B5A72C3D20A2612800974CCE /* EXShellManagerMocks.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXShellManagerMocks.m; sourceTree = "<group>"; };
 		B5AC398D1E95A90B00540AA7 /* EXKernel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernel.h; sourceTree = "<group>"; };
 		B5AC398E1E95A90B00540AA7 /* EXKernel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernel.m; sourceTree = "<group>"; };
 		B5AC39931E95A90B00540AA7 /* EXKernelUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelUtil.h; sourceTree = "<group>"; };
@@ -1242,7 +1242,7 @@
 		B51333411CE649FE00E9FC9E /* ExponentIntegrationTests */ = {
 			isa = PBXGroup;
 			children = (
-				B5A72C3820A2611600974CCE /* EXShellManager */,
+				B58F125E20B73934003E13F1 /* EXEnvironment */,
 				B51333421CE649FE00E9FC9E /* ExponentIntegrationTests.m */,
 				B5356CB82093D71200AA6C7D /* EXAppLoaderTests.m */,
 				B5356CB62093C42800AA6C7D /* EXLinkingTests.m */,
@@ -1354,6 +1354,17 @@
 			path = Versioned;
 			sourceTree = "<group>";
 		};
+		B58F125E20B73934003E13F1 /* EXEnvironment */ = {
+			isa = PBXGroup;
+			children = (
+				B58F126020B73934003E13F1 /* EXEnvironment+Tests.h */,
+				B58F126120B73934003E13F1 /* EXEnvironmentMocks.h */,
+				B58F125F20B73934003E13F1 /* EXEnvironmentMocks.m */,
+				B58F126220B73934003E13F1 /* EXEnvironmentTests.m */,
+			);
+			path = EXEnvironment;
+			sourceTree = "<group>";
+		};
 		B5A473D3204A66F60035C61C /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -1406,17 +1417,6 @@
 				B5A72C2520A0D1BF00974CCE /* EXAppFetcherWithTimeout.m */,
 			);
 			path = AppFetcher;
-			sourceTree = "<group>";
-		};
-		B5A72C3820A2611600974CCE /* EXShellManager */ = {
-			isa = PBXGroup;
-			children = (
-				B5A72C3A20A2611600974CCE /* EXShellManager+Tests.h */,
-				B5A72C3920A2611600974CCE /* EXShellManagerTests.m */,
-				B5A72C3C20A2612800974CCE /* EXShellManagerMocks.h */,
-				B5A72C3D20A2612800974CCE /* EXShellManagerMocks.m */,
-			);
-			path = EXShellManager;
 			sourceTree = "<group>";
 		};
 		B5AC398B1E95A90B00540AA7 /* Kernel */ = {
@@ -2732,9 +2732,9 @@
 			files = (
 				B51333431CE649FE00E9FC9E /* ExponentIntegrationTests.m in Sources */,
 				B5356CB72093C42800AA6C7D /* EXLinkingTests.m in Sources */,
+				B58F126320B73934003E13F1 /* EXEnvironmentMocks.m in Sources */,
 				B5356CB92093D71200AA6C7D /* EXAppLoaderTests.m in Sources */,
-				B5A72C3E20A2612800974CCE /* EXShellManagerMocks.m in Sources */,
-				B5A72C3B20A2611600974CCE /* EXShellManagerTests.m in Sources */,
+				B58F126420B73934003E13F1 /* EXEnvironmentTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

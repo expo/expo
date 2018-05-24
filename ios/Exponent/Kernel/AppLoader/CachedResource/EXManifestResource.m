@@ -29,8 +29,8 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   _originalUrl = originalUrl;
   
   NSString *resourceName;
-  if ([EXEnvironment sharedEnvironment].isShell && [originalUrl.absoluteString isEqual:[EXEnvironment sharedEnvironment].shellManifestUrl]) {
-    resourceName = kEXShellManifestResourceName;
+  if ([EXEnvironment sharedEnvironment].isDetached && [originalUrl.absoluteString isEqual:[EXEnvironment sharedEnvironment].standaloneManifestUrl]) {
+    resourceName = kEXEmbeddedManifestResourceName;
     if ([EXEnvironment sharedEnvironment].releaseChannel){
       self.releaseChannel = [EXEnvironment sharedEnvironment].releaseChannel;
     }

@@ -1,7 +1,7 @@
 #import "EXEnvironment.h"
 #import <Foundation/Foundation.h>
 
-@interface EXShellManager (Tests)
+@interface EXEnvironment (Tests)
 
 - (void)_loadShellConfig:(NSDictionary *)shellConfig
            withInfoPlist:(NSDictionary *)infoPlist
