@@ -28,7 +28,6 @@ import java.util.List;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -54,6 +53,8 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
 
   static final int REQUEST_LAUNCH_CAMERA = 1;
   static final int REQUEST_LAUNCH_IMAGE_LIBRARY = 2;
+
+  static final int DEFAULT_QUALITY = 100;
 
   private Uri mCameraCaptureURI;
   private Promise mPromise;
@@ -91,10 +92,10 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
   private boolean readOptions(final ReadableMap options, final Promise promise) {
     if (options.hasKey(OPTION_QUALITY)) {
       quality = (int) (options.getDouble(OPTION_QUALITY) * 100);
+    } else {
+      quality = DEFAULT_QUALITY;
     }
-    if (options.hasKey(OPTION_ALLOWS_EDITING)) {
-      allowsEditing = options.getBoolean(OPTION_ALLOWS_EDITING);
-    }
+    allowsEditing = options.hasKey(OPTION_ALLOWS_EDITING) && options.getBoolean(OPTION_ALLOWS_EDITING);
     if (options.hasKey(OPTION_MEDIA_TYPES)) {
       mediaTypes = options.getString(OPTION_MEDIA_TYPES);
     }
@@ -105,13 +106,11 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
         promise.reject(new IllegalArgumentException("'aspect option must be of form [Number, Number]"));
         return false;
       }
+    } else {
+      forceAspect = null;
     }
-    if (options.hasKey(OPTION_BASE64)) {
-      base64 = options.getBoolean(OPTION_BASE64);
-    }
-    if (options.hasKey(OPTION_EXIF)) {
-      exif = options.getBoolean(OPTION_EXIF);
-    }
+    base64 = options.hasKey(OPTION_BASE64) && options.getBoolean(OPTION_BASE64);
+    exif = options.hasKey(OPTION_EXIF) && options.getBoolean(OPTION_EXIF);
     return true;
   }
 
@@ -139,14 +138,14 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
   private void launchCameraWithPermissionsGranted(Promise promise, Intent cameraIntent) {
     File imageFile;
     try {
-      imageFile = File.createTempFile("exponent_capture_", ".jpg",
-          Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES));
+      imageFile = new File(ExpFileUtils.generateOutputPath(mScopedContext.getCacheDir(),
+          "ImagePicker", ".jpg"));
     } catch (IOException e) {
       e.printStackTrace();
       return;
     }
     if (imageFile == null) {
-      promise.reject(new IOException("Could not create temporary image file."));
+      promise.reject(new IOException("Could not create image file."));
       return;
     }
     mCameraCaptureURI = ExpFileUtils.contentUriFromFile(imageFile);
@@ -215,33 +214,7 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
           return;
         }
 
-        CropImage.ActivityResult result = CropImage.getActivityResult(intent);
-        int width, height;
-        int rot = result.getRotation() % 360;
-        if (rot < 0) {
-          rot += 360;
-        }
-        if (rot == 0 || rot == 180) { // Rotation is right-angled only
-          width = result.getCropRect().width();
-          height = result.getCropRect().height();
-        } else {
-          width = result.getCropRect().height();
-          height = result.getCropRect().width();
-        }
-        ByteArrayOutputStream out = null;
-        if (base64) {
-          out = new ByteArrayOutputStream();
-          try {
-            // `CropImage` nullifies the `result.getBitmap()` after it writes out to a file, so
-            // we have to read back...
-            InputStream in = new FileInputStream(result.getUri().getPath());
-            IoUtils.copyStream(in, out, null);
-          } catch(IOException e) {
-            promise.reject(e);
-            return;
-          }
-        }
-        returnImageResult(exifData, result.getUri().toString(), width, height, out, promise);
+        handleCropperResult(intent, promise, exifData);
       }
       return;
     }
@@ -293,6 +266,13 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
               EXL.w(TAG, "Image type not supported. Falling back to JPEG instead.");
               extension = ".jpg";
             }
+
+            // if the image is created by camera intent we don't need a new path - it's been already saved
+            String path = requestCode == REQUEST_LAUNCH_CAMERA ?
+                uri.getPath() :
+                ExpFileUtils.generateOutputPath(mScopedContext.getCacheDir(), "ImagePicker", extension);
+            Uri fileUri = requestCode == REQUEST_LAUNCH_CAMERA ? uri : Uri.fromFile(new File(path));
+
             if (allowsEditing) {
               mLaunchedCropper = true;
               mPromise = promise; // Need promise again later
@@ -306,13 +286,7 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
                     .setInitialCropWindowPaddingRatio(0);
               }
               cropImage
-                  .setOutputUri(Uri.fromFile(
-                      new File(ExpFileUtils
-                          .generateOutputPath(
-                              mScopedContext.getCacheDir(),
-                              "ImagePicker",
-                              extension
-                          ))))
+                  .setOutputUri(fileUri)
                   .setOutputCompressFormat(compressFormat)
                   .setOutputCompressQuality(quality)
                   .start(Exponent.getInstance().getCurrentActivity());
@@ -350,7 +324,10 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
                 }
                 return;
               }
-              String path = writeImage(bmp, extension, compressFormat);
+              // create a cache file for an image picked from gallery
+              if (!new File(path).exists()) {
+                writeImage(bmp, path, compressFormat);
+              }
 
               ByteArrayOutputStream out = null;
               if (base64) {
@@ -358,8 +335,7 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
                 bmp.compress(Bitmap.CompressFormat.JPEG, quality, out);
               }
 
-              String fileUri = Uri.fromFile(new File(path)).toString();
-              returnImageResult(exifData, fileUri, bmp.getWidth(), bmp.getHeight(), out, promise);
+              returnImageResult(exifData, fileUri.toString(), bmp.getWidth(), bmp.getHeight(), out, promise);
             }
           } else {
             WritableMap response = Arguments.createMap();
@@ -386,6 +362,36 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
     });
   }
 
+  private void handleCropperResult(Intent intent, Promise promise, WritableMap exifData) {
+    CropImage.ActivityResult result = CropImage.getActivityResult(intent);
+    int width, height;
+    int rot = result.getRotation() % 360;
+    if (rot < 0) {
+      rot += 360;
+    }
+    if (rot == 0 || rot == 180) { // Rotation is right-angled only
+      width = result.getCropRect().width();
+      height = result.getCropRect().height();
+    } else {
+      width = result.getCropRect().height();
+      height = result.getCropRect().width();
+    }
+    ByteArrayOutputStream out = null;
+    if (base64) {
+      out = new ByteArrayOutputStream();
+      try {
+        // `CropImage` nullifies the `result.getBitmap()` after it writes out to a file, so
+        // we have to read back...
+        InputStream in = new FileInputStream(result.getUri().getPath());
+        IoUtils.copyStream(in, out, null);
+      } catch(IOException e) {
+        promise.reject(e);
+        return;
+      }
+    }
+    returnImageResult(exifData, result.getUri().toString(), width, height, out, promise);
+  }
+
   private void returnImageResult(WritableMap exifData, String uri, int width, int height,
                                  ByteArrayOutputStream base64OutputStream, Promise promise) {
     WritableMap response = Arguments.createMap();
@@ -403,11 +409,9 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
     promise.resolve(response);
   }
 
-  private String writeImage(Bitmap image, String extension, Bitmap.CompressFormat compressFormat) {
+  private void writeImage(Bitmap image, String path, Bitmap.CompressFormat compressFormat) {
     FileOutputStream out = null;
-    String path = null;
     try {
-      path = ExpFileUtils.generateOutputPath(mScopedContext.getCacheDir(), "ImagePicker", extension);
       out = new FileOutputStream(path);
       image.compress(compressFormat, quality, out);
     } catch (Exception e) {
@@ -421,7 +425,6 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
         e.printStackTrace();
       }
     }
-    return path;
   }
 
   private String writeVideo(Uri uri) {
