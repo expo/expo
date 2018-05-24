@@ -151,7 +151,6 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   protected void setView(final View view) {
     mContainer.removeAllViews();
     addView(view);
-    checkForReactViews();
   }
 
   protected void addView(final View view) {
@@ -186,7 +185,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   }
 
   // Loop until a view is added to the React root view.
-  private void checkForReactViews() {
+  protected void checkForReactViews() {
     if (mReactRootView.isNull()) {
       return;
     }
@@ -406,6 +405,8 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
             .construct(progressListener);
         builder.callRecursive("setDevBundleDownloadListener", devBundleDownloadListener.get());
       }
+    } else {
+      checkForReactViews();
     }
 
     Bundle bundle = new Bundle();
