@@ -8,11 +8,11 @@
  */
 
 #import "ExpoKit.h"
+#import "EXEnvironment.h"
 #import "EXKernel.h"
 #import "EXKernelLinkingManager.h"
 #import "EXRootViewController.h"
 #import "EXHomeAppManager.h"
-#import "EXShellManager.h"
 #import "EXTest.h"
 
 #import <React/RCTAssert.h>
@@ -37,8 +37,8 @@
   _rootViewController = (EXRootViewController *)[ExpoKit sharedInstance].rootViewController;
   // if test environment isn't configured for a shell app, override here
   // since clearly we're running tests
-  if ([EXShellManager sharedInstance].testEnvironment == EXTestEnvironmentNone) {
-    [EXShellManager sharedInstance].testEnvironment = EXTestEnvironmentLocal;
+  if ([EXEnvironment sharedEnvironment].testEnvironment == EXTestEnvironmentNone) {
+    [EXEnvironment sharedEnvironment].testEnvironment = EXTestEnvironmentLocal;
   }
   
   // NOTE(2018-02-20): Without giving the kernel a second to run, it never opens test-suite. With a

@@ -4,8 +4,8 @@
 #import "EXAppLoader.h"
 #import "EXAppFetcherCacheOnly.h"
 #import "EXAppFetcherWithTimeout.h"
+#import "EXEnvironment.h"
 #import "EXFileDownloader.h"
-#import "EXShellManager.h"
 #import "EXShellManagerMocks.h"
 
 #pragma mark - private/internal methods in App Loader & App Fetchers
@@ -34,8 +34,8 @@
 {
   [super setUp];
   
-  if ([EXShellManager sharedInstance].testEnvironment == EXTestEnvironmentNone) {
-    [EXShellManager sharedInstance].testEnvironment = EXTestEnvironmentLocal;
+  if ([EXEnvironment sharedEnvironment].testEnvironment == EXTestEnvironmentNone) {
+    [EXEnvironment sharedEnvironment].testEnvironment = EXTestEnvironmentLocal;
   }
 }
 

@@ -4,6 +4,7 @@
 #import "EXViewController.h"
 #import "EXAnalytics.h"
 #import "EXBuildConstants.h"
+#import "EXEnvironment.h"
 #import "EXFacebook.h"
 #import "EXGoogleAuthManager.h"
 #import "EXKernel.h"
@@ -13,7 +14,6 @@
 #import "EXRemoteNotificationManager.h"
 #import "EXLocalNotificationManager.h"
 #import "EXBranchManager.h"
-#import "EXShellManager.h"
 
 #import <Crashlytics/Crashlytics.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
@@ -209,7 +209,7 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"EXAppD
   
   if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
     NSURL *webpageURL = userActivity.webpageURL;
-    if ([EXShellManager sharedInstance].isShell) {
+    if ([EXEnvironment sharedEnvironment].isShell) {
       return [EXKernelLinkingManager application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
     } else {
       NSString *path = [webpageURL path];

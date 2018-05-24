@@ -2,9 +2,9 @@
 
 #import "EXAnalytics.h"
 #import "EXBuildConstants.h"
+#import "EXEnvironment.h"
 #import "EXKernel.h"
 #import "ExpoKit.h"
-#import "EXShellManager.h"
 
 #import "Amplitude.h"
 
@@ -118,7 +118,7 @@ NSString * const kEXAnalyticsDisabledConfigKey = @"EXAnalyticsDisabled";
   // hack owls
   // 🦉🦉🦉
   //             🦉
-  if (![EXShellManager sharedInstance].isShell && ![eventId isEqualToString:@"LOAD_EXPERIENCE"]) {
+  if (![EXEnvironment sharedEnvironment].isShell && ![eventId isEqualToString:@"LOAD_EXPERIENCE"]) {
     // if not a shell, and some other event besides LOAD_EXPERIENCE, omit
     return;
   }

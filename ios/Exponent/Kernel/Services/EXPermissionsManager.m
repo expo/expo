@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXShellManager.h"
+#import "EXEnvironment.h"
 #import "EXPermissionsManager.h"
 #import "EXUtil.h"
 
@@ -10,7 +10,7 @@ NSString * const kEXPermissionsKey = @"ExpoPermissions";
 
 - (BOOL)hasGrantedPermission:(NSString *)permission forExperience:(NSString *)experienceId
 {
-  if ([EXShellManager sharedInstance].isShell) {
+  if ([EXEnvironment sharedEnvironment].isShell) {
     return YES;
   }
   

@@ -1,11 +1,11 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+#import "EXEnvironment.h"
 #import "EXKernel.h"
 #import "EXKernelDevKeyCommands.h"
 #import "EXKernelAppRegistry.h"
 #import "EXKernelDevMotionHandler.h"
 #import "EXReactAppManager.h"
-#import "EXShellManager.h"
 
 #import <React/RCTUtils.h>
 
@@ -58,7 +58,7 @@ static NSNotificationName EXShakeGestureNotification = @"EXShakeGestureNotificat
 
 - (void)_handleShakeGesture
 {
-  if ([EXShellManager sharedInstance].isDetached || [EXKernelDevKeyCommands sharedInstance].isLegacyMenuBehaviorEnabled) {
+  if ([EXEnvironment sharedEnvironment].isDetached || [EXKernelDevKeyCommands sharedInstance].isLegacyMenuBehaviorEnabled) {
     [[EXKernel sharedInstance].visibleApp.appManager showDevMenu];
   } else {
     [[EXKernel sharedInstance] switchTasks];

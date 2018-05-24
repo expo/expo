@@ -1,13 +1,14 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXKernel.h"
 #import "EXAppLoader+Updates.h"
+#import "EXEnvironment.h"
+#import "EXKernel.h"
 #import "EXKernelAppRecord.h"
 #import "EXReactAppManager.h"
 #import "EXScopedModuleRegistry.h"
-#import "EXShellManager.h"
 #import "EXUpdates.h"
 #import "EXUpdatesManager.h"
+
 #import <React/RCTBridge.h>
 #import <React/RCTUtils.h>
 
@@ -78,7 +79,7 @@ didRequestManifestWithCacheBehavior:(EXCachedResourceBehavior)cacheBehavior
               success:(void (^)(NSDictionary * _Nonnull))success
               failure:(void (^)(NSError * _Nonnull))failure
 {
-  if ([EXShellManager sharedInstance].isShell && ![EXShellManager sharedInstance].areRemoteUpdatesEnabled) {
+  if ([EXEnvironment sharedEnvironment].isShell && ![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled) {
     failure(RCTErrorWithMessage(@"Remote updates are disabled in app.json"));
     return;
   }
@@ -92,7 +93,7 @@ didRequestBundleWithManifest:(NSDictionary *)manifest
               success:(void (^)(NSData * _Nonnull))success
               failure:(void (^)(NSError * _Nonnull))failure
 {
-  if ([EXShellManager sharedInstance].isShell && ![EXShellManager sharedInstance].areRemoteUpdatesEnabled) {
+  if ([EXEnvironment sharedEnvironment].isShell && ![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled) {
     failure(RCTErrorWithMessage(@"Remote updates are disabled in app.json"));
     return;
   }

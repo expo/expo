@@ -3,10 +3,10 @@
 #import "EXManifestResource.h"
 #import "EXAnalytics.h"
 #import "EXApiUtil.h"
+#import "EXEnvironment.h"
 #import "EXFileDownloader.h"
 #import "EXKernelLinkingManager.h"
 #import "EXKernelUtil.h"
-#import "EXShellManager.h"
 #import "EXVersions.h"
 
 #import <React/RCTConvert.h>
@@ -29,10 +29,10 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   _originalUrl = originalUrl;
   
   NSString *resourceName;
-  if ([EXShellManager sharedInstance].isShell && [originalUrl.absoluteString isEqual:[EXShellManager sharedInstance].shellManifestUrl]) {
+  if ([EXEnvironment sharedEnvironment].isShell && [originalUrl.absoluteString isEqual:[EXEnvironment sharedEnvironment].shellManifestUrl]) {
     resourceName = kEXShellManifestResourceName;
-    if ([EXShellManager sharedInstance].releaseChannel){
-      self.releaseChannel = [EXShellManager sharedInstance].releaseChannel;
+    if ([EXEnvironment sharedEnvironment].releaseChannel){
+      self.releaseChannel = [EXEnvironment sharedEnvironment].releaseChannel;
     }
     NSLog(@"EXManifestResource: Standalone manifest remote url is %@ (%@)", url, originalUrl);
   } else {
@@ -217,7 +217,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
           ([UIDevice currentDevice].systemVersion.floatValue < 10) ||
           
           // the developer disabled manifest verification
-          [EXShellManager sharedInstance].isManifestVerificationBypassed ||
+          [EXEnvironment sharedEnvironment].isManifestVerificationBypassed ||
           
           // we're using a copy that came with the NSBundle and was therefore already codesigned
           [self isUsingEmbeddedResource]
