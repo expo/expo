@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 
-@interface EXShellManagerMocks : NSObject
+@interface EXEnvironmentMocks : NSObject
 
 /**
  *  Load mock configuration for expo client. (no ExpoKit config at all)

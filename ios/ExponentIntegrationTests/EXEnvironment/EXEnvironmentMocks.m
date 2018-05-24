@@ -2,16 +2,16 @@
 #import "EXEnvironment+Tests.h"
 #import "EXEnvironmentMocks.h"
 
-@implementation EXShellManagerMocks
+@implementation EXEnvironmentMocks
 
 #pragma mark - mock environment presets
 
 + (void)loadExpoClientConfig
 {
   [[EXEnvironment sharedEnvironment] _loadShellConfig:@{}
-                                      withInfoPlist:[EXShellManagerMocks _expoClientInfoPlist]
+                                      withInfoPlist:[EXEnvironmentMocks _expoClientInfoPlist]
                                   withExpoKitDevUrl:nil
-                               withEmbeddedManifest:[EXShellManagerMocks embeddedManifest]
+                               withEmbeddedManifest:[EXEnvironmentMocks embeddedManifest]
                                          isDetached:NO
                                  isDebugXCodeScheme:NO
                                        isUserDetach:NO];
@@ -19,10 +19,10 @@
 
 + (void)loadProdServiceConfig
 {
-  [[EXEnvironment sharedEnvironment] _loadShellConfig:[EXShellManagerMocks shellConfig]
-                    withInfoPlist:[EXShellManagerMocks infoPlist]
+  [[EXEnvironment sharedEnvironment] _loadShellConfig:[EXEnvironmentMocks shellConfig]
+                    withInfoPlist:[EXEnvironmentMocks infoPlist]
                 withExpoKitDevUrl:nil
-             withEmbeddedManifest:[EXShellManagerMocks embeddedManifest]
+             withEmbeddedManifest:[EXEnvironmentMocks embeddedManifest]
                        isDetached:YES
                isDebugXCodeScheme:NO
                      isUserDetach:NO];
@@ -30,10 +30,10 @@
 
 + (void)loadDevDetachConfig
 {
-  [[EXEnvironment sharedEnvironment] _loadShellConfig:[EXShellManagerMocks shellConfig]
-                    withInfoPlist:[EXShellManagerMocks infoPlist]
-                withExpoKitDevUrl:[EXShellManagerMocks expoKitDevUrl]
-             withEmbeddedManifest:[EXShellManagerMocks embeddedManifest]
+  [[EXEnvironment sharedEnvironment] _loadShellConfig:[EXEnvironmentMocks shellConfig]
+                    withInfoPlist:[EXEnvironmentMocks infoPlist]
+                withExpoKitDevUrl:[EXEnvironmentMocks expoKitDevUrl]
+             withEmbeddedManifest:[EXEnvironmentMocks embeddedManifest]
                        isDetached:YES
                isDebugXCodeScheme:YES
                      isUserDetach:YES];

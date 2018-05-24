@@ -100,7 +100,7 @@
 
 - (void)testIsOnErrorRecoveryIgnoredInExpoClient
 {
-  [EXShellManagerMocks loadExpoClientConfig];
+  [EXEnvironmentMocks loadExpoClientConfig];
   NSDictionary *manifest = @{
     @"updates": @{
       @"checkAutomatically": @"ON_ERROR_RECOVERY"
@@ -113,7 +113,7 @@
 
 - (void)testIsOnErrorRecoveryRespectedInShellApp
 {
-  [EXShellManagerMocks loadProdServiceConfig];
+  [EXEnvironmentMocks loadProdServiceConfig];
   NSDictionary *manifest = @{
     @"updates": @{
       @"checkAutomatically": @"ON_ERROR_RECOVERY"

@@ -82,7 +82,7 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
     return NO;
   }
   
-  // we don't need to explicitly include a shell app custom URL scheme here
+  // we don't need to explicitly include a standalone app custom URL scheme here
   // because the default iOS linking behavior will still hand those links back to Exponent.
   NSURLComponents *components = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:YES];
   if (components) {
@@ -106,7 +106,7 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
   }
   NSURLComponents *components = [NSURLComponents componentsWithURL:uri resolvingAgainstBaseURL:YES];
 
-  // if the provided uri is the shell app manifest uri,
+  // if the provided uri is the standalone app manifest uri,
   // this should have been transformed into customscheme://deep-link
   // and then all we do here is strip off the deep-link part.
   if ([EXEnvironment sharedEnvironment].isDetached && [[EXEnvironment sharedEnvironment] isStandaloneUrlScheme:components.scheme]) {
@@ -168,7 +168,7 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
   if ([EXEnvironment sharedEnvironment].isDetached && [EXEnvironment sharedEnvironment].hasUrlScheme) {
     // if the provided uri is the standalone app manifest uri,
     // transform this into customscheme://deep-link
-    if ([self _isShellManifestUrl:normalizedUri]) {
+    if ([self _isStandaloneManifestUrl:normalizedUri]) {
       NSString *uriString = normalizedUri.absoluteString;
       NSRange deepLinkRange = [uriString rangeOfString:kEXExpoDeepLinkSeparator];
       // deprecated but we still need to support these links
@@ -205,7 +205,7 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
   NSURLComponents *components = [NSURLComponents componentsWithURL:uri resolvingAgainstBaseURL:YES];
 
   if ([EXEnvironment sharedEnvironment].isDetached && [[EXEnvironment sharedEnvironment] isStandaloneUrlScheme:components.scheme]) {
-    // if we're a shell and this uri had the shell scheme, leave it alone.
+    // if we're standalone and this uri had the standalone scheme, leave it alone.
   } else {
     if ([components.scheme isEqualToString:@"https"]) {
       components.scheme = @"exps";
@@ -223,12 +223,12 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
   return [components URL];
 }
 
-+ (BOOL)_isShellManifestUrl: (NSURL *)normalizedUri
++ (BOOL)_isStandaloneManifestUrl: (NSURL *)normalizedUri
 {
   NSString *uriString = normalizedUri.absoluteString;
-  for (NSString *shellManifestUrl in [EXEnvironment sharedEnvironment].allManifestUrls) {
-    NSURL *normalizedShellManifestURL = [self _uriNormalizedForLinking:[NSURL URLWithString:shellManifestUrl]];
-    if ([normalizedShellManifestURL.absoluteString isEqualToString:uriString]) {
+  for (NSString *manifestUrl in [EXEnvironment sharedEnvironment].allManifestUrls) {
+    NSURL *normalizedManifestURL = [self _uriNormalizedForLinking:[NSURL URLWithString:manifestUrl]];
+    if ([normalizedManifestURL.absoluteString isEqualToString:uriString]) {
       return YES;
     }
   }

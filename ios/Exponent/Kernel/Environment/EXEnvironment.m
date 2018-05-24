@@ -130,7 +130,7 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
       }
       if (isDetached && isDebugScheme) {
         // local detach development: point shell manifest url at local development url
-        [self _loadDetachedDevelopmentUrl:expoKitDevelopmentUrl fallbackToShellConfig:shellConfig];
+        [self _loadDetachedDevelopmentUrl:expoKitDevelopmentUrl];
         if (_standaloneManifestUrl) {
           [allManifestUrls addObject:_standaloneManifestUrl];
         }
@@ -147,9 +147,9 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
       [self _loadEmbeddedBundleUrlWithManifest:embeddedManifest];
 
       // load everything else from EXShell
-      [self _loadMiscShellPropertiesWithConfig:shellConfig];
+      [self _loadMiscPropertiesWithConfig:shellConfig];
 
-      [self _setAnalyticsPropertiesWithShellManifestUrl:_standaloneManifestUrl isUserDetached:isUserDetach];
+      [self _setAnalyticsPropertiesWithStandaloneManifestUrl:_standaloneManifestUrl isUserDetached:isUserDetach];
     }
   }
   _allManifestUrls = allManifestUrls;
@@ -163,18 +163,10 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
   }
 }
 
-- (void)_loadDetachedDevelopmentUrl:(NSString *)expoKitDevelopmentUrl fallbackToShellConfig:(NSDictionary *)shellConfig
+- (void)_loadDetachedDevelopmentUrl:(NSString *)expoKitDevelopmentUrl
 {
-  NSString *developmentUrl = nil;
   if (expoKitDevelopmentUrl) {
-    developmentUrl = expoKitDevelopmentUrl;
-  } else if (shellConfig && shellConfig[@"developmentUrl"]) {
-    DDLogWarn(@"Configuring your ExpoKit `developmentUrl` in EXShell.plist is deprecated, specify this in EXBuildConstants.plist instead.");
-    developmentUrl = shellConfig[@"developmentUrl"];
-  }
-  
-  if (developmentUrl) {
-    _standaloneManifestUrl = developmentUrl;
+    _standaloneManifestUrl = expoKitDevelopmentUrl;
   } else {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                    reason:@"You are running a detached app from Xcode, but it hasn't been configured for local development yet. "
@@ -194,7 +186,7 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
       NSArray *urlSchemes = urlType[@"CFBundleURLSchemes"];
       if (urlSchemes) {
         for (NSString *urlScheme in urlSchemes) {
-          if ([self _isValidShellUrlScheme:urlScheme forDevelopment:NO]) {
+          if ([self _isValidStandaloneUrlScheme:urlScheme forDevelopment:NO]) {
             _urlScheme = urlScheme;
             break;
           }
@@ -204,7 +196,7 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
   }
 }
 
-- (void)_loadMiscShellPropertiesWithConfig:(NSDictionary *)shellConfig
+- (void)_loadMiscPropertiesWithConfig:(NSDictionary *)shellConfig
 {
   _isManifestVerificationBypassed = [shellConfig[@"isManifestVerificationBypassed"] boolValue];
   _areRemoteUpdatesEnabled = (shellConfig[@"areRemoteUpdatesEnabled"] == nil)
@@ -222,7 +214,7 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
   }
 }
 
-- (void)_setAnalyticsPropertiesWithShellManifestUrl:(NSString *)shellManifestUrl
+- (void)_setAnalyticsPropertiesWithStandaloneManifestUrl:(NSString *)shellManifestUrl
                                      isUserDetached:(BOOL)isUserDetached
 {
   if (_testEnvironment == EXTestEnvironmentNone) {
@@ -237,7 +229,7 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
 /**
  *  Is this a valid url scheme for a standalone app?
  */
-- (BOOL)_isValidShellUrlScheme:(NSString *)urlScheme forDevelopment:(BOOL)isForDevelopment
+- (BOOL)_isValidStandaloneUrlScheme:(NSString *)urlScheme forDevelopment:(BOOL)isForDevelopment
 {
   // don't allow shell apps to intercept exp links
   if (urlScheme && urlScheme.length) {
