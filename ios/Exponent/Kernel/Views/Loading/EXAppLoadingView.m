@@ -2,9 +2,9 @@
 #import "EXAppLoadingCancelView.h"
 #import "EXAppLoadingProgressView.h"
 #import "EXConstants.h"
+#import "EXEnvironment.h"
 #import "EXKernel.h"
 #import "EXKernelUtil.h"
-#import "EXShellManager.h"
 #import "EXReactAppManager.h"
 #import "EXResourceLoader.h"
 #import "EXUtil.h"
@@ -118,7 +118,7 @@
   } else {
     // most shell apps use splash unless overridden
     // TODO: disable if this is a different appManager but still run in a shell context.
-    return [EXShellManager sharedInstance].isShell && !([EXShellManager sharedInstance].isSplashScreenDisabled);
+    return [EXEnvironment sharedEnvironment].isShell && !([EXEnvironment sharedEnvironment].isSplashScreenDisabled);
   }
 }
 

@@ -1,12 +1,12 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXApiUtil.h"
+#import "EXAppFetcher+Private.h"
+#import "EXAppLoader.h"
+#import "EXEnvironment.h"
 #import "EXErrorRecoveryManager.h"
 #import "EXJavaScriptResource.h"
 #import "EXKernel.h"
-#import "EXAppFetcher+Private.h"
-#import "EXAppLoader.h"
-#import "EXShellManager.h"
 #import "EXVersions.h"
 
 #import <React/RCTUtils.h>
@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 
   EXCachedResourceBehavior behavior = cacheBehavior;
   // if we've disabled updates, ignore all other settings and only use the cache
-  if ([EXShellManager sharedInstance].isShell && ![EXShellManager sharedInstance].areRemoteUpdatesEnabled) {
+  if ([EXEnvironment sharedEnvironment].isShell && ![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled) {
     behavior = EXCachedResourceOnlyCache;
   }
 

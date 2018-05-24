@@ -1,5 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+#import "EXEnvironment.h"
 #import "EXErrorRecoveryManager.h"
 #import "EXFileDownloader.h"
 #import "EXKernel.h"
@@ -12,7 +13,6 @@
 #import "EXKernelAppRegistry.h"
 #import "EXKernelLinkingManager.h"
 #import "EXManifestResource.h"
-#import "EXShellManager.h"
 
 #import <React/RCTUtils.h>
 
@@ -177,7 +177,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 {
   // if we're in dev mode, don't try loading cached manifest
   if ([_httpManifestUrl.host isEqualToString:@"localhost"]
-      || ([EXShellManager sharedInstance].isShell && [EXShellManager sharedInstance].isDebugXCodeScheme)) {
+      || ([EXEnvironment sharedEnvironment].isShell && [EXEnvironment sharedEnvironment].isDebugXCodeScheme)) {
     // we can't pre-detect if this person is using a developer tool, but using localhost is a pretty solid indicator.
     [self _startAppFetcher:[[EXAppFetcherDevelopmentMode alloc] initWithAppLoader:self]];
   } else {
@@ -230,7 +230,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   }
 
   // only support checkAutomatically: ON_ERROR_RECOVERY in shell & detached apps
-  if (![EXShellManager sharedInstance].isShell) {
+  if (![EXEnvironment sharedEnvironment].isShell) {
     shouldCheckForUpdate = YES;
   }
 
@@ -242,7 +242,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
   // if remote updates are disabled, or we're using `reloadFromCache`, don't check for an update.
   // these checks need to be here because they need to happen after the dev mode check above.
-  if (_shouldUseCacheOnly || ([EXShellManager sharedInstance].isShell && ![EXShellManager sharedInstance].areRemoteUpdatesEnabled)) {
+  if (_shouldUseCacheOnly || ([EXEnvironment sharedEnvironment].isShell && ![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled)) {
     shouldCheckForUpdate = NO;
   }
 
@@ -391,7 +391,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
     success([NSDictionary dictionaryWithDictionary:mutableManifest]);
   } errorBlock:^(NSError * _Nonnull error) {
 #if DEBUG
-    if ([EXShellManager sharedInstance].isShell && error &&
+    if ([EXEnvironment sharedEnvironment].isShell && error &&
         (error.code == 404 || error.domain == EXNetworkErrorDomain)) {
       NSString *message = error.localizedDescription;
       message = [NSString stringWithFormat:@"Make sure you are serving your project from XDE or exp (%@)", message];

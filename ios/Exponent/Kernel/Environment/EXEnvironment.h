@@ -6,9 +6,9 @@
 FOUNDATION_EXPORT NSString * const kEXShellBundleResourceName;
 FOUNDATION_EXPORT NSString * const kEXShellManifestResourceName;
 
-@interface EXShellManager : NSObject
+@interface EXEnvironment : NSObject
 
-+ (instancetype)sharedInstance;
++ (instancetype)sharedEnvironment;
 
 @property (nonatomic, readonly) BOOL isShell; // TODO: retire this property expo/universe#2460
 @property (nonatomic, readonly) BOOL isDetached;

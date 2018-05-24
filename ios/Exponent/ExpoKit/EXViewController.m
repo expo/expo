@@ -1,10 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+#import "EXEnvironment.h"
 #import "EXKernel.h"
 #import "EXScreenOrientationManager.h"
 #import "EXViewController.h"
 #import "ExpoKit.h"
-#import "EXShellManager.h"
 #import "EXUtil.h"
 
 @interface EXViewController ()
@@ -40,7 +40,7 @@
 
 - (void)createRootAppAndMakeVisible
 {
-  NSURL *standaloneAppUrl = [NSURL URLWithString:[EXShellManager sharedInstance].shellManifestUrl];
+  NSURL *standaloneAppUrl = [NSURL URLWithString:[EXEnvironment sharedEnvironment].shellManifestUrl];
   NSDictionary *initialProps = [[EXKernel sharedInstance] initialAppPropsFromLaunchOptions:[ExpoKit sharedInstance].launchOptions];
   EXKernelAppRecord *appRecord = [[EXKernel sharedInstance] createNewAppWithUrl:standaloneAppUrl
                                                                    initialProps:initialProps];

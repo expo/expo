@@ -1,10 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXApiV2Client+EXRemoteNotifications.h"
+#import "EXEnvironment.h"
 #import "EXKernel.h"
 #import "EXProvisioningProfile.h"
 #import "EXRemoteNotificationManager.h"
-#import "EXShellManager.h"
 #import "NSData+EXRemoteNotifications.h"
 
 #import <React/RCTUtils.h>
@@ -228,7 +228,7 @@ typedef void(^EXRemoteNotificationAPNSTokenHandler)(NSData * _Nullable apnsToken
 
 - (BOOL)_supportsCurrentRuntimeEnvironment
 {
-  if (![EXShellManager sharedInstance].isDetached) {
+  if (![EXEnvironment sharedEnvironment].isDetached) {
     return YES;
   }
   

@@ -4,7 +4,7 @@
 #import "EXBuildConstants.h"
 #import "EXKernelUtil.h"
 #import "ExpoKit.h"
-#import "EXShellManager.h"
+#import "EXEnvironment.h"
 
 #import <Crashlytics/Crashlytics.h>
 #import <React/RCTUtils.h>
@@ -12,15 +12,15 @@
 NSString * const kEXShellBundleResourceName = @"shell-app";
 NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
 
-@implementation EXShellManager
+@implementation EXEnvironment
 
-+ (nonnull instancetype)sharedInstance
++ (nonnull instancetype)sharedEnvironment
 {
-  static EXShellManager *theManager;
+  static EXEnvironment *theManager;
   static dispatch_once_t once;
   dispatch_once(&once, ^{
     if (!theManager) {
-      theManager = [[EXShellManager alloc] init];
+      theManager = [[EXEnvironment alloc] init];
     }
   });
   return theManager;

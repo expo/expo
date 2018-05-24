@@ -1,10 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+#import "EXEnvironment.h"
 #import "EXKernelDevKeyCommands.h"
 #import "EXKernel.h"
 #import "EXKernelAppRegistry.h"
 #import "EXReactAppManager.h"
-#import "EXShellManager.h"
 
 #import <React/RCTDefines.h>
 #import <React/RCTUtils.h>
@@ -189,7 +189,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)_handleMenuCommand
 {
-  if ([EXShellManager sharedInstance].isDetached || _isLegacyMenuBehaviorEnabled) {
+  if ([EXEnvironment sharedEnvironment].isDetached || _isLegacyMenuBehaviorEnabled) {
     [[EXKernel sharedInstance].visibleApp.appManager showDevMenu];
   } else {
     [[EXKernel sharedInstance] switchTasks];

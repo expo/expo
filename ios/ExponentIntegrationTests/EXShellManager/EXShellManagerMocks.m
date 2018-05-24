@@ -1,4 +1,4 @@
-#import "EXShellManager.h"
+#import "EXEnvironment.h"
 #import "EXShellManager+Tests.h"
 #import "EXShellManagerMocks.h"
 
@@ -8,7 +8,7 @@
 
 + (void)loadExpoClientConfig
 {
-  [[EXShellManager sharedInstance] _loadShellConfig:@{}
+  [[EXEnvironment sharedEnvironment] _loadShellConfig:@{}
                                       withInfoPlist:[EXShellManagerMocks _expoClientInfoPlist]
                                   withExpoKitDevUrl:nil
                                withEmbeddedManifest:[EXShellManagerMocks embeddedManifest]
@@ -19,7 +19,7 @@
 
 + (void)loadProdServiceConfig
 {
-  [[EXShellManager sharedInstance] _loadShellConfig:[EXShellManagerMocks shellConfig]
+  [[EXEnvironment sharedEnvironment] _loadShellConfig:[EXShellManagerMocks shellConfig]
                     withInfoPlist:[EXShellManagerMocks infoPlist]
                 withExpoKitDevUrl:nil
              withEmbeddedManifest:[EXShellManagerMocks embeddedManifest]
@@ -30,7 +30,7 @@
 
 + (void)loadDevDetachConfig
 {
-  [[EXShellManager sharedInstance] _loadShellConfig:[EXShellManagerMocks shellConfig]
+  [[EXEnvironment sharedEnvironment] _loadShellConfig:[EXShellManagerMocks shellConfig]
                     withInfoPlist:[EXShellManagerMocks infoPlist]
                 withExpoKitDevUrl:[EXShellManagerMocks expoKitDevUrl]
              withEmbeddedManifest:[EXShellManagerMocks embeddedManifest]

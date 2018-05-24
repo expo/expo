@@ -1,4 +1,4 @@
-#import "EXShellManager.h"
+#import "EXEnvironment.h"
 #import <Foundation/Foundation.h>
 
 @interface EXShellManager (Tests)

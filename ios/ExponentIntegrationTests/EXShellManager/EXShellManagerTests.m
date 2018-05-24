@@ -1,4 +1,4 @@
-#import "EXShellManager.h"
+#import "EXEnvironment.h"
 #import "EXShellManager+Tests.h"
 #import "EXShellManagerMocks.h"
 
@@ -16,7 +16,7 @@
 {
   [super setUp];
   
-  _shellManager = [EXShellManager sharedInstance];
+  _shellManager = [EXEnvironment sharedEnvironment];
   if (_shellManager.testEnvironment == EXTestEnvironmentNone) {
     _shellManager.testEnvironment = EXTestEnvironmentLocal;
   }

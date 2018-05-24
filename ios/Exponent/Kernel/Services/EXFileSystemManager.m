@@ -1,11 +1,11 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXShellManager.h"
+#import "EXEnvironment.h"
 #import "EXFileSystemManager.h"
 
 // Returns if the experience id is the main shell experience.
 BOOL EXIsShellExperience(NSString *experienceId) {
-  return [[EXShellManager sharedInstance].shellManifestUrl containsString:experienceId];
+  return [[EXEnvironment sharedEnvironment].shellManifestUrl containsString:experienceId];
 }
 
 @implementation EXFileSystemManager

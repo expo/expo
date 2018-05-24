@@ -1,10 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXErrorView.h"
-#import "EXKernel.h"
 #import "EXAppLoader.h"
+#import "EXErrorView.h"
+#import "EXEnvironment.h"
+#import "EXKernel.h"
 #import "EXKernelAppRecord.h"
-#import "EXShellManager.h"
 #import "EXUtil.h"
 
 @interface EXErrorView ()
@@ -193,7 +193,7 @@
 
 - (BOOL)_isDevDetached
 {
-  return [EXShellManager sharedInstance].isDetached && [EXShellManager sharedInstance].isDebugXCodeScheme;
+  return [EXEnvironment sharedEnvironment].isDetached && [EXEnvironment sharedEnvironment].isDebugXCodeScheme;
 }
 
 @end

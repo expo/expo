@@ -4,8 +4,8 @@
 
 #import <Branch/Branch.h>
 
+#import "EXEnvironment.h"
 #import "EXKernel.h"
-#import "EXShellManager.h"
 #import "EXKernelAppRecord.h"
 #import "RNBranch.h"
 

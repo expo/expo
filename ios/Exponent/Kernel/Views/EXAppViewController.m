@@ -3,17 +3,17 @@
 @import UIKit;
 
 #import "EXAnalytics.h"
-#import "EXAppLoadingView.h"
-#import "EXErrorRecoveryManager.h"
-#import "EXFileDownloader.h"
-#import "EXAppViewController.h"
-#import "EXReactAppManager.h"
-#import "EXErrorView.h"
-#import "EXKernel.h"
 #import "EXAppLoader.h"
+#import "EXAppLoadingView.h"
+#import "EXAppViewController.h"
+#import "EXEnvironment.h"
+#import "EXErrorRecoveryManager.h"
+#import "EXErrorView.h"
+#import "EXFileDownloader.h"
+#import "EXKernel.h"
 #import "EXKernelUtil.h"
+#import "EXReactAppManager.h"
 #import "EXScreenOrientationManager.h"
-#import "EXShellManager.h"
 #import "EXUpdatesManager.h"
 
 #import <React/RCTUtils.h>

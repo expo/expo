@@ -1,15 +1,15 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXFileDownloader.h"
-#import "EXKernel.h"
 #import "EXAppLoader.h"
+#import "EXEnvironment.h"
+#import "EXFileDownloader.h"
+#import "EXHomeModuleManager.h"
+#import "EXManifestResource.h"
+#import "EXKernel.h"
 #import "EXKernelDevKeyCommands.h"
 #import "EXKernelDevMotionHandler.h"
 #import "EXKernelLinkingManager.h"
-#import "EXHomeModuleManager.h"
-#import "EXManifestResource.h"
 #import "EXReactAppManager.h"
-#import "EXShellManager.h"
 
 @implementation EXHomeModuleManager
 
