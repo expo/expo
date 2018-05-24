@@ -131,10 +131,14 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
       NSData *cachedData = [NSData dataWithContentsOfFile:cachePath];
       NSData *embeddedData = [NSData dataWithContentsOfFile:bundlePath];
 
-      NSError *jsonErrorCached;
-      NSError *jsonErrorEmbedded;
-      id cachedManifest = [NSJSONSerialization JSONObjectWithData:cachedData options:kNilOptions error:&jsonErrorCached];
-      id embeddedManifest = [NSJSONSerialization JSONObjectWithData:embeddedData options:kNilOptions error:&jsonErrorEmbedded];
+      NSError *jsonErrorCached, *jsonErrorEmbedded;
+      id cachedManifest, embeddedManifest;
+      if (cachedData) {
+        cachedManifest = [NSJSONSerialization JSONObjectWithData:cachedData options:kNilOptions error:&jsonErrorCached];
+      }
+      if (embeddedData) {
+        embeddedManifest = [NSJSONSerialization JSONObjectWithData:embeddedData options:kNilOptions error:&jsonErrorEmbedded];
+      }
 
       if (!jsonErrorCached && !jsonErrorEmbedded && [self _isUsingEmbeddedManifest:embeddedManifest withCachedManifest:cachedManifest]) {
         _isUsingEmbeddedManifest = @YES;
@@ -146,8 +150,10 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
 
 - (BOOL)_isUsingEmbeddedManifest:(id)embeddedManifest withCachedManifest:(id)cachedManifest
 {
-  NSString *embeddedPublishDateString = embeddedManifest[@"publishedTime"];
-  if (embeddedPublishDateString) {
+  NSDate *embeddedPublishDate = [self _publishedDateFromManifest:embeddedManifest];
+  NSDate *cachedPublishDate;
+
+  if (cachedManifest) {
     // cached manifests are signed so we have to parse the inner manifest
     NSString *cachedManifestString = cachedManifest[@"manifestString"];
     NSDictionary *innerCachedManifest;
@@ -163,17 +169,23 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
         return NO;
       }
     }
-    NSString *cachedPublishDateString = innerCachedManifest[@"publishedTime"];
-
-    if (cachedPublishDateString) {
-      NSDate *embeddedPublishDate = [RCTConvert NSDate:embeddedPublishDateString];
-      NSDate *cachedPublishDate = [RCTConvert NSDate:cachedPublishDateString];
-      if (embeddedPublishDate && cachedPublishDate && [embeddedPublishDate compare:cachedPublishDate] == NSOrderedDescending) {
-        return YES;
-      }
-    }
+    cachedPublishDate = [self _publishedDateFromManifest:innerCachedManifest];
+  }
+  if (embeddedPublishDate && cachedPublishDate && [embeddedPublishDate compare:cachedPublishDate] == NSOrderedDescending) {
+    return YES;
   }
   return NO;
+}
+
+- (NSDate * _Nullable)_publishedDateFromManifest:(id)manifest
+{
+  if (manifest) {
+    NSString *publishDateString = manifest[@"publishedTime"];
+    if (publishDateString) {
+      return [RCTConvert NSDate:publishDateString];
+    }
+  }
+  return nil;
 }
 
 + (NSString *)cachePath
