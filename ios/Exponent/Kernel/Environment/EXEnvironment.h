@@ -22,7 +22,6 @@ FOUNDATION_EXPORT NSString * const kEXEmbeddedManifestResourceName;
 @property (nonatomic, readonly, nonnull) NSArray *allManifestUrls;
 @property (nonatomic, readonly) BOOL isManifestVerificationBypassed;
 @property (nonatomic, readonly) BOOL areRemoteUpdatesEnabled;
-@property (nonatomic, readonly) BOOL isSplashScreenDisabled;
 @property (nonatomic, assign) EXTestEnvironment testEnvironment;
 
 /**

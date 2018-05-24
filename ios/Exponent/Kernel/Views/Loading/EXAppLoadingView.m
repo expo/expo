@@ -116,9 +116,8 @@
     // home always uses splash
     return YES;
   } else {
-    // most standalone apps use splash unless overridden
-    // TODO: disable if this is a different appManager but still run in a shell context.
-    return [EXEnvironment sharedEnvironment].isDetached && !([EXEnvironment sharedEnvironment].isSplashScreenDisabled);
+    // standalone apps use splash
+    return [EXEnvironment sharedEnvironment].isDetached;
   }
 }
 
