@@ -3,16 +3,16 @@
 #import "EXEnvironment.h"
 #import "EXFileSystemManager.h"
 
-// Returns if the experience id is the main shell experience.
-BOOL EXIsShellExperience(NSString *experienceId) {
-  return [[EXEnvironment sharedEnvironment].shellManifestUrl containsString:experienceId];
+// Returns if the experience id is the standalone experience.
+BOOL EXIsStandaloneExperience(NSString *experienceId) {
+  return [[EXEnvironment sharedEnvironment].standaloneManifestUrl containsString:experienceId];
 }
 
 @implementation EXFileSystemManager
 
 - (NSString *)bundleDirectoryForExperienceId:(NSString *)experienceId
 {
-  if (!EXIsShellExperience(experienceId)) {
+  if (!EXIsStandaloneExperience(experienceId)) {
     return nil;
   }
   return [NSBundle mainBundle].bundlePath;
@@ -20,14 +20,14 @@ BOOL EXIsShellExperience(NSString *experienceId) {
 
 - (NSArray<NSString *> *)bundledAssetsForExperienceId:(NSString *)experienceId
 {
-  if (!EXIsShellExperience(experienceId)) {
+  if (!EXIsStandaloneExperience(experienceId)) {
     return nil;
   }
   
   static NSArray<NSString *> *bundledAssets = nil;
   static dispatch_once_t once;
   dispatch_once(&once, ^{
-    NSString *manifestBundlePath = [[NSBundle mainBundle] pathForResource:kEXShellManifestResourceName ofType:@"json"];
+    NSString *manifestBundlePath = [[NSBundle mainBundle] pathForResource:kEXEmbeddedManifestResourceName ofType:@"json"];
     NSData *data = [NSData dataWithContentsOfFile:manifestBundlePath];
     if (data.length == 0) {
       return;

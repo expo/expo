@@ -10,7 +10,7 @@ NSString * const kEXPermissionsKey = @"ExpoPermissions";
 
 - (BOOL)hasGrantedPermission:(NSString *)permission forExperience:(NSString *)experienceId
 {
-  if ([EXEnvironment sharedEnvironment].isShell) {
+  if ([EXEnvironment sharedEnvironment].isDetached) {
     return YES;
   }
   

@@ -40,7 +40,7 @@
 
 - (void)createRootAppAndMakeVisible
 {
-  NSURL *standaloneAppUrl = [NSURL URLWithString:[EXEnvironment sharedEnvironment].shellManifestUrl];
+  NSURL *standaloneAppUrl = [NSURL URLWithString:[EXEnvironment sharedEnvironment].standaloneManifestUrl];
   NSDictionary *initialProps = [[EXKernel sharedInstance] initialAppPropsFromLaunchOptions:[ExpoKit sharedInstance].launchOptions];
   EXKernelAppRecord *appRecord = [[EXKernel sharedInstance] createNewAppWithUrl:standaloneAppUrl
                                                                    initialProps:initialProps];

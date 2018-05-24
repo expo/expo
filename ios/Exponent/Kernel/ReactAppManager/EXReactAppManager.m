@@ -191,9 +191,9 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (NSString *)bundleResourceNameForAppFetcher:(EXAppFetcher *)appFetcher withManifest:(nonnull NSDictionary *)manifest
 {
-  if ([EXEnvironment sharedEnvironment].isShell) {
-    NSLog(@"Standalone bundle remote url is %@", [EXEnvironment sharedEnvironment].shellManifestUrl);
-    return kEXShellBundleResourceName;
+  if ([EXEnvironment sharedEnvironment].isDetached) {
+    NSLog(@"Standalone bundle remote url is %@", [EXEnvironment sharedEnvironment].standaloneManifestUrl);
+    return kEXEmbeddedBundleResourceName;
   } else {
     return manifest[@"id"];
   }
@@ -498,8 +498,8 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (NSDictionary *)launchOptionsForBridge
 {
-  if ([EXEnvironment sharedEnvironment].isShell) {
-    // pass the native app's launch options to shell bridge.
+  if ([EXEnvironment sharedEnvironment].isDetached) {
+    // pass the native app's launch options to standalone bridge.
     return [ExpoKit sharedInstance].launchOptions;
   }
   return @{};

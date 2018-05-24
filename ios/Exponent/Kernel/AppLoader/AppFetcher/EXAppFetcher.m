@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 
   EXCachedResourceBehavior behavior = cacheBehavior;
   // if we've disabled updates, ignore all other settings and only use the cache
-  if ([EXEnvironment sharedEnvironment].isShell && ![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled) {
+  if ([EXEnvironment sharedEnvironment].isDetached && ![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled) {
     behavior = EXCachedResourceOnlyCache;
   }
 

@@ -209,7 +209,7 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"EXAppD
   
   if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
     NSURL *webpageURL = userActivity.webpageURL;
-    if ([EXEnvironment sharedEnvironment].isShell) {
+    if ([EXEnvironment sharedEnvironment].isDetached) {
       return [EXKernelLinkingManager application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
     } else {
       NSString *path = [webpageURL path];

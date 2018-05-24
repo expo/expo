@@ -9,8 +9,8 @@
 #import <Crashlytics/Crashlytics.h>
 #import <React/RCTUtils.h>
 
-NSString * const kEXShellBundleResourceName = @"shell-app";
-NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
+NSString * const kEXEmbeddedBundleResourceName = @"shell-app";
+NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
 
 @implementation EXEnvironment
 
@@ -34,7 +34,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
   return self;
 }
 
-- (BOOL)isShellUrlScheme:(NSString *)scheme
+- (BOOL)isStandaloneUrlScheme:(NSString *)scheme
 {
   return (_urlScheme && [scheme isEqualToString:_urlScheme]);
 }
@@ -48,13 +48,13 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
 
 - (void)_reset
 {
-  _isShell = NO;
   _isDetached = NO;
-  _shellManifestUrl = nil;
+  _standaloneManifestUrl = nil;
   _urlScheme = nil;
   _areRemoteUpdatesEnabled = YES;
   _allManifestUrls = @[];
   _isDebugXCodeScheme = NO;
+  _releaseChannel = @"default";
 }
 
 - (void)_loadDefaultConfig
@@ -71,7 +71,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
 
   // use bundled shell app manifest
   NSDictionary *embeddedManifest = @{};
-  NSString *path = [[NSBundle mainBundle] pathForResource:kEXShellManifestResourceName ofType:@"json"];
+  NSString *path = [[NSBundle mainBundle] pathForResource:kEXEmbeddedManifestResourceName ofType:@"json"];
   NSData *data = [NSData dataWithContentsOfFile:path];
   if (data) {
     NSError *jsonError;
@@ -120,27 +120,26 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
   _isDetached = isDetached;
 
   if (shellConfig) {
-    _isShell = [shellConfig[@"isShell"] boolValue];
     _testEnvironment = [EXTest testEnvironmentFromString:shellConfig[@"testEnvironment"]];
 
-    if (_isShell) {
+    if (_isDetached) {
       // configure published shell url
       [self _loadProductionUrlFromConfig:shellConfig];
-      if (_shellManifestUrl) {
-        [allManifestUrls addObject:_shellManifestUrl];
+      if (_standaloneManifestUrl) {
+        [allManifestUrls addObject:_standaloneManifestUrl];
       }
       if (isDetached && isDebugScheme) {
         // local detach development: point shell manifest url at local development url
         [self _loadDetachedDevelopmentUrl:expoKitDevelopmentUrl fallbackToShellConfig:shellConfig];
-        if (_shellManifestUrl) {
-          [allManifestUrls addObject:_shellManifestUrl];
+        if (_standaloneManifestUrl) {
+          [allManifestUrls addObject:_standaloneManifestUrl];
         }
       }
       // load standalone url scheme
       [self _loadUrlSchemeFromInfoPlist:infoPlist];
-      if (!_shellManifestUrl) {
+      if (!_standaloneManifestUrl) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                       reason:@"This app is configured to be a standalone app, but does not specify a standalone experience url."
+                                       reason:@"This app is configured to be a standalone app, but does not specify a standalone manifest url."
                                      userInfo:nil];
       }
       
@@ -150,7 +149,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
       // load everything else from EXShell
       [self _loadMiscShellPropertiesWithConfig:shellConfig];
 
-      [self _setAnalyticsPropertiesWithShellManifestUrl:_shellManifestUrl isUserDetached:isUserDetach];
+      [self _setAnalyticsPropertiesWithShellManifestUrl:_standaloneManifestUrl isUserDetached:isUserDetach];
     }
   }
   _allManifestUrls = allManifestUrls;
@@ -158,9 +157,9 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
 
 - (void)_loadProductionUrlFromConfig:(NSDictionary *)shellConfig
 {
-  _shellManifestUrl = shellConfig[@"manifestUrl"];
+  _standaloneManifestUrl = shellConfig[@"manifestUrl"];
   if ([ExpoKit sharedInstance].publishedManifestUrlOverride) {
-    _shellManifestUrl = [ExpoKit sharedInstance].publishedManifestUrlOverride;
+    _standaloneManifestUrl = [ExpoKit sharedInstance].publishedManifestUrlOverride;
   }
 }
 
@@ -175,7 +174,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
   }
   
   if (developmentUrl) {
-    _shellManifestUrl = developmentUrl;
+    _standaloneManifestUrl = developmentUrl;
   } else {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                    reason:@"You are running a detached app from Xcode, but it hasn't been configured for local development yet. "
@@ -229,7 +228,7 @@ NSString * const kEXShellManifestResourceName = @"shell-app-manifest";
 {
   if (_testEnvironment == EXTestEnvironmentNone) {
     [[EXAnalytics sharedInstance] setUserProperties:@{ @"INITIAL_URL": shellManifestUrl }];
-    [CrashlyticsKit setObjectValue:_shellManifestUrl forKey:@"initial_url"];
+    [CrashlyticsKit setObjectValue:_standaloneManifestUrl forKey:@"initial_url"];
     if (isUserDetached) {
       [[EXAnalytics sharedInstance] setUserProperties:@{ @"IS_DETACHED": @YES }];
     }

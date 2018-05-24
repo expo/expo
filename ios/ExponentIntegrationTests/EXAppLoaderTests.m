@@ -6,7 +6,7 @@
 #import "EXAppFetcherWithTimeout.h"
 #import "EXEnvironment.h"
 #import "EXFileDownloader.h"
-#import "EXShellManagerMocks.h"
+#import "EXEnvironmentMocks.h"
 
 #pragma mark - private/internal methods in App Loader & App Fetchers
 
