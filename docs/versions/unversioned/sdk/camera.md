@@ -196,6 +196,7 @@ Takes a picture and saves it to app's cache directory. Photos are rotated to mat
     -   **quality (_number_)** -- Specify the quality of compression, from 0 to 1. 0 means compress for small size, 1 means compress for maximum quality.
     -   **base64 (_boolean_)** -- Whether to also include the image data in Base64 format.
     -   **exif (_boolean_)** -- Whether to also include the EXIF data for the image.
+    -   **onPictureSaved (_function_)** -- A callback invoked when picture is saved. If set, the promise of this method will resolve immediately with no data after picture is captured. The data that it should contain will be passed to this callback. If displaying or processing a captured photo right after taking it is not your case, this callback lets you skip waiting for it to be saved.
 
 #### Returns
 
@@ -233,6 +234,26 @@ Android only. Get aspect ratios that are supported by the device and can be pass
 #### Returns
 
 Returns a Promise that resolves to an array of strings representing ratios, eg. `['4:3', '1:1']`.
+
+### `getAvailablePictureSizesAsync`
+
+Get picture sizes that are supported by the device for given `ratio`.
+
+#### Arguments
+
+-   **ratio (_string_)** -- A string representing aspect ratio of sizes to be returned.
+
+#### Returns
+
+Returns a Promise that resolves to an array of strings representing picture sizes that can be passed to `pictureSize` prop. The list varies across Android devices but is the same for every iOS.
+
+### `pausePreview`
+
+Pauses the camera preview. It is not recommended to use `takePictureAsync` when preview is paused.
+
+### `resumePreview`
+
+Resumes the camera preview.
 
 # Supported bar code formats
 
