@@ -10,7 +10,7 @@ When you [publish](./publishing.html) an update to your app, your users will rec
 
 Expo offers multiple behaviors for how it should download your JS. It can either block the UI with a [splash screen](./splash-screens.html) or [AppLoading component](../sdk/app-loading.html) until the new JS is downloaded, or it can immediately show an old version of your JS and download the update in the background. The former option is better if your users must have the latest version at all times; the latter option is better if you have a bad internet connection and need to show something right away.
 
-To enable background JS downloads, set `updates.fallbackToCacheTimeout` to `0` in `app.json`. You can also listen to see when a new version has finished downloading. For more information, see [Configuring OTA Updates](./configuring-ota-updates.html).
+To force JS updates to run in the background (rather than synchronously checking and downloading on app start), set `updates.fallbackToCacheTimeout` to `0` in `app.json`. You can also listen to see when a new version has finished downloading. For more information, see [Configuring OTA Updates](./configuring-ota-updates.html).
 
 ## Cache your assets after downloading
 
