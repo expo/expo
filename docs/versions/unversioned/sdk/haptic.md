@@ -12,7 +12,7 @@ Provides haptic feedback for iOS 10+ devices using the Taptic Engine.
 * User disabled the Taptic Engine in settings
   * [Feature Request](https://expo.canny.io/feature-requests/p/react-native-settings)
 * Haptic engine generation is to low (less than 2nd gen) - Private API 
-  * Using priavte API will get your app rejected: `[[UIDevice currentDevice] valueForKey: @"_feedbackSupportLevel"]` so this is not added in Expo
+  * Using private API will get your app rejected: `[[UIDevice currentDevice] valueForKey: @"_feedbackSupportLevel"]` so this is not added in Expo
 * iOS version is less than 10 (iPhone 7 is the first phone to support this)
   * This could be found through: `Expo.Constants.platform.ios.systemVersion` or `Expo.Constants.platform.ios.platform`
 
