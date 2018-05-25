@@ -85,7 +85,7 @@ ABI23_0_0EX_EXPORT_SCOPED_MODULE(RNBranch, BranchManager);
             result[ABI23_0_0RNBranchLinkOpenedNotificationParamsKey] = params;
 
             if (params[@"~id"]) {
-                BranchUniversalObject *branchUniversalObject = [BranchUniversalObject getBranchUniversalObjectFromDictionary:params];
+                BranchUniversalObject *branchUniversalObject = [BranchUniversalObject objectWithDictionary:params];
                 if (branchUniversalObject) result[ABI23_0_0RNBranchLinkOpenedNotificationBranchUniversalObjectKey] = branchUniversalObject;
 
                 BranchLinkProperties *linkProperties = [BranchLinkProperties getBranchLinkPropertiesFromDictionary:params];

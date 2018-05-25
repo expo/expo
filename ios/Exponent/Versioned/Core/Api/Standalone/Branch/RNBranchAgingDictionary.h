@@ -14,7 +14,7 @@
 
 #pragma mark - Object lifecycle
 
-- (instancetype _Nullable)init NS_UNAVAILABLE;
+- (instancetype _Nonnull)init NS_UNAVAILABLE;
 - (instancetype _Nonnull)initWithTtl:(NSTimeInterval)ttl NS_DESIGNATED_INITIALIZER;
 
 + (instancetype _Nonnull)dictionaryWithTtl:(NSTimeInterval)ttl;

@@ -65,7 +65,7 @@
   },
   {
     "name": "Branch",
-    "version": "~> 0.14.12"
+    "version": "~> 0.24.2"
   },
   {
     "name": "Google-Mobile-Ads-SDK",

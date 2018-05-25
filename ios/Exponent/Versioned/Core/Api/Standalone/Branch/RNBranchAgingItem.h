@@ -13,7 +13,7 @@
 @property (nonatomic, readonly, nonnull) id item;
 @property (nonatomic, readonly) NSTimeInterval accessTime;
 
-- (instancetype _Nullable)init NS_UNAVAILABLE;
+- (instancetype _Nonnull)init NS_UNAVAILABLE;
 - (instancetype _Nonnull) initWithItem:(id _Nonnull)item NS_DESIGNATED_INITIALIZER;
 
 @end

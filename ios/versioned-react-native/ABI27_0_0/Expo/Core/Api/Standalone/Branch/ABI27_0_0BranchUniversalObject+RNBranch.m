@@ -55,10 +55,10 @@
 - (void)setContentIndexingMode:(NSString *)contentIndexingMode
 {
     if ([contentIndexingMode isEqualToString:@"private"]) {
-        self.contentIndexMode = ContentIndexModePrivate;
+        self.contentIndexMode = BranchContentIndexModePrivate;
     }
     else if ([contentIndexingMode isEqualToString:@"public"]) {
-        self.contentIndexMode = ContentIndexModePublic;
+        self.contentIndexMode = BranchContentIndexModePublic;
     }
     else {
         ABI27_0_0RCTLogWarn(@"Invalid value \"%@\" for \"contentIndexingMode\". Supported values are \"public\" and \"private\".", contentIndexingMode);
