@@ -35,11 +35,13 @@ import versioned.host.exp.exponent.modules.api.components.camera.tasks.BarCodeSc
 import versioned.host.exp.exponent.modules.api.components.camera.tasks.BarCodeScannerAsyncTaskDelegate;
 import versioned.host.exp.exponent.modules.api.components.camera.tasks.FaceDetectorAsyncTask;
 import versioned.host.exp.exponent.modules.api.components.camera.tasks.FaceDetectorAsyncTaskDelegate;
+import versioned.host.exp.exponent.modules.api.components.camera.tasks.PictureSavedDelegate;
 import versioned.host.exp.exponent.modules.api.components.camera.tasks.ResolveTakenPictureAsyncTask;
 import versioned.host.exp.exponent.modules.api.components.camera.utils.ImageDimensions;
 import versioned.host.exp.exponent.modules.api.components.facedetector.ExpoFaceDetector;
 
-public class ExpoCameraView extends CameraView implements LifecycleEventListener, BarCodeScannerAsyncTaskDelegate, FaceDetectorAsyncTaskDelegate {
+public class ExpoCameraView extends CameraView implements LifecycleEventListener, BarCodeScannerAsyncTaskDelegate,
+    FaceDetectorAsyncTaskDelegate, PictureSavedDelegate {
   private ThemedReactContext mThemedReactContext;
 
   private Queue<Promise> mPictureTakenPromises = new ConcurrentLinkedQueue<>();
@@ -86,9 +88,12 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
       @Override
       public void onPictureTaken(CameraView cameraView, final byte[] data) {
         Promise promise = mPictureTakenPromises.poll();
-        final File cacheDirectory = mPictureTakenDirectories.remove(promise);
         ReadableMap options = mPictureTakenOptions.remove(promise);
-        new ResolveTakenPictureAsyncTask(data, promise, options, cacheDirectory).execute();
+        if (options.hasKey("fastMode") && options.getBoolean("fastMode")) {
+          promise.resolve(null);
+        }
+        final File cacheDirectory = mPictureTakenDirectories.remove(promise);
+        new ResolveTakenPictureAsyncTask(data, promise, options, cacheDirectory, ExpoCameraView.this).execute();
       }
 
       @Override
@@ -159,7 +164,19 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
     mPictureTakenPromises.add(promise);
     mPictureTakenOptions.put(promise, options);
     mPictureTakenDirectories.put(promise, cacheDirectory);
-    super.takePicture();
+    try {
+      super.takePicture();
+    } catch (Exception e) {
+      mPictureTakenPromises.remove(promise);
+      mPictureTakenOptions.remove(promise);
+      mPictureTakenDirectories.remove(promise);
+      throw e;
+    }
+  }
+
+  @Override
+  public void onPictureSaved(WritableMap response) {
+    ExpoCameraViewHelper.emitPictureSavedEvent(this, response);
   }
 
   public void record(ReadableMap options, final Promise promise, File cacheDirectory) {

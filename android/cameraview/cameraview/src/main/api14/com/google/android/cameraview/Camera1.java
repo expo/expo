@@ -78,7 +78,11 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
 
     private final SizeMap mPreviewSizes = new SizeMap();
 
+    private boolean mIsPreviewActive = false;
+
     private final SizeMap mPictureSizes = new SizeMap();
+
+    private Size mPictureSize;
 
     private AspectRatio mAspectRatio;
 
@@ -138,6 +142,7 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
     void stop() {
         if (mCamera != null) {
             mCamera.stopPreview();
+            mIsPreviewActive = false;
             mCamera.setPreviewCallback(null);
         }
         mShowingPreview = false;
@@ -164,6 +169,7 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
                 final boolean needsToStopPreview = mShowingPreview && Build.VERSION.SDK_INT < 14;
                 if (needsToStopPreview) {
                     mCamera.stopPreview();
+                    mIsPreviewActive = false;
                 }
                 mCamera.setPreviewDisplay(mPreview.getSurfaceHolder());
                 if (needsToStopPreview) {
@@ -179,9 +185,21 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
 
     private void startCameraPreview() {
         mCamera.startPreview();
+        mIsPreviewActive = true;
         if (mIsScanning) {
             mCamera.setPreviewCallback(this);
         }
+    }
+
+    @Override
+    public void resumePreview() {
+        startCameraPreview();
+    }
+
+    @Override
+    public void pausePreview() {
+        mCamera.stopPreview();
+        mIsPreviewActive = false;
     }
 
     @Override
@@ -215,6 +233,25 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
             }
         }
         return idealAspectRatios.ratios();
+    }
+
+    @Override
+    SortedSet<Size> getAvailablePictureSizes(AspectRatio ratio) {
+        return mPictureSizes.sizes(ratio);
+    }
+
+    @Override
+    void setPictureSize(Size size) {
+        mPictureSize = size;
+        if (mCameraParameters != null && mCamera != null) {
+            mCameraParameters.setPictureSize(size.getWidth(), size.getHeight());
+            mCamera.setParameters(mCameraParameters);
+        }
+    }
+
+    @Override
+    Size getPictureSize() {
+        return mPictureSize;
     }
 
     @Override
@@ -334,6 +371,9 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
             throw new IllegalStateException(
                     "Camera is not ready. Call start() before takePicture().");
         }
+        if (!mIsPreviewActive) {
+          throw new IllegalStateException("Preview is paused - resume it before taking a picture.");
+        }
         if (getAutoFocus()) {
             mCamera.cancelAutoFocus();
             mCamera.autoFocus(new Camera.AutoFocusCallback() {
@@ -355,6 +395,7 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
                     isPictureCaptureInProgress.set(false);
                     camera.cancelAutoFocus();
                     camera.startPreview();
+                    mIsPreviewActive = true;
                     if (mIsScanning) {
                         camera.setPreviewCallback(Camera1.this);
                     }
@@ -403,6 +444,7 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
             final boolean needsToStopPreview = mShowingPreview && Build.VERSION.SDK_INT < 14;
             if (needsToStopPreview) {
                 mCamera.stopPreview();
+                mIsPreviewActive = false;
             }
             mCamera.setDisplayOrientation(calcDisplayOrientation(displayOrientation));
             if (needsToStopPreview) {
@@ -420,6 +462,7 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
             }
 
             mCamera.stopPreview();
+            mIsPreviewActive = false;
 
             if (surfaceTexture == null) {
                 mCamera.setPreviewTexture((SurfaceTexture) mPreview.getSurfaceTexture());
@@ -504,13 +547,15 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
         Size size = chooseOptimalSize(sizes);
 
         // Always re-apply camera parameters
-        // Largest picture size in this ratio
-        final Size pictureSize = mPictureSizes.sizes(mAspectRatio).last();
+        if (mPictureSize == null) {
+            mPictureSize = mPictureSizes.sizes(mAspectRatio).last();
+        }
         if (mShowingPreview) {
             mCamera.stopPreview();
+            mIsPreviewActive = false;
         }
         mCameraParameters.setPreviewSize(size.getWidth(), size.getHeight());
-        mCameraParameters.setPictureSize(pictureSize.getWidth(), pictureSize.getHeight());
+        mCameraParameters.setPictureSize(mPictureSize.getWidth(), mPictureSize.getHeight());
         mCameraParameters.setRotation(calcCameraRotation(mDisplayOrientation));
         setAutoFocusInternal(mAutoFocus);
         setFlashInternal(mFlash);
@@ -555,6 +600,7 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
         if (mCamera != null) {
             mCamera.release();
             mCamera = null;
+            mPictureSize = null;
             mCallback.onCameraClosed();
         }
     }
@@ -646,7 +692,6 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
             String currentMode = FLASH_MODES.get(mFlash);
             if (modes == null || !modes.contains(currentMode)) {
                 mCameraParameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-                mFlash = Constants.FLASH_OFF;
                 return true;
             }
             return false;
@@ -687,7 +732,6 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
             String currentMode = WB_MODES.get(mWhiteBalance);
             if (modes == null || !modes.contains(currentMode)) {
                 mCameraParameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_AUTO);
-                mWhiteBalance = Constants.WB_AUTO;
                 return true;
             }
             return false;

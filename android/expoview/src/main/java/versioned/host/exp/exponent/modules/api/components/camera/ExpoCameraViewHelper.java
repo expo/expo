@@ -28,6 +28,7 @@ import versioned.host.exp.exponent.modules.api.components.camera.events.CameraMo
 import versioned.host.exp.exponent.modules.api.components.camera.events.CameraReadyEvent;
 import versioned.host.exp.exponent.modules.api.components.camera.events.FaceDetectionErrorEvent;
 import versioned.host.exp.exponent.modules.api.components.camera.events.FacesDetectedEvent;
+import versioned.host.exp.exponent.modules.api.components.camera.events.PictureSavedEvent;
 import versioned.host.exp.exponent.modules.api.components.camera.utils.ImageDimensions;
 import versioned.host.exp.exponent.modules.api.components.facedetector.ExpoFaceDetector;
 
@@ -44,6 +45,14 @@ public class ExpoCameraViewHelper {
 
   public static void emitCameraReadyEvent(ViewGroup view) {
     CameraReadyEvent event = CameraReadyEvent.obtain(view.getId());
+    ReactContext reactContext = (ReactContext) view.getContext();
+    reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(event);
+  }
+
+  // Picture saved event
+
+  public static void emitPictureSavedEvent(ViewGroup view, WritableMap response) {
+    PictureSavedEvent event = PictureSavedEvent.obtain(view.getId(), response);
     ReactContext reactContext = (ReactContext) view.getContext();
     reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(event);
   }

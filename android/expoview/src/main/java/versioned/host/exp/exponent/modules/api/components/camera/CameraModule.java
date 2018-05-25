@@ -15,6 +15,7 @@ import com.facebook.react.uimanager.UIBlock;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.google.android.cameraview.AspectRatio;
 import com.google.android.cameraview.Constants;
+import com.google.android.cameraview.Size;
 import com.google.android.gms.vision.barcode.Barcode;
 
 import java.io.File;
@@ -22,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 
 import javax.annotation.Nullable;
 
@@ -182,6 +184,48 @@ public class CameraModule extends ExpoKernelServiceConsumerBaseModule {
   }
 
   @ReactMethod
+  public void pausePreview(final int viewTag) {
+    final ReactApplicationContext context = getReactApplicationContext();
+    UIManagerModule uiManager = context.getNativeModule(UIManagerModule.class);
+    uiManager.addUIBlock(new UIBlock() {
+      @Override
+      public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
+        final ExpoCameraView cameraView;
+
+        try {
+          cameraView = (ExpoCameraView) nativeViewHierarchyManager.resolveView(viewTag);
+          if (cameraView.isCameraOpened()) {
+            cameraView.pausePreview();
+          }
+        } catch (Exception e) {
+          EXL.e("E_CAMERA_BAD_VIEWTAG", "pausePreview: Expected a Camera component");
+        }
+      }
+    });
+  }
+
+  @ReactMethod
+  public void resumePreview(final int viewTag) {
+    final ReactApplicationContext context = getReactApplicationContext();
+    UIManagerModule uiManager = context.getNativeModule(UIManagerModule.class);
+    uiManager.addUIBlock(new UIBlock() {
+      @Override
+      public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
+        final ExpoCameraView cameraView;
+
+        try {
+          cameraView = (ExpoCameraView) nativeViewHierarchyManager.resolveView(viewTag);
+          if (cameraView.isCameraOpened()) {
+            cameraView.resumePreview();
+          }
+        } catch (Exception e) {
+          EXL.e("E_CAMERA_BAD_VIEWTAG", "resumePreview: Expected a Camera component");
+        }
+      }
+    });
+  }
+
+  @ReactMethod
   public void takePicture(final ReadableMap options, final int viewTag, final Promise promise) {
     final ReactApplicationContext context = getReactApplicationContext();
     final File cacheDirectory = mScopedContext.getCacheDir();
@@ -200,10 +244,13 @@ public class CameraModule extends ExpoKernelServiceConsumerBaseModule {
             }
           } else {
             Bitmap image = ExpoCameraViewHelper.generateSimulatorPhoto(cameraView.getWidth(), cameraView.getHeight());
-            new ResolveTakenPictureAsyncTask(image, promise, options, cacheDirectory).execute();
+            if (options.hasKey("fastMode") && options.getBoolean("fastMode")) {
+              promise.resolve(null);
+            }
+            new ResolveTakenPictureAsyncTask(image, promise, options, cacheDirectory, cameraView).execute();
           }
         } catch (Exception e) {
-          promise.reject("E_CAMERA_BAD_VIEWTAG", "takePictureAsync: Expected a Camera component");
+          promise.reject("E_CAPTURE_FAILED", e.getMessage());
         }
       }
     });
@@ -282,6 +329,34 @@ public class CameraModule extends ExpoKernelServiceConsumerBaseModule {
           }
         } catch (Exception e) {
           EXL.e("E_CAMERA_BAD_VIEWTAG", "getSupportedRatiosAsync: Expected a Camera component");
+        }
+      }
+    });
+  }
+
+  @ReactMethod
+  public void getAvailablePictureSizes(final String ratio, final int viewTag, final Promise promise) {
+    final ReactApplicationContext context = getReactApplicationContext();
+    UIManagerModule uiManager = context.getNativeModule(UIManagerModule.class);
+    uiManager.addUIBlock(new UIBlock() {
+      @Override
+      public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
+        final ExpoCameraView cameraView;
+
+        try {
+          cameraView = (ExpoCameraView) nativeViewHierarchyManager.resolveView(viewTag);
+          WritableArray result = Arguments.createArray();
+          if (cameraView.isCameraOpened()) {
+            SortedSet<Size> sizes = cameraView.getAvailablePictureSizes(AspectRatio.parse(ratio));
+            for (Size size : sizes) {
+              result.pushString(size.toString());
+            }
+            promise.resolve(result);
+          } else {
+            promise.reject("E_CAMERA_UNAVAILABLE", "Camera is not running");
+          }
+        } catch (Exception e) {
+          promise.reject("E_CAMERA_BAD_VIEWTAG", "getAvailablePictureSizesAsync: Expected a Camera component");
         }
       }
     });

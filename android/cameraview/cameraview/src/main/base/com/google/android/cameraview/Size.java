@@ -16,12 +16,14 @@
 
 package com.google.android.cameraview;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 /**
  * Immutable class for describing width and height dimensions in pixels.
  */
-public class Size implements Comparable<Size> {
+public class Size implements Comparable<Size>, Parcelable {
 
     private final int mWidth;
     private final int mHeight;
@@ -35,6 +37,20 @@ public class Size implements Comparable<Size> {
     public Size(int width, int height) {
         mWidth = width;
         mHeight = height;
+    }
+
+    public static Size parse(String s) {
+        int position = s.indexOf('x');
+        if (position == -1) {
+            throw new IllegalArgumentException("Malformed size: " + s);
+        }
+        try {
+            int width = Integer.parseInt(s.substring(0, position));
+            int height = Integer.parseInt(s.substring(position + 1));
+            return new Size(width, height);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Malformed size: " + s, e);
+        }
     }
 
     public int getWidth() {
@@ -76,4 +92,30 @@ public class Size implements Comparable<Size> {
         return mWidth * mHeight - another.mWidth * another.mHeight;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(mWidth);
+        dest.writeInt(mHeight);
+    }
+
+    public static final Parcelable.Creator<Size> CREATOR
+            = new Parcelable.Creator<Size>() {
+
+        @Override
+        public Size createFromParcel(Parcel source) {
+            int width = source.readInt();
+            int height = source.readInt();
+            return new Size(width, height);
+        }
+
+        @Override
+        public Size[] newArray(int size) {
+            return new Size[size];
+        }
+    };
 }

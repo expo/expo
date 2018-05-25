@@ -21,7 +21,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import host.exp.exponent.utils.ExpFileUtils;
-import versioned.host.exp.exponent.modules.api.components.camera.CameraModule;
 import versioned.host.exp.exponent.modules.api.components.camera.ExpoCameraViewHelper;
 
 public class ResolveTakenPictureAsyncTask extends AsyncTask<Void, Void, WritableMap> {
@@ -31,19 +30,24 @@ public class ResolveTakenPictureAsyncTask extends AsyncTask<Void, Void, Writable
   private Bitmap mBitmap;
   private ReadableMap mOptions;
   private File mDirectory;
+  private PictureSavedDelegate mPictureSavedDelegate;
 
-  public ResolveTakenPictureAsyncTask(byte[] imageData, Promise promise, ReadableMap options, File directory) {
+  public ResolveTakenPictureAsyncTask(byte[] imageData, Promise promise, ReadableMap options,
+                                      File directory, PictureSavedDelegate delegate) {
     mPromise = promise;
     mOptions = options;
     mImageData = imageData;
     mDirectory = directory;
+    mPictureSavedDelegate = delegate;
   }
 
-  public ResolveTakenPictureAsyncTask(Bitmap bitmap, Promise promise, ReadableMap options, File directory) {
+  public ResolveTakenPictureAsyncTask(Bitmap bitmap, Promise promise, ReadableMap options,
+                                      File directory, PictureSavedDelegate delegate) {
     mPromise = promise;
     mBitmap = bitmap;
     mOptions = options;
     mDirectory = directory;
+    mPictureSavedDelegate = delegate;
   }
 
   private int getQuality() {
@@ -133,9 +137,15 @@ public class ResolveTakenPictureAsyncTask extends AsyncTask<Void, Void, Writable
   protected void onPostExecute(WritableMap response) {
     super.onPostExecute(response);
 
-    // If the response is not null everything went well and we can resolve the promise.
     if (response != null) {
-      mPromise.resolve(response);
+      if (mOptions.hasKey("fastMode") && mOptions.getBoolean("fastMode")) {
+        WritableMap wrapper = Arguments.createMap();
+        wrapper.putInt("id", mOptions.getInt("id"));
+        wrapper.putMap("data", response);
+        mPictureSavedDelegate.onPictureSaved(wrapper);
+      } else {
+        mPromise.resolve(response);
+      }
     }
   }
 
