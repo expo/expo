@@ -162,6 +162,9 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
     if ("content".equals(uri.getScheme())) {
       return EnumSet.of(Permission.READ);
     }
+    if ("asset".equals(uri.getScheme())) {
+      return EnumSet.of(Permission.READ);
+    }
     if ("file".equals(uri.getScheme())) {
       return permissionsForPath(uri.getPath());
     }
@@ -187,6 +190,12 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
     ensurePermission(uri, permission, "Location '" + uri + "' doesn't have permission '" + permission.name() + "'.");
   }
 
+  private InputStream openAssetInputStream(Uri uri) throws IOException {
+    // AssetManager expects no leading slash.
+    String asset = uri.getPath().substring(1);
+    return mScopedContext.getAssets().open(asset);
+  }
+
   @ReactMethod
   public void getInfoAsync(String uriStr, ReadableMap options, Promise promise) {
     try {
@@ -210,10 +219,12 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
           result.putBoolean("isDirectory", false);
           promise.resolve(result);
         }
-      } else if ("content".equals(uri.getScheme())) {
+      } else if ("content".equals(uri.getScheme()) || "asset".equals(uri.getScheme())) {
         WritableMap result = Arguments.createMap();
         try {
-          InputStream is = mScopedContext.getContentResolver().openInputStream(uri);
+          InputStream is = "content".equals(uri.getScheme()) ?
+              mScopedContext.getContentResolver().openInputStream(uri) :
+              openAssetInputStream(uri);
           if (is == null) {
             throw new FileNotFoundException();
           }
@@ -249,6 +260,8 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
       ensurePermission(uri, Permission.READ);
       if ("file".equals(uri.getScheme())) {
         promise.resolve(IOUtils.toString(new FileInputStream(uriToFile(uri))));
+      } else if("asset".equals(uri.getScheme())) {
+        promise.resolve(IOUtils.toString(openAssetInputStream(uri)));
       } else {
         throw new IOException("Unsupported scheme for location '" + uri +  "'.");
       }
@@ -369,6 +382,11 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
         }
       } else if ("content".equals(fromUri.getScheme())) {
         InputStream in = mScopedContext.getContentResolver().openInputStream(fromUri);
+        OutputStream out = new FileOutputStream(uriToFile(toUri));
+        IOUtils.copy(in, out);
+        promise.resolve(null);
+      } else if ("asset".equals(fromUri.getScheme())) {
+        InputStream in = openAssetInputStream(fromUri);
         OutputStream out = new FileOutputStream(uriToFile(toUri));
         IOUtils.copy(in, out);
         promise.resolve(null);
@@ -603,13 +621,13 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
         if (isResume) {
           output = new FileOutputStream(file, true);
         } else {
-          output = new FileOutputStream(file, false);    
+          output = new FileOutputStream(file, false);
         }
 
         byte[] data = new byte[1024];
         int count = 0;
         while ((count = input.read(data)) != -1) {
-          output.write(data, 0, count);   
+          output.write(data, 0, count);
         }
 
         WritableMap result = Arguments.createMap();
@@ -619,7 +637,7 @@ public class FileSystemModule extends ReactContextBaseJavaModule {
         }
         result.putInt("status", response.code());
         result.putMap("headers", translateHeaders(response.headers()));
-        
+
         promise.resolve(result);
         return null;
       } catch (Exception e) {
