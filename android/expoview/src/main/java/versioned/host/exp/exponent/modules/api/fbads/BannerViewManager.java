@@ -14,11 +14,6 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import java.util.Map;
 
 public class BannerViewManager extends SimpleViewManager<BannerView> {
-
-  public BannerViewManager(ReactContext context) {
-    super();
-  }
-
   @ReactProp(name = "placementId")
   public void setPlacementId(BannerView view, String placementId) {
     view.setPlacementId(placementId);
