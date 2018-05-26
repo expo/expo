@@ -219,9 +219,9 @@ public class ExponentPackage implements ReactPackage {
         new VideoViewManager(),
         new CameraViewManager(),
         new GLViewManager(),
-        new NativeAdViewManager(reactContext),
+        new NativeAdViewManager(),
         new BarCodeScannerViewManager(),
-        new BannerViewManager(reactContext)
+        new BannerViewManager()
     ));
 
     // Add view manager from 3rd party library packages.
