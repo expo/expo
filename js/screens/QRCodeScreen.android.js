@@ -16,10 +16,8 @@ import { throttle } from 'lodash';
 import Layout from '../constants/Layout';
 
 export default class BarCodeScreen extends React.Component {
-  static route = {
-    navigationBar: {
-      visible: false,
-    },
+  static navigationOptions = {
+    header: null,
   };
 
   state = {
@@ -106,7 +104,7 @@ export default class BarCodeScreen extends React.Component {
   };
 
   _handlePressCancel = () => {
-    this.props.navigation.dismiss();
+    this.props.navigation.goBack(null);
   };
 }
 
