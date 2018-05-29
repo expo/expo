@@ -14,16 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onSurfaceCreate;
 
-- (nonnull NSDictionary *)maybeStartARSession;
+- (void)setArSessionManager:(id)arSessionManager;
 - (void)maybeStopARSession;
-- (nullable NSDictionary *)arMatricesForViewportSize:(CGSize)viewportSize zNear:(CGFloat)zNear zFar:(CGFloat)zFar;
-- (nullable NSDictionary *)arLightEstimation;
-- (nullable NSDictionary *)rawFeaturePoints;
-- (nullable NSDictionary *)planes;
-- (void)setIsPlaneDetectionEnabled:(BOOL)planeDetectionEnabled;
-- (void)setIsLightEstimationEnabled:(BOOL)lightEstimationEnabled;
-- (void)setWorldAlignment:(NSInteger)worldAlignment;
-
 // "protected"
 @property (nonatomic, strong, nullable) EXGLContext *glContext;
 @property (nonatomic, strong, nullable) EAGLContext *uiEaglCtx;

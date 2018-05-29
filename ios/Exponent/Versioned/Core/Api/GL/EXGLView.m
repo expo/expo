@@ -5,7 +5,6 @@
 #include <OpenGLES/ES2/glext.h>
 #include <OpenGLES/ES3/gl.h>
 #include <OpenGLES/ES3/glext.h>
-#import <ARKit/ARKit.h>
 
 #import <React/RCTBridgeModule.h>
 #import <React/RCTUtils.h>
@@ -42,7 +41,7 @@
 @property (nonatomic, assign) BOOL renderbufferPresented;
 @property (nonatomic, assign) CGSize viewBuffersSize;
 
-@property (nonatomic, strong) id arSessionManager;
+@property (nonatomic, weak) id arSessionManager;
 
 @end
 
@@ -268,12 +267,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   // framebuffer to create is unknown. In this case we have nowhere to render to so we skip
   // this frame (the GL work to run remains on the queue for next time).
 
-  if (_glContext.isInitialized && _viewFramebuffer != 0) {
-    // Update AR stuff if we have an AR session running
-    if (_arSessionManager) {
-      [_arSessionManager updateARCamTexture];
-    }
-    
+  if (_glContext.isInitialized && _viewFramebuffer != 0) {    
     // Present current state of view buffers
     // This happens exactly at `gl.endFrameEXP()` in the queue
     if (_viewColorbuffer != 0 && !_renderbufferPresented) {
@@ -359,75 +353,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
 #pragma mark - maybe AR
 
-- (NSDictionary *)maybeStartARSession
-{
-  Class sessionManagerClass = NSClassFromString(@"EXGLARSessionManager");
-  if (sessionManagerClass) {
-    _arSessionManager = [[sessionManagerClass alloc] init];
-  } else {
-    return @{ @"error": @"AR capabilities were not included with this build." };
-  }
-  return [_arSessionManager startARSessionWithGLView:self];
+- (void)setArSessionManager:(id)arSessionManager {
+  _arSessionManager = arSessionManager;
 }
 
 - (void)maybeStopARSession
 {
   if (_arSessionManager) {
-    [_arSessionManager stopARSession];
+    [_arSessionManager stop];
     _arSessionManager = nil;
-  }
-}
-
-- (NSDictionary *)arMatricesForViewportSize:(CGSize)viewportSize zNear:(CGFloat)zNear zFar:(CGFloat)zFar
-{
-  if (_arSessionManager) {
-    return [_arSessionManager arMatricesForViewportSize:viewportSize zNear:zNear zFar:zFar];
-  }
-  return @{};
-}
-
-- (NSDictionary *)arLightEstimation
-{
-  if (_arSessionManager) {
-    return [_arSessionManager arLightEstimation];
-  }
-  return @{};
-}
-
-- (NSDictionary *)rawFeaturePoints
-{
-  if (_arSessionManager) {
-    return [_arSessionManager rawFeaturePoints];
-  }
-  return @{};
-}
-
-- (NSDictionary *)planes
-{
-  if (_arSessionManager) {
-    return [_arSessionManager planes];
-  }
-  return @{};
-}
-
-- (void)setIsPlaneDetectionEnabled:(BOOL)planeDetectionEnabled
-{
-  if (_arSessionManager) {
-    [_arSessionManager setIsPlaneDetectionEnabled:planeDetectionEnabled];
-  }
-}
-
-- (void)setIsLightEstimationEnabled:(BOOL)lightEstimationEnabled
-{
-  if (_arSessionManager) {
-    [_arSessionManager setIsLightEstimationEnabled:lightEstimationEnabled];
-  }
-}
-
-- (void)setWorldAlignment:(NSInteger)worldAlignment
-{
-  if (_arSessionManager) {
-    [_arSessionManager setWorldAlignment:worldAlignment];
   }
 }
 
