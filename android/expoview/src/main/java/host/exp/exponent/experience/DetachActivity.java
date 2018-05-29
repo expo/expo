@@ -105,8 +105,6 @@ public abstract class DetachActivity extends ExperienceActivity {
       // also check publishedUrl since this can get set before Constants.INITIAL_URL is set to developmentUrl
       handleOptions(mKernel.popOptionsForManifestUrl(publishedUrl()));
     }
-
-    clearNotifications();
   }
 
   @Override
