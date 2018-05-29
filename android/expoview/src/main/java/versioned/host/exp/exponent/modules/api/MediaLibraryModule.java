@@ -1,8 +1,11 @@
 package versioned.host.exp.exponent.modules.api;
 
 import android.Manifest;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.database.ContentObserver;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.media.ExifInterface;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -25,6 +28,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import java.io.IOException;
 import java.io.FileInputStream;
@@ -75,6 +79,8 @@ public class MediaLibraryModule extends ExpoKernelServiceConsumerBaseModule {
   private static final String SORT_BY_HEIGHT = "height";
   private static final String SORT_BY_DURATION = "duration";
 
+  private static final String LIBRARY_DID_CHANGE_EVENT = "mediaLibraryDidChange";
+
   private static final Map<String, Integer> MEDIA_TYPES = new HashMap<String, Integer>() {
     {
       put(MEDIA_TYPE_AUDIO, Files.FileColumns.MEDIA_TYPE_AUDIO);
@@ -115,6 +121,9 @@ public class MediaLibraryModule extends ExpoKernelServiceConsumerBaseModule {
       Media.BUCKET_ID,
   };
 
+  private MediaStoreContentObserver mImagesObserver = null;
+  private MediaStoreContentObserver mVideosObserver = null;
+
   public MediaLibraryModule(ReactApplicationContext reactContext, ExperienceId experienceId) {
     super(reactContext, experienceId);
   }
@@ -150,6 +159,7 @@ public class MediaLibraryModule extends ExpoKernelServiceConsumerBaseModule {
             put("duration", SORT_BY_DURATION);
           }
         }));
+        put("CHANGE_LISTENER_NAME", LIBRARY_DID_CHANGE_EVENT);
       }
     });
   }
@@ -943,6 +953,94 @@ public class MediaLibraryModule extends ExpoKernelServiceConsumerBaseModule {
           Integer.parseInt(mInput.getString("after")) : 0;
       return this;
     }
+  }
+
+  // Library change observer
+
+  @ReactMethod
+  public void startObserving() {
+    if (mImagesObserver != null) {
+      return;
+    }
+
+    // We need to register an observer for each type of assets,
+    // because it seems that observing a parent directory (EXTERNAL_CONTENT) doesn't work well,
+    // whereas observing directory of images or videos works fine.
+
+    Handler handler = new Handler();
+    mImagesObserver = new MediaStoreContentObserver(handler, Files.FileColumns.MEDIA_TYPE_IMAGE);
+    mVideosObserver = new MediaStoreContentObserver(handler, Files.FileColumns.MEDIA_TYPE_VIDEO);
+
+    ContentResolver contentResolver = getReactApplicationContext().getContentResolver();
+
+    contentResolver.registerContentObserver(
+        Media.EXTERNAL_CONTENT_URI,
+        true,
+        mImagesObserver
+    );
+    contentResolver.registerContentObserver(
+        MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+        true,
+        mVideosObserver
+    );
+  }
+
+  @ReactMethod
+  public void stopObserving() {
+    if (mImagesObserver != null) {
+      ContentResolver contentResolver = getReactApplicationContext().getContentResolver();
+
+      contentResolver.unregisterContentObserver(mImagesObserver);
+      contentResolver.unregisterContentObserver(mVideosObserver);
+
+      mImagesObserver = null;
+      mVideosObserver = null;
+    }
+  }
+
+  private class MediaStoreContentObserver extends ContentObserver {
+    private int mAssetsTotalCount;
+    private int mMediaType;
+
+    public MediaStoreContentObserver(Handler handler, int mediaType) {
+      super(handler);
+      mMediaType = mediaType;
+      mAssetsTotalCount = getAssetsTotalCount(mMediaType);
+    }
+
+    @Override
+    public void onChange(boolean selfChange) {
+      this.onChange(selfChange, null);
+    }
+
+    @Override
+    public void onChange(boolean selfChange, Uri uri) {
+      int newTotalCount = getAssetsTotalCount(mMediaType);
+
+      // Send event to JS only when assets count has been changed - to filter out some unnecessary events.
+      // It's not perfect solution if someone adds and deletes the same number of assets in a short period of time, but I hope these events will not be batched.
+      if (mAssetsTotalCount != newTotalCount) {
+        mAssetsTotalCount = newTotalCount;
+        getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).
+            emit(LIBRARY_DID_CHANGE_EVENT, Arguments.createMap());
+      }
+    }
+  }
+
+  // internals
+
+  private int getAssetsTotalCount(int mediaType) {
+    Cursor countCursor = getReactApplicationContext().getContentResolver().query(
+        EXTERNAL_CONTENT,
+        new String[] {"count(*) AS count"},
+        Files.FileColumns.MEDIA_TYPE + " == " + mediaType,
+        null,
+        null
+    );
+
+    countCursor.moveToFirst();
+
+    return countCursor.getInt(0);
   }
 
   private static Integer convertMediaType(String mediaType) throws IllegalArgumentException {

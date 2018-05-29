@@ -22,9 +22,12 @@ NSString *const EXAssetMediaTypeVideo = @"video";
 NSString *const EXAssetMediaTypeUnknown = @"unknown";
 NSString *const EXAssetMediaTypeAll = @"all";
 
+NSString *const EXMediaLibraryDidChangeEvent = @"mediaLibraryDidChange";
+
 @interface EXMediaLibrary ()
 
 @property (nonatomic, weak) id<EXPermissionsScopedModuleDelegate> kernelPermissionsServiceDelegate;
+@property (nonatomic, strong) PHFetchResult *allAssetsFetchResult;
 
 @end
 
@@ -71,8 +74,14 @@ EX_EXPORT_SCOPED_MODULE(ExponentMediaLibrary, PermissionsManager);
                @"width": @"width",
                @"height": @"height",
                @"duration": @"duration",
-               }
+               },
+           @"CHANGE_LISTENER_NAME": EXMediaLibraryDidChangeEvent,
            };
+}
+
+- (NSArray<NSString *> *)supportedEvents
+{
+  return @[EXMediaLibraryDidChangeEvent];
 }
 
 RCT_REMAP_METHOD(createAssetAsync,
@@ -404,9 +413,63 @@ RCT_REMAP_METHOD(getAssetsAsync,
   resolve(response);
 }
 
+# pragma mark - PHPhotoLibraryChangeObserver
+
+- (void)startObserving
+{
+  _allAssetsFetchResult = [EXMediaLibrary _getAllAssets];
+  [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];
+}
+
+- (void)stopObserving
+{
+  _allAssetsFetchResult = nil;
+  [[PHPhotoLibrary sharedPhotoLibrary] unregisterChangeObserver:self];
+}
+
+- (void)photoLibraryDidChange:(PHChange *)changeInstance
+{
+  if (changeInstance != nil && _allAssetsFetchResult != nil) {
+    PHFetchResultChangeDetails *changeDetails = [changeInstance changeDetailsForFetchResult:_allAssetsFetchResult];
+    
+    if (changeDetails != nil) {
+      _allAssetsFetchResult = changeDetails.fetchResultAfterChanges;
+      
+      // PHPhotoLibraryChangeObserver is calling this method too often, so we need to filter out some calls before they are sent to JS.
+      // Ultimately, we emit an event only when something has been inserted or removed from the library.
+      if (changeDetails.hasIncrementalChanges && (changeDetails.insertedObjects.count > 0 || changeDetails.removedObjects.count > 0)) {
+        NSMutableArray *insertedAssets = [NSMutableArray new];
+        NSMutableArray *deletedAssets = [NSMutableArray new];
+        NSDictionary *body = @{
+                               @"insertedAssets": insertedAssets,
+                               @"deletedAssets": deletedAssets,
+                               };
+        
+        for (PHAsset *asset in changeDetails.insertedObjects) {
+          [insertedAssets addObject:[EXMediaLibrary _exportAsset:asset]];
+        }
+        for (PHAsset *asset in changeDetails.removedObjects) {
+          [deletedAssets addObject:[EXMediaLibrary _exportAsset:asset]];
+        }
+        
+        [self sendEventWithName:EXMediaLibraryDidChangeEvent body:body];
+      }
+    }
+  }
+}
+
 
 # pragma mark - Internal methods
 
+
++ (PHFetchResult *)_getAllAssets
+{
+  PHFetchOptions *options = [PHFetchOptions new];
+  options.includeAssetSourceTypes = PHAssetSourceTypeUserLibrary;
+  options.includeHiddenAssets = NO;
+  options.includeAllBurstAssets = NO;
+  return [PHAsset fetchAssetsWithOptions:options];
+}
 
 + (PHFetchResult *)_getAssetsByIds:(NSArray<NSString *> *)assetIds
 {
