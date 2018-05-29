@@ -149,6 +149,25 @@ Returns `true` if the assets were successfully removed from the album.
 
 An array of [albums](#album) whose type is `moment`.
 
+
+### `Expo.MediaLibrary.addListener(listener)`
+
+Subscribes for updates in user's media library.
+
+#### Arguments
+
+-   **listener (_function_)** -- A callback that is called when any assets have been inserted or deleted from the library. **On Android** it's invoked with an empty object. **On iOS** it's invoked with an object that contains following keys:
+    -   **insertedAssets (_array_)** -- Array of [assets](#assets) that have been inserted to the library.
+    -   **deletedAssets (_array_)** -- Array of [assets](#assets) that have been deleted from the library.
+
+#### Returns
+
+An EventSubscription object that you can call `remove()` on when you would like to unsubscribe the listener.
+
+### `Expo.MediaLibrary.removeAllListeners()`
+
+Removes all listeners.
+
 ## Types
 
 ### `Asset`
@@ -172,7 +191,7 @@ An array of [albums](#album) whose type is `moment`.
 | orientation *    | _number_ | iOS       | Display orientation of the image         | Numbers 1-8, see [EXIF orientation specification](http://sylvana.net/jpegcrop/exif_orientation.html)|
 | isFavorite *     | _boolean_| iOS       | Whether the asset is marked as favorite  | `true`, `false`                                                                                     |
 
-> These fields can be obtained only by calling `getAssetInfoAsync` method
+> &ast; These fields can be obtained only by calling `getAssetInfoAsync` method
 
 ### `Album`
 
@@ -187,7 +206,7 @@ An array of [albums](#album) whose type is `moment`.
 | approximateLocation * | _object_ | iOS       | Approximated location of all assets in the moment       | `latitude: number, longitude: number` or `null` |
 | locationNames *       | _array_  | iOS       | Names of locations grouped in the moment                |                                                     |
 
-> These fields apply only to albums whose type is `moment`
+> &ast; These fields apply only to albums whose type is `moment`
 
 ## Constants
 
