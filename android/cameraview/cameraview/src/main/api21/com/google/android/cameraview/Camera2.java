@@ -354,6 +354,9 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
 
     @Override
     void setPictureSize(Size size) {
+        if (size == null) {
+          return;
+        }
         if (mCaptureSession != null) {
             try {
                 mCaptureSession.stopRepeating();

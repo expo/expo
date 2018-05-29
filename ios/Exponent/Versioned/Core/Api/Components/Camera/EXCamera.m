@@ -48,6 +48,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     self.previewLayer.needsDisplayOnBoundsChange = YES;
 #endif
     self.paused = NO;
+    self.pictureSize = AVCaptureSessionPresetHigh;
     [self changePreviewOrientation:[UIApplication sharedApplication].statusBarOrientation];
     [self initializeCaptureSessionInput];
     [self startSession];
@@ -409,8 +410,15 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
       self.movieFileOutput.maxRecordedFileSize = [options[@"maxFileSize"] integerValue];
     }
     
+    AVCaptureSessionPreset preset;
     if (options[@"quality"]) {
-      [self updateSessionPreset:[EXCameraUtils captureSessionPresetForVideoResolution:(EXCameraVideoResolution)[options[@"quality"] integerValue]]];
+      preset = [EXCameraUtils captureSessionPresetForVideoResolution:(EXCameraVideoResolution)[options[@"quality"] integerValue]];
+    } else if ([self.session.sessionPreset isEqual:AVCaptureSessionPresetPhoto]) {
+      preset = AVCaptureSessionPresetHigh;
+    }
+    
+    if (preset != nil) {
+      [self updateSessionPreset:preset];
     }
     
     [self updateSessionAudioIsMuted:options[@"mute"] && [options[@"mute"] boolValue]];
@@ -462,7 +470,6 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     if ([self.session canAddOutput:stillImageOutput]) {
       stillImageOutput.outputSettings = @{AVVideoCodecKey : AVVideoCodecJPEG};
       [self.session addOutput:stillImageOutput];
-      [stillImageOutput setHighResolutionStillImageOutputEnabled:YES];
       self.stillImageOutput = stillImageOutput;
     }
     
@@ -746,8 +753,8 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   // we reenable it here (see comment in -record).
   [_faceDetectorManager maybeStartFaceDetectionOnSession:_session withPreviewLayer:_previewLayer];
   
-  if (self.session.sessionPreset != AVCaptureSessionPresetHigh) {
-    [self updateSessionPreset:AVCaptureSessionPresetHigh];
+  if (self.session.sessionPreset != self.pictureSize) {
+    [self updateSessionPreset:self.pictureSize];
   }
 }
 
