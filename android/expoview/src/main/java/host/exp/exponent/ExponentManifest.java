@@ -273,6 +273,16 @@ public class ExponentManifest {
     Uri uri = httpManifestUrlBuilder(manifestUrl).build();
     String httpManifestUrl = uri.toString();
 
+    if (uri.getHost() == null) {
+      String message = "Could not load manifest.";
+      if (Constants.isShellApp()) {
+        message += " Are you sure this experience has been published?";
+      } else {
+        message += " Are you sure this is a valid URL?";
+      }
+      listener.onError(message);
+    }
+
     if (uri.getHost().equals("localhost") || uri.getHost().endsWith(".exp.direct")) {
       // if we're in development mode, we don't ever want to fetch a cached manifest
       return false;
@@ -412,7 +422,8 @@ public class ExponentManifest {
       embeddedManifest.put(ExponentManifest.MANIFEST_LOADED_FROM_CACHE_KEY, true);
       fetchManifestStep3(manifestUrl, embeddedManifest, true, listener);
     } catch (Exception e) {
-      listener.onError(e);
+      listener.onError(new Exception("Could not load embedded manifest. Are you sure this experience has been published?", e));
+      e.printStackTrace();
     }
   }
 
