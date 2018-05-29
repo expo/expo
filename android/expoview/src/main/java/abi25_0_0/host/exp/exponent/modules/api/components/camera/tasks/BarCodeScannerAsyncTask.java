@@ -1,50 +1,42 @@
 package abi25_0_0.host.exp.exponent.modules.api.components.camera.tasks;
 
-import android.util.SparseArray;
+import abi25_0_0.host.exp.exponent.modules.api.components.camera.utils.ExpoBarCodeDetector;
 
-import com.google.android.gms.vision.barcode.Barcode;
-import com.google.android.gms.vision.barcode.BarcodeDetector;
-
-import abi25_0_0.host.exp.exponent.modules.api.components.facedetector.ExpoFrameFactory;
-
-public class BarCodeScannerAsyncTask extends android.os.AsyncTask<Void, Void, Barcode> {
-  private final BarcodeDetector mDetector;
+public class BarCodeScannerAsyncTask extends android.os.AsyncTask<Void, Void, ExpoBarCodeDetector.Result> {
+  private final ExpoBarCodeDetector mDetector;
   private byte[] mImageData;
   private int mWidth;
   private int mHeight;
+  private int mRotation;
   private BarCodeScannerAsyncTaskDelegate mDelegate;
 
   public BarCodeScannerAsyncTask(
       BarCodeScannerAsyncTaskDelegate delegate,
-      BarcodeDetector detector,
+      ExpoBarCodeDetector detector,
       byte[] imageData,
       int width,
-      int height
+      int height,
+      int rotation
   ) {
     mImageData = imageData;
     mWidth = width;
     mHeight = height;
     mDelegate = delegate;
     mDetector = detector;
+    mRotation = rotation;
   }
 
   @Override
-  protected Barcode doInBackground(Void... ignored) {
+  protected ExpoBarCodeDetector.Result doInBackground(Void... ignored) {
     if (isCancelled() || mDelegate == null) {
       return null;
     }
 
-    SparseArray<Barcode> result = mDetector.detect(ExpoFrameFactory.buildFrame(mImageData, mWidth, mHeight, 0).getFrame());
-
-    if (result.size() > 0) {
-      return result.valueAt(0);
-    } else {
-      return null;
-    }
+    return mDetector.detect(mImageData, mWidth, mHeight, mRotation);
   }
 
   @Override
-  protected void onPostExecute(Barcode result) {
+  protected void onPostExecute(ExpoBarCodeDetector.Result result) {
     super.onPostExecute(result);
     if (result != null) {
       mDelegate.onBarCodeRead(result);

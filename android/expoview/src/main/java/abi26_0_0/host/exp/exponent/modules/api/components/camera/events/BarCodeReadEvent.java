@@ -6,19 +6,19 @@ import abi26_0_0.com.facebook.react.bridge.Arguments;
 import abi26_0_0.com.facebook.react.bridge.WritableMap;
 import abi26_0_0.com.facebook.react.uimanager.events.Event;
 import abi26_0_0.com.facebook.react.uimanager.events.RCTEventEmitter;
-import com.google.android.gms.vision.barcode.Barcode;
 
 import abi26_0_0.host.exp.exponent.modules.api.components.camera.CameraViewManager;
+import abi26_0_0.host.exp.exponent.modules.api.components.camera.utils.ExpoBarCodeDetector;
 
 public class BarCodeReadEvent extends Event<BarCodeReadEvent> {
   private static final Pools.SynchronizedPool<BarCodeReadEvent> EVENTS_POOL =
       new Pools.SynchronizedPool<>(3);
 
-  private Barcode mBarCode;
+  private ExpoBarCodeDetector.Result mBarCode;
 
   private BarCodeReadEvent() {}
 
-  public static BarCodeReadEvent obtain(int viewTag, Barcode barCode) {
+  public static BarCodeReadEvent obtain(int viewTag, ExpoBarCodeDetector.Result barCode) {
     BarCodeReadEvent event = EVENTS_POOL.acquire();
     if (event == null) {
       event = new BarCodeReadEvent();
@@ -27,7 +27,7 @@ public class BarCodeReadEvent extends Event<BarCodeReadEvent> {
     return event;
   }
 
-  private void init(int viewTag, Barcode barCode) {
+  private void init(int viewTag, ExpoBarCodeDetector.Result barCode) {
     super.init(viewTag);
     mBarCode = barCode;
   }
@@ -41,7 +41,7 @@ public class BarCodeReadEvent extends Event<BarCodeReadEvent> {
    */
   @Override
   public short getCoalescingKey() {
-    int hashCode = mBarCode.rawValue.hashCode() % Short.MAX_VALUE;
+    int hashCode = mBarCode.getValue().hashCode() % Short.MAX_VALUE;
     return (short) hashCode;
   }
 
@@ -59,8 +59,8 @@ public class BarCodeReadEvent extends Event<BarCodeReadEvent> {
     WritableMap event = Arguments.createMap();
 
     event.putInt("target", getViewTag());
-    event.putString("data", mBarCode.rawValue);
-    event.putInt("type", mBarCode.format);
+    event.putString("data", mBarCode.getValue());
+    event.putInt("type", mBarCode.getType());
 
     return event;
   }

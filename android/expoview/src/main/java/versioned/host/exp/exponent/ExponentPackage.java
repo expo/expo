@@ -29,8 +29,6 @@ import versioned.host.exp.exponent.modules.api.MediaLibraryModule;
 import versioned.host.exp.exponent.modules.api.print.PrintModule;
 import versioned.host.exp.exponent.modules.api.UpdatesModule;
 import versioned.host.exp.exponent.modules.api.av.video.VideoManager;
-import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerModule;
-import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerViewManager;
 import versioned.host.exp.exponent.modules.api.components.facedetector.FaceDetectorModule;
 import versioned.host.exp.exponent.modules.api.sensors.AccelerometerModule;
 import versioned.host.exp.exponent.modules.api.AmplitudeModule;
@@ -194,7 +192,6 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new BrightnessModule(reactContext));
         nativeModules.add(new RNGestureHandlerModule(reactContext));
         nativeModules.add(new StripeModule(reactContext));
-        nativeModules.add(new BarCodeScannerModule(reactContext));
         nativeModules.add(new RNAWSCognitoModule(reactContext));
         nativeModules.add(new MailComposerModule(reactContext));
         nativeModules.add(new CalendarModule(reactContext, experienceId));
@@ -220,7 +217,6 @@ public class ExponentPackage implements ReactPackage {
         new CameraViewManager(),
         new GLViewManager(),
         new NativeAdViewManager(),
-        new BarCodeScannerViewManager(),
         new BannerViewManager()
     ));
 

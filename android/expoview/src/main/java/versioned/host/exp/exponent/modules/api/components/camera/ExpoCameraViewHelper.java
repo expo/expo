@@ -15,7 +15,6 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.google.android.cameraview.CameraView;
-import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.face.Face;
 
 import java.text.SimpleDateFormat;
@@ -23,6 +22,7 @@ import java.util.Calendar;
 import java.util.Locale;
 
 import versioned.host.exp.exponent.modules.api.ImagePickerModule;
+import versioned.host.exp.exponent.modules.api.components.camera.utils.ExpoBarCodeDetector;
 import versioned.host.exp.exponent.modules.api.components.camera.events.BarCodeReadEvent;
 import versioned.host.exp.exponent.modules.api.components.camera.events.CameraMountErrorEvent;
 import versioned.host.exp.exponent.modules.api.components.camera.events.CameraReadyEvent;
@@ -89,7 +89,7 @@ public class ExpoCameraViewHelper {
 
   // Bar code read event
 
-  public static void emitBarCodeReadEvent(ViewGroup view, Barcode barCode) {
+  public static void emitBarCodeReadEvent(ViewGroup view, ExpoBarCodeDetector.Result barCode) {
     BarCodeReadEvent event = BarCodeReadEvent.obtain(view.getId(), barCode);
     ReactContext reactContext = (ReactContext) view.getContext();
     reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(event);

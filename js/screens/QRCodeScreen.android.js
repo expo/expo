@@ -2,18 +2,20 @@
 
 import React from 'react';
 import {
+  Dimensions,
   Linking,
-  Platform,
   StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { BarCodeScanner } from 'expo';
+import { Camera } from 'expo';
 import { throttle } from 'lodash';
 
 import Layout from '../constants/Layout';
+
+const DEFAULT_RATIO = '16:9';
 
 export default class BarCodeScreen extends React.Component {
   static navigationOptions = {
@@ -21,7 +23,8 @@ export default class BarCodeScreen extends React.Component {
   };
 
   state = {
-    scannerIsVisible: Platform.OS !== 'android',
+    scannerIsVisible: false,
+    ratio: undefined,
   };
 
   _hasOpenedUrl: boolean;
@@ -30,11 +33,9 @@ export default class BarCodeScreen extends React.Component {
   componentWillMount() {
     this._hasOpenedUrl = false;
 
-    if (Platform.OS === 'android') {
-      setTimeout(() => {
-        this.setState({ scannerIsVisible: true });
-      }, 800);
-    }
+    setTimeout(() => {
+      this.setState({ scannerIsVisible: true });
+    }, 800);
   }
 
   componentDidMount() {
@@ -46,10 +47,19 @@ export default class BarCodeScreen extends React.Component {
   }
 
   render() {
+    const cameraStyle = this.state.ratio === undefined ? { width: 0 } : StyleSheet.absoluteFill;
     return (
       <View style={styles.container}>
         {this.state.scannerIsVisible ? (
-          <BarCodeScanner onBarCodeRead={this._handleBarCodeRead} style={StyleSheet.absoluteFill} />
+          <Camera
+            ref={ref => {
+              this._scanner = ref;
+            }}
+            onBarCodeRead={this._handleBarCodeRead}
+            style={cameraStyle}
+            ratio={this.state.ratio}
+            onCameraReady={this._setAspectRatio}
+          />
         ) : null}
 
         <View style={styles.topOverlay} />
@@ -87,24 +97,49 @@ export default class BarCodeScreen extends React.Component {
   }, 1000);
 
   _openUrl = (url: string) => {
-    this.props.navigation.dismiss();
+    this.props.navigation.pop();
 
     // note(brentvatne): Give the modal a bit of time to dismiss on Android
     setTimeout(() => {
-      // note(brentvatne): Manually reset the status bar before opening the
-      // experience so that we restore the correct status bar color when
-      // returning to home
-      Platform.OS === 'ios' && StatusBar.setBarStyle('default');
-
       if (!this._hasOpenedUrl) {
         this._hasOpenedUrl = true;
         Linking.openURL(url);
       }
-    }, Platform.OS === 'android' ? 500 : 16);
+    }, 500);
   };
 
   _handlePressCancel = () => {
-    this.props.navigation.goBack(null);
+    this.props.navigation.goBack(null);;
+  };
+
+  _setAspectRatio = async () => {
+    if (this._scanner) {
+      const ratios = await this._scanner.getSupportedRatiosAsync();
+      if (ratios.length === 0) {
+        console.warn(
+          'getSupportedRatiosAsync returned an empty array - preview might be stretched or not visible at all.'
+        );
+        this.setState({
+          ratio: DEFAULT_RATIO,
+        });
+      } else {
+        const { width, height } = Dimensions.get('window');
+        const screenRatio = height / width;
+        const cameraRatio = { ratio: '16:9', value: 10 };
+        ratios.forEach(ratio => {
+          const splitted = ratio.split(':');
+          const [h, w] = splitted;
+          const ratioValue = h / w;
+          if (Math.abs(screenRatio - ratioValue) < Math.abs(screenRatio - cameraRatio.value)) {
+            cameraRatio.ratio = ratio;
+            cameraRatio.value = ratioValue;
+          }
+        });
+        this.setState({
+          ratio: cameraRatio.ratio,
+        });
+      }
+    }
   };
 }
 
@@ -195,31 +230,14 @@ const styles = StyleSheet.create({
     top: 40,
     left: 0,
     right: 0,
-    ...Platform.select({
-      ios: {
-        alignItems: 'center',
-        left: 0,
-      },
-      android: {
-        alignItems: 'flex-start',
-        left: 25,
-      },
-    }),
+    alignItems: 'flex-start',
+    left: 25,
   },
   headerText: {
     color: '#fff',
     backgroundColor: 'transparent',
-    ...Platform.select({
-      ios: {
-        textAlign: 'center',
-        fontSize: 20,
-        fontWeight: '500',
-      },
-      android: {
-        fontSize: 22,
-        fontWeight: '400',
-      },
-    }),
+    fontSize: 22,
+    fontWeight: '400',
   },
   footer: {
     position: 'absolute',

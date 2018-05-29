@@ -15,7 +15,6 @@ import abi25_0_0.com.facebook.react.bridge.ReactContext;
 import abi25_0_0.com.facebook.react.bridge.WritableMap;
 import abi25_0_0.com.facebook.react.uimanager.UIManagerModule;
 import com.google.android.cameraview.CameraView;
-import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.face.Face;
 
 import java.text.SimpleDateFormat;
@@ -28,6 +27,7 @@ import abi25_0_0.host.exp.exponent.modules.api.components.camera.events.CameraMo
 import abi25_0_0.host.exp.exponent.modules.api.components.camera.events.CameraReadyEvent;
 import abi25_0_0.host.exp.exponent.modules.api.components.camera.events.FaceDetectionErrorEvent;
 import abi25_0_0.host.exp.exponent.modules.api.components.camera.events.FacesDetectedEvent;
+import abi25_0_0.host.exp.exponent.modules.api.components.camera.utils.ExpoBarCodeDetector;
 import abi25_0_0.host.exp.exponent.modules.api.components.camera.utils.ImageDimensions;
 import abi25_0_0.host.exp.exponent.modules.api.components.facedetector.ExpoFaceDetector;
 
@@ -80,7 +80,7 @@ public class ExpoCameraViewHelper {
 
   // Bar code read event
 
-  public static void emitBarCodeReadEvent(ViewGroup view, Barcode barCode) {
+  public static void emitBarCodeReadEvent(ViewGroup view, ExpoBarCodeDetector.Result barCode) {
     BarCodeReadEvent event = BarCodeReadEvent.obtain(view.getId(), barCode);
     ReactContext reactContext = (ReactContext) view.getContext();
     reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(event);

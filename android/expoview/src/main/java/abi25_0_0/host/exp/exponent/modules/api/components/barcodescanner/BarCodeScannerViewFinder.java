@@ -6,18 +6,16 @@ import android.hardware.Camera;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.SparseArray;
 import android.view.TextureView;
 
 import abi25_0_0.com.facebook.react.bridge.Arguments;
 import abi25_0_0.com.facebook.react.bridge.WritableMap;
-import com.google.android.gms.vision.barcode.Barcode;
-import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.util.List;
 
-import host.exp.exponent.analytics.EXL;
-import abi25_0_0.host.exp.exponent.modules.api.components.facedetector.ExpoFrameFactory;
+import abi25_0_0.host.exp.exponent.modules.api.components.camera.utils.ExpoBarCodeDetector;
+import abi25_0_0.host.exp.exponent.modules.api.components.camera.utils.GMVBarCodeDetector;
+import abi25_0_0.host.exp.exponent.modules.api.components.camera.utils.ZxingBarCodeDetector;
 
 class BarCodeScannerViewFinder extends TextureView implements TextureView.SurfaceTextureListener, Camera.PreviewCallback {
   private final Context mContext;
@@ -33,7 +31,7 @@ class BarCodeScannerViewFinder extends TextureView implements TextureView.Surfac
   public static volatile boolean barCodeScannerTaskLock = false;
 
   // Detector instance for the barcode scanner
-  private BarcodeDetector mDetector;
+  private ExpoBarCodeDetector mDetector;
 
   public BarCodeScannerViewFinder(Context context, int type, BarCodeScannerView barCodeScannerView) {
     super(context);
@@ -165,18 +163,9 @@ class BarCodeScannerViewFinder extends TextureView implements TextureView.Surfac
    * Additionally supports [codabar, code128, upc_a]
    */
   private void initBarcodeReader(List<Integer> barCodeTypes) {
-    int barcodeFormats = 0;
-    if (barCodeTypes != null) {
-      for (Integer code : barCodeTypes) {
-        barcodeFormats |= code;
-      }
-    }
-
-    mDetector = new BarcodeDetector.Builder(mContext)
-        .setBarcodeFormats(barcodeFormats)
-        .build();
-    if (!mDetector.isOperational()) {
-      EXL.w("ExpoCameraView", "Could not start barcode scanner.");
+    mDetector = new GMVBarCodeDetector(barCodeTypes, mContext);
+    if (!mDetector.isAvailable()) {
+      mDetector = new ZxingBarCodeDetector(barCodeTypes, mContext);
     }
   }
 
@@ -205,23 +194,23 @@ class BarCodeScannerViewFinder extends TextureView implements TextureView.Surfac
 
       // setting PreviewCallback does not really have an effect - this method is called anyway so we
       // need to check if camera changing is in progress or not
-      if (!mIsChanging) {
+      if (!mIsChanging && mCamera != null) {
         Camera.Size size = mCamera.getParameters().getPreviewSize();
 
         int width = size.width;
         int height = size.height;
 
-        final SparseArray<Barcode> result = mDetector.detect(ExpoFrameFactory.buildFrame(mImageData, width, height, 0).getFrame());
+        final ExpoBarCodeDetector.Result result = mDetector.detect(mImageData, width,
+            height, BarCodeScanner.getInstance().getActualDeviceOrientation());
 
-        if (result.size() > 0) {
+        if (result != null) {
           new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-              Barcode barcode = result.valueAt(0);
-              int type = barcode.format;
+              int type = result.getType();
               if (BarCodeScanner.getInstance().getBarCodeTypes().contains(type)) {
                 WritableMap event = Arguments.createMap();
-                event.putString("data", barcode.rawValue);
+                event.putString("data", result.getValue());
                 event.putInt("type", type);
                 mBarCodeScannerView.onBarCodeRead(event);
               }

@@ -2,9 +2,7 @@
 
 import React from 'react';
 import {
-  Dimensions,
   Linking,
-  Platform,
   StatusBar,
   StyleSheet,
   Text,
@@ -17,16 +15,13 @@ import isIPhoneX from '../utils/isIPhoneX';
 
 import Layout from '../constants/Layout';
 
-const DEFAULT_RATIO = '16:9';
-
 export default class BarCodeScreen extends React.Component {
   static navigationOptions = {
     header: null,
   };
 
   state = {
-    scannerIsVisible: Platform.OS !== 'android',
-    ratio: undefined,
+    scannerIsVisible: true,
   };
 
   _hasOpenedUrl: boolean;
@@ -34,12 +29,6 @@ export default class BarCodeScreen extends React.Component {
 
   componentWillMount() {
     this._hasOpenedUrl = false;
-
-    if (Platform.OS === 'android') {
-      setTimeout(() => {
-        this.setState({ scannerIsVisible: true });
-      }, 800);
-    }
   }
 
   componentDidMount() {
@@ -51,21 +40,12 @@ export default class BarCodeScreen extends React.Component {
   }
 
   render() {
-    const cameraStyle =
-      Platform.OS === 'android' && this.state.ratio === undefined
-        ? { width: 0 }
-        : StyleSheet.absoluteFill;
     return (
       <View style={styles.container}>
         {this.state.scannerIsVisible ? (
           <Camera
-            ref={ref => {
-              this._scanner = ref;
-            }}
             onBarCodeRead={this._handleBarCodeRead}
-            style={cameraStyle}
-            ratio={this.state.ratio}
-            onCameraReady={this._setAspectRatio}
+            style={StyleSheet.absoluteFill}
           />
         ) : null}
 
@@ -106,52 +86,21 @@ export default class BarCodeScreen extends React.Component {
   _openUrl = (url: string) => {
     this.props.navigation.pop();
 
-    // note(brentvatne): Give the modal a bit of time to dismiss on Android
     setTimeout(() => {
       // note(brentvatne): Manually reset the status bar before opening the
       // experience so that we restore the correct status bar color when
       // returning to home
-      Platform.OS === 'ios' && StatusBar.setBarStyle('default');
+      StatusBar.setBarStyle('default');
 
       if (!this._hasOpenedUrl) {
         this._hasOpenedUrl = true;
         Linking.openURL(url);
       }
-    }, Platform.OS === 'android' ? 500 : 16);
+    }, 16);
   };
 
   _handlePressCancel = () => {
     this.props.navigation.pop();
-  };
-
-  _setAspectRatio = async () => {
-    if (this._scanner && Platform.OS === 'android') {
-      const ratios = await this._scanner.getSupportedRatiosAsync();
-      if (ratios.length === 0) {
-        console.warn(
-          'getSupportedRatiosAsync returned an empty array - preview might be stretched or not visible at all.'
-        );
-        this.setState({
-          ratio: DEFAULT_RATIO,
-        });
-      } else {
-        const { width, height } = Dimensions.get('window');
-        const screenRatio = height / width;
-        const cameraRatio = { ratio: '16:9', value: 10 };
-        ratios.forEach(ratio => {
-          const splitted = ratio.split(':');
-          const [h, w] = splitted;
-          const ratioValue = h / w;
-          if (Math.abs(screenRatio - ratioValue) < Math.abs(screenRatio - cameraRatio.value)) {
-            cameraRatio.ratio = ratio;
-            cameraRatio.value = ratioValue;
-          }
-        });
-        this.setState({
-          ratio: cameraRatio.ratio,
-        });
-      }
-    }
   };
 }
 
@@ -242,31 +191,15 @@ const styles = StyleSheet.create({
     top: isIPhoneX ? 50 : 40,
     left: 0,
     right: 0,
-    ...Platform.select({
-      ios: {
-        alignItems: 'center',
-        left: 0,
-      },
-      android: {
-        alignItems: 'flex-start',
-        left: 25,
-      },
-    }),
+    alignItems: 'center',
+    left: 0,
   },
   headerText: {
     color: '#fff',
     backgroundColor: 'transparent',
-    ...Platform.select({
-      ios: {
-        textAlign: 'center',
-        fontSize: 20,
-        fontWeight: '500',
-      },
-      android: {
-        fontSize: 22,
-        fontWeight: '400',
-      },
-    }),
+    textAlign: 'center',
+    fontSize: 20,
+    fontWeight: '500',
   },
   footer: {
     position: 'absolute',

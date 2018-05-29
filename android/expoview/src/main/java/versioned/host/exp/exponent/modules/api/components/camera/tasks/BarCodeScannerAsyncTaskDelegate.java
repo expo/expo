@@ -1,8 +1,8 @@
 package versioned.host.exp.exponent.modules.api.components.camera.tasks;
 
-import com.google.android.gms.vision.barcode.Barcode;
+import versioned.host.exp.exponent.modules.api.components.camera.utils.ExpoBarCodeDetector;
 
 public interface BarCodeScannerAsyncTaskDelegate {
-  void onBarCodeRead(Barcode barCode);
+  void onBarCodeRead(ExpoBarCodeDetector.Result barCode);
   void onBarCodeScanningTaskCompleted();
 }
