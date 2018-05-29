@@ -271,9 +271,16 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       handleOptions(mKernel.popOptionsForManifestUrl(mManifestUrl));
     }
 
-    clearNotifications();
+    // this is old code from before `Expo.Notifications.dismissAllNotificationsAsync` existed
+    // since removing it is a breaking change (people have to call ^^^ explicitly if they want
+    // this behavior) we only do it starting in SDK 28
+    // TODO: eric: remove this once SDK 27 is phased out
+    if (mSDKVersion != null && ABIVersion.toNumber(mSDKVersion) < ABIVersion.toNumber("28.0.0")) {
+      clearNotifications();
+    }
   }
 
+  // TODO: eric: remove this once SDK 27 is phased out
   protected void clearNotifications() {
     String experienceId = mManifest.optString(ExponentManifest.MANIFEST_ID_KEY);
     if (experienceId != null) {
