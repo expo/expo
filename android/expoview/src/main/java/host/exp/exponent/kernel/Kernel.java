@@ -672,57 +672,59 @@ public class Kernel extends KernelInterface {
     }
 
     final ActivityManager.AppTask finalExistingTask = existingTask;
-    new AppLoader(manifestUrl, mExponentManifest, mExponentSharedPreferences, forceCache) {
-      @Override
-      public void onOptimisticManifest(final JSONObject optimisticManifest) {
-        Exponent.getInstance().runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-            sendLoadingScreenManifestToExperienceActivity(optimisticManifest);
-          }
-        });
-      }
+    if (existingTask == null) {
+      new AppLoader(manifestUrl, mExponentManifest, mExponentSharedPreferences, forceCache) {
+        @Override
+        public void onOptimisticManifest(final JSONObject optimisticManifest) {
+          Exponent.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              sendLoadingScreenManifestToExperienceActivity(optimisticManifest);
+            }
+          });
+        }
 
-      @Override
-      public void onManifestCompleted(final JSONObject manifest) {
-        Exponent.getInstance().runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-            try {
-              openManifestUrlStep2(manifestUrl, manifest, finalExistingTask);
-            } catch (JSONException e) {
-              handleError(e);
+        @Override
+        public void onManifestCompleted(final JSONObject manifest) {
+          Exponent.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              try {
+                openManifestUrlStep2(manifestUrl, manifest, finalExistingTask);
+              } catch (JSONException e) {
+                handleError(e);
+              }
+            }
+          });
+        }
+
+        @Override
+        public void onBundleCompleted(String localBundlePath) {
+          sendBundleToExperienceActivity(localBundlePath);
+        }
+
+        @Override
+        public void emitEvent(JSONObject params) {
+          ExperienceActivityTask task = sManifestUrlToExperienceActivityTask.get(manifestUrl);
+          if (task != null) {
+            ExperienceActivity experienceActivity = task.experienceActivity.get();
+            if (experienceActivity != null) {
+              experienceActivity.emitUpdatesEvent(params);
             }
           }
-        });
-      }
-
-      @Override
-      public void onBundleCompleted(String localBundlePath) {
-        sendBundleToExperienceActivity(localBundlePath);
-      }
-
-      @Override
-      public void emitEvent(JSONObject params) {
-        ExperienceActivityTask task = sManifestUrlToExperienceActivityTask.get(manifestUrl);
-        if (task != null) {
-          ExperienceActivity experienceActivity = task.experienceActivity.get();
-          if (experienceActivity != null) {
-            experienceActivity.emitUpdatesEvent(params);
-          }
         }
-      }
 
-      @Override
-      public void onError(Exception e) {
-        handleError(e);
-      }
+        @Override
+        public void onError(Exception e) {
+          handleError(e);
+        }
 
-      @Override
-      public void onError(String e) {
-        handleError(e);
-      }
-    }.start();
+        @Override
+        public void onError(String e) {
+          handleError(e);
+        }
+      }.start();
+    }
   }
 
   private void openManifestUrlStep2(String manifestUrl, JSONObject manifest, ActivityManager.AppTask existingTask) throws JSONException {
