@@ -313,6 +313,7 @@
 		BBD03196200011C9009F0434 /* RNAWSCognito.m in Sources */ = {isa = PBXBuildFile; fileRef = BBD03192200011C9009F0434 /* RNAWSCognito.m */; };
 		C467A515C39D7BC540174FC6 /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 52EE209A2B46C07B4237CBD5 /* libPods-ExponentIntegrationTests.a */; };
 		CD9939502040C1AA0087C883 /* EXHaptic.m in Sources */ = {isa = PBXBuildFile; fileRef = CD99394F2040C1AA0087C883 /* EXHaptic.m */; };
+		F1374BC120B57B92008D888B /* EXPrintPDFRenderTask.m in Sources */ = {isa = PBXBuildFile; fileRef = F1374BC020B57B92008D888B /* EXPrintPDFRenderTask.m */; };
 		CDBF79FA20868287009B25D6 /* EXStoreReview.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBF79F920868287009B25D6 /* EXStoreReview.m */; };
 		F1545BF920877E39002DAC67 /* EXMenuWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = F1545BF820877E39002DAC67 /* EXMenuWindow.m */; };
 		F167C43B209C7EE600F01382 /* EXUtilService.m in Sources */ = {isa = PBXBuildFile; fileRef = F167C43A209C7EE600F01382 /* EXUtilService.m */; };
@@ -953,6 +954,8 @@
 		BBD03192200011C9009F0434 /* RNAWSCognito.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNAWSCognito.m; sourceTree = "<group>"; };
 		CD99394E2040C1AA0087C883 /* EXHaptic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXHaptic.h; sourceTree = "<group>"; };
 		CD99394F2040C1AA0087C883 /* EXHaptic.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXHaptic.m; sourceTree = "<group>"; };
+		F1374BBF20B57B92008D888B /* EXPrintPDFRenderTask.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXPrintPDFRenderTask.h; sourceTree = "<group>"; };
+		F1374BC020B57B92008D888B /* EXPrintPDFRenderTask.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXPrintPDFRenderTask.m; sourceTree = "<group>"; };
 		CDBF79F820868287009B25D6 /* EXStoreReview.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXStoreReview.h; sourceTree = "<group>"; };
 		CDBF79F920868287009B25D6 /* EXStoreReview.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXStoreReview.m; sourceTree = "<group>"; };
 		F1545BF720877E39002DAC67 /* EXMenuWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXMenuWindow.h; sourceTree = "<group>"; };
@@ -1673,8 +1676,6 @@
 				3CEBDC401FFBC73D0025EF24 /* EXMailComposer.m */,
 				B5FB73941FF6DADB001C764B /* EXNotifications.h */,
 				B5FB73951FF6DADB001C764B /* EXNotifications.m */,
-				3CDB94E9202AE82D0039E406 /* EXPrint.h */,
-				3CDB94EA202AE8900039E406 /* EXPrint.m */,
 				B5FB73961FF6DADB001C764B /* EXScreenOrientation.h */,
 				B5FB73971FF6DADB001C764B /* EXScreenOrientation.m */,
 				B5FB73981FF6DADB001C764B /* EXSecureStore.h */,
@@ -1698,6 +1699,7 @@
 				B5FB73BC1FF6DADB001C764B /* GL */,
 				B5FB73C91FF6DADB001C764B /* OAuthViewController */,
 				B5FB73CC1FF6DADB001C764B /* Permissions */,
+				F1374BBE20B57B37008D888B /* Print */,
 				F174C8B9201E677600F434C9 /* MediaLibrary */,
 				B5FB73DB1FF6DADB001C764B /* Sensors */,
 				B5FB73E81FF6DADB001C764B /* Standalone */,
@@ -2135,6 +2137,17 @@
 			path = Cognito;
 			sourceTree = "<group>";
 		};
+		F1374BBE20B57B37008D888B /* Print */ = {
+			isa = PBXGroup;
+			children = (
+				3CDB94E9202AE82D0039E406 /* EXPrint.h */,
+				3CDB94EA202AE8900039E406 /* EXPrint.m */,
+				F1374BBF20B57B92008D888B /* EXPrintPDFRenderTask.h */,
+				F1374BC020B57B92008D888B /* EXPrintPDFRenderTask.m */,
+			);
+			path = Print;
+			sourceTree = "<group>";
+		};
 		F174C8B9201E677600F434C9 /* MediaLibrary */ = {
 			isa = PBXGroup;
 			children = (
@@ -2502,6 +2515,7 @@
 				CDBF79FA20868287009B25D6 /* EXStoreReview.m in Sources */,
 				B56C65CF20477223002B2424 /* EXHomeDiagnosticsViewController.m in Sources */,
 				0779EE2620977C9E00C2D71B /* AIRGoogleMapOverlay.m in Sources */,
+				F1374BC120B57B92008D888B /* EXPrintPDFRenderTask.m in Sources */,
 				7846B22520355E9900638E43 /* RNSVGTSpan.m in Sources */,
 				7846B21620355E9900638E43 /* RNSVGImageManager.m in Sources */,
 				6D3FF9032022B57E000D4015 /* EXLocalization.m in Sources */,
