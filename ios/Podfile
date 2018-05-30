@@ -17,7 +17,7 @@ target 'Exponent' do
   pod 'GoogleSignIn', '~> 3.0', :inhibit_warnings => true
   pod 'GoogleMaps', '~> 2.5.0', :inhibit_warnings => true
   pod 'Google-Maps-iOS-Utils', '~> 2.1.0', :inhibit_warnings => true
-  pod 'lottie-ios', '~> 2.1.3', :inhibit_warnings => true
+  pod 'lottie-ios', '~> 2.5.0', :inhibit_warnings => true
   pod 'GPUImage', '~> 0.1.7', :inhibit_warnings => true
   pod 'JKBigInteger2', '0.0.5', :inhibit_warnings => true
   pod 'Branch', '~> 0.24.2', :inhibit_warnings => true

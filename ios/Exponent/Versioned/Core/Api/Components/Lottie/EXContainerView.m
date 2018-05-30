@@ -52,11 +52,11 @@
 
 - (void)setResizeMode:(NSString *)resizeMode {
   if ([resizeMode isEqualToString:@"cover"]) {
-    [self setContentMode:UIViewContentModeScaleAspectFill];
+    [_animationView setContentMode:UIViewContentModeScaleAspectFill];
   } else if ([resizeMode isEqualToString:@"contain"]) {
-    [self setContentMode:UIViewContentModeScaleAspectFit];
+    [_animationView setContentMode:UIViewContentModeScaleAspectFit];
   } else if ([resizeMode isEqualToString:@"center"]) {
-    [self setContentMode:UIViewContentModeCenter];
+    [_animationView setContentMode:UIViewContentModeCenter];
   }
 }
 
