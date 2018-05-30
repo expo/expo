@@ -3,9 +3,10 @@ package versioned.host.exp.exponent.modules.api.components.gesturehandler.react;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.PaintDrawable;
+import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
 import android.util.TypedValue;
 import android.view.MotionEvent;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
+import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
 public class RNGestureHandlerButtonViewManager extends
@@ -26,6 +28,7 @@ public class RNGestureHandlerButtonViewManager extends
     int mBackgroundColor = Color.TRANSPARENT;
     boolean mUseForeground = false;
     boolean mUseBorderless = false;
+    float mBorderRadius = 0;
     boolean mNeedBackgroundUpdate = false;
 
 
@@ -41,6 +44,11 @@ public class RNGestureHandlerButtonViewManager extends
     @Override
     public void setBackgroundColor(int color) {
       mBackgroundColor = color;
+      mNeedBackgroundUpdate = true;
+    }
+
+    public void setBorderRadius(float borderRadius) {
+      mBorderRadius = borderRadius;
       mNeedBackgroundUpdate = true;
     }
 
@@ -79,9 +87,26 @@ public class RNGestureHandlerButtonViewManager extends
       } else if (mBackgroundColor == Color.TRANSPARENT) {
         setBackground(createSelectableDrawable());
       } else {
-        ColorDrawable colorDrawable = new ColorDrawable(mBackgroundColor);
+        PaintDrawable colorDrawable = new PaintDrawable(mBackgroundColor);
+        Drawable selectable = createSelectableDrawable();
+        if (mBorderRadius != 0) {
+          // Radius-connected lines below ought to be considered
+          // as a temporary solution. It do not allow to set
+          // different radius on each corner. However, I suppose it's fairly
+          // fine for button-related use cases.
+          // Therefore it might be used as long as:
+          // 1. ReactViewManager is not a generic class with a possibility to handle another ViewGroup
+          // 2. There's no way to force native behavior of ReactViewGroup's superclass's onTouchEvent
+          colorDrawable.setCornerRadius(mBorderRadius);
+          if (selectable instanceof RippleDrawable
+                  && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            PaintDrawable mask = new PaintDrawable(Color.WHITE);
+            mask.setCornerRadius(mBorderRadius);
+            ((RippleDrawable) selectable).setDrawableByLayerId(android.R.id.mask, mask);
+          }
+        }
         LayerDrawable layerDrawable = new LayerDrawable(
-                new Drawable[] { colorDrawable, createSelectableDrawable() });
+                new Drawable[] { colorDrawable, selectable});
         setBackground(layerDrawable);
       }
     }
@@ -166,6 +191,11 @@ public class RNGestureHandlerButtonViewManager extends
   @ReactProp(name = "enabled")
   public void setEnabled(ButtonViewGroup view, boolean enabled) {
     view.setEnabled(enabled);
+  }
+
+  @ReactProp(name = ViewProps.BORDER_RADIUS)
+  public void setBorderRadius(ButtonViewGroup view, float borderRadius) {
+    view.setBorderRadius(borderRadius);
   }
 
   @Override

@@ -13,6 +13,7 @@
 
 #import "Handlers/RNPanHandler.h"
 #import "Handlers/RNTapHandler.h"
+#import "Handlers/RNFlingHandler.h"
 #import "Handlers/RNLongPressHandler.h"
 #import "Handlers/RNNativeViewHandler.h"
 #import "Handlers/RNPinchHandler.h"
@@ -56,6 +57,7 @@
         map = @{
                 @"PanGestureHandler" : [RNPanGestureHandler class],
                 @"TapGestureHandler" : [RNTapGestureHandler class],
+                @"FlingGestureHandler" : [RNFlingGestureHandler class],
                 @"LongPressGestureHandler": [RNLongPressGestureHandler class],
                 @"NativeViewGestureHandler": [RNNativeViewGestureHandler class],
                 @"PinchGestureHandler": [RNPinchGestureHandler class],

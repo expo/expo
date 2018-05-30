@@ -18,6 +18,7 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIBlock;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import versioned.host.exp.exponent.modules.api.components.gesturehandler.FlingGestureHandler;
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.GestureHandler;
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.LongPressGestureHandler;
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.NativeViewGestureHandler;
@@ -55,6 +56,10 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static final String KEY_TAP_NUMBER_OF_TAPS = "numberOfTaps";
   private static final String KEY_TAP_MAX_DURATION_MS = "maxDurationMs";
   private static final String KEY_TAP_MAX_DELAY_MS = "maxDelayMs";
+  private static final String KEY_TAP_MAX_DELTA_X = "maxDeltaX";
+  private static final String KEY_TAP_MAX_DELTA_Y = "maxDeltaY";
+  private static final String KEY_TAP_MAX_DIST = "maxDist";
+  private static final String KEY_TAP_MIN_POINTERS = "minPointers";
   private static final String KEY_LONG_PRESS_MIN_DURATION_MS = "minDurationMs";
   private static final String KEY_LONG_PRESS_MAX_DIST = "maxDist";
   private static final String KEY_PAN_MIN_DELTA_X = "minDeltaX";
@@ -70,6 +75,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static final String KEY_PAN_MIN_POINTERS = "minPointers";
   private static final String KEY_PAN_MAX_POINTERS = "maxPointers";
   private static final String KEY_PAN_AVG_TOUCHES = "avgTouches";
+  private static final String KEY_NUMBER_OF_POINTERS = "numberOfPointers";
+  private static final String KEY_DIRECTION= "direction";
 
   private abstract static class HandlerFactory<T extends GestureHandler>
           implements RNGestureHandlerEventDataExtractor<T> {
@@ -94,7 +101,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
     @Override
     public void extractEventData(T handler, WritableMap eventData) {
-      // empty default impl
+      eventData.putDouble("numberOfPointers", handler.getNumberOfPointers());
     }
   }
 
@@ -129,6 +136,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
     @Override
     public void extractEventData(NativeViewGestureHandler handler, WritableMap eventData) {
+      super.extractEventData(handler, eventData);
       eventData.putBoolean("pointerInside", handler.isWithinBounds());
     }
   }
@@ -161,10 +169,23 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       if (config.hasKey(KEY_TAP_MAX_DELAY_MS)) {
         handler.setMaxDelayMs(config.getInt(KEY_TAP_MAX_DELAY_MS));
       }
+      if (config.hasKey(KEY_TAP_MAX_DELTA_X)) {
+        handler.setMaxDx(PixelUtil.toPixelFromDIP(config.getDouble(KEY_TAP_MAX_DELTA_X)));
+      }
+      if (config.hasKey(KEY_TAP_MAX_DELTA_Y)) {
+        handler.setMaxDy(PixelUtil.toPixelFromDIP(config.getDouble(KEY_TAP_MAX_DELTA_Y)));
+      }
+      if (config.hasKey(KEY_TAP_MAX_DIST)) {
+        handler.setMaxDist(PixelUtil.toPixelFromDIP(config.getDouble(KEY_TAP_MAX_DIST)));
+      }
+      if (config.hasKey(KEY_TAP_MIN_POINTERS)) {
+        handler.setMinNumberOfPointers(config.getInt(KEY_TAP_MIN_POINTERS));
+      }
     }
 
     @Override
     public void extractEventData(TapGestureHandler handler, WritableMap eventData) {
+      super.extractEventData(handler, eventData);
       eventData.putDouble("x", PixelUtil.toDIPFromPixel(handler.getLastRelativePositionX()));
       eventData.putDouble("y", PixelUtil.toDIPFromPixel(handler.getLastRelativePositionY()));
       eventData.putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.getLastAbsolutePositionX()));
@@ -280,6 +301,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
     @Override
     public void extractEventData(PanGestureHandler handler, WritableMap eventData) {
+      super.extractEventData(handler, eventData);
       eventData.putDouble("x", PixelUtil.toDIPFromPixel(handler.getLastRelativePositionX()));
       eventData.putDouble("y", PixelUtil.toDIPFromPixel(handler.getLastRelativePositionY()));
       eventData.putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.getLastAbsolutePositionX()));
@@ -309,10 +331,39 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
     @Override
     public void extractEventData(PinchGestureHandler handler, WritableMap eventData) {
+      super.extractEventData(handler, eventData);
       eventData.putDouble("scale", handler.getScale());
       eventData.putDouble("focalX", PixelUtil.toDIPFromPixel(handler.getFocalPointX()));
       eventData.putDouble("focalY", PixelUtil.toDIPFromPixel(handler.getFocalPointY()));
       eventData.putDouble("velocity", handler.getVelocity());
+    }
+  }
+
+  private static class FlingGestureHandlerFactory extends HandlerFactory<FlingGestureHandler> {
+    @Override
+    public Class<FlingGestureHandler> getType() {
+      return FlingGestureHandler.class;
+    }
+
+    @Override
+    public String getName() {
+      return "FlingGestureHandler";
+    }
+
+    @Override
+    public FlingGestureHandler create(Context context) {
+      return new FlingGestureHandler();
+    }
+
+    @Override
+    public void configure(FlingGestureHandler handler, ReadableMap config) {
+      super.configure(handler, config);
+      if (config.hasKey(KEY_NUMBER_OF_POINTERS)) {
+        handler.setNumberOfPointersRequired(config.getInt(KEY_NUMBER_OF_POINTERS));
+      }
+      if (config.hasKey(KEY_DIRECTION)) {
+        handler.setDirection(config.getInt(KEY_DIRECTION));
+      }
     }
   }
 
@@ -334,6 +385,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
     @Override
     public void extractEventData(RotationGestureHandler handler, WritableMap eventData) {
+      super.extractEventData(handler, eventData);
       eventData.putDouble("rotation", handler.getRotation());
       eventData.putDouble("anchorX", PixelUtil.toDIPFromPixel(handler.getAnchorX()));
       eventData.putDouble("anchorY", PixelUtil.toDIPFromPixel(handler.getAnchorY()));
@@ -359,7 +411,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
           new LongPressGestureHandlerFactory(),
           new PanGestureHandlerFactory(),
           new PinchGestureHandlerFactory(),
-          new RotationGestureHandlerFactory()
+          new RotationGestureHandlerFactory(),
+          new FlingGestureHandlerFactory()
   };
   private final RNGestureHandlerRegistry mRegistry = new RNGestureHandlerRegistry();
 
@@ -450,6 +503,11 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
             "CANCELLED", GestureHandler.STATE_CANCELLED,
             "FAILED", GestureHandler.STATE_FAILED,
             "END", GestureHandler.STATE_END
+    ), "Direction", MapBuilder.of(
+            "RIGHT", GestureHandler.DIRECTION_RIGHT,
+            "LEFT", GestureHandler.DIRECTION_LEFT,
+            "UP", GestureHandler.DIRECTION_UP,
+            "DOWN", GestureHandler.DIRECTION_DOWN
     ));
   }
 

@@ -47,55 +47,6 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
    * because each finger when treated separately will travel some distance, whereas the average
    * position of all the fingers will remain still while doing a rotation gesture.
    */
-  private static float getLastPointerX(MotionEvent event, boolean averageTouches) {
-    float offset = event.getRawX() - event.getX();
-    int excludeIndex = event.getActionMasked() == MotionEvent.ACTION_POINTER_UP ?
-            event.getActionIndex() : -1;
-
-    if (averageTouches) {
-      float sum = 0f;
-      int count = 0;
-      for (int i = 0, size = event.getPointerCount(); i < size; i++) {
-        if (i != excludeIndex) {
-          sum += event.getX(i) + offset;
-          count++;
-        }
-      }
-      return sum / count;
-    } else {
-      int lastPointerIdx = event.getPointerCount() - 1;
-      if (lastPointerIdx == excludeIndex) {
-        lastPointerIdx--;
-      }
-      return event.getX(lastPointerIdx) + offset;
-    }
-  }
-
-  private static float getLastPointerY(MotionEvent event, boolean averageTouches) {
-    float offset = event.getRawY() - event.getY();
-    int excludeIndex = event.getActionMasked() == MotionEvent.ACTION_POINTER_UP ?
-            event.getActionIndex() : -1;
-
-    if (averageTouches) {
-      float sum = 0f;
-      int count = 0;
-      for (int i = 0, size = event.getPointerCount(); i < size; i++) {
-        if (i != excludeIndex) {
-          sum += event.getY(i) + offset;
-          count++;
-        }
-      }
-      return sum / count;
-    } else {
-      int lastPointerIdx = event.getPointerCount() - 1;
-      if (lastPointerIdx == excludeIndex) {
-        lastPointerIdx -= 1;
-      }
-      return event.getY(lastPointerIdx) + offset;
-    }
-  }
-
-
   public PanGestureHandler(Context context) {
     ViewConfiguration vc = ViewConfiguration.get(context);
     int touchSlop = vc.getScaledTouchSlop();
@@ -239,15 +190,15 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
       mOffsetY += mLastY - mStartY;
 
       // reset starting point
-      mLastX = getLastPointerX(event, mAverageTouches);
-      mLastY = getLastPointerY(event, mAverageTouches);
+      mLastX = GestureUtils.getLastPointerX(event, mAverageTouches);
+      mLastY = GestureUtils.getLastPointerY(event, mAverageTouches);
       mLastEventOffsetX = event.getRawX() - event.getX();
       mLastEventOffsetY = event.getRawY() - event.getY();
       mStartX = mLastX;
       mStartY = mLastY;
     } else {
-      mLastX = getLastPointerX(event, mAverageTouches);
-      mLastY = getLastPointerY(event, mAverageTouches);
+      mLastX = GestureUtils.getLastPointerX(event, mAverageTouches);
+      mLastY = GestureUtils.getLastPointerY(event, mAverageTouches);
       mLastEventOffsetX = event.getRawX() - event.getX();
       mLastEventOffsetY = event.getRawY() - event.getY();
     }
