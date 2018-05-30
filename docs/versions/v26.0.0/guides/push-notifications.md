@@ -216,13 +216,6 @@ type PushMessage = {
   body?: string,
 
   /**
-   * A sound to play when the recipient receives this notification. Specify
-   * "default" to play the device's default notification sound, or omit this
-   * field to play no sound.
-   */
-  sound?: 'default' | null,
-
-  /**
    * Time to Live: the number of seconds for which the message may be kept
    * around for redelivery if it hasn't been delivered yet. Defaults to 0.
    *
@@ -261,10 +254,36 @@ type PushMessage = {
   // iOS-specific fields
 
   /**
+   * A sound to play when the recipient receives this notification. Specify
+   * "default" to play the device's default notification sound, or omit this
+   * field to play no sound.
+   *
+   * Note that on apps that target Android 8.0+ (if using `exp build`, built
+   * in June 2018 or later), this setting will have no effect on Android.
+   * Instead, use `channelId` and a channel with the desired setting.
+   */
+  sound?: 'default' | null,
+
+  /**
    * Number to display in the badge on the app icon. Specify zero to clear the
    * badge.
    */
   badge?: number,
+
+  // Android-specific fields
+
+  /**
+   * ID of the Notification Channel through which to display this notification
+   * on Android devices. If an ID is specified but the corresponding channel
+   * does not exist on the device (i.e. has not yet been created by your app),
+   * the notification will not be displayed to the user.
+   *
+   * If left null, a "Default" channel will be used, and Expo will create the
+   * channel on the device if it does not yet exist. However, use caution, as
+   * the "Default" channel is user-facing and you may not be able to fully
+   * delete it.
+   */
+  channelId?: string
 }
 ```
 
