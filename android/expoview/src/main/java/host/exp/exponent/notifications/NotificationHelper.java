@@ -1,11 +1,14 @@
 package host.exp.exponent.notifications;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
@@ -20,12 +23,14 @@ import expolib_v1.okhttp3.Request;
 import expolib_v1.okhttp3.RequestBody;
 import expolib_v1.okhttp3.Response;
 import host.exp.exponent.Constants;
+import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.AsyncCondition;
 import host.exp.exponent.utils.JSONUtils;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -45,6 +50,8 @@ import host.exp.exponent.utils.ColorParser;
 import host.exp.expoview.R;
 
 public class NotificationHelper {
+
+  private static String TAG = NotificationHelper.class.getSimpleName();
 
   public interface Listener {
     void onSuccess(int id);
@@ -164,22 +171,276 @@ public class NotificationHelper {
     });
   }
 
+  public static void createChannel(
+      Context context,
+      String experienceId,
+      String channelId,
+      String channelName,
+      HashMap details) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      String description = null;
+      String importance = null;
+      Boolean sound = null;
+      Object vibrate = null;
+      Boolean badge = null;
+
+      if (details.containsKey(NotificationConstants.NOTIFICATION_CHANNEL_PRIORITY)) {
+        importance = (String) details.get(NotificationConstants.NOTIFICATION_CHANNEL_PRIORITY);
+      }
+      if (details.containsKey(NotificationConstants.NOTIFICATION_CHANNEL_SOUND)) {
+        sound = (Boolean) details.get(NotificationConstants.NOTIFICATION_CHANNEL_SOUND);
+      }
+      if (details.containsKey(NotificationConstants.NOTIFICATION_CHANNEL_VIBRATE)) {
+        vibrate = details.get(NotificationConstants.NOTIFICATION_CHANNEL_VIBRATE);
+      }
+      if (details.containsKey(NotificationConstants.NOTIFICATION_CHANNEL_DESCRIPTION)) {
+        description = (String) details.get(NotificationConstants.NOTIFICATION_CHANNEL_DESCRIPTION);
+      }
+      if (details.containsKey(NotificationConstants.NOTIFICATION_CHANNEL_BADGE)) {
+        badge = (Boolean) details.get(NotificationConstants.NOTIFICATION_CHANNEL_BADGE);
+      }
+
+      createChannel(
+          context,
+          experienceId,
+          channelId,
+          channelName,
+          description,
+          importance,
+          sound,
+          vibrate,
+          badge
+      );
+    } else {
+      // since channels do not exist on Android 7.1 and below, we'll save the settings in shared
+      // preferences and apply them to individual notifications that have this channelId from now on
+      // this is essentially a "polyfill" of notification channels for Android 7.1 and below
+      // and means that devs don't have to worry about supporting both versions of Android at once
+      new ExponentNotificationManager(context).saveChannelSettings(experienceId, channelId, details);
+    }
+  }
+
+  public static void createChannel(
+      Context context,
+      String experienceId,
+      String channelId,
+      JSONObject details) {
+    try {
+      // we want to throw immediately if there is no channel name
+      String channelName = details.getString(NotificationConstants.NOTIFICATION_CHANNEL_NAME);
+      String description = null;
+      String priority = null;
+      Boolean sound = null;
+      Boolean badge = null;
+
+      if (!details.isNull(NotificationConstants.NOTIFICATION_CHANNEL_DESCRIPTION)) {
+        description = details.optString(NotificationConstants.NOTIFICATION_CHANNEL_DESCRIPTION);
+      }
+      if (!details.isNull(NotificationConstants.NOTIFICATION_CHANNEL_PRIORITY)) {
+        priority = details.optString(NotificationConstants.NOTIFICATION_CHANNEL_PRIORITY);
+      }
+      if (!details.isNull(NotificationConstants.NOTIFICATION_CHANNEL_SOUND)) {
+        sound = details.optBoolean(NotificationConstants.NOTIFICATION_CHANNEL_SOUND);
+      }
+      if (!details.isNull(NotificationConstants.NOTIFICATION_CHANNEL_BADGE)) {
+        badge = details.optBoolean(NotificationConstants.NOTIFICATION_CHANNEL_BADGE, true);
+      }
+
+      Object vibrate;
+      JSONArray jsonArray = details.optJSONArray(NotificationConstants.NOTIFICATION_CHANNEL_VIBRATE);
+      if (jsonArray != null) {
+        ArrayList<Double> vibrateArrayList = new ArrayList<>();
+        for (int i = 0; i < jsonArray.length(); i++) {
+          vibrateArrayList.add(jsonArray.getDouble(i));
+        }
+        vibrate = vibrateArrayList;
+      } else {
+        vibrate = details.optBoolean(NotificationConstants.NOTIFICATION_CHANNEL_VIBRATE, false);
+      }
+
+      createChannel(
+          context,
+          experienceId,
+          channelId,
+          channelName,
+          description,
+          priority,
+          sound,
+          vibrate,
+          badge
+      );
+    } catch (Exception e) {
+      EXL.e(TAG,"Could not create channel from stored JSON Object: " + e.getMessage());
+    }
+  }
+
+  private static void createChannel(
+      Context context,
+      String experienceId,
+      String channelId,
+      String channelName,
+      String description,
+      String importanceString,
+      Boolean sound,
+      Object vibrate,
+      Boolean badge) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      int importance = NotificationManager.IMPORTANCE_DEFAULT;
+
+      if (importanceString != null) {
+        switch (importanceString) {
+          case NotificationConstants.NOTIFICATION_CHANNEL_PRIORITY_MAX:
+            importance = NotificationManager.IMPORTANCE_MAX;
+            break;
+          case NotificationConstants.NOTIFICATION_CHANNEL_PRIORITY_HIGH:
+            importance = NotificationManager.IMPORTANCE_HIGH;
+            break;
+          case NotificationConstants.NOTIFICATION_CHANNEL_PRIORITY_LOW:
+            importance = NotificationManager.IMPORTANCE_LOW;
+            break;
+          case NotificationConstants.NOTIFICATION_CHANNEL_PRIORITY_MIN:
+            importance = NotificationManager.IMPORTANCE_MIN;
+            break;
+          default:
+            importance = NotificationManager.IMPORTANCE_DEFAULT;
+        }
+      }
+
+      NotificationChannel channel = new NotificationChannel(ExponentNotificationManager.getScopedChannelId(experienceId, channelId), channelName, importance);
+
+      // sound is now on by default for channels
+      if (sound == null || !sound) {
+        channel.setSound(null, null);
+      }
+
+      if (vibrate != null) {
+        if (vibrate instanceof ArrayList) {
+          ArrayList vibrateArrayList = (ArrayList) vibrate;
+          long[] pattern = new long[vibrateArrayList.size()];
+          for (int i = 0; i < vibrateArrayList.size(); i++) {
+            pattern[i] = ((Double) vibrateArrayList.get(i)).intValue();
+          }
+          channel.setVibrationPattern(pattern);
+        } else if (vibrate instanceof Boolean && (Boolean) vibrate) {
+          channel.setVibrationPattern(new long[] { 0, 500 });
+        }
+      }
+
+      if (description != null) {
+        channel.setDescription(description);
+      }
+
+      if (badge != null) {
+        channel.setShowBadge(badge);
+      }
+
+      new ExponentNotificationManager(context).createNotificationChannel(experienceId, channel);
+    }
+  }
+
+  public static void maybeCreateLegacyStoredChannel(Context context, String experienceId, String channelId, HashMap details) {
+    // no version check here because if we're on Android 7.1 or below, we still want to save
+    // the channel in shared preferences
+    NotificationChannel existingChannel = new ExponentNotificationManager(context).getNotificationChannel(experienceId, channelId);
+    if (existingChannel == null && details.containsKey(NotificationConstants.NOTIFICATION_CHANNEL_NAME)) {
+      createChannel(context, experienceId, channelId, (String) details.get(NotificationConstants.NOTIFICATION_CHANNEL_NAME), details);
+    }
+  }
+
+  public static void deleteChannel(Context context, String experienceId, String channelId) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      new ExponentNotificationManager(context).deleteNotificationChannel(experienceId, channelId);
+    } else {
+      // deleting a channel on O+ still retains all its settings, so doing nothing here emulates that
+    }
+  }
+
   public static void showNotification(
       final Context context,
       final int id,
       final HashMap details,
       final ExponentManifest exponentManifest,
       final Listener listener) {
-    final NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+    final ExponentNotificationManager manager = new ExponentNotificationManager(context);
+    final String experienceId = (String) details.get("experienceId");
+    final NotificationCompat.Builder builder = new NotificationCompat.Builder(
+        context,
+        ExponentNotificationManager.getScopedChannelId(experienceId, NotificationConstants.NOTIFICATION_DEFAULT_CHANNEL_ID));
 
     builder.setSmallIcon(Constants.isShellApp() ? R.drawable.shell_notification_icon : R.drawable.notification_icon);
     builder.setAutoCancel(true);
 
-    final String experienceId = (String) details.get("experienceId");
     final HashMap data = (HashMap) details.get("data");
 
-    if (data.containsKey("sound") && (Boolean) data.get("sound")) {
-      builder.setDefaults(NotificationCompat.DEFAULT_SOUND);
+    if (data.containsKey("channelId")) {
+      String channelId = (String) data.get("channelId");
+      builder.setChannelId(ExponentNotificationManager.getScopedChannelId(experienceId, channelId));
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        // if we don't yet have a channel matching this ID, check shared preferences --
+        // it's possible this device has just been upgraded to Android 8+ and the channel
+        // needs to be created in the system
+        if (manager.getNotificationChannel(experienceId, channelId) == null) {
+          JSONObject storedChannelDetails = manager.readChannelSettings(experienceId, channelId);
+          if (storedChannelDetails != null) {
+            createChannel(context, experienceId, channelId, storedChannelDetails);
+          }
+        }
+      } else {
+        // on Android 7.1 and below, read channel settings for sound, priority, and vibrate from shared preferences
+        // and apply these settings to the notification individually, since channels do not exist
+        JSONObject storedChannelDetails = manager.readChannelSettings(experienceId, channelId);
+        if (storedChannelDetails != null) {
+          if (storedChannelDetails.optBoolean(NotificationConstants.NOTIFICATION_CHANNEL_SOUND, false)) {
+            builder.setDefaults(NotificationCompat.DEFAULT_SOUND);
+          }
+
+          String priorityString = storedChannelDetails.optString(NotificationConstants.NOTIFICATION_CHANNEL_PRIORITY);
+          int priority;
+          switch (priorityString) {
+            case "max":
+              priority = NotificationCompat.PRIORITY_MAX;
+              break;
+            case "high":
+              priority = NotificationCompat.PRIORITY_HIGH;
+              break;
+            case "low":
+              priority = NotificationCompat.PRIORITY_LOW;
+              break;
+            case "min":
+              priority = NotificationCompat.PRIORITY_MIN;
+              break;
+            default:
+              priority = NotificationCompat.PRIORITY_DEFAULT;
+          }
+          builder.setPriority(priority);
+
+          try {
+            JSONArray vibrateJsonArray = storedChannelDetails.optJSONArray(NotificationConstants.NOTIFICATION_CHANNEL_VIBRATE);
+            if (vibrateJsonArray != null) {
+              long[] pattern = new long[vibrateJsonArray.length()];
+              for (int i = 0; i < vibrateJsonArray.length(); i++) {
+                pattern[i] = ((Double) vibrateJsonArray.getDouble(i)).intValue();
+              }
+              builder.setVibrate(pattern);
+            } else if (storedChannelDetails.optBoolean(NotificationConstants.NOTIFICATION_CHANNEL_VIBRATE, false)) {
+              builder.setVibrate(new long[] { 0, 500 });
+            }
+          } catch (Exception e) {
+            EXL.e(TAG, "Failed to set vibrate settings on notification from stored channel: " + e.getMessage());
+          }
+        } else {
+          EXL.e(TAG, "No stored channel found for " + experienceId + ": " + channelId);
+        }
+      }
+    } else {
+      // make a default channel so that people don't have to explicitly create a channel to see notifications
+      createChannel(
+          context,
+          experienceId,
+          NotificationConstants.NOTIFICATION_DEFAULT_CHANNEL_ID,
+          context.getString(R.string.default_notification_channel_group),
+          new HashMap());
     }
 
     if (data.containsKey("title")) {
@@ -200,43 +461,6 @@ public class NotificationHelper {
 
     if (data.containsKey("sticky")) {
       builder.setOngoing((Boolean) data.get("sticky"));
-    }
-
-    if (data.containsKey("priority")) {
-      int priority;
-
-      switch ((String) data.get("priority")) {
-        case "max":
-          priority = NotificationCompat.PRIORITY_MAX;
-          break;
-        case "high":
-          priority = NotificationCompat.PRIORITY_HIGH;
-          break;
-        case "low":
-          priority = NotificationCompat.PRIORITY_LOW;
-          break;
-        case "min":
-          priority = NotificationCompat.PRIORITY_MIN;
-          break;
-        default:
-          priority = NotificationCompat.PRIORITY_DEFAULT;
-      }
-
-      builder.setPriority(priority);
-    }
-
-    if (data.containsKey("vibrate")) {
-      Object vibrate = data.get("vibrate");
-      if (vibrate instanceof ArrayList) {
-        ArrayList vibrateArrayList = (ArrayList) data.get("vibrate");
-        long[] pattern = new long[vibrateArrayList.size()];
-        for (int i = 0; i < vibrateArrayList.size(); i++) {
-          pattern[i] = ((Double) vibrateArrayList.get(i)).intValue();
-        }
-        builder.setVibrate(pattern);
-      } else if (vibrate instanceof Boolean) {
-        builder.setVibrate(new long[] { 0, 500 });
-      }
     }
 
     ExponentDB.experienceIdToExperience(experienceId, new ExponentDB.ExperienceResultListener() {
@@ -282,7 +506,6 @@ public class NotificationHelper {
                   if (data.containsKey("icon")) {
                     builder.setLargeIcon(bitmap);
                   }
-                  ExponentNotificationManager manager = new ExponentNotificationManager(context);
                   manager.notify(experienceId, id, builder.build());
                   EventBus.getDefault().post(notificationEvent);
                   listener.onSuccess(id);

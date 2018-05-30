@@ -136,12 +136,12 @@ task packageExponentNdkLibs(dependsOn: buildExponentNdkLib, type: Copy) {
 
 
 android {
-  compileSdkVersion 26
-  buildToolsVersion "26.0.1"
+  compileSdkVersion 27
+  buildToolsVersion "27.0.3"
 
   defaultConfig {
     minSdkVersion 19
-    targetSdkVersion 25
+    targetSdkVersion 26
     versionCode 1
     versionName "1.0"
     ndk {
@@ -205,7 +205,7 @@ dependencies {
 
   // React native dependencies
   // We use a different version of appcompat
-  compile 'com.android.support:recyclerview-v7:26.0.1'
+  compile 'com.android.support:recyclerview-v7:27.1.1'
   compile 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.0.0'
   compile 'com.facebook.fresco:fresco:1.0.1'
   compile 'com.facebook.fresco:animated-gif:1.0.1'
@@ -224,9 +224,9 @@ dependencies {
   compile 'org.webkit:android-jsc:r174650'
 
   // Our dependencies
-  compile 'com.android.support:appcompat-v7:26.0.1'
-  compile 'com.android.support:customtabs:26.0.1'
-  compile 'com.android.support:cardview-v7:26.0.1'
+  compile 'com.android.support:appcompat-v7:27.1.1'
+  compile 'com.android.support:customtabs:27.1.1'
+  compile 'com.android.support:cardview-v7:27.1.1'
   compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
     transitive = true;
   }
@@ -238,15 +238,15 @@ dependencies {
   compile 'de.greenrobot:eventbus:2.4.0'
   compile 'com.amplitude:android-sdk:2.9.2' // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
   compile 'com.squareup.picasso:picasso:2.5.2'
-  compile 'com.google.android.gms:play-services-gcm:9.8.0'
-  compile 'com.google.android.gms:play-services-analytics:9.8.0'
-  compile 'com.google.android.gms:play-services-maps:9.8.0'
-  compile 'com.google.android.gms:play-services-auth:9.8.0'
-  compile 'com.google.android.gms:play-services-location:9.8.0'
-  compile 'com.google.android.gms:play-services-ads:9.8.0'
-  compile 'com.google.android.gms:play-services-fitness:9.8.0'
-  compile 'com.google.android.gms:play-services-vision:9.8.0'
-  compile 'com.google.android.gms:play-services-wallet:9.8.0' //may need 10.+
+  compile 'com.google.android.gms:play-services-gcm:12.0.1'
+  compile 'com.google.android.gms:play-services-analytics:12.0.1'
+  compile 'com.google.android.gms:play-services-maps:12.0.1'
+  compile 'com.google.android.gms:play-services-auth:12.0.1'
+  compile 'com.google.android.gms:play-services-location:12.0.1'
+  compile 'com.google.android.gms:play-services-ads:12.0.1'
+  compile 'com.google.android.gms:play-services-fitness:12.0.1'
+  compile 'com.google.android.gms:play-services-vision:12.0.1'
+  compile 'com.google.android.gms:play-services-wallet:12.0.1' //may need 10.+
   compile 'com.stripe:stripe-android:2.1.+'
   compile 'com.github.thefuntasty:CreditCardEntry:1.4.8.4'
   apt 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
@@ -277,10 +277,10 @@ dependencies {
   compile('io.nlopez.smartlocation:library:3.2.11') {
     transitive = false
   }
-  compile 'com.android.support:exifinterface:26.0.1'
+  compile 'com.android.support:exifinterface:27.1.1'
   compile 'com.google.android:cameraview:1.0.0'
-  compile 'com.google.firebase:firebase-core:9.8.0'
-  compile 'com.google.firebase:firebase-messaging:9.8.0'
+  compile 'com.google.firebase:firebase-core:12.0.1'
+  compile 'com.google.firebase:firebase-messaging:12.0.1'
   compile 'com.google.maps.android:android-maps-utils:0.5+'
   compile 'com.jakewharton:butterknife:8.8.1'
   apt 'com.jakewharton:butterknife-compiler:8.8.1'

@@ -8,4 +8,7 @@
   <string name="error_unable_to_load_experience">Unable to load Experience.</string>
   <string name="error_uncaught">Uncaught Error: %s</string>
   <string name="view_error_log">View error log</string>
+  <string name="default_notification_channel_group">Default</string>
+  <string name="persistent_notification_channel_name">Experience notifications</string>
+  <string name="persistent_notification_channel_desc">Persistent notifications that provide debug info about open experiences</string>
 </resources>

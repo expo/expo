@@ -4,26 +4,17 @@ package host.exp.exponent;
 
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Debug;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 
-import com.facebook.soloader.SoLoader;
-
 import javax.inject.Inject;
 
-import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.kernel.Kernel;
-import host.exp.exponent.kernel.KernelConstants;
-import host.exp.expoview.BuildConfig;
 
 // This activity is transparent. It uses android:style/Theme.Translucent.NoTitleBar.
 // Calls finish() once it is done processing Intent.

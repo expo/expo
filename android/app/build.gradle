@@ -16,12 +16,12 @@ repositories {
 }
 
 android {
-  compileSdkVersion 26
-  buildToolsVersion '26.0.1'
+  compileSdkVersion 27
+  buildToolsVersion '27.0.3'
 
   defaultConfig {
     applicationId 'host.exp.exponent'
-    targetSdkVersion 25
+    targetSdkVersion 26
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
     versionCode 84
@@ -103,11 +103,11 @@ dependencies {
   compile 'com.android.support:multidex:1.0.1'
 
   // Our dependencies
-  compile 'com.android.support:appcompat-v7:26.0.1'
+  compile 'com.android.support:appcompat-v7:27.1.1'
 
   // Our dependencies from ExpoView
   // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.
-  compile 'com.android.support:appcompat-v7:26.0.1'
+  compile 'com.android.support:appcompat-v7:27.1.1'
   compile 'com.facebook.android:facebook-android-sdk:4.7.0'
   compile('com.facebook.android:audience-network-sdk:4.22.1') {
     exclude module: 'play-services-ads'
@@ -117,12 +117,12 @@ dependencies {
   compile 'de.greenrobot:eventbus:2.4.0'
   compile 'com.amplitude:android-sdk:2.9.2' // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
   compile 'com.squareup.picasso:picasso:2.5.2'
-  compile 'com.google.android.gms:play-services-gcm:9.8.0'
-  compile 'com.google.android.gms:play-services-analytics:9.8.0'
-  compile 'com.google.android.gms:play-services-maps:9.8.0'
-  compile 'com.google.android.gms:play-services-auth:9.8.0'
-  compile 'com.google.android.gms:play-services-location:9.8.0'
-  compile 'com.google.android.gms:play-services-ads:9.8.0'
+  compile 'com.google.android.gms:play-services-gcm:12.0.1'
+  compile 'com.google.android.gms:play-services-analytics:12.0.1'
+  compile 'com.google.android.gms:play-services-maps:12.0.1'
+  compile 'com.google.android.gms:play-services-auth:12.0.1'
+  compile 'com.google.android.gms:play-services-location:12.0.1'
+  compile 'com.google.android.gms:play-services-ads:12.0.1'
   apt 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
   compile "com.raizlabs.android:DBFlow-Core:2.2.1"
   compile "com.raizlabs.android:DBFlow:2.2.1"
@@ -148,7 +148,7 @@ dependencies {
   compile('io.nlopez.smartlocation:library:3.2.11') {
     transitive = false
   }
-  compile 'com.android.support:exifinterface:26.0.1'
+  compile 'com.android.support:exifinterface:27.1.1'
   compile 'com.squareup.okhttp3:okhttp:3.4.1'
   compile 'com.squareup.okhttp3:okhttp-urlconnection:3.4.1'
   compile 'com.squareup.okhttp3:okhttp-ws:3.4.1'
@@ -158,7 +158,7 @@ dependencies {
   androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.1'
   // We use a modified build of com.android.support.test:runner:1.0.1. Explanation in maven-test/README
   androidTestCompile 'com.android.support.test:runner:1.0.1'
-  androidTestCompile 'com.android.support:support-annotations:26.0.1'
+  androidTestCompile 'com.android.support:support-annotations:27.1.1'
   androidTestCompile 'com.google.code.findbugs:jsr305:3.0.0'
   androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
   androidTestCompile 'com.azimolabs.conditionwatcher:conditionwatcher:0.2'
