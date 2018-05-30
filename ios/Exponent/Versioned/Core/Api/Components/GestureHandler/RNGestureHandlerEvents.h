@@ -12,7 +12,8 @@
 - (instancetype)initWithData:(NSDictionary *)data;
 
 + (RNGestureHandlerEventExtraData *)forPosition:(CGPoint)position
-                           withAbsolutePosition:(CGPoint)absolutePosition;
+                           withAbsolutePosition:(CGPoint)absolutePosition
+                            withNumberOfTouches:(NSUInteger)numberOfTouches;
 + (RNGestureHandlerEventExtraData *)forPan:(CGPoint)position
                       withAbsolutePosition:(CGPoint)absolutePosition
                            withTranslation:(CGPoint)translation
@@ -21,13 +22,12 @@
 + (RNGestureHandlerEventExtraData *)forPinch:(CGFloat)scale
                               withFocalPoint:(CGPoint)focalPoint
                                 withVelocity:(CGFloat)velocity
-                            withNumberOfTouches:(NSUInteger)numberOfTouches;
+                         withNumberOfTouches:(NSUInteger)numberOfTouches;
 + (RNGestureHandlerEventExtraData *)forRotation:(CGFloat)rotation
                                 withAnchorPoint:(CGPoint)anchorPoint
                                    withVelocity:(CGFloat)velocity
                             withNumberOfTouches:(NSUInteger)numberOfTouches;
 + (RNGestureHandlerEventExtraData *)forPointerInside:(BOOL)pointerInside;
-
 @end
 
 @interface RNGestureHandlerEvent : NSObject <RCTEvent>

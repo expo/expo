@@ -82,6 +82,7 @@ import versioned.host.exp.exponent.modules.api.fbads.NativeAdViewManager;
 import versioned.host.exp.exponent.modules.api.gl.GLObjectManagerModule;
 import versioned.host.exp.exponent.modules.api.gl.GLViewManager;
 import versioned.host.exp.exponent.modules.api.IntentLauncherModule;
+import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedModule;
 import versioned.host.exp.exponent.modules.api.SecureStoreModule;
 import versioned.host.exp.exponent.modules.api.sensors.MagnetometerModule;
 import versioned.host.exp.exponent.modules.api.sensors.MagnetometerUncalibratedModule;
@@ -198,6 +199,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new MediaLibraryModule(reactContext, experienceId));
         nativeModules.add(new PrintModule(reactContext, scopedContext));
         nativeModules.add(new LocalizationModule(reactContext));
+        nativeModules.add(new ReanimatedModule(reactContext));
       } catch (JSONException | UnsupportedEncodingException e) {
         EXL.e(TAG, e.toString());
       }
