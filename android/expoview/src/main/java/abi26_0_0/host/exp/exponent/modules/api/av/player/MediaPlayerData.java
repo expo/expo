@@ -17,6 +17,7 @@ import abi26_0_0.com.facebook.react.modules.network.NetworkingModule;
 import java.net.HttpCookie;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -400,13 +401,16 @@ class MediaPlayerData extends PlayerData implements
 
   private List<HttpCookie> getHttpCookiesList() {
     HttpUrl url = HttpUrl.get(URI.create(mUri.toString()));
-    List<Cookie> cookieList = mReactContext.getNativeModule(NetworkingModule.class).mCookieJarContainer.loadForRequest(url);
-    List<HttpCookie> httpCookieList = new ArrayList<>(cookieList.size());
-    for(Cookie cookie : cookieList) {
-      if (cookie.matches(url)) {
-        httpCookieList.add(new HttpCookie(cookie.name(), cookie.value()));
+    if (url != null) {
+      List<Cookie> cookieList = mReactContext.getNativeModule(NetworkingModule.class).mCookieJarContainer.loadForRequest(url);
+      List<HttpCookie> httpCookieList = new ArrayList<>(cookieList.size());
+      for(Cookie cookie : cookieList) {
+        if (cookie.matches(url)) {
+          httpCookieList.add(new HttpCookie(cookie.name(), cookie.value()));
+        }
       }
+      return httpCookieList;
     }
-    return httpCookieList;
+    return Collections.emptyList();
   }
 }
