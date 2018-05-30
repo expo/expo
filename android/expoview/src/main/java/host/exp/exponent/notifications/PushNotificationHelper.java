@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 
@@ -14,6 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.Random;
 
 import javax.inject.Inject;
@@ -59,13 +61,13 @@ public class PushNotificationHelper {
     NativeModuleDepsProvider.getInstance().inject(PushNotificationHelper.class, this);
   }
 
-  public void onMessageReceived(final Context context, final String experienceId, final String message, final String body, final String title) {
+  public void onMessageReceived(final Context context, final String experienceId, final String channelId, final String message, final String body, final String title) {
     ExponentDB.experienceIdToExperience(experienceId, new ExponentDB.ExperienceResultListener() {
       @Override
       public void onSuccess(ExperienceDBObject experience) {
         try {
           JSONObject manifest = new JSONObject(experience.manifest);
-          sendNotification(context, message, experienceId, experience.manifestUrl, manifest, body, title);
+          sendNotification(context, message, experienceId, channelId, experience.manifestUrl, manifest, body, title);
         } catch (JSONException e) {
           EXL.e(TAG, "Couldn't deserialize JSON for experience id " + experienceId);
         }
@@ -79,14 +81,15 @@ public class PushNotificationHelper {
   }
 
 
-  private void sendNotification(final Context context, final String message, final String experienceId, final String manifestUrl,
-                                final JSONObject manifest, final String body, final String title) {
+  private void sendNotification(final Context context, final String message, final String experienceId, final String channelId,
+                                final String manifestUrl, final JSONObject manifest, final String body, final String title) {
     final String name = manifest.optString(ExponentManifest.MANIFEST_NAME_KEY);
     if (name == null) {
       EXL.e(TAG, "No name found for experience id " + experienceId);
       return;
     }
 
+    final ExponentNotificationManager manager = new ExponentNotificationManager(context);
     final JSONObject notificationPreferences = manifest.optJSONObject(ExponentManifest.MANIFEST_NOTIFICATION_INFO_KEY);
 
     NotificationHelper.loadIcon(null, manifest, mExponentManifest, new ExponentManifest.BitmapListener() {
@@ -118,6 +121,42 @@ public class PushNotificationHelper {
           }
         }
 
+        String scopedChannelId;
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        if (channelId != null) {
+          scopedChannelId = ExponentNotificationManager.getScopedChannelId(experienceId, channelId);
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // if we don't yet have a channel matching this ID, check shared preferences --
+            // it's possible this device has just been upgraded to Android 8+ and the channel
+            // needs to be created in the system
+            if (manager.getNotificationChannel(experienceId, channelId) == null) {
+              JSONObject storedChannelDetails = manager.readChannelSettings(experienceId, channelId);
+              if (storedChannelDetails != null) {
+                NotificationHelper.createChannel(context, experienceId, channelId, storedChannelDetails);
+              }
+            }
+          } else {
+            // on Android 7.1 and below, read channel settings for sound from shared preferences
+            // and apply this to the notification individually, since channels do not exist
+            JSONObject storedChannelDetails = manager.readChannelSettings(experienceId, channelId);
+            if (storedChannelDetails != null) {
+              // Default to `sound: true` if nothing is stored for this channel
+              // to match old behavior of push notifications on Android 7.1 and below (always had sound)
+              if (!storedChannelDetails.optBoolean(NotificationConstants.NOTIFICATION_CHANNEL_SOUND, true)) {
+                defaultSoundUri = null;
+              }
+            }
+          }
+        } else {
+          scopedChannelId = ExponentNotificationManager.getScopedChannelId(experienceId, NotificationConstants.NOTIFICATION_DEFAULT_CHANNEL_ID);
+          NotificationHelper.createChannel(
+              context,
+              experienceId,
+              NotificationConstants.NOTIFICATION_DEFAULT_CHANNEL_ID,
+              context.getString(R.string.default_notification_channel_group),
+              new HashMap());
+        }
+
         int color = NotificationHelper.getColor(null, manifest, mExponentManifest);
 
         // Create notification object
@@ -133,7 +172,6 @@ public class PushNotificationHelper {
             PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
         // Build notification
-        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder;
 
         if (isMultiple) {
@@ -153,7 +191,7 @@ public class PushNotificationHelper {
             style.addLine("and " + (unreadNotifications.length() - NotificationConstants.MAX_COLLAPSED_NOTIFICATIONS) + " more...");
           }
 
-          notificationBuilder = new NotificationCompat.Builder(context)
+          notificationBuilder = new NotificationCompat.Builder(context, scopedChannelId)
               .setSmallIcon(Constants.isShellApp() ? R.drawable.shell_notification_icon : R.drawable.notification_icon)
               .setContentTitle(collapsedTitle)
               .setColor(color)
@@ -170,7 +208,7 @@ public class PushNotificationHelper {
             contentTitle = Constants.isShellApp() ? title : name + " - " + title;
           }
 
-          notificationBuilder = new NotificationCompat.Builder(context)
+          notificationBuilder = new NotificationCompat.Builder(context, scopedChannelId)
               .setSmallIcon(Constants.isShellApp() ? R.drawable.shell_notification_icon : R.drawable.notification_icon)
               .setContentTitle(contentTitle)
               .setColor(color)
@@ -192,7 +230,6 @@ public class PushNotificationHelper {
         }
 
         // Display
-        ExponentNotificationManager manager = new ExponentNotificationManager(context);
         manager.notify(experienceId, notificationId, notification);
 
         // Send event. Will be consumed if experience is already open.

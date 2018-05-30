@@ -2,11 +2,18 @@ package host.exp.exponent.notifications;
 
 import android.app.AlarmManager;
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationChannelGroup;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v4.app.NotificationManagerCompat;
 
+import host.exp.exponent.Constants;
+import host.exp.exponent.ExponentManifest;
+import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.KernelConstants;
 import org.json.JSONArray;
@@ -16,19 +23,154 @@ import org.json.JSONObject;
 import javax.inject.Inject;
 
 import host.exp.exponent.storage.ExponentSharedPreferences;
+import host.exp.expoview.R;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ExponentNotificationManager {
 
   @Inject
   ExponentSharedPreferences mExponentSharedPreferences;
 
+  private static String TAG = ExponentNotificationManager.class.getSimpleName();
+
   private Context mContext;
+
+  private static Set<String> mNotificationChannelGroupIds = new HashSet<>();
+  private static boolean mIsExpoPersistentNotificationCreated = false;
 
   public ExponentNotificationManager(Context context) {
     mContext = context;
     NativeModuleDepsProvider.getInstance().inject(ExponentNotificationManager.class, this);
+  }
+
+  public static String getScopedChannelId(String experienceId, String channelId) {
+    if (Constants.isShellApp()) {
+      return channelId;
+    } else {
+      return experienceId + "/" + channelId;
+    }
+  }
+
+  public void maybeCreateNotificationChannelGroup(JSONObject manifest) {
+    if (Constants.isShellApp()) {
+      // currently we only support groups in the client, with one group per experience
+      return;
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      try {
+        String experienceId = manifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+        if (!mNotificationChannelGroupIds.contains(experienceId)) {
+          String channelName = manifest.optString(ExponentManifest.MANIFEST_NAME_KEY, experienceId);
+          NotificationChannelGroup group = new NotificationChannelGroup(experienceId, channelName);
+          mContext.getSystemService(NotificationManager.class).createNotificationChannelGroup(group);
+
+          mNotificationChannelGroupIds.add(experienceId);
+        }
+      } catch (Exception e) {
+        EXL.e(TAG, "Could not create notification channel: " + e.getMessage());
+      }
+    }
+  }
+
+  public void maybeCreateExpoPersistentNotificationChannel() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      if (mIsExpoPersistentNotificationCreated) {
+        return;
+      }
+
+      NotificationManager manager = mContext.getSystemService(NotificationManager.class);
+
+      NotificationChannel channel = new NotificationChannel(
+          NotificationConstants.NOTIFICATION_EXPERIENCE_CHANNEL_ID,
+          mContext.getString(R.string.persistent_notification_channel_name),
+          NotificationManager.IMPORTANCE_DEFAULT);
+      channel.setSound(null, null);
+      channel.setDescription(mContext.getString(R.string.persistent_notification_channel_desc));
+
+      if (!Constants.isShellApp()) {
+        NotificationChannelGroup group = new NotificationChannelGroup(
+            NotificationConstants.NOTIFICATION_EXPERIENCE_CHANNEL_GROUP_ID,
+            mContext.getString(R.string.persistent_notification_channel_group));
+        manager.createNotificationChannelGroup(group);
+        channel.setGroup(NotificationConstants.NOTIFICATION_EXPERIENCE_CHANNEL_GROUP_ID);
+      }
+      manager.createNotificationChannel(channel);
+
+      mIsExpoPersistentNotificationCreated = true;
+    }
+  }
+
+  public void createNotificationChannel(String experienceId, NotificationChannel channel) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      if (!Constants.isShellApp()) {
+        channel.setGroup(experienceId);
+      }
+      mContext.getSystemService(NotificationManager.class).createNotificationChannel(channel);
+    }
+  }
+
+  public void saveChannelSettings(String experienceId, String channelId, HashMap details) {
+    try {
+      JSONObject metadata = mExponentSharedPreferences.getExperienceMetadata(experienceId);
+      if (metadata == null) {
+        metadata = new JSONObject();
+      }
+
+      JSONObject allChannels;
+      if (metadata.has(ExponentSharedPreferences.EXPERIENCE_METADATA_NOTIFICATION_CHANNELS)) {
+        allChannels = metadata.getJSONObject(ExponentSharedPreferences.EXPERIENCE_METADATA_NOTIFICATION_CHANNELS);
+      } else {
+        allChannels = new JSONObject();
+      }
+
+      JSONObject channel = new JSONObject(details);
+
+      allChannels.put(channelId, channel);
+      metadata.put(ExponentSharedPreferences.EXPERIENCE_METADATA_NOTIFICATION_CHANNELS, allChannels);
+
+      mExponentSharedPreferences.updateExperienceMetadata(experienceId, metadata);
+    } catch (JSONException e) {
+      EXL.e(TAG, "Could not store channel in shared preferences: " + e.getMessage());
+    }
+  }
+
+  public JSONObject readChannelSettings(String experienceId, String channelId) {
+    try {
+      JSONObject metadata = mExponentSharedPreferences.getExperienceMetadata(experienceId);
+      if (metadata == null) {
+        metadata = new JSONObject();
+      }
+
+      JSONObject allChannels;
+      if (metadata.has(ExponentSharedPreferences.EXPERIENCE_METADATA_NOTIFICATION_CHANNELS)) {
+        allChannels = metadata.getJSONObject(ExponentSharedPreferences.EXPERIENCE_METADATA_NOTIFICATION_CHANNELS);
+      } else {
+        allChannels = new JSONObject();
+      }
+
+      return allChannels.optJSONObject(channelId);
+    } catch (JSONException e) {
+      EXL.e(TAG, "Could not read channel from shared preferences: " + e.getMessage());
+    }
+    return null;
+  }
+
+  public NotificationChannel getNotificationChannel(String experienceId, String channelId) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      return mContext.getSystemService(NotificationManager.class).getNotificationChannel(getScopedChannelId(experienceId, channelId));
+    } else {
+      return null;
+    }
+  }
+
+  public void deleteNotificationChannel(String experienceId, String channelId) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      mContext.getSystemService(NotificationManager.class).deleteNotificationChannel(getScopedChannelId(experienceId, channelId));
+    }
   }
 
   public void notify(String experienceId, int id, Notification notification) {

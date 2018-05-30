@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.View;
@@ -56,6 +57,7 @@ import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.kernel.KernelProvider;
 import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.notifications.ExponentNotificationManager;
+import host.exp.exponent.notifications.NotificationConstants;
 import host.exp.exponent.notifications.PushNotificationHelper;
 import host.exp.exponent.notifications.ReceivedNotificationEvent;
 import host.exp.exponent.storage.ExponentSharedPreferences;
@@ -98,7 +100,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   private Handler mNotificationAnimationHandler;
   private Runnable mNotificationAnimator;
   private int mNotificationAnimationFrame;
-  private Notification.Builder mNotificationBuilder;
+  private NotificationCompat.Builder mNotificationBuilder;
   private boolean mIsLoadExperienceAllowedToRun = false;
   private boolean mShouldShowLoadingScreenWithOptimisticManifest = false;
 
@@ -377,6 +379,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
     mManifestUrl = manifestUrl;
     mManifest = manifest;
+
+    new ExponentNotificationManager(this).maybeCreateNotificationChannelGroup(mManifest);
 
     Kernel.ExperienceActivityTask task = mKernel.getExperienceActivityTask(mManifestUrl);
     task.taskId = getTaskId();
@@ -702,7 +706,9 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     // Build the actual notification
     final NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
     notificationManager.cancel(NOTIFICATION_ID);
-    mNotificationBuilder = new Notification.Builder(this)
+
+    new ExponentNotificationManager(this).maybeCreateExpoPersistentNotificationChannel();
+    mNotificationBuilder = new NotificationCompat.Builder(this, NotificationConstants.NOTIFICATION_EXPERIENCE_CHANNEL_ID)
         .setContent(mNotificationRemoteViews)
         .setSmallIcon(R.drawable.notification_icon)
         .setShowWhen(false)

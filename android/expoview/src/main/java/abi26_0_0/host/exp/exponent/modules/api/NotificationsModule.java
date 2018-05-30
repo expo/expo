@@ -19,6 +19,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import host.exp.exponent.Constants;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.network.ExponentNetwork;
+import host.exp.exponent.notifications.NotificationConstants;
 import host.exp.exponent.notifications.NotificationHelper;
 import host.exp.exponent.notifications.ExponentNotificationManager;
 import org.json.JSONException;
@@ -135,16 +136,85 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void presentLocalNotification(final ReadableMap data, final Promise promise) {
+  public void createChannel(String channelId, final ReadableMap data, final Promise promise) {
+    String experienceId;
+    String channelName;
+
+    try {
+      experienceId = mManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+    } catch (Exception e) {
+      promise.reject("E_FAILED_CREATING_CHANNEL", "Requires Experience ID");
+      return;
+    }
+
+    if (data.hasKey(NotificationConstants.NOTIFICATION_CHANNEL_NAME)) {
+      channelName = data.getString(NotificationConstants.NOTIFICATION_CHANNEL_NAME);
+    } else {
+      promise.reject("E_FAILED_CREATING_CHANNEL", "Requires channel name");
+      return;
+    }
+
+    try {
+      NotificationHelper.createChannel(
+          getReactApplicationContext(),
+          experienceId,
+          channelId,
+          channelName,
+          data.toHashMap());
+      promise.resolve(null);
+    } catch (Exception e) {
+      promise.reject("E_FAILED_CREATING_CHANNEL", "Could not create channel", e);
+    }
+  }
+
+  @ReactMethod
+  public void deleteChannel(String channelId, final Promise promise) {
+    String experienceId;
+
+    try {
+      experienceId = mManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+    } catch (Exception e) {
+      promise.reject("E_FAILED_DELETING_CHANNEL", "Requires Experience ID");
+      return;
+    }
+
+    try {
+      NotificationHelper.deleteChannel(
+          getReactApplicationContext(),
+          experienceId,
+          channelId);
+      promise.resolve(null);
+    } catch (Exception e) {
+      promise.reject("E_FAILED_DELETING_CHANNEL", "Could not delete channel", e);
+    }
+  }
+
+  @ReactMethod
+  public void presentLocalNotification(final ReadableMap data, final ReadableMap legacyChannelData, final Promise promise) {
     HashMap<String, java.io.Serializable> details = new HashMap<>();
+    String experienceId;
 
     details.put("data", ((ReadableNativeMap) data).toHashMap());
 
     try {
-      details.put("experienceId", mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
+      experienceId = mManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+      details.put("experienceId", experienceId);
     } catch (Exception e) {
-      promise.reject("Requires Experience Id");
+      promise.reject("E_FAILED_PRESENTING_NOTIFICATION", "Requires Experience ID");
       return;
+    }
+
+    if (legacyChannelData != null) {
+      String channelId = data.getString("channelId");
+      if (channelId == null) {
+        promise.reject("E_FAILED_PRESENTING_NOTIFICATION", "legacyChannelData was nonnull with no channelId");
+        return;
+      }
+      NotificationHelper.maybeCreateLegacyStoredChannel(
+          getReactApplicationContext(),
+          experienceId,
+          channelId,
+          legacyChannelData.toHashMap());
     }
 
     int notificationId = new Random().nextInt();
@@ -165,7 +235,21 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void scheduleLocalNotification(final ReadableMap data, final ReadableMap options, final Promise promise) {
+  public void scheduleLocalNotification(final ReadableMap data, final ReadableMap options, final ReadableMap legacyChannelData, final Promise promise) {
+    if (legacyChannelData != null) {
+      String experienceId = mManifest.optString(ExponentManifest.MANIFEST_ID_KEY, null);
+      String channelId = data.getString("channelId");
+      if (channelId == null || experienceId == null) {
+        promise.reject("E_FAILED_PRESENTING_NOTIFICATION", "legacyChannelData was nonnull with no channelId or no experienceId");
+        return;
+      }
+      NotificationHelper.maybeCreateLegacyStoredChannel(
+          getReactApplicationContext(),
+          experienceId,
+          channelId,
+          legacyChannelData.toHashMap());
+    }
+
     int notificationId = new Random().nextInt();
 
     NotificationHelper.scheduleLocalNotification(

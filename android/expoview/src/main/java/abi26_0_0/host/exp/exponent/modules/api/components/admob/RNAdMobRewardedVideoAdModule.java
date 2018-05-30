@@ -31,6 +31,7 @@ public class RNAdMobRewardedVideoAdModule extends ReactContextBaseJavaModule imp
     DID_FAIL_TO_LOAD("rewardedVideoDidFailToLoad"),
     DID_OPEN("rewardedVideoDidOpen"),
     DID_START("rewardedVideoDidStart"),
+    DID_COMPLETE("rewardedVideoDidComplete"),
     DID_CLOSE("rewardedVideoDidClose"),
     WILL_LEAVE_APPLICATION("rewardedVideoWillLeaveApplication");
 
@@ -89,6 +90,11 @@ public class RNAdMobRewardedVideoAdModule extends ReactContextBaseJavaModule imp
   @Override
   public void onRewardedVideoAdLeftApplication() {
     sendEvent(Events.WILL_LEAVE_APPLICATION.toString(), null);
+  }
+
+  @Override
+  public void onRewardedVideoCompleted() {
+    sendEvent(Events.DID_COMPLETE.toString(), null);
   }
 
   @Override
