@@ -40,7 +40,7 @@ RCT_ENUM_CONVERTER(ARWorldAlignment, (@{
 
 
 
-@interface EXGLARSessionManager () <ARSessionObserver>
+@interface EXGLARSessionManager () <ARSessionObserver, ARSessionDelegate>
 {
   GLuint _arCamProgram;
   int _arCamPositionAttrib;

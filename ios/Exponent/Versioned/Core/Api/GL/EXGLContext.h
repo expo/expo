@@ -11,6 +11,8 @@
 #import <OpenGLES/EAGL.h>
 #import "EXGLObjectManager.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class EXGLContext;
 
 @protocol EXGLContextDelegate <NSObject>
@@ -39,3 +41,5 @@
 @property (nonatomic, weak, nullable) id <EXGLContextDelegate> delegate;
 
 @end
+
+NS_ASSUME_NONNULL_END

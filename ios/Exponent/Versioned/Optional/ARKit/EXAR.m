@@ -39,7 +39,7 @@ RCT_EXPORT_MODULE(ExponentAR);
   }
 }
 
-+ (NSDictionary *)serializeARVideoFormat:(ARVideoFormat *)videoFormat
++ (NSDictionary *)serializeARVideoFormat:(ARVideoFormat *)videoFormat API_AVAILABLE(ios(11.3))
 {
   return @{
            @"type": NSStringFromClass([videoFormat class]),
@@ -51,7 +51,7 @@ RCT_EXPORT_MODULE(ExponentAR);
            };
 }
 
-+ (NSMutableArray *)serializeARVideoFormats:(NSArray<ARVideoFormat *>*)videoFormats
++ (NSMutableArray *)serializeARVideoFormats:(NSArray<ARVideoFormat *>*)videoFormats  API_AVAILABLE(ios(11.3))
 {
   NSMutableArray *output = [NSMutableArray array];
   

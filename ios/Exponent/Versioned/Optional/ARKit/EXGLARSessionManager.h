@@ -2,22 +2,23 @@
 #import <ARKit/ARKit.h>
 #import <React/RCTConvert.h>
 
+NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTConvert (ARPlaneDetection)
 
-+ (ARPlaneDetection)ARPlaneDetection:(id)json;
++ (ARPlaneDetection)ARPlaneDetection:(id)json API_AVAILABLE(ios(11.0));
 
 @end
 
 @interface RCTConvert (ARHitTestResultType)
 
-+ (ARHitTestResultType)ARHitTestResultType:(id)json;
++ (ARHitTestResultType)ARHitTestResultType:(id)json API_AVAILABLE(ios(11.0));
 
 @end
 
 @interface RCTConvert (ARWorldAlignment)
 
-+ (ARWorldAlignment)ARWorldAlignment:(id)json;
++ (ARWorldAlignment)ARWorldAlignment:(id)json API_AVAILABLE(ios(11.0));
 
 @end
 
@@ -27,11 +28,12 @@
 
 @end
 
+API_AVAILABLE(ios(11.3))
 @interface EXGLARSessionManager : NSObject
 
 @property (nonatomic, weak) id<EXGLARSessionManagerDelegate> delegate;
 @property (nonatomic, assign) ARPlaneDetection planeDetection;
-@property (nonatomic, assign) ARPlaneDetection worldAlignment;
+@property (nonatomic, assign) ARWorldAlignment worldAlignment;
 
 @property (nonatomic, assign) BOOL shouldAttemptRelocalization;
 @property (nonatomic, assign) BOOL providesAudioData;
@@ -55,3 +57,4 @@
 
 @end
 
+NS_ASSUME_NONNULL_END
