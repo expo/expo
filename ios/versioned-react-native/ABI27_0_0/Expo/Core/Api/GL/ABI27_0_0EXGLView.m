@@ -4,7 +4,6 @@
 
 #include <OpenGLES/ES3/gl.h>
 #include <OpenGLES/ES3/glext.h>
-#import <ARKit/ARKit.h>
 
 #import <ReactABI27_0_0/ABI27_0_0RCTBridgeModule.h>
 #import <ReactABI27_0_0/ABI27_0_0RCTUtils.h>

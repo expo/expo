@@ -3,7 +3,6 @@
 
 #include <OpenGLES/ES3/gl.h>
 #include <OpenGLES/ES3/glext.h>
-#import <ARKit/ARKit.h>
 
 #import <ReactABI26_0_0/ABI26_0_0RCTBridgeModule.h>
 #import <ReactABI26_0_0/ABI26_0_0RCTUtils.h>
