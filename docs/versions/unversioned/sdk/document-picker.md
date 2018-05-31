@@ -10,7 +10,7 @@ In addition, for ExpoKit apps, you need to open the project in Xcode and follow 
 
 ### `Expo.DocumentPicker.getDocumentAsync(options)`
 
-Display the system UI for choosing a document.
+Display the system UI for choosing a document. By default, the chosen file is copied to [the app's internal cache directory](filesystem.md##expofilesystemcachedirectory).
 
 #### Arguments
 
@@ -19,9 +19,10 @@ Display the system UI for choosing a document.
       A map of options:
 
     -   **type (_string_)** -- The [MIME type](https://en.wikipedia.org/wiki/Media_type) of the documents that are available to be picked. Is also supports wildcards like `image/*` to choose any image. To allow any type of document you can use `*/*`. Defaults to `*/*`.
+    -   **copyToCacheDirectory (_boolean_)** -- If `true`, the picked file is copied to [`Expo.FileSystem.CacheDirectory`]((filesystem.md##expofilesystemcachedirectory)), which allows other Expo APIs to read the file immediately. Defaults to `true`. This may impact performance for large files, so you should consider setting this to `false` if you expect users to pick particularly large files and your app does not need immediate read access.
 
 #### Returns
 
 If the user cancelled the document picking, returns `{ type: 'cancel' }`.
 
-Otherwise, returns `{ type: 'success', uri, name, size }` where `uri` is a URI to the local document file, `name` is its name and `size` is its size in bytes.
+Otherwise, returns `{ type: 'success', uri, name, size }` where `uri` is a URI to the local document file, `name` is its original name and `size` is its size in bytes.
