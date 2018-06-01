@@ -292,6 +292,22 @@ The following is a list of properties that are available for you under the `"exp
 
       Local path or remote url to an image to use for your app's icon. If specified, this overrides the top-level `icon` key. We recommend that you use a 1024x1024 png file (transparency is recommended for the Google Play Store). This icon will appear on the home screen and within the Expo app.
 
+    - `adaptiveIcon`
+
+      Settings for an Adaptive Launcher Icon on Android. https://developer.android.com/guide/practices/ui_guidelines/icon_design_adaptive
+
+      - `foregroundImage`
+
+        Local path or remote url to an image to use for the foreground of your app's icon on Android. If specified, this overrides the top-level `icon` and the `android.icon` keys. We recommend that you use a 1024x1024 png file, leaving at least the outer 1/6 transparent on each side.
+
+      - `backgroundColor`
+
+        Color to use as the background for your app's Adaptive Icon on Android. Defaults to white (#FFFFFF).
+
+      - `backgroundImage`
+
+        Local path or remote url to a background image for the background of your app's icon on Android. Must have the same dimensions as `foregroundImage`. If specified, this overrides the `backgroundColor` key.
+
    - `playStoreUrl`
 
       URL to your app on the Google Play Store, if you have deployed it there. This is used to link to your store page from your Expo project page if your app is public.

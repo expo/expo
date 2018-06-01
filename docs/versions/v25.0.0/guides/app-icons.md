@@ -6,7 +6,7 @@ Your app's icon is what users see on the home screen of their devices, as well a
 
 ## Configuring your App's Icon
 
-The most straightforward way to provide an icon for your app is to provide the [icon](configuration.html#icon) key in `app.json`. If you want to do the minimum possible, this key alone is sufficient. However, Expo also accepts platform-specific keys under `ios.icon` and `android.icon`. If either of these exist, they will take priority over the base `icon` key on their respective platform. Most production-quality apps will probably want to provide something slightly different between iOS and Android.
+The most straightforward way to provide an icon for your app is to provide the [icon](configuration.html#icon) key in `app.json`. If you want to do the minimum possible, this key alone is sufficient. However, Expo also accepts platform-specific keys under `ios.icon` and `android.icon`. If either of these exist, they will take priority over the base `icon` key on their respective platform. Further customization of the Android icon is possible using the `android.adaptiveIcon` key, which will override both of the previously mentioned settings. Most production-quality apps will probably want to provide something slightly different between iOS and Android.
 
 ## Icon Best Practices
 
@@ -20,8 +20,10 @@ The most straightforward way to provide an icon for your app is to provide the [
 
 ### Android
 
-- Unlike iOS, the operating system will not mask your icon to any particular shape. Therefore, you may want to use transparency to provide some other shape besides a square.
+- The Android icon is formed from two separate layers -- a foreground image and a background color or image. This allows the OS to mask the icon into different shapes and also support visual effects.
+- The design you provide should follow the [Android Adaptive Icon Guidelines](https://developer.android.com/guide/practices/ui_guidelines/icon_design_adaptive) for launcher icons.
 - Use a png file.
+- The default background color is white; to specify a different background color, use the `android.adaptiveIcon.backgroundColor` field. You can instead specify a background image using the `android.adaptiveIcon.backgroundImage` field; ensure that it has the same dimensions as your foreground image.
 - You may still want to follow some of the [Apple best practices](https://developer.apple.com/ios/human-interface-guidelines/icons-and-images/app-icon/) to ensure your icon looks professional, such as testing your icon on different wallpapers, and avoiding text besides your product's wordmark.
 - Provide something that's at least 512x512 pixels. Since you already need 1024x1024 for iOS, it won't hurt to just provide that here as well.
 

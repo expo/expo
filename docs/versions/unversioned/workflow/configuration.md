@@ -449,6 +449,38 @@ Configuration for how and when the app should request OTA JavaScript updates
     "icon": STRING,
 
     /*
+      Settings for an Adaptive Launcher Icon on Android.
+      https://developer.android.com/guide/practices/ui_guidelines/icon_design_adaptive
+    */
+    "adaptiveIcon": {
+      /*
+        Local path or remote url to an image to use for
+        the foreground of your app's icon on Android.
+
+        We recommend that you use a 1024x1024 png file,
+        leaving at least the outer 1/6 transparent on each side.
+        If specified, this overrides the top-level "icon" and the "android.icon" keys.
+        This icon will appear on the home screen.
+      */
+      "foregroundImage": STRING,
+
+      /*
+        Color to use as the background for your app's Adaptive Icon on Android.
+        Defaults to white (#FFFFFF).
+      */
+      "backgroundColor": STRING,
+
+      /*
+        Local path or remote url to a background image for
+        the background of your app's icon on Android.
+
+        If specified, this overrides the "backgroundColor" key.
+        Must have the same dimensions as "foregroundImage".
+      */
+      "backgroundImage": STRING
+    },
+
+    /*
       URL to your app on the Google Play Store, if you have deployed it there. 
       This is used to link to your store page from your Expo project page if your app is public.
     */
