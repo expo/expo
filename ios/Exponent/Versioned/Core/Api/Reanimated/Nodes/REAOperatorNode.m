@@ -48,6 +48,7 @@ return @(OP); \
             @"sin": REA_SINGLE(sin(a)),
             @"cos": REA_SINGLE(cos(a)),
             @"exp": REA_SINGLE(exp(a)),
+            @"round": REA_SINGLE(round(a)),
 
             // logical
             @"and": ^(NSArray<REANode *> *inputNodes) {

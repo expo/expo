@@ -107,6 +107,12 @@ public class OperatorNode extends Node<Double> {
       return Math.exp(x);
     }
   };
+  private static final Operator ROUND = new SingleOperator() {
+    @Override
+    public double eval(Double x) {
+      return Math.round(x);
+    }
+  };
 
   // logical
   private static final Operator AND = new Operator() {
@@ -159,7 +165,7 @@ public class OperatorNode extends Node<Double> {
   private static final Operator GREATER_THAN = new CompOperator() {
     @Override
     public boolean eval(Double x, Double y) {
-      return x < y;
+      return x > y;
     }
   };
   private static final Operator LESS_OR_EQ = new CompOperator() {
@@ -211,6 +217,8 @@ public class OperatorNode extends Node<Double> {
       mOperator = COS;
     } else if ("exp".equals(op)) {
       mOperator = EXP;
+    } else if ("round".equals(op)) {
+      mOperator = ROUND;
     } else if ("and".equals(op)) {
       mOperator = AND;
     } else if ("or".equals(op)) {
