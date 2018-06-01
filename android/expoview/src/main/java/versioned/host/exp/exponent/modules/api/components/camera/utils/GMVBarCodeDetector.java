@@ -8,9 +8,12 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.util.List;
 
+import host.exp.exponent.analytics.EXL;
 import versioned.host.exp.exponent.modules.api.components.facedetector.ExpoFrameFactory;
 
 public class GMVBarCodeDetector extends ExpoBarCodeDetector {
+
+  private String TAG = GMVBarCodeDetector.class.getSimpleName();
 
   private BarcodeDetector mBarcodeDetector;
 
@@ -28,11 +31,20 @@ public class GMVBarCodeDetector extends ExpoBarCodeDetector {
 
   @Override
   public Result detect(byte[] data, int width, int height, int rotation) {
-    SparseArray<Barcode> result = mBarcodeDetector.detect(ExpoFrameFactory.buildFrame(data, width, height, 0).getFrame());
-    if (result.size() > 0) {
-      Barcode barcode = result.valueAt(0);
-      return new Result(barcode.format, barcode.rawValue);
-    } else {
+    try {
+      SparseArray<Barcode> result = mBarcodeDetector.detect(ExpoFrameFactory.buildFrame(data, width, height, 0).getFrame());
+      if (result.size() > 0) {
+        Barcode barcode = result.valueAt(0);
+        return new Result(barcode.format, barcode.rawValue);
+      } else {
+        return null;
+      }
+    } catch (Exception e) {
+      // for some reason, sometimes the very first preview frame the camera passes back to us
+      // doesn't have the correct amount of data (data.length is too small for the height and width)
+      // which throws, so we just return null
+      // subsequent frames are all the correct length & don't seem to throw
+      EXL.e(TAG, "Failed to detect barcode: " + e.getMessage());
       return null;
     }
   }
