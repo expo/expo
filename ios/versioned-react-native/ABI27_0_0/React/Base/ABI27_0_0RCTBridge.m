@@ -118,7 +118,6 @@ void ABI27_0_0RCTVerifyAllModulesExported(NSArray *extraModules)
           break;
         }
 
-        ABI27_0_0RCTLogWarn(@"Class %@ was not exported. Did you forget to use ABI27_0_0RCT_EXPORT_MODULE()?", cls);
         break;
       }
       superclass = class_getSuperclass(superclass);
