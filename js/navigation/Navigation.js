@@ -117,11 +117,17 @@ ProfileStack.navigationOptions = {
   tabBarLabel: 'Profile',
 };
 
-const TabRoutes = {
-  ProjectsStack,
-  ExploreStack,
-  ProfileStack,
-};
+const TabRoutes =
+  Platform.OS === 'android' || !Constants.isDevice
+    ? {
+        ProjectsStack,
+        ExploreStack,
+        ProfileStack,
+      }
+    : {
+        ProjectsStack,
+        ProfileScreen,
+      };
 
 const TabNavigator =
   Platform.OS === 'ios'
