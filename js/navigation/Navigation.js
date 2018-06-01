@@ -126,7 +126,7 @@ const TabRoutes =
       }
     : {
         ProjectsStack,
-        ProfileScreen,
+        ProfileStack,
       };
 
 const TabNavigator =
