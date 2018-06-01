@@ -89,6 +89,11 @@ public class SQLiteModule extends ReactContextBaseJavaModule {
     }
   }
 
+  @ReactMethod
+  public void close(String dbName) {
+    DATABASES.remove(dbName);
+  }
+
   // do a update/delete/insert operation
   private SQLitePluginResult doUpdateInBackgroundAndPossiblyThrow(String sql, String[] bindArgs,
                                                                   SQLiteDatabase db) {
