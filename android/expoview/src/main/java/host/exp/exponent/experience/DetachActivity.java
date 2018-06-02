@@ -39,7 +39,7 @@ public abstract class DetachActivity extends ExperienceActivity {
 
     mKernel.handleIntent(this, getIntent());
 
-    new AppLoader(Constants.INITIAL_URL, mExponentManifest, mExponentSharedPreferences) {
+    new AppLoader(Constants.INITIAL_URL) {
       @Override
       public void onOptimisticManifest(final JSONObject optimisticManifest) {
         Exponent.getInstance().runOnUiThread(new Runnable() {

@@ -269,6 +269,8 @@ public class ExponentManifest {
     });
   }
 
+  // Returns false if manifestUrl should not be cached. May call listener.onError.
+  // Otherwise, returns true and calls one of the callbacks on listener.
   public boolean fetchCachedManifest(final String manifestUrl, final ManifestListener listener) {
     Uri uri = httpManifestUrlBuilder(manifestUrl).build();
     String httpManifestUrl = uri.toString();

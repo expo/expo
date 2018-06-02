@@ -21,7 +21,7 @@ public class ShellAppActivity extends ExperienceActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    new AppLoader(Constants.INITIAL_URL, mExponentManifest, mExponentSharedPreferences) {
+    new AppLoader(Constants.INITIAL_URL) {
       @Override
       public void onOptimisticManifest(final JSONObject optimisticManifest) {
         Exponent.getInstance().runOnUiThread(new Runnable() {
