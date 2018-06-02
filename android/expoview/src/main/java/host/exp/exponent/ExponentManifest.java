@@ -22,6 +22,7 @@ import host.exp.exponent.generated.ExponentBuildConstants;
 import host.exp.exponent.kernel.Crypto;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.KernelProvider;
+import host.exp.exponent.network.ExpoHeaders;
 import host.exp.exponent.network.ExpoResponse;
 import host.exp.exponent.network.ExponentHttpClient;
 import host.exp.exponent.network.ExponentNetwork;
@@ -430,7 +431,7 @@ public class ExponentManifest {
     }
   }
 
-  private void fetchManifestStep2(final String manifestUrl, final String manifestString, final ExpoResponse.ExpoHeaders headers, final ManifestListener listener, final boolean isEmbedded, boolean isCached) throws JSONException {
+  private void fetchManifestStep2(final String manifestUrl, final String manifestString, final ExpoHeaders headers, final ManifestListener listener, final boolean isEmbedded, boolean isCached) throws JSONException {
     if (Constants.DEBUG_MANIFEST_METHOD_TRACING) {
       Debug.stopMethodTracing();
     }

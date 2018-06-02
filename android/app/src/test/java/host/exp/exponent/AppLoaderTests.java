@@ -21,6 +21,7 @@ import java.io.IOException;
 import expolib_v1.okhttp3.Request;
 import expolib_v1.okhttp3.Response;
 import host.exp.exponent.kernel.Crypto;
+import host.exp.exponent.network.ExpoResponse;
 import host.exp.exponent.network.ExponentHttpClient;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
@@ -62,7 +63,7 @@ public class AppLoaderTests {
       public Void answer(InvocationOnMock invocation) throws Throwable {
         ExponentHttpClient.SafeCallback safeCallback = invocation.getArgumentAt(2, ExponentHttpClient.SafeCallback.class);
 
-        //safeCallback.onCachedResponse();
+        //safeCallback.onResponse(new ExpoResponse());
 
         return null;
       }
