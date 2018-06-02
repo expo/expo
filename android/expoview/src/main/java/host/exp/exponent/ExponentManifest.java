@@ -491,8 +491,6 @@ public class ExponentManifest {
   }
 
   private void fetchManifestStep3(final String manifestUrl, final JSONObject manifest, final boolean isVerified, final ManifestListener listener) {
-    String bundleUrl;
-
     if (!manifest.has(MANIFEST_BUNDLE_URL_KEY)) {
       listener.onError("No bundleUrl in manifest");
       return;
