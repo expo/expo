@@ -71,7 +71,7 @@ public class ExponentHttpClient {
       @Override
       public void onResponse(Call call, Response response) throws IOException {
         if (response.isSuccessful()) {
-          callback.onResponse(new ExpoResponse(response));
+          callback.onResponse(new OkHttpV1ExpoResponse(response));
         } else {
           tryForcedCachedResponse(uri, request, callback, response, null);
         }
@@ -94,7 +94,7 @@ public class ExponentHttpClient {
 
           @Override
           public void onResponse(Call call, Response response) throws IOException {
-            callback.onResponse(new ExpoResponse(response));
+            callback.onResponse(new OkHttpV1ExpoResponse(response));
           }
         });
       }
@@ -127,7 +127,7 @@ public class ExponentHttpClient {
       @Override
       public void onResponse(Call call, Response response) throws IOException {
         if (response.isSuccessful()) {
-          callback.onCachedResponse(new ExpoResponse(response), false);
+          callback.onCachedResponse(new OkHttpV1ExpoResponse(response), false);
           logEventWithUri(Analytics.HTTP_USED_CACHE_RESPONSE, uri);
         } else {
           tryHardCodedResponse(uri, call, callback, initialResponse, initialException);
@@ -196,7 +196,7 @@ public class ExponentHttpClient {
               .message("OK")
               .body(responseBodyForFile(embeddedResponse.responseFilePath, MediaType.parse(embeddedResponse.mediaType)))
               .build();
-          callback.onCachedResponse(new ExpoResponse(response), true);
+          callback.onCachedResponse(new OkHttpV1ExpoResponse(response), true);
           logEventWithUri(Analytics.HTTP_USED_EMBEDDED_RESPONSE, uri);
           return;
         }
@@ -206,7 +206,7 @@ public class ExponentHttpClient {
     }
 
     if (initialResponse != null) {
-      callback.onResponse(new ExpoResponse(initialResponse));
+      callback.onResponse(new OkHttpV1ExpoResponse(initialResponse));
     } else if (initialException != null) {
       callback.onFailure(initialException);
     } else {
