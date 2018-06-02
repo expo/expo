@@ -69,6 +69,7 @@ import host.exp.exponent.generated.ExponentKeys;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.KernelConstants;
+import host.exp.exponent.network.ExpoResponse;
 import host.exp.exponent.network.ExponentHttpClient;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
@@ -374,12 +375,12 @@ public class Exponent {
       final boolean finalShouldForceNetwork = shouldForceNetwork;
       ExponentHttpClient.SafeCallback callback = new ExponentHttpClient.SafeCallback() {
         @Override
-        public void onFailure(Call call, IOException e) {
+        public void onFailure(IOException e) {
           bundleListener.onError(e);
         }
 
         @Override
-        public void onResponse(Call call, Response response) {
+        public void onResponse(ExpoResponse response) {
           if (!response.isSuccessful()) {
             String body = "(could not render body)";
             try {
@@ -463,9 +464,9 @@ public class Exponent {
         }
 
         @Override
-        public void onCachedResponse(Call call, Response response, boolean isEmbedded) {
+        public void onCachedResponse(ExpoResponse response, boolean isEmbedded) {
           EXL.d(TAG, "Using cached or embedded response.");
-          onResponse(call, response);
+          onResponse(response);
         }
       };
 
