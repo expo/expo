@@ -62,7 +62,7 @@ public class AppLoaderTests {
       public Void answer(InvocationOnMock invocation) throws Throwable {
         ExponentHttpClient.SafeCallback safeCallback = invocation.getArgumentAt(2, ExponentHttpClient.SafeCallback.class);
 
-        safeCallback.onCachedResponse();
+        //safeCallback.onCachedResponse();
 
         return null;
       }

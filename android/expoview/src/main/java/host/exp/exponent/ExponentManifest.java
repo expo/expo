@@ -22,6 +22,7 @@ import host.exp.exponent.generated.ExponentBuildConstants;
 import host.exp.exponent.kernel.Crypto;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.KernelProvider;
+import host.exp.exponent.network.ExpoResponse;
 import host.exp.exponent.network.ExponentHttpClient;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
@@ -223,7 +224,7 @@ public class ExponentManifest {
     }
 
     mExponentNetwork.getClient().callSafe(requestBuilder.build(), new ExponentHttpClient.SafeCallback() {
-      private void handleResponse(Response response, boolean isCached) {
+      private void handleResponse(ExpoResponse response, boolean isCached) {
         if (!response.isSuccessful()) {
           ManifestException exception;
           try {
@@ -247,12 +248,12 @@ public class ExponentManifest {
       }
 
       @Override
-      public void onFailure(Call call, IOException e) {
+      public void onFailure(IOException e) {
         listener.onError(new ManifestException(e, manifestUrl));
       }
 
       @Override
-      public void onResponse(Call call, Response response) {
+      public void onResponse(ExpoResponse response) {
         // OkHttp sometimes decides to use the cache anyway here
         boolean isCached = false;
         if (response.networkResponse() == null) {
@@ -262,7 +263,7 @@ public class ExponentManifest {
       }
 
       @Override
-      public void onCachedResponse(Call call, Response response, boolean isEmbedded) {
+      public void onCachedResponse(ExpoResponse response, boolean isEmbedded) {
         // this is only called if network is unavailable for some reason
         handleResponse(response, true);
       }
@@ -299,7 +300,7 @@ public class ExponentManifest {
     final String finalUri = request.url().toString();
 
     mExponentNetwork.getClient().tryForcedCachedResponse(finalUri, request, new ExponentHttpClient.SafeCallback() {
-      private void handleResponse(Response response, final boolean isEmbedded) {
+      private void handleResponse(ExpoResponse response, final boolean isEmbedded) {
         if (!response.isSuccessful()) {
           ManifestException exception;
           try {
@@ -390,17 +391,17 @@ public class ExponentManifest {
       }
 
       @Override
-      public void onFailure(Call call, IOException e) {
+      public void onFailure(IOException e) {
         listener.onError(new ManifestException(e, manifestUrl));
       }
 
       @Override
-      public void onResponse(Call call, Response response) {
+      public void onResponse(ExpoResponse response) {
         handleResponse(response, false);
       }
 
       @Override
-      public void onCachedResponse(Call call, Response response, boolean isEmbedded) {
+      public void onCachedResponse(ExpoResponse response, boolean isEmbedded) {
         handleResponse(response, isEmbedded);
       }
     }, null, null);
@@ -429,7 +430,7 @@ public class ExponentManifest {
     }
   }
 
-  private void fetchManifestStep2(final String manifestUrl, final String manifestString, final Headers headers, final ManifestListener listener, final boolean isEmbedded, boolean isCached) throws JSONException {
+  private void fetchManifestStep2(final String manifestUrl, final String manifestString, final ExpoResponse.ExpoHeaders headers, final ManifestListener listener, final boolean isEmbedded, boolean isCached) throws JSONException {
     if (Constants.DEBUG_MANIFEST_METHOD_TRACING) {
       Debug.stopMethodTracing();
     }
