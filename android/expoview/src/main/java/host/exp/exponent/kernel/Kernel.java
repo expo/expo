@@ -673,7 +673,7 @@ public class Kernel extends KernelInterface {
 
     final ActivityManager.AppTask finalExistingTask = existingTask;
     if (existingTask == null) {
-      new AppLoader(manifestUrl, mExponentManifest, mExponentSharedPreferences, forceCache) {
+      new AppLoader(manifestUrl, forceCache) {
         @Override
         public void onOptimisticManifest(final JSONObject optimisticManifest) {
           Exponent.getInstance().runOnUiThread(new Runnable() {

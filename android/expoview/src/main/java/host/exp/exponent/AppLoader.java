@@ -2,14 +2,14 @@
 
 package host.exp.exponent;
 
-import android.os.Handler;
-import android.os.Looper;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.inject.Inject;
+
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.exceptions.ExceptionUtils;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.storage.ExponentDB;
@@ -21,15 +21,21 @@ public abstract class AppLoader {
 
   private static final String TAG = AppLoader.class.getSimpleName();
 
+  @Inject
+  ExponentManifest mExponentManifest;
+
+  @Inject
+  ExponentSharedPreferences mExponentSharedPreferences;
+
+  @Inject
+  ExpoHandler mExpoHandler;
+
   private String mManifestUrl;
   private JSONObject mCachedManifest;
   private JSONObject mManifest;
   private String mLocalBundlePath;
   private boolean hasResolved = false;
   private final boolean mUseCacheOnly;
-  private ExponentManifest mExponentManifest;
-  private ExponentSharedPreferences mExponentSharedPreferences;
-  private Handler mHandler;
   private Runnable mRunnable;
 
   private static final int DEFAULT_TIMEOUT_LENGTH = 30000;
@@ -42,16 +48,15 @@ public abstract class AppLoader {
   public static final String UPDATE_NO_UPDATE_AVAILABLE_EVENT = "noUpdateAvailable";
   public static final String UPDATE_ERROR_EVENT = "error";
 
-  public AppLoader(String manifestUrl, ExponentManifest exponentManifest, ExponentSharedPreferences exponentSharedPreferences) {
-    this(manifestUrl, exponentManifest, exponentSharedPreferences, false);
+  public AppLoader(String manifestUrl) {
+    this(manifestUrl, false);
   }
 
-  public AppLoader(String manifestUrl, ExponentManifest exponentManifest, ExponentSharedPreferences exponentSharedPreferences, boolean useCacheOnly) {
+  public AppLoader(String manifestUrl, boolean useCacheOnly) {
+    NativeModuleDepsProvider.getInstance().inject(AppLoader.class, this);
+
     mManifestUrl = manifestUrl;
-    mExponentManifest = exponentManifest;
-    mExponentSharedPreferences = exponentSharedPreferences;
     mUseCacheOnly = useCacheOnly;
-    mHandler = new Handler(Looper.getMainLooper());
     mRunnable = new Runnable() {
       @Override
       public void run() {
@@ -179,7 +184,7 @@ public abstract class AppLoader {
   }
 
   private void startTimerAndFetchRemoteManifest(int timeoutLength) {
-    mHandler.postDelayed(mRunnable, timeoutLength);
+    mExpoHandler.postDelayed(mRunnable, timeoutLength);
 
     fetchRemoteManifest();
   }
@@ -210,7 +215,7 @@ public abstract class AppLoader {
   }
 
   private void stopTimer() {
-    mHandler.removeCallbacks(mRunnable);
+    mExpoHandler.removeCallbacks(mRunnable);
   }
 
   private void resolve() {
