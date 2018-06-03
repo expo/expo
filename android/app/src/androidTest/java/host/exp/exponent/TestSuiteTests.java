@@ -190,13 +190,6 @@ public class TestSuiteTests extends BaseTestClass {
   }*/
 
   @Test
-  @ExpoTestSuiteTest
-  @ExpoSdkVersionTest("21.0.0")
-  public void sdk21TestSuite() {
-    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-21-0-0", false);
-  }
-
-  @Test
   @ExpoAlwaysPassThroughFilter
   public void junitIsSillyAndWillFailIfThereIsntOneTestRunPerFile() {}
 }
