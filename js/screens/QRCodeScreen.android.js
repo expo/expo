@@ -10,12 +10,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Camera } from 'expo';
+import { BarCodeScanner } from 'expo';
 import { throttle } from 'lodash';
 
 import Layout from '../constants/Layout';
-
-const DEFAULT_RATIO = '16:9';
 
 export default class BarCodeScreen extends React.Component {
   static navigationOptions = {
@@ -24,7 +22,6 @@ export default class BarCodeScreen extends React.Component {
 
   state = {
     scannerIsVisible: false,
-    ratio: undefined,
   };
 
   _hasOpenedUrl: boolean;
@@ -47,19 +44,10 @@ export default class BarCodeScreen extends React.Component {
   }
 
   render() {
-    const cameraStyle = this.state.ratio === undefined ? { width: 0 } : StyleSheet.absoluteFill;
     return (
       <View style={styles.container}>
         {this.state.scannerIsVisible ? (
-          <Camera
-            ref={ref => {
-              this._scanner = ref;
-            }}
-            onBarCodeRead={this._handleBarCodeRead}
-            style={cameraStyle}
-            ratio={this.state.ratio}
-            onCameraReady={this._setAspectRatio}
-          />
+          <BarCodeScanner onBarCodeRead={this._handleBarCodeRead} style={StyleSheet.absoluteFill} />
         ) : null}
 
         <View style={styles.topOverlay} />
@@ -109,37 +97,7 @@ export default class BarCodeScreen extends React.Component {
   };
 
   _handlePressCancel = () => {
-    this.props.navigation.goBack(null);;
-  };
-
-  _setAspectRatio = async () => {
-    if (this._scanner) {
-      const ratios = await this._scanner.getSupportedRatiosAsync();
-      if (ratios.length === 0) {
-        console.warn(
-          'getSupportedRatiosAsync returned an empty array - preview might be stretched or not visible at all.'
-        );
-        this.setState({
-          ratio: DEFAULT_RATIO,
-        });
-      } else {
-        const { width, height } = Dimensions.get('window');
-        const screenRatio = height / width;
-        const cameraRatio = { ratio: '16:9', value: 10 };
-        ratios.forEach(ratio => {
-          const splitted = ratio.split(':');
-          const [h, w] = splitted;
-          const ratioValue = h / w;
-          if (Math.abs(screenRatio - ratioValue) < Math.abs(screenRatio - cameraRatio.value)) {
-            cameraRatio.ratio = ratio;
-            cameraRatio.value = ratioValue;
-          }
-        });
-        this.setState({
-          ratio: cameraRatio.ratio,
-        });
-      }
-    }
+    this.props.navigation.goBack(null);
   };
 }
 
