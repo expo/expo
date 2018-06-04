@@ -190,7 +190,12 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void presentLocalNotification(final ReadableMap data, final ReadableMap legacyChannelData, final Promise promise) {
+  public void presentLocalNotification(final ReadableMap data, final Promise promise) {
+    presentLocalNotificationWithChannel(data, null, promise);
+  }
+
+  @ReactMethod
+  public void presentLocalNotificationWithChannel(final ReadableMap data, final ReadableMap legacyChannelData, final Promise promise) {
     HashMap<String, java.io.Serializable> details = new HashMap<>();
     String experienceId;
 
@@ -235,7 +240,12 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void scheduleLocalNotification(final ReadableMap data, final ReadableMap options, final ReadableMap legacyChannelData, final Promise promise) {
+  public void scheduleLocalNotification(final ReadableMap data, final ReadableMap options, final Promise promise) {
+    scheduleLocalNotificationWithChannel(data, options, null, promise);
+  }
+
+  @ReactMethod
+  public void scheduleLocalNotificationWithChannel(final ReadableMap data, final ReadableMap options, final ReadableMap legacyChannelData, final Promise promise) {
     if (legacyChannelData != null) {
       String experienceId = mManifest.optString(ExponentManifest.MANIFEST_ID_KEY, null);
       String channelId = data.getString("channelId");
