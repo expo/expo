@@ -148,6 +148,13 @@ public class TestSuiteTests extends BaseTestClass {
 
   @Test
   @ExpoTestSuiteTest
+  @ExpoSdkVersionTest("28.0.0")
+  public void sdk28TestSuite() {
+    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-28-0-0", false);
+  }
+
+  @Test
+  @ExpoTestSuiteTest
   @ExpoSdkVersionTest("27.0.0")
   public void sdk27TestSuite() {
     runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-27-0-0", false);
